@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { CSVConfigUtils } from '../../../utils/csv-utils/csv-config-utils';
 import { CSVCellSetter, CSVCellValidator, CSVParams } from '../../../utils/csv-utils/csv-config-validation.interface';
 import { validateZodCell } from '../../../utils/csv-utils/csv-header-configs';
-import { CritterCSVConfig } from './import-critters-service';
+import { CritterCSVStaticHeader } from './import-critters-service';
 
 /**
  * Get the critter alias cell validator.
@@ -14,12 +14,12 @@ import { CritterCSVConfig } from './import-critters-service';
  *  3. The cell must be unique in the CSV
  *
  * @param {Set<string>} surveyAliases The survey aliases.
- * @param {CSVConfigUtils<CritterCSVConfig>} configUtils The CSV config utils.
+ * @param {CSVConfigUtils<CritterCSVStaticHeader>} configUtils The CSV config utils.
  * @returns {*} {CSVCellValidator} The validate cell callback
  */
 export const getCritterAliasCellValidator = (
   surveyAliases: Set<string>,
-  configUtils: CSVConfigUtils<CritterCSVConfig>
+  configUtils: CSVConfigUtils<CritterCSVStaticHeader>
 ): CSVCellValidator => {
   return (params: CSVParams) => {
     const cellErrors = validateZodCell(params, z.string().trim().min(1).max(50));
@@ -57,12 +57,12 @@ export const getCritterAliasCellValidator = (
  *  2. The cell value must be a valid collection unit for the collection category
  *
  * @param {Object} rowDictionary The row dictionary.
- * @param {CSVConfigUtils<CritterCSVConfig>} configUtils The CSV config utils.
+ * @param {CSVConfigUtils<CritterCSVStaticHeader>} configUtils The CSV config utils.
  * @returns {*} {CSVCellValidator} The validate cell callback
  */
 export const getCritterCollectionUnitCellValidator = (
   rowDictionary: { [tsn: number]: { [header: string]: { [unit: string]: string } } },
-  configUtils: CSVConfigUtils<CritterCSVConfig>
+  configUtils: CSVConfigUtils<CritterCSVStaticHeader>
 ): CSVCellValidator => {
   return (params: CSVParams) => {
     if (params.cell === undefined) {
@@ -124,12 +124,12 @@ export const getCritterCollectionUnitCellValidator = (
  * Get the collection unit cell setter.
  *
  * @param {Object} rowDictionary The row dictionary.
- * @param {CSVConfigUtils<CritterCSVConfig>} configUtils The CSV config utils.
+ * @param {CSVConfigUtils<CritterCSVStaticHeader>} configUtils The CSV config utils.
  * @returns {*} {CSVCellSetter} The set cell value callback
  */
 export const getCritterCollectionUnitCellSetter = (
   rowDictionary: { [tsn: number]: { [header: string]: { [unit: string]: string } } },
-  configUtils: CSVConfigUtils<CritterCSVConfig>
+  configUtils: CSVConfigUtils<CritterCSVStaticHeader>
 ): CSVCellSetter => {
   return (params: CSVParams) => {
     if (params.cell === undefined) {
@@ -151,12 +151,12 @@ export const getCritterCollectionUnitCellSetter = (
  *  2. The cell value must be a valid sex option for the TSN
  *
  * @param {Object} rowDictionary The row dictionary.
- * @param {CSVConfigUtils<CritterCSVConfig>} configUtils The CSV config utils.
+ * @param {CSVConfigUtils<CritterCSVStaticHeader>} configUtils The CSV config utils.
  * @returns {*} {CSVCellValidator} The validate cell callback
  */
 export const getCritterSexCellValidator = (
   rowDictionary: { [tsn: number]: { [sex: string]: string } },
-  configUtils: CSVConfigUtils<CritterCSVConfig>
+  configUtils: CSVConfigUtils<CritterCSVStaticHeader>
 ): CSVCellValidator => {
   return (params: CSVParams) => {
     const rowTsn = Number(configUtils.getCellValue('ITIS_TSN', params.row));
@@ -200,7 +200,7 @@ export const getCritterSexCellValidator = (
  */
 export const getCritterSexCellSetter = (
   rowDictionary: { [tsn: number]: { [sex: string]: string } },
-  configUtils: CSVConfigUtils<CritterCSVConfig>
+  configUtils: CSVConfigUtils<CritterCSVStaticHeader>
 ): CSVCellSetter => {
   return (params: CSVParams) => {
     const tsn = Number(configUtils.getCellValue('ITIS_TSN', params.row));

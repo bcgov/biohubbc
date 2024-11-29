@@ -31,8 +31,11 @@ import {
 
 const defaultLog = getLogger('services/import/import-critters-service');
 
+// Critter CSV static headers
+export type CritterCSVStaticHeader = 'ITIS_TSN' | 'ALIAS' | 'SEX' | 'WLH_ID' | 'DESCRIPTION';
+
 // Critter CSV config with typed static headers
-export type CritterCSVConfig = CSVConfig<'ITIS_TSN' | 'SEX' | 'ALIAS' | 'WLH_ID' | 'DESCRIPTION'>;
+type CritterCSVConfig = CSVConfig<CritterCSVStaticHeader>;
 
 /**
  *
@@ -48,7 +51,7 @@ export class ImportCrittersService extends DBService {
   surveyId: number;
   worksheet: WorkSheet;
 
-  configUtils: CSVConfigUtils<CritterCSVConfig>;
+  configUtils: CSVConfigUtils<CritterCSVStaticHeader>;
 
   platformService: PlatformService;
   critterbaseService: CritterbaseService;

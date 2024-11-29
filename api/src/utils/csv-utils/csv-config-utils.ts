@@ -7,14 +7,15 @@ import { CSVConfig, CSVRow } from './csv-config-validation.interface';
  * CSV Config Utils - A collection of methods useful when building CSVConfigs
  *
  * @exports
+ * @template StaticHeaderType - The static header type
  * @class CSVConfigUtils
  */
-export class CSVConfigUtils<T extends CSVConfig = CSVConfig> {
-  _config: T;
+export class CSVConfigUtils<StaticHeaderType extends Uppercase<string>> {
+  _config: CSVConfig<StaticHeaderType>;
   worksheet: WorkSheet;
   worksheetRows: CSVRow[];
 
-  constructor(worksheet: WorkSheet, config: T) {
+  constructor(worksheet: WorkSheet, config: CSVConfig) {
     this._config = config;
     this.worksheet = worksheet;
     this.worksheetRows = getWorksheetRowObjects(worksheet);
@@ -54,11 +55,11 @@ export class CSVConfigUtils<T extends CSVConfig = CSVConfig> {
   /**
    * Get the cell value from a CSV row.
    *
-   * @param {keyof T['staticHeadersConfig']} header - The header name
+   * @param {StaticHeaderType} header - The header name
    * @param {CSVRow} row - The CSV row
    * @returns {unknown} - The cell value
    */
-  getCellValue(header: keyof T['staticHeadersConfig'], row: CSVRow) {
+  getCellValue(header: StaticHeaderType, row: CSVRow) {
     // Static header or dynamic header exact match
     if (header in row) {
       return row[header as Uppercase<string>];
@@ -75,31 +76,31 @@ export class CSVConfigUtils<T extends CSVConfig = CSVConfig> {
   /**
    * Get all the cell values from a static header.
    *
-   * @param {keyof T['staticHeadersConfig']} header - The header name
+   * @param {StaticHeaderType} header - The header name
    * @returns {unknown[]} - The cell values
    */
-  getCellValues(header: keyof T['staticHeadersConfig']) {
+  getCellValues(header: StaticHeaderType) {
     return this.worksheetRows.map((row) => this.getCellValue(header, row));
   }
 
   /**
    * Get all the unique cell values from a static header.
    *
-   * @param {keyof T['staticHeadersConfig']} header - The header name
+   * @param {StaticHeaderType} header - The header name
    * @returns {unknown[]} - The unique cell values
    */
-  getUniqueCellValues(header: keyof T['staticHeadersConfig']) {
+  getUniqueCellValues(header: StaticHeaderType) {
     return [...new Set(this.getCellValues(header))];
   }
 
   /**
    * Check if all the cell values from a static header are unique.
    *
-   * @param {keyof T['staticHeadersConfig']} header - The header name
+   * @param {StaticHeaderType} header - The header name
    * @param {unknown} cell - The cell value
    * @returns {boolean} - Whether all the cell values are unique
    */
-  isCellUnique(header: keyof T['staticHeadersConfig'], cell: unknown) {
+  isCellUnique(header: StaticHeaderType, cell: unknown) {
     const cellValueCounts = countBy(this.getCellValues(header), (value) => String(value).toLowerCase());
     return cellValueCounts[String(cell).toLowerCase()] === 1;
   }
