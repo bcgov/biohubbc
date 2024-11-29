@@ -1,4 +1,4 @@
-import { countBy, get } from 'lodash';
+import { get } from 'lodash';
 import { z } from 'zod';
 import { CSVConfigUtils } from '../../../utils/csv-utils/csv-config-utils';
 import { CSVError, CSVParams } from '../../../utils/csv-utils/csv-config-validation.interface';
@@ -16,11 +16,9 @@ export const getCritterAliasCellValidator = (
   surveyAliases: Set<string>,
   configUtils: CSVConfigUtils<CritterCSVConfig>
 ): ((params: CSVParams) => CSVError[]) => {
-  const rowAliases = configUtils.getCellValues('ALIAS');
-  const rowAliasCounts = countBy(rowAliases.map((alias) => String(alias).toLowerCase()));
-
   return (params: CSVParams) => {
     const cellErrors = validateZodCell(params, z.string().trim().min(1).max(50));
+    const isAliasUnique = configUtils.isCellUnique('ALIAS', params.cell);
 
     if (cellErrors.length) {
       return cellErrors;
@@ -34,7 +32,7 @@ export const getCritterAliasCellValidator = (
       });
     }
 
-    if (rowAliasCounts[String(params.cell).toLowerCase()] > 1) {
+    if (!isAliasUnique) {
       cellErrors.push({
         error: `Critter alias already exists in the CSV`,
         solution: `Update the alias to be unique`,

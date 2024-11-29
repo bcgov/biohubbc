@@ -35,10 +35,12 @@ export const validateCSVWorksheet = <CSVConfigType extends CSVConfig>(
     // Validate the cell value and modify the errors
     executeValidateCell(params, headerConfig, errors); // Mutates `errors`
 
-    if (!errors.length) {
-      // Set the cell value and modify the rows
-      executeSetCellValue(params, headerConfig, rows); // Mutates `rows`
+    if (errors.length) {
+      return;
     }
+
+    // Set the cell value and modify the rows
+    executeSetCellValue(params, headerConfig, rows); // Mutates `rows`
   });
 
   if (errors.length) {
@@ -65,7 +67,7 @@ export const validateCSVHeaders = (worksheet: WorkSheet, config: CSVConfig): CSV
   }
 
   if (!configUtils.worksheetRows.length) {
-    return [{ rowIndex: 0, error: 'CSV missing rows', solution: 'Add data to CSV' }];
+    return [{ rowIndex: 1, error: 'CSV missing rows', solution: 'Add data to CSV' }];
   }
 
   for (const [staticHeader, headerConfig] of Object.entries(config.staticHeadersConfig)) {
@@ -138,7 +140,7 @@ export const forEachCSVCell = (
 /**
  * Execute the `setCellValue` callback for the cell - handles static and dynamic headers.
  *
- * Note: This mutates the CSV row objects.
+ * Note: This mutates the CSV row objects `mutableRows`.
  *
  * @param {CSVParams} params - The CSV parameters
  * @param {CSVHeaderConfig} headerConfig - The header configuration
@@ -163,7 +165,7 @@ export const executeSetCellValue = (params: CSVParams, headerConfig: CSVHeaderCo
 /**
  * Execute the `validateCell` callback for the cell - handles static and dynamic headers.
  *
- * Note: This mutates the CSV errors array.
+ * Note: This mutates the CSV errors array `mutableErrors`.
  *
  * @param {CSVParams} params - The CSV parameters
  * @param {CSVHeaderConfig} headerConfig - The header configuration

@@ -1,4 +1,4 @@
-import { difference } from 'lodash';
+import { countBy, difference } from 'lodash';
 import { WorkSheet } from 'xlsx';
 import { getHeadersUpperCase, getWorksheetRowObjects } from '../xlsx-utils/worksheet-utils';
 import { CSVConfig, CSVRow } from './csv-config-validation.interface';
@@ -88,5 +88,17 @@ export class CSVConfigUtils<T extends CSVConfig = CSVConfig> {
    */
   getUniqueCellValues(header: keyof T['staticHeadersConfig']) {
     return [...new Set(this.getCellValues(header))];
+  }
+
+  /**
+   * Check if all the cell values from a static header are unique.
+   *
+   * @param {keyof T['staticHeadersConfig']} header - The header name
+   * @param {unknown} cell - The cell value
+   * @returns {boolean} - Whether all the cell values are unique
+   */
+  isCellUnique(header: keyof T['staticHeadersConfig'], cell: unknown) {
+    const cellValueCounts = countBy(this.getCellValues(header), (value) => String(value).toLowerCase());
+    return cellValueCounts[String(cell).toLowerCase()] === 1;
   }
 }
