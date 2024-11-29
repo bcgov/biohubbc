@@ -19,9 +19,10 @@ export const getCSVParamsError = (params: CSVParams): Pick<CSVError, 'cell' | 'h
  *
  * @param {CSVParams} params - The cell parameters
  * @param {z.ZodSchema} schema - The Zod schema
+ * @param {string} [solution] - The solution message
  * @returns {*} {CSVError[]} - The cell validation errors
  */
-export const validateZodCell = (params: CSVParams, schema: z.ZodSchema): CSVError[] => {
+export const validateZodCell = (params: CSVParams, schema: z.ZodSchema, solution?: string): CSVError[] => {
   const errors: CSVError[] = [];
 
   const parsed = schema.safeParse(params.cell);
@@ -30,7 +31,7 @@ export const validateZodCell = (params: CSVParams, schema: z.ZodSchema): CSVErro
     parsed.error.errors.forEach((error) => {
       errors.push({
         error: error.message,
-        solution: 'Update the cell value to match the expected type',
+        solution: solution ?? 'Update the cell value to match the expected type',
         ...getCSVParamsError(params)
       });
     });
@@ -73,13 +74,13 @@ export const getTsnCellValidator = (tsns: Set<number>): ((params: CSVParams) => 
  * Get the description header cell validator.
  *
  * Rules:
- *  1. The cell must be a string with a maximum length of 250
+ *  1. The cell must be a string or undefined with a maximum length of 250
  *
  * @returns {*} {(params: CSVParams) => CSVError[]} The validate cell callback
  */
 export const getDescriptionCellValidator = (): ((params: CSVParams) => CSVError[]) => {
   return (params: CSVParams) => {
-    return validateZodCell(params, z.string().trim().min(1).max(250));
+    return validateZodCell(params, z.string().trim().max(250).optional());
   };
 };
 
@@ -94,20 +95,13 @@ export const getDescriptionCellValidator = (): ((params: CSVParams) => CSVError[
  */
 export const getWlhIDCellValidator = (): ((params: CSVParams) => CSVError[]) => {
   return (params: CSVParams) => {
-    const cellErrors = validateZodCell(params, z.string().optional());
-
-    if (cellErrors.length || !params.cell) {
-      return cellErrors;
-    }
-
-    if (!/^\d{2}-.+/.exec(String(params.cell))) {
-      cellErrors.push({
-        error: `Invalid Wildlife Health ID format`,
-        solution: `Wildlife Health ID must be in the format 'XX-XXXX'`,
-        ...getCSVParamsError(params)
-      });
-    }
-
-    return cellErrors;
+    return validateZodCell(
+      params,
+      z
+        .string()
+        .regex(/^\d{2}-.+/, { message: 'Invalid Wildlife Health ID format' })
+        .optional(),
+      `Wildlife Health ID must be in the format 'XX-XXXX'`
+    );
   };
 };

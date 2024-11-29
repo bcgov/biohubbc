@@ -2,10 +2,14 @@ import { merge, set } from 'lodash';
 import { v4 } from 'uuid';
 import { WorkSheet } from 'xlsx';
 import { IDBConnection } from '../../../database/db';
-import { ApiGeneralError } from '../../../errors/api-error';
 import { CSVConfigUtils } from '../../../utils/csv-utils/csv-config-utils';
 import { validateCSVWorksheet } from '../../../utils/csv-utils/csv-config-validation';
-import { CSVConfig, CSVError, CSVHeaderConfig, CSVRow } from '../../../utils/csv-utils/csv-config-validation.interface';
+import {
+  CSVConfig,
+  CSVError,
+  CSVHeaderConfig,
+  CSVRowValidated
+} from '../../../utils/csv-utils/csv-config-validation.interface';
 import {
   getDescriptionCellValidator,
   getTsnCellValidator,
@@ -100,20 +104,22 @@ export class ImportCrittersService extends DBService {
 
     const payloads = await this._getImportPayloads(rows);
 
-    // Add critters to Critterbase
-    const bulkResponse = await this.critterbaseService.bulkCreate(payloads.critterbasePayload);
+    console.log({ payloads });
 
-    // Check critterbase inserted the full list of critters
-    // In reality this error should not be triggered, safeguard to prevent floating critter ids in SIMS
-    if (bulkResponse.created.critters !== payloads.simsPayload.length) {
-      throw new ApiGeneralError('Unable to fully import critters from CSV', [
-        'importCrittersStrategy -> insertCsvCrittersIntoSimsAndCritterbase',
-        'critterbase bulk create response count !== critterIds.length'
-      ]);
-    }
-
-    // Add Critters to SIMS survey
-    await this.surveyCritterService.addCrittersToSurvey(this.surveyId, payloads.simsPayload);
+    //// Add critters to Critterbase
+    //const bulkResponse = await this.critterbaseService.bulkCreate(payloads.critterbasePayload);
+    //
+    //// Check critterbase inserted the full list of critters
+    //// In reality this error should not be triggered, safeguard to prevent floating critter ids in SIMS
+    //if (bulkResponse.created.critters !== payloads.simsPayload.length) {
+    //  throw new ApiGeneralError('Unable to fully import critters from CSV', [
+    //    'importCrittersStrategy -> insertCsvCrittersIntoSimsAndCritterbase',
+    //    'critterbase bulk create response count !== critterIds.length'
+    //  ]);
+    //}
+    //
+    //// Add Critters to SIMS survey
+    //await this.surveyCritterService.addCrittersToSurvey(this.surveyId, payloads.simsPayload);
 
     return [];
   }
@@ -148,10 +154,10 @@ export class ImportCrittersService extends DBService {
   /**
    * Get the Critterbase and SIMS import payloads.
    *
-   * @param {CSVRow[]} rows - The CSV rows
+   * @param {CSVRowValidated[]} rows - The validated CSV rows
    * @returns {Promise<{ simsPayload: string[]; critterbasePayload: IBulkCreate }>} The import payloads
    */
-  async _getImportPayloads(rows: CSVRow[]) {
+  async _getImportPayloads(rows: CSVRowValidated<CritterCSVConfig>[]) {
     const simsPayload: string[] = [];
     const critterbasePayload: IBulkCreate = { critters: [], collections: [] };
 
@@ -165,11 +171,11 @@ export class ImportCrittersService extends DBService {
       // Critterbase static headers payload
       critterbasePayload.critters?.push({
         critter_id: critterId,
-        sex_qualitative_option_id: this.configUtils.getCellValue('SEX', row),
-        itis_tsn: this.configUtils.getCellValue('ITIS_TSN', row),
-        animal_id: this.configUtils.getCellValue('ALIAS', row),
-        wlh_id: this.configUtils.getCellValue('WLH_ID', row),
-        critter_comment: this.configUtils.getCellValue('DESCRIPTION', row)
+        sex_qualitative_option_id: row.SEX,
+        itis_tsn: row.ITIS_TSN,
+        animal_id: row.ALIAS,
+        wlh_id: row.WLH_ID,
+        critter_comment: row.DESCRIPTION
       });
 
       // Critterbase dynamic headers payload

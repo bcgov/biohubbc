@@ -17,7 +17,7 @@ const mockConfig: CSVConfig = {
   ignoreDynamicHeaders: true
 };
 
-describe.only('critter-header-configs', () => {
+describe('critter-header-configs', () => {
   describe('getCritterAliasCellValidator', () => {
     it('should return a single error when cell value is invalid', () => {
       const badCellValues = [null, undefined, '', ' ', 0, {}];

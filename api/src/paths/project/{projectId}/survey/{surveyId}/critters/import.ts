@@ -102,7 +102,7 @@ POST.apiDoc = {
                 items: {
                   type: 'object',
                   additionalProperties: false,
-                  required: ['error', 'solution', 'rowIndex', 'header'],
+                  required: ['error', 'rowIndex'],
                   properties: {
                     error: {
                       type: 'string'
