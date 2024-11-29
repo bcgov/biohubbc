@@ -2,6 +2,7 @@ import { merge, set } from 'lodash';
 import { v4 } from 'uuid';
 import { WorkSheet } from 'xlsx';
 import { IDBConnection } from '../../../database/db';
+import { ApiGeneralError } from '../../../errors/api-error';
 import { CSVConfigUtils } from '../../../utils/csv-utils/csv-config-utils';
 import { validateCSVWorksheet } from '../../../utils/csv-utils/csv-config-validation';
 import {
@@ -104,22 +105,20 @@ export class ImportCrittersService extends DBService {
 
     const payloads = await this._getImportPayloads(rows);
 
-    console.log({ payloads });
+    // Add critters to Critterbase
+    const bulkResponse = await this.critterbaseService.bulkCreate(payloads.critterbasePayload);
 
-    //// Add critters to Critterbase
-    //const bulkResponse = await this.critterbaseService.bulkCreate(payloads.critterbasePayload);
-    //
-    //// Check critterbase inserted the full list of critters
-    //// In reality this error should not be triggered, safeguard to prevent floating critter ids in SIMS
-    //if (bulkResponse.created.critters !== payloads.simsPayload.length) {
-    //  throw new ApiGeneralError('Unable to fully import critters from CSV', [
-    //    'importCrittersStrategy -> insertCsvCrittersIntoSimsAndCritterbase',
-    //    'critterbase bulk create response count !== critterIds.length'
-    //  ]);
-    //}
-    //
-    //// Add Critters to SIMS survey
-    //await this.surveyCritterService.addCrittersToSurvey(this.surveyId, payloads.simsPayload);
+    // Check critterbase inserted the full list of critters
+    // In reality this error should not be triggered, safeguard to prevent floating critter ids in SIMS
+    if (bulkResponse.created.critters !== payloads.simsPayload.length) {
+      throw new ApiGeneralError('Unable to fully import critters from CSV', [
+        'importCrittersService->importCSVWorksheet',
+        'critterbase bulk create response count !== critterIds.length'
+      ]);
+    }
+
+    // Add Critters to SIMS survey
+    await this.surveyCritterService.addCrittersToSurvey(this.surveyId, payloads.simsPayload);
 
     return [];
   }

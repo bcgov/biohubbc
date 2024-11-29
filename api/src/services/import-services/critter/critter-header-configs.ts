@@ -8,6 +8,11 @@ import { CritterCSVConfig } from './import-critters-service';
 /**
  * Get the critter alias cell validator.
  *
+ * Rules:
+ *  1. The cell must be a string with a length between 1 and 50
+ *  2. The cell must be unique in the survey
+ *  3. The cell must be unique in the CSV
+ *
  * @param {Set<string>} surveyAliases The survey aliases.
  * @param {CSVConfigUtils<CritterCSVConfig>} configUtils The CSV config utils.
  * @returns {*} {(params: CSVParams) => CSVError[]} The validate cell callback
@@ -45,6 +50,11 @@ export const getCritterAliasCellValidator = (
 /**
  * Get the critter collection unit cell validator.
  *
+ * Rules:
+ *  1. The cell must be a string with a max length of 50 or empty
+ *  2. The header must be a valid collection category for the TSN
+ *  3. The cell value must be a valid collection unit for the collection category
+ *
  * @param {Object} rowDictionary The row dictionary.
  * @param {CSVConfigUtils<CritterCSVConfig>} configUtils The CSV config utils.
  * @returns {*} {(params: CSVParams) => CSVError[]} The validate cell callback
@@ -54,7 +64,7 @@ export const getCritterCollectionUnitCellValidator = (
   configUtils: CSVConfigUtils<CritterCSVConfig>
 ): ((params: CSVParams) => CSVError[]) => {
   return (params: CSVParams) => {
-    const cellErrors = validateZodCell(params, z.string().trim().min(1).max(50).optional());
+    const cellErrors = validateZodCell(params, z.string().max(50).optional());
 
     if (cellErrors.length || !params.cell) {
       return cellErrors;
@@ -115,6 +125,11 @@ export const getCritterCollectionUnitCellSetter = (
 
 /**
  * Get the critter sex cell validator.
+ *
+ * Rules:
+ *  1. The cell must be a string with a min length of 1 and max length of 50
+ *  2. The TSN must have sex measurements available
+ *  3. The cell value must be a valid sex option for the TSN
  *
  * @param {Object} rowDictionary The row dictionary.
  * @param {CSVConfigUtils<CritterCSVConfig>} configUtils The CSV config utils.
