@@ -35,6 +35,7 @@ export const validateCSVWorksheet = <CSVConfigType extends CSVConfig>(
     // Validate the cell value and modify the errors
     executeValidateCell(params, headerConfig, errors); // Mutates `errors`
 
+    // If there are errors in the cell don't set the cell value
     if (errors.length) {
       return;
     }
@@ -63,11 +64,11 @@ export const validateCSVHeaders = (worksheet: WorkSheet, config: CSVConfig): CSV
   const configUtils = new CSVConfigUtils(worksheet, config);
 
   if (!configUtils.headers.length) {
-    return [{ rowIndex: 0, error: 'CSV empty', solution: 'Add headers and data to CSV' }];
+    return [{ error: 'CSV empty', solution: 'Add headers and data to CSV', errorRowIndex: 0 }];
   }
 
   if (!configUtils.worksheetRows.length) {
-    return [{ rowIndex: 1, error: 'CSV missing rows', solution: 'Add data to CSV' }];
+    return [{ error: 'CSV missing rows', solution: 'Add data to CSV', errorRowIndex: 1 }];
   }
 
   for (const [staticHeader, headerConfig] of Object.entries(config.staticHeadersConfig)) {
@@ -81,7 +82,7 @@ export const validateCSVHeaders = (worksheet: WorkSheet, config: CSVConfig): CSV
         error: 'CSV missing required header',
         solution: `Add header '${staticHeader}' to CSV`,
         header: staticHeader,
-        rowIndex: 0
+        errorRowIndex: 0
       });
     }
   }
@@ -93,7 +94,7 @@ export const validateCSVHeaders = (worksheet: WorkSheet, config: CSVConfig): CSV
         error: 'Unknown header in CSV',
         solution: `Remove header '${unknownHeader}' from CSV`,
         header: unknownHeader,
-        rowIndex: 0
+        errorRowIndex: 0
       });
     }
   }
@@ -128,7 +129,7 @@ export const forEachCSVCell = (
         cell,
         header,
         row: worksheetRow,
-        rowIndex: i + 1,
+        rowIndex: i,
         staticHeader: staticHeaderConfigMap.get(header)?.staticHeader
       };
 
@@ -151,18 +152,17 @@ export const forEachCSVCell = (
  * @returns {*} {CSVRow[]} - The updated row
  */
 export const executeSetCellValue = (params: CSVParams, headerConfig: CSVHeaderConfig, mutableRows: CSVRow[]) => {
-  if (!headerConfig.setCellValue) {
-    return;
-  }
+  const headerKey = params.staticHeader?.toUpperCase() ?? params.header.toUpperCase();
+  const cellValue = headerConfig?.setCellValue?.(params) ?? params.cell;
 
-  if (params.staticHeader) {
+  // Remove the aliased header if it is not the static header
+  if (params.staticHeader && params.header !== params.staticHeader) {
     delete params.row[params.header];
-    params.row[params.staticHeader.toUpperCase()] = headerConfig.setCellValue(params);
-  } else {
-    params.row[params.header.toUpperCase()] = headerConfig.setCellValue(params);
   }
 
-  mutableRows[params.rowIndex - 1] = params.row;
+  params.row[headerKey] = cellValue;
+
+  mutableRows[params.rowIndex] = params.row;
 };
 
 /**
@@ -194,7 +194,7 @@ export const executeValidateCell = (
         values: error.values,
         cell: error.cell ?? params.cell,
         header: error.header ?? params.header,
-        rowIndex: error.rowIndex ?? params.rowIndex
+        errorRowIndex: error.errorRowIndex ?? params.rowIndex + 1 // headers: 0, data row: 1
       });
     });
   }

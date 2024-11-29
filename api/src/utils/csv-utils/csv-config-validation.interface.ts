@@ -7,17 +7,26 @@ export interface CSVConfig<THeader extends Uppercase<string> = Uppercase<string>
    * Record containing the static headers, their aliases, and the `validateCell` and `setCellValue` callbacks
    * to be called for each static cell.
    *
+   * Note: A static header is a header that is known and defined in the configuration.
+   *
    * @type {Record<THeader, { aliases: Uppercase<string> } & CSVHeaderConfig>}
    */
   staticHeadersConfig: Record<THeader, { aliases: Uppercase<string> } & CSVHeaderConfig>;
   /**
    * Contains the `validateCell` and `setCellValue` callbacks to be called for each dynamic cell.
    *
+   * Note: A dynamic header is a header that is not known and defined in the configuration.
+   * The actual header name is `dynamic` meaning it is defined by the user.
+   *
+   * ie: Additional headers like measurements, markings, collection units etc.
+   *
    * @type {CSVHeaderConfig | undefined}
    */
   dynamicHeadersConfig?: CSVHeaderConfig;
   /**
    * Boolean to ignore dynamic headers.
+   *
+   * ie: If true, the dynamic headers will not be processed.
    *
    * @type {boolean}
    */
@@ -30,13 +39,15 @@ export interface CSVConfig<THeader extends Uppercase<string> = Uppercase<string>
  */
 export interface CSVHeaderConfig {
   /**
-   * Callback to fire when validating the cell.
+   * Callback to fire when validating the cell. Returns a list of CSVErrors.
    *
    * @type {(params: CSVParams) => CSVError[]}
    */
   validateCell?: (params: CSVParams) => CSVError[];
   /**
-   * Callback to fire when setting the cell (after validation).
+   * Callback to fire when setting the cell (after validation). Returns the new cell value.
+   *
+   * ie: Convert a string to a number, or find a the matching UUID for a string.
    *
    * @type {(params: CSVParams) => any | undefined}
    */
@@ -69,11 +80,13 @@ export interface CSVParams {
   /**
    * The cell row index.
    *
+   * Note: First data row index 0.
+   *
    * @type {number}
    */
   rowIndex: number;
   /**
-   * The config static header name. The final row key for static headers.
+   * The config static header name. The final row key.
    *
    * @type {string | undefined}
    */
@@ -98,29 +111,31 @@ export interface CSVError {
    */
   solution: string;
   /**
-   * The row index.
-   *
-   * @type {number}
-   */
-  rowIndex?: number;
-  /**
    * The list of allowed values if applicable.
    *
    * @type {(string[] | number[]) | undefined}
    */
   values?: string[] | number[] | undefined;
   /**
-   * The optionally overridable cell value.
+   * The cell value.
    *
    * @type {unknown | undefined}
    */
   cell?: unknown | undefined;
   /**
-   * The optionally overridable header name.
+   * The header name.
    *
    * @type {string | undefined}
    */
   header?: string | undefined;
+  /**
+   * The row index the error occurred.
+   *
+   * Note: Header row index 0. First data row index 1.
+   *
+   * @type {number}
+   */
+  errorRowIndex?: number;
 }
 
 export type CSVRow = Record<string, any>;

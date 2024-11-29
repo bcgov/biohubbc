@@ -29,6 +29,7 @@ export const getCritterAliasCellValidator = (
       return cellErrors;
     }
 
+    // Check if the alias already exists in the survey
     if (surveyAliases.has(String(params.cell))) {
       cellErrors.push({
         error: `Critter alias already exists in the Survey`,
@@ -36,6 +37,7 @@ export const getCritterAliasCellValidator = (
       });
     }
 
+    // Check if the alias already exists in the CSV
     if (!isAliasUnique) {
       cellErrors.push({
         error: `Critter alias already exists in the CSV`,
@@ -51,9 +53,8 @@ export const getCritterAliasCellValidator = (
  * Get the critter collection unit cell validator.
  *
  * Rules:
- *  1. The cell must be a string with a max length of 50 or empty
- *  2. The header must be a valid collection category for the TSN
- *  3. The cell value must be a valid collection unit for the collection category
+ *  1. The header must be a valid collection category for the TSN
+ *  2. The cell value must be a valid collection unit for the collection category
  *
  * @param {Object} rowDictionary The row dictionary.
  * @param {CSVConfigUtils<CritterCSVConfig>} configUtils The CSV config utils.
@@ -64,39 +65,58 @@ export const getCritterCollectionUnitCellValidator = (
   configUtils: CSVConfigUtils<CritterCSVConfig>
 ): ((params: CSVParams) => CSVError[]) => {
   return (params: CSVParams) => {
-    const cellErrors = validateZodCell(params, z.string().max(50).optional());
-
-    if (cellErrors.length || !params.cell) {
-      return cellErrors;
+    if (params.cell === undefined) {
+      return [];
     }
 
+    // The row TSN value
     const rowTsn = Number(configUtils.getCellValue('ITIS_TSN', params.row));
-    const cellValue = String(params.cell).toLowerCase();
+
+    // The collection unit cell value
+    const collectionUnitCellValue = String(params.cell).toLowerCase();
+
+    // The collection category (for clarity)
+    const collectionCategory = params.header;
 
     const rowDictionaryTsn = get(rowDictionary, rowTsn);
-    const rowDictionaryHeader = get(rowDictionary, [rowTsn, params.header]);
-    const rowDictionaryUnit = get(rowDictionary, [rowTsn, params.header, cellValue]);
 
+    // Check if the row TSN has collection units
     if (!rowDictionaryTsn) {
-      cellErrors.push({
-        error: `Collection units not found for TSN: ${rowTsn}`,
-        solution: `Validate TSN is correct and has collection units`
-      });
-    } else if (!rowDictionaryHeader) {
-      cellErrors.push({
-        error: `Invalid collection category header`,
-        solution: `Use valid collection unit category header`,
-        values: Object.keys(rowDictionaryTsn)
-      });
-    } else if (!rowDictionaryUnit) {
-      cellErrors.push({
-        error: `Invalid collection unit cell value`,
-        solution: `Use valid collection unit cell value`,
-        values: Object.keys(rowDictionaryHeader)
-      });
+      return [
+        {
+          error: `Collection units not found for TSN: ${rowTsn}`,
+          solution: `Validate TSN is correct and has collection units`
+        }
+      ];
     }
 
-    return cellErrors;
+    const rowDictionaryCategory = get(rowDictionary, [rowTsn, collectionCategory]);
+
+    // Check if the dynamic header is a valid collection category for the TSN
+    if (!rowDictionaryCategory) {
+      return [
+        {
+          error: `Invalid collection category header`,
+          solution: `Use valid collection unit category header`,
+          values: Object.keys(rowDictionaryTsn)
+        }
+      ];
+    }
+
+    const rowDictionaryUnit = get(rowDictionary, [rowTsn, collectionCategory, collectionUnitCellValue]);
+
+    // Check if the cell value is a valid collection unit for the collection category
+    if (!rowDictionaryUnit) {
+      return [
+        {
+          error: `Invalid collection unit cell value`,
+          solution: `Use valid collection unit cell value`,
+          values: Object.keys(rowDictionaryCategory)
+        }
+      ];
+    }
+
+    return [];
   };
 };
 
@@ -112,7 +132,7 @@ export const getCritterCollectionUnitCellSetter = (
   configUtils: CSVConfigUtils<CritterCSVConfig>
 ): ((params: CSVParams) => string | undefined) => {
   return (params: CSVParams) => {
-    if (!params.cell) {
+    if (params.cell === undefined) {
       return undefined;
     }
 
@@ -127,9 +147,8 @@ export const getCritterCollectionUnitCellSetter = (
  * Get the critter sex cell validator.
  *
  * Rules:
- *  1. The cell must be a string with a min length of 1 and max length of 50
- *  2. The TSN must have sex measurements available
- *  3. The cell value must be a valid sex option for the TSN
+ *  1. The TSN must have sex measurements available
+ *  2. The cell value must be a valid sex option for the TSN
  *
  * @param {Object} rowDictionary The row dictionary.
  * @param {CSVConfigUtils<CritterCSVConfig>} configUtils The CSV config utils.
@@ -140,32 +159,35 @@ export const getCritterSexCellValidator = (
   configUtils: CSVConfigUtils<CritterCSVConfig>
 ): ((params: CSVParams) => CSVError[]) => {
   return (params: CSVParams) => {
-    const cellErrors = validateZodCell(params, z.string().trim().min(1).max(50));
-
-    if (cellErrors.length) {
-      return cellErrors;
-    }
-
     const rowTsn = Number(configUtils.getCellValue('ITIS_TSN', params.row));
-    const cellValue = String(params.cell).toLowerCase();
+    const sexCellValue = String(params.cell).toLowerCase();
 
     const rowDictionaryTsn = get(rowDictionary, rowTsn);
-    const rowDictionarySex = get(rowDictionary, [rowTsn, cellValue]);
 
+    // Check if the row TSN has sex measurements available
     if (!rowDictionaryTsn) {
-      cellErrors.push({
-        error: `Sex is not a supported attribute for TSN: ${rowTsn}`,
-        solution: `Use a valid TSN that supports sex, or contact a system administrator to add additional sex values.`
-      });
-    } else if (!rowDictionarySex) {
-      cellErrors.push({
-        error: `Sex cell value is invalid`,
-        solution: `Use valid sex option`,
-        values: Object.keys(rowDictionaryTsn)
-      });
+      return [
+        {
+          error: `Sex is not a supported attribute for TSN: ${rowTsn}`,
+          solution: `Use a valid TSN that supports sex, or contact a system administrator to add additional sex values.`
+        }
+      ];
     }
 
-    return cellErrors;
+    const rowDictionarySex = get(rowDictionary, [rowTsn, sexCellValue]);
+
+    // Check if the cell value is a valid sex measurement for the TSN
+    if (!rowDictionarySex) {
+      return [
+        {
+          error: `Sex cell value is invalid`,
+          solution: `Use valid sex option`,
+          values: Object.keys(rowDictionaryTsn)
+        }
+      ];
+    }
+
+    return [];
   };
 };
 

@@ -2,6 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
+import { CSVErrorSchema } from '../../../../../../openapi/schemas/csv';
 import { csvFileSchema } from '../../../../../../openapi/schemas/file';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { ImportCrittersService } from '../../../../../../services/import-services/critter/import-critters-service';
@@ -99,34 +100,7 @@ POST.apiDoc = {
             properties: {
               validation_errors: {
                 type: 'array',
-                items: {
-                  type: 'object',
-                  additionalProperties: false,
-                  required: ['error', 'rowIndex'],
-                  properties: {
-                    error: {
-                      type: 'string'
-                    },
-                    solution: {
-                      type: 'string'
-                    },
-                    cell: {
-                      oneOf: [{ type: 'string' }, { type: 'number' }]
-                    },
-                    header: {
-                      type: 'string'
-                    },
-                    rowIndex: {
-                      type: 'number'
-                    },
-                    values: {
-                      type: 'array',
-                      items: {
-                        oneOf: [{ type: 'string' }, { type: 'number' }]
-                      }
-                    }
-                  }
-                }
+                items: CSVErrorSchema
               }
             }
           }

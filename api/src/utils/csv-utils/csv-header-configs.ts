@@ -38,20 +38,16 @@ export const validateZodCell = (params: CSVParams, schema: z.ZodSchema, solution
  */
 export const getTsnCellValidator = (tsns: Set<number>): ((params: CSVParams) => CSVError[]) => {
   return (params: CSVParams) => {
-    const cellErrors = validateZodCell(params, z.number().min(0));
-
-    if (cellErrors.length) {
-      return cellErrors;
+    if (tsns.has(Number(params.cell))) {
+      return [];
     }
 
-    if (!tsns.has(Number(params.cell))) {
-      cellErrors.push({
+    return [
+      {
         error: `ITIS has no reference of this TSN`,
         solution: `Use valid ITIS TSN`
-      });
-    }
-
-    return cellErrors;
+      }
+    ];
   };
 };
 
@@ -73,20 +69,21 @@ export const getDescriptionCellValidator = (): ((params: CSVParams) => CSVError[
  * Get the Wildlife Health ID header cell validator.
  *
  * Rules:
- *  1. The cell must be a string or undefined
- *  2. The Wildlife Health ID must be in the format 'XX-XXXX'
+ *  1. The Wildlife Health ID must be in the format 'XX-XXXX' or undefined
  *
  * @returns {*} {(params: CSVParams) => CSVError[]} The validate cell callback
  */
 export const getWlhIDCellValidator = (): ((params: CSVParams) => CSVError[]) => {
   return (params: CSVParams) => {
-    return validateZodCell(
-      params,
-      z
-        .string()
-        .regex(/^\d{2}-.+/, { message: 'Invalid Wildlife Health ID format' })
-        .optional(),
-      `Wildlife Health ID must be in the format 'XX-XXXX'`
-    );
+    if (params.cell === undefined || String(params.cell).match(/^\d{2}-.+/)) {
+      return [];
+    }
+
+    return [
+      {
+        error: `Wildlife Health ID must be in the format 'XX-XXXX'`,
+        solution: `Update the Wildlife Health ID to match the expected format`
+      }
+    ];
   };
 };
