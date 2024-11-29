@@ -132,13 +132,16 @@ export const forEachCSVCell = (
         staticHeader: staticHeaderConfigMap.get(header)?.staticHeader
       };
 
-      callback(params, headerConfig);
+      callback(params, {
+        validateCell: headerConfig.validateCell,
+        setCellValue: headerConfig.setCellValue
+      });
     }
   }
 };
 
 /**
- * Execute the `setCellValue` callback for the cell - handles static and dynamic headers.
+ * Execute the CSVConfig `setCellValue` callback for the cell.
  *
  * Note: This mutates the CSV row objects `mutableRows`.
  *
@@ -163,7 +166,7 @@ export const executeSetCellValue = (params: CSVParams, headerConfig: CSVHeaderCo
 };
 
 /**
- * Execute the `validateCell` callback for the cell - handles static and dynamic headers.
+ * Execute the CSVConfig `validateCell` callback for the cell.
  *
  * Note: This mutates the CSV errors array `mutableErrors`.
  *
@@ -189,7 +192,9 @@ export const executeValidateCell = (
 };
 
 /**
- * Get the config map for the CSV worksheet staticHeaders and aliases.
+ * Get the header config map for the CSV worksheet staticHeaders and aliases.
+ *
+ * Maps the header / alias name to the header config.
  *
  * @param {CSVConfig} config - The CSV configuration
  * @returns {*} {Map<string, CSVHeaderConfig & { staticHeader: string }>} - The header config Map

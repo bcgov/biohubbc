@@ -26,7 +26,16 @@ describe.only('csv-config-validation', () => {
 
       const result = validateCSVHeaders(worksheet, mockConfig);
 
-      expect(result).to.deep.equal([{ rowIndex: 0, error: 'CSV is empty', solution: 'Add headers and data to CSV' }]);
+      expect(result).to.deep.equal([{ rowIndex: 0, error: 'CSV empty', solution: 'Add headers and data to CSV' }]);
+    });
+
+    it('should return an error if CSV missing row data', () => {
+      const mockConfig: CSVConfig = { staticHeadersConfig: { ALIAS: { aliases: [] } }, ignoreDynamicHeaders: true };
+      const worksheet: WorkSheet = { A1: { t: 's', v: 'ALIAS' }, '!ref': 'A1' };
+
+      const result = validateCSVHeaders(worksheet, mockConfig);
+
+      expect(result).to.deep.equal([{ rowIndex: 1, error: 'CSV missing rows', solution: 'Add data to CSV' }]);
     });
 
     it('should return an error if the worksheet is missing a required header', () => {
@@ -65,8 +74,18 @@ describe.only('csv-config-validation', () => {
   describe('forEachCSVCell', () => {
     it('should iterate over each cell in the worksheet', () => {
       const worksheet: WorkSheet = xlsx.utils.json_to_sheet([{ TEST: 'cellValue' }]);
+
+      const validateCellStub = sinon.stub();
+      const setCellValueStub = sinon.stub();
+
       const config: CSVConfig = {
-        staticHeadersConfig: { TEST: { aliases: [] } },
+        staticHeadersConfig: {
+          TEST: {
+            aliases: [],
+            validateCell: validateCellStub,
+            setCellValue: setCellValueStub
+          }
+        },
         ignoreDynamicHeaders: true
       };
 
@@ -79,19 +98,30 @@ describe.only('csv-config-validation', () => {
           cell: 'cellValue',
           header: 'TEST',
           rowIndex: 1,
-          row: { TEST: 'cellValue' }
+          row: { TEST: 'cellValue' },
+          staticHeader: 'TEST'
         },
         {
-          aliases: [],
-          staticHeader: 'TEST'
+          validateCell: validateCellStub,
+          setCellValue: setCellValueStub
         }
       );
     });
 
     it('should iterate over each cell in the worksheet when alias is used', () => {
       const worksheet: WorkSheet = xlsx.utils.json_to_sheet([{ TEST_ALIAS: 'cellValue' }]);
+
+      const validateCellStub = sinon.stub();
+      const setCellValueStub = sinon.stub();
+
       const config: CSVConfig = {
-        staticHeadersConfig: { TEST: { aliases: ['TEST_ALIAS'] } },
+        staticHeadersConfig: {
+          TEST: {
+            aliases: ['TEST_ALIAS'],
+            validateCell: validateCellStub,
+            setCellValue: setCellValueStub
+          }
+        },
         ignoreDynamicHeaders: true
       };
 
@@ -104,13 +134,75 @@ describe.only('csv-config-validation', () => {
           cell: 'cellValue',
           header: 'TEST_ALIAS',
           rowIndex: 1,
-          row: { TEST_ALIAS: 'cellValue' }
+          row: { TEST_ALIAS: 'cellValue' },
+          staticHeader: 'TEST'
         },
         {
-          aliases: [],
-          staticHeader: 'TEST'
+          validateCell: validateCellStub,
+          setCellValue: setCellValueStub
         }
       );
+    });
+
+    it('should iterate over dynamic cell values', () => {
+      const worksheet: WorkSheet = xlsx.utils.json_to_sheet([
+        { TEST_ALIAS: 'cellValue', DYNAMIC_HEADER: 'dynamicValue' }
+      ]);
+
+      const staticValidateCellStub = sinon.stub();
+      const staticSetCellValueStub = sinon.stub();
+
+      const validateDynamicCellStub = sinon.stub();
+      const setCellValueDynamicStub = sinon.stub();
+
+      const config: CSVConfig = {
+        staticHeadersConfig: {
+          TEST: {
+            aliases: ['TEST_ALIAS'],
+            validateCell: staticValidateCellStub,
+            setCellValue: staticSetCellValueStub
+          }
+        },
+        dynamicHeadersConfig: {
+          validateCell: validateDynamicCellStub,
+          setCellValue: setCellValueDynamicStub
+        },
+        ignoreDynamicHeaders: false
+      };
+
+      const callbackStub = sinon.stub();
+
+      forEachCSVCell(worksheet, config, callbackStub);
+
+      expect(callbackStub).to.have.been.calledTwice;
+
+      expect(callbackStub.getCall(0).args).to.deep.equal([
+        {
+          cell: 'cellValue',
+          header: 'TEST_ALIAS',
+          rowIndex: 1,
+          row: { TEST_ALIAS: 'cellValue', DYNAMIC_HEADER: 'dynamicValue' },
+          staticHeader: 'TEST'
+        },
+        {
+          validateCell: staticValidateCellStub,
+          setCellValue: staticSetCellValueStub
+        }
+      ]);
+
+      expect(callbackStub.getCall(1).args).to.deep.equal([
+        {
+          cell: 'dynamicValue',
+          header: 'DYNAMIC_HEADER',
+          rowIndex: 1,
+          row: { TEST_ALIAS: 'cellValue', DYNAMIC_HEADER: 'dynamicValue' },
+          staticHeader: undefined // Dynamic headers have no static header mapping
+        },
+        {
+          validateCell: validateDynamicCellStub,
+          setCellValue: setCellValueDynamicStub
+        }
+      ]);
     });
   });
 });
