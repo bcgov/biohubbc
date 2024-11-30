@@ -13,16 +13,16 @@ import {
 /**
  * Validate the CSV worksheet with the CSV config.
  *
- * @template CSVConfigType - The CSV configuration type
+ * @template StaticHeaderType - The CSV static headers
  * @param {WorkSheet} worksheet - The worksheet
  * @param {CSVConfigType} config - The CSV configuration
  * @returns {*} {{ errors: CSVError[]; rows: CSVRowValidated[] }} - The CSV errors and rows
  */
-export const validateCSVWorksheet = <CSVConfigType extends CSVConfig>(
+export const validateCSVWorksheet = <StaticHeaderType extends Uppercase<string>>(
   worksheet: WorkSheet,
-  config: CSVConfigType
-): { errors: CSVError[]; rows: CSVRowValidated<CSVConfigType>[] } => {
-  const rows: CSVRowValidated<CSVConfigType>[] = [];
+  config: CSVConfig<StaticHeaderType>
+): { errors: CSVError[]; rows: CSVRowValidated<StaticHeaderType>[] } => {
+  const rows: CSVRowValidated<StaticHeaderType>[] = [];
   const errors = validateCSVHeaders(worksheet, config);
 
   // If there are errors in the headers, return early
@@ -63,7 +63,7 @@ export const validateCSVHeaders = (worksheet: WorkSheet, config: CSVConfig): CSV
 
   const configUtils = new CSVConfigUtils(worksheet, config);
 
-  if (!configUtils.headers.length) {
+  if (!configUtils.worksheetHeaders.length) {
     return [{ error: 'CSV empty', solution: 'Add headers and data to CSV', errorRowIndex: 0 }];
   }
 
@@ -71,10 +71,8 @@ export const validateCSVHeaders = (worksheet: WorkSheet, config: CSVConfig): CSV
     return [{ error: 'CSV missing rows', solution: 'Add data to CSV', errorRowIndex: 1 }];
   }
 
-  for (const [staticHeader, headerConfig] of Object.entries(config.staticHeadersConfig)) {
-    const worksheetHasStaticHeader = configUtils.staticHeaders.some((header) =>
-      [staticHeader, ...headerConfig.aliases].includes(header)
-    );
+  for (const staticHeader of Object.keys(config.staticHeadersConfig)) {
+    const worksheetHasStaticHeader = configUtils.worksheetStaticHeaders.includes(staticHeader as Uppercase<string>);
 
     // Validate the CSV is not missing a required header
     if (!worksheetHasStaticHeader) {
@@ -88,8 +86,8 @@ export const validateCSVHeaders = (worksheet: WorkSheet, config: CSVConfig): CSV
   }
 
   // Validate the CSV has no unknown headers (if dynamic headers not ignored or allowed)
-  if (!config.ignoreDynamicHeaders && !config.dynamicHeadersConfig && configUtils.dynamicHeaders.length) {
-    for (const unknownHeader of configUtils.dynamicHeaders) {
+  if (!config.ignoreDynamicHeaders && !config.dynamicHeadersConfig && configUtils.worksheetDynamicHeaders.length) {
+    for (const unknownHeader of configUtils.worksheetDynamicHeaders) {
       csvErrors.push({
         error: 'Unknown header in CSV',
         solution: `Remove header '${unknownHeader}' from CSV`,

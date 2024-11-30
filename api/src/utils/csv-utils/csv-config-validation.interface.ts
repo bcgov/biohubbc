@@ -63,7 +63,7 @@ export interface CSVHeaderConfig {
   /**
    * Callback to fire when setting the cell (after validation). Returns the new cell value.
    *
-   * ie: Convert a string to a number, or find a the matching UUID for a string.
+   * ie: Convert a string to a number, or find a the matching UUID for the cell value.
    *
    * @type {CSVCellSetter | undefined} The cell setter function
    */
@@ -112,6 +112,15 @@ export interface CSVParams {
 /**
  * The CSV error interface
  *
+ * @example
+ *  {
+ *    error: `Invalid collection unit`, // No need to include the header name / cell
+ *    solution: `Use a valid collection unit`, // Solution includes the instructions to resolve
+ *    values: ['unit1', 'unit2'], // Optional list of allowed values
+ *    header: 'POPULATION_UNIT',
+ *    cell: 'unit3',
+ *    errorRowIndex: 0, // First data row index 0
+ *  }
  */
 export interface CSVError {
   /**
@@ -164,4 +173,4 @@ export type CSVRow = Record<string, any>;
  * The validated CSV row keyed by the static headers
  *
  */
-export type CSVRowValidated<CSVConfigType extends CSVConfig> = Record<keyof CSVConfigType['staticHeadersConfig'], any>;
+export type CSVRowValidated<StaticHeaderType extends Uppercase<string>> = Record<StaticHeaderType, any>;

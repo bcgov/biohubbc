@@ -2,7 +2,13 @@ import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import xlsx, { WorkSheet } from 'xlsx';
-import { executeValidateCell, forEachCSVCell, validateCSVHeaders } from './csv-config-validation';
+import {
+  executeSetCellValue,
+  executeValidateCell,
+  forEachCSVCell,
+  validateCSVHeaders,
+  validateCSVWorksheet
+} from './csv-config-validation';
 import { CSVConfig } from './csv-config-validation.interface';
 chai.use(sinonChai);
 
@@ -10,6 +16,38 @@ describe('csv-config-validation', () => {
   afterEach(() => {
     sinon.restore();
   });
+
+  describe('validateCSVWorksheet', () => {
+    it('should return rows when CSV is valid', () => {
+      const validateCellStub = sinon.stub().returns([]);
+      const setCellValueStub = sinon.stub().returns('newValue');
+
+      const mockConfig: CSVConfig = {
+        staticHeadersConfig: {
+          ALIAS: {
+            aliases: ['ALIAS_2'],
+            validateCell: validateCellStub,
+            setCellValue: setCellValueStub
+          }
+        },
+        ignoreDynamicHeaders: true
+      };
+
+      const worksheet: WorkSheet = xlsx.utils.json_to_sheet([{ ALIAS_2: 'newValue' }]);
+
+      const result = validateCSVWorksheet(worksheet, mockConfig);
+
+      expect(result).to.deep.equal({
+        errors: [],
+        rows: [
+          {
+            ALIAS: 'value'
+          }
+        ]
+      });
+    });
+  });
+
   describe('validateCSVHeaders', () => {
     it('should return an empty array if the headers are valid', () => {
       const mockConfig: CSVConfig = { staticHeadersConfig: { ALIAS: { aliases: [] } }, ignoreDynamicHeaders: true };
@@ -26,7 +64,7 @@ describe('csv-config-validation', () => {
 
       const result = validateCSVHeaders(worksheet, mockConfig);
 
-      expect(result).to.deep.equal([{ rowIndex: 0, error: 'CSV empty', solution: 'Add headers and data to CSV' }]);
+      expect(result).to.deep.equal([{ errorRowIndex: 0, error: 'CSV empty', solution: 'Add headers and data to CSV' }]);
     });
 
     it('should return an error if CSV missing row data', () => {
@@ -35,7 +73,7 @@ describe('csv-config-validation', () => {
 
       const result = validateCSVHeaders(worksheet, mockConfig);
 
-      expect(result).to.deep.equal([{ rowIndex: 1, error: 'CSV missing rows', solution: 'Add data to CSV' }]);
+      expect(result).to.deep.equal([{ errorRowIndex: 1, error: 'CSV missing rows', solution: 'Add data to CSV' }]);
     });
 
     it('should return an error if the worksheet is missing a required header', () => {
@@ -46,7 +84,7 @@ describe('csv-config-validation', () => {
 
       expect(result).to.deep.equal([
         {
-          rowIndex: 0,
+          errorRowIndex: 0,
           error: 'CSV missing required header',
           header: 'ALIAS',
           solution: "Add header 'ALIAS' to CSV"
@@ -62,7 +100,7 @@ describe('csv-config-validation', () => {
 
       expect(result).to.deep.equal([
         {
-          rowIndex: 0,
+          errorRowIndex: 0,
           error: 'Unknown header in CSV',
           header: 'UNKNOWN_HEADER',
           solution: "Remove header 'UNKNOWN_HEADER' from CSV"
@@ -97,7 +135,7 @@ describe('csv-config-validation', () => {
         {
           cell: 'cellValue',
           header: 'TEST',
-          rowIndex: 1,
+          rowIndex: 0,
           row: { TEST: 'cellValue' },
           staticHeader: 'TEST'
         },
@@ -133,7 +171,7 @@ describe('csv-config-validation', () => {
         {
           cell: 'cellValue',
           header: 'TEST_ALIAS',
-          rowIndex: 1,
+          rowIndex: 0,
           row: { TEST_ALIAS: 'cellValue' },
           staticHeader: 'TEST'
         },
@@ -180,7 +218,7 @@ describe('csv-config-validation', () => {
         {
           cell: 'cellValue',
           header: 'TEST_ALIAS',
-          rowIndex: 1,
+          rowIndex: 0,
           row: { TEST_ALIAS: 'cellValue', DYNAMIC_HEADER: 'dynamicValue' },
           staticHeader: 'TEST'
         },
@@ -194,7 +232,7 @@ describe('csv-config-validation', () => {
         {
           cell: 'dynamicValue',
           header: 'DYNAMIC_HEADER',
-          rowIndex: 1,
+          rowIndex: 0,
           row: { TEST_ALIAS: 'cellValue', DYNAMIC_HEADER: 'dynamicValue' },
           staticHeader: undefined // Dynamic headers have no static header mapping
         },
@@ -215,7 +253,7 @@ describe('csv-config-validation', () => {
       const params = {
         cell: 'cellValue',
         header: 'TEST',
-        rowIndex: 1,
+        rowIndex: 0,
         row: { TEST: 'cellValue' },
         staticHeader: 'TEST'
       };
@@ -226,13 +264,68 @@ describe('csv-config-validation', () => {
 
       executeValidateCell(params, headerConfig, errors);
       expect(validateCellStub).to.have.been.calledOnceWithExactly(params);
-      console.log(errors);
-      //expect(errors[0]).to.deep.equal({
-      //  error: 'error',
-      //  solution: 'solution',
-      //  header: 'TEST',
-      //  rowIndex: 1
-      //});
+      expect(errors).to.deep.equal([
+        {
+          error: 'error',
+          solution: 'solution',
+          cell: 'cellValue',
+          header: 'TEST',
+          errorRowIndex: 1,
+          values: undefined
+        }
+      ]);
+    });
+  });
+
+  describe('executeSetCellValue', () => {
+    it('should call the setCellValue callback and mutate the row', () => {
+      const row = { TEST: 'cellValue' };
+
+      const setCellValueStub = sinon.stub().returns('newValue');
+
+      const params = {
+        cell: 'cellValue',
+        header: 'TEST',
+        rowIndex: 0,
+        row,
+        staticHeader: 'TEST'
+      };
+
+      const headerConfig = {
+        setCellValue: setCellValueStub
+      };
+
+      const mutableRows = [row];
+
+      executeSetCellValue(params, headerConfig, mutableRows);
+
+      expect(setCellValueStub).to.have.been.calledOnceWithExactly(params);
+      expect(mutableRows).to.deep.equal([{ TEST: 'newValue' }]);
+    });
+
+    it('should remap the key for a static header alias', () => {
+      const row = { TEST: 'cellValue' };
+
+      const setCellValueStub = sinon.stub().returns('newValue');
+
+      const params = {
+        cell: 'cellValue',
+        header: 'TEST',
+        rowIndex: 0,
+        row,
+        staticHeader: 'NEW_KEY'
+      };
+
+      const headerConfig = {
+        setCellValue: setCellValueStub
+      };
+
+      const mutableRows = [row];
+
+      executeSetCellValue(params, headerConfig, mutableRows);
+
+      expect(setCellValueStub).to.have.been.calledOnceWithExactly(params);
+      expect(mutableRows).to.deep.equal([{ NEW_KEY: 'newValue' }]);
     });
   });
 });

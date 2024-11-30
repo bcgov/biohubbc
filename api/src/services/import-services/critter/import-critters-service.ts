@@ -34,9 +34,6 @@ const defaultLog = getLogger('services/import/import-critters-service');
 // Critter CSV static headers
 export type CritterCSVStaticHeader = 'ITIS_TSN' | 'ALIAS' | 'SEX' | 'WLH_ID' | 'DESCRIPTION';
 
-// Critter CSV config with typed static headers
-type CritterCSVConfig = CSVConfig<CritterCSVStaticHeader>;
-
 /**
  *
  * ImportCrittersService
@@ -46,7 +43,7 @@ type CritterCSVConfig = CSVConfig<CritterCSVStaticHeader>;
  *
  */
 export class ImportCrittersService extends DBService {
-  _config: CritterCSVConfig;
+  _config: CSVConfig<CritterCSVStaticHeader>;
 
   surveyId: number;
   worksheet: WorkSheet;
@@ -132,9 +129,9 @@ export class ImportCrittersService extends DBService {
    * Note: This will simulate a multi-step validation process if the TSNs are invalid. This is because the TSNs are
    * dependencies for the other header configs, so all TSN related errors must be resolved first.
    *
-   * @returns {Promise<CSVConfig<CritterHeaders>>} The Critter CSV config
+   * @returns {Promise<CSVConfig<CritterCSVStaticHeader>>} The Critter CSV config
    */
-  async _getCSVConfig(): Promise<CritterCSVConfig> {
+  async _getCSVConfig(): Promise<CSVConfig<CritterCSVStaticHeader>> {
     const [tsnHeaderConfig, aliasHeaderConfig, sexHeaderConfig, dynamicHeadersConfig] = await Promise.all([
       this._getTsnHeaderConfig(),
       this._getAliasHeaderConfig(),
@@ -159,7 +156,7 @@ export class ImportCrittersService extends DBService {
    * @param {CSVRowValidated[]} rows - The validated CSV rows
    * @returns {Promise<{ simsPayload: string[]; critterbasePayload: IBulkCreate }>} The import payloads
    */
-  async _getImportPayloads(rows: CSVRowValidated<CritterCSVConfig>[]) {
+  async _getImportPayloads(rows: CSVRowValidated<CritterCSVStaticHeader>[]) {
     const simsPayload: string[] = [];
     const critterbasePayload: IBulkCreate = { critters: [], collections: [] };
 
@@ -181,7 +178,7 @@ export class ImportCrittersService extends DBService {
       });
 
       // Critterbase dynamic headers payload
-      this.configUtils.dynamicHeaders.forEach((header) => {
+      this.configUtils.worksheetDynamicHeaders.forEach((header) => {
         if (row[header]) {
           critterbasePayload.collections?.push({
             collection_unit_id: row[header],

@@ -24,32 +24,89 @@ export class CSVConfigUtils<StaticHeaderType extends Uppercase<string>> {
   /**
    * The CSV worksheet headers.
    *
+   * @example
+   *  worksheetHeaders: ['STATIC1', 'STATIC2_ALIAS', 'DYNAMIC1']
+   *  this:             ['STATIC1', 'STATIC2_ALIAS', 'DYNAMIC1']
+   *
    * @returns {Uppercase<string>[]} - The headers
    */
-  get headers(): Uppercase<string>[] {
+  get worksheetHeaders(): Uppercase<string>[] {
     return getHeadersUpperCase(this.worksheet) as Uppercase<string>[];
   }
 
   /**
-   * The CSV worksheet static headers.
+   * The CSV worksheet aliased static headers (leaves aliases as is).
+   *
+   * @example
+   *  worksheetHeaders: ['STATIC1', 'STATIC2_ALIAS', 'DYNAMIC1']
+   *  this:             ['STATIC1', 'STATIC2_ALIAS']
    *
    * @returns {Uppercase<string>[]} - The static headers
    */
-  get staticHeaders(): Uppercase<string>[] {
-    return this.headers.filter((header) => {
-      return (
-        header in this._config.staticHeadersConfig || this._config.staticHeadersConfig[header]?.aliases.includes(header)
-      );
-    });
+  get worksheetAliasedStaticHeaders(): Uppercase<string>[] {
+    const staticHeaders: string[] = [];
+    const configHeaders = Object.keys(this._config.staticHeadersConfig);
+    const worksheetHeaders = new Set(this.worksheetHeaders);
+
+    for (const header of configHeaders) {
+      if (worksheetHeaders.has(header as Uppercase<string>)) {
+        staticHeaders.push(header);
+      }
+
+      const aliases = this._config.staticHeadersConfig[header].aliases;
+
+      for (const alias of aliases) {
+        if (worksheetHeaders.has(alias as Uppercase<string>)) {
+          staticHeaders.push(alias);
+        }
+      }
+    }
+
+    return staticHeaders as Uppercase<string>[];
+  }
+
+  /**
+   * The CSV worksheet static headers (converts aliases back to static headers).
+   *
+   * @example
+   *  worksheetHeaders: ['STATIC1', 'STATIC2_ALIAS', 'DYNAMIC'] // STATIC2_ALIAS is an alias for STATIC2
+   *  this:             ['STATIC1', 'STATIC2']
+   *
+   * @returns {Uppercase<string>[]} - The static headers
+   */
+  get worksheetStaticHeaders(): Uppercase<string>[] {
+    const staticHeaders: string[] = [];
+    const configHeaders = Object.keys(this._config.staticHeadersConfig);
+    const worksheetHeaders = new Set(this.worksheetHeaders);
+
+    for (const header of configHeaders) {
+      if (worksheetHeaders.has(header as Uppercase<string>)) {
+        staticHeaders.push(header);
+      }
+
+      const aliases = this._config.staticHeadersConfig[header].aliases;
+
+      for (const alias of aliases) {
+        if (worksheetHeaders.has(alias as Uppercase<string>)) {
+          staticHeaders.push(header);
+        }
+      }
+    }
+
+    return staticHeaders as Uppercase<string>[];
   }
 
   /**
    * The CSV worksheet dynamic headers.
    *
+   * @example
+   *  worksheetHeaders: ['STATIC1', 'STATIC2_ALIAS', 'DYNAMIC1']
+   *  this:             ['DYNAMIC1']
+   *
    * @returns {Uppercase<string>[]} - The dynamic headers
    */
-  get dynamicHeaders(): Uppercase<string>[] {
-    return difference(this.headers, this.staticHeaders);
+  get worksheetDynamicHeaders(): Uppercase<string>[] {
+    return difference(this.worksheetHeaders, this.worksheetAliasedStaticHeaders);
   }
 
   /**

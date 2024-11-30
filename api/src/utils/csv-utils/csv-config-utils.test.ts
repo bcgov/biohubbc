@@ -3,13 +3,16 @@ import xlsx, { WorkSheet } from 'xlsx';
 import { CSVConfigUtils } from './csv-config-utils';
 import { CSVConfig } from './csv-config-validation.interface';
 
-describe.only('CSVConfigUtils', () => {
-  describe('init', () => {
+describe('CSVConfigUtils', () => {
+  describe.only('init', () => {
     it('should initialize the CSVConfigUtils', () => {
-      const worksheet: WorkSheet = xlsx.utils.json_to_sheet([{ TEST: 'cellValue', DYNAMIC_HEADER: 'dynamicValue' }]);
-      const mockConfig = {
+      const worksheet: WorkSheet = xlsx.utils.json_to_sheet([
+        { TEST: 'cellValue', ALIASED_HEADER: 'cellValue2', DYNAMIC_HEADER: 'dynamicValue' }
+      ]);
+      const mockConfig: CSVConfig = {
         staticHeadersConfig: {
-          TEST: { aliases: [] }
+          TEST: { aliases: [] },
+          TEST_ALIAS: { aliases: ['ALIASED_HEADER'] }
         },
         ignoreDynamicHeaders: false
       };
@@ -19,10 +22,13 @@ describe.only('CSVConfigUtils', () => {
       expect(utils).to.be.instanceOf(CSVConfigUtils);
       expect(utils._config).to.be.equal(mockConfig);
       expect(utils.worksheet).to.be.equal(worksheet);
-      expect(utils.worksheetRows).to.be.deep.equal([{ TEST: 'cellValue', DYNAMIC_HEADER: 'dynamicValue' }]);
-      expect(utils.headers).to.be.deep.equal(['TEST', 'DYNAMIC_HEADER']);
-      expect(utils.staticHeaders).to.be.deep.equal(['TEST']);
-      expect(utils.dynamicHeaders).to.be.deep.equal(['DYNAMIC_HEADER']);
+      expect(utils.worksheetRows).to.be.deep.equal([
+        { TEST: 'cellValue', ALIASED_HEADER: 'cellValue2', DYNAMIC_HEADER: 'dynamicValue' }
+      ]);
+      expect(utils.worksheetHeaders).to.be.deep.equal(['TEST', 'ALIASED_HEADER', 'DYNAMIC_HEADER']);
+      expect(utils.worksheetAliasedStaticHeaders).to.be.deep.equal(['TEST', 'ALIASED_HEADER']);
+      expect(utils.worksheetStaticHeaders).to.be.deep.equal(['TEST', 'TEST_ALIAS']);
+      expect(utils.worksheetDynamicHeaders).to.be.deep.equal(['DYNAMIC_HEADER']);
     });
   });
 
