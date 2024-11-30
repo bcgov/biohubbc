@@ -33,7 +33,7 @@ describe('critter-header-configs', () => {
       }
     });
 
-    it.only('should return an empty array if the cell is valid', () => {
+    it('should return an empty array if the cell is valid', () => {
       const mockWorksheet = xlsx.utils.json_to_sheet([{ ALIAS: 'alias1' }, { ALIAS: 'alias2' }, { ALIAS: 'alias3' }]);
       const surveyAliases = new Set(['alias1', 'alias2']);
       const configUtils = new CSVConfigUtils(mockWorksheet, mockConfig);

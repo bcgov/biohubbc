@@ -64,7 +64,14 @@ export const validateCSVHeaders = (worksheet: WorkSheet, config: CSVConfig): CSV
   const configUtils = new CSVConfigUtils(worksheet, config);
 
   if (!configUtils.worksheetHeaders.length) {
-    return [{ error: 'CSV empty', solution: 'Add headers and data to CSV', errorRowIndex: 0 }];
+    return [
+      {
+        error: 'CSV empty',
+        solution: 'Add headers and data to CSV',
+        values: configUtils.configStaticHeaders,
+        errorRowIndex: 0
+      }
+    ];
   }
 
   if (!configUtils.worksheetRows.length) {
@@ -78,8 +85,9 @@ export const validateCSVHeaders = (worksheet: WorkSheet, config: CSVConfig): CSV
     if (!worksheetHasStaticHeader) {
       csvErrors.push({
         error: 'CSV missing required header',
-        solution: `Add header '${staticHeader}' to CSV`,
+        solution: `Add missing header to CSV`,
         header: staticHeader,
+        values: [staticHeader, ...config.staticHeadersConfig[staticHeader].aliases],
         errorRowIndex: 0
       });
     }
@@ -90,7 +98,7 @@ export const validateCSVHeaders = (worksheet: WorkSheet, config: CSVConfig): CSV
     for (const unknownHeader of configUtils.worksheetDynamicHeaders) {
       csvErrors.push({
         error: 'Unknown header in CSV',
-        solution: `Remove header '${unknownHeader}' from CSV`,
+        solution: `Remove header from CSV`,
         header: unknownHeader,
         errorRowIndex: 0
       });

@@ -18,7 +18,53 @@ describe('csv-config-validation', () => {
   });
 
   describe('validateCSVWorksheet', () => {
-    it('should return rows when CSV is valid', () => {
+    it.only('should return rows when CSV is valid', () => {
+      const validateCellStub = sinon.stub().returns([]);
+      const setCellValueStub = sinon.stub().returns('newValue');
+
+      const validateDynamicCellStub = sinon.stub().returns([]);
+      const setCellValueDynamicStub = sinon.stub().returns('newDynamicValue');
+
+      const mockConfig: CSVConfig = {
+        staticHeadersConfig: {
+          ALIAS: {
+            aliases: ['ALIAS_2'],
+            validateCell: validateCellStub,
+            setCellValue: setCellValueStub
+          }
+        },
+        dynamicHeadersConfig: {
+          validateCell: validateDynamicCellStub,
+          setCellValue: setCellValueDynamicStub
+        },
+        ignoreDynamicHeaders: false
+      };
+
+      const worksheet: WorkSheet = xlsx.utils.json_to_sheet([
+        { ALIAS_2: 'value', DYNAMIC_HEADER: 'dynamicValue', OTHER_DYNAMIC_HEADER: 'otherDynamicValue' }
+      ]);
+
+      const result = validateCSVWorksheet(worksheet, mockConfig);
+
+      expect(validateCellStub).to.have.been.calledOnce;
+      expect(setCellValueStub).to.have.been.calledOnce;
+
+      expect(validateDynamicCellStub).to.have.been.calledTwice;
+      expect(setCellValueDynamicStub).to.have.been.calledTwice;
+
+      expect(result).to.deep.equal({
+        errors: [],
+        rows: [
+          {
+            ALIAS: 'newValue',
+            DYNAMIC_HEADER: 'newDynamicValue',
+            OTHER_DYNAMIC_HEADER: 'newDynamicValue'
+          }
+        ]
+      });
+    });
+
+    it.only('should only call execute handlers when headers have no errors', () => {
       const validateCellStub = sinon.stub().returns([]);
       const setCellValueStub = sinon.stub().returns('newValue');
 
@@ -33,17 +79,24 @@ describe('csv-config-validation', () => {
         ignoreDynamicHeaders: true
       };
 
-      const worksheet: WorkSheet = xlsx.utils.json_to_sheet([{ ALIAS_2: 'newValue' }]);
+      const worksheet: WorkSheet = xlsx.utils.json_to_sheet([{ BAD: 'value' }]);
 
       const result = validateCSVWorksheet(worksheet, mockConfig);
 
+      expect(validateCellStub).to.have.been.not.calledOnce;
+      expect(setCellValueStub).to.have.been.not.calledOnce;
+
       expect(result).to.deep.equal({
-        errors: [],
-        rows: [
+        errors: [
           {
-            ALIAS: 'newValue'
+            error: 'CSV missing required header',
+            header: 'ALIAS',
+            solution: 'Add missing header to CSV',
+            values: ['ALIAS', 'ALIAS_2'],
+            errorRowIndex: 0
           }
-        ]
+        ],
+        rows: []
       });
     });
   });

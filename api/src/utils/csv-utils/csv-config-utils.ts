@@ -167,7 +167,8 @@ export class CSVConfigUtils<StaticHeaderType extends Uppercase<string>> {
    * @returns {boolean} - Whether all the cell values are unique
    */
   isCellUnique(header: StaticHeaderType, cell: unknown) {
-    const cellValueCounts = countBy(this.getCellValues(header), (value) => String(value).toLowerCase());
-    return !cellValueCounts[String(cell).toLowerCase()];
+    const uniqueDictionary = countBy(this.getCellValues(header), (value) => String(value).toLowerCase());
+    const dictionaryKey = String(cell).toLowerCase();
+    return uniqueDictionary[dictionaryKey] === 1 || uniqueDictionary[dictionaryKey] === undefined;
   }
 }
