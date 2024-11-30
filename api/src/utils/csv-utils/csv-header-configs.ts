@@ -61,7 +61,7 @@ export const getTsnCellValidator = (tsns: Set<number>): CSVCellValidator => {
  */
 export const getDescriptionCellValidator = (): CSVCellValidator => {
   return (params: CSVParams) => {
-    return validateZodCell(params, z.string().trim().max(250).optional());
+    return validateZodCell(params, z.string().trim().min(1).max(250).optional());
   };
 };
 
@@ -81,8 +81,8 @@ export const getWlhIDCellValidator = (): CSVCellValidator => {
 
     return [
       {
-        error: `Wildlife Health ID must be in the format 'XX-XXXX'`,
-        solution: `Update the Wildlife Health ID to match the expected format`
+        error: `Invalid Wildlife Health ID format`,
+        solution: `Update the Wildlife Health ID to match the expected format 'XX-XXXX'`
       }
     ];
   };

@@ -41,7 +41,7 @@ describe('csv-config-validation', () => {
         errors: [],
         rows: [
           {
-            ALIAS: 'value'
+            ALIAS: 'newValue'
           }
         ]
       });

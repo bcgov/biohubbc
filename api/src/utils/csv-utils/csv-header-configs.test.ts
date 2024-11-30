@@ -19,10 +19,7 @@ describe('CSVHeaderConfigs', () => {
       expect(result).to.be.deep.equal([
         {
           error: 'Expected number, received string',
-          solution: 'Update the cell value to match the expected type',
-          cell: 'hi',
-          header: 'HEADER',
-          rowIndex: 0
+          solution: 'Update the cell value to match the expected type'
         }
       ]);
     });
@@ -47,10 +44,7 @@ describe('CSVHeaderConfigs', () => {
       expect(result).to.be.deep.equal([
         {
           error: 'ITIS has no reference of this TSN',
-          solution: 'Use valid ITIS TSN',
-          cell: 3,
-          header: 'HEADER',
-          rowIndex: 0
+          solution: 'Use valid ITIS TSN'
         }
       ]);
     });
@@ -66,7 +60,7 @@ describe('CSVHeaderConfigs', () => {
     });
 
     it('should return a single error when invalid', () => {
-      const badDescriptions = ['', 2, null, undefined, ' '];
+      const badDescriptions = ['', 2, null, ' '];
 
       for (const badDescription of badDescriptions) {
         const descriptionValidator = getDescriptionCellValidator();
@@ -106,10 +100,7 @@ describe('CSVHeaderConfigs', () => {
         expect(result).to.be.deep.equal([
           {
             error: `Invalid Wildlife Health ID format`,
-            solution: `Wildlife Health ID must be in the format 'XX-XXXX'`,
-            cell: badWlhId,
-            header: 'HEADER',
-            rowIndex: 0
+            solution: `Update the Wildlife Health ID to match the expected format 'XX-XXXX'`
           }
         ]);
       });

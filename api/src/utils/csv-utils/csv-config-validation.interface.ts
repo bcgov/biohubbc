@@ -167,7 +167,7 @@ export interface CSVError {
  * The raw unvalidated CSV row
  *
  */
-export type CSVRow = Record<string, any>;
+export type CSVRow = Record<Uppercase<string>, any>;
 
 /**
  * The validated CSV row keyed by the static headers

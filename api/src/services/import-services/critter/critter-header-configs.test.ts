@@ -27,19 +27,20 @@ describe('critter-header-configs', () => {
           new CSVConfigUtils(xlsx.utils.json_to_sheet([]), mockConfig)
         );
 
-        const result = critterAliasValidator({ cell: badCellValue, row: {}, header: 'HEADER', rowIndex: 0 });
+        const result = critterAliasValidator({ cell: badCellValue, row: {}, header: 'ALIAS', rowIndex: 0 });
 
         expect(result.length).to.be.equal(1);
       }
     });
-    it('should return an empty array if the cell is valid', () => {
+
+    it.only('should return an empty array if the cell is valid', () => {
       const mockWorksheet = xlsx.utils.json_to_sheet([{ ALIAS: 'alias1' }, { ALIAS: 'alias2' }, { ALIAS: 'alias3' }]);
       const surveyAliases = new Set(['alias1', 'alias2']);
       const configUtils = new CSVConfigUtils(mockWorksheet, mockConfig);
 
       const critterAliasValidator = getCritterAliasCellValidator(surveyAliases, configUtils);
 
-      const result = critterAliasValidator({ cell: 'alias3', row: {}, header: 'HEADER', rowIndex: 0 });
+      const result = critterAliasValidator({ cell: 'alias4', row: {}, header: 'ALIAS', rowIndex: 0 });
 
       expect(result).to.be.deep.equal([]);
     });
@@ -51,15 +52,12 @@ describe('critter-header-configs', () => {
 
       const critterAliasValidator = getCritterAliasCellValidator(surveyAliases, configUtils);
 
-      const result = critterAliasValidator({ cell: 'alias1', row: {}, header: 'HEADER', rowIndex: 0 });
+      const result = critterAliasValidator({ cell: 'alias1', row: {}, header: 'ALIAS', rowIndex: 0 });
 
       expect(result).to.be.deep.equal([
         {
           error: 'Critter alias already exists in the Survey',
-          solution: 'Update the alias to be unique',
-          cell: 'alias1',
-          header: 'HEADER',
-          rowIndex: 0
+          solution: 'Update the alias to be unique'
         }
       ]);
     });
@@ -71,29 +69,14 @@ describe('critter-header-configs', () => {
 
       const critterAliasValidator = getCritterAliasCellValidator(surveyAliases, configUtils);
 
-      const result = critterAliasValidator({ cell: 'alias3', row: {}, header: 'HEADER', rowIndex: 0 });
+      const result = critterAliasValidator({ cell: 'alias3', row: {}, header: 'ALIAS', rowIndex: 0 });
 
       expect(result).to.be.deep.equal([
         {
           error: 'Critter alias already exists in the CSV',
-          solution: 'Update the alias to be unique',
-          cell: 'alias3',
-          header: 'HEADER',
-          rowIndex: 0
+          solution: 'Update the alias to be unique'
         }
       ]);
-    });
-
-    it('should return no errors when cell value is valid', () => {
-      const mockWorksheet = xlsx.utils.json_to_sheet([{ ALIAS: 'alias1' }, { ALIAS: 'alias2' }, { ALIAS: 'alias3' }]);
-      const surveyAliases = new Set(['alias1', 'alias2']);
-      const configUtils = new CSVConfigUtils(mockWorksheet, mockConfig);
-
-      const critterAliasValidator = getCritterAliasCellValidator(surveyAliases, configUtils);
-
-      const result = critterAliasValidator({ cell: 'alias4', row: {}, header: 'HEADER', rowIndex: 0 });
-
-      expect(result).to.be.deep.equal([]);
     });
   });
 

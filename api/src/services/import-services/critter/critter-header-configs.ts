@@ -136,10 +136,11 @@ export const getCritterCollectionUnitCellSetter = (
       return undefined;
     }
 
-    const tsn = Number(configUtils.getCellValue('ITIS_TSN', params.row));
-    const unit = String(params.cell).toLowerCase();
+    const rowTsn = Number(configUtils.getCellValue('ITIS_TSN', params.row));
+    const collectionCategory = params.header;
+    const collectionUnitCellValue = String(params.cell).toLowerCase();
 
-    return get(rowDictionary, [tsn, params.header, unit]);
+    return get(rowDictionary, [rowTsn, collectionCategory, collectionUnitCellValue]);
   };
 };
 
@@ -203,9 +204,9 @@ export const getCritterSexCellSetter = (
   configUtils: CSVConfigUtils<CritterCSVStaticHeader>
 ): CSVCellSetter => {
   return (params: CSVParams) => {
-    const tsn = Number(configUtils.getCellValue('ITIS_TSN', params.row));
-    const cellValue = String(params.cell).toLowerCase();
+    const rowTsn = Number(configUtils.getCellValue('ITIS_TSN', params.row));
+    const sexCellValue = String(params.cell).toLowerCase();
 
-    return get(rowDictionary, [tsn, cellValue]);
+    return get(rowDictionary, [rowTsn, sexCellValue]);
   };
 };

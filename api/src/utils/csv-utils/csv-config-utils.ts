@@ -22,7 +22,16 @@ export class CSVConfigUtils<StaticHeaderType extends Uppercase<string>> {
   }
 
   /**
-   * The CSV worksheet headers.
+   * The CSV config static headers.
+   *
+   * @returns {Uppercase<string>[]} - The config headers
+   */
+  get configStaticHeaders(): Uppercase<string>[] {
+    return Object.keys(this._config.staticHeadersConfig) as Uppercase<string>[];
+  }
+
+  /**
+   * The CSV worksheet headers. Raw incomming headers from the worksheet.
    *
    * @example
    *  worksheetHeaders: ['STATIC1', 'STATIC2_ALIAS', 'DYNAMIC1']
@@ -35,7 +44,7 @@ export class CSVConfigUtils<StaticHeaderType extends Uppercase<string>> {
   }
 
   /**
-   * The CSV worksheet aliased static headers (leaves aliases as is).
+   * The CSV worksheet aliased static headers (leaves aliased headers as is).
    *
    * @example
    *  worksheetHeaders: ['STATIC1', 'STATIC2_ALIAS', 'DYNAMIC1']
@@ -44,29 +53,29 @@ export class CSVConfigUtils<StaticHeaderType extends Uppercase<string>> {
    * @returns {Uppercase<string>[]} - The static headers
    */
   get worksheetAliasedStaticHeaders(): Uppercase<string>[] {
-    const staticHeaders: string[] = [];
-    const configHeaders = Object.keys(this._config.staticHeadersConfig);
+    const staticHeaders: Uppercase<string>[] = [];
     const worksheetHeaders = new Set(this.worksheetHeaders);
 
-    for (const header of configHeaders) {
-      if (worksheetHeaders.has(header as Uppercase<string>)) {
+    for (const header of this.configStaticHeaders) {
+      if (worksheetHeaders.has(header)) {
         staticHeaders.push(header);
       }
 
       const aliases = this._config.staticHeadersConfig[header].aliases;
 
       for (const alias of aliases) {
-        if (worksheetHeaders.has(alias as Uppercase<string>)) {
+        if (worksheetHeaders.has(alias)) {
+          // Pushing the alias instead of the static header
           staticHeaders.push(alias);
         }
       }
     }
 
-    return staticHeaders as Uppercase<string>[];
+    return staticHeaders;
   }
 
   /**
-   * The CSV worksheet static headers (converts aliases back to static headers).
+   * The CSV worksheet static headers (converts aliased headers to static headers).
    *
    * @example
    *  worksheetHeaders: ['STATIC1', 'STATIC2_ALIAS', 'DYNAMIC'] // STATIC2_ALIAS is an alias for STATIC2
@@ -75,25 +84,25 @@ export class CSVConfigUtils<StaticHeaderType extends Uppercase<string>> {
    * @returns {Uppercase<string>[]} - The static headers
    */
   get worksheetStaticHeaders(): Uppercase<string>[] {
-    const staticHeaders: string[] = [];
-    const configHeaders = Object.keys(this._config.staticHeadersConfig);
+    const staticHeaders: Uppercase<string>[] = [];
     const worksheetHeaders = new Set(this.worksheetHeaders);
 
-    for (const header of configHeaders) {
-      if (worksheetHeaders.has(header as Uppercase<string>)) {
+    for (const header of this.configStaticHeaders) {
+      if (worksheetHeaders.has(header)) {
         staticHeaders.push(header);
       }
 
       const aliases = this._config.staticHeadersConfig[header].aliases;
 
       for (const alias of aliases) {
-        if (worksheetHeaders.has(alias as Uppercase<string>)) {
+        if (worksheetHeaders.has(alias)) {
+          // Pushing the static header instead of the alias
           staticHeaders.push(header);
         }
       }
     }
 
-    return staticHeaders as Uppercase<string>[];
+    return staticHeaders;
   }
 
   /**
@@ -119,11 +128,11 @@ export class CSVConfigUtils<StaticHeaderType extends Uppercase<string>> {
   getCellValue(header: StaticHeaderType, row: CSVRow) {
     // Static header or dynamic header exact match
     if (header in row) {
-      return row[header as Uppercase<string>];
+      return row[header];
     }
 
     // Attempt to find the cell value from the header aliases
-    for (const alias of this._config.staticHeadersConfig[header as Uppercase<string>]?.aliases ?? []) {
+    for (const alias of this._config.staticHeadersConfig[header]?.aliases ?? []) {
       if (alias in row) {
         return row[alias];
       }
@@ -159,6 +168,6 @@ export class CSVConfigUtils<StaticHeaderType extends Uppercase<string>> {
    */
   isCellUnique(header: StaticHeaderType, cell: unknown) {
     const cellValueCounts = countBy(this.getCellValues(header), (value) => String(value).toLowerCase());
-    return cellValueCounts[String(cell).toLowerCase()] === 1;
+    return !cellValueCounts[String(cell).toLowerCase()];
   }
 }

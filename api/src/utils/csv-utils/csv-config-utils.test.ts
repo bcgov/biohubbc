@@ -4,7 +4,7 @@ import { CSVConfigUtils } from './csv-config-utils';
 import { CSVConfig } from './csv-config-validation.interface';
 
 describe('CSVConfigUtils', () => {
-  describe.only('init', () => {
+  describe('init', () => {
     it('should initialize the CSVConfigUtils', () => {
       const worksheet: WorkSheet = xlsx.utils.json_to_sheet([
         { TEST: 'cellValue', ALIASED_HEADER: 'cellValue2', DYNAMIC_HEADER: 'dynamicValue' }
