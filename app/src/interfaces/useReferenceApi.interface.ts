@@ -87,3 +87,21 @@ export interface IGetTechniqueAttributes {
   quantitative_attributes: ITechniqueAttributeQuantitative[];
   qualitative_attributes: ITechniqueAttributeQualitative[];
 }
+
+export type Vantage = {
+  vantage_id: number;
+  name: string;
+  description: string | null;
+};
+
+export type VantageMode = {
+  vantage_mode_method_id: number;
+  vantage_id: number;
+  name: string;
+  description: string | null;
+};
+
+/**
+ * Response for fetching vantage reference records for a method lookup id
+ */
+export type GetVantageReferenceRecord = Vantage & { vantage_modes: VantageMode[] };

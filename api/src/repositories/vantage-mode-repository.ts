@@ -1,39 +1,99 @@
 import { z } from 'zod';
+import { VantageRecord } from '../database-models/vantage';
+import { VantageModeRecord } from '../database-models/vantage_mode';
 import { getKnex } from '../database/db';
 import { getLogger } from '../utils/logger';
 import { BaseRepository } from './base-repository';
 
 const defaultLog = getLogger('repositories/technique-vantage-repository');
 
-const VantageMode = z.object({
-  vantage_mode_id: z.number(),
-  vantage_id: z.number(),
-  name: z.string(),
-  description: z.string()
+export type VantagePostData = {
+  vantage_mode_method_id: number;
+  description: string | null;
+};
+
+export const VantageReferenceRecord = VantageRecord.omit({
+  record_end_date: true
+}).extend({
+  vantage_modes: z.array(
+    VantageModeRecord.omit({
+      record_end_date: true
+    })
+  )
 });
 
-export type VantageMode = z.infer<typeof VantageMode>;
+export type VantageReferenceRecord = z.infer<typeof VantageReferenceRecord>;
 
 export class VantageModeRepository extends BaseRepository {
   /**
-   * Get vantage modes for a set of method lookup ids
+   * Insert vantage records for a technique.
    *
-   * @param {number[]} methodLookupIds
-   * @return {*}  {Promise<VantageMode[]>}
+   * @param {number} methodTechniqueId
+   * @param {VantagePostData[]} vantages
+   * @return {*}  {(Promise<{ method_technique_vantage_mode_id: number }[] | undefined>)}
    * @memberof VantageModeRepository
    */
-  async getVantageModesByMethodLookupIds(methodLookupIds: number[]): Promise<VantageMode[]> {
+  async insertVantagesForTechnique(
+    methodTechniqueId: number,
+    vantages: VantagePostData[]
+  ): Promise<{ method_technique_vantage_mode_id: number }[] | undefined> {
+    defaultLog.debug({ label: 'insertVantagesForTechnique', methodTechniqueId });
+
+    if (!vantages.length) {
+      return;
+    }
+
+    const queryBuilder = getKnex()
+      .insert(
+        vantages.map((vantage) => ({
+          method_technique_id: methodTechniqueId,
+          vantage_mode_method_id: vantage.vantage_mode_method_id,
+          description: vantage.description
+        }))
+      )
+      .into('method_technique_vantage_mode')
+      .returning('method_technique_vantage_mode_id');
+
+    const response = await this.connection.knex(
+      queryBuilder,
+      z.object({ method_technique_vantage_mode_id: z.number() })
+    );
+
+    return response.rows;
+  }
+  /**
+   * Get vantage reference records for a set of method lookup ids.
+   *
+   * @param {number[]} methodLookupIds
+   * @return {*}  {Promise<VantageReferenceRecord[]>}
+   * @memberof VantageModeRepository
+   */
+  async getVantageReferenceRecordsByMethodLookupIds(methodLookupIds: number[]): Promise<VantageReferenceRecord[]> {
     defaultLog.debug({ label: 'getVantageModesByMethodLookupIds', methodLookupIds });
 
     const knex = getKnex();
 
     const queryBuilder = knex
-      .select('vantage_mode_id', 'vantage_id', 'description')
-      .from('vantage_mode as vm')
-      .join('method_vantage_mode as mvm', 'mvm.vantage_mode_id', 'vm.vantage_mode_id')
-      .whereIn('mvm.method_lookup_id', methodLookupIds);
+      .select(
+        'vantage.vantage_id',
+        'vantage.name',
+        'vantage.description',
+        knex.raw(`
+          json_agg(
+            json_build_object(
+              'vantage_mode_id', vantage_mode.vantage_mode_id,
+              'name', vantage_mode.name,
+              'description', vantage_mode.description
+            )
+          ) as vantage_modes
+        `)
+      )
+      .from('vantage')
+      .join('vantage_mode', 'vantage.vantage_id', 'vantage_mode.vantage_id')
+      .join('method_vantage_mode', 'method_vantage_mode.vantage_mode_id', 'vantage_mode.vantage_mode_id')
+      .whereIn('method_vantage_mode.method_lookup_id', methodLookupIds);
 
-    const response = await this.connection.knex(queryBuilder, VantageMode);
+    const response = await this.connection.knex(queryBuilder, VantageReferenceRecord);
 
     return response.rows;
   }

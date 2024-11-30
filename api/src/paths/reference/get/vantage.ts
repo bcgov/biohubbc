@@ -1,16 +1,16 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { getAPIUserDBConnection } from '../../../database/db';
-import { vantageModeSchema } from '../../../openapi/schemas/technique';
+import { vantageReferenceRecordsSchema } from '../../../openapi/schemas/technique';
 import { VantageModeService } from '../../../services/vantage-mode-service';
 import { getLogger } from '../../../utils/logger';
 
 const defaultLog = getLogger('paths/reference/get/vantage-mode');
 
-export const GET: Operation = [getVantageModes()];
+export const GET: Operation = [getVantageReferenceRecords()];
 
 GET.apiDoc = {
-  description: 'Find vantage modes applicable to method lookup options',
+  description: 'Find vantage reference records applicable to method lookup ids.',
   tags: ['reference'],
   parameters: [
     {
@@ -19,7 +19,8 @@ GET.apiDoc = {
       schema: {
         type: 'array',
         items: {
-          type: 'string'
+          type: 'integer',
+          minimum: 1
         },
         minItems: 1
       },
@@ -28,10 +29,10 @@ GET.apiDoc = {
   ],
   responses: {
     200: {
-      description: 'Vantages for a method lookup id.',
+      description: 'Vantage reference records for method lookup id.',
       content: {
         'application/json': {
-          schema: vantageModeSchema
+          schema: vantageReferenceRecordsSchema
         }
       }
     },
@@ -54,11 +55,11 @@ GET.apiDoc = {
 };
 
 /**
- * Get all vantage modes possible for multiple method lookup ids.
+ * Get all vantage reference records for multiple method lookup ids.
  *
  * @returns {RequestHandler}
  */
-export function getVantageModes(): RequestHandler {
+export function getVantageReferenceRecords(): RequestHandler {
   return async (req, res) => {
     const connection = getAPIUserDBConnection();
 
@@ -69,7 +70,7 @@ export function getVantageModes(): RequestHandler {
 
       const vantageModeService = new VantageModeService(connection);
 
-      const response = await vantageModeService.getVantageModesByMethodLookupIds(methodLookupIds);
+      const response = await vantageModeService.getVantageReferenceRecordsByMethodLookupIds(methodLookupIds);
 
       await connection.commit();
 

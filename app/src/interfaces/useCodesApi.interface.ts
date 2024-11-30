@@ -42,4 +42,5 @@ export interface IGetAllCodeSetsResponse {
   attractants: CodeSet<{ id: number; name: string; description: string }>;
   observation_subcount_signs: CodeSet<{ id: number; name: string; description: string }>;
   alert_types: CodeSet<{ id: number; name: string; description: string }>;
+  vantages: CodeSet<{ id: number; name: string; description: string }>;
 }

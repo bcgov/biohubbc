@@ -28,7 +28,8 @@ const initialTechniqueFormValues: CreateTechniqueFormValues = {
   distance_threshold: null,
   method_lookup_id: null,
   attractants: [],
-  attributes: []
+  attributes: [],
+  vantages: []
 };
 
 /**

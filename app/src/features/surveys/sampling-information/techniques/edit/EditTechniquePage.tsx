@@ -87,7 +87,8 @@ export const EditTechniquePage = () => {
         attribute_value: attribute.value,
         attribute_type: 'quantitative' as const
       })) ?? [])
-    ]
+    ],
+    vantages: technique?.vantages
   };
 
   const handleSubmit = async (values: UpdateTechniqueFormValues) => {

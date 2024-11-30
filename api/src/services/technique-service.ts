@@ -10,6 +10,7 @@ import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { AttractantService } from './attractants-service';
 import { DBService } from './db-service';
 import { TechniqueAttributeService } from './technique-attributes-service';
+import { TechniqueVantageService } from './technique-vantage-service';
 
 /**
  * Service layer for techniques.
@@ -22,6 +23,7 @@ export class TechniqueService extends DBService {
   techniqueRepository: TechniqueRepository;
   attractantService: AttractantService;
   techniqueAttributeService: TechniqueAttributeService;
+  techniqueVantageService: TechniqueVantageService;
 
   constructor(connection: IDBConnection) {
     super(connection);
@@ -29,6 +31,7 @@ export class TechniqueService extends DBService {
     this.techniqueRepository = new TechniqueRepository(connection);
     this.attractantService = new AttractantService(connection);
     this.techniqueAttributeService = new TechniqueAttributeService(connection);
+    this.techniqueVantageService = new TechniqueVantageService(connection);
   }
 
   /**
@@ -117,6 +120,11 @@ export class TechniqueService extends DBService {
             technique.attributes.quantitative_attributes
           )
         );
+      }
+
+      // Insert vantages
+      if (technique.vantages.length) {
+        promises.push(this.techniqueVantageService.insertVantagesForTechnique(method_technique_id, technique.vantages));
       }
 
       await Promise.all(promises);

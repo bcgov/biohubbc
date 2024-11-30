@@ -6,6 +6,7 @@ import {
   CreateTechniqueFormValues,
   UpdateTechniqueFormValues
 } from 'features/surveys/sampling-information/techniques/components/TechniqueFormContainer';
+import { TechniqueVantagesForm } from 'features/surveys/sampling-information/techniques/components/vantages/TechniqueVantagesForm';
 import { useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
@@ -52,6 +53,12 @@ export const TechniqueForm = <FormValues extends CreateTechniqueFormValues | Upd
     <Stack gap={5}>
       <HorizontalSplitFormComponent title="General Information" summary="Enter information about the technique">
         <TechniqueGeneralInformationForm />
+      </HorizontalSplitFormComponent>
+
+      <Divider />
+
+      <HorizontalSplitFormComponent title="Vantages" summary="Enter information about the technique vantages">
+        <TechniqueVantagesForm />
       </HorizontalSplitFormComponent>
 
       <Divider />

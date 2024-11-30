@@ -6,6 +6,7 @@ import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { IAttractantPostData } from './attractants-repository';
 import { BaseRepository } from './base-repository';
 import { IQualitativeAttributePostData, IQuantitativeAttributePostData } from './technique-attribute-repository';
+import { VantagePostData } from './vantage-mode-repository';
 
 export interface ITechniquePostData {
   name: string;
@@ -17,6 +18,7 @@ export interface ITechniquePostData {
     qualitative_attributes: IQualitativeAttributePostData[];
   };
   attractants: IAttractantPostData[];
+  vantages: VantagePostData[];
 }
 
 export interface ITechniquePutData extends ITechniquePostData {
@@ -40,7 +42,11 @@ export const TechniqueObject = z.object({
   description: z.string().nullable(),
   distance_threshold: z.number().nullable(),
   method_lookup_id: z.number(),
-  attractants: z.array(z.object({ attractant_lookup_id: z.number() })),
+  attractants: z.array(
+    z.object({
+      attractant_lookup_id: z.number()
+    })
+  ),
   attributes: z.object({
     quantitative_attributes: z.array(
       z.object({
@@ -56,7 +62,14 @@ export const TechniqueObject = z.object({
         method_lookup_attribute_qualitative_option_id: z.string().uuid()
       })
     )
-  })
+  }),
+  vantages: z.array(
+    z.object({
+      method_technique_vantage_mode_id: z.number(),
+      vantage_mode_method_id: z.number(),
+      description: z.string().nullable()
+    })
+  )
 });
 export type TechniqueObject = z.infer<typeof TechniqueObject>;
 
@@ -118,6 +131,22 @@ export class TechniqueRepository extends BaseRepository {
           .from('method_technique_attribute_qualitative')
           .groupBy('method_technique_id')
       )
+      .with(
+        'w_vantages',
+        knex
+          .select(
+            'method_technique_id',
+            knex.raw(`
+              json_agg(json_build_object(
+                'method_technique_vantage_mode_id', method_technique_vantage_mode_id,
+                'vantage_mode_method_id', vantage_mode_method_id,
+                'description', description
+              )) as vantages
+            `)
+          )
+          .from('method_technique_vantage_mode')
+          .groupBy('method_technique_id')
+      )
       .select(
         'mt.method_technique_id',
         'mt.name',
@@ -132,12 +161,16 @@ export class TechniqueRepository extends BaseRepository {
             'quantitative_attributes', COALESCE(w_quantitative_attributes.quantitative_attributes, '[]'::json),
             'qualitative_attributes', COALESCE(w_qualitative_attributes.qualitative_attributes, '[]'::json
           )) AS attributes
+        `),
+        knex.raw(`
+          COALESCE(w_vantages.vantages, '[]'::json) AS vantages
         `)
       )
       .from('method_technique as mt')
       .leftJoin('w_attractants', 'w_attractants.method_technique_id', 'mt.method_technique_id')
       .leftJoin('w_quantitative_attributes', 'w_quantitative_attributes.method_technique_id', 'mt.method_technique_id')
       .leftJoin('w_qualitative_attributes', 'w_qualitative_attributes.method_technique_id', 'mt.method_technique_id')
+      .leftJoin('w_vantages', 'w_vantages.method_technique_id', 'mt.method_technique_id')
       .where('mt.survey_id', surveyId);
 
     return queryBuilder;

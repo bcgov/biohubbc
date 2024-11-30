@@ -31,14 +31,21 @@ export type TechniqueAttributeFormValues =
       attribute_type: 'quantitative'; // discriminator
     };
 
+export type TechniqueVantagesFormValues = {
+  vantage_id: number;
+  vantage_mode_method_id: number;
+};
+
 export type CreateTechniqueFormValues = Omit<ICreateTechniqueRequest, 'attributes'> & {
   // Overwrite the default attributes field to include additional fields used only by the form controls
   attributes: TechniqueAttributeFormValues[];
+  vantages: TechniqueVantagesFormValues[];
 };
 
 export type UpdateTechniqueFormValues = Omit<IGetTechniqueResponse, 'attributes'> & {
   // Overwrite the default attributes field to include additional fields used only by the form controls
   attributes: TechniqueAttributeFormValues[];
+  vantages: TechniqueVantagesFormValues[];
 };
 
 type ITechniqueFormProps<FormValues extends CreateTechniqueFormValues | UpdateTechniqueFormValues> = {

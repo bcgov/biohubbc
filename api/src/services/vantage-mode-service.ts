@@ -1,5 +1,5 @@
 import { IDBConnection } from '../database/db';
-import { VantageMode, VantageModeRepository } from '../repositories/vantage-mode-repository';
+import { VantageModeRepository, VantageReferenceRecord } from '../repositories/vantage-mode-repository';
 import { DBService } from './db-service';
 
 /**
@@ -10,22 +10,22 @@ import { DBService } from './db-service';
  * @extends {DBService}
  */
 export class VantageModeService extends DBService {
-  VantageModeRepository: VantageModeRepository;
+  vantageModeRepository: VantageModeRepository;
 
   constructor(connection: IDBConnection) {
     super(connection);
 
-    this.VantageModeRepository = new VantageModeRepository(connection);
+    this.vantageModeRepository = new VantageModeRepository(connection);
   }
 
   /**
    * Get vantage modes for a set of method lookup ids
    *
    * @param {number[]} methodLookupIds
-   * @return {*}  {Promise<VantageMode[]>}
+   * @return {*}  {Promise<VantageReferenceRecord[]>}
    * @memberof VantageModeService
    */
-  async getVantageModesByMethodLookupIds(methodLookupIds: number[]): Promise<VantageMode[]> {
-    return this.VantageModeRepository.getVantageModesByMethodLookupIds(methodLookupIds);
+  async getVantageReferenceRecordsByMethodLookupIds(methodLookupIds: number[]): Promise<VantageReferenceRecord[]> {
+    return this.vantageModeRepository.getVantageReferenceRecordsByMethodLookupIds(methodLookupIds);
   }
 }

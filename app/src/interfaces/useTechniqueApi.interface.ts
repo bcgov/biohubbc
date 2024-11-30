@@ -16,6 +16,10 @@ export type TechniqueQuantitativeAttribute = {
   value: number;
 };
 
+export type TechniqueVantage = {
+  vantage_mode_method_id: number;
+};
+
 export interface ICreateTechniqueRequest {
   name: string;
   description: string | null;
@@ -43,6 +47,7 @@ export interface IGetTechniqueResponse {
     quantitative_attributes: TechniqueQuantitativeAttribute[];
     qualitative_attributes: TechniqueQualitativeAttribute[];
   };
+  vantages: TechniqueVantage[];
 }
 
 export interface IGetTechniquesResponse {
