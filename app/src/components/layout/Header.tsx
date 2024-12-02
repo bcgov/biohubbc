@@ -3,15 +3,10 @@ import Icon from '@mdi/react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
 import Divider from '@mui/material/Divider';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
 import headerImageLarge from 'assets/images/gov-bc-logo-horiz.png';
 import headerImageSmall from 'assets/images/gov-bc-logo-vert.png';
 import { AuthGuard, SystemRoleGuard, UnAuthGuard } from 'components/security/Guards';
@@ -25,17 +20,11 @@ import { getFormattedIdentitySource } from 'utils/Utils';
 const Header: React.FC = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
-  const [open, setOpen] = React.useState(false);
   const menuOpen = Boolean(anchorEl);
 
   // Support Dialog
   const showSupportDialog = () => {
-    setOpen(true);
     hideMobileMenu();
-  };
-
-  const hideSupportDialog = () => {
-    setOpen(false);
   };
 
   // Responsive Menu
@@ -355,17 +344,9 @@ const Header: React.FC = () => {
                 <RouterLink to="/standards" id="menu_standards">
                   Standards
                 </RouterLink>
-                <Button
-                  color="inherit"
-                  variant="text"
-                  disableElevation
-                  onClick={showSupportDialog}
-                  sx={{
-                    m: '8px',
-                    p: 1
-                  }}>
+                <RouterLink to="/support" id="support">
                   Support
-                </Button>
+                </RouterLink>
               </Box>
             </Box>
             <Box flex="0 0 auto">
@@ -379,23 +360,6 @@ const Header: React.FC = () => {
           </Box>
         </Toolbar>
       </AppBar>
-
-      <Dialog open={open}>
-        <DialogTitle>Contact Support</DialogTitle>
-        <DialogContent>
-          <Typography variant="body1" component="div" color="textSecondary">
-            For technical support or questions about this application, please email &zwnj;
-            <a href="mailto:spi_mail@gov.bc.ca?subject=Support Request - Species Inventory Management System">
-              spi_mail@gov.bc.ca
-            </a>
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button variant="contained" color="primary" onClick={hideSupportDialog}>
-            OK
-          </Button>
-        </DialogActions>
-      </Dialog>
     </>
   );
 };
