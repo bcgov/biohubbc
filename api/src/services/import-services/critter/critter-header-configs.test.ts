@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import xlsx from 'xlsx';
 import { CSVConfigUtils } from '../../../utils/csv-utils/csv-config-utils';
 import { CSVConfig } from '../../../utils/csv-utils/csv-config-validation.interface';
+import { NestedRecord } from '../../../utils/nested-record';
 import {
   getCritterAliasCellValidator,
   getCritterCollectionUnitCellSetter,
@@ -82,15 +83,14 @@ describe('critter-header-configs', () => {
 
   describe('getCritterCollectionUnitCellValidator', () => {
     it('should return an empty array if the cell is valid', () => {
-      const rowDictionary = {
-        1: {
-          HEADER: {
-            unit: 'uuid'
-          }
-        }
-      };
       const cellValidator = getCritterCollectionUnitCellValidator(
-        rowDictionary,
+        new NestedRecord({
+          1: {
+            HEADER: {
+              unit: 'uuid'
+            }
+          }
+        }),
         new CSVConfigUtils(xlsx.utils.json_to_sheet([]), mockConfig)
       );
 
@@ -104,15 +104,14 @@ describe('critter-header-configs', () => {
     });
 
     it('should return a single error when the tsn has no collection units', () => {
-      const rowDictionary = {
-        1: {
-          HEADER: {
-            unit: 'uuid'
-          }
-        }
-      };
       const cellValidator = getCritterCollectionUnitCellValidator(
-        rowDictionary,
+        new NestedRecord({
+          1: {
+            HEADER: {
+              unit: 'uuid'
+            }
+          }
+        }),
         new CSVConfigUtils(xlsx.utils.json_to_sheet([]), mockConfig)
       );
 
@@ -122,15 +121,14 @@ describe('critter-header-configs', () => {
     });
 
     it('should return a single error when collection unit header invalid', () => {
-      const rowDictionary = {
-        1: {
-          HEADER: {
-            unit: 'uuid'
-          }
-        }
-      };
       const cellValidator = getCritterCollectionUnitCellValidator(
-        rowDictionary,
+        new NestedRecord({
+          1: {
+            HEADER: {
+              unit: 'uuid'
+            }
+          }
+        }),
         new CSVConfigUtils(xlsx.utils.json_to_sheet([]), mockConfig)
       );
 
@@ -140,15 +138,14 @@ describe('critter-header-configs', () => {
     });
 
     it('should return a single error when collection unit value invalid', () => {
-      const rowDictionary = {
-        1: {
-          HEADER: {
-            unit: 'uuid'
-          }
-        }
-      };
       const cellValidator = getCritterCollectionUnitCellValidator(
-        rowDictionary,
+        new NestedRecord({
+          1: {
+            HEADER: {
+              unit: 'uuid'
+            }
+          }
+        }),
         new CSVConfigUtils(xlsx.utils.json_to_sheet([]), mockConfig)
       );
 
@@ -161,7 +158,7 @@ describe('critter-header-configs', () => {
   describe('getCritterCollectionUnitSetter', () => {
     it('should return undefined when cell value is falsy', () => {
       const cellSetter = getCritterCollectionUnitCellSetter(
-        {},
+        new NestedRecord(),
         new CSVConfigUtils(xlsx.utils.json_to_sheet([]), mockConfig)
       );
 
@@ -171,15 +168,14 @@ describe('critter-header-configs', () => {
     });
 
     it('should return the uuid', () => {
-      const rowDictionary = {
-        1: {
-          HEADER: {
-            unit: 'uuid'
-          }
-        }
-      };
       const cellSetter = getCritterCollectionUnitCellSetter(
-        rowDictionary,
+        new NestedRecord({
+          1: {
+            HEADER: {
+              unit: 'uuid'
+            }
+          }
+        }),
         new CSVConfigUtils(xlsx.utils.json_to_sheet([]), mockConfig)
       );
 
@@ -191,13 +187,12 @@ describe('critter-header-configs', () => {
 
   describe('getCritterSexCellValidator', () => {
     it('should return an empty array if the cell is valid', () => {
-      const rowDictionary = {
-        1: {
-          male: 'uuid'
-        }
-      };
       const cellValidator = getCritterSexCellValidator(
-        rowDictionary,
+        new NestedRecord({
+          1: {
+            male: 'uuid'
+          }
+        }),
         new CSVConfigUtils(xlsx.utils.json_to_sheet([]), mockConfig)
       );
 
@@ -211,13 +206,12 @@ describe('critter-header-configs', () => {
     });
 
     it('should return a single error when the cell value is invalid', () => {
-      const rowDictionary = {
-        1: {
-          male: 'uuid'
-        }
-      };
       const cellValidator = getCritterSexCellValidator(
-        rowDictionary,
+        new NestedRecord({
+          1: {
+            male: 'uuid'
+          }
+        }),
         new CSVConfigUtils(xlsx.utils.json_to_sheet([]), mockConfig)
       );
 
@@ -231,13 +225,12 @@ describe('critter-header-configs', () => {
     });
 
     it('should return a single error when rowDictionary has no reference to TSN', () => {
-      const rowDictionary = {
-        1: {
-          male: 'uuid'
-        }
-      };
       const cellValidator = getCritterSexCellValidator(
-        rowDictionary,
+        new NestedRecord({
+          1: {
+            male: 'uuid'
+          }
+        }),
         new CSVConfigUtils(xlsx.utils.json_to_sheet([]), mockConfig)
       );
 
@@ -247,13 +240,12 @@ describe('critter-header-configs', () => {
     });
 
     it('should return a single error when rowDictionary has no reference to sex value', () => {
-      const rowDictionary = {
-        1: {
-          male: 'uuid'
-        }
-      };
       const cellValidator = getCritterSexCellValidator(
-        rowDictionary,
+        new NestedRecord({
+          1: {
+            male: 'uuid'
+          }
+        }),
         new CSVConfigUtils(xlsx.utils.json_to_sheet([]), mockConfig)
       );
 
@@ -265,13 +257,13 @@ describe('critter-header-configs', () => {
 
   describe('getCritterSexCellSetter', () => {
     it('should return the uuid', () => {
-      const rowDictionary = {
+      const nestedRecord = new NestedRecord({
         1: {
           male: 'uuid'
         }
-      };
+      });
       const cellSetter = getCritterSexCellSetter(
-        rowDictionary,
+        nestedRecord,
         new CSVConfigUtils(xlsx.utils.json_to_sheet([]), mockConfig)
       );
 

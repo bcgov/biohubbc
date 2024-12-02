@@ -1,8 +1,8 @@
-import { get } from 'lodash';
 import { z } from 'zod';
 import { CSVConfigUtils } from '../../../utils/csv-utils/csv-config-utils';
 import { CSVCellSetter, CSVCellValidator, CSVParams } from '../../../utils/csv-utils/csv-config-validation.interface';
 import { validateZodCell } from '../../../utils/csv-utils/csv-header-configs';
+import { NestedRecord } from '../../../utils/nested-record';
 import { CritterCSVStaticHeader } from './import-critters-service';
 
 /**
@@ -56,12 +56,12 @@ export const getCritterAliasCellValidator = (
  *  1. The header must be a valid collection category for the TSN
  *  2. The cell value must be a valid collection unit for the collection category
  *
- * @param {Object} rowDictionary The row dictionary.
+ * @param {NestedRecord<string>} rowDictionary The row dictionary.
  * @param {CSVConfigUtils<CritterCSVStaticHeader>} configUtils The CSV config utils.
  * @returns {*} {CSVCellValidator} The validate cell callback
  */
 export const getCritterCollectionUnitCellValidator = (
-  rowDictionary: { [tsn: number]: { [header: string]: { [unit: string]: string } } },
+  rowDictionary: NestedRecord<string>,
   configUtils: CSVConfigUtils<CritterCSVStaticHeader>
 ): CSVCellValidator => {
   return (params: CSVParams) => {
@@ -73,12 +73,12 @@ export const getCritterCollectionUnitCellValidator = (
     const rowTsn = Number(configUtils.getCellValue('ITIS_TSN', params.row));
 
     // The collection unit cell value
-    const collectionUnitCellValue = String(params.cell).toLowerCase();
+    const collectionUnitCellValue = String(params.cell);
 
     // The collection category (for clarity)
     const collectionCategory = params.header;
 
-    const rowDictionaryTsn = get(rowDictionary, rowTsn);
+    const rowDictionaryTsn = rowDictionary.get(rowTsn);
 
     // Check if the row TSN has collection units
     if (!rowDictionaryTsn) {
@@ -90,7 +90,7 @@ export const getCritterCollectionUnitCellValidator = (
       ];
     }
 
-    const rowDictionaryCategory = get(rowDictionary, [rowTsn, collectionCategory]);
+    const rowDictionaryCategory = rowDictionary.get(rowTsn, collectionCategory);
 
     // Check if the dynamic header is a valid collection category for the TSN
     if (!rowDictionaryCategory) {
@@ -103,7 +103,7 @@ export const getCritterCollectionUnitCellValidator = (
       ];
     }
 
-    const rowDictionaryUnit = get(rowDictionary, [rowTsn, collectionCategory, collectionUnitCellValue]);
+    const rowDictionaryUnit = rowDictionary.get(rowTsn, collectionCategory, collectionUnitCellValue);
 
     // Check if the cell value is a valid collection unit for the collection category
     if (!rowDictionaryUnit) {
@@ -123,12 +123,12 @@ export const getCritterCollectionUnitCellValidator = (
 /**
  * Get the collection unit cell setter.
  *
- * @param {Object} rowDictionary The row dictionary.
+ * @param {NestedRecord<string>} rowDictionary The row dictionary.
  * @param {CSVConfigUtils<CritterCSVStaticHeader>} configUtils The CSV config utils.
  * @returns {*} {CSVCellSetter} The set cell value callback
  */
 export const getCritterCollectionUnitCellSetter = (
-  rowDictionary: { [tsn: number]: { [header: string]: { [unit: string]: string } } },
+  rowDictionary: NestedRecord<string>,
   configUtils: CSVConfigUtils<CritterCSVStaticHeader>
 ): CSVCellSetter => {
   return (params: CSVParams) => {
@@ -138,9 +138,9 @@ export const getCritterCollectionUnitCellSetter = (
 
     const rowTsn = Number(configUtils.getCellValue('ITIS_TSN', params.row));
     const collectionCategory = params.header;
-    const collectionUnitCellValue = String(params.cell).toLowerCase();
+    const collectionUnitCellValue = String(params.cell);
 
-    return get(rowDictionary, [rowTsn, collectionCategory, collectionUnitCellValue]);
+    return rowDictionary.get(rowTsn, collectionCategory, collectionUnitCellValue);
   };
 };
 
@@ -151,19 +151,19 @@ export const getCritterCollectionUnitCellSetter = (
  *  1. The TSN must have sex measurements available
  *  2. The cell value must be a valid sex option for the TSN
  *
- * @param {Object} rowDictionary The row dictionary.
+ * @param {NestedRecord<string>} rowDictionary The row dictionary.
  * @param {CSVConfigUtils<CritterCSVStaticHeader>} configUtils The CSV config utils.
  * @returns {*} {CSVCellValidator} The validate cell callback
  */
 export const getCritterSexCellValidator = (
-  rowDictionary: { [tsn: number]: { [sex: string]: string } },
+  rowDictionary: NestedRecord<string>,
   configUtils: CSVConfigUtils<CritterCSVStaticHeader>
 ): CSVCellValidator => {
   return (params: CSVParams) => {
     const rowTsn = Number(configUtils.getCellValue('ITIS_TSN', params.row));
-    const sexCellValue = String(params.cell).toLowerCase();
+    const sexCellValue = String(params.cell);
 
-    const rowDictionaryTsn = get(rowDictionary, rowTsn);
+    const rowDictionaryTsn = rowDictionary.get(rowTsn);
 
     // Check if the row TSN has sex measurements available
     if (!rowDictionaryTsn) {
@@ -175,7 +175,7 @@ export const getCritterSexCellValidator = (
       ];
     }
 
-    const rowDictionarySex = get(rowDictionary, [rowTsn, sexCellValue]);
+    const rowDictionarySex = rowDictionary.get(rowTsn, sexCellValue);
 
     // Check if the cell value is a valid sex measurement for the TSN
     if (!rowDictionarySex) {
@@ -195,18 +195,18 @@ export const getCritterSexCellValidator = (
 /**
  * Get the critter sex cell setter.
  *
- * @param {Object} rowDictionary The row dictionary.
+ * @param {NestedRecord<string>} rowDictionary The row dictionary.
  * @param {CSVConfigUtils<CrittterCSVConfig>} configUtils The CSV config utils.
  * @returns {*} {CSVCellValidator} The validate cell callback
  */
 export const getCritterSexCellSetter = (
-  rowDictionary: { [tsn: number]: { [sex: string]: string } },
+  rowDictionary: NestedRecord<string>,
   configUtils: CSVConfigUtils<CritterCSVStaticHeader>
 ): CSVCellSetter => {
   return (params: CSVParams) => {
     const rowTsn = Number(configUtils.getCellValue('ITIS_TSN', params.row));
-    const sexCellValue = String(params.cell).toLowerCase();
+    const sexCellValue = String(params.cell);
 
-    return get(rowDictionary, [rowTsn, sexCellValue]);
+    return rowDictionary.get(rowTsn, sexCellValue);
   };
 };

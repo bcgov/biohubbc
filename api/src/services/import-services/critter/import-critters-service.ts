@@ -1,4 +1,4 @@
-import { merge, set } from 'lodash';
+import { merge } from 'lodash';
 import { v4 } from 'uuid';
 import { WorkSheet } from 'xlsx';
 import { IDBConnection } from '../../../database/db';
@@ -17,6 +17,7 @@ import {
   getWlhIDCellValidator
 } from '../../../utils/csv-utils/csv-header-configs';
 import { getLogger } from '../../../utils/logger';
+import { NestedRecord } from '../../../utils/nested-record';
 import { CritterbaseService, IBulkCreate } from '../../critterbase-service';
 import { DBService } from '../../db-service';
 import { PlatformService } from '../../platform-service';
@@ -240,20 +241,22 @@ export class ImportCrittersService extends DBService {
    * @returns {CSVHeaderConfig} The sex header config
    */
   async _getSexHeaderConfig(): Promise<CSVHeaderConfig> {
-    const rowDictionary: { [tsn: number]: { [sex: string]: string } } = {};
+    const rowDictionary = new NestedRecord<string>();
+
     const rowTsns = this.configUtils.getUniqueCellValues('ITIS_TSN');
     const measurements = await Promise.all(rowTsns.map((tsn) => this.critterbaseService.getTaxonMeasurements(tsn)));
 
-    measurements.forEach((measurement, index) => {
+    measurements.forEach((measurement) => {
       const sexMeasurement = measurement.qualitative.find(
         (measurement) => measurement.measurement_name.toLowerCase() === 'sex'
       );
 
       if (sexMeasurement) {
         sexMeasurement.options.forEach((option) => {
-          const tsn = Number(rowTsns[index]);
-          const sexLabel = option.option_label.toLowerCase();
-          set(rowDictionary, `${tsn}.${sexLabel}`, option.qualitative_option_id);
+          const tsn = Number(sexMeasurement.itis_tsn);
+          const sexLabel = option.option_label;
+
+          rowDictionary.set({ path: [tsn, sexLabel], value: option.qualitative_option_id });
         });
       }
     });
@@ -270,7 +273,7 @@ export class ImportCrittersService extends DBService {
    * @returns {Promise<CSVHeaderConfig>} The Collection Unit dynamic header config
    */
   async _getCollectionUnitDynamicHeaderConfig(): Promise<CSVHeaderConfig> {
-    const rowDictionary: { [tsn: number]: { [header: string]: { [unit: string]: string } } } = {};
+    const rowDictionary = new NestedRecord<string>();
 
     const rowTsns = this.configUtils.getUniqueCellValues('ITIS_TSN');
     // Get the collection units for all the tsns in the worksheet
@@ -280,11 +283,16 @@ export class ImportCrittersService extends DBService {
 
     collectionUnits.forEach((collectionUnits, index) => {
       collectionUnits.forEach((unit) => {
-        const category = unit.category_name.toUpperCase();
+        const category = unit.category_name;
         const tsn = Number(rowTsns[index]);
-        const unitName = unit.unit_name.toLowerCase();
-        // Using lodash to easily set nested object properties without worrying about undefined
-        set(rowDictionary, `${tsn}.${category}.${unitName}`, unit.collection_unit_id);
+        const unitName = unit.unit_name;
+
+        rowDictionary.set({
+          path: [tsn, category, unitName],
+          value: unit.collection_unit_id
+        });
+
+        rowDictionary.set({ path: [tsn, category, unitName], value: unit.collection_unit_id });
       });
     });
 

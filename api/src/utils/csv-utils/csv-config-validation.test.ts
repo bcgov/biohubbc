@@ -18,7 +18,7 @@ describe('csv-config-validation', () => {
   });
 
   describe('validateCSVWorksheet', () => {
-    it.only('should return rows when CSV is valid', () => {
+    it('should return rows when CSV is valid', () => {
       const validateCellStub = sinon.stub().returns([]);
       const setCellValueStub = sinon.stub().returns('newValue');
 
@@ -64,7 +64,7 @@ describe('csv-config-validation', () => {
       });
     });
 
-    it.only('should only call execute handlers when headers have no errors', () => {
+    it('should only call execute handlers when headers have no errors', () => {
       const validateCellStub = sinon.stub().returns([]);
       const setCellValueStub = sinon.stub().returns('newValue');
 
@@ -117,7 +117,9 @@ describe('csv-config-validation', () => {
 
       const result = validateCSVHeaders(worksheet, mockConfig);
 
-      expect(result).to.deep.equal([{ errorRowIndex: 0, error: 'CSV empty', solution: 'Add headers and data to CSV' }]);
+      expect(result).to.deep.equal([
+        { errorRowIndex: 0, error: 'CSV empty', solution: 'Add headers and data to CSV', values: ['ALIAS'] }
+      ]);
     });
 
     it('should return an error if CSV missing row data', () => {
@@ -140,7 +142,8 @@ describe('csv-config-validation', () => {
           errorRowIndex: 0,
           error: 'CSV missing required header',
           header: 'ALIAS',
-          solution: "Add header 'ALIAS' to CSV"
+          solution: 'Add missing header to CSV',
+          values: ['ALIAS']
         }
       ]);
     });
@@ -156,7 +159,7 @@ describe('csv-config-validation', () => {
           errorRowIndex: 0,
           error: 'Unknown header in CSV',
           header: 'UNKNOWN_HEADER',
-          solution: "Remove header 'UNKNOWN_HEADER' from CSV"
+          solution: 'Remove header from CSV'
         }
       ]);
     });
