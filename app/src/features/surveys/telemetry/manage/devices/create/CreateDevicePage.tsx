@@ -58,7 +58,9 @@ export const CreateDevicePage = () => {
     } catch (error) {
       dialogContext.setErrorDialog({
         dialogTitle: TelemetryDeviceI18N.createErrorTitle,
-        dialogText: TelemetryDeviceI18N.createErrorText,
+        dialogText: !(error as APIError).message.includes('already exists')
+          ? TelemetryDeviceI18N.createErrorText
+          : undefined,
         dialogError: (error as APIError).message,
         dialogErrorDetails: (error as APIError)?.errors,
         onClose: () => {

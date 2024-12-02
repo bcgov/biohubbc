@@ -41,6 +41,30 @@ export class TelemetryDeviceRepository extends BaseRepository {
   }
 
   /**
+   * Get a device by its serial number and survey id
+   *
+   * @param {surveyId} surveyId
+   * @param {number} serial
+   * @param {number} device_make_id
+   * @returns {*} {Promise<DeviceRecord>}
+   */
+  async getDeviceBySerial(surveyId: number, serial: number, device_make_id: number): Promise<DeviceRecord> {
+    const knex = getKnex();
+
+    const queryBuilder = knex
+      .select(['device_id', 'survey_id', 'device_key', 'serial', 'device.device_make_id', 'model', 'comment'])
+      .from('device')
+      .join('device_make', 'device_make.device_make_id', 'device.device_make_id')
+      .where('serial', serial)
+      .andWhere('device.device_make_id', device_make_id)
+      .andWhere('survey_id', surveyId);
+
+    const response = await this.connection.knex(queryBuilder, DeviceRecord);
+
+    return response.rows[0];
+  }
+
+  /**
    * Retrieve the list of devices for a survey, based on pagination options.
    *
    * @param {number} surveyId

@@ -97,9 +97,15 @@ export const DeploymentsTable = (props: IDeploymentsTableProps) => {
               <Typography variant="body2" component="div">
                 <strong>Error Deleting Deployment</strong>
               </Typography>
-              <Typography variant="body2" component="div">
-                {String(error)}
-              </Typography>
+              {String(error).includes('foreign key constraint') ? (
+                <Typography variant="body2" component="div">
+                  You must delete telemetry data from this deployment before deleting the deployment.
+                </Typography>
+              ) : (
+                <Typography variant="body2" component="div">
+                  {String(error)}
+                </Typography>
+              )}
             </>
           ),
           open: true

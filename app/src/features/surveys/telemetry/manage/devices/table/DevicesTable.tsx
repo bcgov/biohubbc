@@ -83,9 +83,15 @@ export const DevicesTable = (props: IDevicesTableProps) => {
               <Typography variant="body2" component="div">
                 <strong>Error Deleting Device</strong>
               </Typography>
-              <Typography variant="body2" component="div">
-                {String(error)}
-              </Typography>
+              {String(error).includes('foreign key constraint') ? (
+                <Typography variant="body2" component="div">
+                  You must delete the deployments involving this device before deleting the device.
+                </Typography>
+              ) : (
+                <Typography variant="body2" component="div">
+                  {String(error)}
+                </Typography>
+              )}
             </>
           ),
           open: true

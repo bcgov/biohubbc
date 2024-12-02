@@ -61,11 +61,17 @@ export const DeploymentsContainer = () => {
         snackbarMessage: (
           <>
             <Typography variant="body2" component="div">
-              <strong>Error Deleting Items</strong>
+              <strong>Error Deleting Deployments</strong>
             </Typography>
-            <Typography variant="body2" component="div">
-              {String(error)}
-            </Typography>
+            {String(error).includes('foreign key constraint') ? (
+              <Typography variant="body2" component="div">
+                You must delete telemetry data from these deployments before deleting the deployments.
+              </Typography>
+            ) : (
+              <Typography variant="body2" component="div">
+                {String(error)}
+              </Typography>
+            )}
           </>
         ),
         open: true
