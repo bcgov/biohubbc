@@ -507,7 +507,8 @@ export const surveyBlockSchema: OpenAPIV3.SchemaObject = {
     },
     geojson: {
       description: 'Geojson',
-      type: 'object'
+      type: 'object',
+      nullable: true
     },
     sample_block_count: {
       description: 'Sample block count',
