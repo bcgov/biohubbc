@@ -9,6 +9,7 @@ interface IStandardsToolbar<T> {
   views: { label: string; value: T; icon: string }[];
   currentView: T;
   setCurrentView: React.Dispatch<SetStateAction<T>>;
+  legend?: string;
 }
 
 /**
@@ -18,11 +19,11 @@ interface IStandardsToolbar<T> {
  * @returns
  */
 export const StandardsToolbar = function <T extends string>(props: IStandardsToolbar<T>) {
-  const { views, currentView, setCurrentView } = props;
+  const { views, currentView, setCurrentView, legend = 'Data types' } = props;
 
   return (
     <>
-      <Typography component="legend">Data types</Typography>
+      {legend && <Typography component="legend">{legend}</Typography>}
       <ToggleButtonGroup
         orientation="vertical"
         value={currentView}

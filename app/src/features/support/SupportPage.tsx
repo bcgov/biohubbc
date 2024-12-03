@@ -6,9 +6,10 @@ import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import PageHeader from 'components/layout/PageHeader';
 import { AccordionStandardCard } from 'features/standards/view/components/AccordionStandardCard';
 import { useState } from 'react';
-import { StandardsToolbar } from '../standards/components/StandardsToolbar'; // Import StandardsToolbar
+import { StandardsToolbar } from '../standards/components/StandardsToolbar';
 
 export enum SupportPageView {
   GENERAL = 'GENERAL',
@@ -77,43 +78,51 @@ const SupportPage = () => {
   };
 
   return (
-    <Container maxWidth="xl" sx={{ py: 3 }}>
-      <Stack direction="row" gap={3} component={Paper} sx={{ p: 3 }}>
-        {/* Sidebar with StandardsToolbar */}
-        <Box width="300px" flexShrink={0}>
-          <StandardsToolbar views={views} currentView={currentView} setCurrentView={setCurrentView} />
-        </Box>
-
-        <Divider orientation="vertical" flexItem />
-
-        {/* Main Content Area */}
-        <Box flex="1 1 auto">
-          <Typography variant="h5" gutterBottom>
-            {views.find((view) => view.value === currentView)?.label}
-          </Typography>
-          <Box
-            sx={{
-              p: 3,
-              border: '1px solid',
-              borderColor: grey[300],
-              borderRadius: '8px',
-              bgcolor: grey[50]
-            }}>
-            <Stack gap={2}>
-              {dataMap[currentView]?.map((item: IDataItem, index: number) => (
-                <AccordionStandardCard
-                  key={index}
-                  label={item.label}
-                  subtitle={item.description}
-                  ornament={item.unit ? <Box>{item.unit}</Box> : undefined}
-                  colour={grey[100]}
-                />
-              )) || <Typography>No content available for this section.</Typography>}
-            </Stack>
+    <>
+      <PageHeader title="Support" />
+      <Container maxWidth="xl" sx={{ py: 3 }}>
+        <Stack direction="row" gap={3} component={Paper} sx={{ p: 3 }}>
+          {/* Sidebar with StandardsToolbar */}
+          <Box width="300px" flexShrink={0}>
+            <StandardsToolbar
+              views={views}
+              currentView={currentView}
+              setCurrentView={setCurrentView}
+              legend="Support Section"
+            />
           </Box>
-        </Box>
-      </Stack>
-    </Container>
+
+          <Divider orientation="vertical" flexItem />
+
+          {/* Main Content Area */}
+          <Box flex="1 1 auto">
+            <Typography variant="h5" gutterBottom>
+              {views.find((view) => view.value === currentView)?.label}
+            </Typography>
+            <Box
+              sx={{
+                p: 3,
+                border: '1px solid',
+                borderColor: grey[300],
+                borderRadius: '8px',
+                bgcolor: grey[50]
+              }}>
+              <Stack gap={2}>
+                {dataMap[currentView]?.map((item: IDataItem, index: number) => (
+                  <AccordionStandardCard
+                    key={index}
+                    label={item.label}
+                    subtitle={item.description}
+                    ornament={item.unit ? <Box>{item.unit}</Box> : undefined}
+                    colour={grey[100]}
+                  />
+                )) || <Typography>No content available for this section.</Typography>}
+              </Stack>
+            </Box>
+          </Box>
+        </Stack>
+      </Container>
+    </>
   );
 };
 
