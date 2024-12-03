@@ -27,7 +27,6 @@ import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useTelemetryTableContext } from 'hooks/useContext';
 import { useContext, useDeferredValue, useState } from 'react';
-import { pluralize as p } from 'utils/Utils';
 
 export const TelemetryTableContainer = () => {
   const biohubApi = useBiohubApi();
@@ -274,7 +273,7 @@ export const TelemetryTableContainer = () => {
                   <ListItemIcon>
                     <Icon path={mdiTrashCanOutline} size={1} />
                   </ListItemIcon>
-                  <Typography variant="inherit">Delete {p(numSelectedRows, 'Telemetr', 'y', 'ies')}</Typography>
+                  <Typography variant="inherit">Delete Telemetry</Typography>
                 </MenuItem>
               </Menu>
             </Box>

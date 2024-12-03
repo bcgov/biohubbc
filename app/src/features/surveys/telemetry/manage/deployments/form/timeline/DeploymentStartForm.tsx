@@ -50,11 +50,14 @@ export const DeploymentStartForm = (props: IDeploymentStartFormProps) => {
           label={'Initial capture event'}
           options={captures.map((capture) => ({
             value: capture.capture_id,
-            label: dayjs(capture.capture_date).format(DATE_FORMAT.LongDateTimeFormat)
+            label: capture.capture_time
+              ? dayjs(`${capture.capture_date} ${capture.capture_time}`).format(DATE_FORMAT.LongDateTimeFormat)
+              : dayjs(`${capture.capture_date}`).format(DATE_FORMAT.MediumDateFormat)
           }))}
           onChange={(_: SyntheticEvent<Element, Event>, value: IAutocompleteFieldOption<string> | null) => {
             // Get date of the capture to set attachment_start_date
             if (value) {
+              console.log('date', value);
               const timestamp = dayjs(value.label);
               const date = timestamp.format(DATE_FORMAT.ShortDateFormat);
               const time = timestamp.format('HH:mm:ss');
@@ -73,6 +76,12 @@ export const DeploymentStartForm = (props: IDeploymentStartFormProps) => {
       <Grid item xs={12}>
         <Box sx={{ width: '100%' }} display="flex">
           <DateField
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderTopRightRadius: 0,
+                borderBottomRightRadius: 0
+              }
+            }}
             id="attachment_start_date"
             name="attachment_start_date"
             label="Start date"
