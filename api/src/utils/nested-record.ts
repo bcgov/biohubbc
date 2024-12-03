@@ -13,6 +13,12 @@ interface INestedRecord<TValue> {
 /**
  * NestedRecord - A class to handle nested records with case-insensitive keys
  *
+ * @example
+ *  const record = new NestedRecord({ a: { b: 'c' } });
+ *  record.get('A', 'B'); // 'c'
+ *  record.has('A', 'B'); // true
+ *  record.set({ path: ['A', 'B'], value: 'd' });
+ *
  * @class
  * @exports
  * @template TValue - The final value type

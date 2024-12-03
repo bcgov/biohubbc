@@ -64,26 +64,3 @@ export const getDescriptionCellValidator = (): CSVCellValidator => {
     return validateZodCell(params, z.string().trim().min(1).max(250).optional());
   };
 };
-
-/**
- * Get the Wildlife Health ID header cell validator.
- *
- * Rules:
- *  1. The Wildlife Health ID must be in the format 'XX-XXXX' or undefined
- *
- * @returns {*} {CSVCellValidator} The validate cell callback
- */
-export const getWlhIDCellValidator = (): CSVCellValidator => {
-  return (params: CSVParams) => {
-    if (params.cell === undefined || String(params.cell).match(/^\d{2}-.+/)) {
-      return [];
-    }
-
-    return [
-      {
-        error: `Invalid Wildlife Health ID format`,
-        solution: `Update the Wildlife Health ID to match the expected format 'XX-XXXX'`
-      }
-    ];
-  };
-};

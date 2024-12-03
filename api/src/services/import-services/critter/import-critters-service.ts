@@ -11,11 +11,7 @@ import {
   CSVHeaderConfig,
   CSVRowValidated
 } from '../../../utils/csv-utils/csv-config-validation.interface';
-import {
-  getDescriptionCellValidator,
-  getTsnCellValidator,
-  getWlhIDCellValidator
-} from '../../../utils/csv-utils/csv-header-configs';
+import { getDescriptionCellValidator, getTsnCellValidator } from '../../../utils/csv-utils/csv-header-configs';
 import { getLogger } from '../../../utils/logger';
 import { NestedRecord } from '../../../utils/nested-record';
 import { CritterbaseService, IBulkCreate } from '../../critterbase-service';
@@ -27,7 +23,8 @@ import {
   getCritterCollectionUnitCellSetter,
   getCritterCollectionUnitCellValidator,
   getCritterSexCellSetter,
-  getCritterSexCellValidator
+  getCritterSexCellValidator,
+  getWlhIDCellValidator
 } from './critter-header-configs';
 
 const defaultLog = getLogger('services/import/import-critters-service');
@@ -69,8 +66,8 @@ export class ImportCrittersService extends DBService {
         ITIS_TSN: { aliases: ['TAXON', 'SPECIES', 'TSN'] },
         ALIAS: { aliases: ['NICKNAME', 'NAME', 'ANIMAL_ID'] },
         SEX: { aliases: ['TEST'] },
-        WLH_ID: { aliases: ['WILDLIFE_HEALTH_ID'], validateCell: getWlhIDCellValidator() },
-        DESCRIPTION: { aliases: ['COMMENTS', 'COMMENT', 'NOTES'], validateCell: getDescriptionCellValidator() }
+        WLH_ID: { aliases: ['WILDLIFE_HEALTH_ID', 'WILD LIFE HEALTH ID', 'WLHID'] },
+        DESCRIPTION: { aliases: ['COMMENTS', 'COMMENT', 'NOTES'] }
       },
       ignoreDynamicHeaders: false
     };
@@ -96,7 +93,7 @@ export class ImportCrittersService extends DBService {
    * @returns {*} {Promise<CSVError[]>} List of inserted survey critter ids
    */
   async importCSVWorksheet(): Promise<CSVError[]> {
-    const config = await this._getCSVConfig();
+    const config = await this.getCSVConfig();
 
     const { errors, rows } = validateCSVWorksheet(this.worksheet, config);
 
@@ -132,7 +129,7 @@ export class ImportCrittersService extends DBService {
    *
    * @returns {*} {Promise<CSVConfig<CritterCSVStaticHeader>>} The Critter CSV config
    */
-  async _getCSVConfig(): Promise<CSVConfig<CritterCSVStaticHeader>> {
+  async getCSVConfig(): Promise<CSVConfig<CritterCSVStaticHeader>> {
     const [tsnHeaderConfig, aliasHeaderConfig, sexHeaderConfig, dynamicHeadersConfig] = await Promise.all([
       this._getTsnHeaderConfig(),
       this._getAliasHeaderConfig(),
@@ -144,10 +141,12 @@ export class ImportCrittersService extends DBService {
       staticHeadersConfig: {
         ITIS_TSN: tsnHeaderConfig,
         ALIAS: aliasHeaderConfig,
-        SEX: sexHeaderConfig
+        SEX: sexHeaderConfig,
+        WLH_ID: getWlhIDCellValidator(this.configUtils),
+        DESCRIPTION: getDescriptionCellValidator()
       },
       dynamicHeadersConfig: dynamicHeadersConfig,
-      ignoreDynamicHeaders: dynamicHeadersConfig ? false : true
+      ignoreDynamicHeaders: !dynamicHeadersConfig
     });
   }
 
@@ -212,7 +211,8 @@ export class ImportCrittersService extends DBService {
     const allowedTsns = new Set(taxonomy.map((taxon) => taxon.tsn));
 
     return {
-      validateCell: getTsnCellValidator(allowedTsns)
+      validateCell: getTsnCellValidator(allowedTsns),
+      setCellValue: (params) => Number(params.cell)
     };
   }
 
@@ -230,7 +230,8 @@ export class ImportCrittersService extends DBService {
     const surveyAliases = await this.surveyCritterService.getUniqueSurveyCritterAliases(this.surveyId);
 
     return {
-      validateCell: getCritterAliasCellValidator(surveyAliases, this.configUtils)
+      validateCell: getCritterAliasCellValidator(surveyAliases, this.configUtils),
+      setCellValue: (params) => String(params.cell)
     };
   }
 
@@ -249,14 +250,14 @@ export class ImportCrittersService extends DBService {
     const rowTsns = this.configUtils.getUniqueCellValues('ITIS_TSN');
     const measurements = await Promise.all(rowTsns.map((tsn) => this.critterbaseService.getTaxonMeasurements(tsn)));
 
-    measurements.forEach((measurement) => {
+    measurements.forEach((measurement, index) => {
       const sexMeasurement = measurement.qualitative.find(
         (measurement) => measurement.measurement_name.toLowerCase() === 'sex'
       );
 
       if (sexMeasurement) {
         sexMeasurement.options.forEach((option) => {
-          const tsn = Number(sexMeasurement.itis_tsn);
+          const tsn = Number(rowTsns[index]);
           const sexLabel = option.option_label;
 
           rowDictionary.set({ path: [tsn, sexLabel], value: option.qualitative_option_id });

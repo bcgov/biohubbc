@@ -1,6 +1,11 @@
 import { z } from 'zod';
 import { CSVConfigUtils } from '../../../utils/csv-utils/csv-config-utils';
-import { CSVCellSetter, CSVCellValidator, CSVParams } from '../../../utils/csv-utils/csv-config-validation.interface';
+import {
+  CSVCellSetter,
+  CSVCellValidator,
+  CSVError,
+  CSVParams
+} from '../../../utils/csv-utils/csv-config-validation.interface';
 import { validateZodCell } from '../../../utils/csv-utils/csv-header-configs';
 import { NestedRecord } from '../../../utils/nested-record';
 import { CritterCSVStaticHeader } from './import-critters-service';
@@ -9,9 +14,10 @@ import { CritterCSVStaticHeader } from './import-critters-service';
  * Get the critter alias cell validator.
  *
  * Rules:
- *  1. The cell must be a string with a length between 1 and 50
- *  2. The cell must be unique in the survey
- *  3. The cell must be unique in the CSV
+ *  1. The cell can be a string with a length between 1 and 50
+ *  2. The cell can be a number with a min value of 0
+ *  3. The cell must be unique in the survey
+ *  4. The cell must be unique in the CSV
  *
  * @param {Set<string>} surveyAliases The survey aliases.
  * @param {CSVConfigUtils<CritterCSVStaticHeader>} configUtils The CSV config utils.
@@ -22,7 +28,7 @@ export const getCritterAliasCellValidator = (
   configUtils: CSVConfigUtils<CritterCSVStaticHeader>
 ): CSVCellValidator => {
   return (params: CSVParams) => {
-    const cellErrors = validateZodCell(params, z.string().trim().min(1).max(50));
+    const cellErrors = validateZodCell(params, z.union([z.string().trim().min(1).max(50), z.number().min(0)]));
     const isAliasUnique = configUtils.isCellUnique('ALIAS', params.cell);
 
     if (cellErrors.length) {
@@ -69,18 +75,13 @@ export const getCritterCollectionUnitCellValidator = (
       return [];
     }
 
-    // The row TSN value
-    const rowTsn = Number(configUtils.getCellValue('ITIS_TSN', params.row));
-
-    // The collection unit cell value
-    const collectionUnitCellValue = String(params.cell);
-
-    // The collection category (for clarity)
-    const collectionCategory = params.header;
+    const rowTsn = Number(configUtils.getCellValue('ITIS_TSN', params.row)); // Row TSN
+    const collectionUnitCellValue = String(params.cell); // Cell value
+    const collectionCategory = params.header; // Current header ie: collection category
 
     const rowDictionaryTsn = rowDictionary.get(rowTsn);
 
-    // Check if the row TSN has collection units
+    // Check if the row TSN has associated collection units
     if (!rowDictionaryTsn) {
       return [
         {
@@ -160,8 +161,8 @@ export const getCritterSexCellValidator = (
   configUtils: CSVConfigUtils<CritterCSVStaticHeader>
 ): CSVCellValidator => {
   return (params: CSVParams) => {
-    const rowTsn = Number(configUtils.getCellValue('ITIS_TSN', params.row));
-    const sexCellValue = String(params.cell);
+    const rowTsn = Number(configUtils.getCellValue('ITIS_TSN', params.row)); // Row TSN
+    const sexCellValue = String(params.cell); // Cell value
 
     const rowDictionaryTsn = rowDictionary.get(rowTsn);
 
@@ -208,5 +209,43 @@ export const getCritterSexCellSetter = (
     const sexCellValue = String(params.cell);
 
     return rowDictionary.get(rowTsn, sexCellValue);
+  };
+};
+
+/**
+ * Get the Wildlife Health ID header cell validator.
+ *
+ * Rules:
+ *  1. The Wildlife Health ID must be in the format 'XX-XXXX' or undefined
+ *  2. The Wildlife Health ID must be unique in the CSV
+ *
+ * @param {CSVConfigUtils<CritterCSVStaticHeader>} configUtils The CSV config utils.
+ * @returns {*} {CSVCellValidator} The validate cell callback
+ */
+export const getWlhIDCellValidator = (configUtils: CSVConfigUtils<CritterCSVStaticHeader>): CSVCellValidator => {
+  return (params: CSVParams) => {
+    const cellErrors: CSVError[] = [];
+
+    if (params.cell === undefined) {
+      return [];
+    }
+
+    const isWlhIdUnique = configUtils.isCellUnique('ALIAS', params.cell);
+
+    if (!/^\d{2}-.+/.exec(String(params.cell))) {
+      cellErrors.push({
+        error: `Invalid Wildlife Health ID format`,
+        solution: `Update the Wildlife Health ID to match the expected format 'XX-XXXX'`
+      });
+    }
+
+    if (!isWlhIdUnique) {
+      cellErrors.push({
+        error: `Wildlife Health ID already exists in the CSV`,
+        solution: `Update the Wildlife Health ID to be unique`
+      });
+    }
+
+    return cellErrors;
   };
 };

@@ -106,7 +106,7 @@ export interface CSVParams {
    *
    * @type {string | undefined}
    */
-  staticHeader?: string | undefined;
+  staticHeader?: string;
 }
 
 /**
@@ -140,19 +140,19 @@ export interface CSVError {
    *
    * @type {(string[] | number[]) | undefined}
    */
-  values?: string[] | number[] | undefined;
+  values?: string[] | number[];
   /**
    * The cell value.
    *
    * @type {unknown | undefined}
    */
-  cell?: unknown | undefined;
+  cell?: unknown;
   /**
    * The header name.
    *
    * @type {string | undefined}
    */
-  header?: string | undefined;
+  header?: string;
   /**
    * The row index the error occurred.
    *
