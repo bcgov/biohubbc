@@ -6,7 +6,6 @@ import Collapse from '@mui/material/Collapse';
 import Typography from '@mui/material/Typography';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { IObservationTableRowToSave } from 'hooks/api/useObservationApi';
-import { useObservationsPageContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useEffect } from 'react';
@@ -28,7 +27,6 @@ export const ObservationMeasurementForm = () => {
   const { values } = useFormikContext<IObservationTableRowToSave>();
 
   const critterbaseApi = useCritterbaseApi();
-  const observationsPageContext = useObservationsPageContext();
 
   const measurementsDataLoader = useDataLoader((tsn: number) => critterbaseApi.xref.getTaxonMeasurements(tsn));
 
@@ -40,7 +38,7 @@ export const ObservationMeasurementForm = () => {
     }
 
     measurementsDataLoader.load(tsn);
-  }, [observationsPageContext, measurementsDataLoader]);
+  }, [measurementsDataLoader]);
 
   return (
     <FieldArray

@@ -1,3 +1,4 @@
+import { SubcountToSave } from 'hooks/api/useObservationApi';
 import {
   CBQualitativeMeasurementTypeDefinition,
   CBQuantitativeMeasurementTypeDefinition
@@ -180,3 +181,8 @@ type ObservationSubcountsObject = {
 type ObservationRecordWithSamplingAndSubcountData = StandardObservationColumns &
   ObservationSamplingData &
   ObservationSubcountsObject;
+
+export interface ICreateObservationRequest {
+  standardColumns: StandardObservationColumns;
+  subcounts: SubcountToSave[];
+}

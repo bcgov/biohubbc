@@ -7,7 +7,6 @@ import Typography from '@mui/material/Typography';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { IObservationTableRowToSave } from 'hooks/api/useObservationApi';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useObservationsPageContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { useEffect } from 'react';
 import { TransitionGroup } from 'react-transition-group';
@@ -16,7 +15,7 @@ const initialEnvironmentValues = {
   environment_quantitative_option_id: undefined,
   environment_qualitative_option_id: undefined,
   value: undefined,
-  environment_qualitative_id: undefined,
+  environment_qualitative_id: undefined
 };
 
 /**
@@ -29,13 +28,12 @@ export const ObservationEnvironmentForm = () => {
   const { values } = useFormikContext<IObservationTableRowToSave>();
 
   const biohubApi = useBiohubApi();
-  const observationsPageContext = useObservationsPageContext();
 
   const environmentsDataLoader = useDataLoader(() => biohubApi.reference.findSubcountEnvironments(''));
 
   useEffect(() => {
     environmentsDataLoader.load();
-  }, [observationsPageContext, environmentsDataLoader]);
+  }, [environmentsDataLoader]);
 
   return (
     <FieldArray

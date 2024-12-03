@@ -5,6 +5,7 @@ import {
   CBQuantitativeMeasurementTypeDefinition
 } from 'interfaces/useCritterApi.interface';
 import {
+  ICreateObservationRequest,
   IGetSurveyObservationsGeometryResponse,
   IGetSurveyObservationsResponse,
   ObservationRecord,
@@ -65,6 +66,24 @@ const useObservationApi = (axios: AxiosInstance) => {
   ): Promise<void> => {
     await axios.put(`/api/project/${projectId}/survey/${surveyId}/observations`, {
       surveyObservations
+    });
+  };
+
+  /**
+   * Creates a new observation for the survey
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {IObservationTableRowToSave[]} surveyObservations
+   * @return {*}  {Promise<void>}
+   */
+  const createObservation = async (
+    projectId: number,
+    surveyId: number,
+    surveyObservation: ICreateObservationRequest
+  ): Promise<void> => {
+    await axios.put(`/api/project/${projectId}/survey/${surveyId}/observations`, {
+      surveyObservation
     });
   };
 
@@ -338,7 +357,8 @@ const useObservationApi = (axios: AxiosInstance) => {
     deleteObservationMeasurements,
     deleteObservationEnvironments,
     uploadCsvForImport,
-    processCsvSubmission
+    processCsvSubmission,
+    createObservation
   };
 };
 

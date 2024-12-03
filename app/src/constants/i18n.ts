@@ -509,3 +509,9 @@ export const SurveyExportI18N = {
   exportErrorText:
     'An error has occurred while attempting to export survey data. Please try again. If the error persists, please contact your system administrator.'
 };
+
+export const CreateObservationI18N = {
+  createErrorTitle: 'Error Exporting Survey Data',
+  createErrorText:
+    'An error has occurred while attempting to export survey data. Please try again. If the error persists, please contact your system administrator.'
+};

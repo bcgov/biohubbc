@@ -1,5 +1,8 @@
+import { mdiPlus } from '@mdi/js';
+import Icon from '@mdi/react';
 import { LoadingButton } from '@mui/lab';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import Collapse from '@mui/material/Collapse';
 import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
@@ -33,11 +36,12 @@ import {
   useCodesContext,
   useObservationsContext,
   useObservationsPageContext,
-  useObservationsTableContext
+  useObservationsTableContext,
+  useSurveyContext
 } from 'hooks/useContext';
 import { IGetSampleLocationNonSpatialDetails } from 'interfaces/useSamplingSiteApi.interface';
 import { useEffect, useMemo } from 'react';
-import { AddObservationButton } from '../add/AddObservationButton';
+import { useHistory } from 'react-router';
 import { ConfigureColumnsButton } from './configure-columns/ConfigureColumnsButton';
 import ExportHeadersButton from './export-button/ExportHeadersButton';
 import { ObservationSubcountCommentDialog } from './grid-column-definitions/comment/ObservationSubcountCommentDialog';
@@ -56,6 +60,9 @@ const ObservationsTableContainer = () => {
   const observationsPageContext = useObservationsPageContext();
   const observationsTableContext = useObservationsTableContext();
   const observationsContext = useObservationsContext();
+
+  const { projectId, surveyId } = useSurveyContext();
+  const history = useHistory();
 
   useEffect(() => {
     codesContext.codesDataLoader.load();
@@ -196,8 +203,14 @@ const ObservationsTableContainer = () => {
             onSuccess={() => observationsTableContext.refreshObservationRecords()}
             onFinish={() => observationsPageContext.setIsDisabled(false)}
           />
-          <AddObservationButton
-          />
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<Icon path={mdiPlus} size={1} />}
+            onClick={() => history.push(`/admin/projects/${projectId}/surveys/${surveyId}/observations/create`)}>
+            Add Row
+          </Button>
+
           <Collapse in={observationsTableContext.hasUnsavedChanges} orientation="horizontal" sx={{ mr: -1 }}>
             <Box whiteSpace="nowrap" display="flex" sx={{ gap: 1, pr: 1 }}>
               <LoadingButton
