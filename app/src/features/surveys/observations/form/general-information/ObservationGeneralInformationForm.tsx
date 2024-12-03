@@ -29,7 +29,7 @@ const ObservationGeneralInformationForm: React.FC<ObservationGeneralInformationF
       />
       <Stack direction="row" my={2}>
         <SingleDateField label="Date" name={`${formikFieldName}.date`} />
-        <TimeField formikProps={formikProps} label="Time" name={`${formikFieldName}.time`} id="time" required={false} />
+        <TimeField label="Time" name={`${formikFieldName}.time`} id="time" required={false} />
       </Stack>
       <Stack direction="row" mt={2}>
         <CustomTextField label="Latitude" name={`${formikFieldName}.latitude`} other={{ type: 'number' }} />
