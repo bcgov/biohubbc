@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import duration, { DurationUnitType } from 'dayjs/plugin/duration';
 import { pluralize } from './Utils';
 
-const TIMESTAMP_FORMAT = 'YYYY-MM-DDTHH:mm:ss.SSS[Z]';
+const TIMESTAMP_FORMAT = 'YYYY-MM-DDTHH:mm:ss';
 
 dayjs.extend(duration);
 
