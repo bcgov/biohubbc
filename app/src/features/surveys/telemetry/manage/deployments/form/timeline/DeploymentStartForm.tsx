@@ -57,7 +57,6 @@ export const DeploymentStartForm = (props: IDeploymentStartFormProps) => {
           onChange={(_: SyntheticEvent<Element, Event>, value: IAutocompleteFieldOption<string> | null) => {
             // Get date of the capture to set attachment_start_date
             if (value) {
-              console.log('date', value);
               const timestamp = dayjs(value.label);
               const date = timestamp.format(DATE_FORMAT.ShortDateFormat);
               const time = timestamp.format('HH:mm:ss');

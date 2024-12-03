@@ -15,6 +15,7 @@ import { GridRowSelectionModel } from '@mui/x-data-grid';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
+import { FOREIGN_KEY_CONSTRAINT_ERROR } from 'constants/errors';
 import { DevicesTable } from 'features/surveys/telemetry/manage/devices/table/DevicesTable';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useSurveyContext } from 'hooks/useContext';
@@ -65,7 +66,7 @@ export const DevicesContainer = () => {
             <Typography variant="body2" component="div">
               <strong>Error Deleting Devices</strong>
             </Typography>
-            {String(error).includes('foreign key constraint') ? (
+            {String(error).includes(FOREIGN_KEY_CONSTRAINT_ERROR) ? (
               <Typography variant="body2" component="div">
                 You must delete the deployments involving these devices before deleting the devices.
               </Typography>

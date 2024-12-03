@@ -1,6 +1,7 @@
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import FormikErrorSnackbar from 'components/alert/FormikErrorSnackbar';
+import { UNIQUE_CONSTRAINT_ERROR } from 'constants/errors';
 import { TelemetryDeviceI18N } from 'constants/i18n';
 import {
   DeviceForm,
@@ -58,7 +59,7 @@ export const CreateDevicePage = () => {
     } catch (error) {
       dialogContext.setErrorDialog({
         dialogTitle: TelemetryDeviceI18N.createErrorTitle,
-        dialogText: !(error as APIError).message.includes('already exists')
+        dialogText: !(error as APIError).message.includes(UNIQUE_CONSTRAINT_ERROR)
           ? TelemetryDeviceI18N.createErrorText
           : undefined,
         dialogError: (error as APIError).message,

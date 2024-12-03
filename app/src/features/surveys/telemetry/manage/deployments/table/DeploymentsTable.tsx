@@ -15,6 +15,7 @@ import { GridColDef, GridRowSelectionModel } from '@mui/x-data-grid';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
+import { FOREIGN_KEY_CONSTRAINT_ERROR } from 'constants/errors';
 import dayjs from 'dayjs';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
@@ -97,7 +98,7 @@ export const DeploymentsTable = (props: IDeploymentsTableProps) => {
               <Typography variant="body2" component="div">
                 <strong>Error Deleting Deployment</strong>
               </Typography>
-              {String(error).includes('foreign key constraint') ? (
+              {String(error).includes(FOREIGN_KEY_CONSTRAINT_ERROR) ? (
                 <Typography variant="body2" component="div">
                   You must delete telemetry data from this deployment before deleting the deployment.
                 </Typography>

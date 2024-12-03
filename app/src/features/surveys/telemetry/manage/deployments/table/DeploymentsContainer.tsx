@@ -14,6 +14,7 @@ import { GridRowSelectionModel } from '@mui/x-data-grid';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
+import { FOREIGN_KEY_CONSTRAINT_ERROR } from 'constants/errors';
 import { DeploymentsTable } from 'features/surveys/telemetry/manage/deployments/table/DeploymentsTable';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useSurveyContext } from 'hooks/useContext';
@@ -63,7 +64,7 @@ export const DeploymentsContainer = () => {
             <Typography variant="body2" component="div">
               <strong>Error Deleting Deployments</strong>
             </Typography>
-            {String(error).includes('foreign key constraint') ? (
+            {String(error).includes(FOREIGN_KEY_CONSTRAINT_ERROR) ? (
               <Typography variant="body2" component="div">
                 You must delete telemetry data from these deployments before deleting the deployments.
               </Typography>

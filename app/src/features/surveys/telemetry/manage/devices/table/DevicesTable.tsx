@@ -11,6 +11,7 @@ import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import { GridColDef, GridRowSelectionModel } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
+import { FOREIGN_KEY_CONSTRAINT_ERROR } from 'constants/errors';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { TelemetryDevice } from 'interfaces/useTelemetryDeviceApi.interface';
@@ -83,7 +84,7 @@ export const DevicesTable = (props: IDevicesTableProps) => {
               <Typography variant="body2" component="div">
                 <strong>Error Deleting Device</strong>
               </Typography>
-              {String(error).includes('foreign key constraint') ? (
+              {String(error).includes(FOREIGN_KEY_CONSTRAINT_ERROR) ? (
                 <Typography variant="body2" component="div">
                   You must delete the deployments involving this device before deleting the device.
                 </Typography>
