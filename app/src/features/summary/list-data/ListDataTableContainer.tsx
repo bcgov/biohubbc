@@ -2,12 +2,15 @@ import { mdiFolder, mdiListBoxOutline, mdiMagnify } from '@mdi/js';
 import Icon from '@mdi/react';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
+import Stack from '@mui/material/Stack';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Toolbar from '@mui/material/Toolbar';
+import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
 import ProjectsListContainer from 'features/summary/list-data/project/ProjectsListContainer';
 import SurveysListContainer from 'features/summary/list-data/survey/SurveysListContainer';
 import { useSearchParams } from 'hooks/useSearchParams';
+import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import { useState } from 'react';
 
 export const ACTIVE_VIEW_KEY = 'lvk';
@@ -74,6 +77,7 @@ export const ListDataTableContainer = () => {
           sx={{
             display: 'flex',
             gap: 1,
+            flex: '1 1 auto',
             '& .MuiButton-root': buttonSx
           }}>
           {views.map((view) => (
@@ -87,20 +91,22 @@ export const ListDataTableContainer = () => {
             </ToggleButton>
           ))}
         </ToggleButtonGroup>
-
-        <Button
-          color="primary"
-          sx={buttonSx}
-          onClick={() => {
-            setSearchParams(
-              searchParams.set(SHOW_SEARCH_KEY, showSearch ? SHOW_SEARCH_VALUE.false : SHOW_SEARCH_VALUE.true)
-            );
-            setShowSearch(!showSearch);
-          }}
-          component={Button}
-          startIcon={<Icon path={mdiMagnify} size={1} />}>
-          Search
-        </Button>
+        <Stack gap={1} direction="row">
+          <HelpButtonDialog markdownType={MarkdownTypeNameEnum.PROJECTS_AND_SURVEYS} />
+          <Button
+            color="primary"
+            variant="outlined"
+            onClick={() => {
+              setSearchParams(
+                searchParams.set(SHOW_SEARCH_KEY, showSearch ? SHOW_SEARCH_VALUE.false : SHOW_SEARCH_VALUE.true)
+              );
+              setShowSearch(!showSearch);
+            }}
+            component={Button}
+            startIcon={<Icon path={mdiMagnify} size={1} />}>
+            Search
+          </Button>
+        </Stack>
       </Toolbar>
       <Divider />
       {activeView === ACTIVE_VIEW_VALUE.projects && <ProjectsListContainer showSearch={showSearch} />}

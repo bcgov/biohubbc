@@ -2,6 +2,8 @@ import { AxiosInstance } from 'axios';
 import {
   ICreateSamplingSiteRequest,
   IEditSampleSiteRequest,
+  IFindSamplePeriodResponse,
+  IFindSampleSiteResponse,
   IGetSampleLocationDetails,
   IGetSampleLocationNonSpatialResponse,
   IGetSampleSiteGeometryResponse
@@ -92,14 +94,28 @@ const useSamplingSiteApi = (axios: AxiosInstance) => {
     return data;
   };
 
-  const findSampleSites = async (filterFieldData?: {
-    survey_id?: number;
-    keyword?: string;
-    system_user_id?: number;
-    pagination?: ApiPaginationRequestOptions;
-  }): Promise<IGetSampleLocationNonSpatialResponse> => {
+  /**
+   * Find sample sites.
+   *
+   * @param {{
+   *       survey_id?: number;
+   *       keyword?: string;
+   *       system_user_id?: number;
+   *     }} [filterFieldData]
+   * @param {ApiPaginationRequestOptions} [pagination]
+   * @return {*}  {Promise<IFindSampleSiteResponse>}
+   */
+  const findSampleSites = async (
+    filterFieldData?: {
+      survey_id?: number;
+      keyword?: string;
+      system_user_id?: number;
+    },
+    pagination?: ApiPaginationRequestOptions
+  ): Promise<IFindSampleSiteResponse> => {
     const params = {
-      ...filterFieldData
+      ...filterFieldData,
+      ...pagination
     };
 
     const { data } = await axios.get(`/api/sampling-locations/sites`, {
@@ -109,15 +125,30 @@ const useSamplingSiteApi = (axios: AxiosInstance) => {
     return data;
   };
 
-  const findSampleMethods = async (filterFieldData?: {
-    survey_id?: number;
-    sample_site_id: number;
-    keyword?: string;
-    system_user_id?: number;
-    pagination?: ApiPaginationRequestOptions;
-  }): Promise<IGetSampleLocationNonSpatialResponse> => {
+  /**
+   * Find sample methods.
+   *
+   * @param {{
+   *       survey_id?: number;
+   *       sample_site_id: number;
+   *       keyword?: string;
+   *       system_user_id?: number;
+   *     }} [filterFieldData]
+   * @param {ApiPaginationRequestOptions} [pagination]
+   * @return {*}  {Promise<IGetSampleLocationNonSpatialResponse>}
+   */
+  const findSampleMethods = async (
+    filterFieldData?: {
+      survey_id?: number;
+      sample_site_id: number;
+      keyword?: string;
+      system_user_id?: number;
+    },
+    pagination?: ApiPaginationRequestOptions
+  ): Promise<IGetSampleLocationNonSpatialResponse> => {
     const params = {
-      ...filterFieldData
+      ...filterFieldData,
+      ...pagination
     };
 
     const { data } = await axios.get(`/api/sampling-locations/methods`, {
@@ -127,15 +158,30 @@ const useSamplingSiteApi = (axios: AxiosInstance) => {
     return data;
   };
 
-  const findSamplePeriods = async (filterFieldData?: {
-    survey_id?: number;
-    sample_site_id: number;
-    sample_method_id: number;
-    system_user_id?: number;
-    pagination?: ApiPaginationRequestOptions;
-  }): Promise<IGetSampleLocationNonSpatialResponse> => {
+  /**
+   * Find sample periods.
+   *
+   * @param {{
+   *       survey_id?: number;
+   *       sample_site_id: number;
+   *       sample_method_id: number;
+   *       system_user_id?: number;
+   *     }} [filterFieldData]
+   * @param {ApiPaginationRequestOptions} [pagination]
+   * @return {*}  {Promise<IGetSampleLocationNonSpatialResponse>}
+   */
+  const findSamplePeriods = async (
+    filterFieldData?: {
+      survey_id?: number;
+      sample_site_id?: number;
+      sample_method_id?: number;
+      system_user_id?: number;
+    },
+    pagination?: ApiPaginationRequestOptions
+  ): Promise<IFindSamplePeriodResponse> => {
     const params = {
-      ...filterFieldData
+      ...filterFieldData,
+      ...pagination
     };
 
     const { data } = await axios.get(`/api/sampling-locations/periods`, {

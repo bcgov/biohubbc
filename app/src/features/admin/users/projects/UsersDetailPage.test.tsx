@@ -51,7 +51,7 @@ describe('UsersDetailPage', () => {
   });
 
   it('renders correctly when selectedUser are loaded', async () => {
-    history.push('/admin/users/1');
+    history.push('/admin/manage/users/1');
 
     mockUseApi.user.getUserById.mockResolvedValue({
       system_user_id: 1,

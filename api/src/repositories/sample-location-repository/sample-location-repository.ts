@@ -1,6 +1,14 @@
 import { Feature } from 'geojson';
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
+import { MethodTechniqueRecord } from '../../database-models/method_technique';
+import { SurveyBlockRecord } from '../../database-models/survey_block';
+import { SurveySampleBlockRecord } from '../../database-models/survey_sample_block';
+import { SurveySampleMethodRecord } from '../../database-models/survey_sample_method';
+import { SurveySamplePeriodRecord } from '../../database-models/survey_sample_period';
+import { SurveySampleSiteModel, SurveySampleSiteRecord } from '../../database-models/survey_sample_site';
+import { SurveySampleStratumRecord } from '../../database-models/survey_sample_stratum';
+import { SurveyStratumRecord } from '../../database-models/survey_stratum';
 import { getKnex } from '../../database/db';
 import { ApiExecuteSQLError } from '../../errors/api-error';
 import {
@@ -12,8 +20,7 @@ import { generateGeometryCollectionSQL } from '../../utils/spatial-utils';
 import { ApiPaginationOptions } from '../../zod-schema/pagination';
 import { BaseRepository } from '../base-repository';
 import { SampleBlockRecord, UpdateSampleBlockRecord } from '../sample-blocks-repository';
-import { SampleMethodRecord, UpdateSampleMethodRecord } from '../sample-method-repository';
-import { SamplePeriodRecord } from '../sample-period-repository';
+import { UpdateSampleMethodRecord } from '../sample-method-repository';
 import { SampleStratumRecord, UpdateSampleStratumRecord } from '../sample-stratums-repository';
 import {
   getSamplingLocationBaseQuery,
@@ -34,7 +41,7 @@ export const SampleLocationNonSpatialRecord = z.object({
   description: z.string().nullable(),
   geometry_type: z.string(),
   sample_methods: z.array(
-    SampleMethodRecord.pick({
+    SurveySampleMethodRecord.pick({
       survey_sample_method_id: true,
       survey_sample_site_id: true,
       description: true,
@@ -52,7 +59,7 @@ export const SampleLocationNonSpatialRecord = z.object({
           )
         }),
         sample_periods: z.array(
-          SamplePeriodRecord.pick({
+          SurveySamplePeriodRecord.pick({
             survey_sample_period_id: true,
             survey_sample_method_id: true,
             start_date: true,
@@ -94,7 +101,7 @@ export const SampleLocationBasicRecord = z.object({
   survey_sample_site_id: z.number(),
   name: z.string(),
   sample_methods: z.array(
-    SampleMethodRecord.pick({
+    SurveySampleMethodRecord.pick({
       survey_sample_method_id: true,
       survey_sample_site_id: true,
       method_response_metric_id: true
@@ -105,7 +112,7 @@ export const SampleLocationBasicRecord = z.object({
           name: z.string()
         }),
         sample_periods: z.array(
-          SamplePeriodRecord.pick({
+          SurveySamplePeriodRecord.pick({
             survey_sample_period_id: true,
             survey_sample_method_id: true,
             start_date: true,
@@ -139,35 +146,80 @@ export const SampleSiteGeometryRecord = z.object({
 export type SampleSiteGeometryRecord = z.infer<typeof SampleSiteGeometryRecord>;
 
 /**
- * A survey_sample_site record.
- */
-export const SampleSiteRecord = SampleSiteGeometryRecord.extend({
-  survey_id: z.number(),
-  name: z.string(),
-  description: z.string().nullable(),
-  geometry: z.null(),
-  geography: z.any(),
-  geojson: z.any(),
-  create_date: z.string(),
-  create_user: z.number(),
-  update_date: z.string().nullable(),
-  update_user: z.number().nullable(),
-  revision_count: z.number()
-});
-export type SampleSiteRecord = z.infer<typeof SampleSiteRecord>;
-
-/**
  * Insert object for a single sample site record.
  */
-export type InsertSampleSiteRecord = Pick<SampleSiteRecord, 'name' | 'description' | 'geojson'>;
+export type InsertSampleSiteRecord = Pick<SurveySampleSiteRecord, 'name' | 'description' | 'geojson'>;
 
 /**
  * Update object for a single sample site record.
  */
 export type UpdateSampleSiteRecord = Pick<
-  SampleSiteRecord,
+  SurveySampleSiteRecord,
   'survey_sample_site_id' | 'survey_id' | 'name' | 'description' | 'geojson'
 >;
+
+export const FindSampleSiteRecord = SurveySampleSiteRecord.pick({
+  survey_sample_site_id: true,
+  survey_id: true,
+  name: true,
+  description: true
+}).extend({
+  geometry_type: z.string(),
+  blocks: z.array(
+    SurveySampleBlockRecord.pick({
+      survey_sample_block_id: true,
+      survey_sample_site_id: true,
+      survey_block_id: true
+    }).merge(
+      SurveyBlockRecord.pick({
+        name: true,
+        description: true
+      })
+    )
+  ),
+  stratums: z.array(
+    SurveySampleStratumRecord.pick({
+      survey_sample_stratum_id: true,
+      survey_sample_site_id: true,
+      survey_stratum_id: true
+    }).merge(
+      SurveyStratumRecord.pick({
+        name: true,
+        description: true
+      })
+    )
+  )
+});
+
+export type FindSampleSiteRecord = z.infer<typeof FindSampleSiteRecord>;
+
+export const FindSamplePeriodRecord = SurveySamplePeriodRecord.pick({
+  survey_sample_period_id: true,
+  survey_sample_method_id: true,
+  start_date: true,
+  start_time: true,
+  end_date: true,
+  end_time: true
+})
+  .extend({
+    sample_method: SurveySampleMethodRecord.pick({
+      method_response_metric_id: true
+    })
+  })
+  .extend({
+    method_technique: MethodTechniqueRecord.pick({
+      method_technique_id: true,
+      name: true
+    })
+  })
+  .extend({
+    sample_site: SurveySampleSiteRecord.pick({
+      survey_sample_site_id: true,
+      name: true
+    })
+  });
+
+export type FindSamplePeriodRecord = z.infer<typeof FindSamplePeriodRecord>;
 
 /**
  * Update object for a sample site record, including all associated methods and periods.
@@ -390,10 +442,10 @@ export class SampleLocationRepository extends BaseRepository {
    *
    * @param {number} surveyId
    * @param {number} surveySampleSiteId
-   * @return {*}  {Promise<SampleSiteRecord>}
+   * @return {*}  {Promise<SurveySampleSiteModel>}
    * @memberof SampleLocationService
    */
-  async getSurveySampleSiteById(surveyId: number, surveySampleSiteId: number): Promise<SampleSiteRecord> {
+  async getSurveySampleSiteById(surveyId: number, surveySampleSiteId: number): Promise<SurveySampleSiteModel> {
     const sqlStatement = SQL`
       SELECT
         sss.*
@@ -405,7 +457,7 @@ export class SampleLocationRepository extends BaseRepository {
         sss.survey_sample_site_id = ${surveySampleSiteId}
     `;
 
-    const response = await this.connection.sql(sqlStatement, SampleSiteRecord);
+    const response = await this.connection.sql(sqlStatement, SurveySampleSiteModel);
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to get sample site by ID', [
@@ -544,20 +596,23 @@ export class SampleLocationRepository extends BaseRepository {
     return response.rows;
   }
 
-  /** Retrieve the list of sites that the user has access to, based on filters and pagination options.
+  /**
+   * Retrieve the list of sites that the user has access to, based on filters and pagination options.
    *
    * @param {boolean} isUserAdmin Whether the user is an admin.
    * @param {number | null} systemUserId The user's ID.
-   * @param {IObservationAdvancedFilters} filterFields The filter fields to apply.
+   * @param {ISiteAdvancedFilters} filterFields The filter fields to apply.
    * @param {ApiPaginationOptions} [pagination] The pagination options.
    * @return {Promise<ObservationRecordWithSamplingAndSubcountData[]>} A promise resolving to the list of sites.
+   * @return {*}  {Promise<FindSampleSiteRecord[]>}
+   * @memberof SampleLocationRepository
    */
   async findSites(
     isUserAdmin: boolean,
     systemUserId: number | null,
     filterFields: ISiteAdvancedFilters,
     pagination?: ApiPaginationOptions
-  ) {
+  ): Promise<FindSampleSiteRecord[]> {
     const query = makeFindSamplingSiteBaseQuery(isUserAdmin, systemUserId, filterFields);
 
     if (pagination) {
@@ -568,27 +623,45 @@ export class SampleLocationRepository extends BaseRepository {
       }
     }
 
-    const response = await this.connection.knex(
-      query,
-      z.object({
-        survey_sample_site_id: z.number(),
-        survey_id: z.number(),
-        name: z.string(),
-        description: z.string().nullable(), // TODO NICK nullable?
-        geometry_type: z.string()
-      })
-    );
+    const response = await this.connection.knex(query, FindSampleSiteRecord);
 
     return response.rows;
   }
 
-  /** Retrieve the list of methods that the user has access to, based on filters and pagination options.
+  /**
+   * Retrieve the count of sites that the user has access to, based on filters and pagination options.
    *
    * @param {boolean} isUserAdmin Whether the user is an admin.
    * @param {number | null} systemUserId The user's ID.
-   * @param {IObservationAdvancedFilters} filterFields The filter fields to apply.
+   * @param {ISiteAdvancedFilters} filterFields The filter fields to apply.
+   * @return {*}  {Promise<number>}
+   * @memberof SampleLocationRepository
+   */
+  async findSitesCount(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: ISiteAdvancedFilters
+  ): Promise<number> {
+    const knex = getKnex();
+
+    const findSitesQuery = makeFindSamplingSiteBaseQuery(isUserAdmin, systemUserId, filterFields);
+
+    const query = knex.from(findSitesQuery.as('fsq')).select(knex.raw('count(*)::integer as count'));
+
+    const response = await this.connection.knex(query, z.object({ count: z.number() }));
+
+    return response.rows[0].count;
+  }
+
+  /**
+   * Retrieve the list of methods that the user has access to, based on filters and pagination options.
+   *
+   * @param {boolean} isUserAdmin Whether the user is an admin.
+   * @param {number | null} systemUserId The user's ID.
+   * @param {ISiteAdvancedFilters} filterFields The filter fields to apply.
    * @param {ApiPaginationOptions} [pagination] The pagination options.
-   * @return {Promise<ObservationRecordWithSamplingAndSubcountData[]>} A promise resolving to the list of methods.
+   * @return {*}
+   * @memberof SampleLocationRepository
    */
   async findMethods(
     isUserAdmin: boolean,
@@ -629,20 +702,22 @@ export class SampleLocationRepository extends BaseRepository {
     return response.rows;
   }
 
-  /** Retrieve the list of periods that the user has access to, based on filters and pagination options.
+  /**
+   * Retrieve the list of periods that the user has access to, based on filters and pagination options.
    *
    * @param {boolean} isUserAdmin Whether the user is an admin.
    * @param {number | null} systemUserId The user's ID.
-   * @param {IObservationAdvancedFilters} filterFields The filter fields to apply.
+   * @param {ISiteAdvancedFilters} filterFields The filter fields to apply.
    * @param {ApiPaginationOptions} [pagination] The pagination options.
-   * @return {Promise<ObservationRecordWithSamplingAndSubcountData[]>} A promise resolving to the list of periods.
+   * @return {*}  {Promise<FindSamplePeriodRecord[]>}
+   * @memberof SampleLocationRepository
    */
   async findPeriods(
     isUserAdmin: boolean,
     systemUserId: number | null,
     filterFields: IPeriodAdvancedFilters,
     pagination?: ApiPaginationOptions
-  ) {
+  ): Promise<FindSamplePeriodRecord[]> {
     const query = makeFindSamplingPeriodBaseQuery(isUserAdmin, systemUserId, filterFields);
 
     if (pagination) {
@@ -653,29 +728,44 @@ export class SampleLocationRepository extends BaseRepository {
       }
     }
 
-    const response = await this.connection.knex(
-      query,
-      z.object({
-        survey_sample_period_id: z.number(),
-        survey_sample_method_id: z.number(),
-        start_date: z.string(),
-        start_time: z.string().nullable(),
-        end_date: z.string(),
-        end_time: z.string().nullable()
-      })
-    );
+    const response = await this.connection.knex(query, FindSamplePeriodRecord);
 
     return response.rows;
+  }
+
+  /**
+   * Retrieve the count of periods that the user has access to, based on filters and pagination options.
+   *
+   * @param {boolean} isUserAdmin Whether the user is an admin.
+   * @param {number | null} systemUserId The user's ID.
+   * @param {ISiteAdvancedFilters} filterFields The filter fields to apply.
+   * @return {*}  {Promise<number>}
+   * @memberof SampleLocationRepository
+   */
+  async findPeriodsCount(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: IPeriodAdvancedFilters
+  ): Promise<number> {
+    const knex = getKnex();
+
+    const findPeriodsQuery = makeFindSamplingPeriodBaseQuery(isUserAdmin, systemUserId, filterFields);
+
+    const query = knex.from(findPeriodsQuery.as('fpq')).select(knex.raw('count(*)::integer as count'));
+
+    const response = await this.connection.knex(query, z.object({ count: z.number() }));
+
+    return response.rows[0].count;
   }
 
   /**
    * Updates a survey sample site record.
    *
    * @param {UpdateSampleSiteRecord} sample
-   * @return {*}  {Promise<SampleSiteRecord>}
+   * @return {*}  {Promise<SurveySampleSiteModel>}
    * @memberof SampleLocationRepository
    */
-  async updateSampleSite(sample: UpdateSampleSiteRecord): Promise<SampleSiteRecord> {
+  async updateSampleSite(sample: UpdateSampleSiteRecord): Promise<SurveySampleSiteModel> {
     const sql = SQL`
       UPDATE
         survey_sample_site
@@ -697,7 +787,7 @@ export class SampleLocationRepository extends BaseRepository {
       RETURNING
         *;`);
 
-    const response = await this.connection.sql(sql, SampleSiteRecord);
+    const response = await this.connection.sql(sql, SurveySampleSiteModel);
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to update sample location record', [
@@ -717,10 +807,10 @@ export class SampleLocationRepository extends BaseRepository {
    *
    * @param {number} surveyId
    * @param {InsertSampleSiteRecord} sampleSite
-   * @return {*}  {Promise<SampleSiteRecord>}
+   * @return {*}  {Promise<SurveySampleSiteModel>}
    * @memberof SampleLocationRepository
    */
-  async insertSampleSite(surveyId: number, sampleSite: InsertSampleSiteRecord): Promise<SampleSiteRecord> {
+  async insertSampleSite(surveyId: number, sampleSite: InsertSampleSiteRecord): Promise<SurveySampleSiteModel> {
     const sqlStatement = SQL`
     INSERT INTO survey_sample_site (
       survey_id,
@@ -754,7 +844,7 @@ export class SampleLocationRepository extends BaseRepository {
         *;
     `);
 
-    const response = await this.connection.sql(sqlStatement, SampleSiteRecord);
+    const response = await this.connection.sql(sqlStatement, SurveySampleSiteModel);
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to insert sample location', [
@@ -771,10 +861,10 @@ export class SampleLocationRepository extends BaseRepository {
    *
    * @param {number} surveyId
    * @param {number} surveySampleSiteId
-   * @return {*}  {Promise<SampleSiteRecord>}
+   * @return {*}  {Promise<SurveySampleSiteModel>}
    * @memberof SampleLocationRepository
    */
-  async deleteSampleSiteRecord(surveyId: number, surveySampleSiteId: number): Promise<SampleSiteRecord> {
+  async deleteSampleSiteRecord(surveyId: number, surveySampleSiteId: number): Promise<SurveySampleSiteModel> {
     const sqlStatement = SQL`
       DELETE FROM
         survey_sample_site
@@ -786,10 +876,10 @@ export class SampleLocationRepository extends BaseRepository {
         *;
     `;
 
-    const response = await this.connection.sql(sqlStatement, SampleSiteRecord);
+    const response = await this.connection.sql(sqlStatement, SurveySampleSiteModel);
 
     if (!response?.rowCount) {
-      throw new ApiExecuteSQLError('Failed to delete survey block record', [
+      throw new ApiExecuteSQLError('Failed to delete survey sample site record', [
         'SampleLocationRepository->deleteSampleSiteRecord',
         'rows was null or undefined, expected rows != null'
       ]);

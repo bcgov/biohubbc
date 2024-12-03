@@ -27,6 +27,8 @@ const AttractantCode = ICode.extend({ description: z.string() });
 const ObservationSubcountSignCode = ICode.extend({ description: z.string() });
 const DeviceMakeCode = ICode.extend({ description: z.string() });
 const FrequencyUnitCode = ICode.extend({ description: z.string() });
+const AlertTypeCode = ICode.extend({ description: z.string() });
+const VantageCode = ICode.extend({ description: z.string() });
 
 export const IAllCodeSets = z.object({
   management_action_type: CodeSet(),
@@ -50,7 +52,9 @@ export const IAllCodeSets = z.object({
   attractants: CodeSet(AttractantCode.shape),
   observation_subcount_signs: CodeSet(ObservationSubcountSignCode.shape),
   telemetry_device_makes: CodeSet(DeviceMakeCode.shape),
-  frequency_units: CodeSet(FrequencyUnitCode.shape)
+  frequency_units: CodeSet(FrequencyUnitCode.shape),
+  alert_types: CodeSet(AlertTypeCode.shape),
+  vantages: CodeSet(VantageCode.shape)
 });
 export type IAllCodeSets = z.infer<typeof IAllCodeSets>;
 
@@ -495,7 +499,30 @@ export class CodeRepository extends BaseRepository {
   }
 
   /**
+   * Fetch alert type codes
+   *
+   * @return {*}
+   * @memberof CodeRepository
+   */
+  async getAlertTypes() {
+    const sqlStatement = SQL`
+      SELECT
+        alert_type_id AS id,
+        name,
+        description
+      FROM alert_type
+      WHERE record_end_date IS null
+      ORDER BY name ASC;
+    `;
+
+    const response = await this.connection.sql(sqlStatement, AlertTypeCode);
+
+    return response.rows;
+  }
+
+  /**
    * Get frequency unit codes.
+   * Fetch vantages associated with vantage modes
    *
    * @return {*}
    * @memberof CodeRepository
@@ -511,6 +538,21 @@ export class CodeRepository extends BaseRepository {
     `;
 
     const response = await this.connection.sql(sqlStatement, FrequencyUnitCode);
+
+    return response.rows;
+  }
+
+  async getVantages() {
+    const sqlStatement = SQL`
+      SELECT
+        vantage_id AS id,
+        name,
+        description
+      FROM vantage
+      WHERE record_end_date IS null;
+    `;
+
+    const response = await this.connection.sql(sqlStatement, VantageCode);
 
     return response.rows;
   }

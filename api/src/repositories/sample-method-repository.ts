@@ -1,5 +1,6 @@
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
+import { SurveySampleMethodModel, SurveySampleMethodRecord } from '../database-models/survey_sample_method';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { BaseRepository } from './base-repository';
@@ -9,7 +10,7 @@ import { InsertSamplePeriodRecord, UpdateSamplePeriodRecord } from './sample-per
  * Insert object for a single sample method record.
  */
 export type InsertSampleMethodRecord = Pick<
-  SampleMethodRecord,
+  SurveySampleMethodRecord,
   'survey_sample_site_id' | 'method_technique_id' | 'description' | 'method_response_metric_id'
 > & { sample_periods: InsertSamplePeriodRecord[] };
 
@@ -17,7 +18,7 @@ export type InsertSampleMethodRecord = Pick<
  * Update object for a single sample method record.
  */
 export type UpdateSampleMethodRecord = Pick<
-  SampleMethodRecord,
+  SurveySampleMethodRecord,
   | 'survey_sample_method_id'
   | 'survey_sample_site_id'
   | 'method_technique_id'
@@ -26,26 +27,9 @@ export type UpdateSampleMethodRecord = Pick<
 > & { sample_periods: UpdateSamplePeriodRecord[] };
 
 /**
- * A survey_sample_method record.
- */
-export const SampleMethodRecord = z.object({
-  survey_sample_method_id: z.number(),
-  survey_sample_site_id: z.number(),
-  method_technique_id: z.number(),
-  method_response_metric_id: z.number(),
-  description: z.string(),
-  create_date: z.string(),
-  create_user: z.number(),
-  update_date: z.string().nullable(),
-  update_user: z.number().nullable(),
-  revision_count: z.number()
-});
-export type SampleMethodRecord = z.infer<typeof SampleMethodRecord>;
-
-/**
  * A survey_sample_method detail object.
  */
-export const SampleMethodDetails = SampleMethodRecord.extend({
+export const SampleMethodDetails = SurveySampleMethodModel.extend({
   technique: z.object({
     method_technique_id: z.number(),
     name: z.string(),
@@ -67,13 +51,13 @@ export class SampleMethodRepository extends BaseRepository {
    *
    * @param {number} surveyId
    * @param {number} surveySampleSiteId
-   * @return {*}  {Promise<SampleMethodRecord[]>}
+   * @return {*}  {Promise<SurveySampleMethodModel[]>}
    * @memberof SampleMethodRepository
    */
   async getSampleMethodsForSurveySampleSiteId(
     surveyId: number,
     surveySampleSiteId: number
-  ): Promise<SampleMethodRecord[]> {
+  ): Promise<SurveySampleMethodModel[]> {
     const sql = SQL`
       SELECT
         *
@@ -94,7 +78,7 @@ export class SampleMethodRepository extends BaseRepository {
       ;
     `;
 
-    const response = await this.connection.sql(sql, SampleMethodRecord);
+    const response = await this.connection.sql(sql, SurveySampleMethodModel);
     return response.rows;
   }
 
@@ -122,10 +106,10 @@ export class SampleMethodRepository extends BaseRepository {
    * updates a survey Sample method.
    *
    * @param {UpdateSampleMethodRecord} sampleMethod
-   * @return {*}  {Promise<SampleMethodRecord>}
+   * @return {*}  {Promise<SurveySampleMethodModel>}
    * @memberof SampleMethodRepository
    */
-  async updateSampleMethod(surveyId: number, sampleMethod: UpdateSampleMethodRecord): Promise<SampleMethodRecord> {
+  async updateSampleMethod(surveyId: number, sampleMethod: UpdateSampleMethodRecord): Promise<SurveySampleMethodModel> {
     const sql = SQL`
       UPDATE survey_sample_method ssm
       SET
@@ -158,10 +142,10 @@ export class SampleMethodRepository extends BaseRepository {
    * Inserts a new survey Sample method.
    *
    * @param {InsertSampleMethodRecord} sampleMethod
-   * @return {*}  {Promise<SampleMethodRecord>}
+   * @return {*}  {Promise<SurveySampleMethodModel>}
    * @memberof SampleMethodRepository
    */
-  async insertSampleMethod(sampleMethod: InsertSampleMethodRecord): Promise<SampleMethodRecord> {
+  async insertSampleMethod(sampleMethod: InsertSampleMethodRecord): Promise<SurveySampleMethodModel> {
     const sqlStatement = SQL`
       INSERT INTO survey_sample_method (
         survey_sample_site_id,
@@ -178,7 +162,7 @@ export class SampleMethodRepository extends BaseRepository {
         *;
     `;
 
-    const response = await this.connection.sql(sqlStatement, SampleMethodRecord);
+    const response = await this.connection.sql(sqlStatement, SurveySampleMethodModel);
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to insert sample method', [
@@ -195,10 +179,10 @@ export class SampleMethodRepository extends BaseRepository {
    *
    * @param {number} surveyId
    * @param {number} surveySampleMethodId
-   * @return {*}  {Promise<SampleMethodRecord>}
+   * @return {*}  {Promise<SurveySampleMethodModel>}
    * @memberof SampleMethodRepository
    */
-  async deleteSampleMethodRecord(surveyId: number, surveySampleMethodId: number): Promise<SampleMethodRecord> {
+  async deleteSampleMethodRecord(surveyId: number, surveySampleMethodId: number): Promise<SurveySampleMethodModel> {
     const sqlStatement = SQL`
       DELETE FROM survey_sample_method
       USING survey_sample_site sss
@@ -209,7 +193,7 @@ export class SampleMethodRepository extends BaseRepository {
       RETURNING survey_sample_method.*;
     `;
 
-    const response = await this.connection.sql(sqlStatement, SampleMethodRecord);
+    const response = await this.connection.sql(sqlStatement, SurveySampleMethodModel);
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to delete sample method', [

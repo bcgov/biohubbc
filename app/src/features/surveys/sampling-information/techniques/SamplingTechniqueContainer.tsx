@@ -12,11 +12,14 @@ import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { GridRowSelectionModel } from '@mui/x-data-grid';
+import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { DeleteTechniquesBulkI18N } from 'constants/i18n';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useSurveyContext } from 'hooks/useContext';
+import useDataLoader from 'hooks/useDataLoader';
+import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { SamplingTechniqueTable } from './table/SamplingTechniqueTable';
@@ -33,29 +36,33 @@ export const SamplingTechniqueContainer = () => {
   const biohubApi = useBiohubApi();
 
   // Multi-select row action menu
-  const [bulkActionTechniques, setBulkActionTechniques] = useState<GridRowSelectionModel>([]);
+  const [selectedRows, setSelectedRows] = useState<GridRowSelectionModel>([]);
   const [bulkActionMenuAnchorEl, setBulkActionMenuAnchorEl] = useState<MenuProps['anchorEl']>(null);
 
+  const techniquesDataLoader = useDataLoader(() =>
+    biohubApi.technique.getTechniquesForSurvey(surveyContext.projectId, surveyContext.surveyId)
+  );
+
   useEffect(() => {
-    surveyContext.techniqueDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+    techniquesDataLoader.refresh();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [surveyContext.projectId, surveyContext.surveyId]);
 
-  const techniqueCount = surveyContext.techniqueDataLoader.data?.count ?? 0;
-  const techniques = surveyContext.techniqueDataLoader.data?.techniques ?? [];
+  const techniqueCount = techniquesDataLoader.data?.pagination.total ?? 0;
+  const techniques = techniquesDataLoader.data?.techniques ?? [];
 
   const handleBulkDeleteTechniques = async () => {
     await biohubApi.technique
-      .deleteTechniques(surveyContext.projectId, surveyContext.surveyId, bulkActionTechniques.map(Number))
+      .deleteTechniques(surveyContext.projectId, surveyContext.surveyId, selectedRows.map(Number))
       .then(() => {
         dialogContext.setYesNoDialog({ open: false });
-        setBulkActionTechniques([]);
+        setSelectedRows([]);
         setBulkActionMenuAnchorEl(null);
-        surveyContext.techniqueDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+        techniquesDataLoader.refresh();
       })
       .catch((error: any) => {
         dialogContext.setYesNoDialog({ open: false });
-        setBulkActionTechniques([]);
+        setSelectedRows([]);
         setBulkActionMenuAnchorEl(null);
         dialogContext.setSnackbar({
           snackbarMessage: (
@@ -71,6 +78,11 @@ export const SamplingTechniqueContainer = () => {
           open: true
         });
       });
+  };
+
+  const handleDelete = async (techniqueId: number) => {
+    await biohubApi.technique.deleteTechnique(surveyContext.projectId, surveyContext.surveyId, techniqueId);
+    techniquesDataLoader.refresh();
   };
 
   const deleteBulkTechniquesDialog = () => {
@@ -128,43 +140,47 @@ export const SamplingTechniqueContainer = () => {
           pl: 3
         }}>
         <Typography variant="h3" component="h2" flexGrow={1}>
-          Techniques &zwnj;
+          Sampling Techniques &zwnj;
           <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
             ({techniqueCount})
           </Typography>
         </Typography>
-        <Button
-          variant="contained"
-          color="primary"
-          component={RouterLink}
-          to={'sampling/techniques/create'}
-          startIcon={<Icon path={mdiPlus} size={0.8} />}>
-          Add
-        </Button>
-        <IconButton
-          edge="end"
-          sx={{
-            ml: 1
-          }}
-          aria-label="header-settings"
-          disabled={!bulkActionTechniques.length}
-          onClick={(event) => setBulkActionMenuAnchorEl(event.currentTarget)}
-          title="Bulk Actions">
-          <Icon path={mdiDotsVertical} size={1} />
-        </IconButton>
+        <Stack gap={1} direction="row">
+          <HelpButtonDialog markdownType={MarkdownTypeNameEnum.TECHNIQUES} />
+          <Button
+            variant="contained"
+            color="primary"
+            component={RouterLink}
+            to={'sampling/techniques/create'}
+            startIcon={<Icon path={mdiPlus} size={0.8} />}>
+            Add
+          </Button>
+          <IconButton
+            edge="end"
+            sx={{
+              ml: 1
+            }}
+            aria-label="header-settings"
+            disabled={!selectedRows.length}
+            onClick={(event) => setBulkActionMenuAnchorEl(event.currentTarget)}
+            title="Bulk Actions">
+            <Icon path={mdiDotsVertical} size={1} />
+          </IconButton>
+        </Stack>
       </Toolbar>
 
       <Divider flexItem></Divider>
 
       <LoadingGuard
-        isLoading={surveyContext.techniqueDataLoader.isLoading || !surveyContext.techniqueDataLoader.isReady}
+        isLoading={!techniquesDataLoader.data && (techniquesDataLoader.isLoading || !techniquesDataLoader.isReady)}
         isLoadingFallback={<SkeletonTable />}
         isLoadingFallbackDelay={100}>
-        <Box p={2}>
+        <Box height="400px">
           <SamplingTechniqueTable
             techniques={techniques}
-            bulkActionTechniques={bulkActionTechniques}
-            setBulkActionTechniques={setBulkActionTechniques}
+            selectedRows={selectedRows}
+            setSelectedRows={setSelectedRows}
+            onDelete={handleDelete}
           />
         </Box>
       </LoadingGuard>

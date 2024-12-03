@@ -3,11 +3,15 @@ import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
 import { IPeriodAdvancedFilters } from '../../../models/sampling-locations-view';
-import { paginationRequestQueryParamSchema } from '../../../openapi/schemas/pagination';
+import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../../../openapi/schemas/pagination';
 import { authorizeRequestHandler, userHasValidRole } from '../../../request-handlers/security/authorization';
 import { SampleLocationService } from '../../../services/sample-location-service';
 import { getLogger } from '../../../utils/logger';
-import { ensureCompletePaginationOptions, makePaginationOptionsFromRequest } from '../../../utils/pagination';
+import {
+  ensureCompletePaginationOptions,
+  makePaginationOptionsFromRequest,
+  makePaginationResponse
+} from '../../../utils/pagination';
 import { getSystemUserFromRequest } from '../../../utils/request';
 
 const defaultLog = getLogger('paths/period/index');
@@ -36,84 +40,31 @@ GET.apiDoc = {
   parameters: [
     {
       in: 'query',
-      name: 'keyword',
-      required: false,
-      schema: {
-        type: 'string',
-        nullable: true
-      }
-    },
-    {
-      in: 'query',
-      name: 'itis_tsns',
-      description: 'ITIS TSN numbers',
-      required: false,
-      schema: {
-        type: 'array',
-        items: {
-          type: 'integer'
-        },
-        nullable: true
-      }
-    },
-    {
-      in: 'query',
-      name: 'itis_tsn',
-      description: 'ITIS TSN number',
+      name: 'survey_id',
       required: false,
       schema: {
         type: 'integer',
+        minimum: 1,
         nullable: true
       }
     },
     {
       in: 'query',
-      name: 'start_date',
-      description: 'ISO 8601 date string',
+      name: 'sample_site_id',
       required: false,
       schema: {
-        type: 'string',
+        type: 'integer',
+        minimum: 1,
         nullable: true
       }
     },
     {
       in: 'query',
-      name: 'end_date',
-      description: 'ISO 8601 date string',
+      name: 'sample_method_id',
       required: false,
       schema: {
-        type: 'string',
-        nullable: true
-      }
-    },
-    {
-      in: 'query',
-      name: 'start_time',
-      description: 'ISO 8601 time string',
-      required: false,
-      schema: {
-        type: 'string',
-        nullable: true
-      }
-    },
-    {
-      in: 'query',
-      name: 'end_time',
-      description: 'ISO 8601 time string',
-      required: false,
-      schema: {
-        type: 'string',
-        nullable: true
-      }
-    },
-    {
-      in: 'query',
-      name: 'min_count',
-      description: 'Minimum period count (inclusive).',
-      required: false,
-      schema: {
-        type: 'number',
-        minimum: 0,
+        type: 'integer',
+        minimum: 1,
         nullable: true
       }
     },
@@ -136,7 +87,7 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
-            required: ['periods'],
+            required: ['periods', 'pagination'],
             additionalProperties: false,
             properties: {
               periods: {
@@ -149,7 +100,10 @@ GET.apiDoc = {
                     'start_date',
                     'start_time',
                     'end_date',
-                    'end_time'
+                    'end_time',
+                    'sample_method',
+                    'method_technique',
+                    'sample_site'
                   ],
                   additionalProperties: false,
                   properties: {
@@ -174,10 +128,50 @@ GET.apiDoc = {
                     end_time: {
                       type: 'string',
                       nullable: true
+                    },
+                    sample_method: {
+                      type: 'object',
+                      required: ['method_response_metric_id'],
+                      additionalProperties: false,
+                      properties: {
+                        method_response_metric_id: {
+                          type: 'integer',
+                          minimum: 1
+                        }
+                      }
+                    },
+                    method_technique: {
+                      type: 'object',
+                      required: ['method_technique_id', 'name'],
+                      additionalProperties: false,
+                      properties: {
+                        method_technique_id: {
+                          type: 'integer',
+                          minimum: 1
+                        },
+                        name: {
+                          type: 'string'
+                        }
+                      }
+                    },
+                    sample_site: {
+                      type: 'object',
+                      required: ['survey_sample_site_id', 'name'],
+                      additionalProperties: false,
+                      properties: {
+                        survey_sample_site_id: {
+                          type: 'integer',
+                          minimum: 1
+                        },
+                        name: {
+                          type: 'string'
+                        }
+                      }
                     }
                   }
                 }
-              }
+              },
+              pagination: paginationResponseSchema
             }
           }
         }
@@ -230,18 +224,21 @@ export function findPeriods(): RequestHandler {
 
       const sampleLocationService = new SampleLocationService(connection);
 
-      const periods = await sampleLocationService.findPeriods(
-        isUserAdmin,
-        systemUserId,
-        filterFields,
-        ensureCompletePaginationOptions(paginationOptions)
-      );
+      const [periods, periodsCount] = await Promise.all([
+        sampleLocationService.findPeriods(
+          isUserAdmin,
+          systemUserId,
+          filterFields,
+          ensureCompletePaginationOptions(paginationOptions)
+        ),
+        sampleLocationService.findPeriodsCount(isUserAdmin, systemUserId, filterFields)
+      ]);
 
       await connection.commit();
 
       const response = {
-        periods: periods
-        // TODO NICK add count and pagination to response and openapi schema?
+        periods: periods,
+        pagination: makePaginationResponse(periodsCount, paginationOptions)
       };
 
       // Allow browsers to cache this response for 30 seconds

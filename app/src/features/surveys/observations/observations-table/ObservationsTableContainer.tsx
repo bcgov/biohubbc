@@ -10,6 +10,7 @@ import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { GridColDef, GridRenderEditCellParams } from '@mui/x-data-grid';
+import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
 import DataGridValidationAlert from 'components/data-grid/DataGridValidationAlert';
 import {
   GenericCommentColDef,
@@ -39,6 +40,7 @@ import {
   useObservationsTableContext,
   useSurveyContext
 } from 'hooks/useContext';
+import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import { IGetSampleLocationNonSpatialDetails } from 'interfaces/useSamplingSiteApi.interface';
 import { useEffect, useMemo } from 'react';
 import { useHistory } from 'react-router';
@@ -197,6 +199,7 @@ const ObservationsTableContainer = () => {
         </Typography>
 
         <Stack flexDirection="row" alignItems="center" gap={1} whiteSpace="nowrap">
+          <HelpButtonDialog markdownType={MarkdownTypeNameEnum.OBSERVATIONS} />
           <ImportObservationsButton
             disabled={observationsTableContext.isSaving || observationsTableContext.isDisabled}
             onStart={() => observationsPageContext.setIsDisabled(true)}

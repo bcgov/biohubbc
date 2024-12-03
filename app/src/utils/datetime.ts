@@ -1,8 +1,8 @@
 import dayjs from 'dayjs';
-import duration from 'dayjs/plugin/duration';
+import duration, { DurationUnitType } from 'dayjs/plugin/duration';
 import { pluralize } from './Utils';
 
-const TIMESTAMP_FORMAT = 'YYYY-MM-DDTHH:mm:ss.SSS[Z]';
+const TIMESTAMP_FORMAT = 'YYYY-MM-DDTHH:mm:ss';
 
 dayjs.extend(duration);
 
@@ -25,9 +25,9 @@ export const combineDateTime = (date: string, time?: string | null) => {
  * Formats the time difference between two timestamps into a human-readable string.
  *
  * @param {string} startDate
- * @param {string | null} startTime
+ * @param {(string | null)} startTime
  * @param {string} endDate
- * @param {string | null} endTime
+ * @param {(string | null)} endTime
  * @returns {string | null} A formatted string indicating an amount of time
  */
 export const formatTimeDifference = (
@@ -47,9 +47,10 @@ export const formatTimeDifference = (
   const diff = dayjs.duration(endDateTime.diff(startDateTime));
 
   const parts = [];
+  const units: DurationUnitType[] = ['year', 'month', 'day', 'hour', 'minute', 'second'];
 
-  for (const unit of ['year', 'month', 'day', 'hour', 'minute', 'second']) {
-    const value = diff[`${unit}s`]();
+  for (const unit of units) {
+    const value = diff.get(unit);
 
     if (value > 0) {
       parts.push(`${value} ${pluralize(value, unit)}`);

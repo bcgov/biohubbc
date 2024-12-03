@@ -70,6 +70,7 @@ export interface ISurveyBlockForm {
     survey_block_id: number | null;
     name: string;
     description: string;
+    geojson: Feature;
     sample_block_count: number;
   }[];
 }
@@ -135,9 +136,11 @@ export interface IGetSurveyLocation {
 
 export interface IGetSurveyBlock {
   survey_block_id: number;
+  survey_id?: number;
   name: string;
   description: string;
   revision_count: number;
+  geojson: Feature | null;
   sample_block_count: number;
 }
 
@@ -219,6 +222,7 @@ export type IUpdateSurveyRequest = ISurveyLocationForm & {
     survey_block_id?: number | null;
     name: string;
     description: string;
+    geojson: Feature | null;
   }[];
   site_selection: {
     strategies: string[];
@@ -441,6 +445,7 @@ export interface IGetSurveyForUpdateResponse {
       survey_id: number;
       name: string;
       description: string;
+      geojson: Feature;
       sample_block_count: number;
       revision_count: number;
     }[];

@@ -1,13 +1,14 @@
+import { mdiAutoFix, mdiCalendarRange, mdiMapMarker } from '@mdi/js';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
+import Stack from '@mui/material/Stack';
 import { GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
-import {
-  ISamplingSitePeriodRowData,
-  SamplingPeriodTable
-} from 'features/surveys/sampling-information/periods/table/SamplingPeriodTable';
+import CustomToggleButtonGroup from 'components/toolbar/CustomToggleButtonGroup';
+import { SurveyPeriodsTable } from 'features/surveys/view/components/sampling-data/components/period/SurveyPeriodsTable';
+import { SurveyTechniquesCardContainer } from 'features/surveys/view/components/sampling-data/components/technique/SurveyTechniqueCardContainer';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
@@ -16,8 +17,6 @@ import { ApiPaginationRequestOptions } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
 import { SurveySitesTable } from './components/site/SurveySitesTable';
 import { SurveySamplingHeader } from './components/SurveySamplingHeader';
-import { SurveyTechniquesTable } from './components/technique/SurveyTechniquesTable';
-import { SurveySamplingViewTabs } from './components/view/SurveySamplingViewTabs';
 
 const pageSizeOptions = [10, 25, 50];
 
@@ -31,26 +30,45 @@ export const SurveySamplingTableContainer = () => {
   const surveyContext = useSurveyContext();
   const biohubApi = useBiohubApi();
 
+  // Views
   const [activeView, setActiveView] = useState<SurveySamplingView>(SurveySamplingView.TECHNIQUES);
 
-  // Pagination and sorting for techniques
+  const views = [
+    { value: SurveySamplingView.TECHNIQUES, label: 'Techniques', icon: mdiAutoFix },
+    { value: SurveySamplingView.SITES, label: 'Sampling Sites', icon: mdiMapMarker },
+    { value: SurveySamplingView.PERIODS, label: 'Sampling Periods', icon: mdiCalendarRange }
+  ];
+
+  // Techniques
   const [techniquesPaginationModel, setTechniquesPaginationModel] = useState<GridPaginationModel>({
     page: 0,
     pageSize: pageSizeOptions[0]
   });
+
   const [techniquesSortModel, setTechniquesSortModel] = useState<GridSortModel>([]);
 
-  // Pagination and sorting for sites
+  const techniquesPagination: ApiPaginationRequestOptions = useMemo(() => {
+    const sort = firstOrNull(techniquesSortModel);
+    return {
+      limit: techniquesPaginationModel.pageSize,
+      sort: sort?.field || undefined,
+      order: sort?.sort || undefined,
+      page: techniquesPaginationModel.page + 1
+    };
+  }, [techniquesSortModel, techniquesPaginationModel]);
+
+  const techniquesDataLoader = useDataLoader((pagination: ApiPaginationRequestOptions) =>
+    biohubApi.technique.getTechniquesForSurvey(surveyContext.projectId, surveyContext.surveyId, pagination)
+  );
+
+  // Sites
   const [sitesPaginationModel, setSitesPaginationModel] = useState<GridPaginationModel>({
     page: 0,
     pageSize: pageSizeOptions[0]
   });
+
   const [sitesSortModel, setSitesSortModel] = useState<GridSortModel>([]);
 
-  // Sampling sites data loader and pagination
-  const samplingSitesDataLoader = useDataLoader((pagination: ApiPaginationRequestOptions) =>
-    biohubApi.samplingSite.getSampleSites(surveyContext.projectId, surveyContext.surveyId, { pagination })
-  );
   const sitesPagination: ApiPaginationRequestOptions = useMemo(() => {
     const sort = firstOrNull(sitesSortModel);
     return {
@@ -61,121 +79,197 @@ export const SurveySamplingTableContainer = () => {
     };
   }, [sitesSortModel, sitesPaginationModel]);
 
-  // Refresh data if there is data
+  const samplingSitesDataLoader = useDataLoader((pagination: ApiPaginationRequestOptions) =>
+    biohubApi.samplingSite.findSampleSites({ survey_id: surveyContext.surveyId }, pagination)
+  );
+
+  // Periods
+  const [periodsPaginationModel, setPeriodsPaginationModel] = useState<GridPaginationModel>({
+    page: 0,
+    pageSize: pageSizeOptions[0]
+  });
+
+  const [periodsSortModel, setPeriodsSortModel] = useState<GridSortModel>([]);
+
+  const periodsPagination: ApiPaginationRequestOptions = useMemo(() => {
+    const sort = firstOrNull(periodsSortModel);
+    return {
+      limit: periodsPaginationModel.pageSize,
+      sort: sort?.field || undefined,
+      order: sort?.sort || undefined,
+      page: periodsPaginationModel.page + 1
+    };
+  }, [periodsSortModel, periodsPaginationModel]);
+
+  const samplingPeriodsDataLoader = useDataLoader((pagination: ApiPaginationRequestOptions) =>
+    biohubApi.samplingSite.findSamplePeriods({ survey_id: surveyContext.surveyId }, pagination)
+  );
+
   useEffect(() => {
-    if (
-      [SurveySamplingView.SITES, SurveySamplingView.PERIODS].includes(activeView) &&
-      Number(samplingSitesDataLoader.data?.pagination.total) !== 0
-    ) {
+    // Refresh active view data loader when switching to the view for the first time
+    if (activeView === SurveySamplingView.TECHNIQUES && !techniquesDataLoader.data) {
+      techniquesDataLoader.load(techniquesPagination);
+    }
+
+    if (activeView === SurveySamplingView.SITES && !samplingSitesDataLoader.data) {
       samplingSitesDataLoader.refresh(sitesPagination);
     }
-    if (
-      activeView === SurveySamplingView.TECHNIQUES &&
-      Number(surveyContext.techniqueDataLoader.data?.pagination.total) !== 0
-    ) {
-      surveyContext.techniqueDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+
+    if (activeView === SurveySamplingView.PERIODS && !samplingPeriodsDataLoader.data) {
+      samplingPeriodsDataLoader.refresh(periodsPagination);
     }
-    // Including data loaders in the dependency cause infinite reloads
+    // Including data loaders in the dependency array causes infinite reloads
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeView, sitesPagination]);
+  }, [activeView]);
 
-  const sampleSites = useMemo(() => samplingSitesDataLoader.data?.sampleSites ?? [], [samplingSitesDataLoader.data]);
-  const techniques = surveyContext.techniqueDataLoader.data?.techniques ?? [];
-
-  const samplePeriods: ISamplingSitePeriodRowData[] = useMemo(() => {
-    const data: ISamplingSitePeriodRowData[] = [];
-    for (const site of sampleSites) {
-      for (const method of site.sample_methods) {
-        for (const period of method.sample_periods) {
-          data.push({
-            id: period.survey_sample_period_id,
-            sample_site: site.name,
-            sample_method: method.technique.name,
-            method_response_metric_id: method.method_response_metric_id,
-            start_date: period.start_date,
-            end_date: period.end_date,
-            start_time: period.start_time,
-            end_time: period.end_time
-          });
-        }
-      }
+  useEffect(() => {
+    if (activeView === SurveySamplingView.TECHNIQUES && Number(techniquesDataLoader.data?.pagination.total) !== 0) {
+      techniquesDataLoader.refresh(techniquesPagination);
     }
-    return data;
-  }, [sampleSites]);
+    // Including data loaders in the dependency array causes infinite reloads
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [techniquesPagination]);
+
+  useEffect(() => {
+    if (activeView === SurveySamplingView.SITES && Number(samplingSitesDataLoader.data?.pagination.total) !== 0) {
+      samplingSitesDataLoader.refresh(sitesPagination);
+    }
+    // Including data loaders in the dependency array causes infinite reloads
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sitesPagination]);
+
+  useEffect(() => {
+    if (activeView === SurveySamplingView.PERIODS && Number(samplingPeriodsDataLoader.data?.pagination.total) !== 0) {
+      samplingPeriodsDataLoader.refresh(periodsPagination);
+    }
+    // Including data loaders in the dependency array causes infinite reloads
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [periodsPagination]);
+
+  // Data
+  const techniques = techniquesDataLoader.data?.techniques ?? [];
+  const sampleSites = samplingSitesDataLoader.data?.sites ?? [];
+  const samplePeriods = samplingPeriodsDataLoader.data?.periods ?? [];
 
   return (
-    <>
+    <Box>
       <SurveySamplingHeader />
-      <Divider />
-      <SurveySamplingViewTabs activeView={activeView} setActiveView={setActiveView} />
-      <Divider />
-      <Box px={2} position="relative" height="400px">
-        {activeView === SurveySamplingView.TECHNIQUES && (
-          <LoadingGuard
-            isLoading={surveyContext.techniqueDataLoader.isLoading || !surveyContext.techniqueDataLoader.isReady}
-            isLoadingFallback={<SkeletonTable />}
-            isLoadingFallbackDelay={100}
-            hasNoData={!techniques.length}
-            hasNoDataFallback={
-              <NoDataOverlay
-                height="100%"
-                title="Add Techniques"
-                subtitle="Techniques describe how you collected species observations"
-              />
-            }>
-            <SurveyTechniquesTable
-              techniques={techniques}
-              paginationModel={techniquesPaginationModel}
-              setPaginationModel={setTechniquesPaginationModel}
-              sortModel={techniquesSortModel}
-              setSortModel={setTechniquesSortModel}
-              rowCount={surveyContext.techniqueDataLoader.data?.pagination.total ?? 0}
-            />
-          </LoadingGuard>
-        )}
 
-        {activeView === SurveySamplingView.SITES && (
-          <LoadingGuard
-            isLoading={samplingSitesDataLoader.isLoading || !samplingSitesDataLoader.isReady}
-            isLoadingFallback={<SkeletonTable />}
-            isLoadingFallbackDelay={100}
-            hasNoData={!sampleSites.length}
-            hasNoDataFallback={
-              <NoDataOverlay
-                height="100%"
-                title="Add Sampling Sites"
-                subtitle="Apply your techniques to sampling sites to show where you collected data"
-              />
-            }>
-            <SurveySitesTable
-              sites={sampleSites}
-              paginationModel={sitesPaginationModel}
-              setPaginationModel={setSitesPaginationModel}
-              sortModel={sitesSortModel}
-              setSortModel={setSitesSortModel}
-              rowCount={samplingSitesDataLoader.data?.pagination.total ?? 0}
-            />
-          </LoadingGuard>
-        )}
+      <Divider />
 
-        {/* TODO: Add pagination to the survey periods request */}
-        {activeView === SurveySamplingView.PERIODS && (
-          <LoadingGuard
-            isLoading={samplingSitesDataLoader.isLoading || !samplingSitesDataLoader.isReady}
-            isLoadingFallback={<SkeletonTable />}
-            isLoadingFallbackDelay={100}
-            hasNoData={!samplePeriods.length}
-            hasNoDataFallback={
-              <NoDataOverlay
-                height="100%"
-                title="Add Periods"
-                subtitle="Add periods when you create sampling sites to show when you collected species observations"
-              />
-            }>
-            <SamplingPeriodTable periods={samplePeriods} />
-          </LoadingGuard>
-        )}
-      </Box>
-    </>
+      <Stack display="flex" direction="row" height="400px">
+        <Box flex="0 0 auto" flexDirection="column" justifyContent="space-between" p={2} width="250px">
+          <CustomToggleButtonGroup views={views} activeView={activeView} onViewChange={setActiveView} />
+        </Box>
+
+        <Divider flexItem orientation="vertical" />
+
+        <Box display="flex" flex="1 1 auto" position="relative">
+          {activeView === SurveySamplingView.TECHNIQUES && (
+            <LoadingGuard
+              isLoading={
+                !techniquesDataLoader.data && (techniquesDataLoader.isLoading || !techniquesDataLoader.isReady)
+              }
+              isLoadingFallback={
+                <Box width="100%" height="100%">
+                  <SkeletonTable />
+                </Box>
+              }
+              isLoadingFallbackDelay={100}
+              hasNoData={!techniques.length}
+              hasNoDataFallback={
+                <NoDataOverlay
+                  height="100%"
+                  width="100%"
+                  title="Add Techniques"
+                  subtitle="Techniques describe how you collected species observations"
+                />
+              }
+              hasNoDataFallbackDelay={100}>
+              <Box display="flex" flexDirection="column" width="100%">
+                <SurveyTechniquesCardContainer
+                  techniques={techniques}
+                  paginationModel={techniquesPaginationModel}
+                  setPaginationModel={setTechniquesPaginationModel}
+                  sortModel={techniquesSortModel}
+                  setSortModel={setTechniquesSortModel}
+                  rowCount={techniquesDataLoader.data?.pagination.total ?? 0}
+                />
+              </Box>
+            </LoadingGuard>
+          )}
+
+          {activeView === SurveySamplingView.SITES && (
+            <LoadingGuard
+              isLoading={
+                !samplingSitesDataLoader.data && (samplingSitesDataLoader.isLoading || !samplingSitesDataLoader.isReady)
+              }
+              isLoadingFallback={
+                <Box width="100%" height="100%">
+                  <SkeletonTable />
+                </Box>
+              }
+              isLoadingFallbackDelay={100}
+              hasNoData={!sampleSites.length}
+              hasNoDataFallback={
+                <NoDataOverlay
+                  height="100%"
+                  width="100%"
+                  title="Add Sampling Sites"
+                  subtitle="Apply your techniques to sampling sites to show where you collected data"
+                />
+              }
+              hasNoDataFallbackDelay={100}>
+              <Box position="absolute" height="100%" width="100%">
+                <SurveySitesTable
+                  sites={sampleSites}
+                  paginationModel={sitesPaginationModel}
+                  setPaginationModel={setSitesPaginationModel}
+                  sortModel={sitesSortModel}
+                  setSortModel={setSitesSortModel}
+                  rowCount={samplingSitesDataLoader.data?.pagination.total ?? 0}
+                />
+              </Box>
+            </LoadingGuard>
+          )}
+
+          {/* TODO: Add pagination to the survey periods request */}
+          {activeView === SurveySamplingView.PERIODS && (
+            <LoadingGuard
+              isLoading={
+                !samplingPeriodsDataLoader.data &&
+                (samplingPeriodsDataLoader.isLoading || !samplingPeriodsDataLoader.isReady)
+              }
+              isLoadingFallback={
+                <Box width="100%" height="100%">
+                  <SkeletonTable />
+                </Box>
+              }
+              isLoadingFallbackDelay={100}
+              hasNoData={!samplePeriods.length}
+              hasNoDataFallback={
+                <NoDataOverlay
+                  height="100%"
+                  width="100%"
+                  title="Add Periods"
+                  subtitle="Add periods when you create sampling sites to show when you collected species observations"
+                />
+              }
+              hasNoDataFallbackDelay={100}>
+              <Box height="100%" width="100%">
+                <SurveyPeriodsTable
+                  periods={samplePeriods}
+                  paginationModel={periodsPaginationModel}
+                  setPaginationModel={setPeriodsPaginationModel}
+                  sortModel={periodsSortModel}
+                  setSortModel={setPeriodsSortModel}
+                  rowCount={samplingPeriodsDataLoader.data?.pagination.total ?? 0}
+                />
+              </Box>
+            </LoadingGuard>
+          )}
+        </Box>
+      </Stack>
+    </Box>
   );
 };
