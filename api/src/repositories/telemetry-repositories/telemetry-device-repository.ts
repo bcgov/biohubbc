@@ -41,14 +41,14 @@ export class TelemetryDeviceRepository extends BaseRepository {
   }
 
   /**
-   * Gets a device by its serial number and survey id if it exists
+   * Finds a device by a given serial number and make in the given survey
    *
    * @param {surveyId} surveyId
    * @param {number} serial
-   * @param {number} device_make_id
+   * @param {number} deviceMakeId
    * @returns {*} {Promise<DeviceRecord | null>}
    */
-  async findDeviceBySerial(surveyId: number, serial: number, device_make_id: number): Promise<DeviceRecord | null> {
+  async findDeviceBySerial(surveyId: number, serial: number, deviceMakeId: number): Promise<DeviceRecord | null> {
     const knex = getKnex();
 
     const queryBuilder = knex
@@ -56,7 +56,7 @@ export class TelemetryDeviceRepository extends BaseRepository {
       .from('device')
       .join('device_make', 'device_make.device_make_id', 'device.device_make_id')
       .where('serial', serial)
-      .andWhere('device.device_make_id', device_make_id)
+      .andWhere('device.device_make_id', deviceMakeId)
       .andWhere('survey_id', surveyId);
 
     const response = await this.connection.knex(queryBuilder, DeviceRecord);
