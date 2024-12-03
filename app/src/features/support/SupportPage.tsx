@@ -1,3 +1,4 @@
+import { mdiAccountBox, mdiFormatListBulleted, mdiHelpCircle } from '@mdi/js';
 import Box from '@mui/material/Box';
 import { grey } from '@mui/material/colors';
 import Container from '@mui/material/Container';
@@ -5,9 +6,9 @@ import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import PageHeader from 'components/layout/PageHeader';
 import { AccordionStandardCard } from 'features/standards/view/components/AccordionStandardCard';
 import { useState } from 'react';
+import { StandardsToolbar } from '../standards/components/StandardsToolbar'; // Import StandardsToolbar
 
 export enum SupportPageView {
   GENERAL = 'GENERAL',
@@ -28,33 +29,34 @@ export enum SupportPageView {
 export interface ISupportPageView {
   label: string;
   value: SupportPageView;
+  icon: string;
 }
 
 interface IDataItem {
   label: string;
   description: string;
-  unit?: string; // Optional
+  unit?: string;
 }
 
 type DataMap = Partial<Record<SupportPageView, IDataItem[]>>;
 
 const SupportPage = () => {
-  const [currentView, setCurrentView] = useState(SupportPageView.GENERAL);
+  const [currentView, setCurrentView] = useState<SupportPageView>(SupportPageView.GENERAL);
 
   const views: ISupportPageView[] = [
-    { label: 'General', value: SupportPageView.GENERAL },
-    { label: 'Projects', value: SupportPageView.PROJECTS },
-    { label: 'Surveys', value: SupportPageView.SURVEYS },
-    { label: 'Techniques', value: SupportPageView.TECHNIQUES },
-    { label: 'Sites', value: SupportPageView.SITES },
-    { label: 'Animals', value: SupportPageView.ANIMALS },
-    { label: 'Telemetry', value: SupportPageView.TELEMETRY },
-    { label: 'Observations', value: SupportPageView.OBSERVATIONS },
-    { label: 'Attachments', value: SupportPageView.ATTACHMENTS },
-    { label: 'Standards', value: SupportPageView.STANDARDS },
-    { label: 'FAQ', value: SupportPageView.FAQ },
-    { label: 'Publishing', value: SupportPageView.PUBLISHING },
-    { label: 'Contact', value: SupportPageView.CONTACT }
+    { label: 'General', value: SupportPageView.GENERAL, icon: mdiHelpCircle },
+    { label: 'Projects', value: SupportPageView.PROJECTS, icon: mdiHelpCircle },
+    { label: 'Surveys', value: SupportPageView.SURVEYS, icon: mdiHelpCircle },
+    { label: 'Techniques', value: SupportPageView.TECHNIQUES, icon: mdiHelpCircle },
+    { label: 'Sites', value: SupportPageView.SITES, icon: mdiHelpCircle },
+    { label: 'Animals', value: SupportPageView.ANIMALS, icon: mdiHelpCircle },
+    { label: 'Telemetry', value: SupportPageView.TELEMETRY, icon: mdiHelpCircle },
+    { label: 'Observations', value: SupportPageView.OBSERVATIONS, icon: mdiHelpCircle },
+    { label: 'Attachments', value: SupportPageView.ATTACHMENTS, icon: mdiHelpCircle },
+    { label: 'Standards', value: SupportPageView.STANDARDS, icon: mdiHelpCircle },
+    { label: 'FAQ', value: SupportPageView.FAQ, icon: mdiFormatListBulleted },
+    { label: 'Publishing', value: SupportPageView.PUBLISHING, icon: mdiHelpCircle },
+    { label: 'Contact', value: SupportPageView.CONTACT, icon: mdiAccountBox }
   ];
 
   const dataMap: DataMap = {
@@ -72,45 +74,31 @@ const SupportPage = () => {
     [SupportPageView.SURVEYS]: [
       { label: 'Survey Management', description: 'How to design and use surveys.', unit: 'Surveys' }
     ]
-
   };
 
   return (
-    <>
-      {/* Add the PageHeader */}
-      <PageHeader title="Support" />
+    <Container maxWidth="xl" sx={{ py: 3 }}>
+      <Stack direction="row" gap={3} component={Paper} sx={{ p: 3 }}>
+        {/* Sidebar with StandardsToolbar */}
+        <Box width="300px" flexShrink={0}>
+          <StandardsToolbar views={views} currentView={currentView} setCurrentView={setCurrentView} />
+        </Box>
 
-      {/* Main Container */}
-      <Container maxWidth="xl" sx={{ py: 3 }}>
-        <Stack direction="row" gap={3} component={Paper} sx={{ p: 3 }}>
-          {/* Sidebar for Navigation */}
-          <Box width="300px" flexShrink={0}>
-            <Stack gap={2}>
-              {views.map((view) => (
-                <Box
-                  key={view.value}
-                  onClick={() => setCurrentView(view.value)}
-                  sx={{
-                    p: 2,
-                    cursor: 'pointer',
-                    bgcolor: currentView === view.value ? 'primary.main' : 'grey.100',
-                    color: currentView === view.value ? 'white' : 'black',
-                    borderRadius: '4px',
-                    textAlign: 'center'
-                  }}>
-                  {view.label}
-                </Box>
-              ))}
-            </Stack>
-          </Box>
+        <Divider orientation="vertical" flexItem />
 
-          <Divider orientation="vertical" flexItem />
-
-          {/* Main Content Area */}
-          <Box flex="1 1 auto">
-            <Typography variant="h5" gutterBottom>
-              {views.find((view) => view.value === currentView)?.label}
-            </Typography>
+        {/* Main Content Area */}
+        <Box flex="1 1 auto">
+          <Typography variant="h5" gutterBottom>
+            {views.find((view) => view.value === currentView)?.label}
+          </Typography>
+          <Box
+            sx={{
+              p: 3,
+              border: '1px solid',
+              borderColor: grey[300],
+              borderRadius: '8px',
+              bgcolor: grey[50]
+            }}>
             <Stack gap={2}>
               {dataMap[currentView]?.map((item: IDataItem, index: number) => (
                 <AccordionStandardCard
@@ -120,13 +108,12 @@ const SupportPage = () => {
                   ornament={item.unit ? <Box>{item.unit}</Box> : undefined}
                   colour={grey[100]}
                 />
-
               )) || <Typography>No content available for this section.</Typography>}
             </Stack>
           </Box>
-        </Stack>
-      </Container>
-    </>
+        </Box>
+      </Stack>
+    </Container>
   );
 };
 

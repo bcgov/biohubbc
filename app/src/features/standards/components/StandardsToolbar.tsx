@@ -4,21 +4,20 @@ import ToggleButton from '@mui/material/ToggleButton/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Typography from '@mui/material/Typography';
 import React, { SetStateAction } from 'react';
-import { IStandardsPageView, StandardsPageView } from '../StandardsPage';
 
-interface IStandardsToolbar {
-  views: IStandardsPageView[];
-  currentView: StandardsPageView;
-  setCurrentView: React.Dispatch<SetStateAction<StandardsPageView>>;
+interface IStandardsToolbar<T> {
+  views: { label: string; value: T; icon: string }[];
+  currentView: T;
+  setCurrentView: React.Dispatch<SetStateAction<T>>;
 }
 
 /**
- * Toolbar for setting the standards page view
+ * Generic Toolbar for setting the page view
  *
  * @param props
  * @returns
  */
-export const StandardsToolbar = (props: IStandardsToolbar) => {
+export const StandardsToolbar = function <T extends string>(props: IStandardsToolbar<T>) {
   const { views, currentView, setCurrentView } = props;
 
   return (
@@ -27,7 +26,7 @@ export const StandardsToolbar = (props: IStandardsToolbar) => {
       <ToggleButtonGroup
         orientation="vertical"
         value={currentView}
-        onChange={(_event: React.MouseEvent<HTMLElement>, view: StandardsPageView | null) => {
+        onChange={(_event: React.MouseEvent<HTMLElement>, view: T | null) => {
           if (view) {
             setCurrentView(view);
           }
@@ -62,3 +61,5 @@ export const StandardsToolbar = (props: IStandardsToolbar) => {
     </>
   );
 };
+
+export default StandardsToolbar;
