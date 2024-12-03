@@ -47,7 +47,6 @@ const useTaxonomyApi = () => {
         return qs.stringify(params);
       }
     });
-
     return data;
   };
 

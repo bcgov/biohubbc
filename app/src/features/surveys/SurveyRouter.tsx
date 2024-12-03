@@ -12,6 +12,7 @@ import React from 'react';
 import { Redirect, Switch } from 'react-router';
 import RouteWithTitle from 'utils/RouteWithTitle';
 import { getTitle } from 'utils/Utils';
+import CreateObservationPage from './observations/create/CreateObservationPage';
 import { TelemetryRouter } from './telemetry/TelemetryRouter';
 
 /**
@@ -88,6 +89,17 @@ const SurveyRouter: React.FC = () => {
           <ObservationsContextProvider>
             <SurveyObservationPage />
           </ObservationsContextProvider>
+        </ProjectRoleRouteGuard>
+      </RouteWithTitle>
+
+      <RouteWithTitle
+        exact
+        path="/admin/projects/:id/surveys/:survey_id/observations/create"
+        title={getTitle('Create Observation')}>
+        <ProjectRoleRouteGuard
+          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+          validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+          <CreateObservationPage />
         </ProjectRoleRouteGuard>
       </RouteWithTitle>
 

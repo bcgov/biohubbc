@@ -14,6 +14,8 @@ export interface IGetSurveyObservationsResponse {
   pagination: ApiPaginationResponseParams;
 }
 
+export type FormikKeyUuid = { _id?: string };
+
 export interface IGetSurveyObservationsGeometryObject {
   survey_observation_id: number;
   geometry: GeoJSON.Point;
@@ -102,15 +104,17 @@ type ObservationSubCountQuantitativeMeasurementRecord = {
   revision_count: number;
 };
 
-type ObservationSubcountQualitativeMeasurementObject = Pick<
+export type ObservationSubcountQualitativeMeasurementObject = Pick<
   ObservationSubCountQualitativeMeasurementRecord,
   'critterbase_taxon_measurement_id' | 'critterbase_measurement_qualitative_option_id'
->;
+> &
+  FormikKeyUuid;
 
-type ObservationSubcountQuantitativeMeasurementObject = Pick<
+export type ObservationSubcountQuantitativeMeasurementObject = Pick<
   ObservationSubCountQuantitativeMeasurementRecord,
   'critterbase_taxon_measurement_id' | 'value'
->;
+> &
+  FormikKeyUuid;
 
 type ObservationSubCountQualitativeEnvironmentRecord = {
   observation_subcount_qualitative_environment_id: number;
@@ -136,15 +140,17 @@ type ObservationSubCountQuantitativeEnvironmentRecord = {
   revision_count: number;
 };
 
-type ObservationSubcountQualitativeEnvironmentObject = Pick<
+export type ObservationSubcountQualitativeEnvironmentObject = Pick<
   ObservationSubCountQualitativeEnvironmentRecord,
   'observation_subcount_qualitative_environment_id' | 'environment_qualitative_id' | 'environment_qualitative_option_id'
->;
+> &
+  FormikKeyUuid;
 
-type ObservationSubcountQuantitativeEnvironmentObject = Pick<
+export type ObservationSubcountQuantitativeEnvironmentObject = Pick<
   ObservationSubCountQuantitativeEnvironmentRecord,
   'observation_subcount_quantitative_environment_id' | 'environment_quantitative_id' | 'value'
->;
+> &
+  FormikKeyUuid;
 
 type ObservationSubcountRecord = {
   observation_subcount_id: number;
@@ -177,3 +183,43 @@ type ObservationSubcountsObject = {
 type ObservationRecordWithSamplingAndSubcountData = StandardObservationColumns &
   ObservationSamplingData &
   ObservationSubcountsObject;
+
+export interface SubcountQualitativeMeasurement {
+  measurement_id: string;
+  measurement_option_id: string;
+}
+
+export interface SubcountQuantitativeMeasurement {
+  measurement_id: string;
+  measurement_value: number;
+}
+
+export interface SubcountQualitativeEnvironment {
+  environment_qualitative_id: string;
+  environment_qualitative_option_id: string;
+}
+
+export interface SubcountQuantitativeEnvironment {
+  environment_quantitative_id: string;
+  value: number;
+}
+
+export interface SubcountToSave {
+  observation_subcount_id: number | null;
+  subcount: number | null;
+  comment: string | null;
+  qualitative_measurements: SubcountQualitativeMeasurement[];
+  quantitative_measurements: SubcountQuantitativeMeasurement[];
+  qualitative_environments: SubcountQualitativeEnvironment[];
+  quantitative_environments: SubcountQuantitativeEnvironment[];
+}
+
+export interface ICreateObservationRequest {
+  standardColumns: Omit<StandardObservationColumns, 'survey_observation_id'>;
+  subcounts: SubcountToSave[];
+}
+
+export interface IObservationTableRowToSave {
+  standardColumns: StandardObservationColumns;
+  subcounts: SubcountToSave[];
+}

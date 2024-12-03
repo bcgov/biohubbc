@@ -37,10 +37,12 @@ import {
   useCodesContext,
   useObservationsContext,
   useObservationsPageContext,
-  useObservationsTableContext
+  useObservationsTableContext,
+  useSurveyContext
 } from 'hooks/useContext';
 import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import { useEffect, useMemo } from 'react';
+import { useHistory } from 'react-router';
 import { ConfigureColumnsButton } from './configure-columns/ConfigureColumnsButton';
 import ExportHeadersButton from './export-button/ExportHeadersButton';
 import { ObservationSubcountCommentDialog } from './grid-column-definitions/comment/ObservationSubcountCommentDialog';
@@ -55,6 +57,9 @@ const ObservationsTableContainer = () => {
   const observationsPageContext = useObservationsPageContext();
   const observationsTableContext = useObservationsTableContext();
   const observationsContext = useObservationsContext();
+
+  const { projectId, surveyId } = useSurveyContext();
+  const history = useHistory();
 
   useEffect(() => {
     codesContext.codesDataLoader.load();
@@ -193,10 +198,10 @@ const ObservationsTableContainer = () => {
             variant="contained"
             color="primary"
             startIcon={<Icon path={mdiPlus} size={1} />}
-            onClick={() => observationsTableContext.addObservationRecord()}
-            disabled={observationsTableContext.isSaving || observationsTableContext.isDisabled}>
-            Add Record
+            onClick={() => history.push(`/admin/projects/${projectId}/surveys/${surveyId}/observations/create`)}>
+            Add Row
           </Button>
+
           <Collapse in={observationsTableContext.hasUnsavedChanges} orientation="horizontal" sx={{ mr: -1 }}>
             <Box whiteSpace="nowrap" display="flex" sx={{ gap: 1, pr: 1 }}>
               <LoadingButton

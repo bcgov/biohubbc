@@ -534,6 +534,12 @@ export const AlertI18N = {
   deleteAlertDialogText: 'Are you sure you want to permanently delete this alert? This action cannot be undone.'
 };
 
+export const CreateObservationI18N = {
+  createErrorTitle: 'Error Creating Observations',
+  createErrorText:
+    'An error has occurred while attempting to create observation data. Please try again. If the error persists, please contact your system administrator.'
+};
+
 export const SamplePeriodI18N = {
   cancelTitle: 'Discard changes and exit?',
   cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',

@@ -5,42 +5,16 @@ import {
   CBQuantitativeMeasurementTypeDefinition
 } from 'interfaces/useCritterApi.interface';
 import {
+  ICreateObservationRequest,
   IGetSurveyObservationsGeometryResponse,
   IGetSurveyObservationsResponse,
-  ObservationRecord,
-  StandardObservationColumns
+  IObservationTableRowToSave,
+  ObservationRecord
 } from 'interfaces/useObservationApi.interface';
 import { EnvironmentTypeIds } from 'interfaces/useReferenceApi.interface';
 import { IPartialTaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import qs from 'qs';
 import { ApiPaginationRequestOptions } from 'types/misc';
-
-export interface SubcountToSave {
-  observation_subcount_id: number | null;
-  subcount: number | null;
-  comment: string | null;
-  qualitative_measurements: {
-    measurement_id: string;
-    measurement_option_id: string;
-  }[];
-  quantitative_measurements: {
-    measurement_id: string;
-    measurement_value: number;
-  }[];
-  qualitative_environments: {
-    environment_qualitative_id: string;
-    environment_qualitative_option_id: string;
-  }[];
-  quantitative_environments: {
-    environment_quantitative_id: string;
-    value: number;
-  }[];
-}
-
-export interface IObservationTableRowToSave {
-  standardColumns: StandardObservationColumns;
-  subcounts: SubcountToSave[];
-}
 
 /**
  * Returns a set of supported api methods for working with observations.
@@ -65,6 +39,22 @@ const useObservationApi = (axios: AxiosInstance) => {
     await axios.put(`/api/project/${projectId}/survey/${surveyId}/observations`, {
       surveyObservations
     });
+  };
+
+  /**
+   * Creates a new observation for the survey
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {IObservationTableRowToSave[]} surveyObservations
+   * @return {*}  {Promise<void>}
+   */
+  const createObservation = async (
+    projectId: number,
+    surveyId: number,
+    surveyObservation: ICreateObservationRequest
+  ): Promise<void> => {
+    await axios.post(`/api/project/${projectId}/survey/${surveyId}/observations`, surveyObservation);
   };
 
   /**
@@ -332,7 +322,8 @@ const useObservationApi = (axios: AxiosInstance) => {
     deleteObservationMeasurements,
     deleteObservationEnvironments,
     uploadCsvForImport,
-    processCsvSubmission
+    processCsvSubmission,
+    createObservation
   };
 };
 

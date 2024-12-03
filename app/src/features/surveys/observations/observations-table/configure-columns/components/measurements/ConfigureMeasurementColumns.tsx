@@ -12,6 +12,7 @@ import Typography from '@mui/material/Typography';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { AccordionStandardCard } from 'features/standards/view/components/AccordionStandardCard';
+import { useFocalOrObservedSpeciesTsns } from 'hooks/useFocalOrObservedTsns';
 import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
 import { useState } from 'react';
 import { MeasurementsSearch } from './search/MeasurementsSearch';
@@ -44,11 +45,12 @@ export interface IConfigureMeasurementColumnsProps {
  * @param {IConfigureMeasurementColumnsProps} props
  * @return {*}
  */
-
 export const ConfigureMeasurementColumns = (props: IConfigureMeasurementColumnsProps) => {
   const { measurementColumns, onAddMeasurementColumns, onRemoveMeasurementColumns } = props;
 
   const [isFocalSpeciesMeasurementsOnly, setIsFocalSpeciesMeasurementsOnly] = useState<boolean>(true);
+
+  const [observedAndFocalSpeciesTsns, allSpeciesWithParentsTsns] = useFocalOrObservedSpeciesTsns();
 
   return (
     <Box height="100%" display="flex" flexDirection="column">
@@ -58,7 +60,8 @@ export const ConfigureMeasurementColumns = (props: IConfigureMeasurementColumnsP
       <MeasurementsSearch
         selectedMeasurements={measurementColumns}
         onAddMeasurementColumn={(measurementColumn) => onAddMeasurementColumns([measurementColumn])}
-        focalOrObservedSpeciesOnly={isFocalSpeciesMeasurementsOnly}
+        tsns={isFocalSpeciesMeasurementsOnly ? observedAndFocalSpeciesTsns : []}
+        applicableTsns={allSpeciesWithParentsTsns}
       />
       <FormGroup>
         <FormControlLabel

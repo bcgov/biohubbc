@@ -34,7 +34,7 @@ export const AccordionStandardCard = (props: PropsWithChildren<IAccordionStandar
   };
 
   return (
-    <Paper elevation={0} {...paperProps} sx={{ bgcolor: colour, ...paperProps.sx }}>
+    <Paper elevation={0} {...paperProps} sx={{ bgcolor: colour, flex: '1 1 auto', ...paperProps.sx }}>
       <Box
         display="flex"
         justifyContent="space-between"

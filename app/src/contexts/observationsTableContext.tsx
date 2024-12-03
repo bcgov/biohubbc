@@ -29,12 +29,16 @@ import {
   validateObservationTableRowMeasurements
 } from 'features/surveys/observations/observations-table/observation-row-validation/ObservationRowValidationUtils';
 import { APIError } from 'hooks/api/useAxios';
-import { IObservationTableRowToSave, SubcountToSave } from 'hooks/api/useObservationApi';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useObservationsContext, useObservationsPageContext, useTaxonomyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import { CBMeasurementSearchByTsnResponse, CBMeasurementType } from 'interfaces/useCritterApi.interface';
-import { IGetSurveyObservationsResponse, ObservationRecord } from 'interfaces/useObservationApi.interface';
+import {
+  IGetSurveyObservationsResponse,
+  IObservationTableRowToSave,
+  ObservationRecord,
+  SubcountToSave
+} from 'interfaces/useObservationApi.interface';
 import { EnvironmentType, EnvironmentTypeIds } from 'interfaces/useReferenceApi.interface';
 import {
   createContext,
