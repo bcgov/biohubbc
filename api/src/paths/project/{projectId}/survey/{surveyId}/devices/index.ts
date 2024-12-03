@@ -138,9 +138,10 @@ export function createDevice(): RequestHandler {
 
       const telemetryDeviceService = new TelemetryDeviceService(connection);
 
-      // Check whether device already exists in Survey and throw error if so
-      const device = await telemetryDeviceService.getDeviceBySerial(surveyId, serial, device_make_id);
+      // Check whether device already exists in Survey
+      const device = await telemetryDeviceService.findDeviceBySerial(surveyId, serial, device_make_id);
 
+      // Throw error if device already exists
       if (device) {
         throw new ApiGeneralError(`Device ${serial} of the given make already exists in the Survey.`);
       }

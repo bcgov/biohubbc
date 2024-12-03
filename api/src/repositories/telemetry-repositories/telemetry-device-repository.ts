@@ -41,14 +41,14 @@ export class TelemetryDeviceRepository extends BaseRepository {
   }
 
   /**
-   * Get a device by its serial number and survey id
+   * Gets a device by its serial number and survey id if it exists
    *
    * @param {surveyId} surveyId
    * @param {number} serial
    * @param {number} device_make_id
-   * @returns {*} {Promise<DeviceRecord>}
+   * @returns {*} {Promise<DeviceRecord | null>}
    */
-  async getDeviceBySerial(surveyId: number, serial: number, device_make_id: number): Promise<DeviceRecord> {
+  async findDeviceBySerial(surveyId: number, serial: number, device_make_id: number): Promise<DeviceRecord | null> {
     const knex = getKnex();
 
     const queryBuilder = knex

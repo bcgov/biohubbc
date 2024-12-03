@@ -61,17 +61,17 @@ export class TelemetryDeviceService extends DBService {
   }
 
   /**
-   * Get a device by its serial number and survey id
+   * Get a device by its serial number and survey id if it exists
    *
    * @throws {ApiGeneralError} If the device is not found.
    *
    * @param {number} surveyId
    * @param {number} serial
    * @param {number} device_make_id
-   * @return {*} {Promise<DeviceRecord>}
+   * @return {*} {Promise<DeviceRecord | null>}
    */
-  async getDeviceBySerial(surveyId: number, serial: number, device_make_id: number): Promise<DeviceRecord> {
-    return this.telemetryDeviceRepository.getDeviceBySerial(surveyId, serial, device_make_id);
+  async findDeviceBySerial(surveyId: number, serial: number, device_make_id: number): Promise<DeviceRecord | null> {
+    return this.telemetryDeviceRepository.findDeviceBySerial(surveyId, serial, device_make_id);
   }
 
   /**
