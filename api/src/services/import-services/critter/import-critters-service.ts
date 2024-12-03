@@ -93,7 +93,7 @@ export class ImportCrittersService extends DBService {
    *
    * @async
    * @throws {ApiGeneralError} - If unable to fully insert records into Critterbase
-   * @returns {Promise<number[]>} List of inserted survey critter ids
+   * @returns {*} {Promise<CSVError[]>} List of inserted survey critter ids
    */
   async importCSVWorksheet(): Promise<CSVError[]> {
     const config = await this._getCSVConfig();
@@ -104,7 +104,7 @@ export class ImportCrittersService extends DBService {
       return errors;
     }
 
-    const payloads = await this._getImportPayloads(rows);
+    const payloads = this._getImportPayloads(rows);
 
     // Add critters to Critterbase
     const bulkResponse = await this.critterbaseService.bulkCreate(payloads.critterbasePayload);
@@ -130,7 +130,7 @@ export class ImportCrittersService extends DBService {
    * Note: This will simulate a multi-step validation process if the TSNs are invalid. This is because the TSNs are
    * dependencies for the other header configs, so all TSN related errors must be resolved first.
    *
-   * @returns {Promise<CSVConfig<CritterCSVStaticHeader>>} The Critter CSV config
+   * @returns {*} {Promise<CSVConfig<CritterCSVStaticHeader>>} The Critter CSV config
    */
   async _getCSVConfig(): Promise<CSVConfig<CritterCSVStaticHeader>> {
     const [tsnHeaderConfig, aliasHeaderConfig, sexHeaderConfig, dynamicHeadersConfig] = await Promise.all([
@@ -155,9 +155,12 @@ export class ImportCrittersService extends DBService {
    * Get the Critterbase and SIMS import payloads.
    *
    * @param {CSVRowValidated[]} rows - The validated CSV rows
-   * @returns {Promise<{ simsPayload: string[]; critterbasePayload: IBulkCreate }>} The import payloads
+   * @returns {*} { simsPayload: string[]; critterbasePayload: IBulkCreate } The import payloads
    */
-  async _getImportPayloads(rows: CSVRowValidated<CritterCSVStaticHeader>[]) {
+  _getImportPayloads(rows: CSVRowValidated<CritterCSVStaticHeader>[]): {
+    simsPayload: string[];
+    critterbasePayload: IBulkCreate;
+  } {
     const simsPayload: string[] = [];
     const critterbasePayload: IBulkCreate = { critters: [], collections: [] };
 
@@ -201,7 +204,7 @@ export class ImportCrittersService extends DBService {
    *  1. TSN must be a number
    *  2. TSN must be a real ITIS TSN
    *
-   * @returns {Promise<CSVHeaderConfig>} The TSN header config
+   * @returns {*} {Promise<CSVHeaderConfig>} The TSN header config
    */
   async _getTsnHeaderConfig(): Promise<CSVHeaderConfig> {
     const rowTsns = this.configUtils.getUniqueCellValues('ITIS_TSN');
@@ -221,7 +224,7 @@ export class ImportCrittersService extends DBService {
    *  2. Alias must be unique in the SIMS Survey
    *  3. Alias must be unique in the CSV
    *
-   * @returns {Promise<CSVHeaderConfig>} The alias header config
+   * @returns {*} {Promise<CSVHeaderConfig>} The alias header config
    */
   async _getAliasHeaderConfig(): Promise<CSVHeaderConfig> {
     const surveyAliases = await this.surveyCritterService.getUniqueSurveyCritterAliases(this.surveyId);
@@ -238,7 +241,7 @@ export class ImportCrittersService extends DBService {
    *  1. Sex must be a string
    *  2. Sex must be a valid option in Critterbase for the TSN
    *
-   * @returns {CSVHeaderConfig} The sex header config
+   * @returns {*} {CSVHeaderConfig} The sex header config
    */
   async _getSexHeaderConfig(): Promise<CSVHeaderConfig> {
     const rowDictionary = new NestedRecord<string>();
@@ -270,11 +273,10 @@ export class ImportCrittersService extends DBService {
   /**
    * Get the CSV Collection Unit dynamic header config.
    *
-   * @returns {Promise<CSVHeaderConfig>} The Collection Unit dynamic header config
+   * @returns {*} {Promise<CSVHeaderConfig>} The Collection Unit dynamic header config
    */
   async _getCollectionUnitDynamicHeaderConfig(): Promise<CSVHeaderConfig> {
     const rowDictionary = new NestedRecord<string>();
-
     const rowTsns = this.configUtils.getUniqueCellValues('ITIS_TSN');
     // Get the collection units for all the tsns in the worksheet
     const collectionUnits = await Promise.all(

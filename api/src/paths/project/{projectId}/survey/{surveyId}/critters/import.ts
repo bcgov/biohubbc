@@ -29,7 +29,7 @@ export const POST: Operation = [
       ]
     };
   }),
-  importCsv()
+  importCritterCSV()
 ];
 
 POST.apiDoc = {
@@ -127,7 +127,7 @@ POST.apiDoc = {
  *
  * @return {*}  {RequestHandler}
  */
-export function importCsv(): RequestHandler {
+export function importCritterCSV(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
     const rawFile = getFileFromRequest(req);
@@ -144,11 +144,11 @@ export function importCsv(): RequestHandler {
 
       const errors = await importService.importCSVWorksheet();
 
+      await connection.commit();
+
       if (errors.length) {
         return res.status(422).json({ validation_errors: errors });
       }
-
-      await connection.commit();
 
       return res.status(200).send();
     } catch (error) {

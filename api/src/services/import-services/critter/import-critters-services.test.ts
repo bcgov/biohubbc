@@ -203,28 +203,78 @@ describe('ImportCrittersService', () => {
     });
   });
 
-  //describe('_getCollectionUnitDynamicHeaderConfig', () => {
-  //  it('should return a valid header config object', async () => {
-  //    const mockConnection = getMockDBConnection();
-  //    const worksheet = xlsx.utils.json_to_sheet([{ UNIT: 'unit' }]);
-  //
-  //    const service = new ImportCrittersService(mockConnection, worksheet, 1);
-  //
-  //    const getRowDictionaryStub = sinon.stub(service.configUtils, 'getRowDictionary').returns({ 1: { UNIT: 'unit' } });
-  //    const getCollectionUnitCellValidatorStub = sinon
-  //      .stub(critterConfig, 'getCritterCollectionUnitCellValidator')
-  //      .returns(() => []);
-  //
-  //    const config = await service._getCollectionUnitDynamicHeaderConfig();
-  //
-  //    expect(getRowDictionaryStub).to.have.been.calledOnceWithExactly();
-  //    expect(getCollectionUnitCellValidatorStub).to.have.been.calledOnceWithExactly(
-  //      { 1: { UNIT: 'unit' } },
-  //      service.configUtils
-  //    );
-  //
-  //    expect(config.validateCell).to.be.a('function');
-  //    expect(config.setCellValue).to.be.a('function');
-  //  });
-  //});
+  describe('_getCollectionUnitDynamicHeaderConfig', () => {
+    it('should return a valid header config object', async () => {
+      const mockConnection = getMockDBConnection();
+      const worksheet = xlsx.utils.json_to_sheet([{ UNIT: 'unit', ITIS_TSN: 1234 }]);
+
+      const service = new ImportCrittersService(mockConnection, worksheet, 1);
+
+      const findTaxonCollectionUnitsStub = sinon
+        .stub(service.critterbaseService, 'findTaxonCollectionUnits')
+        .resolves([{ category_name: 'category', unit_name: 'unit', collection_unit_id: 'uuid' }] as any[]);
+
+      const getCollectionUnitCellValidatorStub = sinon
+        .stub(critterConfig, 'getCritterCollectionUnitCellValidator')
+        .returns(() => []);
+
+      const getCollectionUnitCellSetterStub = sinon
+        .stub(critterConfig, 'getCritterCollectionUnitCellSetter')
+        .returns(() => 'value');
+
+      const config = await service._getCollectionUnitDynamicHeaderConfig();
+
+      expect(findTaxonCollectionUnitsStub).to.have.been.calledOnceWithExactly(1234);
+
+      expect(getCollectionUnitCellValidatorStub).to.have.been.calledWithExactly(
+        new NestedRecord({ 1234: { category: { unit: 'uuid' } } }),
+        service.configUtils
+      );
+
+      expect(getCollectionUnitCellSetterStub).to.have.been.calledWithExactly(
+        new NestedRecord({ 1234: { category: { unit: 'uuid' } } }),
+        service.configUtils
+      );
+
+      expect(config.validateCell).to.be.a('function');
+      expect(config.setCellValue).to.be.a('function');
+    });
+  });
+
+  describe('_getImportPayloads', () => {
+    it('should return all import payloads', () => {
+      const mockConnection = getMockDBConnection();
+      const rows = [
+        {
+          ITIS_TSN: '1234',
+          ALIAS: 'test',
+          SEX: 'male',
+          WLH_ID: '12-2222',
+          DESCRIPTION: 'comment',
+          POPULATION_UNIT: 'unit',
+          COLLECTION_UNIT: 'collection'
+        }
+      ];
+      const worksheet = xlsx.utils.json_to_sheet(rows);
+
+      const service = new ImportCrittersService(mockConnection, worksheet, 1);
+
+      const payloads = service._getImportPayloads(rows);
+
+      expect(payloads.simsPayload[0]).to.be.a('string');
+
+      expect(payloads.critterbasePayload.critters?.[0].itis_tsn).to.be.equal('1234');
+      expect(payloads.critterbasePayload.critters?.[0].animal_id).to.be.equal('test');
+      expect(payloads.critterbasePayload.critters?.[0].sex_qualitative_option_id).to.be.equal('male');
+      expect(payloads.critterbasePayload.critters?.[0].wlh_id).to.be.equal('12-2222');
+      expect(payloads.critterbasePayload.critters?.[0].critter_comment).to.be.equal('comment');
+      expect(payloads.critterbasePayload.critters?.[0].critter_id).to.be.a('string');
+
+      expect(payloads.critterbasePayload.collections?.[0].critter_id).to.be.a('string');
+      expect(payloads.critterbasePayload.collections?.[0].collection_unit_id).to.be.equal('unit');
+
+      expect(payloads.critterbasePayload.collections?.[1].critter_id).to.be.a('string');
+      expect(payloads.critterbasePayload.collections?.[1].collection_unit_id).to.be.equal('collection');
+    });
+  });
 });
