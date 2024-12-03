@@ -1,4 +1,4 @@
-import { mdiAccountBox, mdiFormatListBulleted, mdiHelpCircle } from '@mdi/js';
+import { mdiHelpCircle } from '@mdi/js';
 import Box from '@mui/material/Box';
 import { grey } from '@mui/material/colors';
 import Container from '@mui/material/Container';
@@ -13,9 +13,9 @@ import { StandardsToolbar } from '../standards/components/StandardsToolbar';
 
 export enum SupportPageView {
   GENERAL = 'GENERAL',
-  PROJECTS = 'PROJECTS',
+  STRUCTURE = 'STRUCTURE',
   SURVEYS = 'SURVEYS',
-  TECHNIQUES = 'TECHNIQUES',
+  FOUNDATION = 'FOUNDATION',
   SITES = 'SITES',
   ANIMALS = 'ANIMALS',
   TELEMETRY = 'TELEMETRY',
@@ -24,7 +24,8 @@ export enum SupportPageView {
   STANDARDS = 'STANDARDS',
   FAQ = 'FAQ',
   PUBLISHING = 'PUBLISHING',
-  CONTACT = 'CONTACT'
+  CONTACT = 'CONTACT',
+  USERS = 'USERS'
 }
 
 export interface ISupportPageView {
@@ -46,18 +47,19 @@ const SupportPage = () => {
 
   const views: ISupportPageView[] = [
     { label: 'General', value: SupportPageView.GENERAL, icon: mdiHelpCircle },
-    { label: 'Projects', value: SupportPageView.PROJECTS, icon: mdiHelpCircle },
-    { label: 'Surveys', value: SupportPageView.SURVEYS, icon: mdiHelpCircle },
-    { label: 'Techniques', value: SupportPageView.TECHNIQUES, icon: mdiHelpCircle },
-    { label: 'Sites', value: SupportPageView.SITES, icon: mdiHelpCircle },
-    { label: 'Animals', value: SupportPageView.ANIMALS, icon: mdiHelpCircle },
-    { label: 'Telemetry', value: SupportPageView.TELEMETRY, icon: mdiHelpCircle },
-    { label: 'Observations', value: SupportPageView.OBSERVATIONS, icon: mdiHelpCircle },
-    { label: 'Attachments', value: SupportPageView.ATTACHMENTS, icon: mdiHelpCircle },
-    { label: 'Standards', value: SupportPageView.STANDARDS, icon: mdiHelpCircle },
-    { label: 'FAQ', value: SupportPageView.FAQ, icon: mdiFormatListBulleted },
-    { label: 'Publishing', value: SupportPageView.PUBLISHING, icon: mdiHelpCircle },
-    { label: 'Contact', value: SupportPageView.CONTACT, icon: mdiAccountBox }
+    { label: 'SIMS Framework', value: SupportPageView.STRUCTURE, icon: mdiHelpCircle },
+    // { label: 'Surveys', value: SupportPageView.SURVEYS, icon: mdiHelpCircle },
+    // { label: 'Users', value: SupportPageView.USERS, icon: mdiAccountQuestion },
+    { label: 'Foundational Data', value: SupportPageView.FOUNDATION, icon: mdiHelpCircle }
+    // { label: 'Sites', value: SupportPageView.SITES, icon: mdiHelpCircle },
+    // { label: 'Animals', value: SupportPageView.ANIMALS, icon: mdiHelpCircle },
+    // { label: 'Telemetry', value: SupportPageView.TELEMETRY, icon: mdiHelpCircle },
+    // { label: 'Observations', value: SupportPageView.OBSERVATIONS, icon: mdiHelpCircle },
+    // { label: 'Attachments', value: SupportPageView.ATTACHMENTS, icon: mdiHelpCircle },
+    // { label: 'Standards', value: SupportPageView.STANDARDS, icon: mdiHelpCircle },
+    // { label: 'FAQ', value: SupportPageView.FAQ, icon: mdiFormatListBulleted },
+    // { label: 'Publishing', value: SupportPageView.PUBLISHING, icon: mdiHelpCircle },
+    // { label: 'Contact', value: SupportPageView.CONTACT, icon: mdiAccountBox }
   ];
 
   const dataMap: DataMap = {
@@ -69,11 +71,23 @@ const SupportPage = () => {
       { label: 'How to create a project?', description: 'Details about creating and managing projects.' },
       { label: 'How to add team members?', description: 'Learn how to invite and manage team members.' }
     ],
-    [SupportPageView.PROJECTS]: [
+    [SupportPageView.STRUCTURE]: [
+      { label: 'Generic Introduction', description: 'How to create and manage projects.', unit: 'Projects' },
+      { label: 'Creating Projects', description: 'How to create and manage projects.', unit: 'Projects' },
       { label: 'Creating Projects', description: 'How to create and manage projects.', unit: 'Projects' }
     ],
     [SupportPageView.SURVEYS]: [
       { label: 'Survey Management', description: 'How to design and use surveys.', unit: 'Surveys' }
+    ],
+    [SupportPageView.FOUNDATION]: [
+      { label: 'Survey Management', description: 'How to design and use surveys.', unit: 'Surveys' }
+    ],
+    [SupportPageView.CONTACT]: [
+      {
+        label: 'Cotact Support',
+        description: 'For technical support or questions about this application, please email ‌spi_mail@gov.bc.ca',
+        unit: 'Contact'
+      }
     ]
   };
 
