@@ -6,8 +6,6 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { SurveyContext } from 'contexts/surveyContext';
-import { SamplingSiteMethodYupSchema } from 'features/surveys/sampling-information/methods/components/SamplingMethodForm';
-import { SamplingMethodFormContainer } from 'features/surveys/sampling-information/methods/SamplingMethodFormContainer';
 import { SamplingSiteGroupingsForm } from 'features/surveys/sampling-information/sites/components/site-groupings/SamplingSiteGroupingsForm';
 import { useFormikContext } from 'formik';
 import { IGetSampleLocationDetailsForUpdate } from 'interfaces/useSamplingSiteApi.interface';
@@ -23,10 +21,7 @@ export const SampleSiteEditFormYupSchema = yup.object({
   survey_sample_sites: yup
     .array(yup.object())
     .min(1, 'At least one sampling site location is required')
-    .max(1, 'Only one location is permitted per sampling site'),
-  sample_methods: yup
-    .array(yup.object().concat(SamplingSiteMethodYupSchema))
-    .min(1, 'At least one sampling method is required')
+    .max(1, 'Only one location is permitted per sampling site')
 });
 
 export interface ISampleSiteEditFormProps {
@@ -59,14 +54,6 @@ const SampleSiteEditForm = (props: ISampleSiteEditFormProps) => {
             title="Site Location"
             summary="Import or draw sampling site locations used for this survey.">
             <SurveySamplingSiteEditForm />
-          </HorizontalSplitFormComponent>
-
-          <Divider />
-
-          <HorizontalSplitFormComponent
-            title="Sampling Techniques"
-            summary="Specify sampling techniques that were used to collect data.">
-            <SamplingMethodFormContainer />
           </HorizontalSplitFormComponent>
 
           <Divider />

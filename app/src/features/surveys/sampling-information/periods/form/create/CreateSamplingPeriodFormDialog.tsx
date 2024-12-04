@@ -1,10 +1,10 @@
 import EditDialog from 'components/dialog/EditDialog';
-import { SamplingSiteMethodPeriodYupSchema } from 'features/surveys/sampling-information/periods/form/SamplingPeriodFormContainer';
 import {
   ISurveySampleMethodPeriodData,
   SamplePeriodPeriodForm,
   SurveySampleMethodPeriodArrayItemInitialValues
 } from 'features/surveys/sampling-information/periods/form/sites/periods/SamplePeriodPeriodForm';
+import { SamplingSiteMethodPeriodYupSchema } from '../../create/CreateSamplePeriodPage';
 
 interface ICreateSamplingPeriodFormDialogProps {
   open: boolean;

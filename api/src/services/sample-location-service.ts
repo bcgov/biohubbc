@@ -16,7 +16,6 @@ import {
   SampleSiteGeometryRecord,
   UpdateSampleLocationRecord
 } from '../repositories/sample-location-repository/sample-location-repository';
-import { InsertSampleMethodRecord } from '../repositories/sample-method-repository';
 import { InsertSampleStratumRecord } from '../repositories/sample-stratums-repository';
 import { getLogger } from '../utils/logger';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
@@ -29,7 +28,6 @@ export interface PostSampleLocations {
   survey_sample_site_id: number | null;
   survey_id: number;
   survey_sample_sites: InsertSampleSiteRecord[];
-  sample_methods: InsertSampleMethodRecord[];
   blocks: InsertSampleBlockRecord[];
   stratums: InsertSampleStratumRecord[];
 }
@@ -296,26 +294,8 @@ export class SampleLocationService extends DBService {
 
     const sampleSiteRecords = await Promise.all(promises);
 
-    const methodService = new SampleMethodService(this.connection);
     const blockService = new SampleBlockService(this.connection);
     const stratumService = new SampleStratumService(this.connection);
-
-    // Loop through all newly created sample sites
-    // For reach sample site, create associated sample methods
-    const methodPromises = sampleSiteRecords.map((sampleSiteRecord) =>
-      sampleLocations.sample_methods.map((item) => {
-        const sampleMethod = {
-          survey_sample_site_id: sampleSiteRecord.survey_sample_site_id,
-          method_technique_id: item.method_technique_id,
-          description: item.description,
-          sample_periods: item.sample_periods,
-          method_response_metric_id: item.method_response_metric_id
-        };
-        return methodService.insertSampleMethod(sampleMethod);
-      })
-    );
-
-    await Promise.all(methodPromises);
 
     // Loop through all newly created sample sites
     // For reach sample site, create associated sample blocks

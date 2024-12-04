@@ -1,4 +1,4 @@
-import { ISurveySampleMethodFormData } from 'features/surveys/sampling-information/methods/components/SamplingMethodForm';
+import { ISurveySampleMethodFormData } from 'features/surveys/sampling-information/periods/create/CreateSamplePeriodPage';
 import { ISurveySampleMethodPeriodData } from 'features/surveys/sampling-information/periods/form/sites/periods/SamplePeriodPeriodForm';
 import { Feature } from 'geojson';
 import { ApiPaginationResponseParams } from 'types/misc';
@@ -22,7 +22,6 @@ export interface ISurveySampleMethod {
 export interface ICreateSamplingSiteRequest {
   survey_id: number;
   survey_sample_sites: ISurveySampleSite[]; // extracted list from shape files
-  sample_methods: ISurveySampleMethod[];
   blocks: IGetSurveyBlock[];
   stratums: IGetSurveyStratum[];
 }

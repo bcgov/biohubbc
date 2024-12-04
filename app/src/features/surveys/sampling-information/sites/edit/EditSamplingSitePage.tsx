@@ -4,7 +4,6 @@ import Typography from '@mui/material/Typography';
 import FormikErrorSnackbar from 'components/alert/FormikErrorSnackbar';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { CreateSamplingSiteI18N } from 'constants/i18n';
-import { ISurveySampleMethodFormData } from 'features/surveys/sampling-information/methods/components/SamplingMethodForm';
 import { Formik, FormikProps } from 'formik';
 import { Feature } from 'geojson';
 import { APIError } from 'hooks/api/useAxios';
@@ -20,6 +19,7 @@ import {
 } from 'interfaces/useSamplingSiteApi.interface';
 import { useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
+import { ISurveySampleMethodFormData } from '../../periods/create/CreateSamplePeriodPage';
 import SamplingSiteHeader from '../components/SamplingSiteHeader';
 import SampleSiteEditForm, { SampleSiteEditFormYupSchema } from './form/SampleSiteEditForm';
 

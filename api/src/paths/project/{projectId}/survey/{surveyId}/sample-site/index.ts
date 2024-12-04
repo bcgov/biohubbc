@@ -363,7 +363,7 @@ POST.apiDoc = {
         schema: {
           type: 'object',
           additionalProperties: false,
-          required: ['sample_methods', 'survey_sample_sites'],
+          required: ['survey_sample_sites'],
           properties: {
             survey_id: {
               type: 'integer'
@@ -373,68 +373,6 @@ POST.apiDoc = {
             },
             description: {
               type: 'string'
-            },
-            sample_methods: {
-              type: 'array',
-              minItems: 1,
-              items: {
-                type: 'object',
-                additionalProperties: false,
-                required: ['method_technique_id', 'description', 'sample_periods', 'method_response_metric_id'],
-                properties: {
-                  survey_sample_site_id: {
-                    type: 'integer',
-                    nullable: true
-                  },
-                  survey_sample_method_id: {
-                    type: 'integer',
-                    nullable: true
-                  },
-                  description: {
-                    type: 'string'
-                  },
-                  method_technique_id: {
-                    type: 'integer'
-                  },
-                  sample_periods: {
-                    type: 'array',
-                    minItems: 1,
-                    items: {
-                      type: 'object',
-                      additionalProperties: false,
-                      required: ['start_date', 'end_date'],
-                      properties: {
-                        survey_sample_period_id: {
-                          type: 'integer',
-                          nullable: true
-                        },
-                        survey_sample_method_id: {
-                          type: 'integer',
-                          nullable: true
-                        },
-                        start_date: {
-                          type: 'string'
-                        },
-                        end_date: {
-                          type: 'string'
-                        },
-                        start_time: {
-                          type: 'string',
-                          nullable: true
-                        },
-                        end_time: {
-                          type: 'string',
-                          nullable: true
-                        }
-                      }
-                    }
-                  },
-                  method_response_metric_id: {
-                    type: 'integer',
-                    minimum: 1
-                  }
-                }
-              }
             },
             blocks: {
               type: 'array',

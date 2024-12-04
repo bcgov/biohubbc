@@ -2,20 +2,60 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { SamplePeriodI18N } from 'constants/i18n';
+import dayjs from 'dayjs';
 import { Formik, FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
+import yup from 'utils/YupSchema';
 import SamplingSiteHeader from '../../sites/components/SamplingSiteHeader';
 import CreateSamplePeriodForm from '../form/CreateSamplePeriodForm';
-import { SamplingSiteMethodPeriodYupSchema } from '../form/SamplingPeriodFormContainer';
 import {
   ISurveySampleMethodPeriodData,
   SurveySampleMethodPeriodArrayItemInitialValues
 } from '../form/sites/periods/SamplePeriodPeriodForm';
 
+export const SamplingSiteMethodPeriodYupSchema = yup
+  .object({
+    start_date: yup.string().typeError('Start Date is required').isValidDateString().required('Start Date is required'),
+    end_date: yup
+      .string()
+      .typeError('End Date is required')
+      .isValidDateString()
+      .required('End Date is required')
+      .isEndDateSameOrAfterStartDate('start_date'),
+    start_time: yup.string().when('end_time', {
+      is: (val: string | null) => val && val !== null,
+      then: yup.string().typeError('Start Time is required').required('Start Time is required'),
+      otherwise: yup.string().nullable()
+    }),
+    end_time: yup.string().nullable()
+  })
+  .test('checkDatesAreSameAndEndTimeIsAfterStart', 'End date must be after start date', function (value) {
+    const { start_date, end_date, start_time, end_time } = value;
+
+    if (start_date === end_date && start_time && end_time) {
+      return dayjs(`${start_date} ${start_time}`, 'YYYY-MM-DD HH:mm:ss').isBefore(
+        dayjs(`${end_date} ${end_time}`, 'YYYY-MM-DD HH:mm:ss')
+      );
+    }
+    return true;
+  });
+
+  export interface ISurveySampleMethodFormData {
+  _id?: string; // Internal ID used only for a unique key prop. Should not be sent to the API.
+  survey_sample_method_id: number | null;
+  survey_sample_site_id: number | null;
+  method_response_metric_id: number | null;
+  description: string;
+  technique: {
+    method_technique_id: number | null;
+  };
+  sample_periods: ISurveySampleMethodPeriodData[];
+}
+  
 /**
  * Interface for the form data used in the Create Sampling Period form.
  *

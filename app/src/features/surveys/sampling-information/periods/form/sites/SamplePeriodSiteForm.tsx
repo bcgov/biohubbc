@@ -1,14 +1,16 @@
 import { mdiMinusCircleOutline, mdiPlusCircle } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import Box from '@mui/material/Box';
-import Collapse from '@mui/material/Collapse';
+import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import { IGetSampleLocationNonSpatialDetails } from 'interfaces/useSamplingSiteApi.interface';
-import { useState } from 'react';
-import { TransitionGroup } from 'react-transition-group';
+import React, { useState } from 'react';
 import { SamplePeriodPeriodForm } from './periods/SamplePeriodPeriodForm';
 
 interface ISamplingPeriodSiteFormProps {
@@ -28,35 +30,60 @@ export const SamplingPeriodSiteForm = (props: ISamplingPeriodSiteFormProps) => {
   };
 
   return (
-    <Paper variant="outlined" sx={{ px: 3, py: 2 }}>
-      <TransitionGroup>
+    <Paper variant="outlined">
+      <List>
         {sampleSites.map((site, index) => {
           const isExpanded = expandedSites.includes(site.survey_sample_site_id);
+
           return (
-            <Collapse key={site.survey_sample_site_id}>
-              <Box display="flex" justifyContent="space-between" alignItems="center">
-                <Typography fontWeight={700}>{site.name}</Typography>
-                {isExpanded ? (
-                  <IconButton color="error" onClick={() => handleClick(site)}>
-                    <Icon path={mdiMinusCircleOutline} size={1} />
-                  </IconButton>
-                ) : (
-                  <IconButton color="primary" onClick={() => handleClick(site)}>
-                    <Icon path={mdiPlusCircle} size={1} />
-                  </IconButton>
-                )}
-              </Box>
-              {/* Show periods if the site is expanded */}
-              {isExpanded && (
-                <Box ml={2}>
-                  <SamplePeriodPeriodForm />
+            <React.Fragment key={site.survey_sample_site_id}>
+              <ListItem
+                alignItems="flex-start"
+                disablePadding
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'flex-start',
+                  py: 1,
+                  px: 2,
+                  mb: 2
+                }}>
+                <Box display="flex" justifyContent="space-between" width="100%" alignItems="center" mb={1}>
+                  <ListItemText
+                    primary={
+                      <Box display="flex" alignItems="center">
+                        <Typography color={grey[400]} mr={2}>
+                          {index + 1}
+                        </Typography>
+                        <Typography fontWeight={700} variant="subtitle1">
+                          {site.name}
+                        </Typography>
+                      </Box>
+                    }
+                  />
+                  {isExpanded ? (
+                    <IconButton color="error" onClick={() => handleClick(site)}>
+                      <Icon path={mdiMinusCircleOutline} size={1} />
+                    </IconButton>
+                  ) : (
+                    <IconButton color="primary" onClick={() => handleClick(site)}>
+                      <Icon path={mdiPlusCircle} size={1} />
+                    </IconButton>
+                  )}
                 </Box>
-              )}
+
+                {/* Show periods if the site is expanded */}
+                {isExpanded && (
+                  <Box width="100%" pl={2}>
+                    <SamplePeriodPeriodForm />
+                  </Box>
+                )}
+              </ListItem>
               {index < sampleSites.length - 1 && <Divider />}
-            </Collapse>
+            </React.Fragment>
           );
         })}
-      </TransitionGroup>
+      </List>
     </Paper>
   );
 };

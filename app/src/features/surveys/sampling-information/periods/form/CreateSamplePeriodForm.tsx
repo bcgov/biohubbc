@@ -5,8 +5,6 @@ import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
-import { SamplingSiteMethodYupSchema } from 'features/surveys/sampling-information/methods/components/SamplingMethodForm';
-import { SamplingSiteMethodPeriodYupSchema } from 'features/surveys/sampling-information/periods/form/SamplingPeriodFormContainer';
 import { useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
@@ -27,21 +25,7 @@ export const CreateSamplePeriodFormYupSchema = yup.object({
         geojson: yup.object({})
       })
     )
-    .min(1, 'At least one sampling site location is required'),
-  sample_methods: yup
-    .array()
-    .of(
-      SamplingSiteMethodYupSchema.shape({
-        sample_periods: yup
-          .array()
-          .of(SamplingSiteMethodPeriodYupSchema)
-          .min(
-            1,
-            'At least one sampling period is required for each method, describing when exactly this method was done'
-          )
-      })
-    ) // Ensure each item in the array conforms to SamplingSiteMethodYupSchema
-    .min(1, 'At least one sampling method is required') // Add check for at least one item in the array
+    .min(1, 'At least one sampling site location is required')
 });
 
 interface ICreateSamplePeriodFormProps {
