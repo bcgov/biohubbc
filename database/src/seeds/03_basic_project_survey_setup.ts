@@ -191,8 +191,7 @@ const insertSurveyBlockData = (surveyId: number) => `
       ${surveyId},
       '${faker.lorem.words(2)}',
       '${faker.lorem.words(10)}',
-      '[
-        {
+      '{
           "type": "Feature",
           "geometry": {
             "type": "Polygon",
@@ -222,8 +221,7 @@ const insertSurveyBlockData = (surveyId: number) => `
             ]
           },
           "properties": {}
-        }
-      ]'
+      }'
     )
   ;
 `;
