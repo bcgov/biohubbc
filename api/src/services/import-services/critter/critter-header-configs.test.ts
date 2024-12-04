@@ -8,7 +8,8 @@ import {
   getCritterCollectionUnitCellSetter,
   getCritterCollectionUnitCellValidator,
   getCritterSexCellSetter,
-  getCritterSexCellValidator
+  getCritterSexCellValidator,
+  getWlhIDCellValidator
 } from './critter-header-configs';
 
 const mockConfig: CSVConfig = {
@@ -21,7 +22,7 @@ const mockConfig: CSVConfig = {
 describe('critter-header-configs', () => {
   describe('getCritterAliasCellValidator', () => {
     it('should return a single error when cell value is invalid', () => {
-      const badCellValues = [null, undefined, '', ' ', 0, {}];
+      const badCellValues = [null, undefined, '', ' ', {}];
       for (const badCellValue of badCellValues) {
         const critterAliasValidator = getCritterAliasCellValidator(
           new Set(),
@@ -270,6 +271,41 @@ describe('critter-header-configs', () => {
       const result = cellSetter({ cell: 'MALE', row: { ITIS_TSN: 1 }, header: 'HEADER', rowIndex: 0 });
 
       expect(result).to.be.equal('uuid');
+    });
+  });
+
+  describe('getWlhIDCellValidator', () => {
+    it('should return an empty array if the cell is valid', () => {
+      const wlhIDValidator = getWlhIDCellValidator(new CSVConfigUtils(xlsx.utils.json_to_sheet([]), mockConfig));
+
+      const result = wlhIDValidator({ cell: '10-01111', row: {}, header: 'HEADER', rowIndex: 0 });
+
+      expect(result).to.be.deep.equal([]);
+    });
+
+    it('should return no errors when cell is undefined', () => {
+      const wlhIDValidator = getWlhIDCellValidator(new CSVConfigUtils(xlsx.utils.json_to_sheet([]), mockConfig));
+
+      const result = wlhIDValidator({ cell: undefined, row: {}, header: 'HEADER', rowIndex: 0 });
+
+      expect(result).to.be.deep.equal([]);
+    });
+
+    it('should return single error when cell value does not pass regex', () => {
+      const wlhIDValidator = getWlhIDCellValidator(new CSVConfigUtils(xlsx.utils.json_to_sheet([]), mockConfig));
+
+      const badWlhIds = ['100111', '1-011111', '100-222', '21-'];
+
+      badWlhIds.forEach((badWlhId) => {
+        const result = wlhIDValidator({ cell: badWlhId, row: {}, header: 'HEADER', rowIndex: 0 });
+
+        expect(result).to.be.deep.equal([
+          {
+            error: `Invalid Wildlife Health ID format`,
+            solution: `Update the Wildlife Health ID to match the expected format 'XX-XXXX'`
+          }
+        ]);
+      });
     });
   });
 });

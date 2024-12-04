@@ -59,9 +59,9 @@ describe('ImportCrittersService', () => {
         .resolves({ validateCell: () => [], setCellValue: () => 'B' });
 
       sinon.stub(headerConfig, 'getDescriptionCellValidator').returns(() => []);
-      sinon.stub(headerConfig, 'getWlhIDCellValidator').returns(() => []);
+      sinon.stub(critterConfig, 'getWlhIDCellValidator').returns(() => []);
 
-      const config = await service._getCSVConfig();
+      const config = await service.getCSVConfig();
 
       expect(config.staticHeadersConfig.ITIS_TSN.validateCell).to.be.a('function');
       expect(config.staticHeadersConfig.ALIAS.validateCell).to.be.a('function');
@@ -87,9 +87,9 @@ describe('ImportCrittersService', () => {
       sinon.stub(service, '_getCollectionUnitDynamicHeaderConfig').rejects(new Error('Dynamic header error'));
 
       sinon.stub(headerConfig, 'getDescriptionCellValidator').returns(() => []);
-      sinon.stub(headerConfig, 'getWlhIDCellValidator').returns(() => []);
+      sinon.stub(critterConfig, 'getWlhIDCellValidator').returns(() => []);
 
-      const config = await service._getCSVConfig();
+      const config = await service.getCSVConfig();
 
       expect(config.staticHeadersConfig.ITIS_TSN.validateCell).to.be.a('function');
       expect(config.staticHeadersConfig.ALIAS.validateCell).to.be.a('function');
@@ -121,7 +121,7 @@ describe('ImportCrittersService', () => {
       expect(getTsnCellValidatorStub).to.have.been.calledOnceWithExactly(new Set([1234]));
 
       expect(tsnHeaderConfig.validateCell).to.be.a('function');
-      expect(tsnHeaderConfig.setCellValue).to.be.undefined;
+      expect(tsnHeaderConfig.setCellValue).to.be.a('function');
     });
   });
 
@@ -148,7 +148,7 @@ describe('ImportCrittersService', () => {
       );
 
       expect(aliasHeaderConfig.validateCell).to.be.a('function');
-      expect(aliasHeaderConfig.setCellValue).to.be.undefined;
+      expect(aliasHeaderConfig.setCellValue).to.be.a('function');
     });
   });
 

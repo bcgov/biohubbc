@@ -65,7 +65,7 @@ export class ImportCrittersService extends DBService {
       staticHeadersConfig: {
         ITIS_TSN: { aliases: ['TAXON', 'SPECIES', 'TSN'] },
         ALIAS: { aliases: ['NICKNAME', 'NAME', 'ANIMAL_ID'] },
-        SEX: { aliases: ['TEST'] },
+        SEX: { aliases: [] },
         WLH_ID: { aliases: ['WILDLIFE_HEALTH_ID', 'WILD LIFE HEALTH ID', 'WLHID'] },
         DESCRIPTION: { aliases: ['COMMENTS', 'COMMENT', 'NOTES'] }
       },
@@ -137,17 +137,19 @@ export class ImportCrittersService extends DBService {
       this._getCollectionUnitDynamicHeaderConfig().catch(() => undefined) // Same for the dynamic columns
     ]);
 
-    return merge(this._config, {
+    const newConfig = merge(this._config, {
       staticHeadersConfig: {
         ITIS_TSN: tsnHeaderConfig,
         ALIAS: aliasHeaderConfig,
         SEX: sexHeaderConfig,
-        WLH_ID: getWlhIDCellValidator(this.configUtils),
-        DESCRIPTION: getDescriptionCellValidator()
+        WLH_ID: { validateCell: getWlhIDCellValidator(this.configUtils) },
+        DESCRIPTION: { validateCell: getDescriptionCellValidator() }
       },
       dynamicHeadersConfig: dynamicHeadersConfig,
       ignoreDynamicHeaders: !dynamicHeadersConfig
     });
+
+    return newConfig;
   }
 
   /**

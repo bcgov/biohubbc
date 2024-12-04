@@ -230,7 +230,7 @@ export const getWlhIDCellValidator = (configUtils: CSVConfigUtils<CritterCSVStat
       return [];
     }
 
-    const isWlhIdUnique = configUtils.isCellUnique('ALIAS', params.cell);
+    const isWlhIdUnique = configUtils.isCellUnique('WLH_ID', params.cell);
 
     if (!/^\d{2}-.+/.exec(String(params.cell))) {
       cellErrors.push({

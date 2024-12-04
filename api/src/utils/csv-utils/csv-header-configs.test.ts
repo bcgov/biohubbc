@@ -1,11 +1,6 @@
 import { expect } from 'chai';
 import { z } from 'zod';
-import {
-  getDescriptionCellValidator,
-  getTsnCellValidator,
-  getWlhIDCellValidator,
-  validateZodCell
-} from './csv-header-configs';
+import { getDescriptionCellValidator, getTsnCellValidator, validateZodCell } from './csv-header-configs';
 
 describe('CSVHeaderConfigs', () => {
   describe('validateZodCell', () => {
@@ -69,41 +64,6 @@ describe('CSVHeaderConfigs', () => {
 
         expect(result.length).to.be.equal(1);
       }
-    });
-  });
-
-  describe('getWlhIDCellValidator', () => {
-    it('should return an empty array if the cell is valid', () => {
-      const wlhIDValidator = getWlhIDCellValidator();
-
-      const result = wlhIDValidator({ cell: '10-01111', row: {}, header: 'HEADER', rowIndex: 0 });
-
-      expect(result).to.be.deep.equal([]);
-    });
-
-    it('should return no errors when cell is undefined', () => {
-      const wlhIDValidator = getWlhIDCellValidator();
-
-      const result = wlhIDValidator({ cell: undefined, row: {}, header: 'HEADER', rowIndex: 0 });
-
-      expect(result).to.be.deep.equal([]);
-    });
-
-    it('should return single error when cell value does not pass regex', () => {
-      const wlhIDValidator = getWlhIDCellValidator();
-
-      const badWlhIds = ['100111', '1-011111', '100-222', '21-'];
-
-      badWlhIds.forEach((badWlhId) => {
-        const result = wlhIDValidator({ cell: badWlhId, row: {}, header: 'HEADER', rowIndex: 0 });
-
-        expect(result).to.be.deep.equal([
-          {
-            error: `Invalid Wildlife Health ID format`,
-            solution: `Update the Wildlife Health ID to match the expected format 'XX-XXXX'`
-          }
-        ]);
-      });
     });
   });
 });
