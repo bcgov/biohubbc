@@ -5,12 +5,7 @@ import { IDBConnection } from '../../../database/db';
 import { ApiGeneralError } from '../../../errors/api-error';
 import { CSVConfigUtils } from '../../../utils/csv-utils/csv-config-utils';
 import { validateCSVWorksheet } from '../../../utils/csv-utils/csv-config-validation';
-import {
-  CSVConfig,
-  CSVError,
-  CSVHeaderConfig,
-  CSVRowValidated
-} from '../../../utils/csv-utils/csv-config-validation.interface';
+import { CSVConfig, CSVHeaderConfig, CSVRowValidated } from '../../../utils/csv-utils/csv-config-validation.interface';
 import { getDescriptionCellValidator, getTsnCellValidator } from '../../../utils/csv-utils/csv-header-configs';
 import { getLogger } from '../../../utils/logger';
 import { NestedRecord } from '../../../utils/nested-record';
@@ -90,15 +85,15 @@ export class ImportCrittersService extends DBService {
    *
    * @async
    * @throws {ApiGeneralError} - If unable to fully insert records into Critterbase
-   * @returns {*} {Promise<CSVError[]>} List of inserted survey critter ids
+   * @returns {*} {Promise<void>} List of inserted survey critter ids
    */
-  async importCSVWorksheet(): Promise<CSVError[]> {
+  async importCSVWorksheet(): Promise<void> {
     const config = await this.getCSVConfig();
 
     const { errors, rows } = validateCSVWorksheet(this.worksheet, config);
 
     if (errors.length) {
-      return errors;
+      throw new ApiGeneralError('Failed to validate CSV', errors);
     }
 
     const payloads = this._getImportPayloads(rows);
@@ -117,8 +112,6 @@ export class ImportCrittersService extends DBService {
 
     // Add Critters to SIMS survey
     await this.surveyCritterService.addCrittersToSurvey(this.surveyId, payloads.simsPayload);
-
-    return [];
   }
 
   /**

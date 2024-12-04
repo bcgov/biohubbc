@@ -14,7 +14,7 @@ describe('importCsv', () => {
     const mockDBConnection = getMockDBConnection({ open: sinon.stub(), commit: sinon.stub(), release: sinon.stub() });
     const getDBConnectionStub = sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
-    const importCSVWorksheetStub = sinon.stub(ImportCrittersService.prototype, 'importCSVWorksheet').resolves([]);
+    const importCSVWorksheetStub = sinon.stub(ImportCrittersService.prototype, 'importCSVWorksheet');
 
     const mockFile = { originalname: 'test.csv', mimetype: 'test.csv', buffer: Buffer.alloc(1) } as Express.Multer.File;
 
@@ -35,44 +35,6 @@ describe('importCsv', () => {
 
     expect(mockRes.status).to.have.been.calledOnceWithExactly(200);
     expect(mockRes.send).to.have.been.calledOnceWithExactly();
-
-    expect(mockDBConnection.commit).to.have.been.calledOnce;
-    expect(mockDBConnection.release).to.have.been.calledOnce;
-  });
-
-  it('status 422 when import returns validation errors', async () => {
-    const mockDBConnection = getMockDBConnection({ open: sinon.stub(), commit: sinon.stub(), release: sinon.stub() });
-    const getDBConnectionStub = sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
-
-    const importCSVWorksheetStub = sinon
-      .stub(ImportCrittersService.prototype, 'importCSVWorksheet')
-      .resolves([{ error: 'error', solution: 'solution' }]);
-
-    const mockFile = { originalname: 'test.csv', mimetype: 'test.csv', buffer: Buffer.alloc(1) } as Express.Multer.File;
-
-    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
-
-    mockReq.files = [mockFile];
-    mockReq.params.surveyId = '1';
-
-    const requestHandler = importCritterCSV();
-
-    await requestHandler(mockReq, mockRes, mockNext);
-
-    expect(mockDBConnection.open).to.have.been.calledOnce;
-
-    expect(getDBConnectionStub).to.have.been.calledOnce;
-
-    expect(importCSVWorksheetStub).to.have.been.calledOnce;
-
-    expect(mockRes.json).to.have.been.calledOnceWithExactly({
-      validation_errors: [
-        {
-          error: 'error',
-          solution: 'solution'
-        }
-      ]
-    });
 
     expect(mockDBConnection.commit).to.have.been.calledOnce;
     expect(mockDBConnection.release).to.have.been.calledOnce;

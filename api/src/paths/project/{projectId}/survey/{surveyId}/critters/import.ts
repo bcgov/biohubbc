@@ -2,7 +2,6 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
-import { CSVErrorSchema } from '../../../../../../openapi/schemas/csv';
 import { csvFileSchema } from '../../../../../../openapi/schemas/file';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { ImportCrittersService } from '../../../../../../services/import-services/critter/import-critters-service';
@@ -89,24 +88,6 @@ POST.apiDoc = {
     400: {
       $ref: '#/components/responses/400'
     },
-    422: {
-      description: 'CSV validation errors',
-      content: {
-        'application/json': {
-          schema: {
-            type: 'object',
-            additionalProperties: false,
-            required: ['validation_errors'],
-            properties: {
-              validation_errors: {
-                type: 'array',
-                items: CSVErrorSchema
-              }
-            }
-          }
-        }
-      }
-    },
     401: {
       $ref: '#/components/responses/401'
     },
@@ -142,13 +123,9 @@ export function importCritterCSV(): RequestHandler {
 
       const importService = new ImportCrittersService(connection, worksheet, surveyId);
 
-      const errors = await importService.importCSVWorksheet();
+      await importService.importCSVWorksheet();
 
       await connection.commit();
-
-      if (errors.length) {
-        return res.status(422).json({ validation_errors: errors });
-      }
 
       return res.status(200).send();
     } catch (error) {
