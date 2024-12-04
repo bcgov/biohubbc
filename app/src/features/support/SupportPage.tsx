@@ -341,8 +341,7 @@ const SupportPage = () => {
       {
         label: 'Contact Support',
         description:
-          'For technical support or questions about this application. please email <a href="mailto:spi_mail@gov.bc.ca">spi_mail@gov.bc.ca</a>',
-        unit: 'Contact'
+          'For technical support or questions about this application. please email <a href="mailto:spi_mail@gov.bc.ca">spi_mail@gov.bc.ca</a>'
       }
     ]
   };
@@ -358,7 +357,7 @@ const SupportPage = () => {
               views={views}
               currentView={currentView}
               setCurrentView={setCurrentView}
-              legend="Support Section"
+              legend="Support Overview"
             />
           </Box>
 
