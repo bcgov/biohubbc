@@ -14,7 +14,7 @@ import { v4 } from 'uuid';
 import {
   ISurveySampleMethodPeriodData,
   SamplingSiteMethodPeriodYupSchema
-} from '../../periods/SamplingPeriodFormContainer';
+} from '../../periods/form/SamplingPeriodFormContainer';
 
 export interface ISurveySampleMethodFormData {
   _id?: string; // Internal ID used only for a unique key prop. Should not be sent to the API.

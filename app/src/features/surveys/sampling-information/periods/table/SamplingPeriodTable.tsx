@@ -1,14 +1,26 @@
+import { mdiArrowTopRight, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
+import Icon from '@mdi/react';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Menu, { MenuProps } from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
-import { GridColDef, GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
+import { GridColDef, GridPaginationModel, GridRowSelectionModel, GridSortModel } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
+import { LoadingGuard } from 'components/loading/LoadingGuard';
+import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
+import { DeleteTechniqueI18N } from 'constants/i18n';
 import dayjs from 'dayjs';
-import { useCodesContext } from 'hooks/useContext';
+import { useCodesContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
+import { IFindSamplePeriodRecord } from 'interfaces/useSamplingSiteApi.interface';
+import { useState } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import { formatTimeDifference } from 'utils/datetime';
 import { getCodesName } from 'utils/Utils';
 
 export interface ISamplingSitePeriodRowData {
-  id: number;
+  survey_sample_period_id: number;
   sample_site: string;
   sample_method: string;
   method_response_metric_id: number;
@@ -19,12 +31,16 @@ export interface ISamplingSitePeriodRowData {
 }
 
 interface ISamplingPeriodTableProps {
-  periods: ISamplingSitePeriodRowData[];
+  periods: (IFindSamplePeriodRecord | ISamplingSitePeriodRowData)[];
   paginationModel: GridPaginationModel;
   setPaginationModel: React.Dispatch<React.SetStateAction<GridPaginationModel>>;
   sortModel: GridSortModel;
   setSortModel: React.Dispatch<React.SetStateAction<GridSortModel>>;
   rowCount: number;
+  // Used for when rows can be selected, which is only the case on the Manage Sampling Information page (not the Survey page)
+  selectedRows?: GridRowSelectionModel;
+  setSelectedRows?: (selection: GridRowSelectionModel) => void;
+  onDelete?: (techniqueId: number) => Promise<void>;
 }
 
 /**
@@ -34,11 +50,92 @@ interface ISamplingPeriodTableProps {
  * @returns {*}
  */
 export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
-  const { periods, paginationModel, setPaginationModel, sortModel, setSortModel, rowCount } = props;
+  const {
+    periods,
+    paginationModel,
+    setPaginationModel,
+    sortModel,
+    setSortModel,
+    rowCount,
+    selectedRows,
+    setSelectedRows,
+    onDelete
+  } = props;
+
+  // Individual row action menu
+  const [actionMenuAnchorEl, setActionMenuAnchorEl] = useState<{
+    anchor: MenuProps['anchorEl'];
+    periodId: number;
+  } | null>(null);
 
   const codesContext = useCodesContext();
+  const dialogContext = useDialogContext();
+  const { surveyId, projectId } = useSurveyContext();
+
+  /**
+   * Handle the delete technique API call.
+   *
+   */
+  const handleDeletePeriod = async () => {
+    if (!actionMenuAnchorEl || !onDelete) {
+      return;
+    }
+
+    await onDelete(actionMenuAnchorEl.periodId)
+      .then(() => {
+        dialogContext.setYesNoDialog({ open: false });
+        setActionMenuAnchorEl(null);
+      })
+      .catch((error: any) => {
+        dialogContext.setYesNoDialog({ open: false });
+        setActionMenuAnchorEl(null);
+        dialogContext.setSnackbar({
+          snackbarMessage: (
+            <>
+              <Typography variant="body2" component="div">
+                <strong>Error Deleting Period</strong>
+              </Typography>
+              <Typography variant="body2" component="div">
+                {String(error)}
+              </Typography>
+            </>
+          ),
+          open: true
+        });
+      });
+  };
+
+  /**
+   * Display the delete technique dialog.
+   *
+   */
+  const deletePeriodDialog = () => {
+    dialogContext.setYesNoDialog({
+      dialogTitle: DeleteTechniqueI18N.deleteTitle,
+      dialogText: DeleteTechniqueI18N.deleteText,
+      yesButtonLabel: DeleteTechniqueI18N.yesButtonLabel,
+      noButtonLabel: DeleteTechniqueI18N.noButtonLabel,
+      yesButtonProps: { color: 'error' },
+      onClose: () => {
+        dialogContext.setYesNoDialog({ open: false });
+      },
+      onNo: () => {
+        dialogContext.setYesNoDialog({ open: false });
+      },
+      open: true,
+      onYes: () => {
+        handleDeletePeriod();
+      }
+    });
+  };
 
   const columns: GridColDef<ISamplingSitePeriodRowData>[] = [
+    {
+      field: 'id',
+      headerName: 'ID',
+      flex: 1,
+      renderCell: (params) => params.row.survey_sample_period_id
+    },
     {
       field: 'sample_site',
       headerName: 'Site',
@@ -106,29 +203,93 @@ export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
   ];
 
   return (
-    <StyledDataGrid
-      disableColumnMenu
-      rowSelection={false}
-      autoHeight={false}
-      getRowHeight={() => 'auto'}
-      rows={periods}
-      getRowId={(row: ISamplingSitePeriodRowData) => row.id}
-      columns={columns}
-      checkboxSelection={false}
-      disableRowSelectionOnClick
-      rowCount={rowCount}
-      paginationMode="server"
-      sortingMode="server"
-      sortModel={sortModel}
-      paginationModel={paginationModel}
-      onPaginationModelChange={setPaginationModel}
-      onSortModelChange={setSortModel}
-      initialState={{
-        pagination: {
-          paginationModel
+    <>
+      <Menu
+        sx={{ pb: 2 }}
+        open={Boolean(actionMenuAnchorEl)}
+        onClose={() => setActionMenuAnchorEl(null)}
+        anchorEl={actionMenuAnchorEl?.anchor}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'right'
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right'
+        }}>
+        <MenuItem
+          sx={{
+            p: 0,
+            '& a': {
+              display: 'flex',
+              px: 2,
+              py: '6px',
+              textDecoration: 'none',
+              color: 'text.primary',
+              borderRadius: 0,
+              '&:focus': {
+                outline: 'none'
+              }
+            }
+          }}>
+          <RouterLink
+            to={`/admin/projects/${projectId}/surveys/${surveyId}/sampling/techniques/${actionMenuAnchorEl?.periodId}/edit`}>
+            <ListItemIcon>
+              <Icon path={mdiPencilOutline} size={1} />
+            </ListItemIcon>
+            <ListItemText>Edit Details</ListItemText>
+          </RouterLink>
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            setActionMenuAnchorEl(null);
+            deletePeriodDialog();
+          }}>
+          <ListItemIcon>
+            <Icon path={mdiTrashCanOutline} size={1} />
+          </ListItemIcon>
+          <ListItemText>Delete</ListItemText>
+        </MenuItem>
+      </Menu>
+
+      <LoadingGuard
+        hasNoData={!periods.length}
+        hasNoDataFallback={
+          <NoDataOverlay
+            height="200px"
+            title="Add Periods"
+            subtitle="Techniques describe how you collected species observations"
+            icon={mdiArrowTopRight}
+          />
         }
-      }}
-      pageSizeOptions={[10, 25, 50]}
-    />
+        hasNoDataFallbackDelay={100}>
+        <StyledDataGrid
+          disableColumnMenu
+          rowSelection={false}
+          autoHeight={false}
+          getRowHeight={() => 'auto'}
+          rows={periods}
+          getRowId={(row: ISamplingSitePeriodRowData) => row.survey_sample_period_id}
+          columns={columns}
+          checkboxSelection={setSelectedRows ? true : false}
+          rowSelectionModel={selectedRows}
+          onRowSelectionModelChange={setSelectedRows}
+          disableRowSelectionOnClick
+          rowCount={rowCount}
+          paginationMode="server"
+          sortingMode="server"
+          sortModel={sortModel}
+          paginationModel={paginationModel}
+          onPaginationModelChange={setPaginationModel}
+          onSortModelChange={setSortModel}
+          initialState={{
+            pagination: {
+              paginationModel
+            }
+          }}
+          pageSizeOptions={[10, 25, 50]}
+        />
+      </LoadingGuard>
+    </>
   );
 };

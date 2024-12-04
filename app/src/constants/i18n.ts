@@ -522,3 +522,17 @@ export const AlertI18N = {
   deleteAlertDialogTitle: 'Delete Alert?',
   deleteAlertDialogText: 'Are you sure you want to permanently delete this alert? This action cannot be undone.'
 };
+
+export const DeletePeriodsBulkI18N = {
+  deleteTitle: 'Delete selected periods?',
+  deleteText: 'Are you sure you want to permanently delete these periods? This action cannot be undone.',
+  yesButtonLabel: 'Yes',
+  noButtonLabel: 'No'
+};
+
+export const DeletePeriodI18N = {
+  deleteTitle: 'Delete period?',
+  deleteText: 'Are you sure you want to permanently delete this period? This action cannot be undone.',
+  yesButtonLabel: 'Yes',
+  noButtonLabel: 'No'
+};

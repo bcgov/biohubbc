@@ -26,7 +26,7 @@ import { SamplingSiteManageTableView, SamplingSiteTableView } from './view/Sampl
 const pageSizeOptions = [10, 25, 50];
 
 export interface ISamplingSitePeriodRowData {
-  id: number;
+  survey_sample_period_id: number;
   sample_site: string;
   sample_method: string;
   method_response_metric_id: number;
@@ -92,7 +92,7 @@ export const SamplingSiteTableContainer = () => {
       for (const method of site.sample_methods) {
         for (const period of method.sample_periods) {
           data.push({
-            id: period.survey_sample_period_id,
+            survey_sample_period_id: period.survey_sample_period_id,
             sample_site: site.name,
             sample_method: method.technique.name,
             method_response_metric_id: method.method_response_metric_id,

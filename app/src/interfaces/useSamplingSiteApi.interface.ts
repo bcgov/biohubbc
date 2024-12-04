@@ -1,5 +1,5 @@
 import { ISurveySampleMethodFormData } from 'features/surveys/sampling-information/methods/components/SamplingMethodForm';
-import { ISurveySampleMethodPeriodData } from 'features/surveys/sampling-information/periods/SamplingPeriodFormContainer';
+import { ISurveySampleMethodPeriodData } from 'features/surveys/sampling-information/periods/form/SamplingPeriodFormContainer';
 import { Feature } from 'geojson';
 import { ApiPaginationResponseParams } from 'types/misc';
 import { IGetSurveyBlock, IGetSurveyStratum } from './useSurveyApi.interface';

@@ -168,7 +168,7 @@ const useSamplingSiteApi = (axios: AxiosInstance) => {
    *       system_user_id?: number;
    *     }} [filterFieldData]
    * @param {ApiPaginationRequestOptions} [pagination]
-   * @return {*}  {Promise<IGetSampleLocationNonSpatialResponse>}
+   * @return {*}  {Promise<IFindSamplePeriodResponse>}
    */
   const findSamplePeriods = async (
     filterFieldData?: {
@@ -237,6 +237,22 @@ const useSamplingSiteApi = (axios: AxiosInstance) => {
     await axios.post(`/api/project/${projectId}/survey/${surveyId}/sample-site/delete`, { surveySampleSiteIds });
   };
 
+  /**
+   * Delete Sample Periods
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {number} surveySamplePeriodIds
+   * @return {*}  {Promise<void>}
+   */
+  const deleteSamplePeriods = async (
+    projectId: number,
+    surveyId: number,
+    surveySamplePeriodIds: number[]
+  ): Promise<void> => {
+    await axios.post(`/api/project/${projectId}/survey/${surveyId}/sample-site/delete`, { surveySamplePeriodIds });
+  };
+
   return {
     createSamplingSites,
     getSampleSites,
@@ -247,7 +263,8 @@ const useSamplingSiteApi = (axios: AxiosInstance) => {
     findSamplePeriods,
     editSampleSite,
     deleteSampleSite,
-    deleteSampleSites
+    deleteSampleSites,
+    deleteSamplePeriods
   };
 };
 

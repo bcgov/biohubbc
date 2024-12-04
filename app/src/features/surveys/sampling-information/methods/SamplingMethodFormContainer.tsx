@@ -23,7 +23,7 @@ import { CodesContext } from 'contexts/codesContext';
 import { ISurveySampleMethodFormData } from 'features/surveys/sampling-information/methods/components/SamplingMethodForm';
 import { CreateSamplingMethodFormDialog } from 'features/surveys/sampling-information/methods/create/CreateSamplingMethodFormDialog';
 import { EditSamplingMethodFormDialog } from 'features/surveys/sampling-information/methods/edit/EditSamplingMethodFormDialog';
-import { SamplingPeriodFormContainer } from 'features/surveys/sampling-information/periods/SamplingPeriodFormContainer';
+import { SamplingPeriodFormContainer } from 'features/surveys/sampling-information/periods/form/SamplingPeriodFormContainer';
 import { ICreateSampleSiteFormData } from 'features/surveys/sampling-information/sites/create/CreateSamplingSitePage';
 import { IEditSampleSiteFormData } from 'features/surveys/sampling-information/sites/edit/EditSamplingSitePage';
 import { useFormikContext } from 'formik';

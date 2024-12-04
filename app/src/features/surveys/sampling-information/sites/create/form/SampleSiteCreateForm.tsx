@@ -8,7 +8,7 @@ import Stack from '@mui/material/Stack';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { SamplingSiteMethodYupSchema } from 'features/surveys/sampling-information/methods/components/SamplingMethodForm';
 import { SamplingMethodFormContainer } from 'features/surveys/sampling-information/methods/SamplingMethodFormContainer';
-import { SamplingSiteMethodPeriodYupSchema } from 'features/surveys/sampling-information/periods/SamplingPeriodFormContainer';
+import { SamplingSiteMethodPeriodYupSchema } from 'features/surveys/sampling-information/periods/form/SamplingPeriodFormContainer';
 import { SamplingSiteGroupingsForm } from 'features/surveys/sampling-information/sites/components/site-groupings/SamplingSiteGroupingsForm';
 import { ICreateSampleSiteFormData } from 'features/surveys/sampling-information/sites/create/CreateSamplingSitePage';
 import { SampleSiteImportForm } from 'features/surveys/sampling-information/sites/create/form/SampleSiteImportForm';

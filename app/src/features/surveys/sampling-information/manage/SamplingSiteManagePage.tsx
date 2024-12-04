@@ -6,6 +6,7 @@ import { SamplingSiteManageHeader } from 'features/surveys/sampling-information/
 import { SamplingTechniqueContainer } from 'features/surveys/sampling-information/techniques/SamplingTechniqueContainer';
 import { useProjectContext, useSurveyContext } from 'hooks/useContext';
 import { SystemAlertBannerEnum } from 'interfaces/useAlertApi.interface';
+import { SamplingPeriodContainer } from '../periods/SamplingPeriodContainer';
 import SamplingSiteContainer from '../sites/SamplingSiteContainer';
 
 /**
@@ -31,8 +32,11 @@ export const SamplingSiteManagePage = () => {
         <Paper sx={{ mb: 3 }}>
           <SamplingTechniqueContainer />
         </Paper>
-        <Paper>
+        <Paper sx={{ mb: 3 }}>
           <SamplingSiteContainer />
+        </Paper>
+        <Paper>
+          <SamplingPeriodContainer />
         </Paper>
       </Container>
     </Stack>

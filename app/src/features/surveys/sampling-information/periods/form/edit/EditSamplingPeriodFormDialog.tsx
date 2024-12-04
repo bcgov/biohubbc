@@ -1,9 +1,9 @@
 import { EditDialog } from 'components/dialog/EditDialog';
-import { SamplingPeriodForm } from 'features/surveys/sampling-information/periods/components/SamplingPeriodForm';
+import { SamplingPeriodForm } from 'features/surveys/sampling-information/periods/form/SamplingPeriodForm';
 import {
   ISurveySampleMethodPeriodData,
   SamplingSiteMethodPeriodYupSchema
-} from 'features/surveys/sampling-information/periods/SamplingPeriodFormContainer';
+} from 'features/surveys/sampling-information/periods/form/SamplingPeriodFormContainer';
 import { IGetSamplePeriodRecord } from 'interfaces/useSamplingSiteApi.interface';
 
 interface IEditSamplingPeriodFormDialogProps {
