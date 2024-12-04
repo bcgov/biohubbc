@@ -1,5 +1,7 @@
-import { mdiArrowTopRight, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
+import { mdiArrowTopRight, mdiDotsVertical, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import grey from '@mui/material/colors/grey';
+import IconButton from '@mui/material/IconButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Menu, { MenuProps } from '@mui/material/Menu';
@@ -13,7 +15,6 @@ import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { DeleteTechniqueI18N } from 'constants/i18n';
 import dayjs from 'dayjs';
 import { useCodesContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
-import { IFindSamplePeriodRecord } from 'interfaces/useSamplingSiteApi.interface';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { formatTimeDifference } from 'utils/datetime';
@@ -31,7 +32,7 @@ export interface ISamplingSitePeriodRowData {
 }
 
 interface ISamplingPeriodTableProps {
-  periods: (IFindSamplePeriodRecord | ISamplingSitePeriodRowData)[];
+  periods: ISamplingSitePeriodRowData[];
   paginationModel: GridPaginationModel;
   setPaginationModel: React.Dispatch<React.SetStateAction<GridPaginationModel>>;
   sortModel: GridSortModel;
@@ -64,7 +65,7 @@ export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
 
   // Individual row action menu
   const [actionMenuAnchorEl, setActionMenuAnchorEl] = useState<{
-    anchor: MenuProps['anchorEl'];
+    anchorEl: MenuProps['anchorEl'];
     periodId: number;
   } | null>(null);
 
@@ -133,8 +134,17 @@ export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
     {
       field: 'id',
       headerName: 'ID',
-      flex: 1,
-      renderCell: (params) => params.row.survey_sample_period_id
+      width: 70,
+      renderHeader: () => (
+        <Typography color={grey[500]} variant="body2" fontWeight={700}>
+          ID
+        </Typography>
+      ),
+      renderCell: (params) => (
+        <Typography color={grey[500]} variant="body2">
+          {params.row.survey_sample_period_id}
+        </Typography>
+      )
     },
     {
       field: 'sample_site',
@@ -202,13 +212,37 @@ export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
     }
   ];
 
+  // If rows can be selected, include the action button for editing and deleting
+  if (setSelectedRows) {
+    columns.push({
+      field: 'actions',
+      type: 'actions',
+      sortable: false,
+      width: 10,
+      align: 'right',
+      renderCell: (params) => {
+        return (
+          <IconButton
+            onClick={(event) => {
+              setActionMenuAnchorEl({
+                anchorEl: event.currentTarget,
+                periodId: params.row.survey_sample_period_id
+              });
+            }}>
+            <Icon path={mdiDotsVertical} size={1} />
+          </IconButton>
+        );
+      }
+    });
+  }
+
   return (
     <>
       <Menu
         sx={{ pb: 2 }}
         open={Boolean(actionMenuAnchorEl)}
         onClose={() => setActionMenuAnchorEl(null)}
-        anchorEl={actionMenuAnchorEl?.anchor}
+        anchorEl={actionMenuAnchorEl?.anchorEl}
         anchorOrigin={{
           vertical: 'top',
           horizontal: 'right'

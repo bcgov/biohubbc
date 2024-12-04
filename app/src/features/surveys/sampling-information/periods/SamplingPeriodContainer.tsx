@@ -24,7 +24,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
-import { SamplingPeriodTable } from './table/SamplingPeriodTable';
+import { ISamplingSitePeriodRowData, SamplingPeriodTable } from './table/SamplingPeriodTable';
 
 const pageSizeOptions = [10, 25, 50];
 
@@ -72,6 +72,25 @@ export const SamplingPeriodContainer = () => {
 
   const periodCount = periodsDataLoader.data?.pagination.total ?? 0;
   const periods = periodsDataLoader.data?.periods ?? [];
+
+  const rows: ISamplingSitePeriodRowData[] = useMemo(() => {
+    const data: ISamplingSitePeriodRowData[] = [];
+
+    for (const period of periods) {
+      data.push({
+        survey_sample_period_id: period.survey_sample_period_id,
+        sample_site: period.sample_site.name,
+        sample_method: period.method_technique.name,
+        method_response_metric_id: period.sample_method.method_response_metric_id,
+        start_date: period.start_date,
+        end_date: period.end_date,
+        start_time: period.start_time,
+        end_time: period.end_time
+      });
+    }
+
+    return data;
+  }, [periods]);
 
   const handleBulkDeletePeriods = async () => {
     await biohubApi.samplingSite
@@ -191,15 +210,16 @@ export const SamplingPeriodContainer = () => {
         </Stack>
       </Toolbar>
 
-      <Divider flexItem></Divider>
+      <Divider flexItem />
 
       <LoadingGuard
         isLoading={!periodsDataLoader.data && (periodsDataLoader.isLoading || !periodsDataLoader.isReady)}
         isLoadingFallback={<SkeletonTable />}
-        isLoadingFallbackDelay={100}>
+        isLoadingFallbackDelay={100}
+        hasNoData={!periods.length}>
         <Box height="400px">
           <SamplingPeriodTable
-            periods={periods}
+            periods={rows}
             paginationModel={periodsPaginationModel}
             setPaginationModel={setPeriodsPaginationModel}
             sortModel={periodsSortModel}

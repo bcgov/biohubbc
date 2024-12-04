@@ -7,7 +7,7 @@ import { SamplingTechniqueContainer } from 'features/surveys/sampling-informatio
 import { useProjectContext, useSurveyContext } from 'hooks/useContext';
 import { SystemAlertBannerEnum } from 'interfaces/useAlertApi.interface';
 import { SamplingPeriodContainer } from '../periods/SamplingPeriodContainer';
-import SamplingSiteContainer from '../sites/SamplingSiteContainer';
+import SamplingSiteContainer from '../sites/SamplingSiteTableContainer';
 
 /**
  * Page for managing sampling information (sampling techniques and sites).
