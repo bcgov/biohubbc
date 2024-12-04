@@ -523,16 +523,32 @@ export const AlertI18N = {
   deleteAlertDialogText: 'Are you sure you want to permanently delete this alert? This action cannot be undone.'
 };
 
-export const DeletePeriodsBulkI18N = {
-  deleteTitle: 'Delete selected periods?',
-  deleteText: 'Are you sure you want to permanently delete these periods? This action cannot be undone.',
-  yesButtonLabel: 'Yes',
-  noButtonLabel: 'No'
-};
+export const SamplePeriodI18N = {
+  cancelTitle: 'Discard changes and exit?',
+  cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
 
-export const DeletePeriodI18N = {
-  deleteTitle: 'Delete period?',
-  deleteText: 'Are you sure you want to permanently delete this period? This action cannot be undone.',
-  yesButtonLabel: 'Yes',
-  noButtonLabel: 'No'
+  createSamplePeriodTitle: 'Create Sample Period',
+  createSamplePeriodText:
+    'Enter a name, message, and type for the alert. The name and message will be displayed on the alert banner.',
+  createErrorTitle: 'Error Creating Sample Period',
+  createErrorText:
+    'An error has occurred while attempting to create your alert, please try again. If the error persists, please contact your system administrator.',
+
+  updateSamplePeriodTitle: 'Edit Sample Period Details',
+  updateSamplePeriodText: 'Edit the name, description and effective dates for this alert.',
+  updateErrorTitle: 'Error Updating Sample Period',
+  updateErrorText:
+    'An error has occurred while attempting to update your Sample Period, please try again. If the error persists, please contact your system administrator.',
+
+  bulkDeleteSamplePeriodErrorTitle: 'Error Deleting a Sample Period',
+  bulkDeleteSamplePeriodErrorText:
+    'An error has occurred while attempting to delete the Sample Periods, please try again. If the error persists, please contact your system administrator.',
+  bulkDeleteSamplePeriodTitle: 'Delete Sample Period?',
+  bulkDeleteSamplePeriodText: 'Are you sure you want to permanently delete this alert? This action cannot be undone.',
+
+  deleteSamplePeriodErrorTitle: 'Error Deleting a Sample Period',
+  deleteSamplePeriodErrorText:
+    'An error has occurred while attempting to delete the Sample Periods, please try again. If the error persists, please contact your system administrator.',
+  deleteSamplePeriodTitle: 'Delete Sample Period?',
+  deleteSamplePeriodText: 'Are you sure you want to permanently delete this alert? This action cannot be undone.'
 };

@@ -11,8 +11,8 @@ import useDataLoader from 'hooks/useDataLoader';
 import { useContext, useEffect } from 'react';
 import yup from 'utils/YupSchema';
 import { v4 } from 'uuid';
+import { ISurveySampleMethodPeriodData } from '../../periods/form/periods/SamplePeriodPeriodForm';
 import {
-  ISurveySampleMethodPeriodData,
   SamplingSiteMethodPeriodYupSchema
 } from '../../periods/form/SamplingPeriodFormContainer';
 

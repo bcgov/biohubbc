@@ -8,7 +8,7 @@ import { IObservationsContext } from 'contexts/observationsContext';
 import { IObservationsPageContext } from 'contexts/observationsPageContext';
 import dayjs from 'dayjs';
 import { ImportObservationsButton } from 'features/surveys/observations/sampling-sites/components/ImportObservationsButton';
-import { ISurveySampleMethodPeriodData } from 'features/surveys/sampling-information/periods/form/SamplingPeriodFormContainer';
+import { ISurveySampleMethodPeriodData } from 'features/surveys/sampling-information/periods/form/periods/SamplePeriodPeriodForm';
 import { IGetSamplePeriodRecord } from 'interfaces/useSamplingSiteApi.interface';
 
 interface ISamplingSiteListPeriodProps {

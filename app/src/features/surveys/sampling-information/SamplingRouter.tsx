@@ -9,6 +9,7 @@ import { EditTechniquePage } from 'features/surveys/sampling-information/techniq
 import { Switch } from 'react-router';
 import RouteWithTitle from 'utils/RouteWithTitle';
 import { getTitle } from 'utils/Utils';
+import { CreateSamplePeriodPage } from './periods/create/CreateSamplePeriodPage';
 
 /**
  * Router for all `/admin/projects/:id/surveys/:survey_id/sampling/*` pages.
@@ -66,6 +67,24 @@ export const SamplingRouter = () => {
           <EditTechniquePage />
         </DialogContextProvider>
       </RouteWithTitle>
+
+      <RouteWithTitle
+        exact
+        path="/admin/projects/:id/surveys/:survey_id/sampling/periods/create"
+        title={getTitle('Create Periods')}>
+        <DialogContextProvider>
+          <CreateSamplePeriodPage />
+        </DialogContextProvider>
+      </RouteWithTitle>
+
+      {/* <RouteWithTitle
+        exact
+        path="/admin/projects/:id/surveys/:survey_id/sampling/periods/create"
+        title={getTitle('Create Periods')}>
+        <DialogContextProvider>
+          <EditPeriodPage />
+        </DialogContextProvider>
+      </RouteWithTitle> */}
     </Switch>
   );
 };

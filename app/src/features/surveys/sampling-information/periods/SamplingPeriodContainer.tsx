@@ -15,7 +15,7 @@ import { GridPaginationModel, GridRowSelectionModel, GridSortModel } from '@mui/
 import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
-import { DeletePeriodsBulkI18N } from 'constants/i18n';
+import { SamplePeriodI18N } from 'constants/i18n';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
@@ -128,10 +128,10 @@ export const SamplingPeriodContainer = () => {
 
   const deleteBulkPeriodsDialog = () => {
     dialogContext.setYesNoDialog({
-      dialogTitle: DeletePeriodsBulkI18N.deleteTitle,
-      dialogText: DeletePeriodsBulkI18N.deleteText,
-      yesButtonLabel: DeletePeriodsBulkI18N.yesButtonLabel,
-      noButtonLabel: DeletePeriodsBulkI18N.noButtonLabel,
+      dialogTitle: SamplePeriodI18N.bulkDeleteSamplePeriodTitle,
+      dialogText: SamplePeriodI18N.bulkDeleteSamplePeriodErrorText,
+      yesButtonLabel: 'Yes',
+      noButtonLabel: 'No',
       yesButtonProps: { color: 'error' },
       onClose: () => {
         dialogContext.setYesNoDialog({ open: false });

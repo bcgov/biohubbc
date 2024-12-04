@@ -24,24 +24,9 @@ import { ICreateSamplingSiteRequest } from 'interfaces/useSamplingSiteApi.interf
 import { useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import yup from 'utils/YupSchema';
+import { ISurveySampleMethodPeriodData } from './periods/SamplePeriodPeriodForm';
 
-export interface ISurveySampleMethodPeriodData {
-  survey_sample_period_id: number | null;
-  survey_sample_method_id: number | null;
-  start_date: string;
-  end_date: string;
-  start_time: string | null;
-  end_time: string | null;
-}
 
-export const SurveySampleMethodPeriodArrayItemInitialValues = {
-  survey_sample_period_id: null,
-  survey_sample_method_id: null,
-  start_date: '',
-  end_date: '',
-  start_time: '',
-  end_time: ''
-};
 
 export const SamplingSiteMethodPeriodYupSchema = yup
   .object({
