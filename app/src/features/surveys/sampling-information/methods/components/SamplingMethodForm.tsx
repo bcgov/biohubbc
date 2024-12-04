@@ -11,10 +11,10 @@ import useDataLoader from 'hooks/useDataLoader';
 import { useContext, useEffect } from 'react';
 import yup from 'utils/YupSchema';
 import { v4 } from 'uuid';
-import { ISurveySampleMethodPeriodData } from '../../periods/form/periods/SamplePeriodPeriodForm';
 import {
   SamplingSiteMethodPeriodYupSchema
 } from '../../periods/form/SamplingPeriodFormContainer';
+import { ISurveySampleMethodPeriodData } from '../../periods/form/sites/periods/SamplePeriodPeriodForm';
 
 export interface ISurveySampleMethodFormData {
   _id?: string; // Internal ID used only for a unique key prop. Should not be sent to the API.

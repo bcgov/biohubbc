@@ -1,4 +1,4 @@
-import { ISurveySampleMethodPeriodData } from "features/surveys/sampling-information/periods/form/periods/SamplePeriodPeriodForm";
+import { ISurveySampleMethodPeriodData } from "features/surveys/sampling-information/periods/form/sites/periods/SamplePeriodPeriodForm";
 
 export interface ICreateSamplingPeriodRequest {
   survey_id: number;

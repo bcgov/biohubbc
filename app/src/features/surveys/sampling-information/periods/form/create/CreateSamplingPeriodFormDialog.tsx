@@ -1,10 +1,10 @@
 import EditDialog from 'components/dialog/EditDialog';
+import { SamplingSiteMethodPeriodYupSchema } from 'features/surveys/sampling-information/periods/form/SamplingPeriodFormContainer';
 import {
   ISurveySampleMethodPeriodData,
-  SamplingPeriodPeriodForm,
+  SamplePeriodPeriodForm,
   SurveySampleMethodPeriodArrayItemInitialValues
-} from 'features/surveys/sampling-information/periods/form/periods/SamplePeriodPeriodForm';
-import { SamplingSiteMethodPeriodYupSchema } from 'features/surveys/sampling-information/periods/form/SamplingPeriodFormContainer';
+} from 'features/surveys/sampling-information/periods/form/sites/periods/SamplePeriodPeriodForm';
 
 interface ICreateSamplingPeriodFormDialogProps {
   open: boolean;
@@ -28,7 +28,7 @@ export const CreateSamplingPeriodFormDialog = (props: ICreateSamplingPeriodFormD
       open={props.open}
       dialogLoading={false}
       component={{
-        element: <SamplingPeriodPeriodForm />,
+        element: <SamplePeriodPeriodForm />,
         initialValues: SurveySampleMethodPeriodArrayItemInitialValues,
         validationSchema: SamplingSiteMethodPeriodYupSchema
       }}

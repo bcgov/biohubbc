@@ -8,12 +8,15 @@ import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormC
 import { SamplingSiteMethodYupSchema } from 'features/surveys/sampling-information/methods/components/SamplingMethodForm';
 import { SamplingSiteMethodPeriodYupSchema } from 'features/surveys/sampling-information/periods/form/SamplingPeriodFormContainer';
 import { useFormikContext } from 'formik';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
+import useDataLoader from 'hooks/useDataLoader';
 import { ICreateSamplingPeriodRequest } from 'interfaces/useSamplingPeriodApi.interface';
+import { useEffect } from 'react';
 import { useHistory } from 'react-router';
 import yup from 'utils/YupSchema';
 import SamplePeriodGeneralInformationForm from './general-information/SamplePeriodGeneralInformationForm';
-import { SamplingPeriodPeriodForm } from './periods/SamplePeriodPeriodForm';
+import { SamplingPeriodSiteForm } from './sites/SamplePeriodSiteForm';
 
 export const CreateSamplePeriodFormYupSchema = yup.object({
   survey_sample_sites: yup
@@ -56,8 +59,15 @@ const CreateSamplePeriodForm = (props: ICreateSamplePeriodFormProps) => {
 
   const { projectId, surveyId } = useSurveyContext();
   const history = useHistory();
+  const biohubApi = useBiohubApi();
 
   const { submitForm } = useFormikContext<ICreateSamplingPeriodRequest>();
+
+  const sampleSitesDataLoader = useDataLoader(() => biohubApi.samplingSite.getSampleSites(projectId, surveyId));
+
+  useEffect(() => {
+    sampleSitesDataLoader.load();
+  }, []);
 
   return (
     <Container maxWidth="xl" sx={{ py: 3 }}>
@@ -71,7 +81,7 @@ const CreateSamplePeriodForm = (props: ICreateSamplePeriodFormProps) => {
         <Divider sx={{ my: 5 }} />
 
         <HorizontalSplitFormComponent title="Periods" summary="Enter periods by specifying start and end times">
-          <SamplingPeriodPeriodForm />
+          <SamplingPeriodSiteForm sampleSites={sampleSitesDataLoader.data?.sampleSites ?? []} />
         </HorizontalSplitFormComponent>
 
         <Divider sx={{ my: 5 }} />

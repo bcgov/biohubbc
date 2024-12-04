@@ -10,11 +10,11 @@ import { useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import SamplingSiteHeader from '../../sites/components/SamplingSiteHeader';
 import CreateSamplePeriodForm from '../form/CreateSamplePeriodForm';
+import { SamplingSiteMethodPeriodYupSchema } from '../form/SamplingPeriodFormContainer';
 import {
   ISurveySampleMethodPeriodData,
   SurveySampleMethodPeriodArrayItemInitialValues
-} from '../form/periods/SamplePeriodPeriodForm';
-import { SamplingSiteMethodPeriodYupSchema } from '../form/SamplingPeriodFormContainer';
+} from '../form/sites/periods/SamplePeriodPeriodForm';
 
 /**
  * Interface for the form data used in the Create Sampling Period form.

@@ -24,7 +24,7 @@ import { ICreateSamplingSiteRequest } from 'interfaces/useSamplingSiteApi.interf
 import { useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import yup from 'utils/YupSchema';
-import { ISurveySampleMethodPeriodData } from './periods/SamplePeriodPeriodForm';
+import { ISurveySampleMethodPeriodData } from './sites/periods/SamplePeriodPeriodForm';
 
 
 
