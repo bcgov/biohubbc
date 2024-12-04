@@ -162,10 +162,11 @@ export function getSurvey(): RequestHandler {
 
       const surveyService = new SurveyService(connection);
 
-      const surveyData = await surveyService.getSurveyById(surveyId);
-
       // @TODO safe to delete survey supplementary data code?
-      const surveySupplementaryData = await surveyService.getSurveySupplementaryDataById(Number(req.params.surveyId));
+      const [surveyData, surveySupplementaryData] = await Promise.all([
+        surveyService.getSurveyById(surveyId),
+        surveyService.getSurveySupplementaryDataById(surveyId)
+      ]);
 
       await connection.commit();
 
