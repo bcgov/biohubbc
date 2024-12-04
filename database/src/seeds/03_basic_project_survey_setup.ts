@@ -51,6 +51,11 @@ export async function seed(knex: Knex): Promise<void> {
     await knex.raw(`${insertAccessRequest()}`);
   }
 
+  // Insert system alerts
+  for (let i = 0; i < 8; i++) {
+    await knex.raw(`${insertSystemAlert()}`);
+  }
+
   // Check if at least 1 project already exists
   const checkProjectsResponse = await knex.raw(checkAnyProjectExists());
 
@@ -87,6 +92,7 @@ export async function seed(knex: Knex): Promise<void> {
           ${insertMethodTechnique(surveyId)}
           ${insertSurveySamplingMethodData(surveyId)}
           ${insertSurveySamplePeriodData(surveyId)}
+          ${insertSurveyBlockData(surveyId)}
         `);
 
         // Insert regions into surveys
@@ -173,6 +179,19 @@ const insertSurveyParticipationData = (surveyId: number) => `
         ), 1)
       ),
       (SELECT survey_job_id FROM survey_job LIMIT 1)
+    )
+  ;
+`;
+
+const insertSurveyBlockData = (surveyId: number) => `
+  INSERT into survey_block
+    ( survey_id, name, description, geojson )
+  VALUES
+    (
+      ${surveyId},
+      '${faker.lorem.words(2)}',
+      '${faker.lorem.words(10)}',
+      NULL
     )
   ;
 `;
@@ -770,3 +789,31 @@ const insertAccessRequest = () => `
     $$${faker.lorem.sentences(2)}$$
   );
   `;
+
+/**
+ * SQL to insert a fake system alert
+ *
+ */
+const insertSystemAlert = () => `
+  INSERT INTO alert
+    (
+      alert_type_id,
+      name,
+      message,
+      data,
+      severity,
+      record_end_date,
+      create_user,
+      update_user
+    )
+  VALUES (
+    (SELECT alert_type_id FROM alert_type ORDER BY random() LIMIT 1),
+    $$${faker.lorem.words(3)}$$,
+    $$${faker.lorem.sentences(2)}$$,
+    NULL,
+    '${faker.helpers.arrayElement(['info', 'success', 'warning', 'error'])}',
+    (CASE WHEN random() < 0.5 THEN NULL ELSE (CURRENT_DATE - INTERVAL '30 days') END),
+    (SELECT system_user_id FROM system_user ORDER BY random() LIMIT 1),
+    (SELECT system_user_id FROM system_user ORDER BY random() LIMIT 1)
+  );
+`;

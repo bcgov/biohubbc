@@ -1,9 +1,10 @@
 import Typography from '@mui/material/Typography';
-import { GridColDef } from '@mui/x-data-grid';
+import { GridColDef, GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import dayjs from 'dayjs';
 import { useCodesContext } from 'hooks/useContext';
+import { formatTimeDifference } from 'utils/datetime';
 import { getCodesName } from 'utils/Utils';
 
 export interface ISamplingSitePeriodRowData {
@@ -11,14 +12,19 @@ export interface ISamplingSitePeriodRowData {
   sample_site: string;
   sample_method: string;
   method_response_metric_id: number;
-  start_date: string;
-  end_date: string;
+  start_date: string | null;
+  end_date: string | null;
   start_time: string | null;
   end_time: string | null;
 }
 
 interface ISamplingPeriodTableProps {
   periods: ISamplingSitePeriodRowData[];
+  paginationModel: GridPaginationModel;
+  setPaginationModel: React.Dispatch<React.SetStateAction<GridPaginationModel>>;
+  sortModel: GridSortModel;
+  setSortModel: React.Dispatch<React.SetStateAction<GridSortModel>>;
+  rowCount: number;
 }
 
 /**
@@ -28,11 +34,11 @@ interface ISamplingPeriodTableProps {
  * @returns {*}
  */
 export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
-  const { periods } = props;
+  const { periods, paginationModel, setPaginationModel, sortModel, setSortModel, rowCount } = props;
 
   const codesContext = useCodesContext();
 
-  const columns: GridColDef<any>[] = [
+  const columns: GridColDef<ISamplingSitePeriodRowData>[] = [
     {
       field: 'sample_site',
       headerName: 'Site',
@@ -47,15 +53,15 @@ export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
       field: 'method_response_metric_id',
       headerName: 'Response Metric',
       flex: 1,
-      renderCell: (params) => (
-        <>
-          {getCodesName(
-            codesContext.codesDataLoader.data,
-            'method_response_metrics',
-            params.row.method_response_metric_id
-          )}
-        </>
-      )
+      valueGetter: (params) => {
+        const value = getCodesName(
+          codesContext.codesDataLoader.data,
+          'method_response_metrics',
+          params.row.method_response_metric_id
+        );
+
+        return value;
+      }
     },
     {
       field: 'start_date',
@@ -82,22 +88,44 @@ export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
       field: 'end_time',
       headerName: 'End time',
       flex: 1
+    },
+    {
+      field: 'duration',
+      headerName: 'Duration',
+      flex: 1,
+      valueGetter: (params) => {
+        const { start_date, start_time, end_date, end_time } = params.row;
+
+        if (!start_date || !end_date) {
+          return null;
+        }
+
+        return formatTimeDifference(start_date, start_time, end_date, end_time);
+      }
     }
   ];
 
   return (
     <StyledDataGrid
-      autoHeight
-      getRowHeight={() => 'auto'}
       disableColumnMenu
+      rowSelection={false}
+      autoHeight={false}
+      getRowHeight={() => 'auto'}
       rows={periods}
       getRowId={(row: ISamplingSitePeriodRowData) => row.id}
       columns={columns}
       checkboxSelection={false}
       disableRowSelectionOnClick
+      rowCount={rowCount}
+      paginationMode="server"
+      sortingMode="server"
+      sortModel={sortModel}
+      paginationModel={paginationModel}
+      onPaginationModelChange={setPaginationModel}
+      onSortModelChange={setSortModel}
       initialState={{
         pagination: {
-          paginationModel: { page: 1, pageSize: 10 }
+          paginationModel
         }
       }}
       pageSizeOptions={[10, 25, 50]}

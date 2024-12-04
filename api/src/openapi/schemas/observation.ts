@@ -1,5 +1,6 @@
 import { OpenAPIV3 } from 'openapi-types';
 import { paginationResponseSchema } from './pagination';
+import { SampleLocationSchema } from './sample-site';
 
 export const observervationsWithSubcountDataSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
@@ -60,19 +61,27 @@ export const observervationsWithSubcountDataSchema: OpenAPIV3.SchemaObject = {
             nullable: true
           },
           latitude: {
-            type: 'number'
+            type: 'number',
+            nullable: true,
+            minimum: -90,
+            maximum: 90
           },
           longitude: {
-            type: 'number'
+            type: 'number',
+            nullable: true,
+            minimum: -180,
+            maximum: 180
           },
           count: {
             type: 'integer'
           },
           observation_date: {
-            type: 'string'
+            type: 'string',
+            nullable: true
           },
           observation_time: {
-            type: 'string'
+            type: 'string',
+            nullable: true
           },
           survey_sample_site_name: {
             type: 'string',
@@ -217,7 +226,8 @@ export const observervationsWithSubcountDataSchema: OpenAPIV3.SchemaObject = {
         'qualitative_measurements',
         'quantitative_measurements',
         'qualitative_environments',
-        'quantitative_environments'
+        'quantitative_environments',
+        'sample_sites'
       ],
       properties: {
         observationCount: {
@@ -404,7 +414,8 @@ export const observervationsWithSubcountDataSchema: OpenAPIV3.SchemaObject = {
               }
             }
           }
-        }
+        },
+        sample_sites: SampleLocationSchema
       }
     },
     pagination: { ...paginationResponseSchema }

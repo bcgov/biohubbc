@@ -152,3 +152,27 @@ export const techniqueViewSchema: OpenAPIV3.SchemaObject = {
     }
   }
 };
+
+export const vantageModeSchema: OpenAPIV3.SchemaObject = {
+  type: 'object',
+  description: 'Vantage modes allowed for method lookup options that can be applied to a technique',
+  required: ['vantage_modes'],
+  additionalProperties: false,
+  properties: {
+    vantage_modes: {
+      type: 'array',
+      description: 'Possible vantage modes',
+      items: {
+        type: 'object',
+        required: ['vantage_mode_id', 'name', 'vantage_id', 'description'],
+        additionalProperties: false,
+        properties: {
+          vantage_mode_id: { type: 'string', description: 'The primary key of the vantage mode option.' },
+          name: { type: 'string', description: 'The name of the vantage mode option.' },
+          vantage_id: { type: 'string', description: 'The vantage of the mode.' },
+          description: { type: 'string', description: 'The description of the mode option.' }
+        }
+      }
+    }
+  }
+};

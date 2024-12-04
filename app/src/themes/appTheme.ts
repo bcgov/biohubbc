@@ -134,7 +134,6 @@ const appTheme = createTheme({
             textOverflow: 'ellipsis'
           },
           '& span': {
-            display: 'block',
             fontSize: '0.9rem',
             overflow: 'hidden',
             textOverflow: 'ellipsis'

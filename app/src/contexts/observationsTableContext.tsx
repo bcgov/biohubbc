@@ -338,7 +338,7 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
   // Pagination model
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
-    pageSize: 50
+    pageSize: 25
   });
 
   // Sort model
@@ -504,6 +504,7 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
       row.itis_tsn && getTsnMeasurementTypeDefinitionMap(row.itis_tsn);
     }
 
+    // TODO: Either latitude/longitude OR sampling period is required, and either observation date OR sampling period is required
     const requiredStandardColumns: (keyof IObservationTableRow)[] = [
       'observation_subcount_sign_id',
       'count',

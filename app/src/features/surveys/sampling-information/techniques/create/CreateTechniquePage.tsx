@@ -85,9 +85,6 @@ export const CreateTechniquePage = () => {
         createTechniqueRequestData
       ]);
 
-      // Refresh the context, so the next page loads with the latest data
-      surveyContext.techniqueDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
-
       // Success, navigate back to the manage sampling information page
       history.push(
         `/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling`,

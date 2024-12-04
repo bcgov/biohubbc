@@ -1,5 +1,6 @@
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
+import { SurveySamplePeriodModel, SurveySamplePeriodRecord } from '../database-models/survey_sample_period';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { BaseRepository } from './base-repository';
@@ -8,7 +9,7 @@ import { BaseRepository } from './base-repository';
  * Insert object for a single sample period record.
  */
 export type InsertSamplePeriodRecord = Pick<
-  SamplePeriodRecord,
+  SurveySamplePeriodRecord,
   'survey_sample_method_id' | 'start_date' | 'end_date' | 'start_time' | 'end_time'
 >;
 
@@ -16,27 +17,9 @@ export type InsertSamplePeriodRecord = Pick<
  * Update object for a single sample period record.
  */
 export type UpdateSamplePeriodRecord = Pick<
-  SamplePeriodRecord,
+  SurveySamplePeriodRecord,
   'survey_sample_period_id' | 'survey_sample_method_id' | 'start_date' | 'end_date' | 'start_time' | 'end_time'
 >;
-
-/**
- * A survey_sample_period record.
- */
-export const SamplePeriodRecord = z.object({
-  survey_sample_period_id: z.number(),
-  survey_sample_method_id: z.number(),
-  start_date: z.string(),
-  end_date: z.string(),
-  start_time: z.string().nullable(),
-  end_time: z.string().nullable(),
-  create_date: z.string(),
-  create_user: z.number(),
-  update_date: z.string().nullable(),
-  update_user: z.number().nullable(),
-  revision_count: z.number()
-});
-export type SamplePeriodRecord = z.infer<typeof SamplePeriodRecord>;
 
 /**
  * The full hierarchy of sample_* ids for a sample period.
@@ -61,13 +44,13 @@ export class SamplePeriodRepository extends BaseRepository {
    *
    * @param {number} surveyId
    * @param {number} surveySampleMethodId
-   * @return {*}  {Promise<SamplePeriodRecord[]>}
+   * @return {*}  {Promise<SurveySamplePeriodModel[]>}
    * @memberof SamplePeriodRepository
    */
   async getSamplePeriodsForSurveyMethodId(
     surveyId: number,
     surveySampleMethodId: number
-  ): Promise<SamplePeriodRecord[]> {
+  ): Promise<SurveySamplePeriodModel[]> {
     const sql = SQL`
       SELECT
         ssp.*
@@ -87,7 +70,7 @@ export class SamplePeriodRepository extends BaseRepository {
         sss.survey_id = ${surveyId}
       ORDER BY ssp.start_date, ssp.start_time;`;
 
-    const response = await this.connection.sql(sql, SamplePeriodRecord);
+    const response = await this.connection.sql(sql, SurveySamplePeriodModel);
 
     return response.rows;
   }
@@ -140,10 +123,10 @@ export class SamplePeriodRepository extends BaseRepository {
    *
    * @param {number} surveyId
    * @param {UpdateSamplePeriodRecord} samplePeriod
-   * @return {*}  {Promise<SamplePeriodRecord>}
+   * @return {*}  {Promise<SurveySamplePeriodModel>}
    * @memberof SamplePeriodRepository
    */
-  async updateSamplePeriod(surveyId: number, samplePeriod: UpdateSamplePeriodRecord): Promise<SamplePeriodRecord> {
+  async updateSamplePeriod(surveyId: number, samplePeriod: UpdateSamplePeriodRecord): Promise<SurveySamplePeriodModel> {
     const sql = SQL`
       UPDATE survey_sample_period AS ssp
     SET
@@ -167,7 +150,7 @@ export class SamplePeriodRepository extends BaseRepository {
 
     `;
 
-    const response = await this.connection.sql(sql, SamplePeriodRecord);
+    const response = await this.connection.sql(sql, SurveySamplePeriodModel);
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to update sample period', [
@@ -183,10 +166,10 @@ export class SamplePeriodRepository extends BaseRepository {
    * Inserts a new survey Sample Period.
    *
    * @param {InsertSamplePeriodRecord} sample
-   * @return {*}  {Promise<SamplePeriodRecord>}
+   * @return {*}  {Promise<SurveySamplePeriodModel>}
    * @memberof SamplePeriodRepository
    */
-  async insertSamplePeriod(sample: InsertSamplePeriodRecord): Promise<SamplePeriodRecord> {
+  async insertSamplePeriod(sample: InsertSamplePeriodRecord): Promise<SurveySamplePeriodModel> {
     const sqlStatement = SQL`
     INSERT INTO survey_sample_period (
       survey_sample_method_id,
@@ -204,7 +187,7 @@ export class SamplePeriodRepository extends BaseRepository {
       RETURNING
         *;`;
 
-    const response = await this.connection.sql(sqlStatement, SamplePeriodRecord);
+    const response = await this.connection.sql(sqlStatement, SurveySamplePeriodModel);
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to insert sample period', [
@@ -221,10 +204,10 @@ export class SamplePeriodRepository extends BaseRepository {
    *
    * @param {number} surveyId
    * @param {number} surveySamplePeriodId
-   * @return {*}  {Promise<SamplePeriodRecord>}
+   * @return {*}  {Promise<SurveySamplePeriodModel>}
    * @memberof SamplePeriodRepository
    */
-  async deleteSamplePeriodRecord(surveyId: number, surveySamplePeriodId: number): Promise<SamplePeriodRecord> {
+  async deleteSamplePeriodRecord(surveyId: number, surveySamplePeriodId: number): Promise<SurveySamplePeriodModel> {
     const sqlStatement = SQL`
       DELETE
         ssp
@@ -245,7 +228,7 @@ export class SamplePeriodRepository extends BaseRepository {
       ;
       `;
 
-    const response = await this.connection.sql(sqlStatement, SamplePeriodRecord);
+    const response = await this.connection.sql(sqlStatement, SurveySamplePeriodModel);
 
     if (!response?.rowCount) {
       throw new ApiExecuteSQLError('Failed to delete sample period', [
@@ -261,10 +244,10 @@ export class SamplePeriodRepository extends BaseRepository {
    * Deletes multiple Survey Sample Periods for a given array of period ids.
    *
    * @param {number[]} periodsToDelete an array of period ids to delete
-   * @returns {*} {Promise<SamplePeriodRecord[]>} an array of promises for the deleted periods
+   * @returns {*} {Promise<SurveySamplePeriodModel[]>} an array of promises for the deleted periods
    * @memberof SamplePeriodRepository
    */
-  async deleteSamplePeriods(surveyId: number, periodsToDelete: number[]): Promise<SamplePeriodRecord[]> {
+  async deleteSamplePeriods(surveyId: number, periodsToDelete: number[]): Promise<SurveySamplePeriodModel[]> {
     const knex = getKnex();
 
     const sqlStatement = knex
@@ -277,7 +260,7 @@ export class SamplePeriodRepository extends BaseRepository {
       .andWhere('survey_id', surveyId)
       .returning('ssp.*');
 
-    const response = await this.connection.knex(sqlStatement, SamplePeriodRecord);
+    const response = await this.connection.knex(sqlStatement, SurveySamplePeriodModel);
 
     if (!response?.rowCount) {
       throw new ApiExecuteSQLError('Failed to delete sample periods', [

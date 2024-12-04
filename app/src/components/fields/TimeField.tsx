@@ -5,25 +5,19 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { TIME_FORMAT } from 'constants/dateTimeFormats';
 import { default as dayjs } from 'dayjs';
-import { FormikContextType } from 'formik';
+import { useFormikContext } from 'formik';
 import get from 'lodash-es/get';
 
-interface ITimeFieldProps<FormikPropsType> {
+interface ITimeFieldProps {
   label: string;
   name: string;
   id: string;
   required: boolean;
-  formikProps: FormikContextType<FormikPropsType>;
 }
 
-export const TimeField = <FormikPropsType,>(props: ITimeFieldProps<FormikPropsType>) => {
-  const {
-    formikProps: { values, errors, touched, setFieldValue },
-    label,
-    name,
-    id,
-    required
-  } = props;
+export const TimeField = <FormikPropsType extends ITimeFieldProps>(props: ITimeFieldProps) => {
+  const { values, errors, touched, setFieldValue } = useFormikContext<FormikPropsType>();
+  const { label, name, id, required } = props;
 
   const rawTimeValue = get(values, name);
   const formattedTimeValue =
