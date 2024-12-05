@@ -1,4 +1,5 @@
 import { AxiosInstance } from 'axios';
+import { ICreateSamplingPeriodRequest } from 'interfaces/useSamplingPeriodApi.interface';
 import {
   ICreateSamplingSiteRequest,
   IEditSampleSiteRequest,
@@ -253,20 +254,20 @@ const useSamplingSiteApi = (axios: AxiosInstance) => {
     await axios.post(`/api/project/${projectId}/survey/${surveyId}/sample-site/delete`, { surveySamplePeriodIds });
   };
 
-    /**
-   * Delete Sample Periods
+  /**
+   * Create Sample Periods
    *
    * @param {number} projectId
    * @param {number} surveyId
-   * @param {number} surveySamplePeriodIds
+   * @param {ICreateSamplingPeriodRequest} data
    * @return {*}  {Promise<void>}
    */
   const createSamplePeriods = async (
     projectId: number,
     surveyId: number,
-    surveySamplePeriodIds: number[]
+    data: ICreateSamplingPeriodRequest
   ): Promise<void> => {
-    await axios.post(`/api/project/${projectId}/survey/${surveyId}/sample-site/create`, { surveySamplePeriodIds });
+    await axios.post(`/api/project/${projectId}/survey/${surveyId}/sample-site/sample-period`, data);
   };
 
   return {

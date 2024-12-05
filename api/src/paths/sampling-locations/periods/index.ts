@@ -241,9 +241,6 @@ export function findPeriods(): RequestHandler {
         pagination: makePaginationResponse(periodsCount, paginationOptions)
       };
 
-      // Allow browsers to cache this response for 30 seconds
-      res.setHeader('Cache-Control', 'private, max-age=30');
-
       return res.status(200).json(response);
     } catch (error) {
       defaultLog.error({ label: 'getPeriods', message: 'error', error });

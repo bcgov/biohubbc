@@ -99,9 +99,27 @@ export class SampleMethodService extends DBService {
       return samplePeriodService.insertSamplePeriod(samplePeriod);
     });
 
-    await Promise.all(promises);
+    const x = await Promise.all(promises);
 
     return sampleMethodRecord;
+  }
+
+  /**
+   * Inserts survey Sample Methods and associated Sample Periods.
+   *
+   * @param {InsertSampleMethodRecord[]} sampleMethods
+   * @return {*}  {Promise<SurveySampleMethodModel[]>}
+   * @memberof SampleMethodService
+   */
+  async insertSampleMethods(sampleMethods: InsertSampleMethodRecord[]): Promise<SurveySampleMethodModel[]> {
+    // Loop through and create each sample method and its associated sample periods
+    const promises = sampleMethods.map((sampleMethod) => {
+      return this.insertSampleMethod(sampleMethod);
+    });
+
+    const insertedMethods = await Promise.all(promises);
+
+    return insertedMethods;
   }
 
   /**

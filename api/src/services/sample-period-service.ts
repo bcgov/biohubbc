@@ -9,6 +9,7 @@ import {
 } from '../repositories/sample-period-repository';
 import { DBService } from './db-service';
 import { ObservationService } from './observation-service';
+import { SampleMethodService } from './sample-method-service';
 
 /**
  * Sample Period Repository
@@ -19,10 +20,12 @@ import { ObservationService } from './observation-service';
  */
 export class SamplePeriodService extends DBService {
   samplePeriodRepository: SamplePeriodRepository;
+  sampleMethodService: SampleMethodService;
 
   constructor(connection: IDBConnection) {
     super(connection);
     this.samplePeriodRepository = new SamplePeriodRepository(connection);
+    this.sampleMethodService = new SampleMethodService(connection);
   }
 
   /**

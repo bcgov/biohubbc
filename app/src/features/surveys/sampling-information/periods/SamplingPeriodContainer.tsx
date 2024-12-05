@@ -29,7 +29,7 @@ import { ISamplingSitePeriodRowData, SamplingPeriodTable } from './table/Samplin
 const pageSizeOptions = [10, 25, 50];
 
 /**
- * Renders a list of periods.
+ * Renders a table of periods in the Survey.
  *
  * @return {*}
  */
@@ -39,7 +39,13 @@ export const SamplingPeriodContainer = () => {
 
   const biohubApi = useBiohubApi();
 
-  // Periods
+  const [selectedRows, setSelectedRows] = useState<GridRowSelectionModel>([]);
+  const [bulkActionMenuAnchorEl, setBulkActionMenuAnchorEl] = useState<MenuProps['anchorEl']>(null);
+
+  const periodsDataLoader = useDataLoader((pagination: ApiPaginationRequestOptions) =>
+    biohubApi.samplingSite.findSamplePeriods({ survey_id: surveyContext.surveyId }, pagination)
+  );
+
   const [periodsPaginationModel, setPeriodsPaginationModel] = useState<GridPaginationModel>({
     page: 0,
     pageSize: pageSizeOptions[0]
@@ -56,41 +62,6 @@ export const SamplingPeriodContainer = () => {
       page: periodsPaginationModel.page + 1
     };
   }, [periodsSortModel, periodsPaginationModel]);
-
-  // Multi-select row action menu
-  const [selectedRows, setSelectedRows] = useState<GridRowSelectionModel>([]);
-  const [bulkActionMenuAnchorEl, setBulkActionMenuAnchorEl] = useState<MenuProps['anchorEl']>(null);
-
-  const periodsDataLoader = useDataLoader((pagination: ApiPaginationRequestOptions) =>
-    biohubApi.samplingSite.findSamplePeriods({ survey_id: surveyContext.surveyId }, pagination)
-  );
-
-  useEffect(() => {
-    periodsDataLoader.refresh(periodsPagination);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [surveyContext.projectId, surveyContext.surveyId]);
-
-  const periodCount = periodsDataLoader.data?.pagination.total ?? 0;
-  const periods = periodsDataLoader.data?.periods ?? [];
-
-  const rows: ISamplingSitePeriodRowData[] = useMemo(() => {
-    const data: ISamplingSitePeriodRowData[] = [];
-
-    for (const period of periods) {
-      data.push({
-        survey_sample_period_id: period.survey_sample_period_id,
-        sample_site: period.sample_site.name,
-        sample_method: period.method_technique.name,
-        method_response_metric_id: period.sample_method.method_response_metric_id,
-        start_date: period.start_date,
-        end_date: period.end_date,
-        start_time: period.start_time,
-        end_time: period.end_time
-      });
-    }
-
-    return data;
-  }, [periods]);
 
   const handleBulkDeletePeriods = async () => {
     await biohubApi.samplingSite
@@ -145,6 +116,33 @@ export const SamplingPeriodContainer = () => {
       }
     });
   };
+
+  useEffect(() => {
+    periodsDataLoader.refresh(periodsPagination);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [periodsPagination]);
+
+  const periodCount = periodsDataLoader.data?.pagination.total ?? 0;
+  const periods = periodsDataLoader.data?.periods ?? [];
+
+  const rows: ISamplingSitePeriodRowData[] = useMemo(() => {
+    const data: ISamplingSitePeriodRowData[] = [];
+
+    for (const period of periods) {
+      data.push({
+        survey_sample_period_id: period.survey_sample_period_id,
+        sample_site: period.sample_site.name,
+        sample_method: period.method_technique.name,
+        method_response_metric_id: period.sample_method.method_response_metric_id,
+        start_date: period.start_date,
+        end_date: period.end_date,
+        start_time: period.start_time,
+        end_time: period.end_time
+      });
+    }
+
+    return data;
+  }, [periods]);
 
   return (
     <Stack
@@ -225,6 +223,7 @@ export const SamplingPeriodContainer = () => {
             sortModel={periodsSortModel}
             setSortModel={setPeriodsSortModel}
             rowCount={periodsDataLoader.data?.pagination.total ?? 0}
+            pageSizeOptions={pageSizeOptions}
             selectedRows={selectedRows}
             setSelectedRows={setSelectedRows}
             onDelete={handleDelete}

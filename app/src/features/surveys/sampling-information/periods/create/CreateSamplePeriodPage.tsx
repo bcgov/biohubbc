@@ -5,46 +5,66 @@ import { SamplePeriodI18N } from 'constants/i18n';
 import dayjs from 'dayjs';
 import { Formik, FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
-import { useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useCodesContext, useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
-import { useRef, useState } from 'react';
+import { ICreateSamplingPeriodRequest } from 'interfaces/useSamplingPeriodApi.interface';
+import { useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import yup from 'utils/YupSchema';
 import SamplingSiteHeader from '../../sites/components/SamplingSiteHeader';
 import CreateSamplePeriodForm from '../form/CreateSamplePeriodForm';
-import {
-  ISurveySampleMethodPeriodData,
-  SurveySampleMethodPeriodArrayItemInitialValues
-} from '../form/sites/periods/SamplePeriodPeriodForm';
+import { ISurveySampleMethodPeriodData } from '../form/sites/periods/SamplePeriodPeriodForm';
 
-export const SamplingSiteMethodPeriodYupSchema = yup
-  .object({
-    start_date: yup.string().typeError('Start Date is required').isValidDateString().required('Start Date is required'),
-    end_date: yup
-      .string()
-      .typeError('End Date is required')
-      .isValidDateString()
-      .required('End Date is required')
-      .isEndDateSameOrAfterStartDate('start_date'),
-    start_time: yup.string().when('end_time', {
-      is: (val: string | null) => val && val !== null,
-      then: yup.string().typeError('Start Time is required').required('Start Time is required'),
-      otherwise: yup.string().nullable()
-    }),
-    end_time: yup.string().nullable()
-  })
-  .test('checkDatesAreSameAndEndTimeIsAfterStart', 'End date must be after start date', function (value) {
-    const { start_date, end_date, start_time, end_time } = value;
+export const SamplingSiteMethodPeriodYupSchema = yup.object({
+  method_technique_id: yup.number().required('Technique is required'),
+  sample_sites: yup
+    .array()
+    .of(
+      yup.object({
+        survey_sample_site_id: yup.number().required('Site is required'),
+        sample_periods: yup
+          .array()
+          .of(
+            yup
+              .object({
+                start_date: yup
+                  .string()
+                  .typeError('Start Date is required')
+                  .isValidDateString()
+                  .required('Start Date is required'),
+                end_date: yup
+                  .string()
+                  .typeError('End Date is required')
+                  .isValidDateString()
+                  .required('End Date is required')
+                  .isEndDateSameOrAfterStartDate('start_date'),
+                start_time: yup.string().when('end_time', {
+                  is: (val: string | null) => val && val !== null,
+                  then: yup.string().typeError('Start Time is required').required('Start Time is required'),
+                  otherwise: yup.string().nullable()
+                }),
+                end_time: yup.string().nullable()
+              })
+              .test('checkDatesAreSameAndEndTimeIsAfterStart', 'End date must be after start date', function (value) {
+                const { start_date, end_date, start_time, end_time } = value || {};
+                if (start_date === end_date && start_time && end_time) {
+                  return dayjs(`${start_date} ${start_time}`, 'YYYY-MM-DD HH:mm:ss').isBefore(
+                    dayjs(`${end_date} ${end_time}`, 'YYYY-MM-DD HH:mm:ss')
+                  );
+                }
+                return true;
+              })
+          )
+          .required('Sample periods are required')
+          .min(1, 'At least one sample period is required')
+      })
+    )
+    .required('Sample sites are required')
+    .min(1, 'At least one sample site is required')
+});
 
-    if (start_date === end_date && start_time && end_time) {
-      return dayjs(`${start_date} ${start_time}`, 'YYYY-MM-DD HH:mm:ss').isBefore(
-        dayjs(`${end_date} ${end_time}`, 'YYYY-MM-DD HH:mm:ss')
-      );
-    }
-    return true;
-  });
-
-  export interface ISurveySampleMethodFormData {
+export interface ISurveySampleMethodFormData {
   _id?: string; // Internal ID used only for a unique key prop. Should not be sent to the API.
   survey_sample_method_id: number | null;
   survey_sample_site_id: number | null;
@@ -55,7 +75,7 @@ export const SamplingSiteMethodPeriodYupSchema = yup
   };
   sample_periods: ISurveySampleMethodPeriodData[];
 }
-  
+
 /**
  * Interface for the form data used in the Create Sampling Period form.
  *
@@ -63,10 +83,11 @@ export const SamplingSiteMethodPeriodYupSchema = yup
  * @interface ICreateSamplePeriodFormData
  */
 export interface ICreateSamplePeriodFormData {
-  survey_id: number;
-  survey_sample_site_id: number;
   method_technique_id: number;
-  sample_periods: ISurveySampleMethodPeriodData[];
+  sample_sites: {
+    survey_sample_site_id: number;
+    sample_periods: ISurveySampleMethodPeriodData[];
+  }[];
 }
 
 /**
@@ -80,6 +101,13 @@ export const CreateSamplePeriodPage = () => {
   const surveyContext = useSurveyContext();
   const projectContext = useProjectContext();
   const dialogContext = useDialogContext();
+
+  const biohubApi = useBiohubApi();
+  const codesContext = useCodesContext();
+
+  useEffect(() => {
+    codesContext.codesDataLoader.load()
+  }, [])
 
   const formikRef = useRef<FormikProps<ICreateSamplePeriodFormData>>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -109,22 +137,25 @@ export const CreateSamplePeriodPage = () => {
     try {
       setIsSubmitting(true);
 
-      // Remove internal _id property of newly created sample_methods used only as a unique key prop
-      console.log(values);
+      const MOCK_METHOD_RESPONSE_METRIC_ID = codesContext.codesDataLoader.data?.method_response_metrics[0].id as number;
 
-      //   const data: ICreateSamplingPeriodRequest = {
-      //     ...otherValues,
-      //     sample_methods: sample_methods.map((method) => ({
-      //       survey_sample_method_id: method.survey_sample_method_id,
-      //       survey_sample_site_id: method.survey_sample_site_id,
-      //       method_technique_id: method.technique.method_technique_id,
-      //       description: method.description,
-      //       sample_periods: method.sample_periods,
-      //       method_response_metric_id: method.method_response_metric_id
-      //     }))
-      //   };
-
-      //   await biohubApi.samplingSite.createSamplingPeriods(surveyContext.projectId, surveyContext.surveyId, data);
+      // Remove the temporary v4() id used as a formik key
+      const data: ICreateSamplingPeriodRequest = {
+        method_technique_id: values.method_technique_id,
+        sample_sites: values.sample_sites.map((site) => ({
+          survey_sample_site_id: site.survey_sample_site_id,
+          method_response_metric_id: MOCK_METHOD_RESPONSE_METRIC_ID,
+          sample_periods: site.sample_periods.map((period) => ({
+            survey_sample_period_id: null,
+            survey_sample_method_id: null,
+            start_date: period.start_date,
+            start_time: period.start_time,
+            end_date: period.end_date,
+            end_time: period.end_time
+          }))
+        }))
+      };
+      await biohubApi.samplingSite.createSamplePeriods(surveyContext.projectId, surveyContext.surveyId, data);
 
       // create complete, navigate back to observations page
       history.push(
@@ -148,10 +179,8 @@ export const CreateSamplePeriodPage = () => {
       <Formik
         innerRef={formikRef}
         initialValues={{
-          survey_id: surveyContext.surveyId,
-          survey_sample_site_id: '' as unknown as number,
           method_technique_id: '' as unknown as number,
-          sample_periods: [SurveySampleMethodPeriodArrayItemInitialValues]
+          sample_sites: []
         }}
         validationSchema={SamplingSiteMethodPeriodYupSchema}
         validateOnBlur={true}

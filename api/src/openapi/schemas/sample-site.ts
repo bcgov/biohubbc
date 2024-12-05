@@ -57,7 +57,8 @@ export const SampleLocationSchema: OpenAPIV3.SchemaObject = {
             },
             description: {
               type: 'string',
-              maxLength: 250
+              maxLength: 250,
+              nullable: true
             },
             sample_periods: {
               type: 'array',

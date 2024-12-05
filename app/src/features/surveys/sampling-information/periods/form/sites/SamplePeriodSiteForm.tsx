@@ -1,17 +1,24 @@
-import { mdiMinusCircleOutline, mdiPlusCircle } from '@mdi/js';
-import { Icon } from '@mdi/react';
+import { mdiMinusCircleOutline } from '@mdi/js';
+import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
-import grey from '@mui/material/colors/grey';
-import Divider from '@mui/material/Divider';
+import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
-import { IGetSampleLocationNonSpatialDetails } from 'interfaces/useSamplingSiteApi.interface';
-import React, { useState } from 'react';
-import { SamplePeriodPeriodForm } from './periods/SamplePeriodPeriodForm';
+import AutocompleteSearchField from 'components/fields/AutocompleteSearch/AutocompleteSearchField';
+import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useSurveyContext } from 'hooks/useContext';
+import { ICreateSamplingPeriodRequest } from 'interfaces/useSamplingPeriodApi.interface';
+import { IFindSampleSiteRecord, IGetSampleLocationNonSpatialDetails } from 'interfaces/useSamplingSiteApi.interface';
+import { useState } from 'react';
+import {
+    SamplePeriodPeriodForm,
+    SurveySampleMethodPeriodArrayItemInitialValues
+} from './periods/SamplePeriodPeriodForm';
 
 interface ISamplingPeriodSiteFormProps {
   sampleSites: IGetSampleLocationNonSpatialDetails[];
@@ -19,71 +26,106 @@ interface ISamplingPeriodSiteFormProps {
 
 export const SamplingPeriodSiteForm = (props: ISamplingPeriodSiteFormProps) => {
   const { sampleSites } = props;
-  const [expandedSites, setExpandedSites] = useState<number[]>([]);
 
-  const handleClick = (site: IGetSampleLocationNonSpatialDetails) => {
-    if (expandedSites.includes(site.survey_sample_site_id)) {
-      setExpandedSites(expandedSites.filter((existing) => existing !== site.survey_sample_site_id));
-      return;
-    }
-    setExpandedSites((prev) => [...prev, site.survey_sample_site_id]);
+  const { values, setFieldValue } = useFormikContext<ICreateSamplingPeriodRequest>();
+
+  const { surveyId } = useSurveyContext();
+  const biohubApi = useBiohubApi();
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const sampleSiteSearch = async ({ keyword }: { keyword: string }) => {
+    const response = await biohubApi.samplingSite.findSampleSites({
+      survey_id: surveyId,
+      keyword
+    });
+
+    // Remove already selected options
+    return response.sites.filter(
+      (site) => !values.sample_sites.some((existing) => existing.survey_sample_site_id === site.survey_sample_site_id)
+    );
+  };
+
+  const handleRemoveSite = (arrayHelpers: FieldArrayRenderProps, index: number) => {
+    arrayHelpers.remove(index);
+    setRefreshKey((prev) => prev + 1);
   };
 
   return (
-    <Paper variant="outlined">
-      <List>
-        {sampleSites.map((site, index) => {
-          const isExpanded = expandedSites.includes(site.survey_sample_site_id);
-
-          return (
-            <React.Fragment key={site.survey_sample_site_id}>
-              <ListItem
-                alignItems="flex-start"
-                disablePadding
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'flex-start',
-                  py: 1,
-                  px: 2,
-                  mb: 2
-                }}>
-                <Box display="flex" justifyContent="space-between" width="100%" alignItems="center" mb={1}>
-                  <ListItemText
-                    primary={
-                      <Box display="flex" alignItems="center">
-                        <Typography color={grey[400]} mr={2}>
-                          {index + 1}
-                        </Typography>
-                        <Typography fontWeight={700} variant="subtitle1">
-                          {site.name}
-                        </Typography>
-                      </Box>
+    <FieldArray
+      name="sample_sites"
+      render={(arrayHelpers: FieldArrayRenderProps) => (
+        <>
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <AutocompleteSearchField<IFindSampleSiteRecord>
+                formikFieldName="survey_sample_site_id"
+                label="Sampling Site"
+                handleSelect={(site) =>
+                  setFieldValue('sample_sites', [
+                    ...values.sample_sites,
+                    {
+                      survey_sample_site_id: site.survey_sample_site_id,
+                      sample_periods: [SurveySampleMethodPeriodArrayItemInitialValues]
                     }
-                  />
-                  {isExpanded ? (
-                    <IconButton color="error" onClick={() => handleClick(site)}>
-                      <Icon path={mdiMinusCircleOutline} size={1} />
-                    </IconButton>
-                  ) : (
-                    <IconButton color="primary" onClick={() => handleClick(site)}>
-                      <Icon path={mdiPlusCircle} size={1} />
-                    </IconButton>
-                  )}
-                </Box>
+                  ])
+                }
+                searchApi={sampleSiteSearch}
+                getOptionLabel={(option) => option.name}
+                placeholder="Search for a sampling site"
+                clearOnSelect
+                refreshKey={refreshKey}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <List>
+                {values.sample_sites.map((existing, index) => {
+                  const siteDetails = sampleSites.find(
+                    (site) => site.survey_sample_site_id === existing.survey_sample_site_id
+                  );
+                  if (siteDetails) {
+                    return (
+                      <Paper variant="outlined" key={siteDetails.survey_sample_site_id} sx={{ mt: 2 }}>
+                        <ListItem
+                          alignItems="flex-start"
+                          disablePadding
+                          sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'flex-start',
+                            p: 2,
+                            px: 3,
+                            mb: 2
+                          }}>
+                          <Box display="flex" justifyContent="space-between" width="100%" alignItems="center" mb={1}>
+                            <ListItemText
+                              primary={
+                                <Typography fontWeight={700} variant="subtitle1">
+                                  {siteDetails.name}
+                                </Typography>
+                              }
+                            />
+                            <IconButton color="error" onClick={() => handleRemoveSite(arrayHelpers, index)}>
+                              <Icon path={mdiMinusCircleOutline} size={1} />
+                            </IconButton>
+                          </Box>
 
-                {/* Show periods if the site is expanded */}
-                {isExpanded && (
-                  <Box width="100%" pl={2}>
-                    <SamplePeriodPeriodForm />
-                  </Box>
-                )}
-              </ListItem>
-              {index < sampleSites.length - 1 && <Divider />}
-            </React.Fragment>
-          );
-        })}
-      </List>
-    </Paper>
+                          {/* Show periods if the site is expanded */}
+                          <Box width="100%">
+                            <SamplePeriodPeriodForm
+                              index={index}
+                              formikFieldName={`sample_sites[${index}].sample_periods`}
+                            />
+                          </Box>
+                        </ListItem>
+                      </Paper>
+                    );
+                  }
+                })}
+              </List>
+            </Grid>
+          </Grid>
+        </>
+      )}
+    />
   );
 };

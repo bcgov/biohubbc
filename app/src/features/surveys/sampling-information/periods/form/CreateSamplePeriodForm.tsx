@@ -13,8 +13,8 @@ import { ICreateSamplingPeriodRequest } from 'interfaces/useSamplingPeriodApi.in
 import { useEffect } from 'react';
 import { useHistory } from 'react-router';
 import yup from 'utils/YupSchema';
-import SamplePeriodGeneralInformationForm from './general-information/SamplePeriodGeneralInformationForm';
 import { SamplingPeriodSiteForm } from './sites/SamplePeriodSiteForm';
+import SamplePeriodTechniqueForm from './technique/SamplePeriodTechniqueForm';
 
 export const CreateSamplePeriodFormYupSchema = yup.object({
   survey_sample_sites: yup
@@ -56,15 +56,13 @@ const CreateSamplePeriodForm = (props: ICreateSamplePeriodFormProps) => {
   return (
     <Container maxWidth="xl" sx={{ py: 3 }}>
       <Paper sx={{ p: 5 }}>
-        <HorizontalSplitFormComponent
-          title="General Information"
-          summary="Select the site and technique to create periods for">
-          <SamplePeriodGeneralInformationForm />
+        <HorizontalSplitFormComponent title="Technique" summary="Select the technique to create periods for">
+          <SamplePeriodTechniqueForm />
         </HorizontalSplitFormComponent>
 
         <Divider sx={{ my: 5 }} />
 
-        <HorizontalSplitFormComponent title="Periods" summary="Enter periods by specifying start and end times">
+        <HorizontalSplitFormComponent title="Sites" summary="Select sites to create periods for">
           <SamplingPeriodSiteForm sampleSites={sampleSitesDataLoader.data?.sampleSites ?? []} />
         </HorizontalSplitFormComponent>
 

@@ -41,6 +41,7 @@ interface ISamplingPeriodTableProps {
   // Used for when rows can be selected, which is only the case on the Manage Sampling Information page (not the Survey page)
   selectedRows?: GridRowSelectionModel;
   setSelectedRows?: (selection: GridRowSelectionModel) => void;
+  pageSizeOptions: number[];
   onDelete?: (techniqueId: number) => Promise<void>;
 }
 
@@ -59,6 +60,7 @@ export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
     setSortModel,
     rowCount,
     selectedRows,
+    pageSizeOptions,
     setSelectedRows,
     onDelete
   } = props;
@@ -299,13 +301,12 @@ export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
         hasNoDataFallbackDelay={100}>
         <StyledDataGrid
           disableColumnMenu
-          rowSelection={false}
           autoHeight={false}
           getRowHeight={() => 'auto'}
           rows={periods}
           getRowId={(row: ISamplingSitePeriodRowData) => row.survey_sample_period_id}
           columns={columns}
-          checkboxSelection={setSelectedRows ? true : false}
+          checkboxSelection={true}
           rowSelectionModel={selectedRows}
           onRowSelectionModelChange={setSelectedRows}
           disableRowSelectionOnClick
@@ -316,12 +317,12 @@ export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
           paginationModel={paginationModel}
           onPaginationModelChange={setPaginationModel}
           onSortModelChange={setSortModel}
+          pageSizeOptions={pageSizeOptions}
           initialState={{
             pagination: {
               paginationModel
             }
           }}
-          pageSizeOptions={[10, 25, 50]}
         />
       </LoadingGuard>
     </>

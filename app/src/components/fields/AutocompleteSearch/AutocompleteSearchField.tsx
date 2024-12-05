@@ -29,6 +29,10 @@ export interface IAutocompleteSearchFieldProps<T> {
   showStartAdornment?: boolean;
   placeholder?: string;
   error?: string;
+  /**
+   * An arbritrary number that changes to force the options to refresh. Used to update the options when an item is unselected.
+   */
+  refreshKey?: number;
 }
 
 /**
@@ -52,7 +56,8 @@ export const AutocompleteSearchField = <T extends { name: string }>({
   clearOnSelect,
   showStartAdornment,
   placeholder,
-  error
+  error,
+  refreshKey
 }: IAutocompleteSearchFieldProps<T>) => {
   const [inputValue, setInputValue] = useState<string>(defaultSelection?.name || '');
   const [options, setOptions] = useState<T[]>(defaultSelection ? [defaultSelection] : []);
@@ -79,7 +84,7 @@ export const AutocompleteSearchField = <T extends { name: string }>({
     handleSearch('', (newOptions) => {
       setOptions(newOptions);
     });
-  }, []);
+  }, [refreshKey]);
 
   return (
     <Autocomplete
@@ -88,6 +93,7 @@ export const AutocompleteSearchField = <T extends { name: string }>({
       data-testid={formikFieldName}
       noOptionsText={isLoading ? 'Loading...' : noOptionsText}
       options={options}
+      value={null}
       getOptionLabel={getOptionLabel}
       inputValue={inputValue}
       onInputChange={(_, value, reason) => {

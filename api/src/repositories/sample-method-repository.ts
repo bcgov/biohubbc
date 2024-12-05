@@ -3,8 +3,9 @@ import { z } from 'zod';
 import { SurveySampleMethodModel, SurveySampleMethodRecord } from '../database-models/survey_sample_method';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
+import { ICreateSamplingPeriodData } from '../models/sample-period';
 import { BaseRepository } from './base-repository';
-import { InsertSamplePeriodRecord, UpdateSamplePeriodRecord } from './sample-period-repository';
+import { UpdateSamplePeriodRecord } from './sample-period-repository';
 
 /**
  * Insert object for a single sample method record.
@@ -12,7 +13,7 @@ import { InsertSamplePeriodRecord, UpdateSamplePeriodRecord } from './sample-per
 export type InsertSampleMethodRecord = Pick<
   SurveySampleMethodRecord,
   'survey_sample_site_id' | 'method_technique_id' | 'description' | 'method_response_metric_id'
-> & { sample_periods: InsertSamplePeriodRecord[] };
+> & { sample_periods: ICreateSamplingPeriodData[] };
 
 /**
  * Update object for a single sample method record.
