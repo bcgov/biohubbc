@@ -33,10 +33,10 @@ import { GeneralInformationInitialValues } from './components/general-informatio
 import { SurveyLocationInitialValues } from './components/locations/StudyAreaForm';
 import { PurposeAndMethodologyInitialValues } from './components/methodology/PurposeAndMethodologyForm';
 import { SurveyUserJobFormInitialValues } from './components/participants/SurveyUserForm';
-import { SurveyBlockInitialValues } from './components/sampling-strategy/blocks/SurveyBlockForm';
 import { SurveySiteSelectionInitialValues } from './components/sampling-strategy/SurveySiteSelectionForm';
 import { SpeciesInitialValues } from './components/species/SpeciesForm';
 import EditSurveyForm from './edit/EditSurveyForm';
+import { SurveyBlockInitialValues } from './sampling-information/blocks/form/map/BlocksMapForm';
 
 export const defaultSurveyDataFormValues: ICreateSurveyRequest & ISurveyPermitForm & ISurveyFundingSourceForm = {
   ...GeneralInformationInitialValues,

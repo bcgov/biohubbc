@@ -201,7 +201,7 @@ export const SamplingSiteTableContainer = () => {
           edge="end"
           sx={{ ml: 1 }}
           aria-label="header-settings"
-          disabled={!selectedRows.length || activeView === SamplingSiteManageTableView.PERIODS}
+          disabled={!selectedRows.length || activeView === SamplingSiteManageTableView.CLUSTER}
           onClick={handleHeaderMenuClick}
           title="Bulk Actions">
           <Icon path={mdiDotsVertical} size={1} />
@@ -244,7 +244,7 @@ export const SamplingSiteTableContainer = () => {
           </LoadingGuard>
         )}
 
-        {activeView === SamplingSiteManageTableView.PERIODS && (
+        {activeView === SamplingSiteManageTableView.CLUSTER && (
           <LoadingGuard
             isLoading={
               !samplingSitesDataLoader.data && (samplingSitesDataLoader.isLoading || !samplingSitesDataLoader.isReady)

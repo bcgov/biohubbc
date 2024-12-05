@@ -20,7 +20,7 @@ const ImportBoundaryDialog = (props: IImportBoundaryDialogProps) => {
       <Box>
         <Box mb={3}>
           <Alert severity="info">
-            Shapefiles must be compressed into a single zip file. They can include one or more study area features.
+            Shapefiles must be compressed into a single zip file. They can include one or more features.
           </Alert>
         </Box>
         <FileUpload

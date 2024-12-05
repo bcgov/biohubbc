@@ -1,3 +1,4 @@
+import { IBlockData } from 'features/surveys/sampling-information/blocks/form/map/BlocksMapForm';
 import { ISurveySampleMethodFormData } from 'features/surveys/sampling-information/methods/components/SamplingMethodForm';
 import { ISurveySampleMethodPeriodData } from 'features/surveys/sampling-information/periods/SamplingPeriodFormContainer';
 import { Feature } from 'geojson';
@@ -231,4 +232,7 @@ export interface IFindSamplePeriodRecord {
 export interface IFindSamplePeriodResponse {
   periods: IFindSamplePeriodRecord[];
   pagination: ApiPaginationResponseParams;
+}
+export interface ICreateBlocksRequest {
+  blocks: IBlockData[];
 }

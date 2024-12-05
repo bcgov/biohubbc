@@ -1,4 +1,4 @@
-import { mdiCalendarRange, mdiMapMarker } from '@mdi/js';
+import { mdiMapMarker, mdiShapePlus, mdiViewGridPlus } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import Button from '@mui/material/Button';
 import ToggleButton from '@mui/material/ToggleButton';
@@ -7,7 +7,8 @@ import { SetStateAction } from 'react';
 
 export enum SamplingSiteManageTableView {
   SITES = 'SITES',
-  PERIODS = 'PERIODS'
+  CLUSTER = 'CLUSTERS',
+  STRATA = 'STRATA'
 }
 
 interface ISamplingSiteManageTableView {
@@ -33,7 +34,8 @@ export const SamplingSiteTableView = (props: ISamplingSiteTableViewProps) => {
 
   const views: ISamplingSiteManageTableView[] = [
     { value: SamplingSiteManageTableView.SITES, icon: <Icon path={mdiMapMarker} size={0.75} /> },
-    { value: SamplingSiteManageTableView.PERIODS, icon: <Icon path={mdiCalendarRange} size={0.75} /> }
+    { value: SamplingSiteManageTableView.CLUSTER, icon: <Icon path={mdiViewGridPlus} size={0.75} /> },
+    { value: SamplingSiteManageTableView.STRATA, icon: <Icon path={mdiShapePlus} size={0.75} /> }
   ];
 
   const updateDatasetView = (_: React.MouseEvent<HTMLElement>, view: SamplingSiteManageTableView) => {
