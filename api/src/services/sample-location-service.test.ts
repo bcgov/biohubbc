@@ -47,23 +47,6 @@ describe('SampleLocationService', () => {
             }
           }
         ],
-        sample_methods: [
-          {
-            survey_sample_site_id: 1,
-            method_technique_id: 1,
-            method_response_metric_id: 1,
-            description: '',
-            sample_periods: [
-              {
-                survey_sample_method_id: 1,
-                start_date: '2023-01-01',
-                end_date: '2023-01-03',
-                start_time: '12:00:00',
-                end_time: '13:00:00'
-              }
-            ]
-          }
-        ],
         blocks: [
           {
             survey_sample_site_id: 1,
@@ -92,12 +75,10 @@ describe('SampleLocationService', () => {
         update_user: 1,
         revision_count: 0
       });
-      const insertMethod = sinon.stub(SampleMethodService.prototype, 'insertSampleMethod').resolves();
 
       await service.insertSampleLocations(mockData);
 
       expect(insertSample).to.be.called;
-      expect(insertMethod).to.be.called;
     });
   });
 

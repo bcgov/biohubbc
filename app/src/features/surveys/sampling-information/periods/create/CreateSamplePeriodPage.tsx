@@ -106,8 +106,8 @@ export const CreateSamplePeriodPage = () => {
   const codesContext = useCodesContext();
 
   useEffect(() => {
-    codesContext.codesDataLoader.load()
-  }, [])
+    codesContext.codesDataLoader.load();
+  }, []);
 
   const formikRef = useRef<FormikProps<ICreateSamplePeriodFormData>>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);

@@ -142,7 +142,7 @@ GET.apiDoc = {
                           technique: techniqueSimpleViewSchema,
                           method_response_metric_id: {
                             type: 'integer',
-                            minimum: 1,
+                            minimum: 1
                           },
                           description: {
                             type: 'string',

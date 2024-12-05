@@ -1,5 +1,4 @@
 export interface ICreateSamplingPeriodData {
-  survey_sample_period_id: number | null;
   survey_sample_method_id: number | null;
   start_date: string | null;
   end_date: string | null;

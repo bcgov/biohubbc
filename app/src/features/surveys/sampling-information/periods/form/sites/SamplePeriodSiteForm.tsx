@@ -16,8 +16,8 @@ import { ICreateSamplingPeriodRequest } from 'interfaces/useSamplingPeriodApi.in
 import { IFindSampleSiteRecord, IGetSampleLocationNonSpatialDetails } from 'interfaces/useSamplingSiteApi.interface';
 import { useState } from 'react';
 import {
-    SamplePeriodPeriodForm,
-    SurveySampleMethodPeriodArrayItemInitialValues
+  SamplePeriodPeriodForm,
+  SurveySampleMethodPeriodArrayItemInitialValues
 } from './periods/SamplePeriodPeriodForm';
 
 interface ISamplingPeriodSiteFormProps {

@@ -25,7 +25,7 @@ export const SampleSiteCreateFormYupSchema = yup.object({
         geojson: yup.object({})
       })
     )
-    .min(1, 'At least one sampling site location is required'),
+    .min(1, 'At least one sampling site location is required')
 });
 
 interface ISampleSiteCreateFormProps {

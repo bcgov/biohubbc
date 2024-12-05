@@ -99,7 +99,7 @@ export class SampleMethodService extends DBService {
       return samplePeriodService.insertSamplePeriod(samplePeriod);
     });
 
-    const x = await Promise.all(promises);
+    await Promise.all(promises);
 
     return sampleMethodRecord;
   }
