@@ -167,8 +167,8 @@ const ObservationsListContainer = (props: IObservationsListContainerProps) => {
     {
       field: 'survey_observation_id',
       headerName: 'ID',
-      width: 70,
-      minWidth: 70,
+      width: 85,
+      minWidth: 85,
       renderHeader: () => (
         <Typography color={grey[500]} variant="body2" fontWeight={700}>
           ID
@@ -246,7 +246,7 @@ const ObservationsListContainer = (props: IObservationsListContainerProps) => {
         <Divider />
       </Collapse>
 
-      <Box height="100vh" maxHeight="800px" p={2}>
+      <Box height="100vh" maxHeight="800px">
         <LoadingGuard
           isLoading={observationsDataLoader.isLoading || !observationsDataLoader.isReady}
           isLoadingFallback={<SkeletonTable />}

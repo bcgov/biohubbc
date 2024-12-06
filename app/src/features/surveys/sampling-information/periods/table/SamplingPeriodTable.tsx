@@ -15,6 +15,7 @@ import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { DeleteTechniqueI18N } from 'constants/i18n';
 import dayjs from 'dayjs';
 import { useCodesContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
+import { IFindSamplePeriodRecord } from 'interfaces/useSamplingSiteApi.interface';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { formatTimeDifference } from 'utils/datetime';
@@ -32,11 +33,14 @@ export interface ISamplingSitePeriodRowData {
 }
 
 interface ISamplingPeriodTableProps {
-  periods: ISamplingSitePeriodRowData[];
+  periods: IFindSamplePeriodRecord[];
+  selectedRows: GridRowSelectionModel;
+  setSelectedRows: (selection: GridRowSelectionModel) => void;
   paginationModel: GridPaginationModel;
   setPaginationModel: React.Dispatch<React.SetStateAction<GridPaginationModel>>;
   sortModel: GridSortModel;
   setSortModel: React.Dispatch<React.SetStateAction<GridSortModel>>;
+  pageSizeOptions: number[];
   rowCount: number;
   // Used for when rows can be selected, which is only the case on the Manage Sampling Information page (not the Survey page)
   selectedRows?: GridRowSelectionModel;
@@ -48,7 +52,7 @@ interface ISamplingPeriodTableProps {
 /**
  * Renders a table of sampling periods.
  *
- * @param props {<ISamplingPeriodTableProps>}
+ * @param {ISamplingPeriodTableProps} props
  * @returns {*}
  */
 export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
@@ -132,7 +136,7 @@ export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
     });
   };
 
-  const columns: GridColDef<ISamplingSitePeriodRowData>[] = [
+  const columns: GridColDef<IFindSamplePeriodRecord>[] = [
     {
       field: 'id',
       headerName: 'ID',
@@ -151,12 +155,18 @@ export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
     {
       field: 'sample_site',
       headerName: 'Site',
-      flex: 1
+      flex: 1,
+      valueGetter: (params) => {
+        return params.row.sample_site.name;
+      }
     },
     {
       field: 'sample_method',
       headerName: 'Technique',
-      flex: 1
+      flex: 1,
+      valueGetter: (params) => {
+        return params.row.method_technique.name;
+      }
     },
     {
       field: 'method_response_metric_id',
@@ -166,7 +176,7 @@ export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
         const value = getCodesName(
           codesContext.codesDataLoader.data,
           'method_response_metrics',
-          params.row.method_response_metric_id
+          params.row.sample_method.method_response_metric_id
         );
 
         return value;

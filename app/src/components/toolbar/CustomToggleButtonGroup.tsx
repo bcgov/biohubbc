@@ -3,26 +3,73 @@ import Button from '@mui/material/Button';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 
-interface CustomToggleButtonGroupProps<T extends string> {
-  views: Array<{ value: T; label: string; icon: string }>;
-  activeView: T;
-  onViewChange: (view: T) => void;
+export interface ToggleButtonView<ViewValueType> {
+  /**
+   * The value of the toggle button, which will be passed to the `onViewChange` callback.
+   *
+   * @type {ViewValueType}
+   * @memberof ToggleButtonView
+   */
+  value: ViewValueType;
+  /**
+   * The label to display for the toggle button.
+   *
+   * @type {string}
+   * @memberof ToggleButtonView
+   */
+  label: string;
+  /**
+   * An optional start icon.
+   *
+   * @type {string}
+   * @memberof ToggleButtonView
+   */
+  icon?: string;
+}
+
+interface CustomToggleButtonGroupProps<ViewValueType extends string> {
+  /**
+   * An array of views to display in the toggle button group.
+   *
+   * @type {ToggleButtonView<ViewValueType>[]}
+   * @memberof CustomToggleButtonGroupProps
+   */
+  views: ToggleButtonView<ViewValueType>[];
+  /**
+   * The currently active view.
+   *
+   * @type {ViewValueType}
+   * @memberof CustomToggleButtonGroupProps
+   */
+  activeView: ViewValueType;
+  /**
+   * Callback fired when a toggle button is clicked.
+   *
+   * @memberof CustomToggleButtonGroupProps
+   */
+  onViewChange: (view: ViewValueType) => void;
+  /**
+   * The orientation of the toggle button group.
+   *
+   * @type {('horizontal' | 'vertical')}
+   * @memberof CustomToggleButtonGroupProps
+   */
+  orientation: 'horizontal' | 'vertical';
 }
 
 /**
  * A custom toggle button group that allows users to select from multiple views.
  *
- * TODO: Update all togglebuttongroups throughout the app to use this component for consistent styling
- *
- * @param {CustomToggleButtonGroupProps<T>} props
+ * @template ViewValueType
+ * @param {CustomToggleButtonGroupProps<ViewValueType>} props
  * @return {*}
  */
-const CustomToggleButtonGroup = <T extends string>(props: CustomToggleButtonGroupProps<T>) => {
-  const { views, activeView, onViewChange } = props;
+const CustomToggleButtonGroup = <ViewValueType extends string>(props: CustomToggleButtonGroupProps<ViewValueType>) => {
+  const { views, activeView, onViewChange, orientation } = props;
 
   return (
     <ToggleButtonGroup
-      orientation="vertical"
+      orientation={orientation}
       value={activeView}
       onChange={(_, view) => {
         if (view) {
@@ -45,16 +92,15 @@ const CustomToggleButtonGroup = <T extends string>(props: CustomToggleButtonGrou
           justifyContent: 'flex-start'
         }
       }}>
-      {views.map((view) => (
-        <ToggleButton
-          key={view.value}
-          component={Button}
-          color="primary"
-          startIcon={<Icon path={view.icon} size={0.75} />}
-          value={view.value}>
-          {view.label}
-        </ToggleButton>
-      ))}
+      {views.map((view) => {
+        const startIcon = (view.icon && <Icon path={view.icon} size={0.75} />) || undefined;
+
+        return (
+          <ToggleButton key={view.value} component={Button} color="primary" startIcon={startIcon} value={view.value}>
+            {view.label}
+          </ToggleButton>
+        );
+      })}
     </ToggleButtonGroup>
   );
 };

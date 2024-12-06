@@ -4,10 +4,9 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
-import ToggleButton from '@mui/material/ToggleButton';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import CustomToggleButtonGroup from 'components/toolbar/CustomToggleButtonGroup';
 import dayjs from 'dayjs';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
@@ -76,38 +75,16 @@ const AlertListContainer = () => {
         </Button>
       </Toolbar>
       <Divider />
-      <Box p={2} display="flex" justifyContent="space-between">
-        <ToggleButtonGroup
-          value={activeView}
-          onChange={(_, view) => view && setActiveView(view)}
-          exclusive
-          sx={{
-            width: '100%',
-            gap: 1,
-            '& Button': {
-              py: 0.5,
-              px: 1.5,
-              border: 'none !important',
-              fontWeight: 700,
-              borderRadius: '4px !important',
-              fontSize: '0.875rem',
-              letterSpacing: '0.02rem'
-            }
-          }}>
-          {views.map(({ value, label, icon }) => (
-            <ToggleButton
-              key={value}
-              value={value}
-              component={Button}
-              color="primary"
-              startIcon={<Icon path={icon} size={0.75} />}>
-              {label}
-            </ToggleButton>
-          ))}
-        </ToggleButtonGroup>
+      <Box p={2}>
+        <CustomToggleButtonGroup
+          views={views}
+          activeView={activeView}
+          onViewChange={(view) => setActiveView(view)}
+          orientation="horizontal"
+        />
       </Box>
       <Divider />
-      <Box p={2}>
+      <Box>
         {/* Modals */}
         <CreateAlert open={modalState.create} onClose={closeModal} />
         {alertId && modalState.edit && <EditAlert alertId={alertId} open={modalState.edit} onClose={closeModal} />}
