@@ -3,8 +3,8 @@ import { describe } from 'mocha';
 import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { ApiExecuteSQLError } from '../errors/api-error';
 import { getMockDBConnection } from '../__mocks__/db';
+import { ApiExecuteSQLError } from '../errors/api-error';
 import { PostSurveyBlock, SurveyBlockRepository } from './survey-block-repository';
 
 chai.use(sinonChai);
@@ -34,7 +34,7 @@ describe('SurveyBlockRepository', () => {
         rowCount: 1
       } as any as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({
-        sql: () => mockResponse
+        knex: () => mockResponse
       });
 
       const repo = new SurveyBlockRepository(dbConnection);
@@ -51,7 +51,7 @@ describe('SurveyBlockRepository', () => {
         rowCount: 0
       } as any as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({
-        sql: () => mockResponse
+        knex: () => mockResponse
       });
 
       const repo = new SurveyBlockRepository(dbConnection);

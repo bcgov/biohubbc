@@ -5,6 +5,7 @@ import { describe } from 'mocha';
 import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { getMockDBConnection } from '../__mocks__/db';
 import { ApiGeneralError } from '../errors/api-error';
 import { GetReportAttachmentsData } from '../models/project-view';
 import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
@@ -27,7 +28,6 @@ import {
   SurveyTaxonomyWithEcologicalUnits,
   SurveyTypeRecord
 } from '../repositories/survey-repository';
-import { getMockDBConnection } from '../__mocks__/db';
 import { HistoryPublishService } from './history-publish-service';
 import { PermitService } from './permit-service';
 import { PlatformService } from './platform-service';
@@ -77,7 +77,6 @@ describe('SurveyService', () => {
       const getSurveyParticipantsStub = sinon
         .stub(SurveyParticipationService.prototype, 'getSurveyParticipants')
         .resolves([{ data: 'participantData' } as any]);
-      const getSurveyBlockStub = sinon.stub(SurveyBlockService.prototype, 'getSurveyBlocksForSurveyId').resolves([]);
       const getSiteSelectionDataStub = sinon
         .stub(SiteSelectionStrategyService.prototype, 'getSiteSelectionDataBySurveyId')
         .resolves({ strategies: [], stratums: [] });
@@ -98,7 +97,6 @@ describe('SurveyService', () => {
       expect(getSurveyLocationsDataStub).to.be.calledOnce;
       expect(getSurveyParticipantsStub).to.be.calledOnce;
       expect(getSurveyPartnershipsDataStub).to.be.calledOnce;
-      expect(getSurveyBlockStub).to.be.calledOnce;
       expect(getSiteSelectionDataStub).to.be.calledOnce;
 
       expect(response).to.eql({
@@ -115,7 +113,6 @@ describe('SurveyService', () => {
         participants: [{ data: 'participantData' } as any],
         locations: [],
         site_selection: { stratums: [], strategies: [] },
-        blocks: []
       });
     });
   });

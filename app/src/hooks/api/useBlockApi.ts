@@ -16,7 +16,6 @@ const useBlockApi = (axios: AxiosInstance) => {
    * @param {number} surveyId
    * @param {{
    *       keyword?: string;
-   *       sampleSiteIds?: number[];
    *       pagination?: ApiPaginationOptions;
    *     }} [options]
    * *
