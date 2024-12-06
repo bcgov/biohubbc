@@ -117,6 +117,7 @@ export const TelemetryDeviceKeysDialog = (props: ITelemetryDeviceKeysDialogProps
               severity="info"
               variant="standard"
               title="Automatic Data Retrievals"
+              sx={{ mb: 3 }}
               text={
                 <Typography variant="body2">
                   Telemetry data can be imported manually or, for Vectronic and Lotek devices, retrieved automatically

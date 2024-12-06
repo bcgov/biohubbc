@@ -41,6 +41,30 @@ export class TelemetryDeviceRepository extends BaseRepository {
   }
 
   /**
+   * Finds a device by a given serial number and make in the given survey
+   *
+   * @param {surveyId} surveyId
+   * @param {number} serial
+   * @param {number} deviceMakeId
+   * @returns {*} {Promise<DeviceRecord | null>}
+   */
+  async findDeviceBySerial(surveyId: number, serial: number, deviceMakeId: number): Promise<DeviceRecord | null> {
+    const knex = getKnex();
+
+    const queryBuilder = knex
+      .select(['device_id', 'survey_id', 'device_key', 'serial', 'device.device_make_id', 'model', 'comment'])
+      .from('device')
+      .join('device_make', 'device_make.device_make_id', 'device.device_make_id')
+      .where('serial', serial)
+      .andWhere('device.device_make_id', deviceMakeId)
+      .andWhere('survey_id', surveyId);
+
+    const response = await this.connection.knex(queryBuilder, DeviceRecord);
+
+    return response.rows[0];
+  }
+
+  /**
    * Retrieve the list of devices for a survey, based on pagination options.
    *
    * @param {number} surveyId

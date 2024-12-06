@@ -1,4 +1,4 @@
-import Autocomplete from '@mui/material/Autocomplete';
+import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import grey from '@mui/material/colors/grey';
@@ -116,7 +116,7 @@ export const AnimalAutocompleteField = <T extends string | number>(props: IAnima
       isOptionEqualToValue={(option, value) => {
         return option.critter_id === value.critter_id;
       }}
-      filterOptions={(item) => item}
+      filterOptions={createFilterOptions()}
       inputValue={inputValue}
       onInputChange={(_, _value, reason) => {
         if (clearOnSelect && reason === 'clear') {

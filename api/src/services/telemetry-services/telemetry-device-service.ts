@@ -61,6 +61,18 @@ export class TelemetryDeviceService extends DBService {
   }
 
   /**
+   * Finds a device by a given serial number and make in the given survey
+   *
+   * @param {number} surveyId
+   * @param {number} serial
+   * @param {number} deviceMakeId
+   * @return {*} {Promise<DeviceRecord | null>}
+   */
+  async findDeviceBySerial(surveyId: number, serial: number, deviceMakeId: number): Promise<DeviceRecord | null> {
+    return this.telemetryDeviceRepository.findDeviceBySerial(surveyId, serial, deviceMakeId);
+  }
+
+  /**
    * Get a list of devices by their IDs.
    *
    * @param {number} surveyId

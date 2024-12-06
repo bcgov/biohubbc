@@ -42,6 +42,42 @@ describe('TelemetryDeviceService', () => {
     });
   });
 
+  describe('findDeviceBySerial', () => {
+    it('should return a device with the given serial and make if it exists in the survey', async () => {
+      const mockConnection = getMockDBConnection();
+      const service = new TelemetryDeviceService(mockConnection);
+
+      const mockDevice = {
+        device_make_id: 1,
+        model: null,
+        survey_id: 1,
+        device_id: 1,
+        device_key: '1:lotek',
+        serial: 'serial',
+        comment: 'comment'
+      };
+
+      const repoStub = sinon.stub(TelemetryDeviceRepository.prototype, 'findDeviceBySerial').resolves(mockDevice);
+
+      const device = await service.findDeviceBySerial(1, 2, 1);
+
+      expect(repoStub).to.have.been.calledOnceWithExactly(1, 2, 1);
+      expect(device).to.eql(mockDevice);
+    });
+
+    it('should return null if a device with the given serial and make does not exist in the survey', async () => {
+      const mockConnection = getMockDBConnection();
+      const service = new TelemetryDeviceService(mockConnection);
+
+      const repoStub = sinon.stub(TelemetryDeviceRepository.prototype, 'findDeviceBySerial').resolves(null);
+
+      const device = await service.findDeviceBySerial(1, 2, 1);
+
+      expect(repoStub).to.have.been.calledOnceWithExactly(1, 2, 1);
+      expect(device).to.eql(null);
+    });
+  });
+
   describe('deleteDevice', () => {
     it('should delete a device by its ID', async () => {
       const mockConnection = getMockDBConnection();

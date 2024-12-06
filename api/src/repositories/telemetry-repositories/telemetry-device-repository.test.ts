@@ -26,6 +26,22 @@ describe('TelemetryDeviceRepository', () => {
     });
   });
 
+  describe('findDeviceBySerial', () => {
+    it('should find a device with a given serial and make in the given survey', async () => {
+      const mockRow = { device_id: 1 };
+      const mockDBConnection = getMockDBConnection({ knex: sinon.stub().resolves({ rows: [mockRow] }) });
+
+      const mockSurvey = 1;
+      const mockSerial = 12345;
+      const mockDeviceMakeId = 5;
+
+      const telemetryDeviceRepository = new TelemetryDeviceRepository(mockDBConnection);
+
+      const response = await telemetryDeviceRepository.findDeviceBySerial(mockSurvey, mockSerial, mockDeviceMakeId);
+      expect(response).to.eql(mockRow);
+    });
+  });
+
   describe('deleteDevicesByIds', () => {
     it('should delete devices by IDs', async () => {
       const mockRows = [{ device_id: 1 }];

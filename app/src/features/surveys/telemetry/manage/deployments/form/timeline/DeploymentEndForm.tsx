@@ -86,7 +86,7 @@ export const DeploymentEndForm = (props: IDeploymentEndFormProps) => {
     <Grid container spacing={3}>
       <Grid item xs={12} flex="1 1 auto">
         <Typography color="textSecondary" mb={2}>
-          Select how the deployment ended, if applicable. If due to a mortality, you must&nbsp;
+          If applicable, select how the deployment ended. If due to a mortality, you must&nbsp;
           {values.critter_id ? (
             <Typography
               sx={{
@@ -193,6 +193,12 @@ export const DeploymentEndForm = (props: IDeploymentEndFormProps) => {
               {deploymentEndType === 'fell_off' && (
                 <Box sx={{ width: '100%' }} display="flex">
                   <DateField
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        borderTopRightRadius: 0,
+                        borderBottomRightRadius: 0
+                      }
+                    }}
                     id="attachment_end_date"
                     name="attachment_end_date"
                     label="End date"

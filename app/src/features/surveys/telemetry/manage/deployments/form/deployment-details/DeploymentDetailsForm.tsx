@@ -1,17 +1,14 @@
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
 import { AnimalAutocompleteField } from 'components/fields/AnimalAutocompleteField';
 import AutocompleteField, { IAutocompleteFieldOption } from 'components/fields/AutocompleteField';
 import { DeviceAutocompleteField } from 'components/fields/DeviceAutocompleteField';
 import { useFormikContext } from 'formik';
-import { useSurveyContext } from 'hooks/useContext';
 import { ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 import { ICreateAnimalDeployment } from 'interfaces/useTelemetryApi.interface';
 import { TelemetryDevice } from 'interfaces/useTelemetryDeviceApi.interface';
 import get from 'lodash-es/get';
-import { Link as RouterLink } from 'react-router-dom';
 import { numberOrNull } from 'utils/string-utils';
 import { isDefined } from 'utils/Utils';
 import yup from 'utils/YupSchema';
@@ -65,33 +62,8 @@ export const DeploymentDetailsForm = (props: IDeploymentDetailsFormProps) => {
 
   const { setFieldValue, values, touched, errors, handleBlur } = useFormikContext<ICreateAnimalDeployment>();
 
-  const surveyContext = useSurveyContext();
-
   return (
     <Grid container spacing={3}>
-      <Grid item xs={12}>
-        <Typography color="textSecondary">
-          You must&nbsp;
-          <Typography
-            sx={{
-              textDecoration: 'none'
-            }}
-            component={RouterLink}
-            to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry/manage/device/create`}>
-            add the device
-          </Typography>
-          &nbsp;and&nbsp;
-          <Typography
-            sx={{
-              textDecoration: 'none'
-            }}
-            component={RouterLink}
-            to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/animals/create`}>
-            animal
-          </Typography>
-          &nbsp;to your Survey before associating the two in a deployment.
-        </Typography>
-      </Grid>
       <Grid item xs={12}>
         <DeviceAutocompleteField
           formikFieldName="device_id"

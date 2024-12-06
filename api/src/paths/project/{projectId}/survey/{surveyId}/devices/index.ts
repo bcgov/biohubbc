@@ -2,6 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
+import { ApiGeneralError } from '../../../../../../errors/api-error';
 import {
   paginationRequestQueryParamSchema,
   paginationResponseSchema
@@ -136,6 +137,14 @@ export function createDevice(): RequestHandler {
       await connection.open();
 
       const telemetryDeviceService = new TelemetryDeviceService(connection);
+
+      // Check whether device already exists in Survey
+      const device = await telemetryDeviceService.findDeviceBySerial(surveyId, serial, device_make_id);
+
+      // Throw error if device already exists
+      if (device) {
+        throw new ApiGeneralError(`Device ${serial} of the given make already exists in the Survey.`);
+      }
 
       await telemetryDeviceService.createDevice({
         survey_id: surveyId,

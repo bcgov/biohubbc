@@ -1,4 +1,4 @@
-import Autocomplete from '@mui/material/Autocomplete';
+import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
 import grey from '@mui/material/colors/grey';
 import TextField from '@mui/material/TextField';
@@ -119,10 +119,10 @@ export const DeviceAutocompleteField = <T extends string | number>(props: IDevic
       noOptionsText="No matching options"
       options={options ?? []}
       getOptionLabel={(option) => option.serial}
+      filterOptions={createFilterOptions()}
       isOptionEqualToValue={(option, value) => {
         return option.device_id === value.device_id;
       }}
-      filterOptions={(item) => item}
       inputValue={inputValue}
       onInputChange={(_, _value, reason) => {
         if (clearOnSelect && reason === 'clear') {

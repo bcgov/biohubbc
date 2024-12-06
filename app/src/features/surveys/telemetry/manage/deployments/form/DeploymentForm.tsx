@@ -4,6 +4,7 @@ import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import {
   DeploymentDetailsForm,
@@ -17,6 +18,7 @@ import useDataLoader from 'hooks/useDataLoader';
 import { ICreateAnimalDeployment } from 'interfaces/useTelemetryApi.interface';
 import { useEffect } from 'react';
 import { useHistory } from 'react-router';
+import { Link as RouterLink } from 'react-router-dom';
 import {
   DeploymentEndForm,
   DeploymentEndFormInitialValues,
@@ -100,7 +102,32 @@ export const DeploymentForm = (props: IDeploymentFormProps) => {
         <Stack gap={5}>
           <HorizontalSplitFormComponent
             title="Deployment Details"
-            summary="Enter information about the device and animal">
+            summary={
+              <>
+                Enter information about the device and animal.
+                <Typography color="textSecondary">
+                  You must&nbsp;
+                  <Typography
+                    sx={{
+                      textDecoration: 'none'
+                    }}
+                    component={RouterLink}
+                    to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry/manage/device/create`}>
+                    add the device
+                  </Typography>
+                  &nbsp;and&nbsp;
+                  <Typography
+                    sx={{
+                      textDecoration: 'none'
+                    }}
+                    component={RouterLink}
+                    to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/animals/create`}>
+                    animal
+                  </Typography>
+                  &nbsp;to your Survey before associating the two in a deployment.
+                </Typography>
+              </>
+            }>
             <DeploymentDetailsForm
               surveyAnimals={crittersDataLoader.data ?? []}
               surveyDevices={devicesDataLoader.data?.devices ?? []}

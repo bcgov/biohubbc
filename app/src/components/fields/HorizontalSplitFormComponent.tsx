@@ -17,7 +17,7 @@ export interface IHorizontalSplitFormComponentProps {
    * @type {string}
    * @memberof IHorizontalSplitFormComponentProps
    */
-  summary?: string;
+  summary?: string | ReactElement;
   /**
    * The form component to render
    *
