@@ -27,7 +27,7 @@ const HelpButtonTooltip = ({ content, iconSx }: HelpButtonTooltipProps) => {
         position: 'relative',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'center'
       }}>
       {/* Tooltip should always be there, but only show when hovering */}
       <Tooltip
@@ -42,12 +42,12 @@ const HelpButtonTooltip = ({ content, iconSx }: HelpButtonTooltipProps) => {
               py: 1.5,
               px: 2,
               fontSize: '0.875rem',
-              background: '#38598A',
+              background: '#38598A'
             },
             '& .MuiTooltip-arrow::before': {
-              background: '#38598A',
-            },
-          },
+              background: '#38598A'
+            }
+          }
         }}>
         {/* IconButton is always displayed */}
         <IconButton
@@ -55,7 +55,7 @@ const HelpButtonTooltip = ({ content, iconSx }: HelpButtonTooltipProps) => {
           onMouseLeave={() => setRenderTooltip(false)}
           sx={{
             color: '#38598A',
-            ...iconSx,
+            ...iconSx
           }}>
           <Icon path={mdiHelpCircleOutline} size={1} />
         </IconButton>

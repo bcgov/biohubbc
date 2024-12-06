@@ -30,9 +30,7 @@ const SamplingStrategyForm = () => {
         </Box>
       </Collapse>
       <Box component="fieldset" mt={5}>
-        <HelpButtonStack helpText="Blocks are defined areas within your study area that enhance structured sampling and reduce variability. As a higher-level organizational unit, blocks contain sampling sites and help distribute sampling effort systematically across a large area, supporting randomization and reducing potential bias.">
-          <Typography fontWeight={700}>Add Blocks (optional)</Typography>
-        </HelpButtonStack>
+        <Typography fontWeight={700}>Add Blocks (optional)</Typography>
         <Typography
           sx={{
             mb: 2

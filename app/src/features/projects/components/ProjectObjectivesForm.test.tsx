@@ -8,7 +8,7 @@ import ProjectObjectivesForm, {
 
 describe('ProjectObjectivesForm', () => {
   it('renders correctly with default empty values', () => {
-    const { getByLabelText } = render(
+    const { getAllByLabelText } = render(
       <Formik
         initialValues={ProjectObjectivesFormInitialValues}
         validationSchema={ProjectObjectivesFormYupSchema}
@@ -19,7 +19,7 @@ describe('ProjectObjectivesForm', () => {
       </Formik>
     );
 
-    expect(getByLabelText('Objectives', { exact: false })).toBeVisible();
+    expect(getAllByLabelText('Objectives', { exact: false })).toBeVisible();
   });
 
   it('renders correctly with existing objective/caveat values', () => {
@@ -29,7 +29,7 @@ describe('ProjectObjectivesForm', () => {
       }
     };
 
-    const { getByLabelText, getByText } = render(
+    const { getAllByLabelText, getByText } = render(
       <Formik
         initialValues={existingFormValues}
         validationSchema={ProjectObjectivesFormYupSchema}
@@ -40,7 +40,7 @@ describe('ProjectObjectivesForm', () => {
       </Formik>
     );
 
-    expect(getByLabelText('Objectives', { exact: false })).toBeVisible();
+    expect(getAllByLabelText('Objectives', { exact: false })).toBeVisible();
     expect(getByText('a project objective')).toBeVisible();
   });
 });

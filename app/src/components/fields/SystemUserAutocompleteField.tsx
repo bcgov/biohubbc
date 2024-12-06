@@ -141,20 +141,18 @@ export const SystemUserAutocompleteField = (props: ISystemUserAutocompleteFieldP
       disabled={disabled}
       data-testid={formikFieldName}
       filterSelectedOptions
-      noOptionsText={inputValue.length > 2 ? 'No matching options' : 'Enter at least 3 letters'}
+      noOptionsText={inputValue && inputValue.length > 2 ? 'No matching options' : 'Enter at least 3 letters'}
       options={options}
-      getOptionLabel={(option) => option.display_name}
-      isOptionEqualToValue={(option, value) => {
-        return option.system_user_id === value.system_user_id;
-      }}
+      getOptionLabel={(option) => option.display_name || ''}
+      value={null} // Always set value to null to prevent a selected value from showing
+      isOptionEqualToValue={(option, value) => option.system_user_id === value.system_user_id}
       filterOptions={(options) => {
         if (selectedUsers) {
-          return options.filter((item) => selectedUsers && !selectedUsers.includes(item.system_user_id));
+          return options.filter((item) => !selectedUsers.includes(item.system_user_id));
         }
         return options;
       }}
-      inputValue={inputValue}
-      // Text field value changed
+      inputValue={inputValue || ''} // Control the text field value separately
       onInputChange={(_, value, reason) => {
         if (clearOnSelect && reason === 'reset') {
           setInputValue('');
@@ -185,11 +183,10 @@ export const SystemUserAutocompleteField = (props: ISystemUserAutocompleteFieldP
           if (!isMounted()) {
             return;
           }
-          setOptions(() => newOptions);
+          setOptions(newOptions);
           setIsLoading(false);
         });
       }}
-      // Option selected from dropdown
       onChange={(_, option) => {
         if (!option) {
           onClear?.();

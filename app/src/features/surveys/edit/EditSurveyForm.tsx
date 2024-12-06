@@ -189,7 +189,7 @@ const EditSurveyForm = <
 
         <HorizontalSplitFormComponent
           title="Study Area"
-          summary="Import, draw or select a feature from an existing layer to define the study areas for this survey"
+          summary="Import, draw or select a feature from an existing layer to define general areas of interest where survey findings apply."
           component={<StudyAreaForm />}
         />
 

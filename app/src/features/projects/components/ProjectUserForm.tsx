@@ -141,10 +141,12 @@ const ProjectUserForm = (props: IProjectUserFormProps) => {
         <Box mt={3}>
           <SystemUserAutocompleteField
             formikFieldName="system_user_id"
+            data-testid="autocomplete-user-role-search"
             label="Team Member"
             placeholder="Search by user"
-            helpText={`People must request access before you can invite them. A member's role determines their permissions in the Project.`}
+            helpText={`Only active users who have requested access to the Species Inventory Management System before can be invited`}
             selectedUsers={values.participants.map((participant) => participant.system_user_id)}
+            clearOnSelect
             onSelect={(value) => {
               if (value) {
                 handleAddUser(value);

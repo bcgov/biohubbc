@@ -39,7 +39,7 @@ const ProjectDetailsForm = () => {
           <CustomTextField
             name="project.project_name"
             label="Project Name"
-            helpText='Use descriptive names mentioning a species or region to help organize your Projects'
+            helpText="Use descriptive names mentioning a species or region to help organize your Projects"
             other={{
               required: true
             }}
