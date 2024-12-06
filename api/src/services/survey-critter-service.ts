@@ -235,9 +235,9 @@ export class SurveyCritterService extends DBService {
    *
    * @async
    * @param {number} surveyId
-   * @returns {Promise<Map<string, ICritterDetailed | undefined>>} Critter alias -> Detailed critter
+   * @returns {Promise<Map<string, ICritterDetailed>>} Critter alias -> Detailed critter
    */
-  async getSurveyCritterAliasMap(surveyId: number): Promise<Map<string, ICritterDetailed | undefined>> {
+  async getSurveyCritterAliasMap(surveyId: number): Promise<Map<string, ICritterDetailed>> {
     const critters = await this.getCritterbaseSurveyCritters(surveyId);
 
     // Create mapping of alias -> critter_id

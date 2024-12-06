@@ -1,5 +1,7 @@
 import { z } from 'zod';
-import { CSVCellValidator, CSVError, CSVParams } from './csv-config-validation.interface';
+import { ApiGeneralError } from '../../errors/api-error';
+import { formatTimeString } from '../../services/import-services/utils/datetime';
+import { CSVCellSetter, CSVCellValidator, CSVError, CSVParams } from './csv-config-validation.interface';
 
 /**
  * Utility function to validate a CSV cell using a Zod schema.
@@ -24,6 +26,26 @@ export const validateZodCell = (params: CSVParams, schema: z.ZodSchema, solution
   }
 
   return errors;
+};
+
+/**
+ * Get the value from the params state property.
+ *
+ * Note: The state property is potentially set by the cell validator.
+ *
+ * @throws {ApiGeneralError} If the state is undefined ie: not set in the cell validator
+ * @returns {*} {CSVCellSetter} The set cell callback
+ */
+export const getStateCellSetter = (): CSVCellSetter => {
+  return (params: CSVParams) => {
+    if (params.state === undefined) {
+      throw new ApiGeneralError(`Cell state is undefined. Expecting state to have been set in cell validator.`, [
+        params
+      ]);
+    }
+
+    return params.state;
+  };
 };
 
 /**
@@ -62,5 +84,43 @@ export const getTsnCellValidator = (tsns: Set<number>): CSVCellValidator => {
 export const getDescriptionCellValidator = (): CSVCellValidator => {
   return (params: CSVParams) => {
     return validateZodCell(params, z.string().trim().min(1).max(250).optional());
+  };
+};
+
+/**
+ * Get the time header cell validator.
+ *
+ * Rules:
+ *  1. The cell must be a valid 24-hour time format 'HH:mm:ss' or 'HH:mm' or undefined
+ *
+ * @returns {*} {CSVCellValidator} The validate cell callback
+ */
+export const getTimeCellValidator = (): CSVCellValidator => {
+  return (params: CSVParams) => {
+    if (params.cell === undefined || formatTimeString(String(params.cell))) {
+      return [];
+    }
+
+    return [
+      {
+        error: `Use a valid 24-hour time format 'HH:mm:ss' or 'HH:mm'`,
+        solution: `Update the cell value to match the expected format`
+      }
+    ];
+  };
+};
+
+/**
+ * Get the time header cell setter.
+ *
+ * @returns {*} {CSVCellSetter} The set cell callback
+ */
+export const getTimeCellSetter = (): CSVCellSetter => {
+  return (params: CSVParams) => {
+    if (params.cell === undefined) {
+      return undefined;
+    }
+
+    return formatTimeString(String(params.cell));
   };
 };
