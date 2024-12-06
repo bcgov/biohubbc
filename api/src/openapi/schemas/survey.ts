@@ -1,4 +1,5 @@
 import { OpenAPIV3 } from 'openapi-types';
+import { GeoJSONFeature } from './geoJson';
 import { updateCreateUserPropertiesSchema } from './user';
 
 export const surveyDetailsSchema: OpenAPIV3.SchemaObject = {
@@ -506,8 +507,8 @@ export const surveyBlockSchema: OpenAPIV3.SchemaObject = {
       nullable: true
     },
     geojson: {
-      description: 'Geojson',
-      type: 'object'
+      ...(GeoJSONFeature as object),
+      nullable: true
     },
     sample_block_count: {
       description: 'Sample block count',
