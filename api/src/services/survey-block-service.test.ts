@@ -3,8 +3,8 @@ import { describe } from 'mocha';
 import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { getMockDBConnection } from '../__mocks__/db';
 import { PostSurveyBlock, SurveyBlockRepository } from '../repositories/survey-block-repository';
+import { getMockDBConnection } from '../__mocks__/db';
 import { SampleBlockService } from './sample-block-service';
 import { SurveyBlockService } from './survey-block-service';
 
@@ -62,10 +62,7 @@ describe('SurveyBlockService', () => {
       const dbConnection = getMockDBConnection();
       const service = new SurveyBlockService(dbConnection);
 
-      const getOldBlocks = sinon.stub(SurveyBlockService.prototype, 'getSurveyBlocksForSurveyId').resolves([]);
-      const deleteBlock = sinon.stub(SurveyBlockService.prototype, 'deleteSurveyBlock').resolves();
       const insertBlock = sinon.stub(SurveyBlockRepository.prototype, 'insertSurveyBlock').resolves();
-      const updateBlock = sinon.stub(SurveyBlockRepository.prototype, 'updateSurveyBlock').resolves();
 
       const blocks: PostSurveyBlock[] = [
         {
@@ -95,70 +92,7 @@ describe('SurveyBlockService', () => {
       ];
       await service.insertSurveyBlocks(1, blocks);
 
-      expect(getOldBlocks).to.be.calledOnce;
       expect(insertBlock).to.be.calledTwice;
-      expect(deleteBlock).to.not.be.calledOnce;
-      expect(updateBlock).to.not.be.calledOnce;
-    });
-
-    it('should run delete block code', async () => {
-      const dbConnection = getMockDBConnection();
-      const service = new SurveyBlockService(dbConnection);
-
-      const getOldBlocks = sinon.stub(SurveyBlockService.prototype, 'getSurveyBlocksForSurveyId').resolves([
-        {
-          sample_block_count: 0,
-          survey_block_id: 10,
-          survey_id: 1,
-          name: 'Old Block',
-          description: 'Updated',
-          revision_count: 1
-        },
-        {
-          sample_block_count: 0,
-          survey_block_id: 11,
-          survey_id: 1,
-          name: 'Old Block',
-          description: 'Going to be deleted',
-          revision_count: 1
-        }
-      ]);
-      const deleteBlock = sinon.stub(SurveyBlockService.prototype, 'deleteSurveyBlock').resolves();
-      const insertBlock = sinon.stub(SurveyBlockRepository.prototype, 'insertSurveyBlock').resolves();
-      const updateBlock = sinon.stub(SurveyBlockRepository.prototype, 'updateSurveyBlock').resolves();
-
-      const blocks: PostSurveyBlock[] = [
-        {
-          survey_block_id: 10,
-          survey_id: 1,
-          name: 'Old Block',
-          description: 'Updated',
-          geojson: {
-            type: 'Feature',
-            geometry: { type: 'Point', coordinates: [0, 0] },
-            properties: {},
-            id: 'testid1'
-          }
-        },
-        {
-          survey_block_id: null,
-          survey_id: 1,
-          name: 'New Block',
-          description: 'block',
-          geojson: {
-            type: 'Feature',
-            geometry: { type: 'Point', coordinates: [0, 0] },
-            properties: {},
-            id: 'testid1'
-          }
-        }
-      ];
-      await service.insertSurveyBlocks(1, blocks);
-
-      expect(getOldBlocks).to.be.calledOnce;
-      expect(deleteBlock).to.be.calledOnce;
-      expect(insertBlock).to.be.calledOnce;
-      expect(updateBlock).to.be.calledOnce;
     });
   });
 
@@ -183,11 +117,12 @@ describe('SurveyBlockService', () => {
       const dbConnection = getMockDBConnection();
 
       const service = new SurveyBlockService(dbConnection);
+      const mockSurveyId = 1;
       const surveyBlockId = 1;
-      const response = await service.deleteSurveyBlock(surveyBlockId);
+      const response = await service.deleteSurveyBlock(mockSurveyId, surveyBlockId);
 
       expect(response).to.eql(mockResponse);
-      expect(deleteSampleBlockRecordsByBlockIdsStub).to.have.been.calledOnceWith([surveyBlockId]);
+      expect(deleteSampleBlockRecordsByBlockIdsStub).to.have.been.calledOnceWith(mockSurveyId, [surveyBlockId]);
       expect(deleteSurveyBlockRecordStub).to.have.been.calledOnceWith(surveyBlockId);
     });
   });

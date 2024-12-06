@@ -12,7 +12,7 @@ import yup from 'utils/YupSchema';
 import { ICreateBlockFormData } from '../../create/CreateBlockPage';
 import BlocksMapForm from './CreateBlocksMapForm';
 
-export const BlocksFormYupSchema = yup.object({
+export const CreateBlocksFormYupSchema = yup.object({
   blocks: yup
     .array(
       yup.object({
@@ -25,9 +25,10 @@ export const BlocksFormYupSchema = yup.object({
     .min(1, 'At least one block is required')
     .required('Blocks are required')
     .test('unique-names', 'Blocks must have unique names', (blocks) => {
-      if (!blocks || !blocks.length) {
+      if (!blocks?.length) {
         return true;
       }
+
       const names = blocks.map((block) => block.name);
       return new Set(names).size === names.length;
     })
@@ -55,7 +56,7 @@ const CreateBlocksForm = (props: ICreateBlocksFormProps) => {
   return (
     <Container maxWidth="xl" sx={{ py: 3 }}>
       <Paper sx={{ p: 5 }}>
-        <HorizontalSplitFormComponent title="Clusters" summary="Import or draw clusters">
+        <HorizontalSplitFormComponent title="Clusters" summary="Import a spatial file or draw the location of clusters on the map">
           <BlocksMapForm clusterCount={clusterCount} />
         </HorizontalSplitFormComponent>
 

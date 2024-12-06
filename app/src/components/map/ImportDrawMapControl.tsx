@@ -41,24 +41,31 @@ export interface IImportDrawMapControlProps {
   drawControlsRef?: React.MutableRefObject<IDrawControlsRef | null>;
 }
 
-export const ImportDrawMapControl = ({
-  mapId,
-  label,
-  features,
-  handleImport,
-  handleImportFailure,
-  handleAdd,
-  handleEdit,
-  handleDelete,
-  handleDeleteAll,
-  handleRegionSelect,
-  handleFeatureSelect,
-  tooltip,
-  selectedFeatures,
-  regions = [],
-  dialogTitle = 'Import Features',
-  drawControlsRef
-}: IImportDrawMapControlProps) => {
+/**
+ * Returns a generic map control with the ability to draw or import features, used for adding spatial data as part of a form
+ *
+ * @param {IImportDrawMapControlProps} props
+ * @returns {*}
+ */
+export const ImportDrawMapControl = (props: IImportDrawMapControlProps) => {
+  const {
+    mapId,
+    label,
+    features,
+    handleImport,
+    handleImportFailure,
+    handleAdd,
+    handleEdit,
+    handleDelete,
+    handleDeleteAll,
+    handleRegionSelect,
+    handleFeatureSelect,
+    tooltip,
+    selectedFeatures,
+    regions = [],
+    dialogTitle = 'Import Features',
+    drawControlsRef
+  } = props;
   const [updatedBounds, setUpdatedBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -169,7 +176,7 @@ export const ImportDrawMapControl = ({
           <FeatureGroup>
             {regions.map((region, index) => (
               <GeoJSON
-                key={index}
+                key={region.id || index}
                 data={region}
                 eventHandlers={{
                   click: () => handleRegionSelect && handleRegionSelect(region)
@@ -188,13 +195,15 @@ export const ImportDrawMapControl = ({
                 ? SURVEY_MAP_LAYER_COLOURS.SELECTED_COLOUR
                 : SURVEY_MAP_LAYER_COLOURS.NON_SELECTED_COLOUR;
 
+              const id = String(feature.id) || v4();
+
               return {
                 key: feature.id,
                 layerName: `Feature ${index + 1}`,
                 features: [
                   {
                     id: index,
-                    key: String(feature.id) ?? v4(),
+                    key: id,
                     geoJSON: feature
                   }
                 ],

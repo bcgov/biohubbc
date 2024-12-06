@@ -2,10 +2,10 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
 import * as db from '../../../../../../database/db';
 import { HTTPError } from '../../../../../../errors/http-error';
 import { SurveyBlockService } from '../../../../../../services/survey-block-service';
+import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
 import { createSurveyBlocks, getSurveyBlocks } from './index';
 
 chai.use(sinonChai);
@@ -88,7 +88,7 @@ describe('getSurveyBlocks', () => {
   });
 
   it('successfully retrieves survey blocks', async () => {
-    const mockSurveyId = 1
+    const mockSurveyId = 1;
     const mockBlock = {
       survey_block_id: 1,
       survey_id: mockSurveyId,

@@ -82,7 +82,7 @@ export type IStaticLayer = {
    */
   tooltip?: (feature: IStaticLayerFeature) => ReactElement;
   /**
-   * A click handler for the feature for when an individual feature is clicked
+   * A function called when an individual feature on the map is clicked
    */
   handleClick?: (feature: Feature) => void;
 };
@@ -124,7 +124,7 @@ const StaticLayers = (props: PropsWithChildren<IStaticLayersProps>) => {
                       }
                       data={feature.geoJSON}
                       eventHandlers={{
-                        click: () => layer.handleClick && layer.handleClick(feature.geoJSON)
+                        click: () => (layer.handleClick ? layer.handleClick(feature.geoJSON) : undefined)
                       }}
                       {...feature.GeoJSONProps}>
                       {layer.tooltip?.(feature) ?? null}

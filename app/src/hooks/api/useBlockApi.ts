@@ -1,5 +1,10 @@
 import { AxiosInstance } from 'axios';
-import { IGetSurveyBlock, IGetSurveyBlockResponse } from 'interfaces/useBlockApi.interface';
+import {
+  ICreateBlocksRequest,
+  IEditBlock,
+  IGetSurveyBlock,
+  IGetSurveyBlockResponse
+} from 'interfaces/useBlockApi.interface';
 import { ApiPaginationRequestOptions } from 'types/misc';
 
 /**
@@ -63,6 +68,37 @@ const useBlockApi = (axios: AxiosInstance) => {
   };
 
   /**
+   * Inserts survey blocks
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {ICreateBlocksRequest} payload
+   * @return {*}
+   */
+  const createBlocks = async (projectId: number, surveyId: number, payload: ICreateBlocksRequest): Promise<void> => {
+    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/block`, payload);
+
+    return data;
+  };
+
+  /**
+   * Update survey blocks
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {ICreateBlocksRequest} block
+   * @return {*}
+   */
+  const updateBlock = async (projectId: number, surveyId: number, block: IEditBlock): Promise<void> => {
+    const { data } = await axios.put(
+      `/api/project/${projectId}/survey/${surveyId}/block/${block.survey_block_id}`,
+      block
+    );
+
+    return data;
+  };
+
+  /**
    * Delete survey blocks
    *
    * @param {number} projectId
@@ -79,7 +115,7 @@ const useBlockApi = (axios: AxiosInstance) => {
     return data;
   };
 
-  return { getSurveyBlockById, getSurveyBlocks, deleteBlocks };
+  return { getSurveyBlockById, getSurveyBlocks, createBlocks, updateBlock, deleteBlocks };
 };
 
 export default useBlockApi;

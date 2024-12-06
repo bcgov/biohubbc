@@ -3,7 +3,8 @@ import {
   PostSurveyBlock,
   SurveyBlockNonSpatial,
   SurveyBlockRecord,
-  SurveyBlockRepository
+  SurveyBlockRepository,
+  SurveyBlockWithCount
 } from '../repositories/survey-block-repository';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { DBService } from './db-service';
@@ -22,15 +23,15 @@ export class SurveyBlockService extends DBService {
    *
    * @param {number} surveyId
    * @param {number} surveyBlockId
-   * @return {*} {Promise<SurveyBlockRecordWithCount[]>}
+   * @return {*} {Promise<SurveyBlockWithCount>}
    * @returns
    */
-  async getSurveyBlockById(surveyId: number, surveyBlockId: number): Promise<SurveyBlockRecord> {
+  async getSurveyBlockById(surveyId: number, surveyBlockId: number): Promise<SurveyBlockWithCount> {
     return this.surveyBlockRepository.getSurveyBlockById(surveyId, surveyBlockId);
   }
 
   /**
-   * Gets Block Survey Records for a given survey id
+   * Gets survey blocks for the given survey
    *
    * @param {number} surveyId
    * @param {{
@@ -53,7 +54,7 @@ export class SurveyBlockService extends DBService {
   }
 
   /**
-   * Returns the total count of survey blocks belonging to the given survey.
+   * Returns the total count of survey blocks in the given survey.
    *
    * @param {number} surveyId
    * @return {*}  {Promise<number>}

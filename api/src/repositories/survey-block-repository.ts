@@ -53,10 +53,10 @@ export class SurveyBlockRepository extends BaseRepository {
    *
    * @param {number} surveyId
    * @param {number} surveyBlockId
-   * @return {*}  {Promise<SurveyBlockRecord>}
+   * @return {*}  {Promise<SurveyBlockWithCount>}
    * @memberof SurveyBlockRepository
    */
-  async getSurveyBlockById(surveyId: number, surveyBlockId: number): Promise<SurveyBlockRecord> {
+  async getSurveyBlockById(surveyId: number, surveyBlockId: number): Promise<SurveyBlockWithCount> {
     const knex = getKnex();
 
     const queryBuilder = knex('survey_block as sb')
@@ -88,7 +88,7 @@ export class SurveyBlockRepository extends BaseRepository {
    *       sampleSiteIds?: number[];
    *       pagination?: ApiPaginationOptions;
    *     }} [options]
-   * @return {*}  {Promise<SurveyBlockRecord[]>}
+   * @return {*}  {Promise<SurveyBlockNonSpatial[]>}
    * @memberof SurveyBlockRepository
    */
   async getSurveyBlocksForSurveyId(
@@ -181,7 +181,7 @@ export class SurveyBlockRepository extends BaseRepository {
    * Updates a survey block record.
    *
    * @param {SurveyBlock} block
-   * @return {*}  {Promise<void>}
+   * @return {*}  {Promise<SurveyBlockRecord>}
    * @memberof SurveyBlockRepository
    */
   async updateSurveyBlock(block: PostSurveyBlock): Promise<SurveyBlockRecord> {

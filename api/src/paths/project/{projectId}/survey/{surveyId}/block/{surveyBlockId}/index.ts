@@ -4,7 +4,7 @@ import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/
 import { getDBConnection } from '../../../../../../../database/db';
 import { GeoJSONFeature } from '../../../../../../../openapi/schemas/geoJson';
 import { surveyBlockSchema } from '../../../../../../../openapi/schemas/survey';
-import { PostSurveyBlocksRequest } from '../../../../../../../repositories/survey-block-repository';
+import { PostSurveyBlock } from '../../../../../../../repositories/survey-block-repository';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { SurveyBlockService } from '../../../../../../../services/survey-block-service';
 import { getLogger } from '../../../../../../../utils/logger';
@@ -219,18 +219,7 @@ PUT.apiDoc = {
     required: true,
     content: {
       'application/json': {
-        schema: {
-          type: 'object',
-          additionalProperties: false,
-          required: ['blocks'],
-          properties: {
-            blocks: {
-              type: 'array',
-              items: surveyBlockSchema,
-              minItems: 1
-            }
-          }
-        }
+        schema: surveyBlockSchema
       }
     }
   },
@@ -264,11 +253,11 @@ export function updateSurveyBlock(): RequestHandler {
       await connection.open();
 
       const surveyId = Number(req.params.surveyId);
-      const { blocks } = req.body as PostSurveyBlocksRequest;
+      const block = req.body as PostSurveyBlock;
 
       const surveyBlockService = new SurveyBlockService(connection);
 
-      await surveyBlockService.upsertSurveyBlocks(surveyId, blocks);
+      await surveyBlockService.upsertSurveyBlocks(surveyId, [block]);
 
       await connection.commit();
 

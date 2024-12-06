@@ -5,22 +5,46 @@ import { useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 
 export interface CollapsibleCardListProps<T> {
+  /**
+   * Items to disply as cards
+   */
   items: T[];
+  /**
+   * The content of each card, typically a form
+   *
+   * @param item
+   * @param index
+   * @returns
+   */
   renderCardContent: (item: T, index: number) => React.ReactNode;
+  /**
+   * Selected items, used to change the background colour for selected items
+   */
   selectedItems?: T[];
+  /**
+   * Handler for when a card item is selected
+   * @param item
+   */
   onSelectItem?: (item: T) => void;
+  /**
+   * Handler for when all card items are selected
+   */
   onSelectAll?: () => void;
+  /**
+   * Whether to hide the toolbar for expanding/collapsing and selecting all items
+   */
   hideToolbar?: boolean;
 }
 
-const CollapsibleCardList = <T extends { label: string; uuid?: string }>({
-  items,
-  renderCardContent,
-  selectedItems = [],
-  onSelectItem,
-  onSelectAll,
-  hideToolbar
-}: CollapsibleCardListProps<T>) => {
+/**
+ * Returns a list of cards that can each contain a form component, used when adding features to a map
+ * and needing to edit the properties of each feature (eg. name and description)
+ *
+ * @param {CollapsibleCardListProps} props
+ * @returns {*}
+ */
+const CollapsibleCardList = <T extends { label: string; uuid?: string }>(props: CollapsibleCardListProps<T>) => {
+  const { items, renderCardContent, selectedItems = [], onSelectItem, onSelectAll, hideToolbar } = props;
   const [collapsedIndexes, setCollapsedIndexes] = useState<number[]>([]);
 
   const toggleExpand = (index: number) => {

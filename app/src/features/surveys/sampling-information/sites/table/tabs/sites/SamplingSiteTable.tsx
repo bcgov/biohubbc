@@ -45,7 +45,7 @@ interface ISamplingSiteTableProps {
 /**
  * Returns a table of sampling sites with edit actions
  *
- * @param props {<ISamplingSiteTableProps>}
+ * @param props {ISamplingSiteTableProps}
  * @returns {*}
  */
 export const SamplingSiteTable = (props: ISamplingSiteTableProps) => {

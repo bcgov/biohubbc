@@ -8,27 +8,24 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
-import { ICreateBlocksRequest } from 'interfaces/useSamplingSiteApi.interface';
+import { IEditBlock } from 'interfaces/useBlockApi.interface';
 import { useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import SamplingSiteHeader from '../../sites/components/SamplingSiteHeader';
-import { ICreateBlockFormData } from '../create/CreateBlockPage';
-import { BlocksFormYupSchema } from '../form/create/CreateBlocksForm';
-import { IBlockData } from '../form/create/CreateBlocksMapForm';
-import EditBlocksForm from '../form/edit/EditBlocksForm';
+import EditBlocksForm, { EditBlockFormYupSchema } from '../form/edit/EditBlocksForm';
 
 /**
- * Interface for the form data used in the edit block form.
+ * Interface for the form data used in the Create Sampling Site form.
  *
  * @export
  * @interface IEditBlockFormData
  */
 export interface IEditBlockFormData {
-  blocks: IBlockData[];
+  block: IEditBlock;
 }
 
 /**
- * Renders the body content of the Block page.
+ * Renders the page for editing a single survey block
  *
  * @return {*}
  */
@@ -75,23 +72,18 @@ export const EditBlockPage = () => {
     });
   };
 
-  const handleSubmit = async (values: ICreateBlockFormData) => {
+  const handleSubmit = async (values: IEditBlockFormData) => {
     try {
       setIsSubmitting(true);
 
-      const { blocks, ...otherValues } = values;
-
-      const data: ICreateBlocksRequest = {
-        ...otherValues,
-        blocks: blocks.map((block) => ({
-          survey_block_id: block.survey_block_id,
-          geojson: block.geojson,
-          name: block.name,
-          description: block.description
-        }))
+      const data: IEditBlock = {
+        survey_block_id: values.block.survey_block_id,
+        geojson: values.block.geojson,
+        name: values.block.name,
+        description: values.block.description
       };
 
-      await biohubApi.survey.updateBlocks(surveyContext.projectId, surveyContext.surveyId, data);
+      await biohubApi.block.updateBlock(surveyContext.projectId, surveyContext.surveyId, data);
 
       // create complete, navigate back to observations page
       history.push(
@@ -114,11 +106,8 @@ export const EditBlockPage = () => {
       <Prompt when={true} message={locationChangeInterceptor} />
       <Formik
         innerRef={formikRef}
-        initialValues={{
-          // Add uuid for to join map layers with their corresponding cards in the blocks list
-          blocks: [{ ...blocksDataLoader.data, uuid: blocksDataLoader.data.geojson?.id as string }]
-        }}
-        validationSchema={BlocksFormYupSchema}
+        initialValues={{ block: { ...blocksDataLoader.data, uuid: blocksDataLoader.data.geojson?.id as string } }}
+        validationSchema={EditBlockFormYupSchema}
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={handleSubmit}>

@@ -28,7 +28,7 @@ export const POST: Operation = [
 ];
 
 POST.apiDoc = {
-  description: 'Delete survey blockss.',
+  description: 'Delete survey blocks.',
   tags: ['survey'],
   security: [
     {
@@ -113,9 +113,13 @@ export function deleteSurveyBlockRecords(): RequestHandler {
 
       const surveyBlockService = new SurveyBlockService(connection);
 
+      const promises = [];
+
       for (const surveyBlockId of surveyBlockIds) {
-        await surveyBlockService.deleteSurveyBlock(surveyId, surveyBlockId);
+        promises.push(surveyBlockService.deleteSurveyBlock(surveyId, surveyBlockId));
       }
+
+      await Promise.all(promises);
 
       await connection.commit();
 

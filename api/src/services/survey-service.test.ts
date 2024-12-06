@@ -5,7 +5,6 @@ import { describe } from 'mocha';
 import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { getMockDBConnection } from '../__mocks__/db';
 import { ApiGeneralError } from '../errors/api-error';
 import { GetReportAttachmentsData } from '../models/project-view';
 import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
@@ -28,6 +27,7 @@ import {
   SurveyTaxonomyWithEcologicalUnits,
   SurveyTypeRecord
 } from '../repositories/survey-repository';
+import { getMockDBConnection } from '../__mocks__/db';
 import { HistoryPublishService } from './history-publish-service';
 import { PermitService } from './permit-service';
 import { PlatformService } from './platform-service';
@@ -112,7 +112,7 @@ describe('SurveyService', () => {
         },
         participants: [{ data: 'participantData' } as any],
         locations: [],
-        site_selection: { stratums: [], strategies: [] },
+        site_selection: { stratums: [], strategies: [] }
       });
     });
   });
@@ -194,7 +194,6 @@ describe('SurveyService', () => {
       const upsertSurveyParticipantDataStub = sinon
         .stub(SurveyService.prototype, 'upsertSurveyParticipantData')
         .resolves();
-      const upsertBlocks = sinon.stub(SurveyBlockService.prototype, 'upsertSurveyBlocks').resolves();
       const replaceSurveyStratumsStub = sinon
         .stub(SiteSelectionStrategyService.prototype, 'replaceSurveySiteSelectionStratums')
         .resolves();
@@ -230,7 +229,6 @@ describe('SurveyService', () => {
       expect(upsertSurveyFundingSourceDataStub).to.have.been.calledOnce;
       expect(updateSurveyProprietorDataStub).to.have.been.calledOnce;
       expect(upsertSurveyParticipantDataStub).to.have.been.calledOnce;
-      expect(upsertBlocks).to.have.been.calledOnce;
       expect(replaceSurveyStratumsStub).to.have.been.calledOnce;
       expect(replaceSiteStrategiesStub).to.have.been.calledOnce;
       expect(insertUpdateDeleteSurveyLocationStub).to.have.been.calledOnce;

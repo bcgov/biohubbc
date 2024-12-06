@@ -1,11 +1,12 @@
 import Alert, { AlertProps } from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
+import { ReactElement } from 'react';
 
 interface IAlertBarProps extends AlertProps {
   severity: 'error' | 'warning' | 'info' | 'success';
   variant: 'filled' | 'outlined' | 'standard';
   title: string;
-  text?: string | JSX.Element;
+  text?: string | ReactElement;
 }
 
 /**

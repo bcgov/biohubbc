@@ -6,31 +6,20 @@ import YesNoDialog from 'components/dialog/YesNoDialog';
 import CustomTextField from 'components/fields/CustomTextField';
 import { IDrawControlsRef } from 'components/map/components/DrawControls';
 import { ImportDrawMapControl } from 'components/map/ImportDrawMapControl';
+import { CreateBlockI18N } from 'constants/i18n';
 import SurveyMapTooltip from 'features/surveys/view/SurveyMapTooltip';
 import { useFormikContext } from 'formik';
 import { Feature } from 'geojson';
-import { createRef, useState } from 'react';
+import { useDialogContext } from 'hooks/useContext';
+import { createRef, useMemo, useState } from 'react';
 import { shapeFileFeatureDesc, shapeFileFeatureName } from 'utils/Utils';
 import { v4 } from 'uuid';
 import { ICreateBlockFormData } from '../../create/CreateBlockPage';
 
-export interface IBlockData {
-  survey_block_id: number | null;
-  name: string;
-  description: string | null;
-  geojson?: Feature | null;
-  // This is an id meant for the front end only. This is is set if the geojson was drawn by the user (on the leaflet map) vs imported (file upload or region selector)
-  // Locations drawn by the user should be editable in the leaflet map using the draw tools available
-  // Any uploaded or selected regions should not be editable and be placed in the 'static' layer on the map
-  leaflet_id?: number;
-  // This is used to give each location a unique ID so the list/ collapse components have a key
-  uuid?: string;
-}
-
 interface ICreateBlocksMapFormProps {
   /**
    * The number of clusters in the survey, used for generating unique names of new clusters
-   * eg. If the survey has 10 clusters, the cluster name will default to "Cluster 11".
+   * eg. If the survey has 10 clusters, the next cluster name will default to "Cluster 11".
    */
   clusterCount?: number;
 }
@@ -44,6 +33,8 @@ export const SurveyBlockInitialValues = { blocks: [] };
  */
 const CreateBlocksMapForm = (props: ICreateBlocksMapFormProps) => {
   const formikProps = useFormikContext<ICreateBlockFormData>();
+  const dialogContext = useDialogContext();
+
   const { handleSubmit, values, setFieldValue, errors, setFieldError } = formikProps;
 
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
@@ -83,9 +74,20 @@ const CreateBlocksMapForm = (props: ICreateBlocksMapFormProps) => {
     ]);
   };
 
-  // Handle failure during import
-  // TODO: Add import failure dialog
-  const handleImportFailure = () => {};
+  // Display error dialog when import fails
+  const handleImportFailure = () => {
+    dialogContext.setErrorDialog({
+      dialogTitle: CreateBlockI18N.importErrorTitle,
+      dialogText: CreateBlockI18N.importErrorText,
+      onClose: () => {
+        dialogContext.setErrorDialog({ open: false });
+      },
+      onOk: () => {
+        dialogContext.setErrorDialog({ open: false });
+      },
+      open: true
+    });
+  };
 
   // Handle adding a new shape
   const handleAdd = (feature: Feature, id: number) => {
@@ -175,6 +177,12 @@ const CreateBlocksMapForm = (props: ICreateBlocksMapFormProps) => {
     return <SurveyMapTooltip title={label} key={`feature-tooltip-${feature.id}`} />;
   };
 
+  // useMemo to prevent map zoom from changing when a feature is selected
+  const features = useMemo(
+    () => values.blocks.filter((block) => block.geojson).map((block) => block.geojson!),
+    [values.blocks]
+  );
+
   return (
     <form onSubmit={handleSubmit}>
       <YesNoDialog
@@ -198,7 +206,7 @@ const CreateBlocksMapForm = (props: ICreateBlocksMapFormProps) => {
           mapId="survey-blocks-map"
           label="Clusters"
           drawControlsRef={drawRef}
-          features={values.blocks.filter((block) => block.geojson).map((block) => block.geojson!)}
+          features={features}
           handleImport={handleImport}
           handleImportFailure={handleImportFailure}
           handleAdd={handleAdd}

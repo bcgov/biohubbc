@@ -39,7 +39,7 @@ export const POST: Operation = [
 ];
 
 POST.apiDoc = {
-  description: 'Insert new survey Survey block record.',
+  description: 'Insert new survey blocks.',
   tags: ['project', 'survey'],
   security: [
     {

@@ -8,12 +8,11 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
-import { ICreateBlocksRequest } from 'interfaces/useSamplingSiteApi.interface';
+import { ICreateBlock, ICreateBlocksRequest } from 'interfaces/useBlockApi.interface';
 import { useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import SamplingSiteHeader from '../../sites/components/SamplingSiteHeader';
-import CreateBlocksForm, { BlocksFormYupSchema } from '../form/create/CreateBlocksForm';
-import { IBlockData } from '../form/create/CreateBlocksMapForm';
+import CreateBlocksForm, { CreateBlocksFormYupSchema } from '../form/create/CreateBlocksForm';
 
 /**
  * Interface for the form data used in the Create Sampling Site form.
@@ -22,11 +21,11 @@ import { IBlockData } from '../form/create/CreateBlocksMapForm';
  * @interface ICreateBlockFormData
  */
 export interface ICreateBlockFormData {
-  blocks: IBlockData[];
+  blocks: ICreateBlock[];
 }
 
 /**
- * Renders the body content of the Sampling Site page.
+ * Renders the page for adding one or more survey blocks
  *
  * @return {*}
  */
@@ -88,7 +87,7 @@ export const CreateBlockPage = () => {
         }))
       };
 
-      await biohubApi.survey.createBlocks(surveyContext.projectId, surveyContext.surveyId, data);
+      await biohubApi.block.createBlocks(surveyContext.projectId, surveyContext.surveyId, data);
 
       // create complete, navigate back to observations page
       history.push(
@@ -114,7 +113,7 @@ export const CreateBlockPage = () => {
         initialValues={{
           blocks: []
         }}
-        validationSchema={BlocksFormYupSchema}
+        validationSchema={CreateBlocksFormYupSchema}
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={handleSubmit}>
@@ -129,7 +128,7 @@ export const CreateBlockPage = () => {
             breadcrumb="Add Sampling Site Cluster"
           />
           <Box display="flex" flex="1 1 auto">
-            <CreateBlocksForm isSubmitting={isSubmitting} clusterCount={blocksDataLoader.data?.blocks.length ?? 0}/>
+            <CreateBlocksForm isSubmitting={isSubmitting} clusterCount={blocksDataLoader.data?.blocks.length ?? 0} />
           </Box>
         </Box>
       </Formik>

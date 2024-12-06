@@ -134,7 +134,6 @@ export interface IGetSurveyLocation {
   revision_count: number;
 }
 
-
 export interface IGetSurveyStratum {
   survey_stratum_id: number;
   name: string;

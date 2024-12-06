@@ -119,7 +119,7 @@ GET.apiDoc = {
                       ...surveyParticipationAndSystemUserSchema
                     }
                   },
-                  site_selection: surveySiteSelectionSchema,
+                  site_selection: surveySiteSelectionSchema
                 }
               },
               surveySupplementaryData: surveySupplementaryDataSchema

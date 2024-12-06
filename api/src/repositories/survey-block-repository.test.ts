@@ -3,8 +3,8 @@ import { describe } from 'mocha';
 import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { getMockDBConnection } from '../__mocks__/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
+import { getMockDBConnection } from '../__mocks__/db';
 import { PostSurveyBlock, SurveyBlockRepository } from './survey-block-repository';
 
 chai.use(sinonChai);
@@ -209,6 +209,7 @@ describe('SurveyBlockRepository', () => {
 
   describe('deleteSurveyBlockRecord', () => {
     it('should succeed with valid data', async () => {
+      const mockSurveyId = 1;
       const mockResponse = {
         rows: [
           {
@@ -230,11 +231,12 @@ describe('SurveyBlockRepository', () => {
       });
 
       const repo = new SurveyBlockRepository(dbConnection);
-      const response = await repo.deleteSurveyBlockRecord(1);
+      const response = await repo.deleteSurveyBlockRecord(mockSurveyId, 1);
       expect(response.survey_block_id).to.be.eql(1);
     });
 
     it('should failed with erroneous data', async () => {
+      const mockSurveyId = 1;
       const mockResponse = {
         rows: [],
         rowCount: 0
@@ -245,7 +247,7 @@ describe('SurveyBlockRepository', () => {
 
       const repo = new SurveyBlockRepository(dbConnection);
       try {
-        await repo.deleteSurveyBlockRecord(1);
+        await repo.deleteSurveyBlockRecord(mockSurveyId, 1);
         expect.fail();
       } catch (error) {
         expect((error as any as ApiExecuteSQLError).message).to.be.eq('Failed to delete survey block record');

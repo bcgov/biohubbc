@@ -172,9 +172,10 @@ describe('SampleBlockRepository', () => {
       const mockResponse = { rows: [mockRow], rowCount: 1 } as any as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ knex: sinon.stub().resolves(mockResponse) });
 
+      const mockSurveyId = 1;
       const surveyBlockIds = [1, 2];
       const repo = new SampleBlockRepository(dbConnectionObj);
-      const response = await repo.deleteSampleBlockRecordsByBlockIds(surveyBlockIds);
+      const response = await repo.deleteSampleBlockRecordsByBlockIds(mockSurveyId, surveyBlockIds);
 
       expect(dbConnectionObj.knex).to.have.been.calledOnce;
       expect(response).to.eql([mockRow]);
@@ -184,11 +185,12 @@ describe('SampleBlockRepository', () => {
       const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ knex: sinon.stub().resolves(mockResponse) });
 
+      const mockSurveyId = 1;
       const surveyBlockIds = 1;
       const repo = new SampleBlockRepository(dbConnectionObj);
 
       try {
-        await repo.deleteSampleBlockRecordsByBlockIds([surveyBlockIds]);
+        await repo.deleteSampleBlockRecordsByBlockIds(mockSurveyId, [surveyBlockIds]);
       } catch (error) {
         expect(dbConnectionObj.knex).to.have.been.calledOnce;
         expect((error as ApiExecuteSQLError).message).to.be.eql('Failed to delete sample block');

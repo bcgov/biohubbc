@@ -17,6 +17,12 @@ import { SurveyBlocksTableContainer } from './tabs/blocks/SurveyBlocksTableConta
 import { SamplingSiteTableContainer } from './tabs/sites/SamplingSiteTableContainer';
 import { SamplingSiteManageTableView, SamplingSiteTableView } from './view/SamplingSiteTableView';
 
+/**
+ * Returns a container for changing which table is viewed, toggling between sampling sites and survey blocks,
+ * and controls bulk actions for deleting sampling sites and blocks selected in either table
+ *
+ * @returns {*}
+ */
 export const SamplingSiteTabsContainer = () => {
   const [activeView, setActiveView] = useState<SamplingSiteManageTableView>(SamplingSiteManageTableView.SITES);
   const [selectedRows, setSelectedRows] = useState<GridRowSelectionModel>([]);

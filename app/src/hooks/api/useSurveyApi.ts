@@ -8,7 +8,6 @@ import { SurveyExportConfig } from 'features/surveys/view/survey-export/SurveyEx
 import { WarningSchema } from 'interfaces/useBioHubApi.interface';
 import { ICritterDetailedResponse, ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 import { IGetReportDetails, IUploadAttachmentResponse } from 'interfaces/useProjectApi.interface';
-import { ICreateBlocksRequest } from 'interfaces/useSamplingSiteApi.interface';
 import {
   ICreateSurveyRequest,
   ICreateSurveyResponse,
@@ -735,34 +734,6 @@ const useSurveyApi = (axios: AxiosInstance) => {
     return data;
   };
 
-  /**
-   * Inserts survey blocks
-   *
-   * @param {number} projectId
-   * @param {number} surveyId
-   * @param {ICreateBlocksRequest} payload
-   * @return {*}
-   */
-  const createBlocks = async (projectId: number, surveyId: number, payload: ICreateBlocksRequest): Promise<void> => {
-    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/block`, payload);
-
-    return data;
-  };
-
-  /**
-   * Update survey blocks
-   *
-   * @param {number} projectId
-   * @param {number} surveyId
-   * @param {ICreateBlocksRequest} payload
-   * @return {*}
-   */
-  const updateBlocks = async (projectId: number, surveyId: number, payload: ICreateBlocksRequest): Promise<void> => {
-    const { data } = await axios.put(`/api/project/${projectId}/survey/${surveyId}/block`, payload);
-
-    return data;
-  };
-
   return {
     createSurvey,
     getSurveyForView,
@@ -795,9 +766,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     endDeployment,
     deleteDeployment,
     deleteDeployments,
-    exportData,
-    createBlocks,
-    updateBlocks
+    exportData
   };
 };
 

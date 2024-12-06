@@ -8,8 +8,18 @@ import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormC
 import { useFormikContext } from 'formik';
 import { useSurveyContext } from 'hooks/useContext';
 import { useHistory } from 'react-router';
-import { ICreateBlockFormData } from '../../create/CreateBlockPage';
+import yup from 'utils/YupSchema';
+import { IEditBlockFormData } from '../../edit/EditBlockPage';
 import EditBlocksMapForm from './EditBlocksMapForm';
+
+export const EditBlockFormYupSchema = yup.object({
+  block: yup.object({
+    survey_block_id: yup.number().required('Survey block ID is required'),
+    name: yup.string().required('Name is required'),
+    description: yup.string().nullable(),
+    geojson: yup.object().nullable()
+  })
+});
 
 interface IEditBlocksFormProps {
   isSubmitting: boolean;
@@ -25,7 +35,7 @@ const EditBlocksForm = (props: IEditBlocksFormProps) => {
   const { isSubmitting } = props;
 
   const history = useHistory();
-  const { submitForm } = useFormikContext<ICreateBlockFormData>();
+  const { submitForm } = useFormikContext<IEditBlockFormData>();
 
   const surveyContext = useSurveyContext();
 
