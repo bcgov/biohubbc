@@ -8,7 +8,7 @@ export const CSVErrorSchema: OpenAPIV3.SchemaObject = {
   title: 'CSV validation error object',
   type: 'object',
   additionalProperties: false,
-  required: ['error', 'solution', 'errorRowIndex'],
+  required: ['error', 'solution', 'row'],
   properties: {
     error: {
       description: 'The error message',
@@ -33,7 +33,7 @@ export const CSVErrorSchema: OpenAPIV3.SchemaObject = {
       description: 'The header name used in the CSV file',
       type: 'string'
     },
-    errorRowIndex: {
+    row: {
       description: 'The row index the error occurred. Header row index 0. First data row index 1.',
       type: 'number'
     }
