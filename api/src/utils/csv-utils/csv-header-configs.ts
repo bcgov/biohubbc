@@ -44,8 +44,8 @@ export const getTsnCellValidator = (tsns: Set<number>): CSVCellValidator => {
 
     return [
       {
-        error: `ITIS has no reference of this TSN`,
-        solution: `Use valid ITIS TSN`
+        error: `Did not receive a Taxonomic Serial Number (TSN) for the species`,
+        solution: `Use a valid Taxonomic Serial Number (TSN) instead of a name to reference species.`
       }
     ];
   };
