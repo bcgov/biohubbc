@@ -119,7 +119,7 @@ export function createSurveyBlocks(): RequestHandler {
 
       const surveyBlockService = new SurveyBlockService(connection);
 
-      await surveyBlockService.upsertSurveyBlocks(surveyId, blocks);
+      await surveyBlockService.insertSurveyBlocks(surveyId, blocks);
 
       await connection.commit();
 

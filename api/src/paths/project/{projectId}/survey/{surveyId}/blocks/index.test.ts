@@ -24,7 +24,7 @@ describe('createSurveyBlocks', () => {
 
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
-    const upsertSurveyBlocksStub = sinon.stub(SurveyBlockService.prototype, 'upsertSurveyBlocks').resolves();
+    const insertSurveyBlocksStub = sinon.stub(SurveyBlockService.prototype, 'insertSurveyBlocks').resolves();
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -40,7 +40,7 @@ describe('createSurveyBlocks', () => {
     await requestHandler(mockReq, mockRes, mockNext);
 
     expect(mockDBConnection.open).to.have.been.calledOnce;
-    expect(upsertSurveyBlocksStub).to.have.been.calledOnceWith(1, mockReq.body.blocks);
+    expect(insertSurveyBlocksStub).to.have.been.calledOnceWith(1, mockReq.body.blocks);
     expect(mockDBConnection.commit).to.have.been.calledOnce;
     expect(mockRes.status).to.have.been.calledWith(201);
     expect(mockRes.send).to.have.been.calledOnce;
@@ -57,7 +57,7 @@ describe('createSurveyBlocks', () => {
 
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
-    sinon.stub(SurveyBlockService.prototype, 'upsertSurveyBlocks').rejects(new Error('Test Error'));
+    sinon.stub(SurveyBlockService.prototype, 'insertSurveyBlocks').rejects(new Error('Test Error'));
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 

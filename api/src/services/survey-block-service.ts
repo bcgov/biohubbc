@@ -68,34 +68,34 @@ export class SurveyBlockService extends DBService {
   }
 
   /**
-   * Inserts, Updates and Deletes Block records
-   * All passed in blocks are treated as the source of truth,
-   * Any pre existing blocks that do not collide with passed in blocks are deleted
+   * Inserts blocks for the survey
    *
    * @param {number} surveyId
    * @param {SurveyBlock[]} blocks
    * @return {*} {Promise<void>}
    * @memberof SurveyBlockService
    */
-  async upsertSurveyBlocks(surveyId: number, blocks: PostSurveyBlock[]): Promise<void> {
-    // all actions to take
+  async insertSurveyBlocks(surveyId: number, blocks: PostSurveyBlock[]): Promise<void> {
     const promises: Promise<any>[] = [];
 
-    // Get existing blocks
-    const existingBlocks = await this.getSurveyBlocksForSurveyId(surveyId);
-
-    // Filter out any blocks to delete
-    const blocksToDelete = existingBlocks.filter(
-      (item) => !blocks.find((incoming) => incoming.survey_block_id === item.survey_block_id)
-    );
-
-    blocksToDelete.forEach((block) => {
-      promises.push(this.deleteSurveyBlock(block.survey_block_id));
+    blocks.forEach((item: PostSurveyBlock) => {
+      item.survey_id = surveyId;
+      promises.push(this.surveyBlockRepository.insertSurveyBlock(item));
     });
 
-    // Delete blocks before upserting in case blocks to upsert have the same name as a block to delete
-    // ie. if you delete block 'abc' and add a new block 'abc' in the same request, there will be a duplicate name conflict
     await Promise.all(promises);
+  }
+
+  /**
+   * Updates existing survey blocks and inserts any new survey blocks without a survey_block_id
+   *
+   * @param {number} surveyId
+   * @param {SurveyBlock[]} blocks
+   * @return {*} {Promise<void>}
+   * @memberof SurveyBlockService
+   */
+  async updateSurveyBlocks(surveyId: number, blocks: PostSurveyBlock[]): Promise<void> {
+    const promises: Promise<any>[] = [];
 
     // update or insert block data
     blocks.forEach((item: PostSurveyBlock) => {

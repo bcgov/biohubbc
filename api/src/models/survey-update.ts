@@ -1,6 +1,5 @@
 import { Feature } from 'geojson';
 import { SurveyStratum, SurveyStratumRecord } from '../repositories/site-selection-strategy-repository';
-import { PostSurveyBlock } from '../repositories/survey-block-repository';
 import { ITaxonomyWithEcologicalUnits } from '../services/platform-service';
 
 export class PutSurveyObject {
@@ -14,7 +13,6 @@ export class PutSurveyObject {
   participants: PutSurveyParticipantsData[];
   partnerships: PutPartnershipsData;
   site_selection: PutSiteSelectionData;
-  blocks: PostSurveyBlock[];
 
   constructor(obj?: any) {
     this.survey_details = (obj?.survey_details && new PutSurveyDetailsData(obj.survey_details)) || null;
@@ -30,7 +28,6 @@ export class PutSurveyObject {
     this.locations = (obj?.locations && obj.locations.map((p: any) => new PostSurveyLocationData(p))) || [];
     this.partnerships = (obj?.partnerships && new PutPartnershipsData(obj.partnerships)) || null;
     this.site_selection = (obj?.site_selection && new PutSiteSelectionData(obj)) || null;
-    this.blocks = (obj?.blocks && obj.blocks.map((p: any) => p as PostSurveyBlock)) || [];
   }
 }
 

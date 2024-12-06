@@ -93,7 +93,7 @@ describe('SurveyBlockService', () => {
           }
         }
       ];
-      await service.upsertSurveyBlocks(1, blocks);
+      await service.insertSurveyBlocks(1, blocks);
 
       expect(getOldBlocks).to.be.calledOnce;
       expect(insertBlock).to.be.calledTwice;
@@ -153,7 +153,7 @@ describe('SurveyBlockService', () => {
           }
         }
       ];
-      await service.upsertSurveyBlocks(1, blocks);
+      await service.insertSurveyBlocks(1, blocks);
 
       expect(getOldBlocks).to.be.calledOnce;
       expect(deleteBlock).to.be.calledOnce;
