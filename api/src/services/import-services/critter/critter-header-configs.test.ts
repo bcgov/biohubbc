@@ -197,7 +197,7 @@ describe('critter-header-configs', () => {
         new CSVConfigUtils(xlsx.utils.json_to_sheet([]), mockConfig)
       );
 
-      const cellValues = ['male', 'MALE'];
+      const cellValues = ['male', 'MALE', undefined];
 
       for (const cell of cellValues) {
         const result = cellValidator({ cell: cell, row: { ITIS_TSN: 1 }, header: 'HEADER', rowIndex: 0 });
@@ -216,7 +216,7 @@ describe('critter-header-configs', () => {
         new CSVConfigUtils(xlsx.utils.json_to_sheet([]), mockConfig)
       );
 
-      const cellValues = [undefined, '', 0];
+      const cellValues = ['', 0];
 
       for (const cell of cellValues) {
         const result = cellValidator({ cell: cell, row: { ITIS_TSN: 1 }, header: 'HEADER', rowIndex: 0 });

@@ -105,13 +105,13 @@ export interface CSVParams {
    */
   header: string;
   /**
-   * The cell row.
+   * The data row object.
    *
    * @type {CSVRow}
    */
   row: CSVRow;
   /**
-   * The cell row index.
+   * The row index.
    *
    * Note: First data row index 0.
    *
@@ -136,7 +136,7 @@ export interface CSVParams {
  *    values: ['unit1', 'unit2'], // Optional list of allowed values
  *    header: 'POPULATION_UNIT',
  *    cell: 'unit3',
- *    errorRowIndex: 0, // First data row index 0
+ *    row: 1, // Header row index 0. First data row index 1
  *  }
  */
 export interface CSVError {
@@ -177,7 +177,7 @@ export interface CSVError {
    *
    * @type {number}
    */
-  errorRowIndex?: number;
+  row?: number;
 }
 
 /**

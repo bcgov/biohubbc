@@ -69,7 +69,7 @@ export const validateCSVHeaders = (worksheet: WorkSheet, config: CSVConfig): CSV
         error: 'No columns in the file',
         solution: 'Add column names. Did you accidentally include an empty first row above the columns?',
         values: configUtils.configStaticHeaders,
-        errorRowIndex: 0
+        row: 0
       }
     ];
   }
@@ -79,7 +79,7 @@ export const validateCSVHeaders = (worksheet: WorkSheet, config: CSVConfig): CSV
       {
         error: 'No rows in the file',
         solution: 'Add rows. Did you accidentally import the wrong file?',
-        errorRowIndex: 1
+        row: 1
       }
     ];
   }
@@ -97,7 +97,7 @@ export const validateCSVHeaders = (worksheet: WorkSheet, config: CSVConfig): CSV
         solution: `Add all required columns to the file.`,
         header: staticHeader,
         values: [staticHeader, ...config.staticHeadersConfig[staticHeader].aliases],
-        errorRowIndex: 0
+        row: 0
       });
     }
   }
@@ -109,7 +109,7 @@ export const validateCSVHeaders = (worksheet: WorkSheet, config: CSVConfig): CSV
         error: 'An unknown column is included in the file',
         solution: `Remove extra columns from the file.`,
         header: unknownHeader,
-        errorRowIndex: 0
+        row: 0
       });
     }
   }
@@ -209,7 +209,7 @@ export const executeValidateCell = (
         values: error.values,
         cell: error.cell ?? params.cell,
         header: error.header ?? params.header,
-        errorRowIndex: error.errorRowIndex ?? params.rowIndex + 1 // headers: 0, data row: 1
+        row: error.row ?? params.rowIndex + 1 // headers: 0, data row: 1
       });
     });
   }
