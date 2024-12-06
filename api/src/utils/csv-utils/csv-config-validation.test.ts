@@ -159,6 +159,18 @@ describe('csv-config-validation', () => {
       ]);
     });
 
+    it('should NOT return an error if the worksheet is missing a optional header', () => {
+      const mockConfig: CSVConfig = {
+        staticHeadersConfig: { ALIAS: { aliases: [], optional: true } },
+        ignoreDynamicHeaders: true
+      };
+      const worksheet: WorkSheet = xlsx.utils.json_to_sheet([{ NOT_ALIAS: 'value' }]);
+
+      const result = validateCSVHeaders(worksheet, mockConfig);
+
+      expect(result).to.deep.equal([]);
+    });
+
     it('should return an error if the worksheet has an unknown header and dynamic headers are not ignored', () => {
       const mockConfig: CSVConfig = { staticHeadersConfig: { ALIAS: { aliases: [] } }, ignoreDynamicHeaders: false };
       const worksheet: WorkSheet = xlsx.utils.json_to_sheet([{ ALIAS: 'alias', UNKNOWN_HEADER: 'value' }]);
