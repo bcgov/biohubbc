@@ -16,7 +16,6 @@ import { ICritterDetailed } from '../../critterbase-service';
 import { DBService } from '../../db-service';
 import { SurveyCritterService } from '../../survey-critter-service';
 import {
-  getMarkingAliasCellSetter,
   getMarkingAliasCellValidator,
   getMarkingBodyLocationCellValidator,
   getMarkingCaptureDateCellValidator,
@@ -100,9 +99,9 @@ export class ImportMarkingsService extends DBService {
     }
 
     const markings = rows.map((row) => ({
-      critter_id: row.ALIAS, // ALIAS set to critter_id
-      capture_id: row.CAPTURE_DATE, // CAPTURE_DATE set to capture_id
-      body_location: row.BODY_LOCATION, // BODY_LOCATION set to body_location_id
+      critter_id: row.ALIAS, // ALIAS set to Critterbase critter_id
+      capture_id: row.CAPTURE_DATE, // CAPTURE_DATE set to Critterbase capture_id
+      body_location: row.BODY_LOCATION, // BODY_LOCATION set to Critterbase body_location_id
       marking_type: row.MARKING_TYPE,
       identifier: row.IDENTIFIER,
       primary_colour: row.PRIMARY_COLOUR,
@@ -116,15 +115,22 @@ export class ImportMarkingsService extends DBService {
   }
 
   async getCSVConfig(): Promise<CSVConfig<MarkingCSVStaticHeader>> {
-    const [aliasHeaderConfig, colourHeaderConfig, bodyLocationHeaderConfig, markingTypeHeaderConfig] =
-      await Promise.all([
-        this._getAliasHeaderConfig(),
-        this._getColourHeaderConfig(),
-        this._getBodyLocationHeaderConfig(),
-        this._getMarkingTypeHeaderConfig()
-      ]);
+    const [
+      aliasHeaderConfig,
+      captureHeaderConfig,
+      colourHeaderConfig,
+      bodyLocationHeaderConfig,
+      markingTypeHeaderConfig
+    ] = await Promise.all([
+      this._getAliasHeaderConfig(),
+      this._getCaptureDateHeaderConfig(),
+      this._getColourHeaderConfig(),
+      this._getBodyLocationHeaderConfig(),
+      this._getMarkingTypeHeaderConfig()
+    ]);
 
     this.utils.setStaticHeaderConfig('ALIAS', aliasHeaderConfig);
+    this.utils.setStaticHeaderConfig('CAPTURE_DATE', captureHeaderConfig);
     this.utils.setStaticHeaderConfig('BODY_LOCATION', bodyLocationHeaderConfig);
     this.utils.setStaticHeaderConfig('MARKING_TYPE', markingTypeHeaderConfig);
     this.utils.setStaticHeaderConfig('PRIMARY_COLOUR', colourHeaderConfig);
@@ -147,7 +153,7 @@ export class ImportMarkingsService extends DBService {
 
     return {
       validateCell: getMarkingAliasCellValidator(surveyAliasMap),
-      setCellValue: getMarkingAliasCellSetter(surveyAliasMap)
+      setCellValue: getStateCellSetter()
     };
   }
 

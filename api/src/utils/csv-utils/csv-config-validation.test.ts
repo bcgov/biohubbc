@@ -89,9 +89,9 @@ describe('csv-config-validation', () => {
       expect(result).to.deep.equal({
         errors: [
           {
-            error: 'CSV missing required header',
+            error: 'A required column is missing',
+            solution: `Add all required columns to the file.`,
             header: 'ALIAS',
-            solution: 'Add missing header to CSV',
             values: ['ALIAS', 'ALIAS_2'],
             errorRowIndex: 0
           }
@@ -118,7 +118,12 @@ describe('csv-config-validation', () => {
       const result = validateCSVHeaders(worksheet, mockConfig);
 
       expect(result).to.deep.equal([
-        { errorRowIndex: 0, error: 'CSV empty', solution: 'Add headers and data to CSV', values: ['ALIAS'] }
+        {
+          errorRowIndex: 0,
+          error: 'No columns in the file',
+          solution: 'Add column names. Did you accidentally include an empty first row above the columns?',
+          values: ['ALIAS']
+        }
       ]);
     });
 
@@ -128,7 +133,13 @@ describe('csv-config-validation', () => {
 
       const result = validateCSVHeaders(worksheet, mockConfig);
 
-      expect(result).to.deep.equal([{ errorRowIndex: 1, error: 'CSV missing rows', solution: 'Add data to CSV' }]);
+      expect(result).to.deep.equal([
+        {
+          errorRowIndex: 1,
+          error: 'No rows in the file',
+          solution: 'Add rows. Did you accidentally import the wrong file?'
+        }
+      ]);
     });
 
     it('should return an error if the worksheet is missing a required header', () => {
@@ -140,12 +151,24 @@ describe('csv-config-validation', () => {
       expect(result).to.deep.equal([
         {
           errorRowIndex: 0,
-          error: 'CSV missing required header',
+          error: 'A required column is missing',
+          solution: `Add all required columns to the file.`,
           header: 'ALIAS',
-          solution: 'Add missing header to CSV',
           values: ['ALIAS']
         }
       ]);
+    });
+
+    it('should NOT return an error if the worksheet is missing a optional header', () => {
+      const mockConfig: CSVConfig = {
+        staticHeadersConfig: { ALIAS: { aliases: [], optional: true } },
+        ignoreDynamicHeaders: true
+      };
+      const worksheet: WorkSheet = xlsx.utils.json_to_sheet([{ NOT_ALIAS: 'value' }]);
+
+      const result = validateCSVHeaders(worksheet, mockConfig);
+
+      expect(result).to.deep.equal([]);
     });
 
     it('should return an error if the worksheet has an unknown header and dynamic headers are not ignored', () => {
@@ -157,9 +180,9 @@ describe('csv-config-validation', () => {
       expect(result).to.deep.equal([
         {
           errorRowIndex: 0,
-          error: 'Unknown header in CSV',
-          header: 'UNKNOWN_HEADER',
-          solution: 'Remove header from CSV'
+          error: 'An unknown column is included in the file',
+          solution: `Remove extra columns from the file.`,
+          header: 'UNKNOWN_HEADER'
         }
       ]);
     });

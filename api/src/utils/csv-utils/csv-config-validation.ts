@@ -32,6 +32,9 @@ export const validateCSVWorksheet = <StaticHeaderType extends Uppercase<string>>
 
   // Iterate over each cell in the worksheet and validate + set cell values
   forEachCSVCell(worksheet, config, (params, headerConfig) => {
+    // Reset the params state
+    params.state = undefined;
+
     // Validate the cell value and modify the errors
     executeValidateCell(params, headerConfig, errors); // Mutates `errors`
 
@@ -66,8 +69,8 @@ export const validateCSVHeaders = (worksheet: WorkSheet, config: CSVConfig): CSV
   if (!configUtils.worksheetHeaders.length) {
     return [
       {
-        error: 'CSV empty',
-        solution: 'Add headers and data to CSV',
+        error: 'No columns in the file',
+        solution: 'Add column names. Did you accidentally include an empty first row above the columns?',
         values: configUtils.configStaticHeaders,
         errorRowIndex: 0
       }
@@ -75,17 +78,26 @@ export const validateCSVHeaders = (worksheet: WorkSheet, config: CSVConfig): CSV
   }
 
   if (!configUtils.worksheetRows.length) {
-    return [{ error: 'CSV missing rows', solution: 'Add data to CSV', errorRowIndex: 1 }];
+    return [
+      {
+        error: 'No rows in the file',
+        solution: 'Add rows. Did you accidentally import the wrong file?',
+        errorRowIndex: 1
+      }
+    ];
   }
 
-  for (const staticHeader of Object.keys(config.staticHeadersConfig)) {
-    const worksheetHasStaticHeader = configUtils.worksheetStaticHeaders.includes(staticHeader as Uppercase<string>);
+  const worksheetStaticHeaders = new Set(configUtils.worksheetStaticHeaders);
+
+  for (const staticHeader of configUtils.configStaticHeaders) {
+    const headerConfig = config.staticHeadersConfig[staticHeader];
+    const worksheetHasStaticHeader = worksheetStaticHeaders.has(staticHeader);
 
     // Validate the CSV is not missing a required header
-    if (!worksheetHasStaticHeader) {
+    if (!headerConfig.optional && !worksheetHasStaticHeader) {
       csvErrors.push({
-        error: 'CSV missing required header',
-        solution: `Add missing header to CSV`,
+        error: 'A required column is missing',
+        solution: `Add all required columns to the file.`,
         header: staticHeader,
         values: [staticHeader, ...config.staticHeadersConfig[staticHeader].aliases],
         errorRowIndex: 0
@@ -97,8 +109,8 @@ export const validateCSVHeaders = (worksheet: WorkSheet, config: CSVConfig): CSV
   if (!config.ignoreDynamicHeaders && !config.dynamicHeadersConfig && configUtils.worksheetDynamicHeaders.length) {
     for (const unknownHeader of configUtils.worksheetDynamicHeaders) {
       csvErrors.push({
-        error: 'Unknown header in CSV',
-        solution: `Remove header from CSV`,
+        error: 'An unknown column is included in the file',
+        solution: `Remove extra columns from the file.`,
         header: unknownHeader,
         errorRowIndex: 0
       });

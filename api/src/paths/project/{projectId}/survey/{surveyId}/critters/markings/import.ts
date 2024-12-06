@@ -4,11 +4,11 @@ import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/
 import { getDBConnection } from '../../../../../../../database/db';
 import { csvFileSchema } from '../../../../../../../openapi/schemas/file';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
-import { importCSV } from '../../../../../../../services/import-services/import-csv';
-import { ImportMarkingsStrategy } from '../../../../../../../services/import-services/marking/import-markings-strategy';
+import { ImportMarkingsService } from '../../../../../../../services/import-services/marking/import-markings-service';
 import { getLogger } from '../../../../../../../utils/logger';
 import { parseMulterFile } from '../../../../../../../utils/media/media-utils';
 import { getFileFromRequest } from '../../../../../../../utils/request';
+import { constructXLSXWorkbook, getDefaultWorksheet } from '../../../../../../../utils/xlsx-utils/worksheet-utils';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/markings/import');
 
@@ -85,21 +85,7 @@ POST.apiDoc = {
   },
   responses: {
     201: {
-      description: 'Marking import success.',
-      content: {
-        'application/json': {
-          schema: {
-            type: 'object',
-            additionalProperties: false,
-            properties: {
-              markingsCreated: {
-                description: 'Number of Critterbase markings created.',
-                type: 'integer'
-              }
-            }
-          }
-        }
-      }
+      description: 'Marking import success.'
     },
     400: {
       $ref: '#/components/responses/400'
@@ -131,17 +117,19 @@ export function importCsv(): RequestHandler {
 
     const connection = getDBConnection(req.keycloak_token);
 
+    const mediaFile = parseMulterFile(rawFile);
+    const worksheet = getDefaultWorksheet(constructXLSXWorkbook(mediaFile));
+
     try {
       await connection.open();
 
-      const importCsvMarkingsStrategy = new ImportMarkingsStrategy(connection, surveyId);
+      const importMarkings = new ImportMarkingsService(connection, worksheet, surveyId);
 
-      // Pass CSV file and importer as dependencies
-      const markingsCreated = await importCSV(parseMulterFile(rawFile), importCsvMarkingsStrategy);
+      await importMarkings.importCSVWorksheet();
 
       await connection.commit();
 
-      return res.status(201).json({ markingsCreated });
+      return res.status(201).send();
     } catch (error) {
       defaultLog.error({ label: 'importMarkingsCSV', message: 'error', error });
       await connection.rollback();

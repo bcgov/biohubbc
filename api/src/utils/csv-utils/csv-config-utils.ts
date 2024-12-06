@@ -119,6 +119,17 @@ export class CSVConfigUtils<StaticHeaderType extends Uppercase<string>> {
   }
 
   /**
+   * Set a static header config. Injects the header config into the CSV static headers config.
+   *
+   * @param {StaticHeaderType} header - The header name
+   * @param {CSVHeaderConfig} headerConfig - The header config
+   * @returns {void}
+   */
+  setStaticHeaderConfig(header: StaticHeaderType, headerConfig: CSVHeaderConfig): void {
+    this._config.staticHeadersConfig[header] = { ...this._config.staticHeadersConfig[header], ...headerConfig };
+  }
+
+  /**
    * Get the final CSV config
    *
    * @returns {CSVConfig<StaticHeaderType>} - The CSV config
@@ -185,9 +196,5 @@ export class CSVConfigUtils<StaticHeaderType extends Uppercase<string>> {
     const uniqueDictionary = countBy(this.getCellValues(header), (value) => String(value).toLowerCase());
     const dictionaryKey = String(cell).toLowerCase();
     return uniqueDictionary[dictionaryKey] === 1 || uniqueDictionary[dictionaryKey] === undefined;
-  }
-
-  setStaticHeaderConfig(header: StaticHeaderType, headerConfig: CSVHeaderConfig): void {
-    this._config.staticHeadersConfig[header] = { ...this._config.staticHeadersConfig[header], ...headerConfig };
   }
 }

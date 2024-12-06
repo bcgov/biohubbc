@@ -150,7 +150,7 @@ export const getCritterCollectionUnitCellSetter = (
  *
  * Rules:
  *  1. The TSN must have sex measurements available
- *  2. The cell value must be a valid sex option for the TSN
+ *  2. The cell value must be a valid sex option for the TSN or undefined
  *
  * @param {NestedRecord<string>} rowDictionary The row dictionary.
  * @param {CSVConfigUtils<CritterCSVStaticHeader>} configUtils The CSV config utils.
@@ -161,6 +161,10 @@ export const getCritterSexCellValidator = (
   configUtils: CSVConfigUtils<CritterCSVStaticHeader>
 ): CSVCellValidator => {
   return (params: CSVParams) => {
+    if (params.cell === undefined) {
+      return [];
+    }
+
     const rowTsn = Number(configUtils.getCellValue('ITIS_TSN', params.row)); // Row TSN
     const sexCellValue = String(params.cell); // Cell value
 
@@ -205,6 +209,10 @@ export const getCritterSexCellSetter = (
   configUtils: CSVConfigUtils<CritterCSVStaticHeader>
 ): CSVCellSetter => {
   return (params: CSVParams) => {
+    if (params.cell === undefined) {
+      return undefined;
+    }
+
     const rowTsn = Number(configUtils.getCellValue('ITIS_TSN', params.row));
     const sexCellValue = String(params.cell);
 
