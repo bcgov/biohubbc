@@ -3,7 +3,8 @@ import { ISurveySampleMethodFormData } from 'features/surveys/sampling-informati
 import { ISurveySampleMethodPeriodData } from 'features/surveys/sampling-information/periods/SamplingPeriodFormContainer';
 import { Feature } from 'geojson';
 import { ApiPaginationResponseParams } from 'types/misc';
-import { IGetSurveyBlock, IGetSurveyStratum } from './useSurveyApi.interface';
+import { IGetSurveyBlock } from './useBlockApi.interface';
+import { IGetSurveyStratum } from './useSurveyApi.interface';
 
 export interface ISurveySampleSite {
   name: string;

@@ -134,15 +134,6 @@ export interface IGetSurveyLocation {
   revision_count: number;
 }
 
-export interface IGetSurveyBlock {
-  survey_block_id: number;
-  survey_id?: number;
-  name: string;
-  description: string;
-  revision_count: number;
-  geojson: Feature | null;
-  sample_block_count: number;
-}
 
 export interface IGetSurveyStratum {
   survey_stratum_id: number;
@@ -163,7 +154,6 @@ export interface SurveyViewObject {
   participants: IGetSurveyParticipant[];
   partnerships: IGetSurveyForViewResponsePartnerships;
   locations: IGetSurveyLocation[];
-  blocks: IGetSurveyBlock[];
 }
 
 export interface SurveyBasicFieldsObject {

@@ -17,7 +17,7 @@ import {
   SurveyObject,
   SurveySupplementaryData
 } from '../models/survey-view';
-import { PostSurveyBlock, SurveyBlockRecordWithCount } from '../repositories/survey-block-repository';
+import { PostSurveyBlock } from '../repositories/survey-block-repository';
 import { SurveyLocationRecord } from '../repositories/survey-location-repository';
 import { ISurveyProprietorModel, SurveyBasicFields, SurveyRepository } from '../repositories/survey-repository';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
@@ -83,7 +83,6 @@ export class SurveyService extends DBService {
       this.getSurveyLocationsData(surveyId),
       this.surveyParticipationService.getSurveyParticipants(surveyId),
       this.siteSelectionStrategyService.getSiteSelectionDataBySurveyId(surveyId),
-      this.getSurveyBlocksForSurveyId(surveyId)
     ]);
 
     return {
@@ -97,13 +96,7 @@ export class SurveyService extends DBService {
       locations: surveyData[7],
       participants: surveyData[8],
       site_selection: surveyData[9],
-      blocks: surveyData[10]
     };
-  }
-
-  async getSurveyBlocksForSurveyId(surveyId: number): Promise<SurveyBlockRecordWithCount[]> {
-    const service = new SurveyBlockService(this.connection);
-    return service.getSurveyBlocksForSurveyId(surveyId);
   }
 
   async getSurveyPartnershipsData(surveyId: number): Promise<ISurveyPartnerships> {

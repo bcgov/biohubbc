@@ -26,7 +26,7 @@ import { ICreateBlockFormData } from '../../create/CreateBlocksPage';
 export interface IBlockData {
   survey_block_id: number | null;
   name: string;
-  description: string;
+  description: string | null;
   geojson?: Feature;
   // This is an id meant for the front end only. This is is set if the geojson was drawn by the user (on the leaflet map) vs imported (file upload or region selector)
   // Locations drawn by the user should be editable in the leaflet map using the draw tools available
@@ -99,7 +99,7 @@ const BlocksMapForm = () => {
           uuid,
           geojson: { ...feature, id: uuid },
           name: shapeFileFeatureName(feature) ?? '',
-          description: shapeFileFeatureDesc(feature) ?? ''
+          description: shapeFileFeatureDesc(feature) ?? null
         };
       })
     ]);
@@ -115,7 +115,13 @@ const BlocksMapForm = () => {
 
     setFieldValue('blocks', [
       ...values.blocks,
-      { name: '', description: '', uuid, leaflet_id: id, geojson: { ...feature, id: uuid } }
+      {
+        name: `Cluster ${values.blocks.length + 1}`,
+        description: null,
+        uuid,
+        leaflet_id: id,
+        geojson: { ...feature, id: uuid }
+      }
     ]);
   };
 
@@ -249,63 +255,70 @@ const BlocksMapForm = () => {
           </Box>
 
           {/* List of Blocks */}
-          <TransitionGroup>
-            {values.blocks.map((block, index) => (
-              <Collapse key={block.uuid} in>
-                <Paper
-                  sx={{
-                    p: 2,
-                    mb: 2,
-                    bgcolor: selectedFeatures.some((feature) => feature.id === block.uuid) ? blue[50] : grey[50]
-                  }}
-                  variant="outlined">
-                  <Box
-                    display="flex"
-                    justifyContent="space-between"
-                    alignItems="center"
-                    onClick={() => {
-                      toggleExpand(index);
+
+          <Box
+            sx={{
+              maxHeight: '1000px',
+              overflowY: 'scroll'
+            }}>
+            <TransitionGroup>
+              {values.blocks.map((block, index) => (
+                <Collapse key={block.uuid}>
+                  <Paper
+                    sx={{
+                      p: 2,
+                      mb: 2,
+                      bgcolor: selectedFeatures.some((feature) => feature.id === block.uuid) ? blue[50] : grey[50]
                     }}
-                    sx={{ cursor: 'pointer' }}>
-                    <Box display="flex" alignItems="center">
-                      <Checkbox
-                        color="primary"
-                        checked={selectedFeatures.some((feature) => feature.id === block.uuid) || false}
-                        onClick={(event) => {
-                          if (block.geojson) {
-                            handleFeatureSelect(block.geojson);
-                          }
-                          event.stopPropagation();
-                        }}
-                      />
-                      <Typography fontWeight={700}>{block.name || `Cluster ${index + 1}`}</Typography>
+                    variant="outlined">
+                    <Box
+                      display="flex"
+                      justifyContent="space-between"
+                      alignItems="center"
+                      onClick={() => {
+                        toggleExpand(index);
+                      }}
+                      sx={{ cursor: 'pointer' }}>
+                      <Box display="flex" alignItems="center">
+                        <Checkbox
+                          color="primary"
+                          checked={selectedFeatures.some((feature) => feature.id === block.uuid) || false}
+                          onClick={(event) => {
+                            if (block.geojson) {
+                              handleFeatureSelect(block.geojson);
+                            }
+                            event.stopPropagation();
+                          }}
+                        />
+                        <Typography fontWeight={700}>{block.name}</Typography>
+                      </Box>
+
+                      {/* Expand/Collapse and Delete */}
+                      <Box>
+                        <IconButton color="primary">
+                          <Icon path={collapsedIndexes.includes(index) ? mdiChevronDown : mdiChevronUp} size={1} />
+                        </IconButton>
+                      </Box>
                     </Box>
 
-                    {/* Expand/Collapse and Delete */}
-                    <Box>
-                      <IconButton color="primary">
-                        <Icon path={collapsedIndexes.includes(index) ? mdiChevronDown : mdiChevronUp} size={1} />
-                      </IconButton>
-                    </Box>
-                  </Box>
-
-                  {/* Expandable Section */}
-                  <Collapse in={!collapsedIndexes.includes(index)} unmountOnExit>
-                    <Box mt={3}>
-                      <CustomTextField label="Name" name={`blocks[${index}].name`} />
-                    </Box>
-                    <Box mt={3}>
-                      <CustomTextField
-                        label="Description"
-                        name={`blocks[${index}].description`}
-                        other={{ rows: 2, multiline: true }}
-                      />
-                    </Box>
-                  </Collapse>
-                </Paper>
-              </Collapse>
-            ))}
-          </TransitionGroup>
+                    {/* Expandable Section */}
+                    <Collapse in={!collapsedIndexes.includes(index)} unmountOnExit>
+                      <Box mt={3}>
+                        <CustomTextField label="Name" name={`blocks[${index}].name`} />
+                      </Box>
+                      <Box mt={3}>
+                        <CustomTextField
+                          label="Description"
+                          name={`blocks[${index}].description`}
+                          other={{ rows: 2, multiline: true }}
+                        />
+                      </Box>
+                    </Collapse>
+                  </Paper>
+                </Collapse>
+              ))}
+            </TransitionGroup>
+          </Box>
         </>
       )}
     </form>

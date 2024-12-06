@@ -69,10 +69,11 @@ export const CreateBlocksPage = () => {
 
       const data: ICreateBlocksRequest = {
         ...otherValues,
-        blocks: blocks.map((method) => ({
-          survey_block_id: method.survey_block_id,
-          name: method.name,
-          description: method.description
+        blocks: blocks.map((block) => ({
+          survey_block_id: block.survey_block_id,
+          geojson: block.geojson,
+          name: block.name,
+          description: block.description
         }))
       };
 

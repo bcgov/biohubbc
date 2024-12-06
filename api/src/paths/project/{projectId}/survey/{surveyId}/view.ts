@@ -3,7 +3,6 @@ import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../constants/roles';
 import { getDBConnection } from '../../../../../database/db';
 import {
-  surveyBlockSchema,
   surveyDetailsSchema,
   surveyFundingSourceDataSchema,
   surveyLocationSchema,
@@ -121,10 +120,6 @@ GET.apiDoc = {
                     }
                   },
                   site_selection: surveySiteSelectionSchema,
-                  blocks: {
-                    type: 'array',
-                    items: surveyBlockSchema
-                  }
                 }
               },
               surveySupplementaryData: surveySupplementaryDataSchema

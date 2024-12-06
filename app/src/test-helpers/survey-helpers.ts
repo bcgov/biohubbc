@@ -17,7 +17,6 @@ export const surveyObject: SurveyViewObject = {
     survey_types: [1],
     revision_count: 0
   },
-  blocks: [],
   purpose_and_methodology: {
     intended_outcome_ids: [1],
     additional_details: 'details'

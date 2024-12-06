@@ -21,7 +21,7 @@ import useDataLoader from 'hooks/useDataLoader';
 import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { SamplingSiteTableContainer } from './table/SamplingSiteTableContainer';
+import { SamplingSiteTabsContainer } from './table/SamplingSiteTabsContainer';
 
 /**
  * Component for managing sampling sites, methods, and periods.
@@ -146,7 +146,7 @@ const SamplingSiteContainer = () => {
         </LoadingGuard>
       </Box>
 
-      <SamplingSiteTableContainer />
+      <SamplingSiteTabsContainer />
     </>
   );
 };

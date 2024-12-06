@@ -1,8 +1,10 @@
 import { Feature } from 'geojson';
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
+import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { generateGeometryCollectionSQL } from '../utils/spatial-utils';
+import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { BaseRepository } from './base-repository';
 
 export interface PostSurveyBlock {
@@ -13,22 +15,26 @@ export interface PostSurveyBlock {
   geojson: Feature;
 }
 
+export interface PostSurveyBlocksRequest {
+  blocks: PostSurveyBlock[];
+}
+
 // This describes the a row in the database for Survey Block
 export const SurveyBlockRecord = z.object({
   survey_block_id: z.number(),
   survey_id: z.number(),
   name: z.string(),
-  description: z.string(),
+  description: z.string().nullable(),
   geojson: z.any().nullable(),
   revision_count: z.number()
 });
 export type SurveyBlockRecord = z.infer<typeof SurveyBlockRecord>;
 
 // This describes the a row in the database for Survey Block
-export const SurveyBlockRecordWithCount = SurveyBlockRecord.extend({
+export const SurveyBlockNonSpatial = SurveyBlockRecord.extend({
   sample_block_count: z.number()
-});
-export type SurveyBlockRecordWithCount = z.infer<typeof SurveyBlockRecordWithCount>;
+}).omit({ geojson: true });
+export type SurveyBlockNonSpatial = z.infer<typeof SurveyBlockNonSpatial>;
 
 /**
  * A repository class for accessing Survey Block data.
@@ -42,37 +48,98 @@ export class SurveyBlockRepository extends BaseRepository {
    * Gets all Survey Block Records for a given survey id.
    *
    * @param {number} surveyId
+   * @param {{
+   *       keyword?: string;
+   *       sampleSiteIds?: number[];
+   *       pagination?: ApiPaginationOptions;
+   *     }} [options]
    * @return {*}  {Promise<SurveyBlockRecord[]>}
    * @memberof SurveyBlockRepository
    */
-  async getSurveyBlocksForSurveyId(surveyId: number): Promise<SurveyBlockRecordWithCount[]> {
-    const sql = SQL`
-    SELECT
-        sb.survey_block_id,
-        sb.survey_id,
-        sb.name,
-        sb.description,
-        sb.geojson,
-        sb.revision_count,
-        COUNT(ssb.survey_block_id)::integer AS sample_block_count
-    FROM
-        survey_block sb
-    LEFT JOIN
-        survey_sample_block ssb ON sb.survey_block_id = ssb.survey_block_id
-    WHERE
-        sb.survey_id = ${surveyId}
-    GROUP BY
-        sb.survey_block_id,
-        sb.survey_id,
-        sb.name,
-        sb.description,
-        sb.geojson,
-        sb.revision_count;
-    `;
+  async getSurveyBlocksForSurveyId(
+    surveyId: number,
+    options?: {
+      keyword?: string;
+      surveyBlockIds?: number[];
+      pagination?: ApiPaginationOptions;
+    }
+  ): Promise<SurveyBlockNonSpatial[]> {
+    const knex = getKnex();
 
-    const response = await this.connection.sql(sql, SurveyBlockRecordWithCount);
+    const queryBuilder = knex('survey_block as sb')
+      .select([
+        'sb.survey_block_id',
+        'sb.survey_id',
+        'sb.name',
+        'sb.description',
+        'sb.revision_count',
+        knex.raw('COUNT(ssb.survey_block_id)::integer AS sample_block_count')
+      ])
+      .leftJoin('survey_sample_block as ssb', 'sb.survey_block_id', 'ssb.survey_block_id')
+      .where('sb.survey_id', surveyId)
+      .groupBy('sb.survey_block_id', 'sb.survey_id', 'sb.name', 'sb.description', 'sb.geojson', 'sb.revision_count');
+
+    // Add filters for sample site IDs
+    if (options?.surveyBlockIds && options?.surveyBlockIds.length > 0) {
+      queryBuilder.whereIn('sb.survey_block_id', options.surveyBlockIds);
+    }
+
+    // Add keyword filtering
+    if (options?.keyword) {
+      queryBuilder.andWhere((qb) => {
+        qb.orWhere('sb.name', 'ilike', `%${options.keyword}%`).orWhere(
+          'sb.description',
+          'ilike',
+          `%${options.keyword}%`
+        );
+      });
+    }
+
+    // Add pagination logic
+    if (options?.pagination) {
+      const { limit, page, sort, order } = options.pagination;
+
+      if (limit) {
+        queryBuilder.limit(limit).offset((page - 1) * limit);
+      }
+
+      if (sort && order) {
+        queryBuilder.orderBy(sort, order);
+      }
+    }
+
+    const response = await this.connection.knex(queryBuilder, SurveyBlockNonSpatial);
 
     return response.rows;
+  }
+
+  /**
+   * Returns the total count of blocks belonging to the given survey.
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<number>}
+   * @memberof SurveyBlockRepository
+   */
+  async getSurveyBlocksCountBySurveyId(surveyId: number): Promise<number> {
+    const sqlStatement = SQL`
+      SELECT
+        COUNT(*)::integer AS count
+      FROM
+        survey_block
+      WHERE 
+        survey_id = ${surveyId};
+    `;
+
+    const response = await this.connection.sql(sqlStatement, z.object({ count: z.number() }));
+
+    if (!response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to get survey block count', [
+        'SurveyBlockRepository->getSurveyBlocksCountBySurveyId',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response.rows[0].count;
   }
 
   /**
@@ -179,6 +246,7 @@ export class SurveyBlockRepository extends BaseRepository {
         survey_block_id = ${surveyBlockId}
       RETURNING
         survey_block_id,
+        survey_id,
         name,
         description,
         revision_count;

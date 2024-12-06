@@ -1,10 +1,11 @@
 import { IDBConnection } from '../database/db';
 import {
   PostSurveyBlock,
+  SurveyBlockNonSpatial,
   SurveyBlockRecord,
-  SurveyBlockRecordWithCount,
   SurveyBlockRepository
 } from '../repositories/survey-block-repository';
+import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { DBService } from './db-service';
 import { SampleBlockService } from './sample-block-service';
 
@@ -20,11 +21,34 @@ export class SurveyBlockService extends DBService {
    * Gets Block Survey Records for a given survey id
    *
    * @param {number} surveyId
+   * @param {{
+   *       keyword?: string;
+   *       sampleSiteIds?: number[];
+   *       pagination?: ApiPaginationOptions;
+   *     }} [options]
    * @return {*} {Promise<SurveyBlockRecordWithCount[]>}
    * @returns
    */
-  async getSurveyBlocksForSurveyId(surveyId: number): Promise<SurveyBlockRecordWithCount[]> {
-    return this.surveyBlockRepository.getSurveyBlocksForSurveyId(surveyId);
+  async getSurveyBlocksForSurveyId(
+    surveyId: number,
+    options?: {
+      keyword?: string;
+      sampleSiteIds?: number[];
+      pagination?: ApiPaginationOptions;
+    }
+  ): Promise<SurveyBlockNonSpatial[]> {
+    return this.surveyBlockRepository.getSurveyBlocksForSurveyId(surveyId, options);
+  }
+
+  /**
+   * Returns the total count of survey blocks belonging to the given survey.
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<number>}
+   * @memberof SurveyBlockService
+   */
+  async getSurveyBlocksCountBySurveyId(surveyId: number): Promise<number> {
+    return this.surveyBlockRepository.getSurveyBlocksCountBySurveyId(surveyId);
   }
 
   /**

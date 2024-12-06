@@ -5,39 +5,25 @@ import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
-import { SamplingSiteMethodYupSchema } from 'features/surveys/sampling-information/methods/components/SamplingMethodForm';
-import { SamplingSiteMethodPeriodYupSchema } from 'features/surveys/sampling-information/periods/SamplingPeriodFormContainer';
-import { ICreateSampleSiteFormData } from 'features/surveys/sampling-information/sites/create/CreateSamplingSitePage';
 import { useFormikContext } from 'formik';
 import { useSurveyContext } from 'hooks/useContext';
 import { useHistory } from 'react-router';
 import yup from 'utils/YupSchema';
+import { ICreateBlockFormData } from '../create/CreateBlocksPage';
 import BlocksMapForm from './map/BlocksMapForm';
 
 export const BlocksFormYupSchema = yup.object({
-  survey_sample_sites: yup
+  blocks: yup
     .array(
       yup.object({
-        name: yup.string().default(''),
-        description: yup.string().default(''),
-        geojson: yup.object({})
+        survey_block_id: yup.number().nullable(),
+        name: yup.string().required('Name is required'),
+        description: yup.string().nullable(),
+        geojson: yup.object().required('A location is required')
       })
     )
-    .min(1, 'At least one sampling site location is required'),
-  sample_methods: yup
-    .array()
-    .of(
-      SamplingSiteMethodYupSchema.shape({
-        sample_periods: yup
-          .array()
-          .of(SamplingSiteMethodPeriodYupSchema)
-          .min(
-            1,
-            'At least one sampling period is required for each method, describing when exactly this method was done'
-          )
-      })
-    ) // Ensure each item in the array conforms to SamplingSiteMethodYupSchema
-    .min(1, 'At least one sampling method is required') // Add check for at least one item in the array
+    .min(1, 'At least one block is required')
+    .required('Blocks are required')
 });
 
 interface IBlocksFormProps {
@@ -54,14 +40,14 @@ const BlocksForm = (props: IBlocksFormProps) => {
   const { isSubmitting } = props;
 
   const history = useHistory();
-  const { submitForm } = useFormikContext<ICreateSampleSiteFormData>();
+  const { submitForm } = useFormikContext<ICreateBlockFormData>();
 
   const surveyContext = useSurveyContext();
 
   return (
     <Container maxWidth="xl" sx={{ py: 3 }}>
       <Paper sx={{ p: 5 }}>
-        <HorizontalSplitFormComponent title="Cluster" summary="Import or draw clusters to create">
+        <HorizontalSplitFormComponent title="Clusters" summary="Import or draw clusters">
           <BlocksMapForm />
         </HorizontalSplitFormComponent>
 

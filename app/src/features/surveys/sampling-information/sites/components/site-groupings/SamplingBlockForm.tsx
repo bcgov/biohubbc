@@ -12,9 +12,11 @@ import Typography from '@mui/material/Typography';
 import { SurveyContext } from 'contexts/surveyContext';
 import { BlockStratumCard } from 'features/surveys/sampling-information/sites/components/site-groupings/BlockStratumCard';
 import { useFormikContext } from 'formik';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import useDataLoader from 'hooks/useDataLoader';
+import { IGetSurveyBlock } from 'interfaces/useBlockApi.interface';
 import { IGetSampleBlockDetails, IGetSampleLocationDetails } from 'interfaces/useSamplingSiteApi.interface';
-import { IGetSurveyBlock } from 'interfaces/useSurveyApi.interface';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 
 /**
@@ -26,7 +28,17 @@ export const SamplingBlockForm = () => {
   const { values, setFieldValue } = useFormikContext<IGetSampleLocationDetails>();
   const surveyContext = useContext(SurveyContext);
 
-  const options = surveyContext.surveyDataLoader?.data?.surveyData?.blocks || [];
+  const biohubApi = useBiohubApi();
+
+  const samplingBlocksDataLoader = useDataLoader(() =>
+    biohubApi.block.getSurveyBlocks(surveyContext.projectId, surveyContext.surveyId)
+  );
+
+  useEffect(() => {
+    samplingBlocksDataLoader.load();
+  }, []);
+
+  const options = samplingBlocksDataLoader.data?.blocks ?? [];
 
   const [searchText, setSearchText] = useState('');
 

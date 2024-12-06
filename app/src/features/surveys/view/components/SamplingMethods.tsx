@@ -5,7 +5,6 @@ import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import { CodesContext } from 'contexts/codesContext';
 import { SurveyContext } from 'contexts/surveyContext';
-import { IGetSurveyBlock } from 'interfaces/useSurveyApi.interface';
 import { useContext } from 'react';
 
 /**
@@ -23,7 +22,7 @@ const SamplingMethods = () => {
   }
 
   const {
-    surveyData: { site_selection, blocks }
+    surveyData: { site_selection }
   } = surveyForViewData;
 
   return (
@@ -69,34 +68,6 @@ const SamplingMethods = () => {
                     }}
                     primary={stratum.name}
                     secondary={stratum.description}
-                  />
-                </ListItem>
-              );
-            })}
-          </List>
-        </Box>
-      )}
-
-      {blocks.length > 0 && (
-        <Box component="section" className="row">
-          <Typography component="h4">Blocks</Typography>
-          <List disablePadding>
-            {blocks?.map((block: IGetSurveyBlock) => {
-              return (
-                <ListItem
-                  key={`${block.name}-${block.description}`}
-                  sx={{
-                    p: 0,
-                    '& + .MuiListItem-root': {
-                      mt: 1
-                    }
-                  }}>
-                  <ListItemText
-                    sx={{
-                      m: 0
-                    }}
-                    primary={block.name}
-                    secondary={block.description}
                   />
                 </ListItem>
               );
