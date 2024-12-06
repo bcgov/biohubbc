@@ -78,11 +78,14 @@ export const validateCSVHeaders = (worksheet: WorkSheet, config: CSVConfig): CSV
     return [{ error: 'CSV missing rows', solution: 'Add data to CSV', errorRowIndex: 1 }];
   }
 
-  for (const staticHeader of Object.keys(config.staticHeadersConfig)) {
-    const worksheetHasStaticHeader = configUtils.worksheetStaticHeaders.includes(staticHeader as Uppercase<string>);
+  const worksheetStaticHeaders = new Set(configUtils.worksheetStaticHeaders);
+
+  for (const staticHeader of configUtils.configStaticHeaders) {
+    const headerConfig = config.staticHeadersConfig[staticHeader];
+    const worksheetHasStaticHeader = worksheetStaticHeaders.has(staticHeader);
 
     // Validate the CSV is not missing a required header
-    if (!worksheetHasStaticHeader) {
+    if (!headerConfig.optional && !worksheetHasStaticHeader) {
       csvErrors.push({
         error: 'CSV missing required header',
         solution: `Add missing header to CSV`,

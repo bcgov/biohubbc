@@ -61,8 +61,8 @@ export class ImportCrittersService extends DBService {
         ITIS_TSN: { aliases: ['TAXON', 'SPECIES', 'TSN'] },
         ALIAS: { aliases: ['NICKNAME', 'NAME', 'ANIMAL_ID'] },
         SEX: { aliases: [] },
-        WLH_ID: { aliases: ['WILDLIFE_HEALTH_ID', 'WILD LIFE HEALTH ID', 'WLHID'] },
-        DESCRIPTION: { aliases: ['COMMENTS', 'COMMENT', 'NOTES'] }
+        WLH_ID: { aliases: ['WILDLIFE_HEALTH_ID', 'WILD LIFE HEALTH ID', 'WLHID'], optional: true },
+        DESCRIPTION: { aliases: ['COMMENTS', 'COMMENT', 'NOTES'], optional: true }
       },
       ignoreDynamicHeaders: false
     };

@@ -9,9 +9,9 @@ export interface CSVConfig<THeader extends Uppercase<string> = Uppercase<string>
    *
    * Note: A static header is a header that is known and defined in the configuration.
    *
-   * @type {Record<THeader, { aliases: Uppercase<string> } & CSVHeaderConfig>}
+   * @type {Record<THeader, CSVStaticHeaderConfig & CSVHeaderConfig>}
    */
-  staticHeadersConfig: Record<THeader, { aliases: Uppercase<string>[] } & CSVHeaderConfig>;
+  staticHeadersConfig: Record<THeader, CSVStaticHeaderConfig & CSVHeaderConfig>;
   /**
    * Contains the `validateCell` and `setCellValue` callbacks to be called for each dynamic cell.
    *
@@ -31,6 +31,23 @@ export interface CSVConfig<THeader extends Uppercase<string> = Uppercase<string>
    * @type {boolean}
    */
   ignoreDynamicHeaders: boolean;
+}
+
+interface CSVStaticHeaderConfig {
+  /**
+   * A list of aliases for the header.
+   *
+   * @type {Uppercase<string>[]}
+   */
+  aliases: Uppercase<string>[];
+  /**
+   * Indicates if the header is optional. Set this to true if you want to be able to omit the header from the CSV.
+   *
+   * Note: This is not related to the cell validation. It is used to check if the header is present in the CSV.
+   *
+   * @type {true}
+   */
+  optional?: true;
 }
 
 /**
