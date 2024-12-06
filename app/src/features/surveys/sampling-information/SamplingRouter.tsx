@@ -9,7 +9,8 @@ import { EditTechniquePage } from 'features/surveys/sampling-information/techniq
 import { Switch } from 'react-router';
 import RouteWithTitle from 'utils/RouteWithTitle';
 import { getTitle } from 'utils/Utils';
-import { CreateBlocksPage } from './blocks/create/CreateBlocksPage';
+import { CreateBlockPage } from './blocks/create/CreateBlockPage';
+import { EditBlockPage } from './blocks/edit/EditBlockPage';
 
 /**
  * Router for all `/admin/projects/:id/surveys/:survey_id/sampling/*` pages.
@@ -61,10 +62,19 @@ export const SamplingRouter = () => {
 
       <RouteWithTitle
         exact
-        path="/admin/projects/:id/surveys/:survey_id/sampling/blocks/create"
-        title={getTitle('Create Sampling Site Clusters')}>
+        path="/admin/projects/:id/surveys/:survey_id/sampling/block/create"
+        title={getTitle('Create Sampling Site Cluster')}>
         <DialogContextProvider>
-          <CreateBlocksPage />
+          <CreateBlockPage />
+        </DialogContextProvider>
+      </RouteWithTitle>
+
+      <RouteWithTitle
+        exact
+        path="/admin/projects/:id/surveys/:survey_id/sampling/block/:survey_block_id/edit"
+        title={getTitle('Edit Sampling Site Cluster')}>
+        <DialogContextProvider>
+          <EditBlockPage />
         </DialogContextProvider>
       </RouteWithTitle>
 

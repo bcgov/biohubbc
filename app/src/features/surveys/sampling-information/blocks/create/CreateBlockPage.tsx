@@ -6,13 +6,14 @@ import { Formik, FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
+import useDataLoader from 'hooks/useDataLoader';
 import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { ICreateBlocksRequest } from 'interfaces/useSamplingSiteApi.interface';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import SamplingSiteHeader from '../../sites/components/SamplingSiteHeader';
-import BlocksForm, { BlocksFormYupSchema } from '../form/BlocksForm';
-import { IBlockData } from '../form/map/BlocksMapForm';
+import CreateBlocksForm, { BlocksFormYupSchema } from '../form/create/CreateBlocksForm';
+import { IBlockData } from '../form/create/CreateBlocksMapForm';
 
 /**
  * Interface for the form data used in the Create Sampling Site form.
@@ -29,7 +30,7 @@ export interface ICreateBlockFormData {
  *
  * @return {*}
  */
-export const CreateBlocksPage = () => {
+export const CreateBlockPage = () => {
   const history = useHistory();
   const biohubApi = useBiohubApi();
 
@@ -39,6 +40,16 @@ export const CreateBlocksPage = () => {
 
   const formikRef = useRef<FormikProps<ICreateBlockFormData>>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Fetch blocks to determine the number of blocks in the survey,
+  // used for generating unique names of new clusters (eg. "Cluster 1", "Cluster 2", etc.)
+  const blocksDataLoader = useDataLoader(() =>
+    biohubApi.block.getSurveyBlocks(surveyContext.projectId, surveyContext.surveyId)
+  );
+
+  useEffect(() => {
+    blocksDataLoader.load();
+  }, [blocksDataLoader]);
 
   const { locationChangeInterceptor } = useUnsavedChangesDialog();
 
@@ -114,11 +125,11 @@ export const CreateBlocksPage = () => {
             survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
             project_name={projectContext.projectDataLoader.data.projectData.project.project_name}
             is_submitting={isSubmitting}
-            title="Add Sampling Site Clusters"
-            breadcrumb="Add Sampling Site Clusters"
+            title="Add Sampling Site Cluster"
+            breadcrumb="Add Sampling Site Cluster"
           />
           <Box display="flex" flex="1 1 auto">
-            <BlocksForm isSubmitting={isSubmitting} />
+            <CreateBlocksForm isSubmitting={isSubmitting} clusterCount={blocksDataLoader.data?.blocks.length ?? 0}/>
           </Box>
         </Box>
       </Formik>

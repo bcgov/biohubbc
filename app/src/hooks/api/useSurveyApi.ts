@@ -743,12 +743,22 @@ const useSurveyApi = (axios: AxiosInstance) => {
    * @param {ICreateBlocksRequest} payload
    * @return {*}
    */
-  const createBlocks = async (
-    projectId: number,
-    surveyId: number,
-    payload: ICreateBlocksRequest
-  ): Promise<{ presignedS3Urls: string[] }> => {
-    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/blocks`, payload);
+  const createBlocks = async (projectId: number, surveyId: number, payload: ICreateBlocksRequest): Promise<void> => {
+    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/block`, payload);
+
+    return data;
+  };
+
+  /**
+   * Update survey blocks
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {ICreateBlocksRequest} payload
+   * @return {*}
+   */
+  const updateBlocks = async (projectId: number, surveyId: number, payload: ICreateBlocksRequest): Promise<void> => {
+    const { data } = await axios.put(`/api/project/${projectId}/survey/${surveyId}/block`, payload);
 
     return data;
   };
@@ -786,7 +796,8 @@ const useSurveyApi = (axios: AxiosInstance) => {
     deleteDeployment,
     deleteDeployments,
     exportData,
-    createBlocks
+    createBlocks,
+    updateBlocks
   };
 };
 

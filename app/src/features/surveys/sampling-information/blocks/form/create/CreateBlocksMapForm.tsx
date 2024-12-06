@@ -1,33 +1,24 @@
-import { mdiChevronDown, mdiChevronUp } from '@mdi/js';
-import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
-import Collapse from '@mui/material/Collapse';
-import blue from '@mui/material/colors/blue';
-import grey from '@mui/material/colors/grey';
-import IconButton from '@mui/material/IconButton';
 import Paper from '@mui/material/Paper';
-import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
+import AlertBar from 'components/alert/AlertBar';
+import CollapsibleCardList from 'components/card/CollapsibleCardList';
 import YesNoDialog from 'components/dialog/YesNoDialog';
 import CustomTextField from 'components/fields/CustomTextField';
 import { IDrawControlsRef } from 'components/map/components/DrawControls';
 import { ImportDrawMapControl } from 'components/map/ImportDrawMapControl';
+import SurveyMapTooltip from 'features/surveys/view/SurveyMapTooltip';
 import { useFormikContext } from 'formik';
 import { Feature } from 'geojson';
 import { createRef, useState } from 'react';
-import { TransitionGroup } from 'react-transition-group';
 import { shapeFileFeatureDesc, shapeFileFeatureName } from 'utils/Utils';
-import yup from 'utils/YupSchema';
 import { v4 } from 'uuid';
-import { ICreateBlockFormData } from '../../create/CreateBlocksPage';
+import { ICreateBlockFormData } from '../../create/CreateBlockPage';
 
 export interface IBlockData {
   survey_block_id: number | null;
   name: string;
   description: string | null;
-  geojson?: Feature;
+  geojson?: Feature | null;
   // This is an id meant for the front end only. This is is set if the geojson was drawn by the user (on the leaflet map) vs imported (file upload or region selector)
   // Locations drawn by the user should be editable in the leaflet map using the draw tools available
   // Any uploaded or selected regions should not be editable and be placed in the 'static' layer on the map
@@ -36,41 +27,27 @@ export interface IBlockData {
   uuid?: string;
 }
 
+interface ICreateBlocksMapFormProps {
+  /**
+   * The number of clusters in the survey, used for generating unique names of new clusters
+   * eg. If the survey has 10 clusters, the cluster name will default to "Cluster 11".
+   */
+  clusterCount?: number;
+}
+
 export const SurveyBlockInitialValues = { blocks: [] };
-
-export const SurveyLocationDetailsYupSchema = yup.object({
-  name: yup.string().max(100, 'Name cannot exceed 100 characters').required('Name is Required'),
-  description: yup.string().max(250, 'Description cannot exceed 250 characters').default('')
-});
-
-export const SurveyLocationYupSchema = yup.object({
-  locations: yup
-    .array(
-      yup.object({
-        name: yup.string().max(100, 'Name cannot exceed 100 characters').required('Name is Required'),
-        description: yup.string().max(250, 'Description cannot exceed 250 characters').default(''),
-        geojson: yup.array().min(1, 'A geometry is required').required('A geometry is required')
-      })
-    )
-    .min(1, 'At least one feature or boundary is required for a survey study area.')
-});
 
 /**
  * Create blocks - map control
  *
  * @return {*}
  */
-const BlocksMapForm = () => {
+const CreateBlocksMapForm = (props: ICreateBlocksMapFormProps) => {
   const formikProps = useFormikContext<ICreateBlockFormData>();
-  const { handleSubmit, values, setFieldValue } = formikProps;
+  const { handleSubmit, values, setFieldValue, errors, setFieldError } = formikProps;
 
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [selectedFeatures, setSelectedFeatures] = useState<Feature[]>([]);
-  const [collapsedIndexes, setCollapsedIndexes] = useState<number[]>([]);
-
-  const toggleExpand = (index: number) => {
-    setCollapsedIndexes((prev) => (prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]));
-  };
 
   const drawRef = createRef<IDrawControlsRef>();
 
@@ -85,6 +62,7 @@ const BlocksMapForm = () => {
     // set field to an empty array
     setFieldValue('blocks', []);
     setSelectedFeatures([]);
+    setFieldError('blocks', undefined);
   };
 
   // Handle importing new shapes
@@ -106,6 +84,7 @@ const BlocksMapForm = () => {
   };
 
   // Handle failure during import
+  // TODO: Add import failure dialog
   const handleImportFailure = () => {};
 
   // Handle adding a new shape
@@ -113,10 +92,15 @@ const BlocksMapForm = () => {
     // UUID is the key used to join map layers with their corresponding formik data
     const uuid = v4();
 
+    let clusterNumber = values.blocks.length + 1;
+    if (props.clusterCount) {
+      clusterNumber += props.clusterCount;
+    }
+
     setFieldValue('blocks', [
       ...values.blocks,
       {
-        name: `Cluster ${values.blocks.length + 1}`,
+        name: `Cluster ${clusterNumber}`,
         description: null,
         uuid,
         leaflet_id: id,
@@ -138,6 +122,7 @@ const BlocksMapForm = () => {
     // Remove deleted features from 'blocks' array
     const filteredBlocks = values.blocks.filter((block) => !deletedFeatures.some((del) => del.id === block.uuid));
     setFieldValue('blocks', filteredBlocks);
+    setFieldError('blocks', undefined);
 
     // Use Draw Ref to remove editable layers from the map
     deletedFeatures.forEach((deletedFeature) => {
@@ -185,6 +170,11 @@ const BlocksMapForm = () => {
     }
   };
 
+  const handleTooltip = (feature: Feature) => {
+    const label = values.blocks.find((block) => block.uuid === feature.id)?.name ?? '';
+    return <SurveyMapTooltip title={label} key={`feature-tooltip-${feature.id}`} />;
+  };
+
   return (
     <form onSubmit={handleSubmit}>
       <YesNoDialog
@@ -216,113 +206,50 @@ const BlocksMapForm = () => {
           handleDelete={handleDelete}
           handleDeleteAll={handleDeleteAll}
           handleFeatureSelect={handleFeatureSelect}
+          tooltip={handleTooltip}
           selectedFeatures={selectedFeatures}
           dialogTitle="Import Blocks"
         />
       </Paper>
 
+      {errors?.blocks && !Array.isArray(errors?.blocks) && (
+        <AlertBar sx={{ mt: 3 }} severity="error" title={errors.blocks} variant="outlined" />
+      )}
+
       {values.blocks.length > 0 && (
-        <>
-          {/* Action Buttons */}
-          <Box
-            display="flex"
-            justifyContent="justifyContent"
-            mb={2}
-            mt={3}
-            sx={{ '& .MuiButton-root': { bgcolor: grey[50], color: grey[700] } }}>
-            <Box display="flex" alignItems="center" flex="1 1 auto">
-              <Button variant="text" onClick={handleFeatureSelectAll}>
-                <Checkbox
-                  color="primary"
-                  sx={{ p: 0, left: 0, mr: 1 }}
-                  checked={
-                    selectedFeatures.length === values.blocks.length
-                      ? selectedFeatures.every((feature) => values.blocks.some((block) => feature.id === block.uuid))
-                      : false
-                  }
-                />
-                Select All
-              </Button>
-            </Box>
-            <Stack gap={1} flexDirection="row">
-              <Button variant="text" onClick={() => setCollapsedIndexes([])}>
-                Expand All
-              </Button>
-              <Button variant="text" onClick={() => setCollapsedIndexes(values.blocks.map((_, idx) => idx))}>
-                Collapse All
-              </Button>
-            </Stack>
-          </Box>
-
-          {/* List of Blocks */}
-
-          <Box
-            sx={{
-              maxHeight: '1000px',
-              overflowY: 'scroll'
-            }}>
-            <TransitionGroup>
-              {values.blocks.map((block, index) => (
-                <Collapse key={block.uuid}>
-                  <Paper
-                    sx={{
-                      p: 2,
-                      mb: 2,
-                      bgcolor: selectedFeatures.some((feature) => feature.id === block.uuid) ? blue[50] : grey[50]
-                    }}
-                    variant="outlined">
-                    <Box
-                      display="flex"
-                      justifyContent="space-between"
-                      alignItems="center"
-                      onClick={() => {
-                        toggleExpand(index);
-                      }}
-                      sx={{ cursor: 'pointer' }}>
-                      <Box display="flex" alignItems="center">
-                        <Checkbox
-                          color="primary"
-                          checked={selectedFeatures.some((feature) => feature.id === block.uuid) || false}
-                          onClick={(event) => {
-                            if (block.geojson) {
-                              handleFeatureSelect(block.geojson);
-                            }
-                            event.stopPropagation();
-                          }}
-                        />
-                        <Typography fontWeight={700}>{block.name}</Typography>
-                      </Box>
-
-                      {/* Expand/Collapse and Delete */}
-                      <Box>
-                        <IconButton color="primary">
-                          <Icon path={collapsedIndexes.includes(index) ? mdiChevronDown : mdiChevronUp} size={1} />
-                        </IconButton>
-                      </Box>
-                    </Box>
-
-                    {/* Expandable Section */}
-                    <Collapse in={!collapsedIndexes.includes(index)} unmountOnExit>
-                      <Box mt={3}>
-                        <CustomTextField label="Name" name={`blocks[${index}].name`} />
-                      </Box>
-                      <Box mt={3}>
-                        <CustomTextField
-                          label="Description"
-                          name={`blocks[${index}].description`}
-                          other={{ rows: 2, multiline: true }}
-                        />
-                      </Box>
-                    </Collapse>
-                  </Paper>
-                </Collapse>
-              ))}
-            </TransitionGroup>
-          </Box>
-        </>
+        <Box mt={3}>
+          <CollapsibleCardList
+            items={values.blocks.map((block) => ({
+              geojson: block.geojson ?? null,
+              uuid: block.uuid ?? undefined,
+              label: block.name
+            }))}
+            selectedItems={selectedFeatures.map((feature) => ({
+              geojson: feature,
+              uuid: values.blocks.find((block) => block.geojson?.id === feature.id)?.uuid ?? undefined,
+              label: values.blocks.find((block) => block.geojson?.id === feature.id)?.name ?? ''
+            }))}
+            onSelectItem={(feature) => {
+              feature.geojson && handleFeatureSelect(feature.geojson);
+            }}
+            onSelectAll={handleFeatureSelectAll}
+            renderCardContent={(_, index) => (
+              <>
+                <CustomTextField label="Name" name={`blocks[${index}].name`} />
+                <Box mt={3}>
+                  <CustomTextField
+                    label="Description"
+                    name={`blocks[${index}].description`}
+                    other={{ rows: 2, multiline: true }}
+                  />
+                </Box>
+              </>
+            )}
+          />
+        </Box>
       )}
     </form>
   );
 };
 
-export default BlocksMapForm;
+export default CreateBlocksMapForm;

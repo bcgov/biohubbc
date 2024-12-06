@@ -17,7 +17,7 @@ import { SURVEY_MAP_LAYER_COLOURS } from 'constants/colours';
 import { ALL_OF_BC_BOUNDARY } from 'constants/spatial';
 import { Feature, FeatureCollection } from 'geojson';
 import { DrawEvents, LatLngBoundsExpression } from 'leaflet';
-import { useEffect, useState } from 'react';
+import { ReactElement, useEffect, useState } from 'react';
 import { FeatureGroup, GeoJSON, LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import { v4 } from 'uuid';
@@ -30,10 +30,11 @@ export interface IImportDrawMapControlProps {
   handleImportFailure: () => void;
   handleAdd: (feature: Feature, id: number) => void;
   handleEdit: (features: Feature[]) => void;
-  handleDelete: (features: Feature[]) => void;
-  handleDeleteAll: () => void;
+  handleDelete?: (features: Feature[]) => void;
+  handleDeleteAll?: () => void;
   handleRegionSelect?: (feature: Feature) => void;
   handleFeatureSelect?: (feature: Feature) => void;
+  tooltip?: (feature: Feature) => ReactElement;
   selectedFeatures?: Feature[];
   regions?: Feature[]; // Optional for selectable regions
   dialogTitle?: string;
@@ -52,6 +53,7 @@ export const ImportDrawMapControl = ({
   handleDeleteAll,
   handleRegionSelect,
   handleFeatureSelect,
+  tooltip,
   selectedFeatures,
   regions = [],
   dialogTitle = 'Import Features',
@@ -102,27 +104,31 @@ export const ImportDrawMapControl = ({
             onClick={() => setIsDialogOpen(true)}>
             Import
           </Button>
-          <Box>
-            <Button
-              color="primary"
-              variant="outlined"
-              disabled={features.length <= 0}
-              startIcon={<Icon path={mdiTrashCanOutline} size={1} />}
-              onClick={handleDeleteAll}>
-              Remove All
-            </Button>
-          </Box>
-          <Collapse in={selectedFeatures && selectedFeatures?.length > 0} orientation="horizontal">
-            <Box whiteSpace="nowrap" display="flex" sx={{ gap: 1 }}>
+          {handleDeleteAll && (
+            <Box>
               <Button
                 color="primary"
                 variant="outlined"
+                disabled={features.length <= 0}
                 startIcon={<Icon path={mdiTrashCanOutline} size={1} />}
-                onClick={() => selectedFeatures && handleDelete(selectedFeatures)}>
-                Remove Selected
+                onClick={handleDeleteAll}>
+                Remove All
               </Button>
             </Box>
-          </Collapse>
+          )}
+          {handleDelete && (
+            <Collapse in={selectedFeatures && selectedFeatures?.length > 0} orientation="horizontal">
+              <Box whiteSpace="nowrap" display="flex" sx={{ gap: 1 }}>
+                <Button
+                  color="primary"
+                  variant="outlined"
+                  startIcon={<Icon path={mdiTrashCanOutline} size={1} />}
+                  onClick={() => selectedFeatures && handleDelete(selectedFeatures)}>
+                  Remove Selected
+                </Button>
+              </Box>
+            </Collapse>
+          )}
         </Stack>
       </Toolbar>
 
@@ -154,7 +160,7 @@ export const ImportDrawMapControl = ({
             }}
             onLayerDelete={(event: DrawEvents.Deleted) => {
               const deletedFeatures = event.layers.toGeoJSON() as FeatureCollection;
-              handleDelete(deletedFeatures.features);
+              handleDelete && handleDelete(deletedFeatures.features);
             }}
           />
         </FeatureGroup>
@@ -175,28 +181,33 @@ export const ImportDrawMapControl = ({
 
         <LayersControl position="bottomright">
           <StaticLayers
-            layers={features.map((feature, index) => ({
-              key: feature.id,
-              layerName: `Feature ${index + 1}`,
-              features: [
-                {
-                  id: index,
-                  key: String(feature.id) ?? v4(),
-                  geoJSON: feature
+            layers={features.map((feature, index) => {
+              const isSelected = selectedFeatures?.some((selectedFeature) => selectedFeature.id === feature.id);
+
+              const color = isSelected
+                ? SURVEY_MAP_LAYER_COLOURS.SELECTED_COLOUR
+                : SURVEY_MAP_LAYER_COLOURS.NON_SELECTED_COLOUR;
+
+              return {
+                key: feature.id,
+                layerName: `Feature ${index + 1}`,
+                features: [
+                  {
+                    id: index,
+                    key: String(feature.id) ?? v4(),
+                    geoJSON: feature
+                  }
+                ],
+                layerOptions: {
+                  fillColor: color,
+                  color: color
+                },
+                tooltip: tooltip ? () => tooltip(feature) : undefined,
+                handleClick: (feature: Feature) => {
+                  handleFeatureSelect && handleFeatureSelect(feature);
                 }
-              ],
-              layerOptions: {
-                fillColor: selectedFeatures?.some((selectedFeature) => selectedFeature.id === feature.id)
-                  ? SURVEY_MAP_LAYER_COLOURS.SELECTED_COLOUR
-                  : SURVEY_MAP_LAYER_COLOURS.NON_SELECTED_COLOUR,
-                color: selectedFeatures?.some((selectedFeature) => selectedFeature.id === feature.id)
-                  ? SURVEY_MAP_LAYER_COLOURS.SELECTED_COLOUR
-                  : SURVEY_MAP_LAYER_COLOURS.NON_SELECTED_COLOUR
-              },
-              handleClick: (feature: Feature) => {
-                handleFeatureSelect && handleFeatureSelect(feature);
-              }
-            }))}
+              };
+            })}
           />
           <BaseLayerControls />
         </LayersControl>

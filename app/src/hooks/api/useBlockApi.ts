@@ -1,5 +1,5 @@
 import { AxiosInstance } from 'axios';
-import { IGetSurveyBlockResponse } from 'interfaces/useBlockApi.interface';
+import { IGetSurveyBlock, IGetSurveyBlockResponse } from 'interfaces/useBlockApi.interface';
 import { ApiPaginationRequestOptions } from 'types/misc';
 
 /**
@@ -10,6 +10,28 @@ import { ApiPaginationRequestOptions } from 'types/misc';
  */
 const useBlockApi = (axios: AxiosInstance) => {
   /**
+   * Get survey block by id
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {{
+   *       keyword?: string;
+   *       pagination?: ApiPaginationOptions;
+   *     }} [options]
+   * *
+   * @returns {*} {Promise<IGetSurveyBlock}
+   */
+  const getSurveyBlockById = async (
+    projectId: number,
+    surveyId: number,
+    surveyBlockId: number
+  ): Promise<IGetSurveyBlock> => {
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/block/${surveyBlockId}`);
+
+    return data;
+  };
+
+  /**
    * Get survey blocks
    *
    * @param {number} projectId
@@ -19,7 +41,7 @@ const useBlockApi = (axios: AxiosInstance) => {
    *       pagination?: ApiPaginationOptions;
    *     }} [options]
    * *
-   * @returns {*} {Promise<IGetProjectAttachmentsResponse>}
+   * @returns {*} {Promise<IGetSurveyBlockResponse>}
    */
   const getSurveyBlocks = async (
     projectId: number,
@@ -33,7 +55,7 @@ const useBlockApi = (axios: AxiosInstance) => {
       keyword: options?.keyword,
       ...options?.pagination
     };
-    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/blocks`, {
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/block`, {
       params
     });
 
@@ -41,26 +63,23 @@ const useBlockApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Get survey blocks
+   * Delete survey blocks
    *
    * @param {number} projectId
    * @param {number} surveyId
    * @param {number[]} surveyBlockIds
    *
-   * @returns {*} {Promise<IGetProjectAttachmentsResponse>}
+   * @returns {*} {Promise<void>}
    */
   const deleteBlocks = async (projectId: number, surveyId: number, surveyBlockIds: number[]): Promise<void> => {
-    const params = {
+    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/block/delete`, {
       surveyBlockIds
-    };
-    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/blocks`, {
-      params
     });
 
     return data;
   };
 
-  return { getSurveyBlocks, deleteBlocks };
+  return { getSurveyBlockById, getSurveyBlocks, deleteBlocks };
 };
 
 export default useBlockApi;

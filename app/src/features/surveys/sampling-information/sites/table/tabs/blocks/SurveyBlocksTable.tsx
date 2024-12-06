@@ -17,6 +17,7 @@ export interface IBlockRowData {
   id: number;
   name: string;
   description: string | null;
+  sample_block_count: number;
 }
 
 interface ISurveyBlocksTableProps {
@@ -32,13 +33,13 @@ interface ISurveyBlocksTableProps {
   /**
    * Callback fired when the delete action is triggered.
    */
-  onDelete: (sampleSiteId: number) => Promise<void>;
+  onDelete: (surveyBlockId: number) => Promise<void>;
 }
 
 /**
  * Returns a table of survey blocks
  *
- * @param props {<ISurveyBlocksTableProps>}
+ * @param props {ISurveyBlocksTableProps}
  * @returns {*}
  */
 export const SurveyBlocksTable = (props: ISurveyBlocksTableProps) => {
@@ -60,7 +61,7 @@ export const SurveyBlocksTable = (props: ISurveyBlocksTableProps) => {
 
   const [actionMenuAnchorEl, setActionMenuAnchorEl] = useState<{
     anchorEl: MenuProps['anchorEl'];
-    sampleSiteId: number;
+    surveyBlockId: number;
   } | null>(null);
 
   const handleCloseActionMenu = () => {
@@ -77,7 +78,7 @@ export const SurveyBlocksTable = (props: ISurveyBlocksTableProps) => {
       return;
     }
 
-    await onDelete(actionMenuAnchorEl.sampleSiteId)
+    await onDelete(actionMenuAnchorEl.surveyBlockId)
       .then(() => {
         dialogContext.setYesNoDialog({ open: false });
         setActionMenuAnchorEl(null);
@@ -128,7 +129,8 @@ export const SurveyBlocksTable = (props: ISurveyBlocksTableProps) => {
   const rows: IBlockRowData[] = blocks.map((block) => ({
     id: block.survey_block_id,
     name: block.name,
-    description: block.description
+    description: block.description,
+    sample_block_count: block.sample_block_count
   }));
 
   const columns: GridColDef<IBlockRowData>[] = [
@@ -137,13 +139,17 @@ export const SurveyBlocksTable = (props: ISurveyBlocksTableProps) => {
       headerName: 'Name',
       flex: 1
     },
-
     {
       field: 'description',
       headerName: 'Description',
       flex: 1
     },
-
+    {
+      field: 'sample_block_count',
+      headerName: 'Sampling Sites',
+      description: 'The number of sites in the cluster',
+      flex: 1
+    },
     {
       field: 'actions',
       type: 'actions',
@@ -154,7 +160,7 @@ export const SurveyBlocksTable = (props: ISurveyBlocksTableProps) => {
         return (
           <IconButton
             onClick={(event) => {
-              setActionMenuAnchorEl({ anchorEl: event.currentTarget, sampleSiteId: params.row.id });
+              setActionMenuAnchorEl({ anchorEl: event.currentTarget, surveyBlockId: params.row.id });
             }}>
             <Icon path={mdiDotsVertical} size={1} />
           </IconButton>
@@ -188,7 +194,7 @@ export const SurveyBlocksTable = (props: ISurveyBlocksTableProps) => {
             }
           }}>
           <RouterLink
-            to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling/${actionMenuAnchorEl?.sampleSiteId}/edit`}>
+            to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling/block/${actionMenuAnchorEl?.surveyBlockId}/edit`}>
             <ListItemIcon>
               <Icon path={mdiPencilOutline} size={1} />
             </ListItemIcon>

@@ -1,4 +1,4 @@
-import { mdiChevronDown, mdiMapMarker, mdiPlus, mdiShapePlus, mdiViewGridPlus } from '@mdi/js';
+import { mdiChevronDown, mdiMapMarker, mdiPlus, mdiViewGridPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -24,7 +24,7 @@ import { Link as RouterLink } from 'react-router-dom';
 import { SamplingSiteTabsContainer } from './table/SamplingSiteTabsContainer';
 
 /**
- * Component for managing sampling sites, methods, and periods.
+ * Component for managing sampling sites and survey blocks.
  * Returns a map and data grids displaying sampling information.
  *
  * @returns {*}
@@ -63,12 +63,7 @@ const SamplingSiteContainer = () => {
     {
       label: 'Cluster',
       icon: mdiViewGridPlus,
-      to: `/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling/blocks/create`
-    },
-    {
-      label: 'Strata',
-      icon: mdiShapePlus,
-      to: `/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling/strata/create`
+      to: `/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling/block/create`
     }
   ];
 

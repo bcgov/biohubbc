@@ -3,11 +3,11 @@ import { Icon } from '@mdi/react';
 import Button from '@mui/material/Button';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
-import { SetStateAction } from 'react';
 
 export enum SamplingSiteManageTableView {
   SITES = 'SITES',
   CLUSTER = 'CLUSTERS',
+  // TODO: Add strata tab showing a table of strata in survey
   STRATA = 'STRATA'
 }
 
@@ -20,11 +20,11 @@ export type ISamplingSiteCount = Record<SamplingSiteManageTableView, number>;
 
 interface ISamplingSiteTableViewProps {
   activeView: SamplingSiteManageTableView;
-  setActiveView: React.Dispatch<SetStateAction<SamplingSiteManageTableView>>;
+  setActiveView: (view: SamplingSiteManageTableView) => void;
 }
 
 /**
- * Renders tab controls for the sampling site table, which allow the user to switch between viewing sites and periods.
+ * Renders tab controls for the sampling site table, which allow the user to switch between viewing sites and blocks.
  *
  * @param {ISamplingSiteTableViewProps} props
  * @return {*}

@@ -36,7 +36,7 @@ import { SurveyUserJobFormInitialValues } from './components/participants/Survey
 import { SurveySiteSelectionInitialValues } from './components/sampling-strategy/SurveySiteSelectionForm';
 import { SpeciesInitialValues } from './components/species/SpeciesForm';
 import EditSurveyForm from './edit/EditSurveyForm';
-import { SurveyBlockInitialValues } from './sampling-information/blocks/form/map/BlocksMapForm';
+import { SurveyBlockInitialValues } from './sampling-information/blocks/form/create/CreateBlocksMapForm';
 
 export const defaultSurveyDataFormValues: ICreateSurveyRequest & ISurveyPermitForm & ISurveyFundingSourceForm = {
   ...GeneralInformationInitialValues,

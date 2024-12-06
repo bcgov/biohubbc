@@ -31,9 +31,13 @@ export const SurveyBlockRecord = z.object({
 export type SurveyBlockRecord = z.infer<typeof SurveyBlockRecord>;
 
 // This describes the a row in the database for Survey Block
-export const SurveyBlockNonSpatial = SurveyBlockRecord.extend({
+export const SurveyBlockWithCount = SurveyBlockRecord.extend({
   sample_block_count: z.number()
-}).omit({ geojson: true });
+});
+export type SurveyBlockWithCount = z.infer<typeof SurveyBlockWithCount>;
+
+// This describes the a row in the database for Survey Block
+export const SurveyBlockNonSpatial = SurveyBlockWithCount.omit({ geojson: true });
 export type SurveyBlockNonSpatial = z.infer<typeof SurveyBlockNonSpatial>;
 
 /**
@@ -44,6 +48,37 @@ export type SurveyBlockNonSpatial = z.infer<typeof SurveyBlockNonSpatial>;
  * @extends {BaseRepository}
  */
 export class SurveyBlockRepository extends BaseRepository {
+  /**
+   * Gets a specific survey block by its id
+   *
+   * @param {number} surveyId
+   * @param {number} surveyBlockId
+   * @return {*}  {Promise<SurveyBlockRecord>}
+   * @memberof SurveyBlockRepository
+   */
+  async getSurveyBlockById(surveyId: number, surveyBlockId: number): Promise<SurveyBlockRecord> {
+    const knex = getKnex();
+
+    const queryBuilder = knex('survey_block as sb')
+      .select([
+        'sb.survey_block_id',
+        'sb.survey_id',
+        'sb.name',
+        'sb.description',
+        'sb.geojson',
+        'sb.revision_count',
+        knex.raw('COUNT(ssb.survey_block_id)::integer AS sample_block_count')
+      ])
+      .leftJoin('survey_sample_block as ssb', 'sb.survey_block_id', 'ssb.survey_block_id')
+      .where('sb.survey_id', surveyId)
+      .where('sb.survey_block_id', surveyBlockId)
+      .groupBy('sb.survey_block_id', 'sb.survey_id', 'sb.name', 'sb.description', 'sb.geojson', 'sb.revision_count');
+
+    const response = await this.connection.knex(queryBuilder, SurveyBlockWithCount);
+
+    return response.rows[0];
+  }
+
   /**
    * Gets all Survey Block Records for a given survey id.
    *
@@ -234,22 +269,27 @@ export class SurveyBlockRepository extends BaseRepository {
   /**
    * Deletes a survey block record.
    *
+   * @param {number} surveyId
    * @param {number} surveyBlockId
    * @return {*}  {Promise<SurveyBlockRecord>}
    * @memberof SurveyBlockRepository
    */
-  async deleteSurveyBlockRecord(surveyBlockId: number): Promise<SurveyBlockRecord> {
+  async deleteSurveyBlockRecord(surveyId: number, surveyBlockId: number): Promise<SurveyBlockRecord> {
     const sqlStatement = SQL`
       DELETE FROM
-        survey_block
+        survey_block sb
+      USING
+        survey s
       WHERE
-        survey_block_id = ${surveyBlockId}
+        sb.survey_block_id = ${surveyBlockId}
+        AND sb.survey_id = s.survey_id
+        AND sb.survey_id = ${surveyId}
       RETURNING
-        survey_block_id,
-        survey_id,
-        name,
-        description,
-        revision_count;
+        sb.survey_block_id,
+        sb.survey_id,
+        sb.name,
+        sb.description,
+        sb.revision_count;
     `;
 
     const response = await this.connection.sql(sqlStatement, SurveyBlockRecord);

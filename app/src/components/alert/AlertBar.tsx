@@ -5,7 +5,7 @@ interface IAlertBarProps extends AlertProps {
   severity: 'error' | 'warning' | 'info' | 'success';
   variant: 'filled' | 'outlined' | 'standard';
   title: string;
-  text: string | JSX.Element;
+  text?: string | JSX.Element;
 }
 
 /**

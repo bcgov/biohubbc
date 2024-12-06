@@ -9,8 +9,8 @@ import { useFormikContext } from 'formik';
 import { useSurveyContext } from 'hooks/useContext';
 import { useHistory } from 'react-router';
 import yup from 'utils/YupSchema';
-import { ICreateBlockFormData } from '../create/CreateBlocksPage';
-import BlocksMapForm from './map/BlocksMapForm';
+import { ICreateBlockFormData } from '../../create/CreateBlockPage';
+import BlocksMapForm from './CreateBlocksMapForm';
 
 export const BlocksFormYupSchema = yup.object({
   blocks: yup
@@ -19,25 +19,33 @@ export const BlocksFormYupSchema = yup.object({
         survey_block_id: yup.number().nullable(),
         name: yup.string().required('Name is required'),
         description: yup.string().nullable(),
-        geojson: yup.object().required('A location is required')
+        geojson: yup.object().nullable()
       })
     )
     .min(1, 'At least one block is required')
     .required('Blocks are required')
+    .test('unique-names', 'Blocks must have unique names', (blocks) => {
+      if (!blocks || !blocks.length) {
+        return true;
+      }
+      const names = blocks.map((block) => block.name);
+      return new Set(names).size === names.length;
+    })
 });
 
-interface IBlocksFormProps {
+interface ICreateBlocksFormProps {
   isSubmitting: boolean;
+  clusterCount?: number;
 }
 
 /**
- * Renders sampling site create form.
+ * Renders block create form.
  *
- * @param {IBlocksFormProps} props
+ * @param {ICreateBlocksFormProps} props
  * @returns {*}
  */
-const BlocksForm = (props: IBlocksFormProps) => {
-  const { isSubmitting } = props;
+const CreateBlocksForm = (props: ICreateBlocksFormProps) => {
+  const { isSubmitting, clusterCount } = props;
 
   const history = useHistory();
   const { submitForm } = useFormikContext<ICreateBlockFormData>();
@@ -48,7 +56,7 @@ const BlocksForm = (props: IBlocksFormProps) => {
     <Container maxWidth="xl" sx={{ py: 3 }}>
       <Paper sx={{ p: 5 }}>
         <HorizontalSplitFormComponent title="Clusters" summary="Import or draw clusters">
-          <BlocksMapForm />
+          <BlocksMapForm clusterCount={clusterCount} />
         </HorizontalSplitFormComponent>
 
         <Divider sx={{ my: 5 }} />
@@ -80,4 +88,4 @@ const BlocksForm = (props: IBlocksFormProps) => {
   );
 };
 
-export default BlocksForm;
+export default CreateBlocksForm;

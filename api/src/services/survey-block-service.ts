@@ -18,6 +18,18 @@ export class SurveyBlockService extends DBService {
   }
 
   /**
+   * Gets a survey block by its id
+   *
+   * @param {number} surveyId
+   * @param {number} surveyBlockId
+   * @return {*} {Promise<SurveyBlockRecordWithCount[]>}
+   * @returns
+   */
+  async getSurveyBlockById(surveyId: number, surveyBlockId: number): Promise<SurveyBlockRecord> {
+    return this.surveyBlockRepository.getSurveyBlockById(surveyId, surveyBlockId);
+  }
+
+  /**
    * Gets Block Survey Records for a given survey id
    *
    * @param {number} surveyId
@@ -54,17 +66,18 @@ export class SurveyBlockService extends DBService {
   /**
    *  Deletes a survey block record.
    *
+   * @param {number} surveyId
    * @param {number} surveyBlockId
    * @return {*}  {Promise<SurveyBlockRecord>}
    * @memberof SurveyBlockService
    */
-  async deleteSurveyBlock(surveyBlockId: number): Promise<SurveyBlockRecord> {
+  async deleteSurveyBlock(surveyId: number, surveyBlockId: number): Promise<SurveyBlockRecord> {
     const sampleBlockService = new SampleBlockService(this.connection);
 
-    // When a Survey Block is deleted, also delete its associations to sampling sites to avoid orphaned Sample Block records
-    await sampleBlockService.deleteSampleBlockRecordsByBlockIds([surveyBlockId]);
+    // When a Survey Block is deleted, also delete its associations to sampling sites
+    await sampleBlockService.deleteSampleBlockRecordsByBlockIds(surveyId, [surveyBlockId]);
 
-    return this.surveyBlockRepository.deleteSurveyBlockRecord(surveyBlockId);
+    return this.surveyBlockRepository.deleteSurveyBlockRecord(surveyId, surveyBlockId);
   }
 
   /**
@@ -94,10 +107,9 @@ export class SurveyBlockService extends DBService {
    * @return {*} {Promise<void>}
    * @memberof SurveyBlockService
    */
-  async updateSurveyBlocks(surveyId: number, blocks: PostSurveyBlock[]): Promise<void> {
+  async upsertSurveyBlocks(surveyId: number, blocks: PostSurveyBlock[]): Promise<void> {
     const promises: Promise<any>[] = [];
 
-    // update or insert block data
     blocks.forEach((item: PostSurveyBlock) => {
       item.survey_id = surveyId;
       if (item.survey_block_id) {

@@ -17,7 +17,7 @@ import {
   makePaginationResponse
 } from '../../../../../../utils/pagination';
 
-const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/blocks');
+const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/block');
 
 export const POST: Operation = [
   authorizeRequestHandler((req) => {
@@ -39,7 +39,7 @@ export const POST: Operation = [
 ];
 
 POST.apiDoc = {
-  description: 'Insert new survey sample site record.',
+  description: 'Insert new survey Survey block record.',
   tags: ['project', 'survey'],
   security: [
     {
@@ -87,7 +87,7 @@ POST.apiDoc = {
   },
   responses: {
     201: {
-      description: 'Sample site added OK.'
+      description: 'Survey block added OK.'
     },
     400: {
       $ref: '#/components/responses/400'
@@ -190,7 +190,7 @@ GET.apiDoc = {
       schema: {
         type: 'string',
         description:
-          'A keyword to search for in the sample site name or description. If provided, pagination will be ignored.'
+          'A keyword to search for in the Survey block name or description. If provided, pagination will be ignored.'
       },
       required: false
     },
