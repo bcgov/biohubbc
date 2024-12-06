@@ -25,7 +25,7 @@ const identitySources = ['IDIR', 'BCEIDBUSINESS', 'BCEIDBASIC'];
 
 /**
  * Add spatial transform
- *
+ *a
  * @export
  * @param {Knex} knex
  * @return {*}  {Promise<void>}
@@ -52,7 +52,7 @@ export async function seed(knex: Knex): Promise<void> {
   }
 
   // Insert system alerts
-  for (let i = 0; i < 8; i++) {
+  for (let i = 0; i < 50; i++) {
     await knex.raw(`${insertSystemAlert()}`);
   }
 
