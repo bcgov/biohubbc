@@ -160,7 +160,7 @@ const TelemetryListContainer = (props: IAllTelemetryListContainerProps) => {
         <Divider />
       </Collapse>
 
-      <Box height="100vh" maxHeight="800px" p={2}>
+      <Box height="100vh" maxHeight="800px">
         <LoadingGuard
           isLoading={telemetryDataLoader.isLoading || !telemetryDataLoader.isReady}
           isLoadingFallback={<SkeletonTable />}
