@@ -190,6 +190,7 @@ export const SurveySpatialObservationTable = () => {
         rowSelection={false}
         autoHeight={false}
         checkboxSelection={false}
+        disableRowSelectionOnClick
         disableColumnSelector
         disableColumnFilter
         disableColumnMenu

@@ -1,13 +1,10 @@
 import { mdiCancel, mdiCheck, mdiExclamationThick } from '@mdi/js';
-import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
-import ToggleButton from '@mui/material/ToggleButton';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup/ToggleButtonGroup';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import CustomToggleButtonGroup from 'components/toolbar/CustomToggleButtonGroup';
 import { IGetAccessRequestsListResponse } from 'interfaces/useAdminApi.interface';
 import { useState } from 'react';
 import AccessRequestActionedList from './list/actioned/AccessRequestActionedList';
@@ -34,15 +31,15 @@ const AccessRequestContainer = (props: IAccessRequestContainerProps) => {
 
   const [activeView, setActiveView] = useState<AccessRequestViewEnum>(AccessRequestViewEnum.PENDING);
 
-  const views = [
-    { value: AccessRequestViewEnum.PENDING, label: 'Pending', icon: mdiExclamationThick },
-    { value: AccessRequestViewEnum.ACTIONED, label: 'Approved', icon: mdiCheck },
-    { value: AccessRequestViewEnum.REJECTED, label: 'Rejected', icon: mdiCancel }
-  ];
-
   const pendingRequests = accessRequests.filter((request) => request.status_name === 'Pending');
   const actionedRequests = accessRequests.filter((request) => request.status_name === 'Actioned');
   const rejectedRequests = accessRequests.filter((request) => request.status_name === 'Rejected');
+
+  const views = [
+    { value: AccessRequestViewEnum.PENDING, label: `Pending (${pendingRequests.length})`, icon: mdiExclamationThick },
+    { value: AccessRequestViewEnum.ACTIONED, label: `Approved (${actionedRequests.length})`, icon: mdiCheck },
+    { value: AccessRequestViewEnum.REJECTED, label: `Rejected (${rejectedRequests.length})`, icon: mdiCancel }
+  ];
 
   return (
     <Paper>
@@ -53,58 +50,17 @@ const AccessRequestContainer = (props: IAccessRequestContainerProps) => {
       </Toolbar>
       <Divider />
       <Box p={2} display="flex" justifyContent="space-between">
-        <ToggleButtonGroup
-          value={activeView}
-          onChange={(_, view) => {
-            if (!view) {
-              // An active view must be selected at all times
-              return;
-            }
-
+        <CustomToggleButtonGroup
+          views={views}
+          activeView={activeView}
+          onViewChange={(view) => {
             setActiveView(view);
           }}
-          exclusive
-          sx={{
-            width: '100%',
-            gap: 1,
-            '& Button': {
-              py: 0.5,
-              px: 1.5,
-              border: 'none !important',
-              fontWeight: 700,
-              borderRadius: '4px !important',
-              fontSize: '0.875rem',
-              letterSpacing: '0.02rem'
-            }
-          }}>
-          {views.map((view) => {
-            const getCount = () => {
-              switch (view.value) {
-                case AccessRequestViewEnum.PENDING:
-                  return pendingRequests.length;
-                case AccessRequestViewEnum.ACTIONED:
-                  return actionedRequests.length;
-                case AccessRequestViewEnum.REJECTED:
-                  return rejectedRequests.length;
-                default:
-                  return 0;
-              }
-            };
-            return (
-              <ToggleButton
-                key={view.value}
-                value={view.value}
-                component={Button}
-                color="primary"
-                startIcon={<Icon path={view.icon} size={0.75} />}>
-                {view.label} ({getCount()})
-              </ToggleButton>
-            );
-          })}
-        </ToggleButtonGroup>
+          orientation="horizontal"
+        />
       </Box>
       <Divider />
-      <Box p={2}>
+      <Box>
         {activeView === AccessRequestViewEnum.PENDING && (
           <AccessRequestPendingList accessRequests={pendingRequests} refresh={refresh} />
         )}
