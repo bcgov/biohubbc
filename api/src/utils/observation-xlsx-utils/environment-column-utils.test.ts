@@ -191,7 +191,7 @@ describe('environment-column-utils', () => {
               {
                 environment_qualitative_id: '22-123-456',
                 environment_qualitative_option_id: '33-123-456',
-                name: 'Low',
+                name: 'Low'.toLowerCase(),
                 description: 'Low'
               }
             ]
@@ -207,7 +207,7 @@ describe('environment-column-utils', () => {
               {
                 environment_qualitative_id: '44-123-456',
                 environment_qualitative_option_id: '55-123-456',
-                name: 'North',
+                name: 'North'.toLowerCase(),
                 description: 'North'
               }
             ]
@@ -270,6 +270,7 @@ describe('environment-column-utils', () => {
           value: 100
         }
       ];
+
       const environmentNameTypeDefinitionMap: EnvironmentNameTypeDefinitionMap = new Map([
         [
           'Wind Speed',
@@ -281,7 +282,8 @@ describe('environment-column-utils', () => {
               {
                 environment_qualitative_id: '22-123-456',
                 environment_qualitative_option_id: '33-123-456',
-                name: 'Low',
+                // Name is made lowercase at this point in the code
+                name: 'low',
                 description: 'Low'
               }
             ]
@@ -330,7 +332,8 @@ describe('environment-column-utils', () => {
               {
                 environment_qualitative_id: '22-123-456',
                 environment_qualitative_option_id: '33-123-456',
-                name: 'Low',
+                // Name is made lowercase at this point in the code
+                name: 'low',
                 description: 'Low'
               }
             ]
