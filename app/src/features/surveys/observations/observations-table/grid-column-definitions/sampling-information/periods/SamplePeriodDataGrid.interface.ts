@@ -1,4 +1,4 @@
-import { IGetSamplePeriodRecord } from 'interfaces/useSamplingSiteApi.interface';
+import { IGetSamplePeriodRecord } from 'interfaces/usePeriodApi.interface';
 
 export interface IAutocompleteDataGridSamplePeriodOption extends IGetSamplePeriodRecord {
   value: number;

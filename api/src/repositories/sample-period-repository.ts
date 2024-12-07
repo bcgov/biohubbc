@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { SurveySamplePeriodModel, SurveySamplePeriodRecord } from '../database-models/survey_sample_period';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
+import { SurveySamplePeriodDetails } from '../models/sample-period';
 import { BaseRepository } from './base-repository';
 
 /**
@@ -112,6 +113,57 @@ export class SamplePeriodRepository extends BaseRepository {
       throw new ApiExecuteSQLError('Failed to get sample period hierarchy ids', [
         'SamplePeriodRepository->getSamplePeriodHierarchyIds',
         'rowCount was != 1, expected rowCount = 1'
+      ]);
+    }
+
+    return response.rows[0];
+  }
+
+  /**
+   * Gets a sample period record by its ID
+   *
+   * @param {number} surveyId
+   * @param {number} surveySamplePeriodId
+   * @return {*}  {Promise<SurveySamplePeriodDetail>}
+   * @memberof SampleLocationService
+   */
+  async getSurveySamplePeriodById(surveyId: number, surveySamplePeriodId: number): Promise<SurveySamplePeriodDetails> {
+    const sqlStatement = SQL`
+      SELECT
+        ssp.survey_sample_period_id,
+        ssp.survey_sample_method_id,
+        ssp.start_date,
+        ssp.end_date,
+        ssp.start_time,
+        ssp.end_time,
+        jsonb_build_object(
+          'survey_sample_site_id', sss.survey_sample_site_id,
+          'name', sss.name
+        ) AS survey_sample_site,
+        jsonb_build_object(
+          'method_technique_id', mt.method_technique_id,
+          'name', mt.name,
+          'description', mt.description
+        ) AS method_technique
+      FROM
+        survey_sample_period AS ssp
+      JOIN
+        survey_sample_method AS ssm ON ssm.survey_sample_method_id = ssp.survey_sample_method_id
+      JOIN
+        method_technique AS mt ON mt.method_technique_id = ssm.method_technique_id
+      JOIN
+        survey_sample_site AS sss ON sss.survey_sample_site_id = ssm.survey_sample_site_id
+      WHERE
+        sss.survey_id = ${surveyId}
+        AND ssp.survey_sample_period_id = ${surveySamplePeriodId};
+    `;
+
+    const response = await this.connection.sql(sqlStatement, SurveySamplePeriodDetails);
+
+    if (!response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to get sample period by ID', [
+        'SampleLocationRepository->getSurveySamplePeriodById',
+        'rowCount was < 1, expected rowCount > 0'
       ]);
     }
 

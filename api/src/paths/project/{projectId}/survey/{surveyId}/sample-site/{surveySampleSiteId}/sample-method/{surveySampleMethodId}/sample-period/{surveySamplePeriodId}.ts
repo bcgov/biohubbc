@@ -93,16 +93,44 @@ PUT.apiDoc = {
         schema: {
           type: 'object',
           additionalProperties: false,
+          required: ['method_technique_id', 'sample_period'],
           properties: {
-            samplePeriod: {
+            method_technique_id: {
+              type: 'integer',
+              description: 'Primary key of the period',
+              nullable: true
+            },
+            sample_period: {
               type: 'object',
-              additionalProperties: false,
+              required: ['start_date', 'end_date', 'survey_sample_period_id'],
               properties: {
+                survey_sample_period_id: {
+                  type: 'integer',
+                  description: 'Primary key of the period',
+                  nullable: true
+                },
+                survey_sample_method_id: {
+                  type: 'integer',
+                  description: 'Primary key of the method that the period belongs to',
+                  nullable: true
+                },
                 start_date: {
-                  type: 'string'
+                  type: 'string',
+                  description: 'Start date of the period'
+                },
+                start_time: {
+                  type: 'string',
+                  description: 'Start time of the period',
+                  nullable: true
                 },
                 end_date: {
-                  type: 'string'
+                  type: 'string',
+                  description: 'End date of the period'
+                },
+                end_time: {
+                  type: 'string',
+                  description: 'End time of the period',
+                  nullable: true
                 }
               }
             }
@@ -135,33 +163,18 @@ PUT.apiDoc = {
 
 export function updateSurveySamplePeriod(): RequestHandler {
   return async (req, res) => {
-    if (!req.params.surveySampleMethodId) {
-      throw new HTTP400('Missing required param `surveySampleMethodId`');
-    }
-
-    if (!req.params.surveySamplePeriodId) {
-      throw new HTTP400('Missing required param `surveySamplePeriodId`');
-    }
-
-    if (!req.body.samplePeriod) {
-      throw new HTTP400('Missing required body param `samplePeriod`');
-    }
-
     const surveyId = Number(req.params.surveyId);
     const connection = getDBConnection(req.keycloak_token);
 
     try {
-      const samplePeriod: UpdateSamplePeriodRecord = {
-        ...req.body.samplePeriod,
-        survey_sample_method_id: Number(req.params.surveySampleMethodId),
-        survey_sample_period_id: Number(req.params.surveySamplePeriodId)
-      };
+      const samplePeriod = req.body.sample_period as UpdateSamplePeriodRecord;
+      const method_technique_id = Number(req.body.method_technique_id);
 
       await connection.open();
 
       const samplePeriodService = new SamplePeriodService(connection);
 
-      await samplePeriodService.updateSamplePeriod(surveyId, samplePeriod);
+      await samplePeriodService.updateSamplePeriod(surveyId, { sample_period: samplePeriod, method_technique_id });
 
       await connection.commit();
 

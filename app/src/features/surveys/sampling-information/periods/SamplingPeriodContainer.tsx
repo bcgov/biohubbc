@@ -1,4 +1,4 @@
-import { mdiDotsVertical, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
+import { mdiArrowTopRight, mdiDotsVertical, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -15,6 +15,7 @@ import { GridPaginationModel, GridRowSelectionModel, GridSortModel } from '@mui/
 import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
+import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { SamplePeriodI18N } from 'constants/i18n';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useSurveyContext } from 'hooks/useContext';
@@ -43,7 +44,7 @@ export const SamplingPeriodContainer = () => {
   const [bulkActionMenuAnchorEl, setBulkActionMenuAnchorEl] = useState<MenuProps['anchorEl']>(null);
 
   const periodsDataLoader = useDataLoader((pagination: ApiPaginationRequestOptions) =>
-    biohubApi.samplingSite.findSamplePeriods({ survey_id: surveyContext.surveyId }, pagination)
+    biohubApi.period.findSamplePeriods({ survey_id: surveyContext.surveyId }, pagination)
   );
 
   const [periodsPaginationModel, setPeriodsPaginationModel] = useState<GridPaginationModel>({
@@ -64,7 +65,7 @@ export const SamplingPeriodContainer = () => {
   }, [periodsSortModel, periodsPaginationModel]);
 
   const handleBulkDeletePeriods = async () => {
-    await biohubApi.samplingSite
+    await biohubApi.period
       .deleteSamplePeriods(surveyContext.projectId, surveyContext.surveyId, selectedRows.map(Number))
       .then(() => {
         dialogContext.setYesNoDialog({ open: false });
@@ -93,14 +94,14 @@ export const SamplingPeriodContainer = () => {
   };
 
   const handleDelete = async (periodId: number) => {
-    await biohubApi.samplingSite.deleteSamplePeriods(surveyContext.projectId, surveyContext.surveyId, [periodId]);
+    await biohubApi.period.deleteSamplePeriods(surveyContext.projectId, surveyContext.surveyId, [periodId]);
     periodsDataLoader.refresh(periodsPagination);
   };
 
   const deleteBulkPeriodsDialog = () => {
     dialogContext.setYesNoDialog({
       dialogTitle: SamplePeriodI18N.bulkDeleteSamplePeriodTitle,
-      dialogText: SamplePeriodI18N.bulkDeleteSamplePeriodErrorText,
+      dialogText: SamplePeriodI18N.bulkDeleteSamplePeriodText,
       yesButtonLabel: 'Yes',
       noButtonLabel: 'No',
       yesButtonProps: { color: 'error' },
@@ -190,7 +191,7 @@ export const SamplingPeriodContainer = () => {
             variant="contained"
             color="primary"
             component={RouterLink}
-            to={'sampling/periods/create'}
+            to={'sampling/period/create'}
             startIcon={<Icon path={mdiPlus} size={0.8} />}>
             Add
           </Button>
@@ -210,12 +211,21 @@ export const SamplingPeriodContainer = () => {
 
       <Divider flexItem />
 
-      <LoadingGuard
-        isLoading={!periodsDataLoader.data && (periodsDataLoader.isLoading || !periodsDataLoader.isReady)}
-        isLoadingFallback={<SkeletonTable />}
-        isLoadingFallbackDelay={100}
-        hasNoData={!periods.length}>
-        <Box height="400px">
+      <Box height="400px">
+        <LoadingGuard
+          isLoading={!periodsDataLoader.data && (periodsDataLoader.isLoading || !periodsDataLoader.isReady)}
+          isLoadingFallback={<SkeletonTable />}
+          isLoadingFallbackDelay={100}
+          hasNoData={!periods.length}
+          hasNoDataFallback={
+            <NoDataOverlay
+              height="100%"
+              width="100%"
+              title="Add Periods"
+              subtitle="Add periods to indicate when you did a technique at a site"
+              icon={mdiArrowTopRight}
+            />
+          }>
           <SamplingPeriodTable
             periods={rows}
             paginationModel={periodsPaginationModel}
@@ -228,8 +238,8 @@ export const SamplingPeriodContainer = () => {
             setSelectedRows={setSelectedRows}
             onDelete={handleDelete}
           />
-        </Box>
-      </LoadingGuard>
+        </LoadingGuard>
+      </Box>
     </Stack>
   );
 };

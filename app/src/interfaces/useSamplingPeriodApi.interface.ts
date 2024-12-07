@@ -1,4 +1,4 @@
-import { ISurveySampleMethodPeriodData } from 'features/surveys/sampling-information/periods/form/sites/periods/SamplePeriodPeriodForm';
+import { ISurveySampleMethodPeriodData } from 'features/surveys/sampling-information/periods/form/components/sites/periods/SamplePeriodPeriodForm';
 
 export interface ICreateSamplingPeriodSite {
   survey_sample_site_id: number;
@@ -9,4 +9,9 @@ export interface ICreateSamplingPeriodSite {
 export interface ICreateSamplingPeriodRequest {
   method_technique_id: number;
   sample_sites: ICreateSamplingPeriodSite[];
+}
+
+export interface IUpdateSamplingPeriodRequest {
+  method_technique_id: number;
+  sample_period: ISurveySampleMethodPeriodData;
 }

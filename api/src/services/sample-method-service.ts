@@ -1,6 +1,7 @@
 import { SurveySampleMethodModel } from '../database-models/survey_sample_method';
 import { IDBConnection } from '../database/db';
 import { HTTP409 } from '../errors/http-error';
+import { UpdateSampleMethodObject } from '../models/sample-period';
 import {
   InsertSampleMethodRecord,
   SampleMethodRepository,
@@ -177,34 +178,7 @@ export class SampleMethodService extends DBService {
    * @return {*}  {Promise<SurveySampleMethodModel>}
    * @memberof SampleMethodService
    */
-  async updateSampleMethod(surveyId: number, sampleMethod: UpdateSampleMethodRecord): Promise<SurveySampleMethodModel> {
-    const samplePeriodService = new SamplePeriodService(this.connection);
-
-    // Check for any sample periods to delete
-    await samplePeriodService.deleteSamplePeriodsNotInArray(
-      surveyId,
-      sampleMethod.survey_sample_method_id,
-      sampleMethod.sample_periods
-    );
-
-    // Loop through all new sample periods
-    // For each sample period, check if it exists in the existing list
-    // If it does, update it, otherwise create it
-    for (const samplePeriod of sampleMethod.sample_periods) {
-      if (samplePeriod.survey_sample_period_id) {
-        await samplePeriodService.updateSamplePeriod(surveyId, samplePeriod);
-      } else {
-        const newSamplePeriod = {
-          survey_sample_method_id: sampleMethod.survey_sample_method_id,
-          start_date: samplePeriod.start_date,
-          end_date: samplePeriod.end_date,
-          start_time: samplePeriod.start_time,
-          end_time: samplePeriod.end_time
-        };
-        await samplePeriodService.insertSamplePeriod(newSamplePeriod);
-      }
-    }
-
+  async updateSampleMethod(surveyId: number, sampleMethod: UpdateSampleMethodObject): Promise<SurveySampleMethodModel> {
     return this.sampleMethodRepository.updateSampleMethod(surveyId, sampleMethod);
   }
 }

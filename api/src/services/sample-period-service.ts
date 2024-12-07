@@ -1,6 +1,7 @@
-import { SurveySamplePeriodModel } from '../database-models/survey_sample_period';
+import { SurveySamplePeriodModel, SurveySamplePeriodRecord } from '../database-models/survey_sample_period';
 import { IDBConnection } from '../database/db';
 import { HTTP409 } from '../errors/http-error';
+import { UpdateSamplePeriodObject } from '../models/sample-period';
 import {
   InsertSamplePeriodRecord,
   SamplePeriodHierarchyIds,
@@ -56,6 +57,18 @@ export class SamplePeriodService extends DBService {
   }
 
   /**
+   * Gets a survey sample period by its id
+   *
+   * @param {number} surveyId
+   * @param {number} surveySamplePeriodId
+   * @return {*}  {Promise<SurveySamplePeriodRecord>}
+   * @memberof SamplePeriodService
+   */
+  async getSamplePeriodById(surveyId: number, surveySamplePeriodId: number): Promise<SurveySamplePeriodRecord> {
+    return this.samplePeriodRepository.getSurveySamplePeriodById(surveyId, surveySamplePeriodId);
+  }
+
+  /**
    * Deletes a survey Sample Period.
    *
    * @param {number} surveyId
@@ -90,14 +103,20 @@ export class SamplePeriodService extends DBService {
   }
 
   /**
-   * updates a survey Sample Period.
+   * Updates a survey Sample Period.
    *
-   * @param {UpdateSamplePeriodRecord} samplePeriod
+   * @param {UpdateSamplePeriodObject} samplePeriod
    * @return {*}  {Promise<SurveySamplePeriodModel>}
    * @memberof SamplePeriodService
    */
-  async updateSamplePeriod(surveyId: number, samplePeriod: UpdateSamplePeriodRecord): Promise<SurveySamplePeriodModel> {
-    return this.samplePeriodRepository.updateSamplePeriod(surveyId, samplePeriod);
+  async updateSamplePeriod(surveyId: number, data: UpdateSamplePeriodObject): Promise<SurveySamplePeriodModel> {
+    // Update the sample method
+    this.sampleMethodService.updateSampleMethod(surveyId, {
+      survey_sample_method_id: data.sample_period.survey_sample_method_id,
+      method_technique_id: data.method_technique_id
+    });
+
+    return this.samplePeriodRepository.updateSamplePeriod(surveyId, data.sample_period);
   }
 
   /**

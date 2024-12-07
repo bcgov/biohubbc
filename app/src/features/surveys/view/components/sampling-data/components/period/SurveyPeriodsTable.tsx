@@ -4,7 +4,7 @@ import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import dayjs from 'dayjs';
 import { useCodesContext } from 'hooks/useContext';
-import { IFindSamplePeriodRecord } from 'interfaces/useSamplingSiteApi.interface';
+import { IFindSamplePeriodRecord } from 'interfaces/usePeriodApi.interface';
 import { useEffect } from 'react';
 import { formatTimeDifference } from 'utils/datetime';
 import { getCodesName } from 'utils/Utils';

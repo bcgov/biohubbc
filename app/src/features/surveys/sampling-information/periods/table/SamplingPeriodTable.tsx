@@ -12,14 +12,13 @@ import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import { DeleteTechniqueI18N } from 'constants/i18n';
+import { SamplePeriodI18N } from 'constants/i18n';
 import dayjs from 'dayjs';
-import { useCodesContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
-import { IFindSamplePeriodRecord } from 'interfaces/useSamplingSiteApi.interface';
+import { useDialogContext, useSurveyContext } from 'hooks/useContext';
+import { IFindSamplePeriodRecord } from 'interfaces/usePeriodApi.interface';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { formatTimeDifference } from 'utils/datetime';
-import { getCodesName } from 'utils/Utils';
 
 export interface ISamplingSitePeriodRowData {
   survey_sample_period_id: number;
@@ -33,9 +32,7 @@ export interface ISamplingSitePeriodRowData {
 }
 
 interface ISamplingPeriodTableProps {
-  periods: IFindSamplePeriodRecord[];
-  selectedRows: GridRowSelectionModel;
-  setSelectedRows: (selection: GridRowSelectionModel) => void;
+  periods: ISamplingSitePeriodRowData[];
   paginationModel: GridPaginationModel;
   setPaginationModel: React.Dispatch<React.SetStateAction<GridPaginationModel>>;
   sortModel: GridSortModel;
@@ -45,7 +42,6 @@ interface ISamplingPeriodTableProps {
   // Used for when rows can be selected, which is only the case on the Manage Sampling Information page (not the Survey page)
   selectedRows?: GridRowSelectionModel;
   setSelectedRows?: (selection: GridRowSelectionModel) => void;
-  pageSizeOptions: number[];
   onDelete?: (techniqueId: number) => Promise<void>;
 }
 
@@ -75,7 +71,6 @@ export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
     periodId: number;
   } | null>(null);
 
-  const codesContext = useCodesContext();
   const dialogContext = useDialogContext();
   const { surveyId, projectId } = useSurveyContext();
 
@@ -113,15 +108,15 @@ export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
   };
 
   /**
-   * Display the delete technique dialog.
+   * Display the delete period dialog.
    *
    */
   const deletePeriodDialog = () => {
     dialogContext.setYesNoDialog({
-      dialogTitle: DeleteTechniqueI18N.deleteTitle,
-      dialogText: DeleteTechniqueI18N.deleteText,
-      yesButtonLabel: DeleteTechniqueI18N.yesButtonLabel,
-      noButtonLabel: DeleteTechniqueI18N.noButtonLabel,
+      dialogTitle: SamplePeriodI18N.deleteSamplePeriodTitle,
+      dialogText: SamplePeriodI18N.deleteSamplePeriodText,
+      yesButtonLabel: SamplePeriodI18N.deleteSamplePeriodYesButtonLabel,
+      noButtonLabel: SamplePeriodI18N.deleteSamplePeriodNoButtonLabel,
       yesButtonProps: { color: 'error' },
       onClose: () => {
         dialogContext.setYesNoDialog({ open: false });
@@ -155,32 +150,12 @@ export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
     {
       field: 'sample_site',
       headerName: 'Site',
-      flex: 1,
-      valueGetter: (params) => {
-        return params.row.sample_site.name;
-      }
+      flex: 1
     },
     {
       field: 'sample_method',
       headerName: 'Technique',
-      flex: 1,
-      valueGetter: (params) => {
-        return params.row.method_technique.name;
-      }
-    },
-    {
-      field: 'method_response_metric_id',
-      headerName: 'Response Metric',
-      flex: 1,
-      valueGetter: (params) => {
-        const value = getCodesName(
-          codesContext.codesDataLoader.data,
-          'method_response_metrics',
-          params.row.sample_method.method_response_metric_id
-        );
-
-        return value;
-      }
+      flex: 1
     },
     {
       field: 'start_date',
@@ -279,7 +254,7 @@ export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
             }
           }}>
           <RouterLink
-            to={`/admin/projects/${projectId}/surveys/${surveyId}/sampling/techniques/${actionMenuAnchorEl?.periodId}/edit`}>
+            to={`/admin/projects/${projectId}/surveys/${surveyId}/sampling/period/${actionMenuAnchorEl?.periodId}/edit`}>
             <ListItemIcon>
               <Icon path={mdiPencilOutline} size={1} />
             </ListItemIcon>

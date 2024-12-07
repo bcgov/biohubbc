@@ -12,21 +12,8 @@ import useDataLoader from 'hooks/useDataLoader';
 import { ICreateSamplingPeriodRequest } from 'interfaces/useSamplingPeriodApi.interface';
 import { useEffect } from 'react';
 import { useHistory } from 'react-router';
-import yup from 'utils/YupSchema';
-import { SamplingPeriodSiteForm } from './sites/SamplePeriodSiteForm';
-import SamplePeriodTechniqueForm from './technique/SamplePeriodTechniqueForm';
-
-export const CreateSamplePeriodFormYupSchema = yup.object({
-  survey_sample_sites: yup
-    .array(
-      yup.object({
-        name: yup.string().default(''),
-        description: yup.string().default(''),
-        geojson: yup.object({})
-      })
-    )
-    .min(1, 'At least one sampling site location is required')
-});
+import { SamplingPeriodSiteForm } from '../components/sites/SamplePeriodSiteForm';
+import SamplePeriodTechniqueForm from '../components/technique/SamplePeriodTechniqueForm';
 
 interface ICreateSamplePeriodFormProps {
   isSubmitting: boolean;
@@ -56,7 +43,7 @@ const CreateSamplePeriodForm = (props: ICreateSamplePeriodFormProps) => {
   return (
     <Container maxWidth="xl" sx={{ py: 3 }}>
       <Paper sx={{ p: 5 }}>
-        <HorizontalSplitFormComponent title="Technique" summary="Select the technique to create periods for">
+        <HorizontalSplitFormComponent title="Technique" summary="Select the technique to create periods with">
           <SamplePeriodTechniqueForm />
         </HorizontalSplitFormComponent>
 

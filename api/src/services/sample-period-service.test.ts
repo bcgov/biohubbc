@@ -2,11 +2,12 @@ import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { SurveySamplePeriodModel } from '../database-models/survey_sample_period';
+import { UpdateSampleMethodObject, UpdateSamplePeriodObject } from '../models/sample-period';
+import { SampleMethodRepository } from '../repositories/sample-method-repository';
 import {
   InsertSamplePeriodRecord,
   SamplePeriodHierarchyIds,
-  SamplePeriodRepository,
-  UpdateSamplePeriodRecord
+  SamplePeriodRepository
 } from '../repositories/sample-period-repository';
 import { getMockDBConnection } from '../__mocks__/db';
 import { ObservationService } from './observation-service';
@@ -189,20 +190,30 @@ describe('SamplePeriodService', () => {
         .stub(SamplePeriodRepository.prototype, 'updateSamplePeriod')
         .resolves(mockSamplePeriodRecord);
 
-      const samplePeriod: UpdateSamplePeriodRecord = {
-        survey_sample_method_id: 1,
-        survey_sample_period_id: 2,
-        start_date: '2023-10-02',
-        end_date: '2023-01-02',
-        start_time: '12:00:00',
-        end_time: '13:00:00'
+      const updateSampleMethodStub = sinon.stub(SampleMethodRepository.prototype, 'updateSampleMethod').resolves();
+
+      const samplePeriod: UpdateSamplePeriodObject = {
+        method_technique_id: 1,
+        sample_period: {
+          survey_sample_method_id: 1,
+          survey_sample_period_id: 2,
+          start_date: '2023-10-02',
+          end_date: '2023-01-02',
+          start_time: '12:00:00',
+          end_time: '13:00:00'
+        }
+      };
+      const sampleMethod: UpdateSampleMethodObject = {
+        method_technique_id: 1,
+        survey_sample_method_id: 1
       };
       const mockSurveyId = 1001;
 
       const samplePeriodService = new SamplePeriodService(mockDBConnection);
       const response = await samplePeriodService.updateSamplePeriod(mockSurveyId, samplePeriod);
 
-      expect(updateSamplePeriodStub).to.be.calledOnceWith(1001, samplePeriod);
+      expect(updateSamplePeriodStub).to.be.calledOnceWith(1001, samplePeriod.sample_period);
+      expect(updateSampleMethodStub).to.be.calledOnceWith(1001, sampleMethod);
       expect(response).to.eql(mockSamplePeriodRecord);
     });
   });

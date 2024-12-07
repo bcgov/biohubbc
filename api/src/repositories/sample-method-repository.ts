@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { SurveySampleMethodModel, SurveySampleMethodRecord } from '../database-models/survey_sample_method';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
-import { ICreateSamplingPeriodData } from '../models/sample-period';
+import { ICreateSamplingPeriodData, UpdateSampleMethodObject } from '../models/sample-period';
 import { BaseRepository } from './base-repository';
 import { UpdateSamplePeriodRecord } from './sample-period-repository';
 
@@ -106,18 +106,15 @@ export class SampleMethodRepository extends BaseRepository {
   /**
    * updates a survey Sample method.
    *
-   * @param {UpdateSampleMethodRecord} sampleMethod
+   * @param {UpdateSampleMethodObject} sampleMethod
    * @return {*}  {Promise<SurveySampleMethodModel>}
    * @memberof SampleMethodRepository
    */
-  async updateSampleMethod(surveyId: number, sampleMethod: UpdateSampleMethodRecord): Promise<SurveySampleMethodModel> {
+  async updateSampleMethod(surveyId: number, sampleMethod: UpdateSampleMethodObject): Promise<SurveySampleMethodModel> {
     const sql = SQL`
       UPDATE survey_sample_method ssm
       SET
-          survey_sample_site_id = ${sampleMethod.survey_sample_site_id},
-          method_technique_id = ${sampleMethod.method_technique_id},
-          description = ${sampleMethod.description},
-          method_response_metric_id = ${sampleMethod.method_response_metric_id}
+          method_technique_id = ${sampleMethod.method_technique_id}
       FROM 
           survey_sample_site sss
       WHERE

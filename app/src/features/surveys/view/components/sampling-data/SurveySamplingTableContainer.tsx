@@ -1,4 +1,4 @@
-import { mdiAutoFix, mdiCalendarRange, mdiMapMarker } from '@mdi/js';
+import { mdiArrowTopRight, mdiAutoFix, mdiCalendarRange, mdiMapMarker } from '@mdi/js';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
@@ -102,7 +102,7 @@ export const SurveySamplingTableContainer = () => {
   }, [periodsSortModel, periodsPaginationModel]);
 
   const samplingPeriodsDataLoader = useDataLoader((pagination: ApiPaginationRequestOptions) =>
-    biohubApi.samplingSite.findSamplePeriods({ survey_id: surveyContext.surveyId }, pagination)
+    biohubApi.period.findSamplePeriods({ survey_id: surveyContext.surveyId }, pagination)
   );
 
   useEffect(() => {
@@ -258,6 +258,7 @@ export const SurveySamplingTableContainer = () => {
                   width="100%"
                   title="Add Periods"
                   subtitle="Add periods when you create sampling sites to show when you collected species observations"
+                  icon={mdiArrowTopRight}
                 />
               }
               hasNoDataFallbackDelay={100}>

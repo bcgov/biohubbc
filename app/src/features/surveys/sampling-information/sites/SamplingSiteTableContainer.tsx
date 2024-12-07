@@ -1,15 +1,18 @@
-import { mdiArrowTopRight, mdiDotsVertical, mdiTrashCanOutline } from '@mdi/js';
+import { mdiArrowTopRight, mdiDotsVertical, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { GridPaginationModel, GridRowSelectionModel, GridSortModel } from '@mui/x-data-grid';
+import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonMap, SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
@@ -18,7 +21,9 @@ import SurveyMap from 'features/surveys/view/SurveyMap';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
+import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import { useEffect, useMemo, useState } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
 import { SamplingSiteTable } from './table/SamplingSiteTable';
@@ -168,14 +173,34 @@ const SamplingSiteContainer = () => {
           pr: 5.5,
           width: '100%'
         }}>
-        <IconButton
-          edge="end"
-          sx={{ ml: 1 }}
-          aria-label="header-settings"
-          onClick={handleHeaderMenuClick}
-          title="Bulk Actions">
-          <Icon path={mdiDotsVertical} size={1} />
-        </IconButton>
+        <Typography variant="h3" component="h2" flexGrow={1}>
+          Sampling Sites &zwnj;
+          <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
+            ({samplingSitesDataLoader.data?.pagination.total ?? 0})
+          </Typography>
+        </Typography>
+        <Stack gap={1} direction="row">
+          <HelpButtonDialog markdownType={MarkdownTypeNameEnum.SAMPLING_SITES} />
+          <Button
+            variant="contained"
+            color="primary"
+            disabled={Boolean(!techniquesDataLoader.data?.pagination.total)}
+            component={RouterLink}
+            to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling/create`}
+            startIcon={<Icon path={mdiPlus} size={0.8} />}>
+            Add
+          </Button>
+
+          <IconButton
+            edge="end"
+            sx={{ ml: 1 }}
+            aria-label="header-settings"
+            disabled={!selectedRows.length}
+            onClick={handleHeaderMenuClick}
+            title="Bulk Actions">
+            <Icon path={mdiDotsVertical} size={1} />
+          </IconButton>
+        </Stack>
       </Toolbar>
 
       <Divider flexItem />

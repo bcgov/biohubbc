@@ -3,7 +3,8 @@ import { IAutocompleteDataGridSampleMethodOption } from 'features/surveys/observ
 import { IAutocompleteDataGridSamplePeriodOption } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/periods/SamplePeriodDataGrid.interface';
 import { IAutocompleteDataGridSampleSiteOption } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/sites/SampleSiteDataGrid.interface';
 import { SampleLocationCache } from 'features/surveys/observations/observations-table/ObservationsTableContainer';
-import { IGetSampleLocationNonSpatialDetails, IGetSamplePeriodRecord } from 'interfaces/useSamplingSiteApi.interface';
+import { IGetSamplePeriodRecord } from 'interfaces/usePeriodApi.interface';
+import { IGetSampleLocationNonSpatialDetails } from 'interfaces/useSamplingSiteApi.interface';
 import { MutableRefObject } from 'react';
 
 /**

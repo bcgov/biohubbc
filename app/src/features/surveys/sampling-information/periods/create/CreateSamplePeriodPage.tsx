@@ -13,8 +13,8 @@ import { useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import yup from 'utils/YupSchema';
 import SamplingSiteHeader from '../../sites/components/SamplingSiteHeader';
-import CreateSamplePeriodForm from '../form/CreateSamplePeriodForm';
-import { ISurveySampleMethodPeriodData } from '../form/sites/periods/SamplePeriodPeriodForm';
+import { ISurveySampleMethodPeriodData } from '../form/components/sites/periods/SamplePeriodPeriodForm';
+import CreateSamplePeriodForm from '../form/create/CreateSamplePeriodForm';
 
 export const SamplingSiteMethodPeriodYupSchema = yup.object({
   method_technique_id: yup.number().required('Technique is required'),
@@ -155,7 +155,7 @@ export const CreateSamplePeriodPage = () => {
           }))
         }))
       };
-      await biohubApi.samplingSite.createSamplePeriods(surveyContext.projectId, surveyContext.surveyId, data);
+      await biohubApi.period.createSamplePeriods(surveyContext.projectId, surveyContext.surveyId, data);
 
       // create complete, navigate back to observations page
       history.push(

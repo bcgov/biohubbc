@@ -10,6 +10,7 @@ import { Switch } from 'react-router';
 import RouteWithTitle from 'utils/RouteWithTitle';
 import { getTitle } from 'utils/Utils';
 import { CreateSamplePeriodPage } from './periods/create/CreateSamplePeriodPage';
+import { EditSamplePeriodPage } from './periods/edit/EditSamplePeriodPage';
 
 /**
  * Router for all `/admin/projects/:id/surveys/:survey_id/sampling/*` pages.
@@ -70,21 +71,21 @@ export const SamplingRouter = () => {
 
       <RouteWithTitle
         exact
-        path="/admin/projects/:id/surveys/:survey_id/sampling/periods/create"
+        path="/admin/projects/:id/surveys/:survey_id/sampling/period/create"
         title={getTitle('Create Periods')}>
         <DialogContextProvider>
           <CreateSamplePeriodPage />
         </DialogContextProvider>
       </RouteWithTitle>
 
-      {/* <RouteWithTitle
-        exact
-        path="/admin/projects/:id/surveys/:survey_id/sampling/periods/create"
-        title={getTitle('Create Periods')}>
+      <RouteWithTitle
+        // exact
+        path="/admin/projects/:id/surveys/:survey_id/sampling/period/:survey_sample_period_id/edit"
+        title={getTitle('Edit Period')}>
         <DialogContextProvider>
-          <EditPeriodPage />
+          <EditSamplePeriodPage />
         </DialogContextProvider>
-      </RouteWithTitle> */}
+      </RouteWithTitle>
     </Switch>
   );
 };

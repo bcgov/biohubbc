@@ -543,12 +543,16 @@ export const SamplePeriodI18N = {
   bulkDeleteSamplePeriodErrorTitle: 'Error Deleting a Sample Period',
   bulkDeleteSamplePeriodErrorText:
     'An error has occurred while attempting to delete the Sample Periods, please try again. If the error persists, please contact your system administrator.',
-  bulkDeleteSamplePeriodTitle: 'Delete Sample Period?',
-  bulkDeleteSamplePeriodText: 'Are you sure you want to permanently delete this alert? This action cannot be undone.',
+  bulkDeleteSamplePeriodTitle: 'Delete Sample Periods?',
+  bulkDeleteSamplePeriodText:
+    'Are you sure you want to permanently delete the selected periods? This action cannot be undone.',
 
   deleteSamplePeriodErrorTitle: 'Error Deleting a Sample Period',
   deleteSamplePeriodErrorText:
     'An error has occurred while attempting to delete the Sample Periods, please try again. If the error persists, please contact your system administrator.',
   deleteSamplePeriodTitle: 'Delete Sample Period?',
-  deleteSamplePeriodText: 'Are you sure you want to permanently delete this alert? This action cannot be undone.'
+  deleteSamplePeriodText: 'Are you sure you want to permanently delete this period? This action cannot be undone.',
+
+  deleteSamplePeriodYesButtonLabel: 'Delete',
+  deleteSamplePeriodNoButtonLabel: 'Cancel'
 };

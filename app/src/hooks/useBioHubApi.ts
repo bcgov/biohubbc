@@ -12,6 +12,7 @@ import useExternalApi from './api/useExternalApi';
 import useFundingSourceApi from './api/useFundingSourceApi';
 import { useMarkdownApi } from './api/useMarkdownApi';
 import useObservationApi from './api/useObservationApi';
+import { usePeriodApi } from './api/usePeriodApi';
 import useProjectApi from './api/useProjectApi';
 import useProjectParticipationApi from './api/useProjectParticipationApi';
 import usePublishApi from './api/usePublishApi';
@@ -64,6 +65,8 @@ export const useBiohubApi = () => {
 
   const samplingSite = useSamplingSiteApi(apiAxios);
 
+  const period = usePeriodApi(apiAxios);
+
   const technique = useTechniqueApi(apiAxios);
 
   const standards = useStandardsApi(apiAxios);
@@ -101,7 +104,8 @@ export const useBiohubApi = () => {
       reference,
       telemetry,
       markdown,
-      alert
+      alert,
+      period
     }),
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

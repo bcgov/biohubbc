@@ -7,6 +7,8 @@ import TextField from '@mui/material/TextField';
 import { debounce } from 'lodash-es';
 import { useEffect, useMemo, useState } from 'react';
 
+export type WithIdAndName<T> = T & { id: string | number; name: string };
+
 export interface IAutocompleteSearchFieldProps<T> {
   formikFieldName: string;
   label: string;
@@ -41,7 +43,7 @@ export interface IAutocompleteSearchFieldProps<T> {
  * @param {IAutocompleteSearchFieldProps} props
  * @return {*}
  */
-export const AutocompleteSearchField = <T extends { name: string }>({
+export const AutocompleteSearchField = <T extends { id: string | number; name: string }>({
   formikFieldName,
   label,
   handleSelect,
@@ -98,16 +100,16 @@ export const AutocompleteSearchField = <T extends { name: string }>({
       inputValue={inputValue}
       onInputChange={(_, value, reason) => {
         if (reason === 'reset' || reason === 'clear') {
-          if (!clearOnSelect) return;
+          if (!clearOnSelect) {
+            return;
+          }
           setInputValue('');
-          setOptions([]);
           handleClear?.();
           return;
         }
 
         if (!value) {
           setInputValue('');
-          setOptions([]);
           return;
         }
 
@@ -118,11 +120,13 @@ export const AutocompleteSearchField = <T extends { name: string }>({
       }}
       onChange={(_, option) => {
         if (!option) {
-          handleClear?.();
           return;
         }
 
         handleSelect(option);
+
+        // Remove the selected item from the list of options
+        setOptions((prev) => prev.filter((existing) => existing.id !== option.id));
 
         if (clearOnSelect) {
           setInputValue('');

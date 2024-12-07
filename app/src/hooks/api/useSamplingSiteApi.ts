@@ -1,9 +1,7 @@
 import { AxiosInstance } from 'axios';
-import { ICreateSamplingPeriodRequest } from 'interfaces/useSamplingPeriodApi.interface';
 import {
   ICreateSamplingSiteRequest,
   IEditSampleSiteRequest,
-  IFindSamplePeriodResponse,
   IFindSampleSiteResponse,
   IGetSampleLocationDetails,
   IGetSampleLocationNonSpatialResponse,
@@ -160,39 +158,6 @@ const useSamplingSiteApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Find sample periods.
-   *
-   * @param {{
-   *       survey_id?: number;
-   *       sample_site_id: number;
-   *       sample_method_id: number;
-   *       system_user_id?: number;
-   *     }} [filterFieldData]
-   * @param {ApiPaginationRequestOptions} [pagination]
-   * @return {*}  {Promise<IFindSamplePeriodResponse>}
-   */
-  const findSamplePeriods = async (
-    filterFieldData?: {
-      survey_id?: number;
-      sample_site_id?: number;
-      sample_method_id?: number;
-      system_user_id?: number;
-    },
-    pagination?: ApiPaginationRequestOptions
-  ): Promise<IFindSamplePeriodResponse> => {
-    const params = {
-      ...filterFieldData,
-      ...pagination
-    };
-
-    const { data } = await axios.get(`/api/sampling-locations/periods`, {
-      params
-    });
-
-    return data;
-  };
-
-  /**
    * Edit Sample Site
    *
    * @param {number} projectId
@@ -238,38 +203,6 @@ const useSamplingSiteApi = (axios: AxiosInstance) => {
     await axios.post(`/api/project/${projectId}/survey/${surveyId}/sample-site/delete`, { surveySampleSiteIds });
   };
 
-  /**
-   * Delete Sample Periods
-   *
-   * @param {number} projectId
-   * @param {number} surveyId
-   * @param {number} surveySamplePeriodIds
-   * @return {*}  {Promise<void>}
-   */
-  const deleteSamplePeriods = async (
-    projectId: number,
-    surveyId: number,
-    surveySamplePeriodIds: number[]
-  ): Promise<void> => {
-    await axios.post(`/api/project/${projectId}/survey/${surveyId}/sample-site/delete`, { surveySamplePeriodIds });
-  };
-
-  /**
-   * Create Sample Periods
-   *
-   * @param {number} projectId
-   * @param {number} surveyId
-   * @param {ICreateSamplingPeriodRequest} data
-   * @return {*}  {Promise<void>}
-   */
-  const createSamplePeriods = async (
-    projectId: number,
-    surveyId: number,
-    data: ICreateSamplingPeriodRequest
-  ): Promise<void> => {
-    await axios.post(`/api/project/${projectId}/survey/${surveyId}/sample-site/sample-period`, data);
-  };
-
   return {
     createSamplingSites,
     getSampleSites,
@@ -277,12 +210,9 @@ const useSamplingSiteApi = (axios: AxiosInstance) => {
     getSampleSitesGeometry,
     findSampleSites,
     findSampleMethods,
-    findSamplePeriods,
     editSampleSite,
     deleteSampleSite,
-    deleteSampleSites,
-    deleteSamplePeriods,
-    createSamplePeriods
+    deleteSampleSites
   };
 };
 
