@@ -11,7 +11,6 @@ import Typography from '@mui/material/Typography';
 import { GridColDef, GridPaginationModel, GridRowSelectionModel, GridSortModel } from '@mui/x-data-grid';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
-import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { IGetSampleLocationNonSpatialDetails } from 'interfaces/useSamplingSiteApi.interface';
 import { useState } from 'react';
@@ -29,49 +28,63 @@ export interface ISamplingSiteRowData {
 
 interface ISamplingSiteTableProps {
   sites: IGetSampleLocationNonSpatialDetails[];
-  bulkActionSites: GridRowSelectionModel;
-  setBulkActionSites: (selection: GridRowSelectionModel) => void;
+  selectedRows: GridRowSelectionModel;
+  setSelectedRows: (selection: GridRowSelectionModel) => void;
   paginationModel: GridPaginationModel;
   setPaginationModel: React.Dispatch<React.SetStateAction<GridPaginationModel>>;
-  setSortModel: React.Dispatch<React.SetStateAction<GridSortModel>>;
   sortModel: GridSortModel;
+  setSortModel: React.Dispatch<React.SetStateAction<GridSortModel>>;
   pageSizeOptions: number[];
   rowCount: number;
+  /**
+   * Callback fired when the delete action is triggered.
+   */
+  onDelete: (sampleSiteId: number) => Promise<void>;
 }
 
 /**
  * Returns a table of sampling sites with edit actions
  *
- * @param props {<ISamplingSiteTableProps>}
+ * @param {ISamplingSiteTableProps} props
  * @returns {*}
  */
 export const SamplingSiteTable = (props: ISamplingSiteTableProps) => {
   const {
     sites,
-    bulkActionSites,
-    setBulkActionSites,
+    selectedRows,
+    setSelectedRows,
     paginationModel,
     setPaginationModel,
     sortModel,
     setSortModel,
     pageSizeOptions,
-    rowCount
+    rowCount,
+    onDelete
   } = props;
 
-  const biohubApi = useBiohubApi();
   const surveyContext = useSurveyContext();
   const dialogContext = useDialogContext();
 
-  const [actionMenuSite, setActionMenuSite] = useState<number | undefined>();
-  const [actionMenuAnchorEl, setActionMenuAnchorEl] = useState<MenuProps['anchorEl']>(null);
+  const [actionMenuAnchorEl, setActionMenuAnchorEl] = useState<{
+    anchorEl: MenuProps['anchorEl'];
+    sampleSiteId: number;
+  } | null>(null);
 
   const handleCloseActionMenu = () => {
     setActionMenuAnchorEl(null);
   };
 
-  const handleDeleteSamplingSite = async () => {
-    await biohubApi.samplingSite
-      .deleteSampleSite(surveyContext.projectId, surveyContext.surveyId, Number(actionMenuSite))
+  /**
+   * Handle the delete action.
+   *
+   * @return {*}
+   */
+  const handleDelete = async () => {
+    if (!actionMenuAnchorEl) {
+      return;
+    }
+
+    await onDelete(actionMenuAnchorEl.sampleSiteId)
       .then(() => {
         dialogContext.setYesNoDialog({ open: false });
         setActionMenuAnchorEl(null);
@@ -99,7 +112,7 @@ export const SamplingSiteTable = (props: ISamplingSiteTableProps) => {
    * Display the delete samplingSite dialog.
    *
    */
-  const deleteSamplingSiteDialog = () => {
+  const handlePromptConfirmDelete = () => {
     dialogContext.setYesNoDialog({
       dialogTitle: 'Delete sampling site?',
       dialogText: 'Are you sure you want to permanently delete this sampling site?',
@@ -114,7 +127,7 @@ export const SamplingSiteTable = (props: ISamplingSiteTableProps) => {
       },
       open: true,
       onYes: () => {
-        handleDeleteSamplingSite();
+        handleDelete();
       }
     });
   };
@@ -137,7 +150,7 @@ export const SamplingSiteTable = (props: ISamplingSiteTableProps) => {
     {
       field: 'geometry_type',
       headerName: 'Geometry',
-      flex: 1,
+      flex: 0.75,
       renderCell: (params) => (
         <Box>
           <ColouredRectangleChip
@@ -152,11 +165,10 @@ export const SamplingSiteTable = (props: ISamplingSiteTableProps) => {
       headerName: 'Description',
       flex: 1
     },
-
     {
       field: 'blocks',
       headerName: 'Blocks',
-      flex: 1,
+      flex: 0.75,
       renderCell: (params) => (
         <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
           {params.row.blocks.map((block) => (
@@ -170,11 +182,11 @@ export const SamplingSiteTable = (props: ISamplingSiteTableProps) => {
     {
       field: 'stratums',
       headerName: 'Strata',
-      flex: 1,
+      flex: 0.75,
       renderCell: (params) => (
         <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
           {params.row.stratums.map((stratum) => (
-            <Box key={stratum} mr={1} mb={1}>
+            <Box key={stratum} mr={1} mb={1} sx={{ maxWidth: '14ch' }}>
               <ColouredRectangleChip label={stratum} colour={blueGrey} />
             </Box>
           ))}
@@ -189,15 +201,12 @@ export const SamplingSiteTable = (props: ISamplingSiteTableProps) => {
       align: 'right',
       renderCell: (params) => {
         return (
-          <Box position="fixed">
-            <IconButton
-              onClick={(event) => {
-                setActionMenuSite(params.row.id);
-                setActionMenuAnchorEl(event.currentTarget);
-              }}>
-              <Icon path={mdiDotsVertical} size={1} />
-            </IconButton>
-          </Box>
+          <IconButton
+            onClick={(event) => {
+              setActionMenuAnchorEl({ anchorEl: event.currentTarget, sampleSiteId: params.row.id });
+            }}>
+            <Icon path={mdiDotsVertical} size={1} />
+          </IconButton>
         );
       }
     }
@@ -209,7 +218,7 @@ export const SamplingSiteTable = (props: ISamplingSiteTableProps) => {
       <Menu
         open={Boolean(actionMenuAnchorEl)}
         onClose={handleCloseActionMenu}
-        anchorEl={actionMenuAnchorEl}
+        anchorEl={actionMenuAnchorEl?.anchorEl}
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}>
         <MenuItem
@@ -228,7 +237,7 @@ export const SamplingSiteTable = (props: ISamplingSiteTableProps) => {
             }
           }}>
           <RouterLink
-            to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling/${actionMenuSite}/edit`}>
+            to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling/${actionMenuAnchorEl?.sampleSiteId}/edit`}>
             <ListItemIcon>
               <Icon path={mdiPencilOutline} size={1} />
             </ListItemIcon>
@@ -238,7 +247,7 @@ export const SamplingSiteTable = (props: ISamplingSiteTableProps) => {
         <MenuItem
           onClick={() => {
             handleCloseActionMenu();
-            deleteSamplingSiteDialog();
+            handlePromptConfirmDelete();
           }}>
           <ListItemIcon>
             <Icon path={mdiTrashCanOutline} size={1} />
@@ -255,9 +264,10 @@ export const SamplingSiteTable = (props: ISamplingSiteTableProps) => {
         rows={rows}
         getRowId={(row: ISamplingSiteRowData) => row.id}
         columns={columns}
-        rowSelectionModel={bulkActionSites}
-        onRowSelectionModelChange={setBulkActionSites}
+        rowSelectionModel={selectedRows}
+        onRowSelectionModelChange={setSelectedRows}
         checkboxSelection
+        disableRowSelectionOnClick
         rowCount={rowCount}
         paginationMode="server"
         sortingMode="server"

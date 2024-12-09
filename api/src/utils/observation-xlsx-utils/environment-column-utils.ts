@@ -60,7 +60,13 @@ export function getEnvironmentColumnsTypeDefinitionMap(
     const qualitativeEnvironment = environmentTypeDefinitions.qualitative_environments.find(
       (item) => item.name.toLowerCase() === columnName.toLowerCase()
     );
+
     if (qualitativeEnvironment) {
+      // Lowercase the options for comparison
+      qualitativeEnvironment.options = qualitativeEnvironment.options.map((option) => ({
+        ...option,
+        name: option.name.toLowerCase()
+      }));
       columnNameDefinitionMap.set(columnName, qualitativeEnvironment);
       continue;
     }
@@ -104,7 +110,7 @@ export function validateEnvironments(
 
     if (isEnvironmentQualitativeTypeDefinition(environmentDefinition)) {
       return isQualitativeValueValid(
-        String(environmentToValidate.value),
+        String(environmentToValidate.value).toLowerCase(),
         environmentDefinition.options.map((option) => option.name)
       );
     }

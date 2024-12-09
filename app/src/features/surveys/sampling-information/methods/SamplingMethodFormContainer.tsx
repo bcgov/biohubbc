@@ -28,7 +28,9 @@ import { SamplingPeriodFormContainer } from 'features/surveys/sampling-informati
 import { ICreateSampleSiteFormData } from 'features/surveys/sampling-information/sites/create/CreateSamplingSitePage';
 import { IEditSampleSiteFormData } from 'features/surveys/sampling-information/sites/edit/EditSamplingSitePage';
 import { useFormikContext } from 'formik';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
+import useDataLoader from 'hooks/useDataLoader';
 import { useContext, useEffect, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { getCodesName } from 'utils/Utils';
@@ -49,10 +51,20 @@ export const SamplingMethodFormContainer = () => {
 
   const surveyContext = useSurveyContext();
 
+  const biohubApi = useBiohubApi();
+
   const codesContext = useContext(CodesContext);
   useEffect(() => {
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
+
+  const techniquesDataLoader = useDataLoader(() =>
+    biohubApi.technique.getTechniquesForSurvey(surveyContext.projectId, surveyContext.surveyId)
+  );
+
+  useEffect(() => {
+    techniquesDataLoader.load();
+  }, [techniquesDataLoader]);
 
   const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number) => {
     setAnchorEl(event.currentTarget);
@@ -177,7 +189,7 @@ export const SamplingMethodFormContainer = () => {
                         <Box display="flex">
                           <Typography component="span" variant="h5">
                             {
-                              surveyContext.techniqueDataLoader.data?.techniques.find(
+                              techniquesDataLoader.data?.techniques.find(
                                 (technique) =>
                                   technique.method_technique_id === sampleMethod.technique.method_technique_id
                               )?.name

@@ -18,6 +18,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import PageHeader from 'components/layout/PageHeader';
 import PublishSurveyIdDialog from 'components/publish/PublishSurveyDialog';
@@ -31,6 +32,7 @@ import { SurveyContext } from 'contexts/surveyContext';
 import { SurveyExportDialog } from 'features/surveys/view/survey-export/SurveyExportDialog';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import React, { useContext, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
@@ -169,6 +171,7 @@ const SurveyHeader = () => {
             validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
             validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
             <Stack flexDirection="row" alignItems="center" gap={2}>
+              <HelpButtonDialog markdownType={MarkdownTypeNameEnum.SURVEY_PAGE} />
               <FeatureFlagGuard featureFlags={['APP_FF_SUBMIT_BIOHUB']}>
                 <ProjectRoleGuard
                   validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR]}

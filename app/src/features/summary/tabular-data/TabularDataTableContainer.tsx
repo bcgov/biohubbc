@@ -1,16 +1,15 @@
 import { mdiEye, mdiPaw, mdiWifiMarker } from '@mdi/js';
-import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
-import ToggleButton from '@mui/material/ToggleButton';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Typography from '@mui/material/Typography';
+import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
+import CustomToggleButtonGroup from 'components/toolbar/CustomToggleButtonGroup';
 import AnimalsListContainer from 'features/summary/tabular-data/animal/AnimalsListContainer';
 import ObservationsListContainer from 'features/summary/tabular-data/observation/ObservationsListContainer';
 import TelemetryListContainer from 'features/summary/tabular-data/telemetry/TelemetryListContainer';
 import { useSearchParams } from 'hooks/useSearchParams';
+import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import { useState } from 'react';
 
 export const ACTIVE_VIEW_KEY = 'tavk';
@@ -32,18 +31,6 @@ type TabularDataTableURLParams = {
   [SHOW_SEARCH_KEY]: SHOW_SEARCH_VALUE;
 };
 
-const buttonSx = {
-  py: 0.5,
-  px: 2,
-  border: 'none',
-  fontWeight: 700,
-  borderRadius: '4px !important',
-  fontSize: '0.875rem',
-  letterSpacing: '0.02rem',
-  minHeight: '35px',
-  justifyContent: 'flex-start'
-};
-
 /**
  * Data table component for tabular data (ie: observations, animals, telemetry).
  *
@@ -52,7 +39,9 @@ const buttonSx = {
 export const TabularDataTableContainer = () => {
   const { searchParams, setSearchParams } = useSearchParams<TabularDataTableURLParams>();
 
-  const [activeView, setActiveView] = useState(searchParams.get(ACTIVE_VIEW_KEY) ?? ACTIVE_VIEW_VALUE.observations);
+  const [activeView, setActiveView] = useState(
+    (searchParams.get(ACTIVE_VIEW_KEY) as ACTIVE_VIEW_VALUE | null) ?? ACTIVE_VIEW_VALUE.observations
+  );
   const showSearch = true;
 
   const views = [
@@ -61,43 +50,26 @@ export const TabularDataTableContainer = () => {
     { value: ACTIVE_VIEW_VALUE.telemetry, label: 'telemetry', icon: mdiWifiMarker }
   ];
 
-  const onChangeView = (_: React.MouseEvent<HTMLElement>, value: ACTIVE_VIEW_VALUE) => {
-    if (!value) {
-      // User has clicked the active view, do nothing
-      return;
-    }
-
-    setSearchParams(searchParams.set(ACTIVE_VIEW_KEY, value));
-    setActiveView(value);
-  };
-
   return (
     <Stack direction="row">
-      <ToggleButtonGroup
-        orientation="vertical"
-        value={activeView}
-        onChange={onChangeView}
-        exclusive
-        sx={{
-          display: 'flex',
-          gap: 1,
-          '& Button': buttonSx,
-          width: '225px',
-          m: 2
-        }}>
-        <Typography component="legend">Data</Typography>
-        {views.map((view) => (
-          <ToggleButton
-            key={view.label}
-            component={Button}
-            color="primary"
-            startIcon={<Icon path={view.icon} size={0.75} />}
-            value={view.value}>
-            {view.label}
-          </ToggleButton>
-        ))}
-      </ToggleButtonGroup>
+      <Stack mx={2} my={1} width="225px" gap={1}>
+        <Box display="flex" justifyContent="space-between" alignItems="center" minHeight="75px">
+          <Typography variant="h4">Data</Typography>
+          <HelpButtonDialog markdownType={MarkdownTypeNameEnum.SUMMARY_DATA} />
+        </Box>
+        <CustomToggleButtonGroup
+          views={views}
+          activeView={activeView}
+          onViewChange={(view) => {
+            setSearchParams(searchParams.set(ACTIVE_VIEW_KEY, view));
+            setActiveView(view);
+          }}
+          orientation="vertical"
+        />
+      </Stack>
+
       <Divider flexItem orientation="vertical" />
+
       <Box flex="1 1 auto" overflow="hidden">
         {activeView === ACTIVE_VIEW_VALUE.observations && <ObservationsListContainer showSearch={showSearch} />}
         {activeView === ACTIVE_VIEW_VALUE.animals && <AnimalsListContainer showSearch={showSearch} />}

@@ -1,3 +1,5 @@
+import { SurveySamplePeriodRecord } from '../database-models/survey_sample_period';
+import { SurveySampleSiteModel } from '../database-models/survey_sample_site';
 import { IDBConnection } from '../database/db';
 import {
   IMethodAdvancedFilters,
@@ -6,12 +8,12 @@ import {
 } from '../models/sampling-locations-view';
 import { InsertSampleBlockRecord } from '../repositories/sample-blocks-repository';
 import {
+  FindSampleSiteRecord,
   InsertSampleSiteRecord,
   SampleLocationBasicRecord,
   SampleLocationRecord,
   SampleLocationRepository,
   SampleSiteGeometryRecord,
-  SampleSiteRecord,
   UpdateSampleLocationRecord
 } from '../repositories/sample-location-repository/sample-location-repository';
 import { InsertSampleMethodRecord } from '../repositories/sample-method-repository';
@@ -99,10 +101,10 @@ export class SampleLocationService extends DBService {
    *
    * @param {number} surveyId
    * @param {number} surveySampleSiteId
-   * @return {*}  {Promise<SampleSiteRecord>}
+   * @return {*}  {Promise<SurveySampleSiteModel>}
    * @memberof SampleLocationService
    */
-  async getSurveySampleSiteById(surveyId: number, surveySampleSiteId: number): Promise<SampleSiteRecord> {
+  async getSurveySampleSiteById(surveyId: number, surveySampleSiteId: number): Promise<SurveySampleSiteModel> {
     return this.sampleLocationRepository.getSurveySampleSiteById(surveyId, surveySampleSiteId);
   }
 
@@ -141,16 +143,34 @@ export class SampleLocationService extends DBService {
    * @param {(number | null)} systemUserId The system user id of the user making the request
    * @param {ISiteAdvancedFilters} filterFields
    * @param {ApiPaginationOptions} [pagination]
-   * @return {*}
-   * @memberof ObservationService
+   * @return {*}  {Promise<FindSampleSiteRecord[]>}
+   * @memberof SampleLocationService
    */
   async findSites(
     isUserAdmin: boolean,
     systemUserId: number | null,
     filterFields: ISiteAdvancedFilters,
     pagination?: ApiPaginationOptions
-  ) {
+  ): Promise<FindSampleSiteRecord[]> {
     return this.sampleLocationRepository.findSites(isUserAdmin, systemUserId, filterFields, pagination);
+  }
+
+  /**
+   * Retrieves the count of all sites that are available to the user, based on their permissions and
+   * provided filter criteria.
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId The system user id of the user making the request
+   * @param {ISiteAdvancedFilters} filterFields
+   * @return {*}  {Promise<number>}
+   * @memberof SampleLocationService
+   */
+  async findSitesCount(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: ISiteAdvancedFilters
+  ): Promise<number> {
+    return this.sampleLocationRepository.findSitesCount(isUserAdmin, systemUserId, filterFields);
   }
 
   /**
@@ -162,7 +182,7 @@ export class SampleLocationService extends DBService {
    * @param {IMethodAdvancedFilters} filterFields
    * @param {ApiPaginationOptions} [pagination]
    * @return {*}
-   * @memberof ObservationService
+   * @memberof SampleLocationService
    */
   async findMethods(
     isUserAdmin: boolean,
@@ -181,16 +201,34 @@ export class SampleLocationService extends DBService {
    * @param {(number | null)} systemUserId The system user id of the user making the request
    * @param {IPeriodAdvancedFilters} filterFields
    * @param {ApiPaginationOptions} [pagination]
-   * @return {*}
-   * @memberof ObservationService
+   * @return {*}  {Promise<SurveySamplePeriodRecord[]>}
+   * @memberof SampleLocationService
    */
   async findPeriods(
     isUserAdmin: boolean,
     systemUserId: number | null,
     filterFields: IPeriodAdvancedFilters,
     pagination?: ApiPaginationOptions
-  ) {
+  ): Promise<SurveySamplePeriodRecord[]> {
     return this.sampleLocationRepository.findPeriods(isUserAdmin, systemUserId, filterFields, pagination);
+  }
+
+  /**
+   * Retrieves the count of all periods that are available to the user, based on their permissions and
+   * provided filter criteria.
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId The system user id of the user making the request
+   * @param {IPeriodAdvancedFilters} filterFields
+   * @return {*}  {Promise<number>}
+   * @memberof SampleLocationService
+   */
+  async findPeriodsCount(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: IPeriodAdvancedFilters
+  ): Promise<number> {
+    return this.sampleLocationRepository.findPeriodsCount(isUserAdmin, systemUserId, filterFields);
   }
 
   /**
@@ -198,10 +236,10 @@ export class SampleLocationService extends DBService {
    *
    * @param {number} surveyId
    * @param {number} surveySampleSiteId
-   * @return {*}  {Promise<SampleSiteRecord>}
+   * @return {*}  {Promise<SurveySampleSiteModel>}
    * @memberof SampleLocationService
    */
-  async deleteSampleSiteRecord(surveyId: number, surveySampleSiteId: number): Promise<SampleSiteRecord> {
+  async deleteSampleSiteRecord(surveyId: number, surveySampleSiteId: number): Promise<SurveySampleSiteModel> {
     const sampleMethodService = new SampleMethodService(this.connection);
     const sampleBlockService = new SampleBlockService(this.connection);
     const sampleStratumService = new SampleStratumService(this.connection);
@@ -245,10 +283,10 @@ export class SampleLocationService extends DBService {
    * integer id + 1 in the db.
    *
    * @param {PostSampleLocations} sampleLocations
-   * @return {*}  {Promise<SampleSiteRecord[]>}
+   * @return {*}  {Promise<SurveySampleSiteModel[]>}
    * @memberof SampleLocationService
    */
-  async insertSampleLocations(sampleLocations: PostSampleLocations): Promise<SampleSiteRecord[]> {
+  async insertSampleLocations(sampleLocations: PostSampleLocations): Promise<SurveySampleSiteModel[]> {
     defaultLog.debug({ label: 'insertSampleLocations' });
 
     // Create a sample site record for each feature found

@@ -220,7 +220,7 @@ describe('SampleLocationRepository', () => {
         await repo.deleteSampleSiteRecord(mockSurveyId, surveySampleLocationId);
       } catch (error) {
         expect(dbConnectionObj.sql).to.have.been.calledOnce;
-        expect((error as ApiExecuteSQLError).message).to.be.eql('Failed to delete survey block record');
+        expect((error as ApiExecuteSQLError).message).to.be.eql('Failed to delete survey sample site record');
       }
     });
   });

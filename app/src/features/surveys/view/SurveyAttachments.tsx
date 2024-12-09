@@ -1,6 +1,5 @@
 import { mdiAttachment, mdiFilePdfBox, mdiTrayArrowUp } from '@mdi/js';
 import Icon from '@mdi/react';
-import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
@@ -79,40 +78,36 @@ const SurveyAttachments = () => {
         }}
       />
 
-      <Box>
-        <H2MenuToolbar
-          label="Documents"
-          buttonLabel="Upload"
-          buttonTitle="Upload Documents"
-          buttonProps={{ variant: 'contained' }}
-          buttonStartIcon={<Icon path={mdiTrayArrowUp} size={0.75} />}
-          menuItems={[
-            {
-              menuLabel: 'Upload a Report',
-              menuIcon: <Icon path={mdiFilePdfBox} size={1} />,
-              menuOnClick: () => setOpenUploadDialog('Report')
-            },
-            {
-              menuLabel: 'Upload Attachments',
-              menuIcon: <Icon path={mdiAttachment} size={1} />,
-              menuOnClick: () => setOpenUploadDialog('Attachment')
-            }
-          ]}
-          renderButton={(buttonProps) => (
-            <ProjectRoleGuard
-              validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
-              validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-              <Button {...buttonProps} />
-            </ProjectRoleGuard>
-          )}
-        />
+      <H2MenuToolbar
+        label="Documents"
+        buttonLabel="Upload"
+        buttonTitle="Upload Documents"
+        buttonProps={{ variant: 'contained' }}
+        buttonStartIcon={<Icon path={mdiTrayArrowUp} size={0.75} />}
+        menuItems={[
+          {
+            menuLabel: 'Upload a Report',
+            menuIcon: <Icon path={mdiFilePdfBox} size={1} />,
+            menuOnClick: () => setOpenUploadDialog('Report')
+          },
+          {
+            menuLabel: 'Upload Attachments',
+            menuIcon: <Icon path={mdiAttachment} size={1} />,
+            menuOnClick: () => setOpenUploadDialog('Attachment')
+          }
+        ]}
+        renderButton={(buttonProps) => (
+          <ProjectRoleGuard
+            validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+            validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+            <Button {...buttonProps} />
+          </ProjectRoleGuard>
+        )}
+      />
 
-        <Divider />
+      <Divider />
 
-        <Box p={2}>
-          <SurveyAttachmentsList />
-        </Box>
-      </Box>
+      <SurveyAttachmentsList />
     </>
   );
 };

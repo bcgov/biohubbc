@@ -15,7 +15,7 @@ import { useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import startCase from 'lodash-es/startCase';
 import { useEffect, useState } from 'react';
-import { ObservationAnalyticsNoDataOverlay } from './components/ObservationAnalyticsNoDataOverlay';
+
 type GroupByColumnType = 'column' | 'quantitative_measurement' | 'qualitative_measurement';
 
 export type IGroupByOption = {
@@ -89,8 +89,6 @@ export const SurveyObservationAnalytics = () => {
         : [...groupBy, value]
     );
 
-  const allGroupByColumns = [...groupByColumns, ...groupByQualitativeMeasurements, ...groupByQuantitativeMeasurements];
-
   return (
     <Stack direction="row" height="100%">
       <LoadingGuard
@@ -119,17 +117,18 @@ export const SurveyObservationAnalytics = () => {
               orientation="vertical"
               onChange={handleToggleChange}
               sx={{
-                width: '100%',
-                '& .MuiToggleButton-root': {
+                display: 'flex',
+                flex: '1 1 auto',
+                gap: 0.5,
+                '& Button': {
+                  py: 1,
+                  px: 2,
                   border: 'none',
-                  outline: 'none',
                   borderRadius: '4px !important',
                   fontSize: '0.875rem',
+                  fontWeight: 700,
                   letterSpacing: '0.02rem',
-                  textTransform: 'none',
-                  '&::first-letter': {
-                    textTransform: 'capitalize !important'
-                  }
+                  justifyContent: 'flex-start'
                 }
               }}>
               {/* Render toggle buttons for each group by option */}
@@ -139,18 +138,6 @@ export const SurveyObservationAnalytics = () => {
                   component={Button}
                   color="primary"
                   value={option}
-                  sx={{
-                    textAlign: 'left',
-                    display: 'block',
-                    border: 'none',
-                    outline: 'none',
-                    fontWeight: 700,
-                    my: 1,
-                    ':focus': {
-                      outline: 'none',
-                      border: 'none'
-                    }
-                  }}
                   selected={
                     groupByColumns.some((item) => item.field === option.field) ||
                     groupByQualitativeMeasurements.some((item) => item.field === option.field) ||
@@ -158,7 +145,7 @@ export const SurveyObservationAnalytics = () => {
                   }>
                   <Box display="flex" alignItems="center">
                     <Checkbox
-                      sx={{ pl: 0, py: 0 }}
+                      sx={{ pl: 0.5, py: 0.5 }}
                       checked={
                         groupByColumns.some((item) => item.field === option.field) ||
                         groupByQualitativeMeasurements.some((item) => item.field === option.field) ||
@@ -175,19 +162,12 @@ export const SurveyObservationAnalytics = () => {
 
         <Divider orientation="vertical" />
 
-        {/* Overlay for when no group by columns are selected */}
-        {allGroupByColumns.length === 0 && !measurementDefinitionsDataLoader.isLoading && (
-          <ObservationAnalyticsNoDataOverlay />
-        )}
-
         {/* Data grid displaying fetched data */}
-        {measurementDefinitionsDataLoader.data && allGroupByColumns.length > 0 && (
-          <ObservationAnalyticsDataTableContainer
-            groupByColumns={groupByColumns}
-            groupByQuantitativeMeasurements={groupByQuantitativeMeasurements}
-            groupByQualitativeMeasurements={groupByQualitativeMeasurements}
-          />
-        )}
+        <ObservationAnalyticsDataTableContainer
+          groupByColumns={groupByColumns}
+          groupByQuantitativeMeasurements={groupByQuantitativeMeasurements}
+          groupByQualitativeMeasurements={groupByQualitativeMeasurements}
+        />
       </LoadingGuard>
     </Stack>
   );

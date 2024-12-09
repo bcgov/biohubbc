@@ -69,7 +69,7 @@ export const SamplingSiteListContainer = () => {
     };
   }, [sortModel, paginationModel]);
 
-  // Refresh survey list when pagination or sort changes
+  // Refresh survey list when pagination changes
   useEffect(() => {
     sampleSiteDataLoader.refresh(pagination);
 

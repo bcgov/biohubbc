@@ -7,12 +7,14 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import ToggleButton from '@mui/material/ToggleButton';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
 import { ProjectRoleGuard } from 'components/security/Guards';
+import CustomToggleButtonGroup, { ToggleButtonView } from 'components/toolbar/CustomToggleButtonGroup';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
+import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
@@ -22,17 +24,10 @@ export enum SurveySpatialDatasetViewEnum {
   ANIMALS = 'ANIMALS'
 }
 
-interface ISurveySpatialDatasetView {
-  label: string;
-  icon: string;
-  value: SurveySpatialDatasetViewEnum;
-  isLoading: boolean;
-}
-
 interface ISurveySpatialToolbarProps {
   activeView: SurveySpatialDatasetViewEnum;
   setActiveView: (view: SurveySpatialDatasetViewEnum) => void;
-  views: ISurveySpatialDatasetView[];
+  views: ToggleButtonView<SurveySpatialDatasetViewEnum>[];
 }
 
 /**
@@ -45,14 +40,6 @@ export const SurveySpatialToolbar = (props: ISurveySpatialToolbarProps) => {
   const { activeView, setActiveView, views } = props;
 
   const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
-
-  const updateDatasetView = (_event: React.MouseEvent<HTMLElement>, view: SurveySpatialDatasetViewEnum) => {
-    if (!view) {
-      return;
-    }
-
-    setActiveView(view);
-  };
 
   const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     setAnchorEl(event.currentTarget);
@@ -120,53 +107,31 @@ export const SurveySpatialToolbar = (props: ISurveySpatialToolbarProps) => {
           <Typography variant="h2" flex="1 1 auto">
             Survey Data
           </Typography>
-          <ProjectRoleGuard
-            validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
-            validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-            <Button
-              variant="contained"
-              color="primary"
-              aria-label="Manage Survey Data"
-              onClick={handleMenuClick}
-              startIcon={<Icon path={mdiCog} size={0.75}></Icon>}
-              endIcon={<Icon path={mdiChevronDown} size={0.75}></Icon>}
-              sx={{
-                my: -1
-              }}>
-              Manage
-            </Button>
-          </ProjectRoleGuard>
+          <Stack gap={1} direction="row">
+            <HelpButtonDialog markdownType={MarkdownTypeNameEnum.SURVEY_DATA} />
+            <ProjectRoleGuard
+              validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+              validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+              <Button
+                variant="contained"
+                color="primary"
+                aria-label="Manage Survey Data"
+                onClick={handleMenuClick}
+                startIcon={<Icon path={mdiCog} size={0.75}></Icon>}
+                endIcon={<Icon path={mdiChevronDown} size={0.75}></Icon>}>
+                Manage
+              </Button>
+            </ProjectRoleGuard>
+          </Stack>
         </Toolbar>
         <Divider flexItem></Divider>
         <Box p={2} display="flex" justifyContent="space-between">
-          <ToggleButtonGroup
-            value={activeView}
-            onChange={updateDatasetView}
-            exclusive
-            sx={{
-              display: 'flex',
-              gap: 1,
-              '& Button': {
-                py: 0.25,
-                px: 1.5,
-                border: 'none',
-                borderRadius: '4px !important',
-                fontSize: '0.875rem',
-                fontWeight: 700,
-                letterSpacing: '0.02rem'
-              }
-            }}>
-            {views.map((view) => (
-              <ToggleButton
-                key={view.value}
-                component={Button}
-                color="primary"
-                startIcon={<Icon path={view.icon} size={0.75} />}
-                value={view.value}>
-                {view.label}
-              </ToggleButton>
-            ))}
-          </ToggleButtonGroup>
+          <CustomToggleButtonGroup
+            views={views}
+            activeView={activeView}
+            onViewChange={(view) => setActiveView(view)}
+            orientation="horizontal"
+          />
         </Box>
       </Box>
     </>
