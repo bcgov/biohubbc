@@ -1,10 +1,7 @@
 import { mdiCog, mdiLeaf, mdiRuler } from '@mdi/js';
-import Icon from '@mdi/react';
-import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
-import ToggleButton from '@mui/material/ToggleButton';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { GridColDef } from '@mui/x-data-grid';
+import CustomToggleButtonGroup from 'components/toolbar/CustomToggleButtonGroup';
 import { IObservationTableRow } from 'contexts/observationsTableContext';
 import { ConfigureEnvironmentColumns } from 'features/surveys/observations/observations-table/configure-columns/components/environment/ConfigureEnvironmentColumns';
 import { ConfigureGeneralColumns } from 'features/surveys/observations/observations-table/configure-columns/components/general/ConfigureGeneralColumns';
@@ -125,65 +122,21 @@ export const ConfigureColumnsPage = (props: IConfigureColumnsPageProps) => {
 
   const [activeView, setActiveView] = useState(ConfigureColumnsViewEnum.GENERAL);
 
+  const views = [
+    { value: ConfigureColumnsViewEnum.GENERAL, label: 'General', icon: mdiCog },
+    { value: ConfigureColumnsViewEnum.MEASUREMENTS, label: 'Species Attributes', icon: mdiRuler },
+    { value: ConfigureColumnsViewEnum.ENVIRONMENT, label: 'Environment', icon: mdiLeaf }
+  ];
+
   return (
     <Grid container justifyContent="space-between" pr={2} mt={1} height="100%" columnSpacing={5}>
       <Grid item maxWidth="250px">
-        <ToggleButtonGroup
-          value={activeView}
-          onChange={(_, view) => {
-            if (!view) {
-              // An active view must be selected at all times
-              return;
-            }
-
-            setActiveView(view);
-          }}
-          exclusive
+        <CustomToggleButtonGroup
+          views={views}
+          activeView={activeView}
+          onViewChange={(view) => setActiveView(view)}
           orientation="vertical"
-          sx={{
-            width: '100%',
-            gap: 1,
-            '& Button': {
-              textAlign: 'left',
-              display: 'flex',
-              justifyContent: 'flex-start',
-              py: 1,
-              px: 2,
-              border: 'none',
-              borderRadius: '4px !important',
-              fontSize: '0.875rem',
-              fontWeight: 700,
-              letterSpacing: '0.02rem'
-            }
-          }}>
-          <ToggleButton
-            key={ConfigureColumnsViewEnum.GENERAL}
-            component={Button}
-            color="primary"
-            startIcon={<Icon path={mdiCog} size={0.75} />}
-            disabled={disabled}
-            value={ConfigureColumnsViewEnum.GENERAL}>
-            General
-          </ToggleButton>
-          <ToggleButton
-            key={ConfigureColumnsViewEnum.MEASUREMENTS}
-            component={Button}
-            color="primary"
-            startIcon={<Icon path={mdiRuler} size={0.75} />}
-            disabled={disabled}
-            value={ConfigureColumnsViewEnum.MEASUREMENTS}>
-            Species Attributes
-          </ToggleButton>
-          <ToggleButton
-            key={ConfigureColumnsViewEnum.ENVIRONMENT}
-            component={Button}
-            color="primary"
-            startIcon={<Icon path={mdiLeaf} size={0.75} />}
-            disabled={disabled}
-            value={ConfigureColumnsViewEnum.ENVIRONMENT}>
-            Environment
-          </ToggleButton>
-        </ToggleButtonGroup>
+        />
       </Grid>
       <Grid item height="100%" flex="1 1 auto">
         {activeView === ConfigureColumnsViewEnum.GENERAL && (

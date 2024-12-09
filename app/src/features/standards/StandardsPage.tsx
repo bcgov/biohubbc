@@ -6,10 +6,10 @@ import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import PageHeader from 'components/layout/PageHeader';
+import CustomToggleButtonGroup from 'components/toolbar/CustomToggleButtonGroup';
 import { SystemAlertBanner } from 'features/alert/banner/SystemAlertBanner';
 import { SystemAlertBannerEnum } from 'interfaces/useAlertApi.interface';
 import { useState } from 'react';
-import { StandardsToolbar } from './components/StandardsToolbar';
 import { EnvironmentStandards } from './view/environment/EnvironmentStandards';
 import { MethodStandards } from './view/methods/MethodStandards';
 import { SpeciesStandards } from './view/species/SpeciesStandards';
@@ -20,19 +20,13 @@ export enum StandardsPageView {
   ENVIRONMENT = 'ENVIRONMENT'
 }
 
-export interface IStandardsPageView {
-  label: string;
-  value: StandardsPageView;
-  icon: string;
-}
-
 const StandardsPage = () => {
-  const [currentView, setCurrentView] = useState(StandardsPageView.SPECIES);
+  const [activeView, setActiveView] = useState(StandardsPageView.SPECIES);
 
-  const views: IStandardsPageView[] = [
-    { label: 'Species', value: StandardsPageView.SPECIES, icon: mdiPaw },
-    { label: 'Sampling Methods', value: StandardsPageView.METHODS, icon: mdiToolbox },
-    { label: 'Environment variables', value: StandardsPageView.ENVIRONMENT, icon: mdiLeaf }
+  const views = [
+    { value: StandardsPageView.SPECIES, label: 'Species', icon: mdiPaw },
+    { value: StandardsPageView.METHODS, label: 'Sampling Methods', icon: mdiToolbox },
+    { value: StandardsPageView.ENVIRONMENT, label: 'Environment variables', icon: mdiLeaf }
   ];
 
   return (
@@ -43,20 +37,25 @@ const StandardsPage = () => {
         <Stack direction="row" gap={3} component={Paper} sx={{ p: 3 }}>
           {/* TOOLBAR FOR SWITCHING VIEWS */}
           <Box width="300px" flexShrink={0}>
-            <StandardsToolbar views={views} currentView={currentView} setCurrentView={setCurrentView} />
+            <CustomToggleButtonGroup
+              views={views}
+              activeView={activeView}
+              onViewChange={(view) => setActiveView(view)}
+              orientation="vertical"
+            />
           </Box>
 
           <Divider orientation="vertical" color={grey[500]} flexItem />
 
           <Box flex=" 1 1 auto">
             {/* SPECIES STANDARDS */}
-            {currentView === StandardsPageView.SPECIES && <SpeciesStandards />}
+            {activeView === StandardsPageView.SPECIES && <SpeciesStandards />}
 
             {/* METHOD STANDARDS */}
-            {currentView === StandardsPageView.METHODS && <MethodStandards />}
+            {activeView === StandardsPageView.METHODS && <MethodStandards />}
 
             {/* ENVIRONMENT STANDARDS */}
-            {currentView === StandardsPageView.ENVIRONMENT && <EnvironmentStandards />}
+            {activeView === StandardsPageView.ENVIRONMENT && <EnvironmentStandards />}
           </Box>
         </Stack>
       </Container>

@@ -2,11 +2,16 @@ import { mdiRuler, mdiTag } from '@mdi/js';
 import { Box, Divider, Stack, Typography } from '@mui/material';
 import { blueGrey, grey } from '@mui/material/colors';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
+import CustomToggleButtonGroup from 'components/toolbar/CustomToggleButtonGroup';
 import { AccordionStandardCard } from 'features/standards/view/components/AccordionStandardCard';
 import { ScientificNameTypography } from 'features/surveys/animals/components/ScientificNameTypography';
 import { ISpeciesStandards } from 'interfaces/useStandardsApi.interface';
 import { useState } from 'react';
-import SpeciesStandardsToolbar, { SpeciesStandardsViewEnum } from './components/SpeciesStandardsToolbar';
+
+enum SpeciesStandardsViewEnum {
+  MEASUREMENTS = 'measurements',
+  MARKING_BODY_LOCATIONS = 'marking_body_locations'
+}
 
 interface ISpeciesStandardsResultsProps {
   data?: ISpeciesStandards;
@@ -35,23 +40,14 @@ const SpeciesStandardsResults = (props: ISpeciesStandardsResultsProps) => {
       </Box>
       <Divider sx={{ my: 2 }} />
       <Box my={2}>
-        <SpeciesStandardsToolbar
+        <CustomToggleButtonGroup
           views={[
-            {
-              label: `Measurements`,
-              value: SpeciesStandardsViewEnum.MEASUREMENTS,
-              icon: mdiRuler,
-              isLoading: false
-            },
-            {
-              label: `Marking body locations`,
-              value: SpeciesStandardsViewEnum.MARKING_BODY_LOCATIONS,
-              icon: mdiTag,
-              isLoading: false
-            }
+            { value: SpeciesStandardsViewEnum.MEASUREMENTS, label: 'Measurements', icon: mdiRuler },
+            { value: SpeciesStandardsViewEnum.MARKING_BODY_LOCATIONS, label: 'Marking body locations', icon: mdiTag }
           ]}
           activeView={activeView}
-          updateDatasetView={setActiveView}
+          onViewChange={setActiveView}
+          orientation="horizontal"
         />
       </Box>
       <Stack gap={2}>
