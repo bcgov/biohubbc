@@ -114,8 +114,8 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
     {
       field: 'survey_id',
       headerName: 'ID',
-      width: 70,
-      minWidth: 70,
+      width: 85,
+      minWidth: 85,
       renderHeader: () => (
         <Typography color={grey[500]} variant="body2" fontWeight={700}>
           ID
@@ -217,7 +217,7 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
         <Divider />
       </Collapse>
 
-      <Box height="90vh" maxHeight="700px" p={2}>
+      <Box height="90vh" maxHeight="700px">
         <LoadingGuard
           isLoading={surveysDataLoader.isLoading || !surveysDataLoader.isReady}
           isLoadingFallback={<SkeletonTable />}

@@ -19,7 +19,7 @@ export const SurveyBlockRecord = z.object({
   survey_id: z.number(),
   name: z.string(),
   description: z.string(),
-  geojson: z.any(),
+  geojson: z.any().nullable(),
   revision_count: z.number()
 });
 export type SurveyBlockRecord = z.infer<typeof SurveyBlockRecord>;

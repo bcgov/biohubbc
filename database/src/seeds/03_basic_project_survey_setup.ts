@@ -92,6 +92,7 @@ export async function seed(knex: Knex): Promise<void> {
           ${insertMethodTechnique(surveyId)}
           ${insertSurveySamplingMethodData(surveyId)}
           ${insertSurveySamplePeriodData(surveyId)}
+          ${insertSurveyBlockData(surveyId)}
         `);
 
         // Insert regions into surveys
@@ -178,6 +179,49 @@ const insertSurveyParticipationData = (surveyId: number) => `
         ), 1)
       ),
       (SELECT survey_job_id FROM survey_job LIMIT 1)
+    )
+  ;
+`;
+
+const insertSurveyBlockData = (surveyId: number) => `
+  INSERT into survey_block
+    ( survey_id, name, description, geojson )
+  VALUES
+    (
+      ${surveyId},
+      '${faker.lorem.words(2)}',
+      '${faker.lorem.words(10)}',
+      '{
+          "type": "Feature",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  -121.904297,
+                  50.930738
+                ],
+                [
+                  -121.904297,
+                  51.971346
+                ],
+                [
+                  -120.19043,
+                  51.971346
+                ],
+                [
+                  -120.19043,
+                  50.930738
+                ],
+                [
+                  -121.904297,
+                  50.930738
+                ]
+              ]
+            ]
+          },
+          "properties": {}
+      }'
     )
   ;
 `;

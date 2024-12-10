@@ -159,7 +159,12 @@ export const SurveySamplingTableContainer = () => {
 
       <Stack display="flex" direction="row" height="400px">
         <Box flex="0 0 auto" flexDirection="column" justifyContent="space-between" p={2} width="250px">
-          <CustomToggleButtonGroup views={views} activeView={activeView} onViewChange={setActiveView} />
+          <CustomToggleButtonGroup
+            views={views}
+            activeView={activeView}
+            onViewChange={setActiveView}
+            orientation="vertical"
+          />
         </Box>
 
         <Divider flexItem orientation="vertical" />
