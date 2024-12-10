@@ -24,7 +24,7 @@ export const POST: Operation = [
       ]
     };
   }),
-  deleteSurveyBlockRecords()
+  deleteSurveyBlocks()
 ];
 
 POST.apiDoc = {
@@ -101,7 +101,7 @@ POST.apiDoc = {
   }
 };
 
-export function deleteSurveyBlockRecords(): RequestHandler {
+export function deleteSurveyBlocks(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
     const surveyBlockIds = req.body.surveyBlockIds as number[];
@@ -125,7 +125,7 @@ export function deleteSurveyBlockRecords(): RequestHandler {
 
       return res.status(204).send();
     } catch (error) {
-      defaultLog.error({ label: 'deletesurveyBlockRecords', message: 'error', error });
+      defaultLog.error({ label: 'deleteSurveyBlocks', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

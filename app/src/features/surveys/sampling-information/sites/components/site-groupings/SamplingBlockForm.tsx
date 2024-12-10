@@ -27,6 +27,7 @@ import { TransitionGroup } from 'react-transition-group';
 export const SamplingBlockForm = () => {
   const { values, setFieldValue } = useFormikContext<IGetSampleLocationDetails>();
   const surveyContext = useContext(SurveyContext);
+  const [searchText, setSearchText] = useState('');
 
   const biohubApi = useBiohubApi();
 
@@ -36,11 +37,10 @@ export const SamplingBlockForm = () => {
 
   useEffect(() => {
     samplingBlocksDataLoader.load();
-  }, []);
+  }, [samplingBlocksDataLoader]);
 
   const options = samplingBlocksDataLoader.data?.blocks ?? [];
 
-  const [searchText, setSearchText] = useState('');
 
   const handleAddBlock = (block: IGetSurveyBlock) => {
     setFieldValue(`blocks[${values.blocks.length}]`, block);

@@ -41,7 +41,7 @@ export const CreateBlockPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Fetch blocks to determine the number of blocks in the survey,
-  // used for generating unique names of new clusters (eg. "Cluster 1", "Cluster 2", etc.)
+  // used for generating unique names of new clusters (eg. starting at "Cluster 5" instead of "Cluster 1")
   const blocksDataLoader = useDataLoader(() =>
     biohubApi.block.getSurveyBlocks(surveyContext.projectId, surveyContext.surveyId)
   );

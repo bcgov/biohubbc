@@ -31,7 +31,7 @@ export const GET: Operation = [
       ]
     };
   }),
-  getSurveyBlocks()
+  getSurveyBlockById()
 ];
 
 GET.apiDoc = {
@@ -132,7 +132,7 @@ GET.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-export function getSurveyBlocks(): RequestHandler {
+export function getSurveyBlockById(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req.keycloak_token);
 

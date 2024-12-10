@@ -57,6 +57,28 @@ describe('SurveyBlockService', () => {
     });
   });
 
+  describe('getSurveyBlocksCountBySurveyId', () => {
+    it('should successfully get block count for survey', async () => {
+      const mockResponse = {
+        rows: [
+          {
+            count: 1
+          }
+        ],
+        rowCount: 1
+      } as any as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({
+        sql: () => mockResponse
+      });
+
+      const mockSurveyId = 1;
+      const service = new SurveyBlockService(dbConnection);
+      const response = await service.getSurveyBlocksCountBySurveyId(mockSurveyId);
+
+      expect(response).to.eql(1);
+    });
+  });
+
   describe('upsertSurveyBlocks', () => {
     it('should succeed with valid data', async () => {
       const dbConnection = getMockDBConnection();
@@ -110,7 +132,7 @@ describe('SurveyBlockService', () => {
         .stub(SampleBlockService.prototype, 'deleteSampleBlockRecordsByBlockIds')
         .resolves(undefined);
 
-      const deleteSurveyBlockRecordStub = sinon
+      const deleteSurveyBlockstub = sinon
         .stub(SurveyBlockRepository.prototype, 'deleteSurveyBlockRecord')
         .resolves(mockResponse);
 
@@ -123,7 +145,7 @@ describe('SurveyBlockService', () => {
 
       expect(response).to.eql(mockResponse);
       expect(deleteSampleBlockRecordsByBlockIdsStub).to.have.been.calledOnceWith(mockSurveyId, [surveyBlockId]);
-      expect(deleteSurveyBlockRecordStub).to.have.been.calledOnceWith(surveyBlockId);
+      expect(deleteSurveyBlockstub).to.have.been.calledOnceWith(surveyBlockId);
     });
   });
 });

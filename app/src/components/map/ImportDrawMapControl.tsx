@@ -36,7 +36,7 @@ export interface IImportDrawMapControlProps {
   handleFeatureSelect?: (feature: Feature) => void;
   tooltip?: (feature: Feature) => ReactElement;
   selectedFeatures?: Feature[];
-  regions?: Feature[]; // Optional for selectable regions
+  regions?: Feature[]; // Optional for selectable BCGW layers
   dialogTitle?: string;
   drawControlsRef?: React.MutableRefObject<IDrawControlsRef | null>;
 }

@@ -19,11 +19,7 @@ const useBlockApi = (axios: AxiosInstance) => {
    *
    * @param {number} projectId
    * @param {number} surveyId
-   * @param {{
-   *       keyword?: string;
-   *       pagination?: ApiPaginationOptions;
-   *     }} [options]
-   * *
+   * @param {number} surveyBlockId
    * @returns {*} {Promise<IGetSurveyBlock}
    */
   const getSurveyBlockById = async (
@@ -37,7 +33,7 @@ const useBlockApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Get survey blocks
+   * Get blocks for the survey
    *
    * @param {number} projectId
    * @param {number} surveyId

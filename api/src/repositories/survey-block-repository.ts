@@ -85,7 +85,7 @@ export class SurveyBlockRepository extends BaseRepository {
    * @param {number} surveyId
    * @param {{
    *       keyword?: string;
-   *       sampleSiteIds?: number[];
+   *       surveyBlockIds?: number[];
    *       pagination?: ApiPaginationOptions;
    *     }} [options]
    * @return {*}  {Promise<SurveyBlockNonSpatial[]>}
@@ -114,12 +114,10 @@ export class SurveyBlockRepository extends BaseRepository {
       .where('sb.survey_id', surveyId)
       .groupBy('sb.survey_block_id', 'sb.survey_id', 'sb.name', 'sb.description', 'sb.geojson', 'sb.revision_count');
 
-    // Add filters for sample site IDs
     if (options?.surveyBlockIds && options?.surveyBlockIds.length > 0) {
       queryBuilder.whereIn('sb.survey_block_id', options.surveyBlockIds);
     }
 
-    // Add keyword filtering
     if (options?.keyword) {
       queryBuilder.andWhere((qb) => {
         qb.orWhere('sb.name', 'ilike', `%${options.keyword}%`).orWhere(
@@ -130,7 +128,6 @@ export class SurveyBlockRepository extends BaseRepository {
       });
     }
 
-    // Add pagination logic
     if (options?.pagination) {
       const { limit, page, sort, order } = options.pagination;
 

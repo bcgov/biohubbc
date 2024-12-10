@@ -27,11 +27,12 @@ export interface CollapsibleCardListProps<T> {
    */
   onSelectItem?: (item: T) => void;
   /**
-   * Handler for when all card items are selected
+   * Handler for when all card items are selected using the 'Select All' button in the toolbar
    */
   onSelectAll?: () => void;
   /**
-   * Whether to hide the toolbar for expanding/collapsing and selecting all items
+   * Whether to hide the toolbar for expanding/collapsing and selecting all items. If hideToolbar is false and onSelectItem is undefined, 
+   * cards do not appear to be selectable.
    */
   hideToolbar?: boolean;
 }
@@ -52,16 +53,14 @@ const CollapsibleCardList = <T extends { label: string; uuid?: string }>(props: 
   };
 
   // Checkbox state to determine which icon to display in the checkbox
-  // (minus sign if a subset of items are selected, checkmark sign if all items selected)
+  // (minus sign if a subset of items are selected, checkmark sign if all items selected, like MUI's default for datagrid row selection)
   const allSelected = selectedItems.length === items.length;
   const indeterminate = selectedItems.length > 0 && !allSelected;
 
   const toggleExpandCollapseAll = () => {
     if (collapsedIndexes.length === 0) {
-      // If nothing is collapsed, collapse all
       setCollapsedIndexes(items.map((_, idx) => idx));
     } else {
-      // If something is collapsed, expand all
       setCollapsedIndexes([]);
     }
   };

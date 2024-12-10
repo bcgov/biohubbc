@@ -82,7 +82,7 @@ export type IStaticLayer = {
    */
   tooltip?: (feature: IStaticLayerFeature) => ReactElement;
   /**
-   * A function called when an individual feature on the map is clicked
+   * Callback for when an individual feature on the map is clicked
    */
   handleClick?: (feature: Feature) => void;
 };

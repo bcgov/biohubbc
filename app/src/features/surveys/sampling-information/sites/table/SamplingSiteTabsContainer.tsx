@@ -80,7 +80,7 @@ export const SamplingSiteTabsContainer = () => {
     dialogContext.setYesNoDialog({
       dialogTitle: 'Delete Cluster?',
       dialogContent: (
-        <Typography variant="body1" component="div" color="textSecondary">
+        <Typography component="div" color="textSecondary">
           Are you sure you want to delete the selected clusters?
         </Typography>
       ),
@@ -130,7 +130,7 @@ export const SamplingSiteTabsContainer = () => {
     dialogContext.setYesNoDialog({
       dialogTitle: 'Delete Sampling Sites?',
       dialogContent: (
-        <Typography variant="body1" component="div" color="textSecondary">
+        <Typography component="div" color="textSecondary">
           Are you sure you want to delete the selected sampling sites?
         </Typography>
       ),

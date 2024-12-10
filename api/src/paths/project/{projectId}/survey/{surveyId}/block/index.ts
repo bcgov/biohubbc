@@ -154,7 +154,7 @@ export const GET: Operation = [
       ]
     };
   }),
-  getSurveyBlocks()
+  getSurveyBlocksForSurveyId()
 ];
 
 GET.apiDoc = {
@@ -262,11 +262,11 @@ GET.apiDoc = {
 };
 
 /**
- * Get all survey blocks, paginated or filtered by keyword.
+ * Get all survey blocks, paginated or filtered by keyword, for the given survey
  *
  * @returns {RequestHandler}
  */
-export function getSurveyBlocks(): RequestHandler {
+export function getSurveyBlocksForSurveyId(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req.keycloak_token);
 

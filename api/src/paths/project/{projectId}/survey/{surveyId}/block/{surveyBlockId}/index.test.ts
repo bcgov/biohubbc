@@ -6,11 +6,12 @@ import * as db from '../../../../../../../database/db';
 import { HTTPError } from '../../../../../../../errors/http-error';
 import { SurveyBlockService } from '../../../../../../../services/survey-block-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../__mocks__/db';
-import { getSurveyBlocks, updateSurveyBlock } from './index';
+import { updateSurveyBlock } from '.';
+import { getSurveyBlocksForSurveyId } from '..';
 
 chai.use(sinonChai);
 
-describe('getSurveyBlocks', () => {
+describe('getSurveyBlockById', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -38,7 +39,7 @@ describe('getSurveyBlocks', () => {
 
     mockReq.params = { surveyId: '1', surveyBlockId: '1' };
 
-    const requestHandler = getSurveyBlocks();
+    const requestHandler = getSurveyBlocksForSurveyId();
 
     await requestHandler(mockReq, mockRes, mockNext);
 
@@ -74,7 +75,7 @@ describe('getSurveyBlocks', () => {
 
     mockReq.params = { surveyId: '1', surveyBlockId: '1' };
 
-    const requestHandler = getSurveyBlocks();
+    const requestHandler = getSurveyBlocksForSurveyId();
 
     try {
       await requestHandler(mockReq, mockRes, mockNext);

@@ -16,47 +16,49 @@ describe('SurveyBlockRepository', () => {
 
   describe('getSurveyBlocksForSurveyId', () => {
     it('should succeed with valid data', async () => {
+      const mockRows = [
+        {
+          survey_block_id: 1,
+          survey_id: 1,
+          name: '',
+          description: '',
+          geojson: '',
+          create_date: '',
+          create_user: 1,
+          update_date: '',
+          update_user: 1,
+          revision_count: 1
+        }
+      ];
       const mockResponse = {
-        rows: [
-          {
-            survey_block_id: 1,
-            survey_id: 1,
-            name: '',
-            description: '',
-            geojson: '',
-            create_date: '',
-            create_user: 1,
-            update_date: '',
-            update_user: 1,
-            revision_count: 1
-          }
-        ],
+        rows: mockRows,
         rowCount: 1
       } as any as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({
+      const dbConnectionObj = getMockDBConnection({
         knex: () => mockResponse
       });
 
-      const repo = new SurveyBlockRepository(dbConnection);
-      const response = await repo.getSurveyBlocksForSurveyId(1);
+      const mockSurveyId = 1;
+      const repo = new SurveyBlockRepository(dbConnectionObj);
+      const response = await repo.getSurveyBlocksForSurveyId(mockSurveyId);
 
-      response.forEach((item) => {
-        expect(item.survey_id).to.be.eql(1);
-      });
+      expect(response).to.equal(mockRows);
     });
 
     it('should succeed with empty data', async () => {
+      const mockRows: any[] = [];
       const mockResponse = {
-        rows: [],
+        rows: mockRows,
         rowCount: 0
       } as any as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({
         knex: () => mockResponse
       });
 
+      const mockSurveyId = 1;
       const repo = new SurveyBlockRepository(dbConnection);
-      const response = await repo.getSurveyBlocksForSurveyId(1);
-      expect(response).to.be.empty;
+      const response = await repo.getSurveyBlocksForSurveyId(mockSurveyId);
+      expect(response).to.eql(mockRows);
     });
   });
 

@@ -90,7 +90,7 @@ export const SurveyBlocksTable = (props: ISurveyBlocksTableProps) => {
           snackbarMessage: (
             <>
               <Typography variant="body2" component="div">
-                <strong>Error Deleting SamplingSite</strong>
+                <strong>Error Deleting Sampling Site</strong>
               </Typography>
               <Typography variant="body2" component="div">
                 {String(error)}
@@ -103,7 +103,7 @@ export const SurveyBlocksTable = (props: ISurveyBlocksTableProps) => {
   };
 
   /**
-   * Display the delete samplingSite dialog.
+   * Display the delete sampling site dialog.
    *
    */
   const handlePromptConfirmDelete = () => {
