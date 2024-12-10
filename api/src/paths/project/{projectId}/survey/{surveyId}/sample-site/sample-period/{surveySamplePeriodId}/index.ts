@@ -1,11 +1,11 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../../database/db';
+import { UpdateSamplePeriodObject } from '../../../../../../../../models/sample-period';
 import { authorizeRequestHandler } from '../../../../../../../../request-handlers/security/authorization';
 import { SamplePeriodService } from '../../../../../../../../services/sample-period-service';
 import { getLogger } from '../../../../../../../../utils/logger';
-import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../../constants/roles';
-import { UpdateSamplePeriodRecord } from '../../../../../../../../repositories/sample-period-repository';
 
 const defaultLog = getLogger(
   'paths/project/{projectId}/survey/{surveyId}/sample-site/sample-period/{surveySamplePeriodId}/index'
@@ -251,24 +251,6 @@ PUT.apiDoc = {
     },
     {
       in: 'path',
-      name: 'surveySampleSiteId',
-      schema: {
-        type: 'integer',
-        minimum: 1
-      },
-      required: true
-    },
-    {
-      in: 'path',
-      name: 'surveySampleMethodId',
-      schema: {
-        type: 'integer',
-        minimum: 1
-      },
-      required: true
-    },
-    {
-      in: 'path',
       name: 'surveySamplePeriodId',
       schema: {
         type: 'integer',
@@ -289,6 +271,11 @@ PUT.apiDoc = {
             method_technique_id: {
               type: 'integer',
               description: 'Primary key of the period',
+              nullable: true
+            },
+            survey_sample_site_id: {
+              type: 'integer',
+              description: 'Primary key of the sample site',
               nullable: true
             },
             sample_period: {
@@ -358,14 +345,13 @@ export function updateSamplePeriod(): RequestHandler {
     const connection = getDBConnection(req.keycloak_token);
 
     try {
-      const samplePeriod = req.body.sample_period as UpdateSamplePeriodRecord;
-      const method_technique_id = Number(req.body.method_technique_id);
+      const samplePeriod = req.body as UpdateSamplePeriodObject;
 
       await connection.open();
 
       const samplePeriodService = new SamplePeriodService(connection);
 
-      await samplePeriodService.updateSamplePeriod(surveyId, { sample_period: samplePeriod, method_technique_id });
+      await samplePeriodService.updateSamplePeriod(surveyId, samplePeriod);
 
       await connection.commit();
 

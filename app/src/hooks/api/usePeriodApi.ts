@@ -107,17 +107,11 @@ export const usePeriodApi = (axios: AxiosInstance) => {
   const updateSamplePeriod = async (
     projectId: number,
     surveyId: number,
-    surveySampleSiteId: number,
     data: IUpdateSamplingPeriodRequest
   ): Promise<void> => {
-    const siteId = surveySampleSiteId;
-    const methodId = data.sample_period.survey_sample_method_id;
     const periodId = data.sample_period.survey_sample_period_id;
 
-    await axios.put(
-      `/api/project/${projectId}/survey/${surveyId}/sample-site/${siteId}/sample-method/${methodId}/sample-period/${periodId}`,
-      data
-    );
+    await axios.put(`/api/project/${projectId}/survey/${surveyId}/sample-site/sample-period/${periodId}`, data);
   };
 
   return {

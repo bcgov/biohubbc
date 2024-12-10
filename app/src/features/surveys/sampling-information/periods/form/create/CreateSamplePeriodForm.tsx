@@ -38,7 +38,7 @@ const CreateSamplePeriodForm = (props: ICreateSamplePeriodFormProps) => {
 
   useEffect(() => {
     sampleSitesDataLoader.load();
-  }, []);
+  }, [sampleSitesDataLoader]);
 
   return (
     <Container maxWidth="xl" sx={{ py: 3 }}>

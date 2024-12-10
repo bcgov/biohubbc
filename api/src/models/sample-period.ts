@@ -40,6 +40,7 @@ export type SurveySamplePeriodDetails = z.infer<typeof SurveySamplePeriodDetails
 
 export interface UpdateSamplePeriodObject {
   method_technique_id: number;
+  survey_sample_site_id: number;
   sample_period: UpdateSamplePeriodRecord;
 }
 

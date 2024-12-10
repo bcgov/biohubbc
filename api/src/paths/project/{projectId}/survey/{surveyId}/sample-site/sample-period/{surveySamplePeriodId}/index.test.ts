@@ -91,8 +91,11 @@ describe('getSamplePeriodById', () => {
   });
 });
 
-
 describe('updateSamplePeriod', () => {
+  afterEach(() => {
+    sinon.restore();
+  });
+
   it('should successfully update a survey sample period', async () => {
     const mockDBConnection = getMockDBConnection({
       open: sinon.stub(),

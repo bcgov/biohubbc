@@ -107,7 +107,7 @@ export const CreateSamplePeriodPage = () => {
 
   useEffect(() => {
     codesContext.codesDataLoader.load();
-  }, []);
+  }, [codesContext.codesDataLoader]);
 
   const formikRef = useRef<FormikProps<ICreateSamplePeriodFormData>>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -137,6 +137,7 @@ export const CreateSamplePeriodPage = () => {
     try {
       setIsSubmitting(true);
 
+      // TODO: Move method response metric to be an attribute of a technique
       const MOCK_METHOD_RESPONSE_METRIC_ID = codesContext.codesDataLoader.data?.method_response_metrics[0].id as number;
 
       // Remove the temporary v4() id used as a formik key
@@ -146,8 +147,6 @@ export const CreateSamplePeriodPage = () => {
           survey_sample_site_id: site.survey_sample_site_id,
           method_response_metric_id: MOCK_METHOD_RESPONSE_METRIC_ID,
           sample_periods: site.sample_periods.map((period) => ({
-            survey_sample_period_id: null,
-            survey_sample_method_id: null,
             start_date: period.start_date,
             start_time: period.start_time,
             end_date: period.end_date,
@@ -155,6 +154,7 @@ export const CreateSamplePeriodPage = () => {
           }))
         }))
       };
+
       await biohubApi.period.createSamplePeriods(surveyContext.projectId, surveyContext.surveyId, data);
 
       // create complete, navigate back to observations page

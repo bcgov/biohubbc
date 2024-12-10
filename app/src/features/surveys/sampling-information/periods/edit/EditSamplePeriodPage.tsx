@@ -39,11 +39,7 @@ export const EditSamplingSiteMethodPeriodYupSchema = yup.object({
                 .isValidDateString()
                 .required('End Date is required')
                 .isEndDateSameOrAfterStartDate('start_date'),
-              start_time: yup.string().when('end_time', {
-                is: (val: string | null) => val && val !== null,
-                then: yup.string().typeError('Start Time is required').required('Start Time is required'),
-                otherwise: yup.string().nullable()
-              }),
+              start_time: yup.string().nullable(),
               end_time: yup.string().nullable()
             })
             .test(
@@ -101,7 +97,7 @@ export const EditSamplePeriodPage = () => {
 
   useEffect(() => {
     codesContext.codesDataLoader.load();
-  }, []);
+  }, [codesContext.codesDataLoader]);
 
   const samplingPeriodDataLoader = useDataLoader(() =>
     biohubApi.period.getSamplePeriodById(surveyContext.projectId, surveyContext.surveyId, surveySamplePeriodId)
@@ -143,15 +139,11 @@ export const EditSamplePeriodPage = () => {
     try {
       setIsSubmitting(true);
 
-      await biohubApi.period.updateSamplePeriod(
-        surveyContext.projectId,
-        surveyContext.surveyId,
-        values.sample_site.survey_sample_site_id,
-        {
-          method_technique_id: values.method_technique_id,
-          sample_period: values.sample_site.sample_periods[0]
-        }
-      );
+      await biohubApi.period.updateSamplePeriod(surveyContext.projectId, surveyContext.surveyId, {
+        method_technique_id: values.method_technique_id,
+        survey_sample_site_id: values.sample_site.survey_sample_site_id,
+        sample_period: values.sample_site.sample_periods[0]
+      });
 
       // create complete, navigate back to observations page
       history.push(

@@ -14,7 +14,11 @@ export const POST: Operation = [
     return {
       or: [
         {
-          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR],
+          validProjectPermissions: [
+            PROJECT_PERMISSION.COORDINATOR,
+            PROJECT_PERMISSION.COORDINATOR,
+            PROJECT_PERMISSION.COLLABORATOR
+          ],
           surveyId: Number(req.params.surveyId),
           discriminator: 'ProjectPermission'
         },
@@ -86,7 +90,8 @@ POST.apiDoc = {
                   // TODO: Remove method response metric from sample periods
                   method_response_metric_id: {
                     type: 'integer',
-                    description: 'This should be moved to be an attribute of a technique instead of a survey_sample_method'
+                    description:
+                      'This should be moved to be an attribute of a technique instead of a survey_sample_method'
                   },
                   sample_periods: {
                     type: 'array',
@@ -115,7 +120,7 @@ POST.apiDoc = {
                           nullable: true
                         }
                       }
-                    },
+                    }
                   }
                 }
               }

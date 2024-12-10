@@ -181,13 +181,13 @@ describe('SampleMethodService', () => {
             end_date: '2023-01-02',
             start_date: '2023-10-02',
             start_time: '12:00:00',
-            end_time: '13:00:00',
+            end_time: '13:00:00'
           },
           {
             end_date: '2023-10-03',
             start_date: '2023-11-05',
             start_time: '12:00:00',
-            end_time: '13:00:00',
+            end_time: '13:00:00'
           }
         ]
       };

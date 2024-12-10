@@ -194,6 +194,7 @@ describe('SamplePeriodService', () => {
 
       const samplePeriod: UpdateSamplePeriodObject = {
         method_technique_id: 1,
+        survey_sample_site_id: 1,
         sample_period: {
           survey_sample_method_id: 1,
           survey_sample_period_id: 2,

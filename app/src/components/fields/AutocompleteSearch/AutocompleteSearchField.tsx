@@ -86,6 +86,7 @@ export const AutocompleteSearchField = <T extends { id: string | number; name: s
     handleSearch('', (newOptions) => {
       setOptions(newOptions);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refreshKey]);
 
   return (

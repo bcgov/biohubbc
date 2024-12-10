@@ -124,11 +124,11 @@ export const SamplingPeriodContainer = () => {
   }, [periodsPagination]);
 
   const periodCount = periodsDataLoader.data?.pagination.total ?? 0;
-  const periods = periodsDataLoader.data?.periods ?? [];
 
   const rows: ISamplingSitePeriodRowData[] = useMemo(() => {
-    const data: ISamplingSitePeriodRowData[] = [];
+    const periods = periodsDataLoader.data?.periods ?? []; // Extract periods directly within the memo
 
+    const data: ISamplingSitePeriodRowData[] = [];
     for (const period of periods) {
       data.push({
         survey_sample_period_id: period.survey_sample_period_id,
@@ -143,7 +143,7 @@ export const SamplingPeriodContainer = () => {
     }
 
     return data;
-  }, [periods]);
+  }, [periodsDataLoader.data]);
 
   return (
     <Stack
@@ -216,7 +216,7 @@ export const SamplingPeriodContainer = () => {
           isLoading={!periodsDataLoader.data && (periodsDataLoader.isLoading || !periodsDataLoader.isReady)}
           isLoadingFallback={<SkeletonTable />}
           isLoadingFallbackDelay={100}
-          hasNoData={!periods.length}
+          hasNoData={!rows.length}
           hasNoDataFallback={
             <NoDataOverlay
               height="100%"
