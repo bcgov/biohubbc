@@ -37,7 +37,8 @@ GET.apiDoc = {
               'site_selection_strategies',
               'survey_progress',
               'method_response_metrics',
-              'attractants'
+              'attractants',
+              'vantages'
             ],
             properties: {
               management_action_type: {
@@ -365,6 +366,48 @@ GET.apiDoc = {
                 type: 'array',
                 description:
                   'Possible observation subcount sign ids, indicating whether the subcount was a direct sighting, footprints, scat, etc.',
+                items: {
+                  type: 'object',
+                  additionalProperties: false,
+                  required: ['id', 'name', 'description'],
+                  properties: {
+                    id: {
+                      type: 'integer',
+                      minimum: 1
+                    },
+                    name: {
+                      type: 'string'
+                    },
+                    description: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
+              alert_types: {
+                type: 'array',
+                description: 'Alert type options for system administrators managing alert messages.',
+                items: {
+                  type: 'object',
+                  additionalProperties: false,
+                  required: ['id', 'name', 'description'],
+                  properties: {
+                    id: {
+                      type: 'integer',
+                      minimum: 1
+                    },
+                    name: {
+                      type: 'string'
+                    },
+                    description: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
+              vantages: {
+                type: 'array',
+                description: 'Vantages that vantage modes belong to.',
                 items: {
                   type: 'object',
                   additionalProperties: false,

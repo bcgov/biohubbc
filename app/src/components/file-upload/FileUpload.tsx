@@ -19,10 +19,6 @@ export interface IUploadFile {
   error?: string;
 }
 
-export interface IUploadFileListProps {
-  files: IUploadFile[];
-}
-
 export type IReplaceHandler = () => void;
 
 export interface IFileUploadProps {

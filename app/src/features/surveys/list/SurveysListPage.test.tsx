@@ -18,6 +18,12 @@ const history = createMemoryHistory();
 jest.mock('../../../hooks/useBioHubApi');
 const mockBiohubApi = useBiohubApi as jest.Mock;
 
+jest.mock('../../../components/markdown/CustomMarkdown', () => {
+  // Overriding this component because it is ESM only and Jest does not support ESM.
+  // See https://github.com/orgs/remarkjs/discussions/1247 for more information.
+  return {};
+});
+
 const mockUseApi = {
   survey: {
     getSurveysBasicFieldsByProjectId: jest.fn()

@@ -354,10 +354,19 @@ export class ObservationSubCountEnvironmentRepository extends BaseRepository {
         'environment_qualitative.environment_qualitative_id'
       );
 
+    const searchConditions = [];
+
     for (const searchTerm of searchTerms) {
-      queryBuilder
-        .where('environment_qualitative.name', 'ILIKE', `%${searchTerm}%`)
-        .orWhere('environment_qualitative.description', 'ILIKE', `%${searchTerm}%`);
+      searchConditions.push(
+        knex.raw('environment_qualitative.name ILIKE ? OR environment_qualitative.description ILIKE ?', [
+          `%${searchTerm}%`,
+          `%${searchTerm}%`
+        ])
+      );
+    }
+
+    if (searchConditions.length > 0) {
+      queryBuilder.whereRaw(searchConditions.join(' OR '));
     }
 
     queryBuilder.groupBy(
@@ -381,7 +390,9 @@ export class ObservationSubCountEnvironmentRepository extends BaseRepository {
   async findQuantitativeEnvironmentTypeDefinitions(
     searchTerms: string[]
   ): Promise<QuantitativeEnvironmentTypeDefinition[]> {
-    const queryBuilder = getKnex()
+    const knex = getKnex();
+
+    const queryBuilder = knex
       .select(
         'environment_quantitative.environment_quantitative_id',
         'environment_quantitative.name',
@@ -392,10 +403,19 @@ export class ObservationSubCountEnvironmentRepository extends BaseRepository {
       )
       .from('environment_quantitative');
 
+    const searchConditions = [];
+
     for (const searchTerm of searchTerms) {
-      queryBuilder
-        .where('environment_quantitative.name', 'ILIKE', `%${searchTerm}%`)
-        .orWhere('environment_quantitative.description', 'ILIKE', `%${searchTerm}%`);
+      searchConditions.push(
+        knex.raw('environment_quantitative.name ILIKE ? OR environment_quantitative.description ILIKE ?', [
+          `%${searchTerm}%`,
+          `%${searchTerm}%`
+        ])
+      );
+    }
+
+    if (searchConditions.length > 0) {
+      queryBuilder.whereRaw(searchConditions.join(' OR '));
     }
 
     const response = await this.connection.knex(queryBuilder, QuantitativeEnvironmentTypeDefinition);

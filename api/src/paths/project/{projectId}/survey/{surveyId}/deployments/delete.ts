@@ -59,6 +59,7 @@ POST.apiDoc = {
   ],
   requestBody: {
     description: 'Array of one or more deployment IDs to delete.',
+    required: true,
     content: {
       'application/json': {
         schema: {

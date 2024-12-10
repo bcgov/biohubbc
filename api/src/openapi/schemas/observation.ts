@@ -1,5 +1,6 @@
 import { OpenAPIV3 } from 'openapi-types';
 import { paginationResponseSchema } from './pagination';
+import { SampleLocationSchema } from './sample-site';
 
 export const observervationsWithSubcountDataSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
@@ -60,19 +61,27 @@ export const observervationsWithSubcountDataSchema: OpenAPIV3.SchemaObject = {
             nullable: true
           },
           latitude: {
-            type: 'number'
+            type: 'number',
+            nullable: true,
+            minimum: -90,
+            maximum: 90
           },
           longitude: {
-            type: 'number'
+            type: 'number',
+            nullable: true,
+            minimum: -180,
+            maximum: 180
           },
           count: {
             type: 'integer'
           },
           observation_date: {
-            type: 'string'
+            type: 'string',
+            nullable: true
           },
           observation_time: {
-            type: 'string'
+            type: 'string',
+            nullable: true
           },
           survey_sample_site_name: {
             type: 'string',
@@ -95,6 +104,7 @@ export const observervationsWithSubcountDataSchema: OpenAPIV3.SchemaObject = {
                 'observation_subcount_id',
                 'subcount',
                 'observation_subcount_sign_id',
+                'comment',
                 'qualitative_measurements',
                 'quantitative_measurements',
                 'qualitative_environments',
@@ -109,6 +119,11 @@ export const observervationsWithSubcountDataSchema: OpenAPIV3.SchemaObject = {
                   minimum: 1,
                   description:
                     'The observation subcount sign ID, indicating whether the subcount was a direct sighting, footprints, scat, etc.'
+                },
+                comment: {
+                  type: 'string',
+                  nullable: true,
+                  description: 'A comment or note about the subcount record.'
                 },
                 subcount: {
                   type: 'number'
@@ -211,7 +226,8 @@ export const observervationsWithSubcountDataSchema: OpenAPIV3.SchemaObject = {
         'qualitative_measurements',
         'quantitative_measurements',
         'qualitative_environments',
-        'quantitative_environments'
+        'quantitative_environments',
+        'sample_sites'
       ],
       properties: {
         observationCount: {
@@ -398,7 +414,8 @@ export const observervationsWithSubcountDataSchema: OpenAPIV3.SchemaObject = {
               }
             }
           }
-        }
+        },
+        sample_sites: SampleLocationSchema
       }
     },
     pagination: { ...paginationResponseSchema }

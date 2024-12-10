@@ -9,7 +9,9 @@ import DailyRotateFile from 'winston-daily-rotate-file';
 const getLoggerTransportTypes = (): string[] => {
   const transportTypes = [];
 
-  if (process.env.npm_lifecycle_event !== 'test') {
+  // Do not output logs to file when running unit tests
+  // Note: Both lifecycle events are needed to prevent log files ie: `npm run test` or `npm run test-watch`
+  if (process.env.npm_lifecycle_event !== 'test' && process.env.npm_lifecycle_event !== 'test-watch') {
     transportTypes.push('file');
   }
 

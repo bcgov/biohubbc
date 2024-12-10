@@ -46,24 +46,6 @@ export const SpeciesYupSchema = yup.object().shape({
       )
       .min(1, 'You must specify a focal species')
       .required('Required')
-      .test('is-unique-ecological-unit', 'Ecological units must be unique', function () {
-        const focalSpecies = (this.options.context?.species.focal_species ?? []) as ITaxonomyWithEcologicalUnits[];
-
-        const seenCollectionUnitIts = new Set<string | null>();
-
-        for (const focalSpeciesItem of focalSpecies) {
-          for (const ecologicalUnit of focalSpeciesItem.ecological_units) {
-            if (seenCollectionUnitIts.has(ecologicalUnit.critterbase_collection_category_id)) {
-              // Duplicate ecological collection category id found, return false
-              return false;
-            }
-            seenCollectionUnitIts.add(ecologicalUnit.critterbase_collection_category_id);
-          }
-        }
-
-        // Valid, return true
-        return true;
-      })
   })
 });
 

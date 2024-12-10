@@ -42,6 +42,7 @@ describe('findObservations', () => {
             observation_subcount_id: 9,
             subcount: 5,
             observation_subcount_sign_id: 1,
+            comment: 'comment',
             qualitative_measurements: [],
             quantitative_measurements: [],
             qualitative_environments: [],
@@ -103,7 +104,8 @@ describe('findObservations', () => {
       qualitative_measurements: [],
       quantitative_measurements: [],
       qualitative_environments: [],
-      quantitative_environments: []
+      quantitative_environments: [],
+      sample_sites: []
     });
     expect(mockRes.jsonValue.pagination).not.to.be.null;
 
@@ -133,6 +135,7 @@ describe('findObservations', () => {
             observation_subcount_id: 9,
             subcount: 5,
             observation_subcount_sign_id: 1,
+            comment: 'comment',
             qualitative_measurements: [],
             quantitative_measurements: [],
             qualitative_environments: [],

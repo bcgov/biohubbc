@@ -41,7 +41,7 @@ describe('UsersDetailHeader', () => {
   });
 
   it('renders correctly when selectedUser are loaded', async () => {
-    history.push('/admin/users/1');
+    history.push('/admin/manage/users/1');
 
     const { getAllByTestId } = render(
       <Router history={history}>
@@ -56,7 +56,7 @@ describe('UsersDetailHeader', () => {
 
   describe('Are you sure? Dialog', () => {
     it('Remove User button opens dialog', async () => {
-      history.push('/admin/users/1');
+      history.push('/admin/manage/users/1');
 
       const { getAllByText, getByText } = render(
         <DialogContextProvider>
@@ -74,7 +74,7 @@ describe('UsersDetailHeader', () => {
     });
 
     it('does nothing if the user clicks `Cancel` or away from the dialog', async () => {
-      history.push('/admin/users/1');
+      history.push('/admin/manage/users/1');
 
       const { getAllByText, getByText } = render(
         <DialogContextProvider>
@@ -93,16 +93,16 @@ describe('UsersDetailHeader', () => {
       fireEvent.click(getByText('Cancel'));
 
       await waitFor(() => {
-        expect(history.location.pathname).toEqual('/admin/users/1');
+        expect(history.location.pathname).toEqual('/admin/manage/users/1');
       });
     });
 
-    it('deletes the user and routes user back to Manage Users page', async () => {
+    it('deletes the user and routes user back to Admin page', async () => {
       mockUseApi.user.deleteSystemUser.mockResolvedValue({
         response: 200
       } as any);
 
-      history.push('/admin/users/1');
+      history.push('/admin/manage/users/1');
 
       const { getAllByText, getByText } = render(
         <DialogContextProvider>
@@ -121,7 +121,7 @@ describe('UsersDetailHeader', () => {
       fireEvent.click(getByText('Remove'));
 
       await waitFor(() => {
-        expect(history.location.pathname).toEqual('/admin/users');
+        expect(history.location.pathname).toEqual('/admin/manage/users');
       });
     });
   });

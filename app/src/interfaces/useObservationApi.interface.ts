@@ -7,6 +7,7 @@ import {
   EnvironmentQuantitativeTypeDefinition
 } from 'interfaces/useReferenceApi.interface';
 import { ApiPaginationResponseParams } from 'types/misc';
+import { IGetSampleLocationNonSpatialDetails } from './useSamplingSiteApi.interface';
 export interface IGetSurveyObservationsResponse {
   surveyObservations: ObservationRecordWithSamplingAndSubcountData[];
   supplementaryObservationData: SupplementaryObservationData;
@@ -20,7 +21,7 @@ export interface IGetSurveyObservationsGeometryObject {
 
 export interface IGetSurveyObservationsGeometryResponse {
   surveyObservationsGeometry: IGetSurveyObservationsGeometryObject[];
-  supplementaryObservationData: SupplementaryObservationData;
+  supplementaryObservationData: SupplementaryObservationCountData;
 }
 
 type ObservationSamplingData = {
@@ -37,8 +38,8 @@ export type StandardObservationColumns = {
   survey_sample_method_id: number | null;
   survey_sample_period_id: number | null;
   count: number | null;
-  observation_date: string;
-  observation_time: string;
+  observation_date: string | null;
+  observation_time: string | null;
   latitude: number | null;
   longitude: number | null;
 };
@@ -46,6 +47,7 @@ export type StandardObservationColumns = {
 export type SubcountObservationColumns = {
   observation_subcount_id: number | null;
   observation_subcount_sign_id: number;
+  comment: string | null;
   subcount: number | null;
   qualitative_measurements: {
     field: string;
@@ -65,6 +67,11 @@ export type SupplementaryObservationCountData = {
   observationCount: number;
 };
 
+export type ObservationSamplingSupplementaryData = {
+  //   sample_sites: IGetBasicSampleLocation[];
+  sample_sites: IGetSampleLocationNonSpatialDetails[];
+};
+
 export type SupplementaryObservationMeasurementData = {
   qualitative_measurements: CBQualitativeMeasurementTypeDefinition[];
   quantitative_measurements: CBQuantitativeMeasurementTypeDefinition[];
@@ -72,7 +79,9 @@ export type SupplementaryObservationMeasurementData = {
   quantitative_environments: EnvironmentQuantitativeTypeDefinition[];
 };
 
-export type SupplementaryObservationData = SupplementaryObservationCountData & SupplementaryObservationMeasurementData;
+export type SupplementaryObservationData = SupplementaryObservationCountData &
+  SupplementaryObservationMeasurementData &
+  ObservationSamplingSupplementaryData;
 
 type ObservationSubCountQualitativeMeasurementRecord = {
   observation_subcount_id: number;
@@ -144,6 +153,7 @@ type ObservationSubcountRecord = {
   observation_subcount_id: number;
   survey_observation_id: number;
   observation_subcount_sign_id: number;
+  comment: string;
   subcount: number | null;
   create_date: string;
   create_user: number;
@@ -155,6 +165,7 @@ type ObservationSubcountRecord = {
 type ObservationSubcountObject = {
   observation_subcount_id: ObservationSubcountRecord['observation_subcount_id'];
   observation_subcount_sign_id: ObservationSubcountRecord['observation_subcount_sign_id'];
+  comment: ObservationSubcountRecord['comment'];
   subcount: ObservationSubcountRecord['subcount'];
   qualitative_measurements: ObservationSubcountQualitativeMeasurementObject[];
   quantitative_measurements: ObservationSubcountQuantitativeMeasurementObject[];

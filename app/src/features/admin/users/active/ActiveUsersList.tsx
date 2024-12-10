@@ -18,7 +18,6 @@ import { APIError } from 'hooks/api/useAxios';
 import { useAuthStateContext } from 'hooks/useAuthStateContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext } from 'hooks/useContext';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { ISystemUser } from 'interfaces/useUserApi.interface';
 import { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
@@ -32,7 +31,6 @@ import AddSystemUsersForm, {
 
 export interface IActiveUsersListProps {
   activeUsers: ISystemUser[];
-  codes: IGetAllCodeSetsResponse;
   refresh: () => void;
 }
 
@@ -43,7 +41,7 @@ const pageSizeOptions = [10, 25, 50];
  *
  */
 const ActiveUsersList = (props: IActiveUsersListProps) => {
-  const { activeUsers, codes, refresh } = props;
+  const { activeUsers, refresh } = props;
 
   const authStateContext = useAuthStateContext();
   const biohubApi = useBiohubApi();
@@ -59,12 +57,18 @@ const ActiveUsersList = (props: IActiveUsersListProps) => {
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
 
+  const codes = codesContext.codesDataLoader.data;
+
+  if (!codes) {
+    return <></>;
+  }
+
   const activeUsersColumnDefs: GridColDef<ISystemUser>[] = [
     {
       field: 'system_user_id',
       headerName: 'ID',
-      width: 70,
-      minWidth: 70,
+      width: 85,
+      minWidth: 85,
       renderHeader: () => (
         <Typography color={grey[500]} variant="body2" fontWeight={700}>
           ID
@@ -86,7 +90,7 @@ const ActiveUsersList = (props: IActiveUsersListProps) => {
           <Link
             sx={{ fontWeight: 700 }}
             underline="always"
-            to={`/admin/users/${params.row.system_user_id}`}
+            to={`/admin/manage/users/${params.row.system_user_id}`}
             component={RouterLink}>
             {params.row.display_name || 'No identifier'}
           </Link>
@@ -159,7 +163,7 @@ const ActiveUsersList = (props: IActiveUsersListProps) => {
                 menuLabel: 'View Users Details',
                 menuOnClick: () =>
                   history.push({
-                    pathname: `/admin/users/${params.row.system_user_id}`,
+                    pathname: `/admin/manage/users/${params.row.system_user_id}`,
                     state: params.row
                   })
               },
@@ -408,7 +412,7 @@ const ActiveUsersList = (props: IActiveUsersListProps) => {
           </Button>
         </Toolbar>
         <Divider></Divider>
-        <Box p={2}>
+        <Box>
           <StyledDataGrid<ISystemUser>
             noRowsMessage="No Active Users"
             columns={activeUsersColumnDefs}

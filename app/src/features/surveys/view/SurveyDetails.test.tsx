@@ -16,6 +16,12 @@ const history = createMemoryHistory({ initialEntries: ['/admin/projects/1/survey
 jest.mock('../../../hooks/useBioHubApi');
 const mockBiohubApi = useBiohubApi as jest.Mock;
 
+jest.mock('../../../components/markdown/CustomMarkdown', () => {
+  // Overriding this component because it is ESM only and Jest does not support ESM.
+  // See https://github.com/orgs/remarkjs/discussions/1247 for more information.
+  return {};
+});
+
 const mockUseApi = {
   spatial: {
     getRegions: jest.fn<Promise<GetRegionsResponse>, []>()
@@ -51,9 +57,7 @@ describe('SurveyDetails', () => {
     }
   } as DataLoader<any, IGetSurveyForViewResponse, any>;
   const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
-  const mockSampleSiteDataLoader = { data: null } as DataLoader<any, any, any>;
   const mockCritterDataLoader = { data: [] } as DataLoader<any, any, any>;
-  const mockTechniqueDataLoader = { data: [] } as DataLoader<any, any, any>;
 
   it('renders correctly', async () => {
     const { getByText } = render(
@@ -64,8 +68,6 @@ describe('SurveyDetails', () => {
             surveyId: 1,
             surveyDataLoader: mockSurveyDataLoader,
             artifactDataLoader: mockArtifactDataLoader,
-            sampleSiteDataLoader: mockSampleSiteDataLoader,
-            techniqueDataLoader: mockTechniqueDataLoader,
             critterDataLoader: mockCritterDataLoader
           }}>
           <CodesContext.Provider value={mockCodesContext}>

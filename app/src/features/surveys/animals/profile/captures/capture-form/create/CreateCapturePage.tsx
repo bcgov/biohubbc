@@ -17,15 +17,22 @@ import {
 } from 'features/surveys/animals/profile/measurements/utils';
 import { FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useAnimalPageContext, useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
-import { ICreateCaptureRequest } from 'interfaces/useCritterApi.interface';
+import { ICreateCaptureRequest, ILocationCreate } from 'interfaces/useCritterApi.interface';
 import { useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
+import { v4 } from 'uuid';
 
 export const defaultAnimalCaptureFormValues: ICreateCaptureRequest = {
+  attachments: {
+    capture_attachments: {
+      create: {}
+    }
+  },
   capture: {
     capture_id: '',
     capture_date: '',
@@ -50,6 +57,7 @@ export const defaultAnimalCaptureFormValues: ICreateCaptureRequest = {
 export const CreateCapturePage = () => {
   const history = useHistory();
 
+  const biohubApi = useBiohubApi();
   const critterbaseApi = useCritterbaseApi();
 
   const surveyContext = useSurveyContext();
@@ -106,68 +114,69 @@ export const CreateCapturePage = () => {
     setIsSaving(true);
 
     try {
-      const surveyCritterId = animalPageContext.selectedAnimal?.critter_id;
-      const critterbaseCritterId = animalPageContext.selectedAnimal?.critterbase_critter_id;
+      const surveyCritterId = Number(animalPageContext.selectedAnimal?.critter_id);
+      const critterbaseCritterId = String(animalPageContext.selectedAnimal?.critterbase_critter_id);
+      const critterbaseCaptureId = v4(); // Generate a static UUID for the capture and attachments
+      const captureAttachments = Object.values(values.attachments.capture_attachments.create);
 
       if (!values || !critterbaseCritterId || values.capture.capture_location?.geometry.type !== 'Point') {
         return;
       }
 
-      const captureLocation = {
-        longitude: values.capture.capture_location.geometry.coordinates[0],
-        latitude: values.capture.capture_location.geometry.coordinates[1],
-        coordinate_uncertainty: 0,
-        coordinate_uncertainty_units: 'm'
-      };
+      const captureLocations: ILocationCreate[] = [
+        {
+          location_id: v4(),
+          longitude: values.capture.capture_location.geometry.coordinates[0],
+          latitude: values.capture.capture_location.geometry.coordinates[1],
+          coordinate_uncertainty: 0,
+          coordinate_uncertainty_unit: 'm'
+        }
+      ];
 
-      // if release location is null, use the capture location, otherwise format it for critterbase
-      const releaseLocation =
-        values.capture.release_location?.geometry?.type === 'Point'
-          ? {
-              longitude: values.capture.release_location.geometry.coordinates[0],
-              latitude: values.capture.release_location.geometry.coordinates[1],
-              coordinate_uncertainty: 0,
-              coordinate_uncertainty_units: 'm'
-            }
-          : captureLocation;
-
-      // Must create capture first to avoid foreign key constraints. Can't guarantee that the capture is
-      // inserted before the measurements/markings.
-      const captureResponse = await critterbaseApi.capture.createCapture({
-        critter_id: critterbaseCritterId,
-        capture_id: undefined,
-        capture_date: values.capture.capture_date,
-        capture_time: values.capture.capture_time || undefined,
-        release_date: values.capture.release_date || values.capture.capture_date,
-        release_time: values.capture.release_time || values.capture.capture_time || undefined,
-        capture_comment: values.capture.capture_comment || undefined,
-        release_comment: values.capture.release_comment || undefined,
-        capture_location: captureLocation,
-        release_location: releaseLocation ?? captureLocation
-      });
-
-      if (!captureResponse) {
-        showCreateErrorDialog({
-          dialogError: 'An error occurred while attempting to create the capture record.',
-          dialogErrorDetails: ['Capture create failed']
+      if (values.capture.release_location?.geometry.type === 'Point') {
+        captureLocations.push({
+          location_id: v4(),
+          longitude: values.capture.release_location.geometry.coordinates[0],
+          latitude: values.capture.release_location.geometry.coordinates[1],
+          coordinate_uncertainty: 0,
+          coordinate_uncertainty_unit: 'm'
         });
-        return;
       }
 
-      // Create new measurements added while editing the capture
+      /**
+       * Create the Capture, Markings, and Measurements and Locations in Critterbase.
+       *
+       * Note: Critterbase will add the data in the correct order to prevent foreign key constraints.
+       */
       const bulkResponse = await critterbaseApi.critters.bulkCreate({
+        locations: captureLocations,
+        captures: [
+          {
+            critter_id: critterbaseCritterId,
+            capture_id: critterbaseCaptureId,
+            capture_date: values.capture.capture_date,
+            capture_time: values.capture.capture_time || undefined,
+            release_date: values.capture.release_date || values.capture.capture_date,
+            release_time: values.capture.release_time || values.capture.capture_time || undefined,
+            capture_comment: values.capture.capture_comment || undefined,
+            release_comment: values.capture.release_comment || undefined,
+            capture_location_id: captureLocations[0].location_id,
+            release_location_id:
+              captureLocations.length > 1 ? captureLocations[1].location_id : captureLocations[0].location_id
+          }
+        ],
         markings: values.markings.map((marking) => ({
           ...marking,
           marking_id: marking.marking_id,
           critter_id: critterbaseCritterId,
-          capture_id: captureResponse.capture_id
+          capture_id: critterbaseCaptureId
         })),
         qualitative_measurements: values.measurements
           .filter(isQualitativeMeasurementCreate)
           // Format qualitative measurements for create
           .map((measurement) => ({
             critter_id: critterbaseCritterId,
-            capture_id: captureResponse.capture_id,
+            capture_id: critterbaseCaptureId,
             taxon_measurement_id: measurement.taxon_measurement_id,
             qualitative_option_id: measurement.qualitative_option_id
           })),
@@ -176,7 +185,7 @@ export const CreateCapturePage = () => {
           // Format quantitative measurements for create
           .map((measurement) => ({
             critter_id: critterbaseCritterId,
-            capture_id: captureResponse.capture_id,
+            capture_id: critterbaseCaptureId,
             taxon_measurement_id: measurement.taxon_measurement_id,
             value: measurement.value
           }))
@@ -190,8 +199,25 @@ export const CreateCapturePage = () => {
         return;
       }
 
-      // Refresh page
+      // Upload Capture attachments
+      if (captureAttachments.length) {
+        await biohubApi.animal
+          .uploadCritterCaptureAttachments({
+            projectId,
+            surveyId,
+            critterId: surveyCritterId,
+            critterbaseCaptureId: critterbaseCaptureId,
+            files: captureAttachments
+          })
+          .catch(() => {
+            showCreateErrorDialog({
+              dialogError: 'Failed to upload capture attachments',
+              dialogErrorDetails: ['Failed to upload capture attachments']
+            });
+          });
+      }
 
+      // Refresh page
       if (surveyCritterId) {
         animalPageContext.critterDataLoader.refresh(projectId, surveyId, surveyCritterId);
       }
@@ -200,7 +226,7 @@ export const CreateCapturePage = () => {
     } catch (error) {
       const apiError = error as APIError;
       showCreateErrorDialog({
-        dialogTitle: 'Error Creating Survey',
+        dialogTitle: CreateCaptureI18N.createErrorTitle,
         dialogError: apiError?.message,
         dialogErrorDetails: apiError?.errors
       });

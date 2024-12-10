@@ -2,6 +2,7 @@ import { S3Client } from '@aws-sdk/client-s3';
 import { expect } from 'chai';
 import { describe } from 'mocha';
 import {
+  bulkDeleteFilesFromS3,
   deleteFileFromS3,
   generateS3FileKey,
   getS3HostUrl,
@@ -16,6 +17,14 @@ import {
 describe('deleteFileFromS3', () => {
   it('returns null when no key specified', async () => {
     const result = await deleteFileFromS3(null as unknown as string);
+
+    expect(result).to.be.null;
+  });
+});
+
+describe('bulkDeleteFilesFromS3', () => {
+  it('returns null when no keys provided', async () => {
+    const result = await bulkDeleteFilesFromS3([]);
 
     expect(result).to.be.null;
   });
@@ -85,6 +94,36 @@ describe('generateS3FileKey', () => {
 
     expect(result).to.equal('some/s3/prefix/projects/1/surveys/2/submissions/3/testFileName');
   });
+
+  it('returns critter captures folder file path', async () => {
+    process.env.S3_KEY_PREFIX = 'some/s3/prefix';
+
+    const result = generateS3FileKey({
+      projectId: 1,
+      surveyId: 2,
+      critterId: 3,
+      folder: 'captures',
+      critterbaseCaptureId: '123-456-789',
+      fileName: 'testFileName'
+    });
+
+    expect(result).to.equal('some/s3/prefix/projects/1/surveys/2/critters/3/captures/123-456-789/testFileName');
+  });
+
+  it('returns critter mortalities folder file path', async () => {
+    process.env.S3_KEY_PREFIX = 'some/s3/prefix';
+
+    const result = generateS3FileKey({
+      projectId: 1,
+      surveyId: 2,
+      critterId: 3,
+      folder: 'mortalities',
+      critterbaseMortalityId: '123-456-789',
+      fileName: 'testFileName'
+    });
+
+    expect(result).to.equal('some/s3/prefix/projects/1/surveys/2/critters/3/mortalities/123-456-789/testFileName');
+  });
 });
 
 describe('getS3HostUrl', () => {
@@ -97,8 +136,7 @@ describe('getS3HostUrl', () => {
   });
 
   it('should yield a default S3 host url', () => {
-    delete process.env.OBJECT_STORE_URL;
-    delete process.env.OBJECT_STORE_BUCKET_NAME;
+    Object.assign(process.env, { OBJECT_STORE_URL: undefined, OBJECT_STORE_BUCKET_NAME: undefined });
 
     const result = getS3HostUrl();
 
@@ -154,7 +192,7 @@ describe('_getClamAvScanner', () => {
   it('should return a clamAv scanner client', () => {
     process.env.ENABLE_FILE_VIRUS_SCAN = 'true';
     process.env.CLAMAV_HOST = 'host';
-    process.env.CLAMAV_PORT = '1111';
+    process.env.CLAMAV_PORT = 1111;
 
     const result = _getClamAvScanner();
     expect(result).to.not.be.null;
@@ -176,7 +214,7 @@ describe('_getObjectStoreBucketName', () => {
   });
 
   it('should return its default value', () => {
-    delete process.env.OBJECT_STORE_BUCKET_NAME;
+    Object.assign(process.env, { OBJECT_STORE_BUCKET_NAME: undefined });
 
     const result = _getObjectStoreBucketName();
     expect(result).to.equal('');
@@ -212,7 +250,7 @@ describe('_getObjectStoreUrl', () => {
   });
 
   it('should return its default value', () => {
-    delete process.env.OBJECT_STORE_URL;
+    Object.assign(process.env, { OBJECT_STORE_URL: undefined });
 
     const result = _getObjectStoreUrl();
     expect(result).to.equal('https://nrs.objectstore.gov.bc.ca');
@@ -234,7 +272,7 @@ describe('getS3KeyPrefix', () => {
   });
 
   it('should return its default value', () => {
-    delete process.env.S3_KEY_PREFIX;
+    Object.assign(process.env, { S3_KEY_PREFIX: undefined });
 
     const result = getS3KeyPrefix();
     expect(result).to.equal('sims');

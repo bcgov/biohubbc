@@ -1,6 +1,7 @@
 import { DATE_LIMIT } from 'constants/dateTimeFormats';
 import { default as dayjs } from 'dayjs';
 import {
+  ILocationCreate,
   IQualitativeMeasurementCreate,
   IQualitativeMeasurementUpdate,
   IQuantitativeMeasurementCreate,
@@ -82,6 +83,19 @@ export const CreateCritterCaptureSchema = yup.object({
   release_comment: yup.string().optional()
 });
 
+export const CreateBulkCritterCaptureSchema = yup.object({
+  capture_id: yup.string().optional(),
+  critter_id: yup.string().required('Required'),
+  capture_location_id: yup.string().uuid().optional(),
+  release_location_id: yup.string().uuid().optional(),
+  capture_comment: yup.string().optional(),
+  capture_date: yup.string().required('Required'),
+  capture_time: yup.string().optional().nullable(),
+  release_date: yup.string().optional().nullable(),
+  release_time: yup.string().optional().nullable(),
+  release_comment: yup.string().optional()
+});
+
 export const CreateCritterSchema = yup.object({
   critter_id: yup.string().optional(),
   itis_tsn: yup.number().required('Required'),
@@ -152,6 +166,7 @@ export type ICreateCritterMarking = yup.InferType<typeof CreateCritterMarkingSch
 export type ICreateCritterMeasurement = yup.InferType<typeof CreateCritterMeasurementSchema>;
 export type ICreateCritterCollectionUnit = yup.InferType<typeof CreateCritterCollectionUnitSchema> & { key?: string };
 export type ICreateCritterCapture = yup.InferType<typeof CreateCritterCaptureSchema>;
+export type ICreateBulkCritterCapture = yup.InferType<typeof CreateBulkCritterCaptureSchema>;
 export type ICreateCritterFamily = yup.InferType<typeof CreateCritterFamilySchema>;
 export type ICreateCritterMortality = yup.InferType<typeof CreateCritterMortalitySchema>;
 
@@ -162,7 +177,8 @@ export type IBulkCreate = {
   critters?: ICreateCritter[];
   qualitative_measurements?: IQualitativeMeasurementCreate[];
   quantitative_measurements?: IQuantitativeMeasurementCreate[];
-  captures?: ICreateCritterCapture[];
+  locations?: ILocationCreate[];
+  captures?: ICreateBulkCritterCapture[];
   mortality?: ICreateCritterMortality;
   markings?: ICreateCritterMarking[];
   collections?: ICreateCritterCollectionUnit[];

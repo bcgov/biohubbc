@@ -52,13 +52,26 @@ export const EditMortalityPage = () => {
 
   const { projectId, surveyId } = surveyContext;
 
+  useEffect(() => {
+    if (!surveyCritterId) {
+      return;
+    }
+
+    animalPageContext.critterDataLoader.load(projectId, surveyId, surveyCritterId);
+  }, [animalPageContext.critterDataLoader, projectId, surveyCritterId, surveyId]);
+
   const critter = animalPageContext.critterDataLoader.data;
 
-  const mortalityDataLoader = useDataLoader(() => critterbaseApi.mortality.getMortality(mortalityId));
+  const mortalityDataLoader = useDataLoader((mortalityId: string) =>
+    critterbaseApi.mortality.getMortality(mortalityId)
+  );
 
   useEffect(() => {
-    mortalityDataLoader.load();
-  }, [mortalityDataLoader]);
+    if (!mortalityId) {
+      return;
+    }
+    mortalityDataLoader.load(mortalityId);
+  }, [mortalityDataLoader, mortalityId]);
 
   const mortality = mortalityDataLoader.data;
 
