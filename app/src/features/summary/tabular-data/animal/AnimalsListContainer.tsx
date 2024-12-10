@@ -101,8 +101,8 @@ const AnimalsListContainer = (props: IAnimalsListContainerProps) => {
     {
       field: 'critter_id',
       headerName: 'ID',
-      width: 86,
-      minWidth: 86,
+      width: 85,
+      minWidth: 85,
       sortable: false,
       renderHeader: () => (
         <Typography color={grey[500]} variant="body2" fontWeight={700}>

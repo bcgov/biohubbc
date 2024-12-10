@@ -834,7 +834,7 @@ export class ObservationService extends DBService {
 
       // if environment is qualitative, find the option id
       if (isEnvironmentQualitativeTypeDefinition(environment)) {
-        const foundOption = environment.options.find((option) => option.name === String(rowData));
+        const foundOption = environment.options.find((option) => option.name === String(rowData).toLowerCase());
 
         if (!foundOption) {
           return;

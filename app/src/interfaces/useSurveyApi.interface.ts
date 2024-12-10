@@ -140,7 +140,7 @@ export interface IGetSurveyBlock {
   name: string;
   description: string;
   revision_count: number;
-  geojson: Feature;
+  geojson: Feature | null;
   sample_block_count: number;
 }
 

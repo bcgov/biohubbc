@@ -1,6 +1,5 @@
 import { mdiAttachment, mdiFilePdfBox, mdiTrayArrowUp } from '@mdi/js';
 import Icon from '@mdi/react';
-import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
@@ -107,10 +106,10 @@ const ProjectAttachments = () => {
           </ProjectRoleGuard>
         )}
       />
-      <Divider></Divider>
-      <Box p={2}>
-        <ProjectAttachmentsList />
-      </Box>
+
+      <Divider />
+
+      <ProjectAttachmentsList />
     </>
   );
 };

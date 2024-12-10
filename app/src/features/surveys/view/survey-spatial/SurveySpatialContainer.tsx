@@ -58,24 +58,9 @@ export const SurveySpatialContainer = (): JSX.Element => {
         activeView={activeView}
         setActiveView={setActiveView}
         views={[
-          {
-            label: 'Observations',
-            value: SurveySpatialDatasetViewEnum.OBSERVATIONS,
-            icon: mdiEye,
-            isLoading: false
-          },
-          {
-            label: 'Animals',
-            value: SurveySpatialDatasetViewEnum.ANIMALS,
-            icon: mdiPaw,
-            isLoading: false
-          },
-          {
-            label: 'Telemetry',
-            value: SurveySpatialDatasetViewEnum.TELEMETRY,
-            icon: mdiWifiMarker,
-            isLoading: false
-          }
+          { value: SurveySpatialDatasetViewEnum.OBSERVATIONS, label: 'Observations', icon: mdiEye },
+          { value: SurveySpatialDatasetViewEnum.ANIMALS, label: 'Animals', icon: mdiPaw },
+          { value: SurveySpatialDatasetViewEnum.TELEMETRY, label: 'Telemetry', icon: mdiWifiMarker }
         ]}
       />
 

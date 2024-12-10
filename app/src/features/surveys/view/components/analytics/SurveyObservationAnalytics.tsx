@@ -117,17 +117,18 @@ export const SurveyObservationAnalytics = () => {
               orientation="vertical"
               onChange={handleToggleChange}
               sx={{
-                width: '100%',
-                '& .MuiToggleButton-root': {
+                display: 'flex',
+                flex: '1 1 auto',
+                gap: 0.5,
+                '& Button': {
+                  py: 1,
+                  px: 2,
                   border: 'none',
-                  outline: 'none',
                   borderRadius: '4px !important',
                   fontSize: '0.875rem',
+                  fontWeight: 700,
                   letterSpacing: '0.02rem',
-                  textTransform: 'none',
-                  '&::first-letter': {
-                    textTransform: 'capitalize !important'
-                  }
+                  justifyContent: 'flex-start'
                 }
               }}>
               {/* Render toggle buttons for each group by option */}
@@ -137,18 +138,6 @@ export const SurveyObservationAnalytics = () => {
                   component={Button}
                   color="primary"
                   value={option}
-                  sx={{
-                    textAlign: 'left',
-                    display: 'block',
-                    border: 'none',
-                    outline: 'none',
-                    fontWeight: 700,
-                    my: 0.5,
-                    ':focus': {
-                      outline: 'none',
-                      border: 'none'
-                    }
-                  }}
                   selected={
                     groupByColumns.some((item) => item.field === option.field) ||
                     groupByQualitativeMeasurements.some((item) => item.field === option.field) ||
@@ -156,7 +145,7 @@ export const SurveyObservationAnalytics = () => {
                   }>
                   <Box display="flex" alignItems="center">
                     <Checkbox
-                      sx={{ pl: 0, py: 0 }}
+                      sx={{ pl: 0.5, py: 0.5 }}
                       checked={
                         groupByColumns.some((item) => item.field === option.field) ||
                         groupByQualitativeMeasurements.some((item) => item.field === option.field) ||
