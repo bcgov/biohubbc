@@ -1,7 +1,7 @@
-import { SurveySamplePeriodModel, SurveySamplePeriodRecord } from '../database-models/survey_sample_period';
+import { SurveySamplePeriodModel } from '../database-models/survey_sample_period';
 import { IDBConnection } from '../database/db';
 import { HTTP409 } from '../errors/http-error';
-import { UpdateSamplePeriodObject } from '../models/sample-period';
+import { SurveySamplePeriodDetails, UpdateSamplePeriodObject } from '../models/sample-period';
 import {
   InsertSamplePeriodRecord,
   SamplePeriodHierarchyIds,
@@ -61,11 +61,11 @@ export class SamplePeriodService extends DBService {
    *
    * @param {number} surveyId
    * @param {number} surveySamplePeriodId
-   * @return {*}  {Promise<SurveySamplePeriodRecord>}
+   * @return {*}  {Promise<SurveySamplePeriodDetails>}
    * @memberof SamplePeriodService
    */
-  async getSamplePeriodById(surveyId: number, surveySamplePeriodId: number): Promise<SurveySamplePeriodRecord> {
-    return this.samplePeriodRepository.getSurveySamplePeriodById(surveyId, surveySamplePeriodId);
+  async getSamplePeriodById(surveyId: number, surveySamplePeriodId: number): Promise<SurveySamplePeriodDetails> {
+    return this.samplePeriodRepository.getSamplePeriodById(surveyId, surveySamplePeriodId);
   }
 
   /**
@@ -105,7 +105,8 @@ export class SamplePeriodService extends DBService {
   /**
    * Updates a survey Sample Period.
    *
-   * @param {UpdateSamplePeriodObject} samplePeriod
+   * @param {number} surveyId
+   * @param {UpdateSamplePeriodObject} data
    * @return {*}  {Promise<SurveySamplePeriodModel>}
    * @memberof SamplePeriodService
    */

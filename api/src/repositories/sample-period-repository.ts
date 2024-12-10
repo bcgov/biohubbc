@@ -124,10 +124,10 @@ export class SamplePeriodRepository extends BaseRepository {
    *
    * @param {number} surveyId
    * @param {number} surveySamplePeriodId
-   * @return {*}  {Promise<SurveySamplePeriodDetail>}
+   * @return {*}  {Promise<SurveySamplePeriodDetails>}
    * @memberof SampleLocationService
    */
-  async getSurveySamplePeriodById(surveyId: number, surveySamplePeriodId: number): Promise<SurveySamplePeriodDetails> {
+  async getSamplePeriodById(surveyId: number, surveySamplePeriodId: number): Promise<SurveySamplePeriodDetails> {
     const sqlStatement = SQL`
       SELECT
         ssp.survey_sample_period_id,
@@ -162,7 +162,7 @@ export class SamplePeriodRepository extends BaseRepository {
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to get sample period by ID', [
-        'SampleLocationRepository->getSurveySamplePeriodById',
+        'SampleLocationRepository->getSamplePeriodById',
         'rowCount was < 1, expected rowCount > 0'
       ]);
     }

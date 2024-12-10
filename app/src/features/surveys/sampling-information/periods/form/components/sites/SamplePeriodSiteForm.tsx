@@ -46,8 +46,6 @@ export const SamplingPeriodSiteForm = (props: ISamplingPeriodSiteFormProps) => {
     setRefreshKey((prev) => prev + 1);
   };
 
-  console.log(errors);
-
   return (
     <FieldArray
       name="sample_sites"

@@ -9,6 +9,7 @@ import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import { FieldArray, FieldArrayRenderProps } from 'formik';
 import { IGetSampleLocationNonSpatialDetails } from 'interfaces/useSamplingSiteApi.interface';
+import { v4 } from 'uuid';
 import { InitialSurveySamplePeriodValues, SamplePeriodPeriodForm } from './SamplePeriodPeriodForm';
 
 interface SamplePeriodPeriodFormContainerProps {
@@ -81,7 +82,13 @@ export const SamplePeriodPeriodFormContainer = (props: SamplePeriodPeriodFormCon
                     title="Add Period"
                     aria-label="Create Sample Period"
                     startIcon={<Icon path={mdiPlus} size={1} />}
-                    onClick={() => arrayHelpers.push(InitialSurveySamplePeriodValues)}>
+                    onClick={() =>
+                      arrayHelpers.push({
+                        ...InitialSurveySamplePeriodValues,
+                        // Temporary id used as the unique key on the frontend, not to be sent to the backend
+                        id: v4()
+                      })
+                    }>
                     Add Period
                   </Button>
                 )}

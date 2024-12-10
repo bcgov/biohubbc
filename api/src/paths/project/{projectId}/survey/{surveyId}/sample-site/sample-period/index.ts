@@ -14,7 +14,7 @@ export const POST: Operation = [
     return {
       or: [
         {
-          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR],
+          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR],
           surveyId: Number(req.params.surveyId),
           discriminator: 'ProjectPermission'
         },
@@ -25,7 +25,7 @@ export const POST: Operation = [
       ]
     };
   }),
-  createSurveySamplePeriodRecord()
+  createSamplePeriodRecord()
 ];
 
 POST.apiDoc = {
@@ -83,27 +83,19 @@ POST.apiDoc = {
                     minimum: 1,
                     description: 'Primary key of a sampling site to create a period for'
                   },
+                  // TODO: Remove method response metric from sample periods
                   method_response_metric_id: {
                     type: 'integer',
-                    description: 'TEMPORARY - REMOVE AFTER METHOD RESPONSE METRIC IS MOVED TO TECHNIQUE'
+                    description: 'This should be moved to be an attribute of a technique instead of a survey_sample_method'
                   },
                   sample_periods: {
                     type: 'array',
+                    minItems: 1,
                     items: {
                       type: 'object',
                       additionalProperties: false,
                       required: ['start_date', 'end_date'],
                       properties: {
-                        survey_sample_period_id: {
-                          type: 'integer',
-                          description: 'Primary key of the period',
-                          nullable: true
-                        },
-                        survey_sample_method_id: {
-                          type: 'integer',
-                          description: 'Primary key of the method that the period belongs to',
-                          nullable: true
-                        },
                         start_date: {
                           type: 'string',
                           description: 'Start date of the period'
@@ -123,7 +115,7 @@ POST.apiDoc = {
                           nullable: true
                         }
                       }
-                    }
+                    },
                   }
                 }
               }
@@ -155,7 +147,7 @@ POST.apiDoc = {
   }
 };
 
-export function createSurveySamplePeriodRecord(): RequestHandler {
+export function createSamplePeriodRecord(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req.keycloak_token);
 
@@ -181,7 +173,7 @@ export function createSurveySamplePeriodRecord(): RequestHandler {
 
       return res.status(201).send();
     } catch (error) {
-      defaultLog.error({ label: 'createSurveySamplePeriodRecord', message: 'error', error });
+      defaultLog.error({ label: 'createSamplePeriodRecord', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

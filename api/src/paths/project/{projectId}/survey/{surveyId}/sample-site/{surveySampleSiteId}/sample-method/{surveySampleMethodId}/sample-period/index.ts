@@ -203,7 +203,7 @@ export const POST: Operation = [
       ]
     };
   }),
-  createSurveySamplePeriodRecord()
+  createSamplePeriodRecord()
 ];
 
 POST.apiDoc = {
@@ -299,7 +299,7 @@ POST.apiDoc = {
   }
 };
 
-export function createSurveySamplePeriodRecord(): RequestHandler {
+export function createSamplePeriodRecord(): RequestHandler {
   return async (req, res) => {
     if (!req.body.samplePeriod) {
       throw new HTTP400('Missing required body param `samplePeriod`');
@@ -323,7 +323,7 @@ export function createSurveySamplePeriodRecord(): RequestHandler {
 
       return res.status(201).send();
     } catch (error) {
-      defaultLog.error({ label: 'createSurveySamplePeriodRecord', message: 'error', error });
+      defaultLog.error({ label: 'createSamplePeriodRecord', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

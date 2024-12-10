@@ -8,7 +8,6 @@ import { DateTimeFields } from 'components/fields/DateTimeFields';
 import { useFormikContext } from 'formik';
 import { ICreateSamplingPeriodRequest } from 'interfaces/useSamplingPeriodApi.interface';
 import { TransitionGroup } from 'react-transition-group';
-import { v4 } from 'uuid';
 
 export interface ISurveySampleMethodPeriodData {
   // Temporary id used as the unique key on the frontend, not to be sent to the backend
@@ -23,9 +22,6 @@ export interface ISurveySampleMethodPeriodData {
 }
 
 export const InitialSurveySamplePeriodValues: ISurveySampleMethodPeriodData = {
-  // Temporary id used as the unique key on the frontend, not to be sent to the backend
-  id: v4(),
-  // Data for the request
   survey_sample_period_id: null,
   survey_sample_method_id: null,
   start_date: '',
@@ -50,7 +46,7 @@ export const SamplePeriodPeriodForm = (props: ISamplePeriodPeriodFormProps) => {
     <form>
       <TransitionGroup>
         {samplePeriods.map((period, index) => (
-          <Collapse key={period.id || index}>
+          <Collapse key={period.id}>
             <Box
               component={Stack}
               flexDirection="row"

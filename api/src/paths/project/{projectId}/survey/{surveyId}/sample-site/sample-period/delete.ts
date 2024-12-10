@@ -24,7 +24,7 @@ export const POST: Operation = [
       ]
     };
   }),
-  deleteSurveySamplePeriods()
+  deleteSamplePeriods()
 ];
 
 POST.apiDoc = {
@@ -98,7 +98,7 @@ POST.apiDoc = {
   }
 };
 
-export function deleteSurveySamplePeriods(): RequestHandler {
+export function deleteSamplePeriods(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req.keycloak_token);
 
@@ -116,7 +116,7 @@ export function deleteSurveySamplePeriods(): RequestHandler {
 
       return res.status(201).send();
     } catch (error) {
-      defaultLog.error({ label: 'deleteSurveySamplePeriods', message: 'error', error });
+      defaultLog.error({ label: 'deleteSamplePeriods', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

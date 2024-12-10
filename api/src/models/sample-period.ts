@@ -3,7 +3,6 @@ import { SurveySamplePeriodRecord } from '../database-models/survey_sample_perio
 import { UpdateSamplePeriodRecord } from '../repositories/sample-period-repository';
 
 export interface ICreateSamplingPeriodData {
-  survey_sample_method_id: number | null;
   start_date: string | null;
   end_date: string | null;
   start_time: string | null;
@@ -12,7 +11,7 @@ export interface ICreateSamplingPeriodData {
 
 export interface ICreateSamplingPeriodSite {
   survey_sample_site_id: number;
-  // TODO: Remove method_response_metric_id. This will be moved to techniques.
+  // TODO: Remove method_response_metric_id. This will be moved to techniques in a later PR.
   method_response_metric_id: number;
   sample_periods: ICreateSamplingPeriodData[];
 }
