@@ -1,53 +1,52 @@
 import Typography from '@mui/material/Typography';
-import { GridColDef, GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
+import { GridColDef, GridPaginationModel, GridRowSelectionModel, GridSortModel } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import dayjs from 'dayjs';
 import { useCodesContext } from 'hooks/useContext';
+import { IFindSamplePeriodRecord } from 'interfaces/useSamplingSiteApi.interface';
 import { formatTimeDifference } from 'utils/datetime';
 import { getCodesName } from 'utils/Utils';
 
-export interface ISamplingSitePeriodRowData {
-  id: number;
-  sample_site: string;
-  sample_method: string;
-  method_response_metric_id: number;
-  start_date: string | null;
-  end_date: string | null;
-  start_time: string | null;
-  end_time: string | null;
-}
-
 interface ISamplingPeriodTableProps {
-  periods: ISamplingSitePeriodRowData[];
+  periods: IFindSamplePeriodRecord[];
+  selectedRows: GridRowSelectionModel;
+  setSelectedRows: (selection: GridRowSelectionModel) => void;
   paginationModel: GridPaginationModel;
   setPaginationModel: React.Dispatch<React.SetStateAction<GridPaginationModel>>;
   sortModel: GridSortModel;
   setSortModel: React.Dispatch<React.SetStateAction<GridSortModel>>;
+  pageSizeOptions: number[];
   rowCount: number;
 }
 
 /**
  * Renders a table of sampling periods.
  *
- * @param props {<ISamplingPeriodTableProps>}
+ * @param {ISamplingPeriodTableProps} props
  * @returns {*}
  */
 export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
-  const { periods, paginationModel, setPaginationModel, sortModel, setSortModel, rowCount } = props;
+  const { periods, paginationModel, setPaginationModel, sortModel, setSortModel, pageSizeOptions, rowCount } = props;
 
   const codesContext = useCodesContext();
 
-  const columns: GridColDef<ISamplingSitePeriodRowData>[] = [
+  const columns: GridColDef<IFindSamplePeriodRecord>[] = [
     {
       field: 'sample_site',
       headerName: 'Site',
-      flex: 1
+      flex: 1,
+      valueGetter: (params) => {
+        return params.row.sample_site.name;
+      }
     },
     {
       field: 'sample_method',
       headerName: 'Technique',
-      flex: 1
+      flex: 1,
+      valueGetter: (params) => {
+        return params.row.method_technique.name;
+      }
     },
     {
       field: 'method_response_metric_id',
@@ -57,7 +56,7 @@ export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
         const value = getCodesName(
           codesContext.codesDataLoader.data,
           'method_response_metrics',
-          params.row.method_response_metric_id
+          params.row.sample_method.method_response_metric_id
         );
 
         return value;
@@ -112,7 +111,7 @@ export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
       autoHeight={false}
       getRowHeight={() => 'auto'}
       rows={periods}
-      getRowId={(row: ISamplingSitePeriodRowData) => row.id}
+      getRowId={(row: IFindSamplePeriodRecord) => row.survey_sample_period_id}
       columns={columns}
       checkboxSelection={false}
       disableRowSelectionOnClick
@@ -128,7 +127,7 @@ export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
           paginationModel
         }
       }}
-      pageSizeOptions={[10, 25, 50]}
+      pageSizeOptions={pageSizeOptions}
     />
   );
 };

@@ -67,8 +67,8 @@ const ActiveUsersList = (props: IActiveUsersListProps) => {
     {
       field: 'system_user_id',
       headerName: 'ID',
-      width: 70,
-      minWidth: 70,
+      width: 85,
+      minWidth: 85,
       renderHeader: () => (
         <Typography color={grey[500]} variant="body2" fontWeight={700}>
           ID
@@ -412,7 +412,7 @@ const ActiveUsersList = (props: IActiveUsersListProps) => {
           </Button>
         </Toolbar>
         <Divider></Divider>
-        <Box p={2}>
+        <Box>
           <StyledDataGrid<ISystemUser>
             noRowsMessage="No Active Users"
             columns={activeUsersColumnDefs}
