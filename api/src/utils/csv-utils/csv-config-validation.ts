@@ -32,9 +32,6 @@ export const validateCSVWorksheet = <StaticHeaderType extends Uppercase<string>>
 
   // Iterate over each cell in the worksheet and validate + set cell values
   forEachCSVCell(worksheet, config, (params, headerConfig) => {
-    // Reset the params state
-    params.state = undefined;
-
     // Validate the cell value and modify the errors
     executeValidateCell(params, headerConfig, errors); // Mutates `errors`
 

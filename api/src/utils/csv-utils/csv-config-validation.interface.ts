@@ -124,7 +124,6 @@ export interface CSVParams {
    * @type {string | undefined}
    */
   staticHeader?: string;
-  state?: any;
 }
 
 /**

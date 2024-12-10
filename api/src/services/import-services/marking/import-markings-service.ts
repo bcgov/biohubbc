@@ -3,10 +3,9 @@ import { IDBConnection } from '../../../database/db';
 import { ApiGeneralError } from '../../../errors/api-error';
 import { CSVConfigUtils } from '../../../utils/csv-utils/csv-config-utils';
 import { validateCSVWorksheet } from '../../../utils/csv-utils/csv-config-validation';
-import { CSVConfig, CSVHeaderConfig } from '../../../utils/csv-utils/csv-config-validation.interface';
+import { CSVConfig } from '../../../utils/csv-utils/csv-config-validation.interface';
 import {
   getDescriptionCellValidator,
-  getStateCellSetter,
   getTimeCellSetter,
   getTimeCellValidator
 } from '../../../utils/csv-utils/csv-header-configs';
@@ -60,17 +59,13 @@ export class ImportMarkingsService extends DBService {
       staticHeadersConfig: {
         ALIAS: { aliases: ['NICKNAME', 'ANIMAL'] },
         CAPTURE_DATE: { aliases: ['CAPTURE DATE'] },
-        CAPTURE_TIME: {
-          aliases: ['CAPTURE TIME'],
-          validateCell: getTimeCellValidator(),
-          setCellValue: getTimeCellSetter()
-        },
-        BODY_LOCATION: { aliases: ['BODY LOCATION'] },
-        MARKING_TYPE: { aliases: ['MARKING TYPE'] },
-        IDENTIFIER: { aliases: ['ID'], validateCell: getMarkingIdentifierCellValidator() },
-        PRIMARY_COLOUR: { aliases: ['PRIMARY COLOUR'] },
-        SECONDARY_COLOUR: { aliases: ['SECONDARY COLOUR'] },
-        DESCRIPTION: { aliases: ['COMMENT', 'COMMENTS', 'NOTES'], validateCell: getDescriptionCellValidator() }
+        CAPTURE_TIME: { aliases: ['CAPTURE TIME'], optional: true },
+        BODY_LOCATION: { aliases: ['BODY LOCATION'], optional: true },
+        MARKING_TYPE: { aliases: ['MARKING TYPE'], optional: true },
+        IDENTIFIER: { aliases: ['ID'], optional: true },
+        PRIMARY_COLOUR: { aliases: ['PRIMARY COLOUR'], optional: true },
+        SECONDARY_COLOUR: { aliases: ['SECONDARY COLOUR'], optional: true },
+        DESCRIPTION: { aliases: ['COMMENT', 'COMMENTS', 'NOTES'], optional: true }
       },
       ignoreDynamicHeaders: false
     };
@@ -115,71 +110,54 @@ export class ImportMarkingsService extends DBService {
   }
 
   async getCSVConfig(): Promise<CSVConfig<MarkingCSVStaticHeader>> {
-    const [
-      aliasHeaderConfig,
-      captureHeaderConfig,
-      colourHeaderConfig,
-      bodyLocationHeaderConfig,
-      markingTypeHeaderConfig
-    ] = await Promise.all([
-      this._getAliasHeaderConfig(),
-      this._getCaptureDateHeaderConfig(),
-      this._getColourHeaderConfig(),
-      this._getBodyLocationHeaderConfig(),
-      this._getMarkingTypeHeaderConfig()
-    ]);
+    const surveyAliasMap = await this.surveyCritterService.getSurveyCritterAliasMap(this.surveyId);
+    const bodyLocationDictionary = await this._getBodyLocationDictionary(surveyAliasMap);
 
-    this.utils.setStaticHeaderConfig('ALIAS', aliasHeaderConfig);
-    this.utils.setStaticHeaderConfig('CAPTURE_DATE', captureHeaderConfig);
-    this.utils.setStaticHeaderConfig('BODY_LOCATION', bodyLocationHeaderConfig);
-    this.utils.setStaticHeaderConfig('MARKING_TYPE', markingTypeHeaderConfig);
-    this.utils.setStaticHeaderConfig('PRIMARY_COLOUR', colourHeaderConfig);
-    this.utils.setStaticHeaderConfig('SECONDARY_COLOUR', colourHeaderConfig);
+    const markingTypes = new Set(
+      (await this.surveyCritterService.critterbaseService.getMarkingTypes()).map((type) => type.value.toLowerCase())
+    );
 
+    const colours = new Set(
+      (await this.surveyCritterService.critterbaseService.getColours()).map((colour) => colour.value.toLowerCase())
+    );
+
+    this.utils.setStaticHeaderConfig('ALIAS', {
+      validateCell: getMarkingAliasCellValidator(surveyAliasMap)
+    });
+    this.utils.setStaticHeaderConfig('CAPTURE_DATE', {
+      validateCell: getMarkingCaptureDateCellValidator(surveyAliasMap, this.utils)
+    });
+    this.utils.setStaticHeaderConfig('CAPTURE_TIME', {
+      validateCell: getTimeCellValidator(),
+      setCellValue: getTimeCellSetter()
+    });
+    this.utils.setStaticHeaderConfig('BODY_LOCATION', {
+      validateCell: getMarkingBodyLocationCellValidator(bodyLocationDictionary, this.utils)
+    });
+    this.utils.setStaticHeaderConfig('MARKING_TYPE', {
+      validateCell: getMarkingTypeCellValidator(markingTypes)
+    });
+    this.utils.setStaticHeaderConfig('IDENTIFIER', {
+      validateCell: getMarkingIdentifierCellValidator()
+    });
+    this.utils.setStaticHeaderConfig('PRIMARY_COLOUR', {
+      validateCell: getMarkingColourCellValidator(colours)
+    });
+    this.utils.setStaticHeaderConfig('SECONDARY_COLOUR', {
+      validateCell: getMarkingColourCellValidator(colours)
+    });
+    this.utils.setStaticHeaderConfig('DESCRIPTION', {
+      validateCell: getDescriptionCellValidator()
+    });
+
+    // Return the final CSV config
     return this.utils.getConfig();
   }
 
-  async _getSurveyCritterAliasMap(): Promise<Map<string, ICritterDetailed>> {
-    // Cache the survey critter alias map
-    if (!this.surveyCritterAliasMapCache) {
-      this.surveyCritterAliasMapCache = await this.surveyCritterService.getSurveyCritterAliasMap(this.surveyId);
-    }
-
-    return this.surveyCritterAliasMapCache;
-  }
-
-  async _getAliasHeaderConfig(): Promise<CSVHeaderConfig> {
-    const surveyAliasMap = await this._getSurveyCritterAliasMap();
-
-    return {
-      validateCell: getMarkingAliasCellValidator(surveyAliasMap),
-      setCellValue: getStateCellSetter()
-    };
-  }
-
-  async _getCaptureDateHeaderConfig(): Promise<CSVHeaderConfig> {
-    const surveyAliasMap = await this._getSurveyCritterAliasMap();
-
-    return {
-      validateCell: getMarkingCaptureDateCellValidator(surveyAliasMap, this.utils),
-      setCellValue: getStateCellSetter()
-    };
-  }
-
-  async _getMarkingTypeHeaderConfig(): Promise<CSVHeaderConfig> {
-    const markingTypes = await this.surveyCritterService.critterbaseService.getMarkingTypes();
-    const markingTypesSet = new Set(markingTypes.map((type) => type.value.toLowerCase()));
-
-    return {
-      validateCell: getMarkingTypeCellValidator(markingTypesSet)
-    };
-  }
-
-  async _getBodyLocationDictionary(): Promise<NestedRecord<string>> {
+  async _getBodyLocationDictionary(surveyAliasMap: Map<string, ICritterDetailed>): Promise<NestedRecord<string>> {
     const dictionary = new NestedRecord<string>();
     const uniqueTsns = new Set<number>();
 
-    const surveyAliasMap = await this._getSurveyCritterAliasMap();
     const rowAliases = this.utils.getUniqueCellValues('ALIAS');
     const critters = new Set<ICritterDetailed>();
 
@@ -210,23 +188,5 @@ export class ImportMarkingsService extends DBService {
     }
 
     return dictionary;
-  }
-
-  async _getBodyLocationHeaderConfig(): Promise<CSVHeaderConfig> {
-    const dictionary = await this._getBodyLocationDictionary();
-
-    return {
-      validateCell: getMarkingBodyLocationCellValidator(dictionary, this.utils),
-      setCellValue: getStateCellSetter()
-    };
-  }
-
-  async _getColourHeaderConfig(): Promise<CSVHeaderConfig> {
-    const colours = await this.surveyCritterService.critterbaseService.getColours();
-    const coloursSet = new Set(colours.map((colour) => colour.value.toLowerCase()));
-
-    return {
-      validateCell: getMarkingColourCellValidator(coloursSet)
-    };
   }
 }

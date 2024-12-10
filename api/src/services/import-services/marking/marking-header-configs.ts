@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { CSVConfigUtils } from '../../../utils/csv-utils/csv-config-utils';
-import { CSVCellValidator, CSVParams } from '../../../utils/csv-utils/csv-config-validation.interface';
+import { CSVCellValidator, CSVError, CSVParams } from '../../../utils/csv-utils/csv-config-validation.interface';
 import { validateZodCell } from '../../../utils/csv-utils/csv-header-configs';
 import { NestedRecord } from '../../../utils/nested-record';
 import { ICritterDetailed } from '../../critterbase-service';
@@ -26,6 +26,8 @@ export const getMarkingIdentifierCellValidator = (): CSVCellValidator => {
 /**
  * Get the marking alias cell validator.
  *
+ * Note: Mutates the cell value to the `critter_id`
+ *
  * Rules:
  *  1. The alias must exist in the surveyAliasMap ie: critter alias -> critter
  *
@@ -34,43 +36,26 @@ export const getMarkingIdentifierCellValidator = (): CSVCellValidator => {
  */
 export const getMarkingAliasCellValidator = (surveyAliasMap: Map<string, ICritterDetailed>): CSVCellValidator => {
   return (params: CSVParams) => {
-    const critter = surveyAliasMap.get(String(params.cell).toLowerCase());
-
-    if (critter) {
-      // Set the critter in the state for the setter
-      params.state = critter.critter_id;
+    if (params.cell === undefined) {
       return [];
     }
 
-    return [
-      {
-        error: `Unable to find a matching survey critter`,
-        solution: `Use a valid critter alias that exists in the Survey`
-      }
-    ];
+    const critter = surveyAliasMap.get(String(params.cell).toLowerCase());
+
+    if (!critter) {
+      return [
+        {
+          error: `Unable to find a matching survey critter`,
+          solution: `Use a valid critter alias that exists in the Survey`
+        }
+      ];
+    }
+
+    // Set the critter id in the state for the setter
+    params.cell = critter.critter_id;
+    return [];
   };
 };
-
-///**
-// * Get the marking alias cell setter.
-// *
-// * Note: This returns the `critter_id`
-// *
-// * @throws {ApiGeneralError} If the alias is not found in the surveyAliasMap
-// * @param {Map<string, ICritterDetailed>} surveyAliasMap The survey alias map
-// * @returns {*} {CSVCellSetter} The set cell callback
-// */
-//export const getMarkingAliasCellSetter = (surveyAliasMap: Map<string, ICritterDetailed>): CSVCellSetter => {
-//  return (params: CSVParams) => {
-//    const critter = surveyAliasMap.get(String(params.cell).toLowerCase());
-//
-//    if (!critter) {
-//      throw new ApiGeneralError('Alias invalid', [params]);
-//    }
-//
-//    return critter.critter_id;
-//  };
-//};
 
 /**
  * Get the marking type cell validator.
@@ -83,17 +68,21 @@ export const getMarkingAliasCellValidator = (surveyAliasMap: Map<string, ICritte
  */
 export const getMarkingTypeCellValidator = (markingTypes: Set<string>): CSVCellValidator => {
   return (params: CSVParams) => {
-    if (markingTypes.has(String(params.cell).toLowerCase())) {
+    if (params.cell === undefined) {
       return [];
     }
 
-    return [
-      {
-        error: `Marking type not supported`,
-        solution: `Use a valid marking type`,
-        values: Array.from(markingTypes)
-      }
-    ];
+    if (!markingTypes.has(String(params.cell).toLowerCase())) {
+      return [
+        {
+          error: `Marking type not supported`,
+          solution: `Use a valid marking type`,
+          values: Array.from(markingTypes)
+        }
+      ];
+    }
+
+    return [];
   };
 };
 
@@ -104,6 +93,10 @@ export const getMarkingTypeCellValidator = (markingTypes: Set<string>): CSVCellV
  */
 export const getMarkingColourCellValidator = (colours: Set<string>): CSVCellValidator => {
   return (params: CSVParams) => {
+    if (params.cell === undefined) {
+      return [];
+    }
+
     if (colours.has(String(params.cell).toLowerCase())) {
       return [];
     }
@@ -114,6 +107,8 @@ export const getMarkingColourCellValidator = (colours: Set<string>): CSVCellVali
 
 /**
  * Get the marking body location cell validator.
+ *
+ * Note: Mutates the cell value to the `body_location_id`
  *
  * Rules:
  *  1. The cell must be a valid body location for the critter ie: exists in the rowDictionary
@@ -127,6 +122,10 @@ export const getMarkingBodyLocationCellValidator = (
   utils: CSVConfigUtils<MarkingCSVStaticHeader>
 ): CSVCellValidator => {
   return (params: CSVParams) => {
+    if (params.cell === undefined) {
+      return [];
+    }
+
     const bodyLocationCellValue = String(params.cell);
     const rowAlias = String(utils.getCellValue('ALIAS', params.row));
 
@@ -154,44 +153,16 @@ export const getMarkingBodyLocationCellValidator = (
     }
 
     // Set the body location id in the state for the setter
-    params.state = rowDictionaryBodyLocation;
+    params.cell = rowDictionaryBodyLocation;
 
     return [];
   };
 };
 
-///**
-// * Get the marking body location cell setter.
-// *
-// * Note: This returns the taxon `body_location_id`
-// *
-// * @throws {ApiGeneralError} If the body location is not found in the rowDictionary
-// * @param {NestedRecord<string>} rowDictionary The row dictionary
-// * @param {CSVConfigUtils<MarkingCSVStaticHeader>} utils The CSV config utils
-// * @returns {*} {CSVCellSetter} The set cell callback
-// */
-//export const getMarkingBodyLocationCellSetter = (
-//  rowDictionary: NestedRecord<string>,
-//  utils: CSVConfigUtils<MarkingCSVStaticHeader>
-//): CSVCellSetter => {
-//  return (params: CSVParams) => {
-//    const rowAlias = String(utils.getCellValue('ALIAS', params.row));
-//    const bodyLocationCellValue = String(params.cell);
-//
-//    // Get the body location UUID from the row dictionary
-//    const bodyLocationId = rowDictionary.get(rowAlias, bodyLocationCellValue);
-//
-//    // This will throw if the body location was incorrectly validated
-//    if (!bodyLocationId) {
-//      throw new ApiGeneralError('Body location invalid', [params]);
-//    }
-//
-//    return bodyLocationId;
-//  };
-//};
-
 /**
  * Get the marking capture date cell validator.
+ *
+ * Note: Mutates the cell value to the `capture_id`
  *
  * Rules:
  *  1. The cell combined with the 'CAPTURE_TIME' must be a valid timestamp
@@ -205,7 +176,7 @@ export const getMarkingCaptureDateCellValidator = (
   surveyAliasMap: Map<string, ICritterDetailed>,
   utils: CSVConfigUtils<MarkingCSVStaticHeader>
 ): CSVCellValidator => {
-  return (params: CSVParams) => {
+  return (params: CSVParams): CSVError[] => {
     const cellErrors = validateZodCell(params, z.date());
 
     if (cellErrors.length) {
@@ -243,25 +214,8 @@ export const getMarkingCaptureDateCellValidator = (
     }
 
     // Set the capture id in the state for the setter
-    params.state = foundCaptures[0].capture_id;
+    params.cell = foundCaptures[0].capture_id;
 
     return [];
   };
 };
-
-//export const getMarkingCaptureDateCellSetter = (
-//  surveyAliasMap: Map<string, ICritterDetailed>,
-//  utils: CSVConfigUtils<MarkingCSVStaticHeader>
-//): CSVCellSetter => {
-//  return (params: CSVParams) => {
-//    // Row meta data
-//    const dateCellValue = String(params.cell);
-//    const rowAlias = String(utils.getCellValue('ALIAS', params.row));
-//    const rowTime = String(utils.getCellValue('CAPTURE_TIME', params.row));
-//    const aliasCritter = surveyAliasMap.get(rowAlias.toLowerCase()) as ICritterDetailed;
-//
-//    const captures = findCapturesFromDateTime(aliasCritter.captures, dateCellValue, rowTime);
-//
-//    return captures[0].capture_id;
-//  };
-//};

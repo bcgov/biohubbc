@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { ApiGeneralError } from '../../errors/api-error';
 import { formatTimeString } from '../../services/import-services/utils/datetime';
 import { CSVCellSetter, CSVCellValidator, CSVError, CSVParams } from './csv-config-validation.interface';
 
@@ -26,26 +25,6 @@ export const validateZodCell = (params: CSVParams, schema: z.ZodSchema, solution
   }
 
   return errors;
-};
-
-/**
- * Get the value from the params state property.
- *
- * Note: The state property is potentially set by the cell validator.
- *
- * @throws {ApiGeneralError} If the state is undefined ie: not set in the cell validator
- * @returns {*} {CSVCellSetter} The set cell callback
- */
-export const getStateCellSetter = (): CSVCellSetter => {
-  return (params: CSVParams) => {
-    if (params.state === undefined) {
-      throw new ApiGeneralError(`Cell state is undefined. Expecting state to have been set in cell validator.`, [
-        params
-      ]);
-    }
-
-    return params.state;
-  };
 };
 
 /**
