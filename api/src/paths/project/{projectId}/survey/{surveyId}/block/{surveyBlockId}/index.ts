@@ -36,7 +36,7 @@ export const GET: Operation = [
 
 GET.apiDoc = {
   description: 'Get a specific survey block by its id',
-  tags: ['survey'],
+  tags: ['block'],
   security: [
     {
       Bearer: []

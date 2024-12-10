@@ -32,8 +32,8 @@ interface ISamplingSiteTableProps {
   setSelectedRows: (selection: GridRowSelectionModel) => void;
   paginationModel: GridPaginationModel;
   setPaginationModel: React.Dispatch<React.SetStateAction<GridPaginationModel>>;
-  setSortModel: React.Dispatch<React.SetStateAction<GridSortModel>>;
   sortModel: GridSortModel;
+  setSortModel: React.Dispatch<React.SetStateAction<GridSortModel>>;
   pageSizeOptions: number[];
   rowCount: number;
   /**
@@ -45,7 +45,7 @@ interface ISamplingSiteTableProps {
 /**
  * Returns a table of sampling sites with edit actions
  *
- * @param props {ISamplingSiteTableProps}
+ * @param {ISamplingSiteTableProps} props
  * @returns {*}
  */
 export const SamplingSiteTable = (props: ISamplingSiteTableProps) => {
@@ -267,6 +267,7 @@ export const SamplingSiteTable = (props: ISamplingSiteTableProps) => {
         rowSelectionModel={selectedRows}
         onRowSelectionModelChange={setSelectedRows}
         checkboxSelection
+        disableRowSelectionOnClick
         rowCount={rowCount}
         paginationMode="server"
         sortingMode="server"

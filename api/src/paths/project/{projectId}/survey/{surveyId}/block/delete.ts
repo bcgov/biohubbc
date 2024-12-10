@@ -29,7 +29,7 @@ export const POST: Operation = [
 
 POST.apiDoc = {
   description: 'Delete survey blocks.',
-  tags: ['survey'],
+  tags: ['block'],
   security: [
     {
       Bearer: []

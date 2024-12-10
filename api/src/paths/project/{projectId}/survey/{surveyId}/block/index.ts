@@ -40,7 +40,7 @@ export const POST: Operation = [
 
 POST.apiDoc = {
   description: 'Insert new survey blocks.',
-  tags: ['project', 'survey'],
+  tags: ['block'],
   security: [
     {
       Bearer: []
@@ -159,7 +159,7 @@ export const GET: Operation = [
 
 GET.apiDoc = {
   description: 'Get survey blocks.',
-  tags: ['survey'],
+  tags: ['block'],
   security: [
     {
       Bearer: []

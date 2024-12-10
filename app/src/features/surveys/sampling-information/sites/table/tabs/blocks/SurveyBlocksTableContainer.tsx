@@ -76,34 +76,32 @@ export const SurveyBlocksTableContainer = (props: ISurveyBlocksTableContainerPro
   };
 
   return (
-    <>
-      <LoadingGuard
-        isLoading={!blocksDataLoader.data && (blocksDataLoader.isLoading || !blocksDataLoader.isReady)}
-        isLoadingFallback={<SkeletonTable />}
-        isLoadingFallbackDelay={100}
-        hasNoData={!blocks.length}
-        hasNoDataFallback={
-          <NoDataOverlay
-            height="100%"
-            title="Add Clusters"
-            subtitle="Clusters let you group related sampling sites"
-            icon={mdiArrowTopRight}
-          />
-        }
-        hasNoDataFallbackDelay={100}>
-        <SurveyBlocksTable
-          blocks={blocks}
-          paginationModel={paginationModel}
-          setPaginationModel={setPaginationModel}
-          sortModel={sortModel}
-          setSortModel={setSortModel}
-          rowCount={blocksDataLoader.data?.pagination.total ?? 0}
-          pageSizeOptions={pageSizeOptions}
-          selectedRows={selectedRows}
-          setSelectedRows={setSelectedRows}
-          onDelete={handleDelete}
+    <LoadingGuard
+      isLoading={!blocksDataLoader.data && (blocksDataLoader.isLoading || !blocksDataLoader.isReady)}
+      isLoadingFallback={<SkeletonTable />}
+      isLoadingFallbackDelay={100}
+      hasNoData={!blocks.length}
+      hasNoDataFallback={
+        <NoDataOverlay
+          height="100%"
+          title="Add Clusters"
+          subtitle="Clusters let you group related sampling sites"
+          icon={mdiArrowTopRight}
         />
-      </LoadingGuard>
-    </>
+      }
+      hasNoDataFallbackDelay={100}>
+      <SurveyBlocksTable
+        blocks={blocks}
+        paginationModel={paginationModel}
+        setPaginationModel={setPaginationModel}
+        sortModel={sortModel}
+        setSortModel={setSortModel}
+        rowCount={blocksDataLoader.data?.pagination.total ?? 0}
+        pageSizeOptions={pageSizeOptions}
+        selectedRows={selectedRows}
+        setSelectedRows={setSelectedRows}
+        onDelete={handleDelete}
+      />
+    </LoadingGuard>
   );
 };
