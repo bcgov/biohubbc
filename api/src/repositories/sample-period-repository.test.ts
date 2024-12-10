@@ -4,6 +4,7 @@ import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { ApiExecuteSQLError } from '../errors/api-error';
+import { SurveySamplePeriodDetails } from '../models/sample-period';
 import { getMockDBConnection } from '../__mocks__/db';
 import { InsertSamplePeriodRecord, SamplePeriodRepository, UpdateSamplePeriodRecord } from './sample-period-repository';
 
@@ -41,6 +42,31 @@ describe('SamplePeriodRepository', () => {
 
       expect(dbConnectionObj.sql).to.have.been.calledOnce;
       expect(response).to.eql(mockRows);
+    });
+  });
+
+  describe('getSamplePeriodById', () => {
+    it('should return non-empty rows', async () => {
+      const mockRow: SurveySamplePeriodDetails = {
+        survey_sample_method_id: 1,
+        survey_sample_period_id: 2,
+        start_date: '2023-10-02',
+        end_date: '2023-01-02',
+        start_time: '12:00:00',
+        end_time: '13:00:00',
+        survey_sample_site: { survey_sample_site_id: 1, name: 'Site' },
+        method_technique: { method_technique_id: 1, name: 'Technique', description: 'Description' }
+      };
+      const mockResponse = { rows: [mockRow], rowCount: 2 } as any as Promise<QueryResult<any>>;
+      const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
+
+      const mockSurveyId = 1;
+      const surveySampleSiteId = 1;
+      const repo = new SamplePeriodRepository(dbConnectionObj);
+      const response = await repo.getSamplePeriodById(mockSurveyId, surveySampleSiteId);
+
+      expect(dbConnectionObj.sql).to.have.been.calledOnce;
+      expect(response).to.eql(mockRow);
     });
   });
 

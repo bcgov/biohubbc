@@ -17,8 +17,8 @@ export interface IAutocompleteSearchFieldProps<T> {
   /**
    * The API request to make when searching
    *
-   * @param params
-   * @returns
+   * @param {any} params
+   * @returns {Promise<Any>}
    */
   searchApi: (params: any) => Promise<any>;
   getOptionLabel: (option: T) => string;

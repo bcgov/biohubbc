@@ -213,6 +213,90 @@ describe('SampleMethodService', () => {
     });
   });
 
+  it('Inserts multiple sample methods and associated sample periods successfully', async () => {
+    const mockDBConnection = getMockDBConnection();
+
+    const mockSampleMethodRecord: SurveySampleMethodModel = {
+      survey_sample_method_id: 1,
+      survey_sample_site_id: 2,
+      method_technique_id: 3,
+      method_response_metric_id: 1,
+      description: 'description',
+      create_date: '2023-05-06',
+      create_user: 1,
+      update_date: null,
+      update_user: null,
+      revision_count: 0
+    };
+
+    const insertSampleMethodStub = sinon
+      .stub(SampleMethodRepository.prototype, 'insertSampleMethod')
+      .resolves(mockSampleMethodRecord);
+
+    const mockSamplePeriodRecord: SurveySamplePeriodModel = {
+      survey_sample_method_id: 1,
+      survey_sample_period_id: 2,
+      start_date: '2023-10-04',
+      end_date: '2023-11-05',
+      start_time: '12:00:00',
+      end_time: '13:00:00',
+      create_date: '2023-01-02',
+      create_user: 1,
+      update_date: null,
+      update_user: null,
+      revision_count: 0
+    };
+
+    const insertSamplePeriodStub = sinon
+      .stub(SamplePeriodService.prototype, 'insertSamplePeriod')
+      .resolves(mockSamplePeriodRecord);
+
+    const sampleMethods: InsertSampleMethodRecord[] = [
+      {
+        survey_sample_site_id: 2,
+        method_technique_id: 3,
+        method_response_metric_id: 1,
+        description: 'description',
+        sample_periods: [
+          {
+            end_date: '2023-01-02',
+            start_date: '2023-10-02',
+            start_time: '12:00:00',
+            end_time: '13:00:00'
+          },
+          {
+            end_date: '2023-10-03',
+            start_date: '2023-11-05',
+            start_time: '12:00:00',
+            end_time: '13:00:00'
+          }
+        ]
+      }
+    ];
+
+    const sampleMethodService = new SampleMethodService(mockDBConnection);
+    const response = await sampleMethodService.insertSampleMethods(sampleMethods);
+
+    expect(insertSampleMethodStub).to.be.calledOnceWith(sampleMethods[0]);
+
+    expect(insertSamplePeriodStub).to.be.calledWith({
+      survey_sample_method_id: mockSampleMethodRecord.survey_sample_method_id,
+      start_date: sampleMethods[0].sample_periods[0].start_date,
+      end_date: sampleMethods[0].sample_periods[0].end_date,
+      start_time: sampleMethods[0].sample_periods[0].start_time,
+      end_time: sampleMethods[0].sample_periods[0].end_time
+    });
+    expect(insertSamplePeriodStub).to.be.calledWith({
+      survey_sample_method_id: mockSampleMethodRecord.survey_sample_method_id,
+      start_date: sampleMethods[0].sample_periods[1].start_date,
+      end_date: sampleMethods[0].sample_periods[1].end_date,
+      start_time: sampleMethods[0].sample_periods[1].start_time,
+      end_time: sampleMethods[0].sample_periods[1].end_time
+    });
+
+    expect(response).to.eql([mockSampleMethodRecord]);
+  });
+
   describe('updateSampleMethod', () => {
     afterEach(() => {
       sinon.restore();

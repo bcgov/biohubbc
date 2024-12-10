@@ -79,7 +79,7 @@ export const SamplingRouter = () => {
       </RouteWithTitle>
 
       <RouteWithTitle
-        // exact
+        exact
         path="/admin/projects/:id/surveys/:survey_id/sampling/period/:survey_sample_period_id/edit"
         title={getTitle('Edit Period')}>
         <DialogContextProvider>

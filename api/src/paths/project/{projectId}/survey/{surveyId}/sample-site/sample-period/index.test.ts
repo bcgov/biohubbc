@@ -15,7 +15,7 @@ describe('createSamplePeriodRecord', () => {
     sinon.restore();
   });
 
-  it('should return 201 if sample periods are successfully inserted', async () => {
+  it('should successfully create sample periods', async () => {
     const dbConnectionObj = getMockDBConnection({
       open: sinon.stub(),
       release: sinon.stub(),
@@ -69,7 +69,7 @@ describe('createSamplePeriodRecord', () => {
     expect(mockRes.send).to.have.been.calledOnce;
   });
 
-  it('should handle and re-throw errors correctly', async () => {
+  it('should handle and re-throw errors', async () => {
     const dbConnectionObj = getMockDBConnection({
       rollback: sinon.stub(),
       release: sinon.stub()

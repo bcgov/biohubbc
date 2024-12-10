@@ -76,7 +76,7 @@ export class SampleMethodService extends DBService {
   }
 
   /**
-   * Inserts survey Sample Method and associated Sample Periods.
+   * Inserts a single sample method and associated periods
    *
    * @param {InsertSampleMethodRecord} sampleMethod
    * @return {*}  {Promise<SurveySampleMethodModel>}

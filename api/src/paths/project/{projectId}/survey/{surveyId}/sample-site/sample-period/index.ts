@@ -14,11 +14,7 @@ export const POST: Operation = [
     return {
       or: [
         {
-          validProjectPermissions: [
-            PROJECT_PERMISSION.COORDINATOR,
-            PROJECT_PERMISSION.COORDINATOR,
-            PROJECT_PERMISSION.COLLABORATOR
-          ],
+          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR],
           surveyId: Number(req.params.surveyId),
           discriminator: 'ProjectPermission'
         },
@@ -34,7 +30,7 @@ export const POST: Operation = [
 
 POST.apiDoc = {
   description: 'Insert survey sample periods for the given sampling sites and technique',
-  tags: ['project', 'survey'],
+  tags: ['periods'],
   security: [
     {
       Bearer: []

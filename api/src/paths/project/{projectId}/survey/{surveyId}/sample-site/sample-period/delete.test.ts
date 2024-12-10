@@ -45,7 +45,7 @@ describe('deleteSamplePeriods', () => {
     expect(mockRes.send).to.have.been.calledOnce;
   });
 
-  it('should handle errors and return 500 if something goes wrong', async () => {
+  it('should handle and re-throw errors', async () => {
     const mockDBConnection = getMockDBConnection({
       rollback: sinon.stub(),
       release: sinon.stub()
