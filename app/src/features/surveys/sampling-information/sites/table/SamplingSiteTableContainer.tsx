@@ -21,7 +21,7 @@ import useDataLoader from 'hooks/useDataLoader';
 import { useEffect, useMemo, useState } from 'react';
 import { ApiPaginationRequestOptions } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
-import { SamplingSiteTable } from './SamplingSiteTable';
+import { SamplingSiteTable } from './tabs/sites/SamplingSiteTable';
 
 const pageSizeOptions = [10, 25, 50];
 
