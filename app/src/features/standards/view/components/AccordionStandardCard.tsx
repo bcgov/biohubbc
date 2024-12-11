@@ -8,7 +8,7 @@ import React, { PropsWithChildren, ReactElement, useState } from 'react';
 
 interface IAccordionStandardCardProps extends PaperProps {
   label: string | React.ReactElement;
-  subtitle?: string | null;
+  subtitle?: string | React.ReactNode | null;
   ornament?: ReactElement;
   colour: string;
   disableCollapse?: boolean;

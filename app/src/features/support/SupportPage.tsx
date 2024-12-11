@@ -17,7 +17,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import PageHeader from 'components/layout/PageHeader';
 import { AccordionStandardCard } from 'features/standards/view/components/AccordionStandardCard';
-import { useState } from 'react';
+import { ReactNode, useState } from 'react';
 import { StandardsToolbar } from '../standards/components/StandardsToolbar';
 
 // FAQ SECTIONS MAY NEED TO BE FORMATTED IN A DIFFERENT WAY, I DONT KNOW HOW BUT IM THINKING ABOUT IT
@@ -37,7 +37,7 @@ export enum SupportPageView {
   CONTACT = 'CONTACT'
 }
 
-export interface ISupportPageView {
+interface ISupportPageView {
   label: string;
   value: SupportPageView;
   icon: string;
@@ -45,7 +45,7 @@ export interface ISupportPageView {
 
 interface IDataItem {
   label: string;
-  description: string;
+  description: string | ReactNode;
   unit?: string;
 }
 
@@ -68,7 +68,7 @@ const observationText =
   'Get insights into the collection and management of ecological data, including species sightings and measurements. See how observations tie into foundational data and learn about data upload options.';
 
 const animalText =
-  'Manage individual animal records, including their attributes and key events like captures and mortalities. Discover the value of building a relational dataset for long-term ecological studies.';
+  'Animal data represents information about identifiable individuals within your surveying effort. Managing animal data through SIMS has the benefit of allowing you to establish a centralized repository of animal information for species in British Columbia. Contributing to this baseline dataset provides a powerful foundation for research, enabling a more comprehensive understanding of the history of animal handling events, animal survival, and animal health and fertility. Animal data can be managed independently in SIMS or serve as foundational data for managing other datasets. For instance, telemetry data in SIMS is attributed as an extension of an animal, seamlessly linking the two for a comprehensive understanding of individual animal movements and behaviors. ';
 
 const telemetryText =
   'Dive into the management of data from tracking devices, including deployments and automated data retrieval. Learn how telemetry supports real-time tracking and historical data analysis.';
@@ -265,46 +265,121 @@ const SupportPage = () => {
 
     [SupportPageView.ANIMALS]: [
       {
-        label: 'What is animal data and how does it benefit you',
-        description:
-          'Animal data represents detailed information about individual animals, including their attributes and associated events. This data forms the basis for telemetry and long-term ecological studies, offering insights into survival, movement, and population trends.'
+        label: 'Animal Profile',
+        description: (
+          <>
+            <Typography variant="h5" gutterBottom>
+              Animal Profile
+            </Typography>
+            <Typography variant="body1" gutterBottom>
+              Animal data in SIMS is managed through the “Animals” page in your survey. There are two components to
+              animal data: the animal, and its events.
+            </Typography>
+          </>
+        )
       },
       {
-        label: 'Animal data is the foundation for telemetry',
-        description:
-          'Telemetry relies on accurate animal data, providing context for tracking information such as movement, habitat use, and environmental interactions.'
+        label: 'The Animal',
+        description: (
+          <>
+            <Typography variant="h6" gutterBottom>
+              The Animal
+            </Typography>
+            <Typography variant="body1" gutterBottom>
+              An animal entity is comprised of a few base attributes: species, animal name, an animal description,
+              animal sex, and ecological units where applicable.
+            </Typography>
+
+            <Typography variant="h5" gutterBottom sx={{ mt: 3 }}>
+              Species
+            </Typography>
+            <Typography variant="body1" gutterBottom>
+              The available species list in SIMS is derived from the Integrated Taxonomic Information System (ITIS).
+            </Typography>
+
+            <Typography variant="h5" gutterBottom sx={{ mt: 3 }}>
+              Nickname
+            </Typography>
+            <Typography variant="body1" gutterBottom>
+              The name for an animal is a required field. The contents for this field can be an informal nickname you
+              give your animal, or whichever official identifier you use to distinguish it.
+            </Typography>
+
+            <Typography variant="h5" gutterBottom sx={{ mt: 3 }}>
+              Sex
+            </Typography>
+            <Typography variant="body1" gutterBottom>
+              Sex is not a required field, but including this information can enrich the quality of your dataset. The
+              drop-down values for sex are unique to your selected species.
+            </Typography>
+
+            <Typography variant="h5" gutterBottom sx={{ mt: 3 }}>
+              Description
+            </Typography>
+            <Typography variant="body1" gutterBottom>
+              Animal description is a free-form comment box where you are welcome to add any information pertinent to
+              your individual.
+            </Typography>
+
+            <Typography variant="h5" gutterBottom sx={{ mt: 3 }}>
+              Ecological Unit
+            </Typography>
+            <Typography variant="body1" gutterBottom>
+              The ecological unit options are tailored to your selected species. An ecological unit may represent
+              classifications such as an animal's ecotype or population unit.
+            </Typography>
+          </>
+        )
       },
       {
-        label: 'Attributes that an animal can have',
-        description:
-          'Animals in SIMS can have various attributes, such as descriptions, names, population units, and other identifiers that provide a detailed profile for each individual.'
-      },
-      {
-        label: 'Benefit of building a large queriable relational dataset',
-        description:
-          'A relational dataset enables efficient querying and analysis of animal data. This supports research into survival, movement, and population dynamics, improving conservation efforts and ecological understanding.'
-      },
-      {
-        label: 'Bulk vs individual uploading',
-        description:
-          'Animal data can be uploaded individually or in bulk, depending on the volume of data. Bulk uploads are ideal for large datasets, while individual uploads offer precision for small-scale entries.'
-      },
-      {
-        label: 'Where to find templates',
-        description:
-          'Templates for uploading animal data are available in SIMS, providing predefined formats to ensure consistency and simplify data entry.'
-      },
-      {
-        label: 'Animal components: create animal, then create events',
-        description:
-          'Animals in SIMS are created first, followed by associated events such as captures or mortalities. This structure ensures that all events are linked to the appropriate individual.'
-      },
-      {
-        label: 'FAQ',
-        description:
-          'This section addresses common questions about animal data:\n\n' +
-          '- **I do not see my population unit here:** Check the population unit labels in SIMS. If your unit is missing, contact support to request its addition.\n' +
-          '- **What are animal events?** Animal events include important occurrences such as captures, releases, and mortalities, providing a complete history of individual animals.'
+        label: 'The Events',
+        description: (
+          <>
+            <Typography variant="h6" gutterBottom>
+              The Events
+            </Typography>
+            <Typography variant="body1" gutterBottom>
+              Once your animal has been created, you can start attributing events to your animal. Events include both
+              animal captures and animal mortalities.
+            </Typography>
+
+            <Typography variant="h5" gutterBottom sx={{ mt: 3 }}>
+              Capture Events
+            </Typography>
+            <Typography variant="body1" gutterBottom>
+              Capture events, also referred to as animal handling events, are directly associated with an individual
+              animal. Each capture event records key details such as the date, location, comments, release information,
+              and any markings or measurements recorded for the animal at that specific point in time.
+            </Typography>
+
+            <Typography variant="h5" gutterBottom sx={{ mt: 3 }}>
+              Mortality Events
+            </Typography>
+            <Typography variant="body1" gutterBottom>
+              Mortality events can be reported for individual animals in your dataset. Each mortality event records key
+              details such as the date, location, comments, cause of death, and any markings or measurements taken at
+              that specific point in time.
+            </Typography>
+
+            <Typography variant="h5" gutterBottom sx={{ mt: 3 }}>
+              Measurements
+            </Typography>
+            <Typography variant="body1" gutterBottom>
+              Body and life history measurements for an animal can be linked to its capture events, providing a detailed
+              record of changes over time. The measurements are tailored to your selected species and will differ
+              depending on the animal loaded to your surveys.
+            </Typography>
+
+            <Typography variant="h5" gutterBottom sx={{ mt: 3 }}>
+              Markings
+            </Typography>
+            <Typography variant="body1" gutterBottom>
+              Marking information, whether current or newly placed, can be recorded during a capture event and
+              attributed to a specific body marking location on the animal. These marking locations are tailored to
+              specific taxa and will vary based on the species selected.
+            </Typography>
+          </>
+        )
       }
     ],
 
@@ -389,7 +464,13 @@ const SupportPage = () => {
                   <AccordionStandardCard
                     key={index}
                     label={item.label}
-                    subtitle={item.description}
+                    subtitle={
+                      typeof item.description === 'string' ? (
+                        <Typography>{item.description}</Typography>
+                      ) : (
+                        item.description
+                      )
+                    }
                     ornament={item.unit ? <Box>{item.unit}</Box> : undefined}
                     colour={grey[100]}
                   />
