@@ -15,10 +15,8 @@ import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
 import PageHeader from 'components/layout/PageHeader';
 import { AccordionStandardCard } from 'features/standards/view/components/AccordionStandardCard';
-import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import { ReactNode, useState } from 'react';
 import { StandardsToolbar } from '../standards/components/StandardsToolbar';
 
@@ -334,12 +332,7 @@ const SupportPage = () => {
         )
       },
       {
-        label: (
-          <>
-            <Typography>DFSLDF</Typography>
-            <HelpButtonDialog markdownType={MarkdownTypeNameEnum.PROJECT_DETAILS} />
-          </>
-        ),
+        label: 'The Event',
         description: (
           <>
             <Typography variant="h6" gutterBottom>
