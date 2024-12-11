@@ -69,6 +69,8 @@ export const validateCSVHeaders = (worksheet: WorkSheet, config: CSVConfig): CSV
         error: 'No columns in the file',
         solution: 'Add column names. Did you accidentally include an empty first row above the columns?',
         values: configUtils.configStaticHeaders,
+        header: null,
+        cell: null,
         row: 0
       }
     ];
@@ -79,6 +81,8 @@ export const validateCSVHeaders = (worksheet: WorkSheet, config: CSVConfig): CSV
       {
         error: 'No rows in the file',
         solution: 'Add rows. Did you accidentally import the wrong file?',
+        header: null,
+        cell: null,
         row: 1
       }
     ];
@@ -96,6 +100,7 @@ export const validateCSVHeaders = (worksheet: WorkSheet, config: CSVConfig): CSV
         error: 'A required column is missing',
         solution: `Add all required columns to the file.`,
         header: staticHeader,
+        cell: null,
         values: [staticHeader, ...config.staticHeadersConfig[staticHeader].aliases],
         row: 0
       });
@@ -109,6 +114,7 @@ export const validateCSVHeaders = (worksheet: WorkSheet, config: CSVConfig): CSV
         error: 'An unknown column is included in the file',
         solution: `Remove extra columns from the file.`,
         header: unknownHeader,
+        cell: null,
         row: 0
       });
     }
@@ -141,8 +147,9 @@ export const forEachCSVCell = (
       const headerConfig = staticHeaderConfigMap.get(header) ?? config.dynamicHeadersConfig ?? {};
       const cell = worksheetRow[header];
       const params: CSVParams = {
-        cell,
-        header,
+        cell: cell,
+        mutateCell: cell, // Set the mutate cell to the cell value
+        header: header,
         row: worksheetRow,
         rowIndex: i,
         staticHeader: staticHeaderConfigMap.get(header)?.staticHeader
@@ -167,17 +174,19 @@ export const forEachCSVCell = (
  * @returns {*} {CSVRow[]} - The updated row
  */
 export const executeSetCellValue = (params: CSVParams, headerConfig: CSVHeaderConfig, mutableRows: CSVRow[]) => {
+  const row = { ...mutableRows[params.rowIndex] };
+
   const headerKey = params.staticHeader?.toUpperCase() ?? params.header.toUpperCase();
-  const cellValue = headerConfig?.setCellValue?.(params) ?? params.cell;
+  const cellValue = headerConfig?.setCellValue?.(params) ?? params.mutateCell;
 
   // Remove the aliased header if it is not the static header
   if (params.staticHeader && params.header !== params.staticHeader) {
-    delete params.row[params.header];
+    delete row[params.header];
   }
 
-  params.row[headerKey] = cellValue;
+  row[headerKey] = cellValue;
 
-  mutableRows[params.rowIndex] = params.row;
+  mutableRows[params.rowIndex] = row;
 };
 
 /**
@@ -207,8 +216,8 @@ export const executeValidateCell = (
         error: error.error,
         solution: error.solution,
         values: error.values,
-        cell: error.cell ?? params.cell,
-        header: error.header ?? params.header,
+        cell: error.cell === undefined ? params.cell : error.cell, // Use cell value if intentionally null
+        header: error.header === undefined ? params.header : error.header, // Use header value if intentionally null
         row: error.row ?? params.rowIndex + 1 // headers: 0, data row: 1
       });
     });

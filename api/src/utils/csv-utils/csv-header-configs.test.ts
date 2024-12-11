@@ -25,7 +25,7 @@ describe('CSVHeaderConfigs', () => {
       const tsns = new Set([1, 2]);
       const tsnValidator = getTsnCellValidator(tsns);
 
-      const result = tsnValidator({ cell: 1, row: {}, header: 'HEADER', rowIndex: 0 });
+      const result = tsnValidator({ cell: 1, row: {}, header: 'HEADER', rowIndex: 0, mutateCell: 1 });
 
       expect(result).to.be.deep.equal([]);
     });
@@ -34,7 +34,7 @@ describe('CSVHeaderConfigs', () => {
       const tsns = new Set([1, 2]);
       const tsnValidator = getTsnCellValidator(tsns);
 
-      const result = tsnValidator({ cell: 3, row: {}, header: 'HEADER', rowIndex: 0 });
+      const result = tsnValidator({ cell: 3, row: {}, header: 'HEADER', rowIndex: 0, mutateCell: 3 });
 
       expect(result).to.be.deep.equal([
         {
@@ -49,7 +49,13 @@ describe('CSVHeaderConfigs', () => {
     it('should return an empty array if the cell is valid', () => {
       const descriptionValidator = getDescriptionCellValidator();
 
-      const result = descriptionValidator({ cell: 'description', row: {}, header: 'HEADER', rowIndex: 0 });
+      const result = descriptionValidator({
+        cell: 'description',
+        row: {},
+        header: 'HEADER',
+        rowIndex: 0,
+        mutateCell: 'description'
+      });
 
       expect(result).to.be.deep.equal([]);
     });
@@ -60,7 +66,13 @@ describe('CSVHeaderConfigs', () => {
       for (const badDescription of badDescriptions) {
         const descriptionValidator = getDescriptionCellValidator();
 
-        const result = descriptionValidator({ cell: badDescription, row: {}, header: 'HEADER', rowIndex: 0 });
+        const result = descriptionValidator({
+          cell: badDescription,
+          row: {},
+          header: 'HEADER',
+          rowIndex: 0,
+          mutateCell: badDescription
+        });
 
         expect(result.length).to.be.equal(1);
       }

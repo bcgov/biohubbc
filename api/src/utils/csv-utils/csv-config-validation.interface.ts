@@ -95,9 +95,18 @@ export interface CSVParams {
   /**
    * The cell value.
    *
+   * Note: Readonly to prevent mutation during validation. Why? CSV cell validators are expecting the initial cell value.
+   * Use the `setCellValue` callback or the CSVParams `mutateCell` to update the cell value.
+   *
    * @type {unknown}
    */
-  cell: unknown;
+  readonly cell: unknown;
+  /**
+   * The mutatable cell value.
+   *
+   * @type {unknown}
+   */
+  mutateCell: unknown;
   /**
    * The row header name. The initial row key.
    *
@@ -167,9 +176,9 @@ export interface CSVError {
   /**
    * The header name.
    *
-   * @type {string | undefined}
+   * @type {string | null | undefined}
    */
-  header?: string;
+  header?: string | null;
   /**
    * The row index the error occurred.
    *

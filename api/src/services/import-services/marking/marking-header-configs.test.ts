@@ -3,14 +3,15 @@ import { CSVConfigUtils } from '../../../utils/csv-utils/csv-config-utils';
 import { CSVConfig, CSVParams } from '../../../utils/csv-utils/csv-config-validation.interface';
 import { NestedRecord } from '../../../utils/nested-record';
 import {
-  getMarkingAliasCellSetter,
   getMarkingAliasCellValidator,
   getMarkingBodyLocationCellValidator,
+  getMarkingCaptureDateCellValidator,
+  getMarkingColourCellValidator,
   getMarkingIdentifierCellValidator,
   getMarkingTypeCellValidator
 } from './marking-header-configs';
 
-describe.only('marking-header-configs', () => {
+describe('marking-header-configs', () => {
   describe('getMarkingIdentifierCellValidator', () => {
     it('should allow a string with a length between 1 and 50', () => {
       const result = getMarkingIdentifierCellValidator()({ cell: 'string' } as CSVParams);
@@ -43,11 +44,22 @@ describe.only('marking-header-configs', () => {
 
   describe('getMarkingAliasCellValidator', () => {
     it('should only allow values that exist in the surveyAliasMap', () => {
-      const surveyAliasMap: any = new Map<string, string>([['alias', 'survey']]);
+      const surveyAliasMap: any = new Map<string, string>([['alias', { captures: [{ capture_id: 'uuid' }] } as any]]);
 
       const result = getMarkingAliasCellValidator(surveyAliasMap)({ cell: 'ALIAS' } as CSVParams);
 
       expect(result).to.deep.equal([]);
+    });
+
+    it('should update the mutateCell value to the critter_id', () => {
+      const surveyAliasMap = new Map([['alias', { critter_id: 'critter', captures: [{ capture_id: 'uuid' }] } as any]]);
+
+      const params = { cell: 'ALIAS', mutateCell: 'ALIAS' } as CSVParams;
+
+      const result = getMarkingAliasCellValidator(surveyAliasMap)(params);
+
+      expect(params.mutateCell).to.deep.equal('critter');
+      expect(result.length).to.deep.equal(0);
     });
 
     it('should return a single error if does not exist in the surveyAliasMap', () => {
@@ -55,23 +67,15 @@ describe.only('marking-header-configs', () => {
 
       const result = getMarkingAliasCellValidator(surveyAliasMap)({ cell: 'bad' } as CSVParams);
 
-      expect(result.length).to.be.equal(1);
-    });
-  });
-
-  describe('getMarkingAliasCellSetter', () => {
-    it('should return the critter_id if the alias is found', () => {
-      const surveyAliasMap = new Map<string, any>([['alias', { critter_id: 'critter_id' }]]);
-
-      const result = getMarkingAliasCellSetter(surveyAliasMap)({ cell: 'ALIAS' } as CSVParams);
-
-      expect(result).to.be.equal('critter_id');
+      expect(result[0].error).to.contain('find a matching survey critter');
     });
 
-    it('should throw an error if the alias is not found', () => {
-      const surveyAliasMap = new Map<string, any>([['alias', 'survey']]);
+    it('should return a error if the critter has no captures', () => {
+      const surveyAliasMap: any = new Map<string, string>([['alias', { captures: [] } as any]]);
 
-      expect(() => getMarkingAliasCellSetter(surveyAliasMap)({ cell: 'bad' } as CSVParams)).to.throw();
+      const result = getMarkingAliasCellValidator(surveyAliasMap)({ cell: 'alias' } as CSVParams);
+
+      expect(result[0].error).to.contain('no captures');
     });
   });
 
@@ -103,6 +107,7 @@ describe.only('marking-header-configs', () => {
         dictionary,
         utils
       )({
+        mutateCell: 'body_location_id',
         cell: 'location',
         row: { ALIAS: 'alias' },
         header: '',
@@ -110,6 +115,25 @@ describe.only('marking-header-configs', () => {
       } as CSVParams);
 
       expect(result).to.deep.equal([]);
+    });
+
+    it('should update the mutateCell value to the body_location_id', () => {
+      const dictionary = new NestedRecord({ alias: { location: 'uuid' } });
+      const mockConfig: CSVConfig = { staticHeadersConfig: { ALIAS: { aliases: [] } }, ignoreDynamicHeaders: true };
+      const utils = new CSVConfigUtils({}, mockConfig);
+
+      const params = {
+        mutateCell: 'body_location_id',
+        cell: 'location',
+        row: { ALIAS: 'alias' },
+        header: '',
+        rowIndex: 0
+      } as CSVParams;
+
+      const result = getMarkingBodyLocationCellValidator(dictionary, utils)(params);
+
+      expect(params.mutateCell).to.deep.equal('uuid');
+      expect(result.length).to.deep.equal(0);
     });
 
     it('should return a single error when alias has no body locations', () => {
@@ -121,6 +145,7 @@ describe.only('marking-header-configs', () => {
         dictionary,
         utils
       )({
+        mutateCell: 'body_location_id',
         cell: 'bad',
         row: { ALIAS: 'invalidAlias' },
         header: '',
@@ -139,53 +164,129 @@ describe.only('marking-header-configs', () => {
         dictionary,
         utils
       )({
+        mutateCell: 'body_location_id',
         cell: 'bad',
         row: { ALIAS: 'alias' },
         header: '',
         rowIndex: 0
       } as CSVParams);
 
-      expect(result[0].error).to.contain('Invalid taxon body location');
+      expect(result[0].error).to.contain('Invalid taxon marking body location');
     });
   });
 
-  describe('getMarkingBodyLocationCellSetter', () => {
-    it('should return the body location id if the body location is found', () => {
-      const dictionary = new NestedRecord({ alias: { location: 'uuid' } });
-      const mockConfig: CSVConfig = { staticHeadersConfig: { ALIAS: { aliases: [] } }, ignoreDynamicHeaders: true };
-      const utils = new CSVConfigUtils({}, mockConfig);
+  describe('getMarkingColourCellValidator', () => {
+    it('should return no errors for valid colours', () => {
+      const colours = new Set<string>(['colour']);
 
-      const result = getMarkingBodyLocationCellValidator(
-        dictionary,
-        utils
-      )({
-        cell: 'location',
-        row: { ALIAS: 'alias' },
-        header: '',
-        rowIndex: 0
-      } as CSVParams);
+      const result = getMarkingColourCellValidator(colours)({ cell: 'COLOUR' } as CSVParams);
 
       expect(result).to.deep.equal([]);
     });
 
-    it('should throw an error if the body location is not found', () => {
-      const dictionary = new NestedRecord({ alias: { location: 'uuid' } });
-      const mockConfig: CSVConfig = { staticHeadersConfig: { ALIAS: { aliases: [] } }, ignoreDynamicHeaders: true };
-      const utils = new CSVConfigUtils({}, mockConfig);
+    it('should return a single error if the value is not in the colours set', () => {
+      const colours = new Set<string>(['colour']);
 
-      expect(() =>
-        getMarkingBodyLocationCellValidator(
-          dictionary,
-          utils
-        )({
-          cell: 'bad',
-          row: { ALIAS: 'alias' },
-          header: '',
-          rowIndex: 0
-        } as CSVParams)
-      ).to.throw();
+      const result = getMarkingColourCellValidator(colours)({ cell: 'bad' } as CSVParams);
+
+      expect(result.length).to.be.equal(1);
     });
   });
 
-  describe('getMarkingCaptureDateCellSetter', () => {});
+  describe('getMarkingCaptureDateCellValidator', () => {
+    it('should return no errors when alias does not map to survey aliases', () => {
+      const surveyAliasMap: any = new Map<string, string>([['alias', { captures: [{ capture_id: 'uuid' }] } as any]]);
+      const mockConfig: CSVConfig = {
+        staticHeadersConfig: {
+          ALIAS: { aliases: [] },
+          CAPTURE_DATE: { aliases: [] },
+          CAPTURE_TIME: { aliases: [] }
+        },
+        ignoreDynamicHeaders: true
+      };
+      const utils = new CSVConfigUtils({}, mockConfig);
+
+      const result = getMarkingCaptureDateCellValidator(
+        surveyAliasMap,
+        utils
+      )({ cell: '2024-01-01', row: { ALIAS: 'bad', CAPTURE_TIME: '20:20:10' } } as unknown as CSVParams);
+
+      expect(result).to.deep.equal([]);
+    });
+
+    it('should update the mutateCell value to the capture_id', () => {
+      const surveyAliasMap: any = new Map<string, string>([
+        ['alias', { captures: [{ capture_id: 'uuid', capture_date: '2021-01-01' }] } as any]
+      ]);
+      const mockConfig: CSVConfig = {
+        staticHeadersConfig: {
+          ALIAS: { aliases: [] },
+          CAPTURE_DATE: { aliases: [] },
+          CAPTURE_TIME: { aliases: [] }
+        },
+        ignoreDynamicHeaders: true
+      };
+      const utils = new CSVConfigUtils({}, mockConfig);
+
+      const params = { cell: '2021-01-01', row: { ALIAS: 'alias' } } as unknown as CSVParams;
+
+      const result = getMarkingCaptureDateCellValidator(surveyAliasMap, utils)(params);
+
+      expect(params.mutateCell).to.deep.equal('uuid');
+      expect(result.length).to.deep.equal(0);
+    });
+
+    it('should return error when capture not found for critter', () => {
+      const surveyAliasMap: any = new Map<string, string>([
+        ['alias', { captures: [{ capture_id: 'uuid', capture_date: '2021-01-01' }] } as any]
+      ]);
+      const mockConfig: CSVConfig = {
+        staticHeadersConfig: {
+          ALIAS: { aliases: [] },
+          CAPTURE_DATE: { aliases: [] },
+          CAPTURE_TIME: { aliases: [] }
+        },
+        ignoreDynamicHeaders: true
+      };
+      const utils = new CSVConfigUtils({}, mockConfig);
+
+      const result = getMarkingCaptureDateCellValidator(
+        surveyAliasMap,
+        utils
+      )({ cell: '2024-01-01', row: { ALIAS: 'alias', CAPTURE_TIME: '20:20:10' } } as unknown as CSVParams);
+
+      expect(result[0].error).to.contain('not found');
+    });
+
+    it('should return error when multiple captures found for critter', () => {
+      const surveyAliasMap: any = new Map<string, string>([
+        [
+          'alias',
+          {
+            captures: [
+              { capture_id: 'uuid', capture_date: '2021-01-01' },
+              { capture_id: 'uuid2', capture_date: '2021-01-01' }
+            ]
+          } as any
+        ]
+      ]);
+
+      const mockConfig: CSVConfig = {
+        staticHeadersConfig: {
+          ALIAS: { aliases: [] },
+          CAPTURE_DATE: { aliases: [] },
+          CAPTURE_TIME: { aliases: [] }
+        },
+        ignoreDynamicHeaders: true
+      };
+      const utils = new CSVConfigUtils({}, mockConfig);
+
+      const result = getMarkingCaptureDateCellValidator(
+        surveyAliasMap,
+        utils
+      )({ cell: '2021-01-01', row: { ALIAS: 'alias' } } as unknown as CSVParams);
+
+      expect(result[0].error).to.contain('ultiple captures found');
+    });
+  });
 });

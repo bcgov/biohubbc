@@ -29,7 +29,13 @@ describe('critter-header-configs', () => {
           new CSVConfigUtils(xlsx.utils.json_to_sheet([]), mockConfig)
         );
 
-        const result = critterAliasValidator({ cell: badCellValue, row: {}, header: 'ALIAS', rowIndex: 0 });
+        const result = critterAliasValidator({
+          cell: badCellValue,
+          row: {},
+          header: 'ALIAS',
+          rowIndex: 0,
+          mutateCell: badCellValue
+        });
 
         expect(result.length).to.be.equal(1);
       }
@@ -42,7 +48,13 @@ describe('critter-header-configs', () => {
 
       const critterAliasValidator = getCritterAliasCellValidator(surveyAliases, configUtils);
 
-      const result = critterAliasValidator({ cell: 'alias4', row: {}, header: 'ALIAS', rowIndex: 0 });
+      const result = critterAliasValidator({
+        cell: 'alias4',
+        row: {},
+        header: 'ALIAS',
+        rowIndex: 0,
+        mutateCell: 'alias4'
+      });
 
       expect(result).to.be.deep.equal([]);
     });
@@ -54,7 +66,13 @@ describe('critter-header-configs', () => {
 
       const critterAliasValidator = getCritterAliasCellValidator(surveyAliases, configUtils);
 
-      const result = critterAliasValidator({ cell: 'alias1', row: {}, header: 'ALIAS', rowIndex: 0 });
+      const result = critterAliasValidator({
+        cell: 'alias1',
+        row: {},
+        header: 'ALIAS',
+        rowIndex: 0,
+        mutateCell: 'alias1'
+      });
 
       expect(result).to.be.deep.equal([
         {
@@ -71,7 +89,13 @@ describe('critter-header-configs', () => {
 
       const critterAliasValidator = getCritterAliasCellValidator(surveyAliases, configUtils);
 
-      const result = critterAliasValidator({ cell: 'alias3', row: {}, header: 'ALIAS', rowIndex: 0 });
+      const result = critterAliasValidator({
+        cell: 'alias3',
+        row: {},
+        header: 'ALIAS',
+        rowIndex: 0,
+        mutateCell: 'alias3'
+      });
 
       expect(result).to.be.deep.equal([
         {
@@ -98,7 +122,13 @@ describe('critter-header-configs', () => {
       const cellValues = ['unit', undefined];
 
       for (const cell of cellValues) {
-        const result = cellValidator({ cell: cell, row: { ITIS_TSN: 1 }, header: 'HEADER', rowIndex: 0 });
+        const result = cellValidator({
+          cell: cell,
+          row: { ITIS_TSN: 1 },
+          header: 'HEADER',
+          rowIndex: 0,
+          mutateCell: cell
+        });
 
         expect(result).to.be.deep.equal([]);
       }
@@ -116,7 +146,13 @@ describe('critter-header-configs', () => {
         new CSVConfigUtils(xlsx.utils.json_to_sheet([]), mockConfig)
       );
 
-      const result = cellValidator({ cell: 'unit', row: { ITIS_TSN: 2 }, header: 'HEADER', rowIndex: 0 });
+      const result = cellValidator({
+        cell: 'unit',
+        row: { ITIS_TSN: 2 },
+        header: 'HEADER',
+        rowIndex: 0,
+        mutateCell: 'unit'
+      });
 
       expect(result[0].error).to.be.equal('Collection units not found for TSN: 2');
     });
@@ -133,7 +169,13 @@ describe('critter-header-configs', () => {
         new CSVConfigUtils(xlsx.utils.json_to_sheet([]), mockConfig)
       );
 
-      const result = cellValidator({ cell: 'unit', row: { ITIS_TSN: 1 }, header: 'HEADER2', rowIndex: 0 });
+      const result = cellValidator({
+        cell: 'unit',
+        row: { ITIS_TSN: 1 },
+        header: 'HEADER2',
+        rowIndex: 0,
+        mutateCell: 'unit'
+      });
 
       expect(result[0].error).to.be.equal('Invalid collection category header');
     });
@@ -150,7 +192,13 @@ describe('critter-header-configs', () => {
         new CSVConfigUtils(xlsx.utils.json_to_sheet([]), mockConfig)
       );
 
-      const result = cellValidator({ cell: 'unit2', row: { ITIS_TSN: 1 }, header: 'HEADER', rowIndex: 0 });
+      const result = cellValidator({
+        cell: 'unit2',
+        row: { ITIS_TSN: 1 },
+        header: 'HEADER',
+        rowIndex: 0,
+        mutateCell: 'unit2'
+      });
 
       expect(result[0].error).to.be.equal('Invalid collection unit cell value');
     });
@@ -163,7 +211,7 @@ describe('critter-header-configs', () => {
         new CSVConfigUtils(xlsx.utils.json_to_sheet([]), mockConfig)
       );
 
-      const result = cellSetter({ cell: '', row: {}, header: 'HEADER', rowIndex: 0 });
+      const result = cellSetter({ cell: '', row: {}, header: 'HEADER', rowIndex: 0, mutateCell: '' });
 
       expect(result).to.be.equal(undefined);
     });
@@ -180,7 +228,13 @@ describe('critter-header-configs', () => {
         new CSVConfigUtils(xlsx.utils.json_to_sheet([]), mockConfig)
       );
 
-      const result = cellSetter({ cell: 'unit', row: { ITIS_TSN: 1 }, header: 'HEADER', rowIndex: 0 });
+      const result = cellSetter({
+        cell: 'unit',
+        row: { ITIS_TSN: 1 },
+        header: 'HEADER',
+        rowIndex: 0,
+        mutateCell: 'unit'
+      });
 
       expect(result).to.be.equal('uuid');
     });
@@ -200,7 +254,13 @@ describe('critter-header-configs', () => {
       const cellValues = ['male', 'MALE', undefined];
 
       for (const cell of cellValues) {
-        const result = cellValidator({ cell: cell, row: { ITIS_TSN: 1 }, header: 'HEADER', rowIndex: 0 });
+        const result = cellValidator({
+          cell: cell,
+          row: { ITIS_TSN: 1 },
+          header: 'HEADER',
+          rowIndex: 0,
+          mutateCell: cell
+        });
 
         expect(result).to.be.deep.equal([]);
       }
@@ -219,7 +279,13 @@ describe('critter-header-configs', () => {
       const cellValues = ['', 0];
 
       for (const cell of cellValues) {
-        const result = cellValidator({ cell: cell, row: { ITIS_TSN: 1 }, header: 'HEADER', rowIndex: 0 });
+        const result = cellValidator({
+          cell: cell,
+          row: { ITIS_TSN: 1 },
+          header: 'HEADER',
+          rowIndex: 0,
+          mutateCell: cell
+        });
 
         expect(result.length).to.be.equal(1);
       }
@@ -235,7 +301,13 @@ describe('critter-header-configs', () => {
         new CSVConfigUtils(xlsx.utils.json_to_sheet([]), mockConfig)
       );
 
-      const result = cellValidator({ cell: 'male', row: { ITIS_TSN: 2 }, header: 'HEADER', rowIndex: 0 });
+      const result = cellValidator({
+        cell: 'male',
+        row: { ITIS_TSN: 2 },
+        header: 'HEADER',
+        rowIndex: 0,
+        mutateCell: 'male'
+      });
 
       expect(result[0].error).to.be.equal('Sex is not a supported attribute for TSN: 2');
     });
@@ -250,7 +322,13 @@ describe('critter-header-configs', () => {
         new CSVConfigUtils(xlsx.utils.json_to_sheet([]), mockConfig)
       );
 
-      const result = cellValidator({ cell: 'maled', row: { ITIS_TSN: 1 }, header: 'HEADER', rowIndex: 0 });
+      const result = cellValidator({
+        cell: 'maled',
+        row: { ITIS_TSN: 1 },
+        header: 'HEADER',
+        rowIndex: 0,
+        mutateCell: 'maled'
+      });
 
       expect(result[0].error).to.be.equal('Sex cell value is invalid');
     });
@@ -268,7 +346,13 @@ describe('critter-header-configs', () => {
         new CSVConfigUtils(xlsx.utils.json_to_sheet([]), mockConfig)
       );
 
-      const result = cellSetter({ cell: 'MALE', row: { ITIS_TSN: 1 }, header: 'HEADER', rowIndex: 0 });
+      const result = cellSetter({
+        cell: 'MALE',
+        row: { ITIS_TSN: 1 },
+        header: 'HEADER',
+        rowIndex: 0,
+        mutateCell: 'MALE'
+      });
 
       expect(result).to.be.equal('uuid');
     });
@@ -278,7 +362,13 @@ describe('critter-header-configs', () => {
     it('should return an empty array if the cell is valid', () => {
       const wlhIDValidator = getWlhIDCellValidator(new CSVConfigUtils(xlsx.utils.json_to_sheet([]), mockConfig));
 
-      const result = wlhIDValidator({ cell: '10-01111', row: {}, header: 'HEADER', rowIndex: 0 });
+      const result = wlhIDValidator({
+        cell: '10-01111',
+        row: {},
+        header: 'HEADER',
+        rowIndex: 0,
+        mutateCell: '10-01111'
+      });
 
       expect(result).to.be.deep.equal([]);
     });
@@ -286,7 +376,7 @@ describe('critter-header-configs', () => {
     it('should return no errors when cell is undefined', () => {
       const wlhIDValidator = getWlhIDCellValidator(new CSVConfigUtils(xlsx.utils.json_to_sheet([]), mockConfig));
 
-      const result = wlhIDValidator({ cell: undefined, row: {}, header: 'HEADER', rowIndex: 0 });
+      const result = wlhIDValidator({ cell: undefined, row: {}, header: 'HEADER', rowIndex: 0, mutateCell: undefined });
 
       expect(result).to.be.deep.equal([]);
     });
@@ -297,7 +387,7 @@ describe('critter-header-configs', () => {
       const badWlhIds = ['100111', '1-011111', '100-222', '21-'];
 
       badWlhIds.forEach((badWlhId) => {
-        const result = wlhIDValidator({ cell: badWlhId, row: {}, header: 'HEADER', rowIndex: 0 });
+        const result = wlhIDValidator({ cell: badWlhId, row: {}, header: 'HEADER', rowIndex: 0, mutateCell: badWlhId });
 
         expect(result).to.be.deep.equal([
           {

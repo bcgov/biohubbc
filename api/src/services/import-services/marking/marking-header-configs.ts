@@ -26,10 +26,11 @@ export const getMarkingIdentifierCellValidator = (): CSVCellValidator => {
 /**
  * Get the marking alias cell validator.
  *
- * Note: Mutates the cell value to the `critter_id`
+ * Note: Modifies the mutateCell value to the `critter_id`
  *
  * Rules:
  *  1. The alias must exist in the surveyAliasMap ie: critter alias -> critter
+ *  2. The alias (critter) must have Critterbase captures
  *
  *  @param {Map<string, ICritterDetailed>} surveyAliasMap The survey alias map
  *  @returns {*} {CSVCellValidator} The validate cell callback
@@ -51,8 +52,19 @@ export const getMarkingAliasCellValidator = (surveyAliasMap: Map<string, ICritte
       ];
     }
 
+    // If the critter has no captures
+    if (critter.captures.length === 0) {
+      return [
+        {
+          error: `Animal has no captures`,
+          solution: `Add captures to animal`
+        }
+      ];
+    }
+
     // Set the critter id in the state for the setter
-    params.cell = critter.critter_id;
+    params.mutateCell = critter.critter_id;
+
     return [];
   };
 };
@@ -108,7 +120,7 @@ export const getMarkingColourCellValidator = (colours: Set<string>): CSVCellVali
 /**
  * Get the marking body location cell validator.
  *
- * Note: Mutates the cell value to the `body_location_id`
+ * Note: Modifies the mutateCell value to the `body_location_id`
  *
  * Rules:
  *  1. The cell must be a valid body location for the critter ie: exists in the rowDictionary
@@ -134,8 +146,8 @@ export const getMarkingBodyLocationCellValidator = (
     if (!rowDictionaryAlias) {
       return [
         {
-          error: `Taxon body locations not found for alias: ${rowAlias}`,
-          solution: `Validate the alias is correct and taxon has body locations`
+          error: `Taxon marking body locations not found for animal`,
+          solution: `Validate the taxon (TSN) is correct and it allows marking body locations`
         }
       ];
     }
@@ -145,15 +157,15 @@ export const getMarkingBodyLocationCellValidator = (
     if (!rowDictionaryBodyLocation) {
       return [
         {
-          error: `Invalid taxon body location`,
-          solution: `Use valid taxon body location`,
+          error: `Invalid taxon marking body location`,
+          solution: `Use valid taxon marking body location`,
           values: Object.keys(rowDictionaryAlias)
         }
       ];
     }
 
     // Set the body location id in the state for the setter
-    params.cell = rowDictionaryBodyLocation;
+    params.mutateCell = rowDictionaryBodyLocation;
 
     return [];
   };
@@ -162,7 +174,7 @@ export const getMarkingBodyLocationCellValidator = (
 /**
  * Get the marking capture date cell validator.
  *
- * Note: Mutates the cell value to the `capture_id`
+ * Note: Modifies the mutateCell value to the `capture_id`
  *
  * Rules:
  *  1. The cell combined with the 'CAPTURE_TIME' must be a valid timestamp
@@ -177,7 +189,7 @@ export const getMarkingCaptureDateCellValidator = (
   utils: CSVConfigUtils<MarkingCSVStaticHeader>
 ): CSVCellValidator => {
   return (params: CSVParams): CSVError[] => {
-    const cellErrors = validateZodCell(params, z.date());
+    const cellErrors = validateZodCell(params, z.string().date());
 
     if (cellErrors.length) {
       return cellErrors;
@@ -186,17 +198,12 @@ export const getMarkingCaptureDateCellValidator = (
     // Row meta data
     const dateCellValue = String(params.cell);
     const rowAlias = String(utils.getCellValue('ALIAS', params.row));
-    const rowTime = String(utils.getCellValue('CAPTURE_TIME', params.row));
+    const rowTime = utils.getCellValue('CAPTURE_TIME', params.row) as string; // casting to allow undefined
     const aliasCritter = surveyAliasMap.get(rowAlias.toLowerCase());
 
-    // Alias cell validator should have already caught this
+    // All alias errors need to be resolved before proceeding ie: alias not found
     if (!aliasCritter) {
       return [];
-    }
-
-    // If the critter has no captures
-    if (aliasCritter.captures.length === 0) {
-      return [{ error: `Animal has no captures`, solution: `Add captures to animal` }];
     }
 
     const foundCaptures = findCapturesFromDateTime(aliasCritter.captures, dateCellValue, rowTime);
@@ -214,7 +221,7 @@ export const getMarkingCaptureDateCellValidator = (
     }
 
     // Set the capture id in the state for the setter
-    params.cell = foundCaptures[0].capture_id;
+    params.mutateCell = foundCaptures[0].capture_id;
 
     return [];
   };

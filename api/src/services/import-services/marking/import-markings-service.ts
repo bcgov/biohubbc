@@ -37,14 +37,18 @@ export type MarkingCSVStaticHeader =
   | 'SECONDARY_COLOUR'
   | 'DESCRIPTION';
 
+/**
+ * ImportMarkingsService - A service for importing Markings from a CSV into Critterbase.
+ *
+ * @class ImportMarkingsService
+ * @extends DBService
+ */
 export class ImportMarkingsService extends DBService {
   worksheet: WorkSheet;
   surveyId: number;
 
   surveyCritterService: SurveyCritterService;
   utils: CSVConfigUtils<MarkingCSVStaticHeader>;
-
-  surveyCritterAliasMapCache?: Map<string, ICritterDetailed>;
 
   /**
    * Construct an instance of ImportMarkingsStrategy.
@@ -58,10 +62,10 @@ export class ImportMarkingsService extends DBService {
     const initialConfig: CSVConfig<MarkingCSVStaticHeader> = {
       staticHeadersConfig: {
         ALIAS: { aliases: ['NICKNAME', 'ANIMAL'] },
-        CAPTURE_DATE: { aliases: ['CAPTURE DATE'] },
-        CAPTURE_TIME: { aliases: ['CAPTURE TIME'], optional: true },
+        CAPTURE_DATE: { aliases: ['CAPTURE DATE', 'DATE'] },
+        CAPTURE_TIME: { aliases: ['CAPTURE TIME', 'TIME'], optional: true },
         BODY_LOCATION: { aliases: ['BODY LOCATION'], optional: true },
-        MARKING_TYPE: { aliases: ['MARKING TYPE'], optional: true },
+        MARKING_TYPE: { aliases: ['MARKING TYPE', 'TYPE'], optional: true },
         IDENTIFIER: { aliases: ['ID'], optional: true },
         PRIMARY_COLOUR: { aliases: ['PRIMARY COLOUR'], optional: true },
         SECONDARY_COLOUR: { aliases: ['SECONDARY COLOUR'], optional: true },
