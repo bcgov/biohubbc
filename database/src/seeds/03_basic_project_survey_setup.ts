@@ -25,7 +25,7 @@ const identitySources = ['IDIR', 'BCEIDBUSINESS', 'BCEIDBASIC'];
 
 /**
  * Add spatial transform
- *a
+ *
  * @export
  * @param {Knex} knex
  * @return {*}  {Promise<void>}
