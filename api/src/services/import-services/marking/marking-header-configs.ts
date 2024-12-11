@@ -120,8 +120,6 @@ export const getMarkingColourCellValidator = (colours: Set<string>): CSVCellVali
 /**
  * Get the marking body location cell validator.
  *
- * Note: Modifies the mutateCell value to the `body_location_id`
- *
  * Rules:
  *  1. The cell must be a valid body location for the critter ie: exists in the rowDictionary
  *
@@ -163,9 +161,6 @@ export const getMarkingBodyLocationCellValidator = (
         }
       ];
     }
-
-    // Set the body location id in the state for the setter
-    params.mutateCell = rowDictionaryBodyLocation;
 
     return [];
   };

@@ -2,6 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
+import { ApiGeneralError } from '../../../../../../../errors/api-error';
 import { csvFileSchema } from '../../../../../../../openapi/schemas/file';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { ImportMarkingsService } from '../../../../../../../services/import-services/marking/import-markings-service';
@@ -108,6 +109,11 @@ POST.apiDoc = {
 /**
  * Imports a `Critterbase Marking CSV` which bulk adds markings to Critterbase.
  *
+ * TODO: Decide what to do with validation errors. For now, just throw an error.
+ * In future, potentially return the validation errors in the response.
+ * Why? The frontend should be able to easily determine if the extra errors
+ * in the response are CSV validation errors or just regular errors.
+ *
  * @return {*} {RequestHandler}
  */
 export function importCsv(): RequestHandler {
@@ -125,7 +131,11 @@ export function importCsv(): RequestHandler {
 
       const importMarkings = new ImportMarkingsService(connection, worksheet, surveyId);
 
-      await importMarkings.importCSVWorksheet();
+      const validationErrors = await importMarkings.importCSVWorksheet();
+
+      if (validationErrors.length) {
+        throw new ApiGeneralError('Failed to validate CSV', validationErrors);
+      }
 
       await connection.commit();
 

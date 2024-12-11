@@ -117,25 +117,6 @@ describe('marking-header-configs', () => {
       expect(result).to.deep.equal([]);
     });
 
-    it('should update the mutateCell value to the body_location_id', () => {
-      const dictionary = new NestedRecord({ alias: { location: 'uuid' } });
-      const mockConfig: CSVConfig = { staticHeadersConfig: { ALIAS: { aliases: [] } }, ignoreDynamicHeaders: true };
-      const utils = new CSVConfigUtils({}, mockConfig);
-
-      const params = {
-        mutateCell: 'body_location_id',
-        cell: 'location',
-        row: { ALIAS: 'alias' },
-        header: '',
-        rowIndex: 0
-      } as CSVParams;
-
-      const result = getMarkingBodyLocationCellValidator(dictionary, utils)(params);
-
-      expect(params.mutateCell).to.deep.equal('uuid');
-      expect(result.length).to.deep.equal(0);
-    });
-
     it('should return a single error when alias has no body locations', () => {
       const dictionary = new NestedRecord({ alias: { location: 'uuid' } });
       const mockConfig: CSVConfig = { staticHeadersConfig: { ALIAS: { aliases: [] } }, ignoreDynamicHeaders: true };

@@ -1,9 +1,8 @@
 import { WorkSheet } from 'xlsx';
 import { IDBConnection } from '../../../database/db';
-import { ApiGeneralError } from '../../../errors/api-error';
 import { CSVConfigUtils } from '../../../utils/csv-utils/csv-config-utils';
 import { validateCSVWorksheet } from '../../../utils/csv-utils/csv-config-validation';
-import { CSVConfig } from '../../../utils/csv-utils/csv-config-validation.interface';
+import { CSVConfig, CSVError } from '../../../utils/csv-utils/csv-config-validation.interface';
 import {
   getDescriptionCellValidator,
   getTimeCellSetter,
@@ -86,15 +85,15 @@ export class ImportMarkingsService extends DBService {
    *
    * @async
    * @throws {ApiGeneralError} - If unable to fully insert records into Critterbase
-   * @returns {*} {Promise<void>}
+   * @returns {*} {Promise<CSVError[]>}
    */
-  async importCSVWorksheet(): Promise<void> {
+  async importCSVWorksheet(): Promise<CSVError[]> {
     const config = await this.getCSVConfig();
 
     const { errors, rows } = validateCSVWorksheet(this.worksheet, config);
 
     if (errors.length) {
-      throw new ApiGeneralError('Failed to validate CSV', errors);
+      return errors;
     }
 
     const markings = rows.map((row) => ({
@@ -111,8 +110,15 @@ export class ImportMarkingsService extends DBService {
     defaultLog.debug({ label: 'import markings', markings });
 
     await this.surveyCritterService.critterbaseService.bulkCreate({ markings });
+
+    return [];
   }
 
+  /**
+   * Get the CSV configuration for Markings.
+   *
+   * @returns {Promise<CSVConfig<MarkingCSVStaticHeader>>} The CSV configuration
+   */
   async getCSVConfig(): Promise<CSVConfig<MarkingCSVStaticHeader>> {
     const surveyAliasMap = await this.surveyCritterService.getSurveyCritterAliasMap(this.surveyId);
     const bodyLocationDictionary = await this._getBodyLocationDictionary(surveyAliasMap);
@@ -158,6 +164,12 @@ export class ImportMarkingsService extends DBService {
     return this.utils.getConfig();
   }
 
+  /**
+   * Get a dictionary of critter alias -> body location -> body_location_id.
+   *
+   * @param {Map<string, ICritterDetailed>} surveyAliasMap - The survey alias map
+   * @returns {Promise<NestedRecord<string>>} The body location dictionary
+   */
   async _getBodyLocationDictionary(surveyAliasMap: Map<string, ICritterDetailed>): Promise<NestedRecord<string>> {
     const dictionary = new NestedRecord<string>();
     const uniqueTsns = new Set<number>();
