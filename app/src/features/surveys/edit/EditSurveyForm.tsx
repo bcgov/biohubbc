@@ -4,6 +4,7 @@ import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import FormikErrorSnackbar from 'components/alert/FormikErrorSnackbar';
+import HelpButtonStack from 'components/buttons/HelpButtonStack';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { CodesContext } from 'contexts/codesContext';
 import { ProjectContext } from 'contexts/projectContext';
@@ -117,7 +118,9 @@ const EditSurveyForm = <
           summary="Enter any permits used in this survey"
           component={
             <Box component="fieldset">
-              <Typography component="legend">Were any permits used in this survey?</Typography>
+              <HelpButtonStack helpText="Any permits with data submission requirements must be listed.">
+                <Typography fontWeight={700}>Were any permits used in this survey?</Typography>
+              </HelpButtonStack>
               <SurveyPermitForm />
             </Box>
           }
@@ -130,7 +133,9 @@ const EditSurveyForm = <
           summary="Specify funding sources for this survey"
           component={
             <Box component="fieldset">
-              <Typography component="legend">Do any funding agencies require this survey to be submitted?</Typography>
+              <HelpButtonStack helpText="Any funding sources with data submission requirements must be listed.">
+                <Typography fontWeight={700}>Do any funding agencies require this survey to be submitted?</Typography>
+              </HelpButtonStack>
               <SurveyFundingSourceForm />
             </Box>
           }
@@ -160,7 +165,7 @@ const EditSurveyForm = <
 
         <HorizontalSplitFormComponent
           title="Survey Participants"
-          summary="Specify people who participated in this survey. Only people who have signed up for SIMS can be selected."
+          summary="Specify people who participated in this survey"
           component={<SurveyUserForm jobs={codes.survey_jobs} />}
         />
 
@@ -184,7 +189,7 @@ const EditSurveyForm = <
 
         <HorizontalSplitFormComponent
           title="Study Area"
-          summary="Import, draw or select a feature from an existing layer to define the study areas for this survey"
+          summary="Import, draw or select a feature from an existing layer to define general areas of interest where survey findings apply."
           component={<StudyAreaForm />}
         />
 
@@ -195,7 +200,9 @@ const EditSurveyForm = <
           summary="Indicate whether any data is proprietary"
           component={
             <Box component="fieldset">
-              <Typography component="legend">Is any data in this survey proprietary?</Typography>
+              <HelpButtonStack helpText="Proprietary data is information collected while on private or First Nations land and that the land owner or First Nation has requested be secured, or for which the data provider has ownership rights.">
+                <Typography fontWeight={700}>Is any data in this survey proprietary?</Typography>
+              </HelpButtonStack>
               <ProprietaryDataForm
                 proprietary_data_category={
                   codes.proprietor_type?.map((item) => {
