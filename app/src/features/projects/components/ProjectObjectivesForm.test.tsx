@@ -19,7 +19,8 @@ describe('ProjectObjectivesForm', () => {
       </Formik>
     );
 
-    expect(getAllByLabelText('Objectives', { exact: false })).toBeVisible();
+    // Target the 'Objectives' label, rather than the help icon text which includes the word 'objectives'
+    expect(getAllByLabelText('Objectives', { exact: false })[0]).toBeVisible();
   });
 
   it('renders correctly with existing objective/caveat values', () => {
@@ -40,7 +41,8 @@ describe('ProjectObjectivesForm', () => {
       </Formik>
     );
 
-    expect(getAllByLabelText('Objectives', { exact: false })).toBeVisible();
+    // Target the 'Objectives' label, rather than the help icon text which includes the word 'objectives'
+    expect(getAllByLabelText('Objectives', { exact: false })[0]).toBeVisible();
     expect(getByText('a project objective')).toBeVisible();
   });
 });

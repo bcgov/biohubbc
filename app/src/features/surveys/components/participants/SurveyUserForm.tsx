@@ -100,7 +100,6 @@ const SurveyUserForm = (props: ISurveyUserFormProps) => {
       <SystemUserAutocompleteField
         formikFieldName="participants"
         label="Participants"
-        data-testid="autocomplete-user-role-search"
         helpText="Only active users who have requested access to the Species Inventory Management System before can be invited"
         selectedUsers={values.participants.map((participant) => participant.system_user_id)}
         clearOnSelect
