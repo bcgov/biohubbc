@@ -22,11 +22,6 @@ const Header: React.FC = () => {
 
   const menuOpen = Boolean(anchorEl);
 
-  // Support Dialog
-  const showSupportDialog = () => {
-    hideMobileMenu();
-  };
-
   // Responsive Menu
   const showMobileMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -269,7 +264,12 @@ const Header: React.FC = () => {
                 <MenuItem component={RouterLink} to="/standards" id="menu_standards" onClick={hideMobileMenu}>
                   Standards
                 </MenuItem>
-                <MenuItem component="button" onClick={showSupportDialog} sx={{ width: '100%' }}>
+                <MenuItem
+                  tabIndex={1}
+                  component={RouterLink}
+                  to="/support"
+                  id="menu_support_sm"
+                  onClick={hideMobileMenu}>
                   Support
                 </MenuItem>
                 <AuthGuard>
