@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography';
 import React, { PropsWithChildren, ReactElement, useState } from 'react';
 
 interface IAccordionStandardCardProps extends PaperProps {
-  label: string | React.ReactElement;
+  label: string | React.ReactNode;
   subtitle?: string | React.ReactNode | null;
   ornament?: ReactElement;
   colour: string;

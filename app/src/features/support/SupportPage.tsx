@@ -15,8 +15,10 @@ import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
 import PageHeader from 'components/layout/PageHeader';
 import { AccordionStandardCard } from 'features/standards/view/components/AccordionStandardCard';
+import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import { ReactNode, useState } from 'react';
 import { StandardsToolbar } from '../standards/components/StandardsToolbar';
 
@@ -44,7 +46,7 @@ interface ISupportPageView {
 }
 
 interface IDataItem {
-  label: string;
+  label: string | ReactNode;
   description: string | ReactNode;
   unit?: string;
 }
@@ -332,12 +334,18 @@ const SupportPage = () => {
         )
       },
       {
-        label: 'The Events',
+        label: (
+          <>
+            <Typography>DFSLDF</Typography>
+            <HelpButtonDialog markdownType={MarkdownTypeNameEnum.PROJECT_DETAILS} />
+          </>
+        ),
         description: (
           <>
             <Typography variant="h6" gutterBottom>
               The Events
             </Typography>
+
             <Typography variant="body1" gutterBottom>
               Once your animal has been created, you can start attributing events to your animal. Events include both
               animal captures and animal mortalities.
@@ -463,7 +471,7 @@ const SupportPage = () => {
                 {dataMap[currentView]?.map((item: IDataItem, index: number) => (
                   <AccordionStandardCard
                     key={index}
-                    label={item.label}
+                    label={item.label || 'No Label Provided'} // Provide a default value
                     subtitle={
                       typeof item.description === 'string' ? (
                         <Typography>{item.description}</Typography>
