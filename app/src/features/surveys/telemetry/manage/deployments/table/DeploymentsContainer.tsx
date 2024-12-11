@@ -159,7 +159,7 @@ export const DeploymentsContainer = () => {
           isLoading={deploymentsDataLoader.isLoading}
           isLoadingFallback={<SkeletonTable numberOfLines={5} />}
           isLoadingFallbackDelay={100}>
-          <Box p={2}>
+          <Box>
             <LoadingGuard
               isLoading={deploymentsDataLoader.isLoading || !deploymentsDataLoader.isReady}
               isLoadingFallback={<SkeletonTable />}

@@ -137,8 +137,8 @@ export const DevicesTable = (props: IDevicesTableProps) => {
       field: 'device_id',
       headerName: 'Device ID',
       description: 'The unique key for the device',
-      width: 100,
-      minWidth: 100,
+      width: 85,
+      minWidth: 85,
       renderHeader: (params) => (
         <Tooltip title={params.colDef.description}>
           <Typography color={grey[500]} variant="body2" fontWeight={700}>

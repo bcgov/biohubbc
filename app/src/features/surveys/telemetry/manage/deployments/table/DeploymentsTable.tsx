@@ -159,8 +159,8 @@ export const DeploymentsTable = (props: IDeploymentsTableProps) => {
       field: 'deployment2_id',
       headerName: 'Deployment ID',
       description: 'The unique key for the deployment',
-      width: 100,
-      minWidth: 100,
+      width: 85,
+      minWidth: 85,
       renderHeader: (params) => (
         <Tooltip title={params.colDef.description}>
           <Typography color={grey[500]} variant="body2" fontWeight={700}>
@@ -198,7 +198,7 @@ export const DeploymentsTable = (props: IDeploymentsTableProps) => {
         return (
           <Typography variant="body2">
             {serial}
-            <Typography fontSize="inherit" color="textSecondary">
+            <Typography fontSize="inherit" color="textSecondary" component="span" display="block">
               {vendor}
             </Typography>
           </Typography>
@@ -213,7 +213,7 @@ export const DeploymentsTable = (props: IDeploymentsTableProps) => {
       renderCell: (params) => (
         <Typography>
           {params.row.frequency}&nbsp;
-          <Typography component="span" color="textSecondary">
+          <Typography color="textSecondary" component="span">
             {codesContext.codesDataLoader.data?.frequency_units.find(
               (frequencyUnit) => frequencyUnit.id === params.row.frequency_unit_id
             )?.name ?? null}
@@ -241,15 +241,19 @@ export const DeploymentsTable = (props: IDeploymentsTableProps) => {
       headerName: 'End',
       description: 'The end date of the deployment',
       flex: 1,
-      renderCell: (params) => (
-        <>
-          {params.row.attachment_end_time
-            ? dayjs(`${params.row.attachment_end_date} ${params.row.attachment_end_time}`).format(
-                DATE_FORMAT.MediumDateTimeFormat
-              )
-            : dayjs(params.row.attachment_end_date).format(DATE_FORMAT.MediumDateFormat)}
-        </>
-      )
+      renderCell: (params) => {
+        if (!params.row.attachment_end_date) {
+          return null;
+        }
+
+        if (params.row.attachment_end_time) {
+          return dayjs(`${params.row.attachment_end_date} ${params.row.attachment_end_time}`).format(
+            DATE_FORMAT.MediumDateTimeFormat
+          );
+        }
+
+        return dayjs(params.row.attachment_end_date).format(DATE_FORMAT.MediumDateFormat);
+      }
     },
     {
       field: 'status',

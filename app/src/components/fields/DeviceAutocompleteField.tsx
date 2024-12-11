@@ -91,7 +91,7 @@ export const DeviceAutocompleteField = <T extends string | number>(props: IDevic
   const { formikFieldName, label, options, onSelect, defaultDevice, required, disabled, clearOnSelect, placeholder } =
     props;
 
-  const { touched, errors, setFieldValue, values } = useFormikContext<IAutocompleteFieldOption<T>>();
+  const { touched, errors, setFieldValue } = useFormikContext<IAutocompleteFieldOption<T>>();
 
   const codesContext = useCodesContext();
 
@@ -103,12 +103,13 @@ export const DeviceAutocompleteField = <T extends string | number>(props: IDevic
   const [inputValue, setInputValue] = useState(String(defaultDevice?.device_id ?? ''));
 
   useEffect(() => {
-    if (!defaultDevice || get(values, formikFieldName)) {
+    if (!defaultDevice) {
       return;
     }
 
-    setInputValue(String(defaultDevice.device_id));
-  }, [defaultDevice, formikFieldName, values]);
+    // Set the input value to the default device's serial
+    setInputValue(String(defaultDevice.serial));
+  }, [defaultDevice]);
 
   return (
     <Autocomplete

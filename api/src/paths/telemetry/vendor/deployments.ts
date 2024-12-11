@@ -5,7 +5,7 @@ import { getBctwUser } from '../../../services/bctw-service/bctw-service';
 import { BctwTelemetryService } from '../../../services/bctw-service/bctw-telemetry-service';
 import { getLogger } from '../../../utils/logger';
 
-const defaultLog = getLogger('paths/telemetry/manual');
+const defaultLog = getLogger('paths/telemetry/vendor/deployments');
 
 const vendor_telemetry_responses = {
   200: {

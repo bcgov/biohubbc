@@ -15,7 +15,6 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import AlertBar from 'components/alert/AlertBar';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonList } from 'components/loading/SkeletonLoaders';
 import { SurveyDeploymentListItem } from 'features/surveys/telemetry/list/SurveyDeploymentListItem';
@@ -260,7 +259,7 @@ export const SurveyDeploymentList = (props: ISurveyDeploymentListProps) => {
         }}>
         <MenuItem
           component={RouterLink}
-          to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry/deployment/${selectedDeploymentId}/edit`}
+          to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry/manage/deployment/${selectedDeploymentId}/edit`}
           onClick={() => setDeploymentAnchorEl(null)}>
           <ListItemIcon>
             <Icon path={mdiPencilOutline} size={1} />
@@ -392,12 +391,6 @@ export const SurveyDeploymentList = (props: ISurveyDeploymentListProps) => {
                   sx={{
                     background: grey[100]
                   }}>
-                  <AlertBar
-                    severity="error"
-                    text="We're fixing a bug preventing deployments from loading. Please check back later."
-                    title="There's a Bug!"
-                    variant="standard"
-                  />
                   {deployments.map((deployment) => {
                     const animal = surveyContext.critterDataLoader.data?.find(
                       (animal) => animal.critterbase_critter_id === deployment.critterbase_critter_id
