@@ -5,6 +5,7 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import grey from '@mui/material/colors/grey';
 import TextField from '@mui/material/TextField';
+import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
 import SpeciesCard from 'components/species/components/SpeciesCard';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useIsMounted from 'hooks/useIsMounted';
@@ -68,6 +69,13 @@ export interface ISpeciesAutocompleteFieldProps {
    */
   required?: boolean;
   /**
+   * Optional help text to be displayed in a tooltip
+   *
+   * @type {string}
+   * @memberof  ISystemUserAutocompleteFieldProps
+   */
+  helpText?: string;
+  /**
    * If field is disabled.
    *
    * @type {boolean}
@@ -116,6 +124,7 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
     error,
     placeholder,
     disabled,
+    helpText,
     handleSpecies,
     handleClear,
     defaultSpecies,
@@ -191,6 +200,7 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
       getOptionLabel={(option) => option.scientificName}
       filterOptions={(item) => item}
       inputValue={inputValue}
+      fullWidth
       // Text field value changed
       onInputChange={(_, value, reason) => {
         if (reason === 'reset') {
@@ -296,6 +306,7 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
             endAdornment: (
               <>
                 {inputValue && isLoading ? <CircularProgress color="inherit" size={20} /> : null}
+                {helpText && <HelpButtonTooltip content={helpText} iconSx={{ mr: -1 }} />}
                 {params.InputProps.endAdornment}
               </>
             )

@@ -33,6 +33,7 @@ export const FocalSpeciesForm = () => {
             <SpeciesAutocompleteField
               formikFieldName={'species.focal_species'}
               label={'Species'}
+              helpText={'If you focused on multiple related species, you can select a higher taxon (eg. birds, bats).'}
               required={true}
               handleSpecies={(species) => {
                 if (values.species.focal_species.some((focalSpecies) => focalSpecies.tsn === species.tsn)) {
