@@ -16,7 +16,7 @@ export async function up(knex: Knex): Promise<void> {
     ----------------------------------------------------------------------------------------
     INSERT INTO markdown_type (name, description)
     VALUES
-      ('Animal Support', 'Description for Type A'),
+      ('Animal Support', 'Description for Animal Support'),
       ('Type B', 'Description for Type B'),
       ('Type C', 'Description for Type C'),
       ('Type D', 'Description for Type D'),
@@ -32,27 +32,15 @@ export async function up(knex: Knex): Promise<void> {
     ----------------------------------------------------------------------------------------
     INSERT INTO markdown (markdown_type_id, data)
     SELECT
-        mt.markdown_type_id,
-        md.data
+      mt.markdown_type_id,
+      '## Animal data represents information about identifiable individuals within your surveying effort.\\n\\nManaging animal data through SIMS has the benefit of allowing you to establish a centralized repository of animal information for species in British Columbia. Contributing to this baseline dataset provides a powerful foundation for research, enabling a more comprehensive understanding of the history of animal handling events, animal survival, and animal health and fertility. Animal data can be managed independently in SIMS or serve as foundational data for managing other datasets. For instance, telemetry data in SIMS is attributed as an extension of an animal, seamlessly linking the two for a comprehensive understanding of individual animal movements and behaviors.'
     FROM
-        (VALUES
-            ('Type A', '## Type A Content\\n\\nThis is some markdown content for Type A.'),
-            ('Type B', '## Type B Content\\n\\nThis is some markdown content for Type B.'),
-            ('Type C', '## Type C Content\\n\\nThis is some markdown content for Type C.'),
-            ('Type D', '## Type D Content\\n\\nThis is some markdown content for Type D.'),
-            ('Type E', '## Type E Content\\n\\nThis is some markdown content for Type E.'),
-            ('Type F', '## Type F Content\\n\\nThis is some markdown content for Type F.'),
-            ('Type G', '## Type G Content\\n\\nThis is some markdown content for Type G.'),
-            ('Type H', '## Type H Content\\n\\nThis is some markdown content for Type H.'),
-            ('Type I', '## Type I Content\\n\\nThis is some markdown content for Type I.'),
-            ('Type J', '## Type J Content\\n\\nThis is some markdown content for Type J.')
-        ) AS md(name, data)
-    JOIN
-        markdown_type mt ON mt.name = md.name;
+      markdown_type mt
+    WHERE
+      mt.name = 'Animal Support';
   `);
 }
 
 export async function down(knex: Knex): Promise<void> {
     await knex.raw(``);
   }
-  
