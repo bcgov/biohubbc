@@ -6,7 +6,6 @@ import {
   CreateTechniqueFormValues,
   UpdateTechniqueFormValues
 } from 'features/surveys/sampling-information/techniques/components/TechniqueFormContainer';
-import { TechniqueVantagesForm } from 'features/surveys/sampling-information/techniques/components/vantages/TechniqueVantagesForm';
 import { useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
@@ -14,6 +13,7 @@ import { useEffect, useMemo } from 'react';
 import { TechniqueAttractantsForm } from './attractants/TechniqueAttractantsForm';
 import { TechniqueDetailsForm } from './details/TechniqueDetailsForm';
 import { TechniqueGeneralInformationForm } from './general-information/TechniqueGeneralInformationForm';
+import { TechniqueVantageForm } from './vantages/TechniqueVantagesForm';
 
 /**
  * Technique form.
@@ -30,6 +30,10 @@ export const TechniqueForm = <FormValues extends CreateTechniqueFormValues | Upd
 
   const attributeTypeDefinitionDataLoader = useDataLoader((method_lookup_id: number) =>
     biohubApi.reference.getTechniqueAttributes([method_lookup_id])
+  );
+  
+  const vantageReferenceRecordsDataLoader = useDataLoader((methodLookupId: number) =>
+    biohubApi.reference.getVantageReferenceRecords([methodLookupId])
   );
 
   useEffect(() => {
@@ -49,6 +53,16 @@ export const TechniqueForm = <FormValues extends CreateTechniqueFormValues | Upd
     [attributeTypeDefinitionDataLoader.data]
   );
 
+  // Refresh vantage reference data when the method lookup changes
+  useEffect(() => {
+    if (!values.method_lookup_id) {
+      return;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    vantageReferenceRecordsDataLoader.refresh(values.method_lookup_id);
+  }, [values.method_lookup_id]);
+
+
   return (
     <Stack gap={5}>
       <HorizontalSplitFormComponent title="General Information" summary="Enter information about the technique">
@@ -58,7 +72,7 @@ export const TechniqueForm = <FormValues extends CreateTechniqueFormValues | Upd
       <Divider />
 
       <HorizontalSplitFormComponent title="Vantages" summary="Enter information about the technique vantages">
-        <TechniqueVantagesForm />
+        <TechniqueVantageForm vantageReferenceRecords={vantageReferenceRecordsDataLoader.data ?? []}/>
       </HorizontalSplitFormComponent>
 
       <Divider />

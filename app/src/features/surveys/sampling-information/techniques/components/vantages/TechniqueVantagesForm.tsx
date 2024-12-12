@@ -3,88 +3,77 @@ import { Icon } from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Collapse from '@mui/material/Collapse';
-import {
-  CreateTechniqueFormValues,
-  TechniqueVantagesFormValues,
-  UpdateTechniqueFormValues
-} from 'features/surveys/sampling-information/techniques/components/TechniqueFormContainer';
-import { TechniqueVantageForm } from 'features/surveys/sampling-information/techniques/components/vantages/components/TechniqueVantageForm';
-
+import { DualAutocompleteField } from 'components/fields/DualAutocompleteField';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
-import { useBiohubApi } from 'hooks/useBioHubApi';
-import useDataLoader from 'hooks/useDataLoader';
-import { useEffect } from 'react';
+import { GetVantageReferenceRecord } from 'interfaces/useReferenceApi.interface';
 import { TransitionGroup } from 'react-transition-group';
 import { v4 } from 'uuid';
+import { CreateTechniqueFormValues, TechniqueVantagesFormValues, UpdateTechniqueFormValues } from '../TechniqueFormContainer';
 
 const initialVantagesFormValues: Partial<Pick<TechniqueVantagesFormValues, 'vantage_mode_method_id'>> = {
   vantage_mode_method_id: undefined
 };
 
-/**
- * Technique vantages form.
- *
- * @template FormValues
- * @return {*}
- */
-export const TechniqueVantagesForm = <FormValues extends CreateTechniqueFormValues | UpdateTechniqueFormValues>() => {
-  const biohubApi = useBiohubApi();
+interface ITechniqueVantageFormProps {
+  vantageReferenceRecords: GetVantageReferenceRecord[]
+}
 
+export const TechniqueVantageForm = <FormValues extends CreateTechniqueFormValues | UpdateTechniqueFormValues>(
+  props: ITechniqueVantageFormProps
+) => {
+  const { vantageReferenceRecords } = props;
   const { values } = useFormikContext<FormValues>();
-
-  const vantageReferenceRecordsDataLoader = useDataLoader((methodLookupId: number) =>
-    biohubApi.reference.getVantageReferenceRecords([methodLookupId])
-  );
-
-  useEffect(() => {
-    if (!values.method_lookup_id) {
-      return;
-    }
-
-    vantageReferenceRecordsDataLoader.load(values.method_lookup_id);
-  }, [vantageReferenceRecordsDataLoader, values.method_lookup_id]);
-
-  const vantageReferenceRecords = vantageReferenceRecordsDataLoader.data ?? [];
 
   return (
     <FieldArray
-      name="attributes"
+      name="vantages"
       render={(arrayHelpers: FieldArrayRenderProps) => (
         <>
           <TransitionGroup>
-            {values.attributes.map((attribute, index) => {
-              return (
-                // Quantitative and qualitative measurements might have the same attribute_id, so use temporary _id
-                <Collapse key={attribute.attribute_id ?? attribute._id}>
-                  <Box mb={2}>
-                    <TechniqueVantageForm
-                      vantageReferenceRecords={vantageReferenceRecords}
-                      arrayHelpers={arrayHelpers}
-                      index={index}
-                    />
-                  </Box>
-                </Collapse>
-              );
-            })}
+            {values.vantages.map((vantage, index) => (
+              <Collapse key={vantage._id}>
+                <Box mb={2}>
+                  <DualAutocompleteField
+                    categoryOptions={vantageReferenceRecords.map((record) => ({
+                      value: record.vantage_id,
+                      label: record.name
+                    }))}
+                    getUnitOptions={(categoryId: number) => {
+                      const selectedVantage = vantageReferenceRecords.find(
+                        (record) => record.vantage_id === categoryId
+                      );
+                      return selectedVantage?.vantage_modes.map((unit) => ({
+                        value: unit.vantage_mode_method_id,
+                        label: unit.name
+                      })) ?? [];
+                    }}
+                    formikCategoryFieldName={`vantages[${index}].vantage_id`}
+                    formikUnitFieldName={`vantages[${index}].vantage_mode_method_id`}
+                    filterCategoryIds={values.vantages.map(v => v.vantage_id)}
+                    filterUnitIds={values.vantages.map(v => v.vantage_mode_method_id)}
+                    onDelete={() => arrayHelpers.remove(index)}
+                  />
+                </Box>
+              </Collapse>
+            ))}
           </TransitionGroup>
+
           <Button
             color="primary"
             variant="outlined"
             startIcon={<Icon path={mdiPlus} size={1} />}
-            aria-label="add attribute"
-            disabled={values.vantages.length >= vantageReferenceRecords.length} // TODO NICK: this isn't correct, it probably needs to check the total length of all vantage modes?
+            aria-label="add vantage"
             onClick={() => {
-              // When a new measurement is added, _id is created as its unique key.
-              // Attribute_id, which represents the DB primary key, is null for records that don't yet exist in the DB.
               arrayHelpers.push({ ...initialVantagesFormValues, _id: v4() });
             }}>
-            Add Attribute
+            Add Vantage
           </Button>
         </>
       )}
     />
   );
 };
+
 
 //   return (
 //     <Grid container spacing={2}>

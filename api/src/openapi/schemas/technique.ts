@@ -184,13 +184,9 @@ export const vantageReferenceRecordsSchema: OpenAPIV3.SchemaObject = {
   items: {
     type: 'object',
     description: 'Vantage reference record and its associated vantage modes.',
-    required: ['vantage_mode_id', 'vantage_id', 'name', 'description', 'vantage_modes'],
+    required: ['vantage_id', 'name', 'description', 'vantage_modes'],
     additionalProperties: false,
     properties: {
-      vantage_mode_id: {
-        type: 'integer',
-        minimum: 1
-      },
       vantage_id: {
         type: 'integer',
         minimum: 1
@@ -211,16 +207,16 @@ export const vantageReferenceRecordsSchema: OpenAPIV3.SchemaObject = {
           additionalProperties: false,
           properties: {
             vantage_mode_id: {
-              type: 'string',
+              type: 'integer',
               description: 'The primary key of the vantage mode option.'
+            },
+            vantage_id: {
+              type: 'integer',
+              description: 'The vantage of the mode.'
             },
             name: {
               type: 'string',
               description: 'The name of the vantage mode option.'
-            },
-            vantage_id: {
-              type: 'string',
-              description: 'The vantage of the mode.'
             },
             description: {
               type: 'string',

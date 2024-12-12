@@ -17,7 +17,7 @@ export const VantageReferenceRecord = VantageRecord.omit({
 }).extend({
   vantage_modes: z.array(
     VantageModeRecord.omit({
-      record_end_date: true
+      record_end_date: true,
     })
   )
 });
@@ -75,23 +75,26 @@ export class VantageModeRepository extends BaseRepository {
 
     const queryBuilder = knex
       .select(
-        'vantage.vantage_id',
-        'vantage.name',
-        'vantage.description',
+        'v.vantage_id',
+        'v.name',
+        'v.description',
         knex.raw(`
           json_agg(
             json_build_object(
-              'vantage_mode_id', vantage_mode.vantage_mode_id,
-              'name', vantage_mode.name,
-              'description', vantage_mode.description
+              'vantage_mode_id', vm.vantage_mode_id,
+              'vantage_id', vm.vantage_id,
+              'name', vm.name,
+              'description', vm.description
             )
           ) as vantage_modes
         `)
       )
-      .from('vantage')
-      .join('vantage_mode', 'vantage.vantage_id', 'vantage_mode.vantage_id')
-      .join('method_vantage_mode', 'method_vantage_mode.vantage_mode_id', 'vantage_mode.vantage_mode_id')
-      .whereIn('method_vantage_mode.method_lookup_id', methodLookupIds);
+      .from('vantage_mode_method as vmm')
+      .join('vantage_mode as vm', 'vmm.vantage_mode_id', 'vm.vantage_mode_id')
+      .join('vantage as v', 'v.vantage_id', 'vm.vantage_id')
+      .whereIn('vmm.method_lookup_id', methodLookupIds)
+      .whereNull('vmm.record_end_date')
+      .groupBy('v.vantage_id', 'v.name', 'v.description');
 
     const response = await this.connection.knex(queryBuilder, VantageReferenceRecord);
 

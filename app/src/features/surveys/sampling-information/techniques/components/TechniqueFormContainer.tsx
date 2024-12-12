@@ -34,6 +34,8 @@ export type TechniqueAttributeFormValues =
 export type TechniqueVantagesFormValues = {
   vantage_id: number;
   vantage_mode_method_id: number;
+  // internal ID used for form control keys. Not to be sent to API.
+  _id?: string;
 };
 
 export type CreateTechniqueFormValues = Omit<ICreateTechniqueRequest, 'attributes'> & {
