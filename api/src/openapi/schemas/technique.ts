@@ -203,10 +203,10 @@ export const vantageReferenceRecordsSchema: OpenAPIV3.SchemaObject = {
         description: 'Supported vantage mode for the vantage record.',
         items: {
           type: 'object',
-          required: ['vantage_mode_id', 'name', 'vantage_id', 'description'],
+          required: ['vantage_mode_method_id', 'name', 'vantage_id', 'description'],
           additionalProperties: false,
           properties: {
-            vantage_mode_id: {
+            vantage_mode_method_id: {
               type: 'integer',
               description: 'The primary key of the vantage mode option.'
             },

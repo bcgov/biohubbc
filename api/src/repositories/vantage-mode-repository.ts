@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { VantageRecord } from '../database-models/vantage';
 import { VantageModeRecord } from '../database-models/vantage_mode';
+import { VantageModeMethodRecord } from '../database-models/vantage_mode_method';
 import { getKnex } from '../database/db';
 import { getLogger } from '../utils/logger';
 import { BaseRepository } from './base-repository';
@@ -16,9 +17,15 @@ export const VantageReferenceRecord = VantageRecord.omit({
   record_end_date: true
 }).extend({
   vantage_modes: z.array(
-    VantageModeRecord.omit({
+    VantageModeMethodRecord.omit({
       record_end_date: true,
-    })
+      method_lookup_id: true,
+      vantage_mode_id: true,
+      description: true
+    }).merge(
+      // The name and description returned come from the VantageModeRecord
+      VantageModeRecord.pick({ name: true, description: true })
+    )
   )
 });
 
@@ -61,6 +68,7 @@ export class VantageModeRepository extends BaseRepository {
 
     return response.rows;
   }
+
   /**
    * Get vantage reference records for a set of method lookup ids.
    *
@@ -81,7 +89,7 @@ export class VantageModeRepository extends BaseRepository {
         knex.raw(`
           json_agg(
             json_build_object(
-              'vantage_mode_id', vm.vantage_mode_id,
+              'vantage_mode_method_id', vmm.vantage_mode_method_id,
               'vantage_id', vm.vantage_id,
               'name', vm.name,
               'description', vm.description
@@ -96,7 +104,9 @@ export class VantageModeRepository extends BaseRepository {
       .whereNull('vmm.record_end_date')
       .groupBy('v.vantage_id', 'v.name', 'v.description');
 
-    const response = await this.connection.knex(queryBuilder, VantageReferenceRecord);
+    const response = await this.connection.knex(queryBuilder);
+
+    console.log(response.rows, 'ROWS!')
 
     return response.rows;
   }

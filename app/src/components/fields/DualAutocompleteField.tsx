@@ -6,6 +6,7 @@ import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import AutocompleteField from 'components/fields/AutocompleteField';
 import { useFormikContext } from 'formik';
+import { get } from 'lodash';
 import { useEffect, useMemo, useState } from 'react';
 
 /**
@@ -63,22 +64,26 @@ export const DualAutocompleteField = <TCategory extends string | number, TUnit e
   const [unitLabel, setUnitLabel] = useState<string>('Select a unit');
 
   // Get the selected category and unit from Formik values
-  const categoryId: TCategory | null = formik.values[formikCategoryFieldName];
-//   const unitId: TUnit | null = formik.values[formikUnitFieldName];
+  const categoryId: TCategory | null = get(formik.values, formikCategoryFieldName)
+  //   const unitId: TUnit | null = formik.values[formikUnitFieldName];
 
   // Filter category options based on the filterCategoryIds
   const filteredCategories = useMemo(() => {
     const filterCategoryIdsSet = new Set(filterCategoryIds ?? []);
     return categoryOptions.filter((category) => !filterCategoryIdsSet.has(category.value));
-  }, [categoryOptions, filterCategoryIds]);
+  }, []);
+
+  const availableUnits = categoryId ? getUnitOptions(categoryId) : [];
+
+  console.log(categoryId, availableUnits, 'available')
 
   // Filter unit options based on the selected category and filterUnitIds
   const filteredUnits = useMemo(() => {
     if (!categoryId) return [];
     const filterUnitIdsSet = new Set(filterUnitIds ?? []);
-    const availableUnits = getUnitOptions(categoryId);
+    console.log('triggered')
     return availableUnits.filter((unit) => !filterUnitIdsSet.has(unit.value));
-  }, [categoryId, filterUnitIds, getUnitOptions]);
+  }, [getUnitOptions]);
 
   useEffect(() => {
     if (!categoryId) {
@@ -87,6 +92,11 @@ export const DualAutocompleteField = <TCategory extends string | number, TUnit e
       setUnitLabel('Select a specific unit');
     }
   }, [categoryId]);
+
+  console.log(filteredUnits, filteredCategories);
+
+  // console.log(get(formik.values, formikCategoryFieldName))
+  // console.log(filteredCategories)
 
   return (
     <Card
@@ -110,7 +120,6 @@ export const DualAutocompleteField = <TCategory extends string | number, TUnit e
           formik.setFieldValue(formikCategoryFieldName, option.value);
         }}
         required
-        disabled={filteredCategories.length === 0}
         sx={{ flex: '1 1 auto' }}
       />
 

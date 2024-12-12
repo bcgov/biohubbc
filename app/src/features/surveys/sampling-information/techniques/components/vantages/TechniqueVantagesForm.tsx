@@ -42,6 +42,7 @@ export const TechniqueVantageForm = <FormValues extends CreateTechniqueFormValue
                       const selectedVantage = vantageReferenceRecords.find(
                         (record) => record.vantage_id === categoryId
                       );
+                      console.log(selectedVantage, 'selected')
                       return selectedVantage?.vantage_modes.map((unit) => ({
                         value: unit.vantage_mode_method_id,
                         label: unit.name
