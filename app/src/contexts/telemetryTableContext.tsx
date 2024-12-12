@@ -2,23 +2,25 @@ import Typography from '@mui/material/Typography';
 import {
   GridCellParams,
   GridColumnVisibilityModel,
+  GridPaginationModel,
   GridRowId,
   GridRowModes,
   GridRowModesModel,
   GridRowSelectionModel,
+  GridSortModel,
   GridValidRowModel,
   useGridApiRef
 } from '@mui/x-data-grid';
 import { GridApiCommunity, GridStateColDef } from '@mui/x-data-grid/internals';
 import { TelemetryTableI18N } from 'constants/i18n';
 import { SIMS_TELEMETRY_HIDDEN_COLUMNS } from 'constants/session-storage';
-import { DialogContext } from 'contexts/dialogContext';
 import { default as dayjs } from 'dayjs';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { usePersistentState } from 'hooks/usePersistentState';
 import { IAllTelemetry } from 'interfaces/useTelemetryApi.interface';
-import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { createContext, PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { RowValidationError, TableValidationModel } from '../components/data-grid/DataGridValidationAlert';
 
@@ -69,8 +71,23 @@ export type IAllTelemetryTableContext = {
    */
   recordCount: number;
   /**
+   * The pagination model, which defines which telemetry records to fetch and load in the table.
+   */
+  paginationModel: GridPaginationModel;
+  /**
+   * Sets the pagination model.
+   */
+  setPaginationModel: (model: GridPaginationModel) => void;
+  /**
+   * The sort model, which defines how the telemetry records should be sorted.
+   */
+  sortModel: GridSortModel;
+  /**
+   * Sets the sort model.
+   */
+  setSortModel: (mode: GridSortModel) => void;
+  /**
    * Columns hidden from table view
-   *
    */
   hiddenColumns: string[];
   /**
@@ -159,7 +176,8 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
 
   const biohubApi = useBiohubApi();
 
-  const dialogContext = useContext(DialogContext);
+  const surveyContext = useSurveyContext();
+  const dialogContext = useDialogContext();
 
   // The data grid rows
   const [rows, setRows] = useState<IManualTelemetryTableRow[]>([]);
@@ -190,6 +208,15 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
 
   // Count of table records
   const recordCount = rows.length;
+
+  // Pagination model
+  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
+    page: 0,
+    pageSize: 25
+  });
+
+  // Sort model
+  const [sortModel, setSortModel] = useState<GridSortModel>([{ field: 'date', sort: 'desc' }]);
 
   // True if table has unsaved changes, deferring value to prevent ui issue with controls rendering
   const hasUnsavedChanges = _modifiedRowIds.current.length > 0 || _stagedRowIds.current.length > 0;
@@ -421,7 +448,11 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
 
       try {
         if (modifiedRowIdsToDelete.length) {
-          await biohubApi.telemetry.deleteManualTelemetry(modifiedRowIdsToDelete);
+          await biohubApi.telemetry.deleteManualTelemetry(
+            surveyContext.projectId,
+            surveyContext.surveyId,
+            modifiedRowIdsToDelete
+          );
         }
 
         // Remove row IDs from validation model
@@ -470,7 +501,7 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
         });
       }
     },
-    [biohubApi, dialogContext]
+    [biohubApi.telemetry, dialogContext, surveyContext.projectId, surveyContext.surveyId]
   );
 
   /**
@@ -588,26 +619,29 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
       try {
         // create a new records
         const createData = createRows.map((row) => ({
-          deployment_id: String(row.deployment_id),
+          deployment2_id: row.deployment_id,
           latitude: Number(row.latitude),
           longitude: Number(row.longitude),
-          acquisition_date: dayjs(`${row.date}T${row.time}`).toISOString()
+          acquisition_date: dayjs(`${row.date}T${row.time}`).toISOString(),
+          transmission_date: null
         }));
 
         // update existing records
         const updateData = updateRows.map((row) => ({
           telemetry_manual_id: String(row.id),
+          deployment2_id: row.deployment_id,
           latitude: Number(row.latitude),
           longitude: Number(row.longitude),
-          acquisition_date: dayjs(`${row.date}T${row.time}`).toISOString()
+          acquisition_date: dayjs(`${row.date}T${row.time}`).toISOString(),
+          transmission_date: null
         }));
 
         if (createData.length) {
-          await biohubApi.telemetry.createManualTelemetry(createData);
+          await biohubApi.telemetry.createManualTelemetry(surveyContext.projectId, surveyContext.surveyId, createData);
         }
 
         if (updateData.length) {
-          await biohubApi.telemetry.updateManualTelemetry(updateData);
+          await biohubApi.telemetry.updateManualTelemetry(surveyContext.projectId, surveyContext.surveyId, updateData);
         }
 
         revertRecords();
@@ -637,7 +671,15 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
         _isSavingData.current = false;
       }
     },
-    [dialogContext, _updateRowsMode, _isSavingData, revertRecords, refreshRecords, biohubApi]
+    [
+      revertRecords,
+      dialogContext,
+      refreshRecords,
+      biohubApi.telemetry,
+      surveyContext.projectId,
+      surveyContext.surveyId,
+      _updateRowsMode
+    ]
   );
 
   /**
@@ -722,6 +764,10 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
       isSaving: _isSavingData.current,
       validationModel,
       recordCount,
+      setPaginationModel,
+      paginationModel,
+      setSortModel,
+      sortModel,
       toggleColumnsVisibility,
       hiddenColumns,
       onRowEditStart
@@ -743,6 +789,10 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
       isLoading,
       validationModel,
       recordCount,
+      setPaginationModel,
+      paginationModel,
+      setSortModel,
+      sortModel,
       columnVisibilityModel,
       setColumnVisibilityModel,
       toggleColumnsVisibility,

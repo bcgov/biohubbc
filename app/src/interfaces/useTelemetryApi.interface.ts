@@ -30,15 +30,18 @@ export interface IFindTelemetryResponse {
 
 export interface IUpdateManualTelemetry {
   telemetry_manual_id: string;
+  deployment2_id: number;
   latitude: number;
   longitude: number;
   acquisition_date: string;
+  transmission_date: string | null;
 }
 export interface ICreateManualTelemetry {
-  deployment_id: string;
+  deployment2_id: number;
   latitude: number;
   longitude: number;
   acquisition_date: string;
+  transmission_date: string | null;
 }
 
 export interface IManualTelemetry extends ICreateManualTelemetry {

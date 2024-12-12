@@ -19,7 +19,7 @@ import useDataLoader from 'hooks/useDataLoader';
 import { IAnimalDeploymentWithCritter } from 'interfaces/useSurveyApi.interface';
 import { useEffect, useMemo } from 'react';
 
-const MANUAL_TELEMETRY_TYPE = 'MANUAL';
+const MANUAL_TELEMETRY_TYPE = 'manual';
 
 interface IManualTelemetryTableProps {
   isLoading: boolean;
@@ -102,18 +102,18 @@ export const TelemetryTable = (props: IManualTelemetryTableProps) => {
       onRowEditStop={(_params, event) => {
         event.defaultMuiPrevented = true;
       }}
+      // Pagination
+      paginationMode="server"
+      rowCount={telemetryTableContext.recordCount}
+      pageSizeOptions={[25, 50, 100]}
+      paginationModel={telemetryTableContext.paginationModel}
+      onPaginationModelChange={telemetryTableContext.setPaginationModel}
       // Styling
       rowHeight={56}
       localeText={{
         noRowsLabel: 'No Records'
       }}
       getRowHeight={() => 'auto'}
-      initialState={{
-        pagination: {
-          paginationModel: { page: 0, pageSize: 25 }
-        }
-      }}
-      pageSizeOptions={[25, 50, 100]}
       slots={{
         loadingOverlay: SkeletonTable
       }}
