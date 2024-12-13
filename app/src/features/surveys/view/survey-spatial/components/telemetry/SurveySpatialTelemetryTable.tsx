@@ -1,6 +1,6 @@
 import { mdiArrowTopRight } from '@mdi/js';
 import Typography from '@mui/material/Typography';
-import { GridColDef } from '@mui/x-data-grid';
+import { GridColDef, GridSortModel } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
@@ -12,7 +12,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { IAnimalDeploymentWithCritter } from 'interfaces/useSurveyApi.interface';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 // Set height so the skeleton loader will match table rows
 const rowHeight = 52;
@@ -39,13 +39,45 @@ export const SurveySpatialTelemetryTable = () => {
 
   const biohubApi = useBiohubApi();
 
+  const [totalRows, setTotalRows] = useState<number>(0);
+  const [page, setPage] = useState<number>(0);
+  const [pageSize, setPageSize] = useState<number>(10);
+  const [sortModel, setSortModel] = useState<GridSortModel>([]);
+
+  const telemetryDataLoader = useDataLoader((page: number, limit: number, sort?: string, order?: 'asc' | 'desc') =>
+    biohubApi.telemetry.getTelemetryForSurvey(surveyContext.projectId, surveyContext.surveyId, {
+      page: page + 1, // This fixes an off-by-one error between the front end and the back end
+      limit,
+      sort,
+      order
+    })
+  );
+
+  // Page information has changed, fetch more data
+  useEffect(() => {
+    if (sortModel.length > 0) {
+      if (sortModel[0].sort) {
+        telemetryDataLoader.refresh(page, pageSize, sortModel[0].field, sortModel[0].sort);
+      }
+    } else {
+      telemetryDataLoader.refresh(page, pageSize);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, pageSize, sortModel]);
+
+  useEffect(() => {
+    if (!telemetryDataLoader.data) {
+      return;
+    }
+
+    setTotalRows(telemetryDataLoader.data.pagination.total);
+  });
+
   const deploymentsDataLoader = useDataLoader(biohubApi.telemetryDeployment.getDeploymentsInSurvey);
-  const telemetryDataLoader = useDataLoader(biohubApi.telemetry.getTelemetryForSurvey);
   const critterDataLoader = useDataLoader(biohubApi.survey.getSurveyCritters);
 
   useEffect(() => {
     deploymentsDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
-    telemetryDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
     critterDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
   }, [deploymentsDataLoader, telemetryDataLoader, critterDataLoader, surveyContext.projectId, surveyContext.surveyId]);
 
@@ -175,14 +207,21 @@ export const SurveySpatialTelemetryTable = () => {
         columnHeaderHeight={rowHeight}
         rowHeight={rowHeight}
         rows={rows}
+        rowCount={totalRows}
+        // pagination
+        paginationMode="server"
+        paginationModel={{ pageSize, page }}
+        pageSizeOptions={[10, 25, 50]}
+        onPaginationModelChange={(model) => {
+          setPage(model.page);
+          setPageSize(model.pageSize);
+        }}
+        // sorting
+        sortingMode="server"
+        sortModel={sortModel}
+        onSortModelChange={(model) => setSortModel(model)}
         getRowId={(row) => row.id}
         columns={columns}
-        initialState={{
-          pagination: {
-            paginationModel: { page: 1, pageSize: 5 }
-          }
-        }}
-        pageSizeOptions={[5]}
         rowSelection={false}
         checkboxSelection={false}
         disableRowSelectionOnClick

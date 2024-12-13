@@ -148,11 +148,11 @@ export class TelemetryVendorRepository extends BaseRepository {
     }
 
     if (filterFields.start_date) {
-      queryBuilder.where('telemetry_lotek.uploadtimestamp', '>=', filterFields.start_date);
+      queryBuilder.where('telemetry_lotek.recdatetime', '>=', filterFields.start_date);
     }
 
     if (filterFields.end_date) {
-      queryBuilder.where('telemetry_lotek.uploadtimestamp', '<=', filterFields.end_date);
+      queryBuilder.where('telemetry_lotek.recdatetime', '<=', filterFields.end_date);
     }
 
     if (filterFields.system_user_id) {

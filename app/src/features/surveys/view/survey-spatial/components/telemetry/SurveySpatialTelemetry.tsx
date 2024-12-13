@@ -80,7 +80,7 @@ export const SurveySpatialTelemetry = (props: ISurveySpatialTelemetryProps) => {
       </Box>
 
       {/* Display data table with telemetry details */}
-      <Box height={{ xs: 300, md: 500 }} position="relative">
+      <Box height={{ xs: 300, md: 500 }} display="flex">
         <SurveySpatialTelemetryTable />
       </Box>
     </>
