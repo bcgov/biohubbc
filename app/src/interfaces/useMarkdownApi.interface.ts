@@ -30,7 +30,13 @@ export enum MarkdownTypeNameEnum {
 }
 
 export enum MarkdownTypeSupportNameEnum {
+  GENERAL = 'Support General',
+  STRUCTURE = 'Support Structure',
+  FOUNDATION = 'Support Foundation',
+  DATA_STANDARDS = 'Support Standards',
   ANIMAL_ENTITY = 'Animal Entity',
   ANIMAL_EVENT = 'Animal Event',
-  ANIMAL_BULK = 'Animal Bulk Upload'
+  ANIMAL_BULK = 'Animal Bulk Upload',
+  TELEMETRY = 'Support Telemetry',
+  OBSERVATIONS = 'Support Observations'
 }
