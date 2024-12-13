@@ -2,6 +2,8 @@ import { ProjectRoleRouteGuard } from 'components/security/RouteGuards';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { AnimalPageContextProvider } from 'contexts/animalPageContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
+import { ObservationsContextProvider } from 'contexts/observationsContext';
+import { TelemetryContextProvider } from 'contexts/telemetryContext';
 import { AnimalRouter } from 'features/surveys/animals/AnimalRouter';
 import EditSurveyPage from 'features/surveys/edit/EditSurveyPage';
 import { SurveyObservationPage } from 'features/surveys/observations/SurveyObservationPage';
@@ -68,7 +70,9 @@ const SurveyRouter: React.FC = () => {
             PROJECT_PERMISSION.OBSERVER
           ]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-          <TelemetryRouter />
+          <TelemetryContextProvider>
+            <TelemetryRouter />
+          </TelemetryContextProvider>
         </ProjectRoleRouteGuard>
       </RouteWithTitle>
 
@@ -84,7 +88,9 @@ const SurveyRouter: React.FC = () => {
             PROJECT_PERMISSION.OBSERVER
           ]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-          <SurveyObservationPage />
+          <ObservationsContextProvider>
+            <SurveyObservationPage />
+          </ObservationsContextProvider>
         </ProjectRoleRouteGuard>
       </RouteWithTitle>
 

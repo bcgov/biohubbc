@@ -7,7 +7,7 @@ import {
   GenericTimeColDef
 } from 'components/data-grid/GenericGridColumnDefinitions';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
-import { IManualTelemetryTableRow } from 'contexts/telemetryTableContext';
+import { IManualTelemetryTableRow, MANUAL_TELEMETRY_TYPE } from 'contexts/telemetryTableContext';
 import {
   DeploymentColDef,
   DeviceColDef,
@@ -18,8 +18,6 @@ import { useSurveyContext, useTelemetryTableContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { IAnimalDeploymentWithCritter } from 'interfaces/useSurveyApi.interface';
 import { useEffect, useMemo } from 'react';
-
-const MANUAL_TELEMETRY_TYPE = 'manual';
 
 interface IManualTelemetryTableProps {
   isLoading: boolean;
@@ -108,6 +106,10 @@ export const TelemetryTable = (props: IManualTelemetryTableProps) => {
       pageSizeOptions={[25, 50, 100]}
       paginationModel={telemetryTableContext.paginationModel}
       onPaginationModelChange={telemetryTableContext.setPaginationModel}
+      // Sorting
+      sortingMode="server"
+      sortModel={telemetryTableContext.sortModel}
+      onSortModelChange={telemetryTableContext.setSortModel}
       // Styling
       rowHeight={56}
       localeText={{

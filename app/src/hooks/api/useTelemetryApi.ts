@@ -2,6 +2,7 @@ import { AxiosInstance, AxiosProgressEvent, CancelTokenSource } from 'axios';
 import { IAllTelemetryAdvancedFilters } from 'features/summary/tabular-data/telemetry/TelemetryListFilterForm';
 import { IUploadAttachmentResponse } from 'interfaces/useProjectApi.interface';
 import {
+  GetSurveyTelemetryResponse,
   IAllTelemetry,
   ICreateManualTelemetry,
   IFindTelemetryResponse,
@@ -10,7 +11,7 @@ import {
   TelemetrySpatial
 } from 'interfaces/useTelemetryApi.interface';
 import qs from 'qs';
-import { ApiPaginationRequestOptions, ApiPaginationResponseParams } from 'types/misc';
+import { ApiPaginationRequestOptions } from 'types/misc';
 
 /**
  * Returns a set of supported api methods for working with telemetry.
@@ -64,13 +65,13 @@ const useTelemetryApi = (axios: AxiosInstance) => {
    * @param {number} projectId
    * @param {number} surveyId
    * @param {ApiPaginationRequestOptions} [pagination]
-   * @return {*}  {Promise<{ telemetry: IAllTelemetry[]; count: number; pagination: ApiPaginationResponseParams }>}
+   * @return {*}  {Promise<GetSurveyTelemetryResponse>}
    */
   const getTelemetryForSurvey = async (
     projectId: number,
     surveyId: number,
     pagination?: ApiPaginationRequestOptions
-  ): Promise<{ telemetry: IAllTelemetry[]; count: number; pagination: ApiPaginationResponseParams }> => {
+  ): Promise<GetSurveyTelemetryResponse> => {
     const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/telemetry`, {
       params: {
         ...pagination

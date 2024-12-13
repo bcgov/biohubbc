@@ -8,6 +8,7 @@ import { IObservationsTableContext, ObservationsTableContext } from 'contexts/ob
 import { IProjectContext, ProjectContext } from 'contexts/projectContext';
 import { ISurveyContext, SurveyContext } from 'contexts/surveyContext';
 import { ITaxonomyContext, TaxonomyContext } from 'contexts/taxonomyContext';
+import { ITelemetryContext, TelemetryContext } from 'contexts/telemetryContext';
 import { IAllTelemetryTableContext, TelemetryTableContext } from 'contexts/telemetryTableContext';
 import { useContext } from 'react';
 
@@ -192,6 +193,23 @@ export const useAnimalPageContext = (): IAnimalPageContext => {
   if (!context) {
     throw Error(
       'AnimalPageContext is undefined, please verify you are calling useAnimalPageContext() as child of an <AnimalPageContextProvider> component.'
+    );
+  }
+
+  return context;
+};
+
+/**
+ * Returns an instance of `ITelemetryContext` from `TelemetryContext`.
+ *
+ * @return {*}  {ITelemetryContext}
+ */
+export const useTelemetryContext = (): ITelemetryContext => {
+  const context = useContext(TelemetryContext);
+
+  if (!context) {
+    throw Error(
+      'ObservationsContext is undefined, please verify you are calling useObservationsContext() as child of an <ObservationsContextProvider> component.'
     );
   }
 

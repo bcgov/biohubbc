@@ -1,3 +1,5 @@
+import { ApiPaginationResponseParams } from 'types/misc';
+
 /**
  * Create telemetry deployment record.
  */
@@ -53,8 +55,15 @@ export type TelemetryDeployment = {
   critterbase_end_capture_id: string | null;
   critterbase_end_mortality_id: string | null;
   // device data
+  serial: string;
   device_make_id: number;
   model: string | null;
   // critter data
   critterbase_critter_id: string;
+};
+
+export type GetSurveyDeploymentsResponse = {
+  deployments: TelemetryDeployment[];
+  count: number;
+  pagination: ApiPaginationResponseParams;
 };

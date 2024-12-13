@@ -2,7 +2,7 @@ import green from '@mui/material/colors/green';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { MeasurementsSearchAutocomplete } from 'features/surveys/observations/observations-table/configure-columns/components/measurements/search/MeasurementsSearchAutocomplete';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useObservationsContext, useSurveyContext } from 'hooks/useContext';
+import { useSurveyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
@@ -42,8 +42,11 @@ export const MeasurementsSearch: React.FC<IMeasurementsSearchProps> = (props) =>
 
   const critterbaseApi = useCritterbaseApi();
   const surveyContext = useSurveyContext();
-  const observationsContext = useObservationsContext();
   const biohubApi = useBiohubApi();
+
+  const observedSpeciesDataLoader = useDataLoader(() =>
+    biohubApi.observation.getObservedSpecies(surveyContext.projectId, surveyContext.surveyId)
+  );
 
   const measurementsDataLoader = useDataLoader((searchTerm: string, tsns?: number[]) =>
     critterbaseApi.xref.getMeasurementTypeDefinitionsBySearchTerm(searchTerm, tsns)
@@ -52,14 +55,14 @@ export const MeasurementsSearch: React.FC<IMeasurementsSearchProps> = (props) =>
   const hierarchyDataLoader = useDataLoader((tsns: number[]) => biohubApi.taxonomy.getTaxonHierarchyByTSNs(tsns));
 
   useEffect(() => {
-    if (!observationsContext.observedSpeciesDataLoader.data) {
-      observationsContext.observedSpeciesDataLoader.load();
+    if (!observedSpeciesDataLoader.data) {
+      observedSpeciesDataLoader.load();
     }
-  }, [observationsContext.observedSpeciesDataLoader]);
+  }, [observedSpeciesDataLoader]);
 
   const focalOrObservedSpecies: number[] = [
     ...(surveyContext.surveyDataLoader.data?.surveyData.species.focal_species.map((species) => species.tsn) ?? []),
-    ...(observationsContext.observedSpeciesDataLoader.data?.map((species) => species.tsn) ?? [])
+    ...(observedSpeciesDataLoader.data?.map((species) => species.tsn) ?? [])
   ];
 
   useEffect(() => {

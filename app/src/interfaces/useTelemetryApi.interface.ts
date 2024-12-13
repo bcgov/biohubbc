@@ -209,3 +209,9 @@ export type TelemetrySpatial = {
    */
   geometry: Point | null;
 };
+
+export type GetSurveyTelemetryResponse = {
+  telemetry: IAllTelemetry[];
+  count: number;
+  pagination: ApiPaginationResponseParams;
+};
