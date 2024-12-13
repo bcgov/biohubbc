@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { DeploymentRecord } from '../../database-models/deployment';
 import { getKnex } from '../../database/db';
 import { ApiExecuteSQLError } from '../../errors/api-error';
+import { IDeploymentAdvancedFilters } from '../../models/deployment-view';
 import { ApiPaginationOptions } from '../../zod-schema/pagination';
 import { BaseRepository } from '../base-repository';
 import {
@@ -68,67 +69,17 @@ export class TelemetryDeploymentRepository extends BaseRepository {
   }
 
   /**
-   * Get a deployment by its ID. Includes additional device and critter data.
-   *
-   * @param {number} surveyId The survey ID
-   * @param {number[]} deploymentIds A list of deployment IDs
-   * @return {*}  {Promise<ExtendedDeploymentRecord[]>}
-   * @memberof TelemetryDeploymentRepository
-   */
-  async getDeploymentsByIds(surveyId: number, deploymentIds: number[]): Promise<ExtendedDeploymentRecord[]> {
-    const sqlStatement = SQL`
-      SELECT
-        -- deployment data
-        deployment2.deployment2_id,
-        deployment2.survey_id,
-        deployment2.critter_id,
-        deployment2.device_id,
-        deployment2.device_key,
-        deployment2.frequency,
-        deployment2.frequency_unit_id,
-        deployment2.attachment_start_date,
-        deployment2.attachment_start_time,
-        deployment2.attachment_start_timestamp,
-        deployment2.attachment_end_date,
-        deployment2.attachment_end_time,
-        deployment2.attachment_end_timestamp,
-        deployment2.critterbase_start_capture_id,
-        deployment2.critterbase_end_capture_id,
-        deployment2.critterbase_end_mortality_id,
-        -- device data
-        device.device_make_id,
-        device.model,
-        -- critter data
-        critter.critterbase_critter_id
-      FROM
-        deployment2
-      INNER JOIN
-        device
-          ON deployment2.device_id = device.device_id
-      INNER JOIN
-        critter
-          ON deployment2.critter_id = critter.critter_id
-      WHERE
-        deployment2.deployment2_id = ANY (${deploymentIds})
-      AND
-        deployment2.survey_id = ${surveyId};
-    `;
-
-    const response = await this.connection.sql(sqlStatement, ExtendedDeploymentRecord);
-
-    return response.rows;
-  }
-
-  /**
-   * Get deployments for a survey ID. Includes additional device and critter data.
+   * Retrieves the paginated list of deployments under a survey, based on the provided filter params.
    *
    * @param {number} surveyId
+   * @param {number[]} [deploymentIds]
    * @param {ApiPaginationOptions} [pagination]
    * @return {*}  {Promise<ExtendedDeploymentRecord[]>}
    * @memberof TelemetryDeploymentRepository
    */
-  async getDeploymentsForSurveyId(
+  async getDeploymentsForSurvey(
     surveyId: number,
+    deploymentIds?: number[],
     pagination?: ApiPaginationOptions
   ): Promise<ExtendedDeploymentRecord[]> {
     const knex = getKnex();
@@ -154,15 +105,22 @@ export class TelemetryDeploymentRepository extends BaseRepository {
         'deployment2.critterbase_end_capture_id',
         'deployment2.critterbase_end_mortality_id',
         // device data
+        'device.serial',
         'device.device_make_id',
         'device.model',
         // critter data
         'critter.critterbase_critter_id'
       )
       .from('deployment2')
+      .innerJoin('survey', 'deployment2.survey_id', 'survey.survey_id')
       .innerJoin('device', 'deployment2.device_id', 'device.device_id')
       .innerJoin('critter', 'deployment2.critter_id', 'critter.critter_id')
       .where('deployment2.survey_id', surveyId);
+
+    if (deploymentIds?.length) {
+      // Filter results by deployment IDs
+      queryBuilder.whereIn('deployment2.deployment2_id', deploymentIds);
+    }
 
     if (pagination) {
       queryBuilder.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
@@ -171,6 +129,119 @@ export class TelemetryDeploymentRepository extends BaseRepository {
         queryBuilder.orderBy(pagination.sort, pagination.order);
       }
     }
+
+    console.log(queryBuilder.toSQL().toNative().sql);
+    console.log(queryBuilder.toSQL().toNative().bindings);
+
+    const response = await this.connection.knex(queryBuilder, ExtendedDeploymentRecord);
+
+    return response.rows;
+  }
+
+  /**
+   * Retrieves the paginated list of all deployments that are available to the user, based on their permissions and
+   * provided filter criteria.
+   *
+   * @param {boolean} isUserAdmin Whether the user making the request is an admin
+   * @param {(number | null)} systemUserId The system user id of the user making the request
+   * @param {IDeploymentAdvancedFilters} filterFields The filter fields to apply
+   * @param {ApiPaginationOptions} [pagination] The pagination/sorting options to apply
+   * @return {*}  {Promise<ExtendedDeploymentRecord[]>}
+   * @memberof TelemetryDeploymentRepository
+   */
+  async findDeployments(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: IDeploymentAdvancedFilters,
+    pagination?: ApiPaginationOptions
+  ): Promise<ExtendedDeploymentRecord[]> {
+    const knex = getKnex();
+
+    const getSurveyIdsQuery = knex.select<any, { survey_id: number }>(['survey_id']).from('survey');
+
+    // Ensure that users can only see observations that they are participating in, unless they are an administrator.
+    if (!isUserAdmin) {
+      getSurveyIdsQuery.whereIn('survey.project_id', (subqueryBuilder) =>
+        subqueryBuilder
+          .select('project.project_id')
+          .from('project')
+          .leftJoin('project_participation', 'project_participation.project_id', 'project.project_id')
+          .where('project_participation.system_user_id', systemUserId)
+      );
+    }
+
+    if (filterFields.system_user_id) {
+      getSurveyIdsQuery.whereIn('p.project_id', (subQueryBuilder) => {
+        subQueryBuilder
+          .select('project_id')
+          .from('project_participation')
+          .where('system_user_id', filterFields.system_user_id);
+      });
+    }
+
+    const queryBuilder = knex
+      .queryBuilder()
+      .select(
+        // deployment data
+        'deployment2.deployment2_id',
+        'deployment2.survey_id',
+        'deployment2.critter_id',
+        'deployment2.device_id',
+        'deployment2.device_key',
+        'deployment2.frequency',
+        'deployment2.frequency_unit_id',
+        'deployment2.attachment_start_date',
+        'deployment2.attachment_start_time',
+        'deployment2.attachment_start_timestamp',
+        'deployment2.attachment_end_date',
+        'deployment2.attachment_end_time',
+        'deployment2.attachment_end_timestamp',
+        'deployment2.critterbase_start_capture_id',
+        'deployment2.critterbase_end_capture_id',
+        'deployment2.critterbase_end_mortality_id',
+        // device data
+        'device.serial',
+        'device.device_make_id',
+        'device.model',
+        // critter data
+        'critter.critterbase_critter_id'
+      )
+      .from('deployment2')
+      .innerJoin('survey', 'deployment2.survey_id', 'survey.survey_id')
+      .innerJoin('device', 'deployment2.device_id', 'device.device_id')
+      .innerJoin('critter', 'deployment2.critter_id', 'critter.critter_id')
+      .whereIn('deployment2.survey_id', getSurveyIdsQuery);
+
+    if (filterFields.survey_ids?.length) {
+      // Filter results by survey IDs
+      queryBuilder.whereIn('survey.survey_id', filterFields.survey_ids);
+    }
+
+    if (filterFields.deployment_ids?.length) {
+      // Filter results by deployment IDs
+      queryBuilder.whereIn('deployment2.deployment2_id', filterFields.deployment_ids);
+    }
+
+    if (filterFields.system_user_id) {
+      // If a system user ID is provided, filter results by the projects/surveys that user has access to
+      queryBuilder.whereIn('survey.project_id', (subQueryBuilder) => {
+        subQueryBuilder
+          .select('project_id')
+          .from('project_participation')
+          .where('system_user_id', filterFields.system_user_id);
+      });
+    }
+
+    if (pagination) {
+      queryBuilder.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
+
+      if (pagination.sort && pagination.order) {
+        queryBuilder.orderBy(pagination.sort, pagination.order);
+      }
+    }
+
+    console.log(queryBuilder.toSQL().toNative().sql);
+    console.log(queryBuilder.toSQL().toNative().bindings);
 
     const response = await this.connection.knex(queryBuilder, ExtendedDeploymentRecord);
 

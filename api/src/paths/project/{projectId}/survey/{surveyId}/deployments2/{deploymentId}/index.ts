@@ -101,6 +101,7 @@ GET.apiDoc = {
                   'critterbase_end_capture_id',
                   'critterbase_end_mortality_id',
                   // device data
+                  'serial',
                   'device_make_id',
                   'model',
                   // critter data
@@ -198,6 +199,10 @@ GET.apiDoc = {
                     nullable: true
                   },
                   // device data
+                  serial: {
+                    type: 'string',
+                    description: 'Serial number of the device.'
+                  },
                   device_make_id: {
                     type: 'integer',
                     minimum: 1,

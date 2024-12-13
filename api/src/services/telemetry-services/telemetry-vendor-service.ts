@@ -97,7 +97,7 @@ export class TelemetryVendorService extends DBService {
    * @returns {Promise<[Telemetry[], number]>} Tuple of telemetry data and total count
    */
   async getTelemetryForSurvey(surveyId: number, options?: TelemetryOptions): Promise<[Telemetry[], number]> {
-    const deployments = await this.deploymentService.getDeploymentsForSurveyId(surveyId);
+    const deployments = await this.deploymentService.getDeploymentsForSurvey(surveyId);
     const deploymentIds = deployments.map((deployment) => deployment.deployment2_id);
 
     if (!options?.pagination) {
@@ -119,7 +119,7 @@ export class TelemetryVendorService extends DBService {
    * @return {Promise<[TelemetrySpatial[], number]>} - A tuple containing the telemetry spatial data and the total count
    */
   async getTelemetrySpatialForSurvey(surveyId: number): Promise<[TelemetrySpatial[], number]> {
-    const deployments = await this.deploymentService.getDeploymentsForSurveyId(surveyId);
+    const deployments = await this.deploymentService.getDeploymentsForSurvey(surveyId);
     const deploymentIds = deployments.map((deployment) => deployment.deployment2_id);
 
     const telemetry = await this.vendorRepository.getTelemetrySpatialByDeploymentIds(surveyId, deploymentIds);
@@ -178,7 +178,7 @@ export class TelemetryVendorService extends DBService {
    */
   async bulkCreateManualTelemetry(surveyId: number, telemetry: CreateManualTelemetry[]): Promise<void> {
     const deploymentIds = [...new Set(telemetry.map((record) => record.deployment2_id))];
-    const deployments = await this.deploymentService.getDeploymentsByIds(surveyId, deploymentIds);
+    const deployments = await this.deploymentService.getDeploymentsForSurvey(surveyId, deploymentIds);
 
     if (deployments.length !== deploymentIds.length) {
       throw new ApiGeneralError('Failed to create manual telemetry', [

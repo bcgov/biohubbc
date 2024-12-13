@@ -200,6 +200,10 @@ GET.apiDoc = {
                       nullable: true
                     },
                     // device data
+                    serial: {
+                      type: 'string',
+                      description: 'Serial number of the device.'
+                    },
                     device_make_id: {
                       type: 'integer',
                       minimum: 1,
@@ -269,8 +273,9 @@ export function getDeploymentsInSurvey(): RequestHandler {
       const telemetryDeploymentService = new TelemetryDeploymentService(connection);
 
       const [deployments, deploymentsCount] = await Promise.all([
-        telemetryDeploymentService.getDeploymentsForSurveyId(
+        telemetryDeploymentService.getDeploymentsForSurvey(
           surveyId,
+          [],
           ensureCompletePaginationOptions(paginationOptions)
         ),
         telemetryDeploymentService.getDeploymentsCount(surveyId)
