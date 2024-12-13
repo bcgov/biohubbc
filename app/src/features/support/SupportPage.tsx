@@ -1,14 +1,14 @@
 import {
   mdiCardAccountMailOutline,
+  mdiChevronLeft,
+  mdiChevronRight,
   mdiDatabaseRefreshOutline,
   mdiEye,
   mdiLifebuoy,
   mdiOfficeBuildingCogOutline,
   mdiPaw,
   mdiWall,
-  mdiWifiMarker,
-  mdiChevronRight,
-  mdiChevronLeft
+  mdiWifiMarker
 } from '@mdi/js';
 import Box from '@mui/material/Box';
 import { grey } from '@mui/material/colors';
@@ -17,11 +17,11 @@ import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import AccordionSupportCard from 'features/support/components/AccordionSupportCard';
 import PageHeader from 'components/layout/PageHeader';
+import AccordionSupportCard from 'features/support/components/AccordionSupportCard';
+import { MarkdownTypeSupportNameEnum } from 'interfaces/useMarkdownApi.interface';
 import { ReactNode, useState } from 'react';
 import { StandardsToolbar } from '../standards/components/StandardsToolbar';
-import { MarkdownTypeSupportNameEnum } from 'interfaces/useMarkdownApi.interface';
 
 // FAQ SECTIONS MAY NEED TO BE FORMATTED IN A DIFFERENT WAY, I DONT KNOW HOW BUT IM THINKING ABOUT IT
 
@@ -108,7 +108,7 @@ const SupportPage = () => {
   const currentIndex = views.findIndex((view) => view.value === currentView);
 
   const nextView = views[(currentIndex + 1) % views.length];
-  const prevView = views[(currentIndex - 1 + views.length) % views.length]; 
+  const prevView = views[(currentIndex - 1 + views.length) % views.length];
 
   const dataMap: DataMap = {
     [SupportPageView.GENERAL]: [
@@ -481,57 +481,58 @@ const SupportPage = () => {
                       )
                     }
                     colour={grey[100]}
-                    markdownType={
-                      MarkdownTypeSupportNameEnum.ANIMAL_BULK
-                    }
+                    markdownType={MarkdownTypeSupportNameEnum.ANIMAL_BULK}
                   />
                 )) || <Typography>No content available for this section.</Typography>}
               </Stack>
-
-              {/* Navigation buttons */}
               <Stack
                 direction="row"
-                justifyContent="space-between"
+                justifyContent={
+                  currentIndex === 0 ? 'flex-end' : currentIndex === views.length - 1 ? 'flex-start' : 'space-between'
+                }
                 alignItems="center"
-                sx={{ mt: 4 }}
-              >
-                <Box
-                  component="button"
-                  onClick={() => setCurrentView(prevView.value)}
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    border: 'none',
-                    background: 'none',
-                    cursor: 'pointer',
-                    color: grey[700],
-                    '&:hover': { color: grey[900] }
-                  }}
-                >
-                  <svg style={{ width: 24, height: 24, marginRight: 8 }}>
-                    <path d={mdiChevronLeft} fill="currentColor" />
-                  </svg>
-                  <Typography>Previous Topic</Typography>
-                </Box>
+                sx={{ mt: 4 }}>
+                {/* Conditionally render the Previous Topic button */}
+                {currentIndex > 0 && (
+                  <Box
+                    component="button"
+                    onClick={() => setCurrentView(prevView.value)}
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      border: 'none',
+                      background: 'none',
+                      cursor: 'pointer',
+                      color: grey[700],
+                      '&:hover': { color: grey[900] }
+                    }}>
+                    <svg style={{ width: 24, height: 24, marginRight: 8 }}>
+                      <path d={mdiChevronLeft} fill="currentColor" />
+                    </svg>
+                    <Typography>Previous Topic</Typography>
+                  </Box>
+                )}
 
-                <Box
-                  component="button"
-                  onClick={() => setCurrentView(nextView.value)}
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    border: 'none',
-                    background: 'none',
-                    cursor: 'pointer',
-                    color: grey[700],
-                    '&:hover': { color: grey[900] }
-                  }}
-                >
-                  <Typography>Next Topic</Typography>
-                  <svg style={{ width: 24, height: 24, marginLeft: 8 }}>
-                    <path d={mdiChevronRight} fill="currentColor" />
-                  </svg>
-                </Box>
+                {/* Conditionally render the Next Topic button */}
+                {currentIndex < views.length - 1 && (
+                  <Box
+                    component="button"
+                    onClick={() => setCurrentView(nextView.value)}
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      border: 'none',
+                      background: 'none',
+                      cursor: 'pointer',
+                      color: grey[700],
+                      '&:hover': { color: grey[900] }
+                    }}>
+                    <Typography>Next Topic</Typography>
+                    <svg style={{ width: 24, height: 24, marginLeft: 8 }}>
+                      <path d={mdiChevronRight} fill="currentColor" />
+                    </svg>
+                  </Box>
+                )}
               </Stack>
             </Box>
           </Box>
