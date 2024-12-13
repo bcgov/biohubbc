@@ -19,7 +19,7 @@ import AccordionSupportCard from 'features/support/components/AccordionSupportCa
 import PageHeader from 'components/layout/PageHeader';
 import { ReactNode, useState } from 'react';
 import { StandardsToolbar } from '../standards/components/StandardsToolbar';
-import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
+import { MarkdownTypeSupportNameEnum } from 'interfaces/useMarkdownApi.interface';
 
 // FAQ SECTIONS MAY NEED TO BE FORMATTED IN A DIFFERENT WAY, I DONT KNOW HOW BUT IM THINKING ABOUT IT
 
@@ -475,7 +475,7 @@ const SupportPage = () => {
                     }
                     colour={grey[100]}
                     markdownType={
-                      MarkdownTypeNameEnum.PROJECTS_AND_SURVEYS
+                      MarkdownTypeSupportNameEnum.SUPPORT_ANIMALS
                     }
                   />
                 )) || <Typography>No content available for this section.</Typography>}

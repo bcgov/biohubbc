@@ -6,7 +6,7 @@ import Paper, { PaperProps } from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import { CustomMarkdown } from 'components/markdown/CustomMarkdown';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
+import { MarkdownTypeSupportNameEnum } from 'interfaces/useMarkdownApi.interface';
 import React, { PropsWithChildren, ReactElement, useState } from 'react';
 
 // Accordion Support Card Component
@@ -73,7 +73,7 @@ export const AccordionSupportCard = (props: PropsWithChildren<IAccordionSupportC
 
 // Help Accordion for Markdown Retrieval
 interface IHelpAccordionMarkdownProps {
-  markdownType: MarkdownTypeNameEnum;
+  markdownType: MarkdownTypeSupportNameEnum;
   label: string | React.ReactNode;
   colour: string;
   subtitle?: string | React.ReactNode | null;
