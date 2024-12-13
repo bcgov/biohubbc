@@ -26,9 +26,11 @@ export enum MarkdownTypeNameEnum {
   TECHNIQUES = 'Techniques',
   SAMPLING_SITES = 'Sampling Sites',
   SURVEY_METADATA = 'Survey Metadata',
-  OBSERVATIONS = 'Observations',
+  OBSERVATIONS = 'Observations'
 }
 
 export enum MarkdownTypeSupportNameEnum {
-  SUPPORT_ANIMALS = 'Animal Support'
+  ANIMAL_ENTITY = 'Animal Entity',
+  ANIMAL_EVENT = 'Animal Event',
+  ANIMAL_BULK = 'Animal Bulk Upload'
 }

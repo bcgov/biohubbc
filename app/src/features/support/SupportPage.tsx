@@ -475,7 +475,7 @@ const SupportPage = () => {
                     }
                     colour={grey[100]}
                     markdownType={
-                      MarkdownTypeSupportNameEnum.SUPPORT_ANIMALS
+                      MarkdownTypeSupportNameEnum.ANIMAL_BULK
                     }
                   />
                 )) || <Typography>No content available for this section.</Typography>}

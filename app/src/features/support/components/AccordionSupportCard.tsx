@@ -1,25 +1,25 @@
-import { mdiChevronDown, mdiChevronUp } from '@mdi/js';
-import { Icon } from '@mdi/react';
-import { Collapse } from '@mui/material';
+import React, { PropsWithChildren, useState, ReactElement } from 'react';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import { CustomMarkdown } from 'components/markdown/CustomMarkdown';
+import { MarkdownTypeSupportNameEnum } from 'interfaces/useMarkdownApi.interface';
+import { MarkdownScoreButtons } from 'components/buttons/MarkdownScoreButtons';
+import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Paper, { PaperProps } from '@mui/material/Paper';
-import Typography from '@mui/material/Typography';
-import { CustomMarkdown } from 'components/markdown/CustomMarkdown';
-import { useBiohubApi } from 'hooks/useBioHubApi';
-import { MarkdownTypeSupportNameEnum } from 'interfaces/useMarkdownApi.interface';
-import React, { PropsWithChildren, ReactElement, useState } from 'react';
+import { Collapse } from '@mui/material';
+import { mdiChevronDown, mdiChevronUp } from '@mdi/js';
+import Icon from '@mdi/react';
 
-// Accordion Support Card Component
-interface IAccordionSupportCardProps extends PaperProps {
+interface IAccordionSupportCardProps extends PropsWithChildren<PaperProps> {
   label: string | React.ReactNode;
   subtitle?: string | React.ReactNode | null;
   ornament?: ReactElement;
   colour: string;
   disableCollapse?: boolean;
-  onExpand?: () => void; // Added callback for expand action
+  onExpand?: () => void; 
 }
 
-export const AccordionSupportCard = (props: PropsWithChildren<IAccordionSupportCardProps>) => {
+export const AccordionSupportCard = (props: IAccordionSupportCardProps) => {
   const { label, subtitle, children, colour, ornament, disableCollapse, onExpand, ...paperProps } = props;
   const [isCollapsed, setIsCollapsed] = useState(true);
   const expandable = (children || subtitle) && !disableCollapse;
@@ -28,8 +28,7 @@ export const AccordionSupportCard = (props: PropsWithChildren<IAccordionSupportC
     if (expandable) {
       const newCollapseState = !isCollapsed;
       setIsCollapsed(newCollapseState);
-      if (onExpand && newCollapseState === false) {
-        // Trigger onExpand only when expanding
+      if (onExpand && !newCollapseState) {
         onExpand();
       }
     }
@@ -42,14 +41,16 @@ export const AccordionSupportCard = (props: PropsWithChildren<IAccordionSupportC
         justifyContent="space-between"
         alignItems="center"
         sx={{ cursor: expandable ? 'pointer' : 'default', px: 3, py: 2 }}
-        onClick={handleHeaderClick}>
+        onClick={handleHeaderClick}
+      >
         <Typography
           variant="h5"
           sx={{
             '&::first-letter': {
               textTransform: 'capitalize'
             }
-          }}>
+          }}
+        >
           {label}
         </Typography>
         <Box display="flex" alignItems="center">
@@ -60,7 +61,7 @@ export const AccordionSupportCard = (props: PropsWithChildren<IAccordionSupportC
       <Box sx={{ px: 3 }}>
         <Collapse in={!isCollapsed || disableCollapse}>
           {subtitle && (
-            <Typography sx={{ pb: !children ? 2 : 0 }} color="textSecondary">
+            <Typography sx={{ pb: children ? 0 : 2 }} color="textSecondary">
               {subtitle}
             </Typography>
           )}
@@ -71,7 +72,7 @@ export const AccordionSupportCard = (props: PropsWithChildren<IAccordionSupportC
   );
 };
 
-// Help Accordion for Markdown Retrieval
+// Markdown Retrieval
 interface IHelpAccordionMarkdownProps {
   markdownType: MarkdownTypeSupportNameEnum;
   label: string | React.ReactNode;
@@ -79,26 +80,55 @@ interface IHelpAccordionMarkdownProps {
   subtitle?: string | React.ReactNode | null;
 }
 
-const HelpAccordionMarkdown = (props: PropsWithChildren<IHelpAccordionMarkdownProps>) => {
+const HelpAccordionMarkdown = (props: IHelpAccordionMarkdownProps) => {
   const { markdownType, label, colour, subtitle } = props;
-  const [markdownContent, setMarkdownContent] = useState<string | null>(null); // State for fetched content
+  const [markdownContent, setMarkdownContent] = useState<string | null>(null);
+  const [markdownId, setMarkdownId] = useState<number | null>(null); // Track the markdownId
+  const [hasSubmittedScore, setHasSubmittedScore] = useState(false);
   const biohubApi = useBiohubApi();
 
   const fetchMarkdownContent = async () => {
     const { markdown } = await biohubApi.markdown.getMarkdown({ typeName: markdownType });
     if (markdown) {
       setMarkdownContent(markdown.data);
+      setMarkdownId(markdown.markdown_id); // Extract the markdownId from the response
+      setHasSubmittedScore(markdown.participated);
+    }
+  };
+
+  const handleScoreSubmit = async (score: number) => {
+    if (!markdownId) {
+      console.error('Markdown ID is not available for scoring.');
+      return;
+    }
+
+    try {
+      await biohubApi.markdown.insertScore({ markdownId, score });
+      setHasSubmittedScore(true);
+    } catch (error) {
+      console.error('Failed to submit score:', error);
     }
   };
 
   return (
-    <AccordionSupportCard
-      label={label}
-      colour={colour}
-      subtitle={subtitle}
-      onExpand={fetchMarkdownContent} // Trigger fetchMarkdownContent when expanding
-    >
-      {markdownContent ? <CustomMarkdown markdown={markdownContent} /> : <Typography>Loading content...</Typography>}
+    <AccordionSupportCard label={label} colour={colour} subtitle={subtitle} onExpand={fetchMarkdownContent}>
+      {markdownContent ? (
+        <>
+          <CustomMarkdown markdown={markdownContent} />
+          {!hasSubmittedScore && (
+            <Box sx={{ mb: 2 }}>
+              <MarkdownScoreButtons
+                positiveText="This is Helpful"
+                negativeText="This is Confusing"
+                handleSubmit={handleScoreSubmit}
+              />
+            </Box>
+          )}
+          {hasSubmittedScore && <Box sx={{ mb: 2 }}><Typography color="textSecondary">Thanks for your feedback!</Typography></Box>}
+        </>
+      ) : (
+        <Typography>Loading content...</Typography>
+      )}
     </AccordionSupportCard>
   );
 };
