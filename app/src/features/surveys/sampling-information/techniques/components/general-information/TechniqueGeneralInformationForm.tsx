@@ -72,6 +72,9 @@ export const TechniqueGeneralInformationForm = <
           onChange={(_, value) => {
             if (value?.value) {
               setFieldValue('method_lookup_id', value.value);
+              // Clear attributes
+              setFieldValue('attributes', []);
+              setFieldValue('vantage_mode_methods', []);
             }
           }}
         />

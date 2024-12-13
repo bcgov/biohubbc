@@ -29,7 +29,8 @@ describe('TechniqueRepository', () => {
         attributes: {
           qualitative_attributes: [],
           quantitative_attributes: []
-        }
+        },
+        vantage_mode_methods: []
       };
 
       const mockResponse = { rows: [mockRecord], rowCount: 1 } as any as Promise<QueryResult<any>>;
@@ -58,7 +59,8 @@ describe('TechniqueRepository', () => {
         attributes: {
           qualitative_attributes: [],
           quantitative_attributes: []
-        }
+        },
+        vantage_mode_methods: []
       };
 
       const mockResponse = { rows: [mockRecord], rowCount: 1 } as any as Promise<QueryResult<any>>;

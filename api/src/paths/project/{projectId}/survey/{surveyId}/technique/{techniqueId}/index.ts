@@ -10,6 +10,7 @@ import { AttractantService } from '../../../../../../../services/attractants-ser
 import { SampleMethodService } from '../../../../../../../services/sample-method-service';
 import { TechniqueAttributeService } from '../../../../../../../services/technique-attributes-service';
 import { TechniqueService } from '../../../../../../../services/technique-service';
+import { TechniqueVantageService } from '../../../../../../../services/technique-vantage-service';
 import { getLogger } from '../../../../../../../utils/logger';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/technique/{techniqueId}/index');
@@ -245,7 +246,7 @@ export function updateTechnique(): RequestHandler {
     try {
       await connection.open();
 
-      const { attributes, attractants, ...techniqueRow } = technique;
+      const { attributes, attractants, vantage_mode_methods, ...techniqueRow } = technique;
 
       // Update the technique record
       const techniqueService = new TechniqueService(connection);
@@ -254,6 +255,8 @@ export function updateTechnique(): RequestHandler {
       // Update the technique's attributes and attractants
       const attractantsService = new AttractantService(connection);
       const techniqueAttributeService = new TechniqueAttributeService(connection);
+      const techniqueVantageService = new TechniqueVantageService(connection);
+
       await Promise.all([
         // Update attractants
         attractantsService.updateTechniqueAttractants(surveyId, methodTechniqueId, attractants),
@@ -268,7 +271,9 @@ export function updateTechnique(): RequestHandler {
           surveyId,
           methodTechniqueId,
           attributes.quantitative_attributes
-        )
+        ),
+        // Update vantage modes
+        techniqueVantageService.updateVantageModesForTechnique(surveyId, methodTechniqueId, vantage_mode_methods)
       ]);
 
       await connection.commit();

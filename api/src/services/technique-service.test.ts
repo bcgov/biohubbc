@@ -13,6 +13,7 @@ import {
 import { AttractantService } from './attractants-service';
 import { TechniqueAttributeService } from './technique-attributes-service';
 import { TechniqueService } from './technique-service';
+import { TechniqueVantageService } from './technique-vantage-service';
 
 chai.use(sinonChai);
 
@@ -33,7 +34,8 @@ describe('TechniqueService', () => {
         attributes: {
           qualitative_attributes: [],
           quantitative_attributes: []
-        }
+        },
+        vantage_mode_methods: []
       };
 
       sinon.stub(TechniqueRepository.prototype, 'getTechniqueById').resolves(mockRecord);
@@ -63,7 +65,8 @@ describe('TechniqueService', () => {
         attributes: {
           qualitative_attributes: [],
           quantitative_attributes: []
-        }
+        },
+        vantage_mode_methods: []
       };
 
       sinon.stub(TechniqueRepository.prototype, 'getTechniquesForSurveyId').resolves([mockRecord]);
@@ -145,7 +148,8 @@ describe('TechniqueService', () => {
                 method_lookup_attribute_qualitative_option_id: '123-456-99'
               }
             ]
-          }
+          },
+          vantage_mode_methods: []
         }
       ];
 
@@ -197,7 +201,7 @@ describe('TechniqueService', () => {
   });
 
   describe('deleteTechnique', () => {
-    it('should run successfully', async () => {
+    it('should successfully delete the technique', async () => {
       const mockRecord = { method_technique_id: 1 };
 
       const deleteAllTechniqueAttractantsStub = sinon
@@ -205,6 +209,9 @@ describe('TechniqueService', () => {
         .resolves();
       const deleteAllTechniqueAttributesStub = sinon
         .stub(TechniqueAttributeService.prototype, 'deleteAllTechniqueAttributes')
+        .resolves();
+      const deleteAllVantageModesForTechniqueStub = sinon
+        .stub(TechniqueVantageService.prototype, 'deleteAllVantageModesForTechnique')
         .resolves();
       const deleteTechniqueStub = sinon.stub(TechniqueRepository.prototype, 'deleteTechnique').resolves(mockRecord);
 
@@ -219,6 +226,7 @@ describe('TechniqueService', () => {
 
       expect(deleteAllTechniqueAttractantsStub).to.have.been.calledOnceWith(surveyId, methodTechniqueId);
       expect(deleteAllTechniqueAttributesStub).to.have.been.calledOnceWith(surveyId, methodTechniqueId);
+      expect(deleteAllVantageModesForTechniqueStub).to.have.been.calledOnceWith(surveyId, methodTechniqueId);
       expect(deleteTechniqueStub).to.have.been.calledOnceWith(surveyId, methodTechniqueId);
 
       expect(response).to.eql(mockRecord);

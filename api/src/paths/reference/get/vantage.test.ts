@@ -6,7 +6,7 @@ import * as db from '../../../database/db';
 import { HTTPError } from '../../../errors/http-error';
 import { VantageModeService } from '../../../services/vantage-mode-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../__mocks__/db';
-import { getVantageModes } from './vantage-mode';
+import { getVantageReferenceRecords } from './vantage';
 
 chai.use(sinonChai);
 
@@ -17,8 +17,21 @@ describe('getVantageModes', () => {
 
   it('should return vantage modes for method lookup ids', async () => {
     const mockVantageModeResponse = [
-      { vantage_mode_id: 1, vantage_id: 101, name: 'Mode A', description: 'Description for Mode A' },
-      { vantage_mode_id: 2, vantage_id: 102, name: 'Mode B', description: 'Description for Mode B' }
+      {
+        vantage_id: 101,
+        name: 'Vantage A',
+        description: 'Description for vantage A',
+        vantage_modes: [{ vantage_mode_method_id: 1, name: 'Mode A', description: 'Description' }]
+      },
+      {
+        vantage_id: 102,
+        name: 'Vantage B',
+        description: 'Description for vantage B',
+        vantage_modes: [
+          { vantage_mode_method_id: 2, name: 'Mode B', description: 'Description' },
+          { vantage_mode_method_id: 3, name: 'Mode C', description: 'Description' }
+        ]
+      }
     ];
 
     const mockDBConnection = getMockDBConnection({
@@ -29,18 +42,18 @@ describe('getVantageModes', () => {
 
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
-    const getVantageModesByMethodLookupIdsStub = sinon
-      .stub(VantageModeService.prototype, 'getVantageModesByMethodLookupIds')
+    const getVantageReferenceRecordsByMethodLookupIdsStub = sinon
+      .stub(VantageModeService.prototype, 'getVantageReferenceRecordsByMethodLookupIds')
       .resolves(mockVantageModeResponse);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
     mockReq.query = { methodLookupId: ['1', '2'] };
 
-    const requestHandler = getVantageModes();
+    const requestHandler = getVantageReferenceRecords();
 
     await requestHandler(mockReq, mockRes, mockNext);
 
-    expect(getVantageModesByMethodLookupIdsStub).to.have.been.calledOnceWith([1, 2]);
+    expect(getVantageReferenceRecordsByMethodLookupIdsStub).to.have.been.calledOnceWith([1, 2]);
     expect(mockRes.jsonValue).to.eql(mockVantageModeResponse);
 
     expect(mockDBConnection.open).to.have.been.calledOnce;
@@ -58,14 +71,14 @@ describe('getVantageModes', () => {
 
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
-    const getVantageModesByMethodLookupIdsStub = sinon
-      .stub(VantageModeService.prototype, 'getVantageModesByMethodLookupIds')
+    const getVantageReferenceRecordsByMethodLookupIdsStub = sinon
+      .stub(VantageModeService.prototype, 'getVantageReferenceRecordsByMethodLookupIds')
       .rejects(new Error('Test database error'));
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
     mockReq.query = { methodLookupId: ['1', '2'] };
 
-    const requestHandler = getVantageModes();
+    const requestHandler = getVantageReferenceRecords();
 
     try {
       await requestHandler(mockReq, mockRes, mockNext);
@@ -74,7 +87,7 @@ describe('getVantageModes', () => {
       expect(mockDBConnection.open).to.have.been.calledOnce;
       expect(mockDBConnection.rollback).to.have.been.calledOnce;
       expect(mockDBConnection.release).to.have.been.calledOnce;
-      expect(getVantageModesByMethodLookupIdsStub).to.have.been.calledOnceWith([1, 2]);
+      expect(getVantageReferenceRecordsByMethodLookupIdsStub).to.have.been.calledOnceWith([1, 2]);
       expect((error as HTTPError).message).to.equal('Test database error');
     }
   });

@@ -38,16 +38,16 @@ export type TechniqueVantagesFormValues = {
   _id?: string;
 };
 
-export type CreateTechniqueFormValues = Omit<ICreateTechniqueRequest, 'attributes'> & {
+export type CreateTechniqueFormValues = Omit<ICreateTechniqueRequest, 'attributes' | 'vantage_mode_methods'> & {
   // Overwrite the default attributes field to include additional fields used only by the form controls
   attributes: TechniqueAttributeFormValues[];
-  vantages: TechniqueVantagesFormValues[];
+  vantage_mode_methods: TechniqueVantagesFormValues[];
 };
 
-export type UpdateTechniqueFormValues = Omit<IGetTechniqueResponse, 'attributes'> & {
+export type UpdateTechniqueFormValues = Omit<IGetTechniqueResponse, 'attributes' | 'vantage_mode_methods'> & {
   // Overwrite the default attributes field to include additional fields used only by the form controls
   attributes: TechniqueAttributeFormValues[];
-  vantages: TechniqueVantagesFormValues[];
+  vantage_mode_methods: TechniqueVantagesFormValues[];
 };
 
 type ITechniqueFormProps<FormValues extends CreateTechniqueFormValues | UpdateTechniqueFormValues> = {
@@ -93,7 +93,13 @@ const TechniqueFormContainer = <FormValues extends CreateTechniqueFormValues | U
         })
       })
     ),
-    distance_threshold: yup.number().nullable()
+    distance_threshold: yup.number().nullable(),
+    vantage_mode_methods: yup.array(
+      yup.object().shape({
+        vantage_mode_method_id: yup.number().required('Vantage mode is required.'),
+        vantage_id: yup.number().required('Vantage is required.')
+      })
+    )
   });
 
   return (

@@ -1,4 +1,5 @@
 import { ApiPaginationResponseParams } from 'types/misc';
+import { VantageMode } from './useReferenceApi.interface';
 
 export type TechniqueAttractant = {
   attractant_lookup_id: number;
@@ -16,10 +17,12 @@ export type TechniqueQuantitativeAttribute = {
   value: number;
 };
 
-export type TechniqueVantage = {
+export type TechniqueVantageModeMethod = {
   vantage_id: number;
   vantage_mode_method_id: number;
 };
+
+type PostVantageMode = Omit<VantageMode, 'name' | 'vantage_id'>;
 
 export interface ICreateTechniqueRequest {
   name: string;
@@ -31,6 +34,7 @@ export interface ICreateTechniqueRequest {
     qualitative_attributes: TechniqueQualitativeAttribute[];
     quantitative_attributes: TechniqueQuantitativeAttribute[];
   };
+  vantage_mode_methods: PostVantageMode[];
 }
 
 export interface IUpdateTechniqueRequest extends ICreateTechniqueRequest {
@@ -48,7 +52,7 @@ export interface IGetTechniqueResponse {
     quantitative_attributes: TechniqueQuantitativeAttribute[];
     qualitative_attributes: TechniqueQualitativeAttribute[];
   };
-  vantages: TechniqueVantage[];
+  vantage_mode_methods: VantageMode[];
 }
 
 export interface IGetTechniquesResponse {

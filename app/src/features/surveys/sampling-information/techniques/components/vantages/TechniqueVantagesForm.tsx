@@ -8,14 +8,18 @@ import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { GetVantageReferenceRecord } from 'interfaces/useReferenceApi.interface';
 import { TransitionGroup } from 'react-transition-group';
 import { v4 } from 'uuid';
-import { CreateTechniqueFormValues, TechniqueVantagesFormValues, UpdateTechniqueFormValues } from '../TechniqueFormContainer';
+import {
+  CreateTechniqueFormValues,
+  TechniqueVantagesFormValues,
+  UpdateTechniqueFormValues
+} from '../TechniqueFormContainer';
 
 const initialVantagesFormValues: Partial<Pick<TechniqueVantagesFormValues, 'vantage_mode_method_id'>> = {
   vantage_mode_method_id: undefined
 };
 
 interface ITechniqueVantageFormProps {
-  vantageReferenceRecords: GetVantageReferenceRecord[]
+  vantageReferenceRecords: GetVantageReferenceRecord[];
 }
 
 export const TechniqueVantageForm = <FormValues extends CreateTechniqueFormValues | UpdateTechniqueFormValues>(
@@ -26,14 +30,15 @@ export const TechniqueVantageForm = <FormValues extends CreateTechniqueFormValue
 
   return (
     <FieldArray
-      name="vantages"
+      name="vantage_mode_methods"
       render={(arrayHelpers: FieldArrayRenderProps) => (
         <>
           <TransitionGroup>
-            {values.vantages.map((vantage, index) => (
+            {values.vantage_mode_methods.map((vantage, index) => (
               <Collapse key={vantage._id}>
                 <Box mb={2}>
                   <DualAutocompleteField
+                    label="Vantage"
                     categoryOptions={vantageReferenceRecords.map((record) => ({
                       value: record.vantage_id,
                       label: record.name
@@ -42,16 +47,17 @@ export const TechniqueVantageForm = <FormValues extends CreateTechniqueFormValue
                       const selectedVantage = vantageReferenceRecords.find(
                         (record) => record.vantage_id === categoryId
                       );
-                      console.log(selectedVantage, 'selected')
-                      return selectedVantage?.vantage_modes.map((unit) => ({
-                        value: unit.vantage_mode_method_id,
-                        label: unit.name
-                      })) ?? [];
+                      return (
+                        selectedVantage?.vantage_modes.map((unit) => ({
+                          value: unit.vantage_mode_method_id,
+                          label: unit.name
+                        })) ?? []
+                      );
                     }}
-                    formikCategoryFieldName={`vantages[${index}].vantage_id`}
-                    formikUnitFieldName={`vantages[${index}].vantage_mode_method_id`}
-                    filterCategoryIds={values.vantages.map(v => v.vantage_id)}
-                    filterUnitIds={values.vantages.map(v => v.vantage_mode_method_id)}
+                    formikCategoryFieldName={`vantage_mode_methods.[${index}].vantage_id`}
+                    formikUnitFieldName={`vantage_mode_methods.[${index}].vantage_mode_method_id`}
+                    filterCategoryIds={values.vantage_mode_methods.map((v) => v.vantage_id)}
+                    filterUnitIds={values.vantage_mode_methods.map((v) => v.vantage_mode_method_id)}
                     onDelete={() => arrayHelpers.remove(index)}
                   />
                 </Box>
@@ -74,84 +80,3 @@ export const TechniqueVantageForm = <FormValues extends CreateTechniqueFormValue
     />
   );
 };
-
-
-//   return (
-//     <Grid container spacing={2}>
-//       <Grid item xs={12}>
-//         <Typography component="legend">Vantages (optional)</Typography>
-//         <AutocompleteField
-//           id="vantage_mode_method_id"
-//           label="Enter a vantage"
-//           name="vantages"
-//           loading={codesContext.codesDataLoader.isLoading}
-//           options={
-//             vantages
-//               .map((option) => ({
-//                 value: option.id,
-//                 label: option.name,
-//                 description: option.description
-//               }))
-//               .filter(
-//                 (option) => !values.vantages.some((vantage) => vantage.vantage_mode_method_id === option.value)
-//               ) ?? []
-//           }
-//           onChange={(_, value) => {
-//             if (value?.value) {
-//               setFieldValue('vantages', [...values.vantages, { vantage_mode_method_id: value.value }]);
-//             }
-//           }}
-//         />
-//       </Grid>
-//       <Grid item xs={12}>
-//         <TransitionGroup>
-//           {values.vantages.map((vantage, index) => {
-//             const vantageCode = vantages.find((option) => option.id === vantage.vantage_mode_method_id);
-
-//             return (
-//               <Collapse key={vantage.vantage_mode_method_id}>
-//                 <Paper
-//                   variant="outlined"
-//                   sx={{
-//                     py: 1.5,
-//                     px: 2.5,
-//                     mb: 1,
-//                     background: grey[100],
-//                     flex: '1 1 auto',
-//                     display: 'flex',
-//                     justifyContent: 'space-between'
-//                   }}>
-//                   <Box>
-//                     <Typography fontWeight={700}>{vantageCode?.name}</Typography>
-//                     <Typography color="textSecondary" variant="body2">
-//                       {vantageCode?.description}
-//                     </Typography>
-//                   </Box>
-//                   <Box>
-//                     <IconButton
-//                       data-testid={`remove-vantage-button-${index}`}
-//                       sx={{
-//                         ml: 2
-//                       }}
-//                       aria-label="remove vantage"
-//                       onClick={() => {
-//                         // Remove the clicked vantage record from the list of vantages
-//                         setFieldValue(
-//                           'vantages',
-//                           values.vantages.filter(
-//                             (item) => item.vantage_mode_method_id !== vantage.vantage_mode_method_id
-//                           )
-//                         );
-//                       }}>
-//                       <Icon path={mdiClose} size={1} />
-//                     </IconButton>
-//                   </Box>
-//                 </Paper>
-//               </Collapse>
-//             );
-//           })}
-//         </TransitionGroup>
-//       </Grid>
-//     </Grid>
-//   );
-// };

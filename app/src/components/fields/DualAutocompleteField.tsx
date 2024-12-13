@@ -7,7 +7,7 @@ import Stack from '@mui/material/Stack';
 import AutocompleteField from 'components/fields/AutocompleteField';
 import { useFormikContext } from 'formik';
 import { get } from 'lodash';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 /**
  * A generic component for rendering two autocomplete fields that are interdependent (category -> unit).
@@ -15,14 +15,24 @@ import { useEffect, useMemo, useState } from 'react';
  */
 interface IDualAutocompleteFieldProps<TCategory extends string | number, TUnit extends string | number> {
   /**
-   * The categories data to display in the first autocomplete field.
+   * Label to display for the first autocomplete
+   */
+  label: string;
+
+  /**
+   * The categories data to display in the FIRST autocomplete field.
    */
   categoryOptions: { value: TCategory; label: string }[];
 
   /**
-   * The units data to display in the second autocomplete field, based on the selected category.
+   * The units data to display in the SECOND autocomplete field, based on the selected category.
    */
   getUnitOptions: (categoryId: TCategory) => { value: TUnit; label: string }[];
+
+  /**
+   * The units data to display in the SECOND autocomplete field, based on the selected category.
+   */
+  getUnitAutocompleteLabel?: (categoryId: TCategory) => string;
 
   /**
    * The field name for the category in Formik.
@@ -46,57 +56,65 @@ interface IDualAutocompleteFieldProps<TCategory extends string | number, TUnit e
   filterUnitIds?: TUnit[];
 }
 
+/**
+ * Returns two autocomplete fields where the values for the second dropdown depend on the value of the first dropdown.
+ * In this component, CATEGORY refers to the first dropdown and UNIT refers to the second dropdown.
+ *
+ * @param {IDualAutocompleteFieldProps<TCategory, TUnit>}props
+ * @returns
+ */
 export const DualAutocompleteField = <TCategory extends string | number, TUnit extends string | number>(
   props: IDualAutocompleteFieldProps<TCategory, TUnit>
 ) => {
   const {
     categoryOptions,
     getUnitOptions,
-    filterCategoryIds,
-    filterUnitIds,
+    getUnitAutocompleteLabel,
+    label,
+    filterCategoryIds = [],
+    filterUnitIds = [],
     formikCategoryFieldName,
     formikUnitFieldName,
     onDelete
   } = props;
   const formik = useFormikContext<any>();
 
-  // State for the label of the unit field
-  const [unitLabel, setUnitLabel] = useState<string>('Select a unit');
+  // The label of the second dropdown, which defaults to "Value" unless set with the getUnitAutocompleteLabel prop
+  const [unitLabel, setUnitLabel] = useState<string>('Value');
 
-  // Get the selected category and unit from Formik values
-  const categoryId: TCategory | null = get(formik.values, formikCategoryFieldName)
-  //   const unitId: TUnit | null = formik.values[formikUnitFieldName];
+  const categoryId: TCategory | null = get(formik.values, formikCategoryFieldName);
 
-  // Filter category options based on the filterCategoryIds
+  // Options for first dropdown
   const filteredCategories = useMemo(() => {
+
     const filterCategoryIdsSet = new Set(filterCategoryIds ?? []);
-    return categoryOptions.filter((category) => !filterCategoryIdsSet.has(category.value));
-  }, []);
 
-  const availableUnits = categoryId ? getUnitOptions(categoryId) : [];
+    return categoryOptions.filter(
+      (category) => !filterCategoryIdsSet.has(category.value) || categoryId === category.value
+    );
 
-  console.log(categoryId, availableUnits, 'available')
+  }, [categoryOptions, filterCategoryIds, categoryId]);
 
-  // Filter unit options based on the selected category and filterUnitIds
+  // Options for second dropdown that are dependent on the first dropdown
   const filteredUnits = useMemo(() => {
     if (!categoryId) return [];
+
+    const availableUnits = categoryId ? getUnitOptions(categoryId) : [];
+
     const filterUnitIdsSet = new Set(filterUnitIds ?? []);
-    console.log('triggered')
-    return availableUnits.filter((unit) => !filterUnitIdsSet.has(unit.value));
-  }, [getUnitOptions]);
 
-  useEffect(() => {
-    if (!categoryId) {
-      setUnitLabel('Select a unit');
-    } else {
-      setUnitLabel('Select a specific unit');
+    // Update the label of the second dropdown
+    if (getUnitAutocompleteLabel) {
+      const label = getUnitAutocompleteLabel(categoryId);
+      setUnitLabel(label);
     }
-  }, [categoryId]);
 
-  console.log(filteredUnits, filteredCategories);
-
-  // console.log(get(formik.values, formikCategoryFieldName))
-  // console.log(filteredCategories)
+    return availableUnits.filter(
+      (unit) => !filterUnitIdsSet.has(unit.value) || availableUnits.some((available) => available.value === unit.value)
+    );
+    
+    // Update when the selected value of the first dropdown changes
+  }, [categoryId, filterUnitIds, getUnitAutocompleteLabel, getUnitOptions]);
 
   return (
     <Card
@@ -109,8 +127,9 @@ export const DualAutocompleteField = <TCategory extends string | number, TUnit e
       <AutocompleteField
         id={formikCategoryFieldName}
         name={formikCategoryFieldName}
-        label="Category"
+        label={label}
         options={filteredCategories}
+        showValue
         onChange={(_, option) => {
           if (!option) {
             formik.setFieldValue(formikUnitFieldName, undefined);
@@ -120,7 +139,7 @@ export const DualAutocompleteField = <TCategory extends string | number, TUnit e
           formik.setFieldValue(formikCategoryFieldName, option.value);
         }}
         required
-        sx={{ flex: '1 1 auto' }}
+        sx={{ flex: 0.5 }}
       />
 
       <AutocompleteField
@@ -128,12 +147,13 @@ export const DualAutocompleteField = <TCategory extends string | number, TUnit e
         name={formikUnitFieldName}
         label={unitLabel}
         options={filteredUnits}
+        showValue
         onChange={(_, option) => {
           formik.setFieldValue(formikUnitFieldName, option?.value ?? undefined);
         }}
         required
         disabled={filteredUnits.length === 0}
-        sx={{ flex: '1 1 auto' }}
+        sx={{ flex: 0.5 }}
       />
 
       <IconButton data-testid="delete-button" title="Remove" aria-label="Remove" onClick={onDelete} sx={{ mt: 1.125 }}>

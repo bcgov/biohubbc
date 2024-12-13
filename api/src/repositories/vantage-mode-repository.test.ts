@@ -4,7 +4,7 @@ import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { getMockDBConnection } from '../__mocks__/db';
-import { VantageMode, VantageModeRepository } from './vantage-mode-repository'; // Adjust paths as necessary
+import { VantageModeRepository, VantageReferenceRecord } from './vantage-mode-repository';
 
 chai.use(sinonChai);
 
@@ -15,11 +15,11 @@ describe('VantageModeRepository', () => {
 
   describe('getVantageModesByMethodLookupIds', () => {
     it('should successfully return vantage modes for provided method lookup ids', async () => {
-      const mockVantageMode: VantageMode = {
-        vantage_mode_id: 1,
+      const mockVantageMode: VantageReferenceRecord = {
         vantage_id: 101,
-        name: 'Mode A',
-        description: 'Description for mode A'
+        name: 'Vantage A',
+        description: 'Description for vantage A',
+        vantage_modes: [{ vantage_mode_method_id: 1, name: 'Mode A', description: 'Description' }]
       };
 
       const mockResponse = {
@@ -34,7 +34,7 @@ describe('VantageModeRepository', () => {
       const repository = new VantageModeRepository(dbConnection);
       const methodLookupIds = [1, 2, 3];
 
-      const response = await repository.getVantageModesByMethodLookupIds(methodLookupIds);
+      const response = await repository.getVantageReferenceRecordsByMethodLookupIds(methodLookupIds);
 
       expect(response).to.eql([mockVantageMode]);
     });
@@ -52,7 +52,7 @@ describe('VantageModeRepository', () => {
       const repository = new VantageModeRepository(dbConnection);
       const methodLookupIds = [10, 20, 30];
 
-      const response = await repository.getVantageModesByMethodLookupIds(methodLookupIds);
+      const response = await repository.getVantageReferenceRecordsByMethodLookupIds(methodLookupIds);
 
       expect(response).to.eql([]);
     });

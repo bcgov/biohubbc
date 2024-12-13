@@ -10,7 +10,6 @@ const defaultLog = getLogger('repositories/technique-vantage-repository');
 
 export type VantagePostData = {
   vantage_mode_method_id: number;
-  description: string | null;
 };
 
 export const VantageReferenceRecord = VantageRecord.omit({
@@ -54,8 +53,7 @@ export class VantageModeRepository extends BaseRepository {
       .insert(
         vantages.map((vantage) => ({
           method_technique_id: methodTechniqueId,
-          vantage_mode_method_id: vantage.vantage_mode_method_id,
-          description: vantage.description
+          vantage_mode_method_id: vantage.vantage_mode_method_id
         }))
       )
       .into('method_technique_vantage_mode')
@@ -104,9 +102,7 @@ export class VantageModeRepository extends BaseRepository {
       .whereNull('vmm.record_end_date')
       .groupBy('v.vantage_id', 'v.name', 'v.description');
 
-    const response = await this.connection.knex(queryBuilder);
-
-    console.log(response.rows, 'ROWS!')
+    const response = await this.connection.knex(queryBuilder, VantageReferenceRecord);
 
     return response.rows;
   }

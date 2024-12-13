@@ -88,7 +88,11 @@ export const EditTechniquePage = () => {
         attribute_type: 'quantitative' as const
       })) ?? [])
     ],
-    vantages: technique?.vantages
+    vantage_mode_methods: technique.vantage_mode_methods.map((vantage_mode_method) => ({
+      _id: v4(), // A temporary unique id for react keys, etc, as the attribute_id is not unique
+      vantage_id: vantage_mode_method.vantage_id,
+      vantage_mode_method_id: vantage_mode_method.vantage_mode_method_id
+    }))
   };
 
   const handleSubmit = async (values: UpdateTechniqueFormValues) => {
@@ -113,7 +117,11 @@ export const EditTechniquePage = () => {
               method_lookup_attribute_qualitative_id: attribute.attribute_lookup_id,
               method_lookup_attribute_qualitative_option_id: attribute.attribute_value as string
             }))
-        }
+        },
+        vantage_mode_methods: values.vantage_mode_methods.map((vantage_mode_method) => ({
+          vantage_mode_method_id: vantage_mode_method.vantage_mode_method_id,
+          vantage_id: vantage_mode_method.vantage_id
+        }))
       };
 
       // Update the technique

@@ -98,7 +98,6 @@ export type VantageMode = {
   vantage_mode_method_id: number;
   vantage_id: number;
   name: string;
-  description: string | null;
 };
 
 /**

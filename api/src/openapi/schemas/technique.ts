@@ -80,10 +80,10 @@ const techniqueAttributesSchema: OpenAPIV3.SchemaObject = {
 
 export const techniqueVantagesSchema: OpenAPIV3.SchemaObject = {
   type: 'array',
-  description: 'Attractants used to lure species during the technique.',
+  description: 'Vantages from which a method is done, like water, air, or ground.',
   items: {
     type: 'object',
-    required: ['vantage_mode_method_id'],
+    required: ['vantage_mode_method_id', 'vantage_id'],
     additionalProperties: false,
     properties: {
       method_technique_vantage_mode_id: {
@@ -94,9 +94,9 @@ export const techniqueVantagesSchema: OpenAPIV3.SchemaObject = {
         type: 'integer',
         minimum: 1
       },
-      description: {
-        type: 'string',
-        nullable: true
+      vantage_id: {
+        type: 'integer',
+        minimum: 1
       }
     }
   }
@@ -126,7 +126,15 @@ export const techniqueSimpleViewSchema: OpenAPIV3.SchemaObject = {
 
 export const techniqueCreateSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
-  required: ['name', 'description', 'method_lookup_id', 'distance_threshold', 'attractants', 'attributes', 'vantages'],
+  required: [
+    'name',
+    'description',
+    'method_lookup_id',
+    'distance_threshold',
+    'attractants',
+    'attributes',
+    'vantage_mode_methods'
+  ],
   additionalProperties: false,
   properties: {
     name: {
@@ -150,7 +158,7 @@ export const techniqueCreateSchema: OpenAPIV3.SchemaObject = {
     },
     attractants: techniqueAttractantsSchema,
     attributes: techniqueAttributesSchema,
-    vantages: techniqueVantagesSchema
+    vantage_mode_methods: techniqueVantagesSchema
   }
 };
 
