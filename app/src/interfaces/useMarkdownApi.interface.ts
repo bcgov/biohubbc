@@ -27,7 +27,6 @@ export enum MarkdownTypeNameEnum {
   SAMPLING_SITES = 'Sampling Sites',
   SURVEY_METADATA = 'Survey Metadata',
   OBSERVATIONS = 'Observations',
-  SUPPORT_ANIMALS = 'Animal Support'
 }
 
 export enum MarkdownTypeSupportNameEnum {
