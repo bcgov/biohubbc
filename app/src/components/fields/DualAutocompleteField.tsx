@@ -48,12 +48,6 @@ interface IDualAutocompleteFieldProps<TCategory extends string | number, TUnit e
    * Callback for when the delete button is clicked.
    */
   onDelete: () => void;
-
-  /**
-   * Optionally filter out certain categories and units.
-   */
-  filterCategoryIds?: TCategory[];
-  filterUnitIds?: TUnit[];
 }
 
 /**
@@ -71,8 +65,6 @@ export const DualAutocompleteField = <TCategory extends string | number, TUnit e
     getUnitOptions,
     getUnitAutocompleteLabel,
     label,
-    filterCategoryIds = [],
-    filterUnitIds = [],
     formikCategoryFieldName,
     formikUnitFieldName,
     onDelete
@@ -84,37 +76,20 @@ export const DualAutocompleteField = <TCategory extends string | number, TUnit e
 
   const categoryId: TCategory | null = get(formik.values, formikCategoryFieldName);
 
-  // Options for first dropdown
-  const filteredCategories = useMemo(() => {
-
-    const filterCategoryIdsSet = new Set(filterCategoryIds ?? []);
-
-    return categoryOptions.filter(
-      (category) => !filterCategoryIdsSet.has(category.value) || categoryId === category.value
-    );
-
-  }, [categoryOptions, filterCategoryIds, categoryId]);
-
-  // Options for second dropdown that are dependent on the first dropdown
+  // Filter units based on the selected category and exclude already selected units (if any)
   const filteredUnits = useMemo(() => {
     if (!categoryId) return [];
 
-    const availableUnits = categoryId ? getUnitOptions(categoryId) : [];
+    const availableUnits = getUnitOptions(categoryId);
 
-    const filterUnitIdsSet = new Set(filterUnitIds ?? []);
-
-    // Update the label of the second dropdown
+    // Update the label of the second dropdown if a custom label is provided
     if (getUnitAutocompleteLabel) {
       const label = getUnitAutocompleteLabel(categoryId);
       setUnitLabel(label);
     }
 
-    return availableUnits.filter(
-      (unit) => !filterUnitIdsSet.has(unit.value) || availableUnits.some((available) => available.value === unit.value)
-    );
-    
-    // Update when the selected value of the first dropdown changes
-  }, [categoryId, filterUnitIds, getUnitAutocompleteLabel, getUnitOptions]);
+    return availableUnits;
+  }, [categoryId, getUnitAutocompleteLabel, getUnitOptions]);
 
   return (
     <Card
@@ -128,7 +103,7 @@ export const DualAutocompleteField = <TCategory extends string | number, TUnit e
         id={formikCategoryFieldName}
         name={formikCategoryFieldName}
         label={label}
-        options={filteredCategories}
+        options={categoryOptions}
         showValue
         onChange={(_, option) => {
           if (!option) {
@@ -152,7 +127,6 @@ export const DualAutocompleteField = <TCategory extends string | number, TUnit e
           formik.setFieldValue(formikUnitFieldName, option?.value ?? undefined);
         }}
         required
-        disabled={filteredUnits.length === 0}
         sx={{ flex: 0.5 }}
       />
 

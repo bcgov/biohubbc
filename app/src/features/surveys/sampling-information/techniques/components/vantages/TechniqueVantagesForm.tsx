@@ -48,16 +48,22 @@ export const TechniqueVantageForm = <FormValues extends CreateTechniqueFormValue
                         (record) => record.vantage_id === categoryId
                       );
                       return (
-                        selectedVantage?.vantage_modes.map((unit) => ({
-                          value: unit.vantage_mode_method_id,
-                          label: unit.name
-                        })) ?? []
+                        selectedVantage?.vantage_modes
+                          // Remove selected options
+                          .filter(
+                            (mode) =>
+                              !values.vantage_mode_methods.some(
+                                (existing) => existing.vantage_mode_method_id === mode.vantage_mode_method_id
+                              ) || vantage.vantage_mode_method_id === mode.vantage_mode_method_id
+                          )
+                          .map((unit) => ({
+                            value: unit.vantage_mode_method_id,
+                            label: unit.name
+                          })) ?? []
                       );
                     }}
                     formikCategoryFieldName={`vantage_mode_methods.[${index}].vantage_id`}
                     formikUnitFieldName={`vantage_mode_methods.[${index}].vantage_mode_method_id`}
-                    filterCategoryIds={values.vantage_mode_methods.map((v) => v.vantage_id)}
-                    filterUnitIds={values.vantage_mode_methods.map((v) => v.vantage_mode_method_id)}
                     onDelete={() => arrayHelpers.remove(index)}
                   />
                 </Box>
