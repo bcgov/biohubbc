@@ -6,7 +6,9 @@ import {
   mdiOfficeBuildingCogOutline,
   mdiPaw,
   mdiWall,
-  mdiWifiMarker
+  mdiWifiMarker,
+  mdiChevronRight,
+  mdiChevronLeft
 } from '@mdi/js';
 import Box from '@mui/material/Box';
 import { grey } from '@mui/material/colors';
@@ -102,6 +104,11 @@ const SupportPage = () => {
     { label: 'Telemetry', value: SupportPageView.TELEMETRY, icon: mdiWifiMarker },
     { label: 'Contact', value: SupportPageView.CONTACT, icon: mdiCardAccountMailOutline }
   ];
+
+  const currentIndex = views.findIndex((view) => view.value === currentView);
+
+  const nextView = views[(currentIndex + 1) % views.length];
+  const prevView = views[(currentIndex - 1 + views.length) % views.length]; 
 
   const dataMap: DataMap = {
     [SupportPageView.GENERAL]: [
@@ -479,6 +486,52 @@ const SupportPage = () => {
                     }
                   />
                 )) || <Typography>No content available for this section.</Typography>}
+              </Stack>
+
+              {/* Navigation buttons */}
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+                sx={{ mt: 4 }}
+              >
+                <Box
+                  component="button"
+                  onClick={() => setCurrentView(prevView.value)}
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    border: 'none',
+                    background: 'none',
+                    cursor: 'pointer',
+                    color: grey[700],
+                    '&:hover': { color: grey[900] }
+                  }}
+                >
+                  <svg style={{ width: 24, height: 24, marginRight: 8 }}>
+                    <path d={mdiChevronLeft} fill="currentColor" />
+                  </svg>
+                  <Typography>Previous Topic</Typography>
+                </Box>
+
+                <Box
+                  component="button"
+                  onClick={() => setCurrentView(nextView.value)}
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    border: 'none',
+                    background: 'none',
+                    cursor: 'pointer',
+                    color: grey[700],
+                    '&:hover': { color: grey[900] }
+                  }}
+                >
+                  <Typography>Next Topic</Typography>
+                  <svg style={{ width: 24, height: 24, marginLeft: 8 }}>
+                    <path d={mdiChevronRight} fill="currentColor" />
+                  </svg>
+                </Box>
               </Stack>
             </Box>
           </Box>
