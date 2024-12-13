@@ -15,10 +15,11 @@ import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import AccordionSupportCard from 'features/support/components/AccordionSupportCard';
 import PageHeader from 'components/layout/PageHeader';
-import { AccordionStandardCard } from 'features/standards/view/components/AccordionStandardCard';
 import { ReactNode, useState } from 'react';
 import { StandardsToolbar } from '../standards/components/StandardsToolbar';
+import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 
 // FAQ SECTIONS MAY NEED TO BE FORMATTED IN A DIFFERENT WAY, I DONT KNOW HOW BUT IM THINKING ABOUT IT
 
@@ -462,7 +463,7 @@ const SupportPage = () => {
 
               <Stack gap={2}>
                 {dataMap[currentView]?.map((item: IDataItem, index: number) => (
-                  <AccordionStandardCard
+                  <AccordionSupportCard
                     key={index}
                     label={item.label || 'No Label Provided'} // Provide a default value
                     subtitle={
@@ -472,8 +473,10 @@ const SupportPage = () => {
                         item.description
                       )
                     }
-                    ornament={item.unit ? <Box>{item.unit}</Box> : undefined}
                     colour={grey[100]}
+                    markdownType={
+                      MarkdownTypeNameEnum.PROJECTS_AND_SURVEYS
+                    }
                   />
                 )) || <Typography>No content available for this section.</Typography>}
               </Stack>

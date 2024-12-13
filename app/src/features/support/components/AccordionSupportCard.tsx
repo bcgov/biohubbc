@@ -1,17 +1,13 @@
-import { mdiPlusBoxOutline } from '@mdi/js';
-import { Icon } from '@mdi/react';
-import { Button } from '@mui/material';
-import { CustomMarkdown } from 'components/markdown/CustomMarkdown';
-import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useDialogContext } from 'hooks/useContext';
-import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
-import { PropsWithChildren, useState } from 'react';
 import { mdiChevronDown, mdiChevronUp } from '@mdi/js';
+import { Icon } from '@mdi/react';
 import { Collapse } from '@mui/material';
 import Box from '@mui/material/Box';
 import Paper, { PaperProps } from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
-import React, { ReactElement } from 'react';
+import { CustomMarkdown } from 'components/markdown/CustomMarkdown';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
+import React, { PropsWithChildren, ReactElement, useState } from 'react';
 
 // Accordion Support Card Component
 interface IAccordionSupportCardProps extends PaperProps {
@@ -20,16 +16,22 @@ interface IAccordionSupportCardProps extends PaperProps {
   ornament?: ReactElement;
   colour: string;
   disableCollapse?: boolean;
+  onExpand?: () => void; // Added callback for expand action
 }
 
 export const AccordionSupportCard = (props: PropsWithChildren<IAccordionSupportCardProps>) => {
-  const { label, subtitle, children, colour, ornament, disableCollapse, ...paperProps } = props;
+  const { label, subtitle, children, colour, ornament, disableCollapse, onExpand, ...paperProps } = props;
   const [isCollapsed, setIsCollapsed] = useState(true);
   const expandable = (children || subtitle) && !disableCollapse;
 
   const handleHeaderClick = () => {
     if (expandable) {
-      setIsCollapsed(!isCollapsed);
+      const newCollapseState = !isCollapsed;
+      setIsCollapsed(newCollapseState);
+      if (onExpand && newCollapseState === false) {
+        // Trigger onExpand only when expanding
+        onExpand();
+      }
     }
   };
 
@@ -79,36 +81,24 @@ interface IHelpAccordionMarkdownProps {
 
 const HelpAccordionMarkdown = (props: PropsWithChildren<IHelpAccordionMarkdownProps>) => {
   const { markdownType, label, colour, subtitle } = props;
-  const dialogContext = useDialogContext();
+  const [markdownContent, setMarkdownContent] = useState<string | null>(null); // State for fetched content
   const biohubApi = useBiohubApi();
 
-  const createDialogConfig = (markdown: any) => ({
-    open: true,
-    dialogContent: <CustomMarkdown markdown={markdown.data} />,
-    hasSubmitted: markdown.participated,
-    onSubmit: async (score: number) => {
-      await biohubApi.markdown.insertScore({ markdownId: markdown.markdown_id, score });
-      dialogContext.setScoreDialog({ hasSubmitted: true });
-    },
-    onOk: () => {
-      dialogContext.setScoreDialog({ open: false });
-    }
-  });
-
-  // Open the markdown dialog
-  const handleOpenDialog = async () => {
+  const fetchMarkdownContent = async () => {
     const { markdown } = await biohubApi.markdown.getMarkdown({ typeName: markdownType });
-
     if (markdown) {
-      dialogContext.setScoreDialog(createDialogConfig(markdown));
+      setMarkdownContent(markdown.data);
     }
   };
 
   return (
-    <AccordionSupportCard label={label} colour={colour} subtitle={subtitle}>
-      <Button onClick={handleOpenDialog} startIcon={<Icon path={mdiPlusBoxOutline} size={1} />}>
-        Get Help
-      </Button>
+    <AccordionSupportCard
+      label={label}
+      colour={colour}
+      subtitle={subtitle}
+      onExpand={fetchMarkdownContent} // Trigger fetchMarkdownContent when expanding
+    >
+      {markdownContent ? <CustomMarkdown markdown={markdownContent} /> : <Typography>Loading content...</Typography>}
     </AccordionSupportCard>
   );
 };
