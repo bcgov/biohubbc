@@ -31,6 +31,7 @@ describe('getDeploymentById', () => {
       critterbase_start_capture_id: '123-456-789',
       critterbase_end_capture_id: null,
       critterbase_end_mortality_id: null,
+      serial: '123',
       device_make_id: 1,
       critterbase_critter_id: 'uuid',
       model: 'model'

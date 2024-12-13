@@ -34,6 +34,7 @@ describe('getDeploymentsInSurvey', () => {
         critterbase_end_capture_id: null,
         critterbase_end_mortality_id: null,
         // device data
+        serial: '1234',
         device_make_id: 1,
         model: 'ModelX',
         // critter data
@@ -41,7 +42,7 @@ describe('getDeploymentsInSurvey', () => {
       }
     ];
 
-    sinon.stub(TelemetryDeploymentService.prototype, 'getDeploymentsForSurveyId').resolves(mockDeployments);
+    sinon.stub(TelemetryDeploymentService.prototype, 'getDeploymentsForSurvey').resolves(mockDeployments);
     sinon.stub(TelemetryDeploymentService.prototype, 'getDeploymentsCount').resolves(1);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
@@ -78,7 +79,7 @@ describe('getDeploymentsInSurvey', () => {
     const mockError = new Error('Test error');
 
     const getDeploymentsForSurveyIdStub = sinon
-      .stub(TelemetryDeploymentService.prototype, 'getDeploymentsForSurveyId')
+      .stub(TelemetryDeploymentService.prototype, 'getDeploymentsForSurvey')
       .rejects(mockError);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();

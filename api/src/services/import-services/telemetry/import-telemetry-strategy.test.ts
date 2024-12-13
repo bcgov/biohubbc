@@ -43,16 +43,14 @@ describe('import-telemetry-strategy', () => {
 
       sinon.stub(worksheetUtils, 'getDefaultWorksheet').returns(worksheet);
 
-      sinon
-        .stub(importTelemetryStrategy.telemetryVendorService.deploymentService, 'getDeploymentsForSurveyId')
-        .resolves([
-          {
-            deployment2_id: 1,
-            device_key: 'lotek:1234',
-            attachment_start_timestamp: '2024-10-21 10:10:10',
-            attachment_end_timestamp: null
-          }
-        ] as any);
+      sinon.stub(importTelemetryStrategy.telemetryVendorService.deploymentService, 'getDeploymentsForSurvey').resolves([
+        {
+          deployment2_id: 1,
+          device_key: 'lotek:1234',
+          attachment_start_timestamp: '2024-10-21 10:10:10',
+          attachment_end_timestamp: null
+        }
+      ] as any);
 
       sinon.stub(importTelemetryStrategy.telemetryVendorService, 'bulkCreateManualTelemetry').resolves();
 
