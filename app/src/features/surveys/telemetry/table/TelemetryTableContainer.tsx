@@ -149,6 +149,8 @@ export const TelemetryTableContainer = () => {
               variant="contained"
               color="primary"
               startIcon={<Icon path={mdiImport} size={1} />}
+              // TODO: Disabled while the backend CSV Import code is being refactored (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-652)
+              disabled={true}
               onClick={() => setShowImportDialog(true)}>
               Import
             </Button>
