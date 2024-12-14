@@ -28,6 +28,29 @@ export const TechniqueVantageForm = <FormValues extends CreateTechniqueFormValue
   const { vantageReferenceRecords } = props;
   const { values } = useFormikContext<FormValues>();
 
+  const getUnitOptions = (vantageModeMethodId: number, categoryId: number) => {
+    const selectedVantage = vantageReferenceRecords.find((record) => record.vantage_id === categoryId);
+
+    if (!selectedVantage || !selectedVantage.vantage_modes) {
+      return [];
+    }
+
+    // Filter out already selected vantage modes
+    const availableModes = selectedVantage.vantage_modes.filter((mode) => {
+      const isAlreadySelected = values.vantage_mode_methods.some(
+        (existing) => existing.vantage_mode_method_id === mode.vantage_mode_method_id
+      );
+
+      // Keep the option if not already selected, or if it's the one currently being edited
+      return !isAlreadySelected || vantageModeMethodId === mode.vantage_mode_method_id;
+    });
+
+    return availableModes.map((mode) => ({
+      value: mode.vantage_mode_method_id,
+      label: mode.name
+    }));
+  };
+
   return (
     <FieldArray
       name="vantage_mode_methods"
@@ -43,25 +66,7 @@ export const TechniqueVantageForm = <FormValues extends CreateTechniqueFormValue
                       value: record.vantage_id,
                       label: record.name
                     }))}
-                    getUnitOptions={(categoryId: number) => {
-                      const selectedVantage = vantageReferenceRecords.find(
-                        (record) => record.vantage_id === categoryId
-                      );
-                      return (
-                        selectedVantage?.vantage_modes
-                          // Remove selected options
-                          .filter(
-                            (mode) =>
-                              !values.vantage_mode_methods.some(
-                                (existing) => existing.vantage_mode_method_id === mode.vantage_mode_method_id
-                              ) || vantage.vantage_mode_method_id === mode.vantage_mode_method_id
-                          )
-                          .map((unit) => ({
-                            value: unit.vantage_mode_method_id,
-                            label: unit.name
-                          })) ?? []
-                      );
-                    }}
+                    getUnitOptions={(categoryId: number) => getUnitOptions(vantage.vantage_mode_method_id, categoryId)}
                     formikCategoryFieldName={`vantage_mode_methods.[${index}].vantage_id`}
                     formikUnitFieldName={`vantage_mode_methods.[${index}].vantage_mode_method_id`}
                     onDelete={() => arrayHelpers.remove(index)}
