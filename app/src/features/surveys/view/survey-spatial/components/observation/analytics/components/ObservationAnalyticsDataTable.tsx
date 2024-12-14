@@ -1,6 +1,6 @@
 import { GridColDef, GridColumnVisibilityModel } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
-import { IObservationAnalyticsRow } from 'features/surveys/view/components/analytics/components/ObservationAnalyticsDataTableContainer';
+import { IObservationAnalyticsRow } from 'features/surveys/view/survey-spatial/components/observation/analytics/components/ObservationAnalyticsDataTableContainer';
 
 const rowHeight = 50;
 

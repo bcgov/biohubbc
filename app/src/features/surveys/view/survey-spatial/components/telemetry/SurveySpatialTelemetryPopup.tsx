@@ -1,12 +1,12 @@
 import { IStaticLayerFeature } from 'components/map/components/StaticLayers';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import dayjs from 'dayjs';
 import { SurveyMapPopup } from 'features/surveys/view/SurveyMapPopup';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { IAllTelemetry } from 'interfaces/useTelemetryApi.interface';
 import { Popup } from 'react-leaflet';
+import { getFormattedDate } from 'utils/Utils';
 
 export interface ISurveySpatialTelemetryPopupProps {
   feature: IStaticLayerFeature;
@@ -26,8 +26,8 @@ export const SurveySpatialTelemetryPopup = (props: ISurveySpatialTelemetryPopupP
 
   const surveyContext = useSurveyContext();
 
-  const telemetryDataLoader = useDataLoader((projectId: number, surveyId: number, telemetryId: string) =>
-    biohubAPi.telemetry.getTelemetryById(projectId, surveyId, telemetryId)
+  const telemetryDataLoader = useDataLoader((telemetryId: string) =>
+    biohubAPi.telemetry.getTelemetryById(surveyContext.projectId, surveyContext.surveyId, telemetryId)
   );
 
   const getTelemetryMetadata = (telemetry: IAllTelemetry) => {
@@ -42,7 +42,10 @@ export const SurveySpatialTelemetryPopup = (props: ISurveySpatialTelemetryPopupP
           .map((coord) => coord.toFixed(6))
           .join(', ')
       },
-      { label: 'Date', value: dayjs(telemetry?.acquisition_date).format(DATE_FORMAT.LongDateTimeFormat) }
+      {
+        label: 'Date',
+        value: getFormattedDate(DATE_FORMAT.LongDateTimeFormat, telemetry.acquisition_date)
+      }
     ];
   };
 
@@ -53,7 +56,7 @@ export const SurveySpatialTelemetryPopup = (props: ISurveySpatialTelemetryPopupP
       autoPan={true}
       eventHandlers={{
         add: () => {
-          telemetryDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId, feature.id as string);
+          telemetryDataLoader.load(String(feature.id));
         }
       }}>
       <SurveyMapPopup

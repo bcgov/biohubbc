@@ -1,8 +1,8 @@
 import Box from '@mui/material/Box';
 import { IStaticLayer, IStaticLayerFeature } from 'components/map/components/StaticLayers';
 import { SURVEY_MAP_LAYER_COLOURS } from 'constants/colours';
+import { SurveySpatialTelemetryContainer } from 'features/surveys/view/survey-spatial/components/telemetry/SurveySpatialTelemetryContainer';
 import { SurveySpatialTelemetryPopup } from 'features/surveys/view/survey-spatial/components/telemetry/SurveySpatialTelemetryPopup';
-import { SurveySpatialTelemetryTable } from 'features/surveys/view/survey-spatial/components/telemetry/SurveySpatialTelemetryTable';
 import SurveyMap from 'features/surveys/view/SurveyMap';
 import SurveyMapTooltip from 'features/surveys/view/SurveyMapTooltip';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -80,8 +80,8 @@ export const SurveySpatialTelemetry = (props: ISurveySpatialTelemetryProps) => {
       </Box>
 
       {/* Display data table with telemetry details */}
-      <Box height={{ xs: 300, md: 500 }} display="flex">
-        <SurveySpatialTelemetryTable />
+      <Box height={{ xs: 300, md: 500 }} display="flex" flexDirection="column" pt={2}>
+        <SurveySpatialTelemetryContainer />
       </Box>
     </>
   );
