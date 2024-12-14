@@ -8,9 +8,9 @@ import { VantagePostData } from './vantage-mode-repository';
 const defaultLog = getLogger('repositories/technique-vantage-repository');
 
 export const TechniqueVantage = z.object({
-  method_technique_vantage_mode_id: z.number(),
-  vantage_mode_method_id: z.number(),
-  vantage_mode_category_id: z.number()
+  method_technique_vantage_id: z.number(),
+  vantage_method_id: z.number(),
+  vantage_category_id: z.number()
 });
 
 export type TechniqueVantage = z.infer<typeof TechniqueVantage>;
@@ -24,87 +24,72 @@ export type TechniqueVantage = z.infer<typeof TechniqueVantage>;
  */
 export class TechniqueVantageRepository extends BaseRepository {
   /**
-   * Get vantage modes for a technique
+   * Get vantages for a technique
    *
    * @param {number} surveyId
    * @param {number} methodTechniqueId
    * @return {*}  Promise<TechniqueVantage[]> }
-   * @memberof VantageModeRepository
+   * @memberof VantageRepository
    */
-  async getVantageModesForTechnique(surveyId: number, methodTechniqueId: number): Promise<TechniqueVantage[]> {
-    defaultLog.debug({ label: 'getVantageModesForTechnique', methodTechniqueId });
+  async getVantagesForTechnique(surveyId: number, methodTechniqueId: number): Promise<TechniqueVantage[]> {
+    defaultLog.debug({ label: 'getVantagesForTechnique', methodTechniqueId });
 
     const queryBuilder = getKnex()
       .select(
-        'method_technique_vantage_mode.method_technique_vantage_mode_id',
-        'method_technique_vantage_mode.vantage_mode_method_id',
-        'vantage_mode.vantage_mode_category_id'
+        'method_technique_vantage.method_technique_vantage_id',
+        'method_technique_vantage.vantage_method_id',
+        'vantage.vantage_category_id'
       )
-      .from('method_technique_vantage_mode')
-      .join(
-        'method_technique',
-        'method_technique_vantage_mode.method_technique_id',
-        'method_technique.method_technique_id'
-      )
-      .join(
-        'vantage_mode_method',
-        'method_technique_vantage_mode.vantage_mode_method_id',
-        'vantage_mode_method.vantage_mode_method_id'
-      )
-      .join('vantage_mode', 'vantage_mode_method.vantage_mode_id', 'vantage_mode.vantage_mode_id')
+      .from('method_technique_vantage')
+      .join('method_technique', 'method_technique_vantage.method_technique_id', 'method_technique.method_technique_id')
+      .join('vantage_method', 'method_technique_vantage.vantage_method_id', 'vantage_method.vantage_method_id')
+      .join('vantage', 'vantage_method.vantage_id', 'vantage.vantage_id')
       .join('survey', 'method_technique.survey_id', 'survey.survey_id')
       .where('survey.survey_id', surveyId)
-      .where('method_technique_vantage_mode.method_technique_id', methodTechniqueId);
+      .where('method_technique_vantage.method_technique_id', methodTechniqueId);
 
     const response = await this.connection.knex(queryBuilder, TechniqueVantage);
 
     return response.rows;
   }
   /**
-   * Insert vantage modes for a technique.
+   * Insert vantages for a technique.
    *
    * @param {number} surveyId
    * @param {number} methodTechniqueId
-   * @param {VantagePostData[]} vantageModeMethods
-   * @return {*}  {(Promise<{ method_technique_vantage_mode_id: number }[] | undefined>)}
-   * @memberof VantageModeRepository
+   * @param {VantagePostData[]} vantageMethods
+   * @return {*}  {(Promise<{ method_technique_vantage_id: number }[] | undefined>)}
+   * @memberof VantageRepository
    */
-  async insertVantageModesForTechnique(
+  async insertVantagesForTechnique(
     surveyId: number,
     methodTechniqueId: number,
-    vantageModeMethods: VantagePostData[]
-  ): Promise<{ method_technique_vantage_mode_id: number }[] | undefined> {
-    defaultLog.debug({ label: 'insertVantageModesForTechnique', methodTechniqueId });
+    vantageMethods: VantagePostData[]
+  ): Promise<{ method_technique_vantage_id: number }[] | undefined> {
+    defaultLog.debug({ label: 'insertVantagesForTechnique', methodTechniqueId });
 
-    if (!vantageModeMethods.length) {
+    if (!vantageMethods.length) {
       return;
     }
 
     const queryBuilder = getKnex()
       .insert(
-        vantageModeMethods.map((vantageModeMethodId) => ({
+        vantageMethods.map((vantageMethodId) => ({
           method_technique_id: methodTechniqueId,
-          vantage_mode_method_id: vantageModeMethodId.vantage_mode_method_id
+          vantage_method_id: vantageMethodId.vantage_method_id
         }))
       )
-      .into('method_technique_vantage_mode')
-      .join(
-        'method_technique',
-        'method_technique_vantage_mode.method_technique_id',
-        'method_technique.method_technique_id'
-      )
+      .into('method_technique_vantage')
+      .join('method_technique', 'method_technique_vantage.method_technique_id', 'method_technique.method_technique_id')
       .join('survey', 'method_technique.survey_id', 'survey.survey_id')
       .where('survey.survey_id', surveyId)
-      .returning('method_technique_vantage_mode_id');
+      .returning('method_technique_vantage_id');
 
-    const response = await this.connection.knex(
-      queryBuilder,
-      z.object({ method_technique_vantage_mode_id: z.number() })
-    );
+    const response = await this.connection.knex(queryBuilder, z.object({ method_technique_vantage_id: z.number() }));
 
-    if (!response.rows || response.rows.length !== vantageModeMethods.length) {
-      throw new ApiExecuteSQLError('Failed to insert vantage modes for technique', [
-        'TechniqueVantageRepository->insertVantageModesForTechnique',
+    if (!response.rows || response.rows.length !== vantageMethods.length) {
+      throw new ApiExecuteSQLError('Failed to insert vantages for technique', [
+        'TechniqueVantageRepository->insertVantagesForTechnique',
         'rows was null or undefined, expected rows != null'
       ]);
     }
@@ -113,79 +98,71 @@ export class TechniqueVantageRepository extends BaseRepository {
   }
 
   /**
-   * Delete vantage modes for a technique
+   * Delete vantages for a technique
    *
    * @param {number} surveyId
    * @param {number} methodTechniqueId
-   * @param {VantagePostData[]} vantageModeMethods
+   * @param {VantagePostData[]} vantageMethods
    * @return {*}  {Promise<void>}
-   * @memberof VantageModeRepository
+   * @memberof VantageRepository
    */
-  async deleteVantageModesForTechnique(
+  async deleteVantagesForTechnique(
     surveyId: number,
     methodTechniqueId: number,
-    vantageModeMethods: VantagePostData[]
+    vantageMethods: VantagePostData[]
   ): Promise<void> {
-    defaultLog.debug({ label: 'deleteVantageModesForTechnique', methodTechniqueId });
+    defaultLog.debug({ label: 'deleteVantagesForTechnique', methodTechniqueId });
 
-    if (!vantageModeMethods.length) {
+    if (!vantageMethods.length) {
       return;
     }
 
     const queryBuilder = getKnex()
-      .table('method_technique_vantage_mode')
+      .table('method_technique_vantage')
       .delete()
-      .join(
-        'method_technique',
-        'method_technique_vantage_mode.method_technique_id',
-        'method_technique.method_technique_id'
-      )
+      .join('method_technique', 'method_technique_vantage.method_technique_id', 'method_technique.method_technique_id')
       .join('survey', 'method_technique.survey_id', 'survey.survey_id')
       .where('survey.survey_id', surveyId)
-      .where('method_technique_vantage_mode.method_technique_id', methodTechniqueId)
+      .where('method_technique_vantage.method_technique_id', methodTechniqueId)
       .whereIn(
-        'method_technique_vantage_mode.vantage_mode_method_id',
-        vantageModeMethods.map((vantageModeMethod) => vantageModeMethod.vantage_mode_method_id)
+        'method_technique_vantage.vantage_method_id',
+        vantageMethods.map((vantageMethod) => vantageMethod.vantage_method_id)
       );
 
     const response = await this.connection.knex(queryBuilder);
 
     if (!response.rows) {
-      throw new ApiExecuteSQLError('Failed to delete vantage modes for technique', [
-        'TechniqueVantageRepository->deleteVantageModesForTechnique',
+      throw new ApiExecuteSQLError('Failed to delete vantages for technique', [
+        'TechniqueVantageRepository->deleteVantagesForTechnique',
         'rows was null or undefined, expected rows != null'
       ]);
     }
   }
 
   /**
-   * Delete all vantage modes for a technique
+   * Delete all vantages for a technique
    *
    * @param {number} surveyId
    * @param {number} methodTechniqueId
    * @return {*}  {Promise<void>}
-   * @memberof VantageModeRepository
+   * @memberof VantageRepository
    */
-  async deleteAllVantageModesForTechnique(surveyId: number, methodTechniqueId: number): Promise<void> {
-    defaultLog.debug({ label: 'deleteAllVantageModesForTechnique', methodTechniqueId });
+  async deleteAllVantagesForTechnique(surveyId: number, methodTechniqueId: number): Promise<void> {
+    defaultLog.debug({ label: 'deleteAllVantagesForTechnique', methodTechniqueId });
 
     const queryBuilder = getKnex()
-      .table('method_technique_vantage_mode')
+      .table('method_technique_vantage')
       .delete()
-      .join(
-        'method_technique',
-        'method_technique_vantage_mode.method_technique_id',
-        'method_technique.method_technique_id'
-      )
+      .join('method_technique', 'method_technique_vantage.method_technique_id', 'method_technique.method_technique_id')
       .join('survey', 'method_technique.survey_id', 'survey.survey_id')
       .where('survey.survey_id', surveyId)
-      .where('method_technique_vantage_mode.method_technique_id', methodTechniqueId);
+      .where('method_technique_vantage.method_technique_id', methodTechniqueId);
 
     const response = await this.connection.knex(queryBuilder);
 
     if (!response.rows) {
-      throw new ApiExecuteSQLError('Failed to delete all vantage modes for technique', [
-        'TechniqueVantageRepository->deleteAllVantageModesForTechnique',
+      throw new ApiExecuteSQLError('Failed to delete all vantages for technique', [
+        'TechniqueVantageRepository->deleteAllVantagesForTechnique',
         'rows was null or undefined, expected rows != null'
       ]);
     }

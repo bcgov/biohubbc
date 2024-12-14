@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { getAPIUserDBConnection } from '../../../database/db';
 import { vantageReferenceRecordsSchema } from '../../../openapi/schemas/technique';
-import { VantageModeService } from '../../../services/vantage-mode-service';
+import { VantageService } from '../../../services/vantage-mode-service';
 import { getLogger } from '../../../utils/logger';
 
 const defaultLog = getLogger('paths/reference/get/vantage-mode');
@@ -68,15 +68,15 @@ export function getVantageReferenceRecords(): RequestHandler {
 
       await connection.open();
 
-      const vantageModeService = new VantageModeService(connection);
+      const vantageService = new VantageService(connection);
 
-      const response = await vantageModeService.getVantageReferenceRecordsByMethodLookupIds(methodLookupIds);
+      const response = await vantageService.getVantageReferenceRecordsByMethodLookupIds(methodLookupIds);
 
       await connection.commit();
 
       return res.status(200).json(response);
     } catch (error) {
-      defaultLog.error({ label: 'getVantageModes', message: 'error', error });
+      defaultLog.error({ label: 'getVantages', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

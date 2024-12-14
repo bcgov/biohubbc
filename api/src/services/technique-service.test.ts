@@ -35,7 +35,7 @@ describe('TechniqueService', () => {
           qualitative_attributes: [],
           quantitative_attributes: []
         },
-        vantage_mode_methods: []
+        vantage_methods: []
       };
 
       sinon.stub(TechniqueRepository.prototype, 'getTechniqueById').resolves(mockRecord);
@@ -66,7 +66,7 @@ describe('TechniqueService', () => {
           qualitative_attributes: [],
           quantitative_attributes: []
         },
-        vantage_mode_methods: []
+        vantage_methods: []
       };
 
       sinon.stub(TechniqueRepository.prototype, 'getTechniquesForSurveyId').resolves([mockRecord]);
@@ -149,7 +149,7 @@ describe('TechniqueService', () => {
               }
             ]
           },
-          vantage_mode_methods: []
+          vantage_methods: []
         }
       ];
 
@@ -210,8 +210,8 @@ describe('TechniqueService', () => {
       const deleteAllTechniqueAttributesStub = sinon
         .stub(TechniqueAttributeService.prototype, 'deleteAllTechniqueAttributes')
         .resolves();
-      const deleteAllVantageModesForTechniqueStub = sinon
-        .stub(TechniqueVantageService.prototype, 'deleteAllVantageModesForTechnique')
+      const deleteAllVantagesForTechniqueStub = sinon
+        .stub(TechniqueVantageService.prototype, 'deleteAllVantagesForTechnique')
         .resolves();
       const deleteTechniqueStub = sinon.stub(TechniqueRepository.prototype, 'deleteTechnique').resolves(mockRecord);
 
@@ -226,7 +226,7 @@ describe('TechniqueService', () => {
 
       expect(deleteAllTechniqueAttractantsStub).to.have.been.calledOnceWith(surveyId, methodTechniqueId);
       expect(deleteAllTechniqueAttributesStub).to.have.been.calledOnceWith(surveyId, methodTechniqueId);
-      expect(deleteAllVantageModesForTechniqueStub).to.have.been.calledOnceWith(surveyId, methodTechniqueId);
+      expect(deleteAllVantagesForTechniqueStub).to.have.been.calledOnceWith(surveyId, methodTechniqueId);
       expect(deleteTechniqueStub).to.have.been.calledOnceWith(surveyId, methodTechniqueId);
 
       expect(response).to.eql(mockRecord);

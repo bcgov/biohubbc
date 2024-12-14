@@ -23,13 +23,13 @@ describe('TechniqueVantageRepository', () => {
     sinon.restore();
   });
 
-  describe('getVantageModesForTechnique', () => {
-    it('should retrieve the correct vantage modes for a technique', async () => {
+  describe('getVantagesForTechnique', () => {
+    it('should retrieve the correct vantages for a technique', async () => {
       const mockRecord = [
         {
-          method_technique_vantage_mode_id: 1,
+          method_technique_vantage_id: 1,
           method_technique_id: 2,
-          vantage_mode_method_id: 3,
+          vantage_method_id: 3,
           description: 'test description'
         }
       ];
@@ -40,7 +40,7 @@ describe('TechniqueVantageRepository', () => {
       const surveyId = 1;
       const methodTechniqueId = 2;
 
-      const result = await repository.getVantageModesForTechnique(surveyId, methodTechniqueId);
+      const result = await repository.getVantagesForTechnique(surveyId, methodTechniqueId);
 
       expect(knexStub).to.have.been.calledOnce;
       expect(result).to.deep.equal(mockRecord);
@@ -50,7 +50,7 @@ describe('TechniqueVantageRepository', () => {
       sinon.stub(dbConnection, 'knex').throws(new Error('Query error'));
 
       try {
-        await repository.getVantageModesForTechnique(1, 2);
+        await repository.getVantagesForTechnique(1, 2);
         expect.fail('Expected error to be thrown');
       } catch (error) {
         expect((error as HTTPError).message).to.equal('Query error');
@@ -58,11 +58,11 @@ describe('TechniqueVantageRepository', () => {
     });
   });
 
-  describe('insertVantageModesForTechnique', () => {
-    it('should insert the vantage modes successfully', async () => {
-      const mockRecord = [{ method_technique_vantage_mode_id: 1 }];
+  describe('insertVantagesForTechnique', () => {
+    it('should insert the vantages successfully', async () => {
+      const mockRecord = [{ method_technique_vantage_id: 1 }];
 
-      const vantageModeMethods: VantagePostData[] = [{ vantage_mode_method_id: 3 }];
+      const vantageMethods: VantagePostData[] = [{ vantage_method_id: 3 }];
 
       const mockResponse = { rows: mockRecord } as QueryResult<any>;
       const knexStub = sinon.stub(dbConnection, 'knex').resolves(mockResponse);
@@ -70,19 +70,19 @@ describe('TechniqueVantageRepository', () => {
       const surveyId = 1;
       const methodTechniqueId = 2;
 
-      const result = await repository.insertVantageModesForTechnique(surveyId, methodTechniqueId, vantageModeMethods);
+      const result = await repository.insertVantagesForTechnique(surveyId, methodTechniqueId, vantageMethods);
 
       expect(knexStub).to.have.been.calledOnce;
       expect(result).to.deep.equal(mockRecord);
     });
 
     it('should throw an error if insertion fails', async () => {
-      const vantageModeMethods: VantagePostData[] = [{ vantage_mode_method_id: 3 }];
+      const vantageMethods: VantagePostData[] = [{ vantage_method_id: 3 }];
 
       sinon.stub(dbConnection, 'knex').throws(new Error('Insert error'));
 
       try {
-        await repository.insertVantageModesForTechnique(1, 2, vantageModeMethods);
+        await repository.insertVantagesForTechnique(1, 2, vantageMethods);
         expect.fail('Expected error to be thrown');
       } catch (error) {
         expect((error as HTTPError).message).to.equal('Insert error');
@@ -90,9 +90,9 @@ describe('TechniqueVantageRepository', () => {
     });
   });
 
-  describe('deleteVantageModesForTechnique', () => {
-    it('should delete the vantage modes successfully', async () => {
-      const vantageModeMethods: VantagePostData[] = [{ vantage_mode_method_id: 3 }];
+  describe('deleteVantagesForTechnique', () => {
+    it('should delete the vantages successfully', async () => {
+      const vantageMethods: VantagePostData[] = [{ vantage_method_id: 3 }];
 
       const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
       const knexStub = sinon.stub(dbConnection, 'knex').resolves(mockResponse);
@@ -100,28 +100,28 @@ describe('TechniqueVantageRepository', () => {
       const surveyId = 1;
       const methodTechniqueId = 2;
 
-      await repository.deleteVantageModesForTechnique(surveyId, methodTechniqueId, vantageModeMethods);
+      await repository.deleteVantagesForTechnique(surveyId, methodTechniqueId, vantageMethods);
 
       expect(knexStub).to.have.been.calledOnce;
     });
 
     it('should throw an error if deletion fails', async () => {
-      const vantageModeMethods: VantagePostData[] = [{ vantage_mode_method_id: 3 }];
+      const vantageMethods: VantagePostData[] = [{ vantage_method_id: 3 }];
 
       sinon.stub(dbConnection, 'knex').throws(new Error('Delete error'));
 
       try {
-        await repository.deleteVantageModesForTechnique(1, 2, vantageModeMethods);
+        await repository.deleteVantagesForTechnique(1, 2, vantageMethods);
         expect.fail('Expected error to be thrown');
       } catch (error) {
         expect((error as HTTPError).message).to.equal('Delete error');
       }
     });
 
-    it('should do nothing if no vantage mode methods are provided', async () => {
+    it('should do nothing if no vantage methods are provided', async () => {
       const knexStub = sinon.stub(dbConnection, 'knex');
 
-      await repository.deleteVantageModesForTechnique(1, 2, []);
+      await repository.deleteVantagesForTechnique(1, 2, []);
 
       expect(knexStub).to.not.have.been.called;
     });

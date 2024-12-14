@@ -160,9 +160,9 @@ describe('updateTechnique', () => {
             attractant_lookup_id: 111
           }
         ],
-        vantage_mode_methods: [
-          { vantage_mode_method_id: 101, description: 'Mode 1' },
-          { vantage_mode_method_id: 102, description: 'Mode 2' }
+        vantage_methods: [
+          { vantage_method_id: 101, description: 'Mode 1' },
+          { vantage_method_id: 102, description: 'Mode 2' }
         ]
       }
     };
@@ -231,9 +231,9 @@ describe('updateTechnique', () => {
             attractant_lookup_id: 111
           }
         ],
-        vantage_mode_methods: [
-          { vantage_mode_method_id: 101, description: 'Mode 1' },
-          { vantage_mode_method_id: 102, description: 'Mode 2' }
+        vantage_methods: [
+          { vantage_method_id: 101, description: 'Mode 1' },
+          { vantage_method_id: 102, description: 'Mode 2' }
         ]
       }
     };
@@ -254,8 +254,8 @@ describe('updateTechnique', () => {
       .stub(TechniqueAttributeService.prototype, 'insertUpdateDeleteQuantitativeAttributesForTechnique')
       .resolves();
 
-    const updateVantageModesForTechniqueStub = sinon
-      .stub(TechniqueVantageService.prototype, 'updateVantageModesForTechnique')
+    const updateVantagesForTechniqueStub = sinon
+      .stub(TechniqueVantageService.prototype, 'updateVantagesForTechnique')
       .resolves();
 
     const requestHandler = updateTechnique();
@@ -280,11 +280,7 @@ describe('updateTechnique', () => {
       3,
       requestBody.technique.attributes.quantitative_attributes
     );
-    expect(updateVantageModesForTechniqueStub).to.have.been.calledOnceWith(
-      2,
-      3,
-      requestBody.technique.vantage_mode_methods
-    );
+    expect(updateVantagesForTechniqueStub).to.have.been.calledOnceWith(2, 3, requestBody.technique.vantage_methods);
 
     expect(mockRes.statusValue).to.eql(200);
   });

@@ -123,12 +123,12 @@ export class TechniqueService extends DBService {
       }
 
       // Insert vantages
-      if (technique.vantage_mode_methods.length) {
+      if (technique.vantage_methods.length) {
         promises.push(
-          this.techniqueVantageService.insertVantageModesForTechnique(
+          this.techniqueVantageService.insertVantagesForTechnique(
             surveyId,
             method_technique_id,
-            technique.vantage_mode_methods
+            technique.vantage_methods
           )
         );
       }
@@ -171,8 +171,8 @@ export class TechniqueService extends DBService {
     // Delete any attributes on the technique
     await this.techniqueAttributeService.deleteAllTechniqueAttributes(surveyId, methodTechniqueId);
 
-    // Delete any vantage modes on the technique
-    await this.techniqueVantageService.deleteAllVantageModesForTechnique(surveyId, methodTechniqueId);
+    // Delete any vantages on the technique
+    await this.techniqueVantageService.deleteAllVantagesForTechnique(surveyId, methodTechniqueId);
 
     // Delete the technique
     return this.techniqueRepository.deleteTechnique(surveyId, methodTechniqueId);

@@ -19,7 +19,7 @@ export interface ITechniquePostData {
     qualitative_attributes: IQualitativeAttributePostData[];
   };
   attractants: IAttractantPostData[];
-  vantage_mode_methods: VantagePostData[];
+  vantage_methods: VantagePostData[];
 }
 
 export interface ITechniquePutData extends ITechniquePostData {
@@ -64,7 +64,7 @@ export const TechniqueObject = z.object({
       })
     )
   }),
-  vantage_mode_methods: z.array(TechniqueVantage)
+  vantage_methods: z.array(TechniqueVantage)
 });
 export type TechniqueObject = z.infer<typeof TechniqueObject>;
 
@@ -133,19 +133,15 @@ export class TechniqueRepository extends BaseRepository {
             'method_technique_id',
             knex.raw(`
               json_agg(json_build_object(
-                'method_technique_vantage_mode_id', method_technique_vantage_mode.method_technique_vantage_mode_id,
-                'vantage_mode_method_id', method_technique_vantage_mode.vantage_mode_method_id,
-                'vantage_mode_category_id', vantage_mode.vantage_mode_category_id
-              )) as vantage_mode_methods
+                'method_technique_vantage_id', method_technique_vantage.method_technique_vantage_id,
+                'vantage_method_id', method_technique_vantage.vantage_method_id,
+                'vantage_category_id', vantage.vantage_category_id
+              )) as vantage_methods
             `)
           )
-          .from('method_technique_vantage_mode')
-          .join(
-            'vantage_mode_method',
-            'vantage_mode_method.vantage_mode_method_id',
-            'method_technique_vantage_mode.vantage_mode_method_id'
-          )
-          .join('vantage_mode', 'vantage_mode.vantage_mode_id', 'vantage_mode_method.vantage_mode_id')
+          .from('method_technique_vantage')
+          .join('vantage_method', 'vantage_method.vantage_method_id', 'method_technique_vantage.vantage_method_id')
+          .join('vantage', 'vantage.vantage_id', 'vantage_method.vantage_id')
           .groupBy('method_technique_id')
       )
       .select(
@@ -164,7 +160,7 @@ export class TechniqueRepository extends BaseRepository {
           )) AS attributes
         `),
         knex.raw(`
-          COALESCE(w_vantages.vantage_mode_methods, '[]'::json) AS vantage_mode_methods
+          COALESCE(w_vantages.vantage_methods, '[]'::json) AS vantage_methods
         `)
       )
       .from('method_technique as mt')

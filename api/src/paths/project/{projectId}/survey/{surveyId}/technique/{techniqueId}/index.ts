@@ -246,7 +246,7 @@ export function updateTechnique(): RequestHandler {
     try {
       await connection.open();
 
-      const { attributes, attractants, vantage_mode_methods, ...techniqueRow } = technique;
+      const { attributes, attractants, vantage_methods, ...techniqueRow } = technique;
 
       // Update the technique record
       const techniqueService = new TechniqueService(connection);
@@ -272,8 +272,8 @@ export function updateTechnique(): RequestHandler {
           methodTechniqueId,
           attributes.quantitative_attributes
         ),
-        // Update vantage modes
-        techniqueVantageService.updateVantageModesForTechnique(surveyId, methodTechniqueId, vantage_mode_methods)
+        // Update vantages
+        techniqueVantageService.updateVantagesForTechnique(surveyId, methodTechniqueId, vantage_methods)
       ]);
 
       await connection.commit();

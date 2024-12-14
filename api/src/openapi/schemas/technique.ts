@@ -83,18 +83,18 @@ export const techniqueVantagesSchema: OpenAPIV3.SchemaObject = {
   description: 'Vantages from which a method is done, like water, air, or ground.',
   items: {
     type: 'object',
-    required: ['vantage_mode_method_id', 'vantage_mode_category_id'],
+    required: ['vantage_method_id', 'vantage_category_id'],
     additionalProperties: false,
     properties: {
-      method_technique_vantage_mode_id: {
+      method_technique_vantage_id: {
         type: 'integer',
         minimum: 1
       },
-      vantage_mode_method_id: {
+      vantage_method_id: {
         type: 'integer',
         minimum: 1
       },
-      vantage_mode_category_id: {
+      vantage_category_id: {
         type: 'integer',
         minimum: 1
       }
@@ -133,7 +133,7 @@ export const techniqueCreateSchema: OpenAPIV3.SchemaObject = {
     'distance_threshold',
     'attractants',
     'attributes',
-    'vantage_mode_methods'
+    'vantage_methods'
   ],
   additionalProperties: false,
   properties: {
@@ -158,7 +158,7 @@ export const techniqueCreateSchema: OpenAPIV3.SchemaObject = {
     },
     attractants: techniqueAttractantsSchema,
     attributes: techniqueAttributesSchema,
-    vantage_mode_methods: techniqueVantagesSchema
+    vantage_methods: techniqueVantagesSchema
   }
 };
 
@@ -191,11 +191,11 @@ export const vantageReferenceRecordsSchema: OpenAPIV3.SchemaObject = {
   description: 'Vantage reference records.',
   items: {
     type: 'object',
-    description: 'Vantage reference record and its associated vantage modes.',
-    required: ['vantage_mode_category_id', 'name', 'description', 'vantage_modes'],
+    description: 'Vantage category reference record and its associated vantages.',
+    required: ['vantage_category_id', 'name', 'description', 'vantages'],
     additionalProperties: false,
     properties: {
-      vantage_mode_category_id: {
+      vantage_category_id: {
         type: 'integer',
         minimum: 1
       },
@@ -206,29 +206,29 @@ export const vantageReferenceRecordsSchema: OpenAPIV3.SchemaObject = {
         type: 'string',
         nullable: true
       },
-      vantage_modes: {
+      vantages: {
         type: 'array',
-        description: 'Supported vantage mode for the vantage record.',
+        description: 'Supported vantage for the vantage record.',
         items: {
           type: 'object',
-          required: ['vantage_mode_method_id', 'name', 'vantage_mode_category_id', 'description'],
+          required: ['vantage_method_id', 'name', 'vantage_id', 'description'],
           additionalProperties: false,
           properties: {
-            vantage_mode_method_id: {
+            vantage_method_id: {
               type: 'integer',
-              description: 'The primary key of the vantage mode option.'
+              description: 'The primary key of the vantage method option.'
             },
-            vantage_mode_category_id: {
+            vantage_id: {
               type: 'integer',
-              description: 'The vantage of the mode.'
+              description: 'The vantage of the record'
             },
             name: {
               type: 'string',
-              description: 'The name of the vantage mode option.'
+              description: 'The name of the vantage method option.'
             },
             description: {
               type: 'string',
-              description: 'The description of the mode option.'
+              description: 'The description of the vantage method option.'
             }
           }
         }

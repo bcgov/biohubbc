@@ -13,150 +13,146 @@ describe('TechniqueVantageService', () => {
     sinon.restore();
   });
 
-  describe('insertVantageModesForTechnique', () => {
-    it('should insert vantage modes successfully', async () => {
+  describe('insertVantagesForTechnique', () => {
+    it('should insert vantages successfully', async () => {
       const surveyId = 1;
       const methodTechniqueId = 2;
-      const vantageModeMethods = [
-        { vantage_mode_method_id: 101, description: 'Mode 1' },
-        { vantage_mode_method_id: 102, description: 'Mode 2' }
+      const vantageMethods = [
+        { vantage_method_id: 101, description: 'Mode 1' },
+        { vantage_method_id: 102, description: 'Mode 2' }
       ];
 
-      const mockInsertResponse = [{ method_technique_vantage_mode_id: 1 }, { method_technique_vantage_mode_id: 2 }];
-      const insertVantageModesStub = sinon
-        .stub(TechniqueVantageRepository.prototype, 'insertVantageModesForTechnique')
+      const mockInsertResponse = [{ method_technique_vantage_id: 1 }, { method_technique_vantage_id: 2 }];
+      const insertVantagesStub = sinon
+        .stub(TechniqueVantageRepository.prototype, 'insertVantagesForTechnique')
         .resolves(mockInsertResponse);
 
       const dbConnection = getMockDBConnection();
       const service = new TechniqueVantageService(dbConnection);
 
-      const response = await service.insertVantageModesForTechnique(surveyId, methodTechniqueId, vantageModeMethods);
+      const response = await service.insertVantagesForTechnique(surveyId, methodTechniqueId, vantageMethods);
 
       expect(response).to.eql(mockInsertResponse);
-      expect(insertVantageModesStub).to.have.been.calledOnceWith(surveyId, methodTechniqueId, vantageModeMethods);
+      expect(insertVantagesStub).to.have.been.calledOnceWith(surveyId, methodTechniqueId, vantageMethods);
     });
 
-    it('should handle empty vantage modes gracefully', async () => {
+    it('should handle empty vantages gracefully', async () => {
       const surveyId = 1;
       const methodTechniqueId = 2;
-      const vantageModeMethods: any[] = [];
+      const vantageMethods: any[] = [];
 
       const dbConnection = getMockDBConnection();
       const techniqueVantageService = new TechniqueVantageService(dbConnection);
 
-      const response = await techniqueVantageService.insertVantageModesForTechnique(
+      const response = await techniqueVantageService.insertVantagesForTechnique(
         surveyId,
         methodTechniqueId,
-        vantageModeMethods
+        vantageMethods
       );
 
       expect(response).to.be.undefined;
     });
   });
 
-  describe('updateVantageModesForTechnique', () => {
-    it('should update vantage modes successfully', async () => {
+  describe('updateVantagesForTechnique', () => {
+    it('should update vantages successfully', async () => {
       const surveyId = 1;
       const methodTechniqueId = 2;
-      const mockVantageModeMethods = [{ vantage_mode_method_id: 101 }];
+      const mockVantageMethods = [{ vantage_method_id: 101 }];
 
-      const existingVantageModes = [
+      const existingVantages = [
         {
-          method_technique_vantage_mode_id: 2,
-          vantage_mode_method_id: 102,
-          vantage_mode_category_id: 1
+          method_technique_vantage_id: 2,
+          vantage_method_id: 102,
+          vantage_category_id: 1
         }
       ];
 
-      sinon.stub(TechniqueVantageRepository.prototype, 'getVantageModesForTechnique').resolves(existingVantageModes);
+      sinon.stub(TechniqueVantageRepository.prototype, 'getVantagesForTechnique').resolves(existingVantages);
 
-      const deleteVantageModesStub = sinon
-        .stub(TechniqueVantageRepository.prototype, 'deleteVantageModesForTechnique')
+      const deleteVantagesStub = sinon
+        .stub(TechniqueVantageRepository.prototype, 'deleteVantagesForTechnique')
         .resolves();
-      const insertVantageModesStub = sinon
-        .stub(TechniqueVantageRepository.prototype, 'insertVantageModesForTechnique')
+      const insertVantagesStub = sinon
+        .stub(TechniqueVantageRepository.prototype, 'insertVantagesForTechnique')
         .resolves();
 
       const dbConnection = getMockDBConnection();
       const techniqueVantageService = new TechniqueVantageService(dbConnection);
 
-      await techniqueVantageService.updateVantageModesForTechnique(surveyId, methodTechniqueId, mockVantageModeMethods);
+      await techniqueVantageService.updateVantagesForTechnique(surveyId, methodTechniqueId, mockVantageMethods);
 
-      expect(deleteVantageModesStub).to.have.been.calledOnceWith(surveyId, methodTechniqueId, [
-        { vantage_mode_method_id: 102 }
-      ]);
-      expect(insertVantageModesStub).to.have.been.calledOnceWith(surveyId, methodTechniqueId, [
-        { vantage_mode_method_id: 101 }
-      ]);
+      expect(deleteVantagesStub).to.have.been.calledOnceWith(surveyId, methodTechniqueId, [{ vantage_method_id: 102 }]);
+      expect(insertVantagesStub).to.have.been.calledOnceWith(surveyId, methodTechniqueId, [{ vantage_method_id: 101 }]);
     });
 
-    it('should not update if no changes in vantage modes', async () => {
+    it('should not update if no changes in vantages', async () => {
       const surveyId = 1;
       const methodTechniqueId = 2;
-      const vantageModeMethods = [{ vantage_mode_method_id: 101 }, { vantage_mode_method_id: 102 }];
+      const vantageMethods = [{ vantage_method_id: 101 }, { vantage_method_id: 102 }];
 
-      const existingVantageModes = [
+      const existingVantages = [
         {
-          method_technique_vantage_mode_id: 1,
-          vantage_mode_method_id: 101,
-          vantage_mode_category_id: 2
+          method_technique_vantage_id: 1,
+          vantage_method_id: 101,
+          vantage_category_id: 2
         },
         {
-          method_technique_vantage_mode_id: 2,
-          vantage_mode_method_id: 102,
-          vantage_mode_category_id: 1
+          method_technique_vantage_id: 2,
+          vantage_method_id: 102,
+          vantage_category_id: 1
         }
       ];
 
-      sinon.stub(TechniqueVantageRepository.prototype, 'getVantageModesForTechnique').resolves(existingVantageModes);
-      const deleteVantageModesStub = sinon.stub(TechniqueVantageRepository.prototype, 'deleteVantageModesForTechnique');
-      const insertVantageModesStub = sinon.stub(TechniqueVantageRepository.prototype, 'insertVantageModesForTechnique');
+      sinon.stub(TechniqueVantageRepository.prototype, 'getVantagesForTechnique').resolves(existingVantages);
+      const deleteVantagesStub = sinon.stub(TechniqueVantageRepository.prototype, 'deleteVantagesForTechnique');
+      const insertVantagesStub = sinon.stub(TechniqueVantageRepository.prototype, 'insertVantagesForTechnique');
 
       const dbConnection = getMockDBConnection();
       const techniqueVantageService = new TechniqueVantageService(dbConnection);
 
-      await techniqueVantageService.updateVantageModesForTechnique(surveyId, methodTechniqueId, vantageModeMethods);
+      await techniqueVantageService.updateVantagesForTechnique(surveyId, methodTechniqueId, vantageMethods);
 
-      expect(deleteVantageModesStub).to.not.have.been.called;
-      expect(insertVantageModesStub).to.not.have.been.called;
+      expect(deleteVantagesStub).to.not.have.been.called;
+      expect(insertVantagesStub).to.not.have.been.called;
     });
 
-    it('should handle empty current and new vantage modes gracefully', async () => {
+    it('should handle empty current and new vantages gracefully', async () => {
       const surveyId = 1;
       const methodTechniqueId = 2;
-      const vantageModeMethods: any[] = [];
+      const vantageMethods: any[] = [];
 
-      const existingVantageModes: any[] = [];
+      const existingVantages: any[] = [];
 
-      sinon.stub(TechniqueVantageRepository.prototype, 'getVantageModesForTechnique').resolves(existingVantageModes);
-      const deleteVantageModesStub = sinon.stub(TechniqueVantageRepository.prototype, 'deleteVantageModesForTechnique');
-      const insertVantageModesStub = sinon.stub(TechniqueVantageRepository.prototype, 'insertVantageModesForTechnique');
+      sinon.stub(TechniqueVantageRepository.prototype, 'getVantagesForTechnique').resolves(existingVantages);
+      const deleteVantagesStub = sinon.stub(TechniqueVantageRepository.prototype, 'deleteVantagesForTechnique');
+      const insertVantagesStub = sinon.stub(TechniqueVantageRepository.prototype, 'insertVantagesForTechnique');
 
       const dbConnection = getMockDBConnection();
       const techniqueVantageService = new TechniqueVantageService(dbConnection);
 
-      await techniqueVantageService.updateVantageModesForTechnique(surveyId, methodTechniqueId, vantageModeMethods);
+      await techniqueVantageService.updateVantagesForTechnique(surveyId, methodTechniqueId, vantageMethods);
 
-      expect(deleteVantageModesStub).to.not.have.been.called;
-      expect(insertVantageModesStub).to.not.have.been.called;
+      expect(deleteVantagesStub).to.not.have.been.called;
+      expect(insertVantagesStub).to.not.have.been.called;
     });
   });
 
-  describe('deleteAllVantageModesForTechnique', () => {
-    it('should delete all vantage modes for a technique successfully', async () => {
+  describe('deleteAllVantagesForTechnique', () => {
+    it('should delete all vantages for a technique successfully', async () => {
       const surveyId = 1;
       const methodTechniqueId = 2;
 
-      const deleteAllVantageModesStub = sinon
-        .stub(TechniqueVantageRepository.prototype, 'deleteAllVantageModesForTechnique')
+      const deleteAllVantagesStub = sinon
+        .stub(TechniqueVantageRepository.prototype, 'deleteAllVantagesForTechnique')
         .resolves();
 
       const dbConnection = getMockDBConnection();
       const techniqueVantageService = new TechniqueVantageService(dbConnection);
 
-      const response = await techniqueVantageService.deleteAllVantageModesForTechnique(surveyId, methodTechniqueId);
+      const response = await techniqueVantageService.deleteAllVantagesForTechnique(surveyId, methodTechniqueId);
 
-      expect(deleteAllVantageModesStub).to.have.been.calledOnceWith(surveyId, methodTechniqueId);
+      expect(deleteAllVantagesStub).to.have.been.calledOnceWith(surveyId, methodTechniqueId);
       expect(response).to.be.undefined;
     });
   });

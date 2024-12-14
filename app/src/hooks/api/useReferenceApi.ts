@@ -39,7 +39,7 @@ const useReferenceApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Get vantage modes available for a method_lookup_id.
+   * Get vantages available for a method_lookup_id.
    *
    * @param {number[]} methodLookupIds
    * @return {*}  {Promise<GetVantageReferenceRecord[]>}

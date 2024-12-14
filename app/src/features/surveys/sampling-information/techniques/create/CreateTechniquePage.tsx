@@ -29,7 +29,7 @@ const initialTechniqueFormValues: CreateTechniqueFormValues = {
   method_lookup_id: null,
   attractants: [],
   attributes: [],
-  vantage_mode_methods: []
+  vantage_methods: []
 };
 
 /**
@@ -79,9 +79,9 @@ export const CreateTechniquePage = () => {
               value: item.attribute_value as number
             }))
         },
-        vantage_mode_methods: values.vantage_mode_methods.map((vantage_mode_method) => ({
-          vantage_mode_method_id: vantage_mode_method.vantage_mode_method_id,
-          vantage_mode_category_id: vantage_mode_method.vantage_mode_category_id
+        vantage_methods: values.vantage_methods.map((vantage_method) => ({
+          vantage_method_id: vantage_method.vantage_method_id,
+          vantage_category_id: vantage_method.vantage_category_id
         }))
       };
 

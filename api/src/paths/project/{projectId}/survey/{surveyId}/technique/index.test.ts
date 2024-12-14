@@ -55,9 +55,9 @@ describe('createTechniques', () => {
               attractant_lookup_id: 111
             }
           ],
-          vantage_mode_methods: [
-            { vantage_mode_method_id: 101, description: 'Mode 1' },
-            { vantage_mode_method_id: 102, description: 'Mode 2' }
+          vantage_methods: [
+            { vantage_method_id: 101, description: 'Mode 1' },
+            { vantage_method_id: 102, description: 'Mode 2' }
           ]
         }
       ]
@@ -118,9 +118,9 @@ describe('createTechniques', () => {
               attractant_lookup_id: 111
             }
           ],
-          vantage_mode_methods: [
-            { vantage_mode_method_id: 101, description: 'Mode 1' },
-            { vantage_mode_method_id: 102, description: 'Mode 2' }
+          vantage_methods: [
+            { vantage_method_id: 101, description: 'Mode 1' },
+            { vantage_method_id: 102, description: 'Mode 2' }
           ]
         }
       ]
@@ -181,16 +181,16 @@ describe('getTechniques', () => {
           }
         ]
       },
-      vantage_mode_methods: [
+      vantage_methods: [
         {
-          method_technique_vantage_mode_id: 1,
-          vantage_mode_method_id: 101,
-          vantage_mode_category_id: 2
+          method_technique_vantage_id: 1,
+          vantage_method_id: 101,
+          vantage_category_id: 2
         },
         {
-          method_technique_vantage_mode_id: 2,
-          vantage_mode_method_id: 102,
-          vantage_mode_category_id: 1
+          method_technique_vantage_id: 2,
+          vantage_method_id: 102,
+          vantage_category_id: 1
         }
       ]
     };
@@ -254,16 +254,16 @@ describe('getTechniques', () => {
           }
         ]
       },
-      vantage_mode_methods: [
+      vantage_methods: [
         {
-          method_technique_vantage_mode_id: 1,
-          vantage_mode_method_id: 101,
-          vantage_mode_category_id: 2
+          method_technique_vantage_id: 1,
+          vantage_method_id: 101,
+          vantage_category_id: 2
         },
         {
-          method_technique_vantage_mode_id: 2,
-          vantage_mode_method_id: 102,
-          vantage_mode_category_id: 1
+          method_technique_vantage_id: 2,
+          vantage_method_id: 102,
+          vantage_category_id: 1
         }
       ]
     };

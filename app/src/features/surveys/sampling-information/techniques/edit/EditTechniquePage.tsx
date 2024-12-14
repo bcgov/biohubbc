@@ -88,10 +88,10 @@ export const EditTechniquePage = () => {
         attribute_type: 'quantitative' as const
       })) ?? [])
     ],
-    vantage_mode_methods: technique.vantage_mode_methods.map((vantage_mode_method) => ({
+    vantage_methods: technique.vantage_methods.map((vantage_method) => ({
       _id: v4(), // A temporary unique id for react keys, etc, as the attribute_id is not unique
-      vantage_mode_category_id: vantage_mode_method.vantage_mode_category_id,
-      vantage_mode_method_id: vantage_mode_method.vantage_mode_method_id
+      vantage_category_id: vantage_method.vantage_category_id,
+      vantage_method_id: vantage_method.vantage_method_id
     }))
   };
 
@@ -118,9 +118,9 @@ export const EditTechniquePage = () => {
               method_lookup_attribute_qualitative_option_id: attribute.attribute_value as string
             }))
         },
-        vantage_mode_methods: values.vantage_mode_methods.map((vantage_mode_method) => ({
-          vantage_mode_method_id: vantage_mode_method.vantage_mode_method_id,
-          vantage_mode_category_id: vantage_mode_method.vantage_mode_category_id
+        vantage_methods: values.vantage_methods.map((vantage_method) => ({
+          vantage_method_id: vantage_method.vantage_method_id,
+          vantage_category_id: vantage_method.vantage_category_id
         }))
       };
 

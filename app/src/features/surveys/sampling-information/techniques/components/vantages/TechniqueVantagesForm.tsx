@@ -14,8 +14,8 @@ import {
   UpdateTechniqueFormValues
 } from '../TechniqueFormContainer';
 
-const initialVantagesFormValues: Partial<Pick<TechniqueVantagesFormValues, 'vantage_mode_method_id'>> = {
-  vantage_mode_method_id: undefined
+const initialVantagesFormValues: Partial<Pick<TechniqueVantagesFormValues, 'vantage_method_id'>> = {
+  vantage_method_id: undefined
 };
 
 interface ITechniqueVantageFormProps {
@@ -28,47 +28,47 @@ export const TechniqueVantageForm = <FormValues extends CreateTechniqueFormValue
   const { vantageReferenceRecords } = props;
   const { values } = useFormikContext<FormValues>();
 
-  const getUnitOptions = (vantageModeMethodId: number, categoryId: number) => {
-    const selectedVantage = vantageReferenceRecords.find((record) => record.vantage_mode_category_id === categoryId);
+  const getUnitOptions = (vantageMethodId: number, categoryId: number) => {
+    const selectedVantage = vantageReferenceRecords.find((record) => record.vantage_category_id === categoryId);
 
-    if (!selectedVantage || !selectedVantage.vantage_modes) {
+    if (!selectedVantage || !selectedVantage.vantages) {
       return [];
     }
 
-    // Filter out already selected vantage modes
-    const availableModes = selectedVantage.vantage_modes.filter((mode) => {
-      const isAlreadySelected = values.vantage_mode_methods.some(
-        (existing) => existing.vantage_mode_method_id === mode.vantage_mode_method_id
+    // Filter out already selected vantages
+    const availableModes = selectedVantage.vantages.filter((mode) => {
+      const isAlreadySelected = values.vantage_methods.some(
+        (existing) => existing.vantage_method_id === mode.vantage_method_id
       );
 
       // Keep the option if not already selected, or if it's the one currently being edited
-      return !isAlreadySelected || vantageModeMethodId === mode.vantage_mode_method_id;
+      return !isAlreadySelected || vantageMethodId === mode.vantage_method_id;
     });
 
     return availableModes.map((mode) => ({
-      value: mode.vantage_mode_method_id,
+      value: mode.vantage_method_id,
       label: mode.name
     }));
   };
 
   return (
     <FieldArray
-      name="vantage_mode_methods"
+      name="vantage_methods"
       render={(arrayHelpers: FieldArrayRenderProps) => (
         <>
           <TransitionGroup>
-            {values.vantage_mode_methods.map((vantage, index) => (
+            {values.vantage_methods.map((vantage, index) => (
               <Collapse key={vantage._id}>
                 <Box mb={2}>
                   <DualAutocompleteField
                     label="Vantage"
                     categoryOptions={vantageReferenceRecords.map((record) => ({
-                      value: record.vantage_mode_category_id,
+                      value: record.vantage_category_id,
                       label: record.name
                     }))}
-                    getUnitOptions={(categoryId: number) => getUnitOptions(vantage.vantage_mode_method_id, categoryId)}
-                    formikCategoryFieldName={`vantage_mode_methods.[${index}].vantage_mode_category_id`}
-                    formikUnitFieldName={`vantage_mode_methods.[${index}].vantage_mode_method_id`}
+                    getUnitOptions={(categoryId: number) => getUnitOptions(vantage.vantage_method_id, categoryId)}
+                    formikCategoryFieldName={`vantage_methods.[${index}].vantage_category_id`}
+                    formikUnitFieldName={`vantage_methods.[${index}].vantage_method_id`}
                     onDelete={() => arrayHelpers.remove(index)}
                   />
                 </Box>

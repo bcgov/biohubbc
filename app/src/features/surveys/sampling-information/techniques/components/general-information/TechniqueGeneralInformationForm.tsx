@@ -74,7 +74,7 @@ export const TechniqueGeneralInformationForm = <
               setFieldValue('method_lookup_id', value.value);
               // Clear attributes
               setFieldValue('attributes', []);
-              setFieldValue('vantage_mode_methods', []);
+              setFieldValue('vantage_methods', []);
             }
           }}
         />

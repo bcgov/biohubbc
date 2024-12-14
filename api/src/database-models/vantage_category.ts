@@ -1,12 +1,11 @@
 import { z } from 'zod';
 
 /**
- * Vantage Model.
+ * Vantage category model.
  *
- * @description Data model for `vantage`.
+ * @description Data model for `vantage_category`.
  */
-export const VantageModel = z.object({
-  vantage_id: z.number(),
+export const VantageCategoryModel = z.object({
   vantage_category_id: z.number(),
   name: z.string(),
   description: z.string().nullable(),
@@ -18,14 +17,14 @@ export const VantageModel = z.object({
   revision_count: z.number()
 });
 
-export type VantageModel = z.infer<typeof VantageModel>;
+export type VantageCategoryModel = z.infer<typeof VantageCategoryModel>;
 
 /**
- * Vantage Record.
+ * Vantage Category Record.
  *
- * @description Data record for `vantage`.
+ * @description Data record for `vantage_category`.
  */
-export const VantageRecord = VantageModel.omit({
+export const VantageCategory = VantageCategoryModel.omit({
   create_date: true,
   create_user: true,
   update_date: true,
@@ -33,4 +32,4 @@ export const VantageRecord = VantageModel.omit({
   revision_count: true
 });
 
-export type VantageRecord = z.infer<typeof VantageRecord>;
+export type VantageCategory = z.infer<typeof VantageCategory>;
