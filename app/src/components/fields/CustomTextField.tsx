@@ -1,4 +1,6 @@
+import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
+import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
 import { useFormikContext } from 'formik';
 import get from 'lodash-es/get';
 export interface ICustomTextField {
@@ -30,6 +32,13 @@ export interface ICustomTextField {
    * @memberof ICustomTextField
    */
   maxLength?: number;
+  /**
+   * Optional help text to be displayed in a tooltip
+   *
+   * @type {string}
+   * @memberof ICustomTextField
+   */
+  helpText?: string;
   /*
    * TODO: Needed fix: Add correct hardcoded type
    * Note: TextFieldProps causes build compile issue
@@ -41,7 +50,7 @@ export interface ICustomTextField {
 const CustomTextField = (props: React.PropsWithChildren<ICustomTextField>) => {
   const { touched, errors, values, handleChange, handleBlur } = useFormikContext<any>();
 
-  const { name, label, other, placeholder } = props;
+  const { name, label, other, placeholder, helpText } = props;
 
   return (
     <TextField
@@ -49,7 +58,17 @@ const CustomTextField = (props: React.PropsWithChildren<ICustomTextField>) => {
       label={label}
       id={name}
       placeholder={placeholder}
-      inputProps={{ 'data-testid': name, maxLength: props.maxLength || undefined }} // targets the internal input rather than the react component
+      inputProps={{
+        'data-testid': name,
+        maxLength: props.maxLength || undefined
+      }}
+      InputProps={{
+        endAdornment: helpText && (
+          <InputAdornment position="start">
+            <HelpButtonTooltip content={helpText} />
+          </InputAdornment>
+        )
+      }}
       onChange={handleChange}
       onBlur={handleBlur}
       variant="outlined"
@@ -57,6 +76,17 @@ const CustomTextField = (props: React.PropsWithChildren<ICustomTextField>) => {
       fullWidth={true}
       error={get(touched, name) && Boolean(get(errors, name))}
       helperText={get(touched, name) && get(errors, name)}
+      sx={{
+        '& .MuiInputAdornment-root': {
+          mr: 0,
+          height: '100%',
+          alignSelf: 'flex-start',
+          position: 'absolute',
+          top: 12,
+          right: 12
+        },
+        ...other?.sx
+      }}
       {...other}
     />
   );

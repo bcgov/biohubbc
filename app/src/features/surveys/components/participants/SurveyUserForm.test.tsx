@@ -96,7 +96,7 @@ describe('SurveyUserForm', () => {
     );
 
     await waitFor(async () => {
-      expect(getByTestId('autocomplete-user-role-search')).toBeVisible();
+      expect(getByTestId('participants')).toBeVisible();
       expect(getByText('Test User', { exact: false })).toBeVisible();
     });
   });
@@ -137,7 +137,7 @@ describe('SurveyUserForm', () => {
     );
 
     await waitFor(async () => {
-      expect(getByTestId('autocomplete-user-role-search')).toBeVisible();
+      expect(getByTestId('participants')).toBeVisible();
       expect(getByTestId('remove-user-role-button-0')).toBeVisible();
     });
   });

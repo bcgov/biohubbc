@@ -100,7 +100,7 @@ describe('ProjectUserForm', () => {
     );
 
     await waitFor(async () => {
-      expect(getByTestId('autocomplete-user-role-search')).toBeVisible();
+      expect(getByTestId('system_user_id')).toBeVisible();
       expect(getByText('Test User', { exact: false })).toBeVisible();
     });
   });
@@ -140,7 +140,7 @@ describe('ProjectUserForm', () => {
     );
 
     await waitFor(async () => {
-      expect(getByTestId('autocomplete-user-role-search')).toBeVisible();
+      expect(getByTestId('system_user_id')).toBeVisible();
       expect(getByTestId('remove-user-role-button-0')).toBeVisible();
     });
   });
