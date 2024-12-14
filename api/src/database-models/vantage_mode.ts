@@ -7,7 +7,7 @@ import { z } from 'zod';
  */
 export const VantageModeModel = z.object({
   vantage_mode_id: z.number(),
-  vantage_id: z.number(),
+  vantage_mode_category_id: z.number(),
   name: z.string(),
   description: z.string().nullable(),
   record_end_date: z.string().nullable(),

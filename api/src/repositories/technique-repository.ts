@@ -135,7 +135,7 @@ export class TechniqueRepository extends BaseRepository {
               json_agg(json_build_object(
                 'method_technique_vantage_mode_id', method_technique_vantage_mode.method_technique_vantage_mode_id,
                 'vantage_mode_method_id', method_technique_vantage_mode.vantage_mode_method_id,
-                'vantage_id', vantage_mode.vantage_id
+                'vantage_mode_category_id', vantage_mode.vantage_mode_category_id
               )) as vantage_mode_methods
             `)
           )

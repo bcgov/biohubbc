@@ -18,11 +18,11 @@ export type TechniqueQuantitativeAttribute = {
 };
 
 export type TechniqueVantageModeMethod = {
-  vantage_id: number;
+  vantage_mode_category_id: number;
   vantage_mode_method_id: number;
 };
 
-type PostVantageMode = Omit<VantageMode, 'name' | 'vantage_id'>;
+type PostVantageMode = Omit<VantageMode, 'name' | 'vantage_mode_category_id'>;
 
 export interface ICreateTechniqueRequest {
   name: string;

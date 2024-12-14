@@ -32,7 +32,7 @@ export type TechniqueAttributeFormValues =
     };
 
 export type TechniqueVantagesFormValues = {
-  vantage_id: number;
+  vantage_mode_category_id: number;
   vantage_mode_method_id: number;
   // internal ID used for form control keys. Not to be sent to API.
   _id?: string;
@@ -97,7 +97,7 @@ const TechniqueFormContainer = <FormValues extends CreateTechniqueFormValues | U
     vantage_mode_methods: yup.array(
       yup.object().shape({
         vantage_mode_method_id: yup.number().required('Vantage mode is required.'),
-        vantage_id: yup.number().required('Vantage is required.')
+        vantage_mode_category_id: yup.number().required('Vantage is required.')
       })
     )
   });

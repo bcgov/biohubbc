@@ -81,14 +81,14 @@ export class VantageModeRepository extends BaseRepository {
 
     const queryBuilder = knex
       .select(
-        'v.vantage_id',
+        'v.vantage_mode_category_id',
         'v.name',
         'v.description',
         knex.raw(`
           json_agg(
             json_build_object(
               'vantage_mode_method_id', vmm.vantage_mode_method_id,
-              'vantage_id', vm.vantage_id,
+              'vantage_mode_category_id', vm.vantage_mode_category_id,
               'name', vm.name,
               'description', vm.description
             )
@@ -97,10 +97,10 @@ export class VantageModeRepository extends BaseRepository {
       )
       .from('vantage_mode_method as vmm')
       .join('vantage_mode as vm', 'vmm.vantage_mode_id', 'vm.vantage_mode_id')
-      .join('vantage as v', 'v.vantage_id', 'vm.vantage_id')
+      .join('vantage as v', 'v.vantage_mode_category_id', 'vm.vantage_mode_category_id')
       .whereIn('vmm.method_lookup_id', methodLookupIds)
       .whereNull('vmm.record_end_date')
-      .groupBy('v.vantage_id', 'v.name', 'v.description');
+      .groupBy('v.vantage_mode_category_id', 'v.name', 'v.description');
 
     const response = await this.connection.knex(queryBuilder, VantageReferenceRecord);
 

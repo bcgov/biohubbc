@@ -90,7 +90,7 @@ export const EditTechniquePage = () => {
     ],
     vantage_mode_methods: technique.vantage_mode_methods.map((vantage_mode_method) => ({
       _id: v4(), // A temporary unique id for react keys, etc, as the attribute_id is not unique
-      vantage_id: vantage_mode_method.vantage_id,
+      vantage_mode_category_id: vantage_mode_method.vantage_mode_category_id,
       vantage_mode_method_id: vantage_mode_method.vantage_mode_method_id
     }))
   };
@@ -120,7 +120,7 @@ export const EditTechniquePage = () => {
         },
         vantage_mode_methods: values.vantage_mode_methods.map((vantage_mode_method) => ({
           vantage_mode_method_id: vantage_mode_method.vantage_mode_method_id,
-          vantage_id: vantage_mode_method.vantage_id
+          vantage_mode_category_id: vantage_mode_method.vantage_mode_category_id
         }))
       };
 

@@ -29,7 +29,7 @@ export const TechniqueVantageForm = <FormValues extends CreateTechniqueFormValue
   const { values } = useFormikContext<FormValues>();
 
   const getUnitOptions = (vantageModeMethodId: number, categoryId: number) => {
-    const selectedVantage = vantageReferenceRecords.find((record) => record.vantage_id === categoryId);
+    const selectedVantage = vantageReferenceRecords.find((record) => record.vantage_mode_category_id === categoryId);
 
     if (!selectedVantage || !selectedVantage.vantage_modes) {
       return [];
@@ -63,11 +63,11 @@ export const TechniqueVantageForm = <FormValues extends CreateTechniqueFormValue
                   <DualAutocompleteField
                     label="Vantage"
                     categoryOptions={vantageReferenceRecords.map((record) => ({
-                      value: record.vantage_id,
+                      value: record.vantage_mode_category_id,
                       label: record.name
                     }))}
                     getUnitOptions={(categoryId: number) => getUnitOptions(vantage.vantage_mode_method_id, categoryId)}
-                    formikCategoryFieldName={`vantage_mode_methods.[${index}].vantage_id`}
+                    formikCategoryFieldName={`vantage_mode_methods.[${index}].vantage_mode_category_id`}
                     formikUnitFieldName={`vantage_mode_methods.[${index}].vantage_mode_method_id`}
                     onDelete={() => arrayHelpers.remove(index)}
                   />

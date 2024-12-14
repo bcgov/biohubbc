@@ -81,7 +81,7 @@ export const CreateTechniquePage = () => {
         },
         vantage_mode_methods: values.vantage_mode_methods.map((vantage_mode_method) => ({
           vantage_mode_method_id: vantage_mode_method.vantage_mode_method_id,
-          vantage_id: vantage_mode_method.vantage_id
+          vantage_mode_category_id: vantage_mode_method.vantage_mode_category_id
         }))
       };
 

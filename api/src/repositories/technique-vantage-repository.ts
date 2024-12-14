@@ -10,7 +10,7 @@ const defaultLog = getLogger('repositories/technique-vantage-repository');
 export const TechniqueVantage = z.object({
   method_technique_vantage_mode_id: z.number(),
   vantage_mode_method_id: z.number(),
-  vantage_id: z.number()
+  vantage_mode_category_id: z.number()
 });
 
 export type TechniqueVantage = z.infer<typeof TechniqueVantage>;
@@ -38,7 +38,7 @@ export class TechniqueVantageRepository extends BaseRepository {
       .select(
         'method_technique_vantage_mode.method_technique_vantage_mode_id',
         'method_technique_vantage_mode.vantage_mode_method_id',
-        'vantage_mode.vantage_id'
+        'vantage_mode.vantage_mode_category_id'
       )
       .from('method_technique_vantage_mode')
       .join(

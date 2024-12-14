@@ -18,13 +18,13 @@ describe('getVantageModes', () => {
   it('should return vantage modes for method lookup ids', async () => {
     const mockVantageModeResponse = [
       {
-        vantage_id: 101,
+        vantage_mode_category_id: 101,
         name: 'Vantage A',
         description: 'Description for vantage A',
         vantage_modes: [{ vantage_mode_method_id: 1, name: 'Mode A', description: 'Description' }]
       },
       {
-        vantage_id: 102,
+        vantage_mode_category_id: 102,
         name: 'Vantage B',
         description: 'Description for vantage B',
         vantage_modes: [

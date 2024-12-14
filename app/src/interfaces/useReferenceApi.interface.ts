@@ -89,14 +89,14 @@ export interface IGetTechniqueAttributes {
 }
 
 export type Vantage = {
-  vantage_id: number;
+  vantage_mode_category_id: number;
   name: string;
   description: string | null;
 };
 
 export type VantageMode = {
   vantage_mode_method_id: number;
-  vantage_id: number;
+  vantage_mode_category_id: number;
   name: string;
 };
 

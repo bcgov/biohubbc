@@ -83,7 +83,7 @@ export const techniqueVantagesSchema: OpenAPIV3.SchemaObject = {
   description: 'Vantages from which a method is done, like water, air, or ground.',
   items: {
     type: 'object',
-    required: ['vantage_mode_method_id', 'vantage_id'],
+    required: ['vantage_mode_method_id', 'vantage_mode_category_id'],
     additionalProperties: false,
     properties: {
       method_technique_vantage_mode_id: {
@@ -94,7 +94,7 @@ export const techniqueVantagesSchema: OpenAPIV3.SchemaObject = {
         type: 'integer',
         minimum: 1
       },
-      vantage_id: {
+      vantage_mode_category_id: {
         type: 'integer',
         minimum: 1
       }
@@ -192,10 +192,10 @@ export const vantageReferenceRecordsSchema: OpenAPIV3.SchemaObject = {
   items: {
     type: 'object',
     description: 'Vantage reference record and its associated vantage modes.',
-    required: ['vantage_id', 'name', 'description', 'vantage_modes'],
+    required: ['vantage_mode_category_id', 'name', 'description', 'vantage_modes'],
     additionalProperties: false,
     properties: {
-      vantage_id: {
+      vantage_mode_category_id: {
         type: 'integer',
         minimum: 1
       },
@@ -211,14 +211,14 @@ export const vantageReferenceRecordsSchema: OpenAPIV3.SchemaObject = {
         description: 'Supported vantage mode for the vantage record.',
         items: {
           type: 'object',
-          required: ['vantage_mode_method_id', 'name', 'vantage_id', 'description'],
+          required: ['vantage_mode_method_id', 'name', 'vantage_mode_category_id', 'description'],
           additionalProperties: false,
           properties: {
             vantage_mode_method_id: {
               type: 'integer',
               description: 'The primary key of the vantage mode option.'
             },
-            vantage_id: {
+            vantage_mode_category_id: {
               type: 'integer',
               description: 'The vantage of the mode.'
             },

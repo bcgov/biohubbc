@@ -64,7 +64,7 @@ describe('TechniqueVantageService', () => {
         {
           method_technique_vantage_mode_id: 2,
           vantage_mode_method_id: 102,
-          vantage_id: 1
+          vantage_mode_category_id: 1
         }
       ];
 
@@ -99,12 +99,12 @@ describe('TechniqueVantageService', () => {
         {
           method_technique_vantage_mode_id: 1,
           vantage_mode_method_id: 101,
-          vantage_id: 2
+          vantage_mode_category_id: 2
         },
         {
           method_technique_vantage_mode_id: 2,
           vantage_mode_method_id: 102,
-          vantage_id: 1
+          vantage_mode_category_id: 1
         }
       ];
 
