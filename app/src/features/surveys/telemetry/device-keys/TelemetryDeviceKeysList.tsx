@@ -65,8 +65,8 @@ export const TelemetryDeviceKeysList = (props: ITelemetryDeviceKeysListProps) =>
     {
       field: 'survey_telemetry_credential_attachment_id',
       headerName: 'ID',
-      width: 70,
-      minWidth: 70,
+      width: 85,
+      minWidth: 85,
       renderHeader: () => (
         <Typography color={grey[500]} variant="body2" fontWeight={700}>
           ID

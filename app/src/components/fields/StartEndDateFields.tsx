@@ -51,7 +51,14 @@ const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Grid container item spacing={3}>
+      <Grid
+        container
+        item
+        spacing={3}
+        sx={{
+          '& .MuiInputAdornment-root.MuiInputAdornment-positionStart': { mr: -1 },
+          '& .MuiInputAdornment-root': { mr: 1 }
+        }}>
         <Grid item xs={6}>
           <DatePicker
             slots={{
@@ -68,11 +75,13 @@ const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
                 inputProps: {
                   'data-testid': 'start_date'
                 },
+
                 InputLabelProps: {
                   shrink: true
                 },
                 fullWidth: true
-              }
+              },
+              popper: { placement: 'bottom-end' }
             }}
             label="Start Date"
             format={DATE_FORMAT.ShortDateFormat}

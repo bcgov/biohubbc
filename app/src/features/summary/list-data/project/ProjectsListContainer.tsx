@@ -117,8 +117,8 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
     {
       field: 'project_id',
       headerName: 'ID',
-      width: 70,
-      minWidth: 70,
+      width: 85,
+      minWidth: 85,
       renderHeader: () => (
         <Typography color={grey[500]} variant="body2" fontWeight={700}>
           ID
@@ -210,7 +210,7 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
         <Divider />
       </Collapse>
 
-      <Box height="90vh" maxHeight="700px" p={2}>
+      <Box height="90vh" maxHeight="700px">
         <LoadingGuard
           isLoading={projectsDataLoader.isLoading || !projectsDataLoader.isReady}
           isLoadingFallback={<SkeletonTable />}

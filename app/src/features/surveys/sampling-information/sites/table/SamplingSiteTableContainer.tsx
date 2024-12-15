@@ -1,4 +1,4 @@
-import { mdiArrowTopRight, mdiDotsVertical, mdiTrashCanOutline } from '@mdi/js';
+import { mdiArrowTopRight, mdiCalendarRange, mdiDotsVertical, mdiMapMarker, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
@@ -13,6 +13,7 @@ import { GridPaginationModel, GridRowSelectionModel, GridSortModel } from '@mui/
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
+import CustomToggleButtonGroup from 'components/toolbar/CustomToggleButtonGroup';
 import { SamplingPeriodTable } from 'features/surveys/sampling-information/periods/table/SamplingPeriodTable';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useSurveyContext } from 'hooks/useContext';
@@ -21,11 +22,15 @@ import { useEffect, useMemo, useState } from 'react';
 import { ApiPaginationRequestOptions } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
 import { SamplingSiteTable } from './SamplingSiteTable';
-import { SamplingSiteManageTableView, SamplingSiteTableView } from './view/SamplingSiteTableView';
 
 const pageSizeOptions = [10, 25, 50];
 
-export interface ISamplingSitePeriodRowData {
+export enum SamplingViews {
+  SITES = 'SITES',
+  PERIODS = 'PERIODS'
+}
+
+export interface ISamplingPeriodRowData {
   id: number;
   sample_site: string;
   sample_method: string;
@@ -42,71 +47,105 @@ export interface ISamplingSitePeriodRowData {
  * @returns {*}
  */
 export const SamplingSiteTableContainer = () => {
-  const biohubApi = useBiohubApi();
-  const surveyContext = useSurveyContext();
   const dialogContext = useDialogContext();
+  const surveyContext = useSurveyContext();
 
+  const biohubApi = useBiohubApi();
+
+  // Action menu
   const [headerAnchorEl, setHeaderAnchorEl] = useState<null | HTMLElement>(null);
-  const [selectedRows, setSelectedRows] = useState<GridRowSelectionModel>([]);
 
-  // Controls whether sites, methods, or periods are shown
-  const [activeView, setActiveView] = useState<SamplingSiteManageTableView>(SamplingSiteManageTableView.SITES);
+  // Views
+  const [activeView, setActiveView] = useState<SamplingViews>(SamplingViews.SITES);
 
-  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
+  const views = [
+    { value: SamplingViews.SITES, label: 'Sampling Sites', icon: mdiMapMarker },
+    { value: SamplingViews.PERIODS, label: 'Sampling Periods', icon: mdiCalendarRange }
+  ];
+
+  // Sites
+  const [selectedSites, setSelectedSites] = useState<GridRowSelectionModel>([]);
+
+  const [sitesPaginationModel, setSitesPaginationModel] = useState<GridPaginationModel>({
     page: 0,
     pageSize: pageSizeOptions[0]
   });
-  const [sortModel, setSortModel] = useState<GridSortModel>([]);
+
+  const [sitesSortModel, setSitesSortModel] = useState<GridSortModel>([]);
+
+  const sitesPagination: ApiPaginationRequestOptions = useMemo(() => {
+    const sort = firstOrNull(sitesSortModel);
+
+    return {
+      limit: sitesPaginationModel.pageSize,
+      sort: sort?.field || undefined,
+      order: sort?.sort || undefined,
+
+      // API sitesPagination pages begin at 1, but MUI DataGrid sitesPagination begins at 0.
+      page: sitesPaginationModel.page + 1
+    };
+  }, [sitesSortModel, sitesPaginationModel]);
 
   const samplingSitesDataLoader = useDataLoader((pagination: ApiPaginationRequestOptions) =>
     biohubApi.samplingSite.getSampleSites(surveyContext.projectId, surveyContext.surveyId, { pagination })
   );
 
-  const pagination: ApiPaginationRequestOptions = useMemo(() => {
-    const sort = firstOrNull(sortModel);
+  // Periods
+  const [selectedPeriods, setSelectedPeriods] = useState<GridRowSelectionModel>([]);
 
+  const [periodsPaginationModel, setPeriodsPaginationModel] = useState<GridPaginationModel>({
+    page: 0,
+    pageSize: pageSizeOptions[0]
+  });
+
+  const [periodsSortModel, setPeriodsSortModel] = useState<GridSortModel>([]);
+
+  const periodsPagination: ApiPaginationRequestOptions = useMemo(() => {
+    const sort = firstOrNull(periodsSortModel);
     return {
-      limit: paginationModel.pageSize,
+      limit: periodsPaginationModel.pageSize,
       sort: sort?.field || undefined,
       order: sort?.sort || undefined,
-
-      // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
-      page: paginationModel.page + 1
+      page: periodsPaginationModel.page + 1
     };
-  }, [sortModel, paginationModel]);
+  }, [periodsSortModel, periodsPaginationModel]);
 
-  // Refresh survey list when pagination or sort changes
+  const samplingPeriodsDataLoader = useDataLoader((pagination: ApiPaginationRequestOptions) =>
+    biohubApi.samplingSite.findSamplePeriods({ survey_id: surveyContext.surveyId }, pagination)
+  );
+
   useEffect(() => {
-    samplingSitesDataLoader.refresh(pagination);
-
-    // Adding a DataLoader as a dependency causes an infinite rerender loop if a useEffect calls `.refresh`
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pagination]);
-
-  const sampleSites = useMemo(() => samplingSitesDataLoader.data?.sampleSites ?? [], [samplingSitesDataLoader.data]);
-
-  const samplePeriods: ISamplingSitePeriodRowData[] = useMemo(() => {
-    const data: ISamplingSitePeriodRowData[] = [];
-
-    for (const site of sampleSites) {
-      for (const method of site.sample_methods) {
-        for (const period of method.sample_periods) {
-          data.push({
-            id: period.survey_sample_period_id,
-            sample_site: site.name,
-            sample_method: method.technique.name,
-            method_response_metric_id: method.method_response_metric_id,
-            start_date: period.start_date,
-            end_date: period.end_date,
-            start_time: period.start_time,
-            end_time: period.end_time
-          });
-        }
-      }
+    // Refresh active view data loader when switching to the view for the first time
+    if (activeView === SamplingViews.SITES && !samplingSitesDataLoader.data) {
+      samplingSitesDataLoader.refresh(sitesPagination);
     }
 
-    return data;
-  }, [sampleSites]);
+    if (activeView === SamplingViews.PERIODS && !samplingPeriodsDataLoader.data) {
+      samplingPeriodsDataLoader.refresh(periodsPagination);
+    }
+    // Including data loaders in the dependency array causes infinite reloads
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeView]);
+
+  useEffect(() => {
+    if (activeView === SamplingViews.SITES && Number(samplingSitesDataLoader.data?.pagination.total) !== 0) {
+      samplingSitesDataLoader.refresh(sitesPagination);
+    }
+    // Including data loaders in the dependency array causes infinite reloads
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sitesPagination]);
+
+  useEffect(() => {
+    if (activeView === SamplingViews.PERIODS && Number(samplingPeriodsDataLoader.data?.pagination.total) !== 0) {
+      samplingPeriodsDataLoader.refresh(periodsPagination);
+    }
+    // Including data loaders in the dependency array causes infinite reloads
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [periodsPagination]);
+
+  // Data
+  const sampleSites = samplingSitesDataLoader.data?.sampleSites ?? [];
+  const samplePeriods = samplingPeriodsDataLoader.data?.periods ?? [];
 
   // Handler for bulk delete operation
   const handleBulkDelete = async () => {
@@ -114,14 +153,14 @@ export const SamplingSiteTableContainer = () => {
       await biohubApi.samplingSite.deleteSampleSites(
         surveyContext.projectId,
         surveyContext.surveyId,
-        selectedRows.map((site) => Number(site)) // Convert GridRowId to number[]
+        selectedSites.map((site) => Number(site)) // Convert GridRowId to number[]
       );
       dialogContext.setYesNoDialog({ open: false }); // Close confirmation dialog
-      setSelectedRows([]); // Clear selection
-      samplingSitesDataLoader.refresh(pagination); // Refresh data
+      setSelectedSites([]); // Clear selection
+      samplingSitesDataLoader.refresh(sitesPagination); // Refresh data
     } catch (error) {
       dialogContext.setYesNoDialog({ open: false }); // Close confirmation dialog on error
-      setSelectedRows([]); // Clear selection
+      setSelectedSites([]); // Clear selection
       // Show snackbar with error message
       dialogContext.setSnackbar({
         snackbarMessage: (
@@ -141,7 +180,7 @@ export const SamplingSiteTableContainer = () => {
 
   const handleDelete = async (sampleSiteId: number) => {
     await biohubApi.samplingSite.deleteSampleSite(surveyContext.projectId, surveyContext.surveyId, sampleSiteId);
-    samplingSitesDataLoader.refresh(pagination); // Refresh data
+    samplingSitesDataLoader.refresh(sitesPagination); // Refresh data
   };
 
   // Handler for clicking on header menu (bulk actions)
@@ -195,13 +234,18 @@ export const SamplingSiteTableContainer = () => {
           width: '100%'
         }}>
         {/* Toggle buttons for changing between sites, methods, and periods */}
-        <SamplingSiteTableView activeView={activeView} setActiveView={setActiveView} />
+        <CustomToggleButtonGroup
+          views={views}
+          activeView={activeView}
+          onViewChange={(view) => setActiveView(view)}
+          orientation="horizontal"
+        />
 
         <IconButton
           edge="end"
           sx={{ ml: 1 }}
           aria-label="header-settings"
-          disabled={!selectedRows.length || activeView === SamplingSiteManageTableView.PERIODS}
+          disabled={activeView === SamplingViews.PERIODS}
           onClick={handleHeaderMenuClick}
           title="Bulk Actions">
           <Icon path={mdiDotsVertical} size={1} />
@@ -212,7 +256,7 @@ export const SamplingSiteTableContainer = () => {
 
       {/* Data tables */}
       <Box height="400px">
-        {activeView === SamplingSiteManageTableView.SITES && (
+        {activeView === SamplingViews.SITES && (
           <LoadingGuard
             isLoading={
               !samplingSitesDataLoader.data && (samplingSitesDataLoader.isLoading || !samplingSitesDataLoader.isReady)
@@ -231,23 +275,24 @@ export const SamplingSiteTableContainer = () => {
             hasNoDataFallbackDelay={100}>
             <SamplingSiteTable
               sites={sampleSites}
-              paginationModel={paginationModel}
-              setPaginationModel={setPaginationModel}
-              sortModel={sortModel}
-              setSortModel={setSortModel}
-              rowCount={samplingSitesDataLoader.data?.pagination.total ?? 0}
+              selectedRows={selectedSites}
+              setSelectedRows={setSelectedSites}
+              paginationModel={sitesPaginationModel}
+              setPaginationModel={setSitesPaginationModel}
+              sortModel={sitesSortModel}
+              setSortModel={setSitesSortModel}
               pageSizeOptions={pageSizeOptions}
-              selectedRows={selectedRows}
-              setSelectedRows={setSelectedRows}
+              rowCount={samplingSitesDataLoader.data?.pagination.total ?? 0}
               onDelete={handleDelete}
             />
           </LoadingGuard>
         )}
 
-        {activeView === SamplingSiteManageTableView.PERIODS && (
+        {activeView === SamplingViews.PERIODS && (
           <LoadingGuard
             isLoading={
-              !samplingSitesDataLoader.data && (samplingSitesDataLoader.isLoading || !samplingSitesDataLoader.isReady)
+              !samplingPeriodsDataLoader.data &&
+              (samplingPeriodsDataLoader.isLoading || !samplingPeriodsDataLoader.isReady)
             }
             isLoadingFallback={<SkeletonTable />}
             isLoadingFallbackDelay={100}
@@ -263,14 +308,14 @@ export const SamplingSiteTableContainer = () => {
             hasNoDataFallbackDelay={100}>
             <SamplingPeriodTable
               periods={samplePeriods}
-              paginationModel={{
-                page: 0,
-                pageSize: pageSizeOptions[0]
-              }}
-              setPaginationModel={() => {}}
-              sortModel={[]}
-              setSortModel={() => {}}
-              rowCount={samplePeriods.length}
+              selectedRows={selectedPeriods}
+              setSelectedRows={setSelectedPeriods}
+              paginationModel={periodsPaginationModel}
+              setPaginationModel={setPeriodsPaginationModel}
+              sortModel={periodsSortModel}
+              setSortModel={setPeriodsSortModel}
+              pageSizeOptions={pageSizeOptions}
+              rowCount={samplingPeriodsDataLoader.data?.pagination.total ?? 0}
             />
           </LoadingGuard>
         )}

@@ -72,15 +72,10 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
       <Toolbar
         disableGutters
         sx={{
-          px: 2
+          px: 2,
+          justifyContent: 'space-between'
         }}>
-        <Typography
-          data-testid="map-control-title"
-          component="div"
-          fontWeight="700"
-          sx={{
-            flex: '1 1 auto'
-          }}>
+        <Typography data-testid="map-control-title" component="div" fontWeight="700">
           Study Areas
           <Typography component="span" color="textSecondary" sx={{ ml: 0.5, flex: '1 1 auto' }}>
             ({values.locations.length})

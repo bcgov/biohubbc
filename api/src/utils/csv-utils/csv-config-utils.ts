@@ -22,12 +22,12 @@ export class CSVConfigUtils<StaticHeaderType extends Uppercase<string>> {
   }
 
   /**
-   * The CSV _config static headers.
+   * The CSV config static headers.
    *
-   * @returns {Uppercase<string>[]} - The config headers
+   * @returns {StaticHeaderType[]} - The config headers
    */
-  get configStaticHeaders(): Uppercase<string>[] {
-    return Object.keys(this._config.staticHeadersConfig) as Uppercase<string>[];
+  get configStaticHeaders(): StaticHeaderType[] {
+    return Object.keys(this._config.staticHeadersConfig) as StaticHeaderType[];
   }
 
   /**

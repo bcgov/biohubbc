@@ -99,9 +99,9 @@ export const validateCSVHeaders = (worksheet: WorkSheet, config: CSVConfig): CSV
       csvErrors.push({
         error: 'A required column is missing',
         solution: `Add all required columns to the file.`,
+        values: [staticHeader, ...config.staticHeadersConfig[staticHeader].aliases],
         header: staticHeader,
         cell: null,
-        values: [staticHeader, ...config.staticHeadersConfig[staticHeader].aliases],
         row: 0
       });
     }
@@ -176,15 +176,15 @@ export const forEachCSVCell = (
 export const executeSetCellValue = (params: CSVParams, headerConfig: CSVHeaderConfig, mutableRows: CSVRow[]) => {
   const row = { ...mutableRows[params.rowIndex] };
 
-  const headerKey = params.staticHeader?.toUpperCase() ?? params.header.toUpperCase();
+  const headerKey = params.staticHeader?.toUpperCase() ?? params.header.toUpperCase()
   const cellValue = headerConfig?.setCellValue?.(params) ?? params.mutateCell;
 
   // Remove the aliased header if it is not the static header
   if (params.staticHeader && params.header !== params.staticHeader) {
-    delete row[params.header];
+    delete row[params.header as Uppercase<string>];
   }
 
-  row[headerKey] = cellValue;
+  row[headerKey as Uppercase<string>] = cellValue;
 
   mutableRows[params.rowIndex] = row;
 };
