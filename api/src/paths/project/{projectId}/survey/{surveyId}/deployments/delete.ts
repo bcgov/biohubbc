@@ -1,23 +1,19 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../../constants/roles';
-import { getDBConnection } from '../../../../../../../../database/db';
-import { authorizeRequestHandler } from '../../../../../../../../request-handlers/security/authorization';
-import { TelemetryVendorService } from '../../../../../../../../services/telemetry-services/telemetry-vendor-service';
-import { getLogger } from '../../../../../../../../utils/logger';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
+import { getDBConnection } from '../../../../../../database/db';
+import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
+import { TelemetryDeploymentService } from '../../../../../../services/telemetry-services/telemetry-deployment-service';
+import { getLogger } from '../../../../../../utils/logger';
 
-const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/deployments2/telemetry/manual/delete');
+const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/deployments/delete');
 
 export const POST: Operation = [
   authorizeRequestHandler((req) => {
     return {
       or: [
         {
-          validProjectPermissions: [
-            PROJECT_PERMISSION.COORDINATOR,
-            PROJECT_PERMISSION.COLLABORATOR,
-            PROJECT_PERMISSION.OBSERVER
-          ],
+          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR],
           surveyId: Number(req.params.surveyId),
           discriminator: 'ProjectPermission'
         },
@@ -28,12 +24,12 @@ export const POST: Operation = [
       ]
     };
   }),
-  bulkDeleteManualTelemetry()
+  deleteDeploymentsInSurvey()
 ];
 
 POST.apiDoc = {
-  description: 'Bulk delete manual telemetry records.',
-  tags: ['telemetry'],
+  description: 'Delete deployments.',
+  tags: ['deployment'],
   security: [
     {
       Bearer: []
@@ -60,20 +56,20 @@ POST.apiDoc = {
     }
   ],
   requestBody: {
-    description: 'Manual telemetry bulk delete payload.',
+    description: 'Array of one or more deployment IDs to delete.',
     required: true,
     content: {
       'application/json': {
         schema: {
           type: 'object',
+          required: ['deployment_ids'],
           additionalProperties: false,
-          required: ['telemetry_manual_ids'],
           properties: {
-            telemetry_manual_ids: {
+            deployment_ids: {
               type: 'array',
               items: {
-                type: 'string',
-                format: 'uuid'
+                type: 'integer',
+                minimum: 1
               },
               minItems: 1
             }
@@ -84,7 +80,7 @@ POST.apiDoc = {
   },
   responses: {
     200: {
-      description: 'Responds successfully if the telemetry records were deleted.'
+      description: 'Delete OK.'
     },
     400: {
       $ref: '#/components/responses/400'
@@ -108,32 +104,31 @@ POST.apiDoc = {
 };
 
 /**
- * Bulk delete manual telemetry records.
+ * Deletes deployments.
  *
  * @export
- * @return {*} {RequestHandler}
+ * @return {*}  {RequestHandler}
  */
-export function bulkDeleteManualTelemetry(): RequestHandler {
+export function deleteDeploymentsInSurvey(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
-    const telemetryManualIds: string[] = req.body.telemetry_manual_ids;
+    const deploymentIds: number[] = req.body.deployment_ids;
 
     const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
 
-      const telemetryVendorService = new TelemetryVendorService(connection);
+      const telemetryDeploymentService = new TelemetryDeploymentService(connection);
 
-      await telemetryVendorService.bulkDeleteManualTelemetry(surveyId, telemetryManualIds);
+      await telemetryDeploymentService.deleteDeployments(surveyId, deploymentIds);
 
       await connection.commit();
 
       return res.status(200).send();
     } catch (error) {
-      defaultLog.error({ label: 'bulkDeleteManualTelemetry', message: 'error', error });
+      defaultLog.error({ label: 'deleteDeploymentsInSurvey', message: 'error', error });
       await connection.rollback();
-
       throw error;
     } finally {
       connection.release();

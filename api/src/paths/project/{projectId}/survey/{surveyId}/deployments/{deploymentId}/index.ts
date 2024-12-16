@@ -84,7 +84,7 @@ GET.apiDoc = {
                 type: 'object',
                 additionalProperties: false,
                 required: [
-                  'deployment2_id',
+                  'deployment_id',
                   'survey_id',
                   'critter_id',
                   'device_id',
@@ -108,7 +108,7 @@ GET.apiDoc = {
                   'critterbase_critter_id'
                 ],
                 properties: {
-                  deployment2_id: {
+                  deployment_id: {
                     type: 'integer',
                     description: 'Id of the deployment in the Survey.'
                   },

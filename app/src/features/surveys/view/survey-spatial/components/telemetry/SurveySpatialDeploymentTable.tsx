@@ -105,7 +105,7 @@ export const SurveySpatialDeploymentTable = () => {
     return critterDeployments.map((item) => {
       return {
         // Critters in this table may use multiple devices across multiple timespans
-        id: item.deployment.deployment2_id,
+        id: item.deployment.deployment_id,
         critter_id: item.critter.critter_id,
         animal_id: item.critter.animal_id,
         device_id: item.deployment.device_id,

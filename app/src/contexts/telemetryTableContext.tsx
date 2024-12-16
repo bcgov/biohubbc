@@ -630,7 +630,7 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
       try {
         // create a new records
         const createData = createRows.map((row) => ({
-          deployment2_id: row.deployment_id,
+          deployment_id: row.deployment_id,
           latitude: Number(row.latitude),
           longitude: Number(row.longitude),
           acquisition_date: dayjs(`${row.date}T${row.time}`).toISOString(),
@@ -640,7 +640,7 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
         // update existing records
         const updateData = updateRows.map((row) => ({
           telemetry_manual_id: String(row.id),
-          deployment2_id: row.deployment_id,
+          deployment_id: row.deployment_id,
           latitude: Number(row.latitude),
           longitude: Number(row.longitude),
           acquisition_date: dayjs(`${row.date}T${row.time}`).toISOString(),

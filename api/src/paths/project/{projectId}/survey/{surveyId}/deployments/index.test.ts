@@ -17,7 +17,7 @@ describe('getDeploymentsInSurvey', () => {
     const mockDeployments = [
       {
         // deployment data
-        deployment2_id: 1,
+        deployment_id: 1,
         survey_id: 66,
         critter_id: 2,
         device_id: 3,

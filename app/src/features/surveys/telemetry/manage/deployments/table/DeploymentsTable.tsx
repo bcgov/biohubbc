@@ -26,7 +26,7 @@ import { combineDateTime } from 'utils/datetime';
 
 export interface IDeploymentRowData {
   id: number;
-  deployment2_id: number;
+  deployment_id: number;
   critter_id: number;
   device_id: number;
   device_key: string;
@@ -138,8 +138,8 @@ export const DeploymentsTable = (props: IDeploymentsTableProps) => {
   };
 
   const rows: IDeploymentRowData[] = deployments.map((deployment) => ({
-    id: deployment.deployment2_id,
-    deployment2_id: deployment.deployment2_id,
+    id: deployment.deployment_id,
+    deployment_id: deployment.deployment_id,
     critter_id: deployment.critter_id,
     device_id: deployment.device_id,
     device_key: deployment.device_key,
@@ -156,7 +156,7 @@ export const DeploymentsTable = (props: IDeploymentsTableProps) => {
 
   const columns: GridColDef<IDeploymentRowData>[] = [
     {
-      field: 'deployment2_id',
+      field: 'deployment_id',
       headerName: 'Deployment ID',
       description: 'The unique key for the deployment',
       width: 85,
@@ -170,7 +170,7 @@ export const DeploymentsTable = (props: IDeploymentsTableProps) => {
       ),
       renderCell: (params) => (
         <Typography color={grey[500]} variant="body2">
-          {params.row.deployment2_id}
+          {params.row.deployment_id}
         </Typography>
       )
     },
@@ -282,7 +282,7 @@ export const DeploymentsTable = (props: IDeploymentsTableProps) => {
           <Box position="fixed">
             <IconButton
               onClick={(event) => {
-                setActionMenuDeploymentId(params.row.deployment2_id);
+                setActionMenuDeploymentId(params.row.deployment_id);
                 setActionMenuAnchorEl(event.currentTarget);
               }}>
               <Icon path={mdiDotsVertical} size={1} />

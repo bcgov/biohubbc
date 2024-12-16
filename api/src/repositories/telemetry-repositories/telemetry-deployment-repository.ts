@@ -29,7 +29,7 @@ export class TelemetryDeploymentRepository extends BaseRepository {
    */
   async createDeployment(deployment: CreateDeployment): Promise<void> {
     const sqlStatement = SQL`
-      INSERT INTO deployment2 (
+      INSERT INTO deployment (
         survey_id,
         critter_id,
         device_id,
@@ -88,22 +88,22 @@ export class TelemetryDeploymentRepository extends BaseRepository {
       .queryBuilder()
       .select(
         // deployment data
-        'deployment2.deployment2_id',
-        'deployment2.survey_id',
-        'deployment2.critter_id',
-        'deployment2.device_id',
-        'deployment2.device_key',
-        'deployment2.frequency',
-        'deployment2.frequency_unit_id',
-        'deployment2.attachment_start_date',
-        'deployment2.attachment_start_time',
-        'deployment2.attachment_start_timestamp',
-        'deployment2.attachment_end_date',
-        'deployment2.attachment_end_time',
-        'deployment2.attachment_end_timestamp',
-        'deployment2.critterbase_start_capture_id',
-        'deployment2.critterbase_end_capture_id',
-        'deployment2.critterbase_end_mortality_id',
+        'deployment.deployment_id',
+        'deployment.survey_id',
+        'deployment.critter_id',
+        'deployment.device_id',
+        'deployment.device_key',
+        'deployment.frequency',
+        'deployment.frequency_unit_id',
+        'deployment.attachment_start_date',
+        'deployment.attachment_start_time',
+        'deployment.attachment_start_timestamp',
+        'deployment.attachment_end_date',
+        'deployment.attachment_end_time',
+        'deployment.attachment_end_timestamp',
+        'deployment.critterbase_start_capture_id',
+        'deployment.critterbase_end_capture_id',
+        'deployment.critterbase_end_mortality_id',
         // device data
         'device.serial',
         'device.device_make_id',
@@ -111,15 +111,15 @@ export class TelemetryDeploymentRepository extends BaseRepository {
         // critter data
         'critter.critterbase_critter_id'
       )
-      .from('deployment2')
-      .innerJoin('survey', 'deployment2.survey_id', 'survey.survey_id')
-      .innerJoin('device', 'deployment2.device_id', 'device.device_id')
-      .innerJoin('critter', 'deployment2.critter_id', 'critter.critter_id')
-      .where('deployment2.survey_id', surveyId);
+      .from('deployment')
+      .innerJoin('survey', 'deployment.survey_id', 'survey.survey_id')
+      .innerJoin('device', 'deployment.device_id', 'device.device_id')
+      .innerJoin('critter', 'deployment.critter_id', 'critter.critter_id')
+      .where('deployment.survey_id', surveyId);
 
     if (deploymentIds?.length) {
       // Filter results by deployment IDs
-      queryBuilder.whereIn('deployment2.deployment2_id', deploymentIds);
+      queryBuilder.whereIn('deployment.deployment_id', deploymentIds);
     }
 
     if (pagination) {
@@ -180,22 +180,22 @@ export class TelemetryDeploymentRepository extends BaseRepository {
       .queryBuilder()
       .select(
         // deployment data
-        'deployment2.deployment2_id',
-        'deployment2.survey_id',
-        'deployment2.critter_id',
-        'deployment2.device_id',
-        'deployment2.device_key',
-        'deployment2.frequency',
-        'deployment2.frequency_unit_id',
-        'deployment2.attachment_start_date',
-        'deployment2.attachment_start_time',
-        'deployment2.attachment_start_timestamp',
-        'deployment2.attachment_end_date',
-        'deployment2.attachment_end_time',
-        'deployment2.attachment_end_timestamp',
-        'deployment2.critterbase_start_capture_id',
-        'deployment2.critterbase_end_capture_id',
-        'deployment2.critterbase_end_mortality_id',
+        'deployment.deployment_id',
+        'deployment.survey_id',
+        'deployment.critter_id',
+        'deployment.device_id',
+        'deployment.device_key',
+        'deployment.frequency',
+        'deployment.frequency_unit_id',
+        'deployment.attachment_start_date',
+        'deployment.attachment_start_time',
+        'deployment.attachment_start_timestamp',
+        'deployment.attachment_end_date',
+        'deployment.attachment_end_time',
+        'deployment.attachment_end_timestamp',
+        'deployment.critterbase_start_capture_id',
+        'deployment.critterbase_end_capture_id',
+        'deployment.critterbase_end_mortality_id',
         // device data
         'device.serial',
         'device.device_make_id',
@@ -203,11 +203,11 @@ export class TelemetryDeploymentRepository extends BaseRepository {
         // critter data
         'critter.critterbase_critter_id'
       )
-      .from('deployment2')
-      .innerJoin('survey', 'deployment2.survey_id', 'survey.survey_id')
-      .innerJoin('device', 'deployment2.device_id', 'device.device_id')
-      .innerJoin('critter', 'deployment2.critter_id', 'critter.critter_id')
-      .whereIn('deployment2.survey_id', getSurveyIdsQuery);
+      .from('deployment')
+      .innerJoin('survey', 'deployment.survey_id', 'survey.survey_id')
+      .innerJoin('device', 'deployment.device_id', 'device.device_id')
+      .innerJoin('critter', 'deployment.critter_id', 'critter.critter_id')
+      .whereIn('deployment.survey_id', getSurveyIdsQuery);
 
     if (filterFields.survey_ids?.length) {
       // Filter results by survey IDs
@@ -216,7 +216,7 @@ export class TelemetryDeploymentRepository extends BaseRepository {
 
     if (filterFields.deployment_ids?.length) {
       // Filter results by deployment IDs
-      queryBuilder.whereIn('deployment2.deployment2_id', filterFields.deployment_ids);
+      queryBuilder.whereIn('deployment.deployment_id', filterFields.deployment_ids);
     }
 
     if (filterFields.system_user_id) {
@@ -256,7 +256,7 @@ export class TelemetryDeploymentRepository extends BaseRepository {
   async getDeploymentsForCritterId(surveyId: number, critterId: number): Promise<DeploymentRecord[]> {
     const sqlStatement = SQL`
       SELECT
-        deployment2_id,
+        deployment_id,
         survey_id,
         critter_id,
         device_id,
@@ -273,7 +273,7 @@ export class TelemetryDeploymentRepository extends BaseRepository {
         critterbase_end_capture_id,
         critterbase_end_mortality_id
       FROM
-        deployment2
+        deployment
       WHERE
         critter_id = ${critterId} AND
         survey_id = ${surveyId};
@@ -296,7 +296,7 @@ export class TelemetryDeploymentRepository extends BaseRepository {
 
     const queryBuilder = knex
       .select(knex.raw('count(*)::integer as count'))
-      .from('deployment2')
+      .from('deployment')
       .where('survey_id', surveyId);
 
     const response = await this.connection.knex(queryBuilder, z.object({ count: z.number() }));
@@ -307,15 +307,15 @@ export class TelemetryDeploymentRepository extends BaseRepository {
    * Update a deployment.
    *
    * @param {number} surveyId The survey ID
-   * @param {number} deployment2_id The deployment ID
+   * @param {number} deployment_id The deployment ID
    * @param {UpdateDeployment} deployment The deployment data to update
    * @return {*}  {Promise<void>}
    * @memberof TelemetryDeploymentRepository
    */
-  async updateDeployment(surveyId: number, deployment2_id: number, deployment: UpdateDeployment): Promise<void> {
+  async updateDeployment(surveyId: number, deployment_id: number, deployment: UpdateDeployment): Promise<void> {
     const sqlStatement = SQL`
       UPDATE
-        deployment2
+        deployment
       SET
         critter_id = ${deployment.critter_id},
         device_id = ${deployment.device_id},
@@ -329,7 +329,7 @@ export class TelemetryDeploymentRepository extends BaseRepository {
         critterbase_end_capture_id = ${deployment.critterbase_end_capture_id},
         critterbase_end_mortality_id = ${deployment.critterbase_end_mortality_id}
       WHERE
-        deployment2_id = ${deployment2_id} AND
+        deployment_id = ${deployment_id} AND
         survey_id = ${surveyId};
     `;
 
@@ -354,9 +354,9 @@ export class TelemetryDeploymentRepository extends BaseRepository {
   async deleteDeployment(surveyId: number, deploymentId: number): Promise<void> {
     const sqlStatement = SQL`
       DELETE FROM
-        deployment2
+        deployment
       WHERE
-        deployment2_id = ${deploymentId} AND
+        deployment_id = ${deploymentId} AND
         survey_id = ${surveyId};
     `;
 
@@ -382,8 +382,8 @@ export class TelemetryDeploymentRepository extends BaseRepository {
     const queryBuilder = getKnex()
       .queryBuilder()
       .delete()
-      .from('deployment2')
-      .whereIn('deployment2_id', deploymentIds)
+      .from('deployment')
+      .whereIn('deployment_id', deploymentIds)
       .andWhere('survey_id', surveyId);
 
     const response = await this.connection.knex(queryBuilder);

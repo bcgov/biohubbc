@@ -38,7 +38,7 @@ export type UpdateTelemetryDeployment = {
  */
 export type TelemetryDeployment = {
   // deployment data
-  deployment2_id: number;
+  deployment_id: number;
   survey_id: number;
   critter_id: number;
   device_id: number;

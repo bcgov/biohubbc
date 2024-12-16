@@ -7,7 +7,7 @@ import { authorizeRequestHandler } from '../../../../../../../../request-handler
 import { TelemetryVendorService } from '../../../../../../../../services/telemetry-services/telemetry-vendor-service';
 import { getLogger } from '../../../../../../../../utils/logger';
 
-const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/deployments2/{deploymentId}/telemetry/index');
+const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/deployments/{deploymentId}/telemetry/index');
 
 export const GET: Operation = [
   authorizeRequestHandler((req) => {

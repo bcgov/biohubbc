@@ -67,7 +67,7 @@ describe('TelemetryVendorService', () => {
 
       const deploymentServiceStub = sinon
         .stub(service.deploymentService, 'getDeploymentsForCritterId')
-        .resolves([{ deployment2_id: 8 } as any]);
+        .resolves([{ deployment_id: 8 } as any]);
 
       const data = await service.getTelemetryForCritter(1, 1);
 
@@ -109,7 +109,7 @@ describe('TelemetryVendorService', () => {
 
         const deploymentServiceStub = sinon
           .stub(service.deploymentService, 'getDeploymentsForSurvey')
-          .resolves([{ deployment2_id: 8 } as any]);
+          .resolves([{ deployment_id: 8 } as any]);
 
         const surveyId = 1;
         const pagination: ApiPaginationOptions = { page: 1, limit: 10 };
@@ -150,7 +150,7 @@ describe('TelemetryVendorService', () => {
 
         const deploymentServiceStub = sinon
           .stub(service.deploymentService, 'getDeploymentsForSurvey')
-          .resolves([{ deployment2_id: 8 } as any]);
+          .resolves([{ deployment_id: 8 } as any]);
 
         const surveyId = 1;
         const pagination = undefined;
@@ -170,7 +170,7 @@ describe('TelemetryVendorService', () => {
 
       const mockDeployment: ExtendedDeploymentRecord[] = [
         {
-          deployment2_id: 1,
+          deployment_id: 1,
           survey_id: 2,
           critter_id: 3,
           device_id: 4,
@@ -329,7 +329,7 @@ describe('TelemetryVendorService', () => {
 
       await service.bulkCreateManualTelemetry(1, [
         {
-          deployment2_id: 1,
+          deployment_id: 1,
           latitude: 1,
           longitude: 1,
           acquisition_date: '2021-01-01',
@@ -340,7 +340,7 @@ describe('TelemetryVendorService', () => {
       expect(validateStub).to.have.been.calledWith(1, [1]);
       expect(repoStub).to.have.been.calledWith([
         {
-          deployment2_id: 1,
+          deployment_id: 1,
           latitude: 1,
           longitude: 1,
           acquisition_date: '2021-01-01',
@@ -358,7 +358,7 @@ describe('TelemetryVendorService', () => {
       try {
         await service.bulkCreateManualTelemetry(1, [
           {
-            deployment2_id: 1,
+            deployment_id: 1,
             latitude: 1,
             longitude: 1,
             acquisition_date: '2021-01-01',
@@ -383,7 +383,7 @@ describe('TelemetryVendorService', () => {
       await service.bulkUpdateManualTelemetry(1, [
         {
           telemetry_manual_id: '09556e24-153b-4dbb-add6-f00e74131e48',
-          deployment2_id: 1,
+          deployment_id: 1,
           latitude: 1,
           longitude: 1,
           acquisition_date: '2021-01-01',
@@ -395,7 +395,7 @@ describe('TelemetryVendorService', () => {
       expect(repoStub).to.have.been.calledWith([
         {
           telemetry_manual_id: '09556e24-153b-4dbb-add6-f00e74131e48',
-          deployment2_id: 1,
+          deployment_id: 1,
           latitude: 1,
           longitude: 1,
           acquisition_date: '2021-01-01',
@@ -414,7 +414,7 @@ describe('TelemetryVendorService', () => {
         await service.bulkUpdateManualTelemetry(1, [
           {
             telemetry_manual_id: '09556e24-153b-4dbb-add6-f00e74131e48',
-            deployment2_id: 1,
+            deployment_id: 1,
             latitude: 1,
             longitude: 1,
             acquisition_date: '2021-01-01',

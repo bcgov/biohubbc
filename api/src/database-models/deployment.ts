@@ -6,7 +6,7 @@ import { z } from 'zod';
  * @description Data model for `deployment`.
  */
 export const DeploymentModel = z.object({
-  deployment2_id: z.number(),
+  deployment_id: z.number(),
   survey_id: z.number(),
   critter_id: z.number(),
   device_id: z.number(),

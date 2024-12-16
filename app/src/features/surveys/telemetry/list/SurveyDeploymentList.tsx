@@ -373,7 +373,7 @@ export const SurveyDeploymentList = () => {
                             }
 
                             // Select all
-                            const deploymentIds = deployments.map((deployment) => deployment.deployment2_id);
+                            const deploymentIds = deployments.map((deployment) => deployment.deployment_id);
                             setCheckboxSelectedIds([...deploymentIds]);
                           }}
                           inputProps={{ 'aria-label': 'controlled' }}
@@ -404,10 +404,10 @@ export const SurveyDeploymentList = () => {
 
                     return (
                       <SurveyDeploymentListItem
-                        key={deployment.deployment2_id}
+                        key={deployment.deployment_id}
                         animal={animal}
                         deployment={hydratedDeployment}
-                        isChecked={checkboxSelectedIds.includes(deployment.deployment2_id)}
+                        isChecked={checkboxSelectedIds.includes(deployment.deployment_id)}
                         handleDeploymentMenuClick={handledDeploymentMenuClick}
                         handleCheckboxChange={handleCheckboxChange}
                       />

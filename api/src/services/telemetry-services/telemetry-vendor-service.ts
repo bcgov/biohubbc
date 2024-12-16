@@ -83,7 +83,7 @@ export class TelemetryVendorService extends DBService {
    */
   async getTelemetryForCritter(surveyId: number, critterId: number, options?: TelemetryOptions): Promise<Telemetry[]> {
     const deployments = await this.deploymentService.getDeploymentsForCritterId(surveyId, critterId);
-    const deploymentIds = deployments.map((deployment) => deployment.deployment2_id);
+    const deploymentIds = deployments.map((deployment) => deployment.deployment_id);
 
     return this.vendorRepository.getTelemetryByDeploymentIds(surveyId, deploymentIds, options);
   }
@@ -98,7 +98,7 @@ export class TelemetryVendorService extends DBService {
    */
   async getTelemetryForSurvey(surveyId: number, options?: TelemetryOptions): Promise<[Telemetry[], number]> {
     const deployments = await this.deploymentService.getDeploymentsForSurvey(surveyId);
-    const deploymentIds = deployments.map((deployment) => deployment.deployment2_id);
+    const deploymentIds = deployments.map((deployment) => deployment.deployment_id);
 
     if (!options?.pagination) {
       const telemetry = await this.vendorRepository.getTelemetryByDeploymentIds(surveyId, deploymentIds, options);
@@ -120,7 +120,7 @@ export class TelemetryVendorService extends DBService {
    */
   async getTelemetrySpatialForSurvey(surveyId: number): Promise<[TelemetrySpatial[], number]> {
     const deployments = await this.deploymentService.getDeploymentsForSurvey(surveyId);
-    const deploymentIds = deployments.map((deployment) => deployment.deployment2_id);
+    const deploymentIds = deployments.map((deployment) => deployment.deployment_id);
 
     const telemetry = await this.vendorRepository.getTelemetrySpatialByDeploymentIds(surveyId, deploymentIds);
     return [telemetry, telemetry.length];
@@ -177,7 +177,7 @@ export class TelemetryVendorService extends DBService {
    * @returns {Promise<void>}
    */
   async bulkCreateManualTelemetry(surveyId: number, telemetry: CreateManualTelemetry[]): Promise<void> {
-    const deploymentIds = [...new Set(telemetry.map((record) => record.deployment2_id))];
+    const deploymentIds = [...new Set(telemetry.map((record) => record.deployment_id))];
     const deployments = await this.deploymentService.getDeploymentsForSurvey(surveyId, deploymentIds);
 
     if (deployments.length !== deploymentIds.length) {

@@ -90,7 +90,7 @@ export class ImportTelemetryStrategy extends DBService implements CSVImportStrat
 
       // Push the row to validate into the array
       rowsToValidate.push({
-        deployment2_id: deployment?.deployment2_id,
+        deployment_id: deployment?.deployment_id,
         latitude: latitude,
         longitude: longitude,
         acquisition_date: timestamp,
@@ -102,7 +102,7 @@ export class ImportTelemetryStrategy extends DBService implements CSVImportStrat
     return z
       .array(
         z.object({
-          deployment2_id: z.number({
+          deployment_id: z.number({
             required_error: `Unable to infer matching deployment with vendor and serial. Make sure telemetry date and time intersect with deployment attachment start and end dates.`
           }),
           latitude: z.number(),

@@ -15,7 +15,7 @@ import {
   makePaginationResponse
 } from '../../../../../../utils/pagination';
 
-const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/deployments2/index');
+const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/deployments/index');
 
 export const GET: Operation = [
   authorizeRequestHandler((req) => {
@@ -86,7 +86,7 @@ GET.apiDoc = {
                   additionalProperties: false,
                   required: [
                     // deployment data
-                    'deployment2_id',
+                    'deployment_id',
                     'survey_id',
                     'critter_id',
                     'device_id',
@@ -109,7 +109,7 @@ GET.apiDoc = {
                     'critterbase_critter_id'
                   ],
                   properties: {
-                    deployment2_id: {
+                    deployment_id: {
                       type: 'integer',
                       description: 'Id of the deployment in the Survey.'
                     },
