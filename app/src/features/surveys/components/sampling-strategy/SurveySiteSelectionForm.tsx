@@ -118,6 +118,7 @@ const SurveySiteSelectionForm = (props: ISurveySiteSelectionFormProps) => {
         id="site_selection.strategies"
         label="Site selection strategy"
         options={siteStrategies}
+        helpText="Select how the locations of sampling sites were chosen."
         selectedOptions={selectedSiteStrategies}
         required={true}
         onChange={(_, selectedOptions, reason) => {
