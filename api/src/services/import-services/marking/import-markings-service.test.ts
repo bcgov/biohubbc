@@ -134,24 +134,20 @@ describe('import-markings-service', () => {
       expect(markingTypesStub).to.not.have.been.calledOnceWithExactly();
       expect(coloursStub).to.not.have.been.calledOnceWithExactly();
 
-      try {
-        const config = await service.getCSVConfig();
+      const config = await service.getCSVConfig();
 
-        expect(config.dynamicHeadersConfig).to.be.equal(undefined);
-        expect(config.staticHeadersConfig).to.have.keys([
-          'ALIAS',
-          'CAPTURE_DATE',
-          'CAPTURE_TIME',
-          'BODY_LOCATION',
-          'MARKING_TYPE',
-          'IDENTIFIER',
-          'PRIMARY_COLOUR',
-          'SECONDARY_COLOUR',
-          'DESCRIPTION'
-        ]);
-      } catch (error) {
-        expect.fail();
-      }
+      expect(config.dynamicHeadersConfig).to.be.equal(undefined);
+      expect(config.staticHeadersConfig).to.have.keys([
+        'ALIAS',
+        'CAPTURE_DATE',
+        'CAPTURE_TIME',
+        'BODY_LOCATION',
+        'MARKING_TYPE',
+        'IDENTIFIER',
+        'PRIMARY_COLOUR',
+        'SECONDARY_COLOUR',
+        'DESCRIPTION'
+      ]);
     });
   });
 });

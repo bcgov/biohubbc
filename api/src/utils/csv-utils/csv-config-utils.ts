@@ -10,12 +10,12 @@ import { CSVConfig, CSVHeaderConfig, CSVRow } from './csv-config-validation.inte
  * @template StaticHeaderType - The static header type
  * @class CSVConfigUtils
  */
-export class CSVConfigUtils<StaticHeaderType extends Uppercase<string>> {
+export class CSVConfigUtils<StaticHeaderType extends Uppercase<string> = Uppercase<string>> {
   _config: CSVConfig<StaticHeaderType>;
   worksheet: WorkSheet;
   worksheetRows: CSVRow[];
 
-  constructor(worksheet: WorkSheet, config: CSVConfig) {
+  constructor(worksheet: WorkSheet, config: CSVConfig<StaticHeaderType>) {
     this._config = config;
     this.worksheet = worksheet;
     this.worksheetRows = getWorksheetRowObjects(worksheet);
@@ -153,7 +153,7 @@ export class CSVConfigUtils<StaticHeaderType extends Uppercase<string>> {
    */
   getCellValue(header: StaticHeaderType, row: CSVRow): any {
     // Static header or dynamic header exact match
-    if (header in row) {
+    if ((header as Uppercase<string>) in row) {
       return row[header];
     }
 

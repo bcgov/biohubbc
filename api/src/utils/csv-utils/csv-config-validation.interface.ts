@@ -93,10 +93,11 @@ export interface CSVHeaderConfig {
  */
 export interface CSVParams {
   /**
-   * The cell value.
+   * The cell value. Readonly to prevent mutation during validation.
    *
-   * Note: Readonly to prevent mutation during validation. Why? CSV cell validators are expecting the initial cell value.
-   * Use the `setCellValue` callback or the CSVParams `mutateCell` to update the cell value.
+   * Why? CSVUtils and related functions are expecting the initial non-modified cell value for calculations.
+   *
+   * Use the `setCellValue` callback or the CSVParams `this.mutateCell` to update the cell value.
    *
    * @type {unknown}
    */

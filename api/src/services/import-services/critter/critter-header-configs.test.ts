@@ -11,12 +11,17 @@ import {
   getCritterSexCellValidator,
   getWlhIDCellValidator
 } from './critter-header-configs';
+import { CritterCSVStaticHeader } from './import-critters-service';
 
-const mockConfig: CSVConfig = {
+const mockConfig: CSVConfig<CritterCSVStaticHeader> = {
   staticHeadersConfig: {
-    ALIAS: { aliases: [] }
+    ITIS_TSN: { aliases: ['TAXON', 'SPECIES', 'TSN'] },
+    ALIAS: { aliases: ['NICKNAME', 'NAME', 'ANIMAL_ID'] },
+    SEX: { aliases: [], optional: true },
+    WLH_ID: { aliases: ['WILDLIFE_HEALTH_ID', 'WILD LIFE HEALTH ID', 'WLHID'], optional: true },
+    DESCRIPTION: { aliases: ['COMMENTS', 'COMMENT', 'NOTES'], optional: true }
   },
-  ignoreDynamicHeaders: true
+  ignoreDynamicHeaders: false
 };
 
 describe('critter-header-configs', () => {

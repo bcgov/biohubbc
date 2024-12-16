@@ -100,8 +100,11 @@ describe('marking-header-configs', () => {
   describe('getMarkingBodyLocationCellValidator', () => {
     it('should return no errors for valid body locations', () => {
       const dictionary = new NestedRecord({ alias: { location: 'uuid' } });
-      const mockConfig: CSVConfig = { staticHeadersConfig: { ALIAS: { aliases: [] } }, ignoreDynamicHeaders: true };
-      const utils = new CSVConfigUtils({}, mockConfig);
+      const mockConfig = {
+        staticHeadersConfig: { ALIAS: { aliases: [] } },
+        ignoreDynamicHeaders: true
+      };
+      const utils = new CSVConfigUtils<any>({}, mockConfig);
 
       const result = getMarkingBodyLocationCellValidator(
         dictionary,
@@ -119,8 +122,11 @@ describe('marking-header-configs', () => {
 
     it('should return a single error when alias has no body locations', () => {
       const dictionary = new NestedRecord({ alias: { location: 'uuid' } });
-      const mockConfig: CSVConfig = { staticHeadersConfig: { ALIAS: { aliases: [] } }, ignoreDynamicHeaders: true };
-      const utils = new CSVConfigUtils({}, mockConfig);
+      const mockConfig: CSVConfig<'ALIAS'> = {
+        staticHeadersConfig: { ALIAS: { aliases: [] } },
+        ignoreDynamicHeaders: true
+      };
+      const utils = new CSVConfigUtils<any>({}, mockConfig);
 
       const result = getMarkingBodyLocationCellValidator(
         dictionary,
@@ -139,7 +145,7 @@ describe('marking-header-configs', () => {
     it('should return a single error when invalid body location option', () => {
       const dictionary = new NestedRecord({ alias: { location: 'uuid' } });
       const mockConfig: CSVConfig = { staticHeadersConfig: { ALIAS: { aliases: [] } }, ignoreDynamicHeaders: true };
-      const utils = new CSVConfigUtils({}, mockConfig);
+      const utils = new CSVConfigUtils<any>({}, mockConfig);
 
       const result = getMarkingBodyLocationCellValidator(
         dictionary,
@@ -185,7 +191,7 @@ describe('marking-header-configs', () => {
         },
         ignoreDynamicHeaders: true
       };
-      const utils = new CSVConfigUtils({}, mockConfig);
+      const utils = new CSVConfigUtils<any>({}, mockConfig);
 
       const result = getMarkingCaptureDateCellValidator(
         surveyAliasMap,
@@ -207,7 +213,7 @@ describe('marking-header-configs', () => {
         },
         ignoreDynamicHeaders: true
       };
-      const utils = new CSVConfigUtils({}, mockConfig);
+      const utils = new CSVConfigUtils<any>({}, mockConfig);
 
       const params = { cell: '2021-01-01', row: { ALIAS: 'alias' } } as unknown as CSVParams;
 
@@ -229,7 +235,7 @@ describe('marking-header-configs', () => {
         },
         ignoreDynamicHeaders: true
       };
-      const utils = new CSVConfigUtils({}, mockConfig);
+      const utils = new CSVConfigUtils<any>({}, mockConfig);
 
       const result = getMarkingCaptureDateCellValidator(
         surveyAliasMap,
@@ -260,7 +266,7 @@ describe('marking-header-configs', () => {
         },
         ignoreDynamicHeaders: true
       };
-      const utils = new CSVConfigUtils({}, mockConfig);
+      const utils = new CSVConfigUtils<any>({}, mockConfig);
 
       const result = getMarkingCaptureDateCellValidator(
         surveyAliasMap,
