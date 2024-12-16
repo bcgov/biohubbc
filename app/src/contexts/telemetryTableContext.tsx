@@ -611,7 +611,7 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
   }, [rows, _updateRowsMode, _modifiedRowIds]);
 
   /**
-   * Dispatches update and create requests to BCTW
+   * Dispatches update and create requests to SIMS
    *
    * @param {GridValidRowModel[]} createRows - Rows to create
    * @param {GridValidRowModel[]} updateRows - Rows to update
