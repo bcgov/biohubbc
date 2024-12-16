@@ -19,9 +19,11 @@ import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonList } from 'components/loading/SkeletonLoaders';
 import { SurveyDeploymentListItem } from 'features/surveys/telemetry/list/SurveyDeploymentListItem';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useCodesContext, useDialogContext, useSurveyContext, useTelemetryContext } from 'hooks/useContext';
+import { useCodesContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
+import useDataLoader from 'hooks/useDataLoader';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import { ApiPaginationRequestOptions } from 'types/misc';
 
 /**
  * Renders a list of all deployments in the survey
@@ -32,17 +34,18 @@ export const SurveyDeploymentList = () => {
   const dialogContext = useDialogContext();
   const codesContext = useCodesContext();
   const surveyContext = useSurveyContext();
-  const telemetryContext = useTelemetryContext();
 
   const biohubApi = useBiohubApi();
-
-  const deploymentDataLoader = telemetryContext.deploymentDataLoader;
 
   const [bulkDeploymentAnchorEl, setBulkDeploymentAnchorEl] = useState<MenuProps['anchorEl']>(null);
   const [deploymentAnchorEl, setDeploymentAnchorEl] = useState<MenuProps['anchorEl']>(null);
 
   const [checkboxSelectedIds, setCheckboxSelectedIds] = useState<number[]>([]);
   const [selectedDeploymentId, setSelectedDeploymentId] = useState<number | null>();
+
+  const deploymentDataLoader = useDataLoader((pagination?: ApiPaginationRequestOptions) =>
+    biohubApi.telemetryDeployment.getDeploymentsInSurvey(surveyContext.projectId, surveyContext.surveyId, pagination)
+  );
 
   const deployments = deploymentDataLoader.data?.deployments ?? [];
   const deploymentsCount = deploymentDataLoader.data?.count ?? 0;

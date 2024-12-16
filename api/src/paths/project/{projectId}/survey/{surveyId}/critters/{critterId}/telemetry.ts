@@ -30,7 +30,7 @@ export const GET: Operation = [
 
 GET.apiDoc = {
   description: 'Get telemetry points for a specific critter.',
-  tags: ['bctw'],
+  tags: ['telemetry'],
   security: [
     {
       Bearer: []

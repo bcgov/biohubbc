@@ -12,18 +12,20 @@ import {
   useGridApiRef
 } from '@mui/x-data-grid';
 import { GridApiCommunity, GridStateColDef } from '@mui/x-data-grid/internals';
+import { RowValidationError, TableValidationModel } from 'components/data-grid/DataGridValidationAlert';
 import { TelemetryTableI18N } from 'constants/i18n';
 import { SIMS_TELEMETRY_HIDDEN_COLUMNS } from 'constants/session-storage';
 import { default as dayjs } from 'dayjs';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useDialogContext, useSurveyContext, useTelemetryContext } from 'hooks/useContext';
+import { useDialogContext, useSurveyContext } from 'hooks/useContext';
+import useDataLoader from 'hooks/useDataLoader';
 import { usePersistentState } from 'hooks/usePersistentState';
 import { GetSurveyTelemetryResponse } from 'interfaces/useTelemetryApi.interface';
 import { createContext, PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { ApiPaginationRequestOptions } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
 import { v4 as uuidv4 } from 'uuid';
-import { RowValidationError, TableValidationModel } from '../components/data-grid/DataGridValidationAlert';
 
 export const MANUAL_TELEMETRY_TYPE = 'manual';
 
@@ -178,14 +180,15 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
   const surveyContext = useSurveyContext();
   const dialogContext = useDialogContext();
 
-  const {
-    telemetryDataLoader: {
-      data: telemetryData,
-      isLoading: isLoadingTelemetryData,
-      //   hasLoaded: hasLoadedTelemetryData,
-      refresh: refreshTelemetryData
-    }
-  } = useTelemetryContext();
+  const telemetryDataLoader = useDataLoader((pagination?: ApiPaginationRequestOptions) =>
+    biohubApi.telemetry.getTelemetryForSurvey(surveyContext.projectId, surveyContext.surveyId, pagination)
+  );
+
+  useEffect(() => {
+    telemetryDataLoader.load();
+  }, [telemetryDataLoader]);
+
+  const { data: telemetryData, isLoading: isLoadingTelemetryData, refresh: refreshTelemetryData } = telemetryDataLoader;
 
   // The data grid rows
   const [rows, setRows] = useState<IManualTelemetryTableRow[]>([]);
@@ -616,7 +619,7 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
   }, [rows, _updateRowsMode, _modifiedRowIds]);
 
   /**
-   * Dispatches update and create requests to BCTW
+   * Dispatches update and create requests to SIMS
    *
    * @param {GridValidRowModel[]} createRows - Rows to create
    * @param {GridValidRowModel[]} updateRows - Rows to update

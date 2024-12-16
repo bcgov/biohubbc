@@ -67,6 +67,7 @@ export interface IAllTelemetry {
   temperature: number | null;
 }
 
+// TODO: Update this type after telemetry migration
 export type IAnimalDeployment = {
   // BCTW properties
 
