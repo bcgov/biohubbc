@@ -17,10 +17,12 @@ import { SIMS_TELEMETRY_HIDDEN_COLUMNS } from 'constants/session-storage';
 import { default as dayjs } from 'dayjs';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useDialogContext, useSurveyContext, useTelemetryContext } from 'hooks/useContext';
+import { useDialogContext, useSurveyContext } from 'hooks/useContext';
+import useDataLoader from 'hooks/useDataLoader';
 import { usePersistentState } from 'hooks/usePersistentState';
 import { GetSurveyTelemetryResponse } from 'interfaces/useTelemetryApi.interface';
 import { createContext, PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { ApiPaginationRequestOptions } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
 import { v4 as uuidv4 } from 'uuid';
 import { RowValidationError, TableValidationModel } from '../components/data-grid/DataGridValidationAlert';
@@ -178,9 +180,15 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
   const surveyContext = useSurveyContext();
   const dialogContext = useDialogContext();
 
-  const {
-    telemetryDataLoader: { data: telemetryData, isLoading: isLoadingTelemetryData, refresh: refreshTelemetryData }
-  } = useTelemetryContext();
+  const telemetryDataLoader = useDataLoader((pagination?: ApiPaginationRequestOptions) =>
+    biohubApi.telemetry.getTelemetryForSurvey(surveyContext.projectId, surveyContext.surveyId, pagination)
+  );
+
+  useEffect(() => {
+    telemetryDataLoader.load();
+  }, [telemetryDataLoader]);
+
+  const { data: telemetryData, isLoading: isLoadingTelemetryData, refresh: refreshTelemetryData } = telemetryDataLoader;
 
   // The data grid rows
   const [rows, setRows] = useState<IManualTelemetryTableRow[]>([]);
