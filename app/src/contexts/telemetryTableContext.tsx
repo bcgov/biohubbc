@@ -179,12 +179,7 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
   const dialogContext = useDialogContext();
 
   const {
-    telemetryDataLoader: {
-      data: telemetryData,
-      isLoading: isLoadingTelemetryData,
-      //   hasLoaded: hasLoadedTelemetryData,
-      refresh: refreshTelemetryData
-    }
+    telemetryDataLoader: { data: telemetryData, isLoading: isLoadingTelemetryData, refresh: refreshTelemetryData }
   } = useTelemetryContext();
 
   // The data grid rows

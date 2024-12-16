@@ -26,7 +26,7 @@ export type ITelemetryContext = {
 
 export const TelemetryContext = createContext<ITelemetryContext | undefined>(undefined);
 
-export const TelemetryContextProvider = (props: PropsWithChildren<Record<never, any>>) => {
+export const TelemetryContextProvider = (props: PropsWithChildren) => {
   const { projectId, surveyId } = useContext(SurveyContext);
 
   const biohubApi = useBiohubApi();
