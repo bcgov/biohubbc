@@ -6,9 +6,12 @@ import {
   SurveySpatialToolbar
 } from 'features/surveys/view/survey-spatial/components/SurveySpatialToolbar';
 import { SurveySpatialTelemetry } from 'features/surveys/view/survey-spatial/components/telemetry/SurveySpatialTelemetry';
-import { useObservationsContext, useTaxonomyContext } from 'hooks/useContext';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useSurveyContext, useTaxonomyContext } from 'hooks/useContext';
+import useDataLoader from 'hooks/useDataLoader';
 import { isEqual } from 'lodash-es';
 import { useEffect, useMemo, useState } from 'react';
+import { ApiPaginationRequestOptions } from 'types/misc';
 import { useSamplingSiteStaticLayer } from './components/map/useSamplingSiteStaticLayer';
 import { useStudyAreaStaticLayer } from './components/map/useStudyAreaStaticLayer';
 
@@ -20,8 +23,14 @@ import { useStudyAreaStaticLayer } from './components/map/useStudyAreaStaticLaye
  * @returns {JSX.Element} The rendered component.
  */
 export const SurveySpatialContainer = (): JSX.Element => {
-  const observationsContext = useObservationsContext();
+  const surveyContext = useSurveyContext();
   const taxonomyContext = useTaxonomyContext();
+
+  const biohubApi = useBiohubApi();
+
+  const observationsDataLoader = useDataLoader((pagination?: ApiPaginationRequestOptions) =>
+    biohubApi.observation.getObservationRecords(surveyContext.projectId, surveyContext.surveyId, pagination)
+  );
 
   const [activeView, setActiveView] = useState<SurveySpatialDatasetViewEnum>(SurveySpatialDatasetViewEnum.OBSERVATIONS);
 
@@ -33,13 +42,18 @@ export const SurveySpatialContainer = (): JSX.Element => {
     [samplingSiteStaticLayer, studyAreaStaticLayer]
   );
 
+  useEffect(() => {
+    // Load the observations data
+    observationsDataLoader.load();
+  }, [observationsDataLoader]);
+
   // Fetch and cache all taxonomic data required for the observations.
   useEffect(() => {
     const cacheTaxonomicData = async () => {
-      if (observationsContext.observationsDataLoader.data) {
+      if (observationsDataLoader.data) {
         // Fetch all unique ITIS TSNs from observations to retrieve taxonomic names
         const taxonomicIds = [
-          ...new Set(observationsContext.observationsDataLoader.data.surveyObservations.map((item) => item.itis_tsn))
+          ...new Set(observationsDataLoader.data.surveyObservations.map((item) => item.itis_tsn))
         ].filter((tsn): tsn is number => tsn !== null);
 
         await taxonomyContext.cacheSpeciesTaxonomyByIds(taxonomicIds);
@@ -49,7 +63,7 @@ export const SurveySpatialContainer = (): JSX.Element => {
     cacheTaxonomicData();
     // Should not re-run this effect on `taxonomyContext` changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [observationsContext.observationsDataLoader.data]);
+  }, [observationsDataLoader.data]);
 
   return (
     <>

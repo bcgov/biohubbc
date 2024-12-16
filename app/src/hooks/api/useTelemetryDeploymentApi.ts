@@ -1,11 +1,12 @@
 import { AxiosInstance } from 'axios';
 import {
   CreateTelemetryDeployment,
+  GetSurveyDeploymentsResponse,
   TelemetryDeployment,
   UpdateTelemetryDeployment
 } from 'interfaces/useTelemetryDeploymentApi.interface';
 import qs from 'qs';
-import { ApiPaginationRequestOptions, ApiPaginationResponseParams } from 'types/misc';
+import { ApiPaginationRequestOptions } from 'types/misc';
 
 /**
  * Returns a set of supported api methods for working with telemetry deployments.
@@ -84,13 +85,13 @@ export const useTelemetryDeploymentApi = (axios: AxiosInstance) => {
    * @param {number} projectId
    * @param {number} surveyId
    * @param {ApiPaginationRequestOptions} [pagination]
-   * @return {*}  {Promise<{ deployments: TelemetryDeployment[]; count: number; pagination: ApiPaginationResponseParams }>}
+   * @return {*}  {Promise<GetSurveyDeploymentsResponse>}
    */
   const getDeploymentsInSurvey = async (
     projectId: number,
     surveyId: number,
     pagination?: ApiPaginationRequestOptions
-  ): Promise<{ deployments: TelemetryDeployment[]; count: number; pagination: ApiPaginationResponseParams }> => {
+  ): Promise<GetSurveyDeploymentsResponse> => {
     const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/deployments2`, {
       params: {
         ...pagination

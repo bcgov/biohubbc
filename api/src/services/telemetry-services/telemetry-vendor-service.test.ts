@@ -108,7 +108,7 @@ describe('TelemetryVendorService', () => {
         const service = new TelemetryVendorService(mockDBConnection);
 
         const deploymentServiceStub = sinon
-          .stub(service.deploymentService, 'getDeploymentsForSurveyId')
+          .stub(service.deploymentService, 'getDeploymentsForSurvey')
           .resolves([{ deployment2_id: 8 } as any]);
 
         const surveyId = 1;
@@ -149,7 +149,7 @@ describe('TelemetryVendorService', () => {
         const service = new TelemetryVendorService(mockDBConnection);
 
         const deploymentServiceStub = sinon
-          .stub(service.deploymentService, 'getDeploymentsForSurveyId')
+          .stub(service.deploymentService, 'getDeploymentsForSurvey')
           .resolves([{ deployment2_id: 8 } as any]);
 
         const surveyId = 1;
@@ -186,6 +186,7 @@ describe('TelemetryVendorService', () => {
           critterbase_start_capture_id: null,
           critterbase_end_capture_id: null,
           critterbase_end_mortality_id: null,
+          serial: '1234',
           device_make_id: 1,
           model: 'V2',
           critterbase_critter_id: '1111111111'
@@ -203,7 +204,7 @@ describe('TelemetryVendorService', () => {
       ];
 
       const getDeploymentsForSurveyIdStub = sinon
-        .stub(TelemetryDeploymentService.prototype, 'getDeploymentsForSurveyId')
+        .stub(TelemetryDeploymentService.prototype, 'getDeploymentsForSurvey')
         .resolves(mockDeployment);
 
       const getTelemetrySpatialByDeploymentIdsStub = sinon
@@ -324,7 +325,7 @@ describe('TelemetryVendorService', () => {
       const service = new TelemetryVendorService(mockDBConnection);
 
       const repoStub = sinon.stub(TelemetryManualRepository.prototype, 'bulkCreateManualTelemetry');
-      const validateStub = sinon.stub(service.deploymentService, 'getDeploymentsByIds').resolves([true] as any);
+      const validateStub = sinon.stub(service.deploymentService, 'getDeploymentsForSurvey').resolves([true] as any);
 
       await service.bulkCreateManualTelemetry(1, [
         {
@@ -352,7 +353,7 @@ describe('TelemetryVendorService', () => {
       const mockDBConnection = getMockDBConnection();
       const service = new TelemetryVendorService(mockDBConnection);
 
-      sinon.stub(service.deploymentService, 'getDeploymentsByIds').resolves([]);
+      sinon.stub(service.deploymentService, 'getDeploymentsForSurvey').resolves([]);
 
       try {
         await service.bulkCreateManualTelemetry(1, [

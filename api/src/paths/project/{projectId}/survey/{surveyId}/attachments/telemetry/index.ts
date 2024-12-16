@@ -1,14 +1,11 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE } from '../../../../../../../constants/attachments';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
 import { HTTP400 } from '../../../../../../../errors/http-error';
 import { fileSchema } from '../../../../../../../openapi/schemas/file';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { AttachmentService } from '../../../../../../../services/attachment-service';
-import { BctwKeyxService } from '../../../../../../../services/bctw-service/bctw-keyx-service';
-import { getBctwUser } from '../../../../../../../services/bctw-service/bctw-service';
 import { uploadFileToS3 } from '../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../utils/logger';
 import { isValidTelementryCredentialFile } from '../../../../../../../utils/media/media-utils';
@@ -156,12 +153,6 @@ export function postSurveyTelemetryCredentialAttachment(): RequestHandler {
         Number(req.params.surveyId),
         isTelemetryCredentialFile.type
       );
-
-      // Upload telemetry credential file content to BCTW (for supported file types)
-      if (isTelemetryCredentialFile.type === TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.KEYX) {
-        const bctwKeyxService = new BctwKeyxService(getBctwUser(req));
-        await bctwKeyxService.uploadKeyX(rawMediaFile);
-      }
 
       // Upload telemetry credential file to SIMS S3 Storage
       const metadata = {

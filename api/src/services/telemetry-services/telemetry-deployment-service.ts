@@ -1,6 +1,7 @@
 import { DeploymentRecord } from '../../database-models/deployment';
 import { IDBConnection } from '../../database/db';
 import { ApiGeneralError } from '../../errors/api-error';
+import { IDeploymentAdvancedFilters } from '../../models/deployment-view';
 import { TelemetryDeploymentRepository } from '../../repositories/telemetry-repositories/telemetry-deployment-repository';
 import {
   CreateDeployment,
@@ -46,7 +47,7 @@ export class TelemetryDeploymentService extends DBService {
    * @memberof TelemetryDeploymentService
    */
   async getDeploymentById(surveyId: number, deploymentId: number): Promise<ExtendedDeploymentRecord> {
-    const deployments = await this.telemetryDeploymentRepository.getDeploymentsByIds(surveyId, [deploymentId]);
+    const deployments = await this.telemetryDeploymentRepository.getDeploymentsForSurvey(surveyId, [deploymentId]);
 
     if (deployments.length !== 1) {
       throw new ApiGeneralError(`Failed to get deployment`, ['TelemetryDeploymentService->getDeploymentById']);
@@ -56,30 +57,40 @@ export class TelemetryDeploymentService extends DBService {
   }
 
   /**
-   * Get deployments from a list of deployment IDs.
+   * Retrieves the paginated list of deployments under a survey, based on the provided filter params.
    *
-   * @param {number} surveyId The survey ID
-   * @param {number[]} deploymentIds A list of deployment IDs
+   * @param {number} surveyId
+   * @param {number[]} [deploymentIds]
+   * @param {ApiPaginationOptions} [pagination]
    * @return {*}  {Promise<ExtendedDeploymentRecord[]>}
-   * @memberof TelemetryDeploymentService
+   * @memberof TelemetryDeploymentRepository
    */
-  async getDeploymentsByIds(surveyId: number, deploymentIds: number[]): Promise<ExtendedDeploymentRecord[]> {
-    return this.telemetryDeploymentRepository.getDeploymentsByIds(surveyId, deploymentIds);
+  async getDeploymentsForSurvey(
+    surveyId: number,
+    deploymentIds?: number[],
+    pagination?: ApiPaginationOptions
+  ): Promise<ExtendedDeploymentRecord[]> {
+    return this.telemetryDeploymentRepository.getDeploymentsForSurvey(surveyId, deploymentIds, pagination);
   }
 
   /**
-   * Get deployments for a Survey.
+   * Retrieves the paginated list of all deployments that are available to the user, based on their permissions and
+   * provided filter criteria.
    *
-   * @param {number} surveyId
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId
+   * @param {IDeploymentAdvancedFilters} filterFields
    * @param {ApiPaginationOptions} [pagination]
    * @return {*}  {Promise<ExtendedDeploymentRecord[]>}
    * @memberof TelemetryDeploymentService
    */
-  async getDeploymentsForSurveyId(
-    surveyId: number,
+  async findDeployments(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: IDeploymentAdvancedFilters,
     pagination?: ApiPaginationOptions
   ): Promise<ExtendedDeploymentRecord[]> {
-    return this.telemetryDeploymentRepository.getDeploymentsForSurveyId(surveyId, pagination);
+    return this.telemetryDeploymentRepository.findDeployments(isUserAdmin, systemUserId, filterFields, pagination);
   }
 
   /**

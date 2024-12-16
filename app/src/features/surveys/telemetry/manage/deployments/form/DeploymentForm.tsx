@@ -105,7 +105,7 @@ export const DeploymentForm = (props: IDeploymentFormProps) => {
             summary={
               <>
                 Enter information about the device and animal.
-                <Typography color="textSecondary">
+                <Typography color="textSecondary" component="span" display="block">
                   You must&nbsp;
                   <Typography
                     sx={{

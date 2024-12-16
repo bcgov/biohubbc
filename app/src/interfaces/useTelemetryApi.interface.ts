@@ -30,15 +30,18 @@ export interface IFindTelemetryResponse {
 
 export interface IUpdateManualTelemetry {
   telemetry_manual_id: string;
+  deployment2_id: number;
   latitude: number;
   longitude: number;
   acquisition_date: string;
+  transmission_date: string | null;
 }
 export interface ICreateManualTelemetry {
-  deployment_id: string;
+  deployment2_id: number;
   latitude: number;
   longitude: number;
   acquisition_date: string;
+  transmission_date: string | null;
 }
 
 export interface IManualTelemetry extends ICreateManualTelemetry {
@@ -64,6 +67,7 @@ export interface IAllTelemetry {
   temperature: number | null;
 }
 
+// TODO: Update this type after telemetry migration
 export type IAnimalDeployment = {
   // BCTW properties
 
@@ -205,4 +209,10 @@ export type TelemetrySpatial = {
    * The geometry of the telemetry record.
    */
   geometry: Point | null;
+};
+
+export type GetSurveyTelemetryResponse = {
+  telemetry: IAllTelemetry[];
+  count: number;
+  pagination: ApiPaginationResponseParams;
 };

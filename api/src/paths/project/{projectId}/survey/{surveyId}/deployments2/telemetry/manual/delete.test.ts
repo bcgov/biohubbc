@@ -5,7 +5,7 @@ import { TelemetryVendorService } from '../../../../../../../../services/telemet
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../../__mocks__/db';
 import { bulkDeleteManualTelemetry } from './delete';
 
-describe('telemetry/manual/delete', () => {
+describe('delete', () => {
   afterEach(() => {
     sinon.restore();
   });

@@ -691,7 +691,12 @@ export class TelemetryVendorRepository extends BaseRepository {
       queryBuilder.limit(options.pagination.limit).offset((options.pagination.page - 1) * options.pagination.limit);
 
       if (options.pagination.sort && options.pagination.order) {
-        queryBuilder.orderBy(options.pagination.sort, options.pagination.order);
+        if (options.pagination.sort === 'acquisition_time') {
+          // Allow sorting by acquisition_time, which is not a real database column
+          queryBuilder.orderByRaw(knex.raw(`acquisition_date::time ${options.pagination.order}`));
+        } else {
+          queryBuilder.orderBy(options.pagination.sort, options.pagination.order);
+        }
       }
     }
 
@@ -896,7 +901,12 @@ export class TelemetryVendorRepository extends BaseRepository {
       queryBuilder.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
 
       if (pagination.sort && pagination.order) {
-        queryBuilder.orderBy(pagination.sort, pagination.order);
+        if (pagination.sort === 'acquisition_time') {
+          // Allow sorting by acquisition_time, which is not a real database column
+          queryBuilder.orderByRaw(knex.raw(`acquisition_date::time ${pagination.order}`));
+        } else {
+          queryBuilder.orderBy(pagination.sort, pagination.order);
+        }
       }
     }
 

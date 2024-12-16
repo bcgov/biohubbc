@@ -61,7 +61,7 @@ export class ImportTelemetryStrategy extends DBService implements CSVImportStrat
    */
   async validateRows(rows: Row[]) {
     const getColumnCell = generateColumnCellGetterFromColumnValidator(this.columnValidator);
-    const deployments = await this.telemetryVendorService.deploymentService.getDeploymentsForSurveyId(this.surveyId);
+    const deployments = await this.telemetryVendorService.deploymentService.getDeploymentsForSurvey(this.surveyId);
 
     const rowsToValidate: Partial<TelemetryManualRecord>[] = [];
 

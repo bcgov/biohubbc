@@ -42,7 +42,7 @@ export const DeploymentColDef = (props: {
           dataGridProps={params}
           options={props.critterDeployments.map((item) => {
             return {
-              label: `${item.critter.animal_id}: ${item.deployment.device_id}`,
+              label: `${item.deployment.deployment2_id}: ${item.critter.animal_id}`,
               value: item.deployment.deployment2_id
             };
           })}
@@ -57,7 +57,7 @@ export const DeploymentColDef = (props: {
         <AutocompleteDataGridEditCell<IManualTelemetryTableRow, number>
           dataGridProps={params}
           options={props.critterDeployments.map((item) => ({
-            label: `${item.critter.animal_id}: ${item.deployment.device_id}`,
+            label: `${item.deployment.deployment2_id}: ${item.critter.animal_id}`,
             value: item.deployment.deployment2_id
           }))}
           error={error}
@@ -71,7 +71,7 @@ export const DeviceColDef = (props: {
   critterDeployments: IAnimalDeploymentWithCritter[];
 }): GridColDef<IManualTelemetryTableRow> => {
   return {
-    field: 'device_id',
+    field: 'serial',
     headerName: 'Device',
     hideable: true,
     minWidth: 120,
@@ -83,7 +83,7 @@ export const DeviceColDef = (props: {
         {
           props.critterDeployments.find(
             (deployment) => deployment.deployment.deployment2_id === params.row.deployment_id
-          )?.deployment.device_id
+          )?.deployment.serial
         }
       </Typography>
     )

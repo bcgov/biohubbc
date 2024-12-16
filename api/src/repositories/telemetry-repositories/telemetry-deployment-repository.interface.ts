@@ -16,6 +16,7 @@ export type CreateDeployment = z.infer<typeof CreateDeployment>;
 
 export const ExtendedDeploymentRecord = DeploymentRecord.merge(
   DeviceRecord.pick({
+    serial: true,
     device_make_id: true,
     model: true
   }).merge(

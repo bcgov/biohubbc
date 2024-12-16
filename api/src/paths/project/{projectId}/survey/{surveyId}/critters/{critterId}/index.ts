@@ -5,9 +5,12 @@ import { getDBConnection } from '../../../../../../../database/db';
 import { HTTP400, HTTPError, HTTPErrorType } from '../../../../../../../errors/http-error';
 import { bulkUpdateResponse, critterBulkRequestObject } from '../../../../../../../openapi/schemas/critter';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
-import { getBctwUser } from '../../../../../../../services/bctw-service/bctw-service';
 import { CritterAttachmentService } from '../../../../../../../services/critter-attachment-service';
-import { CritterbaseService, ICritterbaseUser } from '../../../../../../../services/critterbase-service';
+import {
+  CritterbaseService,
+  getCritterbaseUser,
+  ICritterbaseUser
+} from '../../../../../../../services/critterbase-service';
 import { SurveyCritterService } from '../../../../../../../services/survey-critter-service';
 import { getLogger } from '../../../../../../../utils/logger';
 
@@ -95,7 +98,7 @@ export function updateSurveyCritter(): RequestHandler {
     const connection = getDBConnection(req.keycloak_token);
     try {
       await connection.open();
-      const user = getBctwUser(req);
+      const user = getCritterbaseUser(req);
 
       if (!critterbaseCritterId) {
         throw new HTTPError(HTTPErrorType.BAD_REQUEST, 400, 'No external critter ID was found.');

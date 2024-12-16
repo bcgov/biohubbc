@@ -7,7 +7,6 @@ import * as db from '../../../../../../../database/db';
 import { HTTPError } from '../../../../../../../errors/http-error';
 import { SurveyTelemetryCredentialAttachment } from '../../../../../../../repositories/attachment-repository';
 import { AttachmentService } from '../../../../../../../services/attachment-service';
-import { BctwKeyxService } from '../../../../../../../services/bctw-service/bctw-keyx-service';
 import * as file_utils from '../../../../../../../utils/file-utils';
 import { KeycloakUserInformation } from '../../../../../../../utils/keycloak-utils';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../__mocks__/db';
@@ -53,7 +52,7 @@ describe('postSurveyTelemetryCredentialAttachment', () => {
     }
   });
 
-  it('succeeds and uploads a KeyX file to BCTW', async () => {
+  it('successfully imports a credential file', async () => {
     const dbConnectionObj = getMockDBConnection();
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
@@ -62,47 +61,6 @@ describe('postSurveyTelemetryCredentialAttachment', () => {
       .resolves({ survey_telemetry_credential_attachment_id: 44, key: 'path/to/file/test.keyx' });
 
     const uploadFileToS3Stub = sinon.stub(file_utils, 'uploadFileToS3').resolves();
-
-    const uploadKeyXStub = sinon.stub(BctwKeyxService.prototype, 'uploadKeyX').resolves();
-
-    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
-
-    mockReq.keycloak_token = {} as KeycloakUserInformation;
-    mockReq.params = {
-      projectId: '1',
-      surveyId: '2'
-    };
-    mockReq.files = [
-      {
-        fieldname: 'media',
-        originalname: 'test.keyx',
-        encoding: '7bit',
-        mimetype: 'text/plain',
-        size: 340
-      }
-    ] as Express.Multer.File[];
-
-    const requestHandler = postSurveyTelemetryCredentialAttachment();
-
-    await requestHandler(mockReq, mockRes, mockNext);
-
-    expect(mockRes.jsonValue).to.eql({ survey_telemetry_credential_attachment_id: 44 });
-    expect(upsertSurveyTelemetryCredentialAttachmentStub).to.be.calledOnce;
-    expect(uploadKeyXStub).to.be.calledOnce;
-    expect(uploadFileToS3Stub).to.be.calledOnce;
-  });
-
-  it('succeeds and does not upload a Cfg file to BCTW', async () => {
-    const dbConnectionObj = getMockDBConnection();
-    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-    const upsertSurveyTelemetryCredentialAttachmentStub = sinon
-      .stub(AttachmentService.prototype, 'upsertSurveyTelemetryCredentialAttachment')
-      .resolves({ survey_telemetry_credential_attachment_id: 44, key: 'path/to/file/test.keyx' });
-
-    const uploadFileToS3Stub = sinon.stub(file_utils, 'uploadFileToS3').resolves();
-
-    const uploadKeyXStub = sinon.stub(BctwKeyxService.prototype, 'uploadKeyX').resolves();
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -127,7 +85,6 @@ describe('postSurveyTelemetryCredentialAttachment', () => {
 
     expect(mockRes.jsonValue).to.eql({ survey_telemetry_credential_attachment_id: 44 });
     expect(upsertSurveyTelemetryCredentialAttachmentStub).to.be.calledOnce;
-    expect(uploadKeyXStub).not.to.be.called; // not called
     expect(uploadFileToS3Stub).to.be.calledOnce;
   });
 
@@ -135,12 +92,11 @@ describe('postSurveyTelemetryCredentialAttachment', () => {
     const dbConnectionObj = getMockDBConnection();
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
+    const mockError = new Error('A test error');
+
     const upsertSurveyTelemetryCredentialAttachmentStub = sinon
       .stub(AttachmentService.prototype, 'upsertSurveyTelemetryCredentialAttachment')
-      .resolves({ survey_telemetry_credential_attachment_id: 44, key: 'path/to/file/test.keyx' });
-
-    const mockError = new Error('A test error');
-    const uploadKeyXStub = sinon.stub(BctwKeyxService.prototype, 'uploadKeyX').rejects(mockError);
+      .rejects(mockError);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -168,7 +124,6 @@ describe('postSurveyTelemetryCredentialAttachment', () => {
       expect((actualError as HTTPError).message).to.equal(mockError.message);
 
       expect(upsertSurveyTelemetryCredentialAttachmentStub).to.have.been.calledOnce;
-      expect(uploadKeyXStub).to.have.been.calledOnce;
     }
   });
 });
