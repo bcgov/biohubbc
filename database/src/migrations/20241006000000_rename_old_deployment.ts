@@ -26,10 +26,12 @@ export async function up(knex: Knex): Promise<void> {
     DROP TRIGGER IF EXISTS audit_critter ON deployment;
     DROP TRIGGER IF EXISTS journal_critter ON deployment;
 
+    -- Drop old deployment table indexes
+    DROP INDEX IF EXISTS deployment_uk1;
+    DROP INDEX IF EXISTS deployment_idx1;
+    
     -- Drop old deployment table constraints
     ALTER TABLE deployment DROP CONSTRAINT IF EXISTS deployment_fk1;
-    ALTER TABLE deployment DROP CONSTRAINT IF EXISTS deployment_idx1;
-    ALTER TABLE deployment DROP CONSTRAINT IF EXISTS deployment_uk1;
     ALTER TABLE deployment DROP CONSTRAINT IF EXISTS deployment_pk;
 
     -- Rename the existing deployment table to deployment_old to preserve the data while we migrate it to the new tables
