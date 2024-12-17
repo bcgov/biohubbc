@@ -142,11 +142,6 @@ const CreateBlocksMapForm = (props: ICreateBlocksMapFormProps) => {
     );
   };
 
-  // Handle deleting shapes
-  const handleDeleteAll = () => {
-    setIsDeleteOpen(true);
-  };
-
   const handleFeatureSelect = (feature: Feature) => {
     if (selectedFeatures.some((selectedFeature) => selectedFeature.id === feature.id)) {
       // Unselect the feature by filtering it out
@@ -212,7 +207,6 @@ const CreateBlocksMapForm = (props: ICreateBlocksMapFormProps) => {
           handleAdd={handleAdd}
           handleEdit={handleEdit}
           handleDelete={handleDelete}
-          handleDeleteAll={handleDeleteAll}
           handleFeatureSelect={handleFeatureSelect}
           tooltip={handleTooltip}
           selectedFeatures={selectedFeatures}

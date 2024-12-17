@@ -174,7 +174,7 @@ export const SamplingSiteTabsContainer = () => {
         <SamplingSiteTableView activeView={activeView} setActiveView={handleActiveViewChange} />
 
         {/* Context menu button */}
-        <IconButton onClick={handleMenuOpen}>
+        <IconButton onClick={handleMenuOpen} disabled={!selectedRows.length}>
           <Icon path={mdiDotsVertical} size={1} />
         </IconButton>
 

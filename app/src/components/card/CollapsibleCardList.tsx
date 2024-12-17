@@ -1,6 +1,7 @@
 import { mdiChevronDown, mdiChevronUp } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Box, Button, Checkbox, Collapse, IconButton, Paper, Typography } from '@mui/material';
+import grey from '@mui/material/colors/grey';
 import { useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 
@@ -92,7 +93,7 @@ const CollapsibleCardList = <T extends { label: string; uuid?: string }>(props: 
       )}
 
       {/* List of Items */}
-      <Box sx={{ maxHeight: '1000px', overflowY: 'scroll' }}>
+      <Box sx={{ maxHeight: '1000px', overflowY: 'auto' }}>
         <TransitionGroup>
           {items.map((item, index) => (
             <Collapse key={item.uuid}>
@@ -100,7 +101,7 @@ const CollapsibleCardList = <T extends { label: string; uuid?: string }>(props: 
                 sx={{
                   p: 2,
                   mb: 2,
-                  bgcolor: selectedItems.some((selected) => selected.uuid === item.uuid) ? '#e3f2fd' : '#f9f9f9'
+                  bgcolor: selectedItems.some((selected) => selected.uuid === item.uuid) ? '#e3f2fd' : grey[50]
                 }}
                 variant="outlined">
                 <Box
