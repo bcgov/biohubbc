@@ -1,12 +1,9 @@
 import { WorkSheet } from 'xlsx';
 import { IDBConnection } from '../../../database/db';
+import { HTTP422CSVValidationError } from '../../../errors/http-error';
 import { CSVConfigUtils } from '../../../utils/csv-utils/csv-config-utils';
 import { validateCSVWorksheet } from '../../../utils/csv-utils/csv-config-validation';
-import {
-  CSVConfig,
-  CSVValidationError,
-  CSV_ERROR_MESSAGE
-} from '../../../utils/csv-utils/csv-config-validation.interface';
+import { CSVConfig, CSV_ERROR_MESSAGE } from '../../../utils/csv-utils/csv-config-validation.interface';
 import {
   getDescriptionCellValidator,
   getTimeCellSetter,
@@ -97,7 +94,7 @@ export class ImportMarkingsService extends DBService {
     const { errors, rows } = validateCSVWorksheet(this.worksheet, config);
 
     if (errors.length) {
-      throw new CSVValidationError(CSV_ERROR_MESSAGE, errors);
+      throw new HTTP422CSVValidationError(CSV_ERROR_MESSAGE, errors);
     }
 
     const markings = rows.map((row) => ({
