@@ -12,6 +12,7 @@ import {
   useGridApiRef
 } from '@mui/x-data-grid';
 import { GridApiCommunity, GridStateColDef } from '@mui/x-data-grid/internals';
+import { RowValidationError, TableValidationModel } from 'components/data-grid/DataGridValidationAlert';
 import { TelemetryTableI18N } from 'constants/i18n';
 import { SIMS_TELEMETRY_HIDDEN_COLUMNS } from 'constants/session-storage';
 import { default as dayjs } from 'dayjs';
@@ -25,7 +26,6 @@ import { createContext, PropsWithChildren, useCallback, useEffect, useMemo, useR
 import { ApiPaginationRequestOptions } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
 import { v4 as uuidv4 } from 'uuid';
-import { RowValidationError, TableValidationModel } from '../components/data-grid/DataGridValidationAlert';
 
 export const MANUAL_TELEMETRY_TYPE = 'manual';
 
@@ -184,11 +184,12 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
     biohubApi.telemetry.getTelemetryForSurvey(surveyContext.projectId, surveyContext.surveyId, pagination)
   );
 
-  useEffect(() => {
-    telemetryDataLoader.load();
-  }, [telemetryDataLoader]);
-
-  const { data: telemetryData, isLoading: isLoadingTelemetryData, refresh: refreshTelemetryData } = telemetryDataLoader;
+  const {
+    data: telemetryData,
+    isLoading: isLoadingTelemetryData,
+    hasLoaded: hasLoadedTelemetryData,
+    refresh: refreshTelemetryData
+  } = telemetryDataLoader;
 
   // The data grid rows
   const [rows, setRows] = useState<IManualTelemetryTableRow[]>([]);
@@ -227,7 +228,7 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
   });
 
   // Sort model
-  const [sortModel, setSortModel] = useState<GridSortModel>([{ field: 'acquisition_date', sort: 'desc' }]);
+  const [sortModel, setSortModel] = useState<GridSortModel>([{ field: 'date', sort: 'desc' }]);
 
   // True if table has unsaved changes, deferring value to prevent ui issue with controls rendering
   const hasUnsavedChanges = _modifiedRowIds.current.length > 0 || _stagedRowIds.current.length > 0;
@@ -619,6 +620,35 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
   }, [rows, _updateRowsMode, _modifiedRowIds]);
 
   /**
+   * Refreshes the observations table with the latest records from the server.
+   *
+   * @return {*}
+   */
+  const refreshTelemetryRecords = useCallback(async () => {
+    const sort = firstOrNull(sortModel);
+
+    let sortField = sort?.field;
+
+    // Convert frontend column names to the backend column names supported by the api
+    if (sortField === 'date') {
+      sortField = 'acquisition_date';
+    } else if (sortField === 'time') {
+      sortField = 'acquisition_time';
+    } else if (sortField === 'telemetry_type') {
+      sortField = 'vendor';
+    }
+
+    return refreshTelemetryData({
+      limit: paginationModel.pageSize,
+      sort: sortField || undefined,
+      order: sort?.sort || undefined,
+
+      // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
+      page: paginationModel.page + 1
+    });
+  }, [paginationModel.page, paginationModel.pageSize, refreshTelemetryData, sortModel]);
+
+  /**
    * Dispatches update and create requests to SIMS
    *
    * @param {GridValidRowModel[]} createRows - Rows to create
@@ -630,7 +660,7 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
       try {
         // create a new records
         const createData = createRows.map((row) => ({
-          deployment2_id: row.deployment_id,
+          deployment_id: row.deployment_id,
           latitude: Number(row.latitude),
           longitude: Number(row.longitude),
           acquisition_date: dayjs(`${row.date}T${row.time}`).toISOString(),
@@ -640,7 +670,7 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
         // update existing records
         const updateData = updateRows.map((row) => ({
           telemetry_manual_id: String(row.id),
-          deployment2_id: row.deployment_id,
+          deployment_id: row.deployment_id,
           latitude: Number(row.latitude),
           longitude: Number(row.longitude),
           acquisition_date: dayjs(`${row.date}T${row.time}`).toISOString(),
@@ -666,7 +696,7 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
           open: true
         });
 
-        return refreshTelemetryData();
+        return refreshTelemetryRecords();
       } catch (error) {
         _updateRowsMode(_modifiedRowIds.current, GridRowModes.Edit, true);
         const apiError = error as APIError;
@@ -683,13 +713,13 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
       }
     },
     [
-      revertRecords,
-      dialogContext,
-      refreshTelemetryData,
+      _updateRowsMode,
       biohubApi.telemetry,
+      dialogContext,
+      refreshTelemetryRecords,
+      revertRecords,
       surveyContext.projectId,
-      surveyContext.surveyId,
-      _updateRowsMode
+      surveyContext.surveyId
     ]
   );
 
@@ -725,35 +755,6 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
   }, [_validateRows, _getEditedIds, _getEditedRows, _saveRecords]);
 
   /**
-   * Refreshes the observations table with the latest records from the server.
-   *
-   * @return {*}
-   */
-  const refreshTelemetryRecords = useCallback(async () => {
-    const sort = firstOrNull(sortModel);
-
-    let sortField = sort?.field;
-
-    // Convert frontend column names to the backend column names supported by the api
-    if (sortField === 'date') {
-      sortField = 'acquisition_date';
-    } else if (sortField === 'time') {
-      sortField = 'acquisition_time';
-    } else if (sortField === 'telemetry_type') {
-      sortField = 'vendor';
-    }
-
-    return refreshTelemetryData({
-      limit: paginationModel.pageSize,
-      sort: sortField || undefined,
-      order: sort?.sort || undefined,
-
-      // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
-      page: paginationModel.page + 1
-    });
-  }, [paginationModel.page, paginationModel.pageSize, refreshTelemetryData, sortModel]);
-
-  /**
    * Fetch new rows based on sort/ pagination model changes
    */
   useEffect(() => {
@@ -767,9 +768,13 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
    *
    */
   useEffect(() => {
+    if (!hasLoadedTelemetryData) {
+      // Existing telemetry records have not yet loaded
+      return;
+    }
+
     if (!telemetryData?.telemetry) {
-      // No telemetry data, clear the table
-      setRows([]);
+      // Existing telemetry data doesn't exist
       return;
     }
 
@@ -787,7 +792,7 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
     });
 
     setRows(rows);
-  }, [telemetryData]);
+  }, [hasLoadedTelemetryData, telemetryData]);
 
   const telemetryTableContext: IAllTelemetryTableContext = useMemo(
     () => ({
@@ -823,30 +828,28 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
     }),
     [
       _muiDataGridApiRef,
-      rows,
-      getColumns,
       addRecord,
-      hasError,
-      saveRecords,
+      columnVisibilityModel,
       deleteRecords,
       deleteSelectedRecords,
-      revertRecords,
-      refreshTelemetryRecords,
+      getColumns,
+      hasError,
       hasUnsavedChanges,
-      rowSelectionModel,
-      rowModesModel,
-      isLoadingTelemetryData,
-      validationModel,
-      recordCount,
-      paginationModel,
-      setPaginationModel,
-      sortModel,
-      setSortModel,
-      columnVisibilityModel,
-      setColumnVisibilityModel,
-      toggleColumnsVisibility,
       hiddenColumns,
-      onRowEditStart
+      isLoadingTelemetryData,
+      onRowEditStart,
+      paginationModel,
+      recordCount,
+      refreshTelemetryRecords,
+      revertRecords,
+      rowModesModel,
+      rowSelectionModel,
+      rows,
+      saveRecords,
+      setColumnVisibilityModel,
+      sortModel,
+      toggleColumnsVisibility,
+      validationModel
     ]
   );
 

@@ -85,7 +85,7 @@ export const SurveyDeploymentListItem = (props: ISurveyDeploymentListItemProps) 
               sx={{ py: 0 }}
               onClick={(event) => {
                 event.stopPropagation();
-                handleCheckboxChange(deployment.deployment2_id);
+                handleCheckboxChange(deployment.deployment_id);
               }}
               inputProps={{ 'aria-label': 'controlled' }}
             />
@@ -108,7 +108,7 @@ export const SurveyDeploymentListItem = (props: ISurveyDeploymentListItemProps) 
                 </Typography>
               </Stack>
               <Typography variant="body2" color="textSecondary" title="Animal">
-                {`${deployment.deployment2_id}: ${animal?.animal_id || 'Unknown'}`}
+                {`${deployment.deployment_id}: ${animal?.animal_id || 'Unknown'}`}
               </Typography>
             </Box>
           </Stack>
@@ -130,7 +130,7 @@ export const SurveyDeploymentListItem = (props: ISurveyDeploymentListItemProps) 
           sx={{ position: 'absolute', right: '24px' }}
           edge="end"
           onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
-            handleDeploymentMenuClick(event, deployment.deployment2_id)
+            handleDeploymentMenuClick(event, deployment.deployment_id)
           }
           aria-label="deployment-settings">
           <Icon path={mdiDotsVertical} size={1}></Icon>

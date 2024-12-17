@@ -8,7 +8,7 @@ import { authorizeRequestHandler } from '../../../../../../../../request-handler
 import { TelemetryVendorService } from '../../../../../../../../services/telemetry-services/telemetry-vendor-service';
 import { getLogger } from '../../../../../../../../utils/logger';
 
-const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/deployments2/telemetry/manual/index');
+const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/deployments/telemetry/manual/index');
 
 export const POST: Operation = [
   authorizeRequestHandler((req) => {
@@ -76,9 +76,9 @@ POST.apiDoc = {
               items: {
                 type: 'object',
                 additionalProperties: false,
-                required: ['deployment2_id', 'latitude', 'longitude', 'acquisition_date', 'transmission_date'],
+                required: ['deployment_id', 'latitude', 'longitude', 'acquisition_date', 'transmission_date'],
                 properties: {
-                  deployment2_id: {
+                  deployment_id: {
                     type: 'integer',
                     minimum: 1
                   },
@@ -235,7 +235,7 @@ PUT.apiDoc = {
                 additionalProperties: false,
                 required: [
                   'telemetry_manual_id',
-                  'deployment2_id',
+                  'deployment_id',
                   'latitude',
                   'longitude',
                   'acquisition_date',
@@ -246,7 +246,7 @@ PUT.apiDoc = {
                     type: 'string',
                     format: 'uuid'
                   },
-                  deployment2_id: {
+                  deployment_id: {
                     type: 'integer',
                     minimum: 1
                   },

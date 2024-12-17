@@ -15,7 +15,7 @@ describe('getDeploymentById', () => {
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
     const mockDeployment = {
-      deployment2_id: 2,
+      deployment_id: 2,
       survey_id: 3,
       critter_id: 4,
       device_id: 5,

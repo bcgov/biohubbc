@@ -160,7 +160,7 @@ export async function seed(knex: Knex): Promise<void> {
         -------- delete device, deployment, credential, telemetry data --------
 
         DELETE FROM telemetry_manual
-        WHERE deployment2_id IN (SELECT deployment2_id FROM deployment2 WHERE survey_id = p_survey_id);
+        WHERE deployment_id IN (SELECT deployment_id FROM deployment WHERE survey_id = p_survey_id);
 
         DELETE FROM survey_telemetry_vendor_credential
         WHERE survey_telemetry_credential_attachment_id IN (SELECT survey_telemetry_credential_attachment_id from survey_telemetry_credential_attachment WHERE survey_id = p_survey_id);
@@ -171,7 +171,7 @@ export async function seed(knex: Knex): Promise<void> {
         DELETE FROM deployment
         WHERE critter_id IN (SELECT critter_id FROM critter WHERE survey_id = p_survey_id);
 
-        DELETE FROM deployment2
+        DELETE FROM deployment
         WHERE survey_id = p_survey_id;
 
         DELETE FROM device

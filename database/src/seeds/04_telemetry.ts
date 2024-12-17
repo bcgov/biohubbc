@@ -82,7 +82,7 @@ export async function seed(knex: Knex): Promise<void> {
       const deviceSerial = rawDevice.rows[0].serial;
 
       const rawDeployment = await knex.raw(insertDeployment(surveyId, critterId, deviceId));
-      const deploymentId = rawDeployment.rows[0].deployment2_id;
+      const deploymentId = rawDeployment.rows[0].deployment_id;
 
       // MANUAL TELEMETRY
       const manualTelemetry = getManualTelemetry(deploymentId, NUM_TELEMETRY_POINTS.MANUAL);
@@ -189,7 +189,7 @@ const insertDevice = (surveyId: number, device: { make: string; model: string; s
  *
  */
 const insertDeployment = (surveyId: number, critterId: number, deviceId: number) => `
-  INSERT INTO deployment2 (
+  INSERT INTO deployment (
     survey_id,
     critter_id,
     device_id,
@@ -203,7 +203,7 @@ const insertDeployment = (surveyId: number, critterId: number, deviceId: number)
     $$${DEPLOYMENT_START_DATE}$$,
     $$${DEPLOYMENT_END_DATE}$$
   )
-  RETURNING deployment2_id;
+  RETURNING deployment_id;
 `;
 
 /**
@@ -217,7 +217,7 @@ const getManualTelemetry = (deploymentId: number, numRecords: number) => {
     const telemetryDate = faker.date.between({ from: TELEMETRY_START_DATE, to: TELEMETRY_END_DATE });
 
     telemetry.push({
-      deployment2_id: deploymentId,
+      deployment_id: deploymentId,
       latitude: faker.location.latitude(),
       longitude: faker.location.longitude(),
       acquisition_date: telemetryDate,

@@ -9,7 +9,7 @@ export const CreateDeployment = DeploymentRecord.omit({
   attachment_start_timestamp: true,
   attachment_end_timestamp: true,
   // Primary key
-  deployment2_id: true
+  deployment_id: true
 });
 
 export type CreateDeployment = z.infer<typeof CreateDeployment>;
@@ -34,7 +34,7 @@ export const UpdateDeployment = DeploymentRecord.omit({
   attachment_start_timestamp: true,
   attachment_end_timestamp: true,
   // Primary key and survey not updatable
-  deployment2_id: true,
+  deployment_id: true,
   survey_id: true
 });
 

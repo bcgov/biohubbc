@@ -120,13 +120,13 @@ export class TelemetryDeploymentService extends DBService {
    * Update a deployment.
    *
    * @param {number} surveyId The survey ID
-   * @param {number} deployment2_id The deployment ID
+   * @param {number} deployment_id The deployment ID
    * @param {UpdateDeployment} deployment The deployment data to update
    * @return {*}  {Promise<string>}
    * @memberof TelemetryDeploymentService
    */
-  async updateDeployment(surveyId: number, deployment2_id: number, deployment: UpdateDeployment): Promise<void> {
-    return this.telemetryDeploymentRepository.updateDeployment(surveyId, deployment2_id, deployment);
+  async updateDeployment(surveyId: number, deployment_id: number, deployment: UpdateDeployment): Promise<void> {
+    return this.telemetryDeploymentRepository.updateDeployment(surveyId, deployment_id, deployment);
   }
 
   /**

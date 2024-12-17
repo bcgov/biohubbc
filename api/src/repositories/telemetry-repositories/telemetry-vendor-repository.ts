@@ -35,8 +35,8 @@ export class TelemetryVendorRepository extends BaseRepository {
     return queryBuilder
       .select(
         'telemetry_lotek.telemetry_lotek_id as telemetry_id',
-        'deployment2.deployment2_id as deployment_id',
-        'deployment2.critter_id as critter_id',
+        'deployment.deployment_id as deployment_id',
+        'deployment.critter_id as critter_id',
         knex.raw(`'${TelemetryVendorEnum.LOTEK}' as vendor`),
         knex.raw('telemetry_lotek.deviceid::text as serial'),
         knex.raw('telemetry_lotek.recdatetime as acquisition_date'),
@@ -51,7 +51,7 @@ export class TelemetryVendorRepository extends BaseRepository {
   /**
    * Add where clause to filter `Lotek` telemetry data by device attachment date range.
    *
-   * Note: Joins the `deployment2` table.
+   * Note: Joins the `deployment` table.
    *
    * @param {Knex.QueryBuilder} queryBuilder
    * @param {string} startDate
@@ -61,12 +61,12 @@ export class TelemetryVendorRepository extends BaseRepository {
    */
   getLotekTelemetryByAttachmentDateRangeClause(queryBuilder: Knex.QueryBuilder): Knex.QueryBuilder {
     return queryBuilder
-      .join('deployment2', 'telemetry_lotek.device_key', 'deployment2.device_key')
-      .andWhereRaw('telemetry_lotek.recdatetime >= deployment2.attachment_start_timestamp')
+      .join('deployment', 'telemetry_lotek.device_key', 'deployment.device_key')
+      .andWhereRaw('telemetry_lotek.recdatetime >= deployment.attachment_start_timestamp')
       .andWhere((qb) =>
         qb
-          .orWhereRaw('telemetry_lotek.recdatetime <= deployment2.attachment_end_timestamp')
-          .orWhereRaw('deployment2.attachment_end_timestamp IS NULL')
+          .orWhereRaw('telemetry_lotek.recdatetime <= deployment.attachment_end_timestamp')
+          .orWhereRaw('deployment.attachment_end_timestamp IS NULL')
       );
   }
 
@@ -81,7 +81,7 @@ export class TelemetryVendorRepository extends BaseRepository {
    * @memberof TelemetryVendorRepository
    */
   getLotekTelemetryBySurveyIdClause(queryBuilder: Knex.QueryBuilder, surveyId: number): Knex.QueryBuilder {
-    return queryBuilder.andWhere('deployment2.survey_id', surveyId);
+    return queryBuilder.andWhere('deployment.survey_id', surveyId);
   }
 
   /**
@@ -93,7 +93,7 @@ export class TelemetryVendorRepository extends BaseRepository {
    * @returns {Knex.QueryBuilder}
    */
   getLotekTelemetryByDeploymentIdsClause(queryBuilder: Knex.QueryBuilder, deploymentIds: number[]): Knex.QueryBuilder {
-    return queryBuilder.whereIn('deployment2.deployment2_id', deploymentIds);
+    return queryBuilder.whereIn('deployment.deployment_id', deploymentIds);
   }
 
   /**
@@ -128,7 +128,7 @@ export class TelemetryVendorRepository extends BaseRepository {
   ): Knex.QueryBuilder {
     const knex = getKnex();
 
-    queryBuilder.join('survey', 'deployment2.survey_id', 'survey.survey_id');
+    queryBuilder.join('survey', 'deployment.survey_id', 'survey.survey_id');
 
     if (!isUserAdmin) {
       // If the user is not an admin, filter results by the projects/surveys they have access to
@@ -148,11 +148,11 @@ export class TelemetryVendorRepository extends BaseRepository {
     }
 
     if (filterFields.start_date) {
-      queryBuilder.where('telemetry_lotek.uploadtimestamp', '>=', filterFields.start_date);
+      queryBuilder.where('telemetry_lotek.recdatetime', '>=', filterFields.start_date);
     }
 
     if (filterFields.end_date) {
-      queryBuilder.where('telemetry_lotek.uploadtimestamp', '<=', filterFields.end_date);
+      queryBuilder.where('telemetry_lotek.recdatetime', '<=', filterFields.end_date);
     }
 
     if (filterFields.system_user_id) {
@@ -181,8 +181,8 @@ export class TelemetryVendorRepository extends BaseRepository {
     return queryBuilder
       .select(
         'telemetry_vectronic.telemetry_vectronic_id as telemetry_id',
-        'deployment2.deployment2_id as deployment_id',
-        'deployment2.critter_id as critter_id',
+        'deployment.deployment_id as deployment_id',
+        'deployment.critter_id as critter_id',
         knex.raw(`'${TelemetryVendorEnum.VECTRONIC}' as vendor`),
         knex.raw('telemetry_vectronic.idcollar::text as serial'),
         knex.raw('telemetry_vectronic.acquisitiontime as acquisition_date'),
@@ -197,7 +197,7 @@ export class TelemetryVendorRepository extends BaseRepository {
   /**
    * Add where clause to filter `Vectronic` telemetry data by device attachment date range.
    *
-   * Note: Joins the `deployment2` table.
+   * Note: Joins the `deployment` table.
    *
    * @param {Knex.QueryBuilder} queryBuilder
    * @param {string} startDate
@@ -207,12 +207,12 @@ export class TelemetryVendorRepository extends BaseRepository {
    */
   getVectronicTelemetryByAttachmentDateRangeClause(queryBuilder: Knex.QueryBuilder): Knex.QueryBuilder {
     return queryBuilder
-      .join('deployment2', 'telemetry_vectronic.device_key', 'deployment2.device_key')
-      .andWhereRaw('telemetry_vectronic.acquisitiontime >= deployment2.attachment_start_timestamp')
+      .join('deployment', 'telemetry_vectronic.device_key', 'deployment.device_key')
+      .andWhereRaw('telemetry_vectronic.acquisitiontime >= deployment.attachment_start_timestamp')
       .andWhere((qb) =>
         qb
-          .orWhereRaw('telemetry_vectronic.acquisitiontime <= deployment2.attachment_end_timestamp')
-          .orWhereRaw('deployment2.attachment_end_timestamp IS NULL')
+          .orWhereRaw('telemetry_vectronic.acquisitiontime <= deployment.attachment_end_timestamp')
+          .orWhereRaw('deployment.attachment_end_timestamp IS NULL')
       );
   }
 
@@ -225,7 +225,7 @@ export class TelemetryVendorRepository extends BaseRepository {
    * @memberof TelemetryVendorRepository
    */
   getVectronicTelemetryBySurveyIdClause(queryBuilder: Knex.QueryBuilder, surveyId: number): Knex.QueryBuilder {
-    return queryBuilder.andWhere('deployment2.survey_id', surveyId);
+    return queryBuilder.andWhere('deployment.survey_id', surveyId);
   }
 
   /**
@@ -240,7 +240,7 @@ export class TelemetryVendorRepository extends BaseRepository {
     queryBuilder: Knex.QueryBuilder,
     deploymentIds: number[]
   ): Knex.QueryBuilder {
-    return queryBuilder.whereIn('deployment2.deployment2_id', deploymentIds);
+    return queryBuilder.whereIn('deployment.deployment_id', deploymentIds);
   }
 
   /**
@@ -275,7 +275,7 @@ export class TelemetryVendorRepository extends BaseRepository {
   ): Knex.QueryBuilder {
     const knex = getKnex();
 
-    queryBuilder.join('survey', 'deployment2.survey_id', 'survey.survey_id');
+    queryBuilder.join('survey', 'deployment.survey_id', 'survey.survey_id');
 
     if (!isUserAdmin) {
       // If the user is not an admin, filter results by the projects/surveys they have access to
@@ -328,8 +328,8 @@ export class TelemetryVendorRepository extends BaseRepository {
     return queryBuilder
       .select(
         'telemetry_ats.telemetry_ats_id as telemetry_id',
-        'deployment2.deployment2_id as deployment_id',
-        'deployment2.critter_id as critter_id',
+        'deployment.deployment_id as deployment_id',
+        'deployment.critter_id as critter_id',
         knex.raw(`'${TelemetryVendorEnum.ATS}' as vendor`),
         knex.raw('telemetry_ats.collarserialnumber::text as serial'),
         'telemetry_ats.date as acquisition_date',
@@ -344,7 +344,7 @@ export class TelemetryVendorRepository extends BaseRepository {
   /**
    * Add where clause to filter `ATS` telemetry data by device attachment date range.
    *
-   * Note: Joins the `deployment2` table.
+   * Note: Joins the `deployment` table.
    *
    * @param {Knex.QueryBuilder} queryBuilder
    * @param {string} startDate
@@ -354,12 +354,12 @@ export class TelemetryVendorRepository extends BaseRepository {
    */
   getATSTelemetryByAttachmentDateRangeClause(queryBuilder: Knex.QueryBuilder): Knex.QueryBuilder {
     return queryBuilder
-      .join('deployment2', 'telemetry_ats.device_key', 'deployment2.device_key')
-      .andWhereRaw('telemetry_ats.date >= deployment2.attachment_start_timestamp')
+      .join('deployment', 'telemetry_ats.device_key', 'deployment.device_key')
+      .andWhereRaw('telemetry_ats.date >= deployment.attachment_start_timestamp')
       .andWhere((qb) =>
         qb
-          .orWhereRaw('telemetry_ats.date <= deployment2.attachment_end_timestamp')
-          .orWhereRaw('deployment2.attachment_end_timestamp IS NULL')
+          .orWhereRaw('telemetry_ats.date <= deployment.attachment_end_timestamp')
+          .orWhereRaw('deployment.attachment_end_timestamp IS NULL')
       );
   }
 
@@ -372,7 +372,7 @@ export class TelemetryVendorRepository extends BaseRepository {
    * @memberof TelemetryVendorRepository
    */
   getATSTelemetryBySurveyIdClause(queryBuilder: Knex.QueryBuilder, surveyId: number): Knex.QueryBuilder {
-    return queryBuilder.andWhere('deployment2.survey_id', surveyId);
+    return queryBuilder.andWhere('deployment.survey_id', surveyId);
   }
 
   /**
@@ -384,7 +384,7 @@ export class TelemetryVendorRepository extends BaseRepository {
    * @returns {Knex.QueryBuilder}
    */
   getATSTelemetryByDeploymentIdsClause(queryBuilder: Knex.QueryBuilder, deploymentIds: number[]): Knex.QueryBuilder {
-    return queryBuilder.whereIn('deployment2.deployment2_id', deploymentIds);
+    return queryBuilder.whereIn('deployment.deployment_id', deploymentIds);
   }
 
   /**
@@ -419,7 +419,7 @@ export class TelemetryVendorRepository extends BaseRepository {
   ): Knex.QueryBuilder {
     const knex = getKnex();
 
-    queryBuilder.join('survey', 'deployment2.survey_id', 'survey.survey_id');
+    queryBuilder.join('survey', 'deployment.survey_id', 'survey.survey_id');
 
     if (!isUserAdmin) {
       // If the user is not an admin, filter results by the projects/surveys they have access to
@@ -462,7 +462,7 @@ export class TelemetryVendorRepository extends BaseRepository {
   /**
    * Get normalized `Manual` telemetry base query.
    *
-   * Note: Joins the `deployment2`, `device` tables.
+   * Note: Joins the `deployment`, `device` tables.
    *
    * @see TelemetrySchema ./telemetry-vendor-repository.interface.ts
    * @param {Knex.QueryBuilder} queryBuilder
@@ -474,8 +474,8 @@ export class TelemetryVendorRepository extends BaseRepository {
     return queryBuilder
       .select(
         'telemetry_manual.telemetry_manual_id as telemetry_id',
-        'telemetry_manual.deployment2_id as deployment_id',
-        'deployment2.critter_id as critter_id',
+        'telemetry_manual.deployment_id as deployment_id',
+        'deployment.critter_id as critter_id',
         knex.raw(`'${TelemetryVendorEnum.MANUAL}' as vendor`),
         'device.serial',
         'telemetry_manual.acquisition_date',
@@ -485,8 +485,8 @@ export class TelemetryVendorRepository extends BaseRepository {
         knex.raw('NULL as temperature')
       )
       .from('telemetry_manual')
-      .join('deployment2', 'telemetry_manual.deployment2_id', 'deployment2.deployment2_id')
-      .join('device', 'deployment2.device_id', 'device.device_id');
+      .join('deployment', 'telemetry_manual.deployment_id', 'deployment.deployment_id')
+      .join('device', 'deployment.device_id', 'device.device_id');
   }
 
   /**
@@ -498,7 +498,7 @@ export class TelemetryVendorRepository extends BaseRepository {
    * @memberof TelemetryVendorRepository
    */
   getManualTelemetryBySurveyIdClause(queryBuilder: Knex.QueryBuilder, surveyId: number): Knex.QueryBuilder {
-    return queryBuilder.andWhere('deployment2.survey_id', surveyId);
+    return queryBuilder.andWhere('deployment.survey_id', surveyId);
   }
 
   /**
@@ -512,11 +512,11 @@ export class TelemetryVendorRepository extends BaseRepository {
    */
   getManualTelemetryByAttachmentDateRangeClause(queryBuilder: Knex.QueryBuilder): Knex.QueryBuilder {
     return queryBuilder
-      .andWhereRaw('telemetry_manual.acquisition_date >= deployment2.attachment_start_timestamp')
+      .andWhereRaw('telemetry_manual.acquisition_date >= deployment.attachment_start_timestamp')
       .andWhere((qb) =>
         qb
-          .orWhereRaw('telemetry_manual.acquisition_date <= deployment2.attachment_end_timestamp')
-          .orWhereRaw('deployment2.attachment_end_timestamp IS NULL')
+          .orWhereRaw('telemetry_manual.acquisition_date <= deployment.attachment_end_timestamp')
+          .orWhereRaw('deployment.attachment_end_timestamp IS NULL')
       );
   }
 
@@ -529,7 +529,7 @@ export class TelemetryVendorRepository extends BaseRepository {
    * @returns {Knex.QueryBuilder}
    */
   getManualTelemetryByDeploymentIdsClause(queryBuilder: Knex.QueryBuilder, deploymentIds: number[]): Knex.QueryBuilder {
-    return queryBuilder.whereIn('deployment2.deployment2_id', deploymentIds);
+    return queryBuilder.whereIn('deployment.deployment_id', deploymentIds);
   }
 
   /**
@@ -564,7 +564,7 @@ export class TelemetryVendorRepository extends BaseRepository {
   ): Knex.QueryBuilder {
     const knex = getKnex();
 
-    queryBuilder.join('survey', 'deployment2.survey_id', 'survey.survey_id');
+    queryBuilder.join('survey', 'deployment.survey_id', 'survey.survey_id');
 
     if (!isUserAdmin) {
       // If the user is not an admin, filter results by the projects/surveys they have access to

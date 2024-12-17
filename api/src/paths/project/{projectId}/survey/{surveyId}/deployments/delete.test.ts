@@ -4,7 +4,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../../../../../database/db';
 import { TelemetryDeploymentService } from '../../../../../../services/telemetry-services/telemetry-deployment-service';
-import { getMockDBConnection, getRequestHandlerMocks } from '../../../.././../../__mocks__/db';
+import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
 import { deleteDeploymentsInSurvey } from './delete';
 
 chai.use(sinonChai);

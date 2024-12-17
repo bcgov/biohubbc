@@ -111,7 +111,7 @@ const useTelemetryApi = (axios: AxiosInstance) => {
     surveyId: number,
     manualTelemetry: ICreateManualTelemetry[]
   ): Promise<void> => {
-    await axios.post<void>(`/api/project/${projectId}/survey/${surveyId}/deployments2/telemetry/manual`, {
+    await axios.post<void>(`/api/project/${projectId}/survey/${surveyId}/deployments/telemetry/manual`, {
       telemetry: manualTelemetry
     });
 
@@ -131,7 +131,7 @@ const useTelemetryApi = (axios: AxiosInstance) => {
     surveyId: number,
     manualTelemetry: IUpdateManualTelemetry[]
   ): Promise<void> => {
-    await axios.put<void>(`/api/project/${projectId}/survey/${surveyId}/deployments2/telemetry/manual`, {
+    await axios.put<void>(`/api/project/${projectId}/survey/${surveyId}/deployments/telemetry/manual`, {
       telemetry: manualTelemetry
     });
 
@@ -148,7 +148,7 @@ const useTelemetryApi = (axios: AxiosInstance) => {
    * @return {*}  {Promise<void>}
    */
   const deleteManualTelemetry = async (projectId: number, surveyId: number, telemetryIds: string[]): Promise<void> => {
-    await axios.post<void>(`/api/project/${projectId}/survey/${surveyId}/deployments2/telemetry/manual/delete`, {
+    await axios.post<void>(`/api/project/${projectId}/survey/${surveyId}/deployments/telemetry/manual/delete`, {
       telemetry_manual_ids: telemetryIds
     });
 

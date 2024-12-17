@@ -9,7 +9,7 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Typography from '@mui/material/Typography';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
-import { ObservationAnalyticsDataTableContainer } from 'features/surveys/view/components/analytics/components/ObservationAnalyticsDataTableContainer';
+import { ObservationAnalyticsDataTableContainer } from 'features/surveys/view/survey-spatial/components/observation/analytics/components/ObservationAnalyticsDataTableContainer';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';

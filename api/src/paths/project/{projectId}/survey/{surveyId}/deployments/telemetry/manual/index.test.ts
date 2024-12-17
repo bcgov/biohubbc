@@ -27,7 +27,7 @@ describe('index', () => {
 
       const mockTelemetry = [
         {
-          deployment2_id: 1,
+          deployment_id: 1,
           latitude: 1,
           longitude: 1,
           acquisition_date: '2021-01-01',

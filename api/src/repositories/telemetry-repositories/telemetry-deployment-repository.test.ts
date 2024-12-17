@@ -81,7 +81,7 @@ describe('TelemetryDeploymentRepository', () => {
   describe('getDeploymentsForSurvey', () => {
     it('should get deployments by survey ID successfully', async () => {
       const mockDeploymentRecord = {
-        deployment2_id: 1,
+        deployment_id: 1,
         survey_id: 1,
         critter_id: 1,
         device_id: 1,
@@ -118,7 +118,7 @@ describe('TelemetryDeploymentRepository', () => {
 
     it('should get a deployment by ID successfully', async () => {
       const mockDeploymentRecord = {
-        deployment2_id: 1,
+        deployment_id: 1,
         survey_id: 1,
         critter_id: 1,
         device_id: 1,
@@ -179,7 +179,7 @@ describe('TelemetryDeploymentRepository', () => {
   describe('getDeploymentsForCritterId', () => {
     it('should get deployments by critter ID successfully', async () => {
       const mockDeploymentRecord = {
-        deployment2_id: 1,
+        deployment_id: 1,
         survey_id: 1,
         critter_id: 1,
         device_id: 1,

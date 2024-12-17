@@ -25,9 +25,9 @@ export class TelemetryManualRepository extends BaseRepository {
     const queryBuilder = knex
       .select('*')
       .from('telemetry_manual')
-      .join('deployment2', 'telemetry_manual.deployment2_id', 'deployment2.deployment2_id')
+      .join('deployment', 'telemetry_manual.deployment_id', 'deployment.deployment_id')
       .whereIn('telemetry_manual.telemetry_manual_id', telemetryManualIds)
-      .andWhere('deployment2.survey_id', surveyId);
+      .andWhere('deployment.survey_id', surveyId);
 
     const response = await this.connection.knex<TelemetryManualRecord>(queryBuilder);
 

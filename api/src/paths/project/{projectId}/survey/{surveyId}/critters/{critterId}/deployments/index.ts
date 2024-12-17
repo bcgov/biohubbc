@@ -7,7 +7,7 @@ import { TelemetryDeploymentService } from '../../../../../../../../services/tel
 import { getLogger } from '../../../../../../../../utils/logger';
 import { numberOrNull } from '../../../../../../../../utils/string-utils';
 
-const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/critters/{critterId}/deployments2');
+const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/critters/{critterId}/deployments');
 
 export const POST: Operation = [
   authorizeRequestHandler((req) => {

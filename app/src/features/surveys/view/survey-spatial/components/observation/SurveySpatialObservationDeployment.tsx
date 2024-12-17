@@ -33,15 +33,17 @@ interface IObservationTableRow {
  *
  * @returns {*}
  */
-export const SurveySpatialObservationTable = () => {
+export const SurveySpatialObservationDeployment = () => {
+  const biohubApi = useBiohubApi();
   const surveyContext = useContext(SurveyContext);
   const taxonomyContext = useTaxonomyContext();
 
-  const biohubApi = useBiohubApi();
-
+  const [totalRows, setTotalRows] = useState<number>(0);
   const [page, setPage] = useState<number>(0);
   const [pageSize, setPageSize] = useState<number>(10);
   const [sortModel, setSortModel] = useState<GridSortModel>([]);
+  const [rows, setTableData] = useState<IObservationTableRow[]>([]);
+  const [tableColumns, setTableColumns] = useState<GridColDef<IObservationTableRow>[]>([]);
 
   const paginatedDataLoader = useDataLoader((page: number, limit: number, sort?: string, order?: 'asc' | 'desc') =>
     biohubApi.observation.getObservationRecords(surveyContext.projectId, surveyContext.surveyId, {
@@ -64,87 +66,92 @@ export const SurveySpatialObservationTable = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, pageSize, sortModel]);
 
-  const rows =
-    paginatedDataLoader.data?.surveyObservations.map((item) => {
-      return {
-        survey_observation_id: item.survey_observation_id,
-        itis_tsn: item.itis_tsn,
-        itis_scientific_name:
-          (item.itis_tsn && taxonomyContext.getCachedSpeciesTaxonomyById(item.itis_tsn)?.scientificName) || null,
-        count: item.count,
-        survey_sample_site_name: item.survey_sample_site_name,
-        survey_sample_method_name: item.survey_sample_method_name,
-        survey_sample_period_start_datetime: item.survey_sample_period_start_datetime,
-        observation_date: dayjs(item.observation_date).format('YYYY-MM-DD'),
-        observation_time: dayjs(item.observation_date).format('HH:mm:ss'),
-        latitude: item.latitude,
-        longitude: item.longitude
-      };
-    }) ?? [];
+  // Update table data and columns when new data is loaded
+  useEffect(() => {
+    if (paginatedDataLoader.data) {
+      setTotalRows(paginatedDataLoader.data.pagination.total);
 
-  const rowCount = paginatedDataLoader.data?.pagination.total ?? 0;
+      setTableData(
+        paginatedDataLoader.data.surveyObservations.map((item) => {
+          return {
+            survey_observation_id: item.survey_observation_id,
+            itis_tsn: item.itis_tsn,
+            itis_scientific_name:
+              (item.itis_tsn && taxonomyContext.getCachedSpeciesTaxonomyById(item.itis_tsn)?.scientificName) || null,
+            count: item.count,
+            survey_sample_site_name: item.survey_sample_site_name,
+            survey_sample_method_name: item.survey_sample_method_name,
+            survey_sample_period_start_datetime: item.survey_sample_period_start_datetime,
+            observation_date: dayjs(item.observation_date).format('YYYY-MM-DD'),
+            observation_time: dayjs(item.observation_date).format('HH:mm:ss'),
+            latitude: item.latitude,
+            longitude: item.longitude
+          };
+        })
+      );
 
-  // Define table columns
-  const columns: GridColDef<IObservationTableRow>[] = [
-    {
-      field: 'itis_scientific_name',
-      headerName: 'Species',
-      flex: 1,
-      minWidth: 200,
-      renderCell: (params) => <em>{params.row.itis_scientific_name}</em>
-    },
-    {
-      field: 'survey_sample_site_name',
-      headerName: 'Sample Site',
-      flex: 1,
-      minWidth: 200
-    },
-    {
-      field: 'survey_sample_method_name',
-      headerName: 'Sample Method',
-      flex: 1,
-      minWidth: 200
-    },
-    {
-      field: 'survey_sample_period_start_datetime',
-      headerName: 'Sample Period',
-      flex: 1,
-      minWidth: 200
-    },
-    {
-      field: 'count',
-      headerName: 'Count',
-      headerAlign: 'right',
-      align: 'right',
-      maxWidth: 100
-    },
-    {
-      field: 'observation_date',
-      headerName: 'Date',
-      maxWidth: 120
-    },
-    {
-      field: 'observation_time',
-      headerName: 'Time',
-      headerAlign: 'right',
-      align: 'right',
-      maxWidth: 100
-    },
-    {
-      field: 'latitude',
-      headerName: 'Lat',
-      headerAlign: 'right',
-      align: 'right',
-      maxWidth: 100
-    },
-    {
-      field: 'longitude',
-      headerName: 'Long',
-      headerAlign: 'right',
-      align: 'right',
-      maxWidth: 100
+      setTableColumns([
+        {
+          field: 'itis_scientific_name',
+          headerName: 'Species',
+          flex: 1,
+          minWidth: 200,
+          renderCell: (params) => <em>{params.row.itis_scientific_name}</em>
+        },
+        {
+          field: 'survey_sample_site_name',
+          headerName: 'Sample Site',
+          flex: 1,
+          minWidth: 200
+        },
+        {
+          field: 'survey_sample_method_name',
+          headerName: 'Sample Method',
+          flex: 1,
+          minWidth: 200
+        },
+        {
+          field: 'survey_sample_period_start_datetime',
+          headerName: 'Sample Period',
+          flex: 1,
+          minWidth: 200
+        },
+        {
+          field: 'count',
+          headerName: 'Count',
+          headerAlign: 'right',
+          align: 'right',
+          maxWidth: 100
+        },
+        {
+          field: 'observation_date',
+          headerName: 'Date',
+          maxWidth: 120
+        },
+        {
+          field: 'observation_time',
+          headerName: 'Time',
+          headerAlign: 'right',
+          align: 'right',
+          maxWidth: 100
+        },
+        {
+          field: 'latitude',
+          headerName: 'Lat',
+          headerAlign: 'right',
+          align: 'right',
+          maxWidth: 100
+        },
+        {
+          field: 'longitude',
+          headerName: 'Long',
+          headerAlign: 'right',
+          align: 'right',
+          maxWidth: 100
+        }
+      ]);
     }
-  ];
+  }, [paginatedDataLoader.data, taxonomyContext]);
 
   return (
     <LoadingGuard
@@ -163,30 +170,25 @@ export const SurveySpatialObservationTable = () => {
       hasNoDataFallbackDelay={100}>
       <StyledDataGrid
         noRowsMessage="No observation records found"
-        // columns
-        columns={columns}
         columnHeaderHeight={rowHeight}
-        // rows
-        rows={rows}
-        rowCount={rowCount}
         rowHeight={rowHeight}
-        rowSelection={false}
-        getRowId={(row) => row.survey_observation_id}
-        autoHeight={false}
-        // pagination
-        paginationMode="server"
+        rows={rows}
+        rowCount={totalRows}
         paginationModel={{ pageSize, page }}
-        pageSizeOptions={[10, 25, 50]}
         onPaginationModelChange={(model) => {
           setPage(model.page);
           setPageSize(model.pageSize);
         }}
-        // sorting
+        pageSizeOptions={[10, 25, 50]}
+        paginationMode="server"
         sortingMode="server"
-        sortingOrder={['asc', 'desc']}
         sortModel={sortModel}
         onSortModelChange={(model) => setSortModel(model)}
-        // misc
+        loading={paginatedDataLoader.isLoading}
+        getRowId={(row) => row.survey_observation_id}
+        columns={tableColumns}
+        rowSelection={false}
+        autoHeight={false}
         checkboxSelection={false}
         disableRowSelectionOnClick
         disableColumnSelector

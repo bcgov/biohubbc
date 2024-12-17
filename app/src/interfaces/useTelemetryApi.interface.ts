@@ -30,14 +30,14 @@ export interface IFindTelemetryResponse {
 
 export interface IUpdateManualTelemetry {
   telemetry_manual_id: string;
-  deployment2_id: number;
+  deployment_id: number;
   latitude: number;
   longitude: number;
   acquisition_date: string;
   transmission_date: string | null;
 }
 export interface ICreateManualTelemetry {
-  deployment2_id: number;
+  deployment_id: number;
   latitude: number;
   longitude: number;
   acquisition_date: string;
@@ -66,87 +66,6 @@ export interface IAllTelemetry {
   elevation: number | null;
   temperature: number | null;
 }
-
-// TODO: Update this type after telemetry migration
-export type IAnimalDeployment = {
-  // BCTW properties
-
-  /**
-   * The ID of a BCTW collar animal assignment (aka: deployment) record.
-   */
-  assignment_id: string;
-  /**
-   * The ID of a BCTW collar record.
-   */
-  collar_id: string;
-  /**
-   * The ID of a BCTW critter record. Should match a critter_id in Critterbase.
-   */
-  critter_id: number;
-  /**
-   * The ID of a BCTW device.
-   */
-  device_id: number;
-  /**
-   * The time the deployment started.
-   */
-  attachment_start_date: string | null;
-  /**
-   * The time the deployment started.
-   */
-  attachment_start_time: string | null;
-  /**
-   * The time the deployment ended.
-   */
-  attachment_end_date: string | null;
-  /**
-   * The time the deployment ended.
-   */
-  attachment_end_time: string | null;
-  /**
-   * The ID of a BCTW deployment record.
-   */
-  bctw_deployment_id: string;
-  /**
-   * The ID of a BCTW device make record.
-   */
-  device_make: number;
-  /**
-   * The model of the device.
-   */
-  device_model: string | null;
-  /**
-   * The frequency of the device.
-   */
-  frequency: number | null;
-  /**
-   * The ID of a BCTW frequency unit record.
-   */
-  frequency_unit: number | null;
-
-  // SIMS properties
-
-  /**
-   * SIMS deployment record ID
-   */
-  deployment_id: number;
-  /**
-   * Critterbase critter ID
-   */
-  critterbase_critter_id: string;
-  /**
-   * Critterbase capture ID for the start of the deployment.
-   */
-  critterbase_start_capture_id: string;
-  /**
-   * Critterbase capture ID for the end of the deployment.
-   */
-  critterbase_end_capture_id: string | null;
-  /**
-   * Critterbase mortality ID for the end of the deployment.
-   */
-  critterbase_end_mortality_id: string | null;
-};
 
 export type ICreateAnimalDeployment = yup.InferType<typeof DeploymentFormYupSchema>;
 
