@@ -1,71 +1,102 @@
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
+import { AttractantLookupRecord } from '../database-models/attractant_lookup';
+import { MethodTechniqueRecord } from '../database-models/method_technique';
+import { MethodTechniqueAttractantRecord } from '../database-models/method_technique_attractant';
+import { MethodTechniqueAttributeQualitativeRecord } from '../database-models/method_technique_attribute_qualitative';
+import { MethodTechniqueAttributeQuantitativeRecord } from '../database-models/method_technique_attribute_quantitative';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
-import { IAttractantPostData } from './attractants-repository';
 import { BaseRepository } from './base-repository';
-import { IQualitativeAttributePostData, IQuantitativeAttributePostData } from './technique-attribute-repository';
 import { TechniqueVantage } from './technique-vantage-repository';
-import { VantagePostData } from './vantage-mode-repository';
 
-export interface ITechniquePostData {
-  name: string;
-  description: string | null;
-  distance_threshold: number | null;
-  method_lookup_id: number;
-  attributes: {
-    quantitative_attributes: IQuantitativeAttributePostData[];
-    qualitative_attributes: IQualitativeAttributePostData[];
-  };
-  attractants: IAttractantPostData[];
-  vantage_methods: VantagePostData[];
-}
-
-export interface ITechniquePutData extends ITechniquePostData {
-  method_technique_id: number;
-}
-
-export interface ITechniqueRowDataForInsert {
-  name: string;
-  description: string | null;
-  distance_threshold: number | null;
-  method_lookup_id: number;
-}
-
-export interface ITechniqueRowDataForUpdate extends ITechniqueRowDataForInsert {
-  method_technique_id: number;
-}
-
-export const TechniqueObject = z.object({
-  method_technique_id: z.number(),
-  name: z.string(),
-  description: z.string().nullable(),
-  distance_threshold: z.number().nullable(),
-  method_lookup_id: z.number(),
-  attractants: z.array(
-    z.object({
-      attractant_lookup_id: z.number()
-    })
-  ),
+const ITechniquePostData = MethodTechniqueRecord.pick({
+  name: true,
+  description: true,
+  distance_threshold: true,
+  method_lookup_id: true
+}).extend({
   attributes: z.object({
     quantitative_attributes: z.array(
-      z.object({
-        method_technique_attribute_quantitative_id: z.number(),
-        method_lookup_attribute_quantitative_id: z.string().uuid(),
-        value: z.number()
+      MethodTechniqueAttributeQuantitativeRecord.pick({
+        method_lookup_attribute_quantitative_id: true,
+        value: true
       })
     ),
     qualitative_attributes: z.array(
-      z.object({
-        method_technique_attribute_qualitative_id: z.number(),
-        method_lookup_attribute_qualitative_id: z.string().uuid(),
-        method_lookup_attribute_qualitative_option_id: z.string().uuid()
+      MethodTechniqueAttributeQualitativeRecord.pick({
+        method_lookup_attribute_qualitative_id: true,
+        method_lookup_attribute_qualitative_option_id: true
+      })
+    )
+  }),
+  attractants: z.array(
+    MethodTechniqueAttractantRecord.pick({
+      attractant_lookup_id: true
+    })
+  ),
+  vantage_methods: z.array(TechniqueVantage)
+});
+
+export type ITechniquePostData = z.infer<typeof ITechniquePostData>;
+
+const ITechniquePutData = ITechniquePostData.merge(
+  MethodTechniqueRecord.pick({
+    method_technique_id: true
+  })
+);
+
+export type ITechniquePutData = z.infer<typeof ITechniquePutData>;
+
+const ITechniqueRowDataForInsert = MethodTechniqueRecord.pick({
+  name: true,
+  description: true,
+  distance_threshold: true,
+  method_lookup_id: true
+});
+
+export type ITechniqueRowDataForInsert = z.infer<typeof ITechniqueRowDataForInsert>;
+
+const ITechniqueRowDataForUpdate = ITechniqueRowDataForInsert.merge(
+  MethodTechniqueRecord.pick({
+    method_technique_id: true
+  })
+);
+
+export type ITechniqueRowDataForUpdate = z.infer<typeof ITechniqueRowDataForUpdate>;
+
+const TechniqueObject = MethodTechniqueRecord.pick({
+  method_technique_id: true,
+  name: true,
+  description: true,
+  distance_threshold: true,
+  method_lookup_id: true
+}).extend({
+  attractants: z.array(
+    AttractantLookupRecord.pick({
+      attractant_lookup_id: true
+    })
+  ),
+  attributes: z.object({
+    qualitative_attributes: z.array(
+      MethodTechniqueAttributeQualitativeRecord.pick({
+        method_technique_attribute_qualitative_id: true,
+        method_lookup_attribute_qualitative_id: true,
+        method_lookup_attribute_qualitative_option_id: true
+      })
+    ),
+    quantitative_attributes: z.array(
+      MethodTechniqueAttributeQuantitativeRecord.pick({
+        method_technique_attribute_quantitative_id: true,
+        method_lookup_attribute_quantitative_id: true,
+        value: true
       })
     )
   }),
   vantage_methods: z.array(TechniqueVantage)
 });
+
 export type TechniqueObject = z.infer<typeof TechniqueObject>;
 
 export class TechniqueRepository extends BaseRepository {

@@ -1,4 +1,6 @@
 import { z } from 'zod';
+import { MethodTechniqueVantageRecord } from '../database-models/method_technique_vantage';
+import { VantageCategory } from '../database-models/vantage_category';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { getLogger } from '../utils/logger';
@@ -7,11 +9,14 @@ import { VantagePostData } from './vantage-mode-repository';
 
 const defaultLog = getLogger('repositories/technique-vantage-repository');
 
-export const TechniqueVantage = z.object({
-  method_technique_vantage_id: z.number(),
-  vantage_method_id: z.number(),
-  vantage_category_id: z.number()
-});
+export const TechniqueVantage = MethodTechniqueVantageRecord.pick({
+  method_technique_vantage_id: true,
+  vantage_method_id: true
+}).merge(
+  VantageCategory.pick({
+    vantage_category_id: true
+  })
+);
 
 export type TechniqueVantage = z.infer<typeof TechniqueVantage>;
 

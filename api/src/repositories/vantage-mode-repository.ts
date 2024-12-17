@@ -8,9 +8,7 @@ import { BaseRepository } from './base-repository';
 
 const defaultLog = getLogger('repositories/technique-vantage-repository');
 
-export type VantagePostData = {
-  vantage_method_id: number;
-};
+export type VantagePostData = Pick<VantageMethodRecord, 'vantage_method_id'>;
 
 export const VantageReferenceRecord = VantageCategory.omit({
   record_end_date: true
