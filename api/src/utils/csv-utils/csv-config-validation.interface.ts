@@ -1,5 +1,21 @@
 import { HTTPError, HTTPErrorType } from '../../errors/http-error';
 
+export const CSV_ERROR_MESSAGE =
+  'CSV contains validation errors. Please check for formatting issues, missing fields, or invalid values and try again.';
+
+/**
+ * A HTTP `422 Unprocessable Entity` error specific to CSV validation.
+ *
+ * @export
+ * @class CSVValidationError
+ * @extends {HTTPError}
+ */
+export class CSVValidationError extends HTTPError {
+  constructor(message: string, errors: CSVError[]) {
+    super('CSV Validation Error' as HTTPErrorType, 422, message, errors);
+  }
+}
+
 /**
  * The CSV configuration interface
  *
@@ -203,16 +219,3 @@ export type CSVRow = Record<Uppercase<string>, any>;
  *
  */
 export type CSVRowValidated<StaticHeaderType extends Uppercase<string>> = Record<StaticHeaderType, any>;
-
-/**
- * A HTTP `422 Unprocessable Entity` error specific to CSV validation.
- *
- * @export
- * @class CSVValidationError
- * @extends {HTTPError}
- */
-export class CSVValidationError extends HTTPError {
-  constructor(message: string, errors: CSVError[]) {
-    super('CSVValidationError' as HTTPErrorType, 422, message, errors);
-  }
-}

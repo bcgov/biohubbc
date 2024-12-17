@@ -2,7 +2,11 @@ import { WorkSheet } from 'xlsx';
 import { IDBConnection } from '../../../database/db';
 import { CSVConfigUtils } from '../../../utils/csv-utils/csv-config-utils';
 import { validateCSVWorksheet } from '../../../utils/csv-utils/csv-config-validation';
-import { CSVConfig, CSVValidationError } from '../../../utils/csv-utils/csv-config-validation.interface';
+import {
+  CSVConfig,
+  CSVValidationError,
+  CSV_ERROR_MESSAGE
+} from '../../../utils/csv-utils/csv-config-validation.interface';
 import {
   getDescriptionCellValidator,
   getTimeCellSetter,
@@ -10,7 +14,7 @@ import {
 } from '../../../utils/csv-utils/csv-header-configs';
 import { getLogger } from '../../../utils/logger';
 import { NestedRecord } from '../../../utils/nested-record';
-import { ICritterDetailed } from '../../critterbase-service';
+import { IAsSelectLookup, ICritterDetailed } from '../../critterbase-service';
 import { DBService } from '../../db-service';
 import { SurveyCritterService } from '../../survey-critter-service';
 import {
@@ -93,7 +97,7 @@ export class ImportMarkingsService extends DBService {
     const { errors, rows } = validateCSVWorksheet(this.worksheet, config);
 
     if (errors.length) {
-      throw new CSVValidationError('Failed to validate Marking CSV', errors);
+      throw new CSVValidationError(CSV_ERROR_MESSAGE, errors);
     }
 
     const markings = rows.map((row) => ({
@@ -170,34 +174,27 @@ export class ImportMarkingsService extends DBService {
    */
   async _getBodyLocationDictionary(surveyAliasMap: Map<string, ICritterDetailed>): Promise<NestedRecord<string>> {
     const dictionary = new NestedRecord<string>();
-    const uniqueTsns = new Set<number>();
+    const rowAliases = this.utils.getUniqueCellValues('ALIAS').map((alias) => String(alias).toLowerCase());
+    const tsnBodyLocationMap = new Map<number, Promise<IAsSelectLookup[]>>();
 
-    const rowAliases = this.utils.getUniqueCellValues('ALIAS');
-    const critters = new Set<ICritterDetailed>();
-
-    // Get unique critters and their tsns
     for (const alias of rowAliases) {
-      const critter = surveyAliasMap.get(String(alias).toLowerCase());
+      const critter = surveyAliasMap.get(alias);
       if (critter) {
-        uniqueTsns.add(critter.itis_tsn);
-        critters.add(critter);
-      }
-    }
+        const tsnBodyLocations = await tsnBodyLocationMap.get(critter.itis_tsn);
 
-    // Fetch body locations for each unique tsn
-    const bodyLocationsArrays = await Promise.all(
-      Array.from(uniqueTsns).map((tsn) =>
-        this.surveyCritterService.critterbaseService.getTaxonBodyLocations(String(tsn))
-      )
-    );
+        if (!tsnBodyLocations) {
+          tsnBodyLocationMap.set(
+            critter.itis_tsn,
+            this.surveyCritterService.critterbaseService.getTaxonBodyLocations(String(critter.itis_tsn))
+          );
+        }
 
-    // Create a dictionary of critter_id -> body location -> body_location_id
-    for (let i = 0; i < critters.size; i++) {
-      const critter = Array.from(critters)[i];
-      const bodyLocations = bodyLocationsArrays[i];
-
-      for (const bodyLocation of bodyLocations) {
-        dictionary.set({ path: [critter.animal_id as string, bodyLocation.value], value: bodyLocation.id });
+        tsnBodyLocations?.map((bodyLocation) => {
+          dictionary.set({
+            path: [alias, bodyLocation.value.toLowerCase()],
+            value: bodyLocation.id
+          });
+        });
       }
     }
 

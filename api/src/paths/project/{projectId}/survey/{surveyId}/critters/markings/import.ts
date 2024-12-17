@@ -2,11 +2,10 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
-import { CSVValidationErrorSchema } from '../../../../../../../openapi/schemas/csv';
+import { CSVValidationErrorResponse } from '../../../../../../../openapi/schemas/csv';
 import { csvFileSchema } from '../../../../../../../openapi/schemas/file';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { ImportMarkingsService } from '../../../../../../../services/import-services/marking/import-markings-service';
-import { CSVValidationError } from '../../../../../../../utils/csv-utils/csv-config-validation.interface';
 import { getLogger } from '../../../../../../../utils/logger';
 import { parseMulterFile } from '../../../../../../../utils/media/media-utils';
 import { getFileFromRequest } from '../../../../../../../utils/request';
@@ -98,7 +97,7 @@ POST.apiDoc = {
     403: {
       $ref: '#/components/responses/403'
     },
-    422: CSVValidationErrorSchema,
+    422: CSVValidationErrorResponse,
     500: {
       $ref: '#/components/responses/500'
     },
@@ -128,11 +127,7 @@ export function importCsv(): RequestHandler {
 
       const importMarkings = new ImportMarkingsService(connection, worksheet, surveyId);
 
-      const validationErrors = await importMarkings.importCSVWorksheet();
-
-      if (validationErrors.length) {
-        throw new CSVValidationError('Marking CSV failed validation', validationErrors);
-      }
+      await importMarkings.importCSVWorksheet();
 
       await connection.commit();
 

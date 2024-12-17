@@ -2,6 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
+import { CSVValidationErrorResponse } from '../../../../../../openapi/schemas/csv';
 import { csvFileSchema } from '../../../../../../openapi/schemas/file';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { ImportCrittersService } from '../../../../../../services/import-services/critter/import-critters-service';
@@ -94,6 +95,7 @@ POST.apiDoc = {
     403: {
       $ref: '#/components/responses/403'
     },
+    422: CSVValidationErrorResponse,
     500: {
       $ref: '#/components/responses/500'
     },
