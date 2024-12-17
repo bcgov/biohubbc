@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Stack from '@mui/material/Stack';
-import { TelemetryTableContextProvider } from 'contexts/telemetryTableContext';
+import { TelemetryTableContext, TelemetryTableContextProvider } from 'contexts/telemetryTableContext';
 import { SurveyDeploymentList } from 'features/surveys/telemetry/list/SurveyDeploymentList';
 import { TelemetryTableContainer } from 'features/surveys/telemetry/table/TelemetryTableContainer';
 import { TelemetryHeader } from 'features/surveys/telemetry/TelemetryHeader';
@@ -39,7 +39,16 @@ export const TelemetryPage = () => {
         {/* Telemetry Component */}
         <Box flex="1 1 auto" position="relative">
           <TelemetryTableContextProvider>
-            <TelemetryTableContainer />
+            <TelemetryTableContext.Consumer>
+              {(context) => {
+                if (!context?._muiDataGridApiRef.current) {
+                  // Delay rendering the ObservationsTable until the DataGrid API is available
+                  return <CircularProgress className="pageProgress" size={40} />;
+                }
+
+                return <TelemetryTableContainer />;
+              }}
+            </TelemetryTableContext.Consumer>
           </TelemetryTableContextProvider>
         </Box>
       </Stack>

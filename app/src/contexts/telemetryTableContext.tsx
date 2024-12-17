@@ -184,10 +184,6 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
     biohubApi.telemetry.getTelemetryForSurvey(surveyContext.projectId, surveyContext.surveyId, pagination)
   );
 
-  useEffect(() => {
-    telemetryDataLoader.load();
-  }, [telemetryDataLoader]);
-
   const {
     data: telemetryData,
     isLoading: isLoadingTelemetryData,
@@ -232,7 +228,7 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
   });
 
   // Sort model
-  const [sortModel, setSortModel] = useState<GridSortModel>([{ field: 'acquisition_date', sort: 'desc' }]);
+  const [sortModel, setSortModel] = useState<GridSortModel>([{ field: 'date', sort: 'desc' }]);
 
   // True if table has unsaved changes, deferring value to prevent ui issue with controls rendering
   const hasUnsavedChanges = _modifiedRowIds.current.length > 0 || _stagedRowIds.current.length > 0;
@@ -832,30 +828,28 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
     }),
     [
       _muiDataGridApiRef,
-      rows,
-      getColumns,
       addRecord,
-      hasError,
-      saveRecords,
+      columnVisibilityModel,
       deleteRecords,
       deleteSelectedRecords,
-      revertRecords,
-      refreshTelemetryRecords,
+      getColumns,
+      hasError,
       hasUnsavedChanges,
-      rowSelectionModel,
-      rowModesModel,
-      isLoadingTelemetryData,
-      validationModel,
-      recordCount,
-      paginationModel,
-      setPaginationModel,
-      sortModel,
-      setSortModel,
-      columnVisibilityModel,
-      setColumnVisibilityModel,
-      toggleColumnsVisibility,
       hiddenColumns,
-      onRowEditStart
+      isLoadingTelemetryData,
+      onRowEditStart,
+      paginationModel,
+      recordCount,
+      refreshTelemetryRecords,
+      revertRecords,
+      rowModesModel,
+      rowSelectionModel,
+      rows,
+      saveRecords,
+      setColumnVisibilityModel,
+      sortModel,
+      toggleColumnsVisibility,
+      validationModel
     ]
   );
 
