@@ -126,7 +126,7 @@ const AutocompleteDataGridEditCell = <DataGridType extends GridValidRowModel, Va
       )}
       renderOption={(renderProps, renderOption) => {
         return (
-          <Box component="li" {...renderProps}>
+          <Box component="li" {...renderProps} key={renderOption.value}>
             {renderOption.label}
           </Box>
         );

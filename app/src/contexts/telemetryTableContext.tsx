@@ -188,7 +188,12 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
     telemetryDataLoader.load();
   }, [telemetryDataLoader]);
 
-  const { data: telemetryData, isLoading: isLoadingTelemetryData, refresh: refreshTelemetryData } = telemetryDataLoader;
+  const {
+    data: telemetryData,
+    isLoading: isLoadingTelemetryData,
+    hasLoaded: hasLoadedTelemetryData,
+    refresh: refreshTelemetryData
+  } = telemetryDataLoader;
 
   // The data grid rows
   const [rows, setRows] = useState<IManualTelemetryTableRow[]>([]);
@@ -619,6 +624,35 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
   }, [rows, _updateRowsMode, _modifiedRowIds]);
 
   /**
+   * Refreshes the observations table with the latest records from the server.
+   *
+   * @return {*}
+   */
+  const refreshTelemetryRecords = useCallback(async () => {
+    const sort = firstOrNull(sortModel);
+
+    let sortField = sort?.field;
+
+    // Convert frontend column names to the backend column names supported by the api
+    if (sortField === 'date') {
+      sortField = 'acquisition_date';
+    } else if (sortField === 'time') {
+      sortField = 'acquisition_time';
+    } else if (sortField === 'telemetry_type') {
+      sortField = 'vendor';
+    }
+
+    return refreshTelemetryData({
+      limit: paginationModel.pageSize,
+      sort: sortField || undefined,
+      order: sort?.sort || undefined,
+
+      // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
+      page: paginationModel.page + 1
+    });
+  }, [paginationModel.page, paginationModel.pageSize, refreshTelemetryData, sortModel]);
+
+  /**
    * Dispatches update and create requests to SIMS
    *
    * @param {GridValidRowModel[]} createRows - Rows to create
@@ -666,7 +700,7 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
           open: true
         });
 
-        return refreshTelemetryData();
+        return refreshTelemetryRecords();
       } catch (error) {
         _updateRowsMode(_modifiedRowIds.current, GridRowModes.Edit, true);
         const apiError = error as APIError;
@@ -683,13 +717,13 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
       }
     },
     [
-      revertRecords,
-      dialogContext,
-      refreshTelemetryData,
+      _updateRowsMode,
       biohubApi.telemetry,
+      dialogContext,
+      refreshTelemetryRecords,
+      revertRecords,
       surveyContext.projectId,
-      surveyContext.surveyId,
-      _updateRowsMode
+      surveyContext.surveyId
     ]
   );
 
@@ -725,35 +759,6 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
   }, [_validateRows, _getEditedIds, _getEditedRows, _saveRecords]);
 
   /**
-   * Refreshes the observations table with the latest records from the server.
-   *
-   * @return {*}
-   */
-  const refreshTelemetryRecords = useCallback(async () => {
-    const sort = firstOrNull(sortModel);
-
-    let sortField = sort?.field;
-
-    // Convert frontend column names to the backend column names supported by the api
-    if (sortField === 'date') {
-      sortField = 'acquisition_date';
-    } else if (sortField === 'time') {
-      sortField = 'acquisition_time';
-    } else if (sortField === 'telemetry_type') {
-      sortField = 'vendor';
-    }
-
-    return refreshTelemetryData({
-      limit: paginationModel.pageSize,
-      sort: sortField || undefined,
-      order: sort?.sort || undefined,
-
-      // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
-      page: paginationModel.page + 1
-    });
-  }, [paginationModel.page, paginationModel.pageSize, refreshTelemetryData, sortModel]);
-
-  /**
    * Fetch new rows based on sort/ pagination model changes
    */
   useEffect(() => {
@@ -767,9 +772,13 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
    *
    */
   useEffect(() => {
+    if (!hasLoadedTelemetryData) {
+      // Existing telemetry records have not yet loaded
+      return;
+    }
+
     if (!telemetryData?.telemetry) {
-      // No telemetry data, clear the table
-      setRows([]);
+      // Existing telemetry data doesn't exist
       return;
     }
 
@@ -787,7 +796,7 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
     });
 
     setRows(rows);
-  }, [telemetryData]);
+  }, [hasLoadedTelemetryData, telemetryData]);
 
   const telemetryTableContext: IAllTelemetryTableContext = useMemo(
     () => ({
