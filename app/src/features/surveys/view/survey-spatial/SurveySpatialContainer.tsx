@@ -56,6 +56,10 @@ export const SurveySpatialContainer = (): JSX.Element => {
           ...new Set(observationsDataLoader.data.surveyObservations.map((item) => item.itis_tsn))
         ].filter((tsn): tsn is number => tsn !== null);
 
+        if (!taxonomicIds.length) {
+          return;
+        }
+
         await taxonomyContext.cacheSpeciesTaxonomyByIds(taxonomicIds);
       }
     };

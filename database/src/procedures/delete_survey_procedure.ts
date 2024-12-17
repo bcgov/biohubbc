@@ -115,6 +115,11 @@ export async function seed(knex: Knex): Promise<void> {
         DELETE FROM survey_report_attachment
         WHERE survey_id = p_survey_id;
 
+        DELETE FROM study_species_unit
+        WHERE study_species_unit_id IN (
+            SELECT study_species_unit_id FROM study_species WHERE survey_id = p_survey_id
+        );
+
         DELETE FROM study_species
         WHERE survey_id = p_survey_id;
 
