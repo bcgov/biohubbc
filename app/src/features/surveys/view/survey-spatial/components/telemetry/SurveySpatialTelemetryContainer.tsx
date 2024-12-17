@@ -11,6 +11,11 @@ export enum SurveySpatialTelemetryContainerViewEnum {
   TELEMETRY = 'TELEMETRY'
 }
 
+/**
+ * Renders the container for the survey spatial telemetry table.
+ *
+ * @return {*} {JSX.Element}
+ */
 export const SurveySpatialTelemetryContainer = () => {
   const [activeView, setActiveView] = useState<SurveySpatialTelemetryContainerViewEnum>(
     SurveySpatialTelemetryContainerViewEnum.DEPLOYMENTS
