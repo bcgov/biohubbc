@@ -11,14 +11,6 @@ import { VantagePostData } from './vantage-mode-repository';
 chai.use(sinonChai);
 
 describe('TechniqueVantageRepository', () => {
-  let dbConnection: any;
-  let repository: TechniqueVantageRepository;
-
-  beforeEach(() => {
-    dbConnection = getMockDBConnection();
-    repository = new TechniqueVantageRepository(dbConnection);
-  });
-
   afterEach(() => {
     sinon.restore();
   });
@@ -33,20 +25,25 @@ describe('TechniqueVantageRepository', () => {
           description: 'test description'
         }
       ];
-
       const mockResponse = { rows: mockRecord } as QueryResult<any>;
-      const knexStub = sinon.stub(dbConnection, 'knex').resolves(mockResponse);
+      const dbConnection = getMockDBConnection({ knex: sinon.stub().resolves(mockResponse) });
+
+      const repository = new TechniqueVantageRepository(dbConnection);
 
       const surveyId = 1;
       const methodTechniqueId = 2;
 
       const result = await repository.getVantagesForTechnique(surveyId, methodTechniqueId);
 
-      expect(knexStub).to.have.been.calledOnce;
+      expect(dbConnection.knex).to.have.been.calledOnce;
       expect(result).to.deep.equal(mockRecord);
     });
 
     it('should throw an error if the query fails', async () => {
+      const dbConnection = getMockDBConnection();
+
+      const repository = new TechniqueVantageRepository(dbConnection);
+
       sinon.stub(dbConnection, 'knex').throws(new Error('Query error'));
 
       try {
@@ -61,22 +58,27 @@ describe('TechniqueVantageRepository', () => {
   describe('insertVantagesForTechnique', () => {
     it('should insert the vantages successfully', async () => {
       const mockRecord = [{ method_technique_vantage_id: 1 }];
+      const mockResponse = { rows: mockRecord } as QueryResult<any>;
+      const dbConnection = getMockDBConnection({ knex: sinon.stub().resolves(mockResponse) });
+
+      const repository = new TechniqueVantageRepository(dbConnection);
 
       const vantageMethods: VantagePostData[] = [{ vantage_method_id: 3 }];
-
-      const mockResponse = { rows: mockRecord } as QueryResult<any>;
-      const knexStub = sinon.stub(dbConnection, 'knex').resolves(mockResponse);
 
       const surveyId = 1;
       const methodTechniqueId = 2;
 
       const result = await repository.insertVantagesForTechnique(surveyId, methodTechniqueId, vantageMethods);
 
-      expect(knexStub).to.have.been.calledOnce;
+      expect(dbConnection.knex).to.have.been.calledOnce;
       expect(result).to.deep.equal(mockRecord);
     });
 
     it('should throw an error if insertion fails', async () => {
+      const dbConnection = getMockDBConnection();
+
+      const repository = new TechniqueVantageRepository(dbConnection);
+
       const vantageMethods: VantagePostData[] = [{ vantage_method_id: 3 }];
 
       sinon.stub(dbConnection, 'knex').throws(new Error('Insert error'));
@@ -92,20 +94,26 @@ describe('TechniqueVantageRepository', () => {
 
   describe('deleteVantagesForTechnique', () => {
     it('should delete the vantages successfully', async () => {
-      const vantageMethods: VantagePostData[] = [{ vantage_method_id: 3 }];
-
       const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
-      const knexStub = sinon.stub(dbConnection, 'knex').resolves(mockResponse);
+      const dbConnection = getMockDBConnection({ knex: sinon.stub().resolves(mockResponse) });
+
+      const repository = new TechniqueVantageRepository(dbConnection);
+
+      const vantageMethods: VantagePostData[] = [{ vantage_method_id: 3 }];
 
       const surveyId = 1;
       const methodTechniqueId = 2;
 
       await repository.deleteVantagesForTechnique(surveyId, methodTechniqueId, vantageMethods);
 
-      expect(knexStub).to.have.been.calledOnce;
+      expect(dbConnection.knex).to.have.been.calledOnce;
     });
 
     it('should throw an error if deletion fails', async () => {
+      const dbConnection = getMockDBConnection();
+
+      const repository = new TechniqueVantageRepository(dbConnection);
+
       const vantageMethods: VantagePostData[] = [{ vantage_method_id: 3 }];
 
       sinon.stub(dbConnection, 'knex').throws(new Error('Delete error'));
@@ -119,6 +127,10 @@ describe('TechniqueVantageRepository', () => {
     });
 
     it('should do nothing if no vantage methods are provided', async () => {
+      const dbConnection = getMockDBConnection();
+
+      const repository = new TechniqueVantageRepository(dbConnection);
+
       const knexStub = sinon.stub(dbConnection, 'knex');
 
       await repository.deleteVantagesForTechnique(1, 2, []);

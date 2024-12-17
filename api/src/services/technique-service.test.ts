@@ -116,6 +116,9 @@ describe('TechniqueService', () => {
       const insertQuantitativeAttributesForTechniqueStub = sinon
         .stub(TechniqueAttributeService.prototype, 'insertQuantitativeAttributesForTechnique')
         .resolves();
+      const insertVantagesForTechniqueStub = sinon
+        .stub(TechniqueVantageService.prototype, 'insertVantagesForTechnique')
+        .resolves();
 
       const dbConnection = getMockDBConnection();
 
@@ -136,20 +139,24 @@ describe('TechniqueService', () => {
           attributes: {
             quantitative_attributes: [
               {
-                method_technique_attribute_quantitative_id: 44,
                 method_lookup_attribute_quantitative_id: '123-456-55',
                 value: 66
               }
             ],
             qualitative_attributes: [
               {
-                method_technique_attribute_qualitative_id: 77,
                 method_lookup_attribute_qualitative_id: '123-456-88',
                 method_lookup_attribute_qualitative_option_id: '123-456-99'
               }
             ]
           },
-          vantage_methods: []
+          vantage_methods: [
+            {
+              method_technique_vantage_id: 1,
+              vantage_method_id: 2,
+              vantage_category_id: 3
+            }
+          ]
         }
       ];
 
@@ -170,6 +177,13 @@ describe('TechniqueService', () => {
         11,
         techniques[0].attributes.quantitative_attributes
       );
+      expect(insertVantagesForTechniqueStub).to.have.been.calledOnceWith(surveyId, 11, [
+        {
+          method_technique_vantage_id: 1,
+          vantage_method_id: 2,
+          vantage_category_id: 3
+        }
+      ]);
 
       expect(response).to.eql([mockRecord]);
     });
