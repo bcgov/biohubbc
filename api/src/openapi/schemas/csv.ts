@@ -41,3 +41,34 @@ export const CSVErrorSchema: OpenAPIV3.SchemaObject = {
     }
   }
 };
+
+/**
+ * CSV validation error response schema
+ *
+ */
+export const CSVValidationErrorSchema: OpenAPIV3.ResponseObject = {
+  description: 'CSV validation errors response',
+  content: {
+    'application/json': {
+      schema: {
+        description: 'Error response object',
+        required: ['name', 'status', 'message'],
+        properties: {
+          name: {
+            type: 'string'
+          },
+          status: {
+            type: 'number'
+          },
+          message: {
+            type: 'string'
+          },
+          errors: {
+            type: 'array',
+            items: CSVErrorSchema
+          }
+        }
+      }
+    }
+  }
+};

@@ -2,7 +2,7 @@ import { WorkSheet } from 'xlsx';
 import { IDBConnection } from '../../../database/db';
 import { CSVConfigUtils } from '../../../utils/csv-utils/csv-config-utils';
 import { validateCSVWorksheet } from '../../../utils/csv-utils/csv-config-validation';
-import { CSVConfig, CSVError } from '../../../utils/csv-utils/csv-config-validation.interface';
+import { CSVConfig, CSVValidationError } from '../../../utils/csv-utils/csv-config-validation.interface';
 import {
   getDescriptionCellValidator,
   getTimeCellSetter,
@@ -87,13 +87,13 @@ export class ImportMarkingsService extends DBService {
    * @throws {ApiGeneralError} - If unable to fully insert records into Critterbase
    * @returns {*} {Promise<CSVError[]>}
    */
-  async importCSVWorksheet(): Promise<CSVError[]> {
+  async importCSVWorksheet(): Promise<void> {
     const config = await this.getCSVConfig();
 
     const { errors, rows } = validateCSVWorksheet(this.worksheet, config);
 
     if (errors.length) {
-      return errors;
+      throw new CSVValidationError('Failed to validate Marking CSV', errors);
     }
 
     const markings = rows.map((row) => ({
@@ -110,8 +110,6 @@ export class ImportMarkingsService extends DBService {
     defaultLog.debug({ label: 'import markings', markings });
 
     await this.surveyCritterService.critterbaseService.bulkCreate({ markings });
-
-    return [];
   }
 
   /**

@@ -176,7 +176,7 @@ export const forEachCSVCell = (
 export const executeSetCellValue = (params: CSVParams, headerConfig: CSVHeaderConfig, mutableRows: CSVRow[]) => {
   const row = { ...mutableRows[params.rowIndex] };
 
-  const headerKey = params.staticHeader?.toUpperCase() ?? params.header.toUpperCase()
+  const headerKey = params.staticHeader?.toUpperCase() ?? params.header.toUpperCase();
   const cellValue = headerConfig?.setCellValue?.(params) ?? params.mutateCell;
 
   // Remove the aliased header if it is not the static header

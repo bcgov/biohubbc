@@ -5,7 +5,12 @@ import { IDBConnection } from '../../../database/db';
 import { ApiGeneralError } from '../../../errors/api-error';
 import { CSVConfigUtils } from '../../../utils/csv-utils/csv-config-utils';
 import { validateCSVWorksheet } from '../../../utils/csv-utils/csv-config-validation';
-import { CSVConfig, CSVHeaderConfig, CSVRowValidated } from '../../../utils/csv-utils/csv-config-validation.interface';
+import {
+  CSVConfig,
+  CSVHeaderConfig,
+  CSVRowValidated,
+  CSVValidationError
+} from '../../../utils/csv-utils/csv-config-validation.interface';
 import { getDescriptionCellValidator, getTsnCellValidator } from '../../../utils/csv-utils/csv-header-configs';
 import { getLogger } from '../../../utils/logger';
 import { NestedRecord } from '../../../utils/nested-record';
@@ -93,7 +98,7 @@ export class ImportCrittersService extends DBService {
     const { errors, rows } = validateCSVWorksheet(this.worksheet, config);
 
     if (errors.length) {
-      throw new ApiGeneralError('Failed to validate CSV', errors);
+      throw new CSVValidationError('Failed to validate Critter CSV', errors);
     }
 
     const payloads = this._getImportPayloads(rows);

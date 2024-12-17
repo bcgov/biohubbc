@@ -2,10 +2,11 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
-import { ApiGeneralError } from '../../../../../../../errors/api-error';
+import { CSVValidationErrorSchema } from '../../../../../../../openapi/schemas/csv';
 import { csvFileSchema } from '../../../../../../../openapi/schemas/file';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { ImportMarkingsService } from '../../../../../../../services/import-services/marking/import-markings-service';
+import { CSVValidationError } from '../../../../../../../utils/csv-utils/csv-config-validation.interface';
 import { getLogger } from '../../../../../../../utils/logger';
 import { parseMulterFile } from '../../../../../../../utils/media/media-utils';
 import { getFileFromRequest } from '../../../../../../../utils/request';
@@ -97,6 +98,7 @@ POST.apiDoc = {
     403: {
       $ref: '#/components/responses/403'
     },
+    422: CSVValidationErrorSchema,
     500: {
       $ref: '#/components/responses/500'
     },
@@ -108,11 +110,6 @@ POST.apiDoc = {
 
 /**
  * Imports a `Critterbase Marking CSV` which bulk adds markings to Critterbase.
- *
- * TODO: Decide what to do with validation errors. For now, just throw an error.
- * In future, potentially return the validation errors in the response.
- * Why? The frontend should be able to easily determine if the extra errors
- * in the response are CSV validation errors or just regular errors.
  *
  * @return {*} {RequestHandler}
  */
@@ -134,7 +131,7 @@ export function importCsv(): RequestHandler {
       const validationErrors = await importMarkings.importCSVWorksheet();
 
       if (validationErrors.length) {
-        throw new ApiGeneralError('Failed to validate CSV', validationErrors);
+        throw new CSVValidationError('Marking CSV failed validation', validationErrors);
       }
 
       await connection.commit();
