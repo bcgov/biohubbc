@@ -67,6 +67,14 @@ export const codes: IGetAllCodeSetsResponse = {
     { id: 1, name: 'Scat', description: 'Scat left by the species.' },
     { id: 2, name: 'Direct sighting', description: 'A direct sighting of the species.' }
   ],
+  telemetry_device_makes: [
+    { id: 1, name: 'Vectronic', description: 'Vectronic device make.' },
+    { id: 2, name: 'Lotek', description: 'Lotek device make.' }
+  ],
+  frequency_units: [
+    { id: 1, name: 'Hz', description: 'Hertz' },
+    { id: 2, name: 'Mhz', description: 'Megahertz' }
+  ],
   alert_types: [
     { id: 1, name: 'Survey', description: 'Alert about surveys.' },
     { id: 2, name: 'General', description: 'General alert.' }

@@ -189,7 +189,6 @@ PUT.apiDoc = {
         type: 'integer',
         minimum: 1
       },
-      description: 'An array of method technique IDs',
       required: true
     }
   ],
@@ -346,7 +345,6 @@ GET.apiDoc = {
         type: 'integer',
         minimum: 1
       },
-      description: 'An array of method technique IDs',
       required: true
     }
   ],

@@ -72,15 +72,15 @@ let DBPool: pg.Pool | undefined;
  * If the pool cannot be created successfully, `process.exit(1)` is called to terminate the API.
  * Why? The API is of no use if the database can't be reached.
  *
- * @param {pg.PoolConfig} [poolConfig]
+ * @param {pg.PoolConfig} poolConfig
  */
-export const initDBPool = function (poolConfig?: pg.PoolConfig): void {
+export const initDBPool = function (poolConfig: pg.PoolConfig): void {
   if (DBPool) {
     // the pool has already been initialized, do nothing
     return;
   }
 
-  defaultLog.debug({ label: 'create db pool', message: 'pool config', poolConfig });
+  defaultLog.debug({ label: 'create db pool', message: 'pool config', poolConfig: { ...poolConfig, password: '***' } });
 
   try {
     DBPool = new pg.Pool(poolConfig);
@@ -114,11 +114,13 @@ export interface IDBConnection {
   /**
    * Opens a new connection, begins a transaction, and sets the user context.
    *
+   * Note: Transaction bypassed if `config.transaction` is `false`.
    * Note: Does nothing if the connection is already open.
    *
+   * @param {{transaction: boolean}} [config] Optional configuration object (contains transaction flag)
    * @memberof IDBConnection
    */
-  open: () => Promise<void>;
+  open: (config?: { transaction: boolean }) => Promise<void>;
   /**
    * Releases (closes) the connection.
    *
@@ -232,6 +234,7 @@ export const getDBConnection = function (keycloakToken?: KeycloakUserInformation
   let _isOpen = false;
   let _isReleased = false;
   let _systemUserId: number | null = null;
+  let _isTransaction = false;
   const _token = keycloakToken;
 
   /**
@@ -252,11 +255,13 @@ export const getDBConnection = function (keycloakToken?: KeycloakUserInformation
   /**
    * Opens a new connection, begins a transaction, and sets the user context.
    *
+   * Note: Transaction bypassed if `config.transaction` is `false`.
    * Note: Does nothing if the connection is already open.
    *
+   * @param {{transaction: boolean}} config Configuration object (contains transaction flag)
    * @throws {Error} if called when the DBPool has not been initialized via `initDBPool`
    */
-  const _open = async () => {
+  const _open = async (config = { transaction: true }) => {
     if (_client || _isOpen) {
       return;
     }
@@ -270,9 +275,13 @@ export const getDBConnection = function (keycloakToken?: KeycloakUserInformation
     _client = await pool.connect();
     _isOpen = true;
     _isReleased = false;
+    _isTransaction = config.transaction;
 
     await _setUserContext();
-    await _client.query('BEGIN');
+
+    if (config.transaction) {
+      await _client.query('BEGIN');
+    }
   };
 
   /**
@@ -292,6 +301,7 @@ export const getDBConnection = function (keycloakToken?: KeycloakUserInformation
     _client.release();
     _isOpen = false;
     _isReleased = true;
+    _isTransaction = false;
   };
 
   /**
@@ -302,6 +312,10 @@ export const getDBConnection = function (keycloakToken?: KeycloakUserInformation
   const _commit = async () => {
     if (!_client || !_isOpen) {
       throw Error('DBConnection is not open');
+    }
+
+    if (!_isTransaction) {
+      throw Error('DBConnection is not a transaction');
     }
 
     await _client.query('COMMIT');
@@ -315,6 +329,10 @@ export const getDBConnection = function (keycloakToken?: KeycloakUserInformation
   const _rollback = async () => {
     if (!_client || !_isOpen) {
       throw Error('DBConnection is not open');
+    }
+
+    if (!_isTransaction) {
+      throw Error('DBConnection is not a transaction');
     }
 
     await _client.query('ROLLBACK');

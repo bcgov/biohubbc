@@ -22,6 +22,8 @@ export async function seed(knex: Knex): Promise<void> {
 
       BEGIN
 
+        -------- delete basic survey data --------
+
         WITH
           occurrence_submissions AS
         (
@@ -113,6 +115,11 @@ export async function seed(knex: Knex): Promise<void> {
         DELETE FROM survey_report_attachment
         WHERE survey_id = p_survey_id;
 
+        DELETE FROM study_species_unit
+        WHERE study_species_unit_id IN (
+            SELECT study_species_unit_id FROM study_species WHERE survey_id = p_survey_id
+        );
+
         DELETE FROM study_species
         WHERE survey_id = p_survey_id;
 
@@ -152,16 +159,80 @@ export async function seed(knex: Knex): Promise<void> {
         DELETE FROM survey_location
         WHERE survey_id = p_survey_id;
 
+        DELETE FROM survey_intended_outcome
+        WHERE survey_id = p_survey_id;
+
+        -------- delete device, deployment, credential, telemetry data --------
+
+        DELETE FROM telemetry_manual
+        WHERE deployment_id IN (SELECT deployment_id FROM deployment WHERE survey_id = p_survey_id);
+
+        DELETE FROM survey_telemetry_vendor_credential
+        WHERE survey_telemetry_credential_attachment_id IN (SELECT survey_telemetry_credential_attachment_id from survey_telemetry_credential_attachment WHERE survey_id = p_survey_id);
+
+        DELETE FROM survey_telemetry_credential_attachment
+        WHERE survey_id = p_survey_id;
+
         DELETE FROM deployment
+        WHERE critter_id IN (SELECT critter_id FROM critter WHERE survey_id = p_survey_id);
+
+        DELETE FROM deployment
+        WHERE survey_id = p_survey_id;
+
+        DELETE FROM device
+        WHERE survey_id = p_survey_id;
+
+        -------- delete animal data --------
+
+        DELETE FROM subcount_critter
+        WHERE critter_id IN (SELECT critter_id FROM critter WHERE survey_id = p_survey_id);
+
+        DELETE FROM critter_mortality_attachment
+        WHERE critter_id IN (SELECT critter_id FROM critter WHERE survey_id = p_survey_id);
+
+        DELETE FROM critter_capture_attachment
         WHERE critter_id IN (SELECT critter_id FROM critter WHERE survey_id = p_survey_id);
 
         DELETE FROM critter
         WHERE survey_id = p_survey_id;
 
-        DELETE FROM survey_intended_outcome
-        WHERE survey_id = p_survey_id;
-
         -------- delete observation data --------
+
+        DELETE FROM observation_subcount_qualitative_environment
+        WHERE observation_subcount_id IN (
+          SELECT observation_subcount_id FROM observation_subcount
+          WHERE survey_observation_id IN (
+            SELECT survey_observation_id FROM survey_observation
+            WHERE survey_id = p_survey_id
+          )
+        );
+
+        DELETE FROM observation_subcount_quantitative_environment
+        WHERE observation_subcount_id IN (
+          SELECT observation_subcount_id FROM observation_subcount
+          WHERE survey_observation_id IN (
+            SELECT survey_observation_id FROM survey_observation
+            WHERE survey_id = p_survey_id
+          )
+        );
+
+        DELETE FROM observation_subcount_qualitative_measurement
+        WHERE observation_subcount_id IN (
+          SELECT observation_subcount_id FROM observation_subcount
+          WHERE survey_observation_id IN (
+            SELECT survey_observation_id FROM survey_observation
+            WHERE survey_id = p_survey_id
+          )
+        );
+
+        DELETE FROM observation_subcount_quantitative_measurement
+        WHERE observation_subcount_id IN (
+          SELECT observation_subcount_id FROM observation_subcount
+          WHERE survey_observation_id IN (
+            SELECT survey_observation_id FROM survey_observation
+            WHERE survey_id = p_survey_id
+          )
+        );
 
         DELETE FROM observation_subcount
         WHERE survey_observation_id IN (
@@ -195,6 +266,7 @@ export async function seed(knex: Knex): Promise<void> {
         WHERE survey_id = p_survey_id;
 
         -------- delete sampling data --------
+
         DELETE FROM survey_sample_period
         WHERE survey_sample_method_id IN (
           SELECT survey_sample_method_id
@@ -220,8 +292,41 @@ export async function seed(knex: Knex): Promise<void> {
         DELETE FROM survey_sample_site
         WHERE survey_id = p_survey_id;
 
+        -------- delete technique data --------
+
+        DELETE FROM method_technique_attractant
+        WHERE method_technique_id IN (
+            SELECT method_technique_id
+            FROM method_technique
+            WHERE survey_id = p_survey_id
+        );
+
+        DELETE FROM method_technique_attribute_qualitative
+        WHERE method_technique_id IN (
+            SELECT method_technique_id
+            FROM method_technique
+            WHERE survey_id = p_survey_id
+        );
+
+        DELETE FROM method_technique_attribute_quantitative
+        WHERE method_technique_id IN (
+            SELECT method_technique_id
+            FROM method_technique
+            WHERE survey_id = p_survey_id
+        );
+
+        DELETE FROM method_technique_vantage_mode
+        WHERE method_technique_id IN (
+            SELECT method_technique_id
+            FROM method_technique
+            WHERE survey_id = p_survey_id
+        );
+
+        DELETE FROM method_technique
+        WHERE survey_id = p_survey_id;
 
         -------- delete the survey --------
+
         DELETE FROM survey
         WHERE survey_id = p_survey_id;
 

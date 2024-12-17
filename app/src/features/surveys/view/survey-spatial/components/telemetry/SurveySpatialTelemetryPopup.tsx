@@ -1,9 +1,12 @@
 import { IStaticLayerFeature } from 'components/map/components/StaticLayers';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import dayjs from 'dayjs';
 import { SurveyMapPopup } from 'features/surveys/view/SurveyMapPopup';
-import { useSurveyContext, useTelemetryDataContext } from 'hooks/useContext';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useSurveyContext } from 'hooks/useContext';
+import useDataLoader from 'hooks/useDataLoader';
+import { IAllTelemetry } from 'interfaces/useTelemetryApi.interface';
 import { Popup } from 'react-leaflet';
+import { getFormattedDate } from 'utils/Utils';
 
 export interface ISurveySpatialTelemetryPopupProps {
   feature: IStaticLayerFeature;
@@ -12,8 +15,6 @@ export interface ISurveySpatialTelemetryPopupProps {
 /**
  * Renders a popup for telemetry data on the map.
  *
- * TODO: This currently relies on the telemetry, deployment, and critter data loaders to already be loaded. The
- * improvement would be to fetch that data when the popup is opened, based on the provided feature ID.
  *
  * @param {ISurveySpatialTelemetryPopupProps} props
  * @return {*}
@@ -21,79 +22,47 @@ export interface ISurveySpatialTelemetryPopupProps {
 export const SurveySpatialTelemetryPopup = (props: ISurveySpatialTelemetryPopupProps) => {
   const { feature } = props;
 
+  const biohubAPi = useBiohubApi();
+
   const surveyContext = useSurveyContext();
-  const telemetryDataContext = useTelemetryDataContext();
 
-  const deploymentDataLoader = telemetryDataContext.deploymentsDataLoader;
-  const telemetryDataLoader = telemetryDataContext.telemetryDataLoader;
+  const telemetryDataLoader = useDataLoader((telemetryId: string) =>
+    biohubAPi.telemetry.getTelemetryById(surveyContext.projectId, surveyContext.surveyId, telemetryId)
+  );
 
-  const getTelemetryMetadata = () => {
-    const telemetryId = feature.id;
-
-    const telemetryRecord = telemetryDataLoader.data?.find((telemetry) => telemetry.id === telemetryId);
-
-    if (!telemetryRecord) {
-      return [{ label: 'Telemetry ID', value: telemetryId }];
-    }
-
-    const deploymentRecord = deploymentDataLoader.data?.deployments.find(
-      (deployment) => deployment.bctw_deployment_id === telemetryRecord.deployment_id
-    );
-
-    if (!deploymentRecord) {
-      return [
-        { label: 'Telemetry ID', value: telemetryId },
-        {
-          label: 'Location',
-          value: [telemetryRecord.latitude, telemetryRecord.longitude]
-            .filter((coord): coord is number => coord !== null)
-            .map((coord) => coord.toFixed(6))
-            .join(', ')
-        },
-        { label: 'Date', value: dayjs(telemetryRecord?.acquisition_date).toISOString() }
-      ];
-    }
-
-    const critterRecord = surveyContext.critterDataLoader.data?.find(
-      (critter) => critter.critter_id === deploymentRecord.critter_id
-    );
-
-    if (!critterRecord) {
-      return [
-        { label: 'Telemetry ID', value: telemetryId },
-        { label: 'Device ID', value: String(deploymentRecord.device_id) },
-        {
-          label: 'Location',
-          value: [telemetryRecord.latitude, telemetryRecord.longitude]
-            .filter((coord): coord is number => coord !== null)
-            .map((coord) => coord.toFixed(6))
-            .join(', ')
-        },
-        { label: 'Date', value: dayjs(telemetryRecord?.acquisition_date).toISOString() }
-      ];
-    }
-
+  const getTelemetryMetadata = (telemetry: IAllTelemetry) => {
     return [
-      { label: 'Telemetry ID', value: telemetryId },
-      { label: 'Device ID', value: String(deploymentRecord.device_id) },
-      { label: 'Nickname', value: critterRecord.animal_id ?? '' },
+      { label: 'Telemetry ID', value: telemetry.telemetry_id },
+      { label: 'Deployment ID', value: String(telemetry.deployment_id) },
+      { label: 'Nickname', value: telemetry.critter_id ?? '' },
       {
         label: 'Location',
-        value: [telemetryRecord?.latitude, telemetryRecord?.longitude]
+        value: [telemetry?.latitude, telemetry?.longitude]
           .filter((coord): coord is number => coord !== null)
           .map((coord) => coord.toFixed(6))
           .join(', ')
       },
-      { label: 'Date', value: dayjs(telemetryRecord?.acquisition_date).format(DATE_FORMAT.LongDateTimeFormat) }
+      {
+        label: 'Date',
+        value: getFormattedDate(DATE_FORMAT.LongDateTimeFormat, telemetry.acquisition_date)
+      }
     ];
   };
 
   return (
-    <Popup keepInView={false} closeButton={true} autoPan={true}>
+    <Popup
+      keepInView={false}
+      closeButton={true}
+      autoPan={true}
+      eventHandlers={{
+        add: () => {
+          telemetryDataLoader.load(String(feature.id));
+        }
+      }}>
       <SurveyMapPopup
-        isLoading={false}
-        title="Telemetry Location"
-        metadata={getTelemetryMetadata()}
+        isLoading={telemetryDataLoader.isLoading || !telemetryDataLoader.isReady}
+        title="Telemetry Point"
+        metadata={telemetryDataLoader.data ? getTelemetryMetadata(telemetryDataLoader.data.telemetry) : []}
         key={`telemetry-feature-popup-${feature.id}`}
       />
     </Popup>
