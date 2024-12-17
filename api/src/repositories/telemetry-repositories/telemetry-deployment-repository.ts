@@ -237,9 +237,6 @@ export class TelemetryDeploymentRepository extends BaseRepository {
       }
     }
 
-    console.log(queryBuilder.toSQL().toNative().sql);
-    console.log(queryBuilder.toSQL().toNative().bindings);
-
     const response = await this.connection.knex(queryBuilder, ExtendedDeploymentRecord);
 
     return response.rows;
