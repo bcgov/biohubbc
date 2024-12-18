@@ -1,14 +1,14 @@
-import React, { PropsWithChildren, useState, ReactElement } from 'react';
-import { useBiohubApi } from 'hooks/useBioHubApi';
-import { CustomMarkdown } from 'components/markdown/CustomMarkdown';
-import { MarkdownTypeSupportNameEnum } from 'interfaces/useMarkdownApi.interface';
-import { MarkdownScoreButtons } from 'components/buttons/MarkdownScoreButtons';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-import Paper, { PaperProps } from '@mui/material/Paper';
-import { Collapse } from '@mui/material';
 import { mdiChevronDown, mdiChevronUp } from '@mdi/js';
 import Icon from '@mdi/react';
+import { Collapse } from '@mui/material';
+import Box from '@mui/material/Box';
+import Paper, { PaperProps } from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
+import { MarkdownScoreButtons } from 'components/buttons/MarkdownScoreButtons';
+import { CustomMarkdown } from 'components/markdown/CustomMarkdown';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import { MarkdownTypeSupportNameEnum } from 'interfaces/useMarkdownApi.interface';
+import React, { PropsWithChildren, ReactElement, useEffect, useState } from 'react';
 
 interface IAccordionSupportCardProps extends PropsWithChildren<PaperProps> {
   label: string | React.ReactNode;
@@ -16,7 +16,7 @@ interface IAccordionSupportCardProps extends PropsWithChildren<PaperProps> {
   ornament?: ReactElement;
   colour: string;
   disableCollapse?: boolean;
-  onExpand?: () => void; 
+  onExpand?: () => void;
 }
 
 export const AccordionSupportCard = (props: IAccordionSupportCardProps) => {
@@ -41,16 +41,14 @@ export const AccordionSupportCard = (props: IAccordionSupportCardProps) => {
         justifyContent="space-between"
         alignItems="center"
         sx={{ cursor: expandable ? 'pointer' : 'default', px: 3, py: 2 }}
-        onClick={handleHeaderClick}
-      >
+        onClick={handleHeaderClick}>
         <Typography
           variant="h5"
           sx={{
             '&::first-letter': {
               textTransform: 'capitalize'
             }
-          }}
-        >
+          }}>
           {label}
         </Typography>
         <Box display="flex" alignItems="center">
@@ -85,6 +83,7 @@ const HelpAccordionMarkdown = (props: IHelpAccordionMarkdownProps) => {
   const [markdownContent, setMarkdownContent] = useState<string | null>(null);
   const [markdownId, setMarkdownId] = useState<number | null>(null); // Track the markdownId
   const [hasSubmittedScore, setHasSubmittedScore] = useState(false);
+  const [justSubmittedScore, setJustSubmittedScore] = useState(false);
   const biohubApi = useBiohubApi();
 
   const fetchMarkdownContent = async () => {
@@ -105,10 +104,15 @@ const HelpAccordionMarkdown = (props: IHelpAccordionMarkdownProps) => {
     try {
       await biohubApi.markdown.insertScore({ markdownId, score });
       setHasSubmittedScore(true);
+      setJustSubmittedScore(true);
     } catch (error) {
       console.error('Failed to submit score:', error);
     }
   };
+
+  useEffect(() => {
+    fetchMarkdownContent();
+  }, []);
 
   return (
     <AccordionSupportCard label={label} colour={colour} subtitle={subtitle} onExpand={fetchMarkdownContent}>
@@ -124,7 +128,11 @@ const HelpAccordionMarkdown = (props: IHelpAccordionMarkdownProps) => {
               />
             </Box>
           )}
-          {hasSubmittedScore && <Box sx={{ mb: 2 }}><Typography color="textSecondary">Thanks for your feedback!</Typography></Box>}
+          {justSubmittedScore && (
+            <Box sx={{ mb: 2 }}>
+              <Typography color="textSecondary">Thanks for your feedback!</Typography>
+            </Box>
+          )}
         </>
       ) : (
         <Typography>Loading content...</Typography>
