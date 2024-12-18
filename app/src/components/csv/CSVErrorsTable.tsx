@@ -38,24 +38,26 @@ export const CSVErrorsTable = (props: CSVErrorsTableProps) => {
       }
     },
     {
+      field: 'cell',
+      headerName: 'Cell',
+      description: 'The cell value in the CSV file',
+      minWidth: 85
+    },
+    {
       field: 'error',
       headerName: 'Error',
       description: 'The error message',
       flex: 1,
-      minWidth: 250
+      minWidth: 250,
+      resizable: true
     },
     {
       field: 'solution',
       headerName: 'Solution',
       description: 'The solution to the error',
       flex: 1,
-      minWidth: 250
-    },
-    {
-      field: 'cell',
-      headerName: 'Cell',
-      description: 'The cell value in the CSV file',
-      minWidth: 85
+      minWidth: 250,
+      resizable: true
     },
     {
       field: 'values',
