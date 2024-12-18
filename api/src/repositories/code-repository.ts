@@ -542,7 +542,7 @@ export class CodeRepository extends BaseRepository {
   }
 
   /**
-   * Fetch vantages associated with vantage modes
+   * Fetch vantages associated with vantages
    *
    * @return {*}
    * @memberof CodeRepository
@@ -550,7 +550,7 @@ export class CodeRepository extends BaseRepository {
   async getVantages() {
     const sqlStatement = SQL`
       SELECT
-        vantage_id AS id,
+        vantage_category_id AS id,
         name,
         description
       FROM vantage

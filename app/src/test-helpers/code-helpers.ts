@@ -78,5 +78,9 @@ export const codes: IGetAllCodeSetsResponse = {
   alert_types: [
     { id: 1, name: 'Survey', description: 'Alert about surveys.' },
     { id: 2, name: 'General', description: 'General alert.' }
+  ],
+  vantages: [
+    { id: 1, name: 'Vantage 1', description: 'Vantage point 1.' },
+    { id: 2, name: 'Vantage 2', description: 'Vantage point 2.' }
   ]
 };

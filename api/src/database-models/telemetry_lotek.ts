@@ -40,6 +40,8 @@ export const TelemetryLotekModel = z.object({
   revision_count: z.number()
 });
 
+export type TelemetryLotekModel = z.infer<typeof TelemetryLotekModel>;
+
 /**
  * Telemetry Lotek Record.
  *

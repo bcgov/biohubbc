@@ -455,7 +455,7 @@ GET.apiDoc = {
               },
               vantages: {
                 type: 'array',
-                description: 'Vantages that vantage modes belong to.',
+                description: 'Vantages that vantages belong to.',
                 items: {
                   type: 'object',
                   additionalProperties: false,
