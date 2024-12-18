@@ -2,13 +2,14 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
+import { CSVValidationErrorResponse } from '../../../../../../openapi/schemas/csv';
 import { csvFileSchema } from '../../../../../../openapi/schemas/file';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { importCSV } from '../../../../../../services/import-services/import-csv';
-import { ImportTelemetryStrategy } from '../../../../../../services/import-services/telemetry/import-telemetry-strategy';
+import { ImportTelemetryService } from '../../../../../../services/import-services/telemetry/import-telemetry-service';
 import { getLogger } from '../../../../../../utils/logger';
 import { parseMulterFile } from '../../../../../../utils/media/media-utils';
 import { getFileFromRequest } from '../../../../../../utils/request';
+import { constructXLSXWorkbook, getDefaultWorksheet } from '../../../../../../utils/xlsx-utils/worksheet-utils';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/telemetry/upload');
 
@@ -86,6 +87,7 @@ POST.apiDoc = {
     403: {
       $ref: '#/components/responses/403'
     },
+    422: CSVValidationErrorResponse,
     500: {
       $ref: '#/components/responses/500'
     },
@@ -103,17 +105,19 @@ POST.apiDoc = {
 export function importTelemetryCSV(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
-    const rawMediaFile = getFileFromRequest(req);
+    const rawFile = getFileFromRequest(req);
 
     const connection = getDBConnection(req.keycloak_token);
+
+    const mediaFile = parseMulterFile(rawFile);
+    const worksheet = getDefaultWorksheet(constructXLSXWorkbook(mediaFile));
 
     try {
       await connection.open();
 
-      const telemetryStrategy = new ImportTelemetryStrategy(connection, surveyId);
+      const telemetryService = new ImportTelemetryService(connection, worksheet, surveyId);
 
-      // Pass CSV file and importer as dependencies
-      await importCSV(parseMulterFile(rawMediaFile), telemetryStrategy);
+      await telemetryService.importCSVWorksheet();
 
       await connection.commit();
 
