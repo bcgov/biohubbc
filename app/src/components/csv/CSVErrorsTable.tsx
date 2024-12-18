@@ -74,7 +74,7 @@ export const CSVErrorsTable = (props: CSVErrorsTableProps) => {
             </Button>
             <Menu open={Boolean(anchorEl)} anchorEl={anchorEl} onClose={() => setAnchorEl(null)}>
               {(params.value as string[]).map((value) => (
-                <MenuItem>{value}</MenuItem>
+                <MenuItem key={`csv-error-option-${value}`}>{value}</MenuItem>
               ))}
             </Menu>
           </>
