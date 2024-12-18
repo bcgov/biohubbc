@@ -45,7 +45,7 @@ export const BreadcrumbNavButton = (props: PropsWithChildren<IBreadcrumbNavButto
             onClick={() => {
               handleMenuClose();
             }}>
-            {item.icon && <Icon path={item.icon ?? ''} size={0.8} style={{ marginRight: '10px' }} />}
+            {item.icon ? <Icon path={item.icon} size={0.8} style={{ marginRight: '10px' }} /> : null}
             {item.label}
           </MenuItem>
         ))}

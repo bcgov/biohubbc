@@ -19,16 +19,15 @@ describe('useTelemetryApi', () => {
       telemetry: [
         {
           telemetry_id: '123',
+          deployment_id: 3,
+          critter_id: 2,
+          vendor: 'lotek',
+          serial: '12345',
           acquisition_date: '2021-01-01',
           latitude: 49.123,
           longitude: -126.123,
-          telemetry_type: 'vendor',
-          device_id: 12345,
-          bctw_deployment_id: '123-123-123',
-          critter_id: 2,
-          deployment_id: 3,
-          critterbase_critter_id: '345-345-345-',
-          animal_id: '567234-234'
+          elevation: 100,
+          temperature: null
         }
       ],
       pagination: {
@@ -44,28 +43,6 @@ describe('useTelemetryApi', () => {
     const result = await useTelemetryApi(axios).findTelemetry({ limit: 25, page: 2 }, { itis_tsn: 12345 });
 
     expect(result).toEqual(mockResponse);
-  });
-
-  describe('getCodeValues', () => {
-    it('should return a list of code values', async () => {
-      const mockCodeValues = {
-        code_header_title: 'code_header_title',
-        code_header_name: 'code_header_name',
-        id: 123,
-        description: 'description',
-        long_description: 'long_description'
-      };
-
-      mock.onGet('/api/telemetry/code?codeHeader=code_header_name').reply(200, [mockCodeValues]);
-      const result = await useTelemetryApi(axios).getCodeValues('code_header_name');
-      expect(result).toEqual([mockCodeValues]);
-    });
-
-    it('should catch errors', async () => {
-      mock.onGet('/api/telemetry/code?codeHeader=code_header_name').reply(500, 'error');
-      const result = await useTelemetryApi(axios).getCodeValues('code_header_name');
-      expect(result).toEqual([]);
-    });
   });
 
   describe('uploadTelemetryDeviceCredentialFile', () => {

@@ -46,6 +46,8 @@ describe('CodeService', () => {
         'survey_progress',
         'method_response_metrics',
         'observation_subcount_signs',
+        'telemetry_device_makes',
+        'frequency_units',
         'alert_types',
         'vantages'
       );

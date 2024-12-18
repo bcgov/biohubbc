@@ -15,11 +15,11 @@ import { PulsatingDot } from 'components/misc/PulsatingDot';
 import dayjs from 'dayjs';
 import { SurveyDeploymentListItemDetails } from 'features/surveys/telemetry/list/SurveyDeploymentListItemDetails';
 import { ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
-import { IAnimalDeployment } from 'interfaces/useTelemetryApi.interface';
+import { TelemetryDeployment } from 'interfaces/useTelemetryDeploymentApi.interface';
 
 export interface ISurveyDeploymentListItemProps {
-  animal: ICritterSimpleResponse;
-  deployment: Omit<IAnimalDeployment, 'frequency_unit'> & { frequency_unit: string | null };
+  animal?: ICritterSimpleResponse;
+  deployment: Omit<TelemetryDeployment, 'frequency_unit'> & { frequency_unit: string | null };
   isChecked: boolean;
   handleDeploymentMenuClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, deploymentId: number) => void;
   handleCheckboxChange: (deploymentId: number) => void;
@@ -101,14 +101,14 @@ export const SurveyDeploymentListItem = (props: ISurveyDeploymentListItemProps) 
                     overflow: 'hidden',
                     textOverflow: 'ellipsis'
                   }}>
-                  {deployment.device_id}
+                  {deployment.serial}
                 </Typography>
                 <Typography component="span" variant="body2" color="textSecondary" title="Device frequency">
                   {deployment.frequency}&nbsp;{deployment.frequency_unit}
                 </Typography>
               </Stack>
               <Typography variant="body2" color="textSecondary" title="Animal">
-                {animal.animal_id}
+                {`${deployment.deployment_id}: ${animal?.animal_id || 'Unknown'}`}
               </Typography>
             </Box>
           </Stack>

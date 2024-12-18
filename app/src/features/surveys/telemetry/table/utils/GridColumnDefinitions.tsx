@@ -38,12 +38,12 @@ export const DeploymentColDef = (props: {
     renderCell: (params) => {
       const error = props.hasError(params);
       return (
-        <AutocompleteDataGridViewCell<IManualTelemetryTableRow, string>
+        <AutocompleteDataGridViewCell<IManualTelemetryTableRow, number>
           dataGridProps={params}
           options={props.critterDeployments.map((item) => {
             return {
-              label: `${item.critter.animal_id}: ${item.deployment.device_id}`,
-              value: item.deployment.bctw_deployment_id
+              label: `${item.deployment.deployment_id}: ${item.critter.animal_id}`,
+              value: item.deployment.deployment_id
             };
           })}
           error={error}
@@ -54,11 +54,11 @@ export const DeploymentColDef = (props: {
       const error = props.hasError(params);
 
       return (
-        <AutocompleteDataGridEditCell<IManualTelemetryTableRow, string>
+        <AutocompleteDataGridEditCell<IManualTelemetryTableRow, number>
           dataGridProps={params}
           options={props.critterDeployments.map((item) => ({
-            label: `${item.critter.animal_id}: ${item.deployment.device_id}`,
-            value: item.deployment.bctw_deployment_id
+            label: `${item.deployment.deployment_id}: ${item.critter.animal_id}`,
+            value: item.deployment.deployment_id
           }))}
           error={error}
         />
@@ -71,7 +71,7 @@ export const DeviceColDef = (props: {
   critterDeployments: IAnimalDeploymentWithCritter[];
 }): GridColDef<IManualTelemetryTableRow> => {
   return {
-    field: 'device_id',
+    field: 'serial',
     headerName: 'Device',
     hideable: true,
     minWidth: 120,
@@ -82,8 +82,8 @@ export const DeviceColDef = (props: {
       <Typography>
         {
           props.critterDeployments.find(
-            (deployment) => deployment.deployment.bctw_deployment_id === params.row.deployment_id
-          )?.deployment.device_id
+            (deployment) => deployment.deployment.deployment_id === params.row.deployment_id
+          )?.deployment.serial
         }
       </Typography>
     )

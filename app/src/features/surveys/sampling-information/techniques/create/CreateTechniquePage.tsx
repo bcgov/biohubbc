@@ -28,7 +28,8 @@ const initialTechniqueFormValues: CreateTechniqueFormValues = {
   distance_threshold: null,
   method_lookup_id: null,
   attractants: [],
-  attributes: []
+  attributes: [],
+  vantage_methods: []
 };
 
 /**
@@ -77,7 +78,11 @@ export const CreateTechniquePage = () => {
               method_lookup_attribute_quantitative_id: item.attribute_lookup_id,
               value: item.attribute_value as number
             }))
-        }
+        },
+        vantage_methods: values.vantage_methods.map((vantage_method) => ({
+          vantage_method_id: vantage_method.vantage_method_id,
+          vantage_category_id: vantage_method.vantage_category_id
+        }))
       };
 
       // Create the technique

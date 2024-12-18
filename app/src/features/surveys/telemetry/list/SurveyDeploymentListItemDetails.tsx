@@ -8,11 +8,11 @@ import { DATE_FORMAT, TIME_FORMAT } from 'constants/dateTimeFormats';
 import dayjs from 'dayjs';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { IAnimalDeployment } from 'interfaces/useTelemetryApi.interface';
+import { TelemetryDeployment } from 'interfaces/useTelemetryDeploymentApi.interface';
 import { useEffect } from 'react';
 
 interface ISurveyDeploymentListItemDetailsProps {
-  deployment: Omit<IAnimalDeployment, 'frequency_unit'> & { frequency_unit: string | null };
+  deployment: Omit<TelemetryDeployment, 'frequency_unit'> & { frequency_unit: string | null };
 }
 
 /**
@@ -49,8 +49,19 @@ export const SurveyDeploymentListItemDetails = (props: ISurveyDeploymentListItem
 
   const endDateFormatted = endDate ? dayjs(endDate).format(DATE_FORMAT.MediumDateFormat) : null;
 
-  if (!startCaptureDataLoader.data) {
+  if (startCaptureDataLoader.isLoading || !startCaptureDataLoader.isReady) {
     return <Skeleton width="100%" height="55px" />;
+  }
+
+  if (!startCaptureDataLoader.data) {
+    // A Critterbase capture record could not be fetched, or does not exist (which should not happen)
+    return (
+      <Box>
+        <Typography variant="subtitle2" color="textSecondary">
+          {'Could not load animal capture data.'}
+        </Typography>
+      </Box>
+    );
   }
 
   const startDate = dayjs(startCaptureDataLoader.data.capture_date).format(DATE_FORMAT.MediumDateFormat);

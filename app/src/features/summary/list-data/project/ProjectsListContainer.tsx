@@ -50,7 +50,7 @@ interface IProjectsListContainerProps {
 }
 
 // Default pagination parameters
-const ApiPaginationRequestOptionsInitialValues: Required<ApiPaginationRequestOptions> = {
+const initialPaginationParams: Required<ApiPaginationRequestOptions> = {
   page: 0,
   limit: 10,
   sort: 'project_id',
@@ -70,14 +70,14 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
   const { searchParams, setSearchParams } = useSearchParams<StringValues<ProjectDataTableURLParams>>();
 
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
-    pageSize: Number(searchParams.get('p_limit') ?? ApiPaginationRequestOptionsInitialValues.limit),
-    page: Number(searchParams.get('p_page') ?? ApiPaginationRequestOptionsInitialValues.page)
+    pageSize: Number(searchParams.get('p_limit') ?? initialPaginationParams.limit),
+    page: Number(searchParams.get('p_page') ?? initialPaginationParams.page)
   });
 
   const [sortModel, setSortModel] = useState<GridSortModel>([
     {
-      field: searchParams.get('p_sort') ?? ApiPaginationRequestOptionsInitialValues.sort,
-      sort: (searchParams.get('p_order') ?? ApiPaginationRequestOptionsInitialValues.order) as GridSortDirection
+      field: searchParams.get('p_sort') ?? initialPaginationParams.sort,
+      sort: (searchParams.get('p_order') ?? initialPaginationParams.order) as GridSortDirection
     }
   ]);
 
@@ -212,7 +212,7 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
 
       <Box height="90vh" maxHeight="700px">
         <LoadingGuard
-          isLoading={projectsDataLoader.isLoading || !projectsDataLoader.isReady}
+          isLoading={!rows.length && (projectsDataLoader.isLoading || !projectsDataLoader.isReady)}
           isLoadingFallback={<SkeletonTable />}
           isLoadingFallbackDelay={100}
           hasNoData={!rows.length}
@@ -227,7 +227,7 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
           hasNoDataFallbackDelay={100}>
           <StyledDataGrid
             noRowsMessage="No projects found"
-            loading={projectsDataLoader.isLoading || !projectsDataLoader.isReady}
+            loading={!rows.length && (projectsDataLoader.isLoading || !projectsDataLoader.isReady)}
             // Columns
             columns={columns}
             // Rows

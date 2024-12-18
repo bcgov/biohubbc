@@ -13,6 +13,7 @@ import {
 import { AttractantService } from './attractants-service';
 import { TechniqueAttributeService } from './technique-attributes-service';
 import { TechniqueService } from './technique-service';
+import { TechniqueVantageService } from './technique-vantage-service';
 
 chai.use(sinonChai);
 
@@ -33,7 +34,8 @@ describe('TechniqueService', () => {
         attributes: {
           qualitative_attributes: [],
           quantitative_attributes: []
-        }
+        },
+        vantage_methods: []
       };
 
       sinon.stub(TechniqueRepository.prototype, 'getTechniqueById').resolves(mockRecord);
@@ -63,7 +65,8 @@ describe('TechniqueService', () => {
         attributes: {
           qualitative_attributes: [],
           quantitative_attributes: []
-        }
+        },
+        vantage_methods: []
       };
 
       sinon.stub(TechniqueRepository.prototype, 'getTechniquesForSurveyId').resolves([mockRecord]);
@@ -113,6 +116,9 @@ describe('TechniqueService', () => {
       const insertQuantitativeAttributesForTechniqueStub = sinon
         .stub(TechniqueAttributeService.prototype, 'insertQuantitativeAttributesForTechnique')
         .resolves();
+      const insertVantagesForTechniqueStub = sinon
+        .stub(TechniqueVantageService.prototype, 'insertVantagesForTechnique')
+        .resolves();
 
       const dbConnection = getMockDBConnection();
 
@@ -133,19 +139,24 @@ describe('TechniqueService', () => {
           attributes: {
             quantitative_attributes: [
               {
-                method_technique_attribute_quantitative_id: 44,
                 method_lookup_attribute_quantitative_id: '123-456-55',
                 value: 66
               }
             ],
             qualitative_attributes: [
               {
-                method_technique_attribute_qualitative_id: 77,
                 method_lookup_attribute_qualitative_id: '123-456-88',
                 method_lookup_attribute_qualitative_option_id: '123-456-99'
               }
             ]
-          }
+          },
+          vantage_methods: [
+            {
+              method_technique_vantage_id: 1,
+              vantage_method_id: 2,
+              vantage_category_id: 3
+            }
+          ]
         }
       ];
 
@@ -166,6 +177,13 @@ describe('TechniqueService', () => {
         11,
         techniques[0].attributes.quantitative_attributes
       );
+      expect(insertVantagesForTechniqueStub).to.have.been.calledOnceWith(surveyId, 11, [
+        {
+          method_technique_vantage_id: 1,
+          vantage_method_id: 2,
+          vantage_category_id: 3
+        }
+      ]);
 
       expect(response).to.eql([mockRecord]);
     });
@@ -197,7 +215,7 @@ describe('TechniqueService', () => {
   });
 
   describe('deleteTechnique', () => {
-    it('should run successfully', async () => {
+    it('should successfully delete the technique', async () => {
       const mockRecord = { method_technique_id: 1 };
 
       const deleteAllTechniqueAttractantsStub = sinon
@@ -205,6 +223,9 @@ describe('TechniqueService', () => {
         .resolves();
       const deleteAllTechniqueAttributesStub = sinon
         .stub(TechniqueAttributeService.prototype, 'deleteAllTechniqueAttributes')
+        .resolves();
+      const deleteAllVantagesForTechniqueStub = sinon
+        .stub(TechniqueVantageService.prototype, 'deleteAllVantagesForTechnique')
         .resolves();
       const deleteTechniqueStub = sinon.stub(TechniqueRepository.prototype, 'deleteTechnique').resolves(mockRecord);
 
@@ -219,6 +240,7 @@ describe('TechniqueService', () => {
 
       expect(deleteAllTechniqueAttractantsStub).to.have.been.calledOnceWith(surveyId, methodTechniqueId);
       expect(deleteAllTechniqueAttributesStub).to.have.been.calledOnceWith(surveyId, methodTechniqueId);
+      expect(deleteAllVantagesForTechniqueStub).to.have.been.calledOnceWith(surveyId, methodTechniqueId);
       expect(deleteTechniqueStub).to.have.been.calledOnceWith(surveyId, methodTechniqueId);
 
       expect(response).to.eql(mockRecord);

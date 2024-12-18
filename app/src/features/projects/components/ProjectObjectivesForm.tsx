@@ -38,6 +38,7 @@ const ProjectObjectivesForm = () => {
           <CustomTextField
             name="objectives.objectives"
             label="Objectives"
+            helpText="Objectives help give context to the information in this Project"
             other={{ multiline: true, required: true, rows: 4 }}
           />
         </Grid>

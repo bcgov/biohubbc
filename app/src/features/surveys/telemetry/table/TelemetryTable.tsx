@@ -7,19 +7,17 @@ import {
   GenericTimeColDef
 } from 'components/data-grid/GenericGridColumnDefinitions';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
-import { IManualTelemetryTableRow } from 'contexts/telemetryTableContext';
+import { IManualTelemetryTableRow, MANUAL_TELEMETRY_TYPE } from 'contexts/telemetryTableContext';
 import {
   DeploymentColDef,
   DeviceColDef,
   TelemetryTypeColDef
 } from 'features/surveys/telemetry/table/utils/GridColumnDefinitions';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useSurveyContext, useTelemetryDataContext, useTelemetryTableContext } from 'hooks/useContext';
+import { useSurveyContext, useTelemetryTableContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { IAnimalDeploymentWithCritter } from 'interfaces/useSurveyApi.interface';
 import { useEffect, useMemo } from 'react';
-
-const MANUAL_TELEMETRY_TYPE = 'MANUAL';
 
 interface IManualTelemetryTableProps {
   isLoading: boolean;
@@ -29,10 +27,9 @@ export const TelemetryTable = (props: IManualTelemetryTableProps) => {
   const biohubApi = useBiohubApi();
 
   const surveyContext = useSurveyContext();
-  const telemetryDataContext = useTelemetryDataContext();
   const telemetryTableContext = useTelemetryTableContext();
 
-  const deploymentDataLoader = telemetryDataContext.deploymentsDataLoader;
+  const deploymentDataLoader = useDataLoader(biohubApi.telemetryDeployment.getDeploymentsInSurvey);
   const critterDataLoader = useDataLoader(biohubApi.survey.getSurveyCritters);
 
   useEffect(() => {
@@ -66,16 +63,19 @@ export const TelemetryTable = (props: IManualTelemetryTableProps) => {
     return critterDeployments;
   }, [critterDataLoader.data, deploymentDataLoader.data]);
 
-  const columns: GridColDef<IManualTelemetryTableRow>[] = [
-    DeploymentColDef({ critterDeployments, hasError: telemetryTableContext.hasError }),
-    // TODO: Show animal nickname as a column
-    DeviceColDef({ critterDeployments }),
-    GenericDateColDef({ field: 'date', headerName: 'Date', hasError: telemetryTableContext.hasError }),
-    GenericTimeColDef({ field: 'time', headerName: 'Time', hasError: telemetryTableContext.hasError }),
-    GenericLatitudeColDef({ field: 'latitude', headerName: 'Latitude', hasError: telemetryTableContext.hasError }),
-    GenericLongitudeColDef({ field: 'longitude', headerName: 'Longitude', hasError: telemetryTableContext.hasError }),
-    TelemetryTypeColDef()
-  ];
+  const columns: GridColDef<IManualTelemetryTableRow>[] = useMemo(
+    () => [
+      DeploymentColDef({ critterDeployments, hasError: telemetryTableContext.hasError }),
+      // TODO: Show animal nickname as a column
+      DeviceColDef({ critterDeployments }),
+      GenericDateColDef({ field: 'date', headerName: 'Date', hasError: telemetryTableContext.hasError }),
+      GenericTimeColDef({ field: 'time', headerName: 'Time', hasError: telemetryTableContext.hasError }),
+      GenericLatitudeColDef({ field: 'latitude', headerName: 'Latitude', hasError: telemetryTableContext.hasError }),
+      GenericLongitudeColDef({ field: 'longitude', headerName: 'Longitude', hasError: telemetryTableContext.hasError }),
+      TelemetryTypeColDef()
+    ],
+    [critterDeployments, telemetryTableContext.hasError]
+  );
 
   return (
     <DataGrid
@@ -103,18 +103,22 @@ export const TelemetryTable = (props: IManualTelemetryTableProps) => {
       onRowEditStop={(_params, event) => {
         event.defaultMuiPrevented = true;
       }}
+      // Pagination
+      paginationMode="server"
+      rowCount={telemetryTableContext.recordCount}
+      pageSizeOptions={[25, 50, 100]}
+      paginationModel={telemetryTableContext.paginationModel}
+      onPaginationModelChange={telemetryTableContext.setPaginationModel}
+      // Sorting
+      sortingMode="server"
+      sortModel={telemetryTableContext.sortModel}
+      onSortModelChange={telemetryTableContext.setSortModel}
       // Styling
       rowHeight={56}
       localeText={{
         noRowsLabel: 'No Records'
       }}
       getRowHeight={() => 'auto'}
-      initialState={{
-        pagination: {
-          paginationModel: { page: 0, pageSize: 25 }
-        }
-      }}
-      pageSizeOptions={[25, 50, 100]}
       slots={{
         loadingOverlay: SkeletonTable
       }}
