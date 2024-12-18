@@ -1,6 +1,6 @@
-import { SupportPageView } from '../constants/SupportPageView';
 import { MarkdownTypeSupportNameEnum } from 'interfaces/useMarkdownApi.interface';
 import { ReactNode } from 'react';
+import { SupportPageView } from '../constants/SupportPageView';
 
 interface IDataItem {
   label: string | ReactNode;
@@ -23,3 +23,4 @@ export const EnumMarkdownTypes: Partial<Record<SupportPageView, MarkdownTypeSupp
   [SupportPageView.TELEMETRY]: [MarkdownTypeSupportNameEnum.TELEMETRY],
   [SupportPageView.OBSERVATIONS]: [MarkdownTypeSupportNameEnum.OBSERVATIONS]
 };
+export { MarkdownTypeSupportNameEnum, SupportPageView };
