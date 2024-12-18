@@ -56,7 +56,7 @@ describe('import-markings-service', () => {
         ]
       });
 
-      const errors = await service.importCSVWorksheet();
+      await service.importCSVWorksheet();
 
       expect(mockGetConfig).to.have.been.called;
       expect(mockValidate).to.have.been.calledOnceWithExactly(worksheet, mockCSVConfig);
@@ -74,11 +74,9 @@ describe('import-markings-service', () => {
           }
         ]
       });
-
-      expect(errors).to.be.an('array').that.is.empty;
     });
 
-    it('should return the errors early', async () => {
+    it('should throw CSV Validation error if rows fail validation', async () => {
       const mockConnection = getMockDBConnection();
       const worksheet = {} as WorkSheet;
       const surveyId = 1;
@@ -93,12 +91,15 @@ describe('import-markings-service', () => {
         rows: []
       });
 
-      const errors = await service.importCSVWorksheet();
-
-      expect(mockGetConfig).to.have.been.called;
-      expect(mockValidate).to.have.been.calledOnceWithExactly(worksheet, mockCSVConfig);
-
-      expect(errors).to.be.an('array').that.is.not.empty;
+      try {
+        await service.importCSVWorksheet();
+        expect.fail('Expected error to be thrown');
+      } catch (err: any) {
+        expect(mockGetConfig).to.have.been.called;
+        expect(mockValidate).to.have.been.calledOnceWithExactly(worksheet, mockCSVConfig);
+        expect(err).to.be.an('error');
+        expect(err.name).to.be.equal('CSV Validation Error');
+      }
     });
   });
 

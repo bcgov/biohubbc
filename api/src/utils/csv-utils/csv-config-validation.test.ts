@@ -94,7 +94,7 @@ describe('csv-config-validation', () => {
             header: 'ALIAS',
             values: ['ALIAS', 'ALIAS_2'],
             cell: null,
-            row: 0
+            row: 1
           }
         ],
         rows: []
@@ -120,7 +120,7 @@ describe('csv-config-validation', () => {
 
       expect(result).to.deep.equal([
         {
-          row: 0,
+          row: 1,
           error: 'No columns in the file',
           solution: 'Add column names. Did you accidentally include an empty first row above the columns?',
           values: ['ALIAS'],
@@ -138,7 +138,7 @@ describe('csv-config-validation', () => {
 
       expect(result).to.deep.equal([
         {
-          row: 1,
+          row: 2,
           error: 'No rows in the file',
           solution: 'Add rows. Did you accidentally import the wrong file?',
           cell: null,
@@ -155,7 +155,7 @@ describe('csv-config-validation', () => {
 
       expect(result).to.deep.equal([
         {
-          row: 0,
+          row: 1,
           error: 'A required column is missing',
           solution: `Add all required columns to the file.`,
           header: 'ALIAS',
@@ -185,7 +185,7 @@ describe('csv-config-validation', () => {
 
       expect(result).to.deep.equal([
         {
-          row: 0,
+          row: 1,
           error: 'An unknown column is included in the file',
           solution: `Remove extra columns from the file.`,
           header: 'UNKNOWN_HEADER',
@@ -361,7 +361,7 @@ describe('csv-config-validation', () => {
           solution: 'solution',
           cell: 'cellValue',
           header: 'TEST',
-          row: 1,
+          row: 2,
           values: undefined
         }
       ]);
