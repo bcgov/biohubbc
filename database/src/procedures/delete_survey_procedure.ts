@@ -315,7 +315,7 @@ export async function seed(knex: Knex): Promise<void> {
             WHERE survey_id = p_survey_id
         );
 
-        DELETE FROM method_technique_vantage_mode
+        DELETE FROM method_technique_vantage
         WHERE method_technique_id IN (
             SELECT method_technique_id
             FROM method_technique
