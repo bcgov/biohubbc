@@ -177,7 +177,7 @@ const useTelemetryApi = (axios: AxiosInstance) => {
     formData.append('media', file);
 
     const { data } = await axios.post<{ submission_id: number }>(
-      `/api/project/${projectId}/survey/${surveyId}/telemetry/upload`,
+      `/api/project/${projectId}/survey/${surveyId}/telemetry/import`,
       formData,
       {
         cancelToken: cancelTokenSource?.token,
