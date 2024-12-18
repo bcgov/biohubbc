@@ -1,13 +1,13 @@
 import { mdiCalendar } from '@mdi/js';
 import { Icon } from '@mdi/react';
-import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import { DatePicker, DatePickerProps, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DATE_FORMAT, DATE_LIMIT } from 'constants/dateTimeFormats';
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import { useFormikContext } from 'formik';
 import { get } from 'lodash-es';
 
-interface IDateFieldProps {
+interface IDateFieldProps extends DatePickerProps<Dayjs> {
   label: string;
   name: string;
   id: string;
@@ -28,6 +28,7 @@ export const DateField = <FormikPropsType extends IDateFieldProps>(props: IDateF
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DatePicker
+        {...props}
         slots={{
           openPickerIcon: () => <Icon path={mdiCalendar} size={1} />
         }}

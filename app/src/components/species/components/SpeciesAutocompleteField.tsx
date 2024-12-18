@@ -295,7 +295,7 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
           label={label}
           variant="outlined"
           fullWidth
-          placeholder={placeholder || 'Enter a species or taxon'}
+          placeholder={placeholder ?? 'Enter a species or taxon'}
           InputProps={{
             ...params.InputProps,
             startAdornment: showStartAdornment && (

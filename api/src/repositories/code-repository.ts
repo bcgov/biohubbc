@@ -25,6 +25,8 @@ const SurveyProgressCode = ICode.extend({ description: z.string() });
 const MethodResponseMetricsCode = ICode.extend({ description: z.string() });
 const AttractantCode = ICode.extend({ description: z.string() });
 const ObservationSubcountSignCode = ICode.extend({ description: z.string() });
+const DeviceMakeCode = ICode.extend({ description: z.string() });
+const FrequencyUnitCode = ICode.extend({ description: z.string() });
 const AlertTypeCode = ICode.extend({ description: z.string() });
 const VantageCode = ICode.extend({ description: z.string() });
 
@@ -49,6 +51,8 @@ export const IAllCodeSets = z.object({
   method_response_metrics: CodeSet(MethodResponseMetricsCode.shape),
   attractants: CodeSet(AttractantCode.shape),
   observation_subcount_signs: CodeSet(ObservationSubcountSignCode.shape),
+  telemetry_device_makes: CodeSet(DeviceMakeCode.shape),
+  frequency_units: CodeSet(FrequencyUnitCode.shape),
   alert_types: CodeSet(AlertTypeCode.shape),
   vantages: CodeSet(VantageCode.shape)
 });
@@ -63,9 +67,9 @@ export class CodeRepository extends BaseRepository {
    */
   async getSampleMethods() {
     const sql = SQL`
-      SELECT 
-        method_lookup_id as id, 
-        name, 
+      SELECT
+        method_lookup_id as id,
+        name,
         description
       FROM method_lookup
       ORDER BY name ASC;
@@ -108,7 +112,7 @@ export class CodeRepository extends BaseRepository {
         first_nations_id as id,
         name
       FROM first_nations
-      WHERE record_end_date is null 
+      WHERE record_end_date is null
       ORDER BY name ASC;
     `;
 
@@ -129,7 +133,7 @@ export class CodeRepository extends BaseRepository {
         agency_id as id,
         name
       FROM agency
-      WHERE record_end_date is null 
+      WHERE record_end_date is null
       ORDER BY name ASC;
     `;
 
@@ -148,7 +152,7 @@ export class CodeRepository extends BaseRepository {
     const sqlStatement = SQL`
       SELECT
         proprietor_type_id as id,
-        name, 
+        name,
         is_first_nation
       FROM proprietor_type
       WHERE record_end_date is null;
@@ -190,7 +194,7 @@ export class CodeRepository extends BaseRepository {
     const sqlStatement = SQL`
       SELECT
         intended_outcome_id as id,
-        name, 
+        name,
         description
       FROM intended_outcome
       WHERE record_end_date is null;
@@ -214,7 +218,7 @@ export class CodeRepository extends BaseRepository {
         agency_id,
         name
       FROM investment_action_category
-      WHERE record_end_date is null 
+      WHERE record_end_date is null
       ORDER BY name ASC;
     `;
 
@@ -318,7 +322,7 @@ export class CodeRepository extends BaseRepository {
         name
       FROM project_role
       WHERE record_end_date is null
-      ORDER BY 
+      ORDER BY
         CASE WHEN name = 'Coordinator' THEN 0 ELSE 1 END;
     `;
 
@@ -472,6 +476,50 @@ export class CodeRepository extends BaseRepository {
   }
 
   /**
+   * Get active telemetry device makes.
+   *
+   * @return {*}
+   * @memberof CodeRepository
+   */
+  async getActiveTelemetryDeviceMakes() {
+    const sqlStatement = SQL`
+      SELECT
+        device_make_id as id,
+        name,
+        description
+      FROM device_make
+      WHERE record_end_date is null
+      -- Some legacy device makes have no effective date, as they are no longer supported, and must be excluded
+      AND record_effective_date IS NOT NULL;
+    `;
+
+    const response = await this.connection.sql(sqlStatement, DeviceMakeCode);
+
+    return response.rows;
+  }
+
+  /**
+   * Get frequency unit codes.
+   *
+   * @return {*}
+   * @memberof CodeRepository
+   */
+  async getFrequencyUnits() {
+    const sqlStatement = SQL`
+      SELECT
+        frequency_unit_id as id,
+        name,
+        description
+      FROM frequency_unit
+      WHERE record_end_date is null;
+    `;
+
+    const response = await this.connection.sql(sqlStatement, FrequencyUnitCode);
+
+    return response.rows;
+  }
+
+  /**
    * Fetch alert type codes
    *
    * @return {*}
@@ -494,7 +542,7 @@ export class CodeRepository extends BaseRepository {
   }
 
   /**
-   * Fetch vantages associated with vantage modes
+   * Fetch vantages associated with vantages
    *
    * @return {*}
    * @memberof CodeRepository
@@ -502,7 +550,7 @@ export class CodeRepository extends BaseRepository {
   async getVantages() {
     const sqlStatement = SQL`
       SELECT
-        vantage_id AS id,
+        vantage_category_id AS id,
         name,
         description
       FROM vantage

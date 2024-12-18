@@ -2,12 +2,15 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
-import { HTTPError, HTTPErrorType } from '../../../../../../../errors/http-error';
+import { HTTP400, HTTPError, HTTPErrorType } from '../../../../../../../errors/http-error';
 import { bulkUpdateResponse, critterBulkRequestObject } from '../../../../../../../openapi/schemas/critter';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
-import { getBctwUser } from '../../../../../../../services/bctw-service/bctw-service';
 import { CritterAttachmentService } from '../../../../../../../services/critter-attachment-service';
-import { CritterbaseService, ICritterbaseUser } from '../../../../../../../services/critterbase-service';
+import {
+  CritterbaseService,
+  getCritterbaseUser,
+  ICritterbaseUser
+} from '../../../../../../../services/critterbase-service';
 import { SurveyCritterService } from '../../../../../../../services/survey-critter-service';
 import { getLogger } from '../../../../../../../utils/logger';
 
@@ -95,7 +98,7 @@ export function updateSurveyCritter(): RequestHandler {
     const connection = getDBConnection(req.keycloak_token);
     try {
       await connection.open();
-      const user = getBctwUser(req);
+      const user = getCritterbaseUser(req);
 
       if (!critterbaseCritterId) {
         throw new HTTPError(HTTPErrorType.BAD_REQUEST, 400, 'No external critter ID was found.');
@@ -149,12 +152,12 @@ export const GET: Operation = [
       ]
     };
   }),
-  getCrittersFromSurvey()
+  getSurveyCritter()
 ];
 
 GET.apiDoc = {
   description: 'Gets a specific critter by its integer Critter Id',
-  tags: ['critterbase'],
+  tags: ['animal', 'critterbase'],
   security: [
     {
       Bearer: []
@@ -163,9 +166,19 @@ GET.apiDoc = {
   parameters: [
     {
       in: 'path',
+      name: 'projectId',
+      schema: {
+        type: 'integer',
+        minimum: 1
+      },
+      required: true
+    },
+    {
+      in: 'path',
       name: 'surveyId',
       schema: {
-        type: 'integer'
+        type: 'integer',
+        minimum: 1
       },
       required: true
     },
@@ -173,9 +186,23 @@ GET.apiDoc = {
       in: 'path',
       name: 'critterId',
       schema: {
-        type: 'integer'
+        type: 'integer',
+        minimum: 1
       },
       required: true
+    },
+    {
+      in: 'query',
+      name: 'expand',
+      description: 'List of related resources to include in the response.',
+      schema: {
+        type: 'array',
+        items: {
+          type: 'string',
+          enum: ['attachments']
+        }
+      },
+      required: false
     }
   ],
   responses: {
@@ -183,7 +210,55 @@ GET.apiDoc = {
       description: 'Responds with a critter',
       content: {
         'application/json': {
-          schema: { type: 'object' }
+          schema: {
+            type: 'object',
+            required: ['critter_id', 'critterbase_critter_id', 'survey_id'],
+            additionalProperties: true, // Allow additional properties while critterbase portion of response is not defined
+            properties: {
+              critterbase_critter_id: {
+                type: 'string',
+                format: 'uuid'
+              },
+              critter_id: {
+                type: 'integer',
+                minimum: 1
+              },
+              survey_id: {
+                type: 'integer',
+                minimum: 1
+              },
+              attachments: {
+                type: 'object',
+                description:
+                  'Attachments associated with the critter. Only included if requested via the expand query parameter.',
+                required: ['captureAttachments'],
+                properties: {
+                  capture_attachments: {
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      required: ['attachment_id', 'attachment_type', 'attachment_url'],
+                      additionalProperties: false,
+                      properties: {
+                        attachment_id: {
+                          type: 'integer',
+                          minimum: 1
+                        },
+                        attachment_type: {
+                          type: 'string',
+                          enum: ['photo', 'video']
+                        },
+                        attachment_url: {
+                          type: 'string',
+                          format: 'uri'
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -205,10 +280,11 @@ GET.apiDoc = {
   }
 };
 
-export function getCrittersFromSurvey(): RequestHandler {
+export function getSurveyCritter(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
     const critterId = Number(req.params.critterId);
+    const expand = (req.query.expand as string[]) ?? [];
 
     const connection = getDBConnection(req.keycloak_token);
 
@@ -221,41 +297,47 @@ export function getCrittersFromSurvey(): RequestHandler {
       };
 
       const surveyService = new SurveyCritterService(connection);
-      const critterbaseService = new CritterbaseService(user);
       const critterAttachmentService = new CritterAttachmentService(connection);
+      const critterbaseService = new CritterbaseService(user);
 
       const surveyCritter = await surveyService.getCritterById(surveyId, critterId);
 
       if (!surveyCritter) {
-        return res.status(404).json({ error: `Critter with id ${critterId} not found.` });
+        throw new HTTP400(`Critter with id ${critterId} not found.`);
       }
 
+      const getAttachmentsPromise = expand.includes('attachments')
+        ? critterAttachmentService.findAllCritterAttachments(surveyCritter.critter_id).then((response) => {
+            return {
+              attachments: {
+                captureAttachments: response.captureAttachments
+                // TODO: add mortality attachments
+              }
+            };
+          })
+        : Promise.resolve({});
+
       // Get the attachments from SIMS table and the Critter from critterbase
-      const [atttachments, critterbaseCritter] = await Promise.all([
-        critterAttachmentService.findAllCritterAttachments(surveyCritter.critter_id),
+      const [attachments, critterbaseCritter] = await Promise.all([
+        getAttachmentsPromise,
         critterbaseService.getCritter(surveyCritter.critterbase_critter_id)
       ]);
 
       await connection.commit();
 
       if (!critterbaseCritter || critterbaseCritter.length === 0) {
-        return res.status(404).json({ error: `Critter ${surveyCritter.critterbase_critter_id} not found.` });
+        throw new HTTP400(`Critterbase critter with id ${surveyCritter.critterbase_critter_id} not found.`);
       }
 
-      const critterMapped = {
-        ...surveyCritter,
+      const response = {
+        ...attachments,
         ...critterbaseCritter,
-        critterbase_critter_id: surveyCritter.critterbase_critter_id,
-        critter_id: surveyCritter.critter_id,
-        attachments: {
-          capture_attachments: atttachments.captureAttachments
-          // TODO: add mortality attachments
-        }
+        ...surveyCritter
       };
 
-      return res.status(200).json(critterMapped);
+      return res.status(200).json(response);
     } catch (error) {
-      defaultLog.error({ label: 'getCritter', message: 'error', error });
+      defaultLog.error({ label: 'getSurveyCritter', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
