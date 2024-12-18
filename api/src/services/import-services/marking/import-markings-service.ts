@@ -172,26 +172,28 @@ export class ImportMarkingsService extends DBService {
   async _getBodyLocationDictionary(surveyAliasMap: Map<string, ICritterDetailed>): Promise<NestedRecord<string>> {
     const dictionary = new NestedRecord<string>();
     const rowAliases = this.utils.getUniqueCellValues('ALIAS').map((alias) => String(alias).toLowerCase());
-    const tsnBodyLocationMap = new Map<number, Promise<IAsSelectLookup[]>>();
+    const tsnBodyLocationMap = new Map<number, Promise<IAsSelectLookup[]>>(); // itis_tsn -> body locations[]
 
+    // TODO: Refactor this to run in parallel?
+    // Currently, this runs in serial for each "unique" TSN while duplicate TSNs are cached
     for (const alias of rowAliases) {
       const critter = surveyAliasMap.get(alias);
-      if (critter) {
-        const tsnBodyLocations = await tsnBodyLocationMap.get(critter.itis_tsn);
+      // Alias maps to a critter and tsnBodyLocationMap does not have the critter's TSN
+      if (critter && !tsnBodyLocationMap.has(critter.itis_tsn)) {
+        tsnBodyLocationMap.set(
+          critter.itis_tsn,
+          this.surveyCritterService.critterbaseService.getTaxonBodyLocations(String(critter.itis_tsn))
+        );
 
-        if (!tsnBodyLocations) {
-          tsnBodyLocationMap.set(
-            critter.itis_tsn,
-            this.surveyCritterService.critterbaseService.getTaxonBodyLocations(String(critter.itis_tsn))
-          );
-        }
+        const tsnBodyLocations = (await tsnBodyLocationMap.get(critter.itis_tsn)) ?? [];
 
-        tsnBodyLocations?.map((bodyLocation) => {
+        // critter alias -> taxon body location -> body_location_id
+        for (const bodyLocation of tsnBodyLocations) {
           dictionary.set({
             path: [alias, bodyLocation.value.toLowerCase()],
             value: bodyLocation.id
           });
-        });
+        }
       }
     }
 

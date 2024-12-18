@@ -205,7 +205,12 @@ export const getMarkingCaptureDateCellValidator = (
 
     // If unable to map the capture date and time to a specific critter capture
     if (foundCaptures.length === 0) {
-      return [{ error: `Capture not found for animal`, solution: `Use a valid date and time to identify the capture` }];
+      return [
+        {
+          error: `Capture not found for animal using date AND time`,
+          solution: `Use a valid date and time to identify the capture`
+        }
+      ];
     }
 
     // If multiple captures found for the critter - data error
