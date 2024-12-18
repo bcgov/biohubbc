@@ -1,5 +1,5 @@
 import { Divider, Paper, Toolbar, Typography } from '@mui/material';
-import { Stack } from '@mui/system';
+import { Box, Stack } from '@mui/system';
 import { ReactElement } from 'react';
 import { CSVError } from 'utils/file-utils';
 import { CSVErrorsTable } from './CSVErrorsTable';
@@ -39,7 +39,9 @@ export const CSVErrorsTableContainer = (props: CSVErrorsTableContainerProps) => 
         )}
       </Toolbar>
       <Divider />
-      <CSVErrorsTable errors={props.errors} />
+      <Box width="100%" height="100%">
+        <CSVErrorsTable errors={props.errors} />
+      </Box>
     </Paper>
   );
 };

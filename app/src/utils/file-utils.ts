@@ -6,6 +6,7 @@ export interface CSVError {
   header: string | null;
   cell: string | number | null;
   row: number;
+  values?: Array<string | number> | undefined;
 }
 
 export interface CSVValidationError {

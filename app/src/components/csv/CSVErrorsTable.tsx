@@ -1,6 +1,9 @@
+import { mdiChevronDown } from '@mdi/js';
+import Icon from '@mdi/react';
+import { Button, Menu, MenuItem } from '@mui/material';
 import { GridColDef } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { CSVError } from 'utils/file-utils';
 import { v4 } from 'uuid';
 
@@ -15,40 +18,70 @@ interface CSVErrorsTableProps {
  * @returns {*} {JSX.Element}
  */
 export const CSVErrorsTable = (props: CSVErrorsTableProps) => {
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
   const columns: GridColDef[] = [
     {
       field: 'row',
       headerName: 'Row',
       description: 'Row number in the CSV file',
-      type: 'number'
+      minWidth: 85
     },
     {
       field: 'header',
       headerName: 'Header',
       description: 'Column header in the CSV file',
       minWidth: 150,
-      maxWidth: 200,
-      type: 'string'
+      maxWidth: 250,
+      renderCell: (params) => {
+        return params.value.toUpperCase();
+      }
     },
     {
       field: 'error',
       headerName: 'Error',
       description: 'The error message',
-      flex: 2,
-      type: 'string'
+      flex: 1,
+      minWidth: 250
     },
     {
       field: 'solution',
       headerName: 'Solution',
       description: 'The solution to the error',
-      flex: 2,
-      type: 'string'
+      flex: 1,
+      minWidth: 250
     },
     {
       field: 'cell',
       headerName: 'Cell',
       description: 'The cell value in the CSV file',
-      type: 'string'
+      minWidth: 85
+    },
+    {
+      field: 'values',
+      headerName: 'Options',
+      description: 'The applicable cell values',
+      minWidth: 85,
+      renderCell: (params) => {
+        return params.value?.length ? (
+          <>
+            <Button
+              onClick={(event) => setAnchorEl(event.currentTarget)}
+              size="small"
+              variant="outlined"
+              endIcon={<Icon path={mdiChevronDown} size={0.8} />}>
+              View
+            </Button>
+            <Menu open={Boolean(anchorEl)} anchorEl={anchorEl} onClose={() => setAnchorEl(null)}>
+              {(params.value as string[]).map((value) => (
+                <MenuItem>{value}</MenuItem>
+              ))}
+            </Menu>
+          </>
+        ) : (
+          'N/A'
+        );
+      }
     }
   ];
 

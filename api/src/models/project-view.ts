@@ -3,10 +3,42 @@ import { ProjectUser } from '../repositories/project-participation-repository';
 import { SystemUser } from '../repositories/user-repository';
 
 export interface IProjectAdvancedFilters {
+  /**
+   * Filter results by keyword.
+   *
+   * @type {string}
+   * @memberof IProjectAdvancedFilters
+   */
   keyword?: string;
+  /**
+   * Filter results by ITIS TSN.
+   *
+   * @type {number}
+   * @memberof IProjectAdvancedFilters
+   */
   itis_tsn?: number;
+  /**
+   * Filter results by ITIS TSNs
+   *
+   * @type {number[]}
+   * @memberof IProjectAdvancedFilters
+   */
   itis_tsns?: number[];
+  /**
+   * Filter results by system user id.
+   *
+   * Note: This is not the id of the user making the request.
+   *
+   * @type {number}
+   * @memberof IProjectAdvancedFilters
+   */
   system_user_id?: number;
+  /**
+   * Filter results by project name.
+   *
+   * @type {string}
+   * @memberof IProjectAdvancedFilters
+   */
   project_name?: string;
 }
 

@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
 import { IStaticLayer, IStaticLayerFeature } from 'components/map/components/StaticLayers';
 import { SURVEY_MAP_LAYER_COLOURS } from 'constants/colours';
-import SurveyObservationTabularDataContainer from 'features/surveys/view/components/data-container/SurveyObservationTabularDataContainer';
+import { SurveySpatialObservationContainer } from 'features/surveys/view/survey-spatial/components/observation/SurveySpatialObservationContainer';
 import { SurveySpatialObservationPointPopup } from 'features/surveys/view/survey-spatial/components/observation/SurveySpatialObservationPointPopup';
 import SurveyMap from 'features/surveys/view/SurveyMap';
 import SurveyMapTooltip from 'features/surveys/view/SurveyMapTooltip';
@@ -77,7 +77,7 @@ export const SurveySpatialObservation = (props: ISurveySpatialObservationProps) 
 
       {/* Display data table with observation details */}
       <Box height={{ xs: 300, md: 500 }} display="flex" flexDirection="column" pt={2}>
-        <SurveyObservationTabularDataContainer />
+        <SurveySpatialObservationContainer />
       </Box>
     </>
   );

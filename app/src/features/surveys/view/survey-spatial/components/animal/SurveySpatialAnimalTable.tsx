@@ -1,4 +1,5 @@
 import { mdiArrowTopRight } from '@mdi/js';
+import Box from '@mui/material/Box';
 import { GridColDef } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
@@ -76,16 +77,22 @@ export const SurveySpatialAnimalTable = (props: ISurveyDataAnimalTableProps) => 
   return (
     <LoadingGuard
       isLoading={animals.length > 0 && (props.isLoading || animalsDataLoader.isLoading || !animalsDataLoader.isReady)}
-      isLoadingFallback={<SkeletonTable />}
+      isLoadingFallback={
+        <Box flex="1 1 auto">
+          <SkeletonTable />
+        </Box>
+      }
       isLoadingFallbackDelay={100}
       hasNoData={!animals.length || !rows.length}
       hasNoDataFallback={
-        <NoDataOverlay
-          height="100%"
-          title="Add Animals"
-          subtitle="Add animals that you have captured, individually identified, or found deceased"
-          icon={mdiArrowTopRight}
-        />
+        <Box flex="1 1 auto">
+          <NoDataOverlay
+            height="100%"
+            title="Add Animals"
+            subtitle="Add animals that you have captured, individually identified, or found deceased"
+            icon={mdiArrowTopRight}
+          />
+        </Box>
       }
       hasNoDataFallbackDelay={100}>
       <StyledDataGrid

@@ -227,7 +227,7 @@ export const SystemUserAutocompleteField = (props: ISystemUserAutocompleteFieldP
           {...params}
           variant="outlined"
           label={label}
-          placeholder={placeholder || 'Search by user'}
+          placeholder={placeholder ?? 'Search by user'}
           fullWidth
           InputProps={{
             ...params.InputProps,
