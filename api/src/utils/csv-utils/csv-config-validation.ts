@@ -71,7 +71,7 @@ export const validateCSVHeaders = (worksheet: WorkSheet, config: CSVConfig): CSV
         values: configUtils.configStaticHeaders,
         header: null,
         cell: null,
-        row: 0
+        row: 1
       }
     ];
   }
@@ -83,7 +83,7 @@ export const validateCSVHeaders = (worksheet: WorkSheet, config: CSVConfig): CSV
         solution: 'Add rows. Did you accidentally import the wrong file?',
         header: null,
         cell: null,
-        row: 1
+        row: 2
       }
     ];
   }
@@ -102,7 +102,7 @@ export const validateCSVHeaders = (worksheet: WorkSheet, config: CSVConfig): CSV
         values: [staticHeader, ...config.staticHeadersConfig[staticHeader].aliases],
         header: staticHeader,
         cell: null,
-        row: 0
+        row: 1
       });
     }
   }
@@ -115,7 +115,7 @@ export const validateCSVHeaders = (worksheet: WorkSheet, config: CSVConfig): CSV
         solution: `Remove extra columns from the file.`,
         header: unknownHeader,
         cell: null,
-        row: 0
+        row: 1
       });
     }
   }
@@ -218,7 +218,7 @@ export const executeValidateCell = (
         values: error.values,
         cell: error.cell === undefined ? params.cell : error.cell, // Use cell value if intentionally null
         header: error.header === undefined ? params.header : error.header, // Use header value if intentionally null
-        row: error.row ?? params.rowIndex + 1 // headers: 0, data row: 1
+        row: error.row ?? params.rowIndex + 2 // headers: 1, data row: 2
       });
     });
   }

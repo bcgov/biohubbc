@@ -28,6 +28,14 @@ type CSVFilesStatus = {
   markings: { file: File | null; status: UploadFileStatus; progress: number; error?: string; errors: CSVError[] };
 };
 
+const INITIAL_FILE_STATE = {
+  file: null,
+  status: UploadFileStatus.PENDING,
+  progress: 0,
+  error: undefined,
+  errors: []
+};
+
 type UpdateFileState = {
   fileType: keyof CSVFilesStatus;
 } & {
@@ -58,9 +66,9 @@ export const CreateCSVCapturesPage = () => {
 
   // Initialize the file upload states
   const [files, setFiles] = useState<CSVFilesStatus>({
-    captures: { file: null, status: UploadFileStatus.PENDING, progress: 0, errors: [] },
-    measurements: { file: null, status: UploadFileStatus.PENDING, progress: 0, errors: [] },
-    markings: { file: null, status: UploadFileStatus.PENDING, progress: 0, errors: [] }
+    captures: INITIAL_FILE_STATE,
+    measurements: INITIAL_FILE_STATE,
+    markings: INITIAL_FILE_STATE
   });
 
   // When any of the files are uploading
@@ -114,11 +122,13 @@ export const CreateCSVCapturesPage = () => {
 
           return UploadFileStatus.COMPLETE; // Return the final status to prevent race conditions with state
         } catch (error: any) {
-          if (isCSVValidationError(error)) {
-            handleFileState({ fileType, status: UploadFileStatus.FAILED, error: error.message, errors: error.errors });
-          } else {
-            handleFileState({ fileType, status: UploadFileStatus.FAILED, error: error.message ?? 'Unknown error' });
-          }
+          handleFileState({
+            fileType,
+            status: UploadFileStatus.FAILED,
+            progress: 100,
+            error: error.message ?? 'Unknown error',
+            errors: isCSVValidationError(error) ? error.errors : []
+          });
 
           return UploadFileStatus.FAILED; // Return the final status to prevent race conditions with state
         }
@@ -187,6 +197,26 @@ export const CreateCSVCapturesPage = () => {
     history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals`);
   };
 
+  /**
+   * Get the props for the file upload component
+   *
+   * @param {keyof CSVFilesStatus} fileType - The type of file to get the props for
+   * @returns {*} {FileUploadSingleItemProps} The props for the file upload component
+   */
+  const getFileUploadProps = (fileType: keyof CSVFilesStatus) => {
+    return {
+      file: files[fileType].file,
+      status: files[fileType].status,
+      progress: files[fileType].progress,
+      error: files[fileType].error,
+      onStatus: (status: UploadFileStatus) => handleFileState({ fileType, status }),
+      onFile: (file: File | null) => handleFileState({ fileType, file }),
+      onError: (error: string) => handleFileState({ fileType, error }),
+      onCancel: () => handleFileState({ fileType, ...INITIAL_FILE_STATE }),
+      DropZoneProps: { acceptedFileExtensions: '.csv' }
+    };
+  };
+
   return (
     <>
       <Prompt when={true} message={locationChangeInterceptor} />
@@ -236,14 +266,7 @@ export const CreateCSVCapturesPage = () => {
               summary="Upload the capture times and locations"
               onDownloadTemplate={() => downloadFile(getCapturesCSVTemplate(), 'SIMS-captures-template.csv')}
               errors={files.captures.errors}>
-              <FileUploadSingleItem
-                {...files.captures}
-                onStatus={(status) => handleFileState({ fileType: 'captures', status })}
-                onFile={(file) => handleFileState({ fileType: 'captures', file })}
-                onError={(error) => handleFileState({ fileType: 'captures', error })}
-                onCancel={() => handleFileState({ fileType: 'captures', status: UploadFileStatus.PENDING })}
-                DropZoneProps={{ acceptedFileExtensions: '.csv' }}
-              />
+              <FileUploadSingleItem {...getFileUploadProps('captures')} />
             </CSVDropzoneSection>
             <Divider />
 
@@ -252,16 +275,7 @@ export const CreateCSVCapturesPage = () => {
               summary="Upload measurements taken during the captures"
               onDownloadTemplate={() => downloadFile(getMeasurementsCSVTemplate(), 'SIMS-measurements-template.csv')}
               errors={files.measurements.errors}>
-              <FileUploadSingleItem
-                {...files.measurements}
-                onStatus={(status) => handleFileState({ fileType: 'measurements', status })}
-                onFile={(file) => handleFileState({ fileType: 'measurements', file })}
-                onError={(error) => handleFileState({ fileType: 'measurements', error })}
-                onCancel={() =>
-                  handleFileState({ fileType: 'measurements', status: UploadFileStatus.PENDING, errors: [] })
-                }
-                DropZoneProps={{ acceptedFileExtensions: '.csv' }}
-              />
+              <FileUploadSingleItem {...getFileUploadProps('measurements')} />
             </CSVDropzoneSection>
             <Divider />
 
@@ -270,14 +284,7 @@ export const CreateCSVCapturesPage = () => {
               summary="Upload markings applied during the captures"
               onDownloadTemplate={() => downloadFile(getMarkingsCSVTemplate(), 'SIMS-markings-template.csv')}
               errors={files.markings.errors}>
-              <FileUploadSingleItem
-                {...files.markings}
-                onStatus={(status) => handleFileState({ fileType: 'markings', status })}
-                onFile={(file) => handleFileState({ fileType: 'markings', file })}
-                onError={(error) => handleFileState({ fileType: 'markings', error })}
-                onCancel={() => handleFileState({ fileType: 'markings', status: UploadFileStatus.PENDING, errors: [] })}
-                DropZoneProps={{ acceptedFileExtensions: '.csv' }}
-              />
+              <FileUploadSingleItem {...getFileUploadProps('markings')} />
             </CSVDropzoneSection>
             <Divider />
           </Stack>

@@ -1,8 +1,8 @@
 import { Box } from '@mui/material';
 import Button from '@mui/material/Button';
-import { CSVErrorsTable } from 'components/csv/CSVErrorsTable';
+import { CSVErrorsTableContainer } from 'components/csv/CSVErrorsTableContainer';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
-import { PropsWithChildren, useState } from 'react';
+import { PropsWithChildren } from 'react';
 import { CSVError } from 'utils/file-utils';
 
 interface CSVDropzoneSectionProps {
@@ -12,9 +12,14 @@ interface CSVDropzoneSectionProps {
   errors: CSVError[];
 }
 
+/**
+ * A section that contains a dropzone for CSV files.
+ * Also renders a table to display errors that occured during the CSV file validation.
+ *
+ * @param {CSVDropzoneSectionProps} props
+ * @returns {*} {JSX.Element}
+ */
 export const CSVDropzoneSection = (props: PropsWithChildren<CSVDropzoneSectionProps>) => {
-  const [showErrorsTable, setShowErrorsTable] = useState(false);
-
   return (
     <HorizontalSplitFormComponent title={props.title} summary={props.summary}>
       <Box sx={{ display: 'flex', flexDirection: 'column' }} gap={2}>
@@ -26,19 +31,9 @@ export const CSVDropzoneSection = (props: PropsWithChildren<CSVDropzoneSectionPr
             onClick={props.onDownloadTemplate}>
             Download Template
           </Button>
-          {props.errors.length > 0 && (
-            <Button
-              sx={{ ml: 2, textTransform: 'none', fontWeight: 'regular' }}
-              variant="contained"
-              color="error"
-              size="small"
-              onClick={() => setShowErrorsTable((s) => !s)}>
-              View CSV Errors
-            </Button>
-          )}
         </Box>
         {props.children}
-        {showErrorsTable && <CSVErrorsTable errors={props.errors} />}
+        {props.errors.length > 0 ? <CSVErrorsTableContainer errors={props.errors} /> : null}
       </Box>
     </HorizontalSplitFormComponent>
   );

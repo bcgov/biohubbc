@@ -8,6 +8,12 @@ interface CSVErrorsTableProps {
   errors: CSVError[];
 }
 
+/**
+ * Renders a CSV errors table.
+ *
+ * @param {CSVErrorsTableProps} props
+ * @returns {*} {JSX.Element}
+ */
 export const CSVErrorsTable = (props: CSVErrorsTableProps) => {
   const columns: GridColDef[] = [
     {
@@ -20,7 +26,8 @@ export const CSVErrorsTable = (props: CSVErrorsTableProps) => {
       field: 'header',
       headerName: 'Header',
       description: 'Column header in the CSV file',
-      minWidth: 200,
+      minWidth: 150,
+      maxWidth: 200,
       type: 'string'
     },
     {
@@ -65,6 +72,13 @@ export const CSVErrorsTable = (props: CSVErrorsTableProps) => {
       rowSelection={false}
       checkboxSelection={false}
       sortingOrder={['asc', 'desc']}
+      initialState={{
+        pagination: {
+          paginationModel: {
+            pageSize: 5
+          }
+        }
+      }}
     />
   );
 };

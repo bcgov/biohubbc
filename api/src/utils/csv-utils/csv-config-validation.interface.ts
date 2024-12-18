@@ -186,7 +186,7 @@ export interface CSVError {
   /**
    * The row index the error occurred.
    *
-   * Note: Header row index 0. First data row index 1.
+   * Note: Header row index 1. First data row index 2.
    *
    * @type {number}
    */
