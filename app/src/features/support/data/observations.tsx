@@ -44,6 +44,27 @@ const observations = [
     label: 'Data Upload',
     description: [],
     markdownType: EnumMarkdownTypes[SupportPageView.OBSERVATIONS]?.[0] || MarkdownTypeSupportNameEnum.OBSERVATIONS
+  }, 
+  {label: 'FAQ',
+    description: [
+      <Typography variant="body1" gutterBottom>
+        <strong>FAQ</strong>
+      </Typography>,
+      <Typography variant="body1" gutterBottom>
+        <strong>I have data collected using PIT Tags – is that observation data or telemetry data? </strong>
+      </Typography>,
+      <Typography variant="body1" gutterBottom>
+        We encourage the management of PIT Tag data through the observations pane, as tag readers/gates can be loaded up as sampling sites. 
+      </Typography>,
+      <Typography variant="body1" gutterBottom>
+        <strong>
+        I have collected my observations in UTM and am having trouble loading them.
+        </strong>
+      </Typography>,
+      <Typography variant="body1" gutterBottom>
+        Currently, SIMS is configured to receive latitude and longitude data in decimal degrees, collected under WGS 1984. 
+      </Typography>
+    ]
   }
 ];
 
