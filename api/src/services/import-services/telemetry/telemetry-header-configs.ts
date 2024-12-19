@@ -17,8 +17,8 @@ export const getTelemetryVendorCellValidator = (vendors: Set<string>): CSVCellVa
 
     return [
       {
-        error: `Vendor not supported`,
-        solution: `Use a valid vendor`,
+        error: `Telemetry vendor not supported`,
+        solution: `Use a valid telemetry vendor`,
         values: Array.from(vendors)
       }
     ];
@@ -56,8 +56,8 @@ export const getTelemetrySerialCellValidator = (
     if (!deployment) {
       return [
         {
-          error: `Device not found in survey`,
-          solution: `Check the serial number and vendor are correct`
+          error: `Device not found in the survey deployments`,
+          solution: `Check the serial number and vendor are correct and the device is deployed in the survey`
         }
       ];
     }

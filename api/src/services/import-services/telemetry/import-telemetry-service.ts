@@ -1,24 +1,21 @@
-import { chunk } from 'lodash';
 import { WorkSheet } from 'xlsx';
 import { z } from 'zod';
 import { IDBConnection } from '../../../database/db';
-import { ApiGeneralError } from '../../../errors/api-error';
 import { HTTP422CSVValidationError } from '../../../errors/http-error';
+import { CodeRepository } from '../../../repositories/code-repository';
 import { CreateManualTelemetry } from '../../../repositories/telemetry-repositories/telemetry-manual-repository.interface';
 import { CSVConfigUtils } from '../../../utils/csv-utils/csv-config-utils';
 import { validateCSVWorksheet } from '../../../utils/csv-utils/csv-config-validation';
 import { CSVConfig, CSV_ERROR_MESSAGE } from '../../../utils/csv-utils/csv-config-validation.interface';
 import { getTimeCellSetter, getTimeCellValidator, validateZodCell } from '../../../utils/csv-utils/csv-header-configs';
-import { taskQueue } from '../../../utils/task-queue';
-import { CodeService } from '../../code-service';
+import { getLogger } from '../../../utils/logger';
 import { DBService } from '../../db-service';
+import { TelemetryDeploymentService } from '../../telemetry-services/telemetry-deployment-service';
 import { TelemetryVendorService } from '../../telemetry-services/telemetry-vendor-service';
 import { formatTimestampString } from '../utils/datetime';
 import { getTelemetrySerialCellValidator, getTelemetryVendorCellValidator } from './telemetry-header-configs';
 
-const TELEMETRY_BATCH_SIZE = 500;
-
-//const defaultLog = getLogger('services/import/import-telemetry-service');
+const defaultLog = getLogger('services/import-services/import-telemetry-service');
 
 // Telemetry CSV static headers
 export type TelemetryCSVStaticHeader = 'VENDOR' | 'SERIAL' | 'LATITUDE' | 'LONGITUDE' | 'DATE' | 'TIME';
@@ -33,8 +30,10 @@ export class ImportTelemetryService extends DBService {
   worksheet: WorkSheet;
   surveyId: number;
 
+  // Services
+  deploymentService: TelemetryDeploymentService;
   telemetryVendorService: TelemetryVendorService;
-  codeService: CodeService;
+  codeRepository: CodeRepository;
   utils: CSVConfigUtils<TelemetryCSVStaticHeader>;
 
   /**
@@ -61,8 +60,10 @@ export class ImportTelemetryService extends DBService {
     this.worksheet = worksheet;
     this.surveyId = surveyId;
 
+    // Initialize services
+    this.deploymentService = new TelemetryDeploymentService(connection);
     this.telemetryVendorService = new TelemetryVendorService(connection);
-    this.codeService = new CodeService(connection);
+    this.codeRepository = new CodeRepository(connection);
     this.utils = new CSVConfigUtils(this.worksheet, initialConfig);
   }
 
@@ -90,21 +91,13 @@ export class ImportTelemetryService extends DBService {
       transmission_date: null
     }));
 
-    // Split the teletry into batches to prevent SQL cap error
-    const telemetryBatches = chunk(telemetry, TELEMETRY_BATCH_SIZE);
+    defaultLog.info({
+      label: 'importCSVWorksheet',
+      message: 'Inserting telemetry records into SIMS',
+      telemetryCount: telemetry.length
+    });
 
-    const telemetryProcessor = async (telemetryBatch: CreateManualTelemetry[]): Promise<void> => {
-      return this.telemetryVendorService.bulkCreateManualTelemetry(this.surveyId, telemetryBatch);
-    };
-
-    const queueResult = await taskQueue(telemetryBatches, telemetryProcessor, 10);
-
-    // Check for any errors in the batch processing
-    const batchErrors = queueResult.filter((result) => result.error);
-
-    if (batchErrors.length) {
-      throw new ApiGeneralError('Failed to batch import telemetry.', [batchErrors.map((task) => task.error)]);
-    }
+    await this.telemetryVendorService.bulkCreateTelemetryInBatches(this.surveyId, telemetry);
   }
 
   /**
@@ -113,14 +106,15 @@ export class ImportTelemetryService extends DBService {
    * @returns {Promise<CSVConfig<TelemetryCSVStaticHeader>>} The CSV configuration
    */
   async getCSVConfig(): Promise<CSVConfig<TelemetryCSVStaticHeader>> {
-    const deployments = await this.telemetryVendorService.deploymentService.getDeploymentsForSurvey(this.surveyId);
-    const vendors = await this.codeService.codeRepository.getActiveTelemetryDeviceMakes();
+    const deployments = await this.deploymentService.getDeploymentsForSurvey(this.surveyId);
+    const vendors = await this.codeRepository.getActiveTelemetryDeviceMakes();
+    const vendorsSet = new Set(vendors.map((vendor) => vendor.name.toLowerCase()));
 
     this.utils.setStaticHeaderConfig('SERIAL', {
       validateCell: getTelemetrySerialCellValidator(deployments, this.utils)
     });
     this.utils.setStaticHeaderConfig('VENDOR', {
-      validateCell: getTelemetryVendorCellValidator(new Set(vendors.map((vendor) => vendor.name.toLowerCase())))
+      validateCell: getTelemetryVendorCellValidator(vendorsSet)
     });
     this.utils.setStaticHeaderConfig('LATITUDE', {
       validateCell: (params) => validateZodCell(params, z.number().min(-90).max(90))

@@ -79,17 +79,11 @@ export const TelemetryTableContainer = () => {
    */
   const handleImportTelemetry = async (file: File) => {
     try {
-      const uploadResponse = await biohubApi.telemetry.uploadCsvForImport(
-        surveyContext.projectId,
-        surveyContext.surveyId,
-        file
-      );
+      await biohubApi.telemetry.importManualTelemetryCSV(surveyContext.projectId, surveyContext.surveyId, file);
 
       setShowImportDialog(false);
 
       setProcessingRecords(true);
-
-      await biohubApi.telemetry.processTelemetryCsvSubmission(uploadResponse.submission_id);
 
       showSnackBar({
         snackbarMessage: (
