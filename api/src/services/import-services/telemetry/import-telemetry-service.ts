@@ -1,12 +1,11 @@
 import { WorkSheet } from 'xlsx';
 import { z } from 'zod';
 import { IDBConnection } from '../../../database/db';
-import { HTTP422CSVValidationError } from '../../../errors/http-error';
 import { CodeRepository } from '../../../repositories/code-repository';
 import { CreateManualTelemetry } from '../../../repositories/telemetry-repositories/telemetry-manual-repository.interface';
 import { CSVConfigUtils } from '../../../utils/csv-utils/csv-config-utils';
 import { validateCSVWorksheet } from '../../../utils/csv-utils/csv-config-validation';
-import { CSVConfig, CSV_ERROR_MESSAGE } from '../../../utils/csv-utils/csv-config-validation.interface';
+import { CSVConfig, CSVError } from '../../../utils/csv-utils/csv-config-validation.interface';
 import { getTimeCellSetter, getTimeCellValidator, validateZodCell } from '../../../utils/csv-utils/csv-header-configs';
 import { getLogger } from '../../../utils/logger';
 import { DBService } from '../../db-service';
@@ -47,8 +46,8 @@ export class ImportTelemetryService extends DBService {
 
     const initialConfig: CSVConfig<TelemetryCSVStaticHeader> = {
       staticHeadersConfig: {
-        SERIAL: { aliases: ['DEVICE_ID'] },
-        VENDOR: { aliases: [] },
+        SERIAL: { aliases: ['DEVICE_ID', 'DEVICE ID', 'DEVICE', 'COLLAR', 'COLLAR ID'] },
+        VENDOR: { aliases: ['MAKE', 'MANUFACTURER'] },
         LATITUDE: { aliases: ['LAT'] },
         LONGITUDE: { aliases: ['LON', 'LONG', 'LNG'] },
         DATE: { aliases: [] },
@@ -72,15 +71,15 @@ export class ImportTelemetryService extends DBService {
    *
    * @async
    * @throws {ApiGeneralError} - If unable to fully insert records into SIMS
-   * @returns {*} {Promise<CSVError[]>}
+   * @returns {*} {Promise<CSVError[]>} List of CSV errors encountered during import
    */
-  async importCSVWorksheet(): Promise<void> {
+  async importCSVWorksheet(): Promise<CSVError[]> {
     const config = await this.getCSVConfig();
 
     const { errors, rows } = validateCSVWorksheet(this.worksheet, config);
 
     if (errors.length) {
-      throw new HTTP422CSVValidationError(CSV_ERROR_MESSAGE, errors);
+      return errors;
     }
 
     const telemetry: CreateManualTelemetry[] = rows.map((row) => ({
@@ -93,11 +92,13 @@ export class ImportTelemetryService extends DBService {
 
     defaultLog.info({
       label: 'importCSVWorksheet',
-      message: 'Inserting telemetry records into SIMS',
+      message: 'Batch creating telemetry records',
       telemetryCount: telemetry.length
     });
 
     await this.telemetryVendorService.bulkCreateTelemetryInBatches(this.surveyId, telemetry);
+
+    return [];
   }
 
   /**

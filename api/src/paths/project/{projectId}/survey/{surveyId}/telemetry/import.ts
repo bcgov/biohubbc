@@ -2,10 +2,12 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
+import { HTTP422CSVValidationError } from '../../../../../../errors/http-error';
 import { CSVValidationErrorResponse } from '../../../../../../openapi/schemas/csv';
 import { csvFileSchema } from '../../../../../../openapi/schemas/file';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { ImportTelemetryService } from '../../../../../../services/import-services/telemetry/import-telemetry-service';
+import { CSV_ERROR_MESSAGE } from '../../../../../../utils/csv-utils/csv-config-validation.interface';
 import { getLogger } from '../../../../../../utils/logger';
 import { parseMulterFile } from '../../../../../../utils/media/media-utils';
 import { getFileFromRequest } from '../../../../../../utils/request';
@@ -117,15 +119,21 @@ export function importTelemetryCSV(): RequestHandler {
 
       const telemetryService = new ImportTelemetryService(connection, worksheet, surveyId);
 
-      await telemetryService.importCSVWorksheet();
+      const errors = await telemetryService.importCSVWorksheet();
+
+      if (errors.length) {
+        throw new HTTP422CSVValidationError(CSV_ERROR_MESSAGE, errors);
+      }
 
       await connection.commit();
 
       return res.status(200).send();
     } catch (error) {
-      defaultLog.error({ label: 'importTelemetry', message: 'error', error });
-      await connection.rollback();
+      if (error instanceof HTTP422CSVValidationError === false) {
+        defaultLog.error({ label: 'importTelemetry', message: 'error', error });
+      }
 
+      await connection.rollback();
       throw error;
     } finally {
       connection.release();

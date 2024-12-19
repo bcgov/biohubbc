@@ -250,16 +250,6 @@ export class TelemetryVendorService extends DBService {
     const batchSize = 500; // Max telemetry records to insert in a single query
     const concurrent = 10; // Max concurrent queries
 
-    const deploymentIds = [...new Set(telemetry.map((record) => record.deployment_id))];
-    const deployments = await this.deploymentService.getDeploymentsForSurvey(surveyId, deploymentIds);
-
-    if (deployments.length !== deploymentIds.length) {
-      throw new ApiGeneralError('Failed to bulk create manual telemetry', [
-        'TelemetryVendorService->bulkCreateManualTelemetryInBatches',
-        'survey missing reference to one or more deployment IDs'
-      ]);
-    }
-
     // Split the teletry into batches to prevent SQL cap error
     const telemetryBatches = chunk(telemetry, batchSize);
 

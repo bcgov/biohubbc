@@ -4,6 +4,9 @@ export const CSV_ERROR_MESSAGE =
 /**
  * The CSV configuration interface
  *
+ * TODO:
+ *  1. Allow or disallow duplicate CSV rows
+ *  2. Support CSVWarnings
  */
 export interface CSVConfig<THeader extends Uppercase<string> = Uppercase<string>> {
   /**
