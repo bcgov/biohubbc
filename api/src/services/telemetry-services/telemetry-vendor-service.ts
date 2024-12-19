@@ -16,8 +16,6 @@ import { ApiPaginationOptions } from '../../zod-schema/pagination';
 import { DBService } from '../db-service';
 import { TelemetryDeploymentService } from './telemetry-deployment-service';
 
-const TELEMETRY_BATCH_SIZE = 500;
-
 /**
  * A service class for working with telemetry vendor data.
  *
@@ -241,8 +239,7 @@ export class TelemetryVendorService extends DBService {
 
   /**
    * Bulk create a telemetry in batches.
-   *
-   * Note: This is to prevent the SQL cap error when inserting a large number of telemetry records. > 700
+   * Note: This is to prevent SQL maximum query size error.
    *
    * @async
    * @param {number} surveyId - The survey ID
@@ -250,20 +247,34 @@ export class TelemetryVendorService extends DBService {
    * @returns {*} {Promise<void>}
    */
   async bulkCreateTelemetryInBatches(surveyId: number, telemetry: CreateManualTelemetry[]): Promise<void> {
-    // Split the teletry into batches to prevent SQL cap error
-    const telemetryBatches = chunk(telemetry, TELEMETRY_BATCH_SIZE);
+    const batchSize = 500; // Max telemetry records to insert in a single query
+    const concurrent = 10; // Max concurrent queries
 
+    const deploymentIds = [...new Set(telemetry.map((record) => record.deployment_id))];
+    const deployments = await this.deploymentService.getDeploymentsForSurvey(surveyId, deploymentIds);
+
+    if (deployments.length !== deploymentIds.length) {
+      throw new ApiGeneralError('Failed to bulk create manual telemetry', [
+        'TelemetryVendorService->bulkCreateManualTelemetryInBatches',
+        'survey missing reference to one or more deployment IDs'
+      ]);
+    }
+
+    // Split the teletry into batches to prevent SQL cap error
+    const telemetryBatches = chunk(telemetry, batchSize);
+
+    // Create the async task processor
     const telemetryProcessor = async (telemetryBatch: CreateManualTelemetry[]): Promise<void> => {
       return this.bulkCreateManualTelemetry(surveyId, telemetryBatch);
     };
 
     // Process the telemetry in batches
-    const queueResult = await taskQueue(telemetryBatches, telemetryProcessor, 10);
+    const queueResult = await taskQueue(telemetryBatches, telemetryProcessor, concurrent);
 
     // Check for any errors in the batch processing
     const batchErrors = queueResult.filter((result) => result.error);
     if (batchErrors.length) {
-      throw new ApiGeneralError('Failed to batch import telemetry.', [batchErrors.map((task) => task.error)]);
+      throw new ApiGeneralError('Failed to bulk create manual telemetry', [batchErrors.map((task) => task.error)]);
     }
   }
 }
