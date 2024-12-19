@@ -1,9 +1,8 @@
 import { WorkSheet } from 'xlsx';
 import { IDBConnection } from '../../../database/db';
-import { HTTP422CSVValidationError } from '../../../errors/http-error';
 import { CSVConfigUtils } from '../../../utils/csv-utils/csv-config-utils';
 import { validateCSVWorksheet } from '../../../utils/csv-utils/csv-config-validation';
-import { CSVConfig, CSV_ERROR_MESSAGE } from '../../../utils/csv-utils/csv-config-validation.interface';
+import { CSVConfig, CSVError } from '../../../utils/csv-utils/csv-config-validation.interface';
 import {
   getDescriptionCellValidator,
   getTimeCellSetter,
@@ -11,7 +10,7 @@ import {
 } from '../../../utils/csv-utils/csv-header-configs';
 import { getLogger } from '../../../utils/logger';
 import { NestedRecord } from '../../../utils/nested-record';
-import { IAsSelectLookup, ICritterDetailed } from '../../critterbase-service';
+import { ICritterDetailed } from '../../critterbase-service';
 import { DBService } from '../../db-service';
 import { SurveyCritterService } from '../../survey-critter-service';
 import {
@@ -86,15 +85,15 @@ export class ImportMarkingsService extends DBService {
    *
    * @async
    * @throws {ApiGeneralError} - If unable to fully insert records into Critterbase
-   * @returns {*} {Promise<CSVError[]>}
+   * @returns {*} {Promise<CSVError[]>} List of CSV errors encountered during import
    */
-  async importCSVWorksheet(): Promise<void> {
+  async importCSVWorksheet(): Promise<CSVError[]> {
     const config = await this.getCSVConfig();
 
     const { errors, rows } = validateCSVWorksheet(this.worksheet, config);
 
     if (errors.length) {
-      throw new HTTP422CSVValidationError(CSV_ERROR_MESSAGE, errors);
+      return errors;
     }
 
     const markings = rows.map((row) => ({
@@ -111,6 +110,8 @@ export class ImportMarkingsService extends DBService {
     defaultLog.debug({ label: 'import markings', markings });
 
     await this.surveyCritterService.critterbaseService.bulkCreate({ markings });
+
+    return [];
   }
 
   /**
@@ -141,7 +142,7 @@ export class ImportMarkingsService extends DBService {
       setCellValue: getTimeCellSetter()
     });
     this.utils.setStaticHeaderConfig('BODY_LOCATION', {
-      validateCell: getMarkingBodyLocationCellValidator(bodyLocationDictionary, this.utils)
+      validateCell: getMarkingBodyLocationCellValidator(surveyAliasMap, bodyLocationDictionary, this.utils)
     });
     this.utils.setStaticHeaderConfig('MARKING_TYPE', {
       validateCell: getMarkingTypeCellValidator(markingTypes)
@@ -164,36 +165,34 @@ export class ImportMarkingsService extends DBService {
   }
 
   /**
-   * Get a dictionary of critter alias -> body location -> body_location_id.
+   * Get a dictionary of critter tsn -> body location -> body_location_id.
    *
    * @param {Map<string, ICritterDetailed>} surveyAliasMap - The survey alias map
    * @returns {Promise<NestedRecord<string>>} The body location dictionary
    */
   async _getBodyLocationDictionary(surveyAliasMap: Map<string, ICritterDetailed>): Promise<NestedRecord<string>> {
     const dictionary = new NestedRecord<string>();
+
     const rowAliases = this.utils.getUniqueCellValues('ALIAS').map((alias) => String(alias).toLowerCase());
-    const tsnBodyLocationMap = new Map<number, Promise<IAsSelectLookup[]>>(); // itis_tsn -> body locations[]
+    const allTsns = rowAliases.map((alias) => surveyAliasMap.get(alias)?.itis_tsn).filter(Boolean) as number[];
+    const uniqueTsns = [...new Set(allTsns)];
 
-    // TODO: Refactor this to run in parallel?
-    // Currently, this runs in serial for each "unique" TSN while duplicate TSNs are cached
-    for (const alias of rowAliases) {
-      const critter = surveyAliasMap.get(alias);
-      // Alias maps to a critter and tsnBodyLocationMap does not have the critter's TSN
-      if (critter && !tsnBodyLocationMap.has(critter.itis_tsn)) {
-        tsnBodyLocationMap.set(
-          critter.itis_tsn,
-          this.surveyCritterService.critterbaseService.getTaxonBodyLocations(String(critter.itis_tsn))
-        );
+    // Get body locations for each unique TSN (in parallel)
+    const taxonBodyLocationArrays = await Promise.all(
+      uniqueTsns.map((tsn) => this.surveyCritterService.critterbaseService.getTaxonBodyLocations(String(tsn)))
+    );
 
-        const tsnBodyLocations = (await tsnBodyLocationMap.get(critter.itis_tsn)) ?? [];
+    // Loop through each TSN and set the dictionary: tsn -> body location -> id
+    for (let index = 0; index < uniqueTsns.length; index++) {
+      const tsn = uniqueTsns[index];
+      const bodyLocations = taxonBodyLocationArrays[index];
 
-        // critter alias -> taxon body location -> body_location_id
-        for (const bodyLocation of tsnBodyLocations) {
-          dictionary.set({
-            path: [alias, bodyLocation.value.toLowerCase()],
-            value: bodyLocation.id
-          });
-        }
+      // set body location dictionary
+      for (const bodyLocation of bodyLocations) {
+        dictionary.set({
+          path: [tsn, bodyLocation.value],
+          value: bodyLocation.id
+        });
       }
     }
 

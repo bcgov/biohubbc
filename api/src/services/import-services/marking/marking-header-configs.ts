@@ -123,11 +123,13 @@ export const getMarkingColourCellValidator = (colours: Set<string>): CSVCellVali
  * Rules:
  *  1. The cell must be a valid body location for the critter ie: exists in the rowDictionary
  *
+ * @param {Map<string, ICritterDetailed>} surveyAliasMap The survey alias map
  * @param {NestedRecord<string>} rowDictionary The row dictionary
  * @param {CSVConfigUtils<MarkingCSVStaticHeader>} utils The CSV config utils
  * @returns {*} {CSVCellValidator} The validate cell callback
  */
 export const getMarkingBodyLocationCellValidator = (
+  surveyAliasMap: Map<string, ICritterDetailed>,
   rowDictionary: NestedRecord<string>,
   utils: CSVConfigUtils<MarkingCSVStaticHeader>
 ): CSVCellValidator => {
@@ -136,10 +138,15 @@ export const getMarkingBodyLocationCellValidator = (
       return [];
     }
 
-    const bodyLocationCellValue = String(params.cell);
     const rowAlias = String(utils.getCellValue('ALIAS', params.row));
+    const aliasTsn = surveyAliasMap.get(rowAlias.toLowerCase())?.itis_tsn;
 
-    const rowDictionaryAlias = rowDictionary.get(rowAlias);
+    // ALIAS header will catch this error
+    if (!aliasTsn) {
+      return [];
+    }
+
+    const rowDictionaryAlias = rowDictionary.get(aliasTsn);
 
     if (!rowDictionaryAlias) {
       return [
@@ -150,7 +157,9 @@ export const getMarkingBodyLocationCellValidator = (
       ];
     }
 
-    const rowDictionaryBodyLocation = rowDictionary.get(rowAlias, bodyLocationCellValue);
+    const bodyLocationCellValue = String(params.cell);
+
+    const rowDictionaryBodyLocation = rowDictionary.get(aliasTsn, bodyLocationCellValue);
 
     if (!rowDictionaryBodyLocation) {
       return [

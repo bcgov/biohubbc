@@ -2,10 +2,12 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
+import { HTTP422CSVValidationError } from '../../../../../../errors/http-error';
 import { CSVValidationErrorResponse } from '../../../../../../openapi/schemas/csv';
 import { csvFileSchema } from '../../../../../../openapi/schemas/file';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { ImportCrittersService } from '../../../../../../services/import-services/critter/import-critters-service';
+import { CSV_ERROR_MESSAGE } from '../../../../../../utils/csv-utils/csv-config-validation.interface';
 import { getLogger } from '../../../../../../utils/logger';
 import { parseMulterFile } from '../../../../../../utils/media/media-utils';
 import { getFileFromRequest } from '../../../../../../utils/request';
@@ -125,7 +127,11 @@ export function importCritterCSV(): RequestHandler {
 
       const importService = new ImportCrittersService(connection, worksheet, surveyId);
 
-      await importService.importCSVWorksheet();
+      const errors = await importService.importCSVWorksheet();
+
+      if (errors.length) {
+        throw new HTTP422CSVValidationError(CSV_ERROR_MESSAGE, errors);
+      }
 
       await connection.commit();
 
