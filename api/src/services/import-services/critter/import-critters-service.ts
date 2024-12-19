@@ -6,7 +6,12 @@ import { ApiGeneralError } from '../../../errors/api-error';
 import { HTTP422CSVValidationError } from '../../../errors/http-error';
 import { CSVConfigUtils } from '../../../utils/csv-utils/csv-config-utils';
 import { validateCSVWorksheet } from '../../../utils/csv-utils/csv-config-validation';
-import { CSVConfig, CSVHeaderConfig, CSVRowValidated } from '../../../utils/csv-utils/csv-config-validation.interface';
+import {
+  CSVConfig,
+  CSVHeaderConfig,
+  CSVRowValidated,
+  CSV_ERROR_MESSAGE
+} from '../../../utils/csv-utils/csv-config-validation.interface';
 import { getDescriptionCellValidator, getTsnCellValidator } from '../../../utils/csv-utils/csv-header-configs';
 import { getLogger } from '../../../utils/logger';
 import { NestedRecord } from '../../../utils/nested-record';
@@ -94,7 +99,7 @@ export class ImportCrittersService extends DBService {
     const { errors, rows } = validateCSVWorksheet(this.worksheet, config);
 
     if (errors.length) {
-      throw new HTTP422CSVValidationError('Failed to validate Critter CSV', errors);
+      throw new HTTP422CSVValidationError(CSV_ERROR_MESSAGE, errors);
     }
 
     const payloads = this._getImportPayloads(rows);

@@ -51,6 +51,14 @@ describe('marking-header-configs', () => {
       expect(result).to.deep.equal([]);
     });
 
+    it('should allow undefined', () => {
+      const surveyAliasMap: any = new Map<string, string>([['alias', { captures: [{ capture_id: 'uuid' }] } as any]]);
+
+      const result = getMarkingAliasCellValidator(surveyAliasMap)({ cell: undefined } as CSVParams);
+
+      expect(result).to.deep.equal([]);
+    });
+
     it('should update the mutateCell value to the critter_id', () => {
       const surveyAliasMap = new Map([['alias', { critter_id: 'critter', captures: [{ capture_id: 'uuid' }] } as any]]);
 
@@ -88,6 +96,14 @@ describe('marking-header-configs', () => {
       expect(result).to.deep.equal([]);
     });
 
+    it('should allow undefined', () => {
+      const markingTypes = new Set<string>(['type']);
+
+      const result = getMarkingTypeCellValidator(markingTypes)({ cell: undefined } as CSVParams);
+
+      expect(result).to.deep.equal([]);
+    });
+
     it('should return a single error if the value is not in the markingTypes set', () => {
       const markingTypes = new Set<string>(['type']);
 
@@ -116,6 +132,14 @@ describe('marking-header-configs', () => {
         header: '',
         rowIndex: 0
       } as CSVParams);
+
+      expect(result).to.deep.equal([]);
+    });
+
+    it('should return no errors for undefined', () => {
+      const cellValidator = getMarkingBodyLocationCellValidator(new NestedRecord(), {} as any);
+
+      const result = cellValidator({ cell: undefined } as CSVParams);
 
       expect(result).to.deep.equal([]);
     });
@@ -167,6 +191,14 @@ describe('marking-header-configs', () => {
       const colours = new Set<string>(['colour']);
 
       const result = getMarkingColourCellValidator(colours)({ cell: 'COLOUR' } as CSVParams);
+
+      expect(result).to.deep.equal([]);
+    });
+
+    it('should return no errors for undefined', () => {
+      const colours = new Set<string>(['colour']);
+
+      const result = getMarkingColourCellValidator(colours)({ cell: undefined } as CSVParams);
 
       expect(result).to.deep.equal([]);
     });
