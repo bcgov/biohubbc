@@ -25,7 +25,7 @@ export const validateCSVWorksheet = <StaticHeaderType extends Uppercase<string>>
   const rows: CSVRowValidated<StaticHeaderType>[] = [];
   const errors = validateCSVHeaders(worksheet, config);
 
-  // If there are errors in the headers, return early
+  // If there are errors in the headers, or rows not unique return early
   if (errors.length) {
     return { errors: errors, rows: [] };
   }

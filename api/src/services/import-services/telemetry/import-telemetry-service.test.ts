@@ -75,7 +75,7 @@ describe('ImportTelemetryService', () => {
       ]);
     });
 
-    it('should throw CSV Validation error if rows fail validation', async () => {
+    it('should return CSV Validation error if rows fail validation', async () => {
       const mockConnection = getMockDBConnection();
       const worksheet = {} as WorkSheet;
       const surveyId = 1;
@@ -90,15 +90,11 @@ describe('ImportTelemetryService', () => {
         rows: []
       });
 
-      try {
-        await service.importCSVWorksheet();
-        expect.fail('Expected error to be thrown');
-      } catch (err: any) {
-        expect(mockGetConfig).to.have.been.called;
-        expect(mockValidate).to.have.been.calledOnceWithExactly(worksheet, mockCSVConfig);
-        expect(err).to.be.an('error');
-        expect(err.name).to.be.equal('CSV Validation Error');
-      }
+      const errors = await service.importCSVWorksheet();
+
+      expect(mockGetConfig).to.have.been.called;
+      expect(mockValidate).to.have.been.calledOnceWithExactly(worksheet, mockCSVConfig);
+      expect(errors).to.deep.equal([{ error: 'error', solution: 'solution', values: [] }]);
     });
   });
 });

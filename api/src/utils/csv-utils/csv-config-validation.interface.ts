@@ -1,11 +1,11 @@
-export const CSV_ERROR_MESSAGE =
-  'CSV contains validation errors. Please check for formatting issues, missing fields, or invalid values and try again.';
+export const CSV_ERROR_MESSAGE = 'CSV contains validation errors. Please fix invalid values and try again.';
 
 /**
  * The CSV configuration interface
  *
  * TODO:
  *  1. Allow or disallow duplicate CSV rows
+ *    - Similar to a DB unique constraint? ie: ['NAME', 'AGE']
  *  2. Support CSVWarnings
  */
 export interface CSVConfig<THeader extends Uppercase<string> = Uppercase<string>> {
