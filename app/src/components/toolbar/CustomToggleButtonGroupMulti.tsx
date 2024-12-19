@@ -1,16 +1,18 @@
 import Icon from '@mdi/react';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import Checkbox from '@mui/material/Checkbox';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 
-export interface ToggleButtonView<ViewValueType> {
+export interface ToggleButtonView<T extends string | number> {
   /**
    * The value of the toggle button, which will be passed to the `onViewChange` callback.
    *
-   * @type {ViewValueType}
+   * @type {T}
    * @memberof ToggleButtonView
    */
-  value: ViewValueType;
+  value: T;
   /**
    * The label to display for the toggle button.
    *
@@ -27,27 +29,27 @@ export interface ToggleButtonView<ViewValueType> {
   icon?: string;
 }
 
-interface CustomToggleButtonGroupProps<ViewValueType extends string | number> {
+interface CustomToggleButtonGroupProps<T extends string | number> {
   /**
    * An array of views to display in the toggle button group.
    *
-   * @type {ToggleButtonView<ViewValueType>[]}
+   * @type {ToggleButtonView<T>[]}
    * @memberof CustomToggleButtonGroupProps
    */
-  views: ToggleButtonView<ViewValueType>[];
+  views: ToggleButtonView<T>[];
   /**
-   * The currently active view.
+   * The currently selected views.
    *
-   * @type {ViewValueType}
+   * @type {T[]}
    * @memberof CustomToggleButtonGroupProps
    */
-  activeView: ViewValueType | null;
+  activeViews: T[];
   /**
    * Callback fired when a toggle button is clicked.
    *
    * @memberof CustomToggleButtonGroupProps
    */
-  onViewChange: (view: ViewValueType) => void;
+  onViewChange: (views: T[]) => void;
   /**
    * The orientation of the toggle button group.
    *
@@ -58,32 +60,40 @@ interface CustomToggleButtonGroupProps<ViewValueType extends string | number> {
   /**
    * Whether no value can be selected
    *
-   * @type {('horizontal' | 'vertical')}
+   * @type {boolean}
    * @memberof CustomToggleButtonGroupProps
    */
-  nullable?: boolean
+  nullable?: boolean;
 }
 
 /**
  * A custom toggle button group that allows users to select from multiple views.
  *
- * @template ViewValueType
- * @param {CustomToggleButtonGroupProps<ViewValueType>} props
+ * @template T
+ * @param {CustomToggleButtonGroupProps<T>} props
  * @return {*}
  */
-const CustomToggleButtonGroup = <ViewValueType extends string | number>(props: CustomToggleButtonGroupProps<ViewValueType>) => {
-  const { views, activeView, onViewChange, orientation, nullable } = props;
+const CustomToggleButtonGroup = <T extends string | number>(props: CustomToggleButtonGroupProps<T>) => {
+  const { views, activeViews, onViewChange, orientation, nullable } = props;
+
+  const handleToggle = (_: React.MouseEvent<HTMLElement>, value: T) => {
+    let newActiveViews = [...activeViews];
+
+    if (newActiveViews.includes(value)) {
+      newActiveViews = newActiveViews.filter((view) => view !== value);
+    } else if (nullable || newActiveViews.length > 0) {
+      newActiveViews.push(value);
+    }
+
+    onViewChange(newActiveViews);
+  };
 
   return (
     <ToggleButtonGroup
       orientation={orientation}
-      value={activeView}
-      onChange={(_, view) => {
-        if (view || nullable) {
-          onViewChange(view);
-        }
-      }}
-      exclusive
+      value={activeViews}
+      onChange={(_, value) => handleToggle(_, value)}
+      exclusive={false} // Allows multiple selections
       sx={{
         display: 'flex',
         flex: '1 1 auto',
@@ -100,11 +110,19 @@ const CustomToggleButtonGroup = <ViewValueType extends string | number>(props: C
         }
       }}>
       {views.map((view) => {
-        const startIcon = (view.icon && <Icon path={view.icon} size={0.75} />) || undefined;
+        const startIcon = view.icon && <Icon path={view.icon} size={0.75} />;
 
         return (
-          <ToggleButton key={view.value} component={Button} color="primary" startIcon={startIcon} value={view.value}>
-            {view.label}
+          <ToggleButton
+            key={view.value}
+            component={Button}
+            value={view.value}
+            onClick={(e) => handleToggle(e, view.value)}
+            startIcon={startIcon}>
+            <Box display="flex" alignItems="center">
+              <Checkbox sx={{ pl: 0.5, py: 0.5 }} checked={activeViews.includes(view.value)} />
+              {view.label}
+            </Box>
           </ToggleButton>
         );
       })}

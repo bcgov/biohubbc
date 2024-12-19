@@ -3,13 +3,13 @@ import { GridPaginationModel, GridRowSelectionModel, GridSortModel } from '@mui/
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
+import CustomToggleButtonGroupMulti from 'components/toolbar/CustomToggleButtonGroupMulti';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { SetStateAction, useEffect, useMemo, useState } from 'react';
 import { ApiPaginationRequestOptions } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
-import { SurveyBlocksTable } from './SurveyBlocksTable';
 
 const pageSizeOptions = [10, 25, 50];
 
@@ -36,7 +36,8 @@ interface ISurveyBlocksTableContainerProps {
  * @returns {*}
  */
 export const SurveyBlocksTableContainer = (props: ISurveyBlocksTableContainerProps) => {
-  const { selectedRows, setSelectedRows } = props;
+  // const { selectedRows, setSelectedRows } = props;
+  const [selectedBlocks, setSelectedBlocks] = useState<number[]>([]);
 
   const biohubApi = useBiohubApi();
   const surveyContext = useSurveyContext();
@@ -75,6 +76,7 @@ export const SurveyBlocksTableContainer = (props: ISurveyBlocksTableContainerPro
     blocksDataLoader.refresh(pagination);
   };
 
+  console.log(setPaginationModel, setSortModel, handleDelete);
   return (
     <LoadingGuard
       isLoading={!blocksDataLoader.data && (blocksDataLoader.isLoading || !blocksDataLoader.isReady)}
@@ -90,18 +92,14 @@ export const SurveyBlocksTableContainer = (props: ISurveyBlocksTableContainerPro
         />
       }
       hasNoDataFallbackDelay={100}>
-      <SurveyBlocksTable
-        blocks={blocks}
-        paginationModel={paginationModel}
-        setPaginationModel={setPaginationModel}
-        sortModel={sortModel}
-        setSortModel={setSortModel}
-        rowCount={blocksDataLoader.data?.pagination.total ?? 0}
-        pageSizeOptions={pageSizeOptions}
-        selectedRows={selectedRows}
-        setSelectedRows={setSelectedRows}
-        onDelete={handleDelete}
-      />
+        <CustomToggleButtonGroupMulti
+          activeViews={selectedBlocks}
+          views={
+            blocksDataLoader.data?.blocks.map((block) => ({ value: block.survey_block_id, label: block.name })) ?? []
+          }
+          onViewChange={(blockIds) => setSelectedBlocks(blockIds.map(Number))}
+          orientation="vertical"
+        />
     </LoadingGuard>
   );
 };

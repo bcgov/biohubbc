@@ -1,12 +1,15 @@
-import { mdiDotsVertical, mdiTrashCanOutline } from '@mdi/js';
+import { mdiDotsVertical, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { GridRowSelectionModel } from '@mui/x-data-grid';
@@ -165,6 +168,7 @@ export const SamplingSiteTabsContainer = () => {
       <Toolbar
         disableGutters
         sx={{
+          display: 'none',
           flex: '1 1 auto',
           pl: 2,
           pr: 1,
@@ -199,18 +203,31 @@ export const SamplingSiteTabsContainer = () => {
       <Box height="400px">
         {/* Render child components based on the active view */}
         {activeView === SamplingSiteManageTableView.SITES && (
-          <SamplingSiteTableContainer
-            refreshKey={siteRefreshKey}
-            selectedRows={selectedRows}
-            setSelectedRows={setSelectedRows}
-          />
-        )}
-        {activeView === SamplingSiteManageTableView.CLUSTER && (
-          <SurveyBlocksTableContainer
-            refreshKey={blockRefreshKey}
-            selectedRows={selectedRows}
-            setSelectedRows={setSelectedRows}
-          />
+          <Stack flexDirection="row" height="100%">
+            <Box width="400px" height="100%" p={2} bgcolor={grey[50]}>
+              <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
+                <Typography fontWeight={700}>Clusters</Typography>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  aria-label="Add Clusters"
+                  startIcon={<Icon path={mdiPlus} size={0.75} />}>
+                  Add
+                </Button>
+              </Box>
+              <SurveyBlocksTableContainer
+                refreshKey={blockRefreshKey}
+                selectedRows={selectedRows}
+                setSelectedRows={setSelectedRows}
+              />
+            </Box>
+            <Divider orientation="vertical" flexItem sx={{ color: grey[100] }} />
+            <SamplingSiteTableContainer
+              refreshKey={siteRefreshKey}
+              selectedRows={selectedRows}
+              setSelectedRows={setSelectedRows}
+            />
+          </Stack>
         )}
       </Box>
     </>
