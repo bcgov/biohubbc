@@ -1,4 +1,6 @@
-import { expect } from 'chai';
+import chai, { expect } from 'chai';
+import sinon from 'sinon';
+import sinonChai from 'sinon-chai';
 import { CSVConfigUtils } from '../../../utils/csv-utils/csv-config-utils';
 import { CSVConfig, CSVParams } from '../../../utils/csv-utils/csv-config-validation.interface';
 import { NestedRecord } from '../../../utils/nested-record';
@@ -11,7 +13,13 @@ import {
   getMarkingTypeCellValidator
 } from './marking-header-configs';
 
+chai.use(sinonChai);
+
 describe('marking-header-configs', () => {
+  beforeEach(() => {
+    sinon.restore();
+  });
+
   describe('getMarkingIdentifierCellValidator', () => {
     it('should allow a string with a length between 1 and 50', () => {
       const result = getMarkingIdentifierCellValidator()({ cell: 'string' } as CSVParams);
@@ -47,6 +55,14 @@ describe('marking-header-configs', () => {
       const surveyAliasMap: any = new Map<string, string>([['alias', { captures: [{ capture_id: 'uuid' }] } as any]]);
 
       const result = getMarkingAliasCellValidator(surveyAliasMap)({ cell: 'ALIAS' } as CSVParams);
+
+      expect(result).to.deep.equal([]);
+    });
+
+    it('should allow undefined', () => {
+      const surveyAliasMap: any = new Map<string, string>([['alias', { captures: [{ capture_id: 'uuid' }] } as any]]);
+
+      const result = getMarkingAliasCellValidator(surveyAliasMap)({ cell: undefined } as CSVParams);
 
       expect(result).to.deep.equal([]);
     });
@@ -88,6 +104,14 @@ describe('marking-header-configs', () => {
       expect(result).to.deep.equal([]);
     });
 
+    it('should allow undefined', () => {
+      const markingTypes = new Set<string>(['type']);
+
+      const result = getMarkingTypeCellValidator(markingTypes)({ cell: undefined } as CSVParams);
+
+      expect(result).to.deep.equal([]);
+    });
+
     it('should return a single error if the value is not in the markingTypes set', () => {
       const markingTypes = new Set<string>(['type']);
 
@@ -99,17 +123,18 @@ describe('marking-header-configs', () => {
 
   describe('getMarkingBodyLocationCellValidator', () => {
     it('should return no errors for valid body locations', () => {
-      const dictionary = new NestedRecord({ alias: { location: 'uuid' } });
-      const mockConfig = {
-        staticHeadersConfig: { ALIAS: { aliases: [] } },
-        ignoreDynamicHeaders: true
-      };
-      const utils = new CSVConfigUtils<any>({}, mockConfig);
+      const dictionary = new NestedRecord({ 1: { location: 'uuid' } });
+      const surveyAliasMap: any = new Map([['alias', { itis_tsn: 1 }]]);
 
-      const result = getMarkingBodyLocationCellValidator(
-        dictionary,
-        utils
-      )({
+      const getCellValueStub = sinon.stub().returns('alias');
+
+      const utils: any = {
+        getCellValue: getCellValueStub
+      };
+
+      const cellValidator = getMarkingBodyLocationCellValidator(surveyAliasMap, dictionary, utils);
+
+      const result = cellValidator({
         mutateCell: 'body_location_id',
         cell: 'location',
         row: { ALIAS: 'alias' },
@@ -120,18 +145,50 @@ describe('marking-header-configs', () => {
       expect(result).to.deep.equal([]);
     });
 
-    it('should return a single error when alias has no body locations', () => {
-      const dictionary = new NestedRecord({ alias: { location: 'uuid' } });
-      const mockConfig: CSVConfig<'ALIAS'> = {
-        staticHeadersConfig: { ALIAS: { aliases: [] } },
-        ignoreDynamicHeaders: true
-      };
-      const utils = new CSVConfigUtils<any>({}, mockConfig);
+    it('should return no errors for undefined', () => {
+      const cellValidator = getMarkingBodyLocationCellValidator(new Map(), new NestedRecord(), {} as any);
 
-      const result = getMarkingBodyLocationCellValidator(
-        dictionary,
-        utils
-      )({
+      const result = cellValidator({ cell: undefined } as CSVParams);
+
+      expect(result).to.deep.equal([]);
+    });
+
+    it('should return no errors when alias does not map to a survey critter', () => {
+      const dictionary = new NestedRecord({ 1: { location: 'uuid' } });
+      const surveyAliasMap: any = new Map([['alias', { itis_tsn: 1 }]]);
+
+      const getCellValueStub = sinon.stub().returns('alias2');
+
+      const utils: any = {
+        getCellValue: getCellValueStub
+      };
+
+      const cellValidator = getMarkingBodyLocationCellValidator(surveyAliasMap, dictionary, utils);
+
+      const result = cellValidator({
+        mutateCell: 'body_location_id',
+        cell: 'bad',
+        row: { ALIAS: 'invalidAlias' },
+        header: '',
+        rowIndex: 0
+      } as CSVParams);
+
+      expect(result).to.deep.equal([]);
+    });
+
+    it('should return an error when tsn has no body locations', () => {
+      const dictionary = new NestedRecord({ 1: { location: 'uuid' } });
+      const surveyAliasMap: any = new Map([['alias', { itis_tsn: 2 }]]);
+
+      const getCellValueStub = sinon.stub().returns('alias');
+
+      const utils: any = {
+        getCellValue: getCellValueStub
+      };
+
+      const cellValidator = getMarkingBodyLocationCellValidator(surveyAliasMap, dictionary, utils);
+
+      const result = cellValidator({
         mutateCell: 'body_location_id',
         cell: 'bad',
         row: { ALIAS: 'invalidAlias' },
@@ -143,14 +200,18 @@ describe('marking-header-configs', () => {
     });
 
     it('should return a single error when invalid body location option', () => {
-      const dictionary = new NestedRecord({ alias: { location: 'uuid' } });
-      const mockConfig: CSVConfig = { staticHeadersConfig: { ALIAS: { aliases: [] } }, ignoreDynamicHeaders: true };
-      const utils = new CSVConfigUtils<any>({}, mockConfig);
+      const dictionary = new NestedRecord({ 1: { location: 'uuid' } });
+      const surveyAliasMap: any = new Map([['alias', { itis_tsn: 1 }]]);
 
-      const result = getMarkingBodyLocationCellValidator(
-        dictionary,
-        utils
-      )({
+      const getCellValueStub = sinon.stub().returns('alias');
+
+      const utils: any = {
+        getCellValue: getCellValueStub
+      };
+
+      const cellValidator = getMarkingBodyLocationCellValidator(surveyAliasMap, dictionary, utils);
+
+      const result = cellValidator({
         mutateCell: 'body_location_id',
         cell: 'bad',
         row: { ALIAS: 'alias' },
@@ -167,6 +228,14 @@ describe('marking-header-configs', () => {
       const colours = new Set<string>(['colour']);
 
       const result = getMarkingColourCellValidator(colours)({ cell: 'COLOUR' } as CSVParams);
+
+      expect(result).to.deep.equal([]);
+    });
+
+    it('should return no errors for undefined', () => {
+      const colours = new Set<string>(['colour']);
+
+      const result = getMarkingColourCellValidator(colours)({ cell: undefined } as CSVParams);
 
       expect(result).to.deep.equal([]);
     });

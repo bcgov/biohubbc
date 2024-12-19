@@ -76,7 +76,7 @@ describe('import-markings-service', () => {
       });
     });
 
-    it('should throw CSV Validation error if rows fail validation', async () => {
+    it('should return CSV Validation error if rows fail validation', async () => {
       const mockConnection = getMockDBConnection();
       const worksheet = {} as WorkSheet;
       const surveyId = 1;
@@ -91,15 +91,11 @@ describe('import-markings-service', () => {
         rows: []
       });
 
-      try {
-        await service.importCSVWorksheet();
-        expect.fail('Expected error to be thrown');
-      } catch (err: any) {
-        expect(mockGetConfig).to.have.been.called;
-        expect(mockValidate).to.have.been.calledOnceWithExactly(worksheet, mockCSVConfig);
-        expect(err).to.be.an('error');
-        expect(err.name).to.be.equal('CSV Validation Error');
-      }
+      const errors = await service.importCSVWorksheet();
+
+      expect(mockGetConfig).to.have.been.called;
+      expect(mockValidate).to.have.been.calledOnceWithExactly(worksheet, mockCSVConfig);
+      expect(errors).to.deep.equal([{ error: 'error', solution: 'solution', values: [] }]);
     });
   });
 
@@ -149,6 +145,57 @@ describe('import-markings-service', () => {
         'SECONDARY_COLOUR',
         'DESCRIPTION'
       ]);
+    });
+  });
+
+  describe('_getBodyLocationDictionary', () => {
+    it('should return a dictionary of critter tsn -> body location -> body_location_id', async () => {
+      const mockConnection = getMockDBConnection();
+
+      const service = new ImportMarkingsService(mockConnection, {}, 1);
+
+      const getCellValues = sinon.stub(service.utils, 'getUniqueCellValues');
+      const getTaxonBodyLocationsStub = sinon.stub(
+        service.surveyCritterService.critterbaseService,
+        'getTaxonBodyLocations'
+      );
+
+      getCellValues.returns(['steve', 'brule']);
+
+      getTaxonBodyLocationsStub.onCall(0).resolves([
+        {
+          id: 'A',
+          value: 'ear',
+          key: 'key'
+        }
+      ]);
+
+      getTaxonBodyLocationsStub.onCall(1).resolves([
+        {
+          id: 'B',
+          value: 'tail',
+          key: 'key'
+        }
+      ]);
+
+      const dictionary = await service._getBodyLocationDictionary(
+        new Map([
+          ['steve', { itis_tsn: 2 }],
+          ['brule', { itis_tsn: 3 }]
+        ] as any)
+      );
+
+      expect(dictionary).to.be.instanceof(NestedRecord);
+      expect(dictionary).to.deep.equal(
+        new NestedRecord({
+          2: {
+            ear: 'A'
+          },
+          3: {
+            tail: 'B'
+          }
+        })
+      );
     });
   });
 });
