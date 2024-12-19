@@ -18,7 +18,8 @@ export async function up(knex: Knex): Promise<void> {
     VALUES
       ('Animal Entity', 'Animal entity markdown text details the fields that form an animal'),
       ('Animal Event', 'Animal event markdown text details the fields that form animal events'),
-      ('Animal Bulk Upload', 'Animal bulk upload markdown text details');
+      ('Animal Bulk Upload', 'Animal bulk upload markdown text details'),
+      ('Observation Data Load', 'Observation data laoding instructions markdown text');
 
 ----------------------------------------------------------------------------------------
 -- Insert into markdown by selecting markdown_type_id based on markdown_type.name
@@ -33,11 +34,13 @@ SELECT
             'Once your animal has been created, you can start attributing events to your animal. Events include both animal captures and animal mortalities.\n\n##### Capture Events\nCapture events, also referred to as animal handling events, are directly associated with an individual animal.\n Each capture event records key details such as the date, location, comments, release information, and any markings or measurements recorded for the animal at that specific point in time.\n\n##### Mortality Events\nMortality events can be reported for individual animals in your dataset.\n Each mortality event records key details such as the date, location, comments, cause of death, and any markings or measurements taken at that specific point in time.\n\nBy managing animal data and mortality events with a long-term perspective in SIMS, you can choose to contribute to building a robust dataset that supports survival analysis and informs conservation and management strategies.\n\n##### Measurements\nBody and life history measurements for an animal can be linked to its animal event, providing a detailed record of changes over time.\n The measurements are tailored to your selected species and will differ depending on the animal loaded to your surveys.\n\n##### Markings\nMarking information, whether current or newly placed, can be recorded during an event and attributed to a specific body marking location on the animal.\n These marking locations are tailored to specific taxa and will vary based on the species selected.'
         WHEN mt.name = 'Animal Bulk Upload' THEN
             'When using the bulk import option, the following fields can be included:\n\n##### ANIMAL\n- **Nickname**\n- **Species**: Must use ITIS numeric codes for species identification.\n- **Sex**\n- **Description**\n- **Ecological Unit Value and Option**\n\n##### CAPTURES\n- **Animal Alias**: A reference to the associated animal.\n- **Capture and Release Date**: In YYYY-MM-DD format.\n- **Capture and Release Time**: In military time, HH:MM:SS format.\n- **Capture and Release Comments**: in WGS 1984 decimal degrees format.\n\n##### MEASUREMENTS\n- **Animal Alias**: A reference to the associated animal.\n- **Capture Date and Time**: To associate the measurement with the correct capture event.\n- **Measurement Options**: A list of valid measurements for your chosen species can be found on the SIMS Standards page.\n\n##### MARKINGS\n- **Animal Alias**: A reference to the associated animal.\n- **Capture Date and Time**: To associate the marking with the correct capture event.\n- **Marking Type**: A list of valid markings can be found on the SIMS Standards page.\n- **Marking Body Location**: A list of valid marking body locations for your chosen species can be found on the SIMS Standards page.\n- **Marking Identifier**\n- **Marking Colours**: A list of valid colours can be found on the SIMS Standards page.'
-    END AS data
+        WHEN mt.name = 'Observation Data Load' THEN
+            'Individual records can be added to your survey by clicking the record button on the top of the pane, and then specifying information such as species, sampling information, sign of observation, date, count, location, and any additional attributes for your configured columns.\n\n##### Bulk Uploading\n For a bulk import of observations record, a template can be downloaded with the applicable columns. The download button for this template exists at the top right of your observations pane. If you have configured any additional columns, they will also be included in your downloaded template. Guidance for the formatting of column values can be found on the SIMS Standards page. Templates can be loaded either to the survey (with your sampling information specified), or to an individual period on a sampling site (in which case your sampling information will auto populate onto your observation).'
+            END AS data
 FROM
     markdown_type mt
 WHERE
-    mt.name IN ('Animal Entity', 'Animal Event', 'Animal Bulk Upload');
+    mt.name IN ('Animal Entity', 'Animal Event', 'Animal Bulk Upload', 'Observation Data Load');
 
   `);
 }
