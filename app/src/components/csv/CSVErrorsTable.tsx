@@ -34,7 +34,7 @@ export const CSVErrorsTable = (props: CSVErrorsTableProps) => {
       minWidth: 150,
       maxWidth: 250,
       renderCell: (params) => {
-        return params.value.toUpperCase();
+        return params.value?.toUpperCase();
       }
     },
     {
