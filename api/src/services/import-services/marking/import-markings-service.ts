@@ -50,7 +50,7 @@ export class ImportMarkingsService extends DBService {
   utils: CSVConfigUtils<MarkingCSVStaticHeader>;
 
   /**
-   * Construct an instance of ImportMarkingsStrategy.
+   * Construct an instance of ImportMarkingsService.
    *
    * @param {IDBConnection} connection - DB connection
    * @param {string} surveyId
@@ -124,11 +124,11 @@ export class ImportMarkingsService extends DBService {
     const bodyLocationDictionary = await this._getBodyLocationDictionary(surveyAliasMap);
 
     const markingTypes = new Set(
-      (await this.surveyCritterService.critterbaseService.getMarkingTypes()).map((type) => type.value.toLowerCase())
+      (await this.surveyCritterService.critterbaseService.getMarkingTypes()).map((type) => type.value)
     );
 
     const colours = new Set(
-      (await this.surveyCritterService.critterbaseService.getColours()).map((colour) => colour.value.toLowerCase())
+      (await this.surveyCritterService.critterbaseService.getColours()).map((colour) => colour.value)
     );
 
     this.utils.setStaticHeaderConfig('ALIAS', {
