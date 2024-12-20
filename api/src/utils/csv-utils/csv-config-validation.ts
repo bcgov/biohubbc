@@ -215,9 +215,9 @@ export const executeValidateCell = (
       mutableErrors.push({
         error: error.error,
         solution: error.solution,
-        values: error.values,
-        cell: error.cell === undefined ? params.cell : error.cell, // Use cell value if intentionally null
-        header: error.header === undefined ? params.header : error.header, // Use header value if intentionally null
+        values: error.values ?? [],
+        cell: (error.cell === undefined ? params.cell : error.cell) ?? null, // Use cell value if intentionally null
+        header: (error.header === undefined ? params.header : error.header) ?? null, // Use header value if intentionally null
         row: error.row ?? params.rowIndex + 2 // headers: 1, data row: 2
       });
     });
