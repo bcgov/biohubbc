@@ -224,7 +224,7 @@ export const getWorksheetRowObjects = (worksheet: xlsx.WorkSheet): Record<symbol
     }
 
     // Add the original row index to the row object
-    // Symbols are non-enumerable, so they won't be included in the JSON output
+    // Symbols are non-enumerable, so they will be `hidden` in the rowObject
     rowObject[WorksheetRowIndexSymbol] = i;
 
     if (rowHasValues) {
