@@ -1,7 +1,7 @@
 import { Divider, Paper, Toolbar, Typography } from '@mui/material';
 import { Box, Stack } from '@mui/system';
 import { ReactElement } from 'react';
-import { CSVError } from 'utils/file-utils';
+import { CSVError } from 'utils/csv-utils';
 import { CSVErrorsTable } from './CSVErrorsTable';
 
 interface CSVErrorsTableContainerProps {

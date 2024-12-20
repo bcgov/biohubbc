@@ -1,4 +1,4 @@
-import { getCSVTemplate } from 'utils/file-utils';
+import { getCSVTemplate } from 'utils/csv-utils';
 
 /**
  * Get CSV template for measurements.

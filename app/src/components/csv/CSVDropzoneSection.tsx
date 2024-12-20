@@ -3,7 +3,7 @@ import Button from '@mui/material/Button';
 import { CSVErrorsTableContainer } from 'components/csv/CSVErrorsTableContainer';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { PropsWithChildren } from 'react';
-import { CSVError } from 'utils/file-utils';
+import { CSVError } from 'utils/csv-utils';
 
 interface CSVDropzoneSectionProps {
   title: string;

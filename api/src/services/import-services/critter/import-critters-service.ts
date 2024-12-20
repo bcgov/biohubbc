@@ -208,7 +208,7 @@ export class ImportCrittersService extends DBService {
    * @returns {*} {Promise<CSVHeaderConfig>} The TSN header config
    */
   async _getTsnHeaderConfig(): Promise<CSVHeaderConfig> {
-    const rowTsns = this.configUtils.getUniqueCellValues('ITIS_TSN');
+    const rowTsns = this.configUtils.getUniqueCellValues('ITIS_TSN').map((tsn) => String(tsn));
     const taxonomy = await this.platformService.getTaxonomyByTsns(rowTsns);
     const allowedTsns = new Set(taxonomy.map((taxon) => taxon.tsn));
 
@@ -249,7 +249,7 @@ export class ImportCrittersService extends DBService {
   async _getSexHeaderConfig(): Promise<CSVHeaderConfig> {
     const rowDictionary = new NestedRecord<string>();
 
-    const rowTsns = this.configUtils.getUniqueCellValues('ITIS_TSN');
+    const rowTsns = this.configUtils.getUniqueCellValues('ITIS_TSN').map((tsn) => String(tsn));
     const measurements = await Promise.all(rowTsns.map((tsn) => this.critterbaseService.getTaxonMeasurements(tsn)));
 
     measurements.forEach((measurement, index) => {
@@ -280,7 +280,7 @@ export class ImportCrittersService extends DBService {
    */
   async _getCollectionUnitDynamicHeaderConfig(): Promise<CSVHeaderConfig> {
     const rowDictionary = new NestedRecord<string>();
-    const rowTsns = this.configUtils.getUniqueCellValues('ITIS_TSN');
+    const rowTsns = this.configUtils.getUniqueCellValues('ITIS_TSN').map((tsn) => String(tsn));
     // Get the collection units for all the tsns in the worksheet
     const collectionUnits = await Promise.all(
       rowTsns.map((tsn) => this.critterbaseService.findTaxonCollectionUnits(tsn))

@@ -17,9 +17,10 @@ import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsa
 import { useCallback, useMemo, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
-import { CSVError, downloadFile, isCSVValidationError } from 'utils/file-utils';
+import { CSVError, isCSVValidationError } from 'utils/csv-utils';
+import { downloadFile } from 'utils/file-utils';
 import { getAxiosProgress } from 'utils/Utils';
-import { CSVDropzoneSection } from './CSVDropzoneSection';
+import { CSVDropzoneSection } from '../../../../../../components/csv/CSVDropzoneSection';
 import { getCapturesCSVTemplate, getMarkingsCSVTemplate, getMeasurementsCSVTemplate } from './utils/templates';
 
 type CSVFilesStatus = {

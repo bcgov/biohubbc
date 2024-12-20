@@ -1,5 +1,5 @@
 import { WorkSheet } from 'xlsx';
-import { getWorksheetRowObjects } from '../xlsx-utils/worksheet-utils';
+import { getWorksheetRowObjects, WorksheetRowIndexSymbol } from '../xlsx-utils/worksheet-utils';
 import { CSVConfigUtils } from './csv-config-utils';
 import {
   CSVConfig,
@@ -81,6 +81,7 @@ export const validateCSVHeaders = (worksheet: WorkSheet, config: CSVConfig): CSV
       {
         error: 'No rows in the file',
         solution: 'Add rows. Did you accidentally import the wrong file?',
+        values: null,
         header: null,
         cell: null,
         row: 2
@@ -113,6 +114,7 @@ export const validateCSVHeaders = (worksheet: WorkSheet, config: CSVConfig): CSV
       csvErrors.push({
         error: 'An unknown column is included in the file',
         solution: `Remove extra columns from the file.`,
+        values: null,
         header: unknownHeader,
         cell: null,
         row: 1
@@ -215,10 +217,11 @@ export const executeValidateCell = (
       mutableErrors.push({
         error: error.error,
         solution: error.solution,
-        values: error.values,
-        cell: error.cell === undefined ? params.cell : error.cell, // Use cell value if intentionally null
-        header: error.header === undefined ? params.header : error.header, // Use header value if intentionally null
-        row: error.row ?? params.rowIndex + 2 // headers: 1, data row: 2
+        values: error.values ?? null,
+        cell: (error.cell === undefined ? params.cell : error.cell) ?? null, // Use cell value if intentionally null
+        header: (error.header === undefined ? params.header : error.header) ?? null, // Use header value if intentionally null
+        // WorksheetRowIndexSymbol is the original row index from the worksheet ie: before filtering empty rows
+        row: error.row ?? params.row[WorksheetRowIndexSymbol] + 1 ?? params.rowIndex + 2 // headers: 1, data row: 2
       });
     });
   }

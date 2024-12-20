@@ -8,7 +8,7 @@ export const CSVErrorSchema: OpenAPIV3.SchemaObject = {
   title: 'CSV validation error object',
   type: 'object',
   additionalProperties: false,
-  required: ['error', 'solution', 'row', 'cell', 'header'],
+  required: ['error', 'solution', 'values', 'cell', 'header', 'row'],
   properties: {
     error: {
       description: 'The error message',
@@ -21,6 +21,7 @@ export const CSVErrorSchema: OpenAPIV3.SchemaObject = {
     values: {
       description: 'The list of allowed values if applicable',
       type: 'array',
+      nullable: true,
       items: {
         oneOf: [
           {
@@ -34,7 +35,14 @@ export const CSVErrorSchema: OpenAPIV3.SchemaObject = {
     },
     cell: {
       description: 'The CSV cell value',
-      oneOf: [{ type: 'string' }, { type: 'number' }],
+      oneOf: [
+        {
+          type: 'string'
+        },
+        {
+          type: 'number'
+        }
+      ],
       nullable: true
     },
     header: {
@@ -59,7 +67,7 @@ export const CSVValidationErrorResponse: OpenAPIV3.ResponseObject = {
     'application/json': {
       schema: {
         description: 'CSV validation error response object',
-        required: ['name', 'status', 'message'],
+        required: ['name', 'status', 'message', 'errors'],
         properties: {
           name: {
             description: 'Error name',
