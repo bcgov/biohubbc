@@ -39,7 +39,7 @@ const telemetry = [
         <strong>FAQ</strong>
       </Typography>,
       <Typography variant="body1" gutterBottom>
-        <strong>I tried to deploy a device but it's giving me the error that this device is already deployed on another animal</strong>
+        <strong>I am attempting to deploy a device but SIMS is giving me an error which states that this device is already deployed on another animal.</strong>
       </Typography>,
       <Typography variant="body1" gutterBottom>
         The error message that the device is already deployed signifies that this device is loaded up to a SIMS project in a deployment that has not yet been closed. In order to redeploy this device on a new animal, the previous deployment must have an end date. 
