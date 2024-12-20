@@ -142,7 +142,8 @@ describe('csv-config-validation', () => {
           error: 'No rows in the file',
           solution: 'Add rows. Did you accidentally import the wrong file?',
           cell: null,
-          header: null
+          header: null,
+          values: null
         }
       ]);
     });
@@ -189,7 +190,8 @@ describe('csv-config-validation', () => {
           error: 'An unknown column is included in the file',
           solution: `Remove extra columns from the file.`,
           header: 'UNKNOWN_HEADER',
-          cell: null
+          cell: null,
+          values: null
         }
       ]);
     });
@@ -362,7 +364,7 @@ describe('csv-config-validation', () => {
           cell: 'cellValue',
           header: 'TEST',
           row: 2,
-          values: []
+          values: null
         }
       ]);
     });
