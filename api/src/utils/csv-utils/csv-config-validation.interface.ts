@@ -1,3 +1,6 @@
+export const CSV_ERROR_MESSAGE =
+  'CSV contains validation errors. Please check for formatting issues, missing fields, or invalid values and try again.';
+
 /**
  * The CSV configuration interface
  *
@@ -93,11 +96,21 @@ export interface CSVHeaderConfig {
  */
 export interface CSVParams {
   /**
-   * The cell value.
+   * The cell value. Readonly to prevent mutation during validation.
+   *
+   * Why? CSVUtils and related functions are expecting the initial non-modified cell value for calculations.
+   *
+   * Use the `setCellValue` callback or the CSVParams `this.mutateCell` to update the cell value.
    *
    * @type {unknown}
    */
-  cell: unknown;
+  readonly cell: unknown;
+  /**
+   * The mutatable cell value.
+   *
+   * @type {unknown}
+   */
+  mutateCell: unknown;
   /**
    * The row header name. The initial row key.
    *
@@ -157,7 +170,7 @@ export interface CSVError {
    *
    * @type {(string[] | number[]) | undefined}
    */
-  values?: string[] | number[];
+  values?: string[] | number[] | null;
   /**
    * The cell value.
    *
@@ -167,13 +180,13 @@ export interface CSVError {
   /**
    * The header name.
    *
-   * @type {string | undefined}
+   * @type {string | null | undefined}
    */
-  header?: string;
+  header?: string | null;
   /**
    * The row index the error occurred.
    *
-   * Note: Header row index 0. First data row index 1.
+   * Note: Header row index 1. First data row index 2.
    *
    * @type {number}
    */
@@ -191,3 +204,5 @@ export type CSVRow = Record<Uppercase<string>, any>;
  *
  */
 export type CSVRowValidated<StaticHeaderType extends Uppercase<string>> = Record<StaticHeaderType, any>;
+
+export type CSVCell = string | number | undefined;

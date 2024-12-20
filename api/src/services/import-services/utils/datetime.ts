@@ -76,7 +76,7 @@ export const areDatesEqual = (_dateA: string, _dateB: string): boolean => {
 export const findCapturesFromDateTime = <T extends ICaptureStub>(
   captures: T[],
   captureDate: string,
-  captureTime: string
+  captureTime?: string
 ): T[] => {
   return captures.filter((capture) => {
     return (

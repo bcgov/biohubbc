@@ -5,7 +5,12 @@ import { IDBConnection } from '../../../database/db';
 import { ApiGeneralError } from '../../../errors/api-error';
 import { CSVConfigUtils } from '../../../utils/csv-utils/csv-config-utils';
 import { validateCSVWorksheet } from '../../../utils/csv-utils/csv-config-validation';
-import { CSVConfig, CSVHeaderConfig, CSVRowValidated } from '../../../utils/csv-utils/csv-config-validation.interface';
+import {
+  CSVConfig,
+  CSVError,
+  CSVHeaderConfig,
+  CSVRowValidated
+} from '../../../utils/csv-utils/csv-config-validation.interface';
 import { getDescriptionCellValidator, getTsnCellValidator } from '../../../utils/csv-utils/csv-header-configs';
 import { getLogger } from '../../../utils/logger';
 import { NestedRecord } from '../../../utils/nested-record';
@@ -85,15 +90,15 @@ export class ImportCrittersService extends DBService {
    *
    * @async
    * @throws {ApiGeneralError} - If unable to fully insert records into Critterbase
-   * @returns {*} {Promise<void>} List of inserted survey critter ids
+   * @returns {*} {Promise<CSVError[]>} List of CSV errors encountered during import
    */
-  async importCSVWorksheet(): Promise<void> {
+  async importCSVWorksheet(): Promise<CSVError[]> {
     const config = await this.getCSVConfig();
 
     const { errors, rows } = validateCSVWorksheet(this.worksheet, config);
 
     if (errors.length) {
-      throw new ApiGeneralError('Failed to validate CSV', errors);
+      return errors;
     }
 
     const payloads = this._getImportPayloads(rows);
@@ -112,6 +117,8 @@ export class ImportCrittersService extends DBService {
 
     // Add Critters to SIMS survey
     await this.surveyCritterService.addCrittersToSurvey(this.surveyId, payloads.simsPayload);
+
+    return [];
   }
 
   /**
@@ -201,7 +208,7 @@ export class ImportCrittersService extends DBService {
    * @returns {*} {Promise<CSVHeaderConfig>} The TSN header config
    */
   async _getTsnHeaderConfig(): Promise<CSVHeaderConfig> {
-    const rowTsns = this.configUtils.getUniqueCellValues('ITIS_TSN');
+    const rowTsns = this.configUtils.getUniqueCellValues('ITIS_TSN').map((tsn) => String(tsn));
     const taxonomy = await this.platformService.getTaxonomyByTsns(rowTsns);
     const allowedTsns = new Set(taxonomy.map((taxon) => taxon.tsn));
 
@@ -242,7 +249,7 @@ export class ImportCrittersService extends DBService {
   async _getSexHeaderConfig(): Promise<CSVHeaderConfig> {
     const rowDictionary = new NestedRecord<string>();
 
-    const rowTsns = this.configUtils.getUniqueCellValues('ITIS_TSN');
+    const rowTsns = this.configUtils.getUniqueCellValues('ITIS_TSN').map((tsn) => String(tsn));
     const measurements = await Promise.all(rowTsns.map((tsn) => this.critterbaseService.getTaxonMeasurements(tsn)));
 
     measurements.forEach((measurement, index) => {
@@ -273,7 +280,7 @@ export class ImportCrittersService extends DBService {
    */
   async _getCollectionUnitDynamicHeaderConfig(): Promise<CSVHeaderConfig> {
     const rowDictionary = new NestedRecord<string>();
-    const rowTsns = this.configUtils.getUniqueCellValues('ITIS_TSN');
+    const rowTsns = this.configUtils.getUniqueCellValues('ITIS_TSN').map((tsn) => String(tsn));
     // Get the collection units for all the tsns in the worksheet
     const collectionUnits = await Promise.all(
       rowTsns.map((tsn) => this.critterbaseService.findTaxonCollectionUnits(tsn))

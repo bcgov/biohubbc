@@ -183,7 +183,7 @@ describe('ImportCrittersService', () => {
 
       const sexHeaderConfig = await service._getSexHeaderConfig();
 
-      expect(getTaxonMeasurementsStub).to.have.been.calledWithExactly(1234);
+      expect(getTaxonMeasurementsStub).to.have.been.calledWithExactly('1234');
       expect(getSexCellValidatorStub).to.have.been.calledWithExactly(
         new NestedRecord({
           1234: { male: 'maleUUID', female: 'femaleUUID' }
@@ -224,7 +224,7 @@ describe('ImportCrittersService', () => {
 
       const config = await service._getCollectionUnitDynamicHeaderConfig();
 
-      expect(findTaxonCollectionUnitsStub).to.have.been.calledOnceWithExactly(1234);
+      expect(findTaxonCollectionUnitsStub).to.have.been.calledOnceWithExactly('1234');
 
       expect(getCollectionUnitCellValidatorStub).to.have.been.calledWithExactly(
         new NestedRecord({ 1234: { category: { unit: 'uuid' } } }),

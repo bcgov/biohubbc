@@ -1,5 +1,5 @@
 import LoadingButton from '@mui/lab/LoadingButton';
-import { Box, Divider } from '@mui/material';
+import { Divider } from '@mui/material';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
@@ -8,7 +8,6 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import axios, { AxiosProgressEvent } from 'axios';
-import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { UploadFileStatus } from 'components/file-upload/FileUploadItem';
 import { FileUploadSingleItem } from 'components/file-upload/FileUploadSingleItem';
 import PageHeader from 'components/layout/PageHeader';
@@ -18,14 +17,24 @@ import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsa
 import { useCallback, useMemo, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
+import { CSVError, isCSVValidationError } from 'utils/csv-utils';
 import { downloadFile } from 'utils/file-utils';
 import { getAxiosProgress } from 'utils/Utils';
+import { CSVDropzoneSection } from '../../../../../../components/csv/CSVDropzoneSection';
 import { getCapturesCSVTemplate, getMarkingsCSVTemplate, getMeasurementsCSVTemplate } from './utils/templates';
 
 type CSVFilesStatus = {
-  captures: { file: File | null; status: UploadFileStatus; progress: number; error?: string };
-  measurements: { file: File | null; status: UploadFileStatus; progress: number; error?: string };
-  markings: { file: File | null; status: UploadFileStatus; progress: number; error?: string };
+  captures: { file: File | null; status: UploadFileStatus; progress: number; error?: string; errors: CSVError[] };
+  measurements: { file: File | null; status: UploadFileStatus; progress: number; error?: string; errors: CSVError[] };
+  markings: { file: File | null; status: UploadFileStatus; progress: number; error?: string; errors: CSVError[] };
+};
+
+const INITIAL_FILE_STATE = {
+  file: null,
+  status: UploadFileStatus.PENDING,
+  progress: 0,
+  error: undefined,
+  errors: []
 };
 
 type UpdateFileState = {
@@ -35,6 +44,7 @@ type UpdateFileState = {
   status?: UploadFileStatus;
   progress?: number;
   error?: string;
+  errors?: CSVError[];
 };
 
 /**
@@ -57,9 +67,9 @@ export const CreateCSVCapturesPage = () => {
 
   // Initialize the file upload states
   const [files, setFiles] = useState<CSVFilesStatus>({
-    captures: { file: null, status: UploadFileStatus.PENDING, progress: 0 },
-    measurements: { file: null, status: UploadFileStatus.PENDING, progress: 0 },
-    markings: { file: null, status: UploadFileStatus.PENDING, progress: 0 }
+    captures: INITIAL_FILE_STATE,
+    measurements: INITIAL_FILE_STATE,
+    markings: INITIAL_FILE_STATE
   });
 
   // When any of the files are uploading
@@ -113,7 +123,13 @@ export const CreateCSVCapturesPage = () => {
 
           return UploadFileStatus.COMPLETE; // Return the final status to prevent race conditions with state
         } catch (error: any) {
-          handleFileState({ fileType, status: UploadFileStatus.FAILED, error: error.message ?? 'Unknown error' });
+          handleFileState({
+            fileType,
+            status: UploadFileStatus.FAILED,
+            progress: 100,
+            error: error.message ?? 'Unknown error',
+            errors: isCSVValidationError(error) ? error.errors : []
+          });
 
           return UploadFileStatus.FAILED; // Return the final status to prevent race conditions with state
         }
@@ -182,6 +198,26 @@ export const CreateCSVCapturesPage = () => {
     history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals`);
   };
 
+  /**
+   * Get the props for the file upload component
+   *
+   * @param {keyof CSVFilesStatus} fileType - The type of file to get the props for
+   * @returns {*} {FileUploadSingleItemProps} The props for the file upload component
+   */
+  const getFileUploadProps = (fileType: keyof CSVFilesStatus) => {
+    return {
+      file: files[fileType].file,
+      status: files[fileType].status,
+      progress: files[fileType].progress,
+      error: files[fileType].error,
+      onStatus: (status: UploadFileStatus) => handleFileState({ fileType, status }),
+      onFile: (file: File | null) => handleFileState({ fileType, file }),
+      onError: (error: string) => handleFileState({ fileType, error }),
+      onCancel: () => handleFileState({ fileType, ...INITIAL_FILE_STATE }),
+      DropZoneProps: { acceptedFileExtensions: '.csv' }
+    };
+  };
+
   return (
     <>
       <Prompt when={true} message={locationChangeInterceptor} />
@@ -226,94 +262,31 @@ export const CreateCSVCapturesPage = () => {
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <Paper sx={{ p: 5 }}>
           <Stack gap={5}>
-            <HorizontalSplitFormComponent title="Captures" summary="Upload the capture times and locations">
-              <Box sx={{ display: 'flex', flexDirection: 'column' }} gap={2}>
-                <Button
-                  sx={{ ml: 'auto', textTransform: 'none', fontWeight: 'regular' }}
-                  variant="outlined"
-                  size="small"
-                  onClick={() => {
-                    downloadFile(getCapturesCSVTemplate(), 'SIMS-captures-template.csv');
-                  }}>
-                  Download Template
-                </Button>
-                <FileUploadSingleItem
-                  {...files.captures}
-                  onStatus={(status) => handleFileState({ fileType: 'captures', status })}
-                  onFile={(file) => handleFileState({ fileType: 'captures', file })}
-                  onError={(error) => handleFileState({ fileType: 'captures', error })}
-                  onCancel={() =>
-                    handleFileState({
-                      fileType: 'captures',
-                      status: UploadFileStatus.PENDING,
-                      error: undefined,
-                      progress: undefined
-                    })
-                  }
-                  DropZoneProps={{ acceptedFileExtensions: '.csv' }}
-                />
-              </Box>
-            </HorizontalSplitFormComponent>
+            <CSVDropzoneSection
+              title="Captures"
+              summary="Upload the capture times and locations"
+              onDownloadTemplate={() => downloadFile(getCapturesCSVTemplate(), 'SIMS-captures-template.csv')}
+              errors={files.captures.errors}>
+              <FileUploadSingleItem {...getFileUploadProps('captures')} />
+            </CSVDropzoneSection>
             <Divider />
 
-            <HorizontalSplitFormComponent title="Measurements" summary="Upload measurements taken during the captures">
-              <Box sx={{ display: 'flex', flexDirection: 'column' }} gap={2}>
-                <Button
-                  sx={{ ml: 'auto', textTransform: 'none', fontWeight: 'regular' }}
-                  variant="outlined"
-                  size="small"
-                  onClick={() => {
-                    downloadFile(getMeasurementsCSVTemplate(), 'SIMS-measurements-template.csv');
-                  }}>
-                  Download Template
-                </Button>
-                <FileUploadSingleItem
-                  {...files.measurements}
-                  onStatus={(status) => handleFileState({ fileType: 'measurements', status })}
-                  onFile={(file) => handleFileState({ fileType: 'measurements', file })}
-                  onError={(error) => handleFileState({ fileType: 'measurements', error })}
-                  onCancel={() =>
-                    handleFileState({
-                      fileType: 'measurements',
-                      status: UploadFileStatus.PENDING,
-                      error: undefined,
-                      progress: undefined
-                    })
-                  }
-                  DropZoneProps={{ acceptedFileExtensions: '.csv' }}
-                />
-              </Box>
-            </HorizontalSplitFormComponent>
+            <CSVDropzoneSection
+              title="Measurements"
+              summary="Upload measurements taken during the captures"
+              onDownloadTemplate={() => downloadFile(getMeasurementsCSVTemplate(), 'SIMS-measurements-template.csv')}
+              errors={files.measurements.errors}>
+              <FileUploadSingleItem {...getFileUploadProps('measurements')} />
+            </CSVDropzoneSection>
             <Divider />
 
-            <HorizontalSplitFormComponent title="Markings" summary="Upload markings applied during the captures">
-              <Box sx={{ display: 'flex', flexDirection: 'column' }} gap={2}>
-                <Button
-                  sx={{ ml: 'auto', textTransform: 'none', fontWeight: 'regular' }}
-                  variant="outlined"
-                  size="small"
-                  onClick={() => {
-                    downloadFile(getMarkingsCSVTemplate(), 'SIMS-markings-template.csv');
-                  }}>
-                  Download Template
-                </Button>
-                <FileUploadSingleItem
-                  {...files.markings}
-                  onStatus={(status) => handleFileState({ fileType: 'markings', status })}
-                  onFile={(file) => handleFileState({ fileType: 'markings', file })}
-                  onError={(error) => handleFileState({ fileType: 'markings', error })}
-                  onCancel={() =>
-                    handleFileState({
-                      fileType: 'markings',
-                      status: UploadFileStatus.PENDING,
-                      error: undefined,
-                      progress: undefined
-                    })
-                  }
-                  DropZoneProps={{ acceptedFileExtensions: '.csv' }}
-                />
-              </Box>
-            </HorizontalSplitFormComponent>
+            <CSVDropzoneSection
+              title="Markings"
+              summary="Upload markings applied during the captures"
+              onDownloadTemplate={() => downloadFile(getMarkingsCSVTemplate(), 'SIMS-markings-template.csv')}
+              errors={files.markings.errors}>
+              <FileUploadSingleItem {...getFileUploadProps('markings')} />
+            </CSVDropzoneSection>
             <Divider />
           </Stack>
 

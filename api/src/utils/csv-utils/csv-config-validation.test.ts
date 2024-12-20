@@ -2,6 +2,7 @@ import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import xlsx, { WorkSheet } from 'xlsx';
+import { WorksheetRowIndexSymbol } from '../xlsx-utils/worksheet-utils';
 import {
   executeSetCellValue,
   executeValidateCell,
@@ -93,7 +94,8 @@ describe('csv-config-validation', () => {
             solution: `Add all required columns to the file.`,
             header: 'ALIAS',
             values: ['ALIAS', 'ALIAS_2'],
-            row: 0
+            cell: null,
+            row: 1
           }
         ],
         rows: []
@@ -119,10 +121,12 @@ describe('csv-config-validation', () => {
 
       expect(result).to.deep.equal([
         {
-          row: 0,
+          row: 1,
           error: 'No columns in the file',
           solution: 'Add column names. Did you accidentally include an empty first row above the columns?',
-          values: ['ALIAS']
+          values: ['ALIAS'],
+          cell: null,
+          header: null
         }
       ]);
     });
@@ -135,9 +139,12 @@ describe('csv-config-validation', () => {
 
       expect(result).to.deep.equal([
         {
-          row: 1,
+          row: 2,
           error: 'No rows in the file',
-          solution: 'Add rows. Did you accidentally import the wrong file?'
+          solution: 'Add rows. Did you accidentally import the wrong file?',
+          cell: null,
+          header: null,
+          values: null
         }
       ]);
     });
@@ -150,11 +157,12 @@ describe('csv-config-validation', () => {
 
       expect(result).to.deep.equal([
         {
-          row: 0,
+          row: 1,
           error: 'A required column is missing',
           solution: `Add all required columns to the file.`,
           header: 'ALIAS',
-          values: ['ALIAS']
+          values: ['ALIAS'],
+          cell: null
         }
       ]);
     });
@@ -179,10 +187,12 @@ describe('csv-config-validation', () => {
 
       expect(result).to.deep.equal([
         {
-          row: 0,
+          row: 1,
           error: 'An unknown column is included in the file',
           solution: `Remove extra columns from the file.`,
-          header: 'UNKNOWN_HEADER'
+          header: 'UNKNOWN_HEADER',
+          cell: null,
+          values: null
         }
       ]);
     });
@@ -216,7 +226,8 @@ describe('csv-config-validation', () => {
           header: 'TEST',
           rowIndex: 0,
           row: { TEST: 'cellValue' },
-          staticHeader: 'TEST'
+          staticHeader: 'TEST',
+          mutateCell: 'cellValue'
         },
         {
           validateCell: validateCellStub,
@@ -252,7 +263,8 @@ describe('csv-config-validation', () => {
           header: 'TEST_ALIAS',
           rowIndex: 0,
           row: { TEST_ALIAS: 'cellValue' },
-          staticHeader: 'TEST'
+          staticHeader: 'TEST',
+          mutateCell: 'cellValue'
         },
         {
           validateCell: validateCellStub,
@@ -298,8 +310,9 @@ describe('csv-config-validation', () => {
           cell: 'cellValue',
           header: 'TEST_ALIAS',
           rowIndex: 0,
-          row: { TEST_ALIAS: 'cellValue', DYNAMIC_HEADER: 'dynamicValue' },
-          staticHeader: 'TEST'
+          row: { TEST_ALIAS: 'cellValue', DYNAMIC_HEADER: 'dynamicValue', [WorksheetRowIndexSymbol]: 1 },
+          staticHeader: 'TEST',
+          mutateCell: 'cellValue'
         },
         {
           validateCell: staticValidateCellStub,
@@ -312,8 +325,9 @@ describe('csv-config-validation', () => {
           cell: 'dynamicValue',
           header: 'DYNAMIC_HEADER',
           rowIndex: 0,
-          row: { TEST_ALIAS: 'cellValue', DYNAMIC_HEADER: 'dynamicValue' },
-          staticHeader: undefined // Dynamic headers have no static header mapping
+          row: { TEST_ALIAS: 'cellValue', DYNAMIC_HEADER: 'dynamicValue', [WorksheetRowIndexSymbol]: 1 },
+          staticHeader: undefined, // Dynamic headers have no static header mapping
+          mutateCell: 'dynamicValue'
         },
         {
           validateCell: validateDynamicCellStub,
@@ -333,8 +347,9 @@ describe('csv-config-validation', () => {
         cell: 'cellValue',
         header: 'TEST',
         rowIndex: 0,
-        row: { TEST: 'cellValue' },
-        staticHeader: 'TEST'
+        row: { TEST: 'cellValue', [WorksheetRowIndexSymbol]: 1 },
+        staticHeader: 'TEST',
+        mutateCell: 'cellValue'
       };
 
       const headerConfig = {
@@ -349,8 +364,8 @@ describe('csv-config-validation', () => {
           solution: 'solution',
           cell: 'cellValue',
           header: 'TEST',
-          row: 1,
-          values: undefined
+          row: 2,
+          values: null
         }
       ]);
     });
@@ -367,7 +382,8 @@ describe('csv-config-validation', () => {
         header: 'TEST',
         rowIndex: 0,
         row,
-        staticHeader: 'TEST'
+        staticHeader: 'TEST',
+        mutateCell: 'cellValue'
       };
 
       const headerConfig = {
@@ -392,7 +408,8 @@ describe('csv-config-validation', () => {
         header: 'TEST',
         rowIndex: 0,
         row,
-        staticHeader: 'NEW_KEY'
+        staticHeader: 'NEW_KEY',
+        mutateCell: 'cellValue'
       };
 
       const headerConfig = {

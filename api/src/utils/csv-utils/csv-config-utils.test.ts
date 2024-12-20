@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import xlsx, { WorkSheet } from 'xlsx';
+import { WorksheetRowIndexSymbol } from '../xlsx-utils/worksheet-utils';
 import { CSVConfigUtils } from './csv-config-utils';
 import { CSVConfig } from './csv-config-validation.interface';
 
@@ -22,9 +23,13 @@ describe('CSVConfigUtils', () => {
       expect(utils).to.be.instanceOf(CSVConfigUtils);
       expect(utils._config).to.be.equal(mockConfig);
       expect(utils.worksheet).to.be.equal(worksheet);
-      expect(utils.worksheetRows).to.be.deep.equal([
-        { TEST: 'cellValue', ALIASED_HEADER: 'cellValue2', DYNAMIC_HEADER: 'dynamicValue' }
-      ]);
+
+      expect(utils.worksheetRows[0]).to.deep.equal({
+        TEST: 'cellValue',
+        ALIASED_HEADER: 'cellValue2',
+        DYNAMIC_HEADER: 'dynamicValue',
+        [WorksheetRowIndexSymbol]: 1
+      });
       expect(utils.worksheetHeaders).to.be.deep.equal(['TEST', 'ALIASED_HEADER', 'DYNAMIC_HEADER']);
       expect(utils.worksheetAliasedStaticHeaders).to.be.deep.equal(['TEST', 'ALIASED_HEADER']);
       expect(utils.worksheetStaticHeaders).to.be.deep.equal(['TEST', 'TEST_ALIAS']);

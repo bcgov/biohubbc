@@ -1,5 +1,5 @@
 import { WorkSheet } from 'xlsx';
-import { getWorksheetRowObjects } from '../xlsx-utils/worksheet-utils';
+import { getWorksheetRowObjects, WorksheetRowIndexSymbol } from '../xlsx-utils/worksheet-utils';
 import { CSVConfigUtils } from './csv-config-utils';
 import {
   CSVConfig,
@@ -69,7 +69,9 @@ export const validateCSVHeaders = (worksheet: WorkSheet, config: CSVConfig): CSV
         error: 'No columns in the file',
         solution: 'Add column names. Did you accidentally include an empty first row above the columns?',
         values: configUtils.configStaticHeaders,
-        row: 0
+        header: null,
+        cell: null,
+        row: 1
       }
     ];
   }
@@ -79,7 +81,10 @@ export const validateCSVHeaders = (worksheet: WorkSheet, config: CSVConfig): CSV
       {
         error: 'No rows in the file',
         solution: 'Add rows. Did you accidentally import the wrong file?',
-        row: 1
+        values: null,
+        header: null,
+        cell: null,
+        row: 2
       }
     ];
   }
@@ -95,9 +100,10 @@ export const validateCSVHeaders = (worksheet: WorkSheet, config: CSVConfig): CSV
       csvErrors.push({
         error: 'A required column is missing',
         solution: `Add all required columns to the file.`,
-        header: staticHeader,
         values: [staticHeader, ...config.staticHeadersConfig[staticHeader].aliases],
-        row: 0
+        header: staticHeader,
+        cell: null,
+        row: 1
       });
     }
   }
@@ -108,8 +114,10 @@ export const validateCSVHeaders = (worksheet: WorkSheet, config: CSVConfig): CSV
       csvErrors.push({
         error: 'An unknown column is included in the file',
         solution: `Remove extra columns from the file.`,
+        values: null,
         header: unknownHeader,
-        row: 0
+        cell: null,
+        row: 1
       });
     }
   }
@@ -141,8 +149,9 @@ export const forEachCSVCell = (
       const headerConfig = staticHeaderConfigMap.get(header) ?? config.dynamicHeadersConfig ?? {};
       const cell = worksheetRow[header];
       const params: CSVParams = {
-        cell,
-        header,
+        cell: cell,
+        mutateCell: cell, // Set the mutate cell to the cell value
+        header: header,
         row: worksheetRow,
         rowIndex: i,
         staticHeader: staticHeaderConfigMap.get(header)?.staticHeader
@@ -167,17 +176,19 @@ export const forEachCSVCell = (
  * @returns {*} {CSVRow[]} - The updated row
  */
 export const executeSetCellValue = (params: CSVParams, headerConfig: CSVHeaderConfig, mutableRows: CSVRow[]) => {
+  const row = { ...mutableRows[params.rowIndex] };
+
   const headerKey = params.staticHeader?.toUpperCase() ?? params.header.toUpperCase();
-  const cellValue = headerConfig?.setCellValue?.(params) ?? params.cell;
+  const cellValue = headerConfig?.setCellValue?.(params) ?? params.mutateCell;
 
   // Remove the aliased header if it is not the static header
   if (params.staticHeader && params.header !== params.staticHeader) {
-    delete params.row[params.header];
+    delete row[params.header as Uppercase<string>];
   }
 
-  params.row[headerKey] = cellValue;
+  row[headerKey as Uppercase<string>] = cellValue;
 
-  mutableRows[params.rowIndex] = params.row;
+  mutableRows[params.rowIndex] = row;
 };
 
 /**
@@ -206,10 +217,11 @@ export const executeValidateCell = (
       mutableErrors.push({
         error: error.error,
         solution: error.solution,
-        values: error.values,
-        cell: error.cell ?? params.cell,
-        header: error.header ?? params.header,
-        row: error.row ?? params.rowIndex + 1 // headers: 0, data row: 1
+        values: error.values ?? null,
+        cell: (error.cell === undefined ? params.cell : error.cell) ?? null, // Use cell value if intentionally null
+        header: (error.header === undefined ? params.header : error.header) ?? null, // Use header value if intentionally null
+        // WorksheetRowIndexSymbol is the original row index from the worksheet ie: before filtering empty rows
+        row: error.row ?? params.row[WorksheetRowIndexSymbol] + 1 ?? params.rowIndex + 2 // headers: 1, data row: 2
       });
     });
   }

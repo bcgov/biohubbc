@@ -16,6 +16,8 @@ describe('importCsv', () => {
 
     const importCSVWorksheetStub = sinon.stub(ImportCrittersService.prototype, 'importCSVWorksheet');
 
+    importCSVWorksheetStub.resolves([]);
+
     const mockFile = { originalname: 'test.csv', mimetype: 'test.csv', buffer: Buffer.alloc(1) } as Express.Multer.File;
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
