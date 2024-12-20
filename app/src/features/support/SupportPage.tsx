@@ -13,14 +13,19 @@ import {
 import { Box, Container, Divider, Paper, Stack, Typography } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import PageHeader from 'components/layout/PageHeader';
-import { useState } from 'react';
+import { useSearchParams } from 'hooks/useSearchParams';
+import { SetStateAction } from 'react';
 import { StandardsToolbar } from '../standards/components/StandardsToolbar';
-import { ISupportPageView, SupportPageView } from '../support/constants/SupportPageView';
+import { ISupportPageView, SupportPageParams, SupportPageView } from '../support/constants/SupportPageView';
 import { dataMap } from '../support/data/dataMap';
 import AccordionSupportCard from './components/AccordionSupportCard';
 
 const SupportPage = () => {
-  const [currentView, setCurrentView] = useState<SupportPageView>(SupportPageView.GENERAL);
+  const { searchParams, setSearchParams } = useSearchParams<SupportPageParams>();
+
+  // Retrieve the current view from the URL using SUPPORT_VIEW_KEY
+  const currentViewParam = searchParams.get('support_view');
+  const currentView = (currentViewParam as SupportPageView) || SupportPageView.GENERAL;
 
   const views: ISupportPageView[] = [
     { label: 'General', value: SupportPageView.GENERAL, icon: mdiLifebuoy },
@@ -34,9 +39,13 @@ const SupportPage = () => {
   ];
 
   const currentIndex = views.findIndex((view) => view.value === currentView);
-
   const nextView = views[(currentIndex + 1) % views.length];
   const prevView = views[(currentIndex - 1 + views.length) % views.length];
+
+  const handleViewChange: React.Dispatch<SetStateAction<SupportPageView>> = (value) => {
+    const newView = typeof value === 'function' ? value(currentView) : value;
+    setSearchParams(searchParams.set('support_view', newView));
+  };
 
   return (
     <>
@@ -47,7 +56,7 @@ const SupportPage = () => {
             <StandardsToolbar
               views={views}
               currentView={currentView}
-              setCurrentView={setCurrentView}
+              setCurrentView={handleViewChange}
               legend="Support Overview"
             />
           </Box>
@@ -92,7 +101,7 @@ const SupportPage = () => {
                 {currentIndex > 0 && (
                   <Box
                     component="button"
-                    onClick={() => setCurrentView(prevView.value)}
+                    onClick={() => handleViewChange(prevView.value)}
                     sx={{
                       display: 'flex',
                       alignItems: 'center',
@@ -112,7 +121,7 @@ const SupportPage = () => {
                 {currentIndex < views.length - 1 && (
                   <Box
                     component="button"
-                    onClick={() => setCurrentView(nextView.value)}
+                    onClick={() => handleViewChange(nextView.value)}
                     sx={{
                       display: 'flex',
                       alignItems: 'center',

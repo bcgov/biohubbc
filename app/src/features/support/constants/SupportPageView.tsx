@@ -15,6 +15,12 @@ export interface ISupportPageView {
   icon: string;
 }
 
+// export const SUPPORT_VIEW_KEY = 'support_view';
+
+export type SupportPageParams = {
+  support_view?: SupportPageView;
+};
+
 export enum MarkdownTypeSupportNameEnum {
   GENERAL = 'GENERAL',
   STRUCTURE = 'STRUCTURE',
