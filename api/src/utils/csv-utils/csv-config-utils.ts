@@ -1,7 +1,7 @@
 import { countBy, difference } from 'lodash';
 import { WorkSheet } from 'xlsx';
 import { getHeadersUpperCase, getWorksheetRowObjects } from '../xlsx-utils/worksheet-utils';
-import { CSVConfig, CSVHeaderConfig, CSVRow } from './csv-config-validation.interface';
+import { CSVCell, CSVConfig, CSVHeaderConfig, CSVRow } from './csv-config-validation.interface';
 
 /**
  * CSV Config Utils - A collection of methods useful when building CSVConfigs
@@ -151,7 +151,7 @@ export class CSVConfigUtils<StaticHeaderType extends Uppercase<string> = Upperca
    * @param {CSVRow} row - The CSV row
    * @returns {any} - The cell value
    */
-  getCellValue(header: StaticHeaderType, row: CSVRow): any {
+  getCellValue(header: StaticHeaderType, row: CSVRow): CSVCell {
     // Static header or dynamic header exact match
     if ((header as Uppercase<string>) in row) {
       return row[header];
@@ -171,7 +171,7 @@ export class CSVConfigUtils<StaticHeaderType extends Uppercase<string> = Upperca
    * @param {StaticHeaderType} header - The header name
    * @returns {any[]} - The cell values
    */
-  getCellValues(header: StaticHeaderType): any[] {
+  getCellValues(header: StaticHeaderType): CSVCell[] {
     return this.worksheetRows.map((row) => this.getCellValue(header, row));
   }
 
@@ -181,7 +181,7 @@ export class CSVConfigUtils<StaticHeaderType extends Uppercase<string> = Upperca
    * @param {StaticHeaderType} header - The header name
    * @returns {any[]} - The unique cell values
    */
-  getUniqueCellValues(header: StaticHeaderType): any[] {
+  getUniqueCellValues(header: StaticHeaderType): CSVCell[] {
     return [...new Set(this.getCellValues(header))];
   }
 

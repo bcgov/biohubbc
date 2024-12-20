@@ -3,6 +3,7 @@ import { CSVConfigUtils } from '../../../utils/csv-utils/csv-config-utils';
 import { CSVCellValidator, CSVError, CSVParams } from '../../../utils/csv-utils/csv-config-validation.interface';
 import { validateZodCell } from '../../../utils/csv-utils/csv-header-configs';
 import { NestedRecord } from '../../../utils/nested-record';
+import { setToLowercase } from '../../../utils/string-utils';
 import { ICritterDetailed } from '../../critterbase-service';
 import { findCapturesFromDateTime } from '../utils/datetime';
 import { MarkingCSVStaticHeader } from './import-markings-service';
@@ -75,10 +76,12 @@ export const getMarkingAliasCellValidator = (surveyAliasMap: Map<string, ICritte
  * Rules:
  *  1. The cell must be a valid marking type ie: exists in the markingTypes set
  *
- * @param {Set<string>} markingTypes The marking types
+ * @param {Set<string>} _markingTypes The marking types
  * @returns {*} {CSVCellValidator} The validate cell callback
  */
-export const getMarkingTypeCellValidator = (markingTypes: Set<string>): CSVCellValidator => {
+export const getMarkingTypeCellValidator = (_markingTypes: Set<string>): CSVCellValidator => {
+  const markingTypes = setToLowercase(_markingTypes);
+
   return (params: CSVParams) => {
     if (params.cell === undefined) {
       return [];
@@ -101,9 +104,12 @@ export const getMarkingTypeCellValidator = (markingTypes: Set<string>): CSVCellV
 /**
  * Get the marking type cell setter.
  *
+ * @param {Set<string>} _colours The colours
  * @returns {*} {CSVCellSetter} The set cell callback
  */
-export const getMarkingColourCellValidator = (colours: Set<string>): CSVCellValidator => {
+export const getMarkingColourCellValidator = (_colours: Set<string>): CSVCellValidator => {
+  const colours = setToLowercase(_colours);
+
   return (params: CSVParams) => {
     if (params.cell === undefined) {
       return [];

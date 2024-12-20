@@ -204,3 +204,5 @@ export type CSVRow = Record<Uppercase<string>, any>;
  *
  */
 export type CSVRowValidated<StaticHeaderType extends Uppercase<string>> = Record<StaticHeaderType, any>;
+
+export type CSVCell = string | number | undefined;
