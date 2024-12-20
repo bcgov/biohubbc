@@ -140,10 +140,6 @@ export const getMarkingBodyLocationCellValidator = (
   utils: CSVConfigUtils<MarkingCSVStaticHeader>
 ): CSVCellValidator => {
   return (params: CSVParams) => {
-    if (params.cell === undefined) {
-      return [];
-    }
-
     const rowAlias = String(utils.getCellValue('ALIAS', params.row));
     const aliasTsn = surveyAliasMap.get(rowAlias.toLowerCase())?.itis_tsn;
 

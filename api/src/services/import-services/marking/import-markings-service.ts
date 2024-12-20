@@ -63,7 +63,7 @@ export class ImportMarkingsService extends DBService {
         ALIAS: { aliases: ['NICKNAME', 'ANIMAL'] },
         CAPTURE_DATE: { aliases: ['CAPTURE DATE', 'DATE'] },
         CAPTURE_TIME: { aliases: ['CAPTURE TIME', 'TIME'], optional: true },
-        BODY_LOCATION: { aliases: ['BODY LOCATION'], optional: true },
+        BODY_LOCATION: { aliases: ['BODY LOCATION'] },
         MARKING_TYPE: { aliases: ['MARKING TYPE', 'TYPE'], optional: true },
         IDENTIFIER: { aliases: ['ID'], optional: true },
         PRIMARY_COLOUR: { aliases: ['PRIMARY COLOUR'], optional: true },

@@ -145,14 +145,6 @@ describe('marking-header-configs', () => {
       expect(result).to.deep.equal([]);
     });
 
-    it('should return no errors for undefined', () => {
-      const cellValidator = getMarkingBodyLocationCellValidator(new Map(), new NestedRecord(), {} as any);
-
-      const result = cellValidator({ cell: undefined } as CSVParams);
-
-      expect(result).to.deep.equal([]);
-    });
-
     it('should return no errors when alias does not map to a survey critter', () => {
       const dictionary = new NestedRecord({ 1: { location: 'uuid' } });
       const surveyAliasMap: any = new Map([['alias', { itis_tsn: 1 }]]);
