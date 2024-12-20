@@ -362,7 +362,7 @@ describe('csv-config-validation', () => {
           cell: 'cellValue',
           header: 'TEST',
           row: 2,
-          values: undefined
+          values: []
         }
       ]);
     });
