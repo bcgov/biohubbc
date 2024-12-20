@@ -21,6 +21,7 @@ export const CSVErrorSchema: OpenAPIV3.SchemaObject = {
     values: {
       description: 'The list of allowed values if applicable',
       type: 'array',
+      nullable: true,
       items: {
         oneOf: [
           {

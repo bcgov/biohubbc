@@ -170,7 +170,7 @@ export interface CSVError {
    *
    * @type {(string[] | number[]) | undefined}
    */
-  values?: string[] | number[];
+  values?: string[] | number[] | null;
   /**
    * The cell value.
    *

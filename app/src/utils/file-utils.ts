@@ -5,8 +5,8 @@ export interface CSVError {
   solution: string;
   header: string | null;
   cell: string | number | null;
+  values: Array<string | number> | null;
   row: number;
-  values: Array<string | number>;
 }
 
 export interface CSVValidationError {
