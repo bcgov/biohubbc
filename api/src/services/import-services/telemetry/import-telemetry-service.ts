@@ -123,13 +123,13 @@ export class ImportTelemetryService extends DBService {
       validateCell: getTelemetryVendorCellValidator(vendorsSet)
     });
     this.utils.setStaticHeaderConfig('LATITUDE', {
-      validateCell: getLatitudeCellValidator({ optional: false })
+      validateCell: getLatitudeCellValidator()
     });
     this.utils.setStaticHeaderConfig('LONGITUDE', {
-      validateCell: getLongitudeCellValidator({ optional: false })
+      validateCell: getLongitudeCellValidator()
     });
     this.utils.setStaticHeaderConfig('DATE', {
-      validateCell: getDateCellValidator({ optional: false })
+      validateCell: getDateCellValidator()
     });
     this.utils.setStaticHeaderConfig('TIME', {
       validateCell: getTimeCellValidator(),

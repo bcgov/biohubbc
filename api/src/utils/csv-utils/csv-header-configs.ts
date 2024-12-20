@@ -2,7 +2,8 @@ import { z } from 'zod';
 import { formatTimeString } from '../../services/import-services/utils/datetime';
 import { CSVCellSetter, CSVCellValidator, CSVError, CSVParams } from './csv-config-validation.interface';
 
-type CSVOptional = {
+// CSVOptionalCell - Optional cell config override
+type CSVOptionalCell = {
   optional: boolean;
 };
 
@@ -17,7 +18,16 @@ type CSVOptional = {
 export const validateZodCell = (params: CSVParams, schema: z.ZodSchema, solution?: string): CSVError[] => {
   const errors: CSVError[] = [];
 
-  const parsed = schema.safeParse(params.cell);
+  const parsed = schema.safeParse(params.cell, {
+    // Custom error message mapping
+    errorMap: (_issue, ctx) => {
+      if (ctx.defaultError === 'Required') {
+        return { message: 'Cell required' };
+      }
+
+      return { message: ctx.defaultError };
+    }
+  });
 
   if (!parsed.success) {
     parsed.error.errors.forEach((error) => {
@@ -114,12 +124,12 @@ export const getTimeCellSetter = (): CSVCellSetter => {
  * Rules:
  *  1. The cell must be a number between -90 and 90 or undefined if optional
  *
- * @param {CSVOptional} options - The CSV options
+ * @param {CSVOptionalCell} [options] - The CSV options
  * @returns {*} {CSVCellValidator} The validate cell callback
  */
-export const getLatitudeCellValidator = (options: CSVOptional): CSVCellValidator => {
+export const getLatitudeCellValidator = (options?: CSVOptionalCell): CSVCellValidator => {
   return (params) => {
-    if (options.optional) {
+    if (options?.optional) {
       return validateZodCell(params, z.number().min(-90).max(90).optional());
     }
 
@@ -133,12 +143,12 @@ export const getLatitudeCellValidator = (options: CSVOptional): CSVCellValidator
  * Rules:
  *  1. The cell must be a number between -180 and 180 or undefined if optional
  *
- * @param {CSVOptional} options - The CSV options
+ * @param {CSVOptionalCell} [options] - The CSV options
  * @returns {*} {CSVCellValidator} The validate cell callback
  */
-export const getLongitudeCellValidator = (options: CSVOptional): CSVCellValidator => {
+export const getLongitudeCellValidator = (options?: CSVOptionalCell): CSVCellValidator => {
   return (params) => {
-    if (options.optional) {
+    if (options?.optional) {
       return validateZodCell(params, z.number().min(-180).max(180).optional());
     }
 
@@ -152,12 +162,12 @@ export const getLongitudeCellValidator = (options: CSVOptional): CSVCellValidato
  * Rules:
  *  1. The cell must be a valid date string (YYYY-MM-DD) or undefined if optional
  *
- * @param {CSVOptional} options - The CSV options
+ * @param {CSVOptionalCell} [options] - The CSV options
  * @returns {*} {CSVCellValidator} The validate cell callback
  */
-export const getDateCellValidator = (options: CSVOptional): CSVCellValidator => {
+export const getDateCellValidator = (options?: CSVOptionalCell): CSVCellValidator => {
   return (params) => {
-    if (options.optional) {
+    if (options?.optional) {
       return validateZodCell(params, z.string().date().optional());
     }
 
