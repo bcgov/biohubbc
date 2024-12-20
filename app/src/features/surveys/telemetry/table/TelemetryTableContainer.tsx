@@ -15,10 +15,12 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import axios, { AxiosProgressEvent } from 'axios';
 import { CSVErrorsTableContainer } from 'components/csv/CSVErrorsTableContainer';
 import DataGridValidationAlert from 'components/data-grid/DataGridValidationAlert';
-import { FileUploadSingleItemDialog } from 'components/dialog/attachments/FileUploadSingleItemDialog';
 import YesNoDialog from 'components/dialog/YesNoDialog';
+import { UploadFileStatus } from 'components/file-upload/FileUploadItem';
+import { FileUploadSingleItem } from 'components/file-upload/FileUploadSingleItem';
 import { TelemetryTableI18N } from 'constants/i18n';
 import { DialogContext, ISnackbarProps } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
@@ -28,7 +30,8 @@ import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useTelemetryTableContext } from 'hooks/useContext';
 import { useContext, useDeferredValue, useState } from 'react';
-import { CSVError, isCSVValidationError } from 'utils/file-utils';
+import { CSVError, isCSVValidationError } from 'utils/csv-utils';
+import { getAxiosProgress } from 'utils/Utils';
 
 export const TelemetryTableContainer = () => {
   const biohubApi = useBiohubApi();
@@ -37,12 +40,21 @@ export const TelemetryTableContainer = () => {
   const telemetryTableContext = useTelemetryTableContext();
   const surveyContext = useContext(SurveyContext);
 
-  const [showImportDialog, setShowImportDialog] = useState(false);
   const [processingRecords, setProcessingRecords] = useState(false);
   const [showConfirmRemoveAllDialog, setShowConfirmRemoveAllDialog] = useState(false);
   const [contextMenuAnchorEl, setContextMenuAnchorEl] = useState<Element | null>(null);
   const [columnVisibilityMenuAnchorEl, setColumnVisibilityMenuAnchorEl] = useState<Element | null>(null);
+
+  // Telemetry import dialog state
+  const [showImportDialog, setShowImportDialog] = useState(false);
   const [importCSVErrors, setImportCSVErrors] = useState<CSVError[]>([]);
+  const [file, setFile] = useState<File | null>(null);
+  const [uploadStatus, setUploadStatus] = useState<UploadFileStatus>(UploadFileStatus.STAGED);
+  const [progress, setProgress] = useState<number>(0);
+
+  const isUploading = uploadStatus === UploadFileStatus.UPLOADING || uploadStatus === UploadFileStatus.FINISHING_UPLOAD;
+  const disableImportButton = isUploading || !file || uploadStatus === UploadFileStatus.FAILED;
+  const cancelToken = axios.CancelToken.source();
 
   const deferredUnsavedChanges = useDeferredValue(telemetryTableContext.hasUnsavedChanges);
 
@@ -60,14 +72,21 @@ export const TelemetryTableContainer = () => {
     setColumnVisibilityMenuAnchorEl(null);
   };
 
+  const handleResetFileImport = () => {
+    setFile(null);
+    setImportCSVErrors([]);
+    setUploadStatus(UploadFileStatus.STAGED);
+    setProgress(0);
+  };
+
   /**
    * Handle the close of the import dialog.
    *
    * @returns {*} {void}
    */
   const handleCloseImportDialog = () => {
-    setImportCSVErrors([]);
     setShowImportDialog(false);
+    handleResetFileImport();
   };
 
   /**
@@ -79,7 +98,20 @@ export const TelemetryTableContainer = () => {
    */
   const handleImportTelemetry = async (file: File) => {
     try {
-      await biohubApi.telemetry.importManualTelemetryCSV(surveyContext.projectId, surveyContext.surveyId, file);
+      setUploadStatus(UploadFileStatus.UPLOADING);
+
+      await biohubApi.telemetry.importManualTelemetryCSV(
+        surveyContext.projectId,
+        surveyContext.surveyId,
+        file,
+        cancelToken,
+        async (progressEvent: AxiosProgressEvent) => {
+          setProgress(getAxiosProgress(progressEvent));
+          if (progressEvent.loaded === progressEvent.total) {
+            setUploadStatus(UploadFileStatus.FINISHING_UPLOAD);
+          }
+        }
+      );
 
       setShowImportDialog(false);
 
@@ -96,7 +128,10 @@ export const TelemetryTableContainer = () => {
       telemetryTableContext.refreshRecords().then(() => {
         setProcessingRecords(false);
       });
+      setUploadStatus(UploadFileStatus.COMPLETE);
     } catch (error) {
+      setUploadStatus(UploadFileStatus.FAILED);
+
       if (isCSVValidationError(error)) {
         setImportCSVErrors(error.errors);
         return;
@@ -124,19 +159,41 @@ export const TelemetryTableContainer = () => {
 
   return (
     <>
-      <FileUploadSingleItemDialog
+      <YesNoDialog
+        dialogTitle={'Import Telemetry'}
+        dialogText={''}
         open={showImportDialog}
-        dialogTitle="Import Telemetry CSV"
+        yesButtonLabel={'Import'}
+        noButtonLabel={'Cancel'}
         onClose={handleCloseImportDialog}
-        onUpload={handleImportTelemetry}
-        uploadButtonLabel="Import"
-        dropZoneProps={{ acceptedFileExtensions: '.csv' }}>
-        {importCSVErrors.length > 0 ? (
-          <Box sx={{ mt: 2 }}>
-            <CSVErrorsTableContainer errors={importCSVErrors} />
-          </Box>
-        ) : null}
-      </FileUploadSingleItemDialog>
+        onNo={handleCloseImportDialog}
+        onYes={() => {
+          if (file) {
+            handleImportTelemetry(file);
+          }
+        }}
+        dialogContent={
+          <>
+            <FileUploadSingleItem
+              file={file}
+              status={uploadStatus}
+              progress={progress}
+              onFile={(file) => setFile(file)}
+              onCancel={handleResetFileImport}
+            />
+            {importCSVErrors.length > 0 ? (
+              <Box sx={{ mt: 2 }}>
+                <CSVErrorsTableContainer errors={importCSVErrors} />
+              </Box>
+            ) : null}
+          </>
+        }
+        yesButtonProps={{
+          loading: isUploading,
+          disabled: disableImportButton
+        }}
+      />
+
       <YesNoDialog
         dialogTitle={TelemetryTableI18N.removeAllDialogTitle}
         dialogText={TelemetryTableI18N.removeAllDialogText}
@@ -173,8 +230,6 @@ export const TelemetryTableContainer = () => {
               variant="contained"
               color="primary"
               startIcon={<Icon path={mdiImport} size={1} />}
-              //// TODO: Disabled while the backend CSV Import code is being refactored (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-652)
-              //disabled={true}
               onClick={() => setShowImportDialog(true)}>
               Import
             </Button>

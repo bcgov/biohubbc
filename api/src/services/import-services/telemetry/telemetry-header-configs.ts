@@ -1,6 +1,7 @@
 import { ExtendedDeploymentRecord } from '../../../repositories/telemetry-repositories/telemetry-deployment-repository.interface';
 import { CSVConfigUtils } from '../../../utils/csv-utils/csv-config-utils';
 import { CSVCellValidator } from '../../../utils/csv-utils/csv-config-validation.interface';
+import { setToLowercase } from '../../../utils/string-utils';
 import { getTelemetryDeviceKey } from '../../telemetry-services/telemetry-utils';
 import { TelemetryCSVStaticHeader } from './import-telemetry-service';
 
@@ -10,8 +11,10 @@ import { TelemetryCSVStaticHeader } from './import-telemetry-service';
  * @returns {*} {CSVCellValidator} The validate cell callback
  */
 export const getTelemetryVendorCellValidator = (vendors: Set<string>): CSVCellValidator => {
+  const vendorsLowerCased = setToLowercase(vendors);
+
   return (params) => {
-    if (vendors.has(String(params.cell).toLowerCase())) {
+    if (vendorsLowerCased.has(String(params.cell).toLowerCase())) {
       return [];
     }
 
@@ -44,12 +47,12 @@ export const getTelemetrySerialCellValidator = (
 
   // Populate the dictionary: device_key -> deployment
   for (const deployment of deployments) {
-    dictionary.set(deployment.device_key, deployment);
+    dictionary.set(deployment.device_key.toLowerCase(), deployment);
   }
 
   return (params) => {
     const serial = Number(params.cell);
-    const vendor = utils.getCellValue('VENDOR', params.row);
+    const vendor = String(utils.getCellValue('VENDOR', params.row)).toLowerCase();
     const deviceKey = getTelemetryDeviceKey({ vendor, serial });
     const deployment = dictionary.get(deviceKey);
 
@@ -64,21 +67,6 @@ export const getTelemetrySerialCellValidator = (
 
     // Mutate the cell to the deployment ID
     params.mutateCell = deployment.deployment_id;
-
-    // TODO: Keeping for when we support "CSVWarnings" in the CSV import
-    //
-    //const timestampInDeploymentRange =
-    //  timestamp >= deployment.attachment_start_timestamp &&
-    //  (deployment.attachment_end_timestamp === null || timestamp <= deployment.attachment_end_timestamp);
-    //
-    //if (!timestampInDeploymentRange) {
-    //  return [
-    //    {
-    //      error: `Timestamp not within deployment range`,
-    //      solution: `Check the telemetry timestamp is within the deployment range`
-    //    }
-    //  ];
-    //}
 
     return [];
   };

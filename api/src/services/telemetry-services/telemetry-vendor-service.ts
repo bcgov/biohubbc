@@ -247,11 +247,13 @@ export class TelemetryVendorService extends DBService {
    * @returns {*} {Promise<void>}
    */
   async bulkCreateTelemetryInBatches(surveyId: number, telemetry: CreateManualTelemetry[]): Promise<void> {
-    const batchSize = 500; // Max telemetry records to insert in a single query
-    const concurrent = 10; // Max concurrent queries
+    // Max telemetry records to insert in a single query
+    const TELEMETRY_BATCH_SIZE = 500;
+    // Max concurrent queries
+    const CONCURRENT_QUERIES = 10;
 
     // Split the teletry into batches to prevent SQL cap error
-    const telemetryBatches = chunk(telemetry, batchSize);
+    const telemetryBatches = chunk(telemetry, TELEMETRY_BATCH_SIZE);
 
     // Create the async task processor
     const telemetryProcessor = async (telemetryBatch: CreateManualTelemetry[]): Promise<void> => {
@@ -259,7 +261,7 @@ export class TelemetryVendorService extends DBService {
     };
 
     // Process the telemetry in batches
-    const queueResult = await taskQueue(telemetryBatches, telemetryProcessor, concurrent);
+    const queueResult = await taskQueue(telemetryBatches, telemetryProcessor, CONCURRENT_QUERIES);
 
     // Check for any errors in the batch processing
     const batchErrors = queueResult.filter((result) => result.error);

@@ -22,7 +22,7 @@ export const validateZodCell = (params: CSVParams, schema: z.ZodSchema, solution
     // Custom error message mapping
     errorMap: (_issue, ctx) => {
       if (ctx.defaultError === 'Required') {
-        return { message: 'Cell required' };
+        return { message: 'Cell is required' };
       }
 
       return { message: ctx.defaultError };
