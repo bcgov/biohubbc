@@ -1,4 +1,5 @@
-export const CSV_ERROR_MESSAGE = 'CSV contains validation errors. Please correct invalid values and try again.';
+export const CSV_ERROR_MESSAGE =
+  'CSV contains validation errors. Please check for formatting issues, missing fields, or invalid values and try again.';
 
 /**
  * The CSV configuration interface
