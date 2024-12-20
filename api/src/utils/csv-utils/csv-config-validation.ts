@@ -1,5 +1,5 @@
 import { WorkSheet } from 'xlsx';
-import { getWorksheetRowObjects } from '../xlsx-utils/worksheet-utils';
+import { getWorksheetRowObjects, WorksheetRowIndexSymbol } from '../xlsx-utils/worksheet-utils';
 import { CSVConfigUtils } from './csv-config-utils';
 import {
   CSVConfig,
@@ -220,7 +220,8 @@ export const executeValidateCell = (
         values: error.values ?? null,
         cell: (error.cell === undefined ? params.cell : error.cell) ?? null, // Use cell value if intentionally null
         header: (error.header === undefined ? params.header : error.header) ?? null, // Use header value if intentionally null
-        row: error.row ?? params.rowIndex + 2 // headers: 1, data row: 2
+        // WorksheetRowIndexSymbol is the original row index from the worksheet ie: before filtering empty rows
+        row: error.row ?? params.row[WorksheetRowIndexSymbol] + 1 ?? params.rowIndex + 2 // headers: 1, data row: 2
       });
     });
   }

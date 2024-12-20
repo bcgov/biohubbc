@@ -208,7 +208,7 @@ export class ImportCrittersService extends DBService {
    * @returns {*} {Promise<CSVHeaderConfig>} The TSN header config
    */
   async _getTsnHeaderConfig(): Promise<CSVHeaderConfig> {
-    const rowTsns = this.configUtils.getUniqueCellValues('ITIS_TSN').map((tsn) => Number(tsn));
+    const rowTsns = this.configUtils.getUniqueCellValues('ITIS_TSN').map((tsn) => String(tsn));
     const taxonomy = await this.platformService.getTaxonomyByTsns(rowTsns);
     const allowedTsns = new Set(taxonomy.map((taxon) => taxon.tsn));
 

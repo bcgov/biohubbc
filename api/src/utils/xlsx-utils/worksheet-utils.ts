@@ -17,7 +17,7 @@ dayjs.extend(customParseFormat);
 
 const defaultLog = getLogger('src/utils/xlsx-utils/worksheet-utils');
 
-const RowIndex = Symbol();
+export const WorksheetRowIndexSymbol = Symbol('WorksheetRowIndex');
 
 export interface IXLSXCSVColumn {
   /**
@@ -223,7 +223,9 @@ export const getWorksheetRowObjects = (worksheet: xlsx.WorkSheet): Record<symbol
       rowHasValues = true;
     }
 
-    rowObject[RowIndex] = i;
+    // Add the original row index to the row object
+    // Symbols are non-enumerable, so they won't be included in the JSON output
+    rowObject[WorksheetRowIndexSymbol] = i;
 
     if (rowHasValues) {
       // Add the row object to the array if it has at least one non-empty cell
