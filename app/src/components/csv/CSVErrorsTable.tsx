@@ -1,7 +1,7 @@
 import { GridColDef } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { useMemo } from 'react';
-import { CSVError } from 'utils/file-utils';
+import { CSVError } from 'utils/csv-utils';
 import { v4 } from 'uuid';
 import { CSVErrorsTableOptionsMenu } from './CSVErrorsTableOptionsMenu';
 
