@@ -205,6 +205,9 @@ export const getWorksheetRowObjects = (worksheet: xlsx.WorkSheet): Record<symbol
     let rowHasValues = false;
 
     for (let j = 0; j <= originalRange.e.c; j++) {
+      // Always add the header (key) to the row object
+      rowObject[headers[j]] = undefined;
+
       const cellAddress = { c: j, r: i };
       const cellRef = xlsx.utils.encode_cell(cellAddress);
       const cell = worksheet[cellRef];
@@ -213,14 +216,17 @@ export const getWorksheetRowObjects = (worksheet: xlsx.WorkSheet): Record<symbol
         continue;
       }
 
+      // Set the cell value for the header, if the cell exists
       rowObject[headers[j]] = trimCellWhitespace(replaceCellDates(cell)).v;
 
+      // If at least one cell has a value, then the row is not empty
       rowHasValues = true;
     }
 
     rowObject[RowIndex] = i;
 
     if (rowHasValues) {
+      // Add the row object to the array if it has at least one non-empty cell
       rowObjectsArray.push(rowObject);
     }
   }
