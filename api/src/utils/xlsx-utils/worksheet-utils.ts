@@ -17,6 +17,8 @@ dayjs.extend(customParseFormat);
 
 const defaultLog = getLogger('src/utils/xlsx-utils/worksheet-utils');
 
+const RowIndex = Symbol();
+
 export interface IXLSXCSVColumn {
   /**
    * Supported column cell types
@@ -133,6 +135,7 @@ export const getWorksheetRows = (worksheet: xlsx.WorkSheet): string[][] => {
 
   for (let i = 1; i <= originalRange.e.r; i++) {
     const row = new Array(getHeadersUpperCase(worksheet).length);
+
     let rowHasValues = false;
 
     for (let j = 0; j <= originalRange.e.c; j++) {
@@ -161,6 +164,8 @@ export const getWorksheetRows = (worksheet: xlsx.WorkSheet): string[][] => {
  * Return an array of row value arrays.
  *
  * Note: The column headers will be transformed to UPPERCASE.
+ * Note: Rows with no non-empty cells will be excluded.
+ * Note: A `RowIndex` symbol will be added to each row object with the original row index.
  *
  * @example
  * [
@@ -168,37 +173,56 @@ export const getWorksheetRows = (worksheet: xlsx.WorkSheet): string[][] => {
  *     "HEADER1": "value1",
  *     "HEADER2": "value2",
  *     "HEADER3": "value3"
+ *     [RowIndex]: 1
  *   },
+ *   // Empty row 2 was excluded
  *   {
  *     "HEADER1": "value4",
  *     "HEADER2": "value5",
  *     "HEADER3": "value6"
+ *     [RowIndex]: 3
  *   }
  * ]
  *
  * @export
  * @param {xlsx.WorkSheet} worksheet
- * @return {*}  {Record<string, any>[]}
+ * @return {*}  {Record<symbol | string, any>[]}
  */
-export const getWorksheetRowObjects = (worksheet: xlsx.WorkSheet): Record<string, any>[] => {
-  const ref = worksheet['!ref'];
+export const getWorksheetRowObjects = (worksheet: xlsx.WorkSheet): Record<symbol | string, any>[] => {
+  const originalRange = getWorksheetRange(worksheet);
 
-  if (!ref) {
+  if (!originalRange) {
     return [];
   }
 
-  const rowObjectsArray: Record<string, any>[] = [];
-  const rows = getWorksheetRows(worksheet);
   const headers = getHeadersUpperCase(worksheet);
 
-  for (let i = 0; i < rows.length; i++) {
-    const rowObject: Record<string, any> = {};
+  const rowObjectsArray: Record<symbol | string, any>[] = [];
 
-    for (let j = 0; j < headers.length; j++) {
-      rowObject[headers[j]] = rows[i][j];
+  for (let i = 1; i <= originalRange.e.r; i++) {
+    const rowObject: Record<symbol | string, any> = {};
+
+    let rowHasValues = false;
+
+    for (let j = 0; j <= originalRange.e.c; j++) {
+      const cellAddress = { c: j, r: i };
+      const cellRef = xlsx.utils.encode_cell(cellAddress);
+      const cell = worksheet[cellRef];
+
+      if (!cell) {
+        continue;
+      }
+
+      rowObject[headers[j]] = trimCellWhitespace(replaceCellDates(cell)).v;
+
+      rowHasValues = true;
     }
 
-    rowObjectsArray.push(rowObject);
+    rowObject[RowIndex] = i;
+
+    if (rowHasValues) {
+      rowObjectsArray.push(rowObject);
+    }
   }
 
   return rowObjectsArray;

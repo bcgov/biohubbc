@@ -79,10 +79,11 @@ export const CSVErrorsTable = (props: CSVErrorsTableProps) => {
     <StyledDataGrid
       noRowsMessage={'No validation errors found'}
       autoHeight
+      getRowHeight={() => 'auto'}
       rows={rows}
       getRowId={(row) => row.id}
       columns={columns}
-      pageSizeOptions={[5, 10, 20, 100]}
+      pageSizeOptions={[10, 25, 50]}
       rowSelection={false}
       checkboxSelection={false}
       sortingOrder={['asc', 'desc']}
