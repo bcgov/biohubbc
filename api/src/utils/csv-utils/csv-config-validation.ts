@@ -1,5 +1,5 @@
 import { WorkSheet } from 'xlsx';
-import { getWorksheetRowIndexSymbol, getWorksheetRowObjects } from '../xlsx-utils/worksheet-utils';
+import { getWorksheetRowObjects } from '../xlsx-utils/worksheet-utils';
 import { CSVConfigUtils } from './csv-config-utils';
 import {
   CSVConfig,
@@ -212,8 +212,6 @@ export const executeValidateCell = (
 
   const cellErrors = headerConfig.validateCell(params);
 
-  const hiddenRowIndexProperty = getWorksheetRowIndexSymbol();
-
   if (cellErrors.length) {
     cellErrors.forEach((error) => {
       mutableErrors.push({
@@ -222,7 +220,7 @@ export const executeValidateCell = (
         values: error.values ?? null,
         cell: (error.cell === undefined ? params.cell : error.cell) ?? null, // Use cell value if intentionally null
         header: (error.header === undefined ? params.header : error.header) ?? null, // Use header value if intentionally null
-        row: error.row ?? params.row[hiddenRowIndexProperty] + 2 ?? params.rowIndex + 2 // headers: 1, data row: 2
+        row: error.row ?? params.rowIndex + 2 // headers: 1, data row: 2
       });
     });
   }
