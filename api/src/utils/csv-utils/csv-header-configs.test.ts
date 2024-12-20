@@ -1,6 +1,13 @@
 import { expect } from 'chai';
 import { z } from 'zod';
-import { getDescriptionCellValidator, getTsnCellValidator, validateZodCell } from './csv-header-configs';
+import { CSVParams } from './csv-config-validation.interface';
+import {
+  getDescriptionCellValidator,
+  getLatitudeCellValidator,
+  getLongitudeCellValidator,
+  getTsnCellValidator,
+  validateZodCell
+} from './csv-header-configs';
 
 describe('CSVHeaderConfigs', () => {
   describe('validateZodCell', () => {
@@ -76,6 +83,74 @@ describe('CSVHeaderConfigs', () => {
 
         expect(result.length).to.be.equal(1);
       }
+    });
+  });
+
+  describe('getLatitudeCellValidator', () => {
+    it('should return an empty array if the cell is valid', () => {
+      const latitudeValidator = getLatitudeCellValidator({ optional: false });
+
+      const values = [1.234, -1.234, 0, -90, 90];
+
+      for (const value of values) {
+        const result = latitudeValidator({ cell: value } as CSVParams);
+
+        expect(result).to.be.deep.equal([]);
+      }
+    });
+
+    it('should return a single error when invalid', () => {
+      const latitudeValidator = getLatitudeCellValidator({ optional: false });
+
+      const badValues = [-91, 91, 'string', null, undefined];
+
+      for (const badValue of badValues) {
+        const result = latitudeValidator({ cell: badValue } as CSVParams);
+
+        expect(result.length).to.be.equal(1);
+      }
+    });
+
+    it('should return an empty array if the cell is optional and undefined', () => {
+      const latitudeValidator = getLatitudeCellValidator({ optional: true });
+
+      const result = latitudeValidator({ cell: undefined } as CSVParams);
+
+      expect(result).to.be.deep.equal([]);
+    });
+  });
+
+  describe('getLongitudeCellValidator', () => {
+    it('should return an empty array if the cell is valid', () => {
+      const longitudeValidator = getLongitudeCellValidator({ optional: false });
+
+      const values = [1.234, -1.234, 0, -180, 180];
+
+      for (const value of values) {
+        const result = longitudeValidator({ cell: value } as CSVParams);
+
+        expect(result).to.be.deep.equal([]);
+      }
+    });
+
+    it('should return a single error when invalid', () => {
+      const longitudeValidator = getLongitudeCellValidator({ optional: false });
+
+      const badValues = [-181, 181, 'string', null, undefined];
+
+      for (const badValue of badValues) {
+        const result = longitudeValidator({ cell: badValue } as CSVParams);
+
+        expect(result.length).to.be.equal(1);
+      }
+    });
+
+    it('should return an empty array if the cell is optional and undefined', () => {
+      const longitudeValidator = getLongitudeCellValidator({ optional: true });
+
+      const result = longitudeValidator({ cell: undefined } as CSVParams);
+
+      expect(result).to.be.deep.equal([]);
     });
   });
 });

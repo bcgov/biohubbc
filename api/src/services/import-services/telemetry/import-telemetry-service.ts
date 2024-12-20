@@ -1,12 +1,17 @@
 import { WorkSheet } from 'xlsx';
-import { z } from 'zod';
 import { IDBConnection } from '../../../database/db';
 import { CodeRepository } from '../../../repositories/code-repository';
 import { CreateManualTelemetry } from '../../../repositories/telemetry-repositories/telemetry-manual-repository.interface';
 import { CSVConfigUtils } from '../../../utils/csv-utils/csv-config-utils';
 import { validateCSVWorksheet } from '../../../utils/csv-utils/csv-config-validation';
 import { CSVConfig, CSVError } from '../../../utils/csv-utils/csv-config-validation.interface';
-import { getTimeCellSetter, getTimeCellValidator, validateZodCell } from '../../../utils/csv-utils/csv-header-configs';
+import {
+  getDateCellValidator,
+  getLatitudeCellValidator,
+  getLongitudeCellValidator,
+  getTimeCellSetter,
+  getTimeCellValidator
+} from '../../../utils/csv-utils/csv-header-configs';
 import { getLogger } from '../../../utils/logger';
 import { DBService } from '../../db-service';
 import { TelemetryDeploymentService } from '../../telemetry-services/telemetry-deployment-service';
@@ -118,13 +123,13 @@ export class ImportTelemetryService extends DBService {
       validateCell: getTelemetryVendorCellValidator(vendorsSet)
     });
     this.utils.setStaticHeaderConfig('LATITUDE', {
-      validateCell: (params) => validateZodCell(params, z.number().min(-90).max(90))
+      validateCell: getLatitudeCellValidator({ optional: false })
     });
     this.utils.setStaticHeaderConfig('LONGITUDE', {
-      validateCell: (params) => validateZodCell(params, z.number().min(-180).max(180))
+      validateCell: getLongitudeCellValidator({ optional: false })
     });
     this.utils.setStaticHeaderConfig('DATE', {
-      validateCell: (params) => validateZodCell(params, z.string().date())
+      validateCell: getDateCellValidator({ optional: false })
     });
     this.utils.setStaticHeaderConfig('TIME', {
       validateCell: getTimeCellValidator(),

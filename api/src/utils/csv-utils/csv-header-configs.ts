@@ -2,6 +2,10 @@ import { z } from 'zod';
 import { formatTimeString } from '../../services/import-services/utils/datetime';
 import { CSVCellSetter, CSVCellValidator, CSVError, CSVParams } from './csv-config-validation.interface';
 
+type CSVOptional = {
+  optional: boolean;
+};
+
 /**
  * Utility function to validate a CSV cell using a Zod schema.
  *
@@ -101,5 +105,62 @@ export const getTimeCellSetter = (): CSVCellSetter => {
     }
 
     return formatTimeString(String(params.cell));
+  };
+};
+
+/**
+ * Get the latitude header cell validator.
+ *
+ * Rules:
+ *  1. The cell must be a number between -90 and 90 or undefined if optional
+ *
+ * @param {CSVOptional} options - The CSV options
+ * @returns {*} {CSVCellValidator} The validate cell callback
+ */
+export const getLatitudeCellValidator = (options: CSVOptional): CSVCellValidator => {
+  return (params) => {
+    if (options.optional) {
+      return validateZodCell(params, z.number().min(-90).max(90).optional());
+    }
+
+    return validateZodCell(params, z.number().min(-90).max(90));
+  };
+};
+
+/**
+ * Get the longitude header cell validator.
+ *
+ * Rules:
+ *  1. The cell must be a number between -180 and 180 or undefined if optional
+ *
+ * @param {CSVOptional} options - The CSV options
+ * @returns {*} {CSVCellValidator} The validate cell callback
+ */
+export const getLongitudeCellValidator = (options: CSVOptional): CSVCellValidator => {
+  return (params) => {
+    if (options.optional) {
+      return validateZodCell(params, z.number().min(-180).max(180).optional());
+    }
+
+    return validateZodCell(params, z.number().min(-180).max(180));
+  };
+};
+
+/**
+ * Get the date header cell validator.
+ *
+ * Rules:
+ *  1. The cell must be a valid date string (YYYY-MM-DD) or undefined if optional
+ *
+ * @param {CSVOptional} options - The CSV options
+ * @returns {*} {CSVCellValidator} The validate cell callback
+ */
+export const getDateCellValidator = (options: CSVOptional): CSVCellValidator => {
+  return (params) => {
+    if (options.optional) {
+      return validateZodCell(params, z.string().date().optional());
+    }
+
+    return validateZodCell(params, z.string().date());
   };
 };
