@@ -20,7 +20,10 @@ export const EnumMarkdownTypes: Partial<Record<SupportPageView, MarkdownTypeSupp
     MarkdownTypeSupportNameEnum.ANIMAL_EVENT,
     MarkdownTypeSupportNameEnum.ANIMAL_BULK
   ],
-  [SupportPageView.TELEMETRY]: [MarkdownTypeSupportNameEnum.TELEMETRY],
+  [SupportPageView.TELEMETRY]: [
+    MarkdownTypeSupportNameEnum.TELEMETRY_MANUAL, 
+    MarkdownTypeSupportNameEnum.TELEMETRY_AUTO
+  ],
   [SupportPageView.OBSERVATIONS]: [MarkdownTypeSupportNameEnum.OBSERVATIONS]
 };
 export { MarkdownTypeSupportNameEnum, SupportPageView };

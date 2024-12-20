@@ -37,6 +37,7 @@ export enum MarkdownTypeSupportNameEnum {
   ANIMAL_ENTITY = 'Animal Entity',
   ANIMAL_EVENT = 'Animal Event',
   ANIMAL_BULK = 'Animal Bulk Upload',
-  TELEMETRY = 'Support Telemetry',
+  TELEMETRY_MANUAL = 'Telemetry Manual Upload',
+  TELEMETRY_AUTO = 'Telemetry Automated',
   OBSERVATIONS = 'Observation Data Load'
 }
