@@ -66,7 +66,7 @@ export const CSVValidationErrorResponse: OpenAPIV3.ResponseObject = {
     'application/json': {
       schema: {
         description: 'CSV validation error response object',
-        required: ['name', 'status', 'message'],
+        required: ['name', 'status', 'message', 'errors'],
         properties: {
           name: {
             description: 'Error name',
