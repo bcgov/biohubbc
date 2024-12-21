@@ -4,7 +4,6 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../../../../../database/db';
 import { HTTPError } from '../../../../../../errors/http-error';
-import { SampleMethodService } from '../../../../../../services/sample-method-service';
 import { TechniqueService } from '../../../../../../services/technique-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
 import { deleteSurveyTechniqueRecords } from './delete';
@@ -19,10 +18,6 @@ describe('deleteSurveyTechniqueRecords', () => {
   it('catches and re-throws error', async () => {
     const mockDBConnection = getMockDBConnection({ rollback: sinon.stub(), release: sinon.stub() });
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
-
-    const getSampleMethodsCountForTechniqueIdsStub = sinon
-      .stub(SampleMethodService.prototype, 'getSampleMethodsCountForTechniqueIds')
-      .resolves(0);
 
     const deleteTechniqueStub = sinon
       .stub(TechniqueService.prototype, 'deleteTechnique')
@@ -45,7 +40,6 @@ describe('deleteSurveyTechniqueRecords', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect(getSampleMethodsCountForTechniqueIdsStub).to.have.been.calledOnce;
       expect(deleteTechniqueStub).to.have.been.calledThrice;
 
       expect(mockDBConnection.rollback).to.have.been.calledOnce;
@@ -58,10 +52,6 @@ describe('deleteSurveyTechniqueRecords', () => {
   it('throws an error if any technique records are associated to an observation record', async () => {
     const mockDBConnection = getMockDBConnection({ rollback: sinon.stub(), release: sinon.stub() });
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
-
-    const getSampleMethodsCountForTechniqueIdsStub = sinon
-      .stub(SampleMethodService.prototype, 'getSampleMethodsCountForTechniqueIds')
-      .resolves(10); // technique records are associated to 10 observation records
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -80,8 +70,6 @@ describe('deleteSurveyTechniqueRecords', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect(getSampleMethodsCountForTechniqueIdsStub).to.have.been.calledOnce;
-
       expect(mockDBConnection.rollback).to.have.been.calledOnce;
       expect(mockDBConnection.release).to.have.been.calledOnce;
 
@@ -95,10 +83,6 @@ describe('deleteSurveyTechniqueRecords', () => {
   it('should delete technique records', async () => {
     const mockDBConnection = getMockDBConnection({ commit: sinon.stub(), release: sinon.stub() });
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
-
-    const getSampleMethodsCountForTechniqueIdsStub = sinon
-      .stub(SampleMethodService.prototype, 'getSampleMethodsCountForTechniqueIds')
-      .resolves(0);
 
     const deleteTechniqueStub = sinon.stub(TechniqueService.prototype, 'deleteTechnique').resolves();
 
@@ -117,7 +101,6 @@ describe('deleteSurveyTechniqueRecords', () => {
 
     await requestHandler(mockReq, mockRes, mockNext);
 
-    expect(getSampleMethodsCountForTechniqueIdsStub).to.have.been.calledOnce;
     expect(deleteTechniqueStub).to.have.been.calledThrice;
 
     expect(mockDBConnection.commit).to.have.been.calledOnce;

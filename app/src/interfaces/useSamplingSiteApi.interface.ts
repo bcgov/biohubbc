@@ -1,9 +1,7 @@
 import { ISurveySampleMethodFormData } from 'features/surveys/sampling-information/periods/create/CreateSamplePeriodPage';
-import { ISurveySampleMethodPeriodData } from 'features/surveys/sampling-information/periods/form/components/sites/periods/SamplePeriodPeriodForm';
+import { ISurveySamplePeriodFormData } from 'features/surveys/sampling-information/periods/form/components/periods/SamplePeriodPeriodForm';
 import { Feature } from 'geojson';
 import { ApiPaginationResponseParams } from 'types/misc';
-import { IGetSamplePeriodRecord } from './usePeriodApi.interface';
-import { IGetSurveyBlock, IGetSurveyStratum } from './useSurveyApi.interface';
 
 export interface ISurveySampleSite {
   name: string;
@@ -17,24 +15,24 @@ export interface ISurveySampleMethod {
   method_response_metric_id: number | null;
   description: string;
   method_technique_id: number | null;
-  sample_periods: ISurveySampleMethodPeriodData[];
+  sample_periods: ISurveySamplePeriodFormData[];
 }
 
 export interface ICreateSamplingSiteRequest {
-  survey_id: number;
   survey_sample_sites: ISurveySampleSite[]; // extracted list from shape files
-  blocks: IGetSurveyBlock[];
-  stratums: IGetSurveyStratum[];
+  blocks: {
+    survey_block_id: number;
+  }[];
+  stratums: {
+    survey_stratum_id: number;
+  }[];
 }
 
 export interface IEditSampleSiteRequest {
   sampleSite: {
     name: string;
     description: string;
-    survey_id: number;
-    survey_sample_sites: Feature[]; // extracted list from shape files (used for formik loading)
-    geojson?: Feature; // geojson object from map (used for sending to api)
-    methods: ISurveySampleMethod[];
+    geojson: Feature;
     blocks: { survey_block_id: number }[];
     stratums: { survey_stratum_id: number }[];
   };
@@ -123,20 +121,6 @@ export interface IGetBasicSamplePeriod {
   end_date: string;
   start_time: string;
   end_time: string;
-}
-
-export interface IGetBasicSampleMethod {
-  survey_sample_method_id: number;
-  survey_sample_site_id: number;
-  method_response_metric_id: number;
-  technique: { survey_technique_id: number; name: string };
-  sample_periods: IGetBasicSamplePeriod[];
-}
-
-export interface IGetBasicSampleLocation {
-  survey_sample_site_id: number;
-  name: string;
-  sample_methods: IGetBasicSampleMethod;
 }
 
 export interface IGetSampleLocationDetailsForUpdate {

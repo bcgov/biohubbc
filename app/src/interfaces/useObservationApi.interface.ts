@@ -68,7 +68,6 @@ export type SupplementaryObservationCountData = {
 };
 
 export type ObservationSamplingSupplementaryData = {
-  //   sample_sites: IGetBasicSampleLocation[];
   sample_sites: IGetSampleLocationNonSpatialDetails[];
 };
 

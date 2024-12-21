@@ -2,9 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
-import { HTTP409 } from '../../../../../../errors/http-error';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { SampleMethodService } from '../../../../../../services/sample-method-service';
 import { TechniqueService } from '../../../../../../services/technique-service';
 import { getLogger } from '../../../../../../utils/logger';
 
@@ -114,14 +112,6 @@ export function deleteSurveyTechniqueRecords(): RequestHandler {
 
     try {
       await connection.open();
-
-      const sampleMethodService = new SampleMethodService(connection);
-
-      const samplingMethodsCount = await sampleMethodService.getSampleMethodsCountForTechniqueIds(methodTechniqueIds);
-
-      if (samplingMethodsCount > 0) {
-        throw new HTTP409('Cannot delete a technique that is associated with a sampling site');
-      }
 
       const techniqueService = new TechniqueService(connection);
 

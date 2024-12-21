@@ -1,0 +1,100 @@
+import { mdiMinusCircleOutline, mdiPlus } from '@mdi/js';
+import Icon from '@mdi/react';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
+import { FieldArray, FieldArrayRenderProps } from 'formik';
+import { v4 } from 'uuid';
+import { InitialSurveySamplePeriodFormValues, SamplePeriodPeriodForm } from './SamplePeriodPeriodForm';
+
+interface SamplePeriodPeriodFormContainerProps {
+  index: number;
+  disableAdd?: boolean;
+  onDelete?: (index: number) => void;
+}
+
+export const SamplePeriodPeriodFormContainer = (props: SamplePeriodPeriodFormContainerProps) => {
+  const { index, onDelete, disableAdd } = props;
+
+  return (
+    <Paper variant="outlined" key={123123} sx={{ mt: 2 }}>
+      <ListItem
+        alignItems="flex-start"
+        disablePadding
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'flex-start',
+          p: 2,
+          px: 3,
+          mb: 2
+        }}>
+        <Box display="flex" justifyContent="space-between" width="100%" alignItems="center" mb={1}>
+          <ListItemText
+            primary={
+              <Typography fontWeight={700} variant="subtitle1">
+                {'123123123'}
+              </Typography>
+            }
+          />
+          {onDelete && (
+            <IconButton
+              color="error"
+              onClick={() => {
+                onDelete(index);
+              }}>
+              <Icon path={mdiMinusCircleOutline} size={1} />
+            </IconButton>
+          )}
+        </Box>
+
+        {/* Show periods if the site is expanded */}
+        <Box width="100%">
+          <FieldArray
+            name={'sample_periods'}
+            render={(arrayHelpers: FieldArrayRenderProps) => (
+              <>
+                <SamplePeriodPeriodForm
+                  index={index}
+                  formikFieldName={'123123'}
+                  samplePeriods={[]}
+                  handleRemove={onDelete ? (index: number) => arrayHelpers.remove(index) : undefined}
+                />
+
+                {/* Add Period Button */}
+                {disableAdd && (
+                  <Button
+                    sx={{
+                      alignSelf: 'flex-start',
+                      mt: 3
+                    }}
+                    data-testid="sampling-period-add-button"
+                    variant="outlined"
+                    color="primary"
+                    title="Add Period"
+                    aria-label="Create Sample Period"
+                    startIcon={<Icon path={mdiPlus} size={1} />}
+                    onClick={() =>
+                      arrayHelpers.push({
+                        ...InitialSurveySamplePeriodFormValues,
+                        // Temporary id used as the unique key on the frontend, not to be sent to the backend
+                        id: v4()
+                      })
+                    }>
+                    Add Period
+                  </Button>
+                )}
+              </>
+            )}
+          />
+        </Box>
+      </ListItem>
+    </Paper>
+  );
+};
+
+export default SamplePeriodPeriodFormContainer;

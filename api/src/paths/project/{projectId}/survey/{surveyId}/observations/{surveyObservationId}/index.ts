@@ -87,7 +87,7 @@ GET.apiDoc = {
               'observation_date',
               'observation_time',
               'survey_sample_site_id',
-              'survey_sample_method_id',
+              'method_technique_id',
               'survey_sample_period_id',
               'create_user',
               'create_date',
@@ -128,7 +128,7 @@ GET.apiDoc = {
                 type: 'integer',
                 nullable: true
               },
-              survey_sample_method_id: {
+              method_technique_id: {
                 type: 'integer',
                 nullable: true
               },

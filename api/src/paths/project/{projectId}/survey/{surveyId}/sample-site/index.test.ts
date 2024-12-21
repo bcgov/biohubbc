@@ -4,19 +4,19 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../../../../../database/db';
 import { HTTPError } from '../../../../../../errors/http-error';
-import { SampleLocationService } from '../../../../../../services/sample-location-service';
+import { SampleSiteService } from '../../../../../../services/sample-site-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
 import * as create_survey_sample_site_record from './index';
 import * as get_survey_sample_site_record from './index';
 
 chai.use(sinonChai);
 
-describe('getSurveySampleLocationRecord', () => {
+describe('getSurveySampleSitesForSurvey', () => {
   afterEach(() => {
     sinon.restore();
   });
 
-  it('should catch and re-throw an error if SampleLocationService throws an error', async () => {
+  it('should catch and re-throw an error if SampleSiteService throws an error', async () => {
     const dbConnectionObj = getMockDBConnection();
 
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
@@ -28,10 +28,10 @@ describe('getSurveySampleLocationRecord', () => {
       surveyId: '1'
     };
 
-    sinon.stub(SampleLocationService.prototype, 'getSampleLocationsForSurveyId').rejects(new Error('an error'));
+    sinon.stub(SampleSiteService.prototype, 'getSampleSitesForSurveyId').rejects(new Error('an error'));
 
     try {
-      const requestHandler = get_survey_sample_site_record.getSurveySampleLocationRecord();
+      const requestHandler = get_survey_sample_site_record.getSurveySampleSitesForSurvey();
 
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
@@ -68,10 +68,10 @@ describe('getSurveySampleLocationRecord', () => {
       stratums: []
     };
 
-    sinon.stub(SampleLocationService.prototype, 'getSampleLocationsCountBySurveyId').resolves(1);
-    sinon.stub(SampleLocationService.prototype, 'getSampleLocationsForSurveyId').resolves([sampleLocation]);
+    sinon.stub(SampleSiteService.prototype, 'getSampleLocationsCountBySurveyId').resolves(1);
+    sinon.stub(SampleSiteService.prototype, 'getSampleSitesForSurveyId').resolves([sampleLocation]);
 
-    const requestHandler = get_survey_sample_site_record.getSurveySampleLocationRecord();
+    const requestHandler = get_survey_sample_site_record.getSurveySampleSitesForSurvey();
 
     await requestHandler(mockReq, mockRes, mockNext);
 
@@ -99,7 +99,7 @@ describe('createSurveySampleSiteRecord', () => {
   it('should work', async () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-    const insertSurveyParticipantStub = sinon.stub(SampleLocationService.prototype, 'insertSampleLocations').resolves();
+    const insertSurveyParticipantStub = sinon.stub(SampleSiteService.prototype, 'insertSampleLocations').resolves();
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 

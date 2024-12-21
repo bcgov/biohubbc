@@ -90,7 +90,6 @@ export async function seed(knex: Knex): Promise<void> {
           ${insertSurveyIntendedOutcome(surveyId)}
           ${insertSurveySamplingSiteData(surveyId)}
           ${insertMethodTechnique(surveyId)}
-          ${insertSurveySamplingMethodData(surveyId)}
           ${insertSurveySamplePeriodData(surveyId)}
           ${insertSurveyBlockData(surveyId)}
         `);
@@ -586,7 +585,8 @@ const insertMethodTechnique = (surveyId: number) =>
   method_lookup_id,
   name,
   description,
-  distance_threshold
+  distance_threshold,
+  method_response_metric_id
  )
  VALUES
  (
@@ -594,49 +594,28 @@ const insertMethodTechnique = (surveyId: number) =>
     (SELECT method_lookup_id FROM method_lookup ORDER BY random() LIMIT 1),
     $$${faker.lorem.word(10)}$$,
     $$${faker.lorem.sentences(2)}$$,
-    $$${faker.number.int({ min: 1, max: 50 })}$$
+    $$${faker.number.int({ min: 1, max: 50 })}$$,
+    (SELECT method_response_metric_id FROM method_response_metric ORDER BY random() LIMIT 1)
  );
 `;
 
 /**
- * SQL to insert survey sampling method data. Requires sampling site.
- *
- */
-const insertSurveySamplingMethodData = (surveyId: number) =>
-  `
- INSERT INTO survey_sample_method
- (
-  survey_sample_site_id,
-  description,
-  method_response_metric_id,
-  method_technique_id
- )
- VALUES
- (
-    (SELECT survey_sample_site_id FROM survey_sample_site WHERE survey_id = ${surveyId} LIMIT 1),
-    $$${faker.lorem.sentences(2)}$$,
-    $$${faker.number.int({ min: 1, max: 4 })}$$,
-    (SELECT method_technique_id FROM method_technique WHERE survey_id = ${surveyId} LIMIT 1)
- );
-`;
-
-/**
- * SQL to insert survey sampling period data. Requires sampling method.
+ * SQL to insert survey sampling period data. Requires survey_sampling_site and method_technique.
  *
  */
 const insertSurveySamplePeriodData = (surveyId: number) =>
   `
   INSERT INTO survey_sample_period
   (
-    survey_sample_method_id,
+    survey_sample_site_id,
+    method_technique_id,
     start_date,
     end_date
   )
   VALUES
   (
-    (SELECT survey_sample_method_id FROM survey_sample_method WHERE survey_sample_site_id = (
-      SELECT survey_sample_site_id FROM survey_sample_site WHERE survey_id = ${surveyId} LIMIT 1
-    ) LIMIT 1),
+    (SELECT survey_sample_site_id FROM survey_sample_site WHERE survey_id = ${surveyId} LIMIT 1),
+    (SELECT method_technique_id FROM method_technique WHERE survey_id = ${surveyId} LIMIT 1),
     $$${faker.date
       .between({ from: '2000-01-01T00:00:00-08:00', to: '2001-01-01T00:00:00-08:00' })
       .toISOString()}$$::date,

@@ -169,6 +169,7 @@ export const SamplingSiteTable = (props: ISamplingSiteTableProps) => {
       field: 'blocks',
       headerName: 'Blocks',
       flex: 0.75,
+      sortable: false, // TODO not yet supported by the API
       renderCell: (params) => (
         <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
           {params.row.blocks.map((block) => (
@@ -183,6 +184,7 @@ export const SamplingSiteTable = (props: ISamplingSiteTableProps) => {
       field: 'stratums',
       headerName: 'Strata',
       flex: 0.75,
+      sortable: false, // TODO not yet supported by the API
       renderCell: (params) => (
         <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
           {params.row.stratums.map((stratum) => (

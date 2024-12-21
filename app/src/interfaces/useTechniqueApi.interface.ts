@@ -47,6 +47,7 @@ export interface IGetTechniqueResponse {
   description: string | null;
   method_lookup_id: number;
   distance_threshold: number | null;
+  method_response_metric_id: number;
   attractants: TechniqueAttractant[];
   attributes: {
     quantitative_attributes: TechniqueQuantitativeAttribute[];

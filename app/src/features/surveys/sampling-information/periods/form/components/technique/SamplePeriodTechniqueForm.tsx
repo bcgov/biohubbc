@@ -4,78 +4,96 @@ import AutocompleteSearchField, { WithIdAndName } from 'components/fields/Autoco
 import { useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
-import { ICreateSamplingPeriodRequest } from 'interfaces/useSamplingPeriodApi.interface';
+import { CreateSamplingPeriod } from 'interfaces/useSamplingPeriodApi.interface';
 import { IGetTechniqueResponse } from 'interfaces/useTechniqueApi.interface';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
-export type PartialTechnique = Pick<IGetTechniqueResponse, 'method_technique_id' | 'name' | 'description'>;
+export type ISelectedTechniqueData = Pick<IGetTechniqueResponse, 'method_technique_id' | 'name' | 'description'>;
 
-interface ISamplePeriodTechniqueFormProps {
-  initialValue?: PartialTechnique;
+export interface ISamplePeriodTechniqueFormProps {
+  editData?: ISelectedTechniqueData;
 }
 
 /**
- * Create sampling period - technique field
+ * Sampling period form - technique field
  *
  * @return {*}
  */
 const SamplePeriodTechniqueForm = (props: ISamplePeriodTechniqueFormProps) => {
-  const { initialValue } = props;
+  const { editData } = props;
 
-  const { setFieldValue, values, errors } = useFormikContext<ICreateSamplingPeriodRequest>();
-
-  const biohubApi = useBiohubApi();
-  const [selectedTechnique, setSelectedTechnique] = useState<PartialTechnique | null>(initialValue || null);
-  const [refreshKey, setRefreshKey] = useState(0);
+  const { errors, setFieldValue } = useFormikContext<CreateSamplingPeriod>();
 
   const { projectId, surveyId } = useSurveyContext();
 
-  const techniqueSearch = async () => {
+  const biohubApi = useBiohubApi();
+
+  // The technique record for the selected method_technique_id, if any
+  const [selectedTechnique, setSelectedTechnique] = useState<ISelectedTechniqueData | undefined>(editData);
+
+  /**
+   * Search for techniques.
+   *
+   * TODO: Currently does not take in any search terms, and just returns all techniques for a survey.
+   *
+   * @return {*}  {Promise<WithIdAndName<ISelectedTechniqueData>[]>}
+   */
+  const searchTechniques = useCallback(async (): Promise<WithIdAndName<ISelectedTechniqueData>[]> => {
     const response = await biohubApi.technique.getTechniquesForSurvey(projectId, surveyId);
 
-    // Remove already selected option
-    return response.techniques
-      .map((technique) => ({
-        ...technique,
+    return response.techniques.map((technique) => {
+      return {
         id: technique.method_technique_id,
+        method_technique_id: technique.method_technique_id,
+        description: technique.description,
         name: technique.name
-      }))
-      .filter((technique) => technique.method_technique_id !== values.method_technique_id);
-  };
+      };
+    });
+  }, [biohubApi.technique, projectId, surveyId]);
 
-  const handleRemove = () => {
+  /**
+   * Handle when a technique is removed (unselected).
+   */
+  const onDelete = () => {
     setFieldValue('method_technique_id', '');
-    setSelectedTechnique(null);
-    setRefreshKey((prev) => prev + 1);
+    setSelectedTechnique(undefined);
   };
 
-  const handleSelect = (technique: IGetTechniqueResponse) => {
+  /**
+   * Handle when a technique is selected from the autocomplete control.
+   *
+   * @param {ISelectedTechniqueData} technique
+   */
+  const onSelect = (technique: ISelectedTechniqueData) => {
     setFieldValue('method_technique_id', technique.method_technique_id);
-    setSelectedTechnique(technique);
-    setRefreshKey((prev) => prev + 1);
+    setSelectedTechnique({
+      method_technique_id: technique.method_technique_id,
+      name: technique.name,
+      description: technique.description
+    });
   };
 
   return (
     <Grid container spacing={3}>
       <Grid item xs={12}>
-        <AutocompleteSearchField<WithIdAndName<IGetTechniqueResponse>>
-          formikFieldName="method_technique_id"
+        {/* Find and select a technique */}
+        <AutocompleteSearchField<WithIdAndName<ISelectedTechniqueData>>
+          fieldName="method_technique"
           label="Technique"
-          handleSelect={handleSelect}
-          searchApi={techniqueSearch}
+          onSelect={onSelect}
+          onSearch={searchTechniques}
           getOptionLabel={(option) => option.name}
           placeholder="Search for a technique"
           clearOnSelect
-          // Refresh the results using a refreshKey, which is an abritrary number that changes to force a refresh
-          refreshKey={refreshKey}
           error={errors.method_technique_id}
         />
-        {selectedTechnique && values.method_technique_id && (
+        {/* Display the selected technique card */}
+        {selectedTechnique && (
           <NameDescriptionCard
             sx={{ mt: 2 }}
-            label={selectedTechnique.name}
-            description={selectedTechnique.description}
-            handleRemove={handleRemove}
+            label={selectedTechnique?.name}
+            description={selectedTechnique?.description}
+            onDelete={onDelete}
           />
         )}
       </Grid>

@@ -87,7 +87,8 @@ export class TechniqueService extends DBService {
         name: technique.name,
         description: technique.description,
         method_lookup_id: technique.method_lookup_id,
-        distance_threshold: technique.distance_threshold
+        distance_threshold: technique.distance_threshold,
+        method_response_metric_id: technique.method_response_metric_id
       };
 
       // Insert root technique record

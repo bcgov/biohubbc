@@ -15,7 +15,8 @@ const ITechniquePostData = MethodTechniqueRecord.pick({
   name: true,
   description: true,
   distance_threshold: true,
-  method_lookup_id: true
+  method_lookup_id: true,
+  method_response_metric_id: true
 }).extend({
   attributes: z.object({
     quantitative_attributes: z.array(
@@ -53,7 +54,8 @@ const ITechniqueRowDataForInsert = MethodTechniqueRecord.pick({
   name: true,
   description: true,
   distance_threshold: true,
-  method_lookup_id: true
+  method_lookup_id: true,
+  method_response_metric_id: true
 });
 
 export type ITechniqueRowDataForInsert = z.infer<typeof ITechniqueRowDataForInsert>;
@@ -71,7 +73,8 @@ const TechniqueObject = MethodTechniqueRecord.pick({
   name: true,
   description: true,
   distance_threshold: true,
-  method_lookup_id: true
+  method_lookup_id: true,
+  method_response_metric_id: true
 }).extend({
   attractants: z.array(
     AttractantLookupRecord.pick({
@@ -181,6 +184,7 @@ export class TechniqueRepository extends BaseRepository {
         'mt.description',
         'mt.distance_threshold',
         'mt.method_lookup_id',
+        'mt.method_response_metric_id',
         knex.raw(`
           COALESCE(w_attractants.attractants, '[]'::json) AS attractants
         `),
@@ -285,6 +289,7 @@ export class TechniqueRepository extends BaseRepository {
         description: techniqueObject.description,
         distance_threshold: techniqueObject.distance_threshold,
         method_lookup_id: techniqueObject.method_lookup_id,
+        method_response_metric_id: techniqueObject.method_response_metric_id,
         survey_id: surveyId
       })
       .into('method_technique')
@@ -313,7 +318,8 @@ export class TechniqueRepository extends BaseRepository {
         name: techniqueObject.name,
         description: techniqueObject.description,
         method_lookup_id: techniqueObject.method_lookup_id,
-        distance_threshold: techniqueObject.distance_threshold
+        distance_threshold: techniqueObject.distance_threshold,
+        method_response_metric_id: techniqueObject.method_response_metric_id
       })
       .where('method_technique_id', techniqueObject.method_technique_id)
       .andWhere('survey_id', surveyId)

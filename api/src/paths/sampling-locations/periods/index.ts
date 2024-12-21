@@ -5,7 +5,7 @@ import { getDBConnection } from '../../../database/db';
 import { IPeriodAdvancedFilters } from '../../../models/sampling-locations-view';
 import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../../../openapi/schemas/pagination';
 import { authorizeRequestHandler, userHasValidRole } from '../../../request-handlers/security/authorization';
-import { SampleLocationService } from '../../../services/sample-location-service';
+import { SamplePeriodService } from '../../../services/sample-period-service';
 import { getLogger } from '../../../utils/logger';
 import {
   ensureCompletePaginationOptions,
@@ -60,7 +60,7 @@ GET.apiDoc = {
     },
     {
       in: 'query',
-      name: 'sample_method_id',
+      name: 'method_technique_id',
       required: false,
       schema: {
         type: 'integer',
@@ -96,12 +96,12 @@ GET.apiDoc = {
                   type: 'object',
                   required: [
                     'survey_sample_period_id',
-                    'survey_sample_method_id',
+                    'survey_sample_site_id',
+                    'method_technique_id',
                     'start_date',
                     'start_time',
                     'end_date',
                     'end_time',
-                    'sample_method',
                     'method_technique',
                     'sample_site'
                   ],
@@ -111,7 +111,11 @@ GET.apiDoc = {
                       type: 'integer',
                       minimum: 1
                     },
-                    survey_sample_method_id: {
+                    survey_sample_site_id: {
+                      type: 'integer',
+                      minimum: 1
+                    },
+                    method_technique_id: {
                       type: 'integer',
                       minimum: 1
                     },
@@ -128,17 +132,6 @@ GET.apiDoc = {
                     end_time: {
                       type: 'string',
                       nullable: true
-                    },
-                    sample_method: {
-                      type: 'object',
-                      required: ['method_response_metric_id'],
-                      additionalProperties: false,
-                      properties: {
-                        method_response_metric_id: {
-                          type: 'integer',
-                          minimum: 1
-                        }
-                      }
                     },
                     method_technique: {
                       type: 'object',
@@ -222,16 +215,16 @@ export function findPeriods(): RequestHandler {
 
       const paginationOptions = makePaginationOptionsFromRequest(req);
 
-      const sampleLocationService = new SampleLocationService(connection);
+      const samplePeriodService = new SamplePeriodService(connection);
 
       const [periods, periodsCount] = await Promise.all([
-        sampleLocationService.findPeriods(
+        samplePeriodService.findSamplePeriods(
           isUserAdmin,
           systemUserId,
           filterFields,
           ensureCompletePaginationOptions(paginationOptions)
         ),
-        sampleLocationService.findPeriodsCount(isUserAdmin, systemUserId, filterFields)
+        samplePeriodService.findSamplePeriodsCount(isUserAdmin, systemUserId, filterFields)
       ]);
 
       await connection.commit();
@@ -262,7 +255,7 @@ function parseQueryParams(req: Request<unknown, unknown, unknown, IPeriodAdvance
   return {
     survey_id: (req.query.survey_id && Number(req.query.survey_id)) ?? undefined,
     sample_site_id: (req.query.sample_site_id && Number(req.query.sample_site_id)) ?? undefined,
-    sample_method_id: (req.query.sample_method_id && Number(req.query.sample_method_id)) ?? undefined,
+    method_technique_id: (req.query.method_technique_id && Number(req.query.method_technique_id)) ?? undefined,
     system_user_id: req.query.system_user_id ?? undefined
   };
 }

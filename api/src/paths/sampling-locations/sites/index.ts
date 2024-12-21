@@ -5,7 +5,7 @@ import { getDBConnection } from '../../../database/db';
 import { ISiteAdvancedFilters } from '../../../models/sampling-locations-view';
 import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../../../openapi/schemas/pagination';
 import { authorizeRequestHandler, userHasValidRole } from '../../../request-handlers/security/authorization';
-import { SampleLocationService } from '../../../services/sample-location-service';
+import { SampleSiteService } from '../../../services/sample-site-service';
 import { getLogger } from '../../../utils/logger';
 import {
   ensureCompletePaginationOptions,
@@ -207,7 +207,7 @@ export function findSites(): RequestHandler {
 
       const paginationOptions = makePaginationOptionsFromRequest(req);
 
-      const sampleLocationService = new SampleLocationService(connection);
+      const sampleLocationService = new SampleSiteService(connection);
 
       const [sites, sitesCount] = await Promise.all([
         sampleLocationService.findSites(

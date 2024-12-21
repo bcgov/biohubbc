@@ -3,27 +3,25 @@ import Icon from '@mdi/react';
 import Autocomplete from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
+import { grey } from '@mui/material/colors';
 import TextField from '@mui/material/TextField';
+import useIsMounted from 'hooks/useIsMounted';
 import { debounce } from 'lodash-es';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 export type WithIdAndName<T> = T & { id: string | number; name: string };
 
 export interface IAutocompleteSearchFieldProps<T> {
-  formikFieldName: string;
+  fieldName: string;
   label: string;
-  handleSelect: (selection: T) => void;
-  handleClear?: () => void;
+  onSelect: (selection: T) => void;
+  onClear?: () => void;
   /**
-   * The API request to make when searching
-   *
-   * @param {any} params
-   * @returns {Promise<Any>}
+   * The API request to make when searching. Will receive the current autocomplete text input value.
    */
-  searchApi: (params: any) => Promise<any>;
+  onSearch: (inputValue: string) => Promise<any>;
   getOptionLabel: (option: T) => string;
   defaultSelection?: T;
-  filters?: any;
   noOptionsText?: string;
   required?: boolean;
   disabled?: boolean;
@@ -44,79 +42,100 @@ export interface IAutocompleteSearchFieldProps<T> {
  * @return {*}
  */
 export const AutocompleteSearchField = <T extends { id: string | number; name: string }>({
-  formikFieldName,
+  fieldName,
   label,
-  handleSelect,
-  handleClear,
-  searchApi,
+  onSelect,
+  onClear,
+  onSearch,
   getOptionLabel,
   defaultSelection,
-  filters,
   noOptionsText = 'No matching options',
   required,
   disabled,
   clearOnSelect,
   showStartAdornment,
   placeholder,
-  error,
-  refreshKey
+  error
 }: IAutocompleteSearchFieldProps<T>) => {
-  const [inputValue, setInputValue] = useState<string>(defaultSelection?.name || '');
+  const isMounted = useIsMounted();
+
+  // The input field value
+  const [inputValue, setInputValue] = useState<string>(defaultSelection ? defaultSelection?.name : '');
+  // The array of options to choose from
   const [options, setOptions] = useState<T[]>(defaultSelection ? [defaultSelection] : []);
+  // Is control loading (search in progress)
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSearch = useMemo(
     () =>
       debounce(async (inputValue: string, callback: (searchedValues: T[]) => void) => {
-        setIsLoading(true);
-        try {
-          const response = await searchApi({ keyword: inputValue, ...filters });
-          callback(response || []);
-        } catch (error) {
-          callback([]);
-        } finally {
-          setIsLoading(false);
-        }
+        await onSearch(inputValue)
+          .then((response) => {
+            callback(response || []);
+          })
+          .catch(() => {
+            callback([]);
+          });
       }, 500),
-    [searchApi, filters]
+    [onSearch]
   );
-
-  // Immediate request when the component mounts to prevent users from waiting. Can remove if performance becomes an issue.
-  useEffect(() => {
-    handleSearch('', (newOptions) => {
-      setOptions(newOptions);
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [refreshKey]);
 
   return (
     <Autocomplete
-      id={formikFieldName}
+      id={`${fieldName}-autocomplete`}
       disabled={disabled}
-      data-testid={formikFieldName}
       noOptionsText={isLoading ? 'Loading...' : noOptionsText}
       options={options}
       value={null}
       getOptionLabel={getOptionLabel}
       inputValue={inputValue}
       onInputChange={(_, value, reason) => {
-        if (reason === 'reset' || reason === 'clear') {
+        if (reason === 'reset') {
           if (!clearOnSelect) {
             return;
           }
+
+          if (inputValue === '' && options.length === 0) {
+            // Nothing to clear
+            return;
+          }
+
           setInputValue('');
-          handleClear?.();
+          onClear?.();
+
+          return;
+        }
+
+        if (reason === 'clear') {
+          if (inputValue === '' && options.length === 0) {
+            // Nothing to clear
+            return;
+          }
+
+          setInputValue('');
+          onClear?.();
           return;
         }
 
         if (!value) {
+          if (inputValue === '' && options.length === 0) {
+            // Nothing to clear
+            return;
+          }
+
           setInputValue('');
           return;
         }
 
+        setIsLoading(true);
         setInputValue(value);
         handleSearch(value, (newOptions) => {
+          if (!isMounted()) {
+            return;
+          }
+
           setOptions(newOptions);
+          setIsLoading(false);
         });
       }}
       onChange={(_, option) => {
@@ -124,21 +143,39 @@ export const AutocompleteSearchField = <T extends { id: string | number; name: s
           return;
         }
 
-        handleSelect(option);
+        onSelect(option);
 
         // Remove the selected item from the list of options
         setOptions((prev) => prev.filter((existing) => existing.id !== option.id));
 
         if (clearOnSelect) {
           setInputValue('');
-        } else {
-          setInputValue(option.name);
+          return;
         }
+
+        setInputValue(option.name);
+      }}
+      renderOption={(renderProps, renderOption) => {
+        return (
+          <Box
+            component="li"
+            sx={{
+              '& + li': {
+                borderTop: '1px solid' + grey[300]
+              }
+            }}
+            {...renderProps}
+            key={renderProps.key}>
+            <Box py={1} width={'100%'}>
+              {getOptionLabel(renderOption)}
+            </Box>
+          </Box>
+        );
       }}
       renderInput={(params) => (
         <TextField
           {...params}
-          name={formikFieldName}
+          name={`${fieldName}-input`}
           required={required}
           label={label}
           variant="outlined"
@@ -160,8 +197,10 @@ export const AutocompleteSearchField = <T extends { id: string | number; name: s
           }}
           error={Boolean(error)}
           helperText={error}
+          data-testid={`${fieldName}-input`}
         />
       )}
+      data-testid={`${fieldName}-autocomplete`}
     />
   );
 };

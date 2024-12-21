@@ -18,7 +18,7 @@ export const observervationsWithSubcountDataSchema: OpenAPIV3.SchemaObject = {
           'itis_tsn',
           'itis_scientific_name',
           'survey_sample_site_id',
-          'survey_sample_method_id',
+          'method_technique_id',
           'survey_sample_period_id',
           'latitude',
           'longitude',
@@ -50,7 +50,7 @@ export const observervationsWithSubcountDataSchema: OpenAPIV3.SchemaObject = {
             minimum: 1,
             nullable: true
           },
-          survey_sample_method_id: {
+          method_technique_id: {
             type: 'integer',
             minimum: 1,
             nullable: true

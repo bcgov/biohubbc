@@ -8,7 +8,7 @@ import {
 import * as file_utils from '../utils/file-utils';
 import { getMockDBConnection } from '../__mocks__/db';
 import { ObservationService } from './observation-service';
-import { SampleLocationService } from './sample-location-service';
+import { SampleSiteService } from './sample-site-service';
 import { SubCountService } from './subcount-service';
 
 chai.use(sinonChai);
@@ -45,7 +45,7 @@ describe('ObservationService', () => {
           survey_sample_period_start_datetime: '2000-01-01 00:00:00',
           survey_sample_site_name: 'SITE_NAME',
           survey_sample_site_id: 1,
-          survey_sample_method_id: 1,
+          method_technique_id: 1,
           survey_sample_period_id: 1,
           subcounts: []
         },
@@ -63,7 +63,7 @@ describe('ObservationService', () => {
           survey_sample_period_start_datetime: '2000-01-01 00:00:00',
           survey_sample_site_name: 'SITE_NAME',
           survey_sample_site_id: 1,
-          survey_sample_method_id: 1,
+          method_technique_id: 1,
           survey_sample_period_id: 1,
           subcounts: []
         }
@@ -95,7 +95,7 @@ describe('ObservationService', () => {
         .resolves({ qualitative_environments: [], quantitative_environments: [] });
 
       const getSampleLocationsForSurveyIdStub = sinon
-        .stub(SampleLocationService.prototype, 'getSampleLocationsForSurveyId')
+        .stub(SampleSiteService.prototype, 'getSampleSitesForSurveyId')
         .resolves([]);
 
       const surveyId = 1;

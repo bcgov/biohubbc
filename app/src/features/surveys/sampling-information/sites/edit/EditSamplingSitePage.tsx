@@ -19,7 +19,6 @@ import {
 } from 'interfaces/useSamplingSiteApi.interface';
 import { useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
-import { ISurveySampleMethodFormData } from '../../periods/create/CreateSamplePeriodPage';
 import SamplingSiteHeader from '../components/SamplingSiteHeader';
 import SampleSiteEditForm, { SampleSiteEditFormYupSchema } from './form/SampleSiteEditForm';
 
@@ -35,7 +34,7 @@ export interface IEditSampleSiteFormData {
   name: string;
   description: string | null;
   geojson: Feature;
-  sample_methods: (IGetSampleMethodDetails | ISurveySampleMethodFormData)[];
+  sample_methods: IGetSampleMethodDetails[];
   blocks: IGetSampleBlockDetails[];
   stratums: IGetSampleStratumDetails[];
 }
@@ -106,17 +105,7 @@ export const EditSamplingSitePage = () => {
         sampleSite: {
           name: values.name,
           description: values.description ?? '',
-          survey_id: values.survey_id,
-          survey_sample_sites: [values.geojson as Feature],
           geojson: values.geojson,
-          methods: values.sample_methods.map((method) => ({
-            survey_sample_method_id: method.survey_sample_method_id,
-            survey_sample_site_id: method.survey_sample_site_id,
-            method_response_metric_id: method.method_response_metric_id,
-            description: method.description,
-            method_technique_id: method.technique.method_technique_id,
-            sample_periods: method.sample_periods
-          })),
           blocks: values.blocks.map((block) => ({ survey_block_id: block.survey_block_id })),
           stratums: values.stratums.map((stratum) => ({ survey_stratum_id: stratum.survey_stratum_id }))
         }

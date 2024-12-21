@@ -5,7 +5,7 @@ import { getDBConnection } from '../../../../../../database/db';
 import { HTTP400, HTTP409 } from '../../../../../../errors/http-error';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { ObservationService } from '../../../../../../services/observation-service';
-import { SampleLocationService } from '../../../../../../services/sample-location-service';
+import { SampleSiteService } from '../../../../../../services/sample-site-service';
 import { getLogger } from '../../../../../../utils/logger';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/sample-site/delete');
@@ -118,7 +118,7 @@ export function deleteSurveySampleSiteRecords(): RequestHandler {
       await connection.open();
 
       const observationService = new ObservationService(connection);
-      const sampleLocationService = new SampleLocationService(connection);
+      const sampleLocationService = new SampleSiteService(connection);
 
       const observationCount = await observationService.getObservationsCountBySampleSiteIds(
         surveyId,

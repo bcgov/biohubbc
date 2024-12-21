@@ -9,7 +9,7 @@ import Typography from '@mui/material/Typography';
 interface INameDescriptionCardProps extends PaperProps {
   label: string;
   description?: string | null;
-  handleRemove?: () => void;
+  onDelete?: () => void;
 }
 
 /**
@@ -19,7 +19,7 @@ interface INameDescriptionCardProps extends PaperProps {
  * @returns
  */
 export const NameDescriptionCard = (props: INameDescriptionCardProps) => {
-  const { label, description, handleRemove, ...boxProps } = props;
+  const { label, description, onDelete, ...boxProps } = props;
 
   return (
     <Paper elevation={0} {...boxProps} sx={{ p: 2, bgcolor: grey[100], ...boxProps.sx }}>
@@ -27,7 +27,7 @@ export const NameDescriptionCard = (props: INameDescriptionCardProps) => {
         <Typography variant="subtitle1" fontWeight="bold">
           {label}
         </Typography>
-        <IconButton onClick={handleRemove}>
+        <IconButton onClick={onDelete}>
           <Icon path={mdiClose} size={1} />
         </IconButton>
       </Box>

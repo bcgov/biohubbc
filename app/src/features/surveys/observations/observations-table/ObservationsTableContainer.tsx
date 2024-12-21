@@ -89,6 +89,8 @@ const ObservationsTableContainer = () => {
     sampleLocationsCache
   ]);
 
+  console.log(sampleLocationsCache.cachedSampleLocationsRef);
+
   // The column definitions of the columns to render in the observations table
   const columns: GridColDef<IObservationTableRow>[] = useMemo(
     () => {

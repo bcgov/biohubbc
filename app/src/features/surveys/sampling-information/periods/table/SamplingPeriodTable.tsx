@@ -15,7 +15,7 @@ import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { SamplePeriodI18N } from 'constants/i18n';
 import dayjs from 'dayjs';
 import { useDialogContext, useSurveyContext } from 'hooks/useContext';
-import { IFindSamplePeriodRecord } from 'interfaces/usePeriodApi.interface';
+import { IFindSamplePeriodRecord } from 'interfaces/useSamplingPeriodApi.interface';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { formatTimeDifference } from 'utils/datetime';

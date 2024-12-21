@@ -4,9 +4,8 @@ import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { ApiExecuteSQLError } from '../errors/api-error';
-import { SurveySamplePeriodDetails } from '../models/sample-period';
 import { getMockDBConnection } from '../__mocks__/db';
-import { InsertSamplePeriodRecord, SamplePeriodRepository, UpdateSamplePeriodRecord } from './sample-period-repository';
+import { SamplePeriodRepository, SurveySamplePeriodDetails } from './sample-period-repository';
 
 chai.use(sinonChai);
 

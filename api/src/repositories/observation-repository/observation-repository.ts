@@ -29,7 +29,7 @@ export const ObservationRecord = z.object({
   itis_tsn: z.number(),
   itis_scientific_name: z.string().nullable(),
   survey_sample_site_id: z.number().nullable(),
-  survey_sample_method_id: z.number().nullable(),
+  method_technique_id: z.number().nullable(),
   survey_sample_period_id: z.number().nullable(),
   latitude: z.number().nullable(),
   longitude: z.number().nullable(),
@@ -107,7 +107,7 @@ export const ObservationRecordWithSamplingAndSubcountData = ObservationRecord.pi
   itis_tsn: true,
   itis_scientific_name: true,
   survey_sample_site_id: true,
-  survey_sample_method_id: true,
+  method_technique_id: true,
   survey_sample_period_id: true,
   latitude: true,
   longitude: true,
@@ -139,7 +139,7 @@ export type InsertObservation = Pick<
   | 'observation_date'
   | 'observation_time'
   | 'survey_sample_site_id'
-  | 'survey_sample_method_id'
+  | 'method_technique_id'
   | 'survey_sample_period_id'
 >;
 
@@ -157,7 +157,7 @@ export type UpdateObservation = Pick<
   | 'observation_date'
   | 'observation_time'
   | 'survey_sample_site_id'
-  | 'survey_sample_method_id'
+  | 'method_technique_id'
   | 'survey_sample_period_id'
 >;
 
@@ -317,7 +317,7 @@ export class ObservationRepository extends BaseRepository {
               : 'DEFAULT',
             surveyId,
             observation.survey_sample_site_id ?? 'NULL',
-            observation.survey_sample_method_id ?? 'NULL',
+            observation.method_technique_id ?? 'NULL',
             observation.survey_sample_period_id ?? 'NULL',
             observation.count,
             observation.latitude ?? 'NULL',

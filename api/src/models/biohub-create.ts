@@ -42,7 +42,7 @@ export class PostSurveyObservationToBiohubObject implements BioHubSubmissionFeat
       survey_id: observationRecord.survey_id,
       taxonomy: observationRecord.itis_tsn,
       survey_sample_site_id: observationRecord?.survey_sample_site_id || null,
-      survey_sample_method_id: observationRecord?.survey_sample_method_id || null,
+      method_technique_id: observationRecord?.method_technique_id || null,
       survey_sample_period_id: observationRecord?.survey_sample_period_id || null,
       latitude: observationRecord.latitude,
       longitude: observationRecord.longitude,

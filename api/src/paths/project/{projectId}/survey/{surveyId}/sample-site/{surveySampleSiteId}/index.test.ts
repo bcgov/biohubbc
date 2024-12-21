@@ -5,9 +5,9 @@ import sinonChai from 'sinon-chai';
 import { deleteSurveySampleSiteRecord, getSurveySampleLocationRecord, updateSurveySampleSite } from '.';
 import * as db from '../../../../../../../database/db';
 import { HTTPError } from '../../../../../../../errors/http-error';
-import { UpdateSampleSiteRecord } from '../../../../../../../repositories/sample-location-repository/sample-location-repository';
+import { UpdateSampleSiteRecord } from '../../../../../../../repositories/sample-site-repository';
 import { ObservationService } from '../../../../../../../services/observation-service';
-import { SampleLocationService } from '../../../../../../../services/sample-location-service';
+import { SampleSiteService } from '../../../../../../../services/sample-site-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../__mocks__/db';
 
 chai.use(sinonChai);
@@ -17,7 +17,7 @@ describe('updateSurveySampleSite', () => {
     sinon.restore();
   });
 
-  it('should catch and re-throw an error if SampleLocationService throws an error', async () => {
+  it('should catch and re-throw an error if SampleSiteService throws an error', async () => {
     const dbConnectionObj = getMockDBConnection();
 
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
@@ -53,7 +53,7 @@ describe('updateSurveySampleSite', () => {
       } as UpdateSampleSiteRecord
     };
 
-    sinon.stub(SampleLocationService.prototype, 'updateSampleLocationMethodPeriod').rejects(new Error('an error'));
+    sinon.stub(SampleSiteService.prototype, 'updateSampleLocationMethodPeriod').rejects(new Error('an error'));
 
     try {
       const requestHandler = updateSurveySampleSite();
@@ -102,7 +102,7 @@ describe('updateSurveySampleSite', () => {
     };
 
     const updateSampleLocationMethodPeriodStub = sinon
-      .stub(SampleLocationService.prototype, 'updateSampleLocationMethodPeriod')
+      .stub(SampleSiteService.prototype, 'updateSampleLocationMethodPeriod')
       .resolves();
 
     const requestHandler = updateSurveySampleSite();
@@ -155,9 +155,7 @@ describe('deleteSurveySampleSiteRecord', () => {
       .stub(ObservationService.prototype, 'getObservationsCountBySampleSiteIds')
       .resolves(0);
 
-    const deleteSampleLocationRecordStub = sinon
-      .stub(SampleLocationService.prototype, 'deleteSampleSiteRecord')
-      .resolves();
+    const deleteSampleLocationRecordStub = sinon.stub(SampleSiteService.prototype, 'deleteSampleSiteRecord').resolves();
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -186,9 +184,7 @@ describe('deleteSurveySampleSiteRecord', () => {
       .stub(ObservationService.prototype, 'getObservationsCountBySampleSiteIds')
       .resolves(0);
 
-    const deleteSampleLocationRecordStub = sinon
-      .stub(SampleLocationService.prototype, 'deleteSampleSiteRecord')
-      .resolves();
+    const deleteSampleLocationRecordStub = sinon.stub(SampleSiteService.prototype, 'deleteSampleSiteRecord').resolves();
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -221,7 +217,7 @@ describe('getSurveySampleLocationRecord', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     const getSurveySampleLocationBySiteIdStub = sinon
-      .stub(SampleLocationService.prototype, 'getSurveySampleLocationBySiteId')
+      .stub(SampleSiteService.prototype, 'getSurveySampleLocationBySiteId')
       .resolves();
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
@@ -248,7 +244,7 @@ describe('getSurveySampleLocationRecord', () => {
 
     const mockError = new Error('a test error');
 
-    sinon.stub(SampleLocationService.prototype, 'getSurveySampleLocationBySiteId').rejects(mockError);
+    sinon.stub(SampleSiteService.prototype, 'getSurveySampleLocationBySiteId').rejects(mockError);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 

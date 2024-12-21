@@ -5,7 +5,7 @@ import sinonChai from 'sinon-chai';
 import * as db from '../../../../../../database/db';
 import { HTTPError } from '../../../../../../errors/http-error';
 import { ObservationService } from '../../../../../../services/observation-service';
-import { SampleLocationService } from '../../../../../../services/sample-location-service';
+import { SampleSiteService } from '../../../../../../services/sample-site-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
 import * as delete_survey_sample_sites from './delete';
 
@@ -53,9 +53,7 @@ describe('deleteSurveySampleSiteRecords', () => {
       .stub(ObservationService.prototype, 'getObservationsCountBySampleSiteIds')
       .resolves(0);
 
-    const deleteSampleLocationRecordStub = sinon
-      .stub(SampleLocationService.prototype, 'deleteSampleSiteRecord')
-      .resolves();
+    const deleteSampleLocationRecordStub = sinon.stub(SampleSiteService.prototype, 'deleteSampleSiteRecord').resolves();
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 

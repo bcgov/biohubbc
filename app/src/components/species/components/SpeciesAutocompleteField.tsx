@@ -250,7 +250,7 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
             return;
           }
 
-          setOptions(() => newOptions);
+          setOptions(newOptions);
           setIsLoading(false);
         });
       }}

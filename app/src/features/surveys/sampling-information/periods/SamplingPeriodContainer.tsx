@@ -44,7 +44,7 @@ export const SamplingPeriodContainer = () => {
   const [bulkActionMenuAnchorEl, setBulkActionMenuAnchorEl] = useState<MenuProps['anchorEl']>(null);
 
   const periodsDataLoader = useDataLoader((pagination: ApiPaginationRequestOptions) =>
-    biohubApi.period.findSamplePeriods({ survey_id: surveyContext.surveyId }, pagination)
+    biohubApi.samplingPeriod.findSamplePeriods({ survey_id: surveyContext.surveyId }, pagination)
   );
 
   const [periodsPaginationModel, setPeriodsPaginationModel] = useState<GridPaginationModel>({
@@ -65,7 +65,7 @@ export const SamplingPeriodContainer = () => {
   }, [periodsSortModel, periodsPaginationModel]);
 
   const handleBulkDeletePeriods = async () => {
-    await biohubApi.period
+    await biohubApi.samplingPeriod
       .deleteSamplePeriods(surveyContext.projectId, surveyContext.surveyId, selectedRows.map(Number))
       .then(() => {
         dialogContext.setYesNoDialog({ open: false });
@@ -94,7 +94,7 @@ export const SamplingPeriodContainer = () => {
   };
 
   const handleDelete = async (periodId: number) => {
-    await biohubApi.period.deleteSamplePeriods(surveyContext.projectId, surveyContext.surveyId, [periodId]);
+    await biohubApi.samplingPeriod.deleteSamplePeriods(surveyContext.projectId, surveyContext.surveyId, [periodId]);
     periodsDataLoader.refresh(periodsPagination);
   };
 
@@ -134,7 +134,7 @@ export const SamplingPeriodContainer = () => {
         survey_sample_period_id: period.survey_sample_period_id,
         sample_site: period.sample_site.name,
         sample_method: period.method_technique.name,
-        method_response_metric_id: period.sample_method.method_response_metric_id,
+        method_response_metric_id: period.method_technique.method_response_metric_id,
         start_date: period.start_date,
         end_date: period.end_date,
         start_time: period.start_time,

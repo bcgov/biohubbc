@@ -3,7 +3,7 @@ import { IAutocompleteDataGridSampleMethodOption } from 'features/surveys/observ
 import { IAutocompleteDataGridSamplePeriodOption } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/periods/SamplePeriodDataGrid.interface';
 import { IAutocompleteDataGridSampleSiteOption } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/sites/SampleSiteDataGrid.interface';
 import { SampleLocationCache } from 'features/surveys/observations/observations-table/ObservationsTableContainer';
-import { IGetSamplePeriodRecord } from 'interfaces/usePeriodApi.interface';
+import { GetSamplingPeriod } from 'interfaces/useSamplingPeriodApi.interface';
 import { IGetSampleLocationNonSpatialDetails } from 'interfaces/useSamplingSiteApi.interface';
 import { MutableRefObject } from 'react';
 
@@ -46,7 +46,7 @@ const formatOption = <T>(item: T, label: string, value: number): T & { label: st
  * @param {(IGetSamplePeriodRecord | null)} period
  * @return {*}
  */
-const getPeriodLabel = (period: IGetSamplePeriodRecord | null) => {
+const getPeriodLabel = (period: GetSamplingPeriod | null) => {
   if (!period) {
     return '';
   }

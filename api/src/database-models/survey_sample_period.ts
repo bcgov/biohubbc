@@ -7,7 +7,8 @@ import { z } from 'zod';
  */
 export const SurveySamplePeriodModel = z.object({
   survey_sample_period_id: z.number(),
-  survey_sample_method_id: z.number(),
+  survey_sample_site_id: z.number(),
+  method_technique_id: z.number(),
   start_date: z.string().nullable(),
   end_date: z.string().nullable(),
   start_time: z.string().nullable(),
