@@ -102,7 +102,7 @@ const useTelemetryApi = (axios: AxiosInstance) => {
    * Bulk create Manual Telemetry records.
    *
    * @param {number} projectId
-   * @param {number} surveyIdF
+   * @param {number} surveyId
    * @param {ICreateManualTelemetry[]} manualTelemetry Manual Telemetry create objects
    * @return {*}  {Promise<void>}
    */
@@ -114,8 +114,6 @@ const useTelemetryApi = (axios: AxiosInstance) => {
     await axios.post<void>(`/api/project/${projectId}/survey/${surveyId}/deployments/telemetry/manual`, {
       telemetry: manualTelemetry
     });
-
-    return;
   };
 
   /**
