@@ -7,18 +7,13 @@ import TaxonomyDataGridViewCell from 'components/data-grid/taxonomy/TaxonomyData
 import TextFieldDataGrid from 'components/data-grid/TextFieldDataGrid';
 import { IObservationTableRow } from 'contexts/observationsTableContext';
 import { ObservationCountDataGridEditCell } from 'features/surveys/observations/observations-table/grid-column-definitions/count/ObservationCountDataGridEditCell';
-import SamplePeriodDataGridEditCell from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/periods/SamplePeriodDataGridEditCell';
+import { SamplePeriodDataGridEditCell } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/periods/SamplePeriodDataGridEditCell';
 import { SamplePeriodDataGridViewCell } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/periods/SamplePeriodDataGridViewCell';
 import { SampleSiteDataGridEditCell } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/sites/SampleSiteDataGridEditCell';
 import { SampleSiteDataGridViewCell } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/sites/SampleSiteDataGridViewCell';
 import { MethodTechniqueDataGridEditCell } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/techniques/MethodTechniqueDataGridEditCell';
 import { MethodTechniqueDataGridViewCell } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/techniques/MethodTechniqueDataGridViewCell';
-import {
-  SamplingInformationCache,
-  SamplingInformationCachedPeriod,
-  SamplingInformationCachedSite,
-  SamplingInformationCachedTechnique
-} from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/useSamplingInformationCache';
+import { SamplingInformationCache } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/useSamplingInformationCache';
 import { CBMeasurementType, CBQualitativeOption } from 'interfaces/useCritterApi.interface';
 import {
   EnvironmentQualitativeTypeDefinition,
@@ -82,10 +77,9 @@ export const TaxonomyColDef = (props: {
 
 export const SampleSiteColDef = (props: {
   samplingInformationCache: SamplingInformationCache;
-  onSelectOption: (selectedSampleSite: SamplingInformationCachedSite | null) => void;
   hasError: (params: GridCellParams) => boolean;
 }): GridColDef<IObservationTableRow> => {
-  const { samplingInformationCache, onSelectOption, hasError } = props;
+  const { samplingInformationCache, hasError } = props;
 
   return {
     field: 'survey_sample_site_id',
@@ -112,7 +106,6 @@ export const SampleSiteColDef = (props: {
         <SampleSiteDataGridEditCell
           dataGridProps={params}
           samplingInformationCache={samplingInformationCache}
-          onSelectOption={(selectedSampleSite) => onSelectOption(selectedSampleSite)}
           error={hasError(params)}
         />
       );
@@ -122,10 +115,9 @@ export const SampleSiteColDef = (props: {
 
 export const MethodTechniqueColDef = (props: {
   samplingInformationCache: SamplingInformationCache;
-  onSelectOption: (selectedMethodTechnique: SamplingInformationCachedTechnique | null) => void;
   hasError: (params: GridCellParams) => boolean;
 }): GridColDef<IObservationTableRow> => {
-  const { samplingInformationCache, onSelectOption, hasError } = props;
+  const { samplingInformationCache, hasError } = props;
 
   return {
     field: 'method_technique_id',
@@ -152,7 +144,6 @@ export const MethodTechniqueColDef = (props: {
         <MethodTechniqueDataGridEditCell
           dataGridProps={params}
           samplingInformationCache={samplingInformationCache}
-          onSelectOption={(selectedMethodTechnique) => onSelectOption(selectedMethodTechnique)}
           error={hasError(params)}
         />
       );
@@ -162,10 +153,9 @@ export const MethodTechniqueColDef = (props: {
 
 export const SamplePeriodColDef = (props: {
   samplingInformationCache: SamplingInformationCache;
-  onSelectOption: (selectedSamplePeriod: SamplingInformationCachedPeriod | null) => void;
   hasError: (params: GridCellParams) => boolean;
 }): GridColDef<IObservationTableRow> => {
-  const { samplingInformationCache, onSelectOption, hasError } = props;
+  const { samplingInformationCache, hasError } = props;
 
   return {
     field: 'survey_sample_period_id',
@@ -192,7 +182,6 @@ export const SamplePeriodColDef = (props: {
         <SamplePeriodDataGridEditCell
           dataGridProps={params}
           samplingInformationCache={samplingInformationCache}
-          onSelectOption={(selectedSamplePeriod) => onSelectOption(selectedSamplePeriod)}
           error={hasError(params)}
         />
       );

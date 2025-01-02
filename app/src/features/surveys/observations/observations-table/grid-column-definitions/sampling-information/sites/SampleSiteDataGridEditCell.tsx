@@ -1,7 +1,11 @@
+import Autocomplete from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
 import { grey } from '@mui/material/colors';
+import Paper from '@mui/material/Paper';
+import TextField from '@mui/material/TextField';
+import useEnhancedEffect from '@mui/material/utils/useEnhancedEffect';
 import { GridRenderEditCellParams, GridValidRowModel } from '@mui/x-data-grid';
-import AsyncAutocompleteDataGridEditCell from 'components/data-grid/autocomplete/AsyncAutocompleteDataGridEditCell';
 import {
   SamplingInformationCache,
   SamplingInformationCachedSite
@@ -11,12 +15,11 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
 import useIsMounted from 'hooks/useIsMounted';
 import debounce from 'lodash-es/debounce';
-import { useMemo } from 'react';
+import { useMemo, useRef, useState } from 'react';
 
 export interface ISampleSiteDataGridCellProps<DataGridType extends GridValidRowModel> {
   dataGridProps: GridRenderEditCellParams<DataGridType>;
   samplingInformationCache: SamplingInformationCache;
-  onSelectOption?: (selectedSampleSite: SamplingInformationCachedSite | null) => void;
   error?: boolean;
 }
 
@@ -31,43 +34,30 @@ export interface ISampleSiteDataGridCellProps<DataGridType extends GridValidRowM
 export const SampleSiteDataGridEditCell = <DataGridType extends GridValidRowModel>(
   props: ISampleSiteDataGridCellProps<DataGridType>
 ) => {
-  const { dataGridProps, samplingInformationCache, onSelectOption, error } = props;
+  const { dataGridProps, samplingInformationCache, error } = props;
+
+  const ref = useRef<HTMLInputElement>();
+
+  useEnhancedEffect(() => {
+    if (dataGridProps.hasFocus) {
+      ref.current?.focus();
+    }
+  }, [dataGridProps.hasFocus]);
 
   const biohubApi = useBiohubApi();
   const surveyContext = useSurveyContext();
 
   const isMounted = useIsMounted();
 
-  /**
-   * Get the current option for the autocomplete, if the field has a value.
-   *
-   * @return {*}  {(Promise<SamplingInformationCachedSite | null>)}
-   */
-  const getCurrentOption = async (): Promise<SamplingInformationCachedSite | null> => {
-    return getCurrentSite(dataGridProps, samplingInformationCache.cachedSampleLocationsRef);
-  };
-
-  /**
-   * Merge the cached sample locations with the new options returned by the async search, removing duplicates.
-   *
-   * @param {SamplingInformationCachedSite[]} cachedOptions
-   * @param {SamplingInformationCachedSite[]} options
-   * @return {*}
-   */
-  const mergeOptions = (cachedOptions: SamplingInformationCachedSite[], options: SamplingInformationCachedSite[]) => {
-    const mergedOptionsMap = new Map<number, SamplingInformationCachedSite>();
-
-    // Merge the cached options with the new options, ensuring no duplicates
-    [...options, ...cachedOptions].forEach((item) => {
-      mergedOptionsMap.set(item.value, {
-        ...item,
-        label: item.label,
-        value: item.value
-      });
-    });
-
-    return Array.from(mergedOptionsMap.values()).sort((a, b) => a.label.localeCompare(b.label));
-  };
+  // The currently selected option
+  const [currentOption, setCurrentOption] = useState<SamplingInformationCachedSite | null>(
+    getCurrentSite(dataGridProps, samplingInformationCache.cachedSampleLocationsRef)
+  );
+  const [options, setOptions] = useState<SamplingInformationCachedSite[]>(
+    samplingInformationCache.cachedSampleLocationsRef.current?.sites ?? []
+  );
+  // Is control loading (search in progress)
+  const [isLoading, setIsLoading] = useState(false);
 
   /**
    * Debounced function to get the options for the autocomplete, based on the search term.
@@ -75,57 +65,58 @@ export const SampleSiteDataGridEditCell = <DataGridType extends GridValidRowMode
    */
   const getOptions = useMemo(
     () =>
-      debounce(
-        async (
-          searchTerm: string,
-          onSearchResults: (searchedValues: SamplingInformationCachedSite[]) => void,
-          onComplete: () => void
-        ) => {
-          const keyword = searchTerm?.trim();
+      debounce(async (searchTerm: string) => {
+        const keyword = searchTerm?.trim();
 
-          return biohubApi.samplingSite
-            .findSampleSites({ survey_id: surveyContext.surveyId, keyword })
-            .then((response) => {
-              if (!isMounted()) {
-                return;
-              }
+        const response = await biohubApi.samplingSite.findSampleSites({ survey_id: surveyContext.surveyId, keyword });
 
-              const options = response.sites.map((item) => ({
-                ...item,
-                label: item.name,
-                value: item.survey_sample_site_id
-              }));
+        if (!isMounted()) {
+          return;
+        }
 
-              const cachedOptions = samplingInformationCache.cachedSampleLocationsRef.current?.sites ?? [];
+        const options = response.sites.map((item) => ({
+          ...item,
+          label: item.name,
+          value: item.survey_sample_site_id
+        }));
 
-              const mergedOptions = mergeOptions(cachedOptions, options);
+        // Update the cached sampling sites
+        samplingInformationCache.updateCachedSamplingSites(options);
 
-              onSearchResults(mergedOptions);
-              onComplete();
-            });
-        },
-        500
-      ),
-    [biohubApi.samplingSite, isMounted, samplingInformationCache.cachedSampleLocationsRef, surveyContext.surveyId]
+        // Set the options for the autocomplete
+        setOptions(samplingInformationCache.cachedSampleLocationsRef.current?.sites ?? []);
+
+        setIsLoading(false);
+      }, 500),
+    [biohubApi.samplingSite, isMounted, samplingInformationCache, surveyContext.surveyId]
   );
 
-  /**
-   * Get the initial options for the autocomplete.
-   *
-   * @return {*}
-   */
-  const getInitialOptions = () => {
-    return samplingInformationCache.cachedSampleLocationsRef.current?.sites ?? [];
-  };
-
   return (
-    <AsyncAutocompleteDataGridEditCell
-      dataGridProps={dataGridProps}
-      getCurrentOption={getCurrentOption}
-      getInitialOptions={getInitialOptions}
-      getOptions={getOptions}
-      onSelectOption={(selectedOption) => {
-        // If the sample site is changed, clear the sample method and period as they are dependent on the site
+    <Autocomplete
+      id={`${dataGridProps.id}[${dataGridProps.field}]`}
+      noOptionsText="No matching options"
+      autoHighlight
+      fullWidth
+      blurOnSelect
+      handleHomeEndKeys
+      loading={isLoading}
+      value={currentOption}
+      options={options}
+      PaperComponent={({ children }) => <Paper sx={{ minWidth: '600px' }}>{children}</Paper>}
+      getOptionLabel={(option) => option.label}
+      isOptionEqualToValue={(option, value) => {
+        if (!option?.value || !value?.value) {
+          return false;
+        }
+        return option.value === value.value;
+      }}
+      filterOptions={(item) => item}
+      onChange={(_, selectedOption) => {
+        // Set the autocomplete value to the selected option
+        setCurrentOption(selectedOption);
+
+        // If the sampling site is changed, clear the method technique and sampling period as they are dependent on
+        // the site
         dataGridProps.api.setEditCellValue({
           id: dataGridProps.id,
           field: 'method_technique_id',
@@ -137,10 +128,43 @@ export const SampleSiteDataGridEditCell = <DataGridType extends GridValidRowMode
           value: null
         });
 
-        onSelectOption?.(selectedOption);
+        // Set the data grid cell value for the selected sampling site option
+        dataGridProps.api.setEditCellValue({
+          id: dataGridProps.id,
+          field: dataGridProps.field,
+          value: selectedOption?.value
+        });
+
+        setIsLoading(false);
       }}
-      placeholder="Search for a site"
-      error={error}
+      onInputChange={(_, newInputValue, reason) => {
+        if (reason === 'input' && newInputValue !== '') {
+          // The user has updated the input field, and it is not empty, trigger the search.
+          // The other options ('clear', 'reset') should not trigger a search.
+          getOptions(newInputValue);
+        }
+      }}
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          inputRef={ref}
+          size="small"
+          variant="outlined"
+          fullWidth
+          error={error}
+          placeholder="Search for a site"
+          InputProps={{
+            color: error ? 'error' : undefined,
+            ...params.InputProps,
+            endAdornment: (
+              <>
+                {isLoading ? <CircularProgress color="inherit" size={20} /> : null}
+                {params.InputProps.endAdornment}
+              </>
+            )
+          }}
+        />
+      )}
       renderOption={(renderProps, renderOption) => {
         return (
           <Box
@@ -158,6 +182,7 @@ export const SampleSiteDataGridEditCell = <DataGridType extends GridValidRowMode
           </Box>
         );
       }}
+      data-testid={dataGridProps.id}
     />
   );
 };

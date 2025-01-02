@@ -1,8 +1,11 @@
+import Autocomplete from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
 import { grey } from '@mui/material/colors';
+import Paper from '@mui/material/Paper';
+import TextField from '@mui/material/TextField';
 import useEnhancedEffect from '@mui/material/utils/useEnhancedEffect';
 import { GridRenderCellParams, GridValidRowModel } from '@mui/x-data-grid';
-import AsyncAutocompleteDataGridEditCell from 'components/data-grid/autocomplete/AsyncAutocompleteDataGridEditCell';
 import {
   SamplingInformationCache,
   SamplingInformationCachedPeriod
@@ -15,13 +18,12 @@ import {
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
 import useIsMounted from 'hooks/useIsMounted';
-import { debounce } from 'lodash-es';
-import { useMemo, useRef } from 'react';
+import debounce from 'lodash-es/debounce';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 export interface ISamplePeriodDataGridEditCellProps<DataGridType extends GridValidRowModel> {
   dataGridProps: GridRenderCellParams<DataGridType>;
   samplingInformationCache: SamplingInformationCache;
-  onSelectOption?: (selectedSamplePeriod: SamplingInformationCachedPeriod | null) => void;
   error?: boolean;
 }
 
@@ -32,10 +34,10 @@ export interface ISamplePeriodDataGridEditCellProps<DataGridType extends GridVal
  * @param {ISamplePeriodDataGridEditCellProps<DataGridType>} props
  * @return {*}
  */
-const SamplePeriodDataGridEditCell = <DataGridType extends GridValidRowModel>(
+export const SamplePeriodDataGridEditCell = <DataGridType extends GridValidRowModel>(
   props: ISamplePeriodDataGridEditCellProps<DataGridType>
 ) => {
-  const { dataGridProps, samplingInformationCache, onSelectOption, error } = props;
+  const { dataGridProps, samplingInformationCache, error } = props;
 
   const ref = useRef<HTMLInputElement>();
 
@@ -50,39 +52,19 @@ const SamplePeriodDataGridEditCell = <DataGridType extends GridValidRowModel>(
 
   const isMounted = useIsMounted();
 
-  /**
-   * Get the current option for the autocomplete, if the field has a value.
-   *
-   * @return {*}  {(Promise<SamplingInformationCachedPeriod | null>)}
-   */
-  const getCurrentOption = async (): Promise<SamplingInformationCachedPeriod | null> => {
-    return getCurrentPeriod(dataGridProps, samplingInformationCache.cachedSampleLocationsRef);
-  };
-
-  //   /**
-  //    * Merge the cached sample locations with the new options returned by the async search, removing duplicates.
-  //    *
-  //    * @param {SamplingInformationCachedPeriod[]} cachedOptions
-  //    * @param {SamplingInformationCachedPeriod[]} options
-  //    * @return {*}
-  //    */
-  //   const mergeOptions = (
-  //     cachedOptions: SamplingInformationCachedPeriod[],
-  //     options: SamplingInformationCachedPeriod[]
-  //   ) => {
-  //     const mergedOptionsMap = new Map<number, SamplingInformationCachedPeriod>();
-
-  //     // Merge the cached options with the new options, ensuring no duplicates
-  //     [...options, ...cachedOptions].forEach((item) => {
-  //       mergedOptionsMap.set(item.value, {
-  //         ...item,
-  //         label: item.label,
-  //         value: item.value
-  //       });
-  //     });
-
-  //     return Array.from(mergedOptionsMap.values()).sort((a, b) => a.label.localeCompare(b.label));
-  //   };
+  // The currently selected option
+  const [currentOption, setCurrentOption] = useState<SamplingInformationCachedPeriod | null>(
+    getCurrentPeriod(dataGridProps, samplingInformationCache.cachedSampleLocationsRef)
+  );
+  const [options, setOptions] = useState<SamplingInformationCachedPeriod[]>(
+    getPeriodsForRow(
+      dataGridProps.row.survey_sample_site_id,
+      dataGridProps.row.method_technique_id,
+      samplingInformationCache.cachedSampleLocationsRef
+    )
+  );
+  // Is control loading (search in progress)
+  const [isLoading, setIsLoading] = useState(false);
 
   /**
    * Debounced function to get the options for the autocomplete, based on the search term.
@@ -90,53 +72,46 @@ const SamplePeriodDataGridEditCell = <DataGridType extends GridValidRowModel>(
    */
   const getOptions = useMemo(
     () =>
-      debounce(
-        async (
-          _searchTerm: string,
-          onSearchResults: (searchedValues: SamplingInformationCachedPeriod[]) => void,
-          onComplete: () => void
-        ) => {
-          const surveySampleSiteId = dataGridProps.row.survey_sample_site_id;
-          const methodTechniqueId = dataGridProps.row.method_technique_id;
+      debounce(async (_searchTerm: string) => {
+        const surveySampleSiteId = dataGridProps.row.survey_sample_site_id;
+        const methodTechniqueId = dataGridProps.row.method_technique_id;
 
-          if (!surveySampleSiteId || !methodTechniqueId) {
-            // Currently the control requires that a site and technique be selected first, before periods can be
-            // searched/selected
-            onComplete();
-            return;
-          }
+        if (!surveySampleSiteId || !methodTechniqueId) {
+          // Currently the control requires that a site and technique be selected first, before periods can be
+          // searched/selected
+          setIsLoading(false);
+          return;
+        }
 
-          return biohubApi.samplingPeriod
-            .findSamplePeriods({
-              survey_id: surveyContext.surveyId,
-              sample_site_id: surveySampleSiteId,
-              method_technique_id: methodTechniqueId
-            })
-            .then((response) => {
-              if (!isMounted()) {
-                return;
-              }
+        const response = await biohubApi.samplingPeriod.findSamplePeriods({
+          survey_id: surveyContext.surveyId,
+          sample_site_id: surveySampleSiteId,
+          method_technique_id: methodTechniqueId
+        });
 
-              const options = response.periods.map((item) => ({
-                ...item,
-                label: getPeriodLabel(item),
-                value: item.survey_sample_period_id
-              }));
+        if (!isMounted()) {
+          return;
+        }
 
-              samplingInformationCache.updateCachedSamplingPeriods(options);
+        const options = response.periods.map((item) => ({
+          ...item,
+          label: getPeriodLabel(item),
+          value: item.survey_sample_period_id
+        }));
 
-              const validOptions = getPeriodsForRow(
-                dataGridProps.row.survey_sample_site_id,
-                dataGridProps.row.method_technique_id,
-                samplingInformationCache.cachedSampleLocationsRef
-              );
+        samplingInformationCache.updateCachedSamplingPeriods(options);
 
-              onSearchResults(validOptions);
-              onComplete();
-            });
-        },
-        500
-      ),
+        const validOptions = getPeriodsForRow(
+          dataGridProps.row.survey_sample_site_id,
+          dataGridProps.row.method_technique_id,
+          samplingInformationCache.cachedSampleLocationsRef
+        );
+
+        // Set the options for the autocomplete
+        setOptions(validOptions);
+
+        setIsLoading(false);
+      }, 500),
     [
       biohubApi.samplingPeriod,
       dataGridProps.row.survey_sample_site_id,
@@ -147,34 +122,98 @@ const SamplePeriodDataGridEditCell = <DataGridType extends GridValidRowModel>(
     ]
   );
 
-  /**
-   * Get the initial options for the autocomplete.
-   *
-   * @return {*}
-   */
-  const getInitialOptions = () => {
+  useEffect(() => {
     if (!dataGridProps.row.survey_sample_site_id || !dataGridProps.row.method_technique_id) {
-      return [];
+      // If either the site or technique is not selected, then unset any selected period, as its value is dependent
+      // on the site and technique.
+      setCurrentOption(null);
     }
 
-    return getPeriodsForRow(
-      dataGridProps.row.survey_sample_site_id,
-      dataGridProps.row.method_technique_id,
-      samplingInformationCache.cachedSampleLocationsRef
-    );
-  };
+    if (
+      currentOption?.survey_sample_site_id !== dataGridProps.row.survey_sample_site_id ||
+      currentOption?.method_technique_id !== dataGridProps.row.method_technique_id
+    ) {
+      // If the site or technique has changed, then unset any selected period, and update the options to reflect the
+      // valid periods for the new site and technique.
+      setCurrentOption(null);
+      setOptions(
+        getPeriodsForRow(
+          dataGridProps.row.survey_sample_site_id,
+          dataGridProps.row.method_technique_id,
+          samplingInformationCache.cachedSampleLocationsRef
+        )
+      );
+    }
+  }, [
+    dataGridProps.row.survey_sample_site_id,
+    dataGridProps.row.method_technique_id,
+    currentOption?.survey_sample_site_id,
+    currentOption?.method_technique_id,
+    samplingInformationCache.cachedSampleLocationsRef
+  ]);
 
   return (
-    <AsyncAutocompleteDataGridEditCell
-      dataGridProps={dataGridProps}
-      getCurrentOption={getCurrentOption}
-      getInitialOptions={getInitialOptions}
-      getOptions={getOptions}
-      onSelectOption={(selectedOption) => {
-        onSelectOption?.(selectedOption);
+    <Autocomplete
+      id={`${dataGridProps.id}[${dataGridProps.field}]`}
+      noOptionsText="No matching options"
+      autoHighlight
+      fullWidth
+      blurOnSelect
+      handleHomeEndKeys
+      loading={isLoading}
+      value={currentOption}
+      options={options}
+      PaperComponent={({ children }) => <Paper sx={{ minWidth: '600px' }}>{children}</Paper>}
+      getOptionLabel={(option) => option.label}
+      isOptionEqualToValue={(option, value) => {
+        if (!option?.value || !value?.value) {
+          return false;
+        }
+        return option.value === value.value;
       }}
-      placeholder="Search for a period"
-      error={error}
+      filterOptions={(item) => item}
+      onChange={(_, selectedOption) => {
+        // Set the autocomplete value to the selected option
+        setCurrentOption(selectedOption);
+
+        // Set the data grid cell value for the selected sampling period option
+        dataGridProps.api.setEditCellValue({
+          id: dataGridProps.id,
+          field: dataGridProps.field,
+          value: selectedOption?.value
+        });
+
+        setIsLoading(false);
+      }}
+      onInputChange={(_, newInputValue, reason) => {
+        if (reason === 'input' && newInputValue !== '') {
+          // The user has updated the input field, and it is not empty, trigger the search.
+          // The other options ('clear', 'reset') should not trigger a search.
+          setIsLoading(true);
+          getOptions(newInputValue);
+        }
+      }}
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          inputRef={ref}
+          size="small"
+          variant="outlined"
+          fullWidth
+          error={error}
+          placeholder="Search for a technique"
+          InputProps={{
+            color: error ? 'error' : undefined,
+            ...params.InputProps,
+            endAdornment: (
+              <>
+                {isLoading ? <CircularProgress color="inherit" size={20} /> : null}
+                {params.InputProps.endAdornment}
+              </>
+            )
+          }}
+        />
+      )}
       renderOption={(renderProps, renderOption) => {
         return (
           <Box
@@ -192,8 +231,7 @@ const SamplePeriodDataGridEditCell = <DataGridType extends GridValidRowModel>(
           </Box>
         );
       }}
+      data-testid={dataGridProps.id}
     />
   );
 };
-
-export default SamplePeriodDataGridEditCell;

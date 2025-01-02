@@ -1,8 +1,11 @@
+import Autocomplete from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
 import { grey } from '@mui/material/colors';
+import Paper from '@mui/material/Paper';
+import TextField from '@mui/material/TextField';
 import useEnhancedEffect from '@mui/material/utils/useEnhancedEffect';
 import { GridRenderEditCellParams, GridValidRowModel } from '@mui/x-data-grid';
-import AsyncAutocompleteDataGridEditCell from 'components/data-grid/autocomplete/AsyncAutocompleteDataGridEditCell';
 import {
   SamplingInformationCache,
   SamplingInformationCachedTechnique
@@ -15,12 +18,11 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
 import useIsMounted from 'hooks/useIsMounted';
 import debounce from 'lodash-es/debounce';
-import { useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 export interface IMethodTechniqueDataGridCellProps<DataGridType extends GridValidRowModel> {
   dataGridProps: GridRenderEditCellParams<DataGridType>;
   samplingInformationCache: SamplingInformationCache;
-  onSelectOption?: (selectedMethodTechnique: SamplingInformationCachedTechnique | null) => void;
   error?: boolean;
 }
 
@@ -35,7 +37,7 @@ export interface IMethodTechniqueDataGridCellProps<DataGridType extends GridVali
 export const MethodTechniqueDataGridEditCell = <DataGridType extends GridValidRowModel>(
   props: IMethodTechniqueDataGridCellProps<DataGridType>
 ) => {
-  const { dataGridProps, samplingInformationCache, onSelectOption, error } = props;
+  const { dataGridProps, samplingInformationCache, error } = props;
 
   const ref = useRef<HTMLInputElement>();
 
@@ -50,39 +52,15 @@ export const MethodTechniqueDataGridEditCell = <DataGridType extends GridValidRo
 
   const isMounted = useIsMounted();
 
-  /**
-   * Get the current option for the autocomplete, if the field has a value.
-   *
-   * @return {*}  {(Promise<SamplingInformationCachedTechnique | null>)}
-   */
-  const getCurrentOption = async (): Promise<SamplingInformationCachedTechnique | null> => {
-    return getCurrentTechnique(dataGridProps, samplingInformationCache.cachedSampleLocationsRef);
-  };
-
-  //   /**
-  //    * Merge the cached sample locations with the new options returned by the async search, removing duplicates.
-  //    *
-  //    * @param {SamplingInformationCachedTechnique[]} cachedOptions
-  //    * @param {SamplingInformationCachedTechnique[]} options
-  //    * @return {*}
-  //    */
-  //   const mergeOptions = (
-  //     cachedOptions: SamplingInformationCachedTechnique[],
-  //     options: SamplingInformationCachedTechnique[]
-  //   ) => {
-  //     const mergedOptionsMap = new Map<number, SamplingInformationCachedTechnique>();
-
-  //     // Merge the cached options with the new options, ensuring no duplicates
-  //     [...options, ...cachedOptions].forEach((item) => {
-  //       mergedOptionsMap.set(item.value, {
-  //         ...item,
-  //         label: item.label,
-  //         value: item.value
-  //       });
-  //     });
-
-  //     return Array.from(mergedOptionsMap.values()).sort((a, b) => a.label.localeCompare(b.label));
-  //   };
+  // The currently selected option
+  const [currentOption, setCurrentOption] = useState<SamplingInformationCachedTechnique | null>(
+    getCurrentTechnique(dataGridProps, samplingInformationCache.cachedSampleLocationsRef)
+  );
+  const [options, setOptions] = useState<SamplingInformationCachedTechnique[]>(
+    getTechniquesForRow(dataGridProps.row.survey_sample_site_id, samplingInformationCache.cachedSampleLocationsRef)
+  );
+  // Is control loading (search in progress)
+  const [isLoading, setIsLoading] = useState(false);
 
   /**
    * Debounced function to get the options for the autocomplete, based on the search term.
@@ -90,50 +68,49 @@ export const MethodTechniqueDataGridEditCell = <DataGridType extends GridValidRo
    */
   const getOptions = useMemo(
     () =>
-      debounce(
-        async (
-          searchTerm: string,
-          onSearchResults: (searchedValues: SamplingInformationCachedTechnique[]) => void,
-          onComplete: () => void
-        ) => {
-          const keyword = searchTerm?.trim();
+      debounce(async (searchTerm: string) => {
+        const keyword = searchTerm?.trim();
 
-          const surveySampleSiteId = dataGridProps.row.survey_sample_site_id;
+        const surveySampleSiteId = dataGridProps.row.survey_sample_site_id;
 
-          if (!surveySampleSiteId) {
-            // Currently the control requires that a site be selected first, before techniques can be searched/selected
-            onComplete();
-            return;
-          }
+        if (!surveySampleSiteId) {
+          // Currently the control requires that a site be selected first, before techniques can be searched/selected
+          setIsLoading(false);
+          return;
+        }
 
-          return biohubApi.technique
-            .findTechniques({ survey_id: surveyContext.surveyId, sample_site_id: surveySampleSiteId, keyword })
-            .then((response) => {
-              if (!isMounted()) {
-                return;
-              }
+        const response = await biohubApi.technique.findTechniques({
+          survey_id: surveyContext.surveyId,
+          sample_site_id: surveySampleSiteId,
+          keyword
+        });
 
-              const options: SamplingInformationCachedTechnique[] = response.techniques.map((item) => ({
-                method_technique_id: item.method_technique_id,
-                survey_sample_site_id: surveySampleSiteId,
-                method_response_metric_id: item.method_response_metric_id,
-                label: item.name,
-                value: item.method_technique_id
-              }));
+        if (!isMounted()) {
+          return;
+        }
 
-              samplingInformationCache.updateCachedMethodTechniques(options);
+        const options: SamplingInformationCachedTechnique[] = response.techniques.map((item) => ({
+          method_technique_id: item.method_technique_id,
+          survey_sample_site_id: surveySampleSiteId,
+          method_response_metric_id: item.method_response_metric_id,
+          label: item.name,
+          value: item.method_technique_id
+        }));
 
-              const validOptions = getTechniquesForRow(
-                dataGridProps.row.survey_sample_site_id,
-                samplingInformationCache.cachedSampleLocationsRef
-              );
+        // Update the cached method techniques
+        samplingInformationCache.updateCachedMethodTechniques(options);
 
-              onSearchResults(validOptions);
-              onComplete();
-            });
-        },
-        500
-      ),
+        // Get the latest valid options for the current row
+        const validOptions = getTechniquesForRow(
+          dataGridProps.row.survey_sample_site_id,
+          samplingInformationCache.cachedSampleLocationsRef
+        );
+
+        // Set the options for the autocomplete
+        setOptions(validOptions);
+
+        setIsLoading(false);
+      }, 500),
     [
       biohubApi.technique,
       dataGridProps.row.survey_sample_site_id,
@@ -143,40 +120,92 @@ export const MethodTechniqueDataGridEditCell = <DataGridType extends GridValidRo
     ]
   );
 
-  /**
-   * Get the initial options for the autocomplete.
-   *
-   * @return {*}
-   */
-  const getInitialOptions = () => {
+  useEffect(() => {
     if (!dataGridProps.row.survey_sample_site_id) {
-      return [];
+      // If the site not selected, then unset any selected technique, as its value is dependent
+      // on the site.
+      setCurrentOption(null);
     }
 
-    return getTechniquesForRow(
-      dataGridProps.row.survey_sample_site_id,
-      samplingInformationCache.cachedSampleLocationsRef
-    );
-  };
+    if (currentOption?.survey_sample_site_id !== dataGridProps.row.survey_sample_site_id) {
+      // If the site has changed, then unset any selected technique, and update the options to reflect the
+      // valid techniques for the new site.
+      setCurrentOption(null);
+      setOptions(
+        getTechniquesForRow(dataGridProps.row.survey_sample_site_id, samplingInformationCache.cachedSampleLocationsRef)
+      );
+    }
+  }, [dataGridProps.row.survey_sample_site_id, currentOption, samplingInformationCache.cachedSampleLocationsRef]);
 
   return (
-    <AsyncAutocompleteDataGridEditCell
-      dataGridProps={dataGridProps}
-      getCurrentOption={getCurrentOption}
-      getInitialOptions={getInitialOptions}
-      getOptions={getOptions}
-      onSelectOption={(selectedOption) => {
-        // If the method technique is changed, clear sample period as is is dependent on the technique
+    <Autocomplete
+      id={`${dataGridProps.id}[${dataGridProps.field}]`}
+      noOptionsText="No matching options"
+      autoHighlight
+      fullWidth
+      blurOnSelect
+      handleHomeEndKeys
+      loading={isLoading}
+      value={currentOption}
+      options={options}
+      PaperComponent={({ children }) => <Paper sx={{ minWidth: '600px' }}>{children}</Paper>}
+      getOptionLabel={(option) => option.label}
+      isOptionEqualToValue={(option, value) => {
+        if (!option?.value || !value?.value) {
+          return false;
+        }
+        return option.value === value.value;
+      }}
+      filterOptions={(item) => item}
+      onChange={(_, selectedOption) => {
+        // Set the autocomplete value to the selected option
+        setCurrentOption(selectedOption);
+
+        // If the method technique is changed, clear sampling period as it is dependent on the method technique
         dataGridProps.api.setEditCellValue({
           id: dataGridProps.id,
           field: 'survey_sample_period_id',
           value: null
         });
 
-        onSelectOption?.(selectedOption);
+        // Set the data grid cell value for the selected method technique option
+        dataGridProps.api.setEditCellValue({
+          id: dataGridProps.id,
+          field: dataGridProps.field,
+          value: selectedOption?.value
+        });
+
+        setIsLoading(false);
       }}
-      placeholder="Search for a technique"
-      error={error}
+      onInputChange={(_, newInputValue, reason) => {
+        if (reason === 'input' && newInputValue !== '') {
+          // The user has updated the input field, and it is not empty, trigger the search.
+          // The other options ('clear', 'reset') should not trigger a search.
+          setIsLoading(true);
+          getOptions(newInputValue);
+        }
+      }}
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          inputRef={ref}
+          size="small"
+          variant="outlined"
+          fullWidth
+          error={error}
+          placeholder="Search for a technique"
+          InputProps={{
+            color: error ? 'error' : undefined,
+            ...params.InputProps,
+            endAdornment: (
+              <>
+                {isLoading ? <CircularProgress color="inherit" size={20} /> : null}
+                {params.InputProps.endAdornment}
+              </>
+            )
+          }}
+        />
+      )}
       renderOption={(renderProps, renderOption) => {
         return (
           <Box
@@ -194,6 +223,7 @@ export const MethodTechniqueDataGridEditCell = <DataGridType extends GridValidRo
           </Box>
         );
       }}
+      data-testid={dataGridProps.id}
     />
   );
 };

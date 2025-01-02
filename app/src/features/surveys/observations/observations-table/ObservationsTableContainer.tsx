@@ -92,35 +92,14 @@ const ObservationsTableContainer = () => {
         TaxonomyColDef({ hasError: observationsTableContext.hasError }),
         SampleSiteColDef({
           samplingInformationCache: sampleLocationsCache,
-          onSelectOption: (selectedSampleSite) => {
-            if (!selectedSampleSite) {
-              return;
-            }
-
-            sampleLocationsCache.updateCachedSampleLocationsRef({ selectedSites: [selectedSampleSite] });
-          },
           hasError: observationsTableContext.hasError
         }),
         MethodTechniqueColDef({
           samplingInformationCache: sampleLocationsCache,
-          onSelectOption: (selectedMethodTechnique) => {
-            if (!selectedMethodTechnique) {
-              return;
-            }
-
-            sampleLocationsCache.updateCachedSampleLocationsRef({ selectedTechniques: [selectedMethodTechnique] });
-          },
           hasError: observationsTableContext.hasError
         }),
         SamplePeriodColDef({
           samplingInformationCache: sampleLocationsCache,
-          onSelectOption: (selectedSamplePeriod) => {
-            if (!selectedSamplePeriod) {
-              return;
-            }
-
-            sampleLocationsCache.updateCachedSampleLocationsRef({ selectedPeriods: [selectedSamplePeriod] });
-          },
           hasError: observationsTableContext.hasError
         }),
         ObservationSubcountSignColDef({ observationSubcountSignOptions, hasError: observationsTableContext.hasError }),
