@@ -71,8 +71,8 @@ const animals = [
     label: 'FAQ',
     description: [
       <Typography variant="body1" gutterBottom>
-      <strong>FAQ</strong>
-    </Typography>,
+        <strong>FAQ</strong>
+      </Typography>,
       <Typography variant="body1" gutterBottom>
         <strong>I am trying to add an ecological unit to my animal and I am unable to make a selection.</strong>
       </Typography>,

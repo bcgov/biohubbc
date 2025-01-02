@@ -1,14 +1,13 @@
-
 import { SupportPageView } from '../constants/SupportPageView';
-import general from './general';
-import { DataMap } from './types';
-import structure from './structure';
-import foundation from './foundation';
-import dataStandards from './dataStandards';
 import animals from './animals';
-import telemetry from './telemetry';
-import observations from './observations';
 import contact from './contact';
+import dataStandards from './dataStandards';
+import foundation from './foundation';
+import general from './general';
+import observations from './observations';
+import structure from './structure';
+import telemetry from './telemetry';
+import { DataMap } from './types';
 
 export const dataMap: DataMap = {
   [SupportPageView.GENERAL]: general,

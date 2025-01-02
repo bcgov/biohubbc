@@ -30,7 +30,7 @@ export enum MarkdownTypeNameEnum {
 }
 
 export enum MarkdownTypeSupportNameEnum {
-  GENERAL = 'Support General',
+  SPI = 'SPI Data',
   STRUCTURE = 'Support Structure',
   FOUNDATION = 'Support Foundation',
   DATA_STANDARDS = 'Support Standards',

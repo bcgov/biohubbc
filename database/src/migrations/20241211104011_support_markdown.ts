@@ -21,7 +21,8 @@ export async function up(knex: Knex): Promise<void> {
       ('Animal Bulk Upload', 'Animal bulk upload markdown text details'),
       ('Observation Data Load', 'Observation data loading instructions markdown text'),
       ('Telemetry Manual Upload', 'Manual telemetry data loading instructions markdown text'),
-      ('Telemetry Automated', 'Automated telemetry data instructions markdown text');
+      ('Telemetry Automated', 'Automated telemetry data instructions markdown text'),
+      ('SPI Data', 'General information about SPI to SIMS data management');
 
 ----------------------------------------------------------------------------------------
 -- Insert into markdown by selecting markdown_type_id based on markdown_type.name
@@ -42,15 +43,17 @@ SELECT
             'Manual data can either be uploaded in bulk or through single record creation. \n\n##### Single Record Creation\n To create a single telemetry record, select the ADD RECORD button, and input your deployment information, your date, time, latitude and longitude of your collected record. Then, save your changes. If you are unhappy with the data you have loaded at any time, you can select your record(s) and then delete them using the vertical ellipses on the righthand side of the telemetry pane. \n\n##### Bulk Upload\n Static files of GPS location data can be loaded onto the telemetry page by csv through the large IMPORT button. The CSV is looking for the following five fields: \n- **DEVICE_ID**: as specified in your created deployment(s). \n- **DATE**: In YYYY-MM-DD format. \n- **TIME**: In military time, HH:MM:SS format. \n- **LATITUDE** and **LONGITUDE**: In WGS 1984 (CRS 4326) decimal degrees format. \n\n If your date/time falls outside of the start and end date constraints defined in your deployment for your device, the data will not submit properly.'
         WHEN mt.name = 'Telemetry Automated' THEN
             'SIMS has the functionality to automatically retrieve your GPS data from the vendor that sold you your device. So long as the vendor has not deleted their data, this process can occur even years after the inactivation of your device. \n\n For SIMS to retrieve these data, you will need to define your deployments first and then load the device keys you would have received upon the purchase of your telemetry device, onto the platform. These can be loaded through the large DEVICE KEYS button on the telemetry page. \n\n SIMS will retrieve your data on a nightly basis, allowing for close to real-time data population into your survey. SIMS will only retrieve the data from the device within the timeframe specified on your deployments. If you do not end your deployment once the device has been removed from your animal, the data will continue to populate into your survey. If you end your deployment, the data falling outside of your defined deployment dates will be removed.'
+         WHEN mt.name = 'SPI Data' THEN
+            'For decades, species data were submitted through the Species Inventory (SPI) database. SPI has historically been more submissions-centric, where data contributors could place pre-formatted templates of completed studies and send data off for submissions. SIMS is meant to replace SPI, and provide a tool for data management, where data contributors can directly interact with and load into the database, interact with their data at any stage of their study progress, and ammend data as necessary. \n\nAny data previously submitted using SPI will be migrated over to projects and surveys in SIMS, and assigned to team leads wherever possible. Thus eliminating any need to submit data twice. \n\nSPI has been around far longer than SIMS and has been developed to allow for data submissions for many specific scenarios. If you are finding that SIMS does not yet have the same capability of allowing your data in as SPI, please contact our team and we will work with you to figure out the best current avenue for your data, as well as modify SIMS to be more flexible for all studies.'
         END AS data
 FROM
     markdown_type mt
 WHERE
-    mt.name IN ('Animal Entity', 'Animal Event', 'Animal Bulk Upload', 'Observation Data Load', 'Telemetry Manual Upload', 'Telemetry Automated');
+    mt.name IN ('Animal Entity', 'Animal Event', 'Animal Bulk Upload', 'Observation Data Load', 'Telemetry Manual Upload', 'Telemetry Automated','SPI Data');
 
   `);
 }
 
 export async function down(knex: Knex): Promise<void> {
-    await knex.raw(``);
-  }
+  await knex.raw(``);
+}

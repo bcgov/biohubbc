@@ -22,7 +22,7 @@ export type SupportPageParams = {
 };
 
 export enum MarkdownTypeSupportNameEnum {
-  GENERAL = 'GENERAL',
+  SPI = 'SPI',
   STRUCTURE = 'STRUCTURE',
   FOUNDATION = 'FOUNDATION',
   DATA_STANDARDS = 'DATA_STANDARDS',

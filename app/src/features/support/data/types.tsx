@@ -11,7 +11,7 @@ interface IDataItem {
 export type DataMap = Partial<Record<SupportPageView, IDataItem[]>>;
 
 export const EnumMarkdownTypes: Partial<Record<SupportPageView, MarkdownTypeSupportNameEnum[]>> = {
-  [SupportPageView.GENERAL]: [MarkdownTypeSupportNameEnum.GENERAL],
+  [SupportPageView.GENERAL]: [MarkdownTypeSupportNameEnum.SPI],
   [SupportPageView.STRUCTURE]: [MarkdownTypeSupportNameEnum.STRUCTURE],
   [SupportPageView.FOUNDATION]: [MarkdownTypeSupportNameEnum.FOUNDATION],
   [SupportPageView.DATA_STANDARDS]: [MarkdownTypeSupportNameEnum.DATA_STANDARDS],
@@ -21,7 +21,7 @@ export const EnumMarkdownTypes: Partial<Record<SupportPageView, MarkdownTypeSupp
     MarkdownTypeSupportNameEnum.ANIMAL_BULK
   ],
   [SupportPageView.TELEMETRY]: [
-    MarkdownTypeSupportNameEnum.TELEMETRY_MANUAL, 
+    MarkdownTypeSupportNameEnum.TELEMETRY_MANUAL,
     MarkdownTypeSupportNameEnum.TELEMETRY_AUTO
   ],
   [SupportPageView.OBSERVATIONS]: [MarkdownTypeSupportNameEnum.OBSERVATIONS]
