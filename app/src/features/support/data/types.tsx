@@ -14,7 +14,7 @@ export const EnumMarkdownTypes: Partial<Record<SupportPageView, MarkdownTypeSupp
   [SupportPageView.GENERAL]: [MarkdownTypeSupportNameEnum.SPI],
   [SupportPageView.STRUCTURE]: [MarkdownTypeSupportNameEnum.STRUCTURE],
   [SupportPageView.FOUNDATION]: [MarkdownTypeSupportNameEnum.FOUNDATION],
-  [SupportPageView.DATA_STANDARDS]: [MarkdownTypeSupportNameEnum.DATA_STANDARDS],
+  [SupportPageView.DATA_STANDARDS]: [MarkdownTypeSupportNameEnum.ITIS],
   [SupportPageView.ANIMALS]: [
     MarkdownTypeSupportNameEnum.ANIMAL_ENTITY,
     MarkdownTypeSupportNameEnum.ANIMAL_EVENT,

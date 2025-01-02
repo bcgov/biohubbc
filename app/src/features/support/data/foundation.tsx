@@ -6,8 +6,14 @@ const foundation = [
     label: 'Foundational Data',
     description: [
       <Typography variant="body1" gutterBottom>
-        Explore the core elements needed to organize ecological data, such as sites, blocks, strata, and techniques,
-        which form the foundation for effective data management in SIMS.
+        This foundational data section will detail the elements of your survey that are required to establish the
+        structure and context needed to support meaningful ecological data collection. By defining key components like
+        strata, blocks, sampling techniques, sampling sites, and attachments, foundational data ensure that survey
+        observation records and broader sampling effort are organized and aligned within the objectives of the survey.
+      </Typography>,
+      <Typography variant="body1" gutterBottom>
+        Establishing foundational data in your survey ensures that sampling objectives are clearly defined and that
+        metadata for sampling efforts are well-documented, accessible and interpretable.
       </Typography>
     ],
     markdownType: EnumMarkdownTypes[SupportPageView.FOUNDATION]?.[0] || MarkdownTypeSupportNameEnum.FOUNDATION

@@ -33,7 +33,7 @@ export enum MarkdownTypeSupportNameEnum {
   SPI = 'SPI Data',
   STRUCTURE = 'Support Structure',
   FOUNDATION = 'Support Foundation',
-  DATA_STANDARDS = 'Support Standards',
+  ITIS = 'ITIS Standards',
   ANIMAL_ENTITY = 'Animal Entity',
   ANIMAL_EVENT = 'Animal Event',
   ANIMAL_BULK = 'Animal Bulk Upload',
