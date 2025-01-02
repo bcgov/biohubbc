@@ -63,10 +63,11 @@ const TaxonomyDataGridEditCell = <DataGridType extends GridValidRowModel>(
       debounce(
         async (
           searchTerm: string,
-          onSearchResults: (searchedValues: IAutocompleteDataGridTaxonomyOption[]) => void
+          onSearchResults: (searchedValues: IAutocompleteDataGridTaxonomyOption[]) => void,
+          onComplete: () => void
         ) => {
           if (!searchTerm) {
-            onSearchResults([]);
+            onComplete();
             return;
           }
 
@@ -81,7 +82,9 @@ const TaxonomyDataGridEditCell = <DataGridType extends GridValidRowModel>(
             rank: item.rank,
             kingdom: item.kingdom
           }));
+
           onSearchResults(options);
+          onComplete();
         },
         500
       ),

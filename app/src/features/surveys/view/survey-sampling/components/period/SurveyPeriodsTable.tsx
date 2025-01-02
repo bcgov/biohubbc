@@ -4,13 +4,13 @@ import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import dayjs from 'dayjs';
 import { useCodesContext } from 'hooks/useContext';
-import { IFindSamplePeriodRecord } from 'interfaces/useSamplingPeriodApi.interface';
+import { GetSamplingPeriod } from 'interfaces/useSamplingPeriodApi.interface';
 import { useEffect } from 'react';
 import { formatTimeDifference } from 'utils/datetime';
 import { getCodesName } from 'utils/Utils';
 
 interface ISamplingPeriodTableProps {
-  periods: IFindSamplePeriodRecord[];
+  periods: GetSamplingPeriod[];
   paginationModel: GridPaginationModel;
   setPaginationModel: React.Dispatch<React.SetStateAction<GridPaginationModel>>;
   sortModel: GridSortModel;
@@ -19,10 +19,10 @@ interface ISamplingPeriodTableProps {
 }
 
 /**
- * Renders a table of survey sampling periods.
+ * Renders a table of survey sampling periods, for the Survey page.
  *
- * @param props {<ISamplingPeriodTableProps>}
- * @returns {*}
+ * @param {ISamplingPeriodTableProps} props
+ * @return {*}
  */
 export const SurveyPeriodsTable = (props: ISamplingPeriodTableProps) => {
   const { periods, paginationModel, setPaginationModel, sortModel, setSortModel, rowCount } = props;
@@ -33,18 +33,18 @@ export const SurveyPeriodsTable = (props: ISamplingPeriodTableProps) => {
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
 
-  const columns: GridColDef<IFindSamplePeriodRecord>[] = [
+  const columns: GridColDef<GetSamplingPeriod>[] = [
     {
-      field: 'sample_site',
+      field: 'survey_sample_site_name',
       headerName: 'Site',
       flex: 1,
       sortable: false, // TODO not yet supported by the API
       valueGetter: (params) => {
-        return params.row.sample_site.name;
+        return params.row.survey_sample_site.name;
       }
     },
     {
-      field: 'sample_method',
+      field: 'method_technique_name',
       headerName: 'Technique',
       flex: 1,
       sortable: false, // TODO not yet supported by the API
@@ -116,7 +116,7 @@ export const SurveyPeriodsTable = (props: ISamplingPeriodTableProps) => {
       autoHeight={false}
       getRowHeight={() => 'auto'}
       rows={periods}
-      getRowId={(row: IFindSamplePeriodRecord) => row.survey_sample_period_id}
+      getRowId={(row: GetSamplingPeriod) => row.survey_sample_period_id}
       columns={columns}
       checkboxSelection={false}
       disableRowSelectionOnClick

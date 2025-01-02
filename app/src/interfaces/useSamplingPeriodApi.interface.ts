@@ -30,30 +30,14 @@ export type GetSamplingPeriod = {
 };
 
 export type GetSamplingPeriodsPaginated = {
-  samplePeriods: GetSamplingPeriod[];
+  periods: GetSamplingPeriod[];
   pagination: ApiPaginationResponseParams;
 };
 
-export type FindSamplingPeriod = {
-  survey_sample_period_id: number;
-  survey_sample_site_id: number;
-  method_technique_id: number;
-  start_date: string;
-  end_date: string;
-  start_time: string;
-  end_time: string;
-  method_technique: {
-    method_technique_id: number;
-    name: string;
-  };
-  sample_site: {
-    survey_sample_site_id: number;
-    name: string;
-  };
-};
+export type FindSamplingPeriod = GetSamplingPeriod;
 
 export type FindSamplingPeriods = {
-  samplePeriods: FindSamplingPeriod[];
+  periods: FindSamplingPeriod[];
   pagination: ApiPaginationResponseParams;
 };
 

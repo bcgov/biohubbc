@@ -20,12 +20,18 @@ import { SurveySamplingHeader } from './components/SurveySamplingHeader';
 
 const pageSizeOptions = [10, 25, 50];
 
+// The different views (tabs) for the Sampling Information section
 export enum SurveySamplingView {
   TECHNIQUES = 'TECHNIQUES',
   SITES = 'SITES',
   PERIODS = 'PERIODS'
 }
 
+/**
+ * Wrapping component for the Sampling Information section, for the Survey page.
+ *
+ * @return {*}
+ */
 export const SurveySamplingTableContainer = () => {
   const surveyContext = useSurveyContext();
   const biohubApi = useBiohubApi();
@@ -148,8 +154,13 @@ export const SurveySamplingTableContainer = () => {
 
   // Data
   const techniques = techniquesDataLoader.data?.techniques ?? [];
+  const techniquesCount = techniquesDataLoader.data?.pagination.total ?? 0;
+
   const sampleSites = samplingSitesDataLoader.data?.sites ?? [];
+  const sampleSitesCount = samplingSitesDataLoader.data?.pagination.total ?? 0;
+
   const samplePeriods = samplingPeriodsDataLoader.data?.periods ?? [];
+  const samplePeriodsCount = samplingPeriodsDataLoader.data?.pagination ?? 0;
 
   return (
     <Box>
@@ -181,7 +192,7 @@ export const SurveySamplingTableContainer = () => {
                 </Box>
               }
               isLoadingFallbackDelay={100}
-              hasNoData={!techniques.length}
+              hasNoData={!techniquesCount}
               hasNoDataFallback={
                 <NoDataOverlay
                   height="100%"
@@ -215,7 +226,7 @@ export const SurveySamplingTableContainer = () => {
                 </Box>
               }
               isLoadingFallbackDelay={100}
-              hasNoData={!sampleSites.length}
+              hasNoData={!sampleSitesCount}
               hasNoDataFallback={
                 <NoDataOverlay
                   height="100%"
@@ -238,7 +249,7 @@ export const SurveySamplingTableContainer = () => {
             </LoadingGuard>
           )}
 
-          {/* TODO: Add pagination to the survey periods request */}
+          {/* TODO: Add pagination to the survey periods request? */}
           {activeView === SurveySamplingView.PERIODS && (
             <LoadingGuard
               isLoading={
@@ -251,7 +262,7 @@ export const SurveySamplingTableContainer = () => {
                 </Box>
               }
               isLoadingFallbackDelay={100}
-              hasNoData={!samplePeriods.length}
+              hasNoData={!samplePeriodsCount}
               hasNoDataFallback={
                 <NoDataOverlay
                   height="100%"

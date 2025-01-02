@@ -4,10 +4,10 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import { SamplingSiteListPeriod } from 'features/surveys/observations/sampling-sites/site/accordion-details/method/period/SamplingSiteListPeriod';
 import { useObservationsContext, useObservationsPageContext } from 'hooks/useContext';
-import { IGetSampleMethodDetails } from 'interfaces/useSamplingSiteApi.interface';
 
 export interface ISamplingSiteListMethodProps {
-  sampleMethod: IGetSampleMethodDetails;
+  // TODO Nick
+  sampleMethod: any;
 }
 
 /**

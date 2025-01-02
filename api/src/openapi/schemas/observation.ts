@@ -1,6 +1,5 @@
 import { OpenAPIV3 } from 'openapi-types';
 import { paginationResponseSchema } from './pagination';
-import { SampleLocationSchema } from './sample-site';
 
 export const observervationsWithSubcountDataSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
@@ -17,16 +16,17 @@ export const observervationsWithSubcountDataSchema: OpenAPIV3.SchemaObject = {
           'survey_id',
           'itis_tsn',
           'itis_scientific_name',
-          'survey_sample_site_id',
-          'method_technique_id',
-          'survey_sample_period_id',
           'latitude',
           'longitude',
           'count',
           'observation_date',
           'observation_time',
+          'subcounts',
+          'survey_sample_site_id',
           'survey_sample_site_name',
-          'survey_sample_method_name',
+          'method_technique_id',
+          'method_technique_name',
+          'survey_sample_period_id',
           'survey_sample_period_start_datetime'
         ],
         properties: {
@@ -43,21 +43,6 @@ export const observervationsWithSubcountDataSchema: OpenAPIV3.SchemaObject = {
           },
           itis_scientific_name: {
             type: 'string',
-            nullable: true
-          },
-          survey_sample_site_id: {
-            type: 'integer',
-            minimum: 1,
-            nullable: true
-          },
-          method_technique_id: {
-            type: 'integer',
-            minimum: 1,
-            nullable: true
-          },
-          survey_sample_period_id: {
-            type: 'integer',
-            minimum: 1,
             nullable: true
           },
           latitude: {
@@ -80,18 +65,6 @@ export const observervationsWithSubcountDataSchema: OpenAPIV3.SchemaObject = {
             nullable: true
           },
           observation_time: {
-            type: 'string',
-            nullable: true
-          },
-          survey_sample_site_name: {
-            type: 'string',
-            nullable: true
-          },
-          survey_sample_method_name: {
-            type: 'string',
-            nullable: true
-          },
-          survey_sample_period_start_datetime: {
             type: 'string',
             nullable: true
           },
@@ -214,6 +187,33 @@ export const observervationsWithSubcountDataSchema: OpenAPIV3.SchemaObject = {
                 }
               }
             }
+          },
+          survey_sample_site_id: {
+            type: 'integer',
+            minimum: 1,
+            nullable: true
+          },
+          survey_sample_site_name: {
+            type: 'string',
+            nullable: true
+          },
+          method_technique_id: {
+            type: 'integer',
+            minimum: 1,
+            nullable: true
+          },
+          method_technique_name: {
+            type: 'string',
+            nullable: true
+          },
+          survey_sample_period_id: {
+            type: 'integer',
+            minimum: 1,
+            nullable: true
+          },
+          survey_sample_period_start_datetime: {
+            type: 'string',
+            nullable: true
           }
         }
       }
@@ -227,7 +227,7 @@ export const observervationsWithSubcountDataSchema: OpenAPIV3.SchemaObject = {
         'quantitative_measurements',
         'qualitative_environments',
         'quantitative_environments',
-        'sample_sites'
+        'sampling_data'
       ],
       properties: {
         observationCount: {
@@ -415,7 +415,91 @@ export const observervationsWithSubcountDataSchema: OpenAPIV3.SchemaObject = {
             }
           }
         },
-        sample_sites: SampleLocationSchema
+        sampling_data: {
+          type: 'array',
+          items: {
+            type: 'object',
+            required: [
+              'survey_sample_period_id',
+              'survey_sample_site_id',
+              'method_technique_id',
+              'start_date',
+              'start_time',
+              'end_date',
+              'end_time',
+              'method_technique',
+              'survey_sample_site'
+            ],
+            additionalProperties: false,
+            properties: {
+              survey_sample_period_id: {
+                type: 'integer',
+                minimum: 1
+              },
+              survey_sample_site_id: {
+                type: 'integer',
+                minimum: 1
+              },
+              method_technique_id: {
+                type: 'integer',
+                minimum: 1
+              },
+              start_date: {
+                type: 'string'
+              },
+              start_time: {
+                type: 'string',
+                nullable: true
+              },
+              end_date: {
+                type: 'string'
+              },
+              end_time: {
+                type: 'string',
+                nullable: true
+              },
+              method_technique: {
+                type: 'object',
+                description: 'Details about the technique of the survey sample period',
+                required: ['method_technique_id', 'name', 'description', 'method_response_metric_id'],
+                properties: {
+                  method_technique_id: {
+                    type: 'integer',
+                    minimum: 1,
+                    description: 'Primary key of the method technique record'
+                  },
+                  name: {
+                    type: 'string',
+                    description: 'Name of the method technique'
+                  },
+                  description: {
+                    type: 'string',
+                    description: 'Description of the method technique',
+                    nullable: true
+                  },
+                  method_response_metric_id: {
+                    type: 'integer',
+                    minimum: 1
+                  }
+                }
+              },
+              survey_sample_site: {
+                type: 'object',
+                required: ['survey_sample_site_id', 'name'],
+                additionalProperties: false,
+                properties: {
+                  survey_sample_site_id: {
+                    type: 'integer',
+                    minimum: 1
+                  },
+                  name: {
+                    type: 'string'
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     pagination: { ...paginationResponseSchema }

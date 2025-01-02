@@ -6,7 +6,7 @@ import { SurveySamplePeriodModel, SurveySamplePeriodRecord } from '../database-m
 import { SurveySampleSiteRecord } from '../database-models/survey_sample_site';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
-import { IPeriodAdvancedFilters } from '../models/sampling-locations-view';
+import { IPeriodAdvancedFilters } from '../models/period-view';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { BaseRepository } from './base-repository';
 
@@ -67,7 +67,7 @@ export const FindSamplePeriodRecord = SurveySamplePeriodRecord.pick({
     })
   })
   .extend({
-    sample_site: SurveySampleSiteRecord.pick({
+    survey_sample_site: SurveySampleSiteRecord.pick({
       survey_sample_site_id: true,
       name: true
     })
@@ -99,40 +99,9 @@ export class SamplePeriodRepository extends BaseRepository {
 
     const queryBuilder = knex.queryBuilder();
 
-    queryBuilder
-      .select([
-        'survey_sample_period.survey_sample_period_id',
-        'survey_sample_period.survey_sample_site_id',
-        'survey_sample_period.method_technique_id',
-        'survey_sample_period.start_date',
-        'survey_sample_period.end_date',
-        'survey_sample_period.start_time',
-        'survey_sample_period.end_time',
-        knex.raw(`
-          jsonb_build_object(
-            'survey_sample_site_id', survey_sample_site.survey_sample_site_id,
-            'name', survey_sample_site.name
-          ) AS survey_sample_site,
-        `),
-        knex.raw(`
-          jsonb_build_object(
-            'method_technique_id', method_technique.method_technique_id,
-            'method_response_metric_id', method_technique.method_response_metric_id,
-            'name', method_technique.name,
-            'description', method_technique.description
-          ) AS method_technique    
-        `)
-      ])
-      .from('survey_sample_period')
-      .innerJoin('method_technique', 'method_technique.method_technique_id', 'survey_sample_period.method_technique_id')
-      .innerJoin(
-        'survey_sample_site',
-        'survey_sample_period.survey_sample_site_id',
-        'survey_sample_site.survey_sample_site_id'
-      )
-      .where('survey_sample_site.survey_id', surveyId)
-      .orderBy('survey_sample_period.start_date')
-      .orderBy('survey_sample_period.start_time');
+    queryBuilder.modify(this._getSamplingPeriodBaseQuery);
+
+    queryBuilder.where('survey_sample_site.survey_id', surveyId);
 
     if (options?.pagination) {
       queryBuilder.limit(options.pagination.limit).offset((options.pagination.page - 1) * options.pagination.limit);
@@ -141,6 +110,9 @@ export class SamplePeriodRepository extends BaseRepository {
         queryBuilder.orderBy(options.pagination.sort, options.pagination.order);
       }
     }
+
+    console.log(queryBuilder.toSQL().toNative().sql);
+    console.log(queryBuilder.toSQL().toNative().bindings);
 
     const response = await this.connection.knex(queryBuilder, SurveySamplePeriodDetails);
 
@@ -331,8 +303,9 @@ export class SamplePeriodRepository extends BaseRepository {
   /**
    * Get the base query for retrieving survey sample periods.
    *
-   * @param {Knex} knex The Knex instance.
-   * @return {*}  {Knex.QueryBuilder} The base query for retrieving survey sample periods
+   * @param {Knex.QueryBuilder} queryBuilder
+   * @return {*}  {Knex.QueryBuilder} The base query for retrieving survey sample periods.
+   * @memberof SamplePeriodRepository
    */
   _getSamplingPeriodBaseQuery(queryBuilder: Knex.QueryBuilder): Knex.QueryBuilder {
     const knex = getKnex();
@@ -348,14 +321,16 @@ export class SamplePeriodRepository extends BaseRepository {
         'survey_sample_period.end_time',
         knex.raw(`
         json_build_object(
-          'method_technique_id', method_technique.method_technique_id,
-          'name', method_technique.name
-        ) as method_technique`),
-        knex.raw(`
-        json_build_object(
            'survey_sample_site_id', survey_sample_site.survey_sample_site_id,
            'name', survey_sample_site.name
-        ) as sample_site`)
+        ) as survey_sample_site`),
+        knex.raw(`
+        json_build_object(
+          'method_technique_id', method_technique.method_technique_id,
+          'method_response_metric_id', method_technique.method_response_metric_id,
+          'name', method_technique.name,
+          'description', method_technique.description
+        ) as method_technique`)
       )
       .from('survey_sample_period')
       .join('method_technique', 'method_technique.method_technique_id', 'survey_sample_period.method_technique_id')
@@ -371,8 +346,11 @@ export class SamplePeriodRepository extends BaseRepository {
   /**
    * Get the base query for retrieving survey sample periods.
    *
-   * @param {Knex} knex The Knex instance.
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId
+   * @param {IPeriodAdvancedFilters} filterFields
    * @return {*}  {Knex.QueryBuilder} The base query for retrieving survey sample periods
+   * @memberof SamplePeriodRepository
    */
   _makeFindSamplingPeriodBaseQuery(
     isUserAdmin: boolean,
@@ -434,10 +412,10 @@ export class SamplePeriodRepository extends BaseRepository {
    *
    * @param {boolean} isUserAdmin Whether the user is an admin.
    * @param {number | null} systemUserId The user's ID.
-   * @param {ISiteAdvancedFilters} filterFields The filter fields to apply.
+   * @param {IPeriodAdvancedFilters} filterFields The filter fields to apply.
    * @param {ApiPaginationOptions} [pagination] The pagination options.
    * @return {*}  {Promise<FindSamplePeriodRecord[]>}
-   * @memberof SampleLocationRepository
+   * @memberof SamplePeriodRepository
    */
   async findSamplePeriods(
     isUserAdmin: boolean,
@@ -465,9 +443,9 @@ export class SamplePeriodRepository extends BaseRepository {
    *
    * @param {boolean} isUserAdmin Whether the user is an admin.
    * @param {number | null} systemUserId The user's ID.
-   * @param {ISiteAdvancedFilters} filterFields The filter fields to apply.
+   * @param {IPeriodAdvancedFilters} filterFields The filter fields to apply.
    * @return {*}  {Promise<number>}
-   * @memberof SampleLocationRepository
+   * @memberof SamplePeriodRepository
    */
   async findSamplePeriodsCount(
     isUserAdmin: boolean,

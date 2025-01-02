@@ -2,25 +2,26 @@ import Box from '@mui/material/Box';
 import { grey } from '@mui/material/colors';
 import { GridRenderEditCellParams, GridValidRowModel } from '@mui/x-data-grid';
 import AsyncAutocompleteDataGridEditCell from 'components/data-grid/autocomplete/AsyncAutocompleteDataGridEditCell';
-import { IAutocompleteDataGridSampleSiteOption } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/sites/SampleSiteDataGrid.interface';
+import {
+  SamplingInformationCache,
+  SamplingInformationCachedSite
+} from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/useSamplingInformationCache';
 import { getCurrentSite } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/utils';
-import { SampleLocationCache } from 'features/surveys/observations/observations-table/ObservationsTableContainer';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
 import useIsMounted from 'hooks/useIsMounted';
-import { IGetSampleLocationNonSpatialDetails } from 'interfaces/useSamplingSiteApi.interface';
 import debounce from 'lodash-es/debounce';
-import { MutableRefObject, useMemo } from 'react';
+import { useMemo } from 'react';
 
 export interface ISampleSiteDataGridCellProps<DataGridType extends GridValidRowModel> {
   dataGridProps: GridRenderEditCellParams<DataGridType>;
-  cachedSampleLocationsRef: MutableRefObject<SampleLocationCache | undefined>;
-  onSelectOption?: (selectedSampleSite: IGetSampleLocationNonSpatialDetails | null) => void;
+  samplingInformationCache: SamplingInformationCache;
+  onSelectOption?: (selectedSampleSite: SamplingInformationCachedSite | null) => void;
   error?: boolean;
 }
 
 /**
- * Data grid taxonomy component for edit.
+ * Data survey sample site component for edit.
  *
  * @template DataGridType
  * @template ValueType
@@ -30,7 +31,7 @@ export interface ISampleSiteDataGridCellProps<DataGridType extends GridValidRowM
 export const SampleSiteDataGridEditCell = <DataGridType extends GridValidRowModel>(
   props: ISampleSiteDataGridCellProps<DataGridType>
 ) => {
-  const { dataGridProps, cachedSampleLocationsRef, onSelectOption, error } = props;
+  const { dataGridProps, samplingInformationCache, onSelectOption, error } = props;
 
   const biohubApi = useBiohubApi();
   const surveyContext = useSurveyContext();
@@ -40,45 +41,32 @@ export const SampleSiteDataGridEditCell = <DataGridType extends GridValidRowMode
   /**
    * Get the current option for the autocomplete, if the field has a value.
    *
-   * @return {*}  {(Promise<IAutocompleteDataGridSampleSiteOption | null>)}
+   * @return {*}  {(Promise<SamplingInformationCachedSite | null>)}
    */
-  const getCurrentOption = async (): Promise<IAutocompleteDataGridSampleSiteOption | null> => {
-    const currentSite = getCurrentSite(dataGridProps, cachedSampleLocationsRef);
-
-    if (!currentSite) {
-      return null;
-    }
-
-    return {
-      ...currentSite,
-      label: currentSite.name,
-      value: currentSite.survey_sample_site_id
-    };
+  const getCurrentOption = async (): Promise<SamplingInformationCachedSite | null> => {
+    return getCurrentSite(dataGridProps, samplingInformationCache.cachedSampleLocationsRef);
   };
 
   /**
    * Merge the cached sample locations with the new options returned by the async search, removing duplicates.
    *
-   * @param {IGetSampleLocationNonSpatialDetails[]} cachedOptions
-   * @param {IGetSampleLocationNonSpatialDetails[]} options
+   * @param {SamplingInformationCachedSite[]} cachedOptions
+   * @param {SamplingInformationCachedSite[]} options
    * @return {*}
    */
-  const mergeOptions = (
-    cachedOptions: IGetSampleLocationNonSpatialDetails[],
-    options: IGetSampleLocationNonSpatialDetails[]
-  ) => {
-    const mergedOptionsMap = new Map<number, IAutocompleteDataGridSampleSiteOption>();
+  const mergeOptions = (cachedOptions: SamplingInformationCachedSite[], options: SamplingInformationCachedSite[]) => {
+    const mergedOptionsMap = new Map<number, SamplingInformationCachedSite>();
 
     // Merge the cached options with the new options, ensuring no duplicates
     [...options, ...cachedOptions].forEach((item) => {
-      mergedOptionsMap.set(item.survey_sample_site_id, {
+      mergedOptionsMap.set(item.value, {
         ...item,
-        label: item.name,
-        value: item.survey_sample_site_id
+        label: item.label,
+        value: item.value
       });
     });
 
-    return Array.from(mergedOptionsMap.values()).sort((a, b) => a.name.localeCompare(b.name));
+    return Array.from(mergedOptionsMap.values()).sort((a, b) => a.label.localeCompare(b.label));
   };
 
   /**
@@ -90,39 +78,35 @@ export const SampleSiteDataGridEditCell = <DataGridType extends GridValidRowMode
       debounce(
         async (
           searchTerm: string,
-          onSearchResults: (searchedValues: IAutocompleteDataGridSampleSiteOption[]) => void
+          onSearchResults: (searchedValues: SamplingInformationCachedSite[]) => void,
+          onComplete: () => void
         ) => {
           const keyword = searchTerm?.trim();
 
-          biohubApi.samplingSite
-            .getSampleSites(surveyContext.projectId, surveyContext.surveyId, { keyword })
+          return biohubApi.samplingSite
+            .findSampleSites({ survey_id: surveyContext.surveyId, keyword })
             .then((response) => {
-              const options = response.sampleSites.map((item) => ({
+              if (!isMounted()) {
+                return;
+              }
+
+              const options = response.sites.map((item) => ({
                 ...item,
                 label: item.name,
                 value: item.survey_sample_site_id
               }));
 
-              if (!isMounted()) {
-                return;
-              }
+              const cachedOptions = samplingInformationCache.cachedSampleLocationsRef.current?.sites ?? [];
 
-              const mergedOptions = mergeOptions(cachedSampleLocationsRef.current?.locations ?? [], options);
+              const mergedOptions = mergeOptions(cachedOptions, options);
 
               onSearchResults(mergedOptions);
+              onComplete();
             });
-
-          onSearchResults(
-            cachedSampleLocationsRef.current?.locations.map((item) => ({
-              ...item,
-              label: item.name,
-              value: item.survey_sample_site_id
-            })) ?? []
-          );
         },
         500
       ),
-    [biohubApi.samplingSite, cachedSampleLocationsRef, isMounted, surveyContext.projectId, surveyContext.surveyId]
+    [biohubApi.samplingSite, isMounted, samplingInformationCache.cachedSampleLocationsRef, surveyContext.surveyId]
   );
 
   /**
@@ -131,13 +115,7 @@ export const SampleSiteDataGridEditCell = <DataGridType extends GridValidRowMode
    * @return {*}
    */
   const getInitialOptions = () => {
-    return (
-      cachedSampleLocationsRef.current?.locations.map((item) => ({
-        ...item,
-        label: item.name,
-        value: item.survey_sample_site_id
-      })) ?? []
-    );
+    return samplingInformationCache.cachedSampleLocationsRef.current?.sites ?? [];
   };
 
   return (
@@ -150,7 +128,7 @@ export const SampleSiteDataGridEditCell = <DataGridType extends GridValidRowMode
         // If the sample site is changed, clear the sample method and period as they are dependent on the site
         dataGridProps.api.setEditCellValue({
           id: dataGridProps.id,
-          field: 'survey_sample_method_id',
+          field: 'method_technique_id',
           value: null
         });
         dataGridProps.api.setEditCellValue({

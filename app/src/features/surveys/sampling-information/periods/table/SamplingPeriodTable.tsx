@@ -15,24 +15,13 @@ import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { SamplePeriodI18N } from 'constants/i18n';
 import dayjs from 'dayjs';
 import { useDialogContext, useSurveyContext } from 'hooks/useContext';
-import { IFindSamplePeriodRecord } from 'interfaces/useSamplingPeriodApi.interface';
+import { GetSamplingPeriod } from 'interfaces/useSamplingPeriodApi.interface';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { formatTimeDifference } from 'utils/datetime';
 
-export interface ISamplingSitePeriodRowData {
-  survey_sample_period_id: number;
-  sample_site: string;
-  sample_method: string;
-  method_response_metric_id: number;
-  start_date: string | null;
-  end_date: string | null;
-  start_time: string | null;
-  end_time: string | null;
-}
-
 interface ISamplingPeriodTableProps {
-  periods: ISamplingSitePeriodRowData[];
+  periods: GetSamplingPeriod[];
   paginationModel: GridPaginationModel;
   setPaginationModel: React.Dispatch<React.SetStateAction<GridPaginationModel>>;
   sortModel: GridSortModel;
@@ -46,7 +35,7 @@ interface ISamplingPeriodTableProps {
 }
 
 /**
- * Renders a table of sampling periods.
+ * Renders a table of survey sampling periods, for the Manage Sampling Information page.
  *
  * @param {ISamplingPeriodTableProps} props
  * @returns {*}
@@ -131,7 +120,7 @@ export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
     });
   };
 
-  const columns: GridColDef<IFindSamplePeriodRecord>[] = [
+  const columns: GridColDef<GetSamplingPeriod>[] = [
     {
       field: 'id',
       headerName: 'ID',
@@ -148,14 +137,22 @@ export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
       )
     },
     {
-      field: 'sample_site',
+      field: 'survey_sample_site_name',
       headerName: 'Site',
-      flex: 1
+      flex: 1,
+      sortable: false, // TODO not yet supported by the API
+      valueGetter: (params) => {
+        return params.row.survey_sample_site.name;
+      }
     },
     {
-      field: 'sample_method',
+      field: 'method_technique_name',
       headerName: 'Technique',
-      flex: 1
+      flex: 1,
+      sortable: false, // TODO not yet supported by the API
+      valueGetter: (params) => {
+        return params.row.method_technique.name;
+      }
     },
     {
       field: 'start_date',
@@ -289,7 +286,7 @@ export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
           autoHeight={false}
           getRowHeight={() => 'auto'}
           rows={periods}
-          getRowId={(row: ISamplingSitePeriodRowData) => row.survey_sample_period_id}
+          getRowId={(row: GetSamplingPeriod) => row.survey_sample_period_id}
           columns={columns}
           checkboxSelection={true}
           rowSelectionModel={selectedRows}

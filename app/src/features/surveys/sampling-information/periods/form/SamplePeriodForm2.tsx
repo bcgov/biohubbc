@@ -4,8 +4,8 @@ import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { ISurveySamplePeriodPeriodFormData } from 'features/surveys/sampling-information/periods/form/components/periods/SamplePeriodPeriodForm';
-import { SamplingPeriodPeriodForm2 } from 'features/surveys/sampling-information/periods/form/components/periods/SamplingPeriodPeriodForm2';
-import { SamplingPeriodSiteForm2 } from 'features/surveys/sampling-information/periods/form/components/sites/SamplingPeriodSiteForm2';
+import { SamplingPeriodPeriodFormContainer } from 'features/surveys/sampling-information/periods/form/components/periods/SamplingPeriodPeriodFormContainer';
+import { SamplingPeriodSiteForm } from 'features/surveys/sampling-information/periods/form/components/sites/SamplingPeriodSiteForm';
 import SamplePeriodTechniqueForm from 'features/surveys/sampling-information/periods/form/components/technique/SamplePeriodTechniqueForm';
 import { useFormikContext } from 'formik';
 import { useSurveyContext } from 'hooks/useContext';
@@ -44,8 +44,6 @@ export const SamplePeriodForm2 = (props: ISamplePeriodFormProps) => {
 
   const { submitForm } = useFormikContext<ISurveySamplePeriodFormData>();
 
-  console.log('1', editData);
-
   return (
     <>
       <HorizontalSplitFormComponent title="Technique" summary="Select a technique">
@@ -55,13 +53,13 @@ export const SamplePeriodForm2 = (props: ISamplePeriodFormProps) => {
       <Divider sx={{ my: 5 }} />
 
       <HorizontalSplitFormComponent title="Site" summary="Select a site">
-        <SamplingPeriodSiteForm2 editData={editData?.survey_sample_site} />
+        <SamplingPeriodSiteForm editData={editData?.survey_sample_site} />
       </HorizontalSplitFormComponent>
 
       <Divider sx={{ my: 5 }} />
 
       <HorizontalSplitFormComponent title="Period" summary="Enter period information">
-        <SamplingPeriodPeriodForm2 disableMultiplePeriods={editData !== undefined} />
+        <SamplingPeriodPeriodFormContainer disableMultiplePeriods={editData !== undefined} />
       </HorizontalSplitFormComponent>
 
       <Divider sx={{ my: 5 }} />

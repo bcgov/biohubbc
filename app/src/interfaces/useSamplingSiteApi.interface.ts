@@ -1,5 +1,3 @@
-import { ISurveySampleMethodFormData } from 'features/surveys/sampling-information/periods/create/CreateSamplePeriodPage';
-import { ISurveySamplePeriodFormData } from 'features/surveys/sampling-information/periods/form/components/periods/SamplePeriodPeriodForm';
 import { Feature } from 'geojson';
 import { ApiPaginationResponseParams } from 'types/misc';
 
@@ -7,15 +5,6 @@ export interface ISurveySampleSite {
   name: string;
   description: string;
   geojson: Feature;
-}
-
-export interface ISurveySampleMethod {
-  survey_sample_method_id: number | null;
-  survey_sample_site_id: number | null;
-  method_response_metric_id: number | null;
-  description: string;
-  method_technique_id: number | null;
-  sample_periods: ISurveySamplePeriodFormData[];
 }
 
 export interface ICreateSamplingSiteRequest {
@@ -49,7 +38,6 @@ export interface IGetSampleLocationNonSpatialDetails {
   name: string;
   description: string;
   geometry_type: string;
-  sample_methods: IGetSampleMethodDetails[];
   blocks: IGetSampleBlockDetails[];
   stratums: IGetSampleStratumDetails[];
 }
@@ -109,14 +97,17 @@ export interface IGetSampleLocationDetails {
   name: string;
   description: string;
   geojson: Feature;
-  sample_methods: IGetSampleMethodDetails[];
   blocks: IGetSampleBlockDetails[];
   stratums: IGetSampleStratumDetails[];
 }
 
+/**
+ * TODO NICK - deprecated?
+ */
 export interface IGetBasicSamplePeriod {
   survey_sample_period_id: number;
-  survey_sample_method_id: number;
+  survey_sample_site_id: number;
+  method_technique_id: number;
   start_date: string;
   end_date: string;
   start_time: string;
@@ -129,7 +120,6 @@ export interface IGetSampleLocationDetailsForUpdate {
   name: string;
   description: string;
   geojson: Feature;
-  sample_methods: (IGetSampleMethodDetails | ISurveySampleMethodFormData)[];
   blocks: IGetSampleBlockDetails[];
   stratums: IGetSampleStratumDetails[];
 }
@@ -158,22 +148,4 @@ export interface IGetSampleStratumDetails {
   //   revision_count: number;
   name: string;
   description: string;
-}
-
-export interface IGetSampleMethodRecord {
-  survey_sample_method_id: number;
-  survey_sample_site_id: number;
-  method_response_metric_id: number;
-  description: string;
-  sample_periods: IGetSamplePeriodRecord[];
-}
-
-export interface IGetSampleMethodDetails extends IGetSampleMethodRecord {
-  technique: {
-    method_technique_id: number;
-    method_lookup_id: number;
-    name: string;
-    description: string;
-    attractants: number[];
-  };
 }

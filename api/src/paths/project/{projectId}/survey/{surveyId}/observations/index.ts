@@ -6,7 +6,10 @@ import { observervationsWithSubcountDataSchema } from '../../../../../../openapi
 import { paginationRequestQueryParamSchema } from '../../../../../../openapi/schemas/pagination';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { CritterbaseService, getCritterbaseUser } from '../../../../../../services/critterbase-service';
-import { InsertUpdateObservations, ObservationService } from '../../../../../../services/observation-service';
+import {
+  InsertUpdateObservations,
+  ObservationService
+} from '../../../../../../services/observation-services/observation-service';
 import { ObservationSubCountEnvironmentService } from '../../../../../../services/observation-subcount-environment-service';
 import { getLogger } from '../../../../../../utils/logger';
 import {
@@ -159,8 +162,6 @@ PUT.apiDoc = {
                     additionalProperties: false,
                     required: [
                       'itis_tsn',
-                      'survey_sample_site_id',
-                      'method_technique_id',
                       'survey_sample_period_id',
                       'count',
                       'latitude',
@@ -181,16 +182,6 @@ PUT.apiDoc = {
                       },
                       itis_scientific_name: {
                         type: 'string',
-                        nullable: true
-                      },
-                      survey_sample_site_id: {
-                        type: 'integer',
-                        minimum: 1,
-                        nullable: true
-                      },
-                      method_technique_id: {
-                        type: 'integer',
-                        minimum: 1,
                         nullable: true
                       },
                       survey_sample_period_id: {
@@ -363,7 +354,7 @@ PUT.apiDoc = {
  */
 const samplingSiteSortingColumnName: Record<string, string> = {
   survey_sample_site_id: 'survey_sample_site_name',
-  survey_sample_method_id: 'survey_sample_method_name',
+  method_technique_id: 'method_technique_name',
   survey_sample_period_id: 'survey_sample_period_start_datetime'
 };
 

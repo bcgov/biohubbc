@@ -6,7 +6,7 @@ import { deleteSurveySampleSiteRecord, getSurveySampleLocationRecord, updateSurv
 import * as db from '../../../../../../../database/db';
 import { HTTPError } from '../../../../../../../errors/http-error';
 import { UpdateSampleSiteRecord } from '../../../../../../../repositories/sample-site-repository';
-import { ObservationService } from '../../../../../../../services/observation-service';
+import { ObservationService } from '../../../../../../../services/observation-services/observation-service';
 import { SampleSiteService } from '../../../../../../../services/sample-site-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../__mocks__/db';
 

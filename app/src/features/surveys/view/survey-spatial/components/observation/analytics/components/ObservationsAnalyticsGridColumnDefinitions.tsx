@@ -6,7 +6,7 @@ import dayjs from 'dayjs';
 import { ScientificNameTypography } from 'features/surveys/animals/components/ScientificNameTypography';
 import { IObservationAnalyticsRow } from 'features/surveys/view/survey-spatial/components/observation/analytics/components/ObservationAnalyticsDataTableContainer';
 import { IGroupByOption } from 'features/surveys/view/survey-spatial/components/observation/analytics/SurveyObservationAnalytics';
-import { IGetSampleLocationNonSpatialDetails } from 'interfaces/useSamplingSiteApi.interface';
+import { GetSamplingPeriod } from 'interfaces/useSamplingPeriodApi.interface';
 import { IPartialTaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import isEqual from 'lodash-es/isEqual';
 
@@ -92,12 +92,10 @@ export const getSpeciesColDef = (
 /**
  * Get the column definition for the sampling site.
  *
- * @param {IGetSampleLocationNonSpatialDetails[]} sampleSites
+ * @param {GetSamplingPeriod[]} samplePeriods
  * @return {*}  {GridColDef<IObservationAnalyticsRow>}
  */
-export const getSamplingSiteColDef = (
-  sampleSites: IGetSampleLocationNonSpatialDetails[]
-): GridColDef<IObservationAnalyticsRow> => ({
+export const getSamplingSiteColDef = (samplePeriods: GetSamplingPeriod[]): GridColDef<IObservationAnalyticsRow> => ({
   headerAlign: 'left',
   align: 'left',
   field: 'survey_sample_site_id',
@@ -109,7 +107,9 @@ export const getSamplingSiteColDef = (
       return null;
     }
 
-    const site = sampleSites.find((site) => isEqual(params.row.survey_sample_site_id, site.survey_sample_site_id));
+    const site = samplePeriods
+      .map((period) => period.survey_sample_site)
+      .find((site) => isEqual(site.survey_sample_site_id, params.row.survey_sample_site_id));
 
     if (!site) {
       return null;
@@ -120,46 +120,42 @@ export const getSamplingSiteColDef = (
 });
 
 /**
- * Get the column definition for the sampling method.
+ * Get the column definition for the method technique.
  *
- * @param {IGetSampleLocationNonSpatialDetails[]} sampleSites
+ * @param {GetSamplingPeriod[]} samplePeriods
  * @return {*}  {GridColDef<IObservationAnalyticsRow>}
  */
-export const getSamplingMethodColDef = (
-  sampleSites: IGetSampleLocationNonSpatialDetails[]
-): GridColDef<IObservationAnalyticsRow> => ({
+export const getMethodTechniqueColDef = (samplePeriods: GetSamplingPeriod[]): GridColDef<IObservationAnalyticsRow> => ({
   headerAlign: 'left',
   align: 'left',
-  field: 'survey_sample_method_id',
-  headerName: 'Method',
+  field: 'method_technique_id',
+  headerName: 'Technique',
   flex: 1,
   minWidth: 150,
   renderCell: (params) => {
-    if (!params.row.survey_sample_method_id) {
+    if (!params.row.method_technique_id) {
       return null;
     }
 
-    const method = sampleSites
-      .flatMap((site) => site.sample_methods)
-      .find((method) => isEqual(params.row.survey_sample_method_id, method.survey_sample_method_id));
+    const technique = samplePeriods
+      .map((period) => period.method_technique)
+      .find((technique) => isEqual(technique.method_technique_id, params.row.method_technique_id));
 
-    if (!method) {
+    if (!technique) {
       return null;
     }
 
-    return <Typography>{method.technique.name}</Typography>;
+    return <Typography>{technique.name}</Typography>;
   }
 });
 
 /**
  * Get the column definition for the sampling period.
  *
- * @param {IGetSampleLocationNonSpatialDetails[]} sampleSites
+ * @param {GetSamplingPeriod[]} samplePeriods
  * @return {*}  {GridColDef<IObservationAnalyticsRow>}
  */
-export const getSamplingPeriodColDef = (
-  sampleSites: IGetSampleLocationNonSpatialDetails[]
-): GridColDef<IObservationAnalyticsRow> => ({
+export const getSamplingPeriodColDef = (samplePeriods: GetSamplingPeriod[]): GridColDef<IObservationAnalyticsRow> => ({
   headerAlign: 'left',
   align: 'left',
   field: 'survey_sample_period_id',
@@ -171,10 +167,9 @@ export const getSamplingPeriodColDef = (
       return null;
     }
 
-    const period = sampleSites
-      .flatMap((site) => site.sample_methods)
-      .flatMap((method) => method.sample_periods)
-      .find((period) => isEqual(params.row.survey_sample_period_id, period.survey_sample_period_id));
+    const period = samplePeriods.find((period) =>
+      isEqual(period.survey_sample_period_id, params.row.survey_sample_period_id)
+    );
 
     if (!period) {
       return null;

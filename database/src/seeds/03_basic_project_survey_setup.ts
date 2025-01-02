@@ -56,11 +56,14 @@ export async function seed(knex: Knex): Promise<void> {
     await knex.raw(`${insertSystemAlert()}`);
   }
 
-  // Check if at least 1 project already exists
   const checkProjectsResponse = await knex.raw(checkAnyProjectExists());
 
-  if (!checkProjectsResponse.rows.length) {
-    for (let i = 0; i < NUM_SEED_PROJECTS; i++) {
+  // The number of projects that already exist
+  const numberOfProjects = checkProjectsResponse.rows.length;
+
+  // If the number of projects that exist is less than the target number of seed projects
+  if (numberOfProjects < NUM_SEED_PROJECTS) {
+    for (let i = numberOfProjects; i < NUM_SEED_PROJECTS; i++) {
       // Insert project data
       const createProjectResponse = await knex.raw(insertProjectData(faker.lorem.words(8)));
       const projectId = createProjectResponse.rows[0].project_id;
@@ -677,14 +680,10 @@ const insertSurveyObservationData = (surveyId: number, count: number) => {
 
     (SELECT survey_sample_site_id FROM survey_sample_site WHERE survey_id = ${surveyId} LIMIT 1),
 
-    (SELECT survey_sample_method_id FROM survey_sample_method WHERE survey_sample_site_id = (
-      SELECT survey_sample_site_id FROM survey_sample_site WHERE survey_id = ${surveyId} LIMIT 1
-    ) LIMIT 1),
+    null,
 
-    (SELECT survey_sample_period_id FROM survey_sample_period WHERE survey_sample_method_id = (
-      SELECT survey_sample_method_id FROM survey_sample_method WHERE survey_sample_site_id = (
-        SELECT survey_sample_site_id FROM survey_sample_site WHERE survey_id = ${surveyId} LIMIT 1
-      ) LIMIT 1
+    (SELECT survey_sample_period_id FROM survey_sample_period WHERE survey_sample_site_id = (
+      SELECT survey_sample_site_id FROM survey_sample_site WHERE survey_id = ${surveyId} LIMIT 1
     ) LIMIT 1)
   )
   RETURNING survey_observation_id;

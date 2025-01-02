@@ -117,40 +117,7 @@ const useSamplingSiteApi = (axios: AxiosInstance) => {
       ...pagination
     };
 
-    const { data } = await axios.get(`/api/sampling-locations/sites`, {
-      params
-    });
-
-    return data;
-  };
-
-  /**
-   * Find sample methods.
-   *
-   * @param {{
-   *       survey_id?: number;
-   *       sample_site_id: number;
-   *       keyword?: string;
-   *       system_user_id?: number;
-   *     }} [filterFieldData]
-   * @param {ApiPaginationRequestOptions} [pagination]
-   * @return {*}  {Promise<IGetSampleLocationNonSpatialResponse>}
-   */
-  const findSampleMethods = async (
-    filterFieldData?: {
-      survey_id?: number;
-      sample_site_id: number;
-      keyword?: string;
-      system_user_id?: number;
-    },
-    pagination?: ApiPaginationRequestOptions
-  ): Promise<IGetSampleLocationNonSpatialResponse> => {
-    const params = {
-      ...filterFieldData,
-      ...pagination
-    };
-
-    const { data } = await axios.get(`/api/sampling-locations/methods`, {
+    const { data } = await axios.get(`/api/sites`, {
       params
     });
 
@@ -209,7 +176,6 @@ const useSamplingSiteApi = (axios: AxiosInstance) => {
     getSampleSiteById,
     getSampleSitesGeometry,
     findSampleSites,
-    findSampleMethods,
     editSampleSite,
     deleteSampleSite,
     deleteSampleSites

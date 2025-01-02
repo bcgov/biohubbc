@@ -25,12 +25,12 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
-import { ISamplingSitePeriodRowData, SamplingPeriodTable } from './table/SamplingPeriodTable';
+import { SamplingPeriodTable } from './table/SamplingPeriodTable';
 
 const pageSizeOptions = [10, 25, 50];
 
 /**
- * Renders a table of periods in the Survey.
+ * Wrapping component for a table of survey sampling periods, for the Manage Sampling Information page.
  *
  * @return {*}
  */
@@ -64,6 +64,10 @@ export const SamplingPeriodContainer = () => {
     };
   }, [periodsSortModel, periodsPaginationModel]);
 
+  /**
+   * Handle the bulk delete periods API call.
+   *
+   */
   const handleBulkDeletePeriods = async () => {
     await biohubApi.samplingPeriod
       .deleteSamplePeriods(surveyContext.projectId, surveyContext.surveyId, selectedRows.map(Number))
@@ -93,11 +97,20 @@ export const SamplingPeriodContainer = () => {
       });
   };
 
+  /**
+   * Handle the delete single period API call.
+   *
+   * @param {number} periodId
+   */
   const handleDelete = async (periodId: number) => {
     await biohubApi.samplingPeriod.deleteSamplePeriods(surveyContext.projectId, surveyContext.surveyId, [periodId]);
     periodsDataLoader.refresh(periodsPagination);
   };
 
+  /**
+   * Open the delete bulk periods dialog.
+   *
+   */
   const deleteBulkPeriodsDialog = () => {
     dialogContext.setYesNoDialog({
       dialogTitle: SamplePeriodI18N.bulkDeleteSamplePeriodTitle,
@@ -123,27 +136,9 @@ export const SamplingPeriodContainer = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [periodsPagination]);
 
-  const periodCount = periodsDataLoader.data?.pagination.total ?? 0;
-
-  const rows: ISamplingSitePeriodRowData[] = useMemo(() => {
-    const periods = periodsDataLoader.data?.periods ?? []; // Extract periods directly within the memo
-
-    const data: ISamplingSitePeriodRowData[] = [];
-    for (const period of periods) {
-      data.push({
-        survey_sample_period_id: period.survey_sample_period_id,
-        sample_site: period.sample_site.name,
-        sample_method: period.method_technique.name,
-        method_response_metric_id: period.method_technique.method_response_metric_id,
-        start_date: period.start_date,
-        end_date: period.end_date,
-        start_time: period.start_time,
-        end_time: period.end_time
-      });
-    }
-
-    return data;
-  }, [periodsDataLoader.data]);
+  // Data
+  const periods = periodsDataLoader.data?.periods ?? [];
+  const periodsCount = periodsDataLoader.data?.pagination.total ?? 0;
 
   return (
     <Stack
@@ -182,7 +177,7 @@ export const SamplingPeriodContainer = () => {
         <Typography variant="h3" component="h2" flexGrow={1}>
           Sampling Periods &zwnj;
           <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
-            ({periodCount})
+            ({periodsCount})
           </Typography>
         </Typography>
         <Stack gap={1} direction="row">
@@ -216,7 +211,7 @@ export const SamplingPeriodContainer = () => {
           isLoading={!periodsDataLoader.data && (periodsDataLoader.isLoading || !periodsDataLoader.isReady)}
           isLoadingFallback={<SkeletonTable />}
           isLoadingFallbackDelay={100}
-          hasNoData={!rows.length}
+          hasNoData={!periodsCount}
           hasNoDataFallback={
             <NoDataOverlay
               height="100%"
@@ -227,7 +222,7 @@ export const SamplingPeriodContainer = () => {
             />
           }>
           <SamplingPeriodTable
-            periods={rows}
+            periods={periods}
             paginationModel={periodsPaginationModel}
             setPaginationModel={setPeriodsPaginationModel}
             sortModel={periodsSortModel}

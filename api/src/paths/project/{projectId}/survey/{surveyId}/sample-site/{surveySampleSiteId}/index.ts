@@ -4,10 +4,9 @@ import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/
 import { getDBConnection } from '../../../../../../../database/db';
 import { HTTP400, HTTP409 } from '../../../../../../../errors/http-error';
 import { GeoJSONFeature } from '../../../../../../../openapi/schemas/geoJson';
-import { techniqueSimpleViewSchema } from '../../../../../../../openapi/schemas/technique';
-import { UpdateSampleLocationRecord } from '../../../../../../../repositories/sample-site-repository';
+import { UpdateSampleLocationRecord } from '../../../../../../../repositories/sample-site-repository/sample-site-repository';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
-import { ObservationService } from '../../../../../../../services/observation-service';
+import { ObservationService } from '../../../../../../../services/observation-services/observation-service';
 import { SampleSiteService } from '../../../../../../../services/sample-site-service';
 import { getLogger } from '../../../../../../../utils/logger';
 
@@ -369,16 +368,7 @@ GET.apiDoc = {
           schema: {
             type: 'object',
             additionalProperties: false,
-            required: [
-              'survey_sample_site_id',
-              'survey_id',
-              'name',
-              'description',
-              'geojson',
-              'sample_methods',
-              'blocks',
-              'stratums'
-            ],
+            required: ['survey_sample_site_id', 'survey_id', 'name', 'description', 'geojson', 'blocks', 'stratums'],
             properties: {
               survey_sample_site_id: {
                 type: 'integer',
@@ -398,87 +388,6 @@ GET.apiDoc = {
               },
               geojson: {
                 ...(GeoJSONFeature as object)
-              },
-              sample_methods: {
-                type: 'array',
-                required: [
-                  'method_technique_id',
-                  'survey_sample_site_id',
-                  'technique',
-                  'method_response_metric_id',
-                  'sample_periods'
-                ],
-                items: {
-                  type: 'object',
-                  additionalProperties: false,
-                  required: [
-                    'method_technique_id',
-                    'survey_sample_site_id',
-                    'method_response_metric_id',
-                    'description',
-                    'sample_periods',
-                    'technique'
-                  ],
-                  properties: {
-                    method_technique_id: {
-                      type: 'integer',
-                      minimum: 1
-                    },
-                    survey_sample_site_id: {
-                      type: 'integer',
-                      minimum: 1
-                    },
-                    method_response_metric_id: {
-                      type: 'integer',
-                      minimum: 1
-                    },
-                    description: {
-                      type: 'string',
-                      maxLength: 250,
-                      nullable: true
-                    },
-                    sample_periods: {
-                      type: 'array',
-                      required: [
-                        'survey_sample_period_id',
-                        'method_technique_id',
-                        'start_date',
-                        'start_time',
-                        'end_date',
-                        'end_time'
-                      ],
-                      items: {
-                        type: 'object',
-                        additionalProperties: false,
-                        properties: {
-                          survey_sample_period_id: {
-                            type: 'integer',
-                            minimum: 1
-                          },
-                          method_technique_id: {
-                            type: 'integer',
-                            minimum: 1
-                          },
-                          start_date: {
-                            type: 'string'
-                          },
-                          start_time: {
-                            type: 'string',
-                            nullable: true
-                          },
-                          end_date: {
-                            type: 'string'
-                          },
-                          end_time: {
-                            type: 'string',
-                            nullable: true
-                          }
-                        }
-                      }
-                    },
-                    technique: techniqueSimpleViewSchema
-                  }
-                }
               },
               blocks: {
                 type: 'array',

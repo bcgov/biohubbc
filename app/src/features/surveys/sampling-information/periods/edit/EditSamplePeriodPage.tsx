@@ -127,8 +127,6 @@ export const EditSamplePeriodPage = () => {
     try {
       setIsSubmitting(true);
 
-      console.log(values);
-
       if (values.sample_periods.length !== 1) {
         throw new Error('Only one sample period can be edited at a time');
       }

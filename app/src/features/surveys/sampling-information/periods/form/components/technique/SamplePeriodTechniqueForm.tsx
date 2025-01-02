@@ -11,6 +11,12 @@ import { useCallback, useState } from 'react';
 export type ISelectedTechniqueData = Pick<IGetTechniqueResponse, 'method_technique_id' | 'name' | 'description'>;
 
 export interface ISamplePeriodTechniqueFormProps {
+  /**
+   * Additional data (display name, description, etc) to pre-populate the UI with in the case of an edit.
+   *
+   * @type {ISelectedTechniqueData}
+   * @memberof ISamplePeriodTechniqueFormProps
+   */
   editData?: ISelectedTechniqueData;
 }
 

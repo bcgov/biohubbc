@@ -1,6 +1,6 @@
 import { SurveySampleSiteModel } from '../database-models/survey_sample_site';
 import { IDBConnection } from '../database/db';
-import { ISiteAdvancedFilters } from '../models/sampling-locations-view';
+import { ISiteAdvancedFilters } from '../models/site-view';
 import { InsertSampleBlockRecord } from '../repositories/sample-blocks-repository';
 import {
   FindSampleSiteRecord,
@@ -9,7 +9,7 @@ import {
   SampleLocationRepository,
   SampleSiteGeometryRecord,
   UpdateSampleLocationRecord
-} from '../repositories/sample-site-repository';
+} from '../repositories/sample-site-repository/sample-site-repository';
 import { InsertSampleStratumRecord } from '../repositories/sample-stratums-repository';
 import { getLogger } from '../utils/logger';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
@@ -98,21 +98,6 @@ export class SampleSiteService extends DBService {
   async getSurveySampleSiteById(surveyId: number, surveySampleSiteId: number): Promise<SurveySampleSiteModel> {
     return this.sampleLocationRepository.getSurveySampleSiteById(surveyId, surveySampleSiteId);
   }
-
-  //   /**
-  //    * Gets basic data for survey sample sites for supplementary observations data
-  //    *
-  //    * @param {number} surveyId
-  //    * @param {number[]} surveySampleSiteIds
-  //    * @return {*}  {Promise<SampleLocationBasicRecord[]>}
-  //    * @memberof SampleSiteService
-  //    */
-  //   async getBasicSurveySampleLocationsBySiteIds(
-  //     surveyId: number,
-  //     surveySampleSiteIds: number[]
-  //   ): Promise<SampleLocationBasicRecord[]> {
-  //     return this.sampleLocationRepository.getBasicSurveySampleLocationsBySiteIds(surveyId, surveySampleSiteIds);
-  //   }
 
   /**
    * Gets a sample location by sample site ID.

@@ -1,20 +1,20 @@
 import { Request, RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../../constants/roles';
-import { getDBConnection } from '../../../database/db';
-import { ISiteAdvancedFilters } from '../../../models/sampling-locations-view';
-import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../../../openapi/schemas/pagination';
-import { authorizeRequestHandler, userHasValidRole } from '../../../request-handlers/security/authorization';
-import { SampleSiteService } from '../../../services/sample-site-service';
-import { getLogger } from '../../../utils/logger';
+import { SYSTEM_ROLE } from '../../constants/roles';
+import { getDBConnection } from '../../database/db';
+import { ISiteAdvancedFilters } from '../../models/site-view';
+import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../../openapi/schemas/pagination';
+import { authorizeRequestHandler, userHasValidRole } from '../../request-handlers/security/authorization';
+import { SampleSiteService } from '../../services/sample-site-service';
+import { getLogger } from '../../utils/logger';
 import {
   ensureCompletePaginationOptions,
   makePaginationOptionsFromRequest,
   makePaginationResponse
-} from '../../../utils/pagination';
-import { getSystemUserFromRequest } from '../../../utils/request';
+} from '../../utils/pagination';
+import { getSystemUserFromRequest } from '../../utils/request';
 
-const defaultLog = getLogger('paths/site/index');
+const defaultLog = getLogger('paths/sites/index');
 
 export const GET: Operation = [
   authorizeRequestHandler(() => {

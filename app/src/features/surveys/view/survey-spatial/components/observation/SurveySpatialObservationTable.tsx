@@ -73,7 +73,7 @@ export const SurveySpatialObservationTable = () => {
           (item.itis_tsn && taxonomyContext.getCachedSpeciesTaxonomyById(item.itis_tsn)?.scientificName) || null,
         count: item.count,
         survey_sample_site_name: item.survey_sample_site_name,
-        survey_sample_method_name: item.survey_sample_method_name,
+        method_technique_name: item.method_technique_name,
         survey_sample_period_start_datetime: item.survey_sample_period_start_datetime,
         observation_date: dayjs(item.observation_date).format('YYYY-MM-DD'),
         observation_time: dayjs(item.observation_date).format('HH:mm:ss'),

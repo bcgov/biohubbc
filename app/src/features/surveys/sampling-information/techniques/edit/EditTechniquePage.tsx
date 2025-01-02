@@ -71,6 +71,7 @@ export const EditTechniquePage = () => {
     description: technique?.description ?? null,
     distance_threshold: technique?.distance_threshold ?? null,
     method_lookup_id: technique?.method_lookup_id ?? null,
+    method_response_metric_id: 1, // NICK TODO: This is a placeholder value.
     attractants: technique?.attractants,
     attributes: [
       ...(technique?.attributes.qualitative_attributes.map((attribute) => ({

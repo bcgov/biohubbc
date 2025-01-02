@@ -1,9 +1,9 @@
 import Typography from '@mui/material/Typography';
 import { GridRenderCellParams, GridValidRowModel } from '@mui/x-data-grid';
 import { SamplingInformationCache } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/useSamplingInformationCache';
-import { getCurrentPeriod } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/utils';
+import { getCurrentTechnique } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/utils';
 
-export interface IPartialSamplePeriodDataGridViewCellProps<DataGridType extends GridValidRowModel> {
+export interface IPartialMethodTechniqueDataGridViewCellProps<DataGridType extends GridValidRowModel> {
   dataGridProps: GridRenderCellParams<DataGridType>;
   samplingInformationCache: SamplingInformationCache;
   error?: boolean;
@@ -13,15 +13,15 @@ export interface IPartialSamplePeriodDataGridViewCellProps<DataGridType extends 
  * Data grid taxonomy component for view.
  *
  * @template DataGridType
- * @param {IPartialSamplePeriodDataGridViewCellProps<DataGridType>} props
+ * @param {IPartialMethodTechniqueDataGridViewCellProps<DataGridType>} props
  * @return {*}
  */
-export const SamplePeriodDataGridViewCell = <DataGridType extends GridValidRowModel>(
-  props: IPartialSamplePeriodDataGridViewCellProps<DataGridType>
+export const MethodTechniqueDataGridViewCell = <DataGridType extends GridValidRowModel>(
+  props: IPartialMethodTechniqueDataGridViewCellProps<DataGridType>
 ) => {
   const { dataGridProps, samplingInformationCache, error } = props;
 
-  const label = getCurrentPeriod(dataGridProps, samplingInformationCache.cachedSampleLocationsRef)?.label ?? '';
+  const label = getCurrentTechnique(dataGridProps, samplingInformationCache.cachedSampleLocationsRef)?.label ?? '';
 
   return (
     <Typography

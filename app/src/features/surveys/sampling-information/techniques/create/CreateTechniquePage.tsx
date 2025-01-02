@@ -26,7 +26,8 @@ const initialTechniqueFormValues: CreateTechniqueFormValues = {
   name: '',
   description: '',
   distance_threshold: null,
-  method_lookup_id: null,
+  method_lookup_id: '' as unknown as number,
+  method_response_metric_id: '' as unknown as number,
   attractants: [],
   attributes: [],
   vantage_methods: []
@@ -63,6 +64,7 @@ export const CreateTechniquePage = () => {
       const createTechniqueRequestData: ICreateTechniqueRequest = {
         ...values,
         distance_threshold: values.distance_threshold || null,
+        method_response_metric_id: 1, // NICK TODO: This is a placeholder value.
         attributes: {
           qualitative_attributes: values.attributes
             .filter(({ attribute_type }) => attribute_type === 'qualitative')

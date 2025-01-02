@@ -6,7 +6,7 @@ import { IObservationAdvancedFilters } from '../../models/observation-view';
 import { observervationsWithSubcountDataSchema } from '../../openapi/schemas/observation';
 import { paginationRequestQueryParamSchema } from '../../openapi/schemas/pagination';
 import { authorizeRequestHandler, userHasValidRole } from '../../request-handlers/security/authorization';
-import { ObservationService } from '../../services/observation-service';
+import { ObservationService } from '../../services/observation-services/observation-service';
 import { getLogger } from '../../utils/logger';
 import {
   ensureCompletePaginationOptions,
@@ -210,7 +210,7 @@ export function findObservations(): RequestHandler {
           quantitative_measurements: [],
           qualitative_environments: [],
           quantitative_environments: [],
-          sample_sites: []
+          sampling_data: []
         },
         pagination: makePaginationResponse(observationsTotalCount, paginationOptions)
       };

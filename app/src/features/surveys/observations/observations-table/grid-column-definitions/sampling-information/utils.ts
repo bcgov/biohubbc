@@ -1,55 +1,51 @@
 import { GridRenderCellParams, GridValidRowModel } from '@mui/x-data-grid';
-import { IAutocompleteDataGridSampleMethodOption } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/methods/SampleMethodDataGrid.interface';
-import { IAutocompleteDataGridSamplePeriodOption } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/periods/SamplePeriodDataGrid.interface';
-import { IAutocompleteDataGridSampleSiteOption } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/sites/SampleSiteDataGrid.interface';
-import { SampleLocationCache } from 'features/surveys/observations/observations-table/ObservationsTableContainer';
-import { GetSamplingPeriod } from 'interfaces/useSamplingPeriodApi.interface';
-import { IGetSampleLocationNonSpatialDetails } from 'interfaces/useSamplingSiteApi.interface';
+import {
+  SamplingInformationCachedPeriod,
+  SamplingInformationCachedSite,
+  SamplingInformationCachedTechnique,
+  SamplingInformationCacheRef
+} from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/useSamplingInformationCache';
 import { MutableRefObject } from 'react';
 
 /**
  * Given a site id and sample location cache, find the site object.
  *
  * @param {(number | undefined)} siteId
- * @param {(SampleLocationCache | undefined)} cache
+ * @param {(SamplingInformationCacheRef | undefined)} cache
  */
-const findSite = (siteId: number | undefined, cache: SampleLocationCache | undefined) =>
-  cache?.locations.find((site) => site.survey_sample_site_id === siteId);
+const findSite = (siteId: number | undefined, cache: SamplingInformationCacheRef | undefined) =>
+  cache?.sites.find((site) => site.survey_sample_site_id === siteId);
 
 /**
- * Given a sample site object and method id, find the method object.
+ * Given a technique id and sample location cache, find the technique object.
  *
- * @param {(IGetSampleLocationNonSpatialDetails | undefined)} site
- * @param {(number | undefined)} methodId
+ * @param {(number | undefined)} techniqueId
+ * @param {(SamplingInformationCacheRef | undefined)} cache
  */
-const findMethod = (site: IGetSampleLocationNonSpatialDetails | undefined, methodId: number | undefined) =>
-  site?.sample_methods.find((method) => method.survey_sample_method_id === methodId);
+const findTechnique = (techniqueId: number | undefined, cache: SamplingInformationCacheRef | undefined) =>
+  cache?.techniques.find((technique) => technique.method_technique_id === techniqueId);
 
 /**
- * Transform a sampling option to be compatible with the autocomplete control.
+ * Given a period id and sample location cache, find the period object.
  *
- * @template T
- * @param {T} item
- * @param {string} label
- * @param {number} value
- * @return {*}  {(T & { label: string; value: number })}
+ * @param {(number | undefined)} periodId
+ * @param {(SamplingInformationCacheRef | undefined)} cache
  */
-const formatOption = <T>(item: T, label: string, value: number): T & { label: string; value: number } => ({
-  ...item,
-  label,
-  value
-});
+const findPeriod = (periodId: number | undefined, cache: SamplingInformationCacheRef | undefined) =>
+  cache?.periods.find((period) => period.survey_sample_period_id === periodId);
 
 /**
  * Get the label for a period.
  *
- * @param {(IGetSamplePeriodRecord | null)} period
+ * @template PeriodType A type that has at least start_date, start_time, end_date, and end_time properties.
+ * @param {PeriodType} period
  * @return {*}
  */
-const getPeriodLabel = (period: GetSamplingPeriod | null) => {
-  if (!period) {
-    return '';
-  }
+export const getPeriodLabel = <
+  PeriodType extends { start_date: string; start_time: string | null; end_date: string; end_time: string | null }
+>(
+  period: PeriodType
+) => {
   return `${period.start_date} ${period.start_time ?? ''} - ${period.end_date} ${period.end_time ?? ''}`;
 };
 
@@ -58,36 +54,29 @@ const getPeriodLabel = (period: GetSamplingPeriod | null) => {
  *
  * @template DataGridType
  * @param {GridRenderCellParams<DataGridType>} dataGridProps
- * @param {(MutableRefObject<SampleLocationCache | undefined>)} cachedSampleLocationsRef
- * @return {*}  {(IAutocompleteDataGridSampleSiteOption | null)}
+ * @param {(MutableRefObject<SamplingInformationCacheRef | undefined>)} cachedSampleLocationsRef
+ * @return {*}  {(SamplingInformationCachedSite | null)}
  */
 export const getCurrentSite = <DataGridType extends GridValidRowModel>(
   dataGridProps: GridRenderCellParams<DataGridType>,
-  cachedSampleLocationsRef: MutableRefObject<SampleLocationCache | undefined>
-): IAutocompleteDataGridSampleSiteOption | null => {
-  const currentSite = findSite(dataGridProps.value as number, cachedSampleLocationsRef.current);
-  return currentSite ? formatOption(currentSite, currentSite.name, currentSite.survey_sample_site_id) : null;
+  cachedSampleLocationsRef: MutableRefObject<SamplingInformationCacheRef | undefined>
+): SamplingInformationCachedSite | null => {
+  return findSite(dataGridProps.value as number, cachedSampleLocationsRef.current) ?? null;
 };
 
 /**
- * Get the currently selected method for the row.
+ * Get the currently selected method technique for the row.
  *
  * @template DataGridType
  * @param {GridRenderCellParams<DataGridType>} dataGridProps
- * @param {(MutableRefObject<SampleLocationCache | undefined>)} cachedSampleLocationsRef
- * @return {*}  {(IAutocompleteDataGridSampleMethodOption | null)}
+ * @param {(MutableRefObject<SamplingInformationCacheRef | undefined>)} cachedSampleLocationsRef
+ * @return {*}  {(SamplingInformationCachedTechnique | null)}
  */
-export const getCurrentMethod = <DataGridType extends GridValidRowModel>(
+export const getCurrentTechnique = <DataGridType extends GridValidRowModel>(
   dataGridProps: GridRenderCellParams<DataGridType>,
-  cachedSampleLocationsRef: MutableRefObject<SampleLocationCache | undefined>
-): IAutocompleteDataGridSampleMethodOption | null => {
-  for (const site of cachedSampleLocationsRef.current?.locations ?? []) {
-    const currentMethod = findMethod(site, dataGridProps.value as number);
-    if (currentMethod) {
-      return formatOption(currentMethod, currentMethod.technique.name, currentMethod.survey_sample_method_id);
-    }
-  }
-  return null;
+  cachedSampleLocationsRef: MutableRefObject<SamplingInformationCacheRef | undefined>
+): SamplingInformationCachedTechnique | null => {
+  return findTechnique(dataGridProps.value as number, cachedSampleLocationsRef.current) ?? null;
 };
 
 /**
@@ -95,59 +84,66 @@ export const getCurrentMethod = <DataGridType extends GridValidRowModel>(
  *
  * @template DataGridType
  * @param {GridRenderCellParams<DataGridType>} dataGridProps
- * @param {(MutableRefObject<SampleLocationCache | undefined>)} cachedSampleLocationsRef
- * @return {*}  {(IAutocompleteDataGridSamplePeriodOption | null)}
+ * @param {(MutableRefObject<SamplingInformationCacheRef | undefined>)} cachedSampleLocationsRef
+ * @return {*}  {(SamplingInformationCachedPeriod | null)}
  */
 export const getCurrentPeriod = <DataGridType extends GridValidRowModel>(
   dataGridProps: GridRenderCellParams<DataGridType>,
-  cachedSampleLocationsRef: MutableRefObject<SampleLocationCache | undefined>
-): IAutocompleteDataGridSamplePeriodOption | null => {
-  for (const site of cachedSampleLocationsRef.current?.locations ?? []) {
-    for (const method of site.sample_methods ?? []) {
-      const currentPeriod = method.sample_periods.find(
-        (period) => period.survey_sample_period_id === dataGridProps.value
-      );
-      if (currentPeriod) {
-        return formatOption(currentPeriod, getPeriodLabel(currentPeriod), currentPeriod.survey_sample_period_id);
-      }
-    }
+  cachedSampleLocationsRef: MutableRefObject<SamplingInformationCacheRef | undefined>
+): SamplingInformationCachedPeriod | null => {
+  return findPeriod(dataGridProps.value as number, cachedSampleLocationsRef.current) ?? null;
+};
+
+/**
+ * Get all valid techniques for the currently selected site.
+ *
+ * @param {(number | undefined)} survey_sample_site_id
+ * @param {(MutableRefObject<SamplingInformationCacheRef | undefined>)} cachedSampleLocationsRef
+ * @return {*}  {SamplingInformationCachedTechnique[]}
+ */
+export const getTechniquesForRow = (
+  survey_sample_site_id: number | undefined,
+  cachedSampleLocationsRef: MutableRefObject<SamplingInformationCacheRef | undefined>
+): SamplingInformationCachedTechnique[] => {
+  const site = findSite(survey_sample_site_id, cachedSampleLocationsRef.current);
+
+  if (!site) {
+    return [];
   }
-  return null;
+
+  const matchingTechniques = cachedSampleLocationsRef.current?.techniques.filter((technique) => {
+    return technique.survey_sample_site_id === site.survey_sample_site_id;
+  });
+
+  return matchingTechniques ?? [];
 };
 
 /**
- * Get all valid methods for the currently selected site.
+ * Get all valid periods for the currently selected site and technique.
  *
- * @template DataGridType
- * @param {GridRenderCellParams<DataGridType>} dataGridProps
- * @param {(MutableRefObject<SampleLocationCache | undefined>)} cachedSampleLocationsRef
- * @return {*}  {IAutocompleteDataGridSampleMethodOption[]}
+ * @param {(number | undefined)} survey_sample_site_id
+ * @param {(number | undefined)} method_technique_id
+ * @param {(MutableRefObject<SamplingInformationCacheRef | undefined>)} cachedSampleLocationsRef
+ * @return {*}  {SamplingInformationCachedPeriod[]}
  */
-export const getMethodsForRow = <DataGridType extends GridValidRowModel>(
-  dataGridProps: GridRenderCellParams<DataGridType>,
-  cachedSampleLocationsRef: MutableRefObject<SampleLocationCache | undefined>
-): IAutocompleteDataGridSampleMethodOption[] => {
-  const site = findSite(dataGridProps.row.survey_sample_site_id, cachedSampleLocationsRef.current);
-  return (site?.sample_methods ?? []).map((method) =>
-    formatOption(method, method.technique.name, method.survey_sample_method_id)
-  );
-};
+export const getPeriodsForRow = (
+  survey_sample_site_id: number | undefined,
+  method_technique_id: number | undefined,
+  cachedSampleLocationsRef: MutableRefObject<SamplingInformationCacheRef | undefined>
+): SamplingInformationCachedPeriod[] => {
+  const site = findSite(survey_sample_site_id, cachedSampleLocationsRef.current);
+  const technique = findTechnique(method_technique_id, cachedSampleLocationsRef.current);
 
-/**
- * Get all valid periods for the currently selected site and method.
- *
- * @template DataGridType
- * @param {GridRenderCellParams<DataGridType>} dataGridProps
- * @param {(MutableRefObject<SampleLocationCache | undefined>)} cachedSampleLocationsRef
- * @return {*}  {IAutocompleteDataGridSamplePeriodOption[]}
- */
-export const getPeriodsForRow = <DataGridType extends GridValidRowModel>(
-  dataGridProps: GridRenderCellParams<DataGridType>,
-  cachedSampleLocationsRef: MutableRefObject<SampleLocationCache | undefined>
-): IAutocompleteDataGridSamplePeriodOption[] => {
-  const site = findSite(dataGridProps.row.survey_sample_site_id, cachedSampleLocationsRef.current);
-  const method = findMethod(site, dataGridProps.row.survey_sample_method_id);
-  return (method?.sample_periods ?? []).map((period) =>
-    formatOption(period, getPeriodLabel(period), period.survey_sample_period_id)
-  );
+  if (!site || !technique) {
+    return [];
+  }
+
+  const matchingPeriods = cachedSampleLocationsRef.current?.periods.filter((period) => {
+    return (
+      period.survey_sample_site_id === site.survey_sample_site_id &&
+      period.method_technique_id === technique.method_technique_id
+    );
+  });
+
+  return matchingPeriods ?? [];
 };

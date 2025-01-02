@@ -81,7 +81,7 @@ export const useSamplingPeriodApi = (axios: AxiosInstance) => {
    * @param {{
    *       survey_id?: number;
    *       sample_site_id: number;
-   *       sample_method_id: number;
+   *       method_technique_id: number;
    *       system_user_id?: number;
    *     }} [filterFieldData]
    * @param {ApiPaginationRequestOptions} [pagination]
@@ -91,7 +91,7 @@ export const useSamplingPeriodApi = (axios: AxiosInstance) => {
     filterFieldData?: {
       survey_id?: number;
       sample_site_id?: number;
-      sample_method_id?: number;
+      method_technique_id?: number;
       system_user_id?: number;
     },
     pagination?: ApiPaginationRequestOptions
@@ -101,7 +101,7 @@ export const useSamplingPeriodApi = (axios: AxiosInstance) => {
       ...pagination
     };
 
-    const { data } = await axios.get(`/api/sampling-locations/periods`, {
+    const { data } = await axios.get(`/api/periods`, {
       params
     });
 

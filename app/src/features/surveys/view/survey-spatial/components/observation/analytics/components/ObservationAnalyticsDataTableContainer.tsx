@@ -10,7 +10,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext, useTaxonomyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { IObservationCountByGroup } from 'interfaces/useAnalyticsApi.interface';
-import { IGetSampleLocationNonSpatialDetails } from 'interfaces/useSamplingSiteApi.interface';
+import { GetSamplingPeriod } from 'interfaces/useSamplingPeriodApi.interface';
 import { useEffect, useMemo } from 'react';
 import {
   getBasicGroupByColDefs,
@@ -18,9 +18,7 @@ import {
   getIndividualCountColDef,
   getIndividualPercentageColDef,
   getRowCountColDef,
-  getSamplingMethodColDef,
   getSamplingPeriodColDef,
-  getSamplingSiteColDef,
   getSpeciesColDef
 } from './ObservationsAnalyticsGridColumnDefinitions';
 
@@ -104,7 +102,7 @@ export const ObservationAnalyticsDataTableContainer = (props: IObservationAnalyt
 
   // TODO: Include sampling information in the analytics response / otherwise get sampling information,
   // which is now more complicated because sample sites are paginated.
-  const sampleSites: IGetSampleLocationNonSpatialDetails[] = [];
+  const samplePeriods: GetSamplingPeriod[] = [];
 
   const allGroupByColumns = useMemo(
     () => [...groupByColumns, ...groupByQualitativeMeasurements, ...groupByQuantitativeMeasurements],
@@ -116,9 +114,9 @@ export const ObservationAnalyticsDataTableContainer = (props: IObservationAnalyt
       getRowCountColDef(),
       getIndividualCountColDef(),
       getIndividualPercentageColDef(),
-      getSamplingSiteColDef(sampleSites),
-      getSamplingMethodColDef(sampleSites),
-      getSamplingPeriodColDef(sampleSites),
+      //   getSamplingSiteColDef(samplePeriods),
+      //   getMethodTechniqueColDef(samplePeriods),
+      getSamplingPeriodColDef(samplePeriods),
       getSpeciesColDef(taxonomyContext.getCachedSpeciesTaxonomyById),
       getDateColDef(),
       ...getBasicGroupByColDefs([...groupByQualitativeMeasurements, ...groupByQuantitativeMeasurements])

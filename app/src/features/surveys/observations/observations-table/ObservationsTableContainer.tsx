@@ -23,14 +23,14 @@ import { IObservationTableRow } from 'contexts/observationsTableContext';
 import { BulkActionsButton } from 'features/surveys/observations/observations-table/bulk-actions/BulkActionsButton';
 import { DiscardChangesButton } from 'features/surveys/observations/observations-table/discard-changes/DiscardChangesButton';
 import {
+  MethodTechniqueColDef,
   ObservationCountColDef,
   ObservationSubcountSignColDef,
-  SampleMethodColDef,
   SamplePeriodColDef,
   SampleSiteColDef,
   TaxonomyColDef
 } from 'features/surveys/observations/observations-table/grid-column-definitions/GridColumnDefinitions';
-import { useSampleLocationsCache } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/useSampleLocationsCache';
+import { useSamplingInformationCache } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/useSamplingInformationCache';
 import { ImportObservationsButton } from 'features/surveys/observations/observations-table/import-obsevations/ImportObservationsButton';
 import ObservationsTable from 'features/surveys/observations/observations-table/ObservationsTable';
 import {
@@ -40,7 +40,6 @@ import {
   useObservationsTableContext
 } from 'hooks/useContext';
 import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
-import { IGetSampleLocationNonSpatialDetails } from 'interfaces/useSamplingSiteApi.interface';
 import { useEffect, useMemo } from 'react';
 import { ConfigureColumnsButton } from './configure-columns/ConfigureColumnsButton';
 import ExportHeadersButton from './export-button/ExportHeadersButton';
@@ -49,10 +48,6 @@ import {
   getEnvironmentColumnDefinitions,
   getMeasurementColumnDefinitions
 } from './grid-column-definitions/GridColumnDefinitionsUtils';
-
-export type SampleLocationCache = {
-  locations: IGetSampleLocationNonSpatialDetails[];
-};
 
 const ObservationsTableContainer = () => {
   const codesContext = useCodesContext();
@@ -74,22 +69,20 @@ const ObservationsTableContainer = () => {
     [codesContext.codesDataLoader.data?.observation_subcount_signs]
   );
 
-  const sampleLocationsCache = useSampleLocationsCache();
+  const sampleLocationsCache = useSamplingInformationCache();
 
   useEffect(() => {
-    if (!observationsContext.observationsDataLoader.data?.supplementaryObservationData.sample_sites?.length) {
+    if (!observationsContext.observationsDataLoader.data?.supplementaryObservationData.sampling_data?.length) {
       return;
     }
 
-    sampleLocationsCache.updateCachedSampleLocationsRef(
-      observationsContext.observationsDataLoader.data.supplementaryObservationData.sample_sites
-    );
+    sampleLocationsCache.initCachedSampleLocationsRef({
+      periods: observationsContext.observationsDataLoader.data.supplementaryObservationData.sampling_data
+    });
   }, [
-    observationsContext.observationsDataLoader.data?.supplementaryObservationData.sample_sites,
+    observationsContext.observationsDataLoader.data?.supplementaryObservationData.sampling_data,
     sampleLocationsCache
   ]);
-
-  console.log(sampleLocationsCache.cachedSampleLocationsRef);
 
   // The column definitions of the columns to render in the observations table
   const columns: GridColDef<IObservationTableRow>[] = useMemo(
@@ -98,27 +91,41 @@ const ObservationsTableContainer = () => {
         // Add standard observation columns to the table
         TaxonomyColDef({ hasError: observationsTableContext.hasError }),
         SampleSiteColDef({
-          cachedSampleLocationsRef: sampleLocationsCache.cachedSampleLocationsRef,
+          samplingInformationCache: sampleLocationsCache,
           onSelectOption: (selectedSampleSite) => {
             if (!selectedSampleSite) {
               return;
             }
 
-            sampleLocationsCache.updateCachedSampleLocationsRef([selectedSampleSite]);
+            sampleLocationsCache.updateCachedSampleLocationsRef({ selectedSites: [selectedSampleSite] });
           },
           hasError: observationsTableContext.hasError
         }),
-        SampleMethodColDef({
-          cachedSampleLocationsRef: sampleLocationsCache.cachedSampleLocationsRef,
+        MethodTechniqueColDef({
+          samplingInformationCache: sampleLocationsCache,
+          onSelectOption: (selectedMethodTechnique) => {
+            if (!selectedMethodTechnique) {
+              return;
+            }
+
+            sampleLocationsCache.updateCachedSampleLocationsRef({ selectedTechniques: [selectedMethodTechnique] });
+          },
           hasError: observationsTableContext.hasError
         }),
         SamplePeriodColDef({
-          cachedSampleLocationsRef: sampleLocationsCache.cachedSampleLocationsRef,
+          samplingInformationCache: sampleLocationsCache,
+          onSelectOption: (selectedSamplePeriod) => {
+            if (!selectedSamplePeriod) {
+              return;
+            }
+
+            sampleLocationsCache.updateCachedSampleLocationsRef({ selectedPeriods: [selectedSamplePeriod] });
+          },
           hasError: observationsTableContext.hasError
         }),
         ObservationSubcountSignColDef({ observationSubcountSignOptions, hasError: observationsTableContext.hasError }),
         ObservationCountColDef({
-          cachedSampleLocationsRef: sampleLocationsCache.cachedSampleLocationsRef,
+          samplingInformationCache: sampleLocationsCache,
           hasError: observationsTableContext.hasError
         }),
         GenericDateColDef({

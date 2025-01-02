@@ -260,10 +260,10 @@ export const findMissingSamplingColumns = (
 ): ObservationRowValidationError[] => {
   const errors: ObservationRowValidationError[] = [];
   // if this row has survey_sample_site_id we need to validate that the other 2 sampling columns are also present
-  if (row['survey_sample_site_id']) {
-    if (!row['survey_sample_method_id']) {
-      const header = tableColumns.find((tc) => tc.field === 'survey_sample_method_id')?.headerName;
-      errors.push({ field: 'survey_sample_method_id', message: `Missing column: ${header}` });
+  if (row['method_technique_id']) {
+    if (!row['method_technique_id']) {
+      const header = tableColumns.find((tc) => tc.field === 'method_technique_id')?.headerName;
+      errors.push({ field: 'method_technique_id', message: `Missing column: ${header}` });
     }
 
     if (!row['survey_sample_period_id']) {

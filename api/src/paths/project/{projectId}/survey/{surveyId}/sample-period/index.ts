@@ -151,12 +151,12 @@ export function postSamplePeriods(): RequestHandler {
 
     try {
       const surveyId = Number(req.params.surveyId);
-      const samplePeriods = req.body.sample_periods;
+      const periods = req.body.sample_periods;
 
       await connection.open();
 
       const samplePeriodService = new SamplePeriodService(connection);
-      await samplePeriodService.insertSamplePeriods(surveyId, samplePeriods);
+      await samplePeriodService.insertSamplePeriods(surveyId, periods);
 
       await connection.commit();
 
@@ -232,7 +232,7 @@ GET.apiDoc = {
             type: 'object',
             additionalProperties: false,
             properties: {
-              samplePeriods: {
+              periods: {
                 type: 'array',
                 items: {
                   type: 'object',
@@ -361,7 +361,7 @@ export function getSurveySamplePeriods(): RequestHandler {
 
       const samplePeriodService = new SamplePeriodService(connection);
 
-      const [samplePeriods, samplePeriodsCount] = await Promise.all([
+      const [periods, samplePeriodsCount] = await Promise.all([
         samplePeriodService.getSamplePeriodsForSurvey(surveyId, {
           pagination: ensureCompletePaginationOptions(paginationOptions)
         }),
@@ -371,7 +371,7 @@ export function getSurveySamplePeriods(): RequestHandler {
       await connection.commit();
 
       return res.status(200).json({
-        samplePeriods,
+        periods,
         pagination: makePaginationResponse(samplePeriodsCount, paginationOptions)
       });
     } catch (error) {

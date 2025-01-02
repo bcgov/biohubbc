@@ -1,5 +1,7 @@
 import { IDBConnection } from '../database/db';
+import { ITechniqueAdvancedFilters } from '../models/technique-view';
 import {
+  FindTechniqueRecord,
   ITechniquePostData,
   ITechniqueRowDataForInsert,
   ITechniqueRowDataForUpdate,
@@ -69,6 +71,43 @@ export class TechniqueService extends DBService {
     return this.techniqueRepository.getTechniquesCountForSurveyId(surveyId);
   }
 
+  /**
+   * Retrieves the paginated list of all techniques that are available to the user, based on their permissions and
+   * provided filter criteria.
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId The system user id of the user making the request
+   * @param {ITechniqueAdvancedFilters} filterFields
+   * @param {ApiPaginationOptions} [pagination]
+   * @return {*}  {Promise<FindTechniqueRecord[]>}
+   * @memberof TechniqueService
+   */
+  async findTechniques(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: ITechniqueAdvancedFilters,
+    pagination?: ApiPaginationOptions
+  ): Promise<FindTechniqueRecord[]> {
+    return this.techniqueRepository.findTechniques(isUserAdmin, systemUserId, filterFields, pagination);
+  }
+
+  /**
+   * Retrieves the count of all techniques that are available to the user, based on their permissions and
+   * provided filter criteria.
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId The system user id of the user making the request
+   * @param {ITechniqueAdvancedFilters} filterFields
+   * @return {*}  {Promise<number>}
+   * @memberof TechniqueService
+   */
+  async findTechniquesCount(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: ITechniqueAdvancedFilters
+  ): Promise<number> {
+    return this.techniqueRepository.findTechniquesCount(isUserAdmin, systemUserId, filterFields);
+  }
   /**
    * Insert technique records.
    *

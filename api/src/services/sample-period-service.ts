@@ -1,6 +1,6 @@
 import { SurveySamplePeriodRecord } from '../database-models/survey_sample_period';
 import { IDBConnection } from '../database/db';
-import { IPeriodAdvancedFilters } from '../models/sampling-locations-view';
+import { IPeriodAdvancedFilters } from '../models/period-view';
 
 import {
   InsertSamplePeriodObject,
@@ -30,13 +30,13 @@ export class SamplePeriodService extends DBService {
    * Insert survey Sample Periods.
    *
    * @param {number} surveyId
-   * @param {InsertSamplePeriodObject[]} samplePeriods
+   * @param {InsertSamplePeriodObject[]} periods
    * @return {*}  {Promise<void>}
    * @memberof SamplePeriodService
    */
-  async insertSamplePeriods(surveyId: number, samplePeriods: InsertSamplePeriodObject[]): Promise<void> {
+  async insertSamplePeriods(surveyId: number, periods: InsertSamplePeriodObject[]): Promise<void> {
     await Promise.all(
-      samplePeriods.map((samplePeriod) => this.samplePeriodRepository.insertSamplePeriod(surveyId, samplePeriod))
+      periods.map((samplePeriod) => this.samplePeriodRepository.insertSamplePeriod(surveyId, samplePeriod))
     );
   }
 

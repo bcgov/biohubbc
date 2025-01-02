@@ -14,7 +14,6 @@ import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsa
 import {
   IEditSampleSiteRequest,
   IGetSampleBlockDetails,
-  IGetSampleMethodDetails,
   IGetSampleStratumDetails
 } from 'interfaces/useSamplingSiteApi.interface';
 import { useEffect, useRef, useState } from 'react';
@@ -34,7 +33,6 @@ export interface IEditSampleSiteFormData {
   name: string;
   description: string | null;
   geojson: Feature;
-  sample_methods: IGetSampleMethodDetails[];
   blocks: IGetSampleBlockDetails[];
   stratums: IGetSampleStratumDetails[];
 }

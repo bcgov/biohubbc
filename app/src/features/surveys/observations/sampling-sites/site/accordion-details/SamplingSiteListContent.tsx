@@ -8,7 +8,6 @@ import { useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { useEffect } from 'react';
 import { SamplingSiteListMap } from './map/SamplingSiteMap';
-import { SamplingSiteListMethod } from './method/SamplingSiteListMethod';
 
 export interface ISamplingSiteListContentProps {
   surveySampleSiteId: number;
@@ -63,14 +62,15 @@ export const SamplingSiteListContent = (props: ISamplingSiteListContentProps) =>
             pt: 1
           }
         }}>
-        {sampleSite.sample_methods?.map((sampleMethod, index) => {
+        {/* // TODO Nick */}
+        {/* {sampleSite.sample_methods?.map((sampleMethod, index) => {
           return (
             <SamplingSiteListMethod
               sampleMethod={sampleMethod}
               key={`${sampleMethod.survey_sample_site_id}-${sampleMethod.survey_sample_method_id}-${index}`}
             />
           );
-        })}
+        })} */}
       </List>
       <Box height="250px" flex="1 1 auto" mx={1} m={2}>
         <SamplingSiteListMap sampleSite={sampleSite} />

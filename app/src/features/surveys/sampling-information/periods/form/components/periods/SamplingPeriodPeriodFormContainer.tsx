@@ -11,17 +11,17 @@ import { ISurveySamplePeriodFormData } from 'features/surveys/sampling-informati
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { v4 } from 'uuid';
 
-export interface ISamplingPeriodPeriodForm2Props {
+export interface ISamplingPeriodPeriodFormContainerProps {
   /**
    * Set to `true` to disable the ability to add multiple periods to this form.
    *
    * @type {boolean}
-   * @memberof ISamplingPeriodPeriodForm2Props
+   * @memberof ISamplingPeriodPeriodFormContainerProps
    */
   disableMultiplePeriods?: boolean;
 }
 
-export const SamplingPeriodPeriodForm2 = (props: ISamplingPeriodPeriodForm2Props) => {
+export const SamplingPeriodPeriodFormContainer = (props: ISamplingPeriodPeriodFormContainerProps) => {
   const { disableMultiplePeriods } = props;
 
   const { values } = useFormikContext<ISurveySamplePeriodFormData>();

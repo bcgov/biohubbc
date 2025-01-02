@@ -24,7 +24,7 @@ export interface IObservationCountByGroup {
   itis_tsn?: number;
   observation_date?: string;
   survey_sample_site_id?: number;
-  survey_sample_method_id?: number;
+  method_technique_id?: number;
   survey_sample_period_id?: number;
   qualitative_measurements: IQualitativeMeasurementGroup[];
   quantitative_measurements: IQuantitativeMeasurementGroup[];

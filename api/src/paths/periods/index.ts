@@ -1,20 +1,20 @@
 import { Request, RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../../constants/roles';
-import { getDBConnection } from '../../../database/db';
-import { IPeriodAdvancedFilters } from '../../../models/sampling-locations-view';
-import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../../../openapi/schemas/pagination';
-import { authorizeRequestHandler, userHasValidRole } from '../../../request-handlers/security/authorization';
-import { SamplePeriodService } from '../../../services/sample-period-service';
-import { getLogger } from '../../../utils/logger';
+import { SYSTEM_ROLE } from '../../constants/roles';
+import { getDBConnection } from '../../database/db';
+import { IPeriodAdvancedFilters } from '../../models/period-view';
+import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../../openapi/schemas/pagination';
+import { authorizeRequestHandler, userHasValidRole } from '../../request-handlers/security/authorization';
+import { SamplePeriodService } from '../../services/sample-period-service';
+import { getLogger } from '../../utils/logger';
 import {
   ensureCompletePaginationOptions,
   makePaginationOptionsFromRequest,
   makePaginationResponse
-} from '../../../utils/pagination';
-import { getSystemUserFromRequest } from '../../../utils/request';
+} from '../../utils/pagination';
+import { getSystemUserFromRequest } from '../../utils/request';
 
-const defaultLog = getLogger('paths/period/index');
+const defaultLog = getLogger('paths/periods/index');
 
 export const GET: Operation = [
   authorizeRequestHandler(() => {
@@ -103,7 +103,7 @@ GET.apiDoc = {
                     'end_date',
                     'end_time',
                     'method_technique',
-                    'sample_site'
+                    'survey_sample_site'
                   ],
                   additionalProperties: false,
                   properties: {
@@ -135,19 +135,30 @@ GET.apiDoc = {
                     },
                     method_technique: {
                       type: 'object',
-                      required: ['method_technique_id', 'name'],
-                      additionalProperties: false,
+                      description: 'Details about the technique of the survey sample period',
+                      required: ['method_technique_id', 'name', 'description', 'method_response_metric_id'],
                       properties: {
                         method_technique_id: {
                           type: 'integer',
-                          minimum: 1
+                          minimum: 1,
+                          description: 'Primary key of the method technique record'
                         },
                         name: {
-                          type: 'string'
+                          type: 'string',
+                          description: 'Name of the method technique'
+                        },
+                        description: {
+                          type: 'string',
+                          description: 'Description of the method technique',
+                          nullable: true
+                        },
+                        method_response_metric_id: {
+                          type: 'integer',
+                          minimum: 1
                         }
                       }
                     },
-                    sample_site: {
+                    survey_sample_site: {
                       type: 'object',
                       required: ['survey_sample_site_id', 'name'],
                       additionalProperties: false,

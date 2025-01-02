@@ -1,56 +1,47 @@
-// @ts-nocheck
-import dayjs from 'dayjs';
-import { DefaultDateFormat } from '../constants/dates';
-import { IDBConnection } from '../database/db';
-import { ApiGeneralError } from '../errors/api-error';
-import { IObservationAdvancedFilters } from '../models/observation-view';
-import { CodeRepository } from '../repositories/code-repository';
+import { SurveyObservationRecord } from '../../database-models/survey_observation';
+import { IDBConnection } from '../../database/db';
+import { ApiGeneralError } from '../../errors/api-error';
+import { IObservationAdvancedFilters } from '../../models/observation-view';
+import { CodeRepository } from '../../repositories/code-repository';
 import {
   InsertObservation,
   ObservationGeometryRecord,
-  ObservationRecord,
   ObservationRecordWithSamplingAndSubcountData,
   ObservationRepository,
   ObservationSpecies,
   ObservationSubmissionRecord,
   UpdateObservation
-} from '../repositories/observation-repository/observation-repository';
+} from '../../repositories/observation-repository/observation-repository';
 import {
   InsertObservationSubCountQualitativeEnvironmentRecord,
   InsertObservationSubCountQuantitativeEnvironmentRecord,
   QualitativeEnvironmentTypeDefinition,
   QuantitativeEnvironmentTypeDefinition
-} from '../repositories/observation-subcount-environment-repository';
+} from '../../repositories/observation-subcount-environment-repository';
 import {
   InsertObservationSubCountQualitativeMeasurementRecord,
   InsertObservationSubCountQuantitativeMeasurementRecord
-} from '../repositories/observation-subcount-measurement-repository';
-import { SamplePeriodHierarchyIds } from '../repositories/sample-period-repository';
-import { SampleLocationRecord } from '../repositories/sample-site-repository';
-import { generateS3FileKey, getFileFromS3 } from '../utils/file-utils';
-import { getLogger } from '../utils/logger';
-import { parseS3File } from '../utils/media/media-utils';
-import { getCodeTypeDefinitions, validateCodes } from '../utils/observation-xlsx-utils/code-column-utils';
-import { isQuantitativeValueValid } from '../utils/observation-xlsx-utils/common-utils';
+} from '../../repositories/observation-subcount-measurement-repository';
+import { SurveySamplePeriodDetails } from '../../repositories/sample-period-repository';
+import { generateS3FileKey, getFileFromS3 } from '../../utils/file-utils';
+import { getLogger } from '../../utils/logger';
+import { parseS3File } from '../../utils/media/media-utils';
+import { getCodeTypeDefinitions, validateCodes } from '../../utils/observation-xlsx-utils/code-column-utils';
+import { isQuantitativeValueValid } from '../../utils/observation-xlsx-utils/common-utils';
 import {
-  EnvironmentNameTypeDefinitionMap,
   getEnvironmentColumnsTypeDefinitionMap,
   getEnvironmentTypeDefinitionsFromColumnNames,
   IEnvironmentDataToValidate,
-  isEnvironmentQualitativeTypeDefinition,
   validateEnvironments
-} from '../utils/observation-xlsx-utils/environment-column-utils';
+} from '../../utils/observation-xlsx-utils/environment-column-utils';
 import {
   getMeasurementColumnNames,
-  getMeasurementFromTsnMeasurementTypeDefinitionMap,
   getTsnMeasurementTypeDefinitionMap,
   IMeasurementDataToValidate,
-  isMeasurementCBQualitativeTypeDefinition,
-  TsnMeasurementTypeDefinitionMap,
   validateMeasurements
-} from '../utils/observation-xlsx-utils/measurement-column-utils';
-import { CSV_COLUMN_ALIASES } from '../utils/xlsx-utils/column-aliases';
-import { generateColumnCellGetterFromColumnValidator } from '../utils/xlsx-utils/column-validator-utils';
+} from '../../utils/observation-xlsx-utils/measurement-column-utils';
+import { CSV_COLUMN_ALIASES } from '../../utils/xlsx-utils/column-aliases';
+import { generateColumnCellGetterFromColumnValidator } from '../../utils/xlsx-utils/column-validator-utils';
 import {
   constructXLSXWorkbook,
   getDefaultWorksheet,
@@ -58,22 +49,26 @@ import {
   getWorksheetRowObjects,
   IXLSXCSVValidator,
   validateCsvFile
-} from '../utils/xlsx-utils/worksheet-utils';
-import { ApiPaginationOptions } from '../zod-schema/pagination';
+} from '../../utils/xlsx-utils/worksheet-utils';
+import { ApiPaginationOptions } from '../../zod-schema/pagination';
 import {
   CBQualitativeMeasurementTypeDefinition,
   CBQuantitativeMeasurementTypeDefinition,
   CritterbaseService
-} from './critterbase-service';
-import { DBService } from './db-service';
-import { ObservationSubCountEnvironmentService } from './observation-subcount-environment-service';
-import { ObservationSubCountMeasurementService } from './observation-subcount-measurement-service';
-import { PlatformService } from './platform-service';
-import { SamplePeriodService } from './sample-period-service';
-import { SampleSiteService } from './sample-site-service';
-import { SubCountService } from './subcount-service';
+} from '../critterbase-service';
+import { DBService } from '../db-service';
+import { ObservationSubCountEnvironmentService } from '../observation-subcount-environment-service';
+import { ObservationSubCountMeasurementService } from '../observation-subcount-measurement-service';
+import { PlatformService } from '../platform-service';
+import { SamplePeriodService } from '../sample-period-service';
+import { SubCountService } from '../subcount-service';
+import {
+  pullEnvironmentsFromWorkSheetRowObject,
+  pullMeasurementsFromWorkSheetRowObject,
+  pullSamplingDataFromWorksheetRowObject
+} from './utils';
 
-const defaultLog = getLogger('services/observation-service');
+export const defaultLog = getLogger('services/observation-services/observation-service');
 const defaultSubcountSign = 'direct sighting';
 
 /**
@@ -91,7 +86,7 @@ export const observationStandardColumnValidator = {
   LATITUDE: { type: 'number', aliases: CSV_COLUMN_ALIASES.LATITUDE, optional: true },
   LONGITUDE: { type: 'number', aliases: CSV_COLUMN_ALIASES.LONGITUDE, optional: true },
   SAMPLING_SITE: { type: 'string', aliases: CSV_COLUMN_ALIASES.SAMPLING_SITE, optional: true },
-  SAMPLING_METHOD: { type: 'string', aliases: CSV_COLUMN_ALIASES.SAMPLING_METHOD, optional: true },
+  METHOD_TECHNIQUE: { type: 'string', aliases: CSV_COLUMN_ALIASES.METHOD_TECHNIQUE, optional: true },
   SAMPLING_PERIOD: { type: 'string', aliases: CSV_COLUMN_ALIASES.SAMPLING_PERIOD, optional: true },
   COMMENT: { type: 'string', aliases: CSV_COLUMN_ALIASES.COMMENT, optional: true }
 } satisfies IXLSXCSVValidator;
@@ -138,7 +133,7 @@ export type ObservationMeasurementSupplementaryData = {
 };
 
 export type ObservationSamplingSupplementaryData = {
-  sample_sites: SampleLocationRecord[];
+  sampling_data: SurveySamplePeriodDetails[];
 };
 
 export type AllObservationSupplementaryData = ObservationCountSupplementaryData &
@@ -264,10 +259,10 @@ export class ObservationService extends DBService {
    * Retrieves all observation records for the given survey
    *
    * @param {number} surveyId
-   * @return {*}  {Promise<ObservationRecord[]>}
+   * @return {*}  {Promise<SurveyObservationRecord[]>}
    * @memberof ObservationRepository
    */
-  async getAllSurveyObservations(surveyId: number): Promise<ObservationRecord[]> {
+  async getAllSurveyObservations(surveyId: number): Promise<SurveyObservationRecord[]> {
     return this.observationRepository.getAllSurveyObservations(surveyId);
   }
 
@@ -287,10 +282,10 @@ export class ObservationService extends DBService {
    *
    * @param {number} surveyId
    * @param {number} surveyObservationId
-   * @return {*}  {Promise<ObservationRecord[]>}
+   * @return {*}  {Promise<SurveyObservationRecord[]>}
    * @memberof ObservationRepository
    */
-  async getSurveyObservationById(surveyId: number, surveyObservationId: number): Promise<ObservationRecord> {
+  async getSurveyObservationById(surveyId: number, surveyObservationId: number): Promise<SurveyObservationRecord> {
     return this.observationRepository.getSurveyObservationById(surveyId, surveyObservationId);
   }
 
@@ -312,22 +307,22 @@ export class ObservationService extends DBService {
     surveyObservations: ObservationRecordWithSamplingAndSubcountData[];
     supplementaryObservationData: AllObservationSupplementaryData;
   }> {
-    const sampleLocationService = new SampleSiteService(this.connection);
+    const samplePeriodService = new SamplePeriodService(this.connection);
     const surveyObservations = await this.observationRepository.getSurveyObservationsWithSamplingDataWithAttributesData(
       surveyId,
       pagination
     );
 
-    const sampleSiteIds = surveyObservations
-      .filter((obs) => obs.survey_sample_site_id)
-      .map((observation) => observation.survey_sample_site_id!);
+    // const sampleSiteIds = surveyObservations
+    //   .filter((obs) => obs.survey_sample_site_id)
+    //   .map((observation) => observation.survey_sample_site_id!);
 
     // Get supplementary observation data
     const observationCount = await this.observationRepository.getSurveyObservationCount(surveyId);
     const subCountService = new SubCountService(this.connection);
     const measurementTypeDefinitions = await subCountService.getMeasurementTypeDefinitionsForSurvey(surveyId);
     const environmentTypeDefinitions = await subCountService.getEnvironmentTypeDefinitionsForSurvey(surveyId);
-    const sampleLocations = await sampleLocationService.getSampleSitesForSurveyId(surveyId, { sampleSiteIds });
+    const samplePeriods = await samplePeriodService.getSamplePeriodsForSurvey(surveyId); // TODO NICK - fetch periods based on some filter? survey_sample_site_id? observation_id? etc? SO we dont just return EVERY period in the whole survey
 
     return {
       surveyObservations: surveyObservations,
@@ -337,7 +332,7 @@ export class ObservationService extends DBService {
         quantitative_measurements: measurementTypeDefinitions.quantitative_measurements,
         qualitative_environments: environmentTypeDefinitions.qualitative_environments,
         quantitative_environments: environmentTypeDefinitions.quantitative_environments,
-        sample_sites: sampleLocations
+        sampling_data: samplePeriods
       }
     };
   }
@@ -621,22 +616,19 @@ export class ObservationService extends DBService {
     }
 
     // SAMPLING INFORMATION -----------------------------------------------------------------------------------------
-    const sampleLocationService = new SampleSiteService(this.connection);
+    const samplePeriodService = new SamplePeriodService(this.connection);
 
     // Get sampling information for the survey to later validate
-    const samplingLocations = await sampleLocationService.getSampleSitesForSurveyId(surveyId);
+    const samplingPeriods = await samplePeriodService.getSamplePeriodsForSurvey(surveyId);
 
     // --------------------------------------------------------------------------------------------------------------
 
     // SamplePeriodHierarchyIds is only for when all records are being assigned to the same sampling period
-    let samplePeriodHierarchyIds: SamplePeriodHierarchyIds;
+    let samplePeriodHierarchyIds: SurveySamplePeriodDetails;
 
     if (options?.surveySamplePeriodId) {
       const samplePeriodService = new SamplePeriodService(this.connection);
-      samplePeriodHierarchyIds = await samplePeriodService.getSamplePeriodHierarchyIds(
-        surveyId,
-        options.surveySamplePeriodId
-      );
+      samplePeriodHierarchyIds = await samplePeriodService.getSamplePeriodById(surveyId, options.surveySamplePeriodId);
     }
 
     // Get subcount sign options and default option for when sign is null
@@ -664,7 +656,7 @@ export class ObservationService extends DBService {
         quantitative_environments: []
       };
 
-      const measurements = this._pullMeasurementsFromWorkSheetRowObject(
+      const measurements = pullMeasurementsFromWorkSheetRowObject(
         row,
         measurementColumnNames,
         tsnMeasurementTypeDefinitionMap
@@ -672,7 +664,7 @@ export class ObservationService extends DBService {
       newSubcount.qualitative_measurements = measurements.qualitative_measurements;
       newSubcount.quantitative_measurements = measurements.quantitative_measurements;
 
-      const environments = this._pullEnvironmentsFromWorkSheetRowObject(
+      const environments = pullEnvironmentsFromWorkSheetRowObject(
         row,
         environmentColumnNames,
         environmentColumnsTypeDefinitionMap
@@ -701,7 +693,7 @@ export class ObservationService extends DBService {
       }
 
       // PROCESS AND VALIDATE SAMPLING INFORMATION -----------------------------------------------------------------------------------------
-      const samplingData = this._pullSamplingDataFromWorksheetRowObject(row, samplingLocations);
+      const samplingData = pullSamplingDataFromWorksheetRowObject(row, samplingPeriods);
 
       if (!samplingData && getColumnCellValue(row, 'SAMPLING_SITE').cell) {
         throw new Error('Failed to process file for importing observations. Sampling data validator failed.');
@@ -730,263 +722,6 @@ export class ObservationService extends DBService {
   }
 
   /**
-   * This function is a helper method for the `processObservationCsvSubmission` function. It will take row data from an uploaded CSV
-   * and find and connect the CSV measurement data with proper measurement taxon ids (UUIDs) from the TsnMeasurementTypeDefinitionMap passed in.
-   * Any qualitative and quantitative measurements found are returned to be inserted into the database. This function assumes that the
-   * data in the CSV has already been validated.
-   *
-   * @param {Record<string, any>} row A worksheet row object from a CSV that was uploaded for processing
-   * @param {string[]} measurementColumns A list of the measurement columns found in a CSV uploaded
-   * @param {TsnMeasurementTypeDefinitionMap} tsnMeasurements Map of TSNs and their valid measurements
-   * @return {*}  {(Pick<InsertSubCount, 'qualitative_measurements' | 'quantitative_measurements'>)}
-   * @memberof ObservationService
-   */
-  _pullMeasurementsFromWorkSheetRowObject(
-    row: Record<string, any>,
-    measurementColumns: string[],
-    tsnMeasurements: TsnMeasurementTypeDefinitionMap
-  ): Pick<InsertSubCount, 'qualitative_measurements' | 'quantitative_measurements'> {
-    const foundMeasurements: Pick<InsertSubCount, 'qualitative_measurements' | 'quantitative_measurements'> = {
-      qualitative_measurements: [],
-      quantitative_measurements: []
-    };
-
-    measurementColumns.forEach((mColumn) => {
-      // Ignore blank columns
-      if (!mColumn) {
-        return;
-      }
-
-      const rowData = row[mColumn];
-
-      // Ignore empty rows
-      if (rowData === undefined) {
-        return;
-      }
-
-      const measurement = getMeasurementFromTsnMeasurementTypeDefinitionMap(
-        getColumnCellValue(row, 'ITIS_TSN').cell as string,
-        mColumn,
-        tsnMeasurements
-      );
-
-      // Ignore empty measurements
-      if (!measurement) {
-        return;
-      }
-
-      // if measurement is qualitative, find the option uuid
-      if (isMeasurementCBQualitativeTypeDefinition(measurement)) {
-        const foundOption = measurement.options.find(
-          (option) =>
-            option.option_label.toLowerCase() === String(rowData).toLowerCase() ||
-            option.option_value === Number(rowData) ||
-            option.qualitative_option_id === rowData
-        );
-
-        if (!foundOption) {
-          return;
-        }
-
-        foundMeasurements.qualitative_measurements.push({
-          measurement_id: measurement.taxon_measurement_id,
-          measurement_option_id: foundOption.qualitative_option_id
-        });
-      } else {
-        foundMeasurements.quantitative_measurements.push({
-          measurement_id: measurement.taxon_measurement_id,
-          measurement_value: Number(rowData)
-        });
-      }
-    });
-
-    return foundMeasurements;
-  }
-
-  _pullEnvironmentsFromWorkSheetRowObject(
-    row: Record<string, any>,
-    environmentColumns: string[],
-    environmentNameTypeDefinitionMap: EnvironmentNameTypeDefinitionMap
-  ): Pick<InsertSubCount, 'qualitative_environments' | 'quantitative_environments'> {
-    const foundEnvironments: Pick<InsertSubCount, 'qualitative_environments' | 'quantitative_environments'> = {
-      qualitative_environments: [],
-      quantitative_environments: []
-    };
-
-    environmentColumns.forEach((mColumn) => {
-      // Ignore blank columns
-      if (!mColumn) {
-        return;
-      }
-
-      const rowData = row[mColumn];
-
-      // Ignore empty rows
-      if (rowData === undefined) {
-        return;
-      }
-
-      const environment = environmentNameTypeDefinitionMap.get(mColumn);
-
-      // Ignore empty environments
-      if (!environment) {
-        return;
-      }
-
-      // if environment is qualitative, find the option id
-      if (isEnvironmentQualitativeTypeDefinition(environment)) {
-        const foundOption = environment.options.find((option) => option.name === String(rowData).toLowerCase());
-
-        if (!foundOption) {
-          return;
-        }
-
-        foundEnvironments.qualitative_environments.push({
-          environment_qualitative_id: foundOption.environment_qualitative_id,
-          environment_qualitative_option_id: foundOption.environment_qualitative_option_id
-        });
-      } else {
-        foundEnvironments.quantitative_environments.push({
-          environment_quantitative_id: environment.environment_quantitative_id,
-          value: Number(rowData)
-        });
-      }
-    });
-
-    return foundEnvironments;
-  }
-
-  /**
-   * Extracts sampling data from the worksheet row object and maps site names, method techniques, and periods
-   * to their respective IDs using the provided samplingLocations.
-   *
-   * @param {Record<string, any>} row - The current row of the worksheet being processed.
-   * @param {SampleLocationRecord[]} samplingLocations - The available sampling locations for the survey, used for mapping names to IDs.
-   * @return { { sampleSiteId: number, methodTechniqueId: number, samplePeriodId: number } | null } The sampling data with IDs, or null if no valid data is found.
-   */
-  _pullSamplingDataFromWorksheetRowObject(
-    row: Record<string, any>,
-    samplingLocations: SampleLocationRecord[]
-  ): { sampleSiteId: number; methodTechniqueId: number; samplePeriodId: number } | null {
-    // Extract site, method, and period data from the row
-    const siteName = getColumnCellValue(row, 'SAMPLING_SITE').cell as string | null;
-    const techniqueName = getColumnCellValue(row, 'SAMPLING_METHOD').cell as string | null;
-    const period = getColumnCellValue(row, 'SAMPLING_PERIOD').cell as string | null;
-
-    if (!siteName) {
-      return null;
-    }
-
-    // Find the site record by name
-    const siteRecord = samplingLocations.find((site) => site.name.toLowerCase() === siteName.toLowerCase());
-
-    // If there is no site, exit early because a site is required when specifying any sampling information for the row.
-    if (!siteRecord) {
-      return null;
-    }
-
-    let methodRecord = null;
-
-    // Find the method record by technique name
-    if (techniqueName) {
-      methodRecord = siteRecord.sample_methods.find(
-        (method) => method.technique.name.toLowerCase() === techniqueName.toLowerCase()
-      );
-    }
-
-    // If we failed to find a method record based on technique name, we will check whether that site has just 1 technique.
-    // If the site has 1 technique, we will assume that the row belongs to that technique.
-    // This is a convenience for users because they only need to specify the sampling site for sites with 1 technique.
-    if (siteRecord.sample_methods.length === 1) {
-      methodRecord = siteRecord.sample_methods[0];
-    }
-
-    // If there are multiple techniques for the site but no technique specified in the row,
-    // exit early because we cannot determine which method to use.
-    if (!methodRecord) {
-      return null;
-    }
-
-    // If period is specified, parse the row value and find a matching record
-    if (period) {
-      // Format the period timestamp data
-      const [startDate, endDate] = period.split('-').map((date: string) => dayjs(date).format(DefaultDateFormat));
-      const startTime = dayjs(period.split('-')[0]).format('HH:mm:ss');
-      const endTime = dayjs(period.split('-')[1]).format('HH:mm:ss');
-
-      // Find matching periods by date
-      const matchingPeriods = methodRecord.sample_periods.filter(
-        (p: any) => p.start_date === startDate && p.end_date === endDate
-      );
-
-      // Return if exactly one period matches the date,
-      // meaning that we have successfully determined a single site, method, and period Id for each row.
-      if (matchingPeriods.length === 1) {
-        return {
-          sampleSiteId: siteRecord.survey_sample_site_id,
-          methodTechniqueId: methodRecord.technique.method_technique_id,
-          samplePeriodId: matchingPeriods[0].survey_sample_period_id
-        };
-      }
-
-      // If multiple periods match by date, try to match also by time
-      const matchingPeriod = matchingPeriods.find((p: any) => p.start_time === startTime && p.end_time === endTime);
-
-      if (matchingPeriod) {
-        return {
-          sampleSiteId: siteRecord.survey_sample_site_id,
-          methodTechniqueId: methodRecord.technique.method_technique_id,
-          samplePeriodId: matchingPeriod.survey_sample_period_id
-        };
-      }
-    }
-
-    // If period is not specified, infer it from the row data
-    const observationDate = getColumnCellValue(row, 'DATE').cell as string | null;
-    const observationTime = getColumnCellValue(row, 'TIME').cell as string | null;
-
-    const formattedDate = dayjs(observationDate);
-    const formattedTime = dayjs(`${observationDate} ${observationTime}`).format('HH:mm:ss');
-
-    // TODO: Fix timezone of the observation date. Observation date is assumed to be UTC instead of local time,
-    // so the observation date being imported from the csv is incorrectly offset by 1 day. eg. "July 28, 2024" is
-    // imported at July 27, 2024
-    //
-    // If no periods match by date/time but the site and method is given, check if the observation date falls within a period.
-    // If true, we will infer the period based on the observation date.
-    const encompassingPeriod = methodRecord.sample_periods.find(
-      (p: any) =>
-        (formattedDate.isAfter(dayjs(p.start_date)) || formattedDate.isSame(dayjs(p.start_date))) &&
-        (formattedDate.isBefore(dayjs(p.end_date)) || formattedDate.isAfter(dayjs(p.end_date))) &&
-        (!p.start_time || formattedTime >= dayjs(`${p.start_date} ${p.start_time}`).format('HH:mm:ss')) &&
-        (!p.end_time || formattedTime <= dayjs(`${p.end_date} ${p.end_time}`).format('HH:mm:ss'))
-    );
-
-    if (encompassingPeriod) {
-      return {
-        sampleSiteId: siteRecord.survey_sample_site_id,
-        methodTechniqueId: methodRecord.technique.method_technique_id,
-        samplePeriodId: encompassingPeriod.survey_sample_period_id
-      };
-    }
-
-    // If there is no observation date and exactly 1 period for the matching method, and there is no period specified in the row,
-    // we will assume that the observation belongs to that period. This is a convenience for users since they don't need to specify
-    // the period if they have only 1 for the matching method.
-    // TODO: Might be worth checking if (!observationDate && methodRecord.sample_periods.length === 1), therefore
-    // failing if the specified date is not in a period
-    if (methodRecord.sample_periods.length === 1) {
-      return {
-        sampleSiteId: siteRecord.survey_sample_site_id,
-        methodTechniqueId: methodRecord.technique.method_technique_id,
-        samplePeriodId: methodRecord.sample_periods[0].survey_sample_period_id
-      };
-    }
-
-    return null;
-  }
-
-  /**
    * Maps over an array of inserted/updated observation records in order to update its scientific
    * name to match its ITIS TSN.
    *
@@ -996,7 +731,7 @@ export class ObservationService extends DBService {
    * @memberof ObservationService
    */
   async _attachItisScientificName<
-    RecordWithTaxonFields extends Pick<ObservationRecord, 'itis_tsn' | 'itis_scientific_name'>
+    RecordWithTaxonFields extends Pick<SurveyObservationRecord, 'itis_tsn' | 'itis_scientific_name'>
   >(recordsToPatch: RecordWithTaxonFields[]): Promise<RecordWithTaxonFields[]> {
     defaultLog.debug({ label: '_attachItisScientificName' });
 

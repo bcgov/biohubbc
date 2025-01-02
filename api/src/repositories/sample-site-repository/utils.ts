@@ -1,6 +1,6 @@
 import { Knex } from 'knex';
 import { getKnex } from '../../database/db';
-import { ISiteAdvancedFilters } from '../../models/sampling-locations-view';
+import { ISiteAdvancedFilters } from '../../models/site-view';
 
 /**
  * Get the base query for retrieving survey sample locations
@@ -12,51 +12,6 @@ export function getSamplingLocationBaseQuery(knex: Knex): Knex.QueryBuilder {
   return (
     knex
       .queryBuilder()
-      .with('w_method_technique_attractant', (qb) => {
-        // Gather technique attractants
-        qb.select(
-          'mta.method_technique_id',
-          knex.raw(`
-          json_agg(json_build_object(
-            'attractant_lookup_id', mta.attractant_lookup_id
-          )) as attractants`)
-        )
-          .from({ mta: 'method_technique_attractant' })
-          .groupBy('mta.method_technique_id');
-      })
-      .with('w_method_technique', (qb) => {
-        // Gather method techniques
-        qb.select(
-          'mt.method_technique_id',
-          knex.raw(`
-          json_build_object(
-            'method_technique_id', mt.method_technique_id,
-            'name', mt.name,
-            'description', mt.description,
-            'method_response_metric_id', mt.method_response_metric_id,
-            'attractants', COALESCE(wmta.attractants, '[]'::json)
-          ) as method_technique`)
-        )
-          .from({ mt: 'method_technique' })
-          .leftJoin('w_method_technique_attractant as wmta', 'wmta.method_technique_id', 'mt.method_technique_id');
-      })
-      .with('w_survey_sample_period', (qb) => {
-        // Aggregate sample periods into an array of objects
-        qb.select(
-          'ssp.survey_sample_method_id',
-          knex.raw(`
-          json_agg(json_build_object(
-            'survey_sample_period_id', ssp.survey_sample_period_id,
-            'survey_sample_method_id', ssp.survey_sample_method_id,
-            'start_date', ssp.start_date,
-            'start_time', ssp.start_time,
-            'end_date', ssp.end_date,
-            'end_time', ssp.end_time
-          ) ORDER BY ssp.start_date, ssp.start_time) as sample_periods`)
-        )
-          .from({ ssp: 'survey_sample_period' })
-          .groupBy('ssp.survey_sample_method_id');
-      })
       .with('w_survey_sample_block', (qb) => {
         // Aggregate sample blocks into an array of objects
         qb.select(
@@ -98,15 +53,17 @@ export function getSamplingLocationBaseQuery(knex: Knex): Knex.QueryBuilder {
         'sss.name',
         'sss.description',
         'sss.geojson',
-        'technique',
-        'wmt.method_technique',
+        // 'technique',
+        // 'wmt.method_technique',
+        // knex.raw(`
+        // COALESCE(wssp.sample_periods, '[]'::json) as sample_periods,
+        // `),
         knex.raw(`
-        COALESCE(wssp.sample_periods, '[]'::json) as sample_periods,
-        COALESCE(wssb.blocks, '[]'::json) as blocks,
-        COALESCE(wssst.stratums, '[]'::json) as stratums`)
+          COALESCE(wssb.blocks, '[]'::json) as blocks,
+          COALESCE(wssst.stratums, '[]'::json) as stratums`)
       )
       .from({ sss: 'survey_sample_site' })
-      .leftJoin('w_method_technique as wmt', 'wssm.survey_sample_site_id', 'sss.survey_sample_site_id')
+      //   .leftJoin('w_method_technique as wmt', 'wssm.survey_sample_site_id', 'sss.survey_sample_site_id')
       .leftJoin('w_survey_sample_block as wssb', 'wssb.survey_sample_site_id', 'sss.survey_sample_site_id')
       .leftJoin('w_survey_sample_stratum as wssst', 'wssst.survey_sample_site_id', 'sss.survey_sample_site_id')
   );

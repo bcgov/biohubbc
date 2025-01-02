@@ -28,7 +28,8 @@ export interface ICreateTechniqueRequest {
   name: string;
   description: string | null;
   distance_threshold: number | null;
-  method_lookup_id: number | null;
+  method_lookup_id: number;
+  method_response_metric_id: number;
   attractants: TechniqueAttractant[];
   attributes: {
     qualitative_attributes: TechniqueQualitativeAttribute[];
@@ -60,3 +61,19 @@ export interface IGetTechniquesResponse {
   techniques: IGetTechniqueResponse[];
   pagination: ApiPaginationResponseParams;
 }
+
+export type FindTechnique = {
+  method_technique_id: number;
+  name: string;
+  description: string | null;
+  distance_threshold: number | null;
+  method_lookup_id: number;
+  method_lookup_name: string;
+  method_response_metric_id: number;
+  method_response_metric_name: string;
+};
+
+export type FindTechniques = {
+  techniques: FindTechnique[];
+  pagination: ApiPaginationResponseParams;
+};

@@ -27,7 +27,13 @@ export interface IProjectAdvancedFilters {
   /**
    * Filter results by system user id.
    *
-   * Note: This is not the id of the user making the request.
+   * Note: This is not the id of the uexport interface IPeriodAdvancedFilters {
+  survey_id?: number;
+  sample_site_id?: number;
+  method_technique_id?: number;
+  system_user_id?: number;
+}
+ser making the request.
    *
    * @type {number}
    * @memberof IProjectAdvancedFilters

@@ -14,6 +14,18 @@ import { Knex } from 'knex';
  * - Add new column method_technique_id to survey_sample_period table
  * - Add new column survey_sample_site_id to survey_sample_period table
  *
+ * survey_observation
+ *
+ *   survey_sample_site_id
+ *   - Drop foreign key constraints for survey_sample_site_id
+ *   - Drop index for foreign key
+ *   - Update comment for column survey_sample_site_id: indicate that it is deprecated
+ *
+ *   survey_sample_site_id
+ *   - Drop foreign key constraints for survey_sample_method_id
+ *   - Drop index for foreign key
+ *   - Update comment for column survey_sample_method_id: indicate that it is deprecated
+ *
  * survey_sample_method
  * - Migrate existing data from survey_sample_method to method_technique and survey_sample_period tables.
  * - Drop survey_sample_method table
@@ -32,6 +44,7 @@ export async function up(knex: Knex): Promise<void> {
     DROP VIEW IF EXISTS survey_sample_site;
     DROP VIEW IF EXISTS survey_sample_method;
     DROP VIEW IF EXISTS survey_sample_period;
+    DROP VIEW IF EXISTS survey_observation;
 
     ----------------------------------------------------------------------------------------
     -- Alter method_technique table
@@ -53,7 +66,7 @@ export async function up(knex: Knex): Promise<void> {
     -- Alter survey_sample_period table
     ----------------------------------------------------------------------------------------
 
-    -- Drop deprecated foreign key constraint to survey_sample_method table
+    -- Drop deprecated foreign key constraint to survey_sample_method table.
     ALTER TABLE survey_sample_period DROP CONSTRAINT survey_sample_period_fk1;
 
     ----------------------------------------------------------------------------------------
@@ -129,6 +142,24 @@ export async function up(knex: Knex): Promise<void> {
     ALTER TABLE survey_sample_period ALTER COLUMN method_technique_id SET NOT NULL;
 
     ----------------------------------------------------------------------------------------
+    -- Alter survey_observation table
+    ----------------------------------------------------------------------------------------
+
+    -- Drop deprecated foreign key constraint to survey_sample_site table.
+    ALTER TABLE survey_observation DROP CONSTRAINT IF EXISTS survey_observation_fk2;
+    -- Drop index for foreign key
+    DROP INDEX IF EXISTS survey_observation_idx2;
+    -- Add comment to indicate that the column is deprecated
+    COMMENT ON COLUMN survey_observation.survey_sample_site_id IS '(Deprecated) Use survey_sample_period_id instead.';
+
+    -- Drop deprecated foreign key constraint to survey_sample_method table.
+    ALTER TABLE survey_observation DROP CONSTRAINT IF EXISTS survey_observation_fk3;
+    -- Drop index for foreign key
+    DROP INDEX IF EXISTS survey_observation_idx3;
+    -- Add comment to indicate that the column is deprecated
+    COMMENT ON COLUMN survey_observation.survey_sample_method_id IS '(Deprecated) Use survey_sample_period_id instead.';
+
+    ----------------------------------------------------------------------------------------
     -- Drop survey_sample_method table
     ----------------------------------------------------------------------------------------
 
@@ -143,7 +174,7 @@ export async function up(knex: Knex): Promise<void> {
     CREATE OR REPLACE VIEW method_technique AS SELECT * FROM biohub.method_technique;
     CREATE OR REPLACE VIEW survey_sample_site AS SELECT * FROM biohub.survey_sample_site;
     CREATE OR REPLACE VIEW survey_sample_period AS SELECT * FROM biohub.survey_sample_period;
-
+    CREATE OR REPLACE VIEW survey_observation AS SELECT * FROM biohub.survey_observation;
   `);
 }
 

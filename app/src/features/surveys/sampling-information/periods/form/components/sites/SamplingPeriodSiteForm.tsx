@@ -10,18 +10,22 @@ import { useCallback, useState } from 'react';
 
 export type ISelectedSampleSiteData = Pick<IGetSampleLocationNonSpatialDetails, 'survey_sample_site_id' | 'name'>;
 
-export interface ISamplingPeriodSiteForm2Props {
+export interface ISamplingPeriodSiteFormProps {
+  /**
+   * Additional data (display name, description, etc) to pre-populate the UI with in the case of an edit.
+   *
+   * @type {ISelectedSampleSiteData}
+   * @memberof ISamplingPeriodSiteFormProps
+   */
   editData?: ISelectedSampleSiteData;
 }
 
-export const SamplingPeriodSiteForm2 = (props: ISamplingPeriodSiteForm2Props) => {
+export const SamplingPeriodSiteForm = (props: ISamplingPeriodSiteFormProps) => {
   const { editData } = props;
-
-  console.log('2', editData);
 
   const { setFieldValue, errors } = useFormikContext<CreateSamplingPeriod>();
 
-  const { projectId, surveyId } = useSurveyContext();
+  const surveyContext = useSurveyContext();
 
   const biohubApi = useBiohubApi();
 
@@ -36,17 +40,20 @@ export const SamplingPeriodSiteForm2 = (props: ISamplingPeriodSiteForm2Props) =>
    */
   const searchSampleSites = useCallback(
     async (searchTerm: string): Promise<WithIdAndName<ISelectedSampleSiteData>[]> => {
-      const response = await biohubApi.samplingSite.getSampleSites(projectId, surveyId, { keyword: searchTerm });
+      const response = await biohubApi.samplingSite.findSampleSites({
+        survey_id: surveyContext.surveyId,
+        keyword: searchTerm
+      });
 
-      return response.sampleSites.map((sampleSite) => {
+      return response.sites.map((site) => {
         return {
-          id: sampleSite.survey_sample_site_id,
-          survey_sample_site_id: sampleSite.survey_sample_site_id,
-          name: sampleSite.name
+          id: site.survey_sample_site_id,
+          survey_sample_site_id: site.survey_sample_site_id,
+          name: site.name
         };
       });
     },
-    [biohubApi.samplingSite, projectId, surveyId]
+    [biohubApi.samplingSite, surveyContext.surveyId]
   );
 
   /**

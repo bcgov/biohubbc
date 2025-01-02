@@ -1,5 +1,6 @@
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
+import { SurveyObservationModel, SurveyObservationRecord } from '../../database-models/survey_observation';
 import { getKnex } from '../../database/db';
 import { ApiExecuteSQLError } from '../../errors/api-error';
 import { IObservationAdvancedFilters } from '../../models/observation-view';
@@ -20,31 +21,6 @@ import { getSurveyObservationsBaseQuery, makeFindObservationsQuery } from './uti
 
 const defaultLog = getLogger('repositories/observation-repository');
 
-/**
- * Interface reflecting survey observations retrieved from the database
- */
-export const ObservationRecord = z.object({
-  survey_observation_id: z.number(),
-  survey_id: z.number(),
-  itis_tsn: z.number(),
-  itis_scientific_name: z.string().nullable(),
-  survey_sample_site_id: z.number().nullable(),
-  method_technique_id: z.number().nullable(),
-  survey_sample_period_id: z.number().nullable(),
-  latitude: z.number().nullable(),
-  longitude: z.number().nullable(),
-  count: z.number(),
-  observation_time: z.string().nullable(),
-  observation_date: z.string().nullable(),
-  create_date: z.string(),
-  create_user: z.number(),
-  update_date: z.string().nullable(),
-  update_user: z.number().nullable(),
-  revision_count: z.number()
-});
-
-export type ObservationRecord = z.infer<typeof ObservationRecord>;
-
 export const ObservationSpecies = z.object({
   itis_tsn: z.number()
 });
@@ -53,7 +29,7 @@ export type ObservationSpecies = z.infer<typeof ObservationSpecies>;
 
 const ObservationSamplingData = z.object({
   survey_sample_site_name: z.string().nullable(),
-  survey_sample_method_name: z.string().nullable(),
+  method_technique_name: z.string().nullable(),
   survey_sample_period_start_datetime: z.string().nullable()
 });
 
@@ -101,22 +77,9 @@ const ObservationSubcountsObject = z.object({
  * - additional fields about the survey_sample_* data for the observation record
  * - additional fields about the subcount records for the observation record
  */
-export const ObservationRecordWithSamplingAndSubcountData = ObservationRecord.pick({
-  survey_observation_id: true,
-  survey_id: true,
-  itis_tsn: true,
-  itis_scientific_name: true,
-  survey_sample_site_id: true,
-  method_technique_id: true,
-  survey_sample_period_id: true,
-  latitude: true,
-  longitude: true,
-  count: true,
-  observation_time: true,
-  observation_date: true
-})
-  .extend(ObservationSamplingData.shape)
-  .extend(ObservationSubcountsObject.shape);
+export const ObservationRecordWithSamplingAndSubcountData = SurveyObservationRecord.extend(
+  ObservationSamplingData.shape
+).extend(ObservationSubcountsObject.shape);
 export type ObservationRecordWithSamplingAndSubcountData = z.infer<typeof ObservationRecordWithSamplingAndSubcountData>;
 
 export const ObservationGeometryRecord = z.object({
@@ -129,7 +92,7 @@ export type ObservationGeometryRecord = z.infer<typeof ObservationGeometryRecord
  * Interface reflecting survey observations that are being inserted into the database
  */
 export type InsertObservation = Pick<
-  ObservationRecord,
+  SurveyObservationRecord,
   | 'itis_tsn'
   | 'itis_scientific_name'
   | 'survey_id'
@@ -138,8 +101,6 @@ export type InsertObservation = Pick<
   | 'count'
   | 'observation_date'
   | 'observation_time'
-  | 'survey_sample_site_id'
-  | 'method_technique_id'
   | 'survey_sample_period_id'
 >;
 
@@ -147,7 +108,7 @@ export type InsertObservation = Pick<
  * Interface reflecting survey observations that are being updated in the database
  */
 export type UpdateObservation = Pick<
-  ObservationRecord,
+  SurveyObservationRecord,
   | 'itis_tsn'
   | 'itis_scientific_name'
   | 'survey_observation_id'
@@ -156,8 +117,6 @@ export type UpdateObservation = Pick<
   | 'count'
   | 'observation_date'
   | 'observation_time'
-  | 'survey_sample_site_id'
-  | 'method_technique_id'
   | 'survey_sample_period_id'
 >;
 
@@ -280,21 +239,19 @@ export class ObservationRepository extends BaseRepository {
    *
    * @param {number} surveyId
    * @param {((InsertObservation | UpdateObservation)[])} observations
-   * @return {*}  {Promise<ObservationRecord[]>}
+   * @return {*}  {Promise<SurveyObservationRecord[]>}
    * @memberof ObservationRepository
    */
   async insertUpdateSurveyObservations(
     surveyId: number,
     observations: (InsertObservation | UpdateObservation)[]
-  ): Promise<ObservationRecord[]> {
+  ): Promise<SurveyObservationRecord[]> {
     const sqlStatement = SQL`
       INSERT INTO
         survey_observation
       (
         survey_observation_id,
         survey_id,
-        survey_sample_site_id,
-        survey_sample_method_id,
         survey_sample_period_id,
         count,
         latitude,
@@ -316,8 +273,6 @@ export class ObservationRepository extends BaseRepository {
               ? observation.survey_observation_id
               : 'DEFAULT',
             surveyId,
-            observation.survey_sample_site_id ?? 'NULL',
-            observation.method_technique_id ?? 'NULL',
             observation.survey_sample_period_id ?? 'NULL',
             observation.count,
             observation.latitude ?? 'NULL',
@@ -337,8 +292,6 @@ export class ObservationRepository extends BaseRepository {
       DO UPDATE SET
         itis_tsn = EXCLUDED.itis_tsn,
         itis_scientific_name = EXCLUDED.itis_scientific_name,
-        survey_sample_site_id = EXCLUDED.survey_sample_site_id,
-        survey_sample_method_id = EXCLUDED.survey_sample_method_id,
         survey_sample_period_id = EXCLUDED.survey_sample_period_id,
         count = EXCLUDED.count,
         observation_date = EXCLUDED.observation_date,
@@ -348,10 +301,20 @@ export class ObservationRepository extends BaseRepository {
     `);
 
     sqlStatement.append(`
-      RETURNING *;
+      RETURNING   
+        survey_observation_id,
+        survey_id,
+        itis_tsn,
+        itis_scientific_name,
+        survey_sample_period_id,
+        latitude,
+        longitude,
+        count,
+        observation_time,
+        observation_date;
     `);
 
-    const response = await this.connection.sql(sqlStatement, ObservationRecord);
+    const response = await this.connection.sql(sqlStatement, SurveyObservationRecord);
 
     return response.rows;
   }
@@ -388,19 +351,30 @@ export class ObservationRepository extends BaseRepository {
    *
    * @param {number} surveyId
    * @param {number} surveyObservationId
-   * @return {*}  {Promise<ObservationRecord[]>}
+   * @return {*}  {Promise<SurveyObservationRecord[]>}
    * @memberof ObservationRepository
    */
-  async getSurveyObservationById(surveyId: number, surveyObservationId: number): Promise<ObservationRecord> {
+  async getSurveyObservationById(surveyId: number, surveyObservationId: number): Promise<SurveyObservationRecord> {
     const knex = getKnex();
     const query = knex
       .queryBuilder()
-      .select('*')
+      .select([
+        'survey_observation_id',
+        'survey_id',
+        'itis_tsn',
+        'itis_scientific_name',
+        'survey_sample_period_id',
+        'latitude',
+        'longitude',
+        'count',
+        'observation_time',
+        'observation_date'
+      ])
       .from('survey_observation')
       .where('survey_observation_id', surveyObservationId)
       .andWhere('survey_id', surveyId);
 
-    const response = await this.connection.knex(query, ObservationRecord);
+    const response = await this.connection.knex(query, SurveyObservationRecord);
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to get observation record', [
@@ -416,14 +390,29 @@ export class ObservationRepository extends BaseRepository {
    * Retrieves all observation records for the given survey
    *
    * @param {number} surveyId
-   * @return {*}  {Promise<ObservationRecord[]>}
+   * @return {*}  {Promise<SurveyObservationRecord[]>}
    * @memberof ObservationRepository
    */
-  async getAllSurveyObservations(surveyId: number): Promise<ObservationRecord[]> {
+  async getAllSurveyObservations(surveyId: number): Promise<SurveyObservationRecord[]> {
     const knex = getKnex();
-    const allRowsQuery = knex.queryBuilder().select('*').from('survey_observation').where('survey_id', surveyId);
+    const allRowsQuery = knex
+      .queryBuilder()
+      .select([
+        'survey_observation_id',
+        'survey_id',
+        'itis_tsn',
+        'itis_scientific_name',
+        'survey_sample_period_id',
+        'latitude',
+        'longitude',
+        'count',
+        'observation_time',
+        'observation_date'
+      ])
+      .from('survey_observation')
+      .where('survey_id', surveyId);
 
-    const response = await this.connection.knex(allRowsQuery, ObservationRecord);
+    const response = await this.connection.knex(allRowsQuery, SurveyObservationRecord);
     return response.rows;
   }
 
@@ -587,7 +576,7 @@ export class ObservationRepository extends BaseRepository {
       .andWhere('survey_id', surveyId)
       .returning('*');
 
-    const response = await this.connection.knex(queryBuilder, ObservationRecord);
+    const response = await this.connection.knex(queryBuilder, SurveyObservationModel);
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to delete observation records', [
