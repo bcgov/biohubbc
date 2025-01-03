@@ -618,35 +618,6 @@ export class ObservationRepository extends BaseRepository {
   }
 
   /**
-   * Retrieves observation records count for the given survey and sample method ids
-   *
-   * TODO NICK - deprecated?
-   *
-   * @param {number[]} sampleMethodIds
-   * @return {*}  {Promise<number>}
-   * @memberof ObservationRepository
-   */
-  async getObservationsCountBySampleMethodIds(sampleMethodIds: number[]): Promise<number> {
-    const knex = getKnex();
-    const sqlStatement = knex
-      .queryBuilder()
-      .select(knex.raw('COUNT(survey_observation_id)::integer as count'))
-      .from('survey_observation')
-      .whereIn('survey_sample_method_id', sampleMethodIds);
-
-    const response = await this.connection.knex(sqlStatement, z.object({ count: z.number() }));
-
-    if (response?.rowCount !== 1) {
-      throw new ApiExecuteSQLError('Failed to get observations count', [
-        'ObservationRepository->getObservationsCountBySampleMethodId',
-        'response.rowCount was !== 1, expected rowCount === 1'
-      ]);
-    }
-
-    return response.rows[0].count;
-  }
-
-  /**
    * Retrieves observation records count for the given survey and sample period ids
    *
    * @param {number[]} samplePeriodIds
