@@ -6,14 +6,14 @@ import { FileUploadSingleItem } from 'components/file-upload/FileUploadSingleIte
 import { DialogContext } from 'contexts/dialogContext';
 import { useContext, useState } from 'react';
 import { isCSVValidationError } from 'utils/csv-utils';
-import { getAxiosProgress } from 'utils/Utils';
+import { getAxiosProgress, waitForRenderCycle } from 'utils/Utils';
 import { CSVDropzoneSection } from './CSVDropzoneSection';
 
 interface CSVSingleImportDialogProps {
   open: boolean;
   dialogTitle: string;
   dialogSummary: string;
-  onCancel: () => void;
+  onClose: () => void;
   onImport: (file: File, onProgress: (progressEvent: AxiosProgressEvent) => void) => Promise<void>;
   onDownloadTemplate: () => void;
 }
@@ -38,12 +38,12 @@ export const CSVSingleImportDialog = (props: CSVSingleImportDialogProps) => {
     isUploading || !file || uploadStatus === UploadFileStatus.FAILED || uploadStatus === UploadFileStatus.COMPLETE;
 
   /**
-   * Cancel the dialog and reset the file import state
+   * Close the dialog and reset the file import state
    *
    * @returns {void}
    */
-  const handleCancel = (): void => {
-    props.onCancel();
+  const handleClose = (): void => {
+    props.onClose();
     handleResetFileImport();
   };
 
@@ -84,21 +84,26 @@ export const CSVSingleImportDialog = (props: CSVSingleImportDialogProps) => {
 
       setUploadStatus(UploadFileStatus.COMPLETE);
 
-      // Show a success snackbar message
-      dialogContext.setSnackbar({
-        open: true,
-        snackbarMessage: (
-          <Typography variant="body2" component="div">
-            CSV imported successfully.
-          </Typography>
-        )
-      });
+      await waitForRenderCycle(500);
+
+      handleClose();
     } catch (err) {
       if (err instanceof Error) {
         setError(err);
       }
 
       setUploadStatus(UploadFileStatus.FAILED);
+    } finally {
+      // Show a success snackbar message
+      dialogContext.setSnackbar({
+        open: true,
+        snackbarAutoCloseMs: 2000,
+        snackbarMessage: (
+          <Typography variant="body2" component="div">
+            {uploadStatus === UploadFileStatus.FAILED ? 'CSV failed to import' : 'CSV imported'}
+          </Typography>
+        )
+      });
     }
   };
 
@@ -140,7 +145,7 @@ export const CSVSingleImportDialog = (props: CSVSingleImportDialogProps) => {
           Import
         </LoadingButton>
 
-        <LoadingButton onClick={handleCancel} color="primary" variant="outlined">
+        <LoadingButton onClick={handleClose} color="primary" variant="outlined">
           {uploadStatus === UploadFileStatus.COMPLETE ? 'Close' : 'Cancel'}
         </LoadingButton>
       </DialogActions>

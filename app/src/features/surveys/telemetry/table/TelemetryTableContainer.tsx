@@ -31,8 +31,6 @@ import { downloadFile } from 'utils/file-utils';
 
 export const TelemetryTableContainer = () => {
   const biohubApi = useBiohubApi();
-
-  //const dialogContext = useContext(DialogContext);
   const telemetryTableContext = useTelemetryTableContext();
   const surveyContext = useContext(SurveyContext);
 
@@ -40,8 +38,6 @@ export const TelemetryTableContainer = () => {
   const [showConfirmRemoveAllDialog, setShowConfirmRemoveAllDialog] = useState(false);
   const [contextMenuAnchorEl, setContextMenuAnchorEl] = useState<Element | null>(null);
   const [columnVisibilityMenuAnchorEl, setColumnVisibilityMenuAnchorEl] = useState<Element | null>(null);
-
-  // Telemetry import dialog state
   const [showImportDialog, setShowImportDialog] = useState(false);
 
   const cancelToken = axios.CancelToken.source();
@@ -82,7 +78,7 @@ export const TelemetryTableContainer = () => {
         open={showImportDialog}
         dialogTitle="Import Telemetry CSV"
         dialogSummary="Import a CSV file containing telemetry records"
-        onCancel={() => setShowImportDialog(false)}
+        onClose={() => setShowImportDialog(false)}
         onImport={handleImportTelemetryCSV}
         onDownloadTemplate={() =>
           downloadFile(getTelemetryCSVTemplate(), `SIMS-telemetry-template-${new Date().getFullYear()}.csv`)

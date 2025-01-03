@@ -178,8 +178,6 @@ const useTelemetryApi = (axios: AxiosInstance) => {
       cancelToken: cancelTokenSource?.token,
       onUploadProgress: onProgress
     });
-
-    return;
   };
 
   /**
