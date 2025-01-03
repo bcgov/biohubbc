@@ -23,7 +23,9 @@ export async function up(knex: Knex): Promise<void> {
       ('Telemetry Manual Upload', 'Manual telemetry data loading instructions markdown text'),
       ('Telemetry Automated', 'Automated telemetry data instructions markdown text'),
       ('SPI Data', 'General information about SPI to SIMS data management'),
-      ('ITIS Standards','Information about how to get a name and tsn from itis');
+      ('ITIS Standards','Information about how to get a name and tsn from itis'), 
+      ('Role Based Security','Information about the types of roles within a project'), 
+      ('Project Components','Details information collected at the project level');
 
 ----------------------------------------------------------------------------------------
 -- Insert into markdown by selecting markdown_type_id based on markdown_type.name
@@ -48,11 +50,15 @@ SELECT
             'For decades, species data were submitted through the Species Inventory (SPI) database. SPI has historically been more submissions-centric, where data contributors could place pre-formatted templates of completed studies and send data off for submissions. SIMS is meant to replace SPI, and provide a tool for data management, where data contributors can directly interact with and load into the database, interact with their data at any stage of their study progress, and ammend data as necessary. \n\nAny data previously submitted using SPI will be migrated over to projects and surveys in SIMS, and assigned to team leads wherever possible. Thus eliminating any need to submit data twice. \n\nSPI has been around far longer than SIMS and has been developed to allow for data submissions for many specific scenarios. If you are finding that SIMS does not yet have the same capability of allowing your data in as SPI, please contact our team and we will work with you to figure out the best current avenue for your data, as well as modify SIMS to be more flexible for all studies.'
         WHEN mt.name = 'ITIS Standards' THEN
             'When querying a species from SIMS, it will only return results for ‘valid’ taxonomic entries in ITIS. There may be instances where a species that you know by a certain name, can be named slightly differently in ITIS but still be referring to the same entity. If you cannot find your species in SIMS, you can navigate to the ITIS site and query for your species, and ITIS may return to you a valid species scientific name and a taxonomic serial number (TSN) that you may use in SIMS.'
+        WHEN mt.name = 'Role Based Security' THEN
+            'Project members can be added and removed, and roles can be adjusted as necessary. Users will only have access to projects when assigned one of the following roles:\n\n##### Coordinator\n The project coordinator(s) have total administrative control over a project, they can add or remove project members, designate roles within a project, and they have the power to delete the project as well as modify any data within it. Each project must have at least one coordinator.\n\n##### Collaborator\n A project collaborator has full read/write access to the project data, they are able to edit and contribute any data, but do not have the same administrative power over the project participants as the coordinator.\n\n##### Observer\n An observer has read access to the data within the project but is unable to contribute or modify these data.'
+        WHEN mt.name = 'Project Components' THEN 
+            'Projects are relatively simple, collecting only a select amount of information, as follows: \n\n##### GENERAL INFORMATION\n- **Project Name**\n- **Project Objectives**: A mandatory comment field where teams can describe the purpose unifying their collection of studies. \n\n##### TEAM MEMBERS\n Team members are managed when a project is created or edited, a project coordinator can search members of their team and assign them their associated roles for each specific project. Team members must have already requested and been granted access to SIMS to be queriable using the team member search functionality. If a team member is not showing up under search results, please let them know to request access to SIMS, or to otherwise contact our systems team for support in granting them access to the application. \n\n##### SURVEYS\n Surveys are created within projects, by pressing the CREATE SURVEY button. All surveys that have been created in a project will be listed in the surveys table within your project page. \n\n##### SHARED FILES\n- **Upload a Report**: Reports can be loaded at the project level but will not be published to BioHub, rather only shared within your project team. The reports can be uploaded as a .doc/.docx or a .pdf and require information such as title, year of publication, summary, and author(s). \n- **Upload Attachments**: Attachments related to your project can be loaded to your project page for ease of sharing within your team. Please note that individual attachments have a size limit of 50MB each.'
             END AS data
 FROM
     markdown_type mt
 WHERE
-    mt.name IN ('Animal Entity', 'Animal Event', 'Animal Bulk Upload', 'Observation Data Load', 'Telemetry Manual Upload', 'Telemetry Automated','SPI Data','ITIS Standards');
+    mt.name IN ('Animal Entity', 'Animal Event', 'Animal Bulk Upload', 'Observation Data Load', 'Telemetry Manual Upload', 'Telemetry Automated','SPI Data','ITIS Standards','Role Based Security', 'Project Components');
 
   `);
 }

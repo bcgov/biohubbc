@@ -12,7 +12,10 @@ export type DataMap = Partial<Record<SupportPageView, IDataItem[]>>;
 
 export const EnumMarkdownTypes: Partial<Record<SupportPageView, MarkdownTypeSupportNameEnum[]>> = {
   [SupportPageView.GENERAL]: [MarkdownTypeSupportNameEnum.SPI],
-  [SupportPageView.STRUCTURE]: [MarkdownTypeSupportNameEnum.STRUCTURE],
+  [SupportPageView.STRUCTURE]: [
+    MarkdownTypeSupportNameEnum.PROJECT_ROLES,
+    MarkdownTypeSupportNameEnum.PROJECT_COMPONENTS
+  ],
   [SupportPageView.FOUNDATION]: [MarkdownTypeSupportNameEnum.FOUNDATION],
   [SupportPageView.DATA_STANDARDS]: [MarkdownTypeSupportNameEnum.ITIS],
   [SupportPageView.ANIMALS]: [

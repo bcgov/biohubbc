@@ -23,7 +23,8 @@ export type SupportPageParams = {
 
 export enum MarkdownTypeSupportNameEnum {
   SPI = 'SPI',
-  STRUCTURE = 'STRUCTURE',
+  PROJECT_ROLES = 'PROJECT_ROLES',
+  PROJECT_COMPONENTS = 'PROJECT COMPONENTS',
   FOUNDATION = 'FOUNDATION',
   ITIS = 'ITIS',
   ANIMAL_ENTITY = 'ANIMAL_ENTITY',

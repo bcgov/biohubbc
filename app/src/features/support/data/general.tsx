@@ -35,7 +35,7 @@ const general = [
         <strong>Data Structure in SIMS</strong>
       </Typography>,
       <Typography variant="body1" gutterBottom>
-        Data in SIMS is organized in a project-survey hierarchy. Projects are also known as your shared workspace with
+        Data in SIMS is organized in a project-survey hierarchy. Projects can be thought of as the shared workspace of
         your study team. You may create as many projects as you would like.
       </Typography>,
       <Typography variant="body1" gutterBottom>
