@@ -25,7 +25,9 @@ export async function up(knex: Knex): Promise<void> {
       ('SPI Data', 'General information about SPI to SIMS data management'),
       ('ITIS Standards','Information about how to get a name and tsn from itis'), 
       ('Role Based Security','Information about the types of roles within a project'), 
-      ('Project Components','Details information collected at the project level');
+      ('Project Components','Details information collected at the project level'),
+      ('Survey Metadata','Details metadata collected at the create and edit survey level'),
+      ('Survey Attachments','Information about the attachments that can be loaded at the survey level');
 
 ----------------------------------------------------------------------------------------
 -- Insert into markdown by selecting markdown_type_id based on markdown_type.name
@@ -54,11 +56,15 @@ SELECT
             'Project members can be added and removed, and roles can be adjusted as necessary. Users will only have access to projects when assigned one of the following roles:\n\n##### Coordinator\n The project coordinator(s) have total administrative control over a project, they can add or remove project members, designate roles within a project, and they have the power to delete the project as well as modify any data within it. Each project must have at least one coordinator.\n\n##### Collaborator\n A project collaborator has full read/write access to the project data, they are able to edit and contribute any data, but do not have the same administrative power over the project participants as the coordinator.\n\n##### Observer\n An observer has read access to the data within the project but is unable to contribute or modify these data.'
         WHEN mt.name = 'Project Components' THEN 
             'Projects are relatively simple, collecting only a select amount of information, as follows: \n\n##### GENERAL INFORMATION\n- **Project Name**\n- **Project Objectives**: A mandatory comment field where teams can describe the purpose unifying their collection of studies. \n\n##### TEAM MEMBERS\n Team members are managed when a project is created or edited, a project coordinator can search members of their team and assign them their associated roles for each specific project. Team members must have already requested and been granted access to SIMS to be queriable using the team member search functionality. If a team member is not showing up under search results, please let them know to request access to SIMS, or to otherwise contact our systems team for support in granting them access to the application. \n\n##### SURVEYS\n Surveys are created within projects, by pressing the CREATE SURVEY button. All surveys that have been created in a project will be listed in the surveys table within your project page. \n\n##### SHARED FILES\n- **Upload a Report**: Reports can be loaded at the project level but will not be published to BioHub, rather only shared within your project team. The reports can be uploaded as a .doc/.docx or a .pdf and require information such as title, year of publication, summary, and author(s). \n- **Upload Attachments**: Attachments related to your project can be loaded to your project page for ease of sharing within your team. Please note that individual attachments have a size limit of 50MB each.'
+        WHEN mt.name = 'Survey Metadata' THEN 
+            'Placeholder'
+        WHEN mt.name = 'Survey Attachments' THEN 
+            'Placeholder'    
             END AS data
 FROM
     markdown_type mt
 WHERE
-    mt.name IN ('Animal Entity', 'Animal Event', 'Animal Bulk Upload', 'Observation Data Load', 'Telemetry Manual Upload', 'Telemetry Automated','SPI Data','ITIS Standards','Role Based Security', 'Project Components');
+    mt.name IN ('Animal Entity', 'Animal Event', 'Animal Bulk Upload', 'Observation Data Load', 'Telemetry Manual Upload', 'Telemetry Automated','SPI Data','ITIS Standards','Role Based Security', 'Project Components', 'Survey Metadata', 'Survey Attachments');
 
   `);
 }

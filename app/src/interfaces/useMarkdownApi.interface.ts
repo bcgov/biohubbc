@@ -33,6 +33,8 @@ export enum MarkdownTypeSupportNameEnum {
   SPI = 'SPI Data',
   PROJECT_ROLES = 'Role Based Security',
   PROJECT_COMPONENTS = 'Project Components',
+  SURVEY_METADATA = 'Survey Metadata',
+  SURVEY_ATTACHMENTS = 'Survey Attachments',
   FOUNDATION = 'Support Foundation',
   ITIS = 'ITIS Standards',
   ANIMAL_ENTITY = 'Animal Entity',
