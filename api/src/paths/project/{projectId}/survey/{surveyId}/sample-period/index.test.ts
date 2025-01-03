@@ -2,14 +2,15 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { createSamplePeriodRecord } from '.';
+import { postSamplePeriods } from '.';
 import * as db from '../../../../../../database/db';
 import { HTTPError } from '../../../../../../errors/http-error';
+import { SamplePeriodService } from '../../../../../../services/sample-period-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
 
 chai.use(sinonChai);
 
-describe('createSamplePeriodRecord', () => {
+describe('postSamplePeriods', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -23,42 +24,43 @@ describe('createSamplePeriodRecord', () => {
 
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-    const insertSampleMethodsStub = sinon.stub(SampleMethodService.prototype, 'insertSampleMethods').resolves();
+    const insertSamplePeriodsStub = sinon.stub(SamplePeriodService.prototype, 'insertSamplePeriods').resolves();
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
+    mockReq.params = {
+      surveyId: '1'
+    };
+
     mockReq.body = {
-      method_technique_id: 1,
-      sample_sites: [
+      sample_periods: [
         {
-          survey_sample_site_id: 1,
-          sample_periods: [
-            {
-              start_date: '2024-12-01',
-              end_date: '2024-12-05'
-            }
-          ]
+          method_technique_id: 2,
+          survey_sample_site_id: 3,
+          start_date: '2024-12-01',
+          start_time: '12:00',
+          end_date: '2024-12-05',
+          end_time: '12:00'
         }
       ]
     };
 
-    const requestHandler = createSamplePeriodRecord();
+    const requestHandler = postSamplePeriods();
 
     await requestHandler(mockReq, mockRes, mockNext);
 
-    expect(insertSampleMethodsStub).to.have.been.calledOnceWithExactly([
-      {
-        survey_sample_site_id: 1,
-        method_technique_id: 1,
-        sample_periods: [
-          {
-            start_date: '2024-12-01',
-            end_date: '2024-12-05'
-          }
-        ],
-        description: null,
-        method_response_metric_id: undefined
-      }
+    expect(insertSamplePeriodsStub).to.have.been.calledOnceWithExactly([
+      1,
+      [
+        {
+          method_technique_id: 2,
+          survey_sample_site_id: 3,
+          start_date: '2024-12-01',
+          start_time: '12:00',
+          end_date: '2024-12-05',
+          end_time: '12:00'
+        }
+      ]
     ]);
 
     expect(mockRes.statusValue).to.equal(201);
@@ -78,31 +80,46 @@ describe('createSamplePeriodRecord', () => {
 
     const mockError = new Error('Test Error');
 
-    sinon.stub(SampleMethodService.prototype, 'insertSampleMethods').rejects(mockError);
+    const insertSamplePeriodsStub = sinon.stub(SamplePeriodService.prototype, 'insertSamplePeriods').rejects(mockError);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
+    mockReq.params = {
+      surveyId: '1'
+    };
+
     mockReq.body = {
-      method_technique_id: 1,
-      sample_sites: [
+      sample_periods: [
         {
-          survey_sample_site_id: 1,
-          sample_periods: [
-            {
-              start_date: '2024-12-01',
-              end_date: '2024-12-05'
-            }
-          ]
+          method_technique_id: 2,
+          survey_sample_site_id: 3,
+          start_date: '2024-12-01',
+          start_time: '12:00',
+          end_date: '2024-12-05',
+          end_time: '12:00'
         }
       ]
     };
 
-    const requestHandler = createSamplePeriodRecord();
+    const requestHandler = postSamplePeriods();
 
     try {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (error) {
+      expect(insertSamplePeriodsStub).to.have.been.calledOnceWithExactly([
+        1,
+        [
+          {
+            method_technique_id: 2,
+            survey_sample_site_id: 3,
+            start_date: '2024-12-01',
+            start_time: '12:00',
+            end_date: '2024-12-05',
+            end_time: '12:00'
+          }
+        ]
+      ]);
       expect((error as HTTPError).message).to.equal('Test Error');
       expect(dbConnectionObj.rollback).to.have.been.calledOnce;
       expect(dbConnectionObj.release).to.have.been.calledOnce;

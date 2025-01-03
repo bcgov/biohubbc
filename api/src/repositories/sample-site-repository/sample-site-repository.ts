@@ -118,12 +118,10 @@ export type FindSampleSiteRecord = z.infer<typeof FindSampleSiteRecord>;
  * Update object for a sample site record, including all associated methods and periods.
  */
 export type UpdateSampleLocationRecord = {
-  //   survey_id: number;
   survey_sample_site_id: number;
   name: string;
   description: string;
   geojson: Feature;
-  //   methods: UpdateSampleMethodRecord[];
   blocks: UpdateSampleBlockRecord[];
   stratums: UpdateSampleStratumRecord[];
 };

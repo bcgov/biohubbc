@@ -313,6 +313,7 @@ export class ObservationService extends DBService {
       pagination
     );
 
+    // TODO nick
     // const sampleSiteIds = surveyObservations
     //   .filter((obs) => obs.survey_sample_site_id)
     //   .map((observation) => observation.survey_sample_site_id!);
@@ -443,17 +444,6 @@ export class ObservationService extends DBService {
    */
   async getObservationsCountBySampleSiteIds(surveyId: number, sampleSiteIds: number[]): Promise<number> {
     return this.observationRepository.getObservationsCountBySampleSiteIds(surveyId, sampleSiteIds);
-  }
-
-  /**
-   * Retrieves observation records count for the given survey and sample method ids
-   *
-   * @param {number[]} sampleMethodIds
-   * @return {*}  {Promise<number>}
-   * @memberof ObservationService
-   */
-  async getObservationsCountBySampleMethodIds(sampleMethodIds: number[]): Promise<number> {
-    return this.observationRepository.getObservationsCountBySampleMethodIds(sampleMethodIds);
   }
 
   /**

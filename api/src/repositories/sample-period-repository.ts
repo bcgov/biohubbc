@@ -468,7 +468,7 @@ export class SamplePeriodRepository extends BaseRepository {
    * @return {*}  {Promise<void>}
    * @memberof SamplePeriodRepository
    */
-  async deleteSamplePeriodRecord(surveyId: number, surveySamplePeriodId: number): Promise<void> {
+  async deleteSamplePeriod(surveyId: number, surveySamplePeriodId: number): Promise<void> {
     const sqlStatement = SQL`
       DELETE
       FROM
@@ -485,7 +485,7 @@ export class SamplePeriodRepository extends BaseRepository {
 
     if (response?.rowCount !== 1) {
       throw new ApiExecuteSQLError('Failed to delete sample period', [
-        'SamplePeriodRepository->deleteSamplePeriodRecord',
+        'SamplePeriodRepository->deleteSamplePeriod',
         `rowCount was ${response.rowCount}, expected rowCount = 1`
       ]);
     }

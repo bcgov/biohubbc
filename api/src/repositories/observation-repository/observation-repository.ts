@@ -620,6 +620,8 @@ export class ObservationRepository extends BaseRepository {
   /**
    * Retrieves observation records count for the given survey and sample method ids
    *
+   * TODO NICK - deprecated?
+   *
    * @param {number[]} sampleMethodIds
    * @return {*}  {Promise<number>}
    * @memberof ObservationRepository

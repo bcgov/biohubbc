@@ -20,28 +20,6 @@ import {
   EnvironmentQuantitativeTypeDefinition
 } from 'interfaces/useReferenceApi.interface';
 
-// TODO NICK - deprecated?
-export type ISampleSiteOption = {
-  survey_sample_site_id: number;
-  sample_site_name: string;
-};
-
-// TODO NICK - deprecated?
-export type ISampleMethodOption = {
-  survey_sample_method_id: number;
-  survey_sample_site_id: number;
-  sample_method_name: string;
-  response_metric: string;
-};
-
-// TODO NICK - deprecated?
-export type ISamplePeriodOption = {
-  survey_sample_period_id: number;
-  survey_sample_method_id: number;
-  sample_period_name: string;
-};
-
-// TODO NICK - deprecated?
 type IObservationSubcountSignOption = {
   observation_subcount_sign_id: number;
   name: string;

@@ -20,7 +20,7 @@ interface IObservationTableRow {
   itis_scientific_name: string | null;
   count: number | null;
   survey_sample_site_name: string | null;
-  survey_sample_method_name: string | null;
+  method_technique_name: string | null;
   survey_sample_period_start_datetime: string | null;
   observation_date: string;
   observation_time: string;
@@ -100,8 +100,8 @@ export const SurveySpatialObservationTable = () => {
       minWidth: 200
     },
     {
-      field: 'survey_sample_method_name',
-      headerName: 'Sample Method',
+      field: 'method_technique_name',
+      headerName: 'Technique',
       flex: 1,
       minWidth: 200
     },

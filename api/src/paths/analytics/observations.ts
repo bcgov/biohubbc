@@ -32,7 +32,7 @@ export const GET: Operation = [
 ];
 
 GET.apiDoc = {
-  description: 'get analytics about observations for one or more surveys',
+  description: 'Get analytics about observations for one or more surveys.',
   tags: ['analytics'],
   security: [
     {
@@ -58,7 +58,14 @@ GET.apiDoc = {
       schema: {
         type: 'array',
         items: {
-          type: 'string'
+          type: 'string',
+          enum: [
+            'survey_sample_site_id',
+            'method_technique_id',
+            'survey_sample_period_id',
+            'itis_tsn',
+            'observation_date'
+          ]
         }
       },
       description: 'An array of column names to group the observations data by'

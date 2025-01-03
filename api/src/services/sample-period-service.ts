@@ -137,7 +137,7 @@ export class SamplePeriodService extends DBService {
    * @memberof SamplePeriodService
    */
   async deleteSamplePeriod(surveyId: number, surveySamplePeriodId: number): Promise<void> {
-    return this.samplePeriodRepository.deleteSamplePeriodRecord(surveyId, surveySamplePeriodId);
+    return this.samplePeriodRepository.deleteSamplePeriod(surveyId, surveySamplePeriodId);
   }
 
   /**

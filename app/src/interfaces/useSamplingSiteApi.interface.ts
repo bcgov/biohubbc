@@ -101,19 +101,6 @@ export interface IGetSampleLocationDetails {
   stratums: IGetSampleStratumDetails[];
 }
 
-/**
- * TODO NICK - deprecated?
- */
-export interface IGetBasicSamplePeriod {
-  survey_sample_period_id: number;
-  survey_sample_site_id: number;
-  method_technique_id: number;
-  start_date: string;
-  end_date: string;
-  start_time: string;
-  end_time: string;
-}
-
 export interface IGetSampleLocationDetailsForUpdate {
   survey_sample_site_id: number | null;
   survey_id: number;

@@ -25,13 +25,13 @@ export type IGroupByOption = {
 };
 
 const initialGroupByColumnOptions: IGroupByOption[] = [
-  { label: 'Sampling Period', field: 'survey_sample_period_id', type: 'column' }
+  { label: 'Sampling Site', field: 'survey_sample_site_id', type: 'column' }
 ];
 
 const allGroupByColumnOptions: IGroupByOption[] = [
   ...initialGroupByColumnOptions,
-  //   { label: 'Technique', field: 'method_technique_id', type: 'column' },
-  //   { label: 'Sampling Site', field: 'suryve_sample_side_id', type: 'column' },
+  { label: 'Technique', field: 'method_technique_id', type: 'column' },
+  { label: 'Sampling Period', field: 'survey_sample_period_id', type: 'column' },
   { label: 'Species', field: 'itis_tsn', type: 'column' },
   { label: 'Date', field: 'observation_date', type: 'column' }
 ];
