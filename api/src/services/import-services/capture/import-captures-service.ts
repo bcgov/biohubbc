@@ -1,9 +1,16 @@
+import { v4 as uuid } from 'uuid';
 import { WorkSheet } from 'xlsx';
 import { IDBConnection } from '../../../database/db';
 import { CSVConfigUtils } from '../../../utils/csv-utils/csv-config-utils';
 import { validateCSVWorksheet } from '../../../utils/csv-utils/csv-config-validation';
 import { CSVConfig, CSVError } from '../../../utils/csv-utils/csv-config-validation.interface';
-import { getDescriptionCellValidator } from '../../../utils/csv-utils/csv-header-configs';
+import {
+  getDateCellValidator,
+  getDescriptionCellValidator,
+  getLatitudeCellValidator,
+  getLongitudeCellValidator,
+  getTimeCellValidator
+} from '../../../utils/csv-utils/csv-header-configs';
 import { getLogger } from '../../../utils/logger';
 import { DBService } from '../../db-service';
 import { SurveyCritterService } from '../../survey-critter-service';
@@ -106,6 +113,25 @@ export class ImportCapturesService extends DBService {
       return errors;
     }
 
+    const captures = rows.map((row) => {
+      return {
+        capture_id: row['capture_id'],
+        critter_id: row['critter_id'],
+        capture_location_id: uuid(),
+        capture_date: row.CAPTURE_DATE,
+        capture_time: row.CAPTURE_TIME,
+        capture_latitude: row.CAPTURE_LATITUDE,
+        capture_longitude: row.CAPTURE_LONGITUDE,
+        capture_comment: row.CAPTURE_COMMENT,
+        release_location_id: row.RELEASE_LATITUDE && row.RELEASE_LONGITUDE ? uuid() : undefined,
+        release_date: row.RELEASE_DATE,
+        release_time: row.RELEASE_TIME,
+        release_latitude: row.RELEASE_LATITUDE,
+        release_longitude: row.RELEASE_LONGITUDE,
+        release_comment: row.RELEASE_COMMENT
+      };
+    });
+
     defaultLog.debug({ label: 'import captures', captures });
 
     await this.surveyCritterService.critterbaseService.bulkCreate({ captures });
@@ -120,14 +146,18 @@ export class ImportCapturesService extends DBService {
    */
   async getCSVConfig(): Promise<CSVConfig<CaptureCSVStaticHeader>> {
     this.utils.setStaticHeaderConfig('ALIAS', { validateCell: undefined });
-    this.utils.setStaticHeaderConfig('CAPTURE_DATE', { validateCell: undefined });
-    this.utils.setStaticHeaderConfig('CAPTURE_TIME', { validateCell: undefined });
-    this.utils.setStaticHeaderConfig('CAPTURE_LATITUDE', { validateCell: undefined });
-    this.utils.setStaticHeaderConfig('CAPTURE_LONGITUDE', { validateCell: undefined });
-    this.utils.setStaticHeaderConfig('RELEASE_DATE', { validateCell: undefined });
-    this.utils.setStaticHeaderConfig('RELEASE_TIME', { validateCell: undefined });
-    this.utils.setStaticHeaderConfig('RELEASE_LATITUDE', { validateCell: undefined });
-    this.utils.setStaticHeaderConfig('RELEASE_LONGITUDE', { validateCell: undefined });
+    this.utils.setStaticHeaderConfig('CAPTURE_DATE', { validateCell: getDateCellValidator() });
+    this.utils.setStaticHeaderConfig('CAPTURE_TIME', { validateCell: getTimeCellValidator() });
+    this.utils.setStaticHeaderConfig('CAPTURE_LATITUDE', { validateCell: getLatitudeCellValidator() });
+    this.utils.setStaticHeaderConfig('CAPTURE_LONGITUDE', { validateCell: getLongitudeCellValidator() });
+    this.utils.setStaticHeaderConfig('RELEASE_DATE', { validateCell: getDateCellValidator({ optional: true }) });
+    this.utils.setStaticHeaderConfig('RELEASE_TIME', { validateCell: getTimeCellValidator() });
+    this.utils.setStaticHeaderConfig('RELEASE_LATITUDE', {
+      validateCell: getLatitudeCellValidator({ optional: true })
+    });
+    this.utils.setStaticHeaderConfig('RELEASE_LONGITUDE', {
+      validateCell: getLongitudeCellValidator({ optional: true })
+    });
     this.utils.setStaticHeaderConfig('CAPTURE_COMMENT', { validateCell: getDescriptionCellValidator() });
     this.utils.setStaticHeaderConfig('RELEASE_COMMENT', { validateCell: getDescriptionCellValidator() });
 
