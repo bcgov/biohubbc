@@ -3,6 +3,7 @@ import { CSVConfigUtils } from '../../../utils/csv-utils/csv-config-utils';
 import { CSVCellValidator, CSVError, CSVParams } from '../../../utils/csv-utils/csv-config-validation.interface';
 import { validateZodCell } from '../../../utils/csv-utils/csv-header-configs';
 import { NestedRecord } from '../../../utils/nested-record';
+import { setToLowercase } from '../../../utils/string-utils';
 import { ICritterDetailed } from '../../critterbase-service';
 import { findCapturesFromDateTime } from '../utils/datetime';
 import { MarkingCSVStaticHeader } from './import-markings-service';
@@ -75,16 +76,18 @@ export const getMarkingAliasCellValidator = (surveyAliasMap: Map<string, ICritte
  * Rules:
  *  1. The cell must be a valid marking type ie: exists in the markingTypes set
  *
- * @param {Set<string>} markingTypes The marking types
+ * @param {Set<string>} markingTypes The marking types set (case insensitive)
  * @returns {*} {CSVCellValidator} The validate cell callback
  */
 export const getMarkingTypeCellValidator = (markingTypes: Set<string>): CSVCellValidator => {
+  const markingTypesLowerCased = setToLowercase(markingTypes);
+
   return (params: CSVParams) => {
     if (params.cell === undefined) {
       return [];
     }
 
-    if (!markingTypes.has(String(params.cell).toLowerCase())) {
+    if (!markingTypesLowerCased.has(String(params.cell).toLowerCase())) {
       return [
         {
           error: `Marking type not supported`,
@@ -101,15 +104,18 @@ export const getMarkingTypeCellValidator = (markingTypes: Set<string>): CSVCellV
 /**
  * Get the marking type cell setter.
  *
+ * @param {Set<string>} colours The colours set (case insensitive)
  * @returns {*} {CSVCellSetter} The set cell callback
  */
 export const getMarkingColourCellValidator = (colours: Set<string>): CSVCellValidator => {
+  const coloursLowerCased = setToLowercase(colours);
+
   return (params: CSVParams) => {
     if (params.cell === undefined) {
       return [];
     }
 
-    if (colours.has(String(params.cell).toLowerCase())) {
+    if (coloursLowerCased.has(String(params.cell).toLowerCase())) {
       return [];
     }
 
@@ -134,10 +140,6 @@ export const getMarkingBodyLocationCellValidator = (
   utils: CSVConfigUtils<MarkingCSVStaticHeader>
 ): CSVCellValidator => {
   return (params: CSVParams) => {
-    if (params.cell === undefined) {
-      return [];
-    }
-
     const rowAlias = String(utils.getCellValue('ALIAS', params.row));
     const aliasTsn = surveyAliasMap.get(rowAlias.toLowerCase())?.itis_tsn;
 

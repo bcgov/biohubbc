@@ -21,6 +21,7 @@ export const CSVErrorSchema: OpenAPIV3.SchemaObject = {
     values: {
       description: 'The list of allowed values if applicable',
       type: 'array',
+      nullable: true,
       items: {
         oneOf: [
           {
@@ -66,7 +67,7 @@ export const CSVValidationErrorResponse: OpenAPIV3.ResponseObject = {
     'application/json': {
       schema: {
         description: 'CSV validation error response object',
-        required: ['name', 'status', 'message'],
+        required: ['name', 'status', 'message', 'errors'],
         properties: {
           name: {
             description: 'Error name',

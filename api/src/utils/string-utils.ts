@@ -52,3 +52,13 @@ export function numberOrNull(value: string | null | undefined): number | null {
 
   return Number(value);
 }
+
+/**
+ * Convert a Set of strings to lowercase.
+ *
+ * @param {Set<string>} set The set of strings
+ * @return {*}  {Set<string>} The set of strings in lowercase
+ */
+export function setToLowercase(set: Set<string>): Set<string> {
+  return new Set([...set].map((value) => value.toLowerCase()));
+}

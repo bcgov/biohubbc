@@ -2,6 +2,7 @@ import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import xlsx, { WorkSheet } from 'xlsx';
+import { WorksheetRowIndexSymbol } from '../xlsx-utils/worksheet-utils';
 import {
   executeSetCellValue,
   executeValidateCell,
@@ -142,7 +143,8 @@ describe('csv-config-validation', () => {
           error: 'No rows in the file',
           solution: 'Add rows. Did you accidentally import the wrong file?',
           cell: null,
-          header: null
+          header: null,
+          values: null
         }
       ]);
     });
@@ -189,7 +191,8 @@ describe('csv-config-validation', () => {
           error: 'An unknown column is included in the file',
           solution: `Remove extra columns from the file.`,
           header: 'UNKNOWN_HEADER',
-          cell: null
+          cell: null,
+          values: null
         }
       ]);
     });
@@ -307,7 +310,7 @@ describe('csv-config-validation', () => {
           cell: 'cellValue',
           header: 'TEST_ALIAS',
           rowIndex: 0,
-          row: { TEST_ALIAS: 'cellValue', DYNAMIC_HEADER: 'dynamicValue' },
+          row: { TEST_ALIAS: 'cellValue', DYNAMIC_HEADER: 'dynamicValue', [WorksheetRowIndexSymbol]: 1 },
           staticHeader: 'TEST',
           mutateCell: 'cellValue'
         },
@@ -322,7 +325,7 @@ describe('csv-config-validation', () => {
           cell: 'dynamicValue',
           header: 'DYNAMIC_HEADER',
           rowIndex: 0,
-          row: { TEST_ALIAS: 'cellValue', DYNAMIC_HEADER: 'dynamicValue' },
+          row: { TEST_ALIAS: 'cellValue', DYNAMIC_HEADER: 'dynamicValue', [WorksheetRowIndexSymbol]: 1 },
           staticHeader: undefined, // Dynamic headers have no static header mapping
           mutateCell: 'dynamicValue'
         },
@@ -344,7 +347,7 @@ describe('csv-config-validation', () => {
         cell: 'cellValue',
         header: 'TEST',
         rowIndex: 0,
-        row: { TEST: 'cellValue' },
+        row: { TEST: 'cellValue', [WorksheetRowIndexSymbol]: 1 },
         staticHeader: 'TEST',
         mutateCell: 'cellValue'
       };
@@ -362,7 +365,7 @@ describe('csv-config-validation', () => {
           cell: 'cellValue',
           header: 'TEST',
           row: 2,
-          values: []
+          values: null
         }
       ]);
     });

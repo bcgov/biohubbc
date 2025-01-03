@@ -10,7 +10,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { IDropZoneConfigProps } from 'components/file-upload/DropZone';
 import { UploadFileStatus } from 'components/file-upload/FileUploadItem';
 import { FileUploadSingleItem } from 'components/file-upload/FileUploadSingleItem';
-import { useEffect, useState } from 'react';
+import { PropsWithChildren, useEffect, useState } from 'react';
 
 interface IFileUploadSingleItemDialog {
   open: boolean;
@@ -27,7 +27,7 @@ interface IFileUploadSingleItemDialog {
  * @param {IFileUploadSingleItemDialog} props
  * @return {*}
  */
-export const FileUploadSingleItemDialog = (props: IFileUploadSingleItemDialog) => {
+export const FileUploadSingleItemDialog = (props: PropsWithChildren<IFileUploadSingleItemDialog>) => {
   const { open, dialogTitle, uploadButtonLabel, onUpload, onClose, dropZoneProps } = props;
 
   const theme = useTheme();
@@ -81,6 +81,7 @@ export const FileUploadSingleItemDialog = (props: IFileUploadSingleItemDialog) =
         <Typography variant="body2" color="error">
           {error}
         </Typography>
+        {props.children}
       </DialogContent>
       <DialogActions>
         <LoadingButton
