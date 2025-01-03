@@ -84,6 +84,7 @@ export const CSVSingleImportDialog = (props: CSVSingleImportDialogProps) => {
 
       setUploadStatus(UploadFileStatus.COMPLETE);
 
+      // Wait for the complete status to be rendered + 500ms before closing the dialog
       await waitForRenderCycle(500);
 
       handleClose();
