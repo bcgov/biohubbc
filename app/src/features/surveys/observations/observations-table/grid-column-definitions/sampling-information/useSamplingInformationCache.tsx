@@ -1,7 +1,7 @@
+import { GridRenderCellParams, GridValidRowModel } from '@mui/x-data-grid';
 import { IAutocompleteDataGridOption } from 'components/data-grid/autocomplete/AutocompleteDataGrid.interface';
-import { getPeriodLabel } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/utils';
 import { GetSamplingPeriod } from 'interfaces/useSamplingPeriodApi.interface';
-import { MutableRefObject, useMemo, useRef } from 'react';
+import { MutableRefObject, useRef } from 'react';
 
 export type SamplingInformationCachedSite = IAutocompleteDataGridOption<number> & {
   survey_sample_site_id: number;
@@ -29,22 +29,44 @@ export type SamplingInformationCacheRef = {
 };
 
 export type SamplingInformationCache = {
-  cachedSampleLocationsRef: MutableRefObject<SamplingInformationCacheRef | undefined>;
-  initCachedSampleLocationsRef: (params: { periods?: GetSamplingPeriod[] }) => void;
+  cachedSamplingInformationRef: MutableRefObject<SamplingInformationCacheRef | undefined>;
+  initCachedSamplingInformationRef: (params: { periods?: GetSamplingPeriod[] }) => void;
   updateCachedSamplingSites: (sites: SamplingInformationCachedSite[]) => void;
   updateCachedMethodTechniques: (techniques: SamplingInformationCachedTechnique[]) => void;
   updateCachedSamplingPeriods: (periods: SamplingInformationCachedPeriod[]) => void;
-  updateCachedSampleLocationsRef: (params: {
-    selectedSites?: SamplingInformationCachedSite[];
-    selectedTechniques?: SamplingInformationCachedTechnique[];
-    selectedPeriods?: SamplingInformationCachedPeriod[];
-  }) => void;
+  getCurrentSite: <DataGridType extends GridValidRowModel>(
+    dataGridProps: GridRenderCellParams<DataGridType>
+  ) => SamplingInformationCachedSite | null;
+  getCurrentTechnique: <DataGridType extends GridValidRowModel>(
+    dataGridProps: GridRenderCellParams<DataGridType>
+  ) => SamplingInformationCachedTechnique | null;
+  getCurrentPeriod: <DataGridType extends GridValidRowModel>(
+    dataGridProps: GridRenderCellParams<DataGridType>
+  ) => SamplingInformationCachedPeriod | null;
+  getTechniquesForRow: (survey_sample_site_id: number | undefined) => SamplingInformationCachedTechnique[];
+  getPeriodsForRow: (
+    survey_sample_site_id: number | undefined,
+    method_technique_id: number | undefined
+  ) => SamplingInformationCachedPeriod[];
 };
 
+/**
+ * A hook to manage a cache of sampling information.
+ *
+ * Provides methods to initialize the cache, update the cache with new data, and retrieve data from the cache.
+ *
+ * @return {*}  {SamplingInformationCache}
+ */
 export const useSamplingInformationCache = (): SamplingInformationCache => {
-  const cachedSampleLocationsRef = useRef<SamplingInformationCacheRef>();
+  const cachedSamplingInformationRef = useRef<SamplingInformationCacheRef>();
 
-  const initCachedSampleLocationsRef = (params: { periods?: GetSamplingPeriod[] }) => {
+  /**
+   * Initialize the cache with the provided sampling periods.
+   *
+   * @param {{ periods?: GetSamplingPeriod[] }} params
+   * @return {*}
+   */
+  const initCachedSamplingInformationRef = (params: { periods?: GetSamplingPeriod[] }) => {
     if (!params.periods?.length) {
       return;
     }
@@ -95,15 +117,21 @@ export const useSamplingInformationCache = (): SamplingInformationCache => {
       ).values()
     );
 
-    cachedSampleLocationsRef.current = {
+    cachedSamplingInformationRef.current = {
       sites,
       techniques,
       periods
     };
   };
 
+  /**
+   * Update the cache with new sampling sites. Will ignore sites that are already in the cache.
+   *
+   * @param {SamplingInformationCachedSite[]} sites
+   * @return {*}
+   */
   const updateCachedSamplingSites = (sites: SamplingInformationCachedSite[]) => {
-    if (!cachedSampleLocationsRef.current) {
+    if (!cachedSamplingInformationRef.current) {
       return;
     }
 
@@ -111,7 +139,7 @@ export const useSamplingInformationCache = (): SamplingInformationCache => {
 
     for (const site of sites ?? []) {
       if (
-        cachedSampleLocationsRef.current.sites.findIndex(
+        cachedSamplingInformationRef.current.sites.findIndex(
           (item) => item.survey_sample_site_id === site.survey_sample_site_id
         ) !== -1
       ) {
@@ -123,15 +151,21 @@ export const useSamplingInformationCache = (): SamplingInformationCache => {
     }
 
     // Update the cache
-    cachedSampleLocationsRef.current = {
-      sites: [...cachedSampleLocationsRef.current.sites, ...newSites],
-      techniques: cachedSampleLocationsRef.current.techniques,
-      periods: cachedSampleLocationsRef.current.periods
+    cachedSamplingInformationRef.current = {
+      sites: [...cachedSamplingInformationRef.current.sites, ...newSites],
+      techniques: cachedSamplingInformationRef.current.techniques,
+      periods: cachedSamplingInformationRef.current.periods
     };
   };
 
+  /**
+   * Update the cache with new method techniques. Will ignore techniques that are already in the cache.
+   *
+   * @param {SamplingInformationCachedTechnique[]} techniques
+   * @return {*}
+   */
   const updateCachedMethodTechniques = (techniques: SamplingInformationCachedTechnique[]) => {
-    if (!cachedSampleLocationsRef.current) {
+    if (!cachedSamplingInformationRef.current) {
       return;
     }
 
@@ -139,7 +173,7 @@ export const useSamplingInformationCache = (): SamplingInformationCache => {
 
     for (const technique of techniques ?? []) {
       if (
-        cachedSampleLocationsRef.current.techniques.findIndex(
+        cachedSamplingInformationRef.current.techniques.findIndex(
           (item) => item.method_technique_id === technique.method_technique_id
         ) !== -1
       ) {
@@ -151,15 +185,21 @@ export const useSamplingInformationCache = (): SamplingInformationCache => {
     }
 
     // Update the cache
-    cachedSampleLocationsRef.current = {
-      sites: cachedSampleLocationsRef.current.sites,
-      techniques: [...cachedSampleLocationsRef.current.techniques, ...newTechniques],
-      periods: cachedSampleLocationsRef.current.periods
+    cachedSamplingInformationRef.current = {
+      sites: cachedSamplingInformationRef.current.sites,
+      techniques: [...cachedSamplingInformationRef.current.techniques, ...newTechniques],
+      periods: cachedSamplingInformationRef.current.periods
     };
   };
 
+  /**
+   * Update the cache with new sampling periods. Will ignore periods that are already in the cache.
+   *
+   * @param {SamplingInformationCachedPeriod[]} periods
+   * @return {*}
+   */
   const updateCachedSamplingPeriods = (periods: SamplingInformationCachedPeriod[]) => {
-    if (!cachedSampleLocationsRef.current) {
+    if (!cachedSamplingInformationRef.current) {
       return;
     }
 
@@ -167,7 +207,7 @@ export const useSamplingInformationCache = (): SamplingInformationCache => {
 
     for (const period of periods ?? []) {
       if (
-        cachedSampleLocationsRef.current.periods.findIndex(
+        cachedSamplingInformationRef.current.periods.findIndex(
           (item) => item.survey_sample_period_id === period.survey_sample_period_id
         ) !== -1
       ) {
@@ -179,93 +219,157 @@ export const useSamplingInformationCache = (): SamplingInformationCache => {
     }
 
     // Update the cache
-    cachedSampleLocationsRef.current = {
-      sites: cachedSampleLocationsRef.current.sites,
-      techniques: cachedSampleLocationsRef.current.techniques,
-      periods: [...cachedSampleLocationsRef.current.periods, ...newPeriods]
+    cachedSamplingInformationRef.current = {
+      sites: cachedSamplingInformationRef.current.sites,
+      techniques: cachedSamplingInformationRef.current.techniques,
+      periods: [...cachedSamplingInformationRef.current.periods, ...newPeriods]
     };
   };
 
-  const updateCachedSampleLocationsRef = (params: {
-    selectedSites?: SamplingInformationCachedSite[];
-    selectedTechniques?: SamplingInformationCachedTechnique[];
-    selectedPeriods?: SamplingInformationCachedPeriod[];
-  }) => {
-    const { selectedSites, selectedTechniques, selectedPeriods } = params;
+  /**
+   * Return the site object for the provided site id.
+   *
+   * @param {(number | undefined)} siteId
+   * @param {(SamplingInformationCacheRef | undefined)} cache
+   */
+  const findSite = (siteId: number | undefined) =>
+    cachedSamplingInformationRef.current?.sites.find((site) => site.survey_sample_site_id === siteId);
 
-    if (!selectedSites?.length) {
-      // If the selected sample site is null, nothing to add to the cache
-      return;
-    }
+  /**
+   * Return the technique object for the provided technique id.
+   *
+   * @param {(number | undefined)} techniqueId
+   * @param {(SamplingInformationCacheRef | undefined)} cache
+   */
+  const findTechnique = (techniqueId: number | undefined) =>
+    cachedSamplingInformationRef.current?.techniques.find((technique) => technique.method_technique_id === techniqueId);
 
-    if (!cachedSampleLocationsRef.current) {
-      // Initialize the cache
-      cachedSampleLocationsRef.current = {
-        sites: selectedSites,
-        techniques: [],
-        periods: []
-      };
-    }
+  /**
+   * Return the period object for the provided period id.
+   *
+   * @param {(number | undefined)} periodId
+   * @param {(SamplingInformationCacheRef | undefined)} cache
+   */
+  const findPeriod = (periodId: number | undefined) =>
+    cachedSamplingInformationRef.current?.periods.find((period) => period.survey_sample_period_id === periodId);
 
-    const newSites = [];
-    for (const site of selectedSites ?? []) {
-      if (
-        cachedSampleLocationsRef.current.sites.findIndex(
-          (item) => item.survey_sample_site_id === site.survey_sample_site_id
-        ) !== -1
-      ) {
-        // The site is already in the cache
-        continue;
-      }
-
-      newSites.push(site);
-    }
-
-    const newTechniques = [];
-    for (const technique of selectedTechniques ?? []) {
-      if (
-        cachedSampleLocationsRef.current.techniques.findIndex(
-          (item) => item.method_technique_id === technique.method_technique_id
-        ) !== -1
-      ) {
-        // The technique is already in the cache
-        continue;
-      }
-
-      newTechniques.push(technique);
-    }
-
-    const newPeriods = [];
-    for (const period of selectedPeriods ?? []) {
-      if (
-        cachedSampleLocationsRef.current.periods.findIndex(
-          (item) => item.survey_sample_period_id === period.survey_sample_period_id
-        ) !== -1
-      ) {
-        // The period is already in the cache
-        continue;
-      }
-
-      newPeriods.push(period);
-    }
-
-    // Update the cache
-    cachedSampleLocationsRef.current = {
-      sites: [...cachedSampleLocationsRef.current.sites, ...newSites],
-      techniques: [...cachedSampleLocationsRef.current.techniques, ...newTechniques],
-      periods: [...cachedSampleLocationsRef.current.periods, ...newPeriods]
-    };
+  /**
+   * Get the label for a period.
+   *
+   * @template PeriodType A type that has at least start_date, start_time, end_date, and end_time properties.
+   * @param {PeriodType} period
+   * @return {*}
+   */
+  const getPeriodLabel = <
+    PeriodType extends { start_date: string; start_time: string | null; end_date: string; end_time: string | null }
+  >(
+    period: PeriodType
+  ) => {
+    return `${period.start_date} ${period.start_time ?? ''} - ${period.end_date} ${period.end_time ?? ''}`;
   };
 
-  return useMemo(
-    () => ({
-      cachedSampleLocationsRef,
-      initCachedSampleLocationsRef,
-      updateCachedSamplingSites,
-      updateCachedMethodTechniques,
-      updateCachedSamplingPeriods,
-      updateCachedSampleLocationsRef
-    }),
-    []
-  );
+  /**
+   * Get the currently selected site for the row.
+   *
+   * @template DataGridType
+   * @param {GridRenderCellParams<DataGridType>} dataGridProps
+   * @param {(MutableRefObject<SamplingInformationCacheRef | undefined>)} cachedSamplingInformationRef
+   * @return {*}  {(SamplingInformationCachedSite | null)}
+   */
+  const getCurrentSite = <DataGridType extends GridValidRowModel>(
+    dataGridProps: GridRenderCellParams<DataGridType>
+  ): SamplingInformationCachedSite | null => {
+    return findSite(dataGridProps.value as number) ?? null;
+  };
+
+  /**
+   * Get the currently selected method technique for the row.
+   *
+   * @template DataGridType
+   * @param {GridRenderCellParams<DataGridType>} dataGridProps
+   * @param {(MutableRefObject<SamplingInformationCacheRef | undefined>)} cachedSamplingInformationRef
+   * @return {*}  {(SamplingInformationCachedTechnique | null)}
+   */
+  const getCurrentTechnique = <DataGridType extends GridValidRowModel>(
+    dataGridProps: GridRenderCellParams<DataGridType>
+  ): SamplingInformationCachedTechnique | null => {
+    return findTechnique(dataGridProps.value as number) ?? null;
+  };
+
+  /**
+   * Get the currently selected period for the row.
+   *
+   * @template DataGridType
+   * @param {GridRenderCellParams<DataGridType>} dataGridProps
+   * @param {(MutableRefObject<SamplingInformationCacheRef | undefined>)} cachedSamplingInformationRef
+   * @return {*}  {(SamplingInformationCachedPeriod | null)}
+   */
+  const getCurrentPeriod = <DataGridType extends GridValidRowModel>(
+    dataGridProps: GridRenderCellParams<DataGridType>
+  ): SamplingInformationCachedPeriod | null => {
+    return findPeriod(dataGridProps.value as number) ?? null;
+  };
+
+  /**
+   * Get all valid techniques for the currently selected site.
+   *
+   * @param {(number | undefined)} survey_sample_site_id
+   * @param {(MutableRefObject<SamplingInformationCacheRef | undefined>)} cachedSamplingInformationRef
+   * @return {*}  {SamplingInformationCachedTechnique[]}
+   */
+  const getTechniquesForRow = (survey_sample_site_id: number | undefined): SamplingInformationCachedTechnique[] => {
+    const site = findSite(survey_sample_site_id);
+
+    if (!site) {
+      return [];
+    }
+
+    const matchingTechniques = cachedSamplingInformationRef.current?.techniques.filter((technique) => {
+      return technique.survey_sample_site_id === site.survey_sample_site_id;
+    });
+
+    return matchingTechniques ?? [];
+  };
+
+  /**
+   * Get all valid periods for the currently selected site and technique.
+   *
+   * @param {(number | undefined)} survey_sample_site_id
+   * @param {(number | undefined)} method_technique_id
+   * @param {(MutableRefObject<SamplingInformationCacheRef | undefined>)} cachedSamplingInformationRef
+   * @return {*}  {SamplingInformationCachedPeriod[]}
+   */
+  const getPeriodsForRow = (
+    survey_sample_site_id: number | undefined,
+    method_technique_id: number | undefined
+  ): SamplingInformationCachedPeriod[] => {
+    const site = findSite(survey_sample_site_id);
+    const technique = findTechnique(method_technique_id);
+
+    if (!site || !technique) {
+      return [];
+    }
+
+    const matchingPeriods = cachedSamplingInformationRef.current?.periods.filter((period) => {
+      return (
+        period.survey_sample_site_id === site.survey_sample_site_id &&
+        period.method_technique_id === technique.method_technique_id
+      );
+    });
+
+    return matchingPeriods ?? [];
+  };
+
+  return {
+    cachedSamplingInformationRef,
+    initCachedSamplingInformationRef,
+    updateCachedSamplingSites,
+    updateCachedMethodTechniques,
+    updateCachedSamplingPeriods,
+    getCurrentSite,
+    getCurrentTechnique,
+    getCurrentPeriod,
+    getTechniquesForRow,
+    getPeriodsForRow
+  };
 };

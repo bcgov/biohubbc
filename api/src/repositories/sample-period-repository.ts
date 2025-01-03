@@ -111,9 +111,6 @@ export class SamplePeriodRepository extends BaseRepository {
       }
     }
 
-    console.log(queryBuilder.toSQL().toNative().sql);
-    console.log(queryBuilder.toSQL().toNative().bindings);
-
     const response = await this.connection.knex(queryBuilder, SurveySamplePeriodDetails);
 
     return response.rows;

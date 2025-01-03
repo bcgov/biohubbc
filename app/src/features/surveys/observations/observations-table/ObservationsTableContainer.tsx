@@ -76,7 +76,7 @@ const ObservationsTableContainer = () => {
       return;
     }
 
-    sampleLocationsCache.initCachedSampleLocationsRef({
+    sampleLocationsCache.initCachedSamplingInformationRef({
       periods: observationsContext.observationsDataLoader.data.supplementaryObservationData.sampling_data
     });
   }, [

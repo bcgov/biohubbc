@@ -1,7 +1,6 @@
 import Typography from '@mui/material/Typography';
 import { GridRenderCellParams, GridValidRowModel } from '@mui/x-data-grid';
 import { SamplingInformationCache } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/useSamplingInformationCache';
-import { getCurrentPeriod } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/utils';
 
 export interface IPartialSamplePeriodDataGridViewCellProps<DataGridType extends GridValidRowModel> {
   dataGridProps: GridRenderCellParams<DataGridType>;
@@ -21,7 +20,7 @@ export const SamplePeriodDataGridViewCell = <DataGridType extends GridValidRowMo
 ) => {
   const { dataGridProps, samplingInformationCache, error } = props;
 
-  const label = getCurrentPeriod(dataGridProps, samplingInformationCache.cachedSampleLocationsRef)?.label ?? '';
+  const label = samplingInformationCache.getCurrentPeriod(dataGridProps)?.label ?? '';
 
   return (
     <Typography

@@ -1,7 +1,6 @@
 import { GridRenderCellParams, GridValidRowModel } from '@mui/x-data-grid';
 import TextFieldDataGrid from 'components/data-grid/TextFieldDataGrid';
 import { SamplingInformationCache } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/useSamplingInformationCache';
-import { getCurrentTechnique } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/utils';
 import { useCodesContext } from 'hooks/useContext';
 import { getCodesName } from 'utils/Utils';
 
@@ -27,7 +26,7 @@ export const ObservationCountDataGridEditCell = <DataGridType extends GridValidR
   const codesContext = useCodesContext();
 
   const getResponseMetric = () => {
-    const currentTechnique = getCurrentTechnique(dataGridProps, samplingInformationCache.cachedSampleLocationsRef);
+    const currentTechnique = samplingInformationCache.getCurrentTechnique(dataGridProps);
 
     if (!currentTechnique) {
       return null;

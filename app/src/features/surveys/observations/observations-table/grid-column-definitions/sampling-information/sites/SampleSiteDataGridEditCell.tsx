@@ -10,7 +10,6 @@ import {
   SamplingInformationCache,
   SamplingInformationCachedSite
 } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/useSamplingInformationCache';
-import { getCurrentSite } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/utils';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
 import useIsMounted from 'hooks/useIsMounted';
@@ -51,10 +50,10 @@ export const SampleSiteDataGridEditCell = <DataGridType extends GridValidRowMode
 
   // The currently selected option
   const [currentOption, setCurrentOption] = useState<SamplingInformationCachedSite | null>(
-    getCurrentSite(dataGridProps, samplingInformationCache.cachedSampleLocationsRef)
+    samplingInformationCache.getCurrentSite(dataGridProps)
   );
   const [options, setOptions] = useState<SamplingInformationCachedSite[]>(
-    samplingInformationCache.cachedSampleLocationsRef.current?.sites ?? []
+    samplingInformationCache.cachedSamplingInformationRef.current?.sites ?? []
   );
   // Is control loading (search in progress)
   const [isLoading, setIsLoading] = useState(false);
@@ -84,7 +83,7 @@ export const SampleSiteDataGridEditCell = <DataGridType extends GridValidRowMode
         samplingInformationCache.updateCachedSamplingSites(options);
 
         // Set the options for the autocomplete
-        setOptions(samplingInformationCache.cachedSampleLocationsRef.current?.sites ?? []);
+        setOptions(samplingInformationCache.cachedSamplingInformationRef.current?.sites ?? []);
 
         setIsLoading(false);
       }, 500),

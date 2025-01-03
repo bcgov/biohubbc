@@ -10,11 +10,7 @@ import {
   SamplingInformationCache,
   SamplingInformationCachedPeriod
 } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/useSamplingInformationCache';
-import {
-  getCurrentPeriod,
-  getPeriodLabel,
-  getPeriodsForRow
-} from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/utils';
+import { getPeriodLabel } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/utils';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
 import useIsMounted from 'hooks/useIsMounted';
@@ -54,13 +50,12 @@ export const SamplePeriodDataGridEditCell = <DataGridType extends GridValidRowMo
 
   // The currently selected option
   const [currentOption, setCurrentOption] = useState<SamplingInformationCachedPeriod | null>(
-    getCurrentPeriod(dataGridProps, samplingInformationCache.cachedSampleLocationsRef)
+    samplingInformationCache.getCurrentPeriod(dataGridProps)
   );
   const [options, setOptions] = useState<SamplingInformationCachedPeriod[]>(
-    getPeriodsForRow(
+    samplingInformationCache.getPeriodsForRow(
       dataGridProps.row.survey_sample_site_id,
-      dataGridProps.row.method_technique_id,
-      samplingInformationCache.cachedSampleLocationsRef
+      dataGridProps.row.method_technique_id
     )
   );
   // Is control loading (search in progress)
@@ -101,10 +96,9 @@ export const SamplePeriodDataGridEditCell = <DataGridType extends GridValidRowMo
 
         samplingInformationCache.updateCachedSamplingPeriods(options);
 
-        const validOptions = getPeriodsForRow(
+        const validOptions = samplingInformationCache.getPeriodsForRow(
           dataGridProps.row.survey_sample_site_id,
-          dataGridProps.row.method_technique_id,
-          samplingInformationCache.cachedSampleLocationsRef
+          dataGridProps.row.method_technique_id
         );
 
         // Set the options for the autocomplete
@@ -137,19 +131,18 @@ export const SamplePeriodDataGridEditCell = <DataGridType extends GridValidRowMo
       // valid periods for the new site and technique.
       setCurrentOption(null);
       setOptions(
-        getPeriodsForRow(
+        samplingInformationCache.getPeriodsForRow(
           dataGridProps.row.survey_sample_site_id,
-          dataGridProps.row.method_technique_id,
-          samplingInformationCache.cachedSampleLocationsRef
+          dataGridProps.row.method_technique_id
         )
       );
     }
   }, [
-    dataGridProps.row.survey_sample_site_id,
-    dataGridProps.row.method_technique_id,
-    currentOption?.survey_sample_site_id,
     currentOption?.method_technique_id,
-    samplingInformationCache.cachedSampleLocationsRef
+    currentOption?.survey_sample_site_id,
+    dataGridProps.row.method_technique_id,
+    dataGridProps.row.survey_sample_site_id,
+    samplingInformationCache
   ]);
 
   return (
