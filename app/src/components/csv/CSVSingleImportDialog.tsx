@@ -1,5 +1,5 @@
 import LoadingButton from '@mui/lab/LoadingButton/LoadingButton';
-import { Box, Dialog, DialogActions, DialogContent, Divider, Typography } from '@mui/material';
+import { Box, Dialog, DialogActions, DialogContent, Divider, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { AxiosProgressEvent } from 'axios';
 import { UploadFileStatus } from 'components/file-upload/FileUploadItem';
 import { FileUploadSingleItem } from 'components/file-upload/FileUploadSingleItem';
@@ -25,6 +25,9 @@ interface CSVSingleImportDialogProps {
  * @return {*} {JSX.Element}
  */
 export const CSVSingleImportDialog = (props: CSVSingleImportDialogProps) => {
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
+
   const dialogContext = useContext(DialogContext);
 
   // Dialog and import state
@@ -113,7 +116,7 @@ export const CSVSingleImportDialog = (props: CSVSingleImportDialogProps) => {
   }
 
   return (
-    <Dialog open={props.open} maxWidth={false}>
+    <Dialog open={props.open} maxWidth={'xl'} fullScreen={fullScreen}>
       <DialogContent sx={{ mt: 2 }}>
         <Box>
           <CSVDropzoneSection

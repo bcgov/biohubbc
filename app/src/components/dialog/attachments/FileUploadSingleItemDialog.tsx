@@ -18,7 +18,6 @@ interface IFileUploadSingleItemDialog {
   uploadButtonLabel: string;
   onUpload: (file: File) => Promise<void>;
   onClose?: () => void;
-  onCancel?: () => void;
   dropZoneProps: Pick<IDropZoneConfigProps, 'acceptedFileExtensions' | 'maxFileSize'>;
 }
 
