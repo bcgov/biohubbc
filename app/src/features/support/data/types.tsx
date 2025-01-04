@@ -18,7 +18,12 @@ export const EnumMarkdownTypes: Partial<Record<SupportPageView, MarkdownTypeSupp
     MarkdownTypeSupportNameEnum.SURVEY_METADATA,
     MarkdownTypeSupportNameEnum.SURVEY_ATTACHMENTS
   ],
-  [SupportPageView.FOUNDATION]: [MarkdownTypeSupportNameEnum.FOUNDATION],
+  [SupportPageView.FOUNDATION]: [
+    MarkdownTypeSupportNameEnum.BLOCKS,
+    MarkdownTypeSupportNameEnum.STRATA,
+    MarkdownTypeSupportNameEnum.TECHNIQUES,
+    MarkdownTypeSupportNameEnum.SAMPLING_SITES
+  ],
   [SupportPageView.DATA_STANDARDS]: [MarkdownTypeSupportNameEnum.ITIS],
   [SupportPageView.ANIMALS]: [
     MarkdownTypeSupportNameEnum.ANIMAL_ENTITY,

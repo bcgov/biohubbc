@@ -29,10 +29,10 @@ const structure = [
       <Typography variant="body1" gutterBottom>
         Projects contain surveys, and act as an umbrella that unifies individual studies. It is up to the discretion of
         the project team what the basis of this unification is. For example, a project team may choose to use the
-        project as an umbrella under which to group like studies. They may have conducted the same study 10 times over a
+        project as a structure under which to group like studies. They may have conducted the same study 10 times over a
         number of years, and group all those within a project. Other teams may group studies together that monitor the
-        same species over multiple regions or do the inverse and monitor multiple species in a single region. Some
-        project teams may choose to group studies based on the fact that the same team conducted them all.
+        same species over multiple regions or do the inverse and group studies that monitor multiple species in a single
+        region. Some project teams may choose to group studies based on the fact that the same team conducted them all.
       </Typography>,
       <Typography variant="body1" gutterBottom>
         There is no limit to the number of projects that a SIMS user, or a collaborative team, can create. One caveat to

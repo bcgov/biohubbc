@@ -27,7 +27,11 @@ export async function up(knex: Knex): Promise<void> {
       ('Role Based Security','Information about the types of roles within a project'), 
       ('Project Components','Details information collected at the project level'),
       ('Survey Metadata Support','Details metadata collected at the create and edit survey level'),
-      ('Survey Attachments','Information about the attachments that can be loaded at the survey level');
+      ('Survey Attachments','Information about the attachments that can be loaded at the survey level'),
+      ('Support Blocks', 'General information about blocks in SIMS for the support page'),
+      ('Support Strata', 'General information about blocks in SIMS for the support page'),
+      ('Support Techniques', 'General information about blocks in SIMS for the support page'),
+      ('Support Sites', 'General information about blocks in SIMS for the support page');
 
 ----------------------------------------------------------------------------------------
 -- Insert into markdown by selecting markdown_type_id based on markdown_type.name
@@ -59,12 +63,20 @@ SELECT
         WHEN mt.name = 'Survey Metadata Support' THEN 
             'Placeholder'
         WHEN mt.name = 'Survey Attachments' THEN 
-            'Please insert text here'    
+            'Please insert text here'
+        WHEN mt.name = 'Support Blocks' THEN
+            'Text1'
+        WHEN mt.name = 'Support Strata' THEN
+            'Text2'
+        WHEN mt.name = 'Support Techniques' THEN
+            'Text3'
+        WHEN mt.name = 'Support Sites' THEN
+            'Text4'
             END AS data
 FROM
     markdown_type mt
 WHERE
-    mt.name IN ('Animal Entity', 'Animal Event', 'Animal Bulk Upload', 'Observation Data Load', 'Telemetry Manual Upload', 'Telemetry Automated','SPI Data','ITIS Standards','Role Based Security', 'Project Components', 'Survey Metadata Support', 'Survey Attachments');
+    mt.name IN ('Animal Entity', 'Animal Event', 'Animal Bulk Upload', 'Observation Data Load', 'Telemetry Manual Upload', 'Telemetry Automated','SPI Data','ITIS Standards','Role Based Security', 'Project Components', 'Survey Metadata Support', 'Survey Attachments', 'Support Blocks', 'Support Strata', 'Support Techniques', 'Support Sites');
 
   `);
 }

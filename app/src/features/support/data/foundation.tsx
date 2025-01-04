@@ -1,9 +1,9 @@
 import { Typography } from '@mui/material';
-import { EnumMarkdownTypes, MarkdownTypeSupportNameEnum, SupportPageView } from './types';
+import { EnumMarkdownTypes, SupportPageView } from './types';
 
 const foundation = [
   {
-    label: 'Foundational Data',
+    label: 'Blocks',
     description: [
       <Typography variant="body1" gutterBottom>
         This foundational data section will detail the elements of your survey that are required to establish the
@@ -16,7 +16,57 @@ const foundation = [
         metadata for sampling efforts are well-documented, accessible and interpretable.
       </Typography>
     ],
-    markdownType: EnumMarkdownTypes[SupportPageView.FOUNDATION]?.[0] || MarkdownTypeSupportNameEnum.FOUNDATION
+    markdownType: EnumMarkdownTypes[SupportPageView.FOUNDATION]?.[0]
+  },
+  {
+    label: 'Strata',
+    description: [
+      <Typography variant="body1" gutterBottom>
+        <strong>Strata</strong>
+      </Typography>,
+      <Typography variant="body1" gutterBottom>
+        Text
+      </Typography>
+    ],
+    markdownType: EnumMarkdownTypes[SupportPageView.FOUNDATION]?.[1]
+  },
+  {
+    label: 'Techniques',
+    description: [
+      <Typography variant="body1" gutterBottom>
+        <strong>Techniques</strong>
+      </Typography>,
+      <Typography variant="body1" gutterBottom>
+        TEXT
+      </Typography>
+    ],
+    markdownType: EnumMarkdownTypes[SupportPageView.FOUNDATION]?.[2]
+  },
+  {
+    label: 'Sampling Sites',
+    description: [
+      <Typography variant="body1" gutterBottom>
+        <strong>Sampling Sites</strong>
+      </Typography>,
+      <Typography variant="body1" gutterBottom>
+        Insert text
+      </Typography>
+    ],
+    markdownType: EnumMarkdownTypes[SupportPageView.FOUNDATION]?.[3]
+  },
+  {
+    label: 'FAQ',
+    description: [
+      <Typography variant="body1" gutterBottom>
+        <strong>FAQ</strong>
+      </Typography>,
+      <Typography variant="body1" gutterBottom>
+        <strong>QUESTION</strong>
+      </Typography>,
+      <Typography variant="body1" gutterBottom>
+        ANSWER
+      </Typography>
+    ]
   }
 ];
 
