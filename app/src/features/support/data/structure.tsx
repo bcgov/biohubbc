@@ -50,11 +50,15 @@ const structure = [
         <strong>Surveys</strong>
       </Typography>,
       <Typography variant="body1" gutterBottom>
-       Surveys describe and house data for individual studies. A survey is the combination of the metadata describing the study, and the data that is loaded into it. The metadata defines the parameters through which the study was conducted and creates a shell to which the study data is loaded. The survey shell lays the foundation for the remaining topics in this support manual.  
+        Surveys describe and house data for individual studies. A survey is the combination of the metadata describing
+        the study, and the data that is loaded into it. The metadata defines the parameters through which the study was
+        conducted and creates a shell to which the study data is loaded. The survey shell lays the foundation for the
+        remaining topics in this support manual.
       </Typography>,
       <Typography variant="body1" gutterBottom>
-        Creating a survey will prompt the user to submit metadata defining their project. Study data cannot be submitted until these metadata have been defined. These survey metadata can be edited at any time after creation. 
-      </Typography>       
+        Creating a survey will prompt the user to submit metadata defining their project. Study data cannot be submitted
+        until these metadata have been defined. These survey metadata can be edited at any time after creation.
+      </Typography>
     ],
     markdownType: EnumMarkdownTypes[SupportPageView.STRUCTURE]?.[2]
   },
@@ -65,7 +69,10 @@ const structure = [
         <strong>Survey Data</strong>
       </Typography>,
       <Typography variant="body1" gutterBottom>
-        Following the creation of a survey, users will be able to upload both Foundational Data (information about sampling), as well as survey data (information about Animals, Telemetry, and Observations) where applicable. Every survey has a 'Documents' section that allows for the upload of files or attachments with relevance to the survey. 
+        Following the creation of a survey, users will be able to upload both Foundational Data (information about
+        sampling), as well as survey data (information about Animals, Telemetry, and Observations) where applicable.
+        Every survey has a 'Documents' section that allows for the upload of files or attachments with relevance to the
+        survey.
       </Typography>
     ],
     markdownType: EnumMarkdownTypes[SupportPageView.STRUCTURE]?.[3]
@@ -77,10 +84,18 @@ const structure = [
         <strong>Publishing to BioHub</strong>
       </Typography>,
       <Typography variant="body1" gutterBottom>
-        The publication of data from SIMS to BioHub can be achieved at the survey-level. Once study teams are pleased with their data and would like to make these data accessible, they can navigate to the survey page and click the publish button. Beside this button is a status text that will specify whether a survey has been published. 
-      </Typography>, 
+        The publication of data from SIMS to BioHub can be achieved at the survey-level. Once study teams are pleased
+        with their data and would like to make these data accessible, they can navigate to the survey page and click the
+        publish button. Beside this button is a status text that will specify whether a survey has been published.
+      </Typography>,
       <Typography>
-        Upon clicking the Publish button, data submitters will be prompted for information regarding the security status of these data. Published data must be secured according to the Species and Ecosystems Data and Information (SEDIS) policy, and meet the Freefom of Information and Protection of Privacy Act (FOIPPA) requirements. All surveys are subject to security reviews by government data stewards prior to the finalization of publication to BioHUB. If survey teams have additional information about a survey that data stewards should be aware of, including resons why a survey should be secured, they can note this information down when prompted after pressing the publish button.
+        Upon clicking the Publish button, data submitters will be prompted for information regarding the security status
+        of these data. Published data must be secured according to the Species and Ecosystems Data and Information
+        (SEDIS) policy, and meet the Freedom of Information and Protection of Privacy Act (FOIPPA) requirements. All
+        surveys are subject to security reviews by government data stewards prior to the finalization of publication to
+        BioHUB. If survey teams have additional information about a survey that data stewards should be aware of,
+        including resons why a survey should be secured, they can note this information down when prompted after
+        pressing the publish button.
       </Typography>
     ]
   },
