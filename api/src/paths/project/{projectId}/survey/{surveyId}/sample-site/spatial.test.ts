@@ -27,7 +27,7 @@ describe('getSurveySampleSitesGeometry', () => {
       surveyId: '1'
     };
 
-    sinon.stub(SampleSiteService.prototype, 'getSampleLocationsGeometryBySurveyId').rejects(new Error('an error'));
+    sinon.stub(SampleSiteService.prototype, 'getSampleSitesGeometryBySurveyId').rejects(new Error('an error'));
 
     try {
       const requestHandler = getSurveySampleSitesGeometry();
@@ -61,7 +61,7 @@ describe('getSurveySampleSitesGeometry', () => {
       }
     ];
 
-    sinon.stub(SampleSiteService.prototype, 'getSampleLocationsGeometryBySurveyId').resolves(sampleSiteData);
+    sinon.stub(SampleSiteService.prototype, 'getSampleSitesGeometryBySurveyId').resolves(sampleSiteData);
 
     const requestHandler = getSurveySampleSitesGeometry();
 

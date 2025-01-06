@@ -8,7 +8,7 @@ import {
   paginationResponseSchema
 } from '../../../../../../openapi/schemas/pagination';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { PostSampleLocations, SampleSiteService } from '../../../../../../services/sample-site-service';
+import { CreateSampleSiteObject, SampleSiteService } from '../../../../../../services/sample-site-service';
 import { getLogger } from '../../../../../../utils/logger';
 import {
   ensureCompletePaginationOptions,
@@ -211,13 +211,13 @@ export function getSurveySampleSitesForSurvey(): RequestHandler {
 
       await connection.open();
 
-      const sampleLocationService = new SampleSiteService(connection);
-      const sampleSites = await sampleLocationService.getSampleSitesForSurveyId(surveyId, {
+      const sampleSiteService = new SampleSiteService(connection);
+      const sampleSites = await sampleSiteService.getSampleSitesForSurveyId(surveyId, {
         keyword: keyword,
         pagination: ensureCompletePaginationOptions(paginationOptions)
       });
 
-      const sampleSitesTotalCount = await sampleLocationService.getSampleLocationsCountBySurveyId(surveyId);
+      const sampleSitesTotalCount = await sampleSiteService.getSampleSitesCountBySurveyId(surveyId);
 
       await connection.commit();
 
@@ -226,7 +226,7 @@ export function getSurveySampleSitesForSurvey(): RequestHandler {
         pagination: makePaginationResponse(sampleSitesTotalCount, paginationOptions)
       });
     } catch (error) {
-      defaultLog.error({ label: 'getSurveySampleLocationRecord', message: 'error', error });
+      defaultLog.error({ label: 'getSurveySampleSitesForSurvey', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
@@ -372,16 +372,16 @@ export function createSurveySampleSiteRecord(): RequestHandler {
     const connection = getDBConnection(req.keycloak_token);
 
     try {
-      const sampleSite: PostSampleLocations = {
+      const sampleSite: CreateSampleSiteObject = {
         ...req.body,
         survey_id: Number(req.params.surveyId)
       };
 
       await connection.open();
 
-      const sampleLocationService = new SampleSiteService(connection);
+      const sampleSiteService = new SampleSiteService(connection);
 
-      await sampleLocationService.insertSampleLocations(sampleSite);
+      await sampleSiteService.createSampleSite(sampleSite);
 
       await connection.commit();
 

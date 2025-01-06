@@ -8,12 +8,23 @@ import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormC
 import { SurveyContext } from 'contexts/surveyContext';
 import { SamplingSiteGroupingsForm } from 'features/surveys/sampling-information/sites/components/site-groupings/SamplingSiteGroupingsForm';
 import { useFormikContext } from 'formik';
-import { IGetSampleLocationDetailsForUpdate } from 'interfaces/useSamplingSiteApi.interface';
+import { Feature } from 'geojson';
+import { IGetSampleBlockDetails, IGetSampleStratumDetails } from 'interfaces/useSamplingSiteApi.interface';
 import { useContext } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import yup from 'utils/YupSchema';
 import SurveySamplingSiteEditForm from '../../components/map/SurveySampleSiteEditForm';
 import SampleSiteGeneralInformationEditForm from './SampleSiteGeneralInformationForm';
+
+export interface IEditSampleSiteFormData {
+  survey_sample_site_id: number | null;
+  survey_id: number;
+  name: string;
+  description: string;
+  geojson: Feature;
+  blocks: IGetSampleBlockDetails[];
+  stratums: IGetSampleStratumDetails[];
+}
 
 export const SampleSiteEditFormYupSchema = yup.object({
   name: yup.string().default('').min(1, 'Minimum 1 character.').max(50, 'Maximum 50 characters.'),
@@ -36,7 +47,7 @@ export interface ISampleSiteEditFormProps {
  */
 const SampleSiteEditForm = (props: ISampleSiteEditFormProps) => {
   const surveyContext = useContext(SurveyContext);
-  const { submitForm } = useFormikContext<IGetSampleLocationDetailsForUpdate>();
+  const { submitForm } = useFormikContext<IEditSampleSiteFormData>();
 
   return (
     <Container maxWidth="xl" sx={{ py: 3 }}>

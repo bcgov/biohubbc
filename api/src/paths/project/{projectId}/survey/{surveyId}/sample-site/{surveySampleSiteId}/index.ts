@@ -4,10 +4,9 @@ import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/
 import { getDBConnection } from '../../../../../../../database/db';
 import { HTTP400, HTTP409 } from '../../../../../../../errors/http-error';
 import { GeoJSONFeature } from '../../../../../../../openapi/schemas/geoJson';
-import { UpdateSampleLocationRecord } from '../../../../../../../repositories/sample-site-repository/sample-site-repository';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { ObservationService } from '../../../../../../../services/observation-services/observation-service';
-import { SampleSiteService } from '../../../../../../../services/sample-site-service';
+import { SampleSiteService, UpdateSampleSiteObject } from '../../../../../../../services/sample-site-service';
 import { getLogger } from '../../../../../../../utils/logger';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/sample-site/{surveySampleSiteId}');
@@ -154,7 +153,7 @@ export function updateSurveySampleSite(): RequestHandler {
     try {
       const surveyId = Number(req.params.surveyId);
 
-      const sampleSite: UpdateSampleLocationRecord = {
+      const sampleSite: UpdateSampleSiteObject = {
         ...req.body.sampleSite,
         survey_id: Number(req.params.surveyId),
         survey_sample_site_id: Number(req.params.surveySampleSiteId)
@@ -162,15 +161,15 @@ export function updateSurveySampleSite(): RequestHandler {
 
       await connection.open();
 
-      const sampleLocationService = new SampleSiteService(connection);
+      const sampleSiteService = new SampleSiteService(connection);
 
-      await sampleLocationService.updateSampleLocationMethodPeriod(surveyId, sampleSite);
+      await sampleSiteService.updateSampleSite(surveyId, sampleSite);
 
       await connection.commit();
 
       return res.status(204).send();
     } catch (error) {
-      defaultLog.error({ label: 'updateSampleLocationMethodPeriod', message: 'error', error });
+      defaultLog.error({ label: 'updateSurveySampleSite', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
@@ -283,9 +282,9 @@ export function deleteSurveySampleSiteRecord(): RequestHandler {
         throw new HTTP409('Cannot delete a sample site that is associated with an observation');
       }
 
-      const sampleLocationService = new SampleSiteService(connection);
+      const sampleSiteService = new SampleSiteService(connection);
 
-      await sampleLocationService.deleteSampleSiteRecord(surveyId, surveySampleSiteId);
+      await sampleSiteService.deleteSampleSiteRecord(surveyId, surveySampleSiteId);
 
       await connection.commit();
 
@@ -320,7 +319,7 @@ export const GET: Operation = [
       ]
     };
   }),
-  getSurveySampleLocationRecord()
+  getSurveySampleSite()
 ];
 
 GET.apiDoc = {
@@ -479,7 +478,7 @@ GET.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-export function getSurveySampleLocationRecord(): RequestHandler {
+export function getSurveySampleSite(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req.keycloak_token);
 
@@ -489,14 +488,14 @@ export function getSurveySampleLocationRecord(): RequestHandler {
       const surveyId = Number(req.params.surveyId);
       const surveySampleSiteId = Number(req.params.surveySampleSiteId);
 
-      const sampleLocationService = new SampleSiteService(connection);
-      const sampleSite = await sampleLocationService.getSurveySampleLocationBySiteId(surveyId, surveySampleSiteId);
+      const sampleSiteService = new SampleSiteService(connection);
+      const sampleSite = await sampleSiteService.getSurveySampleSiteBySiteId(surveyId, surveySampleSiteId);
 
       await connection.commit();
 
       return res.status(200).json(sampleSite);
     } catch (error) {
-      defaultLog.error({ label: 'getSurveySampleLocationRecord', message: 'error', error });
+      defaultLog.error({ label: 'getSurveySampleSite', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

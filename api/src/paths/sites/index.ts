@@ -207,16 +207,16 @@ export function findSites(): RequestHandler {
 
       const paginationOptions = makePaginationOptionsFromRequest(req);
 
-      const sampleLocationService = new SampleSiteService(connection);
+      const sampleSiteService = new SampleSiteService(connection);
 
       const [sites, sitesCount] = await Promise.all([
-        sampleLocationService.findSites(
+        sampleSiteService.findSites(
           isUserAdmin,
           systemUserId,
           filterFields,
           ensureCompletePaginationOptions(paginationOptions)
         ),
-        sampleLocationService.findSitesCount(isUserAdmin, systemUserId, filterFields)
+        sampleSiteService.findSitesCount(isUserAdmin, systemUserId, filterFields)
       ]);
 
       await connection.commit();

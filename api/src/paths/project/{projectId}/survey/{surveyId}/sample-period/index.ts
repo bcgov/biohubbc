@@ -375,7 +375,7 @@ export function getSurveySamplePeriods(): RequestHandler {
         pagination: makePaginationResponse(samplePeriodsCount, paginationOptions)
       });
     } catch (error) {
-      defaultLog.error({ label: 'getSurveySampleLocationRecord', message: 'error', error });
+      defaultLog.error({ label: 'getSurveySamplePeriods', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

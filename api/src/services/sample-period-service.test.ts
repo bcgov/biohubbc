@@ -1,7 +1,6 @@
 import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { SurveySamplePeriodModel } from '../database-models/survey_sample_period';
 import {
   InsertSamplePeriodObject,
   SamplePeriodRepository,
@@ -69,23 +68,7 @@ describe('SamplePeriodService', () => {
     it('Inserts a sample period successfully', async () => {
       const mockDBConnection = getMockDBConnection();
 
-      const mockSamplePeriodRecord: SurveySamplePeriodModel = {
-        survey_sample_period_id: 1,
-        survey_sample_site_id: 2,
-        method_technique_id: 3,
-        start_date: '2023-10-02',
-        end_date: '2023-01-02',
-        start_time: '12:00:00',
-        end_time: '13:00:00',
-        create_date: '2023-05-06',
-        create_user: 1,
-        update_date: null,
-        update_user: null,
-        revision_count: 0
-      };
-      const insertSamplePeriodStub = sinon
-        .stub(SamplePeriodRepository.prototype, 'insertSamplePeriod')
-        .resolves(mockSamplePeriodRecord);
+      const insertSamplePeriodStub = sinon.stub(SamplePeriodRepository.prototype, 'insertSamplePeriod').resolves();
 
       const surveyId = 1;
       const samplePeriods: InsertSamplePeriodObject[] = [
@@ -99,10 +82,9 @@ describe('SamplePeriodService', () => {
         }
       ];
       const samplePeriodService = new SamplePeriodService(mockDBConnection);
-      const response = await samplePeriodService.insertSamplePeriods(surveyId, samplePeriods);
+      await samplePeriodService.insertSamplePeriods(surveyId, samplePeriods);
 
-      expect(insertSamplePeriodStub).to.be.calledOnceWith(samplePeriods);
-      expect(response).to.eql(mockSamplePeriodRecord);
+      expect(insertSamplePeriodStub).to.be.calledOnceWith(1, samplePeriods[0]);
     });
   });
 

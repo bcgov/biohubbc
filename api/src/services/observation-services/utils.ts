@@ -19,10 +19,10 @@ dayjs.extend(isSameOrBefore);
 
 /**
  * Extracts sampling data from the worksheet row object and maps site names, method techniques, and periods
- * to their respective IDs using the provided samplingLocations.
+ * to their respective IDs using the provided samplingPeriods.
  *
  * @param {Record<string, any>} row - The current row of the worksheet being processed.
- * @param {SurveySamplePeriodDetails[]} samplingPeriods - The available sampling locations for the survey, used for
+ * @param {SurveySamplePeriodDetails[]} samplingPeriods - The available sampling periods for the survey, used for
  * mapping names to IDs.
  * @return { { sampleSiteId: number, methodTechniqueId: number, samplePeriodId: number } | null } The sampling data with
  * IDs, or null if no valid data is found.

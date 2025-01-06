@@ -4,12 +4,12 @@ import sinonChai from 'sinon-chai';
 import {
   ObservationRecordWithSamplingAndSubcountData,
   ObservationRepository
-} from '../repositories/observation-repository/observation-repository';
-import * as file_utils from '../utils/file-utils';
-import { getMockDBConnection } from '../__mocks__/db';
+} from '../../repositories/observation-repository/observation-repository';
+import * as file_utils from '../../utils/file-utils';
+import { getMockDBConnection } from '../../__mocks__/db';
+import { SampleSiteService } from '../sample-site-service';
+import { SubCountService } from '../subcount-service';
 import { ObservationService } from './observation-service';
-import { SampleSiteService } from './sample-site-service';
-import { SubCountService } from './subcount-service';
 
 chai.use(sinonChai);
 
@@ -41,11 +41,9 @@ describe('ObservationService', () => {
           itis_scientific_name: 'itis_scientific_name',
           observation_date: '2023-01-01',
           observation_time: '12:00:00',
-          survey_sample_method_name: 'METHOD_NAME',
+          method_technique_name: 'TECHNIQUE_NAME',
           survey_sample_period_start_datetime: '2000-01-01 00:00:00',
           survey_sample_site_name: 'SITE_NAME',
-          survey_sample_site_id: 1,
-          method_technique_id: 1,
           survey_sample_period_id: 1,
           subcounts: []
         },
@@ -59,11 +57,9 @@ describe('ObservationService', () => {
           itis_scientific_name: 'itis_scientific_name',
           observation_date: '2023-02-02',
           observation_time: '13:00:00',
-          survey_sample_method_name: 'METHOD_NAME',
+          method_technique_name: 'TECHNIQUE_NAME',
           survey_sample_period_start_datetime: '2000-01-01 00:00:00',
           survey_sample_site_name: 'SITE_NAME',
-          survey_sample_site_id: 1,
-          method_technique_id: 1,
           survey_sample_period_id: 1,
           subcounts: []
         }
@@ -94,7 +90,7 @@ describe('ObservationService', () => {
         .stub(SubCountService.prototype, 'getEnvironmentTypeDefinitionsForSurvey')
         .resolves({ qualitative_environments: [], quantitative_environments: [] });
 
-      const getSampleLocationsForSurveyIdStub = sinon
+      const getSampleSitesForSurveyIdStub = sinon
         .stub(SampleSiteService.prototype, 'getSampleSitesForSurveyId')
         .resolves([]);
 
@@ -110,7 +106,7 @@ describe('ObservationService', () => {
       expect(getSurveyObservationCountStub).to.be.calledOnceWith(surveyId);
       expect(getMeasurementTypeDefinitionsForSurveyStub).to.be.calledOnceWith(surveyId);
       expect(getEnvironmentTypeDefinitionsForSurveyStub).to.be.calledOnceWith(surveyId);
-      expect(getSampleLocationsForSurveyIdStub).to.be.calledOnceWith(surveyId);
+      expect(getSampleSitesForSurveyIdStub).to.be.calledOnceWith(surveyId);
       expect(response).to.eql({
         surveyObservations: [
           {

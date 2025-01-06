@@ -22,7 +22,7 @@ describe('deleteSamplePeriods', () => {
       commit: sinon.stub()
     });
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
-    sinon.stub(SamplePeriodService.prototype, 'deleteSamplePeriodRecords').resolves();
+    sinon.stub(SamplePeriodService.prototype, 'deleteSamplePeriods').resolves();
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
     mockReq.params = {
@@ -55,7 +55,7 @@ describe('deleteSamplePeriods', () => {
 
     const mockError = new Error('Database error');
 
-    sinon.stub(SamplePeriodService.prototype, 'deleteSamplePeriodRecords').rejects(mockError);
+    sinon.stub(SamplePeriodService.prototype, 'deleteSamplePeriods').rejects(mockError);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 

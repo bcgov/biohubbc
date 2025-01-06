@@ -27,12 +27,12 @@ export interface IEditSampleSiteRequest {
   };
 }
 
-export interface IGetSampleLocationNonSpatialResponse {
-  sampleSites: IGetSampleLocationNonSpatialDetails[];
+export interface IGetSampleSiteRecordExtendedNonSpatialResponse {
+  sampleSites: IGetSampleSiteRecordExtendedNonSpatial[];
   pagination: ApiPaginationResponseParams;
 }
 
-export interface IGetSampleLocationNonSpatialDetails {
+export interface IGetSampleSiteRecordExtendedNonSpatial {
   survey_sample_site_id: number;
   survey_id: number;
   name: string;
@@ -40,19 +40,6 @@ export interface IGetSampleLocationNonSpatialDetails {
   geometry_type: string;
   blocks: IGetSampleBlockDetails[];
   stratums: IGetSampleStratumDetails[];
-}
-
-export interface IGetSampleLocationRecord {
-  survey_sample_site_id: number;
-  survey_id: number;
-  name: string;
-  description: string;
-  geojson: Feature;
-  create_date: string;
-  create_user: number;
-  update_date: string | null;
-  update_user: number | null;
-  revision_count: number;
 }
 
 export interface IGetSampleSiteGeometryResponse {
@@ -91,18 +78,8 @@ export interface IGetSampleSiteGeometry {
   geojson: Feature;
 }
 
-export interface IGetSampleLocationDetails {
+export interface IGetSampleSiteDetails {
   survey_sample_site_id: number;
-  survey_id: number;
-  name: string;
-  description: string;
-  geojson: Feature;
-  blocks: IGetSampleBlockDetails[];
-  stratums: IGetSampleStratumDetails[];
-}
-
-export interface IGetSampleLocationDetailsForUpdate {
-  survey_sample_site_id: number | null;
   survey_id: number;
   name: string;
   description: string;
@@ -115,11 +92,6 @@ export interface IGetSampleBlockDetails {
   survey_sample_block_id: number;
   survey_sample_site_id: number | null;
   survey_block_id: number;
-  //   create_date: string;
-  //   create_user: number;
-  //   update_date: string | null;
-  //   update_user: number | null;
-  //   revision_count: number;
   name: string;
   description: string;
 }
@@ -128,11 +100,6 @@ export interface IGetSampleStratumDetails {
   survey_sample_stratum_id: number;
   survey_sample_site_id: number;
   survey_stratum_id: number;
-  //   create_date: string;
-  //   create_user: number;
-  //   update_date: string | null;
-  //   update_user: number | null;
-  //   revision_count: number;
   name: string;
   description: string;
 }

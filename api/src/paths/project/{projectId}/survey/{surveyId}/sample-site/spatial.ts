@@ -127,7 +127,7 @@ export function getSurveySampleSitesGeometry(): RequestHandler {
 
       const sampleSiteService = new SampleSiteService(connection);
 
-      const sampleSiteData = await sampleSiteService.getSampleLocationsGeometryBySurveyId(surveyId);
+      const sampleSiteData = await sampleSiteService.getSampleSitesGeometryBySurveyId(surveyId);
 
       await connection.commit();
 

@@ -12,14 +12,14 @@ import { ApiExecuteSQLError } from './../../errors/api-error';
 import { generateGeometryCollectionSQL } from './../../utils/spatial-utils';
 import { ApiPaginationOptions } from './../../zod-schema/pagination';
 import { BaseRepository } from './../base-repository';
-import { SampleBlockRecord, UpdateSampleBlockRecord } from './../sample-blocks-repository';
-import { SampleStratumRecord, UpdateSampleStratumRecord } from './../sample-stratums-repository';
-import { getSamplingLocationBaseQuery, makeFindSamplingSiteBaseQuery } from './utils';
+import { SampleBlockRecord } from './../sample-blocks-repository';
+import { SampleStratumRecord } from './../sample-stratums-repository';
+import { getSampleSiteBaseQuery, makeFindSamplingSiteBaseQuery } from './utils';
 
 /**
  * A sample site without spatial data. Includes any associated survey blocks and survey stratums.
  */
-export const SampleLocationNonSpatialRecord = z.object({
+export const SampleSiteRecordExtendedNonSpatial = z.object({
   survey_sample_site_id: z.number(),
   survey_id: z.number(),
   name: z.string(),
@@ -46,16 +46,15 @@ export const SampleLocationNonSpatialRecord = z.object({
     })
   )
 });
-export type SampleLocationNonSpatialRecord = z.infer<typeof SampleLocationNonSpatialRecord>;
+export type SampleSiteRecordExtendedNonSpatial = z.infer<typeof SampleSiteRecordExtendedNonSpatial>;
 
 /**
- * An aggregate record that includes a single sample site, its location, all of its child sample methods, and for each child sample
- * method, all of its child sample periods. Also includes any survey blocks or survey stratums that this site belongs to.
+ * An aggregate record that includes a single sample site, and its associated survey blocks and survey stratums.
  */
-export const SampleLocationRecord = SampleLocationNonSpatialRecord.omit({ geometry_type: true }).extend({
+export const SampleSiteRecordExtended = SampleSiteRecordExtendedNonSpatial.omit({ geometry_type: true }).extend({
   geojson: z.any()
 });
-export type SampleLocationRecord = z.infer<typeof SampleLocationRecord>;
+export type SampleSiteRecordExtended = z.infer<typeof SampleSiteRecordExtended>;
 
 /**
  * A survey_sample_site geometry
@@ -115,27 +114,15 @@ export const FindSampleSiteRecord = SurveySampleSiteRecord.pick({
 export type FindSampleSiteRecord = z.infer<typeof FindSampleSiteRecord>;
 
 /**
- * Update object for a sample site record, including all associated methods and periods.
- */
-export type UpdateSampleLocationRecord = {
-  survey_sample_site_id: number;
-  name: string;
-  description: string;
-  geojson: Feature;
-  blocks: UpdateSampleBlockRecord[];
-  stratums: UpdateSampleStratumRecord[];
-};
-
-/**
- * Sample Location Repository
+ * Sample Site Repository
  *
  * @export
- * @class SampleLocationRepository
+ * @class SampleSiteRepository
  * @extends {BaseRepository}
  */
-export class SampleLocationRepository extends BaseRepository {
+export class SampleSiteRepository extends BaseRepository {
   /**
-   * Gets a paginated set of Sample Locations for the given survey for a given Survey
+   * Gets a paginated set of Sample sites for the given survey for a given Survey
    *
    * @param {number} surveyId
    * @param {{
@@ -143,8 +130,8 @@ export class SampleLocationRepository extends BaseRepository {
    *       sampleSiteIds?: number[];
    *       pagination?: ApiPaginationOptions;
    *     }} [options]
-   * @return {*}  {Promise<SampleLocationNonSpatialRecord[]>}
-   * @memberof SampleLocationRepository
+   * @return {*}  {Promise<SampleSiteRecordExtendedNonSpatial[]>}
+   * @memberof SampleSiteRepository
    */
   async getSampleSitesForSurveyId(
     surveyId: number,
@@ -153,7 +140,7 @@ export class SampleLocationRepository extends BaseRepository {
       sampleSiteIds?: number[];
       pagination?: ApiPaginationOptions;
     }
-  ): Promise<SampleLocationNonSpatialRecord[]> {
+  ): Promise<SampleSiteRecordExtendedNonSpatial[]> {
     const { keyword, sampleSiteIds, pagination } = options || {};
 
     const knex = getKnex();
@@ -230,19 +217,19 @@ export class SampleLocationRepository extends BaseRepository {
       }
     }
 
-    const response = await this.connection.knex(queryBuilder, SampleLocationNonSpatialRecord);
+    const response = await this.connection.knex(queryBuilder, SampleSiteRecordExtendedNonSpatial);
 
     return response.rows;
   }
 
   /**
-   * Returns the total count of sample locations belonging to the given survey.
+   * Returns the total count of sample sites belonging to the given survey.
    *
    * @param {number} surveyId
    * @return {*}  {Promise<number>}
-   * @memberof SampleLocationRepository
+   * @memberof SampleSiteRepository
    */
-  async getSampleLocationsCountBySurveyId(surveyId: number): Promise<number> {
+  async getSampleSitesCountBySurveyId(surveyId: number): Promise<number> {
     const sqlStatement = SQL`
       SELECT
         COUNT(*)::integer AS count
@@ -256,7 +243,7 @@ export class SampleLocationRepository extends BaseRepository {
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to get sample site count', [
-        'SampleLocationRepository->getSampleLocationsCountBySurveyId',
+        'SampleSiteRepository->getSampleSitesCountBySurveyId',
         'rows was null or undefined, expected rows != null'
       ]);
     }
@@ -265,56 +252,24 @@ export class SampleLocationRepository extends BaseRepository {
   }
 
   /**
-   * Gets a sample site record by sample site ID.
+   * Gets a sample site by sample site ID, including methods and periods
    *
    * @param {number} surveyId
    * @param {number} surveySampleSiteId
-   * @return {*}  {Promise<SurveySampleSiteModel>}
+   * @return {*}  {Promise<SampleSiteRecordExtended>}
    * @memberof SampleSiteService
    */
-  async getSurveySampleSiteById(surveyId: number, surveySampleSiteId: number): Promise<SurveySampleSiteModel> {
-    const sqlStatement = SQL`
-      SELECT
-        sss.*
-      FROM
-        survey_sample_site as sss
-      WHERE
-        sss.survey_id = ${surveyId}
-      AND
-        sss.survey_sample_site_id = ${surveySampleSiteId}
-    `;
-
-    const response = await this.connection.sql(sqlStatement, SurveySampleSiteModel);
-
-    if (!response.rowCount) {
-      throw new ApiExecuteSQLError('Failed to get sample site by ID', [
-        'SampleLocationRepository->getSurveySampleSiteById',
-        'rowCount was < 1, expected rowCount > 0'
-      ]);
-    }
-
-    return response.rows[0];
-  }
-
-  /**
-   * Gets a sample location by sample site ID, including methods and periods
-   *
-   * @param {number} surveyId
-   * @param {number} surveySampleSiteId
-   * @return {*}  {Promise<SampleLocationRecord>}
-   * @memberof SampleSiteService
-   */
-  async getSurveySampleLocationBySiteId(surveyId: number, surveySampleSiteId: number): Promise<SampleLocationRecord> {
+  async getSurveySampleSiteBySiteId(surveyId: number, surveySampleSiteId: number): Promise<SampleSiteRecordExtended> {
     const knex = getKnex();
-    const queryBuilder = getSamplingLocationBaseQuery(knex)
+    const queryBuilder = getSampleSiteBaseQuery(knex)
       .where('sss.survey_id', surveyId)
       .where('sss.survey_sample_site_id', surveySampleSiteId);
 
-    const response = await this.connection.knex(queryBuilder, SampleLocationRecord);
+    const response = await this.connection.knex(queryBuilder, SampleSiteRecordExtended);
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to get sample site by ID', [
-        'SampleLocationRepository->getSurveySampleLocationBySiteId',
+        'SampleSiteRepository->getSurveySampleSiteBySiteId',
         'rowCount was < 1, expected rowCount > 0'
       ]);
     }
@@ -327,9 +282,9 @@ export class SampleLocationRepository extends BaseRepository {
    *
    * @param {number} surveyId
    * @return {*}  {Promise<SampleSiteGeometryRecord[]>}
-   * @memberof SampleLocationRepository
+   * @memberof SampleSiteRepository
    */
-  async getSampleLocationsGeometryBySurveyId(surveyId: number): Promise<SampleSiteGeometryRecord[]> {
+  async getSampleSitesGeometryBySurveyId(surveyId: number): Promise<SampleSiteGeometryRecord[]> {
     const sqlStatement = SQL`
       SELECT 
         survey_sample_site_id,
@@ -353,7 +308,7 @@ export class SampleLocationRepository extends BaseRepository {
    * @param {ISiteAdvancedFilters} filterFields The filter fields to apply.
    * @param {ApiPaginationOptions} [pagination] The pagination options.
    * @return {*}  {Promise<FindSampleSiteRecord[]>}
-   * @memberof SampleLocationRepository
+   * @memberof SampleSiteRepository
    */
   async findSites(
     isUserAdmin: boolean,
@@ -383,7 +338,7 @@ export class SampleLocationRepository extends BaseRepository {
    * @param {number | null} systemUserId The user's ID.
    * @param {ISiteAdvancedFilters} filterFields The filter fields to apply.
    * @return {*}  {Promise<number>}
-   * @memberof SampleLocationRepository
+   * @memberof SampleSiteRepository
    */
   async findSitesCount(
     isUserAdmin: boolean,
@@ -407,7 +362,7 @@ export class SampleLocationRepository extends BaseRepository {
    * @param {number} surveyId
    * @param {UpdateSampleSiteRecord} sample
    * @return {*}  {Promise<SurveySampleSiteModel>}
-   * @memberof SampleLocationRepository
+   * @memberof SampleSiteRepository
    */
   async updateSampleSite(surveyId: number, sample: UpdateSampleSiteRecord): Promise<SurveySampleSiteModel> {
     const sql = SQL`
@@ -434,8 +389,8 @@ export class SampleLocationRepository extends BaseRepository {
     const response = await this.connection.sql(sql, SurveySampleSiteModel);
 
     if (!response.rowCount) {
-      throw new ApiExecuteSQLError('Failed to update sample location record', [
-        'SampleLocationRepository->updateSampleSite',
+      throw new ApiExecuteSQLError('Failed to update sample site record', [
+        'SampleSiteRepository->updateSampleSite',
         'rows was null or undefined, expected rows != null'
       ]);
     }
@@ -452,7 +407,7 @@ export class SampleLocationRepository extends BaseRepository {
    * @param {number} surveyId
    * @param {InsertSampleSiteRecord} sampleSite
    * @return {*}  {Promise<SurveySampleSiteModel>}
-   * @memberof SampleLocationRepository
+   * @memberof SampleSiteRepository
    */
   async insertSampleSite(surveyId: number, sampleSite: InsertSampleSiteRecord): Promise<SurveySampleSiteModel> {
     const sqlStatement = SQL`
@@ -491,8 +446,8 @@ export class SampleLocationRepository extends BaseRepository {
     const response = await this.connection.sql(sqlStatement, SurveySampleSiteModel);
 
     if (!response.rowCount) {
-      throw new ApiExecuteSQLError('Failed to insert sample location', [
-        'SampleLocationRepository->insertSampleSite',
+      throw new ApiExecuteSQLError('Failed to insert sample site', [
+        'SampleSiteRepository->insertSampleSite',
         'rows was null or undefined, expected rows != null'
       ]);
     }
@@ -506,7 +461,7 @@ export class SampleLocationRepository extends BaseRepository {
    * @param {number} surveyId
    * @param {number} surveySampleSiteId
    * @return {*}  {Promise<SurveySampleSiteModel>}
-   * @memberof SampleLocationRepository
+   * @memberof SampleSiteRepository
    */
   async deleteSampleSiteRecord(surveyId: number, surveySampleSiteId: number): Promise<SurveySampleSiteModel> {
     const sqlStatement = SQL`
@@ -524,7 +479,7 @@ export class SampleLocationRepository extends BaseRepository {
 
     if (!response?.rowCount) {
       throw new ApiExecuteSQLError('Failed to delete survey sample site record', [
-        'SampleLocationRepository->deleteSampleSiteRecord',
+        'SampleSiteRepository->deleteSampleSiteRecord',
         'rows was null or undefined, expected rows != null'
       ]);
     }

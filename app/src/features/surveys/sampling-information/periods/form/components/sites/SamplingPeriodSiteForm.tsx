@@ -5,10 +5,10 @@ import { useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
 import { CreateSamplingPeriod } from 'interfaces/useSamplingPeriodApi.interface';
-import { IGetSampleLocationNonSpatialDetails } from 'interfaces/useSamplingSiteApi.interface';
+import { IGetSampleSiteRecordExtendedNonSpatial } from 'interfaces/useSamplingSiteApi.interface';
 import { useCallback, useState } from 'react';
 
-export type ISelectedSampleSiteData = Pick<IGetSampleLocationNonSpatialDetails, 'survey_sample_site_id' | 'name'>;
+export type ISelectedSampleSiteData = Pick<IGetSampleSiteRecordExtendedNonSpatial, 'survey_sample_site_id' | 'name'>;
 
 export interface ISamplingPeriodSiteFormProps {
   /**

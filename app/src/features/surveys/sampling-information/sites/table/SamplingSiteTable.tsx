@@ -12,7 +12,7 @@ import { GridColDef, GridPaginationModel, GridRowSelectionModel, GridSortModel }
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { useDialogContext, useSurveyContext } from 'hooks/useContext';
-import { IGetSampleLocationNonSpatialDetails } from 'interfaces/useSamplingSiteApi.interface';
+import { IGetSampleSiteRecordExtendedNonSpatial } from 'interfaces/useSamplingSiteApi.interface';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { getSamplingSiteSpatialType } from 'utils/spatial-utils';
@@ -27,7 +27,7 @@ export interface ISamplingSiteRowData {
 }
 
 interface ISamplingSiteTableProps {
-  sites: IGetSampleLocationNonSpatialDetails[];
+  sites: IGetSampleSiteRecordExtendedNonSpatial[];
   selectedRows: GridRowSelectionModel;
   setSelectedRows: (selection: GridRowSelectionModel) => void;
   paginationModel: GridPaginationModel;

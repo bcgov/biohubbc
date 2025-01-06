@@ -40,7 +40,7 @@ describe('getSurveySampleSitesForSurvey', () => {
     }
   });
 
-  it('should return sampleLocations on success', async () => {
+  it('should return sample sites on success', async () => {
     const dbConnectionObj = getMockDBConnection();
 
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
@@ -51,32 +51,26 @@ describe('getSurveySampleSitesForSurvey', () => {
       surveyId: '1'
     };
 
-    const sampleLocation = {
+    const sampleSite = {
       survey_sample_site_id: 1,
       survey_id: 1,
       name: 'name',
       description: 'description',
       geojson: 'geojson',
-      geography: 'geography',
-      create_date: 'create_date',
-      create_user: 1,
-      update_date: 'update_date',
-      update_user: 2,
-      revision_count: 1,
-      sample_methods: [],
+      geometry_type: 'Point',
       blocks: [],
       stratums: []
     };
 
-    sinon.stub(SampleSiteService.prototype, 'getSampleLocationsCountBySurveyId').resolves(1);
-    sinon.stub(SampleSiteService.prototype, 'getSampleSitesForSurveyId').resolves([sampleLocation]);
+    sinon.stub(SampleSiteService.prototype, 'getSampleSitesCountBySurveyId').resolves(1);
+    sinon.stub(SampleSiteService.prototype, 'getSampleSitesForSurveyId').resolves([sampleSite]);
 
     const requestHandler = get_survey_sample_site_record.getSurveySampleSitesForSurvey();
 
     await requestHandler(mockReq, mockRes, mockNext);
 
     expect(mockRes.jsonValue).to.eql({
-      sampleSites: [sampleLocation],
+      sampleSites: [sampleSite],
       pagination: {
         current_page: 1,
         last_page: 1,
@@ -99,7 +93,7 @@ describe('createSurveySampleSiteRecord', () => {
   it('should work', async () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-    const insertSurveyParticipantStub = sinon.stub(SampleSiteService.prototype, 'insertSampleLocations').resolves();
+    const insertSurveyParticipantStub = sinon.stub(SampleSiteService.prototype, 'createSampleSite').resolves();
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 

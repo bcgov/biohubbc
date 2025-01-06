@@ -31,11 +31,9 @@ describe('findObservations', () => {
         itis_scientific_name: 'itis_scientific_name',
         observation_date: '2023-01-01',
         observation_time: '12:00:00',
-        survey_sample_method_name: 'METHOD_NAME',
+        method_technique_name: 'TECHNIQUE_NAME',
         survey_sample_period_start_datetime: '2000-01-01 00:00:00',
         survey_sample_site_name: 'SITE_NAME',
-        survey_sample_site_id: 1,
-        survey_sample_method_id: 1,
         survey_sample_period_id: 1,
         subcounts: [
           {
@@ -124,11 +122,9 @@ describe('findObservations', () => {
         itis_scientific_name: 'itis_scientific_name',
         observation_date: '2023-01-01',
         observation_time: '12:00:00',
-        survey_sample_method_name: 'METHOD_NAME',
+        method_technique_name: 'TECHNIQUE_NAME',
         survey_sample_period_start_datetime: '2000-01-01 00:00:00',
         survey_sample_site_name: 'SITE_NAME',
-        survey_sample_site_id: 1,
-        survey_sample_method_id: 1,
         survey_sample_period_id: 1,
         subcounts: [
           {

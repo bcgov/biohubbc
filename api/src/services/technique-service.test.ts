@@ -30,6 +30,7 @@ describe('TechniqueService', () => {
         name: 'name',
         description: 'desc',
         distance_threshold: 200,
+        method_response_metric_id: 3,
         attractants: [],
         attributes: {
           qualitative_attributes: [],
@@ -61,6 +62,7 @@ describe('TechniqueService', () => {
         name: 'name',
         description: 'desc',
         distance_threshold: 200,
+        method_response_metric_id: 3,
         attractants: [],
         attributes: {
           qualitative_attributes: [],
@@ -131,6 +133,7 @@ describe('TechniqueService', () => {
           description: 'desc',
           distance_threshold: 200,
           method_lookup_id: 2,
+          method_response_metric_id: 3,
           attractants: [
             {
               attractant_lookup_id: 111
@@ -166,7 +169,8 @@ describe('TechniqueService', () => {
         name: 'name',
         description: 'desc',
         distance_threshold: 200,
-        method_lookup_id: 2
+        method_lookup_id: 2,
+        method_response_metric_id: 3
       });
       expect(insertTechniqueAttractantsStub).to.have.been.calledOnceWith(surveyId, 11, techniques[0].attractants);
       expect(insertQualitativeAttributesForTechniqueStub).to.have.been.calledOnceWith(
@@ -205,7 +209,8 @@ describe('TechniqueService', () => {
         name: 'name',
         description: 'desc',
         distance_threshold: 200,
-        method_lookup_id: 2
+        method_lookup_id: 2,
+        method_response_metric_id: 3
       };
 
       const response = await service.updateTechnique(surveyId, techniqueObject);

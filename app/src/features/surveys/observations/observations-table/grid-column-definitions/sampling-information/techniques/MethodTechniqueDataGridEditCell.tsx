@@ -60,7 +60,7 @@ export const MethodTechniqueDataGridEditCell = <DataGridType extends GridValidRo
 
   /**
    * Debounced function to get the options for the autocomplete, based on the search term.
-   * Includes the cached sample locations in the resulting options array.
+   * Includes the cached method techniques in the resulting options array.
    */
   const getOptions = useMemo(
     () =>

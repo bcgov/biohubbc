@@ -53,7 +53,7 @@ describe('deleteSurveySampleSiteRecords', () => {
       .stub(ObservationService.prototype, 'getObservationsCountBySampleSiteIds')
       .resolves(0);
 
-    const deleteSampleLocationRecordStub = sinon.stub(SampleSiteService.prototype, 'deleteSampleSiteRecord').resolves();
+    const deleteSampleSiteRecordStub = sinon.stub(SampleSiteService.prototype, 'deleteSampleSiteRecord').resolves();
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -71,7 +71,7 @@ describe('deleteSurveySampleSiteRecords', () => {
     await requestHandler(mockReq, mockRes, mockNext);
 
     expect(mockRes.status).to.have.been.calledWith(204);
-    expect(deleteSampleLocationRecordStub).to.have.been.calledThrice;
+    expect(deleteSampleSiteRecordStub).to.have.been.calledThrice;
     expect(getObservationsCountBySampleSiteIdStub).to.have.been.calledOnce;
   });
 });

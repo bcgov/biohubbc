@@ -69,19 +69,19 @@ const ObservationsTableContainer = () => {
     [codesContext.codesDataLoader.data?.observation_subcount_signs]
   );
 
-  const sampleLocationsCache = useSamplingInformationCache();
+  const samplingInformationCache = useSamplingInformationCache();
 
   useEffect(() => {
     if (!observationsContext.observationsDataLoader.data?.supplementaryObservationData.sampling_data?.length) {
       return;
     }
 
-    sampleLocationsCache.initCachedSamplingInformationRef({
+    samplingInformationCache.initCachedSamplingInformationRef({
       periods: observationsContext.observationsDataLoader.data.supplementaryObservationData.sampling_data
     });
   }, [
     observationsContext.observationsDataLoader.data?.supplementaryObservationData.sampling_data,
-    sampleLocationsCache
+    samplingInformationCache
   ]);
 
   // The column definitions of the columns to render in the observations table
@@ -91,20 +91,20 @@ const ObservationsTableContainer = () => {
         // Add standard observation columns to the table
         TaxonomyColDef({ hasError: observationsTableContext.hasError }),
         SampleSiteColDef({
-          samplingInformationCache: sampleLocationsCache,
+          samplingInformationCache: samplingInformationCache,
           hasError: observationsTableContext.hasError
         }),
         MethodTechniqueColDef({
-          samplingInformationCache: sampleLocationsCache,
+          samplingInformationCache: samplingInformationCache,
           hasError: observationsTableContext.hasError
         }),
         SamplePeriodColDef({
-          samplingInformationCache: sampleLocationsCache,
+          samplingInformationCache: samplingInformationCache,
           hasError: observationsTableContext.hasError
         }),
         ObservationSubcountSignColDef({ observationSubcountSignOptions, hasError: observationsTableContext.hasError }),
         ObservationCountColDef({
-          samplingInformationCache: sampleLocationsCache,
+          samplingInformationCache: samplingInformationCache,
           hasError: observationsTableContext.hasError
         }),
         GenericDateColDef({

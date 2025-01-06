@@ -63,7 +63,7 @@ export const SamplePeriodDataGridEditCell = <DataGridType extends GridValidRowMo
 
   /**
    * Debounced function to get the options for the autocomplete, based on the search term.
-   * Includes the cached sample locations in the resulting options array.
+   * Includes the cached sample periods in the resulting options array.
    */
   const getOptions = useMemo(
     () =>

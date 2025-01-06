@@ -3,12 +3,12 @@ import { getKnex } from '../../database/db';
 import { ISiteAdvancedFilters } from '../../models/site-view';
 
 /**
- * Get the base query for retrieving survey sample locations
+ * Get the base query for retrieving survey sample sites.
  *
  * @param {Knex} knex The Knex instance.
- * @return {*}  {Knex.QueryBuilder} The base query for retrieving survey sample locations
+ * @return {*}  {Knex.QueryBuilder} The base query for retrieving survey sample sites.
  */
-export function getSamplingLocationBaseQuery(knex: Knex): Knex.QueryBuilder {
+export function getSampleSiteBaseQuery(knex: Knex): Knex.QueryBuilder {
   return (
     knex
       .queryBuilder()

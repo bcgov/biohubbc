@@ -118,7 +118,7 @@ export function deleteSurveySampleSiteRecords(): RequestHandler {
       await connection.open();
 
       const observationService = new ObservationService(connection);
-      const sampleLocationService = new SampleSiteService(connection);
+      const sampleSiteService = new SampleSiteService(connection);
 
       const observationCount = await observationService.getObservationsCountBySampleSiteIds(
         surveyId,
@@ -130,7 +130,7 @@ export function deleteSurveySampleSiteRecords(): RequestHandler {
       }
 
       for (const surveySampleSiteId of surveySampleSiteIds) {
-        await sampleLocationService.deleteSampleSiteRecord(surveyId, surveySampleSiteId);
+        await sampleSiteService.deleteSampleSiteRecord(surveyId, surveySampleSiteId);
       }
 
       await connection.commit();

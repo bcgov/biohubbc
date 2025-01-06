@@ -188,7 +188,7 @@ export class SamplePeriodRepository extends BaseRepository {
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to get sample period by ID', [
-        'SampleLocationRepository->getSamplePeriodById',
+        'SampleSiteRepository->getSamplePeriodById',
         'rowCount was < 1, expected rowCount > 0'
       ]);
     }

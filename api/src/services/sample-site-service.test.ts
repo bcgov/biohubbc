@@ -3,11 +3,11 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { UpdateSampleBlockRecord } from '../repositories/sample-blocks-repository';
-import { SampleLocationRepository } from '../repositories/sample-site-repository';
+import { SampleSiteRepository } from '../repositories/sample-site-repository/sample-site-repository';
 import { UpdateSampleStratumRecord } from '../repositories/sample-stratums-repository';
 import { getMockDBConnection } from '../__mocks__/db';
 import { SampleBlockService } from './sample-block-service';
-import { PostSampleLocations, SampleSiteService } from './sample-site-service';
+import { CreateSampleSiteObject, SampleSiteService } from './sample-site-service';
 import { SampleStratumService } from './sample-stratum-service';
 
 chai.use(sinonChai);
@@ -17,11 +17,11 @@ describe('SampleSiteService', () => {
     sinon.restore();
   });
 
-  describe('insertSampleLocations', () => {
+  describe('createSampleSite', () => {
     it('should run without issue', async () => {
       const mockDBConnection = getMockDBConnection();
       const service = new SampleSiteService(mockDBConnection);
-      const mockData: PostSampleLocations = {
+      const mockData: CreateSampleSiteObject = {
         survey_sample_site_id: null,
         survey_id: 1,
         survey_sample_sites: [
@@ -60,7 +60,7 @@ describe('SampleSiteService', () => {
         ]
       };
 
-      const insertSample = sinon.stub(SampleLocationRepository.prototype, 'insertSampleSite').resolves({
+      const insertSample = sinon.stub(SampleSiteRepository.prototype, 'insertSampleSite').resolves({
         survey_sample_site_id: 1,
         survey_id: 1,
         name: 'Sample Site 1',
@@ -75,7 +75,7 @@ describe('SampleSiteService', () => {
         revision_count: 0
       });
 
-      await service.insertSampleLocations(mockData);
+      await service.createSampleSite(mockData);
 
       expect(insertSample).to.be.called;
     });
@@ -86,7 +86,7 @@ describe('SampleSiteService', () => {
       const mockDBConnection = getMockDBConnection();
       const service = new SampleSiteService(mockDBConnection);
 
-      sinon.stub(SampleLocationRepository.prototype, 'getSampleSitesForSurveyId').resolves([
+      sinon.stub(SampleSiteRepository.prototype, 'getSampleSitesForSurveyId').resolves([
         {
           survey_sample_site_id: 1,
           survey_id: 1,
@@ -94,7 +94,6 @@ describe('SampleSiteService', () => {
           description: '',
           geometry_type: 'Point',
           blocks: [],
-          sample_methods: [],
           stratums: []
         }
       ]);
@@ -108,31 +107,31 @@ describe('SampleSiteService', () => {
     });
   });
 
-  describe('getSampleLocationsCountBySurveyId', () => {
+  describe('getSampleSitesCountBySurveyId', () => {
     it('should return the sample site count successfully', async () => {
       const dbConnectionObj = getMockDBConnection();
 
-      const repoStub = sinon.stub(SampleLocationRepository.prototype, 'getSampleLocationsCountBySurveyId').resolves(20);
+      const repoStub = sinon.stub(SampleSiteRepository.prototype, 'getSampleSitesCountBySurveyId').resolves(20);
       const surveyService = new SampleSiteService(dbConnectionObj);
-      const response = await surveyService.getSampleLocationsCountBySurveyId(1001);
+      const response = await surveyService.getSampleSitesCountBySurveyId(1001);
 
       expect(repoStub).to.be.calledOnceWith(1001);
       expect(response).to.equal(20);
     });
   });
 
-  describe('getSampleLocationsGeometryBySurveyId', () => {
+  describe('getSampleSitesGeometryBySurveyId', () => {
     it('should return the sample site geometries successfully', async () => {
       const dbConnectionObj = getMockDBConnection();
 
       const mockRows = [{ survey_sample_site_id: 1, geojson: {} }];
 
       const repoStub = sinon
-        .stub(SampleLocationRepository.prototype, 'getSampleLocationsGeometryBySurveyId')
+        .stub(SampleSiteRepository.prototype, 'getSampleSitesGeometryBySurveyId')
         .resolves(mockRows);
 
-      const sampleLocationService = new SampleSiteService(dbConnectionObj);
-      const response = await sampleLocationService.getSampleLocationsGeometryBySurveyId(1001);
+      const sampleSiteService = new SampleSiteService(dbConnectionObj);
+      const response = await sampleSiteService.getSampleSitesGeometryBySurveyId(1001);
 
       expect(repoStub).to.be.calledOnceWith(1001);
       expect(response).to.eql(mockRows);
@@ -166,7 +165,7 @@ describe('SampleSiteService', () => {
       const mockSurveyId = 1;
 
       // Site
-      sinon.stub(SampleLocationRepository.prototype, 'deleteSampleSiteRecord').resolves({
+      sinon.stub(SampleSiteRepository.prototype, 'deleteSampleSiteRecord').resolves({
         survey_sample_site_id: mockSurveySampleSiteId,
         survey_id: mockSurveyId,
         name: 'Sample Site 1',
@@ -193,24 +192,14 @@ describe('SampleSiteService', () => {
     });
   });
 
-  describe('updateSampleLocationMethodPeriod', () => {
-    it('should successfully update smaple location method and period', async () => {
+  describe('updateSampleSite', () => {
+    it('should successfully update sample site blocks and stratums', async () => {
       const mockDBConnection = getMockDBConnection();
       const service = new SampleSiteService(mockDBConnection);
 
       const mockSurveyId = 1;
       const survey_sample_site_id = 1;
 
-      const methods = [
-        {
-          survey_sample_method_id: 2,
-          method_technique_id: 3,
-          method_response_metric_id: 1,
-          description: 'Cool method',
-          sample_periods: []
-        } as any,
-        { method_technique_id: 4, method_response_metric_id: 1, description: 'Cool method', sample_periods: [] } as any
-      ];
       const blocks = [
         {
           survey_sample_block_id: 2,
@@ -244,20 +233,7 @@ describe('SampleSiteService', () => {
         } as UpdateSampleStratumRecord
       ];
 
-      const updateSampleLocationStub = sinon.stub(SampleLocationRepository.prototype, 'updateSampleSite').resolves({
-        survey_sample_site_id: survey_sample_site_id,
-        survey_id: 1,
-        name: 'Cool new site',
-        description: 'Check out this description',
-        geometry: null,
-        geography: '',
-        geojson: [],
-        create_date: '',
-        create_user: 1,
-        update_date: '',
-        update_user: 1,
-        revision_count: 0
-      });
+      const updateSampleSiteStub = sinon.stub(SampleSiteRepository.prototype, 'updateSampleSite').resolves();
       const insertSampleBlockStub = sinon.stub(SampleBlockService.prototype, 'insertSampleBlock').resolves();
       const insertSampleStratumStub = sinon.stub(SampleStratumService.prototype, 'insertSampleStratum').resolves();
       const deleteSampleBlocksNotInArrayStub = sinon
@@ -267,7 +243,7 @@ describe('SampleSiteService', () => {
         .stub(SampleStratumService.prototype, 'deleteSampleStratumsNotInArray')
         .resolves();
 
-      await service.updateSampleLocationMethodPeriod(mockSurveyId, {
+      await service.updateSampleSite(mockSurveyId, {
         survey_sample_site_id: survey_sample_site_id,
         name: 'Cool new site',
         description: 'Check out this description',
@@ -276,13 +252,11 @@ describe('SampleSiteService', () => {
         stratums: stratums
       });
 
-      expect(updateSampleLocationStub).to.be.calledOnceWith({
+      expect(updateSampleSiteStub).to.be.calledOnceWith(mockSurveyId, {
         survey_sample_site_id: survey_sample_site_id,
-        survey_id: 1,
         name: 'Cool new site',
         description: 'Check out this description',
         geojson: { type: 'Feature', geometry: {}, properties: {} },
-        methods: methods,
         blocks: blocks,
         stratums: stratums
       });

@@ -29,6 +29,8 @@ export class SamplePeriodService extends DBService {
   /**
    * Insert survey Sample Periods.
    *
+   * TODO: Update to insert multiple periods in a single query.
+   *
    * @param {number} surveyId
    * @param {InsertSamplePeriodObject[]} periods
    * @return {*}  {Promise<void>}

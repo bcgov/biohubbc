@@ -161,7 +161,7 @@ describe('getSurveyObservations', () => {
           quantitative_measurements: [],
           qualitative_environments: [],
           quantitative_environments: [],
-          sample_sites: []
+          sampling_data: []
         }
       });
 
@@ -223,7 +223,7 @@ describe('getSurveyObservations', () => {
           quantitative_measurements: [],
           qualitative_environments: [],
           quantitative_environments: [],
-          sample_sites: []
+          sampling_data: []
         }
       });
 
@@ -252,7 +252,7 @@ describe('getSurveyObservations', () => {
         quantitative_measurements: [],
         qualitative_environments: [],
         quantitative_environments: [],
-        sample_sites: []
+        sampling_data: []
       },
       pagination: {
         total: 50,
@@ -283,7 +283,7 @@ describe('getSurveyObservations', () => {
           quantitative_measurements: [],
           qualitative_environments: [],
           quantitative_environments: [],
-          sample_sites: []
+          sampling_data: []
         }
       });
 

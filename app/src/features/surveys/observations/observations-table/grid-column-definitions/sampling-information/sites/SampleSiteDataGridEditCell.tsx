@@ -60,7 +60,7 @@ export const SampleSiteDataGridEditCell = <DataGridType extends GridValidRowMode
 
   /**
    * Debounced function to get the options for the autocomplete, based on the search term.
-   * Includes the cached sample locations in the resulting options array.
+   * Includes the cached sample sites in the resulting options array.
    */
   const getOptions = useMemo(
     () =>
