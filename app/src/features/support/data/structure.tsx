@@ -50,8 +50,11 @@ const structure = [
         <strong>Surveys</strong>
       </Typography>,
       <Typography variant="body1" gutterBottom>
-        Text
-      </Typography>
+       Surveys describe and house data for individual studies. A survey is the combination of the metadata describing the study, and the data that is loaded into it. The metadata defines the parameters through which the study was conducted and creates a shell to which the study data is loaded. The survey shell lays the foundation for the remaining topics in this support manual.  
+      </Typography>,
+      <Typography variant="body1" gutterBottom>
+        Creating a survey will prompt the user to submit metadata defining their project. Study data cannot be submitted until these metadata have been defined. These survey metadata can be edited at any time after creation. 
+      </Typography>       
     ],
     markdownType: EnumMarkdownTypes[SupportPageView.STRUCTURE]?.[2]
   },
