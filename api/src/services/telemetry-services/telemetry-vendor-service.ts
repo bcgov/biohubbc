@@ -1,3 +1,4 @@
+import { chunk } from 'lodash';
 import { TelemetryManualRecord } from '../../database-models/telemetry_manual';
 import { IDBConnection } from '../../database/db';
 import { ApiGeneralError } from '../../errors/api-error';
@@ -10,6 +11,7 @@ import {
   TelemetryOptions,
   TelemetrySpatial
 } from '../../repositories/telemetry-repositories/telemetry-vendor-repository.interface';
+import { taskQueue } from '../../utils/task-queue';
 import { ApiPaginationOptions } from '../../zod-schema/pagination';
 import { DBService } from '../db-service';
 import { TelemetryDeploymentService } from './telemetry-deployment-service';
@@ -233,5 +235,38 @@ export class TelemetryVendorService extends DBService {
     }
 
     return this.manualRepository.bulkDeleteManualTelemetry(telemetryManualIds);
+  }
+
+  /**
+   * Bulk create a telemetry in batches.
+   * Note: This is to prevent SQL maximum query size error.
+   *
+   * @async
+   * @param {number} surveyId - The survey ID
+   * @param {CreateManualTelemetry[]} telemetry - The telemetry to create
+   * @returns {*} {Promise<void>}
+   */
+  async bulkCreateTelemetryInBatches(surveyId: number, telemetry: CreateManualTelemetry[]): Promise<void> {
+    // Max telemetry records to insert in a single query
+    const TELEMETRY_BATCH_SIZE = 500;
+    // Max concurrent queries
+    const CONCURRENT_QUERIES = 10;
+
+    // Split the teletry into batches to prevent SQL cap error
+    const telemetryBatches = chunk(telemetry, TELEMETRY_BATCH_SIZE);
+
+    // Create the async task processor
+    const telemetryProcessor = async (telemetryBatch: CreateManualTelemetry[]): Promise<void> => {
+      return this.bulkCreateManualTelemetry(surveyId, telemetryBatch);
+    };
+
+    // Process the telemetry in batches
+    const queueResult = await taskQueue(telemetryBatches, telemetryProcessor, CONCURRENT_QUERIES);
+
+    // Check for any errors in the batch processing
+    const batchErrors = queueResult.filter((result) => result.error);
+    if (batchErrors.length) {
+      throw new ApiGeneralError('Failed to bulk create manual telemetry', [batchErrors.map((task) => task.error)]);
+    }
   }
 }

@@ -102,7 +102,7 @@ const useTelemetryApi = (axios: AxiosInstance) => {
    * Bulk create Manual Telemetry records.
    *
    * @param {number} projectId
-   * @param {number} surveyIdF
+   * @param {number} surveyId
    * @param {ICreateManualTelemetry[]} manualTelemetry Manual Telemetry create objects
    * @return {*}  {Promise<void>}
    */
@@ -114,8 +114,6 @@ const useTelemetryApi = (axios: AxiosInstance) => {
     await axios.post<void>(`/api/project/${projectId}/survey/${surveyId}/deployments/telemetry/manual`, {
       telemetry: manualTelemetry
     });
-
-    return;
   };
 
   /**
@@ -156,51 +154,30 @@ const useTelemetryApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Uploads a telemetry CSV for import.
+   * Imports a telemetry CSV.
    *
    * @param {number} projectId
    * @param {number} surveyId
    * @param {File} file
    * @param {CancelTokenSource} [cancelTokenSource]
    * @param {(progressEvent: AxiosProgressEvent) => void} [onProgress]
-   * @return {*}  {Promise<{ submission_id: number }>}
+   * @return {*} {Promise<void>}
    */
-  const uploadCsvForImport = async (
+  const importManualTelemetryCSV = async (
     projectId: number,
     surveyId: number,
     file: File,
     cancelTokenSource?: CancelTokenSource,
     onProgress?: (progressEvent: AxiosProgressEvent) => void
-  ): Promise<{ submission_id: number }> => {
+  ): Promise<void> => {
     const formData = new FormData();
 
     formData.append('media', file);
 
-    const { data } = await axios.post<{ submission_id: number }>(
-      `/api/project/${projectId}/survey/${surveyId}/telemetry/upload`,
-      formData,
-      {
-        cancelToken: cancelTokenSource?.token,
-        onUploadProgress: onProgress
-      }
-    );
-    return data;
-  };
-
-  /**
-   * Begins processing an uploaded telemetry CSV for import
-   *
-   * @TODO Update to use new API endpoints (bctw migration feature)
-   *
-   * @param {number} submissionId
-   * @return {*}
-   */
-  const processTelemetryCsvSubmission = async (submissionId: number) => {
-    const { data } = await axios.post('/api/telemetry/manual/process', {
-      submission_id: submissionId
+    await axios.post(`/api/project/${projectId}/survey/${surveyId}/telemetry/import`, formData, {
+      cancelToken: cancelTokenSource?.token,
+      onUploadProgress: onProgress
     });
-
-    return data;
   };
 
   /**
@@ -259,8 +236,7 @@ const useTelemetryApi = (axios: AxiosInstance) => {
     createManualTelemetry,
     updateManualTelemetry,
     deleteManualTelemetry,
-    uploadCsvForImport,
-    processTelemetryCsvSubmission,
+    importManualTelemetryCSV,
     uploadTelemetryDeviceCredentialFile,
     getTelemetryDeviceKeyFiles
   };

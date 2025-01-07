@@ -83,7 +83,7 @@ export const CSVErrorsTable = (props: CSVErrorsTableProps) => {
       rows={rows}
       getRowId={(row) => row.id}
       columns={columns}
-      pageSizeOptions={[10, 25, 50]}
+      pageSizeOptions={[5, 10, 25, 50]}
       rowSelection={false}
       checkboxSelection={false}
       sortingOrder={['asc', 'desc']}

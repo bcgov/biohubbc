@@ -4,6 +4,11 @@ export const CSV_ERROR_MESSAGE =
 /**
  * The CSV configuration interface
  *
+ * TODO:
+ *  1. Allow or disallow duplicate CSV rows
+ *    - Similar to a DB unique constraint? ie: ['NAME', 'AGE']
+ *  2. Support CSVWarnings
+ *  3. Support CSVRowValidation? ie: Validate the entire row before / after the cell validation
  */
 export interface CSVConfig<THeader extends Uppercase<string> = Uppercase<string>> {
   /**
