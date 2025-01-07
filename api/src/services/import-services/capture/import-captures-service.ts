@@ -9,11 +9,15 @@ import {
   getDescriptionCellValidator,
   getLatitudeCellValidator,
   getLongitudeCellValidator,
+  getSurveyCritterAliasCellValidator,
+  getTimeCellSetter,
   getTimeCellValidator
 } from '../../../utils/csv-utils/csv-header-configs';
 import { getLogger } from '../../../utils/logger';
+import { ICapture, ILocation } from '../../critterbase-service';
 import { DBService } from '../../db-service';
 import { SurveyCritterService } from '../../survey-critter-service';
+import { getCaptureDateCellValidator, injectCritterIdIntoRow } from './capture-header-configs';
 
 const defaultLog = getLogger('services/import/import-captures-service');
 
@@ -113,28 +117,49 @@ export class ImportCapturesService extends DBService {
       return errors;
     }
 
-    const captures = rows.map((row) => {
-      return {
-        capture_id: row['capture_id'],
+    const captures: ICapture[] = [];
+    const locations: ILocation[] = [];
+
+    for (const row of rows) {
+      let releaseLocationId: string | undefined = undefined;
+      const captureLocationId = uuid();
+
+      // Push the capture location
+      locations.push({
+        location_id: captureLocationId,
+        latitude: row.CAPTURE_LATITUDE,
+        longitude: row.CAPTURE_LONGITUDE
+      });
+
+      // Push the capture release location if included
+      if (row.RELEASE_LATITUDE && row.RELEASE_LONGITUDE) {
+        // Update the release location id
+        releaseLocationId = uuid();
+
+        locations.push({
+          location_id: releaseLocationId,
+          latitude: row.RELEASE_LATITUDE,
+          longitude: row.RELEASE_LONGITUDE
+        });
+      }
+
+      captures.push({
+        capture_id: uuid(),
         critter_id: row['critter_id'],
-        capture_location_id: uuid(),
         capture_date: row.CAPTURE_DATE,
         capture_time: row.CAPTURE_TIME,
-        capture_latitude: row.CAPTURE_LATITUDE,
-        capture_longitude: row.CAPTURE_LONGITUDE,
+        capture_location_id: captureLocationId,
         capture_comment: row.CAPTURE_COMMENT,
-        release_location_id: row.RELEASE_LATITUDE && row.RELEASE_LONGITUDE ? uuid() : undefined,
         release_date: row.RELEASE_DATE,
         release_time: row.RELEASE_TIME,
-        release_latitude: row.RELEASE_LATITUDE,
-        release_longitude: row.RELEASE_LONGITUDE,
+        release_location_id: releaseLocationId,
         release_comment: row.RELEASE_COMMENT
-      };
-    });
+      });
+    }
 
     defaultLog.debug({ label: 'import captures', captures });
 
-    await this.surveyCritterService.critterbaseService.bulkCreate({ captures });
+    await this.surveyCritterService.critterbaseService.bulkCreate({ captures, locations });
 
     return [];
   }
@@ -145,21 +170,24 @@ export class ImportCapturesService extends DBService {
    * @returns {Promise<CSVConfig<CaptureCSVStaticHeader>>} The CSV configuration
    */
   async getCSVConfig(): Promise<CSVConfig<CaptureCSVStaticHeader>> {
-    this.utils.setStaticHeaderConfig('ALIAS', { validateCell: undefined });
-    this.utils.setStaticHeaderConfig('CAPTURE_DATE', { validateCell: getDateCellValidator() });
-    this.utils.setStaticHeaderConfig('CAPTURE_TIME', { validateCell: getTimeCellValidator() });
-    this.utils.setStaticHeaderConfig('CAPTURE_LATITUDE', { validateCell: getLatitudeCellValidator() });
-    this.utils.setStaticHeaderConfig('CAPTURE_LONGITUDE', { validateCell: getLongitudeCellValidator() });
-    this.utils.setStaticHeaderConfig('RELEASE_DATE', { validateCell: getDateCellValidator({ optional: true }) });
-    this.utils.setStaticHeaderConfig('RELEASE_TIME', { validateCell: getTimeCellValidator() });
-    this.utils.setStaticHeaderConfig('RELEASE_LATITUDE', {
-      validateCell: getLatitudeCellValidator({ optional: true })
+    const surveyAliasMap = await this.surveyCritterService.getSurveyCritterAliasMap(this.surveyId);
+
+    this.utils.setAllStaticHeaderConfigs({
+      ALIAS: {
+        validateCell: getSurveyCritterAliasCellValidator(surveyAliasMap),
+        setCellValue: injectCritterIdIntoRow(surveyAliasMap)
+      },
+      CAPTURE_DATE: { validateCell: getCaptureDateCellValidator(surveyAliasMap, this.utils) },
+      CAPTURE_TIME: { validateCell: getTimeCellValidator(), setCellValue: getTimeCellSetter() },
+      CAPTURE_LATITUDE: { validateCell: getLatitudeCellValidator() },
+      CAPTURE_LONGITUDE: { validateCell: getLongitudeCellValidator() },
+      CAPTURE_COMMENT: { validateCell: getDescriptionCellValidator() },
+      RELEASE_DATE: { validateCell: getDateCellValidator({ optional: true }) },
+      RELEASE_TIME: { validateCell: getTimeCellValidator(), setCellValue: getTimeCellSetter() },
+      RELEASE_LATITUDE: { validateCell: getLatitudeCellValidator({ optional: true }) },
+      RELEASE_LONGITUDE: { validateCell: getLongitudeCellValidator({ optional: true }) },
+      RELEASE_COMMENT: { validateCell: getDescriptionCellValidator() }
     });
-    this.utils.setStaticHeaderConfig('RELEASE_LONGITUDE', {
-      validateCell: getLongitudeCellValidator({ optional: true })
-    });
-    this.utils.setStaticHeaderConfig('CAPTURE_COMMENT', { validateCell: getDescriptionCellValidator() });
-    this.utils.setStaticHeaderConfig('RELEASE_COMMENT', { validateCell: getDescriptionCellValidator() });
 
     // Return the final CSV config
     return this.utils.getConfig();

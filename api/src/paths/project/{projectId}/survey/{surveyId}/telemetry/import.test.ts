@@ -6,7 +6,7 @@ import { ImportTelemetryService } from '../../../../../../services/import-servic
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
 import { importTelemetryCSV } from './import';
 
-describe.only('importTelemetryCSV', () => {
+describe('importTelemetryCSV', () => {
   afterEach(() => {
     sinon.restore();
   });

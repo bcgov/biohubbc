@@ -67,6 +67,14 @@ interface CSVStaticHeaderConfig {
 export type CSVCellValidator = (params: CSVParams) => CSVError[];
 
 /**
+ * The CSV config row validator function
+ *
+ * @param {CSVParams} params - The CSV parameters
+ * @returns {CSVError[]} - The list of CSV errors
+ */
+export type CSVRowValidator = (params: CSVParams) => CSVError[];
+
+/**
  * The CSV header config cell setter function
  *
  * @param {CSVParams} params - The CSV parameters

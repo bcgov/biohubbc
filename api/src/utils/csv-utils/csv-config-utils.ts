@@ -129,6 +129,15 @@ export class CSVConfigUtils<StaticHeaderType extends Uppercase<string> = Upperca
     this._config.staticHeadersConfig[header] = { ...this._config.staticHeadersConfig[header], ...headerConfig };
   }
 
+  setAllStaticHeaderConfigs(headersConfig: Record<StaticHeaderType, CSVHeaderConfig>): void {
+    for (const header in headersConfig) {
+      this._config.staticHeadersConfig[header] = {
+        ...this._config.staticHeadersConfig[header],
+        ...headersConfig[header]
+      };
+    }
+  }
+
   /**
    * Get the final CSV config
    *
