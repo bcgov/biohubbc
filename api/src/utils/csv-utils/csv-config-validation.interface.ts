@@ -21,6 +21,14 @@ export interface CSVConfig<THeader extends Uppercase<string> = Uppercase<string>
    */
   staticHeadersConfig: Record<THeader, CSVStaticHeaderConfig & CSVHeaderConfig>;
   /**
+   * Boolean to ignore dynamic headers.
+   *
+   * ie: If true, the dynamic headers will not be processed.
+   *
+   * @type {boolean}
+   */
+  ignoreDynamicHeaders: boolean;
+  /**
    * Contains the `validateCell` and `setCellValue` callbacks to be called for each dynamic cell.
    *
    * Note: A dynamic header is a header that is not known and defined in the configuration.
@@ -31,14 +39,8 @@ export interface CSVConfig<THeader extends Uppercase<string> = Uppercase<string>
    * @type {CSVHeaderConfig | undefined}
    */
   dynamicHeadersConfig?: CSVHeaderConfig;
-  /**
-   * Boolean to ignore dynamic headers.
-   *
-   * ie: If true, the dynamic headers will not be processed.
-   *
-   * @type {boolean}
-   */
-  ignoreDynamicHeaders: boolean;
+
+  rowValidators?: CSVRowValidator[];
 }
 
 interface CSVStaticHeaderConfig {
@@ -65,6 +67,8 @@ interface CSVStaticHeaderConfig {
  * @returns {CSVError[]} - The list of CSV errors
  */
 export type CSVCellValidator = (params: CSVParams) => CSVError[];
+
+export type CSVRowValidator = (params: CSVRowParams) => CSVError[];
 
 /**
  * The CSV header config cell setter function
@@ -93,6 +97,11 @@ export interface CSVHeaderConfig {
    * @type {CSVCellSetter | undefined} The cell setter function
    */
   setCellValue?: CSVCellSetter;
+}
+
+export interface CSVRowParams {
+  row: CSVRow;
+  rowIndex: number;
 }
 
 /**
@@ -198,16 +207,25 @@ export interface CSVError {
   row?: number;
 }
 
+// The CSV row state symbol to store additional row metadata
+export const CSVRowState = Symbol('CSVRowStateSymbol');
+
 /**
  * The raw unvalidated CSV row
  *
  */
-export type CSVRow = Record<Uppercase<string>, any>;
+export type CSVRow = Record<Uppercase<string>, any> & {
+  // The CSV row state symbol to store additional row metadata
+  [CSVRowState]?: Record<string, any>;
+};
 
 /**
  * The validated CSV row keyed by the static headers
  *
  */
-export type CSVRowValidated<StaticHeaderType extends Uppercase<string>> = Record<StaticHeaderType, any>;
+export type CSVRowValidated<StaticHeaderType extends Uppercase<string>> = Record<StaticHeaderType, any> & {
+  // The CSV row state symbol to store additional row metadata
+  [CSVRowState]?: Record<string, any>;
+};
 
 export type CSVCell = string | number | undefined;

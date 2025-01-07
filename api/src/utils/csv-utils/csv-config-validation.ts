@@ -1,4 +1,5 @@
 import { WorkSheet } from 'xlsx';
+import { Row } from '../../services/import-services/import-csv.interface';
 import { getWorksheetRowObjects, WorksheetRowIndexSymbol } from '../xlsx-utils/worksheet-utils';
 import { CSVConfigUtils } from './csv-config-utils';
 import {
@@ -7,7 +8,10 @@ import {
   CSVHeaderConfig,
   CSVParams,
   CSVRow,
-  CSVRowValidated
+  CSVRowParams,
+  CSVRowState,
+  CSVRowValidated,
+  CSVRowValidator
 } from './csv-config-validation.interface';
 
 /**
@@ -30,18 +34,35 @@ export const validateCSVWorksheet = <StaticHeaderType extends Uppercase<string>>
     return { errors: errors, rows: [] };
   }
 
-  // Iterate over each cell in the worksheet and validate + set cell values
-  forEachCSVCell(worksheet, config, (params, headerConfig) => {
-    // Validate the cell value and modify the errors
-    executeValidateCell(params, headerConfig, errors); // Mutates `errors`
+  // Iterate over each row in the worksheet and execute the row validators
+  forEachCSVRow(worksheet, config, (rowParams, rowValidators) => {
+    executeUpdateRowState(rowParams, rows);
 
-    // If there are errors in the cell don't set the cell value
+    // Execute the row validators and modify the errors
+    rowValidators.forEach((rowValidator) => {
+      executeRowValidator(rowParams, rowValidator, errors);
+    });
+
+    // If there are errors in the row abort early
     if (errors.length) {
       return;
     }
 
-    // Set the cell value and modify the rows
-    executeSetCellValue(params, headerConfig, rows); // Mutates `rows`
+    // Iterate over each cell in the row and validate + set cell values
+    forEachCSVRowCell(rowParams.row, rowParams.rowIndex, config, (cellParams, headerConfig) => {
+      // Validate the cell value and modify the errors
+      executeValidateCell(cellParams, headerConfig, errors); // Mutates `errors`
+
+      // If there are errors in the cell don't set the cell value
+      if (errors.length) {
+        return;
+      }
+
+      // Set the cell value and modify the rows
+      executeSetCellValue(cellParams, headerConfig, rows); // Mutates `rows`
+
+      executeUpdateRowState(rowParams, rows);
+    });
   });
 
   if (errors.length) {
@@ -125,6 +146,20 @@ export const validateCSVHeaders = (worksheet: WorkSheet, config: CSVConfig): CSV
   return csvErrors;
 };
 
+export const forEachCSVRow = (
+  worksheet: WorkSheet,
+  config: CSVConfig,
+  callback: (params: CSVRowParams, rowValidators: CSVRowValidator[]) => void
+): void => {
+  const worksheetRows = getWorksheetRowObjects(worksheet);
+
+  for (let i = 0; i < worksheetRows.length; i++) {
+    const worksheetRow = worksheetRows[i];
+
+    callback({ row: worksheetRow, rowIndex: i }, config.rowValidators ?? []);
+  }
+};
+
 /**
  * Iterate over each cell in the CSV worksheet.
  *
@@ -133,36 +168,59 @@ export const validateCSVHeaders = (worksheet: WorkSheet, config: CSVConfig): CSV
  * @param {(params: CSVParams, headerConfig: CSVHeaderConfig) => void} callback - The callback function
  * @returns {*} {void}
  */
-export const forEachCSVCell = (
-  worksheet: WorkSheet,
+export const forEachCSVRowCell = (
+  worksheetRow: Row,
+  rowIndex: number,
   config: CSVConfig,
   callback: (params: CSVParams, headerConfig: CSVHeaderConfig) => void
 ): void => {
   const staticHeaderConfigMap = _getCSVStaticHeaderMap(config);
-  const worksheetRows = getWorksheetRowObjects(worksheet);
 
-  for (let i = 0; i < worksheetRows.length; i++) {
-    const worksheetRow = worksheetRows[i];
+  for (const header in worksheetRow) {
+    // Get the header config for the cell (static or dynamic)
+    const headerConfig = staticHeaderConfigMap.get(header) ?? config.dynamicHeadersConfig ?? {};
+    const cell = worksheetRow[header];
 
-    for (const header in worksheetRow) {
-      // Get the header config for the cell (static or dynamic)
-      const headerConfig = staticHeaderConfigMap.get(header) ?? config.dynamicHeadersConfig ?? {};
-      const cell = worksheetRow[header];
-      const params: CSVParams = {
-        cell: cell,
-        mutateCell: cell, // Set the mutate cell to the cell value
-        header: header,
-        row: worksheetRow,
-        rowIndex: i,
-        staticHeader: staticHeaderConfigMap.get(header)?.staticHeader
-      };
+    const params: CSVParams = {
+      cell: cell,
+      mutateCell: cell, // Set the mutate cell to the cell value
+      header: header,
+      row: worksheetRow,
+      rowIndex: rowIndex,
+      staticHeader: staticHeaderConfigMap.get(header)?.staticHeader
+    };
 
-      callback(params, {
-        validateCell: headerConfig.validateCell,
-        setCellValue: headerConfig.setCellValue
-      });
-    }
+    callback(params, {
+      validateCell: headerConfig.validateCell,
+      setCellValue: headerConfig.setCellValue
+    });
   }
+};
+
+export const executeUpdateRowState = (params: CSVRowParams, mutableRows: CSVRow[]) => {
+  if (!mutableRows[params.rowIndex]) {
+    mutableRows[params.rowIndex] = {};
+  }
+
+  if (!mutableRows[params.rowIndex]?.[CSVRowState] && params.row?.[CSVRowState]) {
+    mutableRows[params.rowIndex][CSVRowState] = params.row[CSVRowState];
+  }
+};
+
+export const executeRowValidator = (params: CSVRowParams, rowValidator: CSVRowValidator, mutableErrors: CSVError[]) => {
+  const rowErrors = rowValidator(params);
+
+  rowErrors.forEach((error) => {
+    mutableErrors.push({
+      error: error.error,
+      solution: error.solution,
+      values: error.values ?? null,
+      cell: error.cell ?? null,
+      header: error.header ?? null,
+      // WorksheetRowIndexSymbol is the original row index from the worksheet ie: before filtering empty rows
+      row: error.row ?? params.row[WorksheetRowIndexSymbol] + 1 ?? params.rowIndex + 2 // headers: 1, data row: 2
+    });
+  });
 };
 
 /**

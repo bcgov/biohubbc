@@ -4,7 +4,8 @@ import {
   CSVCellSetter,
   CSVCellValidator,
   CSVError,
-  CSVParams
+  CSVParams,
+  CSVRowState
 } from '../../../utils/csv-utils/csv-config-validation.interface';
 import { validateZodCell } from '../../../utils/csv-utils/csv-header-configs';
 import { NestedRecord } from '../../../utils/nested-record';
@@ -193,32 +194,29 @@ export const getCritterSexCellValidator = (
       ];
     }
 
+    // Set the row state to store the qualitative option id for the sex
+    params.row[CSVRowState] = {
+      id: rowDictionarySex
+    };
+
     return [];
   };
 };
 
-/**
- * Get the critter sex cell setter.
- *
- * @param {NestedRecord<string>} rowDictionary The row dictionary.
- * @param {CSVConfigUtils<CrittterCSVConfig>} configUtils The CSV config utils.
- * @returns {*} {CSVCellValidator} The validate cell callback
- */
-export const getCritterSexCellSetter = (
-  rowDictionary: NestedRecord<string>,
-  configUtils: CSVConfigUtils<CritterCSVStaticHeader>
-): CSVCellSetter => {
-  return (params: CSVParams) => {
-    if (params.cell === undefined) {
-      return undefined;
-    }
-
-    const rowTsn = Number(configUtils.getCellValue('ITIS_TSN', params.row));
-    const sexCellValue = String(params.cell);
-
-    return rowDictionary.get(rowTsn, sexCellValue);
-  };
-};
+///**
+// * Get the critter sex cell setter.
+// *
+// * @returns {*} {CSVCellValidator} The validate cell callback
+// */
+//export const getCritterSexCellSetter = (): CSVCellSetter => {
+//  return (params: CSVParams) => {
+//    if (params.cell === undefined) {
+//      return undefined;
+//    }
+//
+//    return params.row[CSVRowState]?.sex_qualitative_option_id;
+//  };
+//};
 
 /**
  * Get the Wildlife Health ID header cell validator.

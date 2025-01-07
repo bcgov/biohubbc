@@ -9,6 +9,7 @@ import {
   CSVConfig,
   CSVError,
   CSVHeaderConfig,
+  CSVRowState,
   CSVRowValidated
 } from '../../../utils/csv-utils/csv-config-validation.interface';
 import { getDescriptionCellValidator, getTsnCellValidator } from '../../../utils/csv-utils/csv-header-configs';
@@ -22,7 +23,6 @@ import {
   getCritterAliasCellValidator,
   getCritterCollectionUnitCellSetter,
   getCritterCollectionUnitCellValidator,
-  getCritterSexCellSetter,
   getCritterSexCellValidator,
   getWlhIDCellValidator
 } from './critter-header-configs';
@@ -169,13 +169,19 @@ export class ImportCrittersService extends DBService {
     for (const row of rows) {
       const critterId = v4();
 
+      console.log({ rowState: row[CSVRowState] });
+
+      if (!row[CSVRowState]?.id) {
+        throw new Error('Row does not have row state');
+      }
+
       // SIMS payload
       simsPayload.push(critterId);
 
       // Critterbase static headers payload
       critterbasePayload.critters?.push({
         critter_id: critterId,
-        sex_qualitative_option_id: row.SEX,
+        sex_qualitative_option_id: row[CSVRowState]?.id,
         itis_tsn: row.ITIS_TSN,
         animal_id: row.ALIAS,
         wlh_id: row.WLH_ID,
@@ -268,8 +274,8 @@ export class ImportCrittersService extends DBService {
     });
 
     return {
-      validateCell: getCritterSexCellValidator(rowDictionary, this.configUtils),
-      setCellValue: getCritterSexCellSetter(rowDictionary, this.configUtils)
+      validateCell: getCritterSexCellValidator(rowDictionary, this.configUtils)
+      //setCellValue: getCritterSexCellSetter(rowDictionary, this.configUtils)
     };
   }
 
