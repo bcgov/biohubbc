@@ -84,8 +84,8 @@ const structure = [
         <strong>Publishing to BioHub</strong>
       </Typography>,
       <Typography variant="body1" gutterBottom>
-        The publication of data from SIMS to BioHub can be achieved at the survey-level. Once study teams are pleased
-        with their data and would like to make these data accessible, they can navigate to the survey page and click the
+        The publication of data from SIMS to BioHub is initiated at the survey-level. Once study teams are pleased with
+        their data and would like to make these data accessible, they can navigate to the survey page and click the
         publish button. Beside this button is a status text that will specify whether a survey has been published.
       </Typography>,
       <Typography>
