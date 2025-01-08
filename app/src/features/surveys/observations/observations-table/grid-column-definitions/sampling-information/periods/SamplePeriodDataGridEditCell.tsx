@@ -10,12 +10,12 @@ import {
   SamplingInformationCache,
   SamplingInformationCachedPeriod
 } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/useSamplingInformationCache';
-import { getPeriodLabel } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/utils';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
 import useIsMounted from 'hooks/useIsMounted';
 import debounce from 'lodash-es/debounce';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { getDateTimeLabel } from 'utils/datetime';
 
 export interface ISamplePeriodDataGridEditCellProps<DataGridType extends GridValidRowModel> {
   dataGridProps: GridRenderCellParams<DataGridType>;
@@ -90,7 +90,7 @@ export const SamplePeriodDataGridEditCell = <DataGridType extends GridValidRowMo
 
         const options = response.periods.map((item) => ({
           ...item,
-          label: getPeriodLabel(item),
+          label: getDateTimeLabel(item.start_date, item.start_time, item.end_date, item.end_time),
           value: item.survey_sample_period_id
         }));
 

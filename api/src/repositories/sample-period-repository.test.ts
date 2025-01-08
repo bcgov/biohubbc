@@ -23,6 +23,7 @@ describe('SamplePeriodRepository', () => {
     it('should return non-empty rows', async () => {
       const mockRow: SurveySamplePeriodDetails = {
         survey_sample_period_id: 2,
+        survey_id: 4,
         survey_sample_site_id: 1,
         method_technique_id: 3,
         start_date: '2023-10-02',
@@ -41,14 +42,14 @@ describe('SamplePeriodRepository', () => {
         }
       };
       const mockResponse = { rows: [mockRow], rowCount: 2 } as any as Promise<QueryResult<any>>;
-      const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
+      const dbConnectionObj = getMockDBConnection({ knex: sinon.stub().resolves(mockResponse) });
 
       const mockSurveyId = 1;
       const surveySampleSiteId = 1;
       const repo = new SamplePeriodRepository(dbConnectionObj);
       const response = await repo.getSamplePeriodById(mockSurveyId, surveySampleSiteId);
 
-      expect(dbConnectionObj.sql).to.have.been.calledOnce;
+      expect(dbConnectionObj.knex).to.have.been.calledOnce;
       expect(response).to.eql(mockRow);
     });
   });
@@ -57,11 +58,12 @@ describe('SamplePeriodRepository', () => {
     it('should update the record and return a single row', async () => {
       const mockRow = {};
       const mockResponse = { rows: [mockRow], rowCount: 1 } as any as Promise<QueryResult<any>>;
-      const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
+      const dbConnectionObj = getMockDBConnection({ knex: sinon.stub().resolves(mockResponse) });
 
       const mockSurveyId = 1;
       const samplePeriod: UpdateSamplePeriodObject = {
         survey_sample_period_id: 2,
+        survey_id: 4,
         survey_sample_site_id: 1,
         method_technique_id: 3,
         start_date: '2023-10-02',
@@ -72,17 +74,18 @@ describe('SamplePeriodRepository', () => {
       const repo = new SamplePeriodRepository(dbConnectionObj);
       const response = await repo.updateSamplePeriod(mockSurveyId, samplePeriod);
 
-      expect(dbConnectionObj.sql).to.have.been.calledOnce;
+      expect(dbConnectionObj.knex).to.have.been.calledOnce;
       expect(response).to.eql(mockRow);
     });
 
     it('throws an error if rowCount is falsy', async () => {
       const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
-      const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
+      const dbConnectionObj = getMockDBConnection({ knex: sinon.stub().resolves(mockResponse) });
 
       const mockSurveyId = 1;
       const samplePeriod: UpdateSamplePeriodObject = {
         survey_sample_period_id: 2,
+        survey_id: 4,
         survey_sample_site_id: 1,
         method_technique_id: 3,
         start_date: '2023-10-02',
@@ -96,7 +99,7 @@ describe('SamplePeriodRepository', () => {
         await repo.updateSamplePeriod(mockSurveyId, samplePeriod);
       } catch (error) {
         expect((error as ApiExecuteSQLError).message).to.be.eql('Failed to update sample period');
-        expect(dbConnectionObj.sql).to.have.been.calledOnce;
+        expect(dbConnectionObj.knex).to.have.been.calledOnce;
       }
     });
   });
@@ -105,7 +108,7 @@ describe('SamplePeriodRepository', () => {
     it('should insert a record and return a single row', async () => {
       const mockRow = {};
       const mockResponse = { rows: [mockRow], rowCount: 1 } as any as Promise<QueryResult<any>>;
-      const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
+      const dbConnectionObj = getMockDBConnection({ knex: sinon.stub().resolves(mockResponse) });
 
       const surveyId = 1;
       const samplePeriod: InsertSamplePeriodObject = {
@@ -119,13 +122,13 @@ describe('SamplePeriodRepository', () => {
       const repo = new SamplePeriodRepository(dbConnectionObj);
       const response = await repo.insertSamplePeriod(surveyId, samplePeriod);
 
-      expect(dbConnectionObj.sql).to.have.been.calledOnce;
+      expect(dbConnectionObj.knex).to.have.been.calledOnce;
       expect(response).to.eql(mockRow);
     });
 
     it('throws an error if rowCount is falsy', async () => {
       const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
-      const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
+      const dbConnectionObj = getMockDBConnection({ knex: sinon.stub().resolves(mockResponse) });
 
       const surveyId = 1;
       const samplePeriod: InsertSamplePeriodObject = {
@@ -141,7 +144,7 @@ describe('SamplePeriodRepository', () => {
       try {
         await repo.insertSamplePeriod(surveyId, samplePeriod);
       } catch (error) {
-        expect(dbConnectionObj.sql).to.have.been.calledOnce;
+        expect(dbConnectionObj.knex).to.have.been.calledOnce;
         expect((error as ApiExecuteSQLError).message).to.be.eql('Failed to insert sample period');
       }
     });
@@ -151,20 +154,20 @@ describe('SamplePeriodRepository', () => {
     it('should delete a record and return a single row', async () => {
       const mockRow = {};
       const mockResponse = { rows: [mockRow], rowCount: 1 } as any as Promise<QueryResult<any>>;
-      const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
+      const dbConnectionObj = getMockDBConnection({ knex: sinon.stub().resolves(mockResponse) });
 
       const mockSurveyId = 1;
       const surveySamplePeriodId = 1;
       const repo = new SamplePeriodRepository(dbConnectionObj);
       const response = await repo.deleteSamplePeriod(mockSurveyId, surveySamplePeriodId);
 
-      expect(dbConnectionObj.sql).to.have.been.calledOnce;
+      expect(dbConnectionObj.knex).to.have.been.calledOnce;
       expect(response).to.eql(mockRow);
     });
 
     it('throws an error if rowCount is falsy', async () => {
       const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
-      const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
+      const dbConnectionObj = getMockDBConnection({ knex: sinon.stub().resolves(mockResponse) });
 
       const mockSurveyId = 1;
       const surveySamplePeriodId = 1;
@@ -173,7 +176,7 @@ describe('SamplePeriodRepository', () => {
       try {
         await repo.deleteSamplePeriod(mockSurveyId, surveySamplePeriodId);
       } catch (error) {
-        expect(dbConnectionObj.sql).to.have.been.calledOnce;
+        expect(dbConnectionObj.knex).to.have.been.calledOnce;
         expect((error as ApiExecuteSQLError).message).to.be.eql('Failed to delete sample period');
       }
     });

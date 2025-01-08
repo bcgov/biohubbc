@@ -172,9 +172,6 @@ export class AnalyticsRepository extends BaseRepository {
 
     queryBuilder.orderBy('individual_count', 'desc');
 
-    console.log(queryBuilder.toSQL().toNative().sql);
-    console.log(queryBuilder.toSQL().toNative().bindings);
-
     const response = await this.connection.knex(queryBuilder, ObservationCountByGroupSQLResponse);
 
     return response.rows;

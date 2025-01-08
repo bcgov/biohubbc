@@ -17,7 +17,7 @@ export interface ISamplePeriodTechniqueFormProps {
    * @type {ISelectedTechniqueData}
    * @memberof ISamplePeriodTechniqueFormProps
    */
-  editData?: ISelectedTechniqueData;
+  editData?: ISelectedTechniqueData | null;
 }
 
 /**
@@ -25,7 +25,7 @@ export interface ISamplePeriodTechniqueFormProps {
  *
  * @return {*}
  */
-const SamplePeriodTechniqueForm = (props: ISamplePeriodTechniqueFormProps) => {
+export const SamplePeriodTechniqueForm = (props: ISamplePeriodTechniqueFormProps) => {
   const { editData } = props;
 
   const { errors, setFieldValue } = useFormikContext<CreateSamplingPeriod>();
@@ -35,12 +35,13 @@ const SamplePeriodTechniqueForm = (props: ISamplePeriodTechniqueFormProps) => {
   const biohubApi = useBiohubApi();
 
   // The technique record for the selected method_technique_id, if any
-  const [selectedTechnique, setSelectedTechnique] = useState<ISelectedTechniqueData | undefined>(editData);
+  const [selectedTechnique, setSelectedTechnique] = useState<ISelectedTechniqueData | undefined>(editData ?? undefined);
 
   /**
    * Search for techniques.
    *
-   * TODO: Currently does not take in any search terms, and just returns all techniques for a survey.
+   * TODO: Currently does not take in any search terms, and just returns all techniques for the survey, regardless of
+   * what the user may have entered in the UI.
    *
    * @return {*}  {Promise<WithIdAndName<ISelectedTechniqueData>[]>}
    */
@@ -106,5 +107,3 @@ const SamplePeriodTechniqueForm = (props: ISamplePeriodTechniqueFormProps) => {
     </Grid>
   );
 };
-
-export default SamplePeriodTechniqueForm;

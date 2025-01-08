@@ -40,7 +40,7 @@ export const SurveyPeriodsTable = (props: ISamplingPeriodTableProps) => {
       flex: 1,
       sortable: false, // TODO not yet supported by the API
       valueGetter: (params) => {
-        return params.row.survey_sample_site.name;
+        return params.row.survey_sample_site?.name;
       }
     },
     {
@@ -49,7 +49,7 @@ export const SurveyPeriodsTable = (props: ISamplingPeriodTableProps) => {
       flex: 1,
       sortable: false, // TODO not yet supported by the API
       valueGetter: (params) => {
-        return params.row.method_technique.name;
+        return params.row.method_technique?.name;
       }
     },
     {
@@ -57,10 +57,16 @@ export const SurveyPeriodsTable = (props: ISamplingPeriodTableProps) => {
       headerName: 'Response Metric',
       flex: 1,
       valueGetter: (params) => {
+        const method_response_metric_id = params.row.method_technique?.method_response_metric_id;
+
+        if (!method_response_metric_id) {
+          return null;
+        }
+
         const value = getCodesName(
           codesContext.codesDataLoader.data,
           'method_response_metrics',
-          params.row.method_technique.method_response_metric_id
+          method_response_metric_id
         );
 
         return value;

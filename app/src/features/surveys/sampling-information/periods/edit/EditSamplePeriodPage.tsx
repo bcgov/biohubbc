@@ -2,13 +2,13 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
+import FormikErrorSnackbar from 'components/alert/FormikErrorSnackbar';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { SamplePeriodI18N } from 'constants/i18n';
-import dayjs from 'dayjs';
 import {
   ISurveySamplePeriodFormData,
-  SamplePeriodForm2
-} from 'features/surveys/sampling-information/periods/form/SamplePeriodForm2';
+  SamplePeriodForm
+} from 'features/surveys/sampling-information/periods/form/SamplePeriodForm';
 import { Formik, FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -21,45 +21,73 @@ import { Prompt, useHistory, useParams } from 'react-router';
 import yup from 'utils/YupSchema';
 import SamplingSiteHeader from '../../sites/components/SamplingSiteHeader';
 
-export const EditSamplingSiteMethodPeriodYupSchema = yup.object({
-  method_technique_id: yup.number().required('Technique is required'),
-  survey_sample_site_id: yup.number().required('Site is required'),
-  sample_periods: yup
-    .array()
-    .of(
-      yup
-        .object({
+export const EditSamplingSiteMethodPeriodYupSchema = yup
+  .object({
+    method_technique_id: yup.number().nullable().default(null),
+    survey_sample_site_id: yup.number().nullable().default(null),
+    sample_periods: yup
+      .array()
+      .of(
+        yup.object({
           start_date: yup
             .string()
             .typeError('Start Date is required')
+            .min(1, 'Start Date is required')
             .isValidDateString()
-            .required('Start Date is required'),
+            .default(null),
           end_date: yup
             .string()
             .typeError('End Date is required')
+            .min(1, 'End Date is required')
             .isValidDateString()
-            .required('End Date is required')
-            .isEndDateSameOrAfterStartDate('start_date'),
-          start_time: yup.string().nullable(),
-          end_time: yup.string().nullable()
+            .isEndDateSameOrAfterStartDate('start_date')
+            .default(null),
+          start_time: yup.string().nullable().default(null),
+          end_time: yup.string().nullable().default(null)
         })
-        .test(
-          'checkDatesAreSameAndEndTimeIsAfterStart',
-          'End time must be after start time for the same day',
-          function (value) {
-            const { start_date, end_date, start_time, end_time } = value || {};
-            if (start_date === end_date && start_time && end_time) {
-              return dayjs(`${start_date} ${start_time}`, 'YYYY-MM-DD HH:mm:ss').isBefore(
-                dayjs(`${end_date} ${end_time}`, 'YYYY-MM-DD HH:mm:ss')
-              );
-            }
+      )
+      .nullable()
+      .default([])
+      .test(
+        'non-empty-array-validation',
+        'Start and End Date are required for each period',
+        function (value: ISurveySamplePeriodFormData['sample_periods']) {
+          // Allow null or empty arrays of periods
+          if (value === null || value.length === 0) {
             return true;
           }
-        )
-    )
-    .required('Sample periods are required')
-    .min(1, 'A sample period is required')
-});
+
+          // Check that each period has a non-null start_date and end_date
+          return value.every((item) => {
+            return item.start_date !== null && item.end_date !== null;
+          });
+        }
+      )
+  })
+  .test('at-least-one-defined', 'At least one of site, technique, or sample period is required', function (value) {
+    const { survey_sample_site_id, method_technique_id, sample_periods } = value;
+
+    const isSiteDefined = survey_sample_site_id !== null;
+
+    const isTechniqueDefined = method_technique_id !== null;
+
+    // Check if there is at least one sample period object. The validation above will handle if the contents are valid
+    const isAtLeastOnePeriodDefined = Array.isArray(sample_periods) && sample_periods.length > 0;
+
+    // At least one of the conditions must be true
+    if (!isSiteDefined && !isTechniqueDefined && !isAtLeastOnePeriodDefined) {
+      const errors = [
+        this.createError({
+          path: 'formError',
+          message: 'At least one of site, technique, or sample period is required'
+        })
+      ];
+
+      return new yup.ValidationError(errors);
+    }
+
+    return true;
+  });
 
 /**
  * Renders page for editing a sampling period
@@ -127,28 +155,51 @@ export const EditSamplePeriodPage = () => {
     try {
       setIsSubmitting(true);
 
-      if (values.sample_periods.length !== 1) {
+      if (values.sample_periods.length > 1) {
         throw new Error('Only one sample period can be edited at a time');
       }
 
-      if (!values.sample_periods[0].survey_sample_period_id) {
-        throw new Error('A sample period id is required to edit a sample period');
-      }
+      const samplePeriod = values.sample_periods.length ? values.sample_periods[0] : null;
+
+      let samplePeriodData: UpdateSamplingPeriod;
 
       // Transform the form data to match the API request format
-      const samplePeriodData: UpdateSamplingPeriod = {
-        survey_sample_site_id: values.survey_sample_site_id,
-        method_technique_id: values.method_technique_id,
-        start_date: values.sample_periods[0].start_date,
-        start_time: values.sample_periods[0].start_time,
-        end_date: values.sample_periods[0].end_date,
-        end_time: values.sample_periods[0].end_time
-      };
+      // Default optional fields to null if the value is an empty-string
+      if (values.survey_sample_site_id) {
+        samplePeriodData = {
+          survey_sample_site_id: values.survey_sample_site_id,
+          method_technique_id: values.method_technique_id || null,
+          start_date: samplePeriod?.start_date || null,
+          start_time: samplePeriod?.start_time || null,
+          end_date: samplePeriod?.end_date || null,
+          end_time: samplePeriod?.end_time || null
+        };
+      } else if (values.method_technique_id) {
+        samplePeriodData = {
+          survey_sample_site_id: values.survey_sample_site_id || null,
+          method_technique_id: values.method_technique_id,
+          start_date: samplePeriod?.start_date || null,
+          start_time: samplePeriod?.start_time || null,
+          end_date: samplePeriod?.end_date || null,
+          end_time: samplePeriod?.end_time || null
+        };
+      } else if (samplePeriod?.start_date && samplePeriod?.end_date) {
+        samplePeriodData = {
+          survey_sample_site_id: values.survey_sample_site_id || null,
+          method_technique_id: values.method_technique_id || null,
+          start_date: samplePeriod.start_date,
+          start_time: samplePeriod.start_time || null,
+          end_date: samplePeriod.end_date,
+          end_time: samplePeriod.end_time || null
+        };
+      } else {
+        throw new Error('At least one of site, technique, or sample period is required');
+      }
 
       await biohubApi.samplingPeriod.updateSamplingPeriod(
         surveyContext.projectId,
         surveyContext.surveyId,
-        values.sample_periods[0].survey_sample_period_id,
+        surveySamplePeriodId,
         samplePeriodData
       );
 
@@ -193,6 +244,7 @@ export const EditSamplePeriodPage = () => {
         validateOnChange={false}
         onSubmit={handleSubmit}>
         <Box display="flex" flexDirection="column">
+          <FormikErrorSnackbar />
           <SamplingSiteHeader
             project_id={surveyContext.projectId}
             survey_id={surveyContext.surveyId}
@@ -205,7 +257,7 @@ export const EditSamplePeriodPage = () => {
           <Box display="flex" flex="1 1 auto">
             <Container maxWidth="xl" sx={{ py: 3 }}>
               <Paper sx={{ p: 5 }}>
-                <SamplePeriodForm2 isLoading={isSubmitting} editData={period} />
+                <SamplePeriodForm isLoading={isSubmitting} editData={period} />
               </Paper>
             </Container>
           </Box>

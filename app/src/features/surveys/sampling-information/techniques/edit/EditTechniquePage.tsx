@@ -9,7 +9,8 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import PageHeader from 'components/layout/PageHeader';
 import { EditTechniqueI18N } from 'constants/i18n';
-import TechniqueFormContainer, {
+import {
+  TechniqueFormContainer,
   UpdateTechniqueFormValues
 } from 'features/surveys/sampling-information/techniques/components/TechniqueFormContainer';
 import { FormikProps } from 'formik';

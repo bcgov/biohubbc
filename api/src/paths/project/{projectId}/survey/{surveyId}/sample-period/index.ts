@@ -90,16 +90,19 @@ POST.apiDoc = {
                   survey_sample_site_id: {
                     type: 'integer',
                     minimum: 1,
-                    description: 'Primary key of a sampling site.'
+                    description: 'Primary key of a sampling site.',
+                    nullable: true
                   },
                   method_technique_id: {
                     type: 'integer',
                     minimum: 1,
-                    description: 'Primary key of a method technique.'
+                    description: 'Primary key of a method technique.',
+                    nullable: true
                   },
                   start_date: {
                     type: 'string',
-                    description: 'Start date of the period'
+                    description: 'Start date of the period',
+                    nullable: true
                   },
                   start_time: {
                     type: 'string',
@@ -108,7 +111,8 @@ POST.apiDoc = {
                   },
                   end_date: {
                     type: 'string',
-                    description: 'End date of the period'
+                    description: 'End date of the period',
+                    nullable: true
                   },
                   end_time: {
                     type: 'string',

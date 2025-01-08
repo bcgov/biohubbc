@@ -17,7 +17,7 @@ export interface ISamplingPeriodSiteFormProps {
    * @type {ISelectedSampleSiteData}
    * @memberof ISamplingPeriodSiteFormProps
    */
-  editData?: ISelectedSampleSiteData;
+  editData?: ISelectedSampleSiteData | null;
 }
 
 export const SamplingPeriodSiteForm = (props: ISamplingPeriodSiteFormProps) => {
@@ -30,7 +30,9 @@ export const SamplingPeriodSiteForm = (props: ISamplingPeriodSiteFormProps) => {
   const biohubApi = useBiohubApi();
 
   // The sample site record for the selected sample site, if any
-  const [selectedSampleSite, setSelectedSampleSite] = useState<ISelectedSampleSiteData | undefined>(editData);
+  const [selectedSampleSite, setSelectedSampleSite] = useState<ISelectedSampleSiteData | undefined>(
+    editData ?? undefined
+  );
 
   /**
    * Search for sample sites.

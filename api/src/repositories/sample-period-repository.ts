@@ -24,55 +24,23 @@ export type InsertSamplePeriodObject = Pick<
 export type UpdateSamplePeriodObject = SurveySamplePeriodRecord;
 
 /**
- * Survey sample period record with basic details about the method and site, used for populating the edit form
+ * Survey sample period record with basic details about the method and site.
  */
 export const SurveySamplePeriodDetails = SurveySamplePeriodRecord.extend({
   survey_sample_site: SurveySampleSiteRecord.pick({
     survey_sample_site_id: true,
     name: true
-  }),
+  }).nullable(),
   method_technique: MethodTechniqueRecord.pick({
     method_technique_id: true,
     name: true,
     description: true,
     method_response_metric_id: true
-  })
+  }).nullable()
 });
-
 export type SurveySamplePeriodDetails = z.infer<typeof SurveySamplePeriodDetails>;
 
-/**
- * The full hierarchy of sample_* ids for a sample period.
- */
-export const SamplePeriodHierarchyIds = z.object({
-  survey_sample_period_id: z.number(),
-  method_technique_id: z.number(),
-  survey_sample_site_id: z.number()
-});
-export type SamplePeriodHierarchyIds = z.infer<typeof SamplePeriodHierarchyIds>;
-
-export const FindSamplePeriodRecord = SurveySamplePeriodRecord.pick({
-  survey_sample_period_id: true,
-  survey_sample_site_id: true,
-  method_technique_id: true,
-  start_date: true,
-  start_time: true,
-  end_date: true,
-  end_time: true
-})
-  .extend({
-    method_technique: MethodTechniqueRecord.pick({
-      method_technique_id: true,
-      name: true
-    })
-  })
-  .extend({
-    survey_sample_site: SurveySampleSiteRecord.pick({
-      survey_sample_site_id: true,
-      name: true
-    })
-  });
-
+export const FindSamplePeriodRecord = SurveySamplePeriodDetails;
 export type FindSamplePeriodRecord = z.infer<typeof FindSamplePeriodRecord>;
 
 /**
@@ -101,7 +69,7 @@ export class SamplePeriodRepository extends BaseRepository {
 
     queryBuilder.modify(this._getSamplingPeriodBaseQuery);
 
-    queryBuilder.where('survey_sample_site.survey_id', surveyId);
+    queryBuilder.where('survey_sample_period.survey_id', surveyId);
 
     if (options?.pagination) {
       queryBuilder.limit(options.pagination.limit).offset((options.pagination.page - 1) * options.pagination.limit);
@@ -131,8 +99,8 @@ export class SamplePeriodRepository extends BaseRepository {
     queryBuilder
       .select('count(*)::integer as count')
       .from('survey_sample_period')
-      .innerJoin('method_technique', 'method_technique.method_technique_id', 'survey_sample_period.method_technique_id')
-      .innerJoin(
+      .leftJoin('method_technique', 'method_technique.method_technique_id', 'survey_sample_period.method_technique_id')
+      .leftJoin(
         'survey_sample_site',
         'survey_sample_period.survey_sample_site_id',
         'survey_sample_site.survey_sample_site_id'
@@ -156,30 +124,45 @@ export class SamplePeriodRepository extends BaseRepository {
     const sqlStatement = SQL`
       SELECT
         survey_sample_period.survey_sample_period_id,
+        survey_sample_period.survey_id,
         survey_sample_period.survey_sample_site_id,
         survey_sample_period.method_technique_id,
         survey_sample_period.start_date,
         survey_sample_period.end_date,
         survey_sample_period.start_time,
         survey_sample_period.end_time,
-        jsonb_build_object(
-          'survey_sample_site_id', survey_sample_site.survey_sample_site_id,
-          'name', survey_sample_site.name
-        ) AS survey_sample_site,
-        jsonb_build_object(
-          'method_technique_id', method_technique.method_technique_id,
-          'method_response_metric_id', method_technique.method_response_metric_id,
-          'name', method_technique.name,
-          'description', method_technique.description
-        ) AS method_technique
+        CASE 
+          WHEN 
+            survey_sample_period.survey_sample_site_id IS NULL 
+          THEN 
+            NULL
+          ELSE
+            jsonb_build_object(
+              'survey_sample_site_id', survey_sample_site.survey_sample_site_id,
+              'name', survey_sample_site.name
+            )
+        END AS survey_sample_site,
+        CASE 
+          WHEN 
+            survey_sample_period.method_technique_id IS NULL 
+          THEN 
+            NULL
+          ELSE
+            jsonb_build_object(
+              'method_technique_id', method_technique.method_technique_id,
+              'method_response_metric_id', method_technique.method_response_metric_id,
+              'name', method_technique.name,
+              'description', method_technique.description
+            )
+        END AS method_technique
       FROM
         survey_sample_period
-      JOIN
-        method_technique ON method_technique.method_technique_id = survey_sample_period.method_technique_id
-      JOIN
+      LEFT JOIN
         survey_sample_site ON survey_sample_site.survey_sample_site_id = survey_sample_period.survey_sample_site_id
+      LEFT JOIN
+        method_technique ON method_technique.method_technique_id = survey_sample_period.method_technique_id
       WHERE 
-        survey_sample_site.survey_id = ${surveyId}
+        survey_sample_period.survey_id = ${surveyId}
       AND 
         survey_sample_period.survey_sample_period_id = ${surveySamplePeriodId};
     `;
@@ -205,35 +188,50 @@ export class SamplePeriodRepository extends BaseRepository {
    * @memberof SamplePeriodRepository
    */
   async updateSamplePeriod(surveyId: number, samplePeriod: UpdateSamplePeriodObject): Promise<void> {
-    const sql = SQL`
-      UPDATE 
-        survey_sample_period
-      SET
-        survey_sample_site_id = ${samplePeriod.survey_sample_site_id},
-        method_technique_id = ${samplePeriod.method_technique_id},
-        start_date = ${samplePeriod.start_date},
-        end_date = ${samplePeriod.end_date},
-        start_time = ${samplePeriod.start_time || null},
-        end_time = ${samplePeriod.end_time || null}
-      WHERE 
-        -- Only update if the method_technique_id is valid for the survey
-        EXISTS (
-          SELECT 1 FROM method_technique 
-          WHERE method_technique_id = ${samplePeriod.method_technique_id} 
-          AND survey_id = ${surveyId}
-        )
-      AND
-        -- Only update if the survey_sample_site_id is valid for the survey
-        EXISTS (
-          SELECT 1 FROM survey_sample_site 
-          WHERE survey_sample_site_id = ${samplePeriod.survey_sample_site_id} 
-          AND survey_id = ${surveyId}
-        )
-      AND 
-        survey_sample_period.survey_sample_period_id = ${samplePeriod.survey_sample_period_id};
-    `;
+    const knex = getKnex();
 
-    const response = await this.connection.sql(sql, SurveySamplePeriodModel);
+    const queryBuilder = knex.queryBuilder();
+
+    queryBuilder
+      .update({
+        survey_sample_site_id: samplePeriod.survey_sample_site_id,
+        method_technique_id: samplePeriod.method_technique_id,
+        start_date: samplePeriod.start_date,
+        end_date: samplePeriod.end_date,
+        start_time: samplePeriod.start_time,
+        end_time: samplePeriod.end_time
+      })
+      .from('survey_sample_period');
+
+    if (samplePeriod.survey_sample_site_id) {
+      queryBuilder.whereExists(
+        // If a non-null survey_sample_site_id is provided, only update the period if the survey_sample_site_id is
+        // valid for the survey
+        knex
+          .select(1)
+          .from('survey_sample_site')
+          .where('survey_sample_site_id', samplePeriod.survey_sample_site_id)
+          .andWhere('survey_id', surveyId)
+      );
+    }
+
+    if (samplePeriod.method_technique_id) {
+      // If a non-null method_technique_id is provided, only update the period if the method_technique_id is valid for
+      // the survey
+      queryBuilder.whereExists(
+        knex
+          .select(1)
+          .from('method_technique')
+          .where('method_technique_id', samplePeriod.method_technique_id)
+          .andWhere('survey_id', surveyId)
+      );
+    }
+
+    queryBuilder
+      .andWhere('survey_sample_period_id', samplePeriod.survey_sample_period_id)
+      .andWhere('survey_id', surveyId);
+
+    const response = await this.connection.knex(queryBuilder, SurveySamplePeriodModel);
 
     if (response.rowCount !== 1) {
       throw new ApiExecuteSQLError('Failed to update sample period', [
@@ -261,6 +259,7 @@ export class SamplePeriodRepository extends BaseRepository {
     queryBuilder
       .insert({
         survey_sample_site_id: samplePeriod.survey_sample_site_id,
+        survey_id: surveyId,
         method_technique_id: samplePeriod.method_technique_id,
         start_date: samplePeriod.start_date,
         end_date: samplePeriod.end_date,
@@ -310,6 +309,7 @@ export class SamplePeriodRepository extends BaseRepository {
     queryBuilder
       .select(
         'survey_sample_period.survey_sample_period_id',
+        'survey_sample_period.survey_id',
         'survey_sample_period.survey_sample_site_id',
         'survey_sample_period.method_technique_id',
         'survey_sample_period.start_date',
@@ -317,25 +317,41 @@ export class SamplePeriodRepository extends BaseRepository {
         'survey_sample_period.end_date',
         'survey_sample_period.end_time',
         knex.raw(`
-        json_build_object(
-           'survey_sample_site_id', survey_sample_site.survey_sample_site_id,
-           'name', survey_sample_site.name
-        ) as survey_sample_site`),
+          CASE 
+            WHEN 
+              survey_sample_period.survey_sample_site_id IS NULL 
+            THEN 
+              NULL
+            ELSE
+              jsonb_build_object(
+                'survey_sample_site_id', survey_sample_site.survey_sample_site_id,
+                'name', survey_sample_site.name
+              )
+          END AS survey_sample_site
+        `),
         knex.raw(`
-        json_build_object(
-          'method_technique_id', method_technique.method_technique_id,
-          'method_response_metric_id', method_technique.method_response_metric_id,
-          'name', method_technique.name,
-          'description', method_technique.description
-        ) as method_technique`)
+          CASE 
+            WHEN 
+              survey_sample_period.method_technique_id IS NULL 
+            THEN 
+              NULL
+            ELSE
+              jsonb_build_object(
+                'method_technique_id', method_technique.method_technique_id,
+                'method_response_metric_id', method_technique.method_response_metric_id,
+                'name', method_technique.name,
+                'description', method_technique.description
+              )
+          END AS method_technique
+        `)
       )
       .from('survey_sample_period')
-      .join('method_technique', 'method_technique.method_technique_id', 'survey_sample_period.method_technique_id')
-      .join(
+      .leftJoin(
         'survey_sample_site',
         'survey_sample_site.survey_sample_site_id',
         'survey_sample_period.survey_sample_site_id'
-      );
+      )
+      .leftJoin('method_technique', 'method_technique.method_technique_id', 'survey_sample_period.method_technique_id');
 
     return queryBuilder;
   }
@@ -384,11 +400,11 @@ export class SamplePeriodRepository extends BaseRepository {
     getSamplingPeriodsQuery.modify(this._getSamplingPeriodBaseQuery);
 
     // Filter by the survey ids the user has access to
-    getSamplingPeriodsQuery.whereIn('survey_sample_site.survey_id', getSurveyIdsQuery);
+    getSamplingPeriodsQuery.whereIn('survey_sample_period.survey_id', getSurveyIdsQuery);
 
     if (filterFields.survey_id) {
       // Filter by a specific survey id
-      getSamplingPeriodsQuery.andWhere('survey_sample_site.survey_id', filterFields.survey_id);
+      getSamplingPeriodsQuery.andWhere('survey_sample_period.survey_id', filterFields.survey_id);
     }
 
     if (filterFields.sample_site_id) {
@@ -473,12 +489,10 @@ export class SamplePeriodRepository extends BaseRepository {
       DELETE
       FROM
         survey_sample_period
-      INNER JOIN
-        survey_sample_site ON survey_sample_site.survey_sample_site_id = survey_sample_period.survey_sample_site_id
       WHERE
         survey_sample_period.survey_sample_period_id = ${surveySamplePeriodId}
       AND
-        survey_sample_site.survey_id = ${surveyId};
+        survey_sample_period.survey_id = ${surveyId};
     `;
 
     const response = await this.connection.sql(sqlStatement);
@@ -508,13 +522,8 @@ export class SamplePeriodRepository extends BaseRepository {
     queryBuilder
       .delete()
       .from('survey_sample_period')
-      .innerJoin(
-        'survey_sample_site',
-        'survey_sample_site.survey_sample_site_id',
-        'survey_sample_period.survey_sample_site_id'
-      )
       .whereIn('survey_sample_period.survey_sample_period_id', periodsToDelete)
-      .andWhere('survey_sample_site.survey_id', surveyId);
+      .andWhere('survey_sample_period.survey_id', surveyId);
 
     const response = await this.connection.knex(queryBuilder);
 

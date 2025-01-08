@@ -421,6 +421,7 @@ export const observervationsWithSubcountDataSchema: OpenAPIV3.SchemaObject = {
             type: 'object',
             required: [
               'survey_sample_period_id',
+              'survey_id',
               'survey_sample_site_id',
               'method_technique_id',
               'start_date',
@@ -436,26 +437,49 @@ export const observervationsWithSubcountDataSchema: OpenAPIV3.SchemaObject = {
                 type: 'integer',
                 minimum: 1
               },
-              survey_sample_site_id: {
+              survey_id: {
                 type: 'integer',
                 minimum: 1
+              },
+              survey_sample_site_id: {
+                type: 'integer',
+                minimum: 1,
+                nullable: true
               },
               method_technique_id: {
                 type: 'integer',
-                minimum: 1
+                minimum: 1,
+                nullable: true
               },
               start_date: {
-                type: 'string'
+                type: 'string',
+                nullable: true
               },
               start_time: {
                 type: 'string',
                 nullable: true
               },
               end_date: {
-                type: 'string'
+                type: 'string',
+                nullable: true
               },
               end_time: {
                 type: 'string',
+                nullable: true
+              },
+              survey_sample_site: {
+                type: 'object',
+                required: ['survey_sample_site_id', 'name'],
+                additionalProperties: false,
+                properties: {
+                  survey_sample_site_id: {
+                    type: 'integer',
+                    minimum: 1
+                  },
+                  name: {
+                    type: 'string'
+                  }
+                },
                 nullable: true
               },
               method_technique: {
@@ -481,21 +505,8 @@ export const observervationsWithSubcountDataSchema: OpenAPIV3.SchemaObject = {
                     type: 'integer',
                     minimum: 1
                   }
-                }
-              },
-              survey_sample_site: {
-                type: 'object',
-                required: ['survey_sample_site_id', 'name'],
-                additionalProperties: false,
-                properties: {
-                  survey_sample_site_id: {
-                    type: 'integer',
-                    minimum: 1
-                  },
-                  name: {
-                    type: 'string'
-                  }
-                }
+                },
+                nullable: true
               }
             }
           }

@@ -36,7 +36,7 @@ const pageSizeOptions = [10, 25, 50];
  *
  * @returns {*}
  */
-const SamplingSiteContainer = () => {
+export const SamplingSiteContainer = () => {
   const biohubApi = useBiohubApi();
   const samplingSiteStaticLayer = useSamplingSiteStaticLayer();
 
@@ -256,5 +256,3 @@ const SamplingSiteContainer = () => {
     </>
   );
 };
-
-export default SamplingSiteContainer;

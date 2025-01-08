@@ -2,6 +2,7 @@ import { GridRenderCellParams, GridValidRowModel } from '@mui/x-data-grid';
 import { IAutocompleteDataGridOption } from 'components/data-grid/autocomplete/AutocompleteDataGrid.interface';
 import { GetSamplingPeriod } from 'interfaces/useSamplingPeriodApi.interface';
 import { MutableRefObject, useRef } from 'react';
+import { getDateTimeLabel } from 'utils/datetime';
 
 export type SamplingInformationCachedSite = IAutocompleteDataGridOption<number> & {
   survey_sample_site_id: number;
@@ -9,14 +10,14 @@ export type SamplingInformationCachedSite = IAutocompleteDataGridOption<number> 
 
 export type SamplingInformationCachedTechnique = IAutocompleteDataGridOption<number> & {
   method_technique_id: number;
-  survey_sample_site_id: number;
+  survey_sample_site_id: number | null;
   method_response_metric_id: number;
 };
 
 export type SamplingInformationCachedPeriod = IAutocompleteDataGridOption<number> & {
   survey_sample_period_id: number;
-  survey_sample_site_id: number;
-  method_technique_id: number;
+  survey_sample_site_id: number | null;
+  method_technique_id: number | null;
 };
 
 export type SamplingInformationCacheRef = {
@@ -71,51 +72,54 @@ export const useSamplingInformationCache = (): SamplingInformationCache => {
       return;
     }
 
-    const sites = Array.from(
-      new Map(
-        params.periods.map((period) => [
-          period.survey_sample_site.survey_sample_site_id,
-          {
-            survey_sample_site_id: period.survey_sample_site.survey_sample_site_id,
-            // Satisfy the IAutocompleteDataGridOption interface
-            value: period.survey_sample_site_id,
-            label: period.survey_sample_site.name
-          }
-        ])
-      ).values()
-    );
+    const sitesMap = new Map<number, SamplingInformationCachedSite>();
+    params.periods.forEach((period) => {
+      if (!period.survey_sample_site_id || !period.survey_sample_site) {
+        return;
+      }
 
-    const techniques = Array.from(
-      new Map(
-        params.periods.map((period) => [
-          period.method_technique.method_technique_id,
-          {
-            method_technique_id: period.method_technique.method_technique_id,
-            survey_sample_site_id: period.survey_sample_site.survey_sample_site_id,
-            method_response_metric_id: period.method_technique.method_response_metric_id,
-            // Satisfy the IAutocompleteDataGridOption interface
-            value: period.method_technique_id,
-            label: period.method_technique.name
-          }
-        ])
-      ).values()
-    );
+      sitesMap.set(period.survey_sample_site.survey_sample_site_id, {
+        survey_sample_site_id: period.survey_sample_site.survey_sample_site_id,
+        // Satisfy the IAutocompleteDataGridOption interface
+        value: period.survey_sample_site_id,
+        label: period.survey_sample_site.name
+      });
+    });
+    const sites = Array.from(sitesMap.values());
 
-    const periods = Array.from(
-      new Map(
-        params.periods.map((period) => [
-          period.survey_sample_period_id,
-          {
-            survey_sample_period_id: period.survey_sample_period_id,
-            survey_sample_site_id: period.survey_sample_site.survey_sample_site_id,
-            method_technique_id: period.method_technique.method_technique_id,
-            // Satisfy the IAutocompleteDataGridOption interface
-            value: period.survey_sample_period_id,
-            label: getPeriodLabel(period)
-          }
-        ])
-      ).values()
-    );
+    const techniquesMap = new Map<number, SamplingInformationCachedTechnique>();
+    params.periods.forEach((period) => {
+      if (!period.method_technique_id || !period.method_technique) {
+        return;
+      }
+
+      techniquesMap.set(period.method_technique.method_technique_id, {
+        method_technique_id: period.method_technique.method_technique_id,
+        survey_sample_site_id: period.survey_sample_site?.survey_sample_site_id ?? null, // Default to null if not available
+        method_response_metric_id: period.method_technique.method_response_metric_id,
+        // Satisfy the IAutocompleteDataGridOption interface
+        value: period.method_technique_id,
+        label: period.method_technique.name
+      });
+    });
+    const techniques = Array.from(techniquesMap.values());
+
+    const periodsMap = new Map<number, SamplingInformationCachedPeriod>();
+    params.periods.forEach((period) => {
+      if (!period.start_date || !period.end_date) {
+        return;
+      }
+
+      periodsMap.set(period.survey_sample_period_id, {
+        survey_sample_period_id: period.survey_sample_period_id,
+        survey_sample_site_id: period.survey_sample_site?.survey_sample_site_id ?? null,
+        method_technique_id: period.method_technique?.method_technique_id ?? null,
+        // Satisfy the IAutocompleteDataGridOption interface
+        value: period.survey_sample_period_id,
+        label: getDateTimeLabel(period.start_date, period.start_time, period.end_date, period.end_time)
+      });
+    });
+    const periods = Array.from(periodsMap.values());
 
     cachedSamplingInformationRef.current = {
       sites,
@@ -252,21 +256,6 @@ export const useSamplingInformationCache = (): SamplingInformationCache => {
    */
   const findPeriod = (periodId: number | undefined) =>
     cachedSamplingInformationRef.current?.periods.find((period) => period.survey_sample_period_id === periodId);
-
-  /**
-   * Get the label for a period.
-   *
-   * @template PeriodType A type that has at least start_date, start_time, end_date, and end_time properties.
-   * @param {PeriodType} period
-   * @return {*}
-   */
-  const getPeriodLabel = <
-    PeriodType extends { start_date: string; start_time: string | null; end_date: string; end_time: string | null }
-  >(
-    period: PeriodType
-  ) => {
-    return `${period.start_date} ${period.start_time ?? ''} - ${period.end_date} ${period.end_time ?? ''}`;
-  };
 
   /**
    * Get the currently selected site for the row.

@@ -109,7 +109,7 @@ export const getSamplingSiteColDef = (samplePeriods: GetSamplingPeriod[]): GridC
 
     const site = samplePeriods
       .map((period) => period.survey_sample_site)
-      .find((site) => isEqual(site.survey_sample_site_id, params.row.survey_sample_site_id));
+      .find((site) => isEqual(site?.survey_sample_site_id, params.row.survey_sample_site_id));
 
     if (!site) {
       return null;
@@ -139,7 +139,7 @@ export const getMethodTechniqueColDef = (samplePeriods: GetSamplingPeriod[]): Gr
 
     const technique = samplePeriods
       .map((period) => period.method_technique)
-      .find((technique) => isEqual(technique.method_technique_id, params.row.method_technique_id));
+      .find((technique) => isEqual(technique?.method_technique_id, params.row.method_technique_id));
 
     if (!technique) {
       return null;
@@ -171,7 +171,7 @@ export const getSamplingPeriodColDef = (samplePeriods: GetSamplingPeriod[]): Gri
       isEqual(period.survey_sample_period_id, params.row.survey_sample_period_id)
     );
 
-    if (!period) {
+    if (!period || !period.start_date || !period.end_date) {
       return null;
     }
 

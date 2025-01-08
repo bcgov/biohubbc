@@ -1,21 +1,24 @@
 import LoadingButton from '@mui/lab/LoadingButton';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
+import AlertBar from 'components/alert/AlertBar';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { ISurveySamplePeriodPeriodFormData } from 'features/surveys/sampling-information/periods/form/components/periods/SamplePeriodPeriodForm';
 import { SamplingPeriodPeriodFormContainer } from 'features/surveys/sampling-information/periods/form/components/periods/SamplingPeriodPeriodFormContainer';
 import { SamplingPeriodSiteForm } from 'features/surveys/sampling-information/periods/form/components/sites/SamplingPeriodSiteForm';
-import SamplePeriodTechniqueForm from 'features/surveys/sampling-information/periods/form/components/technique/SamplePeriodTechniqueForm';
+import { SamplePeriodTechniqueForm } from 'features/surveys/sampling-information/periods/form/components/technique/SamplePeriodTechniqueForm';
 import { useFormikContext } from 'formik';
 import { useSurveyContext } from 'hooks/useContext';
 import { GetSamplingPeriod } from 'interfaces/useSamplingPeriodApi.interface';
 import { useHistory } from 'react-router';
 
 export interface ISurveySamplePeriodFormData {
-  method_technique_id: number;
-  survey_sample_site_id: number;
+  method_technique_id: number | null;
+  survey_sample_site_id: number | null;
   sample_periods: ISurveySamplePeriodPeriodFormData[];
+  formError?: string; // Used to store form level errors, if any
 }
 
 export const InitialSurveySamplePeriodFormData = {
@@ -35,14 +38,17 @@ export interface ISamplePeriodFormProps {
  * @param {ISamplePeriodFormProps} props
  * @returns {*}
  */
-export const SamplePeriodForm2 = (props: ISamplePeriodFormProps) => {
+export const SamplePeriodForm = (props: ISamplePeriodFormProps) => {
   const { isLoading, editData } = props;
 
   const { projectId, surveyId } = useSurveyContext();
 
   const history = useHistory();
 
-  const { submitForm } = useFormikContext<ISurveySamplePeriodFormData>();
+  const { submitForm, errors } = useFormikContext<ISurveySamplePeriodFormData>();
+
+  // Limit the number of periods that can be added to 1 if editing an existing period.
+  const maximumNumberOfPeriods = editData !== undefined ? 1 : 0;
 
   return (
     <>
@@ -59,8 +65,14 @@ export const SamplePeriodForm2 = (props: ISamplePeriodFormProps) => {
       <Divider sx={{ my: 5 }} />
 
       <HorizontalSplitFormComponent title="Period" summary="Enter period information">
-        <SamplingPeriodPeriodFormContainer disableMultiplePeriods={editData !== undefined} />
+        <SamplingPeriodPeriodFormContainer maximumNumberOfPeriods={maximumNumberOfPeriods} />
       </HorizontalSplitFormComponent>
+
+      {errors.formError && (
+        <Box sx={{ mt: 5 }}>
+          <AlertBar severity="error" variant="outlined" title="Missing detail" text={errors.formError} />
+        </Box>
+      )}
 
       <Divider sx={{ my: 5 }} />
 

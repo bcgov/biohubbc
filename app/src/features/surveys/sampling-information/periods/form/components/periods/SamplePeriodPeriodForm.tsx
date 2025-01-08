@@ -11,8 +11,8 @@ export interface ISurveySamplePeriodPeriodFormData {
   id?: string;
   // Data for the request
   survey_sample_period_id?: number | null; // Will be null for new periods, and a number for existing periods
-  start_date: string;
-  end_date: string;
+  start_date: string | null;
+  end_date: string | null;
   start_time: string | null;
   end_time: string | null;
 }

@@ -8,9 +8,21 @@
  * @return {*}
  */
 export const getPeriodLabel = <
-  PeriodType extends { start_date: string; start_time: string | null; end_date: string; end_time: string | null }
+  PeriodType extends {
+    start_date: string | null;
+    start_time: string | null;
+    end_date: string | null;
+    end_time: string | null;
+  }
 >(
   period: PeriodType
 ) => {
-  return `${period.start_date} ${period.start_time ?? ''} - ${period.end_date} ${period.end_time ?? ''}`;
+  if (!period.start_date || !period.end_date) {
+    return '';
+  }
+
+  const startTimeString = period.start_time ? ` ${period.start_time}` : ''; // includes leading space
+  const endTimeString = period.end_time ? ` ${period.end_time}` : ''; // includes leading space
+
+  return `${period.start_date}${startTimeString} - ${period.end_date}${endTimeString}`;
 };

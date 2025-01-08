@@ -89,19 +89,28 @@ GET.apiDoc = {
                 type: 'integer',
                 minimum: 1
               },
+              survey_id: {
+                type: 'integer',
+                minimum: 1,
+                nullable: true
+              },
               survey_sample_site_id: {
                 type: 'integer',
-                minimum: 1
+                minimum: 1,
+                nullable: true
               },
               method_technique_id: {
                 type: 'integer',
-                minimum: 1
+                minimum: 1,
+                nullable: true
               },
               start_date: {
-                type: 'string'
+                type: 'string',
+                nullable: true
               },
               end_date: {
-                type: 'string'
+                type: 'string',
+                nullable: true
               },
               start_time: {
                 type: 'string',
@@ -134,7 +143,8 @@ GET.apiDoc = {
                     type: 'integer',
                     minimum: 1
                   }
-                }
+                },
+                nullable: true
               },
               survey_sample_site: {
                 type: 'object',
@@ -150,7 +160,8 @@ GET.apiDoc = {
                     type: 'string',
                     description: 'Name of the site'
                   }
-                }
+                },
+                nullable: true
               }
             }
           }
@@ -282,15 +293,18 @@ PUT.apiDoc = {
           properties: {
             survey_sample_site_id: {
               type: 'integer',
-              minimum: 1
+              minimum: 1,
+              nullable: true
             },
             method_technique_id: {
               type: 'integer',
-              minimum: 1
+              minimum: 1,
+              nullable: true
             },
             start_date: {
               type: 'string',
-              description: 'Start date of the period'
+              description: 'Start date of the period',
+              nullable: true
             },
             start_time: {
               type: 'string',
@@ -299,7 +313,8 @@ PUT.apiDoc = {
             },
             end_date: {
               type: 'string',
-              description: 'End date of the period'
+              description: 'End date of the period',
+              nullable: true
             },
             end_time: {
               type: 'string',

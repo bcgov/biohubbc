@@ -7,22 +7,22 @@ import {
   InitialSurveySamplePeriodPeriodFormData,
   SamplePeriodPeriodForm
 } from 'features/surveys/sampling-information/periods/form/components/periods/SamplePeriodPeriodForm';
-import { ISurveySamplePeriodFormData } from 'features/surveys/sampling-information/periods/form/SamplePeriodForm2';
+import { ISurveySamplePeriodFormData } from 'features/surveys/sampling-information/periods/form/SamplePeriodForm';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { v4 } from 'uuid';
 
 export interface ISamplingPeriodPeriodFormContainerProps {
   /**
-   * Set to `true` to disable the ability to add multiple periods to this form.
+   * Limit the number of periods that can be added. If not provided, there is no limit.
    *
    * @type {boolean}
    * @memberof ISamplingPeriodPeriodFormContainerProps
    */
-  disableMultiplePeriods?: boolean;
+  maximumNumberOfPeriods?: number;
 }
 
 export const SamplingPeriodPeriodFormContainer = (props: ISamplingPeriodPeriodFormContainerProps) => {
-  const { disableMultiplePeriods } = props;
+  const { maximumNumberOfPeriods } = props;
 
   const { values } = useFormikContext<ISurveySamplePeriodFormData>();
 
@@ -47,28 +47,27 @@ export const SamplingPeriodPeriodFormContainer = (props: ISamplingPeriodPeriodFo
               );
             })}
             {/* Disable the ability to add additional periods if editing an existing period. */}
-            {!disableMultiplePeriods ? (
-              <Button
-                sx={{
-                  alignSelf: 'flex-start',
-                  mt: 3
-                }}
-                data-testid="sampling-period-add-button"
-                variant="outlined"
-                color="primary"
-                title="Add Period"
-                aria-label="Create Sample Period"
-                startIcon={<Icon path={mdiPlus} size={1} />}
-                onClick={() =>
-                  arrayHelpers.push({
-                    ...InitialSurveySamplePeriodPeriodFormData,
-                    // Temporary id used as the unique key on the frontend, not to be sent to the backend
-                    id: v4()
-                  })
-                }>
-                Add Period
-              </Button>
-            ) : null}
+            <Button
+              sx={{
+                alignSelf: 'flex-start',
+                mt: 3
+              }}
+              data-testid="sampling-period-add-button"
+              variant="outlined"
+              color="primary"
+              title="Add Period"
+              disabled={maximumNumberOfPeriods ? values.sample_periods.length >= maximumNumberOfPeriods : false}
+              aria-label="Create Sample Period"
+              startIcon={<Icon path={mdiPlus} size={1} />}
+              onClick={() =>
+                arrayHelpers.push({
+                  ...InitialSurveySamplePeriodPeriodFormData,
+                  // Temporary id used as the unique key on the frontend, not to be sent to the backend
+                  id: v4()
+                })
+              }>
+              Add Period
+            </Button>
           </Box>
         );
       }}

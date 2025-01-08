@@ -22,102 +22,112 @@ dayjs.extend(isSameOrBefore);
  * to their respective IDs using the provided samplingPeriods.
  *
  * @param {Record<string, any>} row - The current row of the worksheet being processed.
- * @param {SurveySamplePeriodDetails[]} samplingPeriods - The available sampling periods for the survey, used for
+ * @param {SurveySamplePeriodDetails[]} samplingPeriods - All available sampling periods for the survey, used for
  * mapping names to IDs.
- * @return { { sampleSiteId: number, methodTechniqueId: number, samplePeriodId: number } | null } The sampling data with
- * IDs, or null if no valid data is found.
+ * @return {*}  {({ samplePeriodId: number; sampleSiteId: number | null; methodTechniqueId: number | null } | null)} The
+ * sampling data with IDs, or null if no valid data is found.
  */
 export function pullSamplingDataFromWorksheetRowObject(
   row: Record<string, any>,
   samplingPeriods: SurveySamplePeriodDetails[]
-): { sampleSiteId: number; methodTechniqueId: number; samplePeriodId: number } | null {
+): { samplePeriodId: number; sampleSiteId: number | null; methodTechniqueId: number | null } | null {
   // Extract site, technique, and period data from the row
   const siteName = getColumnCellValue(row, 'SAMPLING_SITE').cell as string | null;
   const techniqueName = getColumnCellValue(row, 'METHOD_TECHNIQUE').cell as string | null;
   const period = getColumnCellValue(row, 'SAMPLING_PERIOD').cell as string | null;
 
-  let matchingPeriods1 = samplingPeriods;
+  // Find all periods that match the site, if one exists in the data
+  let periodsMatchingSite: SurveySamplePeriodDetails[] = [];
   if (siteName) {
-    // Filter periods by site name, if one is provided
-    matchingPeriods1 = _findSamplePeriodFromWorksheetSite(siteName, matchingPeriods1);
+    periodsMatchingSite = _findSamplePeriodFromWorksheetSite(siteName, samplingPeriods);
   }
 
-  let matchingPeriods2 = matchingPeriods1;
+  // Find all periods that match the technique, if one exists in the data
+  let periodsMatchingTechnique: SurveySamplePeriodDetails[] = [];
   if (techniqueName) {
     // Filter periods by technique name, if one is provided
-    matchingPeriods2 = _findSamplePeriodFromWorksheetTechnique(techniqueName, matchingPeriods2);
+    periodsMatchingTechnique = _findSamplePeriodFromWorksheetTechnique(techniqueName, samplingPeriods);
   }
 
-  let matchingPeriods3 = matchingPeriods2;
+  // Find all periods that match the period, if one exists in the data
+  let periodsMatchingPeriod: SurveySamplePeriodDetails[] = [];
   if (period) {
     // Filter periods by period, if one is provided
-    matchingPeriods3 = _findSamplePeriodFromWorksheetPeriod(period, matchingPeriods3);
+    periodsMatchingPeriod = _findSamplePeriodFromWorksheetPeriod(period, samplingPeriods);
   }
 
-  if (matchingPeriods3.length === 1) {
-    // If exactly one period matches after applying some or all of the above filters, then return it
-    return _formatMatchingPeriod(matchingPeriods3[0]);
+  // Cross-reference the above 3 arrays, and return the period that matches the most filters
+  const matchingPeriods = _findMostCompatiblePeriod(
+    periodsMatchingSite,
+    periodsMatchingTechnique,
+    periodsMatchingPeriod
+  );
+  if (matchingPeriods.length === 1) {
+    // Found exactly one period that matches some or all of the filters above
+    return _formatMatchingPeriod(matchingPeriods[0]);
   }
 
-  // If no single period was matched above, then attempt to find an suitable existing  period based on the observation
-  // date and time values
+  // If no single period was matched above, then attempt to find a suitable period based on the observation date and time
   const observationDate = getColumnCellValue(row, 'DATE').cell as string | null;
   const observationTime = getColumnCellValue(row, 'TIME').cell as string | null;
 
   const suitablePeriods = _findSamplePeriodFromWorksheetDateAndTime(observationDate, observationTime, samplingPeriods);
 
   if (suitablePeriods.length) {
-    // If at least one suitable period is found, return the first one
+    // If at least one period is found, return the first one
     return _formatMatchingPeriod(suitablePeriods[0]);
   }
 
-  // If no suitable period is found above, return the first matching period from the original filters, in decreasing
-  // order of specificity, if any yield a single match
-  if (matchingPeriods2.length === 1) {
-    return _formatMatchingPeriod(matchingPeriods2[0]);
-  }
-
-  if (matchingPeriods1.length === 1) {
-    return _formatMatchingPeriod(matchingPeriods1[0]);
-  }
-
-  // Unable to match this observation record to any single period
+  // Unable to match this observation record to any existing period
   return null;
 }
 
 /**
- * This function is a helper method for the `pullSamplingDataFromWorksheetRowObject` function. It will take a site name
- * and find all matching sampling periods from the provided samplingPeriods.
+ * This function is a helper method for the `pullSamplingDataFromWorksheetRowObject` function.
  *
- * @param {string} site
+ * It will take a site name and find all matching sampling periods from the provided samplingPeriods.
+ *
+ * @param {string} siteName
  * @param {SurveySamplePeriodDetails[]} samplingPeriods
- * @return {*}
+ * @return {*}  {SurveySamplePeriodDetails[]}
  */
-function _findSamplePeriodFromWorksheetSite(site: string, samplingPeriods: SurveySamplePeriodDetails[]) {
-  return samplingPeriods.filter((period: any) => period.survey_sample_site.name === site);
+function _findSamplePeriodFromWorksheetSite(
+  siteName: string,
+  samplingPeriods: SurveySamplePeriodDetails[]
+): SurveySamplePeriodDetails[] {
+  return samplingPeriods.filter((period: any) => period.survey_sample_site.name === siteName);
 }
 
 /**
- * This function is a helper method for the `pullSamplingDataFromWorksheetRowObject` function. It will take a technique
- * name and find all matching sampling periods from the provided samplingPeriods.
+ * This function is a helper method for the `pullSamplingDataFromWorksheetRowObject` function.
  *
- * @param {string} technique
+ * It will take a technique name and find all matching sampling periods from the provided samplingPeriods.
+ *
+ * @param {string} techniqueName
  * @param {SurveySamplePeriodDetails[]} samplingPeriods
- * @return {*}
+ * @return {*}  {SurveySamplePeriodDetails[]}
  */
-function _findSamplePeriodFromWorksheetTechnique(technique: string, samplingPeriods: SurveySamplePeriodDetails[]) {
-  return samplingPeriods.filter((period: any) => period.method_technique.name === technique);
+function _findSamplePeriodFromWorksheetTechnique(
+  techniqueName: string,
+  samplingPeriods: SurveySamplePeriodDetails[]
+): SurveySamplePeriodDetails[] {
+  return samplingPeriods.filter((period: any) => period.method_technique.name === techniqueName);
 }
 
 /**
- * This function is a helper method for the `pullSamplingDataFromWorksheetRowObject` function. It will take a period
- * string and find all matching sampling periods from the provided samplingPeriods.
+ * This function is a helper method for the `pullSamplingDataFromWorksheetRowObject` function.
  *
- * @param {string} period
+ * It will take a period string and find all matching sampling periods from the provided samplingPeriods.
+ *
+ * @param {string} period A string in the format "YYYY-MM-DDTHH:mm:ss - YYYY-MM-DDTHH:mm:ss", or a valid subset or
+ * superset. (Ex: "2024-07-28 - 2024-07-29", "2024-07-28T00:00:00 - 2024-07-29T23:59:59", etc)
  * @param {SurveySamplePeriodDetails[]} samplingPeriods
- * @return {*}
+ * @return {*}  {SurveySamplePeriodDetails[]}
  */
-function _findSamplePeriodFromWorksheetPeriod(period: string, samplingPeriods: SurveySamplePeriodDetails[]) {
+function _findSamplePeriodFromWorksheetPeriod(
+  period: string,
+  samplingPeriods: SurveySamplePeriodDetails[]
+): SurveySamplePeriodDetails[] {
   // Format the period timestamp data
   const [startDate, endDate] = period.split('-').map((date: string) => dayjs(date).format(DefaultDateFormat));
   const startTime = dayjs(period.split('-')[0]).format('HH:mm:ss');
@@ -178,6 +188,53 @@ function _findSamplePeriodFromWorksheetDateAndTime(
 }
 
 /**
+ * This function is a helper method for the `pullSamplingDataFromWorksheetRowObject` function.
+ *
+ * It will take the periods found by site, technique, and period and return the period(s) that match the most filters.
+ *
+ * @param {SurveySamplePeriodDetails[]} periodsBySite
+ * @param {SurveySamplePeriodDetails[]} periodsbyTechnique
+ * @param {SurveySamplePeriodDetails[]} periodsByPeriod
+ * @return {*}  {SurveySamplePeriodDetails[]}
+ */
+function _findMostCompatiblePeriod(
+  periodsBySite: SurveySamplePeriodDetails[],
+  periodsbyTechnique: SurveySamplePeriodDetails[],
+  periodsByPeriod: SurveySamplePeriodDetails[]
+): SurveySamplePeriodDetails[] {
+  const allPeriodArrays = [periodsBySite, periodsbyTechnique, periodsByPeriod];
+  const periodFrequency = new Map<number, { count: number; period: SurveySamplePeriodDetails }>();
+
+  // Iterate through all periods and count how many times a survey_sample_period_id appears in the arrays
+  for (const periodArray of allPeriodArrays) {
+    for (const period of periodArray) {
+      const periodId = period.survey_sample_period_id;
+
+      if (!periodFrequency.has(periodId)) {
+        periodFrequency.set(periodId, { count: 0, period: period });
+      }
+
+      periodFrequency.get(periodId)!.count += 1;
+    }
+  }
+
+  // Find the period with the highest count
+  let matchingPeriods: SurveySamplePeriodDetails[] = [];
+  let maxCount = 0;
+
+  for (const { count, period } of periodFrequency.values()) {
+    if (count > maxCount) {
+      maxCount = count;
+      matchingPeriods = [period];
+    } else if (count === maxCount) {
+      matchingPeriods.push(period);
+    }
+  }
+
+  return matchingPeriods;
+}
+
+/**
  * This function is a helper method for the `pullSamplingDataFromWorksheetRowObject` function. It will take a matching
  * period and format it to return the sample site, method technique, and sample period IDs.
  *
@@ -186,9 +243,9 @@ function _findSamplePeriodFromWorksheetDateAndTime(
  */
 function _formatMatchingPeriod(period: SurveySamplePeriodDetails) {
   return {
+    samplePeriodId: period.survey_sample_period_id,
     sampleSiteId: period.survey_sample_site_id,
-    methodTechniqueId: period.method_technique_id,
-    samplePeriodId: period.survey_sample_period_id
+    methodTechniqueId: period.method_technique_id
   };
 }
 

@@ -9,8 +9,9 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import PageHeader from 'components/layout/PageHeader';
 import { CreateTechniqueI18N } from 'constants/i18n';
-import TechniqueFormContainer, {
-  CreateTechniqueFormValues
+import {
+  CreateTechniqueFormValues,
+  TechniqueFormContainer
 } from 'features/surveys/sampling-information/techniques/components/TechniqueFormContainer';
 import { FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';

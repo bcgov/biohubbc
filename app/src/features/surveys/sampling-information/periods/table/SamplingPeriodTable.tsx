@@ -13,12 +13,12 @@ import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { SamplePeriodI18N } from 'constants/i18n';
-import dayjs from 'dayjs';
 import { useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { GetSamplingPeriod } from 'interfaces/useSamplingPeriodApi.interface';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { formatTimeDifference } from 'utils/datetime';
+import { getFormattedDate } from 'utils/Utils';
 
 interface ISamplingPeriodTableProps {
   periods: GetSamplingPeriod[];
@@ -142,7 +142,7 @@ export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
       flex: 1,
       sortable: false, // TODO not yet supported by the API
       valueGetter: (params) => {
-        return params.row.survey_sample_site.name;
+        return params.row.survey_sample_site?.name;
       }
     },
     {
@@ -151,7 +151,7 @@ export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
       flex: 1,
       sortable: false, // TODO not yet supported by the API
       valueGetter: (params) => {
-        return params.row.method_technique.name;
+        return params.row.method_technique?.name;
       }
     },
     {
@@ -159,7 +159,7 @@ export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
       headerName: 'Start date',
       flex: 1,
       renderCell: (params) => (
-        <Typography variant="body2">{dayjs(params.row.start_date).format(DATE_FORMAT.MediumDateFormat)}</Typography>
+        <Typography variant="body2">{getFormattedDate(DATE_FORMAT.MediumDateFormat, params.row.start_date)}</Typography>
       )
     },
     {
@@ -172,7 +172,7 @@ export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
       headerName: 'End date',
       flex: 1,
       renderCell: (params) => (
-        <Typography variant="body2">{dayjs(params.row.end_date).format(DATE_FORMAT.MediumDateFormat)}</Typography>
+        <Typography variant="body2">{getFormattedDate(DATE_FORMAT.MediumDateFormat, params.row.end_date)}</Typography>
       )
     },
     {
