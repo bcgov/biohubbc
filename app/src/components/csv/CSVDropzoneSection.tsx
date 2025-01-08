@@ -20,24 +20,22 @@ interface CSVDropzoneSectionProps {
  */
 export const CSVDropzoneSection = (props: PropsWithChildren<CSVDropzoneSectionProps>) => {
   return (
-    <>
-      <Box sx={{ display: 'flex', flexDirection: 'column' }} gap={2}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-          <Typography variant="h3">{props.title}</Typography>
-          <Button
-            sx={{ textTransform: 'none', fontWeight: 'regular' }}
-            variant="outlined"
-            size="small"
-            onClick={props.onDownloadTemplate}>
-            Download Template
-          </Button>
-        </Box>
-        <Typography color="textSecondary" variant="body2">
-          {props.summary}
-        </Typography>
-        {props.children}
-        {props.errors.length > 0 ? <CSVErrorsContainer errors={props.errors} /> : null}
+    <Box sx={{ display: 'flex', flexDirection: 'column' }} gap={2}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+        <Typography variant="h3">{props.title}</Typography>
+        <Button
+          sx={{ textTransform: 'none', fontWeight: 'regular' }}
+          variant="outlined"
+          size="small"
+          onClick={props.onDownloadTemplate}>
+          Download Template
+        </Button>
       </Box>
-    </>
+      <Typography color="textSecondary" variant="body2">
+        {props.summary}
+      </Typography>
+      {props.children}
+      {props.errors.length > 0 ? <CSVErrorsContainer errors={props.errors} /> : null}
+    </Box>
   );
 };

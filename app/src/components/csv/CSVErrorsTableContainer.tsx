@@ -13,7 +13,7 @@ interface CSVErrorsContainerProps {
  * Renders a CSV errors table with toolbar.
  *
  * @param {CSVErrorsContainerProps} props
- * @returns {*}
+ * @returns {*} {JSX.Element}
  */
 export const CSVErrorsContainer = (props: CSVErrorsContainerProps) => {
   return (
