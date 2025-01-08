@@ -6,10 +6,10 @@ import { WorksheetRowIndexSymbol } from '../xlsx-utils/worksheet-utils';
 import {
   executeRowValidator,
   executeSetCellValue,
-  executeUpdateRowState,
   executeValidateCell,
   forEachCSVRow,
   forEachCSVRowCell,
+  updateRowState,
   validateCSVHeaders,
   validateCSVWorksheet
 } from './csv-config-validation';
@@ -103,6 +103,56 @@ describe('csv-config-validation', () => {
         ],
         rows: []
       });
+    });
+
+    it('should call the row validators and return the errors early', () => {
+      const validateRowStub = sinon.stub().returns([{ error: 'error', solution: 'solution' }]);
+
+      const mockConfig: CSVConfig = {
+        staticHeadersConfig: {
+          ALIAS: {
+            aliases: ['ALIAS_2']
+          }
+        },
+        ignoreDynamicHeaders: true,
+        rowValidators: [validateRowStub]
+      };
+
+      const worksheet: WorkSheet = xlsx.utils.json_to_sheet([{ ALIAS: 'value' }, { ALIAS: 'value' }]);
+
+      const result = validateCSVWorksheet(worksheet, mockConfig);
+
+      expect(validateRowStub).to.have.been.calledTwice;
+      expect(result.errors.length).to.be.equal(2);
+    });
+
+    it('should update the row state with the CSVRowState', () => {
+      const mockConfig: CSVConfig = {
+        staticHeadersConfig: {
+          ALIAS: {
+            aliases: [],
+            validateCell: (params) => {
+              params.row[CSVRowState] = { stateValue: 'newNewValue' };
+              return [];
+            }
+          }
+        },
+        ignoreDynamicHeaders: true,
+        rowValidators: [
+          (params) => {
+            params.row[CSVRowState] = { stateValue: 'newValue', rowValidatorValue: 'rowValidator', otherValue: 'test' };
+            return [];
+          }
+        ]
+      };
+
+      const worksheet: WorkSheet = xlsx.utils.json_to_sheet([{ ALIAS: 'value' }]);
+
+      const result = validateCSVWorksheet(worksheet, mockConfig);
+
+      expect(result.rows[0][CSVRowState]?.stateValue).to.equal('newNewValue');
+      expect(result.rows[0][CSVRowState]?.rowValidatorValue).to.equal('rowValidator');
+      expect(result.rows[0][CSVRowState]?.otherValue).to.equal('test');
     });
   });
 
@@ -360,12 +410,12 @@ describe('csv-config-validation', () => {
     });
   });
 
-  describe('executeUpdateRowState', () => {
+  describe('updateRowState', () => {
     it('should mutate the row state with the CSVRowState when rows empty', () => {
       const mutableRows: CSVRow[] = [];
       const row = { TEST: 'cellValue', [CSVRowState]: { stateValue: 'value' } };
 
-      executeUpdateRowState({ row, rowIndex: 0 }, mutableRows);
+      updateRowState({ row, rowIndex: 0 }, mutableRows);
 
       expect(mutableRows[0][CSVRowState]?.stateValue).to.equal('value');
     });
@@ -374,7 +424,7 @@ describe('csv-config-validation', () => {
       const mutableRows: CSVRow[] = [{ NEW: 'cellValue' }];
       const row = { TEST: 'cellValue', [CSVRowState]: { stateValue: 'value' } };
 
-      executeUpdateRowState({ row, rowIndex: 0 }, mutableRows);
+      updateRowState({ row, rowIndex: 0 }, mutableRows);
 
       expect(mutableRows[0][CSVRowState]?.stateValue).to.equal('value');
       expect(mutableRows[0].NEW).to.equal('cellValue');

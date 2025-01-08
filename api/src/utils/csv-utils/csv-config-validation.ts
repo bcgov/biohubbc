@@ -35,12 +35,11 @@ export const validateCSVWorksheet = <StaticHeaderType extends Uppercase<string>>
 
   // Iterate over each row in the worksheet and execute the row validators
   forEachCSVRow(worksheet, config, (rowParams, rowValidators) => {
-    // Update the row state for each row
-    updateRowState(rowParams, rows);
-
     // Execute the row validators and modify the errors
     rowValidators.forEach((rowValidator) => {
       executeRowValidator(rowParams, rowValidator, errors);
+      // Update the row state for each row validator
+      updateRowState(rowParams, rows);
     });
 
     // If there are errors in the row abort early
@@ -224,7 +223,10 @@ export const updateRowState = (params: CSVRowParams, mutableRows: CSVRow[]) => {
 
   // Update the validated row state
   if (params.row?.[CSVRowState]) {
-    mutableRows[params.rowIndex][CSVRowState] = params.row[CSVRowState];
+    const currentState = mutableRows[params.rowIndex][CSVRowState];
+    const newState = params.row[CSVRowState];
+
+    mutableRows[params.rowIndex][CSVRowState] = { ...currentState, ...newState };
   }
 };
 
