@@ -250,8 +250,7 @@ export const executeRowValidator = (params: CSVRowParams, rowValidator: CSVRowVa
       values: error.values ?? null,
       cell: error.cell ?? null,
       header: error.header ?? null,
-      // WorksheetRowIndexSymbol is the original row index from the worksheet ie: before filtering empty rows
-      row: error.row ?? params.row[WorksheetRowIndexSymbol] + 1 ?? params.rowIndex + 2 // headers: 1, data row: 2
+      row: _getErrorRowIndex(params, error.row)
     });
   });
 };
@@ -311,8 +310,7 @@ export const executeValidateCell = (
         values: error.values ?? null,
         cell: (error.cell === undefined ? params.cell : error.cell) ?? null, // Use cell value if intentionally null
         header: (error.header === undefined ? params.header : error.header) ?? null, // Use header value if intentionally null
-        // WorksheetRowIndexSymbol is the original row index from the worksheet ie: before filtering empty rows
-        row: error.row ?? params.row[WorksheetRowIndexSymbol] + 1 ?? params.rowIndex + 2 // headers: 1, data row: 2
+        row: _getErrorRowIndex(params, error.row)
       });
     });
   }
@@ -342,4 +340,29 @@ export const _getCSVStaticHeaderMap = (config: CSVConfig) => {
   }
 
   return headerMap;
+};
+
+/**
+ * Get the row index the error occurred on.
+ *
+ * Note: Header row index 1. First data row index 2.
+ * Note: `WorksheetRowIndexSymbol` is the original row index from the worksheet ie: before filtering empty rows
+ *
+ * @param {CSVRowParams} params - The CSV row or cell parameters
+ * @param {number} [errorIndex] - The error index
+ * @returns {*} {number} - The error row index
+ */
+const _getErrorRowIndex = (params: { row: CSVRow; rowIndex: number }, errorIndex?: number) => {
+  // If the error index is provided use that
+  if (errorIndex) {
+    return errorIndex;
+  }
+
+  // This is injected by the `getWorksheetRowObjects` function
+  if (params.row[WorksheetRowIndexSymbol]) {
+    return params.row[WorksheetRowIndexSymbol] + 1;
+  }
+
+  // Params row index is 0 based
+  return params.rowIndex + 2;
 };
