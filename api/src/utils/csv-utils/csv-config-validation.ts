@@ -353,7 +353,6 @@ export const _getCSVStaticHeaderMap = (config: CSVConfig) => {
  * @returns {*} {number} - The error row index
  */
 const _getErrorRowIndex = (params: { row: CSVRow; rowIndex: number }, errorIndex?: number) => {
-  // If the error index is provided use that
   if (errorIndex) {
     return errorIndex;
   }
