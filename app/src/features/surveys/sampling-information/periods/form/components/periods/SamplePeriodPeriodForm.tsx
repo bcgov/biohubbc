@@ -5,6 +5,7 @@ import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import { DateTimeFields } from 'components/fields/DateTimeFields';
 import { useFormikContext } from 'formik';
+import { v4 } from 'uuid';
 
 export interface ISurveySamplePeriodPeriodFormData {
   // Temporary id used as the unique key on the frontend, not to be sent to the backend
@@ -18,6 +19,7 @@ export interface ISurveySamplePeriodPeriodFormData {
 }
 
 export const InitialSurveySamplePeriodPeriodFormData: ISurveySamplePeriodPeriodFormData = {
+  id: v4(),
   survey_sample_period_id: null,
   start_date: '',
   end_date: '',

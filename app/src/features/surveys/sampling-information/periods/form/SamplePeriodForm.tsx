@@ -5,7 +5,10 @@ import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import AlertBar from 'components/alert/AlertBar';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
-import { ISurveySamplePeriodPeriodFormData } from 'features/surveys/sampling-information/periods/form/components/periods/SamplePeriodPeriodForm';
+import {
+  InitialSurveySamplePeriodPeriodFormData,
+  ISurveySamplePeriodPeriodFormData
+} from 'features/surveys/sampling-information/periods/form/components/periods/SamplePeriodPeriodForm';
 import { SamplingPeriodPeriodFormContainer } from 'features/surveys/sampling-information/periods/form/components/periods/SamplingPeriodPeriodFormContainer';
 import { SamplingPeriodSiteForm } from 'features/surveys/sampling-information/periods/form/components/sites/SamplingPeriodSiteForm';
 import { SamplePeriodTechniqueForm } from 'features/surveys/sampling-information/periods/form/components/technique/SamplePeriodTechniqueForm';
@@ -24,7 +27,7 @@ export interface ISurveySamplePeriodFormData {
 export const InitialSurveySamplePeriodFormData = {
   method_technique_id: '' as unknown as number,
   survey_sample_site_id: '' as unknown as number,
-  sample_periods: []
+  sample_periods: [InitialSurveySamplePeriodPeriodFormData]
 };
 
 export interface ISamplePeriodFormProps {
@@ -52,19 +55,19 @@ export const SamplePeriodForm = (props: ISamplePeriodFormProps) => {
 
   return (
     <>
-      <HorizontalSplitFormComponent title="Technique" summary="Select a technique">
+      <HorizontalSplitFormComponent title="Technique" summary="Select the technique used for the sampling period">
         <SamplePeriodTechniqueForm editData={editData?.method_technique} />
       </HorizontalSplitFormComponent>
 
       <Divider sx={{ my: 5 }} />
 
-      <HorizontalSplitFormComponent title="Site" summary="Select a site">
+      <HorizontalSplitFormComponent title="Site" summary="Select the site where sampling occurred">
         <SamplingPeriodSiteForm editData={editData?.survey_sample_site} />
       </HorizontalSplitFormComponent>
 
       <Divider sx={{ my: 5 }} />
 
-      <HorizontalSplitFormComponent title="Period" summary="Enter period information">
+      <HorizontalSplitFormComponent title="Period" summary="Enter the start and end time of the sampling period">
         <SamplingPeriodPeriodFormContainer maximumNumberOfPeriods={maximumNumberOfPeriods} />
       </HorizontalSplitFormComponent>
 

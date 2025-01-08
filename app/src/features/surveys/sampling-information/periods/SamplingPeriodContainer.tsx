@@ -181,7 +181,7 @@ export const SamplingPeriodContainer = () => {
           </Typography>
         </Typography>
         <Stack gap={1} direction="row">
-          <HelpButtonDialog markdownType={MarkdownTypeNameEnum.TECHNIQUES} />
+          <HelpButtonDialog markdownType={MarkdownTypeNameEnum.SAMPLING_PERIODS} />
           <Button
             variant="contained"
             color="primary"

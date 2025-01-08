@@ -34,7 +34,7 @@ export const SamplingPeriodPeriodFormContainer = (props: ISamplingPeriodPeriodFo
           <Box>
             {values.sample_periods.map((_period, index) => {
               return (
-                <Grid container spacing={3}>
+                <Grid container spacing={3} mb={3}>
                   <Grid item xs={12}>
                     <SamplePeriodPeriodForm
                       index={index}
@@ -49,8 +49,7 @@ export const SamplingPeriodPeriodFormContainer = (props: ISamplingPeriodPeriodFo
             {/* Disable the ability to add additional periods if editing an existing period. */}
             <Button
               sx={{
-                alignSelf: 'flex-start',
-                mt: 3
+                alignSelf: 'flex-start'
               }}
               data-testid="sampling-period-add-button"
               variant="outlined"
