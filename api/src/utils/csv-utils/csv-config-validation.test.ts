@@ -4,12 +4,16 @@ import sinonChai from 'sinon-chai';
 import xlsx, { WorkSheet } from 'xlsx';
 import { WorksheetRowIndexSymbol } from '../xlsx-utils/worksheet-utils';
 import {
+  executeRowValidator,
   executeSetCellValue,
+  executeUpdateRowState,
   executeValidateCell,
+  forEachCSVRow,
+  forEachCSVRowCell,
   validateCSVHeaders,
   validateCSVWorksheet
 } from './csv-config-validation';
-import { CSVConfig } from './csv-config-validation.interface';
+import { CSVConfig, CSVError, CSVRow, CSVRowState } from './csv-config-validation.interface';
 chai.use(sinonChai);
 
 describe('csv-config-validation', () => {
@@ -197,145 +201,208 @@ describe('csv-config-validation', () => {
     });
   });
 
-  //describe('forEachCSVRowCell', () => {
-  //  it('should iterate over each cell in the worksheet', () => {
-  //    const worksheet: WorkSheet = xlsx.utils.json_to_sheet([{ TEST: 'cellValue' }]);
-  //
-  //    const validateCellStub = sinon.stub();
-  //    const setCellValueStub = sinon.stub();
-  //
-  //    const config: CSVConfig = {
-  //      staticHeadersConfig: {
-  //        TEST: {
-  //          aliases: [],
-  //          validateCell: validateCellStub,
-  //          setCellValue: setCellValueStub
-  //        }
-  //      },
-  //      ignoreDynamicHeaders: true
-  //    };
-  //
-  //    const callbackStub = sinon.stub();
-  //
-  //    forEachCSVRowCell(worksheet, config, callbackStub);
-  //
-  //    expect(callbackStub).to.have.been.calledOnceWithExactly(
-  //      {
-  //        cell: 'cellValue',
-  //        header: 'TEST',
-  //        rowIndex: 0,
-  //        row: { TEST: 'cellValue' },
-  //        staticHeader: 'TEST',
-  //        mutateCell: 'cellValue'
-  //      },
-  //      {
-  //        validateCell: validateCellStub,
-  //        setCellValue: setCellValueStub
-  //      }
-  //    );
-  //  });
-  //
-  //  it('should iterate over each cell in the worksheet when alias is used', () => {
-  //    const worksheet: WorkSheet = xlsx.utils.json_to_sheet([{ TEST_ALIAS: 'cellValue' }]);
-  //
-  //    const validateCellStub = sinon.stub();
-  //    const setCellValueStub = sinon.stub();
-  //
-  //    const config: CSVConfig = {
-  //      staticHeadersConfig: {
-  //        TEST: {
-  //          aliases: ['TEST_ALIAS'],
-  //          validateCell: validateCellStub,
-  //          setCellValue: setCellValueStub
-  //        }
-  //      },
-  //      ignoreDynamicHeaders: true
-  //    };
-  //
-  //    const callbackStub = sinon.stub();
-  //
-  //    forEachCSVRowCell(worksheet, config, callbackStub);
-  //
-  //    expect(callbackStub).to.have.been.calledOnceWithExactly(
-  //      {
-  //        cell: 'cellValue',
-  //        header: 'TEST_ALIAS',
-  //        rowIndex: 0,
-  //        row: { TEST_ALIAS: 'cellValue' },
-  //        staticHeader: 'TEST',
-  //        mutateCell: 'cellValue'
-  //      },
-  //      {
-  //        validateCell: validateCellStub,
-  //        setCellValue: setCellValueStub
-  //      }
-  //    );
-  //  });
-  //
-  //  it('should iterate over dynamic cell values', () => {
-  //    const worksheet: WorkSheet = xlsx.utils.json_to_sheet([
-  //      { TEST_ALIAS: 'cellValue', DYNAMIC_HEADER: 'dynamicValue' }
-  //    ]);
-  //
-  //    const staticValidateCellStub = sinon.stub();
-  //    const staticSetCellValueStub = sinon.stub();
-  //
-  //    const validateDynamicCellStub = sinon.stub();
-  //    const setCellValueDynamicStub = sinon.stub();
-  //
-  //    const config: CSVConfig = {
-  //      staticHeadersConfig: {
-  //        TEST: {
-  //          aliases: ['TEST_ALIAS'],
-  //          validateCell: staticValidateCellStub,
-  //          setCellValue: staticSetCellValueStub
-  //        }
-  //      },
-  //      dynamicHeadersConfig: {
-  //        validateCell: validateDynamicCellStub,
-  //        setCellValue: setCellValueDynamicStub
-  //      },
-  //      ignoreDynamicHeaders: false
-  //    };
-  //
-  //    const callbackStub = sinon.stub();
-  //
-  //    forEachCSVRowCell(worksheet, config, callbackStub);
-  //
-  //    expect(callbackStub).to.have.been.calledTwice;
-  //
-  //    expect(callbackStub.getCall(0).args).to.deep.equal([
-  //      {
-  //        cell: 'cellValue',
-  //        header: 'TEST_ALIAS',
-  //        rowIndex: 0,
-  //        row: { TEST_ALIAS: 'cellValue', DYNAMIC_HEADER: 'dynamicValue', [WorksheetRowIndexSymbol]: 1 },
-  //        staticHeader: 'TEST',
-  //        mutateCell: 'cellValue'
-  //      },
-  //      {
-  //        validateCell: staticValidateCellStub,
-  //        setCellValue: staticSetCellValueStub
-  //      }
-  //    ]);
-  //
-  //    expect(callbackStub.getCall(1).args).to.deep.equal([
-  //      {
-  //        cell: 'dynamicValue',
-  //        header: 'DYNAMIC_HEADER',
-  //        rowIndex: 0,
-  //        row: { TEST_ALIAS: 'cellValue', DYNAMIC_HEADER: 'dynamicValue', [WorksheetRowIndexSymbol]: 1 },
-  //        staticHeader: undefined, // Dynamic headers have no static header mapping
-  //        mutateCell: 'dynamicValue'
-  //      },
-  //      {
-  //        validateCell: validateDynamicCellStub,
-  //        setCellValue: setCellValueDynamicStub
-  //      }
-  //    ]);
-  //  });
-  //});
+  describe('forEachCSVRow', () => {
+    it('should invoke the callback for each row in the worksheet', () => {
+      const worksheet: WorkSheet = xlsx.utils.json_to_sheet([{ TEST: 'cellValue' }, { TEST: 'cellValue2' }]);
 
+      const callbackStub = sinon.stub();
+
+      forEachCSVRow(
+        worksheet,
+        { staticHeadersConfig: { TEST: { aliases: [] } }, ignoreDynamicHeaders: true },
+        callbackStub
+      );
+
+      expect(callbackStub).to.have.been.calledTwice;
+    });
+  });
+
+  describe('forEachCSVRowCell', () => {
+    it('should iterate over each cell in the worksheet', () => {
+      const row = { TEST: 'cellValue' };
+
+      const validateCellStub = sinon.stub();
+      const setCellValueStub = sinon.stub();
+
+      const config: CSVConfig = {
+        staticHeadersConfig: {
+          TEST: {
+            aliases: [],
+            validateCell: validateCellStub,
+            setCellValue: setCellValueStub
+          }
+        },
+        ignoreDynamicHeaders: true
+      };
+
+      const callbackStub = sinon.stub();
+
+      forEachCSVRowCell(row, 0, config, callbackStub);
+
+      expect(callbackStub).to.have.been.calledOnceWithExactly(
+        {
+          cell: 'cellValue',
+          header: 'TEST',
+          rowIndex: 0,
+          row: { TEST: 'cellValue' },
+          staticHeader: 'TEST',
+          mutateCell: 'cellValue'
+        },
+        {
+          validateCell: validateCellStub,
+          setCellValue: setCellValueStub
+        }
+      );
+    });
+
+    it('should iterate over each cell in the worksheet when alias is used', () => {
+      const row = { TEST_ALIAS: 'cellValue' };
+
+      const validateCellStub = sinon.stub();
+      const setCellValueStub = sinon.stub();
+
+      const config: CSVConfig = {
+        staticHeadersConfig: {
+          TEST: {
+            aliases: ['TEST_ALIAS'],
+            validateCell: validateCellStub,
+            setCellValue: setCellValueStub
+          }
+        },
+        ignoreDynamicHeaders: true
+      };
+
+      const callbackStub = sinon.stub();
+
+      forEachCSVRowCell(row, 0, config, callbackStub);
+
+      expect(callbackStub).to.have.been.calledOnceWithExactly(
+        {
+          cell: 'cellValue',
+          header: 'TEST_ALIAS',
+          rowIndex: 0,
+          row: { TEST_ALIAS: 'cellValue' },
+          staticHeader: 'TEST',
+          mutateCell: 'cellValue'
+        },
+        {
+          validateCell: validateCellStub,
+          setCellValue: setCellValueStub
+        }
+      );
+    });
+
+    it('should iterate over dynamic cell values', () => {
+      const row = { TEST_ALIAS: 'cellValue', DYNAMIC_HEADER: 'dynamicValue' };
+
+      const staticValidateCellStub = sinon.stub();
+      const staticSetCellValueStub = sinon.stub();
+
+      const validateDynamicCellStub = sinon.stub();
+      const setCellValueDynamicStub = sinon.stub();
+
+      const config: CSVConfig = {
+        staticHeadersConfig: {
+          TEST: {
+            aliases: ['TEST_ALIAS'],
+            validateCell: staticValidateCellStub,
+            setCellValue: staticSetCellValueStub
+          }
+        },
+        dynamicHeadersConfig: {
+          validateCell: validateDynamicCellStub,
+          setCellValue: setCellValueDynamicStub
+        },
+        ignoreDynamicHeaders: false
+      };
+
+      const callbackStub = sinon.stub();
+
+      forEachCSVRowCell(row, 0, config, callbackStub);
+
+      expect(callbackStub).to.have.been.calledTwice;
+
+      expect(callbackStub.getCall(0).args).to.deep.equal([
+        {
+          cell: 'cellValue',
+          header: 'TEST_ALIAS',
+          rowIndex: 0,
+          row: {
+            TEST_ALIAS: 'cellValue',
+            DYNAMIC_HEADER: 'dynamicValue'
+          },
+          staticHeader: 'TEST',
+          mutateCell: 'cellValue'
+        },
+        {
+          validateCell: staticValidateCellStub,
+          setCellValue: staticSetCellValueStub
+        }
+      ]);
+
+      expect(callbackStub.getCall(1).args).to.deep.equal([
+        {
+          cell: 'dynamicValue',
+          header: 'DYNAMIC_HEADER',
+          rowIndex: 0,
+          row: {
+            TEST_ALIAS: 'cellValue',
+            DYNAMIC_HEADER: 'dynamicValue'
+          },
+          staticHeader: undefined, // Dynamic headers have no static header mapping
+          mutateCell: 'dynamicValue'
+        },
+        {
+          validateCell: validateDynamicCellStub,
+          setCellValue: setCellValueDynamicStub
+        }
+      ]);
+    });
+  });
+
+  describe('executeUpdateRowState', () => {
+    it('should mutate the row state with the CSVRowState when rows empty', () => {
+      const mutableRows: CSVRow[] = [];
+      const row = { TEST: 'cellValue', [CSVRowState]: { stateValue: 'value' } };
+
+      executeUpdateRowState({ row, rowIndex: 0 }, mutableRows);
+
+      expect(mutableRows[0][CSVRowState]?.stateValue).to.equal('value');
+    });
+
+    it('should mutate the row state with the CSVRowState when rows not empty', () => {
+      const mutableRows: CSVRow[] = [{ NEW: 'cellValue' }];
+      const row = { TEST: 'cellValue', [CSVRowState]: { stateValue: 'value' } };
+
+      executeUpdateRowState({ row, rowIndex: 0 }, mutableRows);
+
+      expect(mutableRows[0][CSVRowState]?.stateValue).to.equal('value');
+      expect(mutableRows[0].NEW).to.equal('cellValue');
+    });
+  });
+
+  describe('executeRowValidator', () => {
+    it('should call the row validator callback and mutate errors array', () => {
+      const mutableErrors: CSVError[] = [];
+
+      const validateRowStub = sinon.stub().returns([{ error: 'error', solution: 'solution' }]);
+
+      const row = { TEST: 'cellValue', [WorksheetRowIndexSymbol]: 1 };
+
+      executeRowValidator({ row, rowIndex: 0 }, validateRowStub, mutableErrors);
+      expect(validateRowStub).to.have.been.calledOnceWithExactly({ row, rowIndex: 0 });
+      expect(mutableErrors).to.deep.equal([
+        {
+          error: 'error',
+          solution: 'solution',
+          cell: null,
+          header: null,
+          row: 2,
+          values: null
+        }
+      ]);
+    });
+  });
   describe('executeValidateCell', () => {
     it('should call the validateCell callback and mutate errors array', () => {
       const errors: any[] = [];

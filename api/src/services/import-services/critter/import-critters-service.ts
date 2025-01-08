@@ -169,19 +169,13 @@ export class ImportCrittersService extends DBService {
     for (const row of rows) {
       const critterId = v4();
 
-      console.log({ rowState: row[CSVRowState] });
-
-      if (!row[CSVRowState]?.id) {
-        throw new Error('Row does not have row state');
-      }
-
       // SIMS payload
       simsPayload.push(critterId);
 
       // Critterbase static headers payload
       critterbasePayload.critters?.push({
         critter_id: critterId,
-        sex_qualitative_option_id: row[CSVRowState]?.id,
+        sex_qualitative_option_id: row[CSVRowState]?.sexId,
         itis_tsn: row.ITIS_TSN,
         animal_id: row.ALIAS,
         wlh_id: row.WLH_ID,
@@ -275,7 +269,6 @@ export class ImportCrittersService extends DBService {
 
     return {
       validateCell: getCritterSexCellValidator(rowDictionary, this.configUtils)
-      //setCellValue: getCritterSexCellSetter(rowDictionary, this.configUtils)
     };
   }
 

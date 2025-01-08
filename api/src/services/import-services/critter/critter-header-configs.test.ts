@@ -7,7 +7,6 @@ import {
   getCritterAliasCellValidator,
   getCritterCollectionUnitCellSetter,
   getCritterCollectionUnitCellValidator,
-  getCritterSexCellSetter,
   getCritterSexCellValidator,
   getWlhIDCellValidator
 } from './critter-header-configs';
@@ -336,30 +335,6 @@ describe('critter-header-configs', () => {
       });
 
       expect(result[0].error).to.be.equal('Sex cell value is invalid');
-    });
-  });
-
-  describe('getCritterSexCellSetter', () => {
-    it('should return the uuid', () => {
-      const nestedRecord = new NestedRecord({
-        1: {
-          male: 'uuid'
-        }
-      });
-      const cellSetter = getCritterSexCellSetter(
-        nestedRecord,
-        new CSVConfigUtils(xlsx.utils.json_to_sheet([]), mockConfig)
-      );
-
-      const result = cellSetter({
-        cell: 'MALE',
-        row: { ITIS_TSN: 1 },
-        header: 'HEADER',
-        rowIndex: 0,
-        mutateCell: 'MALE'
-      });
-
-      expect(result).to.be.equal('uuid');
     });
   });
 

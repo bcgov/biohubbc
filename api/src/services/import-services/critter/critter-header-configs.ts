@@ -196,7 +196,7 @@ export const getCritterSexCellValidator = (
 
     // Set the row state to store the qualitative option id for the sex
     params.row[CSVRowState] = {
-      id: rowDictionarySex
+      sexId: rowDictionarySex
     };
 
     return [];

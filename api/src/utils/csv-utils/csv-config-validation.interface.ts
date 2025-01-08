@@ -8,7 +8,6 @@ export const CSV_ERROR_MESSAGE =
  *  1. Allow or disallow duplicate CSV rows
  *    - Similar to a DB unique constraint? ie: ['NAME', 'AGE']
  *  2. Support CSVWarnings
- *  3. Support CSVRowValidation? ie: Validate the entire row before / after the cell validation
  */
 export interface CSVConfig<THeader extends Uppercase<string> = Uppercase<string>> {
   /**
@@ -40,6 +39,15 @@ export interface CSVConfig<THeader extends Uppercase<string> = Uppercase<string>
    */
   dynamicHeadersConfig?: CSVHeaderConfig;
 
+  /**
+   * A list of row validators
+   *
+   * Note: These are called BEFORE the static and dynamic cell validators.
+   * Useful if needing to validate multiple headers (ex: ALIAS, DATE, TIME) or applying some preliminary
+   * validation before the cell validation.
+   *
+   * @type {CSVRowValidator[] | undefined}
+   */
   rowValidators?: CSVRowValidator[];
 }
 
@@ -68,6 +76,13 @@ interface CSVStaticHeaderConfig {
  */
 export type CSVCellValidator = (params: CSVParams) => CSVError[];
 
+/**
+ * The CSV row validator function
+ *
+ * @param {CSVRowParams} params - The CSV row parameters
+ * @returns {CSVError[]} - The list of CSV errors
+ *
+ */
 export type CSVRowValidator = (params: CSVRowParams) => CSVError[];
 
 /**
@@ -100,7 +115,19 @@ export interface CSVHeaderConfig {
 }
 
 export interface CSVRowParams {
+  /**
+   * The data row object.
+   *
+   * @type {CSVRow}
+   */
   row: CSVRow;
+  /**
+   * The row index.
+   *
+   * Note: First data row index 0.
+   *
+   * @type {number}
+   */
   rowIndex: number;
 }
 
@@ -206,8 +233,11 @@ export interface CSVError {
    */
   row?: number;
 }
-
-// The CSV row state symbol to store additional row metadata
+/**
+ * The CSV row state symbol to store additional row metadata
+ * without interfering with the row shape or structure
+ *
+ */
 export const CSVRowState = Symbol('CSVRowStateSymbol');
 
 /**

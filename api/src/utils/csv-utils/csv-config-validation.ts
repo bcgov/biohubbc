@@ -1,5 +1,4 @@
 import { WorkSheet } from 'xlsx';
-import { Row } from '../../services/import-services/import-csv.interface';
 import { getWorksheetRowObjects, WorksheetRowIndexSymbol } from '../xlsx-utils/worksheet-utils';
 import { CSVConfigUtils } from './csv-config-utils';
 import {
@@ -36,6 +35,7 @@ export const validateCSVWorksheet = <StaticHeaderType extends Uppercase<string>>
 
   // Iterate over each row in the worksheet and execute the row validators
   forEachCSVRow(worksheet, config, (rowParams, rowValidators) => {
+    // Update the row state for each row
     executeUpdateRowState(rowParams, rows);
 
     // Execute the row validators and modify the errors
@@ -61,6 +61,7 @@ export const validateCSVWorksheet = <StaticHeaderType extends Uppercase<string>>
       // Set the cell value and modify the rows
       executeSetCellValue(cellParams, headerConfig, rows); // Mutates `rows`
 
+      // Update the row state for each cell
       executeUpdateRowState(rowParams, rows);
     });
   });
@@ -146,6 +147,14 @@ export const validateCSVHeaders = (worksheet: WorkSheet, config: CSVConfig): CSV
   return csvErrors;
 };
 
+/**
+ * Iterate over each row in the CSV worksheet.
+ *
+ * @param {WorkSheet} worksheet - The worksheet
+ * @param {CSVConfig} config - The CSV configuration
+ * @param {(params: CSVRowParams, rowValidators: CSVRowValidator[]) => void} callback - The callback function
+ * @returns {*} {void}
+ */
 export const forEachCSVRow = (
   worksheet: WorkSheet,
   config: CSVConfig,
@@ -163,13 +172,14 @@ export const forEachCSVRow = (
 /**
  * Iterate over each cell in the CSV worksheet.
  *
- * @param {WorkSheet} worksheet - The worksheet
+ * @param {CSVRow} worksheetRow - The worksheet row object
+ * @param {number} rowIndex - The worksheet row index - 0 is the first data row
  * @param {CSVConfig} config - The CSV configuration
  * @param {(params: CSVParams, headerConfig: CSVHeaderConfig) => void} callback - The callback function
  * @returns {*} {void}
  */
 export const forEachCSVRowCell = (
-  worksheetRow: Row,
+  worksheetRow: CSVRow,
   rowIndex: number,
   config: CSVConfig,
   callback: (params: CSVParams, headerConfig: CSVHeaderConfig) => void
@@ -197,16 +207,37 @@ export const forEachCSVRowCell = (
   }
 };
 
+/**
+ * Execute the row state update.
+ *
+ * Note: This mutates the CSV row objects `mutableRows`.
+ *
+ * @param {CSVRowParams} params - The CSV row parameters
+ * @param {CSVRow[]} mutableRows - The mutable rows array
+ * @returns {*} {void}
+ */
 export const executeUpdateRowState = (params: CSVRowParams, mutableRows: CSVRow[]) => {
-  if (!mutableRows[params.rowIndex]) {
+  // Initialize the row if it does not exist
+  if (!mutableRows[params.rowIndex] && params.row[CSVRowState]) {
     mutableRows[params.rowIndex] = {};
   }
 
-  if (!mutableRows[params.rowIndex]?.[CSVRowState] && params.row?.[CSVRowState]) {
+  // Update the validated row state
+  if (params.row?.[CSVRowState]) {
     mutableRows[params.rowIndex][CSVRowState] = params.row[CSVRowState];
   }
 };
 
+/**
+ * Execute the row validator.
+ *
+ * Note: This mutates the CSV errors array `mutableErrors`.
+ *
+ * @param {CSVRowParams} params - The CSV row parameters
+ * @param {CSVRowValidator} rowValidator - The row validator
+ * @param {CSVError[]} mutableErrors - The mutable errors array
+ * @returns {*} {void}
+ */
 export const executeRowValidator = (params: CSVRowParams, rowValidator: CSVRowValidator, mutableErrors: CSVError[]) => {
   const rowErrors = rowValidator(params);
 
