@@ -473,7 +473,7 @@ export class ObservationRepository extends BaseRepository {
 
     const knex = getKnex();
 
-    const queryBuilder = knex.from(observationListQuery.as('olq')).select(knex.raw('count(*)::integer as count'));
+    const queryBuilder = knex.from(observationListQuery).select(knex.raw('count(*)::integer as count'));
 
     const response = await this.connection.knex(queryBuilder, z.object({ count: z.number() }));
 

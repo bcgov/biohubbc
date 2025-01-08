@@ -57,7 +57,6 @@ export async function seed(knex: Knex): Promise<void> {
   }
 
   const checkProjectsResponse = await knex.raw(getProjectCount());
-
   // The number of projects that already exist
   const numberOfProjects = checkProjectsResponse.rows[0].count;
 
@@ -74,8 +73,12 @@ export async function seed(knex: Knex): Promise<void> {
         ${insertProjectParticipationData(projectId)}
       `);
 
-      // Insert survey data
-      for (let j = 0; j < NUM_SEED_SURVEYS_PER_PROJECT; j++) {
+      const checkSurveysResponse = await knex.raw(getSurveyCount(projectId));
+      // The number of projects that already exist
+      const numberOfSurveys = checkSurveysResponse.rows[0].count;
+
+      // If the number of surveys that exists for this project is less than the target number of seed surveys
+      for (let j = numberOfSurveys; j < NUM_SEED_SURVEYS_PER_PROJECT; j++) {
         const createSurveyResponse = await knex.raw(insertSurveyData(projectId, faker.lorem.words(8)));
         const surveyId = createSurveyResponse.rows[0].survey_id;
 
@@ -147,9 +150,18 @@ const checkAnyFundingSourceExists = () => `
 
 const getProjectCount = () => `
   SELECT
-    count(*) as count
+    count(*)::integer as count
   FROM
     project;
+`;
+
+const getSurveyCount = (projectId: number) => `
+  SELECT
+    count(*)::integer as count
+  FROM
+    survey
+  WHERE 
+    project_id = ${projectId};
 `;
 
 const insertSurveySiteStrategy = (surveyId: number) => `
@@ -969,9 +981,7 @@ const insertSurveyObservationData = (surveyId: number, count: number) => {
     timestamp $$${faker.date
       .between({ from: '2000-01-01T00:00:00-08:00', to: '2005-01-01T00:00:00-08:00' })
       .toISOString()}$$::time,
-    (SELECT survey_sample_period_id FROM survey_sample_period WHERE survey_sample_site_id = (
-      SELECT survey_sample_site_id FROM survey_sample_site WHERE survey_id = ${surveyId} LIMIT 1
-    ) LIMIT 1)
+    (SELECT survey_sample_period_id FROM survey_sample_period WHERE survey_id = ${surveyId} ORDER BY random() LIMIT 1)
   )
   RETURNING survey_observation_id;
 `;

@@ -308,22 +308,24 @@ export class ObservationService extends DBService {
     supplementaryObservationData: AllObservationSupplementaryData;
   }> {
     const samplePeriodService = new SamplePeriodService(this.connection);
-    const surveyObservations = await this.observationRepository.getSurveyObservationsWithSamplingDataWithAttributesData(
-      surveyId,
-      pagination
-    );
-
-    // TODO nick
-    // const sampleSiteIds = surveyObservations
-    //   .filter((obs) => obs.survey_sample_site_id)
-    //   .map((observation) => observation.survey_sample_site_id!);
-
-    // Get supplementary observation data
-    const observationCount = await this.observationRepository.getSurveyObservationCount(surveyId);
     const subCountService = new SubCountService(this.connection);
-    const measurementTypeDefinitions = await subCountService.getMeasurementTypeDefinitionsForSurvey(surveyId);
-    const environmentTypeDefinitions = await subCountService.getEnvironmentTypeDefinitionsForSurvey(surveyId);
-    const samplePeriods = await samplePeriodService.getSamplePeriodsForSurvey(surveyId); // TODO NICK - fetch periods based on some filter? survey_sample_site_id? observation_id? etc? SO we dont just return EVERY period in the whole survey
+
+    const [
+      surveyObservations,
+      observationCount,
+      measurementTypeDefinitions,
+      environmentTypeDefinitions,
+      samplePeriods
+    ] = await Promise.all([
+      // Fetch observations
+      this.observationRepository.getSurveyObservationsWithSamplingDataWithAttributesData(surveyId, pagination),
+      // Fetch pagination count data
+      this.observationRepository.getSurveyObservationCount(surveyId),
+      // Fetch supplementary data
+      subCountService.getMeasurementTypeDefinitionsForSurvey(surveyId),
+      subCountService.getEnvironmentTypeDefinitionsForSurvey(surveyId),
+      samplePeriodService.getSamplePeriodsForSurvey(surveyId)
+    ]);
 
     return {
       surveyObservations: surveyObservations,

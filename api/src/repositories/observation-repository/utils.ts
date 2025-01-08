@@ -115,17 +115,17 @@ export function getSurveyObservationsBaseQuery(
             'method_technique.name as method_technique_name'
           )
           .from('survey_sample_period')
-          .innerJoin(
+          .leftJoin(
             'survey_sample_site',
             'survey_sample_site.survey_sample_site_id',
             'survey_sample_period.survey_sample_site_id'
           )
-          .innerJoin(
+          .leftJoin(
             'method_technique',
             'method_technique.method_technique_id',
             'survey_sample_period.method_technique_id'
           )
-          .whereIn('survey_sample_site.survey_id', getSurveyIdsQuery)
+          .whereIn('survey_sample_period.survey_id', getSurveyIdsQuery)
       )
       // Get all qualitative measurements for all subcounts associated to all observations for the survey
       .with(
@@ -296,7 +296,7 @@ export function getSurveyObservationsBaseQuery(
         'w_sampling_data.survey_sample_period_start_datetime'
       )
       .from('survey_observation')
-      .innerJoin(
+      .leftJoin(
         'w_sampling_data',
         'survey_observation.survey_sample_period_id',
         'w_sampling_data.survey_sample_period_id'
