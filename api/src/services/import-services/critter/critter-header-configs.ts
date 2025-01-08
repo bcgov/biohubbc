@@ -203,21 +203,6 @@ export const getCritterSexCellValidator = (
   };
 };
 
-///**
-// * Get the critter sex cell setter.
-// *
-// * @returns {*} {CSVCellValidator} The validate cell callback
-// */
-//export const getCritterSexCellSetter = (): CSVCellSetter => {
-//  return (params: CSVParams) => {
-//    if (params.cell === undefined) {
-//      return undefined;
-//    }
-//
-//    return params.row[CSVRowState]?.sex_qualitative_option_id;
-//  };
-//};
-
 /**
  * Get the Wildlife Health ID header cell validator.
  *

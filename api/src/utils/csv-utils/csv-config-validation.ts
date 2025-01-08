@@ -36,7 +36,7 @@ export const validateCSVWorksheet = <StaticHeaderType extends Uppercase<string>>
   // Iterate over each row in the worksheet and execute the row validators
   forEachCSVRow(worksheet, config, (rowParams, rowValidators) => {
     // Update the row state for each row
-    executeUpdateRowState(rowParams, rows);
+    updateRowState(rowParams, rows);
 
     // Execute the row validators and modify the errors
     rowValidators.forEach((rowValidator) => {
@@ -62,7 +62,7 @@ export const validateCSVWorksheet = <StaticHeaderType extends Uppercase<string>>
       executeSetCellValue(cellParams, headerConfig, rows); // Mutates `rows`
 
       // Update the row state for each cell
-      executeUpdateRowState(rowParams, rows);
+      updateRowState(rowParams, rows);
     });
   });
 
@@ -170,7 +170,7 @@ export const forEachCSVRow = (
 };
 
 /**
- * Iterate over each cell in the CSV worksheet.
+ * Iterate over each cell in the CSV row.
  *
  * @param {CSVRow} worksheetRow - The worksheet row object
  * @param {number} rowIndex - The worksheet row index - 0 is the first data row
@@ -208,7 +208,7 @@ export const forEachCSVRowCell = (
 };
 
 /**
- * Execute the row state update.
+ * Update the row state.
  *
  * Note: This mutates the CSV row objects `mutableRows`.
  *
@@ -216,7 +216,7 @@ export const forEachCSVRowCell = (
  * @param {CSVRow[]} mutableRows - The mutable rows array
  * @returns {*} {void}
  */
-export const executeUpdateRowState = (params: CSVRowParams, mutableRows: CSVRow[]) => {
+export const updateRowState = (params: CSVRowParams, mutableRows: CSVRow[]) => {
   // Initialize the row if it does not exist
   if (!mutableRows[params.rowIndex] && params.row[CSVRowState]) {
     mutableRows[params.rowIndex] = {};
