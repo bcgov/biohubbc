@@ -76,8 +76,8 @@ export const TelemetryTableContainer = () => {
     <>
       <CSVSingleImportDialog
         open={showImportDialog}
-        dialogTitle="Import Telemetry CSV"
-        dialogSummary="Import a CSV file containing telemetry records"
+        dialogTitle="Import Telemetry"
+        dialogSummary="Import telemetry data from a CSV file with columns matching the template. You must create deployments before importing telemetry data."
         onClose={() => setShowImportDialog(false)}
         onImport={handleImportTelemetryCSV}
         onDownloadTemplate={() =>

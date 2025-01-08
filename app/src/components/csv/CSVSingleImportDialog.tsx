@@ -1,5 +1,5 @@
 import LoadingButton from '@mui/lab/LoadingButton/LoadingButton';
-import { Box, Dialog, DialogActions, DialogContent, Divider, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Box, Dialog, DialogActions, DialogContent, Divider, useMediaQuery, useTheme } from '@mui/material';
 import { AxiosProgressEvent } from 'axios';
 import { UploadFileStatus } from 'components/file-upload/FileUploadItem';
 import { FileUploadSingleItem } from 'components/file-upload/FileUploadSingleItem';
@@ -90,6 +90,13 @@ export const CSVSingleImportDialog = (props: CSVSingleImportDialogProps) => {
       // Wait for the complete status to be rendered + 500ms before closing the dialog
       await waitForRenderCycle(500);
 
+      // Show a success snackbar message
+      dialogContext.setSnackbar({
+        open: true,
+        snackbarAutoCloseMs: 2000,
+        snackbarMessage: 'Successfully imported telemetry'
+      });
+
       handleClose();
     } catch (err) {
       if (err instanceof Error) {
@@ -97,17 +104,6 @@ export const CSVSingleImportDialog = (props: CSVSingleImportDialogProps) => {
       }
 
       setUploadStatus(UploadFileStatus.FAILED);
-    } finally {
-      // Show a success snackbar message
-      dialogContext.setSnackbar({
-        open: true,
-        snackbarAutoCloseMs: 2000,
-        snackbarMessage: (
-          <Typography variant="body2" component="div">
-            {uploadStatus === UploadFileStatus.FAILED ? 'CSV failed to import' : 'CSV imported'}
-          </Typography>
-        )
-      });
     }
   };
 

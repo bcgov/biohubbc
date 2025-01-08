@@ -1,9 +1,8 @@
-import { Box } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import Button from '@mui/material/Button';
-import { CSVErrorsTableContainer } from 'components/csv/CSVErrorsTableContainer';
-import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { PropsWithChildren } from 'react';
 import { CSVError } from 'utils/csv-utils';
+import { CSVErrorsContainer } from './CSVErrorsTableContainer';
 
 interface CSVDropzoneSectionProps {
   title: string;
@@ -21,9 +20,10 @@ interface CSVDropzoneSectionProps {
  */
 export const CSVDropzoneSection = (props: PropsWithChildren<CSVDropzoneSectionProps>) => {
   return (
-    <HorizontalSplitFormComponent title={props.title} summary={props.summary}>
+    <>
       <Box sx={{ display: 'flex', flexDirection: 'column' }} gap={2}>
-        <Box sx={{ display: 'flex', ml: 'auto' }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Typography variant="h3">{props.title}</Typography>
           <Button
             sx={{ textTransform: 'none', fontWeight: 'regular' }}
             variant="outlined"
@@ -32,9 +32,12 @@ export const CSVDropzoneSection = (props: PropsWithChildren<CSVDropzoneSectionPr
             Download Template
           </Button>
         </Box>
+        <Typography color="textSecondary" variant="body2">
+          {props.summary}
+        </Typography>
         {props.children}
-        {props.errors.length > 0 ? <CSVErrorsTableContainer errors={props.errors} /> : null}
+        {props.errors.length > 0 ? <CSVErrorsContainer errors={props.errors} /> : null}
       </Box>
-    </HorizontalSplitFormComponent>
+    </>
   );
 };

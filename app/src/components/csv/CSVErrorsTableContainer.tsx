@@ -1,10 +1,10 @@
-import { Divider, Paper, Toolbar, Typography } from '@mui/material';
+import { Toolbar, Typography } from '@mui/material';
 import { Box, Stack } from '@mui/system';
 import { ReactElement } from 'react';
 import { CSVError } from 'utils/csv-utils';
-import { CSVErrorsTable } from './CSVErrorsTable';
+import { CSVErrors } from './CSVErrors';
 
-interface CSVErrorsTableContainerProps {
+interface CSVErrorsContainerProps {
   errors: CSVError[];
   title?: ReactElement;
 }
@@ -12,36 +12,29 @@ interface CSVErrorsTableContainerProps {
 /**
  * Renders a CSV errors table with toolbar.
  *
- * @param {CSVErrorsTableContainerProps} props
- * @returns {*} {JSX.Element}
+ * @param {CSVErrorsContainerProps} props
+ * @returns {*}
  */
-export const CSVErrorsTableContainer = (props: CSVErrorsTableContainerProps) => {
+export const CSVErrorsContainer = (props: CSVErrorsContainerProps) => {
   return (
-    <Paper component={Stack} flexDirection="column" flex="1 1 auto" height="100%">
-      <Toolbar
-        disableGutters
-        sx={{
-          pl: 2,
-          pr: 3
-        }}>
+    <Stack flexDirection="column" flex="1 1 auto" height="100%">
+      <Toolbar disableGutters>
         {props.title ?? (
           <Typography
             sx={{
               flexGrow: '1',
-              fontSize: '1.125rem',
               fontWeight: 700
             }}>
-            CSV Errors Detected &zwnj;
+            Errors &zwnj;
             <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
               ({props.errors.length})
             </Typography>
           </Typography>
         )}
       </Toolbar>
-      <Divider />
       <Box width="100%" height="100%">
-        <CSVErrorsTable errors={props.errors} />
+        <CSVErrors errors={props.errors} />
       </Box>
-    </Paper>
+    </Stack>
   );
 };

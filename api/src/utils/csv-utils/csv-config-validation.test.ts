@@ -91,7 +91,7 @@ describe('csv-config-validation', () => {
         errors: [
           {
             error: 'A required column is missing',
-            solution: `Add all required columns to the file.`,
+            solution: `Add the ALIAS column to the file.`,
             header: 'ALIAS',
             values: ['ALIAS', 'ALIAS_2'],
             cell: null,
@@ -159,7 +159,7 @@ describe('csv-config-validation', () => {
         {
           row: 1,
           error: 'A required column is missing',
-          solution: `Add all required columns to the file.`,
+          solution: `Add the ALIAS column to the file.`,
           header: 'ALIAS',
           values: ['ALIAS'],
           cell: null
@@ -189,7 +189,7 @@ describe('csv-config-validation', () => {
         {
           row: 1,
           error: 'An unknown column is included in the file',
-          solution: `Remove extra columns from the file.`,
+          solution: `Remove the UNKNOWN_HEADER column from the file.`,
           header: 'UNKNOWN_HEADER',
           cell: null,
           values: null
