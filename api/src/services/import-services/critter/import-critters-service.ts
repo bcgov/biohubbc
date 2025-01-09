@@ -172,10 +172,6 @@ export class ImportCrittersService extends DBService {
       // SIMS payload
       simsPayload.push(critterId);
 
-      if (!row[CSVRowState]?.sexId) {
-        throw new Error('no state');
-      }
-
       // Critterbase static headers payload
       critterbasePayload.critters?.push({
         critter_id: critterId,

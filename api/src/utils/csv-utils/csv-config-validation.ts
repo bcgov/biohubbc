@@ -37,7 +37,7 @@ export const validateCSVWorksheet = <StaticHeaderType extends Uppercase<string>>
 
   // Iterate over each row in the worksheet and execute the row validators
   forEachCSVRow(worksheet, config, (rowParams, rowValidators) => {
-    // Execute the row validators and modify the errors
+    // Execute the row validators and push the errors
     rowValidators.forEach((rowValidator) => {
       errors.push(...executeRowValidator(rowParams, rowValidator));
     });
