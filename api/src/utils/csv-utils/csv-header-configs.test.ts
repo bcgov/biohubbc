@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { z } from 'zod';
-import { CSVParams, CSVRowState } from './csv-config-validation.interface';
+import { CSVParams, CSVRow, CSVRowState } from './csv-config-validation.interface';
 import {
   getDescriptionCellValidator,
   getLatitudeCellValidator,
@@ -24,6 +24,25 @@ describe('CSVHeaderConfigs', () => {
       const row = { TEST: 'cellValue', [CSVRowState]: { stateValue: 'oldValue' } };
 
       updateCSVRowState(row, { stateValue: 'newValue' });
+
+      expect(row[CSVRowState]?.stateValue).to.equal('newValue');
+    });
+
+    it('should remove the state in the row', () => {
+      const row = { TEST: 'cellValue', [CSVRowState]: { stateValue: 'oldValue' } };
+
+      updateCSVRowState(row, { stateValue: undefined });
+
+      expect(row[CSVRowState]?.stateValue).to.be.undefined;
+    });
+
+    it('should add additional state values', () => {
+      const row: CSVRow = { TEST: 'cellValue', [CSVRowState]: { stateValue: 'oldValue' } };
+
+      updateCSVRowState(row, { stateValue: 'newValue', additionalValue: 'value' });
+
+      expect(row[CSVRowState]?.stateValue).to.equal('newValue');
+      expect(row[CSVRowState]?.additionalValue).to.equal('value');
     });
   });
 
