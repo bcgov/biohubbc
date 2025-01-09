@@ -4,10 +4,9 @@ import {
   CSVCellSetter,
   CSVCellValidator,
   CSVError,
-  CSVParams,
-  CSVRowState
+  CSVParams
 } from '../../../utils/csv-utils/csv-config-validation.interface';
-import { validateZodCell } from '../../../utils/csv-utils/csv-header-configs';
+import { updateCSVRowState, validateZodCell } from '../../../utils/csv-utils/csv-header-configs';
 import { NestedRecord } from '../../../utils/nested-record';
 import { CritterCSVStaticHeader } from './import-critters-service';
 
@@ -195,9 +194,7 @@ export const getCritterSexCellValidator = (
     }
 
     // Set the row state to store the qualitative option id for the sex
-    params.row[CSVRowState] = {
-      sexId: rowDictionarySex
-    };
+    updateCSVRowState(params.row, { sexId: rowDictionarySex });
 
     return [];
   };

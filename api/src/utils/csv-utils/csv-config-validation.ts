@@ -2,6 +2,8 @@ import { WorkSheet } from 'xlsx';
 import { getWorksheetRowObjects, WorksheetRowIndexSymbol } from '../xlsx-utils/worksheet-utils';
 import { CSVConfigUtils } from './csv-config-utils';
 import {
+  CSVCellSetter,
+  CSVCellValidator,
   CSVConfig,
   CSVError,
   CSVHeaderConfig,
@@ -37,9 +39,7 @@ export const validateCSVWorksheet = <StaticHeaderType extends Uppercase<string>>
   forEachCSVRow(worksheet, config, (rowParams, rowValidators) => {
     // Execute the row validators and modify the errors
     rowValidators.forEach((rowValidator) => {
-      executeRowValidator(rowParams, rowValidator, errors);
-      // Update the row state for each row validator
-      updateRowState(rowParams, rows);
+      errors.push(...executeRowValidator(rowParams, rowValidator));
     });
 
     // If there are errors in the row abort early
@@ -47,22 +47,29 @@ export const validateCSVWorksheet = <StaticHeaderType extends Uppercase<string>>
       return;
     }
 
+    const validatedRow: CSVRow = {};
+
     // Iterate over each cell in the row and validate + set cell values
     forEachCSVRowCell(rowParams.row, rowParams.rowIndex, config, (cellParams, headerConfig) => {
-      // Validate the cell value and modify the errors
-      executeValidateCell(cellParams, headerConfig, errors); // Mutates `errors`
+      // Validate the cell value and push the cell errors
+      if (headerConfig.validateCell) {
+        errors.push(...executeValidateCell(cellParams, headerConfig.validateCell));
+      }
 
       // If there are errors in the cell don't set the cell value
       if (errors.length) {
         return;
       }
 
-      // Set the cell value and modify the rows
-      executeSetCellValue(cellParams, headerConfig, rows); // Mutates `rows`
+      const { header, cell } = executeSetCellValue(cellParams, headerConfig.setCellValue);
 
-      // Update the row state for each cell
-      updateRowState(rowParams, rows);
+      // Set the header and cell value in the validated row
+      validatedRow[header] = cell;
+      // Copy the row state to the validated row
+      validatedRow[CSVRowState] = rowParams.row[CSVRowState];
     });
+
+    rows.push(validatedRow);
   });
 
   if (errors.length) {
@@ -207,113 +214,59 @@ export const forEachCSVRowCell = (
 };
 
 /**
- * Update the row state.
- *
- * Note: This mutates the CSV row objects `mutableRows`.
- *
- * @param {CSVRowParams} params - The CSV row parameters
- * @param {CSVRow[]} mutableRows - The mutable rows array
- * @returns {*} {void}
- */
-export const updateRowState = (params: CSVRowParams, mutableRows: CSVRow[]) => {
-  // Initialize the row if it does not exist
-  if (!mutableRows[params.rowIndex] && params.row[CSVRowState]) {
-    mutableRows[params.rowIndex] = {};
-  }
-
-  // Update the validated row state
-  if (params.row?.[CSVRowState]) {
-    const currentState = mutableRows[params.rowIndex][CSVRowState];
-    const newState = params.row[CSVRowState];
-
-    mutableRows[params.rowIndex][CSVRowState] = { ...currentState, ...newState };
-  }
-};
-
-/**
  * Execute the row validator.
- *
- * Note: This mutates the CSV errors array `mutableErrors`.
  *
  * @param {CSVRowParams} params - The CSV row parameters
  * @param {CSVRowValidator} rowValidator - The row validator
- * @param {CSVError[]} mutableErrors - The mutable errors array
- * @returns {*} {void}
+ * @returns {*} {CSVError[]}
  */
-export const executeRowValidator = (params: CSVRowParams, rowValidator: CSVRowValidator, mutableErrors: CSVError[]) => {
+export const executeRowValidator = (params: CSVRowParams, rowValidator: CSVRowValidator) => {
   const rowErrors = rowValidator(params);
 
-  rowErrors.forEach((error) => {
-    mutableErrors.push({
-      error: error.error,
-      solution: error.solution,
-      values: error.values ?? null,
-      cell: error.cell ?? null,
-      header: error.header ?? null,
-      row: _getErrorRowIndex(params, error.row)
-    });
-  });
+  return rowErrors.map((error) => ({
+    error: error.error,
+    solution: error.solution,
+    values: error.values ?? null,
+    cell: error.cell ?? null,
+    header: error.header ?? null,
+    row: _getErrorRowIndex(params, error.row)
+  }));
 };
 
 /**
  * Execute the CSVConfig `setCellValue` callback for the cell.
  *
- * Note: This mutates the CSV row objects `mutableRows`.
+ * Note: This also swaps the aliased header for the known static header.
  *
  * @param {CSVParams} params - The CSV parameters
- * @param {CSVHeaderConfig} headerConfig - The header configuration
- * @param {CSVRow[]} mutableRows - The mutable rows array
+ * @param {CSVCellSetter} setCellValue - The header configuration
  * @returns {*} {CSVRow[]} - The updated row
  */
-export const executeSetCellValue = (params: CSVParams, headerConfig: CSVHeaderConfig, mutableRows: CSVRow[]) => {
-  const row = { ...mutableRows[params.rowIndex] };
+export const executeSetCellValue = (params: CSVParams, setCellValue?: CSVCellSetter) => {
+  const header = params.staticHeader?.toUpperCase() ?? params.header.toUpperCase();
+  const cell = setCellValue?.(params) ?? params.mutateCell;
 
-  const headerKey = params.staticHeader?.toUpperCase() ?? params.header.toUpperCase();
-  const cellValue = headerConfig?.setCellValue?.(params) ?? params.mutateCell;
-
-  // Remove the aliased header if it is not the static header
-  if (params.staticHeader && params.header !== params.staticHeader) {
-    delete row[params.header as Uppercase<string>];
-  }
-
-  row[headerKey as Uppercase<string>] = cellValue;
-
-  mutableRows[params.rowIndex] = row;
+  return { header, cell };
 };
 
 /**
  * Execute the CSVConfig `validateCell` callback for the cell.
  *
- * Note: This mutates the CSV errors array `mutableErrors`.
- *
  * @param {CSVParams} params - The CSV parameters
- * @param {CSVHeaderConfig} headerConfig - The header configuration
- * @param {CSVError[]} mutableErrors - The mutable errors array
- * @returns {*} {void}
+ * @param {CSVCellValidator} validateCell - The cell validator
+ * @returns {*} {CSVError[]}
  */
-export const executeValidateCell = (
-  params: CSVParams,
-  headerConfig: CSVHeaderConfig,
-  mutableErrors: CSVError[]
-): void => {
-  if (!headerConfig.validateCell) {
-    return;
-  }
+export const executeValidateCell = (params: CSVParams, validateCell: CSVCellValidator): CSVError[] => {
+  const cellErrors = validateCell(params);
 
-  const cellErrors = headerConfig.validateCell(params);
-
-  if (cellErrors.length) {
-    cellErrors.forEach((error) => {
-      mutableErrors.push({
-        error: error.error,
-        solution: error.solution,
-        values: error.values ?? null,
-        cell: (error.cell === undefined ? params.cell : error.cell) ?? null, // Use cell value if intentionally null
-        header: (error.header === undefined ? params.header : error.header) ?? null, // Use header value if intentionally null
-        row: _getErrorRowIndex(params, error.row)
-      });
-    });
-  }
+  return cellErrors.map((error) => ({
+    error: error.error,
+    solution: error.solution,
+    values: error.values ?? null,
+    cell: (error.cell === undefined ? params.cell : error.cell) ?? null, // Use cell value if intentionally null
+    header: (error.header === undefined ? params.header : error.header) ?? null, // Use header value if intentionally null
+    row: _getErrorRowIndex(params, error.row)
+  }));
 };
 
 /**
