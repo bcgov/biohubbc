@@ -8,7 +8,6 @@ export const CSV_ERROR_MESSAGE =
  *  1. Allow or disallow duplicate CSV rows
  *    - Similar to a DB unique constraint? ie: ['NAME', 'AGE']
  *  2. Support CSVWarnings
- *  3. Support CSVRowValidation? ie: Validate the entire row before / after the cell validation
  */
 export interface CSVConfig<THeader extends Uppercase<string> = Uppercase<string>> {
   /**
@@ -21,6 +20,14 @@ export interface CSVConfig<THeader extends Uppercase<string> = Uppercase<string>
    */
   staticHeadersConfig: Record<THeader, CSVStaticHeaderConfig & CSVHeaderConfig>;
   /**
+   * Boolean to ignore dynamic headers.
+   *
+   * ie: If true, the dynamic headers will not be processed.
+   *
+   * @type {boolean}
+   */
+  ignoreDynamicHeaders: boolean;
+  /**
    * Contains the `validateCell` and `setCellValue` callbacks to be called for each dynamic cell.
    *
    * Note: A dynamic header is a header that is not known and defined in the configuration.
@@ -31,14 +38,17 @@ export interface CSVConfig<THeader extends Uppercase<string> = Uppercase<string>
    * @type {CSVHeaderConfig | undefined}
    */
   dynamicHeadersConfig?: CSVHeaderConfig;
+
   /**
-   * Boolean to ignore dynamic headers.
+   * A list of row validators
    *
-   * ie: If true, the dynamic headers will not be processed.
+   * Note: These are called BEFORE the static and dynamic cell validators.
+   * Useful if needing to validate multiple headers (ex: ALIAS, DATE, TIME) or applying some preliminary
+   * validation before the cell validation.
    *
-   * @type {boolean}
+   * @type {CSVRowValidator[] | undefined}
    */
-  ignoreDynamicHeaders: boolean;
+  rowValidators?: CSVRowValidator[];
 }
 
 interface CSVStaticHeaderConfig {
@@ -67,6 +77,15 @@ interface CSVStaticHeaderConfig {
 export type CSVCellValidator = (params: CSVParams) => CSVError[];
 
 /**
+ * The CSV row validator function
+ *
+ * @param {CSVRowParams} params - The CSV row parameters
+ * @returns {CSVError[]} - The list of CSV errors
+ *
+ */
+export type CSVRowValidator = (params: CSVRowParams) => CSVError[];
+
+/**
  * The CSV header config cell setter function
  *
  * @param {CSVParams} params - The CSV parameters
@@ -93,6 +112,23 @@ export interface CSVHeaderConfig {
    * @type {CSVCellSetter | undefined} The cell setter function
    */
   setCellValue?: CSVCellSetter;
+}
+
+export interface CSVRowParams {
+  /**
+   * The data row object.
+   *
+   * @type {CSVRow}
+   */
+  row: CSVRow;
+  /**
+   * The row index.
+   *
+   * Note: First data row index 0.
+   *
+   * @type {number}
+   */
+  rowIndex: number;
 }
 
 /**
@@ -197,17 +233,29 @@ export interface CSVError {
    */
   row?: number;
 }
+/**
+ * The CSV row state symbol to store additional row metadata
+ * without interfering with the row shape or structure
+ *
+ */
+export const CSVRowState = Symbol('CSVRowStateSymbol');
 
 /**
  * The raw unvalidated CSV row
  *
  */
-export type CSVRow = Record<Uppercase<string>, any>;
+export type CSVRow = Record<Uppercase<string>, any> & {
+  // The CSV row state symbol to store additional row metadata
+  [CSVRowState]?: Record<string, any>;
+};
 
 /**
  * The validated CSV row keyed by the static headers
  *
  */
-export type CSVRowValidated<StaticHeaderType extends Uppercase<string>> = Record<StaticHeaderType, any>;
+export type CSVRowValidated<StaticHeaderType extends Uppercase<string>> = Record<StaticHeaderType, any> & {
+  // The CSV row state symbol to store additional row metadata
+  [CSVRowState]?: Record<string, any>;
+};
 
 export type CSVCell = string | number | undefined;
