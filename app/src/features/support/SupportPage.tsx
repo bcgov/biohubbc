@@ -29,11 +29,11 @@ const SupportPage = () => {
   const views: ISupportPageView[] = [
     { label: 'General', value: SupportPageView.GENERAL, icon: mdiLifebuoy },
     { label: 'SIMS Structure', value: SupportPageView.STRUCTURE, icon: mdiOfficeBuildingCogOutline },
-    { label: 'Foundational Data', value: SupportPageView.FOUNDATION, icon: mdiWall },
     { label: 'Data Standards', value: SupportPageView.DATA_STANDARDS, icon: mdiDatabaseRefreshOutline },
+    { label: 'Foundational Data', value: SupportPageView.FOUNDATION, icon: mdiWall },
+    { label: 'Observations', value: SupportPageView.OBSERVATIONS, icon: mdiEye },
     { label: 'Animals', value: SupportPageView.ANIMALS, icon: mdiPaw },
     { label: 'Telemetry', value: SupportPageView.TELEMETRY, icon: mdiWifiMarker },
-    { label: 'Observations', value: SupportPageView.OBSERVATIONS, icon: mdiEye },
     { label: 'Contact', value: SupportPageView.CONTACT, icon: mdiCardAccountMailOutline }
   ];
 
