@@ -19,6 +19,7 @@ describe('getSamplePeriodById', () => {
   it('should successfully get a survey sample period', async () => {
     const mockSamplePeriod: SurveySamplePeriodDetails = {
       survey_sample_period_id: 1,
+      survey_id: 4,
       survey_sample_site_id: 2,
       method_technique_id: 3,
       start_date: '2024-12-01',

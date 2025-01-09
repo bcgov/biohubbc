@@ -11,6 +11,7 @@ import {
   TechniqueRepository
 } from '../repositories/technique-repository';
 import { AttractantService } from './attractants-service';
+import { SamplePeriodService } from './sample-period-service';
 import { TechniqueAttributeService } from './technique-attributes-service';
 import { TechniqueService } from './technique-service';
 import { TechniqueVantageService } from './technique-vantage-service';
@@ -223,6 +224,10 @@ describe('TechniqueService', () => {
     it('should successfully delete the technique', async () => {
       const mockRecord = { method_technique_id: 1 };
 
+      const findSamplePeriodsCountStub = sinon
+        .stub(SamplePeriodService.prototype, 'findSamplePeriodsCount')
+        .resolves(0);
+
       const deleteAllTechniqueAttractantsStub = sinon
         .stub(AttractantService.prototype, 'deleteAllTechniqueAttractants')
         .resolves();
@@ -242,6 +247,8 @@ describe('TechniqueService', () => {
       const methodTechniqueId = 2;
 
       const response = await service.deleteTechnique(surveyId, methodTechniqueId);
+
+      expect(findSamplePeriodsCountStub).to.have.been.calledOnce;
 
       expect(deleteAllTechniqueAttractantsStub).to.have.been.calledOnceWith(surveyId, methodTechniqueId);
       expect(deleteAllTechniqueAttributesStub).to.have.been.calledOnceWith(surveyId, methodTechniqueId);

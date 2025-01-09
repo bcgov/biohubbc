@@ -4,8 +4,9 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { deleteTechnique, updateTechnique } from '.';
 import * as db from '../../../../../../../database/db';
-import { HTTPError } from '../../../../../../../errors/http-error';
+import { HTTP409, HTTPError } from '../../../../../../../errors/http-error';
 import { AttractantService } from '../../../../../../../services/attractants-service';
+import { SamplePeriodService } from '../../../../../../../services/sample-period-service';
 import { TechniqueAttributeService } from '../../../../../../../services/technique-attributes-service';
 import { TechniqueService } from '../../../../../../../services/technique-service';
 import { TechniqueVantageService } from '../../../../../../../services/technique-vantage-service';
@@ -46,7 +47,7 @@ describe('deleteTechnique', () => {
     }
   });
 
-  it('throws an error if any technique records are associated to a sampling site', async () => {
+  it('throws an error if any technique records are associated to a survey sampling period', async () => {
     const mockDBConnection = getMockDBConnection({ rollback: sinon.stub(), release: sinon.stub() });
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
@@ -58,6 +59,8 @@ describe('deleteTechnique', () => {
       techniqueId: '3'
     };
 
+    sinon.stub(SamplePeriodService.prototype, 'findSamplePeriodsCount').resolves(4);
+
     const requestHandler = deleteTechnique();
 
     try {
@@ -67,8 +70,9 @@ describe('deleteTechnique', () => {
       expect(mockDBConnection.rollback).to.have.been.calledOnce;
       expect(mockDBConnection.release).to.have.been.calledOnce;
 
-      expect((actualError as HTTPError).message).to.equal(
-        'Cannot delete a technique that is associated with a sampling site'
+      expect(actualError).instanceOf(HTTP409);
+      expect((actualError as HTTP409).message).to.equal(
+        'Cannot delete a technique that is associated to a survey sample period.'
       );
       expect((actualError as HTTPError).status).to.equal(409);
     }

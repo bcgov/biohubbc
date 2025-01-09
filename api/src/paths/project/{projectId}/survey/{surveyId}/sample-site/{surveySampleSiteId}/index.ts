@@ -155,7 +155,6 @@ export function updateSurveySampleSite(): RequestHandler {
 
       const sampleSite: UpdateSampleSiteObject = {
         ...req.body.sampleSite,
-        survey_id: Number(req.params.surveyId),
         survey_sample_site_id: Number(req.params.surveySampleSiteId)
       };
 

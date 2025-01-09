@@ -49,18 +49,15 @@ describe('postSamplePeriods', () => {
 
     await requestHandler(mockReq, mockRes, mockNext);
 
-    expect(insertSamplePeriodsStub).to.have.been.calledOnceWithExactly([
-      1,
-      [
-        {
-          method_technique_id: 2,
-          survey_sample_site_id: 3,
-          start_date: '2024-12-01',
-          start_time: '12:00',
-          end_date: '2024-12-05',
-          end_time: '12:00'
-        }
-      ]
+    expect(insertSamplePeriodsStub).to.have.been.calledOnceWithExactly(1, [
+      {
+        method_technique_id: 2,
+        survey_sample_site_id: 3,
+        start_date: '2024-12-01',
+        start_time: '12:00',
+        end_date: '2024-12-05',
+        end_time: '12:00'
+      }
     ]);
 
     expect(mockRes.statusValue).to.equal(201);
@@ -70,7 +67,7 @@ describe('postSamplePeriods', () => {
     expect(mockRes.send).to.have.been.calledOnce;
   });
 
-  it('should handle and re-throw errors', async () => {
+  it('should catch and re-throw errors', async () => {
     const dbConnectionObj = getMockDBConnection({
       rollback: sinon.stub(),
       release: sinon.stub()
@@ -85,14 +82,15 @@ describe('postSamplePeriods', () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     mockReq.params = {
+      projectId: '1',
       surveyId: '1'
     };
 
     mockReq.body = {
       sample_periods: [
         {
-          method_technique_id: 2,
           survey_sample_site_id: 3,
+          method_technique_id: 2,
           start_date: '2024-12-01',
           start_time: '12:00',
           end_date: '2024-12-05',
@@ -107,18 +105,15 @@ describe('postSamplePeriods', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (error) {
-      expect(insertSamplePeriodsStub).to.have.been.calledOnceWithExactly([
-        1,
-        [
-          {
-            method_technique_id: 2,
-            survey_sample_site_id: 3,
-            start_date: '2024-12-01',
-            start_time: '12:00',
-            end_date: '2024-12-05',
-            end_time: '12:00'
-          }
-        ]
+      expect(insertSamplePeriodsStub).to.have.been.calledOnceWithExactly(1, [
+        {
+          method_technique_id: 2,
+          survey_sample_site_id: 3,
+          start_date: '2024-12-01',
+          start_time: '12:00',
+          end_date: '2024-12-05',
+          end_time: '12:00'
+        }
       ]);
       expect((error as HTTPError).message).to.equal('Test Error');
       expect(dbConnectionObj.rollback).to.have.been.calledOnce;

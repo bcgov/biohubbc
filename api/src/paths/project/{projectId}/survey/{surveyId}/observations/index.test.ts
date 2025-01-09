@@ -192,7 +192,7 @@ describe('getSurveyObservations', () => {
         quantitative_measurements: [],
         qualitative_environments: [],
         quantitative_environments: [],
-        sample_sites: []
+        sampling_data: []
       },
       pagination: {
         total: 59,
@@ -307,7 +307,7 @@ describe('getSurveyObservations', () => {
         quantitative_measurements: [],
         qualitative_environments: [],
         quantitative_environments: [],
-        sample_sites: []
+        sampling_data: []
       },
       pagination: {
         total: 2,

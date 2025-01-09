@@ -171,8 +171,6 @@ describe('PlatformService', () => {
               properties: {
                 survey_id: undefined,
                 taxonomy: undefined,
-                survey_sample_site_id: null,
-                survey_sample_method_id: null,
                 survey_sample_period_id: null,
                 latitude: undefined,
                 longitude: undefined,

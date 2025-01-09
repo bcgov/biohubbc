@@ -1,4 +1,5 @@
 import { IDBConnection } from '../database/db';
+import { ApiConflictError } from '../errors/api-error';
 import { ITechniqueAdvancedFilters } from '../models/technique-view';
 import {
   FindTechniqueRecord,
@@ -11,6 +12,7 @@ import {
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { AttractantService } from './attractants-service';
 import { DBService } from './db-service';
+import { SamplePeriodService } from './sample-period-service';
 import { TechniqueAttributeService } from './technique-attributes-service';
 import { TechniqueVantageService } from './technique-vantage-service';
 
@@ -205,6 +207,19 @@ export class TechniqueService extends DBService {
    * @memberof TechniqueService
    */
   async deleteTechnique(surveyId: number, methodTechniqueId: number): Promise<{ method_technique_id: number }> {
+    // Do not allow the technique to be deleted if it is associated to any survey sample period records.
+    const samplePeriodService = new SamplePeriodService(this.connection);
+    await samplePeriodService
+      .findSamplePeriodsCount(false, this.connection.systemUserId(), {
+        method_technique_id: methodTechniqueId,
+        survey_id: surveyId
+      })
+      .then((count) => {
+        if (count !== 0) {
+          throw new ApiConflictError('Cannot delete a technique that is associated to a survey sample period.');
+        }
+      });
+
     // Delete any attractants on the technique
     await this.attractantService.deleteAllTechniqueAttractants(surveyId, methodTechniqueId);
 
@@ -216,5 +231,21 @@ export class TechniqueService extends DBService {
 
     // Delete the technique
     return this.techniqueRepository.deleteTechnique(surveyId, methodTechniqueId);
+  }
+
+  /**
+   * Delete multiple technique records.
+   *
+   * @param {number} surveyId
+   * @param {number[]} methodTechniqueIds
+   * @return {*}  {Promise<void>}
+   * @memberof TechniqueService
+   */
+  async deleteTechniques(surveyId: number, methodTechniqueIds: number[]): Promise<void> {
+    // Delete each technique record
+    // TODO: Possible to optimize this to delete all records in a single query?
+    await Promise.all(
+      methodTechniqueIds.map(async (methodTechniqueId) => this.deleteTechnique(surveyId, methodTechniqueId))
+    );
   }
 }

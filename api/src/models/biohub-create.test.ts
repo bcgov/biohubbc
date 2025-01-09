@@ -43,8 +43,6 @@ describe('PostSurveyObservationToBiohubObject', () => {
       expect(data.properties).to.eql({
         survey_id: 1,
         taxonomy: 1,
-        survey_sample_site_id: 1,
-        method_technique_id: 1,
         survey_sample_period_id: 1,
         latitude: 1,
         longitude: 1,
@@ -86,7 +84,7 @@ describe('PostSurveyToBiohubObject', () => {
       observation_date: 'observation_date'
     };
 
-    const survey_obj = {
+    const survey_obj: GetSurveyData = {
       id: 1,
       uuid: '1',
       project_id: 1,

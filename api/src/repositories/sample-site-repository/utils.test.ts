@@ -22,7 +22,6 @@ describe('getSampleSiteBaseQuery', () => {
     const query = getSampleSiteBaseQuery(knex).toString();
 
     expect(query).to.include('select "sss"."survey_sample_site_id", "sss"."survey_id"');
-    expect(query).to.include("COALESCE(wssm.sample_methods, '[]'::json)");
     expect(query).to.include("COALESCE(wssb.blocks, '[]'::json)");
     expect(query).to.include("COALESCE(wssst.stratums, '[]'::json)");
   });
@@ -30,7 +29,6 @@ describe('getSampleSiteBaseQuery', () => {
   it('should join the correct tables', async () => {
     const query = getSampleSiteBaseQuery(knex).toString();
 
-    expect(query).to.include('left join "w_survey_sample_method" as "wssm"');
     expect(query).to.include('left join "w_survey_sample_block" as "wssb"');
     expect(query).to.include('left join "w_survey_sample_stratum" as "wssst"');
   });

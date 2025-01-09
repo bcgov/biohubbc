@@ -56,7 +56,7 @@ describe('SamplePeriodService', () => {
       const samplePeriodService = new SamplePeriodService(mockDBConnection);
       await samplePeriodService.deleteSamplePeriods(mockSurveyId, surveySamplePeriodIds);
 
-      expect(deleteSamplePeriodsStub).to.be.calledOnceWith(surveySamplePeriodIds);
+      expect(deleteSamplePeriodsStub).to.be.calledOnceWith(mockSurveyId, surveySamplePeriodIds);
     });
   });
 
@@ -100,6 +100,7 @@ describe('SamplePeriodService', () => {
 
       const samplePeriod: UpdateSamplePeriodObject = {
         survey_sample_period_id: 2,
+        survey_id: 4,
         survey_sample_site_id: 1,
         method_technique_id: 3,
         start_date: '2023-10-02',

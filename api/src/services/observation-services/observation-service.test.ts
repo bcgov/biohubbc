@@ -7,7 +7,7 @@ import {
 } from '../../repositories/observation-repository/observation-repository';
 import * as file_utils from '../../utils/file-utils';
 import { getMockDBConnection } from '../../__mocks__/db';
-import { SampleSiteService } from '../sample-site-service';
+import { SamplePeriodService } from '../sample-period-service';
 import { SubCountService } from '../subcount-service';
 import { ObservationService } from './observation-service';
 
@@ -71,7 +71,7 @@ describe('ObservationService', () => {
         quantitative_measurements: [],
         qualitative_environments: [],
         quantitative_environments: [],
-        sample_sites: []
+        sampling_data: []
       };
 
       const getSurveyObservationsStub = sinon
@@ -90,8 +90,8 @@ describe('ObservationService', () => {
         .stub(SubCountService.prototype, 'getEnvironmentTypeDefinitionsForSurvey')
         .resolves({ qualitative_environments: [], quantitative_environments: [] });
 
-      const getSampleSitesForSurveyIdStub = sinon
-        .stub(SampleSiteService.prototype, 'getSampleSitesForSurveyId')
+      const getSamplePeriodsForSurveyStub = sinon
+        .stub(SamplePeriodService.prototype, 'getSamplePeriodsForSurvey')
         .resolves([]);
 
       const surveyId = 1;
@@ -106,7 +106,7 @@ describe('ObservationService', () => {
       expect(getSurveyObservationCountStub).to.be.calledOnceWith(surveyId);
       expect(getMeasurementTypeDefinitionsForSurveyStub).to.be.calledOnceWith(surveyId);
       expect(getEnvironmentTypeDefinitionsForSurveyStub).to.be.calledOnceWith(surveyId);
-      expect(getSampleSitesForSurveyIdStub).to.be.calledOnceWith(surveyId);
+      expect(getSamplePeriodsForSurveyStub).to.be.calledOnceWith(surveyId);
       expect(response).to.eql({
         surveyObservations: [
           {

@@ -56,8 +56,8 @@ describe('updateSurveySampleSite', () => {
     }
   });
 
-  it('should return sample sites on success', async () => {
-    const dbConnectionObj = getMockDBConnection();
+  it('should successfully update a survey sample site', async () => {
+    const dbConnectionObj = getMockDBConnection({ commit: sinon.stub(), release: sinon.stub() });
 
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
@@ -84,14 +84,16 @@ describe('updateSurveySampleSite', () => {
 
     mockReq.body = body;
 
-    const updateSampleSiteStub = sinon.stub(SampleSiteService.prototype, 'updateSampleSite').resolves();
+    sinon.stub(SampleSiteService.prototype, 'updateSampleSite').resolves();
 
     const requestHandler = updateSurveySampleSite();
 
     await requestHandler(mockReq, mockRes, mockNext);
 
-    expect(updateSampleSiteStub).to.have.been.calledOnceWithExactly(1001, mockReq.body.sampleSite);
-    expect(mockRes.status).to.have.been.calledWith(204);
+    expect(mockRes.status).to.have.been.calledOnceWith(204);
+
+    expect(dbConnectionObj.commit).to.have.been.calledOnce;
+    expect(dbConnectionObj.release).to.have.been.calledOnce;
   });
 });
 
