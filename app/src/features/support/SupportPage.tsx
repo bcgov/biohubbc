@@ -23,7 +23,6 @@ import AccordionSupportCard from './components/AccordionSupportCard';
 const SupportPage = () => {
   const { searchParams, setSearchParams } = useSearchParams<SupportPageParams>();
 
-  // Retrieve the current view from the URL using SUPPORT_VIEW_KEY
   const currentViewParam = searchParams.get('support_view');
   const currentView = (currentViewParam as SupportPageView) || SupportPageView.GENERAL;
 
@@ -51,7 +50,8 @@ const SupportPage = () => {
     <>
       <PageHeader title="Support" />
       <Container maxWidth="xl" sx={{ py: 3 }}>
-        <Stack direction="row" gap={3} component={Paper} sx={{ p: 3 }}>
+        <Stack direction="row" gap={3} component={Paper} sx={{ p: 3, height: '100%' }}>
+          {/* Navigation Pane */}
           <Box width="300px" flexShrink={0}>
             <StandardsToolbar
               views={views}
@@ -63,41 +63,48 @@ const SupportPage = () => {
 
           <Divider orientation="vertical" flexItem />
 
-          <Box flex="1 1 auto">
-            <Typography variant="h2" gutterBottom>
-              {views.find((view) => view.value === currentView)?.label}
-            </Typography>
+          {/* Main Content Area */}
+          <Stack direction="column" flex="1 1 auto" sx={{ height: '100%' }}>
+            {/* Content */}
+            <Box flex="1 1 auto">
+              <Typography variant="h2" gutterBottom>
+                {views.find((view) => view.value === currentView)?.label}
+              </Typography>
 
-            <Box
-              sx={{
-                p: 3,
-                border: '1px solid',
-                borderColor: grey[300],
-                borderRadius: '8px',
-                bgcolor: grey[50]
-              }}>
-              <Stack gap={2}>
-                {dataMap[currentView]?.map((item, index) => (
-                  <Box key={index}>
-                    {item.description.map((chunk, chunkIndex) => (
-                      <Box key={chunkIndex} sx={{ mb: 2 }}>
-                        {chunk}
-                      </Box>
-                    ))}
-                    {item.markdownType && (
-                      <AccordionSupportCard label={item.label} colour={grey[100]} markdownType={item.markdownType} />
-                    )}
-                  </Box>
-                )) || <Typography>No content available for this section.</Typography>}
-              </Stack>
+              <Box
+                sx={{
+                  p: 3,
+                  border: '1px solid',
+                  borderColor: grey[300],
+                  borderRadius: '8px',
+                  bgcolor: grey[50]
+                }}>
+                <Stack gap={2}>
+                  {dataMap[currentView]?.map((item, index) => (
+                    <Box key={index}>
+                      {item.description.map((chunk, chunkIndex) => (
+                        <Box key={chunkIndex} sx={{ mb: 2 }}>
+                          {chunk}
+                        </Box>
+                      ))}
+                      {item.markdownType && (
+                        <AccordionSupportCard label={item.label} colour={grey[100]} markdownType={item.markdownType} />
+                      )}
+                    </Box>
+                  )) || <Typography>No content available for this section.</Typography>}
+                </Stack>
+              </Box>
+            </Box>
 
+            {/* Chevron Arrows */}
+            {currentView !== SupportPageView.CONTACT && (
               <Stack
                 direction="row"
                 justifyContent={
                   currentIndex === 0 ? 'flex-end' : currentIndex === views.length - 1 ? 'flex-start' : 'space-between'
                 }
                 alignItems="center"
-                sx={{ mt: 2 }}>
+                sx={{ mt: 'auto', pt: 2 }}>
                 {currentIndex > 0 && (
                   <Box
                     component="button"
@@ -138,8 +145,8 @@ const SupportPage = () => {
                   </Box>
                 )}
               </Stack>
-            </Box>
-          </Box>
+            )}
+          </Stack>
         </Stack>
       </Container>
     </>
