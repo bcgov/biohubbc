@@ -3,7 +3,12 @@ import { WorkSheet } from 'xlsx';
 import { IDBConnection } from '../../../database/db';
 import { CSVConfigUtils } from '../../../utils/csv-utils/csv-config-utils';
 import { validateCSVWorksheet } from '../../../utils/csv-utils/csv-config-validation';
-import { CSVConfig, CSVError } from '../../../utils/csv-utils/csv-config-validation.interface';
+import {
+  CSVConfig,
+  CSVError,
+  CSVRowState,
+  CSVRowValidated
+} from '../../../utils/csv-utils/csv-config-validation.interface';
 import {
   getDateCellValidator,
   getDescriptionCellValidator,
@@ -17,7 +22,7 @@ import { getLogger } from '../../../utils/logger';
 import { ICapture, ILocation } from '../../critterbase-service';
 import { DBService } from '../../db-service';
 import { SurveyCritterService } from '../../survey-critter-service';
-import { getCaptureDateCellValidator, injectCritterIdIntoRow } from './capture-header-configs';
+import { getCaptureDateCellValidator } from './capture-header-configs';
 
 const defaultLog = getLogger('services/import/import-captures-service');
 
@@ -80,8 +85,8 @@ export class ImportCapturesService extends DBService {
     const initialConfig: CSVConfig<CaptureCSVStaticHeader> = {
       staticHeadersConfig: {
         ALIAS: { aliases: ['NICKNAME', 'ANIMAL'] },
-        CAPTURE_DATE: { aliases: ['CAPTURE_DATE'] },
-        CAPTURE_TIME: { aliases: ['CAPTURE_TIME'], optional: true },
+        CAPTURE_DATE: { aliases: ['CAPTURE DATE'] },
+        CAPTURE_TIME: { aliases: ['CAPTURE TIME'], optional: true },
         CAPTURE_LATITUDE: { aliases: ['CAPTURE LATITUDE', 'CAPTURE_LAT', 'CAPTURE LAT'] },
         CAPTURE_LONGITUDE: { aliases: CAPTURE_LONGITUDE_ALIASES },
         RELEASE_DATE: { aliases: ['RELEASE DATE'], optional: true },
@@ -145,7 +150,7 @@ export class ImportCapturesService extends DBService {
 
       captures.push({
         capture_id: uuid(),
-        critter_id: row['critter_id'],
+        critter_id: row[CSVRowState]?.critterId,
         capture_date: row.CAPTURE_DATE,
         capture_time: row.CAPTURE_TIME,
         capture_location_id: captureLocationId,
@@ -173,10 +178,7 @@ export class ImportCapturesService extends DBService {
     const surveyAliasMap = await this.surveyCritterService.getSurveyCritterAliasMap(this.surveyId);
 
     this.utils.setAllStaticHeaderConfigs({
-      ALIAS: {
-        validateCell: getSurveyCritterAliasCellValidator(surveyAliasMap),
-        setCellValue: injectCritterIdIntoRow(surveyAliasMap)
-      },
+      ALIAS: { validateCell: getSurveyCritterAliasCellValidator(surveyAliasMap) },
       CAPTURE_DATE: { validateCell: getCaptureDateCellValidator(surveyAliasMap, this.utils) },
       CAPTURE_TIME: { validateCell: getTimeCellValidator(), setCellValue: getTimeCellSetter() },
       CAPTURE_LATITUDE: { validateCell: getLatitudeCellValidator() },
@@ -191,5 +193,39 @@ export class ImportCapturesService extends DBService {
 
     // Return the final CSV config
     return this.utils.getConfig();
+  }
+
+  async _convertRowIntoPayloads(row: CSVRowValidated<CaptureCSVStaticHeader>) {
+    let releaseLocation: ILocation | undefined;
+    const captureLocation: ILocation = {
+      location_id: uuid(),
+      latitude: row.CAPTURE_LATITUDE,
+      longitude: row.CAPTURE_LONGITUDE
+    };
+
+    // Push the capture release location if included
+    if (row.RELEASE_LATITUDE && row.RELEASE_LONGITUDE) {
+      // Update the release location id
+      releaseLocationId = uuid();
+
+      releaseLocation = {
+        location_id: releaseLocationId,
+        latitude: row.RELEASE_LATITUDE,
+        longitude: row.RELEASE_LONGITUDE
+      };
+    }
+
+    const capture = {
+      capture_id: uuid(),
+      critter_id: row[CSVRowState]?.critterId,
+      capture_date: row.CAPTURE_DATE,
+      capture_time: row.CAPTURE_TIME,
+      capture_location_id: captureLocationId,
+      capture_comment: row.CAPTURE_COMMENT,
+      release_date: row.RELEASE_DATE,
+      release_time: row.RELEASE_TIME,
+      release_location_id: releaseLocationId,
+      release_comment: row.RELEASE_COMMENT
+    };
   }
 }

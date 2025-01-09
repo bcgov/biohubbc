@@ -1,29 +1,10 @@
 import { z } from 'zod';
 import { CSVConfigUtils } from '../../../utils/csv-utils/csv-config-utils';
-import { CSVCellSetter, CSVCellValidator } from '../../../utils/csv-utils/csv-config-validation.interface';
+import { CSVCellValidator } from '../../../utils/csv-utils/csv-config-validation.interface';
 import { validateZodCell } from '../../../utils/csv-utils/csv-header-configs';
 import { ICritterDetailed } from '../../critterbase-service';
 import { findCapturesFromDateTime } from '../utils/datetime';
 import { CaptureCSVStaticHeader } from './import-captures-service';
-
-/**
- * Return the original cell value and inject the `critter_id` into the row.
- *
- * Note: This mutates the row object.
- *
- * @param {Map<string, ICritterDetailed>} surveyAliasMap The survey alias map
- * @returns {*} {CSVCellSetter} The set cell callback
- */
-export const injectCritterIdIntoRow = (surveyAliasMap: Map<string, ICritterDetailed>): CSVCellSetter => {
-  return (params) => {
-    const critter = surveyAliasMap.get(String(params.cell).toLowerCase());
-
-    // Inject the critter_id into the row
-    params.row['critter_id'] = critter?.critter_id;
-
-    return params.cell;
-  };
-};
 
 /**
  * Get the capture date cell validator.

@@ -201,6 +201,11 @@ export const getDateCellValidator = (options?: CSVOptionalCell): CSVCellValidato
 /**
  * Get the survey critter alias cell validator.
  *
+ * Note: This validator will update the row state with critter ID - `critterId`.
+ *
+ * Rules:
+ *  1. The cell must be a valid critter alias that exists in the Survey alias map
+ *
  * @param {Map<string, ICritterDetailed>} surveyAliasMap The survey alias map
  * @returns {*} {CSVCellValidator} The validate cell callback
  */
@@ -216,6 +221,9 @@ export const getSurveyCritterAliasCellValidator = (surveyAliasMap: Map<string, I
         }
       ];
     }
+
+    // Update the row state with the critter ID
+    updateCSVRowState(params.row, { critterId: critter.critter_id });
 
     return [];
   };

@@ -136,6 +136,7 @@ export class CSVConfigUtils<StaticHeaderType extends Uppercase<string> = Upperca
         ...headersConfig[header]
       };
     }
+    console.log({ config: this._config });
   }
 
   /**

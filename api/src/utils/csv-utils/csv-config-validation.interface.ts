@@ -194,37 +194,48 @@ export interface CSVParams {
  *    values: ['unit1', 'unit2'], // Optional list of allowed values
  *    header: 'POPULATION_UNIT',
  *    cell: 'unit3',
- *    row: 1, // Header row index 0. First data row index 1
+ *    row: 1, // Header row index 1. First data row index 2
  *  }
  */
 export interface CSVError {
   /**
-   * The error message.
+   * The error message. The user facing message to describe the error.
    *
+   * @example `Invalid collection unit`
    * @type {string}
    */
   error: string;
   /**
-   * The solution message.
+   * The solution message. The user facing message to resolve the error.
    *
+   * @example `Use a valid collection unit`
    * @type {string}
    */
   solution: string;
   /**
    * The list of allowed values if applicable.
    *
+   * Note: Optional as not all errors will have a list of allowed values.
+   *
+   * @example ['unit1', 'unit2']
    * @type {(string[] | number[]) | undefined}
    */
   values?: string[] | number[] | null;
   /**
-   * The cell value.
+   * The cell value that caused the error.
    *
+   * Note: Include value to override.
+   *
+   * @example 'unit3'
    * @type {unknown | undefined}
    */
   cell?: unknown;
   /**
-   * The header name.
+   * The header name. Typically this will be the user facing CSV header name.
    *
+   * Note: Include value to override.
+   *
+   * @example 'Population Unit'
    * @type {string | null | undefined}
    */
   header?: string | null;
@@ -232,7 +243,9 @@ export interface CSVError {
    * The row index the error occurred.
    *
    * Note: Header row index 1. First data row index 2.
+   * Note: Include value to override.
    *
+   * @example 2
    * @type {number}
    */
   row?: number;
