@@ -4,13 +4,16 @@ import sinonChai from 'sinon-chai';
 import xlsx, { WorkSheet } from 'xlsx';
 import { WorksheetRowIndexSymbol } from '../xlsx-utils/worksheet-utils';
 import {
+  executeRowValidator,
   executeSetCellValue,
   executeValidateCell,
-  forEachCSVCell,
+  forEachCSVRow,
+  forEachCSVRowCell,
   validateCSVHeaders,
   validateCSVWorksheet
 } from './csv-config-validation';
-import { CSVConfig } from './csv-config-validation.interface';
+import { CSVConfig, CSVRowState } from './csv-config-validation.interface';
+import { updateCSVRowState } from './csv-header-configs';
 chai.use(sinonChai);
 
 describe('csv-config-validation', () => {
@@ -53,15 +56,14 @@ describe('csv-config-validation', () => {
       expect(validateDynamicCellStub).to.have.been.calledTwice;
       expect(setCellValueDynamicStub).to.have.been.calledTwice;
 
-      expect(result).to.deep.equal({
-        errors: [],
-        rows: [
-          {
-            ALIAS: 'newValue',
-            DYNAMIC_HEADER: 'newDynamicValue',
-            OTHER_DYNAMIC_HEADER: 'newDynamicValue'
-          }
-        ]
+      expect(result.errors.length).to.be.equal(0);
+      expect(result.rows.length).to.be.equal(1);
+
+      expect(result.rows[0]).to.deep.equal({
+        ALIAS: 'newValue',
+        DYNAMIC_HEADER: 'newDynamicValue',
+        OTHER_DYNAMIC_HEADER: 'newDynamicValue',
+        [CSVRowState]: undefined
       });
     });
 
@@ -100,6 +102,62 @@ describe('csv-config-validation', () => {
         ],
         rows: []
       });
+    });
+
+    it('should call the row validators and return the errors early', () => {
+      const validateRowStub = sinon.stub().returns([{ error: 'error', solution: 'solution' }]);
+
+      const mockConfig: CSVConfig = {
+        staticHeadersConfig: {
+          ALIAS: {
+            aliases: ['ALIAS_2']
+          }
+        },
+        ignoreDynamicHeaders: true,
+        rowValidators: [validateRowStub]
+      };
+
+      const worksheet: WorkSheet = xlsx.utils.json_to_sheet([{ ALIAS: 'value' }, { ALIAS: 'value' }]);
+
+      const result = validateCSVWorksheet(worksheet, mockConfig);
+
+      expect(validateRowStub).to.have.been.calledTwice;
+      expect(result.errors.length).to.be.equal(2);
+    });
+
+    it('should update the row state with the CSVRowState', () => {
+      const mockConfig: CSVConfig = {
+        staticHeadersConfig: {
+          ALIAS: {
+            aliases: [],
+            validateCell: (params) => {
+              updateCSVRowState(params.row, { stateValue: 'newValue' });
+
+              return [];
+            }
+          }
+        },
+        ignoreDynamicHeaders: true,
+        rowValidators: [
+          (params) => {
+            updateCSVRowState(params.row, {
+              stateValue: 'value',
+              rowValidatorValue: 'rowValidator',
+              otherValue: 'test'
+            });
+
+            return [];
+          }
+        ]
+      };
+
+      const worksheet: WorkSheet = xlsx.utils.json_to_sheet([{ ALIAS: 'value' }]);
+
+      const result = validateCSVWorksheet(worksheet, mockConfig);
+
+      expect(result.rows[0][CSVRowState]?.stateValue).to.equal('newValue');
+      expect(result.rows[0][CSVRowState]?.rowValidatorValue).to.equal('rowValidator');
+      expect(result.rows[0][CSVRowState]?.otherValue).to.equal('test');
     });
   });
 
@@ -198,9 +256,25 @@ describe('csv-config-validation', () => {
     });
   });
 
-  describe('forEachCSVCell', () => {
+  describe('forEachCSVRow', () => {
+    it('should invoke the callback for each row in the worksheet', () => {
+      const worksheet: WorkSheet = xlsx.utils.json_to_sheet([{ TEST: 'cellValue' }, { TEST: 'cellValue2' }]);
+
+      const callbackStub = sinon.stub();
+
+      forEachCSVRow(
+        worksheet,
+        { staticHeadersConfig: { TEST: { aliases: [] } }, ignoreDynamicHeaders: true },
+        callbackStub
+      );
+
+      expect(callbackStub).to.have.been.calledTwice;
+    });
+  });
+
+  describe('forEachCSVRowCell', () => {
     it('should iterate over each cell in the worksheet', () => {
-      const worksheet: WorkSheet = xlsx.utils.json_to_sheet([{ TEST: 'cellValue' }]);
+      const row = { TEST: 'cellValue' };
 
       const validateCellStub = sinon.stub();
       const setCellValueStub = sinon.stub();
@@ -218,7 +292,7 @@ describe('csv-config-validation', () => {
 
       const callbackStub = sinon.stub();
 
-      forEachCSVCell(worksheet, config, callbackStub);
+      forEachCSVRowCell(row, 0, config, callbackStub);
 
       expect(callbackStub).to.have.been.calledOnceWithExactly(
         {
@@ -237,7 +311,7 @@ describe('csv-config-validation', () => {
     });
 
     it('should iterate over each cell in the worksheet when alias is used', () => {
-      const worksheet: WorkSheet = xlsx.utils.json_to_sheet([{ TEST_ALIAS: 'cellValue' }]);
+      const row = { TEST_ALIAS: 'cellValue' };
 
       const validateCellStub = sinon.stub();
       const setCellValueStub = sinon.stub();
@@ -255,7 +329,7 @@ describe('csv-config-validation', () => {
 
       const callbackStub = sinon.stub();
 
-      forEachCSVCell(worksheet, config, callbackStub);
+      forEachCSVRowCell(row, 0, config, callbackStub);
 
       expect(callbackStub).to.have.been.calledOnceWithExactly(
         {
@@ -274,9 +348,7 @@ describe('csv-config-validation', () => {
     });
 
     it('should iterate over dynamic cell values', () => {
-      const worksheet: WorkSheet = xlsx.utils.json_to_sheet([
-        { TEST_ALIAS: 'cellValue', DYNAMIC_HEADER: 'dynamicValue' }
-      ]);
+      const row = { TEST_ALIAS: 'cellValue', DYNAMIC_HEADER: 'dynamicValue' };
 
       const staticValidateCellStub = sinon.stub();
       const staticSetCellValueStub = sinon.stub();
@@ -301,7 +373,7 @@ describe('csv-config-validation', () => {
 
       const callbackStub = sinon.stub();
 
-      forEachCSVCell(worksheet, config, callbackStub);
+      forEachCSVRowCell(row, 0, config, callbackStub);
 
       expect(callbackStub).to.have.been.calledTwice;
 
@@ -310,7 +382,10 @@ describe('csv-config-validation', () => {
           cell: 'cellValue',
           header: 'TEST_ALIAS',
           rowIndex: 0,
-          row: { TEST_ALIAS: 'cellValue', DYNAMIC_HEADER: 'dynamicValue', [WorksheetRowIndexSymbol]: 1 },
+          row: {
+            TEST_ALIAS: 'cellValue',
+            DYNAMIC_HEADER: 'dynamicValue'
+          },
           staticHeader: 'TEST',
           mutateCell: 'cellValue'
         },
@@ -325,7 +400,10 @@ describe('csv-config-validation', () => {
           cell: 'dynamicValue',
           header: 'DYNAMIC_HEADER',
           rowIndex: 0,
-          row: { TEST_ALIAS: 'cellValue', DYNAMIC_HEADER: 'dynamicValue', [WorksheetRowIndexSymbol]: 1 },
+          row: {
+            TEST_ALIAS: 'cellValue',
+            DYNAMIC_HEADER: 'dynamicValue'
+          },
           staticHeader: undefined, // Dynamic headers have no static header mapping
           mutateCell: 'dynamicValue'
         },
@@ -337,10 +415,29 @@ describe('csv-config-validation', () => {
     });
   });
 
-  describe('executeValidateCell', () => {
-    it('should call the validateCell callback and mutate errors array', () => {
-      const errors: any[] = [];
+  describe('executeRowValidator', () => {
+    it('should call the row validator callback and return errors array', () => {
+      const validateRowStub = sinon.stub().returns([{ error: 'error', solution: 'solution' }]);
 
+      const row = { TEST: 'cellValue', [WorksheetRowIndexSymbol]: 1 };
+
+      const rowErrors = executeRowValidator({ row, rowIndex: 0 }, validateRowStub);
+
+      expect(validateRowStub).to.have.been.calledOnceWithExactly({ row, rowIndex: 0 });
+      expect(rowErrors).to.deep.equal([
+        {
+          error: 'error',
+          solution: 'solution',
+          cell: null,
+          header: null,
+          row: 2,
+          values: null
+        }
+      ]);
+    });
+  });
+  describe('executeValidateCell', () => {
+    it('should call the validateCell callback and return errors array', () => {
       const validateCellStub = sinon.stub().returns([{ error: 'error', solution: 'solution' }]);
 
       const params = {
@@ -352,11 +449,7 @@ describe('csv-config-validation', () => {
         mutateCell: 'cellValue'
       };
 
-      const headerConfig = {
-        validateCell: validateCellStub
-      };
-
-      executeValidateCell(params, headerConfig, errors);
+      const errors = executeValidateCell(params, validateCellStub);
       expect(validateCellStub).to.have.been.calledOnceWithExactly(params);
       expect(errors).to.deep.equal([
         {
@@ -372,7 +465,7 @@ describe('csv-config-validation', () => {
   });
 
   describe('executeSetCellValue', () => {
-    it('should call the setCellValue callback and mutate the row', () => {
+    it('should call the setCellValue callback and return the row', () => {
       const row = { TEST: 'cellValue' };
 
       const setCellValueStub = sinon.stub().returns('newValue');
@@ -386,16 +479,11 @@ describe('csv-config-validation', () => {
         mutateCell: 'cellValue'
       };
 
-      const headerConfig = {
-        setCellValue: setCellValueStub
-      };
-
-      const mutableRows = [row];
-
-      executeSetCellValue(params, headerConfig, mutableRows);
+      const { header, cell } = executeSetCellValue(params, setCellValueStub);
 
       expect(setCellValueStub).to.have.been.calledOnceWithExactly(params);
-      expect(mutableRows).to.deep.equal([{ TEST: 'newValue' }]);
+      expect(header).to.equal('TEST');
+      expect(cell).to.equal('newValue');
     });
 
     it('should remap the key for a static header alias', () => {
@@ -412,16 +500,11 @@ describe('csv-config-validation', () => {
         mutateCell: 'cellValue'
       };
 
-      const headerConfig = {
-        setCellValue: setCellValueStub
-      };
-
-      const mutableRows = [row];
-
-      executeSetCellValue(params, headerConfig, mutableRows);
+      const { header, cell } = executeSetCellValue(params, setCellValueStub);
 
       expect(setCellValueStub).to.have.been.calledOnceWithExactly(params);
-      expect(mutableRows).to.deep.equal([{ NEW_KEY: 'newValue' }]);
+      expect(header).to.equal('NEW_KEY');
+      expect(cell).to.equal('newValue');
     });
   });
 });

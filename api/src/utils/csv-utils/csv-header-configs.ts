@@ -1,11 +1,33 @@
 import { z } from 'zod';
 import { ICritterDetailed } from '../../services/critterbase-service';
 import { formatTimeString } from '../../services/import-services/utils/datetime';
-import { CSVCellSetter, CSVCellValidator, CSVError, CSVParams } from './csv-config-validation.interface';
+import {
+  CSVCellSetter,
+  CSVCellValidator,
+  CSVError,
+  CSVParams,
+  CSVRow,
+  CSVRowState
+} from './csv-config-validation.interface';
 
 // CSVOptionalCell - Optional cell config override
 type CSVOptionalCell = {
   optional: boolean;
+};
+
+/**
+ * Helper to update the CSV row state, if the state does not exist it will be created.
+ *
+ * Note: To remove a state value set it to `undefined`.
+ *
+ * @returns {*} {void}
+ */
+export const updateCSVRowState = (row: CSVRow, state: Record<string, any>) => {
+  if (!row[CSVRowState]) {
+    row[CSVRowState] = {};
+  }
+
+  row[CSVRowState] = { ...row[CSVRowState], ...state };
 };
 
 /**
