@@ -77,6 +77,14 @@ export const CSVErrorsCardStack = (props: CSVErrorsCardStackProps) => {
                     </Typography>
                     <Typography variant="body2">{error.cell ?? 'N/A'}</Typography>
                   </Stack>
+                  {error.cell && error.values && (
+                    <Stack>
+                      <Typography variant="body2" fontWeight={700}>
+                        Allowed Values
+                      </Typography>
+                      <Typography variant="body2">{error.values.join(', ')}</Typography>
+                    </Stack>
+                  )}
                 </Stack>
               </Stack>
             }
