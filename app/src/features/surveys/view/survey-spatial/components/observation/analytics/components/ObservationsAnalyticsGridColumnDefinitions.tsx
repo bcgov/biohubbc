@@ -139,10 +139,10 @@ export const getSamplingPeriodColDef = (): GridColDef<IObservationAnalyticsRow> 
   sortable: false, // Not yet supported by the API
   renderCell: (params) => {
     const label = getDateTimeLabel(
-      params.row.start_date as string | null,
-      params.row.start_time as string | null,
-      params.row.end_date as string | null,
-      params.row.end_time as string | null
+      params.row.start_date ?? null,
+      params.row.start_time ?? null,
+      params.row.end_date ?? null,
+      params.row.end_time ?? null
     );
 
     return <Typography>{label}</Typography>;

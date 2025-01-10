@@ -111,7 +111,8 @@ GET.apiDoc = {
                 'quantitative_measurements',
                 'qualitative_measurements'
               ],
-              // Additional properties is intentionally true to allow for dynamic key-value measurement pairs
+              // Additional properties is intentionally true to allow for dynamic key-value measurement pairs and
+              // dynamic columns based on the groupByColumns query parameter
               additionalProperties: true,
               properties: {
                 id: {
