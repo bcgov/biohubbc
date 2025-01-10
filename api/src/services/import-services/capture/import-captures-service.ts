@@ -126,40 +126,14 @@ export class ImportCapturesService extends DBService {
     const locations: ILocation[] = [];
 
     for (const row of rows) {
-      let releaseLocationId: string | undefined = undefined;
-      const captureLocationId = uuid();
+      const { capture, captureLocation, releaseLocation } = this._convertRowIntoPayloads(row);
 
-      // Push the capture location
-      locations.push({
-        location_id: captureLocationId,
-        latitude: row.CAPTURE_LATITUDE,
-        longitude: row.CAPTURE_LONGITUDE
-      });
-
-      // Push the capture release location if included
-      if (row.RELEASE_LATITUDE && row.RELEASE_LONGITUDE) {
-        // Update the release location id
-        releaseLocationId = uuid();
-
-        locations.push({
-          location_id: releaseLocationId,
-          latitude: row.RELEASE_LATITUDE,
-          longitude: row.RELEASE_LONGITUDE
-        });
+      // Push the capture and location data
+      captures.push(capture);
+      locations.push(captureLocation);
+      if (releaseLocation) {
+        locations.push(releaseLocation);
       }
-
-      captures.push({
-        capture_id: uuid(),
-        critter_id: row[CSVRowState]?.critterId,
-        capture_date: row.CAPTURE_DATE,
-        capture_time: row.CAPTURE_TIME,
-        capture_location_id: captureLocationId,
-        capture_comment: row.CAPTURE_COMMENT,
-        release_date: row.RELEASE_DATE,
-        release_time: row.RELEASE_TIME,
-        release_location_id: releaseLocationId,
-        release_comment: row.RELEASE_COMMENT
-      });
     }
 
     defaultLog.debug({ label: 'import captures', captures });
@@ -195,7 +169,13 @@ export class ImportCapturesService extends DBService {
     return this.utils.getConfig();
   }
 
-  async _convertRowIntoPayloads(row: CSVRowValidated<CaptureCSVStaticHeader>) {
+  /**
+   * Convert a CSV row into Critterbase Capture and Location payloads.
+   *
+   * @param {CSVRowValidated<CaptureCSVStaticHeader>} row - The validated CSV row
+   * @returns {*}
+   */
+  _convertRowIntoPayloads(row: CSVRowValidated<CaptureCSVStaticHeader>) {
     let releaseLocation: ILocation | undefined;
     const captureLocation: ILocation = {
       location_id: uuid(),
@@ -203,29 +183,27 @@ export class ImportCapturesService extends DBService {
       longitude: row.CAPTURE_LONGITUDE
     };
 
-    // Push the capture release location if included
     if (row.RELEASE_LATITUDE && row.RELEASE_LONGITUDE) {
-      // Update the release location id
-      releaseLocationId = uuid();
-
       releaseLocation = {
-        location_id: releaseLocationId,
+        location_id: uuid(),
         latitude: row.RELEASE_LATITUDE,
         longitude: row.RELEASE_LONGITUDE
       };
     }
 
-    const capture = {
+    const capture: ICapture = {
       capture_id: uuid(),
       critter_id: row[CSVRowState]?.critterId,
       capture_date: row.CAPTURE_DATE,
       capture_time: row.CAPTURE_TIME,
-      capture_location_id: captureLocationId,
+      capture_location_id: captureLocation.location_id as string,
       capture_comment: row.CAPTURE_COMMENT,
       release_date: row.RELEASE_DATE,
       release_time: row.RELEASE_TIME,
-      release_location_id: releaseLocationId,
+      release_location_id: releaseLocation?.location_id,
       release_comment: row.RELEASE_COMMENT
     };
+
+    return { capture, captureLocation, releaseLocation };
   }
 }

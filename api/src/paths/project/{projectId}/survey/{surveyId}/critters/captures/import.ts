@@ -31,7 +31,7 @@ export const POST: Operation = [
       ]
     };
   }),
-  importCsv()
+  importCaptureCSV()
 ];
 
 POST.apiDoc = {
@@ -114,7 +114,7 @@ POST.apiDoc = {
  *
  * @return {*} {RequestHandler}
  */
-export function importCsv(): RequestHandler {
+export function importCaptureCSV(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
     const rawFile = getFileFromRequest(req);
