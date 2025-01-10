@@ -8,7 +8,6 @@ import { IObservationsContext } from 'contexts/observationsContext';
 import { IObservationsPageContext } from 'contexts/observationsPageContext';
 import dayjs from 'dayjs';
 import { ImportObservationsButton } from 'features/surveys/observations/sampling-sites/components/ImportObservationsButton';
-// import { ISurveySamplePeriodFormData } from 'features/surveys/sampling-information/periods/form/components/periods/SamplePeriodPeriodForm';
 import { GetSamplingPeriod } from 'interfaces/useSamplingPeriodApi.interface';
 
 interface ISamplingSiteListPeriodProps {
@@ -17,14 +16,17 @@ interface ISamplingSiteListPeriodProps {
   observationsContext?: IObservationsContext;
 }
 /**
- * Renders sampling periods for a sampling method
+ * Renders a timeline of sampling period dates.
+ *
+ * Includes an import observations button if the observationsPageContext and observationsContext are provided.
+ *
  * @param props {ISamplingSiteListPeriodProps}
  * @returns
  */
 export const SamplingSiteListPeriod = (props: ISamplingSiteListPeriodProps) => {
   const formatDate = (dt: Date, time: boolean) => dayjs(dt).format(time ? 'MMM D, YYYY h:mm A' : 'MMM D, YYYY');
 
-  const { observationsPageContext, observationsContext } = props;
+  const { samplePeriods, observationsPageContext, observationsContext } = props;
 
   const dateSx = {
     fontSize: '0.85rem',
@@ -36,7 +38,7 @@ export const SamplingSiteListPeriod = (props: ISamplingSiteListPeriodProps) => {
     color: 'text.secondary'
   };
 
-  const sortedSamplePeriods = props.samplePeriods.sort((a, b) => {
+  const sortedSamplePeriods = samplePeriods.sort((a, b) => {
     if (!a.start_date && !b.start_date) {
       return 0;
     }
@@ -75,12 +77,12 @@ export const SamplingSiteListPeriod = (props: ISamplingSiteListPeriodProps) => {
             m: 0,
             p: 0
           }}
-          key={`${samplePeriod.survey_sample_period_id}-${index}`}>
+          key={`sample-period-${samplePeriod.survey_sample_period_id}`}>
           <TimelineSeparator sx={{ minWidth: 0, ml: 1, mr: 0.5 }}>
-            {props.samplePeriods.length > 1 ? (
+            {samplePeriods.length > 1 ? (
               <Box display="flex" justifyContent="center">
                 <TimelineDot sx={{ bgcolor: grey[400], boxShadow: 'none' }} />
-                {index < props.samplePeriods.length - 1 && (
+                {index < samplePeriods.length - 1 && (
                   <TimelineConnector
                     sx={{
                       bgcolor: grey[400],
@@ -99,6 +101,7 @@ export const SamplingSiteListPeriod = (props: ISamplingSiteListPeriodProps) => {
           </TimelineSeparator>
           <TimelineContent
             sx={{
+              pr: 0,
               '& .MuiTimelineItem-root': {
                 width: '100%',
                 flex: '1 1 auto'

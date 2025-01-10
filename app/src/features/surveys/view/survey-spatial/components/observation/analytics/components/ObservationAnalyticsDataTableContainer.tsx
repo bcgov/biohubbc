@@ -17,8 +17,10 @@ import {
   getDateColDef,
   getIndividualCountColDef,
   getIndividualPercentageColDef,
+  getMethodTechniqueColDef,
   getRowCountColDef,
   getSamplingPeriodColDef,
+  getSamplingSiteColDef,
   getSpeciesColDef
 } from './ObservationsAnalyticsGridColumnDefinitions';
 
@@ -114,8 +116,8 @@ export const ObservationAnalyticsDataTableContainer = (props: IObservationAnalyt
       getRowCountColDef(),
       getIndividualCountColDef(),
       getIndividualPercentageColDef(),
-      //   getSamplingSiteColDef(samplePeriods),
-      //   getMethodTechniqueColDef(samplePeriods),
+      getSamplingSiteColDef(samplePeriods),
+      getMethodTechniqueColDef(samplePeriods),
       getSamplingPeriodColDef(samplePeriods),
       getSpeciesColDef(taxonomyContext.getCachedSpeciesTaxonomyById),
       getDateColDef(),

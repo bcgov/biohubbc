@@ -2,12 +2,11 @@ import Typography from '@mui/material/Typography';
 import { GridColDef, GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import dayjs from 'dayjs';
 import { useCodesContext } from 'hooks/useContext';
 import { GetSamplingPeriod } from 'interfaces/useSamplingPeriodApi.interface';
 import { useEffect } from 'react';
 import { formatTimeDifference } from 'utils/datetime';
-import { getCodesName } from 'utils/Utils';
+import { getCodesName, getFormattedDate } from 'utils/Utils';
 
 interface ISamplingPeriodTableProps {
   periods: GetSamplingPeriod[];
@@ -77,7 +76,7 @@ export const SurveyPeriodsTable = (props: ISamplingPeriodTableProps) => {
       headerName: 'Start date',
       flex: 1,
       renderCell: (params) => (
-        <Typography variant="body2">{dayjs(params.row.start_date).format(DATE_FORMAT.MediumDateFormat)}</Typography>
+        <Typography variant="body2">{getFormattedDate(DATE_FORMAT.MediumDateFormat, params.row.start_date)}</Typography>
       )
     },
     {
@@ -90,7 +89,7 @@ export const SurveyPeriodsTable = (props: ISamplingPeriodTableProps) => {
       headerName: 'End date',
       flex: 1,
       renderCell: (params) => (
-        <Typography variant="body2">{dayjs(params.row.end_date).format(DATE_FORMAT.MediumDateFormat)}</Typography>
+        <Typography variant="body2">{getFormattedDate(DATE_FORMAT.MediumDateFormat, params.row.end_date)}</Typography>
       )
     },
     {

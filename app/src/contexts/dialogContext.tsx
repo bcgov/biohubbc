@@ -174,6 +174,8 @@ export const DialogContextProvider: React.FC<React.PropsWithChildren> = (props) 
     setScoreDialogProps((prev) => ({ ...prev, ...partialProps }));
   };
 
+  console.log(snackbarProps);
+
   return (
     <DialogContext.Provider
       value={{

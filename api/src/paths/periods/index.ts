@@ -53,8 +53,11 @@ GET.apiDoc = {
       name: 'sample_site_id',
       required: false,
       schema: {
-        type: 'integer',
-        minimum: 1,
+        type: 'array',
+        items: {
+          type: 'integer',
+          minimum: 1
+        },
         nullable: true
       }
     },
@@ -63,8 +66,11 @@ GET.apiDoc = {
       name: 'method_technique_id',
       required: false,
       schema: {
-        type: 'integer',
-        minimum: 1,
+        type: 'array',
+        items: {
+          type: 'integer',
+          minimum: 1
+        },
         nullable: true
       }
     },
@@ -276,8 +282,8 @@ export function findPeriods(): RequestHandler {
 function parseQueryParams(req: Request<unknown, unknown, unknown, IPeriodAdvancedFilters>): IPeriodAdvancedFilters {
   return {
     survey_id: (req.query.survey_id && Number(req.query.survey_id)) ?? undefined,
-    sample_site_id: (req.query.sample_site_id && Number(req.query.sample_site_id)) ?? undefined,
-    method_technique_id: (req.query.method_technique_id && Number(req.query.method_technique_id)) ?? undefined,
+    sample_site_id: (req.query.sample_site_id && req.query.sample_site_id.map(Number)) ?? [],
+    method_technique_id: (req.query.method_technique_id && req.query.method_technique_id.map(Number)) ?? [],
     system_user_id: req.query.system_user_id ?? undefined
   };
 }

@@ -407,14 +407,14 @@ export class SamplePeriodRepository extends BaseRepository {
       getSamplingPeriodsQuery.andWhere('survey_sample_period.survey_id', filterFields.survey_id);
     }
 
-    if (filterFields.sample_site_id) {
+    if (filterFields.sample_site_id?.length) {
       // Filter by a specific sample site id
-      getSamplingPeriodsQuery.andWhere('survey_sample_period.survey_sample_site_id', filterFields.sample_site_id);
+      getSamplingPeriodsQuery.whereIn('survey_sample_period.survey_sample_site_id', filterFields.sample_site_id);
     }
 
-    if (filterFields.method_technique_id) {
+    if (filterFields.method_technique_id?.length) {
       // Filter by a specific sample method id
-      getSamplingPeriodsQuery.andWhere('survey_sample_period.method_technique_id', filterFields.method_technique_id);
+      getSamplingPeriodsQuery.whereIn('survey_sample_period.method_technique_id', filterFields.method_technique_id);
     }
 
     return getSamplingPeriodsQuery;

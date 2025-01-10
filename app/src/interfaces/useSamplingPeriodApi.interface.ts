@@ -106,32 +106,10 @@ export type FindSamplingPeriods = {
 
 export type UpdateSamplingPeriod = {
   survey_sample_period_id?: number;
-} & (
-  | {
-      // At least survey sample site is not null
-      survey_sample_site_id: number;
-      method_technique_id: number | null;
-      start_date: string | null;
-      start_time: string | null;
-      end_date: string | null;
-      end_time: string | null;
-    }
-  | {
-      // At least method technique is not null
-      survey_sample_site_id: number | null;
-      method_technique_id: number;
-      start_date: string | null;
-      start_time: string | null;
-      end_date: string | null;
-      end_time: string | null;
-    }
-  | {
-      // At least start/end date are not null
-      survey_sample_site_id: number | null;
-      method_technique_id: number | null;
-      start_date: string;
-      start_time: string | null;
-      end_date: string;
-      end_time: string | null;
-    }
-);
+  survey_sample_site_id: number;
+  method_technique_id: number;
+  start_date: string;
+  start_time: string | null;
+  end_date: string;
+  end_time: string | null;
+};

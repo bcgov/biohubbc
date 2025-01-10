@@ -62,21 +62,26 @@ export function pullSamplingDataFromWorksheetRowObject(
     periodsMatchingTechnique,
     periodsMatchingPeriod
   );
+
   if (matchingPeriods.length === 1) {
-    // Found exactly one period that matches some or all of the filters above
+    // Found exactly one period record that uniquely matches some or all of the filters above
     return _formatMatchingPeriod(matchingPeriods[0]);
   }
 
-  // If no single period was matched above, then attempt to find a suitable period based on the observation date and time
+  // If no single period record was matched above, then attempt to find a suitable unique period based on the
+  // observation date and time
   const observationDate = getColumnCellValue(row, 'DATE').cell as string | null;
   const observationTime = getColumnCellValue(row, 'TIME').cell as string | null;
 
   const suitablePeriods = _findSamplePeriodFromWorksheetDateAndTime(observationDate, observationTime, samplingPeriods);
 
   if (suitablePeriods.length) {
-    // If at least one period is found, return the first one
+    // If at least one period record is found that satisfies the observation date and time, then return the first one
     return _formatMatchingPeriod(suitablePeriods[0]);
   }
+
+  // TODO Nick: If no period record is found by date/time, but multiple were found by site, technique, or period,
+  // should we return the first one here? Or should we return null to indicate that the observation record is invalid?
 
   // Unable to match this observation record to any existing period
   return null;
@@ -95,7 +100,7 @@ function _findSamplePeriodFromWorksheetSite(
   siteName: string,
   samplingPeriods: SurveySamplePeriodDetails[]
 ): SurveySamplePeriodDetails[] {
-  return samplingPeriods.filter((period: any) => period.survey_sample_site.name === siteName);
+  return samplingPeriods.filter((period) => period?.survey_sample_site?.name === siteName);
 }
 
 /**
@@ -111,7 +116,7 @@ function _findSamplePeriodFromWorksheetTechnique(
   techniqueName: string,
   samplingPeriods: SurveySamplePeriodDetails[]
 ): SurveySamplePeriodDetails[] {
-  return samplingPeriods.filter((period: any) => period.method_technique.name === techniqueName);
+  return samplingPeriods.filter((period) => period?.method_technique?.name === techniqueName);
 }
 
 /**
@@ -135,7 +140,7 @@ function _findSamplePeriodFromWorksheetPeriod(
 
   // Find matching periods by date
   let matchingPeriods = samplingPeriods.filter(
-    (period: any) => period.start_date === startDate && period.end_date === endDate
+    (period) => period.start_date === startDate && period.end_date === endDate
   );
 
   // Return if exactly one period matches by date
@@ -144,9 +149,7 @@ function _findSamplePeriodFromWorksheetPeriod(
   }
 
   // If multiple periods match by date, try matching additionally by time
-  matchingPeriods = matchingPeriods.filter(
-    (period: any) => period.start_time === startTime && period.end_time === endTime
-  );
+  matchingPeriods = matchingPeriods.filter((period) => period.start_time === startTime && period.end_time === endTime);
 
   return matchingPeriods;
 }

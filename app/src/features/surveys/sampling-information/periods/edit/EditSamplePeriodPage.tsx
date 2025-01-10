@@ -21,73 +21,40 @@ import { Prompt, useHistory, useParams } from 'react-router';
 import yup from 'utils/YupSchema';
 import SamplingSiteHeader from '../../sites/components/SamplingSiteHeader';
 
-export const EditSamplingSiteMethodPeriodYupSchema = yup
-  .object({
-    method_technique_id: yup.number().nullable().default(null),
-    survey_sample_site_id: yup.number().nullable().default(null),
-    sample_periods: yup
-      .array()
-      .of(
-        yup.object({
-          start_date: yup
-            .string()
-            .typeError('Start Date is required')
-            .min(1, 'Start Date is required')
-            .isValidDateString()
-            .default(null),
-          end_date: yup
-            .string()
-            .typeError('End Date is required')
-            .min(1, 'End Date is required')
-            .isValidDateString()
-            .isEndDateSameOrAfterStartDate('start_date')
-            .default(null),
-          start_time: yup.string().nullable().default(null),
-          end_time: yup.string().nullable().default(null)
-        })
-      )
-      .nullable()
-      .default([])
-      .test(
-        'non-empty-array-validation',
-        'Start and End Date are required for each period',
-        function (value: ISurveySamplePeriodFormData['sample_periods']) {
-          // Allow null or empty arrays of periods
-          if (value === null || value.length === 0) {
-            return true;
-          }
+export const EditSamplingSiteMethodPeriodYupSchema = yup.object({
+  method_technique_id: yup.number().required('Technique is required'),
+  survey_sample_site_id: yup.number().required('Site is required'),
+  sample_periods: yup
+    .array()
+    .of(
+      yup.object({
+        start_date: yup
+          .string()
+          .typeError('Start Date is required')
+          .isValidDateString()
+          .min(1, 'End Date is required')
+          .required('Start Date is required'),
+        end_date: yup
+          .string()
+          .typeError('End Date is required')
+          .isValidDateString()
+          .min(1, 'End Date is required')
+          .isEndDateSameOrAfterStartDate('start_date')
+          .required('End Date is required'),
+        start_time: yup.string().nullable().default(null),
+        end_time: yup.string().nullable().default(null).isEndTimeAfterStartTime('start_time')
+      })
+    )
+    .test('checkAtLeastOnePeriod', 'At least one period is required', function (value) {
+      const hasAtLeastOnPeriod = Array.isArray(value) && value.length > 0;
 
-          // Check that each period has a non-null start_date and end_date
-          return value.every((item) => {
-            return item.start_date !== null && item.end_date !== null;
-          });
-        }
-      )
-  })
-  .test('at-least-one-defined', 'At least one of site, technique, or sample period is required', function (value) {
-    const { survey_sample_site_id, method_technique_id, sample_periods } = value;
+      if (!hasAtLeastOnPeriod) {
+        return this.createError({ path: 'sample_periods', message: 'At least one period is required' });
+      }
 
-    const isSiteDefined = survey_sample_site_id !== null;
-
-    const isTechniqueDefined = method_technique_id !== null;
-
-    // Check if there is at least one sample period object. The validation above will handle if the contents are valid
-    const isAtLeastOnePeriodDefined = Array.isArray(sample_periods) && sample_periods.length > 0;
-
-    // At least one of the conditions must be true
-    if (!isSiteDefined && !isTechniqueDefined && !isAtLeastOnePeriodDefined) {
-      const errors = [
-        this.createError({
-          path: 'formError',
-          message: 'At least one of site, technique, or sample period is required'
-        })
-      ];
-
-      return new yup.ValidationError(errors);
-    }
-
-    return true;
-  });
+      return true;
+    })
+});
 
 /**
  * Renders page for editing a sampling period
@@ -159,42 +126,18 @@ export const EditSamplePeriodPage = () => {
         throw new Error('Only one sample period can be edited at a time');
       }
 
-      const samplePeriod = values.sample_periods.length ? values.sample_periods[0] : null;
-
-      let samplePeriodData: UpdateSamplingPeriod;
+      const samplePeriod = values.sample_periods[0];
 
       // Transform the form data to match the API request format
-      // Default optional fields to null if the value is an empty-string
-      if (values.survey_sample_site_id) {
-        samplePeriodData = {
-          survey_sample_site_id: values.survey_sample_site_id,
-          method_technique_id: values.method_technique_id || null,
-          start_date: samplePeriod?.start_date || null,
-          start_time: samplePeriod?.start_time || null,
-          end_date: samplePeriod?.end_date || null,
-          end_time: samplePeriod?.end_time || null
-        };
-      } else if (values.method_technique_id) {
-        samplePeriodData = {
-          survey_sample_site_id: values.survey_sample_site_id || null,
-          method_technique_id: values.method_technique_id,
-          start_date: samplePeriod?.start_date || null,
-          start_time: samplePeriod?.start_time || null,
-          end_date: samplePeriod?.end_date || null,
-          end_time: samplePeriod?.end_time || null
-        };
-      } else if (samplePeriod?.start_date && samplePeriod?.end_date) {
-        samplePeriodData = {
-          survey_sample_site_id: values.survey_sample_site_id || null,
-          method_technique_id: values.method_technique_id || null,
-          start_date: samplePeriod.start_date,
-          start_time: samplePeriod.start_time || null,
-          end_date: samplePeriod.end_date,
-          end_time: samplePeriod.end_time || null
-        };
-      } else {
-        throw new Error('At least one of site, technique, or sample period is required');
-      }
+      // Data should have already been validated by the Yup schema
+      const samplePeriodData: UpdateSamplingPeriod = {
+        survey_sample_site_id: values.survey_sample_site_id as number,
+        method_technique_id: values.method_technique_id as number,
+        start_date: samplePeriod.start_date as string,
+        start_time: samplePeriod?.start_time || null,
+        end_date: samplePeriod.end_date as string,
+        end_time: samplePeriod?.end_time || null
+      };
 
       await biohubApi.samplingPeriod.updateSamplingPeriod(
         surveyContext.projectId,

@@ -211,7 +211,7 @@ export class TechniqueService extends DBService {
     const samplePeriodService = new SamplePeriodService(this.connection);
     await samplePeriodService
       .findSamplePeriodsCount(false, this.connection.systemUserId(), {
-        method_technique_id: methodTechniqueId,
+        method_technique_id: [methodTechniqueId],
         survey_id: surveyId
       })
       .then((count) => {

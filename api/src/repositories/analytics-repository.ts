@@ -164,6 +164,7 @@ export class AnalyticsRepository extends BaseRepository {
           groupByQualitativeMeasurements
         )
       )
+      .select('w_observations.survey_sample_period_id')
       .from('w_observations');
 
     if (groupByColumns.length) {
