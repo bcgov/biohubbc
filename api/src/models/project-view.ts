@@ -185,7 +185,8 @@ export class GetReportAttachmentsData {
             year: item.year,
             description: item.description,
             key: item.key,
-            file_size: item.file_size
+            file_size: item.file_size,
+            authors: undefined
           };
 
           if (item.authors?.length) {
