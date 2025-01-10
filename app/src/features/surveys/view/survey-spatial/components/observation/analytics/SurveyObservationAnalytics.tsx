@@ -99,7 +99,7 @@ export const SurveyObservationAnalytics = () => {
           </Box>
         }
         isLoadingFallbackDelay={100}>
-        <Box minWidth="250px" display="flex" flexDirection="column">
+        <Box display="flex" flexDirection="column">
           {/* Group by header */}
           <Box flex="0 0 auto">
             <Typography

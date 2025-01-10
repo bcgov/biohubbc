@@ -38,8 +38,8 @@ export const ObservationAnalyticsDataTable = (props: IObservationAnalyticsDataTa
       // Sorting
       sortingMode="server"
       // Row selection
-      rowSelection
-      checkboxSelection
+      rowSelection={false}
+      checkboxSelection={false}
       // Pagination
       initialState={{
         pagination: {
