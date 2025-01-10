@@ -8,6 +8,7 @@ import { useEffect } from 'react';
 import { AnimalHeader } from './AnimalHeader';
 import { AnimalListContainer } from './list/AnimalListContainer';
 import { AnimalProfileContainer } from './profile/AnimalProfileContainer';
+import Checklist from 'components/buttons/ProgressChecklist';
 
 /**
  * Returns the page for managing Animals
@@ -49,13 +50,15 @@ export const SurveyAnimalPage = () => {
         '& .MuiContainer-root': {
           maxWidth: 'none'
         }
-      }}>
+      }}
+    >
       <AnimalHeader
         project_id={surveyContext.projectId}
         project_name={projectContext.projectDataLoader.data.projectData.project.project_name}
         survey_id={surveyContext.surveyId}
         survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
       />
+      <Checklist />
       <Stack
         direction="row"
         gap={1.5}
@@ -63,7 +66,8 @@ export const SurveyAnimalPage = () => {
           flex: '1 1 auto',
           p: 1,
           mr: 1
-        }}>
+        }}
+      >
         <Box minWidth="400px" maxWidth="30%">
           <AnimalListContainer />
         </Box>
