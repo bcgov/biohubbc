@@ -1,15 +1,51 @@
 import { expect } from 'chai';
 import { z } from 'zod';
-import { CSVParams } from './csv-config-validation.interface';
+import { CSVParams, CSVRow, CSVRowState } from './csv-config-validation.interface';
 import {
   getDescriptionCellValidator,
   getLatitudeCellValidator,
   getLongitudeCellValidator,
   getTsnCellValidator,
+  updateCSVRowState,
   validateZodCell
 } from './csv-header-configs';
 
 describe('CSVHeaderConfigs', () => {
+  describe('updateRowState', () => {
+    it('should create the state in the row and add the new value', () => {
+      const row = { TEST: 'cellValue' };
+
+      updateCSVRowState(row, { stateValue: 'value' });
+
+      expect(row[CSVRowState]?.stateValue).to.equal('value');
+    });
+
+    it('should update the state in the row and add the new value', () => {
+      const row = { TEST: 'cellValue', [CSVRowState]: { stateValue: 'oldValue' } };
+
+      updateCSVRowState(row, { stateValue: 'newValue' });
+
+      expect(row[CSVRowState]?.stateValue).to.equal('newValue');
+    });
+
+    it('should remove the state in the row', () => {
+      const row = { TEST: 'cellValue', [CSVRowState]: { stateValue: 'oldValue' } };
+
+      updateCSVRowState(row, { stateValue: undefined });
+
+      expect(row[CSVRowState]?.stateValue).to.be.undefined;
+    });
+
+    it('should add additional state values', () => {
+      const row: CSVRow = { TEST: 'cellValue', [CSVRowState]: { stateValue: 'oldValue' } };
+
+      updateCSVRowState(row, { stateValue: 'newValue', additionalValue: 'value' });
+
+      expect(row[CSVRowState]?.stateValue).to.equal('newValue');
+      expect(row[CSVRowState]?.additionalValue).to.equal('value');
+    });
+  });
+
   describe('validateZodCell', () => {
     it('should return an empty array if the cell is valid', () => {
       const result = validateZodCell({ cell: 123 } as any, z.number());
