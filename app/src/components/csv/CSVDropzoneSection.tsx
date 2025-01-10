@@ -2,7 +2,7 @@ import { Box, Typography } from '@mui/material';
 import Button from '@mui/material/Button';
 import { PropsWithChildren } from 'react';
 import { CSVError } from 'utils/csv-utils';
-import { CSVErrorsContainer } from './CSVErrorsTableContainer';
+import { CSVErrorsCardStackContainer } from './CSVErrorsCardStackContainer';
 
 interface CSVDropzoneSectionProps {
   title: string;
@@ -35,7 +35,7 @@ export const CSVDropzoneSection = (props: PropsWithChildren<CSVDropzoneSectionPr
         {props.summary}
       </Typography>
       {props.children}
-      {props.errors.length > 0 ? <CSVErrorsContainer errors={props.errors} /> : null}
+      {props.errors.length > 0 ? <CSVErrorsCardStackContainer errors={props.errors} /> : null}
     </Box>
   );
 };

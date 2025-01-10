@@ -103,6 +103,13 @@ export const CSVSingleImportDialog = (props: CSVSingleImportDialogProps) => {
         setError(err);
       }
 
+      // Show a failure snackbar message
+      dialogContext.setSnackbar({
+        open: true,
+        snackbarAutoCloseMs: 2000,
+        snackbarMessage: 'Failed to import telemetry'
+      });
+
       setUploadStatus(UploadFileStatus.FAILED);
     }
   };

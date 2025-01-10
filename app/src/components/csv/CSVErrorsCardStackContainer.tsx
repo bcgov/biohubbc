@@ -2,9 +2,9 @@ import { Toolbar, Typography } from '@mui/material';
 import { Box, Stack } from '@mui/system';
 import { ReactElement } from 'react';
 import { CSVError } from 'utils/csv-utils';
-import { CSVErrors } from './CSVErrors';
+import { CSVErrorsCardStack } from './CSVErrorsCardStack';
 
-interface CSVErrorsContainerProps {
+interface CSVErrorsCardStackContainerProps {
   errors: CSVError[];
   title?: ReactElement;
 }
@@ -12,10 +12,10 @@ interface CSVErrorsContainerProps {
 /**
  * Renders a CSV errors table with toolbar.
  *
- * @param {CSVErrorsContainerProps} props
+ * @param {CSVErrorsCardStackContainerProps} props
  * @returns {*} {JSX.Element}
  */
-export const CSVErrorsContainer = (props: CSVErrorsContainerProps) => {
+export const CSVErrorsCardStackContainer = (props: CSVErrorsCardStackContainerProps) => {
   return (
     <Stack flexDirection="column" flex="1 1 auto" height="100%">
       <Toolbar disableGutters>
@@ -33,7 +33,7 @@ export const CSVErrorsContainer = (props: CSVErrorsContainerProps) => {
         )}
       </Toolbar>
       <Box width="100%" height="100%">
-        <CSVErrors errors={props.errors} />
+        <CSVErrorsCardStack errors={props.errors} />
       </Box>
     </Stack>
   );
