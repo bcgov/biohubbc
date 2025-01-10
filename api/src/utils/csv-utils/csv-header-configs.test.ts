@@ -208,6 +208,20 @@ describe('CSVHeaderConfigs', () => {
       expect(result).to.be.deep.equal([]);
     });
 
+    it('should return an error when the cell is not in the survey alias map', () => {
+      const surveyCritterAliasValidator = getSurveyCritterAliasCellValidator(new Map() as any);
+
+      const result = surveyCritterAliasValidator({
+        cell: 'alias',
+        row: {},
+        header: 'HEADER',
+        rowIndex: 0,
+        mutateCell: 'alias'
+      });
+
+      expect(result.length).to.be.equal(1);
+    });
+
     it('should update the row state to store the critter ID', () => {
       const surveyCritterAliasValidator = getSurveyCritterAliasCellValidator(
         new Map([['alias', { critter_id: 'uuid' }]]) as any

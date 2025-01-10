@@ -21,12 +21,12 @@ import {
  * @template StaticHeaderType - The CSV static headers
  * @param {WorkSheet} worksheet - The worksheet
  * @param {CSVConfigType} config - The CSV configuration
- * @returns {*} {{ errors: CSVError[]; rows: CSVRowValidated[] }} - The CSV errors and rows
+ * @returns {*} {{ errors: Required<CSVError>[]; rows: CSVRowValidated[] }} - The CSV errors and rows
  */
 export const validateCSVWorksheet = <StaticHeaderType extends Uppercase<string>>(
   worksheet: WorkSheet,
   config: CSVConfig<StaticHeaderType>
-): { errors: CSVError[]; rows: CSVRowValidated<StaticHeaderType>[] } => {
+): { errors: Required<CSVError>[]; rows: CSVRowValidated<StaticHeaderType>[] } => {
   const rows: CSVRowValidated<StaticHeaderType>[] = [];
   const errors: Required<CSVError>[] = validateCSVHeaders(worksheet, config);
 
