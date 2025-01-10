@@ -2,13 +2,16 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
+import { HTTP422CSVValidationError } from '../../../../../../errors/http-error';
+import { CSVValidationErrorResponse } from '../../../../../../openapi/schemas/csv';
 import { csvFileSchema } from '../../../../../../openapi/schemas/file';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { importCSV } from '../../../../../../services/import-services/import-csv';
-import { ImportTelemetryStrategy } from '../../../../../../services/import-services/telemetry/import-telemetry-strategy';
+import { ImportTelemetryService } from '../../../../../../services/import-services/telemetry/import-telemetry-service';
+import { CSV_ERROR_MESSAGE } from '../../../../../../utils/csv-utils/csv-config-validation.interface';
 import { getLogger } from '../../../../../../utils/logger';
 import { parseMulterFile } from '../../../../../../utils/media/media-utils';
 import { getFileFromRequest } from '../../../../../../utils/request';
+import { constructXLSXWorkbook, getDefaultWorksheet } from '../../../../../../utils/xlsx-utils/worksheet-utils';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/telemetry/upload');
 
@@ -86,6 +89,7 @@ POST.apiDoc = {
     403: {
       $ref: '#/components/responses/403'
     },
+    422: CSVValidationErrorResponse,
     500: {
       $ref: '#/components/responses/500'
     },
@@ -103,25 +107,33 @@ POST.apiDoc = {
 export function importTelemetryCSV(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
-    const rawMediaFile = getFileFromRequest(req);
+    const rawFile = getFileFromRequest(req);
 
     const connection = getDBConnection(req.keycloak_token);
+
+    const mediaFile = parseMulterFile(rawFile);
+    const worksheet = getDefaultWorksheet(constructXLSXWorkbook(mediaFile));
 
     try {
       await connection.open();
 
-      const telemetryStrategy = new ImportTelemetryStrategy(connection, surveyId);
+      const telemetryService = new ImportTelemetryService(connection, worksheet, surveyId);
 
-      // Pass CSV file and importer as dependencies
-      await importCSV(parseMulterFile(rawMediaFile), telemetryStrategy);
+      const errors = await telemetryService.importCSVWorksheet();
+
+      if (errors.length) {
+        throw new HTTP422CSVValidationError(CSV_ERROR_MESSAGE, errors);
+      }
 
       await connection.commit();
 
       return res.status(200).send();
     } catch (error) {
-      defaultLog.error({ label: 'importTelemetry', message: 'error', error });
-      await connection.rollback();
+      if (error instanceof HTTP422CSVValidationError === false) {
+        defaultLog.error({ label: 'importTelemetry', message: 'error', error });
+      }
 
+      await connection.rollback();
       throw error;
     } finally {
       connection.release();

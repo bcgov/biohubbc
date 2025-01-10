@@ -38,22 +38,21 @@ export class TelemetryManualRepository extends BaseRepository {
    *
    * Note: Deployment IDs need to be pre-validated against the survey ID in the service.
    *
+   * TODO: Return a warning if the telemetry records count is less than the input telemetry count
+   *
    * @param {CreateManualTelemetry[]} telemetry - List of manual telemetry data to create
    * @returns {Promise<void>}
    */
   async bulkCreateManualTelemetry(telemetry: CreateManualTelemetry[]): Promise<void> {
     const knex = getKnex();
 
-    const queryBuilder = knex.insert(telemetry).into('telemetry_manual');
+    const queryBuilder = knex
+      .insert(telemetry)
+      .into('telemetry_manual')
+      .onConflict(['deployment_id', 'acquisition_date', 'latitude', 'longitude'])
+      .ignore();
 
-    const response = await this.connection.knex(queryBuilder);
-
-    if (response.rowCount !== telemetry.length) {
-      throw new ApiExecuteSQLError('Failed to create manual telemetry records', [
-        'TelemetryManualRepository->bulkCreateManualTelemetry',
-        `expected rowCount to be ${telemetry.length}, got ${response.rowCount}`
-      ]);
-    }
+    await this.connection.knex(queryBuilder);
   }
 
   /**

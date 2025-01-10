@@ -1,4 +1,5 @@
 import { DatabaseError } from 'pg';
+import { CSVError } from '../utils/csv-utils/csv-config-validation.interface';
 import { ApiError } from './api-error';
 import { BaseError } from './base-error';
 
@@ -10,10 +11,20 @@ export enum HTTPErrorType {
   INTERNAL_SERVER_ERROR = 'Internal Server Error'
 }
 
+export enum HTTPCustomErrorType {
+  CSV_VALIDATION_ERROR = 'CSV Validation Error'
+}
+
 export class HTTPError extends BaseError {
   status: number;
 
-  constructor(name: HTTPErrorType, status: number, message: string, errors?: (string | object)[], stack?: string) {
+  constructor(
+    name: HTTPErrorType | HTTPCustomErrorType,
+    status: number,
+    message: string,
+    errors?: (string | object)[],
+    stack?: string
+  ) {
     super(name, message, errors, stack);
 
     this.status = status;
@@ -102,6 +113,19 @@ export class HTTP500 extends HTTPError {
 
   static fromApiError(apiError: ApiError) {
     return new HTTP500(apiError.message, apiError.errors, apiError.stack);
+  }
+}
+
+/**
+ * A HTTP `422 CSV Validation Error` error.
+ *
+ * @export
+ * @class CSVValidationError
+ * @extends {HTTPError}
+ */
+export class HTTP422CSVValidationError extends HTTPError {
+  constructor(message: string, errors: CSVError[]) {
+    super(HTTPCustomErrorType.CSV_VALIDATION_ERROR, 422, message, errors);
   }
 }
 

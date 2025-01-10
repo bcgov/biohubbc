@@ -1,20 +1,20 @@
-import { getCSVTemplate } from 'utils/file-utils';
+import { CSVEncodedTemplate, getCSVTemplate } from 'utils/csv-utils';
 
 /**
  * Get CSV template for measurements.
  *
- * @returns {string} Encoded CSV template
+ * @returns {CSVEncodedTemplate} Encoded CSV template
  */
-export const getMeasurementsCSVTemplate = (): string => {
+export const getMeasurementsCSVTemplate = (): CSVEncodedTemplate => {
   return getCSVTemplate(['ALIAS', 'CAPTURE_DATE', 'CAPTURE_TIME']);
 };
 
 /**
  * Get CSV template for captures.
  *
- * @returns {string} Encoded CSV template
+ * @returns {CSVEncodedTemplate} Encoded CSV template
  */
-export const getCapturesCSVTemplate = (): string => {
+export const getCapturesCSVTemplate = (): CSVEncodedTemplate => {
   return getCSVTemplate([
     'ALIAS',
     'CAPTURE_DATE',
@@ -33,9 +33,9 @@ export const getCapturesCSVTemplate = (): string => {
 /**
  * Get CSV template for markings.
  *
- * @returns {string} Encoded CSV template
+ * @returns {CSVEncodedTemplate} Encoded CSV template
  */
-export const getMarkingsCSVTemplate = (): string => {
+export const getMarkingsCSVTemplate = (): CSVEncodedTemplate => {
   return getCSVTemplate([
     'ALIAS',
     'CAPTURE_DATE',
@@ -47,4 +47,13 @@ export const getMarkingsCSVTemplate = (): string => {
     'SECONDARY_COLOUR',
     'COMMENT'
   ]);
+};
+
+/**
+ * Get CSV template for telemetry.
+ *
+ * @returns {CSVEncodedTemplate} Encoded CSV template
+ */
+export const getTelemetryCSVTemplate = (): CSVEncodedTemplate => {
+  return getCSVTemplate(['VENDOR', 'SERIAL', 'LATITUDE', 'LONGITUDE', 'DATE', 'TIME']);
 };
