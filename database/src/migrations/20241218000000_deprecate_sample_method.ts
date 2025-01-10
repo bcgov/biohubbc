@@ -17,19 +17,19 @@ import { Knex } from 'knex';
  *
  * Schema changes:
  *
- * method_technique
- * - Add new column method_response_metric_id to method_technique table
- *
  * survey_sample_period
  * - Add new column method_technique_id to survey_sample_period table
  * - Add new column survey_sample_site_id to survey_sample_period table
  *
- * survey_observation
- * - Drop survey_sample_site_id column
- * - Drop survey_sample_method_id column
+ * method_technique
+ * - Add new column method_response_metric_id to method_technique table
  *
  * survey_sample_method
  * - Drop survey_sample_method table
+ *
+ * survey_observation
+ * - Drop survey_sample_site_id column
+ * - Drop survey_sample_method_id column
  *
  * @param {Knex} knex
  * @returns {Promise<void>}

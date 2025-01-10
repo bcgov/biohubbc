@@ -4,6 +4,7 @@ import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
 import { IPeriodAdvancedFilters } from '../../models/period-view';
 import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../../openapi/schemas/pagination';
+import { GetPeriodResponseSchema } from '../../openapi/schemas/period';
 import { authorizeRequestHandler, userHasValidRole } from '../../request-handlers/security/authorization';
 import { SamplePeriodService } from '../../services/sample-period-service';
 import { getLogger } from '../../utils/logger';
@@ -98,99 +99,7 @@ GET.apiDoc = {
             properties: {
               periods: {
                 type: 'array',
-                items: {
-                  type: 'object',
-                  required: [
-                    'survey_sample_period_id',
-                    'survey_id',
-                    'survey_sample_site_id',
-                    'method_technique_id',
-                    'start_date',
-                    'start_time',
-                    'end_date',
-                    'end_time',
-                    'method_technique',
-                    'survey_sample_site'
-                  ],
-                  additionalProperties: false,
-                  properties: {
-                    survey_sample_period_id: {
-                      type: 'integer',
-                      minimum: 1
-                    },
-                    survey_id: {
-                      type: 'integer',
-                      minimum: 1
-                    },
-                    survey_sample_site_id: {
-                      type: 'integer',
-                      minimum: 1,
-                      nullable: true
-                    },
-                    method_technique_id: {
-                      type: 'integer',
-                      minimum: 1,
-                      nullable: true
-                    },
-                    start_date: {
-                      type: 'string',
-                      nullable: true
-                    },
-                    start_time: {
-                      type: 'string',
-                      nullable: true
-                    },
-                    end_date: {
-                      type: 'string',
-                      nullable: true
-                    },
-                    end_time: {
-                      type: 'string',
-                      nullable: true
-                    },
-                    survey_sample_site: {
-                      type: 'object',
-                      required: ['survey_sample_site_id', 'name'],
-                      additionalProperties: false,
-                      properties: {
-                        survey_sample_site_id: {
-                          type: 'integer',
-                          minimum: 1
-                        },
-                        name: {
-                          type: 'string'
-                        }
-                      },
-                      nullable: true
-                    },
-                    method_technique: {
-                      type: 'object',
-                      description: 'Details about the technique of the survey sample period',
-                      required: ['method_technique_id', 'name', 'description', 'method_response_metric_id'],
-                      properties: {
-                        method_technique_id: {
-                          type: 'integer',
-                          minimum: 1,
-                          description: 'Primary key of the method technique record'
-                        },
-                        name: {
-                          type: 'string',
-                          description: 'Name of the method technique'
-                        },
-                        description: {
-                          type: 'string',
-                          description: 'Description of the method technique',
-                          nullable: true
-                        },
-                        method_response_metric_id: {
-                          type: 'integer',
-                          minimum: 1
-                        }
-                      },
-                      nullable: true
-                    }
-                  }
-                }
+                items: GetPeriodResponseSchema
               },
               pagination: paginationResponseSchema
             }

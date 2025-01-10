@@ -2,6 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
+import { GetPeriodResponseSchema } from '../../../../../../../openapi/schemas/period';
 import { UpdateSamplePeriodObject } from '../../../../../../../repositories/sample-period-repository';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { SamplePeriodService } from '../../../../../../../services/sample-period-service';
@@ -70,101 +71,7 @@ GET.apiDoc = {
       description: 'Sample period response object.',
       content: {
         'application/json': {
-          schema: {
-            type: 'object',
-            required: [
-              'survey_sample_period_id',
-              'survey_sample_site_id',
-              'method_technique_id',
-              'start_date',
-              'end_date',
-              'start_time',
-              'end_time',
-              'method_technique',
-              'survey_sample_site'
-            ],
-            additionalProperties: false,
-            properties: {
-              survey_sample_period_id: {
-                type: 'integer',
-                minimum: 1
-              },
-              survey_id: {
-                type: 'integer',
-                minimum: 1,
-                nullable: true
-              },
-              survey_sample_site_id: {
-                type: 'integer',
-                minimum: 1,
-                nullable: true
-              },
-              method_technique_id: {
-                type: 'integer',
-                minimum: 1,
-                nullable: true
-              },
-              start_date: {
-                type: 'string',
-                nullable: true
-              },
-              end_date: {
-                type: 'string',
-                nullable: true
-              },
-              start_time: {
-                type: 'string',
-                nullable: true
-              },
-              end_time: {
-                type: 'string',
-                nullable: true
-              },
-              method_technique: {
-                type: 'object',
-                description: 'Details about the technique of the survey sample period',
-                required: ['method_technique_id', 'name', 'description', 'method_response_metric_id'],
-                properties: {
-                  method_technique_id: {
-                    type: 'integer',
-                    minimum: 1,
-                    description: 'Primary key of the method technique record'
-                  },
-                  name: {
-                    type: 'string',
-                    description: 'Name of the method technique'
-                  },
-                  description: {
-                    type: 'string',
-                    description: 'Description of the method technique',
-                    nullable: true
-                  },
-                  method_response_metric_id: {
-                    type: 'integer',
-                    minimum: 1
-                  }
-                },
-                nullable: true
-              },
-              survey_sample_site: {
-                type: 'object',
-                description: 'Details about the site of the survey sample period',
-                required: ['survey_sample_site_id', 'name'],
-                properties: {
-                  survey_sample_site_id: {
-                    type: 'integer',
-                    minimum: 1,
-                    description: 'Primary key of the site record'
-                  },
-                  name: {
-                    type: 'string',
-                    description: 'Name of the site'
-                  }
-                },
-                nullable: true
-              }
-            }
-          }
+          schema: GetPeriodResponseSchema
         }
       }
     },
