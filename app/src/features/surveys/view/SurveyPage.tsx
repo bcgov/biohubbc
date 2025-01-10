@@ -14,6 +14,7 @@ import SurveyStudyArea from './components/SurveyStudyArea';
 import { SurveySpatialContainer } from './survey-spatial/SurveySpatialContainer';
 import SurveyAttachments from './SurveyAttachments';
 import SurveyHeader from './SurveyHeader';
+import Checklist from 'components/buttons/ProgressChecklist';
 
 /**
  * Page to display a single Survey.
@@ -57,6 +58,7 @@ const SurveyPage: React.FC = () => {
         <Paper sx={{ display: 'none' }}>
           <SurveyStudyArea />
         </Paper>
+        <Checklist></Checklist>
       </Container>
     </>
   );

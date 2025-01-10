@@ -7,22 +7,33 @@ import { ThemeProvider } from '@mui/material/styles';
 import appTheme from 'themes/appTheme';
 import { SurveyContext } from 'contexts/surveyContext';
 import { CodesContext } from 'contexts/codesContext';
-import { SurveyChecklistAPI } from './checklist-view';
 import useDataLoader from 'hooks/useDataLoader';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
-import { useParams } from 'react-router-dom';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 
 export const ChecklistDialog = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
   const [surveyTypes, setSurveyTypes] = useState<string[]>([]);
   const [submissionStatus, setSubmissionStatus] = useState<Record<string, boolean>>({});
-  
-  const { projectId, surveyId } = useParams<{ projectId: string; surveyId: string }>();
+
   const surveyContext = useContext(SurveyContext);
   const codesContext = useContext(CodesContext);
-  
+
+  const projectId = surveyContext.projectId;
+  const surveyId = surveyContext.surveyId;
+
   const crittersApi = useCritterbaseApi();
+  const biohubApi = useBiohubApi();
+
   const geometryDataLoader = useDataLoader((critter_ids: string[]) =>
     crittersApi.critters.getMultipleCrittersGeometryByIds(critter_ids)
+  );
+
+  const observationsGeometryDataLoader = useDataLoader(() =>
+    biohubApi.observation.getObservationsGeometry(projectId, surveyId)
+  );
+
+  const telemetrySpatialDataLoader = useDataLoader(() =>
+    biohubApi.telemetry.getTelemetrySpatialForSurvey(projectId, surveyId)
   );
 
   useEffect(() => {
@@ -56,44 +67,38 @@ export const ChecklistDialog = ({ open, onClose }: { open: boolean; onClose: () 
     const fetchSubmissionStatus = async () => {
       const status: Record<string, boolean> = {};
 
+      // Handle Animal Captures and Mortalities
       if (surveyTypes.includes('Animal captures') || surveyTypes.includes('Animal mortalities')) {
         const critterIds = surveyContext.critterDataLoader.data?.map((critter) => critter.critterbase_critter_id) ?? [];
 
         if (critterIds.length > 0) {
           await geometryDataLoader.load(critterIds);
-        
+
           const captures = geometryDataLoader.data?.captures;
           const mortalities = geometryDataLoader.data?.mortalities;
-        
+
           status['Animal captures'] = Array.isArray(captures) && captures.length > 0;
           status['Animal mortalities'] = Array.isArray(mortalities) && mortalities.length > 0;
         } else {
           status['Animal captures'] = false;
           status['Animal mortalities'] = false;
         }
-              
       }
 
-      for (const type of surveyTypes) {
-        if (type === 'Animal captures' || type === 'Animal mortalities') continue;
+      // Handle Observations
+      if (surveyTypes.includes('Species observations')) {
+        await observationsGeometryDataLoader.load();
 
-        const endpoint = SurveyChecklistAPI[type as keyof typeof SurveyChecklistAPI];
-        if (!endpoint || endpoint === 'placeholder') {
-          status[type] = false;
-          continue;
-        }
+        const observations = observationsGeometryDataLoader.data?.surveyObservationsGeometry;
+        status['Species observations'] = Array.isArray(observations) && observations.length > 0;
+      }
 
-        try {
-          const response = await fetch(endpoint.replace('{projectId}', projectId).replace('{surveyId}', surveyId));
-          if (response.ok) {
-            const data = await response.json();
-            status[type] = data.observationCount > 0;
-          } else {
-            status[type] = false;
-          }
-        } catch {
-          status[type] = false;
-        }
+      // Handle Telemetry
+      if (surveyTypes.includes('Telemetry')) {
+        await telemetrySpatialDataLoader.load();
+
+        const telemetry = telemetrySpatialDataLoader.data?.telemetry;
+        status['Telemetry'] = Array.isArray(telemetry) && telemetry.length > 0;
       }
 
       setSubmissionStatus(status);
