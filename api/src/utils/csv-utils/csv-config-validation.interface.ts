@@ -8,10 +8,6 @@ export const CSV_ERROR_MESSAGE =
  *  1. Allow or disallow duplicate CSV rows
  *    - Similar to a DB unique constraint? ie: ['NAME', 'AGE']
  *  2. Support CSVWarnings
-<<<<<<< HEAD
- *  3. Support CSVRowValidation? ie: Validate the entire row before / after the cell validation
-=======
->>>>>>> md-csv-row-validation
  */
 export interface CSVConfig<THeader extends Uppercase<string> = Uppercase<string>> {
   /**
