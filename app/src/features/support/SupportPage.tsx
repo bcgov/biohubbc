@@ -1,6 +1,5 @@
 import {
   mdiCardAccountMailOutline,
-  mdiDatabaseRefreshOutline,
   mdiEye,
   mdiLifebuoy,
   mdiOfficeBuildingCogOutline,
@@ -9,16 +8,15 @@ import {
   mdiWifiMarker
 } from '@mdi/js';
 import Box from '@mui/material/Box';
-import { grey } from '@mui/material/colors';
 import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
 import PageHeader from 'components/layout/PageHeader';
-import { AccordionStandardCard } from 'features/standards/view/components/AccordionStandardCard';
+import CustomToggleButtonGroup from 'components/toolbar/CustomToggleButtonGroup';
 import { useState } from 'react';
-import { StandardsToolbar } from '../standards/components/StandardsToolbar';
+import { SupportPageGeneral } from './general/SupportPageGeneral';
+import { SupportPageStandards } from './standards/SupportPageStandards';
 
 // FAQ SECTIONS MAY NEED TO BE FORMATTED IN A DIFFERENT WAY, I DONT KNOW HOW BUT IM THINKING ABOUT IT
 
@@ -89,13 +87,13 @@ const textMap: Record<SupportPageView, string> = {
 };
 
 const SupportPage = () => {
-  const [currentView, setCurrentView] = useState<SupportPageView>(SupportPageView.GENERAL);
+  const [activeView, setActiveView] = useState<SupportPageView>(SupportPageView.GENERAL);
 
   const views: ISupportPageView[] = [
     { label: 'General', value: SupportPageView.GENERAL, icon: mdiLifebuoy },
-    { label: 'SIMS Structure', value: SupportPageView.STRUCTURE, icon: mdiOfficeBuildingCogOutline },
+    { label: 'Data Standards', value: SupportPageView.DATA_STANDARDS, icon: mdiOfficeBuildingCogOutline },
     { label: 'Foundational Data', value: SupportPageView.FOUNDATION, icon: mdiWall },
-    { label: 'Data Standards', value: SupportPageView.DATA_STANDARDS, icon: mdiDatabaseRefreshOutline },
+    // { label: 'Data Standards', value: SupportPageView.DATA_STANDARDS, icon: mdiDatabaseRefreshOutline },
     { label: 'Observations', value: SupportPageView.OBSERVATIONS, icon: mdiEye },
     { label: 'Animals', value: SupportPageView.ANIMALS, icon: mdiPaw },
     { label: 'Telemetry', value: SupportPageView.TELEMETRY, icon: mdiWifiMarker },
@@ -103,39 +101,6 @@ const SupportPage = () => {
   ];
 
   const dataMap: DataMap = {
-    [SupportPageView.GENERAL]: [
-      {
-        label: 'What is SIMS and how does it benefit you?',
-        description:
-          'SIMS is the BC Species Inventory Management System, designed as an ecological collaboration space for uploading and managing ecological data. It supports standardized data collection and promotes collaboration across organizations.'
-      },
-      {
-        label: 'Appropriate Use of SIMS',
-        description:
-          'Learn the best practices for using SIMS, including what data should be uploaded, how to maintain data quality, and scenarios where SIMS is not appropriate, such as public data sharing or publication interfaces.'
-      },
-      {
-        label: 'Who should use SIMS',
-        description:
-          'Discover the primary users of SIMS, including government agencies, ecological researchers, and organizations involved in species inventory and data management in British Columbia.'
-      },
-      {
-        label: 'User roles in SIMS',
-        description:
-          'Understand the different roles within SIMS, such as data contributors, project managers, and administrators, and their specific responsibilities for data management and collaboration.'
-      },
-      {
-        label: 'Data Structure in SIMS',
-        description:
-          'Explore the core structure of SIMS, including how data is organized into projects, surveys, and observations, and the importance of standardization for effective data use.'
-      },
-      {
-        label: 'FAQ',
-        description:
-          'Find answers to common questions about SIMS, such as how to access the system, troubleshoot common issues, and learn about upcoming features.'
-      }
-    ],
-
     [SupportPageView.STRUCTURE]: [
       {
         label: 'Projects',
@@ -204,32 +169,6 @@ const SupportPage = () => {
         label: 'Bulk Upload – sites, blocks, etc.',
         description:
           'The bulk upload feature simplifies the process of adding large volumes of foundational data, such as multiple sites or blocks, at once.'
-      }
-    ],
-
-    [SupportPageView.DATA_STANDARDS]: [
-      {
-        label: 'What are data standards and how do they benefit you',
-        description:
-          'Data standards ensure consistent formatting and organization of information, enabling seamless collaboration and integration across projects. The standards page guides users on required formats for data submission.'
-      },
-      {
-        label: 'ITIS',
-        description:
-          'The Integrated Taxonomic Information System (ITIS) provides a standardized taxonomy for species. Use ITIS to verify species names and ensure accurate data entry in SIMS.'
-      },
-      {
-        label: 'How to use our standards page',
-        description:
-          'The standards page provides guidance on formatting your data to align with established protocols. Use it to find details on required variables, acceptable formats, and taxonomy standards, ensuring your data meets submission requirements.'
-      },
-      {
-        label: 'FAQ',
-        description:
-          'This section addresses common questions about data standards:\n\n' +
-          '- **I cannot find my species:** Visit the ITIS website and search for the species name. It may be listed under a different accepted name or synonym in the taxonomy database.\n' +
-          '- **I cannot find a measurement, body location, marking, or environmental variable I need to submit my data:** Contact support to request its addition.\n' +
-          '- **How were these standards decided on?** The data standards were developed using SPI templates, input from biologists, and ongoing feedback from SIMS users to balance standardization with flexibility for various ecological needs.'
       }
     ],
 
@@ -346,57 +285,39 @@ const SupportPage = () => {
     ]
   };
 
+  console.log(dataMap, textMap);
+
   return (
     <>
       <PageHeader title="Support" />
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <Stack direction="row" gap={3} component={Paper} sx={{ p: 3 }}>
-          {/* Sidebar with StandardsToolbar */}
           <Box width="300px" flexShrink={0}>
-            <StandardsToolbar
+            <CustomToggleButtonGroup
               views={views}
-              currentView={currentView}
-              setCurrentView={setCurrentView}
-              legend="Support Overview"
+              activeView={activeView}
+              onViewChange={(view) => setActiveView(view)}
+              orientation="vertical"
             />
           </Box>
 
           <Divider orientation="vertical" flexItem />
 
-          {/* Main Content Area */}
-          <Box flex="1 1 auto">
-            <Typography variant="h2" gutterBottom>
-              {views.find((view) => view.value === currentView)?.label}
-            </Typography>
+          {activeView === SupportPageView.GENERAL && <SupportPageGeneral />}
 
-            {/* Descriptive text rendered dynamically */}
+          {activeView === SupportPageView.DATA_STANDARDS && <SupportPageStandards />}
 
-            <Box
-              sx={{
-                p: 3,
-                border: '1px solid',
-                borderColor: grey[300],
-                borderRadius: '8px',
-                bgcolor: grey[50]
-              }}>
-              <Typography variant="body1" gutterBottom>
-                {textMap[currentView] || 'No additional information available for this section.'}
-              </Typography>
-              <Divider sx={{ my: 2 }} />
+          {activeView === SupportPageView.ANIMALS && <SupportPageGeneral />}
 
-              <Stack gap={2}>
-                {dataMap[currentView]?.map((item: IDataItem, index: number) => (
-                  <AccordionStandardCard
-                    key={index}
-                    label={item.label}
-                    subtitle={item.description}
-                    ornament={item.unit ? <Box>{item.unit}</Box> : undefined}
-                    colour={grey[100]}
-                  />
-                )) || <Typography>No content available for this section.</Typography>}
-              </Stack>
-            </Box>
-          </Box>
+          {activeView === SupportPageView.OBSERVATIONS && <SupportPageGeneral />}
+
+          {activeView === SupportPageView.FOUNDATION && <SupportPageGeneral />}
+
+          {activeView === SupportPageView.STRUCTURE && <SupportPageGeneral />}
+
+          {activeView === SupportPageView.TELEMETRY && <SupportPageGeneral />}
+
+          {activeView === SupportPageView.CONTACT && <SupportPageGeneral />}
         </Stack>
       </Container>
     </>
