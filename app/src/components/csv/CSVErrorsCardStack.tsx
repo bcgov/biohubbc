@@ -23,6 +23,8 @@ interface CSVErrorsCardStackProps {
 export const CSVErrorsCardStack = (props: CSVErrorsCardStackProps) => {
   const [currentPage, setCurrentPage] = useState(0);
 
+  const pageCount = Math.ceil(props.errors.length / MAX_ERRORS_SHOWN);
+
   const rows: (CSVError & { id: string })[] = useMemo(() => {
     return props.errors.slice(currentPage * MAX_ERRORS_SHOWN, (currentPage + 1) * MAX_ERRORS_SHOWN).map((error) => {
       return {
@@ -83,15 +85,13 @@ export const CSVErrorsCardStack = (props: CSVErrorsCardStackProps) => {
       })}
       {props.errors.length > MAX_ERRORS_SHOWN && (
         <Stack direction="row" justifyContent="space-between" alignItems="center" mt={1}>
-          <IconButton onClick={handlePreviousPage} sx={{ cursor: currentPage > 0 ? 'pointer' : 'not-allowed' }}>
+          <IconButton onClick={handlePreviousPage} disabled={!currentPage}>
             <Icon path={mdiChevronLeft} size={1} />
           </IconButton>
           <Typography variant="body2">
-            Page {currentPage + 1} of {Math.ceil(props.errors.length / MAX_ERRORS_SHOWN)}
+            Page {currentPage + 1} of {pageCount}
           </Typography>
-          <IconButton
-            onClick={handleNextPage}
-            sx={{ cursor: (currentPage + 1) * MAX_ERRORS_SHOWN < props.errors.length ? 'pointer' : 'not-allowed' }}>
+          <IconButton onClick={handleNextPage} disabled={currentPage + 1 === pageCount}>
             <Icon path={mdiChevronRight} size={1} />
           </IconButton>
         </Stack>
