@@ -1,19 +1,21 @@
-import React, { useEffect, useState, useContext } from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Typography, Box, Stack } from '@mui/material';
-import { LoadingButton } from '@mui/lab';
-import { mdiTimelineOutline, mdiTimelineCheckOutline } from '@mdi/js';
+import { mdiTimelineCheckOutline, mdiTimelineOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import { LoadingButton } from '@mui/lab';
+import { Box, Dialog, DialogActions, DialogContent, DialogTitle, Stack, Typography } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
-import appTheme from 'themes/appTheme';
-import { SurveyContext } from 'contexts/surveyContext';
 import { CodesContext } from 'contexts/codesContext';
-import useDataLoader from 'hooks/useDataLoader';
-import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
+import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
+import useDataLoader from 'hooks/useDataLoader';
+import { useContext, useEffect, useState } from 'react';
+import appTheme from 'themes/appTheme';
+import { useSurveyProgress } from './SurveyProgressContext';
 
 export const ChecklistDialog = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
-  const [surveyTypes, setSurveyTypes] = useState<string[]>([]);
-  const [submissionStatus, setSubmissionStatus] = useState<Record<string, boolean>>({});
+  const { setSurveyTypes, setSubmissionStatus } = useSurveyProgress(); // Get setters from the new context
+  const [localSurveyTypes, setLocalSurveyTypes] = useState<string[]>([]);
+  const [localSubmissionStatus, setLocalSubmissionStatus] = useState<Record<string, boolean>>({});
 
   const surveyContext = useContext(SurveyContext);
   const codesContext = useContext(CodesContext);
@@ -44,7 +46,8 @@ export const ChecklistDialog = ({ open, onClose }: { open: boolean; onClose: () 
       const codes = codesContext.codesDataLoader.data;
 
       if (!surveyForViewData || !codes) {
-        setSurveyTypes([]);
+        setLocalSurveyTypes([]);
+        setSurveyTypes([]); // Update shared context
         return;
       }
 
@@ -53,22 +56,20 @@ export const ChecklistDialog = ({ open, onClose }: { open: boolean; onClose: () 
       } = surveyForViewData;
 
       const types: string[] =
-        codes.type
-          .filter((code) => survey_details.survey_types.includes(code.id))
-          .map((code) => code.name) || [];
+        codes.type.filter((code) => survey_details.survey_types.includes(code.id)).map((code) => code.name) || [];
 
-      setSurveyTypes(types);
+      setLocalSurveyTypes(types);
+      setSurveyTypes(types); // Update shared context
     };
 
     fetchSurveyTypes();
-  }, [open, surveyContext.surveyDataLoader.data, codesContext.codesDataLoader.data]);
+  }, [open, surveyContext.surveyDataLoader.data, codesContext.codesDataLoader.data, setSurveyTypes]);
 
   useEffect(() => {
     const fetchSubmissionStatus = async () => {
       const status: Record<string, boolean> = {};
 
-      // Handle Animal Captures and Mortalities
-      if (surveyTypes.includes('Animal captures') || surveyTypes.includes('Animal mortalities')) {
+      if (localSurveyTypes.includes('Animal captures') || localSurveyTypes.includes('Animal mortalities')) {
         const critterIds = surveyContext.critterDataLoader.data?.map((critter) => critter.critterbase_critter_id) ?? [];
 
         if (critterIds.length > 0) {
@@ -85,46 +86,30 @@ export const ChecklistDialog = ({ open, onClose }: { open: boolean; onClose: () 
         }
       }
 
-      // Handle Observations
-      if (surveyTypes.includes('Species observations')) {
+      if (localSurveyTypes.includes('Species observations')) {
         await observationsGeometryDataLoader.load();
 
         const observations = observationsGeometryDataLoader.data?.surveyObservationsGeometry;
         status['Species observations'] = Array.isArray(observations) && observations.length > 0;
       }
 
-      // Handle Telemetry
-      if (surveyTypes.includes('Telemetry')) {
+      if (localSurveyTypes.includes('Telemetry')) {
         await telemetrySpatialDataLoader.load();
 
         const telemetry = telemetrySpatialDataLoader.data?.telemetry;
         status['Telemetry'] = Array.isArray(telemetry) && telemetry.length > 0;
       }
 
-      setSubmissionStatus(status);
+      setLocalSubmissionStatus(status);
+      setSubmissionStatus(status); // Update shared context
     };
 
     fetchSubmissionStatus();
-  }, [surveyTypes, surveyContext.critterDataLoader.data]);
+  }, [localSurveyTypes, surveyContext.critterDataLoader.data, setSubmissionStatus]);
 
   return (
     <ThemeProvider theme={appTheme}>
-      <Dialog
-        open={open}
-        onClose={onClose}
-        maxWidth="sm"
-        fullWidth
-        disableScrollLock
-        sx={{
-          '& .MuiDialog-paper': {
-            position: 'fixed',
-            bottom: 15,
-            right: 15,
-            margin: 0,
-            width: '300px',
-          },
-        }}
-      >
+      <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth disableScrollLock>
         <DialogTitle>
           <Typography variant="h3" sx={{ textDecoration: 'underline' }}>
             Survey Checklist
@@ -133,11 +118,11 @@ export const ChecklistDialog = ({ open, onClose }: { open: boolean; onClose: () 
         <DialogContent>
           <Box>
             <Stack spacing={2}>
-              {surveyTypes.length > 0 ? (
-                surveyTypes.map((type, index) => (
+              {localSurveyTypes.length > 0 ? (
+                localSurveyTypes.map((type, index) => (
                   <Box key={index} display="flex" alignItems="center">
                     <Icon
-                      path={submissionStatus[type] ? mdiTimelineCheckOutline : mdiTimelineOutline}
+                      path={localSubmissionStatus[type] ? mdiTimelineCheckOutline : mdiTimelineOutline}
                       size={1}
                       style={{ marginRight: 8 }}
                     />

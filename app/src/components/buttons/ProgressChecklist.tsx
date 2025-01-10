@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import Icon from '@mdi/react';
 import { mdiFormatListChecks } from '@mdi/js';
-import { ChecklistDialog } from 'features/surveys/components/checklist/ChecklistHandler';
+import Icon from '@mdi/react';
 import { Box, IconButton } from '@mui/material';
+import { ChecklistDialog } from 'features/surveys/components/checklist/ChecklistHandler';
+import React, { useState } from 'react';
 
 const Checklist: React.FC = () => {
   const [isDialogOpen, setDialogOpen] = useState(false);
@@ -17,9 +17,8 @@ const Checklist: React.FC = () => {
           position: 'fixed',
           bottom: 15,
           right: 15,
-          zIndex: 1000,
-        }}
-      >
+          zIndex: 1000
+        }}>
         <IconButton
           onClick={openChecklist}
           sx={{
@@ -28,10 +27,9 @@ const Checklist: React.FC = () => {
             border: '2px solid #000000',
             borderRadius: '5px',
             '&:hover': {
-              backgroundColor: '#f0f0f0',
-            },
-          }}
-        >
+              backgroundColor: '#f0f0f0'
+            }
+          }}>
           <Icon path={mdiFormatListChecks} size={1} />
         </IconButton>
       </Box>

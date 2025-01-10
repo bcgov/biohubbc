@@ -1,16 +1,9 @@
-import React from 'react';
 import { Box, LinearProgress, Typography } from '@mui/material';
+import React from 'react';
+import { useSurveyProgress } from './SurveyProgressContext'; // Update with the correct path
 
-interface ProgressBarProps {
-  surveyTypes: string[];
-  submissionStatus: Record<string, boolean>;
-}
-
-/**
- * ProgressBar Component
- * Displays a progress bar indicating the percentage of completed checklist items.
- */
-const ProgressBar: React.FC<ProgressBarProps> = ({ surveyTypes, submissionStatus }) => {
+const ProgressBar: React.FC = () => {
+  const { surveyTypes, submissionStatus } = useSurveyProgress();
   const totalItems = surveyTypes.length;
   const completedItems = surveyTypes.filter((type) => submissionStatus[type]).length;
   const progress = totalItems > 0 ? (completedItems / totalItems) * 100 : 0;

@@ -2,6 +2,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
+import Checklist from 'components/buttons/ProgressChecklist';
 import { CodesContext } from 'contexts/codesContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { TaxonomyContextProvider } from 'contexts/taxonomyContext';
@@ -9,12 +10,13 @@ import { SystemAlertBanner } from 'features/alert/banner/SystemAlertBanner';
 import SurveyDetails from 'features/surveys/view/SurveyDetails';
 import { SystemAlertBannerEnum } from 'interfaces/useAlertApi.interface';
 import React, { useContext, useEffect } from 'react';
+import ProgressBar from '../components/checklist/progressbar';
+import { SurveyProgressProvider } from '../components/checklist/SurveyProgressContext';
 import { SurveySamplingTableContainer } from './components/sampling-data/SurveySamplingTableContainer';
 import SurveyStudyArea from './components/SurveyStudyArea';
 import { SurveySpatialContainer } from './survey-spatial/SurveySpatialContainer';
 import SurveyAttachments from './SurveyAttachments';
 import SurveyHeader from './SurveyHeader';
-import Checklist from 'components/buttons/ProgressChecklist';
 
 /**
  * Page to display a single Survey.
@@ -34,8 +36,11 @@ const SurveyPage: React.FC = () => {
   }
 
   return (
-    <>
+    <SurveyProgressProvider>
+      {' '}
+      {/* Wrap the relevant part of the page */}
       <SurveyHeader />
+      <ProgressBar /> {/* Add the ProgressBar here */}
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <SystemAlertBanner alertTypes={[SystemAlertBannerEnum.SURVEYS]} />
         <Stack gap={3}>
@@ -58,9 +63,9 @@ const SurveyPage: React.FC = () => {
         <Paper sx={{ display: 'none' }}>
           <SurveyStudyArea />
         </Paper>
-        <Checklist></Checklist>
+        <Checklist />
       </Container>
-    </>
+    </SurveyProgressProvider>
   );
 };
 
