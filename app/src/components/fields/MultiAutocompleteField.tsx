@@ -10,6 +10,7 @@ import Checkbox from '@mui/material/Checkbox';
 import Chip from '@mui/material/Chip';
 import ListItemText from '@mui/material/ListItemText';
 import TextField from '@mui/material/TextField';
+import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
 import { useFormikContext } from 'formik';
 import get from 'lodash-es/get';
 import { useEffect, useState } from 'react';
@@ -27,6 +28,7 @@ export interface IMultiAutocompleteField {
   selectedOptions?: IMultiAutocompleteFieldOption[];
   required?: boolean;
   filterLimit?: number;
+  helpText?: string;
   chipVisible?: boolean;
   onChange?: (
     _event: React.ChangeEvent<any>,
@@ -157,6 +159,15 @@ const MultiAutocompleteField: React.FC<IMultiAutocompleteField> = (props) => {
           label={props.label}
           variant="outlined"
           fullWidth
+          InputProps={{
+            ...params.InputProps,
+            endAdornment: (
+              <>
+                {props.helpText && <HelpButtonTooltip content={props.helpText} iconSx={{ mr: -1 }} />}
+                {params.InputProps.endAdornment}
+              </>
+            )
+          }}
           placeholder="Type to start searching"
           error={get(touched, props.id) && Boolean(get(errors, props.id))}
           helperText={get(touched, props.id) && get(errors, props.id)}
@@ -167,7 +178,10 @@ const MultiAutocompleteField: React.FC<IMultiAutocompleteField> = (props) => {
           return;
         }
 
-        return tagValue.map((option, index) => <Chip label={option.label} {...getTagProps({ index })} />);
+        return tagValue.map((option, index) => {
+          const { key, ...tagProps } = getTagProps({ index });
+          return <Chip label={option.label} {...tagProps} key={key} />;
+        });
       }}
     />
   );

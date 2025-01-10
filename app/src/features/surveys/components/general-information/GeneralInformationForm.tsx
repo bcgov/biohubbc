@@ -95,6 +95,7 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
         <CustomTextField
           name="survey_details.survey_name"
           label="Survey Name"
+          // helpText={`A descriptive names that mentions species, regions, and objectives will make it easier to find this Survey.`}
           maxLength={200}
           other={{
             required: true
@@ -105,6 +106,7 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
         <AutocompleteField
           id={'survey_details.progress_id'}
           name={'survey_details.progress_id'}
+          helpText={`Indicate whether this work is being planned, has started, or is completed to allow for Surveys to be filtered by status.`}
           label={'Progress'}
           required
           options={props.progress}

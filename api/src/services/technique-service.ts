@@ -10,6 +10,7 @@ import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { AttractantService } from './attractants-service';
 import { DBService } from './db-service';
 import { TechniqueAttributeService } from './technique-attributes-service';
+import { TechniqueVantageService } from './technique-vantage-service';
 
 /**
  * Service layer for techniques.
@@ -22,6 +23,7 @@ export class TechniqueService extends DBService {
   techniqueRepository: TechniqueRepository;
   attractantService: AttractantService;
   techniqueAttributeService: TechniqueAttributeService;
+  techniqueVantageService: TechniqueVantageService;
 
   constructor(connection: IDBConnection) {
     super(connection);
@@ -29,6 +31,7 @@ export class TechniqueService extends DBService {
     this.techniqueRepository = new TechniqueRepository(connection);
     this.attractantService = new AttractantService(connection);
     this.techniqueAttributeService = new TechniqueAttributeService(connection);
+    this.techniqueVantageService = new TechniqueVantageService(connection);
   }
 
   /**
@@ -119,6 +122,17 @@ export class TechniqueService extends DBService {
         );
       }
 
+      // Insert vantages
+      if (technique.vantage_methods.length) {
+        promises.push(
+          this.techniqueVantageService.insertVantagesForTechnique(
+            surveyId,
+            method_technique_id,
+            technique.vantage_methods
+          )
+        );
+      }
+
       await Promise.all(promises);
 
       return { method_technique_id };
@@ -156,6 +170,9 @@ export class TechniqueService extends DBService {
 
     // Delete any attributes on the technique
     await this.techniqueAttributeService.deleteAllTechniqueAttributes(surveyId, methodTechniqueId);
+
+    // Delete any vantages on the technique
+    await this.techniqueVantageService.deleteAllVantagesForTechnique(surveyId, methodTechniqueId);
 
     // Delete the technique
     return this.techniqueRepository.deleteTechnique(surveyId, methodTechniqueId);

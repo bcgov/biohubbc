@@ -101,8 +101,8 @@ const AnimalsListContainer = (props: IAnimalsListContainerProps) => {
     {
       field: 'critter_id',
       headerName: 'ID',
-      width: 70,
-      minWidth: 70,
+      width: 85,
+      minWidth: 85,
       sortable: false,
       renderHeader: () => (
         <Typography color={grey[500]} variant="body2" fontWeight={700}>
@@ -157,9 +157,9 @@ const AnimalsListContainer = (props: IAnimalsListContainerProps) => {
         <Divider />
       </Collapse>
 
-      <Box height="100vh" maxHeight="800px" p={2}>
+      <Box height="100vh" maxHeight="800px">
         <LoadingGuard
-          isLoading={animalsDataLoader.isLoading || !animalsDataLoader.isReady}
+          isLoading={!rows.length && (animalsDataLoader.isLoading || !animalsDataLoader.isReady)}
           isLoadingFallback={<SkeletonTable />}
           isLoadingFallbackDelay={100}
           hasNoData={!rows.length}
@@ -174,7 +174,7 @@ const AnimalsListContainer = (props: IAnimalsListContainerProps) => {
           hasNoDataFallbackDelay={100}>
           <StyledDataGrid
             noRowsMessage="No animals found"
-            loading={animalsDataLoader.isLoading || !animalsDataLoader.isReady}
+            loading={!rows.length && (animalsDataLoader.isLoading || !animalsDataLoader.isReady)}
             // Columns
             columns={columns}
             // Rows

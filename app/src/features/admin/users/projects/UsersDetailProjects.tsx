@@ -163,7 +163,7 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
         </Typography>
       </Toolbar>
       <Divider></Divider>
-      <Box p={2}>
+      <Box>
         <Table sx={{ tableLayout: 'fixed' }}>
           <TableHead>
             <TableRow>

@@ -3,6 +3,7 @@ import { Icon } from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Collapse from '@mui/material/Collapse';
+import HelpButtonStack from 'components/buttons/HelpButtonStack';
 import { EcologicalUnitDualSelect } from 'components/species/ecological-units/EcologicalUnitDualSelect';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
@@ -56,25 +57,27 @@ export const EcologicalUnitsForm = () => {
               </Collapse>
             ))}
           </TransitionGroup>
-          <Button
-            color="primary"
-            variant="outlined"
-            data-testid="ecological-unit-button"
-            onClick={() => arrayHelpers.push(initialEcologicalUnitValues)}
-            startIcon={<Icon path={mdiPlus} size={0.75} />}
-            aria-label="Add Ecological Unit"
-            disabled={
-              // Disable the button if the species is not selected
-              Boolean(!values.species) ||
-              // Disable the button if the number of ecological units is greater than or equal to the number of available categories
-              (ecologicalUnitsDataLoader.data &&
-                values.ecological_units.length >= ecologicalUnitsDataLoader.data?.length) ||
-              // Disable the button if the data loader is loading
-              ecologicalUnitsDataLoader.isLoading
-            }
-            sx={{ textTransform: 'uppercase' }}>
-            Add Ecological Unit
-          </Button>
+          <HelpButtonStack helpText="The button is disabled if the species does not have any ecological units available.">
+            <Button
+              color="primary"
+              variant="outlined"
+              data-testid="ecological-unit-button"
+              onClick={() => arrayHelpers.push(initialEcologicalUnitValues)}
+              startIcon={<Icon path={mdiPlus} size={0.75} />}
+              aria-label="Add Ecological Unit"
+              disabled={
+                // Disable the button if the species is not selected
+                Boolean(!values.species) ||
+                // Disable the button if the number of ecological units is greater than or equal to the number of available categories
+                (ecologicalUnitsDataLoader.data &&
+                  values.ecological_units.length >= ecologicalUnitsDataLoader.data?.length) ||
+                // Disable the button if the data loader is loading
+                ecologicalUnitsDataLoader.isLoading
+              }
+              sx={{ textTransform: 'uppercase' }}>
+              Add Ecological Unit
+            </Button>
+          </HelpButtonStack>
         </>
       )}
     />

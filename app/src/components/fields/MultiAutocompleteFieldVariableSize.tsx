@@ -6,6 +6,7 @@ import Checkbox from '@mui/material/Checkbox';
 import ListSubheader from '@mui/material/ListSubheader';
 import TextField from '@mui/material/TextField';
 import { FilterOptionsState } from '@mui/material/useAutocomplete';
+import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
 import { useFormikContext } from 'formik';
 import { DebouncedFunc } from 'lodash-es';
 import get from 'lodash-es/get';
@@ -44,6 +45,7 @@ export type IMultiAutocompleteField = {
   label: string;
   required?: boolean;
   filterLimit?: number;
+  helpText?: string;
 } & (ApiSearchTypeParam | defaultTypeParam);
 
 function renderRow(props: ListChildComponentProps) {
@@ -290,6 +292,15 @@ const MultiAutocompleteFieldVariableSize: React.FC<IMultiAutocompleteField> = (p
           label={props.label}
           variant="outlined"
           fullWidth
+          InputProps={{
+            ...params.InputProps,
+            endAdornment: (
+              <>
+                {props.helpText && <HelpButtonTooltip content={props.helpText} iconSx={{ mr: -1 }} />}
+                {params.InputProps.endAdornment}
+              </>
+            )
+          }}
           placeholder="Type to start searching"
           error={get(touched, props.id) && Boolean(get(errors, props.id))}
           helperText={get(touched, props.id) && get(errors, props.id)}

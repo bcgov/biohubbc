@@ -21,7 +21,9 @@ export interface IAnimalAdvancedFilters {
    */
   itis_tsn?: number;
   /**
-   * Filter results by system user id (not necessarily the user making the request).
+   * Filter results by system user id.
+   *
+   * Note: This is not the id of the user making the request.
    *
    * @type {number}
    * @memberof IAnimalAdvancedFilters

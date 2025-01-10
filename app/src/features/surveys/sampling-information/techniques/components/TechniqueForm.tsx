@@ -1,3 +1,4 @@
+import Collapse from '@mui/material/Collapse';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
@@ -10,9 +11,11 @@ import { useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useEffect, useMemo } from 'react';
+import { TransitionGroup } from 'react-transition-group';
 import { TechniqueAttractantsForm } from './attractants/TechniqueAttractantsForm';
 import { TechniqueDetailsForm } from './details/TechniqueDetailsForm';
 import { TechniqueGeneralInformationForm } from './general-information/TechniqueGeneralInformationForm';
+import { TechniqueVantageForm } from './vantages/TechniqueVantagesForm';
 
 /**
  * Technique form.
@@ -29,6 +32,10 @@ export const TechniqueForm = <FormValues extends CreateTechniqueFormValues | Upd
 
   const attributeTypeDefinitionDataLoader = useDataLoader((method_lookup_id: number) =>
     biohubApi.reference.getTechniqueAttributes([method_lookup_id])
+  );
+
+  const vantageReferenceRecordsDataLoader = useDataLoader((methodLookupId: number) =>
+    biohubApi.reference.getVantageReferenceRecords([methodLookupId])
   );
 
   useEffect(() => {
@@ -48,19 +55,47 @@ export const TechniqueForm = <FormValues extends CreateTechniqueFormValues | Upd
     [attributeTypeDefinitionDataLoader.data]
   );
 
+  // Refresh vantage reference data when the method lookup changes
+  useEffect(() => {
+    if (!values.method_lookup_id) {
+      return;
+    }
+    vantageReferenceRecordsDataLoader.refresh(values.method_lookup_id);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [values.method_lookup_id]);
+
   return (
-    <Stack gap={5}>
+    <Stack>
       <HorizontalSplitFormComponent title="General Information" summary="Enter information about the technique">
         <TechniqueGeneralInformationForm />
       </HorizontalSplitFormComponent>
 
-      <Divider />
+      <Divider sx={{ my: 5 }} />
 
-      <HorizontalSplitFormComponent title="Details" summary="Enter additional information about the technique">
-        <TechniqueAttributesForm attributeTypeDefinitions={attributeTypeDefinitions} />
-      </HorizontalSplitFormComponent>
+      <TransitionGroup>
+        {vantageReferenceRecordsDataLoader.data && vantageReferenceRecordsDataLoader.data.length > 0 && (
+          <Collapse>
+            <HorizontalSplitFormComponent title="Vantages" summary="Enter information about the technique vantages">
+              <TechniqueVantageForm vantageReferenceRecords={vantageReferenceRecordsDataLoader.data ?? []} />
+            </HorizontalSplitFormComponent>
 
-      <Divider />
+            <Divider sx={{ my: 5 }} />
+          </Collapse>
+        )}
+      </TransitionGroup>
+
+      <TransitionGroup>
+        {attributeTypeDefinitions.length > 0 && (
+          <Collapse in={!!attributeTypeDefinitions.length}>
+            <HorizontalSplitFormComponent title="Details" summary="Enter additional information about the technique">
+              <TechniqueAttributesForm attributeTypeDefinitions={attributeTypeDefinitions} />
+            </HorizontalSplitFormComponent>
+
+            <Divider sx={{ my: 5 }} />
+          </Collapse>
+        )}
+      </TransitionGroup>
 
       <HorizontalSplitFormComponent
         title="Attractants"
@@ -68,7 +103,7 @@ export const TechniqueForm = <FormValues extends CreateTechniqueFormValues | Upd
         <TechniqueAttractantsForm />
       </HorizontalSplitFormComponent>
 
-      <Divider />
+      <Divider sx={{ my: 5 }} />
 
       <HorizontalSplitFormComponent title="Methodology" summary="Enter details about the technique">
         <TechniqueDetailsForm />
