@@ -3,9 +3,7 @@ import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { BctwDeploymentService } from '../../../../../../services/bctw-service/bctw-deployment-service';
-import { ICritterbaseUser } from '../../../../../../services/critterbase-service';
-import { DeploymentService } from '../../../../../../services/deployment-service';
+import { TelemetryDeploymentService } from '../../../../../../services/telemetry-services/telemetry-deployment-service';
 import { getLogger } from '../../../../../../utils/logger';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/deployments/delete');
@@ -30,8 +28,8 @@ export const POST: Operation = [
 ];
 
 POST.apiDoc = {
-  description: 'Delete deployments from a survey.',
-  tags: ['deployment', 'bctw'],
+  description: 'Delete deployments.',
+  tags: ['deployment'],
   security: [
     {
       Bearer: []
@@ -64,6 +62,8 @@ POST.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
+          required: ['deployment_ids'],
+          additionalProperties: false,
           properties: {
             deployment_ids: {
               type: 'array',
@@ -104,7 +104,7 @@ POST.apiDoc = {
 };
 
 /**
- * Delete deployments from a survey.
+ * Deletes deployments.
  *
  * @export
  * @return {*}  {RequestHandler}
@@ -119,20 +119,9 @@ export function deleteDeploymentsInSurvey(): RequestHandler {
     try {
       await connection.open();
 
-      const user: ICritterbaseUser = {
-        keycloak_guid: connection.systemUserGUID(),
-        username: connection.systemUserIdentifier()
-      };
+      const telemetryDeploymentService = new TelemetryDeploymentService(connection);
 
-      const deletePromises = deploymentIds.map(async (deploymentId) => {
-        const deploymentService = new DeploymentService(connection);
-        const { bctw_deployment_id } = await deploymentService.deleteDeployment(surveyId, deploymentId);
-
-        const bctwDeploymentService = new BctwDeploymentService(user);
-        await bctwDeploymentService.deleteDeployment(bctw_deployment_id);
-      });
-
-      await Promise.all(deletePromises);
+      await telemetryDeploymentService.deleteDeployments(surveyId, deploymentIds);
 
       await connection.commit();
 
@@ -140,7 +129,6 @@ export function deleteDeploymentsInSurvey(): RequestHandler {
     } catch (error) {
       defaultLog.error({ label: 'deleteDeploymentsInSurvey', message: 'error', error });
       await connection.rollback();
-
       throw error;
     } finally {
       connection.release();

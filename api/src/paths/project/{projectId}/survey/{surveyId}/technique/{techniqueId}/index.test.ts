@@ -9,6 +9,7 @@ import { AttractantService } from '../../../../../../../services/attractants-ser
 import { SampleMethodService } from '../../../../../../../services/sample-method-service';
 import { TechniqueAttributeService } from '../../../../../../../services/technique-attributes-service';
 import { TechniqueService } from '../../../../../../../services/technique-service';
+import { TechniqueVantageService } from '../../../../../../../services/technique-vantage-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../__mocks__/db';
 
 chai.use(sinonChai);
@@ -158,6 +159,10 @@ describe('updateTechnique', () => {
           {
             attractant_lookup_id: 111
           }
+        ],
+        vantage_methods: [
+          { vantage_method_id: 101, description: 'Mode 1' },
+          { vantage_method_id: 102, description: 'Mode 2' }
         ]
       }
     };
@@ -225,6 +230,10 @@ describe('updateTechnique', () => {
           {
             attractant_lookup_id: 111
           }
+        ],
+        vantage_methods: [
+          { vantage_method_id: 101, description: 'Mode 1' },
+          { vantage_method_id: 102, description: 'Mode 2' }
         ]
       }
     };
@@ -243,6 +252,10 @@ describe('updateTechnique', () => {
 
     const updateQuantitativeAttributesForTechniqueStub = sinon
       .stub(TechniqueAttributeService.prototype, 'insertUpdateDeleteQuantitativeAttributesForTechnique')
+      .resolves();
+
+    const updateVantagesForTechniqueStub = sinon
+      .stub(TechniqueVantageService.prototype, 'updateVantagesForTechnique')
       .resolves();
 
     const requestHandler = updateTechnique();
@@ -267,6 +280,7 @@ describe('updateTechnique', () => {
       3,
       requestBody.technique.attributes.quantitative_attributes
     );
+    expect(updateVantagesForTechniqueStub).to.have.been.calledOnceWith(2, 3, requestBody.technique.vantage_methods);
 
     expect(mockRes.statusValue).to.eql(200);
   });

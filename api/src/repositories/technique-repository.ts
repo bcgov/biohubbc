@@ -1,63 +1,102 @@
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
+import { AttractantLookupRecord } from '../database-models/attractant_lookup';
+import { MethodTechniqueRecord } from '../database-models/method_technique';
+import { MethodTechniqueAttractantRecord } from '../database-models/method_technique_attractant';
+import { MethodTechniqueAttributeQualitativeRecord } from '../database-models/method_technique_attribute_qualitative';
+import { MethodTechniqueAttributeQuantitativeRecord } from '../database-models/method_technique_attribute_quantitative';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
-import { IAttractantPostData } from './attractants-repository';
 import { BaseRepository } from './base-repository';
-import { IQualitativeAttributePostData, IQuantitativeAttributePostData } from './technique-attribute-repository';
+import { TechniqueVantage } from './technique-vantage-repository';
 
-export interface ITechniquePostData {
-  name: string;
-  description: string | null;
-  distance_threshold: number | null;
-  method_lookup_id: number;
-  attributes: {
-    quantitative_attributes: IQuantitativeAttributePostData[];
-    qualitative_attributes: IQualitativeAttributePostData[];
-  };
-  attractants: IAttractantPostData[];
-}
-
-export interface ITechniquePutData extends ITechniquePostData {
-  method_technique_id: number;
-}
-
-export interface ITechniqueRowDataForInsert {
-  name: string;
-  description: string | null;
-  distance_threshold: number | null;
-  method_lookup_id: number;
-}
-
-export interface ITechniqueRowDataForUpdate extends ITechniqueRowDataForInsert {
-  method_technique_id: number;
-}
-
-export const TechniqueObject = z.object({
-  method_technique_id: z.number(),
-  name: z.string(),
-  description: z.string().nullable(),
-  distance_threshold: z.number().nullable(),
-  method_lookup_id: z.number(),
-  attractants: z.array(z.object({ attractant_lookup_id: z.number() })),
+const ITechniquePostData = MethodTechniqueRecord.pick({
+  name: true,
+  description: true,
+  distance_threshold: true,
+  method_lookup_id: true
+}).extend({
   attributes: z.object({
     quantitative_attributes: z.array(
-      z.object({
-        method_technique_attribute_quantitative_id: z.number(),
-        method_lookup_attribute_quantitative_id: z.string().uuid(),
-        value: z.number()
+      MethodTechniqueAttributeQuantitativeRecord.pick({
+        method_lookup_attribute_quantitative_id: true,
+        value: true
       })
     ),
     qualitative_attributes: z.array(
-      z.object({
-        method_technique_attribute_qualitative_id: z.number(),
-        method_lookup_attribute_qualitative_id: z.string().uuid(),
-        method_lookup_attribute_qualitative_option_id: z.string().uuid()
+      MethodTechniqueAttributeQualitativeRecord.pick({
+        method_lookup_attribute_qualitative_id: true,
+        method_lookup_attribute_qualitative_option_id: true
       })
     )
-  })
+  }),
+  attractants: z.array(
+    MethodTechniqueAttractantRecord.pick({
+      attractant_lookup_id: true
+    })
+  ),
+  vantage_methods: z.array(TechniqueVantage)
 });
+
+export type ITechniquePostData = z.infer<typeof ITechniquePostData>;
+
+const ITechniquePutData = ITechniquePostData.merge(
+  MethodTechniqueRecord.pick({
+    method_technique_id: true
+  })
+);
+
+export type ITechniquePutData = z.infer<typeof ITechniquePutData>;
+
+const ITechniqueRowDataForInsert = MethodTechniqueRecord.pick({
+  name: true,
+  description: true,
+  distance_threshold: true,
+  method_lookup_id: true
+});
+
+export type ITechniqueRowDataForInsert = z.infer<typeof ITechniqueRowDataForInsert>;
+
+const ITechniqueRowDataForUpdate = ITechniqueRowDataForInsert.merge(
+  MethodTechniqueRecord.pick({
+    method_technique_id: true
+  })
+);
+
+export type ITechniqueRowDataForUpdate = z.infer<typeof ITechniqueRowDataForUpdate>;
+
+const TechniqueObject = MethodTechniqueRecord.pick({
+  method_technique_id: true,
+  name: true,
+  description: true,
+  distance_threshold: true,
+  method_lookup_id: true
+}).extend({
+  attractants: z.array(
+    AttractantLookupRecord.pick({
+      attractant_lookup_id: true
+    })
+  ),
+  attributes: z.object({
+    qualitative_attributes: z.array(
+      MethodTechniqueAttributeQualitativeRecord.pick({
+        method_technique_attribute_qualitative_id: true,
+        method_lookup_attribute_qualitative_id: true,
+        method_lookup_attribute_qualitative_option_id: true
+      })
+    ),
+    quantitative_attributes: z.array(
+      MethodTechniqueAttributeQuantitativeRecord.pick({
+        method_technique_attribute_quantitative_id: true,
+        method_lookup_attribute_quantitative_id: true,
+        value: true
+      })
+    )
+  }),
+  vantage_methods: z.array(TechniqueVantage)
+});
+
 export type TechniqueObject = z.infer<typeof TechniqueObject>;
 
 export class TechniqueRepository extends BaseRepository {
@@ -118,6 +157,24 @@ export class TechniqueRepository extends BaseRepository {
           .from('method_technique_attribute_qualitative')
           .groupBy('method_technique_id')
       )
+      .with(
+        'w_vantages',
+        knex
+          .select(
+            'method_technique_id',
+            knex.raw(`
+              json_agg(json_build_object(
+                'method_technique_vantage_id', method_technique_vantage.method_technique_vantage_id,
+                'vantage_method_id', method_technique_vantage.vantage_method_id,
+                'vantage_category_id', vantage.vantage_category_id
+              )) as vantage_methods
+            `)
+          )
+          .from('method_technique_vantage')
+          .join('vantage_method', 'vantage_method.vantage_method_id', 'method_technique_vantage.vantage_method_id')
+          .join('vantage', 'vantage.vantage_id', 'vantage_method.vantage_id')
+          .groupBy('method_technique_id')
+      )
       .select(
         'mt.method_technique_id',
         'mt.name',
@@ -132,12 +189,16 @@ export class TechniqueRepository extends BaseRepository {
             'quantitative_attributes', COALESCE(w_quantitative_attributes.quantitative_attributes, '[]'::json),
             'qualitative_attributes', COALESCE(w_qualitative_attributes.qualitative_attributes, '[]'::json
           )) AS attributes
+        `),
+        knex.raw(`
+          COALESCE(w_vantages.vantage_methods, '[]'::json) AS vantage_methods
         `)
       )
       .from('method_technique as mt')
       .leftJoin('w_attractants', 'w_attractants.method_technique_id', 'mt.method_technique_id')
       .leftJoin('w_quantitative_attributes', 'w_quantitative_attributes.method_technique_id', 'mt.method_technique_id')
       .leftJoin('w_qualitative_attributes', 'w_qualitative_attributes.method_technique_id', 'mt.method_technique_id')
+      .leftJoin('w_vantages', 'w_vantages.method_technique_id', 'mt.method_technique_id')
       .where('mt.survey_id', surveyId);
 
     return queryBuilder;

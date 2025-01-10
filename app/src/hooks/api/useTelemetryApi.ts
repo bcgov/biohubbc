@@ -2,13 +2,13 @@ import { AxiosInstance, AxiosProgressEvent, CancelTokenSource } from 'axios';
 import { IAllTelemetryAdvancedFilters } from 'features/summary/tabular-data/telemetry/TelemetryListFilterForm';
 import { IUploadAttachmentResponse } from 'interfaces/useProjectApi.interface';
 import {
+  GetSurveyTelemetryResponse,
   IAllTelemetry,
-  ICodeResponse,
   ICreateManualTelemetry,
   IFindTelemetryResponse,
-  IManualTelemetry,
   IUpdateManualTelemetry,
-  TelemetryDeviceKeyFile
+  TelemetryDeviceKeyFile,
+  TelemetrySpatial
 } from 'interfaces/useTelemetryApi.interface';
 import qs from 'qs';
 import { ApiPaginationRequestOptions } from 'types/misc';
@@ -42,117 +42,142 @@ const useTelemetryApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Get list of manual and vendor telemetry by deployment ids
+   * Get a telemetry record by id.
    *
-   * @param {string[]} deploymentIds BCTW deployment ids
-   * @return {*}  {Promise<IAllTelemetry[]>}
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {number} telemetryId The telemetry record ID (uuid)
+   * @return {*}  {Promise<{ telemetry: IAllTelemetry }>}
    */
-  const getAllTelemetryByDeploymentIds = async (deploymentIds: string[]): Promise<IAllTelemetry[]> => {
-    const { data } = await axios.get<IAllTelemetry[]>('/api/telemetry/deployments', {
-      params: {
-        bctwDeploymentIds: deploymentIds
-      }
-    });
+  const getTelemetryById = async (
+    projectId: number,
+    surveyId: number,
+    telemetryId: string
+  ): Promise<{ telemetry: IAllTelemetry }> => {
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/telemetry/${telemetryId}`);
+
     return data;
   };
 
   /**
-   * Bulk create Manual Telemetry
+   * Get all telemetry for a survey.
    *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {ApiPaginationRequestOptions} [pagination]
+   * @return {*}  {Promise<GetSurveyTelemetryResponse>}
+   */
+  const getTelemetryForSurvey = async (
+    projectId: number,
+    surveyId: number,
+    pagination?: ApiPaginationRequestOptions
+  ): Promise<GetSurveyTelemetryResponse> => {
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/telemetry`, {
+      params: {
+        ...pagination
+      },
+      paramsSerializer: (params) => qs.stringify(params)
+    });
+
+    return data;
+  };
+
+  /**
+   * Get all telemetry spatial data for a survey.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @return {*}  {Promise<{ telemetry: TelemetrySpatial[]; supplementaryData: { count: number } }>}
+   */
+  const getTelemetrySpatialForSurvey = async (
+    projectId: number,
+    surveyId: number
+  ): Promise<{ telemetry: TelemetrySpatial[]; supplementaryData: { count: number } }> => {
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/telemetry/spatial`);
+
+    return data;
+  };
+
+  /**
+   * Bulk create Manual Telemetry records.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
    * @param {ICreateManualTelemetry[]} manualTelemetry Manual Telemetry create objects
-   * @return {*}  {Promise<ICreateManualTelemetry[]>}
+   * @return {*}  {Promise<void>}
    */
   const createManualTelemetry = async (
+    projectId: number,
+    surveyId: number,
     manualTelemetry: ICreateManualTelemetry[]
-  ): Promise<ICreateManualTelemetry[]> => {
-    const { data } = await axios.post<IManualTelemetry[]>('/api/telemetry/manual', manualTelemetry);
-    return data;
+  ): Promise<void> => {
+    await axios.post<void>(`/api/project/${projectId}/survey/${surveyId}/deployments/telemetry/manual`, {
+      telemetry: manualTelemetry
+    });
   };
 
   /**
-   * Bulk update Manual Telemetry
+   * Bulk update Manual Telemetry records.
    *
+   * @param {number} projectId
+   * @param {number} surveyId
    * @param {IUpdateManualTelemetry[]} manualTelemetry Manual Telemetry update objects
-   * @return {*}
+   * @return {*}  {Promise<void>}
    */
-  const updateManualTelemetry = async (manualTelemetry: IUpdateManualTelemetry[]) => {
-    const { data } = await axios.patch<IManualTelemetry[]>('/api/telemetry/manual', manualTelemetry);
-    return data;
+  const updateManualTelemetry = async (
+    projectId: number,
+    surveyId: number,
+    manualTelemetry: IUpdateManualTelemetry[]
+  ): Promise<void> => {
+    await axios.put<void>(`/api/project/${projectId}/survey/${surveyId}/deployments/telemetry/manual`, {
+      telemetry: manualTelemetry
+    });
+
+    return;
   };
 
   /**
-   * Delete manual telemetry records
+   * Bulk delete manual telemetry records.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
    *
    * @param {string[]} telemetryIds Manual Telemetry ids to delete
-   * @return {*}
+   * @return {*}  {Promise<void>}
    */
-  const deleteManualTelemetry = async (telemetryIds: string[]) => {
-    const { data } = await axios.post<IManualTelemetry[]>('/api/telemetry/manual/delete', telemetryIds);
-    return data;
+  const deleteManualTelemetry = async (projectId: number, surveyId: number, telemetryIds: string[]): Promise<void> => {
+    await axios.post<void>(`/api/project/${projectId}/survey/${surveyId}/deployments/telemetry/manual/delete`, {
+      telemetry_manual_ids: telemetryIds
+    });
+
+    return;
   };
 
   /**
-   * Uploads a telemetry CSV for import.
+   * Imports a telemetry CSV.
    *
    * @param {number} projectId
    * @param {number} surveyId
    * @param {File} file
    * @param {CancelTokenSource} [cancelTokenSource]
    * @param {(progressEvent: AxiosProgressEvent) => void} [onProgress]
-   * @return {*}  {Promise<{ submission_id: number }>}
+   * @return {*} {Promise<void>}
    */
-  const uploadCsvForImport = async (
+  const importManualTelemetryCSV = async (
     projectId: number,
     surveyId: number,
     file: File,
     cancelTokenSource?: CancelTokenSource,
     onProgress?: (progressEvent: AxiosProgressEvent) => void
-  ): Promise<{ submission_id: number }> => {
+  ): Promise<void> => {
     const formData = new FormData();
 
     formData.append('media', file);
 
-    const { data } = await axios.post<{ submission_id: number }>(
-      `/api/project/${projectId}/survey/${surveyId}/telemetry/upload`,
-      formData,
-      {
-        cancelToken: cancelTokenSource?.token,
-        onUploadProgress: onProgress
-      }
-    );
-    return data;
-  };
-
-  /**
-   * Begins processing an uploaded telemetry CSV for import
-   *
-   * @param {number} submissionId
-   * @return {*}
-   */
-  const processTelemetryCsvSubmission = async (submissionId: number) => {
-    const { data } = await axios.post('/api/telemetry/manual/process', {
-      submission_id: submissionId
+    await axios.post(`/api/project/${projectId}/survey/${surveyId}/telemetry/import`, formData, {
+      cancelToken: cancelTokenSource?.token,
+      onUploadProgress: onProgress
     });
-
-    return data;
-  };
-
-  /**
-   * Returns a list of code values for a given code header.
-   *
-   * @param {string} codeHeader
-   * @return {*}  {Promise<ICodeResponse[]>}
-   */
-  const getCodeValues = async (codeHeader: string): Promise<ICodeResponse[]> => {
-    try {
-      const { data } = await axios.get(`/api/telemetry/code?codeHeader=${codeHeader}`);
-      return data;
-    } catch (e) {
-      if (e instanceof Error) {
-        console.error(e.message);
-      }
-    }
-    return [];
   };
 
   /**
@@ -205,13 +230,13 @@ const useTelemetryApi = (axios: AxiosInstance) => {
 
   return {
     findTelemetry,
-    getAllTelemetryByDeploymentIds,
+    getTelemetryById,
+    getTelemetryForSurvey,
+    getTelemetrySpatialForSurvey,
     createManualTelemetry,
     updateManualTelemetry,
     deleteManualTelemetry,
-    uploadCsvForImport,
-    processTelemetryCsvSubmission,
-    getCodeValues,
+    importManualTelemetryCSV,
     uploadTelemetryDeviceCredentialFile,
     getTelemetryDeviceKeyFiles
   };

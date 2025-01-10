@@ -9,6 +9,7 @@ import { grey } from '@mui/material/colors';
 import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import HelpButtonStack from 'components/buttons/HelpButtonStack';
 import { SurveyContext } from 'contexts/surveyContext';
 import { BlockStratumCard } from 'features/surveys/sampling-information/sites/components/site-groupings/BlockStratumCard';
 import { useFormikContext } from 'formik';
@@ -42,7 +43,11 @@ export const SamplingStratumForm = () => {
 
   return (
     <>
-      <Typography component="legend">Assign to Stratum</Typography>
+      <HelpButtonStack
+        helpText="After adding strata to the Survey, you can assign sampling sites to those strata."
+        mb={1}>
+        <Typography fontWeight={700}>Assign to Strata</Typography>
+      </HelpButtonStack>
       <Typography
         variant="body1"
         color="textSecondary"

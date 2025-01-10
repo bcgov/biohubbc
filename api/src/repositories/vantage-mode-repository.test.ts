@@ -4,26 +4,26 @@ import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { getMockDBConnection } from '../__mocks__/db';
-import { VantageMode, VantageModeRepository } from './vantage-mode-repository'; // Adjust paths as necessary
+import { VantageReferenceRecord, VantageRepository } from './vantage-mode-repository';
 
 chai.use(sinonChai);
 
-describe('VantageModeRepository', () => {
+describe('VantageRepository', () => {
   afterEach(() => {
     sinon.restore();
   });
 
-  describe('getVantageModesByMethodLookupIds', () => {
-    it('should successfully return vantage modes for provided method lookup ids', async () => {
-      const mockVantageMode: VantageMode = {
-        vantage_mode_id: 1,
-        vantage_id: 101,
-        name: 'Mode A',
-        description: 'Description for mode A'
+  describe('getVantagesByMethodLookupIds', () => {
+    it('should successfully return vantages for provided method lookup ids', async () => {
+      const mockVantage: VantageReferenceRecord = {
+        vantage_category_id: 101,
+        name: 'Vantage A',
+        description: 'Description for vantage A',
+        vantages: [{ vantage_method_id: 1, name: 'Mode A', description: 'Description' }]
       };
 
       const mockResponse = {
-        rows: [mockVantageMode],
+        rows: [mockVantage],
         rowCount: 1
       } as any as Promise<QueryResult<any>>;
 
@@ -31,15 +31,15 @@ describe('VantageModeRepository', () => {
         knex: () => mockResponse
       });
 
-      const repository = new VantageModeRepository(dbConnection);
+      const repository = new VantageRepository(dbConnection);
       const methodLookupIds = [1, 2, 3];
 
-      const response = await repository.getVantageModesByMethodLookupIds(methodLookupIds);
+      const response = await repository.getVantageReferenceRecordsByMethodLookupIds(methodLookupIds);
 
-      expect(response).to.eql([mockVantageMode]);
+      expect(response).to.eql([mockVantage]);
     });
 
-    it('should return an empty array if no vantage modes are found for provided method lookup ids', async () => {
+    it('should return an empty array if no vantages are found for provided method lookup ids', async () => {
       const mockResponse = {
         rows: [],
         rowCount: 0
@@ -49,10 +49,10 @@ describe('VantageModeRepository', () => {
         knex: () => mockResponse
       });
 
-      const repository = new VantageModeRepository(dbConnection);
+      const repository = new VantageRepository(dbConnection);
       const methodLookupIds = [10, 20, 30];
 
-      const response = await repository.getVantageModesByMethodLookupIds(methodLookupIds);
+      const response = await repository.getVantageReferenceRecordsByMethodLookupIds(methodLookupIds);
 
       expect(response).to.eql([]);
     });

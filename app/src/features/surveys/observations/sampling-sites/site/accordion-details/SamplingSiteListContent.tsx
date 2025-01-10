@@ -50,7 +50,7 @@ export const SamplingSiteListContent = (props: ISamplingSiteListContentProps) =>
   return (
     <>
       {sampleSite.stratums && sampleSite.stratums.length > 0 && (
-        <Box display="flex" alignItems="center" color="textSecondary" py={1} px={1}>
+        <Box display="flex" alignItems="center" color="textSecondary" py={1} px={1.5}>
           <SamplingStratumChips stratums={sampleSite.stratums} />
         </Box>
       )}

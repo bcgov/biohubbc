@@ -22,11 +22,7 @@ export const GET: Operation = [
           discriminator: 'ProjectPermission'
         },
         {
-          validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
-          discriminator: 'SystemRole'
-        },
-        {
-          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN],
+          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR],
           discriminator: 'SystemRole'
         }
       ]
