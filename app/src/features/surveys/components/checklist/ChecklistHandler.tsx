@@ -1,7 +1,9 @@
 import ReactDOM from 'react-dom';
 import React from 'react';
+import { ThemeProvider } from '@mui/material/styles';
 import { LoadingButton } from '@mui/lab';
-
+import { Typography, Box, Stack } from '@mui/material';
+import appTheme from 'themes/appTheme';
 
 export const openChecklist = () => {
   let popup = document.getElementById('checklistPopup');
@@ -14,10 +16,6 @@ export const openChecklist = () => {
       right: 5px;
       transform: translate(-10%, -10%);
       width: 300px;
-      background: white;
-      padding: 20px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-      border-radius: 10px;
       z-index: 1000;
     `;
 
@@ -29,26 +27,37 @@ export const openChecklist = () => {
       };
 
       return (
-        <div>
-          <h3>Action Items</h3>
-          <ul>
-            <li>Code in Variable checklists</li>
-            <li>change formatting to match others</li>
-            <li>open dialog as opposed to popup?</li>
-          </ul>
-          <LoadingButton
-            onClick={handleClose}
-            color="primary"
-            variant="contained"
-            loading={false} 
+        <ThemeProvider theme={appTheme}>
+          <Box
             sx={{
-              display: 'block',
-              margin: '10px auto',
+              background: 'white',
+              padding: 2,
+              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+              borderRadius: 2,
             }}
           >
-            Close
-          </LoadingButton>
-        </div>
+            <Typography variant="h3" gutterBottom sx={{ textDecoration: 'underline' }}>
+              Survey Checklist
+            </Typography>
+            <Stack spacing={1} component="div">
+              <Typography>- Code in Variable checklists</Typography>
+              <Typography>- Change formatting to match others</Typography>
+              <Typography>- Open dialog as opposed to popup?</Typography>
+            </Stack>
+            <LoadingButton
+              loading={false}
+              onClick={handleClose}
+              sx={{
+                display: 'block',
+                margin: '10px auto',
+              }}
+              color="primary"
+              variant="contained"
+            >
+              <strong>OK</strong>
+            </LoadingButton>
+          </Box>
+        </ThemeProvider>
       );
     };
 
