@@ -1,6 +1,7 @@
 import { IDBConnection } from '../database/db';
 import { IAlert, IAlertCreateObject, IAlertFilterObject, IAlertUpdateObject } from '../models/alert-view';
 import { AlertRepository } from '../repositories/alert-repository';
+import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { DBService } from './db-service';
 
 export class AlertService extends DBService {
@@ -16,11 +17,24 @@ export class AlertService extends DBService {
    * Get all alert records, including deactivated alerts
    *
    * @param {IAlertFilterObject} filterObject
+   * @param {ApiPaginationOptions} pagination
    * @return {*}  Promise<IAlert[]>
    * @memberof AlertService
    */
-  async getAlerts(filterObject: IAlertFilterObject): Promise<IAlert[]> {
-    return this.alertRepository.getAlerts(filterObject);
+  async getAlerts(filterObject: IAlertFilterObject, pagination?: ApiPaginationOptions): Promise<IAlert[]> {
+    return this.alertRepository.getAlerts(filterObject, pagination);
+  }
+
+  
+  /**
+   * Get count of alert records, including deactivated alerts
+   *
+   * @param {IAlertFilterObject} filterObject
+   * @return {*}  Promise<number>
+   * @memberof AlertService
+   */
+  async getAlertsCount(filterObject: IAlertFilterObject): Promise<number> {
+    return this.alertRepository.getAlertsCount(filterObject);
   }
 
   /**

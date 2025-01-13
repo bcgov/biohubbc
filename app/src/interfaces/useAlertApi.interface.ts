@@ -1,5 +1,8 @@
+import { ApiPaginationResponseParams } from 'types/misc';
+
 export interface IGetAlertsResponse {
   alerts: IAlert[];
+  pagination: ApiPaginationResponseParams;
 }
 
 export type AlertSeverity = 'info' | 'success' | 'error' | 'warning';

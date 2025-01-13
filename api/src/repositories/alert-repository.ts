@@ -1,8 +1,10 @@
 import { Knex } from 'knex';
 import SQL from 'sql-template-strings';
+import { z } from 'zod';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { IAlert, IAlertCreateObject, IAlertFilterObject, IAlertUpdateObject } from '../models/alert-view';
+import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { BaseRepository } from './base-repository';
 
 /**
@@ -46,10 +48,11 @@ export class AlertRepository extends BaseRepository {
    * Get alert records with optional filters applied
    *
    * @param {IAlertFilterObject} filterObject
+   * @param {ApiPaginationOptions} pagination
    * @return {*}  {Promise<IAlert[]>}
    * @memberof AlertRepository
    */
-  async getAlerts(filterObject: IAlertFilterObject): Promise<IAlert[]> {
+  async getAlerts(filterObject: IAlertFilterObject, pagination?: ApiPaginationOptions): Promise<IAlert[]> {
     const queryBuilder = this._getAlertBaseQuery();
 
     if (filterObject.expiresAfter) {
@@ -70,9 +73,54 @@ export class AlertRepository extends BaseRepository {
         .whereRaw('lower(at.name) = ANY(?)', [filterObject.types.map((type) => type.toLowerCase())]);
     }
 
+    if (pagination) {
+      queryBuilder.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
+
+      if (pagination.sort && pagination.order) {
+        queryBuilder.orderBy(pagination.sort, pagination.order);
+      }
+    }
+
     const response = await this.connection.knex(queryBuilder, IAlert);
 
     return response.rows;
+  }
+
+  /**
+   * Gets count of alert records with optional filters applied
+   *
+   * @param {IAlertFilterObject} filterObject
+   * @return {*}  {Promise<number>}
+   * @memberof AlertRepository
+   */
+  async getAlertsCount(filterObject: IAlertFilterObject): Promise<number> {
+    const queryBuilder = this._getAlertBaseQuery();
+
+    if (filterObject.expiresAfter) {
+      queryBuilder.where((qb) => {
+        qb.whereRaw(`alert.record_end_date >= ?`, [filterObject.expiresAfter]).orWhereNull('alert.record_end_date');
+      });
+    }
+
+    if (filterObject.expiresBefore) {
+      queryBuilder.where((qb) => {
+        qb.whereRaw(`alert.record_end_date < ?`, [filterObject.expiresBefore]);
+      });
+    }
+
+    if (filterObject.types && filterObject.types.length > 0) {
+      queryBuilder
+        .join('alert_type as at', 'at.alert_type_id', 'alert.alert_type_id')
+        .whereRaw('lower(at.name) = ANY(?)', [filterObject.types.map((type) => type.toLowerCase())]);
+    }
+
+    const knex = getKnex();
+
+    const query = knex.from(queryBuilder.as('qb')).select(knex.raw('count(*)::integer as count'));
+
+    const response = await this.connection.knex(query, z.object({ count: z.number() }));
+
+    return response.rows[0].count;
   }
 
   /**
