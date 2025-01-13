@@ -35,6 +35,8 @@ const initialPaginationParams: Required<ApiPaginationRequestOptions> = {
 
 /**
  * Container for displaying a list of alerts created by system administrators
+ *
+ * @returns {*}
  */
 const AlertListContainer = () => {
   const biohubApi = useBiohubApi();

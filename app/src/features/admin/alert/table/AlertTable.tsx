@@ -1,4 +1,4 @@
-import { Box } from '@mui/material';
+import Box from '@mui/material/Box';
 import { green, red } from '@mui/material/colors';
 import { GridColDef, GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
 import AlertBar from 'components/alert/AlertBar';
@@ -34,6 +34,12 @@ interface IAlertTableProps {
   onDelete: (alertId: number) => void;
 }
 
+/**
+ * Returns a data grid of system alerts for administrators to manage
+ *
+ * @param {IAlertTableProps} props
+ * @returns
+ */
 const AlertTable = (props: IAlertTableProps) => {
   const codesContext = useCodesContext();
 
@@ -41,7 +47,7 @@ const AlertTable = (props: IAlertTableProps) => {
 
   const columns: GridColDef<IAlertTableRow>[] = [
     {
-      field: 'preview',
+      field: 'alert_id',
       headerName: 'Alert',
       flex: 1,
       renderCell: (params) => (
@@ -101,6 +107,7 @@ const AlertTable = (props: IAlertTableProps) => {
       columns={columns}
       rowCount={rowCount}
       getRowHeight={() => 'auto'}
+      autoHeight
       pagination
       paginationModel={paginationModel}
       getRowId={(row) => row.alert_id}
@@ -111,6 +118,7 @@ const AlertTable = (props: IAlertTableProps) => {
       sortModel={sortModel}
       onSortModelChange={setSortModel}
       sortingOrder={['asc', 'desc']}
+      rowSelection={false}
     />
   );
 };

@@ -40,8 +40,7 @@ export class AlertRepository extends BaseRepository {
           END AS status
         `)
       )
-      .from('alert')
-      .orderBy('alert.create_date', 'DESC');
+      .from('alert');
   }
 
   /**
