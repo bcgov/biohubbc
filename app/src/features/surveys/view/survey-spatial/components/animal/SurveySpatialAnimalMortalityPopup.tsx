@@ -41,7 +41,7 @@ export const SurveySpatialAnimalMortalityPopup = (props: ISurveySpatialAnimalMor
     animal?: ICritterDetailedResponse
   ) => {
     const metadata = [
-      { label: 'Animal ID', value: animal?.animal_id ?? 'Loading...' },
+      { label: 'Nickname', value: animal?.animal_id ?? 'Loading...' },
       { label: 'Date', value: dayjs(mortality.mortality_timestamp).format(DATE_FORMAT.LongDateTimeFormat) },
       {
         label: 'Coordinates',
