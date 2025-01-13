@@ -4,7 +4,7 @@ import dayjs from 'dayjs';
 import { SurveyMapPopup } from 'features/surveys/view/SurveyMapPopup';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { ICaptureResponse } from 'interfaces/useCritterApi.interface';
+import { ICaptureResponse, ICritterDetailedResponse } from 'interfaces/useCritterApi.interface';
 import { Popup } from 'react-leaflet';
 
 export interface ISurveySpatialAnimalCapturePopupProps {
@@ -22,11 +22,26 @@ export const SurveySpatialAnimalCapturePopup = (props: ISurveySpatialAnimalCaptu
 
   const critterbaseApi = useCritterbaseApi();
 
-  const captureDataLoader = useDataLoader((captureId) => critterbaseApi.capture.getCapture(captureId));
+  // Data loader for capture details
+  const captureDataLoader = useDataLoader((captureId) =>
+    critterbaseApi.capture.getCapture(captureId)
+  );
 
-  const getCaptureMetadata = (capture: ICaptureResponse) => {
-    return [
-      { label: 'Capture ID', value: String(capture.capture_id) },
+  // Data loader for animal details
+  const animalDataLoader = useDataLoader(async (critterId: string) => {
+    const animalData: ICritterDetailedResponse = await critterbaseApi.critters.getDetailedCritter(
+      critterId
+    );
+    return animalData;
+  });
+
+  // Combine capture and animal data into metadata for the popup
+  const getPopupMetadata = (
+    capture: ICaptureResponse,
+    animal?: ICritterDetailedResponse
+  ) => {
+    const metadata = [
+      { label: 'Nickname', value: animal?.animal_id ?? 'Loading...' },
       { label: 'Date', value: dayjs(capture.capture_date).format(DATE_FORMAT.LongDateTimeFormat) },
       { label: 'Time', value: String(capture.capture_time ?? '') },
       {
@@ -37,6 +52,8 @@ export const SurveySpatialAnimalCapturePopup = (props: ISurveySpatialAnimalCaptu
           .join(', ')
       }
     ];
+
+    return metadata;
   };
 
   return (
@@ -46,13 +63,27 @@ export const SurveySpatialAnimalCapturePopup = (props: ISurveySpatialAnimalCaptu
       autoPan={true}
       eventHandlers={{
         add: () => {
-          captureDataLoader.load(String(feature.id));
+          // Load capture data and subsequently load animal data using critter_id
+          captureDataLoader.load(String(feature.id)).then((capture) => {
+            if (capture?.critter_id) {
+              animalDataLoader.load(capture.critter_id);
+            }
+          });
         }
-      }}>
+      }}
+    >
       <SurveyMapPopup
-        isLoading={captureDataLoader.isLoading || !captureDataLoader.isReady}
-        title="Capture"
-        metadata={captureDataLoader.data ? getCaptureMetadata(captureDataLoader.data) : []}
+        isLoading={
+          captureDataLoader.isLoading ||
+          !captureDataLoader.isReady ||
+          animalDataLoader.isLoading
+        }
+        title="Capture Details"
+        metadata={
+          captureDataLoader.data
+            ? getPopupMetadata(captureDataLoader.data, animalDataLoader.data)
+            : []
+        }
         key={`capture-feature-popup-${feature.id}`}
       />
     </Popup>

@@ -204,6 +204,7 @@ export type ICaptureResponse = {
   release_comment: string | null;
   capture_location?: ILocationResponse | null;
   release_location?: ILocationResponse | null;
+  critter_id?: string;
 };
 
 export type IMarkingResponse = {
@@ -301,6 +302,7 @@ export type IMortalityResponse = {
   ultimate_cause_of_death_confidence: string;
   ultimate_predated_by_itis_tsn: number | null;
   mortality_comment: string | null;
+  critter_id?: string;
 };
 
 export type IFamilyParentResponse = {

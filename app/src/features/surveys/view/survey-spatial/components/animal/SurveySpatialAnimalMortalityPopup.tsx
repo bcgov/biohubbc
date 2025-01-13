@@ -4,7 +4,7 @@ import dayjs from 'dayjs';
 import { SurveyMapPopup } from 'features/surveys/view/SurveyMapPopup';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { IMortalityResponse } from 'interfaces/useCritterApi.interface';
+import { IMortalityResponse, ICritterDetailedResponse } from 'interfaces/useCritterApi.interface';
 import { Popup } from 'react-leaflet';
 
 export interface ISurveySpatialAnimalMortalityPopupProps {
@@ -22,11 +22,26 @@ export const SurveySpatialAnimalMortalityPopup = (props: ISurveySpatialAnimalMor
 
   const critterbaseApi = useCritterbaseApi();
 
-  const mortalityDataLoader = useDataLoader((mortalityId) => critterbaseApi.mortality.getMortality(mortalityId));
+  // Data loader for mortality details
+  const mortalityDataLoader = useDataLoader((mortalityId) =>
+    critterbaseApi.mortality.getMortality(mortalityId)
+  );
 
-  const getMortalityMetadata = (mortality: IMortalityResponse) => {
-    return [
-      { label: 'Mortality ID', value: String(mortality.mortality_id) },
+  // Data loader for animal details
+  const animalDataLoader = useDataLoader(async (critterId: string) => {
+    const animalData: ICritterDetailedResponse = await critterbaseApi.critters.getDetailedCritter(
+      critterId
+    );
+    return animalData;
+  });
+
+  // Combine mortality and animal data into metadata for the popup
+  const getMortalityMetadata = (
+    mortality: IMortalityResponse,
+    animal?: ICritterDetailedResponse
+  ) => {
+    const metadata = [
+      { label: 'Animal ID', value: animal?.animal_id ?? 'Loading...' },
       { label: 'Date', value: dayjs(mortality.mortality_timestamp).format(DATE_FORMAT.LongDateTimeFormat) },
       {
         label: 'Coordinates',
@@ -36,6 +51,8 @@ export const SurveySpatialAnimalMortalityPopup = (props: ISurveySpatialAnimalMor
           .join(', ')
       }
     ];
+
+    return metadata;
   };
 
   return (
@@ -45,13 +62,27 @@ export const SurveySpatialAnimalMortalityPopup = (props: ISurveySpatialAnimalMor
       autoPan={true}
       eventHandlers={{
         add: () => {
-          mortalityDataLoader.load(String(feature.id));
+          // Load mortality data and subsequently load animal data using critter_id
+          mortalityDataLoader.load(String(feature.id)).then((mortality) => {
+            if (mortality?.critter_id) {
+              animalDataLoader.load(mortality.critter_id);
+            }
+          });
         }
-      }}>
+      }}
+    >
       <SurveyMapPopup
-        isLoading={mortalityDataLoader.isLoading || !mortalityDataLoader.isReady}
-        title="Mortality"
-        metadata={mortalityDataLoader.data ? getMortalityMetadata(mortalityDataLoader.data) : []}
+        isLoading={
+          mortalityDataLoader.isLoading ||
+          !mortalityDataLoader.isReady ||
+          animalDataLoader.isLoading
+        }
+        title="Mortality Details"
+        metadata={
+          mortalityDataLoader.data
+            ? getMortalityMetadata(mortalityDataLoader.data, animalDataLoader.data)
+            : []
+        }
         key={`mortality-feature-popup-${feature.id}`}
       />
     </Popup>
