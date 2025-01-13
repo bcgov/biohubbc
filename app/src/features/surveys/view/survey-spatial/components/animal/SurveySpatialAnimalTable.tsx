@@ -1,5 +1,6 @@
 import { mdiArrowTopRight } from '@mdi/js';
 import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
 import { GridColDef } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
@@ -20,6 +21,8 @@ interface IAnimalData {
   id: number;
   animal_id: string;
   scientificName: string;
+  sex: string;
+  marking:JSX.Element;
 }
 
 /**
@@ -52,12 +55,25 @@ export const SurveySpatialAnimalTable = (props: ISurveyDataAnimalTableProps) => 
 
   // Map fetched data to table data structure
   const rows: IAnimalData[] =
-    animalsDataLoader.data?.map((item) => ({
-      id: item.critter_id,
-      animal_id: item.animal_id ?? '',
-      scientificName: item.itis_scientific_name,
-      status: !!item.mortality?.length
-    })) ?? [];
+    animalsDataLoader.data?.map((item) => {
+      const capitalizeFirstLetter = (value: unknown) => {
+        const str = typeof value === 'string' ? value : (value as { label?: string })?.label ?? 'Unknown';
+        return str.trim().charAt(0).toUpperCase() + str.trim().slice(1).toLowerCase();
+      };
+      return {
+        id: item.critter_id,
+        animal_id: item.animal_id ?? '',
+        scientificName: item.itis_scientific_name,
+        status: !!item.mortality?.length,
+        sex: capitalizeFirstLetter(item.sex || 'Unknown'), // Normalize and capitalize here
+        marking:(<Chip
+        label={'Click for Markings'}
+        variant="filled"
+        onClick={() => console.log(`Clicked: ${item.animal_id}`)} // Example click handler
+      />
+        )
+      };
+    }) ?? [];
 
   // Define columns for the data grid
   const columns: GridColDef<IAnimalData>[] = [
@@ -71,7 +87,9 @@ export const SurveySpatialAnimalTable = (props: ISurveyDataAnimalTableProps) => 
       headerName: 'Species',
       flex: 1,
       renderCell: (params) => <ScientificNameTypography name={params.value} /> // Render scientific name with custom typography component
-    }
+    },
+    {field: 'sex', headerName: 'Sex', flex: 1, renderCell: (params) => <>{params.value ?? 'Unknown'}</> },
+    {field: 'marking', headerName: 'Marking', flex: 1, renderCell: (params) => params.value}
   ];
 
   return (
