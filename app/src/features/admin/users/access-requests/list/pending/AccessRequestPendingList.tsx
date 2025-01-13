@@ -129,6 +129,7 @@ const AccessRequestPendingList = (props: IAccessRequestPendingListProps) => {
   };
 
   const handleReviewDialogApprove = async (values: IReviewAccessRequestForm) => {
+    console.log('submit', values);
     if (!activeReview) {
       return;
     }
