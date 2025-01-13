@@ -41,10 +41,12 @@ describe('ObservationService', () => {
           itis_scientific_name: 'itis_scientific_name',
           observation_date: '2023-01-01',
           observation_time: '12:00:00',
-          method_technique_name: 'TECHNIQUE_NAME',
-          survey_sample_period_start_datetime: '2000-01-01 00:00:00',
+          survey_sample_site_id: 7,
           survey_sample_site_name: 'SITE_NAME',
+          method_technique_id: 8,
+          method_technique_name: 'TECHNIQUE_NAME',
           survey_sample_period_id: 1,
+          survey_sample_period_start_datetime: '2000-01-01 00:00:00',
           subcounts: []
         },
         {
@@ -57,10 +59,12 @@ describe('ObservationService', () => {
           itis_scientific_name: 'itis_scientific_name',
           observation_date: '2023-02-02',
           observation_time: '13:00:00',
-          method_technique_name: 'TECHNIQUE_NAME',
-          survey_sample_period_start_datetime: '2000-01-01 00:00:00',
+          survey_sample_site_id: 7,
           survey_sample_site_name: 'SITE_NAME',
+          method_technique_id: 8,
+          method_technique_name: 'TECHNIQUE_NAME',
           survey_sample_period_id: 1,
+          survey_sample_period_start_datetime: '2000-01-01 00:00:00',
           subcounts: []
         }
       ];

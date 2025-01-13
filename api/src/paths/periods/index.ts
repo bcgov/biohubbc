@@ -193,6 +193,6 @@ function parseQueryParams(req: Request<unknown, unknown, unknown, IPeriodAdvance
     survey_id: (req.query.survey_id && Number(req.query.survey_id)) ?? undefined,
     sample_site_id: (req.query.sample_site_id && req.query.sample_site_id.map(Number)) ?? [],
     method_technique_id: (req.query.method_technique_id && req.query.method_technique_id.map(Number)) ?? [],
-    system_user_id: req.query.system_user_id ?? undefined
+    system_user_id: (req.query.system_user_id && Number(req.query.system_user_id)) ?? undefined
   };
 }

@@ -249,6 +249,6 @@ function parseQueryParams(
     keyword: req.query.keyword ?? undefined,
     sample_site_id: (req.query.sample_site_id && Number(req.query.sample_site_id)) ?? undefined,
     sample_period_id: (req.query.sample_period_id && Number(req.query.sample_period_id)) ?? undefined,
-    system_user_id: req.query.system_user_id ?? undefined
+    system_user_id: (req.query.system_user_id && Number(req.query.system_user_id)) ?? undefined
   };
 }

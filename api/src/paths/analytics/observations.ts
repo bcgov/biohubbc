@@ -1,7 +1,8 @@
+import { Request, RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { RequestHandler } from 'http-proxy-middleware';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
+import { IObservationAnalyticsFilters } from '../../models/analytics-view';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { AnalyticsService } from '../../services/analytics-service';
 import { getLogger } from '../../utils/logger';
@@ -220,17 +221,17 @@ export function getObservationCountByGroup(): RequestHandler {
     const connection = getDBConnection(req.keycloak_token);
 
     try {
-      const { surveyIds, groupByColumns, groupByQuantitativeMeasurements, groupByQualitativeMeasurements } = req.query;
-
       await connection.open();
+
+      const filterFields = parseQueryParams(req);
 
       const analyticsService = new AnalyticsService(connection);
 
       const response = await analyticsService.getObservationCountByGroup(
-        (surveyIds as string[]).map(Number),
-        (groupByColumns as string[]) ?? [],
-        (groupByQuantitativeMeasurements as string[]) ?? [],
-        (groupByQualitativeMeasurements as string[]) ?? []
+        filterFields.surveyIds,
+        filterFields.groupByColumns,
+        filterFields.groupByQuantitativeMeasurements,
+        filterFields.groupByQualitativeMeasurements
       );
 
       await connection.commit();
@@ -243,5 +244,22 @@ export function getObservationCountByGroup(): RequestHandler {
     } finally {
       connection.release();
     }
+  };
+}
+
+/**
+ * Parse the query parameters from the request into the expected format.
+ *
+ * @param {Request<unknown, unknown, unknown, Partial<IObservationAnalyticsFilters>>} req
+ * @return {*}  {IObservationAnalyticsFilters}
+ */
+function parseQueryParams(
+  req: Request<unknown, unknown, unknown, Partial<IObservationAnalyticsFilters>>
+): IObservationAnalyticsFilters {
+  return {
+    surveyIds: (req.query.surveyIds && req.query.surveyIds.map(Number)) ?? [],
+    groupByColumns: req.query.groupByColumns ?? [],
+    groupByQuantitativeMeasurements: req.query.groupByQuantitativeMeasurements ?? [],
+    groupByQualitativeMeasurements: req.query.groupByQualitativeMeasurements ?? []
   };
 }

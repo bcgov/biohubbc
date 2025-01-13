@@ -250,6 +250,6 @@ function parseQueryParams(req: Request<unknown, unknown, unknown, ISiteAdvancedF
   return {
     survey_id: (req.query.survey_id && Number(req.query.survey_id)) ?? undefined,
     keyword: req.query.keyword ?? undefined,
-    system_user_id: req.query.system_user_id ?? undefined
+    system_user_id: (req.query.system_user_id && Number(req.query.system_user_id)) ?? undefined
   };
 }

@@ -2,8 +2,14 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
-import { observervationsWithSubcountDataSchema } from '../../../../../../openapi/schemas/observation';
-import { paginationRequestQueryParamSchema } from '../../../../../../openapi/schemas/pagination';
+import {
+  findObservationsSchema,
+  observationsSupplementaryDataSchema
+} from '../../../../../../openapi/schemas/observation';
+import {
+  paginationRequestQueryParamSchema,
+  paginationResponseSchema
+} from '../../../../../../openapi/schemas/pagination';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { CritterbaseService, getCritterbaseUser } from '../../../../../../services/critterbase-service';
 import {
@@ -96,7 +102,16 @@ GET.apiDoc = {
       description: 'Survey Observations get response.',
       content: {
         'application/json': {
-          schema: observervationsWithSubcountDataSchema
+          schema: {
+            type: 'object',
+            additionalProperties: false,
+            required: ['surveyObservations', 'supplementaryObservationData', 'pagination'],
+            properties: {
+              surveyObservations: findObservationsSchema,
+              supplementaryObservationData: observationsSupplementaryDataSchema,
+              pagination: paginationResponseSchema
+            }
+          }
         }
       }
     },

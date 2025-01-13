@@ -28,8 +28,11 @@ export const ObservationSpecies = z.object({
 export type ObservationSpecies = z.infer<typeof ObservationSpecies>;
 
 const ObservationSamplingData = z.object({
+  survey_sample_site_id: z.number().nullable(),
   survey_sample_site_name: z.string().nullable(),
+  method_technique_id: z.number().nullable(),
   method_technique_name: z.string().nullable(),
+  // survey_sample_period_id is already included in the SurveyObservationRecord
   survey_sample_period_start_datetime: z.string().nullable()
 });
 
@@ -417,7 +420,7 @@ export class ObservationRepository extends BaseRepository {
   }
 
   /**
-   * Retrieves species observed in a given survey
+   * Retrieves species observed in a given survey.
    *
    * @param {number} surveyId
    * @return {*}  {Promise<ObservationSpecies[]>}
@@ -436,7 +439,7 @@ export class ObservationRepository extends BaseRepository {
   }
 
   /**
-   * Retrieves the count of survey observations for the given survey
+   * Retrieves the count of survey observations for the given survey.
    *
    * @param {number} surveyId
    * @return {*}  {Promise<number>}
@@ -456,7 +459,8 @@ export class ObservationRepository extends BaseRepository {
   }
 
   /**
-   * Retrieves the count of survey observations for the given survey
+   * Retrieves the total count of all observations that are available to the user based on the user's permissions and
+   * filter criteria.
    *
    * @param {boolean} isUserAdmin
    * @param {(number | null)} systemUserId
@@ -469,11 +473,11 @@ export class ObservationRepository extends BaseRepository {
     systemUserId: number | null,
     filterFields: IObservationAdvancedFilters
   ): Promise<number> {
-    const observationListQuery = makeFindObservationsQuery(isUserAdmin, systemUserId, filterFields);
+    const findObservationsQuery = makeFindObservationsQuery(isUserAdmin, systemUserId, filterFields);
 
     const knex = getKnex();
 
-    const queryBuilder = knex.from(observationListQuery).select(knex.raw('count(*)::integer as count'));
+    const queryBuilder = knex.from(findObservationsQuery.as('foq')).select(knex.raw('count(*)::integer as count'));
 
     const response = await this.connection.knex(queryBuilder, z.object({ count: z.number() }));
 

@@ -31,10 +31,12 @@ describe('findObservations', () => {
         itis_scientific_name: 'itis_scientific_name',
         observation_date: '2023-01-01',
         observation_time: '12:00:00',
-        method_technique_name: 'TECHNIQUE_NAME',
-        survey_sample_period_start_datetime: '2000-01-01 00:00:00',
+        survey_sample_site_id: 7,
         survey_sample_site_name: 'SITE_NAME',
+        method_technique_id: 8,
+        method_technique_name: 'TECHNIQUE_NAME',
         survey_sample_period_id: 1,
+        survey_sample_period_start_datetime: '2000-01-01 00:00:00',
         subcounts: [
           {
             observation_subcount_id: 9,
@@ -97,14 +99,6 @@ describe('findObservations', () => {
     expect(findObservationsCountStub).to.have.been.calledOnceWith(true, 20, sinon.match.object);
 
     expect(mockRes.jsonValue.surveyObservations).to.eql(mockFindObservationsResponse);
-    expect(mockRes.jsonValue.supplementaryObservationData).to.eql({
-      observationCount: 50,
-      qualitative_measurements: [],
-      quantitative_measurements: [],
-      qualitative_environments: [],
-      quantitative_environments: [],
-      sampling_data: []
-    });
     expect(mockRes.jsonValue.pagination).not.to.be.null;
 
     expect(mockDBConnection.release).to.have.been.calledOnce;
@@ -122,10 +116,12 @@ describe('findObservations', () => {
         itis_scientific_name: 'itis_scientific_name',
         observation_date: '2023-01-01',
         observation_time: '12:00:00',
-        method_technique_name: 'TECHNIQUE_NAME',
-        survey_sample_period_start_datetime: '2000-01-01 00:00:00',
+        survey_sample_site_id: 7,
         survey_sample_site_name: 'SITE_NAME',
+        method_technique_id: 8,
+        method_technique_name: 'TECHNIQUE_NAME',
         survey_sample_period_id: 1,
+        survey_sample_period_start_datetime: '2000-01-01 00:00:00',
         subcounts: [
           {
             observation_subcount_id: 9,
