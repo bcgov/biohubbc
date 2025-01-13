@@ -89,9 +89,10 @@ export const SamplePeriodTechniqueForm = (props: ISamplePeriodTechniqueFormProps
           label="Technique"
           onSelect={onSelect}
           onSearch={searchTechniques}
+          searchOnMount={true}
           getOptionLabel={(option) => option.name}
           placeholder="Search for a technique"
-          clearOnSelect
+          clearOnSelect={true}
           error={errors.method_technique_id}
         />
         {/* Display the selected technique card */}

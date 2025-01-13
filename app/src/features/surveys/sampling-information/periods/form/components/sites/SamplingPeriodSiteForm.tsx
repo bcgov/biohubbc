@@ -87,9 +87,10 @@ export const SamplingPeriodSiteForm = (props: ISamplingPeriodSiteFormProps) => {
           label="Sampling Site"
           onSelect={onSelect}
           onSearch={searchSampleSites}
+          searchOnMount={true}
           getOptionLabel={(option) => option.name}
           placeholder="Search for a sampling site"
-          clearOnSelect
+          clearOnSelect={true}
           error={errors.survey_sample_site_id}
         />
         {/* Display the selected technique card */}

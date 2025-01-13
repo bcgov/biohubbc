@@ -7,32 +7,77 @@ import { grey } from '@mui/material/colors';
 import TextField from '@mui/material/TextField';
 import useIsMounted from 'hooks/useIsMounted';
 import { debounce } from 'lodash-es';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 export type WithIdAndName<T> = T & { id: string | number; name: string };
 
 export interface IAutocompleteSearchFieldProps<T> {
+  /**
+   * The name of the field.
+   */
   fieldName: string;
+  /**
+   * The label to display for the input field.
+   */
   label: string;
+  /**
+   * Callback fired when an option is selected from the drop-down.
+   */
   onSelect: (selection: T) => void;
+  /**
+   * Callback fired when the clear button ('X' button) is clicked.
+   */
   onClear?: () => void;
   /**
    * The API request to make when searching. Will receive the current autocomplete text input value.
    */
   onSearch: (inputValue: string) => Promise<any>;
-  getOptionLabel: (option: T) => string;
-  defaultSelection?: T;
-  noOptionsText?: string;
-  required?: boolean;
-  disabled?: boolean;
-  clearOnSelect?: boolean;
-  showStartAdornment?: boolean;
-  placeholder?: string;
-  error?: string;
   /**
-   * An arbritrary number that changes to force the options to refresh. Used to update the options when an item is unselected.
+   * The function to get the label to display for each option in the drop-down.
    */
-  refreshKey?: number;
+  getOptionLabel: (option: T) => string;
+  /**
+   * Whether to execute the 'onSearch' callback once on component mount.
+   *
+   * Note: should not be used if 'initialOptions' is set, as it will override the initial options.
+   */
+  searchOnMount?: boolean;
+  /**
+   * The initial value of the input field, if any.
+   */
+  initialInputValue?: string;
+  /**
+   * The initial list of options to choose from, if any.
+   */
+  initialOptions?: T[];
+  /**
+   * The text to display when there are no options to choose from in the drop-down.
+   */
+  noOptionsText?: string;
+  /**
+   * Whether the field is required.
+   */
+  required?: boolean;
+  /**
+   * Whether the field is disabled.
+   */
+  disabled?: boolean;
+  /**
+   * Whether to clear the input field when an option is selected from the drop-down.
+   */
+  clearOnSelect?: boolean;
+  /**
+   * Whether to show the start adornment (magnifying glass icon) in the input field.
+   */
+  showStartAdornment?: boolean;
+  /**
+   * The placeholder text to display in the input field.
+   */
+  placeholder?: string;
+  /**
+   * The error message to display below the input field.
+   */
+  error?: string;
 }
 
 /**
@@ -48,7 +93,9 @@ export const AutocompleteSearchField = <T extends { id: string | number; name: s
   onClear,
   onSearch,
   getOptionLabel,
-  defaultSelection,
+  searchOnMount,
+  initialInputValue,
+  initialOptions,
   noOptionsText = 'No matching options',
   required,
   disabled,
@@ -60,9 +107,9 @@ export const AutocompleteSearchField = <T extends { id: string | number; name: s
   const isMounted = useIsMounted();
 
   // The input field value
-  const [inputValue, setInputValue] = useState<string>(defaultSelection ? defaultSelection?.name : '');
+  const [inputValue, setInputValue] = useState<string>(initialInputValue ?? '');
   // The array of options to choose from
-  const [options, setOptions] = useState<T[]>(defaultSelection ? [defaultSelection] : []);
+  const [options, setOptions] = useState<T[]>(initialOptions ?? []);
   // Is control loading (search in progress)
   const [isLoading, setIsLoading] = useState(false);
 
@@ -79,6 +126,27 @@ export const AutocompleteSearchField = <T extends { id: string | number; name: s
       }, 500),
     [onSearch]
   );
+
+  useEffect(() => {
+    if (!searchOnMount) {
+      return;
+    }
+
+    if (isLoading || options.length > 0) {
+      return;
+    }
+
+    handleSearch(inputValue, (newOptions) => {
+      if (!isMounted()) {
+        return;
+      }
+
+      setOptions(newOptions);
+      setIsLoading(false);
+    });
+    // Only run once on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Autocomplete
@@ -144,9 +212,6 @@ export const AutocompleteSearchField = <T extends { id: string | number; name: s
         }
 
         onSelect(option);
-
-        // Remove the selected item from the list of options
-        setOptions((prev) => prev.filter((existing) => existing.id !== option.id));
 
         if (clearOnSelect) {
           setInputValue('');
