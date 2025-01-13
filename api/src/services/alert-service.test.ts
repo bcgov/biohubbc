@@ -10,22 +10,15 @@ import { AlertService } from './alert-service';
 chai.use(sinonChai);
 
 describe('AlertService', () => {
-  let alertService: AlertService;
-  let mockAlertRepository: sinon.SinonStubbedInstance<AlertRepository>;
-
   afterEach(() => {
     sinon.restore();
   });
 
-  beforeEach(() => {
-    const dbConnection = getMockDBConnection();
-    alertService = new AlertService(dbConnection);
-    mockAlertRepository = sinon.createStubInstance(AlertRepository);
-    alertService.alertRepository = mockAlertRepository; // Inject the mocked repository
-  });
-
   describe('getAlerts', () => {
     it('returns an array of alerts', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const alertService = new AlertService(mockDBConnection);
+
       const mockAlerts: IAlert[] = [
         {
           alert_id: 1,
@@ -39,19 +32,40 @@ describe('AlertService', () => {
         }
       ];
 
-      mockAlertRepository.getAlerts.resolves(mockAlerts);
+      const alertStub = sinon.stub(AlertRepository.prototype, 'getAlerts').resolves(mockAlerts);
 
-      const filterObject: IAlertFilterObject = {}; // Define your filter object as needed
+      const filterObject: IAlertFilterObject = {};
 
       const response = await alertService.getAlerts(filterObject);
 
       expect(response).to.eql(mockAlerts);
-      expect(mockAlertRepository.getAlerts).to.have.been.calledOnceWith(filterObject);
+      expect(alertStub).to.have.been.calledOnceWith(filterObject);
+    });
+  });
+
+  describe('getAlertsCount', () => {
+    it('returns total count of alerts', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const alertService = new AlertService(mockDBConnection);
+
+      const mockAlertsCount = 10;
+
+      const getAlertsCountStub = sinon.stub(AlertRepository.prototype, 'getAlertsCount').resolves(mockAlertsCount);
+
+      const filterObject: IAlertFilterObject = {};
+
+      const response = await alertService.getAlertsCount(filterObject);
+
+      expect(response).to.eql(mockAlertsCount);
+      expect(getAlertsCountStub).to.have.been.calledOnceWith(filterObject);
     });
   });
 
   describe('getAlertById', () => {
     it('returns a specific alert by its Id', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const alertService = new AlertService(mockDBConnection);
+
       const mockAlert: IAlert = {
         alert_id: 1,
         name: 'Alert 1',
@@ -63,17 +77,20 @@ describe('AlertService', () => {
         record_end_date: null
       };
 
-      mockAlertRepository.getAlertById.resolves(mockAlert);
+      const getAlertByIdStub = sinon.stub(AlertRepository.prototype, 'getAlertById').resolves(mockAlert);
 
       const response = await alertService.getAlertById(1);
 
       expect(response).to.eql(mockAlert);
-      expect(mockAlertRepository.getAlertById).to.have.been.calledOnceWith(1);
+      expect(getAlertByIdStub).to.have.been.calledOnceWith(1);
     });
   });
 
   describe('createAlert', () => {
     it('creates an alert and returns its Id', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const alertService = new AlertService(mockDBConnection);
+
       const mockAlertId = 1;
       const mockAlert: IAlertCreateObject = {
         name: 'New Alert',
@@ -84,17 +101,20 @@ describe('AlertService', () => {
         record_end_date: null
       };
 
-      mockAlertRepository.createAlert.resolves(mockAlertId);
+      const createAlertStub = sinon.stub(AlertRepository.prototype, 'createAlert').resolves(mockAlertId);
 
       const response = await alertService.createAlert(mockAlert);
 
       expect(response).to.equal(mockAlertId);
-      expect(mockAlertRepository.createAlert).to.have.been.calledOnceWith(mockAlert);
+      expect(createAlertStub).to.have.been.calledOnceWith(mockAlert);
     });
   });
 
   describe('updateAlert', () => {
     it('updates an alert and returns its Id', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const alertService = new AlertService(mockDBConnection);
+
       const mockAlertId = 1;
       const mockAlert: IAlert = {
         alert_id: mockAlertId,
@@ -107,24 +127,28 @@ describe('AlertService', () => {
         record_end_date: null
       };
 
-      mockAlertRepository.updateAlert.resolves(mockAlertId);
+      const updateAlertStub = sinon.stub(AlertRepository.prototype, 'updateAlert').resolves(mockAlertId);
 
       const response = await alertService.updateAlert(mockAlert);
 
       expect(response).to.equal(mockAlertId);
-      expect(mockAlertRepository.updateAlert).to.have.been.calledOnceWith(mockAlert);
+      expect(updateAlertStub).to.have.been.calledOnceWith(mockAlert);
     });
   });
 
   describe('deleteAlert', () => {
     it('deletes an alert and returns its Id', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const alertService = new AlertService(mockDBConnection);
+
       const mockAlertId = 1;
-      mockAlertRepository.deleteAlert.resolves(mockAlertId);
+
+      const alertStub = sinon.stub(AlertRepository.prototype, 'deleteAlert').resolves(mockAlertId);
 
       const response = await alertService.deleteAlert(mockAlertId);
 
       expect(response).to.equal(mockAlertId);
-      expect(mockAlertRepository.deleteAlert).to.have.been.calledOnceWith(mockAlertId);
+      expect(alertStub).to.have.been.calledOnceWith(mockAlertId);
     });
   });
 });

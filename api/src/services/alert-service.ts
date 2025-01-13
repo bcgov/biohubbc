@@ -25,7 +25,6 @@ export class AlertService extends DBService {
     return this.alertRepository.getAlerts(filterObject, pagination);
   }
 
-  
   /**
    * Get count of alert records, including deactivated alerts
    *

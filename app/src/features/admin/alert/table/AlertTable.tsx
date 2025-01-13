@@ -4,6 +4,7 @@ import { GridColDef, GridPaginationModel, GridSortModel } from '@mui/x-data-grid
 import AlertBar from 'components/alert/AlertBar';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
+import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import dayjs from 'dayjs';
 import { useCodesContext } from 'hooks/useContext';
 import { AlertSeverity } from 'interfaces/useAlertApi.interface';
@@ -71,7 +72,7 @@ const AlertTable = (props: IAlertTableProps) => {
       align: 'left',
       width: 150,
       renderCell: (params) =>
-        params.row.record_end_date ? dayjs(params.row.record_end_date).format('YYYY-MM-DD') : null
+        params.row.record_end_date ? dayjs(params.row.record_end_date).format(DATE_FORMAT.MediumDateFormat) : null
     },
     {
       field: 'status',

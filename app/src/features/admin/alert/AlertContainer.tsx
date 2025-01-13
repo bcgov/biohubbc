@@ -12,7 +12,7 @@ import dayjs from 'dayjs';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { IAlertFilterParams } from 'interfaces/useAlertApi.interface';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ApiPaginationRequestOptions } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
 import CreateAlert from './create/CreateAlert';
@@ -56,16 +56,15 @@ const AlertListContainer = () => {
     }
   ]);
 
-  const sort = firstOrNull(sortModel);
-  const paginationSort: ApiPaginationRequestOptions = useMemo(
-    () => ({
+  const paginationSort: ApiPaginationRequestOptions = useMemo(() => {
+    const sort = firstOrNull(sortModel);
+    return {
       limit: paginationModel.pageSize,
       sort: sort?.field || undefined,
       order: sort?.sort || undefined,
       page: paginationModel.page + 1 // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
-    }),
-    [paginationModel.page, paginationModel.pageSize, sort?.field, sort?.sort]
-  );
+    };
+  }, [paginationModel, sortModel]);
 
   const filters: IAlertFilterParams =
     activeView === AlertViewEnum.ACTIVE ? { expiresAfter: dayjs().format() } : { expiresBefore: dayjs().format() };
@@ -80,37 +79,9 @@ const AlertListContainer = () => {
     setAlertId(null);
   };
 
-  // Ref to track view changes to avoid unnecessary refresh on pagination reset
-  const viewChangedRef = useRef(false);
-
   useEffect(() => {
-    // When active view changes, reset pagination and fetch data
-    setPaginationModel({
-      pageSize: initialPaginationParams.limit,
-      page: 0 // Start from page 0
-    });
-
-    // Set viewChangedRef to true indicating the view has changed
-    viewChangedRef.current = true;
-
-    // Refresh data when active view changes
-    alertDataLoader.refresh(filters, {
-      ...initialPaginationParams,
-      page: 1 // API expects page 1 but MUI expects page 0
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeView]);
-
-  useEffect(() => {
-    if (viewChangedRef.current) {
-      // Reset the flag for the next pagination or sort change
-      viewChangedRef.current = false;
-      return;
-    }
-
-    // Refresh only when pagination or sort changes
     alertDataLoader.refresh(filters, paginationSort);
-  }, [paginationSort, viewChangedRef]);
+  }, [paginationSort]);
 
   return (
     <Paper>
@@ -136,8 +107,7 @@ const AlertListContainer = () => {
           activeView={activeView}
           onViewChange={(view) => {
             setActiveView(view);
-            // Set viewChangedRef to true indicating the view has changed, used to prevent duplicate data refreshes
-            viewChangedRef.current = true;
+            setPaginationModel({ ...initialPaginationParams, pageSize: initialPaginationParams.limit });
           }}
           orientation="horizontal"
         />
