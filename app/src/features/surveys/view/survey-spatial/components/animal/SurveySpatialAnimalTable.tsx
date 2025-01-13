@@ -55,25 +55,44 @@ export const SurveySpatialAnimalTable = (props: ISurveyDataAnimalTableProps) => 
 
   // Map fetched data to table data structure
   const rows: IAnimalData[] =
-    animalsDataLoader.data?.map((item) => {
-      const capitalizeFirstLetter = (value: unknown) => {
-        const str = typeof value === 'string' ? value : (value as { label?: string })?.label ?? 'Unknown';
-        return str.trim().charAt(0).toUpperCase() + str.trim().slice(1).toLowerCase();
-      };
-      return {
-        id: item.critter_id,
-        animal_id: item.animal_id ?? '',
-        scientificName: item.itis_scientific_name,
-        status: !!item.mortality?.length,
-        sex: capitalizeFirstLetter(item.sex || 'Unknown'), // Normalize and capitalize here
-        marking:(<Chip
-        label={'Click for Markings'}
-        variant="filled"
-        onClick={() => console.log(`Clicked: ${item.animal_id}`)} // Example click handler
-      />
-        )
-      };
-    }) ?? [];
+  animalsDataLoader.data?.map((item) => {
+    const capitalizeFirstLetter = (value: unknown) => {
+      const str = typeof value === 'string' ? value : (value as { label?: string })?.label ?? 'Unknown';
+      return str.trim().charAt(0).toUpperCase() + str.trim().slice(1).toLowerCase();
+    };
+
+    // Safely process markings for the current animal
+    const markingChips = Array.isArray(item.markings)
+      ? item.markings.map((marking) => {
+          const eventDate = marking.capture_id
+            ? item.captures?.find((capture) => capture.capture_id === marking.capture_id)?.capture_date
+            : item.mortality?.find((mortality) => mortality.mortality_id === marking.mortality_id)?.mortality_timestamp;
+
+          const displayText = `${marking.marking_type} (${marking.primary_colour || 'N/A'}, ${marking.secondary_colour || 'N/A'}) - ${
+            marking.identifier || 'Unknown'
+          } [${eventDate || 'No Date'}]`;
+
+          return (
+            <Chip
+              key={marking.marking_id}
+              label={displayText}
+              variant="outlined"
+              onClick={() => console.log(`Marking clicked: ${marking.marking_id}`)}
+            />
+          );
+        })
+      : []; // Default to an empty array if `markings` is undefined
+
+    return {
+      id: item.critter_id,
+      animal_id: item.animal_id ?? '',
+      scientificName: item.itis_scientific_name,
+      sex: capitalizeFirstLetter(item.sex || 'Unknown'),
+      marking: <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>{markingChips}</Box>, // Add dynamic chips
+    };
+  }) ?? [];
+
+
 
   // Define columns for the data grid
   const columns: GridColDef<IAnimalData>[] = [
