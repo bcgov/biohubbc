@@ -33,6 +33,7 @@ export class AlertRepository extends BaseRepository {
         'alert.data',
         'alert.severity',
         'alert.record_end_date',
+        'alert.create_date',
         knex.raw(`
           CASE
             WHEN alert.record_end_date < NOW() THEN 'expired'

@@ -28,7 +28,8 @@ describe('AlertService', () => {
           data: {},
           severity: 'error' as IAlertSeverity,
           status: 'active',
-          record_end_date: null
+          record_end_date: null,
+          create_date: '2020-01-01T10:10:10'
         }
       ];
 
@@ -74,7 +75,8 @@ describe('AlertService', () => {
         data: {},
         severity: 'error' as IAlertSeverity,
         status: 'active',
-        record_end_date: null
+        record_end_date: null,
+        create_date: '2020-01-01T10:10:10'
       };
 
       const getAlertByIdStub = sinon.stub(AlertRepository.prototype, 'getAlertById').resolves(mockAlert);
@@ -124,7 +126,8 @@ describe('AlertService', () => {
         data: {},
         severity: 'error' as IAlertSeverity,
         status: 'active',
-        record_end_date: null
+        record_end_date: null,
+        create_date: '2020-01-01T10:10:10'
       };
 
       const updateAlertStub = sinon.stub(AlertRepository.prototype, 'updateAlert').resolves(mockAlertId);

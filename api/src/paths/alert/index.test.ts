@@ -30,7 +30,8 @@ describe('getAlerts', () => {
           severity: 'error' as IAlertSeverity,
           status: 'active' as IAlertStatus,
           data: null,
-          record_end_date: null
+          record_end_date: null,
+          create_date: '2020-01-01T10:10:10'
         },
         {
           alert_id: 2,
@@ -40,7 +41,8 @@ describe('getAlerts', () => {
           severity: 'error' as IAlertSeverity,
           status: 'active' as IAlertStatus,
           data: null,
-          record_end_date: null
+          record_end_date: null,
+          create_date: '2020-01-01T10:10:10'
         }
       ];
       const mockFilters = { types: 'Surveys', expiresBefore: '2020-01-01', expiresAfter: undefined };

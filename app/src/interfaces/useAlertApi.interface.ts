@@ -15,11 +15,12 @@ export interface IAlert {
   data: object | null;
   record_end_date: string | null;
   status: 'expired' | 'active';
+  create_date: string;
 }
 
-export type IAlertCreateObject = Omit<IAlert, 'alert_id' | 'status'>;
+export type IAlertUpdateObject = Omit<IAlert, 'status' | 'create_date'>;
 
-export type IAlertUpdateObject = Omit<IAlert, 'status'>;
+export type IAlertCreateObject = Omit<IAlertUpdateObject, 'alert_id'>;
 
 export interface IAlertFilterParams {
   expiresBefore?: string;

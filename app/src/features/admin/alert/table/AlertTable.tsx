@@ -21,6 +21,7 @@ export interface IAlertTableRow {
   data: object | null;
   record_end_date: string | null;
   status: 'expired' | 'active';
+  create_date: string;
 }
 
 interface IAlertTableProps {
@@ -47,9 +48,10 @@ const AlertTable = (props: IAlertTableProps) => {
 
   const columns: GridColDef<IAlertTableRow>[] = [
     {
-      field: 'alert_id',
+      field: 'preview',
       headerName: 'Alert',
       flex: 1,
+      sortable: false,
       renderCell: (params) => (
         <Box flex={0.9}>
           <AlertBar
@@ -62,11 +64,19 @@ const AlertTable = (props: IAlertTableProps) => {
       )
     },
     {
+      field: 'create_date',
+      headerName: 'Created at',
+      headerAlign: 'left',
+      align: 'left',
+      flex: 0.2,
+      renderCell: (params) => dayjs(params.row.create_date).format(DATE_FORMAT.MediumDateFormat)
+    },
+    {
       field: 'alert_type_id',
       headerName: 'Page',
       headerAlign: 'left',
       align: 'left',
-      width: 150,
+      flex: 0.1,
       renderCell: (params) =>
         codesContext.codesDataLoader.data?.alert_types.find((type) => type.id === params.row.alert_type_id)?.name ??
         params.row.alert_type_id
@@ -76,7 +86,7 @@ const AlertTable = (props: IAlertTableProps) => {
       headerName: 'Expiry date',
       headerAlign: 'left',
       align: 'left',
-      width: 150,
+      flex: 0.2,
       renderCell: (params) =>
         params.row.record_end_date ? dayjs(params.row.record_end_date).format(DATE_FORMAT.MediumDateFormat) : null
     },
@@ -85,7 +95,8 @@ const AlertTable = (props: IAlertTableProps) => {
       headerName: 'Status',
       headerAlign: 'center',
       align: 'center',
-      width: 150,
+      flex: 0.1,
+      sortable: false,
       renderCell: (params) => (
         <ColouredRectangleChip colour={params.row.status === 'active' ? green : red} label={params.row.status} />
       )

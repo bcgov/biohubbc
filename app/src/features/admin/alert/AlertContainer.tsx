@@ -66,14 +66,15 @@ const AlertListContainer = () => {
       order: sort?.sort || undefined,
       page: paginationModel.page + 1 // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
     };
-  }, [paginationModel, sortModel]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paginationModel]);
 
   const filters: IAlertFilterParams =
     activeView === AlertViewEnum.ACTIVE ? { expiresAfter: dayjs().format() } : { expiresBefore: dayjs().format() };
 
-  const alertDataLoader = useDataLoader((filters: IAlertFilterParams, pagination: ApiPaginationRequestOptions) =>
-    biohubApi.alert.getAlerts(filters, pagination)
-  );
+  const alertDataLoader = useDataLoader((filters: IAlertFilterParams, pagination: ApiPaginationRequestOptions) => {
+    return biohubApi.alert.getAlerts(filters, pagination);
+  });
 
   const closeModal = () => {
     alertDataLoader.refresh(filters, paginationSort);
@@ -83,6 +84,7 @@ const AlertListContainer = () => {
 
   useEffect(() => {
     alertDataLoader.refresh(filters, paginationSort);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paginationSort]);
 
   return (
