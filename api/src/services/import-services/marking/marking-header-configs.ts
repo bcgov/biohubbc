@@ -20,7 +20,7 @@ import { MarkingCSVStaticHeader } from './import-markings-service';
  */
 export const getMarkingIdentifierCellValidator = (): CSVCellValidator => {
   return (params: CSVParams) => {
-    return validateZodCell(params, z.union([z.string().trim().min(1).max(50), z.number().min(0)]).optional());
+    return validateZodCell(params.cell, z.union([z.string().trim().min(1).max(50), z.number().min(0)]).optional());
   };
 };
 
@@ -195,7 +195,7 @@ export const getMarkingCaptureDateCellValidator = (
   utils: CSVConfigUtils<MarkingCSVStaticHeader>
 ): CSVCellValidator => {
   return (params: CSVParams): CSVError[] => {
-    const cellErrors = validateZodCell(params, z.string().date());
+    const cellErrors = validateZodCell(params.cell, z.string().date());
 
     if (cellErrors.length) {
       return cellErrors;
