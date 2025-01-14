@@ -55,23 +55,20 @@ export const getDynamicMeasurementCellValidator = (
     if (!headerMeasurement) {
       return [
         {
-          error: `Measurement ${params.header} does not exist for this taxon`,
+          error: `Measurement '${params.header}' does not exist for this taxon`,
           solution: 'Use a valid measurement for this taxon',
           values: Object.keys(taxonMeasurements)
         }
       ];
     }
 
+    // Validate the cell based on the measurement type from the header
     if (isCBQualitativeMeasurementTypeDefinition(headerMeasurement)) {
-      const qualitativeCellValidator = getQualitativeMeasurementCellValidator(headerMeasurement);
-
-      return qualitativeCellValidator(params);
+      return getQualitativeMeasurementCellValidator(headerMeasurement)(params);
     }
 
     if (isCBQuantitativeMeasurementTypeDefinition(headerMeasurement)) {
-      const quantitativeCellValidator = getQuantitativeMeasurementCellValidator(headerMeasurement);
-
-      return quantitativeCellValidator(params);
+      return getQuantitativeMeasurementCellValidator(headerMeasurement)(params);
     }
 
     return [
@@ -89,7 +86,7 @@ export const getDynamicMeasurementCellValidator = (
  * @param {CBQuantitativeMeasurementTypeDefinition} measurement The quantitative measurement definition
  * @returns {*} {CSVCellValidator} The validate cell callback
  */
-const getQuantitativeMeasurementCellValidator = (
+export const getQuantitativeMeasurementCellValidator = (
   measurement: CBQuantitativeMeasurementTypeDefinition
 ): CSVCellValidator => {
   return (params) => {
@@ -121,9 +118,11 @@ const getQuantitativeMeasurementCellValidator = (
       });
     }
 
-    // Update the row state with the taxon measurement id and value
-    // Why an object? Because we need to store the measurement id and the value, and multiple
-    // measurements can be stored in the same row (which would override if not using the header as a key).
+    /**
+     * Update the row state with the taxon measurement id and value
+     * Why an object ([params.header]: {...})?
+     * To prevent overriding if multiple measurements are stored in the same row.
+     */
     updateCSVRowState(params.row, {
       [params.header]: {
         taxon_measurement_id: measurement.taxon_measurement_id,
@@ -143,7 +142,7 @@ const getQuantitativeMeasurementCellValidator = (
  * @param {CBQualitativeMeasurementTypeDefinition} measurement The qualitative measurement definition
  * @returns {*} {CSVCellValidator} The validate cell callback
  */
-const getQualitativeMeasurementCellValidator = (
+export const getQualitativeMeasurementCellValidator = (
   measurement: CBQualitativeMeasurementTypeDefinition
 ): CSVCellValidator => {
   return (params) => {
@@ -172,9 +171,11 @@ const getQualitativeMeasurementCellValidator = (
       ];
     }
 
-    // Update the row state with the taxon measurement id and qualitative option id
-    // Why an object? Because we need to store the measurement id and the value, and multiple
-    // measurements can be stored in the same row (which would override if not using the header as a key).
+    /**
+     * Update the row state with the taxon measurement id and qualitative option id
+     * Why an object ([params.header]: {...})?
+     * To prevent overriding if multiple measurements are stored in the same row.
+     */
     updateCSVRowState(params.row, {
       [params.header]: {
         taxon_measurement_id: measurement.taxon_measurement_id,

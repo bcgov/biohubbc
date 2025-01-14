@@ -47,7 +47,7 @@ export class ImportMeasurementsService extends DBService {
 
     const initialConfig: CSVConfig<MeasurementCSVStaticHeader> = {
       staticHeadersConfig: {
-        // Note: These headers are validated in the row validator
+        // Note: The `validateCell` functions are intentionally left empty as the validation is handled by the row validator
         ALIAS: { aliases: ['NICKNAME', 'ANIMAL'], validateCell: () => [] },
         CAPTURE_DATE: { aliases: ['CAPTURE DATE', 'DATE'], validateCell: () => [] },
         CAPTURE_TIME: { aliases: ['CAPTURE TIME', 'TIME'], validateCell: () => [] }
@@ -92,20 +92,20 @@ export class ImportMeasurementsService extends DBService {
             taxon_measurement_id: measurement.taxon_measurement_id,
             qualitative_option_id: measurement.qualitative_option_id
           });
-        } else if (isCBQuantitativeMeasurement(measurement)) {
+        }
+
+        if (isCBQuantitativeMeasurement(measurement)) {
           quantitativeMeasurements.push({
-            critter_id: row[CSVRowState]?.critterId,
-            capture_id: row[CSVRowState]?.captureId,
+            critter_id: row[CSVRowState]?.critter_id,
+            capture_id: row[CSVRowState]?.capture_id,
             taxon_measurement_id: measurement.taxon_measurement_id,
             value: measurement.value
           });
-        } else {
-          throw new Error('Measurement type not recognized');
         }
       });
     }
 
-    defaultLog.debug({ label: 'import measurements' });
+    defaultLog.debug({ label: 'import measurements', qualitativeMeasurements, quantitativeMeasurements });
 
     await this.surveyCritterService.critterbaseService.bulkCreate({
       qualitative_measurements: qualitativeMeasurements,
@@ -127,23 +127,24 @@ export class ImportMeasurementsService extends DBService {
 
     const config = this.utils.getConfig();
 
+    // Inject the critter capture row validator - ('ALIAS', 'CAPTURE_DATE', 'CAPTURE_TIME')
+    config.rowValidators = [getCritterCaptureRowValidator(surveyAliasMap, this.utils)];
+
+    // Inject the dynamic headers config - handles the dynamic measurement headers
     config.dynamicHeadersConfig = {
-      ...config.dynamicHeadersConfig,
       validateCell: getDynamicMeasurementCellValidator(measurementDictionary, surveyAliasMap, this.utils)
     };
-
-    config.rowValidators = [
-      getCritterCaptureRowValidator(surveyAliasMap, this.utils, {
-        aliasHeader: 'ALIAS',
-        captureDateHeader: 'CAPTURE_DATE',
-        captureTimeHeader: 'CAPTURE_TIME'
-      })
-    ];
 
     // Return the final CSV config
     return config;
   }
 
+  /**
+   * Get the CSV worksheet TSN's.
+   *
+   * @param {Map<string, ICritterDetailed>} surveyAliasMap - Survey alias map
+   * @returns {*} {number[]} List of ITIS TSN's
+   */
   _getWorksheetTsns(surveyAliasMap: Map<string, ICritterDetailed>): number[] {
     const aliases = this.utils.getUniqueCellValues('ALIAS');
 
@@ -155,7 +156,7 @@ export class ImportMeasurementsService extends DBService {
   }
 
   /**
-   *
+   * Get the TSN measurement type definition dictionary.
    *
    * @async
    * @param {number[]} tsns - List of ITIS TSN's
@@ -167,6 +168,7 @@ export class ImportMeasurementsService extends DBService {
     >();
 
     const uniqueTsns = [...new Set(tsns)];
+
     const measurements = await Promise.all(
       uniqueTsns.map((tsn) => this.surveyCritterService.critterbaseService.getTaxonMeasurements(String(tsn)))
     );

@@ -1,8 +1,8 @@
-import { ICritterDetailed } from '../../services/critterbase-service';
-import { findCapturesFromDateTime } from '../../services/import-services/utils/datetime';
-import { CSVConfigUtils } from './csv-config-utils';
-import { CSVRowValidator } from './csv-config-validation.interface';
-import { updateCSVRowState } from './csv-header-configs';
+import { ICritterDetailed } from '../../../services/critterbase-service';
+import { findCapturesFromDateTime } from '../../../services/import-services/utils/datetime';
+import { CSVConfigUtils } from '../csv-config-utils';
+import { CSVRowValidator } from '../csv-config-validation.interface';
+import { updateCSVRowState } from '../csv-header-configs';
 
 export const getCritterCaptureRowValidator = (
   surveyAliasMap: Map<string, ICritterDetailed>,

@@ -6,7 +6,7 @@ import {
 } from '../../critterbase-service';
 
 /**
- * Check if an object is a CBQuantitativeMeasurementTypeDefinition
+ * Check if an object is a `CBQuantitativeMeasurementTypeDefinition`
  *
  * @param {Record<string, unknown>} measurement - The object to check
  * @returns {boolean} True if the object is a CBQuantitativeMeasurementTypeDefinition
@@ -18,7 +18,7 @@ export const isCBQuantitativeMeasurementTypeDefinition = (
 };
 
 /**
- * Check if an object is a CBQualitativeMeasurementTypeDefinition
+ * Check if an object is a `CBQualitativeMeasurementTypeDefinition`
  *
  * @param {Record<string, unknown>} measurement - The object to check
  * @returns {boolean} True if the object is a CBQualitativeMeasurementTypeDefinition
@@ -30,7 +30,7 @@ export const isCBQualitativeMeasurementTypeDefinition = (
 };
 
 /**
- * Check if an object is a CBQualitativeMeasurement
+ * Check if an object is a `CBQualitativeMeasurement`
  *
  * @param {Record<string, unknown>} measurement - The object to check
  * @returns {boolean} True if the object is a CBQualitativeMeasurement
@@ -42,7 +42,7 @@ export const isCBQualitativeMeasurement = (
 };
 
 /**
- * Check if an object is a CBQuantitativeMeasurement
+ * Check if an object is a `CBQuantitativeMeasurement`
  *
  * @param {Record<string, unknown>} measurement - The object to check
  * @returns {boolean} True if the object is a CBQuantitativeMeasurement
