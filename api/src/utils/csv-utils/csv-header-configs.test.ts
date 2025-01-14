@@ -1,8 +1,51 @@
 import { expect } from 'chai';
 import { z } from 'zod';
-import { getDescriptionCellValidator, getTsnCellValidator, validateZodCell } from './csv-header-configs';
+import { CSVParams, CSVRow, CSVRowState } from './csv-config-validation.interface';
+import {
+  getDescriptionCellValidator,
+  getLatitudeCellValidator,
+  getLongitudeCellValidator,
+  getTsnCellValidator,
+  updateCSVRowState,
+  validateZodCell
+} from './csv-header-configs';
 
 describe('CSVHeaderConfigs', () => {
+  describe('updateRowState', () => {
+    it('should create the state in the row and add the new value', () => {
+      const row = { TEST: 'cellValue' };
+
+      updateCSVRowState(row, { stateValue: 'value' });
+
+      expect(row[CSVRowState]?.stateValue).to.equal('value');
+    });
+
+    it('should update the state in the row and add the new value', () => {
+      const row = { TEST: 'cellValue', [CSVRowState]: { stateValue: 'oldValue' } };
+
+      updateCSVRowState(row, { stateValue: 'newValue' });
+
+      expect(row[CSVRowState]?.stateValue).to.equal('newValue');
+    });
+
+    it('should remove the state in the row', () => {
+      const row = { TEST: 'cellValue', [CSVRowState]: { stateValue: 'oldValue' } };
+
+      updateCSVRowState(row, { stateValue: undefined });
+
+      expect(row[CSVRowState]?.stateValue).to.be.undefined;
+    });
+
+    it('should add additional state values', () => {
+      const row: CSVRow = { TEST: 'cellValue', [CSVRowState]: { stateValue: 'oldValue' } };
+
+      updateCSVRowState(row, { stateValue: 'newValue', additionalValue: 'value' });
+
+      expect(row[CSVRowState]?.stateValue).to.equal('newValue');
+      expect(row[CSVRowState]?.additionalValue).to.equal('value');
+    });
+  });
+
   describe('validateZodCell', () => {
     it('should return an empty array if the cell is valid', () => {
       const result = validateZodCell({ cell: 123 } as any, z.number());
@@ -25,7 +68,7 @@ describe('CSVHeaderConfigs', () => {
       const tsns = new Set([1, 2]);
       const tsnValidator = getTsnCellValidator(tsns);
 
-      const result = tsnValidator({ cell: 1, row: {}, header: 'HEADER', rowIndex: 0 });
+      const result = tsnValidator({ cell: 1, row: {}, header: 'HEADER', rowIndex: 0, mutateCell: 1 });
 
       expect(result).to.be.deep.equal([]);
     });
@@ -34,7 +77,7 @@ describe('CSVHeaderConfigs', () => {
       const tsns = new Set([1, 2]);
       const tsnValidator = getTsnCellValidator(tsns);
 
-      const result = tsnValidator({ cell: 3, row: {}, header: 'HEADER', rowIndex: 0 });
+      const result = tsnValidator({ cell: 3, row: {}, header: 'HEADER', rowIndex: 0, mutateCell: 3 });
 
       expect(result).to.be.deep.equal([
         {
@@ -49,7 +92,13 @@ describe('CSVHeaderConfigs', () => {
     it('should return an empty array if the cell is valid', () => {
       const descriptionValidator = getDescriptionCellValidator();
 
-      const result = descriptionValidator({ cell: 'description', row: {}, header: 'HEADER', rowIndex: 0 });
+      const result = descriptionValidator({
+        cell: 'description',
+        row: {},
+        header: 'HEADER',
+        rowIndex: 0,
+        mutateCell: 'description'
+      });
 
       expect(result).to.be.deep.equal([]);
     });
@@ -60,10 +109,84 @@ describe('CSVHeaderConfigs', () => {
       for (const badDescription of badDescriptions) {
         const descriptionValidator = getDescriptionCellValidator();
 
-        const result = descriptionValidator({ cell: badDescription, row: {}, header: 'HEADER', rowIndex: 0 });
+        const result = descriptionValidator({
+          cell: badDescription,
+          row: {},
+          header: 'HEADER',
+          rowIndex: 0,
+          mutateCell: badDescription
+        });
 
         expect(result.length).to.be.equal(1);
       }
+    });
+  });
+
+  describe('getLatitudeCellValidator', () => {
+    it('should return an empty array if the cell is valid', () => {
+      const latitudeValidator = getLatitudeCellValidator({ optional: false });
+
+      const values = [1.234, -1.234, 0, -90, 90];
+
+      for (const value of values) {
+        const result = latitudeValidator({ cell: value } as CSVParams);
+
+        expect(result).to.be.deep.equal([]);
+      }
+    });
+
+    it('should return a single error when invalid', () => {
+      const latitudeValidator = getLatitudeCellValidator({ optional: false });
+
+      const badValues = [-91, 91, 'string', null, undefined];
+
+      for (const badValue of badValues) {
+        const result = latitudeValidator({ cell: badValue } as CSVParams);
+
+        expect(result.length).to.be.equal(1);
+      }
+    });
+
+    it('should return an empty array if the cell is optional and undefined', () => {
+      const latitudeValidator = getLatitudeCellValidator({ optional: true });
+
+      const result = latitudeValidator({ cell: undefined } as CSVParams);
+
+      expect(result).to.be.deep.equal([]);
+    });
+  });
+
+  describe('getLongitudeCellValidator', () => {
+    it('should return an empty array if the cell is valid', () => {
+      const longitudeValidator = getLongitudeCellValidator({ optional: false });
+
+      const values = [1.234, -1.234, 0, -180, 180];
+
+      for (const value of values) {
+        const result = longitudeValidator({ cell: value } as CSVParams);
+
+        expect(result).to.be.deep.equal([]);
+      }
+    });
+
+    it('should return a single error when invalid', () => {
+      const longitudeValidator = getLongitudeCellValidator({ optional: false });
+
+      const badValues = [-181, 181, 'string', null, undefined];
+
+      for (const badValue of badValues) {
+        const result = longitudeValidator({ cell: badValue } as CSVParams);
+
+        expect(result.length).to.be.equal(1);
+      }
+    });
+
+    it('should return an empty array if the cell is optional and undefined', () => {
+      const longitudeValidator = getLongitudeCellValidator({ optional: true });
+
+      const result = longitudeValidator({ cell: undefined } as CSVParams);
+
+      expect(result).to.be.deep.equal([]);
     });
   });
 });

@@ -56,7 +56,7 @@ const initialPaginationParams: Required<ApiPaginationRequestOptions> = {
   page: 0,
   limit: 10,
   sort: 'survey_observation_id',
-  order: 'asc'
+  order: 'desc'
 };
 
 /**
@@ -248,7 +248,7 @@ const ObservationsListContainer = (props: IObservationsListContainerProps) => {
 
       <Box height="100vh" maxHeight="800px">
         <LoadingGuard
-          isLoading={observationsDataLoader.isLoading || !observationsDataLoader.isReady}
+          isLoading={!rows.length && (observationsDataLoader.isLoading || !observationsDataLoader.isReady)}
           isLoadingFallback={<SkeletonTable />}
           isLoadingFallbackDelay={100}
           hasNoData={!rows.length}
@@ -263,7 +263,7 @@ const ObservationsListContainer = (props: IObservationsListContainerProps) => {
           hasNoDataFallbackDelay={100}>
           <StyledDataGrid
             noRowsMessage="No observations found"
-            loading={observationsDataLoader.isLoading || !observationsDataLoader.isReady}
+            loading={!rows.length && (observationsDataLoader.isLoading || !observationsDataLoader.isReady)}
             // Columns
             columns={columns}
             // Rows

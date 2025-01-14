@@ -5,8 +5,12 @@ import sinonChai from 'sinon-chai';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import * as db from '../../database/db';
 import { HTTPError } from '../../errors/http-error';
+import {
+  Telemetry,
+  TelemetryVendorEnum
+} from '../../repositories/telemetry-repositories/telemetry-vendor-repository.interface';
 import { SystemUser } from '../../repositories/user-repository';
-import { FindTelemetryResponse, TelemetryService } from '../../services/telemetry-service';
+import { TelemetryVendorService } from '../../services/telemetry-services/telemetry-vendor-service';
 import { KeycloakUserInformation } from '../../utils/keycloak-utils';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
 import { findTelemetry } from './index';
@@ -19,19 +23,18 @@ describe('findTelemetry', () => {
   });
 
   it('finds and returns telemetry', async () => {
-    const mockFindTelemetryResponse: FindTelemetryResponse[] = [
+    const mockFindTelemetryResponse: Telemetry[] = [
       {
         telemetry_id: '789-789-789',
+        deployment_id: 2,
+        critter_id: 3,
         acquisition_date: '2021-01-01',
+        vendor: TelemetryVendorEnum.MANUAL,
+        serial: '123',
         latitude: 49.123,
         longitude: -126.123,
-        telemetry_type: 'vendor',
-        device_id: 123,
-        bctw_deployment_id: '123-123-123',
-        critter_id: 1,
-        deployment_id: 2,
-        critterbase_critter_id: '456-456-456',
-        animal_id: '678-678-678'
+        elevation: null,
+        temperature: null
       }
     ];
 
@@ -45,14 +48,17 @@ describe('findTelemetry', () => {
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
     const findTelemetryStub = sinon
-      .stub(TelemetryService.prototype, 'findTelemetry')
+      .stub(TelemetryVendorService.prototype, 'findTelemetry')
       .resolves(mockFindTelemetryResponse);
+
+    const findTelemetryCountStub = sinon.stub(TelemetryVendorService.prototype, 'findTelemetryCount').resolves(1);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     mockReq.query = {
       keyword: 'keyword',
-      itis_tsns: ['123456'],
+      start_date: '2021-01-01',
+      end_date: '2021-02-01',
       system_user_id: '11',
       page: '2',
       limit: '10',
@@ -72,6 +78,7 @@ describe('findTelemetry', () => {
     expect(mockDBConnection.commit).to.have.been.calledOnce;
 
     expect(findTelemetryStub).to.have.been.calledOnceWith(true, 20, sinon.match.object, sinon.match.object);
+    expect(findTelemetryCountStub).to.have.been.calledOnceWith(true, 20, sinon.match.object);
 
     expect(mockRes.jsonValue.telemetry).to.eql(mockFindTelemetryResponse);
     expect(mockRes.jsonValue.pagination).not.to.be.null;
@@ -91,14 +98,15 @@ describe('findTelemetry', () => {
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
     const findTelemetryStub = sinon
-      .stub(TelemetryService.prototype, 'findTelemetry')
+      .stub(TelemetryVendorService.prototype, 'findTelemetry')
       .rejects(new Error('a test error'));
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     mockReq.query = {
       keyword: 'keyword',
-      itis_tsns: ['123456'],
+      start_date: '2021-01-01',
+      end_date: '2021-02-01',
       system_user_id: '11',
       page: '2',
       limit: '10',
