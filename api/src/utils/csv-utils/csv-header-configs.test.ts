@@ -49,12 +49,12 @@ describe('CSVHeaderConfigs', () => {
 
   describe('validateZodCell', () => {
     it('should return an empty array if the cell is valid', () => {
-      const result = validateZodCell({ cell: 123 } as any, z.number());
+      const result = validateZodCell(123, z.number());
       expect(result).to.be.deep.equal([]);
     });
 
     it('should return an array of CSV error objects when invalid', () => {
-      const result = validateZodCell({ cell: 'hi', header: 'HEADER', rowIndex: 0 } as any, z.number().min(0).max(0));
+      const result = validateZodCell('hi', z.number().min(0).max(0));
       expect(result).to.be.deep.equal([
         {
           error: 'Expected number, received string',
