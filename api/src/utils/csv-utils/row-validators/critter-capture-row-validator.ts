@@ -4,28 +4,50 @@ import { CSVConfigUtils } from '../csv-config-utils';
 import { CSVRowValidator } from '../csv-config-validation.interface';
 import { updateCSVRowState } from '../csv-header-configs';
 
+/**
+ * Get the critter capture row validator. Validates the critter alias, capture date, and capture time.
+ *
+ * Note: This will update the row state with the critter_id and capture_id.
+ *
+ * Rules:
+ *  1. The alias must exist in the survey alias map
+ *  2. The critter must have at least one capture
+ *  3. The capture date and time must map to a specific critter capture
+ *
+ * @param {Map<string, ICritterDetailed>} surveyAliasMap The survey alias map
+ * @param {CSVConfigUtils} utils The CSV config utils
+ * @param {Uppercase<string>} [aliasHeader='ALIAS'] The alias header
+ * @param {Uppercase<string>} [captureDateHeader='CAPTURE_DATE'] The capture date header
+ * @param {Uppercase<string>} [captureTimeHeader='CAPTURE_TIME'] The capture time header
+ * @returns {*} {CSVRowValidator} The validate row callback
+ */
 export const getCritterCaptureRowValidator = (
   surveyAliasMap: Map<string, ICritterDetailed>,
   utils: CSVConfigUtils,
-  aliasHeader: Uppercase<string> = 'ALIAS',
-  captureDateHeader: Uppercase<string> = 'CAPTURE_DATE',
-  captureTimeHeader: Uppercase<string> = 'CAPTURE_TIME'
+  headers: {
+    alias: Uppercase<string>;
+    captureDate: Uppercase<string>;
+    captureTime: Uppercase<string>;
+  } = {
+    alias: 'ALIAS',
+    captureDate: 'CAPTURE_DATE',
+    captureTime: 'CAPTURE_TIME'
+  }
 ): CSVRowValidator => {
   return (params) => {
-    const errors: CSVRowError[] = [];
-
-    const alias = utils.getCellValue(aliasHeader, params.row);
-    const captureDate = utils.getCellValue(captureDateHeader, params.row);
-    const captureTime = utils.getCellValue(captureTimeHeader, params.row);
+    const alias = utils.getCellValue(headers.alias, params.row);
+    const captureDate = utils.getCellValue(headers.captureDate, params.row);
+    const captureTime = utils.getCellValue(headers.captureTime, params.row);
 
     const critter = surveyAliasMap.get(String(alias).toLowerCase());
 
+    // If the alias is not found in the survey alias map ie: critter does not exist in the survey with this alias
     if (!critter) {
       return [
         {
           error: `Unable to find a matching survey critter`,
           solution: `Use a valid critter alias that exists in the Survey`,
-          header: utils.getWorksheetHeader(aliasHeader, params.row),
+          header: utils.getWorksheetHeader(headers.alias, params.row),
           cell: alias
         }
       ];
@@ -37,7 +59,7 @@ export const getCritterCaptureRowValidator = (
         {
           error: `Animal has no captures`,
           solution: `Add captures to animal`,
-          header: utils.getWorksheetHeader(aliasHeader, params.row),
+          header: utils.getWorksheetHeader(headers.alias, params.row),
           cell: alias
         }
       ];
@@ -51,7 +73,7 @@ export const getCritterCaptureRowValidator = (
         {
           error: `Capture not found for animal using date AND time`,
           solution: `Use a valid date and time to identify the capture`,
-          header: utils.getWorksheetHeader(captureDateHeader, params.row),
+          header: null,
           cell: captureDate
         }
       ];
@@ -63,7 +85,7 @@ export const getCritterCaptureRowValidator = (
         {
           error: `Multiple captures found for animal`,
           solution: `Use a unique date and time to identify the capture`,
-          header: utils.getWorksheetHeader(captureDateHeader, params.row),
+          header: null,
           cell: captureDate
         }
       ];

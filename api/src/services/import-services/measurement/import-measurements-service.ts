@@ -1,9 +1,16 @@
 import { WorkSheet } from 'xlsx';
+import { z } from 'zod';
 import { IDBConnection } from '../../../database/db';
+import { ApiGeneralError } from '../../../errors/api-error';
 import { CSVConfigUtils } from '../../../utils/csv-utils/csv-config-utils';
 import { validateCSVWorksheet } from '../../../utils/csv-utils/csv-config-validation';
 import { CSVConfig, CSVError, CSVRowState } from '../../../utils/csv-utils/csv-config-validation.interface';
-import { getCritterCaptureRowValidator } from '../../../utils/csv-utils/csv-row-validators';
+import {
+  getDateCellValidator,
+  getTimeCellValidator,
+  validateZodCell
+} from '../../../utils/csv-utils/csv-header-configs';
+import { getCritterCaptureRowValidator } from '../../../utils/csv-utils/row-validators/critter-capture-row-validator';
 import { getLogger } from '../../../utils/logger';
 import { NestedRecord } from '../../../utils/nested-record';
 import {
@@ -47,10 +54,9 @@ export class ImportMeasurementsService extends DBService {
 
     const initialConfig: CSVConfig<MeasurementCSVStaticHeader> = {
       staticHeadersConfig: {
-        // Note: The `validateCell` functions are intentionally left empty as the validation is handled by the row validator
-        ALIAS: { aliases: ['NICKNAME', 'ANIMAL'], validateCell: () => [] },
-        CAPTURE_DATE: { aliases: ['CAPTURE DATE', 'DATE'], validateCell: () => [] },
-        CAPTURE_TIME: { aliases: ['CAPTURE TIME', 'TIME'], validateCell: () => [] }
+        ALIAS: { aliases: ['NICKNAME', 'ANIMAL'] },
+        CAPTURE_DATE: { aliases: ['CAPTURE DATE', 'DATE'] },
+        CAPTURE_TIME: { aliases: ['CAPTURE TIME', 'TIME'] }
       },
       ignoreDynamicHeaders: false
     };
@@ -83,24 +89,27 @@ export class ImportMeasurementsService extends DBService {
 
     for (const row of rows) {
       this.utils.worksheetDynamicHeaders.forEach((header) => {
-        const measurement = row[CSVRowState]?.[header];
+        const stateMeasurement = row[CSVRowState]?.[header];
 
-        if (isCBQualitativeMeasurement(measurement)) {
+        if (isCBQualitativeMeasurement(stateMeasurement)) {
           qualitativeMeasurements.push({
             critter_id: row[CSVRowState]?.critter_id,
             capture_id: row[CSVRowState]?.capture_id,
-            taxon_measurement_id: measurement.taxon_measurement_id,
-            qualitative_option_id: measurement.qualitative_option_id
+            taxon_measurement_id: stateMeasurement.taxon_measurement_id,
+            qualitative_option_id: stateMeasurement.qualitative_option_id
           });
-        }
-
-        if (isCBQuantitativeMeasurement(measurement)) {
+        } else if (isCBQuantitativeMeasurement(stateMeasurement)) {
           quantitativeMeasurements.push({
             critter_id: row[CSVRowState]?.critter_id,
             capture_id: row[CSVRowState]?.capture_id,
-            taxon_measurement_id: measurement.taxon_measurement_id,
-            value: measurement.value
+            taxon_measurement_id: stateMeasurement.taxon_measurement_id,
+            value: stateMeasurement.value
           });
+        } else {
+          throw new ApiGeneralError('Invalid measurement type', [
+            'ImportMeasurementsService->importCSVWorksheet',
+            stateMeasurement
+          ]);
         }
       });
     }
@@ -125,12 +134,19 @@ export class ImportMeasurementsService extends DBService {
     const worksheetTsns = this._getWorksheetTsns(surveyAliasMap);
     const measurementDictionary = await this._getTsnMeasurementDictionaries(worksheetTsns);
 
+    // Set the static header configs for additional error information
+    this.utils.setAllStaticHeaderConfigs({
+      ALIAS: { validateCell: (params) => validateZodCell(params.cell, z.string()) },
+      CAPTURE_DATE: { validateCell: getDateCellValidator() },
+      CAPTURE_TIME: { validateCell: getTimeCellValidator() }
+    });
+
     const config = this.utils.getConfig();
 
-    // Inject the critter capture row validator - ('ALIAS', 'CAPTURE_DATE', 'CAPTURE_TIME')
+    // Inject the row validator - handles critter/alias capture validation
     config.rowValidators = [getCritterCaptureRowValidator(surveyAliasMap, this.utils)];
 
-    // Inject the dynamic headers config - handles the dynamic measurement headers
+    // Inject dynamic header config - handles measurement validation
     config.dynamicHeadersConfig = {
       validateCell: getDynamicMeasurementCellValidator(measurementDictionary, surveyAliasMap, this.utils)
     };
