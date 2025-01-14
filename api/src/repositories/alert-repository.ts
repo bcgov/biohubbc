@@ -1,10 +1,9 @@
 import { Knex } from 'knex';
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
-import { AlertRecord } from '../database-models/alert';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
-import { IAlertCreateObject, IAlertFilterObject, IAlertUpdateObject } from '../models/alert-view';
+import { AlertRecordWithStatus, IAlertCreateObject, IAlertFilterObject, IAlertUpdateObject } from '../models/alert-view';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { BaseRepository } from './base-repository';
 
@@ -50,10 +49,13 @@ export class AlertRepository extends BaseRepository {
    *
    * @param {IAlertFilterObject} filterObject
    * @param {ApiPaginationOptions} pagination
-   * @return {*}  {Promise<AlertRecord[]>}
+   * @return {*}  {Promise<AlertRecordWithStatus[]>}
    * @memberof AlertRepository
    */
-  async getAlerts(filterObject: IAlertFilterObject, pagination?: ApiPaginationOptions): Promise<AlertRecord[]> {
+  async getAlerts(
+    filterObject: IAlertFilterObject,
+    pagination?: ApiPaginationOptions
+  ): Promise<AlertRecordWithStatus[]> {
     const queryBuilder = this._getAlertBaseQuery();
 
     if (filterObject.expiresAfter) {
@@ -84,7 +86,7 @@ export class AlertRepository extends BaseRepository {
       }
     }
 
-    const response = await this.connection.knex(queryBuilder, AlertRecord);
+    const response = await this.connection.knex(queryBuilder, AlertRecordWithStatus);
 
     return response.rows;
   }
@@ -130,15 +132,15 @@ export class AlertRepository extends BaseRepository {
    * Get a specific alert by its Id
    *
    * @param {number} alertId
-   * @return {*}  {Promise< AlertRecord>}
+   * @return {*}  {Promise< AlertRecordWithStatus>}
    * @memberof AlertRepository
    */
-  async getAlertById(alertId: number): Promise<AlertRecord> {
+  async getAlertById(alertId: number): Promise<AlertRecordWithStatus> {
     const queryBuilder = this._getAlertBaseQuery();
 
     queryBuilder.where('alert_id', alertId);
 
-    const response = await this.connection.knex(queryBuilder, AlertRecord);
+    const response = await this.connection.knex(queryBuilder, AlertRecordWithStatus);
 
     return response.rows[0];
   }

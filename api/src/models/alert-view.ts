@@ -1,4 +1,10 @@
+import { z } from 'zod';
 import { AlertRecord } from '../database-models/alert';
+
+export const AlertRecordWithStatus = AlertRecord.extend({
+  status: z.enum(['active', 'expired'])
+});
+export type AlertRecordWithStatus = z.infer<typeof AlertRecordWithStatus>;
 
 export type IAlertUpdateObject = Omit<AlertRecord, 'status' | 'create_date'>;
 

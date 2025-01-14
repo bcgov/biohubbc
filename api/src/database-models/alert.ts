@@ -31,8 +31,6 @@ export const AlertRecord = AlertModel.omit({
   update_date: true,
   update_user: true,
   revision_count: true
-}).extend({
-  status: z.enum(['active', 'expired'])
 });
 
 export type AlertRecord = z.infer<typeof AlertRecord>;

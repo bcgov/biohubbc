@@ -18,9 +18,18 @@ export interface IAlert {
   create_date: string;
 }
 
-export type IAlertUpdateObject = Omit<IAlert, 'status' | 'create_date'>;
+export interface IAlertCreateObject {
+  alert_type_id: number;
+  severity: AlertSeverity;
+  name: string;
+  message: string;
+  data: object | null;
+  record_end_date: string | null;
+}
 
-export type IAlertCreateObject = Omit<IAlertUpdateObject, 'alert_id'>;
+export interface IAlertUpdateObject extends IAlertCreateObject {
+  alert_id: number;
+}
 
 export interface IAlertFilterParams {
   expiresBefore?: string;
