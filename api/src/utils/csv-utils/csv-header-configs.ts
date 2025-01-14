@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { ICritterDetailed } from '../../services/critterbase-service';
 import { formatTimeString } from '../../services/import-services/utils/datetime';
 import {
   CSVCellSetter,
@@ -194,5 +195,36 @@ export const getDateCellValidator = (options?: CSVOptionalCell): CSVCellValidato
     }
 
     return validateZodCell(params, z.string().date());
+  };
+};
+
+/**
+ * Get the survey critter alias cell validator.
+ *
+ * Note: This validator will update the row state with critter ID - `critterId`.
+ *
+ * Rules:
+ *  1. The cell must be a valid critter alias that exists in the Survey alias map
+ *
+ * @param {Map<string, ICritterDetailed>} surveyAliasMap The survey alias map
+ * @returns {*} {CSVCellValidator} The validate cell callback
+ */
+export const getSurveyCritterAliasCellValidator = (surveyAliasMap: Map<string, ICritterDetailed>): CSVCellValidator => {
+  return (params) => {
+    const critter = surveyAliasMap.get(String(params.cell).toLowerCase());
+
+    if (!critter) {
+      return [
+        {
+          error: `Unable to find a matching survey critter`,
+          solution: `Use a valid critter alias that exists in the Survey`
+        }
+      ];
+    }
+
+    // Update the row state with the critter ID
+    updateCSVRowState(params.row, { critterId: critter.critter_id });
+
+    return [];
   };
 };

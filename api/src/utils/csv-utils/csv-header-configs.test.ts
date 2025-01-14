@@ -5,6 +5,7 @@ import {
   getDescriptionCellValidator,
   getLatitudeCellValidator,
   getLongitudeCellValidator,
+  getSurveyCritterAliasCellValidator,
   getTsnCellValidator,
   updateCSVRowState,
   validateZodCell
@@ -187,6 +188,55 @@ describe('CSVHeaderConfigs', () => {
       const result = longitudeValidator({ cell: undefined } as CSVParams);
 
       expect(result).to.be.deep.equal([]);
+    });
+  });
+
+  describe('getSurveyCritterAliasCellValidator', () => {
+    it('should return an empty array if the cell is valid', () => {
+      const surveyCritterAliasValidator = getSurveyCritterAliasCellValidator(
+        new Map([['alias', { critter_id: 'uuid' }]]) as any
+      );
+
+      const result = surveyCritterAliasValidator({
+        cell: 'alias',
+        row: {},
+        header: 'HEADER',
+        rowIndex: 0,
+        mutateCell: 'alias'
+      });
+
+      expect(result).to.be.deep.equal([]);
+    });
+
+    it('should return an error when the cell is not in the survey alias map', () => {
+      const surveyCritterAliasValidator = getSurveyCritterAliasCellValidator(new Map() as any);
+
+      const result = surveyCritterAliasValidator({
+        cell: 'alias',
+        row: {},
+        header: 'HEADER',
+        rowIndex: 0,
+        mutateCell: 'alias'
+      });
+
+      expect(result.length).to.be.equal(1);
+    });
+
+    it('should update the row state to store the critter ID', () => {
+      const surveyCritterAliasValidator = getSurveyCritterAliasCellValidator(
+        new Map([['alias', { critter_id: 'uuid' }]]) as any
+      );
+
+      const params = {
+        cell: 'alias',
+        row: {},
+        header: 'HEADER',
+        rowIndex: 0,
+        mutateCell: 'alias'
+      };
+
+      surveyCritterAliasValidator(params);
+      expect(params.row[CSVRowState]?.critterId).to.be.equal('uuid');
     });
   });
 });
