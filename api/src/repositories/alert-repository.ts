@@ -1,9 +1,10 @@
 import { Knex } from 'knex';
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
+import { AlertRecord } from '../database-models/alert';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
-import { IAlert, IAlertCreateObject, IAlertFilterObject, IAlertUpdateObject } from '../models/alert-view';
+import { IAlertCreateObject, IAlertFilterObject, IAlertUpdateObject } from '../models/alert-view';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { BaseRepository } from './base-repository';
 
@@ -49,10 +50,10 @@ export class AlertRepository extends BaseRepository {
    *
    * @param {IAlertFilterObject} filterObject
    * @param {ApiPaginationOptions} pagination
-   * @return {*}  {Promise<IAlert[]>}
+   * @return {*}  {Promise<AlertRecord[]>}
    * @memberof AlertRepository
    */
-  async getAlerts(filterObject: IAlertFilterObject, pagination?: ApiPaginationOptions): Promise<IAlert[]> {
+  async getAlerts(filterObject: IAlertFilterObject, pagination?: ApiPaginationOptions): Promise<AlertRecord[]> {
     const queryBuilder = this._getAlertBaseQuery();
 
     if (filterObject.expiresAfter) {
@@ -78,10 +79,12 @@ export class AlertRepository extends BaseRepository {
 
       if (pagination.sort && pagination.order) {
         queryBuilder.orderBy(pagination.sort, pagination.order);
+      } else {
+        queryBuilder.orderBy('alert_id', 'desc');
       }
     }
 
-    const response = await this.connection.knex(queryBuilder, IAlert);
+    const response = await this.connection.knex(queryBuilder, AlertRecord);
 
     return response.rows;
   }
@@ -127,15 +130,15 @@ export class AlertRepository extends BaseRepository {
    * Get a specific alert by its Id
    *
    * @param {number} alertId
-   * @return {*}  {Promise<IAlert>}
+   * @return {*}  {Promise< AlertRecord>}
    * @memberof AlertRepository
    */
-  async getAlertById(alertId: number): Promise<IAlert> {
+  async getAlertById(alertId: number): Promise<AlertRecord> {
     const queryBuilder = this._getAlertBaseQuery();
 
     queryBuilder.where('alert_id', alertId);
 
-    const response = await this.connection.knex(queryBuilder, IAlert);
+    const response = await this.connection.knex(queryBuilder, AlertRecord);
 
     return response.rows[0];
   }

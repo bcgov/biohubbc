@@ -2,10 +2,11 @@ import chai, { expect } from 'chai';
 import { afterEach, describe, it } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { IAlert, IAlertCreateObject, IAlertFilterObject, IAlertSeverity } from '../models/alert-view';
+import {IAlertCreateObject, IAlertFilterObject, IAlertSeverity } from '../models/alert-view';
 import { AlertRepository } from '../repositories/alert-repository';
 import { getMockDBConnection } from '../__mocks__/db';
 import { AlertService } from './alert-service';
+import { AlertRecord } from '../database-models/alert';
 
 chai.use(sinonChai);
 
@@ -19,7 +20,7 @@ describe('AlertService', () => {
       const mockDBConnection = getMockDBConnection();
       const alertService = new AlertService(mockDBConnection);
 
-      const mockAlerts: IAlert[] = [
+      const mockAlerts: AlertRecord[] = [
         {
           alert_id: 1,
           name: 'Alert 1',
@@ -67,7 +68,7 @@ describe('AlertService', () => {
       const mockDBConnection = getMockDBConnection();
       const alertService = new AlertService(mockDBConnection);
 
-      const mockAlert: IAlert = {
+      const mockAlert: AlertRecord = {
         alert_id: 1,
         name: 'Alert 1',
         message: 'Message 1',
@@ -118,7 +119,7 @@ describe('AlertService', () => {
       const alertService = new AlertService(mockDBConnection);
 
       const mockAlertId = 1;
-      const mockAlert: IAlert = {
+      const mockAlert: AlertRecord = {
         alert_id: mockAlertId,
         name: 'Updated Alert',
         message: 'Updated message',

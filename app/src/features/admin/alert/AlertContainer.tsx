@@ -66,8 +66,7 @@ const AlertListContainer = () => {
       order: sort?.sort || undefined,
       page: paginationModel.page + 1 // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paginationModel]);
+  }, [paginationModel, sortModel]);
 
   const filters: IAlertFilterParams =
     activeView === AlertViewEnum.ACTIVE ? { expiresAfter: dayjs().format() } : { expiresBefore: dayjs().format() };

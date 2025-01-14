@@ -1,5 +1,6 @@
+import { AlertRecord } from '../database-models/alert';
 import { IDBConnection } from '../database/db';
-import { IAlert, IAlertCreateObject, IAlertFilterObject, IAlertUpdateObject } from '../models/alert-view';
+import { IAlertCreateObject, IAlertFilterObject, IAlertUpdateObject } from '../models/alert-view';
 import { AlertRepository } from '../repositories/alert-repository';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { DBService } from './db-service';
@@ -18,10 +19,10 @@ export class AlertService extends DBService {
    *
    * @param {IAlertFilterObject} filterObject
    * @param {ApiPaginationOptions} pagination
-   * @return {*}  Promise<IAlert[]>
+   * @return {*}  Promise<AlertRecord[]>
    * @memberof AlertService
    */
-  async getAlerts(filterObject: IAlertFilterObject, pagination?: ApiPaginationOptions): Promise<IAlert[]> {
+  async getAlerts(filterObject: IAlertFilterObject, pagination?: ApiPaginationOptions): Promise<AlertRecord[]> {
     return this.alertRepository.getAlerts(filterObject, pagination);
   }
 
@@ -40,10 +41,10 @@ export class AlertService extends DBService {
    * Get a specific alert by its ID
    *
    * @param {number} alertId
-   * @return {*}  Promise<IAlert>
+   * @return {*}  Promise<AlertRecord>
    * @memberof AlertService
    */
-  async getAlertById(alertId: number): Promise<IAlert> {
+  async getAlertById(alertId: number): Promise<AlertRecord> {
     return this.alertRepository.getAlertById(alertId);
   }
 
