@@ -22,7 +22,7 @@ export const getCaptureDateCellValidator = (
   utils: CSVConfigUtils<CaptureCSVStaticHeader>
 ): CSVCellValidator => {
   return (params) => {
-    const cellErrors = validateZodCell(params, z.string().date());
+    const cellErrors = validateZodCell(params.cell, z.string().date());
 
     if (cellErrors.length) {
       return cellErrors;

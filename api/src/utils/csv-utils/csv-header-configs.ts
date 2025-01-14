@@ -33,15 +33,15 @@ export const updateCSVRowState = (row: CSVRow, state: Record<string, any>) => {
 /**
  * Utility function to validate a CSV cell using a Zod schema.
  *
- * @param {CSVParams} params - The cell parameters
+ * @param {unkown} cell - The cell value
  * @param {z.ZodSchema} schema - The Zod schema
  * @param {string} [solution] - The solution message
  * @returns {*} {CSVError[]} - The cell validation errors
  */
-export const validateZodCell = (params: CSVParams, schema: z.ZodSchema, solution?: string): CSVError[] => {
+export const validateZodCell = (cell: unknown, schema: z.ZodSchema, solution?: string): CSVError[] => {
   const errors: CSVError[] = [];
 
-  const parsed = schema.safeParse(params.cell, {
+  const parsed = schema.safeParse(cell, {
     // Custom error message mapping
     errorMap: (_issue, ctx) => {
       if (ctx.defaultError === 'Required') {
@@ -99,7 +99,7 @@ export const getTsnCellValidator = (tsns: Set<number>): CSVCellValidator => {
  */
 export const getDescriptionCellValidator = (): CSVCellValidator => {
   return (params: CSVParams) => {
-    return validateZodCell(params, z.string().trim().min(1).max(250).optional());
+    return validateZodCell(params.cell, z.string().trim().min(1).max(250).optional());
   };
 };
 
@@ -153,10 +153,10 @@ export const getTimeCellSetter = (): CSVCellSetter => {
 export const getLatitudeCellValidator = (options?: CSVOptionalCell): CSVCellValidator => {
   return (params) => {
     if (options?.optional) {
-      return validateZodCell(params, z.number().min(-90).max(90).optional());
+      return validateZodCell(params.cell, z.number().min(-90).max(90).optional());
     }
 
-    return validateZodCell(params, z.number().min(-90).max(90));
+    return validateZodCell(params.cell, z.number().min(-90).max(90));
   };
 };
 
@@ -172,10 +172,10 @@ export const getLatitudeCellValidator = (options?: CSVOptionalCell): CSVCellVali
 export const getLongitudeCellValidator = (options?: CSVOptionalCell): CSVCellValidator => {
   return (params) => {
     if (options?.optional) {
-      return validateZodCell(params, z.number().min(-180).max(180).optional());
+      return validateZodCell(params.cell, z.number().min(-180).max(180).optional());
     }
 
-    return validateZodCell(params, z.number().min(-180).max(180));
+    return validateZodCell(params.cell, z.number().min(-180).max(180));
   };
 };
 
@@ -191,10 +191,10 @@ export const getLongitudeCellValidator = (options?: CSVOptionalCell): CSVCellVal
 export const getDateCellValidator = (options?: CSVOptionalCell): CSVCellValidator => {
   return (params) => {
     if (options?.optional) {
-      return validateZodCell(params, z.string().date().optional());
+      return validateZodCell(params.cell, z.string().date().optional());
     }
 
-    return validateZodCell(params, z.string().date());
+    return validateZodCell(params.cell, z.string().date());
   };
 };
 
