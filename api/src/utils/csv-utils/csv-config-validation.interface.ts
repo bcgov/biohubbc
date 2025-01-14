@@ -181,7 +181,12 @@ export interface CSVParams {
 }
 
 /**
- * The CSV error interface
+ * The CSV error interface.
+ *
+ * @description
+ * Set to `null` to explicitly indicate the value can `NOT` be overritten by consumers ie: missing header
+ * Set property to `undefined` to indicate to consumers the value `CAN` be overritten
+ * by a default down stream ie: cell value
  *
  * @example
  *  {
@@ -220,16 +225,12 @@ export interface CSVError {
   /**
    * The cell value that caused the error.
    *
-   * Note: Include value to override.
-   *
    * @example 'unit3'
    * @type {unknown | undefined}
    */
   cell?: unknown;
   /**
    * The header name. Typically this will be the user facing CSV header name.
-   *
-   * Note: Include value to override.
    *
    * @example 'Population Unit'
    * @type {string | null | undefined}
@@ -239,7 +240,6 @@ export interface CSVError {
    * The row index the error occurred.
    *
    * Note: Header row index 1. First data row index 2.
-   * Note: Include value to override.
    *
    * @example 2
    * @type {number}

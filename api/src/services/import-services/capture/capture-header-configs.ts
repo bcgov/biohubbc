@@ -30,7 +30,7 @@ export const getCaptureDateCellValidator = (
 
     // Row meta data
     const captureDate = String(params.cell);
-    const captureTime = utils.getCellValue('CAPTURE_TIME', params.row) as string; // casting to allow undefined
+    const captureTime = utils.getCellValue('CAPTURE_TIME', params.row) as string | undefined;
     const critterAlias = String(utils.getCellValue('ALIAS', params.row));
     const critter = surveyAliasMap.get(critterAlias.toLowerCase());
 
