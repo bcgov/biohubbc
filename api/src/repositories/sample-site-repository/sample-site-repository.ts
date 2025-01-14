@@ -313,7 +313,7 @@ export class SampleSiteRepository extends BaseRepository {
   async findSites(
     isUserAdmin: boolean,
     systemUserId: number | null,
-    filterFields: ISiteAdvancedFilters,
+    filterFields?: ISiteAdvancedFilters,
     pagination?: ApiPaginationOptions
   ): Promise<FindSampleSiteRecord[]> {
     const query = makeFindSamplingSiteBaseQuery(isUserAdmin, systemUserId, filterFields);

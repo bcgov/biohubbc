@@ -2,7 +2,7 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { deleteTechnique, updateTechnique } from '.';
+import { deleteTechnique, getTechniqueById, updateTechnique } from '.';
 import * as db from '../../../../../../../database/db';
 import { HTTP409, HTTPError } from '../../../../../../../errors/http-error';
 import { AttractantService } from '../../../../../../../services/attractants-service';
@@ -270,5 +270,82 @@ describe('updateTechnique', () => {
     expect(updateVantagesForTechniqueStub).to.have.been.calledOnceWith(2, 3, requestBody.technique.vantage_methods);
 
     expect(mockRes.statusValue).to.eql(200);
+  });
+});
+
+describe('getTechniqueById', () => {
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  it('catches and re-throws error', async () => {
+    const mockDBConnection = getMockDBConnection({
+      open: sinon.stub(),
+      commit: sinon.stub(),
+      release: sinon.stub(),
+      rollback: sinon.stub()
+    });
+    sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
+
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    mockReq.params = {
+      projectId: '1',
+      surveyId: '2',
+      techniqueId: '3'
+    };
+
+    const getTechniqueByIdStub = sinon
+      .stub(TechniqueService.prototype, 'getTechniqueById')
+      .rejects(new Error('a test error')); // throw error
+
+    const requestHandler = getTechniqueById();
+
+    try {
+      await requestHandler(mockReq, mockRes, mockNext);
+      expect.fail();
+    } catch (actualError) {
+      expect(mockDBConnection.open).to.have.been.calledOnce;
+
+      expect(getTechniqueByIdStub).to.have.been.calledOnceWith(2, 3);
+
+      expect(mockDBConnection.rollback).to.have.been.calledOnce;
+      expect(mockDBConnection.release).to.have.been.calledOnce;
+
+      expect((actualError as HTTPError).message).to.equal('a test error');
+    }
+  });
+
+  it('returns a technique record', async () => {
+    const mockDBConnection = getMockDBConnection({
+      open: sinon.stub(),
+      commit: sinon.stub(),
+      release: sinon.stub(),
+      rollback: sinon.stub()
+    });
+    sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
+
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    mockReq.params = {
+      projectId: '1',
+      surveyId: '2',
+      techniqueId: '3'
+    };
+
+    const getTechniqueByIdStub = sinon.stub(TechniqueService.prototype, 'getTechniqueById').resolves();
+
+    const requestHandler = getTechniqueById();
+
+    await requestHandler(mockReq, mockRes, mockNext);
+
+    expect(mockDBConnection.open).to.have.been.calledOnce;
+
+    expect(getTechniqueByIdStub).to.have.been.calledOnceWith(2, 3);
+
+    expect(mockDBConnection.commit).to.have.been.calledOnce;
+    expect(mockDBConnection.release).to.have.been.calledOnce;
+
+    expect(mockRes.status).to.have.been.calledOnceWith(200);
   });
 });

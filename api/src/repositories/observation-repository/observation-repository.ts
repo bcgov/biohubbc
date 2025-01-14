@@ -151,7 +151,7 @@ export class ObservationRepository extends BaseRepository {
   async findObservations(
     isUserAdmin: boolean,
     systemUserId: number | null,
-    filterFields: IObservationAdvancedFilters,
+    filterFields?: IObservationAdvancedFilters,
     pagination?: ApiPaginationOptions
   ): Promise<ObservationRecordWithSamplingAndSubcountData[]> {
     const query = makeFindObservationsQuery(isUserAdmin, systemUserId, filterFields);

@@ -97,6 +97,44 @@ describe('SampleSiteRepository', () => {
     });
   });
 
+  describe('findSites', () => {
+    it('should return a list of sites when all filters provided', async () => {
+      const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ knex: () => mockResponse });
+
+      const repository = new SampleSiteRepository(dbConnection);
+
+      const response = await repository.findSites(
+        true,
+        1,
+        {
+          survey_id: 2,
+          keyword: 'term',
+          system_user_id: 3
+        },
+        {
+          limit: 10,
+          page: 1,
+          sort: 'name',
+          order: 'asc'
+        }
+      );
+
+      expect(response).to.eql([{ id: 1 }]);
+    });
+
+    it('should return a list of sites when no filters provided', async () => {
+      const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ knex: () => mockResponse });
+
+      const repository = new SampleSiteRepository(dbConnection);
+
+      const response = await repository.findSites(false, 1, undefined, undefined);
+
+      expect(response).to.eql([{ id: 1 }]);
+    });
+  });
+
   describe('updateSampleSite', () => {
     it('should update the record and return a single row', async () => {
       const mockRow = {};

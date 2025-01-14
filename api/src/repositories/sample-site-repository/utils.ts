@@ -138,7 +138,7 @@ export function getSamplingSiteBaseQuery(queryBuilder: Knex.QueryBuilder): Knex.
 export function makeFindSamplingSiteBaseQuery(
   isUserAdmin: boolean,
   systemUserId: number | null,
-  filterFields: ISiteAdvancedFilters
+  filterFields?: ISiteAdvancedFilters
 ): Knex.QueryBuilder {
   const knex = getKnex();
 
@@ -155,7 +155,7 @@ export function makeFindSamplingSiteBaseQuery(
     );
   }
 
-  if (filterFields.system_user_id) {
+  if (filterFields?.system_user_id) {
     getSurveyIdsQuery.whereIn('p.project_id', (subQueryBuilder) => {
       subQueryBuilder
         .select('project_id')
@@ -172,12 +172,12 @@ export function makeFindSamplingSiteBaseQuery(
   // Filter by the survey ids the user has access to
   getSamplingSitesQuery.whereIn('sss.survey_id', getSurveyIdsQuery);
 
-  if (filterFields.survey_id) {
+  if (filterFields?.survey_id) {
     // Filter by a specific survey id
     getSamplingSitesQuery.andWhere('sss.survey_id', filterFields.survey_id);
   }
 
-  if (filterFields.keyword) {
+  if (filterFields?.keyword) {
     // Filter by keyword
     getSamplingSitesQuery.where((subqueryBuilder) => {
       subqueryBuilder

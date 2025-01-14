@@ -13,7 +13,7 @@ import { IObservationAdvancedFilters } from '../../models/observation-view';
 export function makeFindObservationsQuery(
   isUserAdmin: boolean,
   systemUserId: number | null,
-  filterFields: IObservationAdvancedFilters
+  filterFields?: IObservationAdvancedFilters
 ): Knex.QueryBuilder {
   const knex = getKnex();
 
@@ -30,7 +30,7 @@ export function makeFindObservationsQuery(
     );
   }
 
-  if (filterFields.system_user_id) {
+  if (filterFields?.system_user_id) {
     getSurveyIdsQuery.whereIn('p.project_id', (subQueryBuilder) => {
       subQueryBuilder
         .select('project_id')
@@ -41,19 +41,19 @@ export function makeFindObservationsQuery(
 
   const getObservationsQuery = getSurveyObservationsBaseQuery(knex, getSurveyIdsQuery);
 
-  if (filterFields.min_count) {
+  if (filterFields?.min_count) {
     getObservationsQuery.andWhere('subcount', '>=', filterFields.min_count);
   }
 
-  if (filterFields.start_date) {
+  if (filterFields?.start_date) {
     getObservationsQuery.andWhere('observation_date', '>=', filterFields.start_date);
   }
 
-  if (filterFields.end_date) {
+  if (filterFields?.end_date) {
     getObservationsQuery.andWhere('observation_date', '<=', filterFields.end_date);
   }
 
-  if (filterFields.keyword) {
+  if (filterFields?.keyword) {
     getObservationsQuery.where((subqueryBuilder) => {
       subqueryBuilder.where('itis_scientific_name', 'ilike', `%${filterFields.keyword}%`);
       if (!isNaN(Number(filterFields.keyword))) {
@@ -62,19 +62,19 @@ export function makeFindObservationsQuery(
     });
   }
 
-  if (filterFields.start_time) {
+  if (filterFields?.start_time) {
     getObservationsQuery.andWhere('time', '>=', filterFields.start_time);
   }
 
-  if (filterFields.end_time) {
+  if (filterFields?.end_time) {
     getObservationsQuery.andWhere('time', '<=', filterFields.end_time);
   }
 
   // Focal Species filter
-  if (filterFields.itis_tsns?.length) {
+  if (filterFields?.itis_tsns?.length) {
     // multiple
     getObservationsQuery.whereIn('itis_tsn', filterFields.itis_tsns);
-  } else if (filterFields.itis_tsn) {
+  } else if (filterFields?.itis_tsn) {
     // single
     getObservationsQuery.where('itis_tsn', filterFields.itis_tsn);
   }
