@@ -27,6 +27,7 @@ export type AlertModel = z.infer<typeof AlertModel>;
  * @description Data record for `Alert`.
  */
 export const AlertRecord = AlertModel.omit({
+  create_date: true,
   create_user: true,
   update_date: true,
   update_user: true,
