@@ -76,7 +76,7 @@ const AlertTable = (props: IAlertTableProps) => {
       headerName: 'Page',
       headerAlign: 'left',
       align: 'left',
-      flex: 0.1,
+      flex: 0.2,
       renderCell: (params) =>
         codesContext.codesDataLoader.data?.alert_types.find((type) => type.id === params.row.alert_type_id)?.name ??
         params.row.alert_type_id
