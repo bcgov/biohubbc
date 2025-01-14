@@ -6,7 +6,7 @@ import {
   CSVError,
   CSVParams
 } from '../../../utils/csv-utils/csv-config-validation.interface';
-import { validateZodCell } from '../../../utils/csv-utils/csv-header-configs';
+import { updateCSVRowState, validateZodCell } from '../../../utils/csv-utils/csv-header-configs';
 import { NestedRecord } from '../../../utils/nested-record';
 import { CritterCSVStaticHeader } from './import-critters-service';
 
@@ -193,30 +193,10 @@ export const getCritterSexCellValidator = (
       ];
     }
 
+    // Set the row state to store the qualitative option id for the sex
+    updateCSVRowState(params.row, { sexId: rowDictionarySex });
+
     return [];
-  };
-};
-
-/**
- * Get the critter sex cell setter.
- *
- * @param {NestedRecord<string>} rowDictionary The row dictionary.
- * @param {CSVConfigUtils<CrittterCSVConfig>} configUtils The CSV config utils.
- * @returns {*} {CSVCellValidator} The validate cell callback
- */
-export const getCritterSexCellSetter = (
-  rowDictionary: NestedRecord<string>,
-  configUtils: CSVConfigUtils<CritterCSVStaticHeader>
-): CSVCellSetter => {
-  return (params: CSVParams) => {
-    if (params.cell === undefined) {
-      return undefined;
-    }
-
-    const rowTsn = Number(configUtils.getCellValue('ITIS_TSN', params.row));
-    const sexCellValue = String(params.cell);
-
-    return rowDictionary.get(rowTsn, sexCellValue);
   };
 };
 
