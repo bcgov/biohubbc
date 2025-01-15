@@ -1,21 +1,15 @@
 import { z } from 'zod';
+import { AlertRecord } from '../database-models/alert';
 
-// Define the alert schema
-export const IAlert = z.object({
-  alert_id: z.number(),
-  alert_type_id: z.number().int(),
-  name: z.string(),
-  message: z.string(),
-  severity: z.enum(['info', 'success', 'error', 'warning']),
-  data: z.object({}).nullable(),
-  record_end_date: z.string().nullable(),
+export const AlertRecordWithStatus = AlertRecord.extend({
+  create_date: z.string(),
   status: z.enum(['active', 'expired'])
 });
+export type AlertRecordWithStatus = z.infer<typeof AlertRecordWithStatus>;
 
-// Infer types from the schema
-export type IAlert = z.infer<typeof IAlert>;
-export type IAlertCreateObject = Omit<IAlert, 'alert_id' | 'status'>;
-export type IAlertUpdateObject = Omit<IAlert, 'status'>;
+export type IAlertUpdateObject = AlertRecord;
+
+export type IAlertCreateObject = Omit<AlertRecord, 'alert_id'>;
 
 // Filter object for viewing alerts
 export interface IAlertFilterObject {
