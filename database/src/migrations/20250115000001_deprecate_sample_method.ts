@@ -37,17 +37,6 @@ import { Knex } from 'knex';
 export async function up(knex: Knex): Promise<void> {
   await knex.raw(`--sql
     ----------------------------------------------------------------------------------------
-    -- Drop views
-    ----------------------------------------------------------------------------------------
-    SET SEARCH_PATH=biohub_dapi_v1;
-
-    DROP VIEW IF EXISTS method_technique;
-    DROP VIEW IF EXISTS survey_sample_site;
-    DROP VIEW IF EXISTS survey_sample_method;
-    DROP VIEW IF EXISTS survey_sample_period;
-    DROP VIEW IF EXISTS survey_observation;
-
-    ----------------------------------------------------------------------------------------
     -- Alter method_technique table
     ----------------------------------------------------------------------------------------
     SET SEARCH_PATH=biohub;
@@ -172,17 +161,6 @@ export async function up(knex: Knex): Promise<void> {
     ----------------------------------------------------------------------------------------
 
     DROP TABLE IF EXISTS survey_sample_method CASCADE;
-
-    ----------------------------------------------------------------------------------------
-    -- Update views
-    ----------------------------------------------------------------------------------------
-
-    SET SEARCH_PATH=biohub_dapi_v1;
-
-    CREATE OR REPLACE VIEW method_technique AS SELECT * FROM biohub.method_technique;
-    CREATE OR REPLACE VIEW survey_sample_site AS SELECT * FROM biohub.survey_sample_site;
-    CREATE OR REPLACE VIEW survey_sample_period AS SELECT * FROM biohub.survey_sample_period;
-    CREATE OR REPLACE VIEW survey_observation AS SELECT * FROM biohub.survey_observation;
   `);
 }
 
