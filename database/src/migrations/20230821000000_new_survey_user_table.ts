@@ -89,7 +89,7 @@ export async function up(knex: Knex): Promise<void> {
 
   ALTER TABLE survey_participation ADD CONSTRAINT survey_participation_fk3
   FOREIGN KEY (system_user_id)
-  REFERENCES system_user(system_user_id);
+  REFERENCES "system_user"(system_user_id);
 
   -- Add unique end-date key constraint (don't allow 2 entities with the same name and a NULL record_end_date)
   CREATE UNIQUE INDEX survey_job_nuk1 ON survey_job(name, (record_end_date is NULL)) where record_end_date is null;
