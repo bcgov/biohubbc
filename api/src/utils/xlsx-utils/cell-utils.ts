@@ -11,6 +11,7 @@ import {
   USDefaultDateFormatReverse
 } from '../../constants/dates';
 import { safeTrim } from '../string-utils';
+import { DEFAULT_XLSX_DATE_FORMAT } from './worksheet-utils';
 
 /**
  * Trims whitespace from the value of a string type cell.
@@ -48,7 +49,7 @@ export function replaceCellDates(cell: CellObject) {
     return cell;
   }
 
-  if (cell.z !== 'm/d/yy') {
+  if (cell.z !== DEFAULT_XLSX_DATE_FORMAT) {
     // Cell is not a date or time cell
     return cell;
   }
@@ -131,35 +132,35 @@ export function isStringCellWithDateValue(cell: CellObject): false | string {
   return false;
 }
 
-/**
- * Checks if the cell has a format, and if the format is likely a date format.
- *
- * @export
- * @param {CellObject} cell
- * @return {*}  {boolean} `true` if the cell has a date format, `false` otherwise.
- */
-export function doesCellHaveDateFormat(cell: CellObject): boolean {
-  if (!cell.z) {
-    return false;
-  }
+///**
+// * Checks if the cell has a format, and if the format is likely a date format.
+// *
+// * @export
+// * @param {CellObject} cell
+// * @return {*}  {boolean} `true` if the cell has a date format, `false` otherwise.
+// */
+//export function doesCellHaveDateFormat(cell: CellObject): boolean {
+//  if (!cell.z) {
+//    return false;
+//  }
+//
+//  // format contains `d` and/or `y` which are values only used in date formats
+//  return String(cell.z).includes('d') || String(cell.z).includes('y');
+//}
 
-  // format contains `d` and/or `y` which are values only used in date formats
-  return String(cell.z).includes('d') || String(cell.z).includes('y');
-}
-
-/**
- * Checks if the cell has a format, and if the format is likely a time format.
- *
- * @export
- * @param {CellObject} cell
- * @return {*}  {boolean} `true` if the cell has a time format, `false` otherwise.
- */
-export function doesCellHaveTimeFormat(cell: CellObject): boolean {
-  if (!cell.z) {
-    // Not a date cell and/or has no date format
-    return false;
-  }
-
-  // format contains `h` and/or `ss` which are values only used in time formats, or date formats that include time
-  return String(cell.z).includes('h') || String(cell.z).includes('ss');
-}
+///**
+// * Checks if the cell has a format, and if the format is likely a time format.
+// *
+// * @export
+// * @param {CellObject} cell
+// * @return {*}  {boolean} `true` if the cell has a time format, `false` otherwise.
+// */
+//export function doesCellHaveTimeFormat(cell: CellObject): boolean {
+//  if (!cell.z) {
+//    // Not a date cell and/or has no date format
+//    return false;
+//  }
+//
+//  // format contains `h` and/or `ss` which are values only used in time formats, or date formats that include time
+//  return String(cell.z).includes('h') || String(cell.z).includes('ss');
+//}

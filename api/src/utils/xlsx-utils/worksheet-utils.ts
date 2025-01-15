@@ -4,7 +4,6 @@ import { intersection, isUndefined } from 'lodash';
 import xlsx, { CellObject } from 'xlsx';
 import { getLogger } from '../logger';
 import { MediaFile } from '../media/media-file';
-import { DEFAULT_XLSX_SHEET_NAME } from '../media/xlsx/xlsx-file';
 import { safeToLowerCase } from '../string-utils';
 import { replaceCellDates, trimCellWhitespace } from './cell-utils';
 import {
@@ -12,6 +11,9 @@ import {
   getColumnAliasesFromValidator,
   getColumnNamesFromValidator
 } from './column-validator-utils';
+
+export const DEFAULT_XLSX_SHEET_NAME = 'Sheet1';
+export const DEFAULT_XLSX_DATE_FORMAT = 'm/d/yy';
 
 dayjs.extend(customParseFormat);
 
@@ -54,15 +56,13 @@ export const constructXLSXWorkbook = (file: MediaFile): xlsx.WorkBook => {
   return xlsx.read(file.buffer, {
     // Return date cells as numbers
     cellDates: false,
-    // Include the raw string version of the value
+    // Include the raw string version of the value (.w field)
     cellText: true,
-    // Include the number format (if any) of the value
+    // Include the number format (if any) of the value (.z field)
     cellNF: true,
+    dateNF: DEFAULT_XLSX_DATE_FORMAT, // m/d/yy
     // Don't return raw, as this will return every cell as a string, even if it's a number or date
-    raw: false,
-    // Extra bloat we don't need
-    cellFormula: false,
-    cellHTML: false
+    raw: false
   });
 };
 
