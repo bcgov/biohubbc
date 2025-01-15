@@ -232,4 +232,51 @@ describe('CSVConfigUtils', () => {
       });
     });
   });
+
+  describe('getWorksheetHeader', () => {
+    it('should get the worksheet static header', () => {
+      const mockConfig = {
+        staticHeadersConfig: {
+          TEST: { aliases: [] }
+        },
+        ignoreDynamicHeaders: false
+      };
+
+      const utils = new CSVConfigUtils({}, mockConfig);
+
+      const header = utils.getWorksheetHeader('TEST', { TEST: 'cellValue' });
+
+      expect(header).to.be.equal('TEST');
+    });
+
+    it('should get the worksheet header alias', () => {
+      const mockConfig: CSVConfig = {
+        staticHeadersConfig: {
+          TEST: { aliases: ['OTHER'] }
+        },
+        ignoreDynamicHeaders: false
+      };
+
+      const utils = new CSVConfigUtils({}, mockConfig);
+
+      const header = utils.getWorksheetHeader('TEST', { OTHER: 'cellValue' });
+
+      expect(header).to.be.equal('OTHER');
+    });
+
+    it('should return undefined if header not found', () => {
+      const mockConfig: CSVConfig = {
+        staticHeadersConfig: {
+          TEST: { aliases: [] }
+        },
+        ignoreDynamicHeaders: false
+      };
+
+      const utils = new CSVConfigUtils({}, mockConfig);
+
+      const header = utils.getWorksheetHeader('BAD', { TEST: 'cellValue' });
+
+      expect(header).to.be.undefined;
+    });
+  });
 });

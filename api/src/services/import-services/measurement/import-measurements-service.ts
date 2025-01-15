@@ -106,6 +106,7 @@ export class ImportMeasurementsService extends DBService {
             value: stateMeasurement.value
           });
         } else {
+          // Realistically, this should never happen, only when the CSVRowState is incorrectly set
           throw new ApiGeneralError('Invalid measurement type', [
             'ImportMeasurementsService->importCSVWorksheet',
             stateMeasurement

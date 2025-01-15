@@ -6,7 +6,7 @@ import {
 } from './measurement-header-configs';
 
 describe('measurement-header-configs', () => {
-  describe.only('getQuantitativeMeasurementCellValidator', () => {
+  describe('getQuantitativeMeasurementCellValidator', () => {
     it('should return an empty array if the cell is valid', () => {
       const cellValidator = getQuantitativeMeasurementCellValidator({
         itis_tsn: 123,

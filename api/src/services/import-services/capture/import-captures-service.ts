@@ -138,9 +138,11 @@ export class ImportCapturesService extends DBService {
 
     defaultLog.debug({ label: 'import captures', captures });
 
-    await this.surveyCritterService.critterbaseService.bulkCreate({ captures, locations });
+    throw new Error('test');
 
-    return [];
+    //await this.surveyCritterService.critterbaseService.bulkCreate({ captures, locations });
+
+    //return [];
   }
 
   /**

@@ -121,7 +121,7 @@ export const getQuantitativeMeasurementCellValidator = (
     /**
      * Update the row state with the taxon measurement id and value
      * Why an object ([params.header]: {...})?
-     * To prevent overriding if multiple measurements are stored in the same row.
+     * Prevents overriding state if multiple measurements are stored in the same row.
      */
     updateCSVRowState(params.row, {
       [params.header]: {
@@ -174,7 +174,7 @@ export const getQualitativeMeasurementCellValidator = (
     /**
      * Update the row state with the taxon measurement id and qualitative option id
      * Why an object ([params.header]: {...})?
-     * To prevent overriding if multiple measurements are stored in the same row.
+     * Prevents overriding state if multiple measurements are stored in the same row.
      */
     updateCSVRowState(params.row, {
       [params.header]: {

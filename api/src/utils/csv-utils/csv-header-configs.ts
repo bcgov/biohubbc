@@ -113,6 +113,8 @@ export const getDescriptionCellValidator = (): CSVCellValidator => {
  */
 export const getTimeCellValidator = (): CSVCellValidator => {
   return (params: CSVParams) => {
+    console.log({ timeCell: params.cell });
+
     if (params.cell === undefined || formatTimeString(String(params.cell))) {
       return [];
     }
