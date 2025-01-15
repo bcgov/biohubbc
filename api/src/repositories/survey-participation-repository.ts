@@ -121,7 +121,7 @@ export class SurveyParticipationRepository extends BaseRepository {
         LEFT JOIN
         survey_job sj
         ON sj.survey_job_id = sp.survey_job_id
-      LEFT JOIN system_user su
+      LEFT JOIN "system_user" su
         ON sp.system_user_id = su.system_user_id
       LEFT JOIN
         system_user_role sur
@@ -192,7 +192,7 @@ export class SurveyParticipationRepository extends BaseRepository {
       LEFT JOIN
         survey_job sj
         ON sj.survey_job_id = sp.survey_job_id
-      LEFT JOIN system_user su
+      LEFT JOIN "system_user" su
         ON sp.system_user_id = su.system_user_id
       LEFT JOIN
         system_user_role sur
