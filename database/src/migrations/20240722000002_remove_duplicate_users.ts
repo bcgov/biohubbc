@@ -57,7 +57,7 @@ export async function up(knex: Knex): Promise<void> {
         user_identity_source_id,
         system_user_id
       FROM
-        system_user
+        "system_user"
       ORDER BY
         LOWER(user_identifier),
         user_identity_source_id,
@@ -68,22 +68,22 @@ export async function up(knex: Knex): Promise<void> {
       -- Get all system_user records with a unique user_identifier (case-insensitive) and user_identity_source_id,
       -- aggregating all additional duplicate system_user_ids into an array
       SELECT
-        LOWER(system_user.user_identifier) AS user_identifier,
+        LOWER("system_user".user_identifier) AS user_identifier,
         user_identity_source_id,
-        array_remove(array_agg(system_user.system_user_id), null) duplicate_system_user_ids,
+        array_remove(array_agg("system_user".system_user_id), null) duplicate_system_user_ids,
         -- Get the first non-null value for each of the remaining user detail columns
-        (array_remove(array_agg(system_user.user_guid), null))[1] user_guid,
-        (array_remove(array_agg(system_user.display_name), null))[1] display_name,
-        (array_remove(array_agg(system_user.given_name), null))[1] given_name,
-        (array_remove(array_agg(system_user.family_name), null))[1] family_name,
-        (array_remove(array_agg(system_user.email), null))[1] email,
-        (array_remove(array_agg(system_user.agency), null))[1] agency,
-        (array_remove(array_agg(system_user.notes), null))[1] notes
+        (array_remove(array_agg("system_user".user_guid), null))[1] user_guid,
+        (array_remove(array_agg("system_user".display_name), null))[1] display_name,
+        (array_remove(array_agg("system_user".given_name), null))[1] given_name,
+        (array_remove(array_agg("system_user".family_name), null))[1] family_name,
+        (array_remove(array_agg("system_user".email), null))[1] email,
+        (array_remove(array_agg("system_user".agency), null))[1] agency,
+        (array_remove(array_agg("system_user".notes), null))[1] notes
       FROM
-        system_user
+        "system_user"
       GROUP BY
-        LOWER(system_user.user_identifier),
-        system_user.user_identity_source_id
+        LOWER("system_user".user_identifier),
+        "system_user".user_identity_source_id
     ),
     w_system_user_3 AS (
       -- Combine the two previous CTEs to get the canonical system_user_id to use when there are duplicate users, and
@@ -188,13 +188,13 @@ export async function up(knex: Knex): Promise<void> {
     ),
     -- Delete duplicate system_user records for duplicate system_user_ids
     w_delete_duplicate_system_user AS (
-      DELETE FROM system_user su
+      DELETE FROM "system_user" su
       USING w_system_user_3 wsu3
       WHERE su.system_user_id = ANY(wsu3.duplicate_system_user_ids)
     ),
     -- Update the user details for the canonical system user record
     w_update_system_user AS (
-      UPDATE system_user su
+      UPDATE "system_user" su
       SET
         user_guid = wsu3.user_guid,
         display_name = wsu3.display_name,
@@ -243,7 +243,7 @@ export async function up(knex: Knex): Promise<void> {
     ----------------------------------------------------------------------------------------
 
     -- Don't allow more than 1 record with the same user_identifier (case-insensitive) AND user_identity_source_id.
-    CREATE UNIQUE INDEX system_user_uk2 ON system_user(LOWER(user_identifier), user_identity_source_id);
+    CREATE UNIQUE INDEX system_user_uk2 ON "system_user"(LOWER(user_identifier), user_identity_source_id);
 
     -- Don't allow the same system user to have more than one project role within a project.
     ALTER TABLE biohub.project_participation ADD CONSTRAINT project_participation_uk1 UNIQUE (system_user_id, project_id);
@@ -252,7 +252,7 @@ export async function up(knex: Knex): Promise<void> {
     ALTER TABLE biohub.survey_participation ADD CONSTRAINT survey_participation_uk1 UNIQUE (system_user_id, survey_id);
 
     -- Don't allow duplicate user_guid values
-    CREATE UNIQUE INDEX system_user_uk1 ON system_user (user_guid);
+    CREATE UNIQUE INDEX system_user_uk1 ON "system_user"(user_guid);
   `);
 }
 

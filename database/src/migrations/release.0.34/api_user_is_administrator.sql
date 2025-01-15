@@ -1,7 +1,7 @@
 -- api_user_is_administrator.sql
 drop function if exists api_user_is_administrator;
 
-create or replace function api_user_is_administrator(p_system_user_id system_user.system_user_id%type default null) returns boolean
+create or replace function api_user_is_administrator(p_system_user_id "system_user".system_user_id%type default null) returns boolean
 language plpgsql
 security definer
 stable
@@ -18,7 +18,7 @@ $$
 --                  2021-06-21  initial release
 -- *******************************************************************
 declare
-  _system_user_id system_user.system_user_id%type;
+  _system_user_id "system_user".system_user_id%type;
 begin
   if (p_system_user_id is null) then
     select api_get_context_user_id() into _system_user_id;
