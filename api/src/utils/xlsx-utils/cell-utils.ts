@@ -1,10 +1,14 @@
 import dayjs from 'dayjs';
-import { CellObject } from 'xlsx';
+import xlsx, { CellObject } from 'xlsx';
 import {
   AltDateFormat,
   AltDateFormatReverse,
   DefaultDateFormat,
-  DefaultDateFormatReverse
+  DefaultDateFormatReverse,
+  USAltDateFormat,
+  USAltDateFormatReverse,
+  USDefaultDateFormat,
+  USDefaultDateFormatReverse
 } from '../../constants/dates';
 import { safeTrim } from '../string-utils';
 
@@ -31,8 +35,7 @@ export function trimCellWhitespace(cell: CellObject) {
 }
 
 /**
- * Attempts to identify and update cells whose values are either date strings or date objects to a consistent date
- * format.
+ * Attempts to identify and update cells whose values are either dates or times to a consistent format.
  *
  * @see https://docs.sheetjs.com/docs/csf/cell for details on cell fields
  * @export
@@ -45,33 +48,24 @@ export function replaceCellDates(cell: CellObject) {
     return cell;
   }
 
-  // If the cell was already interpreted as a date, format it to the default date format, and return
-  if (isDateCell(cell) && cell.v instanceof Date) {
-    // Attempt to parse the date using the format and update the cell value
-    cell.v = dayjs((cell.v as Date).toISOString(), DefaultDateFormat).format(DefaultDateFormat);
-    // Update the format to desired default format
-    cell.z = DefaultDateFormat;
-    // Ensure the cell type is set to date
-    cell.t = 'd';
-
+  if (cell.z !== 'm/d/yy') {
+    // Cell is not a date or time cell
     return cell;
   }
 
-  // If the cell is a string cell with a valid date value, update the cell value to a date type cell using the default
-  // format, and return
-  const matchingStringDateFormat = isStringCellWithDateValue(cell);
-  if (matchingStringDateFormat) {
-    // Attempt to parse the date using the format and update the cell value
-    cell.v = dayjs(cell.v as string, matchingStringDateFormat).format(DefaultDateFormat);
-    // Update the format to desired default format
-    cell.z = DefaultDateFormat;
-    // Ensure the cell type is set to date
-    cell.t = 'd';
+  const matchInteger = /^\d+$/;
+  const matchDecimal = /^0\.\d+$/;
 
-    return cell;
+  if (matchInteger.test(String(cell.v))) {
+    // Cell is an integer that represents a date
+    cell.z = 'yyyy-mm-dd';
+    cell.v = xlsx.utils.format_cell(cell);
+  } else if (matchDecimal.test(String(cell.v))) {
+    // Cell is an integer that represents a time
+    cell.z = 'hh:mm:ss';
+    cell.v = xlsx.utils.format_cell(cell);
   }
 
-  // The cell neither a date type cell nor a string type cell with a valid date string value
   return cell;
 }
 
@@ -106,16 +100,35 @@ export function isDateCell(cell: CellObject): boolean {
  * date format, return `false` otherwise.
  */
 export function isStringCellWithDateValue(cell: CellObject): false | string {
-  if (!isStringCell(cell)) {
+  if (!isStringCell(cell) && !isDateCell(cell)) {
     return false;
   }
 
+  // Attempt to match Canadian date formats
   const matchedFormats = [DefaultDateFormat, DefaultDateFormatReverse, AltDateFormat, AltDateFormatReverse].filter(
-    (format) => dayjs(String(cell.v), format).isValid()
+    (format) => dayjs(String(cell.v), format, true).isValid()
   );
 
-  // Ensure only one format matched
-  return matchedFormats.length === 1 ? matchedFormats[0] : false;
+  if (matchedFormats.length === 1) {
+    // Found 1 matching date format
+    return matchedFormats[0];
+  }
+
+  // Attempt to match US date formats
+  const matchedUSFormats = [
+    USDefaultDateFormat,
+    USDefaultDateFormatReverse,
+    USAltDateFormat,
+    USAltDateFormatReverse
+  ].filter((format) => dayjs(String(cell.v), format, true).isValid());
+
+  if (matchedUSFormats.length === 1) {
+    // Found 1 matching date format
+    return matchedUSFormats[0];
+  }
+
+  // Cell content does not match any supported date formats
+  return false;
 }
 
 /**

@@ -52,11 +52,17 @@ export interface IXLSXCSVValidator {
  */
 export const constructXLSXWorkbook = (file: MediaFile): xlsx.WorkBook => {
   return xlsx.read(file.buffer, {
-    cellDates: true,
+    // Return date cells as numbers
+    cellDates: false,
+    // Include the raw string version of the value
+    cellText: true,
+    // Include the number format (if any) of the value
     cellNF: true,
-    cellHTML: false,
-    dateNF: '_',
-    raw: false
+    // Don't return raw, as this will return every cell as a string, even if it's a number or date
+    raw: false,
+    // Extra bloat we don't need
+    cellFormula: false,
+    cellHTML: false
   });
 };
 
@@ -115,49 +121,6 @@ export const getHeadersLowerCase = (worksheet: xlsx.WorkSheet): string[] => {
  */
 export const getHeaderIndex = (worksheet: xlsx.WorkSheet, headerName: string): number => {
   return getHeadersUpperCase(worksheet).indexOf(headerName);
-};
-
-/**
- * Return an array of row value arrays.
- *
- * @export
- * @param {xlsx.WorkSheet} worksheet
- * @return {*}  {string[][]}
- */
-export const getWorksheetRows = (worksheet: xlsx.WorkSheet): string[][] => {
-  const originalRange = getWorksheetRange(worksheet);
-
-  if (!originalRange) {
-    return [];
-  }
-
-  const rowsToReturn: string[][] = [];
-
-  for (let i = 1; i <= originalRange.e.r; i++) {
-    const row = new Array(getHeadersUpperCase(worksheet).length);
-
-    let rowHasValues = false;
-
-    for (let j = 0; j <= originalRange.e.c; j++) {
-      const cellAddress = { c: j, r: i };
-      const cellRef = xlsx.utils.encode_cell(cellAddress);
-      const cell = worksheet[cellRef];
-
-      if (!cell) {
-        continue;
-      }
-
-      row[j] = trimCellWhitespace(replaceCellDates(cell)).v;
-
-      rowHasValues = true;
-    }
-
-    if (row.length && rowHasValues) {
-      rowsToReturn.push(row);
-    }
-  }
-
-  return rowsToReturn;
 };
 
 /**
