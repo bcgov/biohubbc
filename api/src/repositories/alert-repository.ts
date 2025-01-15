@@ -3,7 +3,12 @@ import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
-import { AlertRecordWithStatus, IAlertCreateObject, IAlertFilterObject, IAlertUpdateObject } from '../models/alert-view';
+import {
+  AlertRecordWithStatus,
+  IAlertCreateObject,
+  IAlertFilterObject,
+  IAlertUpdateObject
+} from '../models/alert-view';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { BaseRepository } from './base-repository';
 

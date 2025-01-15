@@ -1,5 +1,10 @@
 import { IDBConnection } from '../database/db';
-import { AlertRecordWithStatus, IAlertCreateObject, IAlertFilterObject, IAlertUpdateObject } from '../models/alert-view';
+import {
+  AlertRecordWithStatus,
+  IAlertCreateObject,
+  IAlertFilterObject,
+  IAlertUpdateObject
+} from '../models/alert-view';
 import { AlertRepository } from '../repositories/alert-repository';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { DBService } from './db-service';
