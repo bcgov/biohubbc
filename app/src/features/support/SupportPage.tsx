@@ -20,6 +20,11 @@ import { ISupportPageView, SupportPageParams, SupportPageView } from '../support
 import { dataMap } from '../support/data/dataMap';
 import AccordionSupportCard from './components/AccordionSupportCard';
 
+/**
+ * Returns information about how to use the app, definitions, and other resources for users.
+ * 
+ * @returns {*}
+ */
 const SupportPage = () => {
   const { searchParams, setSearchParams } = useSearchParams<SupportPageParams>();
 
