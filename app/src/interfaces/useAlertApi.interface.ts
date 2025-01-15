@@ -1,5 +1,8 @@
+import { ApiPaginationResponseParams } from 'types/misc';
+
 export interface IGetAlertsResponse {
   alerts: IAlert[];
+  pagination: ApiPaginationResponseParams;
 }
 
 export type AlertSeverity = 'info' | 'success' | 'error' | 'warning';
@@ -12,11 +15,21 @@ export interface IAlert {
   data: object | null;
   record_end_date: string | null;
   status: 'expired' | 'active';
+  create_date: string;
 }
 
-export type IAlertCreateObject = Omit<IAlert, 'alert_id' | 'status'>;
+export interface IAlertCreateObject {
+  alert_type_id: number;
+  severity: AlertSeverity;
+  name: string;
+  message: string;
+  data: object | null;
+  record_end_date: string | null;
+}
 
-export type IAlertUpdateObject = Omit<IAlert, 'status'>;
+export interface IAlertUpdateObject extends IAlertCreateObject {
+  alert_id: number;
+}
 
 export interface IAlertFilterParams {
   expiresBefore?: string;
