@@ -151,7 +151,7 @@ export class ProjectParticipationRepository extends BaseRepository {
         ON pp.project_role_id = prp.project_role_id
       LEFT JOIN project_permission pp2
         ON pp2.project_permission_id = prp.project_permission_id
-      LEFT JOIN system_user su
+      LEFT JOIN "system_user" su
         ON pp.system_user_id = su.system_user_id
       LEFT JOIN
         system_user_role sur
@@ -365,7 +365,7 @@ export class ProjectParticipationRepository extends BaseRepository {
         ON pp.project_role_id = prp.project_role_id
       LEFT JOIN project_permission pp2
         ON pp2.project_permission_id = prp.project_permission_id
-      LEFT JOIN system_user su
+      LEFT JOIN "system_user" su
         ON pp.system_user_id = su.system_user_id
       LEFT JOIN
         system_user_role sur
@@ -503,7 +503,7 @@ export class ProjectParticipationRepository extends BaseRepository {
         ON pp.project_role_id = prp.project_role_id
       LEFT JOIN project_permission pp2
         ON pp2.project_permission_id = prp.project_permission_id
-      LEFT JOIN system_user su
+      LEFT JOIN "system_user" su
         ON pp.system_user_id = su.system_user_id
       LEFT JOIN
         system_user_role sur

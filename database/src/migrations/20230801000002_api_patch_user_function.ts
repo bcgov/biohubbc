@@ -28,7 +28,7 @@ export async function up(knex: Knex): Promise<void> {
       AS $$
         -- *******************************************************************
         -- Procedure: api_patch_system_user
-        -- Purpose: Updates a system_user record if any of the incoming values are not the same as the existing values.
+        -- Purpose: Updates a "system_user" record if any of the incoming values are not the same as the existing values.
         --
         -- MODIFICATION HISTORY
         -- Person           Date        Comments
@@ -37,11 +37,11 @@ export async function up(knex: Knex): Promise<void> {
         --                  2023-08-01  initial release
         -- *******************************************************************
         DECLARE
-          _system_user system_user%rowtype;
+          _system_user "system_user"%rowtype;
           _user_identity_source_id user_identity_source.user_identity_source_id%type;
         BEGIN
           -- Attempt to find user based on guid
-          SELECT * INTO _system_user FROM system_user
+          SELECT * INTO _system_user FROM "system_user"
             WHERE user_guid = p_system_user_guid
             AND record_end_date IS NULL
             LIMIT 1;
@@ -52,7 +52,7 @@ export async function up(knex: Knex): Promise<void> {
               WHERE name = p_user_identity_source_name
               AND record_end_date IS NULL;
 
-            SELECT * INTO _system_user FROM system_user
+            SELECT * INTO _system_user FROM "system_user"
               WHERE user_identity_source_id = _user_identity_source_id
               AND user_identifier = p_user_identifier
               LIMIT 1;
@@ -64,7 +64,7 @@ export async function up(knex: Knex): Promise<void> {
           END IF;
 
           -- Otherwise, patch the system user record with the latest information passed to this function
-          UPDATE system_user SET
+          UPDATE "system_user" SET
             user_guid = p_system_user_guid,
             user_identifier = p_user_identifier,
             email = p_email,
@@ -92,7 +92,7 @@ export async function up(knex: Knex): Promise<void> {
         END;
       $$;
 
-    COMMENT ON FUNCTION api_patch_system_user(varchar, varchar, varchar, varchar, varchar, varchar, varchar, varchar) IS 'Updates a system_user record if any of the incoming values are not the same as the existing values.';
+    COMMENT ON FUNCTION api_patch_system_user(varchar, varchar, varchar, varchar, varchar, varchar, varchar, varchar) IS 'Updates a "system_user" record if any of the incoming values are not the same as the existing values.';
   `);
 }
 
