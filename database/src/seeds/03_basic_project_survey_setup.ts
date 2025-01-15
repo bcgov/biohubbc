@@ -187,7 +187,7 @@ const insertSurveyParticipationData = (surveyId: number) => `
           SELECT
             system_user_id
           FROM
-            system_user su
+            "system_user" su
           WHERE
             su.user_identifier = '${PROJECT_SEEDER_USER_IDENTIFIER}'
         ), 1)
@@ -449,7 +449,7 @@ const insertProjectParticipationData = (projectId: number) => `
           SELECT
             system_user_id
           FROM
-            system_user su
+            "system_user" su
           WHERE
             su.user_identifier = '${PROJECT_SEEDER_USER_IDENTIFIER}'
         ), 1)
@@ -1079,8 +1079,8 @@ const insertAccessRequest = () => `
   VALUES (
     (SELECT administrative_activity_status_type_id FROM administrative_activity_status_type ORDER BY random() LIMIT 1),
     (SELECT administrative_activity_type_id FROM administrative_activity_type WHERE name = 'System Access'),
-    (SELECT system_user_id FROM system_user ORDER BY random() LIMIT 1),
-    (SELECT system_user_id FROM system_user ORDER BY random() LIMIT 1),
+    (SELECT system_user_id FROM "system_user" ORDER BY random() LIMIT 1),
+    (SELECT system_user_id FROM "system_user" ORDER BY random() LIMIT 1),
     $$${faker.lorem.sentences(2)}$$,
     jsonb_build_object(
         'reason', '${faker.lorem.sentences(1)}',
@@ -1118,7 +1118,7 @@ const insertSystemAlert = () => `
     NULL,
     '${faker.helpers.arrayElement(['info', 'success', 'warning', 'error'])}',
     (CASE WHEN random() < 0.5 THEN NULL ELSE (CURRENT_DATE - INTERVAL '30 days') END),
-    (SELECT system_user_id FROM system_user ORDER BY random() LIMIT 1),
-    (SELECT system_user_id FROM system_user ORDER BY random() LIMIT 1)
+    (SELECT system_user_id FROM "system_user" ORDER BY random() LIMIT 1),
+    (SELECT system_user_id FROM "system_user" ORDER BY random() LIMIT 1)
   );
 `;

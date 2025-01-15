@@ -204,4 +204,32 @@ describe('CSVConfigUtils', () => {
       expect(isUnique).to.be.false;
     });
   });
+
+  describe('setAllStaticHeaderConfigs', () => {
+    it('should set all static header configs', () => {
+      const worksheet: WorkSheet = xlsx.utils.json_to_sheet([{ TEST: 'cellValue' }]);
+      const mockConfig: CSVConfig<'TEST'> = {
+        staticHeadersConfig: {
+          TEST: { aliases: [] }
+        },
+        ignoreDynamicHeaders: false
+      };
+
+      const utils = new CSVConfigUtils(worksheet, mockConfig);
+
+      const validateCell = () => [];
+      const setCellValue = () => 'test';
+
+      utils.setAllStaticHeaderConfigs({
+        TEST: { validateCell, setCellValue }
+      });
+
+      expect(utils._config).to.be.deep.equal({
+        staticHeadersConfig: {
+          TEST: { aliases: [], validateCell, setCellValue }
+        },
+        ignoreDynamicHeaders: false
+      });
+    });
+  });
 });
