@@ -13,16 +13,16 @@ import {
 import { Box, Container, Divider, Paper, Stack, Typography } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import PageHeader from 'components/layout/PageHeader';
+import CustomToggleButtonGroup from 'components/toolbar/CustomToggleButtonGroup';
 import { useSearchParams } from 'hooks/useSearchParams';
 import { SetStateAction } from 'react';
-import { StandardsToolbar } from '../standards/components/StandardsToolbar';
 import { ISupportPageView, SupportPageParams, SupportPageView } from '../support/constants/SupportPageView';
 import { dataMap } from '../support/data/dataMap';
 import AccordionSupportCard from './components/AccordionSupportCard';
 
 /**
  * Returns information about how to use the app, definitions, and other resources for users.
- * 
+ *
  * @returns {*}
  */
 const SupportPage = () => {
@@ -58,11 +58,14 @@ const SupportPage = () => {
         <Stack direction="row" gap={3} component={Paper} sx={{ p: 3, height: '100%' }}>
           {/* Navigation Pane */}
           <Box width="300px" flexShrink={0}>
-            <StandardsToolbar
+            <Typography variant="h4" gutterBottom>
+              Support Overview
+            </Typography>
+            <CustomToggleButtonGroup
               views={views}
-              currentView={currentView}
-              setCurrentView={handleViewChange}
-              legend="Support Overview"
+              activeView={currentView}
+              onViewChange={handleViewChange}
+              orientation={'vertical'}
             />
           </Box>
 
