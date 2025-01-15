@@ -87,7 +87,7 @@ describe('import-markings-service', () => {
       const mockGetConfig = sinon.stub(service, 'getCSVConfig').resolves(mockCSVConfig);
 
       const mockValidate = sinon.stub(csv, 'validateCSVWorksheet').returns({
-        errors: [{ error: 'error', solution: 'solution', values: [] }],
+        errors: [{ error: 'error', solution: 'solution', values: [], cell: 'A1', row: 1, header: 'ALIAS' }],
         rows: []
       });
 
@@ -95,7 +95,9 @@ describe('import-markings-service', () => {
 
       expect(mockGetConfig).to.have.been.called;
       expect(mockValidate).to.have.been.calledOnceWithExactly(worksheet, mockCSVConfig);
-      expect(errors).to.deep.equal([{ error: 'error', solution: 'solution', values: [] }]);
+      expect(errors).to.deep.equal([
+        { error: 'error', solution: 'solution', values: [], cell: 'A1', row: 1, header: 'ALIAS' }
+      ]);
     });
   });
 

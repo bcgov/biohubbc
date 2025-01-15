@@ -83,7 +83,7 @@ export class UserRepository extends BaseRepository {
       su.family_name,
       su.agency
     FROM
-      system_user su
+      "system_user" su
     LEFT JOIN
       system_user_role sur
     ON
@@ -147,7 +147,7 @@ export class UserRepository extends BaseRepository {
       su.family_name,
       su.agency
     FROM
-      system_user su
+      "system_user" su
     LEFT JOIN
       system_user_role sur
     ON
@@ -205,7 +205,7 @@ export class UserRepository extends BaseRepository {
         su.family_name,
         su.agency
       FROM
-        system_user su
+        "system_user" su
       LEFT JOIN
         system_user_role sur
       ON
@@ -264,7 +264,7 @@ export class UserRepository extends BaseRepository {
   ): Promise<{ system_user_id: number }> {
     const sqlStatement = SQL`
     INSERT INTO
-      system_user
+      "system_user"
     (
       user_guid,
       user_identity_source_id,
@@ -328,7 +328,7 @@ export class UserRepository extends BaseRepository {
       su.family_name,
       su.agency
     FROM
-      system_user su
+      "system_user" su
     LEFT JOIN
       system_user_role sur
     ON
@@ -369,7 +369,7 @@ export class UserRepository extends BaseRepository {
   async activateSystemUser(systemUserId: number) {
     const sqlStatement = SQL`
       UPDATE
-        system_user
+        "system_user"
       SET
         record_end_date = NULL
       WHERE
@@ -401,7 +401,7 @@ export class UserRepository extends BaseRepository {
   async deactivateSystemUser(systemUserId: number) {
     const sqlStatement = SQL`
       UPDATE
-        system_user
+        "system_user"
       SET
         record_end_date = now()
       WHERE
