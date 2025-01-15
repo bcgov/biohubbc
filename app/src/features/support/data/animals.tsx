@@ -25,8 +25,8 @@ const animals = [
     label: 'The Animal',
     description: [
       <Typography variant="body1" gutterBottom>
-      <strong>Managing Animals</strong>
-    </Typography>,
+        <strong>Managing Animals</strong>
+      </Typography>,
       <Typography variant="body1" gutterBottom>
         Animal data in SIMS is managed through the “Animals” page in your survey. There are two components to animal
         data: the animal, and its events.
