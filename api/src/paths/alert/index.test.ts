@@ -20,6 +20,7 @@ describe('getAlerts', () => {
 
   describe('as a system user', () => {
     it('returns a list of system alerts', async () => {
+      const mockTotal = 10;
       const mockAlerts = [
         {
           alert_id: 1,
@@ -29,7 +30,8 @@ describe('getAlerts', () => {
           severity: 'error' as IAlertSeverity,
           status: 'active' as IAlertStatus,
           data: null,
-          record_end_date: null
+          record_end_date: null,
+          create_date: '2020-01-01T10:10:10'
         },
         {
           alert_id: 2,
@@ -39,13 +41,18 @@ describe('getAlerts', () => {
           severity: 'error' as IAlertSeverity,
           status: 'active' as IAlertStatus,
           data: null,
-          record_end_date: null
+          record_end_date: null,
+          create_date: '2020-01-01T10:10:10'
         }
       ];
+      const mockFilters = { types: 'Surveys', expiresBefore: '2020-01-01', expiresAfter: undefined };
+      const mockPaginationParams = { page: '1', limit: '10', sort: undefined, order: undefined };
 
       const mockDBConnection = getMockDBConnection({ open: sinon.stub(), commit: sinon.stub() });
       sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
-      sinon.stub(AlertService.prototype, 'getAlerts').resolves(mockAlerts);
+
+      const getAlertsStub = sinon.stub(AlertService.prototype, 'getAlerts').resolves(mockAlerts);
+      const getAlertsCountStub = sinon.stub(AlertService.prototype, 'getAlertsCount').resolves(mockTotal);
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
       mockReq.system_user = {
@@ -63,13 +70,30 @@ describe('getAlerts', () => {
         agency: null
       };
 
+      mockReq.query = {
+        ...mockFilters,
+        ...mockPaginationParams
+      };
+
       const requestHandler = getAlerts();
 
       await requestHandler(mockReq, mockRes, mockNext);
 
-      expect(mockRes.jsonValue).to.eql({ alerts: mockAlerts });
       expect(mockDBConnection.open).to.have.been.calledOnce;
       expect(mockDBConnection.commit).to.have.been.calledOnce;
+
+      expect(getAlertsStub).to.have.been.calledOnceWith(mockFilters, {
+        ...mockPaginationParams,
+        page: Number(mockPaginationParams.page),
+        limit: Number(mockPaginationParams.limit)
+      });
+      expect(getAlertsCountStub).to.have.been.calledOnceWith(mockFilters);
+
+      expect(mockRes.jsonValue.pagination).not.to.be.null;
+      expect(mockRes.jsonValue).to.eql({
+        alerts: mockAlerts,
+        pagination: { total: mockTotal, per_page: 10, current_page: 1, last_page: 1, sort: undefined, order: undefined }
+      });
     });
 
     it('handles errors gracefully', async () => {
