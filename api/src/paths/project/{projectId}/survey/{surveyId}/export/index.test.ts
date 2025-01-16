@@ -6,7 +6,7 @@ import { exportData } from '.';
 import { SYSTEM_ROLE } from '../../../../../../constants/roles';
 import * as db from '../../../../../../database/db';
 import { HTTPError } from '../../../../../../errors/http-error';
-import { SystemUser } from '../../../../../../repositories/user-repository';
+import { SystemUserWithRoles } from '../../../../../../models/system-user-view';
 import { ExportService } from '../../../../../../services/export-services/export-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
 
@@ -29,7 +29,7 @@ describe('exportData', () => {
     mockReq.system_user = {
       system_user_id: 1,
       role_names: [SYSTEM_ROLE.PROJECT_CREATOR]
-    } as SystemUser;
+    } as SystemUserWithRoles;
 
     mockReq.params = {
       projectId: '1',
@@ -67,7 +67,7 @@ describe('exportData', () => {
     mockReq.system_user = {
       system_user_id: 1,
       role_names: [SYSTEM_ROLE.PROJECT_CREATOR]
-    } as SystemUser;
+    } as SystemUserWithRoles;
 
     mockReq.params = {
       projectId: '1',

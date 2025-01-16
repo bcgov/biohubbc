@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { ProjectUser } from '../repositories/project-participation-repository';
-import { SystemUser } from '../repositories/user-repository';
+import { SystemUserWithRoles } from './system-user-view';
 
 export interface IProjectAdvancedFilters {
   /**
@@ -45,7 +45,7 @@ export interface IProjectAdvancedFilters {
 export interface IGetProject {
   project: ProjectData;
   objectives: GetObjectivesData;
-  participants: (ProjectUser & SystemUser)[];
+  participants: (ProjectUser & SystemUserWithRoles)[];
   iucn: GetIUCNClassificationData;
 }
 

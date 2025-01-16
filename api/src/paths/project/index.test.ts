@@ -6,7 +6,7 @@ import { SYSTEM_ROLE } from '../../constants/roles';
 import * as db from '../../database/db';
 import { HTTPError } from '../../errors/http-error';
 import { FindProjectsResponse } from '../../models/project-view';
-import { SystemUser } from '../../repositories/user-repository';
+import { SystemUserWithRoles } from '../../models/system-user-view';
 import { ProjectService } from '../../services/project-service';
 import { KeycloakUserInformation } from '../../utils/keycloak-utils';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
@@ -61,7 +61,7 @@ describe('findProjects', () => {
     mockReq.keycloak_token = {} as KeycloakUserInformation;
     mockReq.system_user = {
       role_names: [SYSTEM_ROLE.SYSTEM_ADMIN]
-    } as SystemUser;
+    } as SystemUserWithRoles;
 
     const requestHandler = findProjects();
 
@@ -124,7 +124,7 @@ describe('findProjects', () => {
     mockReq.keycloak_token = {} as KeycloakUserInformation;
     mockReq.system_user = {
       role_names: [SYSTEM_ROLE.PROJECT_CREATOR]
-    } as SystemUser;
+    } as SystemUserWithRoles;
 
     const requestHandler = findProjects();
 
