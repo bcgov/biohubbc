@@ -1,8 +1,10 @@
 import { SYSTEM_ROLE } from '../constants/roles';
 import { IDBConnection } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
+import { ISystemUserFilterObject } from '../models/system-user-view';
 import { SystemUser, UserRepository, UserSearchCriteria } from '../repositories/user-repository';
 import { getLogger } from '../utils/logger';
+import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { DBService } from './db-service';
 
 const defaultLog = getLogger('services/user-service');
@@ -119,13 +121,24 @@ export class UserService extends DBService {
   /**
    * Get a list of all system users.
    *
+   * @param {ISystemUserFilterObject} filters
+   * @param {ApiPaginationOptions} pagination
    * @return {*}  {Promise<SystemUser[]>}
    * @memberof UserService
    */
-  async listSystemUsers(): Promise<SystemUser[]> {
-    const response = await this.userRepository.listSystemUsers();
+  async listSystemUsers(filters: ISystemUserFilterObject, pagination?: ApiPaginationOptions): Promise<SystemUser[]> {
+    return this.userRepository.listSystemUsers(filters, pagination);
+  }
 
-    return response;
+  /**
+   * Get system users count
+   *
+   * @param {ISystemUserFilterObject} filters
+   * @return {*}  {Promise<number>}
+   * @memberof UserService
+   */
+  async getSystemUsersCount(filters: ISystemUserFilterObject): Promise<number> {
+    return this.userRepository.getSystemUsersCount(filters);
   }
 
   /**

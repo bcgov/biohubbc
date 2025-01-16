@@ -1,7 +1,7 @@
 import { AxiosInstance } from 'axios';
 import { IActiveUserFilters } from 'features/admin/users/active/filters/ActiveUsersFilterForm';
 import { IGetUserProjectsListResponse } from 'interfaces/useProjectApi.interface';
-import { ISystemUser } from 'interfaces/useUserApi.interface';
+import { ISystemUser, ISystemUserResponse } from 'interfaces/useUserApi.interface';
 import qs from 'qs';
 import { ApiPaginationRequestOptions } from 'types/misc';
 
@@ -39,12 +39,12 @@ const useUserApi = (axios: AxiosInstance) => {
    *
    * @param {IActiveUserFilters} filters
    * @param {ApiPaginationRequestOptions} pagination
-   * @return {*}  {Promise<ISystemUser[]>}
+   * @return {*}  {Promise<ISystemUserResponse>}
    */
   const getUsersList = async (
     filters: IActiveUserFilters,
     pagination: ApiPaginationRequestOptions
-  ): Promise<ISystemUser[]> => {
+  ): Promise<ISystemUserResponse> => {
     const params = {
       ...pagination,
       ...filters

@@ -141,10 +141,10 @@ export const SystemUserAutocompleteField = (props: ISystemUserAutocompleteFieldP
       disabled={disabled}
       data-testid={formikFieldName}
       filterSelectedOptions
+      clearOnBlur={false}
       noOptionsText={inputValue && inputValue.length > 2 ? 'No matching options' : 'Enter at least 3 letters'}
       options={options}
       getOptionLabel={(option) => option.display_name || ''}
-      value={null} // Always set value to null to prevent a selected value from showing
       isOptionEqualToValue={(option, value) => option.system_user_id === value.system_user_id}
       filterOptions={(options) => {
         if (selectedUsers) {

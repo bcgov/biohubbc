@@ -154,7 +154,7 @@ const ActiveUsersTableContainer = () => {
               sx={{
                 fontWeight: 400
               }}>
-              ({activeUsersDataLoader.data?.length ?? 0})
+              ({activeUsersDataLoader.data?.users.length ?? 0})
             </Typography>
           </Typography>
           <Button
@@ -169,12 +169,16 @@ const ActiveUsersTableContainer = () => {
         </Toolbar>
         <Divider />
         <Box px={3} py={2}>
-          <ActiveUsersFilterForm handleSubmit={() => {}} />
+          <ActiveUsersFilterForm
+            handleSubmit={(values: IActiveUserFilters) => {
+              activeUsersDataLoader.refresh(values, paginationSort);
+            }}
+          />
         </Box>
         <Box>
           {/* Active Users Table */}
           <ActiveUsersTable
-            activeUsers={activeUsersDataLoader.data ?? []}
+            activeUsers={activeUsersDataLoader.data?.users ?? []}
             systemRoles={codesContext.codesDataLoader.data?.system_roles ?? []}
             onRemoveUserClick={handleRemoveUserClick}
             handleChangeUserPermissionsClick={() => {}}
@@ -202,7 +206,7 @@ const ActiveUsersTableContainer = () => {
                 systemRoles={
                   codesContext.codesDataLoader.data?.system_roles?.map((item) => {
                     return { value: item.id, label: item.name };
-                  }) || []
+                  }) ?? []
                 }
               />
             </>

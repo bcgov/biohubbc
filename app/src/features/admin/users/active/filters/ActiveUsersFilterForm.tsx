@@ -6,15 +6,13 @@ import { useCodesContext } from 'hooks/useContext';
 import { useEffect, useMemo } from 'react';
 
 export type IActiveUserFilters = {
-  name?: string;
-  system_user_id?: string;
-  system_role?: string;
+  system_user_ids?: string[];
+  system_roles?: string[];
 };
 
-export const SurveyAdvancedFiltersInitialValues: IActiveUserFilters = {
-  name: undefined,
-  system_user_id: undefined,
-  system_role: undefined
+export const ActiveUserFiltersInitialValues: IActiveUserFilters = {
+  system_user_ids: [],
+  system_roles: []
 };
 
 export interface IActiveUsersFilterFormProps {
@@ -40,14 +38,15 @@ const ActiveUsersFilterForm = (props: IActiveUsersFilterFormProps) => {
     return (
       codesContext.codesDataLoader.data?.system_roles.map((role) => ({
         label: role.name,
-        value: role.id
+        // Name is intentionally used as both value and label
+        value: role.name
       })) ?? []
     );
   }, [codesContext.codesDataLoader]);
 
   return (
     <Formik
-      initialValues={SurveyAdvancedFiltersInitialValues}
+      initialValues={ActiveUserFiltersInitialValues}
       onSubmit={handleSubmit}
       validateOnChange={false}
       validateOnBlur={false}
@@ -56,19 +55,37 @@ const ActiveUsersFilterForm = (props: IActiveUsersFilterFormProps) => {
         <FilterFieldsContainer
           fields={[
             <SystemUserAutocompleteField
+              key="system-user-filter"
               formikFieldName="system_user_id"
               label="User"
               onSelect={(value) => {
-                if (value?.system_user_id) {
-                  formikProps.setFieldValue('system_user_id', value.system_user_id);
+                if (!value?.system_user_id) {
+                  // No change if value is undefined
+                  formikProps.setFieldValue('system_user_ids', []);
+                  return;
                 }
+
+                formikProps.setFieldValue('system_user_ids', [
+                  ...(formikProps.values.system_user_ids ?? []),
+                  value.system_user_id
+                ]);
               }}
               onClear={() => {
-                formikProps.setFieldValue('system_user_id', undefined);
+                formikProps.setFieldValue('system_user_ids', []);
               }}
-              key="survey-user-filter"
             />,
-            <AutocompleteField options={roleOptions} name="system_role" id="system_role" label="Role" />
+            <AutocompleteField
+              options={roleOptions}
+              name="system_roles"
+              id="system_roles"
+              label="Role"
+              onInputChange={(event) => {
+                formikProps.setFieldValue('system_roles', [
+                  ...(formikProps.values.system_roles ?? []),
+                  event.currentTarget
+                ]);
+              }}
+            />
           ]}
         />
       )}

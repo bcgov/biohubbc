@@ -54,11 +54,7 @@ const ActiveUsersTable = (props: IActiveUsersTableProps) => {
       headerName: 'Display Name',
       flex: 1,
       disableColumnMenu: true,
-      renderCell: (params) => (
-        <Typography variant="body2" sx={{ fontWeight: 700 }}>
-          {params.row.display_name || 'No identifier'}
-        </Typography>
-      )
+      renderCell: (params) => <Typography variant="body2">{params.row.display_name}</Typography>
     },
     {
       field: 'identity_source',
@@ -144,6 +140,8 @@ const ActiveUsersTable = (props: IActiveUsersTableProps) => {
       sortModel={sortModel}
       onSortModelChange={setSortModel}
       pageSizeOptions={pageSizeOptions}
+      disableRowSelectionOnClick
+      rowSelection={false}
     />
   );
 };
