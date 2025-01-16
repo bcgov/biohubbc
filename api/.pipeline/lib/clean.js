@@ -67,7 +67,7 @@ const clean = (settings) => {
       namespace: phaseObj.namespace
     });
 
-    oc.raw('delete', ['all,pvc,secrets,Secrets,secret,configmap,endpoints,Endpoints'], {
+    oc.raw('delete', ['all,pvc,secrets,Secrets,secret,configmap,endpoints,Endpoints,cronjobs,Cronjobs'], {
       selector: `app=${phaseObj.instance},env-id=${phaseObj.changeId},!shared,github-repo=${oc.git.repository},github-owner=${oc.git.owner}`,
       wait: 'true',
       namespace: phaseObj.namespace

@@ -2841,10 +2841,10 @@ COMMENT ON TABLE system_role IS 'Agency or Ministry funding the project.'
 ;
 
 -- 
--- TABLE: system_user 
+-- TABLE: "system_user" 
 --
 
-CREATE TABLE system_user(
+CREATE TABLE "system_user"(
     system_user_id             integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
     user_identity_source_id    integer           NOT NULL,
     user_identifier            varchar(200)      NOT NULL,
@@ -2861,27 +2861,27 @@ CREATE TABLE system_user(
 
 
 
-COMMENT ON COLUMN system_user.system_user_id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN "system_user".system_user_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN system_user.user_identity_source_id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN "system_user".user_identity_source_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN system_user.user_identifier IS 'The identifier of the user.'
+COMMENT ON COLUMN "system_user".user_identifier IS 'The identifier of the user.'
 ;
-COMMENT ON COLUMN system_user.record_effective_date IS 'Record level effective date.'
+COMMENT ON COLUMN "system_user".record_effective_date IS 'Record level effective date.'
 ;
-COMMENT ON COLUMN system_user.record_end_date IS 'Record level end date.'
+COMMENT ON COLUMN "system_user".record_end_date IS 'Record level end date.'
 ;
-COMMENT ON COLUMN system_user.create_date IS 'The datetime the record was created.'
+COMMENT ON COLUMN "system_user".create_date IS 'The datetime the record was created.'
 ;
-COMMENT ON COLUMN system_user.create_user IS 'The id of the user who created the record as identified in the system user table.'
+COMMENT ON COLUMN "system_user".create_user IS 'The id of the user who created the record as identified in the system user table.'
 ;
-COMMENT ON COLUMN system_user.update_date IS 'The datetime the record was updated.'
+COMMENT ON COLUMN "system_user".update_date IS 'The datetime the record was updated.'
 ;
-COMMENT ON COLUMN system_user.update_user IS 'The id of the user who updated the record as identified in the system user table.'
+COMMENT ON COLUMN "system_user".update_user IS 'The id of the user who updated the record as identified in the system user table.'
 ;
-COMMENT ON COLUMN system_user.revision_count IS 'Revision count used for concurrency control.'
+COMMENT ON COLUMN "system_user".revision_count IS 'Revision count used for concurrency control.'
 ;
-COMMENT ON TABLE system_user IS 'Agency or Ministry funding the project.'
+COMMENT ON TABLE "system_user" IS 'Agency or Ministry funding the project.'
 ;
 
 -- 
@@ -3822,13 +3822,13 @@ CREATE UNIQUE INDEX system_role_nuk1 ON system_role(name, (record_end_date is NU
 -- INDEX: system_user_nuk1 
 --
 
-CREATE UNIQUE INDEX system_user_nuk1 ON system_user(user_identifier, record_end_date, user_identity_source_id)
+CREATE UNIQUE INDEX system_user_nuk1 ON "system_user"(user_identifier, record_end_date, user_identity_source_id)
 ;
 -- 
 -- INDEX: "Ref120120" 
 --
 
-CREATE INDEX "Ref120120" ON system_user(user_identity_source_id)
+CREATE INDEX "Ref120120" ON "system_user"(user_identity_source_id)
 ;
 -- 
 -- INDEX: system_user_role_uk1 
@@ -3896,12 +3896,12 @@ CREATE INDEX "Ref78141" ON webform_draft(system_user_id)
 
 ALTER TABLE administrative_activity ADD CONSTRAINT "Refsystem_user143" 
     FOREIGN KEY (assigned_system_user_id)
-    REFERENCES system_user(system_user_id)
+    REFERENCES "system_user"(system_user_id)
 ;
 
 ALTER TABLE administrative_activity ADD CONSTRAINT "Refsystem_user144" 
     FOREIGN KEY (reported_system_user_id)
-    REFERENCES system_user(system_user_id)
+    REFERENCES "system_user"(system_user_id)
 ;
 
 ALTER TABLE administrative_activity ADD CONSTRAINT "Refadministrative_activity_type145" 
@@ -4016,7 +4016,7 @@ ALTER TABLE permit ADD CONSTRAINT "Refsurvey157"
 
 ALTER TABLE permit ADD CONSTRAINT "Refsystem_user171" 
     FOREIGN KEY (system_user_id)
-    REFERENCES system_user(system_user_id)
+    REFERENCES "system_user"(system_user_id)
 ;
 
 
@@ -4141,7 +4141,7 @@ ALTER TABLE project_participation ADD CONSTRAINT "Refproject148"
 
 ALTER TABLE project_participation ADD CONSTRAINT "Refsystem_user149" 
     FOREIGN KEY (system_user_id)
-    REFERENCES system_user(system_user_id)
+    REFERENCES "system_user"(system_user_id)
 ;
 
 ALTER TABLE project_participation ADD CONSTRAINT "Refproject_role150" 
@@ -4181,7 +4181,7 @@ ALTER TABLE security ADD CONSTRAINT "Refsecurity_rule208"
 
 ALTER TABLE security ADD CONSTRAINT "Refsystem_user209" 
     FOREIGN KEY (system_user_id)
-    REFERENCES system_user(system_user_id)
+    REFERENCES "system_user"(system_user_id)
 ;
 
 ALTER TABLE security ADD CONSTRAINT "Refproject210" 
@@ -4391,10 +4391,10 @@ ALTER TABLE survey_summary_submission_message ADD CONSTRAINT "Refsummary_submiss
 
 
 -- 
--- TABLE: system_user 
+-- TABLE: "system_user" 
 --
 
-ALTER TABLE system_user ADD CONSTRAINT "Refuser_identity_source120" 
+ALTER TABLE "system_user" ADD CONSTRAINT "Refuser_identity_source120" 
     FOREIGN KEY (user_identity_source_id)
     REFERENCES user_identity_source(user_identity_source_id)
 ;
@@ -4406,7 +4406,7 @@ ALTER TABLE system_user ADD CONSTRAINT "Refuser_identity_source120"
 
 ALTER TABLE system_user_role ADD CONSTRAINT "Refsystem_user139" 
     FOREIGN KEY (system_user_id)
-    REFERENCES system_user(system_user_id)
+    REFERENCES "system_user"(system_user_id)
 ;
 
 ALTER TABLE system_user_role ADD CONSTRAINT "Refsystem_role140" 
@@ -4441,7 +4441,7 @@ ALTER TABLE template_methodology_species ADD CONSTRAINT "Reftemplate187"
 
 ALTER TABLE webform_draft ADD CONSTRAINT "Refsystem_user141" 
     FOREIGN KEY (system_user_id)
-    REFERENCES system_user(system_user_id)
+    REFERENCES "system_user"(system_user_id)
 ;
 
 

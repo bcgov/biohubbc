@@ -1,4 +1,4 @@
-import Autocomplete from '@mui/material/Autocomplete';
+import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import grey from '@mui/material/colors/grey';
@@ -10,7 +10,7 @@ import { useFormikContext } from 'formik';
 import { useSurveyContext } from 'hooks/useContext';
 import { ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 import { get } from 'lodash-es';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export interface IAnimalAutocompleteFieldProps {
   /**
@@ -93,6 +93,15 @@ export const AnimalAutocompleteField = <T extends string | number>(props: IAnima
   // The input field value
   const [inputValue, setInputValue] = useState(defaultAnimal?.animal_id ?? '');
 
+  useEffect(() => {
+    if (!defaultAnimal) {
+      return;
+    }
+
+    // Set the input value to the default animal's animal_id
+    setInputValue(String(defaultAnimal.animal_id));
+  }, [defaultAnimal]);
+
   // Survey animals to choose from
   const options = surveyContext.critterDataLoader.data;
 
@@ -108,7 +117,7 @@ export const AnimalAutocompleteField = <T extends string | number>(props: IAnima
       isOptionEqualToValue={(option, value) => {
         return option.critter_id === value.critter_id;
       }}
-      filterOptions={(item) => item}
+      filterOptions={createFilterOptions()}
       inputValue={inputValue}
       onInputChange={(_, _value, reason) => {
         if (clearOnSelect && reason === 'clear') {
@@ -160,7 +169,7 @@ export const AnimalAutocompleteField = <T extends string | number>(props: IAnima
           error={get(touched, formikFieldName) && Boolean(get(errors, formikFieldName))}
           helperText={get(touched, formikFieldName) && get(errors, formikFieldName)}
           fullWidth
-          placeholder={placeholder || 'Search for an animal in the Survey'}
+          placeholder={placeholder ?? 'Search for an animal in the Survey'}
           InputProps={{
             ...params.InputProps,
             endAdornment: (

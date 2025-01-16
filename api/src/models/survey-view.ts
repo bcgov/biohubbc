@@ -10,12 +10,56 @@ import { SystemUser } from '../repositories/user-repository';
 import { ITaxonomyWithEcologicalUnits } from '../services/platform-service';
 
 export interface ISurveyAdvancedFilters {
+  /**
+   * Filter results by keyword.
+   *
+   * @type {string}
+   * @memberof ISurveyAdvancedFilters
+   */
   keyword?: string;
+  /**
+   * Filter results by ITIS TSN.
+   *
+   * @type {number}
+   * @memberof ISurveyAdvancedFilters
+   */
   itis_tsn?: number;
+  /**
+   * Filter results by ITIS TSNs.
+   *
+   * @type {number[]}
+   * @memberof ISurveyAdvancedFilters
+   */
   itis_tsns?: number[];
+  /**
+   * Filter results by start date.
+   *
+   * @type {string}
+   * @memberof ISurveyAdvancedFilters
+   */
   start_date?: string;
+  /**
+   * Filter results by end date.
+   *
+   * @type {string}
+   * @memberof ISurveyAdvancedFilters
+   */
   end_date?: string;
+  /**
+   * Filter results by survey name.
+   *
+   * @type {string}
+   * @memberof ISurveyAdvancedFilters
+   */
   survey_name?: string;
+  /**
+   * Filter results by system user id.
+   *
+   * Note: This is not the id of the user making the request.
+   *
+   * @type {number}
+   * @memberof ISurveyAdvancedFilters
+   */
   system_user_id?: number;
 }
 

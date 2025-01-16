@@ -34,6 +34,10 @@ const baseSystemAlertSchema: OpenAPIV3.SchemaObject = {
       description: 'End date of the alert',
       type: 'string',
       nullable: true
+    },
+    create_date: {
+      description: 'Timestamp for when the record was created',
+      type: 'string'
     }
   }
 };
@@ -60,7 +64,17 @@ export const systemAlertPutSchema: OpenAPIV3.SchemaObject = {
  */
 export const systemAlertGetSchema: OpenAPIV3.SchemaObject = {
   ...baseSystemAlertSchema,
-  required: ['alert_id', 'name', 'message', 'data', 'alert_type_id', 'record_end_date', 'severity', 'status'],
+  required: [
+    'alert_id',
+    'name',
+    'message',
+    'data',
+    'alert_type_id',
+    'record_end_date',
+    'severity',
+    'status',
+    'create_date'
+  ],
   additionalProperties: false,
   properties: {
     ...systemAlertPutSchema.properties,

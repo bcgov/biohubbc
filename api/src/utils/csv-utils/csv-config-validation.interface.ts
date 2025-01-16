@@ -1,6 +1,13 @@
+export const CSV_ERROR_MESSAGE =
+  'CSV contains validation errors. Please check for formatting issues, missing fields, or invalid values and try again.';
+
 /**
  * The CSV configuration interface
  *
+ * TODO:
+ *  1. Allow or disallow duplicate CSV rows
+ *    - Similar to a DB unique constraint? ie: ['NAME', 'AGE']
+ *  2. Support CSVWarnings
  */
 export interface CSVConfig<THeader extends Uppercase<string> = Uppercase<string>> {
   /**
@@ -13,6 +20,14 @@ export interface CSVConfig<THeader extends Uppercase<string> = Uppercase<string>
    */
   staticHeadersConfig: Record<THeader, CSVStaticHeaderConfig & CSVHeaderConfig>;
   /**
+   * Boolean to ignore dynamic headers.
+   *
+   * ie: If true, the dynamic headers will not be processed.
+   *
+   * @type {boolean}
+   */
+  ignoreDynamicHeaders: boolean;
+  /**
    * Contains the `validateCell` and `setCellValue` callbacks to be called for each dynamic cell.
    *
    * Note: A dynamic header is a header that is not known and defined in the configuration.
@@ -23,14 +38,17 @@ export interface CSVConfig<THeader extends Uppercase<string> = Uppercase<string>
    * @type {CSVHeaderConfig | undefined}
    */
   dynamicHeadersConfig?: CSVHeaderConfig;
+
   /**
-   * Boolean to ignore dynamic headers.
+   * A list of row validators
    *
-   * ie: If true, the dynamic headers will not be processed.
+   * Note: These are called BEFORE the static and dynamic cell validators.
+   * Useful if needing to validate multiple headers (ex: ALIAS, DATE, TIME) or applying some preliminary
+   * validation before the cell validation.
    *
-   * @type {boolean}
+   * @type {CSVRowValidator[] | undefined}
    */
-  ignoreDynamicHeaders: boolean;
+  rowValidators?: CSVRowValidator[];
 }
 
 interface CSVStaticHeaderConfig {
@@ -57,6 +75,15 @@ interface CSVStaticHeaderConfig {
  * @returns {CSVError[]} - The list of CSV errors
  */
 export type CSVCellValidator = (params: CSVParams) => CSVError[];
+
+/**
+ * The CSV row validator function
+ *
+ * @param {CSVRowParams} params - The CSV row parameters
+ * @returns {CSVError[]} - The list of CSV errors
+ *
+ */
+export type CSVRowValidator = (params: CSVRowParams) => CSVError[];
 
 /**
  * The CSV header config cell setter function
@@ -87,17 +114,44 @@ export interface CSVHeaderConfig {
   setCellValue?: CSVCellSetter;
 }
 
+export interface CSVRowParams {
+  /**
+   * The data row object.
+   *
+   * @type {CSVRow}
+   */
+  row: CSVRow;
+  /**
+   * The row index.
+   *
+   * Note: First data row index 0.
+   *
+   * @type {number}
+   */
+  rowIndex: number;
+}
+
 /**
  * The CSV parameters interface - passed to the cell validation/setter callbacks.
  *
  */
 export interface CSVParams {
   /**
-   * The cell value.
+   * The cell value. Readonly to prevent mutation during validation.
+   *
+   * Why? CSVUtils and related functions are expecting the initial non-modified cell value for calculations.
+   *
+   * Use the `setCellValue` callback or the CSVParams `this.mutateCell` to update the cell value.
    *
    * @type {unknown}
    */
-  cell: unknown;
+  readonly cell: unknown;
+  /**
+   * The mutatable cell value.
+   *
+   * @type {unknown}
+   */
+  mutateCell: unknown;
   /**
    * The row header name. The initial row key.
    *
@@ -127,7 +181,12 @@ export interface CSVParams {
 }
 
 /**
- * The CSV error interface
+ * The CSV error interface.
+ *
+ * @description
+ * Set to `null` to explicitly indicate the value can `NOT` be overritten by consumers ie: missing header
+ * Set property to `undefined` to indicate to consumers the value `CAN` be overritten
+ * by a default down stream ie: cell value
  *
  * @example
  *  {
@@ -136,58 +195,80 @@ export interface CSVParams {
  *    values: ['unit1', 'unit2'], // Optional list of allowed values
  *    header: 'POPULATION_UNIT',
  *    cell: 'unit3',
- *    row: 1, // Header row index 0. First data row index 1
+ *    row: 1, // Header row index 1. First data row index 2
  *  }
  */
 export interface CSVError {
   /**
-   * The error message.
+   * The error message. The user facing message to describe the error.
    *
+   * @example `Invalid collection unit`
    * @type {string}
    */
   error: string;
   /**
-   * The solution message.
+   * The solution message. The user facing message to resolve the error.
    *
+   * @example `Use a valid collection unit`
    * @type {string}
    */
   solution: string;
   /**
    * The list of allowed values if applicable.
    *
+   * Note: Optional as not all errors will have a list of allowed values.
+   *
+   * @example ['unit1', 'unit2']
    * @type {(string[] | number[]) | undefined}
    */
-  values?: string[] | number[];
+  values?: string[] | number[] | null;
   /**
-   * The cell value.
+   * The cell value that caused the error.
    *
+   * @example 'unit3'
    * @type {unknown | undefined}
    */
   cell?: unknown;
   /**
-   * The header name.
+   * The header name. Typically this will be the user facing CSV header name.
    *
-   * @type {string | undefined}
+   * @example 'Population Unit'
+   * @type {string | null | undefined}
    */
-  header?: string;
+  header?: string | null;
   /**
    * The row index the error occurred.
    *
-   * Note: Header row index 0. First data row index 1.
+   * Note: Header row index 1. First data row index 2.
    *
+   * @example 2
    * @type {number}
    */
   row?: number;
 }
+/**
+ * The CSV row state symbol to store additional row metadata
+ * without interfering with the row shape or structure
+ *
+ */
+export const CSVRowState = Symbol('CSVRowStateSymbol');
 
 /**
  * The raw unvalidated CSV row
  *
  */
-export type CSVRow = Record<Uppercase<string>, any>;
+export type CSVRow = Record<Uppercase<string>, any> & {
+  // The CSV row state symbol to store additional row metadata
+  [CSVRowState]?: Record<string, any>;
+};
 
 /**
  * The validated CSV row keyed by the static headers
  *
  */
-export type CSVRowValidated<StaticHeaderType extends Uppercase<string>> = Record<StaticHeaderType, any>;
+export type CSVRowValidated<StaticHeaderType extends Uppercase<string>> = Record<StaticHeaderType, any> & {
+  // The CSV row state symbol to store additional row metadata
+  [CSVRowState]?: Record<string, any>;
+};
+
+export type CSVCell = string | number | undefined;

@@ -16,7 +16,7 @@ $$
 --                  2021-01-03  initial release
 -- *******************************************************************
 declare
-  _system_user_id system_user.system_user_id%type;
+  _system_user_id "system_user".system_user_id%type;
   _user_identity_source_id user_identity_source.user_identity_source_id%type;
 begin
   -- api users will hopefully have created the temp table using an api helper function
@@ -26,7 +26,7 @@ begin
 
   if (_system_user_id is null) THEN    
     -- look up the database user
-    select a.system_user_id into strict _system_user_id from system_user a, user_identity_source b
+    select a.system_user_id into strict _system_user_id from "system_user" a, user_identity_source b
       where a.user_identity_source_id = b.user_identity_source_id
       and b.name = 'DATABASE'
       and user_identifier = user;

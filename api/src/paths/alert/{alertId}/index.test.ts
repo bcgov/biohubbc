@@ -28,7 +28,8 @@ describe('getAlerts', () => {
         severity: 'error' as IAlertSeverity,
         status: 'active' as IAlertStatus,
         data: null,
-        record_end_date: null
+        record_end_date: null,
+        create_date: '2020-01-01T10:10:10'
       };
 
       const mockDBConnection = getMockDBConnection({ open: sinon.stub(), commit: sinon.stub(), release: sinon.stub() });

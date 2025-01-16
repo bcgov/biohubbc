@@ -31,7 +31,7 @@ const dbDeploy = async (settings) => {
         DATABASE_SERVICE_NAME: `${name}-postgresql${phases[phase].suffix}`,
         IMAGE_STREAM_NAME: name,
         IMAGE_STREAM_VERSION: phases.build.tag,
-        POSTGRESQL_DATABASE: 'biohubbc',
+        POSTGRES_DB: 'biohubbc',
         TZ: phases[phase].tz,
         IMAGE_STREAM_NAMESPACE: phases.build.namespace,
         VOLUME_CAPACITY: phases[phase].volumeCapacity,
@@ -46,7 +46,7 @@ const dbDeploy = async (settings) => {
 
   oc.applyRecommendedLabels(objects, name, phase, changeId, instance);
   oc.importImageStreams(objects, phases[phase].tag, phases.build.namespace, phases.build.tag);
-  
+
   await oc.applyAndDeploy(objects, instance);
 };
 

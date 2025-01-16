@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import xlsx, { WorkSheet } from 'xlsx';
+import { WorksheetRowIndexSymbol } from '../xlsx-utils/worksheet-utils';
 import { CSVConfigUtils } from './csv-config-utils';
 import { CSVConfig } from './csv-config-validation.interface';
 
@@ -22,9 +23,13 @@ describe('CSVConfigUtils', () => {
       expect(utils).to.be.instanceOf(CSVConfigUtils);
       expect(utils._config).to.be.equal(mockConfig);
       expect(utils.worksheet).to.be.equal(worksheet);
-      expect(utils.worksheetRows).to.be.deep.equal([
-        { TEST: 'cellValue', ALIASED_HEADER: 'cellValue2', DYNAMIC_HEADER: 'dynamicValue' }
-      ]);
+
+      expect(utils.worksheetRows[0]).to.deep.equal({
+        TEST: 'cellValue',
+        ALIASED_HEADER: 'cellValue2',
+        DYNAMIC_HEADER: 'dynamicValue',
+        [WorksheetRowIndexSymbol]: 1
+      });
       expect(utils.worksheetHeaders).to.be.deep.equal(['TEST', 'ALIASED_HEADER', 'DYNAMIC_HEADER']);
       expect(utils.worksheetAliasedStaticHeaders).to.be.deep.equal(['TEST', 'ALIASED_HEADER']);
       expect(utils.worksheetStaticHeaders).to.be.deep.equal(['TEST', 'TEST_ALIAS']);
@@ -197,6 +202,34 @@ describe('CSVConfigUtils', () => {
       const isUnique = utils.isCellUnique('TEST', 'cellValue');
 
       expect(isUnique).to.be.false;
+    });
+  });
+
+  describe('setAllStaticHeaderConfigs', () => {
+    it('should set all static header configs', () => {
+      const worksheet: WorkSheet = xlsx.utils.json_to_sheet([{ TEST: 'cellValue' }]);
+      const mockConfig: CSVConfig<'TEST'> = {
+        staticHeadersConfig: {
+          TEST: { aliases: [] }
+        },
+        ignoreDynamicHeaders: false
+      };
+
+      const utils = new CSVConfigUtils(worksheet, mockConfig);
+
+      const validateCell = () => [];
+      const setCellValue = () => 'test';
+
+      utils.setAllStaticHeaderConfigs({
+        TEST: { validateCell, setCellValue }
+      });
+
+      expect(utils._config).to.be.deep.equal({
+        staticHeadersConfig: {
+          TEST: { aliases: [], validateCell, setCellValue }
+        },
+        ignoreDynamicHeaders: false
+      });
     });
   });
 });

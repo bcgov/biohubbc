@@ -78,6 +78,30 @@ const techniqueAttributesSchema: OpenAPIV3.SchemaObject = {
   }
 };
 
+export const techniqueVantagesSchema: OpenAPIV3.SchemaObject = {
+  type: 'array',
+  description: 'Vantages from which a method is done, like water, air, or ground.',
+  items: {
+    type: 'object',
+    required: ['vantage_method_id', 'vantage_category_id'],
+    additionalProperties: false,
+    properties: {
+      method_technique_vantage_id: {
+        type: 'integer',
+        minimum: 1
+      },
+      vantage_method_id: {
+        type: 'integer',
+        minimum: 1
+      },
+      vantage_category_id: {
+        type: 'integer',
+        minimum: 1
+      }
+    }
+  }
+};
+
 export const techniqueSimpleViewSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
   required: ['method_technique_id', 'name', 'description', 'attractants'],
@@ -102,7 +126,15 @@ export const techniqueSimpleViewSchema: OpenAPIV3.SchemaObject = {
 
 export const techniqueCreateSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
-  required: ['name', 'description', 'method_lookup_id', 'distance_threshold', 'attractants', 'attributes'],
+  required: [
+    'name',
+    'description',
+    'method_lookup_id',
+    'distance_threshold',
+    'attractants',
+    'attributes',
+    'vantage_methods'
+  ],
   additionalProperties: false,
   properties: {
     name: {
@@ -125,7 +157,8 @@ export const techniqueCreateSchema: OpenAPIV3.SchemaObject = {
       nullable: true
     },
     attractants: techniqueAttractantsSchema,
-    attributes: techniqueAttributesSchema
+    attributes: techniqueAttributesSchema,
+    vantage_methods: techniqueVantagesSchema
   }
 };
 
@@ -153,24 +186,51 @@ export const techniqueViewSchema: OpenAPIV3.SchemaObject = {
   }
 };
 
-export const vantageModeSchema: OpenAPIV3.SchemaObject = {
-  type: 'object',
-  description: 'Vantage modes allowed for method lookup options that can be applied to a technique',
-  required: ['vantage_modes'],
-  additionalProperties: false,
-  properties: {
-    vantage_modes: {
-      type: 'array',
-      description: 'Possible vantage modes',
-      items: {
-        type: 'object',
-        required: ['vantage_mode_id', 'name', 'vantage_id', 'description'],
-        additionalProperties: false,
-        properties: {
-          vantage_mode_id: { type: 'string', description: 'The primary key of the vantage mode option.' },
-          name: { type: 'string', description: 'The name of the vantage mode option.' },
-          vantage_id: { type: 'string', description: 'The vantage of the mode.' },
-          description: { type: 'string', description: 'The description of the mode option.' }
+export const vantageReferenceRecordsSchema: OpenAPIV3.SchemaObject = {
+  type: 'array',
+  description: 'Vantage reference records.',
+  items: {
+    type: 'object',
+    description: 'Vantage category reference record and its associated vantages.',
+    required: ['vantage_category_id', 'name', 'description', 'vantages'],
+    additionalProperties: false,
+    properties: {
+      vantage_category_id: {
+        type: 'integer',
+        minimum: 1
+      },
+      name: {
+        type: 'string'
+      },
+      description: {
+        type: 'string',
+        nullable: true
+      },
+      vantages: {
+        type: 'array',
+        description: 'Supported vantage for the vantage record.',
+        items: {
+          type: 'object',
+          required: ['vantage_method_id', 'name', 'vantage_id', 'description'],
+          additionalProperties: false,
+          properties: {
+            vantage_method_id: {
+              type: 'integer',
+              description: 'The primary key of the vantage method option.'
+            },
+            vantage_id: {
+              type: 'integer',
+              description: 'The vantage of the record'
+            },
+            name: {
+              type: 'string',
+              description: 'The name of the vantage method option.'
+            },
+            description: {
+              type: 'string',
+              description: 'The description of the vantage method option.'
+            }
+          }
         }
       }
     }

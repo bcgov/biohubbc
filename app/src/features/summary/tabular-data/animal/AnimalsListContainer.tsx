@@ -159,7 +159,7 @@ const AnimalsListContainer = (props: IAnimalsListContainerProps) => {
 
       <Box height="100vh" maxHeight="800px">
         <LoadingGuard
-          isLoading={animalsDataLoader.isLoading || !animalsDataLoader.isReady}
+          isLoading={!rows.length && (animalsDataLoader.isLoading || !animalsDataLoader.isReady)}
           isLoadingFallback={<SkeletonTable />}
           isLoadingFallbackDelay={100}
           hasNoData={!rows.length}
@@ -174,7 +174,7 @@ const AnimalsListContainer = (props: IAnimalsListContainerProps) => {
           hasNoDataFallbackDelay={100}>
           <StyledDataGrid
             noRowsMessage="No animals found"
-            loading={animalsDataLoader.isLoading || !animalsDataLoader.isReady}
+            loading={!rows.length && (animalsDataLoader.isLoading || !animalsDataLoader.isReady)}
             // Columns
             columns={columns}
             // Rows

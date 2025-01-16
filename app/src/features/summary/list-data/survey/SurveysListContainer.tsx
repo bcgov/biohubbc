@@ -219,7 +219,7 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
 
       <Box height="90vh" maxHeight="700px">
         <LoadingGuard
-          isLoading={surveysDataLoader.isLoading || !surveysDataLoader.isReady}
+          isLoading={!rows.length && (surveysDataLoader.isLoading || !surveysDataLoader.isReady)}
           isLoadingFallback={<SkeletonTable />}
           isLoadingFallbackDelay={100}
           hasNoData={!rows.length}
@@ -234,7 +234,7 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
           hasNoDataFallbackDelay={100}>
           <StyledDataGrid
             noRowsMessage="No surveys found"
-            loading={surveysDataLoader.isLoading || !surveysDataLoader.isReady}
+            loading={!rows.length && (surveysDataLoader.isLoading || !surveysDataLoader.isReady)}
             // Columns
             columns={columns}
             // Rows
