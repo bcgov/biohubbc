@@ -1,10 +1,9 @@
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { intersection, isUndefined } from 'lodash';
-import xlsx, { CellObject } from 'xlsx';
+import xlsx from 'xlsx';
 import { getLogger } from '../logger';
 import { MediaFile } from '../media/media-file';
-import { safeToLowerCase } from '../string-utils';
 import { replaceCellDates, trimCellWhitespace } from './cell-utils';
 import {
   generateColumnCellGetterFromColumnValidator,
@@ -12,12 +11,12 @@ import {
   getColumnNamesFromValidator
 } from './column-validator-utils';
 
-export const DEFAULT_XLSX_SHEET_NAME = 'Sheet1';
-export const DEFAULT_XLSX_DATE_FORMAT = 'm/d/yy';
-
 dayjs.extend(customParseFormat);
 
 const defaultLog = getLogger('src/utils/xlsx-utils/worksheet-utils');
+
+export const DEFAULT_XLSX_SHEET_NAME = 'Sheet1';
+export const CUSTOM_XLSX_DATE_FORMAT = 'YYYY-MM-DD';
 
 export const WorksheetRowIndexSymbol = Symbol('WorksheetRowIndex');
 
@@ -54,13 +53,14 @@ export interface IXLSXCSVValidator {
  */
 export const constructXLSXWorkbook = (file: MediaFile): xlsx.WorkBook => {
   return xlsx.read(file.buffer, {
-    // Return date cells as numbers
+    // Custom date format
+    dateNF: CUSTOM_XLSX_DATE_FORMAT,
+    // Return date cells as epoch numbers (epoch start: `1900-01-01`)
     cellDates: false,
-    // Include the raw string version of the value (.w field)
-    cellText: true,
     // Include the number format (if any) of the value (.z field)
     cellNF: true,
-    dateNF: DEFAULT_XLSX_DATE_FORMAT, // m/d/yy
+    // Include the raw string version of the value (.w field)
+    cellText: true,
     // Don't return raw, as this will return every cell as a string, even if it's a number or date
     raw: false
   });
@@ -98,29 +98,6 @@ export const getHeadersUpperCase = (worksheet: xlsx.WorkSheet): string[] => {
   }
 
   return headers;
-};
-
-/**
- * Get the lowercase headers (column names) for the given worksheet.
- *
- * @export
- * @param {xlsx.WorkSheet} worksheet
- * @return {*}  {string[]}
- */
-export const getHeadersLowerCase = (worksheet: xlsx.WorkSheet): string[] => {
-  return getHeadersUpperCase(worksheet).map(safeToLowerCase);
-};
-
-/**
- * Get the index of the given header name.
- *
- * @export
- * @param {xlsx.WorkSheet} worksheet
- * @param {string} headerName
- * @return {*}  {number}
- */
-export const getHeaderIndex = (worksheet: xlsx.WorkSheet, headerName: string): number => {
-  return getHeadersUpperCase(worksheet).indexOf(headerName);
 };
 
 /**
@@ -202,6 +179,7 @@ export const getWorksheetRowObjects = (worksheet: xlsx.WorkSheet): Record<symbol
 /**
  * Return boolean indicating whether the worksheet has the expected headers.
  *
+ * @deprecated
  * @export
  * @param {xlsx.WorkSheet} worksheet
  * @param {IXLSXCSVValidator} columnValidator
@@ -229,6 +207,7 @@ export const validateWorksheetHeaders = (worksheet: xlsx.WorkSheet, columnValida
 /**
  * Return boolean indicating whether the worksheet has correct column types. This only checks the required columns in the `columnValidator`
  *
+ * @deprecated
  * @export
  * @param {xlsx.WorkSheet} worksheet
  * @param {IXLSXCSVValidator[]} columnValidator
@@ -303,18 +282,6 @@ export const getDefaultWorksheet = (workbook: xlsx.WorkBook, defaultSheetNameOve
 };
 
 /**
- * Get a worksheet by name.
- *
- * @export
- * @param {xlsx.WorkBook} workbook
- * @param {string} sheetName
- * @return {*}  {xlsx.WorkSheet}
- */
-export const getWorksheetByName = (workbook: xlsx.WorkBook, sheetName: string): xlsx.WorkSheet => {
-  return workbook.Sheets[sheetName];
-};
-
-/**
  * Get a worksheets decoded range object, or return undefined if the worksheet is missing range information.
  *
  * @export
@@ -332,45 +299,9 @@ export const getWorksheetRange = (worksheet: xlsx.WorkSheet): xlsx.Range | undef
 };
 
 /**
- * Iterates over the cells in the worksheet and:
- * - Trims whitespace from cell values.
- * - Converts `Date` objects to ISO strings.
- *
- * https://stackoverflow.com/questions/61789174/how-can-i-remove-all-the-spaces-in-the-cells-of-excelsheet-using-nodejs-code
- *
- * @param {xlsx.WorkSheet} worksheet
- * @returns {xlsx.WorkSheet}
- */
-export const prepareWorksheetCells = (worksheet: xlsx.WorkSheet) => {
-  const range = getWorksheetRange(worksheet);
-
-  if (!range) {
-    return undefined;
-  }
-
-  for (let r = range.s.r; r < range.e.r; r++) {
-    for (let c = range.s.c; c < range.e.c; c++) {
-      const coord = xlsx.utils.encode_cell({ r, c });
-      let cell: CellObject = worksheet[coord];
-
-      if (!cell?.v) {
-        // Cell is null or has no raw value
-        continue;
-      }
-
-      // Replace date and time cells
-      cell = replaceCellDates(cell);
-
-      cell = trimCellWhitespace(cell);
-    }
-  }
-
-  return worksheet;
-};
-
-/**
  * Validates the given CSV file against the given column validator
  *
+ * @deprecated
  * @export
  * @param {xlsx.WorkSheet} xlsxWorksheet
  * @param {IXLSXCSVValidator} columnValidator
@@ -395,6 +326,7 @@ export function validateCsvFile(xlsxWorksheet: xlsx.WorkSheet, columnValidator: 
 /**
  * This function pulls out any non-standard columns from a CSV so they can be processed separately.
  *
+ * @deprecated
  * @param {xlsx.WorkSheet} xlsxWorksheet The worksheet to pull the columns from
  * @param {IXLSXCSVValidator} columnValidator The column validator
  * @returns {*} string[] The list of non-standard columns found in the CSV

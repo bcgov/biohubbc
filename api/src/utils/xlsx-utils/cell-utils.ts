@@ -1,17 +1,21 @@
 import dayjs from 'dayjs';
-import xlsx, { CellObject } from 'xlsx';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+import duration from 'dayjs/plugin/duration';
+import { CellObject } from 'xlsx';
 import {
-  AltDateFormat,
-  AltDateFormatReverse,
   DefaultDateFormat,
   DefaultDateFormatReverse,
-  USAltDateFormat,
-  USAltDateFormatReverse,
+  DefaultTimeFormat,
   USDefaultDateFormat,
   USDefaultDateFormatReverse
 } from '../../constants/dates';
 import { safeTrim } from '../string-utils';
-import { DEFAULT_XLSX_DATE_FORMAT } from './worksheet-utils';
+import { CUSTOM_XLSX_DATE_FORMAT } from './worksheet-utils';
+
+dayjs.extend(duration);
+dayjs.extend(customParseFormat);
+
+type CellValue = CellObject['v'];
 
 /**
  * Trims whitespace from the value of a string type cell.
@@ -38,36 +42,74 @@ export function trimCellWhitespace(cell: CellObject) {
 /**
  * Attempts to identify and update cells whose values are either dates or times to a consistent format.
  *
+ * Note: Mutates the cell object in place.
+ *
  * @see https://docs.sheetjs.com/docs/csf/cell for details on cell fields
  * @export
- * @param {CellObject} cell
- * @return {*}
+ * @param {CellObject} cell - Cell object
+ * @return {*} {CellObject} - Updated cell object
  */
-export function replaceCellDates(cell: CellObject) {
+export function replaceCellDates(cell: CellObject): CellObject {
   if (!cell.v) {
     // Cell has no value
     return cell;
   }
 
-  if (cell.z !== DEFAULT_XLSX_DATE_FORMAT) {
-    // Cell is not a date or time cell
-    return cell;
+  // Check if epoch numeric date (v: 434565)
+  if (cell.z === CUSTOM_XLSX_DATE_FORMAT && cell.v >= 1) {
+    const date = formatDateCellValue(cell.w); // Use the formatted value ('2024-01-01') instead of the epoch number (434565)
+
+    cell.z = DefaultDateFormat;
+    cell.v = date ?? 'Invalid Date Format';
   }
+  // Check if epoch numeric time (v: 0.5)
+  else if (cell.z === CUSTOM_XLSX_DATE_FORMAT && cell.v < 1 && cell.v >= 0) {
+    const time = dayjs.duration(Number(cell.v), 'days');
 
-  const matchInteger = /^\d+$/;
-  const matchDecimal = /^0\.\d+$/;
+    cell.z = DefaultTimeFormat;
+    cell.v = time.format(DefaultTimeFormat);
+  }
+  // Check non-date string cells (v: '2024-01-01')
+  else if (cell.z !== CUSTOM_XLSX_DATE_FORMAT && isStringCell(cell) && dayjs(String(cell.v)).isValid()) {
+    const date = formatDateCellValue(cell.z);
 
-  if (matchInteger.test(String(cell.v))) {
-    // Cell is an integer that represents a date
-    cell.z = 'yyyy-mm-dd';
-    cell.v = xlsx.utils.format_cell(cell);
-  } else if (matchDecimal.test(String(cell.v))) {
-    // Cell is an integer that represents a time
-    cell.z = 'hh:mm:ss';
-    cell.v = xlsx.utils.format_cell(cell);
+    cell.z = DefaultDateFormat;
+    cell.v = date ?? 'Invalid Date Format';
   }
 
   return cell;
+}
+
+export function formatDateCellValue(cellValue: CellValue): string | null {
+  const dateParts = String(cellValue).replace(/\//g, '-').split('-');
+
+  // Check if the string is a 3 part delimited date
+  if (dateParts.length !== 3) {
+    return null;
+  }
+
+  // Generate a dayjs date object for both Canadian and American date formats
+  // Why? There is a edge case where both the Canadian and American date formats are BOTH valid
+  // but the date is generated incorrectly (01/31/2024 -> 2026-07-01).
+  // By checking if the year matches with the cell we can determine which format is correct.
+  const canadianDate = dayjs(String(cellValue), [DefaultDateFormat, DefaultDateFormatReverse]);
+  const americanDate = dayjs(String(cellValue), [USDefaultDateFormat, USDefaultDateFormatReverse]);
+
+  if (!canadianDate.isValid() && !americanDate.isValid()) {
+    return null;
+  }
+
+  const dateYear = Number(dateParts[0].length === 4 ? dateParts[0] : dateParts[2]);
+
+  if (canadianDate.year() === dateYear) {
+    return canadianDate.format(DefaultDateFormat);
+  }
+
+  if (americanDate.year() === dateYear) {
+    return americanDate.format(DefaultDateFormat);
+  }
+
+  return null;
 }
 
 /**
@@ -80,87 +122,3 @@ export function replaceCellDates(cell: CellObject) {
 export function isStringCell(cell: CellObject): boolean {
   return cell.t === 's';
 }
-
-/**
- * Checks if the cell has type date.
- *
- * @export
- * @param {CellObject} cell
- * @return {*}  {boolean} `true` if the cell has type date, `false` otherwise.
- */
-export function isDateCell(cell: CellObject): boolean {
-  return cell.t === 'd';
-}
-
-/**
- * Checks if the cell value is a date string in a known date format.
- *
- * @export
- * @param {CellObject} cell
- * @return {*}  {(false | string)} Return the matched date format if the cell value is a date string matching one known
- * date format, return `false` otherwise.
- */
-export function isStringCellWithDateValue(cell: CellObject): false | string {
-  if (!isStringCell(cell) && !isDateCell(cell)) {
-    return false;
-  }
-
-  // Attempt to match Canadian date formats
-  const matchedFormats = [DefaultDateFormat, DefaultDateFormatReverse, AltDateFormat, AltDateFormatReverse].filter(
-    (format) => dayjs(String(cell.v), format, true).isValid()
-  );
-
-  if (matchedFormats.length === 1) {
-    // Found 1 matching date format
-    return matchedFormats[0];
-  }
-
-  // Attempt to match US date formats
-  const matchedUSFormats = [
-    USDefaultDateFormat,
-    USDefaultDateFormatReverse,
-    USAltDateFormat,
-    USAltDateFormatReverse
-  ].filter((format) => dayjs(String(cell.v), format, true).isValid());
-
-  if (matchedUSFormats.length === 1) {
-    // Found 1 matching date format
-    return matchedUSFormats[0];
-  }
-
-  // Cell content does not match any supported date formats
-  return false;
-}
-
-///**
-// * Checks if the cell has a format, and if the format is likely a date format.
-// *
-// * @export
-// * @param {CellObject} cell
-// * @return {*}  {boolean} `true` if the cell has a date format, `false` otherwise.
-// */
-//export function doesCellHaveDateFormat(cell: CellObject): boolean {
-//  if (!cell.z) {
-//    return false;
-//  }
-//
-//  // format contains `d` and/or `y` which are values only used in date formats
-//  return String(cell.z).includes('d') || String(cell.z).includes('y');
-//}
-
-///**
-// * Checks if the cell has a format, and if the format is likely a time format.
-// *
-// * @export
-// * @param {CellObject} cell
-// * @return {*}  {boolean} `true` if the cell has a time format, `false` otherwise.
-// */
-//export function doesCellHaveTimeFormat(cell: CellObject): boolean {
-//  if (!cell.z) {
-//    // Not a date cell and/or has no date format
-//    return false;
-//  }
-//
-//  // format contains `h` and/or `ss` which are values only used in time formats, or date formats that include time
-//  return String(cell.z).includes('h') || String(cell.z).includes('ss');
-//}
