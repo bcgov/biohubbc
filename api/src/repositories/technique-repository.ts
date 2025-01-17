@@ -364,6 +364,10 @@ export class TechniqueRepository extends BaseRepository {
 
     // Filter by specific sample period id and/or sample site id
     if (filterFields.sample_period_id || filterFields.sample_site_id) {
+      // Multiple survey sample period records can be associated to the same technique, so we need to ensure we only
+      // return distinct technique records when filtering by survey sample period id or survey sample site id.
+      findTechniquesQuery.distinctOn('method_technique.method_technique_id');
+
       findTechniquesQuery.innerJoin(
         'survey_sample_period',
         'survey_sample_period.method_technique_id',
@@ -372,18 +376,12 @@ export class TechniqueRepository extends BaseRepository {
 
       if (filterFields.sample_period_id) {
         // Filter techniques that are associated to the given sample period id
-        findTechniquesQuery.andWhere('survey_sample_period.sample_period_id', filterFields.sample_period_id);
+        findTechniquesQuery.andWhere('survey_sample_period.survey_sample_period_id', filterFields.sample_period_id);
       }
 
       if (filterFields.sample_site_id) {
-        findTechniquesQuery
-          .innerJoin(
-            'survey_sample_site',
-            'survey_sample_site.survey_sample_site_id',
-            'survey_sample_period.survey_sample_site_id'
-          )
-          // Filter techniques that are associated to the given sample site id
-          .andWhere('survey_sample_site.survey_sample_site_id', filterFields.sample_site_id);
+        // Filter techniques that are associated to the given sample site id
+        findTechniquesQuery.andWhere('survey_sample_period.survey_sample_site_id', filterFields.sample_site_id);
       }
     }
 
