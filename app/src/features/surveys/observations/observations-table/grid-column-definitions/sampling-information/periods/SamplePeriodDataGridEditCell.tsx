@@ -88,11 +88,14 @@ export const SamplePeriodDataGridEditCell = <DataGridType extends GridValidRowMo
           return;
         }
 
-        const options = response.periods.map((item) => ({
-          ...item,
-          label: getDateTimeLabel(item.start_date, item.start_time, item.end_date, item.end_time),
-          value: item.survey_sample_period_id
-        }));
+        const options = response.periods
+          .map((item) => ({
+            ...item,
+            label: getDateTimeLabel(item.start_date, item.start_time, item.end_date, item.end_time),
+            value: item.survey_sample_period_id
+          }))
+          // Filter out any periods that do not have a start and end date (and should not be selectable in the UI)
+          .filter((item) => item.start_date && item.end_date);
 
         samplingInformationCache.updateCachedSamplingPeriods(options);
 
@@ -121,6 +124,7 @@ export const SamplePeriodDataGridEditCell = <DataGridType extends GridValidRowMo
       // If either the site or technique is not selected, then unset any selected period, as its value is dependent
       // on the site and technique.
       setCurrentOption(null);
+      return;
     }
 
     if (
@@ -130,16 +134,20 @@ export const SamplePeriodDataGridEditCell = <DataGridType extends GridValidRowMo
       // If the site or technique has changed, then unset any selected period, and update the options to reflect the
       // valid periods for the new site and technique.
       setCurrentOption(null);
+      // Set the options to any previously cached periods for the new site + technique
       setOptions(
         samplingInformationCache.getPeriodsForRow(
           dataGridProps.row.survey_sample_site_id,
           dataGridProps.row.method_technique_id
         )
       );
+      // Trigger a search to get all of the periods for the new site + technique
+      getOptions('');
     }
   }, [
     currentOption?.method_technique_id,
     currentOption?.survey_sample_site_id,
+    getOptions,
     dataGridProps.row.method_technique_id,
     dataGridProps.row.survey_sample_site_id,
     samplingInformationCache

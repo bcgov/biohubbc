@@ -118,15 +118,24 @@ export const MethodTechniqueDataGridEditCell = <DataGridType extends GridValidRo
       // If the site not selected, then unset any selected technique, as its value is dependent
       // on the site.
       setCurrentOption(null);
+      return;
     }
 
     if (currentOption?.survey_sample_site_id !== dataGridProps.row.survey_sample_site_id) {
       // If the site has changed, then unset any selected technique, and update the options to reflect the
       // valid techniques for the new site.
       setCurrentOption(null);
+      // Set the options to any previously cached techniques for the new site
       setOptions(samplingInformationCache.getTechniquesForRow(dataGridProps.row.survey_sample_site_id));
+      // Trigger a search to get all of the techniques for the new site
+      getOptions('');
     }
-  }, [currentOption?.survey_sample_site_id, dataGridProps.row.survey_sample_site_id, samplingInformationCache]);
+  }, [
+    currentOption?.survey_sample_site_id,
+    getOptions,
+    dataGridProps.row.survey_sample_site_id,
+    samplingInformationCache
+  ]);
 
   return (
     <Autocomplete
