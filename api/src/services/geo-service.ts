@@ -234,7 +234,9 @@ export class GeoService {
     axios.interceptors.response.use(
       (response) => response,
       (error) => {
-        throw new ApiGeneralError('Failed to geospatial data from external service.', [formatAxiosError(error)]);
+        throw new ApiGeneralError('Failed to retrieve geospatial data from external service.', [
+          formatAxiosError(error)
+        ]);
       }
     );
   }

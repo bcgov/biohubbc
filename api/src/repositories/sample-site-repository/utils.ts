@@ -53,11 +53,6 @@ export function getSampleSiteBaseQuery(knex: Knex): Knex.QueryBuilder {
         'sss.name',
         'sss.description',
         'sss.geojson',
-        // 'technique',
-        // 'wmt.method_technique',
-        // knex.raw(`
-        // COALESCE(wssp.sample_periods, '[]'::json) as sample_periods,
-        // `),
         knex.raw(`
           COALESCE(wssb.blocks, '[]'::json) as blocks,
           COALESCE(wssst.stratums, '[]'::json) as stratums`)
