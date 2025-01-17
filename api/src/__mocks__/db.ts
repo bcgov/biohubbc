@@ -1,8 +1,10 @@
 import { Request, Response } from 'express';
 import { PoolClient, QueryResult } from 'pg';
 import sinon from 'sinon';
+import xlsx from 'xlsx';
 import * as db from '../database/db';
 import { IDBConnection } from '../database/db';
+import { DEFAULT_XLSX_SHEET_NAME } from '../utils/xlsx-utils/worksheet-utils';
 
 /**
  * Registers and returns a mock `IDBConnection` with empty methods.
@@ -111,4 +113,26 @@ export const getRequestHandlerMocks = () => {
   const mockNext = sinon.fake();
 
   return { mockReq, mockRes, mockNext };
+};
+
+/**
+ * Returns a mock XLSX workbook buffer.
+ *
+ * @param {any[]} data The data to inject into the workbook.
+ * @return {*}  {Buffer}
+ */
+export const getMockXLSXWorkbookBuffer = (data: any[]) => {
+  // Create a new workbook
+  const workbook = xlsx.utils.book_new(); // Create a new workbook
+
+  // Create a new worksheet
+  const worksheet = xlsx.utils.json_to_sheet(data);
+
+  // Inject the worksheet data into the workbook with the default name
+  xlsx.utils.book_append_sheet(workbook, worksheet, DEFAULT_XLSX_SHEET_NAME);
+
+  // Convert the workbook to a buffer
+  const buffer = xlsx.write(workbook, { bookType: 'xlsx', type: 'buffer' });
+
+  return buffer;
 };

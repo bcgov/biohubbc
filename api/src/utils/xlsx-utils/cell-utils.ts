@@ -1,5 +1,4 @@
 import dayjs from 'dayjs';
-import customParseFormat from 'dayjs/plugin/customParseFormat';
 import duration from 'dayjs/plugin/duration';
 import { CellObject } from 'xlsx';
 import {
@@ -13,7 +12,6 @@ import { safeTrim } from '../string-utils';
 import { CUSTOM_XLSX_DATE_FORMAT } from './worksheet-utils';
 
 dayjs.extend(duration);
-dayjs.extend(customParseFormat);
 
 type CellValue = CellObject['v'];
 
@@ -70,11 +68,13 @@ export function replaceCellDates(cell: CellObject): CellObject {
     cell.v = time.format(DefaultTimeFormat);
   }
   // Check non-date string cells (v: '2024-01-01')
-  else if (cell.z !== CUSTOM_XLSX_DATE_FORMAT && isStringCell(cell) && dayjs(String(cell.v)).isValid()) {
+  else if (cell.z !== CUSTOM_XLSX_DATE_FORMAT && isStringCell(cell)) {
     const date = formatDateCellValue(cell.z);
 
-    cell.z = DefaultDateFormat;
-    cell.v = date ?? 'Invalid Date Format';
+    if (date) {
+      cell.z = DefaultDateFormat;
+      cell.v = date;
+    }
   }
 
   return cell;
