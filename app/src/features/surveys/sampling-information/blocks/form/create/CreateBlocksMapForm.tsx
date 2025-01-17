@@ -215,7 +215,7 @@ const CreateBlocksMapForm = (props: ICreateBlocksMapFormProps) => {
       </Paper>
 
       {errors?.blocks && !Array.isArray(errors?.blocks) && (
-        <AlertBar sx={{ mt: 3 }} severity="error" title={errors.blocks} variant="outlined" />
+        <AlertBar sx={{ mt: 3 }} severity="error" title={errors.blocks} variant="outlined" text={errors.blocks} />
       )}
 
       {values.blocks.length > 0 && (
