@@ -53,27 +53,27 @@ export function replaceCellDates(cell: CellObject): CellObject {
     return cell;
   }
 
-  // Check if epoch numeric date (v: 434565)
-  if (cell.z === CUSTOM_XLSX_DATE_FORMAT && cell.v >= 1) {
-    const date = formatDateCellValue(cell.w); // Use the formatted value ('2024-01-01') instead of the epoch number (434565)
+  // If a date cell - convert the raw value (ie: '01-01-2024') to a date string (ie: '2024-01-01')
+  if (isDateCell(cell)) {
+    // Use the formatted value ('2024-01-01') instead of the epoch number (434565)
+    // Why? The epoch number is inconsistent and is affected by the dateNF option.
+    // Same dates with different incomming formats will have different epoch values.
+    const date = formatDateCellValue(cell.w);
 
-    cell.z = DefaultDateFormat;
-    cell.v = date ?? 'Invalid Date Format';
+    return { ...cell, z: DefaultDateFormat, v: date ?? 'Invalid Date Format' };
   }
-  // Check if epoch numeric time (v: 0.5)
-  else if (cell.z === CUSTOM_XLSX_DATE_FORMAT && cell.v < 1 && cell.v >= 0) {
+  // If time cell - convert the epoch value (ie: 0.5) to a time string (ie: '12:00:00')
+  else if (isTimeCell(cell)) {
     const time = dayjs.duration(Number(cell.v), 'days');
 
-    cell.z = DefaultTimeFormat;
-    cell.v = time.format(DefaultTimeFormat);
+    return { ...cell, z: DefaultTimeFormat, v: time.format(DefaultTimeFormat) };
   }
-  // Check non-date string cells (v: '2024-01-01')
+  // If a string cell - check if the string is a date and convert it to a date string
   else if (cell.z !== CUSTOM_XLSX_DATE_FORMAT && isStringCell(cell)) {
-    const date = formatDateCellValue(cell.z);
+    const date = formatDateCellValue(cell.v);
 
     if (date) {
-      cell.z = DefaultDateFormat;
-      cell.v = date;
+      return { ...cell, z: DefaultDateFormat, v: date };
     }
   }
 
@@ -91,7 +91,7 @@ export function formatDateCellValue(cellValue: CellValue): string | null {
   // Generate a dayjs date object for both Canadian and American date formats
   // Why? There is a edge case where both the Canadian and American date formats are BOTH valid
   // but the date is generated incorrectly (01/31/2024 -> 2026-07-01).
-  // By checking if the year matches with the cell we can determine which format is correct.
+  // We can determine the correct format by cross-referencing the year with the raw cell value.
   const canadianDate = dayjs(String(cellValue), [DefaultDateFormat, DefaultDateFormatReverse]);
   const americanDate = dayjs(String(cellValue), [USDefaultDateFormat, USDefaultDateFormatReverse]);
 
@@ -121,4 +121,29 @@ export function formatDateCellValue(cellValue: CellValue): string | null {
  */
 export function isStringCell(cell: CellObject): boolean {
   return cell.t === 's';
+}
+
+/**
+ * Checks if the cell is a date cell.
+ *
+ * @export
+ * @param {CellObject} cell
+ * @return {*}  {boolean} `true` if the cell is a date cell, `false` otherwise.
+ */
+export function isDateCell(cell: CellObject): boolean {
+  return cell.z === CUSTOM_XLSX_DATE_FORMAT && typeof cell.v === 'number' && cell.v >= 1;
+}
+
+/**
+ * Checks if the cell is a time cell.
+ *
+ * Note: This will not detect time cells like `10:00` as they are formatted as strings.
+ * Only detects time cells that are formatted as epoch percentages ie: 0.5.
+ *
+ * @export
+ * @param {CellObject} cell
+ * @return {*}  {boolean} `true` if the cell is a date cell, `false` otherwise.
+ */
+export function isTimeCell(cell: CellObject): boolean {
+  return cell.z === CUSTOM_XLSX_DATE_FORMAT && typeof cell.v === 'number' && cell.v < 1 && cell.v >= 0;
 }
