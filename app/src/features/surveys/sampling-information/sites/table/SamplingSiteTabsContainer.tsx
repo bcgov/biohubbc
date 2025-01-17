@@ -1,24 +1,25 @@
-import { mdiDotsVertical, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
+import { mdiDotsVertical, mdiMapMarker, mdiTrashCanOutline, mdiViewGridPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { GridRowSelectionModel } from '@mui/x-data-grid';
+import CustomToggleButtonGroup from 'components/toolbar/CustomToggleButtonGroup';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { useState } from 'react';
-import { SurveyBlocksTableContainer } from './tabs/blocks/SurveyBlocksTableContainer';
 import { SamplingSiteTableContainer } from './tabs/sites/SamplingSiteTableContainer';
-import { SamplingSiteManageTableView, SamplingSiteTableView } from './view/SamplingSiteTableView';
+
+export enum SamplingSiteManageTableView {
+  SITES = 'SITES',
+  CLUSTER = 'CLUSTERS'
+}
 
 /**
  * Returns a container for changing which table is viewed, toggling between sampling sites and survey blocks,
@@ -32,7 +33,6 @@ export const SamplingSiteTabsContainer = () => {
 
   // Arbitrary number used to trigger refreshes in children
   const [siteRefreshKey, setSiteRefreshKey] = useState(0);
-  const [blockRefreshKey, setBlockRefreshKey] = useState(0);
 
   const dialogContext = useDialogContext();
   const { surveyId, projectId } = useSurveyContext();
@@ -57,8 +57,8 @@ export const SamplingSiteTabsContainer = () => {
       );
       dialogContext.setYesNoDialog({ open: false });
       setSelectedRows([]);
-      // Trigger data refresh
-      setBlockRefreshKey((prev) => prev + 1);
+      // // Trigger data refresh
+      // setBlockRefreshKey((prev) => prev + 1);
     } catch (error) {
       dialogContext.setYesNoDialog({ open: false });
       setSelectedRows([]);
@@ -157,45 +157,55 @@ export const SamplingSiteTabsContainer = () => {
     }
   };
 
-  // Deselect rows when the active view changes
-  const handleActiveViewChange = (view: SamplingSiteManageTableView) => {
-    setActiveView(view);
-    setSelectedRows([]);
-  };
-
   return (
     <>
+      {/* Bulk action context menu */}
+      <Menu
+        anchorEl={menuAnchorEl}
+        open={Boolean(menuAnchorEl)}
+        onClose={handleMenuClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}>
+        <MenuItem onClick={handleDeleteSelected}>
+          <ListItemIcon>
+            <Icon path={mdiTrashCanOutline} size={1} />
+          </ListItemIcon>
+          <ListItemText>Delete Selected</ListItemText>
+        </MenuItem>
+      </Menu>
+
       <Toolbar
         disableGutters
         sx={{
-          display: 'none',
           flex: '1 1 auto',
           pl: 2,
-          pr: 1,
+          pr: 5.5,
           width: '100%'
         }}>
-        {/* Tab toggles for switching views */}
-        <SamplingSiteTableView activeView={activeView} setActiveView={handleActiveViewChange} />
+        {/* Toggle buttons for changing between sites, methods, and periods */}
+        <CustomToggleButtonGroup
+          views={[
+            { value: SamplingSiteManageTableView.SITES, icon: mdiMapMarker, label: SamplingSiteManageTableView.SITES },
+            {
+              value: SamplingSiteManageTableView.CLUSTER,
+              icon: mdiViewGridPlus,
+              label: SamplingSiteManageTableView.CLUSTER
+            }
+          ]}
+          activeView={activeView}
+          onViewChange={(view) => setActiveView(view)}
+          orientation="horizontal"
+        />
 
-        {/* Context menu button */}
-        <IconButton onClick={handleMenuOpen} disabled={!selectedRows.length}>
+        <IconButton
+          edge="end"
+          sx={{ ml: 1 }}
+          aria-label="header-settings"
+          // disabled={activeView === SamplingSiteTabViews.}
+          onClick={handleMenuOpen}
+          title="Bulk Actions">
           <Icon path={mdiDotsVertical} size={1} />
         </IconButton>
-
-        {/* Bulk action context menu */}
-        <Menu
-          anchorEl={menuAnchorEl}
-          open={Boolean(menuAnchorEl)}
-          onClose={handleMenuClose}
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-          transformOrigin={{ vertical: 'top', horizontal: 'right' }}>
-          <MenuItem onClick={handleDeleteSelected}>
-            <ListItemIcon>
-              <Icon path={mdiTrashCanOutline} size={1} />
-            </ListItemIcon>
-            <ListItemText>Delete Selected</ListItemText>
-          </MenuItem>
-        </Menu>
       </Toolbar>
 
       <Divider flexItem />
@@ -203,31 +213,12 @@ export const SamplingSiteTabsContainer = () => {
       <Box height="400px">
         {/* Render child components based on the active view */}
         {activeView === SamplingSiteManageTableView.SITES && (
-          <Stack flexDirection="row" height="100%">
-            <Box width="400px" height="100%" p={2} bgcolor={grey[50]}>
-              <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
-                <Typography fontWeight={700}>Clusters</Typography>
-                <Button
-                  variant="outlined"
-                  color="primary"
-                  aria-label="Add Clusters"
-                  startIcon={<Icon path={mdiPlus} size={0.75} />}>
-                  Add
-                </Button>
-              </Box>
-              <SurveyBlocksTableContainer
-                refreshKey={blockRefreshKey}
-                selectedRows={selectedRows}
-                setSelectedRows={setSelectedRows}
-              />
-            </Box>
-            <Divider orientation="vertical" flexItem sx={{ color: grey[100] }} />
-            <SamplingSiteTableContainer
-              refreshKey={siteRefreshKey}
-              selectedRows={selectedRows}
-              setSelectedRows={setSelectedRows}
-            />
-          </Stack>
+          // <Stack flexDirection="row" height="100%">
+          <SamplingSiteTableContainer
+            refreshKey={siteRefreshKey}
+            selectedRows={selectedRows}
+            setSelectedRows={setSelectedRows}
+          />
         )}
       </Box>
     </>
