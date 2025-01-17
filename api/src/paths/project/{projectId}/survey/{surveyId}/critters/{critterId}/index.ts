@@ -231,7 +231,7 @@ GET.apiDoc = {
                 type: 'object',
                 description:
                   'Attachments associated with the critter. Only included if requested via the expand query parameter.',
-                required: ['captureAttachments'],
+                required: ['capture_attachments'],
                 properties: {
                   capture_attachments: {
                     type: 'array',
@@ -310,7 +310,7 @@ export function getSurveyCritter(): RequestHandler {
         ? critterAttachmentService.findAllCritterAttachments(surveyCritter.critter_id).then((response) => {
             return {
               attachments: {
-                captureAttachments: response.captureAttachments
+                capture_attachments: response.captureAttachments
                 // TODO: add mortality attachments
               }
             };
