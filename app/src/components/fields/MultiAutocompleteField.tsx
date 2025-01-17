@@ -178,7 +178,10 @@ const MultiAutocompleteField: React.FC<IMultiAutocompleteField> = (props) => {
           return;
         }
 
-        return tagValue.map((option, index) => <Chip label={option.label} {...getTagProps({ index })} />);
+        return tagValue.map((option, index) => {
+          const { key, ...tagProps } = getTagProps({ index });
+          return <Chip label={option.label} {...tagProps} key={key} />;
+        });
       }}
     />
   );

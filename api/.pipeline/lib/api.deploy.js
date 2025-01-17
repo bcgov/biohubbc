@@ -25,12 +25,16 @@ const apiDeploy = async (settings) => {
   objects.push(
     ...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/api.dc.yaml`, {
       param: {
+        NAMESPACE: phases[phase].namespace,
         NAME: phases[phase].name,
         SUFFIX: phases[phase].suffix,
         VERSION: phases[phase].tag,
         HOST: phases[phase].host,
         APP_HOST: phases[phase].appHost,
         CHANGE_ID: phases.build.changeId || changeId,
+        // Cronjobs
+        TELEMETRY_CRONJOB_SCHEDULE: phases[phase].telemetryCronjobSchedule,
+        TELEMETRY_CRONJOB_DISABLED: phases[phase].telemetryCronjobDisabled,
         // Node
         NODE_ENV: phases[phase].nodeEnv,
         NODE_OPTIONS: phases[phase].nodeOptions,
@@ -42,8 +46,7 @@ const apiDeploy = async (settings) => {
         BACKBONE_ARTIFACT_INTAKE_PATH: phases[phase].backboneArtifactIntakePath,
         BIOHUB_TAXON_PATH: phases[phase].biohubTaxonPath,
         BIOHUB_TAXON_TSN_PATH: phases[phase].biohubTaxonTsnPath,
-        // BCTW / Critterbase
-        BCTW_API_HOST: phases[phase].bctwApiHost,
+        // Critterbase
         CB_API_HOST: phases[phase].critterbaseApiHost,
         // S3
         S3_KEY_PREFIX: phases[phase].s3KeyPrefix,

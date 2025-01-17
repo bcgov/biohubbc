@@ -15,40 +15,36 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import axios, { AxiosProgressEvent } from 'axios';
+import { CSVSingleImportDialog } from 'components/csv/CSVSingleImportDialog';
 import DataGridValidationAlert from 'components/data-grid/DataGridValidationAlert';
-import { FileUploadSingleItemDialog } from 'components/dialog/attachments/FileUploadSingleItemDialog';
 import YesNoDialog from 'components/dialog/YesNoDialog';
 import { TelemetryTableI18N } from 'constants/i18n';
-import { DialogContext, ISnackbarProps } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
+import { getTelemetryCSVTemplate } from 'features/surveys/animals/profile/captures/import-captures/utils/templates';
+import { TelemetryDeviceKeysButton } from 'features/surveys/telemetry/manage/device-keys/TelemetryDeviceKeysButton';
 import { TelemetryTable } from 'features/surveys/telemetry/table/TelemetryTable';
-import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useTelemetryTableContext } from 'hooks/useContext';
 import { useContext, useDeferredValue, useState } from 'react';
-import { pluralize as p } from 'utils/Utils';
-import { TelemetryDeviceKeysButton } from '../device-keys/TelemetryDeviceKeysButton';
+import { downloadFile } from 'utils/file-utils';
 
 export const TelemetryTableContainer = () => {
   const biohubApi = useBiohubApi();
-
-  const dialogContext = useContext(DialogContext);
   const telemetryTableContext = useTelemetryTableContext();
   const surveyContext = useContext(SurveyContext);
 
-  const [showImportDialog, setShowImportDialog] = useState(false);
   const [processingRecords, setProcessingRecords] = useState(false);
   const [showConfirmRemoveAllDialog, setShowConfirmRemoveAllDialog] = useState(false);
   const [contextMenuAnchorEl, setContextMenuAnchorEl] = useState<Element | null>(null);
   const [columnVisibilityMenuAnchorEl, setColumnVisibilityMenuAnchorEl] = useState<Element | null>(null);
+  const [showImportDialog, setShowImportDialog] = useState(false);
+
+  const cancelToken = axios.CancelToken.source();
 
   const deferredUnsavedChanges = useDeferredValue(telemetryTableContext.hasUnsavedChanges);
 
   const numSelectedRows = telemetryTableContext.rowSelectionModel.length;
-
-  const showSnackBar = (textDialogProps?: Partial<ISnackbarProps>) => {
-    dialogContext.setSnackbar({ ...textDialogProps, open: true });
-  };
 
   const handleCloseContextMenu = () => {
     setContextMenuAnchorEl(null);
@@ -58,61 +54,35 @@ export const TelemetryTableContainer = () => {
     setColumnVisibilityMenuAnchorEl(null);
   };
 
-  const handleImportTelemetry = async (file: File) => {
+  const handleImportTelemetryCSV = async (file: File, onProgress: (progressEvent: AxiosProgressEvent) => void) => {
     try {
-      const uploadResponse = await biohubApi.telemetry.uploadCsvForImport(
+      await biohubApi.telemetry.importManualTelemetryCSV(
         surveyContext.projectId,
         surveyContext.surveyId,
-        file
+        file,
+        cancelToken,
+        onProgress
       );
-
-      setShowImportDialog(false);
 
       setProcessingRecords(true);
 
-      await biohubApi.telemetry.processTelemetryCsvSubmission(uploadResponse.submission_id);
-
-      showSnackBar({
-        snackbarMessage: (
-          <Typography variant="body2" component="div">
-            Telemetry imported successfully.
-          </Typography>
-        )
-      });
-
-      telemetryTableContext.refreshRecords().then(() => {
-        setProcessingRecords(false);
-      });
-    } catch (error) {
-      const apiError = error as APIError;
-
-      dialogContext.setErrorDialog({
-        dialogTitle: TelemetryTableI18N.importRecordsErrorDialogTitle,
-        dialogText: TelemetryTableI18N.importRecordsErrorDialogText,
-        dialogError: apiError.message,
-        dialogErrorDetails: apiError.errors,
-        open: true,
-        onClose: () => {
-          setProcessingRecords(false);
-          dialogContext.setErrorDialog({ open: false });
-        },
-        onOk: () => {
-          setProcessingRecords(false);
-          dialogContext.setErrorDialog({ open: false });
-        }
-      });
+      telemetryTableContext.refreshRecords();
+    } finally {
+      setProcessingRecords(false);
     }
   };
 
   return (
     <>
-      <FileUploadSingleItemDialog
+      <CSVSingleImportDialog
         open={showImportDialog}
-        dialogTitle="Import Telemetry CSV"
+        dialogTitle="Import Telemetry"
+        dialogSummary="Import telemetry data for deployments by uploading a CSV file matching the template. Duplicate records are filtered out, allowing you to import multiple files with duplicate data to ensure all data is entered."
         onClose={() => setShowImportDialog(false)}
-        onUpload={handleImportTelemetry}
-        uploadButtonLabel="Import"
-        dropZoneProps={{ acceptedFileExtensions: '.csv' }}
+        onImport={handleImportTelemetryCSV}
+        onDownloadTemplate={() =>
+          downloadFile(getTelemetryCSVTemplate(), `SIMS-telemetry-template-${new Date().getFullYear()}.csv`)
+        }
       />
       <YesNoDialog
         dialogTitle={TelemetryTableI18N.removeAllDialogTitle}
@@ -274,7 +244,7 @@ export const TelemetryTableContainer = () => {
                   <ListItemIcon>
                     <Icon path={mdiTrashCanOutline} size={1} />
                   </ListItemIcon>
-                  <Typography variant="inherit">Delete {p(numSelectedRows, 'Telemetr', 'y', 'ies')}</Typography>
+                  <Typography variant="inherit">Delete Telemetry</Typography>
                 </MenuItem>
               </Menu>
             </Box>

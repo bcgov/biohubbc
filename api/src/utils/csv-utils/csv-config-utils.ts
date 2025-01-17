@@ -1,7 +1,7 @@
 import { countBy, difference } from 'lodash';
 import { WorkSheet } from 'xlsx';
 import { getHeadersUpperCase, getWorksheetRowObjects } from '../xlsx-utils/worksheet-utils';
-import { CSVConfig, CSVRow } from './csv-config-validation.interface';
+import { CSVCell, CSVConfig, CSVHeaderConfig, CSVRow } from './csv-config-validation.interface';
 
 /**
  * CSV Config Utils - A collection of methods useful when building CSVConfigs
@@ -10,12 +10,12 @@ import { CSVConfig, CSVRow } from './csv-config-validation.interface';
  * @template StaticHeaderType - The static header type
  * @class CSVConfigUtils
  */
-export class CSVConfigUtils<StaticHeaderType extends Uppercase<string>> {
+export class CSVConfigUtils<StaticHeaderType extends Uppercase<string> = Uppercase<string>> {
   _config: CSVConfig<StaticHeaderType>;
   worksheet: WorkSheet;
   worksheetRows: CSVRow[];
 
-  constructor(worksheet: WorkSheet, config: CSVConfig) {
+  constructor(worksheet: WorkSheet, config: CSVConfig<StaticHeaderType>) {
     this._config = config;
     this.worksheet = worksheet;
     this.worksheetRows = getWorksheetRowObjects(worksheet);
@@ -24,10 +24,10 @@ export class CSVConfigUtils<StaticHeaderType extends Uppercase<string>> {
   /**
    * The CSV config static headers.
    *
-   * @returns {Uppercase<string>[]} - The config headers
+   * @returns {StaticHeaderType[]} - The config headers
    */
-  get configStaticHeaders(): Uppercase<string>[] {
-    return Object.keys(this._config.staticHeadersConfig) as Uppercase<string>[];
+  get configStaticHeaders(): StaticHeaderType[] {
+    return Object.keys(this._config.staticHeadersConfig) as StaticHeaderType[];
   }
 
   /**
@@ -119,15 +119,54 @@ export class CSVConfigUtils<StaticHeaderType extends Uppercase<string>> {
   }
 
   /**
+   * Set a static header config. Injects the header config into the CSV static headers config.
+   *
+   * @param {StaticHeaderType} header - The header name
+   * @param {CSVHeaderConfig} headerConfig - The header config
+   * @returns {void}
+   */
+  setStaticHeaderConfig(header: StaticHeaderType, headerConfig: CSVHeaderConfig): void {
+    this._config.staticHeadersConfig[header] = { ...this._config.staticHeadersConfig[header], ...headerConfig };
+  }
+
+  /**
+   * Set all static header configs. Injects the header configs into the CSV static headers config.
+   * Similar to `setStaticHeaderConfig` but for all headers.
+   *
+   * @param {Record<StaticHeaderType, CSVHeaderConfig>} headersConfig - The header configs
+   * @returns {void}
+   */
+  setAllStaticHeaderConfigs(headersConfig: Record<StaticHeaderType, CSVHeaderConfig>): void {
+    for (const header in headersConfig) {
+      this.setStaticHeaderConfig(header, headersConfig[header]);
+    }
+  }
+
+  /**
+   * Get the final CSV config
+   *
+   * @returns {CSVConfig<StaticHeaderType>} - The CSV config
+   */
+  getConfig(): CSVConfig<StaticHeaderType> {
+    for (const header of this.configStaticHeaders) {
+      if (!this._config.staticHeadersConfig[header].validateCell) {
+        throw new Error(`Invalid CSV config. Missing 'validateCell' for static header: ${header}`);
+      }
+    }
+
+    return this._config;
+  }
+
+  /**
    * Get the cell value from a CSV row.
    *
    * @param {StaticHeaderType} header - The header name
    * @param {CSVRow} row - The CSV row
-   * @returns {unknown} - The cell value
+   * @returns {any} - The cell value
    */
-  getCellValue(header: StaticHeaderType, row: CSVRow) {
+  getCellValue(header: StaticHeaderType, row: CSVRow): CSVCell {
     // Static header or dynamic header exact match
-    if (header in row) {
+    if ((header as Uppercase<string>) in row) {
       return row[header];
     }
 
@@ -143,9 +182,9 @@ export class CSVConfigUtils<StaticHeaderType extends Uppercase<string>> {
    * Get all the cell values from a static header.
    *
    * @param {StaticHeaderType} header - The header name
-   * @returns {unknown[]} - The cell values
+   * @returns {any[]} - The cell values
    */
-  getCellValues(header: StaticHeaderType) {
+  getCellValues(header: StaticHeaderType): CSVCell[] {
     return this.worksheetRows.map((row) => this.getCellValue(header, row));
   }
 
@@ -153,9 +192,9 @@ export class CSVConfigUtils<StaticHeaderType extends Uppercase<string>> {
    * Get all the unique cell values from a static header.
    *
    * @param {StaticHeaderType} header - The header name
-   * @returns {unknown[]} - The unique cell values
+   * @returns {any[]} - The unique cell values
    */
-  getUniqueCellValues(header: StaticHeaderType) {
+  getUniqueCellValues(header: StaticHeaderType): CSVCell[] {
     return [...new Set(this.getCellValues(header))];
   }
 
@@ -166,7 +205,7 @@ export class CSVConfigUtils<StaticHeaderType extends Uppercase<string>> {
    * @param {unknown} cell - The cell value
    * @returns {boolean} - Whether all the cell values are unique
    */
-  isCellUnique(header: StaticHeaderType, cell: unknown) {
+  isCellUnique(header: StaticHeaderType, cell: unknown): boolean {
     const uniqueDictionary = countBy(this.getCellValues(header), (value) => String(value).toLowerCase());
     const dictionaryKey = String(cell).toLowerCase();
     return uniqueDictionary[dictionaryKey] === 1 || uniqueDictionary[dictionaryKey] === undefined;

@@ -15,7 +15,7 @@ $$
 --                  2021-01-03  initial release
 -- *******************************************************************
 declare
-  _system_user_id system_user.system_user_id%type;
+  _system_user_id "system_user".system_user_id%type;
   old_row json := null;
   new_row json := null;
 begin

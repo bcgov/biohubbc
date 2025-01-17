@@ -1,5 +1,7 @@
 import axios from 'axios';
 import useReferenceApi from 'hooks/api/useReferenceApi';
+import { useTelemetryDeploymentApi } from 'hooks/api/useTelemetryDeploymentApi';
+import { useTelemetryDeviceApi } from 'hooks/api/useTelemetryDeviceApi';
 import { useConfigContext } from 'hooks/useContext';
 import { useMemo } from 'react';
 import useAdminApi from './api/useAdminApi';
@@ -77,6 +79,10 @@ export const useBiohubApi = () => {
 
   const telemetry = useTelemetryApi(apiAxios);
 
+  const telemetryDeployment = useTelemetryDeploymentApi(apiAxios);
+
+  const telemetryDevice = useTelemetryDeviceApi(apiAxios);
+
   const markdown = useMarkdownApi(apiAxios);
 
   const alert = useAlertApi(apiAxios);
@@ -104,6 +110,8 @@ export const useBiohubApi = () => {
       standards,
       reference,
       telemetry,
+      telemetryDeployment,
+      telemetryDevice,
       markdown,
       alert
     }),

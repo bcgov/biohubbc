@@ -39,7 +39,7 @@ parameters:
   - name: MEMORY_REQUEST
     value: '100Mi'
   - name: MEMORY_LIMIT
-    value: '1.5Gi'
+    value: '1.75Gi'
 objects:
   - kind: Pod
     apiVersion: v1

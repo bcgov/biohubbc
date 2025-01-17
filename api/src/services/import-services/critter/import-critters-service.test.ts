@@ -3,6 +3,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import xlsx from 'xlsx';
 import { CSVConfigUtils } from '../../../utils/csv-utils/csv-config-utils';
+import { CSVRowState } from '../../../utils/csv-utils/csv-config-validation.interface';
 import * as headerConfig from '../../../utils/csv-utils/csv-header-configs';
 import { NestedRecord } from '../../../utils/nested-record';
 import { getMockDBConnection } from '../../../__mocks__/db';
@@ -179,11 +180,10 @@ describe('ImportCrittersService', () => {
       } as any);
 
       const getSexCellValidatorStub = sinon.stub(critterConfig, 'getCritterSexCellValidator').returns(() => []);
-      const getSexCellSetterStub = sinon.stub(critterConfig, 'getCritterSexCellSetter').returns(() => 'A');
 
       const sexHeaderConfig = await service._getSexHeaderConfig();
 
-      expect(getTaxonMeasurementsStub).to.have.been.calledWithExactly(1234);
+      expect(getTaxonMeasurementsStub).to.have.been.calledWithExactly('1234');
       expect(getSexCellValidatorStub).to.have.been.calledWithExactly(
         new NestedRecord({
           1234: { male: 'maleUUID', female: 'femaleUUID' }
@@ -191,15 +191,8 @@ describe('ImportCrittersService', () => {
         service.configUtils
       );
 
-      expect(getSexCellSetterStub).to.have.been.calledWithExactly(
-        new NestedRecord({
-          1234: { male: 'maleUUID', female: 'femaleUUID' }
-        }),
-        service.configUtils
-      );
-
       expect(sexHeaderConfig.validateCell).to.be.a('function');
-      expect(sexHeaderConfig.setCellValue).to.be.a('function');
+      expect(sexHeaderConfig.setCellValue).to.be.undefined;
     });
   });
 
@@ -224,7 +217,7 @@ describe('ImportCrittersService', () => {
 
       const config = await service._getCollectionUnitDynamicHeaderConfig();
 
-      expect(findTaxonCollectionUnitsStub).to.have.been.calledOnceWithExactly(1234);
+      expect(findTaxonCollectionUnitsStub).to.have.been.calledOnceWithExactly('1234');
 
       expect(getCollectionUnitCellValidatorStub).to.have.been.calledWithExactly(
         new NestedRecord({ 1234: { category: { unit: 'uuid' } } }),
@@ -252,7 +245,10 @@ describe('ImportCrittersService', () => {
           WLH_ID: '12-2222',
           DESCRIPTION: 'comment',
           POPULATION_UNIT: 'unit',
-          COLLECTION_UNIT: 'collection'
+          COLLECTION_UNIT: 'collection',
+          [CSVRowState]: {
+            sexId: 'sexId'
+          }
         }
       ];
       const worksheet = xlsx.utils.json_to_sheet(rows);
@@ -265,7 +261,7 @@ describe('ImportCrittersService', () => {
 
       expect(payloads.critterbasePayload.critters?.[0].itis_tsn).to.be.equal('1234');
       expect(payloads.critterbasePayload.critters?.[0].animal_id).to.be.equal('test');
-      expect(payloads.critterbasePayload.critters?.[0].sex_qualitative_option_id).to.be.equal('male');
+      expect(payloads.critterbasePayload.critters?.[0].sex_qualitative_option_id).to.be.equal('sexId');
       expect(payloads.critterbasePayload.critters?.[0].wlh_id).to.be.equal('12-2222');
       expect(payloads.critterbasePayload.critters?.[0].critter_comment).to.be.equal('comment');
       expect(payloads.critterbasePayload.critters?.[0].critter_id).to.be.a('string');

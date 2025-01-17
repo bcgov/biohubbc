@@ -492,3 +492,21 @@ export const isDefined = <T,>(value: T | undefined | null): value is T => value 
 export const getAxiosProgress = (progressEvent: AxiosProgressEvent) => {
   return Math.round((progressEvent.loaded / (progressEvent.total || 1)) * 100);
 };
+
+/**
+ * Wait for the render cycle to complete before continuing.
+ *
+ * How? React updates the DOM asynchronously by queing updates in the event loop.
+ * Awaiting this promise allows react to complete its currently queued tasks (state updates) before continuing.
+ *
+ * Note: The `delayMs` is used to wait AFTER the render cycle updates. This is useful when you want to wait for
+ * the render cycle to complete and then perform some action after a delay, useful for animation or state timing.
+ *
+ * @see https://www.justjeb.com/post/why-does-settimeout-work
+ * @async
+ * @param {number} [delayMs=0] - Delay in milliseconds to wait AFTER the render cycle updates
+ * @returns {*} {Promise<void>}
+ */
+export const waitForRenderCycle = async (delayMs = 0) => {
+  return new Promise((resolve) => setTimeout(resolve, delayMs));
+};

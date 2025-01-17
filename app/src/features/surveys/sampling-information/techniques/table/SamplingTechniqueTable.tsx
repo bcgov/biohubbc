@@ -266,7 +266,7 @@ export const SamplingTechniqueTable = <T extends ITechniqueRowData>(props: ISamp
         hasNoData={!rows.length}
         hasNoDataFallback={
           <NoDataOverlay
-            height="200px"
+            height="100%"
             title="Add Techniques"
             subtitle="Techniques describe how you collected species observations"
             icon={mdiArrowTopRight}
