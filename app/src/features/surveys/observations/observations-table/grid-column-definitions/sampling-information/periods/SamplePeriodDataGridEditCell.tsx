@@ -124,6 +124,7 @@ export const SamplePeriodDataGridEditCell = <DataGridType extends GridValidRowMo
       // If either the site or technique is not selected, then unset any selected period, as its value is dependent
       // on the site and technique.
       setCurrentOption(null);
+      setOptions([]);
       return;
     }
 

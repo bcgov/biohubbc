@@ -118,6 +118,7 @@ export const MethodTechniqueDataGridEditCell = <DataGridType extends GridValidRo
       // If the site not selected, then unset any selected technique, as its value is dependent
       // on the site.
       setCurrentOption(null);
+      setOptions([]);
       return;
     }
 
