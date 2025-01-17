@@ -152,7 +152,7 @@ describe('worksheet-utils', () => {
     });
   });
 
-  describe.only('getWorksheetRowObjects', () => {
+  describe('getWorksheetRowObjects', () => {
     it('should return the worksheet row objects', () => {
       const buffer = getMockXLSXWorkbookBuffer([{ TEST: 'value' }]);
 
