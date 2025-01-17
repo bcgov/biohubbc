@@ -11,11 +11,7 @@ import { CSV_ERROR_MESSAGE } from '../../../../../../../utils/csv-utils/csv-conf
 import { getLogger } from '../../../../../../../utils/logger';
 import { parseMulterFile } from '../../../../../../../utils/media/media-utils';
 import { getFileFromRequest } from '../../../../../../../utils/request';
-import {
-  constructXLSXWorkbook,
-  getDefaultWorksheet,
-  getWorksheetRowObjects
-} from '../../../../../../../utils/xlsx-utils/worksheet-utils';
+import { constructXLSXWorkbook, getDefaultWorksheet } from '../../../../../../../utils/xlsx-utils/worksheet-utils';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/markings/import');
 
@@ -127,12 +123,6 @@ export function importCsv(): RequestHandler {
 
     const mediaFile = parseMulterFile(rawFile);
     const worksheet = getDefaultWorksheet(constructXLSXWorkbook(mediaFile));
-
-    console.log({ worksheet });
-
-    const worksheetRows = getWorksheetRowObjects(worksheet);
-
-    console.log({ worksheetRows });
 
     try {
       await connection.open();

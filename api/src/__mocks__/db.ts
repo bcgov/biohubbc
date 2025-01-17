@@ -118,20 +118,20 @@ export const getRequestHandlerMocks = () => {
 /**
  * Returns a mock XLSX workbook buffer.
  *
- * @param {any[]} data The data to inject into the workbook.
+ * @param {Record<string, any>[]} data The data to inject into the workbook.
  * @return {*}  {Buffer}
  */
-export const getMockXLSXWorkbookBuffer = (data: any[]) => {
-  // Create a new workbook
-  const workbook = xlsx.utils.book_new(); // Create a new workbook
+export const getMockXLSXWorkbookBuffer = (data: Record<string, any>[]) => {
+  // Create a new empty workbook
+  const workbook = xlsx.utils.book_new();
 
-  // Create a new worksheet
+  // Create a new worksheet with the array of records
   const worksheet = xlsx.utils.json_to_sheet(data);
 
   // Inject the worksheet data into the workbook with the default name
   xlsx.utils.book_append_sheet(workbook, worksheet, DEFAULT_XLSX_SHEET_NAME);
 
-  // Convert the workbook to a buffer
+  // Convert the workbook to a xlsx buffer
   const buffer = xlsx.write(workbook, { bookType: 'xlsx', type: 'buffer' });
 
   return buffer;

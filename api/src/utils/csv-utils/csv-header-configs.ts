@@ -190,8 +190,8 @@ export const getLongitudeCellValidator = (options?: CSVOptionalCell): CSVCellVal
  */
 export const getDateCellValidator = (options?: CSVOptionalCell): CSVCellValidator => {
   return (params) => {
-    if (options?.optional && params.cell === undefined) {
-      return [];
+    if (options?.optional) {
+      return validateZodCell(params.cell, z.string().date().optional());
     }
 
     return validateZodCell(params.cell, z.string().date());
