@@ -2,8 +2,6 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
-import { ApiConflictError } from '../../../../../../errors/api-error';
-import { HTTP409 } from '../../../../../../errors/http-error';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { TechniqueService } from '../../../../../../services/technique-service';
 import { getLogger } from '../../../../../../utils/logger';
@@ -125,11 +123,6 @@ export function deleteSurveyTechniqueRecords(): RequestHandler {
     } catch (error) {
       defaultLog.error({ label: 'deleteSurveyTechniqueRecords', message: 'error', error });
       await connection.rollback();
-
-      if (error instanceof ApiConflictError) {
-        throw HTTP409.fromApiError(error);
-      }
-
       throw error;
     } finally {
       connection.release();

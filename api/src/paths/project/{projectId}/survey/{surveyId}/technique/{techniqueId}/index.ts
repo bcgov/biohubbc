@@ -2,8 +2,6 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
-import { ApiConflictError } from '../../../../../../../errors/api-error';
-import { HTTP409 } from '../../../../../../../errors/http-error';
 import { techniqueUpdateSchema, techniqueViewSchema } from '../../../../../../../openapi/schemas/technique';
 import { ITechniquePutData } from '../../../../../../../repositories/technique-repository';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
@@ -121,11 +119,6 @@ export function deleteTechnique(): RequestHandler {
     } catch (error) {
       defaultLog.error({ label: 'deleteTechnique', message: 'error', error });
       await connection.rollback();
-
-      if (error instanceof ApiConflictError) {
-        throw HTTP409.fromApiError(error);
-      }
-
       throw error;
     } finally {
       connection.release();

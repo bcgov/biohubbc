@@ -606,8 +606,13 @@ export class ObservationRepository extends BaseRepository {
       .queryBuilder()
       .select(knex.raw('COUNT(survey_observation_id)::integer as count'))
       .from('survey_observation')
-      .where('survey_id', surveyId)
-      .whereIn('survey_sample_site_id', sampleSiteIds);
+      .leftJoin(
+        'survey_sample_period',
+        'survey_observation.survey_sample_period_id',
+        'survey_sample_period.survey_sample_period_id'
+      )
+      .where('survey_observation.survey_id', surveyId)
+      .whereIn('survey_sample_period.survey_sample_site_id', sampleSiteIds);
 
     const response = await this.connection.knex(sqlStatement, z.object({ count: z.number() }));
 

@@ -34,7 +34,8 @@ export const SurveyTechniquesCardContainer = (props: ISurveyTechniquesCardContai
   }, [methodAttributeDataLoader]);
 
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setPaginationModel({ page: 0, pageSize: parseInt(event.target.value, 10) });
+    // reset the page to 0 when changing the page size
+    setPaginationModel((model) => ({ ...model, page: 0, pageSize: parseInt(event.target.value, 10) }));
   };
 
   const handleChangePage = (_: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
@@ -50,18 +51,16 @@ export const SurveyTechniquesCardContainer = (props: ISurveyTechniquesCardContai
               (method) => method.method_lookup_id === technique.method_lookup_id
             );
 
-            if (attributes) {
-              return (
-                <SurveyTechniqueCard
-                  key={technique.method_technique_id}
-                  methodAttributes={{
-                    quantitative: attributes.quantitative_attributes,
-                    qualitative: attributes.qualitative_attributes
-                  }}
-                  technique={technique}
-                />
-              );
-            }
+            return (
+              <SurveyTechniqueCard
+                key={technique.method_technique_id}
+                methodAttributes={{
+                  quantitative: attributes?.quantitative_attributes ?? [],
+                  qualitative: attributes?.qualitative_attributes ?? []
+                }}
+                technique={technique}
+              />
+            );
           })}
         </Stack>
       </Box>

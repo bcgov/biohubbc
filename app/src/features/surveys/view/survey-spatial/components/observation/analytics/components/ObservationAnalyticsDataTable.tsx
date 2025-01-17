@@ -43,7 +43,7 @@ export const ObservationAnalyticsDataTable = (props: IObservationAnalyticsDataTa
       // Pagination
       initialState={{
         pagination: {
-          paginationModel: { page: 1, pageSize: 10 }
+          paginationModel: { page: 0, pageSize: 10 }
         }
       }}
       pageSizeOptions={[10, 25, 50]}

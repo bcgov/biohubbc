@@ -4,7 +4,8 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { deleteTechnique, getTechniqueById, updateTechnique } from '.';
 import * as db from '../../../../../../../database/db';
-import { HTTP409, HTTPError } from '../../../../../../../errors/http-error';
+import { ApiError } from '../../../../../../../errors/api-error';
+import { HTTPError } from '../../../../../../../errors/http-error';
 import { AttractantService } from '../../../../../../../services/attractants-service';
 import { SamplePeriodService } from '../../../../../../../services/sample-period-service';
 import { TechniqueAttributeService } from '../../../../../../../services/technique-attributes-service';
@@ -70,11 +71,10 @@ describe('deleteTechnique', () => {
       expect(mockDBConnection.rollback).to.have.been.calledOnce;
       expect(mockDBConnection.release).to.have.been.calledOnce;
 
-      expect(actualError).instanceOf(HTTP409);
-      expect((actualError as HTTP409).message).to.equal(
+      expect(actualError).instanceOf(ApiError);
+      expect((actualError as ApiError).message).to.equal(
         'Cannot delete a technique that is associated to a survey sample period.'
       );
-      expect((actualError as HTTPError).status).to.equal(409);
     }
   });
 

@@ -3,7 +3,8 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../../../../../database/db';
-import { HTTP409, HTTPError } from '../../../../../../errors/http-error';
+import { ApiError } from '../../../../../../errors/api-error';
+import { HTTPError } from '../../../../../../errors/http-error';
 import { TechniqueRepository } from '../../../../../../repositories/technique-repository';
 import { AttractantService } from '../../../../../../services/attractants-service';
 import { SamplePeriodService } from '../../../../../../services/sample-period-service';
@@ -89,8 +90,8 @@ describe('deleteSurveyTechniqueRecords', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect(actualError).instanceOf(HTTP409);
-      expect((actualError as HTTP409).message).to.equal(
+      expect(actualError).instanceOf(ApiError);
+      expect((actualError as ApiError).message).to.equal(
         'Cannot delete a technique that is associated to a survey sample period.'
       );
 
