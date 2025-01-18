@@ -40,6 +40,13 @@ export const TechniqueGeneralInformationForm = <
       // Undetermined is a possible option, but filter from the list to discourage its use
       .filter((option) => option.label.toLowerCase() !== 'undetermined') ?? [];
 
+  const responseMetricOptions: ISelectWithSubtextFieldOption[] =
+    codesContext.codesDataLoader.data?.method_response_metrics.map((option) => ({
+      value: option.id,
+      label: option.name,
+      subText: option.description
+    })) ?? [];
+
   if (!codesContext.codesDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
@@ -75,6 +82,26 @@ export const TechniqueGeneralInformationForm = <
               // Clear attributes
               setFieldValue('attributes', []);
               setFieldValue('vantage_methods', []);
+            }
+          }}
+        />
+      </Grid>
+      <Grid item xs={12}>
+        <AutocompleteField
+          id="method_response_metric_id"
+          label="Response Metric"
+          name="method_response_metric_id"
+          showValue
+          required
+          loading={codesContext.codesDataLoader.isLoading}
+          options={responseMetricOptions.map((option) => ({
+            value: option.value as number,
+            label: option.label,
+            description: option.subText
+          }))}
+          onChange={(_, value) => {
+            if (value?.value) {
+              setFieldValue('method_response_metric_id', value.value);
             }
           }}
         />

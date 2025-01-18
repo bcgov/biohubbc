@@ -11,8 +11,10 @@ export interface IPartialObservationCountDataGridEditCellProps<DataGridType exte
   error?: boolean;
 }
 
+const RESPONSE_METRIC_PRESENCE_ABSENCE = 'Presence-absence';
+
 /**
- *
+ * Count data grid component for edit.
  *
  * @template DataGridType
  * @param {IPartialObservationCountDataGridEditCellProps<DataGridType>} props
@@ -39,7 +41,8 @@ export const ObservationCountDataGridEditCell = <DataGridType extends GridValidR
     );
   };
 
-  const maxCount = getResponseMetric() === 'Presence-absence' ? 1 : undefined;
+  // Set the max count to 1, if the response metric is 'Presence-absence'
+  const maxCount = getResponseMetric() === RESPONSE_METRIC_PRESENCE_ABSENCE ? 1 : undefined;
 
   return (
     <TextFieldDataGrid
