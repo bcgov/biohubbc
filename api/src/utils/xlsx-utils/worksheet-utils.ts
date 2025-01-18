@@ -52,18 +52,22 @@ export interface IXLSXCSVValidator {
  * @return {*}  {xlsx.WorkBook}
  */
 export const constructXLSXWorkbook = (file: MediaFile): xlsx.WorkBook => {
-  return xlsx.read(file.buffer, {
-    // Custom date format
-    dateNF: CUSTOM_XLSX_DATE_FORMAT,
-    // Return date cells as epoch numbers (epoch start: `1900-01-01`)
-    cellDates: false,
-    // Include the number format (if any) of the value (.z field)
-    cellNF: true,
-    // Include the raw string version of the value (.w field)
-    cellText: true,
-    // Don't return raw, as this will return every cell as a string, even if it's a number or date
-    raw: false
-  });
+  return xlsx.read(
+    file.buffer,
+    // WARNING: Changing these options will affect the XLSX parsing and may cause unexpected results
+    {
+      // Custom date format
+      dateNF: CUSTOM_XLSX_DATE_FORMAT,
+      // Return date cells as epoch numbers (epoch start: `1900-01-01`)
+      cellDates: false,
+      // Include the number format (if any) of the value (.z field)
+      cellNF: true,
+      // Include the raw string version of the value (.w field)
+      cellText: true,
+      // Don't return raw, as this will return every cell as a string, even if it's a number or date
+      raw: false
+    }
+  );
 };
 
 /**

@@ -40,8 +40,6 @@ export function trimCellWhitespace(cell: CellObject) {
 /**
  * Attempts to identify and update cells whose values are either dates or times to a consistent format.
  *
- * Note: Mutates the cell object in place.
- *
  * @see https://docs.sheetjs.com/docs/csf/cell for details on cell fields
  * @export
  * @param {CellObject} cell - Cell object
@@ -80,6 +78,13 @@ export function replaceCellDates(cell: CellObject): CellObject {
   return cell;
 }
 
+/**
+ * Converts a cell value to a date string - prioritizes Canadian date formats over American date formats.
+ *
+ * @export
+ * @param {CellValue} cellValue - Cell value
+ * @return {*} {string | null} - Date string or null if the cell value is not a date
+ */
 export function formatDateCellValue(cellValue: CellValue): string | null {
   const dateParts = String(cellValue).replace(/\//g, '-').split('-');
 
