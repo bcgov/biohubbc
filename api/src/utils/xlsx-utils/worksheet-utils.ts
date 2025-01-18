@@ -152,10 +152,6 @@ export const getWorksheetRowObjects = (worksheet: xlsx.WorkSheet): Record<symbol
       // Always add the header (key) to the row object
       rowObject[headers[j]] = undefined;
 
-      // Add the original row index to the row object
-      // Symbols are non-enumerable, so they will be `hidden` in the rowObject
-      rowObject[WorksheetRowIndexSymbol] = i;
-
       const cellAddress = { c: j, r: i };
       const cellRef = xlsx.utils.encode_cell(cellAddress);
       const cell = worksheet[cellRef];
@@ -172,6 +168,10 @@ export const getWorksheetRowObjects = (worksheet: xlsx.WorkSheet): Record<symbol
     }
 
     if (rowHasValues) {
+      // Add the original row index to the row object
+      // Symbols are non-enumerable, so they will be `hidden` in the rowObject
+      rowObject[WorksheetRowIndexSymbol] = i;
+
       // Add the row object to the array if it has at least one non-empty cell
       rowObjectsArray.push(rowObject);
     }
