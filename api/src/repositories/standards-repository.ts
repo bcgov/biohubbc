@@ -88,9 +88,9 @@ export class StandardsRepository extends BaseRepository {
           taq.description AS qual_description,
           COALESCE(json_agg(
             json_build_object(
-              'name', mlaqo.name,
-              'description', mlaqo.description
-            ) ORDER BY mlaqo.name
+              'name', taqo.name,
+              'description', taqo.description
+            ) ORDER BY taqo.name
           ), '[]'::json) AS options
         FROM  
           method_lookup_attribute_qualitative_option mlaqo
@@ -98,6 +98,8 @@ export class StandardsRepository extends BaseRepository {
           method_lookup_attribute_qualitative mlaq ON mlaqo.method_lookup_attribute_qualitative_id = mlaq.method_lookup_attribute_qualitative_id
         LEFT JOIN
           technique_attribute_qualitative taq ON mlaq.technique_attribute_qualitative_id = taq.technique_attribute_qualitative_id
+        LEFT JOIN
+          technique_attribute_qualitative_option taqo ON taqo.technique_attribute_qualitative_option_id = mlaqo.technique_attribute_qualitative_option_id
         GROUP BY
           mlaq.method_lookup_id,
           taq.name, 
