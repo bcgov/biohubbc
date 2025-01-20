@@ -42,6 +42,20 @@ describe('cell-utils', () => {
   });
 
   describe('formatStringDateCell', () => {
+    it('should return null when string is not shaped like a date', () => {
+      expect(formatDateCellValue('TEST')).to.be.null;
+    });
+
+    it('should return null when string is not a 3 part delimited string', () => {
+      expect(formatDateCellValue('01-01')).to.be.null;
+      expect(formatDateCellValue('01-01-2024-01')).to.be.null;
+      expect(formatDateCellValue('01/01')).to.be.null;
+    });
+
+    it('should return null when string is not a valid date', () => {
+      expect(formatDateCellValue('99-99-9999')).to.be.null;
+    });
+
     it('should format 2024-01-31', () => {
       expect(formatDateCellValue('2024-01-31')).to.equal('2024-01-31');
     });
