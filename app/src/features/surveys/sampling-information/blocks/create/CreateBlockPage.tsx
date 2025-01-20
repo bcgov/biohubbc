@@ -124,8 +124,8 @@ export const CreateBlockPage = () => {
             survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
             project_name={projectContext.projectDataLoader.data.projectData.project.project_name}
             is_submitting={isSubmitting}
-            title="Add Sampling Site Cluster"
-            breadcrumb="Add Sampling Site Cluster"
+            title="Add Sampling Site"
+            breadcrumb="Add Sampling Site"
           />
           <Box display="flex" flex="1 1 auto">
             <CreateBlocksForm isSubmitting={isSubmitting} clusterCount={blocksDataLoader.data?.blocks.length ?? 0} />

@@ -1,4 +1,8 @@
+import { mdiGroup, mdiMapMarker, mdiPlus } from '@mdi/js';
+import Icon from '@mdi/react';
+import { Button, Toolbar, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
+import grey from '@mui/material/colors/grey';
 import Paper from '@mui/material/Paper';
 import AlertBar from 'components/alert/AlertBar';
 import CollapsibleCardList from 'components/card/CollapsibleCardList';
@@ -6,7 +10,9 @@ import YesNoDialog from 'components/dialog/YesNoDialog';
 import CustomTextField from 'components/fields/CustomTextField';
 import { IDrawControlsRef } from 'components/map/components/DrawControls';
 import { ImportDrawMapControl } from 'components/map/ImportDrawMapControl';
+import CustomToggleButtonGroup from 'components/toolbar/CustomToggleButtonGroup';
 import { CreateBlockI18N } from 'constants/i18n';
+import { SamplingSiteManageTableView } from 'features/surveys/sampling-information/sites/table/SamplingSiteTabsContainer';
 import SurveyMapTooltip from 'features/surveys/view/SurveyMapTooltip';
 import { useFormikContext } from 'formik';
 import { Feature } from 'geojson';
@@ -39,6 +45,7 @@ const CreateBlocksMapForm = (props: ICreateBlocksMapFormProps) => {
 
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [selectedFeatures, setSelectedFeatures] = useState<Feature[]>([]);
+  const [activeView, setActiveView] = useState<SamplingSiteManageTableView>(SamplingSiteManageTableView.SITES);
 
   const drawRef = createRef<IDrawControlsRef>();
 
@@ -199,7 +206,7 @@ const CreateBlocksMapForm = (props: ICreateBlocksMapFormProps) => {
       <Paper variant="outlined" sx={{ overflow: 'hidden' }}>
         <ImportDrawMapControl
           mapId="survey-blocks-map"
-          label="Clusters"
+          label="Sites"
           drawControlsRef={drawRef}
           features={features}
           handleImport={handleImport}
@@ -218,36 +225,72 @@ const CreateBlocksMapForm = (props: ICreateBlocksMapFormProps) => {
         <AlertBar sx={{ mt: 3 }} severity="error" title={errors.blocks} variant="outlined" text={errors.blocks} />
       )}
 
-      {values.blocks.length > 0 && (
-        <Box mt={3}>
-          <CollapsibleCardList
-            items={values.blocks.map((block) => ({
-              geojson: block.geojson ?? null,
-              uuid: block.uuid ?? undefined,
-              label: block.name
-            }))}
-            selectedItems={selectedFeatures.map((feature) => ({
-              geojson: feature,
-              uuid: values.blocks.find((block) => block.geojson?.id === feature.id)?.uuid ?? undefined,
-              label: values.blocks.find((block) => block.geojson?.id === feature.id)?.name ?? ''
-            }))}
-            onSelectItem={(feature) => {
-              feature.geojson && handleFeatureSelect(feature.geojson);
-            }}
-            onSelectAll={handleFeatureSelectAll}
-            renderCardContent={(_, index) => (
-              <>
-                <CustomTextField label="Name" name={`blocks[${index}].name`} />
-                <Box mt={3}>
-                  <CustomTextField
-                    label="Description"
-                    name={`blocks[${index}].description`}
-                    other={{ rows: 2, multiline: true }}
-                  />
-                </Box>
-              </>
-            )}
-          />
+      <Toolbar
+        disableGutters
+        sx={{
+          flex: '1 1 auto',
+          my: 2,
+          width: '100%'
+        }}>
+        <CustomToggleButtonGroup
+          views={[
+            { value: SamplingSiteManageTableView.SITES, icon: mdiMapMarker, label: SamplingSiteManageTableView.SITES },
+            {
+              value: SamplingSiteManageTableView.CLUSTER,
+              icon: mdiGroup,
+              label: SamplingSiteManageTableView.CLUSTER
+            }
+          ]}
+          activeView={activeView}
+          onViewChange={(view) => setActiveView(view)}
+          orientation="horizontal"
+        />
+        <Button
+          sx={{
+            mt: 1
+          }}
+          data-testid="cluster-add-button"
+          variant="outlined"
+          color="primary"
+          title="Create Cluster"
+          aria-label="Create Cluster"
+          startIcon={<Icon path={mdiPlus} size={1} />}>
+          Add Cluster
+        </Button>
+      </Toolbar>
+
+      {values.blocks.length > 0 ? (
+        <CollapsibleCardList
+          items={values.blocks.map((block) => ({
+            geojson: block.geojson ?? null,
+            uuid: block.uuid ?? undefined,
+            label: block.name
+          }))}
+          selectedItems={selectedFeatures.map((feature) => ({
+            geojson: feature,
+            uuid: values.blocks.find((block) => block.geojson?.id === feature.id)?.uuid ?? undefined,
+            label: values.blocks.find((block) => block.geojson?.id === feature.id)?.name ?? ''
+          }))}
+          onSelectItem={(feature) => {
+            feature.geojson && handleFeatureSelect(feature.geojson);
+          }}
+          onSelectAll={handleFeatureSelectAll}
+          renderCardContent={(_, index) => (
+            <>
+              <CustomTextField label="Name" name={`blocks[${index}].name`} />
+              <Box mt={3}>
+                <CustomTextField
+                  label="Description"
+                  name={`blocks[${index}].description`}
+                  other={{ rows: 2, multiline: true }}
+                />
+              </Box>
+            </>
+          )}
+        />
+      ) : (
+        <Box minHeight='200px' bgcolor={grey[100]} display="flex" alignItems="center" justifyContent="center">
+          <Typography>You have not added any new sites</Typography>
         </Box>
       )}
     </form>

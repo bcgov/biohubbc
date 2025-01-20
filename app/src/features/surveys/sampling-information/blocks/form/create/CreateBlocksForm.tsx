@@ -56,7 +56,9 @@ const CreateBlocksForm = (props: ICreateBlocksFormProps) => {
   return (
     <Container maxWidth="xl" sx={{ py: 3 }}>
       <Paper sx={{ p: 5 }}>
-        <HorizontalSplitFormComponent title="Clusters" summary="Import a spatial file or draw the location of clusters on the map">
+        <HorizontalSplitFormComponent
+          title="Sites"
+          summary="Import a spatial file or draw the location of sites on the map">
           <BlocksMapForm clusterCount={clusterCount} />
         </HorizontalSplitFormComponent>
 

@@ -1,4 +1,4 @@
-import { mdiDotsVertical, mdiMapMarker, mdiTrashCanOutline, mdiViewGridPlus } from '@mdi/js';
+import { mdiDotsVertical, mdiGroup, mdiMapMarker, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
@@ -182,13 +182,12 @@ export const SamplingSiteTabsContainer = () => {
           pr: 5.5,
           width: '100%'
         }}>
-        {/* Toggle buttons for changing between sites, methods, and periods */}
         <CustomToggleButtonGroup
           views={[
             { value: SamplingSiteManageTableView.SITES, icon: mdiMapMarker, label: SamplingSiteManageTableView.SITES },
             {
               value: SamplingSiteManageTableView.CLUSTER,
-              icon: mdiViewGridPlus,
+              icon: mdiGroup,
               label: SamplingSiteManageTableView.CLUSTER
             }
           ]}
