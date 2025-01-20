@@ -70,6 +70,7 @@ export function replaceCellDates(cell: CellObject): CellObject {
   else if (cell.z !== CUSTOM_XLSX_DATE_FORMAT && isStringCell(cell)) {
     const date = formatDateCellValue(cell.v);
 
+    // If the string is a date, update the cell value to the formatted date string
     if (date) {
       return { ...cell, z: DefaultDateFormat, v: date };
     }
@@ -104,8 +105,10 @@ export function formatDateCellValue(cellValue: CellValue): string | null {
     return null;
   }
 
+  // Grab the year from the date string
   const dateYear = Number(dateParts[0].length === 4 ? dateParts[0] : dateParts[2]);
 
+  // Always prioritize Canadian date formats over American date formats
   if (canadianDate.year() === dateYear) {
     return canadianDate.format(DefaultDateFormat);
   }
