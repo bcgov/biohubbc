@@ -12,11 +12,11 @@ import { importCSV } from '../import-csv';
 import { ImportMeasurementsStrategy } from './import-measurements-strategy';
 
 describe('importMeasurementsStrategy', () => {
-  describe('importCSV', () => {
-    beforeEach(() => {
-      sinon.restore();
-    });
+  beforeEach(() => {
+    sinon.restore();
+  });
 
+  describe('importCSV', () => {
     it('should import the csv file correctly', async () => {
       const worksheet = {
         A1: { t: 's', v: 'ALIAS' },
