@@ -19,14 +19,18 @@ dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
 
 /**
- * Extracts sampling data from the worksheet row object and maps site names, method techniques, and periods
- * to their respective IDs using the provided samplingPeriods.
+ * A helper function that will take a row object from a worksheet and attempt to find a matching sampling period.
  *
- * @param {Record<string, any>} row - The current row of the worksheet being processed.
- * @param {SurveySamplePeriodDetails[]} samplingPeriods - All available sampling periods for the survey, used for
- * mapping names to IDs.
- * @return {*}  {({ samplePeriodId: number; sampleSiteId: number | null; methodTechniqueId: number | null } | null)} The
- * sampling data with IDs, or null if no valid data is found.
+ * If the row contains a sampling site, technique, or period, then the function will attempt to find a unique period
+ * that matches all of the provided (non-null) values.
+ *
+ * If the row does not contain a sampling site, technique, and period, then the function will attempt to find a unique
+ * period that matches the observation date and time.
+ *
+ * @param {Record<string, any>} row The current row of the worksheet being processed.
+ * @param {SurveySamplePeriodDetails[]} samplingPeriods All available sampling periods for the survey.
+ * @return {*}  {({ samplePeriodId: number; sampleSiteId: number | null; methodTechniqueId: number | null } | null)} A
+ * matching sampling period object, or null if no periods match the row data.
  */
 export function pullSamplingDataFromWorksheetRowObject(
   row: Record<string, any>,
@@ -37,46 +41,53 @@ export function pullSamplingDataFromWorksheetRowObject(
   const worksheetTechniqueName = getColumnCellValue(row, 'METHOD_TECHNIQUE').cell as string | null;
   const worksheetPeriod = getColumnCellValue(row, 'SAMPLING_PERIOD').cell as string | null;
 
-  // Find all periods that match the provided site, technique, and period
-  // Periods must match all non-null worksheet values to be considered a match
-  const matchingPeriodsBySamplingInformation = samplingPeriods.filter((period) => {
-    if (worksheetSiteName) {
-      const isMatch = matchSamplePeriodToWorksheetSiteName(worksheetSiteName, period);
+  // If any of the site, technique, or period values are provided, then attempt to find a unique period
+  // that matches all of provided (non-null) values.
+  if (worksheetSiteName || worksheetTechniqueName || worksheetPeriod) {
+    // Find all periods that match the provided site, technique, and period
+    // Periods must match all non-null worksheet values to be considered a match
+    const matchingPeriodsBySamplingInformation = samplingPeriods.filter((period) => {
+      if (worksheetSiteName) {
+        const isMatch = matchSamplePeriodToWorksheetSiteName(worksheetSiteName, period);
 
-      if (!isMatch) {
-        // If the worksheet site name is provided but does not match, then skip this period
-        return false;
+        if (!isMatch) {
+          // If the worksheet site name is provided but does not match, then this period is not a match
+          return false;
+        }
       }
+
+      if (worksheetTechniqueName) {
+        const isMatch = matchSamplePeriodToWorksheetTechniqueName(worksheetTechniqueName, period);
+
+        if (!isMatch) {
+          // If the worksheet technique name is provided but does not match, then this period is not a match
+          return false;
+        }
+      }
+
+      if (worksheetPeriod) {
+        const isMatch = matchSamplePeriodToWorksheetPeriod(worksheetPeriod, period);
+
+        if (!isMatch) {
+          // If the worksheet period is provided but does not match, then this period is not a match
+          return false;
+        }
+      }
+
+      // If all provided (non-null) values match, then consider this period a match
+      return true;
+    });
+
+    if (matchingPeriodsBySamplingInformation.length === 1) {
+      // Found exactly one period record that uniquely matches some or all of the filters above
+      return formatMatchingPeriod(matchingPeriodsBySamplingInformation[0]);
     }
 
-    if (worksheetTechniqueName) {
-      const isMatch = matchSamplePeriodToWorksheetTechniqueName(worksheetTechniqueName, period);
-
-      if (!isMatch) {
-        // If the worksheet technique name is provided but does not match, then skip this period
-        return false;
-      }
-    }
-
-    if (worksheetPeriod) {
-      const isMatch = matchSamplePeriodToWorksheetPeriod(worksheetPeriod, period);
-
-      if (!isMatch) {
-        // If the worksheet period is provided but does not match, then skip this period
-        return false;
-      }
-    }
-
-    // If all provided values match, then consider this period a match
-    return true;
-  });
-
-  if (matchingPeriodsBySamplingInformation.length === 1) {
-    // Found exactly one period record that uniquely matches some or all of the filters above
-    return formatMatchingPeriod(matchingPeriodsBySamplingInformation[0]);
+    // Unable to match the observation sampling information to any existing period uniquely
+    return null;
   }
 
-  // If no single period record was matched above, then attempt to find a suitable unique period based on the
+  // If not site, technique, or period values are provided, then attempt to find a unique period that matches the
   // observation date and time
   const observationDate = getColumnCellValue(row, 'DATE').cell as string | null;
   const observationTime = getColumnCellValue(row, 'TIME').cell as string | null;
@@ -92,7 +103,7 @@ export function pullSamplingDataFromWorksheetRowObject(
     return formatMatchingPeriod(matchingPeriodsByObservationDateTime[0]);
   }
 
-  // Unable to match this observation record to any existing period uniquely
+  // Unable to match the observation date/time to any existing period uniquely
   return null;
 }
 
