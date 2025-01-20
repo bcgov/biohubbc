@@ -2,7 +2,8 @@ import { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import xlsx from 'xlsx';
-import { getMockXLSXWorkbookBuffer } from '../../__mocks__/db';
+import { getMockXLSXWorkbookBuffer } from '../../__mocks__/xlsx';
+import { MediaFile } from '../media/media-file';
 import { constructXLSXWorkbook, getDefaultWorksheet, IXLSXCSVValidator } from '../xlsx-utils/worksheet-utils';
 import * as worksheet_utils from './worksheet-utils';
 
@@ -155,8 +156,9 @@ describe('worksheet-utils', () => {
   describe('getWorksheetRowObjects', () => {
     it('should return the worksheet row objects', () => {
       const buffer = getMockXLSXWorkbookBuffer([{ TEST: 'value' }]);
+      const mediaFile = new MediaFile('text.xlsx', 'text/csv', buffer);
 
-      const newWorkbook = constructXLSXWorkbook(buffer);
+      const newWorkbook = constructXLSXWorkbook(mediaFile);
       const worksheet = getDefaultWorksheet(newWorkbook);
 
       const rowObjects = worksheet_utils.getWorksheetRowObjects(worksheet);
@@ -167,8 +169,9 @@ describe('worksheet-utils', () => {
 
     it('should return the worksheet row objects with multiple rows', () => {
       const buffer = getMockXLSXWorkbookBuffer([{ TEST: 'value' }, { TEST: 'value2' }]);
+      const mediaFile = new MediaFile('text.xlsx', 'text/csv', buffer);
 
-      const newWorkbook = constructXLSXWorkbook(buffer);
+      const newWorkbook = constructXLSXWorkbook(mediaFile);
       const worksheet = getDefaultWorksheet(newWorkbook);
 
       const rowObjects = worksheet_utils.getWorksheetRowObjects(worksheet);
@@ -180,8 +183,9 @@ describe('worksheet-utils', () => {
 
     it('should trim whitespace from cell values', () => {
       const buffer = getMockXLSXWorkbookBuffer([{ TEST: ' value ' }]);
+      const mediaFile = new MediaFile('text.xlsx', 'text/csv', buffer);
 
-      const newWorkbook = constructXLSXWorkbook(buffer);
+      const newWorkbook = constructXLSXWorkbook(mediaFile);
       const worksheet = getDefaultWorksheet(newWorkbook);
 
       const rowObjects = worksheet_utils.getWorksheetRowObjects(worksheet);
@@ -192,8 +196,9 @@ describe('worksheet-utils', () => {
 
     it('should handle empty rows', () => {
       const buffer = getMockXLSXWorkbookBuffer([{ TEST: 'value' }, {}, { TEST: 'value2' }]);
+      const mediaFile = new MediaFile('text.xlsx', 'text/csv', buffer);
 
-      const newWorkbook = constructXLSXWorkbook(buffer);
+      const newWorkbook = constructXLSXWorkbook(mediaFile);
       const worksheet = getDefaultWorksheet(newWorkbook);
 
       const rowObjects = worksheet_utils.getWorksheetRowObjects(worksheet);
@@ -203,8 +208,9 @@ describe('worksheet-utils', () => {
 
     it('should inject the row index symbol into the rows', () => {
       const buffer = getMockXLSXWorkbookBuffer([{ TEST: 'value' }, {}, { TEST: 'value2' }]);
+      const mediaFile = new MediaFile('text.xlsx', 'text/csv', buffer);
 
-      const newWorkbook = constructXLSXWorkbook(buffer);
+      const newWorkbook = constructXLSXWorkbook(mediaFile);
       const worksheet = getDefaultWorksheet(newWorkbook);
 
       const rowObjects = worksheet_utils.getWorksheetRowObjects(worksheet);
@@ -216,8 +222,9 @@ describe('worksheet-utils', () => {
 
     it('should handle numeric epoch date format', () => {
       const buffer = getMockXLSXWorkbookBuffer([{ DATE: '2024-01-31' }]);
+      const mediaFile = new MediaFile('text.xlsx', 'text/csv', buffer);
 
-      const newWorkbook = constructXLSXWorkbook(buffer);
+      const newWorkbook = constructXLSXWorkbook(mediaFile);
       const worksheet = getDefaultWorksheet(newWorkbook);
 
       worksheet['A2'].z = worksheet_utils.CUSTOM_XLSX_DATE_FORMAT;
@@ -230,8 +237,9 @@ describe('worksheet-utils', () => {
 
     it('should handle numeric epoch time format', () => {
       const buffer = getMockXLSXWorkbookBuffer([{ TIME: '12:00:00' }]);
+      const mediaFile = new MediaFile('text.xlsx', 'text/csv', buffer);
 
-      const newWorkbook = constructXLSXWorkbook(buffer);
+      const newWorkbook = constructXLSXWorkbook(mediaFile);
       const worksheet = getDefaultWorksheet(newWorkbook);
 
       worksheet['A2'].z = worksheet_utils.CUSTOM_XLSX_DATE_FORMAT;
@@ -244,8 +252,9 @@ describe('worksheet-utils', () => {
 
     it('should handle date format 2024-01-31', () => {
       const buffer = getMockXLSXWorkbookBuffer([{ DATE: '2024-01-31' }]);
+      const mediaFile = new MediaFile('text.xlsx', 'text/csv', buffer);
 
-      const newWorkbook = constructXLSXWorkbook(buffer);
+      const newWorkbook = constructXLSXWorkbook(mediaFile);
       const worksheet = getDefaultWorksheet(newWorkbook);
 
       worksheet['A2'].z = worksheet_utils.CUSTOM_XLSX_DATE_FORMAT;
@@ -258,8 +267,9 @@ describe('worksheet-utils', () => {
 
     it('should handle date format 2024/01/31', () => {
       const buffer = getMockXLSXWorkbookBuffer([{ DATE: '2024/01/31' }]);
+      const mediaFile = new MediaFile('text.xlsx', 'text/csv', buffer);
 
-      const newWorkbook = constructXLSXWorkbook(buffer);
+      const newWorkbook = constructXLSXWorkbook(mediaFile);
       const worksheet = getDefaultWorksheet(newWorkbook);
 
       worksheet['A2'].z = worksheet_utils.CUSTOM_XLSX_DATE_FORMAT;
@@ -272,8 +282,9 @@ describe('worksheet-utils', () => {
 
     it('should handle date format 31-01-2024', () => {
       const buffer = getMockXLSXWorkbookBuffer([{ DATE: '31-01-2024' }]);
+      const mediaFile = new MediaFile('text.xlsx', 'text/csv', buffer);
 
-      const newWorkbook = constructXLSXWorkbook(buffer);
+      const newWorkbook = constructXLSXWorkbook(mediaFile);
       const worksheet = getDefaultWorksheet(newWorkbook);
 
       worksheet['A2'].z = worksheet_utils.CUSTOM_XLSX_DATE_FORMAT;
@@ -286,8 +297,9 @@ describe('worksheet-utils', () => {
 
     it('should handle date format 31/01/2024', () => {
       const buffer = getMockXLSXWorkbookBuffer([{ DATE: '31/01/2024' }]);
+      const mediaFile = new MediaFile('text.xlsx', 'text/csv', buffer);
 
-      const newWorkbook = constructXLSXWorkbook(buffer);
+      const newWorkbook = constructXLSXWorkbook(mediaFile);
       const worksheet = getDefaultWorksheet(newWorkbook);
 
       worksheet['A2'].z = worksheet_utils.CUSTOM_XLSX_DATE_FORMAT;
@@ -300,8 +312,9 @@ describe('worksheet-utils', () => {
 
     it('should handle date format 01-31-2024', () => {
       const buffer = getMockXLSXWorkbookBuffer([{ DATE: '01-31-2024' }]);
+      const mediaFile = new MediaFile('test.csv', 'text/csv', buffer);
 
-      const newWorkbook = constructXLSXWorkbook(buffer);
+      const newWorkbook = constructXLSXWorkbook(mediaFile);
       const worksheet = getDefaultWorksheet(newWorkbook);
 
       worksheet['A2'].z = worksheet_utils.CUSTOM_XLSX_DATE_FORMAT;
@@ -314,8 +327,9 @@ describe('worksheet-utils', () => {
 
     it('should handle date format 01/31/2024', () => {
       const buffer = getMockXLSXWorkbookBuffer([{ DATE: '01/31/2024' }]);
+      const mediaFile = new MediaFile('test.csv', 'text/csv', buffer);
 
-      const newWorkbook = constructXLSXWorkbook(buffer);
+      const newWorkbook = constructXLSXWorkbook(mediaFile);
       const worksheet = getDefaultWorksheet(newWorkbook);
 
       worksheet['A2'].z = worksheet_utils.CUSTOM_XLSX_DATE_FORMAT;
@@ -328,8 +342,9 @@ describe('worksheet-utils', () => {
 
     it('should handle date format 2024-01-31', () => {
       const buffer = getMockXLSXWorkbookBuffer([{ DATE: '2024-01-31' }]);
+      const mediaFile = new MediaFile('test.csv', 'text/csv', buffer);
 
-      const newWorkbook = constructXLSXWorkbook(buffer);
+      const newWorkbook = constructXLSXWorkbook(mediaFile);
       const worksheet = getDefaultWorksheet(newWorkbook);
 
       worksheet['A2'].z = worksheet_utils.CUSTOM_XLSX_DATE_FORMAT;
@@ -342,8 +357,9 @@ describe('worksheet-utils', () => {
 
     it('should handle date format 2024/01/31', () => {
       const buffer = getMockXLSXWorkbookBuffer([{ DATE: '2024/01/31' }]);
+      const mediaFile = new MediaFile('test.csv', 'text/csv', buffer);
 
-      const newWorkbook = constructXLSXWorkbook(buffer);
+      const newWorkbook = constructXLSXWorkbook(mediaFile);
       const worksheet = getDefaultWorksheet(newWorkbook);
 
       worksheet['A2'].z = worksheet_utils.CUSTOM_XLSX_DATE_FORMAT;
