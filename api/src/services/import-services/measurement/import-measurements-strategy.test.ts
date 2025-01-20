@@ -31,7 +31,7 @@ describe('importMeasurementsStrategy', () => {
         D2: { t: 'n', w: '2', v: 2 },
         E2: { t: 'n', w: '0', v: 'good' },
         A3: { t: 's', v: 'carlita' },
-        B3: { z: 'yyyy-mm-dd', t: 'd', v: new Date('2024-10-10T07:00:00.000Z'), w: '2024-10-10' },
+        B3: { z: worksheetUtils.CUSTOM_XLSX_DATE_FORMAT, t: 'n', v: 54321, w: '2024-10-10' },
         C3: { t: 's', v: '10:10:12' },
         D3: { t: 'n', w: '2', v: 2 },
         E3: { t: 'n', w: '0', v: 'good' },
