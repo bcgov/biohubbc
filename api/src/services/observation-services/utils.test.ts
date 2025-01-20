@@ -12,7 +12,7 @@ import {
 
 chai.use(sinonChai);
 
-describe.only('Worksheet sampling util functions', () => {
+describe('Worksheet sampling util functions', () => {
   describe('pullSamplingDataFromWorksheetRowObject', () => {
     describe('scenario 1 - all periods partially overlap', () => {
       const samplingPeriods: SurveySamplePeriodDetails[] = [

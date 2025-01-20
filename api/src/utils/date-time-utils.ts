@@ -45,7 +45,7 @@ export function isDateTimeString(value: string): boolean {
     return false;
   }
 
-  return (isDateString(value) && value.includes('T')) || value.includes(':');
+  return isDateString(value) && (value.includes('T') || value.includes(':'));
 }
 
 /**
