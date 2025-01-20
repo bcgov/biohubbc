@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
-import { DefaultTimeFormat } from '../../../constants/dates';
+import { DefaultTimeFormat, DefaultTimeFormatNoSeconds } from '../../../constants/dates';
 
 dayjs.extend(customParseFormat);
 
@@ -23,7 +23,7 @@ interface ICaptureStub {
  */
 export const formatTimeString = (time?: string | null): string | undefined => {
   const fullTime = dayjs(time, DefaultTimeFormat);
-  const shortTime = dayjs(time, 'HH:mm');
+  const shortTime = dayjs(time, DefaultTimeFormatNoSeconds);
 
   if (fullTime.isValid()) {
     return fullTime.format(DefaultTimeFormat);

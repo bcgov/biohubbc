@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import xlsx, { CellObject } from 'xlsx';
-import { DefaultDateFormat } from '../../../constants/dates';
+import { DefaultDateFormat, DefaultTimeFormatNoSeconds } from '../../../constants/dates';
 import { safeTrim } from '../../string-utils';
 
 /**
@@ -113,8 +113,7 @@ export function replaceCellDates(cell: CellObject) {
   }
 
   if (isTimeFormatCell(cell)) {
-    const TimeFormat = 'HH:mm';
-    cell.v = cellDate.format(TimeFormat);
+    cell.v = cellDate.format(DefaultTimeFormatNoSeconds);
     return cell;
   }
 
