@@ -46,24 +46,48 @@ describe('cell-utils', () => {
       expect(formatDateCellValue('2024-01-31')).to.equal('2024-01-31');
     });
 
+    it('should format ambiguous 2024-01-02', () => {
+      expect(formatDateCellValue('2024-01-02')).to.equal('2024-01-02');
+    });
+
     it('should format 2024/01/31', () => {
       expect(formatDateCellValue('2024/01/31')).to.equal('2024-01-31');
+    });
+
+    it('should format ambiguous 2024/01/02', () => {
+      expect(formatDateCellValue('2024/01/02')).to.equal('2024-01-02');
     });
 
     it('should format 31-01-2024', () => {
       expect(formatDateCellValue('31-01-2024')).to.equal('2024-01-31');
     });
 
+    it('should format ambiguous 02-01-2024', () => {
+      expect(formatDateCellValue('02-01-2024')).to.equal('2024-01-02');
+    });
+
     it('should format 31/01/2024', () => {
       expect(formatDateCellValue('31/01/2024')).to.equal('2024-01-31');
+    });
+
+    it('should format ambiguous 02/01/2024', () => {
+      expect(formatDateCellValue('02/01/2024')).to.equal('2024-01-02');
     });
 
     it('should format 01-31-2024', () => {
       expect(formatDateCellValue('01-31-2024')).to.equal('2024-01-31');
     });
 
+    it('should format ambiguous 01-02-2024', () => {
+      expect(formatDateCellValue('01-02-2024')).to.equal('2024-02-01');
+    });
+
     it('should format 01/31/2024', () => {
       expect(formatDateCellValue('01/31/2024')).to.equal('2024-01-31');
+    });
+
+    it('should format ambiguous 01/02/2024', () => {
+      expect(formatDateCellValue('01/02/2024')).to.equal('2024-02-01');
     });
 
     it('should format 2024-01-31', () => {
@@ -72,6 +96,10 @@ describe('cell-utils', () => {
 
     it('should format 2024/01/31', () => {
       expect(formatDateCellValue('2024/01/31')).to.equal('2024-01-31');
+    });
+
+    it('should format ambiguous 2024/01/02', () => {
+      expect(formatDateCellValue('2024/01/02')).to.equal('2024-01-02');
     });
   });
 
