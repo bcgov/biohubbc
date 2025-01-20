@@ -71,6 +71,7 @@ export const getDynamicMeasurementCellValidator = (
       return getQuantitativeMeasurementCellValidator(headerMeasurement)(params);
     }
 
+    // TODO: What is the correct error message for this path?
     return [
       {
         error: 'Invalid measurement type',

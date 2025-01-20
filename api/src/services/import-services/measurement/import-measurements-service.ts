@@ -1,7 +1,6 @@
 import { WorkSheet } from 'xlsx';
 import { z } from 'zod';
 import { IDBConnection } from '../../../database/db';
-import { ApiGeneralError } from '../../../errors/api-error';
 import { CSVConfigUtils } from '../../../utils/csv-utils/csv-config-utils';
 import { validateCSVWorksheet } from '../../../utils/csv-utils/csv-config-validation';
 import { CSVConfig, CSVError, CSVRowState } from '../../../utils/csv-utils/csv-config-validation.interface';
@@ -89,28 +88,26 @@ export class ImportMeasurementsService extends DBService {
 
     for (const row of rows) {
       this.utils.worksheetDynamicHeaders.forEach((header) => {
-        const stateMeasurement = row[CSVRowState]?.[header];
+        const state = row[CSVRowState];
+        const measurement = state?.[header];
 
-        if (isCBQualitativeMeasurement(stateMeasurement)) {
+        // Grab the qualitative measurement from the row
+        if (isCBQualitativeMeasurement(measurement)) {
           qualitativeMeasurements.push({
-            critter_id: row[CSVRowState]?.critter_id,
-            capture_id: row[CSVRowState]?.capture_id,
-            taxon_measurement_id: stateMeasurement.taxon_measurement_id,
-            qualitative_option_id: stateMeasurement.qualitative_option_id
+            critter_id: state?.critter_id,
+            capture_id: state?.capture_id,
+            taxon_measurement_id: measurement.taxon_measurement_id,
+            qualitative_option_id: measurement.qualitative_option_id
           });
-        } else if (isCBQuantitativeMeasurement(stateMeasurement)) {
+        }
+        // Grab the quantitative measurement from the row
+        else if (isCBQuantitativeMeasurement(measurement)) {
           quantitativeMeasurements.push({
-            critter_id: row[CSVRowState]?.critter_id,
-            capture_id: row[CSVRowState]?.capture_id,
-            taxon_measurement_id: stateMeasurement.taxon_measurement_id,
-            value: stateMeasurement.value
+            critter_id: state?.critter_id,
+            capture_id: state?.capture_id,
+            taxon_measurement_id: measurement.taxon_measurement_id,
+            value: measurement.value
           });
-        } else {
-          // Realistically, this should never happen, only when the CSVRowState is incorrectly set
-          throw new ApiGeneralError('Invalid measurement type', [
-            'ImportMeasurementsService->importCSVWorksheet',
-            stateMeasurement
-          ]);
         }
       });
     }
@@ -133,7 +130,7 @@ export class ImportMeasurementsService extends DBService {
   async getCSVConfig(): Promise<CSVConfig<MeasurementCSVStaticHeader>> {
     const surveyAliasMap = await this.surveyCritterService.getSurveyCritterAliasMap(this.surveyId);
     const worksheetTsns = this._getWorksheetTsns(surveyAliasMap);
-    const measurementDictionary = await this._getTsnMeasurementDictionaries(worksheetTsns);
+    const measurementDictionary = await this._getTsnMeasurementDictionary(worksheetTsns);
 
     // Set the static header configs for additional error information
     this.utils.setAllStaticHeaderConfigs({
@@ -179,7 +176,7 @@ export class ImportMeasurementsService extends DBService {
    * @param {number[]} tsns - List of ITIS TSN's
    * @returns {*} {Promise<TSNMeasurementDictionary>} Measurement dictionary
    */
-  async _getTsnMeasurementDictionaries(tsns: number[]): Promise<TSNMeasurementDictionary> {
+  async _getTsnMeasurementDictionary(tsns: number[]): Promise<TSNMeasurementDictionary> {
     const measurementDictionary = new NestedRecord<
       CBQualitativeMeasurementTypeDefinition | CBQuantitativeMeasurementTypeDefinition
     >();

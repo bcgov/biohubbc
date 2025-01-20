@@ -87,7 +87,7 @@ POST.apiDoc = {
     }
   },
   responses: {
-    201: {
+    204: {
       description: 'Measurement import success.'
     },
     400: {
@@ -137,7 +137,7 @@ export function importCsv(): RequestHandler {
 
       await connection.commit();
 
-      return res.status(201).send();
+      return res.status(204).send();
     } catch (error) {
       defaultLog.error({ label: 'importMeasurementsCSV', message: 'error', error });
       await connection.rollback();

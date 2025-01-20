@@ -125,8 +125,6 @@ export function importCaptureCSV(): RequestHandler {
     const workbook = constructXLSXWorkbook(mediaFile);
     const worksheet = getDefaultWorksheet(workbook);
 
-    console.log({ workbook, worksheet });
-
     try {
       await connection.open();
 

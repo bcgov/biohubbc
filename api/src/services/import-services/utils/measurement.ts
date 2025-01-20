@@ -16,7 +16,7 @@ import {
 export const isCBQuantitativeMeasurementTypeDefinition = (
   measurement: Record<string, unknown>
 ): measurement is CBQuantitativeMeasurementTypeDefinition => {
-  return 'unit' in measurement && 'taxon_measurement_id' in measurement;
+  return measurement && 'unit' in measurement && 'taxon_measurement_id' in measurement;
 };
 
 /**
@@ -30,7 +30,7 @@ export const isCBQuantitativeMeasurementTypeDefinition = (
 export const isCBQualitativeMeasurementTypeDefinition = (
   measurement: Record<string, unknown>
 ): measurement is CBQualitativeMeasurementTypeDefinition => {
-  return 'options' in measurement && 'taxon_measurement_id' in measurement;
+  return measurement && 'options' in measurement && 'taxon_measurement_id' in measurement;
 };
 
 /**
@@ -44,7 +44,7 @@ export const isCBQualitativeMeasurementTypeDefinition = (
 export const isCBQualitativeMeasurement = (
   measurement: Record<string, unknown>
 ): measurement is CBQualitativeMeasurement => {
-  return 'qualitative_option_id' in measurement && 'taxon_measurement_id' in measurement;
+  return measurement && 'qualitative_option_id' in measurement && 'taxon_measurement_id' in measurement;
 };
 
 /**
@@ -58,5 +58,5 @@ export const isCBQualitativeMeasurement = (
 export const isCBQuantitativeMeasurement = (
   measurement: Record<string, unknown>
 ): measurement is CBQuantitativeMeasurement => {
-  return 'value' in measurement && 'taxon_measurement_id' in measurement;
+  return measurement && 'value' in measurement && 'taxon_measurement_id' in measurement;
 };
