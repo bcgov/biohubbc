@@ -1,7 +1,7 @@
 import { FeatureCollection } from 'geojson';
 import { ATTACHMENT_TYPE } from '../constants/attachments';
+import { SurveyObservationRecord } from '../database-models/survey_observation';
 import { ISurveyAttachment, ISurveyReportAttachment } from '../repositories/attachment-repository';
-import { ObservationRecord } from '../repositories/observation-repository/observation-repository';
 import { getLogger } from '../utils/logger';
 import { GetSurveyData, GetSurveyPurposeAndMethodologyData } from './survey-view';
 
@@ -33,7 +33,7 @@ export class PostSurveyObservationToBiohubObject implements BioHubSubmissionFeat
   properties: Record<string, any>;
   child_features: BioHubSubmissionFeature[];
 
-  constructor(observationRecord: ObservationRecord) {
+  constructor(observationRecord: SurveyObservationRecord) {
     defaultLog.debug({ label: 'PostSurveyObservationToBiohubObject', message: 'params', observationRecord });
 
     this.id = String(observationRecord.survey_observation_id);
@@ -41,8 +41,6 @@ export class PostSurveyObservationToBiohubObject implements BioHubSubmissionFeat
     this.properties = {
       survey_id: observationRecord.survey_id,
       taxonomy: observationRecord.itis_tsn,
-      survey_sample_site_id: observationRecord?.survey_sample_site_id || null,
-      survey_sample_method_id: observationRecord?.survey_sample_method_id || null,
       survey_sample_period_id: observationRecord?.survey_sample_period_id || null,
       latitude: observationRecord.latitude,
       longitude: observationRecord.longitude,
@@ -146,7 +144,7 @@ export class PostSurveyToBiohubObject implements BioHubSubmissionFeature {
 
   constructor(
     surveyData: GetSurveyData,
-    observationRecords: ObservationRecord[],
+    observationRecords: SurveyObservationRecord[],
     surveyGeometry: FeatureCollection,
     surveyAttachments: ISurveyAttachment[],
     surveyReports: ISurveyReportAttachment[]
@@ -191,7 +189,7 @@ export class PostSurveySubmissionToBioHubObject implements BioHubSubmission {
   constructor(
     surveyData: GetSurveyData,
     GetSurveyPurposeAndMethodologyData: GetSurveyPurposeAndMethodologyData,
-    observationRecords: ObservationRecord[],
+    observationRecords: SurveyObservationRecord[],
     surveyGeometry: FeatureCollection,
     surveyAttachments: ISurveyAttachment[],
     surveyReports: ISurveyReportAttachment[],

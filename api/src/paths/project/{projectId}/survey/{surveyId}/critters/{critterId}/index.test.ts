@@ -162,7 +162,7 @@ describe('getSurveyCritter', () => {
 
     expect(mockRes.status).to.have.been.calledWith(200);
     expect(mockRes.json).to.have.been.calledWith({
-      attachments: mockAttachments,
+      attachments: { capture_attachments: mockAttachments.captureAttachments },
       ...mockCritterbaseCritter,
       ...mockSimsCritter
     });

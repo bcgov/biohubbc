@@ -1,7 +1,7 @@
 -- api_set_context.sql
 drop function if exists api_set_context;
 
-create or replace function api_set_context(p_system_user_identifier system_user.user_identifier%type, p_user_identity_source_name user_identity_source.name%type) returns system_user.system_user_id%type
+create or replace function api_set_context(p_system_user_identifier "system_user".user_identifier%type, p_user_identity_source_name user_identity_source.name%type) returns "system_user".system_user_id%type
 language plpgsql
 security invoker
 set client_min_messages = warning
@@ -19,7 +19,7 @@ $$
 --                  2021-04-16  adjusted to accepted defined user identity source
 -- *******************************************************************
 declare
-  _system_user_id system_user.system_user_id%type;
+  _system_user_id "system_user".system_user_id%type;
   _user_identity_source_id user_identity_source.user_identity_source_id%type;
 begin
 
@@ -27,7 +27,7 @@ begin
     where name = p_user_identity_source_name
     and record_end_date is null;
 
-  select system_user_id into strict _system_user_id from system_user
+  select system_user_id into strict _system_user_id from "system_user"
     where user_identity_source_id = _user_identity_source_id
     and user_identifier = p_system_user_identifier;
 

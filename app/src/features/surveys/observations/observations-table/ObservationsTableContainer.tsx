@@ -23,14 +23,14 @@ import { IObservationTableRow } from 'contexts/observationsTableContext';
 import { BulkActionsButton } from 'features/surveys/observations/observations-table/bulk-actions/BulkActionsButton';
 import { DiscardChangesButton } from 'features/surveys/observations/observations-table/discard-changes/DiscardChangesButton';
 import {
+  MethodTechniqueColDef,
   ObservationCountColDef,
   ObservationSubcountSignColDef,
-  SampleMethodColDef,
   SamplePeriodColDef,
   SampleSiteColDef,
   TaxonomyColDef
 } from 'features/surveys/observations/observations-table/grid-column-definitions/GridColumnDefinitions';
-import { useSampleLocationsCache } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/useSampleLocationsCache';
+import { useSamplingInformationCache } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/useSamplingInformationCache';
 import { ImportObservationsButton } from 'features/surveys/observations/observations-table/import-obsevations/ImportObservationsButton';
 import ObservationsTable from 'features/surveys/observations/observations-table/ObservationsTable';
 import {
@@ -40,7 +40,6 @@ import {
   useObservationsTableContext
 } from 'hooks/useContext';
 import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
-import { IGetSampleLocationNonSpatialDetails } from 'interfaces/useSamplingSiteApi.interface';
 import { useEffect, useMemo } from 'react';
 import { ConfigureColumnsButton } from './configure-columns/ConfigureColumnsButton';
 import ExportHeadersButton from './export-button/ExportHeadersButton';
@@ -49,10 +48,6 @@ import {
   getEnvironmentColumnDefinitions,
   getMeasurementColumnDefinitions
 } from './grid-column-definitions/GridColumnDefinitionsUtils';
-
-export type SampleLocationCache = {
-  locations: IGetSampleLocationNonSpatialDetails[];
-};
 
 const ObservationsTableContainer = () => {
   const codesContext = useCodesContext();
@@ -74,19 +69,19 @@ const ObservationsTableContainer = () => {
     [codesContext.codesDataLoader.data?.observation_subcount_signs]
   );
 
-  const sampleLocationsCache = useSampleLocationsCache();
+  const samplingInformationCache = useSamplingInformationCache();
 
   useEffect(() => {
-    if (!observationsContext.observationsDataLoader.data?.supplementaryObservationData.sample_sites?.length) {
+    if (!observationsContext.observationsDataLoader.data?.supplementaryObservationData.sampling_data?.length) {
       return;
     }
 
-    sampleLocationsCache.updateCachedSampleLocationsRef(
-      observationsContext.observationsDataLoader.data.supplementaryObservationData.sample_sites
-    );
+    samplingInformationCache.initCachedSamplingInformationRef({
+      periods: observationsContext.observationsDataLoader.data.supplementaryObservationData.sampling_data
+    });
   }, [
-    observationsContext.observationsDataLoader.data?.supplementaryObservationData.sample_sites,
-    sampleLocationsCache
+    observationsContext.observationsDataLoader.data?.supplementaryObservationData.sampling_data,
+    samplingInformationCache
   ]);
 
   // The column definitions of the columns to render in the observations table
@@ -96,27 +91,20 @@ const ObservationsTableContainer = () => {
         // Add standard observation columns to the table
         TaxonomyColDef({ hasError: observationsTableContext.hasError }),
         SampleSiteColDef({
-          cachedSampleLocationsRef: sampleLocationsCache.cachedSampleLocationsRef,
-          onSelectOption: (selectedSampleSite) => {
-            if (!selectedSampleSite) {
-              return;
-            }
-
-            sampleLocationsCache.updateCachedSampleLocationsRef([selectedSampleSite]);
-          },
+          samplingInformationCache: samplingInformationCache,
           hasError: observationsTableContext.hasError
         }),
-        SampleMethodColDef({
-          cachedSampleLocationsRef: sampleLocationsCache.cachedSampleLocationsRef,
+        MethodTechniqueColDef({
+          samplingInformationCache: samplingInformationCache,
           hasError: observationsTableContext.hasError
         }),
         SamplePeriodColDef({
-          cachedSampleLocationsRef: sampleLocationsCache.cachedSampleLocationsRef,
+          samplingInformationCache: samplingInformationCache,
           hasError: observationsTableContext.hasError
         }),
         ObservationSubcountSignColDef({ observationSubcountSignOptions, hasError: observationsTableContext.hasError }),
         ObservationCountColDef({
-          cachedSampleLocationsRef: sampleLocationsCache.cachedSampleLocationsRef,
+          samplingInformationCache: samplingInformationCache,
           hasError: observationsTableContext.hasError
         }),
         GenericDateColDef({
