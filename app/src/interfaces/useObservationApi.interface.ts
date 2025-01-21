@@ -6,8 +6,8 @@ import {
   EnvironmentQualitativeTypeDefinition,
   EnvironmentQuantitativeTypeDefinition
 } from 'interfaces/useReferenceApi.interface';
+import { GetSamplingPeriod } from 'interfaces/useSamplingPeriodApi.interface';
 import { ApiPaginationResponseParams } from 'types/misc';
-import { IGetSampleLocationNonSpatialDetails } from './useSamplingSiteApi.interface';
 export interface IGetSurveyObservationsResponse {
   surveyObservations: ObservationRecordWithSamplingAndSubcountData[];
   supplementaryObservationData: SupplementaryObservationData;
@@ -26,7 +26,7 @@ export interface IGetSurveyObservationsGeometryResponse {
 
 type ObservationSamplingData = {
   survey_sample_site_name: string | null;
-  survey_sample_method_name: string | null;
+  method_technique_name: string | null;
   survey_sample_period_start_datetime: string | null;
 };
 
@@ -34,8 +34,6 @@ export type StandardObservationColumns = {
   survey_observation_id: number;
   itis_tsn: number | null;
   itis_scientific_name: string | null;
-  survey_sample_site_id: number | null;
-  survey_sample_method_id: number | null;
   survey_sample_period_id: number | null;
   count: number | null;
   observation_date: string | null;
@@ -68,8 +66,7 @@ export type SupplementaryObservationCountData = {
 };
 
 export type ObservationSamplingSupplementaryData = {
-  //   sample_sites: IGetBasicSampleLocation[];
-  sample_sites: IGetSampleLocationNonSpatialDetails[];
+  sampling_data: GetSamplingPeriod[];
 };
 
 export type SupplementaryObservationMeasurementData = {
