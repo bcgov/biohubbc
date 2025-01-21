@@ -89,7 +89,7 @@ export const SamplingPeriodSiteForm = (props: ISamplingPeriodSiteFormProps) => {
           onSearch={searchSampleSites}
           searchOnMount={true}
           getOptionLabel={(option) => option.name}
-          placeholder="Search for a sampling site"
+          placeholder="Search for a site"
           clearOnSelect={true}
           error={errors.survey_sample_site_id}
         />

@@ -203,7 +203,7 @@ export const SamplePeriodDataGridEditCell = <DataGridType extends GridValidRowMo
           variant="outlined"
           fullWidth
           error={error}
-          placeholder="Search for a technique"
+          placeholder="Search for a period"
           InputProps={{
             color: error ? 'error' : undefined,
             ...params.InputProps,
