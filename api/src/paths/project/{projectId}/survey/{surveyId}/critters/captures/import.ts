@@ -122,8 +122,7 @@ export function importCaptureCSV(): RequestHandler {
     const connection = getDBConnection(req.keycloak_token);
 
     const mediaFile = parseMulterFile(rawFile);
-    const workbook = constructXLSXWorkbook(mediaFile);
-    const worksheet = getDefaultWorksheet(workbook);
+    const worksheet = getDefaultWorksheet(constructXLSXWorkbook(mediaFile));
 
     try {
       await connection.open();

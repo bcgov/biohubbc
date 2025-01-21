@@ -3,7 +3,9 @@ import { CSVCellValidator, CSVError } from '../../../utils/csv-utils/csv-config-
 import { updateCSVRowState } from '../../../utils/csv-utils/csv-header-configs';
 import { NestedRecord } from '../../../utils/nested-record';
 import {
+  CBQualitativeMeasurement,
   CBQualitativeMeasurementTypeDefinition,
+  CBQuantitativeMeasurement,
   CBQuantitativeMeasurementTypeDefinition,
   ICritterDetailed
 } from '../../critterbase-service';
@@ -44,7 +46,7 @@ export const getDynamicMeasurementCellValidator = (
     if (!taxonMeasurements) {
       return [
         {
-          error: `No measurements exist for this taxon TSN: ${critterTsn}`,
+          error: `Taxon: ${critterTsn} has no reference measurements`,
           solution: 'Make sure the taxon has reference measurements'
         }
       ];
@@ -119,16 +121,14 @@ export const getQuantitativeMeasurementCellValidator = (
       });
     }
 
-    /**
-     * Update the row state with the taxon measurement id and value
-     * Why an object ([params.header]: {...})?
-     * Prevents overriding state if multiple measurements are stored in the same row.
-     */
+    // Update the row state with the taxon measurement id and value
     updateCSVRowState(params.row, {
+      // Using header to prevent overwriting other measurements
+      // ie: This function will be called once for each dynamic header
       [params.header]: {
         taxon_measurement_id: measurement.taxon_measurement_id,
         value: params.cell
-      }
+      } satisfies Partial<CBQuantitativeMeasurement>
     });
 
     return cellErrors;
@@ -172,16 +172,14 @@ export const getQualitativeMeasurementCellValidator = (
       ];
     }
 
-    /**
-     * Update the row state with the taxon measurement id and qualitative option id
-     * Why an object ([params.header]: {...})?
-     * Prevents overriding state if multiple measurements are stored in the same row.
-     */
+    // Update the row state with the taxon measurement id and qualitative option id
     updateCSVRowState(params.row, {
+      // Using header to prevent overwriting other measurements
+      // ie: This function will be called once for each dynamic header
       [params.header]: {
         taxon_measurement_id: measurement.taxon_measurement_id,
-        qualitative_measurement_id: matchingOptionValue.qualitative_option_id
-      }
+        qualitative_option_id: matchingOptionValue.qualitative_option_id
+      } satisfies Partial<CBQualitativeMeasurement>
     });
 
     return [];

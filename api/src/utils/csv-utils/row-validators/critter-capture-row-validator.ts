@@ -37,12 +37,6 @@ export const getCritterCaptureRowValidator = (
 ): CSVRowValidator => {
   return (params) => {
     const alias = String(utils.getCellValue(headers.alias, params.row));
-    const captureDate = String(utils.getCellValue(headers.captureDate, params.row));
-    const captureTime = utils.getCellValue(headers.captureTime, params.row);
-
-    // Safely convert the capture time to a string
-    const captureTimeStr = captureTime ? String(captureTime) : undefined;
-
     const critter = surveyAliasMap.get(alias.toLowerCase());
 
     // If the alias is not found in the survey alias map ie: critter does not exist in the survey with this alias
@@ -68,6 +62,10 @@ export const getCritterCaptureRowValidator = (
         }
       ];
     }
+
+    const captureDate = String(utils.getCellValue(headers.captureDate, params.row));
+    const captureTime = utils.getCellValue(headers.captureTime, params.row);
+    const captureTimeStr = captureTime ? String(captureTime) : undefined;
 
     const foundCaptures = findCapturesFromDateTime(critter.captures, captureDate, captureTimeStr);
 
