@@ -23,9 +23,15 @@ export interface IObservationCountByGroup {
   individual_percentage: number;
   itis_tsn?: number;
   observation_date?: string;
-  survey_sample_site_id?: number;
-  survey_sample_method_id?: number;
-  survey_sample_period_id?: number;
+  survey_sample_site_id?: number | null;
+  method_technique_id?: number | null;
+  survey_sample_period_id?: number | null;
+  survey_sample_site_name?: string | null;
+  method_technique_name?: string | null;
+  start_date?: string | null;
+  start_time?: string | null;
+  end_date?: string | null;
+  end_time?: string | null;
   qualitative_measurements: IQualitativeMeasurementGroup[];
   quantitative_measurements: IQuantitativeMeasurementGroup[];
 }

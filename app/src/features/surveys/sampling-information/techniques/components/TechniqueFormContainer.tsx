@@ -64,7 +64,7 @@ type ITechniqueFormProps<FormValues extends CreateTechniqueFormValues | UpdateTe
  * @param {ITechniqueFormProps} props
  * @return {*}
  */
-const TechniqueFormContainer = <FormValues extends CreateTechniqueFormValues | UpdateTechniqueFormValues>(
+export const TechniqueFormContainer = <FormValues extends CreateTechniqueFormValues | UpdateTechniqueFormValues>(
   props: ITechniqueFormProps<FormValues>
 ) => {
   const { initialData, handleSubmit, formikRef } = props;
@@ -117,5 +117,3 @@ const TechniqueFormContainer = <FormValues extends CreateTechniqueFormValues | U
     </Formik>
   );
 };
-
-export default TechniqueFormContainer;

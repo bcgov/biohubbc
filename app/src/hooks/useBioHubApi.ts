@@ -19,6 +19,7 @@ import useProjectApi from './api/useProjectApi';
 import useProjectParticipationApi from './api/useProjectParticipationApi';
 import usePublishApi from './api/usePublishApi';
 import useResourcesApi from './api/useResourcesApi';
+import { useSamplingPeriodApi } from './api/useSamplingPeriodApi';
 import useSamplingSiteApi from './api/useSamplingSiteApi';
 import useSpatialApi from './api/useSpatialApi';
 import useStandardsApi from './api/useStandardsApi';
@@ -67,7 +68,7 @@ export const useBiohubApi = () => {
 
   const samplingSite = useSamplingSiteApi(apiAxios);
 
-  const block = useBlockApi(apiAxios);
+  const samplingPeriod = useSamplingPeriodApi(apiAxios);
 
   const technique = useTechniqueApi(apiAxios);
 
@@ -97,7 +98,6 @@ export const useBiohubApi = () => {
       observation,
       resources,
       codes,
-      block,
       animal,
       user,
       admin,
@@ -113,7 +113,8 @@ export const useBiohubApi = () => {
       telemetryDeployment,
       telemetryDevice,
       markdown,
-      alert
+      alert,
+      samplingPeriod
     }),
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

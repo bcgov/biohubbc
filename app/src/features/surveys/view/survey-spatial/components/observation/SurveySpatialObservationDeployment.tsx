@@ -20,7 +20,7 @@ interface IObservationTableRow {
   itis_scientific_name: string | null;
   count: number | null;
   survey_sample_site_name: string | null;
-  survey_sample_method_name: string | null;
+  method_technique_name: string | null;
   survey_sample_period_start_datetime: string | null;
   observation_date: string;
   observation_time: string;
@@ -80,7 +80,7 @@ export const SurveySpatialObservationDeployment = () => {
               (item.itis_tsn && taxonomyContext.getCachedSpeciesTaxonomyById(item.itis_tsn)?.scientificName) || null,
             count: item.count,
             survey_sample_site_name: item.survey_sample_site_name,
-            survey_sample_method_name: item.survey_sample_method_name,
+            method_technique_name: item.method_technique_name,
             survey_sample_period_start_datetime: item.survey_sample_period_start_datetime,
             observation_date: dayjs(item.observation_date).format('YYYY-MM-DD'),
             observation_time: dayjs(item.observation_date).format('HH:mm:ss'),
@@ -105,8 +105,8 @@ export const SurveySpatialObservationDeployment = () => {
           minWidth: 200
         },
         {
-          field: 'survey_sample_method_name',
-          headerName: 'Sample Method',
+          field: 'method_technique_name',
+          headerName: 'Technique',
           flex: 1,
           minWidth: 200
         },

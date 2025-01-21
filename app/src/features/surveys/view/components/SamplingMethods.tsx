@@ -8,7 +8,7 @@ import { SurveyContext } from 'contexts/surveyContext';
 import { useContext } from 'react';
 
 /**
- * General information content for a survey.
+ * Sampling method information content for a survey.
  *
  * @return {*}
  */

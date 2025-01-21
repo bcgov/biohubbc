@@ -10,15 +10,14 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext, useTaxonomyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { IObservationCountByGroup } from 'interfaces/useAnalyticsApi.interface';
-import { IGetSampleLocationNonSpatialDetails } from 'interfaces/useSamplingSiteApi.interface';
 import { useEffect, useMemo } from 'react';
 import {
   getBasicGroupByColDefs,
   getDateColDef,
   getIndividualCountColDef,
   getIndividualPercentageColDef,
+  getMethodTechniqueColDef,
   getRowCountColDef,
-  getSamplingMethodColDef,
   getSamplingPeriodColDef,
   getSamplingSiteColDef,
   getSpeciesColDef
@@ -102,10 +101,6 @@ export const ObservationAnalyticsDataTableContainer = (props: IObservationAnalyt
     [analyticsDataLoader?.data]
   );
 
-  // TODO: Include sampling information in the analytics response / otherwise get sampling information,
-  // which is now more complicated because sample sites are paginated.
-  const sampleSites: IGetSampleLocationNonSpatialDetails[] = [];
-
   const allGroupByColumns = useMemo(
     () => [...groupByColumns, ...groupByQualitativeMeasurements, ...groupByQuantitativeMeasurements],
     [groupByColumns, groupByQualitativeMeasurements, groupByQuantitativeMeasurements]
@@ -116,9 +111,9 @@ export const ObservationAnalyticsDataTableContainer = (props: IObservationAnalyt
       getRowCountColDef(),
       getIndividualCountColDef(),
       getIndividualPercentageColDef(),
-      getSamplingSiteColDef(sampleSites),
-      getSamplingMethodColDef(sampleSites),
-      getSamplingPeriodColDef(sampleSites),
+      getSamplingSiteColDef(),
+      getMethodTechniqueColDef(),
+      getSamplingPeriodColDef(),
       getSpeciesColDef(taxonomyContext.getCachedSpeciesTaxonomyById),
       getDateColDef(),
       ...getBasicGroupByColDefs([...groupByQualitativeMeasurements, ...groupByQuantitativeMeasurements])
@@ -152,7 +147,9 @@ export const ObservationAnalyticsDataTableContainer = (props: IObservationAnalyt
     <Box display="flex" flex="1 1 auto" position="relative">
       <Box position="absolute" width="100%" height="100%">
         <LoadingGuard
-          isLoading={analyticsDataLoader.isLoading || !analyticsDataLoader.isReady}
+          isLoading={
+            !analyticsDataLoader.data?.length && (analyticsDataLoader.isLoading || !analyticsDataLoader.isReady)
+          }
           isLoadingFallback={<SkeletonTable />}
           isLoadingFallbackDelay={100}
           hasNoData={!analyticsDataLoader.data?.length}

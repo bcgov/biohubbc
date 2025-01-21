@@ -12,6 +12,7 @@ export const MethodTechniqueModel = z.object({
   description: z.string().nullable(),
   distance_threshold: z.number().nullable(),
   method_lookup_id: z.number(),
+  method_response_metric_id: z.number(),
   create_date: z.string(),
   create_user: z.number(),
   update_date: z.string().nullable(),

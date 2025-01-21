@@ -8,7 +8,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { IGetSurveyBlock } from 'interfaces/useBlockApi.interface';
-import { ISurveySampleSite } from 'interfaces/useSamplingSiteApi.interface';
+import { ICreateSamplingSiteRequest, ISurveySampleSite } from 'interfaces/useSamplingSiteApi.interface';
 import { IGetSurveyStratum } from 'interfaces/useSurveyApi.interface';
 import { useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
@@ -69,7 +69,13 @@ export const CreateSamplingSitePage = () => {
     try {
       setIsSubmitting(true);
 
-      await biohubApi.samplingSite.createSamplingSites(surveyContext.projectId, surveyContext.surveyId, values);
+      const requestData: ICreateSamplingSiteRequest = {
+        survey_sample_sites: values.survey_sample_sites,
+        blocks: values.blocks.map((block) => ({ survey_block_id: block.survey_block_id })),
+        stratums: values.stratums.map((stratum) => ({ survey_stratum_id: stratum.survey_stratum_id }))
+      };
+
+      await biohubApi.samplingSite.createSamplingSites(surveyContext.projectId, surveyContext.surveyId, requestData);
 
       // create complete, navigate back to observations page
       history.push(
@@ -97,7 +103,6 @@ export const CreateSamplingSitePage = () => {
           name: '',
           description: '',
           survey_sample_sites: [],
-          sample_methods: [],
           blocks: [],
           stratums: []
         }}

@@ -115,6 +115,12 @@ describe('getFormattedDate', () => {
     expect(formattedDateString).toEqual('');
   });
 
+  it('returns empty string if null date is provided', async () => {
+    const date = null;
+    const formattedDateString = getFormattedDate(DATE_FORMAT.MediumDateFormat, date);
+    expect(formattedDateString).toEqual('');
+  });
+
   it('returns formatted date string if valid date is provided', async () => {
     const date = '2021-03-04T22:44:55.478682';
     const formattedDateString = getFormattedDate(DATE_FORMAT.MediumDateFormat, date);

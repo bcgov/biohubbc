@@ -2,12 +2,10 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
-import { HTTP409 } from '../../../../../../../errors/http-error';
 import { techniqueUpdateSchema, techniqueViewSchema } from '../../../../../../../openapi/schemas/technique';
 import { ITechniquePutData } from '../../../../../../../repositories/technique-repository';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { AttractantService } from '../../../../../../../services/attractants-service';
-import { SampleMethodService } from '../../../../../../../services/sample-method-service';
 import { TechniqueAttributeService } from '../../../../../../../services/technique-attributes-service';
 import { TechniqueService } from '../../../../../../../services/technique-service';
 import { TechniqueVantageService } from '../../../../../../../services/technique-vantage-service';
@@ -111,14 +109,6 @@ export function deleteTechnique(): RequestHandler {
     try {
       await connection.open();
 
-      const sampleMethodService = new SampleMethodService(connection);
-
-      const samplingMethodsCount = await sampleMethodService.getSampleMethodsCountForTechniqueIds([methodTechniqueId]);
-
-      if (samplingMethodsCount > 0) {
-        throw new HTTP409('Cannot delete a technique that is associated with a sampling site');
-      }
-
       const techniqueService = new TechniqueService(connection);
 
       await techniqueService.deleteTechnique(surveyId, methodTechniqueId);
@@ -127,7 +117,7 @@ export function deleteTechnique(): RequestHandler {
 
       return res.status(200).send();
     } catch (error) {
-      defaultLog.error({ label: 'getSurveyTechniques', message: 'error', error });
+      defaultLog.error({ label: 'deleteTechnique', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

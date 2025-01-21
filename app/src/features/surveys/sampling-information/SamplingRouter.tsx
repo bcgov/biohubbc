@@ -9,7 +9,8 @@ import { EditTechniquePage } from 'features/surveys/sampling-information/techniq
 import { Switch } from 'react-router';
 import RouteWithTitle from 'utils/RouteWithTitle';
 import { getTitle } from 'utils/Utils';
-import { EditBlockPage } from './sites/blocks/edit/EditBlockPage';
+import { CreateSamplePeriodPage } from './periods/create/CreateSamplePeriodPage';
+import { EditSamplePeriodPage } from './periods/edit/EditSamplePeriodPage';
 
 /**
  * Router for all `/admin/projects/:id/surveys/:survey_id/sampling/*` pages.
@@ -73,15 +74,6 @@ export const SamplingRouter = () => {
 
       <RouteWithTitle
         exact
-        path="/admin/projects/:id/surveys/:survey_id/sampling/block/:survey_block_id/edit"
-        title={getTitle('Edit Sampling Site Cluster')}>
-        <DialogContextProvider>
-          <EditBlockPage />
-        </DialogContextProvider>
-      </RouteWithTitle>
-
-      <RouteWithTitle
-        exact
         path="/admin/projects/:id/surveys/:survey_id/sampling/techniques/:method_technique_id/edit"
         title={getTitle('Edit Technique')}>
         <ProjectRoleRouteGuard
@@ -91,6 +83,24 @@ export const SamplingRouter = () => {
             <EditTechniquePage />
           </DialogContextProvider>
         </ProjectRoleRouteGuard>
+      </RouteWithTitle>
+
+      <RouteWithTitle
+        exact
+        path="/admin/projects/:id/surveys/:survey_id/sampling/period/create"
+        title={getTitle('Create Periods')}>
+        <DialogContextProvider>
+          <CreateSamplePeriodPage />
+        </DialogContextProvider>
+      </RouteWithTitle>
+
+      <RouteWithTitle
+        exact
+        path="/admin/projects/:id/surveys/:survey_id/sampling/period/:survey_sample_period_id/edit"
+        title={getTitle('Edit Period')}>
+        <DialogContextProvider>
+          <EditSamplePeriodPage />
+        </DialogContextProvider>
       </RouteWithTitle>
     </Switch>
   );
