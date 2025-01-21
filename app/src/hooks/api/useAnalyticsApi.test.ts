@@ -24,7 +24,7 @@ describe('useAnalyticsApi', () => {
         itis_tsn: 123456,
         observation_date: '2021-01-01',
         survey_sample_site_id: 1,
-        survey_sample_method_id: 2,
+        method_technique_id: 2,
         survey_sample_period_id: 3,
         qualitative_measurements: [
           {

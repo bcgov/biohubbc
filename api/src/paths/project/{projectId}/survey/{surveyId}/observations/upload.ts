@@ -4,7 +4,7 @@ import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/rol
 import { getDBConnection } from '../../../../../../database/db';
 import { csvFileSchema } from '../../../../../../openapi/schemas/file';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { ObservationService } from '../../../../../../services/observation-service';
+import { ObservationService } from '../../../../../../services/observation-services/observation-service';
 import { uploadFileToS3 } from '../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../utils/logger';
 import { getFileFromRequest } from '../../../../../../utils/request';

@@ -30,7 +30,7 @@ const initialGroupByColumnOptions: IGroupByOption[] = [
 
 const allGroupByColumnOptions: IGroupByOption[] = [
   ...initialGroupByColumnOptions,
-  { label: 'Sampling Method', field: 'survey_sample_method_id', type: 'column' },
+  { label: 'Technique', field: 'method_technique_id', type: 'column' },
   { label: 'Sampling Period', field: 'survey_sample_period_id', type: 'column' },
   { label: 'Species', field: 'itis_tsn', type: 'column' },
   { label: 'Date', field: 'observation_date', type: 'column' }
@@ -99,7 +99,7 @@ export const SurveyObservationAnalytics = () => {
           </Box>
         }
         isLoadingFallbackDelay={100}>
-        <Box minWidth="250px" display="flex" flexDirection="column">
+        <Box display="flex" flexDirection="column">
           {/* Group by header */}
           <Box flex="0 0 auto">
             <Typography

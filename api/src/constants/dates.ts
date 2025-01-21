@@ -24,6 +24,8 @@ export const USAltDateFormatReverse = 'YYYY/DD/MM'; // 2020/15/01
  */
 export const DefaultTimeFormat = 'HH:mm:ss'; // 23:00:00
 
+export const DefaultTimeFormatNoSeconds = 'HH:mm'; // 23:00
+
 /*
  * Datetime formats.
  */
