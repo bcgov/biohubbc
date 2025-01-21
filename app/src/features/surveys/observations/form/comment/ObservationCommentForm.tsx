@@ -4,20 +4,26 @@ import Button from '@mui/material/Button';
 import CustomTextField from 'components/fields/CustomTextField';
 import { useState } from 'react';
 
+export interface IObservationCommentFormProps {
+  formikSectionName: string;
+}
+
 /**
  * Returns form controls for adding comments to the observation
  *
  * @template FormikValuesType
  * @return {*}
  */
-export const ObservationCommentForm = () => {
+export const ObservationCommentForm = (props: IObservationCommentFormProps) => {
+  const { formikSectionName } = props;
+
   const [showComment, setShowComment] = useState(false);
 
   return (
     <>
       {showComment ? (
         <CustomTextField
-          name="standardColumns.comment"
+          name={`${formikSectionName}.comment`}
           label="Comment"
           maxLength={200}
           other={{

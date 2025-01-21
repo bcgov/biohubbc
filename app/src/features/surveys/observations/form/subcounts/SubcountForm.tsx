@@ -11,13 +11,21 @@ import { v4 } from 'uuid';
 import { MeasurementsSearch } from '../../observations-table/configure-columns/components/measurements/search/MeasurementsSearch';
 import { MeasurementRow } from './measurements/ObservationMeasurementRowForm';
 
+export interface ISubcountFormProps {
+  formikSectionName: string;
+}
+
 /**
  * Returns a grid-like stack of autocomplete components for creating subcounts with optional measurements
  *
+ * @param {ISubcountFormProps} props
  * @returns
  */
-export const SubcountForm = () => {
+export const SubcountForm = (props: ISubcountFormProps) => {
+  const { formikSectionName } = props;
+
   const { values, setFieldValue } = useFormikContext<IObservationForm>();
+
   const [, allSpeciesWithParentsTsns] = useFocalOrObservedSpeciesTsns();
 
   // Keep selected measurements in state to get measurement names
@@ -40,7 +48,7 @@ export const SubcountForm = () => {
       ]
     }));
 
-    setFieldValue('subcounts', subcounts);
+    setFieldValue(formikSectionName, subcounts);
   };
 
   const handleRemoveMeasurement = (taxonMeasurementId: string) => {
@@ -50,12 +58,12 @@ export const SubcountForm = () => {
       measurements: subcount.measurements.filter((measurement) => measurement.measurement_id !== taxonMeasurementId)
     }));
 
-    setFieldValue('subcounts', updatedSubcounts);
+    setFieldValue(formikSectionName, updatedSubcounts);
   };
 
   const handleRemoveSubcount = (_id: string) => {
     const updatedSubcounts = values.subcounts.filter((subcount) => subcount._id !== _id);
-    setFieldValue('subcounts', updatedSubcounts);
+    setFieldValue(formikSectionName, updatedSubcounts);
   };
 
   return (
@@ -105,7 +113,7 @@ export const SubcountForm = () => {
           );
 
           // Create a new subcount with unique measurements and null values
-          setFieldValue('subcounts', [
+          setFieldValue(formikSectionName, [
             ...values.subcounts,
             {
               _id: v4(),

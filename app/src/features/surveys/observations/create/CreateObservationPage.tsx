@@ -222,71 +222,71 @@ const CreateObservationPage = () => {
 
   return (
     <>
-      <TaxonomyContextProvider>
-        <Prompt when={enableCancelCheck} message={locationChangeInterceptor} />
-        <PageHeader
-          title="Create Observation"
-          breadCrumbJSX={
-            <Breadcrumbs aria-label="breadcrumb" separator={'>'}>
-              <Link component={RouterLink} underline="hover" to={`/admin/projects/${projectId}/`}>
-                {projectName}
-              </Link>
-              <Link component={RouterLink} underline="hover" to={`/admin/projects/${projectId}/surveys/${surveyId}`}>
-                {surveyName}
-              </Link>
-              <Link
-                component={RouterLink}
-                underline="hover"
-                to={`/admin/projects/${projectId}/surveys/${surveyId}/observations`}>
-                Observations
-              </Link>
-              <Typography variant="body2" component="span" color="textSecondary" aria-current="page">
-                Create Observation
-              </Typography>
-            </Breadcrumbs>
-          }
-          buttonJSX={
-            <>
-              <LoadingButton
-                loading={isSaving}
-                type="submit"
-                color="primary"
-                variant="contained"
-                onClick={() => formikRef.current?.submitForm()}
-                data-testid="submit-observation-button">
-                Save and Exit
-              </LoadingButton>
-              <Button disabled={isSaving} color="primary" variant="outlined" onClick={handleCancel}>
-                Cancel
-              </Button>
-            </>
-          }
-        />
+      <Prompt when={enableCancelCheck} message={locationChangeInterceptor} />
+      <PageHeader
+        title="Create Observation"
+        breadCrumbJSX={
+          <Breadcrumbs aria-label="breadcrumb" separator={'>'}>
+            <Link component={RouterLink} underline="hover" to={`/admin/projects/${projectId}/`}>
+              {projectName}
+            </Link>
+            <Link component={RouterLink} underline="hover" to={`/admin/projects/${projectId}/surveys/${surveyId}`}>
+              {surveyName}
+            </Link>
+            <Link
+              component={RouterLink}
+              underline="hover"
+              to={`/admin/projects/${projectId}/surveys/${surveyId}/observations`}>
+              Observations
+            </Link>
+            <Typography variant="body2" component="span" color="textSecondary" aria-current="page">
+              Create Observation
+            </Typography>
+          </Breadcrumbs>
+        }
+        buttonJSX={
+          <>
+            <LoadingButton
+              loading={isSaving}
+              type="submit"
+              color="primary"
+              variant="contained"
+              onClick={() => formikRef.current?.submitForm()}
+              data-testid="submit-observation-button">
+              Save and Exit
+            </LoadingButton>
+            <Button disabled={isSaving} color="primary" variant="outlined" onClick={handleCancel}>
+              Cancel
+            </Button>
+          </>
+        }
+      />
 
-        <Container maxWidth="xl" sx={{ py: 3 }}>
-          <Paper sx={{ p: 5 }}>
+      <Container maxWidth="xl" sx={{ py: 3 }}>
+        <Paper sx={{ p: 5 }}>
+          <TaxonomyContextProvider>
             <ObservationForm
               initialData={initialObservationValues}
               handleSubmit={(formikData) => createObservation(formikData)}
               formikRef={formikRef}
             />
-            <Stack mt={4} flexDirection="row" justifyContent="flex-end" gap={1}>
-              <LoadingButton
-                loading={isSaving}
-                type="submit"
-                color="primary"
-                variant="contained"
-                onClick={() => formikRef.current?.submitForm()}
-                data-testid="submit-observation-button">
-                Save and Exit
-              </LoadingButton>
-              <Button disabled={isSaving} color="primary" variant="outlined" onClick={handleCancel}>
-                Cancel
-              </Button>
-            </Stack>
-          </Paper>
-        </Container>
-      </TaxonomyContextProvider>
+          </TaxonomyContextProvider>
+          <Stack mt={4} flexDirection="row" justifyContent="flex-end" gap={1}>
+            <LoadingButton
+              loading={isSaving}
+              type="submit"
+              color="primary"
+              variant="contained"
+              onClick={() => formikRef.current?.submitForm()}
+              data-testid="submit-observation-button">
+              Save and Exit
+            </LoadingButton>
+            <Button disabled={isSaving} color="primary" variant="outlined" onClick={handleCancel}>
+              Cancel
+            </Button>
+          </Stack>
+        </Paper>
+      </Container>
     </>
   );
 };

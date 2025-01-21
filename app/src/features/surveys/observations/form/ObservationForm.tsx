@@ -116,7 +116,7 @@ const ObservationForm = <TInitialFormikData extends IObservationForm>(
 
         {/* Species Form */}
         <HorizontalSplitFormComponent title="Species" summary="Enter the species observed">
-          <ObservationSpeciesForm formikFieldName="standardColumns" />
+          <ObservationSpeciesForm formikSectionName="standardColumns" />
         </HorizontalSplitFormComponent>
 
         <Divider />
@@ -135,13 +135,14 @@ const ObservationForm = <TInitialFormikData extends IObservationForm>(
 
         {/* Location */}
         <HorizontalSplitFormComponent title="Location" summary="Enter the location of the observation">
-          <ObservationLocationForm formikFieldName="standardColumns" />
+          <ObservationLocationForm formikSectionName="standardColumns" />
         </HorizontalSplitFormComponent>
+
         <Divider />
 
         {/* Datetime Form */}
         <HorizontalSplitFormComponent title="Date & Time" summary="Enter the date and time of the observation">
-          <ObservationDateTimeForm formikFieldName="standardColumns" />
+          <ObservationDateTimeForm formikSectionName="standardColumns" />
         </HorizontalSplitFormComponent>
 
         <Divider />
@@ -150,21 +151,21 @@ const ObservationForm = <TInitialFormikData extends IObservationForm>(
         <HorizontalSplitFormComponent
           title="Environmental Conditions"
           summary="Enter information about the environment where the observation was made">
-          <ObservationEnvironmentForm formikFieldName="standardColumns.environments" />
+          <ObservationEnvironmentForm formikSectionName="standardColumns.environments" />
         </HorizontalSplitFormComponent>
 
         <Divider />
 
         {/* Subcounts Form */}
         <HorizontalSplitFormComponent title="Subcounts" summary="Add subcounts to the observation">
-          <SubcountForm />
+          <SubcountForm formikSectionName="subcounts" />
         </HorizontalSplitFormComponent>
 
         <Divider />
 
         {/* Comments Form */}
         <HorizontalSplitFormComponent title="Comments" summary="Add comments about the observation">
-          <ObservationCommentForm />
+          <ObservationCommentForm formikSectionName="standardColumns" />
         </HorizontalSplitFormComponent>
 
         <Divider />

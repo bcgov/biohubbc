@@ -3,16 +3,16 @@ import SingleDateField from 'components/fields/SingleDateField';
 import { TimeField } from 'components/fields/TimeField';
 
 interface IObservationDateTimeFormProps {
-  formikFieldName: string;
+  formikSectionName: string;
 }
 
 const ObservationDateTimeForm = (props: IObservationDateTimeFormProps) => {
-  const { formikFieldName } = props;
+  const { formikSectionName } = props;
 
   return (
     <Stack spacing={2}>
-      <SingleDateField label="Date" name={`${formikFieldName}.observation_date`} />
-      <TimeField label="Time" name={`${formikFieldName}.observation_time`} id="time" required={false} />
+      <SingleDateField label="Date" name={`${formikSectionName}.observation_date`} />
+      <TimeField label="Time" name={`${formikSectionName}.observation_time`} id="time" required={false} />
     </Stack>
   );
 };

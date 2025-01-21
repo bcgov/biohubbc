@@ -18,6 +18,8 @@ const ObservationSamplingForm = (props: IObservationSamplingFormProps) => {
 
   const samplingInformationCache = useSamplingInformationCache();
 
+  // Initialize the cached sampling information.
+  // Optional when creating new records. Necessary when editing existing records.
   samplingInformationCache.initCachedSamplingInformationRef({ periods: [] });
 
   return (

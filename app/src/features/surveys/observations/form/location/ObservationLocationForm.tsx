@@ -2,16 +2,16 @@ import Stack from '@mui/material/Stack';
 import CustomTextField from 'components/fields/CustomTextField';
 
 interface IObservationLocationFormProps {
-  formikFieldName: string;
+  formikSectionName: string;
 }
 
 const ObservationLocationForm = (props: IObservationLocationFormProps) => {
-  const { formikFieldName } = props;
+  const { formikSectionName } = props;
 
   return (
     <Stack spacing={2}>
-      <CustomTextField label="Latitude" name={`${formikFieldName}.latitude`} other={{ type: 'number' }} />
-      <CustomTextField label="Longitude" name={`${formikFieldName}.longitude`} other={{ type: 'number' }} />
+      <CustomTextField label="Latitude" name={`${formikSectionName}.latitude`} other={{ type: 'number' }} />
+      <CustomTextField label="Longitude" name={`${formikSectionName}.longitude`} other={{ type: 'number' }} />
     </Stack>
   );
 };

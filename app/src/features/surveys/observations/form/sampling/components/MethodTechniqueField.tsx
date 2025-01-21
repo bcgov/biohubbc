@@ -72,8 +72,6 @@ export const MethodTechniqueField = (props: IMethodTechniqueFieldProps) => {
           keyword
         });
 
-        console.log(response);
-
         if (!isMounted()) {
           return;
         }

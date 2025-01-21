@@ -25,7 +25,7 @@ const initialEnvironmentValues = {
 };
 
 interface IObservationEnvironmentFormProps {
-  formikFieldName: string; // Accept formikFieldName as a prop
+  formikSectionName: string;
 }
 
 /**
@@ -35,7 +35,8 @@ interface IObservationEnvironmentFormProps {
  * @return {*}
  */
 export const ObservationEnvironmentForm = (props: IObservationEnvironmentFormProps) => {
-  const { formikFieldName } = props;
+  const { formikSectionName } = props;
+
   const { values } = useFormikContext<IObservationForm>();
 
   const biohubApi = useBiohubApi();
@@ -49,11 +50,11 @@ export const ObservationEnvironmentForm = (props: IObservationEnvironmentFormPro
   const environments: (
     | ObservationSubcountQualitativeEnvironmentObject
     | ObservationSubcountQuantitativeEnvironmentObject
-  )[] = get(values, formikFieldName) ?? [];
+  )[] = get(values, formikSectionName) ?? [];
 
   return (
     <FieldArray
-      name={formikFieldName}
+      name={formikSectionName}
       render={(arrayHelpers: FieldArrayRenderProps) => {
         return (
           <>
@@ -73,7 +74,7 @@ export const ObservationEnvironmentForm = (props: IObservationEnvironmentFormPro
                           label: item.name
                         }))
                       ]}
-                      categoryFormikFieldName={`${formikFieldName}[${index}].environment_quantitative_id`}
+                      categoryFormikFieldName={`${formikSectionName}[${index}].environment_quantitative_id`}
                       getCategoryDataType={(categoryId) => {
                         const quantitative = (environmentsDataLoader.data?.quantitative_environments ?? []).find(
                           (item) => item.environment_quantitative_id === categoryId
@@ -111,8 +112,8 @@ export const ObservationEnvironmentForm = (props: IObservationEnvironmentFormPro
                           (item) => item.environment_quantitative_id === categoryId
                         );
                         return quantitative
-                          ? `${formikFieldName}[${index}].value`
-                          : `${formikFieldName}[${index}].environment_qualitative_option_id`;
+                          ? `${formikSectionName}[${index}].value`
+                          : `${formikSectionName}[${index}].environment_qualitative_option_id`;
                       }}
                       onDelete={() => arrayHelpers.remove(index)}
                     />
