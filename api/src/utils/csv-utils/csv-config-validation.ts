@@ -123,7 +123,7 @@ export const validateCSVHeaders = (worksheet: WorkSheet, config: CSVConfig): Req
     if (!headerConfig.optional && !worksheetHasStaticHeader) {
       csvErrors.push({
         error: 'A required column is missing',
-        solution: `Add all required columns to the file.`,
+        solution: `Add the ${staticHeader} column to the file.`,
         values: [staticHeader, ...config.staticHeadersConfig[staticHeader].aliases],
         header: staticHeader,
         cell: null,
@@ -137,7 +137,7 @@ export const validateCSVHeaders = (worksheet: WorkSheet, config: CSVConfig): Req
     for (const unknownHeader of configUtils.worksheetDynamicHeaders) {
       csvErrors.push({
         error: 'An unknown column is included in the file',
-        solution: `Remove extra columns from the file.`,
+        solution: `Remove the ${unknownHeader} column from the file.`,
         values: null,
         header: unknownHeader,
         cell: null,
