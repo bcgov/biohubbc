@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { SystemUserRecord } from '../database-models/system-user';
+import { SystemUserRecord } from '../database-models/system_user';
 
 export interface ISystemUserFilterObject {
   system_user_ids?: number[];

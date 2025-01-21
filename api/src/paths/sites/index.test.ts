@@ -57,7 +57,7 @@ describe('findSites', () => {
     };
     mockReq.keycloak_token = {} as KeycloakUserInformation;
     mockReq.system_user = {
-      system_user_id: 5,
+      system_user_id: 20,
       user_guid: '123-456-789',
       user_identifier: 'test-identifier',
       identity_source: 'IDIR',
@@ -68,7 +68,7 @@ describe('findSites', () => {
       agency: 'test-agency',
       record_end_date: null,
       role_ids: [1],
-      role_names: [SYSTEM_ROLE.PROJECT_CREATOR]
+      role_names: [SYSTEM_ROLE.SYSTEM_ADMIN]
     };
 
     const requestHandler = findSites();
@@ -151,7 +151,7 @@ describe('findSites', () => {
     };
     mockReq.keycloak_token = {} as KeycloakUserInformation;
     mockReq.system_user = {
-      system_user_id: 5,
+      system_user_id: 20,
       user_guid: '123-456-789',
       user_identifier: 'test-identifier',
       identity_source: 'IDIR',

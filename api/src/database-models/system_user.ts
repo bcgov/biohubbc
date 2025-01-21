@@ -3,7 +3,7 @@ import { z } from 'zod';
 /**
  * System User Model.
  *
- * @description Data model for `SystemUser`.
+ * @description Data model for `system_user`.
  */
 export const SystemUserModel = z.object({
   system_user_id: z.number(),
@@ -30,7 +30,7 @@ export type SystemUserModel = z.infer<typeof SystemUserModel>;
 /**
  * System User Record
  *
- * @description Data record for `SystemUser`.
+ * @description Data record for `system_user`.
  */
 export const SystemUserRecord = SystemUserModel.omit({
   create_date: true,
