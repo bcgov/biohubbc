@@ -258,7 +258,8 @@ objects:
       replicas: ${{REPLICAS}}
       revisionHistoryLimit: 10
       selector:
-        deployment: ${NAME}${SUFFIX}
+        matchLabels:
+          deployment: ${NAME}${SUFFIX}
       strategy:
         type: RollingUpdate
         rollingUpdate:
@@ -652,6 +653,7 @@ objects:
                     - name: DATABASE_RESPONSE_VALIDATION_ENABLED
                       value: ${DATABASE_RESPONSE_VALIDATION_ENABLED}
                   command: ['npm', 'run', 'telemetry-cronjob', '--', '--batchSize 1000', '--concurrently 100']
+              restartPolicy: Never
 
   # Disable the HPA for now, as it is preferrable to run an exact number of pods (e.g. min:2, max:2)
   # - kind: HorizontalPodAutoscaler

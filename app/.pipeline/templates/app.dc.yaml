@@ -100,7 +100,8 @@ objects:
       replicas: ${{REPLICAS}}
       revisionHistoryLimit: 10
       selector:
-        deployment: ${NAME}${SUFFIX}
+        matchLabels:
+          deployment: ${NAME}${SUFFIX}
       strategy:
         type: RollingUpdate
         rollingUpdate:

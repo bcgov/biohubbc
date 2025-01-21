@@ -133,7 +133,8 @@ objects:
     spec:
       replicas: ${{REPLICAS}}
       selector:
-        name: '${DATABASE_SERVICE_NAME}'
+        matchLabels:
+          name: '${DATABASE_SERVICE_NAME}'
       strategy:
         type: Recreate
         maxSurge: 50%
