@@ -38,13 +38,10 @@ objects:
         app: "${NAME}"
         deployment: "${NAME}"
       strategy:
-        rollingParams:
-          intervalSeconds: 1
+        type: RollingUpdate
+        rollingUpdate:
           maxSurge: 25%
           maxUnavailable: 25%
-          timeoutSeconds: 600
-          updatePeriodSeconds: 1
-        type: Rolling
       template:
         metadata:
           creationTimestamp:
