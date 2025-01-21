@@ -1,9 +1,10 @@
-import { mdiGroup, mdiMapMarker, mdiPlus } from '@mdi/js';
+import { mdiMapMarker, mdiPlus, mdiViewGridPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Button, Toolbar, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import grey from '@mui/material/colors/grey';
 import Paper from '@mui/material/Paper';
+import Stack from '@mui/system/Stack';
 import AlertBar from 'components/alert/AlertBar';
 import CollapsibleCardList from 'components/card/CollapsibleCardList';
 import YesNoDialog from 'components/dialog/YesNoDialog';
@@ -12,6 +13,7 @@ import { IDrawControlsRef } from 'components/map/components/DrawControls';
 import { ImportDrawMapControl } from 'components/map/ImportDrawMapControl';
 import CustomToggleButtonGroup from 'components/toolbar/CustomToggleButtonGroup';
 import { CreateBlockI18N } from 'constants/i18n';
+import { SamplingBlockForm } from 'features/surveys/sampling-information/sites/components/site-groupings/SamplingBlockForm';
 import { SamplingSiteManageTableView } from 'features/surveys/sampling-information/sites/table/SamplingSiteTabsContainer';
 import SurveyMapTooltip from 'features/surveys/view/SurveyMapTooltip';
 import { useFormikContext } from 'formik';
@@ -20,7 +22,7 @@ import { useDialogContext } from 'hooks/useContext';
 import { createRef, useMemo, useState } from 'react';
 import { shapeFileFeatureDesc, shapeFileFeatureName } from 'utils/Utils';
 import { v4 } from 'uuid';
-import { ICreateBlockFormData } from '../../create/CreateBlockPage';
+import { ICreateBlockFormData } from '../../create/CreateBlockDialog';
 
 interface ICreateBlocksMapFormProps {
   /**
@@ -237,7 +239,7 @@ const CreateBlocksMapForm = (props: ICreateBlocksMapFormProps) => {
             { value: SamplingSiteManageTableView.SITES, icon: mdiMapMarker, label: SamplingSiteManageTableView.SITES },
             {
               value: SamplingSiteManageTableView.CLUSTER,
-              icon: mdiGroup,
+              icon: mdiViewGridPlus,
               label: SamplingSiteManageTableView.CLUSTER
             }
           ]}
@@ -276,21 +278,20 @@ const CreateBlocksMapForm = (props: ICreateBlocksMapFormProps) => {
           }}
           onSelectAll={handleFeatureSelectAll}
           renderCardContent={(_, index) => (
-            <>
+            <Stack gap={3}>
               <CustomTextField label="Name" name={`blocks[${index}].name`} />
-              <Box mt={3}>
-                <CustomTextField
-                  label="Description"
-                  name={`blocks[${index}].description`}
-                  other={{ rows: 2, multiline: true }}
-                />
-              </Box>
-            </>
+              <CustomTextField
+                label="Description"
+                name={`blocks[${index}].description`}
+                other={{ rows: 2, multiline: true }}
+              />
+              <SamplingBlockForm />
+            </Stack>
           )}
         />
       ) : (
-        <Box minHeight='200px' bgcolor={grey[100]} display="flex" alignItems="center" justifyContent="center">
-          <Typography>You have not added any new sites</Typography>
+        <Box minHeight="200px" bgcolor={grey[100]} display="flex" alignItems="center" justifyContent="center">
+          <Typography color='textSecondary'>You have not added any new sites</Typography>
         </Box>
       )}
     </form>

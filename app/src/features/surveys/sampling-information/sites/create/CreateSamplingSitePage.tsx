@@ -2,19 +2,18 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { CreateSamplingSiteI18N } from 'constants/i18n';
-import { ISurveySampleMethodFormData } from 'features/surveys/sampling-information/methods/components/SamplingMethodForm';
 import { Formik, FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { IGetSurveyBlock } from 'interfaces/useBlockApi.interface';
-import { ICreateSamplingSiteRequest, ISurveySampleSite } from 'interfaces/useSamplingSiteApi.interface';
+import { ISurveySampleSite } from 'interfaces/useSamplingSiteApi.interface';
 import { IGetSurveyStratum } from 'interfaces/useSurveyApi.interface';
 import { useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import SamplingSiteHeader from '../components/SamplingSiteHeader';
-import SampleSiteCreateForm, { SampleSiteCreateFormYupSchema } from './form/SampleSiteCreateForm';
+import CreateSamplingSiteForm, { CreateSamplingSiteFormYupSchema } from './form/CreateSamplingSiteForm';
 
 /**
  * Interface for the form data used in the Create Sampling Site form.
@@ -24,8 +23,7 @@ import SampleSiteCreateForm, { SampleSiteCreateFormYupSchema } from './form/Samp
  */
 export interface ICreateSampleSiteFormData {
   survey_id: number;
-  survey_sample_sites: ISurveySampleSite[]; // extracted list from shape files
-  sample_methods: ISurveySampleMethodFormData[];
+  survey_sample_sites: ISurveySampleSite[];
   blocks: IGetSurveyBlock[];
   stratums: IGetSurveyStratum[];
 }
@@ -71,22 +69,7 @@ export const CreateSamplingSitePage = () => {
     try {
       setIsSubmitting(true);
 
-      // Remove internal _id property of newly created sample_methods used only as a unique key prop
-      const { sample_methods, ...otherValues } = values;
-
-      const data: ICreateSamplingSiteRequest = {
-        ...otherValues,
-        sample_methods: sample_methods.map((method) => ({
-          survey_sample_method_id: method.survey_sample_method_id,
-          survey_sample_site_id: method.survey_sample_site_id,
-          method_technique_id: method.technique.method_technique_id,
-          description: method.description,
-          sample_periods: method.sample_periods,
-          method_response_metric_id: method.method_response_metric_id
-        }))
-      };
-
-      await biohubApi.samplingSite.createSamplingSites(surveyContext.projectId, surveyContext.surveyId, data);
+      await biohubApi.samplingSite.createSamplingSites(surveyContext.projectId, surveyContext.surveyId, values);
 
       // create complete, navigate back to observations page
       history.push(
@@ -118,7 +101,7 @@ export const CreateSamplingSitePage = () => {
           blocks: [],
           stratums: []
         }}
-        validationSchema={SampleSiteCreateFormYupSchema}
+        validationSchema={CreateSamplingSiteFormYupSchema}
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={handleSubmit}>
@@ -133,7 +116,7 @@ export const CreateSamplingSitePage = () => {
             breadcrumb="Add Sampling Sites"
           />
           <Box display="flex" flex="1 1 auto">
-            <SampleSiteCreateForm isSubmitting={isSubmitting} />
+            <CreateSamplingSiteForm isSubmitting={isSubmitting} />
           </Box>
         </Box>
       </Formik>

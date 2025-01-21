@@ -19,7 +19,7 @@ import { IEditBlockFormData } from '../../edit/EditBlockPage';
  *
  * @return {*}
  */
-const EditBlocksMapForm = () => {
+const EditBlocksForm = () => {
   const formikProps = useFormikContext<IEditBlockFormData>();
 
   const { handleSubmit, values, setFieldValue } = formikProps;
@@ -151,4 +151,4 @@ const EditBlocksMapForm = () => {
   );
 };
 
-export default EditBlocksMapForm;
+export default EditBlocksForm;

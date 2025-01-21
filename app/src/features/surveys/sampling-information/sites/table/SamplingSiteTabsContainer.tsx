@@ -1,4 +1,4 @@
-import { mdiDotsVertical, mdiGroup, mdiMapMarker, mdiTrashCanOutline } from '@mdi/js';
+import { mdiDotsVertical, mdiMapMarker, mdiTrashCanOutline, mdiViewGridPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
@@ -187,7 +187,7 @@ export const SamplingSiteTabsContainer = () => {
             { value: SamplingSiteManageTableView.SITES, icon: mdiMapMarker, label: SamplingSiteManageTableView.SITES },
             {
               value: SamplingSiteManageTableView.CLUSTER,
-              icon: mdiGroup,
+              icon: mdiViewGridPlus,
               label: SamplingSiteManageTableView.CLUSTER
             }
           ]}

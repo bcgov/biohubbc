@@ -8,8 +8,6 @@ import Collapse from '@mui/material/Collapse';
 import { grey } from '@mui/material/colors';
 import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
-import HelpButtonStack from 'components/buttons/HelpButtonStack';
 import { SurveyContext } from 'contexts/surveyContext';
 import { BlockStratumCard } from 'features/surveys/sampling-information/sites/components/site-groupings/BlockStratumCard';
 import { useFormikContext } from 'formik';
@@ -42,7 +40,6 @@ export const SamplingBlockForm = () => {
 
   const options = samplingBlocksDataLoader.data?.blocks ?? [];
 
-
   const handleAddBlock = (block: IGetSurveyBlock) => {
     setFieldValue(`blocks[${values.blocks.length}]`, block);
   };
@@ -56,20 +53,6 @@ export const SamplingBlockForm = () => {
 
   return (
     <>
-      <HelpButtonStack
-        helpText="After adding blocks to the Survey, you can assign sampling sites to those blocks."
-        mb={1}>
-        <Typography fontWeight={700}>Assign to Block</Typography>
-      </HelpButtonStack>
-      <Typography
-        variant="body1"
-        color="textSecondary"
-        sx={{
-          mb: 3,
-          maxWidth: '92ch'
-        }}>
-        All sampling sites being imported together will be assigned to the selected groups
-      </Typography>
       <Autocomplete
         id={'autocomplete-sample-block-form'}
         data-testid={'autocomplete-user-role-search'}
@@ -109,7 +92,7 @@ export const SamplingBlockForm = () => {
           <TextField
             {...params}
             variant="outlined"
-            placeholder={'Select block'}
+            placeholder={'Select blocks'}
             fullWidth
             InputProps={{
               ...params.InputProps,

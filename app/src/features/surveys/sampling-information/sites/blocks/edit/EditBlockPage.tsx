@@ -11,8 +11,9 @@ import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsa
 import { IEditBlock } from 'interfaces/useBlockApi.interface';
 import { useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
-import SamplingSiteHeader from '../../sites/components/SamplingSiteHeader';
-import EditBlocksForm, { EditBlockFormYupSchema } from '../form/edit/EditBlocksForm';
+import SamplingSiteHeader from '../../components/SamplingSiteHeader';
+import { BlocksFormYupSchema } from '../create/CreateBlockDialog';
+import EditBlocksForm from '../form/edit/EditBlocksForm';
 
 /**
  * Interface for the form data used in the Create Sampling Site form.
@@ -107,7 +108,7 @@ export const EditBlockPage = () => {
       <Formik
         innerRef={formikRef}
         initialValues={{ block: { ...blocksDataLoader.data, uuid: blocksDataLoader.data.geojson?.id as string } }}
-        validationSchema={EditBlockFormYupSchema}
+        validationSchema={BlocksFormYupSchema}
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={handleSubmit}>
@@ -122,7 +123,7 @@ export const EditBlockPage = () => {
             breadcrumb="Edit Sampling Site Cluster"
           />
           <Box display="flex" flex="1 1 auto">
-            <EditBlocksForm isSubmitting={isSubmitting} />
+            <EditBlocksForm />
           </Box>
         </Box>
       </Formik>

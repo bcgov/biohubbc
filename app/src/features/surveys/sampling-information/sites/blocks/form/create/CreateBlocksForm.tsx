@@ -9,41 +9,57 @@ import { useFormikContext } from 'formik';
 import { useSurveyContext } from 'hooks/useContext';
 import { useHistory } from 'react-router';
 import yup from 'utils/YupSchema';
-import { IEditBlockFormData } from '../../edit/EditBlockPage';
-import EditBlocksMapForm from './EditBlocksMapForm';
+import { ICreateBlockFormData } from '../../create/CreateBlockDialog';
+import BlocksMapForm from './CreateBlocksMapForm';
 
-export const EditBlockFormYupSchema = yup.object({
-  block: yup.object({
-    survey_block_id: yup.number().required('Survey block ID is required'),
-    name: yup.string().required('Name is required'),
-    description: yup.string().nullable(),
-    geojson: yup.object().nullable()
-  })
+export const CreateBlocksFormYupSchema = yup.object({
+  blocks: yup
+    .array(
+      yup.object({
+        survey_block_id: yup.number().nullable(),
+        name: yup.string().required('Name is required'),
+        description: yup.string().nullable(),
+        geojson: yup.object().nullable()
+      })
+    )
+    .min(1, 'At least one block is required')
+    .required('Blocks are required')
+    .test('unique-names', 'Blocks must have unique names', (blocks) => {
+      if (!blocks?.length) {
+        return true;
+      }
+
+      const names = blocks.map((block) => block.name);
+      return new Set(names).size === names.length;
+    })
 });
 
-interface IEditBlocksFormProps {
+interface ICreateBlocksFormProps {
   isSubmitting: boolean;
+  clusterCount?: number;
 }
 
 /**
- * Renders block edit form.
+ * Renders block create form.
  *
- * @param {IEditBlocksFormProps} props
+ * @param {ICreateBlocksFormProps} props
  * @returns {*}
  */
-const EditBlocksForm = (props: IEditBlocksFormProps) => {
-  const { isSubmitting } = props;
+const CreateBlocksForm = (props: ICreateBlocksFormProps) => {
+  const { isSubmitting, clusterCount } = props;
 
   const history = useHistory();
-  const { submitForm } = useFormikContext<IEditBlockFormData>();
+  const { submitForm } = useFormikContext<ICreateBlockFormData>();
 
   const surveyContext = useSurveyContext();
 
   return (
     <Container maxWidth="xl" sx={{ py: 3 }}>
       <Paper sx={{ p: 5 }}>
-        <HorizontalSplitFormComponent title="Cluster" summary="Import or draw to edit the location of the cluster">
-          <EditBlocksMapForm />
+        <HorizontalSplitFormComponent
+          title="Sites"
+          summary="Import a spatial file or draw the location of sites on the map">
+          <BlocksMapForm clusterCount={clusterCount} />
         </HorizontalSplitFormComponent>
 
         <Divider sx={{ my: 5 }} />
@@ -75,4 +91,4 @@ const EditBlocksForm = (props: IEditBlocksFormProps) => {
   );
 };
 
-export default EditBlocksForm;
+export default CreateBlocksForm;

@@ -1,25 +1,25 @@
+import { mdiPlus } from '@mdi/js';
+import Icon from '@mdi/react';
 import LoadingButton from '@mui/lab/LoadingButton/LoadingButton';
 import Button from '@mui/material/Button';
-import Collapse from '@mui/material/Collapse';
 import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { SamplingSiteMethodYupSchema } from 'features/surveys/sampling-information/methods/components/SamplingMethodForm';
-import { SamplingMethodFormContainer } from 'features/surveys/sampling-information/methods/SamplingMethodFormContainer';
 import { SamplingSiteMethodPeriodYupSchema } from 'features/surveys/sampling-information/periods/SamplingPeriodFormContainer';
-import { SamplingSiteGroupingsForm } from 'features/surveys/sampling-information/sites/components/site-groupings/SamplingSiteGroupingsForm';
+import CreateBlocksDialog from 'features/surveys/sampling-information/sites/blocks/create/CreateBlockDialog';
 import { ICreateSampleSiteFormData } from 'features/surveys/sampling-information/sites/create/CreateSamplingSitePage';
-import { SampleSiteImportForm } from 'features/surveys/sampling-information/sites/create/form/SampleSiteImportForm';
 import { useFormikContext } from 'formik';
 import { useSurveyContext } from 'hooks/useContext';
+import { useState } from 'react';
 import { useHistory } from 'react-router';
-import { TransitionGroup } from 'react-transition-group';
 import yup from 'utils/YupSchema';
-import SampleSiteGeneralInformationCreateForm from './SampleSiteGeneralInformationCreateForm';
+import { v4 } from 'uuid';
+import CreateSamplingSiteMapControlForm from './CreatingSamplingSiteMapControlForm';
 
-export const SampleSiteCreateFormYupSchema = yup.object({
+export const CreateSamplingSiteFormYupSchema = yup.object({
   survey_sample_sites: yup
     .array(
       yup.object({
@@ -45,64 +45,71 @@ export const SampleSiteCreateFormYupSchema = yup.object({
     .min(1, 'At least one sampling method is required') // Add check for at least one item in the array
 });
 
-interface ISampleSiteCreateFormProps {
+const initialBlockValues = {
+  blocks: [
+    {
+      survey_block_id: null,
+      name: '',
+      uuid: v4(),
+      // geojson: { ...feature, id: uuid },
+      description: null
+    }
+  ]
+};
+
+interface ICreateSamplingSiteFormProps {
   isSubmitting: boolean;
 }
 
 /**
  * Renders sampling site create form.
  *
- * @param {ISampleSiteCreateFormProps} props
+ * @param {ICreateSamplingSiteFormProps} props
  * @returns {*}
  */
-const SampleSiteCreateForm = (props: ISampleSiteCreateFormProps) => {
+const CreateSamplingSiteForm = (props: ICreateSamplingSiteFormProps) => {
   const { isSubmitting } = props;
 
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
   const history = useHistory();
-  const { submitForm, values } = useFormikContext<ICreateSampleSiteFormData>();
+  const { submitForm } = useFormikContext<ICreateSampleSiteFormData>();
 
   const surveyContext = useSurveyContext();
 
+  console.log
   return (
-    <Container maxWidth="xl" sx={{ py: 3 }}>
-      <Paper sx={{ p: 5 }}>
-        <HorizontalSplitFormComponent
-          title="Site Location"
-          summary="Import or draw sampling site locations used for this survey.">
-          <SampleSiteImportForm />
-        </HorizontalSplitFormComponent>
-
-        <Divider sx={{ my: 5 }} />
-
-        <TransitionGroup>
-          {values.survey_sample_sites.length === 1 && (
-            <Collapse>
-              <HorizontalSplitFormComponent
-                title="General Information"
-                summary="Enter a name and description for the sampling site.">
-                <SampleSiteGeneralInformationCreateForm />
-              </HorizontalSplitFormComponent>
-              <Divider sx={{ my: 5 }} />
-            </Collapse>
-          )}
-        </TransitionGroup>
-
-        <Stack gap={5}>
-          <HorizontalSplitFormComponent
-            title="Sampling Techniques"
-            summary="Specify sampling techniques that were used to collect data.">
-            <SamplingMethodFormContainer />
+    <>
+      <CreateBlocksDialog
+        handleClose={() => {
+          setIsDialogOpen(false);
+        }}
+        handleSave={() => {}}
+        isDialogOpen={isDialogOpen}
+        initialValues={initialBlockValues}
+      />
+      <Container maxWidth="xl" sx={{ py: 3 }}>
+        <Paper sx={{ p: 5 }}>
+          <HorizontalSplitFormComponent title="Site Locations" summary="Import or draw the locations of sampling sites">
+            <CreateSamplingSiteMapControlForm />
           </HorizontalSplitFormComponent>
 
-          <Divider />
+          <Divider sx={{ my: 5 }} />
 
-          <HorizontalSplitFormComponent
-            title="Sampling Site Groupings"
-            summary="Group similar sites by assigning them to groups or strata, which you can add when creating or editing your Survey.">
-            <SamplingSiteGroupingsForm />
+          <HorizontalSplitFormComponent title="Clusters" summary="Create clusters to group related sampling sites">
+            <Button
+              data-testid="cluster-add-button"
+              variant="outlined"
+              color="primary"
+              title="Create Cluster"
+              aria-label="Create Cluster"
+              onClick={() => setIsDialogOpen(true)}
+              startIcon={<Icon path={mdiPlus} size={1} />}>
+              Add Cluster
+            </Button>
           </HorizontalSplitFormComponent>
 
-          <Divider />
+          <Divider sx={{ my: 5 }} />
 
           <Stack flexDirection="row" alignItems="center" justifyContent="flex-end" gap={1}>
             <LoadingButton
@@ -124,10 +131,10 @@ const SampleSiteCreateForm = (props: ISampleSiteCreateFormProps) => {
               Cancel
             </Button>
           </Stack>
-        </Stack>
-      </Paper>
-    </Container>
+        </Paper>
+      </Container>
+    </>
   );
 };
 
-export default SampleSiteCreateForm;
+export default CreateSamplingSiteForm;
