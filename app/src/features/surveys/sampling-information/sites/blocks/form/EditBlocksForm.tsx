@@ -12,21 +12,19 @@ import { useDialogContext } from 'hooks/useContext';
 import { createRef, useState } from 'react';
 import { shapeFileFeatureDesc, shapeFileFeatureName } from 'utils/Utils';
 import { v4 } from 'uuid';
-import { IEditBlockFormData } from '../../edit/EditBlockPage';
+import { ICreateSampleSiteFormData } from '../../create/CreateSamplingSitePage.interface';
 
 /**
- * Edit a single survey block - map control
+ * Edit multiple survey blocks - map control
  *
  * @return {*}
  */
 const EditBlocksForm = () => {
-  const formikProps = useFormikContext<IEditBlockFormData>();
-
+  const formikProps = useFormikContext<ICreateSampleSiteFormData>();
   const { handleSubmit, values, setFieldValue } = formikProps;
   const dialogContext = useDialogContext();
 
   const [selectedFeatures, setSelectedFeatures] = useState<Feature[]>([]);
-
   const drawRef = createRef<IDrawControlsRef>();
 
   // Handle importing new shapes
@@ -34,13 +32,17 @@ const EditBlocksForm = () => {
     const feature = features[0];
     const uuid = v4();
 
-    setFieldValue('block', {
-      ...feature,
-      uuid,
-      geojson: { ...feature, id: uuid },
-      name: shapeFileFeatureName(feature) ?? '',
-      description: shapeFileFeatureDesc(feature) ?? null
-    });
+    // Add the new block to the array
+    setFieldValue('blocks', [
+      ...values.blocks,
+      {
+        ...feature,
+        uuid,
+        geojson: { ...feature, id: uuid },
+        name: shapeFileFeatureName(feature) ?? '',
+        description: shapeFileFeatureDesc(feature) ?? null
+      }
+    ]);
   };
 
   // Display error dialog when import fails
@@ -63,18 +65,17 @@ const EditBlocksForm = () => {
     // Remove old map layers
     drawRef.current?.clearLayers();
 
-    // When editing a block and a new geometry is drawn, only update the geojson and leaflet_id
-    // to not overwrite the name and survey_block_id
-    setFieldValue('block', { ...values.block, geojson: { ...feature, id: v4() }, leaflet_id: id });
+    // Add a new block to the blocks array
+    setFieldValue('blocks', [...values.blocks, { geojson: { ...feature, id: v4() }, leaflet_id: id }]);
   };
 
   // Handle editing existing shapes
   const handleEdit = (editedFeatures: Feature[]) => {
     const editedFeature = editedFeatures[0];
-    setFieldValue('block', {
-      ...values.block,
-      geojson: editedFeature
-    });
+    const updatedBlocks = values.blocks.map((block) =>
+      block.geojson?.id === editedFeature.id ? { ...block, geojson: editedFeature } : block
+    );
+    setFieldValue('blocks', updatedBlocks);
   };
 
   const handleFeatureSelect = (feature: Feature) => {
@@ -89,9 +90,12 @@ const EditBlocksForm = () => {
   };
 
   const handleTooltip = (feature: Feature) => {
-    const label = values.block?.name ?? '';
+    const block = values.blocks.find((block) => block.geojson?.id === feature.id);
+    const label = block?.name ?? '';
     return <SurveyMapTooltip title={label} key={`feature-tooltip-${feature.id}`} />;
   };
+
+  const features = values.blocks.map((block) => block.geojson).filter((block) => block !== undefined && block !== null);
 
   return (
     <form onSubmit={handleSubmit}>
@@ -100,7 +104,7 @@ const EditBlocksForm = () => {
           mapId="survey-block-map"
           label="Cluster"
           drawControlsRef={drawRef}
-          features={values.block?.geojson ? [values.block.geojson] : []}
+          features={features.length ? features : []}
           handleImport={handleImport}
           handleImportFailure={handleImportFailure}
           handleAdd={handleAdd}
@@ -108,24 +112,22 @@ const EditBlocksForm = () => {
           handleFeatureSelect={handleFeatureSelect}
           tooltip={handleTooltip}
           selectedFeatures={selectedFeatures}
-          dialogTitle="Import Block"
+          dialogTitle="Import Cluster"
         />
       </Paper>
 
-      {values.block && (
+      {values.blocks && values.blocks.length > 0 && (
         <Box mt={3}>
           <CollapsibleCardList
-            items={[
-              {
-                geojson: values.block.geojson ?? null,
-                uuid: values.block.uuid ?? undefined,
-                label: values.block.name
-              }
-            ]}
+            items={values.blocks.map((block) => ({
+              geojson: block.geojson ?? null,
+              uuid: block.uuid ?? undefined,
+              label: block.name ?? 'Block 1'
+            }))}
             selectedItems={selectedFeatures.map((feature) => ({
               geojson: feature,
-              uuid: values.block.geojson?.id === feature.id ? values.block.uuid : undefined,
-              label: values.block.name ?? ''
+              uuid: values.blocks.find((block) => block.geojson?.id === feature.id)?.uuid,
+              label: values.blocks.find((block) => block.geojson?.id === feature.id)?.name ?? ''
             }))}
             onSelectItem={(feature) => {
               feature.geojson && handleFeatureSelect(feature.geojson);
@@ -134,14 +136,18 @@ const EditBlocksForm = () => {
             hideToolbar
             renderCardContent={() => (
               <>
-                <CustomTextField label="Name" name={`block.name`} />
-                <Box mt={3}>
-                  <CustomTextField
-                    label="Description"
-                    name={`block.description`}
-                    other={{ rows: 2, multiline: true }}
-                  />
-                </Box>
+                {values.blocks.map((block, index) => (
+                  <Box key={block.uuid || index}>
+                    <CustomTextField label="Name" name={`blocks[${index}].name`} />
+                    <Box mt={3}>
+                      <CustomTextField
+                        label="Description"
+                        name={`blocks[${index}].description`}
+                        other={{ rows: 2, multiline: true }}
+                      />
+                    </Box>
+                  </Box>
+                ))}
               </>
             )}
           />

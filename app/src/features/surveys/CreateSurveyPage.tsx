@@ -36,7 +36,6 @@ import { SurveyUserJobFormInitialValues } from './components/participants/Survey
 import { SurveySiteSelectionInitialValues } from './components/sampling-strategy/SurveySiteSelectionForm';
 import { SpeciesInitialValues } from './components/species/SpeciesForm';
 import EditSurveyForm from './edit/EditSurveyForm';
-import { SurveyBlockInitialValues } from './sampling-information/sites/blocks/form/create/CreateBlocksMapForm';
 
 export const defaultSurveyDataFormValues: ICreateSurveyRequest & ISurveyPermitForm & ISurveyFundingSourceForm = {
   ...GeneralInformationInitialValues,
@@ -49,7 +48,6 @@ export const defaultSurveyDataFormValues: ICreateSurveyRequest & ISurveyPermitFo
   ...SurveyLocationInitialValues,
   ...SurveySiteSelectionInitialValues,
   ...SurveyUserJobFormInitialValues,
-  ...SurveyBlockInitialValues,
   ...SpeciesInitialValues
 };
 
@@ -113,7 +111,6 @@ const CreateSurveyPage = () => {
     try {
       // Remove the permit_used and funding_used properties
       const response = await biohubApi.survey.createSurvey(Number(projectData?.project.project_id), {
-        blocks: values.blocks,
         funding_sources: values.funding_sources,
         locations: values.locations.map((location) => ({
           survey_location_id: location.survey_location_id,

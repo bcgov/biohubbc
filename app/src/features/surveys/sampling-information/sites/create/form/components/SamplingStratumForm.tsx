@@ -8,61 +8,65 @@ import Collapse from '@mui/material/Collapse';
 import { grey } from '@mui/material/colors';
 import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import HelpButtonStack from 'components/buttons/HelpButtonStack';
 import { SurveyContext } from 'contexts/surveyContext';
-import { BlockStratumCard } from 'features/surveys/sampling-information/sites/components/site-groupings/BlockStratumCard';
+import { BlockStratumCard } from 'features/surveys/sampling-information/sites/create/form/components/BlockStratumCard';
 import { useFormikContext } from 'formik';
-import { useBiohubApi } from 'hooks/useBioHubApi';
-import useDataLoader from 'hooks/useDataLoader';
-import { IGetSurveyBlock } from 'interfaces/useBlockApi.interface';
-import { IGetSampleBlockDetails, IGetSampleSiteDetails } from 'interfaces/useSamplingSiteApi.interface';
-import { useContext, useEffect, useState } from 'react';
+import { IGetSampleSiteDetails, IGetSampleStratumDetails } from 'interfaces/useSamplingSiteApi.interface';
+import { IGetSurveyStratum, IPostSurveyStratum } from 'interfaces/useSurveyApi.interface';
+import { useContext, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 
 /**
- * Returns a form for creating and editing which survey blocks are associated to a sampling site
+ * Returns a form for creating and editing which survey stratums are associated to a sampling site
  *
  * @returns
  */
-export const SamplingBlockForm = () => {
+export const SamplingStratumForm = () => {
   const { values, setFieldValue } = useFormikContext<IGetSampleSiteDetails>();
   const surveyContext = useContext(SurveyContext);
+
+  const options = surveyContext.surveyDataLoader?.data?.surveyData?.site_selection?.stratums || [];
+
   const [searchText, setSearchText] = useState('');
 
-  const biohubApi = useBiohubApi();
-
-  const samplingBlocksDataLoader = useDataLoader(() =>
-    biohubApi.block.getSurveyBlocks(surveyContext.projectId, surveyContext.surveyId)
-  );
-
-  useEffect(() => {
-    samplingBlocksDataLoader.load();
-  }, [samplingBlocksDataLoader]);
-
-  const options = samplingBlocksDataLoader.data?.blocks ?? [];
-
-  const handleAddBlock = (block: IGetSurveyBlock) => {
-    setFieldValue(`blocks[${values.blocks.length}]`, block);
+  const handleAddStratum = (stratum: IPostSurveyStratum | IGetSurveyStratum) => {
+    setFieldValue(`stratums[${values.stratums.length}]`, stratum);
   };
-
-  const handleRemoveItem = (block: IGetSurveyBlock | IGetSampleBlockDetails) => {
+  const handleRemoveItem = (stratum: IGetSurveyStratum | IGetSampleStratumDetails) => {
     setFieldValue(
-      `blocks`,
-      values.blocks.filter((existing) => existing.survey_block_id !== block.survey_block_id)
+      `stratums`,
+      values.stratums.filter((existing) => existing.survey_stratum_id !== stratum.survey_stratum_id)
     );
   };
 
   return (
     <>
+      <HelpButtonStack
+        helpText="After adding strata to the Survey, you can assign sampling sites to those strata."
+        mb={1}>
+        <Typography fontWeight={700}>Assign to Strata</Typography>
+      </HelpButtonStack>
+      <Typography
+        variant="body1"
+        color="textSecondary"
+        sx={{
+          mb: 3,
+          maxWidth: '92ch'
+        }}>
+        All sampling sites being imported together will be assigned to the selected groups
+      </Typography>
       <Autocomplete
-        id={'autocomplete-sample-block-form'}
+        id={'autocomplete-sample-stratum-form'}
         data-testid={'autocomplete-user-role-search'}
         filterSelectedOptions
         noOptionsText="No records found"
         options={options}
         filterOptions={(options, state) => {
-          const searchFilter = createFilterOptions<IGetSurveyBlock>({ ignoreCase: true });
-          const unselectedOptions = options.filter((item) =>
-            values.blocks.every((existing) => existing.survey_block_id !== item.survey_block_id)
+          const searchFilter = createFilterOptions<IPostSurveyStratum | IGetSurveyStratum>({ ignoreCase: true });
+          const unselectedOptions = options.filter((option) =>
+            values.stratums.every((existing) => existing.survey_stratum_id !== option.survey_stratum_id)
           );
           return searchFilter(unselectedOptions, state);
         }}
@@ -81,7 +85,7 @@ export const SamplingBlockForm = () => {
         }}
         onChange={(_, option) => {
           if (option) {
-            handleAddBlock(option);
+            handleAddStratum(option);
             setSearchText('');
           }
         }}
@@ -92,7 +96,7 @@ export const SamplingBlockForm = () => {
           <TextField
             {...params}
             variant="outlined"
-            placeholder={'Select blocks'}
+            placeholder={'Select stratum'}
             fullWidth
             InputProps={{
               ...params.InputProps,
@@ -106,16 +110,16 @@ export const SamplingBlockForm = () => {
         )}
         renderOption={(renderProps, renderOption) => {
           return (
-            <Box component="li" {...renderProps} key={renderOption?.survey_block_id}>
+            <Box component="li" {...renderProps} key={renderOption?.survey_stratum_id}>
               <BlockStratumCard label={renderOption.name} description={renderOption.description || ''} />
             </Box>
           );
         }}
       />
       <TransitionGroup>
-        {values.blocks.map((item, index) => {
+        {values.stratums.map((item, index) => {
           return (
-            <Collapse key={`${item.name}-${item.description}-${index}`}>
+            <Collapse key={`${item.survey_sample_stratum_id}-${index}`}>
               <Card
                 variant="outlined"
                 sx={{

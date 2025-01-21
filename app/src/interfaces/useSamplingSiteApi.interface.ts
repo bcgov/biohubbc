@@ -1,26 +1,15 @@
+import {
+  IPostSiteBlockAssignment,
+  IPostSurveyBlock,
+  IPostSurveySampleSite
+} from 'features/surveys/sampling-information/sites/create/CreateSamplingSitePage.interface';
 import { Feature } from 'geojson';
 import { ApiPaginationResponseParams } from 'types/misc';
 
-export interface ISurveySampleSite {
-  name: string;
-  description: string;
-  geojson: Feature;
-  // This is an id meant for the front end only. This is set if the geojson was drawn by the user (on the leaflet map) vs imported (file upload or region selector)
-  // Locations drawn by the user should be editable in the leaflet map using the draw tools available
-  // Any uploaded or selected regions should not be editable and be placed in the 'static' layer on the map
-  leaflet_id?: number;
-  // This is used to give each location a unique ID so the list/ collapse components have a key
-  uuid?: string;
-}
-
 export interface ICreateSamplingSiteRequest {
-  survey_sample_sites: ISurveySampleSite[]; // extracted list from shape files
-  blocks: {
-    survey_block_id: number;
-  }[];
-  stratums: {
-    survey_stratum_id: number;
-  }[];
+  survey_sample_sites: IPostSurveySampleSite[];
+  blocks: IPostSurveyBlock[]
+  site_block_assignments: IPostSiteBlockAssignment[];
 }
 
 export interface IEditSampleSiteRequest {

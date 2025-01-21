@@ -68,6 +68,8 @@ export const useBiohubApi = () => {
 
   const samplingSite = useSamplingSiteApi(apiAxios);
 
+  const block = useBlockApi(apiAxios);
+
   const samplingPeriod = useSamplingPeriodApi(apiAxios);
 
   const technique = useTechniqueApi(apiAxios);
@@ -98,6 +100,7 @@ export const useBiohubApi = () => {
       observation,
       resources,
       codes,
+      block,
       animal,
       user,
       admin,

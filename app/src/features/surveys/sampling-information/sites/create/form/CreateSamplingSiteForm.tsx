@@ -7,15 +7,17 @@ import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
-import { ICreateSampleSiteFormData } from 'features/surveys/sampling-information/sites/create/CreateSamplingSitePage';
 import { useFormikContext } from 'formik';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
-import { useState } from 'react';
+import useDataLoader from 'hooks/useDataLoader';
+import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import yup from 'utils/YupSchema';
-import { v4 } from 'uuid';
-import CreateBlocksDialog from '../../blocks/create/CreateBlockDialog';
-import CreateSamplingSiteMapControlForm from './CreatingSamplingSiteMapControlForm';
+import CreateBlocksDialog, { BlocksFormYupSchema } from '../../blocks/create/CreateBlockDialog';
+import { ICreateSampleSiteFormData } from '../CreateSamplingSitePage.interface';
+import { BlockForm } from './CreateSamplingSiteForm.interface';
+import CreateSamplingSiteMapControlForm from './map/CreatingSamplingSiteMapControlForm';
 
 export const CreateSamplingSiteFormYupSchema = yup.object({
   survey_sample_sites: yup
@@ -26,55 +28,47 @@ export const CreateSamplingSiteFormYupSchema = yup.object({
         geojson: yup.object({})
       })
     )
-    .min(1, 'At least one sampling site location is required')
+    .min(1, 'At least one sampling site location is required'),
+  blocks: BlocksFormYupSchema
 });
 
-const initialBlockValues = {
-  blocks: [
-    {
-      survey_block_id: null,
-      name: '',
-      uuid: v4(),
-      // geojson: { ...feature, id: uuid },
-      description: null
-    }
-  ]
-};
+const initialBlocksValues: BlockForm = {
+  blocks: [],
+  site_block_assignments: []
+}
 
 interface ICreateSamplingSiteFormProps {
   isSubmitting: boolean;
 }
 
-/**
- * Renders sampling site create form.
- *
- * @param {ICreateSamplingSiteFormProps} props
- * @returns {*}
- */
-const CreateSamplingSiteForm = (props: ICreateSamplingSiteFormProps) => {
-  const { isSubmitting } = props;
-
+const CreateSamplingSiteForm = ({ isSubmitting }: ICreateSamplingSiteFormProps) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-
-  const history = useHistory();
+  const biohubApi = useBiohubApi();
   const { submitForm } = useFormikContext<ICreateSampleSiteFormData>();
-
   const surveyContext = useSurveyContext();
+  const history = useHistory();
+
+  const samplingBlocksDataLoader = useDataLoader(() =>
+    biohubApi.block.getSurveyBlocks(surveyContext.projectId, surveyContext.surveyId)
+  );
+
+  useEffect(() => {
+    samplingBlocksDataLoader.load();
+  }, [samplingBlocksDataLoader]);
 
   return (
     <>
       <CreateBlocksDialog
-        handleClose={() => {
-          setIsDialogOpen(false);
-        }}
+        handleClose={() => setIsDialogOpen(false)}
         handleSave={() => {}}
         isDialogOpen={isDialogOpen}
-        initialValues={initialBlockValues}
+        initialValues={initialBlocksValues}
       />
+
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <Paper sx={{ p: 5 }}>
           <HorizontalSplitFormComponent title="Site Locations" summary="Import or draw the locations of sampling sites">
-            <CreateSamplingSiteMapControlForm />
+            <CreateSamplingSiteMapControlForm blocks={samplingBlocksDataLoader.data?.blocks ?? []} />
           </HorizontalSplitFormComponent>
 
           <Divider sx={{ my: 5 }} />
@@ -84,8 +78,6 @@ const CreateSamplingSiteForm = (props: ICreateSamplingSiteFormProps) => {
               data-testid="cluster-add-button"
               variant="outlined"
               color="primary"
-              title="Create Cluster"
-              aria-label="Create Cluster"
               onClick={() => setIsDialogOpen(true)}
               startIcon={<Icon path={mdiPlus} size={1} />}>
               Add Cluster
@@ -100,17 +92,15 @@ const CreateSamplingSiteForm = (props: ICreateSamplingSiteFormProps) => {
               variant="contained"
               color="primary"
               loading={isSubmitting}
-              onClick={() => {
-                submitForm();
-              }}>
+              onClick={submitForm}>
               Save and Exit
             </LoadingButton>
             <Button
               variant="outlined"
               color="primary"
-              onClick={() => {
-                history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling`);
-              }}>
+              onClick={() =>
+                history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling`)
+              }>
               Cancel
             </Button>
           </Stack>

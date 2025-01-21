@@ -3,7 +3,6 @@ import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { SamplingSiteManagePage } from 'features/surveys/sampling-information/manage/SamplingSiteManagePage';
 import { CreateSamplingSitePage } from 'features/surveys/sampling-information/sites/create/CreateSamplingSitePage';
-import { EditSamplingSitePage } from 'features/surveys/sampling-information/sites/edit/EditSamplingSitePage';
 import { CreateTechniquePage } from 'features/surveys/sampling-information/techniques/create/CreateTechniquePage';
 import { EditTechniquePage } from 'features/surveys/sampling-information/techniques/edit/EditTechniquePage';
 import { Switch } from 'react-router';
@@ -54,7 +53,7 @@ export const SamplingRouter = () => {
           validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <DialogContextProvider>
-            <EditSamplingSitePage />
+            {/* <EditSamplingSitePage /> */}
           </DialogContextProvider>
         </ProjectRoleRouteGuard>
       </RouteWithTitle>
