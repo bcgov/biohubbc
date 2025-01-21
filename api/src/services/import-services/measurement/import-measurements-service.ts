@@ -11,18 +11,15 @@ import {
 } from '../../../utils/csv-utils/csv-header-configs';
 import { getCritterCaptureRowValidator } from '../../../utils/csv-utils/row-validators/critter-capture-row-validator';
 import { getLogger } from '../../../utils/logger';
-import { NestedRecord } from '../../../utils/nested-record';
-import {
-  CBQualitativeMeasurementTypeDefinition,
-  CBQuantitativeMeasurementTypeDefinition,
-  ICritterDetailed,
-  IQualMeasurement,
-  IQuantMeasurement
-} from '../../critterbase-service';
+import { CritterbaseService, ICritterDetailed, IQualMeasurement, IQuantMeasurement } from '../../critterbase-service';
 import { DBService } from '../../db-service';
 import { SurveyCritterService } from '../../survey-critter-service';
-import { isCBQualitativeMeasurement, isCBQuantitativeMeasurement } from '../utils/measurement';
-import { getDynamicMeasurementCellValidator, TSNMeasurementDictionary } from './measurement-header-configs';
+import {
+  getTsnMeasurementDictionary,
+  isCBQualitativeMeasurement,
+  isCBQuantitativeMeasurement
+} from '../utils/measurement';
+import { getDynamicMeasurementCellValidator } from './measurement-header-configs';
 
 const defaultLog = getLogger('services/import/import-measurement-service');
 
@@ -40,6 +37,7 @@ export class ImportMeasurementsService extends DBService {
   surveyId: number;
 
   surveyCritterService: SurveyCritterService;
+  critterbaseService: CritterbaseService;
   utils: CSVConfigUtils<MeasurementCSVStaticHeader>;
 
   /**
@@ -64,6 +62,7 @@ export class ImportMeasurementsService extends DBService {
     this.surveyId = surveyId;
 
     this.surveyCritterService = new SurveyCritterService(connection);
+    this.critterbaseService = this.surveyCritterService.critterbaseService;
     this.utils = new CSVConfigUtils(this.worksheet, initialConfig);
   }
 
@@ -114,7 +113,7 @@ export class ImportMeasurementsService extends DBService {
 
     defaultLog.debug({ label: 'import measurements', qualitativeMeasurements, quantitativeMeasurements });
 
-    await this.surveyCritterService.critterbaseService.bulkCreate({
+    await this.critterbaseService.bulkCreate({
       qualitative_measurements: qualitativeMeasurements,
       quantitative_measurements: quantitativeMeasurements
     });
@@ -130,7 +129,7 @@ export class ImportMeasurementsService extends DBService {
   async getCSVConfig(): Promise<CSVConfig<MeasurementCSVStaticHeader>> {
     const surveyAliasMap = await this.surveyCritterService.getSurveyCritterAliasMap(this.surveyId);
     const worksheetTsns = this._getWorksheetTsns(surveyAliasMap);
-    const measurementDictionary = await this._getTsnMeasurementDictionary(worksheetTsns);
+    const measurementDictionary = await getTsnMeasurementDictionary(worksheetTsns, this.critterbaseService);
 
     // Set the static header configs for additional error information
     this.utils.setAllStaticHeaderConfigs({
@@ -171,46 +170,5 @@ export class ImportMeasurementsService extends DBService {
     }
 
     return tsns;
-  }
-
-  /**
-   * Get the TSN measurement type definition dictionary.
-   *
-   * @async
-   * @param {number[]} tsns - List of ITIS TSN's
-   * @returns {*} {Promise<TSNMeasurementDictionary>} Measurement dictionary
-   */
-  async _getTsnMeasurementDictionary(tsns: number[]): Promise<TSNMeasurementDictionary> {
-    const measurementDictionary = new NestedRecord<
-      CBQualitativeMeasurementTypeDefinition | CBQuantitativeMeasurementTypeDefinition
-    >();
-    const uniqueTsns = [...new Set(tsns)];
-
-    const measurements = await Promise.all(
-      uniqueTsns.map((tsn) => this.surveyCritterService.critterbaseService.getTaxonMeasurements(String(tsn)))
-    );
-
-    // Note: This makes the assumption that a qualitative measurement and a quantitative measurement
-    // will not have the same measurement name for a given TSN.
-    uniqueTsns.forEach((tsn, index) => {
-      const qualitativeMeasurements = measurements[index].qualitative;
-      const quantitativeMeasurements = measurements[index].quantitative;
-
-      qualitativeMeasurements.forEach((measurement) => {
-        measurementDictionary.set({
-          path: [tsn, measurement.measurement_name],
-          value: measurement
-        });
-      });
-
-      quantitativeMeasurements.forEach((measurement) => {
-        measurementDictionary.set({
-          path: [tsn, measurement.measurement_name],
-          value: measurement
-        });
-      });
-    });
-
-    return measurementDictionary;
   }
 }

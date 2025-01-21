@@ -46,38 +46,38 @@ export const getDynamicMeasurementCellValidator = (
     if (!taxonMeasurements) {
       return [
         {
-          error: `Taxon: ${critterTsn} has no reference measurements`,
+          error: `Taxon has no reference measurements`,
           solution: 'Make sure the taxon has reference measurements'
         }
       ];
     }
 
-    const headerMeasurement = tsnMeasurementDictionary.get(critterTsn, params.header);
+    const measurement = tsnMeasurementDictionary.get(critterTsn, params.header);
 
-    if (!headerMeasurement) {
+    if (!measurement) {
       return [
         {
-          error: `Measurement '${params.header}' does not exist for this taxon`,
-          solution: 'Use a valid measurement for this taxon',
+          error: `Measurement '${params.header}' does not exist`,
+          solution: 'Use a valid taxon measurement as a header',
           values: Object.keys(taxonMeasurements)
         }
       ];
     }
 
     // Validate the cell based on the measurement type from the header
-    if (isCBQualitativeMeasurementTypeDefinition(headerMeasurement)) {
-      return getQualitativeMeasurementCellValidator(headerMeasurement)(params);
+    if (isCBQualitativeMeasurementTypeDefinition(measurement)) {
+      return getQualitativeMeasurementCellValidator(measurement)(params);
     }
 
-    if (isCBQuantitativeMeasurementTypeDefinition(headerMeasurement)) {
-      return getQuantitativeMeasurementCellValidator(headerMeasurement)(params);
+    if (isCBQuantitativeMeasurementTypeDefinition(measurement)) {
+      return getQuantitativeMeasurementCellValidator(measurement)(params);
     }
 
-    // TODO: What is the correct error message for this path?
+    // Can this path ever be reached?
     return [
       {
         error: 'Invalid measurement type',
-        solution: 'Use a valid measurement type'
+        solution: 'Use a supported measurement type'
       }
     ];
   };

@@ -4,6 +4,7 @@ import * as csv from '../../../utils/csv-utils/csv-config-validation';
 import { CSVRowState } from '../../../utils/csv-utils/csv-config-validation.interface';
 import { NestedRecord } from '../../../utils/nested-record';
 import { getMockDBConnection } from '../../../__mocks__/db';
+import * as measurementUtils from '../utils/measurement';
 import { ImportMeasurementsService } from './import-measurements-service';
 
 describe('import-measurements-service', () => {
@@ -92,7 +93,7 @@ describe('import-measurements-service', () => {
 
       sinon.stub(importMeasurementsService.surveyCritterService, 'getSurveyCritterAliasMap').resolves(new Map());
       sinon.stub(importMeasurementsService, '_getWorksheetTsns').returns([1]);
-      sinon.stub(importMeasurementsService, '_getTsnMeasurementDictionary').resolves(new NestedRecord());
+      sinon.stub(measurementUtils, 'getTsnMeasurementDictionary').resolves(new NestedRecord());
 
       const result = await importMeasurementsService.getCSVConfig();
 
@@ -121,31 +122,6 @@ describe('import-measurements-service', () => {
 
       expect(result.length).to.be.equal(1);
       expect(result[0]).to.equal(1);
-    });
-  });
-
-  describe('_getTsnMeasurementDictionary', () => {
-    it('should get the tsn measurement dictionary', async () => {
-      const connection = getMockDBConnection();
-      const importMeasurementsService = new ImportMeasurementsService(connection, {}, 1);
-
-      const measurements = {
-        qualitative: [{ measurement_name: 'qualitative' }],
-        quantitative: [{ measurement_name: 'quantitative' }]
-      };
-
-      const getTaxonMeasurementsStub = sinon.stub(
-        importMeasurementsService.surveyCritterService.critterbaseService,
-        'getTaxonMeasurements'
-      );
-
-      getTaxonMeasurementsStub.resolves(measurements as any);
-
-      const result = await importMeasurementsService._getTsnMeasurementDictionary([1]);
-
-      expect(getTaxonMeasurementsStub).to.have.been.calledOnceWith('1');
-      expect(result.get(1, 'qualitative')).to.deep.equal({ measurement_name: 'qualitative' });
-      expect(result.get(1, 'quantitative')).to.deep.equal({ measurement_name: 'quantitative' });
     });
   });
 });

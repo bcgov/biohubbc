@@ -6,7 +6,7 @@ import { getCritterCaptureRowValidator } from './critter-capture-row-validator';
 
 chai.use(sinonChai);
 
-describe.only('getCritterCaptureRowValidator', () => {
+describe('getCritterCaptureRowValidator', () => {
   afterEach(() => {
     sinon.restore();
   });
