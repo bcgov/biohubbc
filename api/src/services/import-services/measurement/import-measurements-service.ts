@@ -89,24 +89,24 @@ export class ImportMeasurementsService extends DBService {
     for (const row of rows) {
       this.utils.worksheetDynamicHeaders.forEach((header) => {
         const state = row[CSVRowState];
-        const measurement = state?.[header];
+        const stateMeasurement = state?.[header];
 
         // Grab the qualitative measurement from the row
-        if (isCBQualitativeMeasurement(measurement)) {
+        if (isCBQualitativeMeasurement(stateMeasurement)) {
           qualitativeMeasurements.push({
             critter_id: state?.critter_id,
             capture_id: state?.capture_id,
-            taxon_measurement_id: measurement.taxon_measurement_id,
-            qualitative_option_id: measurement.qualitative_option_id
+            taxon_measurement_id: stateMeasurement.taxon_measurement_id,
+            qualitative_option_id: stateMeasurement.qualitative_option_id
           });
         }
         // Grab the quantitative measurement from the row
-        else if (isCBQuantitativeMeasurement(measurement)) {
+        else if (isCBQuantitativeMeasurement(stateMeasurement)) {
           quantitativeMeasurements.push({
             critter_id: state?.critter_id,
             capture_id: state?.capture_id,
-            taxon_measurement_id: measurement.taxon_measurement_id,
-            value: measurement.value
+            taxon_measurement_id: stateMeasurement.taxon_measurement_id,
+            value: stateMeasurement.value
           });
         }
       });
@@ -154,19 +154,23 @@ export class ImportMeasurementsService extends DBService {
   }
 
   /**
-   * Get the CSV worksheet TSN's.
+   * Get the CSV worksheet TSN's Set.
    *
    * @param {Map<string, ICritterDetailed>} surveyAliasMap - Survey alias map
    * @returns {*} {number[]} List of ITIS TSN's
    */
   _getWorksheetTsns(surveyAliasMap: Map<string, ICritterDetailed>): number[] {
-    const aliases = this.utils.getUniqueCellValues('ALIAS');
+    const tsns: number[] = [];
 
-    const critters = aliases
-      .map((alias) => surveyAliasMap.get(String(alias).toLowerCase()))
-      .filter(Boolean) as ICritterDetailed[];
+    for (const alias of this.utils.getUniqueCellValues('ALIAS')) {
+      const critter = surveyAliasMap.get(String(alias).toLowerCase());
 
-    return critters.map((critter) => critter?.itis_tsn);
+      if (critter) {
+        tsns.push(critter.itis_tsn);
+      }
+    }
+
+    return tsns;
   }
 
   /**
@@ -180,7 +184,6 @@ export class ImportMeasurementsService extends DBService {
     const measurementDictionary = new NestedRecord<
       CBQualitativeMeasurementTypeDefinition | CBQuantitativeMeasurementTypeDefinition
     >();
-
     const uniqueTsns = [...new Set(tsns)];
 
     const measurements = await Promise.all(

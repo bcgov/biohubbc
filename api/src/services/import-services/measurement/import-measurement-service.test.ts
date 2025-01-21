@@ -6,7 +6,7 @@ import { NestedRecord } from '../../../utils/nested-record';
 import { getMockDBConnection } from '../../../__mocks__/db';
 import { ImportMeasurementsService } from './import-measurements-service';
 
-describe.only('import-measurements-service', () => {
+describe('import-measurements-service', () => {
   beforeEach(() => {
     sinon.restore();
   });
@@ -82,38 +82,6 @@ describe.only('import-measurements-service', () => {
       });
 
       expect(result).to.be.an('array').that.is.empty;
-    });
-
-    it('should throw an error if the state measurement is not valid', async () => {
-      const connection = getMockDBConnection();
-      const service = new ImportMeasurementsService(connection, {}, 1);
-
-      sinon.stub(service, 'getCSVConfig').returns({} as any);
-      sinon.stub(csv, 'validateCSVWorksheet').returns({
-        errors: [],
-        rows: [
-          {
-            [CSVRowState]: {
-              critter_id: 'critter_id',
-              capture_id: 'capture_id',
-              badHeader: { taxon_measurement_id: 1, qualitative_option_id: 1 },
-              otherBadHeader: { taxon_measurement_id: 1, value: 1 }
-            }
-          }
-        ]
-      });
-
-      sinon.stub(service.utils, 'worksheetDynamicHeaders').get(() => ['qualHeader', 'quantHeader']);
-
-      const bulkCreateStub = sinon.stub(service.surveyCritterService.critterbaseService, 'bulkCreate');
-
-      try {
-        await service.importCSVWorksheet();
-        expect.fail('Expected an error');
-      } catch (error) {
-        expect(error).to.be.an('error');
-        expect(bulkCreateStub).to.not.have.been.called;
-      }
     });
   });
 

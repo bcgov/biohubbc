@@ -49,8 +49,8 @@ export const getCritterCaptureRowValidator = (
     if (!critter) {
       return [
         {
-          error: `Unable to find a matching survey critter`,
-          solution: `Use a valid critter alias that exists in the Survey`,
+          error: `Unable to find a matching survey animal`,
+          solution: `Use a valid critter alias that exists in the survey`,
           header: utils.getWorksheetHeader(headers.alias, params.row),
           cell: alias
         }
