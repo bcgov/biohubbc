@@ -246,7 +246,7 @@ objects:
           storage: '${VOLUME_CAPACITY}'
 
   - kind: Deployment
-    apiVersion: apps.openshift.io/v1
+    apiVersion: apps/v1
     metadata:
       annotations:
         openshift.io/generated-by: OpenShiftWebConsole
@@ -671,8 +671,8 @@ objects:
   #     minReplicas: ${{REPLICAS}}
   #     maxReplicas: ${{REPLICAS_MAX}}
   #     scaleTargetRef:
-  #       apiVersion: apps.openshift.io/v1
   #       kind: Deployment
+  #       apiVersion: apps/v1
   #       name: ${NAME}${SUFFIX}
   #     metrics:
   #       - type: Resource

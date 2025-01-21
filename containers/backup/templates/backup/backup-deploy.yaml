@@ -335,7 +335,7 @@ objects:
       ftp-url-host: ${FTP_URL_HOST}
 
   - kind: Deployment
-    apiVersion: apps.openshift.io/v1
+    apiVersion: apps/v1
     metadata:
       name: ${NAME}
       labels:

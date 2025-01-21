@@ -125,7 +125,7 @@ objects:
         local: false
 
   - kind: Deployment
-    apiVersion: apps.openshift.io/v1
+    apiVersion: apps/v1
     metadata:
       annotations:
         template.alpha.openshift.io/wait-for-ready: 'true'
