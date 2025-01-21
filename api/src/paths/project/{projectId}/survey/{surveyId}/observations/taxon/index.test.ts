@@ -5,7 +5,7 @@ import sinonChai from 'sinon-chai';
 import { getSurveyObservedSpecies } from '.';
 import * as db from '../../../../../../../database/db';
 import { HTTPError } from '../../../../../../../errors/http-error';
-import { ObservationService } from '../../../../../../../services/observation-service';
+import { ObservationService } from '../../../../../../../services/observation-services/observation-service';
 import { PlatformService } from '../../../../../../../services/platform-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../__mocks__/db';
 

@@ -1,19 +1,20 @@
 import { GridRenderCellParams, GridValidRowModel } from '@mui/x-data-grid';
 import TextFieldDataGrid from 'components/data-grid/TextFieldDataGrid';
-import { getCurrentMethod } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/utils';
-import { SampleLocationCache } from 'features/surveys/observations/observations-table/ObservationsTableContainer';
+import { SamplingInformationCache } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/useSamplingInformationCache';
 import { useCodesContext } from 'hooks/useContext';
-import { MutableRefObject } from 'react';
 import { getCodesName } from 'utils/Utils';
 
 export interface IPartialObservationCountDataGridEditCellProps<DataGridType extends GridValidRowModel> {
   dataGridProps: GridRenderCellParams<DataGridType>;
-  cachedSampleLocationsRef: MutableRefObject<SampleLocationCache | undefined>;
+  samplingInformationCache: SamplingInformationCache;
+
   error?: boolean;
 }
 
+const RESPONSE_METRIC_PRESENCE_ABSENCE = 'Presence-absence';
+
 /**
- *
+ * Count data grid component for edit.
  *
  * @template DataGridType
  * @param {IPartialObservationCountDataGridEditCellProps<DataGridType>} props
@@ -22,25 +23,26 @@ export interface IPartialObservationCountDataGridEditCellProps<DataGridType exte
 export const ObservationCountDataGridEditCell = <DataGridType extends GridValidRowModel>(
   props: IPartialObservationCountDataGridEditCellProps<DataGridType>
 ) => {
-  const { dataGridProps, cachedSampleLocationsRef, error } = props;
+  const { dataGridProps, samplingInformationCache, error } = props;
 
   const codesContext = useCodesContext();
 
   const getResponseMetric = () => {
-    const currentMethod = getCurrentMethod(dataGridProps, cachedSampleLocationsRef);
+    const currentTechnique = samplingInformationCache.getCurrentTechnique(dataGridProps);
 
-    if (!currentMethod) {
+    if (!currentTechnique) {
       return null;
     }
 
     return getCodesName(
       codesContext.codesDataLoader.data,
       'method_response_metrics',
-      currentMethod.method_response_metric_id
+      currentTechnique.method_response_metric_id
     );
   };
 
-  const maxCount = getResponseMetric() === 'Presence-absence' ? 1 : undefined;
+  // Set the max count to 1, if the response metric is 'Presence-absence'
+  const maxCount = getResponseMetric() === RESPONSE_METRIC_PRESENCE_ABSENCE ? 1 : undefined;
 
   return (
     <TextFieldDataGrid

@@ -3,7 +3,7 @@ import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { ObservationService } from '../../../../../../services/observation-service';
+import { ObservationService } from '../../../../../../services/observation-services/observation-service';
 import { getLogger } from '../../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/delete');
@@ -48,7 +48,7 @@ POST.apiDoc = {
     }
   ],
   requestBody: {
-    description: 'Survey observation record data',
+    description: 'Survey observation IDs to delete.',
     required: true,
     content: {
       'application/json': {
@@ -76,30 +76,8 @@ POST.apiDoc = {
     }
   },
   responses: {
-    200: {
-      description: 'Delete OK',
-      content: {
-        'application/json': {
-          schema: {
-            type: 'object',
-            additionalProperties: false,
-            required: ['supplementaryObservationData'],
-            properties: {
-              supplementaryObservationData: {
-                type: 'object',
-                additionalProperties: false,
-                required: ['observationCount'],
-                properties: {
-                  observationCount: {
-                    type: 'integer',
-                    minimum: 0
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+    204: {
+      description: 'Delete OK'
     },
     400: {
       $ref: '#/components/responses/400'
@@ -143,11 +121,9 @@ export function deleteSurveyObservations(): RequestHandler {
 
       await observationService.deleteObservationsByIds(surveyId, deleteObservationIds);
 
-      const observationCount = await observationService.getSurveyObservationCount(surveyId);
-
       await connection.commit();
 
-      return res.status(200).json({ supplementaryObservationData: { observationCount } });
+      return res.status(204).send();
     } catch (error) {
       defaultLog.error({ label: 'deleteSurveyObservations', message: 'error', error });
       await connection.rollback();

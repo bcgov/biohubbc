@@ -279,6 +279,6 @@ function parseQueryParams(
     itis_tsn: (req.query.itis_tsn && Number(req.query.itis_tsn)) ?? undefined,
     start_date: req.query.start_date ?? undefined,
     end_date: req.query.end_date ?? undefined,
-    system_user_id: req.query.system_user_id ?? undefined
+    system_user_id: (req.query.system_user_id && Number(req.query.system_user_id)) ?? undefined
   };
 }

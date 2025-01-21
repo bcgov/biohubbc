@@ -25,6 +25,7 @@ describe('TechniqueRepository', () => {
         name: 'name',
         description: 'desc',
         distance_threshold: 200,
+        method_response_metric_id: 3,
         attractants: [],
         attributes: {
           qualitative_attributes: [],
@@ -55,6 +56,7 @@ describe('TechniqueRepository', () => {
         name: 'name',
         description: 'desc',
         distance_threshold: 200,
+        method_response_metric_id: 3,
         attractants: [],
         attributes: {
           qualitative_attributes: [],
@@ -108,7 +110,8 @@ describe('TechniqueRepository', () => {
         name: 'name',
         description: 'desc',
         distance_threshold: 200,
-        method_lookup_id: 2
+        method_lookup_id: 2,
+        method_response_metric_id: 3
       };
 
       const response = await repository.insertTechnique(surveyId, techniqueObject);
@@ -132,7 +135,8 @@ describe('TechniqueRepository', () => {
         name: 'name',
         description: 'desc',
         distance_threshold: 200,
-        method_lookup_id: 2
+        method_lookup_id: 2,
+        method_response_metric_id: 3
       };
 
       const response = await repository.updateTechnique(surveyId, techniqueObject);
