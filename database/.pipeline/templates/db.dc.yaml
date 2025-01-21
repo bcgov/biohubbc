@@ -124,7 +124,7 @@ objects:
       lookupPolicy:
         local: false
 
-  - kind: DeploymentConfig
+  - kind: Deployment
     apiVersion: apps.openshift.io/v1
     metadata:
       annotations:

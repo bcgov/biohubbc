@@ -25,7 +25,7 @@ parameters:
     value: dev
 objects:
   - apiVersion: apps.openshift.io/v1
-    kind: DeploymentConfig
+    kind: Deployment
     metadata:
       creationTimestamp:
       labels:
@@ -36,7 +36,7 @@ objects:
       replicas: 1
       selector:
         app: "${NAME}"
-        deploymentconfig: "${NAME}"
+        deployment: "${NAME}"
       strategy:
         rollingParams:
           intervalSeconds: 1
@@ -51,7 +51,7 @@ objects:
           labels:
             app: "${NAME}"
             role: "${ROLE_NAME}"
-            deploymentconfig: "${NAME}"
+            deployment: "${NAME}"
         spec:
           containers:
             - image: "${NAME}"
@@ -105,6 +105,6 @@ objects:
           targetPort: 3310
       selector:
         app: "${NAME}"
-        deploymentconfig: "${NAME}"
+        deployment: "${NAME}"
       sessionAffinity: None
       type: ClusterIP

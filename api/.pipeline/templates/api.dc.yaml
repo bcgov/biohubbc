@@ -245,7 +245,7 @@ objects:
         requests:
           storage: '${VOLUME_CAPACITY}'
 
-  - kind: DeploymentConfig
+  - kind: Deployment
     apiVersion: apps.openshift.io/v1
     metadata:
       annotations:
@@ -258,7 +258,7 @@ objects:
       replicas: ${{REPLICAS}}
       revisionHistoryLimit: 10
       selector:
-        deploymentConfig: ${NAME}${SUFFIX}
+        deployment: ${NAME}${SUFFIX}
       strategy:
         activeDeadlineSeconds: 21600
         recreateParams:
@@ -275,7 +275,7 @@ objects:
         metadata:
           annotations: null
           labels:
-            deploymentConfig: ${NAME}${SUFFIX}
+            deployment: ${NAME}${SUFFIX}
             role: api
         spec:
           containers:
@@ -542,7 +542,7 @@ objects:
           protocol: TCP
           targetPort: ${{API_PORT_DEFAULT}}
       selector:
-        deploymentconfig: ${NAME}${SUFFIX}
+        deployment: ${NAME}${SUFFIX}
       sessionAffinity: None
       type: ClusterIP
     status:
@@ -594,7 +594,6 @@ objects:
                 - name: api
                   image: ${BASE_IMAGE_REGISTRY_URL}/${NAMESPACE}/${NAME}:${VERSION}
                   imagePullPolicy: Always
-                  restartPolicy: 'Never'
                   terminationGracePeriodSeconds: 30
                   activeDeadlineSeconds: 220
                   env:
@@ -659,9 +658,7 @@ objects:
                       value: ${API_RESPONSE_VALIDATION_ENABLED}
                     - name: DATABASE_RESPONSE_VALIDATION_ENABLED
                       value: ${DATABASE_RESPONSE_VALIDATION_ENABLED}
-                  command: ["npm", "run", "telemetry-cronjob", "--", "--batchSize 1000", "--concurrently 100"]
-              restartPolicy: Never
-
+                  command: ['npm', 'run', 'telemetry-cronjob', '--', '--batchSize 1000', '--concurrently 100']
 
   # Disable the HPA for now, as it is preferrable to run an exact number of pods (e.g. min:2, max:2)
   # - kind: HorizontalPodAutoscaler
@@ -675,7 +672,7 @@ objects:
   #     maxReplicas: ${{REPLICAS_MAX}}
   #     scaleTargetRef:
   #       apiVersion: apps.openshift.io/v1
-  #       kind: DeploymentConfig
+  #       kind: Deployment
   #       name: ${NAME}${SUFFIX}
   #     metrics:
   #       - type: Resource
