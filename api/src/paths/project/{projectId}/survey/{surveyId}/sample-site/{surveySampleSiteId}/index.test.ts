@@ -2,12 +2,11 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { deleteSurveySampleSiteRecord, getSurveySampleLocationRecord, updateSurveySampleSite } from '.';
+import { deleteSurveySampleSiteRecord, getSurveySampleSite, updateSurveySampleSite } from '.';
 import * as db from '../../../../../../../database/db';
 import { HTTPError } from '../../../../../../../errors/http-error';
-import { UpdateSampleSiteRecord } from '../../../../../../../repositories/sample-location-repository/sample-location-repository';
-import { ObservationService } from '../../../../../../../services/observation-service';
-import { SampleLocationService } from '../../../../../../../services/sample-location-service';
+import { ObservationService } from '../../../../../../../services/observation-services/observation-service';
+import { SampleSiteService, UpdateSampleSiteObject } from '../../../../../../../services/sample-site-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../__mocks__/db';
 
 chai.use(sinonChai);
@@ -17,7 +16,7 @@ describe('updateSurveySampleSite', () => {
     sinon.restore();
   });
 
-  it('should catch and re-throw an error if SampleLocationService throws an error', async () => {
+  it('should catch and re-throw an error if SampleSiteService throws an error', async () => {
     const dbConnectionObj = getMockDBConnection();
 
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
@@ -29,31 +28,23 @@ describe('updateSurveySampleSite', () => {
       surveySampleSiteId: '2'
     };
 
-    mockReq.body = {
-      sampleSite: {
-        survey_id: 1,
-        survey_sample_site_id: 1,
-        name: 'name',
-        description: 'description',
-        geojson: {
-          type: 'Feature',
-          geometry: { type: 'Point', coordinates: [0, 0] },
-          properties: {},
-          id: 'testid1'
-        },
-        geography: 'geography',
-        create_date: 'create_date',
-        create_user: 1,
-        update_date: 'update_date',
-        update_user: 2,
-        revision_count: 1,
-        sample_methods: [],
-        blocks: [],
-        stratums: []
-      } as UpdateSampleSiteRecord
+    const body: UpdateSampleSiteObject = {
+      survey_sample_site_id: 1,
+      name: 'name',
+      description: 'description',
+      geojson: {
+        type: 'Feature',
+        geometry: { type: 'Point', coordinates: [0, 0] },
+        properties: {},
+        id: 'testid1'
+      },
+      blocks: [],
+      stratums: []
     };
 
-    sinon.stub(SampleLocationService.prototype, 'updateSampleLocationMethodPeriod').rejects(new Error('an error'));
+    mockReq.body = body;
+
+    sinon.stub(SampleSiteService.prototype, 'updateSampleSite').rejects(new Error('an error'));
 
     try {
       const requestHandler = updateSurveySampleSite();
@@ -65,8 +56,8 @@ describe('updateSurveySampleSite', () => {
     }
   });
 
-  it('should return sampleLocations on success', async () => {
-    const dbConnectionObj = getMockDBConnection();
+  it('should successfully update a survey sample site', async () => {
+    const dbConnectionObj = getMockDBConnection({ commit: sinon.stub(), release: sinon.stub() });
 
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
@@ -77,40 +68,32 @@ describe('updateSurveySampleSite', () => {
       surveySampleSiteId: '2'
     };
 
-    mockReq.body = {
-      sampleSite: {
-        survey_id: 1001,
-        survey_sample_site_id: 2,
-        name: 'name',
-        description: 'description',
-        geojson: {
-          type: 'Feature',
-          geometry: { type: 'Point', coordinates: [0, 0] },
-          properties: {},
-          id: 'testid1'
-        },
-        geography: 'geography',
-        create_date: 'create_date',
-        create_user: 1,
-        update_date: 'update_date',
-        update_user: 2,
-        revision_count: 1,
-        sample_methods: [],
-        blocks: [],
-        stratums: []
-      } as UpdateSampleSiteRecord
+    const body: UpdateSampleSiteObject = {
+      survey_sample_site_id: 1001,
+      name: 'name',
+      description: 'description',
+      geojson: {
+        type: 'Feature',
+        geometry: { type: 'Point', coordinates: [0, 0] },
+        properties: {},
+        id: 'testid1'
+      },
+      blocks: [],
+      stratums: []
     };
 
-    const updateSampleLocationMethodPeriodStub = sinon
-      .stub(SampleLocationService.prototype, 'updateSampleLocationMethodPeriod')
-      .resolves();
+    mockReq.body = body;
+
+    sinon.stub(SampleSiteService.prototype, 'updateSampleSite').resolves();
 
     const requestHandler = updateSurveySampleSite();
 
     await requestHandler(mockReq, mockRes, mockNext);
 
-    expect(updateSampleLocationMethodPeriodStub).to.have.been.calledOnceWithExactly(1001, mockReq.body.sampleSite);
-    expect(mockRes.status).to.have.been.calledWith(204);
+    expect(mockRes.status).to.have.been.calledOnceWith(204);
+
+    expect(dbConnectionObj.commit).to.have.been.calledOnce;
+    expect(dbConnectionObj.release).to.have.been.calledOnce;
   });
 });
 
@@ -155,9 +138,7 @@ describe('deleteSurveySampleSiteRecord', () => {
       .stub(ObservationService.prototype, 'getObservationsCountBySampleSiteIds')
       .resolves(0);
 
-    const deleteSampleLocationRecordStub = sinon
-      .stub(SampleLocationService.prototype, 'deleteSampleSiteRecord')
-      .resolves();
+    const deleteSampleSiteRecordStub = sinon.stub(SampleSiteService.prototype, 'deleteSampleSiteRecord').resolves();
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -175,7 +156,7 @@ describe('deleteSurveySampleSiteRecord', () => {
     await requestHandler(mockReq, mockRes, mockNext);
 
     expect(mockRes.status).to.have.been.calledWith(204);
-    expect(deleteSampleLocationRecordStub).to.have.been.calledOnce;
+    expect(deleteSampleSiteRecordStub).to.have.been.calledOnce;
     expect(getObservationsCountBySampleSiteIdStub).to.have.been.calledOnce;
   });
 
@@ -186,9 +167,7 @@ describe('deleteSurveySampleSiteRecord', () => {
       .stub(ObservationService.prototype, 'getObservationsCountBySampleSiteIds')
       .resolves(0);
 
-    const deleteSampleLocationRecordStub = sinon
-      .stub(SampleLocationService.prototype, 'deleteSampleSiteRecord')
-      .resolves();
+    const deleteSampleSiteRecordStub = sinon.stub(SampleSiteService.prototype, 'deleteSampleSiteRecord').resolves();
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -206,22 +185,22 @@ describe('deleteSurveySampleSiteRecord', () => {
     await requestHandler(mockReq, mockRes, mockNext);
 
     expect(mockRes.status).to.have.been.calledWith(204);
-    expect(deleteSampleLocationRecordStub).to.have.been.calledOnce;
+    expect(deleteSampleSiteRecordStub).to.have.been.calledOnce;
     expect(getObservationsCountBySampleSiteIdStub).to.have.been.calledOnce;
   });
 });
 
-describe('getSurveySampleLocationRecord', () => {
+describe('getSurveySampleSite', () => {
   afterEach(() => {
     sinon.restore();
   });
 
-  it('should successfully get a sample location record', async () => {
+  it('should successfully get a sample site record', async () => {
     const dbConnectionObj = getMockDBConnection();
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-    const getSurveySampleLocationBySiteIdStub = sinon
-      .stub(SampleLocationService.prototype, 'getSurveySampleLocationBySiteId')
+    const getSurveySampleSiteBySiteIdStub = sinon
+      .stub(SampleSiteService.prototype, 'getSurveySampleSiteBySiteId')
       .resolves();
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
@@ -231,12 +210,12 @@ describe('getSurveySampleLocationRecord', () => {
       surveySampleSiteId: '2'
     };
 
-    const requestHandler = getSurveySampleLocationRecord();
+    const requestHandler = getSurveySampleSite();
 
     await requestHandler(mockReq, mockRes, mockNext);
 
     expect(mockRes.status).to.have.been.calledWith(200);
-    expect(getSurveySampleLocationBySiteIdStub).to.have.been.calledOnce;
+    expect(getSurveySampleSiteBySiteIdStub).to.have.been.calledOnce;
   });
 
   it('catches and re-throws error', async () => {
@@ -248,7 +227,7 @@ describe('getSurveySampleLocationRecord', () => {
 
     const mockError = new Error('a test error');
 
-    sinon.stub(SampleLocationService.prototype, 'getSurveySampleLocationBySiteId').rejects(mockError);
+    sinon.stub(SampleSiteService.prototype, 'getSurveySampleSiteBySiteId').rejects(mockError);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -257,7 +236,7 @@ describe('getSurveySampleLocationRecord', () => {
       surveySampleSiteId: '2'
     };
 
-    const requestHandler = getSurveySampleLocationRecord();
+    const requestHandler = getSurveySampleSite();
 
     try {
       await requestHandler(mockReq, mockRes, mockNext);

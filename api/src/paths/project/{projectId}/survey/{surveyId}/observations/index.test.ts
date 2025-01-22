@@ -6,7 +6,7 @@ import * as db from '../../../../../../database/db';
 import { HTTPError } from '../../../../../../errors/http-error';
 import { ObservationRecordWithSamplingAndSubcountData } from '../../../../../../repositories/observation-repository/observation-repository';
 import { CritterbaseService } from '../../../../../../services/critterbase-service';
-import { ObservationService } from '../../../../../../services/observation-service';
+import { ObservationService } from '../../../../../../services/observation-services/observation-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
 import * as observationRecords from './index';
 
@@ -161,7 +161,7 @@ describe('getSurveyObservations', () => {
           quantitative_measurements: [],
           qualitative_environments: [],
           quantitative_environments: [],
-          sample_sites: []
+          sampling_data: []
         }
       });
 
@@ -192,7 +192,7 @@ describe('getSurveyObservations', () => {
         quantitative_measurements: [],
         qualitative_environments: [],
         quantitative_environments: [],
-        sample_sites: []
+        sampling_data: []
       },
       pagination: {
         total: 59,
@@ -223,7 +223,7 @@ describe('getSurveyObservations', () => {
           quantitative_measurements: [],
           qualitative_environments: [],
           quantitative_environments: [],
-          sample_sites: []
+          sampling_data: []
         }
       });
 
@@ -252,7 +252,7 @@ describe('getSurveyObservations', () => {
         quantitative_measurements: [],
         qualitative_environments: [],
         quantitative_environments: [],
-        sample_sites: []
+        sampling_data: []
       },
       pagination: {
         total: 50,
@@ -283,7 +283,7 @@ describe('getSurveyObservations', () => {
           quantitative_measurements: [],
           qualitative_environments: [],
           quantitative_environments: [],
-          sample_sites: []
+          sampling_data: []
         }
       });
 
@@ -307,7 +307,7 @@ describe('getSurveyObservations', () => {
         quantitative_measurements: [],
         qualitative_environments: [],
         quantitative_environments: [],
-        sample_sites: []
+        sampling_data: []
       },
       pagination: {
         total: 2,

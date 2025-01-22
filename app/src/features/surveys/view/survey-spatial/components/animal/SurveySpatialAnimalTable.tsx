@@ -105,7 +105,7 @@ export const SurveySpatialAnimalTable = (props: ISurveyDataAnimalTableProps) => 
         columns={columns}
         initialState={{
           pagination: {
-            paginationModel: { page: 1, pageSize: 5 }
+            paginationModel: { page: 0, pageSize: 5 }
           }
         }}
         pageSizeOptions={[5]}
