@@ -446,7 +446,7 @@ objects:
                   value: ${GCNOTIFY_SMS_URL}
                 - name: FEATURE_FLAGS
                   value: ${FEATURE_FLAGS}
-              image: ' '
+              image: ${BASE_IMAGE_REGISTRY_URL}/${NAMESPACE}/${NAME}:${VERSION}
               imagePullPolicy: Always
               ports:
                 - containerPort: ${{API_PORT_DEFAULT}}
@@ -493,16 +493,6 @@ objects:
               persistentVolumeClaim:
                 claimName: ${NAME}${SUFFIX}
       test: false
-      triggers:
-        - imageChangeParams:
-            automatic: true
-            containerNames:
-              - api
-            from:
-              kind: ImageStreamTag
-              name: ${NAME}:${VERSION}
-          type: ImageChange
-        - type: ConfigChange
     status:
       availableReplicas: 0
       latestVersion: 0
