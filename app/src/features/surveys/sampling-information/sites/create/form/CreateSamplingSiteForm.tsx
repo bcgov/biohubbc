@@ -14,9 +14,9 @@ import useDataLoader from 'hooks/useDataLoader';
 import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import yup from 'utils/YupSchema';
+import { v4 } from 'uuid';
 import CreateBlocksDialog, { BlocksFormYupSchema } from '../../blocks/create/CreateBlockDialog';
 import { ICreateSampleSiteFormData } from '../CreateSamplingSitePage.interface';
-import { BlockForm } from './CreateSamplingSiteForm.interface';
 import CreateSamplingSiteMapControlForm from './map/CreatingSamplingSiteMapControlForm';
 
 export const CreateSamplingSiteFormYupSchema = yup.object({
@@ -29,13 +29,16 @@ export const CreateSamplingSiteFormYupSchema = yup.object({
       })
     )
     .min(1, 'At least one sampling site location is required'),
-  blocks: BlocksFormYupSchema
+  blocks: BlocksFormYupSchema,
+  site_block_assignments: yup
+    .array(
+      yup.object({
+        site_assignment_id: yup.string(),
+        block_assignment_id: yup.string()
+      })
+    )
+    .min(1, 'At least one sampling site location is required')
 });
-
-const initialBlocksValues: BlockForm = {
-  blocks: [],
-  site_block_assignments: []
-}
 
 interface ICreateSamplingSiteFormProps {
   isSubmitting: boolean;
@@ -44,7 +47,7 @@ interface ICreateSamplingSiteFormProps {
 const CreateSamplingSiteForm = ({ isSubmitting }: ICreateSamplingSiteFormProps) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const biohubApi = useBiohubApi();
-  const { submitForm } = useFormikContext<ICreateSampleSiteFormData>();
+  const { submitForm, values } = useFormikContext<ICreateSampleSiteFormData>();
   const surveyContext = useSurveyContext();
   const history = useHistory();
 
@@ -62,13 +65,15 @@ const CreateSamplingSiteForm = ({ isSubmitting }: ICreateSamplingSiteFormProps) 
         handleClose={() => setIsDialogOpen(false)}
         handleSave={() => {}}
         isDialogOpen={isDialogOpen}
-        initialValues={initialBlocksValues}
+        initialValues={values}
       />
 
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <Paper sx={{ p: 5 }}>
           <HorizontalSplitFormComponent title="Site Locations" summary="Import or draw the locations of sampling sites">
-            <CreateSamplingSiteMapControlForm blocks={samplingBlocksDataLoader.data?.blocks ?? []} />
+            <CreateSamplingSiteMapControlForm
+              blocks={samplingBlocksDataLoader.data?.blocks.map((block) => ({ ...block, assignment_id: v4() })) ?? []}
+            />
           </HorizontalSplitFormComponent>
 
           <Divider sx={{ my: 5 }} />

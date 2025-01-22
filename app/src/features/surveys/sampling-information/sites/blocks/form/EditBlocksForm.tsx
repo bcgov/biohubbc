@@ -13,6 +13,7 @@ import { createRef, useState } from 'react';
 import { shapeFileFeatureDesc, shapeFileFeatureName } from 'utils/Utils';
 import { v4 } from 'uuid';
 import { ICreateSampleSiteFormData } from '../../create/CreateSamplingSitePage.interface';
+import { SamplingBlockForm } from './sample-site/SamplingSiteBlockForm';
 
 /**
  * Edit multiple survey blocks - map control
@@ -21,6 +22,7 @@ import { ICreateSampleSiteFormData } from '../../create/CreateSamplingSitePage.i
  */
 const EditBlocksForm = () => {
   const formikProps = useFormikContext<ICreateSampleSiteFormData>();
+
   const { handleSubmit, values, setFieldValue } = formikProps;
   const dialogContext = useDialogContext();
 
@@ -97,12 +99,14 @@ const EditBlocksForm = () => {
 
   const features = values.blocks.map((block) => block.geojson).filter((block) => block !== undefined && block !== null);
 
+  console.log('values', values)
+
   return (
     <form onSubmit={handleSubmit}>
       <Paper variant="outlined" sx={{ overflow: 'hidden' }}>
         <ImportDrawMapControl
           mapId="survey-block-map"
-          label="Cluster"
+          label="Clusters"
           drawControlsRef={drawRef}
           features={features.length ? features : []}
           handleImport={handleImport}
@@ -121,12 +125,12 @@ const EditBlocksForm = () => {
           <CollapsibleCardList
             items={values.blocks.map((block) => ({
               geojson: block.geojson ?? null,
-              uuid: block.uuid ?? undefined,
+              uuid: block.assignment_id ?? undefined,
               label: block.name ?? 'Block 1'
             }))}
             selectedItems={selectedFeatures.map((feature) => ({
               geojson: feature,
-              uuid: values.blocks.find((block) => block.geojson?.id === feature.id)?.uuid,
+              uuid: values.blocks.find((block) => block.geojson?.id === feature.id)?.assignment_id,
               label: values.blocks.find((block) => block.geojson?.id === feature.id)?.name ?? ''
             }))}
             onSelectItem={(feature) => {
@@ -137,7 +141,7 @@ const EditBlocksForm = () => {
             renderCardContent={() => (
               <>
                 {values.blocks.map((block, index) => (
-                  <Box key={block.uuid || index}>
+                  <Box key={block.assignment_id || index}>
                     <CustomTextField label="Name" name={`blocks[${index}].name`} />
                     <Box mt={3}>
                       <CustomTextField
@@ -145,6 +149,9 @@ const EditBlocksForm = () => {
                         name={`blocks[${index}].description`}
                         other={{ rows: 2, multiline: true }}
                       />
+                    </Box>
+                    <Box mt={3}>
+                      <SamplingBlockForm assignment_id={block.assignment_id} sites={values.survey_sample_sites} />
                     </Box>
                   </Box>
                 ))}

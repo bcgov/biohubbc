@@ -2,12 +2,12 @@ import { Feature } from 'geojson';
 
 export interface IPostSurveySampleSite {
   name: string;
-  description: string;
+  description: string | null;
   geojson: Feature;
   // Leaflet id for drawn layers
   leaflet_id?: number;
   // This is used to give each location a unique ID so the list/ collapse components have a key
-  uuid?: string;
+  assignment_id: string;
 }
 
 export interface IPostSurveyBlock {
@@ -17,11 +17,11 @@ export interface IPostSurveyBlock {
   // Leaflet id for drawn layers
   leaflet_id?: number;
   // This is used to give each location a unique ID so the list/ collapse components have a key
-  uuid?: string;
+  assignment_id: string;
 }
 
 export interface IPostSiteBlockAssignment {
-  survey_sample_site_assignment_id: string;
+  site_assignment_id: string;
   block_assignment_id: string;
 }
 

@@ -160,6 +160,8 @@ export const ImportDrawMapControl = (props: IImportDrawMapControlProps) => {
             onLayerAdd={(event: DrawEvents.Created, id: number) => {
               const feature: Feature = event.layer.toGeoJSON();
               handleAdd(feature, id);
+              // Remove the draw layer from the map since the feature will be displayed as a static layer instead
+              event.layer.remove();
             }}
             onLayerEdit={(event: DrawEvents.Edited) => {
               const editedFeatures = event.layers.toGeoJSON() as FeatureCollection;

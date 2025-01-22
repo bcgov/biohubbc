@@ -7,7 +7,8 @@ export interface IGetSurveyBlock {
   name: string;
   description: string;
   revision_count: number;
-  geojson: Feature | null;
+  // TODO: Update the API/database to make geojson required, to match this frontend type
+  geojson: Feature;
   sample_block_count: number;
 }
 

@@ -184,7 +184,6 @@ export const SamplingSiteContainer = () => {
           <Button
             variant="contained"
             color="primary"
-            disabled={Boolean(!techniquesDataLoader.data?.pagination.total)}
             component={RouterLink}
             to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling/create`}
             startIcon={<Icon path={mdiPlus} size={0.8} />}>
