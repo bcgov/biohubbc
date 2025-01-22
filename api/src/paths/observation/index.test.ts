@@ -6,7 +6,6 @@ import { SYSTEM_ROLE } from '../../constants/roles';
 import * as db from '../../database/db';
 import { HTTPError } from '../../errors/http-error';
 import { ObservationRecordWithSamplingAndSubcountData } from '../../repositories/observation-repository/observation-repository';
-import { SystemUser } from '../../repositories/user-repository';
 import { ObservationService } from '../../services/observation-services/observation-service';
 import { KeycloakUserInformation } from '../../utils/keycloak-utils';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
@@ -85,8 +84,19 @@ describe('findObservations', () => {
     };
     mockReq.keycloak_token = {} as KeycloakUserInformation;
     mockReq.system_user = {
+      system_user_id: 20,
+      user_guid: '123-456-789',
+      user_identifier: 'test-identifier',
+      identity_source: 'IDIR',
+      display_name: 'test-user',
+      given_name: 'test-given',
+      family_name: 'test-family',
+      email: 'test-email',
+      agency: 'test-agency',
+      record_end_date: null,
+      role_ids: [1],
       role_names: [SYSTEM_ROLE.SYSTEM_ADMIN]
-    } as SystemUser;
+    };
 
     const requestHandler = findObservations();
 
@@ -173,8 +183,19 @@ describe('findObservations', () => {
     };
     mockReq.keycloak_token = {} as KeycloakUserInformation;
     mockReq.system_user = {
+      system_user_id: 20,
+      user_guid: '123-456-789',
+      user_identifier: 'test-identifier',
+      identity_source: 'IDIR',
+      display_name: 'test-user',
+      given_name: 'test-given',
+      family_name: 'test-family',
+      email: 'test-email',
+      agency: 'test-agency',
+      record_end_date: null,
+      role_ids: [3],
       role_names: [SYSTEM_ROLE.PROJECT_CREATOR]
-    } as SystemUser;
+    };
 
     const requestHandler = findObservations();
 
