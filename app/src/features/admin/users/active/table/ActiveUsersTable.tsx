@@ -41,7 +41,7 @@ const ActiveUsersTable = (props: IActiveUsersTableProps) => {
     setSortModel
   } = props;
 
-  const sortedSystemRoles = systemRoles.sort((item1, item2) => item1.name.localeCompare(item2.name));
+  const sortedSystemRoles = [...systemRoles].sort((item1, item2) => item1.name.localeCompare(item2.name));
 
   const activeUsersColumnDefs: GridColDef<ISystemUser>[] = [
     {
