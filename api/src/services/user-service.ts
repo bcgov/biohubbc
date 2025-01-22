@@ -123,10 +123,13 @@ export class UserService extends DBService {
    *
    * @param {ISystemUserFilterObject} filters
    * @param {ApiPaginationOptions} pagination
-   * @return {*}  {Promise<SystemUser[]>}
+   * @return {*}  {Promise<SystemUserWithRoles[]>}
    * @memberof UserService
    */
-  async listSystemUsers(filters: ISystemUserFilterObject, pagination?: ApiPaginationOptions): Promise<SystemUserWithRoles[]> {
+  async listSystemUsers(
+    filters: ISystemUserFilterObject,
+    pagination?: ApiPaginationOptions
+  ): Promise<SystemUserWithRoles[]> {
     return this.userRepository.listSystemUsers(filters, pagination);
   }
 
@@ -270,6 +273,13 @@ export class UserService extends DBService {
     return this.userRepository.deleteAllProjectRoles(systemUserId);
   }
 
+  /**
+   * Get users matching search criteria
+   *
+   * @param {UserSearchCriteria} searchCriteria
+   * @return {*}
+   * @memberof UserService
+   */
   async getUsers(searchCriteria: UserSearchCriteria) {
     return this.userRepository.getUsers(searchCriteria);
   }

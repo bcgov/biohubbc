@@ -77,6 +77,11 @@ const useUserApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Find system user by keyword
+   *
+   * @return {*}  {Promise<ISystemUser[]>}
+   */
   const searchSystemUser = async (filter: string): Promise<ISystemUser[]> => {
     const { data } = await axios.get(`api/user?keyword=${filter}`);
     return data;

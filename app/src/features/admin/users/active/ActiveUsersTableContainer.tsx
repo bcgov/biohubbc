@@ -3,8 +3,10 @@ import Icon from '@mdi/react';
 import { Box, Button, Divider, Paper, Toolbar, Typography } from '@mui/material';
 import { GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
 import EditDialog from 'components/dialog/EditDialog';
-import { AddSystemUserI18N, DeleteSystemUserI18N } from 'constants/i18n';
+import { AddSystemUserI18N, DeleteSystemUserI18N, UpdateSystemUserI18N } from 'constants/i18n';
+import { ISnackbarProps } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
+import { useAuthStateContext } from 'hooks/useAuthStateContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext, useDialogContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
@@ -35,6 +37,7 @@ const ActiveUsersTableContainer = () => {
 
   const dialogContext = useDialogContext();
   const codesContext = useCodesContext();
+  const authStateContext = useAuthStateContext();
 
   // Pagination and sorting state
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
@@ -67,7 +70,7 @@ const ActiveUsersTableContainer = () => {
 
   useEffect(() => {
     codesContext.codesDataLoader.load();
-  }, []);
+  }, [codesContext.codesDataLoader]);
 
   const handleRemoveUserClick = (user: ISystemUser) => {
     dialogContext.setYesNoDialog({
@@ -141,6 +144,80 @@ const ActiveUsersTableContainer = () => {
     }
   };
 
+  const handleChangeUserPermissionsClick = (row: ISystemUser, newRoleName: any, newRoleId: number) => {
+    dialogContext.setYesNoDialog({
+      dialogTitle: 'Change User Role?',
+      dialogContent: (
+        <Typography variant="body1" color="textSecondary">
+          Change user <strong>{row.user_identifier}</strong>'s role to <strong>{newRoleName}</strong>?
+        </Typography>
+      ),
+      yesButtonLabel: 'Change Role',
+      noButtonLabel: 'Cancel',
+      yesButtonProps: { color: 'primary' },
+      onClose: () => {
+        dialogContext.setYesNoDialog({ open: false });
+      },
+      onNo: () => {
+        dialogContext.setYesNoDialog({ open: false });
+      },
+      open: true,
+      onYes: () => {
+        changeSystemUserRole(row, newRoleId, newRoleName);
+        dialogContext.setYesNoDialog({ open: false });
+      }
+    });
+  };
+
+  const showSnackBar = (textDialogProps?: Partial<ISnackbarProps>) => {
+    dialogContext.setSnackbar({ ...textDialogProps, open: true });
+  };
+
+  const changeSystemUserRole = async (user: ISystemUser, roleId: number, roleName: string) => {
+    if (!user?.system_user_id) {
+      return;
+    }
+    const roleIds = [roleId];
+
+    try {
+      await biohubApi.user.updateSystemUserRoles(user.system_user_id, roleIds);
+
+      showSnackBar({
+        snackbarMessage: (
+          <>
+            <Typography variant="body2" component="div">
+              User <strong>{user.user_identifier}</strong>'s role has changed to <strong>{roleName}</strong>.
+            </Typography>
+          </>
+        ),
+        open: true
+      });
+
+      if (authStateContext.simsUserWrapper.systemUserId === user.system_user_id) {
+        // User is changing their own role
+        authStateContext.simsUserWrapper.refresh();
+      } else {
+        // Refresh users list
+        activeUsersDataLoader.refresh({}, paginationSort);
+      }
+    } catch (error) {
+      const apiError = error as APIError;
+      dialogContext.setErrorDialog({
+        open: true,
+        dialogTitle: UpdateSystemUserI18N.updateUserErrorTitle,
+        dialogText: UpdateSystemUserI18N.updateUserErrorText,
+        dialogError: apiError.message,
+        dialogErrorDetails: apiError.errors,
+        onClose: () => {
+          dialogContext.setErrorDialog({ open: false });
+        },
+        onOk: () => {
+          dialogContext.setErrorDialog({ open: false });
+        }
+      });
+    }
+  };
+
   return (
     <>
       <Paper>
@@ -181,7 +258,7 @@ const ActiveUsersTableContainer = () => {
             activeUsers={activeUsersDataLoader.data?.users ?? []}
             systemRoles={codesContext.codesDataLoader.data?.system_roles ?? []}
             onRemoveUserClick={handleRemoveUserClick}
-            handleChangeUserPermissionsClick={() => {}}
+            handleChangeUserPermissionsClick={handleChangeUserPermissionsClick}
             pagination={paginationModel}
             setPagination={setPaginationModel}
             sortModel={sortModel}

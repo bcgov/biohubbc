@@ -6,6 +6,7 @@ import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { CustomMenuButton, CustomMenuIconButton } from 'components/toolbar/ActionToolbars';
 import { ICode } from 'interfaces/useCodesApi.interface';
 import { ISystemUser } from 'interfaces/useUserApi.interface';
+import { useHistory } from 'react-router';
 
 const pageSizeOptions = [10, 25, 50];
 
@@ -21,6 +22,8 @@ export interface IActiveUsersTableProps {
 }
 
 const ActiveUsersTable = (props: IActiveUsersTableProps) => {
+  const history = useHistory();
+
   const {
     activeUsers,
     onRemoveUserClick,
@@ -106,26 +109,30 @@ const ActiveUsersTable = (props: IActiveUsersTableProps) => {
       width: 70,
       sortable: false,
       disableColumnMenu: true,
-      renderCell: (params) => (
-        <CustomMenuIconButton
-          buttonTitle="Actions"
-          buttonIcon={<Icon path={mdiDotsVertical} size={1} />}
-          menuItems={[
-            {
-              menuIcon: <Icon path={mdiAccountDetailsOutline} size={1} />,
-              menuLabel: 'View Users Details',
-              menuOnClick: () => {
-                /* Handle navigation */
+      renderCell: (params) => {
+        return (
+          <CustomMenuIconButton
+            buttonTitle="Actions"
+            buttonIcon={<Icon path={mdiDotsVertical} size={1} />}
+            menuItems={[
+              {
+                menuIcon: <Icon path={mdiAccountDetailsOutline} size={1} />,
+                menuLabel: 'View Users Details',
+                menuOnClick: () =>
+                  history.push({
+                    pathname: `/admin/manage/users/${params.row.system_user_id}`,
+                    state: params.row
+                  })
+              },
+              {
+                menuIcon: <Icon path={mdiTrashCanOutline} size={1} />,
+                menuLabel: 'Remove User',
+                menuOnClick: () => onRemoveUserClick(params.row)
               }
-            },
-            {
-              menuIcon: <Icon path={mdiTrashCanOutline} size={1} />,
-              menuLabel: 'Remove User',
-              menuOnClick: () => onRemoveUserClick(params.row)
-            }
-          ]}
-        />
-      )
+            ]}
+          />
+        );
+      }
     }
   ];
 

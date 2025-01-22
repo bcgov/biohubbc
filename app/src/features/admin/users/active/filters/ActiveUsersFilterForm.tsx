@@ -32,7 +32,7 @@ const ActiveUsersFilterForm = (props: IActiveUsersFilterFormProps) => {
 
   useEffect(() => {
     codesContext.codesDataLoader.load();
-  }, []);
+  }, [codesContext.codesDataLoader]);
 
   const roleOptions = useMemo(() => {
     return (

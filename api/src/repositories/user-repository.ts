@@ -1,13 +1,17 @@
 import { Knex } from 'knex';
 import SQL from 'sql-template-strings';
+import { z } from 'zod';
 import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
-import { ISystemUserFilterObject } from '../models/system-user-view';
+import {
+  IGetRoles,
+  ISystemUserFilterObject,
+  SystemUserWithRoles,
+  UserSearchCriteria
+} from '../models/system-user-view';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
-import { IGetRoles, SystemUserWithRoles, UserSearchCriteria } from '../models/system-user-view';
 import { BaseRepository } from './base-repository';
-import { z } from 'zod';
 
 export class UserRepository extends BaseRepository {
   /**
@@ -305,7 +309,7 @@ export class UserRepository extends BaseRepository {
       .leftJoin('system_role as sr', 'sur.system_role_id', 'sr.system_role_id')
       .leftJoin('user_identity_source as uis', 'su.user_identity_source_id', 'uis.user_identity_source_id')
       .whereNull('su.record_end_date')
-      .whereNotIn('uis.name', [SYSTEM_IDENTITY_SOURCE.DATABASE])
+      .whereNotIn('uis.name', [SYSTEM_IDENTITY_SOURCE.DATABASE, SYSTEM_IDENTITY_SOURCE.SYSTEM])
       .groupBy(
         'su.system_user_id',
         'su.user_guid',
@@ -327,10 +331,13 @@ export class UserRepository extends BaseRepository {
    *
    * @param {ISystemUserFilterObject} filters
    * @param {ApiPaginationOptions} pagination
-   * @return {*}  {Promise<SystemUser[]>}
+   * @return {*}  {Promise<SystemUserWithRoles[]>}
    * @memberof UserRepository
    */
-  async listSystemUsers(filters: ISystemUserFilterObject, pagination?: ApiPaginationOptions): Promise<SystemUserWithRoles[]> {
+  async listSystemUsers(
+    filters: ISystemUserFilterObject,
+    pagination?: ApiPaginationOptions
+  ): Promise<SystemUserWithRoles[]> {
     const queryBuilder = this._getSystemUsersBaseQuery();
 
     if (filters.system_roles?.length) {
