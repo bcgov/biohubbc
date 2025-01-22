@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { SystemUser } from '../repositories/user-repository';
+import { SystemUserWithRoles } from '../models/system-user-view';
 import { KeycloakUserInformation } from './keycloak-utils';
 
 /**
@@ -30,9 +30,9 @@ export const getKeycloakTokenFromRequest = (req: Request): KeycloakUserInformati
  *
  * @param {Request} req - Express Request
  * @throws {Error} - Missing system user
- * @returns {SystemUser}
+ * @returns {SystemUserWithRoles}
  */
-export const getSystemUserFromRequest = (req: Request): SystemUser => {
+export const getSystemUserFromRequest = (req: Request): SystemUserWithRoles => {
   if (!req.system_user) {
     throw new Error('Request missing system user. Must be authorized.');
   }
