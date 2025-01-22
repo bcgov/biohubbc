@@ -21,6 +21,12 @@ export interface IActiveUsersTableProps {
   setSortModel: (newSortModel: GridSortModel) => void;
 }
 
+/**
+ * Table of active system users with controls for updating user roles and deleting users
+ *
+ * @param {IActiveUsersTableProps} props
+ * @returns
+ */
 const ActiveUsersTable = (props: IActiveUsersTableProps) => {
   const history = useHistory();
 

@@ -1,6 +1,11 @@
 import { mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Box, Button, Divider, Paper, Toolbar, Typography } from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
+import Paper from '@mui/material/Paper';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
 import { GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
 import EditDialog from 'components/dialog/EditDialog';
 import { AddSystemUserI18N, DeleteSystemUserI18N, UpdateSystemUserI18N } from 'constants/i18n';
@@ -30,6 +35,11 @@ const initialPaginationParams: Required<ApiPaginationRequestOptions> = {
   order: 'asc'
 };
 
+/**
+ * Container for the table of active system users, with controls for updating user roles and deleting users
+ *
+ * @returns {*}
+ */
 const ActiveUsersTableContainer = () => {
   const biohubApi = useBiohubApi();
 
@@ -65,12 +75,9 @@ const ActiveUsersTableContainer = () => {
   });
 
   useEffect(() => {
-    activeUsersDataLoader.load({}, paginationSort);
-  }, [activeUsersDataLoader, paginationSort]);
-
-  useEffect(() => {
     codesContext.codesDataLoader.load();
-  }, [codesContext.codesDataLoader]);
+    activeUsersDataLoader.load({}, paginationSort);
+  }, [codesContext.codesDataLoader, activeUsersDataLoader, paginationSort]);
 
   const handleRemoveUserClick = (user: ISystemUser) => {
     dialogContext.setYesNoDialog({

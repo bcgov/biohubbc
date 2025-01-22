@@ -46,6 +46,7 @@ GET.apiDoc = {
       schema: {
         type: 'array',
         items: {
+          description: 'The primary key of a system user to filter results with',
           type: 'integer'
         }
       }
@@ -57,6 +58,8 @@ GET.apiDoc = {
       schema: {
         type: 'array',
         items: {
+          description:
+            'The name of a system role, such as Creator, System Administrator, or Data Administrator to filter results with',
           type: 'string'
         }
       }
