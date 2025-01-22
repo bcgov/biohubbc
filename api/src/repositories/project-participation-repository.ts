@@ -3,8 +3,8 @@ import { z } from 'zod';
 import { PROJECT_ROLE } from '../constants/roles';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
+import { SystemUserWithRoles } from '../models/system-user-view';
 import { BaseRepository } from './base-repository';
-import { SystemUser } from './user-repository';
 
 export const ProjectUser = z.object({
   project_participation_id: z.number(),
@@ -120,10 +120,13 @@ export class ProjectParticipationRepository extends BaseRepository {
    *
    * @param {number} projectId
    * @param {number} systemUserId
-   * @return {*}  {(Promise<(ProjectUser & SystemUser) | null>)}
+   * @return {*}  {(Promise<(ProjectUser & SystemUserWithRoles) | null>)}
    * @memberof ProjectParticipationRepository
    */
-  async getProjectParticipant(projectId: number, systemUserId: number): Promise<(ProjectUser & SystemUser) | null> {
+  async getProjectParticipant(
+    projectId: number,
+    systemUserId: number
+  ): Promise<(ProjectUser & SystemUserWithRoles) | null> {
     const sqlStatement = SQL`
       SELECT
         su.system_user_id,
@@ -186,7 +189,7 @@ export class ProjectParticipationRepository extends BaseRepository {
         pp.create_date DESC;
     `;
 
-    const response = await this.connection.sql(sqlStatement, ProjectUser.merge(SystemUser));
+    const response = await this.connection.sql(sqlStatement, ProjectUser.merge(SystemUserWithRoles));
 
     return response.rows?.[0] || null;
   }
@@ -197,13 +200,13 @@ export class ProjectParticipationRepository extends BaseRepository {
    *
    * @param {number} projectId
    * @param {string} userGuid
-   * @return {*}  {(Promise<(ProjectUser & SystemUser) | null>)}
+   * @return {*}  {(Promise<(ProjectUser & SystemUserWithRoles) | null>)}
    * @memberof ProjectParticipationRepository
    */
   async getProjectParticipantByProjectIdAndUserGuid(
     projectId: number,
     userGuid: string
-  ): Promise<(ProjectUser & SystemUser) | null> {
+  ): Promise<(ProjectUser & SystemUserWithRoles) | null> {
     const knex = getKnex();
     const queryBuilder = knex.queryBuilder();
 
@@ -255,7 +258,7 @@ export class ProjectParticipationRepository extends BaseRepository {
       .groupBy('pp.create_date')
       .orderBy('pp.create_date', 'desc');
 
-    const response = await this.connection.knex(queryBuilder, ProjectUser.merge(SystemUser));
+    const response = await this.connection.knex(queryBuilder, ProjectUser.merge(SystemUserWithRoles));
 
     return response.rows?.[0] || null;
   }
@@ -266,13 +269,13 @@ export class ProjectParticipationRepository extends BaseRepository {
    *
    * @param {number} surveyId
    * @param {string} userGuid
-   * @return {*}  {(Promise<(ProjectUser & SystemUser) | null>)}
+   * @return {*}  {(Promise<(ProjectUser & SystemUserWithRoles) | null>)}
    * @memberof ProjectParticipationRepository
    */
   async getProjectParticipantBySurveyIdAndUserGuid(
     surveyId: number,
     userGuid: string
-  ): Promise<(ProjectUser & SystemUser) | null> {
+  ): Promise<(ProjectUser & SystemUserWithRoles) | null> {
     const knex = getKnex();
     const queryBuilder = knex.queryBuilder();
 
@@ -325,7 +328,7 @@ export class ProjectParticipationRepository extends BaseRepository {
       .groupBy('pp.create_date')
       .orderBy('pp.create_date', 'desc');
 
-    const response = await this.connection.knex(queryBuilder, ProjectUser.merge(SystemUser));
+    const response = await this.connection.knex(queryBuilder, ProjectUser.merge(SystemUserWithRoles));
 
     return response.rows?.[0] || null;
   }
@@ -334,10 +337,10 @@ export class ProjectParticipationRepository extends BaseRepository {
    * Gets a list of project participants for a given project.
    *
    * @param {number} projectId
-   * @return {*}  {(Promise<(ProjectUser & SystemUser)[]>)}
+   * @return {*}  {(Promise<(ProjectUser & SystemUserWithRoles)[]>)}
    * @memberof ProjectParticipationRepository
    */
-  async getProjectParticipants(projectId: number): Promise<(ProjectUser & SystemUser)[]> {
+  async getProjectParticipants(projectId: number): Promise<(ProjectUser & SystemUserWithRoles)[]> {
     const sqlStatement = SQL`
       SELECT
         su.system_user_id,
@@ -398,7 +401,7 @@ export class ProjectParticipationRepository extends BaseRepository {
         pp.create_date DESC;
     `;
 
-    const response = await this.connection.sql(sqlStatement, ProjectUser.merge(SystemUser));
+    const response = await this.connection.sql(sqlStatement, ProjectUser.merge(SystemUserWithRoles));
 
     if (!response.rows.length) {
       throw new ApiExecuteSQLError('Failed to get project team members', [
@@ -472,10 +475,12 @@ export class ProjectParticipationRepository extends BaseRepository {
    * Fetches the project participants for all projects that the given system user is a member of.
    *
    * @param {number} systemUserId
-   * @return {*}  {(Promise<(ProjectUser & SystemUser)[]>)}
+   * @return {*}  {(Promise<(ProjectUser & SystemUserWithRoles)[]>)}
    * @memberof ProjectParticipationRepository
    */
-  async getParticipantsFromAllProjectsBySystemUserId(systemUserId: number): Promise<(ProjectUser & SystemUser)[]> {
+  async getParticipantsFromAllProjectsBySystemUserId(
+    systemUserId: number
+  ): Promise<(ProjectUser & SystemUserWithRoles)[]> {
     const sqlStatement = SQL`
       SELECT
         su.system_user_id,
@@ -536,7 +541,7 @@ export class ProjectParticipationRepository extends BaseRepository {
         pp.create_date DESC;
     `;
 
-    const response = await this.connection.sql(sqlStatement, ProjectUser.merge(SystemUser));
+    const response = await this.connection.sql(sqlStatement, ProjectUser.merge(SystemUserWithRoles));
 
     return response.rows;
   }
