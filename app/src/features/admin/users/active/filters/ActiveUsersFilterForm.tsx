@@ -76,6 +76,7 @@ const ActiveUsersFilterForm = (props: IActiveUsersFilterFormProps) => {
             />,
             <AutocompleteField
               options={roleOptions}
+              key="system-role-filter"
               name="system_roles"
               id="system_roles"
               label="Role"

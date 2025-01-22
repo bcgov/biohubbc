@@ -191,11 +191,11 @@ const ActiveUsersTableContainer = () => {
 
       showSnackBar({
         snackbarMessage: (
-          <>
+      
             <Typography variant="body2" component="div">
               User <strong>{user.user_identifier}</strong>'s role has changed to <strong>{roleName}</strong>.
             </Typography>
-          </>
+          
         ),
         open: true
       });

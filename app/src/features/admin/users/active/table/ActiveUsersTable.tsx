@@ -41,6 +41,8 @@ const ActiveUsersTable = (props: IActiveUsersTableProps) => {
     setSortModel
   } = props;
 
+  const sortedSystemRoles = systemRoles.sort((item1, item2) => item1.name.localeCompare(item2.name));
+
   const activeUsersColumnDefs: GridColDef<ISystemUser>[] = [
     {
       field: 'system_user_id',
@@ -93,16 +95,12 @@ const ActiveUsersTable = (props: IActiveUsersTableProps) => {
             buttonLabel={params.value ?? 'Not Applicable'}
             buttonTitle={'Change User Permissions'}
             buttonProps={{ variant: 'outlined', size: 'small' }}
-            menuItems={systemRoles
-              .sort((item1, item2) => {
-                return item1.name.localeCompare(item2.name);
-              })
-              .map((item) => {
-                return {
-                  menuLabel: item.name,
-                  menuOnClick: () => handleChangeUserPermissionsClick(params.row, item.name, item.id)
-                };
-              })}
+            menuItems={sortedSystemRoles.map((item) => {
+              return {
+                menuLabel: item.name,
+                menuOnClick: () => handleChangeUserPermissionsClick(params.row, item.name, item.id)
+              };
+            })}
             buttonEndIcon={<Icon path={mdiChevronDown} size={1} />}
           />
         );
