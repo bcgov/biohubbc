@@ -15,7 +15,7 @@ describe('measurement-header-configs', () => {
     sinon.restore();
   });
 
-  describe.only('getDynamicMeasurementCellValidator', () => {
+  describe('getDynamicMeasurementCellValidator', () => {
     it('should return no errors if cell is undefined', () => {
       const cellValidator = getDynamicMeasurementCellValidator(new NestedRecord(), new Map(), {} as any);
 

@@ -123,5 +123,18 @@ describe('import-measurements-service', () => {
       expect(result.length).to.be.equal(1);
       expect(result[0]).to.equal(1);
     });
+
+    it('should return an empty array when no tsns are found', async () => {
+      const connection = getMockDBConnection();
+      const importMeasurementsService = new ImportMeasurementsService(connection, {}, 1);
+
+      sinon.stub(importMeasurementsService.utils, 'getUniqueCellValues').returns([]);
+
+      const surveyAliasMap = new Map<string, any>();
+
+      const result = importMeasurementsService._getWorksheetTsns(surveyAliasMap);
+
+      expect(result.length).to.be.equal(0);
+    });
   });
 });
