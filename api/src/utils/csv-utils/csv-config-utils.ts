@@ -119,6 +119,30 @@ export class CSVConfigUtils<StaticHeaderType extends Uppercase<string> = Upperca
   }
 
   /**
+   * Given a static header and a CSV row, return the header used in the worksheet.
+   * This value will either be the static header or an alias of the static header.
+   *
+   * Why? Useful if needing to return the header name as it appears in the CSV worksheet.
+   *
+   * @param {StaticHeaderType} header - The header name
+   * @param {CSVRow} row - The CSV row
+   * @returns {Uppercase<string> | undefined} - The header name
+   */
+  getWorksheetHeader(header: StaticHeaderType, row: CSVRow): Uppercase<string> | undefined {
+    // Static header or dynamic header exact match
+    if ((header as Uppercase<string>) in row) {
+      return header;
+    }
+
+    // Attempt to find the matching header from the header aliases
+    for (const alias of this._config.staticHeadersConfig[header]?.aliases ?? []) {
+      if (alias in row) {
+        return alias;
+      }
+    }
+  }
+
+  /**
    * Set a static header config. Injects the header config into the CSV static headers config.
    *
    * @param {StaticHeaderType} header - The header name
