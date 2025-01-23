@@ -57,8 +57,8 @@ export const getDynamicMeasurementCellValidator = (
     if (!measurement) {
       return [
         {
-          error: `Measurement '${params.header}' does not exist`,
-          solution: 'Use a valid taxon measurement as a header',
+          error: `Column header '${params.header}' does not exist`,
+          solution: 'Use a valid taxon measurement as the header',
           values: Object.keys(taxonMeasurements)
         }
       ];

@@ -71,12 +71,19 @@ export const getCritterCaptureRowValidator = (
 
     // If unable to map the capture date and time to a specific critter capture
     if (foundCaptures.length === 0) {
+      // Returning both errors for date and time
       return [
         {
-          error: `Capture not found for animal using date AND time`,
-          solution: `Use a valid date and time to identify the capture`,
+          error: `Capture not found for animal using date`,
+          solution: `Use a valid date to identify the capture`,
           header: utils.getWorksheetHeader(headers.captureDate, params.row),
           cell: captureDate
+        },
+        {
+          error: `Capture not found for animal using date and time`,
+          solution: `Use a valid date and time to identify the capture`,
+          header: utils.getWorksheetHeader(headers.captureTime, params.row),
+          cell: captureTime
         }
       ];
     }

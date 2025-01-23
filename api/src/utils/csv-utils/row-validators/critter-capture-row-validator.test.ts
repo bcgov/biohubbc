@@ -75,10 +75,13 @@ describe('getCritterCaptureRowValidator', () => {
 
     const errors = rowValidator({ row: {} } as any);
 
-    expect(errors).to.have.lengthOf(1);
+    expect(errors).to.have.lengthOf(2);
     expect(errors[0].error).to.contain('Capture not found');
     expect(errors[0].cell).to.equal('2024-01-01');
     expect(errors[0].header).to.be.equal('HEADER');
+    expect(errors[1].error).to.contain('Capture not found');
+    expect(errors[1].cell).to.equal('10:10:00');
+    expect(errors[1].header).to.be.equal('HEADER');
   });
 
   it('should return an error if multiple captures are found for the critter', () => {
