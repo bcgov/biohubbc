@@ -6,7 +6,6 @@ import { exportData } from '.';
 import { SYSTEM_ROLE } from '../../../../../../constants/roles';
 import * as db from '../../../../../../database/db';
 import { HTTPError } from '../../../../../../errors/http-error';
-import { SystemUser } from '../../../../../../repositories/user-repository';
 import { ExportService } from '../../../../../../services/export-services/export-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
 
@@ -28,8 +27,18 @@ describe('exportData', () => {
 
     mockReq.system_user = {
       system_user_id: 1,
+      user_guid: '123-456-789',
+      user_identifier: 'test-identifier',
+      identity_source: 'IDIR',
+      display_name: 'test-user',
+      given_name: 'test-given',
+      family_name: 'test-family',
+      email: 'test-email',
+      agency: 'test-agency',
+      record_end_date: null,
+      role_ids: [3],
       role_names: [SYSTEM_ROLE.PROJECT_CREATOR]
-    } as SystemUser;
+    };
 
     mockReq.params = {
       projectId: '1',
@@ -66,8 +75,18 @@ describe('exportData', () => {
 
     mockReq.system_user = {
       system_user_id: 1,
+      user_guid: '123-456-789',
+      user_identifier: 'test-identifier',
+      identity_source: 'IDIR',
+      display_name: 'test-user',
+      given_name: 'test-given',
+      family_name: 'test-family',
+      email: 'test-email',
+      agency: 'test-agency',
+      record_end_date: null,
+      role_ids: [3],
       role_names: [SYSTEM_ROLE.PROJECT_CREATOR]
-    } as SystemUser;
+    };
 
     mockReq.params = {
       projectId: '1',

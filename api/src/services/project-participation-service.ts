@@ -2,6 +2,7 @@ import { PROJECT_PERMISSION, PROJECT_ROLE } from '../constants/roles';
 import { IDBConnection } from '../database/db';
 import { ApiGeneralError } from '../errors/api-error';
 import { PostParticipantData } from '../models/project-create';
+import { SystemUserWithRoles } from '../models/system-user-view';
 import {
   IParticipant,
   ProjectParticipationRecord,
@@ -9,7 +10,6 @@ import {
   ProjectUser,
   UserProjectParticipation
 } from '../repositories/project-participation-repository';
-import { SystemUser } from '../repositories/user-repository';
 import { DBService } from './db-service';
 import { UserService } from './user-service';
 
@@ -109,10 +109,13 @@ export class ProjectParticipationService extends DBService {
    *
    * @param {number} projectId
    * @param {number} systemUserId
-   * @return {*}  {(Promise<(ProjectUser & SystemUser) | null>)}
+   * @return {*}  {(Promise<(ProjectUser & SystemUserWithRoles) | null>)}
    * @memberof ProjectParticipationService
    */
-  async getProjectParticipant(projectId: number, systemUserId: number): Promise<(ProjectUser & SystemUser) | null> {
+  async getProjectParticipant(
+    projectId: number,
+    systemUserId: number
+  ): Promise<(ProjectUser & SystemUserWithRoles) | null> {
     return this.projectParticipationRepository.getProjectParticipant(projectId, systemUserId);
   }
 
@@ -121,13 +124,13 @@ export class ProjectParticipationService extends DBService {
    *
    * @param {number} projectId
    * @param {number} userGuid
-   * @return {*}  {(Promise<(ProjectUser & SystemUser) | null>)}
+   * @return {*}  {(Promise<(ProjectUser & SystemUserWithRoles) | null>)}
    * @memberof ProjectParticipationService
    */
   async getProjectParticipantByProjectIdAndUserGuid(
     projectId: number,
     userGuid: string
-  ): Promise<(ProjectUser & SystemUser) | null> {
+  ): Promise<(ProjectUser & SystemUserWithRoles) | null> {
     return this.projectParticipationRepository.getProjectParticipantByProjectIdAndUserGuid(projectId, userGuid);
   }
 
@@ -136,13 +139,13 @@ export class ProjectParticipationService extends DBService {
    *
    * @param {number} surveyId
    * @param {number} userGuid
-   * @return {*}  {(Promise<(ProjectUser & SystemUser) | null>)}
+   * @return {*}  {(Promise<(ProjectUser & SystemUserWithRoles) | null>)}
    * @memberof ProjectParticipationService
    */
   async getProjectParticipantBySurveyIdAndUserGuid(
     surveyId: number,
     userGuid: string
-  ): Promise<(ProjectUser & SystemUser) | null> {
+  ): Promise<(ProjectUser & SystemUserWithRoles) | null> {
     return this.projectParticipationRepository.getProjectParticipantBySurveyIdAndUserGuid(surveyId, userGuid);
   }
 
@@ -150,10 +153,10 @@ export class ProjectParticipationService extends DBService {
    * Gets the project participants for the given project.
    *
    * @param {number} projectId
-   * @return {*}  {(Promise<(ProjectUser & SystemUser)[]>)}
+   * @return {*}  {(Promise<(ProjectUser & SystemUserWithRoles)[]>)}
    * @memberof ProjectParticipationService
    */
-  async getProjectParticipants(projectId: number): Promise<(ProjectUser & SystemUser)[]> {
+  async getProjectParticipants(projectId: number): Promise<(ProjectUser & SystemUserWithRoles)[]> {
     return this.projectParticipationRepository.getProjectParticipants(projectId);
   }
 
@@ -178,10 +181,12 @@ export class ProjectParticipationService extends DBService {
    * Fetches the project participants for all projects that the given system user is a member of.
    *
    * @param {number} systemUserId
-   * @return {*}  {(Promise<(ProjectUser & SystemUser)[]>)}
+   * @return {*}  {(Promise<(ProjectUser & SystemUserWithRoles)[]>)}
    * @memberof projectParticipationRepository
    */
-  async getParticipantsFromAllProjectsBySystemUserId(systemUserId: number): Promise<(ProjectUser & SystemUser)[]> {
+  async getParticipantsFromAllProjectsBySystemUserId(
+    systemUserId: number
+  ): Promise<(ProjectUser & SystemUserWithRoles)[]> {
     return this.projectParticipationRepository.getParticipantsFromAllProjectsBySystemUserId(systemUserId);
   }
 

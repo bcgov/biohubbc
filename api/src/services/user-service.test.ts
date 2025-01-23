@@ -3,8 +3,10 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
+import { SYSTEM_ROLE } from '../constants/roles';
 import { ApiError } from '../errors/api-error';
-import { SystemUser, UserRepository } from '../repositories/user-repository';
+import { SystemUserWithRoles } from '../models/system-user-view';
+import { UserRepository } from '../repositories/user-repository';
 import { getMockDBConnection } from '../__mocks__/db';
 import { UserService } from './user-service';
 
@@ -19,9 +21,22 @@ describe('UserService', () => {
     it('returns a UserObject', async function () {
       const mockDBConnection = getMockDBConnection();
 
-      const mockResponseRow = { system_user_id: 123 };
+      const mockResponseRow: SystemUserWithRoles = {
+        system_user_id: 20,
+        user_guid: '123-456-789',
+        user_identifier: 'test-identifier',
+        identity_source: 'IDIR',
+        display_name: 'test-user',
+        given_name: 'test-given',
+        family_name: 'test-family',
+        email: 'test-email',
+        agency: 'test-agency',
+        record_end_date: null,
+        role_ids: [3],
+        role_names: [SYSTEM_ROLE.PROJECT_CREATOR]
+      };
       const mockUserRepository = sinon.stub(UserRepository.prototype, 'getUserById');
-      mockUserRepository.resolves(mockResponseRow as unknown as SystemUser);
+      mockUserRepository.resolves(mockResponseRow);
 
       const userService = new UserService(mockDBConnection);
 
@@ -53,9 +68,24 @@ describe('UserService', () => {
     it('returns a UserObject for the first row of the response', async function () {
       const mockDBConnection = getMockDBConnection();
 
-      const mockResponseRow = [{ system_user_id: 123 }];
+      const mockResponseRow: SystemUserWithRoles[] = [
+        {
+          system_user_id: 20,
+          user_guid: '123-456-789',
+          user_identifier: 'test-identifier',
+          identity_source: 'IDIR',
+          display_name: 'test-user',
+          given_name: 'test-given',
+          family_name: 'test-family',
+          email: 'test-email',
+          agency: 'test-agency',
+          record_end_date: null,
+          role_ids: [3],
+          role_names: [SYSTEM_ROLE.PROJECT_CREATOR]
+        }
+      ];
       const mockUserRepository = sinon.stub(UserRepository.prototype, 'getUserByGuid');
-      mockUserRepository.resolves(mockResponseRow as unknown as SystemUser[]);
+      mockUserRepository.resolves(mockResponseRow);
 
       const userService = new UserService(mockDBConnection);
 
@@ -87,9 +117,24 @@ describe('UserService', () => {
     it('returns a UserObject for the first row of the response', async function () {
       const mockDBConnection = getMockDBConnection();
 
-      const mockResponseRow = [{ system_user_id: 123 }];
+      const mockResponseRow: SystemUserWithRoles[] = [
+        {
+          system_user_id: 20,
+          user_guid: '123-456-789',
+          user_identifier: 'test-identifier',
+          identity_source: 'IDIR',
+          display_name: 'test-user',
+          given_name: 'test-given',
+          family_name: 'test-family',
+          email: 'test-email',
+          agency: 'test-agency',
+          record_end_date: null,
+          role_ids: [3],
+          role_names: [SYSTEM_ROLE.PROJECT_CREATOR]
+        }
+      ];
       const mockUserRepository = sinon.stub(UserRepository.prototype, 'getUserByIdentifier');
-      mockUserRepository.resolves(mockResponseRow as unknown as SystemUser[]);
+      mockUserRepository.resolves(mockResponseRow);
 
       const userService = new UserService(mockDBConnection);
 
@@ -108,9 +153,22 @@ describe('UserService', () => {
     it('should not throw an error on success', async () => {
       const mockDBConnection = getMockDBConnection();
 
-      const mockRowObj = { system_user_id: 123 };
+      const mockResponseRow: SystemUserWithRoles = {
+        system_user_id: 20,
+        user_guid: '123-456-789',
+        user_identifier: 'test-identifier',
+        identity_source: 'IDIR',
+        display_name: 'test-user',
+        given_name: 'test-given',
+        family_name: 'test-family',
+        email: 'test-email',
+        agency: 'test-agency',
+        record_end_date: null,
+        role_ids: [3],
+        role_names: [SYSTEM_ROLE.PROJECT_CREATOR]
+      };
       const mockUserRepository = sinon.stub(UserRepository.prototype, 'addSystemUser');
-      mockUserRepository.resolves(mockRowObj as unknown as SystemUser);
+      mockUserRepository.resolves(mockResponseRow);
 
       const userService = new UserService(mockDBConnection);
 
@@ -122,7 +180,7 @@ describe('UserService', () => {
 
       const result = await userService.addSystemUser(userGuid, userIdentifier, identitySource, displayName, email);
 
-      expect(result).to.eql(mockRowObj);
+      expect(result).to.eql(mockResponseRow);
       expect(mockUserRepository).to.have.been.calledOnce;
     });
   });
@@ -147,9 +205,52 @@ describe('UserService', () => {
     it('returns a UserObject for each row of the response', async function () {
       const mockDBConnection = getMockDBConnection();
 
-      const mockResponseRows = [{ system_user_id: 123 }, { system_user_id: 456 }, { system_user_id: 789 }];
+      const mockResponseRows: SystemUserWithRoles[] = [
+        {
+          system_user_id: 20,
+          user_guid: '123-456-789',
+          user_identifier: 'test-identifier',
+          identity_source: 'IDIR',
+          display_name: 'test-user',
+          given_name: 'test-given',
+          family_name: 'test-family',
+          email: 'test-email',
+          agency: 'test-agency',
+          record_end_date: null,
+          role_ids: [3],
+          role_names: [SYSTEM_ROLE.PROJECT_CREATOR]
+        },
+        {
+          system_user_id: 21,
+          user_guid: '123-456-789',
+          user_identifier: 'test-identifier',
+          identity_source: 'IDIR',
+          display_name: 'test-user',
+          given_name: 'test-given',
+          family_name: 'test-family',
+          email: 'test-email',
+          agency: 'test-agency',
+          record_end_date: null,
+          role_ids: [1],
+          role_names: [SYSTEM_ROLE.SYSTEM_ADMIN]
+        },
+        {
+          system_user_id: 22,
+          user_guid: '123-456-789',
+          user_identifier: 'test-identifier',
+          identity_source: 'IDIR',
+          display_name: 'test-user',
+          given_name: 'test-given',
+          family_name: 'test-family',
+          email: 'test-email',
+          agency: 'test-agency',
+          record_end_date: null,
+          role_ids: [3],
+          role_names: [SYSTEM_ROLE.PROJECT_CREATOR]
+        }
+      ];
       const mockUserRepository = sinon.stub(UserRepository.prototype, 'listSystemUsers');
-      mockUserRepository.resolves(mockResponseRows as SystemUser[]);
+      mockUserRepository.resolves(mockResponseRows);
 
       const userService = new UserService(mockDBConnection);
 
@@ -199,7 +300,20 @@ describe('UserService', () => {
       const existingSystemUser = null;
       const getUserByGuidStub = sinon.stub(UserService.prototype, 'getUserByGuid').resolves(existingSystemUser);
 
-      const addedSystemUser = { system_user_id: 2, record_end_date: null } as unknown as SystemUser;
+      const addedSystemUser: SystemUserWithRoles = {
+        system_user_id: 2,
+        user_guid: '123-456-789',
+        user_identifier: 'test-identifier',
+        identity_source: 'IDIR',
+        display_name: 'test-user',
+        given_name: 'test-given',
+        family_name: 'test-family',
+        email: 'test-email',
+        agency: 'test-agency',
+        record_end_date: null,
+        role_ids: [3],
+        role_names: [SYSTEM_ROLE.PROJECT_CREATOR]
+      };
       const addSystemUserStub = sinon.stub(UserService.prototype, 'addSystemUser').resolves(addedSystemUser);
 
       const activateSystemUserStub = sinon.stub(UserService.prototype, 'activateSystemUser');
@@ -228,7 +342,7 @@ describe('UserService', () => {
     it('gets an existing system user that is already activate', async () => {
       const mockDBConnection = getMockDBConnection({ systemUserId: () => 1 });
 
-      const existingInactiveSystemUser: SystemUser = {
+      const existingInactiveSystemUser: SystemUserWithRoles = {
         system_user_id: 2,
         user_identifier: 'username',
         identity_source: SYSTEM_IDENTITY_SOURCE.IDIR,
@@ -270,7 +384,7 @@ describe('UserService', () => {
     it('gets an existing system user that is not already active and re-activates it', async () => {
       const mockDBConnection = getMockDBConnection({ systemUserId: () => 1 });
 
-      const existingSystemUser: SystemUser = {
+      const existingSystemUser: SystemUserWithRoles = {
         system_user_id: 2,
         user_identifier: 'username',
         identity_source: SYSTEM_IDENTITY_SOURCE.IDIR,
@@ -291,7 +405,7 @@ describe('UserService', () => {
 
       const activateSystemUserStub = sinon.stub(UserService.prototype, 'activateSystemUser');
 
-      const activatedSystemUser: SystemUser = {
+      const activatedSystemUser: SystemUserWithRoles = {
         system_user_id: 2,
         user_identifier: 'username',
         identity_source: SYSTEM_IDENTITY_SOURCE.IDIR,
