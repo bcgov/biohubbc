@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { ICritterDetailed } from '../../services/critterbase-service';
 import { formatTimeString } from '../../services/import-services/utils/datetime';
+import { ITaxonomy } from '../../services/platform-service';
 import {
   CSVCellSetter,
   CSVCellValidator,
@@ -90,10 +91,74 @@ export const getTsnCellValidator = (tsns: Set<number>): CSVCellValidator => {
 };
 
 /**
- * Get the description header cell validator.
+ * Get the taxon header cell validator.
  *
  * Rules:
- *  1. The cell must be a string or undefined with a maximum length of 250
+ *  1. The cell must be a valid ITIS TSN or scientific name
+ *  2. The cell must be a valid species from the provided taxons
+ *  3. The row state will be updated with the TSN and scientific name
+ *  4. The cell is optional if the optional flag is set
+ *
+ * @param {ITaxonomy[]} taxons The list of taxons
+ * @param {CSVOptionalCell} [options] Optional cell config override
+ * @returns {*} {CSVCellValidator} The validate cell callback
+ */
+export const getTaxonCellValidator = (taxons: ITaxonomy[], options?: CSVOptionalCell): CSVCellValidator => {
+  const taxonMap = new Map<number | string, ITaxonomy>();
+
+  taxons.forEach((taxon) => {
+    taxonMap.set(taxon.tsn, taxon);
+    taxonMap.set(taxon.scientificName.toLowerCase(), taxon);
+  });
+
+  return (params: CSVParams) => {
+    if (options?.optional && params.cell === undefined) {
+      return [];
+    }
+
+    const taxon = taxonMap.get(params.cell as number | string);
+
+    if (typeof params.cell === 'number' && !taxon) {
+      return [
+        {
+          error: 'Invalid ITIS TSN',
+          solution: 'Use a valid ITIS TSN'
+        }
+      ];
+    }
+
+    if (typeof params.cell === 'string' && !taxon) {
+      return [
+        {
+          error: 'Invalid scientific name',
+          solution: 'Use a valid scientific name'
+        }
+      ];
+    }
+
+    if (!taxon) {
+      return [
+        {
+          error: 'Invalid species',
+          solution: 'Use a valid ITIS TSN or scientific name'
+        }
+      ];
+    }
+
+    // Update the row state
+    updateCSVRowState(params.row, { itis_tsn: taxon.tsn, itis_scientific_name: taxon.scientificName });
+
+    return [];
+  };
+};
+
+/**
+ * Get the description header cell validator.
+ *
+ * TODO: Add optional flag to allow undefined values conditionally
+ *
+ * Rules:
+ *  1. The cell must be a string with a maximum length of 250 or undefined
  *
  * @returns {*} {CSVCellValidator} The validate cell callback
  */
@@ -105,6 +170,8 @@ export const getDescriptionCellValidator = (): CSVCellValidator => {
 
 /**
  * Get the time header cell validator.
+ *
+ * TODO: Add optional flag to allow undefined values conditionally
  *
  * Rules:
  *  1. The cell must be a valid 24-hour time format 'HH:mm:ss' or 'HH:mm' or undefined
@@ -152,8 +219,8 @@ export const getTimeCellSetter = (): CSVCellSetter => {
  */
 export const getLatitudeCellValidator = (options?: CSVOptionalCell): CSVCellValidator => {
   return (params) => {
-    if (options?.optional) {
-      return validateZodCell(params.cell, z.number().min(-90).max(90).optional());
+    if (options?.optional && params.cell === undefined) {
+      return [];
     }
 
     return validateZodCell(params.cell, z.number().min(-90).max(90));
@@ -171,8 +238,8 @@ export const getLatitudeCellValidator = (options?: CSVOptionalCell): CSVCellVali
  */
 export const getLongitudeCellValidator = (options?: CSVOptionalCell): CSVCellValidator => {
   return (params) => {
-    if (options?.optional) {
-      return validateZodCell(params.cell, z.number().min(-180).max(180).optional());
+    if (options?.optional && params.cell === undefined) {
+      return [];
     }
 
     return validateZodCell(params.cell, z.number().min(-180).max(180));
@@ -190,8 +257,8 @@ export const getLongitudeCellValidator = (options?: CSVOptionalCell): CSVCellVal
  */
 export const getDateCellValidator = (options?: CSVOptionalCell): CSVCellValidator => {
   return (params) => {
-    if (options?.optional) {
-      return validateZodCell(params.cell, z.string().date().optional());
+    if (options?.optional && params.cell === undefined) {
+      return [];
     }
 
     return validateZodCell(params.cell, z.string().date());
