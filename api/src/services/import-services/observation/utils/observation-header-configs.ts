@@ -1,5 +1,5 @@
-import { ICode } from '../../../repositories/code-repository';
-import { CSVCellValidator } from '../../../utils/csv-utils/csv-config-validation.interface';
+import { ICode } from '../../../../repositories/code-repository';
+import { CSVCellValidator } from '../../../../utils/csv-utils/csv-config-validation.interface';
 
 /**
  * Get the observation subcount sign cell validator
@@ -17,8 +17,6 @@ export const getObservationSubcountSignCellValidator = (subcountSigns: ICode[]):
   return (params) => {
     // Undefined values are allowed, return no errors
     if (!params.cell) {
-      params.mutateCell = null;
-
       return [];
     }
 

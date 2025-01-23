@@ -1,19 +1,12 @@
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 import { CellObject } from 'xlsx';
-import {
-  DefaultDateFormat,
-  DefaultDateFormatReverse,
-  DefaultTimeFormat,
-  USDefaultDateFormat,
-  USDefaultDateFormatReverse
-} from '../../constants/dates';
+import { DefaultDateFormat, DefaultTimeFormat } from '../../constants/dates';
+import { formatDateString } from '../date-time-utils';
 import { safeTrim } from '../string-utils';
 import { CUSTOM_XLSX_DATE_FORMAT } from './worksheet-utils';
 
 dayjs.extend(duration);
-
-type CellValue = CellObject['v'];
 
 /**
  * Trims whitespace from the value of a string type cell.
@@ -56,7 +49,7 @@ export function replaceCellDates(cell: CellObject): CellObject {
     // Use the formatted value ('2024-01-01') instead of the epoch number (434565)
     // Why? The epoch number is inconsistent and is affected by the dateNF option.
     // Same dates with different incomming formats will have different epoch values.
-    const date = formatDateCellValue(cell.w);
+    const date = formatDateString(String(cell.w));
 
     return { ...cell, z: DefaultDateFormat, v: date ?? 'Invalid Date Format' };
   }
@@ -68,7 +61,7 @@ export function replaceCellDates(cell: CellObject): CellObject {
   }
   // If a string cell - check if the string is a date and convert it to a date string
   else if (cell.z !== CUSTOM_XLSX_DATE_FORMAT && isStringCell(cell)) {
-    const date = formatDateCellValue(cell.v);
+    const date = formatDateString(String(cell.v));
 
     // If the string is a date, update the cell value to the formatted date string
     if (date) {
@@ -77,47 +70,6 @@ export function replaceCellDates(cell: CellObject): CellObject {
   }
 
   return cell;
-}
-
-/**
- * Converts a cell value to a date string - prioritizes Canadian date formats over American date formats.
- *
- * @export
- * @param {CellValue} cellValue - Cell value
- * @return {*} {string | null} - Date string or null if the cell value is not a date
- */
-export function formatDateCellValue(cellValue: CellValue): string | null {
-  const dateParts = String(cellValue).replace(/\//g, '-').split('-');
-
-  // Check if the string is a 3 part delimited date
-  if (dateParts.length !== 3) {
-    return null;
-  }
-
-  // Generate a dayjs date object for both Canadian and American date formats
-  // Why? There is a edge case where both the Canadian and American date formats are BOTH valid
-  // but the date is generated incorrectly (01/31/2024 -> 2026-07-01).
-  // We can determine the correct format by cross-referencing the year with the raw cell value.
-  const canadianDate = dayjs(String(cellValue), [DefaultDateFormat, DefaultDateFormatReverse]);
-  const americanDate = dayjs(String(cellValue), [USDefaultDateFormat, USDefaultDateFormatReverse]);
-
-  if (!canadianDate.isValid() && !americanDate.isValid()) {
-    return null;
-  }
-
-  // Grab the year from the date string
-  const dateYear = Number(dateParts[0].length === 4 ? dateParts[0] : dateParts[2]);
-
-  // Always prioritize Canadian date formats over American date formats
-  if (canadianDate.year() === dateYear) {
-    return canadianDate.format(DefaultDateFormat);
-  }
-
-  if (americanDate.year() === dateYear) {
-    return americanDate.format(DefaultDateFormat);
-  }
-
-  return null;
 }
 
 /**

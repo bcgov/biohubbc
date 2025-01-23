@@ -61,7 +61,7 @@ import {
   pullEnvironmentsFromWorkSheetRowObject,
   pullMeasurementsFromWorkSheetRowObject,
   pullSamplingDataFromWorksheetRowObject
-} from '../import-services/observation/utils';
+} from '../import-services/observation/utils/observation-sampling-row-validator';
 import { ObservationSubCountEnvironmentService } from '../observation-subcount-environment-service';
 import { ObservationSubCountMeasurementService } from '../observation-subcount-measurement-service';
 import { PlatformService } from '../platform-service';

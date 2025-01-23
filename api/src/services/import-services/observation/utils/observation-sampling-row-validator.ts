@@ -1,19 +1,23 @@
 import dayjs from 'dayjs';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
-import { DefaultDateFormat, DefaultTimeFormat, DefaultTimeFormatNoSeconds } from '../../../constants/dates';
-import { SurveySamplePeriodDetails } from '../../../repositories/sample-period-repository';
-import { isDateString, isDateTimeString, isTimeString } from '../../../utils/date-time-utils';
+import { DefaultDateFormat, DefaultTimeFormat, DefaultTimeFormatNoSeconds } from '../../../../constants/dates';
+import { SurveySamplePeriodDetails } from '../../../../repositories/sample-period-repository';
+import { CSVConfigUtils } from '../../../../utils/csv-utils/csv-config-utils';
+import { CSVRowValidator } from '../../../../utils/csv-utils/csv-config-validation.interface';
+import { updateCSVRowState } from '../../../../utils/csv-utils/csv-header-configs';
+import { isDateString, isDateTimeString, isTimeString } from '../../../../utils/date-time-utils';
 import {
   EnvironmentNameTypeDefinitionMap,
   isEnvironmentQualitativeTypeDefinition
-} from '../../../utils/observation-xlsx-utils/environment-column-utils';
+} from '../../../../utils/observation-xlsx-utils/environment-column-utils';
 import {
   getMeasurementFromTsnMeasurementTypeDefinitionMap,
   isMeasurementCBQualitativeTypeDefinition,
   TsnMeasurementTypeDefinitionMap
-} from '../../../utils/observation-xlsx-utils/measurement-column-utils';
-import { getColumnCellValue, InsertSubCount } from '../../observation-services/observation-service';
+} from '../../../../utils/observation-xlsx-utils/measurement-column-utils';
+import { getColumnCellValue, InsertSubCount } from '../../../observation-services/observation-service';
+import { ObservationCSVStaticHeader } from '../import-observations-service';
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -27,84 +31,103 @@ dayjs.extend(isSameOrBefore);
  * If the row does not contain a sampling site, technique, and period, then the function will attempt to find a unique
  * period that matches the observation date and time.
  *
- * @param {Record<string, any>} row The current row of the worksheet being processed.
  * @param {SurveySamplePeriodDetails[]} samplingPeriods All available sampling periods for the survey.
  * @return {*}  {({ samplePeriodId: number; sampleSiteId: number | null; methodTechniqueId: number | null } | null)} A
  * matching sampling period object, or null if no periods match the row data.
  */
-export function pullSamplingDataFromWorksheetRowObject(
-  row: Record<string, any>,
-  samplingPeriods: SurveySamplePeriodDetails[]
-): { samplePeriodId: number; sampleSiteId: number | null; methodTechniqueId: number | null } | null {
-  // Extract site, technique, and period data from the row
-  const worksheetSiteName = getColumnCellValue(row, 'SAMPLING_SITE').cell as string | null;
-  const worksheetTechniqueName = getColumnCellValue(row, 'METHOD_TECHNIQUE').cell as string | null;
-  const worksheetPeriod = getColumnCellValue(row, 'SAMPLING_PERIOD').cell as string | null;
+export function getObservationSamplingInformationRowValidator(
+  samplingPeriods: SurveySamplePeriodDetails[],
+  utils: CSVConfigUtils<ObservationCSVStaticHeader>
+): CSVRowValidator {
+  return (params) => {
+    // Extract site, technique, and period data from the row
+    const worksheetSiteName = utils.getCellValue('SAMPLING_SITE', params.row) as string | null;
+    const worksheetTechniqueName = utils.getCellValue('METHOD_TECHNIQUE', params.row) as string | null;
+    const worksheetPeriod = utils.getCellValue('SAMPLING_PERIOD', params.row) as string | null;
 
-  // If any of the site, technique, or period values are provided, then attempt to find a unique period
-  // that matches all of provided (non-null) values.
-  if (worksheetSiteName || worksheetTechniqueName || worksheetPeriod) {
-    // Find all periods that match the provided site, technique, and period
-    // Periods must match all non-null worksheet values to be considered a match
-    const matchingPeriodsBySamplingInformation = samplingPeriods.filter((period) => {
-      if (worksheetSiteName) {
-        const isMatch = matchSamplePeriodToWorksheetSiteName(worksheetSiteName, period);
+    // If any of the site, technique, or period values are provided, then attempt to find a unique period
+    // that matches all of provided (non-null) values.
+    if (worksheetSiteName || worksheetTechniqueName || worksheetPeriod) {
+      // Find all periods that match the provided site, technique, and period
+      // Periods must match all non-null worksheet values to be considered a match
+      const matchingPeriodsBySamplingInformation = samplingPeriods.filter((period) => {
+        if (worksheetSiteName) {
+          const isMatch = matchSamplePeriodToWorksheetSiteName(worksheetSiteName, period);
 
-        if (!isMatch) {
-          // If the worksheet site name is provided but does not match, then this period is not a match
-          return false;
+          if (!isMatch) {
+            // If the worksheet site name is provided but does not match, then this period is not a match
+            return false;
+          }
         }
+
+        if (worksheetTechniqueName) {
+          const isMatch = matchSamplePeriodToWorksheetTechniqueName(worksheetTechniqueName, period);
+
+          if (!isMatch) {
+            // If the worksheet technique name is provided but does not match, then this period is not a match
+            return false;
+          }
+        }
+
+        if (worksheetPeriod) {
+          const isMatch = matchSamplePeriodToWorksheetPeriod(worksheetPeriod, period);
+
+          if (!isMatch) {
+            // If the worksheet period is provided but does not match, then this period is not a match
+            return false;
+          }
+        }
+
+        // If all provided (non-null) values match, then consider this period a match
+        return true;
+      });
+
+      if (matchingPeriodsBySamplingInformation.length === 1) {
+        // Found exactly one period record that uniquely matches some or all of the filters above, then update the row state
+        updateCSVRowState(params.row, {
+          sampling_period_id: matchingPeriodsBySamplingInformation[0].survey_sample_period_id
+        });
+
+        return [];
       }
 
-      if (worksheetTechniqueName) {
-        const isMatch = matchSamplePeriodToWorksheetTechniqueName(worksheetTechniqueName, period);
-
-        if (!isMatch) {
-          // If the worksheet technique name is provided but does not match, then this period is not a match
-          return false;
+      // Unable to match the observation sampling information to any existing period uniquely
+      return [
+        {
+          error: 'Unable to match to observation with sampling information uniquely',
+          solution: 'Please provide more specific sampling information or observation date and time'
         }
-      }
-
-      if (worksheetPeriod) {
-        const isMatch = matchSamplePeriodToWorksheetPeriod(worksheetPeriod, period);
-
-        if (!isMatch) {
-          // If the worksheet period is provided but does not match, then this period is not a match
-          return false;
-        }
-      }
-
-      // If all provided (non-null) values match, then consider this period a match
-      return true;
-    });
-
-    if (matchingPeriodsBySamplingInformation.length === 1) {
-      // Found exactly one period record that uniquely matches some or all of the filters above
-      return formatMatchingPeriod(matchingPeriodsBySamplingInformation[0]);
+      ];
     }
 
-    // Unable to match the observation sampling information to any existing period uniquely
-    return null;
-  }
+    // If not site, technique, or period values are provided, then attempt to find a unique period that matches the
+    // observation date and time
+    const observationDate = utils.getCellValue('DATE', params.row) as string | null;
+    const observationTime = utils.getCellValue('TIME', params.row) as string | null;
 
-  // If not site, technique, or period values are provided, then attempt to find a unique period that matches the
-  // observation date and time
-  const observationDate = getColumnCellValue(row, 'DATE').cell as string | null;
-  const observationTime = getColumnCellValue(row, 'TIME').cell as string | null;
+    const matchingPeriodsByObservationDateTime = matchSamplePeriodsToObservationDateTime(
+      observationDate,
+      observationTime,
+      samplingPeriods
+    );
 
-  const matchingPeriodsByObservationDateTime = matchSamplePeriodsToObservationDateTime(
-    observationDate,
-    observationTime,
-    samplingPeriods
-  );
+    if (matchingPeriodsByObservationDateTime.length) {
+      // If at least one period record is found that satisfies the observation date and time, then update row state
+      updateCSVRowState(params.row, {
+        sampling_period_id: matchingPeriodsByObservationDateTime[0].survey_sample_period_id
+      });
 
-  if (matchingPeriodsByObservationDateTime.length) {
-    // If at least one period record is found that satisfies the observation date and time, then return the first one
-    return formatMatchingPeriod(matchingPeriodsByObservationDateTime[0]);
-  }
+      return [];
+    }
 
-  // Unable to match the observation date/time to any existing period uniquely
-  return null;
+    // Unable to match the observation date/time to any existing period uniquely
+    return [
+      {
+        error: 'Unable to match to observation with observation date and time',
+        solution: 'Please provide more specific sampling information or a valid observation date and time'
+      }
+    ];
+  };
 }
 
 /**
@@ -149,9 +172,9 @@ export function matchSamplePeriodToWorksheetTechniqueName(
  *
  * Note: This function relies on the incoming period string to separate the start and end dates with a " - " delimiter.
  *
- * @param {string} period A string in the format "YYYY-MM-DDTHH:mm:ss - YYYY-MM-DDTHH:mm:ss", or a valid subset or
+ * @param {string} worksheetPeriod A string in the format "YYYY-MM-DDTHH:mm:ss - YYYY-MM-DDTHH:mm:ss", or a valid subset or
  * superset. (Ex: "2024-07-28 - 2024-07-29", "2024-07-28T00:00:00 - 2024-07-29T23:59:59", etc)
- * @param {SurveySamplePeriodDetails[]} samplingPeriods
+ * @param {SurveySamplePeriodDetails[]} samplingPeriod
  * @return {*}  {SurveySamplePeriodDetails}
  */
 export function matchSamplePeriodToWorksheetPeriod(
@@ -344,21 +367,6 @@ export function matchSamplePeriodsToObservationDateTime(
   });
 
   return suitablePeriods;
-}
-
-/**
- * This function is a helper method for the `pullSamplingDataFromWorksheetRowObject` function. It will take a matching
- * period and format it to return the sample site, method technique, and sample period IDs.
- *
- * @param {SurveySamplePeriodDetails} period
- * @return {*}
- */
-export function formatMatchingPeriod(period: SurveySamplePeriodDetails) {
-  return {
-    samplePeriodId: period.survey_sample_period_id,
-    sampleSiteId: period.survey_sample_site_id,
-    methodTechniqueId: period.method_technique_id
-  };
 }
 
 /**

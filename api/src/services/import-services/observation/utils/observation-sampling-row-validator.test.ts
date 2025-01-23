@@ -1,7 +1,7 @@
 import chai, { expect } from 'chai';
 import sinonChai from 'sinon-chai';
-import { SurveySamplePeriodDetails } from '../../../repositories/sample-period-repository';
-import { CSV_COLUMN_ALIASES } from '../../../utils/xlsx-utils/column-aliases';
+import { SurveySamplePeriodDetails } from '../../../../repositories/sample-period-repository';
+import { CSV_COLUMN_ALIASES } from '../../../../utils/xlsx-utils/column-aliases';
 import {
   matchSamplePeriodDateToWorksheetPeriodDateTime,
   matchSamplePeriodsToObservationDateTime,

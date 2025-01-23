@@ -8,6 +8,7 @@ import { validateCSVWorksheet } from '../../../utils/csv-utils/csv-config-valida
 import { CSVConfig, CSVError, CSVRowState } from '../../../utils/csv-utils/csv-config-validation.interface';
 import {
   getDateCellValidator,
+  getDateRangeCellValidator,
   getDescriptionCellValidator,
   getLatitudeCellValidator,
   getLongitudeCellValidator,
@@ -23,7 +24,9 @@ import {
   ObservationService
 } from '../../observation-services/observation-service';
 import { SamplePeriodService } from '../../sample-period-service';
-import { getObservationSubcountSignCellValidator } from './observation-header-configs';
+import { getObservationDynamicHeaderConfig } from './utils/observation-dynamic-header-config';
+import { getObservationSubcountSignCellValidator } from './utils/observation-header-configs';
+import { getObservationSamplingInformationRowValidator } from './utils/observation-sampling-row-validator';
 
 const SUBCOUNT_SIGN_ALIASES: Uppercase<string>[] = ['OBSERVATION_SUBCOUNT_SIGN', 'OBSERVATION SUBCOUNT SIGN', 'SIGN'];
 
@@ -156,26 +159,27 @@ export class ImportObservationsService extends DBService {
    * @returns {Promise<CSVConfig<ObservationCSVStaticHeader>>} The CSV configuration
    */
   async getCSVConfig(): Promise<CSVConfig<ObservationCSVStaticHeader>> {
-    const samplePeriods = await this.samplePeriodService.getSamplePeriodsForSurvey(this.surveyId);
+    const samplingPeriods = await this.samplePeriodService.getSamplePeriodsForSurvey(this.surveyId);
     const subcountSignCodes = await this.codeRepository.getObservationSubcountSigns();
 
     this.utils.setAllStaticHeaderConfigs({
       SPECIES: { validateCell: getTaxonCellValidator([]) },
-      COUNT: { validateCell: (params) => validateZodCell(params, z.number().min(1)) },
+      COUNT: { validateCell: (params) => validateZodCell(params.cell, z.number().min(1)) },
       SUBCOUNT_SIGN: { validateCell: getObservationSubcountSignCellValidator(subcountSignCodes) },
       DATE: { validateCell: getDateCellValidator({ optional: true }) },
       TIME: { validateCell: getTimeCellValidator(), setCellValue: getTimeCellSetter() },
       LATITUDE: { validateCell: getLatitudeCellValidator({ optional: true }) },
       LONGITUDE: { validateCell: getLongitudeCellValidator({ optional: true }) },
-      SAMPLING_PERIOD: { validateCell: (params) => validateZodCell(params, z.string().optional()) },
-      SAMPLING_SITE: { validateCell: (params) => validateZodCell(params, z.string().optional()) },
-      METHOD_TECHNIQUE: { validateCell: (params) => validateZodCell(params, z.string().optional()) },
+      SAMPLING_PERIOD: { validateCell: getDateRangeCellValidator({ optional: true }) },
+      SAMPLING_SITE: { validateCell: (params) => validateZodCell(params.cell, z.string().min(1).optional()) },
+      METHOD_TECHNIQUE: { validateCell: (params) => validateZodCell(params.cell, z.string().min(1).optional()) },
       COMMENT: { validateCell: getDescriptionCellValidator() }
     });
 
     const config = this.utils.getConfig();
 
-    config.dynamicHeadersConfig = { ...config.dynamicHeadersConfig, validateCell: () => [] };
+    config.rowValidators = [getObservationSamplingInformationRowValidator(samplingPeriods, this.utils)];
+    config.dynamicHeadersConfig = { validateCell: getObservationDynamicHeaderConfig() };
 
     // Return the final CSV config
     return config;

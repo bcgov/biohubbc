@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { ICritterDetailed } from '../../services/critterbase-service';
 import { formatTimeString } from '../../services/import-services/utils/datetime';
 import { ITaxonomy } from '../../services/platform-service';
+import { isDateString } from '../date-time-utils';
 import {
   CSVCellSetter,
   CSVCellValidator,
@@ -87,68 +88,6 @@ export const getTsnCellValidator = (tsns: Set<number>): CSVCellValidator => {
         solution: `Use a valid Taxonomic Serial Number (TSN) instead of a name to reference species.`
       }
     ];
-  };
-};
-
-/**
- * Get the taxon header cell validator.
- *
- * Rules:
- *  1. The cell must be a valid ITIS TSN or scientific name
- *  2. The cell must be a valid species from the provided taxons
- *  3. The row state will be updated with the TSN and scientific name
- *  4. The cell is optional if the optional flag is set
- *
- * @param {ITaxonomy[]} taxons The list of taxons
- * @param {CSVOptionalCell} [options] Optional cell config override
- * @returns {*} {CSVCellValidator} The validate cell callback
- */
-export const getTaxonCellValidator = (taxons: ITaxonomy[], options?: CSVOptionalCell): CSVCellValidator => {
-  const taxonMap = new Map<number | string, ITaxonomy>();
-
-  taxons.forEach((taxon) => {
-    taxonMap.set(taxon.tsn, taxon);
-    taxonMap.set(taxon.scientificName.toLowerCase(), taxon);
-  });
-
-  return (params: CSVParams) => {
-    if (options?.optional && params.cell === undefined) {
-      return [];
-    }
-
-    const taxon = taxonMap.get(params.cell as number | string);
-
-    if (typeof params.cell === 'number' && !taxon) {
-      return [
-        {
-          error: 'Invalid ITIS TSN',
-          solution: 'Use a valid ITIS TSN'
-        }
-      ];
-    }
-
-    if (typeof params.cell === 'string' && !taxon) {
-      return [
-        {
-          error: 'Invalid scientific name',
-          solution: 'Use a valid scientific name'
-        }
-      ];
-    }
-
-    if (!taxon) {
-      return [
-        {
-          error: 'Invalid species',
-          solution: 'Use a valid ITIS TSN or scientific name'
-        }
-      ];
-    }
-
-    // Update the row state
-    updateCSVRowState(params.row, { itis_tsn: taxon.tsn, itis_scientific_name: taxon.scientificName });
-
-    return [];
   };
 };
 
@@ -291,6 +230,100 @@ export const getSurveyCritterAliasCellValidator = (surveyAliasMap: Map<string, I
 
     // Update the row state with the critter ID
     updateCSVRowState(params.row, { critterId: critter.critter_id });
+
+    return [];
+  };
+};
+
+/**
+ * Get the date range header cell validator.
+ *
+ * Rules:
+ *  1. The cell must be a valid date range format 'YYYY-MM-DD HH:mm:ss - YYYY-MM-DD HH:mm:ss'
+ *  2. The cell is optional if the optional flag is set
+ *
+ * @param {CSVOptionalCell} [options] Optional cell config override
+ * @returns {*} {CSVCellValidator} The validate cell callback
+ *
+ */
+export const getDateRangeCellValidator = (options?: CSVOptionalCell): CSVCellValidator => {
+  return (params) => {
+    if (options?.optional && params.cell === undefined) {
+      return [];
+    }
+
+    const [startDate, endDate] = String(params.cell).split(' - ');
+
+    if (!isDateString(startDate) || !isDateString(endDate)) {
+      return [
+        {
+          error: 'Invalid date range',
+          solution: 'Use a valid date range format: YYYY-MM-DD HH:mm:ss - YYYY-MM-DD HH:mm:ss'
+        }
+      ];
+    }
+
+    return [];
+  };
+};
+
+/**
+ * Get the taxon header cell validator.
+ *
+ * Rules:
+ *  1. The cell must be a valid ITIS TSN or scientific name
+ *  2. The cell must be a valid species from the provided taxons
+ *  3. The row state will be updated with the TSN and scientific name
+ *  4. The cell is optional if the optional flag is set
+ *
+ * @param {ITaxonomy[]} taxons The list of taxons
+ * @param {CSVOptionalCell} [options] Optional cell config override
+ * @returns {*} {CSVCellValidator} The validate cell callback
+ */
+export const getTaxonCellValidator = (taxons: ITaxonomy[], options?: CSVOptionalCell): CSVCellValidator => {
+  const taxonMap = new Map<number | string, ITaxonomy>();
+
+  taxons.forEach((taxon) => {
+    taxonMap.set(taxon.tsn, taxon);
+    taxonMap.set(taxon.scientificName.toLowerCase(), taxon);
+  });
+
+  return (params: CSVParams) => {
+    if (options?.optional && params.cell === undefined) {
+      return [];
+    }
+
+    const taxon = taxonMap.get(params.cell as number | string);
+
+    if (typeof params.cell === 'number' && !taxon) {
+      return [
+        {
+          error: 'Invalid ITIS TSN',
+          solution: 'Use a valid ITIS TSN'
+        }
+      ];
+    }
+
+    if (typeof params.cell === 'string' && !taxon) {
+      return [
+        {
+          error: 'Invalid scientific name',
+          solution: 'Use a valid scientific name'
+        }
+      ];
+    }
+
+    if (!taxon) {
+      return [
+        {
+          error: 'Invalid species',
+          solution: 'Use a valid ITIS TSN or scientific name'
+        }
+      ];
+    }
+
+    // Update the row state
+    updateCSVRowState(params.row, { itis_tsn: taxon.tsn, itis_scientific_name: taxon.scientificName });
 
     return [];
   };

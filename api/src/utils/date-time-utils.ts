@@ -1,5 +1,12 @@
 import dayjs from 'dayjs';
-import { DefaultTimeFormat, DefaultTimeFormatNoSeconds } from '../constants/dates';
+import {
+  DefaultDateFormat,
+  DefaultDateFormatReverse,
+  DefaultTimeFormat,
+  DefaultTimeFormatNoSeconds,
+  USDefaultDateFormat,
+  USDefaultDateFormatReverse
+} from '../constants/dates';
 
 /**
  * Check if a string is a date string.
@@ -70,4 +77,49 @@ export function isTimeString(value: string): boolean {
   }
 
   return dayjs(value, [DefaultTimeFormat, DefaultTimeFormatNoSeconds], true).isValid();
+}
+
+/**
+ * Formats a date string to a date - prioritizes Canadian date formats over American date formats.
+ *
+ * @example formatDate('2025-01-01') // '2025-01-01'
+ * @example formatDate('01/31/2025') // '2025-01-31'
+ * @example formatDate('31-01-2025') // '2025-01-31'
+ *
+ * @export
+ * @param {string} value -
+ * @return {*} {string | null} - Date string or null if the cell value is not a date
+ */
+export function formatDateString(value: string): string | null {
+  const dateParts = String(value).replace(/\//g, '-').split('-');
+
+  // Check if the string is a 3 part delimited date
+  if (dateParts.length !== 3) {
+    return null;
+  }
+
+  // Generate a dayjs date object for both Canadian and American date formats
+  // Why? There is a edge case where both the Canadian and American date formats are BOTH valid
+  // but the date is generated incorrectly (01/31/2024 -> 2026-07-01).
+  // We can determine the correct format by cross-referencing the year with the raw cell value.
+  const canadianDate = dayjs(String(value), [DefaultDateFormat, DefaultDateFormatReverse]);
+  const americanDate = dayjs(String(value), [USDefaultDateFormat, USDefaultDateFormatReverse]);
+
+  if (!canadianDate.isValid() && !americanDate.isValid()) {
+    return null;
+  }
+
+  // Grab the year from the date string
+  const dateYear = Number(dateParts[0].length === 4 ? dateParts[0] : dateParts[2]);
+
+  // Always prioritize Canadian date formats over American date formats
+  if (canadianDate.year() === dateYear) {
+    return canadianDate.format(DefaultDateFormat);
+  }
+
+  if (americanDate.year() === dateYear) {
+    return americanDate.format(DefaultDateFormat);
+  }
+
+  return null;
 }

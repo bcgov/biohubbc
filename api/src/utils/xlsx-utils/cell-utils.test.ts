@@ -1,12 +1,5 @@
 import { expect } from 'chai';
-import {
-  formatDateCellValue,
-  isDateCell,
-  isStringCell,
-  isTimeCell,
-  replaceCellDates,
-  trimCellWhitespace
-} from './cell-utils';
+import { isDateCell, isStringCell, isTimeCell, replaceCellDates, trimCellWhitespace } from './cell-utils';
 import { CUSTOM_XLSX_DATE_FORMAT } from './worksheet-utils';
 
 describe('cell-utils', () => {
@@ -38,82 +31,6 @@ describe('cell-utils', () => {
 
     it('should format a string date value', () => {
       expect(replaceCellDates({ t: 's', v: '01-01-2024' }).v).to.equal('2024-01-01');
-    });
-  });
-
-  describe('formatStringDateCell', () => {
-    it('should return null when string is not shaped like a date', () => {
-      expect(formatDateCellValue('TEST')).to.be.null;
-    });
-
-    it('should return null when string is not a 3 part delimited string', () => {
-      expect(formatDateCellValue('01-01')).to.be.null;
-      expect(formatDateCellValue('01-01-2024-01')).to.be.null;
-      expect(formatDateCellValue('01/01')).to.be.null;
-    });
-
-    it('should return null when string is not a valid date', () => {
-      expect(formatDateCellValue('99-99-9999')).to.be.null;
-    });
-
-    it('should format 2024-01-31', () => {
-      expect(formatDateCellValue('2024-01-31')).to.equal('2024-01-31');
-    });
-
-    it('should format ambiguous 2024-01-02', () => {
-      expect(formatDateCellValue('2024-01-02')).to.equal('2024-01-02');
-    });
-
-    it('should format 2024/01/31', () => {
-      expect(formatDateCellValue('2024/01/31')).to.equal('2024-01-31');
-    });
-
-    it('should format ambiguous 2024/01/02', () => {
-      expect(formatDateCellValue('2024/01/02')).to.equal('2024-01-02');
-    });
-
-    it('should format 31-01-2024', () => {
-      expect(formatDateCellValue('31-01-2024')).to.equal('2024-01-31');
-    });
-
-    it('should format ambiguous 02-01-2024', () => {
-      expect(formatDateCellValue('02-01-2024')).to.equal('2024-01-02');
-    });
-
-    it('should format 31/01/2024', () => {
-      expect(formatDateCellValue('31/01/2024')).to.equal('2024-01-31');
-    });
-
-    it('should format ambiguous 02/01/2024', () => {
-      expect(formatDateCellValue('02/01/2024')).to.equal('2024-01-02');
-    });
-
-    it('should format 01-31-2024', () => {
-      expect(formatDateCellValue('01-31-2024')).to.equal('2024-01-31');
-    });
-
-    it('should format ambiguous 01-02-2024', () => {
-      expect(formatDateCellValue('01-02-2024')).to.equal('2024-02-01');
-    });
-
-    it('should format 01/31/2024', () => {
-      expect(formatDateCellValue('01/31/2024')).to.equal('2024-01-31');
-    });
-
-    it('should format ambiguous 01/02/2024', () => {
-      expect(formatDateCellValue('01/02/2024')).to.equal('2024-02-01');
-    });
-
-    it('should format 2024-01-31', () => {
-      expect(formatDateCellValue('2024-01-31')).to.equal('2024-01-31');
-    });
-
-    it('should format 2024/01/31', () => {
-      expect(formatDateCellValue('2024/01/31')).to.equal('2024-01-31');
-    });
-
-    it('should format ambiguous 2024/01/02', () => {
-      expect(formatDateCellValue('2024/01/02')).to.equal('2024-01-02');
     });
   });
 
