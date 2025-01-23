@@ -1,4 +1,5 @@
 import { AxiosInstance } from 'axios';
+
 import { ICreateCritterMortality } from 'features/surveys/view/survey-animals/animal';
 import { ICauseOfDeathOption, IMortalityResponse } from 'interfaces/useCritterApi.interface';
 

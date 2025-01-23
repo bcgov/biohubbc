@@ -194,6 +194,7 @@ export type ILocationCreate = {
 };
 
 export type ICaptureResponse = {
+  critter_id: string;
   capture_id: string;
   capture_date: string;
   capture_method_id: string | null;
@@ -204,7 +205,6 @@ export type ICaptureResponse = {
   release_comment: string | null;
   capture_location?: ILocationResponse | null;
   release_location?: ILocationResponse | null;
-  critter_id?: string;
 };
 
 export type IMarkingResponse = {
@@ -291,6 +291,7 @@ export type ICauseOfDeathOption = {
 };
 
 export type IMortalityResponse = {
+  critter_id: string;
   mortality_id: string;
   location_id: string | null;
   mortality_timestamp: string;
@@ -302,7 +303,6 @@ export type IMortalityResponse = {
   ultimate_cause_of_death_confidence: string;
   ultimate_predated_by_itis_tsn: number | null;
   mortality_comment: string | null;
-  critter_id?: string;
 };
 
 export type IFamilyParentResponse = {
@@ -333,7 +333,7 @@ export type ICritterDetailedResponse = {
   responsible_region_nr_id: string;
   critter_comment: string | null;
   collection_units: ICritterCollectionUnitResponse[];
-  mortality: IMortalityResponse[];
+  mortality: Omit<IMortalityResponse,'critter_id'>[];
   captures: ICaptureResponse[];
   markings: IMarkingResponse[];
   measurements: {

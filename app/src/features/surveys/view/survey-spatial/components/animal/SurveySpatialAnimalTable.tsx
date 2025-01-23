@@ -1,6 +1,5 @@
 import { mdiArrowTopRight } from '@mdi/js';
 import Box from '@mui/material/Box';
-import Chip from '@mui/material/Chip';
 import { GridColDef } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
@@ -10,7 +9,7 @@ import { ScientificNameTypography } from 'features/surveys/animals/components/Sc
 import { useSurveyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { IMarkingResponse, ICaptureResponse, IMortalityResponse } from 'interfaces/useCritterApi.interface';
+import { ICaptureResponse, IMortalityResponse } from 'interfaces/useCritterApi.interface';
 import { useEffect } from 'react';
 
 const rowHeight = 52;
@@ -20,7 +19,6 @@ interface IAnimalData {
   animal_id: string;
   scientificName: string;
   sex: string;
-  marking: JSX.Element;
 }
 
 interface ISurveyDataAnimalTableProps {
@@ -39,7 +37,7 @@ export const SurveySpatialAnimalTable = (props: ISurveyDataAnimalTableProps) => 
 
   const fetchCapturesAndMortalities = async () => {
     const captures: ICaptureResponse[] = [];
-    const mortalities: IMortalityResponse[] = [];
+    const mortalities: Omit<IMortalityResponse,'critter_id'>[] = [];
 
     animalsDataLoader.data?.forEach((animal) => {
       if (animal.captures) captures.push(...animal.captures);
@@ -49,36 +47,12 @@ export const SurveySpatialAnimalTable = (props: ISurveyDataAnimalTableProps) => 
     return { captures, mortalities };
   };
 
-  const markingsDataLoader = useDataLoader(async () => {
-    const { captures, mortalities } = await fetchCapturesAndMortalities();
 
-    const critterIdToEventIds = animals.map((animal) => ({
-      critterId: animal.critterbase_critter_id,
-      captureIds: captures.filter((capture) => capture.critter_id === animal.critterbase_critter_id).map((c) => c.capture_id),
-      mortalityIds: mortalities.filter((mortality) => mortality.critter_id === animal.critterbase_critter_id).map((m) => m.mortality_id),
-    }));
-
-    return critterIdToEventIds.map(({ critterId, captureIds, mortalityIds }) => {
-      const relevantMarkings = (animalsDataLoader.data || []).flatMap((animal) => {
-        return (animal.markings || []).filter((marking: IMarkingResponse) => {
-          return (
-            captureIds.includes(marking.capture_id) ||
-            (marking.mortality_id && mortalityIds.includes(marking.mortality_id))
-          );
-        });
-      });
-
-      return {
-        critterId,
-        markings: relevantMarkings,
-      };
-    });
-  });
 
   useEffect(() => {
     if (animals.length) {
       animalsDataLoader.load();
-      markingsDataLoader.load();
+
     }
   }, [animals]);
 
@@ -89,33 +63,11 @@ export const SurveySpatialAnimalTable = (props: ISurveyDataAnimalTableProps) => 
         return str.trim().charAt(0).toUpperCase() + str.trim().slice(1).toLowerCase();
       };
 
-      const markings = markingsDataLoader.data?.find((data) => String(data.critterId) === String(item.critter_id))?.markings || [];
-
-      const markingChips = markings.map((marking: IMarkingResponse) => {
-        const eventDate = marking.capture_id
-          ? item.captures?.find((capture) => capture.capture_id === marking.capture_id)?.capture_date
-          : item.mortality?.find((mortality) => mortality.mortality_id === marking.mortality_id)?.mortality_timestamp;
-
-        const displayText = `${marking.marking_type} (${marking.primary_colour || 'N/A'}, ${marking.secondary_colour || 'N/A'}) - ${
-          marking.identifier || 'Unknown'
-        } [${eventDate || 'No Date'}]`;
-
-        return (
-          <Chip
-            key={marking.marking_id}
-            label={displayText}
-            variant="outlined"
-            onClick={() => console.log(`Marking clicked: ${marking.marking_id}`)}
-          />
-        );
-      });
-
       return {
         id: item.critter_id,
         animal_id: item.animal_id ?? '',
         scientificName: item.itis_scientific_name,
-        sex: capitalizeFirstLetter(item.sex || 'Unknown'),
-        marking: <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>{markingChips}</Box>,
+        sex: capitalizeFirstLetter(item.sex || 'Unknown')
       };
     }) ?? [];
 
@@ -136,12 +88,6 @@ export const SurveySpatialAnimalTable = (props: ISurveyDataAnimalTableProps) => 
       headerName: 'Sex',
       flex: 1,
       renderCell: (params) => <>{params.value ?? 'Unknown'}</>
-    },
-    {
-      field: 'marking',
-      headerName: 'Marking',
-      flex: 1,
-      renderCell: (params) => params.value
     }
   ];
 
@@ -149,7 +95,7 @@ export const SurveySpatialAnimalTable = (props: ISurveyDataAnimalTableProps) => 
     <LoadingGuard
       isLoading={
         animals.length > 0 &&
-        (props.isLoading || animalsDataLoader.isLoading || markingsDataLoader.isLoading || !animalsDataLoader.isReady)
+        (props.isLoading || animalsDataLoader.isLoading || !animalsDataLoader.isReady)
       }
       isLoadingFallback={
         <Box flex="1 1 auto">
