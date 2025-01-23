@@ -57,16 +57,16 @@ import {
   CritterbaseService
 } from '../critterbase-service';
 import { DBService } from '../db-service';
+import {
+  pullEnvironmentsFromWorkSheetRowObject,
+  pullMeasurementsFromWorkSheetRowObject,
+  pullSamplingDataFromWorksheetRowObject
+} from '../import-services/observation/utils';
 import { ObservationSubCountEnvironmentService } from '../observation-subcount-environment-service';
 import { ObservationSubCountMeasurementService } from '../observation-subcount-measurement-service';
 import { PlatformService } from '../platform-service';
 import { SamplePeriodService } from '../sample-period-service';
 import { SubCountService } from '../subcount-service';
-import {
-  pullEnvironmentsFromWorkSheetRowObject,
-  pullMeasurementsFromWorkSheetRowObject,
-  pullSamplingDataFromWorksheetRowObject
-} from './utils';
 
 export const defaultLog = getLogger('services/observation-services/observation-service');
 const defaultSubcountSign = 'direct sighting';
