@@ -214,12 +214,29 @@ export interface SubcountToSave {
   quantitative_environments: SubcountQuantitativeEnvironment[];
 }
 
-export interface ICreateObservationRequest {
-  standardColumns: Omit<StandardObservationColumns, 'survey_observation_id'>;
-  subcounts: SubcountToSave[];
-}
-
 export interface IObservationTableRowToSave {
   standardColumns: StandardObservationColumns;
   subcounts: SubcountToSave[];
+}
+
+export interface ICreateObservationRequest {
+  standardColumns: {
+    itis_tsn: number | null;
+    itis_scientific_name: string | null;
+    survey_sample_period_id: number | null;
+    count: number | null;
+    observation_date: string | null;
+    observation_time: string | null;
+    latitude: number | null;
+    longitude: number | null;
+    qualitative_environments: SubcountQualitativeEnvironment[];
+    quantitative_environments: SubcountQuantitativeEnvironment[];
+  };
+  subcounts: {
+    observation_subcount_id: number | null;
+    subcount: number | null;
+    comment: string | null;
+    qualitative_measurements: SubcountQualitativeMeasurement[];
+    quantitative_measurements: SubcountQuantitativeMeasurement[];
+  }[];
 }

@@ -4,11 +4,11 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { grey } from '@mui/material/colors';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
-import { IObservationForm } from 'features/surveys/observations/form/ObservationForm.interface';
 import {
   SamplingInformationCache,
-  SamplingInformationCachedTechnique
-} from 'features/surveys/observations/form/sampling/hooks/useSamplingInformationCache';
+  SamplingInformationCachedPeriod
+} from 'features/surveys/observations/form/components/sampling/hooks/useSamplingInformationCache';
+import { ObservationFormData } from 'features/surveys/observations/form/ObservationForm.interface';
 import { useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
@@ -16,21 +16,22 @@ import useIsMounted from 'hooks/useIsMounted';
 import { get } from 'lodash-es';
 import debounce from 'lodash-es/debounce';
 import { useEffect, useMemo, useState } from 'react';
+import { getDateTimeLabel } from 'utils/datetime';
 
-export interface IMethodTechniqueFieldProps {
+export interface ISamplingPeriodFieldProps {
   samplingInformationCache: SamplingInformationCache;
 }
 
 /**
- * Method technique formik field.
+ * Survey sample period formik field.
  *
- * @param {IMethodTechniqueFieldProps} props
+ * @param {ISamplingPeriodFieldProps} prop
  * @return {*}
  */
-export const MethodTechniqueField = (props: IMethodTechniqueFieldProps) => {
+export const SamplingPeriodField = (props: ISamplingPeriodFieldProps) => {
   const { samplingInformationCache } = props;
 
-  const { values, errors, touched, setFieldValue } = useFormikContext<IObservationForm>();
+  const { values, errors, touched, setFieldValue } = useFormikContext<ObservationFormData>();
 
   const biohubApi = useBiohubApi();
   const surveyContext = useSurveyContext();
@@ -38,57 +39,61 @@ export const MethodTechniqueField = (props: IMethodTechniqueFieldProps) => {
   const isMounted = useIsMounted();
 
   // The currently selected option
-  const [currentOption, setCurrentOption] = useState<SamplingInformationCachedTechnique | null>(
-    values.standardColumns.method_technique_id
-      ? samplingInformationCache.getCurrentTechnique(values.standardColumns.method_technique_id)
+  const [currentOption, setCurrentOption] = useState<SamplingInformationCachedPeriod | null>(
+    values.standardColumns.survey_sample_period_id
+      ? samplingInformationCache.getCurrentPeriod(values.standardColumns.survey_sample_period_id)
       : null
   );
-  const [options, setOptions] = useState<SamplingInformationCachedTechnique[]>(
-    samplingInformationCache.getTechniquesForRow(values.standardColumns.survey_sample_site_id)
+  const [options, setOptions] = useState<SamplingInformationCachedPeriod[]>(
+    samplingInformationCache.getPeriodsForRow(
+      values.standardColumns.survey_sample_site_id,
+      values.standardColumns.method_technique_id
+    )
   );
   // Is control loading (search in progress)
   const [isLoading, setIsLoading] = useState(false);
 
   /**
    * Debounced function to get the options for the autocomplete, based on the search term.
-   * Includes the cached method techniques in the resulting options array.
+   * Includes the cached sample periods in the resulting options array.
    */
   const getOptions = useMemo(
     () =>
-      debounce(async (searchTerm: string) => {
-        const keyword = searchTerm?.trim();
-
+      debounce(async (_searchTerm: string) => {
         const surveySampleSiteId = values.standardColumns.survey_sample_site_id;
+        const methodTechniqueId = values.standardColumns.method_technique_id;
 
-        if (!surveySampleSiteId) {
-          // Currently the control requires that a site be selected first, before techniques can be searched/selected
+        if (!surveySampleSiteId || !methodTechniqueId) {
+          // Currently the control requires that a site and technique be selected first, before periods can be
+          // searched/selected
           setIsLoading(false);
           return;
         }
 
-        const response = await biohubApi.technique.findTechniques({
+        const response = await biohubApi.samplingPeriod.findSamplePeriods({
           survey_id: surveyContext.surveyId,
-          sample_site_id: surveySampleSiteId,
-          keyword
+          sample_site_id: [surveySampleSiteId],
+          method_technique_id: [methodTechniqueId]
         });
 
         if (!isMounted()) {
           return;
         }
 
-        const options: SamplingInformationCachedTechnique[] = response.techniques.map((item) => ({
-          method_technique_id: item.method_technique_id,
-          survey_sample_site_id: surveySampleSiteId,
-          method_response_metric_id: item.method_response_metric_id,
-          label: item.name,
-          value: item.method_technique_id
-        }));
+        const options = response.periods
+          .map((item) => ({
+            ...item,
+            label: getDateTimeLabel(item.start_date, item.start_time, item.end_date, item.end_time),
+            value: item.survey_sample_period_id
+          })) // Filter out any periods that do not have a start and end date (and should not be selectable in the UI)
+          .filter((item) => item.start_date && item.end_date);
 
-        // Update the cached method techniques
-        samplingInformationCache.updateCachedMethodTechniques(options);
+        samplingInformationCache.updateCachedSamplingPeriods(options);
 
-        // Get the latest valid options for the current row
-        const validOptions = samplingInformationCache.getTechniquesForRow(values.standardColumns.survey_sample_site_id);
+        const validOptions = samplingInformationCache.getPeriodsForRow(
+          values.standardColumns.survey_sample_site_id,
+          values.standardColumns.method_technique_id
+        );
 
         // Set the options for the autocomplete
         setOptions(validOptions);
@@ -96,8 +101,9 @@ export const MethodTechniqueField = (props: IMethodTechniqueFieldProps) => {
         setIsLoading(false);
       }, 500),
     [
-      biohubApi.technique,
+      biohubApi.samplingPeriod,
       values.standardColumns.survey_sample_site_id,
+      values.standardColumns.method_technique_id,
       isMounted,
       samplingInformationCache,
       surveyContext.surveyId
@@ -105,32 +111,42 @@ export const MethodTechniqueField = (props: IMethodTechniqueFieldProps) => {
   );
 
   useEffect(() => {
-    if (!values.standardColumns.survey_sample_site_id) {
-      // If the site not selected, then unset any selected technique, as its value is dependent
-      // on the site.
+    if (!values.standardColumns.survey_sample_site_id || !values.standardColumns.method_technique_id) {
+      // If either the site or technique is not selected, then unset any selected period, as its value is dependent
+      // on the site and technique.
       setCurrentOption(null);
       return;
     }
 
-    if (currentOption?.survey_sample_site_id !== values.standardColumns.survey_sample_site_id) {
-      // If the site has changed, then unset any selected technique, and update the options to reflect the
-      // valid techniques for the new site.
+    if (
+      currentOption?.survey_sample_site_id !== values.standardColumns.survey_sample_site_id ||
+      currentOption?.method_technique_id !== values.standardColumns.method_technique_id
+    ) {
+      // If the site or technique has changed, then unset any selected period, and update the options to reflect the
+      // valid periods for the new site and technique.
       setCurrentOption(null);
-      // Set the options to any previously cached techniques for the new site
-      setOptions(samplingInformationCache.getTechniquesForRow(values.standardColumns.survey_sample_site_id));
-      // Trigger a search to get all of the techniques for the new site
+      // Set the options to any previously cached periods for the new site + technique
+      setOptions(
+        samplingInformationCache.getPeriodsForRow(
+          values.standardColumns.survey_sample_site_id,
+          values.standardColumns.method_technique_id
+        )
+      );
+      // Trigger a search to get all of the periods for the new site + technique
       getOptions('');
     }
   }, [
+    currentOption?.method_technique_id,
     currentOption?.survey_sample_site_id,
     getOptions,
     samplingInformationCache,
+    values.standardColumns.method_technique_id,
     values.standardColumns.survey_sample_site_id
   ]);
 
   return (
     <Autocomplete
-      id="standardColumns.method_technique_id"
+      id="standardColumns.survey_sample_period_id"
       noOptionsText="No matching options"
       autoHighlight
       fullWidth
@@ -152,10 +168,8 @@ export const MethodTechniqueField = (props: IMethodTechniqueFieldProps) => {
         // Set the autocomplete value to the selected option
         setCurrentOption(selectedOption);
 
-        // If the method technique is changed, clear sampling period as it is dependent on the method technique
-        setFieldValue('standardColumns.survey_sample_period_id', null);
-        // Set the data grid cell value for the selected method technique option
-        setFieldValue('standardColumns.method_technique_id', selectedOption?.value);
+        // Set the data grid cell value for the selected sampling period option
+        setFieldValue('standardColumns.survey_sample_period_id', selectedOption?.value);
 
         setIsLoading(false);
       }}
@@ -175,11 +189,12 @@ export const MethodTechniqueField = (props: IMethodTechniqueFieldProps) => {
           fullWidth
           placeholder="Search for a technique"
           error={
-            get(touched, 'standardColumns.method_technique_id') &&
-            Boolean(get(errors, 'standardColumns.method_technique_id'))
+            get(touched, 'standardColumns.survey_sample_period_id') &&
+            Boolean(get(errors, 'standardColumns.survey_sample_period_id'))
           }
           helperText={
-            get(touched, 'standardColumns.method_technique_id') && get(errors, 'standardColumns.method_technique_id')
+            get(touched, 'standardColumns.survey_sample_period_id') &&
+            get(errors, 'standardColumns.survey_sample_period_id')
           }
           InputProps={{
             ...params.InputProps,
@@ -209,7 +224,7 @@ export const MethodTechniqueField = (props: IMethodTechniqueFieldProps) => {
           </Box>
         );
       }}
-      data-testid={'method_technique-field'}
+      data-testid={'survey_sample_period-field'}
     />
   );
 };

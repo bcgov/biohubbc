@@ -4,11 +4,11 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { grey } from '@mui/material/colors';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
-import { IObservationForm } from 'features/surveys/observations/form/ObservationForm.interface';
 import {
   SamplingInformationCache,
   SamplingInformationCachedSite
-} from 'features/surveys/observations/form/sampling/hooks/useSamplingInformationCache';
+} from 'features/surveys/observations/form/components/sampling/hooks/useSamplingInformationCache';
+import { ObservationFormData } from 'features/surveys/observations/form/ObservationForm.interface';
 import { useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
@@ -30,7 +30,7 @@ export interface ISamplingSiteFieldProps {
 export const SamplingSiteField = (props: ISamplingSiteFieldProps) => {
   const { samplingInformationCache } = props;
 
-  const { values, errors, touched, setFieldValue } = useFormikContext<IObservationForm>();
+  const { values, errors, touched, setFieldValue } = useFormikContext<ObservationFormData>();
 
   const biohubApi = useBiohubApi();
   const surveyContext = useSurveyContext();

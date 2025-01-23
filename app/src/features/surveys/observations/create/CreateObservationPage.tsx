@@ -13,7 +13,8 @@ import { CreateObservationI18N } from 'constants/i18n';
 import { CodesContext } from 'contexts/codesContext';
 import { DialogContext } from 'contexts/dialogContext';
 import { TaxonomyContextProvider } from 'contexts/taxonomyContext';
-import { IObservationForm } from 'features/surveys/observations/form/ObservationForm.interface';
+import ObservationForm from 'features/surveys/observations/form/ObservationForm';
+import { ObservationFormData } from 'features/surveys/observations/form/ObservationForm.interface';
 import { FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -30,19 +31,18 @@ import { useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 import { v4 } from 'uuid';
-import ObservationForm from '../form/ObservationForm';
 
 export const initialSubcountValues = {
   observation_subcount_id: null,
   observation_subcount_sign_id: null,
-  subcount: null,
+  count: null,
   comment: null,
   measurements: [],
   environments: [],
   _id: v4()
 };
 
-const initialObservationValues: IObservationForm = {
+const initialObservationFormData: ObservationFormData = {
   standardColumns: {
     survey_observation_id: null,
     itis_tsn: null,
@@ -69,7 +69,7 @@ const initialObservationValues: IObservationForm = {
 const CreateObservationPage = () => {
   const history = useHistory();
   const biohubApi = useBiohubApi();
-  const formikRef = useRef<FormikProps<IObservationForm>>(null);
+  const formikRef = useRef<FormikProps<ObservationFormData>>(null);
 
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);
@@ -121,7 +121,7 @@ const CreateObservationPage = () => {
    * @param {ICreateObservationRequest} observationPostObject
    * @return {*}
    */
-  const createObservation = async (observationPostObject: IObservationForm) => {
+  const createObservation = async (formData: ObservationFormData) => {
     setIsSaving(true);
     try {
       const {
@@ -131,8 +131,26 @@ const CreateObservationPage = () => {
         observation_time,
         survey_sample_period_id,
         longitude,
-        latitude
-      } = observationPostObject.standardColumns;
+        latitude,
+        environments
+      } = formData.standardColumns;
+
+      const quantitative_environments: SubcountQuantitativeEnvironment[] = [];
+      const qualitative_environments: SubcountQualitativeEnvironment[] = [];
+
+      for (const environment of environments) {
+        if ('value' in environment) {
+          quantitative_environments.push({
+            environment_quantitative_id: environment.environment_quantitative_id,
+            value: environment.value
+          });
+        } else if ('environment_qualitative_option_id' in environment) {
+          qualitative_environments.push({
+            environment_qualitative_id: environment.environment_qualitative_id,
+            environment_qualitative_option_id: environment.environment_qualitative_option_id
+          });
+        }
+      }
 
       const standardColumns: ICreateObservationRequest['standardColumns'] = {
         itis_scientific_name,
@@ -142,11 +160,13 @@ const CreateObservationPage = () => {
         survey_sample_period_id,
         latitude,
         longitude,
-        count: observationPostObject.subcounts.reduce((sum, subcount) => sum + (subcount.subcount || 0), 0)
+        count: formData.subcounts.reduce((sum, subcount) => sum + (subcount.count || 0), 0),
+        qualitative_environments,
+        quantitative_environments
       };
 
-      const subcounts: ICreateObservationRequest['subcounts'] = observationPostObject.subcounts.map((subcount) => {
-        const { measurements, environments, ...subcountProps } = subcount;
+      const subcounts: ICreateObservationRequest['subcounts'] = formData.subcounts.map((subcount) => {
+        const { measurements, ...subcountProps } = subcount;
 
         const quantitative_measurements: SubcountQuantitativeMeasurement[] = [];
         const qualitative_measurements: SubcountQualitativeMeasurement[] = [];
@@ -165,32 +185,13 @@ const CreateObservationPage = () => {
           }
         }
 
-        const quantitative_environments: SubcountQuantitativeEnvironment[] = [];
-        const qualitative_environments: SubcountQualitativeEnvironment[] = [];
-
-        for (const environment of environments) {
-          if ('value' in environment) {
-            quantitative_environments.push({
-              environment_quantitative_id: environment.environment_quantitative_id,
-              value: environment.value
-            });
-          } else if ('environment_qualitative_option_id' in environment) {
-            qualitative_environments.push({
-              environment_qualitative_id: environment.environment_qualitative_id,
-              environment_qualitative_option_id: environment.environment_qualitative_option_id
-            });
-          }
-        }
-
         return {
           observation_subcount_id: subcountProps.observation_subcount_id,
-          observation_subcount_sign_id: observationPostObject.standardColumns.observation_sign_id,
+          observation_subcount_sign_id: formData.standardColumns.observation_sign_id,
           comment: subcountProps.comment,
-          subcount: subcountProps.subcount,
+          subcount: subcountProps.count,
           quantitative_measurements,
-          qualitative_measurements,
-          quantitative_environments,
-          qualitative_environments
+          qualitative_measurements
         };
       });
 
@@ -266,8 +267,8 @@ const CreateObservationPage = () => {
         <Paper sx={{ p: 5 }}>
           <TaxonomyContextProvider>
             <ObservationForm
-              initialData={initialObservationValues}
-              handleSubmit={(formikData) => createObservation(formikData)}
+              initialFormData={initialObservationFormData}
+              onSubmit={(formData) => createObservation(formData)}
               formikRef={formikRef}
             />
           </TaxonomyContextProvider>

@@ -4,7 +4,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Collapse from '@mui/material/Collapse';
 import { DualAutocompleteField } from 'components/fields/dual-autocomplete-field/DualAutocompleteField';
-import { IObservationForm } from 'features/surveys/observations/form/ObservationForm.interface';
+import { ObservationFormData } from 'features/surveys/observations/form/ObservationForm.interface';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
@@ -25,7 +25,7 @@ const initialEnvironmentValues = {
 };
 
 interface IObservationEnvironmentFormProps {
-  formikSectionName: string;
+  formikPrefixPath: string;
 }
 
 /**
@@ -35,9 +35,9 @@ interface IObservationEnvironmentFormProps {
  * @return {*}
  */
 export const ObservationEnvironmentForm = (props: IObservationEnvironmentFormProps) => {
-  const { formikSectionName } = props;
+  const { formikPrefixPath } = props;
 
-  const { values } = useFormikContext<IObservationForm>();
+  const { values } = useFormikContext<ObservationFormData>();
 
   const biohubApi = useBiohubApi();
 
@@ -50,11 +50,11 @@ export const ObservationEnvironmentForm = (props: IObservationEnvironmentFormPro
   const environments: (
     | ObservationSubcountQualitativeEnvironmentObject
     | ObservationSubcountQuantitativeEnvironmentObject
-  )[] = get(values, formikSectionName) ?? [];
+  )[] = get(values, formikPrefixPath) ?? [];
 
   return (
     <FieldArray
-      name={formikSectionName}
+      name={formikPrefixPath}
       render={(arrayHelpers: FieldArrayRenderProps) => {
         return (
           <>
@@ -74,7 +74,7 @@ export const ObservationEnvironmentForm = (props: IObservationEnvironmentFormPro
                           label: item.name
                         }))
                       ]}
-                      categoryFormikFieldName={`${formikSectionName}[${index}].environment_quantitative_id`}
+                      categoryFormikFieldName={`${formikPrefixPath}[${index}].environment_quantitative_id`}
                       getCategoryDataType={(categoryId) => {
                         const quantitative = (environmentsDataLoader.data?.quantitative_environments ?? []).find(
                           (item) => item.environment_quantitative_id === categoryId
@@ -112,8 +112,8 @@ export const ObservationEnvironmentForm = (props: IObservationEnvironmentFormPro
                           (item) => item.environment_quantitative_id === categoryId
                         );
                         return quantitative
-                          ? `${formikSectionName}[${index}].value`
-                          : `${formikSectionName}[${index}].environment_qualitative_option_id`;
+                          ? `${formikPrefixPath}[${index}].value`
+                          : `${formikPrefixPath}[${index}].environment_qualitative_option_id`;
                       }}
                       onDelete={() => arrayHelpers.remove(index)}
                     />

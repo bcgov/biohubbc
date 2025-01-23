@@ -2,10 +2,10 @@ import { mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
-import { MethodTechniqueField } from 'features/surveys/observations/form/sampling/components/MethodTechniqueField';
-import { SamplingPeriodField } from 'features/surveys/observations/form/sampling/components/SamplingPeriodField';
-import { SamplingSiteField } from 'features/surveys/observations/form/sampling/components/SamplingSiteField';
-import { useSamplingInformationCache } from 'features/surveys/observations/form/sampling/hooks/useSamplingInformationCache';
+import { MethodTechniqueField } from 'features/surveys/observations/form/components/sampling/components/MethodTechniqueField';
+import { SamplingPeriodField } from 'features/surveys/observations/form/components/sampling/components/SamplingPeriodField';
+import { SamplingSiteField } from 'features/surveys/observations/form/components/sampling/components/SamplingSiteField';
+import { useSamplingInformationCache } from 'features/surveys/observations/form/components/sampling/hooks/useSamplingInformationCache';
 import React from 'react';
 
 interface IObservationSamplingFormProps {
@@ -13,7 +13,13 @@ interface IObservationSamplingFormProps {
   setShowSamplingInformation: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const ObservationSamplingForm = (props: IObservationSamplingFormProps) => {
+/**
+ * Form component for the observation sampling information.
+ *
+ * @param {IObservationSamplingFormProps} props
+ * @return {*}
+ */
+export const ObservationSamplingForm = (props: IObservationSamplingFormProps) => {
   const { showSamplingInformation, setShowSamplingInformation } = props;
 
   const samplingInformationCache = useSamplingInformationCache();
@@ -43,5 +49,3 @@ const ObservationSamplingForm = (props: IObservationSamplingFormProps) => {
     </>
   );
 };
-
-export default ObservationSamplingForm;

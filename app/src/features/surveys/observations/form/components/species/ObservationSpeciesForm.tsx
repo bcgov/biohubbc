@@ -4,7 +4,7 @@ import Stack from '@mui/material/Stack';
 import AutocompleteField from 'components/fields/AutocompleteField';
 import SpeciesAutocompleteField from 'components/species/components/SpeciesAutocompleteField';
 import SpeciesSelectedCard from 'components/species/components/SpeciesSelectedCard';
-import { IObservationForm } from 'features/surveys/observations/form/ObservationForm.interface';
+import { ObservationFormData } from 'features/surveys/observations/form/ObservationForm.interface';
 import { useFormikContext } from 'formik';
 import { useCodesContext } from 'hooks/useContext';
 import { get } from 'lodash-es';
@@ -12,11 +12,17 @@ import { useEffect } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 
 interface IObservationSpeciesFormProps {
-  formikSectionName: string;
+  formikPrefixPath: string;
 }
 
-const ObservationSpeciesForm = (props: IObservationSpeciesFormProps) => {
-  const { formikSectionName } = props;
+/**
+ * Form component for the observation species.
+ *
+ * @param {IObservationSpeciesFormProps} props
+ * @return {*}
+ */
+export const ObservationSpeciesForm = (props: IObservationSpeciesFormProps) => {
+  const { formikPrefixPath } = props;
 
   const codesContext = useCodesContext();
 
@@ -24,22 +30,22 @@ const ObservationSpeciesForm = (props: IObservationSpeciesFormProps) => {
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
 
-  const { setFieldValue, values, errors } = useFormikContext<IObservationForm>();
+  const { setFieldValue, values, errors } = useFormikContext<ObservationFormData>();
 
   return (
     <Stack spacing={1}>
       <SpeciesAutocompleteField
-        formikFieldName={`${formikSectionName}.itis_tsn`}
+        formikFieldName={`${formikPrefixPath}.itis_tsn`}
         label="Species"
         required={true}
         handleSpecies={(species) => {
           if (species.tsn) {
-            setFieldValue(`${formikSectionName}.itis_tsn`, species.tsn);
-            setFieldValue(`${formikSectionName}.itis_scientific_name`, species.scientificName);
+            setFieldValue(`${formikPrefixPath}.itis_tsn`, species.tsn);
+            setFieldValue(`${formikPrefixPath}.itis_scientific_name`, species.scientificName);
           }
         }}
         clearOnSelect={true}
-        error={get(errors, `${formikSectionName}.itis_tsn`)}
+        error={get(errors, `${formikPrefixPath}.itis_tsn`)}
       />
       <TransitionGroup>
         {values.standardColumns.itis_tsn && values.standardColumns.itis_scientific_name && (
@@ -52,7 +58,7 @@ const ObservationSpeciesForm = (props: IObservationSpeciesFormProps) => {
                 tsn: values.standardColumns.itis_tsn ?? ''
               }}
               handleRemove={() => {
-                setFieldValue(`${formikSectionName}.itis_tsn`, null);
+                setFieldValue(`${formikPrefixPath}.itis_tsn`, null);
               }}
             />
           </Collapse>
@@ -60,8 +66,8 @@ const ObservationSpeciesForm = (props: IObservationSpeciesFormProps) => {
       </TransitionGroup>
       <AutocompleteField
         label="Sign"
-        id={`${formikSectionName}.observation_sign_id`}
-        name={`${formikSectionName}.observation_sign_id`}
+        id={`${formikPrefixPath}.observation_sign_id`}
+        name={`${formikPrefixPath}.observation_sign_id`}
         options={
           codesContext.codesDataLoader.data?.observation_subcount_signs.map((sign) => ({
             label: sign.name,
@@ -73,5 +79,3 @@ const ObservationSpeciesForm = (props: IObservationSpeciesFormProps) => {
     </Stack>
   );
 };
-
-export default ObservationSpeciesForm;
