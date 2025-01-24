@@ -113,7 +113,7 @@ export class ImportMeasurementsService extends DBService {
             critter_id: getCritterIdFromState(row),
             capture_id: getCaptureIdFromState(row),
             taxon_measurement_id: getTaxonMeasurementIdFromState(row, stateMeasurement),
-            value: getQuantitativeValueFromState(stateMeasurement)
+            value: getQuantitativeValueFromState(stateMeasurement, stateMeasurement)
           });
         }
       });

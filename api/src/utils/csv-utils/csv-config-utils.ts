@@ -10,13 +10,13 @@ import { CSVCell, CSVConfig, CSVHeaderConfig, CSVRow } from './csv-config-valida
  * @template StaticHeaderType - The static header type
  * @class CSVConfigUtils
  */
-export class CSVConfigUtils<StaticHeaderType = Uppercase<string>> {
-  _config: CSVConfig<StaticHeaderType>;
+export class CSVConfigUtils<StaticHeaderType extends Uppercase<string> = Uppercase<string>> {
+  config: CSVConfig<StaticHeaderType>;
   worksheet: WorkSheet;
   worksheetRows: CSVRow[];
 
   constructor(worksheet: WorkSheet, config: CSVConfig<StaticHeaderType>) {
-    this._config = config;
+    this.config = config;
     this.worksheet = worksheet;
     this.worksheetRows = getWorksheetRowObjects(worksheet);
   }
@@ -27,7 +27,7 @@ export class CSVConfigUtils<StaticHeaderType = Uppercase<string>> {
    * @returns {StaticHeaderType[]} - The config headers
    */
   get configStaticHeaders(): StaticHeaderType[] {
-    return Object.keys(this._config.staticHeadersConfig) as StaticHeaderType[];
+    return Object.keys(this.config.staticHeadersConfig) as StaticHeaderType[];
   }
 
   /**
@@ -61,7 +61,7 @@ export class CSVConfigUtils<StaticHeaderType = Uppercase<string>> {
         staticHeaders.push(header);
       }
 
-      const aliases = this._config.staticHeadersConfig[header].aliases;
+      const aliases = this.config.staticHeadersConfig[header].aliases;
 
       for (const alias of aliases) {
         if (worksheetHeaders.has(alias)) {
@@ -92,7 +92,7 @@ export class CSVConfigUtils<StaticHeaderType = Uppercase<string>> {
         staticHeaders.push(header);
       }
 
-      const aliases = this._config.staticHeadersConfig[header].aliases;
+      const aliases = this.config.staticHeadersConfig[header].aliases;
 
       for (const alias of aliases) {
         if (worksheetHeaders.has(alias)) {
@@ -135,7 +135,7 @@ export class CSVConfigUtils<StaticHeaderType = Uppercase<string>> {
     }
 
     // Attempt to find the matching header from the header aliases
-    for (const alias of this._config.staticHeadersConfig[header]?.aliases ?? []) {
+    for (const alias of this.config.staticHeadersConfig[header]?.aliases ?? []) {
       if (alias in row) {
         return alias;
       }
@@ -150,7 +150,7 @@ export class CSVConfigUtils<StaticHeaderType = Uppercase<string>> {
    * @returns {void}
    */
   setStaticHeaderConfig(header: StaticHeaderType, headerConfig: CSVHeaderConfig): void {
-    this._config.staticHeadersConfig[header] = { ...this._config.staticHeadersConfig[header], ...headerConfig };
+    this.config.staticHeadersConfig[header] = { ...this.config.staticHeadersConfig[header], ...headerConfig };
   }
 
   /**
@@ -173,12 +173,12 @@ export class CSVConfigUtils<StaticHeaderType = Uppercase<string>> {
    */
   getConfig(): CSVConfig<StaticHeaderType> {
     for (const header of this.configStaticHeaders) {
-      if (!this._config.staticHeadersConfig[header].validateCell) {
+      if (!this.config.staticHeadersConfig[header].validateCell) {
         throw new Error(`Invalid CSV config. Missing 'validateCell' for static header: ${header}`);
       }
     }
 
-    return this._config;
+    return this.config;
   }
 
   /**
@@ -195,7 +195,7 @@ export class CSVConfigUtils<StaticHeaderType = Uppercase<string>> {
     }
 
     // Attempt to find the cell value from the header aliases
-    for (const alias of this._config.staticHeadersConfig[header]?.aliases ?? []) {
+    for (const alias of this.config.staticHeadersConfig[header]?.aliases ?? []) {
       if (alias in row) {
         return row[alias];
       }
