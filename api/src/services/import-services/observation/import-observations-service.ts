@@ -12,11 +12,14 @@ import {
   getDescriptionCellValidator,
   getLatitudeCellValidator,
   getLongitudeCellValidator,
-  getTaxonCellValidator,
+  getNonEmptyStringCellValidator,
+  getPositiveNumberCellValidator,
   getTimeCellSetter,
   getTimeCellValidator,
   validateZodCell
 } from '../../../utils/csv-utils/csv-header-configs';
+import { getTaxonRowValidator } from '../../../utils/csv-utils/row-validators/taxon-row-validator';
+import { CritterbaseService } from '../../critterbase-service';
 import { DBService } from '../../db-service';
 import {
   InsertSubCount,
@@ -25,6 +28,8 @@ import {
 } from '../../observation-services/observation-service';
 import { PlatformService } from '../../platform-service';
 import { SamplePeriodService } from '../../sample-period-service';
+import { getTsnMeasurementDictionary, isCBQualitativeMeasurement } from '../utils/measurement';
+import { getTaxonTsnFromRowState } from '../utils/row-state';
 import { getTaxonMap } from '../utils/taxon';
 import { getObservationDynamicHeaderConfig } from './utils/observation-dynamic-header-config';
 import { getObservationSubcountSignCellValidator } from './utils/observation-header-configs';
@@ -134,6 +139,18 @@ export class ImportObservationsService extends DBService {
       };
 
       for (const dynamicHeader of this.utils.worksheetDynamicHeaders) {
+        const state = row[CSVRowState];
+        const stateMeasurement = state?.[dynamicHeader];
+
+        // Grab the qualitative measurement from the row
+        if (isCBQualitativeMeasurement(stateMeasurement)) {
+          newSubcount.qualitative_measurements.push(getQualitativeMeasurementFromRowState(row, dynamicHeader));
+        }
+        // Grab the quantitative measurement from the row
+        else if (isCBQuantitativeMeasurement(stateMeasurement)) {
+          quantitativeMeasurements.push(getQuantitativeMeasurementFromRowState(row, header));
+        }
+
         dynamicHeader;
         // TODO: Inject the measurements and environments into the subcount
       }
@@ -155,31 +172,52 @@ export class ImportObservationsService extends DBService {
   async getCSVConfig(): Promise<CSVConfig<ObservationCSVStaticHeader>> {
     const samplePeriodService = new SamplePeriodService(this.connection);
     const platformService = new PlatformService(this.connection);
+    const critterbaseService = new CritterbaseService({
+      keycloak_guid: this.connection.systemUserGUID(),
+      username: this.connection.systemUserIdentifier()
+    });
     const codeRepository = new CodeRepository(this.connection);
 
     const samplingPeriods = await samplePeriodService.getSamplePeriodsForSurvey(this.surveyId);
     const subcountSignCodes = await codeRepository.getObservationSubcountSigns();
     const taxonIdentifiers = this.utils.getUniqueCellValues('SPECIES');
     const taxonMap = await getTaxonMap(taxonIdentifiers.filter(Boolean) as string[], platformService);
+    const measurementDictionary = await getTsnMeasurementDictionary([], critterbaseService);
 
     this.utils.setAllStaticHeaderConfigs({
-      SPECIES: { validateCell: getTaxonCellValidator(taxonMap) },
-      COUNT: { validateCell: (params) => validateZodCell(params.cell, z.number().min(1)) },
+      // Species is validated by the taxon row validator
+      SPECIES: { validateCell: (params) => validateZodCell(params.cell, z.string().or(z.number())) },
+      COUNT: { validateCell: getPositiveNumberCellValidator() },
+      // Subcount sign must be a valid code value
       SUBCOUNT_SIGN: { validateCell: getObservationSubcountSignCellValidator(subcountSignCodes) },
       DATE: { validateCell: getDateCellValidator({ optional: true }) },
       TIME: { validateCell: getTimeCellValidator(), setCellValue: getTimeCellSetter() },
       LATITUDE: { validateCell: getLatitudeCellValidator({ optional: true }) },
       LONGITUDE: { validateCell: getLongitudeCellValidator({ optional: true }) },
+      // Sampling period is validated by the sampling information row validator
       SAMPLING_PERIOD: { validateCell: getDateRangeCellValidator({ optional: true }) },
-      SAMPLING_SITE: { validateCell: (params) => validateZodCell(params.cell, z.string().min(1).optional()) },
-      METHOD_TECHNIQUE: { validateCell: (params) => validateZodCell(params.cell, z.string().min(1).optional()) },
+      // Sampling site is validated by the sampling information row validator
+      SAMPLING_SITE: { validateCell: getNonEmptyStringCellValidator({ optional: true }) },
+      // Method technique is validated by the sampling information row validator
+      METHOD_TECHNIQUE: { validateCell: getNonEmptyStringCellValidator({ optional: true }) },
       COMMENT: { validateCell: getDescriptionCellValidator() }
     });
 
     const config = this.utils.getConfig();
 
-    config.rowValidators = [getObservationSamplingInformationRowValidator(samplingPeriods, this.utils)];
-    config.dynamicHeadersConfig = { validateCell: getObservationDynamicHeaderConfig() };
+    // Inject the row validators - handles taxon and sampling information validation
+    // Note: Runs BEFORE the static header validation
+    config.rowValidators = [
+      getTaxonRowValidator(taxonMap, this.utils, 'SPECIES'),
+      getObservationSamplingInformationRowValidator(samplingPeriods, this.utils)
+    ];
+
+    // Inject dynamic header config - handles measurement and environment validation
+    config.dynamicHeadersConfig = {
+      validateCell: getObservationDynamicHeaderConfig(measurementDictionary, (params) => {
+        return getTaxonTsnFromRowState(params.row);
+      })
+    };
 
     // Return the final CSV config
     return config;

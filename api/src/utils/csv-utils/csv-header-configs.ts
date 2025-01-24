@@ -1,7 +1,7 @@
 import { z } from 'zod';
+import { ApiGeneralError } from '../../errors/api-error';
 import { ICritterDetailed } from '../../services/critterbase-service';
 import { formatTimeString } from '../../services/import-services/utils/datetime';
-import { TaxonMap } from '../../services/import-services/utils/taxon';
 import { isDateString } from '../date-time-utils';
 import {
   CSVCellSetter,
@@ -30,6 +30,19 @@ export const updateCSVRowState = (row: CSVRow, state: Record<string, any>) => {
   }
 
   row[CSVRowState] = { ...row[CSVRowState], ...state };
+};
+
+export const validateCSVRowState = <ZodSchemaType extends z.ZodSchema>(
+  row: CSVRow,
+  schema: ZodSchemaType
+): z.infer<ZodSchemaType> => {
+  const state = schema.safeParse(row[CSVRowState]);
+
+  if (state.success) {
+    return state.data;
+  }
+
+  throw new ApiGeneralError('Invalid CSV row state', state.error.errors);
 };
 
 /**
@@ -64,6 +77,46 @@ export const validateZodCell = (cell: unknown, schema: z.ZodSchema, solution?: s
   }
 
   return errors;
+};
+
+/**
+ * Get the positive number header cell validator.
+ *
+ * Rules:
+ *  1. The cell must be a positive number
+ *  2. The cell is optional if the optional flag is set
+ *
+ * @param {CSVOptionalCell} [options] Optional cell config override
+ * @returns {*} {CSVCellValidator} The validate cell callback
+ */
+export const getPositiveNumberCellValidator = (options?: CSVOptionalCell): CSVCellValidator => {
+  return (params: CSVParams) => {
+    if (options?.optional && params.cell === undefined) {
+      return [];
+    }
+
+    return validateZodCell(params.cell, z.number().positive());
+  };
+};
+
+/**
+ * Get the non-empty string header cell validator.
+ *
+ * Rules:
+ *  1. The cell must be a non-empty string
+ *  2. The cell is optional if the optional flag is set
+ *
+ * @param {CSVOptionalCell} [options] Optional cell config override
+ * @returns {*} {CSVCellValidator} The validate cell callback
+ */
+export const getNonEmptyStringCellValidator = (options?: CSVOptionalCell) => {
+  return (params: CSVParams) => {
+    if (options?.optional && params.cell === undefined) {
+      return [];
+    }
+
+    return validateZodCell(params.cell, z.string().trim().min(1));
+  };
 };
 
 /**
@@ -262,61 +315,6 @@ export const getDateRangeCellValidator = (options?: CSVOptionalCell): CSVCellVal
         }
       ];
     }
-
-    return [];
-  };
-};
-
-/**
- * Get the taxon header cell validator.
- *
- * Rules:
- *  1. The cell must be a valid ITIS TSN or scientific name
- *  2. The cell must be a valid species from the provided taxons
- *  3. The row state will be updated with the TSN and scientific name
- *  4. The cell is optional if the optional flag is set
- *
- * @param {TaxonMap} taxonMap The list of taxons
- * @param {CSVOptionalCell} [options] Optional cell config override
- * @returns {*} {CSVCellValidator} The validate cell callback
- */
-export const getTaxonCellValidator = (taxonMap: TaxonMap, options?: CSVOptionalCell): CSVCellValidator => {
-  return (params: CSVParams) => {
-    if (options?.optional && params.cell === undefined) {
-      return [];
-    }
-
-    const taxon = taxonMap.get(params.cell as number | string);
-
-    if (typeof params.cell === 'number' && !taxon) {
-      return [
-        {
-          error: 'Invalid ITIS TSN',
-          solution: 'Use a valid ITIS TSN'
-        }
-      ];
-    }
-
-    if (typeof params.cell === 'string' && !taxon) {
-      return [
-        {
-          error: 'Invalid scientific name',
-          solution: 'Use a valid scientific name'
-        }
-      ];
-    }
-
-    if (!taxon) {
-      return [
-        {
-          error: 'Invalid species',
-          solution: 'Use a valid ITIS TSN or scientific name'
-        }
-      ];
-    }
-
-    // Update the row state
-    updateCSVRowState(params.row, { itis_tsn: taxon.tsn, itis_scientific_name: taxon.scientificName });
 
     return [];
   };

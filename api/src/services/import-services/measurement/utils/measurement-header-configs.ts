@@ -1,85 +1,11 @@
-import { CSVCellValidator, CSVError, CSVParams } from '../../../utils/csv-utils/csv-config-validation.interface';
-import { updateCSVRowState } from '../../../utils/csv-utils/csv-header-configs';
-import { NestedRecord } from '../../../utils/nested-record';
+import { CSVCellValidator, CSVError } from '../../../../utils/csv-utils/csv-config-validation.interface';
+import { updateCSVRowState } from '../../../../utils/csv-utils/csv-header-configs';
 import {
   CBQualitativeMeasurement,
   CBQualitativeMeasurementTypeDefinition,
   CBQuantitativeMeasurement,
   CBQuantitativeMeasurementTypeDefinition
-} from '../../critterbase-service';
-import {
-  isCBQualitativeMeasurementTypeDefinition,
-  isCBQuantitativeMeasurementTypeDefinition
-} from '../utils/measurement';
-
-export type TSNMeasurementDictionary = NestedRecord<
-  CBQualitativeMeasurementTypeDefinition | CBQuantitativeMeasurementTypeDefinition
->;
-
-/**
- * Get the dynamic measurement cell validator.
- *
- * @param {TSNMeasurementDictionary} tsnMeasurementDictionary The TSN measurement dictionary
- * @returns {*} {CSVCellValidator} The validate cell callback
- */
-export const getDynamicMeasurementCellValidator = (
-  tsnMeasurementDictionary: TSNMeasurementDictionary,
-  //surveyAliasMap: Map<string, ICritterDetailed>,
-  //utils: CSVConfigUtils<MeasurementCSVStaticHeader>,
-  getRowTSN: (params: CSVParams) => number
-): CSVCellValidator => {
-  return (params) => {
-    if (params.cell === undefined) {
-      return [];
-    }
-
-    const tsn = getRowTSN(params);
-
-    //const alias = String(utils.getCellValue('ALIAS', params.row)).toLowerCase();
-    //const critter = surveyAliasMap.get(alias);
-    //const critterTsn = Number(critter?.itis_tsn);
-
-    const taxonMeasurements = tsnMeasurementDictionary.get(tsn);
-
-    if (!taxonMeasurements) {
-      return [
-        {
-          error: `Taxon has no reference measurements`,
-          solution: 'Make sure the taxon has reference measurements'
-        }
-      ];
-    }
-
-    const measurement = tsnMeasurementDictionary.get(tsn, params.header);
-
-    if (!measurement) {
-      return [
-        {
-          error: `Column header '${params.header}' does not exist`,
-          solution: 'Use a valid taxon measurement as the header',
-          values: Object.keys(taxonMeasurements)
-        }
-      ];
-    }
-
-    // Validate the cell based on the measurement type from the header
-    if (isCBQualitativeMeasurementTypeDefinition(measurement)) {
-      return getQualitativeMeasurementCellValidator(measurement)(params);
-    }
-
-    if (isCBQuantitativeMeasurementTypeDefinition(measurement)) {
-      return getQuantitativeMeasurementCellValidator(measurement)(params);
-    }
-
-    // Can this path ever be reached?
-    return [
-      {
-        error: 'Invalid measurement type',
-        solution: 'Use a supported measurement type'
-      }
-    ];
-  };
-};
+} from '../../../critterbase-service';
 
 /**
  * Get the quantitative measurement cell validator.

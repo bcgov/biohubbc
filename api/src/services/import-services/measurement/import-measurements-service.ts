@@ -19,7 +19,15 @@ import {
   isCBQualitativeMeasurement,
   isCBQuantitativeMeasurement
 } from '../utils/measurement';
-import { getDynamicMeasurementCellValidator } from './measurement-header-configs';
+import {
+  getCaptureIdFromState,
+  getCritterIdFromState,
+  getQualitativeOptionIdFromState,
+  getQuantitativeValueFromState,
+  getTaxonMeasurementIdFromState
+} from '../utils/row-state';
+import { getDynamicMeasurementCellValidator } from './utils/measurement-dynamic-headers-config';
+import { getMeasurementRowTSNGetter } from './utils/measurement-utils';
 
 const defaultLog = getLogger('services/import/import-measurement-service');
 
@@ -93,19 +101,19 @@ export class ImportMeasurementsService extends DBService {
         // Grab the qualitative measurement from the row
         if (isCBQualitativeMeasurement(stateMeasurement)) {
           qualitativeMeasurements.push({
-            critter_id: state?.critter_id,
-            capture_id: state?.capture_id,
-            taxon_measurement_id: stateMeasurement.taxon_measurement_id,
-            qualitative_option_id: stateMeasurement.qualitative_option_id
+            critter_id: getCritterIdFromState(row),
+            capture_id: getCaptureIdFromState(row),
+            taxon_measurement_id: getTaxonMeasurementIdFromState(row, stateMeasurement),
+            qualitative_option_id: getQualitativeOptionIdFromState(stateMeasurement)
           });
         }
         // Grab the quantitative measurement from the row
         else if (isCBQuantitativeMeasurement(stateMeasurement)) {
           quantitativeMeasurements.push({
-            critter_id: state?.critter_id,
-            capture_id: state?.capture_id,
-            taxon_measurement_id: stateMeasurement.taxon_measurement_id,
-            value: stateMeasurement.value
+            critter_id: getCritterIdFromState(row),
+            capture_id: getCaptureIdFromState(row),
+            taxon_measurement_id: getTaxonMeasurementIdFromState(row, stateMeasurement),
+            value: getQuantitativeValueFromState(stateMeasurement)
           });
         }
       });
@@ -145,7 +153,10 @@ export class ImportMeasurementsService extends DBService {
 
     // Inject dynamic header config - handles measurement validation
     config.dynamicHeadersConfig = {
-      validateCell: getDynamicMeasurementCellValidator(measurementDictionary, surveyAliasMap, this.utils)
+      validateCell: getDynamicMeasurementCellValidator(
+        measurementDictionary,
+        getMeasurementRowTSNGetter(surveyAliasMap, this.utils)
+      )
     };
 
     // Return the final CSV config

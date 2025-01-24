@@ -1,14 +1,14 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
-import { CSVParams, CSVRowState } from '../../../utils/csv-utils/csv-config-validation.interface';
-import { NestedRecord } from '../../../utils/nested-record';
-import * as measurementUtils from '../utils/measurement';
-import * as measurementConfigs from './measurement-header-configs';
+import { CSVParams, CSVRowState } from '../../../../utils/csv-utils/csv-config-validation.interface';
+import { NestedRecord } from '../../../../utils/nested-record';
+import * as measurementUtils from '../../utils/measurement';
+import * as measurementConfigs from './utils/measurement-header-configss';
 import {
   getDynamicMeasurementCellValidator,
   getQualitativeMeasurementCellValidator,
   getQuantitativeMeasurementCellValidator
-} from './measurement-header-configs';
+} from './utils/measurement-header-configss';
 
 describe('measurement-header-configs', () => {
   beforeEach(() => {

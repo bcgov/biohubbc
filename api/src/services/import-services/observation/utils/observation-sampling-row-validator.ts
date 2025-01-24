@@ -11,12 +11,7 @@ import {
   EnvironmentNameTypeDefinitionMap,
   isEnvironmentQualitativeTypeDefinition
 } from '../../../../utils/observation-xlsx-utils/environment-column-utils';
-import {
-  getMeasurementFromTsnMeasurementTypeDefinitionMap,
-  isMeasurementCBQualitativeTypeDefinition,
-  TsnMeasurementTypeDefinitionMap
-} from '../../../../utils/observation-xlsx-utils/measurement-column-utils';
-import { getColumnCellValue, InsertSubCount } from '../../../observation-services/observation-service';
+import { InsertSubCount } from '../../../observation-services/observation-service';
 import { ObservationCSVStaticHeader } from '../import-observations-service';
 
 dayjs.extend(isSameOrAfter);
@@ -95,7 +90,10 @@ export function getObservationSamplingInformationRowValidator(
       return [
         {
           error: 'Unable to match to observation with sampling information uniquely',
-          solution: 'Please provide more specific sampling information or observation date and time'
+          solution: 'Please provide more specific sampling information or observation date and time',
+          // TODO: update these to be the correct values
+          header: null,
+          cell: null
         }
       ];
     }
@@ -123,8 +121,16 @@ export function getObservationSamplingInformationRowValidator(
     // Unable to match the observation date/time to any existing period uniquely
     return [
       {
-        error: 'Unable to match to observation with observation date and time',
-        solution: 'Please provide more specific sampling information or a valid observation date and time'
+        error: 'Unable to match to observation with date',
+        solution: 'Please provide more specific sampling information or a valid observation date and time',
+        header: utils.getWorksheetHeader('DATE', params.row),
+        cell: observationDate
+      },
+      {
+        error: 'Unable to match to observation with date and time',
+        solution: 'Please provide more specific sampling information or a valid observation date and time',
+        header: utils.getWorksheetHeader('TIME', params.row),
+        cell: observationTime
       }
     ];
   };
@@ -369,79 +375,79 @@ export function matchSamplePeriodsToObservationDateTime(
   return suitablePeriods;
 }
 
-/**
- * This function is a helper method for the `processObservationCsvSubmission` function. It will take row data from an
- * uploaded CSV and find and connect the CSV measurement data with proper measurement taxon ids (UUIDs) from the
- * TsnMeasurementTypeDefinitionMap passed in. Any qualitative and quantitative measurements found are returned to be
- * inserted into the database. This function assumes that the data in the CSV has already been validated.
- *
- * @param {Record<string, any>} row A worksheet row object from a CSV that was uploaded for processing
- * @param {string[]} measurementColumns A list of the measurement columns found in a CSV uploaded
- * @param {TsnMeasurementTypeDefinitionMap} tsnMeasurements Map of TSNs and their valid measurements
- * @return {*}  {(Pick<InsertSubCount, 'qualitative_measurements' | 'quantitative_measurements'>)}
- * @memberof ObservationService
- */
-export function pullMeasurementsFromWorkSheetRowObject(
-  row: Record<string, any>,
-  measurementColumns: string[],
-  tsnMeasurements: TsnMeasurementTypeDefinitionMap
-): Pick<InsertSubCount, 'qualitative_measurements' | 'quantitative_measurements'> {
-  const foundMeasurements: Pick<InsertSubCount, 'qualitative_measurements' | 'quantitative_measurements'> = {
-    qualitative_measurements: [],
-    quantitative_measurements: []
-  };
-
-  measurementColumns.forEach((mColumn) => {
-    // Ignore blank columns
-    if (!mColumn) {
-      return;
-    }
-
-    const rowData = row[mColumn];
-
-    // Ignore empty rows
-    if (rowData === undefined) {
-      return;
-    }
-
-    const measurement = getMeasurementFromTsnMeasurementTypeDefinitionMap(
-      getColumnCellValue(row, 'ITIS_TSN').cell as string,
-      mColumn,
-      tsnMeasurements
-    );
-
-    // Ignore empty measurements
-    if (!measurement) {
-      return;
-    }
-
-    // if measurement is qualitative, find the option uuid
-    if (isMeasurementCBQualitativeTypeDefinition(measurement)) {
-      const foundOption = measurement.options.find(
-        (option) =>
-          option.option_label.toLowerCase() === String(rowData).toLowerCase() ||
-          option.option_value === Number(rowData) ||
-          option.qualitative_option_id === rowData
-      );
-
-      if (!foundOption) {
-        return;
-      }
-
-      foundMeasurements.qualitative_measurements.push({
-        measurement_id: measurement.taxon_measurement_id,
-        measurement_option_id: foundOption.qualitative_option_id
-      });
-    } else {
-      foundMeasurements.quantitative_measurements.push({
-        measurement_id: measurement.taxon_measurement_id,
-        measurement_value: Number(rowData)
-      });
-    }
-  });
-
-  return foundMeasurements;
-}
+///**
+// * This function is a helper method for the `processObservationCsvSubmission` function. It will take row data from an
+// * uploaded CSV and find and connect the CSV measurement data with proper measurement taxon ids (UUIDs) from the
+// * TsnMeasurementTypeDefinitionMap passed in. Any qualitative and quantitative measurements found are returned to be
+// * inserted into the database. This function assumes that the data in the CSV has already been validated.
+// *
+// * @param {Record<string, any>} row A worksheet row object from a CSV that was uploaded for processing
+// * @param {string[]} measurementColumns A list of the measurement columns found in a CSV uploaded
+// * @param {TsnMeasurementTypeDefinitionMap} tsnMeasurements Map of TSNs and their valid measurements
+// * @return {*}  {(Pick<InsertSubCount, 'qualitative_measurements' | 'quantitative_measurements'>)}
+// * @memberof ObservationService
+// */
+//export function pullMeasurementsFromWorkSheetRowObject(
+//  row: Record<string, any>,
+//  measurementColumns: string[],
+//  tsnMeasurements: TsnMeasurementTypeDefinitionMap
+//): Pick<InsertSubCount, 'qualitative_measurements' | 'quantitative_measurements'> {
+//  const foundMeasurements: Pick<InsertSubCount, 'qualitative_measurements' | 'quantitative_measurements'> = {
+//    qualitative_measurements: [],
+//    quantitative_measurements: []
+//  };
+//
+//  measurementColumns.forEach((mColumn) => {
+//    // Ignore blank columns
+//    if (!mColumn) {
+//      return;
+//    }
+//
+//    const rowData = row[mColumn];
+//
+//    // Ignore empty rows
+//    if (rowData === undefined) {
+//      return;
+//    }
+//
+//    const measurement = getMeasurementFromTsnMeasurementTypeDefinitionMap(
+//      getColumnCellValue(row, 'ITIS_TSN').cell as string,
+//      mColumn,
+//      tsnMeasurements
+//    );
+//
+//    // Ignore empty measurements
+//    if (!measurement) {
+//      return;
+//    }
+//
+//    // if measurement is qualitative, find the option uuid
+//    if (isMeasurementCBQualitativeTypeDefinition(measurement)) {
+//      const foundOption = measurement.options.find(
+//        (option) =>
+//          option.option_label.toLowerCase() === String(rowData).toLowerCase() ||
+//          option.option_value === Number(rowData) ||
+//          option.qualitative_option_id === rowData
+//      );
+//
+//      if (!foundOption) {
+//        return;
+//      }
+//
+//      foundMeasurements.qualitative_measurements.push({
+//        measurement_id: measurement.taxon_measurement_id,
+//        measurement_option_id: foundOption.qualitative_option_id
+//      });
+//    } else {
+//      foundMeasurements.quantitative_measurements.push({
+//        measurement_id: measurement.taxon_measurement_id,
+//        measurement_value: Number(rowData)
+//      });
+//    }
+//  });
+//
+//  return foundMeasurements;
+//}
 
 /**
  * This function is a helper method for the `processObservationCsvSubmission` function. It will take row data from an

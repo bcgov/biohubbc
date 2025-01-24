@@ -10,7 +10,7 @@ import { CSVCell, CSVConfig, CSVHeaderConfig, CSVRow } from './csv-config-valida
  * @template StaticHeaderType - The static header type
  * @class CSVConfigUtils
  */
-export class CSVConfigUtils<StaticHeaderType extends Uppercase<string> = Uppercase<string>> {
+export class CSVConfigUtils<StaticHeaderType = Uppercase<string>> {
   _config: CSVConfig<StaticHeaderType>;
   worksheet: WorkSheet;
   worksheetRows: CSVRow[];

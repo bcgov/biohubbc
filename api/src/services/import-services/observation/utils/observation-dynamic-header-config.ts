@@ -1,14 +1,7 @@
 import { CSVCellValidator, CSVParams } from '../../../../utils/csv-utils/csv-config-validation.interface';
-import { getDynamicMeasurementCellValidator } from '../../measurement/measurement-header-configs';
+import { getDynamicMeasurementCellValidator } from '../../measurement/utils/measurement-header-configs';
 import { TSNMeasurementDictionary } from '../../utils/measurement';
-
-export const isMeasurementHeader = (header: string, dictionary: TSNMeasurementDictionary) => {
-  return dictionary.has(header);
-};
-
-export const isEnvironmentHeader = (_header: string) => {
-  return true;
-};
+import { isEnvironmentHeader, isMeasurementHeader } from './obseration-utils';
 
 export const getObservationDynamicHeaderConfig = (
   tsnMeasurementDictionary: TSNMeasurementDictionary,
