@@ -66,6 +66,7 @@ const getBackboneInternalApiHost = () => process.env.BACKBONE_INTERNAL_API_HOST 
 const getBackboneArtifactIntakePath = () => process.env.BACKBONE_ARTIFACT_INTAKE_PATH || '';
 const getBackboneSurveyIntakePath = () => process.env.BACKBONE_INTAKE_PATH || '';
 const getBackboneTaxonTsnPath = () => process.env.BIOHUB_TAXON_TSN_PATH || '';
+const getBackbonTaxonSearchPath = () => process.env.BIOHUB_TAXON_SEARCH_PATH || '';
 
 export class PlatformService extends DBService {
   attachmentService: AttachmentService;
@@ -114,6 +115,51 @@ export class PlatformService extends DBService {
       return data.searchResponse;
     } catch (error) {
       return [];
+    }
+  }
+
+  /**
+   * Get taxon by scientific name from BioHub.
+   *
+   * @param {string} scientificName - The scientific name of the taxon to search for
+   * @returns {*} {Promise<IItisSearchResult | null>}
+   */
+  async getTaxonByScientificName(scientificName: string): Promise<IItisSearchResult | null> {
+    defaultLog.debug({ label: 'getTaxonByScientificName', scientificName });
+
+    try {
+      const keycloakService = new KeycloakService();
+
+      const token = await keycloakService.getKeycloakServiceToken();
+
+      const backboneTaxonSearchUrl = new URL(getBackbonTaxonSearchPath(), getBackboneInternalApiHost()).href;
+
+      const { data } = await axios.get<{ searchResponse: IItisSearchResult[] }>(backboneTaxonSearchUrl, {
+        headers: {
+          authorization: `Bearer ${token}`
+        },
+        params: {
+          terms: [scientificName]
+        },
+        paramsSerializer: (params) => {
+          return qs.stringify(params);
+        }
+      });
+
+      // Find a matching taxon by scientific name (case-insensitive)
+      const matchingTaxon = data.searchResponse.find(
+        (taxon) => taxon.scientificName.toLowerCase() === scientificName.toLowerCase()
+      );
+
+      if (!matchingTaxon) {
+        return null;
+      }
+
+      return matchingTaxon;
+    } catch (error) {
+      defaultLog.error({ label: 'getTaxonByScientificName', error });
+
+      return null;
     }
   }
 
