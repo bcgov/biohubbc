@@ -213,7 +213,7 @@ export class CSVConfigUtils<StaticHeaderType extends Uppercase<string> = Upperca
   }
 
   /**
-   * Get all the unique cell values from a static header.
+   * Get all the unique cell values from a static header - case sensitive.
    *
    * @param {StaticHeaderType} header - The header name
    * @returns {any[]} - The unique cell values

@@ -23,7 +23,9 @@ import {
   InsertUpdateObservations,
   ObservationService
 } from '../../observation-services/observation-service';
+import { PlatformService } from '../../platform-service';
 import { SamplePeriodService } from '../../sample-period-service';
+import { getTaxonMap } from '../utils/taxon';
 import { getObservationDynamicHeaderConfig } from './utils/observation-dynamic-header-config';
 import { getObservationSubcountSignCellValidator } from './utils/observation-header-configs';
 import { getObservationSamplingInformationRowValidator } from './utils/observation-sampling-row-validator';
@@ -54,10 +56,6 @@ export class ImportObservationsService extends DBService {
   surveyId: number;
   samplePeriodId?: number;
 
-  observationService: ObservationService;
-  samplePeriodService: SamplePeriodService;
-  codeRepository: CodeRepository;
-
   utils: CSVConfigUtils<ObservationCSVStaticHeader>;
 
   /**
@@ -71,7 +69,6 @@ export class ImportObservationsService extends DBService {
 
     const initialConfig: CSVConfig<ObservationCSVStaticHeader> = {
       staticHeadersConfig: {
-        // TODO: This needs to support the scientific name
         SPECIES: { aliases: ['ITIS_TSN', 'ITIS TSN', 'TSN', 'TAXON'] },
         COUNT: { aliases: [] },
         SUBCOUNT_SIGN: { aliases: SUBCOUNT_SIGN_ALIASES, optional: true },
@@ -91,11 +88,7 @@ export class ImportObservationsService extends DBService {
     this.surveyId = surveyId;
     this.samplePeriodId = samplePeriodId;
 
-    this.observationService = new ObservationService(connection);
-    this.samplePeriodService = new SamplePeriodService(connection);
-    this.codeRepository = new CodeRepository(connection);
-
-    this.utils = new CSVConfigUtils(this.worksheet, initialConfig);
+    this.utils = new CSVConfigUtils(worksheet, initialConfig);
   }
 
   /**
@@ -148,7 +141,8 @@ export class ImportObservationsService extends DBService {
       observations.push({ standardColumns: newObservation, subcounts: [newSubcount] });
     }
 
-    await this.observationService.insertUpdateManualSurveyObservations(this.surveyId, observations);
+    const observationService = new ObservationService(this.connection);
+    await observationService.insertUpdateManualSurveyObservations(this.surveyId, observations);
 
     return [];
   }
@@ -159,11 +153,17 @@ export class ImportObservationsService extends DBService {
    * @returns {Promise<CSVConfig<ObservationCSVStaticHeader>>} The CSV configuration
    */
   async getCSVConfig(): Promise<CSVConfig<ObservationCSVStaticHeader>> {
-    const samplingPeriods = await this.samplePeriodService.getSamplePeriodsForSurvey(this.surveyId);
-    const subcountSignCodes = await this.codeRepository.getObservationSubcountSigns();
+    const samplePeriodService = new SamplePeriodService(this.connection);
+    const platformService = new PlatformService(this.connection);
+    const codeRepository = new CodeRepository(this.connection);
+
+    const samplingPeriods = await samplePeriodService.getSamplePeriodsForSurvey(this.surveyId);
+    const subcountSignCodes = await codeRepository.getObservationSubcountSigns();
+    const taxonIdentifiers = this.utils.getUniqueCellValues('SPECIES');
+    const taxonMap = await getTaxonMap(taxonIdentifiers.filter(Boolean) as string[], platformService);
 
     this.utils.setAllStaticHeaderConfigs({
-      SPECIES: { validateCell: getTaxonCellValidator([]) },
+      SPECIES: { validateCell: getTaxonCellValidator(taxonMap) },
       COUNT: { validateCell: (params) => validateZodCell(params.cell, z.number().min(1)) },
       SUBCOUNT_SIGN: { validateCell: getObservationSubcountSignCellValidator(subcountSignCodes) },
       DATE: { validateCell: getDateCellValidator({ optional: true }) },

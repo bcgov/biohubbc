@@ -1,19 +1,16 @@
-import { CSVConfigUtils } from '../../../utils/csv-utils/csv-config-utils';
-import { CSVCellValidator, CSVError } from '../../../utils/csv-utils/csv-config-validation.interface';
+import { CSVCellValidator, CSVError, CSVParams } from '../../../utils/csv-utils/csv-config-validation.interface';
 import { updateCSVRowState } from '../../../utils/csv-utils/csv-header-configs';
 import { NestedRecord } from '../../../utils/nested-record';
 import {
   CBQualitativeMeasurement,
   CBQualitativeMeasurementTypeDefinition,
   CBQuantitativeMeasurement,
-  CBQuantitativeMeasurementTypeDefinition,
-  ICritterDetailed
+  CBQuantitativeMeasurementTypeDefinition
 } from '../../critterbase-service';
 import {
   isCBQualitativeMeasurementTypeDefinition,
   isCBQuantitativeMeasurementTypeDefinition
 } from '../utils/measurement';
-import { MeasurementCSVStaticHeader } from './import-measurements-service';
 
 export type TSNMeasurementDictionary = NestedRecord<
   CBQualitativeMeasurementTypeDefinition | CBQuantitativeMeasurementTypeDefinition
@@ -23,25 +20,26 @@ export type TSNMeasurementDictionary = NestedRecord<
  * Get the dynamic measurement cell validator.
  *
  * @param {TSNMeasurementDictionary} tsnMeasurementDictionary The TSN measurement dictionary
- * @param {Map<string, ICritterDetailed>} surveyAliasMap The survey alias map
- * @param {CSVConfigUtils<MeasurementCSVStaticHeader>} utils The CSV config utils
  * @returns {*} {CSVCellValidator} The validate cell callback
  */
 export const getDynamicMeasurementCellValidator = (
   tsnMeasurementDictionary: TSNMeasurementDictionary,
-  surveyAliasMap: Map<string, ICritterDetailed>,
-  utils: CSVConfigUtils<MeasurementCSVStaticHeader>
+  //surveyAliasMap: Map<string, ICritterDetailed>,
+  //utils: CSVConfigUtils<MeasurementCSVStaticHeader>,
+  getRowTSN: (params: CSVParams) => number
 ): CSVCellValidator => {
   return (params) => {
     if (params.cell === undefined) {
       return [];
     }
 
-    const alias = String(utils.getCellValue('ALIAS', params.row)).toLowerCase();
-    const critter = surveyAliasMap.get(alias);
-    const critterTsn = Number(critter?.itis_tsn);
+    const tsn = getRowTSN(params);
 
-    const taxonMeasurements = tsnMeasurementDictionary.get(critterTsn);
+    //const alias = String(utils.getCellValue('ALIAS', params.row)).toLowerCase();
+    //const critter = surveyAliasMap.get(alias);
+    //const critterTsn = Number(critter?.itis_tsn);
+
+    const taxonMeasurements = tsnMeasurementDictionary.get(tsn);
 
     if (!taxonMeasurements) {
       return [
@@ -52,7 +50,7 @@ export const getDynamicMeasurementCellValidator = (
       ];
     }
 
-    const measurement = tsnMeasurementDictionary.get(critterTsn, params.header);
+    const measurement = tsnMeasurementDictionary.get(tsn, params.header);
 
     if (!measurement) {
       return [

@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { ICritterDetailed } from '../../services/critterbase-service';
 import { formatTimeString } from '../../services/import-services/utils/datetime';
-import { ITaxonomy } from '../../services/platform-service';
+import { TaxonMap } from '../../services/import-services/utils/taxon';
 import { isDateString } from '../date-time-utils';
 import {
   CSVCellSetter,
@@ -276,18 +276,11 @@ export const getDateRangeCellValidator = (options?: CSVOptionalCell): CSVCellVal
  *  3. The row state will be updated with the TSN and scientific name
  *  4. The cell is optional if the optional flag is set
  *
- * @param {ITaxonomy[]} taxons The list of taxons
+ * @param {TaxonMap} taxonMap The list of taxons
  * @param {CSVOptionalCell} [options] Optional cell config override
  * @returns {*} {CSVCellValidator} The validate cell callback
  */
-export const getTaxonCellValidator = (taxons: ITaxonomy[], options?: CSVOptionalCell): CSVCellValidator => {
-  const taxonMap = new Map<number | string, ITaxonomy>();
-
-  taxons.forEach((taxon) => {
-    taxonMap.set(taxon.tsn, taxon);
-    taxonMap.set(taxon.scientificName.toLowerCase(), taxon);
-  });
-
+export const getTaxonCellValidator = (taxonMap: TaxonMap, options?: CSVOptionalCell): CSVCellValidator => {
   return (params: CSVParams) => {
     if (options?.optional && params.cell === undefined) {
       return [];

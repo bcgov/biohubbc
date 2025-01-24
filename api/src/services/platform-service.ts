@@ -66,7 +66,7 @@ const getBackboneInternalApiHost = () => process.env.BACKBONE_INTERNAL_API_HOST 
 const getBackboneArtifactIntakePath = () => process.env.BACKBONE_ARTIFACT_INTAKE_PATH || '';
 const getBackboneSurveyIntakePath = () => process.env.BACKBONE_INTAKE_PATH || '';
 const getBackboneTaxonTsnPath = () => process.env.BIOHUB_TAXON_TSN_PATH || '';
-const getBackbonTaxonSearchPath = () => process.env.BIOHUB_TAXON_SEARCH_PATH || '';
+const getBackboneTaxonSearchPath = () => 'taxonomy/taxon'; // TODO: Update ENV variable
 
 export class PlatformService extends DBService {
   attachmentService: AttachmentService;
@@ -132,7 +132,7 @@ export class PlatformService extends DBService {
 
       const token = await keycloakService.getKeycloakServiceToken();
 
-      const backboneTaxonSearchUrl = new URL(getBackbonTaxonSearchPath(), getBackboneInternalApiHost()).href;
+      const backboneTaxonSearchUrl = new URL(getBackboneTaxonSearchPath(), getBackboneInternalApiHost()).href;
 
       const { data } = await axios.get<{ searchResponse: IItisSearchResult[] }>(backboneTaxonSearchUrl, {
         headers: {
