@@ -194,6 +194,11 @@ export class ImportObservationsService extends DBService {
     return this.utils.getConfig();
   }
 
+  /**
+   * Set the static headers for the Observation CSV.
+   *
+   * @returns {*} {Promise<void>}
+   */
   async _setObservationConfigStaticHeaders() {
     const codeRepository = new CodeRepository(this.connection);
     const subcountSignCodes = await codeRepository.getObservationSubcountSigns();
@@ -218,6 +223,11 @@ export class ImportObservationsService extends DBService {
     });
   }
 
+  /**
+   * Sets the taxon row validator and the observation sampling information row validator for the Observation CSV.
+   *
+   * @returns {*} {Promise<void>}
+   */
   async _setObservationConfigRowValidators() {
     const samplePeriodService = new SamplePeriodService(this.connection);
     const platformService = new PlatformService(this.connection);
@@ -234,6 +244,11 @@ export class ImportObservationsService extends DBService {
     ];
   }
 
+  /**
+   * Sets the environment and measurement dynamic header validator for the Observation CSV.
+   *
+   * @returns {*} {Promise<void>}
+   */
   async _setObservationConfigDynamicHeaders() {
     const critterbaseService = new CritterbaseService({
       keycloak_guid: this.connection.systemUserGUID(),
@@ -244,7 +259,8 @@ export class ImportObservationsService extends DBService {
 
     // Inject dynamic header config - handles measurement and environment validation
     this.utils.config.dynamicHeadersConfig = {
-      validateCell: getObservationDynamicHeaderConfig(measurementDictionary, (params) => {
+      // TODO: Update the second parameter to be the environent dictionary
+      validateCell: getObservationDynamicHeaderConfig(measurementDictionary, {}, (params) => {
         return getTaxonTsnFromState(params.row);
       })
     };

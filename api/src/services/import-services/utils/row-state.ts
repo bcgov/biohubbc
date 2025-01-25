@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { ApiGeneralError } from '../../../errors/api-error';
 import { CSVRow, CSVRowState } from '../../../utils/csv-utils/csv-config-validation.interface';
 
-export const newRowStateGetter = <SchemaType extends z.ZodSchema>(key: string, schema: SchemaType) => {
+export const createRowStateGetter = <SchemaType extends z.ZodSchema>(key: string, schema: SchemaType) => {
   return (row: CSVRow, state?: Record<string, unknown>): z.infer<SchemaType> => {
     const value = state ? state[key] : row[CSVRowState]?.[key];
 
@@ -24,14 +24,14 @@ export const newRowStateGetter = <SchemaType extends z.ZodSchema>(key: string, s
 };
 
 // Taxon
-export const getTaxonTsnFromState = newRowStateGetter('itis_tsn', z.number());
-export const getTaxonScientificNameFromState = newRowStateGetter('itis_scientific_name', z.string());
+export const getTaxonTsnFromState = createRowStateGetter('itis_tsn', z.number());
+export const getTaxonScientificNameFromState = createRowStateGetter('itis_scientific_name', z.string());
 
 // Critter and Capture
-export const getCritterIdFromState = newRowStateGetter('critter_id', z.string().uuid());
-export const getCaptureIdFromState = newRowStateGetter('capture_id', z.string().uuid());
+export const getCritterIdFromState = createRowStateGetter('critter_id', z.string().uuid());
+export const getCaptureIdFromState = createRowStateGetter('capture_id', z.string().uuid());
 
 // Measurement
-export const getTaxonMeasurementIdFromState = newRowStateGetter('taxon_measurement_id', z.string().uuid());
-export const getQualitativeOptionIdFromState = newRowStateGetter('qualitative_option_id', z.string().uuid());
-export const getMeasurementValueFromState = newRowStateGetter('value', z.number());
+export const getTaxonMeasurementIdFromState = createRowStateGetter('taxon_measurement_id', z.string().uuid());
+export const getQualitativeOptionIdFromState = createRowStateGetter('qualitative_option_id', z.string().uuid());
+export const getQuantitativeValueFromState = createRowStateGetter('value', z.number());
