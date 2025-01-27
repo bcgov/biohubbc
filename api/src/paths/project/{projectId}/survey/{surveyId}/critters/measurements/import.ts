@@ -2,13 +2,16 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
+import { HTTP422CSVValidationError } from '../../../../../../../errors/http-error';
+import { CSVValidationErrorResponse } from '../../../../../../../openapi/schemas/csv';
 import { csvFileSchema } from '../../../../../../../openapi/schemas/file';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
-import { importCSV } from '../../../../../../../services/import-services/import-csv';
-import { ImportMeasurementsStrategy } from '../../../../../../../services/import-services/measurement/import-measurements-strategy';
+import { ImportMeasurementsService } from '../../../../../../../services/import-services/measurement/import-measurements-service';
+import { CSV_ERROR_MESSAGE } from '../../../../../../../utils/csv-utils/csv-config-validation.interface';
 import { getLogger } from '../../../../../../../utils/logger';
 import { parseMulterFile } from '../../../../../../../utils/media/media-utils';
 import { getFileFromRequest } from '../../../../../../../utils/request';
+import { constructXLSXWorkbook, getDefaultWorksheet } from '../../../../../../../utils/xlsx-utils/worksheet-utils';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/measurements/import');
 
@@ -28,7 +31,7 @@ export const POST: Operation = [
       ]
     };
   }),
-  importCsv()
+  importMeasurementCSV()
 ];
 
 POST.apiDoc = {
@@ -84,22 +87,8 @@ POST.apiDoc = {
     }
   },
   responses: {
-    201: {
-      description: 'Measurement import success.',
-      content: {
-        'application/json': {
-          schema: {
-            type: 'object',
-            additionalProperties: false,
-            properties: {
-              measurementsCreated: {
-                description: 'Number of Critterbase measurements created.',
-                type: 'integer'
-              }
-            }
-          }
-        }
-      }
+    204: {
+      description: 'Measurement import success.'
     },
     400: {
       $ref: '#/components/responses/400'
@@ -110,6 +99,7 @@ POST.apiDoc = {
     403: {
       $ref: '#/components/responses/403'
     },
+    422: CSVValidationErrorResponse,
     500: {
       $ref: '#/components/responses/500'
     },
@@ -124,24 +114,30 @@ POST.apiDoc = {
  *
  * @return {*} {RequestHandler}
  */
-export function importCsv(): RequestHandler {
+export function importMeasurementCSV(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
     const rawFile = getFileFromRequest(req);
 
     const connection = getDBConnection(req.keycloak_token);
 
+    const mediaFile = parseMulterFile(rawFile);
+    const worksheet = getDefaultWorksheet(constructXLSXWorkbook(mediaFile));
+
     try {
       await connection.open();
 
-      const importCsvMeasurementsStrategy = new ImportMeasurementsStrategy(connection, surveyId);
+      const importMarkings = new ImportMeasurementsService(connection, worksheet, surveyId);
 
-      // Pass CSV file and importer as dependencies
-      const measurementsCreated = await importCSV(parseMulterFile(rawFile), importCsvMeasurementsStrategy);
+      const errors = await importMarkings.importCSVWorksheet();
+
+      if (errors.length) {
+        throw new HTTP422CSVValidationError(CSV_ERROR_MESSAGE, errors);
+      }
 
       await connection.commit();
 
-      return res.status(201).json({ measurementsCreated });
+      return res.status(204).send();
     } catch (error) {
       defaultLog.error({ label: 'importMeasurementsCSV', message: 'error', error });
       await connection.rollback();

@@ -594,7 +594,6 @@ objects:
                 - name: api
                   image: ${BASE_IMAGE_REGISTRY_URL}/${NAMESPACE}/${NAME}:${VERSION}
                   imagePullPolicy: Always
-                  restartPolicy: 'Never'
                   terminationGracePeriodSeconds: 30
                   activeDeadlineSeconds: 220
                   env:
@@ -659,9 +658,8 @@ objects:
                       value: ${API_RESPONSE_VALIDATION_ENABLED}
                     - name: DATABASE_RESPONSE_VALIDATION_ENABLED
                       value: ${DATABASE_RESPONSE_VALIDATION_ENABLED}
-                  command: ["npm", "run", "telemetry-cronjob", "--", "--batchSize 1000", "--concurrently 100"]
+                  command: ['npm', 'run', 'telemetry-cronjob', '--', '--batchSize 1000', '--concurrently 100']
               restartPolicy: Never
-
 
   # Disable the HPA for now, as it is preferrable to run an exact number of pods (e.g. min:2, max:2)
   # - kind: HorizontalPodAutoscaler

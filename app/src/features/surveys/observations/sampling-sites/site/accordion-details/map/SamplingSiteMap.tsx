@@ -1,10 +1,10 @@
 import blue from '@mui/material/colors/blue';
 import { IStaticLayer } from 'components/map/components/StaticLayers';
 import SurveyMap from 'features/surveys/view/SurveyMap';
-import { IGetSampleLocationDetails } from 'interfaces/useSamplingSiteApi.interface';
+import { IGetSampleSiteDetails } from 'interfaces/useSamplingSiteApi.interface';
 
 export interface ISamplingSiteListMapProps {
-  sampleSite: IGetSampleLocationDetails;
+  sampleSite: IGetSampleSiteDetails;
 }
 
 /**

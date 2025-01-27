@@ -38,7 +38,7 @@ export const POST: Operation = [
 ];
 
 POST.apiDoc = {
-  description: 'Insert a new technique for a survey.',
+  description: 'Insert new techniques for a survey.',
   tags: ['technique'],
   security: [
     {
@@ -85,7 +85,7 @@ POST.apiDoc = {
   },
   responses: {
     201: {
-      description: 'Technique created OK.'
+      description: 'Techniques created OK.'
     },
     400: {
       $ref: '#/components/responses/400'
@@ -112,10 +112,11 @@ POST.apiDoc = {
  */
 export function createTechniques(): RequestHandler {
   return async (req, res) => {
-    const surveyId = Number(req.params.surveyId);
     const connection = getDBConnection(req.keycloak_token);
 
     try {
+      const surveyId = Number(req.params.surveyId);
+
       await connection.open();
 
       const techniqueService = new TechniqueService(connection);

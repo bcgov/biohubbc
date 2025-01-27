@@ -9,8 +9,9 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import PageHeader from 'components/layout/PageHeader';
 import { CreateTechniqueI18N } from 'constants/i18n';
-import TechniqueFormContainer, {
-  CreateTechniqueFormValues
+import {
+  CreateTechniqueFormValues,
+  TechniqueFormContainer
 } from 'features/surveys/sampling-information/techniques/components/TechniqueFormContainer';
 import { FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
@@ -26,7 +27,8 @@ const initialTechniqueFormValues: CreateTechniqueFormValues = {
   name: '',
   description: '',
   distance_threshold: null,
-  method_lookup_id: null,
+  method_lookup_id: '' as unknown as number,
+  method_response_metric_id: '' as unknown as number,
   attractants: [],
   attributes: [],
   vantage_methods: []
@@ -63,6 +65,7 @@ export const CreateTechniquePage = () => {
       const createTechniqueRequestData: ICreateTechniqueRequest = {
         ...values,
         distance_threshold: values.distance_threshold || null,
+        method_response_metric_id: values.method_response_metric_id,
         attributes: {
           qualitative_attributes: values.attributes
             .filter(({ attribute_type }) => attribute_type === 'qualitative')

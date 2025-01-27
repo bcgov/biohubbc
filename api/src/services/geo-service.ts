@@ -1,5 +1,7 @@
 import axios, { CancelTokenSource } from 'axios';
 import qs from 'qs';
+import { ApiGeneralError } from '../errors/api-error';
+import { formatAxiosError } from '../errors/axios-error';
 
 /**
  * WGS 84
@@ -228,6 +230,15 @@ export class GeoService {
 
   constructor(options?: { baseUrl?: string }) {
     this.baseUrl = options?.baseUrl ?? process.env.BcgwBaseUrl ?? 'https://openmaps.gov.bc.ca/geo/pub/ows';
+
+    axios.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        throw new ApiGeneralError('Failed to retrieve geospatial data from external service.', [
+          formatAxiosError(error)
+        ]);
+      }
+    );
   }
 
   /**

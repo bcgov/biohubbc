@@ -190,7 +190,8 @@ export const SamplingSiteListContainer = () => {
   };
 
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setPaginationModel({ page: 0, pageSize: parseInt(event.target.value, 10) });
+    // reset the page to 0 when changing the page size
+    setPaginationModel((model) => ({ ...model, page: 0, pageSize: parseInt(event.target.value, 10) }));
   };
 
   const handleChangePage = (_: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {

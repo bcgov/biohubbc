@@ -9,7 +9,7 @@ import { IGetSurveyBlock } from 'interfaces/useSurveyApi.interface';
 import { useContext } from 'react';
 
 /**
- * General information content for a survey.
+ * Sampling method information content for a survey.
  *
  * @return {*}
  */

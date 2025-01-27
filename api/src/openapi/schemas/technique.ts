@@ -130,6 +130,7 @@ export const techniqueCreateSchema: OpenAPIV3.SchemaObject = {
     'name',
     'description',
     'method_lookup_id',
+    'method_response_metric_id',
     'distance_threshold',
     'attractants',
     'attributes',
@@ -149,6 +150,11 @@ export const techniqueCreateSchema: OpenAPIV3.SchemaObject = {
     method_lookup_id: {
       type: 'integer',
       description: 'The ID of a known method type.',
+      minimum: 1
+    },
+    method_response_metric_id: {
+      type: 'integer',
+      description: 'The ID of a known method response metric type.',
       minimum: 1
     },
     distance_threshold: {
@@ -182,57 +188,6 @@ export const techniqueViewSchema: OpenAPIV3.SchemaObject = {
     method_technique_id: {
       type: 'number',
       description: 'Primary key for the technique.'
-    }
-  }
-};
-
-export const vantageReferenceRecordsSchema: OpenAPIV3.SchemaObject = {
-  type: 'array',
-  description: 'Vantage reference records.',
-  items: {
-    type: 'object',
-    description: 'Vantage category reference record and its associated vantages.',
-    required: ['vantage_category_id', 'name', 'description', 'vantages'],
-    additionalProperties: false,
-    properties: {
-      vantage_category_id: {
-        type: 'integer',
-        minimum: 1
-      },
-      name: {
-        type: 'string'
-      },
-      description: {
-        type: 'string',
-        nullable: true
-      },
-      vantages: {
-        type: 'array',
-        description: 'Supported vantage for the vantage record.',
-        items: {
-          type: 'object',
-          required: ['vantage_method_id', 'name', 'vantage_id', 'description'],
-          additionalProperties: false,
-          properties: {
-            vantage_method_id: {
-              type: 'integer',
-              description: 'The primary key of the vantage method option.'
-            },
-            vantage_id: {
-              type: 'integer',
-              description: 'The vantage of the record'
-            },
-            name: {
-              type: 'string',
-              description: 'The name of the vantage method option.'
-            },
-            description: {
-              type: 'string',
-              description: 'The description of the vantage method option.'
-            }
-          }
-        }
-      }
     }
   }
 };
