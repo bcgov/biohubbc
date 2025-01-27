@@ -38,7 +38,7 @@ jobs:
         with:
           # Cache repo based on the commit sha that triggered the workflow
           path: ${{ github.workspace }}/*
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.event.pull_request.head.sha }}
 
   lintAndFormat:
     name: Running Linter and Formatter
@@ -60,7 +60,7 @@ jobs:
           cache-name: cache-repo
         with:
           path: ${{ github.workspace }}/*
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.event.pull_request.head.sha }}
 
       # Checkout the branch if not restored via cache
       - name: Checkout Target Branch

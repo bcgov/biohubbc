@@ -63,3 +63,29 @@ export const formatTimeDifference = (
 
   return parts.slice(0, 2).join(' and ');
 };
+
+/**
+ * Get a label for a date time range.
+ *
+ * @param {(string | null)} startDate
+ * @param {(string | null)} startTime
+ * @param {(string | null)} endDate
+ * @param {(string | null)} endTime
+ * @return {*}  {string} A formatted label of the form: `'start_date[ start_time] - end_date[ end_time]'` or an
+ * empty string; if either start or end date is missing.
+ */
+export const getDateTimeLabel = (
+  startDate: string | null,
+  startTime: string | null,
+  endDate: string | null,
+  endTime: string | null
+): string => {
+  if (!startDate || !endDate) {
+    return '';
+  }
+
+  const startTimeString = startTime ? ` ${startTime}` : ''; // includes leading space
+  const endTimeString = endTime ? ` ${endTime}` : ''; // includes leading space
+
+  return `${startDate}${startTimeString} - ${endDate}${endTimeString}`;
+};

@@ -4,8 +4,8 @@ import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/rol
 import { getDBConnection } from '../../../../../../database/db';
 import { HTTP400, HTTP409 } from '../../../../../../errors/http-error';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { ObservationService } from '../../../../../../services/observation-service';
-import { SampleLocationService } from '../../../../../../services/sample-location-service';
+import { ObservationService } from '../../../../../../services/observation-services/observation-service';
+import { SampleSiteService } from '../../../../../../services/sample-site-service';
 import { getLogger } from '../../../../../../utils/logger';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/sample-site/delete');
@@ -118,7 +118,7 @@ export function deleteSurveySampleSiteRecords(): RequestHandler {
       await connection.open();
 
       const observationService = new ObservationService(connection);
-      const sampleLocationService = new SampleLocationService(connection);
+      const sampleSiteService = new SampleSiteService(connection);
 
       const observationCount = await observationService.getObservationsCountBySampleSiteIds(
         surveyId,
@@ -130,7 +130,7 @@ export function deleteSurveySampleSiteRecords(): RequestHandler {
       }
 
       for (const surveySampleSiteId of surveySampleSiteIds) {
-        await sampleLocationService.deleteSampleSiteRecord(surveyId, surveySampleSiteId);
+        await sampleSiteService.deleteSampleSiteRecord(surveyId, surveySampleSiteId);
       }
 
       await connection.commit();

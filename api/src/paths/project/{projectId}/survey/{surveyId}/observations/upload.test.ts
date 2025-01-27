@@ -4,7 +4,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../../../../../database/db';
 import { HTTPError } from '../../../../../../errors/http-error';
-import { ObservationService } from '../../../../../../services/observation-service';
+import { ObservationService } from '../../../../../../services/observation-services/observation-service';
 import * as file_utils from '../../../../../../utils/file-utils';
 import { getMockDBConnection } from '../../../../../../__mocks__/db';
 import * as upload from './upload';

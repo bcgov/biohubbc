@@ -6,8 +6,8 @@ import { SYSTEM_IDENTITY_SOURCE } from '../../constants/database';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import * as db from '../../database/db';
 import { HTTPError } from '../../errors/http-error';
+import { SystemUserWithRoles } from '../../models/system-user-view';
 import { FundingSource, FundingSourceSupplementaryData } from '../../repositories/funding-source-repository';
-import { SystemUser } from '../../repositories/user-repository';
 import { FundingSourceService } from '../../services/funding-source-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
 import { getFundingSources, postFundingSource } from '../funding-sources';
@@ -52,7 +52,7 @@ describe('getFundingSources', () => {
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
-      const systemUser: SystemUser = {
+      const systemUser: SystemUserWithRoles = {
         system_user_id: 2,
         user_identifier: 'username',
         identity_source: SYSTEM_IDENTITY_SOURCE.IDIR,
@@ -113,7 +113,7 @@ describe('getFundingSources', () => {
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
-      const systemUser: SystemUser = {
+      const systemUser: SystemUserWithRoles = {
         system_user_id: 2,
         user_identifier: 'username',
         identity_source: SYSTEM_IDENTITY_SOURCE.IDIR,

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { ProjectUser } from '../repositories/project-participation-repository';
-import { SystemUser } from '../repositories/user-repository';
+import { SystemUserWithRoles } from './system-user-view';
 
 export interface IProjectAdvancedFilters {
   /**
@@ -27,7 +27,13 @@ export interface IProjectAdvancedFilters {
   /**
    * Filter results by system user id.
    *
-   * Note: This is not the id of the user making the request.
+   * Note: This is not the id of the uexport interface IPeriodAdvancedFilters {
+  survey_id?: number;
+  sample_site_id?: number;
+  method_technique_id?: number;
+  system_user_id?: number;
+}
+ser making the request.
    *
    * @type {number}
    * @memberof IProjectAdvancedFilters
@@ -45,7 +51,7 @@ export interface IProjectAdvancedFilters {
 export interface IGetProject {
   project: ProjectData;
   objectives: GetObjectivesData;
-  participants: (ProjectUser & SystemUser)[];
+  participants: (ProjectUser & SystemUserWithRoles)[];
   iucn: GetIUCNClassificationData;
 }
 
@@ -179,7 +185,8 @@ export class GetReportAttachmentsData {
             year: item.year,
             description: item.description,
             key: item.key,
-            file_size: item.file_size
+            file_size: item.file_size,
+            authors: undefined
           };
 
           if (item.authors?.length) {
