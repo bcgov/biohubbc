@@ -39,10 +39,6 @@ const useStyles = () => {
         backgroundColor: '#fcba19'
       }
     },
-    heroLink: {
-      color: '#fcba19',
-      fontWeight: 700
-    },
     pendingRequestAlert: {
       alignItems: 'center',
       maxWidth: '63ch',
@@ -109,7 +105,6 @@ const LandingActions = () => {
           <Typography variant="body2" color="primary">
             Don't have an account? &zwnj;
             <a
-              // style={classes.heroLink}
               title="Register a BCeID Account"
               target="_blank"
               rel="noopener noreferrer"
