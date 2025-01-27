@@ -1,6 +1,8 @@
-import { CSVCellValidator, CSVParams } from '../../../../utils/csv-utils/csv-config-validation.interface';
+import { CSVCellValidator, CSVError, CSVParams } from '../../../../utils/csv-utils/csv-config-validation.interface';
+import { updateCSVRowState } from '../../../../utils/csv-utils/csv-header-configs';
 import { NestedRecord } from '../../../../utils/nested-record';
 import {
+  CBQualitativeMeasurement,
   CBQualitativeMeasurementTypeDefinition,
   CBQuantitativeMeasurementTypeDefinition
 } from '../../../critterbase-service';
@@ -8,10 +10,8 @@ import {
   isCBQualitativeMeasurementTypeDefinition,
   isCBQuantitativeMeasurementTypeDefinition
 } from '../../utils/measurement';
-import {
-  getQualitativeMeasurementCellValidator,
-  getQuantitativeMeasurementCellValidator
-} from './measurement-header-configs';
+import { validateQualitativeCellValue } from '../../utils/qualitative';
+import { validateQuantitativeCellValue } from '../../utils/quantitative';
 
 export type TSNMeasurementDictionary = NestedRecord<
   CBQualitativeMeasurementTypeDefinition | CBQuantitativeMeasurementTypeDefinition
@@ -58,21 +58,54 @@ export const getDynamicMeasurementCellValidator = (
       ];
     }
 
-    // Validate the cell based on the measurement type from the header
-    if (isCBQualitativeMeasurementTypeDefinition(measurement)) {
-      return getQualitativeMeasurementCellValidator(measurement)(params);
-    }
-
-    if (isCBQuantitativeMeasurementTypeDefinition(measurement)) {
-      return getQuantitativeMeasurementCellValidator(measurement)(params);
-    }
-
-    // Can this path ever be reached?
-    return [
-      {
-        error: 'Invalid measurement type',
-        solution: 'Use a supported measurement type'
-      }
-    ];
+    return _validateMeasurement(params, measurement);
   };
+};
+
+export const _validateMeasurement = (params: CSVParams, measurement: unknown): CSVError[] => {
+  if (isCBQualitativeMeasurementTypeDefinition(measurement)) {
+    const result = validateQualitativeCellValue(params.cell, {
+      qualitative_id: measurement.taxon_measurement_id,
+      options: measurement.options.map((option) => ({
+        option_id: option.qualitative_option_id,
+        option_name: option.option_label
+      }))
+    });
+
+    if (Array.isArray(result)) {
+      return result;
+    }
+
+    // Update the row state with the taxon environment id and qualitative option id
+    updateCSVRowState(params.row, {
+      [params.header]: {
+        taxon_measurement_id: result.qualitative_id,
+        qualitative_option_id: result.option_id
+      } satisfies Partial<CBQualitativeMeasurement>
+    });
+
+    return [];
+  }
+
+  if (isCBQuantitativeMeasurementTypeDefinition(measurement)) {
+    const result = validateQuantitativeCellValue(params.cell, {
+      quantitative_id: measurement.taxon_measurement_id,
+      min: measurement.min_value,
+      max: measurement.max_value
+    });
+
+    if (Array.isArray(result)) {
+      return result;
+    }
+
+    return [];
+  }
+
+  // Can this path ever be reached?
+  return [
+    {
+      error: 'Invalid measurement type',
+      solution: 'Use a supported measurement type'
+    }
+  ];
 };
