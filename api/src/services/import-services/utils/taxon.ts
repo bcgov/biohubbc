@@ -42,3 +42,13 @@ export const getTaxonMap = async (
 
   return taxonMap;
 };
+
+/**
+ * Get the TSNs from a taxon map.
+ *
+ * @param {TaxonMap} taxonMap The taxon map
+ * @return {*} {number[]} The list of TSNs
+ */
+export const getTsnsFromTaxonMap = (taxonMap: TaxonMap) => {
+  return [...new Set(Array.from(taxonMap.values()).map((taxon) => taxon.tsn))];
+};

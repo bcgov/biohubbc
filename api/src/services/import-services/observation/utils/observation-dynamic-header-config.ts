@@ -1,10 +1,14 @@
 import { CSVCellValidator, CSVParams } from '../../../../utils/csv-utils/csv-config-validation.interface';
-import { getDynamicMeasurementCellValidator } from '../../measurement/utils/measurement-dynamic-headers-config';
+import { getDynamicMeasurementCellValidator } from '../../measurement/utils/measurement-dynamic-header-config';
 import { TSNMeasurementDictionary } from '../../utils/measurement';
+import {
+  EnvironmentNameTypeDefinitionMap,
+  getDynamicEnvironmentCellValidator
+} from './environment-dynamic-header-config';
 
 export const getObservationDynamicHeaderConfig = (
   tsnMeasurementDictionary: TSNMeasurementDictionary,
-  environmentDictionary: any, // TODO: Mac: Replace with environment dictionary type
+  environmentDictionary: EnvironmentNameTypeDefinitionMap,
   getRowTSN: (params: CSVParams) => number
 ): CSVCellValidator => {
   // Note: This validator makes the assumption that a measurement header
@@ -17,8 +21,7 @@ export const getObservationDynamicHeaderConfig = (
 
     // Check if the header is an environment header
     if (environmentDictionary.has(params.header)) {
-      // TODO: Mac: Implement environment dynamic header validation
-      return [];
+      return getDynamicEnvironmentCellValidator(environmentDictionary)(params);
     }
 
     // Question: Should we return an error if the header is neither a measurement nor environment header?

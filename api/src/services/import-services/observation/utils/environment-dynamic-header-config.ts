@@ -1,0 +1,125 @@
+import {
+  QualitativeEnvironmentTypeDefinition,
+  QuantitativeEnvironmentTypeDefinition
+} from '../../../../repositories/observation-subcount-environment-repository';
+import { CSVCellValidator, CSVError, CSVParams } from '../../../../utils/csv-utils/csv-config-validation.interface';
+import { updateCSVRowState } from '../../../../utils/csv-utils/csv-header-configs';
+import {
+  EnvironmentNameTypeDefinitionMap,
+  isEnvironmentQualitativeTypeDefinition
+} from '../../../../utils/observation-xlsx-utils/environment-column-utils';
+import { validateQualitativeCellValue } from '../../utils/qualitative';
+import { validateQuantitativeCellValue } from '../../utils/quantitative';
+
+/**
+ * Get the dynamic environment cell validator.
+ *
+ * @returns {*} {CSVCellValidator} The validate cell callback
+ */
+export const getDynamicEnvironmentCellValidator = (
+  environmentMap: EnvironmentNameTypeDefinitionMap
+): CSVCellValidator => {
+  return (params) => {
+    if (params.cell === undefined) {
+      return [];
+    }
+
+    const environment = environmentMap.get(params.header);
+
+    if (!environment) {
+      return [
+        {
+          error: `Column header '${params.header}' does not exist`,
+          solution: 'Use a valid environment as the header',
+          values: Object.keys(environmentMap)
+        }
+      ];
+    }
+
+    if (isEnvironmentQualitativeTypeDefinition(environment)) {
+      return validateQualitativeEnvironmentCell(params, environment);
+    }
+
+    if (isEnvironmentQualitativeTypeDefinition(environment)) {
+      return validateQuantitativeEnvironmentCell(params, environment);
+    }
+
+    // Can this path ever be reached?
+    return [
+      {
+        error: 'Invalid environment type',
+        solution: 'Use a supported environment type'
+      }
+    ];
+  };
+};
+
+/**
+ * Validate the qualitative environment cell value.
+ *
+ * @param {CSVParams} params The CSV params
+ * @param {QualitativeEnvironmentTypeDefinition} environment The qualitative environment definition
+ * @returns {CSVError[]} The list of errors
+ */
+export const validateQualitativeEnvironmentCell = (
+  params: CSVParams,
+  environment: QualitativeEnvironmentTypeDefinition
+): CSVError[] => {
+  // Normalize the environment type definition and validate against
+  const result = validateQualitativeCellValue(params.cell, {
+    qualitative_id: environment.environment_qualitative_id,
+    options: environment.options.map((option) => ({
+      option_id: option.environment_qualitative_option_id,
+      option_name: option.name
+    }))
+  });
+
+  // If the result is list of CSV errors
+  if (Array.isArray(result)) {
+    return result;
+  }
+
+  // Update the row state with the taxon environment id and qualitative option id
+  updateCSVRowState(params.row, {
+    [params.header]: {
+      environment_qualitative_id: result.qualitative_id,
+      environment_qualitative_option_id: result.option_id
+    }
+  }); // TODO: Satisfies?
+
+  return [];
+};
+
+/**
+ * Validate the quantitative environment cell value.
+ *
+ * @param {CSVParams} params The CSV params
+ * @param {QuantitativeEnvironmentTypeDefinition} environment The quantitative environment definition
+ * @returns {CSVError[]} The list of errors
+ */
+export const validateQuantitativeEnvironmentCell = (
+  params: CSVParams,
+  environment: QuantitativeEnvironmentTypeDefinition
+): CSVError[] => {
+  // Normalize the environment type definition and validate against
+  const result = validateQuantitativeCellValue(params.cell, {
+    quantitative_id: environment.environment_quantitative_id,
+    min: environment.min,
+    max: environment.max
+  });
+
+  // If the result is list of CSV errors
+  if (Array.isArray(result)) {
+    return result;
+  }
+
+  // Update the row state with the taxon environment id and value
+  updateCSVRowState(params.row, {
+    [params.header]: {
+      environment_quantitative_id: result.quantitative_id,
+      value: result.value
+    }
+  }); // TODO: Satisfies?
+
+  return [];
+};

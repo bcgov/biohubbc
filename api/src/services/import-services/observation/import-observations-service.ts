@@ -5,7 +5,7 @@ import { CodeRepository } from '../../../repositories/code-repository';
 import { InsertObservation } from '../../../repositories/observation-repository/observation-repository';
 import { CSVConfigUtils } from '../../../utils/csv-utils/csv-config-utils';
 import { validateCSVWorksheet } from '../../../utils/csv-utils/csv-config-validation';
-import { CSVConfig, CSVError, CSVRowState } from '../../../utils/csv-utils/csv-config-validation.interface';
+import { CSVConfig, CSVError, CSVParams, CSVRowState } from '../../../utils/csv-utils/csv-config-validation.interface';
 import {
   getDateCellValidator,
   getDateRangeCellValidator,
@@ -26,8 +26,14 @@ import {
   InsertUpdateObservations,
   ObservationService
 } from '../../observation-services/observation-service';
+import { ObservationSubCountEnvironmentService } from '../../observation-subcount-environment-service';
 import { PlatformService } from '../../platform-service';
 import { SamplePeriodService } from '../../sample-period-service';
+import {
+  getEnvironmentTypeDefinitionMap,
+  isQualitativeEnvironment,
+  isQuantitativeEnvironment
+} from '../utils/environment';
 import {
   getTsnMeasurementDictionary,
   isCBQualitativeMeasurement,
@@ -39,7 +45,7 @@ import {
   getTaxonScientificNameFromState,
   getTaxonTsnFromState
 } from '../utils/row-state';
-import { getTaxonMap } from '../utils/taxon';
+import { getTaxonMap, getTsnsFromTaxonMap, TaxonMap } from '../utils/taxon';
 import { getObservationDynamicHeaderConfig } from './utils/observation-dynamic-header-config';
 import { getObservationSubcountSignCellValidator } from './utils/observation-header-configs';
 import { getObservationSamplingInformationRowValidator } from './utils/observation-sampling-row-validator';
@@ -165,8 +171,20 @@ export class ImportObservationsService extends DBService {
             measurement_value: nestedState.value
           });
         }
-
-        // TODO: Inject the environments into the subcount
+        // Grab the qualitative environment from the row
+        else if (isQualitativeEnvironment(nestedState)) {
+          newSubcount.qualitative_environments.push({
+            environment_qualitative_id: nestedState.environment_qualitative_id,
+            environment_qualitative_option_id: nestedState.environment_qualitative_option_id
+          });
+        }
+        // Grab the quantitative environment from the row
+        else if (isQuantitativeEnvironment(nestedState)) {
+          newSubcount.quantitative_environments.push({
+            environment_quantitative_id: nestedState.environment_quantitative_id,
+            value: nestedState.value
+          });
+        }
       }
 
       observations.push({ standardColumns: newObservation, subcounts: [newSubcount] });
@@ -184,10 +202,15 @@ export class ImportObservationsService extends DBService {
    * @returns {Promise<CSVConfig<ObservationCSVStaticHeader>>} The CSV configuration
    */
   async getCSVConfig(): Promise<CSVConfig<ObservationCSVStaticHeader>> {
+    const platformService = new PlatformService(this.connection);
+
+    const taxonIdentifiers = this.utils.getUniqueCellValues('SPECIES');
+    const taxonMap = await getTaxonMap(taxonIdentifiers.filter(Boolean) as string[], platformService);
+
     await Promise.all([
       this._setObservationConfigStaticHeaders(),
-      this._setObservationConfigRowValidators(),
-      this._setObservationConfigDynamicHeaders()
+      this._setObservationConfigRowValidators(taxonMap),
+      this._setObservationConfigDynamicHeaders(taxonMap)
     ]);
 
     // Return the final CSV config
@@ -226,18 +249,16 @@ export class ImportObservationsService extends DBService {
   /**
    * Sets the taxon row validator and the observation sampling information row validator for the Observation CSV.
    *
+   * Note: Row validators run before static and dynamic header validators.
+   *
    * @returns {*} {Promise<void>}
    */
-  async _setObservationConfigRowValidators() {
+  async _setObservationConfigRowValidators(taxonMap: TaxonMap) {
     const samplePeriodService = new SamplePeriodService(this.connection);
-    const platformService = new PlatformService(this.connection);
 
     const samplingPeriods = await samplePeriodService.getSamplePeriodsForSurvey(this.surveyId);
-    const taxonIdentifiers = this.utils.getUniqueCellValues('SPECIES');
-    const taxonMap = await getTaxonMap(taxonIdentifiers.filter(Boolean) as string[], platformService);
 
     // Inject the row validators - handles taxon and sampling information validation
-    // Note: Runs BEFORE the static header validation
     this.utils.config.rowValidators = [
       getTaxonRowValidator(taxonMap, this.utils, 'SPECIES'),
       getObservationSamplingInformationRowValidator(samplingPeriods, this.utils)
@@ -249,20 +270,23 @@ export class ImportObservationsService extends DBService {
    *
    * @returns {*} {Promise<void>}
    */
-  async _setObservationConfigDynamicHeaders() {
+  async _setObservationConfigDynamicHeaders(taxonMap: TaxonMap) {
     const critterbaseService = new CritterbaseService({
       keycloak_guid: this.connection.systemUserGUID(),
       username: this.connection.systemUserIdentifier()
     });
+    const environmentService = new ObservationSubCountEnvironmentService(this.connection);
 
-    const measurementDictionary = await getTsnMeasurementDictionary([], critterbaseService);
+    // Generate the measurement dictionary and environment map
+    const measurementDictionary = await getTsnMeasurementDictionary(getTsnsFromTaxonMap(taxonMap), critterbaseService);
+    const environmentMap = await getEnvironmentTypeDefinitionMap(this.surveyId, environmentService);
+
+    // Get the TSN from the row state for the dynamic headers validator
+    const getTsnFromRow = (params: CSVParams) => getTaxonTsnFromState(params.row);
 
     // Inject dynamic header config - handles measurement and environment validation
     this.utils.config.dynamicHeadersConfig = {
-      // TODO: Update the second parameter to be the environent dictionary
-      validateCell: getObservationDynamicHeaderConfig(measurementDictionary, {}, (params) => {
-        return getTaxonTsnFromState(params.row);
-      })
+      validateCell: getObservationDynamicHeaderConfig(measurementDictionary, environmentMap, getTsnFromRow)
     };
   }
 }
