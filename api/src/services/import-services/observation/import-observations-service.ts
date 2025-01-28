@@ -5,7 +5,13 @@ import { CodeRepository } from '../../../repositories/code-repository';
 import { InsertObservation } from '../../../repositories/observation-repository/observation-repository';
 import { CSVConfigUtils } from '../../../utils/csv-utils/csv-config-utils';
 import { validateCSVWorksheet } from '../../../utils/csv-utils/csv-config-validation';
-import { CSVConfig, CSVError, CSVParams, CSVRowState } from '../../../utils/csv-utils/csv-config-validation.interface';
+import {
+  CSVConfig,
+  CSVError,
+  CSVParams,
+  CSVRow,
+  CSVRowState
+} from '../../../utils/csv-utils/csv-config-validation.interface';
 import {
   getDateCellValidator,
   getDateRangeCellValidator,
@@ -44,6 +50,7 @@ import {
   getQualitativeMeasurementFromRowState,
   getQuantitativeEnvironmentFromRowState,
   getQuantitativeMeasurementFromRowState,
+  getSamplingPeriodFromRowState,
   getTaxonFromRowState
 } from '../utils/row-state';
 import { getTaxonMap, getTsnsFromTaxonMap, TaxonMap } from '../utils/taxon';
@@ -135,7 +142,7 @@ export class ImportObservationsService extends DBService {
         survey_id: this.surveyId,
         itis_tsn: getTaxonFromRowState(row).itis_tsn,
         itis_scientific_name: getTaxonFromRowState(row).itis_scientific_name,
-        survey_sample_period_id: row.SAMPLING_PERIOD ?? null,
+        survey_sample_period_id: getSamplingPeriodFromRowState(row).sampling_period_id ?? null,
         latitude: row.LATITUDE,
         longitude: row.LONGITUDE,
         count: row.COUNT, // deprecated - each subcount will eventually have its own count
@@ -143,54 +150,7 @@ export class ImportObservationsService extends DBService {
         observation_time: row.TIME
       };
 
-      const newSubcount: InsertSubCount = {
-        observation_subcount_id: null,
-        subcount: row.COUNT,
-        observation_subcount_sign_id: row.SUBCOUNT_SIGN ?? null,
-        comment: row.COMMENT ?? null,
-        qualitative_measurements: [],
-        quantitative_measurements: [],
-        qualitative_environments: [],
-        quantitative_environments: []
-      };
-
-      for (const dynamicHeader of this.utils.worksheetDynamicHeaders) {
-        // Nested state used to prevent conflicts with other CSV headers
-        const nestedState = row[CSVRowState]?.[dynamicHeader];
-
-        // Grab the qualitative measurement from the row
-        if (isCBQualitativeMeasurement(nestedState)) {
-          const qualitativeMeasurement = getQualitativeMeasurementFromRowState(nestedState);
-
-          newSubcount.qualitative_measurements.push({
-            measurement_id: qualitativeMeasurement.taxon_measurement_id,
-            measurement_option_id: qualitativeMeasurement.qualitative_option_id
-          });
-        }
-        // Grab the quantitative measurement from the row
-        else if (isCBQuantitativeMeasurement(nestedState)) {
-          const quantitativeMeasurement = getQuantitativeMeasurementFromRowState(nestedState);
-
-          newSubcount.quantitative_measurements.push({
-            measurement_id: quantitativeMeasurement.taxon_measurement_id,
-            measurement_value: quantitativeMeasurement.value
-          });
-        }
-        // Grab the qualitative environment from the row
-        else if (isQualitativeEnvironmentStub(nestedState)) {
-          const qualitativeEnvironment = getQualitativeEnvironmentFromRowState(nestedState);
-
-          newSubcount.qualitative_environments.push(qualitativeEnvironment);
-        }
-        // Grab the quantitative environment from the row
-        else if (isQuantitativeEnvironmentStub(nestedState)) {
-          const quantitativeEnvironment = getQuantitativeEnvironmentFromRowState(nestedState);
-
-          newSubcount.quantitative_environments.push(quantitativeEnvironment);
-        }
-      }
-
-      observations.push({ standardColumns: newObservation, subcounts: [newSubcount] });
+      observations.push({ standardColumns: newObservation, subcounts: this._getRowSubcounts(row) });
     }
 
     const observationService = new ObservationService(this.connection);
@@ -291,5 +251,64 @@ export class ImportObservationsService extends DBService {
     this.utils.config.dynamicHeadersConfig = {
       validateCell: getObservationDynamicHeaderConfig(measurementDictionary, environmentMap, getTsnFromRow)
     };
+  }
+
+  /**
+   * Get the subcounts from a row.
+   *
+   * @param {CSVRow} row - The row to extract subcounts from
+   * @returns {*} {InsertSubCount[]} The subcounts
+   */
+  _getRowSubcounts(row: CSVRow): InsertSubCount[] {
+    const newSubcount: InsertSubCount = {
+      observation_subcount_id: null,
+      subcount: row.COUNT,
+      observation_subcount_sign_id: row.SUBCOUNT_SIGN ?? null,
+      comment: row.COMMENT ?? null,
+      qualitative_measurements: [],
+      quantitative_measurements: [],
+      qualitative_environments: [],
+      quantitative_environments: []
+    };
+
+    for (const dynamicHeader of this.utils.worksheetDynamicHeaders) {
+      // Nested state used to prevent conflicts with other CSV headers
+      const nestedState = row[CSVRowState]?.[dynamicHeader];
+
+      // Grab the qualitative measurement from the row
+      if (isCBQualitativeMeasurement(nestedState)) {
+        const qualitativeMeasurement = getQualitativeMeasurementFromRowState(nestedState);
+
+        newSubcount.qualitative_measurements.push({
+          measurement_id: qualitativeMeasurement.taxon_measurement_id,
+          measurement_option_id: qualitativeMeasurement.qualitative_option_id
+        });
+      }
+      // Grab the quantitative measurement from the row
+      else if (isCBQuantitativeMeasurement(nestedState)) {
+        const quantitativeMeasurement = getQuantitativeMeasurementFromRowState(nestedState);
+
+        newSubcount.quantitative_measurements.push({
+          measurement_id: quantitativeMeasurement.taxon_measurement_id,
+          measurement_value: quantitativeMeasurement.value
+        });
+      }
+      // Grab the qualitative environment from the row
+      else if (isQualitativeEnvironmentStub(nestedState)) {
+        const qualitativeEnvironment = getQualitativeEnvironmentFromRowState(nestedState);
+
+        newSubcount.qualitative_environments.push(qualitativeEnvironment);
+      }
+      // Grab the quantitative environment from the row
+      else if (isQuantitativeEnvironmentStub(nestedState)) {
+        const quantitativeEnvironment = getQuantitativeEnvironmentFromRowState(nestedState);
+
+        newSubcount.quantitative_environments.push(quantitativeEnvironment);
+      } else {
+        // NOTE: Should this else path throw an error?
+      }
+    }
+
+    return [newSubcount];
   }
 }
