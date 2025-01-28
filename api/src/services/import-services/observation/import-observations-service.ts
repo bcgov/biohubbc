@@ -30,9 +30,9 @@ import { ObservationSubCountEnvironmentService } from '../../observation-subcoun
 import { PlatformService } from '../../platform-service';
 import { SamplePeriodService } from '../../sample-period-service';
 import {
-  getEnvironmentTypeDefinitionMap,
-  isQualitativeEnvironment,
-  isQuantitativeEnvironment
+  getEnvironmentNameTypeDefinitionMap,
+  isQualitativeEnvironmentStub,
+  isQuantitativeEnvironmentStub
 } from '../utils/environment';
 import {
   getTsnMeasurementDictionary,
@@ -40,10 +40,11 @@ import {
   isCBQuantitativeMeasurement
 } from '../utils/measurement';
 import {
-  getQualitativeOptionIdFromState,
-  getTaxonMeasurementIdFromState,
-  getTaxonScientificNameFromState,
-  getTaxonTsnFromState
+  getQualitativeEnvironmentFromRowState,
+  getQualitativeMeasurementFromRowState,
+  getQuantitativeEnvironmentFromRowState,
+  getQuantitativeMeasurementFromRowState,
+  getTaxonFromRowState
 } from '../utils/row-state';
 import { getTaxonMap, getTsnsFromTaxonMap, TaxonMap } from '../utils/taxon';
 import { getObservationDynamicHeaderConfig } from './utils/observation-dynamic-header-config';
@@ -132,8 +133,8 @@ export class ImportObservationsService extends DBService {
     for (const row of rows) {
       const newObservation: InsertObservation = {
         survey_id: this.surveyId,
-        itis_tsn: getTaxonTsnFromState(row),
-        itis_scientific_name: getTaxonScientificNameFromState(row),
+        itis_tsn: getTaxonFromRowState(row).itis_tsn,
+        itis_scientific_name: getTaxonFromRowState(row).itis_scientific_name,
         survey_sample_period_id: row.SAMPLING_PERIOD ?? null,
         latitude: row.LATITUDE,
         longitude: row.LONGITUDE,
@@ -154,36 +155,38 @@ export class ImportObservationsService extends DBService {
       };
 
       for (const dynamicHeader of this.utils.worksheetDynamicHeaders) {
-        // Nested state to prevent conflicts with other CSV headers
+        // Nested state used to prevent conflicts with other CSV headers
         const nestedState = row[CSVRowState]?.[dynamicHeader];
 
         // Grab the qualitative measurement from the row
         if (isCBQualitativeMeasurement(nestedState)) {
+          const qualitativeMeasurement = getQualitativeMeasurementFromRowState(nestedState);
+
           newSubcount.qualitative_measurements.push({
-            measurement_id: getTaxonMeasurementIdFromState(row, nestedState),
-            measurement_option_id: getQualitativeOptionIdFromState(nestedState)
+            measurement_id: qualitativeMeasurement.taxon_measurement_id,
+            measurement_option_id: qualitativeMeasurement.qualitative_option_id
           });
         }
         // Grab the quantitative measurement from the row
         else if (isCBQuantitativeMeasurement(nestedState)) {
+          const quantitativeMeasurement = getQuantitativeMeasurementFromRowState(nestedState);
+
           newSubcount.quantitative_measurements.push({
-            measurement_id: getTaxonMeasurementIdFromState(row, nestedState),
-            measurement_value: nestedState.value
+            measurement_id: quantitativeMeasurement.taxon_measurement_id,
+            measurement_value: quantitativeMeasurement.value
           });
         }
         // Grab the qualitative environment from the row
-        else if (isQualitativeEnvironment(nestedState)) {
-          newSubcount.qualitative_environments.push({
-            environment_qualitative_id: nestedState.environment_qualitative_id,
-            environment_qualitative_option_id: nestedState.environment_qualitative_option_id
-          });
+        else if (isQualitativeEnvironmentStub(nestedState)) {
+          const qualitativeEnvironment = getQualitativeEnvironmentFromRowState(nestedState);
+
+          newSubcount.qualitative_environments.push(qualitativeEnvironment);
         }
         // Grab the quantitative environment from the row
-        else if (isQuantitativeEnvironment(nestedState)) {
-          newSubcount.quantitative_environments.push({
-            environment_quantitative_id: nestedState.environment_quantitative_id,
-            value: nestedState.value
-          });
+        else if (isQuantitativeEnvironmentStub(nestedState)) {
+          const quantitativeEnvironment = getQuantitativeEnvironmentFromRowState(nestedState);
+
+          newSubcount.quantitative_environments.push(quantitativeEnvironment);
         }
       }
 
@@ -279,10 +282,10 @@ export class ImportObservationsService extends DBService {
 
     // Generate the measurement dictionary and environment map
     const measurementDictionary = await getTsnMeasurementDictionary(getTsnsFromTaxonMap(taxonMap), critterbaseService);
-    const environmentMap = await getEnvironmentTypeDefinitionMap(this.surveyId, environmentService);
+    const environmentMap = await getEnvironmentNameTypeDefinitionMap(this.surveyId, environmentService);
 
     // Get the TSN from the row state for the dynamic headers validator
-    const getTsnFromRow = (params: CSVParams) => getTaxonTsnFromState(params.row);
+    const getTsnFromRow = (params: CSVParams) => getTaxonFromRowState(params.row[CSVRowState]).itis_tsn;
 
     // Inject dynamic header config - handles measurement and environment validation
     this.utils.config.dynamicHeadersConfig = {

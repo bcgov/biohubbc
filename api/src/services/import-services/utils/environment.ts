@@ -1,6 +1,4 @@
 import {
-  ObservationSubCountQualitativeEnvironmentRecord,
-  ObservationSubCountQuantitativeEnvironmentRecord,
   QualitativeEnvironmentTypeDefinition,
   QuantitativeEnvironmentTypeDefinition
 } from '../../../repositories/observation-subcount-environment-repository';
@@ -15,7 +13,7 @@ export type EnvironmentNameTypeDefinitionMap = CaseInsensitiveMap<
 /**
  * Check if an object is a `QuantitativeEnvironmentTypeDefinition`
  *
- * Returns true if the object has the properties `unit` and `taxon_measurement_id`
+ * Returns true if the object has the properties `unit` and `environment_quantitative_id`
  *
  * @param {any} environment - The object to check
  * @returns {boolean} True if the object is a QuantitativeEnvironmentTypeDefinition
@@ -34,7 +32,7 @@ export const isQuantitativeEnvironmentTypeDefinition = (
 /**
  * Check if an object is a `QualitativeEnvironmentTypeDefinition`
  *
- * Returns true if the object has the properties `options` and `taxon_measurement_id`
+ * Returns true if the object has the properties `options` and `environment_qualitative_id`
  *
  * @param {unknown} environment - The object to check
  * @returns {boolean} True if the object is a QualitativeEnvironmentTypeDefinition
@@ -51,16 +49,17 @@ export const isQualitativeEnvironmentTypeDefinition = (
 };
 
 /**
- * Check if an object is a `ObservationSubCountQualitativeEnvironmentRecord` - ie: the recorded environment
+ * Check if an object is a qualitative environment stub
  *
  * Returns true if the object has the properties `environment_qualitative_option_id` and `environment_qualitative_id`
  *
+ * Note: This function is NOT a typeguard, it is used to determine if an object
+ * contains the minimum required properties to create a qualitative environment.
+ *
  * @param {unknown} environment - The object to check
- * @returns {boolean} True if the object is a CBQualitativeMeasurement
+ * @returns {boolean} True if the object is a qualitative environment
  */
-export const isQualitativeEnvironment = (
-  environment: unknown
-): environment is ObservationSubCountQualitativeEnvironmentRecord => {
+export const isQualitativeEnvironmentStub = (environment: unknown): boolean => {
   return (
     typeof environment === 'object' &&
     environment != null &&
@@ -70,16 +69,17 @@ export const isQualitativeEnvironment = (
 };
 
 /**
- * Check if an object is a `ObservationSubCountQuantitativeEnvironmentRecord` - ie: the recorded environment
+ * Check if an object is a quantitative environment stub
  *
  * Returns true if the object has the properties `value` and `environment_quantitative_id`
  *
+ * Note: This function is NOT a typeguard, it is used to determine if an object
+ * contains the minimum required properties to create a quantitative environment.
+ *
  * @param {unknown} environment - The object to check
- * @returns {boolean} True if the object is a CBQuantitativeMeasurement
+ * @returns {boolean} True if the object is a quantitative environment
  */
-export const isQuantitativeEnvironment = (
-  environment: unknown
-): environment is ObservationSubCountQuantitativeEnvironmentRecord => {
+export const isQuantitativeEnvironmentStub = (environment: unknown): boolean => {
   return (
     typeof environment === 'object' &&
     environment != null &&
@@ -88,7 +88,14 @@ export const isQuantitativeEnvironment = (
   );
 };
 
-export const getEnvironmentTypeDefinitionMap = async (
+/**
+ * Get the environment name type definition map for a survey - case insensitive
+ *
+ * @param {number} surveyId The survey id
+ * @param {ObservationSubCountEnvironmentService} environmentService The environment service
+ * @return {*}  {Promise<EnvironmentNameTypeDefinitionMap>} A mapping of environment names to their respective environment type definitions
+ */
+export const getEnvironmentNameTypeDefinitionMap = async (
   surveyId: number,
   environmentService: ObservationSubCountEnvironmentService
 ): Promise<EnvironmentNameTypeDefinitionMap> => {
@@ -99,6 +106,7 @@ export const getEnvironmentTypeDefinitionMap = async (
     environmentService.getQuantitativeEnvironmentTypeDefinitionsForSurvey(surveyId)
   ]);
 
+  // Map environment names to their respective environment type definitions
   for (const environment of qualitativeEnvironments) {
     environmentMap.set(environment.name, environment);
   }

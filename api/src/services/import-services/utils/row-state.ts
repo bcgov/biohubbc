@@ -5,51 +5,63 @@ import { CSVRow, CSVRowState } from '../../../utils/csv-utils/csv-config-validat
 /**
  * Create a row state getter
  *
- * @param {string} key - The key to get from the row state
  * @param {z.ZodSchema} schema - The Zod schema to validate the value
  * @returns {*} {function} - The row state getter
  */
-export const createRowStateGetter = <SchemaType extends z.ZodSchema>(key: string, schema: SchemaType) => {
-  return (row: CSVRow, state?: Record<string, unknown>): z.infer<SchemaType> => {
-    const value = state ? state[key] : row[CSVRowState]?.[key];
+export const createRowStateGetter = <SchemaType extends z.ZodSchema>(schema: SchemaType) => {
+  return (rowOrState: CSVRow | CSVRow[typeof CSVRowState]): z.infer<SchemaType> => {
+    const isCSVRow = Object.getOwnPropertySymbols(rowOrState).includes(CSVRowState);
 
-    const parsedValue = schema.safeParse(value);
+    const parsedState = schema.safeParse(isCSVRow ? rowOrState?.[CSVRowState] : rowOrState);
 
     // Throw an error if unable to correctly parse the row state
-    if (!parsedValue.success) {
+    if (!parsedState.success) {
       throw new ApiGeneralError('Invalid CSV row state', [
         {
-          key: key,
-          value: value,
-          errors: parsedValue.error,
-          rowState: row[CSVRowState]
+          state: rowOrState,
+          errors: parsedState.error
         }
       ]);
     }
 
-    return parsedValue;
+    return parsedState.data;
   };
 };
 
 // Taxon
-export const getTaxonTsnFromState = createRowStateGetter('itis_tsn', z.number());
-export const getTaxonScientificNameFromState = createRowStateGetter('itis_scientific_name', z.string());
-
-// Critter and Capture
-export const getCritterIdFromState = createRowStateGetter('critter_id', z.string().uuid());
-export const getCaptureIdFromState = createRowStateGetter('capture_id', z.string().uuid());
+export const getTaxonFromRowState = createRowStateGetter(
+  z.object({
+    itis_tsn: z.number(),
+    itis_scientific_name: z.string()
+  })
+);
 
 // Measurement
-export const getTaxonMeasurementIdFromState = createRowStateGetter('taxon_measurement_id', z.string().uuid());
-export const getQualitativeOptionIdFromState = createRowStateGetter('qualitative_option_id', z.string().uuid());
-export const getQuantitativeValueFromState = createRowStateGetter('value', z.number());
+export const getQualitativeMeasurementFromRowState = createRowStateGetter(
+  z.object({
+    taxon_measurement_id: z.string().uuid(),
+    qualitative_option_id: z.string().uuid()
+  })
+);
+
+export const getQuantitativeMeasurementFromRowState = createRowStateGetter(
+  z.object({
+    taxon_measurement_id: z.string().uuid(),
+    value: z.number()
+  })
+);
 
 // Environment
-export const getEnvironmentQualitativeIdFromState = createRowStateGetter(
-  'environment_qualitative_id',
-  z.string().uuid()
+export const getQualitativeEnvironmentFromRowState = createRowStateGetter(
+  z.object({
+    environment_qualitative_id: z.string().uuid(),
+    environment_qualitative_option_id: z.string().uuid()
+  })
 );
-export const getEnvironmentQualitativeOptionIdFromState = createRowStateGetter(
-  'environment_qualitative_option_id',
-  z.string().uuid()
+
+export const getQuantitativeEnvironmentFromRowState = createRowStateGetter(
+  z.object({
+    environment_quantitative_id: z.string().uuid(),
+    value: z.number()
+  })
 );

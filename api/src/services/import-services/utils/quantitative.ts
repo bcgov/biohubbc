@@ -15,6 +15,8 @@ export const validateQuantitativeCellValue = (
   cell: unknown,
   quantitativeTypeDefinition: IQuantitativeTypeDefinitionStub
 ): CSVError[] | IQuantitativeValidationResult => {
+  const errors: CSVError[] = [];
+
   // Quantitative environments are numbers ie: antler count: 2
   if (typeof cell !== 'number') {
     return [
@@ -24,8 +26,6 @@ export const validateQuantitativeCellValue = (
       }
     ];
   }
-
-  const errors: CSVError[] = [];
 
   // Validate cell value is withing the environment min max bounds
   if (quantitativeTypeDefinition.max != null && cell > quantitativeTypeDefinition.max) {
