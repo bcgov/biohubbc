@@ -12,7 +12,6 @@
     "forceConsistentCasingInFileNames": true,
     "noImplicitThis": true,
     "noImplicitAny": true,
-    "suppressImplicitAnyIndexErrors": true,
     "allowSyntheticDefaultImports": true,
     "noUnusedLocals": false,
     "esModuleInterop": true,

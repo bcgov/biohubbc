@@ -97,7 +97,7 @@ const EditSurveyForm = <
             <GeneralInformationForm
               progress={
                 codes?.survey_progress?.map((item) => {
-                  return { value: item.id, label: item.name, subText: item.description };
+                  return { value: item.id, label: item.name, description: item.description };
                 }) || []
               }
             />
@@ -150,7 +150,7 @@ const EditSurveyForm = <
             <PurposeAndMethodologyForm
               intended_outcomes={
                 codes.intended_outcomes.map((item) => {
-                  return { value: item.id, label: item.name, subText: item.description };
+                  return { value: item.id, label: item.name, description: item.description };
                 }) || []
               }
               type={
