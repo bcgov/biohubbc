@@ -6,39 +6,34 @@ interface IQuantitativeTypeDefinitionStub {
   max: number | null;
 }
 
-interface IQuantitativeValidationResult {
-  quantitative_id: string;
-  value: number;
-}
-
-export const validateQuantitativeCellValue = (
-  cell: unknown,
+export const validateQuantitativeValue = (
+  value: unknown,
   quantitativeTypeDefinition: IQuantitativeTypeDefinitionStub
-): CSVError[] | IQuantitativeValidationResult => {
+): CSVError[] | number => {
   const errors: CSVError[] = [];
 
   // Quantitative environments are numbers ie: antler count: 2
-  if (typeof cell !== 'number') {
+  if (typeof value !== 'number') {
     return [
       {
-        error: 'Quantitative cell value must be a number',
-        solution: 'Update the cell value to match the expected type'
+        error: 'Quantitative value value must be a number',
+        solution: 'Update the value value to match the expected type'
       }
     ];
   }
 
-  // Validate cell value is withing the environment min max bounds
-  if (quantitativeTypeDefinition.max != null && cell > quantitativeTypeDefinition.max) {
+  // Validate value value is withing the environment min max bounds
+  if (quantitativeTypeDefinition.max != null && value > quantitativeTypeDefinition.max) {
     errors.push({
-      error: 'Quantitative cell value too large',
+      error: 'Quantitative value value too large',
       solution: `Value must be less than or equal to ${quantitativeTypeDefinition.max}`
     });
   }
 
-  // Validate cell value is withing the environment min max bounds
-  if (quantitativeTypeDefinition.min != null && cell < quantitativeTypeDefinition.min) {
+  // Validate value value is withing the environment min max bounds
+  if (quantitativeTypeDefinition.min != null && value < quantitativeTypeDefinition.min) {
     errors.push({
-      error: 'Quantitative cell value too small',
+      error: 'Quantitative value value too small',
       solution: `Value must be greater than or equal to ${quantitativeTypeDefinition.min}`
     });
   }
@@ -47,8 +42,5 @@ export const validateQuantitativeCellValue = (
     return errors;
   }
 
-  return {
-    quantitative_id: quantitativeTypeDefinition.quantitative_id,
-    value: cell
-  };
+  return value;
 };

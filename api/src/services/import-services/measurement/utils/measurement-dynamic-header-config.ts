@@ -11,8 +11,8 @@ import {
   isCBQualitativeMeasurementTypeDefinition,
   isCBQuantitativeMeasurementTypeDefinition
 } from '../../utils/measurement';
-import { validateQualitativeCellValue } from '../../utils/qualitative';
-import { validateQuantitativeCellValue } from '../../utils/quantitative';
+import { validateQualitativeValue } from '../../utils/qualitative';
+import { validateQuantitativeValue } from '../../utils/quantitative';
 
 export type TSNMeasurementDictionary = NestedRecord<
   CBQualitativeMeasurementTypeDefinition | CBQuantitativeMeasurementTypeDefinition
@@ -89,7 +89,7 @@ export const validateQualitativeMeasurementCell = (
   measurement: CBQualitativeMeasurementTypeDefinition
 ): CSVError[] => {
   // Normalize the measurement type definition and validate against
-  const result = validateQualitativeCellValue(params.cell, {
+  const result = validateQualitativeValue(params.cell, {
     qualitative_id: measurement.taxon_measurement_id,
     options: measurement.options.map((option) => ({
       option_id: option.qualitative_option_id,
@@ -98,15 +98,15 @@ export const validateQualitativeMeasurementCell = (
   });
 
   // If the result is list of CSV errors
-  if (Array.isArray(result)) {
+  if (typeof result !== 'string') {
     return result;
   }
 
   // Update the row state with the taxon measurement id and qualitative option id
   updateCSVRowState(params.row, {
     [params.header]: {
-      taxon_measurement_id: result.qualitative_id,
-      qualitative_option_id: result.option_id
+      taxon_measurement_id: measurement.taxon_measurement_id,
+      qualitative_option_id: result
     } satisfies Partial<CBQualitativeMeasurement>
   });
 
@@ -125,22 +125,22 @@ export const validateQuantitativeMeasurementCell = (
   measurement: CBQuantitativeMeasurementTypeDefinition
 ): CSVError[] => {
   // Normalize the measurement type definition and validate against
-  const result = validateQuantitativeCellValue(params.cell, {
+  const result = validateQuantitativeValue(params.cell, {
     quantitative_id: measurement.taxon_measurement_id,
     min: measurement.min_value,
     max: measurement.max_value
   });
 
   // If the result is list of CSV errors
-  if (Array.isArray(result)) {
+  if (typeof result !== 'number') {
     return result;
   }
 
   // Update the row state with the taxon measurement id and value
   updateCSVRowState(params.row, {
     [params.header]: {
-      taxon_measurement_id: result.quantitative_id,
-      value: result.value
+      taxon_measurement_id: measurement.taxon_measurement_id,
+      value: result
     } satisfies Partial<CBQuantitativeMeasurement>
   });
 
