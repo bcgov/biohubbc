@@ -1,10 +1,8 @@
 import { CSVCellValidator, CSVParams } from '../../../../utils/csv-utils/csv-config-validation.interface';
 import { getDynamicMeasurementCellValidator } from '../../measurement/utils/measurement-dynamic-header-config';
+import { EnvironmentNameTypeDefinitionMap } from '../../utils/environment';
 import { TSNMeasurementDictionary } from '../../utils/measurement';
-import {
-  EnvironmentNameTypeDefinitionMap,
-  getDynamicEnvironmentCellValidator
-} from './environment-dynamic-header-config';
+import { getDynamicEnvironmentCellValidator } from './environment-dynamic-header-config';
 
 export const getObservationDynamicHeaderConfig = (
   tsnMeasurementDictionary: TSNMeasurementDictionary,
@@ -25,7 +23,6 @@ export const getObservationDynamicHeaderConfig = (
     }
 
     // Question: Should we return an error if the header is neither a measurement nor environment header?
-    // Or should we just ignore it?
     return [
       {
         error: `Invalid dynamic header`,

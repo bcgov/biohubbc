@@ -8,8 +8,8 @@ import {
   EnvironmentNameTypeDefinitionMap,
   isEnvironmentQualitativeTypeDefinition
 } from '../../../../utils/observation-xlsx-utils/environment-column-utils';
-import { validateQualitativeCellValue } from '../../utils/qualitative';
-import { validateQuantitativeCellValue } from '../../utils/quantitative';
+import { validateQualitativeValue } from '../../utils/qualitative';
+import { validateQuantitativeValue } from '../../utils/quantitative';
 
 /**
  * Get the dynamic environment cell validator.
@@ -66,7 +66,7 @@ export const validateQualitativeEnvironmentCell = (
   environment: QualitativeEnvironmentTypeDefinition
 ): CSVError[] => {
   // Normalize the environment type definition and validate against
-  const result = validateQualitativeCellValue(params.cell, {
+  const result = validateQualitativeValue(params.cell, {
     qualitative_id: environment.environment_qualitative_id,
     options: environment.options.map((option) => ({
       option_id: option.environment_qualitative_option_id,
@@ -75,15 +75,15 @@ export const validateQualitativeEnvironmentCell = (
   });
 
   // If the result is list of CSV errors
-  if (Array.isArray(result)) {
+  if (typeof result !== 'string') {
     return result;
   }
 
   // Update the row state with the taxon environment id and qualitative option id
   updateCSVRowState(params.row, {
     [params.header]: {
-      environment_qualitative_id: result.qualitative_id,
-      environment_qualitative_option_id: result.option_id
+      environment_qualitative_id: environment.environment_qualitative_id,
+      environment_qualitative_option_id: result
     }
   }); // TODO: Satisfies?
 
@@ -102,22 +102,22 @@ export const validateQuantitativeEnvironmentCell = (
   environment: QuantitativeEnvironmentTypeDefinition
 ): CSVError[] => {
   // Normalize the environment type definition and validate against
-  const result = validateQuantitativeCellValue(params.cell, {
+  const result = validateQuantitativeValue(params.cell, {
     quantitative_id: environment.environment_quantitative_id,
     min: environment.min,
     max: environment.max
   });
 
   // If the result is list of CSV errors
-  if (Array.isArray(result)) {
+  if (typeof result !== 'number') {
     return result;
   }
 
   // Update the row state with the taxon environment id and value
   updateCSVRowState(params.row, {
     [params.header]: {
-      environment_quantitative_id: result.quantitative_id,
-      value: result.value
+      environment_quantitative_id: environment.environment_quantitative_id,
+      value: result
     }
   }); // TODO: Satisfies?
 

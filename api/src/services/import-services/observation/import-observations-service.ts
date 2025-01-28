@@ -2,7 +2,6 @@ import { WorkSheet } from 'xlsx';
 import { z } from 'zod';
 import { IDBConnection } from '../../../database/db';
 import { CodeRepository } from '../../../repositories/code-repository';
-import { InsertObservation } from '../../../repositories/observation-repository/observation-repository';
 import { CSVConfigUtils } from '../../../utils/csv-utils/csv-config-utils';
 import { validateCSVWorksheet } from '../../../utils/csv-utils/csv-config-validation';
 import {
@@ -42,8 +41,8 @@ import {
 } from '../utils/environment';
 import {
   getTsnMeasurementDictionary,
-  isCBQualitativeMeasurement,
-  isCBQuantitativeMeasurement
+  isCBQualitativeMeasurementStub,
+  isCBQuantitativeMeasurementStub
 } from '../utils/measurement';
 import {
   getQualitativeEnvironmentFromRowState,
@@ -138,19 +137,20 @@ export class ImportObservationsService extends DBService {
     const observations: InsertUpdateObservations[] = [];
 
     for (const row of rows) {
-      const newObservation: InsertObservation = {
-        survey_id: this.surveyId,
-        itis_tsn: getTaxonFromRowState(row).itis_tsn,
-        itis_scientific_name: getTaxonFromRowState(row).itis_scientific_name,
-        survey_sample_period_id: getSamplingPeriodFromRowState(row).sampling_period_id ?? null,
-        latitude: row.LATITUDE,
-        longitude: row.LONGITUDE,
-        count: row.COUNT, // deprecated - each subcount will eventually have its own count
-        observation_date: row.DATE,
-        observation_time: row.TIME
-      };
-
-      observations.push({ standardColumns: newObservation, subcounts: this._getRowSubcounts(row) });
+      observations.push({
+        standardColumns: {
+          survey_id: this.surveyId,
+          itis_tsn: getTaxonFromRowState(row).itis_tsn,
+          itis_scientific_name: getTaxonFromRowState(row).itis_scientific_name,
+          survey_sample_period_id: getSamplingPeriodFromRowState(row).sampling_period_id ?? null,
+          latitude: row.LATITUDE,
+          longitude: row.LONGITUDE,
+          count: row.COUNT, // deprecated - each subcount will eventually have its own count
+          observation_date: row.DATE,
+          observation_time: row.TIME
+        },
+        subcounts: this._getRowSubcounts(row)
+      });
     }
 
     const observationService = new ObservationService(this.connection);
@@ -276,7 +276,7 @@ export class ImportObservationsService extends DBService {
       const nestedState = row[CSVRowState]?.[dynamicHeader];
 
       // Grab the qualitative measurement from the row
-      if (isCBQualitativeMeasurement(nestedState)) {
+      if (isCBQualitativeMeasurementStub(nestedState)) {
         const qualitativeMeasurement = getQualitativeMeasurementFromRowState(nestedState);
 
         newSubcount.qualitative_measurements.push({
@@ -285,7 +285,7 @@ export class ImportObservationsService extends DBService {
         });
       }
       // Grab the quantitative measurement from the row
-      else if (isCBQuantitativeMeasurement(nestedState)) {
+      else if (isCBQuantitativeMeasurementStub(nestedState)) {
         const quantitativeMeasurement = getQuantitativeMeasurementFromRowState(nestedState);
 
         newSubcount.quantitative_measurements.push({
