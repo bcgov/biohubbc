@@ -58,7 +58,7 @@ export const isCBQualitativeMeasurementTypeDefinition = (
  * @param {unknown} measurement - The object to check
  * @returns {boolean} True if the object is a qualitative measurement
  */
-export const isCBQualitativeMeasurement = (measurement: unknown): boolean => {
+export const isCBQualitativeMeasurementStub = (measurement: unknown): boolean => {
   return (
     typeof measurement === 'object' &&
     measurement != null &&
@@ -78,7 +78,7 @@ export const isCBQualitativeMeasurement = (measurement: unknown): boolean => {
  * @param {unknown} measurement - The object to check
  * @returns {boolean} True if the object is a quantitative measurement
  */
-export const isCBQuantitativeMeasurement = (measurement: unknown): boolean => {
+export const isCBQuantitativeMeasurementStub = (measurement: unknown): boolean => {
   return (
     typeof measurement === 'object' &&
     measurement != null &&

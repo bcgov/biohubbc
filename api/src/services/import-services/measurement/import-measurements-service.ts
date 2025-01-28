@@ -16,17 +16,15 @@ import { DBService } from '../../db-service';
 import { SurveyCritterService } from '../../survey-critter-service';
 import {
   getTsnMeasurementDictionary,
-  isCBQualitativeMeasurement,
-  isCBQuantitativeMeasurement
+  isCBQualitativeMeasurementStub,
+  isCBQuantitativeMeasurementStub
 } from '../utils/measurement';
 import {
-  getCaptureIdFromState,
-  getCritterIdFromState,
-  getQualitativeOptionIdFromState,
-  getQuantitativeValueFromState,
-  getTaxonMeasurementIdFromState
+  getCritterCaptureFromRowState,
+  getQualitativeMeasurementFromRowState,
+  getQuantitativeMeasurementFromRowState
 } from '../utils/row-state';
-import { getDynamicMeasurementCellValidator } from './utils/measurement-dynamic-headers-config';
+import { getDynamicMeasurementCellValidator } from './utils/measurement-dynamic-header-config';
 import { getMeasurementRowTSNGetter } from './utils/measurement-utils';
 
 const defaultLog = getLogger('services/import/import-measurement-service');
@@ -99,21 +97,29 @@ export class ImportMeasurementsService extends DBService {
         const stateMeasurement = state?.[header];
 
         // Grab the qualitative measurement from the row
-        if (isCBQualitativeMeasurement(stateMeasurement)) {
+        if (isCBQualitativeMeasurementStub(stateMeasurement)) {
+          // Get the critter and qualitative measurement meta from the row state
+          const critter = getCritterCaptureFromRowState(row);
+          const qualitativeMeasurement = getQualitativeMeasurementFromRowState(row);
+
           qualitativeMeasurements.push({
-            critter_id: getCritterIdFromState(row),
-            capture_id: getCaptureIdFromState(row),
-            taxon_measurement_id: getTaxonMeasurementIdFromState(row, stateMeasurement),
-            qualitative_option_id: getQualitativeOptionIdFromState(stateMeasurement)
+            critter_id: critter.critter_id,
+            capture_id: critter.capture_id,
+            taxon_measurement_id: qualitativeMeasurement.taxon_measurement_id,
+            qualitative_option_id: qualitativeMeasurement.qualitative_option_id
           });
         }
         // Grab the quantitative measurement from the row
-        else if (isCBQuantitativeMeasurement(stateMeasurement)) {
+        else if (isCBQuantitativeMeasurementStub(stateMeasurement)) {
+          // Get the critter and quantitative measurement meta from the row state
+          const critter = getCritterCaptureFromRowState(row);
+          const quantitativeMeasurement = getQuantitativeMeasurementFromRowState(row);
+
           quantitativeMeasurements.push({
-            critter_id: getCritterIdFromState(row),
-            capture_id: getCaptureIdFromState(row),
-            taxon_measurement_id: getTaxonMeasurementIdFromState(row, stateMeasurement),
-            value: getQuantitativeValueFromState(stateMeasurement, stateMeasurement)
+            critter_id: critter.capture_id,
+            capture_id: critter.capture_id,
+            taxon_measurement_id: quantitativeMeasurement.taxon_measurement_id,
+            value: quantitativeMeasurement.value
           });
         }
       });

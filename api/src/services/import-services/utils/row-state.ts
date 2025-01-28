@@ -28,6 +28,14 @@ export const createRowStateGetter = <SchemaType extends z.ZodSchema>(schema: Sch
   };
 };
 
+// Critter / Capture
+export const getCritterCaptureFromRowState = createRowStateGetter(
+  z.object({
+    critter_id: z.string().uuid(),
+    capture_id: z.string().uuid()
+  })
+);
+
 // Taxon
 export const getTaxonFromRowState = createRowStateGetter(
   z.object({
