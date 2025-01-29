@@ -177,12 +177,12 @@ export async function up(knex: Knex): Promise<void> {
 
     -- Add foreign key constraint
     ALTER TABLE survey_observation
-      ADD CONSTRAINT survey_observation_fk1
+      ADD CONSTRAINT survey_observation_fk5
       FOREIGN KEY (observation_sign_id)
       REFERENCES observation_sign(observation_sign_id);
 
     -- Add indexes on foreign keys
-    CREATE INDEX survey_observation_idx1 ON survey_observation(observation_sign_id);
+    CREATE INDEX survey_observation_idx7 ON survey_observation(observation_sign_id);
 
     ----------------------------------------------------------------------------------------
     -- Add journal/audit triggers

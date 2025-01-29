@@ -114,9 +114,11 @@ export async function seed(knex: Knex): Promise<void> {
         }
 
         const response1 = await knex.raw(insertSurveyObservationData(surveyId, 20));
+        await knex.raw(insertObservationEnvironments(response1.rows[0].survey_observation_id));
         await knex.raw(insertObservationSubCount(response1.rows[0].survey_observation_id));
 
         const response2 = await knex.raw(insertSurveyObservationData(surveyId, 20));
+        await knex.raw(insertObservationEnvironments(response1.rows[0].survey_observation_id));
         await knex.raw(insertObservationSubCount(response2.rows[0].survey_observation_id));
 
         const response3 = await knex.raw(insertSurveyObservationData(surveyId, 20));
@@ -935,15 +937,41 @@ const insertObservationSubCount = (surveyObservationId: number) => `
   INSERT INTO observation_subcount
   (
     survey_observation_id,
-    subcount,
-    observation_subcount_sign_id
+    subcount
   )
   VALUES
   (
     ${surveyObservationId},
-    $$${faker.number.int({ min: 1, max: 20 })}$$,
-    (SELECT observation_subcount_sign_id FROM observation_subcount_sign ORDER BY random() LIMIT 1)
+    $$${faker.number.int({ min: 1, max: 20 })}$$
   );
+`;
+
+/**
+ * SQL to insert observation environments.
+ *
+ * @param {number} surveyObservationId
+ */
+const insertObservationEnvironments = (surveyObservationId: number) => `
+    WITH w_environment_qualitative_option AS (
+      SELECT 
+        environment_qualitative_id, 
+        environment_qualitative_option_id
+      FROM 
+        environment_qualitative_option
+      ORDER BY random() LIMIT 2
+    )
+    INSERT INTO observation_environment_qualitative
+    (
+        survey_observation_id,
+        environment_qualitative_id,
+        environment_qualitative_option_id
+    )
+    SELECT
+        ${surveyObservationId},
+        environment_qualitative_id,
+        environment_qualitative_option_id
+    FROM 
+        w_environment_qualitative_option;
 `;
 
 /**
@@ -965,7 +993,8 @@ const insertSurveyObservationData = (surveyId: number, count: number) => {
     count,
     observation_date,
     observation_time,
-    survey_sample_period_id
+    survey_sample_period_id,
+    observation_sign_id
   )
   VALUES
   (
@@ -981,7 +1010,8 @@ const insertSurveyObservationData = (surveyId: number, count: number) => {
     timestamp $$${faker.date
       .between({ from: '2000-01-01T00:00:00-08:00', to: '2005-01-01T00:00:00-08:00' })
       .toISOString()}$$::time,
-    (SELECT survey_sample_period_id FROM survey_sample_period WHERE survey_id = ${surveyId} ORDER BY random() LIMIT 1)
+    (SELECT survey_sample_period_id FROM survey_sample_period WHERE survey_id = ${surveyId} ORDER BY random() LIMIT 1),
+    (SELECT observation_sign_id FROM observation_sign ORDER BY random() LIMIT 1)
   )
   RETURNING survey_observation_id;
 `;
