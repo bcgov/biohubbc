@@ -169,7 +169,6 @@ const Header: React.FC = () => {
   };
 
   return (
-    <>
       <AppBar
         position="relative"
         elevation={0}
@@ -360,7 +359,6 @@ const Header: React.FC = () => {
           </Box>
         </Toolbar>
       </AppBar>
-    </>
   );
 };
 
