@@ -96,7 +96,7 @@ export const ConfigureGeneralColumns = (props: IConfigureGeneralColumnsProps) =>
           const isSelected = !hiddenFields.includes(column.field);
 
           return (
-            <ListItem sx={{ p: 0 }}>
+            <ListItem key={column.field} sx={{ p: 0 }}>
               <AccordionStandardCard
                 key={column.field}
                 label={column.headerName ?? column.field}

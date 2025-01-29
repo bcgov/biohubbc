@@ -43,7 +43,7 @@ export const ConfigureEnvironmentColumns = (props: IConfigureEnvironmentColumnsP
     environmentColumns.qualitative_environments.length || environmentColumns.quantitative_environments.length;
 
   return (
-    <Box height="100%" display="flex" flexDirection="column" width="100%">
+    <Box height="100%" display="flex" flexDirection="column">
       <Typography variant="h5" mb={2}>
         Add Environmental Variables
       </Typography>
