@@ -21,11 +21,11 @@ export type SamplingInformationCachedPeriod = IAutocompleteFieldOption<number> &
 
 export type SamplingInformationCacheRef = {
   // A unique list of sample sites
-  sites: SamplingInformationCachedSite[];
+  sites: Map<number, SamplingInformationCachedSite>;
   // A unique list of techniques
-  techniques: SamplingInformationCachedTechnique[];
+  techniques: Map<number, SamplingInformationCachedTechnique>;
   // A unique list of sampling periods
-  periods: SamplingInformationCachedPeriod[];
+  periods: Map<number, SamplingInformationCachedPeriod>;
 };
 
 export type SamplingInformationCache = {
@@ -37,11 +37,8 @@ export type SamplingInformationCache = {
   getCurrentSite: (surveySampleSiteId: number) => SamplingInformationCachedSite | null;
   getCurrentTechnique: (methodTechniqueId: number) => SamplingInformationCachedTechnique | null;
   getCurrentPeriod: (surveySamplePeriodId: number) => SamplingInformationCachedPeriod | null;
-  getTechniquesForRow: (survey_sample_site_id: number | undefined) => SamplingInformationCachedTechnique[];
-  getPeriodsForRow: (
-    survey_sample_site_id: number | undefined,
-    method_technique_id: number | undefined
-  ) => SamplingInformationCachedPeriod[];
+  getTechniquesForRow: (survey_sample_site_id: number | null) => SamplingInformationCachedTechnique[];
+  getPeriodsForRow: (method_technique_id: number | null) => SamplingInformationCachedPeriod[];
 };
 
 /**
@@ -63,67 +60,55 @@ export const useSamplingInformationCache = (): SamplingInformationCache => {
   const initCachedSamplingInformationRef = (params: { periods?: GetSamplingPeriod[] }) => {
     if (!params.periods?.length) {
       cachedSamplingInformationRef.current = {
-        sites: [],
-        techniques: [],
-        periods: []
+        sites: new Map(),
+        techniques: new Map(),
+        periods: new Map()
       };
 
       return;
     }
 
-    const sitesMap = new Map<number, SamplingInformationCachedSite>();
+    const sitesMap: Map<number, SamplingInformationCachedSite> = new Map();
+    const techniquesMap: Map<number, SamplingInformationCachedTechnique> = new Map();
+    const periodsMap: Map<number, SamplingInformationCachedPeriod> = new Map();
+
     params.periods.forEach((period) => {
-      if (!period.survey_sample_site_id || !period.survey_sample_site) {
-        return;
+      if (_isValidSamplingSite(period) && !sitesMap.has(period.survey_sample_site_id)) {
+        sitesMap.set(period.survey_sample_site_id, {
+          survey_sample_site_id: period.survey_sample_site_id,
+          // Satisfy the IAutocompleteDataGridOption interface
+          value: period.survey_sample_site_id,
+          label: period.survey_sample_site.name
+        });
       }
 
-      sitesMap.set(period.survey_sample_site.survey_sample_site_id, {
-        survey_sample_site_id: period.survey_sample_site.survey_sample_site_id,
-        // Satisfy the IAutocompleteDataGridOption interface
-        value: period.survey_sample_site_id,
-        label: period.survey_sample_site.name
-      });
-    });
-    const sites = Array.from(sitesMap.values());
-
-    const techniquesMap = new Map<number, SamplingInformationCachedTechnique>();
-    params.periods.forEach((period) => {
-      if (!period.method_technique_id || !period.method_technique) {
-        return;
+      if (_isValidMethodTechnique(period) && !techniquesMap.has(period.method_technique.method_technique_id)) {
+        techniquesMap.set(period.method_technique.method_technique_id, {
+          method_technique_id: period.method_technique.method_technique_id,
+          survey_sample_site_id: period.survey_sample_site_id,
+          method_response_metric_id: period.method_technique.method_response_metric_id,
+          // Satisfy the IAutocompleteDataGridOption interface
+          value: period.method_technique.method_technique_id,
+          label: period.method_technique.name
+        });
       }
 
-      techniquesMap.set(period.method_technique.method_technique_id, {
-        method_technique_id: period.method_technique.method_technique_id,
-        survey_sample_site_id: period.survey_sample_site?.survey_sample_site_id ?? null, // Default to null if not available
-        method_response_metric_id: period.method_technique.method_response_metric_id,
-        // Satisfy the IAutocompleteDataGridOption interface
-        value: period.method_technique_id,
-        label: period.method_technique.name
-      });
-    });
-    const techniques = Array.from(techniquesMap.values());
-
-    const periodsMap = new Map<number, SamplingInformationCachedPeriod>();
-    params.periods.forEach((period) => {
-      if (!period.start_date || !period.end_date) {
-        return;
+      if (_isValidSamplingPeriod(period) && !periodsMap.has(period.survey_sample_period_id)) {
+        periodsMap.set(period.survey_sample_period_id, {
+          survey_sample_period_id: period.survey_sample_period_id,
+          survey_sample_site_id: period.survey_sample_site_id,
+          method_technique_id: period.method_technique_id,
+          // Satisfy the IAutocompleteDataGridOption interface
+          value: period.survey_sample_period_id,
+          label: getDateTimeLabel(period.start_date, period.start_time, period.end_date, period.end_time)
+        });
       }
-
-      periodsMap.set(period.survey_sample_period_id, {
-        survey_sample_period_id: period.survey_sample_period_id,
-        survey_sample_site_id: period.survey_sample_site?.survey_sample_site_id ?? null,
-        method_technique_id: period.method_technique?.method_technique_id ?? null,
-        // Satisfy the IAutocompleteDataGridOption interface
-        value: period.survey_sample_period_id,
-        label: getDateTimeLabel(period.start_date, period.start_time, period.end_date, period.end_time)
-      });
     });
-    const periods = Array.from(periodsMap.values());
 
     cachedSamplingInformationRef.current = {
-      sites,
-      techniques,
-      periods
+      sites: sitesMap,
+      techniques: techniquesMap,
+      periods: periodsMap
     };
   };
 
@@ -138,24 +123,17 @@ export const useSamplingInformationCache = (): SamplingInformationCache => {
       return;
     }
 
-    const newSites = [];
+    const newSitesMap = cachedSamplingInformationRef.current.sites;
 
-    for (const site of sites ?? []) {
-      if (
-        cachedSamplingInformationRef.current.sites.findIndex(
-          (item) => item.survey_sample_site_id === site.survey_sample_site_id
-        ) !== -1
-      ) {
-        // The site is already in the cache
-        continue;
+    for (const site of sites) {
+      if (!newSitesMap.has(site.survey_sample_site_id)) {
+        newSitesMap.set(site.survey_sample_site_id, site);
       }
-
-      newSites.push(site);
     }
 
     // Update the cache
     cachedSamplingInformationRef.current = {
-      sites: [...cachedSamplingInformationRef.current.sites, ...newSites],
+      sites: newSitesMap,
       techniques: cachedSamplingInformationRef.current.techniques,
       periods: cachedSamplingInformationRef.current.periods
     };
@@ -172,25 +150,18 @@ export const useSamplingInformationCache = (): SamplingInformationCache => {
       return;
     }
 
-    const newTechniques = [];
+    const newTechniquesMap = cachedSamplingInformationRef.current.techniques;
 
-    for (const technique of techniques ?? []) {
-      if (
-        cachedSamplingInformationRef.current.techniques.findIndex(
-          (item) => item.method_technique_id === technique.method_technique_id
-        ) !== -1
-      ) {
-        // The technique is already in the cache
-        continue;
+    for (const technique of techniques) {
+      if (!newTechniquesMap.has(technique.method_technique_id)) {
+        newTechniquesMap.set(technique.method_technique_id, technique);
       }
-
-      newTechniques.push(technique);
     }
 
     // Update the cache
     cachedSamplingInformationRef.current = {
       sites: cachedSamplingInformationRef.current.sites,
-      techniques: [...cachedSamplingInformationRef.current.techniques, ...newTechniques],
+      techniques: newTechniquesMap,
       periods: cachedSamplingInformationRef.current.periods
     };
   };
@@ -206,55 +177,63 @@ export const useSamplingInformationCache = (): SamplingInformationCache => {
       return;
     }
 
-    const newPeriods = [];
+    const newPeriodsMap = cachedSamplingInformationRef.current.periods;
 
-    for (const period of periods ?? []) {
-      if (
-        cachedSamplingInformationRef.current.periods.findIndex(
-          (item) => item.survey_sample_period_id === period.survey_sample_period_id
-        ) !== -1
-      ) {
-        // The period is already in the cache
-        continue;
+    for (const period of periods) {
+      if (!newPeriodsMap.has(period.survey_sample_period_id)) {
+        newPeriodsMap.set(period.survey_sample_period_id, period);
       }
-
-      newPeriods.push(period);
     }
 
     // Update the cache
     cachedSamplingInformationRef.current = {
       sites: cachedSamplingInformationRef.current.sites,
       techniques: cachedSamplingInformationRef.current.techniques,
-      periods: [...cachedSamplingInformationRef.current.periods, ...newPeriods]
+      periods: newPeriodsMap
     };
   };
 
   /**
    * Return the site object for the provided site id.
    *
-   * @param {(number | undefined)} siteId
-   * @param {(SamplingInformationCacheRef | undefined)} cache
+   * @param {(number | null)} [siteId]
+   * @return {*}  {(SamplingInformationCachedSite | null)}
    */
-  const findSite = (siteId: number | undefined) =>
-    cachedSamplingInformationRef.current?.sites.find((site) => site.survey_sample_site_id === siteId);
+  const findSite = (siteId?: number | null): SamplingInformationCachedSite | null => {
+    if (!siteId) {
+      return null;
+    }
+
+    return cachedSamplingInformationRef.current?.sites.get(siteId) ?? null;
+  };
 
   /**
    * Return the technique object for the provided technique id.
    *
-   * @param {(number | undefined)} techniqueId
-   * @param {(SamplingInformationCacheRef | undefined)} cache
+   * @param {(number | null)} [techniqueId]
+   * @return {*}  {(SamplingInformationCachedTechnique | null)}
    */
-  const findTechnique = (techniqueId: number | undefined) =>
-    cachedSamplingInformationRef.current?.techniques.find((technique) => technique.method_technique_id === techniqueId);
+  const findTechnique = (techniqueId?: number | null): SamplingInformationCachedTechnique | null => {
+    if (!techniqueId) {
+      return null;
+    }
+
+    return cachedSamplingInformationRef.current?.techniques.get(techniqueId) ?? null;
+  };
 
   /**
    * Return the period object for the provided period id.
    *
-   * @param {(number | undefined)} periodId
-   * @param {(SamplingInformationCacheRef | undefined)} cache
+   * @param {(number | null)} [periodId]
+   * @return {*}  {(SamplingInformationCachedPeriod | null)}
    */
-  const findPeriod = (periodId: number | undefined) =>
-    cachedSamplingInformationRef.current?.periods.find((period) => period.survey_sample_period_id === periodId);
+  const findPeriod = (periodId?: number | null): SamplingInformationCachedPeriod | null => {
+    if (!periodId) {
+      return null;
+    }
+
+    return cachedSamplingInformationRef.current?.periods.get(periodId) ?? null;
+  };
 
   /**
    * Get the currently selected site for the row.
@@ -291,50 +270,60 @@ export const useSamplingInformationCache = (): SamplingInformationCache => {
   /**
    * Get all valid techniques for the currently selected site.
    *
-   * @param {(number | undefined)} survey_sample_site_id
+   * @param {(number | null)} [surveySampleSiteId]
    * @return {*}  {SamplingInformationCachedTechnique[]}
    */
-  const getTechniquesForRow = (survey_sample_site_id: number | undefined): SamplingInformationCachedTechnique[] => {
-    const site = findSite(survey_sample_site_id);
-
-    if (!site) {
+  const getTechniquesForRow = (surveySampleSiteId?: number | null): SamplingInformationCachedTechnique[] => {
+    if (!surveySampleSiteId) {
       return [];
     }
 
-    const matchingTechniques = cachedSamplingInformationRef.current?.techniques.filter((technique) => {
-      return technique.survey_sample_site_id === site.survey_sample_site_id;
+    return Array.from(cachedSamplingInformationRef.current?.techniques.values() ?? []).filter((technique) => {
+      return technique.survey_sample_site_id === surveySampleSiteId;
     });
-
-    return matchingTechniques ?? [];
   };
 
   /**
    * Get all valid periods for the currently selected site and technique.
    *
-   * @param {(number | undefined)} survey_sample_site_id
-   * @param {(number | undefined)} method_technique_id
-   * @param {(MutableRefObject<SamplingInformationCacheRef | undefined>)} cachedSamplingInformationRef
+   * @param {(number | null)} [methodTechniqueId]
    * @return {*}  {SamplingInformationCachedPeriod[]}
    */
-  const getPeriodsForRow = (
-    survey_sample_site_id: number | undefined,
-    method_technique_id: number | undefined
-  ): SamplingInformationCachedPeriod[] => {
-    const site = findSite(survey_sample_site_id);
-    const technique = findTechnique(method_technique_id);
-
-    if (!site || !technique) {
+  const getPeriodsForRow = (methodTechniqueId?: number | null): SamplingInformationCachedPeriod[] => {
+    if (!methodTechniqueId) {
       return [];
     }
 
-    const matchingPeriods = cachedSamplingInformationRef.current?.periods.filter((period) => {
-      return (
-        period.survey_sample_site_id === site.survey_sample_site_id &&
-        period.method_technique_id === technique.method_technique_id
-      );
+    return Array.from(cachedSamplingInformationRef.current?.periods.values() ?? []).filter((period) => {
+      return period.method_technique_id === methodTechniqueId;
     });
+  };
 
-    return matchingPeriods ?? [];
+  const _isValidSamplingSite = (
+    period: GetSamplingPeriod
+  ): period is GetSamplingPeriod & {
+    survey_sample_site_id: NonNullable<GetSamplingPeriod['survey_sample_site_id']>;
+    survey_sample_site: NonNullable<GetSamplingPeriod['survey_sample_site']>;
+  } => {
+    return period.survey_sample_site_id !== null && period.survey_sample_site !== null;
+  };
+
+  const _isValidMethodTechnique = (
+    period: GetSamplingPeriod
+  ): period is GetSamplingPeriod & {
+    method_technique_id: NonNullable<GetSamplingPeriod['method_technique_id']>;
+    method_technique: NonNullable<GetSamplingPeriod['method_technique']>;
+  } => {
+    return period.method_technique_id !== null && period.method_technique !== null;
+  };
+
+  const _isValidSamplingPeriod = (
+    period: GetSamplingPeriod
+  ): period is GetSamplingPeriod & {
+    start_date: NonNullable<GetSamplingPeriod['start_date']>;
+    end_date: NonNullable<GetSamplingPeriod['end_date']>;
+  } => {
+    return period.start_date !== null && period.end_date !== null;
   };
 
   return {

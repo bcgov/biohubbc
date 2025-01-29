@@ -233,10 +233,10 @@ export interface ICreateObservationRequest {
     quantitative_environments: SubcountQuantitativeEnvironment[];
   };
   subcounts: {
-    observation_subcount_id: number | null;
-    subcount: number | null;
-    comment: string | null;
+    count: number | null;
+    observation_subcount_sign_id: number | null;
     qualitative_measurements: SubcountQualitativeMeasurement[];
     quantitative_measurements: SubcountQuantitativeMeasurement[];
+    comment: string | null;
   }[];
 }

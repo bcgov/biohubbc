@@ -1,27 +1,27 @@
 import AutocompleteField from 'components/fields/AutocompleteField';
 import { CBQualitativeMeasurementTypeDefinition } from 'interfaces/useCritterApi.interface';
 
-export interface ISubcountCountFieldProps {
-  formikPrefixPath: string;
+export interface ISubcountQualitativeMeasurementFieldProps {
+  formikFieldName: string;
   measurementTypeDefinition: CBQualitativeMeasurementTypeDefinition;
 }
 
 /**
  * Subcount Qualitative Measurement Field component.
  *
- * @param {ISubcountCountFieldProps} props
+ * @param {ISubcountQualitativeMeasurementFieldProps} props
  * @return {*}
  */
-export const SubcountQualitativeMeasurementField = (props: ISubcountCountFieldProps) => {
-  const { formikPrefixPath, measurementTypeDefinition } = props;
+export const SubcountQualitativeMeasurementField = (props: ISubcountQualitativeMeasurementFieldProps) => {
+  const { formikFieldName, measurementTypeDefinition } = props;
 
-  const formikFieldName = formikPrefixPath ? `${formikPrefixPath}.measurement_option_id` : 'measurement_option_id';
+  const subcountQualitativeMeasurementFieldName = `${formikFieldName}.measurement_option_id`;
 
   return (
     <AutocompleteField
       label={measurementTypeDefinition.measurement_name}
-      name={formikFieldName}
-      id={formikFieldName}
+      name={subcountQualitativeMeasurementFieldName}
+      id={subcountQualitativeMeasurementFieldName}
       options={measurementTypeDefinition.options.map((option) => ({
         label: option.option_label,
         value: option.qualitative_option_id

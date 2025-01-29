@@ -96,9 +96,9 @@ export type ObservationGeometryRecord = z.infer<typeof ObservationGeometryRecord
  */
 export type InsertObservation = Pick<
   SurveyObservationRecord,
+  | 'survey_id'
   | 'itis_tsn'
   | 'itis_scientific_name'
-  | 'survey_id'
   | 'latitude'
   | 'longitude'
   | 'count'
@@ -112,9 +112,9 @@ export type InsertObservation = Pick<
  */
 export type UpdateObservation = Pick<
   SurveyObservationRecord,
+  | 'survey_observation_id'
   | 'itis_tsn'
   | 'itis_scientific_name'
-  | 'survey_observation_id'
   | 'latitude'
   | 'longitude'
   | 'count'

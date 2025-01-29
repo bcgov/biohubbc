@@ -44,7 +44,7 @@ export const MethodTechniqueField = (props: IMethodTechniqueFieldProps) => {
       : null
   );
   const [options, setOptions] = useState<SamplingInformationCachedTechnique[]>(
-    samplingInformationCache.getTechniquesForRow(values.standardColumns.survey_sample_site_id)
+    samplingInformationCache.getTechniquesForRow(values.standardColumns.survey_sample_site_id ?? null)
   );
   // Is control loading (search in progress)
   const [isLoading, setIsLoading] = useState(false);
@@ -88,7 +88,9 @@ export const MethodTechniqueField = (props: IMethodTechniqueFieldProps) => {
         samplingInformationCache.updateCachedMethodTechniques(options);
 
         // Get the latest valid options for the current row
-        const validOptions = samplingInformationCache.getTechniquesForRow(values.standardColumns.survey_sample_site_id);
+        const validOptions = samplingInformationCache.getTechniquesForRow(
+          values.standardColumns.survey_sample_site_id ?? null
+        );
 
         // Set the options for the autocomplete
         setOptions(validOptions);

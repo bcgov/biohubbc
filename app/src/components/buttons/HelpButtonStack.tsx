@@ -3,7 +3,7 @@ import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
 import { PropsWithChildren } from 'react';
 
 interface IHelpButtonStackProps extends StackProps {
-  helpText: string;
+  helpText?: string;
 }
 
 const HelpButtonStack = (props: PropsWithChildren<IHelpButtonStackProps>) => {
@@ -11,7 +11,7 @@ const HelpButtonStack = (props: PropsWithChildren<IHelpButtonStackProps>) => {
   return (
     <Stack flexDirection="row" alignItems="center" gap={0.75} flexGrow={1} mt={-1} {...stackProps}>
       {children}
-      <HelpButtonTooltip content={helpText} />
+      {helpText ? <HelpButtonTooltip content={helpText} /> : null}
     </Stack>
   );
 };

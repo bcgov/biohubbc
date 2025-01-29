@@ -1,7 +1,7 @@
 import CustomTextField from 'components/fields/CustomTextField';
 
 export interface ISubcountCommentFormProps {
-  formikPrefixPath: string;
+  formikFieldName: string;
 }
 
 /**
@@ -11,13 +11,13 @@ export interface ISubcountCommentFormProps {
  * @return {*}
  */
 export const SubcountCommentForm = (props: ISubcountCommentFormProps) => {
-  const { formikPrefixPath } = props;
+  const { formikFieldName } = props;
 
-  const formikFieldName = formikPrefixPath ? `${formikPrefixPath}.comment` : 'comment';
+  const subcountCommentFieldName = formikFieldName ? `${formikFieldName}.comment` : 'comment';
 
   return (
     <CustomTextField
-      name={formikFieldName}
+      name={subcountCommentFieldName}
       label="Comment"
       other={{
         multiline: true,

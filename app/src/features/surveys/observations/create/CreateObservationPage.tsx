@@ -139,12 +139,20 @@ const CreateObservationPage = () => {
       const qualitative_environments: SubcountQualitativeEnvironment[] = [];
 
       for (const environment of environments) {
-        if ('value' in environment) {
+        if (environment._type === 'quantitative') {
+          if (!environment.environment_quantitative_id || !environment.value) {
+            continue;
+          }
+
           quantitative_environments.push({
             environment_quantitative_id: environment.environment_quantitative_id,
             value: environment.value
           });
-        } else if ('environment_qualitative_option_id' in environment) {
+        } else if (environment._type === 'qualitative') {
+          if (!environment.environment_qualitative_id || !environment.environment_qualitative_option_id) {
+            continue;
+          }
+
           qualitative_environments.push({
             environment_qualitative_id: environment.environment_qualitative_id,
             environment_qualitative_option_id: environment.environment_qualitative_option_id
@@ -160,7 +168,7 @@ const CreateObservationPage = () => {
         survey_sample_period_id,
         latitude,
         longitude,
-        count: formData.subcounts.reduce((sum, subcount) => sum + (subcount.count || 0), 0),
+        count: formData.subcounts.reduce((sum, subcount) => sum + (subcount.count ?? 0), 0),
         qualitative_environments,
         quantitative_environments
       };
@@ -186,10 +194,9 @@ const CreateObservationPage = () => {
         }
 
         return {
-          observation_subcount_id: subcountProps.observation_subcount_id,
           observation_subcount_sign_id: formData.standardColumns.observation_sign_id,
           comment: subcountProps.comment,
-          subcount: subcountProps.count,
+          count: subcountProps.count,
           quantitative_measurements,
           qualitative_measurements
         };

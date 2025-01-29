@@ -2,7 +2,7 @@ import Typography from '@mui/material/Typography';
 import CustomTextField from 'components/fields/CustomTextField';
 
 export interface ISubcountCountFieldProps {
-  formikPrefixPath: string;
+  formikFieldName: string;
   displayHeader?: boolean;
 }
 
@@ -13,9 +13,9 @@ export interface ISubcountCountFieldProps {
  * @return {*}
  */
 export const SubcountCountField = (props: ISubcountCountFieldProps) => {
-  const { formikPrefixPath, displayHeader } = props;
+  const { formikFieldName, displayHeader } = props;
 
-  const formikFieldName = formikPrefixPath ? `${formikPrefixPath}.count` : 'count';
+  const subcountCountFieldName = `${formikFieldName}.count`;
 
   return (
     <>
@@ -24,7 +24,7 @@ export const SubcountCountField = (props: ISubcountCountFieldProps) => {
           Count
         </Typography>
       )}
-      <CustomTextField label="Subcount" name={formikFieldName} other={{ type: 'number' }} />
+      <CustomTextField label="Subcount" name={subcountCountFieldName} other={{ type: 'number' }} />
     </>
   );
 };

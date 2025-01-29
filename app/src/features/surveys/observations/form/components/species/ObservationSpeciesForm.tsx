@@ -11,19 +11,12 @@ import { get } from 'lodash-es';
 import { useEffect } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 
-interface IObservationSpeciesFormProps {
-  formikPrefixPath: string;
-}
-
 /**
  * Form component for the observation species.
  *
- * @param {IObservationSpeciesFormProps} props
  * @return {*}
  */
-export const ObservationSpeciesForm = (props: IObservationSpeciesFormProps) => {
-  const { formikPrefixPath } = props;
-
+export const ObservationSpeciesForm = () => {
   const codesContext = useCodesContext();
 
   useEffect(() => {
@@ -35,17 +28,17 @@ export const ObservationSpeciesForm = (props: IObservationSpeciesFormProps) => {
   return (
     <Stack spacing={1}>
       <SpeciesAutocompleteField
-        formikFieldName={`${formikPrefixPath}.itis_tsn`}
+        formikFieldName="standardColumns.itis_tsn"
         label="Species"
         required={true}
         handleSpecies={(species) => {
           if (species.tsn) {
-            setFieldValue(`${formikPrefixPath}.itis_tsn`, species.tsn);
-            setFieldValue(`${formikPrefixPath}.itis_scientific_name`, species.scientificName);
+            setFieldValue('standardColumns.itis_tsn', species.tsn);
+            setFieldValue('standardColumns.itis_scientific_name', species.scientificName);
           }
         }}
         clearOnSelect={true}
-        error={get(errors, `${formikPrefixPath}.itis_tsn`)}
+        error={get(errors, 'standardColumns.itis_tsn')}
       />
       <TransitionGroup>
         {values.standardColumns.itis_tsn && values.standardColumns.itis_scientific_name && (
@@ -58,7 +51,7 @@ export const ObservationSpeciesForm = (props: IObservationSpeciesFormProps) => {
                 tsn: values.standardColumns.itis_tsn ?? ''
               }}
               handleRemove={() => {
-                setFieldValue(`${formikPrefixPath}.itis_tsn`, null);
+                setFieldValue('standardColumns.itis_tsn', null);
               }}
             />
           </Collapse>
@@ -66,8 +59,8 @@ export const ObservationSpeciesForm = (props: IObservationSpeciesFormProps) => {
       </TransitionGroup>
       <AutocompleteField
         label="Sign"
-        id={`${formikPrefixPath}.observation_sign_id`}
-        name={`${formikPrefixPath}.observation_sign_id`}
+        id={'standardColumns.observation_sign_id'}
+        name={'standardColumns.observation_sign_id'}
         options={
           codesContext.codesDataLoader.data?.observation_subcount_signs.map((sign) => ({
             label: sign.name,

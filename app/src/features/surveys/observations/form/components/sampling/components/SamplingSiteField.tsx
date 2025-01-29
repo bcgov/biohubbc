@@ -44,7 +44,7 @@ export const SamplingSiteField = (props: ISamplingSiteFieldProps) => {
       : null
   );
   const [options, setOptions] = useState<SamplingInformationCachedSite[]>(
-    samplingInformationCache.cachedSamplingInformationRef.current?.sites ?? []
+    Array.from(samplingInformationCache.cachedSamplingInformationRef.current?.sites.values() ?? [])
   );
   // Is control loading (search in progress)
   const [isLoading, setIsLoading] = useState(false);
@@ -74,7 +74,7 @@ export const SamplingSiteField = (props: ISamplingSiteFieldProps) => {
         samplingInformationCache.updateCachedSamplingSites(options);
 
         // Set the options for the autocomplete
-        setOptions(samplingInformationCache.cachedSamplingInformationRef.current?.sites ?? []);
+        setOptions(Array.from(samplingInformationCache.cachedSamplingInformationRef.current?.sites.values() ?? []));
 
         setIsLoading(false);
       }, 500),

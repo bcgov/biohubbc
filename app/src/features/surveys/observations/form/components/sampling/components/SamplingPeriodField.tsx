@@ -45,10 +45,7 @@ export const SamplingPeriodField = (props: ISamplingPeriodFieldProps) => {
       : null
   );
   const [options, setOptions] = useState<SamplingInformationCachedPeriod[]>(
-    samplingInformationCache.getPeriodsForRow(
-      values.standardColumns.survey_sample_site_id,
-      values.standardColumns.method_technique_id
-    )
+    samplingInformationCache.getPeriodsForRow(values.standardColumns.method_technique_id ?? null)
   );
   // Is control loading (search in progress)
   const [isLoading, setIsLoading] = useState(false);
@@ -91,8 +88,7 @@ export const SamplingPeriodField = (props: ISamplingPeriodFieldProps) => {
         samplingInformationCache.updateCachedSamplingPeriods(options);
 
         const validOptions = samplingInformationCache.getPeriodsForRow(
-          values.standardColumns.survey_sample_site_id,
-          values.standardColumns.method_technique_id
+          values.standardColumns.method_technique_id ?? null
         );
 
         // Set the options for the autocomplete
@@ -126,12 +122,7 @@ export const SamplingPeriodField = (props: ISamplingPeriodFieldProps) => {
       // valid periods for the new site and technique.
       setCurrentOption(null);
       // Set the options to any previously cached periods for the new site + technique
-      setOptions(
-        samplingInformationCache.getPeriodsForRow(
-          values.standardColumns.survey_sample_site_id,
-          values.standardColumns.method_technique_id
-        )
-      );
+      setOptions(samplingInformationCache.getPeriodsForRow(values.standardColumns.method_technique_id));
       // Trigger a search to get all of the periods for the new site + technique
       getOptions('');
     }
@@ -184,10 +175,11 @@ export const SamplingPeriodField = (props: ISamplingPeriodFieldProps) => {
       renderInput={(params) => (
         <TextField
           {...params}
+          name="standardColumns.survey_sample_period_id"
           size="small"
           variant="outlined"
           fullWidth
-          placeholder="Search for a technique"
+          placeholder="Search for a period"
           error={
             get(touched, 'standardColumns.survey_sample_period_id') &&
             Boolean(get(errors, 'standardColumns.survey_sample_period_id'))

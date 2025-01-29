@@ -121,6 +121,40 @@ export type InsertUpdateObservations = {
   subcounts: InsertSubCount[];
 };
 
+export type InsertObservations = {
+  standardColumns: {
+    itis_tsn: number;
+    itis_scientific_name: string | null;
+    survey_sample_period_id: string | null;
+    count: string | null;
+    latitude: string | null;
+    longitude: string | null;
+    observation_date: string | null;
+    observation_time: string | null;
+    qualitative_environments: {
+      environment_qualitative_id: string;
+      environment_qualitative_option_id: string;
+    }[];
+    quantitative_environments: {
+      environment_quantitative_id: string;
+      value: string;
+    }[];
+  };
+  subcounts: {
+    count: number;
+    comment: string | null;
+    observation_subcount_sign_id: number | null;
+    qualitative_measurements: {
+      measurement_id: string;
+      measurement_option_id: string;
+    }[];
+    quantitative_measurements: {
+      measurement_id: string;
+      measurement_value: number;
+    }[];
+  }[];
+};
+
 export type ObservationCountSupplementaryData = {
   observationCount: number;
 };

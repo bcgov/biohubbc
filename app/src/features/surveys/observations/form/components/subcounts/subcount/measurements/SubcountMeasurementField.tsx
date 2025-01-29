@@ -4,42 +4,31 @@ import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { SubcountQualitativeMeasurementField } from 'features/surveys/observations/form/components/subcounts/components/measurements/components/SubcountQualitativeMeasurementField';
-import { SubcountQuantitativeMeasurementField } from 'features/surveys/observations/form/components/subcounts/components/measurements/components/SubcountQuantitativeMeasurementField';
+import { SubcountQualitativeMeasurementField } from 'features/surveys/observations/form/components/subcounts/subcount/measurements/SubcountQualitativeMeasurementField';
+import { SubcountQuantitativeMeasurementField } from 'features/surveys/observations/form/components/subcounts/subcount/measurements/SubcountQuantitativeMeasurementField';
 import {
   CBMeasurementType,
   CBQualitativeMeasurementTypeDefinition,
   CBQuantitativeMeasurementTypeDefinition
 } from 'interfaces/useCritterApi.interface';
 
-export interface ISubcountCountFieldProps {
+export interface ISubcountMeasurementFieldProps {
   /**
    * The formik path prefix for the field. May be empty.
-   *
-   * @type {string}
-   * @memberof ISubcountCountFieldProps
    */
-  formikPrefixPath: string;
+  formikFieldName: string;
   /**
    * The measurement type definition for the measurement field.
-   *
-   * @type {CBMeasurementType}
-   * @memberof ISubcountCountFieldProps
    */
   measurementTypeDefinition: CBMeasurementType;
   /**
    * Whether to display a header with the measurement name and a delete button.
-   *
-   * @type {boolean}
-   * @memberof ISubcountCountFieldProps
    */
   displayHeader?: boolean;
   /**
    * Callback fired when the delete button is clicked.
    *
    * The delete button is only displayed if displayHeader is true.
-   *
-   * @memberof ISubcountCountFieldProps
    */
   onDelete?: () => void;
 }
@@ -47,11 +36,11 @@ export interface ISubcountCountFieldProps {
 /**
  * Subcount Measurement Field component.
  *
- * @param {ISubcountCountFieldProps} props
+ * @param {ISubcountMeasurementFieldProps} props
  * @return {*}
  */
-export const SubcountMeasurementField = (props: ISubcountCountFieldProps) => {
-  const { formikPrefixPath, measurementTypeDefinition, onDelete, displayHeader } = props;
+export const SubcountMeasurementField = (props: ISubcountMeasurementFieldProps) => {
+  const { formikFieldName, measurementTypeDefinition, onDelete, displayHeader } = props;
 
   const isQualitative = isCBQualitativeMeasurementTypeDefinition(measurementTypeDefinition);
 
@@ -74,12 +63,12 @@ export const SubcountMeasurementField = (props: ISubcountCountFieldProps) => {
 
       {isQualitative ? (
         <SubcountQualitativeMeasurementField
-          formikPrefixPath={formikPrefixPath}
+          formikFieldName={formikFieldName}
           measurementTypeDefinition={measurementTypeDefinition}
         />
       ) : (
         <SubcountQuantitativeMeasurementField
-          formikPrefixPath={formikPrefixPath}
+          formikFieldName={formikFieldName}
           measurementTypeDefinition={measurementTypeDefinition}
         />
       )}

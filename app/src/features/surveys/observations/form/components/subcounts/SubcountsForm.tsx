@@ -9,27 +9,22 @@ import HelpButtonStack from 'components/buttons/HelpButtonStack';
 import {
   initialSubcountFormData,
   SubcountForm,
-  subcountValidationSchema
-} from 'features/surveys/observations/form/components/subcounts/components/subcount/SubcountForm';
-import { ObservationFormData, SubcountFormData } from 'features/surveys/observations/form/ObservationForm.interface';
-import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
+  SubcountFormData
+} from 'features/surveys/observations/form/components/subcounts/subcount/SubcountForm';
+import { ObservationFormData } from 'features/surveys/observations/form/ObservationForm.interface';
+import { FieldArray, useFormikContext } from 'formik';
 import { useFocalOrObservedSpeciesTsns } from 'hooks/useFocalOrObservedTsns';
 import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
-import { get } from 'lodash-es';
-import { useState } from 'react';
-import yup from 'utils/YupSchema';
+import get from 'lodash-es/get';
+import { useMemo, useState } from 'react';
 import { v4 } from 'uuid';
 import { MeasurementsSearch } from '../../../observations-table/configure-columns/components/measurements/search/MeasurementsSearch';
 
-export const subcountsValidationSchema = yup.object({
-  subcounts: yup
-    .array()
-    .of(subcountValidationSchema)
-    .min(1, 'At least one subcount is required.')
-    .required('At least one subcount is required.')
-});
+export type SubcountsFormData = {
+  subcounts: SubcountFormData[];
+};
 
-export const initialSubcountsFormData = {
+export const initialSubcountsFormData: SubcountsFormData = {
   subcounts: [
     {
       _id: v4(),
@@ -38,48 +33,46 @@ export const initialSubcountsFormData = {
   ]
 };
 
-export interface ISubcountsFormProps {
-  formikPrefixPath: string;
-}
-
 /**
  * Form component for observation subcounts.
  *
- * @param {ISubcountsFormProps} props
  * @return {*}
  */
-export const SubcountsForm = (props: ISubcountsFormProps) => {
-  const { formikPrefixPath } = props;
-
-  const formikFieldName = formikPrefixPath ? `${formikPrefixPath}.subcounts` : 'subcounts';
-
+export const SubcountsForm = () => {
   const { values, setFieldValue } = useFormikContext<ObservationFormData>();
-
-  console.log(values);
 
   const [, allSpeciesWithParentsTsns] = useFocalOrObservedSpeciesTsns();
 
   // Keep selected measurements in state to get measurement names
   const [selectedMeasurementTypeDefinitions, setSelectedMeasurementTypeDefinitions] = useState<CBMeasurementType[]>([]);
 
+  // Performance: pre-parse the selected measurements into the structure expected by the subcount form.
+  const selectedMeasurementsFormData = useMemo(() => {
+    return selectedMeasurementTypeDefinitions.map((measurement) => ({
+      measurement_option_id: null as unknown as string,
+      measurement_id: measurement.taxon_measurement_id
+    }));
+  }, [selectedMeasurementTypeDefinitions]);
+
   // Adds a new measurement column to the data grid
   const handleAddMeasurement = (measurement: CBMeasurementType) => {
+    console.log(measurement);
     // Add the measurement to selectedMeasurements state
     setSelectedMeasurementTypeDefinitions((prev) => [...prev, measurement]);
 
     // Update subcounts with the new measurement
-    const subcounts = get(values, formikFieldName)?.map((subcount: SubcountFormData) => ({
+    const subcounts: SubcountFormData[] | undefined = get(values, 'subcounts')?.map((subcount) => ({
       ...subcount,
       measurements: [
         ...subcount.measurements,
         {
-          measurement_option_id: null,
+          measurement_option_id: null as unknown as string,
           measurement_id: measurement.taxon_measurement_id
         }
       ]
     }));
 
-    setFieldValue(formikFieldName, subcounts);
+    setFieldValue('subcounts', subcounts);
   };
 
   const handleRemoveMeasurement = (taxonMeasurementId: string) => {
@@ -95,7 +88,7 @@ export const SubcountsForm = (props: ISubcountsFormProps) => {
     );
 
     // Update the formik state with the updated subcounts
-    setFieldValue(formikFieldName, updatedSubcounts);
+    setFieldValue('subcounts', updatedSubcounts);
   };
 
   return (
@@ -117,23 +110,23 @@ export const SubcountsForm = (props: ISubcountsFormProps) => {
 
       <Box sx={{ overflowX: 'auto', whiteSpace: 'nowrap', pb: 2 }}>
         <FieldArray
-          name={formikFieldName}
-          render={(arrayHelpers: FieldArrayRenderProps) => {
+          name={'subcounts'}
+          render={(arrayHelpers) => {
+            const subcountsFormData: SubcountFormData[] | undefined = get(values, 'subcounts');
+
             return (
               <>
                 <Box sx={{ overflow: 'auto' }}>
-                  {values.subcounts.map((subcount, index) => {
-                    const formikSubcountArrayItemFieldName = formikFieldName
-                      ? `${formikFieldName}.[${index}]`
-                      : `[${index}]`;
+                  {subcountsFormData?.map((subcount, index) => {
+                    const subcountsArrayFieldName = `subcounts[${index}]`;
+
                     const enableHeaders = index === 0;
                     const disableRemoveSubcount = values.subcounts.length <= 1;
 
                     return (
                       <Stack gap={2} direction="row" maxWidth="100%" key={subcount._id} sx={{ mb: 2 }}>
                         <SubcountForm
-                          formikPrefixPath={formikSubcountArrayItemFieldName}
-                          subcountFormData={subcount}
+                          formikFieldName={subcountsArrayFieldName}
                           measurementTypeDefinitions={selectedMeasurementTypeDefinitions}
                           onDeleteMeasurement={handleRemoveMeasurement}
                           enableHeaders={enableHeaders}
@@ -169,15 +162,14 @@ export const SubcountsForm = (props: ISubcountsFormProps) => {
                   aria-label="add subcount"
                   sx={{ mt: 2 }}
                   onClick={() => {
-                    // Add a new empty subcount item to the subcounts array
-                    arrayHelpers.push({
+                    const item: SubcountFormData = {
                       _id: v4(),
                       ...initialSubcountFormData,
-                      measurements: selectedMeasurementTypeDefinitions.map((measurement) => ({
-                        measurement_option_id: null,
-                        measurement_id: measurement.taxon_measurement_id
-                      }))
-                    });
+                      measurements: selectedMeasurementsFormData
+                    };
+
+                    // Add a new empty subcount item to the subcounts array
+                    arrayHelpers.push(item);
                   }}>
                   Add Subcount
                 </Button>

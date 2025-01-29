@@ -4,50 +4,59 @@ import Card from '@mui/material/Card';
 import grey from '@mui/material/colors/grey';
 import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
-import AutocompleteField from 'components/fields/AutocompleteField';
-import { DualAutocompleteUnitField } from 'components/fields/dual-autocomplete-field/components/DualAutocompleteUnitField';
+import AutocompleteField, { IAutocompleteFieldOption } from 'components/fields/AutocompleteField';
+import CustomTextField from 'components/fields/CustomTextField';
 import { useFormikContext } from 'formik';
 import { get } from 'lodash';
 import { useMemo, useState } from 'react';
 
 /**
  * A generic component for rendering two autocomplete fields that are interdependent (category -> unit).
- * @param props The component props.
+ *
+ * @export
+ * @interface IDualAutocompleteFieldProps
+ * @template TCategory
+ * @template TUnit
+ * @template CategoryValueType
+ * @template UnitValueType
  */
-interface IDualAutocompleteFieldProps<TCategory extends string | number, TUnit extends string | number> {
-  /**
-   * Label to display for the category field.
-   */
-  categoryLabel: string;
-  /**
-   * The options to display in the category field.
-   */
-  categoryOptions: { label: string; value: TCategory }[];
+export interface IDualAutocompleteFieldProps<
+  CategoryOptionsType extends IAutocompleteFieldOption<CategoryValueType>,
+  UnitOptionsType extends IAutocompleteFieldOption<UnitValueType>,
+  CategoryValueType extends string | number,
+  UnitValueType extends string | number
+> {
   /**
    * The formik field name for the category field.
    */
   categoryFormikFieldName: string;
   /**
-   * Callback to get the data type of the category field.
-   *
-   * If not provided, the default data type will be 'quantitative'.
+   * Label to display for the category field.
    */
-  getCategoryDataType?: (categoryId: TCategory) => 'quantitative' | 'qualitative';
+  categoryFieldLabel: string;
+  /**
+   * The options to display in the category field.
+   */
+  categoryOptions: CategoryOptionsType[];
+  /**
+   * Callback to get the data type of the category field.
+   */
+  getCategoryDataType: (categoryValue: CategoryValueType) => 'quantitative' | 'qualitative';
+  /**
+   * Get the formik field name for the unit field.
+   */
+  getUnitFormikFieldName: (categoryValue: CategoryValueType) => string;
   /**
    * Callback to get the options to display in the unit field, based on the selected category. Only called when a
    * category is selected and the category data type is qualitative.
    */
-  getUnitOptions: (categoryId: TCategory) => { label: string; value: TUnit }[];
+  getUnitOptions: (categoryValue: CategoryValueType) => UnitOptionsType[];
   /**
    * The options to display in the unit field, based on the selected category.
    *
    * If not provided, the default label for the unit field will be "Value".
    */
-  getUnitAutocompleteLabel?: (categoryId: TCategory) => string;
-  /**
-   * Get the formik field name for the unit field.
-   */
-  getUnitFormikFieldName: (categoryId: TCategory) => string;
+  getUnitFieldLabel?: (categoryValue: CategoryValueType) => string;
   /**
    * Callback fired when the delete button is clicked.
    */
@@ -58,52 +67,61 @@ interface IDualAutocompleteFieldProps<TCategory extends string | number, TUnit e
  * Returns two autocomplete fields where the values for the second dropdown depend on the value of the first dropdown.
  * In this component, CATEGORY refers to the first dropdown and UNIT refers to the second dropdown.
  *
- * @param {IDualAutocompleteFieldProps<TCategory, TUnit>}props
- * @returns
+ * @template TCategory
+ * @template TUnit
+ * @template CategoryValueType
+ * @template UnitValueType
+ * @param {IDualAutocompleteFieldProps<TCategory, TUnit, CategoryValueType, UnitValueType>} props
+ * @return {*}
  */
-export const DualAutocompleteField = <TCategory extends string | number, TUnit extends string | number>(
-  props: IDualAutocompleteFieldProps<TCategory, TUnit>
+export const DualAutocompleteField = <
+  TCategory extends IAutocompleteFieldOption<CategoryValueType>,
+  TUnit extends IAutocompleteFieldOption<UnitValueType>,
+  CategoryValueType extends string | number,
+  UnitValueType extends string | number
+>(
+  props: IDualAutocompleteFieldProps<TCategory, TUnit, CategoryValueType, UnitValueType>
 ) => {
   const {
-    categoryLabel,
-    categoryOptions,
     categoryFormikFieldName,
+    categoryFieldLabel,
+    categoryOptions,
     getCategoryDataType,
-    getUnitOptions,
-    getUnitAutocompleteLabel,
     getUnitFormikFieldName,
+    getUnitOptions,
+    getUnitFieldLabel,
     onDelete
   } = props;
   const { values, setFieldValue } = useFormikContext<any>();
 
-  const categoryId: TCategory | null = get(values, categoryFormikFieldName);
+  const categoryValue: CategoryValueType | undefined = get(values, categoryFormikFieldName);
 
   // The category data type (quantitative or qualitative)
-  const categoryDataType = getCategoryDataType ? getCategoryDataType(categoryId as TCategory) : 'quantitative';
+  const categoryDataType = categoryValue ? getCategoryDataType(categoryValue) : 'quantitative';
 
   // The label units field, which defaults to "Value" unless set with the getUnitAutocompleteLabel prop
   const [unitLabel, setUnitLabel] = useState<string>('Value');
 
   // The array of options for the unit field, if the category measurement type is qualitative.
   const unitOptions = useMemo(() => {
-    if (!categoryId) {
+    if (!categoryValue) {
       // No category selected, so no units to display
       return [];
     }
 
-    const availableUnits = getUnitOptions(categoryId);
+    const availableUnits = getUnitOptions(categoryValue);
 
     // Update the label of the second dropdown if a custom label is provided
-    if (getUnitAutocompleteLabel) {
-      const label = getUnitAutocompleteLabel(categoryId);
+    if (getUnitFieldLabel) {
+      const label = getUnitFieldLabel(categoryValue);
       setUnitLabel(label);
     }
 
     return availableUnits;
-  }, [categoryId, getUnitAutocompleteLabel, getUnitOptions]);
+  }, [categoryValue, getUnitFieldLabel, getUnitOptions]);
 
   // The formik field name for the unit field
-  const unitFormikFieldName = categoryId ? getUnitFormikFieldName(categoryId) : 'value';
+  const unitFormikFieldName = categoryValue ? getUnitFormikFieldName(categoryValue) : 'value';
 
   return (
     <Card
@@ -116,7 +134,7 @@ export const DualAutocompleteField = <TCategory extends string | number, TUnit e
       <AutocompleteField
         id={categoryFormikFieldName}
         name={categoryFormikFieldName}
-        label={categoryLabel}
+        label={categoryFieldLabel}
         options={categoryOptions}
         showValue
         required
@@ -134,12 +152,32 @@ export const DualAutocompleteField = <TCategory extends string | number, TUnit e
         sx={{ flex: 0.5 }}
       />
 
-      <DualAutocompleteUnitField
-        unitLabel={unitLabel}
-        unitOptions={unitOptions}
-        categoryDataType={categoryDataType}
-        unitFormikFieldName={unitFormikFieldName}
-      />
+      {categoryDataType === 'qualitative' ? (
+        <AutocompleteField
+          id={unitFormikFieldName}
+          name={unitFormikFieldName}
+          label={unitLabel}
+          options={unitOptions}
+          showValue
+          onChange={(_, option) => {
+            // Set the unit value
+            setFieldValue(unitFormikFieldName, option?.value ?? undefined);
+          }}
+          required
+          sx={{ flex: 0.5 }}
+        />
+      ) : (
+        <CustomTextField
+          name={unitFormikFieldName}
+          label={unitLabel}
+          placeholder="Enter a value"
+          maxLength={10}
+          other={{
+            type: 'number',
+            sx: { flex: 0.5 }
+          }}
+        />
+      )}
 
       <IconButton data-testid="delete-button" title="Remove" aria-label="Remove" onClick={onDelete} sx={{ mt: 1.125 }}>
         <Icon path={mdiClose} size={1} />

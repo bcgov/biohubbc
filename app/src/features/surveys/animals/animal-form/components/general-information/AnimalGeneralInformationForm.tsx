@@ -66,7 +66,7 @@ export const AnimalGeneralInformationForm = (props: IAnimalGeneralInformationFor
             />
           </HelpButtonStack>
           {values.species && (
-            <Collapse in={Boolean(values.species)} key={values.species.tsn}>
+            <Collapse in={Boolean(values.species)} key={values.species.tsn} sx={{ mr: '46px' }}>
               <SelectedAnimalSpecies
                 selectedSpecies={[values.species]}
                 // Disable remove button if editing

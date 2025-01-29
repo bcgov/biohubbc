@@ -414,29 +414,24 @@ POST.apiDoc = {
               description: 'Standard column data for an observation record.',
               type: 'object',
               additionalProperties: false,
-              required: ['itis_tsn'],
+              required: [
+                'itis_tsn',
+                'itis_scientific_name',
+                'survey_sample_period_id',
+                'count',
+                'latitude',
+                'longitude',
+                'observation_date',
+                'observation_time',
+                'qualitative_environments',
+                'quantitative_environments'
+              ],
               properties: {
-                survey_observation_id: {
-                  type: 'integer',
-                  minimum: 1,
-                  description: 'Primary key of the observation record',
-                  nullable: true
-                },
                 itis_tsn: {
                   type: 'integer'
                 },
                 itis_scientific_name: {
                   type: 'string',
-                  nullable: true
-                },
-                survey_sample_site_id: {
-                  type: 'integer',
-                  minimum: 1,
-                  nullable: true
-                },
-                survey_sample_method_id: {
-                  type: 'integer',
-                  minimum: 1,
                   nullable: true
                 },
                 survey_sample_period_id: {
@@ -465,9 +460,40 @@ POST.apiDoc = {
                   type: 'string',
                   nullable: true
                 },
-                revision_count: {
-                  type: 'integer',
-                  minimum: 0
+                qualitative_environments: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    additionalProperties: false,
+                    required: ['environment_qualitative_id', 'environment_qualitative_option_id'],
+                    properties: {
+                      environment_qualitative_id: {
+                        type: 'string',
+                        format: 'uuid'
+                      },
+                      environment_qualitative_option_id: {
+                        type: 'string',
+                        format: 'uuid'
+                      }
+                    }
+                  }
+                },
+                quantitative_environments: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    additionalProperties: false,
+                    required: ['environment_quantitative_id', 'value'],
+                    properties: {
+                      environment_quantitative_id: {
+                        type: 'string',
+                        format: 'uuid'
+                      },
+                      value: {
+                        type: 'number'
+                      }
+                    }
+                  }
                 }
               }
             },
@@ -477,20 +503,11 @@ POST.apiDoc = {
               items: {
                 type: 'object',
                 additionalProperties: false,
-                required: [
-                  'subcount',
-                  'comment',
-                  'qualitative_measurements',
-                  'quantitative_measurements',
-                  'qualitative_environments',
-                  'quantitative_environments'
-                ],
+                required: ['count', 'comment', 'qualitative_measurements', 'quantitative_measurements'],
                 properties: {
-                  observation_subcount_id: {
-                    type: 'integer',
-                    minimum: 1,
-                    description: 'Primary key of the subcount record',
-                    nullable: true
+                  count: {
+                    type: 'number',
+                    description: "The subcount record's count."
                   },
                   observation_subcount_sign_id: {
                     type: 'integer',
@@ -503,10 +520,6 @@ POST.apiDoc = {
                     type: 'string',
                     nullable: true,
                     description: 'A comment or note about the subcount'
-                  },
-                  subcount: {
-                    type: 'number',
-                    description: "The subcount record's count."
                   },
                   qualitative_measurements: {
                     type: 'array',
@@ -533,39 +546,6 @@ POST.apiDoc = {
                           type: 'string'
                         },
                         measurement_value: {
-                          type: 'number'
-                        }
-                      }
-                    }
-                  },
-                  qualitative_environments: {
-                    type: 'array',
-                    items: {
-                      type: 'object',
-                      additionalProperties: false,
-                      properties: {
-                        environment_qualitative_id: {
-                          type: 'string',
-                          format: 'uuid'
-                        },
-                        environment_qualitative_option_id: {
-                          type: 'string',
-                          format: 'uuid'
-                        }
-                      }
-                    }
-                  },
-                  quantitative_environments: {
-                    type: 'array',
-                    items: {
-                      type: 'object',
-                      additionalProperties: false,
-                      properties: {
-                        environment_quantitative_id: {
-                          type: 'string',
-                          format: 'uuid'
-                        },
-                        value: {
                           type: 'number'
                         }
                       }

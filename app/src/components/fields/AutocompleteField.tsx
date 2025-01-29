@@ -9,17 +9,20 @@ import { useFormikContext } from 'formik';
 import get from 'lodash-es/get';
 import { SyntheticEvent } from 'react';
 
-export interface IAutocompleteFieldOption<T extends string | number> {
-  value: T;
+export interface IAutocompleteFieldOption<OptionValueType extends string | number> {
+  value: OptionValueType;
   label: string;
   description?: string | null;
 }
 
-export interface IAutocompleteField<T extends string | number> {
+export interface IAutocompleteField<
+  OptionValueType extends string | number,
+  OptionType extends IAutocompleteFieldOption<OptionValueType>
+> {
   id: string;
   label: string;
   name: string;
-  options: IAutocompleteFieldOption<T>[];
+  options: OptionType[];
   disabled?: boolean;
   loading?: boolean;
   sx?: TextFieldProps['sx']; //https://github.com/TypeStrong/fork-ts-checker-webpack-plugin/issues/271#issuecomment-1561891271
@@ -29,30 +32,32 @@ export interface IAutocompleteField<T extends string | number> {
   disableClearable?: boolean;
   optionFilter?: 'value' | 'label'; // used to filter existing/ set data for the AutocompleteField, defaults to value in getExistingValue function
   helpText?: string;
-  getOptionDisabled?: (option: IAutocompleteFieldOption<T>) => boolean;
-  onChange?: (event: SyntheticEvent<Element, Event>, option: IAutocompleteFieldOption<T> | null) => void;
-  renderOption?: (params: React.HTMLAttributes<HTMLLIElement>, option: IAutocompleteFieldOption<T>) => React.ReactNode;
+  getOptionDisabled?: (option: OptionType) => boolean;
+  onChange?: (event: SyntheticEvent<Element, Event>, option: OptionType | null) => void;
+  renderOption?: (params: React.HTMLAttributes<HTMLLIElement>, option: OptionType) => React.ReactNode;
   onInputChange?: (event: React.SyntheticEvent<Element, Event>, value: string, reason: string) => void;
 }
 
 // To be used when you want an autocomplete field with no freesolo allowed but only one option can be selected
 
-const AutocompleteField = <T extends string | number>(props: IAutocompleteField<T>) => {
-  const { touched, errors, setFieldValue, values } = useFormikContext<IAutocompleteFieldOption<T>>();
+const AutocompleteField = <
+  OptionValueType extends string | number,
+  OptionType extends IAutocompleteFieldOption<OptionValueType> = IAutocompleteFieldOption<OptionValueType>
+>(
+  props: IAutocompleteField<OptionValueType, OptionType>
+) => {
+  const { touched, errors, setFieldValue, values } = useFormikContext<OptionType>();
 
-  const getExistingValue = (existingValue: T): IAutocompleteFieldOption<T> => {
+  const getExistingValue = (existingValue: OptionValueType): OptionType => {
     const result = props.options.find((option) => existingValue === option[props.optionFilter ?? 'value']);
     if (!result) {
-      return null as unknown as IAutocompleteFieldOption<T>;
+      return null as unknown as OptionType;
     }
 
     return result;
   };
 
-  const handleGetOptionSelected = (
-    option: IAutocompleteFieldOption<T>,
-    value: IAutocompleteFieldOption<T>
-  ): boolean => {
+  const handleGetOptionSelected = (option: OptionType, value: OptionType): boolean => {
     if (!option?.value || !value?.value) {
       return false;
     }

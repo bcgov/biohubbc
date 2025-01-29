@@ -51,6 +51,12 @@ export const TechniqueVantageForm = <FormValues extends CreateTechniqueFormValue
     }));
   };
 
+  const vantageCategoryOptions = vantageReferenceRecords.map((record) => ({
+    ...record,
+    value: record.vantage_category_id,
+    label: record.name
+  }));
+
   return (
     <FieldArray
       name="vantage_methods"
@@ -61,15 +67,15 @@ export const TechniqueVantageForm = <FormValues extends CreateTechniqueFormValue
               <Collapse key={vantage._id}>
                 <Box mb={2}>
                   <DualAutocompleteField
-                    categoryLabel="Vantage"
-                    categoryOptions={vantageReferenceRecords.map((record) => ({
-                      value: record.vantage_category_id,
-                      label: record.name
-                    }))}
                     categoryFormikFieldName={`vantage_methods.[${index}].vantage_category_id`}
+                    categoryFieldLabel="Vantage"
+                    categoryOptions={vantageCategoryOptions}
                     getCategoryDataType={() => 'qualitative'}
-                    getUnitOptions={(categoryId) => getUnitOptions(vantage.vantage_method_id, categoryId)}
                     getUnitFormikFieldName={() => `vantage_methods.[${index}].vantage_method_id`}
+                    getUnitFieldLabel={() => 'Value'}
+                    getUnitOptions={(categoryValue) =>
+                      getUnitOptions(vantage.vantage_method_id, categoryValue as number)
+                    }
                     onDelete={() => arrayHelpers.remove(index)}
                   />
                 </Box>

@@ -14,7 +14,7 @@ export interface IDualAutocompleteUnitFieldProps<TUnit extends string | number> 
   /**
    * The data type of the category field.
    */
-  categoryDataType?: 'quantitative' | 'qualitative';
+  categoryDataType: 'quantitative' | 'qualitative';
   /**
    * The formik field name for the unit field.
    */
