@@ -2,6 +2,7 @@ import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
 import { Request } from 'express';
 import qs from 'qs';
 import { z } from 'zod';
+import { IDBConnection } from '../database/db';
 import { ApiError, ApiErrorType } from '../errors/api-error';
 import { ISex } from '../models/animal-view';
 import { getLogger } from '../utils/logger';
@@ -17,6 +18,11 @@ export interface ICritterbaseUser {
 export const getCritterbaseUser = (req: Request): ICritterbaseUser => ({
   keycloak_guid: req.system_user?.user_guid ?? '',
   username: req.system_user?.user_identifier ?? ''
+});
+
+export const getCritterbaseConnectionUser = (connection: IDBConnection) => ({
+  keycloak_guid: connection.systemUserGUID(),
+  username: connection.systemUserIdentifier()
 });
 
 export interface QueryParam {

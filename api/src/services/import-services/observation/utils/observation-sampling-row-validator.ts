@@ -72,25 +72,34 @@ export function getObservationSamplingInformationRowValidator(
         return true;
       });
 
-      if (matchingPeriodsBySamplingInformation.length === 1) {
-        // Found exactly one period record that uniquely matches some or all of the filters above, then update the row state
-        updateCSVRowState(params.row, {
-          sampling_period_id: matchingPeriodsBySamplingInformation[0].survey_sample_period_id
-        });
-
-        return [];
+      if (matchingPeriodsBySamplingInformation.length === 0) {
+        return [
+          {
+            error: 'Unable to match to observation with sampling information',
+            solution: 'Please provide more specific sampling information or observation date and time',
+            header: null,
+            cell: null
+          }
+        ];
       }
 
-      // Unable to match the observation sampling information to any existing period uniquely
-      return [
-        {
-          error: 'Unable to match to observation with sampling information uniquely',
-          solution: 'Please provide more specific sampling information or observation date and time',
-          // TODO: update these to be the correct values
-          header: null,
-          cell: null
-        }
-      ];
+      if (matchingPeriodsBySamplingInformation.length > 1) {
+        return [
+          {
+            error: 'Unable to uniquely match to observation with sampling information',
+            solution: 'Please provide more specific sampling information or observation date and time',
+            header: null,
+            cell: null
+          }
+        ];
+      }
+
+      // Found exactly one period record that uniquely matches some or all of the filters above, then update the row state
+      updateCSVRowState(params.row, {
+        sampling_period_id: matchingPeriodsBySamplingInformation[0].survey_sample_period_id
+      });
+
+      return [];
     }
 
     // If not site, technique, or period values are provided, then attempt to find a unique period that matches the
@@ -104,30 +113,30 @@ export function getObservationSamplingInformationRowValidator(
       samplingPeriods
     );
 
-    if (matchingPeriodsByObservationDateTime.length) {
-      // If at least one period record is found that satisfies the observation date and time, then update row state
-      updateCSVRowState(params.row, {
-        sampling_period_id: matchingPeriodsByObservationDateTime[0].survey_sample_period_id
-      });
-
-      return [];
+    if (matchingPeriodsByObservationDateTime.length === 0) {
+      // Unable to match the observation date/time to any existing period uniquely
+      return [
+        {
+          error: 'Unable to match to observation with date',
+          solution: 'Please provide more specific sampling information or a valid observation date and time',
+          header: utils.getWorksheetHeader('DATE', params.row),
+          cell: observationDate
+        },
+        {
+          error: 'Unable to match to observation with date and time',
+          solution: 'Please provide more specific sampling information or a valid observation date and time',
+          header: utils.getWorksheetHeader('TIME', params.row),
+          cell: observationTime
+        }
+      ];
     }
 
-    // Unable to match the observation date/time to any existing period uniquely
-    return [
-      {
-        error: 'Unable to match to observation with date',
-        solution: 'Please provide more specific sampling information or a valid observation date and time',
-        header: utils.getWorksheetHeader('DATE', params.row),
-        cell: observationDate
-      },
-      {
-        error: 'Unable to match to observation with date and time',
-        solution: 'Please provide more specific sampling information or a valid observation date and time',
-        header: utils.getWorksheetHeader('TIME', params.row),
-        cell: observationTime
-      }
-    ];
+    // If at least one period record is found that satisfies the observation date and time, then update row state
+    updateCSVRowState(params.row, {
+      sampling_period_id: matchingPeriodsByObservationDateTime[0].survey_sample_period_id
+    });
+
+    return [];
   };
 }
 
@@ -144,7 +153,7 @@ export function matchSamplePeriodToWorksheetSiteName(
   worksheetSiteName: string,
   samplingPeriod: SurveySamplePeriodDetails
 ): boolean {
-  return samplingPeriod.survey_sample_site?.name === worksheetSiteName;
+  return samplingPeriod.survey_sample_site?.name.toLowerCase() === worksheetSiteName.toLowerCase();
 }
 
 /**
@@ -160,7 +169,7 @@ export function matchSamplePeriodToWorksheetTechniqueName(
   worksheetTechniqueName: string,
   samplingPeriod: SurveySamplePeriodDetails
 ): boolean {
-  return samplingPeriod.method_technique?.name === worksheetTechniqueName;
+  return samplingPeriod.method_technique?.name.toLowerCase() === worksheetTechniqueName.toLowerCase();
 }
 
 /**

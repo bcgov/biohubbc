@@ -10,9 +10,9 @@ import { CSVRow, CSVRowState } from '../../../utils/csv-utils/csv-config-validat
  */
 export const createRowStateGetter = <SchemaType extends z.ZodSchema>(schema: SchemaType) => {
   return (rowOrState: CSVRow | CSVRow[typeof CSVRowState]): z.infer<SchemaType> => {
-    const isCSVRow = Object.getOwnPropertySymbols(rowOrState).includes(CSVRowState);
+    const isRow = Object.getOwnPropertySymbols(rowOrState).includes(CSVRowState);
 
-    const parsedState = schema.safeParse(isCSVRow ? rowOrState?.[CSVRowState] : rowOrState);
+    const parsedState = schema.safeParse(isRow ? rowOrState?.[CSVRowState] : rowOrState);
 
     // Throw an error if unable to correctly parse the row state
     if (!parsedState.success) {

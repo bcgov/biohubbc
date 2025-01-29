@@ -24,7 +24,8 @@ import {
   validateZodCell
 } from '../../../utils/csv-utils/csv-header-configs';
 import { getTaxonRowValidator } from '../../../utils/csv-utils/row-validators/taxon-row-validator';
-import { CritterbaseService } from '../../critterbase-service';
+import { getLogger } from '../../../utils/logger';
+import { CritterbaseService, getCritterbaseConnectionUser } from '../../critterbase-service';
 import { DBService } from '../../db-service';
 import {
   InsertSubCount,
@@ -56,6 +57,8 @@ import { getTaxonMap, getTsnsFromTaxonMap, TaxonMap } from '../utils/taxon';
 import { getObservationDynamicHeaderConfig } from './utils/observation-dynamic-header-config';
 import { getObservationSubcountSignCellValidator } from './utils/observation-header-configs';
 import { getObservationSamplingInformationRowValidator } from './utils/observation-sampling-row-validator';
+
+const defaultLog = getLogger('services/import/import-observations-service');
 
 const SUBCOUNT_SIGN_ALIASES: Uppercase<string>[] = ['OBSERVATION_SUBCOUNT_SIGN', 'OBSERVATION SUBCOUNT SIGN', 'SIGN'];
 
@@ -154,7 +157,10 @@ export class ImportObservationsService extends DBService {
     }
 
     const observationService = new ObservationService(this.connection);
+
     await observationService.insertUpdateManualSurveyObservations(this.surveyId, observations);
+
+    defaultLog.debug({ label: 'importCSVWorksheet', observations });
 
     return [];
   }
@@ -187,6 +193,7 @@ export class ImportObservationsService extends DBService {
    */
   async _setObservationConfigStaticHeaders() {
     const codeRepository = new CodeRepository(this.connection);
+
     const subcountSignCodes = await codeRepository.getObservationSubcountSigns();
 
     this.utils.setAllStaticHeaderConfigs({
@@ -234,10 +241,7 @@ export class ImportObservationsService extends DBService {
    * @returns {*} {Promise<void>}
    */
   async _setObservationConfigDynamicHeaders(taxonMap: TaxonMap) {
-    const critterbaseService = new CritterbaseService({
-      keycloak_guid: this.connection.systemUserGUID(),
-      username: this.connection.systemUserIdentifier()
-    });
+    const critterbaseService = new CritterbaseService(getCritterbaseConnectionUser(this.connection));
     const environmentService = new ObservationSubCountEnvironmentService(this.connection);
 
     // Generate the measurement dictionary and environment map
@@ -245,11 +249,11 @@ export class ImportObservationsService extends DBService {
     const environmentMap = await getEnvironmentNameTypeDefinitionMap(this.surveyId, environmentService);
 
     // Get the TSN from the row state for the dynamic headers validator
-    const getTsnFromRow = (params: CSVParams) => getTaxonFromRowState(params.row[CSVRowState]).itis_tsn;
+    const getCritterTsn = (params: CSVParams) => getTaxonFromRowState(params.row).itis_tsn;
 
     // Inject dynamic header config - handles measurement and environment validation
     this.utils.config.dynamicHeadersConfig = {
-      validateCell: getObservationDynamicHeaderConfig(measurementDictionary, environmentMap, getTsnFromRow)
+      validateCell: getObservationDynamicHeaderConfig(measurementDictionary, environmentMap, getCritterTsn)
     };
   }
 

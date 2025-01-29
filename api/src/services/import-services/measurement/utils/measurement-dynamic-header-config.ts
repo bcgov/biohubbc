@@ -22,19 +22,19 @@ export type TSNMeasurementDictionary = NestedRecord<
  * Get the dynamic measurement cell validator.
  *
  * @param {TSNMeasurementDictionary} tsnMeasurementDictionary The TSN measurement dictionary
- * @param {(params: CSVParams) => number} getRowTSN The callback to get the TSN from the row/params
+ * @param {(params: CSVParams) => number} getCritterTsn The callback to get the TSN from the row/params
  * @returns {*} {CSVCellValidator} The validate cell callback
  */
 export const getDynamicMeasurementCellValidator = (
   tsnMeasurementDictionary: TSNMeasurementDictionary,
-  getRowTSN: (params: CSVParams) => number
+  getCritterTsn: (params: CSVParams) => number
 ): CSVCellValidator => {
   return (params) => {
     if (params.cell === undefined) {
       return [];
     }
 
-    const tsn = getRowTSN(params);
+    const tsn = getCritterTsn(params);
 
     const taxonMeasurements = tsnMeasurementDictionary.get(tsn);
 

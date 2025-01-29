@@ -31,11 +31,11 @@ export const POST: Operation = [
       ]
     };
   }),
-  uploadMedia()
+  importObservationCSV()
 ];
 
 POST.apiDoc = {
-  description: 'Upload survey observation submission file.',
+  description: 'Upload survey observation CSV file.',
   tags: ['observations'],
   security: [
     {
@@ -46,12 +46,20 @@ POST.apiDoc = {
     {
       in: 'path',
       name: 'projectId',
-      required: true
+      required: true,
+      schema: {
+        type: 'integer',
+        minimum: 1
+      }
     },
     {
       in: 'path',
       name: 'surveyId',
-      required: true
+      required: true,
+      schema: {
+        type: 'integer',
+        minimum: 1
+      }
     }
   ],
   requestBody: {
@@ -100,11 +108,11 @@ POST.apiDoc = {
 };
 
 /**
- * Uploads a media file to S3 and inserts a matching record in the `survey_observation_submission` table.
+ * Imports a `Observation CSV` which bulk creates observations in SIMS.
  *
  * @return {*}  {RequestHandler}
  */
-export function uploadMedia(): RequestHandler {
+export function importObservationCSV(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
 

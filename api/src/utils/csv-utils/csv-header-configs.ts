@@ -311,7 +311,8 @@ export const getDateRangeCellValidator = (options?: CSVOptionalCell): CSVCellVal
       return [
         {
           error: 'Invalid date range',
-          solution: 'Use a valid date range format: YYYY-MM-DD HH:mm:ss - YYYY-MM-DD HH:mm:ss'
+          solution:
+            'Use a valid date range format: YYYY-MM-DD - YYYY-MM-DD OR YYYY-MM-DD HH:mm:ss - YYYY-MM-DD HH:mm:ss'
         }
       ];
     }

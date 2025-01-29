@@ -7,14 +7,14 @@ import { getDynamicEnvironmentCellValidator } from './environment-dynamic-header
 export const getObservationDynamicHeaderConfig = (
   tsnMeasurementDictionary: TSNMeasurementDictionary,
   environmentDictionary: EnvironmentNameTypeDefinitionMap,
-  getRowTSN: (params: CSVParams) => number
+  getCritterTsn: (params: CSVParams) => number
 ): CSVCellValidator => {
   // Note: This validator makes the assumption that a measurement header
   // and an environment header will never have the same name
   return (params) => {
     // Check if the header is a measurement header
     if (tsnMeasurementDictionary.has(params.header)) {
-      return getDynamicMeasurementCellValidator(tsnMeasurementDictionary, getRowTSN)(params);
+      return getDynamicMeasurementCellValidator(tsnMeasurementDictionary, getCritterTsn)(params);
     }
 
     // Check if the header is an environment header

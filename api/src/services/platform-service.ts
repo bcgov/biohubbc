@@ -119,13 +119,13 @@ export class PlatformService extends DBService {
   }
 
   /**
-   * Get taxon by scientific name from BioHub.
+   * Get taxon by scientific name from the BioHub.
    *
    * @param {string} scientificName - The scientific name of the taxon to search for
    * @returns {*} {Promise<IItisSearchResult | null>}
    */
   async getTaxonByScientificName(scientificName: string): Promise<IItisSearchResult | null> {
-    defaultLog.debug({ label: 'getTaxonByScientificName', scientificName });
+    defaultLog.debug({ label: 'getTaxonomyByScientificName', scientificName });
 
     try {
       const keycloakService = new KeycloakService();
@@ -139,7 +139,8 @@ export class PlatformService extends DBService {
           authorization: `Bearer ${token}`
         },
         params: {
-          terms: [scientificName]
+          // Biohub searches ITIS by "terms" -> "alces alces" -> ["alces", "alces"]
+          terms: scientificName.split(' ')
         },
         paramsSerializer: (params) => {
           return qs.stringify(params);
@@ -151,11 +152,9 @@ export class PlatformService extends DBService {
         (taxon) => taxon.scientificName.toLowerCase() === scientificName.toLowerCase()
       );
 
-      if (!matchingTaxon) {
-        return null;
-      }
+      defaultLog.debug({ label: 'getTaxonByScientificName', matchingTaxon });
 
-      return matchingTaxon;
+      return matchingTaxon ?? null;
     } catch (error) {
       defaultLog.error({ label: 'getTaxonByScientificName', error });
 
