@@ -3,78 +3,17 @@ import Checkbox from '@mui/material/Checkbox';
 import grey from '@mui/material/colors/grey';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { GridColDef } from '@mui/x-data-grid';
-import { IObservationTableRow } from 'contexts/observationsTableContext';
-import { GeneralColumnsSecondaryAction } from 'features/surveys/observations/observations-table/configure-columns/components/general/ConfigureGeneralColumnsSecondaryAction';
-import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
-import { EnvironmentType, EnvironmentTypeIds } from 'interfaces/useReferenceApi.interface';
+import { AccordionStandardCard } from 'features/standards/view/components/AccordionStandardCard';
+import { IHideableColumn } from '../../ConfigureColumnsButton';
 
 export interface IConfigureGeneralColumnsProps {
-  /**
-   * Controls the disabled state of the component controls.
-   *
-   * @type {boolean}
-   * @memberof IConfigureColumnsProps
-   */
   disabled: boolean;
-  /**
-   * The column field names of the hidden columns.
-   *
-   * @type {GridColDef<IObservationTableRow>[]}
-   * @memberof IConfigureColumnsProps
-   */
   hiddenFields: string[];
-  /**
-   * The column definitions of the columns that may be toggled to hidden or visible.
-   *
-   * @type {GridColDef<IObservationTableRow>[]}
-   * @memberof IConfigureColumnsProps
-   */
-  hideableColumns: GridColDef<IObservationTableRow>[];
-  /**
-   * Callback fired on toggling the visibility of all columns.
-   *
-   * @memberof IConfigureGeneralColumnsProps
-   */
+  hideableColumns: IHideableColumn[];
   onToggleShowHideAll: () => void;
-  /**
-   * Callback fired on toggling the visibility of a column.
-   *
-   * @memberof IConfigureGeneralColumnsProps
-   */
   onToggleColumnVisibility: (field: string) => void;
-  /**
-   * Callback fired on removing measurements.
-   *
-   * @memberof IConfigureGeneralColumnsProps
-   */
-  onRemoveMeasurements: (measurementColumnsToRemove: string[]) => void;
-  /**
-   * The measurement columns.
-   *
-   * @type {CBMeasurementType[]}
-   * @memberof IConfigureGeneralColumnsProps
-   */
-  measurementColumns: CBMeasurementType[];
-  /**
-   * Callback fired on removing environment columns.
-   *
-   * @memberof IConfigureGeneralColumnsProps
-   */
-  onRemoveEnvironmentColumns: (environmentColumnIds: EnvironmentTypeIds) => void;
-  /**
-   * The environment columns.
-   *
-   * @type {EnvironmentType}
-   * @memberof IConfigureGeneralColumnsProps
-   */
-  environmentColumns: EnvironmentType;
 }
 
 /**
@@ -84,20 +23,9 @@ export interface IConfigureGeneralColumnsProps {
  * @return {*}
  */
 export const ConfigureGeneralColumns = (props: IConfigureGeneralColumnsProps) => {
-  const {
-    disabled,
-    hiddenFields,
-    hideableColumns,
-    onToggleShowHideAll,
-    onToggleColumnVisibility,
-    onRemoveMeasurements,
-    measurementColumns,
-    onRemoveEnvironmentColumns,
-    environmentColumns
-  } = props;
+  const { disabled, hiddenFields, hideableColumns, onToggleShowHideAll, onToggleColumnVisibility } = props;
 
   return (
-    // display="flex" and flexDirection="column" is necessary for the scrollbars to be correctly positioned
     <Box height="100%" display="flex" flexDirection="column">
       <Stack flexDirection="row" alignItems="center" justifyContent="space-between" minWidth={400}>
         <Typography variant="h5">Select Columns to Show</Typography>
@@ -131,46 +59,35 @@ export const ConfigureGeneralColumns = (props: IConfigureGeneralColumnsProps) =>
           my: 2,
           p: 0.5,
           maxHeight: '100%',
-          overflowY: 'auto'
+          overflowY: 'auto',
+          textAlign: 'left'
         }}
         disablePadding>
         {hideableColumns.map((column) => {
           const isSelected = !hiddenFields.includes(column.field);
+
           return (
-            <ListItem
+            <AccordionStandardCard
               key={column.field}
-              secondaryAction={
-                <GeneralColumnsSecondaryAction
-                  disabled={disabled}
-                  field={column.field}
-                  onRemoveMeasurements={onRemoveMeasurements}
-                  measurementColumns={measurementColumns}
-                  onRemoveEnvironmentColumns={onRemoveEnvironmentColumns}
-                  environmentColumns={environmentColumns}
-                />
-              }
-              disablePadding>
-              <ListItemButton
-                dense
-                onClick={() => onToggleColumnVisibility(column.field)}
-                disabled={disabled}
-                sx={{
-                  background: isSelected ? grey[50] : '#fff',
-                  borderRadius: '5px',
-                  alignItems: 'flex-start',
-                  '& .MuiListItemText-root': { my: 0.25 }
-                }}>
-                <ListItemIcon>
-                  <Checkbox edge="start" checked={isSelected} />
-                </ListItemIcon>
-                <Box my={1}>
-                  <ListItemText sx={{ '& .MuiTypography-root': { fontWeight: 700 } }}>{column.headerName}</ListItemText>
-                  <ListItemText sx={{ '& .MuiTypography-root': { color: grey[600] } }}>
-                    {column.description}
-                  </ListItemText>
-                </Box>
-              </ListItemButton>
-            </ListItem>
+              label={column.headerName ?? column.field}
+              colour={isSelected ? grey[100] : grey[50]}
+              subtitle={column.description}
+              handleCheckboxChange={() => onToggleColumnVisibility(column.field)}
+              checkboxDisabled={disabled}
+              checkboxSelected={isSelected}>
+              {column.options.length > 0 && (
+                <Stack gap={1} my={2}>
+                  {column.options.map((option) => (
+                    <AccordionStandardCard
+                      key={option.name}
+                      label={option.name}
+                      subtitle={option.description}
+                      colour={grey[200]}
+                    />
+                  ))}
+                </Stack>
+              )}
+            </AccordionStandardCard>
           );
         })}
       </List>

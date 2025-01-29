@@ -1,10 +1,9 @@
 import { LoadingButton } from '@mui/lab';
 import { Dialog, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
-import { GridColDef } from '@mui/x-data-grid';
-import { IObservationTableRow } from 'contexts/observationsTableContext';
 import { ConfigureColumnsPage } from 'features/surveys/observations/observations-table/configure-columns/components/ConfigureColumnsPage';
 import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
 import { EnvironmentType, EnvironmentTypeIds } from 'interfaces/useReferenceApi.interface';
+import { IHideableColumn } from '../ConfigureColumnsButton';
 
 interface IConfigureColumnsDialogProps {
   /**
@@ -37,10 +36,10 @@ interface IConfigureColumnsDialogProps {
   /**
    * The column definitions of the columns that may be toggled to hidden or visible.
    *
-   * @type {GridColDef<IObservationTableRow>[]}
+   * @type {IHideableColumn[]}
    * @memberof IConfigureColumnsProps
    */
-  hideableColumns: GridColDef<IObservationTableRow>[];
+  hideableColumns: IHideableColumn[];
   /**
    * Callback fired on toggling the visibility of all columns.
    *
@@ -53,12 +52,6 @@ interface IConfigureColumnsDialogProps {
    * @memberof IConfigureColumnsDialogProps
    */
   onToggleColumnVisibility: (field: string) => void;
-  /**
-   * Callback fired on removing measurements.
-   *
-   * @memberof IConfigureColumnsDialogProps
-   */
-  onRemoveMeasurements: (measurementColumnsToRemove: string[]) => void;
   /**
    * The measurement columns.
    *
@@ -112,7 +105,6 @@ export const ConfigureColumnsDialog = (props: IConfigureColumnsDialogProps) => {
     disabled,
     hiddenFields,
     hideableColumns,
-    onRemoveMeasurements,
     onToggleColumnVisibility,
     onToggleShowHideAll,
     measurementColumns,
@@ -146,7 +138,6 @@ export const ConfigureColumnsDialog = (props: IConfigureColumnsDialogProps) => {
           hideableColumns={hideableColumns}
           onToggleShowHideAll={onToggleShowHideAll}
           onToggleColumnVisibility={onToggleColumnVisibility}
-          onRemoveMeasurements={onRemoveMeasurements}
           measurementColumns={measurementColumns}
           onAddMeasurementColumns={onAddMeasurementColumns}
           onRemoveMeasurementColumns={onRemoveMeasurementColumns}

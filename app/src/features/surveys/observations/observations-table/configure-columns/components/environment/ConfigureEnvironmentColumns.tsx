@@ -43,7 +43,7 @@ export const ConfigureEnvironmentColumns = (props: IConfigureEnvironmentColumnsP
     environmentColumns.qualitative_environments.length || environmentColumns.quantitative_environments.length;
 
   return (
-    <Box height="100%" display="flex" flexDirection="column">
+    <Box height="100%" display="flex" flexDirection="column" width="100%">
       <Typography variant="h5" mb={2}>
         Add Environmental Variables
       </Typography>
@@ -63,7 +63,7 @@ export const ConfigureEnvironmentColumns = (props: IConfigureEnvironmentColumnsP
                 alignItems="flex-start"
                 key={`qualitative_environment_item_${environment.environment_qualitative_id}`}>
                 <AccordionStandardCard label={environment.name} subtitle={environment.description} colour={grey[100]}>
-                  <Stack gap={1} my={2}>
+                  <Stack gap={1} my={2} flex="1 1 auto">
                     {environment.options.map((option) => (
                       <AccordionStandardCard
                         key={option.environment_qualitative_option_id}
@@ -91,10 +91,7 @@ export const ConfigureEnvironmentColumns = (props: IConfigureEnvironmentColumnsP
               </Box>
             ))}
             {environmentColumns.quantitative_environments.map((environment) => (
-              <Box
-                display="flex"
-                alignItems="flex-start"
-                key={`quantitative_environment_item_${environment.environment_quantitative_id}`}>
+              <Box display="flex" key={`quantitative_environment_item_${environment.environment_quantitative_id}`}>
                 <AccordionStandardCard
                   label={environment.name}
                   subtitle={environment.description}
