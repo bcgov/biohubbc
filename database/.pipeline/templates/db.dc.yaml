@@ -12,10 +12,13 @@ parameters:
     name: NAME
     required: true
     value: 'postgresql'
-  - name: IMAGE_STREAM_NAMESPACE
+  - name: NAMESPACE
     description: The OpenShift Namespace where the ImageStream resides.
     required: true
     value: 'af2668-tools'
+  - name: BASE_IMAGE_REGISTRY_URL
+    description: The base image registry URL
+    value: image-registry.openshift-image-registry.svc:5000
   - name: IMAGE_STREAM_NAME
     description: The OpenShift ImageStream name.
     required: true
@@ -124,8 +127,8 @@ objects:
       lookupPolicy:
         local: false
 
-  - kind: DeploymentConfig
-    apiVersion: apps.openshift.io/v1
+  - kind: Deployment
+    apiVersion: apps/v1
     metadata:
       annotations:
         template.alpha.openshift.io/wait-for-ready: 'true'
@@ -133,7 +136,8 @@ objects:
     spec:
       replicas: ${{REPLICAS}}
       selector:
-        name: '${DATABASE_SERVICE_NAME}'
+        matchLabels:
+          name: '${DATABASE_SERVICE_NAME}'
       strategy:
         type: Recreate
         maxSurge: 50%
@@ -168,7 +172,7 @@ objects:
                   value: '-c maintenance_work_mem=128MB'
                 - name: PGTZ
                   value: '${TZ}'
-              image: ' '
+              image: ${BASE_IMAGE_REGISTRY_URL}/${NAMESPACE}/${IMAGE_STREAM_NAME}:${IMAGE_STREAM_VERSION}
               imagePullPolicy: IfNotPresent
               livenessProbe:
                 initialDelaySeconds: 30
@@ -205,14 +209,3 @@ objects:
             - name: '${DATABASE_SERVICE_NAME}-data'
               persistentVolumeClaim:
                 claimName: '${DATABASE_SERVICE_NAME}'
-      triggers:
-        - imageChangeParams:
-            automatic: true
-            containerNames:
-              - postgresql
-            from:
-              kind: ImageStreamTag
-              name: '${IMAGE_STREAM_NAME}:${IMAGE_STREAM_VERSION}'
-              namespace: '${IMAGE_STREAM_NAMESPACE}'
-          type: ImageChange
-        - type: ConfigChange

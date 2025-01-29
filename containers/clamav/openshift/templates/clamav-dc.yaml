@@ -3,29 +3,33 @@ apiVersion: v1
 metadata:
   name: clamav
 parameters:
-  - description:
+  - name: BASE_IMAGE_REGISTRY_URL
+    description: The base image registry URL
+    required: true
+    value: image-registry.openshift-image-registry.svc:5000
+  - name: IMAGE_NAMESPACE
+    description: The namespace where to get the above image name
+    displayName: Image Namespace
+    required: true
+    value: af2668-tools
+  - name: NAME
+    description:
       The name assigned to all of the openshift objects defined in this template.
       It is also the name of runtime image you want.
     displayName: Name
-    name: NAME
     required: true
     value: clamav
-  - description: The namespace where to get the above image name
-    displayName: Image Namespace
-    name: IMAGE_NAMESPACE
-    required: true
-    value: biohubbc-tools
-  - description: The name of the role label, used to uniquely identify this deployment
-    displayName: Role Name
-    name: ROLE_NAME
-    value: clamav
-  - description: The TAG name for this environment, e.g., dev, test, prod
+  - name: TAG_NAME
+    description: The TAG name for this environment, e.g., dev, test, prod, latest
     displayName: Env TAG name
-    name: TAG_NAME
-    value: dev
+    value: latest
+  - name: ROLE_NAME
+    description: The name of the role label, used to uniquely identify this deployment
+    displayName: Role Name
+    value: clamav
 objects:
-  - apiVersion: apps.openshift.io/v1
-    kind: DeploymentConfig
+  - kind: Deployment
+    apiVersion: apps/v1
     metadata:
       creationTimestamp:
       labels:
@@ -35,26 +39,24 @@ objects:
     spec:
       replicas: 1
       selector:
-        app: "${NAME}"
-        deploymentconfig: "${NAME}"
+        matchLabels:
+          app: "${NAME}"
+          deployment: "${NAME}"
       strategy:
-        rollingParams:
-          intervalSeconds: 1
+        type: RollingUpdate
+        rollingUpdate:
           maxSurge: 25%
           maxUnavailable: 25%
-          timeoutSeconds: 600
-          updatePeriodSeconds: 1
-        type: Rolling
       template:
         metadata:
           creationTimestamp:
           labels:
             app: "${NAME}"
             role: "${ROLE_NAME}"
-            deploymentconfig: "${NAME}"
+            deployment: "${NAME}"
         spec:
           containers:
-            - image: "${NAME}"
+            - image: ${BASE_IMAGE_REGISTRY_URL}/${IMAGE_NAMESPACE}/${NAME}:${TAG_NAME}
               imagePullPolicy: Always
               name: "${NAME}"
               ports:
@@ -90,8 +92,9 @@ objects:
               kind: ImageStreamTag
               namespace: "${IMAGE_NAMESPACE}"
               name: "${NAME}:${TAG_NAME}"
-  - apiVersion: v1
-    kind: Service
+
+  - kind: Service
+    apiVersion: v1
     metadata:
       creationTimestamp:
       labels:
@@ -105,6 +108,6 @@ objects:
           targetPort: 3310
       selector:
         app: "${NAME}"
-        deploymentconfig: "${NAME}"
+        deployment: "${NAME}"
       sessionAffinity: None
       type: ClusterIP

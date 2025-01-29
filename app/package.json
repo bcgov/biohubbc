@@ -74,7 +74,7 @@
     "request": "^2.88.2",
     "shpjs": "^5.0.2",
     "typescript": "^4.7.4",
-    "uuid": "^8.3.2",
+    "uuid": "^11.0.5",
     "yup": "^0.32.9"
   },
   "devDependencies": {
@@ -99,7 +99,6 @@
     "@types/react-router-dom": "^5.3.3",
     "@types/react-window": "^1.8.2",
     "@types/shpjs": "^3.4.7",
-    "@types/uuid": "^8.3.0",
     "@typescript-eslint/eslint-plugin": "~7.6.0",
     "@typescript-eslint/parser": "~7.6.0",
     "assert": "^2.1.0",

@@ -33,7 +33,7 @@ const dbDeploy = async (settings) => {
         IMAGE_STREAM_VERSION: phases.build.tag,
         POSTGRES_DB: 'biohubbc',
         TZ: phases[phase].tz,
-        IMAGE_STREAM_NAMESPACE: phases.build.namespace,
+        NAMESPACE: phases.build.namespace,
         VOLUME_CAPACITY: phases[phase].volumeCapacity,
         CPU_REQUEST: phases[phase].cpuRequest,
         CPU_LIMIT: phases[phase].cpuLimit,
