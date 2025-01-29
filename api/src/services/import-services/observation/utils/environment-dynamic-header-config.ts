@@ -4,10 +4,11 @@ import {
 } from '../../../../repositories/observation-subcount-environment-repository';
 import { CSVCellValidator, CSVError, CSVParams } from '../../../../utils/csv-utils/csv-config-validation.interface';
 import { updateCSVRowState } from '../../../../utils/csv-utils/csv-header-configs';
+import { EnvironmentNameTypeDefinitionMap } from '../../../../utils/observation-xlsx-utils/environment-column-utils';
 import {
-  EnvironmentNameTypeDefinitionMap,
-  isEnvironmentQualitativeTypeDefinition
-} from '../../../../utils/observation-xlsx-utils/environment-column-utils';
+  isQualitativeEnvironmentTypeDefinition,
+  isQuantitativeEnvironmentTypeDefinition
+} from '../../utils/environment';
 import { validateQualitativeValue } from '../../utils/qualitative';
 import { validateQuantitativeValue } from '../../utils/quantitative';
 
@@ -36,11 +37,11 @@ export const getDynamicEnvironmentCellValidator = (
       ];
     }
 
-    if (isEnvironmentQualitativeTypeDefinition(environment)) {
+    if (isQualitativeEnvironmentTypeDefinition(environment)) {
       return validateQualitativeEnvironmentCell(params, environment);
     }
 
-    if (isEnvironmentQualitativeTypeDefinition(environment)) {
+    if (isQuantitativeEnvironmentTypeDefinition(environment)) {
       return validateQuantitativeEnvironmentCell(params, environment);
     }
 

@@ -9,7 +9,7 @@ import { ICritterDetailed } from '../../../critterbase-service';
  * @param {CSVConfigUtils} utils The CSV config utils
  * @returns {*} {(params: CSVParams) => number} The get measurement row TSN callback
  */
-export const getMeasurementRowTSNGetter = (surveyAliasMap: Map<string, ICritterDetailed>, utils: CSVConfigUtils) => {
+export const getTsnFromMeasurementRow = (surveyAliasMap: Map<string, ICritterDetailed>, utils: CSVConfigUtils) => {
   return (params: CSVParams): number => {
     const alias = String(utils.getCellValue('ALIAS', params.row)).toLowerCase();
     const critter = surveyAliasMap.get(alias);

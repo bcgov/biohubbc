@@ -126,9 +126,9 @@ export function importObservationCSV(): RequestHandler {
     try {
       await connection.open();
 
-      const importMarkings = new ImportObservationsService(connection, worksheet, surveyId);
+      const importObserservations = new ImportObservationsService(connection, worksheet, surveyId);
 
-      const errors = await importMarkings.importCSVWorksheet();
+      const errors = await importObserservations.importCSVWorksheet();
 
       if (errors.length) {
         throw new HTTP422CSVValidationError(CSV_ERROR_MESSAGE, errors);
@@ -138,7 +138,7 @@ export function importObservationCSV(): RequestHandler {
 
       return res.status(204).send();
     } catch (error) {
-      defaultLog.error({ label: 'importMarkingsCSV', message: 'error', error });
+      defaultLog.error({ label: 'importObservationsCSV', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

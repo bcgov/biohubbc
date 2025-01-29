@@ -91,19 +91,19 @@ export const isQuantitativeEnvironmentStub = (environment: unknown): boolean => 
 /**
  * Get the environment name type definition map for a survey - case insensitive
  *
- * @param {number} surveyId The survey id
+ * @param {string[]} environmentNames The environment names
  * @param {ObservationSubCountEnvironmentService} environmentService The environment service
  * @return {*}  {Promise<EnvironmentNameTypeDefinitionMap>} A mapping of environment names to their respective environment type definitions
  */
 export const getEnvironmentNameTypeDefinitionMap = async (
-  surveyId: number,
+  environmentNames: string[],
   environmentService: ObservationSubCountEnvironmentService
 ): Promise<EnvironmentNameTypeDefinitionMap> => {
   const environmentMap: EnvironmentNameTypeDefinitionMap = new CaseInsensitiveMap();
 
   const [qualitativeEnvironments, quantitativeEnvironments] = await Promise.all([
-    environmentService.getQualitativeEnvironmentTypeDefinitionsForSurvey(surveyId),
-    environmentService.getQuantitativeEnvironmentTypeDefinitionsForSurvey(surveyId)
+    environmentService.findQualitativeEnvironmentTypeDefinitions(environmentNames),
+    environmentService.findQuantitativeEnvironmentTypeDefinitions(environmentNames)
   ]);
 
   // Map environment names to their respective environment type definitions

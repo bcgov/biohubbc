@@ -1,7 +1,12 @@
 /**
- * A case-insensitive map - string keys are lowercased before being used.
+ * A case-insensitive map - all string keys are case-insensitive (lowercased).
  *
- * @export
+ * @example `
+ *  const map = new CaseInsensitiveMap<string, number>();
+ *  map.set('KEY', 1);
+ *  map.get('key'); // 1
+ *  map.has('kEy') // true
+ *  `
  * @class CaseInsensitiveMap
  * @template KeyType - The key type
  * @template ValuesType - The value type

@@ -25,7 +25,7 @@ import {
 } from '../../../utils/csv-utils/csv-header-configs';
 import { getTaxonRowValidator } from '../../../utils/csv-utils/row-validators/taxon-row-validator';
 import { getLogger } from '../../../utils/logger';
-import { CritterbaseService, getCritterbaseConnectionUser } from '../../critterbase-service';
+import { CritterbaseService, getCritterbaseUserFromConnection } from '../../critterbase-service';
 import { DBService } from '../../db-service';
 import {
   InsertSubCount,
@@ -54,7 +54,7 @@ import {
   getTaxonFromRowState
 } from '../utils/row-state';
 import { getTaxonMap, getTsnsFromTaxonMap, TaxonMap } from '../utils/taxon';
-import { getObservationDynamicHeaderConfig } from './utils/observation-dynamic-header-config';
+import { getObservationDynamicHeaderCellValidator } from './utils/observation-dynamic-header-config';
 import { getObservationSubcountSignCellValidator } from './utils/observation-header-configs';
 import { getObservationSamplingInformationRowValidator } from './utils/observation-sampling-row-validator';
 
@@ -171,15 +171,22 @@ export class ImportObservationsService extends DBService {
    * @returns {Promise<CSVConfig<ObservationCSVStaticHeader>>} The CSV configuration
    */
   async getCSVConfig(): Promise<CSVConfig<ObservationCSVStaticHeader>> {
+    // Initialize the required services
     const platformService = new PlatformService(this.connection);
+    const samplePeriodService = new SamplePeriodService(this.connection);
+    const critterbaseService = new CritterbaseService(getCritterbaseUserFromConnection(this.connection));
+    const environmentService = new ObservationSubCountEnvironmentService(this.connection);
+    const codeRepository = new CodeRepository(this.connection);
 
-    const taxonIdentifiers = this.utils.getUniqueCellValues('SPECIES');
-    const taxonMap = await getTaxonMap(taxonIdentifiers.filter(Boolean) as string[], platformService);
+    // Generate shared dependencies
+    const taxonIdentifiers = this.utils.getUniqueCellValues('SPECIES').filter(Boolean) as string[];
+    const taxonMap = await getTaxonMap(taxonIdentifiers, platformService);
 
+    // Inject the dependencies and set the static headers, row validators, and dynamic headers
     await Promise.all([
-      this._setObservationConfigStaticHeaders(),
-      this._setObservationConfigRowValidators(taxonMap),
-      this._setObservationConfigDynamicHeaders(taxonMap)
+      this._setObservationStaticHeaderConfigs(codeRepository),
+      this._setObservationRowValidators(taxonMap, samplePeriodService),
+      this._setObservationDynamicHeadersConfig(taxonMap, critterbaseService, environmentService)
     ]);
 
     // Return the final CSV config
@@ -189,15 +196,14 @@ export class ImportObservationsService extends DBService {
   /**
    * Set the static headers for the Observation CSV.
    *
+   * @param {CodeRepository} codeRepository - The code repository
    * @returns {*} {Promise<void>}
    */
-  async _setObservationConfigStaticHeaders() {
-    const codeRepository = new CodeRepository(this.connection);
-
+  async _setObservationStaticHeaderConfigs(codeRepository: CodeRepository) {
     const subcountSignCodes = await codeRepository.getObservationSubcountSigns();
 
     this.utils.setAllStaticHeaderConfigs({
-      // Species is validated by the taxon row validator
+      // Species is pre-validated by the taxon row validator
       SPECIES: { validateCell: (params) => validateZodCell(params.cell, z.string().or(z.number())) },
       COUNT: { validateCell: getPositiveNumberCellValidator() },
       // Subcount sign must be a valid code value
@@ -206,11 +212,11 @@ export class ImportObservationsService extends DBService {
       TIME: { validateCell: getTimeCellValidator(), setCellValue: getTimeCellSetter() },
       LATITUDE: { validateCell: getLatitudeCellValidator({ optional: true }) },
       LONGITUDE: { validateCell: getLongitudeCellValidator({ optional: true }) },
-      // Sampling period is validated by the sampling information row validator
+      // Sampling period is pre-validated by the sampling information row validator
       SAMPLING_PERIOD: { validateCell: getDateRangeCellValidator({ optional: true }) },
-      // Sampling site is validated by the sampling information row validator
+      // Sampling site is pre-validated by the sampling information row validator
       SAMPLING_SITE: { validateCell: getNonEmptyStringCellValidator({ optional: true }) },
-      // Method technique is validated by the sampling information row validator
+      // Method technique is pre-validated by the sampling information row validator
       METHOD_TECHNIQUE: { validateCell: getNonEmptyStringCellValidator({ optional: true }) },
       COMMENT: { validateCell: getDescriptionCellValidator() }
     });
@@ -221,11 +227,11 @@ export class ImportObservationsService extends DBService {
    *
    * Note: Row validators run before static and dynamic header validators.
    *
+   * @param {TaxonMap} taxonMap - The taxon map
+   * @param {SamplePeriodService} samplePeriodService - The sample period service
    * @returns {*} {Promise<void>}
    */
-  async _setObservationConfigRowValidators(taxonMap: TaxonMap) {
-    const samplePeriodService = new SamplePeriodService(this.connection);
-
+  async _setObservationRowValidators(taxonMap: TaxonMap, samplePeriodService: SamplePeriodService) {
     const samplingPeriods = await samplePeriodService.getSamplePeriodsForSurvey(this.surveyId);
 
     // Inject the row validators - handles taxon and sampling information validation
@@ -238,22 +244,31 @@ export class ImportObservationsService extends DBService {
   /**
    * Sets the environment and measurement dynamic header validator for the Observation CSV.
    *
+   * @param {TaxonMap} taxonMap - The taxon map
+   * @param {CritterbaseService} critterbaseService - The critterbase service
+   * @param {ObservationSubCountEnvironmentService} environmentService - The environment service
    * @returns {*} {Promise<void>}
    */
-  async _setObservationConfigDynamicHeaders(taxonMap: TaxonMap) {
-    const critterbaseService = new CritterbaseService(getCritterbaseConnectionUser(this.connection));
-    const environmentService = new ObservationSubCountEnvironmentService(this.connection);
-
+  async _setObservationDynamicHeadersConfig(
+    taxonMap: TaxonMap,
+    critterbaseService: CritterbaseService,
+    environmentService: ObservationSubCountEnvironmentService
+  ) {
     // Generate the measurement dictionary and environment map
     const measurementDictionary = await getTsnMeasurementDictionary(getTsnsFromTaxonMap(taxonMap), critterbaseService);
-    const environmentMap = await getEnvironmentNameTypeDefinitionMap(this.surveyId, environmentService);
+    const environmentMap = await getEnvironmentNameTypeDefinitionMap(
+      // Note: Passing ALL dynamic headers intentionally to detect conflicts
+      // with measurement and environment headers in the dynamic header cell validator
+      this.utils.worksheetDynamicHeaders,
+      environmentService
+    );
 
     // Get the TSN from the row state for the dynamic headers validator
     const getCritterTsn = (params: CSVParams) => getTaxonFromRowState(params.row).itis_tsn;
 
     // Inject dynamic header config - handles measurement and environment validation
     this.utils.config.dynamicHeadersConfig = {
-      validateCell: getObservationDynamicHeaderConfig(measurementDictionary, environmentMap, getCritterTsn)
+      validateCell: getObservationDynamicHeaderCellValidator(measurementDictionary, environmentMap, getCritterTsn)
     };
   }
 
@@ -275,6 +290,7 @@ export class ImportObservationsService extends DBService {
       quantitative_environments: []
     };
 
+    // Loop through the dynamic headers to extract measurements and environments
     for (const dynamicHeader of this.utils.worksheetDynamicHeaders) {
       // Nested state used to prevent conflicts with other CSV headers
       const nestedState = row[CSVRowState]?.[dynamicHeader];
@@ -299,15 +315,11 @@ export class ImportObservationsService extends DBService {
       }
       // Grab the qualitative environment from the row
       else if (isQualitativeEnvironmentStub(nestedState)) {
-        const qualitativeEnvironment = getQualitativeEnvironmentFromRowState(nestedState);
-
-        newSubcount.qualitative_environments.push(qualitativeEnvironment);
+        newSubcount.qualitative_environments.push(getQualitativeEnvironmentFromRowState(nestedState));
       }
       // Grab the quantitative environment from the row
       else if (isQuantitativeEnvironmentStub(nestedState)) {
-        const quantitativeEnvironment = getQuantitativeEnvironmentFromRowState(nestedState);
-
-        newSubcount.quantitative_environments.push(quantitativeEnvironment);
+        newSubcount.quantitative_environments.push(getQuantitativeEnvironmentFromRowState(nestedState));
       } else {
         // NOTE: Should this else path throw an error?
       }

@@ -5,13 +5,15 @@ import { CSVRow, CSVRowState } from '../../../utils/csv-utils/csv-config-validat
 /**
  * Create a row state getter
  *
- * @param {z.ZodSchema} schema - The Zod schema to validate the value
+ * @param {z.ZodSchema} schema - The Zod schema to validate the row state
  * @returns {*} {function} - The row state getter
  */
 export const createRowStateGetter = <SchemaType extends z.ZodSchema>(schema: SchemaType) => {
   return (rowOrState: CSVRow | CSVRow[typeof CSVRowState]): z.infer<SchemaType> => {
+    // Check if the state or row is being passed
     const isRow = Object.getOwnPropertySymbols(rowOrState).includes(CSVRowState);
 
+    // Parse the row state useing the schema
     const parsedState = schema.safeParse(isRow ? rowOrState?.[CSVRowState] : rowOrState);
 
     // Throw an error if unable to correctly parse the row state

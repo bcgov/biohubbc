@@ -25,7 +25,7 @@ import {
   getQuantitativeMeasurementFromRowState
 } from '../utils/row-state';
 import { getDynamicMeasurementCellValidator } from './utils/measurement-dynamic-header-config';
-import { getMeasurementRowTSNGetter } from './utils/measurement-utils';
+import { getTsnFromMeasurementRow } from './utils/measurement-utils';
 
 const defaultLog = getLogger('services/import/import-measurement-service');
 
@@ -161,7 +161,7 @@ export class ImportMeasurementsService extends DBService {
     config.dynamicHeadersConfig = {
       validateCell: getDynamicMeasurementCellValidator(
         measurementDictionary,
-        getMeasurementRowTSNGetter(surveyAliasMap, this.utils)
+        getTsnFromMeasurementRow(surveyAliasMap, this.utils)
       )
     };
 

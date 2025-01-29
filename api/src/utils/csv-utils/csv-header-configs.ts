@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { ApiGeneralError } from '../../errors/api-error';
 import { ICritterDetailed } from '../../services/critterbase-service';
 import { formatTimeString } from '../../services/import-services/utils/datetime';
 import { isDateString } from '../date-time-utils';
@@ -30,19 +29,6 @@ export const updateCSVRowState = (row: CSVRow, state: Record<string, any>) => {
   }
 
   row[CSVRowState] = { ...row[CSVRowState], ...state };
-};
-
-export const validateCSVRowState = <ZodSchemaType extends z.ZodSchema>(
-  row: CSVRow,
-  schema: ZodSchemaType
-): z.infer<ZodSchemaType> => {
-  const state = schema.safeParse(row[CSVRowState]);
-
-  if (state.success) {
-    return state.data;
-  }
-
-  throw new ApiGeneralError('Invalid CSV row state', state.error.errors);
 };
 
 /**
@@ -292,7 +278,9 @@ export const getSurveyCritterAliasCellValidator = (surveyAliasMap: Map<string, I
  * Get the date range header cell validator.
  *
  * Rules:
- *  1. The cell must be a valid date range format 'YYYY-MM-DD HH:mm:ss - YYYY-MM-DD HH:mm:ss'
+ *  1. The cell must be a valid date range format:
+ *    A. 'YYYY-MM-DD - YYYY-MM-DD'
+ *    B. 'YYYY-MM-DD HH:mm:ss - YYYY-MM-DD HH:mm:ss'
  *  2. The cell is optional if the optional flag is set
  *
  * @param {CSVOptionalCell} [options] Optional cell config override
@@ -312,7 +300,7 @@ export const getDateRangeCellValidator = (options?: CSVOptionalCell): CSVCellVal
         {
           error: 'Invalid date range',
           solution:
-            'Use a valid date range format: YYYY-MM-DD - YYYY-MM-DD OR YYYY-MM-DD HH:mm:ss - YYYY-MM-DD HH:mm:ss'
+            "Use a valid date range format: 'YYYY-MM-DD - YYYY-MM-DD' OR 'YYYY-MM-DD HH:mm:ss - YYYY-MM-DD HH:mm:ss'"
         }
       ];
     }

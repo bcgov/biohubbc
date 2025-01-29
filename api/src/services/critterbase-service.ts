@@ -20,7 +20,7 @@ export const getCritterbaseUser = (req: Request): ICritterbaseUser => ({
   username: req.system_user?.user_identifier ?? ''
 });
 
-export const getCritterbaseConnectionUser = (connection: IDBConnection) => ({
+export const getCritterbaseUserFromConnection = (connection: IDBConnection) => ({
   keycloak_guid: connection.systemUserGUID(),
   username: connection.systemUserIdentifier()
 });
