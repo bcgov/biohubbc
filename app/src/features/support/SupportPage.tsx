@@ -51,9 +51,6 @@ const SupportPage = () => {
     setSearchParams(searchParams.set('support_view', newView));
   };
 
-  const justifyContentValue =
-    currentIndex === 0 ? 'flex-end' : currentIndex === views.length - 1 ? 'flex-start' : 'space-between';
-
   return (
     <>
       <PageHeader title="Support" />
@@ -110,7 +107,7 @@ const SupportPage = () => {
             {currentView !== SupportPageView.CONTACT && (
               <Stack
                 direction="row"
-                justifyContent={justifyContentValue}
+                justifyContent={getJustifyContent(currentIndex, views.length)}
                 alignItems="center"
                 sx={{ mt: 'auto', pt: 2 }}>
                 {currentIndex > 0 && (
@@ -132,7 +129,6 @@ const SupportPage = () => {
                     <Typography>Previous Topic</Typography>
                   </Box>
                 )}
-
                 {currentIndex < views.length - 1 && (
                   <Box
                     component="button"
@@ -159,6 +155,16 @@ const SupportPage = () => {
       </Container>
     </>
   );
+};
+
+const getJustifyContent = (currentIndex: number, viewsLength: number) => {
+  if (currentIndex === 0) {
+    return 'flex-end';
+  } else if (currentIndex === viewsLength - 1) {
+    return 'flex-start';
+  } else {
+    return 'space-between';
+  }
 };
 
 export default SupportPage;
