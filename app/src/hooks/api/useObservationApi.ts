@@ -219,40 +219,13 @@ const useObservationApi = (axios: AxiosInstance) => {
     formData.append('media', file);
 
     const { data } = await axios.post<{ submissionId: number }>(
-      `/api/project/${projectId}/survey/${surveyId}/observations/upload`,
+      `/api/project/${projectId}/survey/${surveyId}/observations/import`,
       formData,
       {
         cancelToken: cancelTokenSource?.token,
         onUploadProgress: onProgress
       }
     );
-
-    return data;
-  };
-
-  /**
-   * Begins processing an uploaded observation CSV for import
-   *
-   * @param {number} projectId
-   * @param {number} surveyId
-   * @param {number} submissionId
-   * @param {{
-   *       surveySamplePeriodId?: number;
-   *     }} [options]
-   * @return {*}  {Promise<void>}
-   */
-  const processCsvSubmission = async (
-    projectId: number,
-    surveyId: number,
-    submissionId: number,
-    options?: {
-      surveySamplePeriodId?: number;
-    }
-  ): Promise<void> => {
-    const { data } = await axios.post<void>(`/api/project/${projectId}/survey/${surveyId}/observations/process`, {
-      observation_submission_id: submissionId,
-      options
-    });
 
     return data;
   };
@@ -331,8 +304,7 @@ const useObservationApi = (axios: AxiosInstance) => {
     deleteObservationRecords,
     deleteObservationMeasurements,
     deleteObservationEnvironments,
-    uploadCsvForImport,
-    processCsvSubmission
+    uploadCsvForImport
   };
 };
 

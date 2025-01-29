@@ -57,3 +57,12 @@ export const getMarkingsCSVTemplate = (): CSVEncodedTemplate => {
 export const getTelemetryCSVTemplate = (): CSVEncodedTemplate => {
   return getCSVTemplate(['VENDOR', 'SERIAL', 'LATITUDE', 'LONGITUDE', 'DATE', 'TIME']);
 };
+
+/**
+ * Get CSV template for observations.
+ *
+ * @returns {CSVEncodedTemplate} Encoded CSV template
+ */
+export const getObservationCSVTemplate = (): CSVEncodedTemplate => {
+  return getCSVTemplate(['SPECIES', 'SITE', 'TECHNIQUE', 'PERIOD', 'SIGN', 'COUNT', 'DATE', 'TIME', 'COMMENT']);
+};

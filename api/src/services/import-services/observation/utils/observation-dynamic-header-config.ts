@@ -22,7 +22,7 @@ export const getObservationDynamicHeaderCellValidator = (
       return [
         {
           error: `Dynamic header conflict`,
-          solution: `Header '${params.header}' is both a measurement and environment header`,
+          solution: `Header '${params.header}' is both a measurement and an environment`,
           cell: null
         }
       ];

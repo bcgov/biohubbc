@@ -1,4 +1,6 @@
 import {
+  ObservationSubCountQualitativeEnvironmentRecord,
+  ObservationSubCountQuantitativeEnvironmentRecord,
   QualitativeEnvironmentTypeDefinition,
   QuantitativeEnvironmentTypeDefinition
 } from '../../../../repositories/observation-subcount-environment-repository';
@@ -37,10 +39,12 @@ export const getDynamicEnvironmentCellValidator = (
       ];
     }
 
+    // Environment type is qualitative
     if (isQualitativeEnvironmentTypeDefinition(environment)) {
       return validateQualitativeEnvironmentCell(params, environment);
     }
 
+    // Environment type is quantitative
     if (isQuantitativeEnvironmentTypeDefinition(environment)) {
       return validateQuantitativeEnvironmentCell(params, environment);
     }
@@ -85,8 +89,11 @@ export const validateQualitativeEnvironmentCell = (
     [params.header]: {
       environment_qualitative_id: environment.environment_qualitative_id,
       environment_qualitative_option_id: result
-    }
-  }); // TODO: Satisfies?
+    } satisfies Pick<
+      ObservationSubCountQualitativeEnvironmentRecord,
+      'environment_qualitative_id' | 'environment_qualitative_option_id'
+    >
+  });
 
   return [];
 };
@@ -119,8 +126,8 @@ export const validateQuantitativeEnvironmentCell = (
     [params.header]: {
       environment_quantitative_id: environment.environment_quantitative_id,
       value: result
-    }
-  }); // TODO: Satisfies?
+    } satisfies Pick<ObservationSubCountQuantitativeEnvironmentRecord, 'environment_quantitative_id' | 'value'>
+  });
 
   return [];
 };

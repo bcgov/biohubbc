@@ -7,11 +7,11 @@ import { HTTPError } from '../../../../../../errors/http-error';
 import { ObservationService } from '../../../../../../services/observation-services/observation-service';
 import * as file_utils from '../../../../../../utils/file-utils';
 import { getMockDBConnection } from '../../../../../../__mocks__/db';
-import * as upload from './upload';
+import * as upload from './import';
 
 chai.use(sinonChai);
 
-describe('uploadMedia', () => {
+describe('importObservationCSV', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -48,7 +48,7 @@ describe('uploadMedia', () => {
     sinon.stub(ObservationService.prototype, 'insertSurveyObservationSubmission').rejects(expectedError);
 
     try {
-      const result = upload.uploadMedia();
+      const result = upload.importObservationCSV();
 
       await result(mockReq, null as unknown as any, null as unknown as any);
       expect.fail();
@@ -84,7 +84,7 @@ describe('uploadMedia', () => {
       .stub(ObservationService.prototype, 'insertSurveyObservationSubmission')
       .resolves({ submission_id: 1, key: 'string' });
 
-    const result = upload.uploadMedia();
+    const result = upload.importObservationCSV();
 
     await result(mockReq, sampleRes as unknown as any, null as unknown as any);
     expect(actualResult).to.eql(expectedResponse);

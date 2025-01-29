@@ -13,7 +13,7 @@ import { parseMulterFile } from '../../../../../../utils/media/media-utils';
 import { getFileFromRequest } from '../../../../../../utils/request';
 import { constructXLSXWorkbook, getDefaultWorksheet } from '../../../../../../utils/xlsx-utils/worksheet-utils';
 
-const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/upload');
+const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/import');
 
 export const POST: Operation = [
   authorizeRequestHandler((req) => {
@@ -35,7 +35,7 @@ export const POST: Operation = [
 ];
 
 POST.apiDoc = {
-  description: 'Upload survey observation CSV file.',
+  description: 'Import survey observation CSV file.',
   tags: ['observations'],
   security: [
     {
@@ -63,7 +63,7 @@ POST.apiDoc = {
     }
   ],
   requestBody: {
-    description: 'Survey observation submission file to upload',
+    description: 'Survey observation CSV file to import',
     required: true,
     content: {
       'multipart/form-data': {
@@ -73,7 +73,7 @@ POST.apiDoc = {
           required: ['media'],
           properties: {
             media: {
-              description: 'A survey observation submission file.',
+              description: 'A survey observation CSV file.',
               type: 'array',
               minItems: 1,
               maxItems: 1,

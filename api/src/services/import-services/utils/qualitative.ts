@@ -53,13 +53,13 @@ export const validateQualitativeValue = (
     ];
   }
 
-  const matchingOptionValue = qualitativeTypeDefinition.options.find(
+  const matchingQualitativeOption = qualitativeTypeDefinition.options.find(
     // Not sure why I need to cast params.value to string here after checking above...
     (option) => option.option_name.toLowerCase() === String(value).toLowerCase()
   );
 
   // Validate value is an alowed qualitative environment option
-  if (!matchingOptionValue) {
+  if (!matchingQualitativeOption) {
     return [
       {
         error: `Invalid qualitative option`,
@@ -69,5 +69,5 @@ export const validateQualitativeValue = (
     ];
   }
 
-  return qualitativeTypeDefinition.qualitative_id;
+  return matchingQualitativeOption.option_id;
 };

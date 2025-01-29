@@ -1,12 +1,11 @@
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import { FileUploadSingleItemDialog } from 'components/dialog/attachments/FileUploadSingleItemDialog';
-import { ObservationsTableI18N } from 'constants/i18n';
-import { DialogContext } from 'contexts/dialogContext';
+import Button, { ButtonProps } from '@mui/material/Button';
+import axios, { AxiosProgressEvent } from 'axios';
+import { CSVSingleImportDialog } from 'components/csv/CSVSingleImportDialog';
 import { SurveyContext } from 'contexts/surveyContext';
-import { APIError } from 'hooks/api/useAxios';
+import { getObservationCSVTemplate } from 'features/surveys/animals/profile/captures/import-captures/utils/templates';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useContext, useState } from 'react';
+import { downloadFile } from 'utils/file-utils';
 
 export interface IImportObservationsButtonProps {
   /**
@@ -56,6 +55,7 @@ export interface IImportObservationsButtonProps {
      */
     surveySamplePeriodId?: number;
   };
+  buttonProps?: ButtonProps;
 }
 
 /**
@@ -65,16 +65,16 @@ export interface IImportObservationsButtonProps {
  * @return {*}
  */
 export const ImportObservationsButton = (props: IImportObservationsButtonProps) => {
-  const { disabled, onStart, onSuccess, onError, onFinish, processOptions } = props;
+  const { disabled, onStart, onSuccess, onError, onFinish } = props;
 
   const biohubApi = useBiohubApi();
 
   const surveyContext = useContext(SurveyContext);
   const { projectId, surveyId } = surveyContext;
 
-  const dialogContext = useContext(DialogContext);
-
   const [open, setOpen] = useState<boolean>(false);
+
+  const cancelToken = axios.CancelToken.source();
 
   /**
    * Callback fired when the user attempts to import observations.
@@ -82,48 +82,14 @@ export const ImportObservationsButton = (props: IImportObservationsButtonProps) 
    * @param {File} file
    * @return {*}
    */
-  const handleImportObservations = async (file: File) => {
+  const handleImportObservations = async (file: File, onProgress: (progressEvent: AxiosProgressEvent) => void) => {
     try {
       onStart?.();
 
-      const uploadResponse = await biohubApi.observation.uploadCsvForImport(projectId, surveyId, file);
-
-      await biohubApi.observation.processCsvSubmission(
-        projectId,
-        surveyId,
-        uploadResponse.submissionId,
-        processOptions
-      );
-
-      setOpen(false);
-
-      dialogContext.setSnackbar({
-        snackbarMessage: (
-          <Typography variant="body2" component="div">
-            {ObservationsTableI18N.importRecordsSuccessSnackbarMessage}
-          </Typography>
-        ),
-        open: true
-      });
+      await biohubApi.observation.uploadCsvForImport(projectId, surveyId, file, cancelToken, onProgress);
 
       onSuccess?.();
     } catch (error) {
-      const apiError = error as APIError;
-
-      dialogContext.setErrorDialog({
-        dialogTitle: ObservationsTableI18N.importRecordsErrorDialogTitle,
-        dialogText: ObservationsTableI18N.importRecordsErrorDialogText,
-        dialogError: apiError.message,
-        dialogErrorDetails: apiError.errors,
-        open: true,
-        onClose: () => {
-          dialogContext.setErrorDialog({ open: false });
-        },
-        onOk: () => {
-          dialogContext.setErrorDialog({ open: false });
-        }
-      });
-
       onError?.();
     } finally {
       onFinish?.();
@@ -135,19 +101,19 @@ export const ImportObservationsButton = (props: IImportObservationsButtonProps) 
       <Button
         variant="outlined"
         color="primary"
-        size="small"
-        sx={{ borderRadius: '3px', fontSize: '0.6rem' }}
+        size="medium"
         onClick={() => setOpen(true)}
-        disabled={disabled || false}>
+        disabled={disabled || false}
+        {...props.buttonProps}>
         Import
       </Button>
-      <FileUploadSingleItemDialog
+      <CSVSingleImportDialog
         open={open}
         dialogTitle="Import Observation CSV"
+        dialogSummary="Upload a CSV file to import observations"
         onClose={() => setOpen(false)}
-        onUpload={handleImportObservations}
-        uploadButtonLabel="Import"
-        dropZoneProps={{ acceptedFileExtensions: '.csv' }}
+        onImport={handleImportObservations}
+        onDownloadTemplate={() => downloadFile(getObservationCSVTemplate(), 'SIMS-observations-template.csv')}
       />
     </>
   );

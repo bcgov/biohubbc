@@ -48,7 +48,7 @@ export const validateQuantitativeValue = (
     ];
   }
 
-  // Validate value value is withing the environment min max bounds
+  // Validate value is withing the environment min max bounds
   if (quantitativeTypeDefinition.max != null && value > quantitativeTypeDefinition.max) {
     errors.push({
       error: 'Quantitative value too large',
@@ -56,7 +56,7 @@ export const validateQuantitativeValue = (
     });
   }
 
-  // Validate value value is withing the environment min max bounds
+  // Validate value is withing the environment min max bounds
   if (quantitativeTypeDefinition.min != null && value < quantitativeTypeDefinition.min) {
     errors.push({
       error: 'Quantitative value too small',
