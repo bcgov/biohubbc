@@ -30,7 +30,6 @@ const SupportPage = () => {
 
   const currentViewParam = searchParams.get('support_view');
   const currentView = (currentViewParam as SupportPageView) || SupportPageView.GENERAL;
-  
 
   const views: ISupportPageView[] = [
     { label: 'General', value: SupportPageView.GENERAL, icon: mdiLifebuoy },
@@ -51,13 +50,9 @@ const SupportPage = () => {
     const newView = typeof value === 'function' ? value(currentView) : value;
     setSearchParams(searchParams.set('support_view', newView));
   };
-  
+
   const justifyContentValue =
-  currentIndex === 0
-    ? 'flex-end'
-    : currentIndex === views.length - 1
-    ? 'flex-start'
-    : 'space-between';
+    currentIndex === 0 ? 'flex-end' : currentIndex === views.length - 1 ? 'flex-start' : 'space-between';
 
   return (
     <>
@@ -96,7 +91,7 @@ const SupportPage = () => {
                   bgcolor: grey[50]
                 }}>
                 <Stack gap={2}>
-                {dataMap[currentView]?.map((item, index) => (
+                  {dataMap[currentView]?.map((item, index) => (
                     <Box key={index}>
                       {item.description.map((chunk, chunkIndex) => (
                         <Box key={chunkIndex} sx={{ mb: 2 }}>
