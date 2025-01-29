@@ -29,6 +29,7 @@ const DeviceMakeCode = ICode.extend({ description: z.string() });
 const FrequencyUnitCode = ICode.extend({ description: z.string() });
 const AlertTypeCode = ICode.extend({ description: z.string() });
 const VantageCode = ICode.extend({ description: z.string() });
+const TypeCode = ICode.extend({ description: z.string() });
 
 export const IAllCodeSets = z.object({
   management_action_type: CodeSet(),
@@ -173,13 +174,14 @@ export class CodeRepository extends BaseRepository {
     const sqlStatement = SQL`
       SELECT
         type_id as id,
-        name
+        name,
+        description
       FROM
         type
       WHERE record_end_date is null;
     `;
 
-    const response = await this.connection.sql(sqlStatement, ICode);
+    const response = await this.connection.sql(sqlStatement, TypeCode);
 
     return response.rows;
   }

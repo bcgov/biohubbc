@@ -1,7 +1,7 @@
 import Grid from '@mui/material/Grid';
-import MultiAutocompleteFieldVariableSize, {
-  IMultiAutocompleteFieldOption
-} from 'components/fields/MultiAutocompleteFieldVariableSize';
+import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteField';
+import MultiAutocompleteFieldVariableSize from 'components/fields/MultiAutocompleteFieldVariableSize';
+
 import { CodesContext } from 'contexts/codesContext';
 import { useFormikContext } from 'formik';
 import { useContext, useEffect } from 'react';

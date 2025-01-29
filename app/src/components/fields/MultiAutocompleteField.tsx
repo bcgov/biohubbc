@@ -18,7 +18,7 @@ import { useEffect, useState } from 'react';
 export interface IMultiAutocompleteFieldOption {
   value: string | number;
   label: string;
-  subText?: string;
+  description?: string;
 }
 
 export interface IMultiAutocompleteField {
@@ -133,7 +133,7 @@ const MultiAutocompleteField: React.FC<IMultiAutocompleteField> = (props) => {
       filterOptions={createFilterOptions({ limit: props.filterLimit })}
       renderOption={(renderProps, renderOption, { selected }) => {
         return (
-          <Box component="li" {...renderProps}>
+          <Box component="li" {...renderProps} key={renderOption.value}>
             <Checkbox
               icon={<CheckBoxOutlineBlank fontSize="small" />}
               checkedIcon={<CheckBox fontSize="small" />}
@@ -142,7 +142,7 @@ const MultiAutocompleteField: React.FC<IMultiAutocompleteField> = (props) => {
               value={renderOption.value}
               color="default"
             />
-            <ListItemText primary={renderOption.label} secondary={renderOption.subText} />
+            <ListItemText primary={renderOption.label} secondary={renderOption.description} />
           </Box>
         );
       }}

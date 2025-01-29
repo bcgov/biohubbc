@@ -122,6 +122,9 @@ GET.apiDoc = {
                     },
                     name: {
                       type: 'string'
+                    },
+                    description: {
+                      type: 'string'
                     }
                   }
                 }

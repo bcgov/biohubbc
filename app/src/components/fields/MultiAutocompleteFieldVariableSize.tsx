@@ -12,13 +12,9 @@ import { DebouncedFunc } from 'lodash-es';
 import get from 'lodash-es/get';
 import React, { useEffect, useState } from 'react';
 import { ListChildComponentProps, VariableSizeList } from 'react-window';
+import { IMultiAutocompleteFieldOption } from './MultiAutocompleteField';
 
 const LISTBOX_PADDING = 8; // px
-
-export interface IMultiAutocompleteFieldOption {
-  value: string | number;
-  label: string;
-}
 
 // Params required to make MultiAutocompleteField use API to populate search results
 export type ApiSearchTypeParam = {
@@ -270,7 +266,7 @@ const MultiAutocompleteFieldVariableSize: React.FC<IMultiAutocompleteField> = (p
       filterOptions={handleFiltering}
       renderOption={(renderProps, renderOption, { selected }) => {
         return (
-          <Box component="li" {...renderProps}>
+          <Box component="li" {...renderProps} key={renderOption.value}>
             <Checkbox
               icon={<CheckBoxOutlineBlank fontSize="small" />}
               checkedIcon={<CheckBox fontSize="small" />}

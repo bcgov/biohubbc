@@ -60,6 +60,7 @@ const EditSurveyForm = <
 
   const codesContext = useContext(CodesContext);
   const codes = codesContext.codesDataLoader.data;
+  console.log(codes);
 
   useEffect(() => {
     codesContext.codesDataLoader.load();
@@ -155,7 +156,7 @@ const EditSurveyForm = <
               }
               type={
                 codes?.type?.map((item) => {
-                  return { value: item.id, label: item.name };
+                  return { value: item.id, label: item.name, description: item.description };
                 }) || []
               }
             />

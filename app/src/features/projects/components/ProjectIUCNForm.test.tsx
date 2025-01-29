@@ -1,4 +1,4 @@
-import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
+import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteField';
 import { Formik } from 'formik';
 import { fireEvent, render, waitFor, within } from 'test-helpers/test-utils';
 import ProjectIUCNForm, {
