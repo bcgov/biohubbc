@@ -88,10 +88,14 @@ const SupportPage = () => {
                   bgcolor: grey[50]
                 }}>
                 <Stack gap={2}>
-                  {dataMap[currentView]?.map((item, index) => (
-                    <Box key={index}>
-                      {item.description.map((chunk, chunkIndex) => (
-                        <Box key={chunkIndex} sx={{ mb: 2 }}>
+                  {dataMap[currentView]?.map((item) => (
+                    <Box key={String(item.label)}>
+                      {' '}
+                      {/* Ensure label is a string */}
+                      {item.description.map((chunk) => (
+                        <Box key={String(chunk)} sx={{ mb: 2 }}>
+                          {' '}
+                          {/* Convert chunk to string */}
                           {chunk}
                         </Box>
                       ))}
@@ -103,7 +107,6 @@ const SupportPage = () => {
                 </Stack>
               </Box>
             </Box>
-
             {/* Chevron Arrows */}
             {currentView !== SupportPageView.CONTACT && (
               <Stack
