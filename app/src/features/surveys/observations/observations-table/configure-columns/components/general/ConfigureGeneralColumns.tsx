@@ -3,16 +3,45 @@ import Checkbox from '@mui/material/Checkbox';
 import grey from '@mui/material/colors/grey';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { AccordionStandardCard } from 'features/standards/view/components/AccordionStandardCard';
 import { IHideableColumn } from '../../ConfigureColumnsButton';
 
 export interface IConfigureGeneralColumnsProps {
+  /**
+   * Controls the disabled state of the component controls.
+   *
+   * @type {boolean}
+   * @memberof IConfigureColumnsProps
+   */
   disabled: boolean;
+  /**
+   * The column field names of the hidden columns.
+   *
+   * @type {GridColDef<IObservationTableRow>[]}
+   * @memberof IConfigureColumnsProps
+   */
   hiddenFields: string[];
+  /**
+   * The column definitions of the columns that may be toggled to hidden or visible.
+   *
+   * @type {IHideableColumn[]}
+   * @memberof IConfigureColumnsProps
+   */
   hideableColumns: IHideableColumn[];
+  /**
+   * Callback fired on toggling the visibility of all columns.
+   *
+   * @memberof IConfigureGeneralColumnsProps
+   */
   onToggleShowHideAll: () => void;
+  /**
+   * Callback fired on toggling the visibility of a column.
+   *
+   * @memberof IConfigureGeneralColumnsProps
+   */
   onToggleColumnVisibility: (field: string) => void;
 }
 
@@ -57,37 +86,39 @@ export const ConfigureGeneralColumns = (props: IConfigureGeneralColumnsProps) =>
         gap={0.5}
         sx={{
           my: 2,
-          p: 0.5,
+          py: 0.5,
+          pr: 1,
           maxHeight: '100%',
-          overflowY: 'auto',
-          textAlign: 'left'
+          overflowY: 'auto'
         }}
         disablePadding>
         {hideableColumns.map((column) => {
           const isSelected = !hiddenFields.includes(column.field);
 
           return (
-            <AccordionStandardCard
-              key={column.field}
-              label={column.headerName ?? column.field}
-              colour={isSelected ? grey[100] : grey[50]}
-              subtitle={column.description}
-              handleCheckboxChange={() => onToggleColumnVisibility(column.field)}
-              checkboxDisabled={disabled}
-              checkboxSelected={isSelected}>
-              {column.options.length > 0 && (
-                <Stack gap={1} my={2}>
-                  {column.options.map((option) => (
-                    <AccordionStandardCard
-                      key={option.name}
-                      label={option.name}
-                      subtitle={option.description}
-                      colour={grey[200]}
-                    />
-                  ))}
-                </Stack>
-              )}
-            </AccordionStandardCard>
+            <ListItem sx={{ p: 0 }}>
+              <AccordionStandardCard
+                key={column.field}
+                label={column.headerName ?? column.field}
+                colour={isSelected ? grey[100] : grey[50]}
+                subtitle={column.description}
+                handleCheckboxChange={() => onToggleColumnVisibility(column.field)}
+                checkboxDisabled={disabled}
+                checkboxSelected={isSelected}>
+                {column.options.length > 0 && (
+                  <Stack gap={1} my={2}>
+                    {column.options.map((option) => (
+                      <AccordionStandardCard
+                        key={option.name}
+                        label={option.name}
+                        subtitle={option.description}
+                        colour={grey[200]}
+                      />
+                    ))}
+                  </Stack>
+                )}
+              </AccordionStandardCard>
+            </ListItem>
           );
         })}
       </List>

@@ -66,12 +66,13 @@ export const AccordionStandardCard = (props: PropsWithChildren<IAccordionStandar
                 e.stopPropagation();
               }}
               disabled={checkboxDisabled}
-              sx={{ mr: 1, ml: -1 }}
+              sx={{ mr: 1, ml: -1, position: 'absolute' }}
             />
           )}
           <Typography
             variant="h5"
             sx={{
+              ml: handleCheckboxChange ? 5 : 0,
               '&::first-letter': {
                 textTransform: 'capitalize'
               }

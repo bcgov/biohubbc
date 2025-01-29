@@ -55,7 +55,7 @@ export const ConfigureColumnsButton = (props: IConfigureColumnsButtonProps) => {
     (key) => observationsTableContext.columnVisibilityModel[key] === false
   );
 
-  // Utility function for finding qualitative options for a given measurement or environment column
+  // Columns that can be hidden from the table (visibility toggled on/off)
   const hideableColumns: IHideableColumn[] = useMemo(() => {
     // Map columns to their IHideableColumn definitions to ensure no duplicates
     const columnMap = new Map<string, IHideableColumn>();
@@ -78,7 +78,7 @@ export const ConfigureColumnsButton = (props: IConfigureColumnsButtonProps) => {
         columnMap.set(column.field, { ...column, options: [] });
       });
 
-    // Map and update measurement columns
+    // Map and format measurement columns
     columns
       .filter((column) =>
         observationsTableContext.measurementColumns.some(
@@ -101,7 +101,7 @@ export const ConfigureColumnsButton = (props: IConfigureColumnsButtonProps) => {
         }
       });
 
-    // Map and update environment columns
+    // Map and format environment columns
     columns
       .filter((column) =>
         [
