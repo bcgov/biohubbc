@@ -118,6 +118,8 @@ export const getTsnMeasurementDictionary = async (
         path: [tsn, measurement.measurement_name],
         value: measurement
       });
+
+      console.log({ qualitativeMeasurement: measurement });
     });
 
     quantitativeMeasurements.forEach((measurement) => {
@@ -126,6 +128,8 @@ export const getTsnMeasurementDictionary = async (
         path: [tsn, measurement.measurement_name],
         value: measurement
       });
+
+      console.log({ quantitativeMeasurement: measurement });
     });
   });
 

@@ -4,13 +4,7 @@ import { IDBConnection } from '../../../database/db';
 import { CodeRepository } from '../../../repositories/code-repository';
 import { CSVConfigUtils } from '../../../utils/csv-utils/csv-config-utils';
 import { validateCSVWorksheet } from '../../../utils/csv-utils/csv-config-validation';
-import {
-  CSVConfig,
-  CSVError,
-  CSVParams,
-  CSVRow,
-  CSVRowState
-} from '../../../utils/csv-utils/csv-config-validation.interface';
+import { CSVConfig, CSVError, CSVRow, CSVRowState } from '../../../utils/csv-utils/csv-config-validation.interface';
 import {
   getDateCellValidator,
   getDateRangeCellValidator,
@@ -263,12 +257,9 @@ export class ImportObservationsService extends DBService {
       environmentService
     );
 
-    // Get the TSN from the row state for the dynamic headers validator
-    const getCritterTsn = (params: CSVParams) => getTaxonFromRowState(params.row).itis_tsn;
-
     // Inject dynamic header config - handles measurement and environment validation
     this.utils.config.dynamicHeadersConfig = {
-      validateCell: getObservationDynamicHeaderCellValidator(measurementDictionary, environmentMap, getCritterTsn)
+      validateCell: getObservationDynamicHeaderCellValidator(measurementDictionary, environmentMap)
     };
   }
 

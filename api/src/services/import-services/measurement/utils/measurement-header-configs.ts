@@ -1,11 +1,16 @@
 import { CSVCellValidator, CSVError } from '../../../../utils/csv-utils/csv-config-validation.interface';
 import { updateCSVRowState } from '../../../../utils/csv-utils/csv-header-configs';
+import { NestedRecord } from '../../../../utils/nested-record';
 import {
   CBQualitativeMeasurement,
   CBQualitativeMeasurementTypeDefinition,
   CBQuantitativeMeasurement,
   CBQuantitativeMeasurementTypeDefinition
 } from '../../../critterbase-service';
+
+export type TSNMeasurementDictionary = NestedRecord<
+  CBQualitativeMeasurementTypeDefinition | CBQuantitativeMeasurementTypeDefinition
+>;
 
 /**
  * Get the quantitative measurement cell validator.

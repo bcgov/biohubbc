@@ -8,7 +8,7 @@ import {
   isCBQuantitativeMeasurementTypeDefinition
 } from './measurement';
 
-describe.only('measurement', () => {
+describe('measurement', () => {
   describe('getTsnMeasurementDictionary', () => {
     it('should get the tsn measurement dictionary', async () => {
       const measurements = {
@@ -58,7 +58,12 @@ describe.only('measurement', () => {
 
   describe('isCBQualitativeMeasurementTypeDefinition', () => {
     it('should return true if the object is a qualitative measurement type definition', () => {
-      expect(isCBQualitativeMeasurementTypeDefinition({ measurement_name: 'qualitative' })).to.be.true;
+      expect(
+        isCBQualitativeMeasurementTypeDefinition({
+          taxon_measurement_id: '1',
+          options: [{ qualitative_option_id: '1', option_label: 'option' }]
+        })
+      ).to.be.true;
     });
 
     it('should return false if the object is not a qualitative measurement type definition', () => {
@@ -70,7 +75,12 @@ describe.only('measurement', () => {
 
   describe('isCBQuantitativeMeausurementTypeDefinition', () => {
     it('should return true if the object is a quantitative measurement type definition', () => {
-      expect(isCBQuantitativeMeasurementTypeDefinition({ measurement_name: 'quantitative' })).to.be.true;
+      expect(
+        isCBQuantitativeMeasurementTypeDefinition({
+          taxon_measurement_id: '1',
+          unit: 'm'
+        })
+      ).to.be.true;
     });
 
     it('should return false if the object is not a quantitative measurement type definition', () => {

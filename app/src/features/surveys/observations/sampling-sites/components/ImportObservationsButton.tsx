@@ -40,21 +40,16 @@ export interface IImportObservationsButtonProps {
    */
   onFinish?: () => void;
   /**
-   * Options to pass to the process csv submission endpoint.
+   * An optional survey sample period id. All imported observation records will be associated to this sample period.
    *
-   * @type {{
-   *     surveySamplePeriodId?: number;
-   *   }}
-   * @memberof IImportObservationsButtonProps
+   * @type {number}
    */
-  processOptions?: {
-    /**
-     * An optional survey sample period id. All imported observation records will be associated to this sample period.
-     *
-     * @type {number}
-     */
-    surveySamplePeriodId?: number;
-  };
+  surveySamplePeriodId?: number;
+  /**
+   * Optional button props to pass to the button component.
+   *
+   * @type {ButtonProps}
+   */
   buttonProps?: ButtonProps;
 }
 
@@ -65,7 +60,7 @@ export interface IImportObservationsButtonProps {
  * @return {*}
  */
 export const ImportObservationsButton = (props: IImportObservationsButtonProps) => {
-  const { disabled, onStart, onSuccess, onError, onFinish } = props;
+  const { disabled, surveySamplePeriodId, onStart, onSuccess, onError, onFinish } = props;
 
   const biohubApi = useBiohubApi();
 
@@ -74,7 +69,7 @@ export const ImportObservationsButton = (props: IImportObservationsButtonProps) 
 
   const [open, setOpen] = useState<boolean>(false);
 
-  const cancelToken = axios.CancelToken.source();
+  const cancelTokenSource = axios.CancelToken.source();
 
   /**
    * Callback fired when the user attempts to import observations.
@@ -86,11 +81,20 @@ export const ImportObservationsButton = (props: IImportObservationsButtonProps) 
     try {
       onStart?.();
 
-      await biohubApi.observation.uploadCsvForImport(projectId, surveyId, file, cancelToken, onProgress);
+      await biohubApi.observation.importObservationCSV({
+        projectId,
+        surveyId,
+        surveySamplePeriodId,
+        file,
+        onProgress,
+        cancelTokenSource
+      });
 
       onSuccess?.();
     } catch (error) {
       onError?.();
+      // re-throw the error so the dialog can display the CSVErrors
+      throw error;
     } finally {
       onFinish?.();
     }

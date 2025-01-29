@@ -2,12 +2,6 @@ import { CSVError } from '../../../utils/csv-utils/csv-config-validation.interfa
 
 interface IQuantitativeTypeDefinitionStub {
   /**
-   * The quantitative type definition ID
-   *
-   * @type {string} - UUID
-   */
-  quantitative_id: string; // UUID
-  /**
    * The minimum value the quantitative value can be
    *
    * @type {number}

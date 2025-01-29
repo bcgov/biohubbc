@@ -2,12 +2,6 @@ import { CSVError } from '../../../utils/csv-utils/csv-config-validation.interfa
 
 interface IQualitativeTypeDefinitionStub {
   /**
-   * The qualitative type definition ID
-   *
-   * @type {string} - UUID
-   */
-  qualitative_id: string; // UUID
-  /**
    * The allowed options for the qualitative value
    *
    * @type {Array<{ option_id: string; option_name: string }>}

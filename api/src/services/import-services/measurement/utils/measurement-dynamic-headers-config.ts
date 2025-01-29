@@ -88,9 +88,8 @@ export const validateQualitativeMeasurementCell = (
   params: CSVParams,
   measurement: CBQualitativeMeasurementTypeDefinition
 ): CSVError[] => {
-  // Normalize the measurement type definition and validate against
+  // Normalize the measurement type definition and validate
   const result = validateQualitativeValue(params.cell, {
-    qualitative_id: measurement.taxon_measurement_id,
     options: measurement.options.map((option) => ({
       option_id: option.qualitative_option_id,
       option_name: option.option_label
@@ -124,9 +123,8 @@ export const validateQuantitativeMeasurementCell = (
   params: CSVParams,
   measurement: CBQuantitativeMeasurementTypeDefinition
 ): CSVError[] => {
-  // Normalize the measurement type definition and validate against
+  // Normalize the measurement type definition and validate
   const result = validateQuantitativeValue(params.cell, {
-    quantitative_id: measurement.taxon_measurement_id,
     min: measurement.min_value,
     max: measurement.max_value
   });

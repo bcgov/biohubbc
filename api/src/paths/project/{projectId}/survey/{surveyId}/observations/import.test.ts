@@ -3,11 +3,10 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../../../../../database/db';
-import { HTTPError } from '../../../../../../errors/http-error';
-import { ObservationService } from '../../../../../../services/observation-services/observation-service';
-import * as file_utils from '../../../../../../utils/file-utils';
-import { getMockDBConnection } from '../../../../../../__mocks__/db';
-import * as upload from './import';
+import { HTTP422CSVValidationError } from '../../../../../../errors/http-error';
+import { ImportObservationsService } from '../../../../../../services/import-services/observation/import-observations-service';
+import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
+import { importObservationCSV } from './import';
 
 chai.use(sinonChai);
 
@@ -16,78 +15,68 @@ describe('importObservationCSV', () => {
     sinon.restore();
   });
 
-  const dbConnectionObj = getMockDBConnection();
+  it('status 204 when successful', async () => {
+    const mockDBConnection = getMockDBConnection({ open: sinon.stub(), commit: sinon.stub(), release: sinon.stub() });
+    const getDBConnectionStub = sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
-  const mockReq = {
-    keycloak_token: {},
-    params: {
-      projectId: 1,
-      surveyId: 2
-    },
-    files: [
-      {
-        fieldname: 'media',
-        originalname: 'test.csv',
-        encoding: '7bit',
-        mimetype: 'text/plain',
-        size: 340
-      }
-    ],
-    body: {}
-  } as any;
+    const importCSVWorksheetStub = sinon.stub(ImportObservationsService.prototype, 'importCSVWorksheet');
 
-  it('should throw an error if failure occurs', async () => {
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      }
-    });
+    importCSVWorksheetStub.resolves([]);
 
-    const expectedError = new Error('cannot process request');
-    sinon.stub(ObservationService.prototype, 'insertSurveyObservationSubmission').rejects(expectedError);
+    const mockFile = { originalname: 'test.csv', mimetype: 'test.csv', buffer: Buffer.alloc(1) } as Express.Multer.File;
 
-    try {
-      const result = upload.importObservationCSV();
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
-      await result(mockReq, null as unknown as any, null as unknown as any);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).message).to.equal(expectedError.message);
-    }
+    mockReq.files = [mockFile];
+    mockReq.params.surveyId = '1';
+
+    const requestHandler = importObservationCSV();
+
+    await requestHandler(mockReq, mockRes, mockNext);
+
+    expect(mockDBConnection.open).to.have.been.calledOnce;
+
+    expect(getDBConnectionStub).to.have.been.calledOnce;
+
+    expect(importCSVWorksheetStub).to.have.been.calledOnce;
+
+    expect(mockRes.status).to.have.been.calledOnceWithExactly(204);
+    expect(mockRes.send).to.have.been.calledOnceWithExactly();
+
+    expect(mockDBConnection.commit).to.have.been.calledOnce;
+    expect(mockDBConnection.release).to.have.been.calledOnce;
   });
 
-  it('should succeed with valid params', async () => {
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      }
-    });
+  it('status 422 when CSV validation errors', async () => {
+    const mockDBConnection = getMockDBConnection({ open: sinon.stub(), commit: sinon.stub(), release: sinon.stub() });
+    const getDBConnectionStub = sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
-    sinon.stub(file_utils, 'uploadFileToS3').resolves();
+    const importCSVWorksheetStub = sinon.stub(ImportObservationsService.prototype, 'importCSVWorksheet');
 
-    const expectedResponse = { submissionId: 1 };
+    importCSVWorksheetStub.resolves([{ error: 'error', solution: 'solution' }]);
 
-    let actualResult: any = null;
-    const sampleRes = {
-      status: () => {
-        return {
-          json: (response: any) => {
-            actualResult = response;
-          }
-        };
-      }
-    };
+    const mockFile = { originalname: 'test.csv', mimetype: 'test.csv', buffer: Buffer.alloc(1) } as Express.Multer.File;
 
-    const upsertSurveyAttachmentStub = sinon
-      .stub(ObservationService.prototype, 'insertSurveyObservationSubmission')
-      .resolves({ submission_id: 1, key: 'string' });
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
-    const result = upload.importObservationCSV();
+    mockReq.files = [mockFile];
+    mockReq.params.surveyId = '1';
 
-    await result(mockReq, sampleRes as unknown as any, null as unknown as any);
-    expect(actualResult).to.eql(expectedResponse);
-    expect(upsertSurveyAttachmentStub).to.be.calledOnce;
+    const requestHandler = importObservationCSV();
+
+    try {
+      await requestHandler(mockReq, mockRes, mockNext);
+      expect.fail('Expected an 422 error to be thrown');
+    } catch (err) {
+      expect(mockDBConnection.open).to.have.been.calledOnce;
+
+      expect(getDBConnectionStub).to.have.been.calledOnce;
+
+      expect(importCSVWorksheetStub).to.have.been.calledOnce;
+
+      expect(mockDBConnection.commit).to.have.not.been.called;
+      expect(mockDBConnection.release).to.have.been.calledOnce;
+      expect(err).to.be.instanceOf(HTTP422CSVValidationError);
+    }
   });
 });

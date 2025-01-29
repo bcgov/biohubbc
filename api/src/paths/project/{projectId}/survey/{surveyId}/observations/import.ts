@@ -78,6 +78,11 @@ POST.apiDoc = {
               minItems: 1,
               maxItems: 1,
               items: csvFileSchema
+            },
+            surveySamplePeriodId: {
+              description: 'The sample period id to associate the observations with.',
+              type: 'integer',
+              minimum: 1
             }
           }
         }
@@ -115,6 +120,7 @@ POST.apiDoc = {
 export function importObservationCSV(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
+    const surveySamplePeriodId = Number(req.body.surveySamplePeriodId) || undefined;
 
     const rawFile = getFileFromRequest(req);
     const mediaFile = parseMulterFile(rawFile);
@@ -126,7 +132,12 @@ export function importObservationCSV(): RequestHandler {
     try {
       await connection.open();
 
-      const importObserservations = new ImportObservationsService(connection, worksheet, surveyId);
+      const importObserservations = new ImportObservationsService(
+        connection,
+        worksheet,
+        surveyId,
+        surveySamplePeriodId
+      );
 
       const errors = await importObserservations.importCSVWorksheet();
 

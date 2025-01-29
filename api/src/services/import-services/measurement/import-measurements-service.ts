@@ -24,7 +24,7 @@ import {
   getQualitativeMeasurementFromRowState,
   getQuantitativeMeasurementFromRowState
 } from '../utils/row-state';
-import { getDynamicMeasurementCellValidator } from './utils/measurement-dynamic-header-config';
+import { getDynamicMeasurementCellValidator } from './utils/measurement-dynamic-headers-config';
 import { getTsnFromMeasurementRow } from './utils/measurement-utils';
 
 const defaultLog = getLogger('services/import/import-measurement-service');
@@ -93,14 +93,13 @@ export class ImportMeasurementsService extends DBService {
 
     for (const row of rows) {
       this.utils.worksheetDynamicHeaders.forEach((header) => {
-        const state = row[CSVRowState];
-        const stateMeasurement = state?.[header];
+        const stateMeasurement = row[CSVRowState]?.[header];
 
         // Grab the qualitative measurement from the row
         if (isCBQualitativeMeasurementStub(stateMeasurement)) {
           // Get the critter and qualitative measurement meta from the row state
           const critter = getCritterCaptureFromRowState(row);
-          const qualitativeMeasurement = getQualitativeMeasurementFromRowState(row);
+          const qualitativeMeasurement = getQualitativeMeasurementFromRowState(stateMeasurement);
 
           qualitativeMeasurements.push({
             critter_id: critter.critter_id,
@@ -113,10 +112,10 @@ export class ImportMeasurementsService extends DBService {
         else if (isCBQuantitativeMeasurementStub(stateMeasurement)) {
           // Get the critter and quantitative measurement meta from the row state
           const critter = getCritterCaptureFromRowState(row);
-          const quantitativeMeasurement = getQuantitativeMeasurementFromRowState(row);
+          const quantitativeMeasurement = getQuantitativeMeasurementFromRowState(stateMeasurement);
 
           quantitativeMeasurements.push({
-            critter_id: critter.capture_id,
+            critter_id: critter.critter_id,
             capture_id: critter.capture_id,
             taxon_measurement_id: quantitativeMeasurement.taxon_measurement_id,
             value: quantitativeMeasurement.value

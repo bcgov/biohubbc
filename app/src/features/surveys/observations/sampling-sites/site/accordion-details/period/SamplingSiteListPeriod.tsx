@@ -145,8 +145,7 @@ export const SamplingSiteListPeriod = (props: ISamplingSiteListPeriodProps) => {
                       observationsPageContext.setIsDisabled(false);
                       observationsPageContext.setIsLoading(false);
                     }}
-                    // TODO: Mac: Add support for this in the import endpoint
-                    processOptions={{ surveySamplePeriodId: samplePeriod.survey_sample_period_id }}
+                    surveySamplePeriodId={samplePeriod.survey_sample_period_id}
                     buttonProps={{
                       size: 'small',
                       sx: {

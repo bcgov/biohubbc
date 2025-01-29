@@ -56,7 +56,7 @@ describe('useObservationApi', () => {
     expect(result).toEqual(mockResponse);
   });
 
-  describe('uploadCsvForImport', () => {
+  describe('importObservationCSV', () => {
     it('works as expected', async () => {
       const projectId = 1;
       const surveyId = 2;
@@ -68,7 +68,11 @@ describe('useObservationApi', () => {
 
       mock.onPost(`/api/project/${projectId}/survey/${surveyId}/observations/upload`).reply(200, res);
 
-      const result = await useObservationApi(axios).uploadCsvForImport(projectId, surveyId, file);
+      const result = await useObservationApi(axios).importObservationCSV({
+        projectId,
+        surveyId,
+        file
+      });
 
       expect(result).toEqual(res);
     });

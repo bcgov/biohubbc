@@ -1,4 +1,5 @@
 import { ICode } from '../../../../repositories/code-repository';
+import { CaseInsensitiveMap } from '../../../../utils/case-insensitive-map';
 import { CSVCellValidator } from '../../../../utils/csv-utils/csv-config-validation.interface';
 
 /**
@@ -12,7 +13,7 @@ import { CSVCellValidator } from '../../../../utils/csv-utils/csv-config-validat
  * @returns {*} {CSVCellValidator} The validate cell callback
  */
 export const getObservationSubcountSignCellValidator = (subcountSigns: ICode[]): CSVCellValidator => {
-  const subcountSignMap = new Map(subcountSigns.map((sign) => [sign.name.toLowerCase(), sign]));
+  const subcountSignMap = new CaseInsensitiveMap(subcountSigns.map((sign) => [sign.name, sign]));
 
   return (params) => {
     // Undefined values are allowed, return no errors
@@ -20,8 +21,10 @@ export const getObservationSubcountSignCellValidator = (subcountSigns: ICode[]):
       return [];
     }
 
-    const subcountSign = subcountSignMap.get(String(params.cell).toLowerCase());
+    // Attempt to get the subcount sign from the map
+    const subcountSign = subcountSignMap.get(String(params.cell));
 
+    // Value is not a subcount sign, return an error
     if (!subcountSign) {
       return [
         {

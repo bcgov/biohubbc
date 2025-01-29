@@ -17,6 +17,10 @@ import { validateQuantitativeValue } from '../../utils/quantitative';
 /**
  * Get the dynamic environment cell validator.
  *
+ * Rules:
+ *  1. The header must be a valid SIMS environment (qualitative or quantitative) or undefined
+ *
+ * @param {EnvironmentNameTypeDefinitionMap} environmentMap The environment map
  * @returns {*} {CSVCellValidator} The validate cell callback
  */
 export const getDynamicEnvironmentCellValidator = (
@@ -70,16 +74,15 @@ export const validateQualitativeEnvironmentCell = (
   params: CSVParams,
   environment: QualitativeEnvironmentTypeDefinition
 ): CSVError[] => {
-  // Normalize the environment type definition and validate against
+  // Normalize the environment type definition and validate the cell
   const result = validateQualitativeValue(params.cell, {
-    qualitative_id: environment.environment_qualitative_id,
     options: environment.options.map((option) => ({
       option_id: option.environment_qualitative_option_id,
       option_name: option.name
     }))
   });
 
-  // If the result is list of CSV errors
+  // If the result is not a qualitative value it is a list of CSV errors
   if (typeof result !== 'string') {
     return result;
   }
@@ -109,14 +112,13 @@ export const validateQuantitativeEnvironmentCell = (
   params: CSVParams,
   environment: QuantitativeEnvironmentTypeDefinition
 ): CSVError[] => {
-  // Normalize the environment type definition and validate against
+  // Normalize the environment type definition and validate the cell
   const result = validateQuantitativeValue(params.cell, {
-    quantitative_id: environment.environment_quantitative_id,
     min: environment.min,
     max: environment.max
   });
 
-  // If the result is list of CSV errors
+  // If the result is not a quantitative value it is a list of CSV errors
   if (typeof result !== 'number') {
     return result;
   }
