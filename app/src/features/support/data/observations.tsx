@@ -58,7 +58,7 @@ const observations = [
   {
     label: 'Data Upload',
     description: [],
-    markdownType: EnumMarkdownTypes[SupportPageView.OBSERVATIONS]?.[0] || MarkdownTypeSupportNameEnum.OBSERVATIONS
+    markdownType: EnumMarkdownTypes[SupportPageView.OBSERVATIONS]?.[0] ?? MarkdownTypeSupportNameEnum.OBSERVATIONS
   },
   {
     label: 'FAQ',

@@ -63,7 +63,7 @@ const general = [
         their data if help should be requested.
       </Typography>
     ],
-    markdownType: EnumMarkdownTypes[SupportPageView.GENERAL]?.[0] || MarkdownTypeSupportNameEnum.SPI
+    markdownType: EnumMarkdownTypes[SupportPageView.GENERAL]?.[0] ?? MarkdownTypeSupportNameEnum.SPI
   },
   {
     label: 'FAQ',

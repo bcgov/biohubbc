@@ -40,7 +40,7 @@ const dataStandards = [
         taxonomic service specific to the Province of British Columbia is completed.
       </Typography>
     ],
-    markdownType: EnumMarkdownTypes[SupportPageView.DATA_STANDARDS]?.[0] || MarkdownTypeSupportNameEnum.ITIS
+    markdownType: EnumMarkdownTypes[SupportPageView.DATA_STANDARDS]?.[0] ?? MarkdownTypeSupportNameEnum.ITIS
   },
   {
     label: 'SIMS Standards',
