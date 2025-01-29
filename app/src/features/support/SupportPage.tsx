@@ -88,10 +88,10 @@ const SupportPage = () => {
                   bgcolor: grey[50]
                 }}>
                 <Stack gap={2}>
-                  {dataMap[currentView]?.map((item, index) => (
-                    <Box key={index}>
+                  {dataMap[currentView]?.map((item, itemIndex) => (
+                    <Box key={`${item.label}-${itemIndex}`}>
                       {item.description.map((chunk, chunkIndex) => (
-                        <Box key={chunkIndex} sx={{ mb: 2 }}>
+                        <Box key={`${item.label}-${chunkIndex}`} sx={{ mb: 2 }}>
                           {chunk}
                         </Box>
                       ))}
