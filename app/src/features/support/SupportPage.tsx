@@ -49,6 +49,7 @@ const SupportPage = () => {
   const handleViewChange: React.Dispatch<SetStateAction<SupportPageView>> = (value) => {
     const newView = typeof value === 'function' ? value(currentView) : value;
     setSearchParams(searchParams.set('support_view', newView));
+    window.scrollTo(0, 0);
   };
 
   return (
