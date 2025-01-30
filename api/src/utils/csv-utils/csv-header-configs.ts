@@ -142,6 +142,10 @@ export const getTsnCellValidator = (tsns: Set<number>): CSVCellValidator => {
  */
 export const getDescriptionCellValidator = (): CSVCellValidator => {
   return (params: CSVParams) => {
+    if (typeof params.cell === 'number') {
+      return validateZodCell(params.cell, z.coerce.string().trim().min(1).max(250).optional());
+    }
+
     return validateZodCell(params.cell, z.string().trim().min(1).max(250).optional());
   };
 };

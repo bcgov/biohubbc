@@ -5,6 +5,8 @@ import {
   getDescriptionCellValidator,
   getLatitudeCellValidator,
   getLongitudeCellValidator,
+  getNonEmptyStringCellValidator,
+  getPositiveNumberCellValidator,
   getSurveyCritterAliasCellValidator,
   getTsnCellValidator,
   updateCSVRowState,
@@ -109,19 +111,23 @@ describe('CSVHeaderConfigs', () => {
     it('should return an empty array if the cell is valid', () => {
       const descriptionValidator = getDescriptionCellValidator();
 
-      const result = descriptionValidator({
-        cell: 'description',
-        row: {},
-        header: 'HEADER',
-        rowIndex: 0,
-        mutateCell: 'description'
-      });
+      const validDescriptions = ['description', '1', 1, undefined, ' test'];
 
-      expect(result).to.be.deep.equal([]);
+      for (const validDescription of validDescriptions) {
+        const result = descriptionValidator({
+          cell: validDescription,
+          row: {},
+          header: 'HEADER',
+          rowIndex: 0,
+          mutateCell: 'description'
+        });
+
+        expect(result).to.be.deep.equal([]);
+      }
     });
 
     it('should return a single error when invalid', () => {
-      const badDescriptions = ['', 2, null, ' '];
+      const badDescriptions = ['', null, ' '];
 
       for (const badDescription of badDescriptions) {
         const descriptionValidator = getDescriptionCellValidator();
@@ -253,6 +259,66 @@ describe('CSVHeaderConfigs', () => {
 
       surveyCritterAliasValidator(params);
       expect(params.row[CSVRowState]?.critterId).to.be.equal('uuid');
+    });
+  });
+
+  describe('getPositiveNumberCellValidator', () => {
+    it('should return an empty array if the cell is valid', () => {
+      const positiveNumberValidator = getPositiveNumberCellValidator({ optional: false });
+
+      const values = [1, 0.1, 100];
+
+      for (const value of values) {
+        const result = positiveNumberValidator({ cell: value } as CSVParams);
+
+        expect(result).to.be.deep.equal([]);
+      }
+    });
+
+    it('should return a single error when invalid', () => {
+      const positiveNumberValidator = getPositiveNumberCellValidator({ optional: false });
+
+      const badValues = [0, -1, -0.1, 'string', null, undefined];
+
+      for (const badValue of badValues) {
+        const result = positiveNumberValidator({ cell: badValue } as CSVParams);
+
+        expect(result.length).to.be.equal(1);
+      }
+    });
+  });
+
+  describe('getNonEmptyStringCellValidator', () => {
+    it('should return an empty array if the cell is optional and undefined', () => {
+      const nonEmptyStringValidator = getNonEmptyStringCellValidator({ optional: true });
+
+      const result = nonEmptyStringValidator({ cell: undefined } as CSVParams);
+
+      expect(result).to.be.deep.equal([]);
+    });
+
+    it('should return an empty array if the cell is valid', () => {
+      const nonEmptyStringValidator = getNonEmptyStringCellValidator({ optional: false });
+
+      const values = ['string', '0', '0.1', ' test'];
+
+      for (const value of values) {
+        const result = nonEmptyStringValidator({ cell: value } as CSVParams);
+
+        expect(result).to.be.deep.equal([]);
+      }
+    });
+
+    it('should return a single error when invalid', () => {
+      const nonEmptyStringValidator = getNonEmptyStringCellValidator({ optional: false });
+
+      const badValues = ['', ' ', null, undefined];
+
+      for (const badValue of badValues) {
+        const result = nonEmptyStringValidator({ cell: badValue } as CSVParams);
+
+        expect(result.length).to.be.equal(1);
+      }
     });
   });
 });
