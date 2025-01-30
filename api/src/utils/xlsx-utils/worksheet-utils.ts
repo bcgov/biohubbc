@@ -97,8 +97,8 @@ export const getHeadersUpperCase = (worksheet: xlsx.WorkSheet): string[] => {
     // Parse the headers array from the array of arrays produced by calling `xlsx.utils.sheet_to_json`
     headers = aoaHeaders[0]
       .map(String)
-      .filter(Boolean)
-      .map((header) => header.trim().toUpperCase());
+      .map((header) => header.trim().toUpperCase())
+      .filter(Boolean);
   }
 
   return headers;
@@ -149,6 +149,11 @@ export const getWorksheetRowObjects = (worksheet: xlsx.WorkSheet): Record<symbol
     let rowHasValues = false;
 
     for (let j = 0; j <= originalRange.e.c; j++) {
+      // Skip empty headers
+      if (!headers[j]) {
+        continue;
+      }
+
       // Always add the header (key) to the row object
       rowObject[headers[j]] = undefined;
 
