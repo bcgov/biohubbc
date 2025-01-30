@@ -55,8 +55,11 @@ export function replaceCellDates(cell: CellObject): CellObject {
   }
   // If time cell - convert the epoch value (ie: 0.5) to a time string (ie: '12:00:00')
   else if (isTimeCell(cell)) {
-    const time = dayjs.duration(Number(cell.v), 'days');
-
+    // Round the time fraction to the nearest millisecond to avoid floating point errors
+    // Excel stores time as a fraction of a day, where each day has 86400000 milliseconds.
+    // Ex: , 0.25 is 6:00:00 AM, 0.5 is 12:00:00 PM, 0.75 is 6:00:00 PM
+    const roundedTimeFraction = Math.round(Number(cell.v) * 86400000) / 86400000;
+    const time = dayjs.duration(roundedTimeFraction, 'days');
     return { ...cell, z: DefaultTimeFormat, v: time.format(DefaultTimeFormat) };
   }
   // If a string cell - check if the string is a date and convert it to a date string
