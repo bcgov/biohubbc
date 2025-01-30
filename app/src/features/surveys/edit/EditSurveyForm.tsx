@@ -60,7 +60,7 @@ const EditSurveyForm = <
 
   const codesContext = useContext(CodesContext);
   const codes = codesContext.codesDataLoader.data;
-  console.log(codes);
+  console.log('codes');
 
   useEffect(() => {
     codesContext.codesDataLoader.load();
