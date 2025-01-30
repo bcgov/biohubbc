@@ -23,23 +23,16 @@ export const SurveySpatialAnimalCapturePopup = (props: ISurveySpatialAnimalCaptu
   const critterbaseApi = useCritterbaseApi();
 
   // Data loader for capture details
-  const captureDataLoader = useDataLoader((captureId) =>
-    critterbaseApi.capture.getCapture(captureId)
-  );
+  const captureDataLoader = useDataLoader((captureId) => critterbaseApi.capture.getCapture(captureId));
 
   // Data loader for animal details
   const animalDataLoader = useDataLoader(async (critterId: string) => {
-    const animalData: ICritterDetailedResponse = await critterbaseApi.critters.getDetailedCritter(
-      critterId
-    );
+    const animalData: ICritterDetailedResponse = await critterbaseApi.critters.getDetailedCritter(critterId);
     return animalData;
   });
 
   // Combine capture and animal data into metadata for the popup
-  const getPopupMetadata = (
-    capture: ICaptureResponse,
-    animal?: ICritterDetailedResponse
-  ) => {
+  const getPopupMetadata = (capture: ICaptureResponse, animal?: ICritterDetailedResponse) => {
     const metadata = [
       { label: 'Nickname', value: animal?.animal_id ?? 'Loading...' },
       { label: 'Date', value: dayjs(capture.capture_date).format(DATE_FORMAT.LongDateTimeFormat) },
@@ -69,20 +62,11 @@ export const SurveySpatialAnimalCapturePopup = (props: ISurveySpatialAnimalCaptu
             }
           });
         }
-      }}
-    >
+      }}>
       <SurveyMapPopup
-        isLoading={
-          captureDataLoader.isLoading ||
-          !captureDataLoader.isReady ||
-          animalDataLoader.isLoading
-        }
+        isLoading={captureDataLoader.isLoading || !captureDataLoader.isReady || animalDataLoader.isLoading}
         title="Capture Details"
-        metadata={
-          captureDataLoader.data
-            ? getPopupMetadata(captureDataLoader.data, animalDataLoader.data)
-            : []
-        }
+        metadata={captureDataLoader.data ? getPopupMetadata(captureDataLoader.data, animalDataLoader.data) : []}
         key={`capture-feature-popup-${feature.id}`}
       />
     </Popup>

@@ -35,24 +35,17 @@ export const SurveySpatialAnimalTable = (props: ISurveyDataAnimalTableProps) => 
     critterbaseApi.critters.getMultipleCrittersByIds(animals.map((animal) => animal.critterbase_critter_id))
   );
 
-  const fetchCapturesAndMortalities = async () => {
-    const captures: ICaptureResponse[] = [];
-    const mortalities: Omit<IMortalityResponse,'critter_id'>[] = [];
+  const captures: ICaptureResponse[] = [];
+  const mortalities: Omit<IMortalityResponse, 'critter_id'>[] = [];
 
-    animalsDataLoader.data?.forEach((animal) => {
-      if (animal.captures) captures.push(...animal.captures);
-      if (animal.mortality) mortalities.push(...animal.mortality);
-    });
-
-    return { captures, mortalities };
-  };
-
-
+  animalsDataLoader.data?.forEach((animal) => {
+    if (animal.captures) captures.push(...animal.captures);
+    if (animal.mortality) mortalities.push(...animal.mortality);
+  });
 
   useEffect(() => {
     if (animals.length) {
       animalsDataLoader.load();
-
     }
   }, [animals]);
 
@@ -93,10 +86,7 @@ export const SurveySpatialAnimalTable = (props: ISurveyDataAnimalTableProps) => 
 
   return (
     <LoadingGuard
-      isLoading={
-        animals.length > 0 &&
-        (props.isLoading || animalsDataLoader.isLoading || !animalsDataLoader.isReady)
-      }
+      isLoading={animals.length > 0 && (props.isLoading || animalsDataLoader.isLoading || !animalsDataLoader.isReady)}
       isLoadingFallback={
         <Box flex="1 1 auto">
           <SkeletonTable />

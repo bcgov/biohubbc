@@ -333,7 +333,7 @@ export type ICritterDetailedResponse = {
   responsible_region_nr_id: string;
   critter_comment: string | null;
   collection_units: ICritterCollectionUnitResponse[];
-  mortality: Omit<IMortalityResponse,'critter_id'>[];
+  mortality: Omit<IMortalityResponse, 'critter_id'>[];
   captures: ICaptureResponse[];
   markings: IMarkingResponse[];
   measurements: {

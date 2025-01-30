@@ -13,7 +13,7 @@ import { AnimalMortalityCardContainer } from './components/AnimalMortalityCardCo
 import { AnimalMortalityMap } from './components/AnimalMortalityMap';
 import { AnimalMortalityToolbar } from './components/AnimalMortalityToolbar';
 
-export interface IMortalityWithSupplementaryData extends IMortalityResponse {
+export interface IMortalityWithSupplementaryData extends Omit<IMortalityResponse, 'critter_id'> {
   markings: IMarkingResponse[];
   measurements: { qualitative: IQualitativeMeasurementResponse[]; quantitative: IQuantitativeMeasurementResponse[] };
 }

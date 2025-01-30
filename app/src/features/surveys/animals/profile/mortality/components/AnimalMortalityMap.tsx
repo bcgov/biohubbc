@@ -6,7 +6,7 @@ import { IMortalityResponse } from 'interfaces/useCritterApi.interface';
 import { isDefined } from 'utils/Utils';
 
 interface IAnimalMortalityMapProps {
-  mortality: IMortalityResponse[];
+  mortality: Omit<IMortalityResponse, 'critter_id'>[];
   isLoading: boolean;
 }
 
