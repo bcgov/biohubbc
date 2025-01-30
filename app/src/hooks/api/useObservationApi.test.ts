@@ -62,11 +62,7 @@ describe('useObservationApi', () => {
       const surveyId = 2;
       const file = new File([''], 'file.txt', { type: 'application/plain' });
 
-      const res = {
-        submissionId: 1
-      };
-
-      mock.onPost(`/api/project/${projectId}/survey/${surveyId}/observations/upload`).reply(200, res);
+      mock.onPost(`/api/project/${projectId}/survey/${surveyId}/observations/import`).reply(200, undefined);
 
       const result = await useObservationApi(axios).importObservationCSV({
         projectId,
@@ -74,7 +70,7 @@ describe('useObservationApi', () => {
         file
       });
 
-      expect(result).toEqual(res);
+      expect(result).toEqual(undefined);
     });
   });
 });
