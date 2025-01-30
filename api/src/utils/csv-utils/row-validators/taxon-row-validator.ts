@@ -36,7 +36,16 @@ export const getTaxonRowValidator = <StaticHeaderType = Uppercase<string>>(
 
     const taxon = taxonMap.get(taxonIdentifierCell);
 
-    if (taxonIdentifierCell === 'number' && !taxon) {
+    // If a valid taxon
+    if (taxon) {
+      // Update the row state with the TSN and scientific name
+      updateCSVRowState(params.row, { itis_tsn: taxon.tsn, itis_scientific_name: taxon.scientificName });
+
+      return [];
+    }
+
+    // If an invalid TSN
+    if (typeof taxonIdentifierCell === 'number') {
       return [
         {
           error: 'Invalid ITIS TSN',
@@ -47,7 +56,8 @@ export const getTaxonRowValidator = <StaticHeaderType = Uppercase<string>>(
       ];
     }
 
-    if (typeof taxonIdentifierCell === 'string' && !taxon) {
+    // If an invalid scientific name
+    if (typeof taxonIdentifierCell === 'string') {
       return [
         {
           error: 'Invalid scientific name',
@@ -58,20 +68,13 @@ export const getTaxonRowValidator = <StaticHeaderType = Uppercase<string>>(
       ];
     }
 
-    if (!taxon) {
-      return [
-        {
-          error: 'Invalid species',
-          solution: 'Use a valid ITIS TSN or scientific name',
-          header: taxonHeader,
-          cell: taxonIdentifierCell
-        }
-      ];
-    }
-
-    // Update the row state
-    updateCSVRowState(params.row, { itis_tsn: taxon.tsn, itis_scientific_name: taxon.scientificName });
-
-    return [];
+    return [
+      {
+        error: 'Invalid species',
+        solution: 'Expecting a valid ITIS TSN or scientific name',
+        header: taxonHeader,
+        cell: taxonIdentifierCell
+      }
+    ];
   };
 };
