@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { CaseInsensitiveMap } from './case-insensitive-map';
 
-describe.only('CaseInsensitiveMap', () => {
+describe('CaseInsensitiveMap', () => {
   describe('set / get', () => {
     it('should set a key-value pair in the map', () => {
       const map = new CaseInsensitiveMap<string, number>();
