@@ -9,11 +9,11 @@ import grey from '@mui/material/colors/grey';
 import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { IGetSampleLocationNonSpatialDetails } from 'interfaces/useSamplingSiteApi.interface';
+import { IGetSampleSiteRecordExtendedNonSpatial } from 'interfaces/useSamplingSiteApi.interface';
 import { SamplingSiteListContent } from './accordion-details/SamplingSiteListContent';
 
 export interface ISamplingSiteListSiteProps {
-  sampleSite: IGetSampleLocationNonSpatialDetails;
+  sampleSite: IGetSampleSiteRecordExtendedNonSpatial;
   isChecked: boolean;
   handleSampleSiteMenuClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, sample_site_id: number) => void;
   handleCheckboxChange: (sampleSiteId: number) => void;

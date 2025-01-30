@@ -193,6 +193,8 @@ run-clamav: ## Run clamav
 ## ------------------------------------------------------------------------------
 
 install: ## Runs `npm install` for all projects
+	@echo "npm version used to install packages and create the lock file"
+	@npm -v
 	@echo "==============================================="
 	@echo "Running /api install"
 	@echo "==============================================="

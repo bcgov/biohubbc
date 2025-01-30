@@ -6,9 +6,6 @@ import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
-import { SamplingSiteMethodYupSchema } from 'features/surveys/sampling-information/methods/components/SamplingMethodForm';
-import { SamplingMethodFormContainer } from 'features/surveys/sampling-information/methods/SamplingMethodFormContainer';
-import { SamplingSiteMethodPeriodYupSchema } from 'features/surveys/sampling-information/periods/SamplingPeriodFormContainer';
 import { SamplingSiteGroupingsForm } from 'features/surveys/sampling-information/sites/components/site-groupings/SamplingSiteGroupingsForm';
 import { ICreateSampleSiteFormData } from 'features/surveys/sampling-information/sites/create/CreateSamplingSitePage';
 import { SampleSiteImportForm } from 'features/surveys/sampling-information/sites/create/form/SampleSiteImportForm';
@@ -28,21 +25,7 @@ export const SampleSiteCreateFormYupSchema = yup.object({
         geojson: yup.object({})
       })
     )
-    .min(1, 'At least one sampling site location is required'),
-  sample_methods: yup
-    .array()
-    .of(
-      SamplingSiteMethodYupSchema.shape({
-        sample_periods: yup
-          .array()
-          .of(SamplingSiteMethodPeriodYupSchema)
-          .min(
-            1,
-            'At least one sampling period is required for each method, describing when exactly this method was done'
-          )
-      })
-    ) // Ensure each item in the array conforms to SamplingSiteMethodYupSchema
-    .min(1, 'At least one sampling method is required') // Add check for at least one item in the array
+    .min(1, 'At least one sampling site location is required')
 });
 
 interface ISampleSiteCreateFormProps {
@@ -88,14 +71,6 @@ const SampleSiteCreateForm = (props: ISampleSiteCreateFormProps) => {
         </TransitionGroup>
 
         <Stack gap={5}>
-          <HorizontalSplitFormComponent
-            title="Sampling Techniques"
-            summary="Specify sampling techniques that were used to collect data.">
-            <SamplingMethodFormContainer />
-          </HorizontalSplitFormComponent>
-
-          <Divider />
-
           <HorizontalSplitFormComponent
             title="Sampling Site Groupings"
             summary="Group similar sites by assigning them to groups or strata, which you can add when creating or editing your Survey.">

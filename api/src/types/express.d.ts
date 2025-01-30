@@ -1,4 +1,4 @@
-import { SystemUser } from '../repositories/user-repository';
+import { SystemUserWithRoles } from '../models/system-user-view';
 import { AuthorizationScheme } from '../services/authorization-service';
 import { KeycloakUserInformation } from '../utils/keycloak-utils';
 
@@ -41,7 +41,7 @@ declare module 'express-serve-static-core' {
      * @see authorization.ts -> authorizeRequest()
      *
      */
-    system_user?: SystemUser;
+    system_user?: SystemUserWithRoles;
 
     /**
      * Authorization Scheme object.

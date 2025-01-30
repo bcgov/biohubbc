@@ -285,6 +285,6 @@ function parseQueryParams(req: Request<unknown, unknown, unknown, ISurveyAdvance
     start_date: req.query.start_date ?? undefined,
     end_date: req.query.end_date ?? undefined,
     survey_name: req.query.survey_name ?? undefined,
-    system_user_id: req.query.system_user_id ?? undefined
+    system_user_id: (req.query.system_user_id && Number(req.query.system_user_id)) ?? undefined
   };
 }

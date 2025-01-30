@@ -1,7 +1,8 @@
+import { Request, RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { RequestHandler } from 'http-proxy-middleware';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
+import { IObservationAnalyticsFilters } from '../../models/analytics-view';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { AnalyticsService } from '../../services/analytics-service';
 import { getLogger } from '../../utils/logger';
@@ -32,7 +33,7 @@ export const GET: Operation = [
 ];
 
 GET.apiDoc = {
-  description: 'get analytics about observations for one or more surveys',
+  description: 'Get analytics about observations for one or more surveys.',
   tags: ['analytics'],
   security: [
     {
@@ -58,7 +59,14 @@ GET.apiDoc = {
       schema: {
         type: 'array',
         items: {
-          type: 'string'
+          type: 'string',
+          enum: [
+            'survey_sample_site_id',
+            'method_technique_id',
+            'survey_sample_period_id',
+            'itis_tsn',
+            'observation_date'
+          ]
         }
       },
       description: 'An array of column names to group the observations data by'
@@ -104,7 +112,8 @@ GET.apiDoc = {
                 'quantitative_measurements',
                 'qualitative_measurements'
               ],
-              // Additional properties is intentionally true to allow for dynamic key-value measurement pairs
+              // Additional properties is intentionally true to allow for dynamic key-value measurement pairs and
+              // dynamic columns based on the groupByColumns query parameter
               additionalProperties: true,
               properties: {
                 id: {
@@ -212,17 +221,17 @@ export function getObservationCountByGroup(): RequestHandler {
     const connection = getDBConnection(req.keycloak_token);
 
     try {
-      const { surveyIds, groupByColumns, groupByQuantitativeMeasurements, groupByQualitativeMeasurements } = req.query;
-
       await connection.open();
+
+      const filterFields = parseQueryParams(req);
 
       const analyticsService = new AnalyticsService(connection);
 
       const response = await analyticsService.getObservationCountByGroup(
-        (surveyIds as string[]).map(Number),
-        (groupByColumns as string[]) ?? [],
-        (groupByQuantitativeMeasurements as string[]) ?? [],
-        (groupByQualitativeMeasurements as string[]) ?? []
+        filterFields.surveyIds,
+        filterFields.groupByColumns,
+        filterFields.groupByQuantitativeMeasurements,
+        filterFields.groupByQualitativeMeasurements
       );
 
       await connection.commit();
@@ -235,5 +244,22 @@ export function getObservationCountByGroup(): RequestHandler {
     } finally {
       connection.release();
     }
+  };
+}
+
+/**
+ * Parse the query parameters from the request into the expected format.
+ *
+ * @param {Request<unknown, unknown, unknown, Partial<IObservationAnalyticsFilters>>} req
+ * @return {*}  {IObservationAnalyticsFilters}
+ */
+function parseQueryParams(
+  req: Request<unknown, unknown, unknown, Partial<IObservationAnalyticsFilters>>
+): IObservationAnalyticsFilters {
+  return {
+    surveyIds: (req.query.surveyIds && req.query.surveyIds.map(Number)) ?? [],
+    groupByColumns: req.query.groupByColumns ?? [],
+    groupByQuantitativeMeasurements: req.query.groupByQuantitativeMeasurements ?? [],
+    groupByQualitativeMeasurements: req.query.groupByQualitativeMeasurements ?? []
   };
 }

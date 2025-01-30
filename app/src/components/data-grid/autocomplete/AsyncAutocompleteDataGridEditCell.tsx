@@ -40,7 +40,11 @@ export interface IAsyncAutocompleteDataGridEditCell<
    * @memberof IAsyncAutocompleteDataGridEditCell
    */
   getOptions: DebouncedFunc<
-    (searchTerm: string, onSearchResults: (searchResults: AutocompleteOptionType[]) => void) => Promise<void>
+    (
+      searchTerm: string,
+      onSearchResults: (searchResults: AutocompleteOptionType[]) => void,
+      onComplete: () => void
+    ) => Promise<void>
   >;
   /**
    * Indicates if there is an error with the control
@@ -108,6 +112,7 @@ const AsyncAutocompleteDataGridEditCell = <
   const [currentOption, setCurrentOption] = useState<AutocompleteOptionType | null>(null);
   // Reference to disable search (used when selecting an option to prevent a redundant search)
   const isSearchDisabled = useRef(false);
+  const isSearchInProgress = useRef(false);
   // The array of options to choose from
   const [options, setOptions] = useState<AutocompleteOptionType[]>(getInitialOptions?.() ?? []);
   // Is control loading (search in progress)
@@ -117,12 +122,16 @@ const AsyncAutocompleteDataGridEditCell = <
     let mounted = true;
 
     if (isSearchDisabled.current) {
-      // Search is disabled
+      // Search is disabled temporarily: the user has selectd an option, and because we update the input to match the
+      // selection, the search would normally be triggered. We disable the search temporarily to prevent a redundant
+      // search from being executed. The search will be re-enabled when the user interacts with the input field by
+      // either clearing the input or typing a new search term.
       return;
     }
 
     if (!dataGridValue) {
-      // No current value
+      // No current value tracked by the datagrid state, unset any existing value tracked by this component
+      setCurrentOption(null);
       return;
     }
 
@@ -163,21 +172,40 @@ const AsyncAutocompleteDataGridEditCell = <
 
     if (inputValue === '') {
       // No search term, do not initiate search, cancel any existing search
+      setOptions([]);
       setIsLoading(false);
+      isSearchInProgress.current = false;
       return;
     }
 
+    if (isSearchInProgress.current) {
+      return;
+    }
+
+    isSearchInProgress.current = true;
     setIsLoading(true);
 
     // Call async search function
-    getOptions(inputValue, (searchResults) => {
-      if (!mounted) {
-        return;
-      }
+    getOptions(
+      inputValue,
+      (searchResults) => {
+        if (!mounted) {
+          return;
+        }
 
-      setOptions([...searchResults]);
-      setIsLoading(false);
-    });
+        setOptions([...searchResults]);
+        isSearchInProgress.current = false;
+        setIsLoading(false);
+      },
+      () => {
+        if (!mounted) {
+          return;
+        }
+
+        isSearchInProgress.current = false;
+        setIsLoading(false);
+      }
+    );
 
     return () => {
       mounted = false;
@@ -212,6 +240,7 @@ const AsyncAutocompleteDataGridEditCell = <
         setCurrentOption(selectedOption);
         onSelectOption?.(selectedOption);
         setIsLoading(false);
+        isSearchInProgress.current = false;
 
         // Set the data grid cell value with selected options value
         dataGridProps.api.setEditCellValue({
@@ -225,6 +254,7 @@ const AsyncAutocompleteDataGridEditCell = <
           // Enable search when the user interacts with the input field
           // A 'reset' event is created when the user selects an option, which should not trigger a search
           isSearchDisabled.current = false;
+          isSearchInProgress.current = false;
         }
 
         setInputValue(newInputValue);
@@ -254,7 +284,7 @@ const AsyncAutocompleteDataGridEditCell = <
         renderOption ??
         ((renderProps, renderOption) => {
           return (
-            <Box component="li" {...renderProps}>
+            <Box component="li" {...renderProps} key={renderProps.key}>
               <ListItemText primary={renderOption.label} secondary={renderOption.subtext} />
             </Box>
           );
