@@ -1,5 +1,5 @@
 /**
- * A case-insensitive map - all string keys are case-insensitive (lowercased).
+ * A case-insensitive map - all string keys are normalized to lowercase.
  *
  * @example `
  *  const map = new CaseInsensitiveMap<string, number>();
