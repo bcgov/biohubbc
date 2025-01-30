@@ -3,7 +3,7 @@
 const { OpenShiftClientX } = require('pipeline-cli');
 
 /**
- * Run OC commands to clean all build and deployment artifacts (pods, imagestreams, builds/deployment configs, etc).
+ * Run OC commands to clean all build and deployment artifacts (pods, imagestreams, builds/deployments, etc).
  *
  * @param {*} settings
  */
@@ -42,15 +42,15 @@ const clean = (settings) => {
       }
     });
 
-    // get deployment configs
-    let deploymentConfigs = oc.get('dc', {
+    // get deployments
+    let deployments = oc.get('deployments', {
       selector: `app=${phaseObj.instance},env-id=${phaseObj.changeId},env-name=${phaseKey},!shared,github-repo=${oc.git.repository},github-owner=${oc.git.owner}`,
       namespace: phaseObj.namespace
     });
 
-    // Clean deployment configs
-    deploymentConfigs.forEach((deploymentConfig) => {
-      deploymentConfig.spec.triggers.forEach((trigger) => {
+    // Clean deployments
+    deployments.forEach((deployment) => {
+      deployment.spec.triggers.forEach((trigger) => {
         if (trigger.type == 'ImageChange' && trigger.imageChangeParams.from.kind == 'ImageStreamTag') {
           oc.delete([`ImageStreamTag/${trigger.imageChangeParams.from.name}`], {
             'ignore-not-found': 'true',
