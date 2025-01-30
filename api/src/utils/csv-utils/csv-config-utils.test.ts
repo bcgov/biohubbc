@@ -276,7 +276,7 @@ describe('CSVConfigUtils', () => {
 
       const header = utils.getWorksheetHeader('BAD', { TEST: 'cellValue' });
 
-      expect(header).to.be.undefined;
+      expect(header).to.be.null;
     });
   });
 });
