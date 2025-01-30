@@ -7,7 +7,7 @@ import { getTaxonRowValidator } from './taxon-row-validator';
 
 chai.use(sinonChai);
 
-describe.only('getTaxonRowValidator', () => {
+describe('getTaxonRowValidator', () => {
   afterEach(() => {
     sinon.restore();
   });

@@ -6,8 +6,10 @@ import qs from 'qs';
 import { URL } from 'url';
 import { IDBConnection } from '../database/db';
 import { ApiError, ApiErrorType, ApiGeneralError } from '../errors/api-error';
+import { formatAxiosError } from '../errors/axios-error';
 import { PostSurveySubmissionToBioHubObject } from '../models/biohub-create';
 import { ISurveyAttachment, ISurveyReportAttachment } from '../repositories/attachment-repository';
+import { getEnvironmentVariable } from '../utils/env-config';
 import { isFeatureFlagPresent } from '../utils/feature-flag-utils';
 import { getFileFromS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
@@ -62,11 +64,11 @@ export interface ITaxonomyWithEcologicalUnits extends ITaxonomy {
   ecological_units: IPostCollectionUnit[];
 }
 
-const getBackboneInternalApiHost = () => process.env.BACKBONE_INTERNAL_API_HOST || '';
-const getBackboneArtifactIntakePath = () => process.env.BACKBONE_ARTIFACT_INTAKE_PATH || '';
-const getBackboneSurveyIntakePath = () => process.env.BACKBONE_INTAKE_PATH || '';
-const getBackboneTaxonTsnPath = () => process.env.BIOHUB_TAXON_TSN_PATH || '';
-const getBackboneTaxonSearchPath = () => 'taxonomy/taxon'; // TODO: Update ENV variable
+const getBackboneInternalApiHost = () => getEnvironmentVariable('BACKBONE_INTERNAL_API_HOST');
+const getBackboneArtifactIntakePath = () => getEnvironmentVariable('BACKBONE_ARTIFACT_INTAKE_PATH');
+const getBackboneSurveyIntakePath = () => getEnvironmentVariable('BACKBONE_INTAKE_PATH');
+const getBackboneTaxonTsnPath = () => getEnvironmentVariable('BIOHUB_TAXON_TSN_PATH');
+const getBackboneTaxonPath = () => getEnvironmentVariable('BIOHUB_TAXON_PATH');
 
 export class PlatformService extends DBService {
   attachmentService: AttachmentService;
@@ -136,7 +138,7 @@ export class PlatformService extends DBService {
 
       const token = await keycloakService.getKeycloakServiceToken();
 
-      const backboneTaxonSearchUrl = new URL(getBackboneTaxonSearchPath(), getBackboneInternalApiHost()).href;
+      const backboneTaxonSearchUrl = new URL(getBackboneTaxonPath(), getBackboneInternalApiHost()).href;
 
       const { data } = await axios.get<{ searchResponse: IItisSearchResult[] }>(backboneTaxonSearchUrl, {
         headers: {
@@ -164,7 +166,7 @@ export class PlatformService extends DBService {
 
       return matchingTaxon;
     } catch (error) {
-      defaultLog.error({ label: 'getTaxonByScientificName', error });
+      defaultLog.error({ label: 'getTaxonByScientificName', error: formatAxiosError(error) });
 
       return null;
     }
