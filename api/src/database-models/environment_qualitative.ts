@@ -6,7 +6,7 @@ import { z } from 'zod';
  * @description Data model for `environment_qualitative`.
  */
 export const EnvironmentQualitativeModel = z.object({
-  environment_qualitative_id: z.number(),
+  environment_qualitative_id: z.string().uuid(),
   name: z.string(),
   description: z.string().nullable(),
   record_end_date: z.string().nullable(),

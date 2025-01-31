@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { EnvironmentUnit } from '../repositories/observation-environment-repository';
+import { EnvironmentUnit } from '../database-units/environment_unit';
 
 /**
  * Environment Quantitative Model.
@@ -7,7 +7,7 @@ import { EnvironmentUnit } from '../repositories/observation-environment-reposit
  * @description Data model for `environment_quantitative`.
  */
 export const EnvironmentQuantitativeModel = z.object({
-  environment_quantitative_id: z.number(),
+  environment_quantitative_id: z.string().uuid(),
   name: z.string(),
   description: z.string().nullable(),
   min: z.number().nullable(),

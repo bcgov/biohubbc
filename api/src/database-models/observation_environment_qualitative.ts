@@ -8,8 +8,8 @@ import { z } from 'zod';
 export const ObservationEnvironmentQualitativeModel = z.object({
   observation_environment_qualitative_id: z.number(),
   survey_observation_id: z.number(),
-  environment_qualitative_id: z.string(),
-  environment_qualitative_option_id: z.string(),
+  environment_qualitative_id: z.string().uuid(),
+  environment_qualitative_option_id: z.string().uuid(),
   create_date: z.string(),
   create_user: z.number(),
   update_date: z.string().nullable(),
