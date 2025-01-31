@@ -9,7 +9,7 @@ import { makeCsvObjectUrl } from 'utils/Utils';
 const excludedFields = [
   '__check__',
   'survey_sample_site_id',
-  'survey_sample_method_id',
+  'method_technique_id',
   'survey_sample_period_id',
   'actions'
 ];

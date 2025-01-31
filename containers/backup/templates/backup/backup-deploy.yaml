@@ -3,6 +3,10 @@ apiVersion: template.openshift.io/v1
 metadata:
   name: backup-deployment-template
 parameters:
+  - name: BASE_IMAGE_REGISTRY_URL
+    description: The base image registry URL
+    required: true
+    value: image-registry.openshift-image-registry.svc:5000
   - name: NAME
     displayName: Name
     description: The name assigned to all of the resources.  Use 'backup-{database name}' depending on your database provider
@@ -334,8 +338,8 @@ objects:
       ftp-password: ${FTP_PASSWORD}
       ftp-url-host: ${FTP_URL_HOST}
 
-  - kind: DeploymentConfig
-    apiVersion: apps.openshift.io/v1
+  - kind: Deployment
+    apiVersion: apps/v1
     metadata:
       name: ${NAME}
       labels:
@@ -346,20 +350,10 @@ objects:
     spec:
       strategy:
         type: Recreate
-      triggers:
-        - type: ConfigChange
-        - type: ImageChange
-          imageChangeParams:
-            automatic: true
-            containerNames:
-              - ${NAME}
-            from:
-              kind: ImageStreamTag
-              namespace: ${IMAGE_NAMESPACE}
-              name: ${SOURCE_IMAGE_NAME}:${TAG_NAME}
       replicas: ${{REPLICAS}}
       selector:
-        name: ${NAME}
+        matchLabels:
+          name: ${NAME}
       template:
         metadata:
           name: ${NAME}
@@ -384,7 +378,7 @@ objects:
                     path: ${CONFIG_FILE_NAME}
           containers:
             - name: ${NAME}
-              image: ""
+              image: ${BASE_IMAGE_REGISTRY_URL}/${IMAGE_NAMESPACE}/${SOURCE_IMAGE_NAME}:${TAG_NAME}
               ports: []
               env:
                 - name: BACKUP_STRATEGY

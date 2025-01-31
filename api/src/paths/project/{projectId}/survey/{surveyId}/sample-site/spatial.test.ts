@@ -4,7 +4,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../../../../../database/db';
 import { HTTPError } from '../../../../../../errors/http-error';
-import { SampleLocationService } from '../../../../../../services/sample-location-service';
+import { SampleSiteService } from '../../../../../../services/sample-site-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
 import { getSurveySampleSitesGeometry } from './spatial';
 
@@ -15,7 +15,7 @@ describe('getSurveySampleSitesGeometry', () => {
     sinon.restore();
   });
 
-  it('should catch and re-throw an error if SampleLocationService throws an error', async () => {
+  it('should catch and re-throw an error if SampleSiteService throws an error', async () => {
     const dbConnectionObj = getMockDBConnection();
 
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
@@ -27,7 +27,7 @@ describe('getSurveySampleSitesGeometry', () => {
       surveyId: '1'
     };
 
-    sinon.stub(SampleLocationService.prototype, 'getSampleLocationsGeometryBySurveyId').rejects(new Error('an error'));
+    sinon.stub(SampleSiteService.prototype, 'getSampleSitesGeometryBySurveyId').rejects(new Error('an error'));
 
     try {
       const requestHandler = getSurveySampleSitesGeometry();
@@ -61,7 +61,7 @@ describe('getSurveySampleSitesGeometry', () => {
       }
     ];
 
-    sinon.stub(SampleLocationService.prototype, 'getSampleLocationsGeometryBySurveyId').resolves(sampleSiteData);
+    sinon.stub(SampleSiteService.prototype, 'getSampleSitesGeometryBySurveyId').resolves(sampleSiteData);
 
     const requestHandler = getSurveySampleSitesGeometry();
 

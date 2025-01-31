@@ -3,7 +3,6 @@ import { FeatureCollection, Point } from 'geojson';
 import { ApiPaginationResponseParams } from 'types/misc';
 import yup from 'utils/YupSchema';
 
-// TODO Nick - Replace with new schema
 export interface IFindTelementryObj {
   telemetry_id: string;
   deployment_id: number;

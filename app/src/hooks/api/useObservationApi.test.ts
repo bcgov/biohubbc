@@ -21,8 +21,6 @@ describe('useObservationApi', () => {
           survey_observation_id: 1,
           itis_tsn: 12345,
           itis_scientific_name: 'scientific name',
-          survey_sample_site_id: 1,
-          survey_sample_method_id: 2,
           survey_sample_period_id: 3,
           count: 40,
           observation_date: '2021-01-01',
@@ -30,7 +28,7 @@ describe('useObservationApi', () => {
           latitude: 49.456,
           longitude: -123.456,
           survey_sample_site_name: 'site name',
-          survey_sample_method_name: 'method name',
+          method_technique_name: 'method name',
           survey_sample_period_start_datetime: '2021-01-01 12:00:00',
           subcounts: []
         }
@@ -41,7 +39,7 @@ describe('useObservationApi', () => {
         quantitative_measurements: [],
         qualitative_environments: [],
         quantitative_environments: [],
-        sample_sites: []
+        sampling_data: []
       },
       pagination: {
         total: 100,

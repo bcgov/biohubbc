@@ -2,11 +2,10 @@ import { AxiosInstance } from 'axios';
 import {
   ICreateSamplingSiteRequest,
   IEditSampleSiteRequest,
-  IFindSamplePeriodResponse,
   IFindSampleSiteResponse,
-  IGetSampleLocationDetails,
-  IGetSampleLocationNonSpatialResponse,
-  IGetSampleSiteGeometryResponse
+  IGetSampleSiteDetails,
+  IGetSampleSiteGeometryResponse,
+  IGetSampleSiteRecordExtendedNonSpatialResponse
 } from 'interfaces/useSamplingSiteApi.interface';
 import { ApiPaginationRequestOptions } from 'types/misc';
 
@@ -39,7 +38,7 @@ const useSamplingSiteApi = (axios: AxiosInstance) => {
    * @param {number} projectId
    * @param {number} surveyId
    * @param {ApiPaginationRequestOptions} pagination
-   * @return {*}  {Promise<IGetSampleLocationNonSpatialResponse>}
+   * @return {*}  {Promise<IGetSampleSiteRecordExtendedNonSpatialResponse>}
    */
   const getSampleSites = async (
     projectId: number,
@@ -48,7 +47,7 @@ const useSamplingSiteApi = (axios: AxiosInstance) => {
       keyword?: string;
       pagination?: ApiPaginationRequestOptions;
     }
-  ): Promise<IGetSampleLocationNonSpatialResponse> => {
+  ): Promise<IGetSampleSiteRecordExtendedNonSpatialResponse> => {
     const params = {
       keyword: options?.keyword,
       ...options?.pagination
@@ -83,13 +82,13 @@ const useSamplingSiteApi = (axios: AxiosInstance) => {
    * @param {number} projectId
    * @param {number} surveyId
    * @param {number} sampleSiteId
-   * @return {*}  {Promise<IGetSampleLocationDetails>}
+   * @return {*}  {Promise<IGetSampleSiteDetails>}
    */
   const getSampleSiteById = async (
     projectId: number,
     surveyId: number,
     sampleSiteId: number
-  ): Promise<IGetSampleLocationDetails> => {
+  ): Promise<IGetSampleSiteDetails> => {
     const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/sample-site/${sampleSiteId}`);
     return data;
   };
@@ -118,73 +117,7 @@ const useSamplingSiteApi = (axios: AxiosInstance) => {
       ...pagination
     };
 
-    const { data } = await axios.get(`/api/sampling-locations/sites`, {
-      params
-    });
-
-    return data;
-  };
-
-  /**
-   * Find sample methods.
-   *
-   * @param {{
-   *       survey_id?: number;
-   *       sample_site_id: number;
-   *       keyword?: string;
-   *       system_user_id?: number;
-   *     }} [filterFieldData]
-   * @param {ApiPaginationRequestOptions} [pagination]
-   * @return {*}  {Promise<IGetSampleLocationNonSpatialResponse>}
-   */
-  const findSampleMethods = async (
-    filterFieldData?: {
-      survey_id?: number;
-      sample_site_id: number;
-      keyword?: string;
-      system_user_id?: number;
-    },
-    pagination?: ApiPaginationRequestOptions
-  ): Promise<IGetSampleLocationNonSpatialResponse> => {
-    const params = {
-      ...filterFieldData,
-      ...pagination
-    };
-
-    const { data } = await axios.get(`/api/sampling-locations/methods`, {
-      params
-    });
-
-    return data;
-  };
-
-  /**
-   * Find sample periods.
-   *
-   * @param {{
-   *       survey_id?: number;
-   *       sample_site_id: number;
-   *       sample_method_id: number;
-   *       system_user_id?: number;
-   *     }} [filterFieldData]
-   * @param {ApiPaginationRequestOptions} [pagination]
-   * @return {*}  {Promise<IGetSampleLocationNonSpatialResponse>}
-   */
-  const findSamplePeriods = async (
-    filterFieldData?: {
-      survey_id?: number;
-      sample_site_id?: number;
-      sample_method_id?: number;
-      system_user_id?: number;
-    },
-    pagination?: ApiPaginationRequestOptions
-  ): Promise<IFindSamplePeriodResponse> => {
-    const params = {
-      ...filterFieldData,
-      ...pagination
-    };
-
-    const { data } = await axios.get(`/api/sampling-locations/periods`, {
+    const { data } = await axios.get(`/api/sites`, {
       params
     });
 
@@ -243,8 +176,6 @@ const useSamplingSiteApi = (axios: AxiosInstance) => {
     getSampleSiteById,
     getSampleSitesGeometry,
     findSampleSites,
-    findSampleMethods,
-    findSamplePeriods,
     editSampleSite,
     deleteSampleSite,
     deleteSampleSites

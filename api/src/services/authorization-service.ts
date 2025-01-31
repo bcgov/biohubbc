@@ -1,8 +1,8 @@
 import { SOURCE_SYSTEM } from '../constants/database';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../constants/roles';
 import { IDBConnection } from '../database/db';
+import { SystemUserWithRoles } from '../models/system-user-view';
 import { ProjectUser } from '../repositories/project-participation-repository';
-import { SystemUser } from '../repositories/user-repository';
 import { getKeycloakSource, getUserGuid, KeycloakUserInformation } from '../utils/keycloak-utils';
 import { DBService } from './db-service';
 import { ProjectParticipationService } from './project-participation-service';
@@ -86,13 +86,17 @@ export type AuthorizationScheme = AuthorizeConfigAnd | AuthorizeConfigOr;
 export class AuthorizationService extends DBService {
   _userService = new UserService(this.connection);
   _projectParticipationService = new ProjectParticipationService(this.connection);
-  _systemUser: SystemUser | undefined = undefined;
-  _projectUser: (ProjectUser & SystemUser) | undefined = undefined;
+  _systemUser: SystemUserWithRoles | undefined = undefined;
+  _projectUser: (ProjectUser & SystemUserWithRoles) | undefined = undefined;
   _keycloakToken: KeycloakUserInformation | undefined = undefined;
 
   constructor(
     connection: IDBConnection,
-    init?: { systemUser?: SystemUser; projectUser?: ProjectUser & SystemUser; keycloakToken?: KeycloakUserInformation }
+    init?: {
+      systemUser?: SystemUserWithRoles;
+      projectUser?: ProjectUser & SystemUserWithRoles;
+      keycloakToken?: KeycloakUserInformation;
+    }
   ) {
     super(connection);
 
@@ -319,10 +323,10 @@ export class AuthorizationService extends DBService {
   /**
    * Fetch the user's system user object.
    *
-   * @return {*}  {(Promise<SystemUser | null>)}
+   * @return {*}  {(Promise<SystemUserWithRoles | null>)}
    * @memberof AuthorizationService
    */
-  async getSystemUserObject(): Promise<SystemUser | null> {
+  async getSystemUserObject(): Promise<SystemUserWithRoles | null> {
     let systemUserWithRoles;
 
     try {
@@ -341,9 +345,9 @@ export class AuthorizationService extends DBService {
   /**
    * Finds a single system user based on their keycloak token information.
    *
-   * @return {*}  {(Promise<SystemUser | null>)}
+   * @return {*}  {(Promise<SystemUserWithRoles | null>)}
    */
-  async getSystemUserWithRoles(): Promise<SystemUser | null> {
+  async getSystemUserWithRoles(): Promise<SystemUserWithRoles | null> {
     if (!this._keycloakToken) {
       return null;
     }
@@ -357,9 +361,9 @@ export class AuthorizationService extends DBService {
    * Fetch the user's project user object.
    *
    * @param {number} projectId
-   * @return {*}  {(Promise<(ProjectUser & SystemUser) | null>)}
+   * @return {*}  {(Promise<(ProjectUser & SystemUserWithRoles) | null>)}
    */
-  async getProjectUserObjectByProjectId(projectId: number): Promise<(ProjectUser & SystemUser) | null> {
+  async getProjectUserObjectByProjectId(projectId: number): Promise<(ProjectUser & SystemUserWithRoles) | null> {
     let projectUserWithRoles;
 
     try {
@@ -379,9 +383,9 @@ export class AuthorizationService extends DBService {
    * Finds a single project user based on their keycloak token information.
    *
    * @param {number} projectId
-   * @return {*}  {(Promise<(ProjectUser & SystemUser) | null>)}
+   * @return {*}  {(Promise<(ProjectUser & SystemUserWithRoles) | null>)}
    */
-  async getProjectUserWithRolesByProjectId(projectId: number): Promise<(ProjectUser & SystemUser) | null> {
+  async getProjectUserWithRolesByProjectId(projectId: number): Promise<(ProjectUser & SystemUserWithRoles) | null> {
     if (!this._keycloakToken) {
       return null;
     }
@@ -395,9 +399,9 @@ export class AuthorizationService extends DBService {
    * Fetch the user's project user object.
    *
    * @param {number} projectId
-   * @return {*}  {(Promise<(ProjectUser & SystemUser) | null>)}
+   * @return {*}  {(Promise<(ProjectUser & SystemUserWithRoles) | null>)}
    */
-  async getProjectUserObjectBySurveyId(surveyId: number): Promise<(ProjectUser & SystemUser) | null> {
+  async getProjectUserObjectBySurveyId(surveyId: number): Promise<(ProjectUser & SystemUserWithRoles) | null> {
     let projectUserWithRoles;
 
     try {
@@ -417,9 +421,9 @@ export class AuthorizationService extends DBService {
    * Finds a single project user based on their keycloak token information.
    *
    * @param {number} surveyId
-   * @return {*}  {(Promise<(ProjectUser & SystemUser) | null>)}
+   * @return {*}  {(Promise<(ProjectUser & SystemUserWithRoles) | null>)}
    */
-  async getProjectUserWithRolesBySurveyId(surveyId: number): Promise<(ProjectUser & SystemUser) | null> {
+  async getProjectUserWithRolesBySurveyId(surveyId: number): Promise<(ProjectUser & SystemUserWithRoles) | null> {
     if (!this._keycloakToken) {
       return null;
     }

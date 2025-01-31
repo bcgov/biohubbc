@@ -1,11 +1,13 @@
 import Alert, { AlertProps } from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
+import Typography from '@mui/material/Typography';
 
 interface IAlertBarProps extends AlertProps {
   severity: 'error' | 'warning' | 'info' | 'success';
   variant: 'filled' | 'outlined' | 'standard';
   title: string;
   text: string | JSX.Element;
+  ornament?: JSX.Element;
 }
 
 /**
@@ -15,7 +17,7 @@ interface IAlertBarProps extends AlertProps {
  * @returns
  */
 const AlertBar = (props: IAlertBarProps) => {
-  const { severity, variant, title, text, ...alertProps } = props;
+  const { severity, variant, title, text, ornament, ...alertProps } = props;
 
   const defaultProps = {
     severity: 'success',
@@ -30,8 +32,13 @@ const AlertBar = (props: IAlertBarProps) => {
       {...alertProps}
       variant={variant}
       severity={severity}
-      sx={{ flex: '1 1 auto', ...alertProps.sx }}>
-      <AlertTitle>{title}</AlertTitle>
+      sx={{ flex: '1 1 auto', '& .MuiAlert-message': { flex: '1 1 auto' }, ...alertProps.sx }}>
+      <AlertTitle sx={{ justifyContent: 'space-between', display: 'flex', alignItems: 'center', flex: '1 1 auto' }}>
+        {title}
+        <Typography component="span" variant="body2">
+          {ornament}
+        </Typography>
+      </AlertTitle>
       {text}
     </Alert>
   );

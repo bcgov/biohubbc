@@ -3,13 +3,13 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { ObservationRecord } from '../repositories/observation-repository/observation-repository';
+import { SurveyObservationRecord } from '../database-models/survey_observation';
 import * as featureFlagUtils from '../utils/feature-flag-utils';
 import { getMockDBConnection } from '../__mocks__/db';
 import { AttachmentService } from './attachment-service';
 import { HistoryPublishService } from './history-publish-service';
 import { KeycloakService } from './keycloak-service';
-import { ObservationService } from './observation-service';
+import { ObservationService } from './observation-services/observation-service';
 import { PlatformService } from './platform-service';
 import { SurveyService } from './survey-service';
 
@@ -131,7 +131,7 @@ describe('PlatformService', () => {
 
       const getAllSurveyObservationsStub = sinon
         .stub(ObservationService.prototype, 'getAllSurveyObservations')
-        .resolves([{ survey_observation_id: 2 } as unknown as ObservationRecord]);
+        .resolves([{ survey_observation_id: 2 } as unknown as SurveyObservationRecord]);
 
       const getSurveyLocationsDataStub = sinon
         .stub(SurveyService.prototype, 'getSurveyLocationsData')
@@ -171,8 +171,6 @@ describe('PlatformService', () => {
               properties: {
                 survey_id: undefined,
                 taxonomy: undefined,
-                survey_sample_site_id: null,
-                survey_sample_method_id: null,
                 survey_sample_period_id: null,
                 latitude: undefined,
                 longitude: undefined,

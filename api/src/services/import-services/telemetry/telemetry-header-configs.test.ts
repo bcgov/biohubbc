@@ -45,8 +45,8 @@ describe('TelemetryHeaderConfigs', () => {
       const result = cellValidator({ cell: 5555 } as CSVParams);
       expect(result).to.deep.equal([
         {
-          error: 'Device not found in the survey deployments',
-          solution: 'Check the serial number and vendor are correct and the device is deployed in the survey'
+          error: 'Device not found in deployments',
+          solution: 'Check that the serial number and vendor match a deployment in the Survey'
         }
       ]);
     });

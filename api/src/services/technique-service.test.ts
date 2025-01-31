@@ -11,6 +11,7 @@ import {
   TechniqueRepository
 } from '../repositories/technique-repository';
 import { AttractantService } from './attractants-service';
+import { SamplePeriodService } from './sample-period-service';
 import { TechniqueAttributeService } from './technique-attributes-service';
 import { TechniqueService } from './technique-service';
 import { TechniqueVantageService } from './technique-vantage-service';
@@ -30,6 +31,7 @@ describe('TechniqueService', () => {
         name: 'name',
         description: 'desc',
         distance_threshold: 200,
+        method_response_metric_id: 3,
         attractants: [],
         attributes: {
           qualitative_attributes: [],
@@ -61,6 +63,7 @@ describe('TechniqueService', () => {
         name: 'name',
         description: 'desc',
         distance_threshold: 200,
+        method_response_metric_id: 3,
         attractants: [],
         attributes: {
           qualitative_attributes: [],
@@ -131,6 +134,7 @@ describe('TechniqueService', () => {
           description: 'desc',
           distance_threshold: 200,
           method_lookup_id: 2,
+          method_response_metric_id: 3,
           attractants: [
             {
               attractant_lookup_id: 111
@@ -166,7 +170,8 @@ describe('TechniqueService', () => {
         name: 'name',
         description: 'desc',
         distance_threshold: 200,
-        method_lookup_id: 2
+        method_lookup_id: 2,
+        method_response_metric_id: 3
       });
       expect(insertTechniqueAttractantsStub).to.have.been.calledOnceWith(surveyId, 11, techniques[0].attractants);
       expect(insertQualitativeAttributesForTechniqueStub).to.have.been.calledOnceWith(
@@ -205,7 +210,8 @@ describe('TechniqueService', () => {
         name: 'name',
         description: 'desc',
         distance_threshold: 200,
-        method_lookup_id: 2
+        method_lookup_id: 2,
+        method_response_metric_id: 3
       };
 
       const response = await service.updateTechnique(surveyId, techniqueObject);
@@ -217,6 +223,10 @@ describe('TechniqueService', () => {
   describe('deleteTechnique', () => {
     it('should successfully delete the technique', async () => {
       const mockRecord = { method_technique_id: 1 };
+
+      const findSamplePeriodsCountStub = sinon
+        .stub(SamplePeriodService.prototype, 'findSamplePeriodsCount')
+        .resolves(0);
 
       const deleteAllTechniqueAttractantsStub = sinon
         .stub(AttractantService.prototype, 'deleteAllTechniqueAttractants')
@@ -237,6 +247,8 @@ describe('TechniqueService', () => {
       const methodTechniqueId = 2;
 
       const response = await service.deleteTechnique(surveyId, methodTechniqueId);
+
+      expect(findSamplePeriodsCountStub).to.have.been.calledOnce;
 
       expect(deleteAllTechniqueAttractantsStub).to.have.been.calledOnceWith(surveyId, methodTechniqueId);
       expect(deleteAllTechniqueAttributesStub).to.have.been.calledOnceWith(surveyId, methodTechniqueId);

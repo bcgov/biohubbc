@@ -1,5 +1,6 @@
 import { AxiosInstance } from 'axios';
 import {
+  FindTechniques,
   ICreateTechniqueRequest,
   IGetTechniqueResponse,
   IGetTechniquesResponse,
@@ -54,6 +55,41 @@ const useTechniqueApi = (axios: AxiosInstance) => {
     methodTechniqueId: number
   ): Promise<IGetTechniqueResponse> => {
     const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/technique/${methodTechniqueId}`);
+
+    return data;
+  };
+
+  /**
+   * Find survey techniques.
+   *
+   * @param {{
+   *       keyword?: string;
+   *       survey_id?: number;
+   *       sample_site_id?: number;
+   *       sample_period_id?: number;
+   *       system_user_id?: number;
+   *     }} [filterFieldData]
+   * @param {ApiPaginationRequestOptions} [pagination]
+   * @return {*}  {Promise<FindTechniques>}
+   */
+  const findTechniques = async (
+    filterFieldData?: {
+      keyword?: string;
+      survey_id?: number;
+      sample_site_id?: number;
+      sample_period_id?: number;
+      system_user_id?: number;
+    },
+    pagination?: ApiPaginationRequestOptions
+  ): Promise<FindTechniques> => {
+    const params = {
+      ...filterFieldData,
+      ...pagination
+    };
+
+    const { data } = await axios.get(`/api/techniques`, {
+      params
+    });
 
     return data;
   };
@@ -131,9 +167,10 @@ const useTechniqueApi = (axios: AxiosInstance) => {
 
   return {
     createTechniques,
-    updateTechnique,
     getTechniqueById,
     getTechniquesForSurvey,
+    findTechniques,
+    updateTechnique,
     deleteTechnique,
     deleteTechniques
   };

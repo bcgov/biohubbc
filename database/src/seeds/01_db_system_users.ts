@@ -88,6 +88,26 @@ const systemUsers: SystemUserSeed[] = [
     given_name: 'Annika',
     family_name: 'Meijer',
     email: 'annika.meijer@gov.bc.ca'
+  },
+  {
+    identifier: 'oinostro',
+    type: SYSTEM_IDENTITY_SOURCE.IDIR,
+    role_name: SYSTEM_USER_ROLE_NAME.SYSTEM_ADMINISTRATOR,
+    user_guid: '5134A2E785814352A291886CD5F53CD1',
+    display_name: 'Oscar, Inostroza WLRS:EX',
+    given_name: 'Oscar',
+    family_name: 'Inostroza',
+    email: 'oinostro@gov.bc.ca'
+  },
+  {
+    identifier: 'oscar-bc-adm',
+    type: SYSTEM_IDENTITY_SOURCE.BCEID_BASIC,
+    role_name: SYSTEM_USER_ROLE_NAME.SYSTEM_ADMINISTRATOR,
+    user_guid: 'DCDDBF25F13345EAA9F56BFD1A4F4EA7',
+    display_name: 'Oscar, Inostroza WLRS:EX',
+    given_name: 'Oscar',
+    family_name: 'Inostroza',
+    email: 'oinostro@gov.bc.ca'
   }
 ];
 

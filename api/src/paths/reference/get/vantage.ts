@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { getAPIUserDBConnection } from '../../../database/db';
-import { vantageReferenceRecordsSchema } from '../../../openapi/schemas/technique';
+import { vantageReferenceRecordsSchema } from '../../../openapi/schemas/vantage';
 import { VantageService } from '../../../services/vantage-mode-service';
 import { getLogger } from '../../../utils/logger';
 

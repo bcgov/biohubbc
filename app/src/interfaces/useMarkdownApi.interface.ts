@@ -25,6 +25,7 @@ export enum MarkdownTypeNameEnum {
   SURVEY_PAGE = 'Survey Page',
   TECHNIQUES = 'Techniques',
   SAMPLING_SITES = 'Sampling Sites',
+  SAMPLING_PERIODS = 'Sampling Periods',
   SURVEY_METADATA = 'Survey Metadata',
   OBSERVATIONS = 'Observations'
 }

@@ -4,7 +4,7 @@ import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/rol
 import { getDBConnection } from '../../../../../../database/db';
 import { GeoJSONFeature } from '../../../../../../openapi/schemas/geoJson';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { SampleLocationService } from '../../../../../../services/sample-location-service';
+import { SampleSiteService } from '../../../../../../services/sample-site-service';
 import { getLogger } from '../../../../../../utils/logger';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/sample-site/spatial');
@@ -125,9 +125,9 @@ export function getSurveySampleSitesGeometry(): RequestHandler {
     try {
       await connection.open();
 
-      const sampleSiteService = new SampleLocationService(connection);
+      const sampleSiteService = new SampleSiteService(connection);
 
-      const sampleSiteData = await sampleSiteService.getSampleLocationsGeometryBySurveyId(surveyId);
+      const sampleSiteData = await sampleSiteService.getSampleSitesGeometryBySurveyId(surveyId);
 
       await connection.commit();
 

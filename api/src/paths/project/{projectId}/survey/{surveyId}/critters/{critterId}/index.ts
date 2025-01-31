@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
-import { HTTP400, HTTPError, HTTPErrorType } from '../../../../../../../errors/http-error';
+import { HTTP400 } from '../../../../../../../errors/http-error';
 import { bulkUpdateResponse, critterBulkRequestObject } from '../../../../../../../openapi/schemas/critter';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { CritterAttachmentService } from '../../../../../../../services/critter-attachment-service';
@@ -101,7 +101,7 @@ export function updateSurveyCritter(): RequestHandler {
       const user = getCritterbaseUser(req);
 
       if (!critterbaseCritterId) {
-        throw new HTTPError(HTTPErrorType.BAD_REQUEST, 400, 'No external critter ID was found.');
+        throw new HTTP400('No external critter ID was found.');
       }
 
       const surveyService = new SurveyCritterService(connection);
@@ -231,7 +231,7 @@ GET.apiDoc = {
                 type: 'object',
                 description:
                   'Attachments associated with the critter. Only included if requested via the expand query parameter.',
-                required: ['captureAttachments'],
+                required: ['capture_attachments'],
                 properties: {
                   capture_attachments: {
                     type: 'array',
@@ -310,7 +310,7 @@ export function getSurveyCritter(): RequestHandler {
         ? critterAttachmentService.findAllCritterAttachments(surveyCritter.critter_id).then((response) => {
             return {
               attachments: {
-                captureAttachments: response.captureAttachments
+                capture_attachments: response.captureAttachments
                 // TODO: add mortality attachments
               }
             };

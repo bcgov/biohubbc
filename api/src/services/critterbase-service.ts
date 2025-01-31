@@ -185,6 +185,7 @@ export interface IQualMeasurement {
 
 export interface IQuantMeasurement {
   measurement_quantitative_id?: string;
+  critter_id: string;
   taxon_measurement_id: string;
   capture_id?: string;
   mortality_id?: string;
