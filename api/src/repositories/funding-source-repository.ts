@@ -17,8 +17,7 @@ const FundingSource = z.object({
 export type FundingSource = z.infer<typeof FundingSource>;
 
 const FundingSourceSupplementaryData = z.object({
-  survey_reference_count: z.number().optional(),
-  survey_reference_amount_total: z.number().optional()
+  survey_reference_count: z.number().optional()
 });
 
 export type FundingSourceSupplementaryData = z.infer<typeof FundingSourceSupplementaryData>;
@@ -27,7 +26,6 @@ const SurveyFundingSource = z.object({
   survey_funding_source_id: z.number(),
   survey_id: z.number(),
   funding_source_id: z.number(),
-  amount: z.number(),
   revision_count: z.number().optional(),
   funding_source_name: z.string().optional(),
   start_date: z.string().optional().nullable(),
@@ -137,8 +135,7 @@ export class FundingSourceRepository extends BaseRepository {
       WITH
         w_references as (
           SELECT
-            COUNT(survey_funding_source.funding_source_id)::int as survey_reference_count,
-            COALESCE(SUM(survey_funding_source.amount)::numeric::int, 0) as survey_reference_amount_total
+            COUNT(survey_funding_source.funding_source_id)::int as survey_reference_count
           FROM
             survey_funding_source
           WHERE
@@ -151,8 +148,7 @@ export class FundingSourceRepository extends BaseRepository {
         funding_source.start_date,
         funding_source.end_date,
         funding_source.revision_count,
-        w_references.survey_reference_count,
-        w_references.survey_reference_amount_total
+        w_references.survey_reference_count
       FROM
         funding_source,
         w_references
@@ -190,7 +186,6 @@ export class FundingSourceRepository extends BaseRepository {
         survey_funding_source.survey_funding_source_id,
         survey_funding_source.survey_id,
         survey_funding_source.funding_source_id,
-        survey_funding_source.amount::numeric::int,
         survey_funding_source.revision_count,
         survey.project_id,
         survey.name as survey_name
@@ -210,7 +205,6 @@ export class FundingSourceRepository extends BaseRepository {
         survey_funding_source_id: z.number(),
         survey_id: z.number(),
         funding_source_id: z.number(),
-        amount: z.number(),
         revision_count: z.number(),
         project_id: z.number(),
         survey_name: z.string()
@@ -302,8 +296,7 @@ export class FundingSourceRepository extends BaseRepository {
   async getFundingSourceSupplementaryData(fundingSourceId: number): Promise<FundingSourceSupplementaryData> {
     const sqlStatement = SQL`
         SELECT
-          COUNT(survey_funding_source.funding_source_id)::int as survey_reference_count,
-          COALESCE(SUM(survey_funding_source.amount)::numeric, 0) as survey_reference_amount_total
+          COUNT(survey_funding_source.funding_source_id)::int as survey_reference_count
         FROM
           funding_source
         LEFT JOIN
@@ -343,7 +336,6 @@ export class FundingSourceRepository extends BaseRepository {
         sfs.survey_funding_source_id,
         sfs.survey_id,
         sfs.funding_source_id,
-        sfs.amount::numeric::int,
         sfs.revision_count,
         fs.name as funding_source_name,
         fs.start_date,
@@ -367,20 +359,17 @@ export class FundingSourceRepository extends BaseRepository {
    *
    * @param {number} surveyId
    * @param {number} fundingSourceId
-   * @param {number} amount
    * @return {*}  {Promise<void>}
    * @memberof FundingSourceRepository
    */
-  async postSurveyFundingSource(surveyId: number, fundingSourceId: number, amount: number): Promise<void> {
+  async postSurveyFundingSource(surveyId: number, fundingSourceId: number): Promise<void> {
     const sqlStatement = SQL`
       INSERT INTO survey_funding_source (
         survey_id,
-        funding_source_id,
-        amount
+        funding_source_id
       ) VALUES (
         ${surveyId},
-        ${fundingSourceId},
-        ${amount}
+        ${fundingSourceId}
       );
     `;
 
@@ -396,10 +385,12 @@ export class FundingSourceRepository extends BaseRepository {
 
   /**
    * Update a survey funding source record in survey_funding_source.
+   * 
+   * NOTE: Keeping this function in anticipation of funding sources having additional data that needs to be updateable (eg. funding source ID number, year, etc.). 
+   * Right now it isn't very useful.
    *
    * @param {number} surveyId
    * @param {number} fundingSourceId
-   * @param {number} amount
    * @param {number} revision_count
    * @return {*}  {Promise<void>}
    * @memberof FundingSourceRepository
@@ -407,14 +398,12 @@ export class FundingSourceRepository extends BaseRepository {
   async putSurveyFundingSource(
     surveyId: number,
     fundingSourceId: number,
-    amount: number,
     revision_count: number
   ): Promise<void> {
     const sqlStatement = SQL`
       UPDATE
         survey_funding_source
       SET
-        amount = ${amount},
         revision_count = ${revision_count}
       WHERE
         survey_id = ${surveyId}

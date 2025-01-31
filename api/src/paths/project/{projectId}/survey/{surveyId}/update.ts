@@ -6,7 +6,6 @@ import { PutSurveyObject } from '../../../../../models/survey-update';
 import {
   surveyBlockSchema,
   surveyDetailsSchema,
-  surveyFundingSourceDataSchema,
   surveyLocationSchema,
   surveyPartnershipsSchema,
   surveyPermitSchema,
@@ -84,7 +83,29 @@ PUT.apiDoc = {
             permit: surveyPermitSchema,
             funding_sources: {
               type: 'array',
-              items: surveyFundingSourceDataSchema
+              items: {
+                type: 'object',
+                additionalProperties: false,
+                required: ['funding_source_id'],
+                properties: {
+                  survey_funding_source_id: {
+                    description: 'Survey funding source primary id',
+                    type: 'integer',
+                    minimum: 1,
+                    nullable: true
+                  },
+                  funding_source_id: {
+                    description: 'Funding source reference id',
+                    type: 'integer',
+                    minimum: 1
+                  },
+                  revision_count: {
+                    description: 'The integer of times the record has been revised.',
+                    type: 'integer',
+                    minimum: 0
+                  },
+                }
+              }
             },
             partnerships: surveyPartnershipsSchema,
             proprietor: {

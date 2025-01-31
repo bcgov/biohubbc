@@ -60,7 +60,6 @@ GET.apiDoc = {
                   'description',
                   'revision_count',
                   'survey_reference_count',
-                  'survey_reference_amount_total'
                 ],
                 properties: {
                   funding_source_id: {
@@ -82,11 +81,6 @@ GET.apiDoc = {
                     minimum: 0,
                     description: 'The number of surveys that reference this funding source.'
                   },
-                  survey_reference_amount_total: {
-                    type: 'number',
-                    minimum: 0,
-                    description: 'The total amount from all references to this funding source by all surveys.'
-                  },
                   start_date: {
                     type: 'string',
                     nullable: true
@@ -106,7 +100,6 @@ GET.apiDoc = {
                     'survey_funding_source_id',
                     'survey_id',
                     'funding_source_id',
-                    'amount',
                     'revision_count',
                     'project_id',
                     'survey_name'
@@ -123,10 +116,6 @@ GET.apiDoc = {
                     funding_source_id: {
                       type: 'integer',
                       minimum: 1
-                    },
-                    amount: {
-                      type: 'number',
-                      minimum: 0
                     },
                     revision_count: {
                       type: 'integer',

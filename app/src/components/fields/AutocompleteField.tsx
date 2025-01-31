@@ -20,6 +20,10 @@ export interface IAutocompleteField<T extends string | number> {
   label: string;
   name: string;
   options: IAutocompleteFieldOption<T>[];
+  /**
+   * Selected options are filtered from the options list, so they cannot be selected again
+   */
+  selectedOptions?: T[];
   disabled?: boolean;
   loading?: boolean;
   sx?: TextFieldProps['sx']; //https://github.com/TypeStrong/fork-ts-checker-webpack-plugin/issues/271#issuecomment-1561891271
@@ -49,6 +53,14 @@ const AutocompleteField = <T extends string | number>(props: IAutocompleteField<
     return result;
   };
 
+  // Filter out selected options from the available options
+  const filteredOptions = props.options.filter((option) => {
+    if (props.selectedOptions && props.selectedOptions.includes(option.value)) {
+      return false; // Exclude this option if it's already selected
+    }
+    return true;
+  });
+
   const handleGetOptionSelected = (
     option: IAutocompleteFieldOption<T>,
     value: IAutocompleteFieldOption<T>
@@ -69,7 +81,7 @@ const AutocompleteField = <T extends string | number>(props: IAutocompleteField<
       fullWidth
       data-testid={props.id}
       value={getExistingValue(get(values, props.name))}
-      options={props.options}
+      options={filteredOptions}
       getOptionLabel={(option) => option.label}
       disableClearable={props.disableClearable}
       isOptionEqualToValue={handleGetOptionSelected}

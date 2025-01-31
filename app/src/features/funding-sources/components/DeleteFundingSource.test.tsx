@@ -38,7 +38,6 @@ describe('DeleteFundingSource', () => {
         end_date: null,
         revision_count: 1,
         survey_reference_count: 0,
-        survey_reference_amount_total: 0
       },
       funding_source_survey_references: []
     });
@@ -73,14 +72,12 @@ describe('DeleteFundingSource', () => {
         end_date: null,
         revision_count: 1,
         survey_reference_count: 0,
-        survey_reference_amount_total: 0
       },
       funding_source_survey_references: [
         {
           survey_funding_source_id: 1,
           survey_id: 1,
           funding_source_id: 1,
-          amount: 1,
           revision_count: 1,
           project_id: 1,
           survey_name: 'Survey'

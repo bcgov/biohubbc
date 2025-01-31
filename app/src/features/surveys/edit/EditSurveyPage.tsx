@@ -212,7 +212,10 @@ const EditSurveyPage = () => {
               proprietor: surveyData.proprietor,
               permit: surveyData.permit,
               permit_used: Boolean(surveyData.permit?.permits.length),
-              funding_sources: surveyData.funding_sources,
+              funding_sources: surveyData.funding_sources.map((source) => ({
+                survey_funding_source_id: source.survey_funding_source_id,
+                funding_source_id: source.funding_source_id
+              })),
               funding_used: Boolean(surveyData.funding_sources?.length),
               agreements: surveyData.agreements
             }}

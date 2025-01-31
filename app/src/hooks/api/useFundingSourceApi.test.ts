@@ -25,7 +25,6 @@ describe('useFundingSourceApi', () => {
           end_date: null,
           revision_count: 0,
           survey_reference_count: 1,
-          survey_reference_amount_total: 1000
         }
       ];
 
