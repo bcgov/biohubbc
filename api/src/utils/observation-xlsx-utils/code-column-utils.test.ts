@@ -16,26 +16,24 @@ describe('environment-column-utils', () => {
 
     const codeRepository = new CodeRepository(dbConnectionObj);
 
-    const getObservationSubcountSignsStub = sinon
-      .stub(CodeRepository.prototype, 'getObservationSubcountSigns')
-      .resolves([
-        {
-          id: 1,
-          name: 'Sign 1',
-          description: 'Sign 1 Desc'
-        },
-        {
-          id: 1,
-          name: 'Sign 2',
-          description: 'Sign 2 Desc'
-        }
-      ]);
+    const getObservationSignsStub = sinon.stub(CodeRepository.prototype, 'getObservationSigns').resolves([
+      {
+        id: 1,
+        name: 'Sign 1',
+        description: 'Sign 1 Desc'
+      },
+      {
+        id: 1,
+        name: 'Sign 2',
+        description: 'Sign 2 Desc'
+      }
+    ]);
 
     const result = await getCodeTypeDefinitions(codeRepository);
 
-    expect(getObservationSubcountSignsStub).to.have.been.calledOnce;
+    expect(getObservationSignsStub).to.have.been.calledOnce;
     expect(result).to.eql({
-      OBSERVATION_SUBCOUNT_SIGN: [
+      OBSERVATION_SIGN: [
         {
           id: 1,
           name: 'Sign 1',
@@ -80,7 +78,7 @@ describe('environment-column-utils', () => {
       ];
 
       const codeTypeDefinitions = {
-        OBSERVATION_SUBCOUNT_SIGN: [
+        OBSERVATION_SIGN: [
           {
             id: 1,
             name: 'Sign 1',
@@ -132,7 +130,7 @@ describe('environment-column-utils', () => {
       ];
 
       const codeTypeDefinitions = {
-        OBSERVATION_SUBCOUNT_SIGN: [
+        OBSERVATION_SIGN: [
           {
             id: 1,
             name: 'Sign 1',

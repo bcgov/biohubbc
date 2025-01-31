@@ -5,10 +5,6 @@ import { DefaultDateFormat, DefaultTimeFormat, DefaultTimeFormatNoSeconds } from
 import { SurveySamplePeriodDetails } from '../../repositories/sample-period-repository';
 import { isDateString, isDateTimeString, isTimeString } from '../../utils/date-time-utils';
 import {
-  EnvironmentNameTypeDefinitionMap,
-  isEnvironmentQualitativeTypeDefinition
-} from '../../utils/observation-xlsx-utils/environment-column-utils';
-import {
   getMeasurementFromTsnMeasurementTypeDefinitionMap,
   isMeasurementCBQualitativeTypeDefinition,
   TsnMeasurementTypeDefinitionMap
@@ -433,67 +429,4 @@ export function pullMeasurementsFromWorkSheetRowObject(
   });
 
   return foundMeasurements;
-}
-
-/**
- * This function is a helper method for the `processObservationCsvSubmission` function. It will take row data from an
- * uploaded CSV.
- *
- * @export
- * @param {Record<string, any>} row
- * @param {string[]} environmentColumns
- * @param {EnvironmentNameTypeDefinitionMap} environmentNameTypeDefinitionMap
- * @return {*}  {(Pick<InsertSubCount, 'qualitative_environments' | 'quantitative_environments'>)}
- */
-export function pullEnvironmentsFromWorkSheetRowObject(
-  row: Record<string, any>,
-  environmentColumns: string[],
-  environmentNameTypeDefinitionMap: EnvironmentNameTypeDefinitionMap
-): Pick<InsertSubCount, 'qualitative_environments' | 'quantitative_environments'> {
-  const foundEnvironments: Pick<InsertSubCount, 'qualitative_environments' | 'quantitative_environments'> = {
-    qualitative_environments: [],
-    quantitative_environments: []
-  };
-
-  environmentColumns.forEach((mColumn) => {
-    // Ignore blank columns
-    if (!mColumn) {
-      return;
-    }
-
-    const rowData = row[mColumn];
-
-    // Ignore empty rows
-    if (rowData === undefined) {
-      return;
-    }
-
-    const environment = environmentNameTypeDefinitionMap.get(mColumn);
-
-    // Ignore empty environments
-    if (!environment) {
-      return;
-    }
-
-    // if environment is qualitative, find the option id
-    if (isEnvironmentQualitativeTypeDefinition(environment)) {
-      const foundOption = environment.options.find((option) => option.name === String(rowData).toLowerCase());
-
-      if (!foundOption) {
-        return;
-      }
-
-      foundEnvironments.qualitative_environments.push({
-        environment_qualitative_id: foundOption.environment_qualitative_id,
-        environment_qualitative_option_id: foundOption.environment_qualitative_option_id
-      });
-    } else {
-      foundEnvironments.quantitative_environments.push({
-        environment_quantitative_id: environment.environment_quantitative_id,
-        value: Number(rowData)
-      });
-    }
-  });
-
-  return foundEnvironments;
 }

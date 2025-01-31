@@ -513,6 +513,10 @@ export class ObservationService extends DBService {
     const service = new SubCountService(this.connection);
     await service.deleteObservationSubCountRecords(surveyId, observationIds);
 
+    // Delete observation environments, if any
+    const observationSubCountEnvironmentService = new ObservationEnvironmentService(this.connection);
+    await observationSubCountEnvironmentService.deleteObservationEnvironments(surveyId, observationIds);
+
     // Delete survey_observation records
     return this.observationRepository.deleteObservationsByIds(surveyId, observationIds);
   }

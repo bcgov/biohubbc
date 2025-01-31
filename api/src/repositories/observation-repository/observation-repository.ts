@@ -202,9 +202,6 @@ export class ObservationRepository extends BaseRepository {
       }
     }
 
-    console.log(query.toSQL().toNative().sql);
-    console.log(query.toSQL().toNative().bindings);
-
     const response = await this.connection.knex(query, ObservationRecordWithSamplingAndSubcountData);
 
     return response.rows;

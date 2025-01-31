@@ -64,10 +64,6 @@ export class SubCountService extends DBService {
     const observationSubCountMeasurementService = new ObservationSubCountMeasurementService(this.connection);
     await observationSubCountMeasurementService.deleteObservationMeasurements(surveyId, surveyObservationIds);
 
-    // Delete child environments, if any
-    const observationSubCountEnvironmentService = new ObservationEnvironmentService(this.connection);
-    await observationSubCountEnvironmentService.deleteObservationEnvironments(surveyId, surveyObservationIds);
-
     // Delete observation_subcount records, if any
     return this.subCountRepository.deleteObservationSubCountRecords(surveyId, surveyObservationIds);
   }

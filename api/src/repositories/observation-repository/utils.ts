@@ -297,7 +297,7 @@ export function getSurveyObservationsBaseQuery(
         'w_quantitative_environments.survey_observation_id'
       )
       // Note: inner join requires every observation record to have at least one subcount record, otherwise use left join
-      .leftJoin('w_subcounts', 'w_subcounts.survey_observation_id', 'survey_observation.survey_observation_id')
+      .innerJoin('w_subcounts', 'w_subcounts.survey_observation_id', 'survey_observation.survey_observation_id')
       .whereIn('survey_observation.survey_id', getSurveyIdsQuery)
   );
 }
