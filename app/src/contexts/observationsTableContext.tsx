@@ -36,8 +36,8 @@ import { CBMeasurementSearchByTsnResponse, CBMeasurementType } from 'interfaces/
 import {
   ICreateEditObservation,
   IGetSurveyObservationsResponse,
-  ObservationEnvironmentQualitative,
-  ObservationEnvironmentQuantitative,
+  ObservationEnvironmentQualitativeObject,
+  ObservationEnvironmentQuantitativeObject,
   ObservationRecord,
   SubcountToSave
 } from 'interfaces/useObservationApi.interface';
@@ -1126,8 +1126,8 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
    */
   const _getEnvironmentsToSave = useCallback(
     (row: ObservationRecord) => {
-      const qualitative: ObservationEnvironmentQualitative[] = [];
-      const quantitative: ObservationEnvironmentQuantitative[] = [];
+      const qualitative: ObservationEnvironmentQualitativeObject[] = [];
+      const quantitative: ObservationEnvironmentQuantitativeObject[] = [];
 
       // For each qualitative environment column in the data grid
       for (const environmentDefinition of environmentColumns.qualitative_environments) {

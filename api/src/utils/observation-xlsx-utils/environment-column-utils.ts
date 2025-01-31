@@ -1,5 +1,4 @@
 import {
-  EnvironmentType,
   QualitativeEnvironmentTypeDefinition,
   QuantitativeEnvironmentTypeDefinition
 } from '../../repositories/observation-environment-repository';
@@ -23,12 +22,18 @@ export interface IEnvironmentDataToValidate {
  * @export
  * @param {string[]} columnNames
  * @param {ObservationEnvironmentService} observationEnvironmentService
- * @return {*}  {Promise<EnvironmentType>}
+ * @return {*}  {Promise<{
+ *   qualitative_environments: QualitativeEnvironmentTypeDefinition[];
+ *   quantitative_environments: QuantitativeEnvironmentTypeDefinition[];
+ * }>}
  */
 export async function getEnvironmentTypeDefinitionsFromColumnNames(
   columnNames: string[],
   observationEnvironmentService: ObservationEnvironmentService
-): Promise<EnvironmentType> {
+): Promise<{
+  qualitative_environments: QualitativeEnvironmentTypeDefinition[];
+  quantitative_environments: QuantitativeEnvironmentTypeDefinition[];
+}> {
   const [qualitative_environments, quantitative_environments] = await Promise.all([
     observationEnvironmentService.findQualitativeEnvironmentTypeDefinitions(columnNames),
     observationEnvironmentService.findQuantitativeEnvironmentTypeDefinitions(columnNames)
@@ -43,12 +48,18 @@ export async function getEnvironmentTypeDefinitionsFromColumnNames(
  *
  * @export
  * @param {string[]} columnNames
- * @param {EnvironmentType} environmentTypeDefinitions
+ * @param {{
+ *     qualitative_environments: QualitativeEnvironmentTypeDefinition[];
+ *     quantitative_environments: QuantitativeEnvironmentTypeDefinition[];
+ *   }} environmentTypeDefinitions
  * @return {*}  {EnvironmentNameTypeDefinitionMap}
  */
 export function getEnvironmentColumnsTypeDefinitionMap(
   columnNames: string[],
-  environmentTypeDefinitions: EnvironmentType
+  environmentTypeDefinitions: {
+    qualitative_environments: QualitativeEnvironmentTypeDefinition[];
+    quantitative_environments: QuantitativeEnvironmentTypeDefinition[];
+  }
 ): EnvironmentNameTypeDefinitionMap {
   const columnNameDefinitionMap = new Map<
     string,

@@ -22,8 +22,8 @@ import { useProjectContext, useSurveyContext } from 'hooks/useContext';
 import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import {
   ICreateObservation,
-  ObservationEnvironmentQualitative,
-  ObservationEnvironmentQuantitative,
+  ObservationEnvironmentQualitativeObject,
+  ObservationEnvironmentQuantitativeObject,
   SubcountQualitativeMeasurement,
   SubcountQuantitativeMeasurement
 } from 'interfaces/useObservationApi.interface';
@@ -134,8 +134,8 @@ const CreateObservationPage = () => {
         environments
       } = formData.standardColumns;
 
-      const quantitative_environments: ObservationEnvironmentQuantitative[] = [];
-      const qualitative_environments: ObservationEnvironmentQualitative[] = [];
+      const quantitative_environments: ObservationEnvironmentQuantitativeObject[] = [];
+      const qualitative_environments: ObservationEnvironmentQualitativeObject[] = [];
 
       for (const environment of environments) {
         if (environment._type === 'quantitative') {

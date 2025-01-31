@@ -6,15 +6,6 @@ import { CellObject } from '../xlsx-utils/column-validator-utils';
 // be updated to be more generic if other code sets are used in the future, or if they can be nullable.
 
 /**
- * Given a list of column names, fetches the environment type definitions for each column (if the column has a matching
- * environment type definition).
- *
- * @export
- * @param {string[]} columnNames
- * @param {ObservationEnvironmentService} observationEnvironmentService
- * @return {*}  {Promise<EnvironmentType>}
- */
-/**
  * Returns SIMS code sets for any observation code columns (columns where the value is a code).
  *
  * @export

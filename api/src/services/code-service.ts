@@ -1,6 +1,9 @@
 import { IDBConnection } from '../database/db';
 import { CodeRepository, IAllCodeSets } from '../repositories/code-repository';
-import { EnvironmentType } from '../repositories/observation-environment-repository';
+import {
+  QualitativeEnvironmentTypeDefinition,
+  QuantitativeEnvironmentTypeDefinition
+} from '../repositories/observation-environment-repository';
 import { getLogger } from '../utils/logger';
 import { DBService } from './db-service';
 import { ObservationEnvironmentService } from './observation-environment-service';
@@ -108,10 +111,16 @@ export class CodeService extends DBService {
    * Find qualitative and quantitative environments that match the given search terms.
    *
    * @param {string[]} searchTerms
-   * @return {*}  {Promise<EnvironmentType>}
+   * @return {*}  {Promise<{
+   *     qualitative_environments: QualitativeEnvironmentTypeDefinition[];
+   *     quantitative_environments: QuantitativeEnvironmentTypeDefinition[];
+   *   }>}
    * @memberof CodeService
    */
-  async findEnvironmentReferenceData(searchTerms: string[]): Promise<EnvironmentType> {
+  async findEnvironmentReferenceData(searchTerms: string[]): Promise<{
+    qualitative_environments: QualitativeEnvironmentTypeDefinition[];
+    quantitative_environments: QuantitativeEnvironmentTypeDefinition[];
+  }> {
     defaultLog.debug({ message: 'getEnvironments' });
 
     const observationEnvironmentService = new ObservationEnvironmentService(this.connection);

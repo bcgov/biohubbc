@@ -1,22 +1,32 @@
 export type ObservationEnvironmentQualitativeObject = {
-  observation_environment_qualitative_id: number;
+  /**
+   * The primary ID for the record.
+   * May be undefined if the record has not been saved to the database.
+   */
+  observation_environment_qualitative_id?: number;
+  /**
+   * The ID of the environment type definition record.
+   */
   environment_qualitative_id: string;
+  /**
+   * The ID of the selected environment type option definition record.
+   */
   environment_qualitative_option_id: string;
 };
 
 export type ObservationEnvironmentQuantitativeObject = {
-  observation_environment_quantitative_id: number;
+  /**
+   * The primary ID for the record.
+   * May be undefined if the record has not been saved to the database.
+   */
+  observation_environment_quantitative_id?: number;
+  /**
+   * The ID of the environment type definition record.
+   */
   environment_quantitative_id: string;
-  value: number;
-};
-
-export type ObservationEnvironmentQualitative = {
-  environment_qualitative_id: string;
-  environment_qualitative_option_id: string;
-};
-
-export type ObservationEnvironmentQuantitative = {
-  environment_quantitative_id: string;
+  /**
+   * The numeric value selected.
+   */
   value: number;
 };
 

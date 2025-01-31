@@ -1,7 +1,7 @@
 import {
   ObservationEnvironmentData,
-  ObservationEnvironmentQualitative,
-  ObservationEnvironmentQuantitative
+  ObservationEnvironmentQualitativeObject,
+  ObservationEnvironmentQuantitativeObject
 } from 'interfaces/observation/environment.interface';
 import {
   CBQualitativeMeasurementTypeDefinition,
@@ -87,7 +87,7 @@ type ObservationRecordWithSamplingAndSubcountData = StandardObservationColumns &
   ObservationSubcountsObject;
 
 export interface ICreateEditObservation {
-  standardColumns: StandardObservationColumns;
+  standardColumns: StandardObservationColumns & ObservationEnvironmentData;
   subcounts: SubcountToSave[];
 }
 
@@ -102,8 +102,8 @@ export interface ICreateObservation {
     latitude: number | null;
     longitude: number | null;
     observation_sign_id: number | null;
-    qualitative_environments: ObservationEnvironmentQualitative[];
-    quantitative_environments: ObservationEnvironmentQuantitative[];
+    qualitative_environments: ObservationEnvironmentQualitativeObject[];
+    quantitative_environments: ObservationEnvironmentQuantitativeObject[];
   };
   subcounts: {
     count: number | null;

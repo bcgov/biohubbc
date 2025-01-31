@@ -2,7 +2,6 @@ import { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import {
-  EnvironmentType,
   QualitativeEnvironmentTypeDefinition,
   QuantitativeEnvironmentTypeDefinition
 } from '../../repositories/observation-environment-repository';
@@ -119,7 +118,10 @@ describe('environment-column-utils', () => {
   describe('getEnvironmentColumnsTypeDefinitionMap', () => {
     it('returns the column name definition map', () => {
       const environmentColumns: string[] = ['Wind Speed', 'Weight', 'Col With No Match', 'Wind Direction', 'Height'];
-      const environmentTypeDefinitions: EnvironmentType = {
+      const environmentTypeDefinitions: {
+        qualitative_environments: QualitativeEnvironmentTypeDefinition[];
+        quantitative_environments: QuantitativeEnvironmentTypeDefinition[];
+      } = {
         qualitative_environments: [
           {
             environment_qualitative_id: '11-123-456',

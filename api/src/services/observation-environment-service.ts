@@ -1,9 +1,9 @@
+import { ObservationEnvironmentQualitativeModel } from '../database-models/observation_environment_qualitative';
+import { ObservationEnvironmentQuantitativeModel } from '../database-models/observation_environment_quantitative';
 import { IDBConnection } from '../database/db';
 import {
   InsertObservationQualitativeEnvironmentRecord,
   InsertObservationQuantitativeEnvironmentRecord,
-  ObservationEnvironmentQualitativeRecord,
-  ObservationEnvironmentQuantitativeRecord,
   ObservationEnvironmentRepository,
   QualitativeEnvironmentTypeDefinition,
   QuantitativeEnvironmentTypeDefinition
@@ -22,12 +22,12 @@ export class ObservationEnvironmentService extends DBService {
    * Insert qualitative environment records.
    *
    * @param {InsertObservationQualitativeEnvironmentRecord[]} data
-   * @return {*}  {Promise<ObservationEnvironmentQualitativeRecord[]>}
+   * @return {*}  {Promise<ObservationEnvironmentQualitativeModel[]>}
    * @memberof ObservationEnvironmentService
    */
   async insertObservationQualitativeEnvironment(
     data: InsertObservationQualitativeEnvironmentRecord[]
-  ): Promise<ObservationEnvironmentQualitativeRecord[]> {
+  ): Promise<ObservationEnvironmentQualitativeModel[]> {
     return this.observationEnvironmentRepository.insertObservationQualitativeEnvironmentRecords(data);
   }
 
@@ -35,12 +35,12 @@ export class ObservationEnvironmentService extends DBService {
    * Insert quantitative environment records.
    *
    * @param {InsertObservationQuantitativeEnvironmentRecord[]} data
-   * @return {*}  {Promise<ObservationEnvironmentQuantitativeRecord[]>}
+   * @return {*}  {Promise<ObservationEnvironmentQuantitativeModel[]>}
    * @memberof ObservationEnvironmentService
    */
   async insertObservationQuantitativeEnvironment(
     data: InsertObservationQuantitativeEnvironmentRecord[]
-  ): Promise<ObservationEnvironmentQuantitativeRecord[]> {
+  ): Promise<ObservationEnvironmentQuantitativeModel[]> {
     return this.observationEnvironmentRepository.insertObservationQuantitativeEnvironmentRecords(data);
   }
 

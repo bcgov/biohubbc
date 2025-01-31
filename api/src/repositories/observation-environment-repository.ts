@@ -1,88 +1,30 @@
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
+import { EnvironmentQualitativeRecord } from '../database-models/environment_qualitative';
+import { EnvironmentQualitativeOptionRecord } from '../database-models/environment_qualitative_option';
+import { EnvironmentQuantitativeRecord } from '../database-models/environment_quantitative';
+import { ObservationEnvironmentQualitativeModel } from '../database-models/observation_environment_qualitative';
+import { ObservationEnvironmentQuantitativeModel } from '../database-models/observation_environment_quantitative';
 import { getKnex } from '../database/db';
 import { BaseRepository } from './base-repository';
 
-// Environment unit type definition.
-export const EnvironmentUnit = z.enum([
-  // Should be kept in sync with the database table `environment_unit`
-  'millimeter',
-  'centimeter',
-  'meter',
-  'milligram',
-  'gram',
-  'kilogram',
-  'percent',
-  'celsius',
-  'ppt',
-  'SCF',
-  'degrees',
-  'pH'
-]);
-export type EnvironmentUnit = z.infer<typeof EnvironmentUnit>;
-
-// Qualitative environment option type definition.
-const QualitativeEnvironmentOption = z.object({
-  environment_qualitative_option_id: z.string().uuid(),
-  environment_qualitative_id: z.string().uuid(),
-  name: z.string(),
-  description: z.string().nullable()
-});
-export type QualitativeEnvironmentOption = z.infer<typeof QualitativeEnvironmentOption>;
-
 // Qualitative environment type definition.
-export const QualitativeEnvironmentTypeDefinition = z.object({
-  environment_qualitative_id: z.string().uuid(),
-  name: z.string(),
-  description: z.string().nullable(),
-  options: z.array(QualitativeEnvironmentOption)
+export const QualitativeEnvironmentTypeDefinition = EnvironmentQualitativeRecord.omit({
+  record_end_date: true
+}).extend({
+  options: z.array(
+    EnvironmentQualitativeOptionRecord.omit({
+      record_end_date: true
+    })
+  )
 });
 export type QualitativeEnvironmentTypeDefinition = z.infer<typeof QualitativeEnvironmentTypeDefinition>;
 
 // Quantitative environment type definition.
-const QuantitativeEnvironmentTypeDefinition = z.object({
-  environment_quantitative_id: z.string().uuid(),
-  name: z.string(),
-  description: z.string().nullable(),
-  min: z.number().nullable(),
-  max: z.number().nullable(),
-  unit: EnvironmentUnit.nullable()
+const QuantitativeEnvironmentTypeDefinition = EnvironmentQuantitativeRecord.omit({
+  record_end_date: true
 });
 export type QuantitativeEnvironmentTypeDefinition = z.infer<typeof QuantitativeEnvironmentTypeDefinition>;
-
-/**
- * Mixed environment columns type definition.
- */
-export type EnvironmentType = {
-  qualitative_environments: QualitativeEnvironmentTypeDefinition[];
-  quantitative_environments: QuantitativeEnvironmentTypeDefinition[];
-};
-
-export const ObservationEnvironmentQualitativeRecord = z.object({
-  observation_environment_qualitative_id: z.number(),
-  observation_id: z.number(),
-  environment_qualitative_id: z.string().uuid(),
-  environment_qualitative_option_id: z.string().uuid(),
-  create_date: z.string(),
-  create_user: z.number(),
-  update_date: z.string().nullable(),
-  update_user: z.number().nullable(),
-  revision_count: z.number()
-});
-export type ObservationEnvironmentQualitativeRecord = z.infer<typeof ObservationEnvironmentQualitativeRecord>;
-
-export const ObservationEnvironmentQuantitativeRecord = z.object({
-  observation_environment_quantitative_id: z.number(),
-  observation_id: z.number(),
-  environment_quantitative_id: z.string().uuid(),
-  value: z.number(),
-  create_date: z.string(),
-  create_user: z.number(),
-  update_date: z.string().nullable(),
-  update_user: z.number().nullable(),
-  revision_count: z.number()
-});
-export type ObservationEnvironmentQuantitativeRecord = z.infer<typeof ObservationEnvironmentQuantitativeRecord>;
 
 export interface InsertObservationQualitativeEnvironmentRecord {
   survey_observation_id: number;
@@ -101,15 +43,15 @@ export class ObservationEnvironmentRepository extends BaseRepository {
    * Insert qualitative environment records.
    *
    * @param {InsertObservationQualitativeEnvironmentRecord[]} record
-   * @return {*}  {Promise<ObservationEnvironmentQualitativeRecord[]>}
+   * @return {*}  {Promise<ObservationEnvironmentQualitativeModel[]>}
    * @memberof ObservationEnvironmentRepository
    */
   async insertObservationQualitativeEnvironmentRecords(
     record: InsertObservationQualitativeEnvironmentRecord[]
-  ): Promise<ObservationEnvironmentQualitativeRecord[]> {
+  ): Promise<ObservationEnvironmentQualitativeModel[]> {
     const qb = getKnex().queryBuilder().insert(record).into('observation_environment_qualitative').returning('*');
 
-    const response = await this.connection.knex(qb, ObservationEnvironmentQualitativeRecord);
+    const response = await this.connection.knex(qb, ObservationEnvironmentQualitativeModel);
 
     return response.rows;
   }
@@ -118,15 +60,15 @@ export class ObservationEnvironmentRepository extends BaseRepository {
    * Insert quantitative environment records.
    *
    * @param {InsertObservationQuantitativeEnvironmentRecord[]} record
-   * @return {*}  {Promise<ObservationEnvironmentQuantitativeRecord[]>}
+   * @return {*}  {Promise<ObservationEnvironmentQuantitativeModel[]>}
    * @memberof ObservationEnvironmentRepository
    */
   async insertObservationQuantitativeEnvironmentRecords(
     record: InsertObservationQuantitativeEnvironmentRecord[]
-  ): Promise<ObservationEnvironmentQuantitativeRecord[]> {
+  ): Promise<ObservationEnvironmentQuantitativeModel[]> {
     const qb = getKnex().queryBuilder().insert(record).into('observation_environment_quantitative').returning('*');
 
-    const response = await this.connection.knex(qb, ObservationEnvironmentQuantitativeRecord);
+    const response = await this.connection.knex(qb, ObservationEnvironmentQuantitativeModel);
 
     return response.rows;
   }

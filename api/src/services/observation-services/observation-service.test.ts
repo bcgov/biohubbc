@@ -97,7 +97,7 @@ describe('ObservationService', () => {
         .resolves({ qualitative_measurements: [], quantitative_measurements: [] });
 
       const getEnvironmentTypeDefinitionsForSurveyStub = sinon
-        .stub(SubCountService.prototype, 'getEnvironmentTypeDefinitionsForSurvey')
+        .stub(ObservationService.prototype, 'getEnvironmentTypeDefinitionsForSurvey')
         .resolves({ qualitative_environments: [], quantitative_environments: [] });
 
       const getSamplePeriodsForSurveyStub = sinon

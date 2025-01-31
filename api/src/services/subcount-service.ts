@@ -1,5 +1,4 @@
 import { IDBConnection } from '../database/db';
-import { EnvironmentType } from '../repositories/observation-environment-repository';
 import {
   InsertObservationSubCount,
   InsertSubCountEvent,
@@ -13,7 +12,6 @@ import {
   CritterbaseService
 } from './critterbase-service';
 import { DBService } from './db-service';
-import { ObservationEnvironmentService } from './observation-environment-service';
 import { ObservationSubCountMeasurementService } from './observation-subcount-measurement-service';
 
 export class SubCountService extends DBService {
@@ -103,27 +101,5 @@ export class SubCountService extends DBService {
     ]);
 
     return { qualitative_measurements: response[0], quantitative_measurements: response[1] };
-  }
-
-  /**
-   * Returns a unique set of all environment type definitions for all environments of all observations in the given
-   * survey.
-   *
-   * @param {number} surveyId
-   * @return {*}  {Promise<EnvironmentType>}
-   * @memberof SubCountService
-   */
-  async getEnvironmentTypeDefinitionsForSurvey(surveyId: number): Promise<EnvironmentType> {
-    const observationEnvironmentService = new ObservationEnvironmentService(this.connection);
-
-    const [qualitativeEnvironmentTypeDefinitions, quantitativeEnvironmentTypeDefinitions] = await Promise.all([
-      observationEnvironmentService.getQualitativeEnvironmentTypeDefinitionsForSurvey(surveyId),
-      observationEnvironmentService.getQuantitativeEnvironmentTypeDefinitionsForSurvey(surveyId)
-    ]);
-
-    return {
-      qualitative_environments: qualitativeEnvironmentTypeDefinitions,
-      quantitative_environments: quantitativeEnvironmentTypeDefinitions
-    };
   }
 }
