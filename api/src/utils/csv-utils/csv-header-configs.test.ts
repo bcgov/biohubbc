@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import { z } from 'zod';
 import { CSVParams, CSVRow, CSVRowState } from './csv-config-validation.interface';
 import {
+  getDateRangeCellValidator,
   getDescriptionCellValidator,
   getLatitudeCellValidator,
   getLongitudeCellValidator,
@@ -263,6 +264,14 @@ describe('CSVHeaderConfigs', () => {
   });
 
   describe('getPositiveNumberCellValidator', () => {
+    it('should return an empty array if the cell is optional and undefined', () => {
+      const positiveNumberValidator = getPositiveNumberCellValidator({ optional: true });
+
+      const result = positiveNumberValidator({ cell: undefined } as CSVParams);
+
+      expect(result).to.be.deep.equal([]);
+    });
+
     it('should return an empty array if the cell is valid', () => {
       const positiveNumberValidator = getPositiveNumberCellValidator({ optional: false });
 
@@ -297,6 +306,14 @@ describe('CSVHeaderConfigs', () => {
       expect(result).to.be.deep.equal([]);
     });
 
+    it('should return an empty array if the cell is optional and undefined', () => {
+      const nonEmptyStringValidator = getNonEmptyStringCellValidator({ optional: true });
+
+      const result = nonEmptyStringValidator({ cell: undefined } as CSVParams);
+
+      expect(result).to.be.deep.equal([]);
+    });
+
     it('should return an empty array if the cell is valid', () => {
       const nonEmptyStringValidator = getNonEmptyStringCellValidator({ optional: false });
 
@@ -319,6 +336,32 @@ describe('CSVHeaderConfigs', () => {
 
         expect(result.length).to.be.equal(1);
       }
+    });
+  });
+
+  describe('getDateRangeCellValidator', () => {
+    it('should return an empty array when the cell is valid (timestamps)', () => {
+      const dateRangeValidator = getDateRangeCellValidator({ optional: false });
+      const result = dateRangeValidator({ cell: '2021-01-01 10:10:10 - 2021-01-02 10:10:10' } as CSVParams);
+      expect(result).to.be.deep.equal([]);
+    });
+
+    it('should return an empty array if the cell is valid', () => {
+      const dateRangeValidator = getDateRangeCellValidator({ optional: false });
+      const result = dateRangeValidator({ cell: '2021-01-01 - 2021-01-02' } as CSVParams);
+      expect(result).to.be.deep.equal([]);
+    });
+
+    it('should return a single error when invalid', () => {
+      const dateRangeValidator = getDateRangeCellValidator({ optional: false });
+      const result = dateRangeValidator({ cell: '2021-01-01 - 2021-01-02 - 2021-01-03' } as CSVParams);
+      expect(result.length).to.be.equal(1);
+    });
+
+    it('shoud return an empty array if the cell is optional and undefined', () => {
+      const dateRangeValidator = getDateRangeCellValidator({ optional: true });
+      const result = dateRangeValidator({ cell: undefined } as CSVParams);
+      expect(result).to.be.deep.equal([]);
     });
   });
 });

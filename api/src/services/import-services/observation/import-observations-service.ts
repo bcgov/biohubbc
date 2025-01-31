@@ -44,7 +44,7 @@ import {
   getQualitativeMeasurementFromRowState,
   getQuantitativeEnvironmentFromRowState,
   getQuantitativeMeasurementFromRowState,
-  getSamplingPeriodFromRowState,
+  getSamplePeriodIdFromRowState,
   getTaxonFromRowState
 } from '../utils/row-state';
 import { getTaxonMap, getTsnsFromTaxonMap, TaxonMap } from '../utils/taxon';
@@ -139,7 +139,7 @@ export class ImportObservationsService extends DBService {
           survey_id: this.surveyId,
           itis_tsn: getTaxonFromRowState(row).itis_tsn,
           itis_scientific_name: getTaxonFromRowState(row).itis_scientific_name,
-          survey_sample_period_id: getSamplingPeriodFromRowState(row).sampling_period_id ?? null,
+          survey_sample_period_id: getSamplePeriodIdFromRowState(row).sample_period_id ?? null,
           latitude: row.LATITUDE,
           longitude: row.LONGITUDE,
           count: row.COUNT, // deprecated - each subcount will eventually have its own count
@@ -226,12 +226,12 @@ export class ImportObservationsService extends DBService {
    * @returns {*} {Promise<void>}
    */
   async _setObservationRowValidators(taxonMap: TaxonMap, samplePeriodService: SamplePeriodService) {
-    const samplingPeriods = await samplePeriodService.getSamplePeriodsForSurvey(this.surveyId);
+    const samplePeriods = await samplePeriodService.getSamplePeriodsForSurvey(this.surveyId);
 
     // Inject the row validators - handles taxon and sampling information validation
     this.utils.config.rowValidators = [
       getTaxonRowValidator(taxonMap, this.utils, 'SPECIES'),
-      getObservationSamplingInformationRowValidator(samplingPeriods, this.utils)
+      getObservationSamplingInformationRowValidator(samplePeriods, this.utils)
     ];
   }
 
@@ -272,7 +272,7 @@ export class ImportObservationsService extends DBService {
   _getRowSubcounts(row: CSVRow): InsertSubCount[] {
     const newSubcount: InsertSubCount = {
       observation_subcount_id: null,
-      subcount: row.COUNT,
+      subcount: row.COUNT ?? null,
       observation_subcount_sign_id: row.SUBCOUNT_SIGN ?? null,
       comment: row.COMMENT ?? null,
       qualitative_measurements: [],
@@ -306,11 +306,21 @@ export class ImportObservationsService extends DBService {
       }
       // Grab the qualitative environment from the row
       else if (isQualitativeEnvironmentStub(nestedState)) {
-        newSubcount.qualitative_environments.push(getQualitativeEnvironmentFromRowState(nestedState));
+        const qualitativeEnvironment = getQualitativeEnvironmentFromRowState(nestedState);
+
+        newSubcount.qualitative_environments.push({
+          environment_qualitative_id: qualitativeEnvironment.environment_qualitative_id,
+          environment_qualitative_option_id: qualitativeEnvironment.environment_qualitative_option_id
+        });
       }
       // Grab the quantitative environment from the row
       else if (isQuantitativeEnvironmentStub(nestedState)) {
-        newSubcount.quantitative_environments.push(getQuantitativeEnvironmentFromRowState(nestedState));
+        const quantitativeEnvironment = getQuantitativeEnvironmentFromRowState(nestedState);
+
+        newSubcount.quantitative_environments.push({
+          environment_quantitative_id: quantitativeEnvironment.environment_quantitative_id,
+          value: quantitativeEnvironment.value
+        });
       } else {
         // NOTE: Should this else path throw an error?
       }

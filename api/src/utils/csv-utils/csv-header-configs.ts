@@ -298,9 +298,9 @@ export const getDateRangeCellValidator = (options?: CSVOptionalCell): CSVCellVal
       return [];
     }
 
-    const [startDate, endDate] = String(params.cell).split(' - ');
+    const dateParts = String(params.cell).split(' - ');
 
-    if (!isDateString(startDate) || !isDateString(endDate)) {
+    if (dateParts.length !== 2 || !dateParts.every(isDateString)) {
       return [
         {
           error: 'Invalid date range',

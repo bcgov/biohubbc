@@ -96,7 +96,7 @@ export function getObservationSamplingInformationRowValidator(
 
       // Found exactly one period record that uniquely matches some or all of the filters above, then update the row state
       updateCSVRowState(params.row, {
-        sampling_period_id: matchingPeriodsBySamplingInformation[0].survey_sample_period_id
+        sample_period_id: matchingPeriodsBySamplingInformation[0].survey_sample_period_id
       });
 
       return [];
@@ -133,7 +133,7 @@ export function getObservationSamplingInformationRowValidator(
 
     // If at least one period record is found that satisfies the observation date and time, then update row state
     updateCSVRowState(params.row, {
-      sampling_period_id: matchingPeriodsByObservationDateTime[0].survey_sample_period_id
+      sample_period_id: matchingPeriodsByObservationDateTime[0].survey_sample_period_id
     });
 
     return [];
