@@ -101,7 +101,7 @@ POST.apiDoc = {
                   funding_source_id: {
                     description: 'Funding source id',
                     type: 'integer',
-                    minimum: 1,
+                    minimum: 1
                   }
                 }
               }
@@ -230,7 +230,6 @@ POST.apiDoc = {
 };
 
 export function createSurvey(): RequestHandler {
-
   return async (req, res) => {
     const projectId = Number(req.params.projectId);
 

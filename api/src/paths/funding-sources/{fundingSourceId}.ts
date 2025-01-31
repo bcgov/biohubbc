@@ -54,13 +54,7 @@ GET.apiDoc = {
               funding_source: {
                 type: 'object',
                 additionalProperties: false,
-                required: [
-                  'funding_source_id',
-                  'name',
-                  'description',
-                  'revision_count',
-                  'survey_reference_count',
-                ],
+                required: ['funding_source_id', 'name', 'description', 'revision_count', 'survey_reference_count'],
                 properties: {
                   funding_source_id: {
                     type: 'integer',

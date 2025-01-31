@@ -72,7 +72,7 @@ const TeamMembers = () => {
 
             {/* Member Roles with Icons */}
             {member.roles.map((role) => (
-              <Tooltip title={role} arrow key={role} >
+              <Tooltip title={role} arrow key={role}>
                 <Box ml={0.75} mt={0.5}>
                   <Icon path={PROJECT_ROLE_ICONS[role] ?? ''} size={0.75} color={grey[600]} />
                 </Box>

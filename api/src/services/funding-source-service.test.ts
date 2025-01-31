@@ -40,7 +40,7 @@ describe('FundingSourceService', () => {
 
       const getFundingSourcesSupplementaryDataStub = sinon
         .stub(FundingSourceRepository.prototype, 'getFundingSourceSupplementaryData')
-        .resolves({ survey_reference_count: 2});
+        .resolves({ survey_reference_count: 2 });
 
       const response = await fundingSourceService.getFundingSources({ name: 'name' });
 

@@ -385,8 +385,8 @@ export class FundingSourceRepository extends BaseRepository {
 
   /**
    * Update a survey funding source record in survey_funding_source.
-   * 
-   * NOTE: Keeping this function in anticipation of funding sources having additional data that needs to be updateable (eg. funding source ID number, year, etc.). 
+   *
+   * NOTE: Keeping this function in anticipation of funding sources having additional data that needs to be updateable (eg. funding source ID number, year, etc.).
    * Right now it isn't very useful.
    *
    * @param {number} surveyId
@@ -395,11 +395,7 @@ export class FundingSourceRepository extends BaseRepository {
    * @return {*}  {Promise<void>}
    * @memberof FundingSourceRepository
    */
-  async putSurveyFundingSource(
-    surveyId: number,
-    fundingSourceId: number,
-    revision_count: number
-  ): Promise<void> {
+  async putSurveyFundingSource(surveyId: number, fundingSourceId: number, revision_count: number): Promise<void> {
     const sqlStatement = SQL`
       UPDATE
         survey_funding_source

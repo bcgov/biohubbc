@@ -75,7 +75,7 @@ GET.apiDoc = {
                   minimum: 0,
                   description: 'The number of surveys that reference this funding source.',
                   nullable: true
-                },
+                }
               }
             }
           }

@@ -103,7 +103,7 @@ PUT.apiDoc = {
                     description: 'The integer of times the record has been revised.',
                     type: 'integer',
                     minimum: 0
-                  },
+                  }
                 }
               }
             },

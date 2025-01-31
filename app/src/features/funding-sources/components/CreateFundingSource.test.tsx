@@ -90,7 +90,7 @@ describe('CreateFundingSource', () => {
         start_date: '',
         end_date: '',
         revision_count: 1,
-        survey_reference_count: 0,
+        survey_reference_count: 0
       }
     ]);
     const onClose = jest.fn();

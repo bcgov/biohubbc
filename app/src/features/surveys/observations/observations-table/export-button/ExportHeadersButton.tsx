@@ -44,7 +44,7 @@ const ExportHeadersButton = () => {
   return (
     <Button
       title="Download Observation CSV"
-      variant='outlined'
+      variant="outlined"
       onClick={handleDownload}
       startIcon={<Icon path={mdiTrayArrowDown} size={1} />}
       aria-label="Download Observation CSV">
