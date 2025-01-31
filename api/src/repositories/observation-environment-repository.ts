@@ -58,9 +58,9 @@ export type EnvironmentType = {
   quantitative_environments: QuantitativeEnvironmentTypeDefinition[];
 };
 
-export const ObservationSubCountQualitativeEnvironmentRecord = z.object({
-  observation_subcount_qualitative_environment_id: z.number(),
-  observation_subcount_id: z.number(),
+export const ObservationEnvironmentQualitativeRecord = z.object({
+  observation_environment_qualitative_id: z.number(),
+  observation_id: z.number(),
   environment_qualitative_id: z.string().uuid(),
   environment_qualitative_option_id: z.string().uuid(),
   create_date: z.string(),
@@ -69,13 +69,11 @@ export const ObservationSubCountQualitativeEnvironmentRecord = z.object({
   update_user: z.number().nullable(),
   revision_count: z.number()
 });
-export type ObservationSubCountQualitativeEnvironmentRecord = z.infer<
-  typeof ObservationSubCountQualitativeEnvironmentRecord
->;
+export type ObservationEnvironmentQualitativeRecord = z.infer<typeof ObservationEnvironmentQualitativeRecord>;
 
-export const ObservationSubCountQuantitativeEnvironmentRecord = z.object({
-  observation_subcount_quantitative_environment_id: z.number(),
-  observation_subcount_id: z.number(),
+export const ObservationEnvironmentQuantitativeRecord = z.object({
+  observation_environment_quantitative_id: z.number(),
+  observation_id: z.number(),
   environment_quantitative_id: z.string().uuid(),
   value: z.number(),
   create_date: z.string(),
@@ -84,40 +82,34 @@ export const ObservationSubCountQuantitativeEnvironmentRecord = z.object({
   update_user: z.number().nullable(),
   revision_count: z.number()
 });
-export type ObservationSubCountQuantitativeEnvironmentRecord = z.infer<
-  typeof ObservationSubCountQuantitativeEnvironmentRecord
->;
+export type ObservationEnvironmentQuantitativeRecord = z.infer<typeof ObservationEnvironmentQuantitativeRecord>;
 
-export interface InsertObservationSubCountQualitativeEnvironmentRecord {
-  observation_subcount_id: number;
+export interface InsertObservationQualitativeEnvironmentRecord {
+  survey_observation_id: number;
   environment_qualitative_id: string;
   environment_qualitative_option_id: string;
 }
 
-export interface InsertObservationSubCountQuantitativeEnvironmentRecord {
-  observation_subcount_id: number;
+export interface InsertObservationQuantitativeEnvironmentRecord {
+  survey_observation_id: number;
   environment_quantitative_id: string;
   value: number;
 }
 
-export class ObservationSubCountEnvironmentRepository extends BaseRepository {
+export class ObservationEnvironmentRepository extends BaseRepository {
   /**
    * Insert qualitative environment records.
    *
-   * @param {InsertObservationSubCountQualitativeEnvironmentRecord[]} record
-   * @return {*}  {Promise<ObservationSubCountQualitativeEnvironmentRecord[]>}
-   * @memberof ObservationSubCountEnvironmentRepository
+   * @param {InsertObservationQualitativeEnvironmentRecord[]} record
+   * @return {*}  {Promise<ObservationEnvironmentQualitativeRecord[]>}
+   * @memberof ObservationEnvironmentRepository
    */
   async insertObservationQualitativeEnvironmentRecords(
-    record: InsertObservationSubCountQualitativeEnvironmentRecord[]
-  ): Promise<ObservationSubCountQualitativeEnvironmentRecord[]> {
-    const qb = getKnex()
-      .queryBuilder()
-      .insert(record)
-      .into('observation_subcount_qualitative_environment')
-      .returning('*');
+    record: InsertObservationQualitativeEnvironmentRecord[]
+  ): Promise<ObservationEnvironmentQualitativeRecord[]> {
+    const qb = getKnex().queryBuilder().insert(record).into('observation_environment_qualitative').returning('*');
 
-    const response = await this.connection.knex(qb, ObservationSubCountQualitativeEnvironmentRecord);
+    const response = await this.connection.knex(qb, ObservationEnvironmentQualitativeRecord);
 
     return response.rows;
   }
@@ -125,20 +117,16 @@ export class ObservationSubCountEnvironmentRepository extends BaseRepository {
   /**
    * Insert quantitative environment records.
    *
-   * @param {InsertObservationSubCountQuantitativeEnvironmentRecord[]} record
-   * @return {*}  {Promise<ObservationSubCountQuantitativeEnvironmentRecord[]>}
-   * @memberof ObservationSubCountEnvironmentRepository
+   * @param {InsertObservationQuantitativeEnvironmentRecord[]} record
+   * @return {*}  {Promise<ObservationEnvironmentQuantitativeRecord[]>}
+   * @memberof ObservationEnvironmentRepository
    */
   async insertObservationQuantitativeEnvironmentRecords(
-    record: InsertObservationSubCountQuantitativeEnvironmentRecord[]
-  ): Promise<ObservationSubCountQuantitativeEnvironmentRecord[]> {
-    const qb = getKnex()
-      .queryBuilder()
-      .insert(record)
-      .into('observation_subcount_quantitative_environment')
-      .returning('*');
+    record: InsertObservationQuantitativeEnvironmentRecord[]
+  ): Promise<ObservationEnvironmentQuantitativeRecord[]> {
+    const qb = getKnex().queryBuilder().insert(record).into('observation_environment_quantitative').returning('*');
 
-    const response = await this.connection.knex(qb, ObservationSubCountQuantitativeEnvironmentRecord);
+    const response = await this.connection.knex(qb, ObservationEnvironmentQuantitativeRecord);
 
     return response.rows;
   }
@@ -148,7 +136,7 @@ export class ObservationSubCountEnvironmentRepository extends BaseRepository {
    *
    * @param {number} surveyId
    * @param {number[]} surveyObservationId
-   * @memberof ObservationSubCountEnvironmentRepository
+   * @memberof ObservationEnvironmentRepository
    */
   async deleteObservationEnvironments(surveyId: number, surveyObservationId: number[]) {
     await this.deleteObservationQualitativeEnvironmentRecordsForSurveyObservationIds(surveyObservationId, surveyId);
@@ -161,7 +149,7 @@ export class ObservationSubCountEnvironmentRepository extends BaseRepository {
    *
    * @param {string[]} environmentQualitativeIds
    * @return {*}  {Promise<QualitativeEnvironmentTypeDefinition[]>}
-   * @memberof ObservationSubCountEnvironmentRepository
+   * @memberof ObservationEnvironmentRepository
    */
   async getQualitativeEnvironmentTypeDefinitions(
     environmentQualitativeIds: string[]
@@ -200,7 +188,7 @@ export class ObservationSubCountEnvironmentRepository extends BaseRepository {
    *
    * @param {string[]} environmentQuantitativeIds
    * @return {*}  {Promise<QuantitativeEnvironmentTypeDefinition[]>}
-   * @memberof ObservationSubCountEnvironmentRepository
+   * @memberof ObservationEnvironmentRepository
    */
   async getQuantitativeEnvironmentTypeDefinitions(
     environmentQuantitativeIds: string[]
@@ -230,19 +218,18 @@ export class ObservationSubCountEnvironmentRepository extends BaseRepository {
    *
    * @param {number} surveyId
    * @return {*}  {Promise<QualitativeEnvironmentTypeDefinition[]>}
-   * @memberof ObservationSubCountEnvironmentRepository
+   * @memberof ObservationEnvironmentRepository
    */
   async getQualitativeEnvironmentTypeDefinitionsForSurvey(
     surveyId: number
   ): Promise<QualitativeEnvironmentTypeDefinition[]> {
     const sqlStatement = SQL`
-      WITH w_observation_subcount_qualitative_environment AS (
+      WITH w_observation_environment_qualitative AS (
         SELECT DISTINCT
           environment_qualitative_id
         FROM
           survey_observation
-          LEFT JOIN observation_subcount ON survey_observation.survey_observation_id = observation_subcount.survey_observation_id
-          LEFT JOIN observation_subcount_qualitative_environment ON observation_subcount.observation_subcount_id = observation_subcount_qualitative_environment.observation_subcount_id
+          LEFT JOIN observation_environment_qualitative ON observation_environment_qualitative.survey_observation_id = survey_observation.survey_observation_id
         WHERE
           survey_observation.survey_id = ${surveyId}
       )
@@ -259,8 +246,8 @@ export class ObservationSubCountEnvironmentRepository extends BaseRepository {
           )
         ) AS options
       FROM
-        w_observation_subcount_qualitative_environment
-        INNER JOIN environment_qualitative ON environment_qualitative.environment_qualitative_id = w_observation_subcount_qualitative_environment.environment_qualitative_id
+        w_observation_environment_qualitative
+        INNER JOIN environment_qualitative ON environment_qualitative.environment_qualitative_id = w_observation_environment_qualitative.environment_qualitative_id
         INNER JOIN environment_qualitative_option ON environment_qualitative.environment_qualitative_id = environment_qualitative_option.environment_qualitative_id
       GROUP BY
         environment_qualitative.environment_qualitative_id,
@@ -279,7 +266,7 @@ export class ObservationSubCountEnvironmentRepository extends BaseRepository {
    *
    * @param {number} surveyId
    * @return {*}  {Promise<QuantitativeEnvironmentTypeDefinition[]>}
-   * @memberof ObservationSubCountEnvironmentRepository
+   * @memberof ObservationEnvironmentRepository
    */
   async getQuantitativeEnvironmentTypeDefinitionsForSurvey(
     surveyId: number
@@ -294,12 +281,10 @@ export class ObservationSubCountEnvironmentRepository extends BaseRepository {
         environment_quantitative.unit
       FROM
         survey_observation
-        INNER JOIN observation_subcount ON
-          survey_observation.survey_observation_id = observation_subcount.survey_observation_id
-        INNER JOIN observation_subcount_quantitative_environment
-          ON observation_subcount.observation_subcount_id = observation_subcount_quantitative_environment.observation_subcount_id
+        INNER JOIN observation_environment_quantitative
+          ON survey_observation.survey_observation_id = observation_environment_quantitative.survey_observation_id
         INNER JOIN environment_quantitative
-          ON observation_subcount_quantitative_environment.environment_quantitative_id = environment_quantitative.environment_quantitative_id
+          ON observation_environment_quantitative.environment_quantitative_id = environment_quantitative.environment_quantitative_id
       WHERE
         survey_observation.survey_id = ${surveyId};
   `;
@@ -314,7 +299,7 @@ export class ObservationSubCountEnvironmentRepository extends BaseRepository {
    *
    * @param {string[]} searchTerms
    * @return {*}  {Promise<QualitativeEnvironmentTypeDefinition[]>}
-   * @memberof ObservationSubCountEnvironmentRepository
+   * @memberof ObservationEnvironmentRepository
    */
   async findQualitativeEnvironmentTypeDefinitions(
     searchTerms: string[]
@@ -385,7 +370,7 @@ export class ObservationSubCountEnvironmentRepository extends BaseRepository {
    *
    * @param {string[]} searchTerms
    * @return {*}  {Promise<QuantitativeEnvironmentTypeDefinition[]>}
-   * @memberof ObservationSubCountEnvironmentRepository
+   * @memberof ObservationEnvironmentRepository
    */
   async findQuantitativeEnvironmentTypeDefinitions(
     searchTerms: string[]
@@ -429,7 +414,7 @@ export class ObservationSubCountEnvironmentRepository extends BaseRepository {
    * @param {number[]} surveyObservationId
    * @param {number} surveyId
    * @return {*}  {Promise<number>}
-   * @memberof ObservationSubCountEnvironmentRepository
+   * @memberof ObservationEnvironmentRepository
    */
   async deleteObservationQualitativeEnvironmentRecordsForSurveyObservationIds(
     surveyObservationId: number[],
@@ -438,14 +423,12 @@ export class ObservationSubCountEnvironmentRepository extends BaseRepository {
     const qb = getKnex()
       .queryBuilder()
       .delete()
-      .from('observation_subcount_qualitative_environment')
-      .using(['observation_subcount', 'survey_observation'])
-      .whereRaw(
-        'observation_subcount_qualitative_environment.observation_subcount_id = observation_subcount.observation_subcount_id'
-      )
-      .whereRaw('observation_subcount.survey_observation_id = survey_observation.survey_observation_id')
-      .andWhere(`survey_observation.survey_id`, surveyId)
+      .from('observation_environment_qualitative')
+      .using(['survey_observation'])
+      .andWhere('observation_environment_qualitative.survey_observation_id', 'survey_observation.survey_observation_id')
+      .andWhere('survey_observation.survey_id', surveyId)
       .whereIn('survey_observation.survey_observation_id', surveyObservationId);
+
     const response = await this.connection.knex(qb);
 
     return response.rowCount ?? 0;
@@ -457,7 +440,7 @@ export class ObservationSubCountEnvironmentRepository extends BaseRepository {
    * @param {number[]} surveyObservationId
    * @param {number} surveyId
    * @return {*}  {Promise<number>}
-   * @memberof ObservationSubCountEnvironmentRepository
+   * @memberof ObservationEnvironmentRepository
    */
   async deleteObservationQuantitativeEnvironmentRecordsForSurveyObservationIds(
     surveyObservationId: number[],
@@ -466,13 +449,13 @@ export class ObservationSubCountEnvironmentRepository extends BaseRepository {
     const qb = getKnex()
       .queryBuilder()
       .delete()
-      .from('observation_subcount_quantitative_environment')
-      .using(['observation_subcount', 'survey_observation'])
-      .whereRaw(
-        'observation_subcount_quantitative_environment.observation_subcount_id = observation_subcount.observation_subcount_id'
+      .from('observation_environment_quantitative')
+      .using(['survey_observation'])
+      .andWhere(
+        'observation_environment_quantitative.survey_observation_id',
+        'survey_observation.survey_observation_id'
       )
-      .whereRaw('observation_subcount.survey_observation_id = survey_observation.survey_observation_id')
-      .andWhere(`survey_observation.survey_id`, surveyId)
+      .andWhere('survey_observation.survey_id', surveyId)
       .whereIn('survey_observation.survey_observation_id', surveyObservationId);
 
     const response = await this.connection.knex(qb);
@@ -489,7 +472,7 @@ export class ObservationSubCountEnvironmentRepository extends BaseRepository {
    *       environment_quantitative_id: string[];
    *     }} environmentIds
    * @return {*}  {Promise<void>}
-   * @memberof ObservationSubCountEnvironmentRepository
+   * @memberof ObservationEnvironmentRepository
    */
   async deleteEnvironmentsForEnvironmentIds(
     surveyId: number,
@@ -511,7 +494,7 @@ export class ObservationSubCountEnvironmentRepository extends BaseRepository {
    * @param {number} surveyId
    * @param {string[]} environment_qualitative_id
    * @return {*}  {Promise<number>}
-   * @memberof ObservationSubCountEnvironmentRepository
+   * @memberof ObservationEnvironmentRepository
    */
   async deleteQualitativeEnvironmentForEnvironmentIds(
     surveyId: number,
@@ -520,14 +503,11 @@ export class ObservationSubCountEnvironmentRepository extends BaseRepository {
     const qb = getKnex()
       .queryBuilder()
       .delete()
-      .from('observation_subcount_qualitative_environment')
-      .using(['observation_subcount', 'survey_observation'])
-      .whereRaw(
-        'observation_subcount_qualitative_environment.observation_subcount_id = observation_subcount.observation_subcount_id'
-      )
-      .whereRaw('observation_subcount.survey_observation_id = survey_observation.survey_observation_id')
+      .from('observation_environment_qualitative')
+      .using(['survey_observation'])
+      .andWhere('observation_environment_qualitative.survey_observation_id = survey_observation.survey_observation_id')
       .andWhere('survey_observation.survey_id', surveyId)
-      .whereIn('observation_subcount_qualitative_environment.environment_qualitative_id', environment_qualitative_ids);
+      .whereIn('observation_environment_qualitative.environment_qualitative_id', environment_qualitative_ids);
 
     const response = await this.connection.knex(qb);
 
@@ -541,7 +521,7 @@ export class ObservationSubCountEnvironmentRepository extends BaseRepository {
    * @param {number} surveyId
    * @param {string[]} environment_quantitative_id
    * @return {*}  {Promise<number>}
-   * @memberof ObservationSubCountEnvironmentRepository
+   * @memberof ObservationEnvironmentRepository
    */
   async deleteQuantitativeEnvironmentForEnvironmentIds(
     surveyId: number,
@@ -550,17 +530,11 @@ export class ObservationSubCountEnvironmentRepository extends BaseRepository {
     const qb = getKnex()
       .queryBuilder()
       .delete()
-      .from('observation_subcount_quantitative_environment')
-      .using(['observation_subcount', 'survey_observation'])
-      .whereRaw(
-        'observation_subcount_quantitative_environment.observation_subcount_id = observation_subcount.observation_subcount_id'
-      )
-      .whereRaw('observation_subcount.survey_observation_id = survey_observation.survey_observation_id')
+      .from('observation_environment_quantitative')
+      .using(['survey_observation'])
+      .andWhere('observation_environment_quantitative.survey_observation_id = survey_observation.survey_observation_id')
       .andWhere('survey_observation.survey_id', surveyId)
-      .whereIn(
-        'observation_subcount_quantitative_environment.environment_quantitative_id',
-        environment_quantitative_ids
-      );
+      .whereIn('observation_environment_quantitative.environment_quantitative_id', environment_quantitative_ids);
 
     const response = await this.connection.knex(qb);
 

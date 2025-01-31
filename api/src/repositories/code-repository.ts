@@ -50,7 +50,7 @@ export const IAllCodeSets = z.object({
   survey_progress: CodeSet(SurveyProgressCode.shape),
   method_response_metrics: CodeSet(MethodResponseMetricsCode.shape),
   attractants: CodeSet(AttractantCode.shape),
-  observation_subcount_signs: CodeSet(ObservationSubcountSignCode.shape),
+  observation_signs: CodeSet(ObservationSubcountSignCode.shape),
   telemetry_device_makes: CodeSet(DeviceMakeCode.shape),
   frequency_units: CodeSet(FrequencyUnitCode.shape),
   alert_types: CodeSet(AlertTypeCode.shape),
@@ -455,18 +455,18 @@ export class CodeRepository extends BaseRepository {
   }
 
   /**
-   * Fetch observation subcount sign codes.
+   * Fetch observation sign codes.
    *
    * @return {*}
    * @memberof CodeRepository
    */
-  async getObservationSubcountSigns() {
+  async getObservationSigns() {
     const sqlStatement = SQL`
       SELECT
-        observation_subcount_sign_id AS id,
+        observation_sign_id AS id,
         name,
         description
-      FROM observation_subcount_sign
+      FROM observation_sign
       WHERE record_end_date IS null;
     `;
 

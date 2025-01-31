@@ -11,7 +11,7 @@ import { CellObject } from '../xlsx-utils/column-validator-utils';
  *
  * @export
  * @param {string[]} columnNames
- * @param {ObservationSubCountEnvironmentService} observationSubCountEnvironmentService
+ * @param {ObservationEnvironmentService} observationSubCountEnvironmentService
  * @return {*}  {Promise<EnvironmentType>}
  */
 /**

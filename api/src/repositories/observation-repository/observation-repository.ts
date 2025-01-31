@@ -1,5 +1,7 @@
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
+import { ObservationEnvironmentQualitativeRecord } from '../../database-models/observation_environment_qualitative';
+import { ObservationEnvironmentQuantitativeRecord } from '../../database-models/observation_environment_quantitative';
 import { SurveyObservationModel, SurveyObservationRecord } from '../../database-models/survey_observation';
 import { getKnex } from '../../database/db';
 import { ApiExecuteSQLError } from '../../errors/api-error';
@@ -8,10 +10,6 @@ import { getLogger } from '../../utils/logger';
 import { GeoJSONPointZodSchema } from '../../zod-schema/geoJsonZodSchema';
 import { ApiPaginationOptions } from '../../zod-schema/pagination';
 import { BaseRepository } from '../base-repository';
-import {
-  ObservationSubCountQualitativeEnvironmentRecord,
-  ObservationSubCountQuantitativeEnvironmentRecord
-} from '../observation-subcount-environment-repository';
 import {
   ObservationSubCountQualitativeMeasurementRecord,
   ObservationSubCountQuantitativeMeasurementRecord
@@ -36,6 +34,23 @@ const ObservationSamplingData = z.object({
   survey_sample_period_start_datetime: z.string().nullable()
 });
 
+const ObservationEnvironmentQualitativeObject = ObservationEnvironmentQualitativeRecord.pick({
+  observation_environment_qualitative_id: true,
+  environment_qualitative_id: true,
+  environment_qualitative_option_id: true
+});
+
+const ObservationEnvironmentQuantitativeObject = ObservationEnvironmentQuantitativeRecord.pick({
+  observation_environment_quantitative_id: true,
+  environment_quantitative_id: true,
+  value: true
+});
+
+const ObservationEnvironmentData = z.object({
+  qualitative_environments: z.array(ObservationEnvironmentQualitativeObject),
+  quantitative_environments: z.array(ObservationEnvironmentQuantitativeObject)
+});
+
 const ObservationSubcountQualitativeMeasurementObject = ObservationSubCountQualitativeMeasurementRecord.pick({
   critterbase_taxon_measurement_id: true,
   critterbase_measurement_qualitative_option_id: true
@@ -46,27 +61,12 @@ const ObservationSubcountQuantitativeMeasurementObject = ObservationSubCountQuan
   value: true
 });
 
-const ObservationSubcountQualitativeEnvironmentObject = ObservationSubCountQualitativeEnvironmentRecord.pick({
-  observation_subcount_qualitative_environment_id: true,
-  environment_qualitative_id: true,
-  environment_qualitative_option_id: true
-});
-
-const ObservationSubcountQuantitativeEnvironmentObject = ObservationSubCountQuantitativeEnvironmentRecord.pick({
-  observation_subcount_quantitative_environment_id: true,
-  environment_quantitative_id: true,
-  value: true
-});
-
 const ObservationSubcountObject = z.object({
   observation_subcount_id: ObservationSubCountRecord.shape.observation_subcount_id,
-  observation_subcount_sign_id: ObservationSubCountRecord.shape.observation_subcount_sign_id,
   comment: ObservationSubCountRecord.shape.comment,
   subcount: ObservationSubCountRecord.shape.subcount,
   qualitative_measurements: z.array(ObservationSubcountQualitativeMeasurementObject),
-  quantitative_measurements: z.array(ObservationSubcountQuantitativeMeasurementObject),
-  qualitative_environments: z.array(ObservationSubcountQualitativeEnvironmentObject),
-  quantitative_environments: z.array(ObservationSubcountQuantitativeEnvironmentObject)
+  quantitative_measurements: z.array(ObservationSubcountQuantitativeMeasurementObject)
 });
 
 const ObservationSubcountsObject = z.object({
@@ -82,7 +82,9 @@ const ObservationSubcountsObject = z.object({
  */
 export const ObservationRecordWithSamplingAndSubcountData = SurveyObservationRecord.extend(
   ObservationSamplingData.shape
-).extend(ObservationSubcountsObject.shape);
+)
+  .extend(ObservationEnvironmentData.shape)
+  .extend(ObservationSubcountsObject.shape);
 export type ObservationRecordWithSamplingAndSubcountData = z.infer<typeof ObservationRecordWithSamplingAndSubcountData>;
 
 export const ObservationGeometryRecord = z.object({
@@ -92,36 +94,39 @@ export const ObservationGeometryRecord = z.object({
 export type ObservationGeometryRecord = z.infer<typeof ObservationGeometryRecord>;
 
 /**
- * Interface reflecting survey observations that are being inserted into the database
+ * Interface reflecting structure of observations that are being inserted into the database.
  */
-export type InsertObservation = Pick<
-  SurveyObservationRecord,
-  | 'survey_id'
-  | 'itis_tsn'
-  | 'itis_scientific_name'
-  | 'latitude'
-  | 'longitude'
-  | 'count'
-  | 'observation_date'
-  | 'observation_time'
-  | 'survey_sample_period_id'
->;
+export const InsertObservation = SurveyObservationRecord.pick({
+  survey_id: true,
+  itis_tsn: true,
+  itis_scientific_name: true,
+  latitude: true,
+  longitude: true,
+  count: true,
+  observation_date: true,
+  observation_time: true,
+  survey_sample_period_id: true,
+  observation_sign_id: true
+}).extend(ObservationEnvironmentData.shape);
+export type InsertObservation = z.infer<typeof InsertObservation>;
 
 /**
- * Interface reflecting survey observations that are being updated in the database
+ * Interface reflecting structure of observations that are being updated in the database.
  */
-export type UpdateObservation = Pick<
-  SurveyObservationRecord,
-  | 'survey_observation_id'
-  | 'itis_tsn'
-  | 'itis_scientific_name'
-  | 'latitude'
-  | 'longitude'
-  | 'count'
-  | 'observation_date'
-  | 'observation_time'
-  | 'survey_sample_period_id'
->;
+export const UpdateObservation = SurveyObservationRecord.pick({
+  survey_observation_id: true,
+  survey_id: true,
+  itis_tsn: true,
+  itis_scientific_name: true,
+  latitude: true,
+  longitude: true,
+  count: true,
+  observation_date: true,
+  observation_time: true,
+  survey_sample_period_id: true,
+  observation_sign_id: true
+}).extend(ObservationEnvironmentData.shape);
+export type UpdateObservation = z.infer<typeof UpdateObservation>;
 
 /**
  * Interface reflecting survey observations retrieved from the database
@@ -197,7 +202,10 @@ export class ObservationRepository extends BaseRepository {
       }
     }
 
-    const response = await this.connection.knex(query);
+    console.log(query.toSQL().toNative().sql);
+    console.log(query.toSQL().toNative().bindings);
+
+    const response = await this.connection.knex(query, ObservationRecordWithSamplingAndSubcountData);
 
     return response.rows;
   }
@@ -262,7 +270,8 @@ export class ObservationRepository extends BaseRepository {
         observation_date,
         observation_time,
         itis_tsn,
-        itis_scientific_name
+        itis_scientific_name,
+        observation_sign_id
       )
       OVERRIDING SYSTEM VALUE
       VALUES
@@ -283,7 +292,8 @@ export class ObservationRepository extends BaseRepository {
             observation.observation_date ? `'${observation.observation_date}'` : 'NULL',
             observation.observation_time ? `'${observation.observation_time}'` : 'NULL',
             observation.itis_tsn ?? 'NULL',
-            observation.itis_scientific_name ? `'${observation.itis_scientific_name}'` : 'NULL'
+            observation.itis_scientific_name ? `'${observation.itis_scientific_name}'` : 'NULL',
+            observation.observation_sign_id ?? 'NULL'
           ].join(', ')})`;
         })
         .join(', ')
@@ -314,7 +324,8 @@ export class ObservationRepository extends BaseRepository {
         longitude,
         count,
         observation_time,
-        observation_date;
+        observation_date,
+        observation_sign_id;
     `);
 
     const response = await this.connection.sql(sqlStatement, SurveyObservationRecord);
@@ -371,7 +382,8 @@ export class ObservationRepository extends BaseRepository {
         'longitude',
         'count',
         'observation_time',
-        'observation_date'
+        'observation_date',
+        'observation_sign_id'
       ])
       .from('survey_observation')
       .where('survey_observation_id', surveyObservationId)
@@ -410,7 +422,8 @@ export class ObservationRepository extends BaseRepository {
         'longitude',
         'count',
         'observation_time',
-        'observation_date'
+        'observation_date',
+        'observation_sign_id'
       ])
       .from('survey_observation')
       .where('survey_id', surveyId);

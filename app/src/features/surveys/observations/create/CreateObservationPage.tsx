@@ -22,9 +22,9 @@ import { useProjectContext, useSurveyContext } from 'hooks/useContext';
 import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import {
   ICreateObservationRequest,
-  SubcountQualitativeEnvironment,
+  ObservationEnvironmentQualitative,
+  ObservationEnvironmentQuantitative,
   SubcountQualitativeMeasurement,
-  SubcountQuantitativeEnvironment,
   SubcountQuantitativeMeasurement
 } from 'interfaces/useObservationApi.interface';
 import { useContext, useEffect, useRef, useState } from 'react';
@@ -34,7 +34,6 @@ import { v4 } from 'uuid';
 
 export const initialSubcountValues = {
   observation_subcount_id: null,
-  observation_subcount_sign_id: null,
   count: null,
   comment: null,
   measurements: [],
@@ -135,8 +134,8 @@ const CreateObservationPage = () => {
         environments
       } = formData.standardColumns;
 
-      const quantitative_environments: SubcountQuantitativeEnvironment[] = [];
-      const qualitative_environments: SubcountQualitativeEnvironment[] = [];
+      const quantitative_environments: ObservationEnvironmentQuantitative[] = [];
+      const qualitative_environments: ObservationEnvironmentQualitative[] = [];
 
       for (const environment of environments) {
         if (environment._type === 'quantitative') {
@@ -169,6 +168,7 @@ const CreateObservationPage = () => {
         latitude,
         longitude,
         count: formData.subcounts.reduce((sum, subcount) => sum + (subcount.count ?? 0), 0),
+        observation_sign_id: formData.standardColumns.observation_sign_id,
         qualitative_environments,
         quantitative_environments
       };
@@ -194,7 +194,6 @@ const CreateObservationPage = () => {
         }
 
         return {
-          observation_subcount_sign_id: formData.standardColumns.observation_sign_id,
           comment: subcountProps.comment,
           count: subcountProps.count,
           quantitative_measurements,

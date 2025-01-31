@@ -175,55 +175,45 @@ export function getSurveyObservationsBaseQuery(
           })
           .groupBy('observation_subcount_id')
       )
-      // Get all qualitative environments for all subcounts associated to all observations for the survey
+      // Get all qualitative environments for all observations associated to the survey
       .with(
         'w_qualitative_environments',
         knex
           .select(
-            'observation_subcount_id',
+            'survey_observation_id',
             knex.raw(`
               json_agg(json_build_object(
-                'observation_subcount_qualitative_environment_id', observation_subcount_qualitative_environment_id,
+                'observation_environment_qualitative_id', observation_environment_qualitative_id,
                 'environment_qualitative_id', environment_qualitative_id,
                 'environment_qualitative_option_id', environment_qualitative_option_id
               )) as qualitative_environments
             `)
           )
-          .from('observation_subcount_qualitative_environment')
-          .whereIn('observation_subcount_id', (qb1) => {
-            qb1
-              .select('observation_subcount_id')
-              .from('observation_subcount')
-              .whereIn('survey_observation_id', (qb2) => {
-                qb2.select('survey_observation_id').from('survey_observation').whereIn('survey_id', getSurveyIdsQuery);
-              });
+          .from('observation_environment_qualitative')
+          .whereIn('survey_observation_id', (qb1) => {
+            qb1.select('survey_observation_id').from('survey_observation').whereIn('survey_id', getSurveyIdsQuery);
           })
-          .groupBy('observation_subcount_id')
+          .groupBy('survey_observation_id')
       )
-      // Get all quantitative environments for all subcounts associated to all observations for the survey
+      // Get all quantitative environments for all observations associated to the survey
       .with(
         'w_quantitative_environments',
         knex
           .select(
-            'observation_subcount_id',
+            'survey_observation_id',
             knex.raw(`
               json_agg(json_build_object(
-                'observation_subcount_quantitative_environment_id', observation_subcount_quantitative_environment_id,
+                'observation_environment_quantitative_id', observation_environment_quantitative_id,
                 'environment_quantitative_id', environment_quantitative_id,
                 'value', value
               )) as quantitative_environments
             `)
           )
-          .from('observation_subcount_quantitative_environment')
-          .whereIn('observation_subcount_id', (qb1) => {
-            qb1
-              .select('observation_subcount_id')
-              .from('observation_subcount')
-              .whereIn('survey_observation_id', (qb2) => {
-                qb2.select('survey_observation_id').from('survey_observation').whereIn('survey_id', getSurveyIdsQuery);
-              });
+          .from('observation_environment_quantitative')
+          .whereIn('survey_observation_id', (qb1) => {
+            qb1.select('survey_observation_id').from('survey_observation').whereIn('survey_id', getSurveyIdsQuery);
           })
-          .groupBy('observation_subcount_id')
+          .groupBy('survey_observation_id')
       )
       // Rollup the subcount records into an array of objects for each observation
       .with(
@@ -234,13 +224,10 @@ export function getSurveyObservationsBaseQuery(
             knex.raw(`
               json_agg(json_build_object(
                 'observation_subcount_id', observation_subcount.observation_subcount_id,
-                'observation_subcount_sign_id', observation_subcount.observation_subcount_sign_id,
                 'comment', observation_subcount.comment,
                 'subcount', subcount,
                 'qualitative_measurements', COALESCE(w_qualitative_measurements.qualitative_measurements, '[]'::json),
-                'quantitative_measurements', COALESCE(w_quantitative_measurements.quantitative_measurements, '[]'::json),
-                'qualitative_environments', COALESCE(w_qualitative_environments.qualitative_environments, '[]'::json),
-                'quantitative_environments', COALESCE(w_quantitative_environments.quantitative_environments, '[]'::json)
+                'quantitative_measurements', COALESCE(w_quantitative_measurements.quantitative_measurements, '[]'::json)
               )) as subcounts
             `)
           )
@@ -254,16 +241,6 @@ export function getSurveyObservationsBaseQuery(
             'w_quantitative_measurements',
             'observation_subcount.observation_subcount_id',
             'w_quantitative_measurements.observation_subcount_id'
-          )
-          .leftJoin(
-            'w_qualitative_environments',
-            'observation_subcount.observation_subcount_id',
-            'w_qualitative_environments.observation_subcount_id'
-          )
-          .leftJoin(
-            'w_quantitative_environments',
-            'observation_subcount.observation_subcount_id',
-            'w_quantitative_environments.observation_subcount_id'
           )
           .whereIn(
             'survey_observation_id',
@@ -283,6 +260,14 @@ export function getSurveyObservationsBaseQuery(
         'survey_observation.count',
         'survey_observation.observation_date',
         'survey_observation.observation_time',
+        'survey_observation.observation_sign_id',
+        // Observation environment data
+        knex.raw(
+          `COALESCE(w_qualitative_environments.qualitative_environments, '[]'::json) as qualitative_environments`
+        ),
+        knex.raw(
+          `COALESCE(w_quantitative_environments.quantitative_environments, '[]'::json) as quantitative_environments`
+        ),
         // Observation subcount data
         knex.raw(`COALESCE(w_subcounts.subcounts, '[]'::json) as subcounts`),
         // Site data
@@ -301,8 +286,18 @@ export function getSurveyObservationsBaseQuery(
         'survey_observation.survey_sample_period_id',
         'w_sampling_data.survey_sample_period_id'
       )
+      .leftJoin(
+        'w_qualitative_environments',
+        'survey_observation.survey_observation_id',
+        'w_qualitative_environments.survey_observation_id'
+      )
+      .leftJoin(
+        'w_quantitative_environments',
+        'survey_observation.survey_observation_id',
+        'w_quantitative_environments.survey_observation_id'
+      )
       // Note: inner join requires every observation record to have at least one subcount record, otherwise use left join
-      .innerJoin('w_subcounts', 'w_subcounts.survey_observation_id', 'survey_observation.survey_observation_id')
+      .leftJoin('w_subcounts', 'w_subcounts.survey_observation_id', 'survey_observation.survey_observation_id')
       .whereIn('survey_observation.survey_id', getSurveyIdsQuery)
   );
 }

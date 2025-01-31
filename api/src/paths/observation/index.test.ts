@@ -36,16 +36,16 @@ describe('findObservations', () => {
         method_technique_name: 'TECHNIQUE_NAME',
         survey_sample_period_id: 1,
         survey_sample_period_start_datetime: '2000-01-01 00:00:00',
+        observation_sign_id: 1,
+        qualitative_environments: [],
+        quantitative_environments: [],
         subcounts: [
           {
             observation_subcount_id: 9,
             subcount: 5,
-            observation_subcount_sign_id: 1,
             comment: 'comment',
             qualitative_measurements: [],
-            quantitative_measurements: [],
-            qualitative_environments: [],
-            quantitative_environments: []
+            quantitative_measurements: []
           }
         ]
       }
@@ -132,16 +132,16 @@ describe('findObservations', () => {
         method_technique_name: 'TECHNIQUE_NAME',
         survey_sample_period_id: 1,
         survey_sample_period_start_datetime: '2000-01-01 00:00:00',
+        observation_sign_id: 1,
+        qualitative_environments: [],
+        quantitative_environments: [],
         subcounts: [
           {
             observation_subcount_id: 9,
             subcount: 5,
-            observation_subcount_sign_id: 1,
             comment: 'comment',
             qualitative_measurements: [],
-            quantitative_measurements: [],
-            qualitative_environments: [],
-            quantitative_environments: []
+            quantitative_measurements: []
           }
         ]
       }

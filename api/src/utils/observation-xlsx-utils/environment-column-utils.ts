@@ -2,8 +2,8 @@ import {
   EnvironmentType,
   QualitativeEnvironmentTypeDefinition,
   QuantitativeEnvironmentTypeDefinition
-} from '../../repositories/observation-subcount-environment-repository';
-import { ObservationSubCountEnvironmentService } from '../../services/observation-subcount-environment-service';
+} from '../../repositories/observation-environment-repository';
+import { ObservationEnvironmentService } from '../../services/observation-environment-service';
 import { isQualitativeValueValid, isQuantitativeValueValid } from './common-utils';
 
 export type EnvironmentNameTypeDefinitionMap = Map<
@@ -22,12 +22,12 @@ export interface IEnvironmentDataToValidate {
  *
  * @export
  * @param {string[]} columnNames
- * @param {ObservationSubCountEnvironmentService} observationSubCountEnvironmentService
+ * @param {ObservationEnvironmentService} observationSubCountEnvironmentService
  * @return {*}  {Promise<EnvironmentType>}
  */
 export async function getEnvironmentTypeDefinitionsFromColumnNames(
   columnNames: string[],
-  observationSubCountEnvironmentService: ObservationSubCountEnvironmentService
+  observationSubCountEnvironmentService: ObservationEnvironmentService
 ): Promise<EnvironmentType> {
   const [qualitative_environments, quantitative_environments] = await Promise.all([
     observationSubCountEnvironmentService.findQualitativeEnvironmentTypeDefinitions(columnNames),

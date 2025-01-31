@@ -125,6 +125,21 @@ const ObservationsListContainer = (props: IObservationsListContainerProps) => {
             id: String(observationRow.survey_observation_id),
             ...observationRow,
 
+            // Reduce the array of qualitative environments into an object and spread into the row
+            ...observationRow.qualitative_environments.reduce((acc, cur) => {
+              return {
+                ...acc,
+                [cur.environment_qualitative_id]: cur.environment_qualitative_option_id
+              };
+            }, {}),
+            // Reduce the array of quantitative environments into an object and spread into the row
+            ...observationRow.quantitative_environments.reduce((acc, cur) => {
+              return {
+                ...acc,
+                [cur.environment_quantitative_id]: cur.value
+              };
+            }, {}),
+
             // Spread the subcount row data into the row
             observation_subcount_id: subcountRow.observation_subcount_id,
             // Reduce the array of qualitative measurements into an object and spread into the row
@@ -139,20 +154,6 @@ const ObservationsListContainer = (props: IObservationsListContainerProps) => {
               return {
                 ...acc,
                 [cur.critterbase_taxon_measurement_id]: cur.value
-              };
-            }, {}),
-            // Reduce the array of qualitative environments into an object and spread into the row
-            ...subcountRow.qualitative_environments.reduce((acc, cur) => {
-              return {
-                ...acc,
-                [cur.environment_qualitative_id]: cur.environment_qualitative_option_id
-              };
-            }, {}),
-            // Reduce the array of quantitative environments into an object and spread into the row
-            ...subcountRow.quantitative_environments.reduce((acc, cur) => {
-              return {
-                ...acc,
-                [cur.environment_quantitative_id]: cur.value
               };
             }, {})
           };

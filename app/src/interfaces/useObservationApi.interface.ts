@@ -42,15 +42,22 @@ export type StandardObservationColumns = {
   observation_time: string | null;
   latitude: number | null;
   longitude: number | null;
+  observation_sign_id: number | null;
+  qualitative_environments: {
+    environment_qualitative_id: string;
+    environment_qualitative_option_id: string;
+  }[];
+  quantitative_environments: {
+    environment_quantitative_id: string;
+    value: number;
+  }[];
 };
 
 export type SubcountObservationColumns = {
   observation_subcount_id: number | null;
-  observation_subcount_sign_id: number;
   comment: string | null;
   subcount: number | null;
   qualitative_measurements: {
-    field: string;
     critterbase_taxon_measurement_id: string;
     critterbase_measurement_qualitative_option_id: string;
   }[];
@@ -116,9 +123,9 @@ export type ObservationSubcountQuantitativeMeasurementObject = Pick<
 > &
   FormikKeyUuid;
 
-type ObservationSubCountQualitativeEnvironmentRecord = {
-  observation_subcount_qualitative_environment_id: number;
-  observation_subcount_id: number;
+type ObservationEnvironmentQualitativeRecord = {
+  observation_environment_qualitative_id: number;
+  observation_id: number;
   environment_qualitative_id: string;
   environment_qualitative_option_id: string;
   create_date: string;
@@ -128,9 +135,9 @@ type ObservationSubCountQualitativeEnvironmentRecord = {
   revision_count: number;
 };
 
-type ObservationSubCountQuantitativeEnvironmentRecord = {
-  observation_subcount_quantitative_environment_id: number;
-  observation_subcount_id: number;
+type ObservationEnvironmentQuantitativeRecord = {
+  observation_environment_quantitative_id: number;
+  observation_id: number;
   environment_quantitative_id: string;
   value: number;
   create_date: string;
@@ -141,21 +148,20 @@ type ObservationSubCountQuantitativeEnvironmentRecord = {
 };
 
 export type ObservationSubcountQualitativeEnvironmentObject = Pick<
-  ObservationSubCountQualitativeEnvironmentRecord,
-  'observation_subcount_qualitative_environment_id' | 'environment_qualitative_id' | 'environment_qualitative_option_id'
+  ObservationEnvironmentQualitativeRecord,
+  'observation_environment_qualitative_id' | 'environment_qualitative_id' | 'environment_qualitative_option_id'
 > &
   FormikKeyUuid;
 
 export type ObservationSubcountQuantitativeEnvironmentObject = Pick<
-  ObservationSubCountQuantitativeEnvironmentRecord,
-  'observation_subcount_quantitative_environment_id' | 'environment_quantitative_id' | 'value'
+  ObservationEnvironmentQuantitativeRecord,
+  'observation_environment_quantitative_id' | 'environment_quantitative_id' | 'value'
 > &
   FormikKeyUuid;
 
 type ObservationSubcountRecord = {
   observation_subcount_id: number;
   survey_observation_id: number;
-  observation_subcount_sign_id: number;
   comment: string;
   subcount: number | null;
   create_date: string;
@@ -167,7 +173,6 @@ type ObservationSubcountRecord = {
 
 type ObservationSubcountObject = {
   observation_subcount_id: ObservationSubcountRecord['observation_subcount_id'];
-  observation_subcount_sign_id: ObservationSubcountRecord['observation_subcount_sign_id'];
   comment: ObservationSubcountRecord['comment'];
   subcount: ObservationSubcountRecord['subcount'];
   qualitative_measurements: ObservationSubcountQualitativeMeasurementObject[];
@@ -194,12 +199,12 @@ export interface SubcountQuantitativeMeasurement {
   measurement_value: number;
 }
 
-export interface SubcountQualitativeEnvironment {
+export interface ObservationEnvironmentQualitative {
   environment_qualitative_id: string;
   environment_qualitative_option_id: string;
 }
 
-export interface SubcountQuantitativeEnvironment {
+export interface ObservationEnvironmentQuantitative {
   environment_quantitative_id: string;
   value: number;
 }
@@ -210,8 +215,6 @@ export interface SubcountToSave {
   comment: string | null;
   qualitative_measurements: SubcountQualitativeMeasurement[];
   quantitative_measurements: SubcountQuantitativeMeasurement[];
-  qualitative_environments: SubcountQualitativeEnvironment[];
-  quantitative_environments: SubcountQuantitativeEnvironment[];
 }
 
 export interface IObservationTableRowToSave {
@@ -229,12 +232,12 @@ export interface ICreateObservationRequest {
     observation_time: string | null;
     latitude: number | null;
     longitude: number | null;
-    qualitative_environments: SubcountQualitativeEnvironment[];
-    quantitative_environments: SubcountQuantitativeEnvironment[];
+    observation_sign_id: number | null;
+    qualitative_environments: ObservationEnvironmentQualitative[];
+    quantitative_environments: ObservationEnvironmentQuantitative[];
   };
   subcounts: {
     count: number | null;
-    observation_subcount_sign_id: number | null;
     qualitative_measurements: SubcountQualitativeMeasurement[];
     quantitative_measurements: SubcountQuantitativeMeasurement[];
     comment: string | null;

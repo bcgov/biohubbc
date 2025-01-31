@@ -40,7 +40,7 @@ GET.apiDoc = {
               'survey_progress',
               'method_response_metrics',
               'attractants',
-              'observation_subcount_signs',
+              'observation_signs',
               'telemetry_device_makes',
               'frequency_units',
               'alert_types',
@@ -368,10 +368,10 @@ GET.apiDoc = {
                   }
                 }
               },
-              observation_subcount_signs: {
+              observation_signs: {
                 type: 'array',
                 description:
-                  'Possible observation subcount sign ids, indicating whether the subcount was a direct sighting, footprints, scat, etc.',
+                  'Possible observation sign ids, indicating whether the observation was a direct sighting, footprints, scat, etc.',
                 items: {
                   type: 'object',
                   additionalProperties: false,

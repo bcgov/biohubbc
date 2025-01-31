@@ -62,7 +62,7 @@ export const ObservationSpeciesForm = () => {
         id={'standardColumns.observation_sign_id'}
         name={'standardColumns.observation_sign_id'}
         options={
-          codesContext.codesDataLoader.data?.observation_subcount_signs.map((sign) => ({
+          codesContext.codesDataLoader.data?.observation_signs.map((sign) => ({
             label: sign.name,
             value: sign.id
           })) ?? []

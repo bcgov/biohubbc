@@ -36,6 +36,8 @@ import { CBMeasurementSearchByTsnResponse, CBMeasurementType } from 'interfaces/
 import {
   IGetSurveyObservationsResponse,
   IObservationTableRowToSave,
+  ObservationEnvironmentQualitative,
+  ObservationEnvironmentQuantitative,
   ObservationRecord,
   SubcountToSave
 } from 'interfaces/useObservationApi.interface';
@@ -510,7 +512,7 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
 
     // TODO: Either latitude/longitude OR sampling period is required, and either observation date OR sampling period is required
     const requiredStandardColumns: (keyof IObservationTableRow)[] = [
-      'observation_subcount_sign_id',
+      'observation_sign_id',
       'count',
       'latitude',
       'longitude',
@@ -923,7 +925,7 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
       survey_sample_site_id: null as unknown as number,
       method_technique_id: null as unknown as number,
       survey_sample_period_id: null,
-      observation_subcount_sign_id: null as unknown as number,
+      observation_sign_id: null as unknown as number,
       count: null as unknown as number,
       observation_date: '',
       observation_time: '',
@@ -1124,8 +1126,8 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
    */
   const _getEnvironmentsToSave = useCallback(
     (row: ObservationRecord) => {
-      const qualitative: SubcountToSave['qualitative_environments'] = [];
-      const quantitative: SubcountToSave['quantitative_environments'] = [];
+      const qualitative: ObservationEnvironmentQualitative[] = [];
+      const quantitative: ObservationEnvironmentQuantitative[] = [];
 
       // For each qualitative environment column in the data grid
       for (const environmentDefinition of environmentColumns.qualitative_environments) {
@@ -1165,7 +1167,6 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
     (row: ObservationRecord) => {
       // Get all populated measurement column values for the row
       const measurementsToSave = _getMeasurementsToSave(row);
-      const environmentsToSave = _getEnvironmentsToSave(row);
 
       // Return the subcount row to save
       return {
@@ -1175,14 +1176,11 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
         // See https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-534
         subcount: row.count,
         comment: row.comment,
-        observation_subcount_sign_id: row.observation_subcount_sign_id,
         qualitative_measurements: measurementsToSave.qualitative,
-        quantitative_measurements: measurementsToSave.quantitative,
-        qualitative_environments: environmentsToSave.qualitative,
-        quantitative_environments: environmentsToSave.quantitative
+        quantitative_measurements: measurementsToSave.quantitative
       };
     },
-    [_getEnvironmentsToSave, _getMeasurementsToSave]
+    [_getMeasurementsToSave]
   );
 
   /**
@@ -1196,6 +1194,8 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
       // Get all subcount row data for the observation row
       const subcountsToSave = _getSubcountsToSave(row);
 
+      const environmentsToSave = _getEnvironmentsToSave(row);
+
       // Return the observation row to save
       return {
         standardColumns: {
@@ -1207,7 +1207,10 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
           observation_date: row.observation_date,
           observation_time: row.observation_time,
           latitude: row.latitude,
-          longitude: row.longitude
+          longitude: row.longitude,
+          observation_sign_id: row.observation_sign_id,
+          qualitative_environments: environmentsToSave.qualitative,
+          quantitative_environments: environmentsToSave.quantitative
         },
         // Set the subcount data for the observation row.
         // Why? Currently the UI only supports 1 subcount record per observation record.
@@ -1215,7 +1218,7 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
         subcounts: [subcountsToSave]
       };
     },
-    [_getSubcountsToSave]
+    [_getSubcountsToSave, _getEnvironmentsToSave]
   );
 
   /**
@@ -1256,10 +1259,23 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
           id: String(observationRow.survey_observation_id),
           ...observationRow,
 
+          // Reduce the array of qualitative environments into an object and spread into the row
+          ...observationRow.qualitative_environments.reduce((acc, cur) => {
+            return {
+              ...acc,
+              [cur.environment_qualitative_id]: cur.environment_qualitative_option_id
+            };
+          }, {}),
+          // Reduce the array of quantitative environments into an object and spread into the row
+          ...observationRow.quantitative_environments.reduce((acc, cur) => {
+            return {
+              ...acc,
+              [cur.environment_quantitative_id]: cur.value
+            };
+          }, {}),
+
           // Add the subcount id to the row
           observation_subcount_id: subcountRow.observation_subcount_id,
-          // Add the subcount sign data into the row
-          observation_subcount_sign_id: subcountRow.observation_subcount_sign_id,
           // // Add the subcount comment into the row
           comment: subcountRow.comment,
 
@@ -1275,20 +1291,6 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
             return {
               ...acc,
               [cur.critterbase_taxon_measurement_id]: cur.value
-            };
-          }, {}),
-          // Reduce the array of qualitative environments into an object and spread into the row
-          ...subcountRow.qualitative_environments.reduce((acc, cur) => {
-            return {
-              ...acc,
-              [cur.environment_qualitative_id]: cur.environment_qualitative_option_id
-            };
-          }, {}),
-          // Reduce the array of quantitative environments into an object and spread into the row
-          ...subcountRow.quantitative_environments.reduce((acc, cur) => {
-            return {
-              ...acc,
-              [cur.environment_quantitative_id]: cur.value
             };
           }, {})
         };

@@ -1,9 +1,9 @@
 import { IDBConnection } from '../database/db';
 import { CodeRepository, IAllCodeSets } from '../repositories/code-repository';
-import { EnvironmentType } from '../repositories/observation-subcount-environment-repository';
+import { EnvironmentType } from '../repositories/observation-environment-repository';
 import { getLogger } from '../utils/logger';
 import { DBService } from './db-service';
-import { ObservationSubCountEnvironmentService } from './observation-subcount-environment-service';
+import { ObservationEnvironmentService } from './observation-environment-service';
 
 const defaultLog = getLogger('services/code-queries');
 
@@ -44,7 +44,7 @@ export class CodeService extends DBService {
       survey_progress,
       method_response_metrics,
       attractants,
-      observation_subcount_signs,
+      observation_signs,
       telemetry_device_makes,
       frequency_units,
       alert_types,
@@ -69,7 +69,7 @@ export class CodeService extends DBService {
       await this.codeRepository.getSurveyProgress(),
       await this.codeRepository.getMethodResponseMetrics(),
       await this.codeRepository.getAttractants(),
-      await this.codeRepository.getObservationSubcountSigns(),
+      await this.codeRepository.getObservationSigns(),
       await this.codeRepository.getActiveTelemetryDeviceMakes(),
       await this.codeRepository.getFrequencyUnits(),
       await this.codeRepository.getAlertTypes(),
@@ -96,7 +96,7 @@ export class CodeService extends DBService {
       survey_progress,
       method_response_metrics,
       attractants,
-      observation_subcount_signs,
+      observation_signs,
       telemetry_device_makes,
       frequency_units,
       alert_types,
@@ -114,7 +114,7 @@ export class CodeService extends DBService {
   async findSubcountEnvironments(searchTerms: string[]): Promise<EnvironmentType> {
     defaultLog.debug({ message: 'getEnvironments' });
 
-    const observationSubCountEnvironmentService = new ObservationSubCountEnvironmentService(this.connection);
+    const observationSubCountEnvironmentService = new ObservationEnvironmentService(this.connection);
 
     const [qualitative_environments, quantitative_environments] = await Promise.all([
       await observationSubCountEnvironmentService.findQualitativeEnvironmentTypeDefinitions(searchTerms),

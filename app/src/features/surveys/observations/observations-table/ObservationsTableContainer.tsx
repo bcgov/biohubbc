@@ -25,7 +25,7 @@ import { DiscardChangesButton } from 'features/surveys/observations/observations
 import {
   MethodTechniqueColDef,
   ObservationCountColDef,
-  ObservationSubcountSignColDef,
+  ObservationSignColDef,
   SamplePeriodColDef,
   SampleSiteColDef,
   TaxonomyColDef
@@ -65,13 +65,13 @@ const ObservationsTableContainer = () => {
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
 
-  const observationSubcountSignOptions = useMemo(
+  const observationSignOptions = useMemo(
     () =>
-      codesContext.codesDataLoader.data?.observation_subcount_signs.map((option) => ({
-        observation_subcount_sign_id: option.id,
+      codesContext.codesDataLoader.data?.observation_signs.map((option) => ({
+        observation_sign_id: option.id,
         name: option.name
       })) ?? [],
-    [codesContext.codesDataLoader.data?.observation_subcount_signs]
+    [codesContext.codesDataLoader.data?.observation_signs]
   );
 
   const samplingInformationCache = useSamplingInformationCache();
@@ -107,7 +107,7 @@ const ObservationsTableContainer = () => {
           samplingInformationCache: samplingInformationCache,
           hasError: observationsTableContext.hasError
         }),
-        ObservationSubcountSignColDef({ observationSubcountSignOptions, hasError: observationsTableContext.hasError }),
+        ObservationSignColDef({ observationSignOptions, hasError: observationsTableContext.hasError }),
         ObservationCountColDef({
           samplingInformationCache: samplingInformationCache,
           hasError: observationsTableContext.hasError
@@ -158,7 +158,7 @@ const ObservationsTableContainer = () => {
     // observationsTableContext is listed as a missing dependency
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
-      observationSubcountSignOptions,
+      observationSignOptions,
       observationsTableContext.environmentColumns,
       observationsTableContext.hasError,
       observationsTableContext.measurementColumns,

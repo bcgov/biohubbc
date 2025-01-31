@@ -5,8 +5,8 @@ import {
   EnvironmentType,
   QualitativeEnvironmentTypeDefinition,
   QuantitativeEnvironmentTypeDefinition
-} from '../../repositories/observation-subcount-environment-repository';
-import { ObservationSubCountEnvironmentService } from '../../services/observation-subcount-environment-service';
+} from '../../repositories/observation-environment-repository';
+import { ObservationEnvironmentService } from '../../services/observation-environment-service';
 import { getMockDBConnection } from '../../__mocks__/db';
 import * as environment_column_utils from './environment-column-utils';
 import { EnvironmentNameTypeDefinitionMap, IEnvironmentDataToValidate } from './environment-column-utils';
@@ -20,7 +20,7 @@ describe('environment-column-utils', () => {
     const dbConnectionObj = getMockDBConnection();
 
     const findQualitativeEnvironmentTypeDefinitionsStub = sinon
-      .stub(ObservationSubCountEnvironmentService.prototype, 'findQualitativeEnvironmentTypeDefinitions')
+      .stub(ObservationEnvironmentService.prototype, 'findQualitativeEnvironmentTypeDefinitions')
       .resolves([
         {
           environment_qualitative_id: '11-123-456',
@@ -51,7 +51,7 @@ describe('environment-column-utils', () => {
       ]);
 
     const findQuantitativeEnvironmentTypeDefinitionsStub = sinon
-      .stub(ObservationSubCountEnvironmentService.prototype, 'findQuantitativeEnvironmentTypeDefinitions')
+      .stub(ObservationEnvironmentService.prototype, 'findQuantitativeEnvironmentTypeDefinitions')
       .resolves([
         {
           environment_quantitative_id: '66-123-456',
@@ -64,8 +64,9 @@ describe('environment-column-utils', () => {
       ]);
 
     const columnNames: string[] = ['Wind Speed', 'Weight', 'Col With No Match', 'Wind Direction', 'Height'];
-    const observationSubCountEnvironmentService: ObservationSubCountEnvironmentService =
-      new ObservationSubCountEnvironmentService(dbConnectionObj);
+    const observationSubCountEnvironmentService: ObservationEnvironmentService = new ObservationEnvironmentService(
+      dbConnectionObj
+    );
 
     const result = await environment_column_utils.getEnvironmentTypeDefinitionsFromColumnNames(
       columnNames,

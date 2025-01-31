@@ -2,7 +2,7 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { ObservationSubCountEnvironmentRepository } from '../repositories/observation-subcount-environment-repository';
+import { ObservationSubCountEnvironmentRepository } from '../repositories/observation-environment-repository';
 import { ObservationSubCountMeasurementRepository } from '../repositories/observation-subcount-measurement-repository';
 import {
   InsertObservationSubCount,

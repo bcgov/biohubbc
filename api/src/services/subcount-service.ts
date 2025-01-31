@@ -1,5 +1,5 @@
 import { IDBConnection } from '../database/db';
-import { EnvironmentType } from '../repositories/observation-subcount-environment-repository';
+import { EnvironmentType } from '../repositories/observation-environment-repository';
 import {
   InsertObservationSubCount,
   InsertSubCountEvent,
@@ -13,7 +13,7 @@ import {
   CritterbaseService
 } from './critterbase-service';
 import { DBService } from './db-service';
-import { ObservationSubCountEnvironmentService } from './observation-subcount-environment-service';
+import { ObservationEnvironmentService } from './observation-environment-service';
 import { ObservationSubCountMeasurementService } from './observation-subcount-measurement-service';
 
 export class SubCountService extends DBService {
@@ -65,7 +65,7 @@ export class SubCountService extends DBService {
     await observationSubCountMeasurementService.deleteObservationMeasurements(surveyId, surveyObservationIds);
 
     // Delete child environments, if any
-    const observationSubCountEnvironmentService = new ObservationSubCountEnvironmentService(this.connection);
+    const observationSubCountEnvironmentService = new ObservationEnvironmentService(this.connection);
     await observationSubCountEnvironmentService.deleteObservationEnvironments(surveyId, surveyObservationIds);
 
     // Delete observation_subcount records, if any
@@ -118,7 +118,7 @@ export class SubCountService extends DBService {
    * @memberof SubCountService
    */
   async getEnvironmentTypeDefinitionsForSurvey(surveyId: number): Promise<EnvironmentType> {
-    const observationSubCountEnvironmentService = new ObservationSubCountEnvironmentService(this.connection);
+    const observationSubCountEnvironmentService = new ObservationEnvironmentService(this.connection);
 
     const [qualitativeEnvironmentTypeDefinitions, quantitativeEnvironmentTypeDefinitions] = await Promise.all([
       observationSubCountEnvironmentService.getQualitativeEnvironmentTypeDefinitionsForSurvey(surveyId),

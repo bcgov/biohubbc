@@ -5,7 +5,6 @@ import sinonChai from 'sinon-chai';
 import * as db from '../../../../../../database/db';
 import { HTTPError } from '../../../../../../errors/http-error';
 import { ObservationRecordWithSamplingAndSubcountData } from '../../../../../../repositories/observation-repository/observation-repository';
-import { CritterbaseService } from '../../../../../../services/critterbase-service';
 import { ObservationService } from '../../../../../../services/observation-services/observation-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
 import * as observationRecords from './index';
@@ -21,10 +20,6 @@ describe('insertUpdateManualSurveyObservations', () => {
     const dbConnectionObj = getMockDBConnection();
 
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-    const validateSurveyObservationsStub = sinon
-      .stub(ObservationService.prototype, 'validateSurveyObservations')
-      .resolves(true);
 
     const insertUpdateSurveyObservationsStub = sinon
       .stub(ObservationService.prototype, 'insertUpdateManualSurveyObservations')
@@ -79,10 +74,6 @@ describe('insertUpdateManualSurveyObservations', () => {
 
     await requestHandler(mockReq, mockRes, mockNext);
 
-    expect(validateSurveyObservationsStub).to.have.been.calledOnceWith(
-      surveyObservations,
-      sinon.match.instanceOf(CritterbaseService)
-    );
     expect(insertUpdateSurveyObservationsStub).to.have.been.calledOnceWith(2, surveyObservations);
     expect(mockRes.statusValue).to.equal(204);
     expect(mockRes.jsonValue).to.eql(undefined);
@@ -92,8 +83,6 @@ describe('insertUpdateManualSurveyObservations', () => {
     const dbConnectionObj = getMockDBConnection({ release: sinon.stub() });
 
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-    sinon.stub(ObservationService.prototype, 'validateSurveyObservations').resolves(true);
 
     sinon.stub(ObservationService.prototype, 'insertUpdateManualSurveyObservations').rejects(new Error('a test error'));
 

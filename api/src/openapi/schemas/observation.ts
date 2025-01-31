@@ -15,13 +15,16 @@ export const findObservationsSchema: OpenAPIV3.SchemaObject = {
       'count',
       'observation_date',
       'observation_time',
+      'observation_sign_id',
       'subcounts',
       'survey_sample_site_id',
       'survey_sample_site_name',
       'method_technique_id',
       'method_technique_name',
       'survey_sample_period_id',
-      'survey_sample_period_start_datetime'
+      'survey_sample_period_start_datetime',
+      'qualitative_environments',
+      'quantitative_environments'
     ],
     properties: {
       survey_observation_id: {
@@ -62,6 +65,57 @@ export const findObservationsSchema: OpenAPIV3.SchemaObject = {
         type: 'string',
         nullable: true
       },
+      observation_sign_id: {
+        type: 'integer',
+        minimum: 1,
+        description:
+          'The observation sign ID, indicating whether the observation was a direct sighting, footprints, scat, etc.'
+      },
+      qualitative_environments: {
+        type: 'array',
+        items: {
+          type: 'object',
+          additionalProperties: false,
+          required: [
+            'observation_environment_qualitative_id',
+            'environment_qualitative_id',
+            'environment_qualitative_option_id'
+          ],
+          properties: {
+            observation_environment_qualitative_id: {
+              type: 'integer'
+            },
+            environment_qualitative_id: {
+              type: 'string',
+              format: 'uuid'
+            },
+            environment_qualitative_option_id: {
+              type: 'string',
+              format: 'uuid'
+            }
+          }
+        }
+      },
+      quantitative_environments: {
+        type: 'array',
+        items: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['observation_environment_quantitative_id', 'environment_quantitative_id', 'value'],
+          properties: {
+            observation_environment_quantitative_id: {
+              type: 'integer'
+            },
+            environment_quantitative_id: {
+              type: 'string',
+              format: 'uuid'
+            },
+            value: {
+              type: 'number'
+            }
+          }
+        }
+      },
       subcounts: {
         type: 'array',
         items: {
@@ -70,22 +124,13 @@ export const findObservationsSchema: OpenAPIV3.SchemaObject = {
           required: [
             'observation_subcount_id',
             'subcount',
-            'observation_subcount_sign_id',
             'comment',
             'qualitative_measurements',
-            'quantitative_measurements',
-            'qualitative_environments',
-            'quantitative_environments'
+            'quantitative_measurements'
           ],
           properties: {
             observation_subcount_id: {
               type: 'integer'
-            },
-            observation_subcount_sign_id: {
-              type: 'integer',
-              minimum: 1,
-              description:
-                'The observation subcount sign ID, indicating whether the subcount was a direct sighting, footprints, scat, etc.'
             },
             comment: {
               type: 'string',
@@ -121,51 +166,6 @@ export const findObservationsSchema: OpenAPIV3.SchemaObject = {
                 required: ['critterbase_taxon_measurement_id', 'value'],
                 properties: {
                   critterbase_taxon_measurement_id: {
-                    type: 'string',
-                    format: 'uuid'
-                  },
-                  value: {
-                    type: 'number'
-                  }
-                }
-              }
-            },
-            qualitative_environments: {
-              type: 'array',
-              items: {
-                type: 'object',
-                additionalProperties: false,
-                required: [
-                  'observation_subcount_qualitative_environment_id',
-                  'environment_qualitative_id',
-                  'environment_qualitative_option_id'
-                ],
-                properties: {
-                  observation_subcount_qualitative_environment_id: {
-                    type: 'integer'
-                  },
-                  environment_qualitative_id: {
-                    type: 'string',
-                    format: 'uuid'
-                  },
-                  environment_qualitative_option_id: {
-                    type: 'string',
-                    format: 'uuid'
-                  }
-                }
-              }
-            },
-            quantitative_environments: {
-              type: 'array',
-              items: {
-                type: 'object',
-                additionalProperties: false,
-                required: ['observation_subcount_quantitative_environment_id', 'environment_quantitative_id', 'value'],
-                properties: {
-                  observation_subcount_quantitative_environment_id: {
-                    type: 'integer'
-                  },
-                  environment_quantitative_id: {
                     type: 'string',
                     format: 'uuid'
                   },

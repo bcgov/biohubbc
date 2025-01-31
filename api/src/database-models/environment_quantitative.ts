@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { EnvironmentUnit } from '../repositories/observation-subcount-environment-repository';
+import { EnvironmentUnit } from '../repositories/observation-environment-repository';
 
 /**
  * Environment Quantitative Model.

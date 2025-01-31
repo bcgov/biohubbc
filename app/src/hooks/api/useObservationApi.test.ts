@@ -30,6 +30,9 @@ describe('useObservationApi', () => {
           survey_sample_site_name: 'site name',
           method_technique_name: 'method name',
           survey_sample_period_start_datetime: '2021-01-01 12:00:00',
+          observation_sign_id: 1,
+          qualitative_environments: [],
+          quantitative_environments: [],
           subcounts: []
         }
       ],

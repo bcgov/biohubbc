@@ -28,7 +28,6 @@ describe('SubCountRepository', () => {
         survey_observation_id: 1,
         comment: 'comment',
         subcount: 5,
-        observation_subcount_sign_id: null,
         create_date: '1970-01-01',
         create_user: 1,
         update_date: null,

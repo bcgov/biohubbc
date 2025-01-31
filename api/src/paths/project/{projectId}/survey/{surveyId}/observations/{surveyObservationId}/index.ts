@@ -79,36 +79,21 @@ GET.apiDoc = {
             required: [
               'survey_observation_id',
               'survey_id',
-              'latitude',
-              'longitude',
-              'count',
               'itis_tsn',
               'itis_scientific_name',
+              'survey_sample_period_id',
+              'count',
+              'latitude',
+              'longitude',
               'observation_date',
               'observation_time',
-              'survey_sample_site_id',
-              'method_technique_id',
-              'survey_sample_period_id',
-              'create_user',
-              'create_date',
-              'update_user',
-              'update_date',
-              'revision_count'
+              'observation_sign_id'
             ],
             properties: {
               survey_observation_id: {
                 type: 'integer'
               },
               survey_id: {
-                type: 'integer'
-              },
-              latitude: {
-                type: 'number'
-              },
-              longitude: {
-                type: 'number'
-              },
-              count: {
                 type: 'integer'
               },
               itis_tsn: {
@@ -118,45 +103,28 @@ GET.apiDoc = {
                 type: 'string',
                 nullable: true
               },
+              survey_sample_period_id: {
+                type: 'integer',
+                nullable: true
+              },
+              count: {
+                type: 'integer'
+              },
+              latitude: {
+                type: 'number'
+              },
+              longitude: {
+                type: 'number'
+              },
               observation_date: {
                 type: 'string'
               },
               observation_time: {
                 type: 'string'
               },
-              survey_sample_site_id: {
-                type: 'integer',
-                nullable: true
-              },
-              method_technique_id: {
-                type: 'integer',
-                nullable: true
-              },
-              survey_sample_period_id: {
-                type: 'integer',
-                nullable: true
-              },
-              create_date: {
-                type: 'string',
-                description: 'ISO 8601 date string'
-              },
-              create_user: {
+              observation_sign_id: {
                 type: 'integer',
                 minimum: 1
-              },
-              update_date: {
-                type: 'string',
-                description: 'ISO 8601 date string',
-                nullable: true
-              },
-              update_user: {
-                type: 'integer',
-                minimum: 1,
-                nullable: true
-              },
-              revision_count: {
-                type: 'integer',
-                minimum: 0
               }
             }
           }

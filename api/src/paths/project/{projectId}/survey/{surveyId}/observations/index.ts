@@ -11,12 +11,10 @@ import {
   paginationResponseSchema
 } from '../../../../../../openapi/schemas/pagination';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { CritterbaseService, getCritterbaseUser } from '../../../../../../services/critterbase-service';
 import {
   InsertUpdateObservations,
   ObservationService
 } from '../../../../../../services/observation-services/observation-service';
-import { ObservationSubCountEnvironmentService } from '../../../../../../services/observation-subcount-environment-service';
 import { getLogger } from '../../../../../../utils/logger';
 import {
   ensureCompletePaginationOptions,
@@ -196,12 +194,16 @@ PUT.apiDoc = {
                     additionalProperties: false,
                     required: [
                       'itis_tsn',
+                      'itis_scientific_name',
                       'survey_sample_period_id',
                       'count',
                       'latitude',
                       'longitude',
                       'observation_date',
-                      'observation_time'
+                      'observation_time',
+                      'observation_sign_id',
+                      'qualitative_environments',
+                      'quantitative_environments'
                     ],
                     properties: {
                       survey_observation_id: {
@@ -239,6 +241,45 @@ PUT.apiDoc = {
                       observation_time: {
                         type: 'string'
                       },
+                      observation_sign_id: {
+                        type: 'integer',
+                        minimum: 1,
+                        description:
+                          'The observation sign ID, indicating whether the observation was a direct sighting, footprints, scat, etc.'
+                      },
+                      qualitative_environments: {
+                        type: 'array',
+                        items: {
+                          type: 'object',
+                          additionalProperties: false,
+                          properties: {
+                            environment_qualitative_id: {
+                              type: 'string',
+                              format: 'uuid'
+                            },
+                            environment_qualitative_option_id: {
+                              type: 'string',
+                              format: 'uuid'
+                            }
+                          }
+                        }
+                      },
+                      quantitative_environments: {
+                        type: 'array',
+                        items: {
+                          type: 'object',
+                          additionalProperties: false,
+                          properties: {
+                            environment_quantitative_id: {
+                              type: 'string',
+                              format: 'uuid'
+                            },
+                            value: {
+                              type: 'number'
+                            }
+                          }
+                        }
+                      },
                       revision_count: {
                         type: 'integer',
                         minimum: 0
@@ -251,15 +292,7 @@ PUT.apiDoc = {
                     items: {
                       type: 'object',
                       additionalProperties: false,
-                      required: [
-                        'subcount',
-                        'observation_subcount_sign_id',
-                        'comment',
-                        'qualitative_measurements',
-                        'quantitative_measurements',
-                        'qualitative_environments',
-                        'quantitative_environments'
-                      ],
+                      required: ['subcount', 'comment', 'qualitative_measurements', 'quantitative_measurements'],
                       properties: {
                         observation_subcount_id: {
                           type: 'integer',
@@ -267,12 +300,6 @@ PUT.apiDoc = {
                           nullable: true,
                           description:
                             'The observation subcount ID. If provided, the mataching existing subcount record will be updated. If not provided, a new subcount record will be inserted.'
-                        },
-                        observation_subcount_sign_id: {
-                          type: 'integer',
-                          minimum: 1,
-                          description:
-                            'The observation subcount sign ID, indicating whether the subcount was a direct sighting, footprints, scat, etc.'
                         },
                         comment: {
                           type: 'string',
@@ -308,39 +335,6 @@ PUT.apiDoc = {
                                 type: 'string'
                               },
                               measurement_value: {
-                                type: 'number'
-                              }
-                            }
-                          }
-                        },
-                        qualitative_environments: {
-                          type: 'array',
-                          items: {
-                            type: 'object',
-                            additionalProperties: false,
-                            properties: {
-                              environment_qualitative_id: {
-                                type: 'string',
-                                format: 'uuid'
-                              },
-                              environment_qualitative_option_id: {
-                                type: 'string',
-                                format: 'uuid'
-                              }
-                            }
-                          }
-                        },
-                        quantitative_environments: {
-                          type: 'array',
-                          items: {
-                            type: 'object',
-                            additionalProperties: false,
-                            properties: {
-                              environment_quantitative_id: {
-                                type: 'string',
-                                format: 'uuid'
-                              },
-                              value: {
                                 type: 'number'
                               }
                             }
@@ -423,6 +417,7 @@ POST.apiDoc = {
                 'longitude',
                 'observation_date',
                 'observation_time',
+                'observation_sign_id',
                 'qualitative_environments',
                 'quantitative_environments'
               ],
@@ -458,6 +453,13 @@ POST.apiDoc = {
                 },
                 observation_time: {
                   type: 'string',
+                  nullable: true
+                },
+                observation_sign_id: {
+                  type: 'integer',
+                  minimum: 1,
+                  description:
+                    'The observation observation sign ID, indicating whether the observation was a direct sighting, footprints, scat, etc.',
                   nullable: true
                 },
                 qualitative_environments: {
@@ -508,13 +510,6 @@ POST.apiDoc = {
                   count: {
                     type: 'number',
                     description: "The subcount record's count."
-                  },
-                  observation_subcount_sign_id: {
-                    type: 'integer',
-                    minimum: 1,
-                    description:
-                      'The observation subcount sign ID, indicating whether the subcount was a direct sighting, footprints, scat, etc.',
-                    nullable: true
                   },
                   comment: {
                     type: 'string',
@@ -663,20 +658,6 @@ export function putObservations(): RequestHandler {
 
       const observationService = new ObservationService(connection);
 
-      // Validate measurement data against fetched measurement definition
-      const critterBaseService = new CritterbaseService(getCritterbaseUser(req));
-      const observationSubCountEnvironmentService = new ObservationSubCountEnvironmentService(connection);
-
-      const isValid = await observationService.validateSurveyObservations(
-        observationRows,
-        critterBaseService,
-        observationSubCountEnvironmentService
-      );
-
-      if (!isValid) {
-        throw new Error('Failed to save observation data, failed data validation.');
-      }
-
       // Insert/update observation records
       await observationService.insertUpdateManualSurveyObservations(surveyId, observationRows);
 
@@ -707,25 +688,11 @@ export function postObservations(): RequestHandler {
       const surveyId = Number(req.params.surveyId);
       const observationRow: InsertUpdateObservations = req.body;
 
-      defaultLog.debug({ label: 'postSurveyObservations', surveyId });
+      defaultLog.debug({ label: 'postObservations', surveyId });
 
       await connection.open();
 
       const observationService = new ObservationService(connection);
-
-      // Validate measurement data against fetched measurement definition
-      const critterBaseService = new CritterbaseService(getCritterbaseUser(req));
-      const observationSubCountEnvironmentService = new ObservationSubCountEnvironmentService(connection);
-
-      const isValid = await observationService.validateSurveyObservations(
-        [observationRow],
-        critterBaseService,
-        observationSubCountEnvironmentService
-      );
-
-      if (!isValid) {
-        throw new Error('Failed to save observation data, failed data validation.');
-      }
 
       // Insert/update observation records
       await observationService.insertUpdateManualSurveyObservations(surveyId, [observationRow]);

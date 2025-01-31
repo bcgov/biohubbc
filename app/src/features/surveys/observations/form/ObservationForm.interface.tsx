@@ -9,9 +9,19 @@ export type ObservationFormData = {
   /**
    * The standard columns for the observation record.
    */
-  standardColumns: Omit<StandardObservationColumns, 'survey_observation_id'> & {
+  standardColumns: Pick<
+    StandardObservationColumns,
+    | 'itis_tsn'
+    | 'itis_scientific_name'
+    | 'survey_sample_period_id'
+    | 'count'
+    | 'observation_date'
+    | 'observation_time'
+    | 'latitude'
+    | 'longitude'
+    | 'observation_sign_id'
+  > & {
     survey_observation_id: number | null;
-    observation_sign_id: number | null;
     survey_sample_site_id: number | undefined;
     method_technique_id: number | undefined;
   } & EnvironmentsFormData;

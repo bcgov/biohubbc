@@ -56,7 +56,6 @@ export const SubcountsForm = () => {
 
   // Adds a new measurement column to the data grid
   const handleAddMeasurement = (measurement: CBMeasurementType) => {
-    console.log(measurement);
     // Add the measurement to selectedMeasurements state
     setSelectedMeasurementTypeDefinitions((prev) => [...prev, measurement]);
 

@@ -21,7 +21,7 @@ import {
 } from 'interfaces/useReferenceApi.interface';
 
 type IObservationSubcountSignOption = {
-  observation_subcount_sign_id: number;
+  observation_sign_id: number;
   name: string;
 };
 
@@ -201,19 +201,19 @@ export const ObservationCountColDef = (props: {
   };
 };
 
-export const ObservationSubcountSignColDef = (props: {
-  observationSubcountSignOptions: IObservationSubcountSignOption[];
+export const ObservationSignColDef = (props: {
+  observationSignOptions: IObservationSubcountSignOption[];
   hasError: (params: GridCellParams) => boolean;
 }): GridColDef<IObservationTableRow> => {
-  const { observationSubcountSignOptions, hasError } = props;
+  const { observationSignOptions, hasError } = props;
 
-  const signOptions = observationSubcountSignOptions.map((item) => ({
+  const signOptions = observationSignOptions.map((item) => ({
     label: item.name,
-    value: item.observation_subcount_sign_id
+    value: item.observation_sign_id
   }));
 
   return {
-    field: 'observation_subcount_sign_id',
+    field: 'observation_sign_id',
     headerName: 'Sign',
     description: 'The sign of the observation',
     editable: true,

@@ -7,7 +7,6 @@ export const ObservationSubCountRecord = z.object({
   observation_subcount_id: z.number(),
   survey_observation_id: z.number(),
   subcount: z.number().nullable(),
-  observation_subcount_sign_id: z.number().nullable(),
   comment: z.string().nullable(),
   create_date: z.string(),
   create_user: z.number(),
@@ -18,7 +17,7 @@ export const ObservationSubCountRecord = z.object({
 export type ObservationSubCountRecord = z.infer<typeof ObservationSubCountRecord>;
 export type InsertObservationSubCount = Pick<
   ObservationSubCountRecord,
-  'survey_observation_id' | 'subcount' | 'observation_subcount_sign_id' | 'comment'
+  'survey_observation_id' | 'subcount' | 'comment'
 >;
 
 export const SubCountEventRecord = z.object({

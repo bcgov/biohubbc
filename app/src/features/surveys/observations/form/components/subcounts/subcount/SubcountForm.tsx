@@ -30,10 +30,6 @@ export type SubcountFormData = {
    */
   comment: string | null;
   /**
-   * The subcount sign id.
-   */
-  observation_subcount_sign_id: number | null;
-  /**
    * The markings for the subcount record.
    *
    * // TODO - future enhancement
@@ -43,7 +39,6 @@ export type SubcountFormData = {
 
 export const initialSubcountFormData: SubcountFormData = {
   observation_subcount_id: null,
-  observation_subcount_sign_id: null,
   count: null,
   comment: null,
   ...initialSubcountMeasurementsFormData

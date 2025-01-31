@@ -110,23 +110,6 @@ export const ObservationYupSchema = yup.object({
       }
       return true;
     }),
-
-  // .when(['survey_sample_period_id', 'latitude', 'longitude'], {
-  //   is: (survey_sample_period_id: number, latitude: number, longitude: number) => {
-  //     console.log(survey_sample_period_id, latitude, longitude);
-  //     return !survey_sample_period_id && (!latitude || !longitude);
-  //   },
-  //   then: yup.object({
-  //     latitude: yup.number().nullable().required('Latitude and longitude or a sampling period must be provided'),
-  //     longitude: yup.number().nullable().required('Latitude and longitude or a sampling period must be provided')
-  //   })
-  // })
-  // .when(['survey_sample_period_id', 'observation_date'], {
-  //   is: (survey_sample_period_id: number, observation_date: string) => !survey_sample_period_id && !observation_date,
-  //   then: yup.object({
-  //     observation_date: yup.date().nullable().required('Observation date or a sampling period must be provided')
-  //   })
-  // }),
   subcounts: yup
     .array()
     .of(
