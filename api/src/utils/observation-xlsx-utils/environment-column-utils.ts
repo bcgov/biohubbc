@@ -22,16 +22,16 @@ export interface IEnvironmentDataToValidate {
  *
  * @export
  * @param {string[]} columnNames
- * @param {ObservationEnvironmentService} observationSubCountEnvironmentService
+ * @param {ObservationEnvironmentService} observationEnvironmentService
  * @return {*}  {Promise<EnvironmentType>}
  */
 export async function getEnvironmentTypeDefinitionsFromColumnNames(
   columnNames: string[],
-  observationSubCountEnvironmentService: ObservationEnvironmentService
+  observationEnvironmentService: ObservationEnvironmentService
 ): Promise<EnvironmentType> {
   const [qualitative_environments, quantitative_environments] = await Promise.all([
-    observationSubCountEnvironmentService.findQualitativeEnvironmentTypeDefinitions(columnNames),
-    observationSubCountEnvironmentService.findQuantitativeEnvironmentTypeDefinitions(columnNames)
+    observationEnvironmentService.findQualitativeEnvironmentTypeDefinitions(columnNames),
+    observationEnvironmentService.findQuantitativeEnvironmentTypeDefinitions(columnNames)
   ]);
 
   return { qualitative_environments, quantitative_environments };

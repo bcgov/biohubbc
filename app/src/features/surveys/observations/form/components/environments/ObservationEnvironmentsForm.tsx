@@ -34,7 +34,7 @@ export const ObservationEnvironmentsForm = () => {
 
   const biohubApi = useBiohubApi();
 
-  const environmentsDataLoader = useDataLoader(() => biohubApi.reference.findSubcountEnvironments(''));
+  const environmentsDataLoader = useDataLoader(() => biohubApi.reference.findEnvironmentReferenceData(''));
 
   useEffect(() => {
     environmentsDataLoader.load();

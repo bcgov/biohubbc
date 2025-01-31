@@ -114,11 +114,11 @@ export class SubCountService extends DBService {
    * @memberof SubCountService
    */
   async getEnvironmentTypeDefinitionsForSurvey(surveyId: number): Promise<EnvironmentType> {
-    const observationSubCountEnvironmentService = new ObservationEnvironmentService(this.connection);
+    const observationEnvironmentService = new ObservationEnvironmentService(this.connection);
 
     const [qualitativeEnvironmentTypeDefinitions, quantitativeEnvironmentTypeDefinitions] = await Promise.all([
-      observationSubCountEnvironmentService.getQualitativeEnvironmentTypeDefinitionsForSurvey(surveyId),
-      observationSubCountEnvironmentService.getQuantitativeEnvironmentTypeDefinitionsForSurvey(surveyId)
+      observationEnvironmentService.getQualitativeEnvironmentTypeDefinitionsForSurvey(surveyId),
+      observationEnvironmentService.getQuantitativeEnvironmentTypeDefinitionsForSurvey(surveyId)
     ]);
 
     return {

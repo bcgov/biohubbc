@@ -5,10 +5,10 @@ import {
   CBQuantitativeMeasurementTypeDefinition
 } from 'interfaces/useCritterApi.interface';
 import {
-  ICreateObservationRequest,
+  ICreateEditObservation,
+  ICreateObservation,
   IGetSurveyObservationsGeometryResponse,
   IGetSurveyObservationsResponse,
-  IObservationTableRowToSave,
   ObservationRecord
 } from 'interfaces/useObservationApi.interface';
 import { EnvironmentTypeIds } from 'interfaces/useReferenceApi.interface';
@@ -28,13 +28,13 @@ const useObservationApi = (axios: AxiosInstance) => {
    *
    * @param {number} projectId
    * @param {number} surveyId
-   * @param {IObservationTableRowToSave[]} surveyObservations
+   * @param {ICreateEditObservation[]} surveyObservations
    * @return {*}  {Promise<void>}
    */
   const insertUpdateObservationRecords = async (
     projectId: number,
     surveyId: number,
-    surveyObservations: IObservationTableRowToSave[]
+    surveyObservations: ICreateEditObservation[]
   ): Promise<void> => {
     await axios.put(`/api/project/${projectId}/survey/${surveyId}/observations`, {
       surveyObservations
@@ -46,13 +46,13 @@ const useObservationApi = (axios: AxiosInstance) => {
    *
    * @param {number} projectId
    * @param {number} surveyId
-   * @param {IObservationTableRowToSave[]} surveyObservations
+   * @param {ICreateObservation} surveyObservation
    * @return {*}  {Promise<void>}
    */
   const createObservation = async (
     projectId: number,
     surveyId: number,
-    surveyObservation: ICreateObservationRequest
+    surveyObservation: ICreateObservation
   ): Promise<void> => {
     await axios.post(`/api/project/${projectId}/survey/${surveyId}/observations`, surveyObservation);
   };

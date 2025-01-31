@@ -21,7 +21,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useProjectContext, useSurveyContext } from 'hooks/useContext';
 import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import {
-  ICreateObservationRequest,
+  ICreateObservation,
   ObservationEnvironmentQualitative,
   ObservationEnvironmentQuantitative,
   SubcountQualitativeMeasurement,
@@ -117,7 +117,7 @@ const CreateObservationPage = () => {
   /**
    * Creates a new observation
    *
-   * @param {ICreateObservationRequest} observationPostObject
+   * @param {ICreateObservation} observationPostObject
    * @return {*}
    */
   const createObservation = async (formData: ObservationFormData) => {
@@ -159,7 +159,7 @@ const CreateObservationPage = () => {
         }
       }
 
-      const standardColumns: ICreateObservationRequest['standardColumns'] = {
+      const standardColumns: ICreateObservation['standardColumns'] = {
         itis_scientific_name,
         itis_tsn,
         observation_date,
@@ -173,7 +173,7 @@ const CreateObservationPage = () => {
         quantitative_environments
       };
 
-      const subcounts: ICreateObservationRequest['subcounts'] = formData.subcounts.map((subcount) => {
+      const subcounts: ICreateObservation['subcounts'] = formData.subcounts.map((subcount) => {
         const { measurements, ...subcountProps } = subcount;
 
         const quantitative_measurements: SubcountQuantitativeMeasurement[] = [];
@@ -201,7 +201,7 @@ const CreateObservationPage = () => {
         };
       });
 
-      const createObservationPayload: ICreateObservationRequest = {
+      const createObservationPayload: ICreateObservation = {
         standardColumns,
         subcounts
       };

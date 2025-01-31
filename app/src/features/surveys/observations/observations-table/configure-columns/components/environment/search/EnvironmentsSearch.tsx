@@ -31,7 +31,7 @@ export const EnvironmentsSearch = (props: IEnvironmentsSearchProps) => {
   const biohubApi = useBiohubApi();
 
   const environmentsDataLoader = useDataLoader(async (searchTerm: string) =>
-    biohubApi.reference.findSubcountEnvironments(searchTerm)
+    biohubApi.reference.findEnvironmentReferenceData(searchTerm)
   );
 
   // Need to process them into 1 array? With a common label?

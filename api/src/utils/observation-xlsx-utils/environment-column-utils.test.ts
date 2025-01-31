@@ -64,13 +64,11 @@ describe('environment-column-utils', () => {
       ]);
 
     const columnNames: string[] = ['Wind Speed', 'Weight', 'Col With No Match', 'Wind Direction', 'Height'];
-    const observationSubCountEnvironmentService: ObservationEnvironmentService = new ObservationEnvironmentService(
-      dbConnectionObj
-    );
+    const observationEnvironmentService = new ObservationEnvironmentService(dbConnectionObj);
 
     const result = await environment_column_utils.getEnvironmentTypeDefinitionsFromColumnNames(
       columnNames,
-      observationSubCountEnvironmentService
+      observationEnvironmentService
     );
 
     expect(findQualitativeEnvironmentTypeDefinitionsStub).to.have.been.calledOnceWith(columnNames);

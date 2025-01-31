@@ -34,8 +34,8 @@ import { useObservationsContext, useObservationsPageContext, useTaxonomyContext 
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import { CBMeasurementSearchByTsnResponse, CBMeasurementType } from 'interfaces/useCritterApi.interface';
 import {
+  ICreateEditObservation,
   IGetSurveyObservationsResponse,
-  IObservationTableRowToSave,
   ObservationEnvironmentQualitative,
   ObservationEnvironmentQuantitative,
   ObservationRecord,
@@ -1035,7 +1035,7 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
    * Send all observation rows to the backend.
    */
   const _saveRecords = useCallback(
-    async (rowsToSave: IObservationTableRowToSave[]) => {
+    async (rowsToSave: ICreateEditObservation[]) => {
       try {
         await biohubApi.observation.insertUpdateObservationRecords(projectId, surveyId, rowsToSave);
 
@@ -1187,10 +1187,10 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
    * Compiles the given row into the format expected by the SIMS API.
    *
    * @param {ObservationRecord} row
-   * @return {*}  {IObservationTableRowToSave}
+   * @return {*}  {ICreateEditObservation}
    */
   const _getRowToSave = useCallback(
-    (row: ObservationRecord): IObservationTableRowToSave => {
+    (row: ObservationRecord): ICreateEditObservation => {
       // Get all subcount row data for the observation row
       const subcountsToSave = _getSubcountsToSave(row);
 
@@ -1224,16 +1224,16 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
   /**
    * Transforms the raw data grid rows into the format expected by the SIMS API.
    *
-   * @return {*}  {IObservationTableRowToSave[]}
+   * @return {*}  {ICreateEditObservation[]}
    */
-  const _getRowsToSave = useCallback((): IObservationTableRowToSave[] => {
+  const _getRowsToSave = useCallback((): ICreateEditObservation[] => {
     // Get all rows that have been modified
     const modifiedRows: ObservationRecord[] = modifiedRowIds
       .map((rowId) => _muiDataGridApiRef.current.getRow(rowId))
       .filter(Boolean);
 
     // Transform the modified rows into the format expected by the SIMS API
-    const rowsToSave: IObservationTableRowToSave[] = modifiedRows.map((modifiedRow) => _getRowToSave(modifiedRow));
+    const rowsToSave: ICreateEditObservation[] = modifiedRows.map((modifiedRow) => _getRowToSave(modifiedRow));
 
     return rowsToSave;
   }, [_getRowToSave, _muiDataGridApiRef, modifiedRowIds]);

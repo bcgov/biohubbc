@@ -111,14 +111,14 @@ export class CodeService extends DBService {
    * @return {*}  {Promise<EnvironmentType>}
    * @memberof CodeService
    */
-  async findSubcountEnvironments(searchTerms: string[]): Promise<EnvironmentType> {
+  async findEnvironmentReferenceData(searchTerms: string[]): Promise<EnvironmentType> {
     defaultLog.debug({ message: 'getEnvironments' });
 
-    const observationSubCountEnvironmentService = new ObservationEnvironmentService(this.connection);
+    const observationEnvironmentService = new ObservationEnvironmentService(this.connection);
 
     const [qualitative_environments, quantitative_environments] = await Promise.all([
-      await observationSubCountEnvironmentService.findQualitativeEnvironmentTypeDefinitions(searchTerms),
-      await observationSubCountEnvironmentService.findQuantitativeEnvironmentTypeDefinitions(searchTerms)
+      await observationEnvironmentService.findQualitativeEnvironmentTypeDefinitions(searchTerms),
+      await observationEnvironmentService.findQuantitativeEnvironmentTypeDefinitions(searchTerms)
     ]);
 
     return {
