@@ -259,11 +259,18 @@ export const findMissingSamplingColumns = (
   tableColumns: GridColDef[]
 ): ObservationRowValidationError[] => {
   const errors: ObservationRowValidationError[] = [];
-  // if this row has survey_sample_site_id we need to validate that the other 2 sampling columns are also present
-  if (row['survey_sample_site_id']) {
-    if (!row['survey_sample_method_id']) {
-      const header = tableColumns.find((tc) => tc.field === 'survey_sample_method_id')?.headerName;
-      errors.push({ field: 'survey_sample_method_id', message: `Missing column: ${header}` });
+  // If the row has any of the sampling columns set, then all of them must be set.
+  // Technically, only the period is required, but a period can only be selected if the site and technique are
+  // selected as well.
+  if (row['survey_sample_site_id'] || row['method_technique_id'] || row['survey_sample_period_id']) {
+    if (!row['survey_sample_site_id']) {
+      const header = tableColumns.find((tc) => tc.field === 'survey_sample_site_id')?.headerName;
+      errors.push({ field: 'survey_sample_site_id', message: `Missing column: ${header}` });
+    }
+
+    if (!row['method_technique_id']) {
+      const header = tableColumns.find((tc) => tc.field === 'method_technique_id')?.headerName;
+      errors.push({ field: 'method_technique_id', message: `Missing column: ${header}` });
     }
 
     if (!row['survey_sample_period_id']) {

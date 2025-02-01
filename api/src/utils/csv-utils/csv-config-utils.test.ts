@@ -204,4 +204,79 @@ describe('CSVConfigUtils', () => {
       expect(isUnique).to.be.false;
     });
   });
+
+  describe('setAllStaticHeaderConfigs', () => {
+    it('should set all static header configs', () => {
+      const worksheet: WorkSheet = xlsx.utils.json_to_sheet([{ TEST: 'cellValue' }]);
+      const mockConfig: CSVConfig<'TEST'> = {
+        staticHeadersConfig: {
+          TEST: { aliases: [] }
+        },
+        ignoreDynamicHeaders: false
+      };
+
+      const utils = new CSVConfigUtils(worksheet, mockConfig);
+
+      const validateCell = () => [];
+      const setCellValue = () => 'test';
+
+      utils.setAllStaticHeaderConfigs({
+        TEST: { validateCell, setCellValue }
+      });
+
+      expect(utils._config).to.be.deep.equal({
+        staticHeadersConfig: {
+          TEST: { aliases: [], validateCell, setCellValue }
+        },
+        ignoreDynamicHeaders: false
+      });
+    });
+  });
+
+  describe('getWorksheetHeader', () => {
+    it('should get the worksheet static header', () => {
+      const mockConfig = {
+        staticHeadersConfig: {
+          TEST: { aliases: [] }
+        },
+        ignoreDynamicHeaders: false
+      };
+
+      const utils = new CSVConfigUtils({}, mockConfig);
+
+      const header = utils.getWorksheetHeader('TEST', { TEST: 'cellValue' });
+
+      expect(header).to.be.equal('TEST');
+    });
+
+    it('should get the worksheet header alias', () => {
+      const mockConfig: CSVConfig = {
+        staticHeadersConfig: {
+          TEST: { aliases: ['OTHER'] }
+        },
+        ignoreDynamicHeaders: false
+      };
+
+      const utils = new CSVConfigUtils({}, mockConfig);
+
+      const header = utils.getWorksheetHeader('TEST', { OTHER: 'cellValue' });
+
+      expect(header).to.be.equal('OTHER');
+    });
+
+    it('should return undefined if header not found', () => {
+      const mockConfig: CSVConfig = {
+        staticHeadersConfig: {
+          TEST: { aliases: [] }
+        },
+        ignoreDynamicHeaders: false
+      };
+
+      const utils = new CSVConfigUtils({}, mockConfig);
+
+      const header = utils.getWorksheetHeader('BAD', { TEST: 'cellValue' });
+
+      expect(header).to.be.undefined;
+    });
+  });
 });

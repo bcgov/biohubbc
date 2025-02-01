@@ -285,7 +285,7 @@ export const SamplingTechniqueTable = <T extends ITechniqueRowData>(props: ISamp
           onRowSelectionModelChange={setSelectedRows}
           initialState={{
             pagination: {
-              paginationModel: { page: 1, pageSize: 10 }
+              paginationModel: { page: 0, pageSize: 10 }
             }
           }}
           pageSizeOptions={[10, 25, 50]}

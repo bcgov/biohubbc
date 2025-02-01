@@ -28,7 +28,7 @@ export const getCritterAliasCellValidator = (
   configUtils: CSVConfigUtils<CritterCSVStaticHeader>
 ): CSVCellValidator => {
   return (params: CSVParams) => {
-    const cellErrors = validateZodCell(params, z.union([z.string().trim().min(1).max(50), z.number().min(0)]));
+    const cellErrors = validateZodCell(params.cell, z.union([z.string().trim().min(1).max(50), z.number().min(0)]));
     const isAliasUnique = configUtils.isCellUnique('ALIAS', params.cell);
 
     if (cellErrors.length) {

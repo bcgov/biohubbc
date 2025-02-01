@@ -80,10 +80,10 @@ export type CSVCellValidator = (params: CSVParams) => CSVError[];
  * The CSV row validator function
  *
  * @param {CSVRowParams} params - The CSV row parameters
- * @returns {CSVError[]} - The list of CSV errors
+ * @returns {CSVRowError[]} - The list of CSV row errors
  *
  */
-export type CSVRowValidator = (params: CSVRowParams) => CSVError[];
+export type CSVRowValidator = (params: CSVRowParams) => CSVRowError[];
 
 /**
  * The CSV header config cell setter function
@@ -181,7 +181,12 @@ export interface CSVParams {
 }
 
 /**
- * The CSV error interface
+ * The CSV error interface.
+ *
+ * @description
+ * Set to `null` to explicitly indicate the value can `NOT` be overritten by consumers ie: missing header
+ * Set property to `undefined` to indicate to consumers the value `CAN` be overritten
+ * by a default down stream ie: cell value
  *
  * @example
  *  {
@@ -190,49 +195,68 @@ export interface CSVParams {
  *    values: ['unit1', 'unit2'], // Optional list of allowed values
  *    header: 'POPULATION_UNIT',
  *    cell: 'unit3',
- *    row: 1, // Header row index 0. First data row index 1
+ *    row: 1, // Header row index 1. First data row index 2
  *  }
  */
 export interface CSVError {
   /**
-   * The error message.
+   * The error message. The user facing message to describe the error.
    *
+   * @example `Invalid collection unit`
    * @type {string}
    */
   error: string;
   /**
-   * The solution message.
+   * The solution message. The user facing message to resolve the error.
    *
+   * @example `Use a valid collection unit`
    * @type {string}
    */
   solution: string;
   /**
    * The list of allowed values if applicable.
    *
+   * Note: Optional as not all errors will have a list of allowed values.
+   *
+   * @example ['unit1', 'unit2']
    * @type {(string[] | number[]) | undefined}
    */
   values?: string[] | number[] | null;
   /**
-   * The cell value.
+   * The cell value that caused the error.
    *
+   * @example 'unit3'
    * @type {unknown | undefined}
    */
   cell?: unknown;
   /**
-   * The header name.
+   * The header name. Typically this will be the user facing CSV header name.
    *
-   * @type {string | null | undefined}
+   * @example 'Population Unit'
+   * @type {Uppercase<string> | string | null | undefined}
    */
-  header?: string | null;
+  header?: Uppercase<string> | string | null;
   /**
    * The row index the error occurred.
    *
    * Note: Header row index 1. First data row index 2.
    *
+   * @example 2
    * @type {number}
    */
   row?: number;
 }
+
+/**
+ * Similar to `CSVError` but with additional required properties.
+ *
+ * Why? When returning errors from a row validator, additional properties
+ * are required as it lacks the `CSVParams` object which is passed to the cell
+ * validators. This is to ensure the error object is consistent across the validators.
+ *
+ */
+type CSVRowError = Prettify<CSVError & { header: Uppercase<string> | string | null }>;
+
 /**
  * The CSV row state symbol to store additional row metadata
  * without interfering with the row shape or structure

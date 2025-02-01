@@ -22,11 +22,6 @@ const Header: React.FC = () => {
 
   const menuOpen = Boolean(anchorEl);
 
-  // Support Dialog
-  const showSupportDialog = () => {
-    hideMobileMenu();
-  };
-
   // Responsive Menu
   const showMobileMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -145,7 +140,8 @@ const Header: React.FC = () => {
             textDecoration: 'none'
           },
           '& img': {
-            mr: 2
+            mr: 2,
+            maxHeight: 70
           }
         }}>
         <RouterLink to="/" aria-label="Go to SIMS Home">
@@ -174,193 +170,191 @@ const Header: React.FC = () => {
   };
 
   return (
-    <>
-      <AppBar
-        position="relative"
-        elevation={0}
+    <AppBar
+      position="relative"
+      elevation={0}
+      sx={{
+        fontFamily: 'BCSans, Verdana, Arial, sans-serif',
+        backgroundColor: '#003366',
+        borderBottom: '3px solid #fcba19'
+      }}>
+      <Toolbar
         sx={{
-          fontFamily: 'BCSans, Verdana, Arial, sans-serif',
-          backgroundColor: '#003366',
-          borderBottom: '3px solid #fcba19'
+          height: 70
         }}>
-        <Toolbar
-          sx={{
-            height: 70
-          }}>
-          {/* Responsive Menu */}
-          <Box display={{ sm: 'flex', lg: 'none' }} justifyContent="space-between" alignItems="center" flex="1 1 auto">
+        {/* Responsive Menu */}
+        <Box display={{ sm: 'flex', lg: 'none' }} justifyContent="space-between" alignItems="center" flex="1 1 auto">
+          <Box
+            sx={{
+              '& a': {
+                display: 'flex',
+                color: '#fff',
+                fontSize: '18px',
+                fontWeight: '400'
+              }
+            }}>
+            <AppBrand></AppBrand>
+          </Box>
+
+          <Box>
+            <UnAuthGuard>
+              <PublicViewUser />
+            </UnAuthGuard>
+            <Button
+              color="inherit"
+              startIcon={<Icon path={mdiMenu} size={1.25}></Icon>}
+              sx={{
+                ml: 2,
+                fontSize: '16px',
+                fontWeight: 700,
+                textTransform: 'none'
+              }}
+              aria-controls={menuOpen ? 'mobileMenu' : undefined}
+              aria-haspopup="true"
+              aria-expanded={menuOpen ? 'true' : undefined}
+              onClick={showMobileMenu}>
+              Menu
+            </Button>
+            <Menu
+              id="mobileMenu"
+              anchorEl={anchorEl}
+              open={menuOpen}
+              onClose={hideMobileMenu}
+              MenuListProps={{
+                'aria-labelledby': 'basic-button'
+              }}
+              sx={{
+                '& a': {
+                  color: '#1a5a96',
+                  borderRadius: 0,
+                  fontWeight: 700,
+                  textDecoration: 'none',
+                  outline: 'none'
+                },
+                '& button': {
+                  color: '#1a5a96',
+                  fontWeight: 700
+                }
+              }}>
+              <MenuItem tabIndex={1} component={RouterLink} to="/" id="menu_home_sm">
+                Home
+              </MenuItem>
+              <AuthGuard>
+                <MenuItem
+                  tabIndex={1}
+                  component={RouterLink}
+                  to="/admin/summary"
+                  id="menu_projects_sm"
+                  onClick={hideMobileMenu}>
+                  Projects
+                </MenuItem>
+              </AuthGuard>
+              <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                <MenuItem id="menu_admin_manage" component={RouterLink} to="/admin/manage" onClick={hideMobileMenu}>
+                  Admin
+                </MenuItem>
+                <MenuItem
+                  id="menu_admin_funding_sources_sm"
+                  component={RouterLink}
+                  to="/admin/funding-sources"
+                  onClick={hideMobileMenu}>
+                  Funding Sources
+                </MenuItem>
+              </SystemRoleGuard>
+              <MenuItem component={RouterLink} to="/standards" id="menu_standards" onClick={hideMobileMenu}>
+                Standards
+              </MenuItem>
+              <MenuItem tabIndex={0} component={RouterLink} to="/support" id="menu_support_sm" onClick={hideMobileMenu}>
+                Support
+              </MenuItem>
+              <AuthGuard>
+                <LoggedInUser />
+              </AuthGuard>
+            </Menu>
+          </Box>
+        </Box>
+
+        {/* Desktop Menu */}
+        <Box
+          display={{ xs: 'none', lg: 'flex' }}
+          flexDirection="row"
+          alignItems="center"
+          justifyContent="space-between"
+          width="100%">
+          <Box display="flex" flexDirection="row" alignItems="center">
             <Box
               sx={{
                 '& a': {
                   display: 'flex',
+                  alignItems: 'center',
                   color: '#fff',
                   fontSize: '18px',
-                  fontWeight: '400'
+                  fontWeight: '400',
+                  textDecoration: 'none'
                 }
               }}>
               <AppBrand></AppBrand>
             </Box>
-
-            <Box>
-              <UnAuthGuard>
-                <PublicViewUser />
-              </UnAuthGuard>
-              <Button
-                color="inherit"
-                startIcon={<Icon path={mdiMenu} size={1.25}></Icon>}
-                sx={{
-                  ml: 2,
+            <Box
+              ml={8}
+              display="flex"
+              alignItems="center"
+              sx={{
+                '& a': {
+                  p: 1,
+                  color: 'inherit',
+                  fontWeight: 700,
+                  lineHeight: 1.75,
+                  textDecoration: 'none'
+                },
+                '& a + a': {
+                  ml: 1
+                },
+                '& button': {
                   fontSize: '16px',
                   fontWeight: 700,
                   textTransform: 'none'
-                }}
-                aria-controls={menuOpen ? 'mobileMenu' : undefined}
-                aria-haspopup="true"
-                aria-expanded={menuOpen ? 'true' : undefined}
-                onClick={showMobileMenu}>
-                Menu
-              </Button>
-              <Menu
-                id="mobileMenu"
-                anchorEl={anchorEl}
-                open={menuOpen}
-                onClose={hideMobileMenu}
-                MenuListProps={{
-                  'aria-labelledby': 'basic-button'
-                }}
-                sx={{
-                  '& a': {
-                    color: '#1a5a96',
-                    borderRadius: 0,
-                    fontWeight: 700,
-                    textDecoration: 'none',
-                    outline: 'none'
-                  },
-                  '& button': {
-                    color: '#1a5a96',
-                    fontWeight: 700
-                  }
-                }}>
-                <MenuItem tabIndex={1} component={RouterLink} to="/" id="menu_home_sm">
-                  Home
-                </MenuItem>
-                <AuthGuard>
-                  <MenuItem
-                    tabIndex={1}
-                    component={RouterLink}
-                    to="/admin/summary"
-                    id="menu_projects_sm"
-                    onClick={hideMobileMenu}>
-                    Projects
-                  </MenuItem>
-                </AuthGuard>
-                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                  <MenuItem id="menu_admin_manage" component={RouterLink} to="/admin/manage" onClick={hideMobileMenu}>
-                    Admin
-                  </MenuItem>
-                  <MenuItem
-                    id="menu_admin_funding_sources_sm"
-                    component={RouterLink}
-                    to="/admin/funding-sources"
-                    onClick={hideMobileMenu}>
-                    Funding Sources
-                  </MenuItem>
-                </SystemRoleGuard>
-                <MenuItem component={RouterLink} to="/standards" id="menu_standards" onClick={hideMobileMenu}>
-                  Standards
-                </MenuItem>
-                <MenuItem component="button" onClick={showSupportDialog} sx={{ width: '100%' }}>
-                  Support
-                </MenuItem>
-                <AuthGuard>
-                  <LoggedInUser />
-                </AuthGuard>
-              </Menu>
-            </Box>
-          </Box>
-
-          {/* Desktop Menu */}
-          <Box
-            display={{ xs: 'none', lg: 'flex' }}
-            flexDirection="row"
-            alignItems="center"
-            justifyContent="space-between"
-            width="100%">
-            <Box display="flex" flexDirection="row" alignItems="center">
-              <Box
-                sx={{
-                  '& a': {
-                    display: 'flex',
-                    alignItems: 'center',
-                    color: '#fff',
-                    fontSize: '18px',
-                    fontWeight: '400',
-                    textDecoration: 'none'
-                  }
-                }}>
-                <AppBrand></AppBrand>
-              </Box>
-              <Box
-                ml={8}
-                display="flex"
-                alignItems="center"
-                sx={{
-                  '& a': {
-                    p: 1,
-                    color: 'inherit',
-                    fontWeight: 700,
-                    lineHeight: 1.75,
-                    textDecoration: 'none'
-                  },
-                  '& a + a': {
-                    ml: 1
-                  },
-                  '& button': {
-                    fontSize: '16px',
-                    fontWeight: 700,
-                    textTransform: 'none'
-                  }
-                }}>
-                <UnAuthGuard>
-                  <RouterLink to="/" id="menu_home">
-                    Home
-                  </RouterLink>
-                </UnAuthGuard>
-                <AuthGuard>
-                  <RouterLink to="/admin/summary" id="menu_projects">
-                    Projects
-                  </RouterLink>
-                </AuthGuard>
-                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                  <RouterLink to="/admin/manage" id="menu_admin_users">
-                    Admin
-                  </RouterLink>
-                </SystemRoleGuard>
-                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                  <RouterLink to="/admin/funding-sources" id="menu_admin_funding_sources">
-                    Funding Sources
-                  </RouterLink>
-                </SystemRoleGuard>
-                <RouterLink to="/standards" id="menu_standards">
-                  Standards
-                </RouterLink>
-                <RouterLink to="/support" id="support">
-                  Support
-                </RouterLink>
-              </Box>
-            </Box>
-            <Box flex="0 0 auto">
+                }
+              }}>
               <UnAuthGuard>
-                <PublicViewUser />
+                <RouterLink to="/" id="menu_home">
+                  Home
+                </RouterLink>
               </UnAuthGuard>
               <AuthGuard>
-                <LoggedInUser />
+                <RouterLink to="/admin/summary" id="menu_projects">
+                  Projects
+                </RouterLink>
               </AuthGuard>
+              <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                <RouterLink to="/admin/manage" id="menu_admin_users">
+                  Admin
+                </RouterLink>
+              </SystemRoleGuard>
+              <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                <RouterLink to="/admin/funding-sources" id="menu_admin_funding_sources">
+                  Funding Sources
+                </RouterLink>
+              </SystemRoleGuard>
+              <RouterLink to="/standards" id="menu_standards">
+                Standards
+              </RouterLink>
+              <RouterLink to="/support" id="support">
+                Support
+              </RouterLink>
             </Box>
           </Box>
-        </Toolbar>
-      </AppBar>
-    </>
+          <Box flex="0 0 auto">
+            <UnAuthGuard>
+              <PublicViewUser />
+            </UnAuthGuard>
+            <AuthGuard>
+              <LoggedInUser />
+            </AuthGuard>
+          </Box>
+        </Box>
+      </Toolbar>
+    </AppBar>
   );
 };
 

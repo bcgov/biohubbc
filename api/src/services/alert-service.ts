@@ -1,6 +1,12 @@
 import { IDBConnection } from '../database/db';
-import { IAlert, IAlertCreateObject, IAlertFilterObject, IAlertUpdateObject } from '../models/alert-view';
+import {
+  AlertRecordWithStatus,
+  IAlertCreateObject,
+  IAlertFilterObject,
+  IAlertUpdateObject
+} from '../models/alert-view';
 import { AlertRepository } from '../repositories/alert-repository';
+import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { DBService } from './db-service';
 
 export class AlertService extends DBService {
@@ -16,21 +22,36 @@ export class AlertService extends DBService {
    * Get all alert records, including deactivated alerts
    *
    * @param {IAlertFilterObject} filterObject
-   * @return {*}  Promise<IAlert[]>
+   * @param {ApiPaginationOptions} pagination
+   * @return {*}  Promise<AlertRecordWithStatus[]>
    * @memberof AlertService
    */
-  async getAlerts(filterObject: IAlertFilterObject): Promise<IAlert[]> {
-    return this.alertRepository.getAlerts(filterObject);
+  async getAlerts(
+    filterObject: IAlertFilterObject,
+    pagination?: ApiPaginationOptions
+  ): Promise<AlertRecordWithStatus[]> {
+    return this.alertRepository.getAlerts(filterObject, pagination);
+  }
+
+  /**
+   * Get count of alert records, including deactivated alerts
+   *
+   * @param {IAlertFilterObject} filterObject
+   * @return {*}  Promise<number>
+   * @memberof AlertService
+   */
+  async getAlertsCount(filterObject: IAlertFilterObject): Promise<number> {
+    return this.alertRepository.getAlertsCount(filterObject);
   }
 
   /**
    * Get a specific alert by its ID
    *
    * @param {number} alertId
-   * @return {*}  Promise<IAlert>
+   * @return {*}  Promise<AlertRecordWithStatus>
    * @memberof AlertService
    */
-  async getAlertById(alertId: number): Promise<IAlert> {
+  async getAlertById(alertId: number): Promise<AlertRecordWithStatus> {
     return this.alertRepository.getAlertById(alertId);
   }
 

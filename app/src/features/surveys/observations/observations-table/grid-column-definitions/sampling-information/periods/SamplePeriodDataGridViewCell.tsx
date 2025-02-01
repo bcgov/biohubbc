@@ -1,12 +1,10 @@
 import Typography from '@mui/material/Typography';
 import { GridRenderCellParams, GridValidRowModel } from '@mui/x-data-grid';
-import { getCurrentPeriod } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/utils';
-import { SampleLocationCache } from 'features/surveys/observations/observations-table/ObservationsTableContainer';
-import { MutableRefObject } from 'react';
+import { SamplingInformationCache } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/useSamplingInformationCache';
 
 export interface IPartialSamplePeriodDataGridViewCellProps<DataGridType extends GridValidRowModel> {
   dataGridProps: GridRenderCellParams<DataGridType>;
-  cachedSampleLocationsRef: MutableRefObject<SampleLocationCache | undefined>;
+  samplingInformationCache: SamplingInformationCache;
   error?: boolean;
 }
 
@@ -20,9 +18,9 @@ export interface IPartialSamplePeriodDataGridViewCellProps<DataGridType extends 
 export const SamplePeriodDataGridViewCell = <DataGridType extends GridValidRowModel>(
   props: IPartialSamplePeriodDataGridViewCellProps<DataGridType>
 ) => {
-  const { dataGridProps, cachedSampleLocationsRef, error } = props;
+  const { dataGridProps, samplingInformationCache, error } = props;
 
-  const label = getCurrentPeriod(dataGridProps, cachedSampleLocationsRef)?.label ?? '';
+  const label = samplingInformationCache.getCurrentPeriod(dataGridProps)?.label ?? '';
 
   return (
     <Typography

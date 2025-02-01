@@ -6,8 +6,7 @@ import { SYSTEM_ROLE } from '../../constants/roles';
 import * as db from '../../database/db';
 import { HTTPError } from '../../errors/http-error';
 import { ObservationRecordWithSamplingAndSubcountData } from '../../repositories/observation-repository/observation-repository';
-import { SystemUser } from '../../repositories/user-repository';
-import { ObservationService } from '../../services/observation-service';
+import { ObservationService } from '../../services/observation-services/observation-service';
 import { KeycloakUserInformation } from '../../utils/keycloak-utils';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
 import { findObservations } from './index';
@@ -31,12 +30,12 @@ describe('findObservations', () => {
         itis_scientific_name: 'itis_scientific_name',
         observation_date: '2023-01-01',
         observation_time: '12:00:00',
-        survey_sample_method_name: 'METHOD_NAME',
-        survey_sample_period_start_datetime: '2000-01-01 00:00:00',
+        survey_sample_site_id: 7,
         survey_sample_site_name: 'SITE_NAME',
-        survey_sample_site_id: 1,
-        survey_sample_method_id: 1,
+        method_technique_id: 8,
+        method_technique_name: 'TECHNIQUE_NAME',
         survey_sample_period_id: 1,
+        survey_sample_period_start_datetime: '2000-01-01 00:00:00',
         subcounts: [
           {
             observation_subcount_id: 9,
@@ -85,8 +84,19 @@ describe('findObservations', () => {
     };
     mockReq.keycloak_token = {} as KeycloakUserInformation;
     mockReq.system_user = {
+      system_user_id: 20,
+      user_guid: '123-456-789',
+      user_identifier: 'test-identifier',
+      identity_source: 'IDIR',
+      display_name: 'test-user',
+      given_name: 'test-given',
+      family_name: 'test-family',
+      email: 'test-email',
+      agency: 'test-agency',
+      record_end_date: null,
+      role_ids: [1],
       role_names: [SYSTEM_ROLE.SYSTEM_ADMIN]
-    } as SystemUser;
+    };
 
     const requestHandler = findObservations();
 
@@ -99,14 +109,6 @@ describe('findObservations', () => {
     expect(findObservationsCountStub).to.have.been.calledOnceWith(true, 20, sinon.match.object);
 
     expect(mockRes.jsonValue.surveyObservations).to.eql(mockFindObservationsResponse);
-    expect(mockRes.jsonValue.supplementaryObservationData).to.eql({
-      observationCount: 50,
-      qualitative_measurements: [],
-      quantitative_measurements: [],
-      qualitative_environments: [],
-      quantitative_environments: [],
-      sample_sites: []
-    });
     expect(mockRes.jsonValue.pagination).not.to.be.null;
 
     expect(mockDBConnection.release).to.have.been.calledOnce;
@@ -124,12 +126,12 @@ describe('findObservations', () => {
         itis_scientific_name: 'itis_scientific_name',
         observation_date: '2023-01-01',
         observation_time: '12:00:00',
-        survey_sample_method_name: 'METHOD_NAME',
-        survey_sample_period_start_datetime: '2000-01-01 00:00:00',
+        survey_sample_site_id: 7,
         survey_sample_site_name: 'SITE_NAME',
-        survey_sample_site_id: 1,
-        survey_sample_method_id: 1,
+        method_technique_id: 8,
+        method_technique_name: 'TECHNIQUE_NAME',
         survey_sample_period_id: 1,
+        survey_sample_period_start_datetime: '2000-01-01 00:00:00',
         subcounts: [
           {
             observation_subcount_id: 9,
@@ -181,8 +183,19 @@ describe('findObservations', () => {
     };
     mockReq.keycloak_token = {} as KeycloakUserInformation;
     mockReq.system_user = {
+      system_user_id: 20,
+      user_guid: '123-456-789',
+      user_identifier: 'test-identifier',
+      identity_source: 'IDIR',
+      display_name: 'test-user',
+      given_name: 'test-given',
+      family_name: 'test-family',
+      email: 'test-email',
+      agency: 'test-agency',
+      record_end_date: null,
+      role_ids: [3],
       role_names: [SYSTEM_ROLE.PROJECT_CREATOR]
-    } as SystemUser;
+    };
 
     const requestHandler = findObservations();
 

@@ -3,7 +3,7 @@ import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
-import { ObservationService } from '../../../../../../../services/observation-service';
+import { ObservationService } from '../../../../../../../services/observation-services/observation-service';
 import { getLogger } from '../../../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/{surveyObservationId}');
@@ -87,7 +87,7 @@ GET.apiDoc = {
               'observation_date',
               'observation_time',
               'survey_sample_site_id',
-              'survey_sample_method_id',
+              'method_technique_id',
               'survey_sample_period_id',
               'create_user',
               'create_date',
@@ -128,7 +128,7 @@ GET.apiDoc = {
                 type: 'integer',
                 nullable: true
               },
-              survey_sample_method_id: {
+              method_technique_id: {
                 type: 'integer',
                 nullable: true
               },

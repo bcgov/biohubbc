@@ -86,7 +86,7 @@ describe('ImportTelemetryService', () => {
       const mockGetConfig = sinon.stub(service, 'getCSVConfig').resolves(mockCSVConfig);
 
       const mockValidate = sinon.stub(csv, 'validateCSVWorksheet').returns({
-        errors: [{ error: 'error', solution: 'solution', values: [] }],
+        errors: [{ error: 'error', solution: 'solution', values: [], cell: 'A1', row: 1, header: 'SERIAL' }],
         rows: []
       });
 
@@ -94,7 +94,9 @@ describe('ImportTelemetryService', () => {
 
       expect(mockGetConfig).to.have.been.called;
       expect(mockValidate).to.have.been.calledOnceWithExactly(worksheet, mockCSVConfig);
-      expect(errors).to.deep.equal([{ error: 'error', solution: 'solution', values: [] }]);
+      expect(errors).to.deep.equal([
+        { error: 'error', solution: 'solution', values: [], cell: 'A1', row: 1, header: 'SERIAL' }
+      ]);
     });
   });
 });

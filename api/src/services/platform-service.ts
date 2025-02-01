@@ -16,7 +16,7 @@ import { IPostCollectionUnit } from './critterbase-service';
 import { DBService } from './db-service';
 import { HistoryPublishService } from './history-publish-service';
 import { KeycloakService } from './keycloak-service';
-import { ObservationService } from './observation-service';
+import { ObservationService } from './observation-services/observation-service';
 import { SurveyService } from './survey-service';
 
 const defaultLog = getLogger('services/platform-service');

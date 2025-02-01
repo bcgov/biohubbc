@@ -13,21 +13,21 @@ export async function up(knex: Knex): Promise<void> {
 
     DROP FUNCTION IF EXISTS api_set_context;
 
-    CREATE OR REPLACE FUNCTION api_set_context(p_system_user_guid system_user.user_guid%type, p_user_identity_source_name user_identity_source.name%type) RETURNS system_user.system_user_id%type
+    CREATE OR REPLACE FUNCTION api_set_context(p_system_user_guid "system_user".user_guid%type, p_user_identity_source_name user_identity_source.name%type) RETURNS "system_user".system_user_id%type
     language plpgsql
     security invoker
     SET client_min_messages = warning
     AS
     $$
       DECLARE
-        _system_user_id system_user.system_user_id%type;
+        _system_user_id "system_user".system_user_id%type;
         _user_identity_source_id user_identity_source.user_identity_source_id%type;
       BEGIN
         SELECT user_identity_source_id INTO strict _user_identity_source_id FROM user_identity_source
           WHERE LOWER(name) = LOWER(p_user_identity_source_name)
           AND record_end_date IS NULL;
   
-        SELECT system_user_id INTO strict _system_user_id FROM system_user
+        SELECT system_user_id INTO strict _system_user_id FROM "system_user"
           WHERE user_identity_source_id = _user_identity_source_id
           AND LOWER(user_guid) = LOWER(p_system_user_guid);
   

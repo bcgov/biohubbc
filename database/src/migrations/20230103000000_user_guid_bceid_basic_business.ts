@@ -15,7 +15,7 @@ export async function up(knex: Knex): Promise<void> {
     SET SCHEMA '${DB_SCHEMA}';
     SET SEARCH_PATH = ${DB_SCHEMA_DAPI_V1};
 
-    DROP VIEW IF EXISTS system_user;
+    DROP VIEW IF EXISTS "system_user";
     DROP VIEW IF EXISTS user_identity_source;
   `);
 
@@ -61,8 +61,8 @@ export async function up(knex: Knex): Promise<void> {
 
   // Update default GUIDs
   await knex.raw(`
-    UPDATE system_user SET user_guid = 'postgres' WHERE user_identifier LIKE 'postgres';
-    UPDATE system_user SET user_guid = 'biohub_api' WHERE user_identifier LIKE 'biohub_api';
+    UPDATE "system_user" SET user_guid = 'postgres' WHERE user_identifier LIKE 'postgres';
+    UPDATE "system_user" SET user_guid = 'biohub_api' WHERE user_identifier LIKE 'biohub_api';
   `);
 
   await knex.raw(`
@@ -75,7 +75,7 @@ export async function up(knex: Knex): Promise<void> {
   // Drop the default value for GUIDs
   await knex.raw(`
     ALTER TABLE
-      system_user
+      "system_user"
     ALTER COLUMN
       user_guid
     DROP DEFAULT;
@@ -85,7 +85,7 @@ export async function up(knex: Knex): Promise<void> {
   await knex.raw(`
     drop function if exists api_set_context;
 
-    create or replace function api_set_context(p_system_user_guid system_user.user_guid%type, p_user_identity_source_name user_identity_source.name%type) returns system_user.system_user_id%type
+    create or replace function api_set_context(p_system_user_guid "system_user".user_guid%type, p_user_identity_source_name user_identity_source.name%type) returns "system_user".system_user_id%type
     language plpgsql
     security invoker
     set client_min_messages = warning
@@ -110,7 +110,7 @@ export async function up(knex: Knex): Promise<void> {
     --                  user identifier
     -- *******************************************************************
     declare
-      _system_user_id system_user.system_user_id%type;
+      _system_user_id "system_user".system_user_id%type;
       _user_identity_source_id user_identity_source.user_identity_source_id%type;
     begin
 
@@ -118,7 +118,7 @@ export async function up(knex: Knex): Promise<void> {
         where name = p_user_identity_source_name
         and record_end_date is null;
 
-      select system_user_id into strict _system_user_id from system_user
+      select system_user_id into strict _system_user_id from "system_user"
         where user_identity_source_id = _user_identity_source_id
         and user_guid = p_system_user_guid;
 
@@ -138,7 +138,7 @@ export async function up(knex: Knex): Promise<void> {
   await knex.raw(`
     SET SEARCH_PATH = ${DB_SCHEMA_DAPI_V1};
 
-    CREATE OR REPLACE VIEW system_user AS SELECT * FROM biohub.system_user;
+    CREATE OR REPLACE VIEW "system_user" AS SELECT * FROM biohub."system_user";
     CREATE OR REPLACE VIEW user_identity_source AS SELECT * FROM biohub.user_identity_source;
   `);
 }

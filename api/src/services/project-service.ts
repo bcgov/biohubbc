@@ -12,10 +12,10 @@ import {
   IProjectAdvancedFilters,
   ProjectData
 } from '../models/project-view';
+import { SystemUserWithRoles } from '../models/system-user-view';
 import { GET_ENTITIES, IUpdateProject } from '../paths/project/{projectId}/update';
 import { ProjectUser } from '../repositories/project-participation-repository';
 import { ProjectRepository } from '../repositories/project-repository';
-import { SystemUser } from '../repositories/user-repository';
 import { deleteFileFromS3 } from '../utils/file-utils';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { AttachmentService } from './attachment-service';
@@ -160,7 +160,7 @@ export class ProjectService extends DBService {
     return this.projectRepository.getObjectivesData(projectId);
   }
 
-  async getProjectParticipantsData(projectId: number): Promise<(ProjectUser & SystemUser)[]> {
+  async getProjectParticipantsData(projectId: number): Promise<(ProjectUser & SystemUserWithRoles)[]> {
     return this.projectParticipationService.getProjectParticipants(projectId);
   }
 

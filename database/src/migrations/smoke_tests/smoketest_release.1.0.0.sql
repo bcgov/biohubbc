@@ -6,23 +6,23 @@ set search_path=biohub;
 do $$
 declare
   _count integer = 0;
-  _system_user system_user%rowtype;
-  _system_user_id system_user.system_user_id%type;
+  _system_user "system_user"%rowtype;
+  _system_user_id "system_user".system_user_id%type;
 begin
-  select * into _system_user from system_user where user_identifier = 'myIDIR';
+  select * into _system_user from "system_user" where user_identifier = 'myIDIR';
   if _system_user.system_user_id is not null then
     delete from permit where system_user_id = _system_user.system_user_id;
     delete from administrative_activity where reported_system_user_id = _system_user.system_user_id;
     delete from administrative_activity where assigned_system_user_id = _system_user.system_user_id;
     delete from system_user_role where system_user_id = _system_user.system_user_id;
-    delete from system_user where system_user_id = _system_user.system_user_id;
+    delete from "system_user" where system_user_id = _system_user.system_user_id;
   end if;
 
-  insert into system_user (user_identity_source_id, user_identifier, record_effective_date) values ((select user_identity_source_id from user_identity_source where name = 'IDIR' and record_end_date is null), 'myIDIR', now()) returning system_user_id into _system_user_id;
+  insert into "system_user" (user_identity_source_id, user_identifier, record_effective_date) values ((select user_identity_source_id from user_identity_source where name = 'IDIR' and record_end_date is null), 'myIDIR', now()) returning system_user_id into _system_user_id;
   insert into system_user_role (system_user_id, system_role_id) values (_system_user_id, (select system_role_id from system_role where name =  'System Administrator'));
 
-  select count(1) into _count from system_user;
-  assert _count > 1, 'FAIL system_user';
+  select count(1) into _count from "system_user";
+  assert _count > 1, 'FAIL "system_user"';
   select count(1) into _count from audit_log;
   assert _count > 1, 'FAIL audit_log';
 
@@ -40,7 +40,7 @@ declare
   _project_id project.project_id%type;
   _survey_id survey.survey_id%type;
   _count integer = 0;
-  _system_user_id system_user.system_user_id%type;
+  _system_user_id "system_user".system_user_id%type;
   _study_species_id study_species.study_species_id%type;
   _occurrence_submission_id occurrence_submission.occurrence_submission_id%type;
   _submission_status_id submission_status.submission_status_id%type;
@@ -183,7 +183,7 @@ begin
 
   -- test ancillary data
   delete from webform_draft;
-  insert into webform_draft (system_user_id, name, data) values ((select system_user_id from system_user limit 1), 'my draft name', '{ "customer": "John Doe", "items": {"product": "Beer","qty": 6}}');
+  insert into webform_draft (system_user_id, name, data) values ((select system_user_id from "system_user" limit 1), 'my draft name', '{ "customer": "John Doe", "items": {"product": "Beer","qty": 6}}');
   select count(1) into _count from webform_draft;
   assert _count = 1, 'FAIL webform_draft';
 

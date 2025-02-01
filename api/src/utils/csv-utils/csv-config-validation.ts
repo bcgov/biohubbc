@@ -21,14 +21,14 @@ import {
  * @template StaticHeaderType - The CSV static headers
  * @param {WorkSheet} worksheet - The worksheet
  * @param {CSVConfigType} config - The CSV configuration
- * @returns {*} {{ errors: CSVError[]; rows: CSVRowValidated[] }} - The CSV errors and rows
+ * @returns {*} {{ errors: Required<CSVError>[]; rows: CSVRowValidated[] }} - The CSV errors and rows
  */
 export const validateCSVWorksheet = <StaticHeaderType extends Uppercase<string>>(
   worksheet: WorkSheet,
   config: CSVConfig<StaticHeaderType>
-): { errors: CSVError[]; rows: CSVRowValidated<StaticHeaderType>[] } => {
+): { errors: Required<CSVError>[]; rows: CSVRowValidated<StaticHeaderType>[] } => {
   const rows: CSVRowValidated<StaticHeaderType>[] = [];
-  const errors = validateCSVHeaders(worksheet, config);
+  const errors: Required<CSVError>[] = validateCSVHeaders(worksheet, config);
 
   // If there are errors in the headers, return early
   if (errors.length) {
@@ -41,11 +41,6 @@ export const validateCSVWorksheet = <StaticHeaderType extends Uppercase<string>>
     rowValidators.forEach((rowValidator) => {
       errors.push(...executeRowValidator(rowParams, rowValidator));
     });
-
-    // If there are errors in the row abort early
-    if (errors.length) {
-      return;
-    }
 
     const validatedRow: CSVRow = {};
 
@@ -64,6 +59,7 @@ export const validateCSVWorksheet = <StaticHeaderType extends Uppercase<string>>
       const { header, cell } = executeSetCellValue(cellParams, headerConfig.setCellValue);
 
       // Set the header and cell value in the validated row
+      // Note: The header is either the static header or the dynamic header ie: the CSV header
       validatedRow[header] = cell;
       // Copy the row state to the validated row
       validatedRow[CSVRowState] = rowParams.row[CSVRowState];
@@ -84,10 +80,10 @@ export const validateCSVWorksheet = <StaticHeaderType extends Uppercase<string>>
  *
  * @param {WorkSheet} worksheet - The worksheet
  * @param {CSVConfig} config - The CSV configuration
- * @returns {*} {CSVError[]} - The CSV errors
+ * @returns {*} {Required<CSVError>[]} - The CSV errors
  */
-export const validateCSVHeaders = (worksheet: WorkSheet, config: CSVConfig): CSVError[] => {
-  const csvErrors: CSVError[] = [];
+export const validateCSVHeaders = (worksheet: WorkSheet, config: CSVConfig): Required<CSVError>[] => {
+  const csvErrors: Required<CSVError>[] = [];
 
   const configUtils = new CSVConfigUtils(worksheet, config);
 
@@ -127,7 +123,7 @@ export const validateCSVHeaders = (worksheet: WorkSheet, config: CSVConfig): CSV
     if (!headerConfig.optional && !worksheetHasStaticHeader) {
       csvErrors.push({
         error: 'A required column is missing',
-        solution: `Add all required columns to the file.`,
+        solution: `Add the ${staticHeader} column to the file.`,
         values: [staticHeader, ...config.staticHeadersConfig[staticHeader].aliases],
         header: staticHeader,
         cell: null,
@@ -141,7 +137,7 @@ export const validateCSVHeaders = (worksheet: WorkSheet, config: CSVConfig): CSV
     for (const unknownHeader of configUtils.worksheetDynamicHeaders) {
       csvErrors.push({
         error: 'An unknown column is included in the file',
-        solution: `Remove extra columns from the file.`,
+        solution: `Remove the ${unknownHeader} column from the file.`,
         values: null,
         header: unknownHeader,
         cell: null,
@@ -218,11 +214,12 @@ export const forEachCSVRowCell = (
  *
  * @param {CSVRowParams} params - The CSV row parameters
  * @param {CSVRowValidator} rowValidator - The row validator
- * @returns {*} {CSVError[]}
+ * @returns {*} {Required<CSVError>[]}
  */
-export const executeRowValidator = (params: CSVRowParams, rowValidator: CSVRowValidator) => {
+export const executeRowValidator = (params: CSVRowParams, rowValidator: CSVRowValidator): Required<CSVError>[] => {
   const rowErrors = rowValidator(params);
 
+  // Map the partial row errors to the required error format ie: fill in the missing values
   return rowErrors.map((error) => ({
     error: error.error,
     solution: error.solution,
@@ -243,7 +240,9 @@ export const executeRowValidator = (params: CSVRowParams, rowValidator: CSVRowVa
  * @returns {*} {CSVRow[]} - The updated row
  */
 export const executeSetCellValue = (params: CSVParams, setCellValue?: CSVCellSetter) => {
+  // The fallback is needed as dynamic headers have no static header
   const header = params.staticHeader?.toUpperCase() ?? params.header.toUpperCase();
+  // Set the cell value from the handler or use the mutate cell value
   const cell = setCellValue?.(params) ?? params.mutateCell;
 
   return { header, cell };
@@ -254,17 +253,20 @@ export const executeSetCellValue = (params: CSVParams, setCellValue?: CSVCellSet
  *
  * @param {CSVParams} params - The CSV parameters
  * @param {CSVCellValidator} validateCell - The cell validator
- * @returns {*} {CSVError[]}
+ * @returns {*} {Required<CSVError>[]}
  */
-export const executeValidateCell = (params: CSVParams, validateCell: CSVCellValidator): CSVError[] => {
+export const executeValidateCell = (params: CSVParams, validateCell: CSVCellValidator): Required<CSVError>[] => {
   const cellErrors = validateCell(params);
 
+  // Map the partial cell errors to the required error format ie: fill in the missing values
   return cellErrors.map((error) => ({
     error: error.error,
     solution: error.solution,
     values: error.values ?? null,
-    cell: (error.cell === undefined ? params.cell : error.cell) ?? null, // Use cell value if intentionally null
-    header: (error.header === undefined ? params.header : error.header) ?? null, // Use header value if intentionally null
+    // Use the error cell value if intentionally null - if undefined fall back to params cell value
+    cell: (error.cell === undefined ? params.cell : error.cell) ?? null,
+    // Use the error header value if intentionally null - if undefined fall back to params header value
+    header: (error.header === undefined ? params.header : error.header) ?? null,
     row: _getErrorRowIndex(params, error.row)
   }));
 };
@@ -285,7 +287,7 @@ export const _getCSVStaticHeaderMap = (config: CSVConfig) => {
       const uppercasedHeader = header.toUpperCase();
 
       if (headerMap.has(uppercasedHeader)) {
-        throw new Error(`Duplicate header in CSV config: ${uppercasedHeader}`);
+        throw new Error(`Duplicate header in CSV config: ${uppercasedHeader}. Check for duplicate aliases.`);
       }
 
       headerMap.set(uppercasedHeader, { ...headerConfig, staticHeader });

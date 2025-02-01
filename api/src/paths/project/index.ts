@@ -269,6 +269,6 @@ function parseQueryParams(req: Request<unknown, unknown, unknown, IProjectAdvanc
     itis_tsns: req.query.itis_tsns ?? undefined,
     itis_tsn: (req.query.itis_tsn && Number(req.query.itis_tsn)) ?? undefined,
     project_name: req.query.project_name ?? undefined,
-    system_user_id: req.query.system_user_id ?? undefined
+    system_user_id: (req.query.system_user_id && Number(req.query.system_user_id)) ?? undefined
   };
 }

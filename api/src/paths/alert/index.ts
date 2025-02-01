@@ -4,9 +4,15 @@ import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
 import { IAlertFilterObject } from '../../models/alert-view';
 import { systemAlertCreateSchema, systemAlertGetSchema } from '../../openapi/schemas/alert';
+import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../../openapi/schemas/pagination';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { AlertService } from '../../services/alert-service';
 import { getLogger } from '../../utils/logger';
+import {
+  ensureCompletePaginationOptions,
+  makePaginationOptionsFromRequest,
+  makePaginationResponse
+} from '../../utils/pagination';
 
 const defaultLog = getLogger('paths/alert/index');
 
@@ -59,7 +65,8 @@ GET.apiDoc = {
       schema: {
         type: 'string'
       }
-    }
+    },
+    ...paginationRequestQueryParamSchema
   ],
   responses: {
     200: {
@@ -72,7 +79,8 @@ GET.apiDoc = {
             additionalProperties: false,
             required: ['alerts'],
             properties: {
-              alerts: { type: 'array', description: 'Array of system alerts', items: systemAlertGetSchema }
+              alerts: { type: 'array', description: 'Array of system alerts', items: systemAlertGetSchema },
+              pagination: { ...paginationResponseSchema }
             }
           }
         }
@@ -112,13 +120,20 @@ export function getAlerts(): RequestHandler {
 
       const filterObject = parseQueryParams(req);
 
+      const paginationOptions = makePaginationOptionsFromRequest(req);
+
       const alertService = new AlertService(connection);
 
-      const alerts = await alertService.getAlerts(filterObject);
+      const [alerts, alertsTotalCount] = await Promise.all([
+        alertService.getAlerts(filterObject, ensureCompletePaginationOptions(paginationOptions)),
+        alertService.getAlertsCount(filterObject)
+      ]);
 
       await connection.commit();
 
-      return res.status(200).json({ alerts: alerts });
+      return res
+        .status(200)
+        .json({ alerts: alerts, pagination: makePaginationResponse(alertsTotalCount, paginationOptions) });
     } catch (error) {
       defaultLog.error({ label: 'getAlerts', message: 'error', error });
       await connection.rollback();

@@ -5,6 +5,12 @@ metadata:
   labels:
     build: biohubbc-app
 parameters:
+  - name: NAMESPACE
+    description: Openshift namespace name
+    value: ''
+  - name: BASE_IMAGE_REGISTRY_URL
+    description: The base image registry URL
+    value: image-registry.openshift-image-registry.svc:5000
   - name: NAME
     value: biohubbc-app
   - name: SUFFIX
@@ -87,8 +93,8 @@ objects:
       status:
         dockerImageRepository: null
 
-  - kind: DeploymentConfig
-    apiVersion: apps.openshift.io/v1
+  - kind: Deployment
+    apiVersion: apps/v1
     metadata:
       annotations:
         openshift.io/generated-by: OpenShiftWebConsole
@@ -100,24 +106,18 @@ objects:
       replicas: ${{REPLICAS}}
       revisionHistoryLimit: 10
       selector:
-        deploymentConfig: ${NAME}${SUFFIX}
+        matchLabels:
+          deployment: ${NAME}${SUFFIX}
       strategy:
-        activeDeadlineSeconds: 21600
-        recreateParams:
-          timeoutSeconds: 600
-        resources:
-          requests:
-            cpu: ${CPU_REQUEST}
-            memory: ${MEMORY_REQUEST}
-          limits:
-            cpu: ${CPU_LIMIT}
-            memory: ${MEMORY_LIMIT}
-        type: Rolling
+        type: RollingUpdate
+        rollingUpdate:
+          maxSurge: 25%
+          maxUnavailable: 25%
       template:
         metadata:
           annotations: null
           labels:
-            deploymentConfig: ${NAME}${SUFFIX}
+            deployment: ${NAME}${SUFFIX}
             role: app
         spec:
           containers:
@@ -165,7 +165,7 @@ objects:
                   value: ${REACT_APP_BIOHUB_TAXON_TSN_PATH}
                 - name: REACT_APP_FEATURE_FLAGS
                   value: ${REACT_APP_FEATURE_FLAGS}
-              image: ' '
+              image: ${BASE_IMAGE_REGISTRY_URL}/${NAMESPACE}/${NAME}:${VERSION}
               imagePullPolicy: Always
               ports:
                 - containerPort: ${{APP_PORT_DEFAULT}}
@@ -208,23 +208,6 @@ objects:
             - emptyDir: {}
               name: ${NAME}${SUFFIX}
       test: false
-      triggers:
-        - imageChangeParams:
-            automatic: true
-            containerNames:
-              - app
-            from:
-              kind: ImageStreamTag
-              name: ${NAME}:${VERSION}
-          type: ImageChange
-        - type: ConfigChange
-    status:
-      availableReplicas: 0
-      latestVersion: 0
-      observedGeneration: 0
-      replicas: 0
-      unavailableReplicas: 0
-      updatedReplicas: 0
 
   - kind: Service
     apiVersion: v1
@@ -239,7 +222,7 @@ objects:
           protocol: TCP
           targetPort: ${{APP_PORT_DEFAULT}}
       selector:
-        deploymentconfig: ${NAME}${SUFFIX}
+        deployment: ${NAME}${SUFFIX}
       sessionAffinity: None
       type: ClusterIP
     status:
@@ -277,8 +260,8 @@ objects:
   #     minReplicas: ${{REPLICAS}}
   #     maxReplicas: ${{REPLICAS_MAX}}
   #     scaleTargetRef:
-  #       apiVersion: apps.openshift.io/v1
-  #       kind: DeploymentConfig
+  #       kind: Deployment
+  #       apiVersion: apps/v1
   #       name: ${NAME}${SUFFIX}
   #     metrics:
   #       - type: Resource

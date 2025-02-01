@@ -7,6 +7,7 @@ import {
   IGetAlertsResponse
 } from 'interfaces/useAlertApi.interface';
 import qs from 'qs';
+import { ApiPaginationRequestOptions } from 'types/misc';
 
 /**
  * Returns a set of supported api methods for managing alerts
@@ -19,10 +20,15 @@ export const useAlertApi = (axios: AxiosInstance) => {
    * Get system alert details based on its ID for viewing purposes.
    *
    * @param {IAlertFilterParams} filterObject
+   * @param {ApiPaginationRequestOptions} pagination
    * @return {*} {Promise<IGetAlertsResponse[]>}
    */
-  const getAlerts = async (filterObject?: IAlertFilterParams): Promise<IGetAlertsResponse> => {
+  const getAlerts = async (
+    filterObject?: IAlertFilterParams,
+    pagination?: ApiPaginationRequestOptions
+  ): Promise<IGetAlertsResponse> => {
     const params = {
+      ...pagination,
       ...filterObject
     };
 

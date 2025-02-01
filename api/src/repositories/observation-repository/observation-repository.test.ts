@@ -14,6 +14,50 @@ describe('ObservationRepository', () => {
     sinon.restore();
   });
 
+  describe('findObservations', () => {
+    it('should return a list of observations when all filters provided', async () => {
+      const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ knex: () => mockResponse });
+
+      const repository = new ObservationRepository(dbConnection);
+
+      const response = await repository.findObservations(
+        true,
+        1,
+        {
+          keyword: 'term',
+          itis_tsns: [1234, 2345],
+          itis_tsn: undefined,
+          start_date: '2023-01-01',
+          end_date: '2023-01-01',
+          start_time: '12:00:00',
+          end_time: '12:00:00',
+          min_count: 3,
+          system_user_id: 4
+        },
+        {
+          limit: 10,
+          page: 1,
+          sort: 'name',
+          order: 'asc'
+        }
+      );
+
+      expect(response).to.eql([{ id: 1 }]);
+    });
+
+    it('should return a list of observations when no filters provided', async () => {
+      const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ knex: () => mockResponse });
+
+      const repository = new ObservationRepository(dbConnection);
+
+      const response = await repository.findObservations(false, 1, undefined, undefined);
+
+      expect(response).to.eql([{ id: 1 }]);
+    });
+  });
+
   describe('deleteObservationsNotInArray', () => {
     it('should delete all records except for the ids in the provided array', async () => {
       const mockQueryResponse = { rows: [], rowCount: 3 } as unknown as QueryResult<any>;

@@ -1,14 +1,15 @@
-import { SurveySamplePeriodModel } from '../database-models/survey_sample_period';
+import { SurveySamplePeriodRecord } from '../database-models/survey_sample_period';
 import { IDBConnection } from '../database/db';
-import { HTTP409 } from '../errors/http-error';
+import { IPeriodAdvancedFilters } from '../models/period-view';
+
 import {
-  InsertSamplePeriodRecord,
-  SamplePeriodHierarchyIds,
+  InsertSamplePeriodObject,
   SamplePeriodRepository,
-  UpdateSamplePeriodRecord
+  SurveySamplePeriodDetails,
+  UpdateSamplePeriodObject
 } from '../repositories/sample-period-repository';
+import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { DBService } from './db-service';
-import { ObservationService } from './observation-service';
 
 /**
  * Sample Period Repository
@@ -26,30 +27,107 @@ export class SamplePeriodService extends DBService {
   }
 
   /**
-   *  Gets all survey Sample periods.
+   * Insert survey Sample Periods.
+   *
+   * TODO: Update to insert multiple periods in a single query.
    *
    * @param {number} surveyId
-   * @param {number} surveySampleMethodId
-   * @return {*}  {Promise<SurveySamplePeriodModel[]>}
+   * @param {InsertSamplePeriodObject[]} periods
+   * @return {*}  {Promise<void>}
    * @memberof SamplePeriodService
    */
-  async getSamplePeriodsForSurveyMethodId(
-    surveyId: number,
-    surveySampleMethodId: number
-  ): Promise<SurveySamplePeriodModel[]> {
-    return this.samplePeriodRepository.getSamplePeriodsForSurveyMethodId(surveyId, surveySampleMethodId);
+  async insertSamplePeriods(surveyId: number, periods: InsertSamplePeriodObject[]): Promise<void> {
+    await Promise.all(
+      periods.map((samplePeriod) => this.samplePeriodRepository.insertSamplePeriod(surveyId, samplePeriod))
+    );
   }
 
   /**
-   * Gets the full hierarchy of sample_site_id, sample_method_id, and sample_period_id for a given sample period id.
+   * Gets all survey Sample periods.
+   *
+   * @param {number} surveyId
+   * @param {{ pagination?: ApiPaginationOptions }} [options]
+   * @return {*}  {Promise<SurveySamplePeriodDetails[]>}
+   * @memberof SamplePeriodService
+   */
+  async getSamplePeriodsForSurvey(
+    surveyId: number,
+    options?: { pagination?: ApiPaginationOptions }
+  ): Promise<SurveySamplePeriodDetails[]> {
+    return this.samplePeriodRepository.getSamplePeriodsForSurvey(surveyId, options);
+  }
+
+  /**
+   * Gets all survey Sample periods count.
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<number>}
+   * @memberof SamplePeriodService
+   */
+  async getSamplePeriodsCountForSurvey(surveyId: number): Promise<number> {
+    return this.samplePeriodRepository.getSamplePeriodsCountForSurvey(surveyId);
+  }
+
+  /**
+   * Gets a survey sample period by its id
    *
    * @param {number} surveyId
    * @param {number} surveySamplePeriodId
-   * @return {*}  {Promise<SamplePeriodHierarchyIds>}
+   * @return {*}  {Promise<SurveySamplePeriodDetails>}
    * @memberof SamplePeriodService
    */
-  async getSamplePeriodHierarchyIds(surveyId: number, surveySamplePeriodId: number): Promise<SamplePeriodHierarchyIds> {
-    return this.samplePeriodRepository.getSamplePeriodHierarchyIds(surveyId, surveySamplePeriodId);
+  async getSamplePeriodById(surveyId: number, surveySamplePeriodId: number): Promise<SurveySamplePeriodDetails> {
+    return this.samplePeriodRepository.getSamplePeriodById(surveyId, surveySamplePeriodId);
+  }
+
+  /**
+   * Retrieves the paginated list of all periods that are available to the user, based on their permissions and
+   * provided filter criteria.
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId The system user id of the user making the request
+   * @param {IPeriodAdvancedFilters} filterFields
+   * @param {ApiPaginationOptions} [pagination]
+   * @return {*}  {Promise<SurveySamplePeriodRecord[]>}
+   * @memberof SampleSiteService
+   */
+  async findSamplePeriods(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: IPeriodAdvancedFilters,
+    pagination?: ApiPaginationOptions
+  ): Promise<SurveySamplePeriodRecord[]> {
+    return this.samplePeriodRepository.findSamplePeriods(isUserAdmin, systemUserId, filterFields, pagination);
+  }
+
+  /**
+   * Retrieves the count of all periods that are available to the user, based on their permissions and
+   * provided filter criteria.
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId The system user id of the user making the request
+   * @param {IPeriodAdvancedFilters} filterFields
+   * @return {*}  {Promise<number>}
+   * @memberof SampleSiteService
+   */
+  async findSamplePeriodsCount(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: IPeriodAdvancedFilters
+  ): Promise<number> {
+    return this.samplePeriodRepository.findSamplePeriodsCount(isUserAdmin, systemUserId, filterFields);
+  }
+
+  /**
+   * Updates a survey Sample Period.
+   *
+   * @param {number} surveyId
+   * @param {UpdateSamplePeriodObject} data
+   * @return {*}  {Promise<UpdateSamplePeriodObject>}
+   * @memberof SamplePeriodService
+   */
+  async updateSamplePeriod(surveyId: number, data: UpdateSamplePeriodObject): Promise<void> {
+    return this.samplePeriodRepository.updateSamplePeriod(surveyId, data);
   }
 
   /**
@@ -57,85 +135,21 @@ export class SamplePeriodService extends DBService {
    *
    * @param {number} surveyId
    * @param {number} surveySamplePeriodId
-   * @return {*}  {Promise<SurveySamplePeriodModel>}
+   * @return {*}  {Promise<void>}
    * @memberof SamplePeriodService
    */
-  async deleteSamplePeriodRecord(surveyId: number, surveySamplePeriodId: number): Promise<SurveySamplePeriodModel> {
-    return this.samplePeriodRepository.deleteSamplePeriodRecord(surveyId, surveySamplePeriodId);
+  async deleteSamplePeriod(surveyId: number, surveySamplePeriodId: number): Promise<void> {
+    return this.samplePeriodRepository.deleteSamplePeriod(surveyId, surveySamplePeriodId);
   }
 
   /**
    * Deletes multiple Survey Sample Periods for a given array of period ids.
    *
    * @param {number[]} periodsToDelete an array of period ids to delete
-   * @returns {*} {Promise<SurveySamplePeriodModel[]>} an array of promises for the deleted periods
+   * @returns {*} {Promise<void>}
    * @memberof SamplePeriodService
    */
-  async deleteSamplePeriodRecords(surveyId: number, periodsToDelete: number[]): Promise<SurveySamplePeriodModel[]> {
+  async deleteSamplePeriods(surveyId: number, periodsToDelete: number[]): Promise<void> {
     return this.samplePeriodRepository.deleteSamplePeriods(surveyId, periodsToDelete);
-  }
-
-  /**
-   * Inserts survey Sample Period.
-   *
-   * @param {InsertSamplePeriodRecord} samplePeriod
-   * @return {*}  {Promise<SurveySamplePeriodModel>}
-   * @memberof SamplePeriodService
-   */
-  async insertSamplePeriod(samplePeriod: InsertSamplePeriodRecord): Promise<SurveySamplePeriodModel> {
-    return this.samplePeriodRepository.insertSamplePeriod(samplePeriod);
-  }
-
-  /**
-   * updates a survey Sample Period.
-   *
-   * @param {UpdateSamplePeriodRecord} samplePeriod
-   * @return {*}  {Promise<SurveySamplePeriodModel>}
-   * @memberof SamplePeriodService
-   */
-  async updateSamplePeriod(surveyId: number, samplePeriod: UpdateSamplePeriodRecord): Promise<SurveySamplePeriodModel> {
-    return this.samplePeriodRepository.updateSamplePeriod(surveyId, samplePeriod);
-  }
-
-  /**
-   * Fetches and compares any existing sample periods for a given sample method id.
-   * Any sample periods not found in the given array will be deleted.
-   *
-   * @param {number} surveySampleMethodId
-   * @param {UpdateSampleMethodRecord[]} newPeriod
-   * @memberof SamplePeriodService
-   */
-  async deleteSamplePeriodsNotInArray(
-    surveyId: number,
-    surveySampleMethodId: number,
-    newPeriod: UpdateSamplePeriodRecord[]
-  ) {
-    // Get any existing Period for the given sample method
-    const existingPeriods = await this.getSamplePeriodsForSurveyMethodId(surveyId, surveySampleMethodId);
-
-    // Compare input and existing for Period to delete
-    // Any existing periods that are not found in the new Periods being passed in will be collected for deletion
-    const existingPeriodsToDelete = existingPeriods.filter((existingPeriod) => {
-      return !newPeriod.find(
-        (incomingMethod) => incomingMethod.survey_sample_period_id === existingPeriod.survey_sample_period_id
-      );
-    });
-
-    const observationService = new ObservationService(this.connection);
-
-    // Delete any Periods not found in the passed in array
-    if (existingPeriodsToDelete.length > 0) {
-      const existingSamplePeriodIds = existingPeriodsToDelete.map((period) => period.survey_sample_period_id);
-      const samplingPeriodObservationsCount = await observationService.getObservationsCountBySamplePeriodIds(
-        existingSamplePeriodIds
-      );
-
-      if (samplingPeriodObservationsCount > 0) {
-        // TODO services should not throw HTTP errors (only endpoints should)
-        throw new HTTP409('Cannot delete a sample period that is associated with an observation');
-      }
-
-      await this.deleteSamplePeriodRecords(surveyId, existingSamplePeriodIds);
-    }
   }
 }

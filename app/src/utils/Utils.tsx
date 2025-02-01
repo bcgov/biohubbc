@@ -99,10 +99,14 @@ export const getFormattedDateRangeString = (
  * Get a formatted date string.
  *
  * @param {DATE_FORMAT} dateFormat
- * @param {string} date ISO 8601 date string
+ * @param {(string | null)} date ISO 8601 date string
  * @return {string} formatted date string, or an empty string if unable to parse the date
  */
-export const getFormattedDate = (dateFormat: DATE_FORMAT, date: string): string => {
+export const getFormattedDate = (dateFormat: DATE_FORMAT, date: string | null): string => {
+  if (!date) {
+    return '';
+  }
+
   const dateJs = dayjs(date);
 
   if (!dateJs.isValid()) {

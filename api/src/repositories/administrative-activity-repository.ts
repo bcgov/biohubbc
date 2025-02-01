@@ -82,7 +82,7 @@ export class AdministrativeActivityRepository extends BaseRepository {
       ON
         aa.administrative_activity_type_id = aat.administrative_activity_type_id
       LEFT OUTER JOIN
-        system_user su 
+        "system_user" su 
       ON 
         su.system_user_id = aa.update_user
       WHERE
@@ -223,7 +223,7 @@ export class AdministrativeActivityRepository extends BaseRepository {
         FROM
           project_participation pp
         LEFT JOIN
-          system_user su 
+          "system_user" su 
         ON
           pp.system_user_id = su.system_user_id 
         WHERE

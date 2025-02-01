@@ -1,43 +1,9 @@
 import SQL from 'sql-template-strings';
-import { z } from 'zod';
 import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
+import { IGetRoles, SystemUserWithRoles, UserSearchCriteria } from '../models/system-user-view';
 import { BaseRepository } from './base-repository';
-
-export const SystemUser = z.object({
-  system_user_id: z.number(),
-  user_identifier: z.string(),
-  user_guid: z.string().nullable(),
-  identity_source: z.string(),
-  record_end_date: z.string().nullable(),
-  role_ids: z.array(z.number()),
-  role_names: z.array(z.string()),
-  email: z.string(),
-  display_name: z.string(),
-  given_name: z.string().nullable(),
-  family_name: z.string().nullable(),
-  agency: z.string().nullable()
-});
-
-export type SystemUser = z.infer<typeof SystemUser>;
-
-export interface IInsertUser {
-  system_user_id: number;
-  user_identity_source_id: number;
-  user_identifier: number;
-  record_effective_date: string;
-  record_end_date: string;
-}
-
-export interface IGetRoles {
-  system_role_id: number;
-  name: string;
-}
-
-export interface UserSearchCriteria {
-  keyword?: 'string';
-}
 
 export class UserRepository extends BaseRepository {
   /**
@@ -64,10 +30,10 @@ export class UserRepository extends BaseRepository {
    * Fetch a single system user by their system user ID.
    *
    * @param {number} systemUserId
-   * @return {*}  {Promise<SystemUser>}
+   * @return {*}  {Promise<SystemUserWithRoles>}
    * @memberof UserRepository
    */
-  async getUserById(systemUserId: number): Promise<SystemUser> {
+  async getUserById(systemUserId: number): Promise<SystemUserWithRoles> {
     const sqlStatement = SQL`
     SELECT
       su.system_user_id,
@@ -83,7 +49,7 @@ export class UserRepository extends BaseRepository {
       su.family_name,
       su.agency
     FROM
-      system_user su
+      "system_user" su
     LEFT JOIN
       system_user_role sur
     ON
@@ -113,7 +79,7 @@ export class UserRepository extends BaseRepository {
       su.agency;
   `;
 
-    const response = await this.connection.sql(sqlStatement, SystemUser);
+    const response = await this.connection.sql(sqlStatement, SystemUserWithRoles);
 
     if (response.rowCount !== 1) {
       throw new ApiExecuteSQLError('Failed to get user by id', [
@@ -128,10 +94,10 @@ export class UserRepository extends BaseRepository {
    * Get an existing system user by their GUID.
    *
    * @param {string} userGuid the user's GUID
-   * @return {*}  {Promise<SystemUser>}
+   * @return {*}  {Promise<SystemUserWithRoles>}
    * @memberof UserRepository
    */
-  async getUserByGuid(userGuid: string): Promise<SystemUser[]> {
+  async getUserByGuid(userGuid: string): Promise<SystemUserWithRoles[]> {
     const sqlStatement = SQL`
     SELECT
       su.system_user_id,
@@ -147,7 +113,7 @@ export class UserRepository extends BaseRepository {
       su.family_name,
       su.agency
     FROM
-      system_user su
+      "system_user" su
     LEFT JOIN
       system_user_role sur
     ON
@@ -175,7 +141,7 @@ export class UserRepository extends BaseRepository {
       su.agency;
   `;
 
-    const response = await this.connection.sql(sqlStatement, SystemUser);
+    const response = await this.connection.sql(sqlStatement, SystemUserWithRoles);
 
     return response.rows;
   }
@@ -185,11 +151,11 @@ export class UserRepository extends BaseRepository {
    *
    * @param userIdentifier the user's identifier
    * @param identitySource the user's identity source, e.g. `'IDIR'`
-   * @return {*} {(Promise<SystemUser[]>)} Promise resolving an array containing the user, if they match the
+   * @return {*} {(Promise<SystemUserWithRoles[]>)} Promise resolving an array containing the user, if they match the
    * search criteria.
    * @memberof UserService
    */
-  async getUserByIdentifier(userIdentifier: string, identitySource: string): Promise<SystemUser[]> {
+  async getUserByIdentifier(userIdentifier: string, identitySource: string): Promise<SystemUserWithRoles[]> {
     const sqlStatement = SQL`
       SELECT
         su.system_user_id,
@@ -205,7 +171,7 @@ export class UserRepository extends BaseRepository {
         su.family_name,
         su.agency
       FROM
-        system_user su
+        "system_user" su
       LEFT JOIN
         system_user_role sur
       ON
@@ -235,7 +201,7 @@ export class UserRepository extends BaseRepository {
         su.agency;
     `;
 
-    const response = await this.connection.sql(sqlStatement, SystemUser);
+    const response = await this.connection.sql(sqlStatement, SystemUserWithRoles);
 
     return response.rows;
   }
@@ -264,7 +230,7 @@ export class UserRepository extends BaseRepository {
   ): Promise<{ system_user_id: number }> {
     const sqlStatement = SQL`
     INSERT INTO
-      system_user
+      "system_user"
     (
       user_guid,
       user_identity_source_id,
@@ -309,10 +275,10 @@ export class UserRepository extends BaseRepository {
   /**
    * Get a list of all system users.
    *
-   * @return {*}  {Promise<SystemUser[]>}
+   * @return {*}  {Promise<SystemUserWithRoles[]>}
    * @memberof UserRepository
    */
-  async listSystemUsers(): Promise<SystemUser[]> {
+  async listSystemUsers(): Promise<SystemUserWithRoles[]> {
     const sqlStatement = SQL`
     SELECT
       su.system_user_id,
@@ -328,7 +294,7 @@ export class UserRepository extends BaseRepository {
       su.family_name,
       su.agency
     FROM
-      system_user su
+      "system_user" su
     LEFT JOIN
       system_user_role sur
     ON
@@ -355,7 +321,7 @@ export class UserRepository extends BaseRepository {
       su.family_name,
       su.agency;
   `;
-    const response = await this.connection.sql(sqlStatement, SystemUser);
+    const response = await this.connection.sql(sqlStatement, SystemUserWithRoles);
 
     return response.rows;
   }
@@ -369,7 +335,7 @@ export class UserRepository extends BaseRepository {
   async activateSystemUser(systemUserId: number) {
     const sqlStatement = SQL`
       UPDATE
-        system_user
+        "system_user"
       SET
         record_end_date = NULL
       WHERE
@@ -401,7 +367,7 @@ export class UserRepository extends BaseRepository {
   async deactivateSystemUser(systemUserId: number) {
     const sqlStatement = SQL`
       UPDATE
-        system_user
+        "system_user"
       SET
         record_end_date = now()
       WHERE
@@ -520,10 +486,10 @@ export class UserRepository extends BaseRepository {
    * Get an array of users based on search criteria.
    *
    * @param {UserSearchCriteria} searchCriteria
-   * @return {*}  {Promise<SystemUser[]>}
+   * @return {*}  {Promise<SystemUserWithRoles[]>}
    * @memberof UserRepository
    */
-  async getUsers(searchCriteria: UserSearchCriteria): Promise<SystemUser[]> {
+  async getUsers(searchCriteria: UserSearchCriteria): Promise<SystemUserWithRoles[]> {
     const knex = getKnex();
     const queryBuilder = knex.queryBuilder();
 
@@ -582,7 +548,7 @@ export class UserRepository extends BaseRepository {
 
     queryBuilder.limit(50);
 
-    const response = await this.connection.knex(queryBuilder, SystemUser);
+    const response = await this.connection.knex(queryBuilder, SystemUserWithRoles);
 
     return response.rows;
   }

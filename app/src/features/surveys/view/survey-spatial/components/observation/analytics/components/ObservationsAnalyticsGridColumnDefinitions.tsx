@@ -6,9 +6,8 @@ import dayjs from 'dayjs';
 import { ScientificNameTypography } from 'features/surveys/animals/components/ScientificNameTypography';
 import { IObservationAnalyticsRow } from 'features/surveys/view/survey-spatial/components/observation/analytics/components/ObservationAnalyticsDataTableContainer';
 import { IGroupByOption } from 'features/surveys/view/survey-spatial/components/observation/analytics/SurveyObservationAnalytics';
-import { IGetSampleLocationNonSpatialDetails } from 'interfaces/useSamplingSiteApi.interface';
 import { IPartialTaxonomy } from 'interfaces/useTaxonomyApi.interface';
-import isEqual from 'lodash-es/isEqual';
+import { getDateTimeLabel } from 'utils/datetime';
 
 /**
  * Get the column definition for the row count.
@@ -22,7 +21,8 @@ export const getRowCountColDef = (): GridColDef<IObservationAnalyticsRow> => ({
   headerName: 'Count of observations',
   type: 'number',
   flex: 1,
-  minWidth: 150
+  minWidth: 150,
+  sortable: false // Not yet supported by the API
 });
 
 /**
@@ -37,7 +37,8 @@ export const getIndividualCountColDef = (): GridColDef<IObservationAnalyticsRow>
   headerName: 'Count of individuals',
   type: 'number',
   flex: 1,
-  minWidth: 150
+  minWidth: 150,
+  sortable: false // Not yet supported by the API
 });
 
 /**
@@ -53,6 +54,7 @@ export const getIndividualPercentageColDef = (): GridColDef<IObservationAnalytic
   type: 'number',
   flex: 1,
   minWidth: 150,
+  sortable: false, // Not yet supported by the API
   renderCell: (params) => (
     <Typography variant="body2">
       {params.row.individual_percentage}&nbsp;
@@ -78,6 +80,7 @@ export const getSpeciesColDef = (
   headerName: 'Species',
   flex: 1,
   minWidth: 150,
+  sortable: false, // Not yet supported by the API
   renderCell: (params) => {
     if (!params.row.itis_tsn) {
       return null;
@@ -92,103 +95,57 @@ export const getSpeciesColDef = (
 /**
  * Get the column definition for the sampling site.
  *
- * @param {IGetSampleLocationNonSpatialDetails[]} sampleSites
  * @return {*}  {GridColDef<IObservationAnalyticsRow>}
  */
-export const getSamplingSiteColDef = (
-  sampleSites: IGetSampleLocationNonSpatialDetails[]
-): GridColDef<IObservationAnalyticsRow> => ({
+export const getSamplingSiteColDef = (): GridColDef<IObservationAnalyticsRow> => ({
   headerAlign: 'left',
   align: 'left',
   field: 'survey_sample_site_id',
   headerName: 'Site',
   flex: 1,
   minWidth: 150,
-  renderCell: (params) => {
-    if (!params.row.survey_sample_site_id) {
-      return null;
-    }
-
-    const site = sampleSites.find((site) => isEqual(params.row.survey_sample_site_id, site.survey_sample_site_id));
-
-    if (!site) {
-      return null;
-    }
-
-    return <Typography>{site.name}</Typography>;
-  }
+  sortable: false, // Not yet supported by the API
+  renderCell: (params) => <Typography>{params.row.survey_sample_site_name}</Typography>
 });
 
 /**
- * Get the column definition for the sampling method.
+ * Get the column definition for the method technique.
  *
- * @param {IGetSampleLocationNonSpatialDetails[]} sampleSites
  * @return {*}  {GridColDef<IObservationAnalyticsRow>}
  */
-export const getSamplingMethodColDef = (
-  sampleSites: IGetSampleLocationNonSpatialDetails[]
-): GridColDef<IObservationAnalyticsRow> => ({
+export const getMethodTechniqueColDef = (): GridColDef<IObservationAnalyticsRow> => ({
   headerAlign: 'left',
   align: 'left',
-  field: 'survey_sample_method_id',
-  headerName: 'Method',
+  field: 'method_technique_id',
+  headerName: 'Technique',
   flex: 1,
   minWidth: 150,
-  renderCell: (params) => {
-    if (!params.row.survey_sample_method_id) {
-      return null;
-    }
-
-    const method = sampleSites
-      .flatMap((site) => site.sample_methods)
-      .find((method) => isEqual(params.row.survey_sample_method_id, method.survey_sample_method_id));
-
-    if (!method) {
-      return null;
-    }
-
-    return <Typography>{method.technique.name}</Typography>;
-  }
+  sortable: false, // Not yet supported by the API
+  renderCell: (params) => <Typography>{params.row.method_technique_name}</Typography>
 });
 
 /**
  * Get the column definition for the sampling period.
  *
- * @param {IGetSampleLocationNonSpatialDetails[]} sampleSites
  * @return {*}  {GridColDef<IObservationAnalyticsRow>}
  */
-export const getSamplingPeriodColDef = (
-  sampleSites: IGetSampleLocationNonSpatialDetails[]
-): GridColDef<IObservationAnalyticsRow> => ({
+export const getSamplingPeriodColDef = (): GridColDef<IObservationAnalyticsRow> => ({
   headerAlign: 'left',
   align: 'left',
   field: 'survey_sample_period_id',
   headerName: 'Period',
   flex: 1,
   minWidth: 180,
+  sortable: false, // Not yet supported by the API
   renderCell: (params) => {
-    if (!params.row.survey_sample_period_id) {
-      return null;
-    }
-
-    const period = sampleSites
-      .flatMap((site) => site.sample_methods)
-      .flatMap((method) => method.sample_periods)
-      .find((period) => isEqual(params.row.survey_sample_period_id, period.survey_sample_period_id));
-
-    if (!period) {
-      return null;
-    }
-
-    const formattedDateRange = `${dayjs(period.start_date).format(DATE_FORMAT.ShortMediumDateFormat)} – ${dayjs(
-      period.end_date
-    ).format(DATE_FORMAT.ShortMediumDateFormat)}`;
-
-    return (
-      <Typography overflow="hidden" textOverflow="ellipsis" title={formattedDateRange}>
-        {formattedDateRange}
-      </Typography>
+    const label = getDateTimeLabel(
+      params.row.start_date ?? null,
+      params.row.start_time ?? null,
+      params.row.end_date ?? null,
+      params.row.end_time ?? null
     );
+
+    return <Typography>{label}</Typography>;
   }
 });
 
@@ -204,6 +161,7 @@ export const getDateColDef = (): GridColDef<IObservationAnalyticsRow> => ({
   headerName: 'Date',
   minWidth: 150,
   flex: 1,
+  sortable: false, // Not yet supported by the API
   renderCell: (params) =>
     params.row.observation_date ? (
       <Typography>{dayjs(params.row.observation_date).format(DATE_FORMAT.MediumDateFormat)}</Typography>

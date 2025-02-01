@@ -1,3 +1,4 @@
+import { Knex } from 'knex';
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { AttractantLookupRecord } from '../database-models/attractant_lookup';
@@ -7,6 +8,7 @@ import { MethodTechniqueAttributeQualitativeRecord } from '../database-models/me
 import { MethodTechniqueAttributeQuantitativeRecord } from '../database-models/method_technique_attribute_quantitative';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
+import { ITechniqueAdvancedFilters } from '../models/technique-view';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { BaseRepository } from './base-repository';
 import { TechniqueVantage } from './technique-vantage-repository';
@@ -15,7 +17,8 @@ const ITechniquePostData = MethodTechniqueRecord.pick({
   name: true,
   description: true,
   distance_threshold: true,
-  method_lookup_id: true
+  method_lookup_id: true,
+  method_response_metric_id: true
 }).extend({
   attributes: z.object({
     quantitative_attributes: z.array(
@@ -53,7 +56,8 @@ const ITechniqueRowDataForInsert = MethodTechniqueRecord.pick({
   name: true,
   description: true,
   distance_threshold: true,
-  method_lookup_id: true
+  method_lookup_id: true,
+  method_response_metric_id: true
 });
 
 export type ITechniqueRowDataForInsert = z.infer<typeof ITechniqueRowDataForInsert>;
@@ -71,7 +75,8 @@ const TechniqueObject = MethodTechniqueRecord.pick({
   name: true,
   description: true,
   distance_threshold: true,
-  method_lookup_id: true
+  method_lookup_id: true,
+  method_response_metric_id: true
 }).extend({
   attractants: z.array(
     AttractantLookupRecord.pick({
@@ -98,6 +103,13 @@ const TechniqueObject = MethodTechniqueRecord.pick({
 });
 
 export type TechniqueObject = z.infer<typeof TechniqueObject>;
+
+export const FindTechniqueRecord = MethodTechniqueRecord.extend({
+  method_response_metric_name: z.string(),
+  method_lookup_name: z.string()
+});
+
+export type FindTechniqueRecord = z.infer<typeof FindTechniqueRecord>;
 
 export class TechniqueRepository extends BaseRepository {
   /**
@@ -181,6 +193,7 @@ export class TechniqueRepository extends BaseRepository {
         'mt.description',
         'mt.distance_threshold',
         'mt.method_lookup_id',
+        'mt.method_response_metric_id',
         knex.raw(`
           COALESCE(w_attractants.attractants, '[]'::json) AS attractants
         `),
@@ -268,6 +281,170 @@ export class TechniqueRepository extends BaseRepository {
   }
 
   /**
+   * Get the base query for retrieving survey techniques.
+   *
+   * @param {Knex.QueryBuilder} queryBuilder
+   * @return {*}  {Knex.QueryBuilder} The base query for retrieving survey techniques.
+   * @memberof TechniqueRepository
+   */
+  _getTechniquesBaseQuery(queryBuilder: Knex.QueryBuilder): Knex.QueryBuilder {
+    queryBuilder
+      .select(
+        'method_technique.method_technique_id',
+        'method_technique.survey_id',
+        'method_technique.name',
+        'method_technique.description',
+        'method_technique.distance_threshold',
+        'method_technique.method_lookup_id',
+        'method_technique.method_response_metric_id',
+        'method_response_metric.name as method_response_metric_name',
+        'method_lookup.name as method_lookup_name'
+      )
+      .from('method_technique')
+      .innerJoin(
+        'method_response_metric',
+        'method_technique.method_response_metric_id',
+        'method_response_metric.method_response_metric_id'
+      )
+      .innerJoin('method_lookup', 'method_technique.method_lookup_id', 'method_lookup.method_lookup_id');
+
+    return queryBuilder;
+  }
+
+  /**
+   * Get the base query for retrieving survey techniques.
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId
+   * @param {ITechniqueAdvancedFilters} filterFields
+   * @return {*}  {Knex.QueryBuilder} The base query for retrieving survey sample periods
+   * @memberof TechniqueRepository
+   */
+  _makeFindTechniquesBaseQuery(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: ITechniqueAdvancedFilters
+  ): Knex.QueryBuilder {
+    const knex = getKnex();
+
+    const getSurveyIdsQuery = knex.select<any, { survey_id: number }>(['survey_id']).from('survey');
+
+    // Ensure that users can only see observations that they are participating in, unless they are an administrator.
+    if (!isUserAdmin) {
+      getSurveyIdsQuery.whereIn('survey.project_id', (subqueryBuilder) =>
+        subqueryBuilder
+          .select('project.project_id')
+          .from('project')
+          .leftJoin('project_participation', 'project_participation.project_id', 'project.project_id')
+          .where('project_participation.system_user_id', systemUserId)
+      );
+    }
+
+    if (filterFields.system_user_id) {
+      getSurveyIdsQuery.whereIn('project.project_id', (subQueryBuilder) => {
+        subQueryBuilder
+          .select('project_id')
+          .from('project_participation')
+          .where('system_user_id', filterFields.system_user_id);
+      });
+    }
+
+    const findTechniquesQuery = knex.queryBuilder();
+
+    // Add the base query
+    findTechniquesQuery.modify(this._getTechniquesBaseQuery);
+
+    // Filter by the survey ids the user has access to
+    findTechniquesQuery.whereIn('method_technique.survey_id', getSurveyIdsQuery);
+
+    if (filterFields.survey_id) {
+      // Filter by a specific survey id
+      findTechniquesQuery.andWhere('method_technique.survey_id', filterFields.survey_id);
+    }
+
+    // Filter by specific sample period id and/or sample site id
+    if (filterFields.sample_period_id || filterFields.sample_site_id) {
+      // Multiple survey sample period records can be associated to the same technique, so we need to ensure we only
+      // return distinct technique records when filtering by survey sample period id or survey sample site id.
+      findTechniquesQuery.distinctOn('method_technique.method_technique_id');
+
+      findTechniquesQuery.innerJoin(
+        'survey_sample_period',
+        'survey_sample_period.method_technique_id',
+        'method_technique.method_technique_id'
+      );
+
+      if (filterFields.sample_period_id) {
+        // Filter techniques that are associated to the given sample period id
+        findTechniquesQuery.andWhere('survey_sample_period.survey_sample_period_id', filterFields.sample_period_id);
+      }
+
+      if (filterFields.sample_site_id) {
+        // Filter techniques that are associated to the given sample site id
+        findTechniquesQuery.andWhere('survey_sample_period.survey_sample_site_id', filterFields.sample_site_id);
+      }
+    }
+
+    return findTechniquesQuery;
+  }
+
+  /**
+   * Retrieve the list of techniques that the user has access to, based on filters and pagination options.
+   *
+   * @param {boolean} isUserAdmin Whether the user is an admin.
+   * @param {number | null} systemUserId The user's ID.
+   * @param {ITechniqueAdvancedFilters} filterFields The filter fields to apply.
+   * @param {ApiPaginationOptions} [pagination] The pagination options.
+   * @return {*}  {Promise<FindTechniqueRecord[]>}
+   * @memberof TechniqueRepository
+   */
+  async findTechniques(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: ITechniqueAdvancedFilters,
+    pagination?: ApiPaginationOptions
+  ): Promise<FindTechniqueRecord[]> {
+    const query = this._makeFindTechniquesBaseQuery(isUserAdmin, systemUserId, filterFields);
+
+    if (pagination) {
+      query.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
+
+      if (pagination.sort && pagination.order) {
+        query.orderBy(pagination.sort, pagination.order);
+      }
+    }
+
+    const response = await this.connection.knex(query, FindTechniqueRecord);
+
+    return response.rows;
+  }
+
+  /**
+   * Retrieve the count of techniques that the user has access to, based on filters and pagination options.
+   *
+   * @param {boolean} isUserAdmin Whether the user is an admin.
+   * @param {number | null} systemUserId The user's ID.
+   * @param {ITechniqueAdvancedFilters} filterFields The filter fields to apply.
+   * @return {*}  {Promise<number>}
+   * @memberof TechniqueRepository
+   */
+  async findTechniquesCount(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: ITechniqueAdvancedFilters
+  ): Promise<number> {
+    const knex = getKnex();
+
+    const findTechniquesQuery = this._makeFindTechniquesBaseQuery(isUserAdmin, systemUserId, filterFields);
+
+    const query = knex.from(findTechniquesQuery.as('fsq')).select(knex.raw('count(*)::integer as count'));
+
+    const response = await this.connection.knex(query, z.object({ count: z.number() }));
+
+    return response.rows[0].count;
+  }
+
+  /**
    * Create a new technique.
    *
    * @param {number} surveyId
@@ -285,6 +462,7 @@ export class TechniqueRepository extends BaseRepository {
         description: techniqueObject.description,
         distance_threshold: techniqueObject.distance_threshold,
         method_lookup_id: techniqueObject.method_lookup_id,
+        method_response_metric_id: techniqueObject.method_response_metric_id,
         survey_id: surveyId
       })
       .into('method_technique')
@@ -313,7 +491,8 @@ export class TechniqueRepository extends BaseRepository {
         name: techniqueObject.name,
         description: techniqueObject.description,
         method_lookup_id: techniqueObject.method_lookup_id,
-        distance_threshold: techniqueObject.distance_threshold
+        distance_threshold: techniqueObject.distance_threshold,
+        method_response_metric_id: techniqueObject.method_response_metric_id
       })
       .where('method_technique_id', techniqueObject.method_technique_id)
       .andWhere('survey_id', surveyId)

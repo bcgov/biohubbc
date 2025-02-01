@@ -121,7 +121,7 @@ describe('UsersDetailHeader', () => {
       fireEvent.click(getByText('Remove'));
 
       await waitFor(() => {
-        expect(history.location.pathname).toEqual('/admin/manage/users');
+        expect(history.location.pathname).toEqual('/admin/manage');
       });
     });
   });

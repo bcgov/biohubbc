@@ -160,6 +160,7 @@ describe('getTechniques', () => {
       description: 'description',
       distance_threshold: 200,
       method_lookup_id: 33,
+      method_response_metric_id: 22,
       attractants: [
         {
           attractant_lookup_id: 111
@@ -233,6 +234,7 @@ describe('getTechniques', () => {
       description: 'description',
       distance_threshold: 200,
       method_lookup_id: 33,
+      method_response_metric_id: 22,
       attractants: [
         {
           attractant_lookup_id: 111

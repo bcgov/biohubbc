@@ -56,7 +56,7 @@ jobs:
         run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
 
       - name: Scale down
-        run: oc get deploymentconfig --namespace af2668-dev --selector env-id=$PR_NUMBER -o name | awk '{print "oc scale --replicas=0 " $1}' | bash
+        run: oc get DeploymentConfig,Deployment --namespace af2668-dev --selector env-id=$PR_NUMBER -o name | awk '{print "oc scale --replicas=0 " $1}' | bash
 
   # Checkout the repo once and cache it for use in subsequent jobs
   checkoutRepo:
@@ -90,7 +90,7 @@ jobs:
         with:
           # Cache repo based on the commit sha that triggered the workflow
           path: ${{ github.workspace }}/*
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.event.pull_request.head.sha }}
 
   # Build the web frontend app image
   buildAPP:
@@ -118,7 +118,7 @@ jobs:
           cache-name: cache-repo
         with:
           path: ${{ github.workspace }}/*
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.event.pull_request.head.sha }}
 
       # Checkout the branch if not restored via cache
       - name: Checkout Target Branch
@@ -174,7 +174,7 @@ jobs:
           cache-name: cache-repo
         with:
           path: ${{ github.workspace }}/*
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.event.pull_request.head.sha }}
 
       # Checkout the branch if not restored via cache
       - name: Checkout Target Branch
@@ -230,7 +230,7 @@ jobs:
           cache-name: cache-repo
         with:
           path: ${{ github.workspace }}/*
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.event.pull_request.head.sha }}
 
       # Checkout the branch if not restored via cache
       - name: Checkout Target Branch
@@ -286,7 +286,7 @@ jobs:
           cache-name: cache-repo
         with:
           path: ${{ github.workspace }}/*
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.event.pull_request.head.sha }}
 
       # Checkout the branch if not restored via cache
       - name: Checkout Target Branch
@@ -343,7 +343,7 @@ jobs:
           cache-name: cache-repo
         with:
           path: ${{ github.workspace }}/*
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.event.pull_request.head.sha }}
 
       # Checkout the branch if not restored via cache
       - name: Checkout Target Branch
@@ -400,7 +400,7 @@ jobs:
           cache-name: cache-repo
         with:
           path: ${{ github.workspace }}/*
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.event.pull_request.head.sha }}
 
       # Checkout the branch if not restored via cache
       - name: Checkout Target Branch
@@ -435,7 +435,8 @@ jobs:
     name: Deploy Database Setup Image
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    if: ${{ github.event.pull_request.merged == true }}
+    # TODO 1/2: Temporarily disable migrations in prod until the postgres 17 upgrade has been completed
+    if: ${{ github.base_ref != 'prod' && github.event.pull_request.merged == true }}
     env:
       PR_NUMBER: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}
@@ -458,7 +459,7 @@ jobs:
           cache-name: cache-repo
         with:
           path: ${{ github.workspace }}/*
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.event.pull_request.head.sha }}
 
       # Checkout the branch if not restored via cache
       - name: Checkout Target Branch
@@ -516,7 +517,7 @@ jobs:
           cache-name: cache-repo
         with:
           path: ${{ github.workspace }}/*
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.event.pull_request.head.sha }}
 
       # Checkout the branch if not restored via cache
       - name: Checkout Target Branch
@@ -554,7 +555,8 @@ jobs:
     if: ${{ github.event.pull_request.merged == true }}
     needs:
       - deployDatabase
-      - deployDatabaseSetup
+      # TODO 2/2: Temporarily disable migrations in prod until the postgres 17 upgrade has been completed
+      # - deployDatabaseSetup
       - deployAPI
       - deployAPP
     env:
@@ -575,7 +577,7 @@ jobs:
           cache-name: cache-repo
         with:
           path: ${{ github.workspace }}/*
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.event.pull_request.head.sha }}
 
       # Checkout the branch if not restored via cache
       - name: Checkout Target Branch
@@ -623,5 +625,5 @@ jobs:
         env:
           POD_SELECTOR: biohubbc
         run: |
-          oc --namespace af2668-dev   get all,pvc,secret,pods,ReplicationController,DeploymentConfig,HorizontalPodAutoscaler,imagestreamtag -o name | grep $POD_SELECTOR | grep $PR_NUMBER | awk '{print "oc delete --ignore-not-found " $1}' | bash
-          oc --namespace af2668-tools get all,pvc,secret,pods,ReplicationController,DeploymentConfig,HorizontalPodAutoscaler,imagestreamtag -o name | grep $POD_SELECTOR | grep $PR_NUMBER | awk '{print "oc delete --ignore-not-found " $1}' | bash
+          oc --namespace af2668-dev   get all,pvc,secret,pods,ReplicationController,DeploymentConfig,Deployment,HorizontalPodAutoscaler,imagestreamtag -o name | grep $POD_SELECTOR | grep $PR_NUMBER | awk '{print "oc delete --ignore-not-found " $1}' | bash
+          oc --namespace af2668-tools get all,pvc,secret,pods,ReplicationController,DeploymentConfig,Deployment,HorizontalPodAutoscaler,imagestreamtag -o name | grep $POD_SELECTOR | grep $PR_NUMBER | awk '{print "oc delete --ignore-not-found " $1}' | bash

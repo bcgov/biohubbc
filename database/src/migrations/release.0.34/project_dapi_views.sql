@@ -56,7 +56,7 @@
  create or replace view system_constant as select * from biohub.system_constant;
  create or replace view system_metadata_constant as select * from biohub.system_metadata_constant;
  create or replace view system_role as select * from biohub.system_role;
- create or replace view system_user as select * from biohub.system_user;
+ create or replace view "system_user" as select * from biohub."system_user";
  create or replace view system_user_role as select * from biohub.system_user_role;
  create or replace view template as select * from biohub.template;
  create or replace view template_methodology_species as select * from biohub.template_methodology_species;

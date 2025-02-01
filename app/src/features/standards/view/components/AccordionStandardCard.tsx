@@ -7,8 +7,8 @@ import Typography from '@mui/material/Typography';
 import React, { PropsWithChildren, ReactElement, useState } from 'react';
 
 interface IAccordionStandardCardProps extends PaperProps {
-  label: string | React.ReactElement;
-  subtitle?: string | null;
+  label: string | React.ReactNode;
+  subtitle?: string | React.ReactNode | null;
   ornament?: ReactElement;
   colour: string;
   disableCollapse?: boolean;

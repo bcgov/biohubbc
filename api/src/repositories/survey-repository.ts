@@ -603,11 +603,10 @@ export class SurveyRepository extends BaseRepository {
         'survey.progress_id',
         knex.raw('array_remove(array_agg(study_species.itis_tsn), NULL) AS focal_species')
       )
-      .from('project')
-      .leftJoin('survey', 'survey.project_id', 'project.project_id')
+      .from('survey')
       .leftJoin('study_species', 'study_species.survey_id', 'survey.survey_id')
       .leftJoin('survey_progress', 'survey_progress.survey_progress_id', 'survey.progress_id')
-      .where('project.project_id', projectId)
+      .where('survey.project_id', projectId)
       .where('study_species.is_focal', true)
       .groupBy('survey.survey_id')
       .groupBy('survey.name')

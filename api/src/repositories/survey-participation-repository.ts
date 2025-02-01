@@ -1,8 +1,8 @@
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { ApiExecuteSQLError } from '../errors/api-error';
+import { SystemUserWithRoles } from '../models/system-user-view';
 import { BaseRepository } from './base-repository';
-import { SystemUser } from './user-repository';
 
 const SurveyJob = z.object({
   survey_job_id: z.number().int().positive(),
@@ -97,7 +97,10 @@ export class SurveyParticipationRepository extends BaseRepository {
    * @return {*}  {(Promise<SurveyUser | null>)}
    * @memberof SurveyParticipationRepository
    */
-  async getSurveyParticipant(surveyId: number, systemUserId: number): Promise<(SurveyUser & SystemUser) | null> {
+  async getSurveyParticipant(
+    surveyId: number,
+    systemUserId: number
+  ): Promise<(SurveyUser & SystemUserWithRoles) | null> {
     const sqlStatement = SQL`
       SELECT
         su.system_user_id,
@@ -121,7 +124,7 @@ export class SurveyParticipationRepository extends BaseRepository {
         LEFT JOIN
         survey_job sj
         ON sj.survey_job_id = sp.survey_job_id
-      LEFT JOIN system_user su
+      LEFT JOIN "system_user" su
         ON sp.system_user_id = su.system_user_id
       LEFT JOIN
         system_user_role sur
@@ -156,7 +159,7 @@ export class SurveyParticipationRepository extends BaseRepository {
         sp.create_date DESC;
       `;
 
-    const response = await this.connection.sql(sqlStatement, SurveyUser.merge(SystemUser));
+    const response = await this.connection.sql(sqlStatement, SurveyUser.merge(SystemUserWithRoles));
 
     return response.rows?.[0] || null;
   }
@@ -168,7 +171,7 @@ export class SurveyParticipationRepository extends BaseRepository {
    * @return {*}  {Promise<SurveyUser[]>}
    * @memberof SurveyParticipationRepository
    */
-  async getSurveyParticipants(surveyId: number): Promise<(SurveyUser & SystemUser)[]> {
+  async getSurveyParticipants(surveyId: number): Promise<(SurveyUser & SystemUserWithRoles)[]> {
     const sqlStatement = SQL`
       SELECT
         su.system_user_id,
@@ -192,7 +195,7 @@ export class SurveyParticipationRepository extends BaseRepository {
       LEFT JOIN
         survey_job sj
         ON sj.survey_job_id = sp.survey_job_id
-      LEFT JOIN system_user su
+      LEFT JOIN "system_user" su
         ON sp.system_user_id = su.system_user_id
       LEFT JOIN
         system_user_role sur
@@ -227,7 +230,7 @@ export class SurveyParticipationRepository extends BaseRepository {
         sp.create_date DESC;
     `;
 
-    const response = await this.connection.sql(sqlStatement, SurveyUser.merge(SystemUser));
+    const response = await this.connection.sql(sqlStatement, SurveyUser.merge(SystemUserWithRoles));
 
     return response.rows;
   }

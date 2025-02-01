@@ -8,8 +8,7 @@ import {
   IGetSurveyObservationsGeometryResponse,
   IGetSurveyObservationsResponse,
   ObservationRecord,
-  StandardObservationColumns,
-  SupplementaryObservationCountData
+  StandardObservationColumns
 } from 'interfaces/useObservationApi.interface';
 import { EnvironmentTypeIds } from 'interfaces/useReferenceApi.interface';
 import { IPartialTaxonomy } from 'interfaces/useTaxonomyApi.interface';
@@ -264,19 +263,14 @@ const useObservationApi = (axios: AxiosInstance) => {
    * @param {number} projectId
    * @param {number} surveyId
    * @param {((string | number)[])} surveyObservationIds
-   * @return {*}  {Promise<{ supplementaryObservationData: SupplementaryObservationCountData }>}
+   * @return {*}  {Promise<void>}
    */
   const deleteObservationRecords = async (
     projectId: number,
     surveyId: number,
     surveyObservationIds: (string | number)[]
-  ): Promise<{ supplementaryObservationData: SupplementaryObservationCountData }> => {
-    const { data } = await axios.post<{ supplementaryObservationData: SupplementaryObservationCountData }>(
-      `/api/project/${projectId}/survey/${surveyId}/observations/delete`,
-      { surveyObservationIds }
-    );
-
-    return data;
+  ): Promise<void> => {
+    await axios.post(`/api/project/${projectId}/survey/${surveyId}/observations/delete`, { surveyObservationIds });
   };
 
   /**

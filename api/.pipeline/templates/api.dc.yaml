@@ -245,8 +245,8 @@ objects:
         requests:
           storage: '${VOLUME_CAPACITY}'
 
-  - kind: DeploymentConfig
-    apiVersion: apps.openshift.io/v1
+  - kind: Deployment
+    apiVersion: apps/v1
     metadata:
       annotations:
         openshift.io/generated-by: OpenShiftWebConsole
@@ -258,24 +258,18 @@ objects:
       replicas: ${{REPLICAS}}
       revisionHistoryLimit: 10
       selector:
-        deploymentConfig: ${NAME}${SUFFIX}
+        matchLabels:
+          deployment: ${NAME}${SUFFIX}
       strategy:
-        activeDeadlineSeconds: 21600
-        recreateParams:
-          timeoutSeconds: 600
-        resources:
-          requests:
-            cpu: ${CPU_REQUEST}
-            memory: ${MEMORY_REQUEST}
-          limits:
-            cpu: ${CPU_LIMIT}
-            memory: ${MEMORY_LIMIT}
-        type: Rolling
+        type: RollingUpdate
+        rollingUpdate:
+          maxSurge: 25%
+          maxUnavailable: 25%
       template:
         metadata:
           annotations: null
           labels:
-            deploymentConfig: ${NAME}${SUFFIX}
+            deployment: ${NAME}${SUFFIX}
             role: api
         spec:
           containers:
@@ -452,7 +446,7 @@ objects:
                   value: ${GCNOTIFY_SMS_URL}
                 - name: FEATURE_FLAGS
                   value: ${FEATURE_FLAGS}
-              image: ' '
+              image: ${BASE_IMAGE_REGISTRY_URL}/${NAMESPACE}/${NAME}:${VERSION}
               imagePullPolicy: Always
               ports:
                 - containerPort: ${{API_PORT_DEFAULT}}
@@ -499,16 +493,6 @@ objects:
               persistentVolumeClaim:
                 claimName: ${NAME}${SUFFIX}
       test: false
-      triggers:
-        - imageChangeParams:
-            automatic: true
-            containerNames:
-              - api
-            from:
-              kind: ImageStreamTag
-              name: ${NAME}:${VERSION}
-          type: ImageChange
-        - type: ConfigChange
     status:
       availableReplicas: 0
       latestVersion: 0
@@ -542,7 +526,7 @@ objects:
           protocol: TCP
           targetPort: ${{API_PORT_DEFAULT}}
       selector:
-        deploymentconfig: ${NAME}${SUFFIX}
+        deployment: ${NAME}${SUFFIX}
       sessionAffinity: None
       type: ClusterIP
     status:
@@ -594,7 +578,6 @@ objects:
                 - name: api
                   image: ${BASE_IMAGE_REGISTRY_URL}/${NAMESPACE}/${NAME}:${VERSION}
                   imagePullPolicy: Always
-                  restartPolicy: 'Never'
                   terminationGracePeriodSeconds: 30
                   activeDeadlineSeconds: 220
                   env:
@@ -659,9 +642,8 @@ objects:
                       value: ${API_RESPONSE_VALIDATION_ENABLED}
                     - name: DATABASE_RESPONSE_VALIDATION_ENABLED
                       value: ${DATABASE_RESPONSE_VALIDATION_ENABLED}
-                  command: ["npm", "run", "telemetry-cronjob", "--", "--batchSize 1000", "--concurrently 100"]
+                  command: ['npm', 'run', 'telemetry-cronjob', '--', '--batchSize 1000', '--concurrently 100']
               restartPolicy: Never
-
 
   # Disable the HPA for now, as it is preferrable to run an exact number of pods (e.g. min:2, max:2)
   # - kind: HorizontalPodAutoscaler
@@ -674,8 +656,8 @@ objects:
   #     minReplicas: ${{REPLICAS}}
   #     maxReplicas: ${{REPLICAS_MAX}}
   #     scaleTargetRef:
-  #       apiVersion: apps.openshift.io/v1
-  #       kind: DeploymentConfig
+  #       kind: Deployment
+  #       apiVersion: apps/v1
   #       name: ${NAME}${SUFFIX}
   #     metrics:
   #       - type: Resource

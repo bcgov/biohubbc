@@ -9,7 +9,8 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import PageHeader from 'components/layout/PageHeader';
 import { EditTechniqueI18N } from 'constants/i18n';
-import TechniqueFormContainer, {
+import {
+  TechniqueFormContainer,
   UpdateTechniqueFormValues
 } from 'features/surveys/sampling-information/techniques/components/TechniqueFormContainer';
 import { FormikProps } from 'formik';
@@ -71,6 +72,7 @@ export const EditTechniquePage = () => {
     description: technique?.description ?? null,
     distance_threshold: technique?.distance_threshold ?? null,
     method_lookup_id: technique?.method_lookup_id ?? null,
+    method_response_metric_id: technique.method_response_metric_id,
     attractants: technique?.attractants,
     attributes: [
       ...(technique?.attributes.qualitative_attributes.map((attribute) => ({

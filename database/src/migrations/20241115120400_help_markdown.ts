@@ -108,7 +108,7 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN markdown_user.revision_count IS 'Revision count used for concurrency control.';
 
     ALTER TABLE markdown_user ADD CONSTRAINT markdown_user_fk1 FOREIGN KEY (markdown_id) REFERENCES markdown(markdown_id);
-    ALTER TABLE markdown_user ADD CONSTRAINT markdown_user_fk2 FOREIGN KEY (system_user_id) REFERENCES system_user(system_user_id);
+    ALTER TABLE markdown_user ADD CONSTRAINT markdown_user_fk2 FOREIGN KEY (system_user_id) REFERENCES "system_user"(system_user_id);
 
     CREATE INDEX markdown_user_idx1 ON markdown_user(system_user_id);
     CREATE INDEX markdown_user_idx2 ON markdown_user(markdown_id);

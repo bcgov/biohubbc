@@ -36,17 +36,17 @@ export async function seed(knex: Knex): Promise<void> {
       SET client_min_messages TO 'warning'
       AS $$
         DECLARE
-          _system_user system_user%rowtype;
+          _system_user "system_user"%rowtype;
         BEGIN
           -- Attempt to find user based on guid
-          SELECT * INTO _system_user FROM system_user
+          SELECT * INTO _system_user FROM "system_user"
             WHERE LOWER(user_guid) = LOWER(p_system_user_guid)
             AND record_end_date IS NULL
             LIMIT 1;
 
           -- Otherwise, attempt to find user based on identifier and identity source
           IF NOT found THEN
-            SELECT * INTO _system_user FROM system_user
+            SELECT * INTO _system_user FROM "system_user"
             WHERE user_identity_source_id = (
               SELECT user_identity_source_id FROM user_identity_source
               WHERE LOWER(name) = LOWER(p_user_identity_source_name)
@@ -63,7 +63,7 @@ export async function seed(knex: Knex): Promise<void> {
           END IF;
 
           -- Otherwise, patch the system user record with the latest information passed to this function
-          UPDATE system_user SET
+          UPDATE "system_user" SET
             user_guid = p_system_user_guid,
             user_identifier = p_user_identifier,
             email = p_email,
@@ -91,6 +91,6 @@ export async function seed(knex: Knex): Promise<void> {
         END;
       $$;
 
-    COMMENT ON FUNCTION api_patch_system_user(varchar, varchar, varchar, varchar, varchar, varchar, varchar, varchar) IS 'Updates a system_user record if any of the incoming values are not the same as the existing values.';
+    COMMENT ON FUNCTION api_patch_system_user(varchar, varchar, varchar, varchar, varchar, varchar, varchar, varchar) IS 'Updates a "system_user" record if any of the incoming values are not the same as the existing values.';
   `);
 }

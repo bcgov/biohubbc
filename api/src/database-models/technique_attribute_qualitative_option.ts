@@ -8,7 +8,7 @@ import { z } from 'zod';
 export const TechniqueAttributeQualitativeOptionModel = z.object({
   technique_attribute_qualitative_option_id: z.string().uuid(),
   name: z.string(),
-  description: z.string(),
+  description: z.string().nullable(),
   record_end_date: z.string().nullable(),
   create_date: z.string(),
   create_user: z.number(),

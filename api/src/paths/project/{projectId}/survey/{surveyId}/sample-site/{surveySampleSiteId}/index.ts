@@ -4,11 +4,9 @@ import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/
 import { getDBConnection } from '../../../../../../../database/db';
 import { HTTP400, HTTP409 } from '../../../../../../../errors/http-error';
 import { GeoJSONFeature } from '../../../../../../../openapi/schemas/geoJson';
-import { techniqueSimpleViewSchema } from '../../../../../../../openapi/schemas/technique';
-import { UpdateSampleLocationRecord } from '../../../../../../../repositories/sample-location-repository/sample-location-repository';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
-import { ObservationService } from '../../../../../../../services/observation-service';
-import { SampleLocationService } from '../../../../../../../services/sample-location-service';
+import { ObservationService } from '../../../../../../../services/observation-services/observation-service';
+import { SampleSiteService, UpdateSampleSiteObject } from '../../../../../../../services/sample-site-service';
 import { getLogger } from '../../../../../../../utils/logger';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/sample-site/{surveySampleSiteId}');
@@ -62,6 +60,7 @@ PUT.apiDoc = {
     {
       in: 'path',
       name: 'surveySampleSiteId',
+      description: 'The ID of the survey sample site to update.',
       schema: {
         type: 'integer',
         minimum: 1
@@ -81,11 +80,8 @@ PUT.apiDoc = {
             sampleSite: {
               type: 'object',
               additionalProperties: false,
-              required: ['name', 'description', 'methods', 'survey_sample_sites'],
+              required: ['name', 'description', 'geojson', 'blocks', 'stratums'],
               properties: {
-                survey_id: {
-                  type: 'integer'
-                },
                 name: {
                   type: 'string'
                 },
@@ -94,78 +90,6 @@ PUT.apiDoc = {
                 },
                 geojson: {
                   ...(GeoJSONFeature as object)
-                },
-                methods: {
-                  type: 'array',
-                  minItems: 1,
-                  items: {
-                    type: 'object',
-                    additionalProperties: false,
-                    required: [
-                      'survey_sample_method_id',
-                      'survey_sample_site_id',
-                      'method_technique_id',
-                      'method_response_metric_id',
-                      'description',
-                      'sample_periods'
-                    ],
-                    properties: {
-                      survey_sample_method_id: {
-                        type: 'integer',
-                        minimum: 1,
-                        nullable: true
-                      },
-                      survey_sample_site_id: {
-                        type: 'integer',
-                        minimum: 1,
-                        nullable: true
-                      },
-                      method_technique_id: {
-                        type: 'integer',
-                        minimum: 1
-                      },
-                      method_response_metric_id: {
-                        type: 'integer',
-                        minimum: 1
-                      },
-                      description: {
-                        type: 'string'
-                      },
-                      sample_periods: {
-                        type: 'array',
-                        minItems: 1,
-                        items: {
-                          type: 'object',
-                          additionalProperties: false,
-                          required: ['start_date', 'end_date'],
-                          properties: {
-                            survey_sample_period_id: {
-                              type: 'integer',
-                              nullable: true
-                            },
-                            survey_sample_method_id: {
-                              type: 'integer',
-                              nullable: true
-                            },
-                            start_date: {
-                              type: 'string'
-                            },
-                            end_date: {
-                              type: 'string'
-                            },
-                            start_time: {
-                              type: 'string',
-                              nullable: true
-                            },
-                            end_time: {
-                              type: 'string',
-                              nullable: true
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
                 },
                 blocks: {
                   type: 'array',
@@ -192,10 +116,6 @@ PUT.apiDoc = {
                       }
                     }
                   }
-                },
-                survey_sample_sites: {
-                  type: 'array',
-                  items: GeoJSONFeature as object
                 }
               }
             }
@@ -228,27 +148,27 @@ PUT.apiDoc = {
 
 export function updateSurveySampleSite(): RequestHandler {
   return async (req, res) => {
-    const surveyId = Number(req.params.surveyId);
     const connection = getDBConnection(req.keycloak_token);
 
     try {
-      const sampleSite: UpdateSampleLocationRecord = {
+      const surveyId = Number(req.params.surveyId);
+
+      const sampleSite: UpdateSampleSiteObject = {
         ...req.body.sampleSite,
-        survey_id: Number(req.params.surveyId),
         survey_sample_site_id: Number(req.params.surveySampleSiteId)
       };
 
       await connection.open();
 
-      const sampleLocationService = new SampleLocationService(connection);
+      const sampleSiteService = new SampleSiteService(connection);
 
-      await sampleLocationService.updateSampleLocationMethodPeriod(surveyId, sampleSite);
+      await sampleSiteService.updateSampleSite(surveyId, sampleSite);
 
       await connection.commit();
 
       return res.status(204).send();
     } catch (error) {
-      defaultLog.error({ label: 'updateSampleLocationMethodPeriod', message: 'error', error });
+      defaultLog.error({ label: 'updateSurveySampleSite', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
@@ -361,9 +281,9 @@ export function deleteSurveySampleSiteRecord(): RequestHandler {
         throw new HTTP409('Cannot delete a sample site that is associated with an observation');
       }
 
-      const sampleLocationService = new SampleLocationService(connection);
+      const sampleSiteService = new SampleSiteService(connection);
 
-      await sampleLocationService.deleteSampleSiteRecord(surveyId, surveySampleSiteId);
+      await sampleSiteService.deleteSampleSiteRecord(surveyId, surveySampleSiteId);
 
       await connection.commit();
 
@@ -398,7 +318,7 @@ export const GET: Operation = [
       ]
     };
   }),
-  getSurveySampleLocationRecord()
+  getSurveySampleSite()
 ];
 
 GET.apiDoc = {
@@ -446,16 +366,7 @@ GET.apiDoc = {
           schema: {
             type: 'object',
             additionalProperties: false,
-            required: [
-              'survey_sample_site_id',
-              'survey_id',
-              'name',
-              'description',
-              'geojson',
-              'sample_methods',
-              'blocks',
-              'stratums'
-            ],
+            required: ['survey_sample_site_id', 'survey_id', 'name', 'description', 'geojson', 'blocks', 'stratums'],
             properties: {
               survey_sample_site_id: {
                 type: 'integer',
@@ -475,86 +386,6 @@ GET.apiDoc = {
               },
               geojson: {
                 ...(GeoJSONFeature as object)
-              },
-              sample_methods: {
-                type: 'array',
-                required: [
-                  'survey_sample_method_id',
-                  'survey_sample_site_id',
-                  'technique',
-                  'method_response_metric_id',
-                  'sample_periods'
-                ],
-                items: {
-                  type: 'object',
-                  additionalProperties: false,
-                  required: [
-                    'survey_sample_method_id',
-                    'survey_sample_site_id',
-                    'method_response_metric_id',
-                    'description',
-                    'sample_periods',
-                    'technique'
-                  ],
-                  properties: {
-                    survey_sample_method_id: {
-                      type: 'integer',
-                      minimum: 1
-                    },
-                    survey_sample_site_id: {
-                      type: 'integer',
-                      minimum: 1
-                    },
-                    method_response_metric_id: {
-                      type: 'integer',
-                      minimum: 1
-                    },
-                    description: {
-                      type: 'string',
-                      maxLength: 250
-                    },
-                    sample_periods: {
-                      type: 'array',
-                      required: [
-                        'survey_sample_period_id',
-                        'survey_sample_method_id',
-                        'start_date',
-                        'start_time',
-                        'end_date',
-                        'end_time'
-                      ],
-                      items: {
-                        type: 'object',
-                        additionalProperties: false,
-                        properties: {
-                          survey_sample_period_id: {
-                            type: 'integer',
-                            minimum: 1
-                          },
-                          survey_sample_method_id: {
-                            type: 'integer',
-                            minimum: 1
-                          },
-                          start_date: {
-                            type: 'string'
-                          },
-                          start_time: {
-                            type: 'string',
-                            nullable: true
-                          },
-                          end_date: {
-                            type: 'string'
-                          },
-                          end_time: {
-                            type: 'string',
-                            nullable: true
-                          }
-                        }
-                      }
-                    },
-                    technique: techniqueSimpleViewSchema
-                  }
-                }
               },
               blocks: {
                 type: 'array',
@@ -646,7 +477,7 @@ GET.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-export function getSurveySampleLocationRecord(): RequestHandler {
+export function getSurveySampleSite(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req.keycloak_token);
 
@@ -656,14 +487,14 @@ export function getSurveySampleLocationRecord(): RequestHandler {
       const surveyId = Number(req.params.surveyId);
       const surveySampleSiteId = Number(req.params.surveySampleSiteId);
 
-      const sampleLocationService = new SampleLocationService(connection);
-      const sampleSite = await sampleLocationService.getSurveySampleLocationBySiteId(surveyId, surveySampleSiteId);
+      const sampleSiteService = new SampleSiteService(connection);
+      const sampleSite = await sampleSiteService.getSurveySampleSiteBySiteId(surveyId, surveySampleSiteId);
 
       await connection.commit();
 
       return res.status(200).json(sampleSite);
     } catch (error) {
-      defaultLog.error({ label: 'getSurveySampleLocationRecord', message: 'error', error });
+      defaultLog.error({ label: 'getSurveySampleSite', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
