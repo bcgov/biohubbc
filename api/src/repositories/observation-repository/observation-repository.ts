@@ -15,7 +15,12 @@ import {
   ObservationSubCountQualitativeMeasurementRecord,
   ObservationSubCountQuantitativeMeasurementRecord
 } from '../observation-subcount-measurement-repository';
-import { getSurveyObservationsBaseQuery, makeFindObservationsQuery } from './utils';
+import {
+  getSurveyFlattenedObservationsBaseQuery,
+  getSurveyObservationsBaseQuery,
+  makeFindFlattenedObservationsQuery,
+  makeFindObservationsQuery
+} from './utils';
 
 const defaultLog = getLogger('repositories/observation-repository');
 
@@ -79,7 +84,7 @@ const ObservationSubcountsObject = z.object({
  * Includes:
  * - fields from the observation record
  * - additional fields about the survey_sample_* data for the observation record
- * - additional fields about the subcount records for the observation record
+ * - additional fields about the subcount record(s) for the observation record
  */
 export const ObservationRecordWithSamplingAndSubcountData = SurveyObservationRecord.extend(
   ObservationSamplingData.shape
@@ -87,6 +92,24 @@ export const ObservationRecordWithSamplingAndSubcountData = SurveyObservationRec
   .extend(ObservationEnvironmentData.shape)
   .extend(ObservationSubcountsObject.shape);
 export type ObservationRecordWithSamplingAndSubcountData = z.infer<typeof ObservationRecordWithSamplingAndSubcountData>;
+
+/**
+ * An extended flattened observation record.
+ * Includes:
+ * - fields from the observation record
+ * - additional fields about the survey_sample_* data for the observation record
+ * - additional fields about the subcount record for the observation record
+ */
+export const FlattenedObservationRecordWithSamplingAndSubcountData = SurveyObservationRecord.extend(
+  ObservationSamplingData.shape
+)
+  .extend(ObservationEnvironmentData.shape)
+  .extend({
+    subcount: ObservationSubcountObject
+  });
+export type FlattenedObservationRecordWithSamplingAndSubcountData = z.infer<
+  typeof FlattenedObservationRecordWithSamplingAndSubcountData
+>;
 
 export const ObservationGeometryRecord = z.object({
   survey_observation_id: z.number(),
@@ -175,6 +198,35 @@ export class ObservationRepository extends BaseRepository {
     return response.rows;
   }
 
+  /** Retrieve the list of observations that the user has access to, based on filters and pagination options.
+   *
+   * @param {boolean} isUserAdmin Whether the user is an admin.
+   * @param {number | null} systemUserId The user's ID.
+   * @param {IObservationAdvancedFilters} filterFields The filter fields to apply.
+   * @param {ApiPaginationOptions} [pagination] The pagination options.
+   * @return {Promise<FlattenedObservationRecordWithSamplingAndSubcountData[]>} A promise resolving to the list of observations.
+   */
+  async findFlattenedObservations(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields?: IObservationAdvancedFilters,
+    pagination?: ApiPaginationOptions
+  ): Promise<FlattenedObservationRecordWithSamplingAndSubcountData[]> {
+    const query = makeFindFlattenedObservationsQuery(isUserAdmin, systemUserId, filterFields);
+
+    if (pagination) {
+      query.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
+
+      if (pagination.sort && pagination.order) {
+        query.orderBy(pagination.sort, pagination.order);
+      }
+    }
+
+    const response = await this.connection.knex(query, FlattenedObservationRecordWithSamplingAndSubcountData);
+
+    return response.rows;
+  }
+
   /**
    * Retrieves a paginated set of observation records for the given survey, including data for
    * associated sampling records.
@@ -184,7 +236,7 @@ export class ObservationRepository extends BaseRepository {
    * @return {Promise<ObservationRecordWithSamplingAndSubcountData[]>} A promise resolving to the list of observations.
    * @memberof ObservationRepository
    */
-  async getSurveyObservationsWithSamplingDataWithAttributesData(
+  async getSurveyObservations(
     surveyId: number,
     pagination?: ApiPaginationOptions
   ): Promise<ObservationRecordWithSamplingAndSubcountData[]> {
@@ -204,6 +256,39 @@ export class ObservationRepository extends BaseRepository {
     }
 
     const response = await this.connection.knex(query, ObservationRecordWithSamplingAndSubcountData);
+
+    return response.rows;
+  }
+
+  /**
+   * Retrieves a paginated set of flattened observation records for the given survey, including data for
+   * associated sampling records.
+   *
+   * @param {number} surveyId The ID of the survey.
+   * @param {ApiPaginationOptions} [pagination] The pagination options.
+   * @return {Promise<FlattenedObservationRecordWithSamplingAndSubcountData[]>} A promise resolving to the list of observations.
+   * @memberof ObservationRepository
+   */
+  async getSurveyFlattenedObservations(
+    surveyId: number,
+    pagination?: ApiPaginationOptions
+  ): Promise<FlattenedObservationRecordWithSamplingAndSubcountData[]> {
+    const knex = getKnex();
+
+    const query = getSurveyFlattenedObservationsBaseQuery(
+      knex,
+      knex.select<any, { survey_id: number }>('survey_id').from('survey').where('survey_id', surveyId)
+    );
+
+    if (pagination) {
+      query.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
+
+      if (pagination.sort && pagination.order) {
+        query.orderBy(pagination.sort, pagination.order);
+      }
+    }
+
+    const response = await this.connection.knex(query, FlattenedObservationRecordWithSamplingAndSubcountData);
 
     return response.rows;
   }
@@ -456,13 +541,38 @@ export class ObservationRepository extends BaseRepository {
    * @return {*}  {Promise<number>}
    * @memberof ObservationRepository
    */
-  async getSurveyObservationCount(surveyId: number): Promise<number> {
+  async getSurveyObservationsCount(surveyId: number): Promise<number> {
     const knex = getKnex();
     const sqlStatement = knex
       .queryBuilder()
       .select(knex.raw('COUNT(survey_observation_id)::integer as count'))
       .from('survey_observation')
       .where('survey_id', surveyId);
+
+    const response = await this.connection.knex(sqlStatement, z.object({ count: z.number() }));
+
+    return response.rows[0].count;
+  }
+
+  /**
+   * Retrieves the count of flattened survey observations for the given survey.
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<number>}
+   * @memberof ObservationRepository
+   */
+  async getSurveyFlattenedObservationsCount(surveyId: number): Promise<number> {
+    const knex = getKnex();
+    const sqlStatement = knex
+      .queryBuilder()
+      .select(knex.raw('COUNT(observation_subcount_id)::integer as count'))
+      .from('observation_subcount')
+      .innerJoin(
+        'survey_observation',
+        'observation_subcount.survey_observation_id',
+        'survey_observation.survey_observation_id'
+      )
+      .where('survey_observation.survey_id', surveyId);
 
     const response = await this.connection.knex(sqlStatement, z.object({ count: z.number() }));
 
@@ -493,8 +603,43 @@ export class ObservationRepository extends BaseRepository {
     const response = await this.connection.knex(queryBuilder, z.object({ count: z.number() }));
 
     if (!response.rowCount) {
-      throw new ApiExecuteSQLError('Failed to get survey count', [
-        'findObservationsCount->findObservationsCount',
+      throw new ApiExecuteSQLError('Failed to get observations count', [
+        'ObservationRepository->findObservationsCount',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response.rows[0].count;
+  }
+
+  /**
+   * Retrieves the total count of all flattened observations that are available to the user based on the user's
+   * permissions and filter criteria.
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId
+   * @param {IObservationAdvancedFilters} filterFields
+   * @return {*}  {Promise<number>}
+   * @memberof ObservationRepository
+   */
+  async findFlattenedObservationsCount(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: IObservationAdvancedFilters
+  ): Promise<number> {
+    const findFlattenedObservationsQuery = makeFindFlattenedObservationsQuery(isUserAdmin, systemUserId, filterFields);
+
+    const knex = getKnex();
+
+    const queryBuilder = knex
+      .from(findFlattenedObservationsQuery.as('foq'))
+      .select(knex.raw('count(*)::integer as count'));
+
+    const response = await this.connection.knex(queryBuilder, z.object({ count: z.number() }));
+
+    if (!response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to get observations count', [
+        'ObservationRepository->findFlattenedObservationsCount',
         'rows was null or undefined, expected rows != null'
       ]);
     }

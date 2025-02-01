@@ -85,11 +85,11 @@ describe('ObservationService', () => {
       };
 
       const getSurveyObservationsStub = sinon
-        .stub(ObservationRepository.prototype, 'getSurveyObservationsWithSamplingDataWithAttributesData')
+        .stub(ObservationRepository.prototype, 'getSurveyObservations')
         .resolves(mockObservations);
 
       const getSurveyObservationCountStub = sinon
-        .stub(ObservationRepository.prototype, 'getSurveyObservationCount')
+        .stub(ObservationRepository.prototype, 'getSurveyObservationsCount')
         .resolves(2);
 
       const getMeasurementTypeDefinitionsForSurveyStub = sinon

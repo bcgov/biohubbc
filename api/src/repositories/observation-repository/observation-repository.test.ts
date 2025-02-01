@@ -146,7 +146,7 @@ describe('ObservationRepository', () => {
     });
   });
 
-  describe('getSurveyObservationsWithSamplingDataWithAttributesData', () => {
+  describe('getSurveyObservations', () => {
     it('get all observations for a survey when some observation records exist', async () => {
       const mockRows = [{}, {}];
       const mockQueryResponse = { rows: mockRows, rowCount: 2 } as unknown as QueryResult<any>;
@@ -159,7 +159,7 @@ describe('ObservationRepository', () => {
 
       const surveyId = 1;
 
-      const response = await repository.getSurveyObservationsWithSamplingDataWithAttributesData(surveyId);
+      const response = await repository.getSurveyObservations(surveyId);
 
       expect(response).to.be.eql(mockRows);
     });
@@ -176,13 +176,13 @@ describe('ObservationRepository', () => {
 
       const surveyId = 1;
 
-      const response = await repository.getSurveyObservationsWithSamplingDataWithAttributesData(surveyId);
+      const response = await repository.getSurveyObservations(surveyId);
 
       expect(response).to.be.eql(mockRows);
     });
   });
 
-  describe('getSurveyObservationCount', () => {
+  describe('getSurveyObservationsCount', () => {
     it('gets the count of survey observations for the given survey', async () => {
       const mockQueryResponse = { rows: [{ count: 1 }] } as unknown as QueryResult<any>;
 
@@ -192,7 +192,7 @@ describe('ObservationRepository', () => {
 
       const repo = new ObservationRepository(mockDBConnection);
 
-      const response = await repo.getSurveyObservationCount(1);
+      const response = await repo.getSurveyObservationsCount(1);
 
       expect(response).to.eql(1);
     });

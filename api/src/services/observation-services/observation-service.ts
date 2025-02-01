@@ -9,6 +9,7 @@ import {
   QuantitativeEnvironmentTypeDefinition
 } from '../../repositories/observation-environment-repository';
 import {
+  FlattenedObservationRecordWithSamplingAndSubcountData,
   InsertObservation,
   ObservationGeometryRecord,
   ObservationRecordWithSamplingAndSubcountData,
@@ -162,6 +163,26 @@ export class ObservationService extends DBService {
     pagination?: ApiPaginationOptions
   ): Promise<ObservationRecordWithSamplingAndSubcountData[]> {
     return this.observationRepository.findObservations(isUserAdmin, systemUserId, filterFields, pagination);
+  }
+
+  /**
+   * Retrieves the paginated list of all observations that are available to the user, based on their permissions and
+   * provided filter criteria.
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId The system user id of the user making the request
+   * @param {IObservationAdvancedFilters} filterFields
+   * @param {ApiPaginationOptions} [pagination]
+   * @return {*}  {Promise<FlattenedObservationRecordWithSamplingAndSubcountData[]>}
+   * @memberof ObservationService
+   */
+  async findFlattenedObservations(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: IObservationAdvancedFilters,
+    pagination?: ApiPaginationOptions
+  ): Promise<FlattenedObservationRecordWithSamplingAndSubcountData[]> {
+    return this.observationRepository.findFlattenedObservations(isUserAdmin, systemUserId, filterFields, pagination);
   }
 
   /**
@@ -325,9 +346,60 @@ export class ObservationService extends DBService {
       samplePeriods
     ] = await Promise.all([
       // Fetch observations
-      this.observationRepository.getSurveyObservationsWithSamplingDataWithAttributesData(surveyId, pagination),
+      this.observationRepository.getSurveyObservations(surveyId, pagination),
       // Fetch pagination count data
-      this.observationRepository.getSurveyObservationCount(surveyId),
+      this.observationRepository.getSurveyObservationsCount(surveyId),
+      // Fetch supplementary data
+      subCountService.getMeasurementTypeDefinitionsForSurvey(surveyId),
+      this.getEnvironmentTypeDefinitionsForSurvey(surveyId),
+      samplePeriodService.getSamplePeriodsForSurvey(surveyId)
+    ]);
+
+    return {
+      surveyObservations: surveyObservations,
+      supplementaryObservationData: {
+        observationCount,
+        qualitative_measurements: measurementTypeDefinitions.qualitative_measurements,
+        quantitative_measurements: measurementTypeDefinitions.quantitative_measurements,
+        qualitative_environments: environmentTypeDefinitions.qualitative_environments,
+        quantitative_environments: environmentTypeDefinitions.quantitative_environments,
+        sampling_data: samplePeriods
+      }
+    };
+  }
+
+  /**
+   * Retrieves all flattened observation records for the given survey along with supplementary data
+   *
+   * @param {number} surveyId
+   * @param {ApiPaginationOptions} [pagination]
+   * @return {*}  {Promise<{
+   *     surveyObservations: FlattenedObservationRecordWithSamplingAndSubcountData[];
+   *     supplementaryObservationData: AllObservationSupplementaryData;
+   *   }>}
+   * @memberof ObservationService
+   */
+  async getSurveyFlattenedObservationsWithSupplementaryAndSamplingDataAndAttributeData(
+    surveyId: number,
+    pagination?: ApiPaginationOptions
+  ): Promise<{
+    surveyObservations: FlattenedObservationRecordWithSamplingAndSubcountData[];
+    supplementaryObservationData: AllObservationSupplementaryData;
+  }> {
+    const samplePeriodService = new SamplePeriodService(this.connection);
+    const subCountService = new SubCountService(this.connection);
+
+    const [
+      surveyObservations,
+      observationCount,
+      measurementTypeDefinitions,
+      environmentTypeDefinitions,
+      samplePeriods
+    ] = await Promise.all([
+      // Fetch observations
+      this.observationRepository.getSurveyFlattenedObservations(surveyId, pagination),
+      // Fetch pagination count data
+      this.observationRepository.getSurveyFlattenedObservationsCount(surveyId),
       // Fetch supplementary data
       subCountService.getMeasurementTypeDefinitionsForSurvey(surveyId),
       this.getEnvironmentTypeDefinitionsForSurvey(surveyId),
@@ -365,7 +437,7 @@ export class ObservationService extends DBService {
     const surveyObservationsGeometry = await this.observationRepository.getSurveyObservationsGeometry(surveyId);
 
     // Get supplementary observation data
-    const observationCount = await this.observationRepository.getSurveyObservationCount(surveyId);
+    const observationCount = await this.observationRepository.getSurveyObservationsCount(surveyId);
 
     return { surveyObservationsGeometry, supplementaryObservationData: { observationCount } };
   }
@@ -377,8 +449,19 @@ export class ObservationService extends DBService {
    * @return {*}  {Promise<number>}
    * @memberof ObservationRepository
    */
-  async getSurveyObservationCount(surveyId: number): Promise<number> {
-    return this.observationRepository.getSurveyObservationCount(surveyId);
+  async getSurveyObservationsCount(surveyId: number): Promise<number> {
+    return this.observationRepository.getSurveyObservationsCount(surveyId);
+  }
+
+  /**
+   * Retrieves the count of flattened survey observations for the given survey
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<number>}
+   * @memberof ObservationRepository
+   */
+  async getSurveyFlattenedObservationsCount(surveyId: number): Promise<number> {
+    return this.observationRepository.getSurveyFlattenedObservationsCount(surveyId);
   }
 
   /**
@@ -396,6 +479,23 @@ export class ObservationService extends DBService {
     filterFields: IObservationAdvancedFilters
   ): Promise<number> {
     return this.observationRepository.findObservationsCount(isUserAdmin, systemUserId, filterFields);
+  }
+
+  /**
+   * Retrieves the count of flattened survey observations for the given survey
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId
+   * @param {IObservationAdvancedFilters} filterFields
+   * @return {*}  {Promise<number>}
+   * @memberof ObservationRepository
+   */
+  async findFlattenedObservationsCount(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: IObservationAdvancedFilters
+  ): Promise<number> {
+    return this.observationRepository.findFlattenedObservationsCount(isUserAdmin, systemUserId, filterFields);
   }
 
   /**
