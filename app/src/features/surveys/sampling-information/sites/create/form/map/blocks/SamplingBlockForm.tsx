@@ -42,23 +42,31 @@ export const SamplingBlockForm = (props: ISamplingBlockFormProps) => {
 
   const blockOptions: IAutocompleteFieldOption<string>[] = props.blocks.map((block) => ({
     value: block.assignment_id,
-    label: block.name
+    label: block.name,
+    description: block.description
   }));
 
+  console.log(blockOptions)
+  console.log(values, 'vals')
+
   return (
-    
-      <AutocompleteWithList
-        options={blockOptions}
-        selectedItems={[]}
-        handleSelect={handleAddBlock}
-        handleRemove={handleRemoveItem}
-        getOptionLabel={(option) => option.label}
-        renderOptionDetails={(option) => (
-          <BlockStratumCard label={option.label} description={option.description || ''} />
-        )}
-        placeholder="Select blocks"
-        noOptionsText="No records found"
-      />
-    
+    <AutocompleteWithList
+      options={blockOptions}
+      selectedItems={values.blocks
+        .filter((block) =>
+          values.site_block_assignments.some((assignment) => assignment.block_assignment_id === block.assignment_id)
+        )
+        .map((block) => ({
+          value: block.assignment_id,
+          label: block.name,
+          description: block.description
+        }))}
+      handleSelect={handleAddBlock}
+      handleRemove={handleRemoveItem}
+      getOptionLabel={(option) => option.label}
+      renderOptionDetails={(option) => <BlockStratumCard label={option.label} description={option.description || ''} />}
+      placeholder="Select blocks"
+      noOptionsText="No records found"
+    />
   );
 };

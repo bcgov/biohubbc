@@ -40,15 +40,27 @@ export const SamplingBlockForm = (props: ISamplingBlockFormProps) => {
     );
   };
 
-  const blockOptions: IAutocompleteFieldOption<string>[] = props.sites.map((site) => ({
+  const siteOptions: IAutocompleteFieldOption<string>[] = props.sites.map((site) => ({
     value: site.assignment_id,
-    label: site.name
+    label: site.name,
+    description: site.description
   }));
+
+  const selectedSites = values.survey_sample_sites
+    .filter((site) =>
+      values.site_block_assignments.some((assignment) => assignment.site_assignment_id === site.assignment_id)
+    )
+    .map((site) => ({
+      value: site.assignment_id,
+      label: site.name,
+      description: site.description
+    }));
+  console.log(selectedSites, 'selected');
 
   return (
     <AutocompleteWithList
-      options={blockOptions}
-      selectedItems={[]}
+      options={siteOptions}
+      selectedItems={selectedSites}
       handleSelect={handleAddBlock}
       handleRemove={handleRemoveItem}
       getOptionLabel={(option) => option.label}

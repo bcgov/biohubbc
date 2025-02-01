@@ -1,5 +1,6 @@
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
 import CollapsibleCardList from 'components/card/CollapsibleCardList';
 import CustomTextField from 'components/fields/CustomTextField';
 import { IDrawControlsRef } from 'components/map/components/DrawControls';
@@ -32,15 +33,15 @@ const EditBlocksForm = () => {
   // Handle importing new shapes
   const handleImport = (features: Feature[]) => {
     const feature = features[0];
-    const uuid = v4();
+    const assignment_id = v4();
 
     // Add the new block to the array
     setFieldValue('blocks', [
       ...values.blocks,
       {
         ...feature,
-        uuid,
-        geojson: { ...feature, id: uuid },
+        assignment_id,
+        geojson: { ...feature, id: assignment_id },
         name: shapeFileFeatureName(feature) ?? '',
         description: shapeFileFeatureDesc(feature) ?? null
       }
@@ -68,7 +69,10 @@ const EditBlocksForm = () => {
     drawRef.current?.clearLayers();
 
     // Add a new block to the blocks array
-    setFieldValue('blocks', [...values.blocks, { geojson: { ...feature, id: v4() }, leaflet_id: id }]);
+    setFieldValue('blocks', [
+      ...values.blocks,
+      { geojson: { ...feature, id: v4() }, leaflet_id: id, assignment_id: v4() }
+    ]);
   };
 
   // Handle editing existing shapes
@@ -99,7 +103,7 @@ const EditBlocksForm = () => {
 
   const features = values.blocks.map((block) => block.geojson).filter((block) => block !== undefined && block !== null);
 
-  console.log('values', values)
+  console.log('values', values);
 
   return (
     <form onSubmit={handleSubmit}>
@@ -125,12 +129,12 @@ const EditBlocksForm = () => {
           <CollapsibleCardList
             items={values.blocks.map((block) => ({
               geojson: block.geojson ?? null,
-              uuid: block.assignment_id ?? undefined,
+              assignment_id: block.assignment_id ?? undefined,
               label: block.name ?? 'Block 1'
             }))}
             selectedItems={selectedFeatures.map((feature) => ({
               geojson: feature,
-              uuid: values.blocks.find((block) => block.geojson?.id === feature.id)?.assignment_id,
+              assignment_id: values.blocks.find((block) => block.geojson?.id === feature.id)?.assignment_id ?? '',
               label: values.blocks.find((block) => block.geojson?.id === feature.id)?.name ?? ''
             }))}
             onSelectItem={(feature) => {
@@ -138,24 +142,20 @@ const EditBlocksForm = () => {
             }}
             onSelectAll={() => {}}
             hideToolbar
-            renderCardContent={() => (
-              <>
-                {values.blocks.map((block, index) => (
-                  <Box key={block.assignment_id || index}>
-                    <CustomTextField label="Name" name={`blocks[${index}].name`} />
-                    <Box mt={3}>
-                      <CustomTextField
-                        label="Description"
-                        name={`blocks[${index}].description`}
-                        other={{ rows: 2, multiline: true }}
-                      />
-                    </Box>
-                    <Box mt={3}>
-                      <SamplingBlockForm assignment_id={block.assignment_id} sites={values.survey_sample_sites} />
-                    </Box>
-                  </Box>
-                ))}
-              </>
+            renderCardContent={(block, index) => (
+              <Stack gap={3}>
+                <CustomTextField label="Name" name={`blocks[${index}].name`} />
+                <Box mt={3}>
+                  <CustomTextField
+                    label="Description"
+                    name={`blocks[${index}].description`}
+                    other={{ rows: 2, multiline: true }}
+                  />
+                </Box>
+                <Box mt={3}>
+                  <SamplingBlockForm assignment_id={block.assignment_id} sites={values.survey_sample_sites} />
+                </Box>
+              </Stack>
             )}
           />
         </Box>

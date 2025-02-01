@@ -45,10 +45,9 @@ export interface CollapsibleCardListProps<T> {
  * @param {CollapsibleCardListProps} props
  * @returns {*}
  */
-const CollapsibleCardList = <T extends { label: string; uuid?: string }>(props: CollapsibleCardListProps<T>) => {
+const CollapsibleCardList = <T extends { label: string; id?: string | number }>(props: CollapsibleCardListProps<T>) => {
   const { items, renderCardContent, selectedItems = [], onSelectItem } = props;
 
-  // Initialize the expandedIndexes state to include all indices by default
   const [expandedIndexes, setExpandedIndexes] = useState<number[]>([]);
 
   const toggleExpand = (index: number) => {
@@ -59,13 +58,13 @@ const CollapsibleCardList = <T extends { label: string; uuid?: string }>(props: 
     <Box sx={{ maxHeight: '1200px', overflowY: 'auto' }}>
       <TransitionGroup>
         {items.map((item, index) => (
-          <Collapse key={item.uuid}>
+          <Collapse key={item.id}>
             <Box display="flex" flex="1 1 auto" alignItems="center" mb={2}>
               <Paper
                 sx={{
                   flex: '1 1 auto',
                   p: 2,
-                  bgcolor: selectedItems.some((selected) => selected.uuid === item.uuid) ? '#e3f2fd' : grey[50]
+                  bgcolor: selectedItems.some((selected) => selected.id === item.id) ? '#e3f2fd' : grey[50]
                 }}
                 variant="outlined">
                 <Box
@@ -78,7 +77,7 @@ const CollapsibleCardList = <T extends { label: string; uuid?: string }>(props: 
                     {onSelectItem && (
                       <Checkbox
                         color="primary"
-                        checked={selectedItems.some((selected) => selected.uuid === item.uuid)}
+                        checked={selectedItems.some((selected) => selected.id === item.id)}
                         onClick={(event) => {
                           onSelectItem(item);
                           event.stopPropagation();

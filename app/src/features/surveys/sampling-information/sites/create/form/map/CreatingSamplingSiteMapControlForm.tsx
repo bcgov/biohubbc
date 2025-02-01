@@ -15,7 +15,11 @@ import { useDialogContext } from 'hooks/useContext';
 import { createRef, useMemo, useState } from 'react';
 import { shapeFileFeatureDesc, shapeFileFeatureName } from 'utils/Utils';
 import { v4 } from 'uuid';
-import { ICreateSampleSiteFormData, IPostSurveyBlock, IPostSurveySampleSite } from '../../CreateSamplingSitePage.interface';
+import {
+  ICreateSampleSiteFormData,
+  IPostSurveyBlock,
+  IPostSurveySampleSite
+} from '../../CreateSamplingSitePage.interface';
 
 interface ICreateSamplingSiteMapControlFormProps {
   siteCount?: number;
@@ -163,17 +167,18 @@ const CreateSamplingSiteMapControlForm = ({ siteCount, blocks }: ICreateSampling
         <CollapsibleCardList
           items={values.survey_sample_sites.map((block) => ({
             geojson: block.geojson ?? null,
-            uuid: block.assignment_id,
+            assignment_id: block.assignment_id,
             label: block.name
           }))}
           selectedItems={selectedFeatures.map((feature) => ({
             geojson: feature,
-            uuid: values.survey_sample_sites.find((block) => block.geojson?.id === feature.id)?.assignment_id,
+            assignment_id:
+              values.survey_sample_sites.find((block) => block.geojson?.id === feature.id)?.assignment_id ?? '',
             label: values.survey_sample_sites.find((block) => block.geojson?.id === feature.id)?.name ?? ''
           }))}
           onSelectItem={(feature) => feature.geojson && handleFeatureSelect(feature.geojson)}
           onSelectAll={handleFeatureSelectAll}
-          renderCardContent={(_, index) => (
+          renderCardContent={(site, index) => (
             <Stack gap={3}>
               <CustomTextField label="Name" name={`survey_sample_sites[${index}].name`} />
               <CustomTextField
@@ -181,7 +186,7 @@ const CreateSamplingSiteMapControlForm = ({ siteCount, blocks }: ICreateSampling
                 name={`survey_sample_sites[${index}].description`}
                 other={{ rows: 2, multiline: true }}
               />
-              <SamplingBlockForm assignment_id={`survey_sample_sites[${index}].assignment_id`} blocks={blocks} />
+              <SamplingBlockForm assignment_id={site.assignment_id} blocks={blocks} />
             </Stack>
           )}
         />
