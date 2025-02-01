@@ -114,7 +114,7 @@ export const ObservationYupSchema = yup.object({
     .array()
     .of(
       yup.object({
-        count: yup.number().nullable().required('A subcount is required'),
+        subcount: yup.number().nullable().required('A count is required'),
         comment: yup.string().nullable(),
         measurements: yup.array().of(
           yup.object({

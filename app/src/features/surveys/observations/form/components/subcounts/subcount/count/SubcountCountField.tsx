@@ -15,7 +15,7 @@ export interface ISubcountCountFieldProps {
 export const SubcountCountField = (props: ISubcountCountFieldProps) => {
   const { formikFieldName, displayHeader } = props;
 
-  const subcountCountFieldName = `${formikFieldName}.count`;
+  const subcountCountFieldName = `${formikFieldName}.subcount`;
 
   return (
     <>

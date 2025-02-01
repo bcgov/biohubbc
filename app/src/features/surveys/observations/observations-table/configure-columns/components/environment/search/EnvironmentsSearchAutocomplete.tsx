@@ -7,6 +7,14 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import {
+  isQualitativeEnvironmentTypeDefinition,
+  isQuantitativeEnvironmentTypeDefinition
+} from 'features/surveys/observations/observations-table/grid-column-definitions/GridColumnDefinitionsUtils';
+import {
+  isEnvironmentQualitativeTypeDefinition,
+  isEnvironmentQuantitativeTypeDefinition
+} from 'features/surveys/observations/utils/type-guard-utils';
+import {
   EnvironmentQualitativeTypeDefinition,
   EnvironmentQuantitativeTypeDefinition,
   EnvironmentType
@@ -81,9 +89,9 @@ export const EnvironmentsSearchAutocomplete = (props: IEnvironmentsSearchAutocom
       clearOnBlur={true}
       getOptionLabel={(option) => option.name}
       isOptionEqualToValue={(option, value) => {
-        if ('environment_qualitative_id' in option && 'environment_qualitative_id' in value) {
+        if (isEnvironmentQualitativeTypeDefinition(option) && isEnvironmentQualitativeTypeDefinition(value)) {
           return option.environment_qualitative_id === value.environment_qualitative_id;
-        } else if ('environment_quantitative_id' in option && 'environment_quantitative_id' in value) {
+        } else if (isEnvironmentQuantitativeTypeDefinition(option) && isEnvironmentQuantitativeTypeDefinition(value)) {
           return option.environment_quantitative_id === value.environment_quantitative_id;
         }
 
@@ -95,11 +103,11 @@ export const EnvironmentsSearchAutocomplete = (props: IEnvironmentsSearchAutocom
         }
 
         const unselectedOptions = options.filter((option) => {
-          if ('environment_qualitative_id' in option) {
+          if (isEnvironmentQualitativeTypeDefinition(option)) {
             return !selectedOptions.qualitative_environments.some(
               (item) => item.environment_qualitative_id === option.environment_qualitative_id
             );
-          } else if ('environment_quantitative_id' in option) {
+          } else if (isEnvironmentQuantitativeTypeDefinition(option)) {
             return !selectedOptions.quantitative_environments.some(
               (item) => item.environment_quantitative_id === option.environment_quantitative_id
             );
@@ -135,8 +143,8 @@ export const EnvironmentsSearchAutocomplete = (props: IEnvironmentsSearchAutocom
         }
 
         onAddEnvironmentColumn({
-          qualitative_environments: 'environment_qualitative_id' in value ? [value] : [],
-          quantitative_environments: 'environment_quantitative_id' in value ? [value] : []
+          qualitative_environments: isQualitativeEnvironmentTypeDefinition(value) ? [value] : [],
+          quantitative_environments: isQuantitativeEnvironmentTypeDefinition(value) ? [value] : []
         });
         setInputValue('');
         setOptions([]);
@@ -152,7 +160,7 @@ export const EnvironmentsSearchAutocomplete = (props: IEnvironmentsSearchAutocom
             }}
             {...renderProps}
             key={`environment-item-${
-              'environment_qualitative_id' in renderOption
+              isQualitativeEnvironmentTypeDefinition(renderOption)
                 ? renderOption.environment_qualitative_id
                 : renderOption.environment_quantitative_id
             }`}

@@ -104,7 +104,7 @@ export type InsertObservations = {
     }[];
   };
   subcounts: {
-    count: number;
+    subcount: number;
     comment: string | null;
     qualitative_measurements: {
       measurement_id: string;
@@ -165,7 +165,7 @@ export class ObservationService extends DBService {
   }
 
   /**
-   * Upserts the given observation records and their associated measurements.
+   * Upserts the given observation records and their associated subcounts.
    *
    * @param {number} surveyId
    * @param {InsertUpdateObservations[]} observations
@@ -177,10 +177,13 @@ export class ObservationService extends DBService {
     observations: InsertUpdateObservations[]
   ): Promise<void> {
     const subCountService = new SubCountService(this.connection);
-    const measurementService = new ObservationSubCountMeasurementService(this.connection);
-    const environmentService = new ObservationEnvironmentService(this.connection);
+    const observationSubCountMeasurementService = new ObservationSubCountMeasurementService(this.connection);
+    const observationEnvironmentService = new ObservationEnvironmentService(this.connection);
 
     for (const observation of observations) {
+      console.log('observation', observation);
+      // -- Observation Data --------------------------------------------------------------
+
       // Upsert observation standard columns
       const upsertedObservationRecord = await this.observationRepository.insertUpdateSurveyObservations(
         surveyId,
@@ -189,13 +192,21 @@ export class ObservationService extends DBService {
 
       const surveyObservationId = upsertedObservationRecord[0].survey_observation_id;
 
+      // -- Observation Environment Data --------------------------------------------------------------
+
+      // TODO: Update 'delete environment' process to fetch and find differences between incoming and existing data to
+      // only add, update or delete records as needed
+
+      // Delete old observation environment records
+      await observationEnvironmentService.deleteObservationEnvironments(surveyId, [surveyObservationId]);
+
       const qualitativeEnvironmentData: InsertObservationQualitativeEnvironmentRecord[] =
         observation.standardColumns.qualitative_environments.map((item) => ({
           survey_observation_id: surveyObservationId,
           environment_qualitative_id: item.environment_qualitative_id,
           environment_qualitative_option_id: item.environment_qualitative_option_id
         }));
-      await environmentService.insertObservationQualitativeEnvironment(qualitativeEnvironmentData);
+      await observationEnvironmentService.insertObservationQualitativeEnvironment(qualitativeEnvironmentData);
 
       const quantitativeEnvironmentData: InsertObservationQuantitativeEnvironmentRecord[] =
         observation.standardColumns.quantitative_environments.map((item) => ({
@@ -203,26 +214,29 @@ export class ObservationService extends DBService {
           environment_quantitative_id: item.environment_quantitative_id,
           value: item.value
         }));
-      await environmentService.insertObservationQuantitativeEnvironment(quantitativeEnvironmentData);
+      await observationEnvironmentService.insertObservationQuantitativeEnvironment(quantitativeEnvironmentData);
 
-      // TODO: Update process to fetch and find differences between incoming and existing data to only add, update or delete records as needed
+      // -- Observation Subcount Data --------------------------------------------------------------
+
+      // TODO: Update 'delete subcount' process to fetch and find differences between incoming and existing data to
+      // only add, update or delete records as needed
+
       // Delete old observation subcount records (critters, measurements and subcounts)
       await subCountService.deleteObservationSubCountRecords(surveyId, [surveyObservationId]);
 
       for (const subcount of observation.subcounts) {
+        console.log('subcount', subcount);
+        // -- Subcount Data --------------------------------------------------------------
+
         // Insert observation subcount record for each subcount.
         const observationSubCountRecord = await subCountService.insertObservationSubCount({
           survey_observation_id: surveyObservationId,
-          //  NOTE: The UI currently only allows one subcount per observation, so the standardColumns count can be used
-          subcount: observation.subcounts.length === 1 ? observation.standardColumns.count : subcount.subcount,
+          subcount: subcount.subcount,
           comment: subcount.comment
         });
 
-        if (!observation.subcounts.length) {
-          return;
-        }
+        // -- Subcount Measurement Data --------------------------------------------------------------
 
-        // TODO: Update process to fetch and find differences between incoming and existing data to only add, update or delete records as needed
         if (subcount.qualitative_measurements.length) {
           const qualitativeData: InsertObservationSubCountQualitativeMeasurementRecord[] =
             subcount.qualitative_measurements.map((item) => ({
@@ -230,7 +244,7 @@ export class ObservationService extends DBService {
               critterbase_taxon_measurement_id: item.measurement_id,
               critterbase_measurement_qualitative_option_id: item.measurement_option_id
             }));
-          await measurementService.insertObservationSubCountQualitativeMeasurement(qualitativeData);
+          await observationSubCountMeasurementService.insertObservationSubCountQualitativeMeasurement(qualitativeData);
         }
 
         if (subcount.quantitative_measurements.length) {
@@ -240,7 +254,9 @@ export class ObservationService extends DBService {
               critterbase_taxon_measurement_id: item.measurement_id,
               value: item.measurement_value
             }));
-          await measurementService.insertObservationSubCountQuantitativeMeasurement(quantitativeData);
+          await observationSubCountMeasurementService.insertObservationSubCountQuantitativeMeasurement(
+            quantitativeData
+          );
         }
       }
     }
@@ -536,7 +552,7 @@ export class ObservationService extends DBService {
    * @memberof ObservationRepository
    */
   async deleteObservationsByIds(surveyId: number, observationIds: number[]): Promise<number> {
-    // Remove any existing child subcount records (observation_subcount, subcount_event, subcount_critter) before
+    // Remove any existing child subcount records (observation_subcount, subcount_critter) before
     // deleting survey_observation records
     const service = new SubCountService(this.connection);
     await service.deleteObservationSubCountRecords(surveyId, observationIds);

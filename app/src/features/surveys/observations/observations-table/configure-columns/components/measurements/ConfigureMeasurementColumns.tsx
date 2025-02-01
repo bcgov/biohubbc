@@ -12,6 +12,10 @@ import Typography from '@mui/material/Typography';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { AccordionStandardCard } from 'features/standards/view/components/AccordionStandardCard';
+import {
+  isQualitativeMeasurementTypeDefinition,
+  isQuantitativeMeasurementTypeDefinition
+} from 'features/surveys/observations/observations-table/grid-column-definitions/GridColumnDefinitionsUtils';
 import { useFocalOrObservedSpeciesTsns } from 'hooks/useFocalOrObservedTsns';
 import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
 import { useState } from 'react';
@@ -101,11 +105,11 @@ export const ConfigureMeasurementColumns = (props: IConfigureMeasurementColumnsP
                 subtitle={measurement.measurement_desc ?? ''}
                 colour={grey[100]}
                 ornament={
-                  'unit' in measurement && measurement.unit ? (
+                  isQuantitativeMeasurementTypeDefinition(measurement) && measurement.unit ? (
                     <ColouredRectangleChip colour={blueGrey} label={measurement.unit} />
                   ) : undefined
                 }>
-                {'options' in measurement && (
+                {isQualitativeMeasurementTypeDefinition(measurement) && (
                   <Stack gap={1} my={2}>
                     {measurement.options.map((option) => (
                       <AccordionStandardCard

@@ -1174,7 +1174,7 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
         // Map the observation `count` value to the `subcount` value, for now.
         // Why?: Currently there is no UI support for setting a subcount value.
         // See https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-534
-        subcount: row.count,
+        subcount: row.subcount,
         comment: row.comment,
         qualitative_measurements: measurementsToSave.qualitative,
         quantitative_measurements: measurementsToSave.quantitative

@@ -22,9 +22,9 @@ export type SubcountFormData = {
   /**
    * The count value for the subcount record.
    *
-   * ie: How many of the species were observed.
+   * Ex: How many of the species were observed.
    */
-  count: number | null;
+  subcount: number | null;
   /**
    * The comment for the subcount record.
    */
@@ -39,7 +39,7 @@ export type SubcountFormData = {
 
 export const initialSubcountFormData: SubcountFormData = {
   observation_subcount_id: null,
-  count: null,
+  subcount: null,
   comment: null,
   ...initialSubcountMeasurementsFormData
 };

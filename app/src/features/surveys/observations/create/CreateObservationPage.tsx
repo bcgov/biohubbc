@@ -15,6 +15,10 @@ import { DialogContext } from 'contexts/dialogContext';
 import { TaxonomyContextProvider } from 'contexts/taxonomyContext';
 import ObservationForm from 'features/surveys/observations/form/ObservationForm';
 import { ObservationFormData } from 'features/surveys/observations/form/ObservationForm.interface';
+import {
+  isSubcountQualitativeMeasurement,
+  isSubcountQuantitativeMeasurement
+} from 'features/surveys/observations/utils/type-guard-utils';
 import { FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -34,7 +38,7 @@ import { v4 } from 'uuid';
 
 export const initialSubcountValues = {
   observation_subcount_id: null,
-  count: null,
+  subcount: null,
   comment: null,
   measurements: [],
   environments: [],
@@ -167,7 +171,7 @@ const CreateObservationPage = () => {
         survey_sample_period_id,
         latitude,
         longitude,
-        count: formData.subcounts.reduce((sum, subcount) => sum + (subcount.count ?? 0), 0),
+        count: formData.subcounts.reduce((sum, subcount) => sum + (subcount.subcount ?? 0), 0),
         observation_sign_id: formData.standardColumns.observation_sign_id,
         qualitative_environments,
         quantitative_environments
@@ -180,12 +184,23 @@ const CreateObservationPage = () => {
         const qualitative_measurements: SubcountQualitativeMeasurement[] = [];
 
         for (const measurement of measurements) {
-          if ('measurement_value' in measurement) {
+          console.log(measurement);
+          if (isSubcountQuantitativeMeasurement(measurement)) {
+            if (!measurement.measurement_value) {
+              // No value was entered for the quantitative measurement, skip it
+              continue;
+            }
+
             quantitative_measurements.push({
               measurement_id: measurement.measurement_id,
               measurement_value: measurement.measurement_value
             });
-          } else if ('measurement_option_id' in measurement) {
+          } else if (isSubcountQualitativeMeasurement(measurement)) {
+            if (!measurement.measurement_option_id) {
+              // No value was selected for the qualitative measurement, skip it
+              continue;
+            }
+
             qualitative_measurements.push({
               measurement_id: measurement.measurement_id,
               measurement_option_id: measurement.measurement_option_id
@@ -194,8 +209,8 @@ const CreateObservationPage = () => {
         }
 
         return {
+          subcount: subcountProps.subcount,
           comment: subcountProps.comment,
-          count: subcountProps.count,
           quantitative_measurements,
           qualitative_measurements
         };
@@ -205,6 +220,8 @@ const CreateObservationPage = () => {
         standardColumns,
         subcounts
       };
+
+      console.log(createObservationPayload);
 
       await biohubApi.observation.createObservation(projectId, surveyId, createObservationPayload);
 
@@ -274,7 +291,10 @@ const CreateObservationPage = () => {
           <TaxonomyContextProvider>
             <ObservationForm
               initialFormData={initialObservationFormData}
-              onSubmit={(formData) => createObservation(formData)}
+              onSubmit={(formData) => {
+                console.log(formData);
+                createObservation(formData);
+              }}
               formikRef={formikRef}
             />
           </TaxonomyContextProvider>

@@ -6,11 +6,8 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { SubcountQualitativeMeasurementField } from 'features/surveys/observations/form/components/subcounts/subcount/measurements/SubcountQualitativeMeasurementField';
 import { SubcountQuantitativeMeasurementField } from 'features/surveys/observations/form/components/subcounts/subcount/measurements/SubcountQuantitativeMeasurementField';
-import {
-  CBMeasurementType,
-  CBQualitativeMeasurementTypeDefinition,
-  CBQuantitativeMeasurementTypeDefinition
-} from 'interfaces/useCritterApi.interface';
+import { isCBQualitativeMeasurementTypeDefinition } from 'features/surveys/observations/utils/type-guard-utils';
+import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
 
 export interface ISubcountMeasurementFieldProps {
   /**
@@ -42,7 +39,7 @@ export interface ISubcountMeasurementFieldProps {
 export const SubcountMeasurementField = (props: ISubcountMeasurementFieldProps) => {
   const { formikFieldName, measurementTypeDefinition, onDelete, displayHeader } = props;
 
-  const isQualitative = isCBQualitativeMeasurementTypeDefinition(measurementTypeDefinition);
+  const isQualitativeMeasurement = isCBQualitativeMeasurementTypeDefinition(measurementTypeDefinition);
 
   return (
     <Box minWidth="300px" flex={1}>
@@ -61,7 +58,7 @@ export const SubcountMeasurementField = (props: ISubcountMeasurementFieldProps) 
         </Stack>
       )}
 
-      {isQualitative ? (
+      {isQualitativeMeasurement ? (
         <SubcountQualitativeMeasurementField
           formikFieldName={formikFieldName}
           measurementTypeDefinition={measurementTypeDefinition}
@@ -75,18 +72,3 @@ export const SubcountMeasurementField = (props: ISubcountMeasurementFieldProps) 
     </Box>
   );
 };
-
-/**
- * Type guard to check if a given item is a `CBQualitativeMeasurementTypeDefinition`.
- *
- * Qualitative measurements have an `options` property, while quantitative measurements do not.
- *
- * @export
- * @param {(CBQuantitativeMeasurementTypeDefinition | CBQualitativeMeasurementTypeDefinition)} item
- * @return {*}  {item is CBQuantitativeMeasurementTypeDefinition}
- */
-export function isCBQualitativeMeasurementTypeDefinition(
-  item: CBQualitativeMeasurementTypeDefinition | CBQuantitativeMeasurementTypeDefinition
-): item is CBQualitativeMeasurementTypeDefinition {
-  return 'options' in item;
-}

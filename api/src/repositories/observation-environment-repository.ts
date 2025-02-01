@@ -81,8 +81,10 @@ export class ObservationEnvironmentRepository extends BaseRepository {
    * @memberof ObservationEnvironmentRepository
    */
   async deleteObservationEnvironments(surveyId: number, surveyObservationId: number[]) {
-    await this.deleteObservationQualitativeEnvironmentRecordsForSurveyObservationIds(surveyObservationId, surveyId);
-    await this.deleteObservationQuantitativeEnvironmentRecordsForSurveyObservationIds(surveyObservationId, surveyId);
+    await Promise.all([
+      this.deleteObservationQualitativeEnvironmentRecordsForSurveyObservationIds(surveyObservationId, surveyId),
+      this.deleteObservationQuantitativeEnvironmentRecordsForSurveyObservationIds(surveyObservationId, surveyId)
+    ]);
   }
 
   /**
@@ -367,7 +369,7 @@ export class ObservationEnvironmentRepository extends BaseRepository {
       .delete()
       .from('observation_environment_qualitative')
       .using(['survey_observation'])
-      .andWhere('observation_environment_qualitative.survey_observation_id', 'survey_observation.survey_observation_id')
+      .whereRaw('observation_environment_qualitative.survey_observation_id = survey_observation.survey_observation_id')
       .andWhere('survey_observation.survey_id', surveyId)
       .whereIn('survey_observation.survey_observation_id', surveyObservationId);
 
@@ -393,10 +395,7 @@ export class ObservationEnvironmentRepository extends BaseRepository {
       .delete()
       .from('observation_environment_quantitative')
       .using(['survey_observation'])
-      .andWhere(
-        'observation_environment_quantitative.survey_observation_id',
-        'survey_observation.survey_observation_id'
-      )
+      .whereRaw('observation_environment_quantitative.survey_observation_id = survey_observation.survey_observation_id')
       .andWhere('survey_observation.survey_id', surveyId)
       .whereIn('survey_observation.survey_observation_id', surveyObservationId);
 

@@ -252,6 +252,7 @@ PUT.apiDoc = {
                         items: {
                           type: 'object',
                           additionalProperties: false,
+                          required: ['environment_qualitative_id', 'environment_qualitative_option_id'],
                           properties: {
                             environment_qualitative_id: {
                               type: 'string',
@@ -269,6 +270,7 @@ PUT.apiDoc = {
                         items: {
                           type: 'object',
                           additionalProperties: false,
+                          required: ['environment_quantitative_id', 'value'],
                           properties: {
                             environment_quantitative_id: {
                               type: 'string',
@@ -315,6 +317,7 @@ PUT.apiDoc = {
                           items: {
                             type: 'object',
                             additionalProperties: false,
+                            required: ['measurement_id', 'measurement_option_id'],
                             properties: {
                               measurement_id: {
                                 type: 'string'
@@ -330,6 +333,7 @@ PUT.apiDoc = {
                           items: {
                             type: 'object',
                             additionalProperties: false,
+                            required: ['measurement_id', 'measurement_value'],
                             properties: {
                               measurement_id: {
                                 type: 'string'
@@ -505,9 +509,9 @@ POST.apiDoc = {
               items: {
                 type: 'object',
                 additionalProperties: false,
-                required: ['count', 'comment', 'qualitative_measurements', 'quantitative_measurements'],
+                required: ['subcount', 'comment', 'qualitative_measurements', 'quantitative_measurements'],
                 properties: {
-                  count: {
+                  subcount: {
                     type: 'number',
                     description: "The subcount record's count."
                   },

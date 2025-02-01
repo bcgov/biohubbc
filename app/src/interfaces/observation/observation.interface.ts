@@ -106,7 +106,7 @@ export interface ICreateObservation {
     quantitative_environments: ObservationEnvironmentQuantitativeObject[];
   };
   subcounts: {
-    count: number | null;
+    subcount: number | null;
     qualitative_measurements: SubcountQualitativeMeasurement[];
     quantitative_measurements: SubcountQuantitativeMeasurement[];
     comment: string | null;

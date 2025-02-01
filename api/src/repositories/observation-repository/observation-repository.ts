@@ -2,6 +2,7 @@ import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { ObservationEnvironmentQualitativeRecord } from '../../database-models/observation_environment_qualitative';
 import { ObservationEnvironmentQuantitativeRecord } from '../../database-models/observation_environment_quantitative';
+import { ObservationSubcountRecord } from '../../database-models/observation_subcount';
 import { SurveyObservationModel, SurveyObservationRecord } from '../../database-models/survey_observation';
 import { getKnex } from '../../database/db';
 import { ApiExecuteSQLError } from '../../errors/api-error';
@@ -14,7 +15,6 @@ import {
   ObservationSubCountQualitativeMeasurementRecord,
   ObservationSubCountQuantitativeMeasurementRecord
 } from '../observation-subcount-measurement-repository';
-import { ObservationSubCountRecord } from '../subcount-repository';
 import { getSurveyObservationsBaseQuery, makeFindObservationsQuery } from './utils';
 
 const defaultLog = getLogger('repositories/observation-repository');
@@ -61,10 +61,11 @@ const ObservationSubcountQuantitativeMeasurementObject = ObservationSubCountQuan
   value: true
 });
 
-const ObservationSubcountObject = z.object({
-  observation_subcount_id: ObservationSubCountRecord.shape.observation_subcount_id,
-  comment: ObservationSubCountRecord.shape.comment,
-  subcount: ObservationSubCountRecord.shape.subcount,
+const ObservationSubcountObject = ObservationSubcountRecord.pick({
+  observation_subcount_id: true,
+  comment: true,
+  subcount: true
+}).extend({
   qualitative_measurements: z.array(ObservationSubcountQualitativeMeasurementObject),
   quantitative_measurements: z.array(ObservationSubcountQuantitativeMeasurementObject)
 });
