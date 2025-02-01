@@ -202,7 +202,6 @@ export class ObservationService extends DBService {
     const observationEnvironmentService = new ObservationEnvironmentService(this.connection);
 
     for (const observation of observations) {
-      console.log('observation', observation);
       // -- Observation Data --------------------------------------------------------------
 
       // Upsert observation standard columns
@@ -246,7 +245,6 @@ export class ObservationService extends DBService {
       await subCountService.deleteObservationSubCountRecords(surveyId, [surveyObservationId]);
 
       for (const subcount of observation.subcounts) {
-        console.log('subcount', subcount);
         // -- Subcount Data --------------------------------------------------------------
 
         // Insert observation subcount record for each subcount.
