@@ -6,13 +6,21 @@ export enum SupportPageView {
   ANIMALS = 'ANIMALS',
   TELEMETRY = 'TELEMETRY',
   OBSERVATIONS = 'OBSERVATIONS',
-  CONTACT = 'CONTACT'
+  CONTACT = 'CONTACT',
+  PROJECTS = "PROJECTS",
+  SURVEYS = 'SURVEYS',
+  SAMPLING = "SAMPLING",
+  DATA = 'DATA',
+  PROJECT_TEAM = 'PROJECT_TEAM',
+  FILES = 'FILES',
+  METADATA = 'METADATA'
 }
 
 export interface ISupportPageView {
   label: string;
   value: SupportPageView;
   icon: string;
+  children: ISupportPageView[]
 }
 
 // export const SUPPORT_VIEW_KEY = 'support_view';

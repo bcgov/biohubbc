@@ -1,4 +1,5 @@
 import Icon from '@mdi/react';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
@@ -25,6 +26,13 @@ export interface ToggleButtonView<ViewValueType> {
    * @memberof ToggleButtonView
    */
   icon?: string;
+  /**
+   * Optional children views, which can be indented
+   *
+   * @type {string}
+   * @memberof ToggleButtonView
+   */
+  children?: ToggleButtonView<ViewValueType>[];
 }
 
 interface CustomToggleButtonGroupProps<ViewValueType extends string> {
@@ -67,6 +75,33 @@ interface CustomToggleButtonGroupProps<ViewValueType extends string> {
 const CustomToggleButtonGroup = <ViewValueType extends string>(props: CustomToggleButtonGroupProps<ViewValueType>) => {
   const { views, activeView, onViewChange, orientation } = props;
 
+  const renderViews = (views: ToggleButtonView<ViewValueType>[], level: number = 0) => {
+    return views.map((view) => {
+      const startIcon = view.icon ? <Icon path={view.icon} size={0.75} /> : undefined;
+
+      return (
+        <Box
+          key={view.value}
+          sx={{
+            marginLeft: level * 2, 
+            mt: level > 0 ? 0.5 : 0
+          }}>
+          <ToggleButton
+            component={Button}
+            color="primary"
+            startIcon={startIcon}
+            value={view.value}
+            onClick={() => onViewChange(view.value)}>
+            {view.label}
+          </ToggleButton>
+
+          {/* Render child views if they exist */}
+          {view.children && view.children.length > 0 && renderViews(view.children, level + 1)}
+        </Box>
+      );
+    });
+  };
+
   return (
     <ToggleButtonGroup
       orientation={orientation}
@@ -79,10 +114,11 @@ const CustomToggleButtonGroup = <ViewValueType extends string>(props: CustomTogg
       exclusive
       sx={{
         display: 'flex',
-        flex: '1 1 auto',
+        flexDirection: orientation === 'vertical' ? 'column' : 'row',
         gap: 0.5,
         '& Button': {
           py: 1,
+          width: '100%',
           px: 2,
           border: 'none',
           borderRadius: '4px !important',
@@ -92,15 +128,7 @@ const CustomToggleButtonGroup = <ViewValueType extends string>(props: CustomTogg
           justifyContent: 'flex-start'
         }
       }}>
-      {views.map((view) => {
-        const startIcon = (view.icon && <Icon path={view.icon} size={0.75} />) || undefined;
-
-        return (
-          <ToggleButton key={view.value} component={Button} color="primary" startIcon={startIcon} value={view.value}>
-            {view.label}
-          </ToggleButton>
-        );
-      })}
+      {renderViews(views)}
     </ToggleButtonGroup>
   );
 };
