@@ -1,5 +1,102 @@
 import { OpenAPIV3 } from 'openapi-types';
 
+const ObservationQualitativeEnvironment: OpenAPIV3.SchemaObject = {
+  type: 'object',
+  additionalProperties: false,
+  required: [
+    'observation_environment_qualitative_id',
+    'environment_qualitative_id',
+    'environment_qualitative_option_id'
+  ],
+  properties: {
+    observation_environment_qualitative_id: {
+      type: 'integer'
+    },
+    environment_qualitative_id: {
+      type: 'string',
+      format: 'uuid'
+    },
+    environment_qualitative_option_id: {
+      type: 'string',
+      format: 'uuid'
+    }
+  }
+};
+
+const ObservationQuantitativeEnvironment: OpenAPIV3.SchemaObject = {
+  type: 'object',
+  additionalProperties: false,
+  required: ['observation_environment_quantitative_id', 'environment_quantitative_id', 'value'],
+  properties: {
+    observation_environment_quantitative_id: {
+      type: 'integer'
+    },
+    environment_quantitative_id: {
+      type: 'string',
+      format: 'uuid'
+    },
+    value: {
+      type: 'number'
+    }
+  }
+};
+
+const ObservationSubcountSchema: OpenAPIV3.SchemaObject = {
+  type: 'object',
+  description:
+    'An observation subcount record. Each subcount defines additional attributes/details about a subset of the observed taxa in the observation.',
+  additionalProperties: false,
+  required: ['observation_subcount_id', 'subcount', 'comment', 'qualitative_measurements', 'quantitative_measurements'],
+  properties: {
+    observation_subcount_id: {
+      type: 'integer'
+    },
+    comment: {
+      type: 'string',
+      nullable: true,
+      description: 'A comment or note about the subcount record.'
+    },
+    subcount: {
+      type: 'number'
+    },
+    qualitative_measurements: {
+      type: 'array',
+      items: {
+        type: 'object',
+        additionalProperties: false,
+        required: ['critterbase_taxon_measurement_id', 'critterbase_measurement_qualitative_option_id'],
+        properties: {
+          critterbase_taxon_measurement_id: {
+            type: 'string',
+            format: 'uuid'
+          },
+          critterbase_measurement_qualitative_option_id: {
+            type: 'string',
+            format: 'uuid'
+          }
+        }
+      }
+    },
+    quantitative_measurements: {
+      type: 'array',
+      items: {
+        type: 'object',
+        additionalProperties: false,
+        required: ['critterbase_taxon_measurement_id', 'value'],
+        properties: {
+          critterbase_taxon_measurement_id: {
+            type: 'string',
+            format: 'uuid'
+          },
+          value: {
+            type: 'number'
+          }
+        }
+      }
+    }
+  }
+};
+
 export const findObservationsSchema: OpenAPIV3.SchemaObject = {
   type: 'array',
   items: {
@@ -73,111 +170,128 @@ export const findObservationsSchema: OpenAPIV3.SchemaObject = {
       },
       qualitative_environments: {
         type: 'array',
-        items: {
-          type: 'object',
-          additionalProperties: false,
-          required: [
-            'observation_environment_qualitative_id',
-            'environment_qualitative_id',
-            'environment_qualitative_option_id'
-          ],
-          properties: {
-            observation_environment_qualitative_id: {
-              type: 'integer'
-            },
-            environment_qualitative_id: {
-              type: 'string',
-              format: 'uuid'
-            },
-            environment_qualitative_option_id: {
-              type: 'string',
-              format: 'uuid'
-            }
-          }
-        }
+        items: ObservationQualitativeEnvironment
       },
       quantitative_environments: {
         type: 'array',
-        items: {
-          type: 'object',
-          additionalProperties: false,
-          required: ['observation_environment_quantitative_id', 'environment_quantitative_id', 'value'],
-          properties: {
-            observation_environment_quantitative_id: {
-              type: 'integer'
-            },
-            environment_quantitative_id: {
-              type: 'string',
-              format: 'uuid'
-            },
-            value: {
-              type: 'number'
-            }
-          }
-        }
+        items: ObservationQuantitativeEnvironment
       },
       subcounts: {
         type: 'array',
-        items: {
-          type: 'object',
-          additionalProperties: false,
-          required: [
-            'observation_subcount_id',
-            'subcount',
-            'comment',
-            'qualitative_measurements',
-            'quantitative_measurements'
-          ],
-          properties: {
-            observation_subcount_id: {
-              type: 'integer'
-            },
-            comment: {
-              type: 'string',
-              nullable: true,
-              description: 'A comment or note about the subcount record.'
-            },
-            subcount: {
-              type: 'number'
-            },
-            qualitative_measurements: {
-              type: 'array',
-              items: {
-                type: 'object',
-                additionalProperties: false,
-                required: ['critterbase_taxon_measurement_id', 'critterbase_measurement_qualitative_option_id'],
-                properties: {
-                  critterbase_taxon_measurement_id: {
-                    type: 'string',
-                    format: 'uuid'
-                  },
-                  critterbase_measurement_qualitative_option_id: {
-                    type: 'string',
-                    format: 'uuid'
-                  }
-                }
-              }
-            },
-            quantitative_measurements: {
-              type: 'array',
-              items: {
-                type: 'object',
-                additionalProperties: false,
-                required: ['critterbase_taxon_measurement_id', 'value'],
-                properties: {
-                  critterbase_taxon_measurement_id: {
-                    type: 'string',
-                    format: 'uuid'
-                  },
-                  value: {
-                    type: 'number'
-                  }
-                }
-              }
-            }
-          }
-        }
+        description: 'All subcount records for the observation.',
+        items: ObservationSubcountSchema
       },
+      survey_sample_site_id: {
+        type: 'integer',
+        minimum: 1,
+        nullable: true
+      },
+      survey_sample_site_name: {
+        type: 'string',
+        nullable: true
+      },
+      method_technique_id: {
+        type: 'integer',
+        minimum: 1,
+        nullable: true
+      },
+      method_technique_name: {
+        type: 'string',
+        nullable: true
+      },
+      survey_sample_period_id: {
+        type: 'integer',
+        minimum: 1,
+        nullable: true
+      },
+      survey_sample_period_start_datetime: {
+        type: 'string',
+        nullable: true
+      }
+    }
+  }
+};
+
+export const findFlattenedObservationsSchema: OpenAPIV3.SchemaObject = {
+  type: 'array',
+  items: {
+    type: 'object',
+    additionalProperties: false,
+    required: [
+      'survey_observation_id',
+      'survey_id',
+      'itis_tsn',
+      'itis_scientific_name',
+      'latitude',
+      'longitude',
+      'count',
+      'observation_date',
+      'observation_time',
+      'observation_sign_id',
+      'subcount',
+      'survey_sample_site_id',
+      'survey_sample_site_name',
+      'method_technique_id',
+      'method_technique_name',
+      'survey_sample_period_id',
+      'survey_sample_period_start_datetime',
+      'qualitative_environments',
+      'quantitative_environments'
+    ],
+    properties: {
+      survey_observation_id: {
+        type: 'integer',
+        minimum: 1
+      },
+      survey_id: {
+        type: 'integer',
+        minimum: 1
+      },
+      itis_tsn: {
+        type: 'integer'
+      },
+      itis_scientific_name: {
+        type: 'string',
+        nullable: true
+      },
+      latitude: {
+        type: 'number',
+        nullable: true,
+        minimum: -90,
+        maximum: 90
+      },
+      longitude: {
+        type: 'number',
+        nullable: true,
+        minimum: -180,
+        maximum: 180
+      },
+      count: {
+        type: 'integer'
+      },
+      observation_date: {
+        type: 'string',
+        nullable: true
+      },
+      observation_time: {
+        type: 'string',
+        nullable: true
+      },
+      observation_sign_id: {
+        type: 'integer',
+        minimum: 1,
+        description:
+          'The observation sign ID, indicating whether the observation was a direct sighting, footprints, scat, etc.'
+      },
+      qualitative_environments: {
+        type: 'array',
+        items: ObservationQualitativeEnvironment
+      },
+      quantitative_environments: {
+        type: 'array',
+        items: ObservationQuantitativeEnvironment
+      },
+      subcount: ObservationSubcountSchema,
       survey_sample_site_id: {
         type: 'integer',
         minimum: 1,

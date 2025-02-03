@@ -7,13 +7,13 @@ import {
 import {
   ICreateEditObservation,
   ICreateObservation,
+  IGetSurveyFlattenedObservationsResponse,
   IGetSurveyObservationsGeometryResponse,
   IGetSurveyObservationsResponse,
   ObservationRecord
 } from 'interfaces/useObservationApi.interface';
 import { EnvironmentTypeIds } from 'interfaces/useReferenceApi.interface';
 import { IPartialTaxonomy } from 'interfaces/useTaxonomyApi.interface';
-import qs from 'qs';
 import { ApiPaginationRequestOptions } from 'types/misc';
 
 /**
@@ -58,11 +58,11 @@ const useObservationApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Get observations for a system user id.
+   * Find observations.
    *
    * @param {ApiPaginationRequestOptions} [pagination]
    * @param {IObservationsAdvancedFilters} filterFieldData
-   * @return {*} {Promise<IFindProjectsResponse[]>}
+   * @return {*} {Promise<IGetSurveyObservationsResponse[]>}
    */
   const findObservations = async (
     pagination?: ApiPaginationRequestOptions,
@@ -74,8 +74,30 @@ const useObservationApi = (axios: AxiosInstance) => {
     };
 
     const { data } = await axios.get('/api/observation', {
-      params,
-      paramsSerializer: (params) => qs.stringify(params)
+      params
+    });
+
+    return data;
+  };
+
+  /**
+   * Find flattened observations.
+   *
+   * @param {ApiPaginationRequestOptions} [pagination]
+   * @param {IObservationsAdvancedFilters} filterFieldData
+   * @return {*} {Promise<IFindSurveyFlattenedObservationsResponse[]>}
+   */
+  const findFlattenedObservations = async (
+    pagination?: ApiPaginationRequestOptions,
+    filterFieldData?: IObservationsAdvancedFilters
+  ): Promise<IGetSurveyFlattenedObservationsResponse> => {
+    const params = {
+      ...pagination,
+      ...filterFieldData
+    };
+
+    const { data } = await axios.get('/api/observation/flattened', {
+      params
     });
 
     return data;
@@ -100,6 +122,33 @@ const useObservationApi = (axios: AxiosInstance) => {
 
     const { data } = await axios.get<IGetSurveyObservationsResponse>(
       `/api/project/${projectId}/survey/${surveyId}/observations`,
+      {
+        params
+      }
+    );
+
+    return data;
+  };
+
+  /**
+   * Retrieves all survey flattened observation records for the given survey
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {ApiPaginationRequestOptions} [pagination]
+   * @return {*}  {Promise<IGetSurveyFlattenedObservationsResponse>}
+   */
+  const getFlattenedObservationRecords = async (
+    projectId: number,
+    surveyId: number,
+    pagination?: ApiPaginationRequestOptions
+  ): Promise<IGetSurveyFlattenedObservationsResponse> => {
+    const params = {
+      ...pagination
+    };
+
+    const { data } = await axios.get<IGetSurveyFlattenedObservationsResponse>(
+      `/api/project/${projectId}/survey/${surveyId}/observations/flattened`,
       {
         params
       }
@@ -313,9 +362,11 @@ const useObservationApi = (axios: AxiosInstance) => {
   return {
     insertUpdateObservationRecords,
     getObservationRecords,
+    getFlattenedObservationRecords,
     getObservationRecord,
     getObservedSpecies,
     findObservations,
+    findFlattenedObservations,
     getObservationsGeometry,
     getObservationMeasurementDefinitions,
     deleteObservationRecords,

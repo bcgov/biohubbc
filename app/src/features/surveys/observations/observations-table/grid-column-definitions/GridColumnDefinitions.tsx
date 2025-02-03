@@ -34,7 +34,7 @@ export const TaxonomyColDef = (props: {
     field: 'itis_tsn',
     headerName: 'Species',
     description: 'The observed species, or if the species is unknown, a higher taxon',
-    editable: true,
+    editable: false,
     hideable: true,
     flex: 1,
     minWidth: 200,
@@ -63,7 +63,7 @@ export const SampleSiteColDef = (props: {
     field: 'survey_sample_site_id',
     description: 'The sampling site where the observation was made',
     headerName: 'Site',
-    editable: true,
+    editable: false,
     hideable: true,
     flex: 1,
     minWidth: 180,
@@ -101,7 +101,7 @@ export const MethodTechniqueColDef = (props: {
     field: 'method_technique_id',
     headerName: 'Technique',
     description: 'The technique with which the observation was made',
-    editable: true,
+    editable: false,
     hideable: true,
     flex: 1,
     minWidth: 180,
@@ -139,7 +139,7 @@ export const SamplePeriodColDef = (props: {
     field: 'survey_sample_period_id',
     headerName: 'Period',
     description: 'The sampling period in which the observation was made',
-    editable: true,
+    editable: false,
     hideable: true,
     flex: 1,
     minWidth: 180,
@@ -167,17 +167,17 @@ export const SamplePeriodColDef = (props: {
   };
 };
 
-export const ObservationCountColDef = (props: {
+export const ObservationSubcountColDef = (props: {
   samplingInformationCache: SamplingInformationCache;
   hasError: (params: GridCellParams) => boolean;
 }): GridColDef<IObservationTableRow> => {
   const { samplingInformationCache, hasError } = props;
 
   return {
-    field: 'count',
+    field: 'subcount',
     headerName: 'Count',
     description: 'The number of individuals observed',
-    editable: true,
+    editable: false,
     hideable: true,
     type: 'number',
     minWidth: 110,
@@ -216,7 +216,7 @@ export const ObservationSignColDef = (props: {
     field: 'observation_sign_id',
     headerName: 'Sign',
     description: 'The sign of the observation',
-    editable: true,
+    editable: false,
     hideable: true,
     minWidth: 140,
     disableColumnMenu: true,
@@ -240,7 +240,7 @@ export const ObservationQuantitativeMeasurementColDef = (props: {
     field: measurement.taxon_measurement_id,
     headerName: measurement.measurement_name,
     description: measurement.measurement_desc ?? '',
-    editable: true,
+    editable: false,
     hideable: true,
     sortable: false,
     type: 'number',
@@ -296,7 +296,7 @@ export const ObservationQualitativeMeasurementColDef = (props: {
     field: measurement.taxon_measurement_id,
     headerName: measurement.measurement_name,
     description: measurement.measurement_desc ?? '',
-    editable: true,
+    editable: false,
     hideable: true,
     sortable: false,
     flex: 1,
@@ -326,7 +326,7 @@ export const ObservationQuantitativeEnvironmentColDef = (props: {
     field: String(environment.environment_quantitative_id),
     headerName: environment.name,
     description: environment.description ?? '',
-    editable: true,
+    editable: false,
     hideable: true,
     sortable: false,
     type: 'number',
@@ -381,7 +381,7 @@ export const ObservationQualitativeEnvironmentColDef = (props: {
     field: String(environment.environment_qualitative_id),
     headerName: environment.name,
     description: environment.description ?? '',
-    editable: true,
+    editable: false,
     hideable: true,
     sortable: false,
     flex: 1,

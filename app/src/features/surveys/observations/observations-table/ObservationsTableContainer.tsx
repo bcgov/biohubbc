@@ -24,8 +24,8 @@ import { BulkActionsButton } from 'features/surveys/observations/observations-ta
 import { DiscardChangesButton } from 'features/surveys/observations/observations-table/discard-changes/DiscardChangesButton';
 import {
   MethodTechniqueColDef,
-  ObservationCountColDef,
   ObservationSignColDef,
+  ObservationSubcountColDef,
   SamplePeriodColDef,
   SampleSiteColDef,
   TaxonomyColDef
@@ -108,7 +108,7 @@ const ObservationsTableContainer = () => {
           hasError: observationsTableContext.hasError
         }),
         ObservationSignColDef({ observationSignOptions, hasError: observationsTableContext.hasError }),
-        ObservationCountColDef({
+        ObservationSubcountColDef({
           samplingInformationCache: samplingInformationCache,
           hasError: observationsTableContext.hasError
         }),
@@ -116,25 +116,29 @@ const ObservationsTableContainer = () => {
           field: 'observation_date',
           headerName: 'Date',
           hasError: observationsTableContext.hasError,
-          description: 'The date when the observation was made'
+          description: 'The date when the observation was made',
+          editable: false
         }),
         GenericTimeColDef({
           field: 'observation_time',
           headerName: 'Time',
           hasError: observationsTableContext.hasError,
-          description: 'The time of day when the observation was made'
+          description: 'The time of day when the observation was made',
+          editable: false
         }),
         GenericLatitudeColDef({
           field: 'latitude',
           headerName: 'Latitude',
           hasError: observationsTableContext.hasError,
-          description: 'The latitude where the observation was made'
+          description: 'The latitude where the observation was made',
+          editable: false
         }),
         GenericLongitudeColDef({
           field: 'longitude',
           headerName: 'Longitude',
           hasError: observationsTableContext.hasError,
-          description: 'The longitude where the observation was made'
+          description: 'The longitude where the observation was made',
+          editable: false
         }),
         // Add measurement columns to the table
         ...getMeasurementColumnDefinitions(
@@ -149,6 +153,7 @@ const ObservationsTableContainer = () => {
         GenericCommentColDef({
           field: 'comment',
           headerName: '',
+          editable: false,
           hasError: observationsTableContext.hasError,
           handleOpen: (params: GridRenderEditCellParams) => observationsTableContext.setCommentDialogParams(params),
           handleClose: () => observationsTableContext.setCommentDialogParams(null)

@@ -1,5 +1,5 @@
 import { mdiArrowTopRight } from '@mdi/js';
-import { GridColDef, GridSortModel } from '@mui/x-data-grid';
+import { GridColDef, GridSortModel, GridValidRowModel } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
@@ -14,11 +14,11 @@ import { useContext, useEffect, useState } from 'react';
 // Set height so the skeleton loader will match table rows
 const rowHeight = 52;
 
-interface IObservationTableRow {
-  survey_observation_id: number;
+interface IFlattenedObservationTableRow extends GridValidRowModel {
+  observation_subcount_id: number;
   itis_tsn: number | null;
   itis_scientific_name: string | null;
-  count: number | null;
+  subcount: number | null;
   survey_sample_site_name: string | null;
   method_technique_name: string | null;
   survey_sample_period_start_datetime: string | null;
@@ -44,7 +44,7 @@ export const SurveySpatialObservationTable = () => {
   const [sortModel, setSortModel] = useState<GridSortModel>([]);
 
   const paginatedDataLoader = useDataLoader((page: number, limit: number, sort?: string, order?: 'asc' | 'desc') =>
-    biohubApi.observation.getObservationRecords(surveyContext.projectId, surveyContext.surveyId, {
+    biohubApi.observation.getFlattenedObservationRecords(surveyContext.projectId, surveyContext.surveyId, {
       page: page + 1, // This fixes an off-by-one error between the front end and the back end
       limit,
       sort,
@@ -64,14 +64,14 @@ export const SurveySpatialObservationTable = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, pageSize, sortModel]);
 
-  const rows =
+  const rows: IFlattenedObservationTableRow[] =
     paginatedDataLoader.data?.surveyObservations.map((item) => {
       return {
-        survey_observation_id: item.survey_observation_id,
+        observation_subcount_id: item.subcount.observation_subcount_id,
         itis_tsn: item.itis_tsn,
         itis_scientific_name:
           (item.itis_tsn && taxonomyContext.getCachedSpeciesTaxonomyById(item.itis_tsn)?.scientificName) || null,
-        count: item.count,
+        subcount: item.subcount.subcount,
         survey_sample_site_name: item.survey_sample_site_name,
         method_technique_name: item.method_technique_name,
         survey_sample_period_start_datetime: item.survey_sample_period_start_datetime,
@@ -85,7 +85,7 @@ export const SurveySpatialObservationTable = () => {
   const rowCount = paginatedDataLoader.data?.pagination.total ?? 0;
 
   // Define table columns
-  const columns: GridColDef<IObservationTableRow>[] = [
+  const columns: GridColDef<IFlattenedObservationTableRow>[] = [
     {
       field: 'itis_scientific_name',
       headerName: 'Species',
@@ -112,7 +112,7 @@ export const SurveySpatialObservationTable = () => {
       minWidth: 200
     },
     {
-      field: 'count',
+      field: 'subcount',
       headerName: 'Count',
       headerAlign: 'right',
       align: 'right',
@@ -161,7 +161,7 @@ export const SurveySpatialObservationTable = () => {
         />
       }
       hasNoDataFallbackDelay={100}>
-      <StyledDataGrid
+      <StyledDataGrid<IFlattenedObservationTableRow>
         noRowsMessage="No observation records found"
         // columns
         columns={columns}
@@ -171,7 +171,7 @@ export const SurveySpatialObservationTable = () => {
         rowCount={rowCount}
         rowHeight={rowHeight}
         rowSelection={false}
-        getRowId={(row) => row.survey_observation_id}
+        getRowId={(row: IFlattenedObservationTableRow) => row.observation_subcount_id}
         autoHeight={false}
         // pagination
         paginationMode="server"

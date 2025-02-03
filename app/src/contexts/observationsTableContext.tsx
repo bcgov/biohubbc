@@ -35,7 +35,7 @@ import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import { CBMeasurementSearchByTsnResponse, CBMeasurementType } from 'interfaces/useCritterApi.interface';
 import {
   ICreateEditObservation,
-  IGetSurveyObservationsResponse,
+  IGetSurveyFlattenedObservationsResponse,
   ObservationEnvironmentQualitativeObject,
   ObservationEnvironmentQuantitativeObject,
   ObservationRecord,
@@ -154,7 +154,7 @@ export type IObservationsTableContext = {
   /**
    * Refreshes the Observation Table with already existing records
    */
-  refreshObservationRecords: () => Promise<IGetSurveyObservationsResponse | undefined>;
+  refreshObservationRecords: () => Promise<IGetSurveyFlattenedObservationsResponse | undefined>;
   /**
    * Returns all of the observation table records that have been selected
    */
@@ -1244,50 +1244,47 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
    * @param {IGetSurveyObservationsResponse} observationsData
    * @return {*}  {IObservationTableRow[]}
    */
-  const _getRowsToDisplay = useCallback((observationsData: IGetSurveyObservationsResponse): IObservationTableRow[] => {
-    // Spread all subcount rows into separate observation table rows, duplicating the parent observation standard row data
-    const rowsToDisplay: IObservationTableRow[] = observationsData.surveyObservations.flatMap((observationRow) => {
-      // Return a new row for each subcount, which contains the parent observation standard row data
-      return observationRow.subcounts.map((subcountRow) => {
-        // This code flattens out the array of subcount rows into a single array of observation rows, where each row
-        // contains a copy of the parent observation standard row data, and the unique subcount row data.
-        // Note: This code currently assumes that each observation record has exactly 1 subcount record.
-        // Why? Currently there is no UI support for handling multiple subcount records per observation record.
-        // See https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-534
+  const _getRowsToDisplay = useCallback(
+    (observationsData: IGetSurveyFlattenedObservationsResponse): IObservationTableRow[] => {
+      // Spread all subcount rows into separate observation table rows, duplicating the parent observation standard row data
+      const rowsToDisplay: IObservationTableRow[] = observationsData.surveyObservations.flatMap((observationRow) => {
+        const { subcount, qualitative_environments, quantitative_environments, ...restObservation } = observationRow;
+        const { qualitative_measurements, quantitative_measurements, ...restSubcount } = subcount;
         return {
-          // Spread the standard observation row data into the row
-          id: String(observationRow.survey_observation_id),
-          ...observationRow,
+          // Set the required datagrid row id
+          id: String(restSubcount.observation_subcount_id),
 
-          // Reduce the array of qualitative environments into an object and spread into the row
-          ...observationRow.qualitative_environments.reduce((acc, cur) => {
+          // Spread the standard observation row data into the row
+          ...restObservation,
+
+          // Reduce the array of observation qualitative environments into an object and spread into the row
+          ...qualitative_environments.reduce((acc, cur) => {
             return {
               ...acc,
               [cur.environment_qualitative_id]: cur.environment_qualitative_option_id
             };
           }, {}),
-          // Reduce the array of quantitative environments into an object and spread into the row
-          ...observationRow.quantitative_environments.reduce((acc, cur) => {
+          // Reduce the array of observation quantitative environments into an object and spread into the row
+          ...quantitative_environments.reduce((acc, cur) => {
             return {
               ...acc,
               [cur.environment_quantitative_id]: cur.value
             };
           }, {}),
 
-          // Add the subcount id to the row
-          observation_subcount_id: subcountRow.observation_subcount_id,
-          // // Add the subcount comment into the row
-          comment: subcountRow.comment,
+          // Spread the standard subcount data into the row
+          ...restSubcount,
 
-          // Reduce the array of qualitative measurements into an object and spread into the row
-          ...subcountRow.qualitative_measurements.reduce((acc, cur) => {
+          // Reduce the array of subcount qualitative measurements into an object and spread into the row
+          ...qualitative_measurements.reduce((acc, cur) => {
             return {
               ...acc,
               [cur.critterbase_taxon_measurement_id]: cur.critterbase_measurement_qualitative_option_id
             };
           }, {}),
-          // Reduce the array of quantitative measurements into an object and spread into the row
-          ...subcountRow.quantitative_measurements.reduce((acc, cur) => {
+
+          // Reduce the array of subcount quantitative measurements into an object and spread into the row
+          ...quantitative_measurements.reduce((acc, cur) => {
             return {
               ...acc,
               [cur.critterbase_taxon_measurement_id]: cur.value
@@ -1295,10 +1292,11 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
           }, {})
         };
       });
-    });
 
-    return rowsToDisplay;
-  }, []);
+      return rowsToDisplay;
+    },
+    []
+  );
 
   /**
    * Fetch new rows based on sort/ pagination model changes

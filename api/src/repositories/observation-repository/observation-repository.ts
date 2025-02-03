@@ -218,7 +218,12 @@ export class ObservationRepository extends BaseRepository {
       query.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
 
       if (pagination.sort && pagination.order) {
-        query.orderBy(pagination.sort, pagination.order);
+        if (pagination.sort === 'subcount') {
+          const knex = getKnex();
+          query.orderByRaw(knex.raw(`(subcount->>'${pagination.sort}')::numeric ${pagination.order}`));
+        } else {
+          query.orderBy(pagination.sort, pagination.order);
+        }
       }
     }
 
@@ -284,7 +289,12 @@ export class ObservationRepository extends BaseRepository {
       query.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
 
       if (pagination.sort && pagination.order) {
-        query.orderBy(pagination.sort, pagination.order);
+        if (pagination.sort === 'subcount') {
+          const knex = getKnex();
+          query.orderByRaw(knex.raw(`(subcount->>'${pagination.sort}')::numeric ${pagination.order}`));
+        } else {
+          query.orderBy(pagination.sort, pagination.order);
+        }
       }
     }
 

@@ -16,7 +16,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
 import { useSearchParams } from 'hooks/useSearchParams';
-import { IGetSurveyObservationsResponse } from 'interfaces/useObservationApi.interface';
+import { IGetSurveyFlattenedObservationsResponse } from 'interfaces/useObservationApi.interface';
 import { useCallback, useState } from 'react';
 import { ApiPaginationRequestOptions, StringValues } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
@@ -108,7 +108,7 @@ const ObservationsListContainer = (props: IObservationsListContainerProps) => {
 
   const observationsDataLoader = useDataLoader(
     (pagination: ApiPaginationRequestOptions, filter?: IObservationsAdvancedFilters) => {
-      return biohubApi.observation.findObservations(pagination, filter);
+      return biohubApi.observation.findFlattenedObservations(pagination, filter);
     }
   );
 
@@ -117,47 +117,51 @@ const ObservationsListContainer = (props: IObservationsListContainerProps) => {
   }, [advancedFiltersModel, paginationSort]);
 
   const getRowsFromObservations = useCallback(
-    (observationsData: IGetSurveyObservationsResponse): IObservationTableRow[] =>
+    (observationsData: IGetSurveyFlattenedObservationsResponse): IObservationTableRow[] =>
       observationsData.surveyObservations?.flatMap((observationRow) => {
-        return observationRow.subcounts.map((subcountRow) => {
-          return {
-            // Spread the standard observation row data into the row
-            id: String(observationRow.survey_observation_id),
-            ...observationRow,
+        const { subcount, qualitative_environments, quantitative_environments, ...restObservation } = observationRow;
+        const { qualitative_measurements, quantitative_measurements, ...restSubcount } = subcount;
+        return {
+          // Set the required datagrid row id
+          id: String(restSubcount.observation_subcount_id),
 
-            // Reduce the array of qualitative environments into an object and spread into the row
-            ...observationRow.qualitative_environments.reduce((acc, cur) => {
-              return {
-                ...acc,
-                [cur.environment_qualitative_id]: cur.environment_qualitative_option_id
-              };
-            }, {}),
-            // Reduce the array of quantitative environments into an object and spread into the row
-            ...observationRow.quantitative_environments.reduce((acc, cur) => {
-              return {
-                ...acc,
-                [cur.environment_quantitative_id]: cur.value
-              };
-            }, {}),
+          // Spread the standard observation row data into the row
+          ...restObservation,
 
-            // Spread the subcount row data into the row
-            observation_subcount_id: subcountRow.observation_subcount_id,
-            // Reduce the array of qualitative measurements into an object and spread into the row
-            ...subcountRow.qualitative_measurements.reduce((acc, cur) => {
-              return {
-                ...acc,
-                [cur.critterbase_taxon_measurement_id]: cur.critterbase_measurement_qualitative_option_id
-              };
-            }, {}),
-            // Reduce the array of quantitative measurements into an object and spread into the row
-            ...subcountRow.quantitative_measurements.reduce((acc, cur) => {
-              return {
-                ...acc,
-                [cur.critterbase_taxon_measurement_id]: cur.value
-              };
-            }, {})
-          };
-        });
+          // Reduce the array of observation qualitative environments into an object and spread into the row
+          ...qualitative_environments.reduce((acc, cur) => {
+            return {
+              ...acc,
+              [cur.environment_qualitative_id]: cur.environment_qualitative_option_id
+            };
+          }, {}),
+          // Reduce the array of observation quantitative environments into an object and spread into the row
+          ...quantitative_environments.reduce((acc, cur) => {
+            return {
+              ...acc,
+              [cur.environment_quantitative_id]: cur.value
+            };
+          }, {}),
+
+          // Spread the standard subcount data into the row
+          ...restSubcount,
+
+          // Reduce the array of subcount qualitative measurements into an object and spread into the row
+          ...qualitative_measurements.reduce((acc, cur) => {
+            return {
+              ...acc,
+              [cur.critterbase_taxon_measurement_id]: cur.critterbase_measurement_qualitative_option_id
+            };
+          }, {}),
+
+          // Reduce the array of subcount quantitative measurements into an object and spread into the row
+          ...quantitative_measurements.reduce((acc, cur) => {
+            return {
+              ...acc,
+              [cur.critterbase_taxon_measurement_id]: cur.value
+            };
+          }, {})
+        };
       }),
     []
   );
@@ -198,7 +202,7 @@ const ObservationsListContainer = (props: IObservationsListContainerProps) => {
       )
     },
     {
-      field: 'count',
+      field: 'subcount',
       headerName: 'Count',
       flex: 1
     },

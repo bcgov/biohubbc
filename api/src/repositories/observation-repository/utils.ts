@@ -21,7 +21,43 @@ export function makeFindObservationsQuery(
 
   const getObservationsQuery = getSurveyObservationsBaseQuery(knex, authorizedSurveyIdsQuery);
 
-  _applyFilterFields(getObservationsQuery, filterFields);
+  if (filterFields?.min_count) {
+    getObservationsQuery.andWhere('count', '>=', filterFields.min_count);
+  }
+
+  if (filterFields?.start_date) {
+    getObservationsQuery.andWhere('observation_date', '>=', filterFields.start_date);
+  }
+
+  if (filterFields?.end_date) {
+    getObservationsQuery.andWhere('observation_date', '<=', filterFields.end_date);
+  }
+
+  if (filterFields?.keyword) {
+    getObservationsQuery.where((subqueryBuilder) => {
+      subqueryBuilder.where('itis_scientific_name', 'ilike', `%${filterFields.keyword}%`);
+      if (!isNaN(Number(filterFields.keyword))) {
+        subqueryBuilder.orWhere('survey_observation.survey_observation_id', Number(filterFields.keyword));
+      }
+    });
+  }
+
+  if (filterFields?.start_time) {
+    getObservationsQuery.andWhere('time', '>=', filterFields.start_time);
+  }
+
+  if (filterFields?.end_time) {
+    getObservationsQuery.andWhere('time', '<=', filterFields.end_time);
+  }
+
+  // Focal Species filter
+  if (filterFields?.itis_tsns?.length) {
+    // multiple
+    getObservationsQuery.whereIn('itis_tsn', filterFields.itis_tsns);
+  } else if (filterFields?.itis_tsn) {
+    // single
+    getObservationsQuery.where('itis_tsn', filterFields.itis_tsn);
+  }
 
   return getObservationsQuery;
 }
@@ -43,11 +79,47 @@ export function makeFindFlattenedObservationsQuery(
 
   const authorizedSurveyIdsQuery = _getAuthorizedSurveyIdsQuery(isUserAdmin, systemUserId, filterFields);
 
-  const getObservationsQuery = getSurveyFlattenedObservationsBaseQuery(knex, authorizedSurveyIdsQuery);
+  const getFlattenedObservationsQuery = getSurveyFlattenedObservationsBaseQuery(knex, authorizedSurveyIdsQuery);
 
-  _applyFilterFields(getObservationsQuery, filterFields);
+  if (filterFields?.min_count) {
+    getFlattenedObservationsQuery.andWhereRaw(knex.raw(`subcount->>subcount >= ${filterFields.min_count}`));
+  }
 
-  return getObservationsQuery;
+  if (filterFields?.start_date) {
+    getFlattenedObservationsQuery.andWhere('observation_date', '>=', filterFields.start_date);
+  }
+
+  if (filterFields?.end_date) {
+    getFlattenedObservationsQuery.andWhere('observation_date', '<=', filterFields.end_date);
+  }
+
+  if (filterFields?.keyword) {
+    getFlattenedObservationsQuery.where((subqueryBuilder) => {
+      subqueryBuilder.where('itis_scientific_name', 'ilike', `%${filterFields.keyword}%`);
+      if (!isNaN(Number(filterFields.keyword))) {
+        subqueryBuilder.orWhere('survey_observation.survey_observation_id', Number(filterFields.keyword));
+      }
+    });
+  }
+
+  if (filterFields?.start_time) {
+    getFlattenedObservationsQuery.andWhere('time', '>=', filterFields.start_time);
+  }
+
+  if (filterFields?.end_time) {
+    getFlattenedObservationsQuery.andWhere('time', '<=', filterFields.end_time);
+  }
+
+  // Focal Species filter
+  if (filterFields?.itis_tsns?.length) {
+    // multiple
+    getFlattenedObservationsQuery.whereIn('itis_tsn', filterFields.itis_tsns);
+  } else if (filterFields?.itis_tsn) {
+    // single
+    getFlattenedObservationsQuery.where('itis_tsn', filterFields.itis_tsn);
+  }
+
+  return getFlattenedObservationsQuery;
 }
 
 /**
@@ -440,7 +512,7 @@ function _selectFlattenedObservationColumns(
       'w_quantitative_environments.survey_observation_id'
     )
     // Note: inner join requires every observation record to have at least one subcount record, otherwise use left join
-    .innerJoin('w_subcounts', 'w_subcounts.survey_observation_id', 'survey_observation.survey_observation_id')
+    .innerJoin('w_subcount', 'w_subcount.survey_observation_id', 'survey_observation.survey_observation_id')
     .whereIn('survey_observation.survey_id', authorizedSurveyIdsQuery);
 
   return queryBuilder;
@@ -485,52 +557,4 @@ function _getAuthorizedSurveyIdsQuery(
   }
 
   return authorizedSurveyIdsQuery;
-}
-
-/**
- * Helper function to apply the observation filter fields to the provided query builder.
- *
- * @export
- * @param {Knex.QueryBuilder} queryBuilder
- * @param {IObservationAdvancedFilters} [filterFields]
- * @return {*}  {void}
- */
-function _applyFilterFields(queryBuilder: Knex.QueryBuilder, filterFields?: IObservationAdvancedFilters): void {
-  if (filterFields?.min_count) {
-    queryBuilder.andWhere('subcount', '>=', filterFields.min_count);
-  }
-
-  if (filterFields?.start_date) {
-    queryBuilder.andWhere('observation_date', '>=', filterFields.start_date);
-  }
-
-  if (filterFields?.end_date) {
-    queryBuilder.andWhere('observation_date', '<=', filterFields.end_date);
-  }
-
-  if (filterFields?.keyword) {
-    queryBuilder.where((subqueryBuilder) => {
-      subqueryBuilder.where('itis_scientific_name', 'ilike', `%${filterFields.keyword}%`);
-      if (!isNaN(Number(filterFields.keyword))) {
-        subqueryBuilder.orWhere('survey_observation.survey_observation_id', Number(filterFields.keyword));
-      }
-    });
-  }
-
-  if (filterFields?.start_time) {
-    queryBuilder.andWhere('time', '>=', filterFields.start_time);
-  }
-
-  if (filterFields?.end_time) {
-    queryBuilder.andWhere('time', '<=', filterFields.end_time);
-  }
-
-  // Focal Species filter
-  if (filterFields?.itis_tsns?.length) {
-    // multiple
-    queryBuilder.whereIn('itis_tsn', filterFields.itis_tsns);
-  } else if (filterFields?.itis_tsn) {
-    // single
-    queryBuilder.where('itis_tsn', filterFields.itis_tsn);
-  }
 }

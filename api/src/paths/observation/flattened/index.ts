@@ -1,19 +1,19 @@
 import { Request, RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../constants/roles';
-import { getDBConnection } from '../../database/db';
-import { IObservationAdvancedFilters } from '../../models/observation-view';
-import { findObservationsSchema } from '../../openapi/schemas/observation';
-import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../../openapi/schemas/pagination';
-import { authorizeRequestHandler, userHasValidRole } from '../../request-handlers/security/authorization';
-import { ObservationService } from '../../services/observation-services/observation-service';
-import { getLogger } from '../../utils/logger';
+import { SYSTEM_ROLE } from '../../../constants/roles';
+import { getDBConnection } from '../../../database/db';
+import { IObservationAdvancedFilters } from '../../../models/observation-view';
+import { findFlattenedObservationsSchema } from '../../../openapi/schemas/observation';
+import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../../../openapi/schemas/pagination';
+import { authorizeRequestHandler, userHasValidRole } from '../../../request-handlers/security/authorization';
+import { ObservationService } from '../../../services/observation-services/observation-service';
+import { getLogger } from '../../../utils/logger';
 import {
   ensureCompletePaginationOptions,
   makePaginationOptionsFromRequest,
   makePaginationResponse
-} from '../../utils/pagination';
-import { getSystemUserFromRequest } from '../../utils/request';
+} from '../../../utils/pagination';
+import { getSystemUserFromRequest } from '../../../utils/request';
 
 const defaultLog = getLogger('paths/observation/index');
 
@@ -27,11 +27,11 @@ export const GET: Operation = [
       ]
     };
   }),
-  findObservations()
+  findFlattenedObservations()
 ];
 
 GET.apiDoc = {
-  description: "Gets a list of observations based on the user's permissions and filter criteria.",
+  description: "Gets a list of flattened observation records based on the user's permissions and filter criteria.",
   tags: ['observations'],
   security: [
     {
@@ -136,7 +136,7 @@ GET.apiDoc = {
   ],
   responses: {
     200: {
-      description: 'Observation response object.',
+      description: 'Flattened observation response object.',
       content: {
         'application/json': {
           schema: {
@@ -144,7 +144,7 @@ GET.apiDoc = {
             additionalProperties: false,
             required: ['surveyObservations', 'pagination'],
             properties: {
-              surveyObservations: findObservationsSchema,
+              surveyObservations: findFlattenedObservationsSchema,
               pagination: paginationResponseSchema
             }
           }
@@ -174,7 +174,7 @@ GET.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-export function findObservations(): RequestHandler {
+export function findFlattenedObservations(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'getObservations' });
 
@@ -199,13 +199,13 @@ export function findObservations(): RequestHandler {
       const observationService = new ObservationService(connection);
 
       const [observations, observationsTotalCount] = await Promise.all([
-        observationService.findObservations(
+        observationService.findFlattenedObservations(
           isUserAdmin,
           systemUserId,
           filterFields,
           ensureCompletePaginationOptions(paginationOptions)
         ),
-        observationService.findObservationsCount(isUserAdmin, systemUserId, filterFields)
+        observationService.findFlattenedObservationsCount(isUserAdmin, systemUserId, filterFields)
       ]);
 
       await connection.commit();
@@ -220,7 +220,7 @@ export function findObservations(): RequestHandler {
 
       return res.status(200).json(response);
     } catch (error) {
-      defaultLog.error({ label: 'findObservations', message: 'error', error });
+      defaultLog.error({ label: 'findFlattenedObservations', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

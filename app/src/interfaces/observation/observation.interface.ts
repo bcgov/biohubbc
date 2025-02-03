@@ -27,6 +27,12 @@ export interface IGetSurveyObservationsResponse {
   pagination: ApiPaginationResponseParams;
 }
 
+export interface IGetSurveyFlattenedObservationsResponse {
+  surveyObservations: FlattenedObservationRecordWithSamplingAndSubcountData[];
+  supplementaryObservationData: SupplementaryObservationData;
+  pagination: ApiPaginationResponseParams;
+}
+
 export interface IGetSurveyObservationsGeometryObject {
   survey_observation_id: number;
   geometry: GeoJSON.Point;
@@ -77,14 +83,13 @@ export type SupplementaryObservationData = SupplementaryObservationCountData &
   SupplementaryObservationMeasurementData &
   ObservationSamplingSupplementaryData;
 
-type ObservationSubcountsObject = {
-  subcounts: ObservationSubcountObject[];
-};
-
 type ObservationRecordWithSamplingAndSubcountData = StandardObservationColumns &
   ObservationEnvironmentData &
-  ObservationSamplingData &
-  ObservationSubcountsObject;
+  ObservationSamplingData & { subcounts: ObservationSubcountObject[] };
+
+type FlattenedObservationRecordWithSamplingAndSubcountData = StandardObservationColumns &
+  ObservationEnvironmentData &
+  ObservationSamplingData & { subcount: ObservationSubcountObject };
 
 export interface ICreateEditObservation {
   standardColumns: StandardObservationColumns & ObservationEnvironmentData;
