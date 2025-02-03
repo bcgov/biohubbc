@@ -44,7 +44,7 @@ export const SubcountMeasurementField = (props: ISubcountMeasurementFieldProps) 
   return (
     <Box minWidth="300px" flex={1}>
       {displayHeader === true && (
-        <Stack direction="row" alignItems="center" gap={1} my={2} sx={{ position: 'relative' }}>
+        <Stack direction="row" alignItems="center" gap={1} my={1.75} sx={{ position: 'relative' }}>
           <Typography fontWeight={700} textTransform="uppercase" variant="body2" flex={0.9}>
             {measurementTypeDefinition.measurement_name}
           </Typography>

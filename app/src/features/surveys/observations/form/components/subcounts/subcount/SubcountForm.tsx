@@ -1,12 +1,14 @@
 import Box from '@mui/material/Box';
+import grey from '@mui/material/colors/grey';
+import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
-import { SubcountCommentForm } from 'features/surveys/observations/form/components/subcounts/subcount/comment/SubcountCommentForm';
 import { SubcountCountField } from 'features/surveys/observations/form/components/subcounts/subcount/count/SubcountCountField';
 import {
   initialSubcountMeasurementsFormData,
   SubcountMeasurementsForm
 } from 'features/surveys/observations/form/components/subcounts/subcount/measurements/SubcountMeasurementsForm';
 import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
+import { SubcountCommentForm } from './comment/SubcountCommentForm';
 
 export type SubcountFormData = {
   /**
@@ -61,8 +63,14 @@ export const SubcountForm = (props: ISubcountFormProps) => {
   const { formikFieldName, measurementTypeDefinitions, onDeleteMeasurement, enableHeaders } = props;
 
   return (
-    <Stack flexDirection="column" gap={2}>
-      <Stack flexDirection="row" gap={1}>
+    <Stack flexDirection="column" gap={2} sx={{ flex: '1 1 auto' }}>
+      <Paper
+        component={Stack}
+        variant="outlined"
+        flexDirection="row"
+        gap={1}
+        p={2}
+        sx={{ flex: '1 1 auto', bgcolor: grey[50] }}>
         {/* Render the subcount count field */}
         <Box flex="1 1 auto" minWidth="200px">
           <SubcountCountField formikFieldName={formikFieldName} displayHeader={enableHeaders} />
@@ -77,10 +85,12 @@ export const SubcountForm = (props: ISubcountFormProps) => {
             enableHeaders={enableHeaders}
           />
         </Stack>
-      </Stack>
 
-      {/* Render the subcount comment field */}
-      <SubcountCommentForm formikFieldName={formikFieldName} />
+        {/* Render the subcount comment field */}
+        <Box flex="1 1 auto" minWidth="300px">
+          <SubcountCommentForm formikFieldName={formikFieldName} displayHeader={enableHeaders} />
+        </Box>
+      </Paper>
     </Stack>
   );
 };
