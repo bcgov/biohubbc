@@ -258,8 +258,7 @@ function _getSubcountsQuery(authorizedSurveyIdsQuery: Knex.QueryBuilder): Knex.Q
 
   const queryBuilder = knex.queryBuilder();
 
-  queryBuilder;
-  knex
+  queryBuilder
     .select(
       'survey_observation_id',
       knex.raw(`
@@ -297,8 +296,7 @@ function _getFlattenedSubcountsQuery(authorizedSurveyIdsQuery: Knex.QueryBuilder
 
   const queryBuilder = knex.queryBuilder();
 
-  queryBuilder;
-  knex
+  queryBuilder
     .select(
       'survey_observation_id',
       knex.raw(`
