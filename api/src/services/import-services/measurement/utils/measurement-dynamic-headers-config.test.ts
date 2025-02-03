@@ -123,6 +123,7 @@ describe('measurement-dynamic-headers-config', () => {
       expect(result[0].error).to.contain('Invalid measurement type');
     });
   });
+
   describe('validateQualitativeMeasurementCell', () => {
     it('should validate the qualitative measurement cell value successfully', () => {
       const params = {
