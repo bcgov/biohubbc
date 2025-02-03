@@ -1,0 +1,129 @@
+import { NestedRecord } from '../../../utils/nested-record';
+import {
+  CBQualitativeMeasurement,
+  CBQualitativeMeasurementTypeDefinition,
+  CBQuantitativeMeasurement,
+  CBQuantitativeMeasurementTypeDefinition,
+  CritterbaseService
+} from '../../critterbase-service';
+
+export type TSNMeasurementDictionary = NestedRecord<
+  CBQualitativeMeasurementTypeDefinition | CBQuantitativeMeasurementTypeDefinition
+>;
+
+/**
+ * Check if an object is a `CBQuantitativeMeasurementTypeDefinition`
+ *
+ * Returns true if the object has the properties `unit` and `taxon_measurement_id`
+ *
+ * @param {any} measurement - The object to check
+ * @returns {boolean} True if the object is a CBQuantitativeMeasurementTypeDefinition
+ */
+export const isCBQuantitativeMeasurementTypeDefinition = (
+  measurement: unknown
+): measurement is CBQuantitativeMeasurementTypeDefinition => {
+  return (
+    typeof measurement === 'object' &&
+    measurement != null &&
+    'unit' in measurement &&
+    'taxon_measurement_id' in measurement
+  );
+};
+
+/**
+ * Check if an object is a `CBQualitativeMeasurementTypeDefinition`
+ *
+ * Returns true if the object has the properties `options` and `taxon_measurement_id`
+ *
+ * @param {unknown} measurement - The object to check
+ * @returns {boolean} True if the object is a CBQualitativeMeasurementTypeDefinition
+ */
+export const isCBQualitativeMeasurementTypeDefinition = (
+  measurement: unknown
+): measurement is CBQualitativeMeasurementTypeDefinition => {
+  return (
+    typeof measurement === 'object' &&
+    measurement != null &&
+    'options' in measurement &&
+    'taxon_measurement_id' in measurement
+  );
+};
+
+/**
+ * Check if an object is a `CBQualitativeMeasurement` - ie: the recorded mesasurement
+ *
+ * Returns true if the object has the properties `qualitative_option_id` and `taxon_measurement_id`
+ *
+ * @param {unknown} measurement - The object to check
+ * @returns {boolean} True if the object is a CBQualitativeMeasurement
+ */
+export const isCBQualitativeMeasurement = (measurement: unknown): measurement is CBQualitativeMeasurement => {
+  return (
+    typeof measurement === 'object' &&
+    measurement != null &&
+    'qualitative_option_id' in measurement &&
+    'taxon_measurement_id' in measurement
+  );
+};
+
+/**
+ * Check if an object is a `CBQuantitativeMeasurement` - ie: the recorded mesasurement
+ *
+ * Returns true if the object has the properties `value` and `taxon_measurement_id`
+ *
+ * @param {unknown} measurement - The object to check
+ * @returns {boolean} True if the object is a CBQuantitativeMeasurement
+ */
+export const isCBQuantitativeMeasurement = (measurement: unknown): measurement is CBQuantitativeMeasurement => {
+  return (
+    typeof measurement === 'object' &&
+    measurement != null &&
+    'value' in measurement &&
+    'taxon_measurement_id' in measurement
+  );
+};
+
+/**
+ * Get the TSN measurement type definition dictionary.
+ *
+ * @async
+ * @param {number[]} tsns - List of ITIS TSN's
+ * @param {CritterbaseService} critterbaseService
+ * @returns {*} {Promise<TSNMeasurementDictionary>} Measurement dictionary
+ */
+export const getTsnMeasurementDictionary = async (
+  tsns: number[],
+  critterbaseService: CritterbaseService
+): Promise<TSNMeasurementDictionary> => {
+  const measurementDictionary = new NestedRecord<
+    CBQualitativeMeasurementTypeDefinition | CBQuantitativeMeasurementTypeDefinition
+  >();
+  const uniqueTsns = [...new Set(tsns)];
+
+  const measurements = await Promise.all(uniqueTsns.map((tsn) => critterbaseService.getTaxonMeasurements(String(tsn))));
+
+  // Note: This makes the assumption that a qualitative measurement and a quantitative measurement
+  // will not have the same measurement name for a given TSN.
+  uniqueTsns.forEach((tsn, index) => {
+    const qualitativeMeasurements = measurements[index].qualitative;
+    const quantitativeMeasurements = measurements[index].quantitative;
+
+    qualitativeMeasurements.forEach((measurement) => {
+      measurementDictionary.set({
+        // Implicitly handles casing (lowercase)
+        path: [tsn, measurement.measurement_name],
+        value: measurement
+      });
+    });
+
+    quantitativeMeasurements.forEach((measurement) => {
+      measurementDictionary.set({
+        // Implicitly handles casing (lowercase)
+        path: [tsn, measurement.measurement_name],
+        value: measurement
+      });
+    });
+  });
+
+  return measurementDictionary;
+};

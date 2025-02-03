@@ -14,11 +14,12 @@ const useStyles = () => {
       display: 'flex',
       alignItems: 'center',
       height: '80vh',
+      position: 'relative',
       paddingTop: theme.spacing(6),
       paddingBottom: theme.spacing(6),
       color: theme.palette.primary.contrastText,
       background: '#00438A linear-gradient(to bottom, #00438A, #00274D)',
-      backgroundImage: `url('/assets/golden-crowned-kinglet.jpg')`,
+      backgroundImage: `url('/assets/mountain-goats.jpg')`,
       backgroundPosition: 'center',
       backgroundRepeat: 'no-repeat',
       backgroundSize: 'cover',
@@ -40,14 +41,12 @@ const useStyles = () => {
     },
     heroTitle: {
       maxWidth: '19ch',
-      fontSize: '2.5em',
-      textShadow: '0px 0px 15px rgba(0,13,26,0.5)'
+      fontSize: '2.5em'
     },
     heroSubtitle: {
       margin: '1.6em 0 2em 0',
       maxWidth: '50ch',
-      fontSize: '0.9em',
-      textShadow: '0px 0px 10px rgba(0,13,26,1)'
+      fontSize: '0.8em'
     },
     introContainer: {
       display: 'flex',
@@ -73,16 +72,19 @@ export const LandingPage = () => {
       <Box sx={classes.heroContainer}>
         <Container maxWidth="xl">
           <Box sx={classes.heroContainerInner}>
-            <Typography variant="h1" sx={classes.heroTitle}>
+            <Typography variant="h1" sx={classes.heroTitle} color="primary">
               Species Inventory Management System
             </Typography>
-            <Typography sx={classes.heroSubtitle}>
+            <Typography sx={classes.heroSubtitle} color="primary">
               Collaboratively manage fish and wildlife data and information to help protect biodiversity in British
               Columbia.
             </Typography>
             <LandingActions />
           </Box>
         </Container>
+        <Typography position="absolute" sx={{ right: '16px', bottom: '16px' }} aria-label="Photo by Shane White">
+          Photo: Shane White
+        </Typography>
       </Box>
       <Box sx={classes.introContainer}>
         <Container maxWidth="xl">

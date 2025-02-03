@@ -156,7 +156,8 @@ const Header: React.FC = () => {
             textDecoration: 'none'
           },
           '& img': {
-            mr: 2
+            mr: 2,
+            maxHeight: 70
           }
         }}>
         <RouterLink to="/" aria-label="Go to SIMS Home">

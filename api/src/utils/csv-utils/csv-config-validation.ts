@@ -42,11 +42,6 @@ export const validateCSVWorksheet = <StaticHeaderType extends Uppercase<string>>
       errors.push(...executeRowValidator(rowParams, rowValidator));
     });
 
-    // If there are errors in the row abort early
-    if (errors.length) {
-      return;
-    }
-
     const validatedRow: CSVRow = {};
 
     // Iterate over each cell in the row and validate + set cell values
