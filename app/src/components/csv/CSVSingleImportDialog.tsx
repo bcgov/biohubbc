@@ -119,7 +119,7 @@ export const CSVSingleImportDialog = (props: CSVSingleImportDialogProps) => {
   }
 
   return (
-    <Dialog open={props.open} maxWidth={'md'} fullScreen={fullScreen}>
+    <Dialog open={props.open} maxWidth={'xl'} fullScreen={fullScreen}>
       <DialogContent sx={{ mt: 2 }}>
         <Box>
           <CSVDropzoneSection

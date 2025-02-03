@@ -50,6 +50,7 @@ import {
 import { getTaxonMap, getTsnsFromTaxonMap, TaxonMap } from '../utils/taxon';
 import { getObservationDynamicHeaderCellValidator } from './utils/observation-dynamic-header-config';
 import { getObservationSubcountSignCellValidator } from './utils/observation-header-configs';
+import { getObservationLocationRowValidator } from './utils/observation-location-row-validator';
 import { getObservationSamplingInformationRowValidator } from './utils/observation-sampling-row-validator';
 
 const defaultLog = getLogger('services/import/import-observations-service');
@@ -150,11 +151,11 @@ export class ImportObservationsService extends DBService {
       });
     }
 
+    defaultLog.debug({ label: 'importCSVWorksheet', observations });
+
     const observationService = new ObservationService(this.connection);
 
     await observationService.insertUpdateManualSurveyObservations(this.surveyId, observations);
-
-    defaultLog.debug({ label: 'importCSVWorksheet', observations });
 
     return [];
   }
@@ -217,7 +218,7 @@ export class ImportObservationsService extends DBService {
   }
 
   /**
-   * Sets the taxon row validator and the observation sampling information row validator for the Observation CSV.
+   * Sets the taxon row validator, sampling information and location row validators for the Observation CSV.
    *
    * Note: Row validators run before static and dynamic header validators.
    *
@@ -228,10 +229,14 @@ export class ImportObservationsService extends DBService {
   async _setObservationRowValidators(taxonMap: TaxonMap, samplePeriodService: SamplePeriodService) {
     const samplePeriods = await samplePeriodService.getSamplePeriodsForSurvey(this.surveyId);
 
-    // Inject the row validators - handles taxon and sampling information validation
+    // Inject the row validators - handles taxon, sampling information and location validation
     this.utils.config.rowValidators = [
       getTaxonRowValidator(taxonMap, this.utils, 'SPECIES'),
-      getObservationSamplingInformationRowValidator(samplePeriods, this.utils)
+      // Note: Sampling information validator must run before location validator
+      // Why?: Sampling information validator may update the state with the sample period ID,
+      // the location validator uses this state to determine if latitude and longitude are required
+      getObservationSamplingInformationRowValidator(samplePeriods, this.utils),
+      getObservationLocationRowValidator(this.utils)
     ];
   }
 

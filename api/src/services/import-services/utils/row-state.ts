@@ -92,6 +92,6 @@ export const getQuantitativeEnvironmentFromRowState = createRowStateGetter(
 // Observation
 export const getSamplePeriodIdFromRowState = createRowStateGetter(
   z.object({
-    sample_period_id: z.number()
+    sample_period_id: z.number().optional()
   })
 );
