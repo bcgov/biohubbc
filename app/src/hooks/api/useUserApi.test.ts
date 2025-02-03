@@ -59,7 +59,10 @@ describe('useUserApi', () => {
       }
     ]);
 
-    const result = await useUserApi(axios).getUsersList();
+    const result = await useUserApi(axios).getUsersList(
+      {},
+      { page: 0, limit: 10, sort: 'system_user_id', order: 'desc' }
+    );
 
     expect(result[0].system_user_id).toEqual(1);
     expect(result[0].user_identifier).toEqual('myidirboss');

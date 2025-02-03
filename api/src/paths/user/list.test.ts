@@ -22,7 +22,16 @@ describe('users', () => {
 
       sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
-      const mockResponse = [
+      const mockTotal = 10;
+      const mockPaginationParams = {
+        total: mockTotal,
+        per_page: 10,
+        current_page: 1,
+        last_page: 1,
+        sort: undefined,
+        order: undefined
+      };
+      const mockUsers = [
         {
           system_user_id: 1,
           user_identifier: 'testname',
@@ -39,7 +48,13 @@ describe('users', () => {
         }
       ];
 
-      sinon.stub(UserService.prototype, 'listSystemUsers').resolves(mockResponse);
+      const mockResponse = {
+        users: mockUsers,
+        pagination: mockPaginationParams
+      };
+
+      sinon.stub(UserService.prototype, 'listSystemUsers').resolves(mockUsers);
+      sinon.stub(UserService.prototype, 'getSystemUsersCount').resolves(mockTotal);
 
       const requestHandler = users.getUserList();
 
