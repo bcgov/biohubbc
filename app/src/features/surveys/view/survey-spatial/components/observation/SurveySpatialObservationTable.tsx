@@ -148,7 +148,7 @@ export const SurveySpatialObservationTable = () => {
 
   return (
     <LoadingGuard
-      isLoading={paginatedDataLoader.isLoading || !paginatedDataLoader.isReady}
+      isLoading={!paginatedDataLoader.data && (paginatedDataLoader.isLoading || !paginatedDataLoader.isReady)}
       isLoadingFallback={<SkeletonTable />}
       isLoadingFallbackDelay={100}
       hasNoData={!rows.length}

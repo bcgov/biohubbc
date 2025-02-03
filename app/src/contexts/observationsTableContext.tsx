@@ -1025,8 +1025,17 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
 
   // True if the taxonomy cache is still initializing or the observations data is still loading
   const isLoading: boolean = useMemo(() => {
-    return !taxonomyCacheStatus.isInitialized || isLoadingObservationsData || observationsPageContext.isLoading;
-  }, [isLoadingObservationsData, observationsPageContext.isLoading, taxonomyCacheStatus.isInitialized]);
+    return (
+      !taxonomyCacheStatus.isInitialized ||
+      (!observationsData && isLoadingObservationsData) ||
+      observationsPageContext.isLoading
+    );
+  }, [
+    isLoadingObservationsData,
+    observationsData,
+    observationsPageContext.isLoading,
+    taxonomyCacheStatus.isInitialized
+  ]);
 
   // True if the save process has started
   const isSaving: boolean = _isSavingData.current || _isStoppingEdit.current;

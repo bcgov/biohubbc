@@ -302,7 +302,11 @@ export const GenericCommentColDef = <T extends GridValidRowModel>(props: {
       return (
         <Tooltip title={params.value} arrow>
           <span>
-            <IconButton aria-label="observation-subcount-comment" disabled>
+            <IconButton
+              aria-label="observation-subcount-comment"
+              onClick={() => {
+                props.handleOpen(params);
+              }}>
               {params.value ? (
                 <Icon path={mdiCommentText} size={1} key="comment-view-id" color={appTheme.palette.primary.dark} />
               ) : (

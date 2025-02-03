@@ -940,12 +940,14 @@ const insertObservationSubCount = (surveyObservationId: number) => `
   INSERT INTO observation_subcount
   (
     survey_observation_id,
-    subcount
+    subcount,
+    comment
   )
   VALUES
   (
     ${surveyObservationId},
-    $$${faker.number.int({ min: 1, max: 20 })}$$
+    $$${faker.number.int({ min: 1, max: 20 })}$$,
+    $$${faker.lorem.sentences({ min: 0, max: 4 })}$$
   );
 `;
 

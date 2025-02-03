@@ -245,17 +245,6 @@ const ObservationsTableContainer = () => {
         open={Boolean(observationsTableContext.commentDialogParams)}
         initialValue={observationsTableContext.commentDialogParams?.value}
         handleClose={() => observationsTableContext.setCommentDialogParams(null)}
-        handleSave={(value) => {
-          if (!observationsTableContext.commentDialogParams) {
-            return;
-          }
-
-          observationsTableContext.commentDialogParams.api.setEditCellValue({
-            value,
-            id: observationsTableContext.commentDialogParams.id,
-            field: observationsTableContext.commentDialogParams.field
-          });
-        }}
       />
 
       <Box display="flex" flexDirection="column" flex="1 1 auto" position="relative">
