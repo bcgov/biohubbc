@@ -53,22 +53,24 @@ export const ObservationEnvironmentsForm = () => {
       render={(arrayHelpers: FieldArrayRenderProps) => {
         return (
           <>
-            <Stack flexDirection="column" gap={2}>
-              {environmentsFormData?.map((environmentFormData, index) => {
-                const environmentsArrayFieldName = `standardColumns.environments[${index}]`;
+            {environmentsFormData.length > 0 && (
+              <Stack flexDirection="column" gap={2} sx={{ mb: 4 }}>
+                {environmentsFormData?.map((environmentFormData, index) => {
+                  const environmentsArrayFieldName = `standardColumns.environments[${index}]`;
 
-                return (
-                  <EnvironmentField
-                    formikFieldName={environmentsArrayFieldName}
-                    environmentTypeDefinitions={environmentTypeDefinitions}
-                    onDelete={() => arrayHelpers.remove(index)}
-                    key={environmentFormData._id}
-                  />
-                );
-              })}
-            </Stack>
+                  return (
+                    <EnvironmentField
+                      formikFieldName={environmentsArrayFieldName}
+                      environmentTypeDefinitions={environmentTypeDefinitions}
+                      onDelete={() => arrayHelpers.remove(index)}
+                      key={environmentFormData._id}
+                    />
+                  );
+                })}
+              </Stack>
+            )}
 
-            <Box sx={{ mt: 4 }}>
+            <Box>
               <Button
                 color="primary"
                 variant="outlined"

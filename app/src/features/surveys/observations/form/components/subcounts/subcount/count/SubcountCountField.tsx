@@ -1,4 +1,5 @@
 import Typography from '@mui/material/Typography';
+import HelpButtonStack from 'components/buttons/HelpButtonStack';
 import CustomTextField from 'components/fields/CustomTextField';
 
 export interface ISubcountCountFieldProps {
@@ -20,9 +21,15 @@ export const SubcountCountField = (props: ISubcountCountFieldProps) => {
   return (
     <>
       {displayHeader === true && (
-        <Typography fontWeight={700} textTransform="uppercase" variant="body2" my={2}>
-          Count
-        </Typography>
+        <HelpButtonStack
+          sx={{ my: 0.5 }}
+          helpText="
+            Count is the number of individuals with a specific set of characteristics. If you have multiple counts, they should add up to the total number of individuals in the
+            observation.">
+          <Typography fontWeight={700} textTransform="uppercase" variant="body2">
+            Count
+          </Typography>
+        </HelpButtonStack>
       )}
       <CustomTextField label="Subcount" name={subcountCountFieldName} other={{ type: 'number' }} />
     </>
