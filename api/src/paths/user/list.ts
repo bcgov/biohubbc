@@ -47,7 +47,8 @@ GET.apiDoc = {
         type: 'array',
         items: {
           description: 'The primary key of a system user to filter results with',
-          type: 'integer'
+          type: 'integer',
+          minimum: 1
         }
       }
     },
