@@ -101,7 +101,6 @@ export const _getLogger = function (loggerName: string) {
   const transports = [];
 
   if (transportTypes.includes('file')) {
-    console.log('file logging enabled');
     // Output logs to file, except when running unit tests
     transports.push(
       new DailyRotateFile({
@@ -150,8 +149,7 @@ export const _getLogger = function (loggerName: string) {
     );
   }
 
-  console.log('adding logger');
-
+  // Create new logger instance
   return winston.loggers.add(DEFAULT_LOGGER, { transports: transports });
 };
 
