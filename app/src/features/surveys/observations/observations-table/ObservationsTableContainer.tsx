@@ -40,7 +40,7 @@ import {
 } from 'hooks/useContext';
 import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import { useEffect, useMemo } from 'react';
-import { ImportObservationsButton } from '../sampling-sites/components/ImportObservationsButton';
+import { ImportObservationsButton } from '../ImportObservationsButton';
 import { ConfigureColumnsButton } from './configure-columns/ConfigureColumnsButton';
 import ExportHeadersButton from './export-button/ExportHeadersButton';
 import { ObservationSubcountCommentDialog } from './grid-column-definitions/comment/ObservationSubcountCommentDialog';

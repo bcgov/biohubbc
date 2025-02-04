@@ -21,7 +21,7 @@ export const createRowStateGetter = <SchemaType extends z.ZodSchema>(schema: Sch
   return (rowOrState: CSVRow | CSVRow[typeof CSVRowState]): z.infer<SchemaType> => {
     // Check if the state or row is being passed
     // Note: The row state is stored as a symbol on the row object
-    const isRow = Object.getOwnPropertySymbols(rowOrState).includes(CSVRowState);
+    const isRow = _isCSVRow(rowOrState);
 
     // Get the state from the row
     const state = isRow ? rowOrState?.[CSVRowState] : rowOrState;
@@ -41,6 +41,16 @@ export const createRowStateGetter = <SchemaType extends z.ZodSchema>(schema: Sch
 
     return parsedState.data;
   };
+};
+
+/**
+ * Check if the row is a CSV row
+ *
+ * @param {CSVRow | CSVRow[typeof CSVRowState]} rowOrState - The row or row state
+ * @returns {boolean} - Whether the row is a CSV row
+ */
+const _isCSVRow = (rowOrState: CSVRow | CSVRow[typeof CSVRowState]): rowOrState is CSVRow => {
+  return Object.getOwnPropertySymbols(rowOrState).includes(CSVRowState);
 };
 
 // Critter / Capture

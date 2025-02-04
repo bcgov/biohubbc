@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography';
 import { IObservationsContext } from 'contexts/observationsContext';
 import { IObservationsPageContext } from 'contexts/observationsPageContext';
 import dayjs from 'dayjs';
-import { ImportObservationsButton } from 'features/surveys/observations/sampling-sites/components/ImportObservationsButton';
+import { ImportObservationsButton } from 'features/surveys/observations/ImportObservationsButton';
 import { GetSamplingPeriod } from 'interfaces/useSamplingPeriodApi.interface';
 
 interface ISamplingSiteListPeriodProps {

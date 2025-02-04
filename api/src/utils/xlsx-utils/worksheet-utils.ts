@@ -154,7 +154,7 @@ export const getWorksheetRowObjects = (worksheet: xlsx.WorkSheet): Record<symbol
         continue;
       }
 
-      // Always add the header (key) to the row object
+      // Inject the header into the row object
       rowObject[headers[j]] = undefined;
 
       const cellAddress = { c: j, r: i };
