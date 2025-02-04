@@ -1,16 +1,20 @@
 import {
   mdiAccountSupervisor,
+  mdiAutoFix,
   mdiCardAccountMailOutline,
   mdiCheckDecagram,
   mdiChevronLeft,
   mdiChevronRight,
-  mdiDatabaseCogOutline,
+  mdiDatabaseCog,
+  mdiEye,
   mdiFileOutline,
   mdiFolder,
   mdiHome,
   mdiInformationOutline,
   mdiListBoxOutline,
-  mdiMapMarkerRadius
+  mdiPaw,
+  mdiPineTreeVariant,
+  mdiWifiMarker
 } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Box, Button, Container, Divider, Paper, Stack, Typography } from '@mui/material';
@@ -22,6 +26,11 @@ import { ReactNode, SetStateAction } from 'react';
 import { ISupportPageView, SupportPageParams, SupportPageView } from '../support/constants/SupportPageView';
 import { SupportOverview } from './content/overview/SupportOverview';
 import { SupportProjects } from './content/projects/SupportProjects';
+import { SupportObservations } from './content/projects/surveys/data/observations/SupportObservations';
+import { SupportData } from './content/projects/surveys/data/SupportData';
+import { SupportTelemetry } from './content/projects/surveys/data/telemetry/SupportTelemetry';
+import { SupportSampling } from './content/projects/surveys/sampling/SupportSampling';
+import { SupportSurveys } from './content/projects/surveys/SupportSurveys';
 import { SupportTeam } from './content/projects/team/SupportTeam';
 
 /**
@@ -62,17 +71,42 @@ export const SupportPage = () => {
             {
               label: 'Sampling',
               value: SupportPageView.SAMPLING,
-              icon: mdiMapMarkerRadius,
+              icon: mdiAutoFix,
               children: []
             },
             {
               label: 'Data',
               value: SupportPageView.DATA,
-              icon: mdiDatabaseCogOutline,
-              children: []
+              icon: mdiDatabaseCog,
+              children: [
+                {
+                  label: 'Observations',
+                  value: SupportPageView.OBSERVATIONS,
+                  icon: mdiEye,
+                  children: []
+                },
+                {
+                  label: 'Telemetry',
+                  value: SupportPageView.TELEMETRY,
+                  icon: mdiWifiMarker,
+                  children: []
+                },
+                {
+                  label: 'Animals',
+                  value: SupportPageView.ANIMALS,
+                  icon: mdiPaw,
+                  children: []
+                },
+                {
+                  label: 'Habitat Features',
+                  value: SupportPageView.HABITAT,
+                  icon: mdiPineTreeVariant,
+                  children: []
+                }
+              ]
             },
             {
-              label: 'Files',
+              label: 'Attachments',
               value: SupportPageView.FILES,
               icon: mdiFileOutline,
               children: []
@@ -128,8 +162,13 @@ export const SupportPage = () => {
 
   const dataMap: Partial<Record<SupportPageView, ReactNode>> = {
     [SupportPageView.GENERAL]: <SupportOverview />,
-    [SupportPageView.PROJECTS]: <SupportProjects/>,
-    [SupportPageView.PROJECT_TEAM]: <SupportTeam/>
+    [SupportPageView.PROJECTS]: <SupportProjects />,
+    [SupportPageView.PROJECT_TEAM]: <SupportTeam />,
+    [SupportPageView.SURVEYS]: <SupportSurveys />,
+    [SupportPageView.SAMPLING]: <SupportSampling />,
+    [SupportPageView.OBSERVATIONS]: <SupportObservations />,
+    [SupportPageView.TELEMETRY]: <SupportTelemetry />,
+    [SupportPageView.DATA]: <SupportData />
   };
 
   return (

@@ -13,7 +13,8 @@ export enum SupportPageView {
   DATA = 'DATA',
   PROJECT_TEAM = 'PROJECT_TEAM',
   FILES = 'FILES',
-  METADATA = 'METADATA'
+  METADATA = 'METADATA',
+  HABITAT = "HABITAT"
 }
 
 export interface ISupportPageView {

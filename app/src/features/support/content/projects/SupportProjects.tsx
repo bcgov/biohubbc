@@ -44,7 +44,7 @@ export const SupportProjects = () => (
           <Stack direction="row" alignItems="center" spacing={1}>
             <Icon path={PROJECT_ROLE_ICONS['Collaborator']} size={0.75} style={{ color: grey[600] }} />
             <Typography>
-              <strong>Collaborators</strong> can only add or information, not manage access or publish
+              <strong>Collaborators</strong> can add and edit information, but not manage access or publish
             </Typography>
           </Stack>
         </ListItem>
@@ -64,7 +64,7 @@ export const SupportProjects = () => (
         Surveys
       </Typography>
       <Typography variant="body1" gutterBottom key="gensims2">
-        Surveys contain the ecological data that you collected for some purpose. Surveys are like subfolders in a
+        Surveys contain the ecological data that you collected. Surveys are like subfolders in a
         Project that the whole team can access. Whether a team member can add, edit or only view Survey data depends on
         their role in the Project.
       </Typography>

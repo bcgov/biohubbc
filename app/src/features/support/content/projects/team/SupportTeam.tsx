@@ -13,8 +13,8 @@ export const SupportTeam = () => (
   <Stack gap={5} mb={3}>
     <Box>
       <Typography key="project-components-2">
-        A Project team is a group of people who collaboratively manage data and information. Each team member has a
-        specific role that determines what they can do in the workspace.
+        Project teams are groups of people who collaboratively manage data and information. Each team
+        member in a Project has a specific role that determines what they can do in the workspace.
       </Typography>
     </Box>
 
@@ -25,8 +25,8 @@ export const SupportTeam = () => (
         </Typography>
         <Typography gutterBottom>
           The person who created the Project will be a Coordinator by default, letting them invite others to the
-          workspace. There must be at least one Coordinator at all times, but you might also have multiple Coordinators.
-          A team member's role can change over time as their responsibilities change.
+          workspace. There must be at least one Coordinator at all times, but you can also have multiple Coordinators. A
+          team member's role can be changed at any time.
         </Typography>
       </Box>
 
