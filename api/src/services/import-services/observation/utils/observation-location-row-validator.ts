@@ -1,5 +1,5 @@
 import { CSVConfigUtils } from '../../../../utils/csv-utils/csv-config-utils';
-import { CSVRowValidator } from '../../../../utils/csv-utils/csv-config-validation.interface';
+import { CSVRowError, CSVRowValidator } from '../../../../utils/csv-utils/csv-config-validation.interface';
 import { getSamplePeriodIdFromRowState } from '../../utils/row-state';
 import { ObservationCSVStaticHeader } from '../import-observations-service';
 
@@ -28,19 +28,26 @@ export function getObservationLocationRowValidator(utils: CSVConfigUtils<Observa
       return [];
     }
 
-    return [
-      {
+    const errors: CSVRowError[] = [];
+
+    if (!worksheetLatitude) {
+      errors.push({
         error: 'Latitude is required when sampling information is not provided',
         solution: 'Please include a latitude for the observation',
         header: 'LATITUDE' satisfies ObservationCSVStaticHeader,
         cell: null
-      },
-      {
+      });
+    }
+
+    if (!worksheetLongitude) {
+      errors.push({
         error: 'Longitude is required when sampling information is not provided',
         solution: 'Please include a longitude for the observation',
         header: 'LONGITUDE' satisfies ObservationCSVStaticHeader,
         cell: null
-      }
-    ];
+      });
+    }
+
+    return errors;
   };
 }

@@ -41,7 +41,7 @@ export function getObservationSamplingInformationRowValidator(
     const worksheetObservationTime = utils.getCellValue('TIME', params.row) as string | null;
 
     // Determine if the worksheet contains any sampling information
-    const worksheetHasSamplingInformation = worksheetSiteName || worksheetTechniqueName || worksheetPeriod;
+    const worksheetHasSamplingInformation = worksheetSiteName ?? worksheetTechniqueName ?? worksheetPeriod;
 
     // VALID: No sampling information provided, but observation date / time is provided (no period needed)
     if (!worksheetHasSamplingInformation && worksheetObservationDate) {
@@ -250,7 +250,7 @@ export function matchSamplePeriodToWorksheetTechniqueName(
  *
  * @param {string} worksheetPeriod A string in the format "YYYY-MM-DDTHH:mm:ss - YYYY-MM-DDTHH:mm:ss", or a valid subset or
  * superset. (Ex: "2024-07-28 - 2024-07-29", "2024-07-28T00:00:00 - 2024-07-29T23:59:59", etc)
- * @param {SurveySamplePeriodDetails[]} samplingPeriod
+ * @param {SurveySamplePeriodDetails} samplingPeriod
  * @return {*}  {SurveySamplePeriodDetails}
  */
 export function matchSamplePeriodToWorksheetPeriod(
