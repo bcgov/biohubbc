@@ -50,7 +50,6 @@ import {
 import { getTaxonMap, getTsnsFromTaxonMap, TaxonMap } from '../utils/taxon';
 import { getObservationDynamicHeaderCellValidator } from './utils/observation-dynamic-header-config';
 import { getObservationSubcountSignCellValidator } from './utils/observation-header-configs';
-import { getObservationLocationRowValidator } from './utils/observation-location-row-validator';
 import { getObservationSamplingInformationRowValidator } from './utils/observation-sampling-row-validator';
 
 const defaultLog = getLogger('services/import/import-observations-service');
@@ -232,11 +231,7 @@ export class ImportObservationsService extends DBService {
     // Inject the row validators - handles taxon, sampling information and location validation
     this.utils.config.rowValidators = [
       getTaxonRowValidator(taxonMap, this.utils, 'SPECIES'),
-      // Note: Sampling information validator must run before location validator
-      // Why?: Sampling information validator may update the state with the sample period ID,
-      // the location validator uses this state to determine if latitude and longitude are required
-      getObservationSamplingInformationRowValidator(samplePeriods, this.utils),
-      getObservationLocationRowValidator(this.utils)
+      getObservationSamplingInformationRowValidator(samplePeriods, this.utils)
     ];
   }
 

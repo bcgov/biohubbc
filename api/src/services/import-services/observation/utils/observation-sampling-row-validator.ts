@@ -4,7 +4,7 @@ import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import { DefaultTimeFormat, DefaultTimeFormatNoSeconds } from '../../../../constants/dates';
 import { SurveySamplePeriodDetails } from '../../../../repositories/sample-period-repository';
 import { CSVConfigUtils } from '../../../../utils/csv-utils/csv-config-utils';
-import { CSVRowValidator } from '../../../../utils/csv-utils/csv-config-validation.interface';
+import { CSVRowError, CSVRowValidator } from '../../../../utils/csv-utils/csv-config-validation.interface';
 import { updateCSVRowState } from '../../../../utils/csv-utils/csv-header-configs';
 import { formatDateString, isDateString, isDateTimeString, isTimeString } from '../../../../utils/date-time-utils';
 import { ObservationCSVStaticHeader } from '../import-observations-service';
@@ -40,24 +40,55 @@ export function getObservationSamplingInformationRowValidator(
     const worksheetObservationDate = utils.getCellValue('DATE', params.row) as string | null;
     const worksheetObservationTime = utils.getCellValue('TIME', params.row) as string | null;
 
-    // Determine if the worksheet contains any sampling information
-    const worksheetHasSamplingInformation = worksheetSiteName ?? worksheetTechniqueName ?? worksheetPeriod;
+    // Extract latitude and longitude from the row
+    const worksheetLatitude = utils.getCellValue('LATITUDE', params.row) as string | null;
+    const worksheetLongitude = utils.getCellValue('LONGITUDE', params.row) as string | null;
 
-    // VALID: No sampling information provided, but observation date / time is provided (no period needed)
-    if (!worksheetHasSamplingInformation && worksheetObservationDate) {
+    // Determine if the worksheet contains any sampling information
+    const worksheetHasSamplingInformation = Boolean(worksheetSiteName || worksheetTechniqueName || worksheetPeriod);
+
+    const worksheetHasSpatial = Boolean(worksheetLatitude && worksheetLongitude);
+
+    // VALID: No sampling information provided, but observation date / time is provided with lat / lon
+    if (!worksheetHasSamplingInformation && worksheetObservationDate && worksheetHasSpatial) {
       return [];
     }
 
-    // INVALID: No sampling information or observation date / time provided
+    const errors: CSVRowError[] = [];
+
+    // INVALID: Observation date is required when sampling information is not provided
     if (!worksheetHasSamplingInformation && !worksheetObservationDate) {
-      return [
-        {
-          error: 'Row does not contain sampling information or observation date / time',
-          solution: 'Please provide sampling information or a valid observation date and time',
-          header: null,
-          cell: null
-        }
-      ];
+      errors.push({
+        error: 'Observation date is required when sampling information is not provided',
+        solution: 'Please provide sampling information or an observation date and time',
+        header: utils.getWorksheetHeader('DATE', params.row),
+        cell: null
+      });
+    }
+
+    // INVALID: Latitude is required when sampling information is not provided
+    if (!worksheetHasSamplingInformation && !worksheetLatitude) {
+      errors.push({
+        error: 'Latitude is required when sampling information is not provided',
+        solution: 'Please provide sampling information or a valid latitude',
+        header: utils.getWorksheetHeader('LATITUDE', params.row),
+        cell: null
+      });
+    }
+
+    // INVALID: Longitude is required when sampling information is not provided
+    if (!worksheetHasSamplingInformation && !worksheetLongitude) {
+      errors.push({
+        error: 'Longitude is required when sampling information is not provided',
+        solution: 'Please provide sampling information or a valid longitude',
+        header: utils.getWorksheetHeader('LONGITUDE', params.row),
+        cell: null
+      });
+    }
+
+    // Return early if any errors are found
+    if (errors.length) {
+      return errors;
     }
 
     // Filter the sampling periods by the provided sampling information

@@ -164,17 +164,80 @@ describe('Worksheet sampling util functions', () => {
   });
 
   describe('getObservationSamplingInformationRowValidator', () => {
-    it('should return no errors when no sampling information and observation date provided', () => {
+    it('should return no errors when no sampling information and observation date provided with lat/lon', () => {
       const getCellValueStub = sinon.stub();
 
       getCellValueStub.onCall(3).returns('2021-01-01');
       getCellValueStub.onCall(4).returns('11:00:00');
+      getCellValueStub.onCall(5).returns(1);
+      getCellValueStub.onCall(6).returns(1);
 
-      const validator = getObservationSamplingInformationRowValidator([], { getCellValue: getCellValueStub } as any);
+      const validator = getObservationSamplingInformationRowValidator([], {
+        getCellValue: getCellValueStub,
+        getWorksheetHeader: () => 'HEADER'
+      } as any);
 
       const result = validator({ row: {} } as any);
 
       expect(result.length).to.be.equal(0);
+    });
+
+    it('should return an error when no sampling information and no latitude but date provided', () => {
+      const getCellValueStub = sinon.stub();
+
+      getCellValueStub.onCall(3).returns('2021-01-01');
+      getCellValueStub.onCall(4).returns('11:00:00');
+      getCellValueStub.onCall(5).returns(null);
+      getCellValueStub.onCall(6).returns(1);
+
+      const validator = getObservationSamplingInformationRowValidator([], {
+        getCellValue: getCellValueStub,
+        getWorksheetHeader: () => 'HEADER'
+      } as any);
+
+      const result = validator({ row: {} } as any);
+
+      expect(result[0].error).to.contain('Latitude is required');
+    });
+
+    it('should return an error when no sampling information and no longitude but date provided', () => {
+      const getCellValueStub = sinon.stub();
+
+      getCellValueStub.onCall(3).returns('2021-01-01');
+      getCellValueStub.onCall(4).returns('11:00:00');
+      getCellValueStub.onCall(5).returns(1);
+      getCellValueStub.onCall(6).returns(null);
+
+      const validator = getObservationSamplingInformationRowValidator([], {
+        getCellValue: getCellValueStub,
+        getWorksheetHeader: () => 'HEADER'
+      } as any);
+
+      const result = validator({ row: {} } as any);
+
+      expect(result[0].error).to.contain('Longitude is required');
+    });
+
+    it('should return date, lat and lon errors when no sampling information and no latitude and longitude provided', () => {
+      const getCellValueStub = sinon.stub();
+
+      getCellValueStub.onCall(3).returns(null);
+      getCellValueStub.onCall(4).returns('11:00:00');
+      getCellValueStub.onCall(5).returns(null);
+      getCellValueStub.onCall(6).returns(null);
+
+      const validator = getObservationSamplingInformationRowValidator([], {
+        getCellValue: getCellValueStub,
+        getWorksheetHeader: () => 'HEADER'
+      } as any);
+
+      const result = validator({ row: {} } as any);
+
+      expect(result.length).to.equal(3);
+
+      expect(result[0].error).to.contain('date is required');
+      expect(result[1].error).to.contain('Latitude is required');
+      expect(result[2].error).to.contain('Longitude is required');
     });
 
     it('should return an error when no sampling information and no observation date provided', () => {
@@ -182,12 +245,17 @@ describe('Worksheet sampling util functions', () => {
 
       getCellValueStub.onCall(3).returns(null);
       getCellValueStub.onCall(4).returns(null);
+      getCellValueStub.onCall(5).returns(1);
+      getCellValueStub.onCall(6).returns(1);
 
-      const validator = getObservationSamplingInformationRowValidator([], { getCellValue: getCellValueStub } as any);
+      const validator = getObservationSamplingInformationRowValidator([], {
+        getCellValue: getCellValueStub,
+        getWorksheetHeader: () => 'HEADER'
+      } as any);
 
       const result = validator({ row: {} } as any);
 
-      expect(result[0].error).to.contain('contain sampling information or observation date');
+      expect(result[0].error).to.contain('date is required');
     });
 
     it('should return an error when no matching period found', () => {
@@ -211,7 +279,8 @@ describe('Worksheet sampling util functions', () => {
       ] as any[];
 
       const validator = getObservationSamplingInformationRowValidator(samplePeriods, {
-        getCellValue: getCellValueStub
+        getCellValue: getCellValueStub,
+        getWorksheetHeader: () => 'HEADER'
       } as any);
 
       const result = validator({ row: {} } as any);
@@ -243,7 +312,8 @@ describe('Worksheet sampling util functions', () => {
       ] as any[];
 
       const validator = getObservationSamplingInformationRowValidator(samplePeriods, {
-        getCellValue: getCellValueStub
+        getCellValue: getCellValueStub,
+        getWorksheetHeader: () => 'HEADER'
       } as any);
 
       const params = { row: {} } as any;
