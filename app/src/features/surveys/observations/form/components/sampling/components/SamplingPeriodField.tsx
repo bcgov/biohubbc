@@ -4,6 +4,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { grey } from '@mui/material/colors';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 import {
   SamplingInformationCache,
   SamplingInformationCachedPeriod
@@ -176,7 +177,6 @@ export const SamplingPeriodField = (props: ISamplingPeriodFieldProps) => {
         <TextField
           {...params}
           name="standardColumns.survey_sample_period_id"
-          size="small"
           variant="outlined"
           fullWidth
           placeholder="Search for a period"
@@ -203,15 +203,15 @@ export const SamplingPeriodField = (props: ISamplingPeriodFieldProps) => {
         return (
           <Box
             component="li"
+            {...renderProps}
             sx={{
               '& + li': {
                 borderTop: '1px solid' + grey[300]
               }
             }}
-            {...renderProps}
-            key={renderProps.id}>
-            <Box py={1} width="100%">
-              {renderOption.label}
+            key={renderOption.survey_sample_period_id}>
+            <Box py={1}>
+              <Typography fontWeight={700}>{renderOption.label}</Typography>
             </Box>
           </Box>
         );

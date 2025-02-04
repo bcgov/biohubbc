@@ -4,6 +4,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { grey } from '@mui/material/colors';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 import {
   SamplingInformationCache,
   SamplingInformationCachedTechnique
@@ -172,7 +173,6 @@ export const MethodTechniqueField = (props: IMethodTechniqueFieldProps) => {
       renderInput={(params) => (
         <TextField
           {...params}
-          size="small"
           variant="outlined"
           fullWidth
           placeholder="Search for a technique"
@@ -198,15 +198,15 @@ export const MethodTechniqueField = (props: IMethodTechniqueFieldProps) => {
         return (
           <Box
             component="li"
+            {...renderProps}
             sx={{
               '& + li': {
                 borderTop: '1px solid' + grey[300]
               }
             }}
-            {...renderProps}
-            key={renderProps.id}>
-            <Box py={1} width="100%">
-              {renderOption.label}
+            key={renderOption.method_technique_id}>
+            <Box py={1}>
+              <Typography fontWeight={700}>{renderOption.label}</Typography>
             </Box>
           </Box>
         );
