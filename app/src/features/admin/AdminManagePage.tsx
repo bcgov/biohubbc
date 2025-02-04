@@ -7,13 +7,8 @@ import useDataLoader from 'hooks/useDataLoader';
 import { useEffect } from 'react';
 import AlertContainer from './alert/AlertContainer';
 import AccessRequestContainer from './users/access-requests/AccessRequestContainer';
-import ActiveUsersList from './users/active/ActiveUsersList';
+import ActiveUsersList from './users/active/ActiveUsersTableContainer';
 
-/**
- * Page to display admin functionality for managing users, alerts, etc.
- *
- * @return {*}
- */
 const AdminManagePage = () => {
   const biohubApi = useBiohubApi();
 
@@ -33,19 +28,8 @@ const AdminManagePage = () => {
     accessRequestsDataLoader.load();
   }, [accessRequestsDataLoader]);
 
-  // ACTIVE USERS
-  const activeUsersDataLoader = useDataLoader(() => biohubApi.user.getUsersList());
-  useEffect(() => {
-    activeUsersDataLoader.load();
-  }, [activeUsersDataLoader]);
-
   const refreshAccessRequests = () => {
     accessRequestsDataLoader.refresh();
-    activeUsersDataLoader.refresh();
-  };
-
-  const refreshActiveUsers = () => {
-    activeUsersDataLoader.refresh();
   };
 
   return (
@@ -57,7 +41,7 @@ const AdminManagePage = () => {
           <AlertContainer />
         </Box>
         <Box mt={3}>
-          <ActiveUsersList activeUsers={activeUsersDataLoader.data ?? []} refresh={refreshActiveUsers} />
+          <ActiveUsersList />
         </Box>
       </Container>
     </>

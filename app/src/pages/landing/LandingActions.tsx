@@ -39,10 +39,6 @@ const useStyles = () => {
         backgroundColor: '#fcba19'
       }
     },
-    heroLink: {
-      color: '#fcba19',
-      fontWeight: 700
-    },
     pendingRequestAlert: {
       alignItems: 'center',
       maxWidth: '63ch',
@@ -103,11 +99,12 @@ const LandingActions = () => {
               Log In
             </Button>
           </Box>
-          <Typography>You need a valid government-issued IDIR or BCeID account to log in.</Typography>
-          <Typography>
+          <Typography variant="body2" color="primary">
+            You need a valid government-issued IDIR or BCeID account to log in.
+          </Typography>
+          <Typography variant="body2" color="primary">
             Don't have an account? &zwnj;
             <a
-              style={classes.heroLink}
               title="Register a BCeID Account"
               target="_blank"
               rel="noopener noreferrer"
@@ -118,7 +115,7 @@ const LandingActions = () => {
         </>
       </UnAuthGuard>
       <AuthGuard>
-        <Typography variant="body1" data-testid="landing_page_greeting">
+        <Typography color="primary.dark" data-testid="landing_page_greeting">
           <span>Welcome</span>
           {isReturningUser && <span>&nbsp;back</span>}
           {userIdentifier && (
@@ -128,7 +125,9 @@ const LandingActions = () => {
           )}
         </Typography>
         {mayMakeAccessRequest && (
-          <Typography variant="body2">You have not yet been granted access to this application.</Typography>
+          <Typography variant="body2" color="primary">
+            You have not yet been granted access to this application.
+          </Typography>
         )}
         {isAwaitingAccessApproval && (
           <Alert

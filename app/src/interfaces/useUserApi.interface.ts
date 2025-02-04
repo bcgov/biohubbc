@@ -1,3 +1,5 @@
+import { ApiPaginationResponseParams } from 'types/misc';
+
 export interface ISystemUser {
   system_user_id: number;
   user_identifier: string;
@@ -9,4 +11,9 @@ export interface ISystemUser {
   email: string;
   display_name: string;
   agency: string | null;
+}
+
+export interface ISystemUserResponse {
+  users: ISystemUser[];
+  pagination: ApiPaginationResponseParams;
 }
