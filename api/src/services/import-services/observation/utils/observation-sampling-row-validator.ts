@@ -18,7 +18,7 @@ dayjs.extend(isSameOrBefore);
  * sampling periods.
  *
  * Successfull paths:
- *  1. No sampling information provided, but observation date / time is provided (no period needed)
+ *  1. No sampling information provided, but observation date, latitude and longitude is provided
  *  2. Exact period match found using site, technique, and period
  *  3. Multiple periods match the site, technique, and period, but only one matches the observation date and time
  *
