@@ -34,7 +34,7 @@ export function getObservationLocationRowValidator(utils: CSVConfigUtils<Observa
       errors.push({
         error: 'Latitude is required when sampling information is not provided',
         solution: 'Please include a latitude for the observation',
-        header: 'LATITUDE' satisfies ObservationCSVStaticHeader,
+        header: utils.getWorksheetHeader('LATITUDE', params.row),
         cell: null
       });
     }
@@ -43,7 +43,7 @@ export function getObservationLocationRowValidator(utils: CSVConfigUtils<Observa
       errors.push({
         error: 'Longitude is required when sampling information is not provided',
         solution: 'Please include a longitude for the observation',
-        header: 'LONGITUDE' satisfies ObservationCSVStaticHeader,
+        header: utils.getWorksheetHeader('LONGITUDE', params.row),
         cell: null
       });
     }
