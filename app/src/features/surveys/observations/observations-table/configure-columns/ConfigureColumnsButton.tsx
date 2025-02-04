@@ -29,7 +29,7 @@ export interface IConfigureColumnsButtonProps {
 
 export interface IHideableColumn
   extends Pick<GridColDef<IObservationTableRow>, 'field' | 'headerName' | 'description'> {
-  options: { name: string; description: string }[];
+  options: { name: string; description: string | null }[];
 }
 
 /**
@@ -57,73 +57,47 @@ export const ConfigureColumnsButton = (props: IConfigureColumnsButtonProps) => {
 
   // Columns that can be hidden from the table (visibility toggled on/off)
   const hideableColumns: IHideableColumn[] = useMemo(() => {
-    // Map columns to their IHideableColumn definitions to ensure no duplicates
     const columnMap = new Map<string, IHideableColumn>();
 
-    // Add all standard, hideable columns
-    columns
-      .filter((column) => column?.hideable)
-      .forEach((column) => {
-        if (column.headerName?.toLowerCase() === 'sign') {
-          columnMap.set(column.field, {
-            ...column,
-            options:
-              codesContext.codesDataLoader.data?.observation_subcount_signs.map((sign) => ({
-                name: sign.name,
-                description: sign.description
-              })) ?? []
-          });
-          return;
-        }
-        columnMap.set(column.field, { ...column, options: [] });
-      });
+    columns.forEach((column) => {
+      if (!column?.hideable) return;
 
-    // Map and format measurement columns
-    columns
-      .filter((column) =>
-        observationsTableContext.measurementColumns.some(
-          (measurement) => column.headerName?.toLowerCase() === measurement.measurement_name.toLowerCase()
-        )
-      )
-      .forEach((column) => {
+      let options: { name: string; description: string | null }[] = [];
+
+      if (column.headerName?.toLowerCase() === 'sign') {
+        options =
+          codesContext.codesDataLoader.data?.observation_subcount_signs.map((sign) => ({
+            name: sign.name,
+            description: sign.description
+          })) ?? [];
+      } else {
         const foundMeasurement = observationsTableContext.measurementColumns.find(
           (measurement) => column.headerName?.toLowerCase() === measurement.measurement_name.toLowerCase()
         );
+
         if (foundMeasurement && 'options' in foundMeasurement) {
-          columnMap.set(column.field, {
-            ...column,
-            options:
-              foundMeasurement.options.map((option) => ({
-                name: option.option_label,
-                description: option.option_desc
-              })) ?? []
-          } as IHideableColumn);
-        }
-      });
+          options =
+            foundMeasurement.options.map((option) => ({
+              name: option.option_label,
+              description: option.option_desc
+            })) ?? [];
+        } else {
+          const foundEnvironment = [
+            ...observationsTableContext.environmentColumns.quantitative_environments,
+            ...observationsTableContext.environmentColumns.qualitative_environments
+          ].find((environment) => column.headerName?.toLowerCase() === environment.name.toLowerCase());
 
-    // Map and format environment columns
-    columns
-      .filter((column) =>
-        [
-          ...observationsTableContext.environmentColumns.quantitative_environments,
-          ...observationsTableContext.environmentColumns.qualitative_environments
-        ].some((environment) => environment.name === column.headerName)
-      )
-      .forEach((column) => {
-        const foundEnvironment = observationsTableContext.environmentColumns.qualitative_environments.find(
-          (environment) => column.headerName === environment.name
-        );
-        if (foundEnvironment) {
-          columnMap.set(column.field, {
-            ...column,
-            options: foundEnvironment.options ?? []
-          } as IHideableColumn);
+          if (foundEnvironment && 'options' in foundEnvironment) {
+            options = foundEnvironment.options ?? [];
+          }
         }
-      });
+      }
 
-    // Return the updated columns, using the map to ensure no duplicates
+      columnMap.set(column.field, { ...column, options });
+    });
+
     return Array.from(columnMap.values());
-  }, [columns, observationsTableContext]);
+  }, [columns, codesContext.codesDataLoader.data, observationsTableContext]);
 
   const measurementColumns = observationsTableContext.measurementColumns;
 
