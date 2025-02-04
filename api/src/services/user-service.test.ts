@@ -197,7 +197,7 @@ describe('UserService', () => {
 
       const userService = new UserService(mockDBConnection);
 
-      const result = await userService.listSystemUsers();
+      const result = await userService.listSystemUsers({});
 
       expect(result).to.eql([]);
     });
@@ -254,9 +254,27 @@ describe('UserService', () => {
 
       const userService = new UserService(mockDBConnection);
 
-      const result = await userService.listSystemUsers();
+      const result = await userService.listSystemUsers({});
 
       expect(result).to.eql([mockResponseRows[0], mockResponseRows[1], mockResponseRows[2]]);
+    });
+  });
+
+  describe('getSystemUsersCount', function () {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('returns empty array if the query response has no rows', async function () {
+      const mockDBConnection = getMockDBConnection();
+      const mockUserRepository = sinon.stub(UserRepository.prototype, 'getSystemUsersCount');
+      mockUserRepository.resolves(15);
+
+      const userService = new UserService(mockDBConnection);
+
+      const result = await userService.getSystemUsersCount({});
+
+      expect(result).to.eql(15);
     });
   });
 

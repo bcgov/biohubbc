@@ -236,14 +236,14 @@ describe('UserRepository', () => {
       const mockQueryResponse = { rowCount: 1, rows: [] } as any as Promise<QueryResult<any>>;
 
       const mockDBConnection = getMockDBConnection({
-        sql: async () => {
+        knex: async () => {
           return mockQueryResponse;
         }
       });
 
       const userRepository = new UserRepository(mockDBConnection);
 
-      const response = await userRepository.listSystemUsers();
+      const response = await userRepository.listSystemUsers({});
 
       expect(response).to.eql([]);
     });
@@ -264,16 +264,38 @@ describe('UserRepository', () => {
       const mockQueryResponse = { rowCount: 1, rows: mockResponse } as any as Promise<QueryResult<any>>;
 
       const mockDBConnection = getMockDBConnection({
-        sql: async () => {
+        knex: async () => {
           return mockQueryResponse;
         }
       });
 
       const userRepository = new UserRepository(mockDBConnection);
 
-      const response = await userRepository.listSystemUsers();
+      const response = await userRepository.listSystemUsers({});
 
       expect(response).to.equal(mockResponse);
+    });
+  });
+
+  describe('getSystemUsersCount', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+    it('should return the count of system users', async () => {
+      const mockCount = 15;
+      const mockQueryResponse = { rowCount: 1, rows: [{ count: mockCount }] } as any as Promise<QueryResult<any>>;
+
+      const mockDBConnection = getMockDBConnection({
+        knex: async () => {
+          return mockQueryResponse;
+        }
+      });
+
+      const userRepository = new UserRepository(mockDBConnection);
+
+      const response = await userRepository.getSystemUsersCount({});
+
+      expect(response).to.eql(mockCount);
     });
   });
 
