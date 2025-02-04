@@ -125,6 +125,7 @@ export const SamplingPeriodField = (props: ISamplingPeriodFieldProps) => {
       // Set the options to any previously cached periods for the new site + technique
       setOptions(samplingInformationCache.getPeriodsForRow(values.standardColumns.method_technique_id));
       // Trigger a search to get all of the periods for the new site + technique
+      setIsLoading(true);
       getOptions('');
     }
   }, [

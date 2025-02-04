@@ -184,7 +184,6 @@ const CreateObservationPage = () => {
         const qualitative_measurements: SubcountQualitativeMeasurement[] = [];
 
         for (const measurement of measurements) {
-          console.log(measurement);
           if (isSubcountQuantitativeMeasurement(measurement)) {
             if (!measurement.measurement_value) {
               // No value was entered for the quantitative measurement, skip it
@@ -220,8 +219,6 @@ const CreateObservationPage = () => {
         standardColumns,
         subcounts
       };
-
-      console.log(createObservationPayload);
 
       await biohubApi.observation.createObservation(projectId, surveyId, createObservationPayload);
 
@@ -292,7 +289,6 @@ const CreateObservationPage = () => {
             <ObservationForm
               initialFormData={initialObservationFormData}
               onSubmit={(formData) => {
-                console.log(formData);
                 createObservation(formData);
               }}
               formikRef={formikRef}

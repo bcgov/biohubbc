@@ -122,6 +122,7 @@ export const MethodTechniqueField = (props: IMethodTechniqueFieldProps) => {
       // Set the options to any previously cached techniques for the new site
       setOptions(samplingInformationCache.getTechniquesForRow(values.standardColumns.survey_sample_site_id));
       // Trigger a search to get all of the techniques for the new site
+      setIsLoading(true);
       getOptions('');
     }
   }, [

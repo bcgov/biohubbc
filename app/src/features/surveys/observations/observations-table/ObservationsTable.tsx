@@ -52,11 +52,9 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       onSortModelChange={observationsTableContext.setSortModel}
       // Row editing
       onRowEditStart={(params) => {
-        console.log('onRowEditStart', params);
         observationsTableContext.onRowEditStart(params.id);
       }}
       onRowEditStop={(_params, event) => {
-        console.log('onRowEditStop', _params, event);
         event.defaultMuiPrevented = true;
       }}
       // Row selection

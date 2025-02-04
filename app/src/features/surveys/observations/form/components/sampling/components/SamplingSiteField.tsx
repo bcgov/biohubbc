@@ -16,7 +16,7 @@ import { useSurveyContext } from 'hooks/useContext';
 import useIsMounted from 'hooks/useIsMounted';
 import { get } from 'lodash-es';
 import debounce from 'lodash-es/debounce';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 export interface ISamplingSiteFieldProps {
   samplingInformationCache: SamplingInformationCache;
@@ -81,6 +81,16 @@ export const SamplingSiteField = (props: ISamplingSiteFieldProps) => {
       }, 500),
     [biohubApi.samplingSite, isMounted, samplingInformationCache, surveyContext.surveyId]
   );
+
+  useEffect(() => {
+    if (options.length || isLoading) {
+      return;
+    }
+
+    // Preload the options on initial load
+    setIsLoading(true);
+    getOptions('');
+  }, [getOptions, isLoading, options.length]);
 
   return (
     <Autocomplete
