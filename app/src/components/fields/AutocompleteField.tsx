@@ -54,12 +54,9 @@ const AutocompleteField = <T extends string | number>(props: IAutocompleteField<
   };
 
   // Filter out selected options from the available options
-  const filteredOptions = props.options.filter((option) => {
-    if (props.selectedOptions && props.selectedOptions.includes(option.value)) {
-      return false; // Exclude this option if it's already selected
-    }
-    return true;
-  });
+  const filteredOptions = props.options.filter((option) =>
+    props.selectedOptions && props.selectedOptions.includes(option.value) ? false : true
+  );
 
   const handleGetOptionSelected = (
     option: IAutocompleteFieldOption<T>,

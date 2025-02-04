@@ -32,15 +32,15 @@ export const FocalSpeciesForm = () => {
             <AlertBar
               text={
                 <>
-                  We are working with the&nbsp;
+                  We are working with the &zwnj;
                   <a href="https://www2.gov.bc.ca/gov/content/environment/plants-animals-ecosystems/conservation-data-centre">
-                    Conservation Data Center
+                    Conservation Data Center &zwnj;
                   </a>
-                  &nbsp;to integrate British Columbia's official taxonomy data shown in the&nbsp;
+                  to integrate British Columbia's official taxonomy data shown in the &zwnj;
                   <a href="https://www2.gov.bc.ca/gov/content/environment/plants-animals-ecosystems/conservation-data-centre/explore-cdc-data/species-and-ecosystems-explorer">
                     BC Species & Ecosystems Explorer
                   </a>
-                  . Temporarily, taxonomic names come from the&nbsp;
+                  . Temporarily, taxonomic names come from the &zwnj;
                   <a href="https://itis.gov/">Integrated Taxonomy Information System</a>.
                 </>
               }
