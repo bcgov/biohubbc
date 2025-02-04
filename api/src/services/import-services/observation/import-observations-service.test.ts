@@ -188,7 +188,7 @@ describe('import-observations-service', () => {
       expect(taxonRowValidatorStub).to.have.been.calledOnce;
       expect(observationSamplingRowValidatorStub).to.have.been.calledOnce;
 
-      expect(service.utils.config.rowValidators).to.be.an('array').and.to.have.length(2);
+      expect(service.utils.config.rowValidators).to.be.an('array').and.to.have.length(3);
     });
   });
 

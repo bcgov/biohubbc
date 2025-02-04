@@ -76,7 +76,7 @@ export function getObservationSamplingInformationRowValidator(
     if (matchingPeriodsBySamplingInformation.length === 0) {
       return [
         {
-          error: 'Unable to match to observation with sampling information',
+          error: 'Unable to match observation with sampling information',
           solution: 'Please provide more specific sampling information (site, technique, period)',
           header: null,
           cell: null
@@ -109,14 +109,16 @@ export function getObservationSamplingInformationRowValidator(
     if (matchingPeriodsByObservationDateTime.length === 0) {
       return [
         {
-          error: 'Unable to match period using observation with date',
-          solution: 'Use an observation date that falls within the period start and end date',
+          error: 'Sampling period is ambiguous, unable to uniquely identify period using observation date',
+          solution:
+            'Use an observation date that falls within a single period start and end date, or explicitly add a period',
           header: utils.getWorksheetHeader('DATE', params.row),
           cell: worksheetObservationDate
         },
         {
-          error: 'Unable to match period using observation with date and time',
-          solution: 'Use an observation date and time that falls within the period start and end date',
+          error: 'Sampling period is ambiguous, unable to unquely identify period using observation date and time',
+          solution:
+            'Use an observation date and time that falls within a single period start and end date, or explicitly add a period',
           header: utils.getWorksheetHeader('TIME', params.row),
           cell: worksheetObservationTime
         }
