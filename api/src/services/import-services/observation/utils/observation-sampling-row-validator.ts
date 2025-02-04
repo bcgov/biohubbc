@@ -47,10 +47,8 @@ export function getObservationSamplingInformationRowValidator(
     // Determine if the worksheet contains any sampling information
     const worksheetHasSamplingInformation = Boolean(worksheetSiteName || worksheetTechniqueName || worksheetPeriod);
 
-    const worksheetHasSpatial = Boolean(worksheetLatitude && worksheetLongitude);
-
     // VALID: No sampling information provided, but observation date / time is provided with lat / lon
-    if (!worksheetHasSamplingInformation && worksheetObservationDate && worksheetHasSpatial) {
+    if (!worksheetHasSamplingInformation && worksheetObservationDate && worksheetLatitude && worksheetLongitude) {
       return [];
     }
 

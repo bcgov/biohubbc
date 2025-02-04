@@ -19,12 +19,13 @@ import { CSVRow, CSVRowState } from '../../../utils/csv-utils/csv-config-validat
  */
 export const createRowStateGetter = <SchemaType extends z.ZodSchema>(schema: SchemaType) => {
   return (rowOrState: CSVRow | CSVRow[typeof CSVRowState]): z.infer<SchemaType> => {
-    // Check if the state or row is being passed
-    // Note: The row state is stored as a symbol on the row object
-    const isRow = _isCSVRow(rowOrState);
+    let state = rowOrState;
 
-    // Get the state from the row
-    const state = isRow ? rowOrState?.[CSVRowState] : rowOrState;
+    // Note: The row state is nested under the CSVRowState symbol
+    if (_isCSVRow(rowOrState)) {
+      // Get the state from the row
+      state = rowOrState?.[CSVRowState];
+    }
 
     // Parse the row state using the schema
     const parsedState = schema.safeParse(state);
@@ -44,7 +45,7 @@ export const createRowStateGetter = <SchemaType extends z.ZodSchema>(schema: Sch
 };
 
 /**
- * Check if the row is a CSV row
+ * Check if the object is a CSV row
  *
  * @param {CSVRow | CSVRow[typeof CSVRowState]} rowOrState - The row or row state
  * @returns {boolean} - Whether the row is a CSV row
