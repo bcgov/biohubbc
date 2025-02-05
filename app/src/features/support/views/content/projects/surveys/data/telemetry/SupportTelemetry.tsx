@@ -59,8 +59,8 @@ export const SupportTelemetry = () => (
         then the capture event for that animal when the device was put on.
       </Typography>
       <Typography gutterBottom>
-        When linking the animal and device, you'll reference the capture event when the device was put on, painting the
-        full picture of your telemetry data.
+        When linking the animal and device, you'll reference the capture event when the device was put on to paint the
+        full picture of your data.
       </Typography>
     </Box>
 

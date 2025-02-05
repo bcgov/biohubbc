@@ -3,17 +3,16 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
 /**
- * Information about Animals
+ * Information about Observations
  *
  * @returns {*}
  */
-export const SupportAnimals = () => (
+export const SupportObservations = () => (
   <Stack gap={5} mb={3}>
     <Box>
       <Typography key="project-components-2">
-        Animals are uniquely recognized individuals that you may have captured or marked. When you add an Animals to
-        your Survey, you create a profile for that individual that can be referenced in the future. This allows for all
-        information about the individual to be easily gathered.
+        Observations are counts of species at specific locations and times. The location is typically a sampling site,
+        but you can also add observations without a sampling site.
       </Typography>
     </Box>
 
@@ -21,7 +20,7 @@ export const SupportAnimals = () => (
       <Typography fontWeight={700} variant="h4" mb={2}>
         Species
       </Typography>
-      <Typography gutterBottom key="gensims2">
+      <Typography gutterBottom key="gensims2" mb={2}>
         The species is the taxon that you observed. If you cannot determine the species, you can use a higher taxon like
         the genus or family.
       </Typography>
@@ -38,19 +37,19 @@ export const SupportAnimals = () => (
         Sampling Information
       </Typography>
       <Typography gutterBottom key="gensims2">
-        You can link observations to sampling information&mdash;sites, techniques, and periods&mdash;by selecting the
-        period when the observation was made. You can still add observations without sampling information, but
-        observations without sampling sites are commonly considered incidentals and less reliable for rigorous analyses.
+        You can link observations to sampling information by including the period when the observation was made. You can
+        still add observations without sampling information, but observations without sampling sites are commonly
+        considered incidentals and less informative for rigorous analyses.
       </Typography>
     </Box>
 
     <Box>
       <Typography fontWeight={700} variant="h4" mb={2}>
-        Species-specific Attributes
+        Species Attributes
       </Typography>
       <Typography gutterBottom key="gensims2">
         You can add species-specific attributes (eg. life stage, sex, body condition) to your observations. The
-        attributes applicable to a species are defined in the Standards.
+        attributes applicable to a species are shown in the Standards.
       </Typography>
     </Box>
 
@@ -60,7 +59,7 @@ export const SupportAnimals = () => (
       </Typography>
       <Typography gutterBottom key="gensims2">
         You can add environmental conditions (eg. temperature, cloud cover, wind speed) to your observations. Possible
-        environmental conditions are defined in the Standards.
+        environmental conditions are shown in the Standards.
       </Typography>
     </Box>
   </Stack>

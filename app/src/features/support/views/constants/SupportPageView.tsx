@@ -1,3 +1,4 @@
+
 export enum SupportPageView {
   GENERAL = 'GENERAL',
   STRUCTURE = 'STRUCTURE',
@@ -7,27 +8,25 @@ export enum SupportPageView {
   TELEMETRY = 'TELEMETRY',
   OBSERVATIONS = 'OBSERVATIONS',
   CONTACT = 'CONTACT',
-  PROJECTS = "PROJECTS",
+  PROJECTS = 'PROJECTS',
   SURVEYS = 'SURVEYS',
-  SAMPLING = "SAMPLING",
+  SAMPLING = 'SAMPLING',
   DATA = 'DATA',
   PROJECT_TEAM = 'PROJECT_TEAM',
   FILES = 'FILES',
   METADATA = 'METADATA',
-  HABITAT = "HABITAT"
+  HABITAT = 'HABITAT'
 }
 
 export interface ISupportPageView {
   label: string;
   value: SupportPageView;
   icon: string;
-  children: ISupportPageView[]
+  children: ISupportPageView[];
 }
 
-// export const SUPPORT_VIEW_KEY = 'support_view';
-
 export type SupportPageParams = {
-  support_view?: SupportPageView;
+  v: SupportPageView;
 };
 
 export enum MarkdownTypeSupportNameEnum {

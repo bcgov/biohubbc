@@ -5,7 +5,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { AccordionStandardCard } from 'features/standards/view/components/AccordionStandardCard';
 
-export const SupportPageStandards = () => {
+export const SupportStandards = () => {
   return (
     <Box>
       <Typography variant="h2" gutterBottom>

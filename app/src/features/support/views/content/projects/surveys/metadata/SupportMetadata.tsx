@@ -5,17 +5,17 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
 /**
- * Information about Sampling
+ * Information about Metadata
  *
  * @returns {*}
  */
-export const SupportSampling = () => (
+export const SupportMetadata = () => (
   <Stack gap={5} mb={3}>
     <Box>
       <Typography key="project-components-2">
-        The sampling information in a Survey describes exactly where, when, and how you collected data within your area
-        of interest. The term sampling is used because we often collect just a sample of ecological data to represent
-        the area of interest, saving us from having to collect data everywhere.
+        The sampling information in a Survey describes exactly where, when, and how you collected data. The term
+        sampling is used because we often collect just a sample of ecological data to represent the area of interest,
+        saving us from having to collect data everywhere.
       </Typography>
     </Box>
 
@@ -60,8 +60,8 @@ export const SupportSampling = () => (
         Technique
       </Typography>
       <Typography gutterBottom key="gensims2">
-        Techniques represent the methods that you used to collect data at your sampling sites. Techniques can contain a variety of
-        information:
+        Techniques represent the methods that you used to collect data at your sampling sites. Techniques can contain a
+        variety of information:
       </Typography>
       <List sx={{ listStyleType: 'disc', '& .MuiListItem-root': { ml: 5 } }}>
         <ListItem sx={{ display: 'list-item' }}>
