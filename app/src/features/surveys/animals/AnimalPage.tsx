@@ -1,10 +1,12 @@
 import CircularProgress from '@mui/material/CircularProgress';
+import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/system/Box';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useAnimalPageContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { useEffect } from 'react';
+import { SurveySpatialAnimal } from '../view/survey-spatial/components/animal/SurveySpatialAnimal';
 import { AnimalHeader } from './AnimalHeader';
 import { AnimalListContainer } from './list/AnimalListContainer';
 import { AnimalProfileContainer } from './profile/AnimalProfileContainer';
@@ -68,11 +70,15 @@ export const SurveyAnimalPage = () => {
           <AnimalListContainer />
         </Box>
 
-        {animalPageContext.selectedAnimal && (
-          <Box maxWidth="75%" flex="1 1 auto" height="100%">
+        <Box maxWidth="75%" flex="1 1 auto" height="100%">
+          {animalPageContext.selectedAnimal ? (
             <AnimalProfileContainer />
-          </Box>
-        )}
+          ) : (
+            <Paper elevation={3} sx={{ height: '100%', p: 2 }}>
+              <SurveySpatialAnimal />
+            </Paper>
+          )}
+        </Box>
       </Stack>
     </Stack>
   );

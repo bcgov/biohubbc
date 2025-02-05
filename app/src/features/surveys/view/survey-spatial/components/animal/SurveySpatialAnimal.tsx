@@ -3,7 +3,6 @@ import { IStaticLayer } from 'components/map/components/StaticLayers';
 import { SURVEY_MAP_LAYER_COLOURS } from 'constants/colours';
 import { SurveySpatialAnimalCapturePopup } from 'features/surveys/view/survey-spatial/components/animal/SurveySpatialAnimalCapturePopup';
 import { SurveySpatialAnimalMortalityPopup } from 'features/surveys/view/survey-spatial/components/animal/SurveySpatialAnimalMortalityPopup';
-import { SurveySpatialAnimalTable } from 'features/surveys/view/survey-spatial/components/animal/SurveySpatialAnimalTable';
 import SurveyMap from 'features/surveys/view/SurveyMap';
 import SurveyMapTooltip from 'features/surveys/view/SurveyMapTooltip';
 import { useSurveyContext } from 'hooks/useContext';
@@ -12,20 +11,16 @@ import useDataLoader from 'hooks/useDataLoader';
 import { useEffect, useMemo } from 'react';
 import { coloredCustomMortalityMarker } from 'utils/mapUtils';
 
-interface ISurveySpatialAnimalProps {
-  /**
-   * Array of additional static layers to be added to the map.
-   */
-  staticLayers: IStaticLayer[];
+interface ISurveySpatialAnimalMapProps {
+  staticLayers?: IStaticLayer[];
 }
 
 /**
- * Component for displaying animal capture points on a map and in a table.
- * Retrieves and displays data related to animal captures for a specific survey.
+ * Reusable component for displaying a survey spatial animal map.
+ * This component can be imported and used in multiple places.
  */
-export const SurveySpatialAnimal = (props: ISurveySpatialAnimalProps) => {
+export const SurveySpatialAnimal = ({ staticLayers = [] }: ISurveySpatialAnimalMapProps) => {
   const surveyContext = useSurveyContext();
-
   const crittersApi = useCritterbaseApi();
 
   const critterIds = useMemo(
@@ -33,18 +28,14 @@ export const SurveySpatialAnimal = (props: ISurveySpatialAnimalProps) => {
     [surveyContext.critterDataLoader.data]
   );
 
-  // Data loader for fetching animal capture data for the map ONLY. Table data is fetched separately in `SurveySpatialAnimalTable.tsx`
   const geometryDataLoader = useDataLoader((critter_ids: string[]) =>
     crittersApi.critters.getMultipleCrittersGeometryByIds(critter_ids)
   );
 
   useEffect(() => {
-    if (!critterIds.length) {
-      return;
+    if (critterIds.length) {
+      geometryDataLoader.load(critterIds);
     }
-
-    geometryDataLoader.load(critterIds);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [critterIds]);
 
   const captureLayer: IStaticLayer = {
@@ -67,7 +58,7 @@ export const SurveySpatialAnimal = (props: ISurveySpatialAnimalProps) => {
         }
       })) ?? [],
     popup: (feature) => <SurveySpatialAnimalCapturePopup feature={feature} />,
-    tooltip: (feature) => <SurveyMapTooltip title="Animal Capture" key={`mortality-tooltip-${feature.id}`} />
+    tooltip: (feature) => <SurveyMapTooltip title="Animal Capture" key={`capture-tooltip-${feature.id}`} />
   };
 
   const mortalityLayer: IStaticLayer = {
@@ -91,23 +82,15 @@ export const SurveySpatialAnimal = (props: ISurveySpatialAnimalProps) => {
         }
       })) ?? [],
     popup: (feature) => <SurveySpatialAnimalMortalityPopup feature={feature} />,
-    tooltip: (feature) => <SurveyMapTooltip title="Animal Mortality" key={`capture-tooltip-${feature.id}`} />
+    tooltip: (feature) => <SurveyMapTooltip title="Animal Mortality" key={`mortality-tooltip-${feature.id}`} />
   };
 
   return (
-    <>
-      {/* Display map with animal capture points */}
-      <Box height={{ xs: 300, md: 500 }} position="relative">
-        <SurveyMap
-          staticLayers={[...props.staticLayers, captureLayer, mortalityLayer]}
-          isLoading={geometryDataLoader.isLoading}
-        />
-      </Box>
-
-      {/* Display data table with animal capture details */}
-      <Box height={{ xs: 300, md: 500 }} display="flex">
-        <SurveySpatialAnimalTable isLoading={geometryDataLoader.isLoading} />
-      </Box>
-    </>
+    <Box height={{ xs: 300, md: 500 }} position="relative">
+      <SurveyMap
+        staticLayers={[...staticLayers, captureLayer, mortalityLayer]}
+        isLoading={geometryDataLoader.isLoading}
+      />
+    </Box>
   );
 };
