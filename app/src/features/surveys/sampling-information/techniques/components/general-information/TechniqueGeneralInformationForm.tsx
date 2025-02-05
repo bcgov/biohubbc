@@ -68,6 +68,7 @@ export const TechniqueGeneralInformationForm = <
           id="method_lookup_id"
           label="Sampling method"
           name="method_lookup_id"
+          helpText={`The approach employed to facilitate data collection in a structured and consistent manner.`}
           showValue
           required
           loading={codesContext.codesDataLoader.isLoading}
@@ -91,6 +92,7 @@ export const TechniqueGeneralInformationForm = <
           id="method_response_metric_id"
           label="Response Metric"
           name="method_response_metric_id"
+          helpText={`A qualitative or quantitative measure used to assess and record the outcome of sampling effort.`}
           showValue
           required
           loading={codesContext.codesDataLoader.isLoading}

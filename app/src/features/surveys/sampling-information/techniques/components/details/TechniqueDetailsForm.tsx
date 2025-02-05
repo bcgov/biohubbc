@@ -17,6 +17,7 @@ export const TechniqueDetailsForm = () => {
           label="Maximum detection distance (metres)"
           maxLength={1000}
           other={{ type: 'number' }}
+          helpText={`The range within which observations can be made, influenced by the attributes of the technique.`}
         />
       </Grid>
     </Grid>
