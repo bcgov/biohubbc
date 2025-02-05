@@ -84,7 +84,7 @@ export const surveyFundingSourceSchema: OpenAPIV3.SchemaObject = {
   title: 'survey funding source response object',
   type: 'object',
   additionalProperties: false,
-  required: ['survey_funding_source_id', 'survey_id', 'funding_source_id', 'amount'],
+  required: ['survey_funding_source_id', 'survey_id', 'funding_source_id'],
   properties: {
     survey_funding_source_id: {
       description: 'Survey funding source id',
@@ -100,11 +100,6 @@ export const surveyFundingSourceSchema: OpenAPIV3.SchemaObject = {
       description: 'Funding source id',
       type: 'integer',
       minimum: 1
-    },
-    amount: {
-      description: 'Funding source amount',
-      type: 'number',
-      minimum: 0
     },
     revision_count: {
       description: 'The integer of times the record has been revised.',
@@ -216,7 +211,7 @@ export const surveyFundingSourceDataSchema: OpenAPIV3.SchemaObject = {
   title: 'survey funding source response object',
   type: 'object',
   additionalProperties: false,
-  required: ['funding_source_id', 'amount'],
+  required: ['funding_source_id'],
   properties: {
     survey_funding_source_id: {
       description: 'Survey funding source id',
@@ -233,11 +228,6 @@ export const surveyFundingSourceDataSchema: OpenAPIV3.SchemaObject = {
       description: 'Funding source id',
       type: 'integer',
       minimum: 1
-    },
-    amount: {
-      description: 'Funding source amount',
-      type: 'number',
-      minimum: 0
     },
     revision_count: {
       description: 'The integer of times the record has been revised.',
