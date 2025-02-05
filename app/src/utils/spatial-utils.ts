@@ -3,24 +3,44 @@ import { Feature, Point } from 'geojson';
 import { isDefined } from './Utils';
 
 /**
+ * Checks whether a latitude value is valid.
+ *
+ * A valid latitude is between -90 and 90 degrees, inclusive.
+ *
+ * @param {(number | null | undefined)} latitude
+ * @return {*}  {boolean} 'true' if the latitude is valid, 'false' otherwise.
+ */
+export const isValidLatitude = (latitude: number | null | undefined): boolean => {
+  return isDefined(latitude) && latitude >= -90 && latitude <= 90;
+};
+
+/**
+ * Checks whether a longitude value is valid.
+ *
+ * A valid longitude is between -180 and 180 degrees, inclusive.
+ *
+ * @param {(number | null | undefined)} longitude
+ * @return {*}  {boolean} 'true' if the longitude is valid, 'false' otherwise.
+ */
+export const isValidLongitude = (longitude: number | null | undefined): boolean => {
+  return isDefined(longitude) && longitude >= -180 && longitude <= 180;
+};
+
+/**
  * Checks whether a latitude-longitude pair of coordinates is valid.
  *
  * A valid latitude is between -90 and 90 degrees, inclusive.
  * A valid longitude is between -180 and 180 degrees, inclusive.
  *
- * @param {(number | undefined)} latitude
- * @param {(number | undefined)} longitude
- * @return {*}  {boolean}
+ * @param {(number | null | undefined)} latitude
+ * @param {(number | null | undefined)} longitude
+ * @return {*}  {boolean} 'true' if the coordinates are valid, 'false' otherwise.
  */
-export const isValidCoordinates = (latitude: number | undefined, longitude: number | undefined) => {
-  return (
-    isDefined(latitude) &&
-    isDefined(longitude) &&
-    latitude >= -90 &&
-    latitude <= 90 &&
-    longitude >= -180 &&
-    longitude <= 180
-  );
+export const isValidCoordinates = (
+  latitude: number | null | undefined,
+  longitude: number | null | undefined
+): boolean => {
+  return isValidLatitude(latitude) && isValidLongitude(longitude);
 };
 
 /**
