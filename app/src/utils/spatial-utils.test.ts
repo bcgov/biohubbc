@@ -1,7 +1,91 @@
 import { SAMPLING_SITE_SPATIAL_TYPE } from 'constants/spatial';
 import { Feature, Point } from 'geojson';
-import { getSamplingSiteSpatialType } from 'utils/spatial-utils';
+import { getSamplingSiteSpatialType, isValidLatitude, isValidLongitude } from 'utils/spatial-utils';
 import { getCoordinatesFromGeoJson, isGeoJsonPointFeature, isValidCoordinates } from './spatial-utils';
+
+describe('isValidLatitude', () => {
+  it('returns true when latitude is valid', () => {
+    const latitude = 0;
+
+    const response = isValidLatitude(latitude);
+
+    expect(response).toEqual(true);
+  });
+
+  it('returns false when the latitude is less than -90', () => {
+    const latitude = -91;
+
+    const response = isValidLatitude(latitude);
+
+    expect(response).toEqual(false);
+  });
+
+  it('returns false when the latitude is greater than 90', () => {
+    const latitude = 91;
+
+    const response = isValidLatitude(latitude);
+
+    expect(response).toEqual(false);
+  });
+
+  it('returns false when the latitude is undefined', () => {
+    const latitude = undefined;
+
+    const response = isValidLatitude(latitude);
+
+    expect(response).toEqual(false);
+  });
+
+  it('returns false when the latitude is null', () => {
+    const latitude = null;
+
+    const response = isValidLatitude(latitude);
+
+    expect(response).toEqual(false);
+  });
+});
+
+describe('isValidLongitude', () => {
+  it('returns true when longitude is valid', () => {
+    const longitude = 0;
+
+    const response = isValidLongitude(longitude);
+
+    expect(response).toEqual(true);
+  });
+
+  it('returns false when the longitude is less than -180', () => {
+    const longitude = -181;
+
+    const response = isValidLongitude(longitude);
+
+    expect(response).toEqual(false);
+  });
+
+  it('returns false when the longitude is greater than 180', () => {
+    const longitude = 181;
+
+    const response = isValidLongitude(longitude);
+
+    expect(response).toEqual(false);
+  });
+
+  it('returns false when the longitude is undefined', () => {
+    const longitude = undefined;
+
+    const response = isValidLongitude(longitude);
+
+    expect(response).toEqual(false);
+  });
+
+  it('returns false when the longitude is null', () => {
+    const longitude = null;
+
+    const response = isValidLongitude(longitude);
+
+    expect(response).toEqual(false);
+  });
+});
 
 describe('isValidCoordinates', () => {
   it('returns true when the latitude and longitude values are valid', () => {

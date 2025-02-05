@@ -1,9 +1,10 @@
 import { SYSTEM_ROLE } from '../constants/roles';
 import { IDBConnection } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
-import { SystemUserWithRoles, UserSearchCriteria } from '../models/system-user-view';
+import { ISystemUserFilterObject, SystemUserWithRoles, UserSearchCriteria } from '../models/system-user-view';
 import { UserRepository } from '../repositories/user-repository';
 import { getLogger } from '../utils/logger';
+import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { DBService } from './db-service';
 
 const defaultLog = getLogger('services/user-service');
@@ -125,8 +126,22 @@ export class UserService extends DBService {
    * @return {*}  {Promise<SystemUserWithRoles[]>}
    * @memberof UserService
    */
-  async listSystemUsers(): Promise<SystemUserWithRoles[]> {
-    return this.userRepository.listSystemUsers();
+  async listSystemUsers(
+    filters: ISystemUserFilterObject,
+    pagination?: ApiPaginationOptions
+  ): Promise<SystemUserWithRoles[]> {
+    return this.userRepository.listSystemUsers(filters, pagination);
+  }
+
+  /**
+   * Get system users count
+   *
+   * @param {ISystemUserFilterObject} filters
+   * @return {*}  {Promise<number>}
+   * @memberof UserService
+   */
+  async getSystemUsersCount(filters: ISystemUserFilterObject): Promise<number> {
+    return this.userRepository.getSystemUsersCount(filters);
   }
 
   /**
@@ -258,6 +273,13 @@ export class UserService extends DBService {
     return this.userRepository.deleteAllProjectRoles(systemUserId);
   }
 
+  /**
+   * Get users matching search criteria
+   *
+   * @param {UserSearchCriteria} searchCriteria
+   * @return {*}
+   * @memberof UserService
+   */
   async getUsers(searchCriteria: UserSearchCriteria) {
     return this.userRepository.getUsers(searchCriteria);
   }
