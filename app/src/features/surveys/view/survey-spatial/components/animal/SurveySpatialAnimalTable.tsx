@@ -9,84 +9,64 @@ import { ScientificNameTypography } from 'features/surveys/animals/components/Sc
 import { useSurveyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { ICaptureResponse, IMortalityResponse } from 'interfaces/useCritterApi.interface';
 import { useEffect } from 'react';
 
 const rowHeight = 52;
 
-interface IAnimalData {
+interface IAnimalRow {
   id: number;
   animal_id: string;
   scientificName: string;
-  sex: string;
+  sex: string | null;
 }
 
 interface ISurveyDataAnimalTableProps {
   isLoading: boolean;
 }
 
-export const SurveySpatialAnimalTable = (props: ISurveyDataAnimalTableProps) => {
-  const surveyContext = useSurveyContext();
+/**
+ * Returns table of animals in the Survey
+ *
+ * @param {ISurveyDataAnimalTableProps} props
+ * @returns {*}
+ */
+export const SurveySpatialAnimalTable = ({ isLoading }: ISurveyDataAnimalTableProps) => {
+  const { critterDataLoader } = useSurveyContext();
   const critterbaseApi = useCritterbaseApi();
-
-  const animals = surveyContext.critterDataLoader.data ?? [];
+  const animals = critterDataLoader.data ?? [];
 
   const animalsDataLoader = useDataLoader(() =>
-    critterbaseApi.critters.getMultipleCrittersByIds(animals.map((animal) => animal.critterbase_critter_id))
+    critterbaseApi.critters.getMultipleCrittersByIds(
+      animals.map(({ critterbase_critter_id }) => critterbase_critter_id)
+    )
   );
 
-  const captures: ICaptureResponse[] = [];
-  const mortalities: Omit<IMortalityResponse, 'critter_id'>[] = [];
-
-  animalsDataLoader.data?.forEach((animal) => {
-    if (animal.captures) captures.push(...animal.captures);
-    if (animal.mortality) mortalities.push(...animal.mortality);
-  });
-
   useEffect(() => {
-    if (animals.length) {
-      animalsDataLoader.load();
-    }
+    if (animals.length) animalsDataLoader.load();
   }, [animals]);
 
-  const rows: IAnimalData[] =
-    animalsDataLoader.data?.map((item) => {
-      const capitalizeFirstLetter = (value: unknown) => {
-        const str = typeof value === 'string' ? value : (value as { label?: string })?.label ?? 'Unknown';
-        return str.trim().charAt(0).toUpperCase() + str.trim().slice(1).toLowerCase();
-      };
+  const rows: IAnimalRow[] =
+    animalsDataLoader.data?.map(({ critter_id, animal_id, itis_scientific_name, sex }) => ({
+      id: critter_id,
+      animal_id: animal_id ?? '',
+      scientificName: itis_scientific_name,
+      sex: sex?.label ?? null
+    })) ?? [];
 
-      return {
-        id: item.critter_id,
-        animal_id: item.animal_id ?? '',
-        scientificName: item.itis_scientific_name,
-        sex: capitalizeFirstLetter(item.sex || 'Unknown')
-      };
-    }) ?? [];
-
-  const columns: GridColDef<IAnimalData>[] = [
-    {
-      field: 'animal_id',
-      headerName: 'Nickname',
-      flex: 1
-    },
+  const columns: GridColDef<IAnimalRow>[] = [
+    { field: 'animal_id', headerName: 'Nickname', flex: 1 },
     {
       field: 'scientificName',
       headerName: 'Species',
       flex: 1,
-      renderCell: (params) => <ScientificNameTypography name={params.value} />
+      renderCell: ({ value }) => <ScientificNameTypography name={value} variant="body2" />
     },
-    {
-      field: 'sex',
-      headerName: 'Sex',
-      flex: 1,
-      renderCell: (params) => <>{params.value ?? 'Unknown'}</>
-    }
+    { field: 'sex', headerName: 'Sex', flex: 1, renderCell: ({ value }) => value ?? 'Unknown' }
   ];
 
   return (
     <LoadingGuard
-      isLoading={animals.length > 0 && (props.isLoading || animalsDataLoader.isLoading || !animalsDataLoader.isReady)}
+      isLoading={animals.length > 0 && (isLoading || animalsDataLoader.isLoading || !animalsDataLoader.isReady)}
       isLoadingFallback={
         <Box flex="1 1 auto">
           <SkeletonTable />
@@ -104,17 +84,13 @@ export const SurveySpatialAnimalTable = (props: ISurveyDataAnimalTableProps) => 
         </Box>
       }>
       <StyledDataGrid
-        noRowsMessage={'No animals found'}
+        noRowsMessage="No animals found"
         columnHeaderHeight={rowHeight}
         rowHeight={rowHeight}
         rows={rows}
         getRowId={(row) => row.id}
         columns={columns}
-        initialState={{
-          pagination: {
-            paginationModel: { page: 0, pageSize: 5 }
-          }
-        }}
+        initialState={{ pagination: { paginationModel: { page: 0, pageSize: 5 } } }}
         pageSizeOptions={[5]}
         rowSelection={false}
         checkboxSelection={false}

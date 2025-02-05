@@ -1,73 +1,66 @@
-import { IStaticLayerFeature } from 'components/map/components/StaticLayers';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import dayjs from 'dayjs';
 import { SurveyMapPopup } from 'features/surveys/view/SurveyMapPopup';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { ICritterDetailedResponse, IMortalityResponse } from 'interfaces/useCritterApi.interface';
 import { Popup } from 'react-leaflet';
 
-export interface ISurveySpatialAnimalMortalityPopupProps {
-  feature: IStaticLayerFeature;
+interface ISurveySpatialAnimalMortalityPopupProps {
+  mortalityId: string;
 }
 
 /**
- * Renders a popup for animal mortality data on the map.
+ * Returns information about a critter mortality record, shown when a mortality point is clicked on the map
  *
  * @param {ISurveySpatialAnimalMortalityPopupProps} props
- * @return {*}
+ * @returns {*}
  */
 export const SurveySpatialAnimalMortalityPopup = (props: ISurveySpatialAnimalMortalityPopupProps) => {
-  const { feature } = props;
+  const { mortalityId } = props;
 
   const critterbaseApi = useCritterbaseApi();
 
-  // Data loader for mortality details
-  const mortalityDataLoader = useDataLoader((mortalityId) => critterbaseApi.mortality.getMortality(mortalityId));
+  const mortalityDataLoader = useDataLoader(critterbaseApi.mortality.getMortality);
+  const animalDataLoader = useDataLoader(critterbaseApi.critters.getCritterSimple);
 
-  // Data loader for animal details
-  const animalDataLoader = useDataLoader(async (critterId: string) => {
-    const animalData: ICritterDetailedResponse = await critterbaseApi.critters.getDetailedCritter(critterId);
-    return animalData;
-  });
+  const formatPopupMetadata = () => {
+    if (!mortalityDataLoader.data || !animalDataLoader.data) return [];
 
-  // Combine mortality and animal data into metadata for the popup
-  const getMortalityMetadata = (mortality: IMortalityResponse, animal?: ICritterDetailedResponse) => {
-    const metadata = [
-      { label: 'Nickname', value: animal?.animal_id ?? 'Loading...' },
-      { label: 'Date', value: dayjs(mortality.mortality_timestamp).format(DATE_FORMAT.LongDateTimeFormat) },
+    const { mortality_timestamp, location } = mortalityDataLoader.data;
+    const { animal_id } = animalDataLoader.data;
+
+    return [
+      { label: 'Nickname', value: animal_id },
+      {
+        label: 'Date',
+        value: dayjs(mortality_timestamp).format(DATE_FORMAT.MediumDateTimeFormat)
+      },
       {
         label: 'Coordinates',
-        value: [mortality.location?.latitude ?? null, mortality.location?.longitude ?? null]
-          .filter((coord): coord is number => coord !== null)
-          .map((coord) => coord.toFixed(6))
+        value: [location?.latitude, location?.longitude]
+          .filter(Boolean)
+          .map((coord) => coord!.toFixed(6))
           .join(', ')
       }
     ];
-
-    return metadata;
   };
 
   return (
     <Popup
       keepInView={false}
-      closeButton={true}
-      autoPan={true}
+      closeButton
+      autoPan
       eventHandlers={{
-        add: () => {
-          // Load mortality data and subsequently load animal data using critter_id
-          mortalityDataLoader.load(String(feature.id)).then((mortality) => {
-            if (mortality?.critter_id) {
-              animalDataLoader.load(mortality.critter_id);
-            }
-          });
+        add: async () => {
+          const mortality = await mortalityDataLoader.load(mortalityId);
+          if (mortality) animalDataLoader.load(mortality.critter_id);
         }
       }}>
       <SurveyMapPopup
-        isLoading={mortalityDataLoader.isLoading || !mortalityDataLoader.isReady || animalDataLoader.isLoading}
+        isLoading={mortalityDataLoader.isLoading || animalDataLoader.isLoading}
         title="Mortality Details"
-        metadata={mortalityDataLoader.data ? getMortalityMetadata(mortalityDataLoader.data, animalDataLoader.data) : []}
-        key={`mortality-feature-popup-${feature.id}`}
+        metadata={formatPopupMetadata()}
+        key={`mortality-feature-popup-${mortalityId}`}
       />
     </Popup>
   );

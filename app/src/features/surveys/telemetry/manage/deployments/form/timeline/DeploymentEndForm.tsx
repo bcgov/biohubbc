@@ -49,7 +49,7 @@ export const DeploymentEndFormYupSchema = yup.object({
 
 interface IDeploymentEndFormProps {
   captures: ICaptureResponse[];
-  mortalities: Omit<IMortalityResponse, 'critter_id'>[];
+  mortalities: IMortalityResponse[];
 }
 
 /**
