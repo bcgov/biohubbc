@@ -37,14 +37,19 @@ export const DeviceDetailsForm = (props: IDeviceDetailsFormProps) => {
           name="device_make_id"
           id="device_make_id"
           label="Make"
-          helpText='Indicate the vendor from which the device was purchased.'
+          helpText="Indicate the vendor from which the device was purchased."
           options={deviceMakes}
           required={true}
         />
       </Grid>
       <Grid item xs={12}>
-        <CustomTextField name="serial" label="Serial Number" maxLength={100} other={{ required: true }} 
-        helpText='Commonly referred to as the device identifer.'/>
+        <CustomTextField
+          name="serial"
+          label="Serial Number"
+          maxLength={100}
+          other={{ required: true }}
+          helpText="Commonly referred to as the device identifer."
+        />
       </Grid>
       <Grid item xs={12}>
         <CustomTextField name="model" label="Model (optional)" maxLength={100} />
