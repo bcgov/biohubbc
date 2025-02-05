@@ -5,6 +5,7 @@ import {
   getDescriptionCellValidator,
   getLatitudeCellValidator,
   getLongitudeCellValidator,
+  getLookupIdCellValidator,
   getSurveyCritterAliasCellValidator,
   getTsnCellValidator,
   updateCSVRowState,
@@ -253,6 +254,49 @@ describe('CSVHeaderConfigs', () => {
 
       surveyCritterAliasValidator(params);
       expect(params.row[CSVRowState]?.critterId).to.be.equal('uuid');
+    });
+  });
+
+  describe('getLookupIdCellValidator', () => {
+    it('should return an empty array if the cell is valid', () => {
+      const values = [{ name: 'name', id: 'id' }];
+      const lookupIdValidator = getLookupIdCellValidator(values, {
+        optional: false,
+        getError: () => 'error',
+        getSolution: () => 'solution'
+      });
+
+      const result = lookupIdValidator({ cell: 'name' } as CSVParams);
+
+      expect(result).to.be.deep.equal([]);
+    });
+
+    it('should return a single error when invalid', () => {
+      const values = [{ name: 'name', id: 'id' }];
+      const lookupIdValidator = getLookupIdCellValidator(values, {
+        optional: false,
+        getError: () => 'error',
+        getSolution: () => 'solution'
+      });
+
+      const result = lookupIdValidator({ cell: 'invalid' } as CSVParams);
+
+      expect(result.length).to.be.equal(1);
+      expect(result[0].error).to.be.equal('error');
+      expect(result[0].solution).to.be.equal('solution');
+    });
+
+    it('should return an empty array if the cell is optional and undefined', () => {
+      const values = [{ name: 'name', id: 'id' }];
+      const lookupIdValidator = getLookupIdCellValidator(values, {
+        optional: true,
+        getError: () => 'error',
+        getSolution: () => 'solution'
+      });
+
+      const result = lookupIdValidator({ cell: undefined } as CSVParams);
+
+      expect(result).to.be.deep.equal([]);
     });
   });
 });

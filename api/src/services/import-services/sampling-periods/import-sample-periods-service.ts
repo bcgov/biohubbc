@@ -14,13 +14,13 @@ import { DBService } from '../../db-service';
 import { SamplePeriodService } from '../../sample-period-service';
 import { SampleSiteService } from '../../sample-site-service';
 import { TechniqueService } from '../../technique-service';
-import { getMethodTechniqueCellValidator, getSamplingSiteCellValidator } from './utils/sampling-periods-header-configs';
+import { getMethodTechniqueCellValidator, getSampleSiteCellValidator } from './utils/sample-periods-header-configs';
 
-const defaultLog = getLogger('services/import/import-sampling-periods-service');
+const defaultLog = getLogger('services/import/import-sample-periods-service');
 
-// Sampling Period CSV static headers
-export type SamplingPeriodCSVStaticHeader =
-  | 'SAMPLING_SITE'
+// Sample Period CSV static headers
+export type SamplePeriodCSVStaticHeader =
+  | 'SAMPLE_SITE'
   | 'TECHNIQUE_NAME'
   | 'START_DATE'
   | 'START_TIME'
@@ -28,19 +28,19 @@ export type SamplingPeriodCSVStaticHeader =
   | 'END_TIME';
 
 /**
- * ImportSamplingPeriodsService - A service for importing Sampling Periods into SIMS.
+ * ImportSamplePeriodsService - A service for importing Sample Periods into SIMS.
  *
- * @class ImportSamplingPeriodsService
+ * @class ImportSamplePeriodsService
  * @extends DBService
  */
-export class ImportSamplingPeriodsService extends DBService {
+export class ImportSamplePeriodsService extends DBService {
   worksheet: WorkSheet;
   surveyId: number;
 
-  utils: CSVConfigUtils<SamplingPeriodCSVStaticHeader>;
+  utils: CSVConfigUtils<SamplePeriodCSVStaticHeader>;
 
   /**
-   * Construct an instance of ImportSamplingPeriodsService.
+   * Construct an instance of ImportSamplePeriodsService.
    *
    * @param {IDBConnection} connection - DB connection
    * @param {string} surveyId
@@ -48,9 +48,9 @@ export class ImportSamplingPeriodsService extends DBService {
   constructor(connection: IDBConnection, worksheet: WorkSheet, surveyId: number) {
     super(connection);
 
-    const initialConfig: CSVConfig<SamplingPeriodCSVStaticHeader> = {
+    const initialConfig: CSVConfig<SamplePeriodCSVStaticHeader> = {
       staticHeadersConfig: {
-        SAMPLING_SITE: { aliases: ['SAMPLING SITE', 'SITE'] },
+        SAMPLE_SITE: { aliases: ['SAMPLE SITE', 'SAMPLING_SITE', 'SAMPLING SITE', 'SITE'] },
         TECHNIQUE_NAME: { aliases: ['TECHNIQUE NAME', 'TECHNIQUE'] },
         START_DATE: { aliases: ['START DATE'] },
         START_TIME: { aliases: ['START TIME'], optional: true },
@@ -67,7 +67,7 @@ export class ImportSamplingPeriodsService extends DBService {
   }
 
   /**
-   * Import a `Sampling Periods` CSV worksheet into SIMS.
+   * Import a `Sample Periods` CSV worksheet into SIMS.
    *
    * @async
    * @throws {ApiGeneralError} - If unable to fully insert records into Critterbase
@@ -87,7 +87,7 @@ export class ImportSamplingPeriodsService extends DBService {
     // Convert the rows to sample periods
     const samplePeriods: InsertSamplePeriodObject[] = rows.map((row) => {
       return {
-        survey_sample_site_id: row.SAMPLING_SITE,
+        survey_sample_site_id: row.SAMPLE_SITE,
         method_technique_id: row.TECHNIQUE_NAME,
         start_date: row.START_DATE,
         start_time: row.START_TIME,
@@ -98,17 +98,17 @@ export class ImportSamplingPeriodsService extends DBService {
 
     await samplePeriodService.insertSamplePeriods(this.surveyId, samplePeriods);
 
-    defaultLog.debug({ label: 'import sampling periods', samplePeriods });
+    defaultLog.debug({ label: 'import sample periods', samplePeriods });
 
     return [];
   }
 
   /**
-   * Get the CSV configuration for Sampling Periods.
+   * Get the CSV configuration for Sample Periods.
    *
    * @returns {Promise<CSVConfig<SamplingPeriodCSVStaticHeader>>} The CSV configuration
    */
-  async getCSVConfig(): Promise<CSVConfig<SamplingPeriodCSVStaticHeader>> {
+  async getCSVConfig(): Promise<CSVConfig<SamplePeriodCSVStaticHeader>> {
     // Initialize dependent services
     const sampleSiteService = new SampleSiteService(this.connection);
     const methodTechniqueService = new TechniqueService(this.connection);
@@ -119,7 +119,7 @@ export class ImportSamplingPeriodsService extends DBService {
 
     // Set all the static header configs
     this.utils.setAllStaticHeaderConfigs({
-      SAMPLING_SITE: { validateCell: getSamplingSiteCellValidator(sampleSites) },
+      SAMPLE_SITE: { validateCell: getSampleSiteCellValidator(sampleSites) },
       TECHNIQUE_NAME: { validateCell: getMethodTechniqueCellValidator(methodTechniques) },
       START_DATE: { validateCell: getDateCellValidator() },
       START_TIME: { validateCell: getTimeCellValidator(), setCellValue: getTimeCellSetter() },

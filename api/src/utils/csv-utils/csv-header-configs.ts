@@ -228,3 +228,61 @@ export const getSurveyCritterAliasCellValidator = (surveyAliasMap: Map<string, I
     return [];
   };
 };
+
+/**
+ * Get the lookup ID cell validator - case-insensitive.
+ * This validator is used to validate a cell value against a list of lookup values.
+ *
+ * Note: This validator will update the row state with the reference ID - `mutateCell`.
+ *
+ * Rules:
+ *  1. The cell must be a valid reference value from the provided reference values
+ *  2. The reference value is case-insensitive
+ *
+ * @param {Array<{ name: string; id: string | number }>} values List of lookup value objects
+ * @param {CSVOptionalCell & {
+ *  getError: (params: CSVParams) => string;
+ *  getSolution: (params: CSVParams) => string }
+ *  } options The cell options
+ * @returns {*} {CSVCellValidator} The validate cell callback
+ */
+export const getLookupIdCellValidator = (
+  values: Array<{ name: string; id: string | number }>,
+  options: CSVOptionalCell & {
+    getError: (params: CSVParams) => string;
+    getSolution: (params: CSVParams) => string;
+  }
+): CSVCellValidator => {
+  // TODO: Replace with case-insensitive map
+
+  const lookupValueMap = new Map(values.map((value) => [value.name.toLowerCase(), value.id]));
+  const lookupValues = values.map((value) => value.name);
+
+  return (params) => {
+    // Allow optional cells to be empty if configured
+    if (options.optional && params.cell === undefined) {
+      return [];
+    }
+
+    // Check if the cell value is a valid reference value
+    const value = lookupValueMap.get(String(params.cell).toLowerCase());
+
+    // Update the row state with the reference ID
+    if (value) {
+      params.mutateCell = value;
+
+      return [];
+    }
+
+    // Return an error if the cell value is not a valid reference value
+    return [
+      {
+        error: options.getError(params),
+        solution: options.getSolution(params),
+        header: params.header,
+        cell: params.cell,
+        values: lookupValues
+      }
+    ];
+  };
+};
