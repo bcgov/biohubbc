@@ -107,7 +107,7 @@ export const SurveySpatialAnimal = (props: ISurveySpatialAnimalProps) => {
       </Box>
 
       {/* Display data table with animal capture details */}
-      <Box minHeight={{ xs: 300, md: 500 }} display="flex">
+      <Box height={{ xs: 300, md: 500 }} display="flex" flexDirection="column">
         <SurveySpatialAnimalTable isLoading={geometryDataLoader.isLoading} />
       </Box>
     </>

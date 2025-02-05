@@ -4,7 +4,6 @@ import { SurveyMapPopup } from 'features/surveys/view/SurveyMapPopup';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { Popup } from 'react-leaflet';
-import { combineDateTime } from 'utils/datetime';
 
 interface ISurveySpatialAnimalCapturePopupProps {
   captureId: string;
@@ -32,17 +31,13 @@ export const SurveySpatialAnimalCapturePopup = (props: ISurveySpatialAnimalCaptu
 
     return [
       { label: 'Nickname', value: animal_id },
-      {
-        label: 'Date',
-        value: capture_time
-          ? dayjs(combineDateTime(capture_date, capture_time)).format(DATE_FORMAT.MediumDateTimeFormat)
-          : dayjs(combineDateTime(capture_date, capture_time)).format(DATE_FORMAT.MediumDateFormat)
-      },
+      { label: 'Date', value: dayjs(capture_date).format(DATE_FORMAT.LongDateTimeFormat) },
+      { label: 'Time', value: String(capture_time ?? '') },
       {
         label: 'Coordinates',
         value: [capture_location?.latitude, capture_location?.longitude]
-          .filter(Boolean)
-          .map((coord) => coord!.toFixed(6))
+          .filter((coord): coord is number => coord !== null)
+          .map((coord) => coord.toFixed(6))
           .join(', ')
       }
     ];
@@ -56,6 +51,7 @@ export const SurveySpatialAnimalCapturePopup = (props: ISurveySpatialAnimalCaptu
       eventHandlers={{
         add: async () => {
           const capture = await captureDataLoader.load();
+          // Fetch critter information to get the animal's nickname to display, which isn't included in the capture response
           if (capture) animalDataLoader.load(capture.critter_id);
         }
       }}>
