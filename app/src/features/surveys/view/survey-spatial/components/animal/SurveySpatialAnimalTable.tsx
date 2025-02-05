@@ -15,7 +15,7 @@ const rowHeight = 52;
 
 interface IAnimalRow {
   id: number;
-  animal_id: string;
+  animal_id: string | null;
   scientificName: string;
   sex: string | null;
 }
@@ -30,7 +30,9 @@ interface ISurveyDataAnimalTableProps {
  * @param {ISurveyDataAnimalTableProps} props
  * @returns {*}
  */
-export const SurveySpatialAnimalTable = ({ isLoading }: ISurveyDataAnimalTableProps) => {
+export const SurveySpatialAnimalTable = (props: ISurveyDataAnimalTableProps) => {
+  const { isLoading } = props;
+
   const { critterDataLoader } = useSurveyContext();
   const critterbaseApi = useCritterbaseApi();
   const animals = critterDataLoader.data ?? [];
@@ -46,11 +48,11 @@ export const SurveySpatialAnimalTable = ({ isLoading }: ISurveyDataAnimalTablePr
   }, [animals]);
 
   const rows: IAnimalRow[] =
-    animalsDataLoader.data?.map(({ critter_id, animal_id, itis_scientific_name, sex }) => ({
-      id: critter_id,
-      animal_id: animal_id ?? '',
-      scientificName: itis_scientific_name,
-      sex: sex?.label ?? null
+    animalsDataLoader.data?.map((animal) => ({
+      ...animal,
+      id: animal.critter_id,
+      scientificName: animal.itis_scientific_name,
+      sex: animal.sex?.label ?? null
     })) ?? [];
 
   const columns: GridColDef<IAnimalRow>[] = [
@@ -90,8 +92,12 @@ export const SurveySpatialAnimalTable = ({ isLoading }: ISurveyDataAnimalTablePr
         rows={rows}
         getRowId={(row) => row.id}
         columns={columns}
-        initialState={{ pagination: { paginationModel: { page: 0, pageSize: 5 } } }}
-        pageSizeOptions={[5]}
+        initialState={{
+          pagination: {
+            paginationModel: { page: 0, pageSize: 10 }
+          }
+        }}
+        pageSizeOptions={[10, 25, 50]}
         rowSelection={false}
         checkboxSelection={false}
         disableRowSelectionOnClick

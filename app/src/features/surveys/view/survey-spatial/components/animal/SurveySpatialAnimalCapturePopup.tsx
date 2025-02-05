@@ -21,7 +21,7 @@ export const SurveySpatialAnimalCapturePopup = (props: ISurveySpatialAnimalCaptu
 
   const critterbaseApi = useCritterbaseApi();
 
-  const captureDataLoader = useDataLoader(critterbaseApi.capture.getCapture);
+  const captureDataLoader = useDataLoader(() => critterbaseApi.capture.getCapture(captureId));
   const animalDataLoader = useDataLoader(critterbaseApi.critters.getCritterSimple);
 
   const formatPopupMetadata = () => {
@@ -51,11 +51,11 @@ export const SurveySpatialAnimalCapturePopup = (props: ISurveySpatialAnimalCaptu
   return (
     <Popup
       keepInView={false}
-      closeButton
-      autoPan
+      closeButton={true}
+      autoPan={true}
       eventHandlers={{
         add: async () => {
-          const capture = await captureDataLoader.load(captureId);
+          const capture = await captureDataLoader.load();
           if (capture) animalDataLoader.load(capture.critter_id);
         }
       }}>

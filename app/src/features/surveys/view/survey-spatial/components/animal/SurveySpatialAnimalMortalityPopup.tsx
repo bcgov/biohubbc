@@ -33,6 +33,7 @@ export const SurveySpatialAnimalMortalityPopup = (props: ISurveySpatialAnimalMor
       { label: 'Nickname', value: animal_id },
       {
         label: 'Date',
+        // Critterbase does not provide time as its own string so mortalities without time data will erroneously show 12:00 AM in the popup
         value: dayjs(mortality_timestamp).format(DATE_FORMAT.MediumDateTimeFormat)
       },
       {
@@ -48,8 +49,8 @@ export const SurveySpatialAnimalMortalityPopup = (props: ISurveySpatialAnimalMor
   return (
     <Popup
       keepInView={false}
-      closeButton
-      autoPan
+      closeButton={true}
+      autoPan={true}
       eventHandlers={{
         add: async () => {
           const mortality = await mortalityDataLoader.load(mortalityId);
