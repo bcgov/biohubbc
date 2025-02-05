@@ -2,7 +2,6 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useContext } from 'react';
-import { getFormattedAmount } from 'utils/Utils';
 
 /**
  * Funding source content for a survey.
@@ -28,14 +27,6 @@ const SurveyFundingSources = () => {
           {funding_sources.map((surveyFundingSource) => (
             <Box className="row" key={surveyFundingSource.funding_source_id}>
               <Typography component="dt">{surveyFundingSource.funding_source_name}</Typography>
-              <Typography
-                component="dd"
-                sx={{
-                  display: 'inline-block',
-                  width: 'auto'
-                }}>
-                {getFormattedAmount(surveyFundingSource.amount)}
-              </Typography>
             </Box>
           ))}
         </Box>

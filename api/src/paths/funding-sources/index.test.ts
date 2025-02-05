@@ -29,7 +29,6 @@ describe('getFundingSources', () => {
           end_date: '2020-01-01',
           description: 'description',
           revision_count: 0,
-          survey_reference_amount_total: 2,
           survey_reference_count: 20000
         },
         {
@@ -39,7 +38,6 @@ describe('getFundingSources', () => {
           end_date: '2020-01-01',
           description: 'description2',
           revision_count: 0,
-          survey_reference_amount_total: 3,
           survey_reference_count: 30000
         }
       ];
@@ -90,7 +88,6 @@ describe('getFundingSources', () => {
           end_date: '2020-01-01',
           description: 'description',
           revision_count: 0,
-          survey_reference_amount_total: 2,
           survey_reference_count: 20000
         },
         {
@@ -100,7 +97,6 @@ describe('getFundingSources', () => {
           end_date: '2020-01-01',
           description: 'description2',
           revision_count: 0,
-          survey_reference_amount_total: 3,
           survey_reference_count: 30000
         }
       ];
@@ -137,7 +133,6 @@ describe('getFundingSources', () => {
       expect(mockRes.jsonValue).to.eql(
         mockFundingSources.map((item) => {
           // remove sensitive fields
-          delete item.survey_reference_amount_total;
           delete item.survey_reference_count;
           return item;
         })

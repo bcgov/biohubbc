@@ -195,7 +195,7 @@ const ObservationsTableContainer = () => {
             startIcon={<Icon path={mdiPlus} size={1} />}
             onClick={() => observationsTableContext.addObservationRecord()}
             disabled={observationsTableContext.isSaving || observationsTableContext.isDisabled}>
-            Add Record
+            Add
           </Button>
           <Collapse in={observationsTableContext.hasUnsavedChanges} orientation="horizontal" sx={{ mr: -1 }}>
             <Box whiteSpace="nowrap" display="flex" sx={{ gap: 1, pr: 1 }}>

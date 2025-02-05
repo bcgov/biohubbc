@@ -1,4 +1,4 @@
-import { mdiCellphoneMarker, mdiMapMarker } from '@mdi/js';
+import { mdiAccessPointPlus, mdiMapMarker } from '@mdi/js';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import CustomToggleButtonGroup from 'components/toolbar/CustomToggleButtonGroup';
@@ -22,7 +22,7 @@ export const SurveySpatialTelemetryContainer = () => {
   );
 
   const views = [
-    { label: 'Deployments', value: SurveySpatialTelemetryContainerViewEnum.DEPLOYMENTS, icon: mdiCellphoneMarker },
+    { label: 'Deployments', value: SurveySpatialTelemetryContainerViewEnum.DEPLOYMENTS, icon: mdiAccessPointPlus },
     { label: 'Telemetry', value: SurveySpatialTelemetryContainerViewEnum.TELEMETRY, icon: mdiMapMarker }
   ];
 

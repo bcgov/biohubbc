@@ -199,6 +199,7 @@ export const SurveySamplingTableContainer = () => {
                   width="100%"
                   title="Add Techniques"
                   subtitle="Techniques describe how you collected species observations"
+                  icon={mdiArrowTopRight}
                 />
               }
               hasNoDataFallbackDelay={100}>
@@ -233,6 +234,7 @@ export const SurveySamplingTableContainer = () => {
                   width="100%"
                   title="Add Sampling Sites"
                   subtitle="Apply your techniques to sampling sites to show where you collected data"
+                  icon={mdiArrowTopRight}
                 />
               }
               hasNoDataFallbackDelay={100}>
