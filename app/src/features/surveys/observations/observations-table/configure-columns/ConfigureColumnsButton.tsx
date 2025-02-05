@@ -60,7 +60,9 @@ export const ConfigureColumnsButton = (props: IConfigureColumnsButtonProps) => {
     const columnMap = new Map<string, IHideableColumn>();
 
     columns.forEach((column) => {
-      if (!column?.hideable) return;
+      if (!column?.hideable) {
+        return;
+      }
 
       let options: { name: string; description: string | null }[] = [];
 
