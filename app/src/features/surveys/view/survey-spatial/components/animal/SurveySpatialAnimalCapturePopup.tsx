@@ -3,7 +3,9 @@ import dayjs from 'dayjs';
 import { SurveyMapPopup } from 'features/surveys/view/SurveyMapPopup';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
+import { useMemo } from 'react';
 import { Popup } from 'react-leaflet';
+import { isDefined } from 'utils/Utils';
 
 interface ISurveySpatialAnimalCapturePopupProps {
   captureId: string;
@@ -23,8 +25,10 @@ export const SurveySpatialAnimalCapturePopup = (props: ISurveySpatialAnimalCaptu
   const captureDataLoader = useDataLoader(() => critterbaseApi.capture.getCapture(captureId));
   const animalDataLoader = useDataLoader(critterbaseApi.critters.getCritterSimple);
 
-  const formatPopupMetadata = () => {
-    if (!captureDataLoader.data || !animalDataLoader.data) return [];
+  const popupMetadata = useMemo(() => {
+    if (!captureDataLoader.data || !animalDataLoader.data) {
+      return [];
+    }
 
     const { capture_date, capture_time, capture_location } = captureDataLoader.data;
     const { animal_id } = animalDataLoader.data;
@@ -36,12 +40,12 @@ export const SurveySpatialAnimalCapturePopup = (props: ISurveySpatialAnimalCaptu
       {
         label: 'Coordinates',
         value: [capture_location?.latitude, capture_location?.longitude]
-          .filter((coord): coord is number => coord !== null)
+          .filter((coord): coord is number => isDefined(coord))
           .map((coord) => coord.toFixed(6))
           .join(', ')
       }
     ];
-  };
+  }, [captureDataLoader.data, animalDataLoader.data]);
 
   return (
     <Popup
@@ -51,14 +55,16 @@ export const SurveySpatialAnimalCapturePopup = (props: ISurveySpatialAnimalCaptu
       eventHandlers={{
         add: async () => {
           const capture = await captureDataLoader.load();
-          // Fetch critter information to get the animal's nickname to display, which isn't included in the capture response
-          if (capture) animalDataLoader.load(capture.critter_id);
+          // Fetch critter information to get the animal's animal_id to display, which isn't included in the capture response
+          if (capture) {
+            animalDataLoader.load(capture.critter_id);
+          }
         }
       }}>
       <SurveyMapPopup
         isLoading={captureDataLoader.isLoading || animalDataLoader.isLoading}
         title="Capture Details"
-        metadata={formatPopupMetadata()}
+        metadata={popupMetadata}
         key={`capture-feature-popup-${captureId}`}
       />
     </Popup>

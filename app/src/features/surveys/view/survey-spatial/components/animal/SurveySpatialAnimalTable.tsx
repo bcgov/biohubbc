@@ -12,7 +12,7 @@ import { ScientificNameTypography } from 'features/surveys/animals/components/Sc
 import { useSurveyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 
 const rowHeight = 52;
 
@@ -39,17 +39,18 @@ export const SurveySpatialAnimalTable = (props: ISurveyDataAnimalTableProps) => 
 
   const { critterDataLoader } = useSurveyContext();
   const critterbaseApi = useCritterbaseApi();
-  const animals = critterDataLoader.data ?? [];
+
+  const animals = useMemo(() => critterDataLoader.data ?? [], [critterDataLoader.data]);
 
   const animalsDataLoader = useDataLoader(() =>
-    critterbaseApi.critters.getMultipleCrittersByIds(
-      animals.map(({ critterbase_critter_id }) => critterbase_critter_id)
-    )
+    critterbaseApi.critters.getMultipleCrittersByIds(animals.map((animal) => animal.critterbase_critter_id))
   );
 
   useEffect(() => {
-    if (animals.length) animalsDataLoader.load();
-  }, [animals]);
+    if (animals.length) {
+      animalsDataLoader.load();
+    }
+  }, [animals, animalsDataLoader]);
 
   const rows: IAnimalRow[] =
     animalsDataLoader.data?.map((animal) => ({
