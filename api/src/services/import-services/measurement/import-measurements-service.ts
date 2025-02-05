@@ -27,7 +27,7 @@ const defaultLog = getLogger('services/import/import-measurement-service');
 export type MeasurementCSVStaticHeader = 'ALIAS' | 'CAPTURE_DATE' | 'CAPTURE_TIME';
 
 /**
- * ImportMeasurementsService - A service for importing Markings from a CSV into Critterbase.
+ * ImportMeasurementsService - A service for importing Measurements from a CSV into Critterbase.
  *
  * @class ImportMeasurementsService
  * @extends DBService
