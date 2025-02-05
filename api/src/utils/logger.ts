@@ -3,7 +3,15 @@ import DailyRotateFile from 'winston-daily-rotate-file';
 
 const DEFAULT_LOGGER = 'default';
 
-export type CustomWinstonLoggerParams = {
+export type CustomLogger = {
+  error: (params: CustomLoggerParams) => void;
+  warn: (params: CustomLoggerParams) => void;
+  info: (params: CustomLoggerParams) => void;
+  debug: (params: CustomLoggerParams) => void;
+  silly: (params: CustomLoggerParams) => void;
+};
+
+export type CustomLoggerParams = {
   label?: string;
   message?: string;
   error?: any;
@@ -47,17 +55,17 @@ export type CustomWinstonLoggerParams = {
  * }
  *
  * @param {string} logLabel common label for the instance of the logger.
- * @returns
+ * @return {*}  {CustomLogger}
  */
-export const getLogger = (logLabel: string) => {
-  const logger = _getLogger(DEFAULT_LOGGER);
+export const getLogger = (logLabel: string): CustomLogger => {
+  const logger = _getOrCreateLoggerSingleton(DEFAULT_LOGGER);
 
   return {
-    info: (params: CustomWinstonLoggerParams) => logger.info({ logger: logLabel, ...params }),
-    warn: (params: CustomWinstonLoggerParams) => logger.warn({ logger: logLabel, ...params }),
-    error: (params: CustomWinstonLoggerParams) => logger.error({ logger: logLabel, ...params }),
-    debug: (params: CustomWinstonLoggerParams) => logger.debug({ logger: logLabel, ...params }),
-    silly: (params: CustomWinstonLoggerParams) => logger.silly({ logger: logLabel, ...params })
+    error: (params: CustomLoggerParams) => logger.error({ logger: logLabel, ...params }),
+    warn: (params: CustomLoggerParams) => logger.warn({ logger: logLabel, ...params }),
+    info: (params: CustomLoggerParams) => logger.info({ logger: logLabel, ...params }),
+    debug: (params: CustomLoggerParams) => logger.debug({ logger: logLabel, ...params }),
+    silly: (params: CustomLoggerParams) => logger.silly({ logger: logLabel, ...params })
   };
 };
 
@@ -86,9 +94,9 @@ const getLoggerTransportTypes = (): string[] => {
  * Get or create a singleton logger instance.
  *
  * @param {string} loggerName The name of the logger instance.
- * @returns
+ * @return {*}  {winston.Logger}
  */
-export const _getLogger = function (loggerName: string) {
+export const _getOrCreateLoggerSingleton = function (loggerName: string): winston.Logger {
   const hasLogger = winston.loggers.has(loggerName);
 
   if (hasLogger) {
@@ -150,7 +158,7 @@ export const _getLogger = function (loggerName: string) {
   }
 
   // Create new logger instance
-  return winston.loggers.add(DEFAULT_LOGGER, { transports: transports });
+  return winston.loggers.add(loggerName, { transports: transports });
 };
 
 export const WinstonLogLevels = ['silent', 'error', 'warn', 'info', 'debug', 'silly'] as const;
