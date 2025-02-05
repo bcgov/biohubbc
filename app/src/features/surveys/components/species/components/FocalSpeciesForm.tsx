@@ -2,6 +2,7 @@ import Collapse from '@mui/material/Collapse';
 import { grey } from '@mui/material/colors';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
+import AlertBar from 'components/alert/AlertBar';
 import SpeciesAutocompleteField from 'components/species/components/SpeciesAutocompleteField';
 import SpeciesSelectedCard from 'components/species/components/SpeciesSelectedCard';
 import { FocalSpeciesAlert } from 'features/surveys/components/species/components/FocalSpeciesAlert';
@@ -28,6 +29,25 @@ export const FocalSpeciesForm = () => {
       render={(arrayHelpers) => {
         return (
           <Stack gap={2}>
+            <AlertBar
+              text={
+                <>
+                  We are working with the &zwnj;
+                  <a href="https://www2.gov.bc.ca/gov/content/environment/plants-animals-ecosystems/conservation-data-centre">
+                    Conservation Data Center
+                  </a>
+                  &zwnj; to integrate British Columbia's official taxonomy data shown in the &zwnj;
+                  <a href="https://www2.gov.bc.ca/gov/content/environment/plants-animals-ecosystems/conservation-data-centre/explore-cdc-data/species-and-ecosystems-explorer">
+                    BC Species & Ecosystems Explorer
+                  </a>
+                  . Temporarily, taxonomic names come from the &zwnj;
+                  <a href="https://itis.gov/">Integrated Taxonomic Information System</a>.
+                </>
+              }
+              severity="info"
+              title="Species Taxonomy"
+              variant="standard"
+            />
             <FocalSpeciesAlert />
 
             <SpeciesAutocompleteField

@@ -13,7 +13,6 @@ import { IGetFundingSourceResponse } from 'interfaces/useFundingSourceApi.interf
 import { debounce } from 'lodash';
 import { useCallback, useMemo, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { getFormattedAmount } from 'utils/Utils';
 
 const useStyles = () => {
   return {
@@ -49,7 +48,6 @@ interface IFundingSourceSurveyReferencesTableEntry {
   project_id: number;
   survey_id: number;
   survey_name: string;
-  amount: number;
 }
 
 const NoRowsOverlay = (props: { sx: Record<string, any> }) => (
@@ -84,14 +82,6 @@ const FundingSourceSurveyReferences = (props: IFundingSourceSurveyReferencesProp
           children={params.row.survey_name}
         />
       )
-    },
-    {
-      field: 'amount',
-      headerName: 'Amount',
-      flex: 1,
-      valueGetter: (params) => {
-        return getFormattedAmount(params.value, { maximumFractionDigits: 2 });
-      }
     }
   ];
 
