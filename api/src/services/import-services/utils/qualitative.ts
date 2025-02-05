@@ -32,16 +32,20 @@ interface IQualitativeTypeDefinitionStub {
  *
  * @param {unknown} value - The value to validate
  * @param {IQualitativeTypeDefinitionStub} qualitativeTypeDefinition - The qualitative type definition
+ * @param {string} [qualitativeTag] - The tag to inject into the error message ie: 'measurement' or 'environment'
  * @returns {CSVError[] | string} - The list of errors or the qualitative value
  */
 export const validateQualitativeValue = (
   value: unknown,
-  qualitativeTypeDefinition: IQualitativeTypeDefinitionStub
+  qualitativeTypeDefinition: IQualitativeTypeDefinitionStub,
+  qualitativeTag?: string
 ): CSVError[] | string => {
+  const qualitativeTagString = qualitativeTag ? ` ${qualitativeTag}` : '';
+
   if (typeof value !== 'string') {
     return [
       {
-        error: 'Qualitative value must be a string',
+        error: `Qualitative${qualitativeTagString} value must be a string`,
         solution: 'Update the value to match the expected type'
       }
     ];
@@ -51,11 +55,11 @@ export const validateQualitativeValue = (
     (option) => option.option_name.toLowerCase() === value.toLowerCase()
   );
 
-  // Validate value is an alowed qualitative environment option
+  // Validate value is an alowed qualitative option
   if (!matchingQualitativeOption) {
     return [
       {
-        error: `Invalid qualitative option`,
+        error: `Invalid qualitative${qualitativeTagString} option`,
         solution: `Use a valid qualitative option`,
         values: qualitativeTypeDefinition.options.map((option) => option.option_name)
       }

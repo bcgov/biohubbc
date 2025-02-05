@@ -88,13 +88,13 @@ export const validateQualitativeMeasurementCell = (
   params: CSVParams,
   measurement: CBQualitativeMeasurementTypeDefinition
 ): CSVError[] => {
+  const options = measurement.options.map((option) => ({
+    option_id: option.qualitative_option_id,
+    option_name: option.option_label
+  }));
+
   // Normalize the measurement type definition and validate
-  const result = validateQualitativeValue(params.cell, {
-    options: measurement.options.map((option) => ({
-      option_id: option.qualitative_option_id,
-      option_name: option.option_label
-    }))
-  });
+  const result = validateQualitativeValue(params.cell, { options: options }, 'measurement');
 
   // If the result is list of CSV errors
   if (typeof result !== 'string') {
@@ -124,10 +124,14 @@ export const validateQuantitativeMeasurementCell = (
   measurement: CBQuantitativeMeasurementTypeDefinition
 ): CSVError[] => {
   // Normalize the measurement type definition and validate
-  const result = validateQuantitativeValue(params.cell, {
-    min: measurement.min_value,
-    max: measurement.max_value
-  });
+  const result = validateQuantitativeValue(
+    params.cell,
+    {
+      min: measurement.min_value,
+      max: measurement.max_value
+    },
+    'measurement'
+  );
 
   // If the result is list of CSV errors
   if (typeof result !== 'number') {

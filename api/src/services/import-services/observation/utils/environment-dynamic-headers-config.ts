@@ -74,13 +74,13 @@ export const validateQualitativeEnvironmentCell = (
   params: CSVParams,
   environment: QualitativeEnvironmentTypeDefinition
 ): CSVError[] => {
+  const options = environment.options.map((option) => ({
+    option_id: option.environment_qualitative_option_id,
+    option_name: option.name
+  }));
+
   // Normalize the environment type definition and validate the cell
-  const result = validateQualitativeValue(params.cell, {
-    options: environment.options.map((option) => ({
-      option_id: option.environment_qualitative_option_id,
-      option_name: option.name
-    }))
-  });
+  const result = validateQualitativeValue(params.cell, { options: options }, 'environment');
 
   // If the result is not a qualitative value it is a list of CSV errors
   if (typeof result !== 'string') {
@@ -113,10 +113,14 @@ export const validateQuantitativeEnvironmentCell = (
   environment: QuantitativeEnvironmentTypeDefinition
 ): CSVError[] => {
   // Normalize the environment type definition and validate the cell
-  const result = validateQuantitativeValue(params.cell, {
-    min: environment.min,
-    max: environment.max
-  });
+  const result = validateQuantitativeValue(
+    params.cell,
+    {
+      min: environment.min,
+      max: environment.max
+    },
+    'environment'
+  );
 
   // If the result is not a quantitative value it is a list of CSV errors
   if (typeof result !== 'number') {

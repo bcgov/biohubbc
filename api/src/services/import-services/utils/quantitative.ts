@@ -24,36 +24,39 @@ interface IQuantitativeTypeDefinitionStub {
  *
  * @param {unknown} value - The value to validate
  * @param {IQuantitativeTypeDefinitionStub} quantitativeTypeDefinition - The quantitative type definition
+ * @param {string} [quantitativeTag] - The tag to inject into the error message ie: 'measurement' or 'environment'
  * @returns {CSVError[] | number} - The list of errors or the quantitative value
  */
 export const validateQuantitativeValue = (
   value: unknown,
-  quantitativeTypeDefinition: IQuantitativeTypeDefinitionStub
+  quantitativeTypeDefinition: IQuantitativeTypeDefinitionStub,
+  quantitativeTag?: string
 ): CSVError[] | number => {
   const errors: CSVError[] = [];
+  const quantitativeTagString = quantitativeTag ? ` ${quantitativeTag}` : '';
 
-  // Quantitative environments are numbers ie: antler count: 2
+  // Quantitative are numbers ie: antler count: 2
   if (typeof value !== 'number') {
     return [
       {
-        error: 'Quantitative value must be a number',
+        error: `Quantitative${quantitativeTagString} value must be a number`,
         solution: 'Update the value to match the expected type'
       }
     ];
   }
 
-  // Validate value is withing the environment min max bounds
+  // Validate value is within min max bounds
   if (quantitativeTypeDefinition.max != null && value > quantitativeTypeDefinition.max) {
     errors.push({
-      error: 'Quantitative value too large',
+      error: `Quantitative${quantitativeTagString} value too large`,
       solution: `Value must be less than or equal to ${quantitativeTypeDefinition.max}`
     });
   }
 
-  // Validate value is withing the environment min max bounds
+  // Validate value is within the min max bounds
   if (quantitativeTypeDefinition.min != null && value < quantitativeTypeDefinition.min) {
     errors.push({
-      error: 'Quantitative value too small',
+      error: `Quantitative${quantitativeTagString} value too small`,
       solution: `Value must be greater than or equal to ${quantitativeTypeDefinition.min}`
     });
   }
