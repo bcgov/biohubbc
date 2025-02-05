@@ -162,45 +162,43 @@ const SurveysListPage = () => {
 
       <Divider />
 
-      <Box p={2}>
-        <LoadingGuard
-          isLoading={projectContext.surveysListDataLoader.isLoading || !projectContext.surveysListDataLoader.isReady}
-          isLoadingFallback={<SkeletonTable data-testid="survey-list-skeleton" />}
-          isLoadingFallbackDelay={100}
-          hasNoData={!surveys.length}
-          hasNoDataFallback={
-            <NoDataOverlay
-              height="200px"
-              title="Create a Survey"
-              subtitle="Start managing ecological data by creating a survey"
-              icon={mdiArrowTopRight}
-              data-testid="survey-list-no-data-overlay"
-            />
-          }
-          hasNoDataFallbackDelay={100}>
-          <StyledDataGrid
-            noRowsMessage="No surveys found"
-            columns={columns}
-            rows={surveys}
-            rowCount={projectContext.surveysListDataLoader.data?.pagination?.total ?? 0}
-            getRowId={(row) => row.survey_id}
-            pageSizeOptions={[...pageSizeOptions]}
-            paginationMode="server"
-            sortingMode="server"
-            sortModel={sortModel}
-            paginationModel={paginationModel}
-            onPaginationModelChange={setPaginationModel}
-            onSortModelChange={setSortModel}
-            rowSelection={false}
-            checkboxSelection={false}
-            disableRowSelectionOnClick
-            disableColumnSelector
-            disableColumnFilter
-            disableColumnMenu
-            sortingOrder={['asc', 'desc']}
+      <LoadingGuard
+        isLoading={projectContext.surveysListDataLoader.isLoading || !projectContext.surveysListDataLoader.isReady}
+        isLoadingFallback={<SkeletonTable data-testid="survey-list-skeleton" />}
+        isLoadingFallbackDelay={100}
+        hasNoData={!surveys.length}
+        hasNoDataFallback={
+          <NoDataOverlay
+            height="200px"
+            title="Create a Survey"
+            subtitle="Start managing ecological data by creating a survey"
+            icon={mdiArrowTopRight}
+            data-testid="survey-list-no-data-overlay"
           />
-        </LoadingGuard>
-      </Box>
+        }
+        hasNoDataFallbackDelay={100}>
+        <StyledDataGrid
+          noRowsMessage="No surveys found"
+          columns={columns}
+          rows={surveys}
+          rowCount={projectContext.surveysListDataLoader.data?.pagination?.total ?? 0}
+          getRowId={(row) => row.survey_id}
+          pageSizeOptions={[...pageSizeOptions]}
+          paginationMode="server"
+          sortingMode="server"
+          sortModel={sortModel}
+          paginationModel={paginationModel}
+          onPaginationModelChange={setPaginationModel}
+          onSortModelChange={setSortModel}
+          rowSelection={false}
+          checkboxSelection={false}
+          disableRowSelectionOnClick
+          disableColumnSelector
+          disableColumnFilter
+          disableColumnMenu
+          sortingOrder={['asc', 'desc']}
+        />
+      </LoadingGuard>
     </>
   );
 };

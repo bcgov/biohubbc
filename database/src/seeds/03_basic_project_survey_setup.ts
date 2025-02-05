@@ -289,13 +289,11 @@ const insertSurveyFundingData = (surveyId: number) => `
   INSERT into survey_funding_source
     (
       survey_id,
-      funding_source_id,
-      amount
+      funding_source_id
     )
   VALUES (
     ${surveyId},
-    (select funding_source_id from funding_source order by random() limit 1),
-    ${faker.commerce.price({ min: 100, max: 99999999, dec: 0 })}
+    (select funding_source_id from funding_source order by random() limit 1)
   );
 `;
 

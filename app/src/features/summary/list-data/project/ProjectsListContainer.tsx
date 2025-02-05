@@ -160,7 +160,7 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
           {params.row.members.map((member) => (
             <TeamMemberAvatar
               key={member.system_user_id}
-              title={member.display_name}
+              tooltip={member.display_name}
               label={member.display_name
                 .split(',')
                 .map((name) => name.trim().slice(0, 1).toUpperCase())

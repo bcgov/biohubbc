@@ -64,11 +64,9 @@ export class PostPartnershipsData {
 
 export class PostFundingSourceData {
   funding_source_id: number;
-  amount: number;
 
   constructor(obj?: any) {
     this.funding_source_id = obj?.funding_source_id || null;
-    this.amount = obj?.amount ?? null;
   }
 }
 

@@ -203,7 +203,8 @@ const ObservationsTableContainer = () => {
             variant="contained"
             color="primary"
             startIcon={<Icon path={mdiPlus} size={1} />}
-            onClick={() => history.push(`/admin/projects/${projectId}/surveys/${surveyId}/observations/create`)}>
+            onClick={() => history.push(`/admin/projects/${projectId}/surveys/${surveyId}/observations/create`)}
+            disabled={observationsTableContext.isSaving || observationsTableContext.isDisabled}>
             Add Row
           </Button>
 

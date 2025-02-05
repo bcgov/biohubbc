@@ -1,31 +1,22 @@
-import { mdiClose, mdiPlus } from '@mdi/js';
-import Icon from '@mdi/react';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
 import Collapse from '@mui/material/Collapse';
-import grey from '@mui/material/colors/grey';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import IconButton from '@mui/material/IconButton';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
 import AlertBar from 'components/alert/AlertBar';
+import { NameDescriptionCard } from 'components/card/NameDescriptionCard';
 import AutocompleteField from 'components/fields/AutocompleteField';
-import DollarAmountField from 'components/fields/DollarAmountField';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { IEditSurveyRequest } from 'interfaces/useSurveyApi.interface';
 import get from 'lodash-es/get';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import yup from 'utils/YupSchema';
 
 export interface ISurveyFundingSource {
   funding_source_id: number;
-  amount: number;
   revision_count: number;
   survey_funding_source_id?: number | null;
   survey_id: number;
@@ -37,16 +28,8 @@ export interface ISurveyFundingSource {
 
 export interface ISurveyFundingSourceForm {
   funding_used: boolean | null;
-  funding_sources: ISurveyFundingSource[];
+  funding_sources: { funding_source_id: number }[];
 }
-
-const SurveyFundingSourceInitialValues: ISurveyFundingSource = {
-  funding_source_id: undefined as unknown as number,
-  amount: undefined as unknown as number,
-  revision_count: 0,
-  survey_funding_source_id: undefined,
-  survey_id: 0
-};
 
 export const SurveyFundingSourceFormInitialValues: ISurveyFundingSourceForm = {
   funding_used: null,
@@ -58,33 +41,33 @@ export const SurveyFundingSourceFormYupSchema = yup.object().shape({
     .boolean()
     .nullable()
     .required('You must indicate whether a funding source requires this survey to be submitted'),
-  funding_sources: yup.array(
-    yup.object().shape({
-      funding_source_id: yup
-        .number()
-        .required('Must select a funding source')
-        .min(1, 'Must select a funding source')
-        .test('is-unique-funding-source', 'Funding sources must be unique', function (fundingSourceId) {
-          const formValues = this.options.context;
+  funding_sources: yup
+    .array(
+      yup.object().shape({
+        funding_source_id: yup
+          .number()
+          .required('Must select a funding source')
+          .min(1, 'Must select a funding source')
+          .test('is-unique-funding-source', 'Funding sources must be unique', function (fundingSourceId) {
+            const formValues = this.options.context;
 
-          if (!formValues?.funding_sources?.length) {
-            return true;
-          }
+            if (!formValues?.funding_sources?.length) {
+              return true;
+            }
 
-          return (
-            formValues.funding_sources.filter(
-              (fundingSource: ISurveyFundingSource) => fundingSource.funding_source_id === fundingSourceId
-            ).length <= 1
-          );
-        }),
-      amount: yup
-        .number()
-        .min(0, 'Must be a positive number')
-        .max(9999999999, 'Cannot exceed $9,999,999,999')
-        .nullable(true)
-        .transform((value) => (isNaN(value) ? null : Number(value)))
+            return (
+              formValues.funding_sources.filter(
+                (fundingSource: ISurveyFundingSource) => fundingSource.funding_source_id === fundingSourceId
+              ).length <= 1
+            );
+          })
+      })
+    )
+    .when('funding_used', {
+      is: true,
+      then: yup.array().min(1, 'You must select at least one funding source'),
+      otherwise: yup.array().nullable()
     })
-  )
 });
 
 /**
@@ -92,11 +75,34 @@ export const SurveyFundingSourceFormYupSchema = yup.object().shape({
  *
  * @return {*}
  */
-const SurveyFundingSourceForm = () => {
-  const formikProps = useFormikContext<IEditSurveyRequest>();
-  const { values, handleChange, handleSubmit, errors, setFieldValue, submitCount, setFieldError } = formikProps;
 
-  // Determine value of funding_used based on whether funding_sources exist
+export const SurveyFundingSourceForm = () => {
+  const { values, handleSubmit, errors, setFieldValue, submitCount, setFieldError } =
+    useFormikContext<IEditSurveyRequest>();
+
+  const biohubApi = useBiohubApi();
+
+  const fundingSourcesDataLoader = useDataLoader(() => biohubApi.funding.getAllFundingSources());
+
+  useEffect(() => {
+    fundingSourcesDataLoader.load();
+  }, [fundingSourcesDataLoader]);
+
+  const fundingSourceOptions = useMemo(
+    () =>
+      fundingSourcesDataLoader.data?.map((option) => ({ value: option.funding_source_id, label: option.name })) ?? [],
+    [fundingSourcesDataLoader.data]
+  );
+
+  const existingFunctionSources = useMemo(
+    () =>
+      fundingSourceOptions.filter((option) =>
+        values.funding_sources.map((source) => source.funding_source_id).includes(option.value)
+      ),
+    [fundingSourceOptions, values.funding_sources]
+  );
+
+  // Update `funding_used` based on the existence of `funding_sources`
   useEffect(() => {
     if (values.funding_sources.length > 0) {
       setFieldValue('funding_used', values.funding_used);
@@ -105,13 +111,6 @@ const SurveyFundingSourceForm = () => {
     }
   }, [setFieldValue, values.funding_sources, values.funding_used]);
 
-  const biohubApi = useBiohubApi();
-  const fundingSourcesDataLoader = useDataLoader(() => biohubApi.funding.getAllFundingSources());
-  fundingSourcesDataLoader.load();
-
-  const fundingSources = fundingSourcesDataLoader.data ?? [];
-
-  // Determine the radio button value
   const getFundingUsedValue = () => {
     if (values.funding_used === true) {
       return 'true';
@@ -139,16 +138,17 @@ const SurveyFundingSourceForm = () => {
                 }
               />
             )}
+
+            {/* Radio Buttons for funding_used */}
             <RadioGroup
               aria-label="funding_used"
               name="funding_used"
               value={getFundingUsedValue()}
+              sx={{ mb: 1 }}
               onChange={(event) => {
                 const value = event.target.value === 'true' ? true : false;
                 setFieldValue('funding_used', value);
-                if (value) {
-                  arrayHelpers.push(SurveyFundingSourceInitialValues);
-                } else {
+                if (!value) {
                   setFieldValue('funding_sources', []);
                 }
                 setFieldError('funding_used', undefined);
@@ -157,88 +157,35 @@ const SurveyFundingSourceForm = () => {
               <FormControlLabel value="false" control={<Radio required={true} color="primary" />} label="No" />
             </RadioGroup>
 
-            <TransitionGroup
-              component={Stack}
-              gap={1}
-              role="list"
-              sx={{
-                '&:not(:has(div[role=listitem]))': {
-                  display: 'none'
-                }
-              }}>
-              {values.funding_sources.map((surveyFundingSource: ISurveyFundingSource, index: number) => {
-                return (
-                  <Collapse role="listitem" key={index}>
-                    <Card
-                      component={Stack}
-                      variant="outlined"
-                      flexDirection="row"
-                      alignItems="flex-start"
-                      gap={2}
-                      sx={{
-                        width: '100%',
-                        mt: 1,
-                        p: 2,
-                        backgroundColor: grey[100]
-                      }}>
-                      <AutocompleteField
-                        id={`funding_sources.[${index}].funding_source_id`}
-                        name={`funding_sources.[${index}].funding_source_id`}
-                        label="Funding Source"
-                        options={fundingSources.map((fundingSource) => ({
-                          value: fundingSource.funding_source_id,
-                          label: fundingSource.name
-                        }))}
-                        loading={fundingSourcesDataLoader.isLoading}
-                        required
-                        sx={{
-                          flex: '1 1 auto'
-                        }}
-                      />
-                      <DollarAmountField
-                        label="Amount (Optional)"
-                        id={`funding_sources.[${index}].amount`}
-                        name={`funding_sources.[${index}].amount`}
-                        value={surveyFundingSource.amount}
-                        onChange={handleChange}
-                        sx={{
-                          width: '200px'
-                        }}
-                      />
-
-                      <IconButton
-                        data-testid={`funding-form-delete-button-${index}`}
-                        title="Remove Funding Source"
-                        aria-label="Remove Funding Source"
-                        onClick={() => arrayHelpers.remove(index)}
-                        sx={{ mt: 1.125 }}>
-                        <Icon path={mdiClose} size={1} />
-                      </IconButton>
-                    </Card>
-                  </Collapse>
-                );
-              })}
-            </TransitionGroup>
-            {errors.funding_sources && !Array.isArray(errors?.funding_sources) && (
-              <Box mt={3}>
-                <Typography style={{ fontSize: '12px', color: '#f44336' }}>{errors.funding_sources}</Typography>
-              </Box>
-            )}
+            {/* Autocomplete to select funding sources */}
             {values.funding_used && (
-              <Button
-                data-testid="funding-form-add-button"
-                variant="outlined"
-                color="primary"
-                title="Create Funding Source"
-                aria-label="Create Funding Source"
-                startIcon={<Icon path={mdiPlus} size={1} />}
-                onClick={() => arrayHelpers.push(SurveyFundingSourceInitialValues)}
-                sx={{
-                  alignSelf: 'flex-start'
-                }}>
-                Add Funding Source
-              </Button>
+              <AutocompleteField
+                id="funding_sources"
+                name="funding_sources"
+                label="Funding Source"
+                selectedOptions={values.funding_sources.map((source) => source.funding_source_id)}
+                required
+                options={fundingSourceOptions}
+                onChange={(_, option) => {
+                  if (option) {
+                    setFieldValue('funding_sources', [...values.funding_sources, { funding_source_id: option.value }]);
+                  }
+                }}
+              />
             )}
+
+            {/* Transition Group for displaying funding sources */}
+            <TransitionGroup>
+              {existingFunctionSources.map((fundingSource, index) => (
+                <Collapse key={fundingSource.value}>
+                  <NameDescriptionCard
+                    sx={{ my: 0.5 }}
+                    onDelete={() => arrayHelpers.remove(index)}
+                    label={fundingSource.label}
+                  />
+                </Collapse>
+              ))}
+            </TransitionGroup>
           </Stack>
         )}
       />

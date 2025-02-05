@@ -40,7 +40,7 @@ describe('FundingSourceService', () => {
 
       const getFundingSourcesSupplementaryDataStub = sinon
         .stub(FundingSourceRepository.prototype, 'getFundingSourceSupplementaryData')
-        .resolves({ survey_reference_count: 2, survey_reference_amount_total: 1 });
+        .resolves({ survey_reference_count: 2 });
 
       const response = await fundingSourceService.getFundingSources({ name: 'name' });
 
@@ -53,8 +53,7 @@ describe('FundingSourceService', () => {
           start_date: '2020-01-01',
           end_date: '2020-01-01',
           description: 'description',
-          survey_reference_count: 2,
-          survey_reference_amount_total: 1
+          survey_reference_count: 2
         }
       ]);
     });
@@ -72,7 +71,6 @@ describe('FundingSourceService', () => {
         end_date: '2020-01-01',
         description: 'description',
         revision_count: 0,
-        survey_reference_amount_total: 1,
         survey_reference_count: 500
       };
 
@@ -81,7 +79,6 @@ describe('FundingSourceService', () => {
           survey_funding_source_id: 1,
           survey_id: 2,
           funding_source_id: 3,
-          amount: 500,
           revision_count: 0,
           project_id: 1,
           survey_name: 'survey name'
@@ -188,7 +185,6 @@ describe('FundingSourceService', () => {
           funding_source_id: 1,
           survey_funding_source_id: 1,
           survey_id: 1,
-          amount: 1,
           revision_count: 1
         }
       ];
@@ -211,7 +207,7 @@ describe('FundingSourceService', () => {
 
       const postFundingSourceStub = sinon.stub(FundingSourceRepository.prototype, 'postSurveyFundingSource').resolves();
 
-      const response = await fundingSourceService.postSurveyFundingSource(1, 1, 100);
+      const response = await fundingSourceService.postSurveyFundingSource(1, 1);
 
       expect(postFundingSourceStub).to.be.calledOnce;
       expect(response).to.eql(undefined);
@@ -225,7 +221,7 @@ describe('FundingSourceService', () => {
 
       const postFundingSourceStub = sinon.stub(FundingSourceRepository.prototype, 'putSurveyFundingSource').resolves();
 
-      const response = await fundingSourceService.putSurveyFundingSource(1, 1, 100, 1);
+      const response = await fundingSourceService.putSurveyFundingSource(1, 1, 1);
 
       expect(postFundingSourceStub).to.be.calledOnce;
       expect(response).to.eql(undefined);
