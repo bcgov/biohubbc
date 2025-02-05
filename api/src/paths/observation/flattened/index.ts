@@ -56,7 +56,8 @@ GET.apiDoc = {
       schema: {
         type: 'array',
         items: {
-          type: 'integer'
+          type: 'integer',
+          minimum: 1
         },
         nullable: true
       }
@@ -68,6 +69,7 @@ GET.apiDoc = {
       required: false,
       schema: {
         type: 'integer',
+        minimum: 1,
         nullable: true
       }
     },

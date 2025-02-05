@@ -10,7 +10,8 @@ const ObservationQualitativeEnvironment: OpenAPIV3.SchemaObject = {
   ],
   properties: {
     observation_environment_qualitative_id: {
-      type: 'integer'
+      type: 'integer',
+      minimum: 1
     },
     environment_qualitative_id: {
       type: 'string',
@@ -29,7 +30,8 @@ const ObservationQuantitativeEnvironment: OpenAPIV3.SchemaObject = {
   required: ['observation_environment_quantitative_id', 'environment_quantitative_id', 'value'],
   properties: {
     observation_environment_quantitative_id: {
-      type: 'integer'
+      type: 'integer',
+      minimum: 1
     },
     environment_quantitative_id: {
       type: 'string',
@@ -49,7 +51,8 @@ const ObservationSubcountSchema: OpenAPIV3.SchemaObject = {
   required: ['observation_subcount_id', 'subcount', 'comment', 'qualitative_measurements', 'quantitative_measurements'],
   properties: {
     observation_subcount_id: {
-      type: 'integer'
+      type: 'integer',
+      minimum: 1
     },
     comment: {
       type: 'string',
@@ -133,7 +136,8 @@ export const findObservationsSchema: OpenAPIV3.SchemaObject = {
         minimum: 1
       },
       itis_tsn: {
-        type: 'integer'
+        type: 'integer',
+        minimum: 1
       },
       itis_scientific_name: {
         type: 'string',
@@ -248,7 +252,8 @@ export const findFlattenedObservationsSchema: OpenAPIV3.SchemaObject = {
         minimum: 1
       },
       itis_tsn: {
-        type: 'integer'
+        type: 'integer',
+        minimum: 1
       },
       itis_scientific_name: {
         type: 'string',
