@@ -16,6 +16,7 @@ import { IMarkings } from 'interfaces/useCritterApi.interface';
 import { useEffect, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { MarkingCard } from './MarkingCard';
+import HelpButtonStack from 'components/buttons/HelpButtonStack';
 
 /**
  * Returns the control for applying markings to an animal on the animal form
@@ -162,6 +163,7 @@ export const MarkingsForm = <FormikValuesType extends IMarkings>() => {
               ))}
             </TransitionGroup>
           </Stack>
+          <HelpButtonStack helpText={'Indicate animal markings, with the exception of GPS telemetry devices, which are managed on the telemetry page.'}>
           <Button
             sx={{ mt: 2 }}
             color="primary"
@@ -171,6 +173,7 @@ export const MarkingsForm = <FormikValuesType extends IMarkings>() => {
             onClick={() => setIsDialogOpen(true)}>
             Add Marking
           </Button>
+          </HelpButtonStack>
         </>
       )}
     />
