@@ -11,14 +11,15 @@ import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { GridPaginationModel, GridRowSelectionModel, GridSortModel } from '@mui/x-data-grid';
+import axios, { AxiosProgressEvent } from 'axios';
 import { DualImportButton } from 'components/buttons/DualImportButton';
 import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
-import { FileUploadSingleItemDialog } from 'components/dialog/attachments/FileUploadSingleItemDialog';
+import { CSVSingleImportDialog } from 'components/csv/CSVSingleImportDialog';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
-import { CreateSamplingSiteI18N, SamplePeriodI18N } from 'constants/i18n';
-import { APIError } from 'hooks/api/useAxios';
+import { SamplePeriodI18N } from 'constants/i18n';
+import { getSamplePeriodCSVTemplate } from 'features/surveys/animals/profile/captures/import-captures/utils/templates';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
@@ -26,7 +27,8 @@ import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import { useEffect, useMemo, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions } from 'types/misc';
-import { firstOrNull } from 'utils/Utils';
+import { downloadFile } from 'utils/file-utils';
+import { firstOrNull, waitForRenderCycle } from 'utils/Utils';
 import { SamplingPeriodTable } from './table/SamplingPeriodTable';
 
 const pageSizeOptions = [10, 25, 50];
@@ -134,29 +136,28 @@ export const SamplingPeriodContainer = () => {
     });
   };
 
-  const handleBulkImportSamplePeriods = async (file: File) => {
-    try {
-      await biohubApi.survey.importCrittersFromCsv(file, surveyContext.projectId, surveyContext.surveyId);
-      surveyContext.critterDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
-    } catch (error) {
-      const apiError = error as APIError;
+  /**
+   * Handle the bulk import sample periods.
+   *
+   * @param {File} file
+   * @param {(progressEvent: AxiosProgressEvent) => void} onProgress
+   * @return {*} {Promise<void>}
+   */
+  const handleBulkImportSamplePeriods = async (file: File, onProgress: (progressEvent: AxiosProgressEvent) => void) => {
+    await biohubApi.samplingPeriod.importSamplePeriodsFromCsv(
+      file,
+      surveyContext.projectId,
+      surveyContext.surveyId,
+      axios.CancelToken.source(),
+      onProgress
+    );
 
-      dialogContext.setErrorDialog({
-        dialogTitle: CreateSamplingSiteI18N.createErrorTitle,
-        dialogText: CreateSamplingSiteI18N.createErrorText,
-        dialogError: apiError.message,
-        dialogErrorDetails: apiError.errors,
-        open: true,
-        onClose: () => {
-          dialogContext.setErrorDialog({ open: false });
-        },
-        onOk: () => {
-          dialogContext.setErrorDialog({ open: false });
-        }
-      });
-    } finally {
-      setOpenBulkImportDialog(false);
-    }
+    periodsDataLoader.refresh(periodsPagination);
+
+    // Wait for the render cycle to complete before closing the dialog
+    await waitForRenderCycle();
+
+    setOpenBulkImportDialog(false);
   };
 
   useEffect(() => {
@@ -170,13 +171,15 @@ export const SamplingPeriodContainer = () => {
 
   return (
     <>
-      <FileUploadSingleItemDialog
+      <CSVSingleImportDialog
         open={openBulkImportDialog}
-        dialogTitle="Import Sample Periods"
+        dialogTitle="Import Sampling Periods"
+        dialogSummary="Import sampling periods data for a survey by uploading a CSV file matching the template"
         onClose={() => setOpenBulkImportDialog(false)}
-        onUpload={handleBulkImportSamplePeriods}
-        uploadButtonLabel="Import"
-        dropZoneProps={{ acceptedFileExtensions: '.csv' }}
+        onImport={handleBulkImportSamplePeriods}
+        onDownloadTemplate={() =>
+          downloadFile(getSamplePeriodCSVTemplate(), `SIMS-sampling-periods-template-${new Date().getFullYear()}.csv`)
+        }
       />
       <Stack
         flexDirection="column"
