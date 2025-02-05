@@ -80,10 +80,10 @@ export type CSVCellValidator = (params: CSVParams) => CSVError[];
  * The CSV row validator function
  *
  * @param {CSVRowParams} params - The CSV row parameters
- * @returns {CSVError[]} - The list of CSV errors
+ * @returns {CSVRowError[]} - The list of CSV row errors
  *
  */
-export type CSVRowValidator = (params: CSVRowParams) => CSVError[];
+export type CSVRowValidator = (params: CSVRowParams) => CSVRowError[];
 
 /**
  * The CSV header config cell setter function
@@ -233,9 +233,9 @@ export interface CSVError {
    * The header name. Typically this will be the user facing CSV header name.
    *
    * @example 'Population Unit'
-   * @type {string | null | undefined}
+   * @type {Uppercase<string> | string | null | undefined}
    */
-  header?: string | null;
+  header?: Uppercase<string> | string | null;
   /**
    * The row index the error occurred.
    *
@@ -246,6 +246,17 @@ export interface CSVError {
    */
   row?: number;
 }
+
+/**
+ * Similar to `CSVError` but with additional required properties.
+ *
+ * Why? When returning errors from a row validator, additional properties
+ * are required as it lacks the `CSVParams` object which is passed to the cell
+ * validators. This is to ensure the error object is consistent across the validators.
+ *
+ */
+type CSVRowError = Prettify<CSVError & { header: Uppercase<string> | string | null }>;
+
 /**
  * The CSV row state symbol to store additional row metadata
  * without interfering with the row shape or structure

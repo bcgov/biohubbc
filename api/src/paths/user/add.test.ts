@@ -4,7 +4,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { SYSTEM_IDENTITY_SOURCE } from '../../constants/database';
 import * as db from '../../database/db';
-import { SystemUser } from '../../repositories/user-repository';
+import { SystemUserWithRoles } from '../../models/system-user-view';
 import { UserService } from '../../services/user-service';
 import * as keycloakUtils from '../../utils/keycloak-utils';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
@@ -37,7 +37,7 @@ describe('user', () => {
         roleId: 1
       };
 
-      const mockUserObject: SystemUser = {
+      const mockUserObject: SystemUserWithRoles = {
         system_user_id: 1,
         user_identifier: '',
         user_guid: '',
@@ -85,7 +85,7 @@ describe('user', () => {
         roleId: 1
       };
 
-      const mockUserObject: SystemUser = {
+      const mockUserObject: SystemUserWithRoles = {
         system_user_id: 1,
         user_identifier: '',
         user_guid: '',

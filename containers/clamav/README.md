@@ -41,7 +41,7 @@ A copy of the templates patched templates (converted to yaml) are included here 
 
    This will build the image, adding a new tag to the `clamav` ImageStream (`clamav:latest`)
 
-### Import the Deployment Config
+### Import the Deployment
 
 1. Log into OpenShift
 2. Switch to your dev environment.
@@ -51,20 +51,20 @@ A copy of the templates patched templates (converted to yaml) are included here 
    ```
 
 3. Navigate to the `<clamav_repo>/openshift/templates` folder
-4. Import the clamav deployment config (clamav-dc.yaml)
+4. Import the clamav deployment (clamav-dc.yaml)
 
    ```
    oc process -f clamav-dc.conf | oc create -f -
    ```
 
-   This will create a new DeploymentConfig (`clamav`) and Service (`clamav`).
+   This will create a new Deployment (`clamav`) and Service (`clamav`).
 
 #### Deploy the Image
 
 1. Deploy the image
 
    ```
-   OpenShift Web UI (Administrator) -> Workloads -> DeploymentConfigs -> clamav -> Actions -> Start Rollout
+   OpenShift Web UI (Administrator) -> Workloads -> Deployments -> clamav -> Actions -> Start Rollout
    ```
 
    This will deploy a Pod running the ClamaAV image.

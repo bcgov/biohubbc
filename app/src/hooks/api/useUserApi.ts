@@ -1,6 +1,9 @@
 import { AxiosInstance } from 'axios';
+import { IActiveUserFilters } from 'features/admin/users/active/filters/ActiveUsersFilterForm';
 import { IGetUserProjectsListResponse } from 'interfaces/useProjectApi.interface';
-import { ISystemUser } from 'interfaces/useUserApi.interface';
+import { ISystemUser, ISystemUserResponse } from 'interfaces/useUserApi.interface';
+import qs from 'qs';
+import { ApiPaginationRequestOptions } from 'types/misc';
 
 /**
  * Returns a set of supported api methods for working with users.
@@ -34,10 +37,20 @@ const useUserApi = (axios: AxiosInstance) => {
   /**
    * Get user details for all users.
    *
-   * @return {*}  {Promise<ISystemUser[]>}
+   * @param {IActiveUserFilters} filters
+   * @param {ApiPaginationRequestOptions} pagination
+   * @return {*}  {Promise<ISystemUserResponse>}
    */
-  const getUsersList = async (): Promise<ISystemUser[]> => {
-    const { data } = await axios.get('/api/user/list');
+  const getUsersList = async (
+    filters: IActiveUserFilters,
+    pagination: ApiPaginationRequestOptions
+  ): Promise<ISystemUserResponse> => {
+    const params = {
+      ...pagination,
+      ...filters
+    };
+
+    const { data } = await axios.get('/api/user/list', { params, paramsSerializer: (params) => qs.stringify(params) });
 
     return data;
   };
@@ -64,6 +77,11 @@ const useUserApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Find system user by keyword
+   *
+   * @return {*}  {Promise<ISystemUser[]>}
+   */
   const searchSystemUser = async (filter: string): Promise<ISystemUser[]> => {
     const { data } = await axios.get(`api/user?keyword=${filter}`);
     return data;

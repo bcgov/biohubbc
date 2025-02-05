@@ -45,6 +45,22 @@ describe('CSVHeaderConfigs', () => {
       expect(row[CSVRowState]?.stateValue).to.equal('newValue');
       expect(row[CSVRowState]?.additionalValue).to.equal('value');
     });
+
+    it('should set nested state values', () => {
+      const row: CSVRow = { TEST: 'cellValue' };
+
+      updateCSVRowState(row, { state: { value: 'newValue' } });
+
+      expect(row[CSVRowState]?.state?.value).to.equal('newValue');
+    });
+
+    it('should update nested state values', () => {
+      const row: CSVRow = { TEST: 'cellValue', [CSVRowState]: { state: { value: 'oldValue' } } };
+
+      updateCSVRowState(row, { state: { value: 'newValue' } });
+
+      expect(row[CSVRowState]?.state?.value).to.equal('newValue');
+    });
   });
 
   describe('validateZodCell', () => {

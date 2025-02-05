@@ -6,8 +6,8 @@ import { SiteSelectionData } from '../repositories/site-selection-strategy-repos
 import { SurveyBlockRecord } from '../repositories/survey-block-repository';
 import { SurveyLocationRecord } from '../repositories/survey-location-repository';
 import { SurveyUser } from '../repositories/survey-participation-repository';
-import { SystemUser } from '../repositories/user-repository';
 import { ITaxonomyWithEcologicalUnits } from '../services/platform-service';
+import { SystemUserWithRoles } from './system-user-view';
 
 export interface ISurveyAdvancedFilters {
   /**
@@ -85,7 +85,7 @@ export type SurveyObject = {
   purpose_and_methodology: GetSurveyPurposeAndMethodologyData;
   proprietor: GetSurveyProprietorData | null;
   locations: SurveyLocationRecord[];
-  participants: (SurveyUser & SystemUser)[];
+  participants: (SurveyUser & SystemUserWithRoles)[];
   partnerships: ISurveyPartnerships;
   site_selection: SiteSelectionData;
   blocks: SurveyBlockRecord[];
