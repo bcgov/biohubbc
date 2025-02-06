@@ -6,10 +6,13 @@ import { getSamplePeriodIdFromRowState } from '../../utils/row-state';
 import {
   findMatchingPeriodsWithObservationDateTime,
   findMatchingPeriodsWithSamplingInformation,
+  findMatchingPeriodWithSamplePeriodId,
   getObservationSamplingInformationRowValidator,
   matchSamplePeriodDateToWorksheetPeriodDateTime,
   matchSamplePeriodTimeToWorksheetPeriodDateTime,
-  matchSamplePeriodToWorksheetPeriod
+  matchSamplePeriodToWorksheetPeriod,
+  validateSiteExistsInSamplePeriods,
+  validateTechniqueExistsInSamplePeriods
 } from './observation-sampling-row-validator';
 
 chai.use(sinonChai);
@@ -164,6 +167,54 @@ describe('Worksheet sampling util functions', () => {
   });
 
   describe('getObservationSamplingInformationRowValidator', () => {
+    it('should throw an error when sample period id does not exist in the sample periods', () => {
+      const getCellValueStub = sinon.stub();
+
+      getCellValueStub.onCall(0).returns('SampleSiteOne');
+      getCellValueStub.onCall(1).returns('MethodTechniqueOne');
+      getCellValueStub.onCall(2).returns('2021-01-01 11:00:00 - 2021-01-02 12:00:00');
+
+      const validator = getObservationSamplingInformationRowValidator(
+        [{ survey_sample_period_id: 1 }] as any[],
+        {
+          getCellValue: getCellValueStub,
+          getWorksheetHeader: () => 'HEADER'
+        } as any,
+        2
+      );
+
+      try {
+        validator({ row: {} } as any);
+        expect.fail('should have thrown an error');
+      } catch (err: any) {
+        expect(err.message).to.exist;
+      }
+    });
+
+    it('should update the row state with the sample period id when found', () => {
+      const getCellValueStub = sinon.stub();
+
+      getCellValueStub.onCall(0).returns('SampleSiteOne');
+      getCellValueStub.onCall(1).returns('MethodTechniqueOne');
+      getCellValueStub.onCall(2).returns('2021-01-01 11:00:00 - 2021-01-02 12:00:00');
+
+      const validator = getObservationSamplingInformationRowValidator(
+        [{ survey_sample_period_id: 1 }] as any[],
+        {
+          getCellValue: getCellValueStub,
+          getWorksheetHeader: () => 'HEADER'
+        } as any,
+        1
+      );
+
+      const params = { row: {} } as any;
+
+      validator(params);
+
+      expect(getSamplePeriodIdFromRowState(params.row).sample_period_id).to.equal(1);
+      expect(getSamplePeriodIdFromRowState(params.row).sample_period_id).to.equal(1);
+    });
+
     it('should return no errors when no sampling information and observation date provided with lat/lon', () => {
       const getCellValueStub = sinon.stub();
 
@@ -261,7 +312,7 @@ describe('Worksheet sampling util functions', () => {
     it('should return an error when no matching period found', () => {
       const getCellValueStub = sinon.stub();
 
-      getCellValueStub.onCall(0).returns('BAD');
+      getCellValueStub.onCall(0).returns('SampleSiteOne');
       getCellValueStub.onCall(1).returns('MethodTechniqueOne');
       getCellValueStub.onCall(2).returns('2021-01-01 - 2021-01-03');
 
@@ -1271,6 +1322,76 @@ describe('Worksheet sampling util functions', () => {
       const result = findMatchingPeriodsWithObservationDateTime(observationDate, observationTime, samplingPeriods);
 
       expect(result).to.eql([]);
+    });
+  });
+
+  describe('validateSiteExistsInSamplePeriods', () => {
+    it('should return an error when site name does not exist in sample periods', () => {
+      const samplePeriods = [{ survey_sample_site: { name: 'SampleSiteOne' } }] as any[];
+
+      const error = validateSiteExistsInSamplePeriods('bad', 'HEADER', samplePeriods);
+
+      expect(error?.error).to.contain('not exist');
+    });
+
+    it('should return null when site name exists in sample periods', () => {
+      const samplePeriods = [{ survey_sample_site: { name: 'SampleSiteOne' } }] as any[];
+
+      const error = validateSiteExistsInSamplePeriods('SampleSiteOne', 'HEADER', samplePeriods);
+
+      expect(error).to.be.null;
+    });
+
+    it('should return null when sample site name is null', () => {
+      const samplePeriods = [{ survey_sample_site: { name: 'SampleSiteOne' } }] as any[];
+
+      const error = validateSiteExistsInSamplePeriods(null, 'HEADER', samplePeriods);
+
+      expect(error).to.be.null;
+    });
+  });
+
+  describe('validateTechniqueExistsInSamplePeriods', () => {
+    it('should return an error when method technique does not exist in sample periods', () => {
+      const samplePeriods = [{ method_technique: { name: 'MethodTechniqueOne' } }] as any[];
+
+      const error = validateTechniqueExistsInSamplePeriods('bad', 'HEADER', samplePeriods);
+
+      expect(error?.error).to.contain('not exist');
+    });
+
+    it('should return null when method technique exists in sample periods', () => {
+      const samplePeriods = [{ method_technique: { name: 'MethodTechniqueOne' } }] as any[];
+
+      const error = validateTechniqueExistsInSamplePeriods('MethodTechniqueOne', 'HEADER', samplePeriods);
+
+      expect(error).to.be.null;
+    });
+
+    it('should return null when method technique name is null', () => {
+      const samplePeriods = [{ method_technique: { name: 'MethodTechniqueOne' } }] as any[];
+
+      const error = validateTechniqueExistsInSamplePeriods(null, 'HEADER', samplePeriods);
+
+      expect(error).to.be.null;
+    });
+  });
+
+  describe('findMatchingPeriodWithSamplePeriodId', () => {
+    it('should return true when match found', () => {
+      const samplePeriods = [{ survey_sample_period_id: 1 }] as any[];
+
+      const result = findMatchingPeriodWithSamplePeriodId(samplePeriods, 1);
+
+      expect(result).to.be.true;
+    });
+
+    it('should return false when match not found', () => {
+      const samplePeriods = [{ survey_sample_period_id: 1 }] as any[];
+
+      const result = findMatchingPeriodWithSamplePeriodId(samplePeriods, 2);
+
+      expect(result).to.be.false;
     });
   });
 });

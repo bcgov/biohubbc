@@ -111,13 +111,13 @@ export function getObservationSamplingInformationRowValidator(
     }
 
     // Validate the site and technique names exist in the sample periods
-    const siteNameDoesNotExistError = validateSiteNameExistsInSamplePeriods(
+    const siteNameDoesNotExistError = validateSiteExistsInSamplePeriods(
       worksheetSiteName,
       utils.getWorksheetHeader('SAMPLING_SITE', params.row),
       samplingPeriods
     );
 
-    const techniqueNameDoesNotExistError = validateTechniqueNameExistsInSamplePeriods(
+    const techniqueNameDoesNotExistError = validateTechniqueExistsInSamplePeriods(
       worksheetTechniqueName,
       utils.getWorksheetHeader('METHOD_TECHNIQUE', params.row),
       samplingPeriods
@@ -273,15 +273,16 @@ export function findMatchingPeriodsWithSamplingInformation(
     return true;
   });
 }
+
 /**
- * Validate the sample site name exists in the Sample Periods
+ * Validate the sample site exists in the Sample Periods
  *
  * @param {string | null} siteName The site name to validate
  * @param {Uppercase<string> | null} header The header of the site name cell
  * @param {SurveySamplePeriodDetails[]} samplePeriods All available sampling periods for the survey.
  * @return {*} {CSVError | null}
  */
-export function validateSiteNameExistsInSamplePeriods(
+export function validateSiteExistsInSamplePeriods(
   siteName: string | null,
   header: Uppercase<string> | null,
   samplePeriods: SurveySamplePeriodDetails[]
@@ -307,14 +308,14 @@ export function validateSiteNameExistsInSamplePeriods(
 }
 
 /**
- * Validate the sample technique name exists in the Sample Periods
+ * Validate the sample technique exists in the Sample Periods
  *
  * @param {string | null} techniqueName The technique name to validate
  * @param {Uppercase<string> | null} header The header of the technique name cell
  * @param {SurveySamplePeriodDetails[]} samplePeriods All available sampling periods for the survey.
  * @return {*} {CSVError | null}
  */
-export function validateTechniqueNameExistsInSamplePeriods(
+export function validateTechniqueExistsInSamplePeriods(
   techniqueName: string | null,
   header: Uppercase<string> | null,
   samplePeriods: SurveySamplePeriodDetails[]
