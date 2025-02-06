@@ -231,7 +231,7 @@ export class ImportObservationsService extends DBService {
     // Inject the row validators - handles taxon, sampling information and location validation
     this.utils.config.rowValidators = [
       getTaxonRowValidator(taxonMap, this.utils, 'SPECIES'),
-      getObservationSamplingInformationRowValidator(samplePeriods, this.utils)
+      getObservationSamplingInformationRowValidator(samplePeriods, this.utils, this.samplePeriodId)
     ];
   }
 

@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+import { compact } from 'lodash';
 import { DefaultTimeFormat, DefaultTimeFormatNoSeconds } from '../../../../constants/dates';
 import { SurveySamplePeriodDetails } from '../../../../repositories/sample-period-repository';
 import { CSVConfigUtils } from '../../../../utils/csv-utils/csv-config-utils';
@@ -17,6 +18,8 @@ dayjs.extend(isSameOrBefore);
  * that the sampling information provided in the row matches a valid sampling period from the provided list of
  * sampling periods.
  *
+ * TODO: Mac: Split this function into smaller, more testable functions
+ *
  * Successfull paths:
  *  1. No sampling information provided, but observation date, latitude and longitude is provided
  *  2. Exact period match found using site, technique, and period
@@ -28,7 +31,8 @@ dayjs.extend(isSameOrBefore);
  */
 export function getObservationSamplingInformationRowValidator(
   samplingPeriods: SurveySamplePeriodDetails[],
-  utils: CSVConfigUtils<ObservationCSVStaticHeader>
+  utils: CSVConfigUtils<ObservationCSVStaticHeader>,
+  samplePeriodId?: number
 ): CSVRowValidator {
   return (params) => {
     // Extract site, technique, and period data from the row
@@ -46,6 +50,24 @@ export function getObservationSamplingInformationRowValidator(
 
     // Determine if the worksheet contains any sampling information
     const worksheetHasSamplingInformation = Boolean(worksheetSiteName || worksheetTechniqueName || worksheetPeriod);
+
+    // VALID: Sample period id is provided and exists in the list of sampling periods
+    if (samplePeriodId) {
+      if (findMatchingPeriodWithSamplePeriodId(samplingPeriods, samplePeriodId)) {
+        updateCSVRowState(params.row, { sample_period_id: samplePeriodId });
+
+        return [];
+      }
+
+      return [
+        {
+          error: 'Unknown sample period',
+          solution: 'Please provide a valid sample period',
+          header: null,
+          cell: null
+        }
+      ];
+    }
 
     // VALID: No sampling information provided, but observation date / time is provided with lat / lon
     if (!worksheetHasSamplingInformation && worksheetObservationDate && worksheetLatitude && worksheetLongitude) {
@@ -87,6 +109,27 @@ export function getObservationSamplingInformationRowValidator(
     // Return early if any errors are found
     if (errors.length) {
       return errors;
+    }
+
+    // Validate the site and technique names exist in the sample periods
+    const siteNameDoesNotExistError = validateSiteNameExistsInSamplePeriods(
+      worksheetSiteName,
+      utils.getWorksheetHeader('SAMPLING_SITE', params.row),
+      samplingPeriods
+    );
+
+    const techniqueNameDoesNotExistError = validateTechniqueNameExistsInSamplePeriods(
+      worksheetTechniqueName,
+      utils.getWorksheetHeader('METHOD_TECHNIQUE', params.row),
+      samplingPeriods
+    );
+
+    // Combine the site and technique errors and remove any null values
+    const siteAndTechniqueErrors = compact([siteNameDoesNotExistError, techniqueNameDoesNotExistError]);
+
+    // INVALID: Site or technique name does not exist in the survey sample periods
+    if (siteAndTechniqueErrors.length) {
+      return siteAndTechniqueErrors;
     }
 
     // Filter the sampling periods by the provided sampling information
@@ -230,6 +273,88 @@ export function findMatchingPeriodsWithSamplingInformation(
     // If all provided (non-null) values match, then consider this period a match
     return true;
   });
+}
+/**
+ * Validate the sample site name exists in the Sample Periods
+ *
+ * @param {string | null} siteName The site name to validate
+ * @param {Uppercase<string> | null} header The header of the site name cell
+ * @param {SurveySamplePeriodDetails[]} samplePeriods All available sampling periods for the survey.
+ * @return {*} {CSVError | null}
+ */
+export function validateSiteNameExistsInSamplePeriods(
+  siteName: string | null,
+  header: Uppercase<string> | null,
+  samplePeriods: SurveySamplePeriodDetails[]
+): CSVRowError | null {
+  // If no site name is provided, then no validation is required
+  if (!siteName) {
+    return null;
+  }
+
+  const siteNameExists = samplePeriods.some((period) => matchSamplePeriodToWorksheetSiteName(siteName, period));
+
+  if (!siteNameExists) {
+    return {
+      error: 'Site does not exist',
+      solution: 'Please use an allowed sampling site, or add the site to the survey',
+      header: header,
+      cell: siteName,
+      values: samplePeriods.map((period) => period.survey_sample_site?.name).filter(Boolean) as string[]
+    };
+  }
+
+  return null;
+}
+
+/**
+ * Validate the sample technique name exists in the Sample Periods
+ *
+ * @param {string | null} techniqueName The technique name to validate
+ * @param {Uppercase<string> | null} header The header of the technique name cell
+ * @param {SurveySamplePeriodDetails[]} samplePeriods All available sampling periods for the survey.
+ * @return {*} {CSVError | null}
+ */
+export function validateTechniqueNameExistsInSamplePeriods(
+  techniqueName: string | null,
+  header: Uppercase<string> | null,
+  samplePeriods: SurveySamplePeriodDetails[]
+): CSVRowError | null {
+  // If no technique name is provided, then no validation is required
+  if (!techniqueName) {
+    return null;
+  }
+
+  const techniqueNameExists = samplePeriods.some((period) =>
+    matchSamplePeriodToWorksheetTechniqueName(techniqueName, period)
+  );
+
+  if (!techniqueNameExists) {
+    return {
+      error: 'Technique does not exist',
+      solution: 'Please use an allowed method technique, or add the technique to the survey',
+      header: header,
+      cell: techniqueName,
+      values: samplePeriods.map((period) => period.method_technique?.name).filter(Boolean) as string[]
+    };
+  }
+
+  return null;
+}
+
+/**
+ * Find Matching Period with Sample Period Id - This function will return true if the provided sample period id is found
+ * in the provided list of sample periods.
+ *
+ * @param {SurveySamplePeriodDetails[]} samplePeriods
+ * @param {number} samplePeriodId
+ * @return {*} {boolean}
+ */
+export function findMatchingPeriodWithSamplePeriodId(
+  samplePeriods: SurveySamplePeriodDetails[],
+  samplePeriodId: number
+): boolean {
+  return samplePeriods.some((period) => period.survey_sample_period_id === samplePeriodId);
 }
 
 /**
