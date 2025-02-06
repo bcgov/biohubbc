@@ -19,7 +19,7 @@ export const getSampleSiteCellValidator = (samplingSites: SampleSiteRecordExtend
     samplingSites.map((site) => ({ name: site.name, id: site.survey_sample_site_id })),
     {
       getError: (params) => `Sample site "${params.cell}" not found`,
-      getSolution: (params) => `Add the sample site "${params.cell}" to the survey`,
+      getSolution: (params) => `Add the sample site "${params.cell}" to the survey or pick an option from the list.`,
       optional: false
     }
   );
@@ -41,7 +41,8 @@ export const getMethodTechniqueCellValidator = (methodTechniques: TechniqueObjec
     methodTechniques.map((technique) => ({ name: technique.name, id: technique.method_technique_id })),
     {
       getError: (params) => `Method technique "${params.cell}" not found`,
-      getSolution: (params) => `Add the method technique "${params.cell}" to the survey`,
+      getSolution: (params) =>
+        `Add the method technique "${params.cell}" to the survey or pick an option from the list.`,
       optional: false
     }
   );
