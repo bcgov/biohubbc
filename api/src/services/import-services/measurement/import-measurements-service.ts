@@ -16,10 +16,16 @@ import { DBService } from '../../db-service';
 import { SurveyCritterService } from '../../survey-critter-service';
 import {
   getTsnMeasurementDictionary,
-  isCBQualitativeMeasurement,
-  isCBQuantitativeMeasurement
+  isCBQualitativeMeasurementStub,
+  isCBQuantitativeMeasurementStub
 } from '../utils/measurement';
-import { getDynamicMeasurementCellValidator } from './measurement-header-configs';
+import {
+  getCritterCaptureFromRowState,
+  getQualitativeMeasurementFromRowState,
+  getQuantitativeMeasurementFromRowState
+} from '../utils/row-state';
+import { getDynamicMeasurementCellValidator } from './utils/measurement-dynamic-headers-config';
+import { getTsnFromMeasurementRow } from './utils/measurement-utils';
 
 const defaultLog = getLogger('services/import/import-measurement-service');
 
@@ -87,25 +93,32 @@ export class ImportMeasurementsService extends DBService {
 
     for (const row of rows) {
       this.utils.worksheetDynamicHeaders.forEach((header) => {
-        const state = row[CSVRowState];
-        const stateMeasurement = state?.[header];
+        const stateMeasurement = row[CSVRowState]?.[header];
 
         // Grab the qualitative measurement from the row
-        if (isCBQualitativeMeasurement(stateMeasurement)) {
+        if (isCBQualitativeMeasurementStub(stateMeasurement)) {
+          // Get the critter and qualitative measurement meta from the row state
+          const critter = getCritterCaptureFromRowState(row);
+          const qualitativeMeasurement = getQualitativeMeasurementFromRowState(stateMeasurement);
+
           qualitativeMeasurements.push({
-            critter_id: state?.critter_id,
-            capture_id: state?.capture_id,
-            taxon_measurement_id: stateMeasurement.taxon_measurement_id,
-            qualitative_option_id: stateMeasurement.qualitative_option_id
+            critter_id: critter.critter_id,
+            capture_id: critter.capture_id,
+            taxon_measurement_id: qualitativeMeasurement.taxon_measurement_id,
+            qualitative_option_id: qualitativeMeasurement.qualitative_option_id
           });
         }
         // Grab the quantitative measurement from the row
-        else if (isCBQuantitativeMeasurement(stateMeasurement)) {
+        else if (isCBQuantitativeMeasurementStub(stateMeasurement)) {
+          // Get the critter and quantitative measurement meta from the row state
+          const critter = getCritterCaptureFromRowState(row);
+          const quantitativeMeasurement = getQuantitativeMeasurementFromRowState(stateMeasurement);
+
           quantitativeMeasurements.push({
-            critter_id: state?.critter_id,
-            capture_id: state?.capture_id,
-            taxon_measurement_id: stateMeasurement.taxon_measurement_id,
-            value: stateMeasurement.value
+            critter_id: critter.critter_id,
+            capture_id: critter.capture_id,
+            taxon_measurement_id: quantitativeMeasurement.taxon_measurement_id,
+            value: quantitativeMeasurement.value
           });
         }
       });
@@ -145,7 +158,10 @@ export class ImportMeasurementsService extends DBService {
 
     // Inject dynamic header config - handles measurement validation
     config.dynamicHeadersConfig = {
-      validateCell: getDynamicMeasurementCellValidator(measurementDictionary, surveyAliasMap, this.utils)
+      validateCell: getDynamicMeasurementCellValidator(
+        measurementDictionary,
+        getTsnFromMeasurementRow(surveyAliasMap, this.utils)
+      )
     };
 
     // Return the final CSV config
