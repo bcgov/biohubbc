@@ -255,7 +255,7 @@ export interface CSVError {
  * validators. This is to ensure the error object is consistent across the validators.
  *
  */
-type CSVRowError = Prettify<CSVError & { header: Uppercase<string> | string | null }>;
+export type CSVRowError = Prettify<Omit<CSVError, 'header'> & { header: Uppercase<string> | string | null }>;
 
 /**
  * The CSV row state symbol to store additional row metadata
