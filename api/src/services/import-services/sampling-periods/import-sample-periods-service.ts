@@ -9,6 +9,7 @@ import {
   getTimeCellSetter,
   getTimeCellValidator
 } from '../../../utils/csv-utils/csv-header-configs';
+import { getStartDateIsBeforeEndDateRowValidator } from '../../../utils/csv-utils/row-validators/start-end-date-order-row-validator';
 import { getLogger } from '../../../utils/logger';
 import { DBService } from '../../db-service';
 import { SamplePeriodService } from '../../sample-period-service';
@@ -50,8 +51,8 @@ export class ImportSamplePeriodsService extends DBService {
 
     const initialConfig: CSVConfig<SamplePeriodCSVStaticHeader> = {
       staticHeadersConfig: {
-        SAMPLE_SITE: { aliases: ['SAMPLE SITE', 'SAMPLING_SITE', 'SAMPLING SITE', 'SITE'] },
-        TECHNIQUE_NAME: { aliases: ['TECHNIQUE NAME', 'TECHNIQUE'] },
+        SAMPLE_SITE: { aliases: ['SAMPLE SITE', 'SAMPLING_SITE', 'SAMPLING SITE', 'SITE', 'LOCATION', 'STATION'] },
+        TECHNIQUE_NAME: { aliases: ['TECHNIQUE NAME', 'METHOD_TECHNIQUE', 'METHOD TECHNIQUE', 'TECHNIQUE', 'METHOD'] },
         START_DATE: { aliases: ['START DATE'] },
         START_TIME: { aliases: ['START TIME'], optional: true },
         END_DATE: { aliases: ['END DATE'] },
@@ -126,6 +127,16 @@ export class ImportSamplePeriodsService extends DBService {
       END_DATE: { validateCell: getDateCellValidator() },
       END_TIME: { validateCell: getTimeCellValidator(), setCellValue: getTimeCellSetter() }
     });
+
+    // Set the start date is before end date row validator
+    this.utils.config.rowValidators = [
+      getStartDateIsBeforeEndDateRowValidator(this.utils, {
+        startDate: 'START_DATE',
+        startTime: 'START_TIME',
+        endDate: 'END_DATE',
+        endTime: 'END_TIME'
+      })
+    ];
 
     // Return the final CSV config
     return this.utils.getConfig();

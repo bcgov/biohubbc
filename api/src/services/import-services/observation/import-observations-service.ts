@@ -102,7 +102,7 @@ export class ImportObservationsService extends DBService {
         LONGITUDE: { aliases: ['LON', 'LONG', 'LNG'], optional: true },
         SAMPLING_PERIOD: { aliases: ['PERIOD', 'TIME PERIOD', 'SESSION'], optional: true },
         SAMPLING_SITE: { aliases: ['SITE', 'SITE ID', 'LOCATION', 'SAMPLING SITE', 'STATION'], optional: true },
-        METHOD_TECHNIQUE: { aliases: ['METHOD', 'TECHNIQUE'], optional: true },
+        METHOD_TECHNIQUE: { aliases: ['METHOD TECHNIQUE', 'METHOD', 'TECHNIQUE'], optional: true },
         COMMENT: { aliases: ['COMMENTS', 'NOTE', 'NOTES'], optional: true }
       },
       ignoreDynamicHeaders: false
