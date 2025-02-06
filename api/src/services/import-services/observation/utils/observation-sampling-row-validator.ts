@@ -147,8 +147,8 @@ export function getObservationSamplingInformationRowValidator(
     if (matchingPeriodsBySamplingInformation.length === 0) {
       return [
         {
-          error: 'Unable to match observation with sampling information',
-          solution: 'Please provide more specific sampling information (site, technique, period)',
+          error: 'Unable to find matching sampling period',
+          solution: `Make sure you have a period for site '${worksheetSiteName}' and technique '${worksheetTechniqueName}', and create one if you don't.`,
           header: null,
           cell: null
         }
@@ -297,7 +297,7 @@ export function validateSiteExistsInSamplePeriods(
   if (!siteNameExists) {
     return {
       error: 'Site does not exist',
-      solution: 'Please use an allowed sampling site, or add the site to the survey',
+      solution: `Use the name of an existing sampling site, or create the site if it doesn't exist`,
       header: header,
       cell: siteName,
       values: samplePeriods.map((period) => period.survey_sample_site?.name).filter(Boolean) as string[]
@@ -332,7 +332,7 @@ export function validateTechniqueExistsInSamplePeriods(
   if (!techniqueNameExists) {
     return {
       error: 'Technique does not exist',
-      solution: 'Please use an allowed method technique, or add the technique to the survey',
+      solution: `Use the name of an existing technique, or create the technique if it doesn't exist`,
       header: header,
       cell: techniqueName,
       values: samplePeriods.map((period) => period.method_technique?.name).filter(Boolean) as string[]
