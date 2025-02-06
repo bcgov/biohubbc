@@ -3,6 +3,7 @@ import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import { compact } from 'lodash';
 import { DefaultTimeFormat, DefaultTimeFormatNoSeconds } from '../../../../constants/dates';
+import { ApiGeneralError } from '../../../../errors/api-error';
 import { SurveySamplePeriodDetails } from '../../../../repositories/sample-period-repository';
 import { CSVConfigUtils } from '../../../../utils/csv-utils/csv-config-utils';
 import { CSVRowError, CSVRowValidator } from '../../../../utils/csv-utils/csv-config-validation.interface';
@@ -59,14 +60,12 @@ export function getObservationSamplingInformationRowValidator(
         return [];
       }
 
-      return [
-        {
-          error: 'Unknown sample period',
-          solution: 'Please provide a valid sample period',
-          header: null,
-          cell: null
-        }
-      ];
+      // Note: Normally we don't want to throw errors in validators, but in this case, it's a critical error
+      // that should be caught early in the import process
+      throw new ApiGeneralError('Invalid sample period id provided', [
+        'observation-sampling-row-validator->getObservationSamplingInformationRowValidator',
+        { survey_sample_period_id: samplePeriodId }
+      ]);
     }
 
     // VALID: No sampling information provided, but observation date / time is provided with lat / lon
