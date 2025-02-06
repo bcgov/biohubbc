@@ -92,7 +92,7 @@ export const SurveySpatialAnimal = (props: ISurveySpatialAnimalProps) => {
           properties: {}
         }
       })) ?? [],
-    popup: (feature) => <SurveySpatialAnimalMortalityPopup mortalityId={`${feature.id}`} />,
+    popup: (feature) => <SurveySpatialAnimalMortalityPopup mortalityId={String(feature.id)} />,
     tooltip: (feature) => <SurveyMapTooltip title="Animal Mortality" key={`capture-tooltip-${feature.id}`} />
   };
 
