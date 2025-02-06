@@ -31,11 +31,11 @@ export const POST: Operation = [
       ]
     };
   }),
-  importSamplingPeriodsCSV()
+  importSamplePeriodsCSV()
 ];
 
 POST.apiDoc = {
-  description: 'Import SIMS CSV Sampling periods CSV file',
+  description: 'Import SIMS CSV Sample periods CSV file',
   tags: ['periods'],
   security: [
     {
@@ -65,7 +65,7 @@ POST.apiDoc = {
     }
   ],
   requestBody: {
-    description: 'SIMS sampling period CSV import file.',
+    description: 'SIMS sample period CSV import file.',
     required: true,
     content: {
       'multipart/form-data': {
@@ -75,7 +75,7 @@ POST.apiDoc = {
           required: ['media'],
           properties: {
             media: {
-              description: 'SIMS sampling period CSV import file.',
+              description: 'SIMS sample period CSV import file.',
               type: 'array',
               minItems: 1,
               maxItems: 1,
@@ -88,7 +88,7 @@ POST.apiDoc = {
   },
   responses: {
     204: {
-      description: 'Sampling periods CSV import success.'
+      description: 'Sample periods CSV import success.'
     },
     400: {
       $ref: '#/components/responses/400'
@@ -110,11 +110,11 @@ POST.apiDoc = {
 };
 
 /**
- * Imports a `Sampling Period CSV` which bulk adds sampling periods into SIMS.
+ * Imports a `Sample Period CSV` which bulk adds sample periods into SIMS.
  *
  * @return {*} {RequestHandler}
  */
-export function importSamplingPeriodsCSV(): RequestHandler {
+export function importSamplePeriodsCSV(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
     const rawFile = getFileFromRequest(req);
@@ -127,9 +127,9 @@ export function importSamplingPeriodsCSV(): RequestHandler {
     try {
       await connection.open();
 
-      const importSamplingPeriods = new ImportSamplePeriodsService(connection, worksheet, surveyId);
+      const importSamplePeriods = new ImportSamplePeriodsService(connection, worksheet, surveyId);
 
-      const errors = await importSamplingPeriods.importCSVWorksheet();
+      const errors = await importSamplePeriods.importCSVWorksheet();
 
       if (errors.length) {
         throw new HTTP422CSVValidationError(CSV_ERROR_MESSAGE, errors);
@@ -139,7 +139,7 @@ export function importSamplingPeriodsCSV(): RequestHandler {
 
       return res.status(204).send();
     } catch (error) {
-      defaultLog.error({ label: 'importSamplingPeriodsCSV', message: 'error', error });
+      defaultLog.error({ label: 'importSamplePeriodsCSV', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
