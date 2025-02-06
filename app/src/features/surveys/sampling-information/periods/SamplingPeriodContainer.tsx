@@ -155,7 +155,7 @@ export const SamplingPeriodContainer = () => {
     periodsDataLoader.refresh(periodsPagination);
 
     // Wait for the render cycle to complete before closing the dialog
-    await waitForRenderCycle();
+    await waitForRenderCycle(500);
 
     setOpenBulkImportDialog(false);
   };

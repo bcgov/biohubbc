@@ -233,11 +233,11 @@ export const getSurveyCritterAliasCellValidator = (surveyAliasMap: Map<string, I
  * Get the lookup ID cell validator - case-insensitive.
  * This validator is used to validate a cell value against a list of lookup values.
  *
- * Note: This validator will update the mutate cell value to the reference ID.
+ * Note: This validator will update the mutate cell value to the lookup value ID.
  *
  * Rules:
- *  1. The cell must be a valid reference value from the provided reference values
- *  2. The reference value is case-insensitive
+ *  1. The cell must match a value by name in the lookup values list
+ *  2. The lookup values are case-insensitive
  *
  * @param {Array<{ name: string; id: string | number }>} values List of lookup value objects
  * @param {CSVOptionalCell & {
@@ -263,12 +263,12 @@ export const getLookupIdCellValidator = (
       return [];
     }
 
-    // Check if the cell value is a valid reference value
-    const value = lookupValueMap.get(String(params.cell).toLowerCase());
+    // Check if the cell value matches a lookup value by name (case-insensitive)
+    const lookupValueId = lookupValueMap.get(String(params.cell).toLowerCase());
 
-    // Update the row state with the reference ID
-    if (value) {
-      params.mutateCell = value;
+    // Update the row state with the lookup ID
+    if (lookupValueId) {
+      params.mutateCell = lookupValueId;
 
       return [];
     }

@@ -2,15 +2,18 @@ import { mdiFileDocumentPlusOutline, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Box, Button, ButtonProps, Tooltip } from '@mui/material';
 
+// TODO: Invesitgate why the `to` prop is not working for the `Button` component.
 interface IDualImportButtonProps {
   /**
    * Props for the single import button.
    *
+   * @type {ButtonProps & { to?: string }}
    */
   singleImportButtonProps: ButtonProps & { to?: string };
   /**
    * Props for the bulk import button.
    *
+   * @type {ButtonProps & { to?: string }}
    */
   bulkImportButtonProps: ButtonProps & { to?: string };
 }
@@ -28,11 +31,10 @@ export const DualImportButton = (props: IDualImportButtonProps) => {
         <Button
           variant="contained"
           color="primary"
-          to={props.singleImportButtonProps.to}
           startIcon={<Icon path={mdiPlus} size={1} />}
           sx={{ mr: 0.2, borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
           {...props.singleImportButtonProps}>
-          Add
+          {props.singleImportButtonProps.children ?? 'Add'}
         </Button>
       </Tooltip>
       <Tooltip title="Bulk import">
