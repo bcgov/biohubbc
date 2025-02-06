@@ -1,6 +1,7 @@
-import { mdiArrowTopRight, mdiDotsVertical, mdiTrashCanOutline } from '@mdi/js';
+import { mdiArrowTopRight, mdiDotsVertical, mdiImport, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -12,7 +13,6 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { GridPaginationModel, GridRowSelectionModel, GridSortModel } from '@mui/x-data-grid';
 import axios, { AxiosProgressEvent } from 'axios';
-import { DualImportButton } from 'components/buttons/DualImportButton';
 import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
 import { CSVSingleImportDialog } from 'components/csv/CSVSingleImportDialog';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
@@ -222,15 +222,19 @@ export const SamplingPeriodContainer = () => {
           </Typography>
           <Stack gap={1} direction="row">
             <HelpButtonDialog markdownType={MarkdownTypeNameEnum.SAMPLING_PERIODS} />
-            <DualImportButton
-              singleImportButtonProps={{
-                component: RouterLink,
-                to: 'sampling/period/create'
-              }}
-              bulkImportButtonProps={{
-                onClick: () => setOpenBulkImportDialog(true)
-              }}
-            />
+            <Button
+              component={RouterLink}
+              to="sampling/period/create"
+              variant="contained"
+              startIcon={<Icon path={mdiPlus} size={0.8} />}>
+              Add
+            </Button>
+            <Button
+              onClick={() => setOpenBulkImportDialog(true)}
+              variant="contained"
+              startIcon={<Icon path={mdiImport} size={0.8} />}>
+              Import
+            </Button>
             <IconButton
               edge="end"
               sx={{
