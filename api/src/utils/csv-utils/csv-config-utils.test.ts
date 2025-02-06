@@ -21,7 +21,7 @@ describe('CSVConfigUtils', () => {
       const utils = new CSVConfigUtils(worksheet, mockConfig);
 
       expect(utils).to.be.instanceOf(CSVConfigUtils);
-      expect(utils._config).to.be.equal(mockConfig);
+      expect(utils.config).to.be.equal(mockConfig);
       expect(utils.worksheet).to.be.equal(worksheet);
 
       expect(utils.worksheetRows[0]).to.deep.equal({
@@ -224,7 +224,7 @@ describe('CSVConfigUtils', () => {
         TEST: { validateCell, setCellValue }
       });
 
-      expect(utils._config).to.be.deep.equal({
+      expect(utils.config).to.be.deep.equal({
         staticHeadersConfig: {
           TEST: { aliases: [], validateCell, setCellValue }
         },
@@ -276,7 +276,7 @@ describe('CSVConfigUtils', () => {
 
       const header = utils.getWorksheetHeader('BAD', { TEST: 'cellValue' });
 
-      expect(header).to.be.undefined;
+      expect(header).to.be.null;
     });
   });
 });

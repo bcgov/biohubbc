@@ -10,14 +10,17 @@ import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useEffect, useMemo } from 'react';
 import { coloredCustomMortalityMarker } from 'utils/mapUtils';
+import { SurveySpatialAnimalTable } from './SurveySpatialAnimalTable';
 
 interface ISurveySpatialAnimalMapProps {
   staticLayers?: IStaticLayer[];
 }
 
 /**
- * Reusable component for displaying a survey spatial animal map.
- * This component can be imported and used in multiple places.
+ * Container displaying map of captures and mortalities for animals in the Survey, and table of animals below the map
+ *
+ * @param {ISurveySpatialAnimalProps} props
+ * @returns
  */
 export const SurveySpatialAnimal = ({ staticLayers = [] }: ISurveySpatialAnimalMapProps) => {
   const surveyContext = useSurveyContext();
@@ -57,8 +60,8 @@ export const SurveySpatialAnimal = ({ staticLayers = [] }: ISurveySpatialAnimalM
           properties: {}
         }
       })) ?? [],
-    popup: (feature) => <SurveySpatialAnimalCapturePopup feature={feature} />,
-    tooltip: (feature) => <SurveyMapTooltip title="Animal Capture" key={`capture-tooltip-${feature.id}`} />
+    popup: (feature) => <SurveySpatialAnimalCapturePopup captureId={String(feature.id)} />,
+    tooltip: (feature) => <SurveyMapTooltip title="Animal Capture" key={`mortality-tooltip-${feature.id}`} />
   };
 
   const mortalityLayer: IStaticLayer = {
@@ -81,16 +84,24 @@ export const SurveySpatialAnimal = ({ staticLayers = [] }: ISurveySpatialAnimalM
           properties: {}
         }
       })) ?? [],
-    popup: (feature) => <SurveySpatialAnimalMortalityPopup feature={feature} />,
-    tooltip: (feature) => <SurveyMapTooltip title="Animal Mortality" key={`mortality-tooltip-${feature.id}`} />
+    popup: (feature) => <SurveySpatialAnimalMortalityPopup mortalityId={String(feature.id)} />,
+    tooltip: (feature) => <SurveyMapTooltip title="Animal Mortality" key={`capture-tooltip-${feature.id}`} />
   };
 
   return (
-    <Box height={{ xs: 300, md: 500 }} position="relative">
-      <SurveyMap
-        staticLayers={[...staticLayers, captureLayer, mortalityLayer]}
-        isLoading={geometryDataLoader.isLoading}
-      />
-    </Box>
+    <>
+      {/* Display map with animal capture points */}
+      <Box height={{ xs: 300, md: 500 }} position="relative">
+        <SurveyMap
+          staticLayers={[captureLayer, mortalityLayer]}
+          isLoading={geometryDataLoader.isLoading}
+        />
+      </Box>
+
+      {/* Display data table with animal capture details */}
+      <Box height={{ xs: 300, md: 500 }} display="flex" flexDirection="column">
+        <SurveySpatialAnimalTable isLoading={geometryDataLoader.isLoading} />
+      </Box>
+    </>
   );
 };

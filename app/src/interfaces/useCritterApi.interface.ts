@@ -194,6 +194,7 @@ export type ILocationCreate = {
 };
 
 export type ICaptureResponse = {
+  critter_id: string;
   capture_id: string;
   capture_date: string;
   capture_method_id: string | null;
@@ -290,6 +291,7 @@ export type ICauseOfDeathOption = {
 };
 
 export type IMortalityResponse = {
+  critter_id: string;
   mortality_id: string;
   location_id: string | null;
   mortality_timestamp: string;

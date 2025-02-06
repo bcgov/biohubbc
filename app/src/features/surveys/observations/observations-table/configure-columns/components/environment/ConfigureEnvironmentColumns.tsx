@@ -52,74 +52,69 @@ export const ConfigureEnvironmentColumns = (props: IConfigureEnvironmentColumnsP
         onAddEnvironmentColumn={(environmentColumn) => onAddEnvironmentColumns(environmentColumn)}
       />
       {hasEnvironmentColumns ? (
-        <>
-          <Typography variant="h5" sx={{ fontWeight: 500 }} color="textSecondary" my={2}>
-            Selected environments
-          </Typography>
-          <Stack gap={2} sx={{ overflowY: 'auto' }} maxHeight={400}>
-            {environmentColumns.qualitative_environments.map((environment) => (
-              <Box
-                display="flex"
-                alignItems="flex-start"
-                key={`qualitative_environment_item_${environment.environment_qualitative_id}`}>
-                <AccordionStandardCard label={environment.name} subtitle={environment.description} colour={grey[100]}>
-                  <Stack gap={1} my={2}>
-                    {environment.options.map((option) => (
-                      <AccordionStandardCard
-                        key={option.environment_qualitative_option_id}
-                        label={option.name}
-                        subtitle={option.description}
-                        colour={grey[200]}
-                        disableCollapse
-                      />
-                    ))}
-                  </Stack>
-                </AccordionStandardCard>
-                <Box ml={1} mt={1}>
-                  <IconButton
-                    aria-label="Remove environment column"
-                    onClick={() =>
-                      onRemoveEnvironmentColumns({
-                        qualitative_environments: [environment.environment_qualitative_id],
-                        quantitative_environments: []
-                      })
-                    }
-                    data-testid="configure-environment-qualitative-column-remove-button">
-                    <Icon path={mdiTrashCanOutline} size={1} />
-                  </IconButton>
-                </Box>
-              </Box>
-            ))}
-            {environmentColumns.quantitative_environments.map((environment) => (
-              <Box
-                display="flex"
-                alignItems="flex-start"
-                key={`quantitative_environment_item_${environment.environment_quantitative_id}`}>
-                <AccordionStandardCard
-                  label={environment.name}
-                  subtitle={environment.description}
-                  colour={grey[100]}
-                  ornament={
-                    environment.unit ? <ColouredRectangleChip colour={blueGrey} label={environment.unit} /> : undefined
+        <Stack gap={2} sx={{ overflowY: 'auto', mt: 2 }} maxHeight={400}>
+          {environmentColumns.qualitative_environments.map((environment) => (
+            <Box
+              display="flex"
+              alignItems="flex-start"
+              key={`qualitative_environment_item_${environment.environment_qualitative_id}`}>
+              <AccordionStandardCard label={environment.name} subtitle={environment.description} colour={grey[100]}>
+                <Stack gap={1} my={2}>
+                  {environment.options.map((option) => (
+                    <AccordionStandardCard
+                      key={option.environment_qualitative_option_id}
+                      label={option.name}
+                      subtitle={option.description}
+                      colour={grey[200]}
+                      disableCollapse
+                    />
+                  ))}
+                </Stack>
+              </AccordionStandardCard>
+              <Box ml={1} mt={1}>
+                <IconButton
+                  aria-label="Remove environment column"
+                  onClick={() =>
+                    onRemoveEnvironmentColumns({
+                      qualitative_environments: [environment.environment_qualitative_id],
+                      quantitative_environments: []
+                    })
                   }
-                />
-                <Box ml={1} mt={1}>
-                  <IconButton
-                    aria-label="Remove environment column"
-                    onClick={() =>
-                      onRemoveEnvironmentColumns({
-                        qualitative_environments: [],
-                        quantitative_environments: [environment.environment_quantitative_id]
-                      })
-                    }
-                    data-testid="configure-environment-quantitative-column-remove-button">
-                    <Icon path={mdiTrashCanOutline} size={1} />
-                  </IconButton>
-                </Box>
+                  data-testid="configure-environment-qualitative-column-remove-button">
+                  <Icon path={mdiTrashCanOutline} size={1} />
+                </IconButton>
               </Box>
-            ))}
-          </Stack>
-        </>
+            </Box>
+          ))}
+          {environmentColumns.quantitative_environments.map((environment) => (
+            <Box
+              display="flex"
+              alignItems="flex-start"
+              key={`quantitative_environment_item_${environment.environment_quantitative_id}`}>
+              <AccordionStandardCard
+                label={environment.name}
+                subtitle={environment.description}
+                colour={grey[100]}
+                ornament={
+                  environment.unit ? <ColouredRectangleChip colour={blueGrey} label={environment.unit} /> : undefined
+                }
+              />
+              <Box ml={1} mt={1}>
+                <IconButton
+                  aria-label="Remove environment column"
+                  onClick={() =>
+                    onRemoveEnvironmentColumns({
+                      qualitative_environments: [],
+                      quantitative_environments: [environment.environment_quantitative_id]
+                    })
+                  }
+                  data-testid="configure-environment-quantitative-column-remove-button">
+                  <Icon path={mdiTrashCanOutline} size={1} />
+                </IconButton>
+              </Box>
+            </Box>
+          ))}
+        </Stack>
       ) : (
         <NoDataOverlay
           minHeight="200px"

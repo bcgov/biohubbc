@@ -2,14 +2,18 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
+import { HTTP422CSVValidationError } from '../../../../../../errors/http-error';
+import { CSVValidationErrorResponse } from '../../../../../../openapi/schemas/csv';
 import { csvFileSchema } from '../../../../../../openapi/schemas/file';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { ObservationService } from '../../../../../../services/observation-services/observation-service';
-import { uploadFileToS3 } from '../../../../../../utils/file-utils';
+import { ImportObservationsService } from '../../../../../../services/import-services/observation/import-observations-service';
+import { CSV_ERROR_MESSAGE } from '../../../../../../utils/csv-utils/csv-config-validation.interface';
 import { getLogger } from '../../../../../../utils/logger';
+import { parseMulterFile } from '../../../../../../utils/media/media-utils';
 import { getFileFromRequest } from '../../../../../../utils/request';
+import { constructXLSXWorkbook, getDefaultWorksheet } from '../../../../../../utils/xlsx-utils/worksheet-utils';
 
-const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/upload');
+const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/import');
 
 export const POST: Operation = [
   authorizeRequestHandler((req) => {
@@ -27,11 +31,11 @@ export const POST: Operation = [
       ]
     };
   }),
-  uploadMedia()
+  importObservationCSV()
 ];
 
 POST.apiDoc = {
-  description: 'Upload survey observation submission file.',
+  description: 'Import survey observation CSV file.',
   tags: ['observations'],
   security: [
     {
@@ -42,16 +46,24 @@ POST.apiDoc = {
     {
       in: 'path',
       name: 'projectId',
-      required: true
+      required: true,
+      schema: {
+        type: 'integer',
+        minimum: 1
+      }
     },
     {
       in: 'path',
       name: 'surveyId',
-      required: true
+      required: true,
+      schema: {
+        type: 'integer',
+        minimum: 1
+      }
     }
   ],
   requestBody: {
-    description: 'Survey observation submission file to upload',
+    description: 'Survey observation CSV file to import',
     required: true,
     content: {
       'multipart/form-data': {
@@ -61,11 +73,16 @@ POST.apiDoc = {
           required: ['media'],
           properties: {
             media: {
-              description: 'A survey observation submission file.',
+              description: 'A survey observation CSV file.',
               type: 'array',
               minItems: 1,
               maxItems: 1,
               items: csvFileSchema
+            },
+            surveySamplePeriodId: {
+              description: 'The sample period id to associate the observations with.',
+              type: 'integer',
+              minimum: 1
             }
           }
         }
@@ -73,21 +90,8 @@ POST.apiDoc = {
     }
   },
   responses: {
-    200: {
-      description: 'Upload OK',
-      content: {
-        'application/json': {
-          schema: {
-            type: 'object',
-            additionalProperties: false,
-            properties: {
-              submissionId: {
-                type: 'number'
-              }
-            }
-          }
-        }
-      }
+    204: {
+      description: 'Observation import success.'
     },
     400: {
       $ref: '#/components/responses/400'
@@ -98,6 +102,7 @@ POST.apiDoc = {
     403: {
       $ref: '#/components/responses/403'
     },
+    422: CSVValidationErrorResponse,
     500: {
       $ref: '#/components/responses/500'
     },
@@ -108,43 +113,43 @@ POST.apiDoc = {
 };
 
 /**
- * Uploads a media file to S3 and inserts a matching record in the `survey_observation_submission` table.
+ * Imports a `Observation CSV` which bulk creates observations in SIMS.
  *
  * @return {*}  {RequestHandler}
  */
-export function uploadMedia(): RequestHandler {
+export function importObservationCSV(): RequestHandler {
   return async (req, res) => {
-    const rawMediaFile = getFileFromRequest(req);
+    const surveyId = Number(req.params.surveyId);
+    const surveySamplePeriodId = Number(req.body.surveySamplePeriodId) || undefined;
+
+    const rawFile = getFileFromRequest(req);
+    const mediaFile = parseMulterFile(rawFile);
+    const workbook = constructXLSXWorkbook(mediaFile);
+    const worksheet = getDefaultWorksheet(workbook);
 
     const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
 
-      // Insert a new record in the `survey_observation_submission` table
-      const observationService = new ObservationService(connection);
-      const { submission_id: submissionId, key } = await observationService.insertSurveyObservationSubmission(
-        rawMediaFile,
-        Number(req.params.projectId),
-        Number(req.params.surveyId)
+      const importObserservations = new ImportObservationsService(
+        connection,
+        worksheet,
+        surveyId,
+        surveySamplePeriodId
       );
 
-      // Upload file to S3
-      const metadata = {
-        filename: rawMediaFile.originalname,
-        username: req.keycloak_token?.preferred_username ?? '',
-        email: req.keycloak_token?.email ?? ''
-      };
+      const errors = await importObserservations.importCSVWorksheet();
 
-      const result = await uploadFileToS3(rawMediaFile, key, metadata);
-
-      defaultLog.debug({ label: 'uploadMedia', message: 'result', result });
+      if (errors.length) {
+        throw new HTTP422CSVValidationError(CSV_ERROR_MESSAGE, errors);
+      }
 
       await connection.commit();
 
-      return res.status(200).json({ submissionId });
+      return res.status(204).send();
     } catch (error) {
-      defaultLog.error({ label: 'uploadMedia', message: 'error', error });
+      defaultLog.error({ label: 'importObservationsCSV', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

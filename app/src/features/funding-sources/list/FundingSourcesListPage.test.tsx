@@ -66,7 +66,6 @@ describe('FundingSourcesListPage', () => {
         start_date: null,
         end_date: null,
         revision_count: 0,
-        survey_reference_amount_total: 10500,
         survey_reference_count: 2
       },
       {
@@ -76,7 +75,6 @@ describe('FundingSourcesListPage', () => {
         start_date: null,
         end_date: null,
         revision_count: 0,
-        survey_reference_amount_total: 0,
         survey_reference_count: 0
       }
     ];
@@ -138,7 +136,6 @@ describe('FundingSourcesListPage', () => {
         start_date: null,
         end_date: null,
         revision_count: 0,
-        survey_reference_amount_total: 10500,
         survey_reference_count: 2
       }
     ];
@@ -187,7 +184,6 @@ describe('FundingSourcesListPage', () => {
         start_date: null,
         end_date: null,
         revision_count: 0,
-        survey_reference_amount_total: 10500,
         survey_reference_count: 2
       }
     ];
@@ -235,7 +231,6 @@ describe('FundingSourcesListPage', () => {
         start_date: null,
         end_date: null,
         revision_count: 0,
-        survey_reference_amount_total: 10500,
         survey_reference_count: 2
       }
     ];
