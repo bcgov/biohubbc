@@ -1,6 +1,5 @@
 import { SurveyObservationRecord } from '../../database-models/survey_observation';
 import { IDBConnection } from '../../database/db';
-import { ApiGeneralError } from '../../errors/api-error';
 import { IObservationAdvancedFilters } from '../../models/observation-view';
 import {
   InsertObservationQualitativeEnvironmentRecord,
@@ -25,9 +24,6 @@ import {
 import { SurveySamplePeriodDetails } from '../../repositories/sample-period-repository';
 import { generateS3FileKey } from '../../utils/file-utils';
 import { getLogger } from '../../utils/logger';
-import { CSV_COLUMN_ALIASES } from '../../utils/xlsx-utils/column-aliases';
-import { generateColumnCellGetterFromColumnValidator } from '../../utils/xlsx-utils/column-validator-utils';
-import { IXLSXCSVValidator } from '../../utils/xlsx-utils/worksheet-utils';
 import { ApiPaginationOptions } from '../../zod-schema/pagination';
 import {
   CBQualitativeMeasurementTypeDefinition,
@@ -36,33 +32,10 @@ import {
 import { DBService } from '../db-service';
 import { ObservationEnvironmentService } from '../observation-environment-service';
 import { ObservationSubCountMeasurementService } from '../observation-subcount-measurement-service';
-import { PlatformService } from '../platform-service';
 import { SamplePeriodService } from '../sample-period-service';
 import { SubCountService } from '../subcount-service';
 
 export const defaultLog = getLogger('services/observation-services/observation-service');
-
-/**
- * An XLSX validation config for the standard columns of an Observation CSV.
- *
- * Note: `satisfies` allows `keyof` to correctly infer key types, while also
- * enforcing uppercase object keys.
- */
-export const observationStandardColumnValidator = {
-  ITIS_TSN: { type: 'number', aliases: CSV_COLUMN_ALIASES.ITIS_TSN },
-  COUNT: { type: 'number' },
-  OBSERVATION_SIGN: { type: 'code', aliases: CSV_COLUMN_ALIASES.OBSERVATION_SIGN, optional: true },
-  DATE: { type: 'date', optional: true },
-  TIME: { type: 'string', optional: true },
-  LATITUDE: { type: 'number', aliases: CSV_COLUMN_ALIASES.LATITUDE, optional: true },
-  LONGITUDE: { type: 'number', aliases: CSV_COLUMN_ALIASES.LONGITUDE, optional: true },
-  SAMPLING_SITE: { type: 'string', aliases: CSV_COLUMN_ALIASES.SAMPLING_SITE, optional: true },
-  METHOD_TECHNIQUE: { type: 'string', aliases: CSV_COLUMN_ALIASES.METHOD_TECHNIQUE, optional: true },
-  SAMPLING_PERIOD: { type: 'string', aliases: CSV_COLUMN_ALIASES.SAMPLING_PERIOD, optional: true },
-  COMMENT: { type: 'string', aliases: CSV_COLUMN_ALIASES.COMMENT, optional: true }
-} satisfies IXLSXCSVValidator;
-
-export const getColumnCellValue = generateColumnCellGetterFromColumnValidator(observationStandardColumnValidator);
 
 export interface InsertSubCount {
   observation_subcount_id: number | null;
@@ -205,10 +178,9 @@ export class ObservationService extends DBService {
       // -- Observation Data --------------------------------------------------------------
 
       // Upsert observation standard columns
-      const upsertedObservationRecord = await this.observationRepository.insertUpdateSurveyObservations(
-        surveyId,
-        await this._attachItisScientificName([observation.standardColumns])
-      );
+      const upsertedObservationRecord = await this.observationRepository.insertUpdateSurveyObservations(surveyId, [
+        observation.standardColumns
+      ]);
 
       const surveyObservationId = upsertedObservationRecord[0].survey_observation_id;
 
@@ -661,30 +633,5 @@ export class ObservationService extends DBService {
 
     // Delete survey_observation records
     return this.observationRepository.deleteObservationsByIds(surveyId, observationIds);
-  }
-
-  /**
-   * Gets the code id value with a matching name from a pre-mapped set of options. If the function returns null, the
-   * request should probably throw an error.
-   *
-   * @param cellValue The name of a code to find the id for
-   * @param codeMap A Map where the key is the normalized code name and the value is the ID
-   * @param defaultCodeId A precomputed default code ID for cases where cellValue is null
-   * @returns The ID of the matching code, or the default ID, or null if no match is found
-   */
-  _getCodeIdFromCellValue(
-    cellValue: string | null,
-    codeMap: Map<string, number>,
-    defaultCodeId?: number | null
-  ): number | null {
-    const value = cellValue?.toLowerCase(); // Normalize the cell value
-
-    // If no value exists, return the default code ID or null
-    if (!value) {
-      return defaultCodeId ?? null;
-    }
-
-    // Return the ID from the map if it exists, otherwise return null
-    return codeMap.get(value) ?? null;
   }
 }

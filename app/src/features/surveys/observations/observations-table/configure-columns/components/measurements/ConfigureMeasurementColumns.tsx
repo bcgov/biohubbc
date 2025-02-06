@@ -7,6 +7,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
@@ -93,13 +94,15 @@ export const ConfigureMeasurementColumns = (props: IConfigureMeasurementColumnsP
           gap={1}
           sx={{
             my: 1,
-            p: 0.5,
+            py: 0.5,
             maxHeight: '100%',
             overflowY: 'auto'
           }}
           disablePadding>
           {measurementColumns.map((measurement) => (
-            <Box display="flex" alignItems="flex-start" key={`measurement_item_${measurement.taxon_measurement_id}`}>
+            <ListItem
+              sx={{ p: 0, display: 'flex', alignItems: 'flex-start' }}
+              key={`measurement_item_${measurement.taxon_measurement_id}`}>
               <AccordionStandardCard
                 label={measurement.measurement_name}
                 subtitle={measurement.measurement_desc ?? ''}
@@ -130,7 +133,7 @@ export const ConfigureMeasurementColumns = (props: IConfigureMeasurementColumnsP
                   <Icon path={mdiTrashCanOutline} size={1} />
                 </IconButton>
               </Box>
-            </Box>
+            </ListItem>
           ))}
         </List>
       ) : (

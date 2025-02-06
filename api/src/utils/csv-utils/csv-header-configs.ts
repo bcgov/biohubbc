@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { ICritterDetailed } from '../../services/critterbase-service';
 import { formatTimeString } from '../../services/import-services/utils/datetime';
+import { isDateString } from '../date-time-utils';
 import {
   CSVCellSetter,
   CSVCellValidator,
@@ -65,6 +66,46 @@ export const validateZodCell = (cell: unknown, schema: z.ZodSchema, solution?: s
 };
 
 /**
+ * Get the positive number header cell validator.
+ *
+ * Rules:
+ *  1. The cell must be a positive number
+ *  2. The cell is optional if the optional flag is set
+ *
+ * @param {CSVOptionalCell} [options] Optional cell config override
+ * @returns {*} {CSVCellValidator} The validate cell callback
+ */
+export const getPositiveNumberCellValidator = (options?: CSVOptionalCell): CSVCellValidator => {
+  return (params: CSVParams) => {
+    if (options?.optional && params.cell === undefined) {
+      return [];
+    }
+
+    return validateZodCell(params.cell, z.number().positive());
+  };
+};
+
+/**
+ * Get the non-empty string header cell validator.
+ *
+ * Rules:
+ *  1. The cell must be a non-empty string
+ *  2. The cell is optional if the optional flag is set
+ *
+ * @param {CSVOptionalCell} [options] Optional cell config override
+ * @returns {*} {CSVCellValidator} The validate cell callback
+ */
+export const getNonEmptyStringCellValidator = (options?: CSVOptionalCell) => {
+  return (params: CSVParams) => {
+    if (options?.optional && params.cell === undefined) {
+      return [];
+    }
+
+    return validateZodCell(params.cell, z.string().trim().min(1));
+  };
+};
+
+/**
  * Get the TSN header cell validator.
  *
  * Rules:
@@ -92,19 +133,28 @@ export const getTsnCellValidator = (tsns: Set<number>): CSVCellValidator => {
 /**
  * Get the description header cell validator.
  *
+ * TODO: Add optional flag to allow undefined values conditionally
+ *
  * Rules:
- *  1. The cell must be a string or undefined with a maximum length of 250
+ *  1. The cell must be a string with a maximum length of 250 or undefined
  *
  * @returns {*} {CSVCellValidator} The validate cell callback
  */
 export const getDescriptionCellValidator = (): CSVCellValidator => {
   return (params: CSVParams) => {
-    return validateZodCell(params.cell, z.string().trim().min(1).max(250).optional());
+    if (typeof params.cell === 'number') {
+      // Allow numbers to be converted to strings for descriptions
+      params.mutateCell = String(params.cell);
+    }
+
+    return validateZodCell(params.mutateCell, z.string().trim().min(1).max(250).optional());
   };
 };
 
 /**
  * Get the time header cell validator.
+ *
+ * TODO: Add optional flag to allow undefined values conditionally
  *
  * Rules:
  *  1. The cell must be a valid 24-hour time format 'HH:mm:ss' or 'HH:mm' or undefined
@@ -152,8 +202,8 @@ export const getTimeCellSetter = (): CSVCellSetter => {
  */
 export const getLatitudeCellValidator = (options?: CSVOptionalCell): CSVCellValidator => {
   return (params) => {
-    if (options?.optional) {
-      return validateZodCell(params.cell, z.number().min(-90).max(90).optional());
+    if (options?.optional && params.cell === undefined) {
+      return [];
     }
 
     return validateZodCell(params.cell, z.number().min(-90).max(90));
@@ -171,8 +221,8 @@ export const getLatitudeCellValidator = (options?: CSVOptionalCell): CSVCellVali
  */
 export const getLongitudeCellValidator = (options?: CSVOptionalCell): CSVCellValidator => {
   return (params) => {
-    if (options?.optional) {
-      return validateZodCell(params.cell, z.number().min(-180).max(180).optional());
+    if (options?.optional && params.cell === undefined) {
+      return [];
     }
 
     return validateZodCell(params.cell, z.number().min(-180).max(180));
@@ -190,8 +240,8 @@ export const getLongitudeCellValidator = (options?: CSVOptionalCell): CSVCellVal
  */
 export const getDateCellValidator = (options?: CSVOptionalCell): CSVCellValidator => {
   return (params) => {
-    if (options?.optional) {
-      return validateZodCell(params.cell, z.string().date().optional());
+    if (options?.optional && params.cell === undefined) {
+      return [];
     }
 
     return validateZodCell(params.cell, z.string().date());
@@ -224,6 +274,41 @@ export const getSurveyCritterAliasCellValidator = (surveyAliasMap: Map<string, I
 
     // Update the row state with the critter ID
     updateCSVRowState(params.row, { critterId: critter.critter_id });
+
+    return [];
+  };
+};
+
+/**
+ * Get the date range header cell validator.
+ *
+ * Rules:
+ *  1. The cell must be a valid date range format:
+ *    A. 'YYYY-MM-DD - YYYY-MM-DD'
+ *    B. 'YYYY-MM-DD HH:mm:ss - YYYY-MM-DD HH:mm:ss'
+ *  2. The cell is optional if the optional flag is set
+ *
+ * @param {CSVOptionalCell} [options] Optional cell config override
+ * @returns {*} {CSVCellValidator} The validate cell callback
+ *
+ */
+export const getDateRangeCellValidator = (options?: CSVOptionalCell): CSVCellValidator => {
+  return (params) => {
+    if (options?.optional && params.cell === undefined) {
+      return [];
+    }
+
+    const dateParts = String(params.cell).split(' - ');
+
+    if (dateParts.length !== 2 || !dateParts.every(isDateString)) {
+      return [
+        {
+          error: 'Invalid date range',
+          solution:
+            "Use a valid date range format: 'YYYY-MM-DD - YYYY-MM-DD' OR 'YYYY-MM-DD HH:mm:ss - YYYY-MM-DD HH:mm:ss'"
+        }
+      ];
+    }
 
     return [];
   };

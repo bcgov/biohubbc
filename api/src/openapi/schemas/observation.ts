@@ -60,7 +60,8 @@ const ObservationSubcountSchema: OpenAPIV3.SchemaObject = {
       description: 'A comment or note about the subcount record.'
     },
     subcount: {
-      type: 'number'
+      type: 'number',
+      minimum: 0
     },
     qualitative_measurements: {
       type: 'array',
@@ -156,7 +157,8 @@ export const findObservationsSchema: OpenAPIV3.SchemaObject = {
         maximum: 180
       },
       count: {
-        type: 'integer'
+        type: 'integer',
+        minimum: 0
       },
       observation_date: {
         type: 'string',

@@ -234,66 +234,38 @@ const useObservationApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Uploads an observation CSV for import.
+   * Imports observation records from a CSV file.
    *
-   * @param {number} projectId
-   * @param {number} surveyId
-   * @param {File} file
    * @param {{
-   *       samplingPeriodId: number;
-   *     }} [options]
-   * @param {CancelTokenSource} [cancelTokenSource]
-   * @param {(progressEvent: AxiosProgressEvent) => void} [onProgress]
+   *    projectId: number;
+   *    surveyId: number;
+   *    file: File; // The CSV file to import.
+   *    surveySamplePeriodId?: number; // Optional sample period id to associate all imported records with.
+   *    cancelTokenSource?: CancelTokenSource;
+   *    onProgress?: (progressEvent: AxiosProgressEvent) => void;
+   * }} params
    * @return {*}  {Promise<{ submissionId: number }>}
    */
-  const uploadCsvForImport = async (
-    projectId: number,
-    surveyId: number,
-    file: File,
-    cancelTokenSource?: CancelTokenSource,
-    onProgress?: (progressEvent: AxiosProgressEvent) => void
-  ): Promise<{ submissionId: number }> => {
+  const importObservationCSV = async (params: {
+    projectId: number;
+    surveyId: number;
+    file: File;
+    surveySamplePeriodId?: number;
+    cancelTokenSource?: CancelTokenSource;
+    onProgress?: (progressEvent: AxiosProgressEvent) => void;
+  }): Promise<void> => {
     const formData = new FormData();
 
-    formData.append('media', file);
+    formData.append('media', params.file);
 
-    const { data } = await axios.post<{ submissionId: number }>(
-      `/api/project/${projectId}/survey/${surveyId}/observations/upload`,
-      formData,
-      {
-        cancelToken: cancelTokenSource?.token,
-        onUploadProgress: onProgress
-      }
-    );
-
-    return data;
-  };
-
-  /**
-   * Begins processing an uploaded observation CSV for import
-   *
-   * @param {number} projectId
-   * @param {number} surveyId
-   * @param {number} submissionId
-   * @param {{
-   *       surveySamplePeriodId?: number;
-   *     }} [options]
-   * @return {*}  {Promise<void>}
-   */
-  const processCsvSubmission = async (
-    projectId: number,
-    surveyId: number,
-    submissionId: number,
-    options?: {
-      surveySamplePeriodId?: number;
+    if (params.surveySamplePeriodId) {
+      formData.append('surveySamplePeriodId', params.surveySamplePeriodId.toString());
     }
-  ): Promise<void> => {
-    const { data } = await axios.post<void>(`/api/project/${projectId}/survey/${surveyId}/observations/process`, {
-      observation_submission_id: submissionId,
-      options
-    });
 
-    return data;
+    await axios.post(`/api/project/${params.projectId}/survey/${params.surveyId}/observations/import`, formData, {
+      cancelToken: params.cancelTokenSource?.token,
+      onUploadProgress: params.onProgress
+    });
   };
 
   /**
@@ -372,8 +344,7 @@ const useObservationApi = (axios: AxiosInstance) => {
     deleteObservationRecords,
     deleteObservationMeasurements,
     deleteObservationEnvironments,
-    uploadCsvForImport,
-    processCsvSubmission,
+    importObservationCSV,
     createObservation
   };
 };
