@@ -300,7 +300,7 @@ export function validateSiteExistsInSamplePeriods(
       solution: `Use the name of an existing sampling site, or create the site if it doesn't exist`,
       header: header,
       cell: siteName,
-      values: samplePeriods.map((period) => period.survey_sample_site?.name).filter(Boolean) as string[]
+      values: [...new Set(samplePeriods.map((period) => period.survey_sample_site?.name).filter(Boolean) as string[])]
     };
   }
 
@@ -335,7 +335,7 @@ export function validateTechniqueExistsInSamplePeriods(
       solution: `Use the name of an existing technique, or create the technique if it doesn't exist`,
       header: header,
       cell: techniqueName,
-      values: samplePeriods.map((period) => period.method_technique?.name).filter(Boolean) as string[]
+      values: [...new Set(samplePeriods.map((period) => period.method_technique?.name).filter(Boolean) as string[])]
     };
   }
 
