@@ -37,7 +37,7 @@ export const DeviceDetailsForm = (props: IDeviceDetailsFormProps) => {
           name="device_make_id"
           id="device_make_id"
           label="Make"
-          helpText="Indicate the vendor from which the device was purchased."
+          helpText="The vendor or manufacturer of the device."
           options={deviceMakes}
           required={true}
         />
@@ -48,7 +48,7 @@ export const DeviceDetailsForm = (props: IDeviceDetailsFormProps) => {
           label="Serial Number"
           maxLength={100}
           other={{ required: true }}
-          helpText="Commonly referred to as the device identifer."
+          helpText="The unique identifier of the device, commonly a sequence of numbers."
         />
       </Grid>
       <Grid item xs={12}>

@@ -6,7 +6,6 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import { Stack } from '@mui/system';
 import HelpButtonStack from 'components/buttons/HelpButtonStack';
 import { MarkingsDialog } from 'features/surveys/animals/profile/markings/MarkingsDialog';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
@@ -128,47 +127,46 @@ export const MarkingsForm = <FormikValuesType extends IMarkings>() => {
           />
 
           {/* MARKING CARDS */}
-          <Stack gap={3}>
-            <TransitionGroup>
-              {values.markings.map((marking, index) => (
-                <Collapse key={marking.marking_id ?? marking._id}>
-                  <MarkingCard
-                    editable
-                    identifier={marking.identifier}
-                    comment={marking.comment}
-                    primary_colour_label={
-                      markingColoursDataLoader.data?.find((colour) => colour.colour_id == marking.primary_colour_id)
-                        ?.colour
-                    }
-                    secondary_colour_label={
-                      markingColoursDataLoader.data?.find((colour) => colour.colour_id == marking.secondary_colour_id)
-                        ?.colour
-                    }
-                    marking_type_label={
-                      markingTypesDataLoader.data?.find((type) => type.marking_type_id == marking.marking_type_id)
-                        ?.name ?? ''
-                    }
-                    marking_body_location_label={
-                      markingBodyLocationDataLoader.data?.find(
-                        (body_location) =>
-                          body_location.taxon_marking_body_location_id == marking.taxon_marking_body_location_id
-                      )?.body_location ?? ''
-                    }
-                    handleMarkingMenuClick={(event) => {
-                      setMarkingAnchorEl(event.currentTarget);
-                      setSelectedMarking(index);
-                    }}
-                  />
-                </Collapse>
-              ))}
-            </TransitionGroup>
-          </Stack>
+
+          <TransitionGroup>
+            {values.markings.map((marking, index) => (
+              <Collapse key={marking.marking_id ?? marking._id}>
+                <MarkingCard
+                  sx={{ mb: 2 }}
+                  editable
+                  identifier={marking.identifier}
+                  comment={marking.comment}
+                  primary_colour_label={
+                    markingColoursDataLoader.data?.find((colour) => colour.colour_id == marking.primary_colour_id)
+                      ?.colour
+                  }
+                  secondary_colour_label={
+                    markingColoursDataLoader.data?.find((colour) => colour.colour_id == marking.secondary_colour_id)
+                      ?.colour
+                  }
+                  marking_type_label={
+                    markingTypesDataLoader.data?.find((type) => type.marking_type_id == marking.marking_type_id)
+                      ?.name ?? ''
+                  }
+                  marking_body_location_label={
+                    markingBodyLocationDataLoader.data?.find(
+                      (body_location) =>
+                        body_location.taxon_marking_body_location_id == marking.taxon_marking_body_location_id
+                    )?.body_location ?? ''
+                  }
+                  handleMarkingMenuClick={(event) => {
+                    setMarkingAnchorEl(event.currentTarget);
+                    setSelectedMarking(index);
+                  }}
+                />
+              </Collapse>
+            ))}
+          </TransitionGroup>
+
           <HelpButtonStack
-            helpText={
-              'Indicate animal markings, with the exception of GPS telemetry devices, which are managed on the telemetry page.'
-            }>
+            sx={{ mt: 1 }}
+            helpText={'Markings are physical tags or identifiers on the animal, excluding telemetry devices.'}>
             <Button
-              sx={{ mt: 2 }}
               color="primary"
               variant="outlined"
               startIcon={<Icon path={mdiPlus} size={1} />}

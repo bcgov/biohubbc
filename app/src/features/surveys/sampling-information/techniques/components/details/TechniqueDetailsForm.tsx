@@ -17,7 +17,7 @@ export const TechniqueDetailsForm = () => {
           label="Maximum detection distance (metres)"
           maxLength={1000}
           other={{ type: 'number' }}
-          helpText={`The range within which observations can be made, influenced by the constituents of the technique specified above.`}
+          helpText={`Individuals that are further than this distance from the observer are not counted. Applicable to methods where all species within a certain distance are counted.`}
         />
       </Grid>
     </Grid>

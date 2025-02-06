@@ -45,7 +45,7 @@ export const TechniqueAttractantsForm = <
           id="method_technique_attractant_id"
           label="Enter an attractant"
           name="attractants"
-          helpText={`Attractants are utilized to lure the target species, increasing the likelihood of encounter.`}
+          helpText={`Attractants are what you used to increase the chances of encountering the target species.`}
           loading={codesContext.codesDataLoader.isLoading}
           options={
             attractants
