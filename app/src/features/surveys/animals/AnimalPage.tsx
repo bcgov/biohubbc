@@ -16,6 +16,7 @@ import { Link as RouterLink } from 'react-router-dom';
 import { AnimalHeader } from './AnimalHeader';
 import { AnimalListContainer } from './list/AnimalListContainer';
 import { AnimalProfileContainer } from './profile/AnimalProfileContainer';
+import Typography from '@mui/material/Typography';
 /**
  * Returns the page for managing Animals
  *
@@ -66,12 +67,13 @@ export const SurveyAnimalPage = () => {
         <Box minWidth="400px" maxWidth="30%">
           <AnimalListContainer />
         </Box>
-        <Box maxWidth="75%" flex="1 1 auto" height="100%">
+        <Box flex="1 1 auto" height="100%">
           {animalPageContext.selectedAnimal ? (
             <AnimalProfileContainer />
           ) : (
             <Paper elevation={3} sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-              <Toolbar sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+              <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Typography>Animals</Typography>
                 <Button
                   component={RouterLink}
                   to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/animals/captures`}
@@ -83,7 +85,7 @@ export const SurveyAnimalPage = () => {
                 </Button>
               </Toolbar>
               <Divider flexItem />
-              <Box p={2} flex="1 1 auto">
+              <Box flex="1 1 auto">
                 <SurveySpatialAnimal />
               </Box>
             </Paper>

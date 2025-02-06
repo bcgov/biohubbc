@@ -22,7 +22,7 @@ interface ISurveySpatialAnimalMapProps {
  * @param {ISurveySpatialAnimalProps} props
  * @returns
  */
-export const SurveySpatialAnimal = ({ staticLayers = [] }: ISurveySpatialAnimalMapProps) => {
+export const SurveySpatialAnimal = (props: ISurveySpatialAnimalMapProps) => {
   const surveyContext = useSurveyContext();
   const crittersApi = useCritterbaseApi();
 
@@ -93,7 +93,7 @@ export const SurveySpatialAnimal = ({ staticLayers = [] }: ISurveySpatialAnimalM
       {/* Display map with animal capture points */}
       <Box height={{ xs: 300, md: 500 }} position="relative">
         <SurveyMap
-          staticLayers={[captureLayer, mortalityLayer]}
+          staticLayers={[...props.staticLayers ??[], captureLayer, mortalityLayer]}
           isLoading={geometryDataLoader.isLoading}
         />
       </Box>
