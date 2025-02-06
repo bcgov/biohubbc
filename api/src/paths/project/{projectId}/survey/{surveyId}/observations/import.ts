@@ -81,7 +81,9 @@ POST.apiDoc = {
             },
             surveySamplePeriodId: {
               description: 'The sample period id to associate the observations with.',
-              type: 'integer',
+              // Intentionally using string as `formData` only supports string / binary values
+              type: 'string',
+              format: 'number',
               minimum: 1
             }
           }
