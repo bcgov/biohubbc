@@ -1,8 +1,6 @@
 import { NestedRecord } from '../../../utils/nested-record';
 import {
-  CBQualitativeMeasurement,
   CBQualitativeMeasurementTypeDefinition,
-  CBQuantitativeMeasurement,
   CBQuantitativeMeasurementTypeDefinition,
   CritterbaseService
 } from '../../critterbase-service';
@@ -50,14 +48,17 @@ export const isCBQualitativeMeasurementTypeDefinition = (
 };
 
 /**
- * Check if an object is a `CBQualitativeMeasurement` - ie: the recorded mesasurement
+ * Check if an object is a qualitative measurement stub
  *
  * Returns true if the object has the properties `qualitative_option_id` and `taxon_measurement_id`
  *
+ * Note: This function is NOT a typeguard, it is used to determine if an object
+ * contains the minimum required properties to create a qualitative measurement.
+ *
  * @param {unknown} measurement - The object to check
- * @returns {boolean} True if the object is a CBQualitativeMeasurement
+ * @returns {boolean} True if the object is a qualitative measurement
  */
-export const isCBQualitativeMeasurement = (measurement: unknown): measurement is CBQualitativeMeasurement => {
+export const isCBQualitativeMeasurementStub = (measurement: unknown): boolean => {
   return (
     typeof measurement === 'object' &&
     measurement != null &&
@@ -67,14 +68,17 @@ export const isCBQualitativeMeasurement = (measurement: unknown): measurement is
 };
 
 /**
- * Check if an object is a `CBQuantitativeMeasurement` - ie: the recorded mesasurement
+ * Check if an object is a quantitative measurement stub
  *
  * Returns true if the object has the properties `value` and `taxon_measurement_id`
  *
+ * Note: This function is NOT a typeguard, it is used to determine if an object
+ * contains the minimum required properties to create a quantitative measurement.
+ *
  * @param {unknown} measurement - The object to check
- * @returns {boolean} True if the object is a CBQuantitativeMeasurement
+ * @returns {boolean} True if the object is a quantitative measurement
  */
-export const isCBQuantitativeMeasurement = (measurement: unknown): measurement is CBQuantitativeMeasurement => {
+export const isCBQuantitativeMeasurementStub = (measurement: unknown): boolean => {
   return (
     typeof measurement === 'object' &&
     measurement != null &&

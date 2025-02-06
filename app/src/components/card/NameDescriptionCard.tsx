@@ -22,8 +22,8 @@ export const NameDescriptionCard = (props: INameDescriptionCardProps) => {
   const { label, description, onDelete, ...boxProps } = props;
 
   return (
-    <Paper elevation={0} {...boxProps} sx={{ p: 2, bgcolor: grey[100], ...boxProps.sx }}>
-      <Box display="flex" justifyContent="space-between">
+    <Paper elevation={0} variant="outlined" {...boxProps} sx={{ p: 2, bgcolor: grey[100], ...boxProps.sx }}>
+      <Box display="flex" justifyContent="space-between" alignItems="center">
         <Typography variant="subtitle1" fontWeight="bold">
           {label}
         </Typography>

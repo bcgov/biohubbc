@@ -8,6 +8,7 @@ import {
   CBQuantitativeMeasurementTypeDefinition
 } from 'interfaces/useCritterApi.interface';
 import { EnvironmentType } from 'interfaces/useReferenceApi.interface';
+import { isValidLatitude, isValidLongitude } from 'utils/spatial-utils';
 
 /**
  * Validates a given observation table row against the given measurement columns.
@@ -335,6 +336,16 @@ export const validateObservationTableRow = (
   // Validate time value
   if (row.observation_time === 'Invalid date') {
     errors.push({ field: 'observation_time', message: 'Invalid time' });
+  }
+
+  // Validate latitude
+  if (!isValidLatitude(row.latitude)) {
+    errors.push({ field: 'latitude', message: 'Latitude must be between -90 and 90' });
+  }
+
+  // Validate longitude
+  if (!isValidLongitude(row.longitude)) {
+    errors.push({ field: 'longitude', message: 'Longitude must be between -180 and 180' });
   }
 
   return errors;
