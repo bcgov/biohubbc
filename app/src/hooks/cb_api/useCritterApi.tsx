@@ -53,6 +53,18 @@ const useCritterApi = (axios: AxiosInstance) => {
   };
 
   /**
+   * Get a critter with simple response.
+   *
+   * @async
+   * @param {string} critter_id - Critter identifier.
+   * @returns {Promise<ICritterSimpleResponse>}
+   */
+  const getCritterSimple = async (critter_id: string): Promise<ICritterSimpleResponse> => {
+    const { data } = await axios.get(`/api/critterbase/critters/${critter_id}`);
+    return data;
+  };
+
+  /**
    * Get a critter with detailed response.
    * Includes all markings, captures, mortalities etc.
    *
@@ -94,6 +106,7 @@ const useCritterApi = (axios: AxiosInstance) => {
   };
 
   return {
+    getCritterSimple,
     getDetailedCritter,
     getMultipleCrittersByIds,
     getMultipleCrittersGeometryByIds,

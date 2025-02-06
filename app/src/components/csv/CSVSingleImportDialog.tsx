@@ -94,7 +94,7 @@ export const CSVSingleImportDialog = (props: CSVSingleImportDialogProps) => {
       dialogContext.setSnackbar({
         open: true,
         snackbarAutoCloseMs: 2000,
-        snackbarMessage: 'Successfully imported telemetry'
+        snackbarMessage: 'Successfully imported CSV file'
       });
 
       handleClose();
@@ -107,7 +107,7 @@ export const CSVSingleImportDialog = (props: CSVSingleImportDialogProps) => {
       dialogContext.setSnackbar({
         open: true,
         snackbarAutoCloseMs: 2000,
-        snackbarMessage: 'Failed to import telemetry'
+        snackbarMessage: 'Failed to import CSV file'
       });
 
       setUploadStatus(UploadFileStatus.FAILED);
@@ -119,7 +119,7 @@ export const CSVSingleImportDialog = (props: CSVSingleImportDialogProps) => {
   }
 
   return (
-    <Dialog open={props.open} maxWidth={'md'} fullScreen={fullScreen}>
+    <Dialog open={props.open} maxWidth={'xl'} fullScreen={fullScreen}>
       <DialogContent sx={{ mt: 2 }}>
         <Box>
           <CSVDropzoneSection

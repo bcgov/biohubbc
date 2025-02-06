@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
+import { v4 } from 'uuid';
 import * as csv from '../../../utils/csv-utils/csv-config-validation';
 import { CSVRowState } from '../../../utils/csv-utils/csv-config-validation.interface';
 import { NestedRecord } from '../../../utils/nested-record';
@@ -42,16 +43,24 @@ describe('import-measurements-service', () => {
       const connection = getMockDBConnection();
       const service = new ImportMeasurementsService(connection, {}, 1);
 
+      const critterIdMock = v4();
+      const captureIdMock = v4();
+      const taxonMeasurementIdMock = v4();
+      const qualitativeOptionIdMock = v4();
+
       sinon.stub(service, 'getCSVConfig').returns({} as any);
       sinon.stub(csv, 'validateCSVWorksheet').returns({
         errors: [],
         rows: [
           {
             [CSVRowState]: {
-              critter_id: 'critter_id',
-              capture_id: 'capture_id',
-              qualHeader: { taxon_measurement_id: 1, qualitative_option_id: 1 },
-              quantHeader: { taxon_measurement_id: 1, value: 1 }
+              critter_id: critterIdMock,
+              capture_id: captureIdMock,
+              qualHeader: {
+                taxon_measurement_id: taxonMeasurementIdMock,
+                qualitative_option_id: qualitativeOptionIdMock
+              },
+              quantHeader: { taxon_measurement_id: taxonMeasurementIdMock, value: 1 }
             }
           }
         ]
@@ -66,17 +75,17 @@ describe('import-measurements-service', () => {
       expect(bulkCreateStub).to.have.been.calledOnceWithExactly({
         qualitative_measurements: [
           {
-            critter_id: 'critter_id',
-            capture_id: 'capture_id',
-            taxon_measurement_id: 1,
-            qualitative_option_id: 1
+            critter_id: critterIdMock,
+            capture_id: captureIdMock,
+            taxon_measurement_id: taxonMeasurementIdMock,
+            qualitative_option_id: qualitativeOptionIdMock
           }
         ],
         quantitative_measurements: [
           {
-            critter_id: 'critter_id',
-            capture_id: 'capture_id',
-            taxon_measurement_id: 1,
+            critter_id: critterIdMock,
+            capture_id: captureIdMock,
+            taxon_measurement_id: taxonMeasurementIdMock,
             value: 1
           }
         ]
