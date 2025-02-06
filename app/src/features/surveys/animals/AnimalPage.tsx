@@ -6,6 +6,7 @@ import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
 import Box from '@mui/system/Box';
 import { SurveySpatialAnimal } from 'features/surveys/view/survey-spatial/components/animal/SurveySpatialAnimal';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -16,7 +17,6 @@ import { Link as RouterLink } from 'react-router-dom';
 import { AnimalHeader } from './AnimalHeader';
 import { AnimalListContainer } from './list/AnimalListContainer';
 import { AnimalProfileContainer } from './profile/AnimalProfileContainer';
-import Typography from '@mui/material/Typography';
 /**
  * Returns the page for managing Animals
  *

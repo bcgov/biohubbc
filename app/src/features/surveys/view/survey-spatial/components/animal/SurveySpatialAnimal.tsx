@@ -93,7 +93,7 @@ export const SurveySpatialAnimal = (props: ISurveySpatialAnimalMapProps) => {
       {/* Display map with animal capture points */}
       <Box height={{ xs: 300, md: 500 }} position="relative">
         <SurveyMap
-          staticLayers={[...props.staticLayers ??[], captureLayer, mortalityLayer]}
+          staticLayers={[...(props.staticLayers ?? []), captureLayer, mortalityLayer]}
           isLoading={geometryDataLoader.isLoading}
         />
       </Box>
