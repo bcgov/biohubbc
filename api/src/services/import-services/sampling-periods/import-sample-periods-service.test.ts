@@ -103,7 +103,7 @@ describe('import-sample-periods-service', () => {
       expect(sampleSiteStub).to.have.been.calledOnceWithExactly(1);
       expect(methodTechniqueStub).to.have.been.calledOnceWithExactly(1);
 
-      expect(config.rowValidators).to.be.undefined;
+      expect(config.rowValidators).to.be.an('array').with.a.lengthOf(1);
       expect(config.staticHeadersConfig).to.have.keys(
         'SAMPLE_SITE',
         'TECHNIQUE_NAME',

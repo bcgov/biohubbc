@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { ICritterDetailed } from '../../services/critterbase-service';
 import { formatTimeString } from '../../services/import-services/utils/datetime';
+import { CaseInsensitiveMap } from '../case-insensitive-map';
 import { isDateString } from '../date-time-utils';
 import {
   CSVCellSetter,
@@ -338,8 +339,7 @@ export const getLookupIdCellValidator = (
     getSolution: (params: CSVParams) => string;
   }
 ): CSVCellValidator => {
-  // TODO: Replace with case-insensitive map
-  const lookupValueMap = new Map(values.map((value) => [value.name.toLowerCase(), value.id]));
+  const lookupValueMap = new CaseInsensitiveMap(values.map((value) => [value.name, value.id]));
   const lookupValues = values.map((value) => value.name);
 
   return (params) => {
@@ -349,7 +349,7 @@ export const getLookupIdCellValidator = (
     }
 
     // Check if the cell value matches a lookup value by name (case-insensitive)
-    const lookupValueId = lookupValueMap.get(String(params.cell).toLowerCase());
+    const lookupValueId = lookupValueMap.get(String(params.cell));
 
     // Update the row state with the lookup ID
     if (lookupValueId) {

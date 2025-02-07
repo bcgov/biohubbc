@@ -56,10 +56,12 @@ export async function seed(knex: Knex): Promise<void> {
         INTO _sample_period
         LIMIT 1;
 
+        -- Create specific error message for overlapping sample periods
         IF found AND TG_OP = 'INSERT' THEN
           RAISE EXCEPTION 'Failed to create Survey sample period. The new sample period overlaps with an existing sample period (id: %).', _sample_period.survey_sample_period_id;
         END IF;
 
+        -- Update specific error message for overlapping sample periods
         IF found AND TG_OP = 'UPDATE' THEN
           RAISE EXCEPTION 'Failed to update Survey sample period. The new sample period overlaps with an existing sample period (id: %).', _sample_period.survey_sample_period_id;
         END IF;
