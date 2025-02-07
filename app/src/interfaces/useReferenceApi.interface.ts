@@ -1,7 +1,27 @@
 /**
- * A qualitative environment unit.
+ * A quantitative unit.
  */
-export type EnvironmentUnit = 'millimeter' | 'centimeter' | 'meter' | 'milligram' | 'gram' | 'kilogram';
+export type QuantitativeUnit =
+  | 'millimeter'
+  | 'centimeter'
+  | 'meter'
+  | 'milligram'
+  | 'gram'
+  | 'kilogram'
+  | 'percent'
+  | 'celsius'
+  | 'ppt'
+  | 'SCF'
+  | 'degrees'
+  | 'pH'
+  | 'seconds'
+  | 'meters squared'
+  | 'count'
+  | 'GHz'
+  | 'Hz'
+  | 'amps'
+  | 'volts'
+  | 'megapixels';
 
 /**
  * A quantitative environment type definition.
@@ -12,7 +32,7 @@ export type EnvironmentQuantitativeTypeDefinition = {
   description: string | null;
   min: number | null;
   max: number | null;
-  unit: EnvironmentUnit | null;
+  unit: QuantitativeUnit | null;
 };
 
 /**
