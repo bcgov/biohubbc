@@ -227,6 +227,8 @@ export class ImportObservationsService extends DBService {
    *
    * @param {TaxonMap} taxonMap - The taxon map
    * @param {SamplePeriodService} samplePeriodService - The sample period service
+   * @param {SampleSiteService} sampleSiteService - The sample site service
+   * @param {TechniqueService} methodTechniqueService - The method technique service
    * @returns {*} {Promise<void>}
    */
   async _setObservationRowValidators(
