@@ -11,6 +11,13 @@ import {
 import { getEnvironmentVariable } from '../env-config';
 import { ArchiveFile, MediaFile } from './media-file';
 
+/**
+ * Validation and device key data structure
+ *
+ * @export
+ * @interface IValidationData
+ * @typedef {IValidationData}
+ */
 export interface IValidationData {
   /**
    * Device Key file type, keyx or cfg
@@ -21,7 +28,7 @@ export interface IValidationData {
   /**
    * keyData array, stores one or many keys
    *
-   * @type {Array}
+   * @type {IMultipleData}
    */
   keyData?: IMultipleData[]; // Array<{}>;
   /**
@@ -32,23 +39,63 @@ export interface IValidationData {
   error?: string;
 }
 
+/**
+ * Array that stores multiple device keys
+ *
+ * @interface IMultipleData
+ * @typedef {IMultipleData}
+ */
 interface IMultipleData {
   fileName: string;
   keysData?: ICfgData[] | IKeyxData[];
   error?: string;
 }
+/**
+ * Lotek device key data structure
+ *
+ * @interface ICfgData
+ * @typedef {ICfgData}
+ */
 interface ICfgData {
   id: number;
   key: string;
   'Iridium IMEI': number;
 }
 
+/**
+ * Vectronic device key data structure
+ *
+ * @interface IKeyxData
+ * @typedef {IKeyxData}
+ */
 interface IKeyxData {
   id: string;
   key: string;
   comID: number;
   comType: string;
   collarType: number;
+}
+
+/**
+ * Vectronic json parsed data structure
+ *
+ * @interface ParsedKeyxXMLData
+ * @typedef {ParsedKeyxXMLData}
+ */
+interface ParsedKeyxXMLData {
+  collarKey: {
+    collar: {
+      '@_ID': string;
+      comIDList: {
+        comID: {
+          '@_comType': string;
+          '#text': number;
+        };
+      };
+      key: string;
+      collarType: number;
+    };
+  };
 }
 
 /**
@@ -141,7 +188,6 @@ export const parseUnknownZipFile = (
         })
     };
   } catch (err: any) {
-    console.error(err);
     return { filesArray: [], error: err.message };
   }
 };
@@ -174,6 +220,12 @@ export const parseS3File = async (file: GetObjectCommandOutput): Promise<MediaFi
   return new MediaFile(fileName, mimetype, buffer);
 };
 
+/**
+ * Check for supported compression mime types
+ *
+ * @param {string} mimetype
+ * @returns {boolean}
+ */
 export const isZipMimetype = (mimetype: string): boolean => {
   if (!mimetype) {
     return false;
@@ -184,7 +236,11 @@ export const isZipMimetype = (mimetype: string): boolean => {
   );
 };
 
-// XML parser configuration options
+/**
+ * XML parser configuration options
+ *
+ * @type {{ ignoreAttributes: boolean; attributeNamePrefix: string; }}
+ */
 const xmlParserOptions = {
   ignoreAttributes: false,
   attributeNamePrefix: '@_'
@@ -201,25 +257,33 @@ const fetchCollarSepCount = async (collarId: string, collarKey: string): Promise
   const vectronicApi = axios.create({
     baseURL: getEnvironmentVariable('VECTRONIC_API_HOST')
   });
-  try {
-    const response = await vectronicApi.get(`/collar/${collarId}/sep/count`, {
-      params: {
-        collarkey: collarKey
-      }
-    });
-    return response.data;
-  } catch (error: any) {
-    console.error(error.message);
-    throw error;
-  }
+
+  const response = await vectronicApi.get(`/collar/${collarId}/sep/count`, {
+    params: {
+      collarkey: collarKey
+    }
+  });
+  return response.data;
 };
 
+/**
+ * Ensures input file contains expected xml tags
+ *
+ * @param {string} str
+ * @param {ReadonlyArray<string>} substrings
+ * @returns {*}
+ */
 const findVectronicExpectedTags = (str: string, substrings: ReadonlyArray<string>) => {
   return substrings.filter((substring) => str.includes(substring));
 };
 
-// Map keyx data to common JSON
-const mapKeyxData = (input: any): IKeyxData => {
+/**
+ * Map keyx data to common JSON
+ *
+ * @param {ParsedKeyxXMLData} input
+ * @returns {IKeyxData}
+ */
+const mapKeyxData = (input: ParsedKeyxXMLData): IKeyxData => {
   return {
     id: input.collarKey.collar['@_ID'],
     key: input.collarKey.collar.key,
@@ -229,6 +293,12 @@ const mapKeyxData = (input: any): IKeyxData => {
   };
 };
 
+/**
+ * Validate lotek cfg file format
+ *
+ * @param {string} content
+ * @returns {(string | null)}
+ */
 const validateCfgFormat = (content: string): string | null => {
   // Split content in blocks by '[number]' directive
   const blocks = content.split(/(?=\[\d+\])/);
@@ -289,8 +359,15 @@ const validateCfgFormat = (content: string): string | null => {
   return null;
 };
 
+/**
+ * Convert properly formated lotek cfg devices file into JSON
+ *
+ * @param {string} input
+ * @returns {ICfgData[]}
+ */
 const cfgToJSON = (input: string): ICfgData[] => {
-  const regex = /\[(\d+)\]\s*((?:Key=[^\n]+(?:\s+Iridium IMEI=\d+)?|\s+Iridium IMEI=\d+\s+Key=[^\n]+)+)/g;
+  // const regex = /\[(\d+)\]\s*((?:Key=[^\n]+(?:\s+Iridium IMEI=\d+)?|\s+Iridium IMEI=\d+\s+Key=[^\n]+)+)/g;
+  const regex = /\[(\d+)\]\s*((?:Key=[^\n]+(?:\s+Iridium IMEI=\d+)?\s*)+)/g;
   return [...input.matchAll(regex)].map(([, id, block]) => {
     // Extracting Key and Iridium IMEI directives in any order
     const keyMatch = block.match(/Key=([^\s]+)/);
@@ -308,13 +385,11 @@ const cfgToJSON = (input: string): ICfgData[] => {
 };
 
 /**
- * Checks if the file is a valid telemetry credential file.
+ * Checks if the file is a valid telemetry credential file an extracts the key data.
  *
+ * @async
  * @param {Express.Multer.File} file
- * @return {*}  {({
- *   type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE;
- *   error?: string;
- * })}
+ * @returns {Promise<IValidationData>}
  */
 export const validateGetKeyDataTelementryCredentialFile = async (
   file: Express.Multer.File
@@ -334,14 +409,11 @@ export const validateGetKeyDataTelementryCredentialFile = async (
 };
 
 /**
- * Returns true if the file is a keyx file, or a zip that contains only keyx files.
+ * Validates vectronic keyx file and extracts key data
  *
- * @export
+ * @async
  * @param {Express.Multer.File} file
- * @return {*}  {({
- *   type: 'unknown' | 'keyx';
- *   error?: string;
- * })}
+ * @returns {Promise<IValidationData>}
  */
 export const checkFileForKeyx = async (file: Express.Multer.File): Promise<IValidationData> => {
   // File is a KeyX file if it ends in '.keyx'
@@ -408,11 +480,10 @@ export const checkFileForKeyx = async (file: Express.Multer.File): Promise<IVali
 };
 
 /**
- * Returns IValidationData.
+ * Validates lotek cfg file and extracts key data
  *
- * @export
  * @param {Express.Multer.File} file
- * @return {IValidationData}
+ * @returns {IValidationData}
  */
 export const checkFileForCfg = (file: Express.Multer.File): IValidationData => {
   // File is a Cfg file if it ends in '.cfg'
@@ -442,6 +513,12 @@ export const checkFileForCfg = (file: Express.Multer.File): IValidationData => {
   };
 };
 
+/**
+ * Processes lotek key file to extract key data
+ *
+ * @param {MediaFile[]} dataArray
+ * @returns {IMultipleData[]}
+ */
 const processCfgFilesArray = (dataArray: MediaFile[]): IMultipleData[] => {
   const resultJSON: IMultipleData[] = [];
   dataArray.some((data) => {
@@ -469,6 +546,13 @@ const processCfgFilesArray = (dataArray: MediaFile[]): IMultipleData[] => {
   return resultJSON;
 };
 
+/**
+ * Processes vectronic key file to extract key data
+ *
+ * @async
+ * @param {MediaFile[]} dataArray
+ * @returns {Promise<IMultipleData[]>}
+ */
 const processKeyxFilesArray = async (dataArray: MediaFile[]): Promise<IMultipleData[]> => {
   const resultJSON: IMultipleData[] = [];
   for (const keyxData of dataArray) {
@@ -531,14 +615,11 @@ const processKeyxFilesArray = async (dataArray: MediaFile[]): Promise<IMultipleD
 };
 
 /**
- * Returns true if the file is a zip that contains only keyx or a zip with only Cfg files.
+ * Validates ZIP device key files (lotek or vectronic) and extracts key data
  *
- * @export
+ * @async
  * @param {Express.Multer.File} file
- * @return {*}  {({
- *   type: 'unknown' | 'keyx' | 'cfg';
- *   error?: string;
- * })}
+ * @returns {Promise<IValidationData>}
  */
 export const checkFileForZip = async (file: Express.Multer.File): Promise<IValidationData> => {
   const mimeType = mime.getType(file.originalname) ?? '';

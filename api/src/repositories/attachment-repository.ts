@@ -1767,10 +1767,12 @@ export class AttachmentRepository extends BaseRepository {
               const sqlStatement = SQL`
             INSERT INTO telemetry_credential_lotek (
               ndeviceid,
-              strspecialid
+              strspecialid,
+              devicekey
             ) VALUES (
               ${key.id},
-              ${key['Iridium IMEI']}
+              ${key['Iridium IMEI']},
+              ${key.key}
             )
             RETURNING
               telemetry_credential_lotek_id;
@@ -1802,8 +1804,8 @@ export class AttachmentRepository extends BaseRepository {
             ) VALUES (
               ${key.id},
               ${key.comType},
-              ${key.id},
               ${key.comID},
+              ${key.key},
               ${key.collarType}
             )
             RETURNING

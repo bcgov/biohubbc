@@ -171,7 +171,9 @@ export function postSurveyTelemetryCredentialAttachment(): RequestHandler {
       // The rollback connection method triggers an exception if the connection is not open
       // This exception error message is the one that bubbles up to the front end and not the intended error set when throwing HTTP400 exception
       // Added to connection isConnectionOpen to rollback only when the connection has been opened
-      if (connection.isConnectionOpen()) await connection.rollback();
+      if (connection.isConnectionOpen()) {
+        await connection.rollback();
+      }
 
       throw error;
     } finally {

@@ -34,6 +34,11 @@ export enum TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE {
   UNKNOWN = 'unknown'
 }
 
+/**
+ * Vectronic device key required xml tags
+ *
+ * @type {readonly ["</collarKey>", "</collar>", "</comIDList>", "comType", "</comID>", "</key>", "</collarType>"]}
+ */
 export const TELEMETRY_CREDENTIAL_ATTACHMENT_VECTRONIC_XMLTAGS = [
   '</collarKey>',
   '</collar>',
