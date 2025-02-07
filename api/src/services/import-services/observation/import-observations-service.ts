@@ -29,6 +29,8 @@ import {
 import { ObservationSubCountEnvironmentService } from '../../observation-subcount-environment-service';
 import { PlatformService } from '../../platform-service';
 import { SamplePeriodService } from '../../sample-period-service';
+import { SampleSiteService } from '../../sample-site-service';
+import { TechniqueService } from '../../technique-service';
 import {
   getEnvironmentNameTypeDefinitionMap,
   isQualitativeEnvironmentStub,
@@ -139,7 +141,7 @@ export class ImportObservationsService extends DBService {
           survey_id: this.surveyId,
           itis_tsn: getTaxonFromRowState(row).itis_tsn,
           itis_scientific_name: getTaxonFromRowState(row).itis_scientific_name,
-          survey_sample_period_id: getSamplePeriodIdFromRowState(row).sample_period_id ?? null,
+          survey_sample_period_id: this.samplePeriodId ?? getSamplePeriodIdFromRowState(row).sample_period_id ?? null,
           latitude: row.LATITUDE,
           longitude: row.LONGITUDE,
           count: row.COUNT, // deprecated - each subcount will eventually have its own count
@@ -170,6 +172,8 @@ export class ImportObservationsService extends DBService {
     const samplePeriodService = new SamplePeriodService(this.connection);
     const critterbaseService = new CritterbaseService(getCritterbaseUserFromConnection(this.connection));
     const environmentService = new ObservationSubCountEnvironmentService(this.connection);
+    const sampleSiteService = new SampleSiteService(this.connection);
+    const methodTechniqueSerice = new TechniqueService(this.connection);
     const codeRepository = new CodeRepository(this.connection);
 
     // Generate shared dependencies
@@ -179,7 +183,7 @@ export class ImportObservationsService extends DBService {
     // Inject the dependencies and set the static headers, row validators, and dynamic headers
     await Promise.all([
       this._setObservationStaticHeaderConfigs(codeRepository),
-      this._setObservationRowValidators(taxonMap, samplePeriodService),
+      this._setObservationRowValidators(taxonMap, samplePeriodService, sampleSiteService, methodTechniqueSerice),
       this._setObservationDynamicHeadersConfig(taxonMap, critterbaseService, environmentService)
     ]);
 
@@ -223,15 +227,31 @@ export class ImportObservationsService extends DBService {
    *
    * @param {TaxonMap} taxonMap - The taxon map
    * @param {SamplePeriodService} samplePeriodService - The sample period service
+   * @param {SampleSiteService} sampleSiteService - The sample site service
+   * @param {TechniqueService} methodTechniqueService - The method technique service
    * @returns {*} {Promise<void>}
    */
-  async _setObservationRowValidators(taxonMap: TaxonMap, samplePeriodService: SamplePeriodService) {
+  async _setObservationRowValidators(
+    taxonMap: TaxonMap,
+    samplePeriodService: SamplePeriodService,
+    sampleSiteService: SampleSiteService,
+    methodTechniqueService: TechniqueService
+  ) {
+    // Generate the sample periods, sites, and method techniques
     const samplePeriods = await samplePeriodService.getSamplePeriodsForSurvey(this.surveyId);
+    const sampleSites = await sampleSiteService.getSampleSitesForSurveyId(this.surveyId);
+    const methodTechniques = await methodTechniqueService.getTechniquesForSurveyId(this.surveyId);
 
     // Inject the row validators - handles taxon, sampling information and location validation
     this.utils.config.rowValidators = [
       getTaxonRowValidator(taxonMap, this.utils, 'SPECIES'),
-      getObservationSamplingInformationRowValidator(samplePeriods, this.utils)
+      getObservationSamplingInformationRowValidator({
+        samplePeriods: samplePeriods,
+        sampleSites: sampleSites,
+        methodTechniques: methodTechniques,
+        utils: this.utils,
+        samplePeriodId: this.samplePeriodId
+      })
     ];
   }
 

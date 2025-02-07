@@ -178,15 +178,29 @@ describe('import-observations-service', () => {
         .stub(observationSamplingRowValidator, 'getObservationSamplingInformationRowValidator')
         .returns(() => []);
       const taxonMap = new CaseInsensitiveMap<string, IItisSearchResult>();
-      const samplePeriodService: any = {
+      const samplePeriodServiceStub: any = {
         getSamplePeriodsForSurvey: sinon.stub().resolves([])
       };
+      const sampleSiteServiceStub: any = {
+        getSampleSitesForSurveyId: sinon.stub().resolves([])
+      };
 
-      await service._setObservationRowValidators(taxonMap, samplePeriodService);
+      const methodTechniqueServiceStub: any = {
+        getTechniquesForSurveyId: sinon.stub().resolves([])
+      };
 
-      expect(samplePeriodService.getSamplePeriodsForSurvey).to.have.been.calledOnce;
-      expect(taxonRowValidatorStub).to.have.been.calledOnce;
+      await service._setObservationRowValidators(
+        taxonMap,
+        samplePeriodServiceStub,
+        sampleSiteServiceStub,
+        methodTechniqueServiceStub
+      );
+
+      expect(samplePeriodServiceStub.getSamplePeriodsForSurvey).to.have.been.calledOnceWithExactly(1);
+      expect(taxonRowValidatorStub).to.have.been.calledOnceWithExactly(taxonMap, service.utils, 'SPECIES');
       expect(observationSamplingRowValidatorStub).to.have.been.calledOnce;
+      expect(sampleSiteServiceStub.getSampleSitesForSurveyId).to.have.been.calledOnceWithExactly(1);
+      expect(methodTechniqueServiceStub.getTechniquesForSurveyId).to.have.been.calledOnceWithExactly(1);
 
       expect(service.utils.config.rowValidators).to.be.an('array').and.to.have.length(2);
     });
