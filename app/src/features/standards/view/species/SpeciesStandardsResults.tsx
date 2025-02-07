@@ -1,4 +1,4 @@
-import { mdiBone, mdiBook, mdiRuler, mdiTag } from '@mdi/js';
+import { mdiBook, mdiRuler, mdiTag } from '@mdi/js';
 import { Box, Divider, Stack, Typography } from '@mui/material';
 import { blueGrey, grey } from '@mui/material/colors';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
@@ -11,7 +11,6 @@ import { useState } from 'react';
 enum SpeciesStandardsViewEnum {
   MEASUREMENTS = 'measurements',
   MARKING_BODY_LOCATIONS = 'marking_body_locations',
-  MARKING_TYPES = 'marking_types',
   ECOLOGICAL_UNIT = 'ecological_unit'
 }
 
@@ -45,9 +44,8 @@ const SpeciesStandardsResults = (props: ISpeciesStandardsResultsProps) => {
         <CustomToggleButtonGroup
           views={[
             { value: SpeciesStandardsViewEnum.MEASUREMENTS, label: 'Measurements', icon: mdiRuler },
-            { value: SpeciesStandardsViewEnum.MARKING_BODY_LOCATIONS, label: 'Marking body locations', icon: mdiBone },
-            { value: SpeciesStandardsViewEnum.MARKING_TYPES, label: 'Markings', icon: mdiTag},
-            { value: SpeciesStandardsViewEnum.ECOLOGICAL_UNIT, label: 'Ecological Unit', icon: mdiBook}
+            { value: SpeciesStandardsViewEnum.MARKING_BODY_LOCATIONS, label: 'Marking body locations', icon: mdiTag },
+            { value: SpeciesStandardsViewEnum.ECOLOGICAL_UNIT, label: 'Ecological Unit', icon: mdiBook }
           ]}
           activeView={activeView}
           onViewChange={setActiveView}
@@ -96,32 +94,27 @@ const SpeciesStandardsResults = (props: ISpeciesStandardsResultsProps) => {
             ))}
           </>
         )}
-        {activeView === SpeciesStandardsViewEnum.MARKING_TYPES && (
-          <>
-            {props.data.markingBodyLocations.map((location) => (
-              <AccordionStandardCard label={location.value} colour={grey[100]} disableCollapse key={location.id} />
-            ))}
-          </>
-        )}
         {activeView === SpeciesStandardsViewEnum.ECOLOGICAL_UNIT && (
           <>
-            {props.data.ecologicalCategory.map((unit) => (
+            {props.data.ecologicalUnits.map((category) => (
               <AccordionStandardCard
-                key={unit.collection_category_id}
-                label={unit.category_name}
-                subtitle={unit.description}
+                key={category.collection_category_id}
+                label={category.category_name}
+                subtitle={category.description}
                 colour={grey[100]}>
-                <Stack gap={2} my={2}>
-                  {props.data?.ecologicalUnits.map((unit_option) => (
-                    <AccordionStandardCard
-                      key={unit_option.collection_category_id}
-                      label={unit_option.unit_name}
-                      subtitle={unit_option.description}
-                      colour={grey[200]}
-                      disableCollapse
-                    />
-                  ))}
-                </Stack>
+                {/* <Stack gap={2} my={2}>
+                  {props.data?.ecologicalUnits
+                    .filter((unit) => unit.collection_category_id === category.collection_category_id)
+                    .map((unit) => (
+                      <AccordionStandardCard
+                        key={unit.collection_unit_id}
+                        label={unit.unit_name}
+                        subtitle={unit.description}
+                        colour={grey[200]}
+                        disableCollapse
+                      />
+                    ))}
+                </Stack> */}
               </AccordionStandardCard>
             ))}
           </>

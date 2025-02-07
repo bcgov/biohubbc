@@ -1,8 +1,7 @@
 import {
   CBQualitativeMeasurementTypeDefinition,
   CBQuantitativeMeasurementTypeDefinition,
-  ICollectionCategory,
-  ICollectionUnit
+  ICollectionCategory
 } from './useCritterApi.interface';
 
 interface IStandardNameDescription {
@@ -36,8 +35,7 @@ export interface ISpeciesStandards {
     key: string;
     value: string;
   }[];
-  ecologicalUnits: ICollectionUnit[];
-  ecologicalCategory: ICollectionCategory[];
+  ecologicalUnits: ICollectionCategory[];
 }
 
 /**

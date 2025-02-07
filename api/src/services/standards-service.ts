@@ -39,14 +39,16 @@ export class StandardsService extends DBService {
     const response = await Promise.all([
       this.platformService.getTaxonomyByTsns([tsn]),
       this.critterbaseService.getTaxonBodyLocations(String(tsn)),
-      this.critterbaseService.getTaxonMeasurements(String(tsn))
+      this.critterbaseService.getTaxonMeasurements(String(tsn)),
+      this.critterbaseService.findTaxonCollectionCategories(String(tsn))
     ]);
 
     return {
       tsn: tsn,
       scientificName: response[0][0].scientificName,
       markingBodyLocations: response[1],
-      measurements: response[2]
+      measurements: response[2],
+      ecologicalUnits: response[3]
     };
   }
 
