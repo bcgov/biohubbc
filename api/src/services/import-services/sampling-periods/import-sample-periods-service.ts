@@ -99,7 +99,7 @@ export class ImportSamplePeriodsService extends DBService {
 
     await samplePeriodService.insertSamplePeriods(this.surveyId, samplePeriods);
 
-    defaultLog.debug({ label: 'import sample periods', samplePeriods });
+    defaultLog.debug({ label: 'importCSVWorksheet', message: 'import sample periods', samplePeriods });
 
     return [];
   }
