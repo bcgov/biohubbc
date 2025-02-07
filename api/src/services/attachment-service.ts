@@ -12,12 +12,14 @@ import {
   IProjectAttachment,
   IProjectReportAttachment,
   IProjectReportAttachmentAuthor,
+  IResponseTelemetryCredentialAttachment,
   ISurveyAttachment,
   ISurveyReportAttachment,
   ISurveyReportAttachmentAuthor,
   SurveyTelemetryCredentialAttachment
 } from '../repositories/attachment-repository';
 import { deleteFileFromS3, generateS3FileKey } from '../utils/file-utils';
+import { IValidationData } from '../utils/media/media-utils';
 import { DBService } from './db-service';
 import { HistoryPublishService } from './history-publish-service';
 
@@ -910,16 +912,16 @@ export class AttachmentService extends DBService {
    *
    * @param {number} surveyId
    * @param {string} fileName
-   * @param {string} fileType
+   * @param {IValidationData} fileData
    * @return {*}  {Promise<{ survey_telemetry_credential_attachment_id: number }>}
    * @memberof AttachmentService
    */
   async updateSurveyTelemetryCredentialAttachment(
     surveyId: number,
     fileName: string,
-    fileType: string
+    fileData: IValidationData
   ): Promise<{ survey_telemetry_credential_attachment_id: number }> {
-    return this.attachmentRepository.updateSurveyTelemetryCredentialAttachment(surveyId, fileName, fileType);
+    return this.attachmentRepository.updateSurveyTelemetryCredentialAttachment(surveyId, fileName, fileData);
   }
 
   /**
@@ -927,23 +929,23 @@ export class AttachmentService extends DBService {
    *
    * @param {string} fileName
    * @param {number} fileSize
-   * @param {string} fileType
+   * @param {IValidationData} fileData
    * @param {number} surveyId
    * @param {string} key
-   * @return {*}  {Promise<{ survey_telemetry_credential_attachment_id: number }>}
+   * @return {*}  {Promise<IResponseTelemetryCredentialAttachment>}
    * @memberof AttachmentService
    */
   async insertSurveyTelemetryCredentialAttachment(
     fileName: string,
     fileSize: number,
-    fileType: string,
+    fileData: IValidationData,
     surveyId: number,
     key: string
-  ): Promise<{ survey_telemetry_credential_attachment_id: number }> {
+  ): Promise<IResponseTelemetryCredentialAttachment> {
     return this.attachmentRepository.insertSurveyTelemetryCredentialAttachment(
       fileName,
       fileSize,
-      fileType,
+      fileData,
       surveyId,
       key
     );
@@ -968,15 +970,15 @@ export class AttachmentService extends DBService {
    * @param {number} projectId
    * @param {number} surveyId
    * @param {string} attachmentType
-   * @return {*}  {Promise<{ survey_telemetry_credential_attachment_id: number; key: string }>}
+   * @return {*}  {Promise<IResponseTelemetryCredentialAttachment>}
    * @memberof AttachmentService
    */
   async upsertSurveyTelemetryCredentialAttachment(
     file: Express.Multer.File,
     projectId: number,
     surveyId: number,
-    attachmentType: string
-  ): Promise<{ survey_telemetry_credential_attachment_id: number; key: string }> {
+    attachmentData: IValidationData
+  ): Promise<IResponseTelemetryCredentialAttachment> {
     const key = generateS3FileKey({
       projectId: projectId,
       surveyId: surveyId,
@@ -986,21 +988,21 @@ export class AttachmentService extends DBService {
 
     const getResponse = await this.getSurveyTelemetryCredentialAttachmentByFileName(file.originalname, surveyId);
 
-    let attachmentResult: { survey_telemetry_credential_attachment_id: number };
+    let attachmentResult: IResponseTelemetryCredentialAttachment;
 
     if (getResponse && getResponse.rowCount) {
       // Existing attachment with matching name found, update it
       attachmentResult = await this.updateSurveyTelemetryCredentialAttachment(
         surveyId,
         file.originalname,
-        attachmentType
+        attachmentData
       );
     } else {
       // No matching attachment found, insert new attachment
       attachmentResult = await this.insertSurveyTelemetryCredentialAttachment(
         file.originalname,
         file.size,
-        attachmentType,
+        attachmentData,
         surveyId,
         key
       );

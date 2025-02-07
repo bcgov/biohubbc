@@ -8,10 +8,10 @@ import { authorizeRequestHandler } from '../../../../../../../request-handlers/s
 import { AttachmentService } from '../../../../../../../services/attachment-service';
 import { uploadFileToS3 } from '../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../utils/logger';
-import { isValidTelementryCredentialFile } from '../../../../../../../utils/media/media-utils';
+import { validateGetKeyDataTelementryCredentialFile } from '../../../../../../../utils/media/media-utils';
 import { getFileFromRequest } from '../../../../../../../utils/request';
 
-const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/keyx/upload');
+const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/telemetry');
 
 export const POST: Operation = [
   authorizeRequestHandler((req) => {
@@ -127,7 +127,6 @@ POST.apiDoc = {
 export function postSurveyTelemetryCredentialAttachment(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req.keycloak_token);
-
     try {
       const rawMediaFile = getFileFromRequest(req);
 
@@ -137,8 +136,7 @@ export function postSurveyTelemetryCredentialAttachment(): RequestHandler {
         files: { ...rawMediaFile, buffer: 'Too big to print' }
       });
 
-      const isTelemetryCredentialFile = isValidTelementryCredentialFile(rawMediaFile);
-
+      const isTelemetryCredentialFile = await validateGetKeyDataTelementryCredentialFile(rawMediaFile);
       if (isTelemetryCredentialFile.error) {
         throw new HTTP400(isTelemetryCredentialFile.error);
       }
@@ -151,7 +149,7 @@ export function postSurveyTelemetryCredentialAttachment(): RequestHandler {
         rawMediaFile,
         Number(req.params.projectId),
         Number(req.params.surveyId),
-        isTelemetryCredentialFile.type
+        isTelemetryCredentialFile
       );
 
       // Upload telemetry credential file to SIMS S3 Storage
@@ -160,7 +158,7 @@ export function postSurveyTelemetryCredentialAttachment(): RequestHandler {
         username: req.keycloak_token?.preferred_username ?? '',
         email: req.keycloak_token?.email ?? ''
       };
-      await uploadFileToS3(rawMediaFile, upsertResult.key, metadata);
+      if (upsertResult.key) await uploadFileToS3(rawMediaFile, upsertResult.key, metadata);
 
       await connection.commit();
 
@@ -169,7 +167,12 @@ export function postSurveyTelemetryCredentialAttachment(): RequestHandler {
       });
     } catch (error) {
       defaultLog.error({ label: 'postSurveyTelemetryCredentialAttachment', message: 'error', error });
-      await connection.rollback();
+
+      // The rollback connection method triggers an exception if the connection is not open
+      // This exception error message is the one that bubbles up to the front end and not the intended error set when throwing HTTP400 exception
+      // Added to connection isConnectionOpen to rollback only when the connection has been opened
+      if (connection.isConnectionOpen()) await connection.rollback();
+
       throw error;
     } finally {
       connection.release();

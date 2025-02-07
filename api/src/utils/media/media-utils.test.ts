@@ -116,9 +116,9 @@ describe('parseUnknownZipFile', () => {
 
     const response = media_utils.parseUnknownZipFile(multerFile.buffer);
 
-    expect(response.length).to.equal(2);
-    expect(response[0]).to.eql(new MediaFile('file1.txt', 'text/plain', Buffer.from('file1data')));
-    expect(response[1]).to.eql(new MediaFile('file2.csv', 'text/csv', Buffer.from('file2data')));
+    expect(response.filesArray.length).to.equal(2);
+    expect(response.filesArray[0]).to.eql(new MediaFile('file1.txt', 'text/plain', Buffer.from('file1data')));
+    expect(response.filesArray[1]).to.eql(new MediaFile('file2.csv', 'text/csv', Buffer.from('file2data')));
   });
 
   it('returns an empty array if the zip contains no files', () => {
@@ -130,7 +130,7 @@ describe('parseUnknownZipFile', () => {
 
     const response = media_utils.parseUnknownZipFile(multerFile.buffer);
 
-    expect(response.length).to.equal(0);
+    expect(response.filesArray.length).to.equal(0);
   });
 });
 
