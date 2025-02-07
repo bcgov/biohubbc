@@ -393,7 +393,7 @@ describe('Worksheet sampling util functions', () => {
 
       const result = validator({ row: {} } as any);
 
-      expect(result[0].error).to.contain('match observation with sampling');
+      expect(result[0].error).to.contain('find matching sampling period');
     });
 
     it('should return no errors and update state when matching period found', () => {
