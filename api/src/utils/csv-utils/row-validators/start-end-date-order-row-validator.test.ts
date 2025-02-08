@@ -5,7 +5,7 @@ import { getStartDateIsBeforeEndDateRowValidator } from './start-end-date-order-
 
 chai.use(sinonChai);
 
-describe.only('getStartDateIsBeforeEndDateRowValidator', () => {
+describe('getStartDateIsBeforeEndDateRowValidator', () => {
   afterEach(() => {
     sinon.restore();
   });
