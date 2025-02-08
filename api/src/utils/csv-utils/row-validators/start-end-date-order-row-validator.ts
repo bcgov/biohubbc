@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { isDateTimeString } from '../../date-time-utils';
+import { isDateString } from '../../date-time-utils';
 import { CSVConfigUtils } from '../csv-config-utils';
 import { CSVRowValidator } from '../csv-config-validation.interface';
 
@@ -18,25 +18,32 @@ export const getStartDateIsBeforeEndDateRowValidator = <StaticHeaderType extends
   utils: CSVConfigUtils<StaticHeaderType>,
   staticHeaders: {
     startDate: StaticHeaderType;
-    startTime: StaticHeaderType | undefined;
     endDate: StaticHeaderType;
-    endTime: StaticHeaderType | undefined;
+    startTime?: StaticHeaderType;
+    endTime?: StaticHeaderType;
   }
 ): CSVRowValidator => {
   return (params) => {
-    let startTimeStamp = utils.getCellValue(staticHeaders.startDate, params.row) as string;
-    let endTimeStamp = utils.getCellValue(staticHeaders.endDate, params.row) as string;
+    let startTimeStamp = String(utils.getCellValue(staticHeaders.startDate, params.row));
+    let endTimeStamp = String(utils.getCellValue(staticHeaders.endDate, params.row));
 
-    if (staticHeaders.startTime) {
-      startTimeStamp += ` ${utils.getCellValue(staticHeaders.startTime, params.row)}`;
+    // Casting as string to make the type more clear ie: `string | undefined` vs `CSVCell`
+    const startTime = staticHeaders.startTime && (utils.getCellValue(staticHeaders.startTime, params.row) as string);
+    const endTime = staticHeaders.endTime && (utils.getCellValue(staticHeaders.endTime, params.row) as string);
+
+    // Append the time to the date if it exists
+    if (startTime) {
+      startTimeStamp += ` ${startTime}`;
     }
 
-    if (staticHeaders.endTime) {
-      endTimeStamp += ` ${utils.getCellValue(staticHeaders.endTime, params.row)}`;
+    if (endTime) {
+      endTimeStamp += ` ${endTime}`;
     }
 
-    // INVALID: If either timestamp is invalid
-    if (!isDateTimeString(startTimeStamp) || !isDateTimeString(endTimeStamp)) {
+    const timestampsAreInvalid = !isDateString(startTimeStamp) || !isDateString(endTimeStamp);
+
+    // INVALID: Timestamps must be valid date-time strings
+    if (timestampsAreInvalid) {
       return [
         {
           error: 'Unable to parse date and time values',
@@ -47,8 +54,10 @@ export const getStartDateIsBeforeEndDateRowValidator = <StaticHeaderType extends
       ];
     }
 
-    // INVALID: If the start date is AFTER the end date
-    if (dayjs(startTimeStamp).isAfter(dayjs(endTimeStamp))) {
+    const startDateIsAfterEndDate = dayjs(startTimeStamp).isAfter(dayjs(endTimeStamp));
+
+    // INVALID: Start dates must be before end dates
+    if (startDateIsAfterEndDate) {
       return [
         {
           error: 'Start date is after end date',
