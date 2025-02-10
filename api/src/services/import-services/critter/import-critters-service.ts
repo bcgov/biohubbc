@@ -1,4 +1,3 @@
-import { merge } from 'lodash';
 import { v4 } from 'uuid';
 import { WorkSheet } from 'xlsx';
 import { IDBConnection } from '../../../database/db';
@@ -41,8 +40,6 @@ export type CritterCSVStaticHeader = 'ITIS_TSN' | 'ALIAS' | 'SEX' | 'WLH_ID' | '
  *
  */
 export class ImportCrittersService extends DBService {
-  _config: CSVConfig<CritterCSVStaticHeader>;
-
   surveyId: number;
   worksheet: WorkSheet;
 
@@ -61,7 +58,7 @@ export class ImportCrittersService extends DBService {
   constructor(connection: IDBConnection, worksheet: WorkSheet, surveyId: number) {
     super(connection);
 
-    this._config = {
+    const initialConfig: CSVConfig<CritterCSVStaticHeader> = {
       staticHeadersConfig: {
         ITIS_TSN: { aliases: ['TAXON', 'SPECIES', 'TSN'] },
         ALIAS: { aliases: ['NICKNAME', 'NAME', 'ANIMAL_ID'] },
@@ -75,7 +72,7 @@ export class ImportCrittersService extends DBService {
     this.surveyId = surveyId;
     this.worksheet = worksheet;
 
-    this.configUtils = new CSVConfigUtils(worksheet, this._config);
+    this.configUtils = new CSVConfigUtils(worksheet, initialConfig);
 
     this.platformService = new PlatformService(connection);
     this.surveyCritterService = new SurveyCritterService(connection);
@@ -137,19 +134,18 @@ export class ImportCrittersService extends DBService {
       this._getCollectionUnitDynamicHeaderConfig().catch(() => undefined) // Same for the dynamic columns
     ]);
 
-    const newConfig = merge(this._config, {
-      staticHeadersConfig: {
-        ITIS_TSN: tsnHeaderConfig,
-        ALIAS: aliasHeaderConfig,
-        SEX: sexHeaderConfig,
-        WLH_ID: { validateCell: getWlhIDCellValidator(this.configUtils) },
-        DESCRIPTION: { validateCell: getDescriptionCellValidator() }
-      },
-      dynamicHeadersConfig: dynamicHeadersConfig,
-      ignoreDynamicHeaders: !dynamicHeadersConfig
+    this.configUtils.setAllStaticHeaderConfigs({
+      ITIS_TSN: { validateCell: tsnHeaderConfig.validateCell, setCellValue: tsnHeaderConfig.setCellValue },
+      ALIAS: { validateCell: aliasHeaderConfig.validateCell, setCellValue: aliasHeaderConfig.setCellValue },
+      SEX: sexHeaderConfig ? { validateCell: sexHeaderConfig.validateCell } : { validateCell: () => [] },
+      WLH_ID: { validateCell: getWlhIDCellValidator(this.configUtils) },
+      DESCRIPTION: { validateCell: getDescriptionCellValidator() }
     });
 
-    return newConfig;
+    this.configUtils.config.dynamicHeadersConfig = dynamicHeadersConfig;
+    this.configUtils.config.ignoreDynamicHeaders = !dynamicHeadersConfig;
+
+    return this.configUtils.getConfig();
   }
 
   /**
