@@ -11,10 +11,13 @@ import { updateCSVRowState } from '../csv-header-configs';
  *  2. The cell must be a valid species from the provided taxons
  *  3. The row state will be updated with the TSN and scientific name
  *
+ * @template StaticHeaderType
  * @param {TaxonMap} taxonMap The list of taxons
+ * @param {CSVConfigUtils} utils The CSV config utils
+ * @param {string} taxonStaticHeader The taxon static header
  * @returns {*} {CSVCellValidator} The validate cell callback
  */
-export const getTaxonRowValidator = <StaticHeaderType = Uppercase<string>>(
+export const getTaxonRowValidator = <StaticHeaderType extends Uppercase<string> = Uppercase<string>>(
   taxonMap: TaxonMap,
   utils: CSVConfigUtils<StaticHeaderType>,
   taxonStaticHeader: StaticHeaderType

@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { ICritterDetailed } from '../../services/critterbase-service';
 import { formatTimeString } from '../../services/import-services/utils/datetime';
+import { CaseInsensitiveMap } from '../case-insensitive-map';
 import { isDateString } from '../date-time-utils';
 import {
   CSVCellSetter,
@@ -311,5 +312,61 @@ export const getDateRangeCellValidator = (options?: CSVOptionalCell): CSVCellVal
     }
 
     return [];
+  };
+};
+
+/**
+ * Get the lookup ID cell validator - case-insensitive.
+ * This validator is used to validate a cell value against a list of lookup values.
+ *
+ * Note: This validator will update the mutate cell value to the lookup value ID.
+ *
+ * Rules:
+ *  1. The cell must match a value by name in the lookup values list
+ *  2. The lookup values are case-insensitive
+ *
+ * @param {Array<{ name: string; id: string | number }>} values List of lookup value objects
+ * @param {CSVOptionalCell & {
+ *  getError: (params: CSVParams) => string;
+ *  getSolution: (params: CSVParams) => string }
+ *  } options The cell options
+ * @returns {*} {CSVCellValidator} The validate cell callback
+ */
+export const getLookupIdCellValidator = (
+  values: Array<{ name: string; id: string | number }>,
+  options: CSVOptionalCell & {
+    getError: (params: CSVParams) => string;
+    getSolution: (params: CSVParams) => string;
+  }
+): CSVCellValidator => {
+  const lookupValueMap = new CaseInsensitiveMap(values.map((value) => [value.name, value.id]));
+  const lookupValues = values.map((value) => value.name);
+
+  return (params) => {
+    // Allow optional cells to be empty if configured
+    if (options.optional && params.cell === undefined) {
+      return [];
+    }
+
+    // Check if the cell value matches a lookup value by name (case-insensitive)
+    const lookupValueId = lookupValueMap.get(String(params.cell));
+
+    // Update the row state with the lookup ID
+    if (lookupValueId) {
+      params.mutateCell = lookupValueId;
+
+      return [];
+    }
+
+    // Return an error if the cell value is not a valid reference value
+    return [
+      {
+        error: options.getError(params),
+        solution: options.getSolution(params),
+        header: params.header,
+        cell: params.cell,
+        values: lookupValues
+      }
+    ];
   };
 };

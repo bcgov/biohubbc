@@ -6,14 +6,14 @@ import { HTTP422CSVValidationError } from '../../../../../../errors/http-error';
 import { CSVValidationErrorResponse } from '../../../../../../openapi/schemas/csv';
 import { csvFileSchema } from '../../../../../../openapi/schemas/file';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { ImportObservationsService } from '../../../../../../services/import-services/observation/import-observations-service';
+import { ImportSamplePeriodsService } from '../../../../../../services/import-services/sampling-periods/import-sample-periods-service';
 import { CSV_ERROR_MESSAGE } from '../../../../../../utils/csv-utils/csv-config-validation.interface';
 import { getLogger } from '../../../../../../utils/logger';
 import { parseMulterFile } from '../../../../../../utils/media/media-utils';
 import { getFileFromRequest } from '../../../../../../utils/request';
 import { constructXLSXWorkbook, getDefaultWorksheet } from '../../../../../../utils/xlsx-utils/worksheet-utils';
 
-const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/import');
+const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/sample-period/import');
 
 export const POST: Operation = [
   authorizeRequestHandler((req) => {
@@ -31,12 +31,12 @@ export const POST: Operation = [
       ]
     };
   }),
-  importObservationCSV()
+  importSamplePeriodsCSV()
 ];
 
 POST.apiDoc = {
-  description: 'Import survey observation CSV file.',
-  tags: ['observations'],
+  description: 'Import SIMS CSV Sample periods CSV file',
+  tags: ['periods'],
   security: [
     {
       Bearer: []
@@ -45,6 +45,7 @@ POST.apiDoc = {
   parameters: [
     {
       in: 'path',
+      description: 'SIMS survey id',
       name: 'projectId',
       required: true,
       schema: {
@@ -54,6 +55,7 @@ POST.apiDoc = {
     },
     {
       in: 'path',
+      description: 'SIMS survey id',
       name: 'surveyId',
       required: true,
       schema: {
@@ -63,7 +65,7 @@ POST.apiDoc = {
     }
   ],
   requestBody: {
-    description: 'Survey observation CSV file to import',
+    description: 'SIMS sample period CSV import file.',
     required: true,
     content: {
       'multipart/form-data': {
@@ -73,18 +75,11 @@ POST.apiDoc = {
           required: ['media'],
           properties: {
             media: {
-              description: 'A survey observation CSV file.',
+              description: 'SIMS sample period CSV import file.',
               type: 'array',
               minItems: 1,
               maxItems: 1,
               items: csvFileSchema
-            },
-            surveySamplePeriodId: {
-              description: 'The sample period id to associate the observations with.',
-              // Intentionally using string as `formData` only supports string / binary values
-              type: 'string',
-              format: 'number',
-              minimum: 1
             }
           }
         }
@@ -93,7 +88,7 @@ POST.apiDoc = {
   },
   responses: {
     204: {
-      description: 'Observation import success.'
+      description: 'Sample periods CSV import success.'
     },
     400: {
       $ref: '#/components/responses/400'
@@ -115,33 +110,26 @@ POST.apiDoc = {
 };
 
 /**
- * Imports a `Observation CSV` which bulk creates observations in SIMS.
+ * Imports a `Sample Period CSV` which bulk adds sample periods into SIMS.
  *
- * @return {*}  {RequestHandler}
+ * @return {*} {RequestHandler}
  */
-export function importObservationCSV(): RequestHandler {
+export function importSamplePeriodsCSV(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
-    const surveySamplePeriodId = req.body.surveySamplePeriodId ? Number(req.body.surveySamplePeriodId) : undefined;
-
     const rawFile = getFileFromRequest(req);
-    const mediaFile = parseMulterFile(rawFile);
-    const workbook = constructXLSXWorkbook(mediaFile);
-    const worksheet = getDefaultWorksheet(workbook);
 
     const connection = getDBConnection(req.keycloak_token);
+
+    const mediaFile = parseMulterFile(rawFile);
+    const worksheet = getDefaultWorksheet(constructXLSXWorkbook(mediaFile));
 
     try {
       await connection.open();
 
-      const importObserservations = new ImportObservationsService(
-        connection,
-        worksheet,
-        surveyId,
-        surveySamplePeriodId
-      );
+      const importSamplePeriods = new ImportSamplePeriodsService(connection, worksheet, surveyId);
 
-      const errors = await importObserservations.importCSVWorksheet();
+      const errors = await importSamplePeriods.importCSVWorksheet();
 
       if (errors.length) {
         throw new HTTP422CSVValidationError(CSV_ERROR_MESSAGE, errors);
@@ -151,7 +139,7 @@ export function importObservationCSV(): RequestHandler {
 
       return res.status(204).send();
     } catch (error) {
-      defaultLog.error({ label: 'importObservationsCSV', message: 'error', error });
+      defaultLog.error({ label: 'importSamplePeriodsCSV', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
