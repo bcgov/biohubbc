@@ -78,9 +78,9 @@ export function getObservationSamplingInformationRowValidator(
 
   return (params) => {
     // Extract site, technique, and period data from the row
-    const worksheetSiteName = utils.getCellValue('SAMPLING_SITE', params.row) as string | null;
+    const worksheetSiteName = utils.getCellValue('SAMPLE_SITE', params.row) as string | null;
     const worksheetTechniqueName = utils.getCellValue('METHOD_TECHNIQUE', params.row) as string | null;
-    const worksheetPeriod = utils.getCellValue('SAMPLING_PERIOD', params.row) as string | null;
+    const worksheetPeriod = utils.getCellValue('SAMPLE_PERIOD', params.row) as string | null;
 
     // Extract observation date and time from the row
     const worksheetObservationDate = utils.getCellValue('DATE', params.row) as string | null;
@@ -157,7 +157,7 @@ export function getObservationSamplingInformationRowValidator(
     // Validate the site and technique names exist in the sample periods
     const siteNameDoesNotExistError = validateSiteExistsInSamplePeriods(
       worksheetSiteName,
-      utils.getWorksheetHeader('SAMPLING_SITE', params.row),
+      utils.getWorksheetHeader('SAMPLE_SITE', params.row),
       sampleSiteMap
     );
 

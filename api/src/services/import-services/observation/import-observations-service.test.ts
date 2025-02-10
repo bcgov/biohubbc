@@ -41,8 +41,8 @@ describe('import-observations-service', () => {
         'TIME',
         'LATITUDE',
         'LONGITUDE',
-        'SAMPLING_PERIOD',
-        'SAMPLING_SITE',
+        'SAMPLE_PERIOD',
+        'SAMPLE_SITE',
         'METHOD_TECHNIQUE',
         'COMMENT'
       ]);
