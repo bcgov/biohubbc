@@ -81,7 +81,9 @@ POST.apiDoc = {
             },
             surveySamplePeriodId: {
               description: 'The sample period id to associate the observations with.',
-              type: 'integer',
+              // Intentionally using string as `formData` only supports string / binary values
+              type: 'string',
+              format: 'number',
               minimum: 1
             }
           }
@@ -120,7 +122,7 @@ POST.apiDoc = {
 export function importObservationCSV(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
-    const surveySamplePeriodId = Number(req.body.surveySamplePeriodId) || undefined;
+    const surveySamplePeriodId = req.body.surveySamplePeriodId ? Number(req.body.surveySamplePeriodId) : undefined;
 
     const rawFile = getFileFromRequest(req);
     const mediaFile = parseMulterFile(rawFile);
