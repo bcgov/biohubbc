@@ -38,7 +38,10 @@ export class SubCountService extends DBService {
    * @return {*}  {Promise<void>}
    * @memberof SubCountService
    */
-  async deleteObservationSubCountRecords(surveyId: number, surveyObservationIds: number[]): Promise<void> {
+  async deleteObservationSubCountRecordsByObservationId(
+    surveyId: number,
+    surveyObservationIds: number[]
+  ): Promise<void> {
     const observationSubCountMeasurementService = new ObservationSubCountMeasurementService(this.connection);
 
     await Promise.all([
@@ -49,7 +52,22 @@ export class SubCountService extends DBService {
     ]);
 
     // Delete observation_subcount records, if any
-    return this.subCountRepository.deleteObservationSubCountRecords(surveyId, surveyObservationIds);
+    return this.subCountRepository.deleteObservationSubCountRecordsByObservationId(surveyId, surveyObservationIds);
+  }
+
+  /**
+   * Deletes all observation subcount records for the given observation subcount ids, and dependent records.
+   *
+   * Note: If all subcount records are deleted for a given survey observation record, then the survey observation
+   * records will also be deleted, as all survey observations should have at least one subcount.
+   *
+   * @param {number} surveyId
+   * @param {number[]} observationSubcountIds
+   * @return {*}  {Promise<void>}
+   * @memberof ObservationRepository
+   */
+  async deleteObservationSubcountRecords(surveyId: number, observationSubcountIds: number[]): Promise<void> {
+    await this.subCountRepository.deleteObservationSubcountRecords(surveyId, observationSubcountIds);
   }
 
   /**

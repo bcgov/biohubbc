@@ -789,10 +789,10 @@ export class ObservationRepository extends BaseRepository {
 
     const response = await this.connection.knex(queryBuilder, SurveyObservationModel);
 
-    if (!response.rowCount) {
+    if (response.rowCount !== observationIds.length) {
       throw new ApiExecuteSQLError('Failed to delete observation records', [
         'ObservationRepository->deleteObservationsByIds',
-        'rowCount was null or undefined, expected rowCount = 1'
+        `rowCount was ${response.rowCount}, expected rowCount = ${observationIds.length}`
       ]);
     }
 

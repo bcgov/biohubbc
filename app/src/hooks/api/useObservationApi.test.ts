@@ -76,4 +76,36 @@ describe('useObservationApi', () => {
       expect(result).toEqual(undefined);
     });
   });
+
+  describe('deleteObservationRecords', () => {
+    it('works as expected', async () => {
+      const projectId = 1;
+      const surveyId = 2;
+      const observationIds = [3, 4];
+
+      mock.onPost(`/api/project/${projectId}/survey/${surveyId}/observations/delete`).reply(200, undefined);
+
+      const result = await useObservationApi(axios).deleteObservationRecords(projectId, surveyId, observationIds);
+
+      expect(result).toEqual(undefined);
+    });
+  });
+
+  describe('deleteObservationSubcountRecords', () => {
+    it('works as expected', async () => {
+      const projectId = 1;
+      const surveyId = 2;
+      const observationSubcountIds = [3, 4];
+
+      mock.onPost(`/api/project/${projectId}/survey/${surveyId}/observations/subcounts/delete`).reply(200, undefined);
+
+      const result = await useObservationApi(axios).deleteObservationSubcountRecords(
+        projectId,
+        surveyId,
+        observationSubcountIds
+      );
+
+      expect(result).toEqual(undefined);
+    });
+  });
 });

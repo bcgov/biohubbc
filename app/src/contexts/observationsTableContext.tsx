@@ -576,7 +576,7 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
       try {
         if (savedRowIdsToDelete.length) {
           // Delete previously saved records from the server, if any
-          await biohubApi.observation.deleteObservationRecords(projectId, surveyId, savedRowIdsToDelete);
+          await biohubApi.observation.deleteObservationSubcountRecords(projectId, surveyId, savedRowIdsToDelete);
           // Refresh the table after deleting one or more records
           refreshObservationRecords();
         }

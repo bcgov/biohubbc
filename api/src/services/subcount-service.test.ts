@@ -49,7 +49,7 @@ describe('SubCountService', () => {
     });
   });
 
-  describe('deleteObservationSubCountRecords', () => {
+  describe('deleteObservationSubCountRecordsByObservationId', () => {
     it('should delete observation_subcount records and related child records', async () => {
       const mockDbConnection = getMockDBConnection();
       const subCountService = new SubCountService(mockDbConnection);
@@ -65,10 +65,10 @@ describe('SubCountService', () => {
         .stub(ObservationSubCountMeasurementRepository.prototype, 'deleteObservationMeasurements')
         .resolves();
       const deleteObservationSubCountRecordsStub = sinon
-        .stub(SubCountRepository.prototype, 'deleteObservationSubCountRecords')
+        .stub(SubCountRepository.prototype, 'deleteObservationSubCountRecordsByObservationId')
         .resolves();
 
-      await subCountService.deleteObservationSubCountRecords(mockSurveyId, mockSurveyObservationIds);
+      await subCountService.deleteObservationSubCountRecordsByObservationId(mockSurveyId, mockSurveyObservationIds);
 
       expect(deleteSubCountCritterRecordsForObservationIdStub).to.be.calledOnceWith(
         mockSurveyId,

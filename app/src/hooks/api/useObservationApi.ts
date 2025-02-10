@@ -285,6 +285,27 @@ const useObservationApi = (axios: AxiosInstance) => {
   };
 
   /**
+   * Delete observation subcount records having the given observation subcount id.
+   *
+   * Note: An observation must have at least one subcount. If all subcount records are deleted, the observation record
+   * will also be deleted.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {((string | number)[])} observationSubcountIds
+   * @return {*}  {Promise<void>}
+   */
+  const deleteObservationSubcountRecords = async (
+    projectId: number,
+    surveyId: number,
+    observationSubcountIds: (string | number)[]
+  ): Promise<void> => {
+    await axios.post(`/api/project/${projectId}/survey/${surveyId}/observations/subcounts/delete`, {
+      observationSubcountIds
+    });
+  };
+
+  /**
    * Deletes all of the observation measurements, from all observation records, having the given taxon measurement id.
    *
    * @param {number} projectId
@@ -342,6 +363,7 @@ const useObservationApi = (axios: AxiosInstance) => {
     getObservationsGeometry,
     getObservationMeasurementDefinitions,
     deleteObservationRecords,
+    deleteObservationSubcountRecords,
     deleteObservationMeasurements,
     deleteObservationEnvironments,
     importObservationCSV,

@@ -213,7 +213,7 @@ export class ObservationService extends DBService {
       // only add, update or delete records as needed
 
       // Delete old observation subcount records (critters, measurements and subcounts)
-      await subCountService.deleteObservationSubCountRecords(surveyId, [surveyObservationId]);
+      await subCountService.deleteObservationSubCountRecordsByObservationId(surveyId, [surveyObservationId]);
 
       for (const subcount of observation.subcounts) {
         // -- Subcount Data --------------------------------------------------------------
@@ -587,7 +587,7 @@ export class ObservationService extends DBService {
     // Remove any existing child subcount records (observation_subcount, subcount_critter) before
     // deleting survey_observation records
     const service = new SubCountService(this.connection);
-    await service.deleteObservationSubCountRecords(surveyId, observationIds);
+    await service.deleteObservationSubCountRecordsByObservationId(surveyId, observationIds);
 
     // Delete observation environments, if any
     const observationEnvironmentService = new ObservationEnvironmentService(this.connection);
