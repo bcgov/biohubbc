@@ -66,8 +66,8 @@ export type ObservationCSVStaticHeader =
   | 'TIME'
   | 'LATITUDE'
   | 'LONGITUDE'
-  | 'SAMPLING_SITE'
-  | 'SAMPLING_PERIOD'
+  | 'SAMPLE_SITE'
+  | 'SAMPLE_PERIOD'
   | 'METHOD_TECHNIQUE'
   | 'COMMENT';
 
@@ -102,9 +102,12 @@ export class ImportObservationsService extends DBService {
         TIME: { aliases: [], optional: true },
         LATITUDE: { aliases: ['LAT'], optional: true },
         LONGITUDE: { aliases: ['LON', 'LONG', 'LNG'], optional: true },
-        SAMPLING_PERIOD: { aliases: ['PERIOD', 'TIME PERIOD', 'SESSION'], optional: true },
-        SAMPLING_SITE: { aliases: ['SITE', 'SITE ID', 'LOCATION', 'SAMPLING SITE', 'STATION'], optional: true },
-        METHOD_TECHNIQUE: { aliases: ['METHOD', 'TECHNIQUE'], optional: true },
+        SAMPLE_PERIOD: {
+          aliases: ['SAMPLE PERIOD', 'SAMPLING_PERIOD', 'SAMPLING_PERIOD', 'PERIOD', 'TIME PERIOD', 'SESSION'],
+          optional: true
+        },
+        SAMPLE_SITE: { aliases: ['SAMPLE SITE', 'SAMPLING_SITE', 'SAMPLING SITE', 'SITE', 'LOCATION', 'STATION'] },
+        METHOD_TECHNIQUE: { aliases: ['METHOD TECHNIQUE', 'METHOD', 'TECHNIQUE'], optional: true },
         COMMENT: { aliases: ['COMMENTS', 'NOTE', 'NOTES'], optional: true }
       },
       ignoreDynamicHeaders: false
@@ -211,9 +214,9 @@ export class ImportObservationsService extends DBService {
       LATITUDE: { validateCell: getLatitudeCellValidator({ optional: true }) },
       LONGITUDE: { validateCell: getLongitudeCellValidator({ optional: true }) },
       // Sampling period is pre-validated by the sampling information row validator
-      SAMPLING_PERIOD: { validateCell: getDateRangeCellValidator({ optional: true }) },
+      SAMPLE_PERIOD: { validateCell: getDateRangeCellValidator({ optional: true }) },
       // Sampling site is pre-validated by the sampling information row validator
-      SAMPLING_SITE: { validateCell: getNonEmptyStringCellValidator({ optional: true }) },
+      SAMPLE_SITE: { validateCell: getNonEmptyStringCellValidator({ optional: true }) },
       // Method technique is pre-validated by the sampling information row validator
       METHOD_TECHNIQUE: { validateCell: getNonEmptyStringCellValidator({ optional: true }) },
       COMMENT: { validateCell: getDescriptionCellValidator() }
