@@ -6,10 +6,13 @@ import { getSamplePeriodIdFromRowState } from '../../utils/row-state';
 import {
   findMatchingPeriodsWithObservationDateTime,
   findMatchingPeriodsWithSamplingInformation,
+  findMatchingPeriodWithSamplePeriodId,
   getObservationSamplingInformationRowValidator,
   matchSamplePeriodDateToWorksheetPeriodDateTime,
   matchSamplePeriodTimeToWorksheetPeriodDateTime,
-  matchSamplePeriodToWorksheetPeriod
+  matchSamplePeriodToWorksheetPeriod,
+  validateSiteExistsInSamplePeriods,
+  validateTechniqueExistsInSamplePeriods
 } from './observation-sampling-row-validator';
 
 chai.use(sinonChai);
@@ -164,6 +167,62 @@ describe('Worksheet sampling util functions', () => {
   });
 
   describe('getObservationSamplingInformationRowValidator', () => {
+    it('should throw an error when sample period id does not exist in the sample periods', () => {
+      const getCellValueStub = sinon.stub();
+
+      getCellValueStub.onCall(0).returns('SampleSiteOne');
+      getCellValueStub.onCall(1).returns('MethodTechniqueOne');
+      getCellValueStub.onCall(2).returns('2021-01-01 11:00:00 - 2021-01-02 12:00:00');
+
+      const rowValidatorParams = {
+        samplePeriods: [{ survey_sample_period_id: 1 }] as any[],
+        sampleSites: [{ name: 'SampleSiteOne' }] as any[],
+        methodTechniques: [{ name: 'MethodTechniqueOne' }] as any[],
+        utils: {
+          getCellValue: getCellValueStub,
+          getWorksheetHeader: () => 'HEADER'
+        },
+        samplePeriodId: 1
+      } as any;
+
+      const validator = getObservationSamplingInformationRowValidator(rowValidatorParams);
+
+      try {
+        validator({ row: {} } as any);
+        expect.fail('should have thrown an error');
+      } catch (err: any) {
+        expect(err.message).to.exist;
+      }
+    });
+
+    it('should update the row state with the sample period id when found', () => {
+      const getCellValueStub = sinon.stub();
+
+      getCellValueStub.onCall(0).returns('SampleSiteOne');
+      getCellValueStub.onCall(1).returns('MethodTechniqueOne');
+      getCellValueStub.onCall(2).returns('2021-01-01 11:00:00 - 2021-01-02 12:00:00');
+
+      const rowValidatorParams = {
+        samplePeriods: [{ survey_sample_period_id: 1 }] as any[],
+        sampleSites: [{ name: 'SampleSiteOne' }] as any[],
+        methodTechniques: [{ name: 'MethodTechniqueOne' }] as any[],
+        utils: {
+          getCellValue: getCellValueStub,
+          getWorksheetHeader: () => 'HEADER'
+        },
+        samplePeriodId: 1
+      } as any;
+
+      const validator = getObservationSamplingInformationRowValidator(rowValidatorParams);
+
+      const params = { row: {} } as any;
+
+      validator(params);
+
+      expect(getSamplePeriodIdFromRowState(params.row).sample_period_id).to.equal(1);
+      expect(getSamplePeriodIdFromRowState(params.row).sample_period_id).to.equal(1);
+    });
+
     it('should return no errors when no sampling information and observation date provided with lat/lon', () => {
       const getCellValueStub = sinon.stub();
 
@@ -172,10 +231,18 @@ describe('Worksheet sampling util functions', () => {
       getCellValueStub.onCall(5).returns(1);
       getCellValueStub.onCall(6).returns(1);
 
-      const validator = getObservationSamplingInformationRowValidator([], {
-        getCellValue: getCellValueStub,
-        getWorksheetHeader: () => 'HEADER'
-      } as any);
+      const rowValidatorParams = {
+        samplePeriods: [{ survey_sample_period_id: 1 }] as any[],
+        sampleSites: [{ name: 'SampleSiteOne' }] as any[],
+        methodTechniques: [{ name: 'MethodTechniqueOne' }] as any[],
+        utils: {
+          getCellValue: getCellValueStub,
+          getWorksheetHeader: () => 'HEADER'
+        },
+        samplePeriodId: 1
+      } as any;
+
+      const validator = getObservationSamplingInformationRowValidator(rowValidatorParams);
 
       const result = validator({ row: {} } as any);
 
@@ -190,10 +257,18 @@ describe('Worksheet sampling util functions', () => {
       getCellValueStub.onCall(5).returns(null);
       getCellValueStub.onCall(6).returns(1);
 
-      const validator = getObservationSamplingInformationRowValidator([], {
-        getCellValue: getCellValueStub,
-        getWorksheetHeader: () => 'HEADER'
-      } as any);
+      const rowValidatorParams = {
+        samplePeriods: [{ survey_sample_period_id: 1 }] as any[],
+        sampleSites: [{ name: 'SampleSiteOne' }] as any[],
+        methodTechniques: [{ name: 'MethodTechniqueOne' }] as any[],
+        utils: {
+          getCellValue: getCellValueStub,
+          getWorksheetHeader: () => 'HEADER'
+        },
+        samplePeriodId: undefined
+      } as any;
+
+      const validator = getObservationSamplingInformationRowValidator(rowValidatorParams);
 
       const result = validator({ row: {} } as any);
 
@@ -208,10 +283,18 @@ describe('Worksheet sampling util functions', () => {
       getCellValueStub.onCall(5).returns(1);
       getCellValueStub.onCall(6).returns(null);
 
-      const validator = getObservationSamplingInformationRowValidator([], {
-        getCellValue: getCellValueStub,
-        getWorksheetHeader: () => 'HEADER'
-      } as any);
+      const rowValidatorParams = {
+        samplePeriods: [{ survey_sample_period_id: 1 }] as any[],
+        sampleSites: [{ name: 'SampleSiteOne' }] as any[],
+        methodTechniques: [{ name: 'MethodTechniqueOne' }] as any[],
+        utils: {
+          getCellValue: getCellValueStub,
+          getWorksheetHeader: () => 'HEADER'
+        },
+        samplePeriodId: undefined
+      } as any;
+
+      const validator = getObservationSamplingInformationRowValidator(rowValidatorParams);
 
       const result = validator({ row: {} } as any);
 
@@ -226,10 +309,18 @@ describe('Worksheet sampling util functions', () => {
       getCellValueStub.onCall(5).returns(null);
       getCellValueStub.onCall(6).returns(null);
 
-      const validator = getObservationSamplingInformationRowValidator([], {
-        getCellValue: getCellValueStub,
-        getWorksheetHeader: () => 'HEADER'
-      } as any);
+      const rowValidatorParams = {
+        samplePeriods: [{ survey_sample_period_id: 1 }] as any[],
+        sampleSites: [{ name: 'SampleSiteOne' }] as any[],
+        methodTechniques: [{ name: 'MethodTechniqueOne' }] as any[],
+        utils: {
+          getCellValue: getCellValueStub,
+          getWorksheetHeader: () => 'HEADER'
+        },
+        samplePeriodId: undefined
+      } as any;
+
+      const validator = getObservationSamplingInformationRowValidator(rowValidatorParams);
 
       const result = validator({ row: {} } as any);
 
@@ -248,10 +339,18 @@ describe('Worksheet sampling util functions', () => {
       getCellValueStub.onCall(5).returns(1);
       getCellValueStub.onCall(6).returns(1);
 
-      const validator = getObservationSamplingInformationRowValidator([], {
-        getCellValue: getCellValueStub,
-        getWorksheetHeader: () => 'HEADER'
-      } as any);
+      const rowValidatorParams = {
+        samplePeriods: [{ survey_sample_period_id: 1 }] as any[],
+        sampleSites: [{ name: 'SampleSiteOne' }] as any[],
+        methodTechniques: [{ name: 'MethodTechniqueOne' }] as any[],
+        utils: {
+          getCellValue: getCellValueStub,
+          getWorksheetHeader: () => 'HEADER'
+        },
+        samplePeriodId: undefined
+      } as any;
+
+      const validator = getObservationSamplingInformationRowValidator(rowValidatorParams);
 
       const result = validator({ row: {} } as any);
 
@@ -261,12 +360,13 @@ describe('Worksheet sampling util functions', () => {
     it('should return an error when no matching period found', () => {
       const getCellValueStub = sinon.stub();
 
-      getCellValueStub.onCall(0).returns('BAD');
+      getCellValueStub.onCall(0).returns('SampleSiteOne');
       getCellValueStub.onCall(1).returns('MethodTechniqueOne');
       getCellValueStub.onCall(2).returns('2021-01-01 - 2021-01-03');
 
       const samplePeriods = [
         {
+          survey_sample_period_id: 1,
           survey_sample_site: {
             name: 'SampleSiteOne'
           },
@@ -278,14 +378,22 @@ describe('Worksheet sampling util functions', () => {
         }
       ] as any[];
 
-      const validator = getObservationSamplingInformationRowValidator(samplePeriods, {
-        getCellValue: getCellValueStub,
-        getWorksheetHeader: () => 'HEADER'
-      } as any);
+      const rowValidatorParams = {
+        samplePeriods: samplePeriods,
+        sampleSites: [{ name: 'SampleSiteOne', survey_sample_site_id: 2 }] as any[],
+        methodTechniques: [{ name: 'MethodTechniqueOne', method_technique_id: 3 }] as any[],
+        utils: {
+          getCellValue: getCellValueStub,
+          getWorksheetHeader: () => 'HEADER'
+        },
+        samplePeriodId: undefined
+      } as any;
+
+      const validator = getObservationSamplingInformationRowValidator(rowValidatorParams);
 
       const result = validator({ row: {} } as any);
 
-      expect(result[0].error).to.contain('match observation with sampling');
+      expect(result[0].error).to.contain('find matching sampling period');
     });
 
     it('should return no errors and update state when matching period found', () => {
@@ -311,10 +419,18 @@ describe('Worksheet sampling util functions', () => {
         }
       ] as any[];
 
-      const validator = getObservationSamplingInformationRowValidator(samplePeriods, {
-        getCellValue: getCellValueStub,
-        getWorksheetHeader: () => 'HEADER'
-      } as any);
+      const rowValidatorParams = {
+        samplePeriods: samplePeriods,
+        sampleSites: [{ name: 'SampleSiteOne' }] as any[],
+        methodTechniques: [{ name: 'MethodTechniqueOne' }] as any[],
+        utils: {
+          getCellValue: getCellValueStub,
+          getWorksheetHeader: () => 'HEADER'
+        },
+        samplePeriodId: 1
+      } as any;
+
+      const validator = getObservationSamplingInformationRowValidator(rowValidatorParams);
 
       const params = { row: {} } as any;
 
@@ -362,10 +478,18 @@ describe('Worksheet sampling util functions', () => {
         }
       ] as any[];
 
-      const validator = getObservationSamplingInformationRowValidator(samplePeriods, {
-        getCellValue: getCellValueStub,
-        getWorksheetHeader: () => 'HEADER'
-      } as any);
+      const rowValidatorParams = {
+        samplePeriods: samplePeriods,
+        sampleSites: [{ name: 'SampleSiteOne' }] as any[],
+        methodTechniques: [{ name: 'MethodTechniqueOne' }] as any[],
+        utils: {
+          getCellValue: getCellValueStub,
+          getWorksheetHeader: () => 'HEADER'
+        },
+        samplePeriodId: undefined
+      } as any;
+
+      const validator = getObservationSamplingInformationRowValidator(rowValidatorParams);
 
       const result = validator({ row: {} } as any);
 
@@ -409,10 +533,18 @@ describe('Worksheet sampling util functions', () => {
         }
       ] as any[];
 
-      const validator = getObservationSamplingInformationRowValidator(samplePeriods, {
-        getCellValue: getCellValueStub,
-        getWorksheetHeader: () => 'HEADER'
-      } as any);
+      const rowValidatorParams = {
+        samplePeriods: samplePeriods,
+        sampleSites: [{ name: 'SampleSiteOne', survey_sample_site_id: 2 }] as any[],
+        methodTechniques: [{ name: 'MethodTechniqueOne', method_technique_id: 3 }] as any[],
+        utils: {
+          getCellValue: getCellValueStub,
+          getWorksheetHeader: () => 'HEADER'
+        },
+        samplePeriodId: undefined
+      } as any;
+
+      const validator = getObservationSamplingInformationRowValidator(rowValidatorParams);
 
       const params = { row: {} } as any;
 
@@ -456,10 +588,18 @@ describe('Worksheet sampling util functions', () => {
         }
       ] as any[];
 
-      const validator = getObservationSamplingInformationRowValidator(samplePeriods, {
-        getCellValue: getCellValueStub,
-        getWorksheetHeader: () => 'HEADER'
-      } as any);
+      const rowValidatorParams = {
+        samplePeriods: samplePeriods,
+        sampleSites: [{ name: 'SampleSiteOne' }] as any[],
+        methodTechniques: [{ name: 'MethodTechniqueOne' }] as any[],
+        utils: {
+          getCellValue: getCellValueStub,
+          getWorksheetHeader: () => 'HEADER'
+        },
+        samplePeriodId: undefined
+      } as any;
+
+      const validator = getObservationSamplingInformationRowValidator(rowValidatorParams);
 
       const params = { row: {} } as any;
 
@@ -1271,6 +1411,76 @@ describe('Worksheet sampling util functions', () => {
       const result = findMatchingPeriodsWithObservationDateTime(observationDate, observationTime, samplingPeriods);
 
       expect(result).to.eql([]);
+    });
+  });
+
+  describe('validateSiteExistsInSamplePeriods', () => {
+    it('should return an error when site name does not exist in sample periods', () => {
+      const sampleSiteMap = new Map([['SampleSiteOne', 1]]);
+
+      const error = validateSiteExistsInSamplePeriods('bad', 'HEADER', sampleSiteMap);
+
+      expect(error?.error).to.contain('not exist');
+    });
+
+    it('should return null when site name exists in sample periods', () => {
+      const sampleSiteMap = new Map([['SampleSiteOne', 1]]);
+
+      const error = validateSiteExistsInSamplePeriods('SampleSiteOne', 'HEADER', sampleSiteMap);
+
+      expect(error).to.be.null;
+    });
+
+    it('should return null when sample site name is null', () => {
+      const sampleSiteMap = new Map([['SampleSiteOne', 1]]);
+
+      const error = validateSiteExistsInSamplePeriods(null, 'HEADER', sampleSiteMap);
+
+      expect(error).to.be.null;
+    });
+  });
+
+  describe('validateTechniqueExistsInSamplePeriods', () => {
+    it('should return an error when method technique does not exist in sample periods', () => {
+      const methodTechniqueMap = new Map([['MethodTechniqueOne', 1]]);
+
+      const error = validateTechniqueExistsInSamplePeriods('bad', 'HEADER', methodTechniqueMap);
+
+      expect(error?.error).to.contain('not exist');
+    });
+
+    it('should return null when method technique exists in sample periods', () => {
+      const methodTechniqueMap = new Map([['MethodTechniqueOne', 1]]);
+
+      const error = validateTechniqueExistsInSamplePeriods('MethodTechniqueOne', 'HEADER', methodTechniqueMap);
+
+      expect(error).to.be.null;
+    });
+
+    it('should return null when method technique name is null', () => {
+      const methodTechniqueMap = new Map([['MethodTechniqueOne', 1]]);
+
+      const error = validateTechniqueExistsInSamplePeriods(null, 'HEADER', methodTechniqueMap);
+
+      expect(error).to.be.null;
+    });
+  });
+
+  describe('findMatchingPeriodWithSamplePeriodId', () => {
+    it('should return true when match found', () => {
+      const samplePeriods = [{ survey_sample_period_id: 1 }] as any[];
+
+      const result = findMatchingPeriodWithSamplePeriodId(samplePeriods, 1);
+
+      expect(result).to.be.true;
+    });
+
+    it('should return false when match not found', () => {
+      const samplePeriods = [{ survey_sample_period_id: 1 }] as any[];
+
+      const result = findMatchingPeriodWithSamplePeriodId(samplePeriods, 2);
+
+      expect(result).to.be.false;
     });
   });
 });
