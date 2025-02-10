@@ -157,7 +157,7 @@ export function getObservationSamplingInformationRowValidator(
     // Validate the site and technique names exist in the sample periods
     const siteNameDoesNotExistError = validateSiteExistsInSamplePeriods(
       worksheetSiteName,
-      utils.getWorksheetHeader('SAMPLING_SITE', params.row),
+      utils.getWorksheetHeader('SAMPLE_SITE', params.row),
       sampleSiteMap
     );
 
