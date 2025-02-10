@@ -6,9 +6,6 @@ import { formatDateString } from '../date-time-utils';
 import { safeTrim } from '../string-utils';
 import { CUSTOM_XLSX_DATE_FORMAT } from './worksheet-utils';
 
-//const NUM_SECONDS_IN_DAY = 86400;
-//const NUM_MILLISECONDS_IN_DAY = 86400000;
-
 dayjs.extend(duration);
 
 /**

@@ -113,17 +113,31 @@ export const getTsnMeasurementDictionary = async (
     const quantitativeMeasurements = measurements[index].quantitative;
 
     qualitativeMeasurements.forEach((measurement) => {
+      // Set the measurement by the measurement name
       measurementDictionary.set({
         // Implicitly handles casing (lowercase)
         path: [tsn, measurement.measurement_name],
         value: measurement
       });
+
+      // Set the measurement by the taxon measurement id
+      measurementDictionary.set({
+        path: [tsn, measurement.taxon_measurement_id],
+        value: measurement
+      });
     });
 
     quantitativeMeasurements.forEach((measurement) => {
+      // Set the measurement by the measurement name
       measurementDictionary.set({
         // Implicitly handles casing (lowercase)
         path: [tsn, measurement.measurement_name],
+        value: measurement
+      });
+
+      // Set the measurement by the taxon measurement id
+      measurementDictionary.set({
+        path: [tsn, measurement.taxon_measurement_id],
         value: measurement
       });
     });
