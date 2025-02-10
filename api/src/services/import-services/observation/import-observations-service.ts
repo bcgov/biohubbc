@@ -2,6 +2,7 @@ import { WorkSheet } from 'xlsx';
 import { z } from 'zod';
 import { IDBConnection } from '../../../database/db';
 import { CodeRepository } from '../../../repositories/code-repository';
+import { InsertObservation } from '../../../repositories/observation-repository/observation-repository';
 import { CSVConfigUtils } from '../../../utils/csv-utils/csv-config-utils';
 import { validateCSVWorksheet } from '../../../utils/csv-utils/csv-config-validation';
 import { CSVConfig, CSVError, CSVRow, CSVRowState } from '../../../utils/csv-utils/csv-config-validation.interface';
@@ -21,12 +22,12 @@ import { getTaxonRowValidator } from '../../../utils/csv-utils/row-validators/ta
 import { getLogger } from '../../../utils/logger';
 import { CritterbaseService, getCritterbaseUserFromConnection } from '../../critterbase-service';
 import { DBService } from '../../db-service';
+import { ObservationEnvironmentService } from '../../observation-environment-service';
 import {
   InsertSubCount,
   InsertUpdateObservations,
   ObservationService
 } from '../../observation-services/observation-service';
-import { ObservationSubCountEnvironmentService } from '../../observation-subcount-environment-service';
 import { PlatformService } from '../../platform-service';
 import { SamplePeriodService } from '../../sample-period-service';
 import { SampleSiteService } from '../../sample-site-service';
@@ -51,17 +52,15 @@ import {
 } from '../utils/row-state';
 import { getTaxonMap, getTsnsFromTaxonMap, TaxonMap } from '../utils/taxon';
 import { getObservationDynamicHeaderCellValidator } from './utils/observation-dynamic-header-config';
-import { getObservationSubcountSignCellValidator } from './utils/observation-header-configs';
+import { getObservationSignCellValidator } from './utils/observation-header-configs';
 import { getObservationSamplingInformationRowValidator } from './utils/observation-sampling-row-validator';
 
 const defaultLog = getLogger('services/import/import-observations-service');
 
-const SUBCOUNT_SIGN_ALIASES: Uppercase<string>[] = ['OBSERVATION_SUBCOUNT_SIGN', 'OBSERVATION SUBCOUNT SIGN', 'SIGN'];
-
 export type ObservationCSVStaticHeader =
   | 'SPECIES'
   | 'COUNT'
-  | 'SUBCOUNT_SIGN'
+  | 'OBSERVATION_SIGN'
   | 'DATE'
   | 'TIME'
   | 'LATITUDE'
@@ -97,7 +96,7 @@ export class ImportObservationsService extends DBService {
       staticHeadersConfig: {
         SPECIES: { aliases: ['ITIS_TSN', 'ITIS TSN', 'TSN', 'TAXON'] },
         COUNT: { aliases: [] },
-        SUBCOUNT_SIGN: { aliases: SUBCOUNT_SIGN_ALIASES, optional: true },
+        OBSERVATION_SIGN: { aliases: ['OBSERVATION SIGN', 'SIGN'], optional: true },
         DATE: { aliases: [], optional: true },
         TIME: { aliases: [], optional: true },
         LATITUDE: { aliases: ['LAT'], optional: true },
@@ -149,7 +148,9 @@ export class ImportObservationsService extends DBService {
           longitude: row.LONGITUDE,
           count: row.COUNT, // deprecated - each subcount will eventually have its own count
           observation_date: row.DATE,
-          observation_time: row.TIME
+          observation_time: row.TIME,
+          observation_sign_id: row.OBSERVATION_SIGN,
+          ...this._getRowEnvironments(row)
         },
         subcounts: this._getRowSubcounts(row)
       });
@@ -174,7 +175,7 @@ export class ImportObservationsService extends DBService {
     const platformService = new PlatformService(this.connection);
     const samplePeriodService = new SamplePeriodService(this.connection);
     const critterbaseService = new CritterbaseService(getCritterbaseUserFromConnection(this.connection));
-    const environmentService = new ObservationSubCountEnvironmentService(this.connection);
+    const environmentService = new ObservationEnvironmentService(this.connection);
     const sampleSiteService = new SampleSiteService(this.connection);
     const methodTechniqueSerice = new TechniqueService(this.connection);
     const codeRepository = new CodeRepository(this.connection);
@@ -201,14 +202,14 @@ export class ImportObservationsService extends DBService {
    * @returns {*} {Promise<void>}
    */
   async _setObservationStaticHeaderConfigs(codeRepository: CodeRepository) {
-    const subcountSignCodes = await codeRepository.getObservationSubcountSigns();
+    const observationSignCodes = await codeRepository.getObservationSigns();
 
     this.utils.setAllStaticHeaderConfigs({
       // Species is pre-validated by the taxon row validator
       SPECIES: { validateCell: (params) => validateZodCell(params.cell, z.string().or(z.number())) },
       COUNT: { validateCell: getPositiveNumberCellValidator() },
-      // Subcount sign must be a valid code value
-      SUBCOUNT_SIGN: { validateCell: getObservationSubcountSignCellValidator(subcountSignCodes) },
+      // Observation sign must be a valid code value
+      OBSERVATION_SIGN: { validateCell: getObservationSignCellValidator(observationSignCodes) },
       DATE: { validateCell: getDateCellValidator({ optional: true }) },
       TIME: { validateCell: getTimeCellValidator(), setCellValue: getTimeCellSetter() },
       LATITUDE: { validateCell: getLatitudeCellValidator({ optional: true }) },
@@ -263,13 +264,13 @@ export class ImportObservationsService extends DBService {
    *
    * @param {TaxonMap} taxonMap - The taxon map
    * @param {CritterbaseService} critterbaseService - The critterbase service
-   * @param {ObservationSubCountEnvironmentService} environmentService - The environment service
+   * @param {ObservationEnvironmentService} environmentService - The environment service
    * @returns {*} {Promise<void>}
    */
   async _setObservationDynamicHeadersConfig(
     taxonMap: TaxonMap,
     critterbaseService: CritterbaseService,
-    environmentService: ObservationSubCountEnvironmentService
+    environmentService: ObservationEnvironmentService
   ) {
     // Generate the measurement dictionary and environment map
     const measurementDictionary = await getTsnMeasurementDictionary(getTsnsFromTaxonMap(taxonMap), critterbaseService);
@@ -296,12 +297,9 @@ export class ImportObservationsService extends DBService {
     const newSubcount: InsertSubCount = {
       observation_subcount_id: null,
       subcount: row.COUNT ?? null,
-      observation_subcount_sign_id: row.SUBCOUNT_SIGN ?? null,
       comment: row.COMMENT ?? null,
       qualitative_measurements: [],
-      quantitative_measurements: [],
-      qualitative_environments: [],
-      quantitative_environments: []
+      quantitative_measurements: []
     };
 
     // Loop through the dynamic headers to extract measurements and environments
@@ -327,11 +325,32 @@ export class ImportObservationsService extends DBService {
           measurement_value: quantitativeMeasurement.value
         });
       }
-      // Grab the qualitative environment from the row
-      else if (isQualitativeEnvironmentStub(nestedState)) {
+    }
+
+    return [newSubcount];
+  }
+
+  /**
+   * Get the subcounts from a row.
+   *
+   * @param {CSVRow} row - The row to extract subcounts from
+   * @returns {*} {InsertSubCount[]} The subcounts
+   */
+  _getRowEnvironments(row: CSVRow): Pick<InsertObservation, 'qualitative_environments' | 'quantitative_environments'> {
+    const environments: Pick<InsertObservation, 'qualitative_environments' | 'quantitative_environments'> = {
+      qualitative_environments: [],
+      quantitative_environments: []
+    };
+
+    // Loop through the dynamic headers to extract measurements and environments
+    for (const dynamicHeader of this.utils.worksheetDynamicHeaders) {
+      // Nested state used to prevent conflicts with other CSV headers
+      const nestedState = row[CSVRowState]?.[dynamicHeader];
+
+      if (isQualitativeEnvironmentStub(nestedState)) {
         const qualitativeEnvironment = getQualitativeEnvironmentFromRowState(nestedState);
 
-        newSubcount.qualitative_environments.push({
+        environments.qualitative_environments.push({
           environment_qualitative_id: qualitativeEnvironment.environment_qualitative_id,
           environment_qualitative_option_id: qualitativeEnvironment.environment_qualitative_option_id
         });
@@ -340,15 +359,13 @@ export class ImportObservationsService extends DBService {
       else if (isQuantitativeEnvironmentStub(nestedState)) {
         const quantitativeEnvironment = getQuantitativeEnvironmentFromRowState(nestedState);
 
-        newSubcount.quantitative_environments.push({
+        environments.quantitative_environments.push({
           environment_quantitative_id: quantitativeEnvironment.environment_quantitative_id,
           value: quantitativeEnvironment.value
         });
-      } else {
-        // NOTE: Should this else path throw an error?
       }
     }
 
-    return [newSubcount];
+    return environments;
   }
 }

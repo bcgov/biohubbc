@@ -39,7 +39,6 @@ export const defaultLog = getLogger('services/observation-services/observation-s
 
 export interface InsertSubCount {
   observation_subcount_id: number | null;
-  observation_subcount_sign_id: number | null;
   comment: string | null;
   subcount: number;
   qualitative_measurements: {
@@ -574,43 +573,6 @@ export class ObservationService extends DBService {
       qualitative_environments: qualitativeEnvironmentTypeDefinitions,
       quantitative_environments: quantitativeEnvironmentTypeDefinitions
     };
-  }
-
-  /**
-   * Maps over an array of inserted/updated observation records in order to update its scientific
-   * name to match its ITIS TSN.
-   *
-   * @template RecordWithTaxonFields
-   * @param {RecordWithTaxonFields[]} recordsToPatch
-   * @return {*}  {Promise<RecordWithTaxonFields[]>}
-   * @memberof ObservationService
-   */
-  async _attachItisScientificName<
-    RecordWithTaxonFields extends Pick<SurveyObservationRecord, 'itis_tsn' | 'itis_scientific_name'>
-  >(recordsToPatch: RecordWithTaxonFields[]): Promise<RecordWithTaxonFields[]> {
-    defaultLog.debug({ label: '_attachItisScientificName' });
-
-    const platformService = new PlatformService(this.connection);
-
-    const uniqueTsnSet: Set<number> = recordsToPatch.reduce((acc: Set<number>, record: RecordWithTaxonFields) => {
-      if (record.itis_tsn) {
-        acc.add(record.itis_tsn);
-      }
-      return acc;
-    }, new Set<number>([]));
-
-    const taxonomyResponse = await platformService.getTaxonomyByTsns(Array.from(uniqueTsnSet)).catch((error) => {
-      throw new ApiGeneralError(
-        `Failed to fetch scientific names for observation records. The request to BioHub failed: ${error}`
-      );
-    });
-
-    return recordsToPatch.map((recordToPatch: RecordWithTaxonFields) => {
-      recordToPatch.itis_scientific_name =
-        taxonomyResponse.find((taxonItem) => taxonItem.tsn === recordToPatch.itis_tsn)?.scientificName ?? null;
-
-      return recordToPatch;
-    });
   }
 
   /**

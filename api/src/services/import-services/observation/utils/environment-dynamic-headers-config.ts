@@ -1,9 +1,9 @@
+import { ObservationEnvironmentQualitativeRecord } from '../../../../database-models/observation_environment_qualitative';
+import { ObservationEnvironmentQuantitativeRecord } from '../../../../database-models/observation_environment_quantitative';
 import {
-  ObservationSubCountQualitativeEnvironmentRecord,
-  ObservationSubCountQuantitativeEnvironmentRecord,
   QualitativeEnvironmentTypeDefinition,
   QuantitativeEnvironmentTypeDefinition
-} from '../../../../repositories/observation-subcount-environment-repository';
+} from '../../../../repositories/observation-environment-repository';
 import { CSVCellValidator, CSVError, CSVParams } from '../../../../utils/csv-utils/csv-config-validation.interface';
 import { updateCSVRowState } from '../../../../utils/csv-utils/csv-header-configs';
 import { EnvironmentNameTypeDefinitionMap } from '../../../../utils/observation-xlsx-utils/environment-column-utils';
@@ -93,7 +93,7 @@ export const validateQualitativeEnvironmentCell = (
       environment_qualitative_id: environment.environment_qualitative_id,
       environment_qualitative_option_id: result
     } satisfies Pick<
-      ObservationSubCountQualitativeEnvironmentRecord,
+      ObservationEnvironmentQualitativeRecord,
       'environment_qualitative_id' | 'environment_qualitative_option_id'
     >
   });
@@ -132,7 +132,7 @@ export const validateQuantitativeEnvironmentCell = (
     [params.header]: {
       environment_quantitative_id: environment.environment_quantitative_id,
       value: result
-    } satisfies Pick<ObservationSubCountQuantitativeEnvironmentRecord, 'environment_quantitative_id' | 'value'>
+    } satisfies Pick<ObservationEnvironmentQuantitativeRecord, 'environment_quantitative_id' | 'value'>
   });
 
   return [];

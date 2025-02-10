@@ -68,7 +68,7 @@ export const ConfigureColumnsButton = (props: IConfigureColumnsButtonProps) => {
 
       if (column.headerName?.toLowerCase() === 'sign') {
         options =
-          codesContext.codesDataLoader.data?.observation_subcount_signs.map((sign) => ({
+          codesContext.codesDataLoader.data?.observation_signs.map((sign) => ({
             name: sign.name,
             description: sign.description
           })) ?? [];

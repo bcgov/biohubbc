@@ -26,17 +26,17 @@ describe('import-observations-service', () => {
       const service = new ImportObservationsService(mockConnection, {}, 1);
 
       const mockCodeRepository = {
-        getObservationSubcountSigns: sinon.stub().resolves([{ id: 'CODE', name: 'NAME' }])
+        getObservationSigns: sinon.stub().resolves([{ id: 'CODE', name: 'NAME' }])
       };
 
       await service._setObservationStaticHeaderConfigs(mockCodeRepository as any);
 
-      expect(mockCodeRepository.getObservationSubcountSigns).to.have.been.calledOnce;
+      expect(mockCodeRepository.getObservationSigns).to.have.been.calledOnce;
 
       expect(service.utils.config.staticHeadersConfig).to.have.keys([
         'SPECIES',
         'COUNT',
-        'SUBCOUNT_SIGN',
+        'OBSERVATION_SIGN',
         'DATE',
         'TIME',
         'LATITUDE',
@@ -94,6 +94,7 @@ describe('import-observations-service', () => {
             DATE: '2021-01-01',
             TIME: '12:00:00',
             COUNT: 3,
+            OBSERVATION_SIGN: 7,
             [CSVRowState]: {
               itis_tsn: 4,
               itis_scientific_name: 'alces',
@@ -120,7 +121,10 @@ describe('import-observations-service', () => {
             longitude: 2,
             count: 3,
             observation_date: '2021-01-01',
-            observation_time: '12:00:00'
+            observation_time: '12:00:00',
+            observation_sign_id: 7,
+            qualitative_environments: [],
+            quantitative_environments: []
           },
           subcounts: []
         }
@@ -266,6 +270,51 @@ describe('import-observations-service', () => {
       });
     });
 
+    it('should handle the other row properties', () => {
+      const mockConnection = getMockDBConnection();
+      const service = new ImportObservationsService(mockConnection, {}, 1);
+
+      const row = {
+        COUNT: 10,
+        COMMENT: 'test'
+      };
+
+      const result = service._getRowSubcounts(row);
+
+      expect(result).to.be.an('array').and.to.have.length(1);
+      expect(result[0].subcount).to.equal(row.COUNT);
+      expect(result[0].comment).to.equal(row.COMMENT);
+    });
+
+    it('should handle undefined values -> null', () => {
+      const mockConnection = getMockDBConnection();
+      const service = new ImportObservationsService(mockConnection, {}, 1);
+
+      const row = {};
+
+      const result = service._getRowSubcounts(row);
+
+      expect(result).to.be.an('array').and.to.have.length(1);
+      expect(result[0].subcount).to.equal(null);
+      expect(result[0].comment).to.equal(null);
+    });
+  });
+
+  describe('_getRowEnvironments', () => {
+    it('should return an array of subcounts', () => {
+      const mockConnection = getMockDBConnection();
+      const service = new ImportObservationsService(mockConnection, {}, 1);
+
+      const row = {};
+
+      const result = service._getRowEnvironments(row);
+
+      expect(result).to.deep.equal({
+        qualitative_environments: [],
+        quantitative_environments: []
+      });
+    });
+
     it('should handle qualitative environments', () => {
       const mockConnection = getMockDBConnection();
       const service = new ImportObservationsService(mockConnection, {}, 1);
@@ -281,10 +330,11 @@ describe('import-observations-service', () => {
         }
       };
 
-      const result = service._getRowSubcounts(row);
+      const result = service._getRowEnvironments(row);
 
-      expect(result).to.be.an('array').and.to.have.length(1);
-      expect(result[0].qualitative_environments[0]).to.deep.equal({
+      expect(result).to.have.property('qualitative_environments').that.is.an('array');
+      expect(result).to.have.property('quantitative_environments').that.is.an('array');
+      expect(result.qualitative_environments[0]).to.deep.equal({
         environment_qualitative_id: row[CSVRowState].QUALITATIVE_ENVIRONMENT.environment_qualitative_id,
         environment_qualitative_option_id: row[CSVRowState].QUALITATIVE_ENVIRONMENT.environment_qualitative_option_id
       });
@@ -305,45 +355,14 @@ describe('import-observations-service', () => {
         }
       };
 
-      const result = service._getRowSubcounts(row);
+      const result = service._getRowEnvironments(row);
 
-      expect(result).to.be.an('array').and.to.have.length(1);
-      expect(result[0].quantitative_environments[0]).to.deep.equal({
+      expect(result).to.have.property('qualitative_environments').that.is.an('array');
+      expect(result).to.have.property('quantitative_environments').that.is.an('array');
+      expect(result.quantitative_environments[0]).to.deep.equal({
         environment_quantitative_id: row[CSVRowState].QUANTITATIVE_ENVIRONMENT.environment_quantitative_id,
         value: row[CSVRowState].QUANTITATIVE_ENVIRONMENT.value
       });
-    });
-
-    it('should handle the other row properties', () => {
-      const mockConnection = getMockDBConnection();
-      const service = new ImportObservationsService(mockConnection, {}, 1);
-
-      const row = {
-        COUNT: 10,
-        SUBCOUNT_SIGN: 1,
-        COMMENT: 'test'
-      };
-
-      const result = service._getRowSubcounts(row);
-
-      expect(result).to.be.an('array').and.to.have.length(1);
-      expect(result[0].subcount).to.equal(row.COUNT);
-      expect(result[0].observation_subcount_sign_id).to.equal(row.SUBCOUNT_SIGN);
-      expect(result[0].comment).to.equal(row.COMMENT);
-    });
-
-    it('should handle undefined values -> null', () => {
-      const mockConnection = getMockDBConnection();
-      const service = new ImportObservationsService(mockConnection, {}, 1);
-
-      const row = {};
-
-      const result = service._getRowSubcounts(row);
-
-      expect(result).to.be.an('array').and.to.have.length(1);
-      expect(result[0].subcount).to.equal(null);
-      expect(result[0].observation_subcount_sign_id).to.equal(null);
-      expect(result[0].comment).to.equal(null);
     });
   });
 });

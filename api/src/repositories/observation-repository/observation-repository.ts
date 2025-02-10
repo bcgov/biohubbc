@@ -39,23 +39,6 @@ const ObservationSamplingData = z.object({
   survey_sample_period_start_datetime: z.string().nullable()
 });
 
-const ObservationEnvironmentQualitativeObject = ObservationEnvironmentQualitativeRecord.pick({
-  observation_environment_qualitative_id: true,
-  environment_qualitative_id: true,
-  environment_qualitative_option_id: true
-});
-
-const ObservationEnvironmentQuantitativeObject = ObservationEnvironmentQuantitativeRecord.pick({
-  observation_environment_quantitative_id: true,
-  environment_quantitative_id: true,
-  value: true
-});
-
-const ObservationEnvironmentData = z.object({
-  qualitative_environments: z.array(ObservationEnvironmentQualitativeObject),
-  quantitative_environments: z.array(ObservationEnvironmentQuantitativeObject)
-});
-
 const ObservationSubcountQualitativeMeasurementObject = ObservationSubCountQualitativeMeasurementRecord.pick({
   critterbase_taxon_measurement_id: true,
   critterbase_measurement_qualitative_option_id: true
@@ -89,7 +72,22 @@ const ObservationSubcountsObject = z.object({
 export const ObservationRecordWithSamplingAndSubcountData = SurveyObservationRecord.extend(
   ObservationSamplingData.shape
 )
-  .extend(ObservationEnvironmentData.shape)
+  .extend({
+    qualitative_environments: z.array(
+      ObservationEnvironmentQualitativeRecord.pick({
+        observation_environment_qualitative_id: true,
+        environment_qualitative_id: true,
+        environment_qualitative_option_id: true
+      })
+    ),
+    quantitative_environments: z.array(
+      ObservationEnvironmentQuantitativeRecord.pick({
+        observation_environment_quantitative_id: true,
+        environment_quantitative_id: true,
+        value: true
+      })
+    )
+  })
   .extend(ObservationSubcountsObject.shape);
 export type ObservationRecordWithSamplingAndSubcountData = z.infer<typeof ObservationRecordWithSamplingAndSubcountData>;
 
@@ -103,7 +101,22 @@ export type ObservationRecordWithSamplingAndSubcountData = z.infer<typeof Observ
 export const FlattenedObservationRecordWithSamplingAndSubcountData = SurveyObservationRecord.extend(
   ObservationSamplingData.shape
 )
-  .extend(ObservationEnvironmentData.shape)
+  .extend({
+    qualitative_environments: z.array(
+      ObservationEnvironmentQualitativeRecord.pick({
+        observation_environment_qualitative_id: true,
+        environment_qualitative_id: true,
+        environment_qualitative_option_id: true
+      })
+    ),
+    quantitative_environments: z.array(
+      ObservationEnvironmentQuantitativeRecord.pick({
+        observation_environment_quantitative_id: true,
+        environment_quantitative_id: true,
+        value: true
+      })
+    )
+  })
   .extend({
     subcount: ObservationSubcountObject
   });
@@ -131,7 +144,20 @@ export const InsertObservation = SurveyObservationRecord.pick({
   observation_time: true,
   survey_sample_period_id: true,
   observation_sign_id: true
-}).extend(ObservationEnvironmentData.shape);
+}).extend({
+  qualitative_environments: z.array(
+    ObservationEnvironmentQualitativeRecord.pick({
+      environment_qualitative_id: true,
+      environment_qualitative_option_id: true
+    })
+  ),
+  quantitative_environments: z.array(
+    ObservationEnvironmentQuantitativeRecord.pick({
+      environment_quantitative_id: true,
+      value: true
+    })
+  )
+});
 export type InsertObservation = z.infer<typeof InsertObservation>;
 
 /**
@@ -149,7 +175,22 @@ export const UpdateObservation = SurveyObservationRecord.pick({
   observation_time: true,
   survey_sample_period_id: true,
   observation_sign_id: true
-}).extend(ObservationEnvironmentData.shape);
+}).extend({
+  qualitative_environments: z.array(
+    ObservationEnvironmentQualitativeRecord.pick({
+      observation_environment_qualitative_id: true,
+      environment_qualitative_id: true,
+      environment_qualitative_option_id: true
+    })
+  ),
+  quantitative_environments: z.array(
+    ObservationEnvironmentQuantitativeRecord.pick({
+      observation_environment_quantitative_id: true,
+      environment_quantitative_id: true,
+      value: true
+    })
+  )
+});
 export type UpdateObservation = z.infer<typeof UpdateObservation>;
 
 /**
