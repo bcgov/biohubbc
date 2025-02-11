@@ -1,8 +1,9 @@
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { getKnex } from '../../database/db';
+import { ApiExecuteSQLError } from '../../errors/api-error';
 import { BaseRepository } from '../base-repository';
-import { LotekPayload } from './telemetry-lotek-repository.interface';
+import { ICfgData, LotekPayload } from './telemetry-lotek-repository.interface';
 
 /**
  * A repository class for working with raw Lotek telemetry data.
@@ -53,5 +54,47 @@ export class TelemetryLotekRepository extends BaseRepository {
     );
 
     return result.rows;
+  }
+
+  /**
+   * Insert Lotek device key data
+   *
+   * @async
+   * @param {ICfgData} key
+   * @returns {Promise<number>}
+   */
+  async insertTelemetryCredentialAttachmentLotek(key: ICfgData): Promise<number> {
+    const sqlStatement = SQL`
+      WITH ins_key AS (
+        INSERT INTO telemetry_credential_lotek (
+          ndeviceid,
+          strspecialid,
+          devicekey
+        ) VALUES (
+          ${key.id},
+          ${key['Iridium IMEI']},
+          ${key.key}
+        )
+        ON CONFLICT (device_key)
+        DO NOTHING
+        RETURNING
+          telemetry_credential_lotek_id
+      )
+      SELECT COALESCE((SELECT telemetry_credential_lotek_id FROM ins_key), 0) AS telemetry_credential_lotek_id;
+      `;
+
+    const responseLotek = await this.connection.sql(
+      sqlStatement,
+      z.object({ telemetry_credential_lotek_id: z.number() })
+    );
+
+    if (!responseLotek?.rows?.[0]) {
+      throw new ApiExecuteSQLError('Failed to insert lotek device key data', [
+        'AttachmentRepository->insertTelemetryCredentialAttachmentLotek',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return responseLotek?.rows?.[0].telemetry_credential_lotek_id;
   }
 }

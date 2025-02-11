@@ -1,11 +1,10 @@
 import { QueryResult } from 'pg';
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
-import { TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE } from '../constants/attachments';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { PostReportAttachmentMetadata, PutReportAttachmentMetadata } from '../models/project-survey-attachments';
-import { getTelemetryDeviceKey } from '../services/telemetry-services/telemetry-utils';
+import { IDeviceKeyData } from '../services/attachment-service';
 import { getLogger } from '../utils/logger';
 import { IValidationData } from '../utils/media/media-utils';
 import { BaseRepository } from './base-repository';
@@ -71,14 +70,6 @@ export interface ISurveyReportAttachmentAuthor {
   last_name: string;
   update_date: string;
   revision_count: number;
-}
-
-export interface IResponseTelemetryCredentialAttachment {
-  key?: string;
-  survey_telemetry_credential_attachment_id?: number;
-  survey_telemetry_vendor_credential_id?: number[];
-  telemetry_credential_lotek_id?: number[];
-  telemetry_credential_vectronic_id?: number[];
 }
 
 export const SurveyTelemetryCredentialAttachment = z.object({
@@ -1668,31 +1659,7 @@ export class AttachmentRepository extends BaseRepository {
     return response.rows[0];
   }
 
-  /**
-   * Insert survey telemetry credential attachment record.
-   *
-   * @param {string} fileName
-   * @param {number} fileSize
-   * @param {string} fileType
-   * @param {number} surveyId
-   * @param {string} key
-   * @return {*}  {Promise<IResponseTelemetryCredentialAttachment>}
-   * @memberof AttachmentRepository
-   */
-  async insertSurveyTelemetryCredentialAttachment(
-    fileName: string,
-    fileSize: number,
-    fileData: IValidationData,
-    surveyId: number,
-    key: string
-  ): Promise<IResponseTelemetryCredentialAttachment> {
-    // Initialize empty response json object
-    const responseJSON: IResponseTelemetryCredentialAttachment = {
-      survey_telemetry_vendor_credential_id: [],
-      telemetry_credential_lotek_id: [],
-      telemetry_credential_vectronic_id: []
-    };
-
+  async insertSurveyTelemetryCredentialAttachment(deviceKeyData: IDeviceKeyData): Promise<number> {
     const sqlStatement = SQL`
     INSERT INTO survey_telemetry_credential_attachment (
       survey_id,
@@ -1701,11 +1668,11 @@ export class AttachmentRepository extends BaseRepository {
       file_type,
       key
     ) VALUES (
-      ${surveyId},
-      ${fileName},
-      ${fileSize},
-      ${fileData.type},
-      ${key}
+      ${deviceKeyData.surveyId},
+      ${deviceKeyData.fileName},
+      ${deviceKeyData.fileSize},
+      ${deviceKeyData.fileData.type},
+      ${deviceKeyData.key}
     )
     RETURNING
       survey_telemetry_credential_attachment_id;
@@ -1722,117 +1689,8 @@ export class AttachmentRepository extends BaseRepository {
         'rows was null or undefined, expected rows != null'
       ]);
     }
-    responseJSON.survey_telemetry_credential_attachment_id =
-      response?.rows?.[0].survey_telemetry_credential_attachment_id;
 
-    const vendor = TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.CFG === fileData.type ? 'Lotek' : 'Vectronic';
-    if (fileData.keyData) {
-      for (const keyFile of fileData.keyData) {
-        // Iterate through the keys array
-        if (keyFile.keysData) {
-          for (const key of keyFile.keysData) {
-            // Generate SIMS device_key
-            const serial = key.id;
-            const deviceKey = getTelemetryDeviceKey({ vendor, serial });
-
-            const sqlStatement = SQL`
-          INSERT INTO survey_telemetry_vendor_credential (
-            survey_telemetry_credential_attachment_id,
-            device_key
-          ) VALUES (
-            ${responseJSON.survey_telemetry_credential_attachment_id},
-            ${deviceKey}
-          )
-          RETURNING
-            survey_telemetry_vendor_credential_id;
-          `;
-
-            const responseVendor = await this.connection.sql(
-              sqlStatement,
-              z.object({ survey_telemetry_vendor_credential_id: z.number() })
-            );
-
-            if (!responseVendor?.rows?.[0]) {
-              throw new ApiExecuteSQLError('Failed to insert survey attachment data', [
-                'AttachmentRepository->insertSurveyTelemetryCredentialAttachment',
-                'rows was null or undefined, expected rows != null'
-              ]);
-            }
-            responseJSON.survey_telemetry_vendor_credential_id?.push(
-              responseVendor?.rows?.[0].survey_telemetry_vendor_credential_id
-            );
-
-            // the data is for lotek cfg
-            if ('Iridium IMEI' in key) {
-              const sqlStatement = SQL`
-            INSERT INTO telemetry_credential_lotek (
-              ndeviceid,
-              strspecialid,
-              devicekey
-            ) VALUES (
-              ${key.id},
-              ${key['Iridium IMEI']},
-              ${key.key}
-            )
-            RETURNING
-              telemetry_credential_lotek_id;
-            `;
-
-              const responseLotek = await this.connection.sql(
-                sqlStatement,
-                z.object({ telemetry_credential_lotek_id: z.number() })
-              );
-
-              if (!responseLotek?.rows?.[0]) {
-                throw new ApiExecuteSQLError('Failed to insert survey attachment data', [
-                  'AttachmentRepository->insertSurveyTelemetryCredentialAttachment',
-                  'rows was null or undefined, expected rows != null'
-                ]);
-              }
-              responseJSON.telemetry_credential_lotek_id?.push(responseLotek?.rows?.[0].telemetry_credential_lotek_id);
-            }
-
-            // the data is for vectronic keyx
-            if ('comID' in key && 'comType' in key && 'collarType' in key) {
-              const sqlStatement = SQL`
-            INSERT INTO telemetry_credential_vectronic (
-              idcollar,
-              comtype,
-              idcom,
-              collarkey,
-              collartype
-            ) VALUES (
-              ${key.id},
-              ${key.comType},
-              ${key.comID},
-              ${key.key},
-              ${key.collarType}
-            )
-            RETURNING
-              telemetry_credential_vectronic_id;
-            `;
-
-              const responseVectronic = await this.connection.sql(
-                sqlStatement,
-                z.object({ telemetry_credential_vectronic_id: z.number() })
-              );
-
-              if (!responseVectronic?.rows?.[0]) {
-                throw new ApiExecuteSQLError('Failed to insert survey attachment data', [
-                  'AttachmentRepository->insertSurveyTelemetryCredentialAttachment',
-                  'rows was null or undefined, expected rows != null'
-                ]);
-              }
-              responseJSON.telemetry_credential_vectronic_id?.push(
-                responseVectronic?.rows?.[0].telemetry_credential_vectronic_id
-              );
-            }
-          }
-        }
-      }
-    }
-
-    return responseJSON;
+    return response?.rows?.[0].survey_telemetry_credential_attachment_id;
   }
 
   /**

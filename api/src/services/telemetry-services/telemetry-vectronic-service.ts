@@ -97,6 +97,23 @@ export class TelemetryVectronicService extends DBService {
   }
 
   /**
+   * As A check test, fetch vectronic device telemetry separation count from the Vectronic API.
+   *
+   * @async
+   * @param {string} collarId
+   * @param {string} collarKey
+   * @returns {Promise<number>}
+   */
+  async fetchTelemetrySepCountFromVectronic(collarId: string, collarKey: string): Promise<number> {
+    const response = await this.vectronicClient.get(`/collar/${collarId}/sep/count`, {
+      params: {
+        collarkey: collarKey
+      }
+    });
+    return response.data;
+  }
+
+  /**
    * Get all Vectronic credentials from SIMS.
    *
    * @returns {*} {Promise<TelemetryCredentialVectronicRecord[]>}

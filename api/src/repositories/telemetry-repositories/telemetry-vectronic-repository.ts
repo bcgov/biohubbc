@@ -2,8 +2,9 @@ import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { TelemetryCredentialVectronicRecord } from '../../database-models/telemetry_credential_vectronic';
 import { getKnex } from '../../database/db';
+import { ApiExecuteSQLError } from '../../errors/api-error';
 import { BaseRepository } from '../base-repository';
-import { VectronicPayload } from './telemetry-vectronic-repository.interface';
+import { IKeyxData, VectronicPayload } from './telemetry-vectronic-repository.interface';
 
 /**
  * A repository class for working with raw vectronic telemetry data.
@@ -68,5 +69,51 @@ export class TelemetryVectronicRepository extends BaseRepository {
     );
 
     return result.rows;
+  }
+
+  /**
+   * Insert Vectronic device key data
+   *
+   * @async
+   * @param {IKeyxData} key
+   * @returns {Promise<number>}
+   */
+  async insertTelemetryCredentialAttachmentVectronic(key: IKeyxData): Promise<number> {
+    const sqlStatement = SQL`
+      WITH ins_key AS (
+        INSERT INTO telemetry_credential_vectronic (
+          idcollar,
+          comtype,
+          idcom,
+          collarkey,
+          collartype
+        ) VALUES (
+          ${key.id},
+          ${key.comType},
+          ${key.comID},
+          ${key.key},
+          ${key.collarType}
+        )
+        ON CONFLICT (device_key)
+        DO NOTHING
+        RETURNING
+          telemetry_credential_vectronic_id
+      )
+      SELECT COALESCE((SELECT telemetry_credential_vectronic_id FROM ins_key), 0) AS telemetry_credential_vectronic_id;
+      `;
+
+    const responseVectronic = await this.connection.sql(
+      sqlStatement,
+      z.object({ telemetry_credential_vectronic_id: z.number() })
+    );
+
+    if (!responseVectronic?.rows?.[0]) {
+      throw new ApiExecuteSQLError('Failed to insert vectronic device key data', [
+        'AttachmentRepository->insertTelemetryCredentialAttachmentVectronic',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return responseVectronic?.rows?.[0].telemetry_credential_vectronic_id;
   }
 }

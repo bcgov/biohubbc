@@ -6,6 +6,7 @@ import { HTTP400 } from '../../../../../../../errors/http-error';
 import { fileSchema } from '../../../../../../../openapi/schemas/file';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { AttachmentService } from '../../../../../../../services/attachment-service';
+import { TelemetryVectronicService } from '../../../../../../../services/telemetry-services/telemetry-vectronic-service';
 import { uploadFileToS3 } from '../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../utils/logger';
 import { validateGetKeyDataTelementryCredentialFile } from '../../../../../../../utils/media/media-utils';
@@ -136,7 +137,11 @@ export function postSurveyTelemetryCredentialAttachment(): RequestHandler {
         files: { ...rawMediaFile, buffer: 'Too big to print' }
       });
 
-      const isTelemetryCredentialFile = await validateGetKeyDataTelementryCredentialFile(rawMediaFile);
+      const telemetryVectronicService = new TelemetryVectronicService(connection);
+      const isTelemetryCredentialFile = await validateGetKeyDataTelementryCredentialFile(
+        rawMediaFile,
+        telemetryVectronicService
+      );
       if (isTelemetryCredentialFile.error) {
         throw new HTTP400(isTelemetryCredentialFile.error);
       }
