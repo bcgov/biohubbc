@@ -15,7 +15,7 @@ import { getEnvironmentVariable } from '../../utils/env-config';
 import { getLogger } from '../../utils/logger';
 import { QueueResult, taskQueue } from '../../utils/task-queue';
 import { DBService } from '../db-service';
-import { keysToLowerCase } from './telemetry-utils';
+import { getTelemetryDeviceKey, keysToLowerCase } from './telemetry-utils';
 import { TelemetryProcessingOptions, TelemetryProcessingResult } from './telemetry.interface';
 const defaultLog = getLogger('telemetry-vectronic-service');
 
@@ -184,7 +184,12 @@ export class TelemetryVectronicService extends DBService {
           telemetry.created = await this.batchCreateTelemetry(vectronicTelemetry, options.batchSize);
         }
 
-        defaultLog.info({ label: 'processTelemetry', ...telemetry });
+        defaultLog.info({
+          label: 'processTelemetry',
+          device_key: getTelemetryDeviceKey({ vendor: 'vectronic', serial: task.serial }),
+          telemetry: telemetry
+        });
+
         return { new: telemetry.new, created: telemetry.created };
       },
       options.concurrently
