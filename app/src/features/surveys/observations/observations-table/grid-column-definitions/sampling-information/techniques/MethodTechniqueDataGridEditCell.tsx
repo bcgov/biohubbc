@@ -101,13 +101,10 @@ export const MethodTechniqueDataGridEditCell = <DataGridType extends GridValidRo
         // Update the cached method techniques
         samplingInformationCache.updateCachedMethodTechniques(options);
 
-        // Get the latest valid options for the current row
-        const validOptions = samplingInformationCache.getTechniquesForRow(dataGridProps.row.survey_sample_site_id);
-
         // Track the survey sample site id for the current set of options
         setCurrentSiteId(surveySampleSiteId);
         // Set the options for the autocomplete
-        setOptions(validOptions);
+        setOptions(options);
 
         setIsLoading(false);
       }, 500),
@@ -148,6 +145,12 @@ export const MethodTechniqueDataGridEditCell = <DataGridType extends GridValidRo
       fullWidth
       blurOnSelect
       handleHomeEndKeys
+      onOpen={() => {
+        // On opening the dropdown, set the options to all valid cached techniques
+        setOptions(
+          Object.values(samplingInformationCache.getTechniquesForRow(dataGridProps.row.survey_sample_site_id) ?? [])
+        );
+      }}
       loading={isLoading}
       value={currentOption}
       options={options}
