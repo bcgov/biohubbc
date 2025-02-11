@@ -25,7 +25,7 @@ import {
   getCapturesCSVTemplate,
   getMarkingsCSVTemplate,
   getMeasurementsCSVTemplate
-} from '../../../../../../utils/templates';
+} from '../../../../../../utils/csv-templates';
 
 type CSVFilesStatus = {
   captures: { file: File | null; status: UploadFileStatus; progress: number; error?: string; errors: CSVError[] };

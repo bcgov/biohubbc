@@ -26,8 +26,8 @@ import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import { useEffect, useMemo, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions } from 'types/misc';
+import { getSamplePeriodCSVTemplate } from 'utils/csv-templates';
 import { downloadFile } from 'utils/file-utils';
-import { getSamplePeriodCSVTemplate } from 'utils/templates';
 import { firstOrNull } from 'utils/Utils';
 import { SamplingPeriodTable } from './table/SamplingPeriodTable';
 

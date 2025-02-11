@@ -26,8 +26,8 @@ import { TelemetryTable } from 'features/surveys/telemetry/table/TelemetryTable'
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useTelemetryTableContext } from 'hooks/useContext';
 import { useContext, useDeferredValue, useState } from 'react';
+import { getTelemetryCSVTemplate } from 'utils/csv-templates';
 import { downloadFile } from 'utils/file-utils';
-import { getTelemetryCSVTemplate } from 'utils/templates';
 
 export const TelemetryTableContainer = () => {
   const biohubApi = useBiohubApi();

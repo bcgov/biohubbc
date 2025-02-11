@@ -4,8 +4,8 @@ import { CSVSingleImportDialog } from 'components/csv/CSVSingleImportDialog';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useContext, useState } from 'react';
+import { getObservationCSVTemplate } from 'utils/csv-templates';
 import { downloadFile } from 'utils/file-utils';
-import { getObservationCSVTemplate } from 'utils/templates';
 
 export interface IImportObservationsButtonProps {
   /**
