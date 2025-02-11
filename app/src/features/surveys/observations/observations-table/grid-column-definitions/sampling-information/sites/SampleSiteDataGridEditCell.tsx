@@ -82,8 +82,8 @@ export const SampleSiteDataGridEditCell = <DataGridType extends GridValidRowMode
         // Update the cached sampling sites
         samplingInformationCache.updateCachedSamplingSites(options);
 
-        // Set the options for the autocomplete
-        setOptions(samplingInformationCache.cachedSamplingInformationRef.current?.sites ?? []);
+        // Set the options for the autocomplete that matched the current search term
+        setOptions(options);
 
         setIsLoading(false);
       }, 500),
@@ -98,6 +98,10 @@ export const SampleSiteDataGridEditCell = <DataGridType extends GridValidRowMode
       fullWidth
       blurOnSelect
       handleHomeEndKeys
+      onOpen={() => {
+        // On opening the dropdown, set the options to all cached sampling sites
+        setOptions(() => samplingInformationCache.cachedSamplingInformationRef.current?.sites ?? []);
+      }}
       loading={isLoading}
       value={currentOption}
       options={options}
