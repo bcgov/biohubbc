@@ -30,6 +30,8 @@ const FrequencyUnitCode = ICode.extend({ description: z.string() });
 const AlertTypeCode = ICode.extend({ description: z.string() });
 const VantageCode = ICode.extend({ description: z.string() });
 const TypeCode = ICode.extend({ description: z.string() });
+const SiteSelectionStrategyCode = ICode.extend({ description: z.string() });
+
 
 export const IAllCodeSets = z.object({
   management_action_type: CodeSet(),
@@ -363,12 +365,13 @@ export class CodeRepository extends BaseRepository {
     const sqlStatement = SQL`
       SELECT
         ss.site_strategy_id as id,
-        ss.name
+        ss.name,
+        ss.description
       FROM site_strategy ss
       WHERE record_end_date is null;
     `;
 
-    const response = await this.connection.sql(sqlStatement, ICode);
+    const response = await this.connection.sql(sqlStatement, SiteSelectionStrategyCode);
 
     return response.rows;
   }

@@ -7,6 +7,7 @@
 export interface ICode {
   id: number;
   name: string;
+
 }
 
 /**
@@ -35,7 +36,7 @@ export interface IGetAllCodeSetsResponse {
   administrative_activity_status_type: CodeSet;
   intended_outcomes: CodeSet<{ id: number; name: string; description: string }>;
   survey_jobs: CodeSet;
-  site_selection_strategies: CodeSet;
+  site_selection_strategies: CodeSet<{id: number; name: string; description: string}>;
   survey_progress: CodeSet<{ id: number; name: string; description: string }>;
   sample_methods: CodeSet<{ id: number; name: string; description: string }>;
   method_response_metrics: CodeSet<{ id: number; name: string; description: string }>;

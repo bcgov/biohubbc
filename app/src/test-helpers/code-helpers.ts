@@ -44,8 +44,8 @@ export const codes: IGetAllCodeSetsResponse = {
     { id: 2, name: 'Survey Job 2' }
   ],
   site_selection_strategies: [
-    { id: 1, name: 'Strategy 1' },
-    { id: 2, name: 'Strategy 2' }
+    { id: 1, name: 'Strategy 1', description: 'Description 1' },
+    { id: 2, name: 'Strategy 2', description: 'Description 2' }
   ],
   sample_methods: [
     { id: 1, name: 'Camera Trap', description: 'Description 1' },
