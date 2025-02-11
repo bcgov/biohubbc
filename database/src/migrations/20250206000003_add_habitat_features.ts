@@ -19,7 +19,39 @@ export async function up(knex: Knex): Promise<void> {
     -- Create habitat_feature lookup tables
     ----------------------------------------------------------------------------------------
 
-    SET SEARCH_PATH=biohub, public;
+    SET SEARCH_PATH=biohub,public;
+
+    CREATE TABLE habitat_feature (
+      habitat_feature_id    integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+      name                  varchar(100)       NOT NULL,
+      description           varchar(250),
+      record_end_date       date,
+      create_date           timestamptz(6)     DEFAULT now() NOT NULL,
+      create_user           integer            NOT NULL,
+      update_date           timestamptz(6),
+      update_user           integer,
+      revision_count        integer            DEFAULT 0 NOT NULL,
+      CONSTRAINT habitat_feature_pk PRIMARY KEY (habitat_feature_id)
+    );
+  
+    COMMENT ON TABLE  habitat_feature                       IS 'Habitat feature type definitions.';
+    COMMENT ON COLUMN habitat_feature.habitat_feature_id    IS 'System generated surrogate primary key identifier.';
+    COMMENT ON COLUMN habitat_feature.name                  IS 'The name of the habitat feature.';
+    COMMENT ON COLUMN habitat_feature.description           IS 'The description of the habitat feature.';
+    COMMENT ON COLUMN habitat_feature.record_end_date       IS 'Record level end date.';
+    COMMENT ON COLUMN habitat_feature.create_date           IS 'The datetime the record was created.';
+    COMMENT ON COLUMN habitat_feature.create_user           IS 'The id of the user who created the record as identified in the system user table.';
+    COMMENT ON COLUMN habitat_feature.update_date           IS 'The datetime the record was updated.';
+    COMMENT ON COLUMN habitat_feature.update_user           IS 'The id of the user who updated the record as identified in the system user table.';
+    COMMENT ON COLUMN habitat_feature.revision_count        IS 'Revision count used for concurrency control.';
+
+    -- Add unique end-date key constraint
+    CREATE UNIQUE INDEX habitat_feature_nuk1 ON habitat_feature(name, (record_end_date IS NULL)) WHERE record_end_date IS NULL;
+  
+    -- Add index to support the search for a habitat_feature by name
+    CREATE INDEX habitat_feature_idx1 ON habitat_feature(name);
+
+    ----------------------------------------------------------------------------------------
 
     CREATE TABLE habitat_feature_quantitative (
       habitat_feature_quantitative_id    uuid                 DEFAULT public.gen_random_uuid(),
@@ -141,7 +173,8 @@ export async function up(knex: Knex): Promise<void> {
     CREATE TABLE survey_habitat_feature (
       survey_habitat_feature_id    integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
       survey_id                    integer            NOT NULL,
-      count                        integer            NOT NULL,
+      habitat_feature_id           integer            NOT NULL,
+      count                        numeric            NOT NULL,
       latitude                     numeric(10, 7)     NOT NULL,
       longitude                    numeric(10, 7)     NOT NULL,
       observed_date                date               NOT NULL,
@@ -157,7 +190,8 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON TABLE  survey_habitat_feature                              IS 'Habitat features observed during a survey.';
     COMMENT ON COLUMN survey_habitat_feature.survey_habitat_feature_id    IS 'System generated surrogate primary key identifier.';
     COMMENT ON COLUMN survey_habitat_feature.survey_id                    IS 'A foreign key pointing to the survey table.';
-    COMMENT ON COLUMN survey_habitat_feature.count                        IS 'The count of the observed habitat feature.';
+    COMMENT ON COLUMN survey_habitat_feature.habitat_feature_id           IS 'A foreign key pointing to the habitat feature table.';
+    COMMENT ON COLUMN survey_habitat_feature.count                        IS 'The count or measured value of the observed habitat features.';
     COMMENT ON COLUMN survey_habitat_feature.latitude                     IS 'The latitude of the observed habitat feature, having ten points of total precision and 7 points of precision after the decimal.';
     COMMENT ON COLUMN survey_habitat_feature.longitude                    IS 'The longitude of the observed habitat feature, having ten points of total precision and 7 points of precision after the decimal.';
     COMMENT ON COLUMN survey_habitat_feature.observed_date                IS 'The date associated with the observation of the habitat feature.';
@@ -174,8 +208,52 @@ export async function up(knex: Knex): Promise<void> {
       FOREIGN KEY (survey_id)
       REFERENCES survey(survey_id);
 
+    ALTER TABLE survey_habitat_feature
+        ADD CONSTRAINT survey_habitat_feature_fk2
+        FOREIGN KEY (habitat_feature_id)
+        REFERENCES habitat_feature(habitat_feature_id);
+
     -- Add indexes for foreign keys
     CREATE INDEX survey_habitat_feature_idx1 ON survey_habitat_feature(survey_id);
+
+    CREATE INDEX survey_habitat_feature_idx2 ON survey_habitat_feature(habitat_feature_id);
+
+    ----------------------------------------------------------------------------------------
+
+    CREATE TABLE survey_habitat_feature_taxon (
+      survey_habitat_feature_taxon_id    integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+      survey_habitat_feature_id          integer            NOT NULL,
+      itis_tsn                           integer            NOT NULL,
+      itis_scientific_name               varchar(300)       NOT NULL,
+      comment                            varchar(250),
+      create_date                        timestamptz(6)     DEFAULT now() NOT NULL,
+      create_user                        integer            NOT NULL,
+      update_date                        timestamptz(6),
+      update_user                        integer,
+      revision_count                     integer            DEFAULT 0 NOT NULL,
+      CONSTRAINT survey_habitat_feature_taxon_pk PRIMARY KEY (survey_habitat_feature_taxon_id)
+    );
+
+    COMMENT ON TABLE  survey_habitat_feature_taxon                                    IS 'Taxon related to a habitat feature observed during a survey.';
+    COMMENT ON COLUMN survey_habitat_feature_taxon.survey_habitat_feature_taxon_id    IS 'System generated surrogate primary key identifier.';
+    COMMENT ON COLUMN survey_habitat_feature_taxon.survey_habitat_feature_id          IS 'A foreign key pointing to the survey habitat feature table.';
+    COMMENT ON COLUMN survey_habitat_feature_taxon.itis_tsn                           IS 'The ITIS TSN identifier for the species associated with the observed habitat feature.';
+    COMMENT ON COLUMN survey_habitat_feature_taxon.itis_scientific_name               IS 'The scientific name for the species associated with the observed habitat feature.';
+    COMMENT ON COLUMN survey_habitat_feature_taxon.comment                            IS 'A foreign key pointing to the survey table.';
+    COMMENT ON COLUMN survey_habitat_feature_taxon.create_date                        IS 'The datetime the record was created.';
+    COMMENT ON COLUMN survey_habitat_feature_taxon.create_user                        IS 'The id of the user who created the record as identified in the system user table.';
+    COMMENT ON COLUMN survey_habitat_feature_taxon.update_date                        IS 'The datetime the record was updated.';
+    COMMENT ON COLUMN survey_habitat_feature_taxon.update_user                        IS 'The id of the user who updated the record as identified in the system user table.';
+    COMMENT ON COLUMN survey_habitat_feature_taxon.revision_count                     IS 'Revision count used for concurrency control.';
+
+    -- Add foreign key constraint
+    ALTER TABLE survey_habitat_feature_taxon
+      ADD CONSTRAINT survey_habitat_feature_taxon_fk1
+      FOREIGN KEY (survey_habitat_feature_id)
+      REFERENCES survey_habitat_feature(survey_habitat_feature_id);
+
+    -- Add indexes for foreign keys
+    CREATE INDEX survey_habitat_feature_taxon_idx1 ON survey_habitat_feature_taxon(survey_habitat_feature_id);
 
     ----------------------------------------------------------------------------------------
     -- Create join tables between survey_habitat_feature and habitat_feature_quantitative and habitat_feature_qualitative
@@ -287,6 +365,9 @@ export async function up(knex: Knex): Promise<void> {
     -- Create audit/journal triggers
     ----------------------------------------------------------------------------------------
 
+    CREATE TRIGGER audit_habitat_feature BEFORE INSERT OR UPDATE OR DELETE ON biohub.habitat_feature FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
+    CREATE TRIGGER journal_habitat_feature AFTER INSERT OR UPDATE OR DELETE ON biohub.habitat_feature FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
+
     CREATE TRIGGER audit_habitat_feature_quantitative BEFORE INSERT OR UPDATE OR DELETE ON biohub.habitat_feature_quantitative FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
     CREATE TRIGGER journal_habitat_feature_quantitative AFTER INSERT OR UPDATE OR DELETE ON biohub.habitat_feature_quantitative FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
 
@@ -298,6 +379,9 @@ export async function up(knex: Knex): Promise<void> {
 
     CREATE TRIGGER audit_survey_habitat_feature BEFORE INSERT OR UPDATE OR DELETE ON biohub.survey_habitat_feature FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
     CREATE TRIGGER journal_survey_habitat_feature AFTER INSERT OR UPDATE OR DELETE ON biohub.survey_habitat_feature FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
+
+    CREATE TRIGGER audit_survey_habitat_feature_taxon BEFORE INSERT OR UPDATE OR DELETE ON biohub.survey_habitat_feature_taxon FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
+    CREATE TRIGGER journal_survey_habitat_feature_taxon AFTER INSERT OR UPDATE OR DELETE ON biohub.survey_habitat_feature_taxon FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
 
     CREATE TRIGGER audit_survey_habitat_feature_quantitative BEFORE INSERT OR UPDATE OR DELETE ON biohub.survey_habitat_feature_quantitative FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
     CREATE TRIGGER journal_survey_habitat_feature_quantitative AFTER INSERT OR UPDATE OR DELETE ON biohub.survey_habitat_feature_quantitative FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
