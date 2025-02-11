@@ -75,3 +75,7 @@ export const getObservationCSVTemplate = (): CSVEncodedTemplate => {
 export const getSamplePeriodCSVTemplate = (): CSVEncodedTemplate => {
   return getCSVTemplate(['SAMPLE_SITE', 'TECHNIQUE_NAME', 'START_DATE', 'START_TIME', 'END_DATE', 'END_TIME']);
 };
+
+export const getAnimalCSVTemplate = (): CSVEncodedTemplate => {
+  return getCSVTemplate(['SPECIES', 'ALIAS', 'SEX', 'WLH_ID', 'DESCRIPTION']);
+};

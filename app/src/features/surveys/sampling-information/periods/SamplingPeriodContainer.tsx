@@ -28,7 +28,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions } from 'types/misc';
 import { downloadFile } from 'utils/file-utils';
-import { firstOrNull, waitForRenderCycle } from 'utils/Utils';
+import { firstOrNull } from 'utils/Utils';
 import { SamplingPeriodTable } from './table/SamplingPeriodTable';
 
 const pageSizeOptions = [10, 25, 50];
@@ -153,9 +153,6 @@ export const SamplingPeriodContainer = () => {
     );
 
     periodsDataLoader.refresh(periodsPagination);
-
-    // Wait for the render cycle to complete before closing the dialog
-    await waitForRenderCycle(500);
 
     setOpenBulkImportDialog(false);
   };

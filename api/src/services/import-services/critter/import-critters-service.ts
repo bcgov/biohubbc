@@ -66,7 +66,7 @@ export class ImportCrittersService extends DBService {
         ITIS_TSN: { aliases: getAllAliases(['TAXON', 'SPECIES', 'TSN', 'SCIENTIFIC_NAME']) },
         ALIAS: { aliases: getAllAliases(['NICKNAME', 'NAME', 'ANIMAL_ID']) },
         SEX: { aliases: [], optional: true },
-        WLH_ID: { aliases: getAllAliases(['WILDLIFE_HEALTH_ID', 'WLHID', 'WLH_ID']) },
+        WLH_ID: { aliases: getAllAliases(['WILDLIFE_HEALTH_ID', 'WLHID']) },
         DESCRIPTION: { aliases: ['COMMENTS', 'COMMENT', 'NOTES'], optional: true }
       },
       ignoreDynamicHeaders: false
