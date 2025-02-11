@@ -8,6 +8,7 @@ import {
   CSVConfig,
   CSVError,
   CSVHeaderConfig,
+  CSVParams,
   CSVRowState,
   CSVRowValidated
 } from '../../../utils/csv-utils/csv-config-validation.interface';
@@ -20,19 +21,19 @@ import { CritterbaseService, IBulkCreate } from '../../critterbase-service';
 import { DBService } from '../../db-service';
 import { PlatformService } from '../../platform-service';
 import { SurveyCritterService } from '../../survey-critter-service';
-import { getTaxonMap } from '../utils/taxon';
+import { getTaxonMap, TaxonMap } from '../utils/taxon';
 import {
   getCritterAliasCellValidator,
   getCritterCollectionUnitCellSetter,
   getCritterCollectionUnitCellValidator,
   getCritterSexCellValidator,
   getWlhIDCellValidator
-} from './critter-header-configs';
+} from './utils/critter-header-configs';
 
 const defaultLog = getLogger('services/import/import-critters-service');
 
 // Critter CSV static headers
-export type CritterCSVStaticHeader = 'ITIS_TSN' | 'ALIAS' | 'SEX' | 'WLH_ID' | 'DESCRIPTION';
+export type CritterCSVStaticHeader = 'SPECIES' | 'ALIAS' | 'SEX' | 'WLH_ID' | 'DESCRIPTION';
 
 /**
  *
@@ -63,7 +64,7 @@ export class ImportCrittersService extends DBService {
 
     const initialConfig: CSVConfig<CritterCSVStaticHeader> = {
       staticHeadersConfig: {
-        ITIS_TSN: { aliases: getAllAliases(['TAXON', 'SPECIES', 'TSN', 'SCIENTIFIC_NAME']) },
+        SPECIES: { aliases: getAllAliases(['TAXON', 'TSN', 'SCIENTIFIC_NAME']) },
         ALIAS: { aliases: getAllAliases(['NICKNAME', 'NAME', 'ANIMAL_ID']) },
         SEX: { aliases: [], optional: true },
         WLH_ID: { aliases: getAllAliases(['WILDLIFE_HEALTH_ID', 'WLHID']) },
@@ -115,6 +116,8 @@ export class ImportCrittersService extends DBService {
       ]);
     }
 
+    throw new Error('testing...');
+
     // Add Critters to SIMS survey
     await this.surveyCritterService.addCrittersToSurvey(this.surveyId, payloads.simsPayload);
 
@@ -130,27 +133,30 @@ export class ImportCrittersService extends DBService {
    * @returns {*} {Promise<CSVConfig<CritterCSVStaticHeader>>} The Critter CSV config
    */
   async getCSVConfig(): Promise<CSVConfig<CritterCSVStaticHeader>> {
-    const [aliasHeaderConfig, sexHeaderConfig, dynamicHeadersConfig] = await Promise.all([
-      this._getAliasHeaderConfig(),
-      this._getSexHeaderConfig().catch(() => undefined), // If this throws due to invalid TSNs, we can ignore this header till TSNs are fixed
-      this._getCollectionUnitDynamicHeaderConfig().catch(() => undefined) // Same for the dynamic columns
-    ]);
-
     // Generate the taxon map from the worksheet taxon identifiers
-    const taxonIdentifiers = this.utils.getUniqueCellValues('ITIS_TSN').filter(Boolean) as Array<string | number>;
+    const taxonIdentifiers = this.utils.getUniqueCellValues('SPECIES').filter(Boolean) as Array<string | number>;
     const taxonMap = await getTaxonMap(taxonIdentifiers, this.platformService);
 
+    // Get the header configs in parallel
+    const [aliasHeaderConfig, sexHeaderConfig, dynamicHeadersConfig] = await Promise.all([
+      this._getAliasHeaderConfig(),
+      // If this throws due to invalid TSNs, we can ignore this header till TSNs are fixed
+      this._getSexHeaderConfig(taxonMap).catch(() => undefined),
+      // If this throws due to invalid TSNs, we can ignore dynamic headers till TSNs are fixed
+      this._getCollectionUnitDynamicHeaderConfig(taxonMap).catch(() => undefined)
+    ]);
+
     this.utils.setAllStaticHeaderConfigs({
-      // ITIS_TSN is handled by the taxon row validator
-      ITIS_TSN: { validateCell: () => [] },
+      // SPECIES is handled by the taxon row validator
+      SPECIES: { validateCell: () => [] },
       ALIAS: aliasHeaderConfig,
-      // SEX header config is only defined when the TSNs are valid
+      // SEX header validator is only defined when the TSNs are valid
       SEX: sexHeaderConfig ?? { validateCell: () => [] },
       WLH_ID: { validateCell: getWlhIDCellValidator(this.utils) },
       DESCRIPTION: { validateCell: getDescriptionCellValidator() }
     });
 
-    this.utils.config.rowValidators = [getTaxonRowValidator(taxonMap, this.utils, 'ITIS_TSN')];
+    this.utils.config.rowValidators = [getTaxonRowValidator(taxonMap, this.utils, 'SPECIES')];
 
     this.utils.config.dynamicHeadersConfig = dynamicHeadersConfig;
     this.utils.config.ignoreDynamicHeaders = !dynamicHeadersConfig;
@@ -182,7 +188,7 @@ export class ImportCrittersService extends DBService {
       critterbasePayload.critters?.push({
         critter_id: critterId,
         sex_qualitative_option_id: row[CSVRowState]?.sexId,
-        itis_tsn: row.ITIS_TSN,
+        itis_tsn: row.SPECIES,
         animal_id: row.ALIAS,
         wlh_id: row.WLH_ID,
         critter_comment: row.DESCRIPTION
@@ -232,12 +238,19 @@ export class ImportCrittersService extends DBService {
    *
    * @returns {*} {CSVHeaderConfig} The sex header config
    */
-  async _getSexHeaderConfig(): Promise<CSVHeaderConfig> {
+  async _getSexHeaderConfig(taxonMap: TaxonMap): Promise<CSVHeaderConfig> {
     const rowDictionary = new NestedRecord<string>();
 
-    const rowTsns = this.utils.getUniqueCellValues('ITIS_TSN').map((tsn) => String(tsn));
-    const measurements = await Promise.all(rowTsns.map((tsn) => this.critterbaseService.getTaxonMeasurements(tsn)));
+    // Get the worksheet tsns and the callback to get the critter row tsn
+    const worksheetTsns = this._getWorksheetTsns(taxonMap);
+    const getCritterTsn = this._getCritterRowTsnGetter(taxonMap);
 
+    // Get the measurements for all the taxon identifiers
+    const measurements = await Promise.all(
+      worksheetTsns.map((tsn) => this.critterbaseService.getTaxonMeasurements(tsn))
+    );
+
+    // Populate the row dictionary with the tsn and measurement sex label
     measurements.forEach((measurement, index) => {
       const sexMeasurement = measurement.qualitative.find(
         (measurement) => measurement.measurement_name.toLowerCase() === 'sex'
@@ -245,7 +258,7 @@ export class ImportCrittersService extends DBService {
 
       if (sexMeasurement) {
         sexMeasurement.options.forEach((option) => {
-          const tsn = Number(rowTsns[index]);
+          const tsn = worksheetTsns[index];
           const sexLabel = option.option_label;
 
           rowDictionary.set({ path: [tsn, sexLabel], value: option.qualitative_option_id });
@@ -254,7 +267,7 @@ export class ImportCrittersService extends DBService {
     });
 
     return {
-      validateCell: getCritterSexCellValidator(rowDictionary, this.utils)
+      validateCell: getCritterSexCellValidator(rowDictionary, getCritterTsn)
     };
   }
 
@@ -263,18 +276,22 @@ export class ImportCrittersService extends DBService {
    *
    * @returns {*} {Promise<CSVHeaderConfig>} The Collection Unit dynamic header config
    */
-  async _getCollectionUnitDynamicHeaderConfig(): Promise<CSVHeaderConfig> {
+  async _getCollectionUnitDynamicHeaderConfig(taxonMap: TaxonMap): Promise<CSVHeaderConfig> {
     const rowDictionary = new NestedRecord<string>();
-    const rowTsns = this.utils.getUniqueCellValues('ITIS_TSN').map((tsn) => String(tsn));
+
+    // Get the worksheet tsns and the callback to get the critter row tsn
+    const worksheetTsns = this._getWorksheetTsns(taxonMap);
+    const getCritterTsn = this._getCritterRowTsnGetter(taxonMap);
+
     // Get the collection units for all the tsns in the worksheet
     const collectionUnits = await Promise.all(
-      rowTsns.map((tsn) => this.critterbaseService.findTaxonCollectionUnits(tsn))
+      worksheetTsns.map((tsn) => this.critterbaseService.findTaxonCollectionUnits(tsn))
     );
 
     collectionUnits.forEach((collectionUnits, index) => {
       collectionUnits.forEach((unit) => {
         const category = unit.category_name;
-        const tsn = Number(rowTsns[index]);
+        const tsn = Number(worksheetTsns[index]);
         const unitName = unit.unit_name;
 
         rowDictionary.set({
@@ -287,8 +304,44 @@ export class ImportCrittersService extends DBService {
     });
 
     return {
-      validateCell: getCritterCollectionUnitCellValidator(rowDictionary, this.utils),
-      setCellValue: getCritterCollectionUnitCellSetter(rowDictionary, this.utils)
+      validateCell: getCritterCollectionUnitCellValidator(rowDictionary, getCritterTsn),
+      setCellValue: getCritterCollectionUnitCellSetter(rowDictionary, getCritterTsn)
+    };
+  }
+
+  /**
+   * Get the worksheet ITIS TSN's from the worksheet taxon identifiers - no duplicates.
+   *
+   * @param {TaxonMap} taxonMap The taxon map
+   * @returns {*} {number[]} The worksheet ITIS TSNs
+   */
+  _getWorksheetTsns(taxonMap: TaxonMap): number[] {
+    const worksheetTsns: number[] = [];
+
+    // Get the unique taxon identifiers from the worksheet ie: ['12345', 'Alces Alces']
+    const taxonIdentifiers = this.utils.getUniqueCellValues('SPECIES').filter(Boolean) as Array<string | number>;
+
+    for (const identifier of taxonIdentifiers) {
+      const taxon = taxonMap.get(identifier);
+
+      if (taxon) {
+        worksheetTsns.push(taxon.tsn);
+      }
+    }
+
+    return [...new Set(worksheetTsns)];
+  }
+
+  _getCritterRowTsnGetter(taxonMap: TaxonMap): (params: CSVParams) => number {
+    return (params: CSVParams) => {
+      const taxonIdentifier = this.utils.getCellValue('SPECIES', params.row);
+      const taxon = taxonMap.get(String(taxonIdentifier));
+
+      if (taxon) {
+        return taxon.tsn;
+      }
+
+      return -1;
     };
   }
 }

@@ -9,8 +9,8 @@ import { NestedRecord } from '../../../utils/nested-record';
 import { getMockDBConnection } from '../../../__mocks__/db';
 import { CritterbaseService } from '../../critterbase-service';
 import { SurveyCritterService } from '../../survey-critter-service';
-import * as critterConfig from './critter-header-configs';
 import { ImportCrittersService } from './import-critters-service';
+import * as critterConfig from './utils/critter-header-configs';
 
 chai.use(sinonChai);
 

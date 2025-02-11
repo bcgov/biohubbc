@@ -104,7 +104,7 @@ export const getTsnMeasurementDictionary = async (
   >();
   const uniqueTsns = [...new Set(tsns)];
 
-  const measurements = await Promise.all(uniqueTsns.map((tsn) => critterbaseService.getTaxonMeasurements(String(tsn))));
+  const measurements = await Promise.all(uniqueTsns.map((tsn) => critterbaseService.getTaxonMeasurements(tsn)));
 
   // Note: This makes the assumption that a qualitative measurement and a quantitative measurement
   // will not have the same measurement name for a given TSN.

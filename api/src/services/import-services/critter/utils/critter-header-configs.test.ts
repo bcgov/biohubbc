@@ -3,7 +3,6 @@ import xlsx from 'xlsx';
 import { CSVConfigUtils } from '../../../../utils/csv-utils/csv-config-utils';
 import { CSVConfig } from '../../../../utils/csv-utils/csv-config-validation.interface';
 import { NestedRecord } from '../../../../utils/nested-record';
-import { CritterCSVStaticHeader } from '../import-critters-service';
 import {
   getCritterAliasCellValidator,
   getCritterCollectionUnitCellSetter,
@@ -11,6 +10,7 @@ import {
   getCritterSexCellValidator,
   getWlhIDCellValidator
 } from './utils/critter-header-configss';
+import { CritterCSVStaticHeader } from '../import-critters-service';
 
 const mockConfig: CSVConfig<CritterCSVStaticHeader> = {
   staticHeadersConfig: {
