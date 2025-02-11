@@ -50,14 +50,17 @@ export const SamplePeriodDataGridEditCell = <DataGridType extends GridValidRowMo
 
   // The currently selected option
   const [currentOption, setCurrentOption] = useState<SamplingInformationCachedPeriod | null>(
-    samplingInformationCache.getCurrentPeriod(dataGridProps)
+    samplingInformationCache.getCurrentPeriod(dataGridProps.value)
   );
+  // The options for the autocomplete
   const [options, setOptions] = useState<SamplingInformationCachedPeriod[]>(
-    samplingInformationCache.getPeriodsForRow(
-      dataGridProps.row.survey_sample_site_id,
-      dataGridProps.row.method_technique_id
-    )
+    samplingInformationCache.getPeriodsForRow(dataGridProps.row.method_technique_id)
   );
+  // The survey sample site id and method technique id for the current set of options
+  // These are used to detect if the site or technique value in the data grid state has changed, and therefore the
+  // options of this control should be updated.
+  const [currentSiteId, setCurrentSiteId] = useState<number | null>(dataGridProps.row.survey_sample_site_id);
+  const [currentTechniqueId, setCurrentTechniqueId] = useState<number | null>(dataGridProps.row.method_technique_id);
   // Is control loading (search in progress)
   const [isLoading, setIsLoading] = useState(false);
 
@@ -99,11 +102,11 @@ export const SamplePeriodDataGridEditCell = <DataGridType extends GridValidRowMo
 
         samplingInformationCache.updateCachedSamplingPeriods(options);
 
-        const validOptions = samplingInformationCache.getPeriodsForRow(
-          dataGridProps.row.survey_sample_site_id,
-          dataGridProps.row.method_technique_id
-        );
+        const validOptions = samplingInformationCache.getPeriodsForRow(surveySampleSiteId, methodTechniqueId);
 
+        // Track the survey sample site id and method technique id for the current set of options
+        setCurrentSiteId(surveySampleSiteId);
+        setCurrentTechniqueId(methodTechniqueId);
         // Set the options for the autocomplete
         setOptions(validOptions);
 
@@ -129,8 +132,8 @@ export const SamplePeriodDataGridEditCell = <DataGridType extends GridValidRowMo
     }
 
     if (
-      currentOption?.survey_sample_site_id !== dataGridProps.row.survey_sample_site_id ||
-      currentOption?.method_technique_id !== dataGridProps.row.method_technique_id
+      currentSiteId !== dataGridProps.row.survey_sample_site_id ||
+      currentTechniqueId !== dataGridProps.row.method_technique_id
     ) {
       // If the site or technique has changed, then unset any selected period, and update the options to reflect the
       // valid periods for the new site and technique.
@@ -146,8 +149,8 @@ export const SamplePeriodDataGridEditCell = <DataGridType extends GridValidRowMo
       getOptions('');
     }
   }, [
-    currentOption?.method_technique_id,
-    currentOption?.survey_sample_site_id,
+    currentSiteId,
+    currentTechniqueId,
     getOptions,
     dataGridProps.row.method_technique_id,
     dataGridProps.row.survey_sample_site_id,

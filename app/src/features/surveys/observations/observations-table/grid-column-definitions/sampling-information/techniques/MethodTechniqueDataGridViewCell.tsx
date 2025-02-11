@@ -20,7 +20,7 @@ export const MethodTechniqueDataGridViewCell = <DataGridType extends GridValidRo
 ) => {
   const { dataGridProps, samplingInformationCache, error } = props;
 
-  const label = samplingInformationCache.getCurrentTechnique(dataGridProps)?.label ?? '';
+  const label = samplingInformationCache.getCurrentTechnique(dataGridProps.value)?.label ?? '';
 
   return (
     <Typography

@@ -50,11 +50,16 @@ export const MethodTechniqueDataGridEditCell = <DataGridType extends GridValidRo
 
   // The currently selected option
   const [currentOption, setCurrentOption] = useState<SamplingInformationCachedTechnique | null>(
-    samplingInformationCache.getCurrentTechnique(dataGridProps)
+    samplingInformationCache.getCurrentTechnique(dataGridProps.value)
   );
+  // The options for the autocomplete
   const [options, setOptions] = useState<SamplingInformationCachedTechnique[]>(
     samplingInformationCache.getTechniquesForRow(dataGridProps.row.survey_sample_site_id)
   );
+  // The survey sample site id for the current set of options
+  // These are used to detect if the site value in the data grid state has changed, and therefore the options of this
+  // control should be updated.
+  const [currentSiteId, setCurrentSiteId] = useState<number | null>(dataGridProps.row.survey_sample_site_id);
   // Is control loading (search in progress)
   const [isLoading, setIsLoading] = useState(false);
 
@@ -99,6 +104,8 @@ export const MethodTechniqueDataGridEditCell = <DataGridType extends GridValidRo
         // Get the latest valid options for the current row
         const validOptions = samplingInformationCache.getTechniquesForRow(dataGridProps.row.survey_sample_site_id);
 
+        // Track the survey sample site id for the current set of options
+        setCurrentSiteId(surveySampleSiteId);
         // Set the options for the autocomplete
         setOptions(validOptions);
 
@@ -122,7 +129,7 @@ export const MethodTechniqueDataGridEditCell = <DataGridType extends GridValidRo
       return;
     }
 
-    if (currentOption?.survey_sample_site_id !== dataGridProps.row.survey_sample_site_id) {
+    if (currentSiteId !== dataGridProps.row.survey_sample_site_id) {
       // If the site has changed, then unset any selected technique, and update the options to reflect the
       // valid techniques for the new site.
       setCurrentOption(null);
@@ -131,12 +138,7 @@ export const MethodTechniqueDataGridEditCell = <DataGridType extends GridValidRo
       // Trigger a search to get all of the techniques for the new site
       getOptions('');
     }
-  }, [
-    currentOption?.survey_sample_site_id,
-    getOptions,
-    dataGridProps.row.survey_sample_site_id,
-    samplingInformationCache
-  ]);
+  }, [currentSiteId, getOptions, dataGridProps.row.survey_sample_site_id, samplingInformationCache]);
 
   return (
     <Autocomplete
