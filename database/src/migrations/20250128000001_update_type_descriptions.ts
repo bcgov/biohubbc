@@ -9,11 +9,12 @@ import { Knex } from 'knex';
  */
 export async function up(knex: Knex): Promise<void> {
   await knex.raw(`
+
+SET search_path=biohub;
+
 ----------------------------------------------------------------------------------------
 -- Add new type descriptions to the type table  
 ----------------------------------------------------------------------------------------
-
-SET search_path=biohub;
 
 UPDATE type
     SET description = CASE name
@@ -24,6 +25,18 @@ UPDATE type
       WHEN 'Habitat features' THEN 'Recording characteristics of the environment, such as vegetation, water sources, or terrain.'
     END
     WHERE name IN ('Telemetry', 'Species observations', 'Animal captures', 'Animal mortalities', 'Habitat features');
+
+
+----------------------------------------------------------------------------------------
+-- Add new site_selection_strategy descriptions to the site_strategy table  
+----------------------------------------------------------------------------------------
+UPDATE site_strategy
+    SET description = CASE name
+      WHEN 'Random' THEN 'Randomly selecting sites for surveying.'
+      WHEN 'Stratified' THEN 'Dividing the survey area into distinct sub-areas and sampling each sub-area separately.'
+      WHEN 'Systematic' THEN 'Selecting sites at regular intervals across the survey area.'
+    END
+    WHERE name IN ('Random', 'Stratified', 'Systematic');
 
 `);
 }
