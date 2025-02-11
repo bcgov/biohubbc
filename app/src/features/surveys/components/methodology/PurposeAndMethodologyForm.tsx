@@ -3,7 +3,6 @@ import Grid from '@mui/material/Grid';
 import CustomTextField from 'components/fields/CustomTextField';
 import MultiAutocompleteField, { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteField';
 import MultiAutocompleteFieldVariableSize from 'components/fields/MultiAutocompleteFieldVariableSize';
-
 import { ISelectWithSubtextFieldOption } from 'components/fields/SelectWithSubtext';
 import React from 'react';
 import yup from 'utils/YupSchema';
@@ -42,7 +41,7 @@ export interface IPurposeAndMethodologyFormProps {
  * @return {*}
  */
 const PurposeAndMethodologyForm: React.FC<IPurposeAndMethodologyFormProps> = (props) => {
-  console.log(props);
+  console.log('Survey types:', props.type);
   return (
     <form>
       <Box component="fieldset">
