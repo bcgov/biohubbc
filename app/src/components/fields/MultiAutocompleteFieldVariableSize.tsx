@@ -3,9 +3,9 @@ import CheckBoxOutlineBlank from '@mui/icons-material/CheckBoxOutlineBlank';
 import Autocomplete, { AutocompleteInputChangeReason, createFilterOptions } from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
+import ListItemText from '@mui/material/ListItemText';
 import ListSubheader from '@mui/material/ListSubheader';
 import TextField from '@mui/material/TextField';
-import ListItemText from '@mui/material/ListItemText';
 import { FilterOptionsState } from '@mui/material/useAutocomplete';
 import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
 import { useFormikContext } from 'formik';
@@ -256,7 +256,7 @@ const MultiAutocompleteFieldVariableSize: React.FC<IMultiAutocompleteField> = (p
       id={props.id}
       data-testid={props.id}
       options={options}
-      getOptionLabel={(option) => `${option.label} - ${option.description}`}
+      getOptionLabel={(option) => option.label}
       isOptionEqualToValue={handleGetOptionSelected}
       disableCloseOnSelect
       disableListWrap
