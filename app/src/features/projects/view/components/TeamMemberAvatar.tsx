@@ -1,10 +1,11 @@
 import Box from '@mui/material/Box';
+import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 
 interface ITeamMemberAvatarProps {
   color: string;
   label: string;
-  title?: string;
+  tooltip?: string;
 }
 
 /**
@@ -13,21 +14,22 @@ interface ITeamMemberAvatarProps {
  * @returns
  */
 export const TeamMemberAvatar = (props: ITeamMemberAvatarProps) => {
-  const { color, label, title } = props;
+  const { color, label, tooltip } = props;
   return (
-    <Box
-      title={title}
-      sx={{
-        height: '35px',
-        width: '35px',
-        minWidth: '35px',
-        borderRadius: '50%',
-        bgcolor: color,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center'
-      }}>
-      <Typography sx={{ fontSize: '0.8rem', color: '#fff', fontWeight: 700, userSelect: 'none' }}>{label}</Typography>
-    </Box>
+    <Tooltip title={tooltip} arrow>
+      <Box
+        sx={{
+          height: '35px',
+          width: '35px',
+          minWidth: '35px',
+          borderRadius: '50%',
+          bgcolor: color,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}>
+        <Typography sx={{ fontSize: '0.8rem', color: '#fff', fontWeight: 700, userSelect: 'none' }}>{label}</Typography>
+      </Box>
+    </Tooltip>
   );
 };

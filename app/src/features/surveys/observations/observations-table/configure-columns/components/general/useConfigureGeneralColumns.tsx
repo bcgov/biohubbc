@@ -1,9 +1,9 @@
-import { GridColDef, GridColumnVisibilityModel } from '@mui/x-data-grid';
-import { IObservationTableRow } from 'contexts/observationsTableContext';
+import { GridColumnVisibilityModel } from '@mui/x-data-grid';
 import { useObservationsTableContext } from 'hooks/useContext';
+import { IHideableColumn } from '../../ConfigureColumnsButton';
 
 export interface IUseConfigureGeneralColumnsProps {
-  hideableColumns: GridColDef<IObservationTableRow>[];
+  hideableColumns: IHideableColumn[];
 }
 
 /**
