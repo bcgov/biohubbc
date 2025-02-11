@@ -31,11 +31,11 @@ describe('ImportCrittersService', () => {
       expect(service).to.have.property('worksheet', worksheet);
       expect(service).to.have.property('surveyId', 1);
 
-      expect(service.configUtils).to.be.instanceof(CSVConfigUtils);
+      expect(service.utils).to.be.instanceof(CSVConfigUtils);
       expect(service.surveyCritterService).to.be.instanceof(SurveyCritterService);
       expect(service.critterbaseService).to.be.instanceof(CritterbaseService);
 
-      expect(Object.keys(service._config.staticHeadersConfig)).to.deep.equal([
+      expect(Object.keys(service.utils.config.staticHeadersConfig)).to.deep.equal([
         'ITIS_TSN',
         'ALIAS',
         'SEX',
@@ -52,7 +52,6 @@ describe('ImportCrittersService', () => {
 
       const service = new ImportCrittersService(mockConnection, worksheet, 1);
 
-      sinon.stub(service, '_getTsnHeaderConfig').resolves({ validateCell: () => [] });
       sinon.stub(service, '_getAliasHeaderConfig').resolves({ validateCell: () => [] });
       sinon.stub(service, '_getSexHeaderConfig').resolves({ validateCell: () => [], setCellValue: () => 'A' });
       sinon
@@ -82,7 +81,6 @@ describe('ImportCrittersService', () => {
 
       const service = new ImportCrittersService(mockConnection, worksheet, 1);
 
-      sinon.stub(service, '_getTsnHeaderConfig').resolves({ validateCell: () => [] });
       sinon.stub(service, '_getAliasHeaderConfig').resolves({ validateCell: () => [] });
       sinon.stub(service, '_getSexHeaderConfig').resolves({ validateCell: () => [], setCellValue: () => 'A' });
       sinon.stub(service, '_getCollectionUnitDynamicHeaderConfig').rejects(new Error('Dynamic header error'));
@@ -104,28 +102,6 @@ describe('ImportCrittersService', () => {
     });
   });
 
-  describe('_getTsnHeaderConfig', () => {
-    it('should return a valid header config object', async () => {
-      const mockConnection = getMockDBConnection();
-      const worksheet = xlsx.utils.json_to_sheet([{ ITIS_TSN: '1234' }]);
-
-      const service = new ImportCrittersService(mockConnection, worksheet, 1);
-
-      const getTaxonomyByTsnsStub = sinon
-        .stub(service.platformService, 'getTaxonomyByTsns')
-        .resolves([{ tsn: 1234, scientificName: 'test' }]);
-      const getTsnCellValidatorStub = sinon.stub(headerConfig, 'getTsnCellValidator').returns(() => []);
-
-      const tsnHeaderConfig = await service._getTsnHeaderConfig();
-
-      expect(getTaxonomyByTsnsStub).to.have.been.calledOnceWithExactly(['1234']);
-      expect(getTsnCellValidatorStub).to.have.been.calledOnceWithExactly(new Set([1234]));
-
-      expect(tsnHeaderConfig.validateCell).to.be.a('function');
-      expect(tsnHeaderConfig.setCellValue).to.be.a('function');
-    });
-  });
-
   describe('_getAliasHeaderConfig', () => {
     it('should return a valid header config object', async () => {
       const mockConnection = getMockDBConnection();
@@ -143,10 +119,7 @@ describe('ImportCrittersService', () => {
       const aliasHeaderConfig = await service._getAliasHeaderConfig();
 
       expect(getSurveyCritterAliasesStub).to.have.been.calledOnceWithExactly(1);
-      expect(getCritterAliasCellValidatorStub).to.have.been.calledOnceWithExactly(
-        new Set(['test']),
-        service.configUtils
-      );
+      expect(getCritterAliasCellValidatorStub).to.have.been.calledOnceWithExactly(new Set(['test']), service.utils);
 
       expect(aliasHeaderConfig.validateCell).to.be.a('function');
       expect(aliasHeaderConfig.setCellValue).to.be.a('function');
@@ -188,7 +161,7 @@ describe('ImportCrittersService', () => {
         new NestedRecord({
           1234: { male: 'maleUUID', female: 'femaleUUID' }
         }),
-        service.configUtils
+        service.utils
       );
 
       expect(sexHeaderConfig.validateCell).to.be.a('function');
@@ -221,12 +194,12 @@ describe('ImportCrittersService', () => {
 
       expect(getCollectionUnitCellValidatorStub).to.have.been.calledWithExactly(
         new NestedRecord({ 1234: { category: { unit: 'uuid' } } }),
-        service.configUtils
+        service.utils
       );
 
       expect(getCollectionUnitCellSetterStub).to.have.been.calledWithExactly(
         new NestedRecord({ 1234: { category: { unit: 'uuid' } } }),
-        service.configUtils
+        service.utils
       );
 
       expect(config.validateCell).to.be.a('function');
