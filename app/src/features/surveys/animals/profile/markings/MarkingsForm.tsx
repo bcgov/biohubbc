@@ -165,7 +165,7 @@ export const MarkingsForm = <FormikValuesType extends IMarkings>() => {
 
           <HelpButtonStack
             sx={{ mt: 1 }}
-            helpText={'Markings are physical tags or identifiers on the animal, excluding telemetry devices.'}>
+            helpText="Markings are physical tags or identifiers on the animal, excluding telemetry devices.">
             <Button
               color="primary"
               variant="outlined"
