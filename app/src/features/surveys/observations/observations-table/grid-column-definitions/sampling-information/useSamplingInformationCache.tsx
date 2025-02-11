@@ -69,6 +69,12 @@ export const useSamplingInformationCache = (): SamplingInformationCache => {
    */
   const initCachedSamplingInformationRef = (params: { periods?: GetSamplingPeriod[] }) => {
     if (!params.periods?.length) {
+      // No periods to initialize with
+      return;
+    }
+
+    if (cachedSamplingInformationRef.current) {
+      // Already initialized
       return;
     }
 
