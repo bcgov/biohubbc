@@ -11,7 +11,7 @@ import { useSurveyContext } from 'hooks/useContext';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { downloadFile } from 'utils/file-utils';
-import { getAnimalCSVTemplate } from '../../profile/captures/import-captures/utils/templates';
+import { getAnimalCSVTemplate } from '../../../../../utils/templates';
 
 interface IAnimaListToolbarProps {
   animalCount: number;

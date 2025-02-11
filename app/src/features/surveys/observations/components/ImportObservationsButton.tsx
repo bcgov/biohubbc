@@ -2,10 +2,10 @@ import Button, { ButtonProps } from '@mui/material/Button';
 import axios, { AxiosProgressEvent } from 'axios';
 import { CSVSingleImportDialog } from 'components/csv/CSVSingleImportDialog';
 import { SurveyContext } from 'contexts/surveyContext';
-import { getObservationCSVTemplate } from 'features/surveys/animals/profile/captures/import-captures/utils/templates';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useContext, useState } from 'react';
 import { downloadFile } from 'utils/file-utils';
+import { getObservationCSVTemplate } from 'utils/templates';
 
 export interface IImportObservationsButtonProps {
   /**

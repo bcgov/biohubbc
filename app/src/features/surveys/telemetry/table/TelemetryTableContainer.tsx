@@ -21,13 +21,13 @@ import DataGridValidationAlert from 'components/data-grid/DataGridValidationAler
 import YesNoDialog from 'components/dialog/YesNoDialog';
 import { TelemetryTableI18N } from 'constants/i18n';
 import { SurveyContext } from 'contexts/surveyContext';
-import { getTelemetryCSVTemplate } from 'features/surveys/animals/profile/captures/import-captures/utils/templates';
 import { TelemetryDeviceKeysButton } from 'features/surveys/telemetry/manage/device-keys/TelemetryDeviceKeysButton';
 import { TelemetryTable } from 'features/surveys/telemetry/table/TelemetryTable';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useTelemetryTableContext } from 'hooks/useContext';
 import { useContext, useDeferredValue, useState } from 'react';
 import { downloadFile } from 'utils/file-utils';
+import { getTelemetryCSVTemplate } from 'utils/templates';
 
 export const TelemetryTableContainer = () => {
   const biohubApi = useBiohubApi();

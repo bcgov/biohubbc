@@ -19,7 +19,6 @@ import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { SamplePeriodI18N } from 'constants/i18n';
-import { getSamplePeriodCSVTemplate } from 'features/surveys/animals/profile/captures/import-captures/utils/templates';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
@@ -28,6 +27,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions } from 'types/misc';
 import { downloadFile } from 'utils/file-utils';
+import { getSamplePeriodCSVTemplate } from 'utils/templates';
 import { firstOrNull } from 'utils/Utils';
 import { SamplingPeriodTable } from './table/SamplingPeriodTable';
 
