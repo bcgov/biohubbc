@@ -32,6 +32,7 @@ import PurposeAndMethodologyForm, {
 import SurveyUserForm, { SurveyUserJobYupSchema } from '../components/participants/SurveyUserForm';
 import { SurveySiteSelectionYupSchema } from '../components/sampling-strategy/SurveySiteSelectionForm';
 import SpeciesForm, { SpeciesYupSchema } from '../components/species/SpeciesForm';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 
 export interface IEditSurveyForm<
   T extends
@@ -79,6 +80,14 @@ const EditSurveyForm = <
     .concat(SurveySiteSelectionYupSchema)
     .concat(SurveyPartnershipsFormYupSchema)
     .concat(SpeciesYupSchema);
+
+  // Add this transformer function
+  const transformSurveyJobs = (jobs: typeof codes.survey_jobs): IGetAllCodeSetsResponse['project_roles'] => {
+    return jobs.map(job => ({
+      ...job,
+      description: job.name // or provide a meaningful description if available
+    }));
+  };
 
   return (
     <Formik<T>
@@ -166,7 +175,7 @@ const EditSurveyForm = <
         <HorizontalSplitFormComponent
           title="Survey Participants"
           summary="Specify people who participated in this survey"
-          component={<SurveyUserForm jobs={codes.survey_jobs} />}
+          component={<SurveyUserForm jobs={transformSurveyJobs(codes.survey_jobs)} />}
         />
 
         <Divider />

@@ -323,7 +323,8 @@ export class CodeRepository extends BaseRepository {
     const sqlStatement = SQL`
       SELECT
         project_role_id as id,
-        name
+        name,
+        description
       FROM project_role
       WHERE record_end_date is null
       ORDER BY

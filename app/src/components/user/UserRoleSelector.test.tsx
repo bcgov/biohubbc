@@ -1,19 +1,18 @@
 import { PROJECT_ROLE } from 'constants/roles';
-import { ICode } from 'interfaces/useCodesApi.interface';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import UserRoleSelector from './UserRoleSelector';
-const roles: ICode[] = [
+
+const mockRoles: IGetAllCodeSetsResponse['project_roles'] = [
   {
     id: 1,
-    name: PROJECT_ROLE.COLLABORATOR
+    name: PROJECT_ROLE.COORDINATOR,
+    description: 'The administrative lead of the project.'
   },
   {
     id: 2,
-    name: PROJECT_ROLE.COORDINATOR
-  },
-  {
-    id: 3,
-    name: PROJECT_ROLE.OBSERVER
+    name: PROJECT_ROLE.COLLABORATOR,
+    description: 'A participant team member of the project.'
   }
 ];
 
@@ -35,7 +34,7 @@ describe('UserRoleSelector', () => {
           agency: 'Business',
           project_role_names: [PROJECT_ROLE.COORDINATOR]
         }}
-        roles={roles}
+        roles={mockRoles}
         error={undefined}
         selectedRole={PROJECT_ROLE.COORDINATOR}
         handleAdd={() => {}}
@@ -68,7 +67,7 @@ describe('UserRoleSelector', () => {
           agency: 'Business',
           project_role_names: [PROJECT_ROLE.COORDINATOR]
         }}
-        roles={roles}
+        roles={mockRoles}
         error={undefined}
         selectedRole={PROJECT_ROLE.COORDINATOR}
         handleAdd={() => {}}
@@ -106,7 +105,7 @@ describe('UserRoleSelector', () => {
           agency: 'Business',
           project_role_names: []
         }}
-        roles={roles}
+        roles={mockRoles}
         error={undefined}
         selectedRole={''}
         handleAdd={onAdd}

@@ -27,8 +27,8 @@ export const codes: IGetAllCodeSetsResponse = {
     { id: 2, name: 'Role 2' }
   ],
   project_roles: [
-    { id: 1, name: 'Project Role 1' },
-    { id: 2, name: 'Project Role 2' }
+    { id: 1, name: 'Project Role 1', description: 'Description 1' },
+    { id: 2, name: 'Project Role 2', description: 'Description 2' }
   ],
   administrative_activity_status_type: [
     { id: 1, name: 'Pending' },
