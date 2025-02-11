@@ -256,27 +256,26 @@ export const checkFileForKeyx = async (
     const jsonKeyxData = mapKeyxData(parser.parse(xmlString));
 
     // Validate key using Vectronic API separation count
-    const keyStatus = await telemetryVectronicService
-      .fetchTelemetrySepCountFromVectronic(jsonKeyxData.id, jsonKeyxData.key)
-      .then(() => {
-        return {
-          type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.KEYX,
-          keyData: [
-            {
-              fileName: file.originalname,
-              keysData: [jsonKeyxData]
-            }
-          ]
-        };
-      })
-      .catch(() => {
-        return {
-          type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.KEYX,
-          error:
-            TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING.INVALID_XML_FILE +
-            TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING.KEYX_NOT_FOUND
-        };
-      });
+    let keyStatus;
+    try {
+      await telemetryVectronicService.fetchTelemetrySepCountFromVectronic(jsonKeyxData.id, jsonKeyxData.key);
+      keyStatus = {
+        type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.KEYX,
+        keyData: [
+          {
+            fileName: file.originalname,
+            keysData: [jsonKeyxData]
+          }
+        ]
+      };
+    } catch (error) {
+      keyStatus = {
+        type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.KEYX,
+        error:
+          TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING.INVALID_XML_FILE +
+          TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING.KEYX_NOT_FOUND
+      };
+    }
 
     return keyStatus;
   }
@@ -398,14 +397,13 @@ const processKeyxFilesArray = async (
     const parser = new XMLParser(xmlParserOptions);
     const jsonKeyxData = mapKeyxData(parser.parse(keyxFileString));
 
-    const keyStatus = await telemetryVectronicService
-      .fetchTelemetrySepCountFromVectronic(jsonKeyxData.id, jsonKeyxData.key)
-      .then(() => {
-        return true;
-      })
-      .catch(() => {
-        return false;
-      });
+    let keyStatus;
+    try {
+      await telemetryVectronicService.fetchTelemetrySepCountFromVectronic(jsonKeyxData.id, jsonKeyxData.key);
+      keyStatus = true;
+    } catch (error) {
+      keyStatus = false;
+    }
 
     if (!keyStatus) {
       resultJSON.length = 0;
