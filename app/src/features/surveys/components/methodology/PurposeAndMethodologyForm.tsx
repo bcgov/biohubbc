@@ -41,7 +41,6 @@ export interface IPurposeAndMethodologyFormProps {
  * @return {*}
  */
 const PurposeAndMethodologyForm: React.FC<IPurposeAndMethodologyFormProps> = (props) => {
-  console.log('Survey types:', props.type);
   return (
     <form>
       <Box component="fieldset">
