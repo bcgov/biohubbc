@@ -16,6 +16,7 @@ const xlsxWorksheet: xlsx.WorkSheet = {
   F1: { t: 's', v: 'Longitude' },
   G1: { t: 's', v: 'Antler Configuration' },
   H1: { t: 's', v: 'Wind Direction' },
+  I1: { t: 's', v: ' ' },
   A2: { t: 'n', w: '180703', v: 180703 },
   B2: { t: 'n', w: '1', v: 1 },
   C2: { t: 's', v: '1970-01-01T08:00:00.000Z' },
@@ -24,6 +25,7 @@ const xlsxWorksheet: xlsx.WorkSheet = {
   F2: { t: 'n', w: '-123', v: -123 },
   G2: { t: 's', v: 'more than 3 points' },
   H2: { t: 's', v: 'North' },
+  I2: { t: 's', v: undefined },
   A3: { t: 'n', w: '180596', v: 180596 },
   B3: { t: 'n', w: '2', v: 2 },
   C3: { t: 's', v: '1970-01-01T08:00:00.000Z' },
@@ -31,6 +33,7 @@ const xlsxWorksheet: xlsx.WorkSheet = {
   E3: { t: 'n', w: '-57', v: -57 },
   F3: { t: 'n', w: '-122', v: -122 },
   H3: { t: 's', v: 'North' },
+  I3: { t: 's', v: undefined },
   A4: { t: 'n', w: '180713', v: 180713 },
   B4: { t: 'n', w: '3', v: 3 },
   C4: { t: 's', v: '1970-01-01T08:00:00.000Z' },
@@ -38,6 +41,7 @@ const xlsxWorksheet: xlsx.WorkSheet = {
   E4: { t: 'n', w: '-56', v: -56 },
   F4: { t: 'n', w: '-121', v: -121 },
   H4: { t: 's', v: 'North' },
+  I4: { t: 's', v: undefined },
   '!ref': 'A1:H9'
 };
 

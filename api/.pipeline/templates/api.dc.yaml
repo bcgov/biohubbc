@@ -39,10 +39,9 @@ parameters:
     description: Api default port name
     value: '6100-tcp'
   # Volume (for API logs and other persistent data)
-  - description: Volume space available for data, e.g. 512Mi, 2Gi.
-    displayName: Volume Capacity
-    name: VOLUME_CAPACITY
+  - name: VOLUME_CAPACITY
     required: true
+    description: Volume space available for data, e.g. 512Mi, 2Gi.
     value: '500Mi'
   # Clamav
   - name: ENABLE_FILE_VIRUS_SCAN
@@ -149,13 +148,13 @@ parameters:
     value: data/logs
     description: Directory where log files are stored
   - name: LOG_FILE_NAME
-    value: sims-api-%DATE%.log
+    value: sims-api.log
     description: Name of the log file
   - name: LOG_FILE_DATE_PATTERN
-    value: YYYY-MM-DD-HH
+    value: YYYY-MM-DD
     description: Date pattern for log the files
   - name: LOG_FILE_MAX_SIZE
-    value: 50m
+    value: 45m
     description: Maximum size an individual log file can reach before a new file is created
   - name: LOG_FILE_MAX_FILES
     value: '10'

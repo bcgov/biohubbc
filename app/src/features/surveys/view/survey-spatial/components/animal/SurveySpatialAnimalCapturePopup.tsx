@@ -1,43 +1,51 @@
-import { IStaticLayerFeature } from 'components/map/components/StaticLayers';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import dayjs from 'dayjs';
 import { SurveyMapPopup } from 'features/surveys/view/SurveyMapPopup';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { ICaptureResponse } from 'interfaces/useCritterApi.interface';
+import { useMemo } from 'react';
 import { Popup } from 'react-leaflet';
+import { isDefined } from 'utils/Utils';
 
-export interface ISurveySpatialAnimalCapturePopupProps {
-  feature: IStaticLayerFeature;
+interface ISurveySpatialAnimalCapturePopupProps {
+  captureId: string;
 }
 
 /**
- * Renders a popup for animal capture data on the map.
+ * Returns information about a critter capture record, shown when a capture point is clicked on the map
  *
  * @param {ISurveySpatialAnimalCapturePopupProps} props
- * @return {*}
+ * @returns {*}
  */
 export const SurveySpatialAnimalCapturePopup = (props: ISurveySpatialAnimalCapturePopupProps) => {
-  const { feature } = props;
+  const { captureId } = props;
 
   const critterbaseApi = useCritterbaseApi();
 
-  const captureDataLoader = useDataLoader((captureId) => critterbaseApi.capture.getCapture(captureId));
+  const captureDataLoader = useDataLoader(() => critterbaseApi.capture.getCapture(captureId));
+  const animalDataLoader = useDataLoader(critterbaseApi.critters.getCritterSimple);
 
-  const getCaptureMetadata = (capture: ICaptureResponse) => {
+  const popupMetadata = useMemo(() => {
+    if (!captureDataLoader.data || !animalDataLoader.data) {
+      return [];
+    }
+
+    const { capture_date, capture_time, capture_location } = captureDataLoader.data;
+    const { animal_id } = animalDataLoader.data;
+
     return [
-      { label: 'Capture ID', value: String(capture.capture_id) },
-      { label: 'Date', value: dayjs(capture.capture_date).format(DATE_FORMAT.LongDateTimeFormat) },
-      { label: 'Time', value: String(capture.capture_time ?? '') },
+      { label: 'Nickname', value: animal_id },
+      { label: 'Date', value: dayjs(capture_date).format(DATE_FORMAT.LongDateTimeFormat) },
+      { label: 'Time', value: String(capture_time ?? '') },
       {
         label: 'Coordinates',
-        value: [capture.release_location?.latitude ?? null, capture.release_location?.longitude ?? null]
-          .filter((coord): coord is number => coord !== null)
+        value: [capture_location?.latitude, capture_location?.longitude]
+          .filter((coord): coord is number => isDefined(coord))
           .map((coord) => coord.toFixed(6))
           .join(', ')
       }
     ];
-  };
+  }, [captureDataLoader.data, animalDataLoader.data]);
 
   return (
     <Popup
@@ -45,15 +53,19 @@ export const SurveySpatialAnimalCapturePopup = (props: ISurveySpatialAnimalCaptu
       closeButton={true}
       autoPan={true}
       eventHandlers={{
-        add: () => {
-          captureDataLoader.load(String(feature.id));
+        add: async () => {
+          const capture = await captureDataLoader.load();
+          // Fetch critter information to get the animal's animal_id to display, which isn't included in the capture response
+          if (capture) {
+            animalDataLoader.load(capture.critter_id);
+          }
         }
       }}>
       <SurveyMapPopup
-        isLoading={captureDataLoader.isLoading || !captureDataLoader.isReady}
-        title="Capture"
-        metadata={captureDataLoader.data ? getCaptureMetadata(captureDataLoader.data) : []}
-        key={`capture-feature-popup-${feature.id}`}
+        isLoading={captureDataLoader.isLoading || animalDataLoader.isLoading}
+        title="Capture Details"
+        metadata={popupMetadata}
+        key={`capture-feature-popup-${captureId}`}
       />
     </Popup>
   );

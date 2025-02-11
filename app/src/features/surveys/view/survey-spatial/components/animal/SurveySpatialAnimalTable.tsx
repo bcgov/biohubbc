@@ -1,6 +1,9 @@
 import { mdiArrowTopRight } from '@mdi/js';
 import Box from '@mui/material/Box';
+import green from '@mui/material/colors/green';
+import red from '@mui/material/colors/red';
 import { GridColDef } from '@mui/x-data-grid';
+import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
@@ -9,80 +12,82 @@ import { ScientificNameTypography } from 'features/surveys/animals/components/Sc
 import { useSurveyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
+import { useEffect, useMemo } from 'react';
 
-// Set height so the skeleton loader matches table rows
 const rowHeight = 52;
 
-/**
- * Interface defining the structure of animal data used in the table.
- */
-interface IAnimalData {
+interface IAnimalRow {
   id: number;
-  animal_id: string;
+  animal_id: string | null;
   scientificName: string;
+  sex: string | null;
+  status: string;
 }
 
-/**
- * Props interface for SurveySpatialAnimalTable component.
- */
 interface ISurveyDataAnimalTableProps {
   isLoading: boolean;
 }
 
 /**
- * Component for displaying animal data in a table, fetching data via context and API hooks.
- * Renders a table with animal nicknames and scientific names, with loading skeleton when data is loading.
+ * Returns table of animals in the Survey
+ *
+ * @param {ISurveyDataAnimalTableProps} props
+ * @returns {*}
  */
 export const SurveySpatialAnimalTable = (props: ISurveyDataAnimalTableProps) => {
-  const surveyContext = useSurveyContext();
+  const { isLoading } = props;
+
+  const { critterDataLoader } = useSurveyContext();
   const critterbaseApi = useCritterbaseApi();
 
-  // Fetch critter data loader from survey context
-  const animals = surveyContext.critterDataLoader.data ?? [];
+  const animals = useMemo(() => critterDataLoader.data ?? [], [critterDataLoader.data]);
 
-  // DataLoader to fetch detailed critter data based on IDs from context
   const animalsDataLoader = useDataLoader(() =>
     critterbaseApi.critters.getMultipleCrittersByIds(animals.map((animal) => animal.critterbase_critter_id))
   );
 
-  // Load data if animals data is available
-  if (animals.length) {
-    animalsDataLoader.load();
-  }
+  useEffect(() => {
+    if (animals.length) {
+      animalsDataLoader.load();
+    }
+  }, [animals, animalsDataLoader]);
 
-  // Map fetched data to table data structure
-  const rows: IAnimalData[] =
-    animalsDataLoader.data?.map((item) => ({
-      id: item.critter_id,
-      animal_id: item.animal_id ?? '',
-      scientificName: item.itis_scientific_name,
-      status: !!item.mortality?.length
+  const rows: IAnimalRow[] =
+    animalsDataLoader.data?.map((animal) => ({
+      ...animal,
+      id: animal.critter_id,
+      scientificName: animal.itis_scientific_name,
+      sex: animal.sex?.label ?? null,
+      status: animal.mortality?.length ? 'Deceased' : 'Alive'
     })) ?? [];
 
-  // Define columns for the data grid
-  const columns: GridColDef<IAnimalData>[] = [
-    {
-      field: 'animal_id',
-      headerName: 'Nickname',
-      flex: 1
-    },
+  const columns: GridColDef<IAnimalRow>[] = [
+    { field: 'animal_id', headerName: 'Nickname', flex: 1 },
     {
       field: 'scientificName',
       headerName: 'Species',
       flex: 1,
-      renderCell: (params) => <ScientificNameTypography name={params.value} /> // Render scientific name with custom typography component
+      renderCell: (params) => <ScientificNameTypography name={params.value} variant="body2" />
+    },
+    { field: 'sex', headerName: 'Sex', flex: 1, renderCell: (params) => params.value },
+    {
+      field: 'status',
+      headerName: 'Status',
+      flex: 1,
+      renderCell: (params) => (
+        <ColouredRectangleChip label={params.value} colour={params.value === 'Alive' ? green : red} />
+      )
     }
   ];
 
   return (
     <LoadingGuard
-      isLoading={animals.length > 0 && (props.isLoading || animalsDataLoader.isLoading || !animalsDataLoader.isReady)}
+      isLoading={animals.length > 0 && (isLoading || animalsDataLoader.isLoading || !animalsDataLoader.isReady)}
       isLoadingFallback={
         <Box flex="1 1 auto">
           <SkeletonTable />
         </Box>
       }
-      isLoadingFallbackDelay={100}
       hasNoData={!animals.length || !rows.length}
       hasNoDataFallback={
         <Box flex="1 1 auto">
@@ -93,32 +98,33 @@ export const SurveySpatialAnimalTable = (props: ISurveyDataAnimalTableProps) => 
             icon={mdiArrowTopRight}
           />
         </Box>
-      }
-      hasNoDataFallbackDelay={100}>
-      <StyledDataGrid
-        // Data grid component for displaying animal data
-        noRowsMessage={'No animals found'}
-        columnHeaderHeight={rowHeight}
-        rowHeight={rowHeight}
-        rows={rows}
-        getRowId={(row) => row.id}
-        columns={columns}
-        initialState={{
-          pagination: {
-            paginationModel: { page: 0, pageSize: 5 }
-          }
-        }}
-        pageSizeOptions={[5]}
-        rowSelection={false}
-        checkboxSelection={false}
-        disableRowSelectionOnClick
-        disableColumnSelector
-        disableColumnFilter
-        disableColumnMenu
-        disableVirtualization
-        sortingOrder={['asc', 'desc']}
-        data-testid="survey-animals-data-table"
-      />
+      }>
+      <Box flex="1 1 auto" overflow="hidden">
+        <StyledDataGrid
+          noRowsMessage="No animals found"
+          columnHeaderHeight={rowHeight}
+          rowHeight={rowHeight}
+          rows={rows}
+          getRowId={(row) => row.id}
+          columns={columns}
+          initialState={{
+            pagination: {
+              paginationModel: { page: 0, pageSize: 10 }
+            }
+          }}
+          pageSizeOptions={[10, 25, 50]}
+          rowSelection={false}
+          autoHeight={false}
+          checkboxSelection={false}
+          disableRowSelectionOnClick
+          disableColumnSelector
+          disableColumnFilter
+          disableColumnMenu
+          disableVirtualization
+          sortingOrder={['asc', 'desc']}
+          data-testid="survey-animals-data-table"
+        />
+      </Box>
     </LoadingGuard>
   );
 };

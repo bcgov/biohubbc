@@ -8,7 +8,7 @@ export interface ISurveyMapPopupProps {
   title: string;
   metadata: {
     label: string;
-    value: string | number;
+    value: string | number | null;
   }[];
 }
 

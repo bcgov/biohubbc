@@ -141,10 +141,10 @@ export const SystemUserAutocompleteField = (props: ISystemUserAutocompleteFieldP
       disabled={disabled}
       data-testid={formikFieldName}
       filterSelectedOptions
+      clearOnBlur={false}
       noOptionsText={inputValue && inputValue.length > 2 ? 'No matching options' : 'Enter at least 3 letters'}
       options={options}
       getOptionLabel={(option) => option.display_name || ''}
-      value={null} // Always set value to null to prevent a selected value from showing
       isOptionEqualToValue={(option, value) => option.system_user_id === value.system_user_id}
       filterOptions={(options) => {
         if (selectedUsers) {
@@ -174,18 +174,21 @@ export const SystemUserAutocompleteField = (props: ISystemUserAutocompleteFieldP
           return;
         }
 
-        setIsLoading(true);
-        setInputValue(value);
-        handleSearch(value, (newOptions) => {
-          if (value.length < 3) {
-            return;
-          }
-          if (!isMounted()) {
-            return;
-          }
-          setOptions(newOptions);
-          setIsLoading(false);
-        });
+        // reason === 'input' is only true when the change comes from typing in the text field, not from a state change (ie. not from the useState value changing)
+        if (reason === 'input') {
+          setIsLoading(true);
+          setInputValue(value);
+          handleSearch(value, (newOptions) => {
+            if (value.length < 3) {
+              return;
+            }
+            if (!isMounted()) {
+              return;
+            }
+            setOptions(newOptions);
+          });
+        }
+        setIsLoading(false);
       }}
       onChange={(_, option) => {
         if (!option) {
@@ -194,6 +197,7 @@ export const SystemUserAutocompleteField = (props: ISystemUserAutocompleteFieldP
         }
 
         onSelect(option);
+        setIsLoading(false);
 
         if (clearOnSelect) {
           setInputValue('');

@@ -123,12 +123,11 @@ export class FundingSourceService extends DBService {
    *
    * @param {number} surveyId
    * @param {number} fundingSourceId
-   * @param {number} amount
    * @return {*}  {Promise<void>}
    * @memberof FundingSourceService
    */
-  async postSurveyFundingSource(surveyId: number, fundingSourceId: number, amount: number): Promise<void> {
-    return this.fundingSourceRepository.postSurveyFundingSource(surveyId, fundingSourceId, amount);
+  async postSurveyFundingSource(surveyId: number, fundingSourceId: number): Promise<void> {
+    return this.fundingSourceRepository.postSurveyFundingSource(surveyId, fundingSourceId);
   }
 
   /**
@@ -136,18 +135,12 @@ export class FundingSourceService extends DBService {
    *
    * @param {number} surveyId
    * @param {number} fundingSourceId
-   * @param {number} amount
    * @param {number} revision_count
    * @return {*}  {Promise<void>}
    * @memberof FundingSourceService
    */
-  async putSurveyFundingSource(
-    surveyId: number,
-    fundingSourceId: number,
-    amount: number,
-    revision_count: number
-  ): Promise<void> {
-    return this.fundingSourceRepository.putSurveyFundingSource(surveyId, fundingSourceId, amount, revision_count);
+  async putSurveyFundingSource(surveyId: number, fundingSourceId: number, revision_count: number): Promise<void> {
+    return this.fundingSourceRepository.putSurveyFundingSource(surveyId, fundingSourceId, revision_count);
   }
 
   /**

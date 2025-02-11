@@ -8,9 +8,9 @@ import { ProjectContext } from 'contexts/projectContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { TaxonomyContextProvider } from 'contexts/taxonomyContext';
 import { useContext } from 'react';
+import SurveyObservationHeader from './components/SurveyObservationHeader';
 import ObservationsTableContainer from './observations-table/ObservationsTableContainer';
 import { SamplingSiteListContainer } from './sampling-sites/SamplingSiteListContainer';
-import SurveyObservationHeader from './SurveyObservationHeader';
 
 export const SurveyObservationPage = () => {
   const surveyContext = useContext(SurveyContext);

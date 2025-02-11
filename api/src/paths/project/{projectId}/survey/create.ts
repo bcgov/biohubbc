@@ -6,7 +6,6 @@ import { PostSurveyObject } from '../../../../models/survey-create';
 import {
   surveyBlockSchema,
   surveyDetailsSchema,
-  surveyFundingSourceDataSchema,
   surveyLocationSchema,
   surveyPartnershipsSchema,
   surveyPermitSchema,
@@ -94,7 +93,18 @@ POST.apiDoc = {
             permit: surveyPermitSchema,
             funding_sources: {
               type: 'array',
-              items: surveyFundingSourceDataSchema
+              items: {
+                type: 'object',
+                additionalProperties: false,
+                required: ['funding_source_id'],
+                properties: {
+                  funding_source_id: {
+                    description: 'Funding source id',
+                    type: 'integer',
+                    minimum: 1
+                  }
+                }
+              }
             },
             partnerships: surveyPartnershipsSchema,
             proprietor: surveyProprietorSchema,
