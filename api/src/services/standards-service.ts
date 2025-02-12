@@ -38,7 +38,7 @@ export class StandardsService extends DBService {
     // Fetch all measurement type definitions from Critterbase for the unique taxon_measurement_ids
     const response = await Promise.all([
       this.platformService.getTaxonomyByTsns([tsn]),
-      this.critterbaseService.getTaxonBodyLocations(String(tsn)),
+      this.critterbaseService.getTaxonBodyLocations(tsn),
       this.critterbaseService.getTaxonMeasurements(tsn)
     ]);
 

@@ -26,7 +26,7 @@ describe('measurement', () => {
 
       const result = await getTsnMeasurementDictionary([1], critterbaseServiceMock as any);
 
-      expect(getMeasurementsStub).to.have.been.calledOnceWith('1');
+      expect(getMeasurementsStub).to.have.been.calledOnceWith(1);
       expect(result.get(1, 'qualitative')?.measurement_name).to.equal('qualitative');
       expect(result.get(1, 'quantitative')?.measurement_name).to.equal('quantitative');
       expect(result.get(1, 'uuid1')?.measurement_name).to.equal('qualitative');
