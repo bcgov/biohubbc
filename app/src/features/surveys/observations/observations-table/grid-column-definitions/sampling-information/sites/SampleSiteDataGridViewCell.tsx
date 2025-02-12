@@ -20,7 +20,7 @@ export const SampleSiteDataGridViewCell = <DataGridType extends GridValidRowMode
 ) => {
   const { dataGridProps, samplingInformationCache, error } = props;
 
-  const label = samplingInformationCache.getCurrentSite(dataGridProps)?.label ?? '';
+  const label = samplingInformationCache.getCurrentSite(dataGridProps.value)?.label ?? '';
 
   return (
     <Typography

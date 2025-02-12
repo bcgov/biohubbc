@@ -50,10 +50,11 @@ export const SampleSiteDataGridEditCell = <DataGridType extends GridValidRowMode
 
   // The currently selected option
   const [currentOption, setCurrentOption] = useState<SamplingInformationCachedSite | null>(
-    samplingInformationCache.getCurrentSite(dataGridProps)
+    samplingInformationCache.getCurrentSite(dataGridProps.value)
   );
+
   const [options, setOptions] = useState<SamplingInformationCachedSite[]>(
-    samplingInformationCache.cachedSamplingInformationRef.current?.sites ?? []
+    Object.values(samplingInformationCache.cachedSamplingInformationRef.current?.sites ?? [])
   );
   // Is control loading (search in progress)
   const [isLoading, setIsLoading] = useState(false);
@@ -100,7 +101,7 @@ export const SampleSiteDataGridEditCell = <DataGridType extends GridValidRowMode
       handleHomeEndKeys
       onOpen={() => {
         // On opening the dropdown, set the options to all cached sampling sites
-        setOptions(() => samplingInformationCache.cachedSamplingInformationRef.current?.sites ?? []);
+        setOptions(Object.values(samplingInformationCache.cachedSamplingInformationRef.current?.sites ?? []));
       }}
       loading={isLoading}
       value={currentOption}
