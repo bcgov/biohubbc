@@ -6,7 +6,7 @@ import {
   CSVParams,
   CSVRowState
 } from '../../../../utils/csv-utils/csv-config-validation.interface';
-import { updateCSVRowState, validateZodCell } from '../../../../utils/csv-utils/csv-header-configs';
+import { validateZodCell } from '../../../../utils/csv-utils/csv-header-configs';
 import { NestedRecord } from '../../../../utils/nested-record';
 import { CritterCSVStaticHeader } from '../import-critters-service';
 
@@ -165,10 +165,10 @@ export const getCritterSexCellValidator = (rowDictionary: NestedRecord<string>):
       ];
     }
 
-    const rowDictionarySex = rowDictionary.get(rowTsn, sexCellValue);
+    const sexQualitativeOptionId = rowDictionary.get(rowTsn, sexCellValue);
 
     // Check if the cell value is a valid sex measurement for the TSN
-    if (!rowDictionarySex) {
+    if (!sexQualitativeOptionId) {
       return [
         {
           error: `Sex cell value is invalid`,
@@ -178,8 +178,7 @@ export const getCritterSexCellValidator = (rowDictionary: NestedRecord<string>):
       ];
     }
 
-    // Set the row state to store the qualitative option id for the sex
-    updateCSVRowState(params.row, { sexId: rowDictionarySex });
+    params.mutateCell = sexQualitativeOptionId;
 
     return [];
   };
