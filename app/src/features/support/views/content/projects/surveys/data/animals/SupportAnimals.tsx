@@ -10,7 +10,7 @@ import Typography from '@mui/material/Typography';
 export const SupportAnimals = () => (
   <Stack gap={5} mb={3}>
     <Box>
-      <Typography key="project-components-2">
+      <Typography >
         Animals are known individuals that have captured or marked. When you add an Animals to your Survey, you're
         establishing create a profile for that individual that can be referenced again in the future. This makes it
         possible to gather all information about a specific individual.
@@ -21,9 +21,9 @@ export const SupportAnimals = () => (
       <Typography fontWeight={700} variant="h4" mb={2}>
         Captures
       </Typography>
-      <Typography gutterBottom key="gensims2">
+      <Typography gutterBottom>
         You can add information about where and when you captured an animal, along with any markings that you applied or
-        measurements that you recorded.
+        measurements that you recorded. To add a capture, you must first add the animal.
       </Typography>
     </Box>
 
@@ -31,7 +31,7 @@ export const SupportAnimals = () => (
       <Typography fontWeight={700} variant="h4" mb={2}>
         Markings
       </Typography>
-      <Typography gutterBottom key="gensims2">
+      <Typography gutterBottom >
         You can add markings that you applied during a capture event.
       </Typography>
     </Box>
@@ -40,7 +40,7 @@ export const SupportAnimals = () => (
       <Typography fontWeight={700} variant="h4" mb={2}>
         Mortalities
       </Typography>
-      <Typography gutterBottom key="gensims2">
+      <Typography gutterBottom >
         You can add information about where and when the animal died.
       </Typography>
     </Box>

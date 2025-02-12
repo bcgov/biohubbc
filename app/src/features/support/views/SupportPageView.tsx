@@ -14,19 +14,19 @@ import {
   mdiWifiMarker
 } from '@mdi/js';
 import { ReactNode } from 'react';
-import { SupportOverview } from './views/content/overview/SupportOverview';
-import { SupportProjects } from './views/content/projects/SupportProjects';
-import { SupportAnimals } from './views/content/projects/surveys/data/animals/SupportAnimals';
-import { SupportHabitat } from './views/content/projects/surveys/data/habitat/SupportHabitat';
-import { SupportObservations } from './views/content/projects/surveys/data/observations/SupportObservations';
-import { SupportData } from './views/content/projects/surveys/data/SupportData';
-import { SupportTelemetry } from './views/content/projects/surveys/data/telemetry/SupportTelemetry';
-import { SupportFiles } from './views/content/projects/surveys/files/SupportFiles';
-import { SupportMetadata } from './views/content/projects/surveys/metadata/SupportMetadata';
-import { SupportSampling } from './views/content/projects/surveys/sampling/SupportSampling';
-import { SupportSurveys } from './views/content/projects/surveys/SupportSurveys';
-import { SupportTeam } from './views/content/projects/team/SupportTeam';
-import { SupportStandards } from './views/content/standards/SupportStandards';
+import { SupportOverview } from './content/overview/SupportOverview';
+import { SupportProjects } from './content/projects/SupportProjects';
+import { SupportAnimals } from './content/projects/surveys/data/animals/SupportAnimals';
+import { SupportHabitat } from './content/projects/surveys/data/habitat/SupportHabitat';
+import { SupportObservations } from './content/projects/surveys/data/observations/SupportObservations';
+import { SupportData } from './content/projects/surveys/data/SupportData';
+import { SupportTelemetry } from './content/projects/surveys/data/telemetry/SupportTelemetry';
+import { SupportFiles } from './content/projects/surveys/files/SupportFiles';
+import { SupportMetadata } from './content/projects/surveys/metadata/SupportMetadata';
+import { SupportSampling } from './content/projects/surveys/sampling/SupportSampling';
+import { SupportSurveys } from './content/projects/surveys/SupportSurveys';
+import { SupportTeam } from './content/projects/team/SupportTeam';
+import { SupportStandards } from './content/standards/SupportStandards';
 
 export enum SupportPageView {
   overview = 'overview',
@@ -104,17 +104,17 @@ export const SupportPageViews: ISupportPageView[] = [
                 children: []
               },
               {
-                label: 'Animals',
-                value: SupportPageView.animals,
-                icon: mdiPaw,
-                order: 9,
-                children: []
-              },
-              {
                 label: 'Telemetry',
                 value: SupportPageView.telemetry,
                 icon: mdiWifiMarker,
                 order: 8,
+                children: []
+              },
+              {
+                label: 'Animals',
+                value: SupportPageView.animals,
+                icon: mdiPaw,
+                order: 9,
                 children: []
               },
               {
@@ -130,14 +130,14 @@ export const SupportPageViews: ISupportPageView[] = [
             label: 'Files',
             value: SupportPageView.files,
             icon: mdiFileOutline,
-            order: 10,
+            order: 11,
             children: []
           },
           {
             label: 'Metadata',
             value: SupportPageView.metadata,
             icon: mdiInformationOutline,
-            order: 10,
+            order: 12,
             children: []
           }
         ]
@@ -148,7 +148,7 @@ export const SupportPageViews: ISupportPageView[] = [
     label: 'Standards',
     value: SupportPageView.standards,
     icon: mdiCheckDecagram,
-    order: 9,
+    order: 13,
     children: []
   }
 ];

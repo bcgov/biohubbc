@@ -10,7 +10,7 @@ import Typography from '@mui/material/Typography';
 export const SupportHabitat = () => (
   <Stack gap={5} mb={3}>
     <Box>
-      <Typography key="project-components-2">
+      <Typography >
         We are working on supporting wildlife habitat feature data
       </Typography>
     </Box>

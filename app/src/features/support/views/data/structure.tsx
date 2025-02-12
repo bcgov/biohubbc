@@ -22,7 +22,7 @@ const structure = [
       <Typography key="project-components-1" variant="body1" gutterBottom>
         <strong>Projects</strong>
       </Typography>,
-      <Typography key="project-components-2" variant="body1" gutterBottom>
+      <Typography  variant="body1" gutterBottom>
         Projects are loosely defined and can be used for whichever best suits the needs of the study team. The main
         advantage and function of a project is that they allow for role-based security within the system.
       </Typography>,

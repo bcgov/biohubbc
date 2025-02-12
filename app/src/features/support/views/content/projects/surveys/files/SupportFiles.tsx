@@ -12,90 +12,38 @@ import Typography from '@mui/material/Typography';
 export const SupportFiles = () => (
   <Stack gap={5} mb={3}>
     <Box>
-      <Typography key="project-components-2">
-        The sampling information in a Survey describes exactly where, when, and how you collected data. The term
-        sampling is used because we often collect just a sample of ecological data to represent the area of interest,
-        saving us from having to collect data everywhere.
+      <Typography>
+        You can add supplementary information to your Survey by uploading attachments. This lets you store information
+        beyond the main data types.
       </Typography>
     </Box>
-
     <Box>
       <Typography fontWeight={700} variant="h4" mb={2}>
-        Sampling Site
+        Common Attachments
       </Typography>
-      <Typography gutterBottom key="gensims2">
-        A sampling site is a location where data is collected. Sampling sites can be points, transects, or areas,
-        depending on how you sampled:
-      </Typography>
+      <Typography gutterBottom>Here are some items that you that you might upload as Survey attachments:</Typography>
       <List sx={{ listStyleType: 'disc', '& .MuiListItem-root': { ml: 5 }, mb: 2 }}>
-        <ListItem sx={{ display: 'list-item' }}>
-          <Typography>
-            <strong>Points</strong> should represent fixed locations where data was collected
-          </Typography>
-        </ListItem>
-        <ListItem sx={{ display: 'list-item' }}>
-          <Typography>
-            <strong>Transects</strong> should represent paths that data were collected along, including flight paths
-          </Typography>
-        </ListItem>
-        <ListItem sx={{ display: 'list-item' }}>
-          <Typography>
-            <strong>Areas</strong> should represent bigger areas that data were collected in
-          </Typography>
-        </ListItem>
-      </List>
-      <Typography fontWeight={700} variant="h5" mb={2}>
-        Choose What Works
-      </Typography>
-      <Typography gutterBottom key="gensims2">
-        You might be wondering whether your site is a point, line, or area. We recommend using the option that you think
-        is best, given your objectives and understanding of the data. If your area is small enough to be considered a
-        point without losing information, you can keep it simple by using a point. You can add comments to your site to
-        save important details.
-      </Typography>
-    </Box>
-
-    <Box>
-      <Typography fontWeight={700} variant="h4" mb={2}>
-        Technique
-      </Typography>
-      <Typography gutterBottom key="gensims2">
-        Techniques represent the methods that you used to collect data at your sampling sites. Techniques can contain a
-        variety of information:
-      </Typography>
-      <List sx={{ listStyleType: 'disc', '& .MuiListItem-root': { ml: 5 } }}>
-        <ListItem sx={{ display: 'list-item' }}>
-          <Typography>
-            <strong>Method</strong> is the category of common methods that the technique belongs to, such as visual
-            encounter or camera trap
-          </Typography>
-        </ListItem>
-        <ListItem sx={{ display: 'list-item' }}>
-          <Typography>
-            <strong>Attributes</strong> describe how you implemented a method, like the model of your camera trap or
-            size of your net
-          </Typography>
-        </ListItem>
-        <ListItem sx={{ display: 'list-item' }}>
-          <Typography>
-            <strong>Attractants</strong> are tools used to increase your chances of observing the target species, such
-            as bait or light
-          </Typography>
-        </ListItem>
+        <ListItem sx={{ display: 'list-item' }}>Maps</ListItem>
+        <ListItem sx={{ display: 'list-item' }}>Photographs</ListItem>
+        <ListItem sx={{ display: 'list-item' }}>Original data files</ListItem>
+        <ListItem sx={{ display: 'list-item' }}>Spatial files</ListItem>
       </List>
     </Box>
-
     <Box>
       <Typography fontWeight={700} variant="h4" mb={2}>
-        Period
+        Project vs. Survey Attachments
       </Typography>
-      <Typography gutterBottom key="gensims2">
-        Periods represent precisely when you collected data, which you might call a sampling session. Using the terms
-        above, periods indicate &zwnj;
-        <strong>when you applied a technique at a sampling site</strong>. Precise start and end information is important
-        because it helps interpet the absence of species from your data&mdash;was the species missing because it didn't
-        occur at that time or the species wasn't being searched for at that time?
+      <Typography gutterBottom mb={2}>
+        Attachments can be added to Projects or Surveys, but you should put data-related files in the relevant Survey.
+        Project-level attachments should be more general information that your team needs to store and that you wouldn't
+        include if you were sharing your dataset.
       </Typography>
+      <Typography gutterBottom>Here are some good examples of Project-level attachments:</Typography>
+      <List sx={{ listStyleType: 'disc', '& .MuiListItem-root': { ml: 5 }, mb: 2 }}>
+        <ListItem sx={{ display: 'list-item' }}>Species identification guides</ListItem>
+        <ListItem sx={{ display: 'list-item' }}>Meeting notes</ListItem>
+        <ListItem sx={{ display: 'list-item' }}>Draft documents</ListItem>
+      </List>
     </Box>
   </Stack>
 );

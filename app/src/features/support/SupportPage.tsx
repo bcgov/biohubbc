@@ -11,8 +11,9 @@ import {
   SupportPageView,
   SupportPageViewMap,
   SupportPageViews
-} from './SupportPageView';
+} from './views/SupportPageView';
 
+// This is the URL param for the actie view
 const VIEW_KEY = 'v';
 
 /**
@@ -40,17 +41,14 @@ export const SupportPage = () => {
     return views.flatMap((view) => [view, ...flattenViews(view.children ?? [])]);
   };
 
-  // Find the current view object for its label, icon, children
-  const currentView = useMemo(
-    () => flattenViews(SupportPageViews).find((view) => view.value === activeView),
-    [activeView]
-  );
-
   // Sort views based on the order field
   const orderedViews = useMemo(
-    () => SupportPageViews.flatMap((view) => [view, ...view.children]).sort((a, b) => a.order - b.order),
-    []
+    () => flattenViews(SupportPageViews).sort((a, b) => a.order - b.order),
+    [SupportPageViews]
   );
+
+  // Find the current view object for its label, icon, children
+  const currentView = useMemo(() => orderedViews.find((view) => view.value === activeView), [activeView]);
 
   const currentIndex = currentView ? orderedViews.findIndex((v) => v.value === currentView.value) : 0;
   const prevView = orderedViews[currentIndex - 1] || null;
@@ -59,11 +57,24 @@ export const SupportPage = () => {
   // Get the JSX content to display for the activeView
   const children = SupportPageViewMap[activeView];
 
+  const justifyContentPosition: 'flex-end' | 'flex-start' | 'space-between' = useMemo(() => {
+    // If on the first page, position the 'Next' button on the right
+    if (currentIndex === 0) {
+      return 'flex-end';
+    }
+    // If on the first page, position the 'Previous' button on the left
+    if (currentIndex === orderedViews.length - 1) {
+      return 'flex-start';
+    }
+    // If on a middle page, position both buttons with space-between
+    return 'space-between';
+  }, [currentIndex]);
+
   return (
     <>
       <PageHeader title="Support" />
       <Container maxWidth="xl" sx={{ py: 3 }}>
-        <Stack direction="row" gap={3} component={Paper} sx={{ p: 3, mt: 3, height: '100%' }}>
+        <Stack direction="row" gap={3} component={Paper} sx={{ p: 3, height: '100%' }}>
           {/* Navigation Pane */}
           <Box width="300px" flexShrink={0}>
             <CustomToggleButtonGroup
@@ -91,13 +102,7 @@ export const SupportPage = () => {
             <Stack
               direction="row"
               alignItems="center"
-              justifyContent={
-                currentIndex === 0
-                  ? 'flex-end'
-                  : currentIndex === SupportPageViews.length - 1
-                  ? 'flex-start'
-                  : 'space-between'
-              }
+              justifyContent={justifyContentPosition}
               sx={{ width: '100%', '& .MuiButton-root': { fontWeight: 700 } }}>
               {currentIndex > 0 && (
                 <Button
@@ -106,7 +111,7 @@ export const SupportPage = () => {
                   Previous
                 </Button>
               )}
-              {currentIndex < SupportPageViews.length - 1 && (
+              {currentIndex < orderedViews.length - 1 && (
                 <Button
                   onClick={() => handleViewChange(nextView.value)}
                   endIcon={<Icon path={mdiChevronRight} size={1} />}>

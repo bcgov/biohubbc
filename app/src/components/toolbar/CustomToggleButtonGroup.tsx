@@ -4,7 +4,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export interface ToggleButtonView<ViewValueType> {
   value: ViewValueType;
@@ -28,14 +28,36 @@ const CustomToggleButtonGroup = <ViewValueType extends string>({
 }: CustomToggleButtonGroupProps<ViewValueType>) => {
   const [expanded, setExpanded] = useState<Set<ViewValueType>>(new Set());
 
+  // Function to find all parent views of the activeView
+  const findParentViews = (
+    views: ToggleButtonView<ViewValueType>[],
+    target: ViewValueType,
+    parents: Set<ViewValueType> = new Set()
+  ): Set<ViewValueType> => {
+    for (const view of views) {
+      if (view.value === target) {
+        return parents;
+      }
+      if (view.children) {
+        const found = findParentViews(view.children, target, new Set([...parents, view.value]));
+        if (found.size) {
+          return found;
+        }
+      }
+    }
+    return new Set();
+  };
+
+  // Expand all parents of activeView on mount or when activeView changes
+  useEffect(() => {
+    const parents = findParentViews(views, activeView);
+    setExpanded((prev) => new Set([...prev, ...parents]));
+  }, [activeView, views]);
+
   const toggleExpand = (view: ViewValueType) => {
     setExpanded((prev) => {
       const newSet = new Set(prev);
-      if (newSet.has(view)) {
-        newSet.delete(view);
-      } else {
-        newSet.add(view);
-      }
+      newSet.has(view) ? newSet.delete(view) : newSet.add(view);
       return newSet;
     });
   };
