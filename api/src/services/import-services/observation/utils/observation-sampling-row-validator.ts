@@ -59,7 +59,6 @@ interface IRowValidatorParams {
  * that the sampling information provided in the row matches a valid sampling period from the provided list of
  * sampling periods.
  *
- * TODO: Mac: Split this function into smaller, more testable functions
  *
  * Successfull paths:
  *  1. No sampling information provided, but observation date, latitude and longitude is provided
@@ -207,6 +206,16 @@ export function getObservationSamplingInformationRowValidator(
   };
 }
 
+/**
+ * Validate Observation Date, Latitude, and Longitude all exist - used when sampling information is not provided.
+ *
+ * @param {string | null} worksheetObservationDate The observation date from the worksheet
+ * @param {string | null} worksheetLatitude The latitude from the worksheet
+ * @param {string | null} worksheetLongitude The longitude from the worksheet
+ * @param {CSVConfigUtils<ObservationCSVStaticHeader>} utils The CSV Config Utils for the observation CSV
+ * @param {CSVRowParams} params The CSV Row Params
+ * @return {*} {CSVRowError[]} A list of CSV row errors
+ */
 export function validateObservationDateLatitudeLongitudeExist(
   worksheetObservationDate: string | null,
   worksheetLatitude: string | null,
@@ -249,6 +258,18 @@ export function validateObservationDateLatitudeLongitudeExist(
   return errors;
 }
 
+/**
+ * Validate Single Period Matches with Observation Date Time - This function will validate a list of sampling periods
+ * (filtered by site, technique, and period) and ensure that the observation date and time provided in the row matches
+ * a valid sampling period from the list of sampling periods.
+ *
+ * @param {string | null} worksheetObservationDate The observation date from the worksheet
+ * @param {string | null} worksheetObservationTime The observation time from the worksheet
+ * @param {SurveySamplePeriodDetails[]} samplePeriods The list of sampling periods to validate against
+ * @param {CSVConfigUtils<ObservationCSVStaticHeader>} utils The CSV Config Utils for the observation CSV
+ * @param {CSVRowParams} params The CSV Row Params
+ * @return {*} {CSVRowError[]} A list of CSV row errors
+ */
 export function validateSinglePeriodMatchesWithObservationDateTime(
   worksheetObservationDate: string | null,
   worksheetObservationTime: string | null,
