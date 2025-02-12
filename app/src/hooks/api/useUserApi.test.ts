@@ -58,7 +58,7 @@ describe('useUserApi', () => {
           // ... other user properties
         },
         {
-          system_user_id: 2,
+          system_user_id: 2
           // ... second user properties
         }
       ],
