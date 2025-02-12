@@ -80,8 +80,8 @@ const UserRoleSelector: React.FC<IUserRoleSelectorProps> = (props) => {
                 );
               }}>
               {roles.map((item) => (
-                <MenuItem 
-                  key={item.id} 
+                <MenuItem
+                  key={item.id}
                   value={item.name}
                   sx={{
                     display: 'flex',
@@ -97,10 +97,7 @@ const UserRoleSelector: React.FC<IUserRoleSelectorProps> = (props) => {
                       </>
                     )}
                   </Box>
-                  <Typography 
-                    variant="caption" 
-                    color="text.secondary"
-                    sx={{ mt: 0.5 }}>
+                  <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5 }}>
                     {item.description}
                   </Typography>
                 </MenuItem>

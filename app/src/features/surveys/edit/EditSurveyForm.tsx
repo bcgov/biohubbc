@@ -14,6 +14,7 @@ import SurveyPartnershipsForm, {
   SurveyPartnershipsFormYupSchema
 } from 'features/surveys/view/components/SurveyPartnershipsForm';
 import { Formik, FormikProps } from 'formik';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { ICreateSurveyRequest, IUpdateSurveyRequest } from 'interfaces/useSurveyApi.interface';
 import React, { useContext, useEffect } from 'react';
 import AgreementsForm, { AgreementsYupSchema } from '../components/agreements/AgreementsForm';
@@ -32,7 +33,6 @@ import PurposeAndMethodologyForm, {
 import SurveyUserForm, { SurveyUserJobYupSchema } from '../components/participants/SurveyUserForm';
 import { SurveySiteSelectionYupSchema } from '../components/sampling-strategy/SurveySiteSelectionForm';
 import SpeciesForm, { SpeciesYupSchema } from '../components/species/SpeciesForm';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 
 export interface IEditSurveyForm<
   T extends
@@ -83,9 +83,9 @@ const EditSurveyForm = <
 
   // Add this transformer function
   const transformSurveyJobs = (jobs: typeof codes.survey_jobs): IGetAllCodeSetsResponse['project_roles'] => {
-    return jobs.map(job => ({
+    return jobs.map((job) => ({
       ...job,
-      description: job.description 
+      description: job.description
     }));
   };
 

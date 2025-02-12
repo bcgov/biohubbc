@@ -32,7 +32,6 @@ const VantageCode = ICode.extend({ description: z.string() });
 const TypeCode = ICode.extend({ description: z.string() });
 const SiteSelectionStrategyCode = ICode.extend({ description: z.string() });
 
-
 export const IAllCodeSets = z.object({
   management_action_type: CodeSet(),
   first_nations: CodeSet(),

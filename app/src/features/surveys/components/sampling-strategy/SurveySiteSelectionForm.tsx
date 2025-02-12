@@ -65,7 +65,7 @@ const SurveySiteSelectionForm = (props: ISurveySiteSelectionFormProps) => {
   assert(codesContext.codesDataLoader.data);
 
   const siteStrategies = codesContext.codesDataLoader.data.site_selection_strategies.map((code) => {
-    return { label: code.name, value: code.name, description: code.description }
+    return { label: code.name, value: code.name, description: code.description };
   });
   const selectedSiteStrategies = siteStrategies.filter((item) => values.site_selection.strategies.includes(item.value));
 

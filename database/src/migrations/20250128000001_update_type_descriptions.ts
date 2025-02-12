@@ -42,5 +42,5 @@ UPDATE site_strategy
 }
 
 export async function down(knex: Knex): Promise<void> {
-    await knex.raw(``);
-  }
+  await knex.raw(``);
+}

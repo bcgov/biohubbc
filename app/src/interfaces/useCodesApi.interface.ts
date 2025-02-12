@@ -7,7 +7,6 @@
 export interface ICode {
   id: number;
   name: string;
-
 }
 
 /**
@@ -26,17 +25,17 @@ export interface IGetAllCodeSetsResponse {
   first_nations: CodeSet;
   agency: CodeSet;
   investment_action_category: CodeSet<{ id: number; agency_id: number; name: string }>;
-  type: CodeSet<{ id: number; name: string, description: string }>;
+  type: CodeSet<{ id: number; name: string; description: string }>;
   proprietor_type: CodeSet<{ id: number; name: string; is_first_nation: boolean }>;
   iucn_conservation_action_level_1_classification: CodeSet;
   iucn_conservation_action_level_2_subclassification: CodeSet<{ id: number; iucn1_id: number; name: string }>;
   iucn_conservation_action_level_3_subclassification: CodeSet<{ id: number; iucn2_id: number; name: string }>;
   system_roles: CodeSet;
-  project_roles: CodeSet<{ id: number; name: string, description: string }>;
+  project_roles: CodeSet<{ id: number; name: string; description: string }>;
   administrative_activity_status_type: CodeSet;
   intended_outcomes: CodeSet<{ id: number; name: string; description: string }>;
   survey_jobs: CodeSet<{ id: number; name: string; description: string }>;
-  site_selection_strategies: CodeSet<{id: number; name: string; description: string}>;
+  site_selection_strategies: CodeSet<{ id: number; name: string; description: string }>;
   survey_progress: CodeSet<{ id: number; name: string; description: string }>;
   sample_methods: CodeSet<{ id: number; name: string; description: string }>;
   method_response_metrics: CodeSet<{ id: number; name: string; description: string }>;

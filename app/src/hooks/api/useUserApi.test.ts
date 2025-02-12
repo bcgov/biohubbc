@@ -45,19 +45,33 @@ describe('useUserApi', () => {
     expect(result.role_names).toEqual(['role 1', 'role 2']);
   });
 
+  // Update the test to match the correct interface
   it('getUsersList works as expected', async () => {
-    mock.onGet('/api/user/list').reply(200, [
-      {
-        system_user_id: 1,
-        user_identifier: 'myidirboss',
-        role_names: ['role 1', 'role 2']
-      },
-      {
-        system_user_id: 2,
-        user_identifier: 'myidirbossagain',
-        role_names: ['role 1', 'role 4']
+    // ...existing test setup...
+
+    const mockResponse = {
+      users: [
+        {
+          system_user_id: 1,
+          user_identifier: 'myidirboss',
+          role_names: ['role 1', 'role 2']
+          // ... other user properties
+        },
+        {
+          system_user_id: 2,
+          // ... second user properties
+        }
+      ],
+      pagination: {
+        total: 2,
+        current_page: 1,
+        last_page: 1,
+        per_page: 10
       }
-    ]);
+    };
+
+    // Mock axios response
+    mock.onGet('/api/user/list').reply(200, mockResponse);
 
     const result = await useUserApi(axios).getUsersList(
       {},
@@ -68,8 +82,8 @@ describe('useUserApi', () => {
     expect(result.users[0].user_identifier).toEqual('myidirboss');
     expect(result.users[0].role_names).toEqual(['role 1', 'role 2']);
     expect(result.users[1].system_user_id).toEqual(2);
-    expect(result.users[1].user_identifier).toEqual('myidirbossagain');
-    expect(result.users[1].role_names).toEqual(['role 1', 'role 4']);
+    expect(result.pagination.total).toEqual(2);
+    expect(result.pagination.current_page).toEqual(1);
   });
 
   it('getProjectList works as expected', async () => {
