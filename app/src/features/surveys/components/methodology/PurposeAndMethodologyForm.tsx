@@ -2,7 +2,6 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import CustomTextField from 'components/fields/CustomTextField';
 import MultiAutocompleteField, { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteField';
-import MultiAutocompleteFieldVariableSize from 'components/fields/MultiAutocompleteFieldVariableSize';
 import { ISelectWithSubtextFieldOption } from 'components/fields/SelectWithSubtext';
 import React from 'react';
 import yup from 'utils/YupSchema';
@@ -46,7 +45,7 @@ const PurposeAndMethodologyForm: React.FC<IPurposeAndMethodologyFormProps> = (pr
       <Box component="fieldset">
         <Grid container spacing={3}>
           <Grid item xs={12}>
-            <MultiAutocompleteFieldVariableSize
+            <MultiAutocompleteField
               id={'survey_details.survey_types'}
               label={'Collected data'}
               options={props.type}
