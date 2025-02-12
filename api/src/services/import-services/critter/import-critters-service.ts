@@ -8,7 +8,6 @@ import {
   CSVConfig,
   CSVError,
   CSVHeaderConfig,
-  CSVParams,
   CSVRowState,
   CSVRowValidated
 } from '../../../utils/csv-utils/csv-config-validation.interface';
@@ -24,7 +23,6 @@ import { SurveyCritterService } from '../../survey-critter-service';
 import { getTaxonMap, TaxonMap } from '../utils/taxon';
 import {
   getCritterAliasCellValidator,
-  getCritterCollectionUnitCellSetter,
   getCritterCollectionUnitCellValidator,
   getCritterSexCellValidator,
   getWlhIDCellValidator
@@ -146,6 +144,7 @@ export class ImportCrittersService extends DBService {
       this._getCollectionUnitDynamicHeaderConfig(taxonMap).catch(() => undefined)
     ]);
 
+    // Set the static header configs
     this.utils.setAllStaticHeaderConfigs({
       // SPECIES is handled by the taxon row validator
       SPECIES: { validateCell: () => [] },
@@ -156,8 +155,10 @@ export class ImportCrittersService extends DBService {
       DESCRIPTION: { validateCell: getDescriptionCellValidator() }
     });
 
+    // Add the taxon row validator - validates the taxon / tsn and sets the TSN in the row state
     this.utils.config.rowValidators = [getTaxonRowValidator(taxonMap, this.utils, 'SPECIES')];
 
+    // Set the dynamic header config - validates the collection unit columns
     this.utils.config.dynamicHeadersConfig = dynamicHeadersConfig;
     this.utils.config.ignoreDynamicHeaders = !dynamicHeadersConfig;
 
@@ -243,7 +244,6 @@ export class ImportCrittersService extends DBService {
 
     // Get the worksheet tsns and the callback to get the critter row tsn
     const worksheetTsns = this._getWorksheetTsns(taxonMap);
-    const getCritterTsn = this._getCritterRowTsnGetter(taxonMap);
 
     // Get the measurements for all the taxon identifiers
     const measurements = await Promise.all(
@@ -267,7 +267,7 @@ export class ImportCrittersService extends DBService {
     });
 
     return {
-      validateCell: getCritterSexCellValidator(rowDictionary, getCritterTsn)
+      validateCell: getCritterSexCellValidator(rowDictionary)
     };
   }
 
@@ -281,7 +281,6 @@ export class ImportCrittersService extends DBService {
 
     // Get the worksheet tsns and the callback to get the critter row tsn
     const worksheetTsns = this._getWorksheetTsns(taxonMap);
-    const getCritterTsn = this._getCritterRowTsnGetter(taxonMap);
 
     // Get the collection units for all the tsns in the worksheet
     const collectionUnits = await Promise.all(
@@ -304,8 +303,7 @@ export class ImportCrittersService extends DBService {
     });
 
     return {
-      validateCell: getCritterCollectionUnitCellValidator(rowDictionary, getCritterTsn),
-      setCellValue: getCritterCollectionUnitCellSetter(rowDictionary, getCritterTsn)
+      validateCell: getCritterCollectionUnitCellValidator(rowDictionary)
     };
   }
 
@@ -330,18 +328,5 @@ export class ImportCrittersService extends DBService {
     }
 
     return [...new Set(worksheetTsns)];
-  }
-
-  _getCritterRowTsnGetter(taxonMap: TaxonMap): (params: CSVParams) => number {
-    return (params: CSVParams) => {
-      const taxonIdentifier = this.utils.getCellValue('SPECIES', params.row);
-      const taxon = taxonMap.get(String(taxonIdentifier));
-
-      if (taxon) {
-        return taxon.tsn;
-      }
-
-      return -1;
-    };
   }
 }

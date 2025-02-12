@@ -1,10 +1,10 @@
 import { z } from 'zod';
 import { CSVConfigUtils } from '../../../../utils/csv-utils/csv-config-utils';
 import {
-  CSVCellSetter,
   CSVCellValidator,
   CSVError,
-  CSVParams
+  CSVParams,
+  CSVRowState
 } from '../../../../utils/csv-utils/csv-config-validation.interface';
 import { updateCSVRowState, validateZodCell } from '../../../../utils/csv-utils/csv-header-configs';
 import { NestedRecord } from '../../../../utils/nested-record';
@@ -63,19 +63,22 @@ export const getCritterAliasCellValidator = (
  *  2. The cell value must be a valid collection unit for the collection category
  *
  * @param {NestedRecord<string>} rowDictionary The row dictionary.
- * @param {(params: CSVParams) => number} getRowTsn The callback to get the TSN from the row/params
  * @returns {*} {CSVCellValidator} The validate cell callback
  */
-export const getCritterCollectionUnitCellValidator = (
-  rowDictionary: NestedRecord<string>,
-  getRowTsn: (params: CSVParams) => number
-): CSVCellValidator => {
+export const getCritterCollectionUnitCellValidator = (rowDictionary: NestedRecord<string>): CSVCellValidator => {
   return (params: CSVParams) => {
     if (params.cell === undefined) {
       return [];
     }
 
-    const rowTsn = getRowTsn(params);
+    // Get the ITIS TSN from the row state - set by the taxon row validator
+    const rowTsn: number | null = params.row[CSVRowState]?.itis_tsn ?? null;
+
+    // Let the taxon row validator handle invalid TSNs (runs before this validator)
+    if (!rowTsn) {
+      return [];
+    }
+
     const collectionUnitCellValue = String(params.cell); // Cell value
     const collectionCategory = params.header; // Current header ie: collection category
 
@@ -117,32 +120,10 @@ export const getCritterCollectionUnitCellValidator = (
       ];
     }
 
+    // Set the cell value to the collection unit id
+    params.mutateCell = rowDictionaryUnit;
+
     return [];
-  };
-};
-
-/**
- * Get the collection unit cell setter.
- *
- * @param {NestedRecord<string>} rowDictionary The row dictionary.
- * @param {(params: CSVParams) => number} getRowTsn The callback to get the TSN from the row/params
- * @returns {*} {CSVCellSetter} The set cell value callback
- */
-export const getCritterCollectionUnitCellSetter = (
-  rowDictionary: NestedRecord<string>,
-  getRowTsn: (params: CSVParams) => number
-  //configUtils: CSVConfigUtils<CritterCSVStaticHeader>
-): CSVCellSetter => {
-  return (params: CSVParams) => {
-    if (params.cell === undefined) {
-      return undefined;
-    }
-
-    const rowTsn = getRowTsn(params);
-    const collectionCategory = params.header;
-    const collectionUnitCellValue = String(params.cell);
-
-    return rowDictionary.get(rowTsn, collectionCategory, collectionUnitCellValue);
   };
 };
 
@@ -154,19 +135,21 @@ export const getCritterCollectionUnitCellSetter = (
  *  2. The cell value must be a valid sex option for the TSN or undefined
  *
  * @param {NestedRecord<string>} rowDictionary The row dictionary.
- * @param {(params: CSVParams) => number} getRowTsn The callback to get the TSN from the row/params
  * @returns {*} {CSVCellValidator} The validate cell callback
  */
-export const getCritterSexCellValidator = (
-  rowDictionary: NestedRecord<string>,
-  getRowTsn: (params: CSVParams) => number
-): CSVCellValidator => {
+export const getCritterSexCellValidator = (rowDictionary: NestedRecord<string>): CSVCellValidator => {
   return (params: CSVParams) => {
     if (params.cell === undefined) {
       return [];
     }
 
-    const rowTsn = getRowTsn(params);
+    // Get the ITIS TSN from the row state - set by the taxon row validator
+    const rowTsn: number | null = params.row[CSVRowState]?.itis_tsn ?? null;
+
+    // Let the taxon row validator handle invalid TSNs (runs before this validator)
+    if (!rowTsn) {
+      return [];
+    }
 
     const sexCellValue = String(params.cell); // Cell value
 
