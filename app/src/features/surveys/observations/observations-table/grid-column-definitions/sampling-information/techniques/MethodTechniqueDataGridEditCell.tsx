@@ -90,7 +90,7 @@ export const MethodTechniqueDataGridEditCell = <DataGridType extends GridValidRo
           return;
         }
 
-        const options: SamplingInformationCachedTechnique[] = response.techniques.map((item) => ({
+        const options = response.techniques.map((item) => ({
           method_technique_id: item.method_technique_id,
           survey_sample_site_id: surveySampleSiteId,
           method_response_metric_id: item.method_response_metric_id,

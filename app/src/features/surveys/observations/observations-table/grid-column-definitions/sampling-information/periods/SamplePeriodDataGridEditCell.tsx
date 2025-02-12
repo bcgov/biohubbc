@@ -54,7 +54,10 @@ export const SamplePeriodDataGridEditCell = <DataGridType extends GridValidRowMo
   );
   // The options for the autocomplete
   const [options, setOptions] = useState<SamplingInformationCachedPeriod[]>(
-    samplingInformationCache.getPeriodsForRow(dataGridProps.row.method_technique_id)
+    samplingInformationCache.getPeriodsForRow(
+      dataGridProps.row.survey_sample_site_id,
+      dataGridProps.row.method_technique_id
+    )
   );
   // The survey sample site id and method technique id for the current set of options
   // These are used to detect if the site or technique value in the data grid state has changed, and therefore the

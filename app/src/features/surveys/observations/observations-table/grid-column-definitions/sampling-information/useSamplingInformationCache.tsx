@@ -59,15 +59,22 @@ export type SamplingInformationCache = {
   cachedSamplingInformationRef: MutableRefObject<SamplingInformationCacheRef | undefined>;
   initCachedSamplingInformationRef: (params: { periods?: GetSamplingPeriod[] }) => void;
   updateCachedSamplingSites: (sites: SamplingInformationCachedSite[]) => void;
-  updateCachedMethodTechniques: (techniques: SamplingInformationCachedTechnique[]) => void;
-  updateCachedSamplingPeriods: (periods: SamplingInformationCachedPeriod[]) => void;
+  updateCachedMethodTechniques: (
+    techniques: (SamplingInformationCachedTechnique & { survey_sample_site_id: number | null })[]
+  ) => void;
+  updateCachedSamplingPeriods: (
+    periods: (SamplingInformationCachedPeriod & {
+      survey_sample_site_id: number | null;
+      method_technique_id: number | null;
+    })[]
+  ) => void;
   getCurrentSite: (surveySampleSiteId: number) => SamplingInformationCachedSite | null;
   getCurrentTechnique: (methodTechniqueId: number) => SamplingInformationCachedTechnique | null;
   getCurrentPeriod: (surveySamplePeriodId: number) => SamplingInformationCachedPeriod | null;
-  getTechniquesForRow: (surveySampleSiteId?: number | null) => SamplingInformationCachedTechnique[];
+  getTechniquesForRow: (surveySampleSiteId: number | null) => SamplingInformationCachedTechnique[];
   getPeriodsForRow: (
-    surveySampleSiteId?: number | null,
-    methodTechniqueId?: number | null
+    surveySampleSiteId: number | null,
+    methodTechniqueId: number | null
   ) => SamplingInformationCachedPeriod[];
 };
 
@@ -193,11 +200,11 @@ export const useSamplingInformationCache = (): SamplingInformationCache => {
   /**
    * Update the cache with new method techniques. Will ignore techniques that are already in the cache.
    *
-   * @param {SamplingInformationCachedTechnique[]} techniques
+   * @param {((SamplingInformationCachedTechnique & { survey_sample_site_id: number | null })[])} techniques
    * @return {*}
    */
   const updateCachedMethodTechniques = (
-    techniques: (SamplingInformationCachedTechnique & { survey_sample_site_id?: number })[]
+    techniques: (SamplingInformationCachedTechnique & { survey_sample_site_id: number | null })[]
   ) => {
     if (!cachedSamplingInformationRef.current) {
       return;
@@ -209,7 +216,9 @@ export const useSamplingInformationCache = (): SamplingInformationCache => {
     for (const technique of techniques) {
       if (!techniquesMap[technique.method_technique_id]) {
         // If the technique is not already in the map, add it
-        techniquesMap[technique.method_technique_id] = technique;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { survey_sample_site_id, ...rest } = technique;
+        techniquesMap[technique.method_technique_id] = rest;
       }
 
       if (technique.survey_sample_site_id) {
@@ -233,11 +242,17 @@ export const useSamplingInformationCache = (): SamplingInformationCache => {
   /**
    * Update the cache with new sampling periods. Will ignore periods that are already in the cache.
    *
-   * @param {SamplingInformationCachedPeriod[]} periods
+   * @param {((SamplingInformationCachedPeriod & {
+   *       survey_sample_site_id: number | null;
+   *       method_technique_id: number | null;
+   *     })[])} periods
    * @return {*}
    */
   const updateCachedSamplingPeriods = (
-    periods: (SamplingInformationCachedPeriod & { survey_sample_site_id?: number; method_technique_id?: number })[]
+    periods: (SamplingInformationCachedPeriod & {
+      survey_sample_site_id: number | null;
+      method_technique_id: number | null;
+    })[]
   ) => {
     if (!cachedSamplingInformationRef.current) {
       return;
@@ -249,7 +264,9 @@ export const useSamplingInformationCache = (): SamplingInformationCache => {
     for (const period of periods) {
       if (!periodsMap[period.survey_sample_period_id]) {
         // If the period is not already in the map, add it
-        periodsMap[period.survey_sample_period_id] = period;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { survey_sample_site_id, method_technique_id, ...rest } = period;
+        periodsMap[period.survey_sample_period_id] = rest;
       }
 
       if (period.survey_sample_site_id && period.method_technique_id) {
@@ -273,51 +290,49 @@ export const useSamplingInformationCache = (): SamplingInformationCache => {
   /**
    * Return the site object for the provided site id.
    *
-   * @param {(number | null)} [siteId]
+   * @param {(number | null)} surveySampleSiteId
    * @return {*}  {(SamplingInformationCachedSite | null)}
    */
-  const findSite = (siteId?: number | null): SamplingInformationCachedSite | null => {
-    if (!siteId) {
+  const findSite = (surveySampleSiteId: number | null): SamplingInformationCachedSite | null => {
+    if (!surveySampleSiteId) {
       return null;
     }
 
-    return cachedSamplingInformationRef.current?.sites[siteId] ?? null;
+    return cachedSamplingInformationRef.current?.sites[surveySampleSiteId] ?? null;
   };
 
   /**
    * Return the technique object for the provided technique id.
    *
-   * @param {(number | null)} [techniqueId]
+   * @param {(number | null)} techniqueId
    * @return {*}  {(SamplingInformationCachedTechnique | null)}
    */
-  const findTechnique = (techniqueId?: number | null): SamplingInformationCachedTechnique | null => {
-    if (!techniqueId) {
+  const findTechnique = (methodTechniqueId: number | null): SamplingInformationCachedTechnique | null => {
+    if (!methodTechniqueId) {
       return null;
     }
 
-    return cachedSamplingInformationRef.current?.techniques[techniqueId] ?? null;
+    return cachedSamplingInformationRef.current?.techniques[methodTechniqueId] ?? null;
   };
 
   /**
    * Return the period object for the provided period id.
    *
-   * @param {(number | null)} [periodId]
+   * @param {(number | null)} surveySamplePeriodId
    * @return {*}  {(SamplingInformationCachedPeriod | null)}
    */
-  const findPeriod = (periodId?: number | null): SamplingInformationCachedPeriod | null => {
-    if (!periodId) {
+  const findPeriod = (surveySamplePeriodId: number | null): SamplingInformationCachedPeriod | null => {
+    if (!surveySamplePeriodId) {
       return null;
     }
 
-    return cachedSamplingInformationRef.current?.periods[periodId] ?? null;
+    return cachedSamplingInformationRef.current?.periods[surveySamplePeriodId] ?? null;
   };
 
   /**
    * Get the currently selected site for the row.
    *
-   * @template DataGridType
-   * @param {GridRenderCellParams<DataGridType>} dataGridProps
-   * @param {(MutableRefObject<SamplingInformationCacheRef | undefined>)} cachedSamplingInformationRef
+   * @param {number} surveySampleSiteId
    * @return {*}  {(SamplingInformationCachedSite | null)}
    */
   const getCurrentSite = (surveySampleSiteId: number): SamplingInformationCachedSite | null => {
@@ -347,10 +362,10 @@ export const useSamplingInformationCache = (): SamplingInformationCache => {
   /**
    * Get all valid techniques for the currently selected site.
    *
-   * @param {(number | null)} [surveySampleSiteId]
+   * @param {(number | null)} surveySampleSiteId
    * @return {*}  {SamplingInformationCachedTechnique[]}
    */
-  const getTechniquesForRow = (surveySampleSiteId?: number | null): SamplingInformationCachedTechnique[] => {
+  const getTechniquesForRow = (surveySampleSiteId: number | null): SamplingInformationCachedTechnique[] => {
     if (!surveySampleSiteId) {
       return [];
     }
@@ -363,20 +378,20 @@ export const useSamplingInformationCache = (): SamplingInformationCache => {
 
     // Get all techniques for the matching technique ids
     return methodTechniqueIds
-      .map((techniqueId) => cachedSamplingInformationRef.current?.techniques[techniqueId])
+      .map((methodTechniqueId) => cachedSamplingInformationRef.current?.techniques[methodTechniqueId])
       .filter((value): value is SamplingInformationCachedTechnique => value !== undefined);
   };
 
   /**
    * Get all valid periods for the currently selected site and technique.
    *
-   * @param {(number | null)} [surveySampleSiteId]
-   * @param {(number | null)} [methodTechniqueId]
+   * @param {(number | null)} surveySampleSiteId
+   * @param {(number | null)} methodTechniqueId
    * @return {*}  {SamplingInformationCachedPeriod[]}
    */
   const getPeriodsForRow = (
-    surveySampleSiteId?: number | null,
-    methodTechniqueId?: number | null
+    surveySampleSiteId: number | null,
+    methodTechniqueId: number | null
   ): SamplingInformationCachedPeriod[] => {
     if (!surveySampleSiteId || !methodTechniqueId) {
       return [];
@@ -398,21 +413,21 @@ export const useSamplingInformationCache = (): SamplingInformationCache => {
   /**
    * Get a key for the site technique index.
    *
-   * @param {(number | null)} [surveySampleSiteId]
+   * @param {(number | null)} surveySampleSiteId
    * @return {*}  {IndexKey}
    */
-  const _getSiteTechniqueKey = (surveySampleSiteId?: number | null): IndexKey => {
+  const _getSiteTechniqueKey = (surveySampleSiteId: number | null): IndexKey => {
     return `${surveySampleSiteId ?? null}`;
   };
 
   /**
    * Get a key for the technique period index.
    *
-   * @param {(number | null)} [surveySampleSiteId]
-   * @param {(number | null)} [methodTechniqueId]
+   * @param {(number | null)} surveySampleSiteId
+   * @param {(number | null)} methodTechniqueId
    * @return {*}  {IndexKey}
    */
-  const _getTechniquePeriodKey = (surveySampleSiteId?: number | null, methodTechniqueId?: number | null): IndexKey => {
+  const _getTechniquePeriodKey = (surveySampleSiteId: number | null, methodTechniqueId: number | null): IndexKey => {
     return `${surveySampleSiteId ?? null}-${methodTechniqueId ?? null}`;
   };
 
