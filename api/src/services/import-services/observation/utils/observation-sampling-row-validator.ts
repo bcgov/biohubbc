@@ -122,7 +122,7 @@ export function getObservationSamplingInformationRowValidator(
 
     // Validate the observation date, latitude, and longitude exist when sampling information is NOT provided
     if (!worksheetHasSamplingInformation) {
-      const errors = validateObservationDateLatitudeLongitudeExist(
+      const errors = validateWorksheetHasLatitudeLongitudeAndDate(
         worksheetObservationDate,
         worksheetLatitude,
         worksheetLongitude,
@@ -216,7 +216,7 @@ export function getObservationSamplingInformationRowValidator(
  * @param {CSVRowParams} params The CSV Row Params
  * @return {*} {CSVRowError[]} A list of CSV row errors
  */
-export function validateObservationDateLatitudeLongitudeExist(
+export function validateWorksheetHasLatitudeLongitudeAndDate(
   worksheetObservationDate: string | null,
   worksheetLatitude: string | null,
   worksheetLongitude: string | null,
