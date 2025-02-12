@@ -148,7 +148,7 @@ export const useSamplingInformationCache = (): SamplingInformationCache => {
           label: getDateTimeLabel(period.start_date, period.start_time, period.end_date, period.end_time)
         };
 
-        if (period.survey_sample_period_id && period.method_technique_id) {
+        if (period.survey_sample_site_id && period.method_technique_id) {
           // If the period has a parent technique, ensure it is indexed
           periodIndex[_getTechniquePeriodKey(period.survey_sample_site_id, period.method_technique_id)] = (
             periodIndex[_getTechniquePeriodKey(period.survey_sample_site_id, period.method_technique_id)] ??
@@ -416,8 +416,8 @@ export const useSamplingInformationCache = (): SamplingInformationCache => {
    * @param {(number | null)} surveySampleSiteId
    * @return {*}  {IndexKey}
    */
-  const _getSiteTechniqueKey = (surveySampleSiteId: number | null): IndexKey => {
-    return `${surveySampleSiteId ?? null}`;
+  const _getSiteTechniqueKey = (surveySampleSiteId: number): IndexKey => {
+    return `${surveySampleSiteId}`;
   };
 
   /**
@@ -427,8 +427,8 @@ export const useSamplingInformationCache = (): SamplingInformationCache => {
    * @param {(number | null)} methodTechniqueId
    * @return {*}  {IndexKey}
    */
-  const _getTechniquePeriodKey = (surveySampleSiteId: number | null, methodTechniqueId: number | null): IndexKey => {
-    return `${surveySampleSiteId ?? null}-${methodTechniqueId ?? null}`;
+  const _getTechniquePeriodKey = (surveySampleSiteId: number, methodTechniqueId: number): IndexKey => {
+    return `${surveySampleSiteId}-${methodTechniqueId}`;
   };
 
   /**
