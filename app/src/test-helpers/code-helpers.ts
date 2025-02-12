@@ -40,8 +40,8 @@ export const codes: IGetAllCodeSetsResponse = {
     { id: 2, name: 'Intended Outcome 2', description: 'Description 2' }
   ],
   survey_jobs: [
-    { id: 1, name: 'Survey Job 1' },
-    { id: 2, name: 'Survey Job 2' }
+    { id: 1, name: 'Survey Job 1', description: 'Description 1' },
+    { id: 2, name: 'Survey Job 2', description: 'Description 2' }
   ],
   site_selection_strategies: [
     { id: 1, name: 'Strategy 1', description: 'Description 1' },

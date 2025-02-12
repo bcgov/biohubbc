@@ -85,7 +85,7 @@ const EditSurveyForm = <
   const transformSurveyJobs = (jobs: typeof codes.survey_jobs): IGetAllCodeSetsResponse['project_roles'] => {
     return jobs.map(job => ({
       ...job,
-      description: job.name // or provide a meaningful description if available
+      description: job.description 
     }));
   };
 

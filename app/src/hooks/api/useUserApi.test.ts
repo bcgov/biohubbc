@@ -64,12 +64,12 @@ describe('useUserApi', () => {
       { page: 0, limit: 10, sort: 'system_user_id', order: 'desc' }
     );
 
-    expect(result[0].system_user_id).toEqual(1);
-    expect(result[0].user_identifier).toEqual('myidirboss');
-    expect(result[0].role_names).toEqual(['role 1', 'role 2']);
-    expect(result[1].system_user_id).toEqual(2);
-    expect(result[1].user_identifier).toEqual('myidirbossagain');
-    expect(result[1].role_names).toEqual(['role 1', 'role 4']);
+    expect(result.users[0].system_user_id).toEqual(1);
+    expect(result.users[0].user_identifier).toEqual('myidirboss');
+    expect(result.users[0].role_names).toEqual(['role 1', 'role 2']);
+    expect(result.users[1].system_user_id).toEqual(2);
+    expect(result.users[1].user_identifier).toEqual('myidirbossagain');
+    expect(result.users[1].role_names).toEqual(['role 1', 'role 4']);
   });
 
   it('getProjectList works as expected', async () => {

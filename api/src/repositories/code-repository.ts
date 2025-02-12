@@ -346,7 +346,8 @@ export class CodeRepository extends BaseRepository {
     const sqlStatement = SQL`
       SELECT
         survey_job_id as id,
-        name
+        name,
+        description
       FROM survey_job
       WHERE record_end_date is null;
     `;

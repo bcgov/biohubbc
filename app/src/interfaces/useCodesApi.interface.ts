@@ -35,7 +35,7 @@ export interface IGetAllCodeSetsResponse {
   project_roles: CodeSet<{ id: number; name: string, description: string }>;
   administrative_activity_status_type: CodeSet;
   intended_outcomes: CodeSet<{ id: number; name: string; description: string }>;
-  survey_jobs: CodeSet;
+  survey_jobs: CodeSet<{ id: number; name: string; description: string }>;
   site_selection_strategies: CodeSet<{id: number; name: string; description: string}>;
   survey_progress: CodeSet<{ id: number; name: string; description: string }>;
   sample_methods: CodeSet<{ id: number; name: string; description: string }>;
