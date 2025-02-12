@@ -388,7 +388,25 @@ export async function up(knex: Knex): Promise<void> {
 
     CREATE TRIGGER audit_survey_habitat_feature_qualitative BEFORE INSERT OR UPDATE OR DELETE ON biohub.survey_habitat_feature_qualitative FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
     CREATE TRIGGER journal_survey_habitat_feature_qualitative AFTER INSERT OR UPDATE OR DELETE ON biohub.survey_habitat_feature_qualitative FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
-  `);
+  
+
+    ----------------------------------------------------------------------------------------
+    -- Insert initial habitat feature records
+    ----------------------------------------------------------------------------------------
+
+    INSERT INTO 
+      habitat_feature (name, description)
+    VALUES 
+      ('Nest', 'A structure for holding eggs or offspring'),
+      ('Burrow', 'An excavated hole that descends below ground for denning, sheltering, or foraging'),
+      ('Den', 'An excavated cavity that descends below ground or under a tree root system for denning'),
+      ('Mineral lick', 'A naturally occurring mineral deposit with evidence of use by species'),
+      ('Wallow', 'An area of mud or shallow water that species roll or relax in, often leaving a depression in the ground'),
+      ('Hibernaculum', 'A cavity or structure that species use to hibernate'),
+      ('Roost', 'A structure where species aggregate for rest or sleep'),
+      ('Hot spring', 'A source of water that is heated geothermally and comes to the surface, as a seep or forming a pool');
+  
+    `);
 }
 
 export async function down(knex: Knex): Promise<void> {
