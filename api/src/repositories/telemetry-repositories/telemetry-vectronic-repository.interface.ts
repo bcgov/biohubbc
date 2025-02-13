@@ -34,7 +34,7 @@ export type VectronicTask = z.infer<typeof VectronicTask>;
 export interface IKeyxData {
   id: string;
   key: string;
-  comID: number;
+  comID: string;
   comType: string;
   collarType: number;
 }

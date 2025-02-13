@@ -109,7 +109,7 @@ export interface ParsedKeyxXMLData {
       comIDList: {
         comID: {
           '@_comType': string;
-          '#text': number;
+          '#text': string;
         };
       };
       key: string;
