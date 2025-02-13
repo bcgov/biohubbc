@@ -1712,12 +1712,12 @@ export class AttachmentRepository extends BaseRepository {
         update_date,
         create_date,
         file_size
-      from
+      FROM
         survey_telemetry_credential_attachment
-      where
+      WHERE
         survey_id = ${surveyId}
-      and
-        file_name = ${fileName};
+      AND
+        file_name ILIKE ${fileName};
     `;
 
     const response = await this.connection.sql(sqlStatement);

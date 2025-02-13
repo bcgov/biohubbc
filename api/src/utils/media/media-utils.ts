@@ -8,7 +8,7 @@ import {
   TELEMETRY_CREDENTIAL_ATTACHMENT_VECTRONIC_XMLTAGS
 } from '../../constants/attachments';
 import {
-  cfgToJSON,
+  convertLotekCredentialFileToJson,
   findVectronicExpectedTags,
   IMultipleData,
   mapKeyxData,
@@ -224,7 +224,7 @@ export const checkFileForKeyx = async (
   telemetryVectronicService: TelemetryVectronicService
 ): Promise<IValidationData> => {
   // File is a KeyX file if it ends in '.keyx'
-  if (file.originalname.endsWith('.keyx')) {
+  if (file.originalname.toLowerCase().endsWith('.keyx')) {
     const xmlString = file.buffer.toString();
 
     // Validate file for properly formed XML
@@ -282,7 +282,7 @@ export const checkFileForKeyx = async (
 
   return {
     type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.UNKNOWN,
-    error: 'File type is not a .keyx'
+    error: TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING.FILE_NOT_KEYX
   };
 };
 
@@ -294,7 +294,7 @@ export const checkFileForKeyx = async (
  */
 export const checkFileForCfg = (file: Express.Multer.File): IValidationData => {
   // File is a Cfg file if it ends in '.cfg'
-  if (file?.originalname.endsWith('.cfg')) {
+  if (file?.originalname.toLowerCase().endsWith('.cfg')) {
     const cfgString = file.buffer.toString();
     const notValidCfg = validateCfgFormat(cfgString);
 
@@ -309,14 +309,14 @@ export const checkFileForCfg = (file: Express.Multer.File): IValidationData => {
       keyData: [
         {
           fileName: file.originalname,
-          keysData: cfgToJSON(cfgString)
+          keysData: convertLotekCredentialFileToJson(cfgString)
         }
       ]
     };
   }
   return {
     type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.UNKNOWN,
-    error: 'File type is not a .Cfg'
+    error: TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING.FILE_NOT_CFG
   };
 };
 
@@ -344,7 +344,7 @@ const processCfgFilesArray = (dataArray: MediaFile[]): IMultipleData[] => {
 
     resultJSON.push({
       fileName: data.fileName,
-      keysData: cfgToJSON(cfgFileString)
+      keysData: convertLotekCredentialFileToJson(cfgFileString)
     });
 
     return false;
@@ -434,8 +434,15 @@ export const checkFileForZip = async (
   file: Express.Multer.File,
   telemetryVectronicService: TelemetryVectronicService
 ): Promise<IValidationData> => {
-  const mimeType = mime.getType(file.originalname) ?? '';
-  if (!isZipMimetype(mimeType)) {
+  if (!file?.originalname.toLowerCase().endsWith('.zip')) {
+    // File extension is not a zip
+    return {
+      type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.UNKNOWN,
+      error: TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING.INVALID_ZIP_CONTENT
+    };
+  }
+
+  if (!isZipMimetype(file.mimetype)) {
     // File is a zip file with invalid mime type
     return {
       type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.UNKNOWN,

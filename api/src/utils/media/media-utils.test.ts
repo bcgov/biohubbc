@@ -4,7 +4,12 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE } from '../../constants/attachments';
+import {
+  TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING,
+  TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE
+} from '../../constants/attachments';
+import { TelemetryVectronicService } from '../../services/telemetry-services/telemetry-vectronic-service';
+import { getMockDBConnection } from '../../__mocks__/db';
 import { ArchiveFile, MediaFile } from './media-file';
 import * as media_utils from './media-utils';
 
@@ -213,34 +218,9 @@ describe('parseS3File', () => {
   });
 });
 
-describe('isValidTelementryCredentialFile', () => {
-  it('should return true if the file extension is .keyx', () => {
-    const validKeyxFile = {
-      originalname: 'test.keyx',
-      mimetype: 'application/octet-stream',
-      buffer: Buffer.alloc(0)
-    } as unknown as Express.Multer.File;
-
-    expect(media_utils.checkFileForKeyx(validKeyxFile)).to.eql({
-      type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.KEYX
-    });
-  });
-
-  it('should return false if the file is not a .keyx or zip mimetype', () => {
-    const invalidFile = {
-      originalname: 'test.txt',
-      mimetype: 'text/plain',
-      buffer: Buffer.alloc(0)
-    } as unknown as Express.Multer.File;
-
-    const multerFile = { ...invalidFile, buffer: Buffer.alloc(0) };
-    expect(media_utils.checkFileForKeyx(multerFile)).to.eql({
-      type: 'unknown',
-      error: 'File is neither a .keyx file, nor an archive containing only .keyx files'
-    });
-  });
-
-  it('should return false if the file is an empty zip file', () => {
+describe('checkFileForZip', () => {
+  it('should return error if the file is an empty zip file', async () => {
+    const service = new TelemetryVectronicService(getMockDBConnection());
     const zipFile = {
       originalname: 'test.zip',
       mimetype: 'application/zip',
@@ -249,13 +229,33 @@ describe('isValidTelementryCredentialFile', () => {
 
     const emptyZipFile = new AdmZip();
     const multerFile = { ...zipFile, buffer: emptyZipFile.toBuffer() };
-    expect(media_utils.checkFileForKeyx(multerFile)).to.eql({
-      type: 'unknown',
-      error: 'File is an archive that contains no content'
+
+    expect(await media_utils.checkFileForZip(multerFile, service)).to.eql({
+      type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.UNKNOWN,
+      error: TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING.ARCHIVE_WITH_NO_FILES
     });
   });
 
-  it('should return false if the zip file contains any non .keyx files', () => {
+  it('should return error if the zip file has invalid mimetype', async () => {
+    const service = new TelemetryVectronicService(getMockDBConnection());
+    const zipFile = {
+      originalname: 'test.zip',
+      mimetype: 'application/x-7z-compressed',
+      buffer: Buffer.alloc(0)
+    } as unknown as Express.Multer.File;
+
+    const invalidZipFile = new AdmZip();
+    invalidZipFile.addFile('test.keyx', Buffer.alloc(0));
+    const multerFile = { ...zipFile, buffer: invalidZipFile.toBuffer() };
+
+    expect(await media_utils.checkFileForZip(multerFile, service)).to.eql({
+      type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.UNKNOWN,
+      error: 'File is a zip file with invalid mime type'
+    });
+  });
+
+  it('should return error if the zip file contains any non .keyx or .cfg files', async () => {
+    const service = new TelemetryVectronicService(getMockDBConnection());
     const zipFile = {
       originalname: 'test.zip',
       mimetype: 'application/zip',
@@ -265,13 +265,15 @@ describe('isValidTelementryCredentialFile', () => {
     const invalidZipFile = new AdmZip();
     invalidZipFile.addFile('test.txt', Buffer.alloc(0));
     const multerFile = { ...zipFile, buffer: invalidZipFile.toBuffer() };
-    expect(media_utils.checkFileForKeyx(multerFile)).to.eql({
-      type: 'unknown',
-      error: 'File is an archive that contains non .keyx files'
+
+    expect(await media_utils.checkFileForZip(multerFile, service)).to.eql({
+      type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.UNKNOWN,
+      error: TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING.INVALID_ZIP_CONTENT
     });
   });
 
-  it('should return true if the zip file contains only .keyx files', () => {
+  it('should return error if the zip file contains only .keyx files with invalid XML', async () => {
+    const service = new TelemetryVectronicService(getMockDBConnection());
     const zipFile = {
       originalname: 'test.zip',
       mimetype: 'application/zip',
@@ -281,53 +283,14 @@ describe('isValidTelementryCredentialFile', () => {
     const validZipFile = new AdmZip();
     validZipFile.addFile('test.keyx', Buffer.alloc(0));
     const multerFile = { ...zipFile, buffer: validZipFile.toBuffer() };
-    expect(media_utils.checkFileForKeyx(multerFile)).to.eql({
-      type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.KEYX
+    expect(await media_utils.checkFileForZip(multerFile, service)).to.eql({
+      type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.KEYX,
+      error: 'Invalid key file in ZIP: test.keyx, InvalidXml, Start tag expected.'
     });
   });
 
-  it('should return true if the file extension is .cfg', () => {
-    const validCfgFile = {
-      originalname: 'test.cfg',
-      mimetype: 'application/octet-stream',
-      buffer: Buffer.alloc(0)
-    } as unknown as Express.Multer.File;
-
-    expect(media_utils.checkFileForCfg(validCfgFile)).to.eql({
-      type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.CFG
-    });
-  });
-
-  it('should return false if the file is not a .cfg or zip mimetype', () => {
-    const invalidFile = {
-      originalname: 'test.txt',
-      mimetype: 'text/plain',
-      buffer: Buffer.alloc(0)
-    } as unknown as Express.Multer.File;
-
-    const multerFile = { ...invalidFile, buffer: Buffer.alloc(0) };
-    expect(media_utils.checkFileForCfg(multerFile)).to.eql({
-      type: 'unknown',
-      error: 'File is neither a .cfg file, nor an archive containing only .cfg files'
-    });
-  });
-
-  it('should return false if the file is an empty zip file', () => {
-    const zipFile = {
-      originalname: 'test.zip',
-      mimetype: 'application/zip',
-      buffer: Buffer.alloc(0)
-    } as unknown as Express.Multer.File;
-
-    const emptyZipFile = new AdmZip();
-    const multerFile = { ...zipFile, buffer: emptyZipFile.toBuffer() };
-    expect(media_utils.checkFileForCfg(multerFile)).to.eql({
-      type: 'unknown',
-      error: 'File is an archive that contains no content'
-    });
-  });
-
-  it('should return false if the zip file contains any non .cfg files', () => {
+  it('should return error if the zip file contains only .keyx files with valid XML but bad tags', async () => {
+    const service = new TelemetryVectronicService(getMockDBConnection());
     const zipFile = {
       originalname: 'test.zip',
       mimetype: 'application/zip',
@@ -335,15 +298,97 @@ describe('isValidTelementryCredentialFile', () => {
     } as unknown as Express.Multer.File;
 
     const invalidZipFile = new AdmZip();
-    invalidZipFile.addFile('test.txt', Buffer.alloc(0));
+    invalidZipFile.addFile('test.keyx', Buffer.from('<data><test try="1"/></data>', 'utf-8'));
     const multerFile = { ...zipFile, buffer: invalidZipFile.toBuffer() };
-    expect(media_utils.checkFileForCfg(multerFile)).to.eql({
-      type: 'unknown',
-      error: 'File is an archive that contains non .cfg files'
+    expect(await media_utils.checkFileForZip(multerFile, service)).to.eql({
+      type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.KEYX,
+      error: 'Invalid key file in ZIP: test.keyx, Missing one or more required tags'
     });
   });
 
-  it('should return true if the zip file contains only .cfg files', () => {
+  it('should return error if the zip file contains only .cfg files with invalid key format', async () => {
+    const service = new TelemetryVectronicService(getMockDBConnection());
+    const zipFile = {
+      originalname: 'test.zip',
+      mimetype: 'application/zip',
+      buffer: Buffer.alloc(0)
+    } as unknown as Express.Multer.File;
+
+    const invalidZipFile = new AdmZip();
+    invalidZipFile.addFile(
+      'test.cfg',
+      Buffer.from('[888888]\nKey=uuuuuuuuuuuuc~[]hhhhhhhhhhhh^gg@frE\nIridium IMEI=111111111111111', 'utf-8')
+    );
+    const multerFile = { ...zipFile, buffer: invalidZipFile.toBuffer() };
+    expect(await media_utils.checkFileForZip(multerFile, service)).to.eql({
+      type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.CFG,
+      error: "Invalid key file in ZIP: test.cfg, Invalid 'Key' in key 1. Expected 64 characters."
+    });
+  });
+
+  it('should return error if the zip file contains only .cfg files with invalid IMEI format', async () => {
+    const service = new TelemetryVectronicService(getMockDBConnection());
+    const zipFile = {
+      originalname: 'test.zip',
+      mimetype: 'application/zip',
+      buffer: Buffer.alloc(0)
+    } as unknown as Express.Multer.File;
+
+    const invalidZipFile = new AdmZip();
+    invalidZipFile.addFile(
+      'test.cfg',
+      Buffer.from(
+        '[888888]\nKey=d`qwertydisosososososohehuuuuuuuuuuuuuuuuc~[]hhhhhhhhhhhh^gg@frE\nIridium IMEI=abc',
+        'utf-8'
+      )
+    );
+    const multerFile = { ...zipFile, buffer: invalidZipFile.toBuffer() };
+    expect(await media_utils.checkFileForZip(multerFile, service)).to.eql({
+      type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.CFG,
+      error: "Invalid key file in ZIP: test.cfg, Invalid 'Iridium IMEI' length in key 1. Expected a 15-digit number."
+    });
+  });
+
+  it('should return error if the Zip file contains a mix cfg and keyx files', async () => {
+    const service = new TelemetryVectronicService(getMockDBConnection());
+    const zipFile = {
+      originalname: 'test.zip',
+      mimetype: 'application/zip',
+      buffer: Buffer.alloc(0)
+    } as unknown as Express.Multer.File;
+
+    const mixedZipFile = new AdmZip();
+    mixedZipFile.addFile('test.keyx', Buffer.alloc(0));
+    mixedZipFile.addFile('test.cfg', Buffer.alloc(0));
+    const multerFile = { ...zipFile, buffer: mixedZipFile.toBuffer() };
+
+    expect(await media_utils.checkFileForZip(multerFile, service)).to.eql({
+      type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.UNKNOWN,
+      error: TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING.INVALID_ZIP_CONTENT
+    });
+  });
+
+  it('should return error in response JSON of the first invalid .cfg file in the zip file', async () => {
+    const service = new TelemetryVectronicService(getMockDBConnection());
+    const zipFile = {
+      originalname: 'test.zip',
+      mimetype: 'application/zip',
+      buffer: Buffer.alloc(0)
+    } as unknown as Express.Multer.File;
+
+    const badCfgZipFile = new AdmZip();
+    badCfgZipFile.addFile('test1.cfg', Buffer.alloc(0));
+    badCfgZipFile.addFile('test2.cfg', Buffer.alloc(0));
+    const multerFile = { ...zipFile, buffer: badCfgZipFile.toBuffer() };
+
+    expect(await media_utils.checkFileForZip(multerFile, service)).to.eql({
+      type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.CFG,
+      error: 'Invalid key file in ZIP: test1.cfg, Key 1 must contain exactly 3 non-empty lines.'
+    });
+  });
+
+  it('should return keyData in response JSON for each file if the zip file contains only valid .cfg files', async () => {
+    const service = new TelemetryVectronicService(getMockDBConnection());
     const zipFile = {
       originalname: 'test.zip',
       mimetype: 'application/zip',
@@ -351,28 +396,72 @@ describe('isValidTelementryCredentialFile', () => {
     } as unknown as Express.Multer.File;
 
     const validZipFile = new AdmZip();
-    validZipFile.addFile('test.cfg', Buffer.alloc(0));
+    validZipFile.addFile(
+      'test1.cfg',
+      Buffer.from(
+        '[888888]\nKey=d`qwertydisosososososohehuuuuuuuuuuuuuuuuc~[]hhhhhhhhhhhh^gg@frE\nIridium IMEI=111111111111111',
+        'utf-8'
+      )
+    );
+    validZipFile.addFile(
+      'test2.cfg',
+      Buffer.from(
+        '[222222]\nKey=abBBBBBBBddddddddddddddddddddiiiiiiiidddddddjkhjhvhjgvhvg^nn@feE\nIridium IMEI=222222222222222',
+        'utf-8'
+      )
+    );
     const multerFile = { ...zipFile, buffer: validZipFile.toBuffer() };
-    expect(media_utils.checkFileForCfg(multerFile)).to.eql({
-      type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.CFG
+
+    expect(await media_utils.checkFileForZip(multerFile, service)).to.eql({
+      type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.CFG,
+      keyData: [
+        {
+          fileName: 'test1.cfg',
+          keysData: [
+            {
+              id: 888888,
+              key: 'd`qwertydisosososososohehuuuuuuuuuuuuuuuuc~[]hhhhhhhhhhhh^gg@frE',
+              'Iridium IMEI': 111111111111111
+            }
+          ]
+        },
+        {
+          fileName: 'test2.cfg',
+          keysData: [
+            {
+              id: 222222,
+              key: 'abBBBBBBBddddddddddddddddddddiiiiiiiidddddddjkhjhvhjgvhvg^nn@feE',
+              'Iridium IMEI': 222222222222222
+            }
+          ]
+        }
+      ]
     });
   });
 });
 
 describe('checkFileForKeyx', () => {
-  it('should return true if the file extension is .keyx', () => {
-    const validKeyxFile = {
+  it('should return error because the key is not registred on the vectronic side', async () => {
+    const service = new TelemetryVectronicService(getMockDBConnection());
+    const invalidKeyxFile = {
       originalname: 'test.keyx',
       mimetype: 'application/octet-stream',
-      buffer: Buffer.alloc(0)
+      buffer: Buffer.from(
+        '<?xml version="1.0" encoding="utf-8"?><collarKey><collar ID="12345"><comIDList><comID comType="Paladium">888888888888888</comID></comIDList><key>ABCDEF1234567890ABCDEF1234567890</key><collarType>333</collarType></collar></collarKey>',
+        'utf-8'
+      )
     } as unknown as Express.Multer.File;
 
-    expect(media_utils.checkFileForKeyx(validKeyxFile)).to.eql({
-      type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.KEYX
+    expect(await media_utils.checkFileForKeyx(invalidKeyxFile, service)).to.eql({
+      type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.KEYX,
+      error:
+        TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING.INVALID_XML_FILE +
+        TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING.KEYX_NOT_FOUND
     });
   });
 
-  it('should return false if the file is not a .keyx or zip mimetype', () => {
+  it('should return error if the file is not a .keyx', async () => {
+    const service = new TelemetryVectronicService(getMockDBConnection());
     const invalidFile = {
       originalname: 'test.txt',
       mimetype: 'text/plain',
@@ -380,61 +469,71 @@ describe('checkFileForKeyx', () => {
     } as unknown as Express.Multer.File;
 
     const multerFile = { ...invalidFile, buffer: Buffer.alloc(0) };
-    expect(media_utils.checkFileForKeyx(multerFile)).to.eql({
-      type: 'unknown',
-      error: 'File is neither a .keyx file, nor an archive containing only .keyx files'
+
+    expect(await media_utils.checkFileForKeyx(multerFile, service)).to.eql({
+      type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.UNKNOWN,
+      error: 'File type is not a .keyx'
     });
   });
 
-  it('should return false if the file is an empty zip file', () => {
-    const zipFile = {
-      originalname: 'test.zip',
-      mimetype: 'application/zip',
-      buffer: Buffer.alloc(0)
+  it('should return error key XML file does not contain expected tags ', async () => {
+    const service = new TelemetryVectronicService(getMockDBConnection());
+    const invalidKeyxFile = {
+      originalname: 'test.keyx',
+      mimetype: 'application/octet-stream',
+      buffer: Buffer.from('<?xml version="1.0" encoding="utf-8"?><collarKey></collarKey>', 'utf-8')
     } as unknown as Express.Multer.File;
 
-    const emptyZipFile = new AdmZip();
-    const multerFile = { ...zipFile, buffer: emptyZipFile.toBuffer() };
-    expect(media_utils.checkFileForKeyx(multerFile)).to.eql({
-      type: 'unknown',
-      error: 'File is an archive that contains no content'
+    expect(await media_utils.checkFileForKeyx(invalidKeyxFile, service)).to.eql({
+      type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.KEYX,
+      error: TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING.INVALID_XML_FILE + 'Missing one or more expected tags'
     });
   });
 
-  it('should return false if the zip file contains any non .keyx files', () => {
-    const zipFile = {
-      originalname: 'test.zip',
-      mimetype: 'application/zip',
+  it('should return error with invalid xml in .keyx', async () => {
+    const service = new TelemetryVectronicService(getMockDBConnection());
+    const validKeyxFile = {
+      originalname: 'test.keyx',
+      mimetype: 'application/octet-stream',
       buffer: Buffer.alloc(0)
     } as unknown as Express.Multer.File;
 
-    const invalidZipFile = new AdmZip();
-    invalidZipFile.addFile('test.txt', Buffer.alloc(0));
-    const multerFile = { ...zipFile, buffer: invalidZipFile.toBuffer() };
-    expect(media_utils.checkFileForKeyx(multerFile)).to.eql({
-      type: 'unknown',
-      error: 'File is an archive that contains non .keyx files'
-    });
-  });
-
-  it('should return true if the zip file contains only .keyx files', () => {
-    const zipFile = {
-      originalname: 'test.zip',
-      mimetype: 'application/zip',
-      buffer: Buffer.alloc(0)
-    } as unknown as Express.Multer.File;
-
-    const validZipFile = new AdmZip();
-    validZipFile.addFile('test.keyx', Buffer.alloc(0));
-    const multerFile = { ...zipFile, buffer: validZipFile.toBuffer() };
-    expect(media_utils.checkFileForKeyx(multerFile)).to.eql({
-      type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.KEYX
+    expect(await media_utils.checkFileForKeyx(validKeyxFile, service)).to.eql({
+      type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.KEYX,
+      error: TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING.INVALID_XML_FILE + 'InvalidXml, Start tag expected.'
     });
   });
 });
 
 describe('checkFileForCfg', () => {
-  it('should return true if the file extension is .cfg', () => {
+  it('should return file type CFG and keyData JSON from the key', () => {
+    const validCfgFile = {
+      originalname: 'test.cfg',
+      mimetype: 'application/octet-stream',
+      buffer: Buffer.from(
+        '[888888]\nKey=d`qwertydisosososososohehuuuuuuuuuuuuuuuuc~[]hhhhhhhhhhhh^gg@frE\nIridium IMEI=111111111111111',
+        'utf-8'
+      )
+    } as unknown as Express.Multer.File;
+
+    expect(media_utils.checkFileForCfg(validCfgFile)).to.eql({
+      type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.CFG,
+      keyData: [
+        {
+          fileName: 'test.cfg',
+          keysData: [
+            {
+              id: 888888,
+              key: 'd`qwertydisosososososohehuuuuuuuuuuuuuuuuc~[]hhhhhhhhhhhh^gg@frE',
+              'Iridium IMEI': 111111111111111
+            }
+          ]
+        }
+      ]
+    });
+  });
+
+  it('should return error if the .cfg is malformed', () => {
     const validCfgFile = {
       originalname: 'test.cfg',
       mimetype: 'application/octet-stream',
@@ -442,11 +541,28 @@ describe('checkFileForCfg', () => {
     } as unknown as Express.Multer.File;
 
     expect(media_utils.checkFileForCfg(validCfgFile)).to.eql({
-      type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.CFG
+      type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.CFG,
+      error: 'Key 1 must contain exactly 3 non-empty lines.'
     });
   });
 
-  it('should return false if the file is not a .cfg or zip mimetype', () => {
+  it('should return error if the cfg key has an invalid ID', () => {
+    const invalidCfgFile = {
+      originalname: 'test.cfg',
+      mimetype: 'application/octet-stream',
+      buffer: Buffer.from(
+        '[sadasd]\n\nKey=d`qwertydisosososososohehuuuuuuuuuuuuuuuuc~[]hhhhhhhhhhhh^gg@frE\nIridium IMEI=111111111111111',
+        'utf-8'
+      )
+    } as unknown as Express.Multer.File;
+
+    expect(media_utils.checkFileForCfg(invalidCfgFile)).to.eql({
+      type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.CFG,
+      error: 'Invalid ID in key 1. Valid format: [number].'
+    });
+  });
+
+  it('should return error if the file is not a .cfg', () => {
     const invalidFile = {
       originalname: 'test.txt',
       mimetype: 'text/plain',
@@ -454,55 +570,10 @@ describe('checkFileForCfg', () => {
     } as unknown as Express.Multer.File;
 
     const multerFile = { ...invalidFile, buffer: Buffer.alloc(0) };
+
     expect(media_utils.checkFileForCfg(multerFile)).to.eql({
-      type: 'unknown',
-      error: 'File is neither a .cfg file, nor an archive containing only .cfg files'
-    });
-  });
-
-  it('should return false if the file is an empty zip file', () => {
-    const zipFile = {
-      originalname: 'test.zip',
-      mimetype: 'application/zip',
-      buffer: Buffer.alloc(0)
-    } as unknown as Express.Multer.File;
-
-    const emptyZipFile = new AdmZip();
-    const multerFile = { ...zipFile, buffer: emptyZipFile.toBuffer() };
-    expect(media_utils.checkFileForCfg(multerFile)).to.eql({
-      type: 'unknown',
-      error: 'File is an archive that contains no content'
-    });
-  });
-
-  it('should return false if the zip file contains any non .cfg files', () => {
-    const zipFile = {
-      originalname: 'test.zip',
-      mimetype: 'application/zip',
-      buffer: Buffer.alloc(0)
-    } as unknown as Express.Multer.File;
-
-    const invalidZipFile = new AdmZip();
-    invalidZipFile.addFile('test.txt', Buffer.alloc(0));
-    const multerFile = { ...zipFile, buffer: invalidZipFile.toBuffer() };
-    expect(media_utils.checkFileForCfg(multerFile)).to.eql({
-      type: 'unknown',
-      error: 'File is an archive that contains non .cfg files'
-    });
-  });
-
-  it('should return true if the zip file contains only .cfg files', () => {
-    const zipFile = {
-      originalname: 'test.zip',
-      mimetype: 'application/zip',
-      buffer: Buffer.alloc(0)
-    } as unknown as Express.Multer.File;
-
-    const validZipFile = new AdmZip();
-    validZipFile.addFile('test.cfg', Buffer.alloc(0));
-    const multerFile = { ...zipFile, buffer: validZipFile.toBuffer() };
-    expect(media_utils.checkFileForCfg(multerFile)).to.eql({
-      type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.CFG
+      type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.UNKNOWN,
+      error: TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING.FILE_NOT_CFG
     });
   });
 });

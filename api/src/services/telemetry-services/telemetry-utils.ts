@@ -1,7 +1,5 @@
-import axios from 'axios';
 import { ICfgData } from '../../repositories/telemetry-repositories/telemetry-lotek-repository.interface';
 import { IKeyxData } from '../../repositories/telemetry-repositories/telemetry-vectronic-repository.interface';
-import { getEnvironmentVariable } from '../../utils/env-config';
 
 interface IDeviceKey {
   /**
@@ -91,26 +89,6 @@ export interface ParsedKeyxXMLData {
 export const xmlParserOptions = {
   ignoreAttributes: false,
   attributeNamePrefix: '@_'
-};
-
-/**
- * As A check test, fetch vectronic device telemetry separation count from the Vectronic API.
- *
- * @param { string } collarId - Vectronic collar device ID
- * @param { string } collarKey - Vectronic collar key
- * @returns {*} {Promise<number>}
- */
-export const fetchCollarSepCount = async (collarId: string, collarKey: string): Promise<number> => {
-  const vectronicApi = axios.create({
-    baseURL: getEnvironmentVariable('VECTRONIC_API_HOST')
-  });
-
-  const response = await vectronicApi.get(`/collar/${collarId}/sep/count`, {
-    params: {
-      collarkey: collarKey
-    }
-  });
-  return response.data;
 };
 
 /**
@@ -212,7 +190,7 @@ export const validateCfgFormat = (content: string): string | null => {
  * @param {string} input
  * @returns {ICfgData[]}
  */
-export const cfgToJSON = (input: string): ICfgData[] => {
+export const convertLotekCredentialFileToJson = (input: string): ICfgData[] => {
   const regex = /\[(\d+)\]\s*((?:Key=[^\n]+(?:\s+Iridium IMEI=\d+)?\s*)+)/g;
   return [...input.matchAll(regex)].map(([, id, block]) => {
     // Extracting Key and Iridium IMEI directives in any order

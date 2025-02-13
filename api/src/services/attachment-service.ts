@@ -1,7 +1,7 @@
 import { QueryResult } from 'pg';
 import { ATTACHMENT_TYPE, TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE } from '../constants/attachments';
 import { IDBConnection } from '../database/db';
-import { ApiGeneralError } from '../errors/api-error';
+import { HTTP400 } from '../errors/http-error';
 import {
   GetAttachmentsWithSupplementalData,
   IReportAttachmentAuthor,
@@ -1061,7 +1061,7 @@ export class AttachmentService extends DBService {
     const getResponse = await this.getSurveyTelemetryCredentialAttachmentByFileName(file.originalname, surveyId);
     if (getResponse && getResponse.rowCount) {
       // Existing attachment with matching name found, throw error
-      throw new ApiGeneralError('Device key file already exists.');
+      throw new HTTP400('Device key file already exists.');
     }
 
     const attachmentResult = await this.insertSurveyTelemetryCredentialAttachment({
