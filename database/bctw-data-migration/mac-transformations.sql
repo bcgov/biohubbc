@@ -75,3 +75,42 @@ FROM bctw.telemetry_manual bctw_telemetry_manual
 INNER JOIN biohub.deployment_old sims_deployment_old
 ON bctw_telemetry_manual.deployment_id = sims_deployment_old.bctw_deployment_id
 WHERE bctw.is_valid(valid_to);
+
+
+-- BCTW table: bctw.telemetry_api_ats
+-- SIMS table: sims.telemetry_ats
+
+-- This generates the SQL to transform the data from the BCTW
+-- table `bctw.telemetry_api_ats` to the SIMS table `sims.telemetry_ats`.
+
+-- Notes: The BCTW `geom` column is a PostGis Geometry type,
+-- but the SIMS `geography` column is a PostGis Geography type
+-- so we need to cast the `geom` column to a `geography` type.
+
+
+-- Query count: 817
+-- BCTW table count: 817
+
+SELECT
+	collarserialnumber,
+	"date",
+	numberfixes,
+	battvoltage,
+	mortality,
+	breakoff,
+	gpsontime,
+	satontime,
+	saterrors,
+	gmtoffset,
+	lowbatt,
+	"event",
+	latitude,
+	longitude,
+	cepradius_km,
+	temperature,
+	hdop,
+	numsats,
+	fixtime,
+	activity,
+	geom::geography AS geography
+FROM bctw.telemetry_api_ats;
