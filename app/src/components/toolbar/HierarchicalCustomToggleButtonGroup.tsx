@@ -4,7 +4,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 export interface ToggleButtonView<ViewValueType> {
   /**
@@ -84,24 +84,27 @@ export const HierarchicalCustomToggleButtonGroup = <ViewValueType extends string
   const [expanded, setExpanded] = useState<Set<ViewValueType>>(new Set());
 
   // Function to find all parent views of the activeView
-  const findParentViews = (
-    views: ToggleButtonView<ViewValueType>[],
-    target: ViewValueType,
-    parents: Set<ViewValueType> = new Set()
-  ): Set<ViewValueType> => {
-    for (const view of views) {
-      if (view.value === target) {
-        return parents;
-      }
-      if (view.children) {
-        const found = findParentViews(view.children, target, new Set([...parents, view.value]));
-        if (found.size) {
-          return found;
+  const findParentViews = useCallback(
+    (
+      views: ToggleButtonView<ViewValueType>[],
+      target: ViewValueType,
+      parents: Set<ViewValueType> = new Set()
+    ): Set<ViewValueType> => {
+      for (const view of views) {
+        if (view.value === target) {
+          return parents;
+        }
+        if (view.children) {
+          const found = findParentViews(view.children, target, new Set([...parents, view.value]));
+          if (found.size) {
+            return found;
+          }
         }
       }
-    }
-    return new Set();
-  };
+      return new Set();
+    },
+    []
+  );
 
   // Expand all parents of activeView on mount or when activeView changes
   useEffect(() => {
@@ -112,7 +115,8 @@ export const HierarchicalCustomToggleButtonGroup = <ViewValueType extends string
   const toggleExpand = (view: ViewValueType) => {
     setExpanded((prev) => {
       const newSet = new Set(prev);
-      newSet.has(view) ? newSet.delete(view) : newSet.add(view);
+      // Only collapse the view if it's clicked while already selected
+      newSet.has(view) && view === activeView ? newSet.delete(view) : newSet.add(view);
       return newSet;
     });
   };

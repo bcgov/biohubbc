@@ -91,10 +91,9 @@ export const SupportSampling = () => (
       </Typography>
       <Typography gutterBottom>
         Periods represent precisely when you collected data, which you might call a sampling session. Using the terms
-        above, periods indicate &zwnj;
-        <strong>when you applied a technique at a sampling site</strong>. Precise start and end information is important
-        because it helps interpet the absence of species from your data&mdash;was the species missing because it didn't
-        occur at that time or the species wasn't being searched for at that time?
+        above, periods indicate <strong>when you applied a technique at a sampling site</strong>. Precise start and end
+        information is important because it helps interpet the absence of species from your data&mdash;was the species
+        missing because it didn't occur at that time or the species wasn't being searched for at that time?
       </Typography>
     </Box>
   </Stack>

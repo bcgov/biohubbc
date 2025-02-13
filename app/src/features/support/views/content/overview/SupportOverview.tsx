@@ -17,8 +17,8 @@ export const SupportOverview = () => (
       </Typography>
       <List sx={{ listStyleType: 'disc', '& .MuiListItem-root': { ml: 5 } }}>
         <ListItem sx={{ display: 'list-item' }}>
-          Upload species observations, animal telemetry, and other information to &zwnj;
-          <strong>shared workspaces</strong> that are private to your team
+          Upload species observations, animal telemetry, and other information to <strong>shared workspaces</strong>{' '}
+          that are private to your team
         </ListItem>
         <ListItem sx={{ display: 'list-item' }}>
           Plot your data on <strong>interactive maps</strong> and gain insights into demographics or population trends

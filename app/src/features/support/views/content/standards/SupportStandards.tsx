@@ -15,7 +15,7 @@ export const SupportStandards = () => {
           we've made it easy to do so.
         </Typography>
         <Typography gutterBottom>
-          If you need a new option added to a dropdown menu or a new piece of data to be supported, please email &zwnj;
+          If you need a new option added to a dropdown menu or a new piece of data to be supported, please email{' '}
           <a href="mailto:spi_mail@gov.bc.ca">spi_mail@gov.bc.ca</a> with your request.
         </Typography>
       </Box>

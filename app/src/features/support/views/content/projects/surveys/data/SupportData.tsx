@@ -21,7 +21,7 @@ export const SupportData = () => (
         Observations
       </Typography>
       <Typography gutterBottom mb={2}>
-        Species observations are one of the main supported types of data. Observations are &zwnj;
+        Species observations are one of the main supported types of data. Observations are{' '}
         <strong>counts of species</strong>. If you're thinking you observed instead of counted a species, you can use a
         count of one, or even set your observations to represent presence&ndash;absence instead of true counts.
       </Typography>
@@ -38,7 +38,7 @@ export const SupportData = () => (
       </Typography>
       <Typography gutterBottom mb={2}>
         Telemetry is movement data collected from a tracking device and another supported data type. In a Survey, you
-        can manage not just the positional telemetry data but also <strong>devices</strong> and &zwnj;
+        can manage not just the positional telemetry data but also <strong>devices</strong> and{' '}
         <strong>deployments</strong> of those devices on animals.
       </Typography>
       <Typography gutterBottom>

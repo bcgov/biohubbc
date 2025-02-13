@@ -4,7 +4,7 @@ import { Box, Button, Container, Divider, Paper, Stack, Typography } from '@mui/
 import PageHeader from 'components/layout/PageHeader';
 import { HierarchicalCustomToggleButtonGroup } from 'components/toolbar/HierarchicalCustomToggleButtonGroup';
 import { useSearchParams } from 'hooks/useSearchParams';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import {
   ISupportPageView,
   SupportPageParams,
@@ -37,14 +37,15 @@ export const SupportPage = () => {
   };
 
   // Recursively flattens child views
-  const flattenViews = (views: ISupportPageView[]): ISupportPageView[] => {
+  const flattenViews = useCallback((views: ISupportPageView[]): ISupportPageView[] => {
     return views.flatMap((view) => [view, ...flattenViews(view.children ?? [])]);
-  };
+  }, []);
 
   // Sort views based on the order field
   const orderedViews = useMemo(
     () => flattenViews(SupportPageViews).sort((a, b) => a.order - b.order),
-    [SupportPageViews, flattenViews]
+    // Don't need to include SupportPageViews because it never changes, imported as a constant from a separate file
+    [flattenViews]
   );
 
   // Find the current view object for its label, icon, children
