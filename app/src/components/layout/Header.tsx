@@ -264,7 +264,7 @@ const Header: React.FC = () => {
               <MenuItem component={RouterLink} to="/standards" id="menu_standards" onClick={hideMobileMenu}>
                 Standards
               </MenuItem>
-              <MenuItem tabIndex={0} component={RouterLink} to="/support" id="menu_support_sm" onClick={hideMobileMenu}>
+              <MenuItem component={RouterLink} to="/support" sx={{ width: '100%' }}>
                 Support
               </MenuItem>
               <AuthGuard>
@@ -339,7 +339,7 @@ const Header: React.FC = () => {
               <RouterLink to="/standards" id="menu_standards">
                 Standards
               </RouterLink>
-              <RouterLink to="/support" id="support">
+              <RouterLink to="/support" id="menu_support">
                 Support
               </RouterLink>
             </Box>

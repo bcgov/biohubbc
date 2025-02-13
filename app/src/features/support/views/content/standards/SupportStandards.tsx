@@ -4,7 +4,7 @@ import Typography from '@mui/material/Typography';
 
 /**
  * Information about standards and allowed values (eg. species-dependent attributes, environments)
- * 
+ *
  * @returns {*}
  */
 export const SupportStandards = () => {
