@@ -15,7 +15,13 @@ import {
   CSVRowValidator
 } from '../../../../utils/csv-utils/csv-config-validation.interface';
 import { updateCSVRowState } from '../../../../utils/csv-utils/csv-header-configs';
-import { formatDateString, isDateString, isDateTimeString, isTimeString } from '../../../../utils/date-time-utils';
+import {
+  formatDateString,
+  isDateString,
+  isDateTimeString,
+  isTimeString,
+  newDayjs
+} from '../../../../utils/date-time-utils';
 import { ObservationCSVStaticHeader } from '../import-observations-service';
 
 dayjs.extend(isSameOrAfter);
@@ -683,30 +689,31 @@ export function findMatchingPeriodsWithObservationDateTime(
     return [];
   }
 
-  const formattedObservationDateTime = observationTime
-    ? dayjs(`${observationDate} ${observationTime}`)
-    : dayjs(observationDate);
+  const observationDateTime = newDayjs(observationDate, observationTime);
 
-  const suitablePeriods = samplePeriods.filter((samplePeriod) => {
+  const matchingObservationSamplePeriods = samplePeriods.filter((samplePeriod) => {
     if (!samplePeriod.start_date || !samplePeriod.end_date) {
       // If the sampling period does not have a start or end date, then it cannot be matched
       return false;
     }
 
-    const formattedSamplingPeriodStartDateTime = samplePeriod.start_time
-      ? dayjs(`${samplePeriod.start_date} ${samplePeriod.start_time}`)
-      : dayjs(samplePeriod.start_date);
+    const samplePeriodStartDateTime = newDayjs(samplePeriod.start_date, samplePeriod.start_time);
+    const samplePeriodEndDateTime = newDayjs(samplePeriod.end_date, samplePeriod.end_time);
 
-    const formattedSamplingPeriodEndDateTime = samplePeriod.end_time
-      ? dayjs(`${samplePeriod.end_date} ${samplePeriod.end_time}`)
-      : dayjs(samplePeriod.end_date);
+    console.log({
+      samplePeriodStartDateTime: samplePeriodStartDateTime.format(),
+      samplePeriodEndDateTime: samplePeriodEndDateTime.format(),
+      observationDateTime: observationDateTime.format(),
+      isSameOrAfter: observationDateTime.isSameOrAfter(samplePeriodStartDateTime),
+      isSameOrBefore: observationDateTime.isSameOrBefore(samplePeriodEndDateTime)
+    });
 
     // The observation date time must be within the start and end date time of the sampling period
     return (
-      formattedObservationDateTime.isSameOrAfter(formattedSamplingPeriodStartDateTime) &&
-      formattedObservationDateTime.isSameOrBefore(formattedSamplingPeriodEndDateTime)
+      observationDateTime.isSameOrAfter(samplePeriodStartDateTime) &&
+      observationDateTime.isSameOrBefore(samplePeriodEndDateTime)
     );
   });
 
-  return suitablePeriods;
+  return matchingObservationSamplePeriods;
 }

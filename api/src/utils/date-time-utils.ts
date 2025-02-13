@@ -5,12 +5,31 @@ import {
   DefaultDateFormatSingleDigit,
   DefaultDateFormatSingleDigitReverse,
   DefaultTimeFormat,
+  DefaultTimeFormat12Hour,
+  DefaultTimeFormat12HourAlt,
+  DefaultTimeFormat12HourNoSeconds,
+  DefaultTimeFormat12HourNoSecondsAlt,
   DefaultTimeFormatNoSeconds,
   USDefaultDateFormat,
   USDefaultDateFormatReverse,
   USDefaultDateFormatSingleDigit,
   USDefaultDateFormatSingleDigitReverse
 } from '../constants/dates';
+
+/**
+ * Converts a date + time string into a dayjs object.
+ *
+ * @param {string} date - The date string
+ * @param {string} [time] - The time string
+ * @returns {dayjs.Dayjs} - The dayjs object
+ */
+export function newDayjs(date: string, time?: string | null): dayjs.Dayjs {
+  if (time) {
+    return dayjs(`${date} ${time}`);
+  }
+
+  return dayjs(date);
+}
 
 /**
  * Check if a string is a date string.
@@ -137,4 +156,53 @@ export function formatDateString(value: string): string | null {
   }
 
   return null;
+}
+
+/**
+ * Formats a time string to a time ignoring AM/PM suffixes.
+ *
+ * @example formatTimeString('10:00') // '10:00:00'
+ * @example formatTimeString('10:00:00') // '10:00:00'
+ * @example formatTimeString('10:00:00 AM') // '10:00:00'
+ * @example formatTimeString('10:00:00 PM') // '22:00:00'
+ */
+export function formatTimeString(value: string): string | null {
+  let timeString = value.toLowerCase();
+
+  // Time strings are expected to be in the formats:
+  // 'hh:mm:ss' or 'hh:mm' or 'hh:mm:ss am' or 'hh:mm:ss pm'
+  const timeParts = timeString.split(':');
+
+  const hours = Number(timeParts[0]);
+
+  // If the time is 24 hour time, remove the PM suffix
+  if (hours > 12 && timeString.includes('pm')) {
+    // Remove ' pm' and 'pm' suffixes - case insensitive
+    timeString = timeString.replace('pm', '').replace(' ', '');
+  }
+
+  // Check if the string is a 2 or 3 part delimited time string
+  if (timeParts.length < 2 || timeParts.length > 3) {
+    return null;
+  }
+
+  // Convert the time string to a dayjs object
+  const time = dayjs(
+    timeString,
+    [
+      DefaultTimeFormat,
+      DefaultTimeFormatNoSeconds,
+      DefaultTimeFormat12Hour,
+      DefaultTimeFormat12HourNoSeconds,
+      DefaultTimeFormat12HourAlt,
+      DefaultTimeFormat12HourNoSecondsAlt
+    ],
+    true
+  );
+
+  if (!time.isValid()) {
+    return null;
+  }
+
+  return time.format(DefaultTimeFormat);
 }

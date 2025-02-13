@@ -114,6 +114,7 @@ describe('ImportCrittersService', () => {
       const getTaxonomyByTsnsStub = sinon
         .stub(service.platformService, 'getTaxonomyByTsns')
         .resolves([{ tsn: 1234, scientificName: 'test' }]);
+
       const getTsnCellValidatorStub = sinon.stub(headerConfig, 'getTsnCellValidator').returns(() => []);
 
       const tsnHeaderConfig = await service._getTsnHeaderConfig();
