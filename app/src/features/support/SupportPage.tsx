@@ -13,7 +13,7 @@ import {
   SupportPageViews
 } from './views/SupportPageView';
 
-// This is the URL param for the actie view
+// This is the URL param for the active view
 const VIEW_KEY = 'v';
 
 /**
@@ -63,7 +63,7 @@ export const SupportPage = () => {
     if (currentIndex === 0) {
       return 'flex-end';
     }
-    // If on the first page, position the 'Previous' button on the left
+    // If on the last page, position the 'Previous' button on the left
     if (currentIndex === orderedViews.length - 1) {
       return 'flex-start';
     }

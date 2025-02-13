@@ -2,6 +2,11 @@ import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
+/**
+ * Information about standards and allowed values (eg. species-dependent attributes, environments)
+ * 
+ * @returns {*}
+ */
 export const SupportStandards = () => {
   return (
     <Stack gap={5} mb={3}>
