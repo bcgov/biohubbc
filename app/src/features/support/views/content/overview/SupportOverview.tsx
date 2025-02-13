@@ -36,7 +36,7 @@ export const SupportOverview = () => (
         Work Together
       </Typography>
       <Typography variant="body1" gutterBottom>
-        The Species Inventory Management System simplifies data sharing with collaborators through&nbsp;
+        The Species Inventory Management System simplifies data sharing with collaborators through{' '}
         <strong>Projects</strong>. When you make a Project, only you and your team can access and manage the information
         in that Project.
       </Typography>

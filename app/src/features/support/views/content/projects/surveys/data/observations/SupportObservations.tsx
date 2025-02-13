@@ -25,7 +25,7 @@ export const SupportObservations = () => (
         the genus or family.
       </Typography>
       <Typography gutterBottom>
-        Temporarily, the list of available species comes from the&nbsp;
+        Temporarily, the list of available species comes from the{' '}
         <a href="itis.gov">Integrated Taxonomic Information System</a>. We are working with the Conservation Data Center
         to integrate British Columbia's official taxonomy information and replace the Integrated Taxonomic Information
         System.
