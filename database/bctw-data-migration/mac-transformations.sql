@@ -1,3 +1,5 @@
+-------------------------------------------------------------------------------------------------------
+
 -- Purpose: SQL to transform data from the BCTW to the SIMS database.
 
 -- Steps to create export SQL:
@@ -7,6 +9,8 @@
   -- 4. In the "Format settings" tab, select "Target table name" and modify to SIMS table name
   -- 5. Select "Proceed" to export the data to local machine
 
+
+-------------------------------------------------------------------------------------------------------
 
 -- STATUS: Confirmed working - no import issues
 
@@ -34,6 +38,8 @@ SELECT
   now() AS verified_date
 FROM bctw.api_lotek_credential;
 
+
+-------------------------------------------------------------------------------------------------------
 
 -- STATUS: Confirmed working - no import issues after fixing the `idcom` column type
 
@@ -64,6 +70,8 @@ SELECT
 FROM bctw.api_vectronic_credential;
 
 
+-------------------------------------------------------------------------------------------------------
+
 -- STATUS: Not confirmed - waiting for the dployments to be transferred from the
 -- `deployment_old` -> `deployment` table in SIMS. Note this should work once the deployments
 -- are transferred.
@@ -91,6 +99,9 @@ FROM bctw.telemetry_manual bctw_telemetry_manual
 INNER JOIN biohub.deployment_old sims_deployment_old
 ON bctw_telemetry_manual.deployment_id = sims_deployment_old.bctw_deployment_id
 WHERE bctw.is_valid(valid_to);
+
+
+-------------------------------------------------------------------------------------------------------
 
 -- STATUS: Confirmed working - no import issues
 
@@ -125,3 +136,6 @@ SELECT
 	fixtime,
 	activity
 FROM bctw.telemetry_api_ats;
+
+
+-------------------------------------------------------------------------------------------------------
