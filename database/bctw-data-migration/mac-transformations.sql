@@ -20,6 +20,9 @@
   -- Todays date (the date the data was migrated)?
   -- The date the data was created in BCTW?
 
+-- Query count: 1029
+-- BCTW table count: 1029
+
 SELECT
   ndeviceid,
   strspecialid,
@@ -38,9 +41,37 @@ FROM bctw.api_lotek_credential;
 
 -- This is straight forward, no questions to answer.
 
+-- Query count: 1123
+-- BCTW table count: 1123
+
 SELECT
 	idcollar,
 	idcom,
 	collarkey,
 	collartype
 FROM bctw.api_vectronic_credential;
+
+
+-- BCTW table: bctw_telemetry_manual.telemetry_manual
+-- SIMS table: sims_telemetry_manual.telemetry_manual
+
+-- This generates the SQL to transform the data from the BCTW
+-- table `bctw_telemetry_manual.telemetry_manual` to the
+-- SIMS table `sims_deployment_old.telemetry_manual`.
+
+-- Note: Interestingly this query only has records for a single SIMS deployment 2601
+
+-- Query count: 127 rows
+-- BCTW table count (only valid rows): 127 rows
+-- BCTW table count (all rows): 1648 rows
+
+
+SELECT
+	sims_deployment_old.deployment_id,
+	bctw_telemetry_manual.latitude,
+	bctw_telemetry_manual.longitude,
+	bctw_telemetry_manual.acquisition_date
+FROM bctw.telemetry_manual bctw_telemetry_manual
+INNER JOIN biohub.deployment_old sims_deployment_old
+ON bctw_telemetry_manual.deployment_id = sims_deployment_old.bctw_deployment_id
+WHERE bctw.is_valid(valid_to);
