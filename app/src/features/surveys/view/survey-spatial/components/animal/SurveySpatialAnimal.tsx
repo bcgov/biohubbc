@@ -20,8 +20,10 @@ interface ISurveySpatialAnimalProps {
 }
 
 /**
- * Component for displaying animal capture points on a map and in a table.
- * Retrieves and displays data related to animal captures for a specific survey.
+ * Container displaying map of captures and mortalities for animals in the Survey, and table of animals below the map
+ *
+ * @param {ISurveySpatialAnimalProps} props
+ * @returns
  */
 export const SurveySpatialAnimal = (props: ISurveySpatialAnimalProps) => {
   const surveyContext = useSurveyContext();
@@ -66,7 +68,7 @@ export const SurveySpatialAnimal = (props: ISurveySpatialAnimalProps) => {
           properties: {}
         }
       })) ?? [],
-    popup: (feature) => <SurveySpatialAnimalCapturePopup feature={feature} />,
+    popup: (feature) => <SurveySpatialAnimalCapturePopup captureId={String(feature.id)} />,
     tooltip: (feature) => <SurveyMapTooltip title="Animal Capture" key={`mortality-tooltip-${feature.id}`} />
   };
 
@@ -90,7 +92,7 @@ export const SurveySpatialAnimal = (props: ISurveySpatialAnimalProps) => {
           properties: {}
         }
       })) ?? [],
-    popup: (feature) => <SurveySpatialAnimalMortalityPopup feature={feature} />,
+    popup: (feature) => <SurveySpatialAnimalMortalityPopup mortalityId={String(feature.id)} />,
     tooltip: (feature) => <SurveyMapTooltip title="Animal Mortality" key={`capture-tooltip-${feature.id}`} />
   };
 
@@ -105,7 +107,7 @@ export const SurveySpatialAnimal = (props: ISurveySpatialAnimalProps) => {
       </Box>
 
       {/* Display data table with animal capture details */}
-      <Box height={{ xs: 300, md: 500 }} display="flex">
+      <Box height={{ xs: 300, md: 500 }} display="flex" flexDirection="column">
         <SurveySpatialAnimalTable isLoading={geometryDataLoader.isLoading} />
       </Box>
     </>

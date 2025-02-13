@@ -1,4 +1,4 @@
-import { mdiAttachment, mdiFilePdfBox, mdiTrayArrowUp } from '@mdi/js';
+import { mdiAttachment, mdiTrayArrowUp } from '@mdi/js';
 import Icon from '@mdi/react';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
@@ -85,11 +85,6 @@ const SurveyAttachments = () => {
         buttonProps={{ variant: 'contained' }}
         buttonStartIcon={<Icon path={mdiTrayArrowUp} size={0.75} />}
         menuItems={[
-          {
-            menuLabel: 'Upload a Report',
-            menuIcon: <Icon path={mdiFilePdfBox} size={1} />,
-            menuOnClick: () => setOpenUploadDialog('Report')
-          },
           {
             menuLabel: 'Upload Attachments',
             menuIcon: <Icon path={mdiAttachment} size={1} />,

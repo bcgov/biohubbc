@@ -20,7 +20,7 @@ export const SamplePeriodDataGridViewCell = <DataGridType extends GridValidRowMo
 ) => {
   const { dataGridProps, samplingInformationCache, error } = props;
 
-  const label = samplingInformationCache.getCurrentPeriod(dataGridProps)?.label ?? '';
+  const label = samplingInformationCache.getCurrentPeriod(dataGridProps.value)?.label ?? '';
 
   return (
     <Typography
