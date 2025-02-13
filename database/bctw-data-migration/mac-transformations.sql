@@ -9,7 +9,7 @@
 
 
 -- BCTW table: api_lotek_credential
--- SIMS table: lotek_credential
+-- SIMS table: telemetry_credential_lotek
 
 -- This generates the SQL to transform the data from the BCTW
 -- table `api_lotek_credential` to the SIMS table `lotek_credential`.
@@ -28,3 +28,19 @@ SELECT
   true AS is_valid,
   now() AS verified_date
 FROM bctw.api_lotek_credential;
+
+
+-- BCTW table: api_vectronic_credential
+-- SIMS table: telemetry_credential_vectronic
+
+-- This generates the SQL to transform the data from the BCTW
+-- table `api_vectronic_credential` to the SIMS table `telemetry_vectronic_credential`.
+
+-- This is straight forward, no questions to answer.
+
+SELECT
+	idcollar,
+	idcom,
+	collarkey,
+	collartype
+FROM bctw.api_vectronic_credential;
