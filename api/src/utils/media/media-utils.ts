@@ -129,7 +129,7 @@ export const parseUnknownZipFile = (
     const entries = unzippedFile.getEntries();
     return {
       filesArray: entries
-        .filter((item) => !item.isDirectory)
+        .filter((item) => !item.isDirectory && !item.entryName.startsWith('__MACOSX/'))
         .map((item) => {
           const fileName = item?.name;
           const mimetype = mime.getType(fileName) || '';
@@ -225,8 +225,7 @@ export const checkFileForKeyx = async (
 ): Promise<IValidationData> => {
   // File is a KeyX file if it ends in '.keyx'
   if (file.originalname.toLowerCase().endsWith('.keyx')) {
-    const xmlString = file.buffer.toString();
-
+    const xmlString = file.buffer ? file.buffer.toString() : '';
     // Validate file for properly formed XML
     const resultXMLValidation = XMLValidator.validate(xmlString);
     if (true !== resultXMLValidation) {
@@ -246,7 +245,9 @@ export const checkFileForKeyx = async (
     if (expectedXmlTags.length !== TELEMETRY_CREDENTIAL_ATTACHMENT_VECTRONIC_XMLTAGS.length) {
       return {
         type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.KEYX,
-        error: TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING.INVALID_XML_FILE + 'Missing one or more expected tags'
+        error:
+          TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING.INVALID_XML_FILE +
+          TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING.MISSING_XML_TAGS
       };
     }
 
@@ -295,7 +296,7 @@ export const checkFileForKeyx = async (
 export const checkFileForCfg = (file: Express.Multer.File): IValidationData => {
   // File is a Cfg file if it ends in '.cfg'
   if (file?.originalname.toLowerCase().endsWith('.cfg')) {
-    const cfgString = file.buffer.toString();
+    const cfgString = file.buffer ? file.buffer.toString() : '';
     const notValidCfg = validateCfgFormat(cfgString);
 
     if (notValidCfg) {
@@ -329,7 +330,7 @@ export const checkFileForCfg = (file: Express.Multer.File): IValidationData => {
 const processCfgFilesArray = (dataArray: MediaFile[]): IMultipleData[] => {
   const resultJSON: IMultipleData[] = [];
   dataArray.some((data) => {
-    const cfgFileString = data.buffer.toString();
+    const cfgFileString = data.buffer ? data.buffer.toString() : '';
     const notValidCfg = validateCfgFormat(cfgFileString);
 
     // break files iterator as soon as an error is found
@@ -366,8 +367,7 @@ const processKeyxFilesArray = async (
 ): Promise<IMultipleData[]> => {
   const resultJSON: IMultipleData[] = [];
   for (const keyxData of dataArray) {
-    const keyxFileString = keyxData.buffer.toString();
-
+    const keyxFileString = keyxData.buffer ? keyxData.buffer.toString() : '';
     // Validate file for properly formed XML and break iterator if error
     const resultXMLValidation = XMLValidator.validate(keyxFileString);
     if (true !== resultXMLValidation) {
@@ -446,7 +446,7 @@ export const checkFileForZip = async (
     // File is a zip file with invalid mime type
     return {
       type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.UNKNOWN,
-      error: 'File is a zip file with invalid mime type'
+      error: TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING.FILE_INVALID_MIMETYPE
     };
   }
 

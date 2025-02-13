@@ -250,7 +250,7 @@ describe('checkFileForZip', () => {
 
     expect(await media_utils.checkFileForZip(multerFile, service)).to.eql({
       type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.UNKNOWN,
-      error: 'File is a zip file with invalid mime type'
+      error: TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING.FILE_INVALID_MIMETYPE
     });
   });
 
@@ -486,7 +486,9 @@ describe('checkFileForKeyx', () => {
 
     expect(await media_utils.checkFileForKeyx(invalidKeyxFile, service)).to.eql({
       type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.KEYX,
-      error: TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING.INVALID_XML_FILE + 'Missing one or more expected tags'
+      error:
+        TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING.INVALID_XML_FILE +
+        TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING.MISSING_XML_TAGS
     });
   });
 

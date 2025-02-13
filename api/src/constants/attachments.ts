@@ -62,7 +62,9 @@ export enum TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING {
   INVALID_XML_FILE = 'Invalid XML file: ',
   KEYX_NOT_FOUND = 'Key not found in the remote vectronic records.',
   FILE_NOT_CFG = 'File type is not a .cfg',
-  FILE_NOT_KEYX = 'File type is not a .keyx'
+  FILE_NOT_KEYX = 'File type is not a .keyx',
+  FILE_INVALID_MIMETYPE = 'File is a zip file with invalid mime type',
+  MISSING_XML_TAGS = 'Missing one or more expected tags'
 }
 
 export enum CRITTER_CAPTURE_ATTACHMENT_TYPE {
