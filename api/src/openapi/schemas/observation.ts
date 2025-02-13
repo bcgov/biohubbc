@@ -84,6 +84,7 @@ export const findObservationsSchema: OpenAPIV3.SchemaObject = {
             observation_subcount_sign_id: {
               type: 'integer',
               minimum: 1,
+              nullable: true,
               description:
                 'The observation subcount sign ID, indicating whether the subcount was a direct sighting, footprints, scat, etc.'
             },

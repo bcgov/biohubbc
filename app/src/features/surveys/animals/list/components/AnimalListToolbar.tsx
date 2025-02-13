@@ -1,9 +1,9 @@
-import { mdiDotsVertical, mdiFileDocumentPlusOutline, mdiPlus } from '@mdi/js';
+import { mdiDotsVertical } from '@mdi/js';
 import { Icon } from '@mdi/react';
-import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import { DualImportButton } from 'components/buttons/DualImportButton';
 import { FileUploadSingleItemDialog } from 'components/dialog/attachments/FileUploadSingleItemDialog';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
@@ -82,21 +82,14 @@ export const AnimalListToolbar = (props: IAnimaListToolbarProps) => {
             ({props.animalCount})
           </Typography>
         </Typography>
-        <Button
-          variant="contained"
-          color="primary"
-          component={RouterLink}
-          to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/animals/create`}
-          startIcon={<Icon path={mdiPlus} size={1} />}
-          sx={{ mr: 0.2, borderTopRightRadius: 0, borderBottomRightRadius: 0 }}>
-          Add
-        </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => setOpenImportDialog(true)}
-          startIcon={<Icon path={mdiFileDocumentPlusOutline} size={1} />}
-          sx={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0, '& .MuiButton-startIcon': { mx: 0 } }}
+        <DualImportButton
+          singleImportButtonProps={{
+            component: RouterLink,
+            to: `/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/animals/create`
+          }}
+          bulkImportButtonProps={{
+            onClick: () => setOpenImportDialog(true)
+          }}
         />
         <IconButton
           edge="end"

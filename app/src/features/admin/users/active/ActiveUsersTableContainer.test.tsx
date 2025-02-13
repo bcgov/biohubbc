@@ -7,7 +7,7 @@ import { Router } from 'react-router';
 import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import { codes } from 'test-helpers/code-helpers';
 import { cleanup, render, waitFor } from 'test-helpers/test-utils';
-import ActiveUsersList, { IActiveUsersListProps } from './ActiveUsersList';
+import ActiveUsersTableContainer from './ActiveUsersTableContainer';
 
 const history = createMemoryHistory();
 
@@ -34,14 +34,14 @@ const mockCodesContext: ICodesContext = {
   } as DataLoader<any, any, any>
 };
 
-const renderContainer = (props: IActiveUsersListProps) => {
+const renderContainer = () => {
   const authState = getMockAuthState({ base: SystemAdminAuthState });
 
   return render(
     <AuthStateContext.Provider value={authState}>
       <CodesContext.Provider value={mockCodesContext}>
         <Router history={history}>
-          <ActiveUsersList {...props} />
+          <ActiveUsersTableContainer />
         </Router>
       </CodesContext.Provider>
     </AuthStateContext.Provider>
@@ -58,10 +58,7 @@ describe('ActiveUsersList', () => {
   });
 
   it('shows `No Active Users` when there are no active users', async () => {
-    const { getByText } = renderContainer({
-      activeUsers: [],
-      refresh: () => {}
-    });
+    const { getByText } = renderContainer();
 
     await waitFor(() => {
       expect(getByText('No Active Users')).toBeVisible();
@@ -69,10 +66,7 @@ describe('ActiveUsersList', () => {
   });
 
   it('renders the add new users button correctly', async () => {
-    const { getByTestId } = renderContainer({
-      activeUsers: [],
-      refresh: () => {}
-    });
+    const { getByTestId } = renderContainer();
 
     await waitFor(() => {
       expect(getByTestId('invite-system-users-button')).toBeVisible();

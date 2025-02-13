@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography';
 import { IObservationsContext } from 'contexts/observationsContext';
 import { IObservationsPageContext } from 'contexts/observationsPageContext';
 import dayjs from 'dayjs';
-import { ImportObservationsButton } from 'features/surveys/observations/sampling-sites/components/ImportObservationsButton';
+import { ImportObservationsButton } from 'features/surveys/observations/components/ImportObservationsButton';
 import { GetSamplingPeriod } from 'interfaces/useSamplingPeriodApi.interface';
 
 interface ISamplingSiteListPeriodProps {
@@ -145,7 +145,14 @@ export const SamplingSiteListPeriod = (props: ISamplingSiteListPeriodProps) => {
                       observationsPageContext.setIsDisabled(false);
                       observationsPageContext.setIsLoading(false);
                     }}
-                    processOptions={{ surveySamplePeriodId: samplePeriod.survey_sample_period_id }}
+                    surveySamplePeriodId={samplePeriod.survey_sample_period_id}
+                    buttonProps={{
+                      size: 'small',
+                      sx: {
+                        borderRadius: '3px',
+                        fontSize: '0.6rem'
+                      }
+                    }}
                   />
                 </Box>
               )}

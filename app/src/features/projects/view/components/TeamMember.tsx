@@ -2,6 +2,7 @@ import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import grey from '@mui/material/colors/grey';
 import Stack from '@mui/material/Stack';
+import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import assert from 'assert';
 import { PROJECT_ROLE_ICONS } from 'constants/roles';
@@ -68,11 +69,14 @@ const TeamMembers = () => {
             <Typography variant="body2" color="textSecondary" display="flex" alignItems="center">
               {member.display_name}
             </Typography>
+
             {/* Member Roles with Icons */}
             {member.roles.map((role) => (
-              <Box key={role} ml={0.75} mt={0.5}>
-                <Icon path={PROJECT_ROLE_ICONS[role] ?? ''} size={0.75} color={grey[600]} />
-              </Box>
+              <Tooltip title={role} arrow key={role}>
+                <Box ml={0.75} mt={0.5}>
+                  <Icon path={PROJECT_ROLE_ICONS[role] ?? ''} size={0.75} color={grey[600]} />
+                </Box>
+              </Tooltip>
             ))}
           </Box>
         );

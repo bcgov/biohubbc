@@ -417,11 +417,7 @@ export class SurveyService extends DBService {
     promises.push(
       Promise.all(
         postSurveyData.funding_sources.map((fundingSource) =>
-          this.fundingSourceService.postSurveyFundingSource(
-            surveyId,
-            fundingSource.funding_source_id,
-            fundingSource.amount
-          )
+          this.fundingSourceService.postSurveyFundingSource(surveyId, fundingSource.funding_source_id)
         )
       )
     );
@@ -985,52 +981,36 @@ export class SurveyService extends DBService {
     // Get any existing survey funding sources
     const existingSurveyFundingSources = await this.fundingSourceService.getSurveyFundingSources(surveyId);
 
-    //Compare input and existing for fundings to delete
+    // Compare input and existing funding sources for deletions (funding sources to be removed)
     const existingSurveyFundingToDelete = existingSurveyFundingSources.filter((existingSurveyFunding) => {
       return !surveyData.funding_sources.find(
-        (incomingFunding) => incomingFunding.survey_funding_source_id === existingSurveyFunding.survey_funding_source_id
+        (incomingFunding) => incomingFunding.funding_source_id === existingSurveyFunding.funding_source_id
       );
     });
 
-    // Delete any no existing fundings
+    // Delete any funding sources that are no longer part of the incoming data
     if (existingSurveyFundingToDelete.length) {
-      const promises: Promise<any>[] = [];
-
-      existingSurveyFundingToDelete.forEach((surveyFunding: any) => {
-        promises.push(this.fundingSourceService.deleteSurveyFundingSource(surveyId, surveyFunding.funding_source_id));
-      });
-
-      await Promise.all(promises);
+      const deletePromises = existingSurveyFundingToDelete.map((surveyFunding) =>
+        this.fundingSourceService.deleteSurveyFundingSource(surveyId, surveyFunding.funding_source_id)
+      );
+      await Promise.all(deletePromises);
     }
 
-    const promises: Promise<any>[] = [];
-
-    // The remaining funding sources with either update if they have a survey_funding_source_id
-    // or insert new record
-    surveyData.funding_sources.forEach((fundingSource) => {
-      if (fundingSource.survey_funding_source_id) {
-        // Update funding source
-        promises.push(
-          this.fundingSourceService.putSurveyFundingSource(
-            surveyId,
-            fundingSource.funding_source_id,
-            fundingSource.amount,
-            fundingSource.revision_count || 0
+    // Insert new funding sources that don't already exist in the current survey funding sources
+    const insertPromises = surveyData.funding_sources
+      .filter(
+        (source) =>
+          !existingSurveyFundingSources.some(
+            (existing) => existing.survey_funding_source_id === source.survey_funding_source_id
           )
-        );
-      } else {
-        // Create new funding source
-        promises.push(
-          this.fundingSourceService.postSurveyFundingSource(
-            surveyId,
-            fundingSource.funding_source_id,
-            fundingSource.amount
-          )
-        );
-      }
-    });
+      )
+      .map((fundingSource) => {
+        // Insert the new funding source
+        return this.fundingSourceService.postSurveyFundingSource(surveyId, fundingSource.funding_source_id);
+      });
 
-    await Promise.all(promises);
+    // Wait for all the promises (inserts) to finish
+    await Promise.all(insertPromises);
   }
 
   /**

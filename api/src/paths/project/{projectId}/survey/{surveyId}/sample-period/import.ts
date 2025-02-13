@@ -2,14 +2,18 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
+import { HTTP422CSVValidationError } from '../../../../../../errors/http-error';
+import { CSVValidationErrorResponse } from '../../../../../../openapi/schemas/csv';
 import { csvFileSchema } from '../../../../../../openapi/schemas/file';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { ObservationService } from '../../../../../../services/observation-services/observation-service';
-import { uploadFileToS3 } from '../../../../../../utils/file-utils';
+import { ImportSamplePeriodsService } from '../../../../../../services/import-services/sampling-periods/import-sample-periods-service';
+import { CSV_ERROR_MESSAGE } from '../../../../../../utils/csv-utils/csv-config-validation.interface';
 import { getLogger } from '../../../../../../utils/logger';
+import { parseMulterFile } from '../../../../../../utils/media/media-utils';
 import { getFileFromRequest } from '../../../../../../utils/request';
+import { constructXLSXWorkbook, getDefaultWorksheet } from '../../../../../../utils/xlsx-utils/worksheet-utils';
 
-const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/upload');
+const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/sample-period/import');
 
 export const POST: Operation = [
   authorizeRequestHandler((req) => {
@@ -27,12 +31,12 @@ export const POST: Operation = [
       ]
     };
   }),
-  uploadMedia()
+  importSamplePeriodsCSV()
 ];
 
 POST.apiDoc = {
-  description: 'Upload survey observation submission file.',
-  tags: ['observations'],
+  description: 'Import SIMS CSV Sample periods CSV file',
+  tags: ['periods'],
   security: [
     {
       Bearer: []
@@ -41,17 +45,27 @@ POST.apiDoc = {
   parameters: [
     {
       in: 'path',
+      description: 'SIMS survey id',
       name: 'projectId',
-      required: true
+      required: true,
+      schema: {
+        type: 'integer',
+        minimum: 1
+      }
     },
     {
       in: 'path',
+      description: 'SIMS survey id',
       name: 'surveyId',
-      required: true
+      required: true,
+      schema: {
+        type: 'integer',
+        minimum: 1
+      }
     }
   ],
   requestBody: {
-    description: 'Survey observation submission file to upload',
+    description: 'SIMS sample period CSV import file.',
     required: true,
     content: {
       'multipart/form-data': {
@@ -61,7 +75,7 @@ POST.apiDoc = {
           required: ['media'],
           properties: {
             media: {
-              description: 'A survey observation submission file.',
+              description: 'SIMS sample period CSV import file.',
               type: 'array',
               minItems: 1,
               maxItems: 1,
@@ -73,21 +87,8 @@ POST.apiDoc = {
     }
   },
   responses: {
-    200: {
-      description: 'Upload OK',
-      content: {
-        'application/json': {
-          schema: {
-            type: 'object',
-            additionalProperties: false,
-            properties: {
-              submissionId: {
-                type: 'number'
-              }
-            }
-          }
-        }
-      }
+    204: {
+      description: 'Sample periods CSV import success.'
     },
     400: {
       $ref: '#/components/responses/400'
@@ -98,6 +99,7 @@ POST.apiDoc = {
     403: {
       $ref: '#/components/responses/403'
     },
+    422: CSVValidationErrorResponse,
     500: {
       $ref: '#/components/responses/500'
     },
@@ -108,43 +110,36 @@ POST.apiDoc = {
 };
 
 /**
- * Uploads a media file to S3 and inserts a matching record in the `survey_observation_submission` table.
+ * Imports a `Sample Period CSV` which bulk adds sample periods into SIMS.
  *
- * @return {*}  {RequestHandler}
+ * @return {*} {RequestHandler}
  */
-export function uploadMedia(): RequestHandler {
+export function importSamplePeriodsCSV(): RequestHandler {
   return async (req, res) => {
-    const rawMediaFile = getFileFromRequest(req);
+    const surveyId = Number(req.params.surveyId);
+    const rawFile = getFileFromRequest(req);
 
     const connection = getDBConnection(req.keycloak_token);
+
+    const mediaFile = parseMulterFile(rawFile);
+    const worksheet = getDefaultWorksheet(constructXLSXWorkbook(mediaFile));
 
     try {
       await connection.open();
 
-      // Insert a new record in the `survey_observation_submission` table
-      const observationService = new ObservationService(connection);
-      const { submission_id: submissionId, key } = await observationService.insertSurveyObservationSubmission(
-        rawMediaFile,
-        Number(req.params.projectId),
-        Number(req.params.surveyId)
-      );
+      const importSamplePeriods = new ImportSamplePeriodsService(connection, worksheet, surveyId);
 
-      // Upload file to S3
-      const metadata = {
-        filename: rawMediaFile.originalname,
-        username: req.keycloak_token?.preferred_username ?? '',
-        email: req.keycloak_token?.email ?? ''
-      };
+      const errors = await importSamplePeriods.importCSVWorksheet();
 
-      const result = await uploadFileToS3(rawMediaFile, key, metadata);
-
-      defaultLog.debug({ label: 'uploadMedia', message: 'result', result });
+      if (errors.length) {
+        throw new HTTP422CSVValidationError(CSV_ERROR_MESSAGE, errors);
+      }
 
       await connection.commit();
 
-      return res.status(200).json({ submissionId });
+      return res.status(204).send();
     } catch (error) {
-      defaultLog.error({ label: 'uploadMedia', message: 'error', error });
+      defaultLog.error({ label: 'importSamplePeriodsCSV', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
