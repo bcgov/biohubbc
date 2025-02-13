@@ -8,6 +8,8 @@
   -- 5. Select "Proceed" to export the data to local machine
 
 
+-- STATUS: Confirmed working - no import issues
+
 -- BCTW table: api_lotek_credential
 -- SIMS table: telemetry_credential_lotek
 
@@ -33,6 +35,8 @@ SELECT
 FROM bctw.api_lotek_credential;
 
 
+-- STATUS: Confirmed working - no import issues after fixing the `idcom` column type
+
 -- BCTW table: api_vectronic_credential
 -- SIMS table: telemetry_credential_vectronic
 
@@ -44,13 +48,25 @@ FROM bctw.api_lotek_credential;
 -- Query count: 1123
 -- BCTW table count: 1123
 
+-- Note: The `idcom` is the incorrect type in the Biohub table.
+-- Example values: 0-2399684 and 300434068136700
+
+ALTER table biohub.telemetry_credential_vectronic
+ALTER column idcom
+SET DATA TYPE VARCHAR(50);
+
 SELECT
 	idcollar,
+  comtype,
 	idcom,
 	collarkey,
 	collartype
 FROM bctw.api_vectronic_credential;
 
+
+-- STATUS: Not confirmed - waiting for the dployments to be transferred from the
+-- `deployment_old` -> `deployment` table in SIMS. Note this should work once the deployments
+-- are transferred.
 
 -- BCTW table: bctw_telemetry_manual.telemetry_manual
 -- SIMS table: sims_telemetry_manual.telemetry_manual
@@ -76,17 +92,13 @@ INNER JOIN biohub.deployment_old sims_deployment_old
 ON bctw_telemetry_manual.deployment_id = sims_deployment_old.bctw_deployment_id
 WHERE bctw.is_valid(valid_to);
 
+-- STATUS: Confirmed working - no import issues
 
 -- BCTW table: bctw.telemetry_api_ats
 -- SIMS table: sims.telemetry_ats
 
 -- This generates the SQL to transform the data from the BCTW
 -- table `bctw.telemetry_api_ats` to the SIMS table `sims.telemetry_ats`.
-
--- Notes: The BCTW `geom` column is a PostGis Geometry type,
--- but the SIMS `geography` column is a PostGis Geography type
--- so we need to cast the `geom` column to a `geography` type.
-
 
 -- Query count: 817
 -- BCTW table count: 817
@@ -111,6 +123,5 @@ SELECT
 	hdop,
 	numsats,
 	fixtime,
-	activity,
-	geom::geography AS geography
+	activity
 FROM bctw.telemetry_api_ats;
