@@ -6,10 +6,10 @@ import { HTTP400 } from '../../../../../../../errors/http-error';
 import { fileSchema } from '../../../../../../../openapi/schemas/file';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { AttachmentService } from '../../../../../../../services/attachment-service';
+import { validateGetKeyDataTelementryCredentialFile } from '../../../../../../../services/telemetry-services/telemetry-utils';
 import { TelemetryVectronicService } from '../../../../../../../services/telemetry-services/telemetry-vectronic-service';
 import { uploadFileToS3 } from '../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../utils/logger';
-import { validateGetKeyDataTelementryCredentialFile } from '../../../../../../../utils/media/media-utils';
 import { getFileFromRequest } from '../../../../../../../utils/request';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/telemetry');

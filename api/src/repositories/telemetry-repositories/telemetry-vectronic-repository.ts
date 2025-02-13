@@ -78,7 +78,7 @@ export class TelemetryVectronicRepository extends BaseRepository {
    * @param {IKeyxData} key
    * @returns {Promise<number>}
    */
-  async insertTelemetryCredentialAttachmentVectronic(key: IKeyxData): Promise<number> {
+  async insertTelemetryCredentialVectronic(key: IKeyxData): Promise<number> {
     const sqlStatement = SQL`
       WITH ins_key AS (
         INSERT INTO telemetry_credential_vectronic (
@@ -109,7 +109,7 @@ export class TelemetryVectronicRepository extends BaseRepository {
 
     if (!responseVectronic?.rows?.[0]) {
       throw new ApiExecuteSQLError('Failed to insert vectronic device key data', [
-        'AttachmentRepository->insertTelemetryCredentialAttachmentVectronic',
+        'AttachmentRepository->insertTelemetryCredentialVectronic',
         'rows was null or undefined, expected rows != null'
       ]);
     }

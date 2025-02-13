@@ -63,7 +63,7 @@ export class TelemetryLotekRepository extends BaseRepository {
    * @param {ICfgData} key
    * @returns {Promise<number>}
    */
-  async insertTelemetryCredentialAttachmentLotek(key: ICfgData): Promise<number> {
+  async insertTelemetryCredentialLotek(key: ICfgData): Promise<number> {
     const sqlStatement = SQL`
       WITH ins_key AS (
         INSERT INTO telemetry_credential_lotek (
@@ -90,7 +90,7 @@ export class TelemetryLotekRepository extends BaseRepository {
 
     if (!responseLotek?.rows?.[0]) {
       throw new ApiExecuteSQLError('Failed to insert lotek device key data', [
-        'AttachmentRepository->insertTelemetryCredentialAttachmentLotek',
+        'AttachmentRepository->insertTelemetryCredentialLotek',
         'rows was null or undefined, expected rows != null'
       ]);
     }

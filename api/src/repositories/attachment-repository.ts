@@ -5,8 +5,8 @@ import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { PostReportAttachmentMetadata, PutReportAttachmentMetadata } from '../models/project-survey-attachments';
 import { IDeviceKeyData } from '../services/attachment-service';
+import { IValidationData } from '../services/telemetry-services/telemetry-utils';
 import { getLogger } from '../utils/logger';
-import { IValidationData } from '../utils/media/media-utils';
 import { BaseRepository } from './base-repository';
 
 export type IAttachment = ISurveyAttachment | ISurveyReportAttachment | IProjectAttachment | IProjectReportAttachment;
@@ -1659,6 +1659,13 @@ export class AttachmentRepository extends BaseRepository {
     return response.rows[0];
   }
 
+  /**
+   * Inserts uploaded device key attachment file
+   *
+   * @async
+   * @param {IDeviceKeyData} deviceKeyData
+   * @returns {Promise<number>}
+   */
   async insertSurveyTelemetryCredentialAttachment(deviceKeyData: IDeviceKeyData): Promise<number> {
     const sqlStatement = SQL`
     INSERT INTO survey_telemetry_credential_attachment (

@@ -22,10 +22,9 @@ import { TelemetryLotekRepository } from '../repositories/telemetry-repositories
 import { TelemetryVectronicRepository } from '../repositories/telemetry-repositories/telemetry-vectronic-repository';
 import { TelemetryVendorRepository } from '../repositories/telemetry-repositories/telemetry-vendor-repository';
 import { deleteFileFromS3, generateS3FileKey } from '../utils/file-utils';
-import { IValidationData } from '../utils/media/media-utils';
 import { DBService } from './db-service';
 import { HistoryPublishService } from './history-publish-service';
-import { getTelemetryDeviceKey } from './telemetry-services/telemetry-utils';
+import { getTelemetryDeviceKey, IValidationData } from './telemetry-services/telemetry-utils';
 
 export interface IAttachmentType {
   id: number;
@@ -1005,14 +1004,14 @@ export class AttachmentService extends DBService {
             // the data is for lotek cfg
             if ('Iridium IMEI' in key) {
               responseJSON.telemetry_credential_lotek_id?.push(
-                await this.telemetryLotekRepository.insertTelemetryCredentialAttachmentLotek(key)
+                await this.telemetryLotekRepository.insertTelemetryCredentialLotek(key)
               );
             }
 
             // the data is for vectronic keyx
             if ('comID' in key && 'comType' in key && 'collarType' in key) {
               responseJSON.telemetry_credential_vectronic_id?.push(
-                await this.telemetryVectronicRepository.insertTelemetryCredentialAttachmentVectronic(key)
+                await this.telemetryVectronicRepository.insertTelemetryCredentialVectronic(key)
               );
             }
           }

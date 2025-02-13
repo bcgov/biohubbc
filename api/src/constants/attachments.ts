@@ -27,7 +27,10 @@ export enum TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE {
    * Vectronic API key file type.
    */
   KEYX = 'KeyX',
-
+  /**
+   * Zip file type. Zip of .cfg or .keyx files
+   */
+  ZIP = 'Zip',
   /**
    * Unknown file type.
    */
