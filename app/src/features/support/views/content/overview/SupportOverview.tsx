@@ -35,7 +35,7 @@ export const SupportOverview = () => (
       <Typography fontWeight={700} variant="h4" mb={2}>
         Work Together
       </Typography>
-      <Typography variant="body1" gutterBottom >
+      <Typography variant="body1" gutterBottom>
         The Species Inventory Management System simplifies data sharing with collaborators through&nbsp;
         <strong>Projects</strong>. When you make a Project, only you and your team can access and manage the information
         in that Project.
@@ -46,7 +46,7 @@ export const SupportOverview = () => (
       <Typography fontWeight={700} variant="h4" mb={2}>
         Simplify Data Management
       </Typography>
-      <Typography variant="body1" gutterBottom >
+      <Typography variant="body1" gutterBottom>
         Add data to <strong>Surveys</strong> to start gaining insights into species distributions, demographics, and
         more through interactive maps and quick analytics. Surveys help you structure data in alignment with provincial
         standards, enabling comparisons to other datasets and simplifying data management.
@@ -57,7 +57,7 @@ export const SupportOverview = () => (
       <Typography fontWeight={700} variant="h4" mb={2}>
         Modernizing Legacy Systems
       </Typography>
-      <Typography variant="body1" gutterBottom >
+      <Typography variant="body1" gutterBottom>
         The Species Inventory Management System is part of modernizing British Columbia's legacy fish and wildlife data
         systems. The Species Inventory Management System will partly replace the Species Inventory (SPI) database, which
         stores decades worth of fish and wildlife data from across British Columbia. The historical data stored in SPI

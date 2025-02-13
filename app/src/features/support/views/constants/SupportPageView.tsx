@@ -1,4 +1,3 @@
-
 export enum SupportPageView {
   GENERAL = 'GENERAL',
   STRUCTURE = 'STRUCTURE',

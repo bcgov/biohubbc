@@ -12,7 +12,7 @@ import Typography from '@mui/material/Typography';
 export const SupportTelemetry = () => (
   <Stack gap={5} mb={3}>
     <Box>
-      <Typography >
+      <Typography>
         Telemetry is animal movement data collected from a tracking device. The tracking devices are typically GPS
         devices that automatically transmit an animal's location through satellites, but they also include very high
         frequency (VHF) devices where the animal is followed in the field.
@@ -20,10 +20,10 @@ export const SupportTelemetry = () => (
     </Box>
 
     <Box>
-      <Typography  variant="h3" mb={2}>
+      <Typography variant="h3" mb={2}>
         Adding Telemetry Data
       </Typography>
-      <Typography gutterBottom >
+      <Typography gutterBottom>
         To add telemetry data to your Survey, you must first add three pieces of information:
       </Typography>
       <List sx={{ listStyleType: 'disc', '& .MuiListItem-root': { ml: 5 } }}>
@@ -43,7 +43,7 @@ export const SupportTelemetry = () => (
       <Typography fontWeight={700} variant="h4" mb={2}>
         Devices
       </Typography>
-      <Typography gutterBottom >
+      <Typography gutterBottom>
         The device represents the physical unit transmitting data, usually identified by its serial number and
         manufacturer. We require you to add devices before linking them to deployments to help identify unique devices
         and simplify the management of telemetry data.
@@ -54,7 +54,7 @@ export const SupportTelemetry = () => (
       <Typography fontWeight={700} variant="h4" mb={2}>
         Animals
       </Typography>
-      <Typography gutterBottom  mb={2}>
+      <Typography gutterBottom mb={2}>
         Animals are the individuals with telemetry devices. Before adding telemetry data, you must add the animal and
         then the capture event for that animal when the device was put on.
       </Typography>
@@ -68,7 +68,7 @@ export const SupportTelemetry = () => (
       <Typography fontWeight={700} variant="h4" mb={2}>
         Deployments
       </Typography>
-      <Typography gutterBottom >
+      <Typography gutterBottom>
         A deployment is the <strong>link between an animal and device</strong>. Both the animal and device need to be
         added before the deployment. Once you have a deployment, you can import the telemetry data for that deployment.
       </Typography>

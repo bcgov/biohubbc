@@ -12,9 +12,9 @@ import Typography from '@mui/material/Typography';
 export const SupportTeam = () => (
   <Stack gap={5} mb={3}>
     <Box>
-      <Typography >
-        Project teams are groups of people who collaboratively manage data and information. Each team
-        member in a Project has a specific role that determines what they can do in the workspace.
+      <Typography>
+        Project teams are groups of people who collaboratively manage data and information. Each team member in a
+        Project has a specific role that determines what they can do in the workspace.
       </Typography>
     </Box>
 
@@ -34,7 +34,7 @@ export const SupportTeam = () => (
         <Typography fontWeight={700} variant="h5" mb={2}>
           Coordinators
         </Typography>
-        <Typography variant="body1" gutterBottom >
+        <Typography variant="body1" gutterBottom>
           Team members with the Coordinator role have the following privileges:
         </Typography>
         <List sx={{ listStyleType: 'disc', '& .MuiListItem-root': { ml: 5, alignItems: 'center' } }}>
@@ -49,7 +49,7 @@ export const SupportTeam = () => (
         <Typography fontWeight={700} variant="h5" mb={2}>
           Collaborators
         </Typography>
-        <Typography variant="body1" gutterBottom >
+        <Typography variant="body1" gutterBottom>
           Team members with the Collaborator role have the following privileges:
         </Typography>
         <List sx={{ listStyleType: 'disc', '& .MuiListItem-root': { ml: 5, alignItems: 'center' } }}>
@@ -62,7 +62,7 @@ export const SupportTeam = () => (
         <Typography fontWeight={700} variant="h5" mb={2}>
           Observer
         </Typography>
-        <Typography variant="body1" gutterBottom >
+        <Typography variant="body1" gutterBottom>
           Team members with the Observer role have the following privileges:
         </Typography>
         <List sx={{ listStyleType: 'disc', '& .MuiListItem-root': { ml: 5, alignItems: 'center' } }}>

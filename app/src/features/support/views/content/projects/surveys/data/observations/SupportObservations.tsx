@@ -10,7 +10,7 @@ import Typography from '@mui/material/Typography';
 export const SupportObservations = () => (
   <Stack gap={5} mb={3}>
     <Box>
-      <Typography >
+      <Typography>
         Observations are counts of species at specific locations and times. The location is typically a sampling site,
         but you can also add observations without a sampling site.
       </Typography>
@@ -20,11 +20,11 @@ export const SupportObservations = () => (
       <Typography fontWeight={700} variant="h4" mb={2}>
         Species
       </Typography>
-      <Typography gutterBottom  mb={2}>
+      <Typography gutterBottom mb={2}>
         The species is the taxon that you observed. If you cannot determine the species, you can use a higher taxon like
         the genus or family.
       </Typography>
-      <Typography gutterBottom >
+      <Typography gutterBottom>
         Temporarily, the list of available species comes from the&nbsp;
         <a href="itis.gov">Integrated Taxonomic Information System</a>. We are working with the Conservation Data Center
         to integrate British Columbia's official taxonomy information and replace the Integrated Taxonomic Information
@@ -36,7 +36,7 @@ export const SupportObservations = () => (
       <Typography fontWeight={700} variant="h4" mb={2}>
         Sampling Information
       </Typography>
-      <Typography gutterBottom >
+      <Typography gutterBottom>
         You can link observations to sampling information by including the period when the observation was made. You can
         still add observations without sampling information, but observations without sampling sites are commonly
         considered incidentals and less informative for rigorous analyses.
@@ -47,7 +47,7 @@ export const SupportObservations = () => (
       <Typography fontWeight={700} variant="h4" mb={2}>
         Species Attributes
       </Typography>
-      <Typography gutterBottom >
+      <Typography gutterBottom>
         You can add species-specific attributes (eg. life stage, sex, body condition) to your observations. The
         attributes applicable to a species are shown in the Standards.
       </Typography>
@@ -57,7 +57,7 @@ export const SupportObservations = () => (
       <Typography fontWeight={700} variant="h4" mb={2}>
         Environmental Conditions
       </Typography>
-      <Typography gutterBottom >
+      <Typography gutterBottom>
         You can add environmental conditions (eg. temperature, cloud cover, wind speed) to your observations. Possible
         environmental conditions are shown in the Standards.
       </Typography>

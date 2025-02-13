@@ -4,11 +4,11 @@ import { Collapse } from '@mui/material';
 import Box from '@mui/material/Box';
 import Paper, { PaperProps } from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
-import React, { PropsWithChildren, ReactElement, useState } from 'react';
+import { PropsWithChildren, ReactElement, useState } from 'react';
 
 interface IAccordionStandardCardProps extends PaperProps {
-  label: string | React.ReactNode;
-  subtitle?: string | React.ReactNode | null;
+  label: string | ReactElement;
+  subtitle?: string | ReactElement | null;
   ornament?: ReactElement;
   colour: string;
   disableCollapse?: boolean;

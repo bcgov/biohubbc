@@ -1,93 +1,71 @@
-import { mdiChevronDown, mdiChevronRight } from '@mdi/js';
 import Icon from '@mdi/react';
-import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
-import { useEffect, useState } from 'react';
 
 export interface ToggleButtonView<ViewValueType> {
+  /**
+   * The value of the toggle button, which will be passed to the `onViewChange` callback.
+   *
+   * @type {ViewValueType}
+   * @memberof ToggleButtonView
+   */
   value: ViewValueType;
+  /**
+   * The label to display for the toggle button.
+   *
+   * @type {string}
+   * @memberof ToggleButtonView
+   */
   label: string;
+  /**
+   * An optional start icon.
+   *
+   * @type {string}
+   * @memberof ToggleButtonView
+   */
   icon?: string;
-  children?: ToggleButtonView<ViewValueType>[];
 }
 
 interface CustomToggleButtonGroupProps<ViewValueType extends string> {
+  /**
+   * An array of views to display in the toggle button group.
+   *
+   * @type {ToggleButtonView<ViewValueType>[]}
+   * @memberof CustomToggleButtonGroupProps
+   */
   views: ToggleButtonView<ViewValueType>[];
+  /**
+   * The currently active view.
+   *
+   * @type {ViewValueType}
+   * @memberof CustomToggleButtonGroupProps
+   */
   activeView: ViewValueType;
+  /**
+   * Callback fired when a toggle button is clicked.
+   *
+   * @memberof CustomToggleButtonGroupProps
+   */
   onViewChange: (view: ViewValueType) => void;
+  /**
+   * The orientation of the toggle button group.
+   *
+   * @type {('horizontal' | 'vertical')}
+   * @memberof CustomToggleButtonGroupProps
+   */
   orientation: 'horizontal' | 'vertical';
 }
 
-const CustomToggleButtonGroup = <ViewValueType extends string>({
-  views,
-  activeView,
-  onViewChange,
-  orientation
-}: CustomToggleButtonGroupProps<ViewValueType>) => {
-  const [expanded, setExpanded] = useState<Set<ViewValueType>>(new Set());
-
-  // Function to find all parent views of the activeView
-  const findParentViews = (
-    views: ToggleButtonView<ViewValueType>[],
-    target: ViewValueType,
-    parents: Set<ViewValueType> = new Set()
-  ): Set<ViewValueType> => {
-    for (const view of views) {
-      if (view.value === target) {
-        return parents;
-      }
-      if (view.children) {
-        const found = findParentViews(view.children, target, new Set([...parents, view.value]));
-        if (found.size) {
-          return found;
-        }
-      }
-    }
-    return new Set();
-  };
-
-  // Expand all parents of activeView on mount or when activeView changes
-  useEffect(() => {
-    const parents = findParentViews(views, activeView);
-    setExpanded((prev) => new Set([...prev, ...parents]));
-  }, [activeView, views]);
-
-  const toggleExpand = (view: ViewValueType) => {
-    setExpanded((prev) => {
-      const newSet = new Set(prev);
-      newSet.has(view) ? newSet.delete(view) : newSet.add(view);
-      return newSet;
-    });
-  };
-
-  const renderViews = (views: ToggleButtonView<ViewValueType>[], level = 0) => {
-    return views.map((view) => {
-      const startIcon = view.icon ? <Icon path={view.icon} size={0.75} /> : undefined;
-      const hasChildren = view.children && view.children.length > 0;
-      const isExpanded = expanded.has(view.value);
-
-      return (
-        <Box key={view.value} sx={{ marginLeft: level * 2, mt: level > 0 ? 0.5 : 0 }}>
-          <ToggleButton
-            component={Button}
-            color="primary"
-            startIcon={startIcon}
-            endIcon={hasChildren && <Icon path={isExpanded ? mdiChevronDown : mdiChevronRight} size={1} />}
-            value={view.value}
-            onClick={() => {
-              onViewChange(view.value);
-              if (hasChildren) toggleExpand(view.value);
-            }}>
-            {view.label}
-          </ToggleButton>
-
-          {hasChildren && isExpanded && renderViews(view.children ?? [], level + 1)}
-        </Box>
-      );
-    });
-  };
+/**
+ * A custom toggle button group that allows users to select from multiple views.
+ *
+ * @template ViewValueType
+ * @param {CustomToggleButtonGroupProps<ViewValueType>} props
+ * @return {*}
+ */
+const CustomToggleButtonGroup = <ViewValueType extends string>(props: CustomToggleButtonGroupProps<ViewValueType>) => {
+  const { views, activeView, onViewChange, orientation } = props;
 
   return (
     <ToggleButtonGroup
@@ -101,11 +79,10 @@ const CustomToggleButtonGroup = <ViewValueType extends string>({
       exclusive
       sx={{
         display: 'flex',
-        flexDirection: orientation === 'vertical' ? 'column' : 'row',
+        flex: '1 1 auto',
         gap: 0.5,
         '& Button': {
           py: 1,
-          width: '100%',
           px: 2,
           border: 'none',
           borderRadius: '4px !important',
@@ -115,7 +92,15 @@ const CustomToggleButtonGroup = <ViewValueType extends string>({
           justifyContent: 'flex-start'
         }
       }}>
-      {renderViews(views)}
+      {views.map((view) => {
+        const startIcon = (view.icon && <Icon path={view.icon} size={0.75} />) || undefined;
+
+        return (
+          <ToggleButton key={view.value} component={Button} color="primary" startIcon={startIcon} value={view.value}>
+            {view.label}
+          </ToggleButton>
+        );
+      })}
     </ToggleButtonGroup>
   );
 };

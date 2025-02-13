@@ -2,7 +2,7 @@ import { mdiChevronLeft, mdiChevronRight } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Box, Button, Container, Divider, Paper, Stack, Typography } from '@mui/material';
 import PageHeader from 'components/layout/PageHeader';
-import CustomToggleButtonGroup from 'components/toolbar/CustomToggleButtonGroup';
+import { HierarchicalCustomToggleButtonGroup } from 'components/toolbar/HierarchicalCustomToggleButtonGroup';
 import { useSearchParams } from 'hooks/useSearchParams';
 import { useMemo, useState } from 'react';
 import {
@@ -44,11 +44,11 @@ export const SupportPage = () => {
   // Sort views based on the order field
   const orderedViews = useMemo(
     () => flattenViews(SupportPageViews).sort((a, b) => a.order - b.order),
-    [SupportPageViews]
+    [SupportPageViews, flattenViews]
   );
 
   // Find the current view object for its label, icon, children
-  const currentView = useMemo(() => orderedViews.find((view) => view.value === activeView), [activeView]);
+  const currentView = useMemo(() => orderedViews.find((view) => view.value === activeView), [activeView, orderedViews]);
 
   const currentIndex = currentView ? orderedViews.findIndex((v) => v.value === currentView.value) : 0;
   const prevView = orderedViews[currentIndex - 1] || null;
@@ -68,7 +68,7 @@ export const SupportPage = () => {
     }
     // If on a middle page, position both buttons with space-between
     return 'space-between';
-  }, [currentIndex]);
+  }, [currentIndex, orderedViews]);
 
   return (
     <>
@@ -77,7 +77,7 @@ export const SupportPage = () => {
         <Stack direction="row" gap={3} component={Paper} sx={{ p: 3, height: '100%' }}>
           {/* Navigation Pane */}
           <Box width="300px" flexShrink={0}>
-            <CustomToggleButtonGroup
+            <HierarchicalCustomToggleButtonGroup
               views={SupportPageViews}
               activeView={activeView}
               onViewChange={handleViewChange}

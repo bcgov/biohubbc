@@ -12,7 +12,7 @@ import Typography from '@mui/material/Typography';
 export const SupportSampling = () => (
   <Stack gap={5} mb={3}>
     <Box>
-      <Typography >
+      <Typography>
         The sampling information in a Survey describes exactly where, when, and how you collected data. The term
         sampling is used because we often collect just a sample of ecological data to represent the area of interest,
         saving us from having to collect data everywhere.
@@ -23,7 +23,7 @@ export const SupportSampling = () => (
       <Typography fontWeight={700} variant="h4" mb={2}>
         Sampling Site
       </Typography>
-      <Typography gutterBottom >
+      <Typography gutterBottom>
         A sampling site is a location where data is collected. Sampling sites can be points, transects, or areas,
         depending on how you sampled:
       </Typography>
@@ -47,7 +47,7 @@ export const SupportSampling = () => (
       <Typography fontWeight={700} variant="h5" mb={2}>
         Choose What Works
       </Typography>
-      <Typography gutterBottom >
+      <Typography gutterBottom>
         You might be wondering whether your site is a point, line, or area. We recommend using the option that you think
         is best, given your objectives and understanding of the data. If your area is small enough to be considered a
         point without losing information, you can keep it simple by using a point. You can add comments to your site to
@@ -59,7 +59,7 @@ export const SupportSampling = () => (
       <Typography fontWeight={700} variant="h4" mb={2}>
         Technique
       </Typography>
-      <Typography gutterBottom >
+      <Typography gutterBottom>
         Techniques represent the methods that you used to collect data at your sampling sites. Techniques can contain a
         variety of information:
       </Typography>
@@ -89,7 +89,7 @@ export const SupportSampling = () => (
       <Typography fontWeight={700} variant="h4" mb={2}>
         Period
       </Typography>
-      <Typography gutterBottom >
+      <Typography gutterBottom>
         Periods represent precisely when you collected data, which you might call a sampling session. Using the terms
         above, periods indicate &zwnj;
         <strong>when you applied a technique at a sampling site</strong>. Precise start and end information is important
