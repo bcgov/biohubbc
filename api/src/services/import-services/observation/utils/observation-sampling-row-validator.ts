@@ -700,14 +700,6 @@ export function findMatchingPeriodsWithObservationDateTime(
     const samplePeriodStartDateTime = newDayjs(samplePeriod.start_date, samplePeriod.start_time);
     const samplePeriodEndDateTime = newDayjs(samplePeriod.end_date, samplePeriod.end_time);
 
-    console.log({
-      samplePeriodStartDateTime: samplePeriodStartDateTime.format(),
-      samplePeriodEndDateTime: samplePeriodEndDateTime.format(),
-      observationDateTime: observationDateTime.format(),
-      isSameOrAfter: observationDateTime.isSameOrAfter(samplePeriodStartDateTime),
-      isSameOrBefore: observationDateTime.isSameOrBefore(samplePeriodEndDateTime)
-    });
-
     // The observation date time must be within the start and end date time of the sampling period
     return (
       observationDateTime.isSameOrAfter(samplePeriodStartDateTime) &&
