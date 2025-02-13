@@ -20,7 +20,13 @@ w_missing_deployment_ids as (
   full join biohub.critter
     on
     biohub.deployment_old.critter_id = biohub.critter.critter_id
+    --  left join biohub.survey
+    --    on
+    --    critter.survey_id = survey.survey_id
   where
+    1 = 1
+    --  and survey."name" not ilike '%bctw%'
+    and
     not exists (
       select
         1
@@ -28,7 +34,7 @@ w_missing_deployment_ids as (
         bctw.collar_animal_assignment
       where
         bctw.collar_animal_assignment.deployment_id = bctw_deployment_id
-    )
+    );
 ),
 w_unique_bctw_records as (
   select
@@ -51,13 +57,36 @@ w_unique_bctw_records as (
 select
   w_missing_deployment_ids.*,
   w_unique_bctw_records.*,
-  ABS(extract(EPOCH from w_unique_bctw_records.created_at::timestamp) - extract(EPOCH from w_missing_deployment_ids.create_date::timestamp)) as diff
+  ABS(
+    extract(
+      EPOCH
+    from
+      w_unique_bctw_records.created_at::timestamp
+    ) - extract(
+      EPOCH
+    from
+      w_missing_deployment_ids.create_date::timestamp
+    )
+  ) as diff
 from 
   w_missing_deployment_ids
 left join w_unique_bctw_records
 on
-  w_missing_deployment_ids.critterbase_critter_id = w_unique_bctw_records.critter_id;
--- where ABS(EXTRACT(EPOCH FROM collar_animal_assignment.created_at::timestamp) - EXTRACT(EPOCH FROM w_missing_deployment_ids.create_date::timestamp)) < 2;
+  -- join on matching critter ids (295 records)
+  w_missing_deployment_ids.critterbase_critter_id = w_unique_bctw_records.critter_id
+  -- where the difference in create dates is greater than x milliseconds
+where
+  ABS(
+    extract(
+      EPOCH
+    from
+      w_unique_bctw_records.created_at::timestamp
+    ) - extract(
+      EPOCH
+    from
+      w_missing_deployment_ids.create_date::timestamp
+    )
+  ) > 1;
 
 -------------------------------------------------------------------------------------
 -- Find all SIMS deployment ids that do not have a matching bctw deployment id
@@ -150,4 +179,41 @@ where
       deployment_id
     from
       w_deployments_with_multiple_active_rows
+  );
+
+
+-------------------------------------------------------------------------------------
+-- Find all sims deployments that have no matching bctw deployments AND the survey 
+-- name doesnt include 'bctw', which are all auto-generated surveys.
+-------------------------------------------------------------------------------------
+
+select 
+    distinct on
+    (bctw_deployment_id)
+    deployment_old.bctw_deployment_id,
+    deployment_old.deployment_id,
+    deployment_old.create_date,
+    deployment_old.critter_id,
+    critter.critterbase_critter_id,
+    critter.survey_id,
+    survey.project_id
+from
+    biohub.deployment_old
+left join biohub.critter
+    on
+    biohub.deployment_old.critter_id = biohub.critter.critter_id
+left join biohub.survey
+    on
+    critter.survey_id = survey.survey_id
+where
+  1 = 1
+  and survey."name" not ilike '%bctw%'
+  and
+    not exists (
+    select
+        1
+    from
+        bctw.collar_animal_assignment
+    where
+        bctw.collar_animal_assignment.deployment_id = bctw_deployment_id
   );
