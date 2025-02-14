@@ -15,8 +15,8 @@ export async function up(knex: Knex): Promise<void> {
     SET SEARCH_PATH=biohub;
 
     ALTER TABLE telemetry_credential_vectronic ALTER COLUMN idcom SET DATA TYPE VARCHAR(50);
-    ALTER TABLE telemetry_credential_lotek ADD COLUMN devicekey VARCHAR(1000) NOT NULL;
-    COMMENT ON COLUMN telemetry_credential_lotek.devicekey IS 'The Lotek device key that corresponds to the Key label in the CFG file.';
+    ALTER TABLE telemetry_credential_lotek ADD COLUMN key VARCHAR(1000) NOT NULL;
+    COMMENT ON COLUMN telemetry_credential_lotek.key IS 'The Lotek device key that corresponds to the Key label in the CFG file.';
 
   `);
 }

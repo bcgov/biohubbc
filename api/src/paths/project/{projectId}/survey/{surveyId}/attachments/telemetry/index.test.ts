@@ -12,7 +12,6 @@ import { TelemetryVectronicService } from '../../../../../../../services/telemet
 import * as file_utils from '../../../../../../../utils/file-utils';
 import { KeycloakUserInformation } from '../../../../../../../utils/keycloak-utils';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../__mocks__/db';
-// import { TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE } from '../../../../../../../constants/attachments';
 
 chai.use(sinonChai);
 

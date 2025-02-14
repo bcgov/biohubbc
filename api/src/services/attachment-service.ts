@@ -984,37 +984,40 @@ export class AttachmentService extends DBService {
       await this.attachmentRepository.insertSurveyTelemetryCredentialAttachment(deviceKeyData);
 
     const vendor = TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.CFG === deviceKeyData.fileData.type ? 'Lotek' : 'Vectronic';
-    if (deviceKeyData.fileData.keyData) {
-      for (const keyFile of deviceKeyData.fileData.keyData) {
-        // Iterate through the keys array
-        if (keyFile.keysData) {
-          for (const key of keyFile.keysData) {
-            // Generate SIMS device_key
-            const serial = key.id;
-            const deviceKey = getTelemetryDeviceKey({ vendor, serial });
+    if (!deviceKeyData.fileData.keyData) {
+      return responseJSON;
+    }
 
-            // populate device key vendor table
-            responseJSON.survey_telemetry_vendor_credential_id?.push(
-              await this.telemetryVendorRepository.insertTelemetryCredentialAttachmentVendor(
-                deviceKey,
-                responseJSON.survey_telemetry_credential_attachment_id
-              )
-            );
+    for (const keyFile of deviceKeyData.fileData.keyData) {
+      if (!keyFile.keysData) {
+        continue;
+      }
 
-            // the data is for lotek cfg
-            if ('Iridium IMEI' in key) {
-              responseJSON.telemetry_credential_lotek_id?.push(
-                await this.telemetryLotekRepository.insertTelemetryCredentialLotek(key)
-              );
-            }
+      for (const key of keyFile.keysData) {
+        // Generate SIMS device_key
+        const serial = key.id;
+        const deviceKey = getTelemetryDeviceKey({ vendor, serial });
 
-            // the data is for vectronic keyx
-            if ('comID' in key && 'comType' in key && 'collarType' in key) {
-              responseJSON.telemetry_credential_vectronic_id?.push(
-                await this.telemetryVectronicRepository.insertTelemetryCredentialVectronic(key)
-              );
-            }
-          }
+        // populate device key vendor table
+        responseJSON.survey_telemetry_vendor_credential_id?.push(
+          await this.telemetryVendorRepository.insertTelemetryCredentialAttachmentVendor(
+            deviceKey,
+            responseJSON.survey_telemetry_credential_attachment_id
+          )
+        );
+
+        // the data is for lotek cfg
+        if ('Iridium IMEI' in key) {
+          responseJSON.telemetry_credential_lotek_id?.push(
+            await this.telemetryLotekRepository.insertTelemetryCredentialLotek(key)
+          );
+        }
+
+        // the data is for vectronic keyx
+        if ('comID' in key && 'comType' in key && 'collarType' in key) {
+          responseJSON.telemetry_credential_vectronic_id?.push(
+            await this.telemetryVectronicRepository.insertTelemetryCredentialVectronic(key)
+          );
         }
       }
     }

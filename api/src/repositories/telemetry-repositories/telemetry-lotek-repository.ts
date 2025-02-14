@@ -69,7 +69,7 @@ export class TelemetryLotekRepository extends BaseRepository {
         INSERT INTO telemetry_credential_lotek (
           ndeviceid,
           strspecialid,
-          devicekey
+          key
         ) VALUES (
           ${key.id},
           ${key['Iridium IMEI']},
