@@ -82,8 +82,8 @@ export async function telemetryCronjob() {
     const parsedVectronic = parseResults('Vectronic', vectronicResults);
 
     return {
-      new: parsedLotek.new + parsedVectronic.new,
-      created: parsedLotek.created + parsedVectronic.created,
+      new_telemetry: parsedLotek.new + parsedVectronic.new,
+      created_telemetry: parsedLotek.created + parsedVectronic.created,
       errors: parsedLotek.errors.concat(parsedVectronic.errors)
     };
   } finally {

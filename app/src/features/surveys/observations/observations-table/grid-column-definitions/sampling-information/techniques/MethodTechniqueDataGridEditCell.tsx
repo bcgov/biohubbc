@@ -50,11 +50,16 @@ export const MethodTechniqueDataGridEditCell = <DataGridType extends GridValidRo
 
   // The currently selected option
   const [currentOption, setCurrentOption] = useState<SamplingInformationCachedTechnique | null>(
-    samplingInformationCache.getCurrentTechnique(dataGridProps)
+    samplingInformationCache.getCurrentTechnique(dataGridProps.value)
   );
+  // The options for the autocomplete
   const [options, setOptions] = useState<SamplingInformationCachedTechnique[]>(
     samplingInformationCache.getTechniquesForRow(dataGridProps.row.survey_sample_site_id)
   );
+  // The survey sample site id for the current set of options
+  // These are used to detect if the site value in the data grid state has changed, and therefore the options of this
+  // control should be updated.
+  const [currentSiteId, setCurrentSiteId] = useState<number | null>(dataGridProps.row.survey_sample_site_id);
   // Is control loading (search in progress)
   const [isLoading, setIsLoading] = useState(false);
 
@@ -85,7 +90,7 @@ export const MethodTechniqueDataGridEditCell = <DataGridType extends GridValidRo
           return;
         }
 
-        const options: SamplingInformationCachedTechnique[] = response.techniques.map((item) => ({
+        const options = response.techniques.map((item) => ({
           method_technique_id: item.method_technique_id,
           survey_sample_site_id: surveySampleSiteId,
           method_response_metric_id: item.method_response_metric_id,
@@ -96,11 +101,10 @@ export const MethodTechniqueDataGridEditCell = <DataGridType extends GridValidRo
         // Update the cached method techniques
         samplingInformationCache.updateCachedMethodTechniques(options);
 
-        // Get the latest valid options for the current row
-        const validOptions = samplingInformationCache.getTechniquesForRow(dataGridProps.row.survey_sample_site_id);
-
+        // Track the survey sample site id for the current set of options
+        setCurrentSiteId(surveySampleSiteId);
         // Set the options for the autocomplete
-        setOptions(validOptions);
+        setOptions(options);
 
         setIsLoading(false);
       }, 500),
@@ -122,7 +126,7 @@ export const MethodTechniqueDataGridEditCell = <DataGridType extends GridValidRo
       return;
     }
 
-    if (currentOption?.survey_sample_site_id !== dataGridProps.row.survey_sample_site_id) {
+    if (currentSiteId !== dataGridProps.row.survey_sample_site_id) {
       // If the site has changed, then unset any selected technique, and update the options to reflect the
       // valid techniques for the new site.
       setCurrentOption(null);
@@ -131,12 +135,7 @@ export const MethodTechniqueDataGridEditCell = <DataGridType extends GridValidRo
       // Trigger a search to get all of the techniques for the new site
       getOptions('');
     }
-  }, [
-    currentOption?.survey_sample_site_id,
-    getOptions,
-    dataGridProps.row.survey_sample_site_id,
-    samplingInformationCache
-  ]);
+  }, [currentSiteId, getOptions, dataGridProps.row.survey_sample_site_id, samplingInformationCache]);
 
   return (
     <Autocomplete
@@ -146,6 +145,12 @@ export const MethodTechniqueDataGridEditCell = <DataGridType extends GridValidRo
       fullWidth
       blurOnSelect
       handleHomeEndKeys
+      onOpen={() => {
+        // On opening the dropdown, set the options to all valid cached techniques
+        setOptions(
+          Object.values(samplingInformationCache.getTechniquesForRow(dataGridProps.row.survey_sample_site_id) ?? [])
+        );
+      }}
       loading={isLoading}
       value={currentOption}
       options={options}
