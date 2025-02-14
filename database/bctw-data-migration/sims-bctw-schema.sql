@@ -187,7 +187,8 @@ SELECT
   --
   -- Note: The `create_date` is the `created_at` date from the BCTW table
   -- Note: The `update_date` is the `updated_at` date from the BCTW table
-  -- Note: The `create_user` and `update_user` columns are hardcoded to the SIMS `postgres` user
+  -- Note: The `create_user` column is the BCTW user ID mapped to the SIMS user ID OR the SIMS `postgres` user
+  -- Note: The `update_user` column is the BCTW user ID mapped to the SIMS user ID OR the SIMS `postgres` user
   -- Note: The `revision_count` column is hardcoded to 0
   --
   bctw_collar.created_at as create_date,
