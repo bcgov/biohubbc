@@ -81,6 +81,7 @@ CREATE TABLE if not exists new_collar (
 CREATE TABLE if not exists new_deployment (
     new_deployment_id        INTEGER,
     new_deployment_uuid      UUID,
+    sims_survey_id           INTEGER,
     bctw_deployment_uuid     UUID,
 --
     sims_deployment_uuid     UUID,
@@ -106,6 +107,9 @@ CREATE INDEX new_deployment_idx1 ON new_deployment(new_collar_id);
 
 --------------------------------------------------------------------------------------------------------------
 -- Merge collar and collar_animal_assignment tables, and insert into new_collar_deployment table;
+-- 
+-- Notes
+-- Join on collar_id, group by attachment_start and device_id
 --------------------------------------------------------------------------------------------------------------
 
 
@@ -254,10 +258,13 @@ WHERE EXISTS (
 ) returning new_collar_deployment_id;
 
 --------------------------------------------------------------------------------------------------------------
--- Insert data into new collar and new deployment tables
+-- Insert valid data into new collar and new deployment tables
+-- 
+-- Notes 
+-- This should only include rows where there is only 1 deployment for 1 critter for 1 make for 1 model, etc. 
+-- We only take the MAX for the create/update/user values, in order to squash the soft delete timestamps down.
 --------------------------------------------------------------------------------------------------------------
 
--- Note: This should only include rows where there is only 1 deployment for 1 critter for 1 make for 1 model, etc. We only take the MAX for the create/update/user values, in order to squash the soft delete timestamps down.
 WITH w_data_array AS (
     select
       *
@@ -394,6 +401,10 @@ ON
 
 --------------------------------------------------------------------------------------------------------------
 -- Insert into the sims_deployment table all sims records which have no matching BCTW record
+-- 
+-- Notes
+-- This excludes any deployments for surveys that have 'bctw' in the name. Why? These are all surveys generated
+-- by the scripts to ETL bctw project data into SIMS, which have already been run.
 --------------------------------------------------------------------------------------------------------------
 
 insert into sims_deployment (
@@ -439,15 +450,17 @@ where
   );
 
 --------------------------------------------------------------------------------------------------------------
--- Update new_deployment records with matching SIMS deployment data, based on the critter matching, and the create dates being milliseconds apart
+-- Update new_deployment records with matching SIMS deployment data, based on the critter matching, and the 
+-- create date difference being less than 1 second apart
 --------------------------------------------------------------------------------------------------------------
 
-update new_deployment set sims_deployment_uuid = sims_deployment.sims_deployment_uuid
+update new_deployment 
+  set sims_deployment_uuid = sims_deployment.sims_deployment_uuid,
+  sims_survey_id = sims_deployment.sims_survey_id
 from sims_deployment
 where 
   sims_deployment.sims_critter_uuid = new_deployment.bctw_critter_uuid
-and ABS(EXTRACT(EPOCH FROM sims_deployment.sims_create_date) - EXTRACT(EPOCH FROM new_deployment.create_date)) < 1
-and new_deployment.create_user = 139;
+and ABS(EXTRACT(EPOCH FROM sims_deployment.sims_create_date) - EXTRACT(EPOCH FROM new_deployment.create_date)) < 1;
 
 --------------------------------------------------------------------------------------------------------------
 -- Investigate remaining invalid bctw deployment records
@@ -616,3 +629,19 @@ WHERE EXISTS (
     and t1.device_id = t2.device_id
     and (t1.attachment_start, t1.attachment_end) OVERLAPS (t2.attachment_start, t2.attachment_end)
 )
+
+-- Find SIMS deployments that have no matching bctw deployment, and where no critter id matches
+select
+  *
+from
+  sims_deployment
+where
+  internal_sims_deployment_id not in (
+    select
+      internal_sims_deployment_id
+    from
+      sims_deployment,
+      new_deployment
+    where
+      sims_deployment.sims_critter_uuid = new_deployment.bctw_critter_uuid
+  );
