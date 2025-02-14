@@ -37,7 +37,7 @@ BEGIN
       u.id
     FROM bctw.user u
     INNER JOIN biohub.system_user su
-      ON su.user_identifier ILIKE u.keycloak_guid
+      ON su.user_guid ILIKE u.keycloak_guid
     WHERE u.id = bctw_id
     LIMIT 1
   );
