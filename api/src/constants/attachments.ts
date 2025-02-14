@@ -61,8 +61,8 @@ export const TELEMETRY_CREDENTIAL_ATTACHMENT_VECTRONIC_XMLTAGS = [
 export enum TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING {
   INVALID_ZIP_CONTENT = 'The file is neither a .keyx or .cfg file, nor is it an archive containing only files of these types.',
   ARCHIVE_WITH_NO_FILES = 'File is an archive that contains no content',
-  INVALID_KEY_FILE = 'Invalid key file in ZIP: ',
-  INVALID_XML_FILE = 'Invalid XML file: ',
+  INVALID_KEY_FILE = 'Invalid key file in ZIP',
+  INVALID_XML_FILE = 'Invalid XML file',
   KEYX_NOT_FOUND = 'Key not found in the remote vectronic records.',
   FILE_NOT_CFG = 'File type is not a .cfg',
   FILE_NOT_KEYX = 'File type is not a .keyx',

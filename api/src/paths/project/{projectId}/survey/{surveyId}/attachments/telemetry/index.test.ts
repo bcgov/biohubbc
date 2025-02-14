@@ -194,8 +194,7 @@ describe('postSurveyTelemetryCredentialAttachment', () => {
     } catch (actualError) {
       const error = actualError as HTTPError;
       expect(error.message).to.equal(
-        TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING.INVALID_XML_FILE +
-          TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING.KEYX_NOT_FOUND
+        `${TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING.INVALID_XML_FILE}: ${TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING.KEYX_NOT_FOUND}`
       );
       expect(error.status).to.equal(400);
     }

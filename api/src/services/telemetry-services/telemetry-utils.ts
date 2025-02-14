@@ -282,7 +282,7 @@ const isCredentialFileExtension = (
   fileType: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE
 ): boolean => {
   const originalName = file?.originalname?.toLowerCase();
-  const fileExtension = '.' + fileType.toLowerCase();
+  const fileExtension = `.${fileType.toLowerCase()}`;
   if (originalName?.endsWith(fileExtension)) {
     return true;
   }
@@ -308,11 +308,7 @@ export const checkFileForKeyx = async (
     if (true !== resultXMLValidation) {
       return {
         type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.KEYX,
-        error:
-          TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING.INVALID_XML_FILE +
-          resultXMLValidation.err.code +
-          ', ' +
-          resultXMLValidation.err.msg
+        error: `${TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING.INVALID_XML_FILE}: ${resultXMLValidation.err.code}, ${resultXMLValidation.err.msg}`
       };
     }
 
@@ -322,9 +318,7 @@ export const checkFileForKeyx = async (
     if (expectedXmlTags.length !== TELEMETRY_CREDENTIAL_ATTACHMENT_VECTRONIC_XMLTAGS.length) {
       return {
         type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.KEYX,
-        error:
-          TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING.INVALID_XML_FILE +
-          TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING.MISSING_XML_TAGS
+        error: `${TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING.INVALID_XML_FILE}: ${TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING.MISSING_XML_TAGS}`
       };
     }
 
@@ -349,9 +343,7 @@ export const checkFileForKeyx = async (
     } catch (error) {
       keyStatus = {
         type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.KEYX,
-        error:
-          TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING.INVALID_XML_FILE +
-          TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING.KEYX_NOT_FOUND
+        error: `${TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING.INVALID_XML_FILE}: ${TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING.KEYX_NOT_FOUND}`
       };
     }
 
@@ -451,7 +443,7 @@ const processKeyxFilesArray = async (
       resultJSON.length = 0;
       resultJSON.push({
         fileName: keyxData.fileName,
-        error: resultXMLValidation.err.code + ', ' + resultXMLValidation.err.msg
+        error: `${resultXMLValidation.err.code}, ${resultXMLValidation.err.msg}`
       });
       break;
     }
@@ -561,11 +553,7 @@ export const checkFileForZip = async (
     if (cfgDataJSON[0].error) {
       return {
         type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.CFG,
-        error:
-          TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING.INVALID_KEY_FILE +
-          cfgDataJSON[0].fileName +
-          ', ' +
-          cfgDataJSON[0].error
+        error: `${TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING.INVALID_KEY_FILE}: ${cfgDataJSON[0].fileName}, ${cfgDataJSON[0].error}`
       };
     }
 
@@ -580,11 +568,7 @@ export const checkFileForZip = async (
   if (keyxDataJSON[0].error) {
     return {
       type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.KEYX,
-      error:
-        TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING.INVALID_KEY_FILE +
-        keyxDataJSON[0].fileName +
-        ', ' +
-        keyxDataJSON[0].error
+      error: `${TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING.INVALID_KEY_FILE}: ${keyxDataJSON[0].fileName}, ${keyxDataJSON[0].error}`
     };
   }
 

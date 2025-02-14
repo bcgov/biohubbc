@@ -361,9 +361,7 @@ describe('checkFileForKeyx', () => {
 
     expect(await telemetry_utils.checkFileForKeyx(invalidKeyxFile, service)).to.eql({
       type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.KEYX,
-      error:
-        TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING.INVALID_XML_FILE +
-        TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING.KEYX_NOT_FOUND
+      error: `${TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING.INVALID_XML_FILE}: ${TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING.KEYX_NOT_FOUND}`
     });
   });
 
@@ -393,9 +391,7 @@ describe('checkFileForKeyx', () => {
 
     expect(await telemetry_utils.checkFileForKeyx(invalidKeyxFile, service)).to.eql({
       type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.KEYX,
-      error:
-        TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING.INVALID_XML_FILE +
-        TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING.MISSING_XML_TAGS
+      error: `${TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING.INVALID_XML_FILE}: ${TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING.MISSING_XML_TAGS}`
     });
   });
 
@@ -409,7 +405,7 @@ describe('checkFileForKeyx', () => {
 
     expect(await telemetry_utils.checkFileForKeyx(validKeyxFile, service)).to.eql({
       type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.KEYX,
-      error: TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING.INVALID_XML_FILE + 'InvalidXml, Start tag expected.'
+      error: `${TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING.INVALID_XML_FILE}: InvalidXml, Start tag expected.`
     });
   });
 });
