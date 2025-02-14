@@ -1,4 +1,12 @@
 --------------------------------------------------------------------------------------------------------------
+--
+-- Questions?
+--
+-- 1. What user should we use for the `create_user` and `update_user` columns in the SIMS tables?
+--
+--------------------------------------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------------------------------------
 -- Create SIMS BCTW schema
 --------------------------------------------------------------------------------------------------------------
 
@@ -14,7 +22,7 @@ DROP TABLE IF EXISTS sims_bctw.telemetry_ats;
 DROP TABLE IF EXISTS sims_bctw.device;
 
 --------------------------------------------------------------------------------------------------------------
--- Create function to map a BCTW user ID SIMS user ID
+-- Create function to map a BCTW user ID a SIMS user ID
 --------------------------------------------------------------------------------------------------------------
 
 CREATE OR REPLACE FUNCTION sims_bctw.convert_bctw_user_to_sims_user(bctw_id integer, is_update_user boolean)
@@ -37,7 +45,7 @@ BEGIN
       u.id
     FROM bctw.user u
     INNER JOIN biohub.system_user su
-      ON su.user_identifier ILIKE u.keycloak_guid
+      ON LOWER(su.user_guid) = LOWER(u.keycloak_guid)
     WHERE u.id = bctw_id
     LIMIT 1
   );
@@ -76,13 +84,13 @@ SELECT
   --
   -- Audit Columns
   --
-  -- Note: The `create_date` is when the record was created in BCTW
+  -- Note: The `create_date` is hardcoded to the current date
   -- Note: The `update_date` is hardcoded to NULL
   -- Note: The `create_user` column is hardcoded to the SIMS `postgres` user
   -- Note: The `update_user` column is hardcoded to NULL
   -- Note: The `revision_count` column is hardcoded to 0
   --
-  dtrecord_added as create_date,
+  now() as create_date,
   NULL::timestamptz as update_date,
   (SELECT system_user_id FROM biohub.system_user WHERE user_identifier = 'postgres') as create_user,
   NULL::integer as update_user,
@@ -185,14 +193,14 @@ SELECT
   --
   -- Audit Columns
   --
-  -- Note: The `create_date` is the `created_at` date from the BCTW table
-  -- Note: The `update_date` is the `updated_at` date from the BCTW table
+  -- Note: The `create_date` defaults to the current date
+  -- Note: The `update_date` defaults to NULL
   -- Note: The `create_user` column is the BCTW user ID mapped to the SIMS user ID OR the SIMS `postgres` user
   -- Note: The `update_user` column is the BCTW user ID mapped to the SIMS user ID OR the SIMS `postgres` user
   -- Note: The `revision_count` column is hardcoded to 0
   --
-  bctw_collar.created_at as create_date,
-  bctw_collar.updated_at as update_date,
+  now()::timestamptz as create_date,
+  NULL:timestamptz as update_date,
   sims_bctw.convert_bctw_user_to_sims_user(bctw_collar.created_by_user_id, false) as create_user,
   sims_bctw.convert_bctw_user_to_sims_user(bctw_collar.updated_by_user_id, true) as update_user,
   0 as revision_count
