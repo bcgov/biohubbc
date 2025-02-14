@@ -170,26 +170,31 @@ INTO TABLE sims_bctw.telemetry_ats
 FROM bctw.telemetry_api_ats;
 
 --------------------------------------------------------------------------------------------------------------
--- Create SIMS device table
+-- Create SIMS device table from the bctw.new_collar table
 --------------------------------------------------------------------------------------------------------------
 
-SELECT
+select
   --survey_id,
   -- This will need to be a sub-select or join to get the survey_id
   -- based on the collar_animal_assignment / deployment tables
-  bctw_collar.device_id as serial,
-  bctw_collar.device_model as model,
+  bctw.new_collar.device_id as serial,
+  bctw.new_collar.device_model as model,
   (
-  SELECT sims_device_make.device_make_id
-  FROM biohub.device_make sims_device_make
-  WHERE sims_device_make.name ILIKE (
-      SELECT code_name
-      FROM bctw.code
-      WHERE code_id = bctw_collar.device_make
-    )
+    select
+      biohub.device_make.device_make_id
+    from
+      biohub.device_make
+    where
+      biohub.device_make.name ilike (
+        select
+          code_name
+        from
+          bctw.code
+        where
+          code_id = new_collar.device_make::integer
+      )
   ) as device_make_id,
-  -- Note: In PROD records only have the device_comment or the malfunction_comment but not both
-  CONCAT_WS( ' + ','2025: BCTW -> SIMS Data Migration', bctw_collar.device_comment, bctw_collar.malfunction_comment) as comment,
+  new_collar.comment as comment
   --
   -- Audit Columns
   --
@@ -199,12 +204,18 @@ SELECT
   -- Note: The `update_user` column is the BCTW user ID mapped to the SIMS user ID OR the SIMS `postgres` user
   -- Note: The `revision_count` column is hardcoded to 0
   --
-  now()::timestamptz as create_date,
-  NULL:timestamptz as update_date,
-  sims_bctw.convert_bctw_user_to_sims_user(bctw_collar.created_by_user_id, false) as create_user,
-  sims_bctw.convert_bctw_user_to_sims_user(bctw_collar.updated_by_user_id, true) as update_user,
-  0 as revision_count
-INTO TABLE sims_bctw.device
-FROM bctw.collar bctw_collar
-WHERE bctw.is_valid(bctw_collar.valid_to)
-AND device_make IS NOT NULL;
+  --    now()::timestamptz as create_date,
+  --    null::timestamptz as update_date,
+  --    sims_bctw.convert_bctw_user_to_sims_user(
+  --      bctw.new_collar.created_by_user_id,
+  --      false
+  --    ) as create_user,
+  --    sims_bctw.convert_bctw_user_to_sims_user(
+  --      bctw.new_collar.updated_by_user_id,
+  --      true
+  --    ) as update_user,
+  --    0 as revision_count
+into
+  table sims_bctw.device
+from
+  bctw.new_collar;
