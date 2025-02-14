@@ -224,6 +224,7 @@ into
   table sims_bctw.device
 from
   bctw.new_collar;
+  
 
 --------------------------------------------------------------------------------------------------------------
 -- Create SIMS telemetry manual historic
