@@ -151,7 +151,7 @@ with w_data as (
       bctw.is_valid(caa.valid_to) and 
       bctw.is_valid(c.valid_to) 
     GROUP BY
-        attachment_start, device_id
+        attachment_start, device_id, device_make
 )
 INSERT INTO new_collar_deployment (
     bctw_critter_uuid,
@@ -265,6 +265,7 @@ where new_collar_deployment_id in (
         WHERE 
             t1.new_collar_deployment_id <> t2.new_collar_deployment_id and 
             t1.device_id = t2.device_id and 
+            t1.device_make = t2.device_make and 
             (t1.attachment_start, t1.attachment_end[1]) OVERLAPS (t2.attachment_start, t2.attachment_end[1])
     )
 ) returning new_collar_deployment_id;
