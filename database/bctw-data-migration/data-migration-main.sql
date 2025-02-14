@@ -110,6 +110,9 @@ CREATE INDEX new_deployment_idx1 ON new_deployment(new_collar_id);
 -- 
 -- Notes
 -- Join on collar_id, group by attachment_start and device_id
+--
+-- TODO: Check if any device ids intersect between the vendor telemetry tables. If not, then we are good. 
+--       If they do, then we wil have to revise this query.
 --------------------------------------------------------------------------------------------------------------
 
 
@@ -144,6 +147,9 @@ with w_data as (
         collar_animal_assignment caa
     JOIN
         collar c ON c.collar_id = caa.collar_id
+    where
+      bctw.is_valid(caa.valid_to) and 
+      bctw.is_valid(c.valid_to) 
     GROUP BY
         attachment_start, device_id
 )
@@ -214,21 +220,21 @@ update new_collar_deployment set internal_is_valid = true where new_collar_deplo
     ) AND (
       ARRAY_LENGTH(bctw_collar_uuid, 1) IS NULL
       OR ARRAY_LENGTH(bctw_collar_uuid, 1) <= 1
-    ) AND (
-      ARRAY_LENGTH(device_make, 1) IS NULL
-      OR ARRAY_LENGTH(device_make, 1) <= 1
-    ) AND (
-      ARRAY_LENGTH(device_model, 1) IS NULL
-      OR ARRAY_LENGTH(device_model, 1) <= 1
+--    ) AND (
+--      ARRAY_LENGTH(device_make, 1) IS NULL
+--      OR ARRAY_LENGTH(device_make, 1) <= 1
+--    ) AND (
+--      ARRAY_LENGTH(device_model, 1) IS NULL
+--      OR ARRAY_LENGTH(device_model, 1) <= 1
 --    ) AND (
 --      ARRAY_LENGTH(comment, 1) IS NULL
 --      OR ARRAY_LENGTH(comment, 1) <= 1
-    ) AND (
-      ARRAY_LENGTH(frequency, 1) IS NULL
-      OR ARRAY_LENGTH(frequency, 1) <= 1
-    ) AND (
-      ARRAY_LENGTH(frequency_unit, 1) IS NULL
-      OR ARRAY_LENGTH(frequency_unit, 1) <= 1
+--    ) AND (
+--      ARRAY_LENGTH(frequency, 1) IS NULL
+--      OR ARRAY_LENGTH(frequency, 1) <= 1
+--    ) AND (
+--      ARRAY_LENGTH(frequency_unit, 1) IS NULL
+--      OR ARRAY_LENGTH(frequency_unit, 1) <= 1
     ) AND (
       ARRAY_LENGTH(attachment_end, 1) IS NULL
       OR ARRAY_LENGTH(attachment_end, 1) <= 1
@@ -236,25 +242,31 @@ update new_collar_deployment set internal_is_valid = true where new_collar_deplo
 );
 
 -- Mark rows as invalid if they have overlapping attachment dates for the same device id
-update new_collar_deployment set internal_is_valid = false where new_collar_deployment_id in (
-WITH w_data AS (
-    select
-      *
-    from
-      new_collar_deployment
-)
-SELECT
-  t1.new_collar_deployment_id
-FROM
-  w_data as t1
-WHERE EXISTS (
-    SELECT 1
+update 
+    new_collar_deployment 
+set 
+    internal_is_valid = false 
+where new_collar_deployment_id in (
+    WITH w_data AS (
+        select
+          *
+        from
+          new_collar_deployment
+    )
+    SELECT
+        t1.new_collar_deployment_id
     FROM
-    w_data AS t2
-    WHERE t1.new_collar_deployment_id <> t2.new_collar_deployment_id
-    and t1.device_id = t2.device_id
-    and (t1.attachment_start, t1.attachment_end[1]) OVERLAPS (t2.attachment_start, t2.attachment_end[1])
-)
+        w_data as t1
+    WHERE EXISTS (
+        SELECT 
+            1
+        FROM
+            w_data AS t2
+        WHERE 
+            t1.new_collar_deployment_id <> t2.new_collar_deployment_id and 
+            t1.device_id = t2.device_id and 
+            (t1.attachment_start, t1.attachment_end[1]) OVERLAPS (t2.attachment_start, t2.attachment_end[1])
+    )
 ) returning new_collar_deployment_id;
 
 --------------------------------------------------------------------------------------------------------------
@@ -408,14 +420,14 @@ ON
 --------------------------------------------------------------------------------------------------------------
 
 insert into sims_deployment (
-  sims_project_id,
-  sims_survey_id,
-  sims_survey_name,
-  sims_critter_id,
-  sims_critter_uuid,
-  sims_deployment_id,
-  sims_deployment_uuid,
-  sims_create_date
+    sims_project_id,
+    sims_survey_id,
+    sims_survey_name,
+    sims_critter_id,
+    sims_critter_uuid,
+    sims_deployment_id,
+    sims_deployment_uuid,
+    sims_create_date
 )
 select 
     distinct on
@@ -431,23 +443,20 @@ select
 from
     biohub.deployment_old
 left join biohub.critter
-    on
-    biohub.deployment_old.critter_id = biohub.critter.critter_id
+    on biohub.deployment_old.critter_id = biohub.critter.critter_id
 left join biohub.survey
-    on
-    critter.survey_id = survey.survey_id
+    on critter.survey_id = survey.survey_id
 where
-  1 = 1
-  and survey."name" not ilike '%bctw%'
-  and
+    1 = 1 and 
+    survey."name" not ilike '%bctw%' and
     not exists (
-    select
-        1
-    from
-        bctw.collar_animal_assignment
-    where
-        bctw.collar_animal_assignment.deployment_id = bctw_deployment_id
-  );
+        select
+            1
+        from
+            bctw.collar_animal_assignment
+        where
+           bctw.collar_animal_assignment.deployment_id = bctw_deployment_id
+    );
 
 --------------------------------------------------------------------------------------------------------------
 -- Update new_deployment records with matching SIMS deployment data, based on the critter matching, and the 
@@ -455,12 +464,96 @@ where
 --------------------------------------------------------------------------------------------------------------
 
 update new_deployment 
-  set sims_deployment_uuid = sims_deployment.sims_deployment_uuid,
-  sims_survey_id = sims_deployment.sims_survey_id
+    set sims_deployment_uuid = sims_deployment.sims_deployment_uuid,
+    sims_survey_id = sims_deployment.sims_survey_id
 from sims_deployment
 where 
-  sims_deployment.sims_critter_uuid = new_deployment.bctw_critter_uuid
+    sims_deployment.sims_critter_uuid = new_deployment.bctw_critter_uuid
 and ABS(EXTRACT(EPOCH FROM sims_deployment.sims_create_date) - EXTRACT(EPOCH FROM new_deployment.create_date)) < 1;
+
+--------------------------------------------------------------------------------------------------------------
+-- Update new_deployment records with their corresponding SIMS deployment data for all remaining records, based  
+-- on the bctw_deployment_uuid, which should already match an existing SIMS deployment uuid.
+--------------------------------------------------------------------------------------------------------------
+
+update new_deployment 
+    set sims_deployment_uuid = sims_tables.bctw_deployment_id,
+    sims_survey_id = sims_tables.survey_id
+from (
+    select 
+        critter.survey_id,
+        critter.critter_id,
+        critter.critterbase_critter_id,
+        deployment_old.deployment_id,
+        deployment_old.bctw_deployment_id
+    from
+        biohub.deployment_old
+    left join biohub.critter
+        on deployment_old.critter_id = critter.critter_id
+) as sims_tables
+where 
+  sims_tables.critterbase_critter_id = new_deployment.bctw_critter_uuid and
+  sims_tables.bctw_deployment_id = new_deployment.bctw_deployment_uuid and
+  new_deployment.sims_survey_id is null;
+
+--------------------------------------------------------------------------------------------------------------
+-- Update new_deployment records with their corresponding SIMS deployment data for all remaining records based 
+-- on the critter matching, and the create date difference being less than 1 second apart
+--------------------------------------------------------------------------------------------------------------
+
+update new_deployment 
+    set sims_deployment_uuid = sims_tables.bctw_deployment_id,
+    sims_survey_id = sims_tables.survey_id
+from (
+    select 
+        critter.survey_id,
+        critter.critter_id,
+        critter.critterbase_critter_id,
+        deployment_old.deployment_id,
+        deployment_old.bctw_deployment_id,
+        deployment_old.create_date
+    from
+        biohub.deployment_old
+    left join biohub.critter
+        on deployment_old.critter_id = critter.critter_id
+) as sims_tables
+where 
+    sims_tables.critterbase_critter_id = new_deployment.bctw_critter_uuid and 
+    ABS(EXTRACT(EPOCH FROM sims_tables.create_date) - EXTRACT(EPOCH FROM new_deployment.create_date)) < 1 and
+    new_deployment.sims_survey_id is null;
+
+
+--------------------------------------------------------------------------------------------------------------
+-- Update new_deployment records with their corresponding SIMS deployment data for all remaining records, based  
+-- on the bctw_critter_uuid, which should already match an existing SIMS critter uuid.
+--------------------------------------------------------------------------------------------------------------
+
+update new_deployment 
+    set sims_survey_id = sims_tables.survey_id
+from (
+    select 
+        critter.survey_id,
+        critter.critter_id,
+        critter.critterbase_critter_id
+    from
+        biohub.critter
+) as sims_tables
+where 
+    sims_tables.critterbase_critter_id = new_deployment.bctw_critter_uuid and 
+    new_deployment.sims_survey_id is null;
+
+
+
+
+
+--------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------
+
+
+
+
 
 --------------------------------------------------------------------------------------------------------------
 -- Investigate remaining invalid bctw deployment records
