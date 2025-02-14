@@ -2,10 +2,10 @@
 --
 -- Questions?
 --
--- 1. What user should we use for the `create_user` and `update_user` columns in the SIMS tables?
+-- 1. What user should we use for the `create_user` and `update_user` columns in the SIMS tables? `postgres` user?
+-- 2. What is the value of the `verified_date` column in the telemetry_credential_lotek table?
+-- 3. What is the value of the `is_valid` column in the telemetry_credential_lotek table?
 --
---------------------------------------------------------------------------------------------------------------
-
 --------------------------------------------------------------------------------------------------------------
 -- Create SIMS BCTW schema
 --------------------------------------------------------------------------------------------------------------
@@ -20,6 +20,7 @@ DROP TABLE IF EXISTS sims_bctw.telemetry_credential_lotek;
 DROP TABLE IF EXISTS sims_bctw.telemetry_credential_vectronic;
 DROP TABLE IF EXISTS sims_bctw.telemetry_ats;
 DROP TABLE IF EXISTS sims_bctw.device;
+DROP TABLE IF EXISTS sims_bctw.telemetry_historic;
 
 --------------------------------------------------------------------------------------------------------------
 -- Create function to map a BCTW user ID a SIMS user ID
@@ -70,6 +71,7 @@ END;
 $function$
 ;
 
+
 --------------------------------------------------------------------------------------------------------------
 -- Create SIMS telemetry_credential_lotek table
 --------------------------------------------------------------------------------------------------------------
@@ -97,6 +99,7 @@ SELECT
   0 as revision_count
 INTO TABLE sims_bctw.telemetry_credential_lotek
 FROM bctw.api_lotek_credential;
+
 
 --------------------------------------------------------------------------------------------------------------
 -- Create SIMS telemetry_credential_vectronic table
@@ -126,6 +129,7 @@ SELECT
   0 as revision_count
 INTO TABLE sims_bctw.telemetry_credential_vectronic
 FROM bctw.api_vectronic_credential;
+
 
 --------------------------------------------------------------------------------------------------------------
 -- Create SIMS telemetry_ats table
@@ -168,6 +172,7 @@ SELECT
   0 as revision_count
 INTO TABLE sims_bctw.telemetry_ats
 FROM bctw.telemetry_api_ats;
+
 
 --------------------------------------------------------------------------------------------------------------
 -- Create SIMS device table from the bctw.new_collar table
@@ -219,3 +224,18 @@ into
   table sims_bctw.device
 from
   bctw.new_collar;
+
+--------------------------------------------------------------------------------------------------------------
+-- Create SIMS telemetry manual historic
+--------------------------------------------------------------------------------------------------------------
+
+SELECT
+  *,
+  now()::timestamptz as create_date,
+  NULL::timestamptz as update_date,
+  (SELECT system_user_id FROM biohub.system_user WHERE user_identifier = 'postgres') as create_user,
+  NULL::integer as update_user,
+  0 as revision_count
+INTO TABLE sims_bctw.telemetry_historic
+FROM bctw.telemetry_manual_historic;
+
