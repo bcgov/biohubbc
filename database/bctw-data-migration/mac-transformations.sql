@@ -139,3 +139,48 @@ FROM bctw.telemetry_api_ats;
 
 
 -------------------------------------------------------------------------------------------------------
+
+-- STATUS:
+
+-- BCTW table: bctw.collar
+-- SIMS table: sims.device
+
+-- This generates the SQL to transform the data from the BCTW
+-- table `bctw.collar` to the SIMS table `sims.device`.
+
+-- Query count:
+-- BCTW table count:
+
+
+-- Collars without a device_make - Omitting
+
+-- |collar_id                           | device_id|
+-- |-----------------------------------------------|
+-- |2bee2455-2f14-41ff-a9b9-e9d79880fd18| 29597    | lotek: [x] vectronic: [x] ats: [x]
+-- |f14fd63e-6a46-41be-93f9-356311d7bf68| 29598    | lotek: [x] vectronic: [x] ats: [x]
+-- |e002fb78-2748-4170-bea8-5fa654745895| 31176    | lotek: [x] vectronic: [x] ats: [x]
+-- |d03ac01d-47c7-478e-af07-1c35b7376b9a| 31175    | lotek: [x] vectronic: [x] ats: [x]
+-- |885956bb-6a01-41bb-9dd2-b075991b85dd| 29173    | lotek: [x] vectronic: [x] ats: [x]
+-- |37c2ac8f-3f8c-46e0-8770-718695822f19| 31174    | lotek: [x] vectronic: [x] ats: [x]
+
+SELECT
+  --survey_id,
+  -- This will need to be a sub-select or join to get the survey_id
+  -- based on the collar_animal_assignment / deployment tables
+  bctw_collar.device_id as serial,
+  bctw_collar.device_model as model,
+  (
+  SELECT sims_device_make.device_make_id
+  FROM biohub.device_make sims_device_make
+  WHERE sims_device_make.name ILIKE (
+      SELECT code_name
+      FROM bctw.code
+      WHERE code_id = bctw_collar.device_make
+    )
+  ) as device_make_id,
+  -- Note: In PROD records only have the device_comment or the malfunction_comment but not both
+  CONCAT_WS( ' + ','2025: BCTW -> SIMS Data Migration', bctw_collar.device_comment, bctw_collar.malfunction_comment) as comment
+FROM bctw.collar bctw_collar
+WHERE bctw.is_valid(bctw_collar.valid_to)
+AND device_make IS NOT NULL;
+
