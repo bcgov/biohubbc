@@ -13,6 +13,7 @@ import { useState } from 'react';
 import { EnvironmentStandards } from './view/environment/EnvironmentStandards';
 import { MethodStandards } from './view/methods/MethodStandards';
 import { SpeciesStandards } from './view/species/SpeciesStandards';
+import { MarkingStandards } from './view/markings/MarkingStandards';
 
 export enum StandardsPageView {
   SPECIES = 'SPECIES',
@@ -60,7 +61,7 @@ const StandardsPage = () => {
             {activeView === StandardsPageView.ENVIRONMENT && <EnvironmentStandards />}
 
             {/* MARKING TYPE STANDARDS */}
-            {activeView === StandardsPageView.MARKINGS && <EnvironmentStandards />}
+            {activeView === StandardsPageView.MARKINGS && <MarkingStandards/>}
           </Box>
         </Stack>
       </Container>
