@@ -184,6 +184,7 @@ select
   -- based on the collar_animal_assignment / deployment tables
   bctw.new_collar.device_id as serial,
   bctw.new_collar.device_model as model,
+  COALESCE(
   (
     select
       biohub.device_make.device_make_id
@@ -198,7 +199,14 @@ select
         where
           code_id = new_collar.device_make::integer
       )
-  ) as device_make_id,
+  ), (
+   select
+      biohub.device_make.device_make_id
+    from
+      biohub.device_make
+    where
+      biohub.device_make.name ilike 'lotek'
+  )) as device_make_id,
   new_collar.comment as comment
   --
   -- Audit Columns
@@ -224,7 +232,6 @@ into
   table sims_bctw.device
 from
   bctw.new_collar;
-  
 
 --------------------------------------------------------------------------------------------------------------
 -- Create SIMS telemetry manual historic
