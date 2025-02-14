@@ -184,3 +184,29 @@ FROM bctw.collar bctw_collar
 WHERE bctw.is_valid(bctw_collar.valid_to)
 AND device_make IS NOT NULL;
 
+
+-------------------------------------------------------------------------------------------------------
+
+-- Find lotek serials that exist in the vectronic table
+
+-- 81223 81224 81225 81226 81227 81228 81229 81230 81313
+-- 81231 81232 81233 81234 81246 81249 81252 81253 81314
+-- 81254 81255 81256 81259 81260 81261 81265 81270 81315
+-- 81272 81274 81279 81281 81283 81310 81311 81312
+
+SELECT DISTINCT(l.deviceid)
+FROM bctw.telemetry_api_lotek l
+INNER JOIN bctw.telemetry_api_vectronic t
+ON l.deviceid = idcollar;
+
+-- Find ats serials that exist in the vectronic table
+SELECT DISTINCT(l.deviceid)
+FROM bctw.telemetry_api_lotek l
+INNER JOIN bctw.telemetry_api_ats t
+ON l.deviceid = t.collarserialnumber;
+
+-- Find vectronic serials that exist in the lotek table
+SELECT DISTINCT(t.idcollar)
+FROM bctw.telemetry_api_vectronic t
+INNER JOIN bctw.telemetry_api_ats a
+ON t.idcollar = a.collarserialnumber;
