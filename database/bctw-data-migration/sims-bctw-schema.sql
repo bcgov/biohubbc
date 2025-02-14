@@ -14,7 +14,7 @@ DROP TABLE IF EXISTS sims_bctw.telemetry_ats;
 DROP TABLE IF EXISTS sims_bctw.device;
 
 --------------------------------------------------------------------------------------------------------------
--- Create function to map a BCTW user ID SIMS user ID
+-- Create function to map a BCTW user ID a SIMS user ID
 --------------------------------------------------------------------------------------------------------------
 
 CREATE OR REPLACE FUNCTION sims_bctw.convert_bctw_user_to_sims_user(bctw_id integer, is_update_user boolean)
@@ -163,6 +163,8 @@ FROM bctw.telemetry_api_ats;
 
 --------------------------------------------------------------------------------------------------------------
 -- Create SIMS device table
+--
+-- Question: Of all the collars in the new SIMS table
 --------------------------------------------------------------------------------------------------------------
 
 SELECT
