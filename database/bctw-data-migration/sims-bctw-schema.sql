@@ -61,7 +61,7 @@ BEGIN
     RAISE EXCEPTION 'The SIMS postgres user does not exist';
   END IF;
 
-	IF sims_user_id IS NOT NULL THEN
+  IF sims_user_id IS NOT NULL THEN
     RETURN sims_user_id;
   END IF;
 
@@ -108,11 +108,11 @@ FROM bctw.api_lotek_credential;
 ALTER table biohub.telemetry_credential_vectronic ALTER column idcom SET DATA TYPE VARCHAR(50);
 
 SELECT
-	idcollar,
+  idcollar,
   comtype,
-	idcom,
-	collarkey,
-	collartype,
+  idcom,
+  collarkey,
+  collartype,
   --
   -- Audit Columns
   --
@@ -136,26 +136,26 @@ FROM bctw.api_vectronic_credential;
 --------------------------------------------------------------------------------------------------------------
 
 SELECT
-	collarserialnumber,
-	"date",
-	numberfixes,
-	battvoltage,
-	mortality,
-	breakoff,
-	gpsontime,
-	satontime,
-	saterrors,
-	gmtoffset,
-	lowbatt,
-	"event",
-	latitude,
-	longitude,
-	cepradius_km,
-	temperature,
-	hdop,
-	numsats,
-	fixtime,
-	activity,
+  collarserialnumber,
+  "date",
+  numberfixes,
+  battvoltage,
+  mortality,
+  breakoff,
+  gpsontime,
+  satontime,
+  saterrors,
+  gmtoffset,
+  lowbatt,
+  "event",
+  latitude,
+  longitude,
+  cepradius_km,
+  temperature,
+  hdop,
+  numsats,
+  fixtime,
+  activity,
   --
   -- Audit Columns
   --
@@ -201,11 +201,27 @@ with w_clean_bctw_device_deployment as (
     new_deployment
   left join new_collar on
     new_collar.new_collar_id = new_deployment.new_collar_id
+),
+w_remove_duplicates as (
+  select
+    sims_survey_id,
+    device_id,
+    device_make,
+    device_model,
+    comment
+  from
+    w_clean_bctw_device_deployment
+  group by
+    sims_survey_id,
+    device_id,
+    device_make,
+    device_model,
+    comment
 )
 select
-  w_clean_bctw_device_deployment.sims_survey_id as survey_id,
-  w_clean_bctw_device_deployment.device_id as serial,
-  w_clean_bctw_device_deployment.device_model as model,
+  w_remove_duplicates.sims_survey_id as survey_id,
+  w_remove_duplicates.device_id as serial,
+  w_remove_duplicates.device_model as model,
   coalesce(
     (
       select
@@ -219,7 +235,7 @@ select
           from
             bctw.code
           where
-            code_id = w_clean_bctw_device_deployment.device_make::integer
+            code_id = w_remove_duplicates.device_make::integer
         )
     ),
     (
@@ -231,22 +247,27 @@ select
         biohub.device_make.name ilike 'lotek'
     )
   ) as device_make_id,
-  w_clean_bctw_device_deployment.comment as comment
+  w_remove_duplicates.comment as comment
 into
   table sims_bctw.device
 from
-  w_clean_bctw_device_deployment;
+  w_remove_duplicates;
 
 --------------------------------------------------------------------------------------------------------------
 
 with w_clean_bctw_device_deployment as (
   select
-    *
+    new_deployment.*,
+    new_collar.new_collar_id,
+    new_collar.bctw_collar_uuid,
+    new_collar.device_make,
+    new_collar.device_model,
+    new_collar.device_id
   from
     new_deployment
   left join new_collar on
     new_collar.new_collar_id = new_deployment.new_collar_id
-)   
+)
 select 
   w_clean_bctw_device_deployment.sims_survey_id as survey_id,
   (
@@ -262,21 +283,31 @@ select
     select
       device_id
     from
-      bctw_sims.device
+      sims_bctw.device
     where
       device.survey_id = w_clean_bctw_device_deployment.sims_survey_id
       and device.serial = w_clean_bctw_device_deployment.device_id
   ) as device_id,
-  --  device_key,
-  w_clean_bctw_device_deployment.frequency,
-  --  w_clean_bctw_device_deployment.frequency_unit_id as frequency_unit,
+  w_clean_bctw_device_deployment.frequency as frequency,
+  (
+    select
+      frequency_unit.frequency_unit_id
+    from
+      biohub.frequency_unit
+    where
+      frequency_unit."name" ilike (
+        select
+          code.code_name
+        from
+          bctw.code
+        where
+          code.code_id = w_clean_bctw_device_deployment.frequency_unit::integer
+      )
+  ) as frequency_unit,
   w_clean_bctw_device_deployment.attachment_start as attachment_start_date,
   w_clean_bctw_device_deployment.attachment_start as attachment_start_time,
   w_clean_bctw_device_deployment.attachment_end as attachment_end_date,
-  w_clean_bctw_device_deployment.attachment_end as attachment_end_time,
-  --  critterbase_start_capture_id,
-  --  critterbase_end_capture_id,
-  --  critterbase_end_mortality_id,
+  w_clean_bctw_device_deployment.attachment_end as attachment_end_time
 into
   table sims_bctw.deployment
 from
