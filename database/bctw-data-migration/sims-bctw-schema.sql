@@ -254,7 +254,6 @@ from
   w_remove_duplicates;
 
 --------------------------------------------------------------------------------------------------------------
-
 with w_clean_bctw_device_deployment as (
   select
     new_deployment.*,
@@ -277,6 +276,7 @@ select
       biohub.critter
     where
       critter.critterbase_critter_id = w_clean_bctw_device_deployment.bctw_critter_uuid
+      and critter.survey_id = w_clean_bctw_device_deployment.sims_survey_id
   ) as critter_id,
   (
     -- Find the newly created device_id from the device table, based on the survey_id and device_id
@@ -287,6 +287,21 @@ select
     where
       device.survey_id = w_clean_bctw_device_deployment.sims_survey_id
       and device.serial = w_clean_bctw_device_deployment.device_id
+      and device.device_make_id = (
+        select
+          biohub.device_make.device_make_id
+        from
+          biohub.device_make
+        where
+          biohub.device_make.name ilike (
+            select
+              code_name
+            from
+              bctw.code
+            where
+              code_id = w_clean_bctw_device_deployment.device_make::integer
+          )
+      )
   ) as device_id,
   w_clean_bctw_device_deployment.frequency as frequency,
   (
