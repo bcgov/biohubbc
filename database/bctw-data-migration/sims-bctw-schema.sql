@@ -185,28 +185,32 @@ select
   bctw.new_collar.device_id as serial,
   bctw.new_collar.device_model as model,
   COALESCE(
-  (
-    select
-      biohub.device_make.device_make_id
-    from
-      biohub.device_make
-    where
-      biohub.device_make.name ilike (
+    (
         select
-          code_name
+            biohub.device_make.device_make_id
         from
-          bctw.code
+            biohub.device_make
         where
-          code_id = new_collar.device_make::integer
-      )
-  ), (
-   select
-      biohub.device_make.device_make_id
-    from
-      biohub.device_make
-    where
-      biohub.device_make.name ilike 'lotek'
-  )) as device_make_id,
+            biohub.device_make.name ilike (
+                select
+                    code_name
+                from
+                    bctw.code
+                where
+                    code_id = new_collar.device_make::integer
+        )
+    ), 
+    (
+    -- Default to the 'lotek' device make if the device make is not found
+    -- in PROD only 6 devices have no make, but we believe they should be 'lotek'
+        select
+            biohub.device_make.device_make_id
+        from
+            biohub.device_make
+        where
+            biohub.device_make.name ilike 'lotek'
+    )
+  ) as device_make_id,
   new_collar.comment as comment
   --
   -- Audit Columns
