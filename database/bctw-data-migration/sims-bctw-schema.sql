@@ -173,70 +173,6 @@ SELECT
 INTO TABLE sims_bctw.telemetry_ats
 FROM bctw.telemetry_api_ats;
 
-
---------------------------------------------------------------------------------------------------------------
--- Create SIMS device table from the bctw.new_collar table
---------------------------------------------------------------------------------------------------------------
-
-select
-  --survey_id,
-  -- This will need to be a sub-select or join to get the survey_id
-  -- based on the collar_animal_assignment / deployment tables
-  bctw.new_collar.device_id as serial,
-  bctw.new_collar.device_model as model,
-  COALESCE(
-    (
-        select
-            biohub.device_make.device_make_id
-        from
-            biohub.device_make
-        where
-            biohub.device_make.name ilike (
-                select
-                    code_name
-                from
-                    bctw.code
-                where
-                    code_id = new_collar.device_make::integer
-        )
-    ), 
-    (
-    -- Default to the 'lotek' device make if the device make is not found
-    -- in PROD only 6 devices have no make, but we believe they should be 'lotek'
-        select
-            biohub.device_make.device_make_id
-        from
-            biohub.device_make
-        where
-            biohub.device_make.name ilike 'lotek'
-    )
-  ) as device_make_id,
-  new_collar.comment as comment
-  --
-  -- Audit Columns
-  --
-  -- Note: The `create_date` defaults to the current date
-  -- Note: The `update_date` defaults to NULL
-  -- Note: The `create_user` column is the BCTW user ID mapped to the SIMS user ID OR the SIMS `postgres` user
-  -- Note: The `update_user` column is the BCTW user ID mapped to the SIMS user ID OR the SIMS `postgres` user
-  -- Note: The `revision_count` column is hardcoded to 0
-  --
-  --    now()::timestamptz as create_date,
-  --    null::timestamptz as update_date,
-  --    sims_bctw.convert_bctw_user_to_sims_user(
-  --      bctw.new_collar.created_by_user_id,
-  --      false
-  --    ) as create_user,
-  --    sims_bctw.convert_bctw_user_to_sims_user(
-  --      bctw.new_collar.updated_by_user_id,
-  --      true
-  --    ) as update_user,
-  --    0 as revision_count
-into
-  table sims_bctw.device
-from
-  bctw.new_collar;
-
 --------------------------------------------------------------------------------------------------------------
 -- Create SIMS telemetry manual historic
 --------------------------------------------------------------------------------------------------------------
@@ -251,3 +187,63 @@ SELECT
 INTO TABLE sims_bctw.telemetry_historic
 FROM bctw.telemetry_manual_historic;
 
+--------------------------------------------------------------------------------------------------------------
+-- Create SIMS deployment and device tables
+--------------------------------------------------------------------------------------------------------------
+
+with w_clean_bctw_device_deployment as (
+  select
+    *
+  from
+    new_deployment
+  left join new_collar on
+    new_collar.new_collar_id = new_deployment.new_collar_id
+)
+select
+  w_clean_bctw_device_deployment.sims_survey_id as survey_id,
+  w_clean_bctw_device_deployment.device_id as serial,
+  w_clean_bctw_device_deployment.device_model as model,
+  COALESCE(
+  (
+    select biohub.device_make.device_make_id
+    from biohub.device_make
+    where biohub.device_make.name ilike (
+        select code_name
+        from bctw.code
+        where code_id = w_clean_bctw_device_deployment.device_make::integer
+  )), (
+   select biohub.device_make.device_make_id
+    from biohub.device_make
+    where biohub.device_make.name ilike 'lotek'
+  )) as device_make_id,
+  w_clean_bctw_device_deployment.comment as comment
+into
+  table sims_bctw.device
+from
+  w_clean_bctw_device_deployment;
+
+    
+with w_clean_bctw_device_deployment as (
+  select
+    *
+  from
+    new_deployment
+  left join new_collar on
+    new_collar.new_collar_id = new_deployment.new_collar_id
+)   
+select 
+  w_clean_bctw_device_deployment.sims_survey_id as survey_id,
+  (select critter_id from biohub.critter where critter.critterbase_critter_id = w_clean_bctw_device_deployment.bctw_critter_uuid) as critter_id,
+  (select device_id from bctw_sims.device where device.survey_id = w_clean_bctw_device_deployment.sims_survey_id and device.serial = w_clean_bctw_device_deployment.device_id ) as device_id,
+--  device_key,
+  w_clean_bctw_device_deployment.frequency,
+--  w_clean_bctw_device_deployment.frequency_unit_id as frequency_unit,
+  w_clean_bctw_device_deployment.attachment_start as attachment_start_date,
+  w_clean_bctw_device_deployment.attachment_start as attachment_start_time,
+  w_clean_bctw_device_deployment.attachment_end as attachment_end_date,
+  w_clean_bctw_device_deployment.attachment_end as attachment_end_time,
+--  critterbase_start_capture_id,
+--  critterbase_end_capture_id,
+--  critterbase_end_mortality_id,
+into table sims_bctw.deployment
+from w_clean_bctw_device_deployment;
