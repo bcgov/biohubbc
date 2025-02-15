@@ -203,26 +203,39 @@ select
   w_clean_bctw_device_deployment.sims_survey_id as survey_id,
   w_clean_bctw_device_deployment.device_id as serial,
   w_clean_bctw_device_deployment.device_model as model,
-  COALESCE(
-  (
-    select biohub.device_make.device_make_id
-    from biohub.device_make
-    where biohub.device_make.name ilike (
-        select code_name
-        from bctw.code
-        where code_id = w_clean_bctw_device_deployment.device_make::integer
-  )), (
-   select biohub.device_make.device_make_id
-    from biohub.device_make
-    where biohub.device_make.name ilike 'lotek'
-  )) as device_make_id,
+  coalesce(
+    (
+      select
+        biohub.device_make.device_make_id
+      from
+        biohub.device_make
+      where
+        biohub.device_make.name ilike (
+          select
+            code_name
+          from
+            bctw.code
+          where
+            code_id = w_clean_bctw_device_deployment.device_make::integer
+        )
+    ),
+    (
+      select
+        biohub.device_make.device_make_id
+      from
+        biohub.device_make
+      where
+        biohub.device_make.name ilike 'lotek'
+    )
+  ) as device_make_id,
   w_clean_bctw_device_deployment.comment as comment
 into
   table sims_bctw.device
 from
   w_clean_bctw_device_deployment;
 
-    
+--------------------------------------------------------------------------------------------------------------
+
 with w_clean_bctw_device_deployment as (
   select
     *
@@ -233,17 +246,34 @@ with w_clean_bctw_device_deployment as (
 )   
 select 
   w_clean_bctw_device_deployment.sims_survey_id as survey_id,
-  (select critter_id from biohub.critter where critter.critterbase_critter_id = w_clean_bctw_device_deployment.bctw_critter_uuid) as critter_id,
-  (select device_id from bctw_sims.device where device.survey_id = w_clean_bctw_device_deployment.sims_survey_id and device.serial = w_clean_bctw_device_deployment.device_id ) as device_id,
---  device_key,
+  (
+    select
+      critter_id
+    from
+      biohub.critter
+    where
+      critter.critterbase_critter_id = w_clean_bctw_device_deployment.bctw_critter_uuid
+  ) as critter_id,
+  (
+    select
+      device_id
+    from
+      bctw_sims.device
+    where
+      device.survey_id = w_clean_bctw_device_deployment.sims_survey_id
+      and device.serial = w_clean_bctw_device_deployment.device_id
+  ) as device_id,
+  --  device_key,
   w_clean_bctw_device_deployment.frequency,
---  w_clean_bctw_device_deployment.frequency_unit_id as frequency_unit,
+  --  w_clean_bctw_device_deployment.frequency_unit_id as frequency_unit,
   w_clean_bctw_device_deployment.attachment_start as attachment_start_date,
   w_clean_bctw_device_deployment.attachment_start as attachment_start_time,
   w_clean_bctw_device_deployment.attachment_end as attachment_end_date,
   w_clean_bctw_device_deployment.attachment_end as attachment_end_time,
---  critterbase_start_capture_id,
---  critterbase_end_capture_id,
---  critterbase_end_mortality_id,
-into table sims_bctw.deployment
-from w_clean_bctw_device_deployment;
+  --  critterbase_start_capture_id,
+  --  critterbase_end_capture_id,
+  --  critterbase_end_mortality_id,
+into
+  table sims_bctw.deployment
+from
+  w_clean_bctw_device_deployment;
