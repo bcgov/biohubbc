@@ -191,6 +191,9 @@ FROM bctw.telemetry_manual_historic;
 -- Create SIMS deployment and device tables
 --------------------------------------------------------------------------------------------------------------
 
+-- Insert devices into the SIMS device table
+-- Note: This does not current account for duplicate device serials for the same survey Either account for 
+-- them, or else run a query after to strip them out.
 with w_clean_bctw_device_deployment as (
   select
     *
@@ -255,6 +258,7 @@ select
       critter.critterbase_critter_id = w_clean_bctw_device_deployment.bctw_critter_uuid
   ) as critter_id,
   (
+    -- Find the newly created device_id from the device table, based on the survey_id and device_id
     select
       device_id
     from
