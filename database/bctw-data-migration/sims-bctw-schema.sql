@@ -1,9 +1,9 @@
 --------------------------------------------------------------------------------------------------------------
 
-drop table new_collar cascade;
-drop table new_deployment cascade;
-drop table new_collar_deployment cascade;
-drop table sims_deployment cascade;
+drop table if exists new_collar cascade;
+drop table if exists new_deployment cascade;
+drop table if exists new_collar_deployment cascade;
+drop table if exists sims_deployment cascade;
 
 --------------------------------------------------------------------------------------------------------------
 -- Create new tables
@@ -46,7 +46,7 @@ CREATE TABLE if not exists new_collar_deployment (
     c_created_at                   timestamptz(6)[],
     c_created_by                   integer[],
     c_updated_at                   timestamptz(6)[],
-    c_updated_by                   integer[],z
+    c_updated_by                   integer[],
     c_valid_to                     timestamptz(6)[],
     caa_created_at                 timestamptz(6)[],
     caa_created_by                 integer[],
@@ -141,9 +141,9 @@ with w_data as (
         (array_remove(array_agg(distinct caa.updated_by_user_id), null)) AS caa_updated_by,
                      (array_agg(distinct caa.valid_to)) AS caa_valid_to
     FROM
-        collar_animal_assignment caa
+        bctw.collar_animal_assignment caa
     JOIN
-        collar c ON c.collar_id = caa.collar_id
+        bctw.collar c ON c.collar_id = caa.collar_id
     where
       bctw.is_valid(caa.valid_to) and
       bctw.is_valid(c.valid_to)
@@ -552,7 +552,6 @@ where
 -- 2. What is the value of the `verified_date` column in the telemetry_credential_lotek table?
 -- 3. What is the value of the `is_valid` column in the telemetry_credential_lotek table?
 --
--- TODO: Mac: Strip out the audit columns from the other tables and drop the function
 -- TODO: Mac: Check that all the the `old_deployment` records have also been transferred to the `deployment` table
 -- TODO: Nick: The attachment start and end dates are still incorrect in the deployment table, `deployment` uses `date` and `time` columns, while BCTW uses `timestamp` columns.
 -- TODO: Critterbase attachment start and end dates need to be validated / included in the initial data munge/new tables
@@ -571,56 +570,8 @@ DROP TABLE IF EXISTS sims_bctw.telemetry_credential_lotek;
 DROP TABLE IF EXISTS sims_bctw.telemetry_credential_vectronic;
 DROP TABLE IF EXISTS sims_bctw.telemetry_ats;
 DROP TABLE IF EXISTS sims_bctw.device;
+DROP TABLE IF EXISTS sims_bctw.deployment;
 DROP TABLE IF EXISTS sims_bctw.telemetry_historic;
-
---------------------------------------------------------------------------------------------------------------
--- Create function to map a BCTW user ID a SIMS user ID
---------------------------------------------------------------------------------------------------------------
-
-CREATE OR REPLACE FUNCTION sims_bctw.convert_bctw_user_to_sims_user(bctw_id integer, is_update_user boolean)
- RETURNS integer
- LANGUAGE plpgsql
-AS $function$
-
-DECLARE
-  sims_user_id integer;
-  postgres_user_id integer;
-
-BEGIN
-
-  IF bctw_id IS NULL AND is_update_user = true THEN
-    RETURN null;
-  END IF;
-
-  sims_user_id := (
-    SELECT
-      u.id
-    FROM bctw.user u
-    INNER JOIN biohub.system_user su
-      ON LOWER(su.user_guid) = LOWER(u.keycloak_guid)
-    WHERE u.id = bctw_id
-    LIMIT 1
-  );
-
-  postgres_user_id := (
-    SELECT system_user_id
-    FROM biohub.system_user
-    WHERE user_identifier = 'postgres'
-  );
-
-  IF postgres_user_id IS NULL THEN
-    RAISE EXCEPTION 'The SIMS postgres user does not exist';
-  END IF;
-
-  IF sims_user_id IS NOT NULL THEN
-    RETURN sims_user_id;
-  END IF;
-
-  RETURN postgres_user_id;
-
-END;
-$function$
-;
 
 
 --------------------------------------------------------------------------------------------------------------
@@ -633,21 +584,7 @@ SELECT
   dtcreated,
   strsatellite,
   true AS is_valid, -- question: Are all records valid?
-  now() AS verified_date, -- question: Is this the current date?
-  --
-  -- Audit Columns
-  --
-  -- Note: The `create_date` is hardcoded to the current date
-  -- Note: The `update_date` is hardcoded to NULL
-  -- Note: The `create_user` column is hardcoded to the SIMS `postgres` user
-  -- Note: The `update_user` column is hardcoded to NULL
-  -- Note: The `revision_count` column is hardcoded to 0
-  --
-  now() as create_date,
-  NULL::timestamptz as update_date,
-  (SELECT system_user_id FROM biohub.system_user WHERE user_identifier = 'postgres') as create_user,
-  NULL::integer as update_user,
-  0 as revision_count
+  now() AS verified_date -- question: Is this the current date?
 INTO TABLE sims_bctw.telemetry_credential_lotek
 FROM bctw.api_lotek_credential;
 
@@ -663,21 +600,7 @@ SELECT
   comtype,
   idcom,
   collarkey,
-  collartype,
-  --
-  -- Audit Columns
-  --
-  -- Note: The `create_date` is hardcoded to the current date (no date in the BCTW table)
-  -- Note: The `update_date` is hardcoded to NULL
-  -- Note: The `create_user` column is hardcoded to the SIMS `postgres` user
-  -- Note: The `update_user` column is hardcoded to NULL
-  -- Note: The `revision_count` column is hardcoded to 0
-  --
-  now()::timestamptz as create_date,
-  NULL::timestamptz as update_date,
-  (SELECT system_user_id FROM biohub.system_user WHERE user_identifier = 'postgres') as create_user,
-  NULL::integer as update_user,
-  0 as revision_count
+  collartype
 INTO TABLE sims_bctw.telemetry_credential_vectronic
 FROM bctw.api_vectronic_credential;
 
@@ -706,21 +629,7 @@ SELECT
   hdop,
   numsats,
   fixtime,
-  activity,
-  --
-  -- Audit Columns
-  --
-  -- Note: The `create_date` is hardcoded to the current date
-  -- Note: The `update_date` is hardcoded to NULL
-  -- Note: The `create_user` column is hardcoded to the SIMS `postgres` user
-  -- Note: The `update_user` column is hardcoded to NULL
-  -- Note: The `revision_count` column is hardcoded to 0
-  --
-  now()::timestamptz as create_date, -- question: Should this be the `date` column? I think its the date the telemetry was recorded.
-  NULL::timestamptz as update_date,
-  (SELECT system_user_id FROM biohub.system_user WHERE user_identifier = 'postgres') as create_user,
-  NULL::integer as update_user,
-  0 as revision_count
+  activity
 INTO TABLE sims_bctw.telemetry_ats
 FROM bctw.telemetry_api_ats;
 
@@ -729,12 +638,7 @@ FROM bctw.telemetry_api_ats;
 --------------------------------------------------------------------------------------------------------------
 
 SELECT
-  *,
-  now()::timestamptz as create_date,
-  NULL::timestamptz as update_date,
-  (SELECT system_user_id FROM biohub.system_user WHERE user_identifier = 'postgres') as create_user,
-  NULL::integer as update_user,
-  0 as revision_count
+  *
 INTO TABLE sims_bctw.telemetry_historic
 FROM bctw.telemetry_manual_historic;
 
