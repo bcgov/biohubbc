@@ -56,7 +56,7 @@ jobs:
         run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
 
       - name: Scale down
-        run: oc get deploymentconfig --namespace af2668-dev --selector env-id=$PR_NUMBER -o name | awk '{print "oc scale --replicas=0 " $1}' | bash
+        run: oc get DeploymentConfig,Deployment --namespace af2668-dev --selector env-id=$PR_NUMBER -o name | awk '{print "oc scale --replicas=0 " $1}' | bash
 
   # Checkout the repo once and cache it for use in subsequent jobs
   checkoutRepo:
@@ -90,7 +90,7 @@ jobs:
         with:
           # Cache repo based on the commit sha that triggered the workflow
           path: ${{ github.workspace }}/*
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.event.pull_request.head.sha }}
 
   # Build the web frontend app image
   buildAPP:
@@ -118,7 +118,7 @@ jobs:
           cache-name: cache-repo
         with:
           path: ${{ github.workspace }}/*
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.event.pull_request.head.sha }}
 
       # Checkout the branch if not restored via cache
       - name: Checkout Target Branch
@@ -174,7 +174,7 @@ jobs:
           cache-name: cache-repo
         with:
           path: ${{ github.workspace }}/*
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.event.pull_request.head.sha }}
 
       # Checkout the branch if not restored via cache
       - name: Checkout Target Branch
@@ -230,7 +230,7 @@ jobs:
           cache-name: cache-repo
         with:
           path: ${{ github.workspace }}/*
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.event.pull_request.head.sha }}
 
       # Checkout the branch if not restored via cache
       - name: Checkout Target Branch
@@ -286,7 +286,7 @@ jobs:
           cache-name: cache-repo
         with:
           path: ${{ github.workspace }}/*
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.event.pull_request.head.sha }}
 
       # Checkout the branch if not restored via cache
       - name: Checkout Target Branch
@@ -343,7 +343,7 @@ jobs:
           cache-name: cache-repo
         with:
           path: ${{ github.workspace }}/*
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.event.pull_request.head.sha }}
 
       # Checkout the branch if not restored via cache
       - name: Checkout Target Branch
@@ -400,7 +400,7 @@ jobs:
           cache-name: cache-repo
         with:
           path: ${{ github.workspace }}/*
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.event.pull_request.head.sha }}
 
       # Checkout the branch if not restored via cache
       - name: Checkout Target Branch
@@ -431,62 +431,62 @@ jobs:
           DEBUG=* npm run db:deploy -- --pr=$PR_NUMBER --env=$BRANCH --branch=$BRANCH --type=static
 
   # Deploy Database setup image
-  #   deployDatabaseSetup:
-  #     name: Deploy Database Setup Image
-  #     runs-on: ubuntu-latest
-  #     timeout-minutes: 30
-  #     if: ${{ github.event.pull_request.merged == true }}
-  #     env:
-  #       PR_NUMBER: ${{ github.event.number }}
-  #       BRANCH: ${{ github.base_ref }}
-  #     needs:
-  #       - scaleDownPods
-  #       - buildDatabaseSetup
-  #       - deployDatabase
-  #     steps:
-  #       # Install Node - for `node` and `npm` commands
-  #       - name: Setup Node.js
-  #         uses: actions/setup-node@v4
-  #         with:
-  #           node-version: 20
+  deployDatabaseSetup:
+    name: Deploy Database Setup Image
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    if: ${{ github.event.pull_request.merged == true }}
+    env:
+      PR_NUMBER: ${{ github.event.number }}
+      BRANCH: ${{ github.base_ref }}
+    needs:
+      - scaleDownPods
+      - buildDatabaseSetup
+      - deployDatabase
+    steps:
+      # Install Node - for `node` and `npm` commands
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
-  #       # Load repo from cache
-  #       - name: Cache repo
-  #         uses: actions/cache@v4
-  #         id: cache-repo
-  #         env:
-  #           cache-name: cache-repo
-  #         with:
-  #           path: ${{ github.workspace }}/*
-  #           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+      # Load repo from cache
+      - name: Cache repo
+        uses: actions/cache@v4
+        id: cache-repo
+        env:
+          cache-name: cache-repo
+        with:
+          path: ${{ github.workspace }}/*
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.event.pull_request.head.sha }}
 
-  #       # Checkout the branch if not restored via cache
-  #       - name: Checkout Target Branch
-  #         if: steps.cache-repo.outputs.cache-hit != 'true'
-  #         uses: actions/checkout@v4
+      # Checkout the branch if not restored via cache
+      - name: Checkout Target Branch
+        if: steps.cache-repo.outputs.cache-hit != 'true'
+        uses: actions/checkout@v4
 
-  #       # Install oc, which was removed from the ubuntu-latest image in v24.04
-  #       - name: Install OpenShift CLI tools
-  #         uses: redhat-actions/openshift-tools-installer@v1
-  #         with:
-  #           oc: "4.14"
+      # Install oc, which was removed from the ubuntu-latest image in v24.04
+      - name: Install OpenShift CLI tools
+        uses: redhat-actions/openshift-tools-installer@v1
+        with:
+          oc: "4.14"
 
-  #       # Log in to OpenShift.
-  #       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
-  #       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
-  #       - name: Log in to OpenShift
-  #         run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
+      # Log in to OpenShift.
+      # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
+      # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
+      - name: Log in to OpenShift
+        run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
 
-  #       # Install database pipeline node modules
-  #       - name: Install database pipeline node modules
-  #         working-directory: "database/.pipeline/"
-  #         run: npm ci
+      # Install database pipeline node modules
+      - name: Install database pipeline node modules
+        working-directory: "database/.pipeline/"
+        run: npm ci
 
-  #       # Deploy the database setup image
-  #       - name: Deploy Database Setup Image
-  #         working-directory: "database/.pipeline/"
-  #         run: |
-  #           DEBUG=* npm run db-setup:deploy -- --pr=$PR_NUMBER --env=$BRANCH --branch=$BRANCH --type=static
+      # Deploy the database setup image
+      - name: Deploy Database Setup Image
+        working-directory: "database/.pipeline/"
+        run: |
+          DEBUG=* npm run db-setup:deploy -- --pr=$PR_NUMBER --env=$BRANCH --branch=$BRANCH --type=static
 
   # Deploy API image
   deployAPI:
@@ -516,7 +516,7 @@ jobs:
           cache-name: cache-repo
         with:
           path: ${{ github.workspace }}/*
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.event.pull_request.head.sha }}
 
       # Checkout the branch if not restored via cache
       - name: Checkout Target Branch
@@ -554,7 +554,7 @@ jobs:
     if: ${{ github.event.pull_request.merged == true }}
     needs:
       - deployDatabase
-      #   - deployDatabaseSetup
+      - deployDatabaseSetup
       - deployAPI
       - deployAPP
     env:
@@ -575,7 +575,7 @@ jobs:
           cache-name: cache-repo
         with:
           path: ${{ github.workspace }}/*
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.event.pull_request.head.sha }}
 
       # Checkout the branch if not restored via cache
       - name: Checkout Target Branch
@@ -623,5 +623,5 @@ jobs:
         env:
           POD_SELECTOR: biohubbc
         run: |
-          oc --namespace af2668-dev   get all,pvc,secret,pods,ReplicationController,DeploymentConfig,HorizontalPodAutoscaler,imagestreamtag -o name | grep $POD_SELECTOR | grep $PR_NUMBER | awk '{print "oc delete --ignore-not-found " $1}' | bash
-          oc --namespace af2668-tools get all,pvc,secret,pods,ReplicationController,DeploymentConfig,HorizontalPodAutoscaler,imagestreamtag -o name | grep $POD_SELECTOR | grep $PR_NUMBER | awk '{print "oc delete --ignore-not-found " $1}' | bash
+          oc --namespace af2668-dev   get all,pvc,secret,pods,ReplicationController,DeploymentConfig,Deployment,HorizontalPodAutoscaler,imagestreamtag -o name | grep $POD_SELECTOR | grep $PR_NUMBER | awk '{print "oc delete --ignore-not-found " $1}' | bash
+          oc --namespace af2668-tools get all,pvc,secret,pods,ReplicationController,DeploymentConfig,Deployment,HorizontalPodAutoscaler,imagestreamtag -o name | grep $POD_SELECTOR | grep $PR_NUMBER | awk '{print "oc delete --ignore-not-found " $1}' | bash

@@ -178,8 +178,6 @@ export type IUpdateSurveyRequest = ISurveyLocationForm & {
   };
   funding_sources: {
     funding_source_id: number;
-    amount: number;
-    revision_count: number;
   }[];
   partnerships: IGetSurveyForUpdateResponsePartnerships;
   purpose_and_methodology: {
@@ -349,7 +347,6 @@ export interface IGetSurveyForUpdateResponse {
       funding_source_id: number;
       survey_id: number;
       survey_funding_source_id: number;
-      amount: number;
       funding_source_name: string;
       start_date: string | null;
       end_date: string | null;

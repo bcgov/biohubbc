@@ -37,6 +37,7 @@ POST.apiDoc = {
             username: { type: 'string' },
             email: { type: 'string' },
             identitySource: { type: 'string', description: 'Whether the account is an IDIR or BCeID.' },
+            company: { type: 'string', description: 'The company that the user belongs to.', nullable: true },
             displayName: { type: 'string' }
           }
         }

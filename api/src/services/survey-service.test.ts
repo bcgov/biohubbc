@@ -281,7 +281,6 @@ describe('SurveyService', () => {
           survey_funding_source_id: 5,
           survey_id: 1,
           funding_source_id: 2,
-          amount: 1000,
           revision_count: 0,
           funding_source_name: 'FundingSource1',
           start_date: '2023-01-02',

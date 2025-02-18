@@ -2,6 +2,7 @@ import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
 import { Request } from 'express';
 import qs from 'qs';
 import { z } from 'zod';
+import { IDBConnection } from '../database/db';
 import { ApiError, ApiErrorType } from '../errors/api-error';
 import { ISex } from '../models/animal-view';
 import { getLogger } from '../utils/logger';
@@ -14,9 +15,28 @@ export interface ICritterbaseUser {
   keycloak_guid: string;
 }
 
+/**
+ * Get Critterbase user from a request
+ *
+ * TODO: Rename to `getCritterbaseUserFromRequest`
+ *
+ * @param {Request} req
+ * @returns {ICritterbaseUser}
+ */
 export const getCritterbaseUser = (req: Request): ICritterbaseUser => ({
   keycloak_guid: req.system_user?.user_guid ?? '',
   username: req.system_user?.user_identifier ?? ''
+});
+
+/**
+ * Get Critterbase user from connection
+ *
+ * @param {IDBConnection} connection
+ * @returns {ICritterbaseUser}
+ */
+export const getCritterbaseUserFromConnection = (connection: IDBConnection) => ({
+  keycloak_guid: connection.systemUserGUID(),
+  username: connection.systemUserIdentifier()
 });
 
 export interface QueryParam {
@@ -185,6 +205,7 @@ export interface IQualMeasurement {
 
 export interface IQuantMeasurement {
   measurement_quantitative_id?: string;
+  critter_id: string;
   taxon_measurement_id: string;
   capture_id?: string;
   mortality_id?: string;

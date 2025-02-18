@@ -43,7 +43,6 @@ export const surveyObject: SurveyViewObject = {
   funding_sources: [
     {
       funding_source_id: 1,
-      amount: 1000,
       revision_count: 0,
       survey_id: 1,
       survey_funding_source_id: 1,

@@ -1,5 +1,6 @@
 import { expect } from 'chai';
-import { SystemUser } from '../repositories/user-repository';
+import { SYSTEM_ROLE } from '../constants/roles';
+import { SystemUserWithRoles } from '../models/system-user-view';
 import { getRequestHandlerMocks } from '../__mocks__/db';
 import { KeycloakUserInformation } from './keycloak-utils';
 import { getFileFromRequest, getKeycloakTokenFromRequest, getSystemUserFromRequest } from './request';
@@ -75,7 +76,20 @@ describe('getSystemUserFromRequest', () => {
 
   it('should return system_user', () => {
     const { mockReq } = getRequestHandlerMocks();
-    const mockUser = { user: true } as unknown as SystemUser;
+    const mockUser: SystemUserWithRoles = {
+      system_user_id: 20,
+      user_guid: '123-456-789',
+      user_identifier: 'test-identifier',
+      identity_source: 'IDIR',
+      display_name: 'test-user',
+      given_name: 'test-given',
+      family_name: 'test-family',
+      email: 'test-email',
+      agency: 'test-agency',
+      record_end_date: null,
+      role_ids: [1],
+      role_names: [SYSTEM_ROLE.SYSTEM_ADMIN]
+    };
 
     mockReq.system_user = mockUser;
 

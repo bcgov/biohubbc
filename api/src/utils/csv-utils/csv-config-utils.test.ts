@@ -21,7 +21,7 @@ describe('CSVConfigUtils', () => {
       const utils = new CSVConfigUtils(worksheet, mockConfig);
 
       expect(utils).to.be.instanceOf(CSVConfigUtils);
-      expect(utils._config).to.be.equal(mockConfig);
+      expect(utils.config).to.be.equal(mockConfig);
       expect(utils.worksheet).to.be.equal(worksheet);
 
       expect(utils.worksheetRows[0]).to.deep.equal({
@@ -224,12 +224,59 @@ describe('CSVConfigUtils', () => {
         TEST: { validateCell, setCellValue }
       });
 
-      expect(utils._config).to.be.deep.equal({
+      expect(utils.config).to.be.deep.equal({
         staticHeadersConfig: {
           TEST: { aliases: [], validateCell, setCellValue }
         },
         ignoreDynamicHeaders: false
       });
+    });
+  });
+
+  describe('getWorksheetHeader', () => {
+    it('should get the worksheet static header', () => {
+      const mockConfig = {
+        staticHeadersConfig: {
+          TEST: { aliases: [] }
+        },
+        ignoreDynamicHeaders: false
+      };
+
+      const utils = new CSVConfigUtils({}, mockConfig);
+
+      const header = utils.getWorksheetHeader('TEST', { TEST: 'cellValue' });
+
+      expect(header).to.be.equal('TEST');
+    });
+
+    it('should get the worksheet header alias', () => {
+      const mockConfig: CSVConfig = {
+        staticHeadersConfig: {
+          TEST: { aliases: ['OTHER'] }
+        },
+        ignoreDynamicHeaders: false
+      };
+
+      const utils = new CSVConfigUtils({}, mockConfig);
+
+      const header = utils.getWorksheetHeader('TEST', { OTHER: 'cellValue' });
+
+      expect(header).to.be.equal('OTHER');
+    });
+
+    it('should return undefined if header not found', () => {
+      const mockConfig: CSVConfig = {
+        staticHeadersConfig: {
+          TEST: { aliases: [] }
+        },
+        ignoreDynamicHeaders: false
+      };
+
+      const utils = new CSVConfigUtils({}, mockConfig);
+
+      const header = utils.getWorksheetHeader('BAD', { TEST: 'cellValue' });
+
+      expect(header).to.be.null;
     });
   });
 });

@@ -1,6 +1,74 @@
 import winston from 'winston';
 import DailyRotateFile from 'winston-daily-rotate-file';
 
+const DEFAULT_LOGGER = 'default';
+
+export type CustomLogger = {
+  error: (params: CustomLoggerParams) => void;
+  warn: (params: CustomLoggerParams) => void;
+  info: (params: CustomLoggerParams) => void;
+  debug: (params: CustomLoggerParams) => void;
+  silly: (params: CustomLoggerParams) => void;
+};
+
+export type CustomLoggerParams = {
+  label?: string;
+  message?: string;
+  error?: any;
+  [key: string]: any;
+};
+
+/**
+ * Get a singleton logger.
+ *
+ * Wraps the winston logger to provide a common interface for logging.
+ *
+ * @example
+ *
+ * Initialization:
+ *
+ * import { getLogger } from './logger';
+ *
+ * const defaultLog = getLogger('class-or-file-name');
+ *
+ * Usage:
+ *
+ * log.info({ message: 'A basic log message!' })
+ *
+ * log.info({ label: 'functionName', message: 'A message with a label!' })
+ *
+ * log.error({ label: 'functionName', message: 'An error message!:', error })
+ *
+ * log.debug({ label: 'functionName', message: 'A debug message!:', debugInfo1, debugInfo2 })
+ *
+ * Example Output:
+ *
+ * {
+ *   timestamp: '2025-02-04 14:05:24',
+ *   level: 'debug',
+ *   message: {
+ *     logger: 'class-or-file-name',
+ *     label: 'functionName',
+ *     message: 'An error message!:',
+ *     error: {...}
+ *   }
+ * }
+ *
+ * @param {string} logLabel common label for the instance of the logger.
+ * @return {*}  {CustomLogger}
+ */
+export const getLogger = (logLabel: string): CustomLogger => {
+  const logger = _getOrCreateLoggerSingleton(DEFAULT_LOGGER);
+
+  return {
+    error: (params: CustomLoggerParams) => logger.error({ logger: logLabel, ...params }),
+    warn: (params: CustomLoggerParams) => logger.warn({ logger: logLabel, ...params }),
+    info: (params: CustomLoggerParams) => logger.info({ logger: logLabel, ...params }),
+    debug: (params: CustomLoggerParams) => logger.debug({ logger: logLabel, ...params }),
+    silly: (params: CustomLoggerParams) => logger.silly({ logger: logLabel, ...params })
+  };
+};
+
 /**
  * Get the transport types to use for the logger.
  *
@@ -23,60 +91,19 @@ const getLoggerTransportTypes = (): string[] => {
 };
 
 /**
- * Get or create a logger for the given `logLabel`.
+ * Get or create a singleton logger instance.
  *
- * Centralized logger that uses Winston 3.x.
- *
- * Initializing the logger:
- *
- * import { getLogger } from './logger';
- * const defaultLog = getLogger('class-or-file-name');
- *
- * Usage:
- *
- * log.info({ message: 'A basic log message!' })
- *
- * log.info({ label: 'functionName', message: 'A message with a label!' })
- *
- * log.error({ label: 'functionName', message: 'An error message!:', error })
- *
- * log.debug({ label: 'functionName', message: 'A debug message!:', debugInfo1, debugInfo2 })
- *
- * ...etc
- *
- * Example Output:
- *
- * [15-09-2019 14:44:30] [info] (class-or-file-name): A basic log message!
- *
- * [15-09-2019 14:44:30] [info] (class-or-file-name): functionName - A message with a label!
- *
- * [02-12-2019 14:45:02] [error] (class-or-file-name): functionName - An error message!
- * {
- *   error: 404 Not Found
- * }
- *
- * [02-12-2019 14:46:15] [error] (class-or-file-name): functionName - A debug message!
- * {
- *   debugInfo1: 'someDebugInfo1'
- * }
- * {
- *   debugInfo2: 'someDebugInfo2'
- * }
- *
- * ...etc
- *
- * Environment Variables:
- *
- * LOG_LEVEL - Defines the level of logging that the logger will output to the console. (default: debug)
- *
- * LOG_LEVEL_FILE - Defines the level of logging that the logger will output to persistent log files. (default: debug)
- *
- * Valid logging level values (from least logging to most logging) - silent, error, warn, info, debug, silly
- *
- * @param {string} logLabel common label for the instance of the logger.
- * @returns
+ * @param {string} loggerName The name of the logger instance.
+ * @return {*}  {winston.Logger}
  */
-export const getLogger = function (logLabel: string) {
+export const _getOrCreateLoggerSingleton = function (loggerName: string): winston.Logger {
+  const hasLogger = winston.loggers.has(loggerName);
+
+  if (hasLogger) {
+    // Return the existing logger instance
+    return winston.loggers.get(loggerName);
+  }
+
   const transportTypes = getLoggerTransportTypes();
 
   const transports = [];
@@ -86,16 +113,16 @@ export const getLogger = function (logLabel: string) {
     transports.push(
       new DailyRotateFile({
         dirname: process.env.LOG_FILE_DIR || 'data/logs',
-        filename: process.env.LOG_FILE_NAME || 'sims-api-%DATE%.log',
-        datePattern: process.env.LOG_FILE_DATE_PATTERN || 'YYYY-MM-DD-HH',
-        maxSize: process.env.LOG_FILE_MAX_SIZE || '50m',
+        filename: process.env.LOG_FILE_NAME || 'sims-api.log',
+        datePattern: process.env.LOG_FILE_DATE_PATTERN || 'YYYY-MM-DD',
+        maxSize: process.env.LOG_FILE_MAX_SIZE || '49m',
         maxFiles: process.env.LOG_FILE_MAX_FILES || '10',
         level: process.env.LOG_LEVEL_FILE || 'debug',
         format: winston.format.combine(
           winston.format((info) => {
             const { timestamp, level, ...rest } = info;
             // Return the properties of info in a specific order
-            return { timestamp, level, logger: logLabel, ...rest };
+            return { timestamp, level, ...rest };
           })(),
           winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
           winston.format.prettyPrint({ colorize: false, depth: 10 })
@@ -121,7 +148,7 @@ export const getLogger = function (logLabel: string) {
           winston.format((info) => {
             const { timestamp, level, ...rest } = info;
             // Return the properties of info in a specific order
-            return { timestamp, level, logger: logLabel, ...rest };
+            return { timestamp, level, ...rest };
           })(),
           winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
           winston.format.prettyPrint({ colorize: true, depth: 10 })
@@ -130,7 +157,8 @@ export const getLogger = function (logLabel: string) {
     );
   }
 
-  return winston.loggers.get(logLabel || 'default', { transports: transports });
+  // Create new logger instance
+  return winston.loggers.add(loggerName, { transports: transports });
 };
 
 export const WinstonLogLevels = ['silent', 'error', 'warn', 'info', 'debug', 'silly'] as const;

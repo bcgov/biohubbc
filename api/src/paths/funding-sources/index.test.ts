@@ -6,8 +6,8 @@ import { SYSTEM_IDENTITY_SOURCE } from '../../constants/database';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import * as db from '../../database/db';
 import { HTTPError } from '../../errors/http-error';
+import { SystemUserWithRoles } from '../../models/system-user-view';
 import { FundingSource, FundingSourceSupplementaryData } from '../../repositories/funding-source-repository';
-import { SystemUser } from '../../repositories/user-repository';
 import { FundingSourceService } from '../../services/funding-source-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
 import { getFundingSources, postFundingSource } from '../funding-sources';
@@ -29,7 +29,6 @@ describe('getFundingSources', () => {
           end_date: '2020-01-01',
           description: 'description',
           revision_count: 0,
-          survey_reference_amount_total: 2,
           survey_reference_count: 20000
         },
         {
@@ -39,7 +38,6 @@ describe('getFundingSources', () => {
           end_date: '2020-01-01',
           description: 'description2',
           revision_count: 0,
-          survey_reference_amount_total: 3,
           survey_reference_count: 30000
         }
       ];
@@ -52,7 +50,7 @@ describe('getFundingSources', () => {
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
-      const systemUser: SystemUser = {
+      const systemUser: SystemUserWithRoles = {
         system_user_id: 2,
         user_identifier: 'username',
         identity_source: SYSTEM_IDENTITY_SOURCE.IDIR,
@@ -90,7 +88,6 @@ describe('getFundingSources', () => {
           end_date: '2020-01-01',
           description: 'description',
           revision_count: 0,
-          survey_reference_amount_total: 2,
           survey_reference_count: 20000
         },
         {
@@ -100,7 +97,6 @@ describe('getFundingSources', () => {
           end_date: '2020-01-01',
           description: 'description2',
           revision_count: 0,
-          survey_reference_amount_total: 3,
           survey_reference_count: 30000
         }
       ];
@@ -113,7 +109,7 @@ describe('getFundingSources', () => {
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
-      const systemUser: SystemUser = {
+      const systemUser: SystemUserWithRoles = {
         system_user_id: 2,
         user_identifier: 'username',
         identity_source: SYSTEM_IDENTITY_SOURCE.IDIR,
@@ -137,7 +133,6 @@ describe('getFundingSources', () => {
       expect(mockRes.jsonValue).to.eql(
         mockFundingSources.map((item) => {
           // remove sensitive fields
-          delete item.survey_reference_amount_total;
           delete item.survey_reference_count;
           return item;
         })

@@ -23,7 +23,7 @@ export const AlertModel = z.object({
 export type AlertModel = z.infer<typeof AlertModel>;
 
 /**
- * Alert Record. Intentionally do not omit create_date.
+ * Alert Record
  *
  * @description Data record for `Alert`.
  */

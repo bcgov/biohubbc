@@ -5,8 +5,8 @@ import { IPermitModel } from '../repositories/permit-repository';
 import { SiteSelectionData } from '../repositories/site-selection-strategy-repository';
 import { SurveyLocationRecord } from '../repositories/survey-location-repository';
 import { SurveyUser } from '../repositories/survey-participation-repository';
-import { SystemUser } from '../repositories/user-repository';
 import { ITaxonomyWithEcologicalUnits } from '../services/platform-service';
+import { SystemUserWithRoles } from './system-user-view';
 
 export interface ISurveyAdvancedFilters {
   /**
@@ -84,7 +84,7 @@ export type SurveyObject = {
   purpose_and_methodology: GetSurveyPurposeAndMethodologyData;
   proprietor: GetSurveyProprietorData | null;
   locations: SurveyLocationRecord[];
-  participants: (SurveyUser & SystemUser)[];
+  participants: (SurveyUser & SystemUserWithRoles)[];
   partnerships: ISurveyPartnerships;
   site_selection: SiteSelectionData;
 };
@@ -122,7 +122,6 @@ export class GetSurveyFundingSourceData {
   survey_funding_source_id: number;
   survey_id: number;
   funding_source_id: number;
-  amount: number;
   revision_count?: number;
   funding_source_name?: string;
   start_date?: string | null;
@@ -133,7 +132,6 @@ export class GetSurveyFundingSourceData {
     this.survey_funding_source_id = obj?.survey_funding_source_id || null;
     this.funding_source_id = obj?.funding_source_id || null;
     this.survey_id = obj?.survey_id || null;
-    this.amount = obj?.amount ?? null;
     this.revision_count = obj?.revision_count || 0;
     this.funding_source_name = obj?.funding_source_name || null;
     this.start_date = obj?.start_date || null;
