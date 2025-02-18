@@ -433,7 +433,10 @@ insert into sims_deployment (
     sims_critter_uuid,
     sims_deployment_id,
     sims_deployment_uuid,
-    sims_create_date
+    sims_create_date,
+    critterbase_start_capture_id,
+    critterbase_end_capture_id,
+    critterbase_end_mortality_id
 )
 select
     distinct on
@@ -491,16 +494,19 @@ and ABS(EXTRACT(EPOCH FROM sims_deployment.sims_create_date) - EXTRACT(EPOCH FRO
 update new_deployment
     set sims_deployment_uuid = sims_tables.bctw_deployment_id,
     sims_survey_id = sims_tables.survey_id,
-    critterbase_start_capture_id = sims_deployment.critterbase_start_capture_id,
-    critterbase_end_capture_id = sims_deployment.critterbase_end_capture_id,
-    critterbase_end_mortality_id = sims_deployment.critterbase_end_mortality_id
+    critterbase_start_capture_id = sims_tables.critterbase_start_capture_id,
+    critterbase_end_capture_id = sims_tables.critterbase_end_capture_id,
+    critterbase_end_mortality_id = sims_tables.critterbase_end_mortality_id
 from (
     select
         critter.survey_id,
         critter.critter_id,
         critter.critterbase_critter_id,
         deployment_old.deployment_id,
-        deployment_old.bctw_deployment_id
+        deployment_old.bctw_deployment_id,
+        deployment_old.critterbase_start_capture_id,
+        deployment_old.critterbase_end_capture_id,
+        deployment_old.critterbase_end_mortality_id
     from
         biohub.deployment_old
     left join biohub.critter
@@ -519,9 +525,9 @@ where
 update new_deployment
     set sims_deployment_uuid = sims_tables.bctw_deployment_id,
     sims_survey_id = sims_tables.survey_id,
-    critterbase_start_capture_id = sims_deployment.critterbase_start_capture_id,
-    critterbase_end_capture_id = sims_deployment.critterbase_end_capture_id,
-    critterbase_end_mortality_id = sims_deployment.critterbase_end_mortality_id
+    critterbase_start_capture_id = sims_tables.critterbase_start_capture_id,
+    critterbase_end_capture_id = sims_tables.critterbase_end_capture_id,
+    critterbase_end_mortality_id = sims_tables.critterbase_end_mortality_id
 from (
     select
         critter.survey_id,
@@ -529,7 +535,10 @@ from (
         critter.critterbase_critter_id,
         deployment_old.deployment_id,
         deployment_old.bctw_deployment_id,
-        deployment_old.create_date
+        deployment_old.create_date,
+        deployment_old.critterbase_start_capture_id,
+        deployment_old.critterbase_end_capture_id,
+        deployment_old.critterbase_end_mortality_id
     from
         biohub.deployment_old
     left join biohub.critter
@@ -547,10 +556,7 @@ where
 --------------------------------------------------------------------------------------------------------------
 
 update new_deployment
-    set sims_survey_id = sims_tables.survey_id,
-    critterbase_start_capture_id = sims_tables.critterbase_start_capture_id,
-    critterbase_end_capture_id = sims_tables.critterbase_end_capture_id,
-    critterbase_end_mortality_id = sims_tables.critterbase_end_mortality_id
+    set sims_survey_id = sims_tables.survey_id
 from (
     select
         critter.survey_id,
