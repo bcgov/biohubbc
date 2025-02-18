@@ -582,7 +582,6 @@ where
 -- 3. What is the value of the `is_valid` column in the telemetry_credential_lotek table?
 --
 -- TODO: Mac: Check that all the the `old_deployment` records have also been transferred to the `deployment` table
--- TODO: Nick: The attachment start and end dates are still incorrect in the deployment table, `deployment` uses `date` and `time` columns, while BCTW uses `timestamp` columns.
 -- TODO: Critterbase attachment start and end dates need to be validated / included in the initial data munge/new tables
 --
 --------------------------------------------------------------------------------------------------------------
@@ -814,4 +813,3 @@ into
   table sims_bctw.deployment
 from
   w_clean_bctw_device_deployment;
-  
