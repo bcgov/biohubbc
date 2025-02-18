@@ -18,7 +18,10 @@ CREATE TABLE if not exists sims_deployment (
     sims_critter_uuid              UUID,
     sims_deployment_id             INTEGER,
     sims_deployment_uuid           UUID,
-    sims_create_date               timestamptz(6)
+    sims_create_date               timestamptz(6),
+    critterbase_start_capture_id   UUID,
+    critterbase_end_capture_id     UUID,
+    critterbase_end_mortality_id   UUID
 );
 
 CREATE TABLE if not exists new_collar_deployment (
@@ -94,6 +97,11 @@ CREATE TABLE if not exists new_deployment (
     attachment_end           TIMESTAMP,
     frequency                DECIMAL,
     frequency_unit           VARCHAR(50),
+--
+    critterbase_start_capture_id    UUID,
+    critterbase_end_capture_id      UUID,
+    critterbase_end_mortality_id    UUID,
+--
     create_date              timestamptz(6),
     create_user              integer,
     update_date              timestamptz(6),
@@ -437,7 +445,10 @@ select
     critter.critterbase_critter_id as sims_critter_uuid,
     deployment_old.deployment_id as sims_deployment_id,
     deployment_old.bctw_deployment_id as sims_deployment_uuid,
-    deployment_old.create_date as sims_create_date
+    deployment_old.create_date as sims_create_date,
+    deployment_old.critterbase_start_capture_id,
+    deployment_old.critterbase_end_capture_id,
+    deployment_old.critterbase_end_mortality_id
 from
     biohub.deployment_old
 left join biohub.critter
@@ -463,7 +474,10 @@ where
 
 update new_deployment
     set sims_deployment_uuid = sims_deployment.sims_deployment_uuid,
-    sims_survey_id = sims_deployment.sims_survey_id
+    sims_survey_id = sims_deployment.sims_survey_id,
+    critterbase_start_capture_id = sims_deployment.critterbase_start_capture_id,
+    critterbase_end_capture_id = sims_deployment.critterbase_end_capture_id,
+    critterbase_end_mortality_id = sims_deployment.critterbase_end_mortality_id
 from sims_deployment
 where
     sims_deployment.sims_critter_uuid = new_deployment.bctw_critter_uuid
@@ -476,7 +490,10 @@ and ABS(EXTRACT(EPOCH FROM sims_deployment.sims_create_date) - EXTRACT(EPOCH FRO
 
 update new_deployment
     set sims_deployment_uuid = sims_tables.bctw_deployment_id,
-    sims_survey_id = sims_tables.survey_id
+    sims_survey_id = sims_tables.survey_id,
+    critterbase_start_capture_id = sims_deployment.critterbase_start_capture_id,
+    critterbase_end_capture_id = sims_deployment.critterbase_end_capture_id,
+    critterbase_end_mortality_id = sims_deployment.critterbase_end_mortality_id
 from (
     select
         critter.survey_id,
@@ -501,7 +518,10 @@ where
 
 update new_deployment
     set sims_deployment_uuid = sims_tables.bctw_deployment_id,
-    sims_survey_id = sims_tables.survey_id
+    sims_survey_id = sims_tables.survey_id,
+    critterbase_start_capture_id = sims_deployment.critterbase_start_capture_id,
+    critterbase_end_capture_id = sims_deployment.critterbase_end_capture_id,
+    critterbase_end_mortality_id = sims_deployment.critterbase_end_mortality_id
 from (
     select
         critter.survey_id,
@@ -527,7 +547,10 @@ where
 --------------------------------------------------------------------------------------------------------------
 
 update new_deployment
-    set sims_survey_id = sims_tables.survey_id
+    set sims_survey_id = sims_tables.survey_id,
+    critterbase_start_capture_id = sims_tables.critterbase_start_capture_id,
+    critterbase_end_capture_id = sims_tables.critterbase_end_capture_id,
+    critterbase_end_mortality_id = sims_tables.critterbase_end_mortality_id
 from (
     select
         critter.survey_id,
@@ -774,11 +797,15 @@ select
           code.code_id = w_clean_bctw_device_deployment.frequency_unit::integer
       )
   ) as frequency_unit,
-  w_clean_bctw_device_deployment.attachment_start as attachment_start_date,
-  w_clean_bctw_device_deployment.attachment_start as attachment_start_time,
-  w_clean_bctw_device_deployment.attachment_end as attachment_end_date,
-  w_clean_bctw_device_deployment.attachment_end as attachment_end_time
+  w_clean_bctw_device_deployment.attachment_start::date as attachment_start_date,
+  w_clean_bctw_device_deployment.attachment_start::time as attachment_start_time,
+  w_clean_bctw_device_deployment.attachment_end::date as attachment_end_date,
+  w_clean_bctw_device_deployment.attachment_end::time as attachment_end_time,
+  w_clean_bctw_device_deployment.critterbase_start_capture_id as critterbase_start_capture_id,
+  w_clean_bctw_device_deployment.critterbase_end_capture_id as critterbase_end_capture_id,
+  w_clean_bctw_device_deployment.critterbase_end_mortality_id as critterbase_end_mortality_id
 into
   table sims_bctw.deployment
 from
   w_clean_bctw_device_deployment;
+  
