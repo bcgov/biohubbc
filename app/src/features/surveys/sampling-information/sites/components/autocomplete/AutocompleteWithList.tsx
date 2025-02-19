@@ -59,6 +59,7 @@ export const AutocompleteWithList = <T extends IAutocompleteFieldOption<string |
           }
         }}
         onChange={(_, option) => {
+          console.log(option, 'OPTION')
           if (option) {
             handleSelect(option);
             setSearchText('');

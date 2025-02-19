@@ -1,8 +1,14 @@
+import { mdiChevronDown, mdiMinusCircle } from '@mdi/js';
+import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
+import Checkbox from '@mui/material/Checkbox';
+import Collapse from '@mui/material/Collapse';
+import grey from '@mui/material/colors/grey';
+import IconButton from '@mui/material/IconButton';
 import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
 import Stack from '@mui/system/Stack';
 import AlertBar from 'components/alert/AlertBar';
-import CollapsibleCardList from 'components/card/CollapsibleCardList';
 import CustomTextField from 'components/fields/CustomTextField';
 import { IDrawControlsRef } from 'components/map/components/DrawControls';
 import { ImportDrawMapControl } from 'components/map/ImportDrawMapControl';
@@ -12,7 +18,8 @@ import SurveyMapTooltip from 'features/surveys/view/SurveyMapTooltip';
 import { useFormikContext } from 'formik';
 import { Feature } from 'geojson';
 import { useDialogContext } from 'hooks/useContext';
-import { createRef, useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
+import { TransitionGroup } from 'react-transition-group';
 import { shapeFileFeatureDesc, shapeFileFeatureName } from 'utils/Utils';
 import { v4 } from 'uuid';
 import {
@@ -22,7 +29,7 @@ import {
 } from '../../CreateSamplingSitePage.interface';
 
 interface ICreateSamplingSiteMapControlFormProps {
-  siteCount?: number;
+  siteCount: number;
   blocks: IPostSurveyBlock[];
 }
 
@@ -31,29 +38,22 @@ const CreateSamplingSiteMapControlForm = ({ siteCount, blocks }: ICreateSampling
   const { handleSubmit, values, setFieldValue, errors, setFieldError } = formikProps;
   const dialogContext = useDialogContext();
 
-  const [selectedFeatures, setSelectedFeatures] = useState<Feature[]>([]);
-  const drawRef = createRef<IDrawControlsRef>();
+  const [expandedIndexes, setExpandedIndexes] = useState<string[]>([]);
 
-  // const handleDeleteAll = () => {
-  //   values.survey_sample_sites.forEach((item) => {
-  //     if (item.leaflet_id) drawRef.current?.clearLayers();
-  //   });
-  //   setFieldValue('survey_sample_sites', []);
-  //   setSelectedFeatures([]);
-  //   setFieldError('survey_sample_sites', undefined);
-  // };
+  const toggleExpand = (id: string) => {
+    setExpandedIndexes((prev) => (prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]));
+  };
+
+  const [selectedFeatures, setSelectedFeatures] = useState<Feature[]>([]);
+  const drawRef = useRef<IDrawControlsRef>(null);
 
   const handleImport = (features: Feature[]) => {
-    const newSites: IPostSurveySampleSite[] = features.map((feature) => {
-      const assignment_id = v4();
-      return {
-        ...feature,
-        assignment_id,
-        geojson: { ...feature, id: assignment_id },
-        name: shapeFileFeatureName(feature) ?? '',
-        description: shapeFileFeatureDesc(feature) ?? null
-      };
-    });
+    const newSites: IPostSurveySampleSite[] = features.map((feature) => ({
+      site_assignment_id: v4(),
+      geojson: { ...feature, id: v4() },
+      name: shapeFileFeatureName(feature) ?? '',
+      description: shapeFileFeatureDesc(feature) ?? null
+    }));
 
     setFieldValue('survey_sample_sites', [...values.survey_sample_sites, ...newSites]);
   };
@@ -69,69 +69,80 @@ const CreateSamplingSiteMapControlForm = ({ siteCount, blocks }: ICreateSampling
   };
 
   const handleAdd = (feature: Feature, id: number) => {
-    const assignment_id = v4();
     const siteNumber = values.survey_sample_sites.length + 1 + (siteCount || 0);
-    const newSite: IPostSurveySampleSite = {
-      name: `Site ${siteNumber}`,
-      assignment_id,
-      description: null,
-      leaflet_id: id,
-      geojson: { ...feature, id: assignment_id }
-    };
-    setFieldValue('survey_sample_sites', [...values.survey_sample_sites, newSite]);
+    const assignment_id = v4();
+
+    setFieldValue('survey_sample_sites', [
+      ...values.survey_sample_sites,
+      {
+        name: `Site ${siteNumber}`,
+        assignment_id,
+        description: null,
+        leaflet_id: id,
+        geojson: { ...feature, id: assignment_id }
+      }
+    ]);
   };
 
   const handleEdit = (editedFeatures: Feature[]) => {
-    const updatedSites = values.survey_sample_sites.filter(
-      (block) => !editedFeatures.some((feature) => feature.id === block.assignment_id)
+    setFieldValue(
+      'survey_sample_sites',
+      values.survey_sample_sites.map((site) => {
+        const editedFeature = editedFeatures.find((f) => f.id === site.site_assignment_id);
+        return editedFeature ? { ...site, geojson: editedFeature } : site;
+      })
     );
-    setFieldValue('survey_sample_sites', [...updatedSites, ...editedFeatures]);
   };
 
   const handleDelete = (deletedFeatures: Feature[]) => {
-    const filteredSites = values.survey_sample_sites.filter(
-      (block) => !deletedFeatures.some((del) => del.id === block.assignment_id)
+    setFieldValue(
+      'survey_sample_sites',
+      values.survey_sample_sites.filter((site) => !deletedFeatures.some((del) => del.id === site.site_assignment_id))
     );
-    setFieldValue('survey_sample_sites', filteredSites);
     setFieldError('survey_sample_sites', undefined);
 
     deletedFeatures.forEach((deletedFeature) => {
-      const blockToDelete = values.survey_sample_sites.find((block) => block.assignment_id === deletedFeature.id);
-      blockToDelete?.leaflet_id && drawRef.current?.deleteLayer(blockToDelete.leaflet_id);
+      const siteToDelete = values.survey_sample_sites.find((site) => site.site_assignment_id === deletedFeature.id);
+      if (siteToDelete?.leaflet_id) {
+        drawRef.current?.deleteLayer(siteToDelete.leaflet_id);
+      }
     });
 
-    setSelectedFeatures((prevSelected) =>
-      prevSelected.filter((selected) => !deletedFeatures.some((del) => del.id === selected.id))
-    );
+    setSelectedFeatures((prev) => prev.filter((selected) => !deletedFeatures.some((del) => del.id === selected.id)));
   };
 
   const handleFeatureSelect = (feature: Feature) => {
-    setSelectedFeatures((prevSelected) =>
-      prevSelected.some((selectedFeature) => selectedFeature.id === feature.id)
-        ? prevSelected.filter((selectedFeature) => selectedFeature.id !== feature.id)
-        : [...prevSelected, feature]
+    setSelectedFeatures((prev) =>
+      prev.some((selected) => selected.id === feature.id)
+        ? prev.filter((selected) => selected.id !== feature.id)
+        : [...prev, feature]
     );
   };
 
-  const handleFeatureSelectAll = () => {
-    const allSelected = values.survey_sample_sites.every(
-      (block) => block.geojson && selectedFeatures.some((feature) => feature.id === block.assignment_id)
-    );
+  const siteMap = useMemo(() => {
+    return new Map(values.survey_sample_sites.map((site) => [site.site_assignment_id, site]));
+  }, [values.survey_sample_sites]);
 
-    setSelectedFeatures(
-      allSelected ? [] : values.survey_sample_sites.filter((block) => block.geojson).map((block) => block.geojson!)
-    );
-  };
+  // const selectedItems = useMemo(
+  //   () =>
+  //     selectedFeatures
+  //       .map((feature) => {
+  //         const site = siteMap.get(String(feature.id));
+  //         return site ? { geojson: feature, assignment_id: site.site_assignment_id, label: site.name } : null;
+  //       })
+  //       .filter(Boolean),
+  //   [selectedFeatures, siteMap]
+  // );
 
-  const handleTooltip = (feature: Feature) => {
-    const label = values.survey_sample_sites.find((block) => block.assignment_id === feature.id)?.name ?? '';
-    return <SurveyMapTooltip title={label} key={`feature-tooltip-${feature.id}`} />;
-  };
+  // const handleFeatureSelectAll = () => {
+  //   setSelectedFeatures((prev) =>
+  //     prev.length === values.survey_sample_sites.length ? [] : values.survey_sample_sites.map((site) => site.geojson!)
+  //   );
+  // };
 
-  const features = useMemo(
-    () => values.survey_sample_sites.filter((block) => block.geojson).map((block) => block.geojson!),
-    [values.survey_sample_sites]
-  );
+  const features = useMemo(() => values.survey_sample_sites.map((site) => site.geojson!), [values.survey_sample_sites]);
+
+  console.log(expandedIndexes);
 
   return (
     <form onSubmit={handleSubmit}>
@@ -147,7 +158,7 @@ const CreateSamplingSiteMapControlForm = ({ siteCount, blocks }: ICreateSampling
           handleEdit={handleEdit}
           handleDelete={handleDelete}
           handleFeatureSelect={handleFeatureSelect}
-          tooltip={handleTooltip}
+          tooltip={(feature) => <SurveyMapTooltip title={siteMap.get(String(feature.id))?.name ?? ''} />}
           selectedFeatures={selectedFeatures}
           dialogTitle="Import Sites"
         />
@@ -155,41 +166,69 @@ const CreateSamplingSiteMapControlForm = ({ siteCount, blocks }: ICreateSampling
 
       {errors?.survey_sample_sites && !Array.isArray(errors?.survey_sample_sites) && (
         <AlertBar
-          sx={{ mt: 3 }}
           severity="error"
           title={errors.survey_sample_sites}
           variant="outlined"
           text={errors.survey_sample_sites}
+          sx={{ mt: 3 }}
         />
       )}
 
       <Box mt={3}>
-        <CollapsibleCardList
-          items={values.survey_sample_sites.map((block) => ({
-            geojson: block.geojson ?? null,
-            assignment_id: block.assignment_id,
-            label: block.name
-          }))}
-          selectedItems={selectedFeatures.map((feature) => ({
-            geojson: feature,
-            assignment_id:
-              values.survey_sample_sites.find((block) => block.geojson?.id === feature.id)?.assignment_id ?? '',
-            label: values.survey_sample_sites.find((block) => block.geojson?.id === feature.id)?.name ?? ''
-          }))}
-          onSelectItem={(feature) => feature.geojson && handleFeatureSelect(feature.geojson)}
-          onSelectAll={handleFeatureSelectAll}
-          renderCardContent={(site, index) => (
-            <Stack gap={3}>
-              <CustomTextField label="Name" name={`survey_sample_sites[${index}].name`} />
-              <CustomTextField
-                label="Description"
-                name={`survey_sample_sites[${index}].description`}
-                other={{ rows: 2, multiline: true }}
-              />
-              <SamplingBlockForm assignment_id={site.assignment_id} blocks={blocks} />
-            </Stack>
-          )}
-        />
+        <TransitionGroup>
+          {values.survey_sample_sites.map((site, index) => (
+            <Collapse key={site.site_assignment_id} >
+              <Box display="flex" alignItems="center" mb={2}>
+                <Paper
+                  sx={{
+                    flex: 1,
+                    p: 2,
+                    bgcolor: selectedFeatures.some((selected) => selected.id === site.geojson?.id)
+                      ? '#e3f2fd'
+                      : grey[50]
+                  }}
+                  variant="outlined">
+                  <Box
+                    display="flex"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    onClick={() => {
+                      toggleExpand(site.site_assignment_id);
+                    }}
+                    sx={{ cursor: 'pointer' }}>
+                    <Box display="flex" alignItems="center">
+                      <Checkbox
+                        color="primary"
+                        checked={selectedFeatures.some((selected) => selected.id === site.geojson?.id)}
+                        onChange={() => handleFeatureSelect(site.geojson!)}
+                      />
+                      <Typography fontWeight={700}>{site.name}</Typography>
+                    </Box>
+                    <IconButton color="primary">
+                      <Icon path={mdiChevronDown} size={1} />
+                    </IconButton>
+                  </Box>
+
+                  <Collapse in={expandedIndexes.includes(site.site_assignment_id)}>
+                    <Stack gap={2} mt={3}>
+                      <CustomTextField label="Name" name={`survey_sample_sites[${index}].name`} />
+                      <CustomTextField
+                        label="Description"
+                        name={`survey_sample_sites[${index}].description`}
+                        other={{ multiline: true, rows: 2 }}
+                      />
+                      <SamplingBlockForm site_assignment_id={site.site_assignment_id} blocks={blocks} />
+                    </Stack>
+                  </Collapse>
+                </Paper>
+
+                <IconButton color="error" sx={{ mx: 1 }} onClick={() => handleDelete([site.geojson!])}>
+                  <Icon path={mdiMinusCircle} size={1} />
+                </IconButton>
+              </Box>
+            </Collapse>
+          ))}
+        </TransitionGroup>
       </Box>
     </form>
   );

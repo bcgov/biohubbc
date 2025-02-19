@@ -13,7 +13,7 @@ interface ISamplingBlockFormProps {
   /**
    * Survey blocks
    */
-  sites: IPostSurveySampleSite[];
+  sites: Omit<IPostSurveySampleSite, 'geojson'>[];
 }
 
 /**
@@ -22,13 +22,14 @@ interface ISamplingBlockFormProps {
  * @returns
  */
 export const SamplingBlockForm = (props: ISamplingBlockFormProps) => {
+  const { assignment_id, sites } = props;
+
   const { values, setFieldValue } = useFormikContext<ICreateSamplingSiteRequest>();
 
   const handleAddBlock = (block: IAutocompleteFieldOption<string>) => {
-    setFieldValue(`site_block_assignments`, [
-      ...values.site_block_assignments,
-      { block_assignment_id: block.value, site_assignment_id: props.assignment_id }
-    ]);
+    const newAssignment = { block_assignment_id: block.value, site_assignment_id: assignment_id };
+
+    setFieldValue(`site_block_assignments`, [...new Set([...values.site_block_assignments, newAssignment])]);
   };
 
   const handleRemoveItem = (block: IAutocompleteFieldOption<string>) => {
@@ -41,21 +42,32 @@ export const SamplingBlockForm = (props: ISamplingBlockFormProps) => {
   };
 
   const siteOptions: IAutocompleteFieldOption<string>[] = props.sites.map((site) => ({
-    value: site.assignment_id,
+    value: site.site_assignment_id,
     label: site.name,
     description: site.description
   }));
 
-  const selectedSites = values.survey_sample_sites
-    .filter((site) =>
-      values.site_block_assignments.some((assignment) => assignment.site_assignment_id === site.assignment_id)
-    )
-    .map((site) => ({
-      value: site.assignment_id,
-      label: site.name,
-      description: site.description
-    }));
-  console.log(selectedSites, 'selected');
+  // const selectedSites = sites
+  //   .filter((site) =>
+  //     values.site_block_assignments.some((assignment) => assignment.site_assignment_id === site.assignment_id)
+  //   )
+  //   .map((site) => ({
+  //     value: site.assignment_id,
+  //     label: site.name,
+  //     description: site.description
+  //   }));
+
+  /**
+   * Get blocks assigned to this site
+   */
+  const selectedSites = values.site_block_assignments
+    // Filters for the current block
+    .filter((assignment) => assignment.block_assignment_id === assignment_id)
+    .map((assignment) => {
+      const block = sites.find((s) => s.site_assignment_id === assignment.site_assignment_id);
+      return block ? { value: block.site_assignment_id, label: block.name } : null;
+    })
+    .filter((block): block is IAutocompleteFieldOption<string> => block !== null);
 
   return (
     <AutocompleteWithList

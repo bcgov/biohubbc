@@ -1,7 +1,11 @@
 import EditDialog from 'components/dialog/EditDialog';
 import { useFormikContext } from 'formik';
 import yup from 'utils/YupSchema';
-import { ICreateSampleSiteFormData, IPostSurveyBlock } from '../../create/CreateSamplingSitePage.interface';
+import {
+  ICreateSampleSiteFormData,
+  IPostSurveyBlock,
+  IPostSurveySampleSite
+} from '../../create/CreateSamplingSitePage.interface';
 import EditBlocksForm from '../form/EditBlocksForm';
 
 export const BlocksFormYupSchema = yup.object({
@@ -16,10 +20,15 @@ interface IEditBlocksDialogProps {
   handleClose: () => void;
   handleSave: (data: IPostSurveyBlock) => void;
   initialValues: IPostSurveyBlock[];
+  sites: Omit<IPostSurveySampleSite, 'geojson'>[];
+  /**
+   * The number of blocks, used for default names of new blocks
+   */
+  blockCount: number;
 }
 
 export const EditBlocksDialog = (props: IEditBlocksDialogProps) => {
-  const { initialValues, isDialogOpen, handleClose } = props;
+  const { initialValues, isDialogOpen, handleClose, sites, blockCount } = props;
 
   const formikProps = useFormikContext<ICreateSampleSiteFormData>();
   const { handleSubmit } = formikProps;
@@ -34,7 +43,7 @@ export const EditBlocksDialog = (props: IEditBlocksDialogProps) => {
       component={{
         initialValues: initialValues,
         validationSchema: BlocksFormYupSchema,
-        element: <EditBlocksForm />
+        element: <EditBlocksForm sites={sites} blockCount={blockCount} />
       }}
     />
   );

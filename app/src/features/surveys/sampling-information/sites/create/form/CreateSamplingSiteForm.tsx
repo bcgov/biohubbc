@@ -11,7 +11,7 @@ import { useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useHistory } from 'react-router';
 import yup from 'utils/YupSchema';
 import { v4 } from 'uuid';
@@ -47,17 +47,36 @@ interface ICreateSamplingSiteFormProps {
 const CreateSamplingSiteForm = ({ isSubmitting }: ICreateSamplingSiteFormProps) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const biohubApi = useBiohubApi();
+
   const { submitForm, values } = useFormikContext<ICreateSampleSiteFormData>();
+
   const surveyContext = useSurveyContext();
   const history = useHistory();
 
+  // Get existing blocks to assign sampling sites to
   const samplingBlocksDataLoader = useDataLoader(() =>
     biohubApi.block.getSurveyBlocks(surveyContext.projectId, surveyContext.surveyId)
   );
 
+  // Get existing sampling sites to allow them to be added to new clusters
+  const samplingSitesDataLoader = useDataLoader(() =>
+    biohubApi.samplingSite.getSampleSites(surveyContext.projectId, surveyContext.surveyId)
+  );
+
   useEffect(() => {
     samplingBlocksDataLoader.load();
-  }, [samplingBlocksDataLoader]);
+    samplingSitesDataLoader.load();
+  }, [samplingBlocksDataLoader, samplingSitesDataLoader]);
+
+  // Add assignment_id to blocks for joining blocks to clusters
+  const blocks = useMemo(
+    () => samplingBlocksDataLoader.data?.blocks.map((block) => ({ ...block, block_assignment_id: v4() })) ?? [],
+    [samplingBlocksDataLoader.data]
+  );
+  const sites = useMemo(
+    () => samplingSitesDataLoader.data?.sampleSites.map((site) => ({ ...site, site_assignment_id: v4() })) ?? [],
+    [samplingSitesDataLoader.data]
+  );
 
   return (
     <>
@@ -66,14 +85,14 @@ const CreateSamplingSiteForm = ({ isSubmitting }: ICreateSamplingSiteFormProps) 
         handleSave={() => {}}
         isDialogOpen={isDialogOpen}
         initialValues={values}
+        sites={sites}
+        blockCount={blocks.length}
       />
 
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <Paper sx={{ p: 5 }}>
           <HorizontalSplitFormComponent title="Site Locations" summary="Import or draw the locations of sampling sites">
-            <CreateSamplingSiteMapControlForm
-              blocks={samplingBlocksDataLoader.data?.blocks.map((block) => ({ ...block, assignment_id: v4() })) ?? []}
-            />
+            <CreateSamplingSiteMapControlForm blocks={blocks} siteCount={sites.length} />
           </HorizontalSplitFormComponent>
 
           <Divider sx={{ my: 5 }} />

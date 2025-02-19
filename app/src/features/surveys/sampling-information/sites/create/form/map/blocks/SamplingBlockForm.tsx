@@ -2,67 +2,92 @@ import { IAutocompleteFieldOption } from 'components/fields/AutocompleteField';
 import { AutocompleteWithList } from 'features/surveys/sampling-information/sites/components/autocomplete/AutocompleteWithList';
 import { useFormikContext } from 'formik';
 import { ICreateSamplingSiteRequest } from 'interfaces/useSamplingSiteApi.interface';
-import { IPostSurveyBlock } from '../../../CreateSamplingSitePage.interface';
+import { IPostSiteBlockAssignment, IPostSurveyBlock } from '../../../CreateSamplingSitePage.interface';
 import { BlockStratumCard } from '../../components/BlockStratumCard';
 
 interface ISamplingBlockFormProps {
   /**
-   * Assignment id of the site
+   * Assignment ID of the block
    */
-  assignment_id: string;
+  site_assignment_id: string;
   /**
-   * Survey blocks
+   * Available survey blocks
    */
   blocks: IPostSurveyBlock[];
 }
 
 /**
- * Returns a form for creating and editing which survey blocks are associated to a sampling site
- *
+ * Form for associating survey blocks with sampling sites
+ * @param {ISamplingBlockFormProps} props
  * @returns
  */
 export const SamplingBlockForm = (props: ISamplingBlockFormProps) => {
+  const { site_assignment_id, blocks } = props;
+
   const { values, setFieldValue } = useFormikContext<ICreateSamplingSiteRequest>();
 
+  /**
+   * Adds a site-block assignment to the form state
+   */
   const handleAddBlock = (block: IAutocompleteFieldOption<string>) => {
-    setFieldValue(`site_block_assignments`, [
-      ...values.site_block_assignments,
-      { block_assignment_id: block.value, site_assignment_id: props.assignment_id }
-    ]);
+    const newAssignment: IPostSiteBlockAssignment = {
+      site_assignment_id: site_assignment_id,
+      block_assignment_id: block.value
+    };
+
+    setFieldValue('site_block_assignments', [...new Set([...values.site_block_assignments, newAssignment])]);
   };
 
-  const handleRemoveItem = (block: IAutocompleteFieldOption<string>) => {
+  console.log(values.site_block_assignments, 'assignments');
+
+  /**
+   * Removes a site-block assignment from formik
+   */
+  const handleRemoveBlock = (block: IAutocompleteFieldOption<string>) => {
     setFieldValue(
-      `site_block_assignments`,
+      'site_block_assignments',
       values.site_block_assignments.filter(
-        (site_block_assignment) => site_block_assignment.block_assignment_id !== block.value
+        (assignment) =>
+          !(
+            assignment.site_assignment_id === site_assignment_id &&
+            assignment.block_assignment_id === block.value
+          )
       )
     );
   };
 
-  const blockOptions: IAutocompleteFieldOption<string>[] = props.blocks.map((block) => ({
-    value: block.assignment_id,
+  /**
+   * Available blocks formatted as options
+   */
+  const blockOptions: IAutocompleteFieldOption<string>[] = blocks.map((block) => ({
+    value: block.block_assignment_id,
     label: block.name,
     description: block.description
   }));
 
-  console.log(blockOptions)
-  console.log(values, 'vals')
+  console.log(values.site_block_assignments, 'existing assignments');
+
+  /**
+   * Get blocks assigned to this site
+   */
+  const selectedBlocks = values.site_block_assignments
+    .filter((assignment) => assignment.site_assignment_id === site_assignment_id)
+    .map((assignment) => {
+      console.log('blocks for searching', blocks);
+      const block = blocks.find((b) => b.block_assignment_id === assignment.block_assignment_id);
+      console.log('block found', block);
+      return block ? { value: block.block_assignment_id, label: block.name } : null;
+    })
+    .filter((block): block is IAutocompleteFieldOption<string> => block !== null);
+
+  console.log(selectedBlocks, 'selectedBlocks');
 
   return (
     <AutocompleteWithList
       options={blockOptions}
-      selectedItems={values.blocks
-        .filter((block) =>
-          values.site_block_assignments.some((assignment) => assignment.block_assignment_id === block.assignment_id)
-        )
-        .map((block) => ({
-          value: block.assignment_id,
-          label: block.name,
-          description: block.description
-        }))}
+      selectedItems={selectedBlocks}
       handleSelect={handleAddBlock}
-      handleRemove={handleRemoveItem}
+      handleRemove={handleRemoveBlock}
       getOptionLabel={(option) => option.label}
       renderOptionDetails={(option) => <BlockStratumCard label={option.label} description={option.description || ''} />}
       placeholder="Select blocks"

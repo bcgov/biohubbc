@@ -7,17 +7,9 @@ import { TransitionGroup } from 'react-transition-group';
 
 export interface CollapsibleCardListProps<T> {
   /**
-   * Items to disply as cards
+   * Items to display as cards
    */
   items: T[];
-  /**
-   * The content of each card, typically a form
-   *
-   * @param item
-   * @param index
-   * @returns
-   */
-  renderCardContent: (item: T, index: number) => React.ReactNode;
   /**
    * Selected items, used to change the background colour for selected items
    */
@@ -36,17 +28,20 @@ export interface CollapsibleCardListProps<T> {
    * cards do not appear to be selectable.
    */
   hideToolbar?: boolean;
+  /**
+   * Children to render inside each card
+   */
+  children: React.ReactNode;
 }
 
 /**
- * Returns a list of cards that can each contain a form component, used when adding features to a map
- * and needing to edit the properties of each feature (eg. name and description)
- *
+ * Returns a list of cards that can each contain content passed from the parent component.
+ * 
  * @param {CollapsibleCardListProps} props
  * @returns {*}
  */
-const CollapsibleCardList = <T extends { label: string; id?: string | number }>(props: CollapsibleCardListProps<T>) => {
-  const { items, renderCardContent, selectedItems = [], onSelectItem } = props;
+const CollapsibleCardList = <T extends { label: string; id: string | number }>(props: CollapsibleCardListProps<T>) => {
+  const { items, selectedItems = [], onSelectItem, children } = props;
 
   const [expandedIndexes, setExpandedIndexes] = useState<number[]>([]);
 
@@ -92,9 +87,9 @@ const CollapsibleCardList = <T extends { label: string; id?: string | number }>(
                   </IconButton>
                 </Box>
 
-                {/* Expandable Form Content */}
+                {/* Expandable Content (children passed from the parent) */}
                 <Collapse in={expandedIndexes.includes(index)} unmountOnExit>
-                  <Box mt={3}>{renderCardContent(item, index)}</Box>
+                  <Box mt={3}>{children}</Box>
                 </Collapse>
               </Paper>
 
