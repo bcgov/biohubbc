@@ -23,3 +23,18 @@ const VectronicTask = z.object({
 });
 
 export type VectronicTask = z.infer<typeof VectronicTask>;
+
+/**
+ * Vectronic device key data structure
+ *
+ * @export
+ * @interface IKeyxData
+ * @typedef {IKeyxData}
+ */
+export interface IKeyxData {
+  id: string;
+  key: string;
+  comID: string;
+  comType: string;
+  collarType: number;
+}
