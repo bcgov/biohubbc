@@ -5,20 +5,22 @@ import EditDialog from 'components/dialog/EditDialog';
 import { useFormikContext } from 'formik';
 import { useState } from 'react';
 import yup from 'utils/YupSchema';
-import EditBlocksForm from '../../blocks/form/EditBlocksForm';
-import { ICreateSampleSiteFormData, IPostSurveySampleSite } from '../../create/CreateSamplingSitePage.interface';
-import { BlockForm } from '../CreateSamplingSiteForm.interface';
-import { SiteBlockAssignmentYupSchema } from '../map/blocks/SamplingBlockForm';
+import EditBlocksForm from '../../../../blocks/form/EditBlocksForm';
+import { ICreateSampleSiteFormData, IPostSurveySampleSite } from '../../../CreateSamplingSitePage.interface';
+import { BlockForm } from '../../CreateSamplingSiteForm.interface';
+import { SiteBlockAssignmentYupSchema } from '../../map/blocks/SamplingBlockForm';
+
+export const BlocksYupSchema = yup.array(
+  yup.object({
+    survey_block_id: yup.number(),
+    name: yup.string().required('Name is required'),
+    description: yup.string().nullable(),
+    geojson: yup.object().nullable()
+  })
+);
 
 export const BlocksFormYupSchema = yup.object({
-  blocks: yup.array(
-    yup.object({
-      survey_block_id: yup.number(),
-      name: yup.string().required('Name is required'),
-      description: yup.string().nullable(),
-      geojson: yup.object().nullable()
-    })
-  ),
+  blocks: BlocksYupSchema,
   site_block_assignments: SiteBlockAssignmentYupSchema
 });
 

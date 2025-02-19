@@ -13,19 +13,23 @@ import { useEffect, useMemo } from 'react';
 import { useHistory } from 'react-router';
 import yup from 'utils/YupSchema';
 import { v4 } from 'uuid';
-import { ICreateSampleSiteFormData } from '../create/CreateSamplingSitePage.interface';
-import { BlocksFormYupSchema, CreateSamplingSiteBlockAssignmentForm } from './assignment/CreateSamplingSiteBlockAssignmentForm';
-import CreateSamplingSiteMapControlForm from './map/CreatingSamplingSiteMapControlForm';
+import { ICreateSampleSiteFormData } from '../CreateSamplingSitePage.interface';
+import {
+  BlocksYupSchema,
+  CreateSamplingSiteBlockAssignmentForm
+} from './assignment/block/CreateSamplingSiteBlockAssignmentForm';
 import { SiteBlockAssignmentYupSchema } from './map/blocks/SamplingBlockForm';
+import CreateSamplingSiteMapControlForm from './map/CreatingSamplingSiteMapControlForm';
 
 export const CreateSamplingSiteFormYupSchema = yup.object({
   survey_sample_sites: yup.array(
     yup.object({
-      site_assignment_id: yup.string(),
-      block_assignment_id: yup.string()
+      name: yup.string().required('Name is required'),
+      description: yup.string().nullable(),
+      geojson: yup.object().nullable()
     })
   ),
-  blocks: BlocksFormYupSchema,
+  blocks: BlocksYupSchema,
   site_block_assignments: SiteBlockAssignmentYupSchema
 });
 
@@ -50,29 +54,29 @@ const CreateSamplingSiteForm = (props: ICreateSamplingSiteFormProps) => {
   const surveyContext = useSurveyContext();
   const history = useHistory();
 
-  // Get existing blocks to assign sampling sites to
-  const samplingBlocksDataLoader = useDataLoader(() =>
-    biohubApi.block.getSurveyBlocks(surveyContext.projectId, surveyContext.surveyId)
-  );
-
   // Get existing sampling sites to allow them to be added to new clusters
   const samplingSitesDataLoader = useDataLoader(() =>
     biohubApi.samplingSite.getSampleSites(surveyContext.projectId, surveyContext.surveyId)
   );
 
+  // Get existing blocks to assign sampling sites to
+  const surveyBlocksDataLoader = useDataLoader(() =>
+    biohubApi.block.getSurveyBlocks(surveyContext.projectId, surveyContext.surveyId)
+  );
+
   useEffect(() => {
-    samplingBlocksDataLoader.load();
+    surveyBlocksDataLoader.load();
     samplingSitesDataLoader.load();
-  }, [samplingBlocksDataLoader, samplingSitesDataLoader]);
+  }, [surveyBlocksDataLoader, samplingSitesDataLoader]);
 
   // IMPORTANT: Always include existing sites from the database AND new sites from the current formik context,
   // and add site_assignment_id/block_assignment_id as temporary unique keys for joining sites and blocks that don't yet have a primary key to reference
   const blocks = useMemo(
     () => [
-      ...(samplingBlocksDataLoader.data?.blocks.map((block) => ({ ...block, block_assignment_id: v4() })) ?? []),
+      ...(surveyBlocksDataLoader.data?.blocks.map((block) => ({ ...block, block_assignment_id: v4() })) ?? []),
       ...values.blocks
     ],
-    [samplingBlocksDataLoader.data, values.blocks]
+    [surveyBlocksDataLoader.data, values.blocks]
   );
 
   // Memoize sites and combine existing and new (staged) sites
@@ -84,12 +88,24 @@ const CreateSamplingSiteForm = (props: ICreateSamplingSiteFormProps) => {
     [samplingSitesDataLoader.data, values.survey_sample_sites]
   );
 
+  // Memoize sites and combine existing and new (staged) sites
+  const stratums = useMemo(
+    () => [
+      ...(surveyContext.surveyDataLoader.data?.surveyData.site_selection.stratums.map((stratums) => ({
+        ...stratums,
+        stratums_assignment_id: v4()
+      })) ?? []),
+      ...values.stratums
+    ],
+    [surveyContext.surveyDataLoader.data, values.stratums]
+  );
+
   return (
     <Container maxWidth="xl" sx={{ py: 3 }}>
       <Paper sx={{ p: 5 }}>
         {/* Map control for adding new sampling sites */}
         <HorizontalSplitFormComponent title="Site Locations" summary="Import or draw the locations of sampling sites">
-          <CreateSamplingSiteMapControlForm blocks={blocks} siteCount={sites.length} />
+          <CreateSamplingSiteMapControlForm blocks={blocks} stratums={stratums} siteCount={sites.length} />
         </HorizontalSplitFormComponent>
 
         <Divider sx={{ my: 5 }} />
@@ -97,6 +113,13 @@ const CreateSamplingSiteForm = (props: ICreateSamplingSiteFormProps) => {
         {/* Block control dialog for adding new blocks */}
         <HorizontalSplitFormComponent title="Clusters" summary="Create clusters to group related sampling sites">
           <CreateSamplingSiteBlockAssignmentForm sites={sites} blockCount={blocks.length} />
+        </HorizontalSplitFormComponent>
+
+        <Divider sx={{ my: 5 }} />
+
+        {/* Block control dialog for adding new stratums */}
+        <HorizontalSplitFormComponent title="Strata" summary="Create strata that sampling sites belong to">
+          <CreateSamplingSiteBlockAssignmentForm sites={sites} blockCount={stratums.length} />
         </HorizontalSplitFormComponent>
 
         <Divider sx={{ my: 5 }} />

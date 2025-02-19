@@ -4,7 +4,7 @@ import { useFormikContext } from 'formik';
 import { ICreateSamplingSiteRequest } from 'interfaces/useSamplingSiteApi.interface';
 import { useMemo } from 'react';
 import yup from 'utils/YupSchema';
-import { IPostSiteBlockAssignment, IPostSurveyBlock } from '../../../create/CreateSamplingSitePage.interface';
+import { IPostSiteBlockAssignment, IPostSurveyBlock } from '../../../CreateSamplingSitePage.interface';
 import { BlockStratumCard } from '../../components/BlockStratumCard';
 
 export const SiteBlockAssignmentYupSchema = yup.array(

@@ -13,26 +13,31 @@ import CustomTextField from 'components/fields/CustomTextField';
 import { IDrawControlsRef } from 'components/map/components/DrawControls';
 import { ImportDrawMapControl } from 'components/map/ImportDrawMapControl';
 import { CreateBlockI18N } from 'constants/i18n';
-import { SamplingBlockForm } from 'features/surveys/sampling-information/sites/form/map/blocks/SamplingBlockForm';
+import { SamplingBlockForm } from 'features/surveys/sampling-information/sites/create/form/map/blocks/SamplingBlockForm';
 import SurveyMapTooltip from 'features/surveys/view/SurveyMapTooltip';
 import { useFormikContext } from 'formik';
 import { Feature } from 'geojson';
 import { useDialogContext } from 'hooks/useContext';
+import { IPostSurveyStratum } from 'interfaces/useSurveyApi.interface';
 import { useMemo, useRef, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { shapeFileFeatureDesc, shapeFileFeatureName } from 'utils/Utils';
 import { v4 } from 'uuid';
 import {
-    ICreateSampleSiteFormData,
-    IPostSurveyBlock,
-    IPostSurveySampleSite
-} from '../../create/CreateSamplingSitePage.interface';
+  ICreateSampleSiteFormData,
+  IPostSurveyBlock,
+  IPostSurveySampleSite
+} from '../../CreateSamplingSitePage.interface';
 
 interface ICreateSamplingSiteMapControlFormProps {
   /**
    * Array of blocks that can be assigned to the new sampling site
    */
   blocks: IPostSurveyBlock[];
+  /**
+   * Array of stratums that can be assigned to the new sampling site
+   */
+  stratums: IPostSurveyStratum[];
   /**
    * Number of sites, used for dynamically naming new sites (eg. Site 1, Site 2).
    * Includes sites in formik (ie. values.sites.length + dataLoader.sites.length)
@@ -47,7 +52,7 @@ interface ICreateSamplingSiteMapControlFormProps {
  * @returns
  */
 const CreateSamplingSiteMapControlForm = (props: ICreateSamplingSiteMapControlFormProps) => {
-  const { siteCount, blocks } = props;
+  const { siteCount, blocks, stratums } = props;
 
   const { handleSubmit, values, setFieldValue, errors, setFieldError } = useFormikContext<ICreateSampleSiteFormData>();
 

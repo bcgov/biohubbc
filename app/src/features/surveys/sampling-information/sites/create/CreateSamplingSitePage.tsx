@@ -7,11 +7,12 @@ import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
+import { ICreateSamplingSiteRequest } from 'interfaces/useSamplingSiteApi.interface';
 import { useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import SamplingSiteHeader from '../components/SamplingSiteHeader';
-import CreateSamplingSiteForm, { CreateSamplingSiteFormYupSchema } from '../form/CreateSamplingSiteForm';
 import { ICreateSampleSiteFormData } from './CreateSamplingSitePage.interface';
+import CreateSamplingSiteForm, { CreateSamplingSiteFormYupSchema } from './form/CreateSamplingSiteForm';
 
 /**
  * Renders the body content of the create sampling site page, which allows for both sites and clusters to be added.
@@ -51,10 +52,27 @@ export const CreateSamplingSitePage = () => {
   };
 
   const handleSubmit = async (values: ICreateSampleSiteFormData) => {
+    const data: ICreateSamplingSiteRequest = {
+      survey_sample_sites: values.survey_sample_sites.map((site) => ({
+        site_assignment_id: site.site_assignment_id,
+        name: site.name,
+        description: site.description,
+        geojson: site.geojson
+      })),
+      blocks: values.blocks.map((block) => ({
+        block_assignment_id: block.block_assignment_id,
+        name: block.name,
+        description: block.description,
+        geojson: block.geojson
+      })),
+      site_block_assignments: values.site_block_assignments,
+      site_stratum_assignments: values.site_stratum_assignments
+    };
+
     try {
       setIsSubmitting(true);
 
-      await biohubApi.samplingSite.createSamplingSites(surveyContext.projectId, surveyContext.surveyId, values);
+      await biohubApi.samplingSite.createSamplingSites(surveyContext.projectId, surveyContext.surveyId, data);
 
       // create complete, navigate back to sampling page
       history.push(
@@ -81,7 +99,9 @@ export const CreateSamplingSitePage = () => {
           survey_id: surveyContext.surveyId,
           survey_sample_sites: [],
           blocks: [],
-          site_block_assignments: []
+          stratums: [],
+          site_block_assignments: [],
+          site_stratum_assignments: []
         }}
         validationSchema={CreateSamplingSiteFormYupSchema}
         validateOnBlur={true}

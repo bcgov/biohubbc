@@ -1,8 +1,8 @@
+import { SurveyBlockRecord } from '../database-models/survey_block';
 import { IDBConnection } from '../database/db';
 import {
   PostSurveyBlock,
   SurveyBlockNonSpatial,
-  SurveyBlockRecord,
   SurveyBlockRepository,
   SurveyBlockWithCount
 } from '../repositories/survey-block-repository';
@@ -86,20 +86,18 @@ export class SurveyBlockService extends DBService {
    *
    * @param {number} surveyId
    * @param {SurveyBlock[]} blocks
-   * @return {*} {Promise<void>}
+   * @return {*} {Promise<any[]>} - Returns an array of responses from insertSurveyBlock
    * @memberof SurveyBlockService
    */
-  async insertSurveyBlocks(surveyId: number, blocks: PostSurveyBlock[]): Promise<void> {
-    const promises: Promise<any>[] = [];
-
-    blocks.forEach((item: PostSurveyBlock) => {
+  async insertSurveyBlocks(surveyId: number, blocks: PostSurveyBlock[]): Promise<SurveyBlockRecord[]> {
+    const promises = blocks.map((item: PostSurveyBlock) => {
       item.survey_id = surveyId;
-      promises.push(this.surveyBlockRepository.insertSurveyBlock(item));
+      return this.surveyBlockRepository.insertSurveyBlock(item);
     });
 
-    await Promise.all(promises);
+    // Wait for all insertions to complete and return the responses
+    return Promise.all(promises);
   }
-
   /**
    * Updates existing survey blocks and inserts any new survey blocks without a survey_block_id
    *

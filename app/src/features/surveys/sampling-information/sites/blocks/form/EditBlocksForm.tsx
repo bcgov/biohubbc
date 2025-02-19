@@ -24,7 +24,7 @@ import {
   IPostSurveyBlock,
   IPostSurveySampleSite
 } from '../../create/CreateSamplingSitePage.interface';
-import { BlockForm } from '../../form/CreateSamplingSiteForm.interface';
+import { BlockForm } from '../../create/form/CreateSamplingSiteForm.interface';
 import { SamplingBlockForm } from './sample-site/SamplingSiteBlockForm';
 
 interface IEditBlocksForm {
@@ -160,8 +160,6 @@ const EditBlocksForm = (props: IEditBlocksForm) => {
   };
 
   const features = values.blocks.map((block) => block.geojson).filter((block) => block !== undefined && block !== null);
-
-  console.log(values.blocks, 'blocks')
 
   return (
     <form onSubmit={handleSubmit}>

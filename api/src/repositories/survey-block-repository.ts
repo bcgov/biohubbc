@@ -6,6 +6,7 @@ import { ApiExecuteSQLError } from '../errors/api-error';
 import { generateGeometryCollectionSQL } from '../utils/spatial-utils';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { BaseRepository } from './base-repository';
+import { SurveyBlockRecord } from '../database-models/survey_block';
 
 export interface PostSurveyBlock {
   survey_block_id: number | null;
@@ -13,22 +14,12 @@ export interface PostSurveyBlock {
   name: string;
   description: string;
   geojson: Feature;
+  assignment_id?: string
 }
 
 export interface PostSurveyBlocksRequest {
   blocks: PostSurveyBlock[];
 }
-
-// This describes the a row in the database for Survey Block
-export const SurveyBlockRecord = z.object({
-  survey_block_id: z.number(),
-  survey_id: z.number(),
-  name: z.string(),
-  description: z.string().nullable(),
-  geojson: z.any().nullable(),
-  revision_count: z.number()
-});
-export type SurveyBlockRecord = z.infer<typeof SurveyBlockRecord>;
 
 // This describes the a row in the database for Survey Block
 export const SurveyBlockWithCount = SurveyBlockRecord.extend({

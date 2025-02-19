@@ -1,5 +1,6 @@
 import {
   IPostSiteBlockAssignment,
+  IPostSiteStratumAssignment,
   IPostSurveyBlock,
   IPostSurveySampleSite
 } from 'features/surveys/sampling-information/sites/create/CreateSamplingSitePage.interface';
@@ -10,6 +11,7 @@ export interface ICreateSamplingSiteRequest {
   survey_sample_sites: IPostSurveySampleSite[];
   blocks: IPostSurveyBlock[]
   site_block_assignments: IPostSiteBlockAssignment[];
+  site_stratum_assignments: IPostSiteStratumAssignment[]
 }
 
 export interface IEditSampleSiteRequest {

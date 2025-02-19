@@ -68,7 +68,7 @@ export type SampleSiteGeometryRecord = z.infer<typeof SampleSiteGeometryRecord>;
 /**
  * Insert object for a single sample site record.
  */
-export type InsertSampleSiteRecord = Pick<SurveySampleSiteRecord, 'name' | 'description' | 'geojson'>;
+export type InsertSampleSiteRecord = Pick<SurveySampleSiteRecord, 'name' | 'description' | 'geojson'> & {site_assignment_id: string};
 
 /**
  * Update object for a single sample site record.

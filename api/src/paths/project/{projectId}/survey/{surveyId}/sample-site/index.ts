@@ -255,7 +255,7 @@ export const POST: Operation = [
 ];
 
 POST.apiDoc = {
-  description: 'Insert new survey sample site record.',
+  description: 'Insert new survey sample site records.',
   tags: ['project', 'survey'],
   security: [
     {
@@ -289,54 +289,73 @@ POST.apiDoc = {
         schema: {
           type: 'object',
           additionalProperties: false,
-          required: ['survey_sample_sites', 'blocks', 'stratums'],
+          required: ['survey_sample_sites', 'blocks', 'site_block_assignments'],
           properties: {
-            name: {
-              type: 'string'
-            },
-            description: {
-              type: 'string'
-            },
             survey_sample_sites: {
               type: 'array',
-              minItems: 1,
               items: {
                 type: 'object',
                 additionalProperties: false,
                 properties: {
                   name: {
-                    type: 'string'
+                    type: 'string',
+                    description: 'Name of the sampling site'
                   },
                   description: {
-                    type: 'string'
+                    type: 'string',
+                    description: 'Description of the sampling site',
+                    nullable: true
                   },
-                  geojson: { ...(GeoJSONFeature as object) }
+                  geojson: { ...(GeoJSONFeature as object) },
+                  site_assignment_id: { type: 'string', description: 'Temporary id for a site' }
                 }
               }
             },
             blocks: {
               type: 'array',
+              description: 'Array of blocks to create',
               items: {
                 type: 'object',
                 additionalProperties: false,
-                required: ['survey_block_id'],
+                required: ['name', 'description'],
                 properties: {
-                  survey_block_id: {
-                    type: 'number'
-                  }
+                  name: {
+                    type: 'string',
+                    description: 'Name of the block'
+                  },
+                  description: {
+                    type: 'string',
+                    description: 'Description of the block',
+                    nullable: true
+                  },
+                  geojson: { ...(GeoJSONFeature as object), description: 'Geometry of the block' },
+                  block_assignment_id: { type: 'string', description: 'Temporary id for a block' }
                 }
               }
             },
-            stratums: {
+            site_block_assignments: {
               type: 'array',
+              description: 'Array of site-block assignments, indicating which blocks to assign which sites to.',
               items: {
                 type: 'object',
                 additionalProperties: false,
-                required: ['survey_stratum_id'],
+                required: ['block_assignment_id', 'site_assignment_id'],
                 properties: {
-                  survey_stratum_id: {
-                    type: 'number'
-                  }
+                  block_assignment_id: { type: 'string', description: 'Temporary id for a block' },
+                  site_assignment_id: { type: 'string', description: 'Temporary id for a site' }
+                }
+              }
+            },
+            site_stratum_assignments: {
+              type: 'array',
+              description: 'Array of site-stratum assignments, indicating which stratums to assign which sites to.',
+              items: {
+                type: 'object',
+                additionalProperties: false,
+                required: ['stratum_assignment_id', 'site_assignment_id'],
+                properties: {
+                  stratum_assignment_id: { type: 'string', description: 'Temporary id for a stratum' },
+                  site_assignment_id: { type: 'string', description: 'Temporary id for a site' }
                 }
               }
             }
@@ -381,7 +400,7 @@ export function createSurveySampleSiteRecord(): RequestHandler {
 
       const sampleSiteService = new SampleSiteService(connection);
 
-      await sampleSiteService.createSampleSite(sampleSite);
+      await sampleSiteService.createSampleSitesAndBlocks(sampleSite);
 
       await connection.commit();
 

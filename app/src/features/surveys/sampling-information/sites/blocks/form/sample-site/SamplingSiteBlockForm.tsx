@@ -3,7 +3,7 @@ import { AutocompleteWithList } from 'features/surveys/sampling-information/site
 import { useFormikContext } from 'formik';
 import { ICreateSamplingSiteRequest } from 'interfaces/useSamplingSiteApi.interface';
 import { IPostSiteBlockAssignment, IPostSurveySampleSite } from '../../../create/CreateSamplingSitePage.interface';
-import { BlockStratumCard } from '../../../form/components/BlockStratumCard';
+import { BlockStratumCard } from '../../../create/form/components/BlockStratumCard';
 
 interface ISamplingBlockFormProps {
   /**
