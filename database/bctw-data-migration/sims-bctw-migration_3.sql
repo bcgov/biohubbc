@@ -91,7 +91,8 @@ INSERT INTO biohub.telemetry_credential_lotek (
   dtcreated,
   strsatellite,
   verified_date,
-  is_valid
+  is_valid,
+  key
   )
 SELECT
   ndeviceid::int4,
@@ -99,7 +100,8 @@ SELECT
   dtcreated::timestamptz(6),
   strsatellite::varchar(100),
   verified_date::timestamptz(6),
-  is_valid::bool
+  is_valid::bool,
+  key::varchar(1000)
 FROM sims_bctw.telemetry_credential_lotek;
 
 
@@ -178,13 +180,63 @@ SELECT
   activity::varchar
 FROM sims_bctw.telemetry_ats;
 
--- --------------------------------------------------------------------------------------------------------------
--- -- Insert into SIMS telemetry manual historic
--- --
--- -- TODO: Mac: Add this table to DEV and TEST through a migration
--- --
--- --------------------------------------------------------------------------------------------------------------
---
--- -- SELECT *
--- -- INTO TABLE biohub.telemetry_historic
--- -- FROM sims_bctw.telemetry_manual_historic;
+--------------------------------------------------------------------------------------------------------------
+-- Insert into SIMS telemetry_historic
+--------------------------------------------------------------------------------------------------------------
+-- Net-new data: This can be safely truncated
+TRUNCATE TABLE biohub.telemetry_historic CASCADE;
+
+INSERT INTO biohub.telemetry_historic (
+  telemetry_historic_id,
+  region,
+  species,
+  ecotype,
+  population_unit,
+  population_unit_id,
+  management_area,
+  wlh_id,
+  animal_id,
+  device_id,
+  frequency,
+  collar_type,
+  collar_make,
+  collar_model,
+  dop,
+  fix_date_time,
+  year_,
+  month_,
+  day_,
+  latitude,
+  longitude,
+  albers_x,
+  albers_y,
+  original_file_location,
+  exists_kmb_tracking
+  )
+SELECT
+  id::uuid,
+  region::text,
+  species::text,
+  ecotype::text,
+  population_unit::text,
+  population_unit_id::int4,
+  management_area::text,
+  wlh_id::text,
+  animal_id::text,
+  device_id::text,
+  frequency::float8,
+  collar_type::text,
+  collar_make::text,
+  collar_model::text,
+  dop::float8,
+  fix_date_time::text,
+  year_::int4,
+  month_::int4,
+  day_::int4,
+  latitude::float8,
+  longitude::float8,
+  albers_x::float8,
+  albers_y::float8,
+  orig_file_loc::text,
+  exists_kmb_tracking::text
+FROM sims_bctw.telemetry_historic;
