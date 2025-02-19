@@ -632,8 +632,6 @@ FROM bctw.api_lotek_credential;
 -- Create SIMS telemetry_credential_vectronic table
 --------------------------------------------------------------------------------------------------------------
 
-ALTER table biohub.telemetry_credential_vectronic ALTER column idcom SET DATA TYPE VARCHAR(50);
-
 SELECT
   idcollar,
   comtype,
@@ -820,7 +818,7 @@ from
 -- Unique one-off fixes
 --------------------------------------------------------------------------------------------------------------
 -- This is the only record that has a start date before the end date. Assuming they entered the dates in the wrong field, swapping them to resolve the issue.
-UPDATE sims_bctw.deployment 
+UPDATE sims_bctw.deployment
 SET (attachment_start_date, attachment_start_time, attachment_end_date, attachment_end_time) =
     (attachment_end_date, attachment_end_time, attachment_start_date, attachment_start_time)
 WHERE serial = '84229';

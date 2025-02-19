@@ -43,16 +43,14 @@ rm -f sims-bctw-migration-final.sql
 cat sims-bctw-migration_1.sql >> sims-bctw-migration-final.sql
 cat bctw_bctw_no_owner_no_acl_dump.sql >> sims-bctw-migration-final.sql
 cat sims-bctw-migration_2.sql >> sims-bctw-migration-final.sql
-# TODO: Add this line back once working
-#
-# cat sims-bctw-migration_3.sql >> sims-bctw-migration-final.sql
+cat sims-bctw-migration_3.sql >> sims-bctw-migration-final.sql
 cat sims-bctw-migration_4.sql >> sims-bctw-migration-final.sql
 
 echo "MIGRATION: Running BCTW data migration SQL on SIMS database..."
 docker cp sims-bctw-migration-final.sql sims-db-all-container:/sims-bctw-migration-final.sql &&
-docker exec -it sims-db-all-container psql --single-transaction -U postgres -d biohubbc -v ON_ERROR_STOP=1 -f sims-bctw-migration-final.sql ||
-echo "MIGRATION: ERROR: Failed to migrate BCTW data into SIMS database. Exiting..." &&
-echo "MIGRATION: BCTW data migration into SIMS database complete."
+docker exec -it sims-db-all-container psql --single-transaction -U postgres -d biohubbc -v ON_ERROR_STOP=1 -f sims-bctw-migration-final.sql &&
+echo "MIGRATION: BCTW data migration into SIMS database complete." ||
+echo "MIGRATION: ERROR: Failed to migrate BCTW data into SIMS database. Exiting..."
 
 rm -f sims-bctw-migration-final.sql
 
