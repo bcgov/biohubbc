@@ -819,6 +819,9 @@ from
 --------------------------------------------------------------------------------------------------------------
 -- Unique one-off fixes
 --------------------------------------------------------------------------------------------------------------
-
-update sims_bctw.deployment set attachment_start_date = '2022-01-26', attachment_end_date = '2022-02-25' where serial = '84229';
+-- This is the only record that has a start date before the end date. Assuming they entered the dates in the wrong field, swapping them to resolve the issue.
+UPDATE sims_bctw.deployment 
+SET (attachment_start_date, attachment_start_time, attachment_end_date, attachment_end_time) =
+    (attachment_end_date, attachment_end_time, attachment_start_date, attachment_start_time)
+WHERE serial = '84229';
 
