@@ -34,11 +34,8 @@ export const EnvironmentStandardsSchema = z.object({
 export type EnvironmentStandards = z.infer<typeof EnvironmentStandardsSchema>;
 
 export interface MarkingStandards {
-  types: {name: string;
-    marking_type_id: string;
-    description: string;}[];
-  colours: {colour: string;
-    colour_id: string;}[];
+  types: { name: string; marking_type_id: string; description: string }[];
+  colours: { colour: string; colour_id: string; description: string }[];
 }
 
 export const MethodStandardSchema = z.object({

@@ -65,7 +65,7 @@ export class StandardsService extends DBService {
         return { name: type.key, marking_type_id: type.id, description: type.value };
       }),
       colours: colours.map((colour) => {
-        return { colour: colour.key, colour_id: colour.id };
+        return { colour: colour.value, colour_id: colour.id, description: colour.key };
       })
     };
   }

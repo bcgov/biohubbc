@@ -152,7 +152,7 @@ export const MarkingStandardsSchema: OpenAPIV3.SchemaObject = {
             description: 'Name of the marking type'
           },
           marking_type_id: {
-            type: 'integer',
+            type: 'string',
             description: 'ID of the marking type'
           },
           description: {
@@ -174,8 +174,12 @@ export const MarkingStandardsSchema: OpenAPIV3.SchemaObject = {
             description: 'Name of the marking colour'
           },
           colour_id: {
-            type: 'integer',
+            type: 'string',
             description: 'ID of the marking colour'
+          },
+          description: {
+            type: 'string',
+            description: 'description of the marking colour'
           }
         }
       }
