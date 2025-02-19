@@ -19,6 +19,9 @@ export async function up(knex: Knex): Promise<void> {
       ADD CONSTRAINT survey_telemetry_vendor_credential_fk2
       FOREIGN KEY (survey_id)
       REFERENCES survey(survey_id);
+
+    -- Add indexes for foreign keys
+    CREATE INDEX survey_telemetry_vendor_credential_idx3 ON survey_telemetry_vendor_credential(survey_id);
   `);
 }
 
