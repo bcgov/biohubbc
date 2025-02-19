@@ -1,86 +1,77 @@
--- TODO: Insert data into SIMS from sims_bctw.
+truncate
+  table biohub.deployment cascade;
+
+truncate
+  table biohub.device cascade;
+
 -- Insert SIMS devices
-with 
-w_insert_devices as (
-  insert
-    into
-      biohub.device (
-        survey_id,
-        serial,
-        model,
-        device_make_id,
-        comment
-      )
-      select
-        survey_id,
-        serial,
-        model,
-        device_make_id,
-        comment
-      from
-        sims_bctw.device
-  returning *
-),
-w_insert_deployments as (
-  insert
-    into
-      biohub.deployment (
-        survey_id,
-        critter_id,
-        -- TODO: get device_id fk from result of previous device insert
-        (
-          select
-            w_insert_devices.device_id
-          from
-            w_insert_devices
-          where
-            w_insert_devices.survey_id = sims_bctw.deployment.survey_id
-            and w_insert_devices.serial = sims_bctw.device_id
-        ) as device_id,
-        (
-          -- Generate device_key
-          select
+insert
+  into
+  biohub.device (
+    survey_id,
+    serial,
+    model,
+    device_make_id,
+    comment
+  )
+select
+  survey_id,
+  serial,
+  model,
+  device_make_id,
+  comment
+from
+  sims_bctw.device;
+
+-- Insert SIMS deployments
+insert
+  into
+    biohub.deployment (
+      survey_id,
+      critter_id,
+      device_id,
+      frequency,
+      frequency_unit_id,
+      attachment_start_date,
+      attachment_start_time,
+      attachment_end_date,
+      attachment_end_time,
+      critterbase_start_capture_id,
+      critterbase_end_capture_id,
+      critterbase_end_mortality_id
+  )
+    select
+      sims_bctw.deployment.survey_id,
+      sims_bctw.deployment.critter_id,
+      biohub.device.device_id,
+      frequency,
+      case
+        when frequency is not null then
+          coalesce(
+            frequency_unit,
             (
-              (
-                -- Get device make name
-                select
-                  biohub.device_make.name
-                from
-                  biohub.device_make
-                where
-                  biohub.device_make.device_make_id = w_insert_devices.device_make_id
-              ) || ':' || w_insert_devices.serial
-            ),
-          from
-            w_insert_devices
-          where
-            w_insert_devices.survey_id = sims_bctw.deployment.survey_id
-            and w_insert_devices.serial = sims_bctw.device_id
-        ) as device_id,
-        frequency,
-        frequency_unit,
-        attachment_start_date,
-        attachment_start_time,
-        attachment_end_date,
-        attachment_end_time,
-        critterbase_start_capture_id,
-        critterbase_end_capture_id,
-        critterbase_end_mortality_id
-      )
-      select
-        survey_id,
-        critter_id,
-        device_id,
-        device_key,
-        frequency,
-        frequency_unit,
-        attachment_start_date,
-        attachment_start_time,
-        attachment_end_date,
-        attachment_end_time,
-        critterbase_start_capture_id,
-        critterbase_end_capture_id,
-        critterbase_end_mortality_id
-      from
-        sims_bctw.deployment
-)
+              select
+                      frequency_unit_id
+              from
+                      frequency_unit
+              where
+                      name = 'mhz'
+            )
+          )
+        else null
+      end as frequency_unit,
+      attachment_start_date,
+      attachment_start_time,
+      attachment_end_date,
+      attachment_end_time,
+      critterbase_start_capture_id,
+      critterbase_end_capture_id,
+      critterbase_end_mortality_id
+from
+      sims_bctw.deployment
+left join biohub.device
+    on
+      sims_bctw.deployment.survey_id = biohub.device.survey_id
+  and
+       sims_bctw.deployment.serial = biohub.device.serial
+returning *;
