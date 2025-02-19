@@ -56,7 +56,7 @@ GET.apiDoc = {
  * @returns {RequestHandler}
  */
 export function getMarkingStandards(): RequestHandler {
-  return async (req, res) => {
+  return async (_, res) => {
     const connection = getAPIUserDBConnection();
 
     try {
@@ -64,9 +64,7 @@ export function getMarkingStandards(): RequestHandler {
 
       const standardsService = new StandardsService(connection);
 
-      const keyword = (req.query.keyword as string) ?? '';
-
-      const response = await standardsService.getMarkingStandards(keyword);
+      const response = await standardsService.getMarkingStandards();
 
       await connection.commit();
 

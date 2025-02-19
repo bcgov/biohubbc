@@ -1,5 +1,10 @@
 import { AxiosInstance } from 'axios';
-import { IEnvironmentStandards, IMarkingsStandards, IMethodStandard, ISpeciesStandards } from 'interfaces/useStandardsApi.interface';
+import {
+  IEnvironmentStandards,
+  IMarkingsStandards,
+  IMethodStandard,
+  ISpeciesStandards
+} from 'interfaces/useStandardsApi.interface';
 import qs from 'qs';
 
 /**
@@ -71,7 +76,6 @@ const useStandardsApi = (axios: AxiosInstance) => {
 
     return data;
   };
-
 
   return {
     getSpeciesStandards,

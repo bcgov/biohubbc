@@ -51,13 +51,12 @@ export class StandardsService extends DBService {
   }
 
   /**
-   * Gets environment standards
+   * Gets marking standards
    *
-   * @param {string} keyword - search term for filtering the response based on environemntal variable name
-   * @return {MarkingStandard[]}
+   * @return {MarkingStandards}
    * @memberof standardsService
    */
-  async getMarkingStandards(keyword?: string): Promise<MarkingStandards> {
+  async getMarkingStandards(): Promise<MarkingStandards> {
     const types = await this.critterbaseService.getMarkingTypes();
     const colours = await this.critterbaseService.getColours();
     return {
@@ -71,7 +70,7 @@ export class StandardsService extends DBService {
   }
 
   /**
-   * Gets marking standards
+   * Gets environment standards
    *
    * @param {string} keyword - search term for filtering the response based on environemntal variable name
    * @return {EnvironmentStandard[]}

@@ -11,9 +11,9 @@ import { SystemAlertBanner } from 'features/alert/banner/SystemAlertBanner';
 import { SystemAlertBannerEnum } from 'interfaces/useAlertApi.interface';
 import { useState } from 'react';
 import { EnvironmentStandards } from './view/environment/EnvironmentStandards';
+import { MarkingStandards } from './view/markings/MarkingStandards';
 import { MethodStandards } from './view/methods/MethodStandards';
 import { SpeciesStandards } from './view/species/SpeciesStandards';
-import { MarkingStandards } from './view/markings/MarkingStandards';
 
 export enum StandardsPageView {
   SPECIES = 'SPECIES',
@@ -29,7 +29,7 @@ const StandardsPage = () => {
     { value: StandardsPageView.SPECIES, label: 'Species', icon: mdiPaw },
     { value: StandardsPageView.METHODS, label: 'Sampling Methods', icon: mdiToolbox },
     { value: StandardsPageView.ENVIRONMENT, label: 'Environment variables', icon: mdiLeaf },
-    {value: StandardsPageView.MARKINGS, label: 'Markings', icon: mdiTag}
+    { value: StandardsPageView.MARKINGS, label: 'Markings', icon: mdiTag }
   ];
 
   return (
@@ -61,7 +61,7 @@ const StandardsPage = () => {
             {activeView === StandardsPageView.ENVIRONMENT && <EnvironmentStandards />}
 
             {/* MARKING TYPE STANDARDS */}
-            {activeView === StandardsPageView.MARKINGS && <MarkingStandards/>}
+            {activeView === StandardsPageView.MARKINGS && <MarkingStandards />}
           </Box>
         </Stack>
       </Container>

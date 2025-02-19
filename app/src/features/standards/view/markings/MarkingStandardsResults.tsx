@@ -1,6 +1,5 @@
-import { blueGrey, grey } from '@mui/material/colors';
+import { grey } from '@mui/material/colors';
 import Stack from '@mui/material/Stack';
-import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { AccordionStandardCard } from 'features/standards/view/components/AccordionStandardCard';
 import { IMarkingsStandards } from 'interfaces/useStandardsApi.interface';
 
@@ -28,11 +27,7 @@ export const MarkingStandardsResults = (props: IMarkingStandardsResultsProps) =>
         <AccordionStandardCard label="Marking Types" colour={grey[100]}>
           <Stack gap={2} my={2}>
             {standards.types.map((type) => (
-              <ColouredRectangleChip
-                key={type.name}
-                label={type.description}
-                colour={blueGrey}
-              />
+              <AccordionStandardCard key={type.name} label={type.description} colour={grey[200]} />
             ))}
           </Stack>
         </AccordionStandardCard>
@@ -43,11 +38,7 @@ export const MarkingStandardsResults = (props: IMarkingStandardsResultsProps) =>
         <AccordionStandardCard label="Marking Colours" colour={grey[100]}>
           <Stack gap={2} my={2}>
             {standards.colours.map((colour) => (
-              <ColouredRectangleChip
-                key={colour.colour}
-                label={colour.colour}
-                colour={blueGrey}
-              />
+              <AccordionStandardCard key={colour.colour} label={colour.colour} colour={grey[200]} />
             ))}
           </Stack>
         </AccordionStandardCard>
