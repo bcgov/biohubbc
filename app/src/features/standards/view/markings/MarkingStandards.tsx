@@ -1,42 +1,22 @@
 import { Box, Skeleton, Stack, Typography } from '@mui/material';
-import { AxiosInstance } from 'axios';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
-import useAxios from 'hooks/api/useAxios';
-import { useMarkingApi } from 'hooks/cb_api/useMarkingApi';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { IMarkingColourOption, IMarkingTypeResponse } from 'interfaces/useMarkingApi.interface';
+import { useEffect } from 'react';
 import { MarkingStandardsResults } from './MarkingStandardsResults';
 
 export const MarkingStandards = () => {
-  const axiosInstance: AxiosInstance = useAxios();
-  const markingApi = useMarkingApi(axiosInstance);
+  const biohubApi = useBiohubApi();
 
-  const markingsDataLoader = useDataLoader(async () => {
-    console.log('Fetching marking standards data...');
-    try {
-      const markingTypes: IMarkingTypeResponse[] = await markingApi.getMarkingTypeOptions();
-      const markingColours: IMarkingColourOption[] = await markingApi.getMarkingColourOptions();
+  const markingsDataLoader = useDataLoader((keyword?: string) => biohubApi.standards.getMarkingsStandards(keyword));
 
-      console.log('Marking Types:', markingTypes);
-      console.log('Marking Colours:', markingColours);
+  useEffect(() => {
+    markingsDataLoader.load();
+  }, [markingsDataLoader]);
 
-      return {
-        markingTypes,
-        markingColours,
-        transformedMarkingTypes: markingTypes.map((item: IMarkingTypeResponse) => ({
-          value: item.marking_type_id,
-          label: item.name
-        })),
-        transformedMarkingColours: markingColours.map((item: IMarkingColourOption) => ({
-          value: item.colour_id,
-          label: item.colour
-        }))
-      };
-    } catch (error) {
-      console.error('Failed to fetch marking data:', error);
-      return { markingTypes: [], markingColours: [] };
-    }
-  });
+  if (!markingsDataLoader.data) {
+    return <></>;
+  }
 
   return (
     <Box my={2}>
@@ -49,7 +29,7 @@ export const MarkingStandards = () => {
           </Stack>
         }
         hasNoData={
-          !(markingsDataLoader.data?.markingTypes.length || markingsDataLoader.data?.markingColours.length) &&
+          !(markingsDataLoader.data?.types.length || markingsDataLoader.data?.colours.length) &&
           markingsDataLoader.isReady
         }
         hasNoDataFallback={
@@ -57,7 +37,7 @@ export const MarkingStandards = () => {
             <Typography color="textSecondary">No marking standards found</Typography>
           </Box>
         }>
-        <MarkingStandardsResults data={markingsDataLoader.data} />
+        <MarkingStandardsResults standards={markingsDataLoader.data} />
       </LoadingGuard>
     </Box>
   );

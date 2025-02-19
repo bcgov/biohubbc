@@ -1,5 +1,5 @@
 import { IDBConnection } from '../database/db';
-import { EnvironmentStandards, ISpeciesStandards, MethodStandard } from '../models/standards-view';
+import { EnvironmentStandards, ISpeciesStandards, MarkingStandards, MethodStandard } from '../models/standards-view';
 import { StandardsRepository } from '../repositories/standards-repository';
 import { CritterbaseService } from './critterbase-service';
 import { DBService } from './db-service';
@@ -52,6 +52,26 @@ export class StandardsService extends DBService {
 
   /**
    * Gets environment standards
+   *
+   * @param {string} keyword - search term for filtering the response based on environemntal variable name
+   * @return {MarkingStandard[]}
+   * @memberof standardsService
+   */
+  async getMarkingStandards(keyword?: string): Promise<MarkingStandards> {
+    const types = await this.critterbaseService.getMarkingTypes();
+    const colours = await this.critterbaseService.getColours();
+    return {
+      types: types.map((type) => {
+        return { name: type.key, marking_type_id: type.id, description: type.value };
+      }),
+      colours: colours.map((colour) => {
+        return { colour: colour.key, colour_id: colour.id };
+      })
+    };
+  }
+
+  /**
+   * Gets marking standards
    *
    * @param {string} keyword - search term for filtering the response based on environemntal variable name
    * @return {EnvironmentStandard[]}

@@ -135,3 +135,50 @@ export const MethodStandardSchema: OpenAPIV3.SchemaObject = {
     }
   }
 };
+
+export const MarkingStandardsSchema: OpenAPIV3.SchemaObject = {
+  type: 'object',
+  description: 'Marking standards response object showing supported marking types and colours',
+  additionalProperties: false,
+  properties: {
+    types: {
+      type: 'array',
+      description: 'Array of marking types',
+      items: {
+        type: 'object',
+        properties: {
+          name: {
+            type: 'string',
+            description: 'Name of the marking type'
+          },
+          marking_type_id: {
+            type: 'integer',
+            description: 'ID of the marking type'
+          },
+          description: {
+            type: 'string',
+            description: 'Description of the marking type',
+            nullable: true
+          }
+        }
+      }
+    },
+    colours: {
+      type: 'array',
+      description: 'Array of marking colour options',
+      items: {
+        type: 'object',
+        properties: {
+          colour: {
+            type: 'string',
+            description: 'Name of the marking colour'
+          },
+          colour_id: {
+            type: 'integer',
+            description: 'ID of the marking colour'
+          }
+        }
+      }
+    }
+  }
+};
