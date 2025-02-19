@@ -1,4 +1,4 @@
-import { IPostSiteBlockAssignment, IPostSurveyBlock } from '../CreateSamplingSitePage.interface';
+import { IPostSiteBlockAssignment, IPostSurveyBlock } from '../create/CreateSamplingSitePage.interface';
 
 export interface BlockForm {
   blocks: IPostSurveyBlock[];

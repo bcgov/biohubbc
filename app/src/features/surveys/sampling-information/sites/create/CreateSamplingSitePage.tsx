@@ -10,11 +10,11 @@ import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsa
 import { useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import SamplingSiteHeader from '../components/SamplingSiteHeader';
+import CreateSamplingSiteForm, { CreateSamplingSiteFormYupSchema } from '../form/CreateSamplingSiteForm';
 import { ICreateSampleSiteFormData } from './CreateSamplingSitePage.interface';
-import CreateSamplingSiteForm, { CreateSamplingSiteFormYupSchema } from './form/CreateSamplingSiteForm';
 
 /**
- * Renders the body content of the create sampling site page.
+ * Renders the body content of the create sampling site page, which allows for both sites and clusters to be added.
  *
  * @return {*}
  */
@@ -56,7 +56,7 @@ export const CreateSamplingSitePage = () => {
 
       await biohubApi.samplingSite.createSamplingSites(surveyContext.projectId, surveyContext.surveyId, values);
 
-      // create complete, navigate back to observations page
+      // create complete, navigate back to sampling page
       history.push(
         `/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling`,
         SKIP_CONFIRMATION_DIALOG

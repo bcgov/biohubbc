@@ -16,15 +16,15 @@ import SurveyMapTooltip from 'features/surveys/view/SurveyMapTooltip';
 import { useFormikContext } from 'formik';
 import { Feature } from 'geojson';
 import { useDialogContext } from 'hooks/useContext';
-import { createRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { shapeFileFeatureDesc, shapeFileFeatureName } from 'utils/Utils';
 import { v4 } from 'uuid';
 import {
-  ICreateSampleSiteFormData,
   IPostSurveyBlock,
   IPostSurveySampleSite
 } from '../../create/CreateSamplingSitePage.interface';
+import { BlockForm } from '../../form/CreateSamplingSiteForm.interface';
 import { SamplingBlockForm } from './sample-site/SamplingSiteBlockForm';
 
 interface IEditBlocksForm {
@@ -46,19 +46,27 @@ interface IEditBlocksForm {
 const EditBlocksForm = (props: IEditBlocksForm) => {
   const { sites, blockCount } = props;
 
-  const formikProps = useFormikContext<ICreateSampleSiteFormData>();
+  const formikProps = useFormikContext<BlockForm>();
 
   const { handleSubmit, values, setFieldValue, setFieldError } = formikProps;
   const dialogContext = useDialogContext();
 
-  const [expandedIndexes, setExpandedIndexes] = useState<string[]>([]);
+  const [expandedIndexes, setExpandedIndexes] = useState<Set<string>>(new Set());
 
   const toggleExpand = (id: string) => {
-    setExpandedIndexes((prev) => (prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]));
+    setExpandedIndexes((prev) => {
+      const newExpandedIndexes = new Set(prev);
+      if (newExpandedIndexes.has(id)) {
+        newExpandedIndexes.delete(id);
+      } else {
+        newExpandedIndexes.add(id);
+      }
+      return newExpandedIndexes;
+    });
   };
 
   const [selectedFeatures, setSelectedFeatures] = useState<Feature[]>([]);
-  const drawRef = createRef<IDrawControlsRef>();
+  const drawRef = useRef<IDrawControlsRef>(null);
 
   // Handle importing new shapes
   const handleImport = (features: Feature[]) => {
@@ -117,20 +125,21 @@ const EditBlocksForm = (props: IEditBlocksForm) => {
   };
 
   const handleFeatureSelect = (feature: Feature) => {
-    if (selectedFeatures.some((selectedFeature) => selectedFeature.id === feature.id)) {
-      // Unselect the feature by filtering it out
-      const filteredFeatures = selectedFeatures.filter((selectedFeature) => selectedFeature.id !== feature.id);
-      setSelectedFeatures(filteredFeatures);
-    } else {
-      // Add the feature to the selected list
-      setSelectedFeatures((prev) => [...prev, feature]);
-    }
+    setSelectedFeatures((prev) => {
+      const featureExists = prev.some((selectedFeature) => selectedFeature.id === feature.id);
+      if (featureExists) {
+        return prev.filter((selectedFeature) => selectedFeature.id !== feature.id);
+      } else {
+        return [...prev, feature];
+      }
+    });
   };
 
   const handleDelete = (deletedFeatures: Feature[]) => {
+    const deletedFeatureIds = deletedFeatures.map((feature) => feature.id);
     setFieldValue(
       'blocks',
-      values.blocks.filter((site) => !deletedFeatures.some((del) => del.id === site.block_assignment_id))
+      values.blocks.filter((site) => !deletedFeatureIds.includes(site.block_assignment_id))
     );
     setFieldError('blocks', undefined);
 
@@ -141,7 +150,7 @@ const EditBlocksForm = (props: IEditBlocksForm) => {
       }
     });
 
-    setSelectedFeatures((prev) => prev.filter((selected) => !deletedFeatures.some((del) => del.id === selected.id)));
+    setSelectedFeatures((prev) => prev.filter((selected) => !deletedFeatureIds.includes(selected.id)));
   };
 
   const handleTooltip = (feature: Feature) => {
@@ -151,6 +160,8 @@ const EditBlocksForm = (props: IEditBlocksForm) => {
   };
 
   const features = values.blocks.map((block) => block.geojson).filter((block) => block !== undefined && block !== null);
+
+  console.log(values.blocks, 'blocks')
 
   return (
     <form onSubmit={handleSubmit}>
@@ -171,68 +182,64 @@ const EditBlocksForm = (props: IEditBlocksForm) => {
         />
       </Paper>
 
-      {
-        <Box mt={3}>
-          <TransitionGroup>
-            {values.blocks.map((block, index) => (
-              <Collapse key={block.block_assignment_id}>
-                <Box display="flex" alignItems="center" mb={2}>
-                  <Paper
-                    sx={{
-                      flex: 1,
-                      p: 2,
-                      bgcolor: selectedFeatures.some((selected) => selected.id === block.geojson?.id)
-                        ? '#e3f2fd'
-                        : grey[50]
-                    }}
-                    variant="outlined">
-                    <Box
-                      display="flex"
-                      justifyContent="space-between"
-                      alignItems="center"
-                      onClick={() => {
-                        toggleExpand(block.block_assignment_id);
-                      }}
-                      sx={{ cursor: 'pointer' }}>
-                      <Box display="flex" alignItems="center">
-                        <Checkbox
-                          color="primary"
-                          checked={selectedFeatures.some((selected) => selected.id === block.geojson?.id)}
-                          onChange={() => handleFeatureSelect(block.geojson!)}
-                        />
-                        <Typography fontWeight={700}>{block.name}</Typography>
-                      </Box>
-                      <IconButton color="primary">
-                        <Icon path={mdiChevronDown} size={1} />
-                      </IconButton>
-                    </Box>
-
-                    <Collapse in={expandedIndexes.includes(block.block_assignment_id)}>
-                      <Stack gap={2} mt={3}>
-                        <CustomTextField label="Name" name={`blocks[${index}].name`} />
-                        <Box>
-                          <CustomTextField
-                            label="Description"
-                            name={`blocks[${index}].description`}
-                            other={{ rows: 2, multiline: true }}
-                          />
-                        </Box>
-                        <Box>
-                          <SamplingBlockForm assignment_id={block.block_assignment_id} sites={sites} />
-                        </Box>
-                      </Stack>
-                    </Collapse>
-                  </Paper>
-
-                  <IconButton color="error" sx={{ mx: 1 }} onClick={() => handleDelete([block.geojson!])}>
-                    <Icon path={mdiMinusCircle} size={1} />
+      <TransitionGroup>
+        {values.blocks.map((block, index) => (
+          <Collapse key={block.block_assignment_id}>
+            <Box display="flex" alignItems="center" mt={2}>
+              <Paper
+                sx={{
+                  flex: 1,
+                  p: 2,
+                  bgcolor: selectedFeatures.some((selected) => selected.id === block.geojson?.id) ? '#e3f2fd' : grey[50]
+                }}
+                variant="outlined">
+                <Box
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  onClick={() => toggleExpand(block.block_assignment_id)}
+                  sx={{ cursor: 'pointer' }}>
+                  <Box display="flex" alignItems="center">
+                    <Checkbox
+                      color="primary"
+                      checked={selectedFeatures.some((selected) => selected.id === block.geojson?.id)}
+                      onChange={() => handleFeatureSelect(block.geojson!)}
+                    />
+                    <Typography fontWeight={700}>{block.name}</Typography>
+                  </Box>
+                  <IconButton color="primary">
+                    <Icon path={mdiChevronDown} size={1} />
                   </IconButton>
                 </Box>
-              </Collapse>
-            ))}
-          </TransitionGroup>
-        </Box>
-      }
+
+                <Collapse in={expandedIndexes.has(block.block_assignment_id)}>
+                  <Stack gap={2} mt={3}>
+                    <CustomTextField label="Name" name={`blocks[${index}].name`} />
+                    <Box>
+                      <CustomTextField
+                        label="Description"
+                        name={`blocks[${index}].description`}
+                        other={{ rows: 2, multiline: true }}
+                      />
+                    </Box>
+                    <Box>
+                      <SamplingBlockForm
+                        key={block.block_assignment_id}
+                        block_assignment_id={block.block_assignment_id}
+                        sites={sites}
+                      />
+                    </Box>
+                  </Stack>
+                </Collapse>
+              </Paper>
+
+              <IconButton color="error" sx={{ mx: 1 }} onClick={() => handleDelete([block.geojson!])}>
+                <Icon path={mdiMinusCircle} size={1} />
+              </IconButton>
+            </Box>
+          </Collapse>
+        ))}
+      </TransitionGroup>
     </form>
   );
 };

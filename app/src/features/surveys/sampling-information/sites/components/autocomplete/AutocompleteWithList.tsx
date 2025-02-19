@@ -116,7 +116,6 @@ export const AutocompleteWithList = <T extends IAutocompleteFieldOption<string |
                   </IconButton>
                 }
                 title={getOptionLabel(item)}
-                subheader={renderOptionDetails ? renderOptionDetails(item) : undefined}
               />
             </Card>
           </Collapse>

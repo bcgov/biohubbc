@@ -11,7 +11,7 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import HelpButtonStack from 'components/buttons/HelpButtonStack';
 import { SurveyContext } from 'contexts/surveyContext';
-import { BlockStratumCard } from 'features/surveys/sampling-information/sites/create/form/components/BlockStratumCard';
+import { BlockStratumCard } from 'features/surveys/sampling-information/sites/form/components/BlockStratumCard';
 import { useFormikContext } from 'formik';
 import { IGetSampleSiteDetails, IGetSampleStratumDetails } from 'interfaces/useSamplingSiteApi.interface';
 import { IGetSurveyStratum, IPostSurveyStratum } from 'interfaces/useSurveyApi.interface';
