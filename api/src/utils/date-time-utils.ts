@@ -2,10 +2,14 @@ import dayjs from 'dayjs';
 import {
   DefaultDateFormat,
   DefaultDateFormatReverse,
+  DefaultDateFormatSingleDigit,
+  DefaultDateFormatSingleDigitReverse,
   DefaultTimeFormat,
   DefaultTimeFormatNoSeconds,
   USDefaultDateFormat,
-  USDefaultDateFormatReverse
+  USDefaultDateFormatReverse,
+  USDefaultDateFormatSingleDigit,
+  USDefaultDateFormatSingleDigitReverse
 } from '../constants/dates';
 
 /**
@@ -102,8 +106,19 @@ export function formatDateString(value: string): string | null {
   // Why? There is a edge case where both the Canadian and American date formats are BOTH valid
   // but the date is generated incorrectly (01/31/2024 -> 2026-07-01).
   // We can determine the correct format by cross-referencing the year with the raw cell value.
-  const canadianDate = dayjs(String(value), [DefaultDateFormat, DefaultDateFormatReverse]);
-  const americanDate = dayjs(String(value), [USDefaultDateFormat, USDefaultDateFormatReverse]);
+  const canadianDate = dayjs(String(value), [
+    DefaultDateFormat,
+    DefaultDateFormatReverse,
+    DefaultDateFormatSingleDigit,
+    DefaultDateFormatSingleDigitReverse
+  ]);
+
+  const americanDate = dayjs(String(value), [
+    USDefaultDateFormat,
+    USDefaultDateFormatReverse,
+    USDefaultDateFormatSingleDigit,
+    USDefaultDateFormatSingleDigitReverse
+  ]);
 
   if (!canadianDate.isValid() && !americanDate.isValid()) {
     return null;

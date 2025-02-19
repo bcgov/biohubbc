@@ -4,6 +4,8 @@ import { z } from 'zod';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { PostReportAttachmentMetadata, PutReportAttachmentMetadata } from '../models/project-survey-attachments';
+import { IDeviceKeyData } from '../services/attachment-service';
+import { IValidationData } from '../services/telemetry-services/telemetry-utils';
 import { getLogger } from '../utils/logger';
 import { BaseRepository } from './base-repository';
 
@@ -1626,14 +1628,14 @@ export class AttachmentRepository extends BaseRepository {
   async updateSurveyTelemetryCredentialAttachment(
     surveyId: number,
     fileName: string,
-    fileType: string
+    fileData: IValidationData
   ): Promise<{ survey_telemetry_credential_attachment_id: number }> {
     const sqlStatement = SQL`
       UPDATE
         survey_telemetry_credential_attachment
       SET
         file_name = ${fileName},
-        file_type = ${fileType}
+        file_type = ${fileData.type}
       WHERE
         file_name = ${fileName}
       AND
@@ -1658,23 +1660,13 @@ export class AttachmentRepository extends BaseRepository {
   }
 
   /**
-   * Insert survey telemetry credential attachment record.
+   * Inserts uploaded device key attachment file
    *
-   * @param {string} fileName
-   * @param {number} fileSize
-   * @param {string} fileType
-   * @param {number} surveyId
-   * @param {string} key
-   * @return {*}  {Promise<{ survey_telemetry_credential_attachment_id: number }>}
-   * @memberof AttachmentRepository
+   * @async
+   * @param {IDeviceKeyData} deviceKeyData
+   * @returns {Promise<number>}
    */
-  async insertSurveyTelemetryCredentialAttachment(
-    fileName: string,
-    fileSize: number,
-    fileType: string,
-    surveyId: number,
-    key: string
-  ): Promise<{ survey_telemetry_credential_attachment_id: number }> {
+  async insertSurveyTelemetryCredentialAttachment(deviceKeyData: IDeviceKeyData): Promise<number> {
     const sqlStatement = SQL`
     INSERT INTO survey_telemetry_credential_attachment (
       survey_id,
@@ -1683,11 +1675,11 @@ export class AttachmentRepository extends BaseRepository {
       file_type,
       key
     ) VALUES (
-      ${surveyId},
-      ${fileName},
-      ${fileSize},
-      ${fileType},
-      ${key}
+      ${deviceKeyData.surveyId},
+      ${deviceKeyData.fileName},
+      ${deviceKeyData.fileSize},
+      ${deviceKeyData.fileData.type},
+      ${deviceKeyData.key}
     )
     RETURNING
       survey_telemetry_credential_attachment_id;
@@ -1705,7 +1697,7 @@ export class AttachmentRepository extends BaseRepository {
       ]);
     }
 
-    return response.rows[0];
+    return response?.rows?.[0].survey_telemetry_credential_attachment_id;
   }
 
   /**
@@ -1727,12 +1719,12 @@ export class AttachmentRepository extends BaseRepository {
         update_date,
         create_date,
         file_size
-      from
+      FROM
         survey_telemetry_credential_attachment
-      where
+      WHERE
         survey_id = ${surveyId}
-      and
-        file_name = ${fileName};
+      AND
+        file_name ILIKE ${fileName};
     `;
 
     const response = await this.connection.sql(sqlStatement);

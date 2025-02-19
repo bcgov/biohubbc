@@ -3,12 +3,12 @@ import { Icon } from '@mdi/react';
 import Box from '@mui/material/Box';
 import grey from '@mui/material/colors/grey';
 import IconButton from '@mui/material/IconButton';
-import Paper from '@mui/material/Paper';
+import Paper, { PaperProps } from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import startCase from 'lodash-es/startCase';
 
-interface IMarkingCardProps {
+interface IMarkingCardProps extends PaperProps {
   editable: boolean;
   primary_colour_label?: string;
   secondary_colour_label?: string;
@@ -34,11 +34,12 @@ export const MarkingCard = (props: IMarkingCardProps) => {
     identifier,
     marking_body_location_label,
     marking_type_label,
-    handleMarkingMenuClick
+    handleMarkingMenuClick,
+    ...paperProps
   } = props;
 
   return (
-    <Paper variant="outlined" sx={{ px: 3, py: 2, bgcolor: grey[100] }}>
+    <Paper variant="outlined" {...paperProps} sx={{ px: 3, py: 2, bgcolor: grey[100], ...paperProps?.sx }}>
       <Box position="relative" display="flex">
         <Typography component="dd" fontWeight={700} variant="body2">
           {startCase(marking_type_label)}

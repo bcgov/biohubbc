@@ -133,64 +133,75 @@ describe('isTimeString', () => {
       expect(formatDateString('99-99-9999')).to.be.null;
     });
 
-    it('should format 2024-01-31', () => {
-      expect(formatDateString('2024-01-31')).to.equal('2024-01-31');
+    describe('edge cases', () => {
+      it('should format 1-8-2007', () => {
+        expect(formatDateString('1-8-2007')).to.equal('2007-08-01');
+        expect(formatDateString('1/8/2007')).to.equal('2007-08-01');
+      });
     });
 
-    it('should format ambiguous 2024-01-02', () => {
-      expect(formatDateString('2024-01-02')).to.equal('2024-01-02');
+    describe('Canadian formats', () => {
+      it('should format YYYY-MM-DD', () => {
+        expect(formatDateString('2024-01-31')).to.equal('2024-01-31');
+        expect(formatDateString('2024/01/31')).to.equal('2024-01-31');
+      });
+
+      it('should format ambiguous YYYY-MM-DD', () => {
+        expect(formatDateString('2024-01-02')).to.equal('2024-01-02');
+        expect(formatDateString('2024/01/02')).to.equal('2024-01-02');
+      });
+
+      it('should format DD-MM-YYYY', () => {
+        expect(formatDateString('31-01-2024')).to.equal('2024-01-31');
+        expect(formatDateString('31/01/2024')).to.equal('2024-01-31');
+      });
+
+      it('should format ambiguous DD-MM-YYYY', () => {
+        expect(formatDateString('02-01-2024')).to.equal('2024-01-02');
+        expect(formatDateString('02/01/2024')).to.equal('2024-01-02');
+      });
+
+      it('should format YYYY-M-D', () => {
+        expect(formatDateString('2024-1-31')).to.equal('2024-01-31');
+        expect(formatDateString('2024/1/31')).to.equal('2024-01-31');
+      });
+
+      it('should format ambiguous YYYY-M-D', () => {
+        expect(formatDateString('2024-1-2')).to.equal('2024-01-02');
+        expect(formatDateString('2024/1/2')).to.equal('2024-01-02');
+      });
     });
 
-    it('should format 2024/01/31', () => {
-      expect(formatDateString('2024/01/31')).to.equal('2024-01-31');
-    });
+    describe('American formats (prioritizes canadian formats first)', () => {
+      it('should format YYYY-MM-DD', () => {
+        expect(formatDateString('2024-01-31')).to.equal('2024-01-31');
+        expect(formatDateString('2024/01/31')).to.equal('2024-01-31');
+      });
 
-    it('should format ambiguous 2024/01/02', () => {
-      expect(formatDateString('2024/01/02')).to.equal('2024-01-02');
-    });
+      it('should format ambiguous YYYY-DD-MM', () => {
+        expect(formatDateString('2024-02-01')).to.equal('2024-02-01');
+        expect(formatDateString('2024/02/01')).to.equal('2024-02-01');
+      });
 
-    it('should format 31-01-2024', () => {
-      expect(formatDateString('31-01-2024')).to.equal('2024-01-31');
-    });
+      it('should format MM-DD-YYYY', () => {
+        expect(formatDateString('01-31-2024')).to.equal('2024-01-31');
+        expect(formatDateString('01/31/2024')).to.equal('2024-01-31');
+      });
 
-    it('should format ambiguous 02-01-2024', () => {
-      expect(formatDateString('02-01-2024')).to.equal('2024-01-02');
-    });
+      it('should format ambiguous MM-DD-YYYY', () => {
+        expect(formatDateString('01-02-2024')).to.equal('2024-02-01');
+        expect(formatDateString('01/02/2024')).to.equal('2024-02-01');
+      });
 
-    it('should format 31/01/2024', () => {
-      expect(formatDateString('31/01/2024')).to.equal('2024-01-31');
-    });
+      it('should format YYYY-D-M', () => {
+        expect(formatDateString('2024-31-1')).to.equal('2024-01-31');
+        expect(formatDateString('2024/31/1')).to.equal('2024-01-31');
+      });
 
-    it('should format ambiguous 02/01/2024', () => {
-      expect(formatDateString('02/01/2024')).to.equal('2024-01-02');
-    });
-
-    it('should format 01-31-2024', () => {
-      expect(formatDateString('01-31-2024')).to.equal('2024-01-31');
-    });
-
-    it('should format ambiguous 01-02-2024', () => {
-      expect(formatDateString('01-02-2024')).to.equal('2024-02-01');
-    });
-
-    it('should format 01/31/2024', () => {
-      expect(formatDateString('01/31/2024')).to.equal('2024-01-31');
-    });
-
-    it('should format ambiguous 01/02/2024', () => {
-      expect(formatDateString('01/02/2024')).to.equal('2024-02-01');
-    });
-
-    it('should format 2024-01-31', () => {
-      expect(formatDateString('2024-01-31')).to.equal('2024-01-31');
-    });
-
-    it('should format 2024/01/31', () => {
-      expect(formatDateString('2024/01/31')).to.equal('2024-01-31');
-    });
-
-    it('should format ambiguous 2024/01/02', () => {
-      expect(formatDateString('2024/01/02')).to.equal('2024-01-02');
+      it('should format ambiguous YYYY-D-M', () => {
+        expect(formatDateString('2024-2-1')).to.equal('2024-02-01');
+        expect(formatDateString('2024/2/1')).to.equal('2024-02-01');
+      });
     });
   });
 });

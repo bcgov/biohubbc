@@ -9,6 +9,7 @@ export const TelemetryCredentialLotekModel = z.object({
   telemetry_credential_lotek_id: z.number(),
   device_key: z.string(),
   ndeviceid: z.number(),
+  key: z.string(),
   strspecialid: z.string().nullable(),
   dtcreated: z.string().nullable(),
   strsatellite: z.string().nullable(),

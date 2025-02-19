@@ -121,6 +121,14 @@ export interface IDBConnection {
    * @memberof IDBConnection
    */
   open: (config?: { transaction: boolean }) => Promise<void>;
+
+  /**
+   * Check if the connection is opened
+   *
+   * @memberof IDBConnection
+   */
+  isConnectionOpen: () => boolean;
+
   /**
    * Releases (closes) the connection.
    *
@@ -282,6 +290,10 @@ export const getDBConnection = function (keycloakToken?: KeycloakUserInformation
     if (config.transaction) {
       await _client.query('BEGIN');
     }
+  };
+
+  const _isConnectionOpen = () => {
+    return _isOpen;
   };
 
   /**
@@ -586,6 +598,7 @@ export const getDBConnection = function (keycloakToken?: KeycloakUserInformation
   return {
     getClient: asyncErrorWrapper(_getClient),
     open: asyncErrorWrapper(_open),
+    isConnectionOpen: syncErrorWrapper(_isConnectionOpen),
     sql: asyncErrorWrapper(_sql),
     knex: asyncErrorWrapper(_knex),
     release: syncErrorWrapper(_release),
