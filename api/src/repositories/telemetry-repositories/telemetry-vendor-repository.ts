@@ -1002,19 +1002,23 @@ export class TelemetryVendorRepository extends BaseRepository {
    * Insert vendor device key data
    *
    * @async
+   * @param {number} survey_id
    * @param {string} deviceKey
    * @param {number} survey_telemetry_credential_attachment_id
    * @returns {Promise<number>}
    */
   async insertTelemetryCredentialAttachmentVendor(
+    survey_id: number,
     deviceKey: string,
     survey_telemetry_credential_attachment_id: number
   ): Promise<number> {
     const sqlStatement = SQL`
       INSERT INTO survey_telemetry_vendor_credential (
+        survey_id,
         survey_telemetry_credential_attachment_id,
         device_key
       ) VALUES (
+        ${survey_id},
         ${survey_telemetry_credential_attachment_id},
         ${deviceKey}
       )
