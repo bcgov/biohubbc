@@ -470,7 +470,6 @@ left join biohub.survey
     on critter.survey_id = survey.survey_id
 where
     1 = 1 and
-    survey."name" not ilike '%bctw%' and
     not exists (
         select
             1
