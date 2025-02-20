@@ -18,49 +18,36 @@ where
     collar.valid_to is null;
 ```
 
-# TODO
+## TODO
 
-## Records in SIMS
+### sims-bctw-etl_1X.sql
 
-    - a table with all existing SIMS deployments joined to BCTW deployments + collars
+- Initial setup
 
-        Part 1
-        - Some of these already match BCTW deployment ids
-            - Get matching collar_animal_assignment data
-                - Get valid record if one exists, else get most recent invalid record
-            - Get matching collar data
-                - Get valid record if one exists, else get most recent invalid record
-            - Insert into SIMS (device, deployment)
+### sims-bctw-etl_2X.sql
 
-        sims_bctw: 1_collar_deployment, 1_device, 1_deployment
+- Records in biohub.deployment_old with no matching BCTW deployment uuid
+  - Match to their corresponding collar_animal_assignment + collar records using critter uuid + dates
 
-        Part 2
-        - Some do not match existing deployment ids
-            - Reconcile mismatched deployment ids using critter uuid + create_date
-            - Get matching collar_animal_assignment data
-                - Get valid record if one exists, else get most recent invalid record
-            - Get matching collar data
-                - Get valid record if one exists, else get most recent invalid record
-            - Insert into SIMS
+TODO: Resolve remaining missing collar records
 
-            sims_bctw: 2_collar_deployment, 2_device, 2_deployment
+### sims-bctw-etl_3X.sql
 
-    sims.deployment_old -> bctw.existing_collar_deployment -> sims.device, sims.deployment
+- Records in biohub.deployment_old with matching BCTW deployment uuid
+  - Match to their corresponding collar_animal_assignment + collar records using deployment uuid
 
-## Records in BCTW
+TODO: finish
 
-    Part 3
-    - A table with all existing BCTW deployments + collars
-        - strip out invalid collars/deployments
-        - strip out records that are already in SIMS (Filter out deployment ids that are in sims.deployment_old AND have a matching deployment id in bctw.collar_animal_assignment. These will be accounted for in Parts 1 and 2)
-        - Insert remaining into SIMS
+### sims-bctw-etl_4X.sql
 
-    (bctw.new_collar_deployment - bctw.existing_collar_deployment) -> sims.device, sims.deployment
+- Final insert of device and deployment data into real sims tables
 
-    sims_bctw: 3_collar_deployment, 3_device, 3_deployment
+TODO: finish when 2X and 3X are done.
 
-##
+### sims-bctw-etl_5X.sql
 
-    1_collar_deployment (90% of deployment_old)
-    2_collar_deployment (10% of deployment_old)
-    3_collar_deployment (new new not in deployment_old)
+- Telemetry credential data
+
+### sims-bctw-etl_6X.sql
+
+- Historic manual telemetry data

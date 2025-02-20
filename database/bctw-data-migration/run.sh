@@ -23,7 +23,7 @@ BCTW_DUMP_FILE="bctw_bctw_no_owner_no_acl_dump.sql"
 MIGRATION_FILE="sims-bctw-migration-final.sql"
 BCTW_DB_PORT=7777
 SIMS_DB_PORT=8888
-SIMS_DOCKER_CONTAINER="sims-db-all-container"
+SIMS_DOCKER_CONTAINER="sims-db-2-container"
 
 echo "MIGRATION: Beginning SIMS -> BCTW data migration..."
 
@@ -102,7 +102,7 @@ echo "MIGRATION: Running BCTW data migration SQL on LOCAL SIMS database..."
 docker cp "$MIGRATION_FILE" "$SIMS_DOCKER_CONTAINER:/sims-bctw-migration-final.sql"
 
 # Execute the migration inside the container
-if docker exec -it "$SIMS_DOCKER_CONTAINER" psql --single-transaction -U postgres -d biohubbc -v ON_ERROR_STOP=1 -f /sims-bctw-migration-final.sql; then
+if docker exec -it "$SIMS_DOCKER_CONTAINER" psql --single-transaction -U postgres -d biohubbc -v ON_ERROR_STOP=1 -f sims-bctw-migration-final.sql; then
   echo "MIGRATION: BCTW data migration into SIMS LOCAL database complete."
 else
   echo "MIGRATION: ERROR: Failed to migrate BCTW data into SIMS LOCAL database. Exiting..."
