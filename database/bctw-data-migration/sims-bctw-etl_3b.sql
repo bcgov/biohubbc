@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------------------------------------
 
 -- Insert all sims deployment records that have a matching bctw deployment record
-INSERT INTO bctw.sims_mismatched_deployments (
+INSERT INTO bctw.mismatched_sims_deployments (
     survey_id,
     deployment_id,
     critter_id,

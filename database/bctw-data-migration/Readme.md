@@ -18,11 +18,29 @@ where
     collar.valid_to is null;
 ```
 
+## Data
+
+### Records in biohub.deployment_old with no matching BCTW deployment uuid
+
+Records with both a valid deployment record and valid collar record (happy path)
+
+Records with an invalid deployment record and/or invalid collar record (may require more complicated resolution)
+
+### Records in biohub.deployment_old with a matching BCTW deployment uuid
+
+Records with both a valid deployment record and valid collar record (happy path)
+
+Records with an invalid deployment record and/or invalid collar record (may require more complicated resolution)
+
 ## TODO
+
+### sims-bctw-etl_0X.sql
+
+- Initial setup
 
 ### sims-bctw-etl_1X.sql
 
-- Initial setup
+- Common bctw combined tables
 
 ### sims-bctw-etl_2X.sql
 

@@ -12,22 +12,22 @@ drop table if exists bctw.resolved_mismatched_collars;
 --------------------------------------------------------------------------------------------------------------
 
 select 
-    sims_mismatched_deployments.survey_id,
-    sims_mismatched_deployments.deployment_id,
-    sims_mismatched_deployments.critter_id,
-    sims_mismatched_deployments.critterbase_critter_id,
-    sims_mismatched_deployments.bctw_deployment_id,
-    sims_mismatched_deployments.create_date,
-    sims_mismatched_deployments.create_user,
-    sims_mismatched_deployments.update_date,
-    sims_mismatched_deployments.update_user,
-    sims_mismatched_deployments.revision_count,
-    sims_mismatched_deployments.critterbase_start_capture_id,
-    sims_mismatched_deployments.critterbase_end_capture_id,
-    sims_mismatched_deployments.critterbase_end_mortality_id,
+    mismatched_sims_deployments.survey_id,
+    mismatched_sims_deployments.deployment_id,
+    mismatched_sims_deployments.critter_id,
+    mismatched_sims_deployments.critterbase_critter_id,
+    mismatched_sims_deployments.bctw_deployment_id,
+    mismatched_sims_deployments.create_date,
+    mismatched_sims_deployments.create_user,
+    mismatched_sims_deployments.update_date,
+    mismatched_sims_deployments.update_user,
+    mismatched_sims_deployments.revision_count,
+    mismatched_sims_deployments.critterbase_start_capture_id,
+    mismatched_sims_deployments.critterbase_end_capture_id,
+    mismatched_sims_deployments.critterbase_end_mortality_id,
     --
     mismatched_deployment.mismatched_deployment_id,
-    mismatched_deployment.mismatched_collar_deployment_id,
+    mismatched_deployment.valid_collar_deployment_id,
     mismatched_deployment.sims_survey_id,
     mismatched_deployment.bctw_deployment_uuid,
     mismatched_deployment.bctw_critter_uuid,
@@ -45,12 +45,12 @@ select
 into 
     bctw.resolved_mismatched_deployment
 from 
-    bctw.sims_mismatched_deployments
+    bctw.mismatched_sims_deployments
 left join 
     bctw.mismatched_deployment
 on
-    sims_mismatched_deployments.critterbase_critter_id = mismatched_deployment.bctw_critter_uuid and 
-    ABS(EXTRACT(EPOCH FROM sims_mismatched_deployments.create_date::timestamp) - EXTRACT(EPOCH FROM mismatched_deployment.create_date::timestamp)) < 2;
+    mismatched_sims_deployments.critterbase_critter_id = mismatched_deployment.bctw_critter_uuid and 
+    ABS(EXTRACT(EPOCH FROM mismatched_sims_deployments.create_date::timestamp) - EXTRACT(EPOCH FROM mismatched_deployment.create_date::timestamp)) < 2;
 
 --------------------------------------------------------------------------------------------------------------
 -- Create a new table: resolved_mismatched_collars
@@ -76,7 +76,7 @@ select
     resolved_mismatched_deployment.critterbase_end_mortality_id,
     --
     resolved_mismatched_deployment.mismatched_deployment_id,
-    resolved_mismatched_deployment.mismatched_collar_deployment_id,
+    resolved_mismatched_deployment.valid_collar_deployment_id,
     resolved_mismatched_deployment.sims_survey_id,
     resolved_mismatched_deployment.bctw_deployment_uuid,
     resolved_mismatched_deployment.bctw_critter_uuid,
@@ -86,7 +86,7 @@ select
     resolved_mismatched_deployment.frequency_unit,
     --
     mismatched_collar.mismatched_collar_id,
-    -- mismatched_collar.mismatched_collar_deployment_id,
+    -- mismatched_collar.valid_collar_deployment_id,
     -- mismatched_collar.sims_survey_id,
     mismatched_collar.bctw_collar_uuid,
     mismatched_collar.device_id as serial,
@@ -104,7 +104,7 @@ from
 left join 
     bctw.mismatched_collar 
 on
-    mismatched_collar.mismatched_collar_deployment_id = resolved_mismatched_deployment.mismatched_collar_deployment_id;
+    mismatched_collar.valid_collar_deployment_id = resolved_mismatched_deployment.valid_collar_deployment_id;
 
 
 --------------------------------------------------------------------------------------------------------------
@@ -117,9 +117,9 @@ set
     device_make = bctw.collar.device_make,
     device_model = bctw.collar.device_model
 from
-    bctw.invalid_mismatched_collar_deployment
+    bctw.invalid_collar_deployment
 where
-    bctw.invalid_mismatched_collar_deployment.critter_id = bctw.resolved_mismatched_collars.bctw_critter_uuid 
+    bctw.invalid_collar_deployment.critter_id = bctw.resolved_mismatched_collars.bctw_critter_uuid 
     and bctw.is_valid(bctw.collar_animal_assignment.valid_to)
     and bctw.resolved_mismatched_collars.mismatched_collar_id is null;
 -- This will match on 26 of the 29 records.
@@ -128,14 +128,14 @@ select
 from
     bctw.resolved_mismatched_collars     
 left join
-    bctw.invalid_mismatched_collar_deployment
+    bctw.invalid_collar_deployment
 on 
-    bctw.resolved_mismatched_collars.critterbase_critter_id = ANY(bctw.invalid_mismatched_collar_deployment.bctw_critter_uuid)
+    bctw.resolved_mismatched_collars.critterbase_critter_id = ANY(bctw.invalid_collar_deployment.bctw_critter_uuid)
 where 
     bctw.resolved_mismatched_collars.serial is null
 and (
-  ABS(EXTRACT(EPOCH FROM resolved_mismatched_collars.create_date::timestamp) - EXTRACT(EPOCH FROM invalid_mismatched_collar_deployment.collar_animal_assignment_created_at[1]::timestamp)) < 1
-  or ABS(EXTRACT(EPOCH FROM resolved_mismatched_collars.create_date::timestamp) - EXTRACT(EPOCH FROM invalid_mismatched_collar_deployment.collar_animal_assignment_created_at[2]::timestamp)) < 1
+  ABS(EXTRACT(EPOCH FROM resolved_mismatched_collars.create_date::timestamp) - EXTRACT(EPOCH FROM invalid_collar_deployment.collar_animal_assignment_created_at[1]::timestamp)) < 1
+  or ABS(EXTRACT(EPOCH FROM resolved_mismatched_collars.create_date::timestamp) - EXTRACT(EPOCH FROM invalid_collar_deployment.collar_animal_assignment_created_at[2]::timestamp)) < 1
 );
 --------------------------------------------------------------------------------------------------------------
 
@@ -157,7 +157,7 @@ w_clean_bctw_device_deployment as (
         resolved_mismatched_deployment.critterbase_end_mortality_id,
         --
         resolved_mismatched_deployment.mismatched_deployment_id,
-        resolved_mismatched_deployment.mismatched_collar_deployment_id,
+        resolved_mismatched_deployment.valid_collar_deployment_id,
         resolved_mismatched_deployment.sims_survey_id,
         resolved_mismatched_deployment.bctw_deployment_uuid,
         resolved_mismatched_deployment.bctw_critter_uuid,
@@ -167,7 +167,7 @@ w_clean_bctw_device_deployment as (
         resolved_mismatched_deployment.frequency_unit,
         --
         mismatched_collar.mismatched_collar_id,
-        -- mismatched_collar.mismatched_collar_deployment_id,
+        -- mismatched_collar.valid_collar_deployment_id,
         -- mismatched_collar.sims_survey_id,
         mismatched_collar.bctw_collar_uuid,
         mismatched_collar.device_id as serial,
@@ -183,7 +183,7 @@ w_clean_bctw_device_deployment as (
     left join 
         bctw.mismatched_collar 
     on
-        mismatched_collar.mismatched_collar_deployment_id = resolved_mismatched_deployment.mismatched_collar_deployment_id
+        mismatched_collar.valid_collar_deployment_id = resolved_mismatched_deployment.valid_collar_deployment_id
 ),
 w_remove_duplicates as (
     select
@@ -248,7 +248,7 @@ w_clean_bctw_device_deployment as (
         resolved_mismatched_deployment.critterbase_end_capture_id,
         resolved_mismatched_deployment.critterbase_end_mortality_id,
         resolved_mismatched_deployment.mismatched_deployment_id,
-        resolved_mismatched_deployment.mismatched_collar_deployment_id,
+        resolved_mismatched_deployment.valid_collar_deployment_id,
         resolved_mismatched_deployment.sims_survey_id,
         resolved_mismatched_deployment.bctw_deployment_uuid,
         resolved_mismatched_deployment.bctw_critter_uuid,
@@ -258,7 +258,7 @@ w_clean_bctw_device_deployment as (
         resolved_mismatched_deployment.frequency_unit,
         --
         mismatched_collar.mismatched_collar_id,
-        -- mismatched_collar.mismatched_collar_deployment_id,
+        -- mismatched_collar.valid_collar_deployment_id,
         -- mismatched_collar.sims_survey_id,
         mismatched_collar.bctw_collar_uuid,
         mismatched_collar.device_id as serial,
@@ -274,7 +274,7 @@ w_clean_bctw_device_deployment as (
     left join 
         bctw.mismatched_collar
     on
-        mismatched_collar.mismatched_collar_deployment_id = resolved_mismatched_deployment.mismatched_collar_deployment_id
+        mismatched_collar.valid_collar_deployment_id = resolved_mismatched_deployment.valid_collar_deployment_id
 )
 insert into 
     sims_bctw.mismatched_deployment
