@@ -17,7 +17,7 @@ CREATE TABLE if not exists bctw.matched_sims_deployments (
     critter_id                      integer,
     critterbase_critter_id          uuid,
     bctw_deployment_id              uuid,
-    create_date                     timestamptz(6),              
+    create_date                     timestamptz(6),
     create_user                     integer,
     update_date                     timestamptz(6),
     update_user                     integer,
