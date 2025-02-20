@@ -69,12 +69,12 @@ SELECT
         )
       ),         
       (
-        select
-          code_id::text
+        SELECT
+          biohub.device_make.device_make_id
         from
-          bctw.code
+          biohub.device_make
         where
-          bctw.code.code_name ilike 'LOTEK'
+          biohub.device_make.name ilike 'LOTEK'
       )
   ) as device_make_id,
   device_model,
