@@ -2,7 +2,71 @@
 -- Combine and transform final mismatched and final matched tables
 --------------------------------------------------------------------------------------------------------------
 
--- TODO
+WITH w_combined_data AS (
+  SELECT 
+    *
+  FROM
+    sims_bctw.final_matched_device_deployment
+    UNION ALL
+    sims_bctw.final_mismatched_device_deployment
+)
+SELECT
+  survey_id,
+  deployment_id,
+  critter_id,
+  device_id as serial,
+  frequency,
+  CASE
+    WHEN frequency IS NOT NULL THEN
+    COALESCE(
+      -- attempt to match the frequency unit from bctw to sims
+      (SELECT
+        biohub.frequency_unit.frequency_unit_id
+      FROM
+        biohub.frequency_unit
+      WHERE
+        biohub.frequency_unit.name ilike (
+          SELECT
+            code_name
+          FROM
+            bctw.code
+          WHERE
+            code_id = flattened_valid_collar_deployment.frequency_unit::integer
+        )
+      ),
+      -- if no match, and record has a frequency value default to 'mhz'
+      (SELECT frequency_unit_id FROM biohub.frequency_unit WHERE biohub.frequency_unit.name = 'mhz')
+    )
+    ELSE null
+  END AS frequency_unit,
+  attachment_start::date as attachment_start_date, -- casting to `date` correct?
+  attachment_start::time as attachment_start_time,
+  attachment_end::date as attachment_end_date, -- cating to `date` correct?
+  attachment_end::time as attachment_end_time,
+  critterbase_start_capture_id,
+  critterbase_end_capture_id,
+  critterbase_end_mortality_id,
+  (
+    SELECT
+      biohub.device_make.device_make_id
+    FROM
+      biohub.device_make
+    WHERE
+      biohub.device_make.name ilike (
+        SELECT
+          code_name
+        FROM
+          bctw.code
+        WHERE
+          code_id = flattened_valid_collar_deployment.device_make::integer
+      )
+  ) as device_make_id,
+  device_model,
+  comment
+FROM 
+  w_combined_data
+INTO TABLE
+  sims_bctw.final_device_deployment;
 
 --------------------------------------------------------------------------------------------------------------
 -- Insert final data into SIMS
