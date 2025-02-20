@@ -1,9 +1,9 @@
 --------------------------------------------------------------------------------------------------------------
--- Populate sims_matched_deployments table
+-- Populate matched_sims_deployments table
 --------------------------------------------------------------------------------------------------------------
 
 -- Insert all sims deployment records that have a matching bctw deployment record
-INSERT INTO bctw.mismatched_sims_deployments (
+INSERT INTO bctw.matched_sims_deployments (
     survey_id,
     deployment_id,
     critter_id,

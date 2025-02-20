@@ -41,7 +41,7 @@ CREATE TABLE if not exists bctw.valid_collar_deployment (
 
 -- A flattened table of BCTW deployments and collars, that are NOT both valid
 CREATE TABLE if not exists bctw.invalid_collar_deployment (
-    valid_collar_deployment_id        INTEGER          GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    valid_collar_deployment_id             INTEGER          GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
     --
     bctw_deployment_uuid                   UUID[],
     --

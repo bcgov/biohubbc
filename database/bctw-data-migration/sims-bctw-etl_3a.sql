@@ -1,4 +1,4 @@
-drop table if exists bctw.sims_matched_deployments cascade;
+drop table if exists bctw.matched_sims_deployments cascade;
 
 drop table if exists bctw.matched_collar cascade;
 drop table if exists bctw.matched_deployment cascade;
@@ -11,7 +11,7 @@ drop table if exists sims_bctw.matched_deployment cascade;
 ------------------------------------------------------------
 
 -- Existing sims deployment records that have a matching bctw deployment record
-CREATE TABLE if not exists bctw.sims_matched_deployments (
+CREATE TABLE if not exists bctw.matched_sims_deployments (
     survey_id                       integer,
     deployment_id                   integer,
     critter_id                      integer,
@@ -79,6 +79,8 @@ CREATE TABLE if not exists bctw.matched_deployment (
 
 -- Device records for the sims deployments that had matching BCTW deployments
 CREATE TABLE if not exists sims_bctw.matched_device (
+    matched_device_id INTEGER GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    --
     survey_id           INTEGER,
     --
     device_key          VARCHAR,
@@ -91,6 +93,9 @@ CREATE TABLE if not exists sims_bctw.matched_device (
 
 -- Deployment records for the sims deployments that had matching BCTW deployments
 CREATE TABLE if not exists sims_bctw.matched_deployment (
+    matched_deployment_id        INTEGER        GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    matched_device_id            INTEGER,
+    --
     survey_id                       INTEGER,
     --
     critter_id                      INTEGER,
