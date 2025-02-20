@@ -15,17 +15,6 @@
 SET SEARCH_PATH TO biohub;
 
 --------------------------------------------------------------------------------------------------------------
--- Truncate tables
---------------------------------------------------------------------------------------------------------------
--- TODO: Mac: Is this safe to truncate in PROD?
-TRUNCATE TABLE biohub.telemetry_credential_lotek CASCADE;
--- TODO: Mac: Is this safe to truncate in PROD?
-TRUNCATE TABLE biohub.telemetry_credential_vectronic CASCADE;
--- These net-new tables are safe to truncate in PROD
-TRUNCATE TABLE biohub.telemetry_ats CASCADE;
-TRUNCATE TABLE biohub.telemetry_historic CASCADE;
-
---------------------------------------------------------------------------------------------------------------
 -- Import data into biohub.telemetry_credential_lotek table
 --------------------------------------------------------------------------------------------------------------
 -- Patch to add missing column - PR branch missing this column - Production will have this
@@ -48,7 +37,8 @@ SELECT
   now()::timestamptz(6),
   true as is_valid,
   NULL as "key"
-FROM bctw.api_lotek_credential;
+FROM bctw.api_lotek_credential
+WHERE NOT EXISTS (SELECT 1 FROM biohub.telemetry_credential_lotek WHERE ndeviceid::int4 = biohub.telemetry_credential_lotek.ndeviceid);
 
 
 --------------------------------------------------------------------------------------------------------------
@@ -67,7 +57,8 @@ SELECT
   idcom::varchar(50),
   collarkey::varchar(1000),
   collartype::int4
-FROM bctw.api_vectronic_credential;
+FROM bctw.api_vectronic_credential
+WHERE NOT EXISTS (SELECT 1 FROM biohub.telemetry_credential_vectronic WHERE idcollar::int4 = biohub.telemetry_credential_vectronic.idcollar);
 
 --------------------------------------------------------------------------------------------------------------
 -- Import data into biohub.telemetry_ats table
@@ -115,7 +106,14 @@ SELECT
   numsats::varchar,
   fixtime::varchar,
   activity::varchar
-FROM bctw.telemetry_api_ats;
+FROM bctw.telemetry_api_ats
+WHERE NOT EXISTS (
+    SELECT
+      1
+    FROM biohub.telemetry_ats
+    WHERE collarserialnumber::int4 = biohub.telemetry_ats.collarserialnumber
+    AND "date"::timestamptz = biohub.telemetry_ats."date"
+  );
 
 --------------------------------------------------------------------------------------------------------------
 -- Import data into biohub.telemetry_historic table
@@ -171,4 +169,5 @@ SELECT
   albers_y::float8,
   orig_file_loc::text,
   exists_kmb_tracking::text
-FROM bctw.telemetry_manual_historic;
+FROM bctw.telemetry_manual_historic
+WHERE NOT EXISTS (SELECT 1 FROM biohub.telemetry_historic WHERE id::uuid = biohub.telemetry_historic.telemetry_historic_id);
