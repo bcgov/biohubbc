@@ -493,7 +493,7 @@ update bctw.new_deployment
 from bctw.sims_deployment
 where
     sims_deployment.sims_critter_uuid = new_deployment.bctw_critter_uuid
-and ABS(EXTRACT(EPOCH FROM sims_deployment.sims_create_date) - EXTRACT(EPOCH FROM new_deployment.create_date)) < 1;
+and ABS(EXTRACT(EPOCH FROM sims_deployment.sims_create_date::timestamp) - EXTRACT(EPOCH FROM new_deployment.create_date::timestamp)) < 1;
 
 --------------------------------------------------------------------------------------------------------------
 -- Update new_deployment records with their corresponding SIMS deployment data for all remaining records, based
@@ -555,7 +555,7 @@ from (
 ) as sims_tables
 where
     sims_tables.critterbase_critter_id = new_deployment.bctw_critter_uuid and
-    ABS(EXTRACT(EPOCH FROM sims_tables.create_date) - EXTRACT(EPOCH FROM new_deployment.create_date)) < 1 and
+    ABS(EXTRACT(EPOCH FROM sims_tables.create_date::timestamp) - EXTRACT(EPOCH FROM new_deployment.create_date::timestamp)) < 1 and
     new_deployment.sims_survey_id is null;
 
 
