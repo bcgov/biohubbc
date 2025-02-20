@@ -29,6 +29,6 @@ DROP TABLE IF EXISTS sims_bctw.final_matched_device_deployment;
 
 SELECT *
 INTO sims_bctw.final_matched_device_deployment
-FROM bctw.flattened_valid_collar_deployment
-INNER JOIN bctw.matched_sims_deployments
+FROM bctw.matched_sims_deployments
+INNER JOIN bctw.flattened_valid_collar_deployment
 ON bctw.matched_sims_deployments.bctw_deployment_id = bctw.flattened_valid_collar_deployment.bctw_deployment_uuid;

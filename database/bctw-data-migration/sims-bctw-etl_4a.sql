@@ -1,3 +1,5 @@
+drop table if exists sims_bctw.final_device_deployment;
+
 --------------------------------------------------------------------------------------------------------------
 -- Combine and transform final mismatched and final matched tables
 --------------------------------------------------------------------------------------------------------------
@@ -7,7 +9,10 @@ WITH w_combined_data AS (
     *
   FROM
     sims_bctw.final_matched_device_deployment
-    UNION ALL
+  UNION ALL
+  select
+    *
+  from
     sims_bctw.final_mismatched_device_deployment
 )
 SELECT
@@ -15,6 +20,7 @@ SELECT
   deployment_id,
   critter_id,
   device_id as serial,
+  device_model as model,
   frequency,
   CASE
     WHEN frequency IS NOT NULL THEN
@@ -31,7 +37,7 @@ SELECT
           FROM
             bctw.code
           WHERE
-            code_id = flattened_valid_collar_deployment.frequency_unit::integer
+            code_id = w_combined_data.frequency_unit::integer
         )
       ),
       -- if no match, and record has a frequency value default to 'mhz'
@@ -46,34 +52,72 @@ SELECT
   critterbase_start_capture_id,
   critterbase_end_capture_id,
   critterbase_end_mortality_id,
-  (
-    SELECT
-      biohub.device_make.device_make_id
-    FROM
-      biohub.device_make
-    WHERE
-      biohub.device_make.name ilike (
-        SELECT
-          code_name
-        FROM
+  coalesce(
+    (
+      SELECT
+        biohub.device_make.device_make_id
+      FROM
+        biohub.device_make
+      WHERE
+        biohub.device_make.name ilike (
+          SELECT
+            code_name
+          FROM
+            bctw.code
+          WHERE
+            code_id = w_combined_data.device_make::integer
+        )
+      ),         
+      (
+        select
+          code_id::text
+        from
           bctw.code
-        WHERE
-          code_id = flattened_valid_collar_deployment.device_make::integer
+        where
+          bctw.code.code_name ilike 'LOTEK'
       )
   ) as device_make_id,
   device_model,
   comment
-FROM 
-  w_combined_data
 INTO TABLE
-  sims_bctw.final_device_deployment;
+  sims_bctw.final_device_deployment
+FROM 
+  w_combined_data;
 
 --------------------------------------------------------------------------------------------------------------
 -- Insert final data into SIMS
 --------------------------------------------------------------------------------------------------------------
+set search_path = biohub;
 
 -- Insert data into device
-WITH w_insert_device AS (
+WITH 
+w_deduplicated_devices as (
+    SELECT
+        survey_id,
+        serial,
+        device_make_id,
+        model,
+        comment
+    FROM
+        sims_bctw.final_device_deployment
+    where not exists (
+        SELECT
+            1
+        FROM
+            biohub.device
+        WHERE
+            survey_id = final_device_deployment.survey_id
+            AND serial = final_device_deployment.serial
+            AND device_make_id = final_device_deployment.device_make_id
+    )
+    GROUP BY
+        survey_id,
+        serial,
+        device_make_id,
+        model,
+        comment
+),
+w_insert_device AS (
   INSERT INTO biohub.device (
     survey_id,
     serial,
@@ -81,18 +125,17 @@ WITH w_insert_device AS (
     model,
     comment
   ) 
-  SELECT (
+  SELECT 
     survey_id,
     serial,
     device_make_id,
     model,
     comment
-  ) 
   FROM 
-    sims_bctw.final_device_deployment
+    w_deduplicated_devices
   RETURNING 
     *
-),
+)
 -- Insert data into deployment
 INSERT INTO biohub.deployment (
   survey_id,
@@ -108,22 +151,21 @@ INSERT INTO biohub.deployment (
   critterbase_end_capture_id,
   critterbase_end_mortality_id
 ) 
-SELECT (
-  survey_id,
-  critter_id,
-  device_id,
-  frequency,
-  frequency_unit_id,
-  attachment_start_date,
-  attachment_start_time,
-  attachment_end_date,
-  attachment_end_time,
-  critterbase_start_capture_id,
-  critterbase_end_capture_id,
-  critterbase_end_mortality_id
-)
+SELECT
+  final_device_deployment.survey_id,
+  final_device_deployment.critter_id,
+  w_insert_device.device_id,
+  final_device_deployment.frequency,
+  final_device_deployment.frequency_unit,
+  final_device_deployment.attachment_start_date,
+  final_device_deployment.attachment_start_time,
+  final_device_deployment.attachment_end_date,
+  final_device_deployment.attachment_end_time,
+  final_device_deployment.critterbase_start_capture_id,
+  final_device_deployment.critterbase_end_capture_id,
+  final_device_deployment.critterbase_end_mortality_id
 FROM 
-  final_device_deployment
+  sims_bctw.final_device_deployment
 INNER JOIN
   w_insert_device
 ON

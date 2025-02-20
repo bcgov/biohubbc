@@ -222,7 +222,7 @@ with w_valid_collar_deployment as (
         collar.device_id,
         (array_remove(array_agg(distinct collar.device_make), null)) AS device_make,
         (array_remove(ARRAY_AGG(DISTINCT collar.device_model) FILTER (WHERE collar.device_model IS NOT NULL AND collar.device_model != ''), '')) AS device_model,
-        (array_remove(ARRAY_AGG(DISTINCT CONCAT_WS('; ', '2025: BCTW -> SIMS Data Migration', collar.device_comment, collar.malfunction_comment)) FILTER (WHERE (collar.device_comment IS NOT NULL AND collar.device_comment != '') or (collar.malfunction_comment IS NOT NULL AND collar.malfunction_comment != '')), '')) AS comment,
+        (array_remove(ARRAY_AGG(DISTINCT CONCAT_WS('; ', '2025: BCTW -> SIMS Data Migration', collar.device_comment, collar.malfunction_comment)), '')) AS comment,
         (array_remove(array_agg(distinct collar.frequency), null)) AS frequency,
         (array_remove(array_agg(distinct collar.frequency_unit), null)) AS frequency_unit,
         --
@@ -321,7 +321,7 @@ with w_valid_collar_deployment as (
         collar.device_id,
         (array_remove(array_agg(distinct collar.device_make), null)) AS device_make,
         (array_remove(ARRAY_AGG(DISTINCT collar.device_model) FILTER (WHERE collar.device_model IS NOT NULL AND collar.device_model != ''), '')) AS device_model,
-        (array_remove(ARRAY_AGG(DISTINCT CONCAT_WS('; ', '2025: BCTW -> SIMS Data Migration', collar.device_comment, collar.malfunction_comment)) FILTER (WHERE (collar.device_comment IS NOT NULL AND collar.device_comment != '') or (collar.malfunction_comment IS NOT NULL AND collar.malfunction_comment != '')), '')) AS comment,
+        (array_remove(ARRAY_AGG(DISTINCT CONCAT_WS('; ', '2025: BCTW -> SIMS Data Migration', collar.device_comment, collar.malfunction_comment)), '')) AS comment,
         (array_remove(array_agg(distinct collar.frequency), null)) AS frequency,
         (array_remove(array_agg(distinct collar.frequency_unit), null)) AS frequency_unit,
         --
@@ -420,7 +420,7 @@ with w_valid_collar_deployment as (
         collar.device_id,
         (array_remove(array_agg(distinct collar.device_make), null)) AS device_make,
         (array_remove(ARRAY_AGG(DISTINCT collar.device_model) FILTER (WHERE collar.device_model IS NOT NULL AND collar.device_model != ''), '')) AS device_model,
-        (array_remove(ARRAY_AGG(DISTINCT CONCAT_WS('; ', '2025: BCTW -> SIMS Data Migration', collar.device_comment, collar.malfunction_comment)) FILTER (WHERE (collar.device_comment IS NOT NULL AND collar.device_comment != '') or (collar.malfunction_comment IS NOT NULL AND collar.malfunction_comment != '')), '')) AS comment,
+        (array_remove(ARRAY_AGG(DISTINCT CONCAT_WS('; ', '2025: BCTW -> SIMS Data Migration', collar.device_comment, collar.malfunction_comment)), '')) AS comment,
         (array_remove(array_agg(distinct collar.frequency), null)) AS frequency,
         (array_remove(array_agg(distinct collar.frequency_unit), null)) AS frequency_unit,
         --
