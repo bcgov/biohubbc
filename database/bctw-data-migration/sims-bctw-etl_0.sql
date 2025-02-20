@@ -1,6 +1,7 @@
 DROP SCHEMA IF EXISTS bctw CASCADE;
 DROP SCHEMA IF EXISTS crypto CASCADE;
 DROP SCHEMA IF EXISTS bctw_dapi_v1 CASCADE;
+DROP SCHEMA IF EXISTS sims_bctw CASCADE;
 
 -- Create initial BCTW schema
 CREATE SCHEMA IF NOT EXISTS bctw;
@@ -10,6 +11,9 @@ CREATE SCHEMA IF NOT EXISTS crypto;
 
 -- Create bctw_dapi_v1 schema, which is required by the BCTW export file.
 CREATE SCHEMA IF NOT EXISTS bctw_dapi_v1;
+
+-- Create sims_bctw schema, which is required by the BCTW export file.
+CREATE SCHEMA IF NOT EXISTS sims_bctw;
 
 -- Grant postgres user full access to bctw schema (needed?)
 GRANT ALL ON SCHEMA bctw TO postgres;

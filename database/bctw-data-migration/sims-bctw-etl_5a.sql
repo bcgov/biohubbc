@@ -28,6 +28,9 @@ TRUNCATE TABLE biohub.telemetry_historic CASCADE;
 --------------------------------------------------------------------------------------------------------------
 -- Import data into biohub.telemetry_credential_lotek table
 --------------------------------------------------------------------------------------------------------------
+-- Patch to add missing column - PR branch missing this column - Production will have this
+ALTER TABLE telemetry_credential_lotek ADD COLUMN IF NOT EXISTS key VARCHAR(1000);
+
 INSERT INTO biohub.telemetry_credential_lotek (
   ndeviceid,
   strspecialid,
