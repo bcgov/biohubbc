@@ -1,5 +1,7 @@
 
 --------------------------------------------------------------------------------------------------------------
+-- Note: Commented these 'mark as invalid' sections out, because there are no invalid rows in this case.
+--------------------------------------------------------------------------------------------------------------
 
 -- Mark all rows as valid, if they only have 1 distinct value in the important columns. This will include records that may have had multuple soft deleted rows, but because all of the key fields are unchanged, we should be able to safely merge them into 1 record.
 -- update 
