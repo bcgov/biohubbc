@@ -23,7 +23,7 @@
 -- Valid Device and Deployment ETL
 -- Insert valid devices and deployments into the staging table `sims_bctw.final_matched_device_deployment`
 --
--- Record count: 1622
+-- Record count: 1909 / 1943 (34 remaining)
 --------------------------------------------------------------------------------------------------------------
 DROP TABLE IF EXISTS sims_bctw.final_matched_device_deployment;
 
@@ -32,3 +32,27 @@ INTO sims_bctw.final_matched_device_deployment
 FROM bctw.matched_sims_deployments
 INNER JOIN bctw.flattened_valid_collar_deployment
 ON bctw.matched_sims_deployments.bctw_deployment_id = bctw.flattened_valid_collar_deployment.bctw_deployment_uuid;
+
+insert into sims_bctw.final_matched_device_deployment
+SELECT *
+FROM bctw.matched_sims_deployments
+INNER JOIN bctw.flattened_invalid_collar_valid_deployment
+ON bctw.matched_sims_deployments.bctw_deployment_id = bctw.flattened_invalid_collar_valid_deployment.bctw_deployment_uuid
+and bctw.matched_sims_deployments.deployment_id not in (select deployment_id from sims_bctw.final_matched_device_deployment);
+
+insert into sims_bctw.final_matched_device_deployment
+SELECT *
+FROM bctw.matched_sims_deployments
+INNER JOIN bctw.flattened_valid_collar_invalid_deployment
+ON bctw.matched_sims_deployments.bctw_deployment_id = bctw.flattened_valid_collar_invalid_deployment.bctw_deployment_uuid
+and bctw.matched_sims_deployments.deployment_id not in (select deployment_id from sims_bctw.final_matched_device_deployment);
+
+--SELECT *
+----INTO sims_bctw.final_matched_device_deployment
+--FROM bctw.matched_sims_deployments
+--INNER JOIN bctw.flattened_invalid_collar_deployment
+--ON bctw.matched_sims_deployments.bctw_deployment_id = bctw.flattened_invalid_collar_deployment.bctw_deployment_uuid
+--and 
+--  bctw.matched_sims_deployments.deployment_id not in (
+--    select deployment_id from sims_bctw.final_matched_device_deployment
+--  );
