@@ -1,4 +1,5 @@
 drop table if exists bctw.valid_collar_deployment cascade;
+drop table if exists bctw.valid_flattened_collar_deployment cascade;
 drop table if exists bctw.invalid_collar_deployment cascade;
 
 ------------------------------------------------------------

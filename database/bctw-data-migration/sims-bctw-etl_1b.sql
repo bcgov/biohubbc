@@ -96,6 +96,80 @@ select
 FROM
     w_valid_collar_deployment;
 
+
+-------------------------------------------------------------------------------------------------------------
+-- Flatten the valid_collar_deployment table
+-------------------------------------------------------------------------------------------------------------
+
+WITH 
+-- Resolve the max values for each column (remove arrays)
+w_resolved_valid_valid_collar_deployment_rows as (
+    select
+        valid_collar_deployment_id,
+        --
+        bctw_deployment_uuid[1],
+        --
+        bctw_collar_uuid[1],
+        --
+        bctw_critter_uuid[1],
+        --
+        device_id,
+        device_make[1],
+        device_model[1],
+        comment[1],
+        frequency[1],
+        frequency_unit[1],
+        attachment_start,
+        attachment_end[1],
+        --
+        max_vals.collar_created_at,
+        max_vals.collar_created_by,
+        max_vals.collar_updated_at,
+        max_vals.collar_updated_by,
+        collar_valid_to[1],
+        --
+        max_vals.collar_animal_assignment_created_at,
+        max_vals.collar_animal_assignment_created_by,
+        max_vals.collar_animal_assignment_updated_at,
+        max_vals.collar_animal_assignment_updated_by,
+        collar_animal_assignment_valid_to[1]
+    FROM
+        bctw.valid_collar_deployment
+    CROSS JOIN LATERAL (
+        SELECT
+            MAX(collar_created_at) as collar_created_at,
+            MAX(collar_created_by) as collar_created_by,
+            MAX(collar_updated_at) as collar_updated_at,
+            MAX(collar_updated_by) as collar_updated_by,
+            MAX(collar_animal_assignment_created_at) as collar_animal_assignment_created_at,
+            MAX(collar_animal_assignment_created_by) as collar_animal_assignment_created_by,
+            MAX(collar_animal_assignment_updated_at) as collar_animal_assignment_updated_at,
+            MAX(collar_animal_assignment_updated_by) as collar_animal_assignment_updated_by
+        FROM 
+            (
+                SELECT
+                    UNNEST(collar_created_at) AS collar_created_at,
+                    UNNEST(collar_created_by) AS collar_created_by,
+                    UNNEST(collar_updated_at) AS collar_updated_at,
+                    UNNEST(collar_updated_by) AS collar_updated_by,
+                    UNNEST(collar_animal_assignment_created_at) as collar_animal_assignment_created_at,
+                    UNNEST(collar_animal_assignment_created_by) as collar_animal_assignment_created_by,
+                    UNNEST(collar_animal_assignment_updated_at) as collar_animal_assignment_updated_at,
+                    UNNEST(collar_animal_assignment_updated_by) as collar_animal_assignment_updated_by
+                FROM 
+                    bctw.valid_collar_deployment ncd_inner
+                WHERE 
+                    ncd_inner.valid_collar_deployment_id = bctw.valid_collar_deployment.valid_collar_deployment_id
+            ) AS unnested
+    ) AS max_vals
+)
+select 
+    * 
+into table 
+    bctw.valid_flattened_collar_deployment
+from 
+    w_resolved_valid_valid_collar_deployment_rows;
+
 --------------------------------------------------------------------------------------------------------------
 -- Populate invalid_collar_deployment table
 --------------------------------------------------------------------------------------------------------------
