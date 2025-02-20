@@ -78,9 +78,8 @@ rm -f "$MIGRATION_FILE"
 cat sims-bctw-migration_1.sql >> "$MIGRATION_FILE"
 cat "$BCTW_DUMP_FILE" >> "$MIGRATION_FILE"
 cat sims-bctw-migration_2.sql >> "$MIGRATION_FILE"
-# cat sims-bctw-migration_3.sql >> "$MIGRATION_FILE"
-# TODO: Uncomment after testing
-# cat sims-bctw-migration_4.sql >> "$MIGRATION_FILE"
+cat sims-bctw-migration_3.sql >> "$MIGRATION_FILE"
+cat sims-bctw-migration_4.sql >> "$MIGRATION_FILE"
 
 # Step 4: Run migration on the appropriate database
 if [ "$1" = "--prod" ]; then
@@ -90,28 +89,23 @@ if [ "$1" = "--prod" ]; then
     echo "MIGRATION: BCTW data migration into SIMS PRODUCTION database complete."
   else
     echo "MIGRATION: ERROR: Failed to migrate BCTW data into SIMS PRODUCTION database. Exiting..."
-    exit 1
   fi
 
-  exit 0
-fi
-
-echo "MIGRATION: Running BCTW data migration SQL on LOCAL SIMS database..."
-
-# Copy the migration file into the Docker container
-docker cp "$MIGRATION_FILE" "$SIMS_DOCKER_CONTAINER:/sims-bctw-migration-final.sql"
-
-# Execute the migration inside the container
-if docker exec -it "$SIMS_DOCKER_CONTAINER" psql --single-transaction -U postgres -d biohubbc -v ON_ERROR_STOP=1 -f sims-bctw-migration-final.sql; then
-  echo "MIGRATION: BCTW data migration into SIMS LOCAL database complete."
 else
-  echo "MIGRATION: ERROR: Failed to migrate BCTW data into SIMS LOCAL database. Exiting..."
-  exit 1
-fi
+  echo "MIGRATION: Running BCTW data migration SQL on LOCAL SIMS database..."
 
+  # Copy the migration file into the Docker container
+  docker cp "$MIGRATION_FILE" "$SIMS_DOCKER_CONTAINER:/sims-bctw-migration-final.sql"
+
+  # Execute the migration inside the container
+  if docker exec -it "$SIMS_DOCKER_CONTAINER" psql --single-transaction -U postgres -d biohubbc -v ON_ERROR_STOP=1 -f sims-bctw-migration-final.sql; then
+    echo "MIGRATION: BCTW data migration into SIMS LOCAL database complete."
+  else
+    echo "MIGRATION: ERROR: Failed to migrate BCTW data into SIMS LOCAL database. Exiting..."
+  fi
+
+fi
 
 # Cleanup: Remove the migration file after execution
 rm -f "$MIGRATION_FILE"
-
-exit 0
 
