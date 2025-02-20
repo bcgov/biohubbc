@@ -23,7 +23,7 @@ BCTW_DUMP_FILE="bctw_bctw_no_owner_no_acl_dump.sql"
 MIGRATION_FILE="sims-bctw-migration-final.sql"
 BCTW_DB_PORT=7777
 SIMS_DB_PORT=8888
-SIMS_DOCKER_CONTAINER="sims-db-2-container"
+SIMS_DOCKER_CONTAINER="sims-db-all-container"
 
 echo "MIGRATION: Beginning SIMS -> BCTW data migration..."
 
@@ -75,11 +75,9 @@ echo "MIGRATION: Creating BCTW -> SIMS database migration file..."
 rm -f "$MIGRATION_FILE"
 
 # Step 3: Concatenate migration files into a single script
-cat sims-bctw-migration_1.sql >> "$MIGRATION_FILE"
+cat sims-bctw-etl_0.sql >> "$MIGRATION_FILE"
 cat "$BCTW_DUMP_FILE" >> "$MIGRATION_FILE"
-cat sims-bctw-migration_2.sql >> "$MIGRATION_FILE"
-cat sims-bctw-migration_3.sql >> "$MIGRATION_FILE"
-cat sims-bctw-migration_4.sql >> "$MIGRATION_FILE"
+cat sims-bctw-etl_5a.sql >> "$MIGRATION_FILE"
 
 # Step 4: Run migration on the appropriate database
 if [ "$1" = "--prod" ]; then
