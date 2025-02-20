@@ -22,7 +22,7 @@
 BCTW_DUMP_FILE="bctw_bctw_no_owner_no_acl_dump.sql"
 MIGRATION_FILE="sims-bctw-migration-final.sql"
 BCTW_DB_PORT=7777
-SIMS_DB_PORT=8888
+SIMS_DB_PORT=9999
 SIMS_DOCKER_CONTAINER="sims-db-all-container"
 
 echo "MIGRATION: Beginning SIMS -> BCTW data migration..."
@@ -77,6 +77,17 @@ rm -f "$MIGRATION_FILE"
 # Step 3: Concatenate migration files into a single script
 cat sims-bctw-etl_0.sql >> "$MIGRATION_FILE"
 cat "$BCTW_DUMP_FILE" >> "$MIGRATION_FILE"
+cat sims-bctw-etl_1b.sql >> "$MIGRATION_FILE"
+cat sims-bctw-etl_1c.sql >> "$MIGRATION_FILE"
+cat sims-bctw-etl_2a.sql >> "$MIGRATION_FILE"
+cat sims-bctw-etl_2b.sql >> "$MIGRATION_FILE"
+cat sims-bctw-etl_2c.sql >> "$MIGRATION_FILE"
+cat sims-bctw-etl_2d.sql >> "$MIGRATION_FILE"
+cat sims-bctw-etl_3a.sql >> "$MIGRATION_FILE"
+cat sims-bctw-etl_3b.sql >> "$MIGRATION_FILE"
+cat sims-bctw-etl_3c.sql >> "$MIGRATION_FILE"
+cat sims-bctw-etl_3d.sql >> "$MIGRATION_FILE"
+cat sims-bctw-etl_4a.sql >> "$MIGRATION_FILE"
 cat sims-bctw-etl_5a.sql >> "$MIGRATION_FILE"
 
 # Step 4: Run migration on the appropriate database
