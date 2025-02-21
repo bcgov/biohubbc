@@ -2,9 +2,6 @@
 
 node_modules
 
-bctw_bctw_no_owner_no_acl_dump.sql
-sims-bctw-migration-final.sql
-
 **/.npm
 **/.config
 **.bash_history

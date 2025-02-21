@@ -6,6 +6,11 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 
+
+# scripts
+bctw_bctw_no_owner_no_acl_dump.sql
+sims-bctw-migration-final.sql
+
 # SonarQube
 .sonarqube
 
