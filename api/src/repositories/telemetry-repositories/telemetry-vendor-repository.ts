@@ -1,4 +1,3 @@
-// NOSONAR
 import { Knex } from 'knex';
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
@@ -91,7 +90,6 @@ export class TelemetryVendorRepository extends BaseRepository {
    * @param {number} surveyId
    * @returns {Knex.QueryBuilder}
    */
-  // NOSONAR
   getLotekTelemetryByCredentialClause(queryBuilder: Knex.QueryBuilder, surveyId: number): Knex.QueryBuilder {
     return queryBuilder
       .join(
@@ -127,6 +125,40 @@ export class TelemetryVendorRepository extends BaseRepository {
   }
 
   /**
+   * Filter results by vendor credentials
+   *
+   * @private
+   * @static
+   * @param {Knex.QueryBuilder} queryBuilder
+   * @returns {Knex.QueryBuilder}
+   */
+  private static getLotekOrVectronicTelemetryByCredentialsClause(queryBuilder: Knex.QueryBuilder): Knex.QueryBuilder {
+    return queryBuilder.join(
+      'survey_telemetry_vendor_credential',
+      'survey.survey_id',
+      'survey_telemetry_vendor_credential.survey_id'
+    );
+  }
+
+  /**
+   * Filter results by the projects/surveys user have access to
+   *
+   * @private
+   * @static
+   * @param {Knex.QueryBuilder} queryBuilder
+   * @param {(number | null)} systemUserId
+   * @returns {Knex.QueryBuilder}
+   */
+  private static getTelemetryByProjectsSurveysUserAccessClause(
+    queryBuilder: Knex.QueryBuilder,
+    systemUserId: number | null
+  ): Knex.QueryBuilder {
+    return queryBuilder
+      .join('project_participation', 'survey.project_id', 'project_participation.project_id')
+      .where('project_participation.system_user_id', systemUserId);
+  }
+
+  /**
    * Find `Lotek` telemetry data records the user has access to, based on filters and pagination options.
    *
    * Checks for vendor credentials.
@@ -138,7 +170,6 @@ export class TelemetryVendorRepository extends BaseRepository {
    * @return {*}  {Knex.QueryBuilder}
    * @memberof TelemetryVendorRepository
    */
-  // NOSONAR
   findLotekTelemetryClause(
     queryBuilder: Knex.QueryBuilder,
     isUserAdmin: boolean,
@@ -151,15 +182,9 @@ export class TelemetryVendorRepository extends BaseRepository {
 
     if (!isUserAdmin) {
       // If the user is not an admin, filter results by vendor credentials
-      queryBuilder.join(
-        'survey_telemetry_vendor_credential',
-        'survey.survey_id',
-        'survey_telemetry_vendor_credential.survey_id'
-      );
+      TelemetryVendorRepository.getLotekOrVectronicTelemetryByCredentialsClause(queryBuilder);
       // If the user is not an admin, filter results by the projects/surveys they have access to
-      queryBuilder
-        .join('project_participation', 'survey.project_id', 'project_participation.project_id')
-        .where('project_participation.system_user_id', systemUserId);
+      TelemetryVendorRepository.getTelemetryByProjectsSurveysUserAccessClause(queryBuilder, systemUserId);
     }
 
     if (filterFields.keyword) {
@@ -260,7 +285,6 @@ export class TelemetryVendorRepository extends BaseRepository {
    * @param {number} surveyId
    * @returns {Knex.QueryBuilder}
    */
-  // NOSONAR
   getVectronicTelemetryByCredentialClause(queryBuilder: Knex.QueryBuilder, surveyId: number): Knex.QueryBuilder {
     return queryBuilder
       .join(
@@ -310,7 +334,6 @@ export class TelemetryVendorRepository extends BaseRepository {
    * @return {*}  {Knex.QueryBuilder}
    * @memberof TelemetryVendorRepository
    */
-  // NOSONAR
   findVectronicTelemetryClause(
     queryBuilder: Knex.QueryBuilder,
     isUserAdmin: boolean,
@@ -323,15 +346,9 @@ export class TelemetryVendorRepository extends BaseRepository {
 
     if (!isUserAdmin) {
       // If the user is not an admin, filter results by vendor credentials
-      queryBuilder.join(
-        'survey_telemetry_vendor_credential',
-        'survey.survey_id',
-        'survey_telemetry_vendor_credential.survey_id'
-      );
+      TelemetryVendorRepository.getLotekOrVectronicTelemetryByCredentialsClause(queryBuilder);
       // If the user is not an admin, filter results by the projects/surveys they have access to
-      queryBuilder
-        .join('project_participation', 'survey.project_id', 'project_participation.project_id')
-        .where('project_participation.system_user_id', systemUserId);
+      TelemetryVendorRepository.getTelemetryByProjectsSurveysUserAccessClause(queryBuilder, systemUserId);
     }
 
     if (filterFields.keyword) {
@@ -473,9 +490,7 @@ export class TelemetryVendorRepository extends BaseRepository {
 
     if (!isUserAdmin) {
       // If the user is not an admin, filter results by the projects/surveys they have access to
-      queryBuilder
-        .join('project_participation', 'survey.project_id', 'project_participation.project_id')
-        .where('project_participation.system_user_id', systemUserId);
+      TelemetryVendorRepository.getTelemetryByProjectsSurveysUserAccessClause(queryBuilder, systemUserId);
     }
 
     if (filterFields.keyword) {
@@ -618,9 +633,7 @@ export class TelemetryVendorRepository extends BaseRepository {
 
     if (!isUserAdmin) {
       // If the user is not an admin, filter results by the projects/surveys they have access to
-      queryBuilder
-        .join('project_participation', 'survey.project_id', 'project_participation.project_id')
-        .where('project_participation.system_user_id', systemUserId);
+      TelemetryVendorRepository.getTelemetryByProjectsSurveysUserAccessClause(queryBuilder, systemUserId);
     }
 
     if (filterFields.keyword) {
