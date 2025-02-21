@@ -1,5 +1,6 @@
 import winston from 'winston';
 import DailyRotateFile from 'winston-daily-rotate-file';
+import { getRequestId, getRequestUser } from './async-request-storage';
 
 const DEFAULT_LOGGER = 'default';
 
@@ -61,11 +62,41 @@ export const getLogger = (logLabel: string): CustomLogger => {
   const logger = _getOrCreateLoggerSingleton(DEFAULT_LOGGER);
 
   return {
-    error: (params: CustomLoggerParams) => logger.error({ logger: logLabel, ...params }),
-    warn: (params: CustomLoggerParams) => logger.warn({ logger: logLabel, ...params }),
-    info: (params: CustomLoggerParams) => logger.info({ logger: logLabel, ...params }),
-    debug: (params: CustomLoggerParams) => logger.debug({ logger: logLabel, ...params }),
-    silly: (params: CustomLoggerParams) => logger.silly({ logger: logLabel, ...params })
+    error: (params: CustomLoggerParams) =>
+      logger.error({
+        requestId: getRequestId(),
+        user: getRequestUser(),
+        logger: logLabel,
+        ...params
+      }),
+    warn: (params: CustomLoggerParams) =>
+      logger.warn({
+        requestId: getRequestId(),
+        requestUser: getRequestUser(),
+        logger: logLabel,
+        ...params
+      }),
+    info: (params: CustomLoggerParams) =>
+      logger.info({
+        requestId: getRequestId(),
+        requestUser: getRequestUser(),
+        logger: logLabel,
+        ...params
+      }),
+    debug: (params: CustomLoggerParams) =>
+      logger.debug({
+        requestId: getRequestId(),
+        requestUser: getRequestUser(),
+        logger: logLabel,
+        ...params
+      }),
+    silly: (params: CustomLoggerParams) =>
+      logger.silly({
+        requestId: getRequestId(),
+        requestUser: getRequestUser(),
+        logger: logLabel,
+        ...params
+      })
   };
 };
 
@@ -119,11 +150,7 @@ export const _getOrCreateLoggerSingleton = function (loggerName: string): winsto
         maxFiles: process.env.LOG_FILE_MAX_FILES || '10',
         level: process.env.LOG_LEVEL_FILE || 'debug',
         format: winston.format.combine(
-          winston.format((info) => {
-            const { timestamp, level, ...rest } = info;
-            // Return the properties of info in a specific order
-            return { timestamp, level, ...rest };
-          })(),
+          getCustomLogFormat(),
           winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
           winston.format.prettyPrint({ colorize: false, depth: 10 })
         ),
@@ -145,11 +172,7 @@ export const _getOrCreateLoggerSingleton = function (loggerName: string): winsto
       new winston.transports.Console({
         level: process.env.LOG_LEVEL || 'debug',
         format: winston.format.combine(
-          winston.format((info) => {
-            const { timestamp, level, ...rest } = info;
-            // Return the properties of info in a specific order
-            return { timestamp, level, ...rest };
-          })(),
+          getCustomLogFormat(),
           winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
           winston.format.prettyPrint({ colorize: true, depth: 10 })
         )
@@ -159,6 +182,23 @@ export const _getOrCreateLoggerSingleton = function (loggerName: string): winsto
 
   // Create new logger instance
   return winston.loggers.add(loggerName, { transports: transports });
+};
+
+export const getCustomLogFormat = (): winston.Logform.Format => {
+  const customFormat = winston.format((info) => {
+    //TODO: Mac: Replace this with the correct format
+    return {
+      requestId: info.requestId,
+      timestamp: info.timestamp,
+      requestUser: info.requestUser,
+      logger: info.logger,
+      label: info.label,
+      level: info.level,
+      message: info.message
+    };
+  });
+
+  return customFormat();
 };
 
 export const WinstonLogLevels = ['silent', 'error', 'warn', 'info', 'debug', 'silly'] as const;

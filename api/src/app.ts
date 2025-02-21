@@ -1,3 +1,4 @@
+import { AsyncLocalStorage } from 'async_hooks';
 import express, { NextFunction, Request, Response } from 'express';
 import { initialize } from 'express-openapi';
 import multer from 'multer';
@@ -13,9 +14,13 @@ import {
 } from './middleware/critterbase-proxy';
 import { rootAPIDoc } from './openapi/root-api-doc';
 import { authenticateRequest, authenticateRequestOptional } from './request-handlers/security/authentication';
+import { initRequestStorage, RequestStore } from './utils/async-request-storage';
 import { loadEnvironmentVariables } from './utils/env-config';
 import { scanFileForVirus } from './utils/file-utils';
 import { getLogger } from './utils/logger';
+
+// Initialize the request storage to track specific request information
+export const AsyncRequestStorage = new AsyncLocalStorage<RequestStore>();
 
 // Load and validate the environment variables
 loadEnvironmentVariables();
@@ -76,6 +81,7 @@ const openAPIFramework = initialize({
   routesIndexFileRegExp: /(?:index)?\.[tj]s$/, // updated default to allow .ts
   promiseMode: true, // allow endpoint handlers to return promises
   docsPath: '/raw-api-docs', // path to view raw openapi spec
+  operations: {},
   consumesMiddleware: {
     'application/json': express.json({ limit: MAX_REQ_BODY_SIZE }),
     'multipart/form-data': function (req, res, next) {
@@ -188,6 +194,9 @@ try {
  */
 function getAdditionalMiddleware(): express.RequestHandler[] {
   const additionalMiddleware = [];
+
+  // Initialize the request storage for each request
+  additionalMiddleware.push(initRequestStorage);
 
   if (process.env.API_RESPONSE_VALIDATION_ENABLED === 'true') {
     // Validate endpoint responses against openapi spec
