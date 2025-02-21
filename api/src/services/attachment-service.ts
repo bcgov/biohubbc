@@ -21,6 +21,7 @@ import {
 import { TelemetryLotekRepository } from '../repositories/telemetry-repositories/telemetry-lotek-repository';
 import { TelemetryVectronicRepository } from '../repositories/telemetry-repositories/telemetry-vectronic-repository';
 import { TelemetryVendorRepository } from '../repositories/telemetry-repositories/telemetry-vendor-repository';
+import { TelemetryVendorEnum } from '../repositories/telemetry-repositories/telemetry-vendor-repository.interface';
 import { deleteFileFromS3, generateS3FileKey } from '../utils/file-utils';
 import { DBService } from './db-service';
 import { HistoryPublishService } from './history-publish-service';
@@ -983,7 +984,10 @@ export class AttachmentService extends DBService {
     responseJSON.survey_telemetry_credential_attachment_id =
       await this.attachmentRepository.insertSurveyTelemetryCredentialAttachment(deviceKeyData);
 
-    const vendor = TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.CFG === deviceKeyData.fileData.type ? 'Lotek' : 'Vectronic';
+    const vendor =
+      TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.CFG === deviceKeyData.fileData.type
+        ? TelemetryVendorEnum.LOTEK
+        : TelemetryVendorEnum.VECTRONIC;
     if (!deviceKeyData.fileData.keyData) {
       return responseJSON;
     }
@@ -1001,6 +1005,7 @@ export class AttachmentService extends DBService {
         // populate device key vendor table
         responseJSON.survey_telemetry_vendor_credential_id?.push(
           await this.telemetryVendorRepository.insertTelemetryCredentialAttachmentVendor(
+            deviceKeyData.surveyId,
             deviceKey,
             responseJSON.survey_telemetry_credential_attachment_id
           )

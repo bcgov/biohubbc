@@ -148,7 +148,7 @@ export function postSurveyTelemetryCredentialAttachment(): RequestHandler {
 
       await connection.open();
 
-      // Insert telemetry credential file record in SIMS
+      // Insert telemetry credential file records in SIMS tables
       const attachmentService = new AttachmentService(connection);
       const upsertResult = await attachmentService.upsertSurveyTelemetryCredentialAttachment(
         rawMediaFile,
