@@ -173,17 +173,17 @@ export function formatTimeString(value: string): string | null {
   // 'hh:mm:ss' or 'hh:mm' or 'hh:mm:ss am' or 'hh:mm:ss pm'
   const timeParts = timeString.split(':');
 
+  // Check if the string is a 2 or 3 part delimited time string
+  if (timeParts.length < 2 || timeParts.length > 3) {
+    return null;
+  }
+
   const hours = Number(timeParts[0]);
 
   // If the time is 24 hour time, remove the PM suffix
   if (hours > 12 && timeString.includes('pm')) {
     // Remove ' pm' and 'pm' suffixes - case insensitive
     timeString = timeString.replace('pm', '').replace(' ', '');
-  }
-
-  // Check if the string is a 2 or 3 part delimited time string
-  if (timeParts.length < 2 || timeParts.length > 3) {
-    return null;
   }
 
   // Convert the time string to a dayjs object
