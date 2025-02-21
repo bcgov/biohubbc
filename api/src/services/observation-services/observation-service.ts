@@ -31,7 +31,6 @@ import {
 } from '../critterbase-service';
 import { DBService } from '../db-service';
 import { getTsnMeasurementDictionary } from '../import-services/utils/measurement';
-import { validateQualitativeValue } from '../import-services/utils/qualitative';
 import { validateQuantitativeValue } from '../import-services/utils/quantitative';
 import { ObservationSubCountEnvironmentService } from '../observation-subcount-environment-service';
 import { ObservationSubCountMeasurementService } from '../observation-subcount-measurement-service';
@@ -591,14 +590,8 @@ export class ObservationService extends DBService {
             return false;
           }
 
-          // Validate the qualitative value against the measurement definition (not a list of errors)
-          return !Array.isArray(
-            validateQualitativeValue(qualitative_measurement.measurement_option_id, {
-              options: measurementDefinition.options.map((option) => ({
-                option_id: option.qualitative_option_id,
-                option_name: option.option_label
-              }))
-            })
+          return measurementDefinition.options.find(
+            (option) => option.qualitative_option_id === qualitative_measurement.measurement_option_id
           );
         });
       });
@@ -617,13 +610,14 @@ export class ObservationService extends DBService {
             return false;
           }
 
-          // Validate the quantitative value against the measurement definition (not a list of errors)
-          return !Array.isArray(
-            validateQuantitativeValue(quantitative_measurement.measurement_value, {
-              min: measurementDefinition.min_value,
-              max: measurementDefinition.max_value
-            })
-          );
+          // Validate the quantitative value against the measurement definition
+          const errors = validateQuantitativeValue(quantitative_measurement.measurement_value, {
+            min: measurementDefinition.min_value,
+            max: measurementDefinition.max_value
+          });
+
+          // Return false if there are any errors
+          return !Array.isArray(errors);
         });
       });
     });
