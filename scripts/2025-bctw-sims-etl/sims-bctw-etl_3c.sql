@@ -1,23 +1,5 @@
--- Tables to use:
--- bctw.matched_sims_deployments - Might not need
--- bctw.valid_collar_deployment
--- bctw.flattened_valid_collar_deployment - Both the collar and deployment are valid
--- bctw.invalid_collar_deployment
--- plus any other intermediate, etc tables that are needed. (use any tables in sims-bctw-etl_3a.sql)
-
--- match all the perfect ones
--- match all the ones where the deployment is happy
--- match all the ones where the collar is happy?
-
--- join to the matched_sims_deployments table
--- Insert the valid devices
--- INSERT INTO biohub.device (
---   survey_id,
---   serial,
---   device_make_id,
---   model,
---   comment
--- )
+drop table if exists sims_bctw.final_mismatched_device_deployment;
+drop table if exists sims_bctw.final_unresolved_matched_device_deployment;
 
 ---------------------------------------------------------------------------------------------------------------
 -- Valid Device and Deployment ETL
@@ -27,32 +9,40 @@
 --------------------------------------------------------------------------------------------------------------
 DROP TABLE IF EXISTS sims_bctw.final_matched_device_deployment;
 
+-- Insert happy path records
 SELECT *
 INTO sims_bctw.final_matched_device_deployment
 FROM bctw.matched_sims_deployments
 INNER JOIN bctw.flattened_valid_collar_deployment
 ON bctw.matched_sims_deployments.bctw_deployment_id = bctw.flattened_valid_collar_deployment.bctw_deployment_uuid;
 
+-- Insert where the deployment is valid, but the collar is invalid
 insert into sims_bctw.final_matched_device_deployment
 SELECT *
 FROM bctw.matched_sims_deployments
 INNER JOIN bctw.flattened_invalid_collar_valid_deployment
 ON bctw.matched_sims_deployments.bctw_deployment_id = bctw.flattened_invalid_collar_valid_deployment.bctw_deployment_uuid
-and bctw.matched_sims_deployments.deployment_id not in (select deployment_id from sims_bctw.final_matched_device_deployment);
+AND bctw.matched_sims_deployments.deployment_id NOT IN (SELECT deployment_id FROM sims_bctw.final_matched_device_deployment);
 
+-- Insert where the deployment is invalid, but the collar is valid
 insert into sims_bctw.final_matched_device_deployment
 SELECT *
 FROM bctw.matched_sims_deployments
 INNER JOIN bctw.flattened_valid_collar_invalid_deployment
 ON bctw.matched_sims_deployments.bctw_deployment_id = bctw.flattened_valid_collar_invalid_deployment.bctw_deployment_uuid
-and bctw.matched_sims_deployments.deployment_id not in (select deployment_id from sims_bctw.final_matched_device_deployment);
+AND bctw.matched_sims_deployments.deployment_id NOT IN (SELECT deployment_id FROM sims_bctw.final_matched_device_deployment);
 
---SELECT *
-----INTO sims_bctw.final_matched_device_deployment
---FROM bctw.matched_sims_deployments
---INNER JOIN bctw.flattened_invalid_collar_deployment
---ON bctw.matched_sims_deployments.bctw_deployment_id = bctw.flattened_invalid_collar_deployment.bctw_deployment_uuid
---and 
---  bctw.matched_sims_deployments.deployment_id not in (
---    select deployment_id from sims_bctw.final_matched_device_deployment
---  );
+-- Insert where the deployment is invalid, and the collar is invalid (0 records)
+insert into sims_bctw.final_matched_device_deployment
+SELECT *
+FROM bctw.matched_sims_deployments
+INNER JOIN bctw.flattened_invalid_collar_deployment
+ON bctw.matched_sims_deployments.bctw_deployment_id = bctw.flattened_invalid_collar_deployment.bctw_deployment_uuid
+AND bctw.matched_sims_deployments.deployment_id NOT IN (SELECT deployment_id FROM sims_bctw.final_matched_device_deployment );
+
+-- Insert the remaining unresolved records into a new table, so they may be manually resolved later (5 records)
+-- 'unresolved' means that we were unable to automatically find a match in BCTW. A match may exist, but it will require human curation.
+SELECT *
+INTO TABLE sims_bctw.final_unresolved_matched_device_deployment
+FROM bctw.matched_sims_deployments
+WHERE bctw.matched_sims_deployments.deployment_id NOT IN (SELECT deployment_id FROM sims_bctw.final_matched_device_deployment);
