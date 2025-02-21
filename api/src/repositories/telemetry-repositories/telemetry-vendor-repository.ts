@@ -1,3 +1,4 @@
+// NOSONAR
 import { Knex } from 'knex';
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
