@@ -20,7 +20,7 @@
     "format": "prettier --loglevel=warn --check \"./src/**/*.{js,jsx,ts,tsx,css,scss}\"",
     "format-fix": "prettier --loglevel=warn --write \"./src/**/*.{js,jsx,ts,tsx,json,css,scss}\"",
     "fix": "npm-run-all -l -s lint-fix format-fix",
-    "telemetry-cronjob": "ts-node src/cronjobs/telemetry/index"
+    "telemetry-cronjob": "node src/cronjobs/telemetry/index"
   },
   "engines": {
     "node": ">= 20.0.0",

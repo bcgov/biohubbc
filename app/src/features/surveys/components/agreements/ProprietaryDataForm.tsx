@@ -207,11 +207,9 @@ const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
                   component="fieldset"
                   error={touched.proprietor?.disa_required && Boolean(errors.proprietor?.disa_required)}>
                   <HelpButtonStack helpText="A DISA serves to document the terms and conditions with respect to the ownership, custodianship, storage, sharing, use, and disclosure of data and information.">
-                    <Typography component="legend" variant="h5">
-                      Data and Information Sharing Agreement (DISA)
-                    </Typography>
+                    <Typography variant="h5">Data and Information Sharing Agreement (DISA)</Typography>
                   </HelpButtonStack>
-                  <Typography variant="body1" color="textSecondary">
+                  <Typography color="textSecondary">
                     Do you require a data and information sharing agreement?
                   </Typography>
                   <Box mt={2}>

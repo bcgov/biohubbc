@@ -10,7 +10,7 @@ export const TelemetryCredentialVectronicModel = z.object({
   device_key: z.string(),
   idcollar: z.number(),
   comtype: z.string(),
-  idcom: z.number(),
+  idcom: z.string(),
   collarkey: z.string(),
   collartype: z.number(),
   create_date: z.string(),
