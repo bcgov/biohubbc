@@ -1,6 +1,7 @@
 import { QueryResult } from 'pg';
-import { ATTACHMENT_TYPE } from '../constants/attachments';
+import { ATTACHMENT_TYPE, TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE } from '../constants/attachments';
 import { IDBConnection } from '../database/db';
+import { HTTP400 } from '../errors/http-error';
 import {
   GetAttachmentsWithSupplementalData,
   IReportAttachmentAuthor,
@@ -17,13 +18,48 @@ import {
   ISurveyReportAttachmentAuthor,
   SurveyTelemetryCredentialAttachment
 } from '../repositories/attachment-repository';
+import { TelemetryLotekRepository } from '../repositories/telemetry-repositories/telemetry-lotek-repository';
+import { TelemetryVectronicRepository } from '../repositories/telemetry-repositories/telemetry-vectronic-repository';
+import { TelemetryVendorRepository } from '../repositories/telemetry-repositories/telemetry-vendor-repository';
+import { TelemetryVendorEnum } from '../repositories/telemetry-repositories/telemetry-vendor-repository.interface';
 import { deleteFileFromS3, generateS3FileKey } from '../utils/file-utils';
 import { DBService } from './db-service';
 import { HistoryPublishService } from './history-publish-service';
+import { getTelemetryDeviceKey, IValidationData } from './telemetry-services/telemetry-utils';
 
 export interface IAttachmentType {
   id: number;
   type: 'Report' | 'Other';
+}
+
+/**
+ * Response object for inserting a device key into the tables
+ *
+ * @export
+ * @interface IResponseTelemetryCredentialAttachment
+ * @typedef {IResponseTelemetryCredentialAttachment}
+ */
+export interface IResponseTelemetryCredentialAttachment {
+  key?: string;
+  survey_telemetry_credential_attachment_id?: number;
+  survey_telemetry_vendor_credential_id?: number[];
+  telemetry_credential_lotek_id?: number[];
+  telemetry_credential_vectronic_id?: number[];
+}
+
+/**
+ * Data required to persist a device key
+ *
+ * @export
+ * @interface IDeviceKeyData
+ * @typedef {IDeviceKeyData}
+ */
+export interface IDeviceKeyData {
+  fileName: string;
+  fileSize: number;
+  fileData: IValidationData;
+  surveyId: number;
+  key: string;
 }
 
 /**
@@ -35,11 +71,17 @@ export interface IAttachmentType {
  */
 export class AttachmentService extends DBService {
   attachmentRepository: AttachmentRepository;
+  telemetryVectronicRepository: TelemetryVectronicRepository;
+  telemetryLotekRepository: TelemetryLotekRepository;
+  telemetryVendorRepository: TelemetryVendorRepository;
 
   constructor(connection: IDBConnection) {
     super(connection);
 
     this.attachmentRepository = new AttachmentRepository(connection);
+    this.telemetryVectronicRepository = new TelemetryVectronicRepository(connection);
+    this.telemetryLotekRepository = new TelemetryLotekRepository(connection);
+    this.telemetryVendorRepository = new TelemetryVendorRepository(connection);
   }
 
   /**
@@ -910,43 +952,82 @@ export class AttachmentService extends DBService {
    *
    * @param {number} surveyId
    * @param {string} fileName
-   * @param {string} fileType
+   * @param {IValidationData} fileData
    * @return {*}  {Promise<{ survey_telemetry_credential_attachment_id: number }>}
    * @memberof AttachmentService
    */
   async updateSurveyTelemetryCredentialAttachment(
     surveyId: number,
     fileName: string,
-    fileType: string
+    fileData: IValidationData
   ): Promise<{ survey_telemetry_credential_attachment_id: number }> {
-    return this.attachmentRepository.updateSurveyTelemetryCredentialAttachment(surveyId, fileName, fileType);
+    return this.attachmentRepository.updateSurveyTelemetryCredentialAttachment(surveyId, fileName, fileData);
   }
 
   /**
    * Insert survey telemetry credential attachment record.
    *
-   * @param {string} fileName
-   * @param {number} fileSize
-   * @param {string} fileType
-   * @param {number} surveyId
-   * @param {string} key
-   * @return {*}  {Promise<{ survey_telemetry_credential_attachment_id: number }>}
-   * @memberof AttachmentService
+   * @async
+   * @param {IDeviceKeyData} deviceKeyData
+   * @returns {Promise<IResponseTelemetryCredentialAttachment>}
    */
   async insertSurveyTelemetryCredentialAttachment(
-    fileName: string,
-    fileSize: number,
-    fileType: string,
-    surveyId: number,
-    key: string
-  ): Promise<{ survey_telemetry_credential_attachment_id: number }> {
-    return this.attachmentRepository.insertSurveyTelemetryCredentialAttachment(
-      fileName,
-      fileSize,
-      fileType,
-      surveyId,
-      key
-    );
+    deviceKeyData: IDeviceKeyData
+  ): Promise<IResponseTelemetryCredentialAttachment> {
+    // Initialize empty response json object
+    const responseJSON: IResponseTelemetryCredentialAttachment = {
+      survey_telemetry_vendor_credential_id: [],
+      telemetry_credential_lotek_id: [],
+      telemetry_credential_vectronic_id: []
+    };
+
+    responseJSON.survey_telemetry_credential_attachment_id =
+      await this.attachmentRepository.insertSurveyTelemetryCredentialAttachment(deviceKeyData);
+
+    const vendor =
+      TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.CFG === deviceKeyData.fileData.type
+        ? TelemetryVendorEnum.LOTEK
+        : TelemetryVendorEnum.VECTRONIC;
+    if (!deviceKeyData.fileData.keyData) {
+      return responseJSON;
+    }
+
+    for (const keyFile of deviceKeyData.fileData.keyData) {
+      if (!keyFile.keysData) {
+        continue;
+      }
+
+      for (const key of keyFile.keysData) {
+        // Generate SIMS device_key
+        const serial = key.id;
+        const deviceKey = getTelemetryDeviceKey({ vendor, serial });
+
+        // populate device key vendor table
+        responseJSON.survey_telemetry_vendor_credential_id?.push(
+          await this.telemetryVendorRepository.insertTelemetryCredentialAttachmentVendor(
+            deviceKeyData.surveyId,
+            deviceKey,
+            responseJSON.survey_telemetry_credential_attachment_id
+          )
+        );
+
+        // the data is for lotek cfg
+        if ('Iridium IMEI' in key) {
+          responseJSON.telemetry_credential_lotek_id?.push(
+            await this.telemetryLotekRepository.insertTelemetryCredentialLotek(key)
+          );
+        }
+
+        // the data is for vectronic keyx
+        if ('comID' in key && 'comType' in key && 'collarType' in key) {
+          responseJSON.telemetry_credential_vectronic_id?.push(
+            await this.telemetryVectronicRepository.insertTelemetryCredentialVectronic(key)
+          );
+        }
+      }
+    }
+
+    return responseJSON;
   }
 
   /**
@@ -968,15 +1049,15 @@ export class AttachmentService extends DBService {
    * @param {number} projectId
    * @param {number} surveyId
    * @param {string} attachmentType
-   * @return {*}  {Promise<{ survey_telemetry_credential_attachment_id: number; key: string }>}
+   * @return {*}  {Promise<IResponseTelemetryCredentialAttachment>}
    * @memberof AttachmentService
    */
   async upsertSurveyTelemetryCredentialAttachment(
     file: Express.Multer.File,
     projectId: number,
     surveyId: number,
-    attachmentType: string
-  ): Promise<{ survey_telemetry_credential_attachment_id: number; key: string }> {
+    attachmentData: IValidationData
+  ): Promise<IResponseTelemetryCredentialAttachment> {
     const key = generateS3FileKey({
       projectId: projectId,
       surveyId: surveyId,
@@ -985,26 +1066,18 @@ export class AttachmentService extends DBService {
     });
 
     const getResponse = await this.getSurveyTelemetryCredentialAttachmentByFileName(file.originalname, surveyId);
-
-    let attachmentResult: { survey_telemetry_credential_attachment_id: number };
-
     if (getResponse && getResponse.rowCount) {
-      // Existing attachment with matching name found, update it
-      attachmentResult = await this.updateSurveyTelemetryCredentialAttachment(
-        surveyId,
-        file.originalname,
-        attachmentType
-      );
-    } else {
-      // No matching attachment found, insert new attachment
-      attachmentResult = await this.insertSurveyTelemetryCredentialAttachment(
-        file.originalname,
-        file.size,
-        attachmentType,
-        surveyId,
-        key
-      );
+      // Existing attachment with matching name found, throw error
+      throw new HTTP400('Device key file already exists.');
     }
+
+    const attachmentResult = await this.insertSurveyTelemetryCredentialAttachment({
+      fileName: file.originalname,
+      fileSize: file.size,
+      fileData: attachmentData,
+      surveyId: surveyId,
+      key: key
+    });
 
     return { ...attachmentResult, key };
   }

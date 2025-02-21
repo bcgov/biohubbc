@@ -103,10 +103,13 @@ export class ImportObservationsService extends DBService {
         LATITUDE: { aliases: ['LAT'], optional: true },
         LONGITUDE: { aliases: ['LON', 'LONG', 'LNG'], optional: true },
         SAMPLE_PERIOD: {
-          aliases: ['SAMPLE PERIOD', 'SAMPLING_PERIOD', 'SAMPLING_PERIOD', 'PERIOD', 'TIME PERIOD', 'SESSION'],
+          aliases: ['SAMPLE PERIOD', 'SAMPLING PERIOD', 'SAMPLING_PERIOD', 'PERIOD', 'TIME PERIOD', 'SESSION'],
           optional: true
         },
-        SAMPLE_SITE: { aliases: ['SAMPLE SITE', 'SAMPLING_SITE', 'SAMPLING SITE', 'SITE', 'LOCATION', 'STATION'] },
+        SAMPLE_SITE: {
+          aliases: ['SAMPLE SITE', 'SAMPLING_SITE', 'SAMPLING SITE', 'SITE', 'LOCATION', 'STATION'],
+          optional: true
+        },
         METHOD_TECHNIQUE: { aliases: ['METHOD TECHNIQUE', 'METHOD', 'TECHNIQUE'], optional: true },
         COMMENT: { aliases: ['COMMENTS', 'NOTE', 'NOTES'], optional: true }
       },
