@@ -136,6 +136,7 @@ export class TelemetryVendorRepository extends BaseRepository {
    * @return {*}  {Knex.QueryBuilder}
    * @memberof TelemetryVendorRepository
    */
+  // NOSONAR: Duplicated code
   findLotekTelemetryClause(
     queryBuilder: Knex.QueryBuilder,
     isUserAdmin: boolean,
@@ -306,6 +307,7 @@ export class TelemetryVendorRepository extends BaseRepository {
    * @return {*}  {Knex.QueryBuilder}
    * @memberof TelemetryVendorRepository
    */
+  // NOSONAR: Duplicated code
   findVectronicTelemetryClause(
     queryBuilder: Knex.QueryBuilder,
     isUserAdmin: boolean,
