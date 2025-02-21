@@ -90,6 +90,7 @@ export class TelemetryVendorRepository extends BaseRepository {
    * @param {number} surveyId
    * @returns {Knex.QueryBuilder}
    */
+  // NOSONAR
   getLotekTelemetryByCredentialClause(queryBuilder: Knex.QueryBuilder, surveyId: number): Knex.QueryBuilder {
     return queryBuilder
       .join(
@@ -136,6 +137,7 @@ export class TelemetryVendorRepository extends BaseRepository {
    * @return {*}  {Knex.QueryBuilder}
    * @memberof TelemetryVendorRepository
    */
+  // NOSONAR
   findLotekTelemetryClause(
     queryBuilder: Knex.QueryBuilder,
     isUserAdmin: boolean,
@@ -147,7 +149,6 @@ export class TelemetryVendorRepository extends BaseRepository {
     queryBuilder.join('survey', 'deployment.survey_id', 'survey.survey_id');
 
     if (!isUserAdmin) {
-      /* NOSONAR */
       // If the user is not an admin, filter results by vendor credentials
       queryBuilder.join(
         'survey_telemetry_vendor_credential',
@@ -258,6 +259,7 @@ export class TelemetryVendorRepository extends BaseRepository {
    * @param {number} surveyId
    * @returns {Knex.QueryBuilder}
    */
+  // NOSONAR
   getVectronicTelemetryByCredentialClause(queryBuilder: Knex.QueryBuilder, surveyId: number): Knex.QueryBuilder {
     return queryBuilder
       .join(
@@ -307,6 +309,7 @@ export class TelemetryVendorRepository extends BaseRepository {
    * @return {*}  {Knex.QueryBuilder}
    * @memberof TelemetryVendorRepository
    */
+  // NOSONAR
   findVectronicTelemetryClause(
     queryBuilder: Knex.QueryBuilder,
     isUserAdmin: boolean,
@@ -318,7 +321,6 @@ export class TelemetryVendorRepository extends BaseRepository {
     queryBuilder.join('survey', 'deployment.survey_id', 'survey.survey_id');
 
     if (!isUserAdmin) {
-      /* NOSONAR */
       // If the user is not an admin, filter results by vendor credentials
       queryBuilder.join(
         'survey_telemetry_vendor_credential',
