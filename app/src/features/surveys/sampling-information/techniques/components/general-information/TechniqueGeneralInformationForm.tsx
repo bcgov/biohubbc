@@ -68,6 +68,7 @@ export const TechniqueGeneralInformationForm = <
           id="method_lookup_id"
           label="Sampling method"
           name="method_lookup_id"
+          helpText="The category of the method used to collect data."
           showValue
           required
           loading={codesContext.codesDataLoader.isLoading}
@@ -91,6 +92,7 @@ export const TechniqueGeneralInformationForm = <
           id="method_response_metric_id"
           label="Response Metric"
           name="method_response_metric_id"
+          helpText="The value that you measured using the technique."
           showValue
           required
           loading={codesContext.codesDataLoader.isLoading}

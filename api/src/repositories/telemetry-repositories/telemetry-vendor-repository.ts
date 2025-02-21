@@ -1,4 +1,5 @@
 import { Knex } from 'knex';
+import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { getKnex } from '../../database/db';
 import { ApiExecuteSQLError } from '../../errors/api-error';
@@ -995,5 +996,44 @@ export class TelemetryVendorRepository extends BaseRepository {
     }
 
     return response.rows[0].count;
+  }
+
+  /**
+   * Insert vendor device key data
+   *
+   * @async
+   * @param {string} deviceKey
+   * @param {number} survey_telemetry_credential_attachment_id
+   * @returns {Promise<number>}
+   */
+  async insertTelemetryCredentialAttachmentVendor(
+    deviceKey: string,
+    survey_telemetry_credential_attachment_id: number
+  ): Promise<number> {
+    const sqlStatement = SQL`
+      INSERT INTO survey_telemetry_vendor_credential (
+        survey_telemetry_credential_attachment_id,
+        device_key
+      ) VALUES (
+        ${survey_telemetry_credential_attachment_id},
+        ${deviceKey}
+      )
+      RETURNING
+        survey_telemetry_vendor_credential_id;
+      `;
+
+    const responseVendor = await this.connection.sql(
+      sqlStatement,
+      z.object({ survey_telemetry_vendor_credential_id: z.number() })
+    );
+
+    if (!responseVendor?.rows?.[0]) {
+      throw new ApiExecuteSQLError('Failed to insert vendor device key attachment data', [
+        'AttachmentRepository->insertTelemetryCredentialAttachmentVendor',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return responseVendor?.rows?.[0].survey_telemetry_vendor_credential_id;
   }
 }
