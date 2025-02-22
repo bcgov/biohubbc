@@ -278,7 +278,7 @@ export const GenericCommentColDef = <T extends GridValidRowModel>(props: {
         <Tooltip title={params.value} arrow>
           <span>
             <IconButton
-              aria-label="observation-subcount-comment"
+              aria-label="edit-comment"
               onClick={() => {
                 props.handleOpen(params);
               }}>
@@ -303,7 +303,7 @@ export const GenericCommentColDef = <T extends GridValidRowModel>(props: {
         <Tooltip title={params.value} arrow>
           <span>
             <IconButton
-              aria-label="observation-subcount-comment"
+              aria-label="view-comment"
               onClick={() => {
                 props.handleOpen(params);
               }}>

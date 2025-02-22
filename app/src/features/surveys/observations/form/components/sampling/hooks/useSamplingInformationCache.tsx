@@ -3,6 +3,10 @@ import { GetSamplingPeriod } from 'interfaces/useSamplingPeriodApi.interface';
 import { MutableRefObject, useRef } from 'react';
 import { getDateTimeLabel } from 'utils/datetime';
 
+// TODO: Update to use the logic from the other useSamplingInformationCache file (deprecate this one?).
+// It has improved logic and is more up-to-date. Both caches could probably be merged, with the context specific
+// functions being moved to separate utils file or something similar.
+
 export type SamplingInformationCachedSite = IAutocompleteFieldOption<number> & {
   survey_sample_site_id: number;
 };

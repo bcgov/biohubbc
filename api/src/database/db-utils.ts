@@ -77,6 +77,11 @@ const parseError = (error: any) => {
       throw new ApiExecuteSQLError('Failed to update stale data', [error]);
     }
 
+    if (error.code === '23505') {
+      // error thrown by DB when query fails due: duplicate key value violates unique constraint "telemetry_credential_vectronic_idx1"
+      throw new ApiExecuteSQLError('Duplicate device key found in file', [error]);
+    }
+
     if (error.code === '23503') {
       // error thrown by DB when query fails due to foreign key constraint
       throw new ApiExecuteSQLError('Failed to delete record due to foreign key constraint', [error]);

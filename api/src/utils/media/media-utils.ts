@@ -1,7 +1,6 @@
 import { GetObjectCommandOutput } from '@aws-sdk/client-s3';
 import AdmZip from 'adm-zip';
 import mime from 'mime';
-import { TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE } from '../../constants/attachments';
 import { ArchiveFile, MediaFile } from './media-file';
 
 /**
@@ -36,7 +35,7 @@ export const parseUnknownMulterFile = (rawMedia: Express.Multer.File): null | Me
     const archiveFile = parseMulterFile(rawMedia);
     const mediaFiles = parseUnknownZipFile(rawMedia.buffer);
 
-    return new ArchiveFile(archiveFile.fileName, archiveFile.mimetype, archiveFile.buffer, mediaFiles);
+    return new ArchiveFile(archiveFile.fileName, archiveFile.mimetype, archiveFile.buffer, mediaFiles.filesArray);
   }
 
   return parseMulterFile(rawMedia);
@@ -59,7 +58,7 @@ export const parseUnknownS3File = async (rawMedia: GetObjectCommandOutput): Prom
     const archiveFile = await parseS3File(rawMedia);
     const mediaFiles = parseUnknownZipFile((await rawMedia.Body.transformToByteArray()) as Buffer);
 
-    return new ArchiveFile(archiveFile.fileName, archiveFile.mimetype, archiveFile.buffer, mediaFiles);
+    return new ArchiveFile(archiveFile.fileName, archiveFile.mimetype, archiveFile.buffer, mediaFiles.filesArray);
   }
 
   return await parseS3File(rawMedia);
@@ -71,21 +70,34 @@ export const parseUnknownS3File = async (rawMedia: GetObjectCommandOutput): Prom
  * Note: Ignores any directory structures, flattening all nested files into a single array.
  *
  * @param {Buffer} zipFile
- * @return {*}  {MediaFile[]}
+ * @returns {{
+ *   filesArray: MediaFile[];
+ *   error?: string;
+ * }}
  */
-export const parseUnknownZipFile = (zipFile: Buffer): MediaFile[] => {
-  const unzippedFile = new AdmZip(zipFile);
-  const entries = unzippedFile.getEntries();
+export const parseUnknownZipFile = (
+  zipFile: Buffer
+): {
+  filesArray: MediaFile[];
+  error?: string;
+} => {
+  try {
+    const unzippedFile = new AdmZip(zipFile);
+    const entries = unzippedFile.getEntries();
+    return {
+      filesArray: entries
+        .filter((item) => !item.isDirectory && !item.entryName.startsWith('__MACOSX/'))
+        .map((item) => {
+          const fileName = item?.name;
+          const mimetype = mime.getType(fileName) || '';
+          const buffer = item?.getData();
 
-  return entries
-    .filter((item) => !item.isDirectory)
-    .map((item) => {
-      const fileName = item?.name;
-      const mimetype = mime.getType(fileName) || '';
-      const buffer = item?.getData();
-
-      return new MediaFile(fileName, mimetype, buffer);
-    });
+          return new MediaFile(fileName, mimetype, buffer);
+        })
+    };
+  } catch (err: any) {
+    return { filesArray: [], error: err.message };
+  }
 };
 
 /**
@@ -116,6 +128,12 @@ export const parseS3File = async (file: GetObjectCommandOutput): Promise<MediaFi
   return new MediaFile(fileName, mimetype, buffer);
 };
 
+/**
+ * Check for supported compression mime types
+ *
+ * @param {string} mimetype
+ * @returns {boolean}
+ */
 export const isZipMimetype = (mimetype: string): boolean => {
   if (!mimetype) {
     return false;
@@ -124,129 +142,4 @@ export const isZipMimetype = (mimetype: string): boolean => {
   return [/application\/zip/, /application\/x-zip-compressed/, /application\/x-rar-compressed/].some((regex) =>
     regex.test(mimetype)
   );
-};
-
-/**
- * Checks if the file is a valid telemetry credential file.
- *
- * @param {Express.Multer.File} file
- * @return {*}  {({
- *   type: 'unknown' | TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE;
- *   error?: string;
- * })}
- */
-export const isValidTelementryCredentialFile = (
-  file: Express.Multer.File
-): {
-  type: 'unknown' | TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE;
-  error?: string;
-} => {
-  const isKeyX = checkFileForKeyx(file);
-
-  if (isKeyX.error === undefined) {
-    return isKeyX;
-  }
-
-  const isCfg = checkFileForCfg(file);
-
-  if (isCfg.error === undefined) {
-    return isCfg;
-  }
-
-  return {
-    type: 'unknown',
-    error: 'The file is neither a .keyx or .cfg file, nor is it an archive containing only files of these types.'
-  };
-};
-
-/**
- * Returns true if the file is a keyx file, or a zip that contains only keyx files.
- *
- * @export
- * @param {Express.Multer.File} file
- * @return {*}  {({
- *   type: 'unknown' | 'keyx';
- *   error?: string;
- * })}
- */
-export const checkFileForKeyx = (
-  file: Express.Multer.File
-): {
-  type: 'unknown' | TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.KEYX;
-  error?: string;
-} => {
-  // File is a KeyX file if it ends in '.keyx'
-  if (file.originalname.endsWith('.keyx')) {
-    return { type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.KEYX };
-  }
-
-  const mimeType = mime.getType(file.originalname) ?? '';
-  if (!isZipMimetype(mimeType)) {
-    // File cannot be a KeyX file, since it is not an archive nor does it have a .keyx extension
-    return {
-      type: 'unknown',
-      error: 'File is neither a .keyx file, nor an archive containing only .keyx files'
-    };
-  }
-
-  const zipEntries = parseUnknownZipFile(file.buffer);
-  if (zipEntries.length === 0) {
-    // File is a zip file, but it is empty
-    return { type: 'unknown', error: 'File is an archive that contains no content' };
-  }
-
-  // Return false if any of the files in the zip are not keyx files
-  const result = zipEntries.every((zipEntry) => zipEntry.fileName.endsWith('.keyx'));
-
-  if (!result) {
-    return { type: 'unknown', error: 'File is an archive that contains non .keyx files' };
-  }
-
-  return { type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.KEYX };
-};
-
-/**
- * Returns true if the file is a cfg file, or a zip that contains only cfg files.
- *
- * @export
- * @param {Express.Multer.File} file
- * @return {*}  {({
- *   type: 'unknown' | TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.CFG;
- *   error?: string;
- * })}
- */
-export const checkFileForCfg = (
-  file: Express.Multer.File
-): {
-  type: 'unknown' | TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.CFG;
-  error?: string;
-} => {
-  // File is a Cfg file if it ends in '.cfg'
-  if (file?.originalname.endsWith('.cfg')) {
-    return { type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.CFG };
-  }
-
-  const mimeType = mime.getType(file.originalname) ?? '';
-  if (!isZipMimetype(mimeType)) {
-    // File cannot be a Cfg file, since it is not an archive nor does it have a .cfg extension
-    return {
-      type: 'unknown',
-      error: 'File is neither a .cfg file, nor an archive containing only .cfg files'
-    };
-  }
-
-  const zipEntries = parseUnknownZipFile(file.buffer);
-  if (zipEntries.length === 0) {
-    // File is a zip file, but it is empty
-    return { type: 'unknown', error: 'File is an archive that contains no content' };
-  }
-
-  // Return false if any of the files in the zip are not cfg files
-  const result = zipEntries.every((zipEntry) => zipEntry.fileName.endsWith('.cfg'));
-
-  if (!result) {
-    return { type: 'unknown', error: 'File is an archive that contains non .cfg files' };
-  }
-
-  return { type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.CFG };
 };
