@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { NIL as ALL_ZEROS_UUID, v4 as uuid } from 'uuid';
+import { v4 as uuid } from 'uuid';
 import { AsyncRequestStorage } from '../app';
 
 // Key for request-specific data
@@ -58,18 +58,22 @@ export function _getRequestStoreValue(key: RequestStoreKey): string | undefined 
 /**
  * Get the request id of the current request.
  *
+ * Note: Falls back to 'SYSTEM' if the request store is not initialized.
+ *
  * @return {*} {string | undefined}
  */
 export function getRequestId(): string | undefined {
-  return _getRequestStoreValue('requestId') ?? ALL_ZEROS_UUID;
+  return _getRequestStoreValue('requestId') ?? 'SYSTEM';
 }
 
 /**
  * Get the user who made the request.
  *
+ * Note: Falls back to 'SYSTEM' if the request store is not initialized.
+ *
  * @example 'SBRULE'
  * @return {*} {string | undefined}
  */
 export function getRequestUser(): string | undefined {
-  return _getRequestStoreValue('username') ?? 'SIMS_API';
+  return _getRequestStoreValue('username') ?? 'SYSTEM';
 }

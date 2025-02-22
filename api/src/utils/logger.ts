@@ -62,42 +62,34 @@ export const getLogger = (logLabel: string): CustomLogger => {
   const logger = _getOrCreateLoggerSingleton(DEFAULT_LOGGER);
 
   return {
-    error: (params: CustomLoggerParams) =>
-      logger.error({
-        requestId: getRequestId(),
-        user: getRequestUser(),
-        logger: logLabel,
-        ...params
-      }),
-    warn: (params: CustomLoggerParams) =>
-      logger.warn({
-        requestId: getRequestId(),
-        requestUser: getRequestUser(),
-        logger: logLabel,
-        ...params
-      }),
-    info: (params: CustomLoggerParams) =>
-      logger.info({
-        requestId: getRequestId(),
-        requestUser: getRequestUser(),
-        logger: logLabel,
-        ...params
-      }),
-    debug: (params: CustomLoggerParams) =>
-      logger.debug({
-        requestId: getRequestId(),
-        requestUser: getRequestUser(),
-        logger: logLabel,
-        ...params
-      }),
-    silly: (params: CustomLoggerParams) =>
-      logger.silly({
-        requestId: getRequestId(),
-        requestUser: getRequestUser(),
-        logger: logLabel,
-        ...params
-      })
+    error: (params: CustomLoggerParams) => logger.error(..._getLoggerParameters(logLabel, params)),
+    warn: (params: CustomLoggerParams) => logger.warn(..._getLoggerParameters(logLabel, params)),
+    info: (params: CustomLoggerParams) => logger.info(..._getLoggerParameters(logLabel, params)),
+    debug: (params: CustomLoggerParams) => logger.debug(..._getLoggerParameters(logLabel, params)),
+    silly: (params: CustomLoggerParams) => logger.silly(..._getLoggerParameters(logLabel, params))
   };
+};
+
+/**
+ * Helper function for `getLogger` to normalize the logger parameters to ensure 'message' is defined.
+ *
+ * Note: This fixes a strange issue with winston combining the message and metadata into a single object,
+ * when the message is NOT provided.
+ *
+ * @param {string} logLabel The common label for the logger instance.
+ * @param {CustomLoggerParams} params The logger parameters.
+ * @return {*}  {[string, CustomLoggerParams]} The normalized logger parameters.
+ */
+export const _getLoggerParameters = (logLabel: string, params: CustomLoggerParams): [string, CustomLoggerParams] => {
+  if (params.message) {
+    // Remove 'message' from params and return it as the first element
+    const { message, ...restParams } = params;
+
+    return [message, { logger: logLabel, ...restParams }];
+  }
+
+  // Return 'Unknown' as log message when 'message' is not provided
+  return ['Message unknown', { logger: logLabel, ...params }];
 };
 
 /**
@@ -119,6 +111,29 @@ const getLoggerTransportTypes = (): string[] => {
   }
 
   return transportTypes;
+};
+
+/**
+ * Get the log format for the winston logger.
+ *
+ * @return {*}  {winston.Logform.Format}
+ */
+export const _getLogFormat = (): winston.Logform.Format => {
+  return winston.format.combine(
+    winston.format.metadata({ fillExcept: ['message', 'level', 'logger', 'label'] }),
+    winston.format((info) => ({
+      requestId: getRequestId(), // 'd3d3b4d3-7b3d-4b3d-8b3d-3d3b4d3b3d3b'
+      timestamp: info.timestamp, // '2025-02-04 14:05:24'
+      requestUser: getRequestUser(), // 'SBRULE'
+      level: info.level, // 'DEBUG'
+      logger: info.logger, // 'app-logger'
+      label: info.label, // 'label/function name/etc.'
+      message: info.message, // 'A log message!:'
+      metadata: info.metadata // { ... }
+    }))(),
+    winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+    winston.format.prettyPrint({ colorize: true, depth: 10 })
+  );
 };
 
 /**
@@ -149,11 +164,7 @@ export const _getOrCreateLoggerSingleton = function (loggerName: string): winsto
         maxSize: process.env.LOG_FILE_MAX_SIZE || '49m',
         maxFiles: process.env.LOG_FILE_MAX_FILES || '10',
         level: process.env.LOG_LEVEL_FILE || 'debug',
-        format: winston.format.combine(
-          getCustomLogFormat(),
-          winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-          winston.format.prettyPrint({ colorize: false, depth: 10 })
-        ),
+        format: _getLogFormat(),
         options: {
           // https://nodejs.org/api/fs.html#file-system-flags
           // Open file for reading and appending. The file is created if it does not exist.
@@ -171,34 +182,13 @@ export const _getOrCreateLoggerSingleton = function (loggerName: string): winsto
     transports.push(
       new winston.transports.Console({
         level: process.env.LOG_LEVEL || 'debug',
-        format: winston.format.combine(
-          getCustomLogFormat(),
-          winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-          winston.format.prettyPrint({ colorize: true, depth: 10 })
-        )
+        format: _getLogFormat()
       })
     );
   }
 
   // Create new logger instance
   return winston.loggers.add(loggerName, { transports: transports });
-};
-
-export const getCustomLogFormat = (): winston.Logform.Format => {
-  const customFormat = winston.format((info) => {
-    //TODO: Mac: Replace this with the correct format
-    return {
-      requestId: info.requestId,
-      timestamp: info.timestamp,
-      requestUser: info.requestUser,
-      logger: info.logger,
-      label: info.label,
-      level: info.level,
-      message: info.message
-    };
-  });
-
-  return customFormat();
 };
 
 export const WinstonLogLevels = ['silent', 'error', 'warn', 'info', 'debug', 'silly'] as const;
