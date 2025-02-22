@@ -45,14 +45,16 @@ export type CustomLoggerParams = {
  * Example Output:
  *
  * {
- *   timestamp: '2025-02-04 14:05:24',
- *   level: 'debug',
- *   message: {
- *     logger: 'class-or-file-name',
- *     label: 'functionName',
- *     message: 'An error message!:',
- *     error: {...}
- *   }
+ *    requestId: '46d544ed-9d70-499a-888c-1a1c67fb095',
+ *    timestamp: '2025-02-21 16:54:18',
+ *    requestUser: 'SBRULE',
+ *    level: 'info',
+ *    logger: 'class-logger',
+ *    label: 'functionName',
+ *    message: 'Log message!',
+ *    metadata: {
+ *      id: '123',
+ *    }
  * }
  *
  * @param {string} logLabel common label for the instance of the logger.
@@ -74,7 +76,7 @@ export const getLogger = (logLabel: string): CustomLogger => {
  * Helper function for `getLogger` to normalize the logger parameters to ensure 'message' is defined.
  *
  * Note: This fixes a strange issue with winston combining the message and metadata into a single object,
- * when the message is NOT provided.
+ * when the message is NOT included in the params.
  *
  * @param {string} logLabel The common label for the logger instance.
  * @param {CustomLoggerParams} params The logger parameters.
@@ -120,18 +122,23 @@ const getLoggerTransportTypes = (): string[] => {
  */
 export const _getLogFormat = (): winston.Logform.Format => {
   return winston.format.combine(
+    // Fill the metadata with all the properties except the ones listed
     winston.format.metadata({ fillExcept: ['message', 'level', 'logger', 'label'] }),
+    // Organize the log message structure
     winston.format((info) => ({
+      // NOTE: Would adding a unique log id be useful? Different from the request id which is shared across async requests
       requestId: getRequestId(), // 'd3d3b4d3-7b3d-4b3d-8b3d-3d3b4d3b3d3b'
       timestamp: info.timestamp, // '2025-02-04 14:05:24'
       requestUser: getRequestUser(), // 'SBRULE'
       level: info.level, // 'DEBUG'
       logger: info.logger, // 'app-logger'
       label: info.label, // 'label/function name/etc.'
-      message: info.message, // 'A log message!:'
+      message: info.message, // 'A log message!'
       metadata: info.metadata // { ... }
     }))(),
+    // Format the log timestamp
     winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+    // Colorize the log message and limit the depth of the metadata object
     winston.format.prettyPrint({ colorize: true, depth: 10 })
   );
 };

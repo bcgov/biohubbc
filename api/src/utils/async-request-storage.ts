@@ -24,15 +24,15 @@ export type RequestStore = Map<RequestStoreKey, string>;
 export function initRequestStorage(req: Request, _res: Response, next: NextFunction) {
   const requestStore: RequestStore = new Map();
 
-  // Set the request id for the current request - unique for each request
+  // Generate the request id for the current request - unique for each request
   requestStore.set('requestId', uuid());
 
-  // Set the username for the current request
+  // Set the username of the user who made the current request
   requestStore.set('username', req.keycloak_token?.idir_username ?? req.keycloak_token?.bceid_username);
 
+  // Note: Must call `next()` within the `AsyncRequestStorage` callback to ensure
+  // the request store is available to all subsequent middleware and routes
   AsyncRequestStorage.run(requestStore, () => {
-    // Note: Must call `next()` within the `AsyncRequestStorage` callback to ensure
-    // the request store is available to all subsequent middleware and routes
     next();
   });
 }
