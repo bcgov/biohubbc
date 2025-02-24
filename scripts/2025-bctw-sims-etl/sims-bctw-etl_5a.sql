@@ -175,21 +175,34 @@ WHERE NOT EXISTS (SELECT 1 FROM biohub.telemetry_historic WHERE id::uuid = biohu
 --------------------------------------------------------------------------------------------------------------
 -- Import data into biohub.telemetry_manual table
 --------------------------------------------------------------------------------------------------------------
+INSERT INTO biohub.telemetry_manual (
+  telemetry_manual_id,
+  deployment_id,
+  latitude,
+  longitude,
+  transmission_date,
+  acquisition_date
+)
 SELECT
+  bctw.telemetry_manual.telemetry_manual_id,
+  biohub.deployment.deployment_id,
   bctw.telemetry_manual.latitude,
   bctw.telemetry_manual.longitude,
   NULL::timestamptz as transmission_date,
   bctw.telemetry_manual.acquisition_date
 FROM bctw.telemetry_manual
-INNER JOIN sims_bctw.final_device_deployment
-  ON sims_bctw.final_device_deployment.bctw_deployment_id = bctw.telemetry_manual.deployment_id
+INNER JOIN biohub.deployment
+  ON biohub.deployment.bctw_deployment_id = bctw.telemetry_manual.deployment_id
 WHERE NOT EXISTS (
     SELECT
       1
     FROM biohub.telemetry_manual
-    WHERE latitude = biohub.telemetry_manual.latitude
-    AND longitude = biohub.telemetry_manual.longitude
-    AND acquisition_date = biohub.telemetry_manual.acquisition_date
+    WHERE bctw.telemetry_manual.telemetry_manual_id = biohub.telemetry_manual.telemetry_manual_id
   )
 AND bctw.is_valid(bctw.telemetry_manual.valid_to);
+
+--------------------------------------------------------------------------------------------------------------
+-- Drop temporary columns
+--------------------------------------------------------------------------------------------------------------
+ALTER TABLE biohub.deployment DROP COLUMN IF EXISTS bctw_deployment_id;
 

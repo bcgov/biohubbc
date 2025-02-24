@@ -9,6 +9,7 @@ The final result of these scripts is the creation of a number of records in the 
 - `telemetry_credential_lotek`
 - `telemetry_credential_vectronic`
 - `telemetry_ats`
+- `telemetry_manual`
 - `telemetry_historic`
 
 ## Development Notes

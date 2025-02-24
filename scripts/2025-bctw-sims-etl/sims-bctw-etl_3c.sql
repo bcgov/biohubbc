@@ -1,4 +1,4 @@
-drop table if exists sims_bctw.final_mismatched_device_deployment;
+-- drop table if exists sims_bctw.final_mismatched_device_deployment;
 drop table if exists sims_bctw.final_unresolved_matched_device_deployment;
 
 ---------------------------------------------------------------------------------------------------------------

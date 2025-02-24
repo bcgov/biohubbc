@@ -90,6 +90,8 @@ FROM
 --------------------------------------------------------------------------------------------------------------
 set search_path = biohub;
 
+alter table biohub.deployment add column if not exists bctw_deployment_id uuid;
+
 -- Insert data into device
 WITH
 w_deduplicated_devices as (
@@ -117,8 +119,7 @@ w_deduplicated_devices as (
         device_make_id,
         model,
         comment
-),
-w_insert_device AS (
+)
   INSERT INTO biohub.device (
     survey_id,
     serial,
@@ -133,12 +134,21 @@ w_insert_device AS (
     model,
     comment
   FROM
-    w_deduplicated_devices
-  RETURNING
-    *
-)
+    w_deduplicated_devices;
+
+-- This is the only record that has a start date before the end date. Assuming they entered the dates in the wrong field, swapping them to resolve the issue.
+UPDATE sims_bctw.final_device_deployment
+SET
+  attachment_start_date = sims_bctw.final_device_deployment.attachment_end_date,
+  attachment_end_date = sims_bctw.final_device_deployment.attachment_start_date,
+  attachment_start_time = sims_bctw.final_device_deployment.attachment_end_time,
+  attachment_end_time = sims_bctw.final_device_deployment.attachment_start_time
+WHERE
+  serial = '84229';
+
 -- Insert data into deployment
 INSERT INTO biohub.deployment (
+  bctw_deployment_id, -- temporary column to store the bctw deployment id for manual telemetry ref
   survey_id,
   critter_id,
   device_id,
@@ -153,25 +163,26 @@ INSERT INTO biohub.deployment (
   critterbase_end_mortality_id
 )
 SELECT
+  final_device_deployment.bctw_deployment_id,
   final_device_deployment.survey_id,
   final_device_deployment.critter_id,
-  w_insert_device.device_id,
+  biohub.device.device_id,
   final_device_deployment.frequency,
   final_device_deployment.frequency_unit,
-  final_device_deployment.attachment_start_date,
-  final_device_deployment.attachment_start_time,
-  final_device_deployment.attachment_end_date,
-  final_device_deployment.attachment_end_time,
+  final_device_deployment.attachment_start_date::date,
+  final_device_deployment.attachment_start_time::time,
+  final_device_deployment.attachment_end_date::date,
+  final_device_deployment.attachment_end_time::time,
   final_device_deployment.critterbase_start_capture_id,
   final_device_deployment.critterbase_end_capture_id,
   final_device_deployment.critterbase_end_mortality_id
 FROM
   sims_bctw.final_device_deployment
 INNER JOIN
-  w_insert_device
+  biohub.device
 ON
-  final_device_deployment.survey_id = w_insert_device.survey_id
+  final_device_deployment.survey_id = biohub.device.survey_id
 AND
-  final_device_deployment.serial = w_insert_device.serial
+  final_device_deployment.serial = biohub.device.serial
 AND
-  final_device_deployment.device_make_id = w_insert_device.device_make_id;
+  final_device_deployment.device_make_id = biohub.device.device_make_id;
