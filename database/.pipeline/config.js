@@ -71,7 +71,7 @@ const phases = {
     nodeEnv: 'development',
     tz: config.timezone.db,
     dbSetupDockerfilePath: dbSetupDockerfilePath,
-    volumeCapacity: (isStaticDeployment && '3Gi') || '10Gi',
+    volumeCapacity: (isStaticDeployment && '3Gi') || '500Mi',
     cpuRequest: '50m',
     cpuLimit: '600m',
     memoryRequest: '100Mi',

@@ -458,6 +458,66 @@ jobs:
           DEBUG=* npm run deploy -- --pr=$PR_NUMBER --env=dev
 
   # Deploy Database image
+  deployDatabaseSetup:
+    name: Deploy Database Setup Image
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    if: ${{ github.event.pull_request.merged == false &&
+      github.event.pull_request.draft == false &&
+      ( needs.skipDuplicateActions.outputs.ignore_skip == 'true' ||
+      fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.should_skip == false ||
+      fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.skipped_by.branch != github.head_ref ) }}
+    env:
+      PR_NUMBER: ${{ github.event.number }}
+    needs:
+      - deployDatabase
+    steps:
+      # Install Node - for `node` and `npm` commands
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # Load repo from cache
+      - name: Cache repo
+        uses: actions/cache@v4
+        id: cache-repo
+        env:
+          cache-name: cache-repo
+        with:
+          path: ${{ github.workspace }}/*
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.event.pull_request.head.sha }}
+
+      # Checkout the branch if not restored via cache
+      - name: Checkout Target Branch
+        if: steps.cache-repo.outputs.cache-hit != 'true'
+        uses: actions/checkout@v4
+
+      # Install oc, which was removed from the ubuntu-latest image in v24.04
+      - name: Install OpenShift CLI tools
+        uses: redhat-actions/openshift-tools-installer@v1
+        with:
+          oc: "4.14"
+
+      # Log in to OpenShift.
+      # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
+      # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
+      - name: Log in to OpenShift
+        run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
+
+      # Install database pipeline node modules
+      # Note: This already caches node modules internally
+      - name: Install pipeline node modules
+        working-directory: database/.pipeline/
+        run: npm ci
+
+      # Deploy the database setup image
+      - name: Deploy Database Setup Image
+        working-directory: database/.pipeline/
+        run: |
+          DEBUG=* npm run db-setup:deploy -- --pr=$PR_NUMBER --env=dev
+
+  # Deploy Database image
   deployDatabase:
     name: Deploy Database Image
     runs-on: ubuntu-latest
@@ -601,6 +661,7 @@ jobs:
       - buildAPI
       - deployAPP
       - deployDatabase
+      - deployDatabaseSetup
       - deployAPI
     steps:
       - name: Log result
@@ -614,6 +675,7 @@ jobs:
           echo needs.buildAPI.result: ${{ needs.buildAPI.result }}
           echo needs.deployAPP.result: ${{ needs.deployAPP.result }}
           echo needs.deployDatabase.result: ${{ needs.deployDatabase.result }}
+          echo needs.deployDatabaseSetup.result: ${{ needs.deployDatabaseSetup.result }}
           echo needs.deployAPI.result: ${{ needs.deployAPI.result }}
 
       - name: Report success
