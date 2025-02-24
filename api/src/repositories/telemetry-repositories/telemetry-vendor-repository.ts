@@ -126,13 +126,14 @@ export class TelemetryVendorRepository extends BaseRepository {
 
   /**
    * Filter results by vendor credentials
+   * The method is static to allow it to be accessed without requiring an instance of TelemetryVendorRepository
+   * This is needed because the query is built inside .modify() method
    *
-   * @private
    * @static
    * @param {Knex.QueryBuilder} queryBuilder
    * @returns {Knex.QueryBuilder}
    */
-  private static getLotekOrVectronicTelemetryByCredentialsClause(queryBuilder: Knex.QueryBuilder): Knex.QueryBuilder {
+  static getLotekOrVectronicTelemetryByCredentialsClause(queryBuilder: Knex.QueryBuilder): Knex.QueryBuilder {
     return queryBuilder.join(
       'survey_telemetry_vendor_credential',
       'survey.survey_id',
@@ -142,14 +143,15 @@ export class TelemetryVendorRepository extends BaseRepository {
 
   /**
    * Filter results by the projects/surveys user have access to
+   * The method is static to allow it to be accessed without requiring an instance of TelemetryVendorRepository
+   * This is needed because the query is built inside .modify() method
    *
-   * @private
    * @static
    * @param {Knex.QueryBuilder} queryBuilder
    * @param {(number | null)} systemUserId
    * @returns {Knex.QueryBuilder}
    */
-  private static getTelemetryByProjectsSurveysUserAccessClause(
+  static getTelemetryByProjectsSurveysUserAccessClause(
     queryBuilder: Knex.QueryBuilder,
     systemUserId: number | null
   ): Knex.QueryBuilder {
