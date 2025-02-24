@@ -22,18 +22,18 @@ describe('CritterbaseService', () => {
     describe('getTaxonMeasurements', () => {
       it('should retrieve taxon measurements', async () => {
         const axiosStub = sinon.stub(cb.axiosInstance, 'get').resolves({ data: [] });
-        await cb.getTaxonMeasurements('123456');
-        expect(axiosStub).to.have.been.calledOnceWith('/xref/taxon-measurements', { params: { tsn: '123456' } });
+        await cb.getTaxonMeasurements(123456);
+        expect(axiosStub).to.have.been.calledOnceWith('/xref/taxon-measurements', { params: { tsn: 123456 } });
       });
     });
 
     describe('getTaxonBodyLocations', () => {
       it('should retrieve taxon body locations', async () => {
         const axiosStub = sinon.stub(cb.axiosInstance, 'get').resolves({ data: [] });
-        await cb.getTaxonBodyLocations('asdf');
+        await cb.getTaxonBodyLocations(1234);
         expect(axiosStub).to.have.been.calledOnceWith('/xref/taxon-marking-body-locations', {
           params: {
-            tsn: 'asdf',
+            tsn: 1234,
             format: 'asSelect'
           }
         });
