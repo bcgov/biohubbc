@@ -1,7 +1,7 @@
 import { Knex } from 'knex';
 
 /**
- * Add new columns to survey_sample_period table
+ * Add/Update descriptions for autocomplete options in the type and site_strategy tables.
  *
  * @export
  * @param {Knex} knex

@@ -47,19 +47,15 @@ describe('useUserApi', () => {
 
   // Update the test to match the correct interface
   it('getUsersList works as expected', async () => {
-    // ...existing test setup...
-
     const mockResponse = {
       users: [
         {
           system_user_id: 1,
           user_identifier: 'myidirboss',
           role_names: ['role 1', 'role 2']
-          // ... other user properties
         },
         {
           system_user_id: 2
-          // ... second user properties
         }
       ],
       pagination: {

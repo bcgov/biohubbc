@@ -81,7 +81,8 @@ const EditSurveyForm = <
     .concat(SurveyPartnershipsFormYupSchema)
     .concat(SpeciesYupSchema);
 
-  // Add this transformer function
+  // Transforms survey_jobs data structure to match the expected project_roles type interface
+  // required by the SurveyUserForm component
   const transformSurveyJobs = (jobs: typeof codes.survey_jobs): IGetAllCodeSetsResponse['project_roles'] => {
     return jobs.map((job) => ({
       ...job,
