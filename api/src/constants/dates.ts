@@ -37,6 +37,14 @@ export const DefaultTimeFormat = 'HH:mm:ss'; // 23:00:00
 
 export const DefaultTimeFormatNoSeconds = 'HH:mm'; // 23:00
 
+export const DefaultTimeFormat12Hour = 'hh:mm:ss A'; // 11:00:00 PM
+
+export const DefaultTimeFormat12HourAlt = 'hh:mm:ss a'; // 11:00:00 pm
+
+export const DefaultTimeFormat12HourNoSeconds = 'hh:mm A'; // 11:00 PM
+
+export const DefaultTimeFormat12HourNoSecondsAlt = 'hh:mm a'; // 11:00 pm
+
 /*
  * Datetime formats.
  */

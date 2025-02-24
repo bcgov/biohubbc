@@ -1,20 +1,19 @@
 import { expect } from 'chai';
 import xlsx from 'xlsx';
-import { CSVConfigUtils } from '../../../utils/csv-utils/csv-config-utils';
-import { CSVConfig } from '../../../utils/csv-utils/csv-config-validation.interface';
-import { NestedRecord } from '../../../utils/nested-record';
+import { CSVConfigUtils } from '../../../../utils/csv-utils/csv-config-utils';
+import { CSVConfig, CSVRowState } from '../../../../utils/csv-utils/csv-config-validation.interface';
+import { NestedRecord } from '../../../../utils/nested-record';
+import { CritterCSVStaticHeader } from '../import-critters-service';
 import {
   getCritterAliasCellValidator,
-  getCritterCollectionUnitCellSetter,
   getCritterCollectionUnitCellValidator,
   getCritterSexCellValidator,
   getWlhIDCellValidator
 } from './critter-header-configs';
-import { CritterCSVStaticHeader } from './import-critters-service';
 
 const mockConfig: CSVConfig<CritterCSVStaticHeader> = {
   staticHeadersConfig: {
-    ITIS_TSN: { aliases: ['TAXON', 'SPECIES', 'TSN'] },
+    SPECIES: { aliases: ['TAXON', 'SPECIES', 'TSN'] },
     ALIAS: { aliases: ['NICKNAME', 'NAME', 'ANIMAL_ID'] },
     SEX: { aliases: [], optional: true },
     WLH_ID: { aliases: ['WILDLIFE_HEALTH_ID', 'WILD LIFE HEALTH ID', 'WLHID'], optional: true },
@@ -119,8 +118,7 @@ describe('critter-header-configs', () => {
               unit: 'uuid'
             }
           }
-        }),
-        new CSVConfigUtils(xlsx.utils.json_to_sheet([]), mockConfig)
+        })
       );
 
       const cellValues = ['unit', undefined];
@@ -128,7 +126,7 @@ describe('critter-header-configs', () => {
       for (const cell of cellValues) {
         const result = cellValidator({
           cell: cell,
-          row: { ITIS_TSN: 1 },
+          row: { SPECIES: 1, [CSVRowState]: { itis_tsn: 1 } },
           header: 'HEADER',
           rowIndex: 0,
           mutateCell: cell
@@ -146,13 +144,12 @@ describe('critter-header-configs', () => {
               unit: 'uuid'
             }
           }
-        }),
-        new CSVConfigUtils(xlsx.utils.json_to_sheet([]), mockConfig)
+        })
       );
 
       const result = cellValidator({
         cell: 'unit',
-        row: { ITIS_TSN: 2 },
+        row: { SPECIES: 2, [CSVRowState]: { itis_tsn: 2 } },
         header: 'HEADER',
         rowIndex: 0,
         mutateCell: 'unit'
@@ -169,13 +166,12 @@ describe('critter-header-configs', () => {
               unit: 'uuid'
             }
           }
-        }),
-        new CSVConfigUtils(xlsx.utils.json_to_sheet([]), mockConfig)
+        })
       );
 
       const result = cellValidator({
         cell: 'unit',
-        row: { ITIS_TSN: 1 },
+        row: { SPECIES: 1, [CSVRowState]: { itis_tsn: 1 } },
         header: 'HEADER2',
         rowIndex: 0,
         mutateCell: 'unit'
@@ -192,55 +188,18 @@ describe('critter-header-configs', () => {
               unit: 'uuid'
             }
           }
-        }),
-        new CSVConfigUtils(xlsx.utils.json_to_sheet([]), mockConfig)
+        })
       );
 
       const result = cellValidator({
         cell: 'unit2',
-        row: { ITIS_TSN: 1 },
+        row: { SPECIES: 1, [CSVRowState]: { itis_tsn: 1 } },
         header: 'HEADER',
         rowIndex: 0,
         mutateCell: 'unit2'
       });
 
       expect(result[0].error).to.be.equal('Invalid collection unit cell value');
-    });
-  });
-
-  describe('getCritterCollectionUnitSetter', () => {
-    it('should return undefined when cell value is falsy', () => {
-      const cellSetter = getCritterCollectionUnitCellSetter(
-        new NestedRecord(),
-        new CSVConfigUtils(xlsx.utils.json_to_sheet([]), mockConfig)
-      );
-
-      const result = cellSetter({ cell: '', row: {}, header: 'HEADER', rowIndex: 0, mutateCell: '' });
-
-      expect(result).to.be.equal(undefined);
-    });
-
-    it('should return the uuid', () => {
-      const cellSetter = getCritterCollectionUnitCellSetter(
-        new NestedRecord({
-          1: {
-            HEADER: {
-              unit: 'uuid'
-            }
-          }
-        }),
-        new CSVConfigUtils(xlsx.utils.json_to_sheet([]), mockConfig)
-      );
-
-      const result = cellSetter({
-        cell: 'unit',
-        row: { ITIS_TSN: 1 },
-        header: 'HEADER',
-        rowIndex: 0,
-        mutateCell: 'unit'
-      });
-
-      expect(result).to.be.equal('uuid');
     });
   });
 
@@ -251,8 +210,7 @@ describe('critter-header-configs', () => {
           1: {
             male: 'uuid'
           }
-        }),
-        new CSVConfigUtils(xlsx.utils.json_to_sheet([]), mockConfig)
+        })
       );
 
       const cellValues = ['male', 'MALE', undefined];
@@ -260,7 +218,7 @@ describe('critter-header-configs', () => {
       for (const cell of cellValues) {
         const result = cellValidator({
           cell: cell,
-          row: { ITIS_TSN: 1 },
+          row: { SPECIES: 1, [CSVRowState]: { itis_tsn: 1 } },
           header: 'HEADER',
           rowIndex: 0,
           mutateCell: cell
@@ -276,8 +234,7 @@ describe('critter-header-configs', () => {
           1: {
             male: 'uuid'
           }
-        }),
-        new CSVConfigUtils(xlsx.utils.json_to_sheet([]), mockConfig)
+        })
       );
 
       const cellValues = ['', 0];
@@ -285,7 +242,7 @@ describe('critter-header-configs', () => {
       for (const cell of cellValues) {
         const result = cellValidator({
           cell: cell,
-          row: { ITIS_TSN: 1 },
+          row: { SPECIES: 1, [CSVRowState]: { itis_tsn: 1 } },
           header: 'HEADER',
           rowIndex: 0,
           mutateCell: cell
@@ -301,13 +258,12 @@ describe('critter-header-configs', () => {
           1: {
             male: 'uuid'
           }
-        }),
-        new CSVConfigUtils(xlsx.utils.json_to_sheet([]), mockConfig)
+        })
       );
 
       const result = cellValidator({
         cell: 'male',
-        row: { ITIS_TSN: 2 },
+        row: { SPECIES: 2, [CSVRowState]: { itis_tsn: 2 } },
         header: 'HEADER',
         rowIndex: 0,
         mutateCell: 'male'
@@ -322,13 +278,12 @@ describe('critter-header-configs', () => {
           1: {
             male: 'uuid'
           }
-        }),
-        new CSVConfigUtils(xlsx.utils.json_to_sheet([]), mockConfig)
+        })
       );
 
       const result = cellValidator({
         cell: 'maled',
-        row: { ITIS_TSN: 1 },
+        row: { SPECIES: 1, [CSVRowState]: { itis_tsn: 1 } },
         header: 'HEADER',
         rowIndex: 0,
         mutateCell: 'maled'
