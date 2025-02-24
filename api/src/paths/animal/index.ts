@@ -121,18 +121,18 @@ GET.apiDoc = {
                     },
                     sex: {
                       type: 'object',
-                      description: 'The Critterbase critter sex.',
+                      description: 'The Critterbase critter sex object.',
                       required: ['qualitative_option_id', 'label'],
                       additionalProperties: false,
                       properties: {
                         qualitative_option_id: {
                           type: 'string',
                           format: 'uuid',
-                          description: 'The critterbase sex qualitative option UUID'
+                          description: 'The critterbase sex qualitative option id.'
                         },
                         label: {
                           type: 'string',
-                          description: 'The sex label.',
+                          description: 'The sex option label.',
                           example: 'Female'
                         }
                       },
