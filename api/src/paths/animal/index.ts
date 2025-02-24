@@ -116,15 +116,32 @@ GET.apiDoc = {
                     },
                     animal_id: {
                       type: 'string',
-                      description: 'The Critterbase critter animal ID.'
+                      description: 'The Critterbase critter animal ID.',
+                      nullable: true
                     },
                     sex: {
-                      type: 'string',
-                      description: 'The Critterbase critter sex.'
+                      type: 'object',
+                      description: 'The Critterbase critter sex.',
+                      required: ['qualitative_option_id', 'label'],
+                      additionalProperties: false,
+                      properties: {
+                        qualitative_option_id: {
+                          type: 'string',
+                          format: 'uuid',
+                          description: 'The critterbase sex qualitative option UUID'
+                        },
+                        label: {
+                          type: 'string',
+                          description: 'The sex label.',
+                          example: 'Female'
+                        }
+                      },
+                      nullable: true
                     },
                     itis_tsn: {
                       type: 'number',
-                      description: 'The Critterbase critter ITIS TSN.'
+                      description: 'The Critterbase critter ITIS TSN.',
+                      minimum: 1
                     },
                     itis_scientific_name: {
                       type: 'string',
@@ -132,7 +149,8 @@ GET.apiDoc = {
                     },
                     critter_comment: {
                       type: 'string',
-                      description: 'The Critterbase critter comment.'
+                      description: 'The Critterbase critter comment.',
+                      nullable: true
                     },
                     critter_id: {
                       type: 'integer',
