@@ -1,4 +1,3 @@
-import { AsyncLocalStorage } from 'async_hooks';
 import express, { NextFunction, Request, Response } from 'express';
 import { initialize } from 'express-openapi';
 import multer from 'multer';
@@ -14,13 +13,10 @@ import {
 } from './middleware/critterbase-proxy';
 import { rootAPIDoc } from './openapi/root-api-doc';
 import { authenticateRequest, authenticateRequestOptional } from './request-handlers/security/authentication';
-import { initRequestStorage, RequestStore } from './utils/async-request-storage';
+import { initRequestStorage } from './utils/async-request-storage';
 import { loadEnvironmentVariables } from './utils/env-config';
 import { scanFileForVirus } from './utils/file-utils';
 import { getLogger } from './utils/logger';
-
-// Initialize the request storage to track specific request information
-export const AsyncRequestStorage = new AsyncLocalStorage<RequestStore>();
 
 // Load and validate the environment variables
 loadEnvironmentVariables();
@@ -197,7 +193,6 @@ function getAdditionalMiddleware(): express.RequestHandler[] {
 
   // Initialize the request storage for each request
   additionalMiddleware.push(initRequestStorage);
-  //additionalMiddleware.push(testAsyncRequestStorage);
 
   if (process.env.API_RESPONSE_VALIDATION_ENABLED === 'true') {
     // Validate endpoint responses against openapi spec
@@ -206,29 +201,6 @@ function getAdditionalMiddleware(): express.RequestHandler[] {
 
   return additionalMiddleware;
 }
-
-//// TODO: Remove after testing
-//// test the request storage middleware works with multiple requests at the same time
-////
-//// 1. Run first request with `async-request-storage-test` header
-//// 2. Before the first request finishes, run a second request without the header
-//// 3. The second request should finish before the first request
-//// Validate that both requests have different request ids (Correct!)
-//async function testAsyncRequestStorage(req: Request, _res: Response, _next: NextFunction) {
-//  console.log('Running REGULAR request');
-//
-//  if (req.headers['async-request-storage-test']) {
-//    console.log('Running SLOW request');
-//
-//    const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-//
-//    await delay(10000);
-//
-//    console.log('SLOW request done');
-//  }
-//
-//  _next();
-//}
 
 /**
  * Middleware to apply openapi response validation to all routes.

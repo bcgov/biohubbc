@@ -19,6 +19,10 @@ export type CustomLoggerParams = {
   [key: string]: any;
 };
 
+export const WinstonLogLevels = ['silent', 'error', 'warn', 'info', 'debug', 'silly'] as const;
+
+export type WinstonLogLevel = (typeof WinstonLogLevels)[number];
+
 /**
  * Get a singleton logger.
  *
@@ -99,7 +103,7 @@ export const _getLoggerParameters = (logLabel: string, params: CustomLoggerParam
  *
  * @return {*}  {string[]}
  */
-const getLoggerTransportTypes = (): string[] => {
+const _getLoggerTransportTypes = (): string[] => {
   const transportTypes = [];
 
   // Do not output logs to file when running unit tests
@@ -157,7 +161,7 @@ export const _getOrCreateLoggerSingleton = function (loggerName: string): winsto
     return winston.loggers.get(loggerName);
   }
 
-  const transportTypes = getLoggerTransportTypes();
+  const transportTypes = _getLoggerTransportTypes();
 
   const transports = [];
 
@@ -198,48 +202,44 @@ export const _getOrCreateLoggerSingleton = function (loggerName: string): winsto
   return winston.loggers.add(loggerName, { transports: transports });
 };
 
-export const WinstonLogLevels = ['silent', 'error', 'warn', 'info', 'debug', 'silly'] as const;
-
-export type WinstonLogLevel = (typeof WinstonLogLevels)[number];
-
 /**
  * Set the winston logger log level for the console transport
  *
- * @param {WinstonLogLevel} logLevel
+ * @param {WinstonLogLevel} consoleLogLevel
  */
-export const setLogLevel = (logLevel: WinstonLogLevel) => {
-  const transportTypes = getLoggerTransportTypes();
+export const setLogLevel = (consoleLogLevel: WinstonLogLevel): void => {
+  const transportTypes = _getLoggerTransportTypes();
 
   if (!transportTypes.includes('console')) {
     return;
   }
 
   // Update env var for future loggers
-  process.env.LOG_LEVEL = logLevel;
+  process.env.LOG_LEVEL = consoleLogLevel;
 
   // Update console transport log level, which is the last transport in all environments
   winston.loggers.loggers.forEach((logger) => {
-    logger.transports[transportTypes.length - 1].level = logLevel;
+    logger.transports[transportTypes.length - 1].level = consoleLogLevel;
   });
 };
 
 /**
  * Set the winston logger log level for the file transport.
  *
- * @param {WinstonLogLevel} logLevel
+ * @param {WinstonLogLevel} fileLogLevel
  */
-export const setLogLevelFile = (logLevelFile: WinstonLogLevel) => {
-  const transportTypes = getLoggerTransportTypes();
+export const setLogLevelFile = (fileLogLevel: WinstonLogLevel): void => {
+  const transportTypes = _getLoggerTransportTypes();
 
   if (!transportTypes.includes('file')) {
     return;
   }
 
   // Update env var for future loggers
-  process.env.LOG_LEVEL_FILE = logLevelFile;
+  process.env.LOG_LEVEL_FILE = fileLogLevel;
 
   // Update file transport log level, which is the first transport in all environments
   winston.loggers.loggers.forEach((logger) => {
-    logger.transports[0].level = logLevelFile;
+    logger.transports[0].level = fileLogLevel;
   });
 };
