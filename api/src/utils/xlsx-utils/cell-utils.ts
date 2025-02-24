@@ -2,12 +2,9 @@ import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 import { CellObject } from 'xlsx';
 import { DefaultDateFormat, DefaultTimeFormat } from '../../constants/dates';
-import { formatDateString } from '../date-time-utils';
+import { formatDateString, formatTimeString } from '../date-time-utils';
 import { safeTrim } from '../string-utils';
 import { CUSTOM_XLSX_DATE_FORMAT } from './worksheet-utils';
-
-//const NUM_SECONDS_IN_DAY = 86400;
-//const NUM_MILLISECONDS_IN_DAY = 86400000;
 
 dayjs.extend(duration);
 
@@ -73,6 +70,14 @@ export function replaceCellDates(cell: CellObject): CellObject {
     // If the string is a date, update the cell value to the formatted date string
     if (date) {
       return { ...cell, z: DefaultDateFormat, v: date };
+    }
+
+    // If the string is a time, update the cell value to the formatted time string
+    // ie: '10:00' -> '10:00:00' or '10:00:00 AM' -> '10:00:00'
+    const time = formatTimeString(String(cell.v));
+
+    if (time) {
+      return { ...cell, z: DefaultTimeFormat, v: time };
     }
   }
 

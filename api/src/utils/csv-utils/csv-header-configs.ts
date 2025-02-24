@@ -1,8 +1,7 @@
 import { z } from 'zod';
 import { ICritterDetailed } from '../../services/critterbase-service';
-import { formatTimeString } from '../../services/import-services/utils/datetime';
 import { CaseInsensitiveMap } from '../case-insensitive-map';
-import { isDateString } from '../date-time-utils';
+import { formatTimeString, isDateString } from '../date-time-utils';
 import {
   CSVCellSetter,
   CSVCellValidator,
