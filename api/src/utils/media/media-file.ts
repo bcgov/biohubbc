@@ -1,28 +1,18 @@
-export interface IMediaFile {
-  fileName: string;
-  mimetype: string;
-  buffer: Buffer;
-  mediaValidation: MediaValidation;
-}
-
 /**
  * A generic wrapper for any media file.
  *
  * @export
  * @class MediaFile
- * @implements {IMediaFile}
  */
-export class MediaFile implements IMediaFile {
+export class MediaFile {
   fileName: string;
   mimetype: string;
   buffer: Buffer;
-  mediaValidation: MediaValidation;
 
   constructor(fileName: string, mimetype: string, buffer: Buffer) {
     this.fileName = fileName.toLowerCase();
     this.mimetype = mimetype;
     this.buffer = buffer;
-    this.mediaValidation = new MediaValidation(this.fileName);
   }
 
   /**
@@ -42,23 +32,7 @@ export class MediaFile implements IMediaFile {
       return this.fileName;
     }
   }
-
-  /**
-   * Executes each validator function in the provided `validators` against this instance, returning
-   * `this.mediaValidation`
-   *
-   * @param {MediaValidator[]} validators
-   * @return {*}  {MediaValidation}
-   * @memberof MediaFile
-   */
-  validate(validators: MediaValidator[]): MediaValidation {
-    validators.forEach((validator) => validator(this));
-
-    return this.mediaValidation;
-  }
 }
-
-export type MediaValidator = (mediaFile: IMediaFile) => IMediaFile;
 
 /**
  * A generic wrapper for any archive file.
@@ -66,11 +40,10 @@ export type MediaValidator = (mediaFile: IMediaFile) => IMediaFile;
  * @class ArchiveFile
  * @implements {IMediaFile}
  */
-export class ArchiveFile implements IMediaFile {
+export class ArchiveFile {
   fileName: string;
   mimetype: string;
   buffer: Buffer;
-  mediaValidation: MediaValidation;
 
   mediaFiles: MediaFile[];
 
@@ -78,7 +51,6 @@ export class ArchiveFile implements IMediaFile {
     this.fileName = fileName.toLowerCase();
     this.mimetype = mimetype;
     this.buffer = buffer;
-    this.mediaValidation = new MediaValidation(this.fileName);
 
     this.mediaFiles = mediaFiles;
   }
@@ -99,61 +71,5 @@ export class ArchiveFile implements IMediaFile {
     } else {
       return this.fileName;
     }
-  }
-
-  /**
-   * Executes each validator function in the provided `validators` against this instance, returning
-   * `this.mediaValidation`
-   *
-   * @param {ArchiveValidator[]} validators
-   * @return {*}  {MediaValidation}
-   * @memberof ArchiveFile
-   */
-  validate(validators: ArchiveValidator[]): MediaValidation {
-    validators.forEach((validator) => validator(this));
-
-    return this.mediaValidation;
-  }
-}
-
-export type ArchiveValidator = (archiveFile: ArchiveFile) => ArchiveFile;
-
-export interface IMediaState {
-  fileName: string;
-  fileErrors?: string[];
-  isValid: boolean;
-}
-
-/**
- * Supports getting/setting validation errors for any media file.
- *
- * @export
- * @class MediaValidation
- */
-export class MediaValidation {
-  fileName: string;
-  fileErrors: string[];
-  isValid: boolean;
-
-  constructor(fileName: string) {
-    this.fileName = fileName;
-    this.fileErrors = [];
-    this.isValid = true;
-  }
-
-  addFileErrors(errors: string[]) {
-    this.fileErrors = this.fileErrors.concat(errors);
-
-    if (errors?.length) {
-      this.isValid = false;
-    }
-  }
-
-  getState(): IMediaState {
-    return {
-      fileName: this.fileName,
-      fileErrors: this.fileErrors,
-      isValid: this.isValid
-    };
   }
 }

@@ -61,8 +61,8 @@ describe('StandardsService', () => {
       const response = await standardsService.getSpeciesStandards(mockTsn);
 
       expect(getTaxonomyByTsnsStub).to.be.calledOnceWith([mockTsn]);
-      expect(getTaxonBodyLocationsStub).to.be.calledOnceWith(String(mockTsn));
-      expect(getTaxonMeasurementsStub).to.be.calledOnceWith(String(mockTsn));
+      expect(getTaxonBodyLocationsStub).to.be.calledOnceWith(mockTsn);
+      expect(getTaxonMeasurementsStub).to.be.calledOnceWith(mockTsn);
 
       expect(response.measurements.quantitative[0].measurement_name).to.eql('body mass');
       expect(response.measurements.qualitative[0].measurement_desc).to.eql('description');
