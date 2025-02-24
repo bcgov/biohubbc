@@ -94,8 +94,8 @@ export const _getLoggerParameters = (logLabel: string, params: CustomLoggerParam
     return [message, { logger: logLabel, ...restParams }];
   }
 
-  // Return 'Unknown' as log message when 'message' is not provided
-  return ['Message unknown', { logger: logLabel, ...params }];
+  // Return 'unknown' as log message when 'message' is not provided
+  return ['unknown', { logger: logLabel, ...params }];
 };
 
 /**
@@ -133,7 +133,7 @@ export const _getLogFormat = (): winston.Logform.Format => {
       // NOTE: Would adding a unique log id be useful? Different from the request id which is shared across async requests
       requestId: getRequestId(), // 'd3d3b4d3-7b3d-4b3d-8b3d-3d3b4d3b3d3b'
       timestamp: info.timestamp, // '2025-02-04 14:05:24'
-      requestUser: getRequestUser(), // 'SBRULE'
+      user: getRequestUser(), // 'SBRULE'
       level: info.level, // 'DEBUG'
       logger: info.logger, // 'app-logger'
       label: info.label, // 'label/function name/etc.'

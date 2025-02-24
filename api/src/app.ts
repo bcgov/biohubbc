@@ -38,7 +38,7 @@ const app: express.Express = express();
 
 // Enable CORS
 app.use(function (req: Request, res: Response, next: NextFunction) {
-  defaultLog.debug({ method: req.method, url: req.url });
+  defaultLog.debug({ message: 'request', label: 'api-middleware', method: req.method, url: req.url });
 
   res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Authorization, responseType');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE, HEAD');

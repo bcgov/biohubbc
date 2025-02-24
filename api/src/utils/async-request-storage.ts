@@ -7,7 +7,7 @@ const DEFAULT_REQUEST_STORE_VALUE = 'SYSTEM';
 // Request store keys
 export type RequestStoreKey = 'requestId' | 'username';
 
-// Key-value store for request-specific data
+// Map (Store) for request metadata
 // Note: Intentionally using type `string` for values to restrict the potential data types,
 // trying to keep this as lightweight as possible.
 export type RequestStore = Map<RequestStoreKey, string>;

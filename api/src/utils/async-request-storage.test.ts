@@ -46,13 +46,15 @@ describe('async-request-storage', () => {
       let requestIdA;
       let requestIdB;
 
-      const route = () => {
+      const route = async () => {
         const store = AsyncRequestStorage.getStore();
 
         requestIdA = store?.get('requestId');
 
         expect(store?.get('requestId')).to.be.a('string');
         expect(store?.get('username')).to.be.equal('idir_username');
+
+        await new Promise((resolve) => setTimeout(resolve, 100));
 
         mockNext();
       };
