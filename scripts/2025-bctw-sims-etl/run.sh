@@ -89,6 +89,7 @@ cat sims-bctw-etl_3c.sql >> "$MIGRATION_FILE"
 cat sims-bctw-etl_3d.sql >> "$MIGRATION_FILE"
 cat sims-bctw-etl_4a.sql >> "$MIGRATION_FILE"
 cat sims-bctw-etl_5a.sql >> "$MIGRATION_FILE"
+# We will manually do this step in the production database
 # cat sims-bctw-etl_6a.sql >> "$MIGRATION_FILE"
 
 # Step 4: Run migration on the appropriate database

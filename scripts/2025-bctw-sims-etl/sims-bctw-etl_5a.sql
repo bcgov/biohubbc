@@ -171,3 +171,25 @@ SELECT
   exists_kmb_tracking::text
 FROM bctw.telemetry_manual_historic
 WHERE NOT EXISTS (SELECT 1 FROM biohub.telemetry_historic WHERE id::uuid = biohub.telemetry_historic.telemetry_historic_id);
+
+--------------------------------------------------------------------------------------------------------------
+-- Import data into biohub.telemetry_manual table
+--------------------------------------------------------------------------------------------------------------
+SELECT
+  bctw.telemetry_manual.latitude,
+  bctw.telemetry_manual.longitude,
+  NULL::timestamptz as transmission_date,
+  bctw.telemetry_manual.acquisition_date
+FROM bctw.telemetry_manual
+INNER JOIN sims_bctw.final_device_deployment
+  ON sims_bctw.final_device_deployment.bctw_deployment_id = bctw.telemetry_manual.deployment_id
+WHERE NOT EXISTS (
+    SELECT
+      1
+    FROM biohub.telemetry_manual
+    WHERE latitude = biohub.telemetry_manual.latitude
+    AND longitude = biohub.telemetry_manual.longitude
+    AND acquisition_date = biohub.telemetry_manual.acquisition_date
+  )
+AND bctw.is_valid(bctw.telemetry_manual.valid_to);
+

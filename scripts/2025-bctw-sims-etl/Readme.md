@@ -65,7 +65,9 @@ TODO: finish when 2X and 3X are done.
 ### sims-bctw-etl_5X.sql
 
 - Telemetry credential data
+- ATS telemetry data
+- Historic telemetry data
 
 ### sims-bctw-etl_6X.sql
 
-- Historic manual telemetry data
+- Drop all generated schemas and dependencies

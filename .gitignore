@@ -8,6 +8,7 @@ lerna-debug.log*
 
 
 # scripts
+# These scripts are downloaded from scripts/2025-bctw-sims-etl
 bctw_bctw_no_owner_no_acl_dump.sql
 sims-bctw-migration-final.sql
 

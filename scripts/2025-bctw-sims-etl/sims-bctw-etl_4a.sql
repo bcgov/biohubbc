@@ -5,7 +5,7 @@ drop table if exists sims_bctw.final_device_deployment;
 --------------------------------------------------------------------------------------------------------------
 
 WITH w_combined_data AS (
-  SELECT 
+  SELECT
     *
   FROM
     sims_bctw.final_matched_device_deployment
@@ -18,6 +18,7 @@ WITH w_combined_data AS (
 SELECT
   survey_id,
   deployment_id,
+  bctw_deployment_id,
   critter_id,
   device_id as serial,
   device_model as model,
@@ -67,7 +68,7 @@ SELECT
           WHERE
             code_id = w_combined_data.device_make::integer
         )
-      ),         
+      ),
       (
         SELECT
           biohub.device_make.device_make_id
@@ -81,7 +82,7 @@ SELECT
   comment
 INTO TABLE
   sims_bctw.final_device_deployment
-FROM 
+FROM
   w_combined_data;
 
 --------------------------------------------------------------------------------------------------------------
@@ -90,7 +91,7 @@ FROM
 set search_path = biohub;
 
 -- Insert data into device
-WITH 
+WITH
 w_deduplicated_devices as (
     SELECT
         survey_id,
@@ -124,16 +125,16 @@ w_insert_device AS (
     device_make_id,
     model,
     comment
-  ) 
-  SELECT 
+  )
+  SELECT
     survey_id,
     serial,
     device_make_id,
     model,
     comment
-  FROM 
+  FROM
     w_deduplicated_devices
-  RETURNING 
+  RETURNING
     *
 )
 -- Insert data into deployment
@@ -150,7 +151,7 @@ INSERT INTO biohub.deployment (
   critterbase_start_capture_id,
   critterbase_end_capture_id,
   critterbase_end_mortality_id
-) 
+)
 SELECT
   final_device_deployment.survey_id,
   final_device_deployment.critter_id,
@@ -164,7 +165,7 @@ SELECT
   final_device_deployment.critterbase_start_capture_id,
   final_device_deployment.critterbase_end_capture_id,
   final_device_deployment.critterbase_end_mortality_id
-FROM 
+FROM
   sims_bctw.final_device_deployment
 INNER JOIN
   w_insert_device
