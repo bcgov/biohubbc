@@ -104,7 +104,7 @@ export const getTsnMeasurementDictionary = async (
   >();
   const uniqueTsns = [...new Set(tsns)];
 
-  const measurements = await Promise.all(uniqueTsns.map((tsn) => critterbaseService.getTaxonMeasurements(String(tsn))));
+  const measurements = await Promise.all(uniqueTsns.map((tsn) => critterbaseService.getTaxonMeasurements(tsn)));
 
   // Note: This makes the assumption that a qualitative measurement and a quantitative measurement
   // will not have the same measurement name for a given TSN.
@@ -113,17 +113,31 @@ export const getTsnMeasurementDictionary = async (
     const quantitativeMeasurements = measurements[index].quantitative;
 
     qualitativeMeasurements.forEach((measurement) => {
+      // Set the measurement by the measurement name
       measurementDictionary.set({
         // Implicitly handles casing (lowercase)
         path: [tsn, measurement.measurement_name],
         value: measurement
       });
+
+      // Set the measurement by the taxon measurement id
+      measurementDictionary.set({
+        path: [tsn, measurement.taxon_measurement_id],
+        value: measurement
+      });
     });
 
     quantitativeMeasurements.forEach((measurement) => {
+      // Set the measurement by the measurement name
       measurementDictionary.set({
         // Implicitly handles casing (lowercase)
         path: [tsn, measurement.measurement_name],
+        value: measurement
+      });
+
+      // Set the measurement by the taxon measurement id
+      measurementDictionary.set({
+        path: [tsn, measurement.taxon_measurement_id],
         value: measurement
       });
     });
