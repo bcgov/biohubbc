@@ -19,7 +19,7 @@ WITH w_combined_data AS (
       select
         bctw_deployment_uuid
       from
-        final_matched_device_deployment
+        sims_bctw.final_matched_device_deployment
     )
 )
 SELECT
