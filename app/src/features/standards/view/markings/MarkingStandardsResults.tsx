@@ -1,4 +1,4 @@
-import * as muiColour from '@mui/material/colors';
+import { grey } from '@mui/material/colors';
 import Stack from '@mui/material/Stack';
 import { AccordionStandardCard } from 'features/standards/view/components/AccordionStandardCard';
 import { IMarkingsStandards } from 'interfaces/useStandardsApi.interface';
@@ -22,10 +22,10 @@ export const MarkingStandardsResults = (props: IMarkingStandardsResultsProps) =>
     <Stack gap={2}>
       {/* Accordion for Marking Types */}
       {props.standards.types.length > 0 && (
-        <AccordionStandardCard label="Marking Types" colour={muiColour.grey[100]}>
+        <AccordionStandardCard label="Marking Types" colour={grey[100]}>
           <Stack gap={2} my={2}>
             {props.standards.types.map((type) => (
-              <AccordionStandardCard key={type.name} label={type.name} colour={muiColour.grey[200]} />
+              <AccordionStandardCard key={type.name} label={type.name} colour={grey[200]} />
             ))}
           </Stack>
         </AccordionStandardCard>
@@ -33,14 +33,14 @@ export const MarkingStandardsResults = (props: IMarkingStandardsResultsProps) =>
 
       {/* Accordion for Marking Colours */}
       {props.standards.colours.length > 0 && (
-        <AccordionStandardCard label="Marking Colours" colour={muiColour.grey[100]}>
+        <AccordionStandardCard label="Marking Colours" colour={grey[100]}>
           <Stack gap={2} my={2}>
             {props.standards.colours.map((colour) => (
               <AccordionStandardCard
                 key={colour.colour}
                 // Fall back to colour name if no description
                 label={colour.description ?? colour.colour}
-                colour={muiColour[colour.colour.toLowerCase()]?.[100] ?? muiColour.grey[200]}
+                colour={grey[200]}
               />
             ))}
           </Stack>
