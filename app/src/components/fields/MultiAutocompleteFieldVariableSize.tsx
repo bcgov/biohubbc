@@ -277,7 +277,7 @@ const MultiAutocompleteFieldVariableSize: React.FC<IMultiAutocompleteField> = (p
               value={renderOption.value}
               color="default"
             />
-            <ListItemText primary={renderOption.label} secondary={renderOption.description} />
+            <ListItemText primary={renderOption.label} secondary={renderOption.subText} />
           </Box>
         );
       }}

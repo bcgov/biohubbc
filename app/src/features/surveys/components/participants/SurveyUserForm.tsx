@@ -5,7 +5,7 @@ import AlertBar from 'components/alert/AlertBar';
 import { SystemUserAutocompleteField } from 'components/fields/SystemUserAutocompleteField';
 import UserRoleSelector from 'components/user/UserRoleSelector';
 import { useFormikContext } from 'formik';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
+import { ICodeWithDescription } from 'interfaces/useCodesApi.interface';
 import { ICreateSurveyRequest, IGetSurveyParticipant } from 'interfaces/useSurveyApi.interface';
 import { ISystemUser } from 'interfaces/useUserApi.interface';
 import { TransitionGroup } from 'react-transition-group';
@@ -21,14 +21,19 @@ export const SurveyUserJobYupSchema = yup.object().shape({
 });
 
 interface ISurveyUserFormProps {
-  jobs: IGetAllCodeSetsResponse['project_roles'];
+  jobs: ICodeWithDescription[];
 }
 
 export const SurveyUserJobFormInitialValues = {
   participants: []
 };
 
-const SurveyUserForm: React.FC<ISurveyUserFormProps> = (props) => {
+/**
+ * Form for adding users to a survey.
+ *
+ * @param {ISurveyUserFormProps} props
+ */
+const SurveyUserForm = (props: ISurveyUserFormProps) => {
   const { handleSubmit, values, setFieldValue, errors, setErrors } = useFormikContext<ICreateSurveyRequest>();
 
   const handleAddUser = (user: ISystemUser | IGetSurveyParticipant) => {

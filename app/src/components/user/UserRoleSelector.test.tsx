@@ -1,9 +1,9 @@
 import { PROJECT_ROLE } from 'constants/roles';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
+import { ICodeWithDescription } from 'interfaces/useCodesApi.interface';
 import { fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import UserRoleSelector from './UserRoleSelector';
 
-const mockRoles: IGetAllCodeSetsResponse['project_roles'] = [
+const mockRoles: ICodeWithDescription[] = [
   {
     id: 1,
     name: PROJECT_ROLE.COORDINATOR,

@@ -2,13 +2,13 @@ import { PROJECT_ROLE } from 'constants/roles';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { Formik } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
+import { ICodeWithDescription } from 'interfaces/useCodesApi.interface';
 import { ISystemUser } from 'interfaces/useUserApi.interface';
 import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import { render, waitFor } from 'test-helpers/test-utils';
 import ProjectUserForm, { ProjectUserRoleYupSchema } from './ProjectUserForm';
 
-const mockRoles: IGetAllCodeSetsResponse['project_roles'] = [
+const mockRoles: ICodeWithDescription[] = [
   {
     id: 1,
     name: 'Project Manager',

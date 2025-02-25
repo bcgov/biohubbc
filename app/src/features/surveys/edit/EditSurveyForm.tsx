@@ -14,7 +14,6 @@ import SurveyPartnershipsForm, {
   SurveyPartnershipsFormYupSchema
 } from 'features/surveys/view/components/SurveyPartnershipsForm';
 import { Formik, FormikProps } from 'formik';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { ICreateSurveyRequest, IUpdateSurveyRequest } from 'interfaces/useSurveyApi.interface';
 import React, { useContext, useEffect } from 'react';
 import AgreementsForm, { AgreementsYupSchema } from '../components/agreements/AgreementsForm';
@@ -80,15 +79,6 @@ const EditSurveyForm = <
     .concat(SurveySiteSelectionYupSchema)
     .concat(SurveyPartnershipsFormYupSchema)
     .concat(SpeciesYupSchema);
-
-  // Transforms survey_jobs data structure to match the expected project_roles type interface
-  // required by the SurveyUserForm component
-  const transformSurveyJobs = (jobs: typeof codes.survey_jobs): IGetAllCodeSetsResponse['project_roles'] => {
-    return jobs.map((job) => ({
-      ...job,
-      description: job.description
-    }));
-  };
 
   return (
     <Formik<T>
@@ -164,7 +154,7 @@ const EditSurveyForm = <
                 }) || []
               }
               type={
-                codes?.type?.map((item) => {
+                codes?.survey_data_type?.map((item) => {
                   return { value: item.id, label: item.name, description: item.description };
                 }) || []
               }
@@ -176,7 +166,7 @@ const EditSurveyForm = <
         <HorizontalSplitFormComponent
           title="Survey Participants"
           summary="Specify people who participated in this survey"
-          component={<SurveyUserForm jobs={transformSurveyJobs(codes.survey_jobs)} />}
+          component={<SurveyUserForm jobs={codes.survey_jobs} />}
         />
 
         <Divider />

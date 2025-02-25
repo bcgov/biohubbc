@@ -1,13 +1,13 @@
 import { AuthStateContext } from 'contexts/authStateContext';
 import { Formik } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
+import { ICodeWithDescription } from 'interfaces/useCodesApi.interface';
 import { ISystemUser } from 'interfaces/useUserApi.interface';
 import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import { render, waitFor } from 'test-helpers/test-utils';
 import SurveyUserForm, { SurveyUserJobYupSchema } from './SurveyUserForm';
 
-const mockJobs: IGetAllCodeSetsResponse['project_roles'] = [
+const mockJobs: ICodeWithDescription[] = [
   {
     id: 1,
     name: 'Pilot',

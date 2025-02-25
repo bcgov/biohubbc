@@ -2,63 +2,49 @@ import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { BaseRepository } from './base-repository';
 
-export const ICode = z.object({
-  id: z.number(),
-  name: z.string()
-});
-export type ICode = z.infer<typeof ICode>;
-
-export const CodeSet = <T extends z.ZodRawShape>(zodSchema?: T) => {
-  if (zodSchema) {
-    return z.array(z.object(zodSchema));
-  }
-  return z.array(ICode);
-};
-
-const InvestmentActionCategoryCode = ICode.extend({ agency_id: z.number() });
-const ProprietorTypeCode = ICode.extend({ is_first_nation: z.boolean() });
-const IucnConservationActionLevel2SubclassificationCode = ICode.extend({ iucn1_id: z.number() });
-const IucnConservationActionLevel3SubclassificationCode = ICode.extend({ iucn2_id: z.number() });
-const IntendedOutcomeCode = ICode.extend({ description: z.string() });
-const SampleMethodsCode = ICode.extend({ description: z.string() });
-const SurveyProgressCode = ICode.extend({ description: z.string() });
-const MethodResponseMetricsCode = ICode.extend({ description: z.string() });
-const AttractantCode = ICode.extend({ description: z.string() });
-const ObservationSubcountSignCode = ICode.extend({ description: z.string() });
-const DeviceMakeCode = ICode.extend({ description: z.string() });
-const FrequencyUnitCode = ICode.extend({ description: z.string() });
-const AlertTypeCode = ICode.extend({ description: z.string() });
-const VantageCode = ICode.extend({ description: z.string() });
-const TypeCode = ICode.extend({ description: z.string() });
-const SiteSelectionStrategyCode = ICode.extend({ description: z.string() });
-
-export const IAllCodeSets = z.object({
-  management_action_type: CodeSet(),
-  first_nations: CodeSet(),
-  agency: CodeSet(),
-  investment_action_category: CodeSet(InvestmentActionCategoryCode.shape),
-  type: CodeSet(),
-  proprietor_type: CodeSet(ProprietorTypeCode.shape),
-  iucn_conservation_action_level_1_classification: CodeSet(),
-  iucn_conservation_action_level_2_subclassification: CodeSet(IucnConservationActionLevel2SubclassificationCode.shape),
-  iucn_conservation_action_level_3_subclassification: CodeSet(IucnConservationActionLevel3SubclassificationCode.shape),
-  system_roles: CodeSet(),
-  project_roles: CodeSet(),
-  administrative_activity_status_type: CodeSet(),
-  intended_outcomes: CodeSet(IntendedOutcomeCode.shape),
-  survey_jobs: CodeSet(),
-  site_selection_strategies: CodeSet(),
-  sample_methods: CodeSet(SampleMethodsCode.shape),
-  survey_progress: CodeSet(SurveyProgressCode.shape),
-  method_response_metrics: CodeSet(MethodResponseMetricsCode.shape),
-  attractants: CodeSet(AttractantCode.shape),
-  observation_subcount_signs: CodeSet(ObservationSubcountSignCode.shape),
-  telemetry_device_makes: CodeSet(DeviceMakeCode.shape),
-  frequency_units: CodeSet(FrequencyUnitCode.shape),
-  alert_types: CodeSet(AlertTypeCode.shape),
-  vantages: CodeSet(VantageCode.shape)
-});
+export type ICode = z.infer<typeof Code>;
+export type ICodeDescription = z.infer<typeof CodeDescription>;
 export type IAllCodeSets = z.infer<typeof IAllCodeSets>;
+
+// Code without description
+export const Code = z.object({ id: z.number(), name: z.string() });
+
+// Code with description
+export const CodeDescription = Code.extend({ description: z.string() });
+
+// Codes with additional properties
+const InvestmentActionCategoryCode = Code.extend({ agency_id: z.number() });
+const ProprietorTypeCode = Code.extend({ is_first_nation: z.boolean() });
+const IucnConservationActionLevel2SubclassificationCode = Code.extend({ iucn1_id: z.number() });
+const IucnConservationActionLevel3SubclassificationCode = Code.extend({ iucn2_id: z.number() });
+
+// All code sets
+export const IAllCodeSets = z.object({
+  management_action_type: Code.array(),
+  first_nations: Code.array(),
+  agency: Code.array(),
+  investment_action_category: InvestmentActionCategoryCode.array(),
+  survey_data_type: CodeDescription.array(),
+  proprietor_type: ProprietorTypeCode.array(),
+  iucn_conservation_action_level_1_classification: Code.array(),
+  iucn_conservation_action_level_2_subclassification: IucnConservationActionLevel2SubclassificationCode.array(),
+  iucn_conservation_action_level_3_subclassification: IucnConservationActionLevel3SubclassificationCode.array(),
+  system_roles: Code.array(),
+  project_roles: CodeDescription.array(),
+  administrative_activity_status_type: Code.array(),
+  intended_outcomes: CodeDescription.array(),
+  survey_jobs: CodeDescription.array(),
+  site_selection_strategies: Code.array(),
+  sample_methods: CodeDescription.array(),
+  survey_progress: CodeDescription.array(),
+  method_response_metrics: CodeDescription.array(),
+  attractants: CodeDescription.array(),
+  observation_subcount_signs: CodeDescription.array(),
+  telemetry_device_makes: CodeDescription.array(),
+  frequency_units: CodeDescription.array(),
+  alert_types: CodeDescription.array(),
+  vantages: CodeDescription.array()
+});
 
 export class CodeRepository extends BaseRepository {
   /**
@@ -97,7 +83,7 @@ export class CodeRepository extends BaseRepository {
       WHERE record_end_date is null;
     `;
 
-    const response = await this.connection.sql(sqlStatement, ICode);
+    const response = await this.connection.sql(sqlStatement, Code);
 
     return response.rows;
   }
@@ -118,7 +104,7 @@ export class CodeRepository extends BaseRepository {
       ORDER BY name ASC;
     `;
 
-    const response = await this.connection.sql(sqlStatement, ICode);
+    const response = await this.connection.sql(sqlStatement, Code);
 
     return response.rows;
   }
@@ -139,7 +125,7 @@ export class CodeRepository extends BaseRepository {
       ORDER BY name ASC;
     `;
 
-    const response = await this.connection.sql(sqlStatement, ICode);
+    const response = await this.connection.sql(sqlStatement, Code);
 
     return response.rows;
   }
@@ -166,12 +152,14 @@ export class CodeRepository extends BaseRepository {
   }
 
   /**
-   * Fetch activity codes.
+   * Fetch survey data type.
+   *
+   * TODO: Rename this table to something more specific ie: not 'type'
    *
    * @return {*}
    * @memberof CodeRepository
    */
-  async getType() {
+  async getSurveyDataType() {
     const sqlStatement = SQL`
       SELECT
         type_id as id,
@@ -182,7 +170,7 @@ export class CodeRepository extends BaseRepository {
       WHERE record_end_date is null;
     `;
 
-    const response = await this.connection.sql(sqlStatement, TypeCode);
+    const response = await this.connection.sql(sqlStatement, CodeDescription);
 
     return response.rows;
   }
@@ -203,7 +191,7 @@ export class CodeRepository extends BaseRepository {
       WHERE record_end_date is null;
     `;
 
-    const response = await this.connection.sql(sqlStatement, IntendedOutcomeCode);
+    const response = await this.connection.sql(sqlStatement, CodeDescription);
 
     return response.rows;
   }
@@ -245,7 +233,7 @@ export class CodeRepository extends BaseRepository {
       WHERE record_end_date is null;
     `;
 
-    const response = await this.connection.sql(sqlStatement, ICode);
+    const response = await this.connection.sql(sqlStatement, Code);
 
     return response.rows;
   }
@@ -307,7 +295,7 @@ export class CodeRepository extends BaseRepository {
       WHERE record_end_date is null;
     `;
 
-    const response = await this.connection.sql(sqlStatement, ICode);
+    const response = await this.connection.sql(sqlStatement, Code);
 
     return response.rows;
   }
@@ -330,7 +318,7 @@ export class CodeRepository extends BaseRepository {
         CASE WHEN name = 'Coordinator' THEN 0 ELSE 1 END;
     `;
 
-    const response = await this.connection.sql(sqlStatement, ICode);
+    const response = await this.connection.sql(sqlStatement, CodeDescription);
 
     return response.rows;
   }
@@ -351,7 +339,7 @@ export class CodeRepository extends BaseRepository {
       WHERE record_end_date is null;
     `;
 
-    const response = await this.connection.sql(sqlStatement, ICode);
+    const response = await this.connection.sql(sqlStatement, CodeDescription);
 
     return response.rows;
   }
@@ -372,7 +360,7 @@ export class CodeRepository extends BaseRepository {
       WHERE record_end_date is null;
     `;
 
-    const response = await this.connection.sql(sqlStatement, SiteSelectionStrategyCode);
+    const response = await this.connection.sql(sqlStatement, CodeDescription);
 
     return response.rows;
   }
@@ -392,7 +380,7 @@ export class CodeRepository extends BaseRepository {
       WHERE record_end_date is null;
     `;
 
-    const response = await this.connection.sql(sqlStatement, ICode);
+    const response = await this.connection.sql(sqlStatement, Code);
 
     return response.rows;
   }
@@ -413,7 +401,7 @@ export class CodeRepository extends BaseRepository {
       WHERE record_end_date is null;
     `;
 
-    const response = await this.connection.sql(sqlStatement, SurveyProgressCode);
+    const response = await this.connection.sql(sqlStatement, CodeDescription);
 
     return response.rows;
   }
@@ -434,7 +422,7 @@ export class CodeRepository extends BaseRepository {
       WHERE record_end_date IS null;
     `;
 
-    const response = await this.connection.sql(sqlStatement, MethodResponseMetricsCode);
+    const response = await this.connection.sql(sqlStatement, CodeDescription);
 
     return response.rows;
   }
@@ -455,7 +443,7 @@ export class CodeRepository extends BaseRepository {
       WHERE record_end_date IS null;
     `;
 
-    const response = await this.connection.sql(sqlStatement, AttractantCode);
+    const response = await this.connection.sql(sqlStatement, CodeDescription);
 
     return response.rows;
   }
@@ -476,7 +464,7 @@ export class CodeRepository extends BaseRepository {
       WHERE record_end_date IS null;
     `;
 
-    const response = await this.connection.sql(sqlStatement, ObservationSubcountSignCode);
+    const response = await this.connection.sql(sqlStatement, CodeDescription);
 
     return response.rows;
   }
@@ -499,7 +487,7 @@ export class CodeRepository extends BaseRepository {
       AND record_effective_date IS NOT NULL;
     `;
 
-    const response = await this.connection.sql(sqlStatement, DeviceMakeCode);
+    const response = await this.connection.sql(sqlStatement, CodeDescription);
 
     return response.rows;
   }
@@ -520,7 +508,7 @@ export class CodeRepository extends BaseRepository {
       WHERE record_end_date is null;
     `;
 
-    const response = await this.connection.sql(sqlStatement, FrequencyUnitCode);
+    const response = await this.connection.sql(sqlStatement, CodeDescription);
 
     return response.rows;
   }
@@ -542,7 +530,7 @@ export class CodeRepository extends BaseRepository {
       ORDER BY name ASC;
     `;
 
-    const response = await this.connection.sql(sqlStatement, AlertTypeCode);
+    const response = await this.connection.sql(sqlStatement, CodeDescription);
 
     return response.rows;
   }
@@ -563,7 +551,7 @@ export class CodeRepository extends BaseRepository {
       WHERE record_end_date IS null;
     `;
 
-    const response = await this.connection.sql(sqlStatement, VantageCode);
+    const response = await this.connection.sql(sqlStatement, CodeDescription);
 
     return response.rows;
   }

@@ -8,7 +8,7 @@ import Paper from '@mui/material/Paper';
 import Select from '@mui/material/Select';
 import Typography from '@mui/material/Typography';
 import { PROJECT_ROLE_ICONS } from 'constants/roles';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
+import { ICodeWithDescription } from 'interfaces/useCodesApi.interface';
 import { IGetProjectParticipant } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyParticipant } from 'interfaces/useSurveyApi.interface';
 import { ISystemUser } from 'interfaces/useUserApi.interface';
@@ -18,7 +18,7 @@ interface IUserRoleSelectorProps {
   index: number;
   user: ISystemUser | IGetProjectParticipant | IGetSurveyParticipant;
   selectedRole: string;
-  roles: IGetAllCodeSetsResponse['project_roles'];
+  roles: ICodeWithDescription[];
   error: JSX.Element | undefined;
   handleAdd: (role: string, index: number) => void;
   handleRemove: (id: number) => void;

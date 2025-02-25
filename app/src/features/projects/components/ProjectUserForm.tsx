@@ -6,7 +6,7 @@ import { SystemUserAutocompleteField } from 'components/fields/SystemUserAutocom
 import UserRoleSelector from 'components/user/UserRoleSelector';
 import { PROJECT_ROLE } from 'constants/roles';
 import { useFormikContext } from 'formik';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
+import { ICodeWithDescription } from 'interfaces/useCodesApi.interface';
 import { ICreateProjectRequest, IGetProjectParticipant } from 'interfaces/useProjectApi.interface';
 import { ISystemUser } from 'interfaces/useUserApi.interface';
 import { TransitionGroup } from 'react-transition-group';
@@ -30,7 +30,7 @@ export const ProjectUserRoleYupSchema = yup.object().shape({
 });
 
 interface IProjectUserFormProps {
-  roles: IGetAllCodeSetsResponse['project_roles'];
+  roles: ICodeWithDescription[];
   description?: string;
 }
 
