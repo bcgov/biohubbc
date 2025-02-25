@@ -492,10 +492,10 @@ export class CritterbaseService {
   /**
    * Fetches qualitative and quantitative measurements for the specified taxon.
    *
-   * @param {string} tsn - The taxon serial number (TSN).
+   * @param {number} tsn - The taxon serial number (TSN).
    * @returns {Promise<{ qualitative: CBQualitativeMeasurementTypeDefinition[], quantitative: CBQuantitativeMeasurementTypeDefinition[] }>} - The response data containing qualitative and quantitative measurements.
    */
-  async getTaxonMeasurements(tsn: string): Promise<{
+  async getTaxonMeasurements(tsn: number): Promise<{
     qualitative: CBQualitativeMeasurementTypeDefinition[];
     quantitative: CBQuantitativeMeasurementTypeDefinition[];
   }> {
@@ -507,10 +507,10 @@ export class CritterbaseService {
   /**
    * Fetches body location information for the specified taxon.
    *
-   * @param {string} tsn - The taxon serial number (TSN).
+   * @param {number} tsn - The taxon serial number (TSN).
    * @returns {Promise<IAsSelectLookup[]>} - The response data containing body location information.
    */
-  async getTaxonBodyLocations(tsn: string): Promise<IAsSelectLookup[]> {
+  async getTaxonBodyLocations(tsn: number): Promise<IAsSelectLookup[]> {
     const response = await this.axiosInstance.get('/xref/taxon-marking-body-locations', {
       params: { tsn, format: CritterbaseFormatEnum.AS_SELECT }
     });
@@ -704,10 +704,10 @@ export class CritterbaseService {
    * Find collection categories by tsn. Includes hierarchies.
    *
    * @async
-   * @param {string} tsn - ITIS TSN
+   * @param {number} tsn - ITIS TSN
    * @returns {Promise<ICollectionCategory[]>} Collection categories
    */
-  async findTaxonCollectionCategories(tsn: string): Promise<ICollectionCategory[]> {
+  async findTaxonCollectionCategories(tsn: number): Promise<ICollectionCategory[]> {
     const response = await this.axiosInstance.get(`/xref/taxon-collection-categories`, { params: { tsn } });
 
     return response.data;
@@ -717,10 +717,10 @@ export class CritterbaseService {
    * Find collection units by tsn. Includes hierarchies.
    *
    * @async
-   * @param {string} tsn - ITIS TSN
+   * @param {number} tsn - ITIS TSN
    * @returns {Promise<ICollectionUnitWithCategory[]>} Collection units
    */
-  async findTaxonCollectionUnits(tsn: string): Promise<ICollectionUnitWithCategory[]> {
+  async findTaxonCollectionUnits(tsn: number): Promise<ICollectionUnitWithCategory[]> {
     const response = await this.axiosInstance.get(`/xref/taxon-collection-units`, { params: { tsn } });
 
     return response.data;

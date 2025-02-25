@@ -11,8 +11,8 @@ import {
   matchSamplePeriodDateToWorksheetPeriodDateTime,
   matchSamplePeriodTimeToWorksheetPeriodDateTime,
   matchSamplePeriodToWorksheetPeriod,
-  validateSiteExistsInSamplePeriods,
-  validateTechniqueExistsInSamplePeriods
+  validateSiteExistsInSurveySampleSiteMap,
+  validateTechniqueExistsInSurveyTechniqueMap
 } from './observation-sampling-row-validator';
 
 chai.use(sinonChai);
@@ -440,172 +440,344 @@ describe('Worksheet sampling util functions', () => {
       expect(getSamplePeriodIdFromRowState(params.row).sample_period_id).to.equal(1);
     });
 
-    it('should return an error when unable to uniquely match period with date and time', () => {
-      const getCellValueStub = sinon.stub();
+    describe('A: Observation date and time included', () => {
+      it('A: should return an error when unable to uniquely match period', () => {
+        const getCellValueStub = sinon.stub();
 
-      getCellValueStub.onCall(0).returns(null);
-      getCellValueStub.onCall(1).returns(null);
-      getCellValueStub.onCall(2).returns('2021-01-01 11:00:00 - 2021-01-02 12:00:00');
-      getCellValueStub.onCall(3).returns('2025-01-01');
-      getCellValueStub.onCall(4).returns('11:00:00');
+        getCellValueStub.onCall(0).returns(null);
+        getCellValueStub.onCall(1).returns(null);
+        getCellValueStub.onCall(2).returns('2021-01-01 - 2021-01-02');
+        getCellValueStub.onCall(3).returns('2025-01-01');
+        getCellValueStub.onCall(4).returns('11:00:00');
 
-      const samplePeriods = [
-        {
-          survey_sample_period_id: 1,
-          survey_sample_site: {
-            name: 'SampleSiteOne'
+        const samplePeriods = [
+          {
+            survey_sample_period_id: 1,
+            survey_sample_site: {
+              name: 'SampleSiteOne'
+            },
+            method_technique: {
+              name: 'MethodTechniqueOne'
+            },
+            start_date: '2021-01-01',
+            start_time: '11:00:00',
+            end_date: '2021-01-02',
+            end_time: '12:00:00'
           },
-          method_technique: {
-            name: 'MethodTechniqueOne'
+          {
+            survey_sample_period_id: 2,
+            survey_sample_site: {
+              name: 'SampleSiteOne'
+            },
+            method_technique: {
+              name: 'MethodTechniqueOne'
+            },
+            start_date: '2021-01-01',
+            start_time: '11:00:00',
+            end_date: '2021-01-02',
+            end_time: '12:00:00'
+          }
+        ] as any[];
+
+        const rowValidatorParams = {
+          samplePeriods: samplePeriods,
+          sampleSites: [{ name: 'SampleSiteOne' }] as any[],
+          methodTechniques: [{ name: 'MethodTechniqueOne' }] as any[],
+          utils: {
+            getCellValue: getCellValueStub,
+            getWorksheetHeader: () => 'HEADER'
           },
-          start_date: '2021-01-01',
-          start_time: '11:00:00',
-          end_date: '2021-01-02',
-          end_time: '12:00:00'
-        },
-        {
-          survey_sample_period_id: 2,
-          survey_sample_site: {
-            name: 'SampleSiteOne'
+          samplePeriodId: undefined
+        } as any;
+
+        const validator = getObservationSamplingInformationRowValidator(rowValidatorParams);
+
+        const result = validator({ row: {} } as any);
+
+        expect(result.length).to.equal(2);
+        expect(result[0].error).to.contain('period is ambiguous');
+      });
+
+      it('A: should return no errors and update state when able to uniquely match a period', () => {
+        const getCellValueStub = sinon.stub();
+
+        getCellValueStub.onCall(0).returns(null);
+        getCellValueStub.onCall(1).returns(null);
+        getCellValueStub.onCall(2).returns('2021-01-01 - 2021-01-02');
+        getCellValueStub.onCall(3).returns('2021-01-01');
+        getCellValueStub.onCall(4).returns('11:30:00');
+
+        const samplePeriods = [
+          {
+            survey_sample_period_id: 1,
+            survey_sample_site: {
+              name: 'SampleSiteOne'
+            },
+            method_technique: {
+              name: 'MethodTechniqueOne'
+            },
+            start_date: '2022-01-01',
+            end_date: '2022-01-02'
           },
-          method_technique: {
-            name: 'MethodTechniqueOne'
+          {
+            survey_sample_period_id: 2,
+            survey_sample_site: {
+              name: 'SampleSiteOne'
+            },
+            method_technique: {
+              name: 'MethodTechniqueOne'
+            },
+            start_date: '2021-01-01',
+            start_time: '11:00:00',
+            end_date: '2021-01-02',
+            end_time: '12:00:00'
+          }
+        ] as any[];
+
+        const rowValidatorParams = {
+          samplePeriods: samplePeriods,
+          sampleSites: [{ name: 'SampleSiteOne', survey_sample_site_id: 2 }] as any[],
+          methodTechniques: [{ name: 'MethodTechniqueOne', method_technique_id: 3 }] as any[],
+          utils: {
+            getCellValue: getCellValueStub,
+            getWorksheetHeader: () => 'HEADER'
           },
-          start_date: '2021-01-01',
-          start_time: '11:00:00',
-          end_date: '2021-01-02',
-          end_time: '12:00:00'
-        }
-      ] as any[];
+          samplePeriodId: undefined
+        } as any;
 
-      const rowValidatorParams = {
-        samplePeriods: samplePeriods,
-        sampleSites: [{ name: 'SampleSiteOne' }] as any[],
-        methodTechniques: [{ name: 'MethodTechniqueOne' }] as any[],
-        utils: {
-          getCellValue: getCellValueStub,
-          getWorksheetHeader: () => 'HEADER'
-        },
-        samplePeriodId: undefined
-      } as any;
+        const validator = getObservationSamplingInformationRowValidator(rowValidatorParams);
 
-      const validator = getObservationSamplingInformationRowValidator(rowValidatorParams);
+        const params = { row: {} } as any;
 
-      const result = validator({ row: {} } as any);
+        const result = validator(params);
 
-      expect(result.length).to.equal(2);
-      expect(result[0].error).to.contain('period is ambiguous');
+        expect(result.length).to.equal(0);
+        expect(getSamplePeriodIdFromRowState(params.row).sample_period_id).to.equal(2);
+      });
+
+      it('A: should return errors when unable to uniquely match period with date and time', () => {
+        const getCellValueStub = sinon.stub();
+
+        getCellValueStub.onCall(0).returns(null);
+        getCellValueStub.onCall(1).returns(null);
+        getCellValueStub.onCall(2).returns('2021-01-01 - 2021-01-02');
+        getCellValueStub.onCall(3).returns('2021-01-01');
+        getCellValueStub.onCall(4).returns('11:30:00');
+
+        const samplePeriods = [
+          {
+            survey_sample_period_id: 1,
+            survey_sample_site: {
+              name: 'SampleSiteOne'
+            },
+            method_technique: {
+              name: 'MethodTechniqueOne'
+            },
+            start_date: '2021-01-01',
+            end_date: '2021-01-02'
+          },
+          {
+            survey_sample_period_id: 2,
+            survey_sample_site: {
+              name: 'SampleSiteOne'
+            },
+            method_technique: {
+              name: 'MethodTechniqueOne'
+            },
+            start_date: '2021-01-01',
+            end_date: '2021-01-02'
+          }
+        ] as any[];
+
+        const rowValidatorParams = {
+          samplePeriods: samplePeriods,
+          sampleSites: [{ name: 'SampleSiteOne' }] as any[],
+          methodTechniques: [{ name: 'MethodTechniqueOne' }] as any[],
+          utils: {
+            getCellValue: getCellValueStub,
+            getWorksheetHeader: () => 'HEADER'
+          },
+          samplePeriodId: undefined
+        } as any;
+
+        const validator = getObservationSamplingInformationRowValidator(rowValidatorParams);
+
+        const params = { row: {} } as any;
+
+        const result = validator(params);
+
+        expect(result.length).to.equal(2);
+        expect(result[0].error).to.contain('observation date and time');
+      });
     });
 
-    it('should return no errors and update state when uniquely matching period with date and time', () => {
-      const getCellValueStub = sinon.stub();
+    describe('B: Observation date and time not included but period contains time information', () => {
+      it('B: should return an error when unable to uniquely match period', () => {
+        const getCellValueStub = sinon.stub();
 
-      getCellValueStub.onCall(0).returns(null);
-      getCellValueStub.onCall(1).returns(null);
-      getCellValueStub.onCall(2).returns('2021-01-01 - 2021-01-02');
-      getCellValueStub.onCall(3).returns('2021-01-01');
-      getCellValueStub.onCall(4).returns('11:30:00');
+        getCellValueStub.onCall(0).returns(null);
+        getCellValueStub.onCall(1).returns(null);
+        getCellValueStub.onCall(2).returns('2021-01-01 11:00:00 - 2021-01-02 12:00:00');
 
-      const samplePeriods = [
-        {
-          survey_sample_period_id: 1,
-          survey_sample_site: {
-            name: 'SampleSiteOne'
+        const samplePeriods = [
+          {
+            survey_sample_period_id: 1,
+            survey_sample_site: {
+              name: 'SampleSiteOne'
+            },
+            method_technique: {
+              name: 'MethodTechniqueOne'
+            },
+            start_date: '2021-01-01',
+            start_time: '11:00:00',
+            end_date: '2021-01-02',
+            end_time: '12:00:00'
           },
-          method_technique: {
-            name: 'MethodTechniqueOne'
+          {
+            survey_sample_period_id: 2,
+            survey_sample_site: {
+              name: 'SampleSiteOne'
+            },
+            method_technique: {
+              name: 'MethodTechniqueOne'
+            },
+            start_date: '2021-01-01',
+            start_time: '11:00:00',
+            end_date: '2021-01-02',
+            end_time: '12:00:00'
+          }
+        ] as any[];
+
+        const rowValidatorParams = {
+          samplePeriods: samplePeriods,
+          sampleSites: [{ name: 'SampleSiteOne' }] as any[],
+          methodTechniques: [{ name: 'MethodTechniqueOne' }] as any[],
+          utils: {
+            getCellValue: getCellValueStub,
+            getWorksheetHeader: () => 'HEADER'
           },
-          start_date: '2021-01-01',
-          end_date: '2021-01-02'
-        },
-        {
-          survey_sample_period_id: 2,
-          survey_sample_site: {
-            name: 'SampleSiteOne'
+          samplePeriodId: undefined
+        } as any;
+
+        const validator = getObservationSamplingInformationRowValidator(rowValidatorParams);
+
+        const result = validator({ row: {} } as any);
+
+        expect(result.length).to.equal(2);
+        expect(result[0].error).to.contain('period is ambiguous');
+      });
+
+      it('B: should return no errors and update state when able to uniquely match a period', () => {
+        const getCellValueStub = sinon.stub();
+
+        getCellValueStub.onCall(0).returns(null);
+        getCellValueStub.onCall(1).returns(null);
+        getCellValueStub.onCall(2).returns('2021-01-01 11:00:00 - 2021-01-02 12:00:00');
+
+        const samplePeriods = [
+          {
+            survey_sample_period_id: 1,
+            survey_sample_site: {
+              name: 'SampleSiteOne'
+            },
+            method_technique: {
+              name: 'MethodTechniqueOne'
+            },
+            start_date: '2022-01-01',
+            end_date: '2022-01-02'
           },
-          method_technique: {
-            name: 'MethodTechniqueOne'
+          {
+            survey_sample_period_id: 2,
+            survey_sample_site: {
+              name: 'SampleSiteOne'
+            },
+            method_technique: {
+              name: 'MethodTechniqueOne'
+            },
+            start_date: '2021-01-01',
+            start_time: '11:00:00',
+            end_date: '2021-01-02',
+            end_time: '12:00:00'
+          }
+        ] as any[];
+
+        const rowValidatorParams = {
+          samplePeriods: samplePeriods,
+          sampleSites: [{ name: 'SampleSiteOne', survey_sample_site_id: 2 }] as any[],
+          methodTechniques: [{ name: 'MethodTechniqueOne', method_technique_id: 3 }] as any[],
+          utils: {
+            getCellValue: getCellValueStub,
+            getWorksheetHeader: () => 'HEADER'
           },
-          start_date: '2021-01-01',
-          start_time: '11:00:00',
-          end_date: '2021-01-02',
-          end_time: '12:00:00'
-        }
-      ] as any[];
+          samplePeriodId: undefined
+        } as any;
 
-      const rowValidatorParams = {
-        samplePeriods: samplePeriods,
-        sampleSites: [{ name: 'SampleSiteOne', survey_sample_site_id: 2 }] as any[],
-        methodTechniques: [{ name: 'MethodTechniqueOne', method_technique_id: 3 }] as any[],
-        utils: {
-          getCellValue: getCellValueStub,
-          getWorksheetHeader: () => 'HEADER'
-        },
-        samplePeriodId: undefined
-      } as any;
+        const validator = getObservationSamplingInformationRowValidator(rowValidatorParams);
 
-      const validator = getObservationSamplingInformationRowValidator(rowValidatorParams);
+        const params = { row: {} } as any;
 
-      const params = { row: {} } as any;
+        const result = validator(params);
 
-      const result = validator(params);
+        expect(result.length).to.equal(0);
+        expect(getSamplePeriodIdFromRowState(params.row).sample_period_id).to.equal(2);
+      });
 
-      expect(result.length).to.equal(0);
-      expect(getSamplePeriodIdFromRowState(params.row).sample_period_id).to.equal(1);
-    });
+      it('B: should return errors when unable to uniquely match period with date and time', () => {
+        const getCellValueStub = sinon.stub();
 
-    it('should return errors when unable to uniquely match period with date and time', () => {
-      const getCellValueStub = sinon.stub();
+        getCellValueStub.onCall(0).returns(null);
+        getCellValueStub.onCall(1).returns(null);
+        getCellValueStub.onCall(2).returns('2021-01-01 11:00:00 - 2021-01-02 12:00:00');
 
-      getCellValueStub.onCall(0).returns(null);
-      getCellValueStub.onCall(1).returns(null);
-      getCellValueStub.onCall(2).returns('2021-01-01 - 2021-01-02');
-      getCellValueStub.onCall(3).returns('2021-01-01');
-      getCellValueStub.onCall(4).returns('11:30:00');
-
-      const samplePeriods = [
-        {
-          survey_sample_period_id: 1,
-          survey_sample_site: {
-            name: 'SampleSiteOne'
+        const samplePeriods = [
+          {
+            survey_sample_period_id: 1,
+            survey_sample_site: {
+              name: 'SampleSiteOne'
+            },
+            method_technique: {
+              name: 'MethodTechniqueOne'
+            },
+            start_date: '2021-01-01',
+            start_time: '11:00:00',
+            end_date: '2021-01-02',
+            end_time: '12:00:00'
           },
-          method_technique: {
-            name: 'MethodTechniqueOne'
+          {
+            survey_sample_period_id: 2,
+            survey_sample_site: {
+              name: 'SampleSiteOne'
+            },
+            method_technique: {
+              name: 'MethodTechniqueOne'
+            },
+            start_date: '2021-01-01',
+            start_time: '11:00:00',
+            end_date: '2021-01-02',
+            end_time: '12:00:00'
+          }
+        ] as any[];
+
+        const rowValidatorParams = {
+          samplePeriods: samplePeriods,
+          sampleSites: [{ name: 'SampleSiteOne' }] as any[],
+          methodTechniques: [{ name: 'MethodTechniqueOne' }] as any[],
+          utils: {
+            getCellValue: getCellValueStub,
+            getWorksheetHeader: () => 'HEADER'
           },
-          start_date: '2021-01-01',
-          end_date: '2021-01-02'
-        },
-        {
-          survey_sample_period_id: 2,
-          survey_sample_site: {
-            name: 'SampleSiteOne'
-          },
-          method_technique: {
-            name: 'MethodTechniqueOne'
-          },
-          start_date: '2021-01-01',
-          end_date: '2021-01-02'
-        }
-      ] as any[];
+          samplePeriodId: undefined
+        } as any;
 
-      const rowValidatorParams = {
-        samplePeriods: samplePeriods,
-        sampleSites: [{ name: 'SampleSiteOne' }] as any[],
-        methodTechniques: [{ name: 'MethodTechniqueOne' }] as any[],
-        utils: {
-          getCellValue: getCellValueStub,
-          getWorksheetHeader: () => 'HEADER'
-        },
-        samplePeriodId: undefined
-      } as any;
+        const validator = getObservationSamplingInformationRowValidator(rowValidatorParams);
 
-      const validator = getObservationSamplingInformationRowValidator(rowValidatorParams);
+        const params = { row: {} } as any;
 
-      const params = { row: {} } as any;
+        const result = validator(params);
 
-      const result = validator(params);
-
-      expect(result.length).to.equal(2);
+        expect(result.length).to.equal(2);
+        expect(result[0].error).to.contain('period is ambiguous');
+      });
     });
   });
 
@@ -640,10 +812,8 @@ describe('Worksheet sampling util functions', () => {
 
           expect(result).to.be.true;
         });
-      });
 
-      describe('returns false', () => {
-        it('matches on date, but not on time', () => {
+        it('matches on date, but not on time (time is ignored)', () => {
           const worksheetPeriod = `2021-01-01 - 2021-01-02`;
 
           const samplingPeriod = {
@@ -669,9 +839,11 @@ describe('Worksheet sampling util functions', () => {
 
           const result = matchSamplePeriodToWorksheetPeriod(worksheetPeriod, samplingPeriod);
 
-          expect(result).to.be.false;
+          expect(result).to.be.true;
         });
+      });
 
+      describe('returns false', () => {
         it('worksheet period has no end date', () => {
           const worksheetPeriod = `2021-01-01 11:00:00`;
 
@@ -1414,11 +1586,11 @@ describe('Worksheet sampling util functions', () => {
     });
   });
 
-  describe('validateSiteExistsInSamplePeriods', () => {
+  describe('validateSiteExistsInSurveySampleSiteMap', () => {
     it('should return an error when site name does not exist in sample periods', () => {
       const sampleSiteMap = new Map([['SampleSiteOne', 1]]);
 
-      const error = validateSiteExistsInSamplePeriods('bad', 'HEADER', sampleSiteMap);
+      const error = validateSiteExistsInSurveySampleSiteMap('bad', 'HEADER', sampleSiteMap);
 
       expect(error?.error).to.contain('not exist');
     });
@@ -1426,7 +1598,7 @@ describe('Worksheet sampling util functions', () => {
     it('should return null when site name exists in sample periods', () => {
       const sampleSiteMap = new Map([['SampleSiteOne', 1]]);
 
-      const error = validateSiteExistsInSamplePeriods('SampleSiteOne', 'HEADER', sampleSiteMap);
+      const error = validateSiteExistsInSurveySampleSiteMap('SampleSiteOne', 'HEADER', sampleSiteMap);
 
       expect(error).to.be.null;
     });
@@ -1434,17 +1606,17 @@ describe('Worksheet sampling util functions', () => {
     it('should return null when sample site name is null', () => {
       const sampleSiteMap = new Map([['SampleSiteOne', 1]]);
 
-      const error = validateSiteExistsInSamplePeriods(null, 'HEADER', sampleSiteMap);
+      const error = validateSiteExistsInSurveySampleSiteMap(null, 'HEADER', sampleSiteMap);
 
       expect(error).to.be.null;
     });
   });
 
-  describe('validateTechniqueExistsInSamplePeriods', () => {
+  describe('validateTechniqueExistsInSurveyTechniqueMap', () => {
     it('should return an error when method technique does not exist in sample periods', () => {
       const methodTechniqueMap = new Map([['MethodTechniqueOne', 1]]);
 
-      const error = validateTechniqueExistsInSamplePeriods('bad', 'HEADER', methodTechniqueMap);
+      const error = validateTechniqueExistsInSurveyTechniqueMap('bad', 'HEADER', methodTechniqueMap);
 
       expect(error?.error).to.contain('not exist');
     });
@@ -1452,7 +1624,7 @@ describe('Worksheet sampling util functions', () => {
     it('should return null when method technique exists in sample periods', () => {
       const methodTechniqueMap = new Map([['MethodTechniqueOne', 1]]);
 
-      const error = validateTechniqueExistsInSamplePeriods('MethodTechniqueOne', 'HEADER', methodTechniqueMap);
+      const error = validateTechniqueExistsInSurveyTechniqueMap('MethodTechniqueOne', 'HEADER', methodTechniqueMap);
 
       expect(error).to.be.null;
     });
@@ -1460,7 +1632,7 @@ describe('Worksheet sampling util functions', () => {
     it('should return null when method technique name is null', () => {
       const methodTechniqueMap = new Map([['MethodTechniqueOne', 1]]);
 
-      const error = validateTechniqueExistsInSamplePeriods(null, 'HEADER', methodTechniqueMap);
+      const error = validateTechniqueExistsInSurveyTechniqueMap(null, 'HEADER', methodTechniqueMap);
 
       expect(error).to.be.null;
     });
