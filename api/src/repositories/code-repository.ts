@@ -2,6 +2,7 @@ import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { BaseRepository } from './base-repository';
 
+// Code types
 export type ICode = z.infer<typeof Code>;
 export type ICodeDescription = z.infer<typeof CodeDescription>;
 export type IAllCodeSets = z.infer<typeof IAllCodeSets>;
@@ -50,10 +51,10 @@ export class CodeRepository extends BaseRepository {
   /**
    * Fetch sample method codes.
    *
-   * @return {*}
+   * @return {*} {Promise<ICodeDescription[]>}
    * @memberof CodeRepository
    */
-  async getSampleMethods() {
+  async getSampleMethods(): Promise<ICodeDescription[]> {
     const sql = SQL`
       SELECT
         method_lookup_id as id,
@@ -63,7 +64,7 @@ export class CodeRepository extends BaseRepository {
       ORDER BY name ASC;
     `;
 
-    const response = await this.connection.sql(sql);
+    const response = await this.connection.sql(sql, CodeDescription);
 
     return response.rows;
   }
@@ -71,10 +72,10 @@ export class CodeRepository extends BaseRepository {
   /**
    * Fetch management action type codes.
    *
-   * @return {*}
+   * @return {*} {Promise<ICode[]>}
    * @memberof CodeRepository
    */
-  async getManagementActionType() {
+  async getManagementActionType(): Promise<ICode[]> {
     const sqlStatement = SQL`
       SELECT
         management_action_type_id as id,
@@ -91,10 +92,10 @@ export class CodeRepository extends BaseRepository {
   /**
    * Fetch first nation codes.
    *
-   * @return {*}
+   * @return {*} {Promise<ICode[]>}
    * @memberof CodeRepository
    */
-  async getFirstNations() {
+  async getFirstNations(): Promise<ICode[]> {
     const sqlStatement = SQL`
       SELECT
         first_nations_id as id,
@@ -112,10 +113,10 @@ export class CodeRepository extends BaseRepository {
   /**
    * Fetch agency codes.
    *
-   * @return {*}
+   * @return {*} {Promise<ICode[]>}
    * @memberof CodeRepository
    */
-  async getAgency() {
+  async getAgency(): Promise<ICode[]> {
     const sqlStatement = SQL`
       SELECT
         agency_id as id,
@@ -133,10 +134,10 @@ export class CodeRepository extends BaseRepository {
   /**
    * Fetch proprietor type codes.
    *
-   * @return {*}
+   * @return {*} {Promise<z.infer<typeof ProprietorTypeCode>[]>}
    * @memberof CodeRepository
    */
-  async getProprietorType() {
+  async getProprietorType(): Promise<z.infer<typeof ProprietorTypeCode>[]> {
     const sqlStatement = SQL`
       SELECT
         proprietor_type_id as id,
@@ -156,10 +157,10 @@ export class CodeRepository extends BaseRepository {
    *
    * TODO: Rename this table to something more specific ie: not 'type'
    *
-   * @return {*}
+   * @return {*} {Promise<ICodeDescription[]>}
    * @memberof CodeRepository
    */
-  async getSurveyDataType() {
+  async getSurveyDataType(): Promise<ICodeDescription[]> {
     const sqlStatement = SQL`
       SELECT
         type_id as id,
@@ -178,10 +179,10 @@ export class CodeRepository extends BaseRepository {
   /**
    * Fetch intended outcomes codes.
    *
-   * @return {*}
+   * @return {*} {Promise<ICodeDescription[]>}
    * @memberof CodeRepository
    */
-  async getIntendedOutcomes() {
+  async getIntendedOutcomes(): Promise<ICodeDescription[]> {
     const sqlStatement = SQL`
       SELECT
         intended_outcome_id as id,
@@ -199,10 +200,10 @@ export class CodeRepository extends BaseRepository {
   /**
    * Fetch investment action category codes.
    *
-   * @return {*}
+   * @return {*} {Promise<z.infer<typeof InvestmentActionCategoryCode>[]>}
    * @memberof CodeRepository
    */
-  async getInvestmentActionCategory() {
+  async getInvestmentActionCategory(): Promise<z.infer<typeof InvestmentActionCategoryCode>[]> {
     const sqlStatement = SQL`
       SELECT
         investment_action_category_id as id,
@@ -221,10 +222,10 @@ export class CodeRepository extends BaseRepository {
   /**
    * Fetch IUCN conservation action level 1 classification codes.
    *
-   * @return {*}
+   * @return {*} {Promise<ICode[]>}
    * @memberof CodeRepository
    */
-  async getIUCNConservationActionLevel1Classification() {
+  async getIUCNConservationActionLevel1Classification(): Promise<ICode[]> {
     const sqlStatement = SQL`
       SELECT
         iucn_conservation_action_level_1_classification_id as id,
@@ -241,10 +242,12 @@ export class CodeRepository extends BaseRepository {
   /**
    * Fetch IUCN conservation action level 2 sub-classification codes.
    *
-   * @return {*}
+   * @return {*} {Promise<z.infer<typeof IucnConservationActionLevel2SubclassificationCode>[]}
    * @memberof CodeRepository
    */
-  async getIUCNConservationActionLevel2Subclassification() {
+  async getIUCNConservationActionLevel2Subclassification(): Promise<
+    z.infer<typeof IucnConservationActionLevel2SubclassificationCode>[]
+  > {
     const sqlStatement = SQL`
       SELECT
         iucn_conservation_action_level_2_subclassification_id as id,
@@ -262,10 +265,12 @@ export class CodeRepository extends BaseRepository {
   /**
    * Fetch IUCN conservation action level 3 sub-classification codes.
    *
-   * @return {*}
+   * @return {*} {Promise<z.infer<typeof IucnConservationActionLevel3SubclassificationCode>[]}
    * @memberof CodeRepository
    */
-  async getIUCNConservationActionLevel3Subclassification() {
+  async getIUCNConservationActionLevel3Subclassification(): Promise<
+    z.infer<typeof IucnConservationActionLevel3SubclassificationCode>[]
+  > {
     const sqlStatement = SQL`
       SELECT
         iucn_conservation_action_level_3_subclassification_id as id,
@@ -283,10 +288,10 @@ export class CodeRepository extends BaseRepository {
   /**
    * Fetch system role codes.
    *
-   * @return {*}
+   * @return {*} {Promise<ICode[]>}
    * @memberof CodeRepository
    */
-  async getSystemRoles() {
+  async getSystemRoles(): Promise<ICode[]> {
     const sqlStatement = SQL`
       SELECT
         system_role_id as id,
@@ -303,10 +308,10 @@ export class CodeRepository extends BaseRepository {
   /**
    * Fetch project role codes.
    *
-   * @return {*}
+   * @return {*} {Promise<ICodeDescription[]>}
    * @memberof CodeRepository
    */
-  async getProjectRoles() {
+  async getProjectRoles(): Promise<ICodeDescription[]> {
     const sqlStatement = SQL`
       SELECT
         project_role_id as id,
@@ -326,10 +331,10 @@ export class CodeRepository extends BaseRepository {
   /**
    * Fetch survey job codes.
    *
-   * @return {*}
+   * @return {*} {Promise<ICodeDescription[]>}
    * @memberof CodeRepository
    */
-  async getSurveyJobs() {
+  async getSurveyJobs(): Promise<ICodeDescription[]> {
     const sqlStatement = SQL`
       SELECT
         survey_job_id as id,
@@ -347,10 +352,10 @@ export class CodeRepository extends BaseRepository {
   /**
    * Fetch site selection strategy codes
    *
-   * @return {*}
+   * @return {*} {Promise<ICode[]>}
    * @memberof CodeRepository
    */
-  async getSiteSelectionStrategies() {
+  async getSiteSelectionStrategies(): Promise<ICode[]> {
     const sqlStatement = SQL`
       SELECT
         ss.site_strategy_id as id,
@@ -368,10 +373,10 @@ export class CodeRepository extends BaseRepository {
   /**
    * Fetch administrative activity status type codes.
    *
-   * @return {*}
+   * @return {*} {Promise<ICode[]>}
    * @memberof CodeRepository
    */
-  async getAdministrativeActivityStatusType() {
+  async getAdministrativeActivityStatusType(): Promise<ICode[]> {
     const sqlStatement = SQL`
       SELECT
         administrative_activity_status_type_id as id,
@@ -388,10 +393,10 @@ export class CodeRepository extends BaseRepository {
   /**
    * Fetch survey progress codes.
    *
-   * @return {*}
+   * @return {*} {Promise<ICodeDescription[]>}
    * @memberof CodeRepository
    */
-  async getSurveyProgress() {
+  async getSurveyProgress(): Promise<ICodeDescription[]> {
     const sqlStatement = SQL`
       SELECT
         survey_progress_id as id,
@@ -409,10 +414,10 @@ export class CodeRepository extends BaseRepository {
   /**
    * Fetch method response metrics codes.
    *
-   * @return {*}
+   * @return {*} {Promise<ICodeDescription[]>}
    * @memberof CodeRepository
    */
-  async getMethodResponseMetrics() {
+  async getMethodResponseMetrics(): Promise<ICodeDescription[]> {
     const sqlStatement = SQL`
       SELECT
         method_response_metric_id AS id,
@@ -430,10 +435,10 @@ export class CodeRepository extends BaseRepository {
   /**
    * Fetch attractants codes.
    *
-   * @return {*}
+   * @return {*} {Promise<ICodeDescription[]>}
    * @memberof CodeRepository
    */
-  async getAttractants() {
+  async getAttractants(): Promise<ICodeDescription[]> {
     const sqlStatement = SQL`
       SELECT
         attractant_lookup_id AS id,
@@ -451,10 +456,10 @@ export class CodeRepository extends BaseRepository {
   /**
    * Fetch observation subcount sign codes.
    *
-   * @return {*}
+   * @return {*} {Promise<ICodeDescription[]>}
    * @memberof CodeRepository
    */
-  async getObservationSubcountSigns() {
+  async getObservationSubcountSigns(): Promise<ICodeDescription[]> {
     const sqlStatement = SQL`
       SELECT
         observation_subcount_sign_id AS id,
@@ -472,10 +477,10 @@ export class CodeRepository extends BaseRepository {
   /**
    * Get active telemetry device makes.
    *
-   * @return {*}
+   * @return {*} {Promise<ICodeDescription[]>}
    * @memberof CodeRepository
    */
-  async getActiveTelemetryDeviceMakes() {
+  async getActiveTelemetryDeviceMakes(): Promise<ICodeDescription[]> {
     const sqlStatement = SQL`
       SELECT
         device_make_id as id,
@@ -495,10 +500,10 @@ export class CodeRepository extends BaseRepository {
   /**
    * Get frequency unit codes.
    *
-   * @return {*}
+   * @return {*} {Promise<ICodeDescription[]>}
    * @memberof CodeRepository
    */
-  async getFrequencyUnits() {
+  async getFrequencyUnits(): Promise<ICodeDescription[]> {
     const sqlStatement = SQL`
       SELECT
         frequency_unit_id as id,
@@ -516,10 +521,10 @@ export class CodeRepository extends BaseRepository {
   /**
    * Fetch alert type codes
    *
-   * @return {*}
+   * @return {*} {Promise<ICodeDescription[]>}
    * @memberof CodeRepository
    */
-  async getAlertTypes() {
+  async getAlertTypes(): Promise<ICodeDescription[]> {
     const sqlStatement = SQL`
       SELECT
         alert_type_id AS id,
@@ -538,10 +543,10 @@ export class CodeRepository extends BaseRepository {
   /**
    * Fetch vantages associated with vantages
    *
-   * @return {*}
+   * @return {*} {Promise<ICodeDescription[]>}
    * @memberof CodeRepository
    */
-  async getVantages() {
+  async getVantages(): Promise<ICodeDescription[]> {
     const sqlStatement = SQL`
       SELECT
         vantage_category_id AS id,
