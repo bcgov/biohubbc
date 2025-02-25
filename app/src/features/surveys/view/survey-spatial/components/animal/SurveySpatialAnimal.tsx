@@ -12,6 +12,9 @@ import { useEffect, useMemo } from 'react';
 import { coloredCustomMortalityMarker } from 'utils/mapUtils';
 import { SurveySpatialAnimalTable } from './SurveySpatialAnimalTable';
 
+/**
+ * Array of additional static layers to be added to the map.
+ */
 interface ISurveySpatialAnimalMapProps {
   staticLayers?: IStaticLayer[];
 }
@@ -36,10 +39,12 @@ export const SurveySpatialAnimal = (props: ISurveySpatialAnimalMapProps) => {
   );
 
   useEffect(() => {
-    if (critterIds.length) {
-      geometryDataLoader.load(critterIds);
+    if (!critterIds.length) {
+      return;
     }
-  }, [critterIds]);
+
+    geometryDataLoader.load(critterIds);
+  }, [critterIds, geometryDataLoader]);
 
   const captureLayer: IStaticLayer = {
     layerName: 'Animal Captures',
