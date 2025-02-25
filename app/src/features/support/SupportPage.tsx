@@ -87,11 +87,7 @@ export const SupportPage = () => {
             </Box>
 
             {/* Chevron Arrows */}
-            <Stack
-              direction="row"
-              alignItems="center"
-              flexGrow={1}
-              sx={{ width: '100%', '& .MuiButton-root': { fontWeight: 700 } }}>
+            <Stack direction="row" alignItems="center" sx={{ width: '100%', '& .MuiButton-root': { fontWeight: 700 } }}>
               {currentIndex > 0 && (
                 <Button
                   onClick={() => handleViewChange(prevView.value)}
