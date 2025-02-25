@@ -496,10 +496,16 @@ export class CritterbaseService {
    * @async
    * @returns {Promise<IColour>} Colour lookup values
    */
-  async getColours(): Promise<IColour> {
-    const response = await this.axiosInstance.get('/colours');
+  async getColours(): Promise<IColour[]> {
+    const response = await this.axiosInstance.get<IColour[]>('/lookups/colours');
 
-    return response.data;
+    // Mapping to exclude critterbase audit columns
+    return response.data.map((colour) => ({
+      colour_id: colour.colour_id,
+      colour: colour.colour,
+      hex_code: colour.hex_code,
+      description: colour.description
+    }));
   }
 
   /**
@@ -520,12 +526,17 @@ export class CritterbaseService {
    * Fetches Critterbase marking type lookup values.
    *
    * @async
-   * @returns {Promise<IMarkingType>} Critterbase marking type lookup values
+   * @returns {Promise<IMarkingType[]>} Critterbase marking type lookup values
    */
-  async getMarkingTypes(): Promise<IMarkingType> {
-    const response = await this.axiosInstance.get('/marking-types');
+  async getMarkingTypes(): Promise<IMarkingType[]> {
+    const response = await this.axiosInstance.get<IMarkingType[]>('/lookups/marking-types');
 
-    return response.data;
+    // Mapping to exclude critterbase audit columns
+    return response.data.map((markingType) => ({
+      marking_type_id: markingType.marking_type_id,
+      name: markingType.name,
+      description: markingType.description
+    }));
   }
 
   /**

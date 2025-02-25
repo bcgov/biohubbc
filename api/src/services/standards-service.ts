@@ -63,20 +63,8 @@ export class StandardsService extends DBService {
     ]);
 
     return {
-      types: markingTypes.map((type) => {
-        return {
-          name: type.value,
-          marking_type_id: type.id,
-          description: null
-        };
-      }),
-      colours: colours.map((colour) => {
-        return {
-          colour: colour.value,
-          colour_id: colour.id,
-          description: null
-        };
-      })
+      types: markingTypes,
+      colours: colours
     };
   }
 
