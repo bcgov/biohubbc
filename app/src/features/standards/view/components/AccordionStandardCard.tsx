@@ -5,11 +5,11 @@ import Checkbox from '@mui/material/Checkbox';
 import Collapse from '@mui/material/Collapse';
 import Paper, { PaperProps } from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
-import React, { PropsWithChildren, ReactElement, useState } from 'react';
+import { PropsWithChildren, ReactElement, useState } from 'react';
 
 interface IAccordionStandardCardProps extends PaperProps {
-  label: string | React.ReactElement;
-  subtitle?: string | null;
+  label: string | ReactElement;
+  subtitle?: string | ReactElement | null;
   ornament?: ReactElement;
   colour: string;
   disableCollapse?: boolean;
