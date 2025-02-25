@@ -14,6 +14,13 @@ WITH w_combined_data AS (
     *
   from
     sims_bctw.final_mismatched_device_deployment
+    where
+    final_mismatched_device_deployment.bctw_deployment_uuid not in (
+      select
+        bctw_deployment_uuid
+      from
+        final_matched_device_deployment
+    )
 )
 SELECT
   survey_id,
