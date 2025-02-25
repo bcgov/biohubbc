@@ -179,7 +179,8 @@ export const MarkingStandardsSchema: OpenAPIV3.SchemaObject = {
           },
           description: {
             type: 'string',
-            description: 'description of the marking colour'
+            description: 'description of the marking colour',
+            nullable: true
           }
         }
       }

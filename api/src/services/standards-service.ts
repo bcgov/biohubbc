@@ -57,14 +57,25 @@ export class StandardsService extends DBService {
    * @memberof standardsService
    */
   async getMarkingStandards(): Promise<MarkingStandards> {
-    const types = await this.critterbaseService.getMarkingTypes();
-    const colours = await this.critterbaseService.getColours();
+    const [markingTypes, colours] = await Promise.all([
+      this.critterbaseService.getMarkingTypes(),
+      this.critterbaseService.getColours()
+    ]);
+
     return {
-      types: types.map((type) => {
-        return { name: type.key, marking_type_id: type.id, description: type.value };
+      types: markingTypes.map((type) => {
+        return {
+          name: type.value,
+          marking_type_id: type.id,
+          description: null
+        };
       }),
       colours: colours.map((colour) => {
-        return { colour: colour.value, colour_id: colour.id, description: colour.key };
+        return {
+          colour: colour.value,
+          colour_id: colour.id,
+          description: null
+        };
       })
     };
   }

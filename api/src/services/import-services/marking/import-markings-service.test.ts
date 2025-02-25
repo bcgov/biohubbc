@@ -121,11 +121,11 @@ describe('import-markings-service', () => {
       const bodyLocationDictionaryStub = sinon.stub(service, '_getBodyLocationDictionary').resolves(mockDictionary);
 
       const markingTypesStub = sinon
-        .stub(service.surveyCritterService.critterbaseService, 'getMarkingTypes')
+        .stub(service.surveyCritterService.critterbaseService, 'getFormattedMarkingTypes')
         .resolves(mockMarkingTypes);
 
       const coloursStub = sinon
-        .stub(service.surveyCritterService.critterbaseService, 'getColours')
+        .stub(service.surveyCritterService.critterbaseService, 'getFormattedColours')
         .resolves(mockColours);
 
       expect(surveyAliasMapStub).to.not.have.been.calledOnceWithExactly(surveyId);
