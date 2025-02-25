@@ -23,13 +23,6 @@ import {
 import { SurveySamplePeriodDetails } from '../../repositories/sample-period-repository';
 import { generateS3FileKey } from '../../utils/file-utils';
 import { getLogger } from '../../utils/logger';
-import { isQuantitativeValueValid } from '../../utils/observation-xlsx-utils/common-utils';
-import { IEnvironmentDataToValidate } from '../../utils/observation-xlsx-utils/environment-column-utils';
-import {
-  getTsnMeasurementTypeDefinitionMap,
-  IMeasurementDataToValidate,
-  validateMeasurements
-} from '../../utils/observation-xlsx-utils/measurement-column-utils';
 import { ApiPaginationOptions } from '../../zod-schema/pagination';
 import {
   CBQualitativeMeasurementTypeDefinition,
@@ -37,6 +30,8 @@ import {
   CritterbaseService
 } from '../critterbase-service';
 import { DBService } from '../db-service';
+import { getTsnMeasurementDictionary } from '../import-services/utils/measurement';
+import { validateQuantitativeValue } from '../import-services/utils/quantitative';
 import { ObservationSubCountEnvironmentService } from '../observation-subcount-environment-service';
 import { ObservationSubCountMeasurementService } from '../observation-subcount-measurement-service';
 import { SamplePeriodService } from '../sample-period-service';
@@ -90,6 +85,11 @@ export type ObservationSamplingSupplementaryData = {
 export type AllObservationSupplementaryData = ObservationCountSupplementaryData &
   ObservationMeasurementSupplementaryData &
   ObservationSamplingSupplementaryData;
+
+export interface IEnvironmentDataToValidate {
+  key: string;
+  value: string | number;
+}
 
 export class ObservationService extends DBService {
   observationRepository: ObservationRepository;
@@ -540,60 +540,16 @@ export class ObservationService extends DBService {
         // Return early if incoming environment column data is invalid
         return false;
       }
-
-      const validValue = isQuantitativeValueValid(
-        Number(quantitativeEnvironmentToValidate.value),
-        foundEnvironment.min,
-        foundEnvironment.max
-      );
-
-      if (!validValue) {
-        defaultLog.debug({
-          label: 'validateSurveyObservations',
-          message: 'Quantitative environments are invalid',
-          errors: ['Quantitative environment value is out of range']
-        });
-        // Return early if incoming environment column data is invalid
-        return false;
-      }
     }
 
     // VALIDATE MEASUREMENTS -----------------------------------------------------------------------------------------
 
-    // Fetch all measurement type definitions from Critterbase for all unique TSNs
-    const tsns = observationRows.map((row) => String(row.standardColumns.itis_tsn));
-    const tsnMeasurementTypeDefinitionMap = await getTsnMeasurementTypeDefinitionMap(tsns, critterBaseService);
-
-    // Map observation subcount data objects into a IMeasurementDataToValidate array
-    const measurementsToValidate: IMeasurementDataToValidate[] = observationRows.flatMap(
-      (item: InsertUpdateObservations) => {
-        return item.subcounts.flatMap((subcount) => {
-          const qualitativeMeasurementsToValidate = subcount.qualitative_measurements.map((qualitative_measurement) => {
-            return {
-              tsn: String(item.standardColumns.itis_tsn),
-              key: qualitative_measurement.measurement_id,
-              value: qualitative_measurement.measurement_option_id
-            };
-          });
-
-          const quantitativeMeasurementsToValidate: IMeasurementDataToValidate[] =
-            subcount.quantitative_measurements.map((quantitative_measurement) => {
-              return {
-                tsn: String(item.standardColumns.itis_tsn),
-                key: quantitative_measurement.measurement_id,
-                value: quantitative_measurement.measurement_value
-              };
-            });
-
-          return [...qualitativeMeasurementsToValidate, ...quantitativeMeasurementsToValidate];
-        });
-      }
+    const observationMeasurementsAreValid = await this._validateObservationMeasurements(
+      observationRows,
+      critterBaseService
     );
 
-    // Validate measurement data against fetched measurement definition
-    const areMeasurementsValid = validateMeasurements(measurementsToValidate, tsnMeasurementTypeDefinitionMap);
-
-    if (!areMeasurementsValid) {
+    if (!observationMeasurementsAreValid) {
       defaultLog.debug({ label: 'validateSurveyObservations', message: 'Measurements are invalid' });
       // Return early if measurements are invalid
       return false;
@@ -603,5 +559,69 @@ export class ObservationService extends DBService {
 
     // Return true if both environments and measurements are valid
     return true;
+  }
+
+  /**
+   * Validates all qualitative and quantitative measurements against fetched measurement definitions.
+   *
+   * @param {InsertUpdateObservations[]} observations The observations to validate
+   * @param {CritterbaseService} critterbaseService Used to fetch measurement definitions to validate against
+   * @return {*}  {Promise<boolean>} `true` if the observations are valid, `false` otherwise
+   */
+  async _validateObservationMeasurements(
+    observations: InsertUpdateObservations[],
+    critterbaseService: CritterbaseService
+  ) {
+    // Fetch all measurement type definitions from Critterbase for all unique TSNs
+    const tsns = observations.map((row) => row.standardColumns.itis_tsn);
+
+    const tsnMeasurementTypeDefinitionMap = await getTsnMeasurementDictionary(tsns, critterbaseService);
+
+    // Validate all qualitative measurements against fetched measurement definitions
+    const qualitativeMeasurementsAreAllValid = observations.every((observationRow) => {
+      return observationRow.subcounts.every((subcount) => {
+        return subcount.qualitative_measurements.every((qualitative_measurement) => {
+          const measurementDefinition = tsnMeasurementTypeDefinitionMap.get(
+            observationRow.standardColumns.itis_tsn,
+            qualitative_measurement.measurement_id
+          ) as CBQualitativeMeasurementTypeDefinition;
+
+          if (!measurementDefinition) {
+            return false;
+          }
+
+          return measurementDefinition.options.find(
+            (option) => option.qualitative_option_id === qualitative_measurement.measurement_option_id
+          );
+        });
+      });
+    });
+
+    // Validate all quantitative measurements against fetched measurement definitions
+    const quantitativeMeasurementsAreAllValid = observations.every((observationRow) => {
+      return observationRow.subcounts.every((subcount) => {
+        return subcount.quantitative_measurements.every((quantitative_measurement) => {
+          const measurementDefinition = tsnMeasurementTypeDefinitionMap.get(
+            observationRow.standardColumns.itis_tsn,
+            quantitative_measurement.measurement_id
+          ) as CBQuantitativeMeasurementTypeDefinition;
+
+          if (!measurementDefinition) {
+            return false;
+          }
+
+          // Validate the quantitative value against the measurement definition
+          const errors = validateQuantitativeValue(quantitative_measurement.measurement_value, {
+            min: measurementDefinition.min_value,
+            max: measurementDefinition.max_value
+          });
+
+          // Return false if there are any errors
+          return !Array.isArray(errors);
+        });
+      });
+    });
+
+    return qualitativeMeasurementsAreAllValid && quantitativeMeasurementsAreAllValid;
   }
 }

@@ -28,7 +28,7 @@ export const ObservationCountDataGridEditCell = <DataGridType extends GridValidR
   const codesContext = useCodesContext();
 
   const getResponseMetric = () => {
-    const currentTechnique = samplingInformationCache.getCurrentTechnique(dataGridProps);
+    const currentTechnique = samplingInformationCache.getCurrentTechnique(dataGridProps.value);
 
     if (!currentTechnique) {
       return null;

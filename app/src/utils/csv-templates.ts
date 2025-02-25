@@ -66,3 +66,21 @@ export const getTelemetryCSVTemplate = (): CSVEncodedTemplate => {
 export const getObservationCSVTemplate = (): CSVEncodedTemplate => {
   return getCSVTemplate(['SPECIES', 'SITE', 'TECHNIQUE', 'PERIOD', 'SIGN', 'COUNT', 'DATE', 'TIME', 'COMMENT']);
 };
+
+/**
+ * Get CSV template for sample periods.
+ *
+ * @returns {CSVEncodedTemplate} Encoded CSV template
+ */
+export const getSamplePeriodCSVTemplate = (): CSVEncodedTemplate => {
+  return getCSVTemplate(['SAMPLE_SITE', 'TECHNIQUE_NAME', 'START_DATE', 'START_TIME', 'END_DATE', 'END_TIME']);
+};
+
+/**
+ * Get CSV template for Animals.
+ *
+ * @returns {CSVEncodedTemplate} Encoded CSV template
+ */
+export const getAnimalCSVTemplate = (): CSVEncodedTemplate => {
+  return getCSVTemplate(['SPECIES', 'ALIAS', 'SEX', 'WLH_ID', 'DESCRIPTION']);
+};

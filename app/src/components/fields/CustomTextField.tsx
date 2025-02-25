@@ -3,6 +3,7 @@ import TextField from '@mui/material/TextField';
 import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
 import { useFormikContext } from 'formik';
 import get from 'lodash-es/get';
+import { useMemo } from 'react';
 export interface ICustomTextField {
   /**
    * Label for the text field
@@ -52,6 +53,9 @@ const CustomTextField = (props: React.PropsWithChildren<ICustomTextField>) => {
 
   const { name, label, other, placeholder, helpText } = props;
 
+  // Used to avoid the tooltip adornment overlapping with MUI's default number control adornment
+  const isNumber = useMemo(() => other?.type === 'number', [other]);
+
   return (
     <TextField
       name={name}
@@ -78,7 +82,7 @@ const CustomTextField = (props: React.PropsWithChildren<ICustomTextField>) => {
       helperText={get(touched, name) && get(errors, name)}
       sx={{
         '& .MuiInputAdornment-root': {
-          mr: 0,
+          mr: isNumber ? 3 : 0,
           height: '100%',
           alignSelf: 'flex-start',
           position: 'absolute',
