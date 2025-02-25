@@ -5,9 +5,9 @@ import Typography from '@mui/material/Typography';
 /**
  * Information about Data
  *
- * @returns {*}
+ * @returns {*} {JSX.Element}
  */
-export const SupportData = () => (
+export const SupportData = (): JSX.Element => (
   <Stack gap={5} mb={3}>
     <Box>
       <Typography>

@@ -13,7 +13,6 @@ import {
   mdiPineTree,
   mdiWifiMarker
 } from '@mdi/js';
-import { ReactNode } from 'react';
 import { SupportOverview } from './content/overview/SupportOverview';
 import { SupportProjects } from './content/projects/SupportProjects';
 import { SupportAnimals } from './content/projects/surveys/data/animals/SupportAnimals';
@@ -28,6 +27,7 @@ import { SupportSurveys } from './content/projects/surveys/SupportSurveys';
 import { SupportTeam } from './content/projects/team/SupportTeam';
 import { SupportStandards } from './content/standards/SupportStandards';
 
+// Support Page View Enum
 export enum SupportPageView {
   overview = 'overview',
   standards = 'standards',
@@ -53,7 +53,7 @@ export interface ISupportPageView {
 }
 
 export type SupportPageParams = {
-  v: SupportPageView;
+  view: SupportPageView;
 };
 
 export const SupportPageViews: ISupportPageView[] = [
@@ -153,7 +153,13 @@ export const SupportPageViews: ISupportPageView[] = [
   }
 ];
 
-export const SupportPageViewMap: Partial<Record<SupportPageView, ReactNode>> = {
+/**
+ * Support Page View Map to render the correct view based on the activeView
+ *
+ * @export
+ * @type {Record<SupportPageView, JSX.Element>}
+ */
+export const SupportPageViewMap: Record<SupportPageView, JSX.Element> = {
   [SupportPageView.overview]: <SupportOverview />,
   [SupportPageView.projects]: <SupportProjects />,
   [SupportPageView.team]: <SupportTeam />,

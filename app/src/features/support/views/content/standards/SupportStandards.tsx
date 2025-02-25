@@ -5,9 +5,9 @@ import Typography from '@mui/material/Typography';
 /**
  * Information about standards and allowed values (eg. species-dependent attributes, environments)
  *
- * @returns {*}
+ * @returns {*} {JSX.Element}
  */
-export const SupportStandards = () => {
+export const SupportStandards = (): JSX.Element => {
   return (
     <Stack gap={5} mb={3}>
       <Box>

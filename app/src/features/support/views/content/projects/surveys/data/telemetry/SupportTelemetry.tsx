@@ -7,9 +7,9 @@ import Typography from '@mui/material/Typography';
 /**
  * Information about Telemetry
  *
- * @returns {*}
+ * @returns {*} {JSX.Element}
  */
-export const SupportTelemetry = () => (
+export const SupportTelemetry = (): JSX.Element => (
   <Stack gap={5} mb={3}>
     <Box>
       <Typography>

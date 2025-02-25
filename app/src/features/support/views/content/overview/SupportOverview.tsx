@@ -7,9 +7,9 @@ import Typography from '@mui/material/Typography';
 /**
  * General information about the Species Inventory Management System
  *
- * @returns {*}
+ * @returns {*} {JSX.Element}
  */
-export const SupportOverview = () => (
+export const SupportOverview = (): JSX.Element => (
   <Stack gap={5} mb={3}>
     <Box>
       <Typography gutterBottom key="gensims1">

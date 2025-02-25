@@ -7,9 +7,9 @@ import Typography from '@mui/material/Typography';
 /**
  * Information about Files
  *
- * @returns {*}
+ * @returns {*} {JSX.Element}
  */
-export const SupportFiles = () => (
+export const SupportFiles = (): JSX.Element => (
   <Stack gap={5} mb={3}>
     <Box>
       <Typography>

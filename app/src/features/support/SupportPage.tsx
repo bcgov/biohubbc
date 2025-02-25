@@ -14,7 +14,7 @@ import {
 } from './views/SupportPageView';
 
 // This is the URL param for the active view
-const VIEW_KEY = 'v';
+const VIEW_KEY = 'view';
 
 /**
  * Returns information about how to use the app, definitions, and other resources for users.
@@ -58,19 +58,6 @@ export const SupportPage = () => {
   // Get the JSX content to display for the activeView
   const children = SupportPageViewMap[activeView];
 
-  const justifyContentPosition: 'flex-end' | 'flex-start' | 'space-between' = useMemo(() => {
-    // If on the first page, position the 'Next' button on the right
-    if (currentIndex === 0) {
-      return 'flex-end';
-    }
-    // If on the last page, position the 'Previous' button on the left
-    if (currentIndex === orderedViews.length - 1) {
-      return 'flex-start';
-    }
-    // If on a middle page, position both buttons with space-between
-    return 'space-between';
-  }, [currentIndex, orderedViews]);
-
   return (
     <>
       <PageHeader title="Support" />
@@ -103,19 +90,21 @@ export const SupportPage = () => {
             <Stack
               direction="row"
               alignItems="center"
-              justifyContent={justifyContentPosition}
+              flexGrow={1}
               sx={{ width: '100%', '& .MuiButton-root': { fontWeight: 700 } }}>
               {currentIndex > 0 && (
                 <Button
                   onClick={() => handleViewChange(prevView.value)}
-                  startIcon={<Icon path={mdiChevronLeft} size={1} />}>
+                  startIcon={<Icon path={mdiChevronLeft} size={1} />}
+                  sx={{ mr: 'auto' }}>
                   Previous
                 </Button>
               )}
               {currentIndex < orderedViews.length - 1 && (
                 <Button
                   onClick={() => handleViewChange(nextView.value)}
-                  endIcon={<Icon path={mdiChevronRight} size={1} />}>
+                  endIcon={<Icon path={mdiChevronRight} size={1} />}
+                  sx={{ ml: 'auto' }}>
                   Next
                 </Button>
               )}

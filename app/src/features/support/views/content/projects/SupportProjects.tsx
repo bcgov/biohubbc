@@ -10,9 +10,9 @@ import { PROJECT_ROLE_ICONS } from 'constants/roles';
 /**
  * Information about Projects
  *
- * @returns {*}
+ * @returns {*} {JSX.Element}
  */
-export const SupportProjects = () => (
+export const SupportProjects = (): JSX.Element => (
   <Stack gap={5} mb={3}>
     <Box>
       <Typography>

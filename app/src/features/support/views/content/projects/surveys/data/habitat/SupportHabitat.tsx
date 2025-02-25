@@ -5,9 +5,9 @@ import Typography from '@mui/material/Typography';
 /**
  * Information about Habitat
  *
- * @returns {*}
+ * @returns {*} {JSX.Element}
  */
-export const SupportHabitat = () => (
+export const SupportHabitat = (): JSX.Element => (
   <Stack gap={5} mb={3}>
     <Box>
       <Typography>We are working on supporting wildlife habitat feature data</Typography>

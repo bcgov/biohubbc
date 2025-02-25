@@ -7,9 +7,9 @@ import Typography from '@mui/material/Typography';
 /**
  * Information about Sampling
  *
- * @returns {*}
+ * @returns {*} {JSX.Element}
  */
-export const SupportSampling = () => (
+export const SupportSampling = (): JSX.Element => (
   <Stack gap={5} mb={3}>
     <Box>
       <Typography>
