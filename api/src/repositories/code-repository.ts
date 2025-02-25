@@ -12,7 +12,7 @@ export const Code = z.object({ id: z.number(), name: z.string() });
 // Code with description
 export const CodeDescription = Code.extend({ description: z.string() });
 
-// Codes with additional properties
+// Codes which need to include additional properties
 const InvestmentActionCategoryCode = Code.extend({ agency_id: z.number() });
 const ProprietorTypeCode = Code.extend({ is_first_nation: z.boolean() });
 const IucnConservationActionLevel2SubclassificationCode = Code.extend({ iucn1_id: z.number() });
