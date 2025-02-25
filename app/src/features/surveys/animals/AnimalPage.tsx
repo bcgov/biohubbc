@@ -73,7 +73,9 @@ export const SurveyAnimalPage = () => {
           ) : (
             <Paper elevation={3} sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
               <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Typography variant="h5" component="h2">Animal Overview</Typography>
+                <Typography variant="h5" component="h2">
+                  Animal Overview
+                </Typography>
                 <Button
                   component={RouterLink}
                   to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/animals/captures`}
