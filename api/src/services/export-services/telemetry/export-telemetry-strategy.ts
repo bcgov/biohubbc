@@ -106,7 +106,7 @@ export class ExportTelemetryStrategy extends DBService implements ExportStrategy
     return stream;
   };
 
-  static generateTelemetryCSV = (item: Telemetry): string => {
+  static readonly generateTelemetryCSV = (item: Telemetry): string => {
     const { dateStr, timeStr } = parseDateAndTimeString(item.acquisition_date);
     return [
       item.telemetry_id,
