@@ -14,9 +14,7 @@ export const MarkingStandards = () => {
     markingsDataLoader.load();
   }, [markingsDataLoader]);
 
-  if (!markingsDataLoader.data) {
-    return <></>;
-  }
+  const markingsData = markingsDataLoader.data ?? { types: [], colours: [] };
 
   return (
     <Box my={2}>
@@ -29,15 +27,14 @@ export const MarkingStandards = () => {
           </Stack>
         }
         hasNoData={
-          !(markingsDataLoader.data?.types.length || markingsDataLoader.data?.colours.length) &&
-          markingsDataLoader.isReady
+          !(markingsData?.types.length || markingsData?.colours.length) && !markingsData && markingsDataLoader.isReady
         }
         hasNoDataFallback={
           <Box minHeight="200px" display="flex" alignItems="center" justifyContent="center">
             <Typography color="textSecondary">No marking standards found</Typography>
           </Box>
         }>
-        <MarkingStandardsResults standards={markingsDataLoader.data} />
+        <MarkingStandardsResults standards={markingsData} />
       </LoadingGuard>
     </Box>
   );
