@@ -21,7 +21,7 @@ describe('ExportTelemetryStrategy', () => {
       const result = await exportTelemetryStrategy.getExportStrategyConfig();
 
       expect(result.streams?.length).to.equal(1);
-      expect(result.streams?.[0].fileName).to.equal('telemetry.json');
+      expect(result.streams?.[0].fileName).to.equal('telemetry.csv');
     });
   });
 });

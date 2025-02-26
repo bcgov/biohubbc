@@ -75,6 +75,26 @@ export function getJsonStringifyTransformStream(): Transform {
 }
 
 /**
+ * Get a CSV transform stream, that expects objects and outputs csv.
+ *
+ * Note: The incoming data stream must yield objects, or this will throw an error.
+ *
+ * @export
+ * @returns {Transform}
+ */
+export function getCsvTransformStream(): Transform {
+  const transformStream = new Transform({
+    objectMode: true, // Expects objects
+    transform(chunk, _encoding, callback) {
+      // the chunk and push it to the next stream
+      callback(null, chunk.toString() + '\r\n');
+    }
+  });
+
+  return transformStream;
+}
+
+/**
  * Adds error handling to a stream to prevent memory leaks.
  *
  * Registers an 'error' event handler on the stream that emits am 'end' event and destroys the stream, if not already
@@ -99,3 +119,34 @@ export function registerStreamErrorHandler(stream: Readable): Readable {
 
   return stream;
 }
+
+/**
+ * Format date and time into timestamp string.
+ *
+ * @param {string} date - Date string
+ * @param {string} [time] - Time string
+ * @returns {string} Formatted date and time string
+ */
+
+/**
+ * Parse date and time strings from timestamp
+ *
+ * @param {string} inputDate
+ * @returns {{ dateStr: string; timeStr: string }}
+ */
+export const parseDateAndTimeString = (inputDate: string): { dateStr: string; timeStr: string } => {
+  const date = new Date(inputDate);
+  const dateStr = new Intl.DateTimeFormat('en-CA').format(date);
+
+  // Format the time part (HH:mm:ss) with Canada PST timezone
+  const timeStr = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Vancouver', // Use Canada PST timezone
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: true,
+    timeZoneName: 'short' // Include timezone abbreviation
+  }).format(date);
+
+  return { dateStr, timeStr };
+};
