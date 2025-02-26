@@ -1,4 +1,4 @@
-import { mdiLeaf, mdiPaw, mdiToolbox } from '@mdi/js';
+import { mdiLeaf, mdiPaw, mdiTag, mdiToolbox } from '@mdi/js';
 import Box from '@mui/material/Box';
 import { grey } from '@mui/material/colors';
 import Container from '@mui/material/Container';
@@ -11,13 +11,15 @@ import { SystemAlertBanner } from 'features/alert/banner/SystemAlertBanner';
 import { SystemAlertBannerEnum } from 'interfaces/useAlertApi.interface';
 import { useState } from 'react';
 import { EnvironmentStandards } from './view/environment/EnvironmentStandards';
+import { MarkingStandards } from './view/markings/MarkingStandards';
 import { MethodStandards } from './view/methods/MethodStandards';
 import { SpeciesStandards } from './view/species/SpeciesStandards';
 
 export enum StandardsPageView {
   SPECIES = 'SPECIES',
   METHODS = 'METHODS',
-  ENVIRONMENT = 'ENVIRONMENT'
+  ENVIRONMENT = 'ENVIRONMENT',
+  MARKINGS = 'MARKINGS'
 }
 
 const StandardsPage = () => {
@@ -26,7 +28,8 @@ const StandardsPage = () => {
   const views = [
     { value: StandardsPageView.SPECIES, label: 'Species', icon: mdiPaw },
     { value: StandardsPageView.METHODS, label: 'Sampling Methods', icon: mdiToolbox },
-    { value: StandardsPageView.ENVIRONMENT, label: 'Environment variables', icon: mdiLeaf }
+    { value: StandardsPageView.ENVIRONMENT, label: 'Environment variables', icon: mdiLeaf },
+    { value: StandardsPageView.MARKINGS, label: 'Markings', icon: mdiTag }
   ];
 
   return (
@@ -56,6 +59,9 @@ const StandardsPage = () => {
 
             {/* ENVIRONMENT STANDARDS */}
             {activeView === StandardsPageView.ENVIRONMENT && <EnvironmentStandards />}
+
+            {/* MARKING TYPE STANDARDS */}
+            {activeView === StandardsPageView.MARKINGS && <MarkingStandards />}
           </Box>
         </Stack>
       </Container>

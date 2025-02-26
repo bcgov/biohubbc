@@ -286,6 +286,21 @@ export interface IAsSelectLookup {
   value: string;
 }
 
+// Critterbase colour lookup
+export interface IColour {
+  colour_id: string;
+  colour: string;
+  hex_code: string | null;
+  description: string | null;
+}
+
+// Critterbase marking type lookup
+export interface IMarkingType {
+  marking_type_id: string;
+  name: string;
+  description: string | null;
+}
+
 /**
  * A Critterbase quantitative measurement.
  */
@@ -462,13 +477,45 @@ export class CritterbaseService {
   }
 
   /**
-   * Fetches Critterbase colour lookup values.
+   * Fetches Critterbase colour lookup values formatted.
    *
    * @async
    * @returns {Promise<IAsSelectLookup[]>} AsSelect format
    */
-  async getColours(): Promise<IAsSelectLookup[]> {
+  async getFormattedColours(): Promise<IAsSelectLookup[]> {
     const response = await this.axiosInstance.get('/lookups/colours', {
+      params: { format: CritterbaseFormatEnum.AS_SELECT }
+    });
+
+    return response.data;
+  }
+
+  /**
+   * Get Critterbase colour lookup values.
+   *
+   * @async
+   * @returns {Promise<IColour>} Colour lookup values
+   */
+  async getColours(): Promise<IColour[]> {
+    const response = await this.axiosInstance.get<IColour[]>('/lookups/colours');
+
+    // Mapping to exclude critterbase audit columns
+    return response.data.map((colour) => ({
+      colour_id: colour.colour_id,
+      colour: colour.colour,
+      hex_code: colour.hex_code,
+      description: colour.description
+    }));
+  }
+
+  /**
+   * Fetches Critterbase marking type lookup values formatted.
+   *
+   * @async
+   * @returns {Promise<IAsSelectLookup[]>} AsSelect format
+   */
+  async getFormattedMarkingTypes(): Promise<IAsSelectLookup[]> {
+    const response = await this.axiosInstance.get('/lookups/marking-types', {
       params: { format: CritterbaseFormatEnum.AS_SELECT }
     });
 
@@ -479,14 +526,17 @@ export class CritterbaseService {
    * Fetches Critterbase marking type lookup values.
    *
    * @async
-   * @returns {Promise<IAsSelectLookup[]>} AsSelect format
+   * @returns {Promise<IMarkingType[]>} Critterbase marking type lookup values
    */
-  async getMarkingTypes(): Promise<IAsSelectLookup[]> {
-    const response = await this.axiosInstance.get('/lookups/marking-types', {
-      params: { format: CritterbaseFormatEnum.AS_SELECT }
-    });
+  async getMarkingTypes(): Promise<IMarkingType[]> {
+    const response = await this.axiosInstance.get<IMarkingType[]>('/lookups/marking-types');
 
-    return response.data;
+    // Mapping to exclude critterbase audit columns
+    return response.data.map((markingType) => ({
+      marking_type_id: markingType.marking_type_id,
+      name: markingType.name,
+      description: markingType.description
+    }));
   }
 
   /**

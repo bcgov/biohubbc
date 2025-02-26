@@ -1,5 +1,5 @@
 import { IDBConnection } from '../database/db';
-import { EnvironmentStandards, ISpeciesStandards, MethodStandard } from '../models/standards-view';
+import { EnvironmentStandards, ISpeciesStandards, MarkingStandards, MethodStandard } from '../models/standards-view';
 import { StandardsRepository } from '../repositories/standards-repository';
 import { CritterbaseService } from './critterbase-service';
 import { DBService } from './db-service';
@@ -47,6 +47,24 @@ export class StandardsService extends DBService {
       scientificName: response[0][0].scientificName,
       markingBodyLocations: response[1],
       measurements: response[2]
+    };
+  }
+
+  /**
+   * Gets marking standards
+   *
+   * @return {MarkingStandards}
+   * @memberof standardsService
+   */
+  async getMarkingStandards(): Promise<MarkingStandards> {
+    const [markingTypes, colours] = await Promise.all([
+      this.critterbaseService.getMarkingTypes(),
+      this.critterbaseService.getColours()
+    ]);
+
+    return {
+      types: markingTypes,
+      colours: colours
     };
   }
 
