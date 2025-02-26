@@ -18,7 +18,7 @@ import { useEffect, useState } from 'react';
 export interface IMultiAutocompleteFieldOption {
   value: string | number;
   label: string;
-  description?: string;
+  description: string | null;
 }
 
 export interface IMultiAutocompleteField {
