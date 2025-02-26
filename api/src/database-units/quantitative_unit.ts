@@ -34,5 +34,3 @@ export enum QuantitativeUnit {
  * @description Type for `quantitative_unit` database type.
  */
 export const QuantitativeUnitType = z.nativeEnum(QuantitativeUnit);
-
-export type QuantitativeUnitType = z.infer<typeof QuantitativeUnitType>;

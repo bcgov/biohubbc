@@ -22,23 +22,26 @@ export async function seed(knex: Knex): Promise<void> {
     AS
     $$
     BEGIN
-      IF NOT EXISTS (
+      -- Check that the incoming habitat_feature_quantitative_definition_id exists in 
+      -- the habitat_feature_type_quantitative_option table for the parent survey_habitat_feature_id
+      IF EXISTS (
         SELECT
           1
         FROM
           habitat_feature_type_quantitative_option
-        INNER JOIN 
-            habitat_feature_type ON habitat_feature_type.habitat_feature_type_id = habitat_feature_type_quantitative_option.habitat_feature_type_id
         INNER JOIN
-            survey_habitat_feature ON survey_habitat_feature.habitat_feature_type_id = habitat_feature_type.habitat_feature_type_id
+          survey_habitat_feature ON survey_habitat_feature.habitat_feature_type_id = habitat_feature_type_quantitative_option.habitat_feature_type_id
         WHERE
-            survey_habitat_feature.survey_habitat_feature_id = NEW.survey_habitat_feature_id
+          survey_habitat_feature.survey_habitat_feature_id = NEW.survey_habitat_feature_id
         AND
-            habitat_feature_type_quantitative_option.habitat_feature_quantitative_definition_id = NEW.habitat_feature_quantitative_definition_id
+          habitat_feature_type_quantitative_option.habitat_feature_quantitative_definition_id = NEW.habitat_feature_quantitative_definition_id
       ) THEN
-          RAISE EXCEPTION 'The habitat_feature_id of the incoming survey_habitat_feature_id does not support the incoming habitat_feature_quantitative_definition_id.';
+        -- Found a matching record, return the new record
+        RETURN NEW;    
       END IF;
-      RETURN NEW;
+      
+      -- No matching record found, raise an exception
+      RAISE EXCEPTION 'The habitat_feature_id of the incoming survey_habitat_feature_id does not support the incoming habitat_feature_quantitative_definition_id.';
     END;
     $$;
 
@@ -50,18 +53,27 @@ export async function seed(knex: Knex): Promise<void> {
     AS
     $$
     BEGIN
-        IF EXISTS (
-            SELECT 1
-            FROM habitat_feature_type_qualitative_option hftqo
-            JOIN survey_habitat_feature shf ON shf.habitat_feature_type_id = hftqo.habitat_feature_type_id
-            WHERE shf.survey_habitat_feature_id = NEW.survey_habitat_feature_id
-            AND hftqo.habitat_feature_qualitative_definition_id = NEW.habitat_feature_qualitative_definition_id
-            LIMIT 1
+      -- Check that the incoming habitat_feature_qualitative_definition_id exists in 
+      -- the habitat_feature_type_qualitative_option table for the parent survey_habitat_feature_id
+      IF EXISTS (
+        SELECT
+          1
+        FROM
+          habitat_feature_type_quantitative_option
+        INNER JOIN
+            survey_habitat_feature ON survey_habitat_feature.habitat_feature_type_id = habitat_feature_type_quantitative_option.habitat_feature_type_id
+        WHERE
+            survey_habitat_feature.survey_habitat_feature_id = NEW.survey_habitat_feature_id
+        AND
+            habitat_feature_type_quantitative_option.habitat_feature_quantitative_definition_id = NEW.habitat_feature_quantitative_definition_id
+        LIMIT 1
       ) 
       THEN
-          RETURN NEW;
+        -- Found a matching record, return the new record
+        RETURN NEW;
       END IF;
 
+      -- No matching record found, raise an exception
       RAISE EXCEPTION 'The habitat_feature_id of the incoming survey_habitat_feature_id does not support the incoming habitat_feature_qualitative_definition_id.';    
     END;
     $$;

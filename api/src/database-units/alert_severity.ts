@@ -18,5 +18,3 @@ export enum AlertSeverity {
  * @description Type for `alert_severity` database type.
  */
 export const AlertSeverityType = z.nativeEnum(AlertSeverity);
-
-export type AlertSeverityType = z.infer<typeof AlertSeverityType>;
