@@ -38,7 +38,7 @@ export const ProjectUserRoleFormInitialValues = {
   participants: []
 };
 
-const ProjectUserForm: React.FC<IProjectUserFormProps> = (props) => {
+const ProjectUserForm = (props: IProjectUserFormProps): JSX.Element => {
   const { handleSubmit, values, setFieldValue, errors, setErrors } = useFormikContext<ICreateProjectRequest>();
 
   const handleAddUser = (user: ISystemUser | IGetProjectParticipant) => {

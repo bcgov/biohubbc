@@ -3,7 +3,6 @@ import Grid from '@mui/material/Grid';
 import CustomTextField from 'components/fields/CustomTextField';
 import MultiAutocompleteField, { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteField';
 import { ISelectWithSubtextFieldOption } from 'components/fields/SelectWithSubtext';
-import React from 'react';
 import yup from 'utils/YupSchema';
 
 export interface IPurposeAndMethodologyForm {
@@ -39,7 +38,7 @@ export interface IPurposeAndMethodologyFormProps {
  *
  * @return {*}
  */
-const PurposeAndMethodologyForm: React.FC<IPurposeAndMethodologyFormProps> = (props) => {
+const PurposeAndMethodologyForm = (props: IPurposeAndMethodologyFormProps) => {
   return (
     <form>
       <Box component="fieldset">

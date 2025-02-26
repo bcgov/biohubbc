@@ -149,14 +149,18 @@ const EditSurveyForm = <
           component={
             <PurposeAndMethodologyForm
               intended_outcomes={
-                codes.intended_outcomes.map((item) => {
-                  return { value: item.id, label: item.name, description: item.description };
-                }) || []
+                codes.intended_outcomes?.map((item) => ({
+                  value: item.id,
+                  label: item.name,
+                  description: item.description
+                })) ?? []
               }
               type={
-                codes?.survey_data_type?.map((item) => {
-                  return { value: item.id, label: item.name, description: item.description };
-                }) || []
+                codes.survey_data_type?.map((item) => ({
+                  value: item.id,
+                  label: item.name,
+                  description: item.description
+                })) ?? []
               }
             />
           }></HorizontalSplitFormComponent>
