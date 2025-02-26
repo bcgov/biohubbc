@@ -12,11 +12,13 @@ import ProjectIUCNForm, {
 const classifications: IMultiAutocompleteFieldOption[] = [
   {
     value: 1,
-    label: 'Class 1'
+    label: 'Class 1',
+    description: null
   },
   {
     value: 2,
-    label: 'Class 2'
+    label: 'Class 2',
+    description: null
   }
 ];
 
@@ -24,12 +26,14 @@ const subClassifications1: IIUCNSubClassification1Option[] = [
   {
     value: 3,
     iucn1_id: 1,
-    label: 'A Sub-class 1'
+    label: 'A Sub-class 1',
+    description: null
   },
   {
     value: 4,
     iucn1_id: 2,
-    label: 'A Sub-class 1 again'
+    label: 'A Sub-class 1 again',
+    description: null
   }
 ];
 
@@ -37,12 +41,14 @@ const subClassifications2: IIUCNSubClassification2Option[] = [
   {
     value: 5,
     iucn2_id: 3,
-    label: 'A Sub-class 2'
+    label: 'A Sub-class 2',
+    description: null
   },
   {
     value: 6,
     iucn2_id: 4,
-    label: 'A Sub-class 2 again'
+    label: 'A Sub-class 2 again',
+    description: null
   }
 ];
 

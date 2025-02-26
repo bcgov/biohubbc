@@ -55,7 +55,11 @@ const PurposeAndMethodologyForm = (props: IPurposeAndMethodologyFormProps) => {
             <MultiAutocompleteField
               id="purpose_and_methodology.intended_outcome_ids"
               label="Ecological concepts of interest"
-              options={props.intended_outcomes}
+              options={props.intended_outcomes.map((outcome) => ({
+                value: outcome.value,
+                label: outcome.label,
+                description: null
+              }))}
               required={true}
             />
           </Grid>

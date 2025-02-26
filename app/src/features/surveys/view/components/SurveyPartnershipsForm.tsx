@@ -42,12 +42,12 @@ const SurveyPartnershipsForm = () => {
 
   const first_nations: IMultiAutocompleteFieldOption[] =
     codes?.first_nations?.map((item) => {
-      return { value: item.id, label: item.name };
+      return { value: item.id, label: item.name, description: null };
     }) || [];
 
   const stakeholder_partnerships: IMultiAutocompleteFieldOption[] =
     codes?.agency?.map((item) => {
-      return { value: item.name, label: item.name };
+      return { value: item.name, label: item.name, description: null };
     }) || [];
 
   return (
