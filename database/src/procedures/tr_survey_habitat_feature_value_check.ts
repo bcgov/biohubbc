@@ -59,13 +59,13 @@ export async function seed(knex: Knex): Promise<void> {
         SELECT
           1
         FROM
-          habitat_feature_type_quantitative_option
+          habitat_feature_type_qualitative_option
         INNER JOIN
-            survey_habitat_feature ON survey_habitat_feature.habitat_feature_type_id = habitat_feature_type_quantitative_option.habitat_feature_type_id
+            survey_habitat_feature ON survey_habitat_feature.habitat_feature_type_id = habitat_feature_type_qualitative_option.habitat_feature_type_id
         WHERE
             survey_habitat_feature.survey_habitat_feature_id = NEW.survey_habitat_feature_id
         AND
-            habitat_feature_type_quantitative_option.habitat_feature_quantitative_definition_id = NEW.habitat_feature_quantitative_definition_id
+            habitat_feature_type_qualitative_option.habitat_feature_qualitative_definition_id = NEW.habitat_feature_qualitative_definition_id
         LIMIT 1
       ) 
       THEN

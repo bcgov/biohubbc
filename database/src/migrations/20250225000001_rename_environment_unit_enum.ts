@@ -3,7 +3,7 @@ import { Knex } from 'knex';
 /**
  * Rename the `environment_unit` enum to `quantitative_unit`.
  *
- * Originally created in migration `20240417000000_obsevation_environment_tables.ts` when only the environment tables
+ * Originally created in migration `20240417000000_observation_environment_tables.ts` when only the environment tables
  * used it. But, it really contains generic units that can be used in other tables as well.
  *
  * @export
