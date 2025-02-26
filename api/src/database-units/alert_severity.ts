@@ -3,8 +3,20 @@ import { z } from 'zod';
 /**
  * Alert Severity Data Type.
  *
- * @description Data type for `alert_severity`.
+ * @description Enum for `alert_severity` database type.
  */
-export const AlertSeverity = z.enum(['info', 'warning', 'error', 'success']);
+export enum AlertSeverity {
+  INFO = 'info',
+  WARNING = 'warning',
+  ERROR = 'error',
+  SUCCESS = 'success'
+}
 
-export type AlertSeverity = z.infer<typeof AlertSeverity>;
+/**
+ * Alert Severity Data Type.
+ *
+ * @description Type for `alert_severity` database type.
+ */
+export const AlertSeverityType = z.nativeEnum(AlertSeverity);
+
+export type AlertSeverityType = z.infer<typeof AlertSeverityType>;

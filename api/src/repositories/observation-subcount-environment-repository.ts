@@ -1,6 +1,6 @@
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
-import { QuantitativeUnit } from '../database-units/quantitative_unit';
+import { QuantitativeUnitType } from '../database-units/quantitative_unit';
 import { getKnex } from '../database/db';
 import { BaseRepository } from './base-repository';
 
@@ -29,7 +29,7 @@ const QuantitativeEnvironmentTypeDefinition = z.object({
   description: z.string().nullable(),
   min: z.number().nullable(),
   max: z.number().nullable(),
-  unit: QuantitativeUnit.nullable()
+  unit: QuantitativeUnitType.nullable()
 });
 export type QuantitativeEnvironmentTypeDefinition = z.infer<typeof QuantitativeEnvironmentTypeDefinition>;
 

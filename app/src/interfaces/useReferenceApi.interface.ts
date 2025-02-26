@@ -1,5 +1,7 @@
 /**
  * A quantitative unit.
+ * 
+ * Note: should be kept in sync with the `quantitative_unit` enum in the database.
  */
 export type QuantitativeUnit =
   | 'millimeter'
