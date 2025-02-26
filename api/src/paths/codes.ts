@@ -531,8 +531,8 @@ export function getAllCodes(): RequestHandler {
         throw new HTTP500('Failed to fetch codes');
       }
 
-      // // Allow browsers to cache this response for 300 seconds (5 minutes)
-      // res.setHeader('Cache-Control', 'private, max-age=300');
+      // Allow browsers to cache this response for 300 seconds (5 minutes)
+      res.setHeader('Cache-Control', 'private, max-age=300');
 
       return res.status(200).json(allCodeSets);
     } catch (error) {
