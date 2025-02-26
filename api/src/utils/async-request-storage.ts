@@ -1,6 +1,7 @@
 import { AsyncLocalStorage } from 'async_hooks';
 import { NextFunction, Request, Response } from 'express';
 import { v4 as uuid } from 'uuid';
+import { getUserIdentifier } from './keycloak-utils';
 
 const DEFAULT_REQUEST_STORE_VALUE = 'SYSTEM';
 
@@ -38,8 +39,10 @@ export function initRequestStorage(req: Request, _res: Response, next: NextFunct
   // Generate the request id for the current request - unique for each request
   requestStore.set('requestId', uuid());
 
-  // Set the username of the user who made the current request
-  requestStore.set('username', req.keycloak_token?.idir_username ?? req.keycloak_token?.bceid_username);
+  if (req.keycloak_token) {
+    // Set the username of the user who made the current request
+    requestStore.set('username', getUserIdentifier(req.keycloak_token));
+  }
 
   // Note: Must call `next()` within the `AsyncRequestStorage` callback to ensure
   // the request store is available to all subsequent middleware and routes
