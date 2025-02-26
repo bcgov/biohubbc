@@ -25,10 +25,10 @@ export async function up(knex: Knex): Promise<void> {
     VALUES
       (
         'Visibility',
-        'The maximum distance (in meters) at which an observer can clearly see wildlife, affected by weather, vegetation, lighting, or terrain.',
+        'The maximum distance at which an observer can clearly see wildlife, influenced by weather, vegetation, lighting, and terrain.',
         0,
         10000,
-        'meters'
+        'meter'
       );
 
     
