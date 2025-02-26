@@ -7,7 +7,7 @@ describe('async-request-storage', () => {
     it('should set the request id and username in the request store', () => {
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
-      mockReq.keycloak_token = { idir_username: 'idir_username' } as any;
+      mockReq.keycloak_token = { identity_provider: 'idir', idir_username: 'idir_username' } as any;
 
       const route = () => {
         const store = AsyncRequestStorage.getStore();
@@ -24,7 +24,7 @@ describe('async-request-storage', () => {
     it('should set the request id and username in the request store with BCEID username', () => {
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
-      mockReq.keycloak_token = { bceid_username: 'bceid_username' } as any;
+      mockReq.keycloak_token = { identity_provider: 'bceidbasic', bceid_username: 'bceid_username' } as any;
 
       const route = () => {
         const store = AsyncRequestStorage.getStore();
@@ -41,7 +41,7 @@ describe('async-request-storage', () => {
     it('should handle multiple requests', () => {
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
-      mockReq.keycloak_token = { idir_username: 'idir_username' } as any;
+      mockReq.keycloak_token = { identity_provider: 'idir', idir_username: 'idir_username' } as any;
 
       let requestIdA;
       let requestIdB;
