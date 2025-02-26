@@ -24,84 +24,49 @@ export class CodeService extends DBService {
   async getAllCodeSets(): Promise<IAllCodeSets> {
     defaultLog.debug({ message: 'getAllCodeSets' });
 
-    const [
-      management_action_type,
-      first_nations,
-      agency,
-      investment_action_category,
-      survey_data_type,
-      iucn_conservation_action_level_1_classification,
-      iucn_conservation_action_level_2_subclassification,
-      iucn_conservation_action_level_3_subclassification,
-      proprietor_type,
-      system_roles,
-      project_roles,
-      administrative_activity_status_type,
-      intended_outcomes,
-      survey_jobs,
-      site_selection_strategies,
-      sample_methods,
-      survey_progress,
-      method_response_metrics,
-      attractants,
-      observation_subcount_signs,
-      telemetry_device_makes,
-      frequency_units,
-      alert_types,
-      vantages
-    ] = await Promise.all([
-      await this.codeRepository.getManagementActionType(),
-      await this.codeRepository.getFirstNations(),
-      await this.codeRepository.getAgency(),
-      await this.codeRepository.getInvestmentActionCategory(),
-      await this.codeRepository.getSurveyDataType(),
-      await this.codeRepository.getIUCNConservationActionLevel1Classification(),
-      await this.codeRepository.getIUCNConservationActionLevel2Subclassification(),
-      await this.codeRepository.getIUCNConservationActionLevel3Subclassification(),
-      await this.codeRepository.getProprietorType(),
-      await this.codeRepository.getSystemRoles(),
-      await this.codeRepository.getProjectRoles(),
-      await this.codeRepository.getAdministrativeActivityStatusType(),
-      await this.codeRepository.getIntendedOutcomes(),
-      await this.codeRepository.getSurveyJobs(),
-      await this.codeRepository.getSiteSelectionStrategies(),
-      await this.codeRepository.getSampleMethods(),
-      await this.codeRepository.getSurveyProgress(),
-      await this.codeRepository.getMethodResponseMetrics(),
-      await this.codeRepository.getAttractants(),
-      await this.codeRepository.getObservationSubcountSigns(),
-      await this.codeRepository.getActiveTelemetryDeviceMakes(),
-      await this.codeRepository.getFrequencyUnits(),
-      await this.codeRepository.getAlertTypes(),
-      await this.codeRepository.getVantages()
-    ]);
-
-    return {
-      management_action_type,
-      first_nations,
-      agency,
-      investment_action_category,
-      survey_data_type,
-      iucn_conservation_action_level_1_classification,
-      iucn_conservation_action_level_2_subclassification,
-      iucn_conservation_action_level_3_subclassification,
-      proprietor_type,
-      system_roles,
-      project_roles,
-      administrative_activity_status_type,
-      intended_outcomes,
-      survey_jobs,
-      site_selection_strategies,
-      sample_methods,
-      survey_progress,
-      method_response_metrics,
-      attractants,
-      observation_subcount_signs,
-      telemetry_device_makes,
-      frequency_units,
-      alert_types,
-      vantages
+    // All code sets to fetch
+    const codePromises: Record<keyof IAllCodeSets, Promise<IAllCodeSets[keyof IAllCodeSets]>> = {
+      management_action_type: this.codeRepository.getManagementActionType(),
+      first_nations: this.codeRepository.getFirstNations(),
+      agency: this.codeRepository.getAgency(),
+      investment_action_category: this.codeRepository.getInvestmentActionCategory(),
+      survey_data_type: this.codeRepository.getSurveyDataType(),
+      iucn_conservation_action_level_1_classification:
+        this.codeRepository.getIUCNConservationActionLevel1Classification(),
+      iucn_conservation_action_level_2_subclassification:
+        this.codeRepository.getIUCNConservationActionLevel2Subclassification(),
+      iucn_conservation_action_level_3_subclassification:
+        this.codeRepository.getIUCNConservationActionLevel3Subclassification(),
+      proprietor_type: this.codeRepository.getProprietorType(),
+      system_roles: this.codeRepository.getSystemRoles(),
+      project_roles: this.codeRepository.getProjectRoles(),
+      administrative_activity_status_type: this.codeRepository.getAdministrativeActivityStatusType(),
+      intended_outcomes: this.codeRepository.getIntendedOutcomes(),
+      survey_jobs: this.codeRepository.getSurveyJobs(),
+      site_selection_strategies: this.codeRepository.getSiteSelectionStrategies(),
+      sample_methods: this.codeRepository.getSampleMethods(),
+      survey_progress: this.codeRepository.getSurveyProgress(),
+      method_response_metrics: this.codeRepository.getMethodResponseMetrics(),
+      attractants: this.codeRepository.getAttractants(),
+      observation_subcount_signs: this.codeRepository.getObservationSubcountSigns(),
+      telemetry_device_makes: this.codeRepository.getActiveTelemetryDeviceMakes(),
+      frequency_units: this.codeRepository.getFrequencyUnits(),
+      alert_types: this.codeRepository.getAlertTypes(),
+      vantages: this.codeRepository.getVantages()
     };
+
+    // Fetch all code sets in parallel
+    const codes = await Promise.all(Object.values(codePromises));
+    const keys = Object.keys(codePromises);
+
+    // Generate the final code sets object
+    const codeSets = {} as IAllCodeSets;
+    for (let i = 0; i < keys.length; i++) {
+      // Add the code set to the final object
+      codeSets[keys[i]] = codes[i];
+    }
+
+    return codeSets;
   }
 
   /**
