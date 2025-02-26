@@ -1,5 +1,6 @@
 import winston from 'winston';
 import DailyRotateFile from 'winston-daily-rotate-file';
+import { getRequestId, getRequestUser } from './async-request-storage';
 
 const DEFAULT_LOGGER = 'default';
 
@@ -17,6 +18,10 @@ export type CustomLoggerParams = {
   error?: any;
   [key: string]: any;
 };
+
+export const WinstonLogLevels = ['silent', 'error', 'warn', 'info', 'debug', 'silly'] as const;
+
+export type WinstonLogLevel = (typeof WinstonLogLevels)[number];
 
 /**
  * Get a singleton logger.
@@ -44,14 +49,16 @@ export type CustomLoggerParams = {
  * Example Output:
  *
  * {
- *   timestamp: '2025-02-04 14:05:24',
- *   level: 'debug',
- *   message: {
- *     logger: 'class-or-file-name',
- *     label: 'functionName',
- *     message: 'An error message!:',
- *     error: {...}
- *   }
+ *    requestId: '46d544ed-9d70-499a-888c-1a1c67fb095',
+ *    timestamp: '2025-02-21 16:54:18',
+ *    requestUser: 'SBRULE',
+ *    level: 'info',
+ *    logger: 'class-logger',
+ *    label: 'functionName',
+ *    message: 'Log message!',
+ *    metadata: {
+ *      id: '123',
+ *    }
  * }
  *
  * @param {string} logLabel common label for the instance of the logger.
@@ -61,12 +68,34 @@ export const getLogger = (logLabel: string): CustomLogger => {
   const logger = _getOrCreateLoggerSingleton(DEFAULT_LOGGER);
 
   return {
-    error: (params: CustomLoggerParams) => logger.error({ logger: logLabel, ...params }),
-    warn: (params: CustomLoggerParams) => logger.warn({ logger: logLabel, ...params }),
-    info: (params: CustomLoggerParams) => logger.info({ logger: logLabel, ...params }),
-    debug: (params: CustomLoggerParams) => logger.debug({ logger: logLabel, ...params }),
-    silly: (params: CustomLoggerParams) => logger.silly({ logger: logLabel, ...params })
+    error: (params: CustomLoggerParams) => logger.error(..._getLoggerParameters(logLabel, params)),
+    warn: (params: CustomLoggerParams) => logger.warn(..._getLoggerParameters(logLabel, params)),
+    info: (params: CustomLoggerParams) => logger.info(..._getLoggerParameters(logLabel, params)),
+    debug: (params: CustomLoggerParams) => logger.debug(..._getLoggerParameters(logLabel, params)),
+    silly: (params: CustomLoggerParams) => logger.silly(..._getLoggerParameters(logLabel, params))
   };
+};
+
+/**
+ * Helper function for `getLogger` to normalize the logger parameters to ensure 'message' is defined.
+ *
+ * Note: This fixes a strange issue with winston combining the message and metadata into a single object,
+ * when the message is NOT included in the params.
+ *
+ * @param {string} logLabel The common label for the logger instance.
+ * @param {CustomLoggerParams} params The logger parameters.
+ * @return {*}  {[string, CustomLoggerParams]} The normalized logger parameters.
+ */
+export const _getLoggerParameters = (logLabel: string, params: CustomLoggerParams): [string, CustomLoggerParams] => {
+  if (params.message) {
+    // Remove 'message' from params and return it as the first element
+    const { message, ...restParams } = params;
+
+    return [message, { logger: logLabel, ...restParams }];
+  }
+
+  // Return 'unknown' as log message when 'message' is not provided
+  return ['unknown', { logger: logLabel, ...params }];
 };
 
 /**
@@ -74,7 +103,7 @@ export const getLogger = (logLabel: string): CustomLogger => {
  *
  * @return {*}  {string[]}
  */
-const getLoggerTransportTypes = (): string[] => {
+const _getLoggerTransportTypes = (): string[] => {
   const transportTypes = [];
 
   // Do not output logs to file when running unit tests
@@ -91,6 +120,34 @@ const getLoggerTransportTypes = (): string[] => {
 };
 
 /**
+ * Get the log format for the winston logger.
+ *
+ * @return {*}  {winston.Logform.Format}
+ */
+export const _getLogFormat = (): winston.Logform.Format => {
+  return winston.format.combine(
+    // Fill the metadata with all the properties except the ones listed
+    winston.format.metadata({ fillExcept: ['message', 'level', 'logger', 'label'] }),
+    // Organize the log message structure
+    winston.format((info) => ({
+      // NOTE: Would adding a unique log id be useful? Different from the request id which is shared across async requests
+      requestId: getRequestId(), // 'd3d3b4d3-7b3d-4b3d-8b3d-3d3b4d3b3d3b'
+      timestamp: info.timestamp, // '2025-02-04 14:05:24'
+      user: getRequestUser(), // 'SBRULE'
+      level: info.level, // 'DEBUG'
+      logger: info.logger, // 'app-logger'
+      label: info.label, // 'label/function name/etc.'
+      message: info.message, // 'A log message!'
+      metadata: info.metadata // { ... }
+    }))(),
+    // Format the log timestamp
+    winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+    // Colorize the log message and limit the depth of the metadata object
+    winston.format.prettyPrint({ colorize: true, depth: 10 })
+  );
+};
+
+/**
  * Get or create a singleton logger instance.
  *
  * @param {string} loggerName The name of the logger instance.
@@ -104,7 +161,7 @@ export const _getOrCreateLoggerSingleton = function (loggerName: string): winsto
     return winston.loggers.get(loggerName);
   }
 
-  const transportTypes = getLoggerTransportTypes();
+  const transportTypes = _getLoggerTransportTypes();
 
   const transports = [];
 
@@ -118,15 +175,7 @@ export const _getOrCreateLoggerSingleton = function (loggerName: string): winsto
         maxSize: process.env.LOG_FILE_MAX_SIZE || '49m',
         maxFiles: process.env.LOG_FILE_MAX_FILES || '10',
         level: process.env.LOG_LEVEL_FILE || 'debug',
-        format: winston.format.combine(
-          winston.format((info) => {
-            const { timestamp, level, ...rest } = info;
-            // Return the properties of info in a specific order
-            return { timestamp, level, ...rest };
-          })(),
-          winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-          winston.format.prettyPrint({ colorize: false, depth: 10 })
-        ),
+        format: _getLogFormat(),
         options: {
           // https://nodejs.org/api/fs.html#file-system-flags
           // Open file for reading and appending. The file is created if it does not exist.
@@ -144,15 +193,7 @@ export const _getOrCreateLoggerSingleton = function (loggerName: string): winsto
     transports.push(
       new winston.transports.Console({
         level: process.env.LOG_LEVEL || 'debug',
-        format: winston.format.combine(
-          winston.format((info) => {
-            const { timestamp, level, ...rest } = info;
-            // Return the properties of info in a specific order
-            return { timestamp, level, ...rest };
-          })(),
-          winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-          winston.format.prettyPrint({ colorize: true, depth: 10 })
-        )
+        format: _getLogFormat()
       })
     );
   }
@@ -161,48 +202,44 @@ export const _getOrCreateLoggerSingleton = function (loggerName: string): winsto
   return winston.loggers.add(loggerName, { transports: transports });
 };
 
-export const WinstonLogLevels = ['silent', 'error', 'warn', 'info', 'debug', 'silly'] as const;
-
-export type WinstonLogLevel = (typeof WinstonLogLevels)[number];
-
 /**
  * Set the winston logger log level for the console transport
  *
- * @param {WinstonLogLevel} logLevel
+ * @param {WinstonLogLevel} consoleLogLevel
  */
-export const setLogLevel = (logLevel: WinstonLogLevel) => {
-  const transportTypes = getLoggerTransportTypes();
+export const setLogLevel = (consoleLogLevel: WinstonLogLevel): void => {
+  const transportTypes = _getLoggerTransportTypes();
 
   if (!transportTypes.includes('console')) {
     return;
   }
 
   // Update env var for future loggers
-  process.env.LOG_LEVEL = logLevel;
+  process.env.LOG_LEVEL = consoleLogLevel;
 
   // Update console transport log level, which is the last transport in all environments
   winston.loggers.loggers.forEach((logger) => {
-    logger.transports[transportTypes.length - 1].level = logLevel;
+    logger.transports[transportTypes.length - 1].level = consoleLogLevel;
   });
 };
 
 /**
  * Set the winston logger log level for the file transport.
  *
- * @param {WinstonLogLevel} logLevel
+ * @param {WinstonLogLevel} fileLogLevel
  */
-export const setLogLevelFile = (logLevelFile: WinstonLogLevel) => {
-  const transportTypes = getLoggerTransportTypes();
+export const setLogLevelFile = (fileLogLevel: WinstonLogLevel): void => {
+  const transportTypes = _getLoggerTransportTypes();
 
   if (!transportTypes.includes('file')) {
     return;
   }
 
   // Update env var for future loggers
-  process.env.LOG_LEVEL_FILE = logLevelFile;
+  process.env.LOG_LEVEL_FILE = fileLogLevel;
 
   // Update file transport log level, which is the first transport in all environments
   winston.loggers.loggers.forEach((logger) => {
-    logger.transports[0].level = logLevelFile;
+    logger.transports[0].level = fileLogLevel;
   });
 };
