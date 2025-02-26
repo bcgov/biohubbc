@@ -38,8 +38,6 @@ const app: express.Express = express();
 
 // Enable CORS
 app.use(function (req: Request, res: Response, next: NextFunction) {
-  defaultLog.debug({ message: 'request', label: 'api-middleware', method: req.method, url: req.url });
-
   res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Authorization, responseType');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE, HEAD');
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -49,6 +47,8 @@ app.use(function (req: Request, res: Response, next: NextFunction) {
     res.status(200).end();
     return;
   }
+
+  defaultLog.debug({ message: 'request', label: 'api-middleware', method: req.method, url: req.url });
 
   next();
 });
