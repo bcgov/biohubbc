@@ -2,6 +2,7 @@ import chai, { expect } from 'chai';
 import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { AlertSeverity } from '../database-units/alert_severity';
 import { AlertRecordWithStatus, IAlertCreateObject, IAlertUpdateObject } from '../models/alert-view';
 import { getMockDBConnection } from '../__mocks__/db';
 import { AlertRepository } from './alert-repository';
@@ -25,7 +26,7 @@ describe('AlertRepository', () => {
           message: 'This is an alert.',
           alert_type_id: 1,
           data: {},
-          severity: 'error',
+          severity: AlertSeverity.ERROR,
           status: 'active',
           record_end_date: null,
           create_date: '2020-01-01'
@@ -53,7 +54,7 @@ describe('AlertRepository', () => {
           message: 'This is an alert.',
           alert_type_id: 1,
           data: {},
-          severity: 'error',
+          severity: AlertSeverity.ERROR,
           record_end_date: null,
           status: 'active'
         }
@@ -81,7 +82,7 @@ describe('AlertRepository', () => {
           message: 'This is an alert.',
           alert_type_id: 1,
           data: {},
-          severity: 'error',
+          severity: AlertSeverity.ERROR,
           record_end_date: null,
           status: 'active'
         }
@@ -116,7 +117,7 @@ describe('AlertRepository', () => {
         message: 'Updated message',
         alert_type_id: 1,
         data: {},
-        severity: 'error',
+        severity: AlertSeverity.ERROR,
         record_end_date: null
       };
 
@@ -141,7 +142,7 @@ describe('AlertRepository', () => {
         message: 'New alert message',
         alert_type_id: 1,
         data: {},
-        severity: 'error',
+        severity: AlertSeverity.ERROR,
         record_end_date: null
       };
 

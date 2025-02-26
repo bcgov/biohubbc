@@ -4,6 +4,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { SYSTEM_IDENTITY_SOURCE } from '../../constants/database';
 import { SYSTEM_ROLE } from '../../constants/roles';
+import { AlertSeverity } from '../../database-units/alert_severity';
 import * as db from '../../database/db';
 import { HTTPError } from '../../errors/http-error';
 import { AlertRecordWithStatus } from '../../models/alert-view';
@@ -27,7 +28,7 @@ describe('getAlerts', () => {
           name: 'Alert 1',
           message: 'Message 1',
           alert_type_id: 1,
-          severity: 'error',
+          severity: AlertSeverity.ERROR,
           status: 'active',
           data: null,
           record_end_date: null,
@@ -38,7 +39,7 @@ describe('getAlerts', () => {
           name: 'Alert 2',
           message: 'Message 2',
           alert_type_id: 2,
-          severity: 'error',
+          severity: AlertSeverity.ERROR,
           status: 'active',
           data: null,
           record_end_date: null,
@@ -126,7 +127,7 @@ describe('createAlert', () => {
       name: 'New Alert',
       message: 'New alert message',
       alert_type_id: 1,
-      severity: 'medium'
+      severity: AlertSeverity.INFO
     };
 
     const mockDBConnection = getMockDBConnection({ open: sinon.stub(), commit: sinon.stub() });

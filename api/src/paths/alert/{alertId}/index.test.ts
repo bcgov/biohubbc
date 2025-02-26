@@ -5,6 +5,7 @@ import sinonChai from 'sinon-chai';
 import { deleteAlert, getAlertById, updateAlert } from '.';
 import { SYSTEM_IDENTITY_SOURCE } from '../../../constants/database';
 import { SYSTEM_ROLE } from '../../../constants/roles';
+import { AlertSeverity } from '../../../database-units/alert_severity';
 import * as db from '../../../database/db';
 import { HTTPError } from '../../../errors/http-error';
 import { AlertRecordWithStatus } from '../../../models/alert-view';
@@ -25,7 +26,7 @@ describe('getAlerts', () => {
         name: 'Alert 1',
         message: 'Message 1',
         alert_type_id: 1,
-        severity: 'error',
+        severity: AlertSeverity.ERROR,
         status: 'active',
         data: null,
         record_end_date: null,
