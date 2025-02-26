@@ -34,7 +34,7 @@ export const TechniqueGeneralInformationForm = <
       .map((option) => ({
         value: option.id,
         label: option.name,
-        subText: option.description
+        description: option.description
       }))
       // TODO https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-615 - Replace filter with more generic solution
       // Undetermined is a possible option, but filter from the list to discourage its use
@@ -44,7 +44,7 @@ export const TechniqueGeneralInformationForm = <
     codesContext.codesDataLoader.data?.method_response_metrics.map((option) => ({
       value: option.id,
       label: option.name,
-      subText: option.description
+      description: option.description
     })) ?? [];
 
   if (!codesContext.codesDataLoader.data) {
@@ -75,7 +75,7 @@ export const TechniqueGeneralInformationForm = <
           options={methodOptions.map((option) => ({
             value: option.value as number,
             label: option.label,
-            description: option.subText
+            description: option.description
           }))}
           onChange={(_, value) => {
             if (value?.value) {
@@ -99,7 +99,7 @@ export const TechniqueGeneralInformationForm = <
           options={responseMetricOptions.map((option) => ({
             value: option.value as number,
             label: option.label,
-            description: option.subText
+            description: option.description
           }))}
           onChange={(_, value) => {
             if (value?.value) {
