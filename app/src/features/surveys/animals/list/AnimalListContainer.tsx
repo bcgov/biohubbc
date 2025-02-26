@@ -58,6 +58,15 @@ export const AnimalListContainer = () => {
     });
   };
 
+  const handleToggleCritterSelect = (critter: ISurveyCritter) => {
+    if (selectedAnimal?.critter_id === critter.critter_id) {
+      setSelectedAnimal();
+      return;
+    }
+
+    setSelectedAnimal(critter);
+  };
+
   const handleCritterMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, critter: ISurveyCritter) => {
     setCritterAnchorEl(event.currentTarget);
     setSelectedCritterMenu(critter);
@@ -355,7 +364,7 @@ export const AnimalListContainer = () => {
                         key={critter.critter_id}
                         critter={critter}
                         isSelectedAnimal={selectedAnimal?.critter_id === critter.critter_id}
-                        onAnimalClick={setSelectedAnimal}
+                        onAnimalClick={handleToggleCritterSelect}
                         isCheckboxSelected={checkboxSelectedIds.includes(critter.critter_id)}
                         onCheckboxClick={handleCheckboxChange}
                         onMenuClick={handleCritterMenuClick}
