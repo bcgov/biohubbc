@@ -21,7 +21,11 @@ import { CSVError, isCSVValidationError } from 'utils/csv-utils';
 import { downloadFile } from 'utils/file-utils';
 import { getAxiosProgress } from 'utils/Utils';
 import { CSVDropzoneSection } from '../../../../../../components/csv/CSVDropzoneSection';
-import { getCapturesCSVTemplate, getMarkingsCSVTemplate, getMeasurementsCSVTemplate } from './utils/templates';
+import {
+  getCapturesCSVTemplate,
+  getMarkingsCSVTemplate,
+  getMeasurementsCSVTemplate
+} from '../../../../../../utils/csv-templates';
 
 type CSVFilesStatus = {
   captures: { file: File | null; status: UploadFileStatus; progress: number; error?: string; errors: CSVError[] };

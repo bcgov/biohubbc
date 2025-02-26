@@ -3,7 +3,6 @@ import { IStaticLayer } from 'components/map/components/StaticLayers';
 import { SURVEY_MAP_LAYER_COLOURS } from 'constants/colours';
 import { SurveySpatialAnimalCapturePopup } from 'features/surveys/view/survey-spatial/components/animal/SurveySpatialAnimalCapturePopup';
 import { SurveySpatialAnimalMortalityPopup } from 'features/surveys/view/survey-spatial/components/animal/SurveySpatialAnimalMortalityPopup';
-import { SurveySpatialAnimalTable } from 'features/surveys/view/survey-spatial/components/animal/SurveySpatialAnimalTable';
 import SurveyMap from 'features/surveys/view/SurveyMap';
 import SurveyMapTooltip from 'features/surveys/view/SurveyMapTooltip';
 import { useSurveyContext } from 'hooks/useContext';
@@ -11,12 +10,13 @@ import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useEffect, useMemo } from 'react';
 import { coloredCustomMortalityMarker } from 'utils/mapUtils';
+import { SurveySpatialAnimalTable } from './SurveySpatialAnimalTable';
 
-interface ISurveySpatialAnimalProps {
-  /**
-   * Array of additional static layers to be added to the map.
-   */
-  staticLayers: IStaticLayer[];
+/**
+ * Array of additional static layers to be added to the map.
+ */
+interface ISurveySpatialAnimalMapProps {
+  staticLayers?: IStaticLayer[];
 }
 
 /**
@@ -25,9 +25,8 @@ interface ISurveySpatialAnimalProps {
  * @param {ISurveySpatialAnimalProps} props
  * @returns
  */
-export const SurveySpatialAnimal = (props: ISurveySpatialAnimalProps) => {
+export const SurveySpatialAnimal = (props: ISurveySpatialAnimalMapProps) => {
   const surveyContext = useSurveyContext();
-
   const crittersApi = useCritterbaseApi();
 
   const critterIds = useMemo(
@@ -35,7 +34,6 @@ export const SurveySpatialAnimal = (props: ISurveySpatialAnimalProps) => {
     [surveyContext.critterDataLoader.data]
   );
 
-  // Data loader for fetching animal capture data for the map ONLY. Table data is fetched separately in `SurveySpatialAnimalTable.tsx`
   const geometryDataLoader = useDataLoader((critter_ids: string[]) =>
     crittersApi.critters.getMultipleCrittersGeometryByIds(critter_ids)
   );
@@ -46,8 +44,7 @@ export const SurveySpatialAnimal = (props: ISurveySpatialAnimalProps) => {
     }
 
     geometryDataLoader.load(critterIds);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [critterIds]);
+  }, [critterIds, geometryDataLoader]);
 
   const captureLayer: IStaticLayer = {
     layerName: 'Animal Captures',
@@ -101,7 +98,7 @@ export const SurveySpatialAnimal = (props: ISurveySpatialAnimalProps) => {
       {/* Display map with animal capture points */}
       <Box height={{ xs: 300, md: 500 }} position="relative">
         <SurveyMap
-          staticLayers={[...props.staticLayers, captureLayer, mortalityLayer]}
+          staticLayers={[...(props.staticLayers ?? []), captureLayer, mortalityLayer]}
           isLoading={geometryDataLoader.isLoading}
         />
       </Box>

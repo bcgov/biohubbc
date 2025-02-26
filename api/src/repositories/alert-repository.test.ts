@@ -2,7 +2,8 @@ import chai, { expect } from 'chai';
 import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { IAlertSeverity } from '../models/alert-view';
+import { AlertSeverity } from '../database-units/alert_severity';
+import { AlertRecordWithStatus, IAlertCreateObject, IAlertUpdateObject } from '../models/alert-view';
 import { getMockDBConnection } from '../__mocks__/db';
 import { AlertRepository } from './alert-repository';
 
@@ -18,16 +19,17 @@ describe('AlertRepository', () => {
 
   describe('getAlerts', () => {
     it('should return an array of alerts with empty filters', async () => {
-      const mockRows = [
+      const mockRows: AlertRecordWithStatus[] = [
         {
           alert_id: 1,
           name: 'Alert 1',
           message: 'This is an alert.',
           alert_type_id: 1,
           data: {},
-          severity: 'error' as IAlertSeverity,
+          severity: AlertSeverity.ERROR,
+          status: 'active',
           record_end_date: null,
-          status: 'active'
+          create_date: '2020-01-01'
         }
       ];
       const mockQueryResponse = { rows: mockRows, rowCount: 1 } as unknown as QueryResult<any>;
@@ -52,7 +54,7 @@ describe('AlertRepository', () => {
           message: 'This is an alert.',
           alert_type_id: 1,
           data: {},
-          severity: 'error',
+          severity: AlertSeverity.ERROR,
           record_end_date: null,
           status: 'active'
         }
@@ -80,7 +82,7 @@ describe('AlertRepository', () => {
           message: 'This is an alert.',
           alert_type_id: 1,
           data: {},
-          severity: 'error',
+          severity: AlertSeverity.ERROR,
           record_end_date: null,
           status: 'active'
         }
@@ -109,13 +111,13 @@ describe('AlertRepository', () => {
       });
 
       const alertRepository = new AlertRepository(mockDBConnection);
-      const alert = {
+      const alert: IAlertUpdateObject = {
         alert_id: 1,
         name: 'Updated Alert',
         message: 'Updated message',
         alert_type_id: 1,
         data: {},
-        severity: 'error' as IAlertSeverity,
+        severity: AlertSeverity.ERROR,
         record_end_date: null
       };
 
@@ -135,12 +137,12 @@ describe('AlertRepository', () => {
       });
 
       const alertRepository = new AlertRepository(mockDBConnection);
-      const alert = {
+      const alert: IAlertCreateObject = {
         name: 'New Alert',
         message: 'New alert message',
         alert_type_id: 1,
         data: {},
-        severity: 'error' as IAlertSeverity,
+        severity: AlertSeverity.ERROR,
         record_end_date: null
       };
 
