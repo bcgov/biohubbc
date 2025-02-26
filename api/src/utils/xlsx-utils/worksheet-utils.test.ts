@@ -1,10 +1,9 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import sinon from 'sinon';
 import xlsx from 'xlsx';
 import { getMockXLSXWorkbookBuffer } from '../../__mocks__/xlsx';
 import { MediaFile } from '../media/media-file';
-import { constructXLSXWorkbook, getDefaultWorksheet, IXLSXCSVValidator } from '../xlsx-utils/worksheet-utils';
+import { constructXLSXWorkbook, getDefaultWorksheet } from '../xlsx-utils/worksheet-utils';
 import * as worksheet_utils from './worksheet-utils';
 
 const xlsxWorksheet: xlsx.WorkSheet = {
@@ -60,100 +59,6 @@ describe('worksheet-utils', () => {
         'ANTLER CONFIGURATION',
         'WIND DIRECTION'
       ]);
-    });
-  });
-
-  describe('validateWorksheetHeaders', () => {
-    afterEach(() => {
-      sinon.restore();
-    });
-
-    it('should validate aliases', () => {
-      const observationCSVColumnValidator: IXLSXCSVValidator = {
-        SPECIES: { type: 'string', aliases: ['TAXON'] },
-        COUNT: { type: 'number' },
-        DATE: { type: 'string' },
-        TIME: { type: 'string' },
-        LATITUDE: { type: 'number', aliases: ['LAT'] },
-        LONGITUDE: { type: 'number', aliases: ['LON', 'LONG', 'LNG'] }
-      };
-
-      const mockWorksheet = {} as unknown as xlsx.WorkSheet;
-
-      const getHeadersUpperCaseStub = sinon
-        .stub(worksheet_utils, 'getHeadersUpperCase')
-        .callsFake(() => ['TAXON', 'COUNT', 'DATE', 'TIME', 'LAT', 'LON']);
-
-      const result = worksheet_utils.validateWorksheetHeaders(mockWorksheet, observationCSVColumnValidator);
-
-      expect(getHeadersUpperCaseStub).to.be.calledOnce;
-      expect(result).to.equal(true);
-    });
-
-    it('should validate for missing optional headers', () => {
-      const observationCSVColumnValidator: IXLSXCSVValidator = {
-        SPECIES: { type: 'string', aliases: ['TAXON'], optional: true },
-        COUNT: { type: 'number', optional: true },
-        DATE: { type: 'string' },
-        TIME: { type: 'string' },
-        LATITUDE: { type: 'number', aliases: ['LAT'] },
-        LONGITUDE: { type: 'number', aliases: ['LON', 'LONG', 'LNG'] }
-      };
-
-      const mockWorksheet = {} as unknown as xlsx.WorkSheet;
-
-      const getHeadersUpperCaseStub = sinon
-        .stub(worksheet_utils, 'getHeadersUpperCase')
-        .callsFake(() => ['DATE', 'TIME', 'LAT', 'LON']);
-
-      const result = worksheet_utils.validateWorksheetHeaders(mockWorksheet, observationCSVColumnValidator);
-
-      expect(getHeadersUpperCaseStub).to.be.calledOnce;
-      expect(result).to.equal(true);
-    });
-
-    it('should succeed for header thats optional but provided', () => {
-      const observationCSVColumnValidator: IXLSXCSVValidator = {
-        SPECIES: { type: 'string', aliases: ['TAXON'], optional: true },
-        COUNT: { type: 'number' },
-        DATE: { type: 'string' },
-        TIME: { type: 'string' },
-        LATITUDE: { type: 'number', aliases: ['LAT'] },
-        LONGITUDE: { type: 'number', aliases: ['LON', 'LONG', 'LNG'] }
-      };
-
-      const mockWorksheet = {} as unknown as xlsx.WorkSheet;
-
-      const getHeadersUpperCaseStub = sinon
-        .stub(worksheet_utils, 'getHeadersUpperCase')
-        .callsFake(() => ['TAXON', 'COUNT', 'DATE', 'TIME', 'LAT', 'LON']);
-
-      const result = worksheet_utils.validateWorksheetHeaders(mockWorksheet, observationCSVColumnValidator);
-
-      expect(getHeadersUpperCaseStub).to.be.calledOnce;
-      expect(result).to.equal(true);
-    });
-
-    it('should fail for unknown aliases', () => {
-      const observationCSVColumnValidator: IXLSXCSVValidator = {
-        SPECIES: { type: 'string', aliases: ['TAXON'] },
-        COUNT: { type: 'number' },
-        DATE: { type: 'string' },
-        TIME: { type: 'string' },
-        LATITUDE: { type: 'number', aliases: ['LAT'] },
-        LONGITUDE: { type: 'number', aliases: ['LON', 'LONG', 'LNG'] }
-      };
-
-      const mockWorksheet = {} as unknown as xlsx.WorkSheet;
-
-      const getHeadersUpperCaseStub = sinon
-        .stub(worksheet_utils, 'getHeadersUpperCase')
-        .callsFake(() => ['SPECIES', 'COUNT', 'DATE', 'TIME', 'SOMETHING_LAT', 'LON']);
-
-      const result = worksheet_utils.validateWorksheetHeaders(mockWorksheet, observationCSVColumnValidator);
-
-      expect(getHeadersUpperCaseStub).to.be.calledOnce;
-      expect(result).to.equal(false);
     });
   });
 

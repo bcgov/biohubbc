@@ -9,8 +9,8 @@ import { NestedRecord } from '../../../utils/nested-record';
 import { getMockDBConnection } from '../../../__mocks__/db';
 import { CritterbaseService } from '../../critterbase-service';
 import { SurveyCritterService } from '../../survey-critter-service';
-import * as critterConfig from './critter-header-configs';
 import { ImportCrittersService } from './import-critters-service';
+import * as critterConfig from './utils/critter-header-configs';
 
 chai.use(sinonChai);
 
@@ -31,12 +31,12 @@ describe('ImportCrittersService', () => {
       expect(service).to.have.property('worksheet', worksheet);
       expect(service).to.have.property('surveyId', 1);
 
-      expect(service.configUtils).to.be.instanceof(CSVConfigUtils);
+      expect(service.utils).to.be.instanceof(CSVConfigUtils);
       expect(service.surveyCritterService).to.be.instanceof(SurveyCritterService);
       expect(service.critterbaseService).to.be.instanceof(CritterbaseService);
 
-      expect(Object.keys(service._config.staticHeadersConfig)).to.deep.equal([
-        'ITIS_TSN',
+      expect(Object.keys(service.utils.config.staticHeadersConfig)).to.deep.equal([
+        'SPECIES',
         'ALIAS',
         'SEX',
         'WLH_ID',
@@ -45,14 +45,13 @@ describe('ImportCrittersService', () => {
     });
   });
 
-  describe('_getCSVConfig', () => {
-    it('should return a valid CSVConfig object (no errors thrown)', async () => {
+  describe('getCSVConfig', () => {
+    it('should return a valid CSVConfig object', async () => {
       const mockConnection = getMockDBConnection();
       const worksheet = xlsx.utils.json_to_sheet([]);
 
       const service = new ImportCrittersService(mockConnection, worksheet, 1);
 
-      sinon.stub(service, '_getTsnHeaderConfig').resolves({ validateCell: () => [] });
       sinon.stub(service, '_getAliasHeaderConfig').resolves({ validateCell: () => [] });
       sinon.stub(service, '_getSexHeaderConfig').resolves({ validateCell: () => [], setCellValue: () => 'A' });
       sinon
@@ -64,7 +63,7 @@ describe('ImportCrittersService', () => {
 
       const config = await service.getCSVConfig();
 
-      expect(config.staticHeadersConfig.ITIS_TSN.validateCell).to.be.a('function');
+      expect(config.staticHeadersConfig.SPECIES.validateCell).to.be.a('function');
       expect(config.staticHeadersConfig.ALIAS.validateCell).to.be.a('function');
       expect(config.staticHeadersConfig.SEX.validateCell).to.be.a('function');
       expect(config.staticHeadersConfig.SEX.setCellValue).to.be.a('function');
@@ -74,55 +73,6 @@ describe('ImportCrittersService', () => {
       expect(config.dynamicHeadersConfig?.setCellValue).to.be.a('function');
 
       expect(config.ignoreDynamicHeaders).to.be.false;
-    });
-
-    it('should return a valid CSVConfig object (when errors thrown)', async () => {
-      const mockConnection = getMockDBConnection();
-      const worksheet = xlsx.utils.json_to_sheet([]);
-
-      const service = new ImportCrittersService(mockConnection, worksheet, 1);
-
-      sinon.stub(service, '_getTsnHeaderConfig').resolves({ validateCell: () => [] });
-      sinon.stub(service, '_getAliasHeaderConfig').resolves({ validateCell: () => [] });
-      sinon.stub(service, '_getSexHeaderConfig').resolves({ validateCell: () => [], setCellValue: () => 'A' });
-      sinon.stub(service, '_getCollectionUnitDynamicHeaderConfig').rejects(new Error('Dynamic header error'));
-
-      sinon.stub(headerConfig, 'getDescriptionCellValidator').returns(() => []);
-      sinon.stub(critterConfig, 'getWlhIDCellValidator').returns(() => []);
-
-      const config = await service.getCSVConfig();
-
-      expect(config.staticHeadersConfig.ITIS_TSN.validateCell).to.be.a('function');
-      expect(config.staticHeadersConfig.ALIAS.validateCell).to.be.a('function');
-      expect(config.staticHeadersConfig.SEX.validateCell).to.be.a('function');
-      expect(config.staticHeadersConfig.SEX.setCellValue).to.be.a('function');
-      expect(config.staticHeadersConfig.WLH_ID.validateCell).to.be.a('function');
-      expect(config.staticHeadersConfig.DESCRIPTION.validateCell).to.be.a('function');
-
-      expect(config.dynamicHeadersConfig).to.be.undefined;
-      expect(config.ignoreDynamicHeaders).to.be.true;
-    });
-  });
-
-  describe('_getTsnHeaderConfig', () => {
-    it('should return a valid header config object', async () => {
-      const mockConnection = getMockDBConnection();
-      const worksheet = xlsx.utils.json_to_sheet([{ ITIS_TSN: '1234' }]);
-
-      const service = new ImportCrittersService(mockConnection, worksheet, 1);
-
-      const getTaxonomyByTsnsStub = sinon
-        .stub(service.platformService, 'getTaxonomyByTsns')
-        .resolves([{ tsn: 1234, scientificName: 'test' }]);
-      const getTsnCellValidatorStub = sinon.stub(headerConfig, 'getTsnCellValidator').returns(() => []);
-
-      const tsnHeaderConfig = await service._getTsnHeaderConfig();
-
-      expect(getTaxonomyByTsnsStub).to.have.been.calledOnceWithExactly(['1234']);
-      expect(getTsnCellValidatorStub).to.have.been.calledOnceWithExactly(new Set([1234]));
-
-      expect(tsnHeaderConfig.validateCell).to.be.a('function');
-      expect(tsnHeaderConfig.setCellValue).to.be.a('function');
     });
   });
 
@@ -143,10 +93,7 @@ describe('ImportCrittersService', () => {
       const aliasHeaderConfig = await service._getAliasHeaderConfig();
 
       expect(getSurveyCritterAliasesStub).to.have.been.calledOnceWithExactly(1);
-      expect(getCritterAliasCellValidatorStub).to.have.been.calledOnceWithExactly(
-        new Set(['test']),
-        service.configUtils
-      );
+      expect(getCritterAliasCellValidatorStub).to.have.been.calledOnceWithExactly(new Set(['test']), service.utils);
 
       expect(aliasHeaderConfig.validateCell).to.be.a('function');
       expect(aliasHeaderConfig.setCellValue).to.be.a('function');
@@ -156,7 +103,7 @@ describe('ImportCrittersService', () => {
   describe('_getSexHeaderConfig', () => {
     it('should return a valid header config object', async () => {
       const mockConnection = getMockDBConnection();
-      const worksheet = xlsx.utils.json_to_sheet([{ ITIS_TSN: 1234 }]);
+      const worksheet = xlsx.utils.json_to_sheet([{ SPECIES: 'species' }]);
 
       const service = new ImportCrittersService(mockConnection, worksheet, 1);
 
@@ -181,14 +128,13 @@ describe('ImportCrittersService', () => {
 
       const getSexCellValidatorStub = sinon.stub(critterConfig, 'getCritterSexCellValidator').returns(() => []);
 
-      const sexHeaderConfig = await service._getSexHeaderConfig();
+      const sexHeaderConfig = await service._getSexHeaderConfig([1234]);
 
-      expect(getTaxonMeasurementsStub).to.have.been.calledWithExactly('1234');
+      expect(getTaxonMeasurementsStub).to.have.been.calledWithExactly(1234);
       expect(getSexCellValidatorStub).to.have.been.calledWithExactly(
         new NestedRecord({
           1234: { male: 'maleUUID', female: 'femaleUUID' }
-        }),
-        service.configUtils
+        })
       );
 
       expect(sexHeaderConfig.validateCell).to.be.a('function');
@@ -199,7 +145,7 @@ describe('ImportCrittersService', () => {
   describe('_getCollectionUnitDynamicHeaderConfig', () => {
     it('should return a valid header config object', async () => {
       const mockConnection = getMockDBConnection();
-      const worksheet = xlsx.utils.json_to_sheet([{ UNIT: 'unit', ITIS_TSN: 1234 }]);
+      const worksheet = xlsx.utils.json_to_sheet([{ UNIT: 'unit', SPECIES: 'species' }]);
 
       const service = new ImportCrittersService(mockConnection, worksheet, 1);
 
@@ -211,26 +157,16 @@ describe('ImportCrittersService', () => {
         .stub(critterConfig, 'getCritterCollectionUnitCellValidator')
         .returns(() => []);
 
-      const getCollectionUnitCellSetterStub = sinon
-        .stub(critterConfig, 'getCritterCollectionUnitCellSetter')
-        .returns(() => 'value');
+      const config = await service._getCollectionUnitDynamicHeaderConfig([1234]);
 
-      const config = await service._getCollectionUnitDynamicHeaderConfig();
-
-      expect(findTaxonCollectionUnitsStub).to.have.been.calledOnceWithExactly('1234');
+      expect(findTaxonCollectionUnitsStub).to.have.been.calledOnceWithExactly(1234);
 
       expect(getCollectionUnitCellValidatorStub).to.have.been.calledWithExactly(
-        new NestedRecord({ 1234: { category: { unit: 'uuid' } } }),
-        service.configUtils
-      );
-
-      expect(getCollectionUnitCellSetterStub).to.have.been.calledWithExactly(
-        new NestedRecord({ 1234: { category: { unit: 'uuid' } } }),
-        service.configUtils
+        new NestedRecord({ 1234: { category: { unit: 'uuid' } } })
       );
 
       expect(config.validateCell).to.be.a('function');
-      expect(config.setCellValue).to.be.a('function');
+      expect(config.setCellValue).to.be.undefined;
     });
   });
 
@@ -239,15 +175,16 @@ describe('ImportCrittersService', () => {
       const mockConnection = getMockDBConnection();
       const rows = [
         {
-          ITIS_TSN: '1234',
+          SPECIES: 1234,
           ALIAS: 'test',
-          SEX: 'male',
+          SEX: 'sexId',
           WLH_ID: '12-2222',
           DESCRIPTION: 'comment',
           POPULATION_UNIT: 'unit',
           COLLECTION_UNIT: 'collection',
           [CSVRowState]: {
-            sexId: 'sexId'
+            itis_tsn: 1234,
+            itis_scientific_name: 'species'
           }
         }
       ];
@@ -259,7 +196,7 @@ describe('ImportCrittersService', () => {
 
       expect(payloads.simsPayload[0]).to.be.a('string');
 
-      expect(payloads.critterbasePayload.critters?.[0].itis_tsn).to.be.equal('1234');
+      expect(payloads.critterbasePayload.critters?.[0].itis_tsn).to.be.equal(1234);
       expect(payloads.critterbasePayload.critters?.[0].animal_id).to.be.equal('test');
       expect(payloads.critterbasePayload.critters?.[0].sex_qualitative_option_id).to.be.equal('sexId');
       expect(payloads.critterbasePayload.critters?.[0].wlh_id).to.be.equal('12-2222');

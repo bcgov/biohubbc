@@ -41,6 +41,9 @@ export const getMockDBConnection = (config?: Partial<IDBConnection>): IDBConnect
     open: async () => {
       // do nothing
     },
+    isConnectionOpen: () => {
+      return null as unknown as boolean;
+    },
     release: () => {
       // do nothing
     },

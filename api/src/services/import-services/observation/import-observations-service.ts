@@ -106,7 +106,10 @@ export class ImportObservationsService extends DBService {
           aliases: ['SAMPLE PERIOD', 'SAMPLING PERIOD', 'SAMPLING_PERIOD', 'PERIOD', 'TIME PERIOD', 'SESSION'],
           optional: true
         },
-        SAMPLE_SITE: { aliases: ['SAMPLE SITE', 'SAMPLING_SITE', 'SAMPLING SITE', 'SITE', 'LOCATION', 'STATION'] },
+        SAMPLE_SITE: {
+          aliases: ['SAMPLE SITE', 'SAMPLING_SITE', 'SAMPLING SITE', 'SITE', 'LOCATION', 'STATION'],
+          optional: true
+        },
         METHOD_TECHNIQUE: { aliases: ['METHOD TECHNIQUE', 'METHOD', 'TECHNIQUE'], optional: true },
         COMMENT: { aliases: ['COMMENTS', 'NOTE', 'NOTES'], optional: true }
       },

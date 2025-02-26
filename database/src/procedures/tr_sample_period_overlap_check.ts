@@ -40,6 +40,7 @@ export async function seed(knex: Knex): Promise<void> {
         SELECT *
         FROM survey_sample_period
         WHERE survey_id = NEW.survey_id
+        AND survey_sample_period_id IS DISTINCT FROM NEW.survey_sample_period_id
         AND method_technique_id IS NOT DISTINCT FROM NEW.method_technique_id
         AND survey_sample_site_id IS NOT DISTINCT FROM NEW.survey_sample_site_id
         AND (
