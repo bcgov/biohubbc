@@ -58,7 +58,7 @@ const PurposeAndMethodologyForm = (props: IPurposeAndMethodologyFormProps) => {
               options={props.intended_outcomes.map((outcome) => ({
                 value: outcome.value,
                 label: outcome.label,
-                description: null
+                description: outcome.description
               }))}
               required={true}
             />

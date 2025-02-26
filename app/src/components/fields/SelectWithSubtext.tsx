@@ -11,7 +11,7 @@ import React, { useState } from 'react';
 export interface ISelectWithSubtextFieldOption {
   value: string | number;
   label: string;
-  subText?: string;
+  description: string | null;
 }
 
 export interface ISelectWithSubtextField {
@@ -76,7 +76,7 @@ const SelectWithSubtextField: React.FC<ISelectWithSubtextField> = (props) => {
             }}>
             <ListItemText
               primary={item.label}
-              secondary={item.subText}
+              secondary={item.description}
               sx={{
                 '& .MuiListItemText-primary': {
                   fontSize: '14px',
