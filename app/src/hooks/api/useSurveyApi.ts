@@ -469,18 +469,25 @@ const useSurveyApi = (axios: AxiosInstance) => {
    * @param {File} file
    * @param {number} projectId
    * @param {number} surveyId
+   * @param {CancelTokenSource} [cancelTokenSource]
+   * @param {(progressEvent: AxiosProgressEvent) => void} [onProgress]
    * @return {*}  {Promise<{ survey_critter_ids: number[] }>}
    */
   const importCrittersFromCsv = async (
     file: File,
     projectId: number,
-    surveyId: number
+    surveyId: number,
+    cancelTokenSource?: CancelTokenSource,
+    onProgress?: (progressEvent: AxiosProgressEvent) => void
   ): Promise<{ survey_critter_ids: number[] }> => {
     const formData = new FormData();
 
     formData.append('media', file);
 
-    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/critters/import`, formData);
+    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/critters/import`, formData, {
+      cancelToken: cancelTokenSource?.token,
+      onUploadProgress: onProgress
+    });
 
     return data;
   };

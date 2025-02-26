@@ -6,8 +6,8 @@ import {
 } from '../../../../repositories/observation-subcount-environment-repository';
 import { CSVCellValidator, CSVError, CSVParams } from '../../../../utils/csv-utils/csv-config-validation.interface';
 import { updateCSVRowState } from '../../../../utils/csv-utils/csv-header-configs';
-import { EnvironmentNameTypeDefinitionMap } from '../../../../utils/observation-xlsx-utils/environment-column-utils';
 import {
+  EnvironmentNameTypeDefinitionMap,
   isQualitativeEnvironmentTypeDefinition,
   isQuantitativeEnvironmentTypeDefinition
 } from '../../utils/environment';
