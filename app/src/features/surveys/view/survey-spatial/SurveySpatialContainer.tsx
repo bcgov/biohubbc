@@ -1,4 +1,5 @@
 import { mdiEye, mdiPaw, mdiWifiMarker } from '@mdi/js';
+import { ComponentSwitch } from 'components/misc/ComponentSwitch';
 import { SurveySpatialAnimal } from 'features/surveys/view/survey-spatial/components/animal/SurveySpatialAnimal';
 import { SurveySpatialObservation } from 'features/surveys/view/survey-spatial/components/observation/SurveySpatialObservation';
 import {
@@ -9,7 +10,6 @@ import { SurveySpatialTelemetry } from 'features/surveys/view/survey-spatial/com
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext, useTaxonomyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
-import { isEqual } from 'lodash-es';
 import { useEffect, useMemo, useState } from 'react';
 import { ApiPaginationRequestOptions } from 'types/misc';
 import { useSamplingSiteStaticLayer } from './components/map/useSamplingSiteStaticLayer';
@@ -82,14 +82,14 @@ export const SurveySpatialContainer = (): JSX.Element => {
         ]}
       />
 
-      {/* Display the corresponding dataset view based on the selected active view */}
-      {isEqual(SurveySpatialDatasetViewEnum.OBSERVATIONS, activeView) && (
-        <SurveySpatialObservation staticLayers={staticLayers} />
-      )}
-      {isEqual(SurveySpatialDatasetViewEnum.TELEMETRY, activeView) && (
-        <SurveySpatialTelemetry staticLayers={staticLayers} />
-      )}
-      {isEqual(SurveySpatialDatasetViewEnum.ANIMALS, activeView) && <SurveySpatialAnimal staticLayers={staticLayers} />}
+      <ComponentSwitch
+        switch={activeView}
+        components={{
+          [SurveySpatialDatasetViewEnum.OBSERVATIONS]: <SurveySpatialObservation staticLayers={staticLayers} />,
+          [SurveySpatialDatasetViewEnum.TELEMETRY]: <SurveySpatialTelemetry staticLayers={staticLayers} />,
+          [SurveySpatialDatasetViewEnum.ANIMALS]: <SurveySpatialAnimal staticLayers={staticLayers} />
+        }}
+      />
     </>
   );
 };
