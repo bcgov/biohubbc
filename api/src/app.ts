@@ -13,6 +13,7 @@ import {
 } from './middleware/critterbase-proxy';
 import { rootAPIDoc } from './openapi/root-api-doc';
 import { authenticateRequest, authenticateRequestOptional } from './request-handlers/security/authentication';
+import { initRequestStorage } from './utils/async-request-storage';
 import { loadEnvironmentVariables } from './utils/env-config';
 import { scanFileForVirus } from './utils/file-utils';
 import { getLogger } from './utils/logger';
@@ -37,8 +38,6 @@ const app: express.Express = express();
 
 // Enable CORS
 app.use(function (req: Request, res: Response, next: NextFunction) {
-  defaultLog.debug({ method: req.method, url: req.url });
-
   res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Authorization, responseType');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE, HEAD');
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -48,6 +47,8 @@ app.use(function (req: Request, res: Response, next: NextFunction) {
     res.status(200).end();
     return;
   }
+
+  defaultLog.debug({ message: 'request', label: 'api-middleware', method: req.method, url: req.url });
 
   next();
 });
@@ -188,6 +189,9 @@ try {
  */
 function getAdditionalMiddleware(): express.RequestHandler[] {
   const additionalMiddleware = [];
+
+  // Initialize the request storage for each request
+  additionalMiddleware.push(initRequestStorage);
 
   if (process.env.API_RESPONSE_VALIDATION_ENABLED === 'true') {
     // Validate endpoint responses against openapi spec

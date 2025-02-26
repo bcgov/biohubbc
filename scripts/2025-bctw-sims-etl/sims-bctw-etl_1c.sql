@@ -560,10 +560,13 @@ FROM
  where 
      valid_collar_deployment_id in (
          WITH w_data AS (
-             select
-                 *
-             from
-                 bctw.invalid_collar_deployment
+             select * from bctw.valid_collar_deployment
+             union all 
+             select * from bctw.invalid_collar_deployment
+             union all 
+             select * from bctw.invalid_collar_valid_deployment
+             union all 
+             select * from bctw.valid_collar_invalid_deployment
          )
          SELECT
              t1.valid_collar_deployment_id
@@ -578,7 +581,7 @@ FROM
                  t1.valid_collar_deployment_id <> t2.valid_collar_deployment_id and
                  t1.device_id = t2.device_id and
                  t1.device_make = t2.device_make and
-                 (t1.attachment_start, t1.attachment_end[1]) OVERLAPS (t2.attachment_start, t2.attachment_end[1])
+                 (t1.attachment_start, coalesce(t1.attachment_end[1], '9999-12-31')) OVERLAPS (t2.attachment_start, coalesce(t2.attachment_end[1], '9999-12-31'))
          )
      );
  
@@ -636,10 +639,13 @@ FROM
  where 
      valid_collar_deployment_id in (
          WITH w_data AS (
-             select
-                 *
-             from
-                 bctw.invalid_collar_valid_deployment
+             select * from bctw.valid_collar_deployment
+             union all 
+             select * from bctw.invalid_collar_deployment
+             union all 
+             select * from bctw.invalid_collar_valid_deployment
+             union all 
+             select * from bctw.valid_collar_invalid_deployment
          )
          SELECT
              t1.valid_collar_deployment_id
@@ -654,7 +660,7 @@ FROM
                  t1.valid_collar_deployment_id <> t2.valid_collar_deployment_id and
                  t1.device_id = t2.device_id and
                  t1.device_make = t2.device_make and
-                 (t1.attachment_start, t1.attachment_end[1]) OVERLAPS (t2.attachment_start, t2.attachment_end[1])
+                 (t1.attachment_start, coalesce(t1.attachment_end[1], '9999-12-31')) OVERLAPS (t2.attachment_start, coalesce(t2.attachment_end[1], '9999-12-31'))
          )
      );
  
@@ -712,10 +718,13 @@ FROM
  where 
      valid_collar_deployment_id in (
          WITH w_data AS (
-             select
-                 *
-             from
-                 bctw.valid_collar_invalid_deployment
+             select * from bctw.valid_collar_deployment
+             union all 
+             select * from bctw.invalid_collar_deployment
+             union all 
+             select * from bctw.invalid_collar_valid_deployment
+             union all 
+             select * from bctw.valid_collar_invalid_deployment
          )
          SELECT
              t1.valid_collar_deployment_id
@@ -730,7 +739,7 @@ FROM
                  t1.valid_collar_deployment_id <> t2.valid_collar_deployment_id and
                  t1.device_id = t2.device_id and
                  t1.device_make = t2.device_make and
-                 (t1.attachment_start, t1.attachment_end[1]) OVERLAPS (t2.attachment_start, t2.attachment_end[1])
+                 (t1.attachment_start, coalesce(t1.attachment_end[1], '9999-12-31')) OVERLAPS (t2.attachment_start, coalesce(t2.attachment_end[1], '9999-12-31'))
          )
      );
 

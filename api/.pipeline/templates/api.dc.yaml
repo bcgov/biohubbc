@@ -623,11 +623,11 @@ objects:
                       value: ${VECTRONIC_API_HOST}
                     # Logging
                     - name: LOG_LEVEL
-                      value: ${LOG_LEVEL}
+                      value: debug
                     - name: LOG_LEVEL_FILE
-                      value: data/cronjob-logs
+                      value: debug
                     - name: LOG_FILE_DIR
-                      value: ${LOG_FILE_DIR}
+                      value: data/cronjob-logs
                     - name: LOG_FILE_NAME
                       value: sims-telemetry-cronjob-%DATE%.log
                     - name: LOG_FILE_DATE_PATTERN
