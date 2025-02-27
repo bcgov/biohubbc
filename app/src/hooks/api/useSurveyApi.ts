@@ -11,6 +11,7 @@ import {
   ICreateSurveyRequest,
   ICreateSurveyResponse,
   IFindSurveysResponse,
+  IFindSurveysSpatialResponse,
   IGetSurveyAttachmentsResponse,
   IGetSurveyForUpdateResponse,
   IGetSurveyForViewResponse,
@@ -82,6 +83,30 @@ const useSurveyApi = (axios: AxiosInstance) => {
     };
 
     const { data } = await axios.get('/api/survey', { params, paramsSerializer: (params) => qs.stringify(params) });
+
+    return data;
+  };
+
+  /**
+   * Get survey geometries for a system user id.
+   *
+   * @param {ApiPaginationRequestOptions} [pagination]
+   * @param {ISurveyAdvancedFilters} filterFieldData
+   * @return {*} {Promise<IFindProjectsResponse[]>}
+   */
+  const findSurveysSpatial = async (
+    pagination?: ApiPaginationRequestOptions,
+    filterFieldData?: ISurveyAdvancedFilters
+  ): Promise<IFindSurveysSpatialResponse> => {
+    const params = {
+      ...pagination,
+      ...filterFieldData
+    };
+
+    const { data } = await axios.get('/api/survey/spatial', {
+      params,
+      paramsSerializer: (params) => qs.stringify(params)
+    });
 
     return data;
   };
@@ -612,6 +637,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     getSurveysBasicFieldsByProjectId,
     getSurveyForUpdate,
     findSurveys,
+    findSurveysSpatial,
     updateSurvey,
     uploadSurveyAttachments,
     uploadSurveyReports,

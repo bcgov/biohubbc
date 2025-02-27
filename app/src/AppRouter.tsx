@@ -59,7 +59,7 @@ const AppRouter: React.FC = () => {
 
       <Redirect exact from="/admin" to="/admin/summary" />
 
-      <RouteWithTitle path="/admin/summary" title={getTitle('Summary')}>
+      <RouteWithTitle path="/admin/summary" title={getTitle('Overview')}>
         <BaseLayout>
           <AuthenticatedRouteGuard>
             <CodesContextProvider>

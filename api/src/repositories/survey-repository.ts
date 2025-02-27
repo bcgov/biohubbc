@@ -7,6 +7,7 @@ import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
 import { PutSurveyObject } from '../models/survey-update';
 import {
   FindSurveysResponse,
+  FindSurveysSpatialResponse,
   GetAttachmentsData,
   GetReportAttachmentsData,
   GetSurveyProprietorData,
@@ -215,9 +216,94 @@ export class SurveyRepository extends BaseRepository {
     if (filterFields.itis_tsns?.length) {
       // multiple
       query.whereIn('sp.itis_tsn', filterFields.itis_tsns);
-    } else if (filterFields.itis_tsn) {
-      // single
-      query.where('sp.itis_tsn', filterFields.itis_tsn);
+    }
+
+    // Keyword Search filter
+    if (filterFields.keyword) {
+      const keywordMatch = `%${filterFields.keyword}%`;
+      query.where((subQueryBuilder) => {
+        subQueryBuilder
+          .where('s.name', 'ilike', keywordMatch)
+          .orWhere('s.additional_details', 'ilike', keywordMatch)
+          .orWhere('s.comments', 'ilike', keywordMatch);
+
+        // If the keyword is a number, also match on survey Id
+        if (!isNaN(Number(filterFields.keyword))) {
+          subQueryBuilder.orWhere('s.survey_id', Number(filterFields.keyword));
+        }
+      });
+    }
+
+    return query;
+  }
+
+  /**
+   * Constructs a non-paginated query used to get the geometries of all surveys based on the user's permissions and filter criteria.
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId The system user id of the user making the request
+   * @param {ISurveyAdvancedFilters} filterFields
+   * @return {*}  Promise<Knex.QueryBuilder>
+   * @memberof SurveyRepository
+   */
+  _makeFindSurveySpatialQuery(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: ISurveyAdvancedFilters
+  ): Knex.QueryBuilder {
+    const knex = getKnex();
+
+    const query = knex
+      .distinct('s.survey_id', 's.project_id', 'sl.survey_location_id', 'sl.geojson')
+      .from('survey_location as sl')
+      .join('survey as s', 'sl.survey_id', 's.survey_id')
+      .leftJoin('project as p', 'p.project_id', 's.project_id')
+      .leftJoin('study_species as sp', 'sp.survey_id', 's.survey_id')
+      .leftJoin('survey_type as st', 'st.survey_id', 's.survey_id')
+      .leftJoin('survey_region as sr', 'sr.survey_id', 's.survey_id')
+      .leftJoin('region_lookup as rl', 'rl.region_id', 'sr.region_id')
+      .leftJoin('project_participation as ppa', 'ppa.project_id', 's.project_id');
+
+    // Ensure that users can only see surveys that they are participating in, unless they are an administrator.
+    if (!isUserAdmin) {
+      query.whereIn('p.project_id', (subQueryBuilder) => {
+        subQueryBuilder.select('project_id').from('project_participation').where('system_user_id', systemUserId);
+      });
+    }
+
+    if (filterFields.system_user_id) {
+      query.whereIn('p.project_id', (subQueryBuilder) => {
+        subQueryBuilder
+          .select('project_id')
+          .from('project_participation')
+          .where('system_user_id', filterFields.system_user_id);
+      });
+    }
+
+    // Start Date filter
+    if (filterFields.start_date) {
+      query.andWhere('s.start_date', '>=', filterFields.start_date);
+    }
+
+    // End Date filter
+    if (filterFields.end_date) {
+      query.andWhere('s.end_date', '<=', filterFields.end_date);
+    }
+
+    // Project Name filter (like match)
+    if (filterFields.survey_name) {
+      query.andWhere('s.name', 'ilike', `%${filterFields.survey_name}%`);
+    }
+
+    // Project Name filter (like match)
+    if (filterFields.project_name) {
+      query.andWhere('p.name', 'ilike', `%${filterFields.project_name}%`);
+    }
+
+    // Focal Species filter
+    if (filterFields.itis_tsns?.length) {
+      // multiple
+      query.whereIn('sp.itis_tsn', filterFields.itis_tsns);
     }
 
     // Keyword Search filter
@@ -267,6 +353,38 @@ export class SurveyRepository extends BaseRepository {
     }
 
     const response = await this.connection.knex(query, FindSurveysResponse);
+
+    return response.rows;
+  }
+
+  /**
+   * Retrieves the paginated list of survey geometries that are available to the user.
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId The system user id of the user making the request
+   * @param {ISurveyAdvancedFilters} filterFields
+   * @param {ApiPaginationOptions} [pagination]
+   * @return {*}  {Promise<FindSurveysSpatialResponse[]>}
+   * @memberof SurveyRepository
+   */
+  async findSurveysSpatial(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: ISurveyAdvancedFilters,
+    pagination?: ApiPaginationOptions
+  ): Promise<FindSurveysSpatialResponse[]> {
+    const query = this._makeFindSurveySpatialQuery(isUserAdmin, systemUserId, filterFields);
+
+    // Pagination
+    if (pagination) {
+      query.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
+
+      if (pagination.sort && pagination.order) {
+        query.orderBy(pagination.sort, pagination.order);
+      }
+    }
+
+    const response = await this.connection.knex(query, FindSurveysSpatialResponse);
 
     return response.rows;
   }

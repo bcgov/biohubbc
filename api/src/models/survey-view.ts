@@ -18,13 +18,6 @@ export interface ISurveyAdvancedFilters {
    */
   keyword?: string;
   /**
-   * Filter results by ITIS TSN.
-   *
-   * @type {number}
-   * @memberof ISurveyAdvancedFilters
-   */
-  itis_tsn?: number;
-  /**
    * Filter results by ITIS TSNs.
    *
    * @type {number[]}
@@ -52,6 +45,14 @@ export interface ISurveyAdvancedFilters {
    * @memberof ISurveyAdvancedFilters
    */
   survey_name?: string;
+
+  /**
+   * Filter results by project name.
+   *
+   * @type {string}
+   * @memberof ISurveyAdvancedFilters
+   */
+  project_name?: string;
   /**
    * Filter results by system user id.
    *
@@ -76,6 +77,15 @@ export const FindSurveysResponse = z.object({
 });
 
 export type FindSurveysResponse = z.infer<typeof FindSurveysResponse>;
+
+export const FindSurveysSpatialResponse = z.object({
+  project_id: z.number(),
+  survey_id: z.number(),
+  survey_location_id: z.number(),
+  geojson: z.any()
+});
+
+export type FindSurveysSpatialResponse = z.infer<typeof FindSurveysSpatialResponse>;
 
 export type SurveyObject = {
   survey_details: GetSurveyData;

@@ -8,7 +8,7 @@ import { useTaxonomyContext } from 'hooks/useContext';
 export type IProjectAdvancedFilters = {
   keyword?: string;
   itis_tsn?: number;
-  system_user_id?: string;
+  system_user_id?: number;
 };
 
 export const ProjectAdvancedFiltersInitialValues: IProjectAdvancedFilters = {

@@ -1,9 +1,9 @@
 import { mdiChevronDown, mdiChevronUp } from '@mdi/js';
 import Icon from '@mdi/react';
+import { AlertProps } from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Collapse from '@mui/material/Collapse';
-import grey from '@mui/material/colors/grey';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import AlertBar from 'components/alert/AlertBar';
@@ -13,7 +13,7 @@ import useDataLoader from 'hooks/useDataLoader';
 import { IAlert, SystemAlertBannerEnum } from 'interfaces/useAlertApi.interface';
 import { useEffect, useState } from 'react';
 
-interface ISystemAlertBannerProps {
+interface ISystemAlertBannerProps extends AlertProps {
   alertTypes?: SystemAlertBannerEnum[];
 }
 
@@ -27,7 +27,7 @@ const NumberOfAlertsShownInitially = 2;
  * @returns
  */
 export const SystemAlertBanner = (props: ISystemAlertBannerProps) => {
-  const { alertTypes } = props;
+  const { alertTypes, ...alertProps } = props;
 
   const biohubApi = useBiohubApi();
 
@@ -59,6 +59,7 @@ export const SystemAlertBanner = (props: ISystemAlertBannerProps) => {
           title={alert.name}
           key={alert.alert_id}
           variant="outlined"
+          {...alertProps}
         />
       );
 
@@ -89,21 +90,21 @@ export const SystemAlertBanner = (props: ISystemAlertBannerProps) => {
   }
 
   return (
-    <Box mb={3}>
+    <Box>
       {renderAlerts(alerts)}
       {numberOfAlerts > NumberOfAlertsShownInitially && (
         <Button
           variant="text"
           onClick={() => setIsExpanded((prev) => !prev)}
-          sx={{ color: grey[700] }}
+          color="primary"
           startIcon={<Icon path={(isExpanded && mdiChevronUp) || mdiChevronDown} size={0.8} />}>
-          <Typography variant="body2">
+          <Typography variant="body2" fontWeight={700} color="primary">
             {isExpanded ? (
               <>{'See fewer alerts'}</>
             ) : (
               <>
                 {'See more alerts'} &zwnj;
-                <Typography component="span" variant="inherit" color="textSecondary">
+                <Typography component="span" variant="inherit">
                   ({numberOfAlerts - NumberOfAlertsShownInitially})
                 </Typography>
               </>

@@ -4,6 +4,7 @@ import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
 import { PostSurveyLocationData, PutPartnershipsData, PutSurveyObject } from '../models/survey-update';
 import {
   FindSurveysResponse,
+  FindSurveysSpatialResponse,
   GetAttachmentsData,
   GetFocalSpeciesData,
   GetPermitData,
@@ -338,6 +339,26 @@ export class SurveyService extends DBService {
     pagination?: ApiPaginationOptions
   ): Promise<FindSurveysResponse[]> {
     return this.surveyRepository.findSurveys(isUserAdmin, systemUserId, filterFields, pagination);
+  }
+
+  /**
+   * Retrieves the geometries of all surveys that are available to the user, based on their permissions and provided
+   * filter criteria.
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId The system user id of the user making the request
+   * @param {ISurveyAdvancedFilters} filterFields
+   * @param {ApiPaginationOptions} [pagination]
+   * @returns {*} {Promise<{id: number}[]>}
+   * @memberof SurveyRepository
+   */
+  async findSurveysSpatial(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: ISurveyAdvancedFilters,
+    pagination?: ApiPaginationOptions
+  ): Promise<FindSurveysSpatialResponse[]> {
+    return this.surveyRepository.findSurveysSpatial(isUserAdmin, systemUserId, filterFields, pagination);
   }
 
   /**

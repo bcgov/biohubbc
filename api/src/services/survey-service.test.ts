@@ -10,6 +10,8 @@ import { GetReportAttachmentsData } from '../models/project-view';
 import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
 import { PostSurveyLocationData, PutSurveyObject, PutSurveyPermitData } from '../models/survey-update';
 import {
+  FindSurveysResponse,
+  FindSurveysSpatialResponse,
   GetAttachmentsData,
   GetFocalSpeciesData,
   GetSurveyData,
@@ -725,6 +727,93 @@ describe('SurveyService', () => {
 
       expect(deleteSurveyTypesDataStub).to.have.been.calledOnceWith(surveyId);
       expect(insertSurveyTypeStub).to.have.been.calledOnceWith([22, 33, 44]);
+    });
+  });
+
+  describe('findSurveys', () => {
+    it('returns rows on success', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new SurveyService(dbConnection);
+
+      const data: FindSurveysResponse[] = [
+        {
+          project_id: 1,
+          survey_id: 1,
+          name: 'Survey 1',
+          progress_id: 1,
+          regions: [],
+          start_date: '2020-01-01',
+          end_date: '2020-02-01',
+          focal_species: [],
+          types: []
+        },
+        {
+          project_id: 2,
+          survey_id: 2,
+          name: 'Survey 2',
+          progress_id: 1,
+          regions: [],
+          start_date: '2020-01-01',
+          end_date: '2020-02-01',
+          focal_species: [],
+          types: []
+        }
+      ];
+
+      const repoStub = sinon.stub(SurveyRepository.prototype, 'findSurveys').resolves(data);
+
+      const response = await service.findSurveys(true, 1, {});
+
+      expect(repoStub).to.be.calledOnce;
+      expect(response[0].survey_id).to.equal(1);
+      expect(response[0].name).to.equal('Survey 1');
+
+      expect(response[1].survey_id).to.equal(2);
+      expect(response[1].name).to.equal('Survey 2');
+    });
+  });
+
+  describe('findSurveysSpatial', () => {
+    it('returns rows on success', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new SurveyService(dbConnection);
+
+      const data: FindSurveysSpatialResponse[] = [
+        {
+          project_id: 1,
+          survey_id: 1,
+          survey_location_id: 1,
+          geojson: []
+        },
+        {
+          project_id: 2,
+          survey_id: 2,
+          survey_location_id: 2,
+          geojson: []
+        }
+      ];
+
+      const repoStub = sinon.stub(SurveyRepository.prototype, 'findSurveysSpatial').resolves(data);
+
+      const response = await service.findSurveysSpatial(true, 1, {});
+
+      expect(repoStub).to.be.calledOnce;
+      expect(response[0].survey_id).to.equal(1);
+      expect(response[1].survey_id).to.equal(2);
+    });
+  });
+
+  describe('findSurveysCount', () => {
+    it('returns the total survey count', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new SurveyService(dbConnection);
+
+      const repoStub = sinon.stub(SurveyRepository.prototype, 'findSurveysCount').resolves(10);
+
+      const response = await service.findSurveysCount(false, 1001, {});
+
+      expect(repoStub).to.be.calledOnce;
+      expect(response).to.eql(10);
     });
   });
 

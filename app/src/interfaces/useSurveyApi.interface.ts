@@ -272,6 +272,36 @@ export interface IFindSurveysResponse {
 }
 
 /**
+ * Find surveys spatial response object.
+ *
+ * @export
+ * @interface IFindSurveysSpatialResponse
+ */
+export interface IFindSurveysSpatialResponse {
+  surveys: ISurveySpatialItem[];
+  pagination: ApiPaginationResponseParams;
+}
+
+export interface ISurveySpatialItem {
+  /**
+   * The project that the geometry comes from
+   */
+  project_id: number;
+  /**
+   * The survey that the geometry comes from
+   */
+  survey_id: string;
+  /**
+   * The survey location id of the geometry
+   */
+  survey_location_id: string;
+  /**
+   * Feature collection for the potentially many geometry in a Survey
+   */
+  geojson: Feature[];
+}
+
+/**
  * An interface for a single instance of survey metadata, for view-only use cases.
  *
  * @export

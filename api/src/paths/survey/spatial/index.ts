@@ -1,37 +1,39 @@
 import { Request, RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../constants/roles';
-import { getDBConnection } from '../../database/db';
-import { ISurveyAdvancedFilters } from '../../models/survey-view';
-import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../../openapi/schemas/pagination';
-import { authorizeRequestHandler, userHasValidRole } from '../../request-handlers/security/authorization';
-import { SurveyService } from '../../services/survey-service';
-import { getLogger } from '../../utils/logger';
+import { SYSTEM_ROLE } from '../../../constants/roles';
+import { getDBConnection } from '../../../database/db';
+import { ISurveyAdvancedFilters } from '../../../models/survey-view';
+import { GeoJSONFeature } from '../../../openapi/schemas/geoJson';
+import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../../../openapi/schemas/pagination';
+import { authorizeRequestHandler, userHasValidRole } from '../../../request-handlers/security/authorization';
+import { SurveyService } from '../../../services/survey-service';
+import { getLogger } from '../../../utils/logger';
 import {
   ensureCompletePaginationOptions,
   makePaginationOptionsFromRequest,
   makePaginationResponse
-} from '../../utils/pagination';
-import { getSystemUserFromRequest } from '../../utils/request';
+} from '../../../utils/pagination';
+import { getSystemUserFromRequest } from '../../../utils/request';
 
-const defaultLog = getLogger('paths/survey/index');
+const defaultLog = getLogger('paths/survey/spatial');
 
 export const GET: Operation = [
   authorizeRequestHandler(() => {
     return {
       and: [
         {
-          discriminator: 'SystemUser'
+          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR],
+          discriminator: 'SystemRole'
         }
       ]
     };
   }),
-  findSurveys()
+  findSurveysSpatial()
 ];
 
 GET.apiDoc = {
-  description: "Gets a list of surveys based on the user's permissions and filter criteria.",
-  tags: ['surveys'],
+  description: 'Get survey spatial for a user id.',
+  tags: ['survey'],
   security: [
     {
       Bearer: []
@@ -62,27 +64,16 @@ GET.apiDoc = {
     },
     {
       in: 'query',
-      name: 'start_date',
-      description: 'ISO 8601 datetime string',
-      required: false,
-      schema: {
-        type: 'string',
-        nullable: true
-      }
-    },
-    {
-      in: 'query',
-      name: 'end_date',
-      description: 'ISO 8601 datetime string',
-      required: false,
-      schema: {
-        type: 'string',
-        nullable: true
-      }
-    },
-    {
-      in: 'query',
       name: 'survey_name',
+      required: false,
+      schema: {
+        type: 'string',
+        nullable: true
+      }
+    },
+    {
+      in: 'query',
+      name: 'project_name',
       required: false,
       schema: {
         type: 'string',
@@ -103,7 +94,7 @@ GET.apiDoc = {
   ],
   responses: {
     200: {
-      description: 'Survey response object.',
+      description: 'Surveys spatial response object for given user.',
       content: {
         'application/json': {
           schema: {
@@ -114,19 +105,10 @@ GET.apiDoc = {
               surveys: {
                 type: 'array',
                 items: {
+                  title: 'Survey Get Spatial Response Object',
                   type: 'object',
                   additionalProperties: false,
-                  required: [
-                    'project_id',
-                    'survey_id',
-                    'name',
-                    'progress_id',
-                    'start_date',
-                    'end_date',
-                    'regions',
-                    'focal_species',
-                    'types'
-                  ],
+                  required: ['project_id', 'survey_id', 'survey_location_id', 'geojson'],
                   properties: {
                     project_id: {
                       type: 'integer',
@@ -136,44 +118,11 @@ GET.apiDoc = {
                       type: 'integer',
                       minimum: 1
                     },
-                    name: {
-                      type: 'string'
-                    },
-                    progress_id: {
+                    survey_location_id: {
                       type: 'integer',
                       minimum: 1
                     },
-                    start_date: {
-                      type: 'string',
-                      description: 'ISO 8601 datetime string',
-                      nullable: true
-                    },
-                    end_date: {
-                      type: 'string',
-                      description: 'ISO 8601 datetime string',
-                      nullable: true
-                    },
-                    regions: {
-                      type: 'array',
-                      items: {
-                        type: 'string'
-                      },
-                      nullable: true
-                    },
-                    focal_species: {
-                      type: 'array',
-                      items: {
-                        type: 'integer'
-                      },
-                      nullable: true
-                    },
-                    types: {
-                      type: 'array',
-                      items: {
-                        type: 'integer',
-                        nullable: true
-                      }
-                    }
+                    geojson: { type: 'array', items: { ...(GeoJSONFeature as object) } }
                   }
                 }
               },
@@ -202,13 +151,13 @@ GET.apiDoc = {
 };
 
 /**
- * Get surveys for the current user, based on their permissions and filter criteria.
+ * Get all project geometries (potentially based on filter criteria).
  *
  * @returns {RequestHandler}
  */
-export function findSurveys(): RequestHandler {
+export function findSurveysSpatial(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'findSurveys' });
+    defaultLog.debug({ label: 'findSurveysSpatial' });
 
     const connection = getDBConnection(req.keycloak_token);
 
@@ -224,14 +173,14 @@ export function findSurveys(): RequestHandler {
         systemUser.role_names
       );
 
-      const filterFields = parseQueryParams(req);
-
       const paginationOptions = makePaginationOptionsFromRequest(req);
+
+      const filterFields = parseQueryParams(req);
 
       const surveyService = new SurveyService(connection);
 
-      const [surveys, surveysTotalCount] = await Promise.all([
-        surveyService.findSurveys(
+      const [surveySpatial, surveysTotalCount] = await Promise.all([
+        surveyService.findSurveysSpatial(
           isUserAdmin,
           systemUserId,
           filterFields,
@@ -243,16 +192,16 @@ export function findSurveys(): RequestHandler {
       await connection.commit();
 
       const response = {
-        surveys,
+        surveys: surveySpatial,
         pagination: makePaginationResponse(surveysTotalCount, paginationOptions)
       };
 
       // Allow browsers to cache this response for 30 seconds
-      res.setHeader('Cache-Control', 'private, max-age=30');
+      res.setHeader('Cache-Control', 'private, max-age=5');
 
       return res.status(200).json(response);
     } catch (error) {
-      defaultLog.error({ label: 'findSurveys', message: 'error', error });
+      defaultLog.error({ label: 'findSurveysSpatial', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
@@ -271,9 +220,8 @@ function parseQueryParams(req: Request<unknown, unknown, unknown, ISurveyAdvance
   return {
     keyword: req.query.keyword ?? undefined,
     itis_tsns: req.query.itis_tsns ?? undefined,
-    start_date: req.query.start_date ?? undefined,
-    end_date: req.query.end_date ?? undefined,
     survey_name: req.query.survey_name ?? undefined,
+    project_name: req.query.project_name ?? undefined,
     system_user_id: (req.query.system_user_id && Number(req.query.system_user_id)) ?? undefined
   };
 }

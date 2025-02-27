@@ -1,4 +1,4 @@
-import { mdiFolder, mdiListBoxOutline, mdiMagnify } from '@mdi/js';
+import { mdiDatabaseSearch, mdiFolder, mdiListBoxOutline, mdiMagnify } from '@mdi/js';
 import Icon from '@mdi/react';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
@@ -11,11 +11,13 @@ import SurveysListContainer from 'features/summary/list-data/survey/SurveysListC
 import { useSearchParams } from 'hooks/useSearchParams';
 import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import { useState } from 'react';
+import { TabularDataTableContainer } from '../tabular-data/TabularDataTableContainer';
 
 export const ACTIVE_VIEW_KEY = 'lvk';
 export enum ACTIVE_VIEW_VALUE {
   projects = 'pv',
-  surveys = 'sv'
+  surveys = 'sv',
+  data = 'dv'
 }
 
 export const SHOW_SEARCH_KEY = 'lvsk';
@@ -45,7 +47,8 @@ export const ListDataTableContainer = () => {
 
   const views = [
     { value: ACTIVE_VIEW_VALUE.projects, label: 'projects', icon: mdiFolder },
-    { value: ACTIVE_VIEW_VALUE.surveys, label: 'surveys', icon: mdiListBoxOutline }
+    { value: ACTIVE_VIEW_VALUE.surveys, label: 'surveys', icon: mdiListBoxOutline },
+    { value: ACTIVE_VIEW_VALUE.data, label: 'data', icon: mdiDatabaseSearch }
   ];
 
   return (
@@ -80,6 +83,7 @@ export const ListDataTableContainer = () => {
       <Divider />
       {activeView === ACTIVE_VIEW_VALUE.projects && <ProjectsListContainer showSearch={showSearch} />}
       {activeView === ACTIVE_VIEW_VALUE.surveys && <SurveysListContainer showSearch={showSearch} />}
+      {activeView === ACTIVE_VIEW_VALUE.data && <TabularDataTableContainer />}
     </>
   );
 };

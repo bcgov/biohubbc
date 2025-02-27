@@ -1,5 +1,4 @@
 import Box from '@mui/material/Box';
-import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
@@ -27,7 +26,7 @@ const PageHeader = (props: IPageHeader) => {
         top: 0,
         zIndex: 1002
       }}>
-      <Container maxWidth={'xl'} sx={{ py: { xs: 2, sm: 3 } }}>
+      <Box sx={{ px: 3, py: { xs: 2, sm: 3 } }}>
         {breadCrumbJSX}
         <Stack
           flexDirection={{ xs: 'column', md: 'row' }}
@@ -48,7 +47,7 @@ const PageHeader = (props: IPageHeader) => {
             </Stack>
           )}
         </Stack>
-      </Container>
+      </Box>
     </Paper>
   );
 };

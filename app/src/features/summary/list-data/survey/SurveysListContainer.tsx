@@ -11,21 +11,24 @@ import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
+import { IStaticLayer } from 'components/map/components/StaticLayers';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { getNrmRegionColour, NrmRegionKeys } from 'constants/colours';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { NRM_REGION_APPENDED_TEXT } from 'constants/regions';
 import dayjs from 'dayjs';
 import { SurveyProgressChip } from 'features/surveys/components/SurveyProgressChip';
+import SurveyMap from 'features/surveys/view/SurveyMap';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
 import { useSearchParams } from 'hooks/useSearchParams';
 import { SurveyBasicFieldsObject } from 'interfaces/useSurveyApi.interface';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions, StringValues } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
+import { IProjectAdvancedFilters } from '../project/ProjectsListFilterForm';
 import SurveysListFilterForm, {
   ISurveyAdvancedFilters,
   SurveyAdvancedFiltersInitialValues
@@ -88,7 +91,9 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
     itis_tsn: searchParams.get('s_itis_tsn')
       ? Number(searchParams.get('s_itis_tsn'))
       : SurveyAdvancedFiltersInitialValues.itis_tsn,
-    system_user_id: searchParams.get('s_system_user_id') ?? SurveyAdvancedFiltersInitialValues.system_user_id
+    system_user_id: searchParams.get('s_system_user_id')
+      ? Number(searchParams.get('s_system_user_id'))
+      : SurveyAdvancedFiltersInitialValues.system_user_id
   });
 
   const sort = firstOrNull(sortModel);
@@ -103,12 +108,40 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
     biohubApi.survey.findSurveys(pagination, filter)
   );
 
+  const geometryDataLoader = useDataLoader(
+    (pagination: ApiPaginationRequestOptions, filter?: IProjectAdvancedFilters) =>
+      biohubApi.survey.findSurveysSpatial(pagination, filter)
+  );
+
+  // Fetch projects when either the pagination, sort, or advanced filters change
+  useDeepCompareEffect(() => {
+    surveysDataLoader.refresh(paginationSort, advancedFiltersModel);
+    geometryDataLoader.refresh(paginationSort, advancedFiltersModel);
+  }, [advancedFiltersModel, paginationSort]);
+
+  const rows = surveysDataLoader.data?.surveys ?? [];
+
+  const geometries: IStaticLayer[] = useMemo(
+    () =>
+      geometryDataLoader.data
+        ? [
+            {
+              layerName: 'Surveys',
+              features: geometryDataLoader.data?.surveys.map((survey) => ({
+                id: survey.survey_location_id,
+                key: survey.survey_location_id,
+                geoJSON: survey.geojson[0]
+              }))
+            }
+          ]
+        : [],
+    [geometryDataLoader.data?.surveys]
+  );
+
   // Fetch projects when either the pagination, sort, or advanced filters change
   useDeepCompareEffect(() => {
     surveysDataLoader.refresh(paginationSort, advancedFiltersModel);
   }, [advancedFiltersModel, paginationSort]);
-
-  const rows = surveysDataLoader.data?.surveys ?? [];
 
   const columns: GridColDef<SurveyBasicFieldsObject>[] = [
     {
@@ -217,7 +250,11 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
         <Divider />
       </Collapse>
 
-      <Box height="90vh" maxHeight="700px">
+      <Box height="50vh" position="relative">
+        <SurveyMap staticLayers={geometries} isLoading={geometryDataLoader.isLoading} />
+      </Box>
+
+      <Box height="70vh" maxHeight="700px">
         <LoadingGuard
           isLoading={!rows.length && (surveysDataLoader.isLoading || !surveysDataLoader.isReady)}
           isLoadingFallback={<SkeletonTable />}
@@ -225,7 +262,7 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
           hasNoData={!rows.length}
           hasNoDataFallback={
             <NoDataOverlay
-              height="400px"
+              height="100%"
               title="Create Surveys in Projects"
               subtitle="You currently have no surveys. Once you create or get invited to projects with surveys, they will be displayed here"
               icon={mdiArrowTopRight}

@@ -11,10 +11,12 @@ import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
+import { IStaticLayer } from 'components/map/components/StaticLayers';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { getNrmRegionColour, NrmRegionKeys } from 'constants/colours';
 import { NRM_REGION_APPENDED_TEXT } from 'constants/regions';
 import { TeamMemberAvatar } from 'features/projects/view/components/TeamMemberAvatar';
+import SurveyMap from 'features/surveys/view/SurveyMap';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
@@ -86,7 +88,9 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
     itis_tsn: searchParams.get('p_itis_tsn')
       ? Number(searchParams.get('p_itis_tsn'))
       : ProjectAdvancedFiltersInitialValues.itis_tsn,
-    system_user_id: searchParams.get('p_system_user_id') ?? ProjectAdvancedFiltersInitialValues.system_user_id
+    system_user_id: searchParams.get('p_system_user_id')
+      ? Number(searchParams.get('p_system_user_id'))
+      : ProjectAdvancedFiltersInitialValues.system_user_id
   });
 
   const sort = firstOrNull(sortModel);
@@ -105,12 +109,35 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
       biohubApi.project.findProjects(pagination, filter)
   );
 
+  const geometryDataLoader = useDataLoader(
+    (pagination: ApiPaginationRequestOptions, filter?: IProjectAdvancedFilters) =>
+      biohubApi.survey.findSurveysSpatial(pagination, filter)
+  );
+
   // Fetch projects when either the pagination, sort, or advanced filters change
   useDeepCompareEffect(() => {
     projectsDataLoader.refresh(paginationSort, advancedFiltersModel);
+    geometryDataLoader.refresh(paginationSort, advancedFiltersModel);
   }, [advancedFiltersModel, paginationSort]);
 
   const rows = projectsDataLoader.data?.projects ?? [];
+
+  const geometries: IStaticLayer[] = useMemo(
+    () =>
+      geometryDataLoader.data
+        ? [
+            {
+              layerName: 'Surveys',
+              features: geometryDataLoader.data?.surveys.map((survey) => ({
+                id: survey.survey_location_id,
+                key: survey.survey_location_id,
+                geoJSON: survey.geojson[0]
+              }))
+            }
+          ]
+        : [],
+    [geometryDataLoader.data?.surveys]
+  );
 
   // Define the columns for the DataGrid
   const columns: GridColDef<IProjectsListItemData>[] = [
@@ -210,7 +237,11 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
         <Divider />
       </Collapse>
 
-      <Box height="90vh" maxHeight="700px">
+      <Box height="50vh" position="relative">
+        <SurveyMap staticLayers={geometries} isLoading={geometryDataLoader.isLoading} />
+      </Box>
+
+      <Box height="70vh" maxHeight="700px">
         <LoadingGuard
           isLoading={!rows.length && (projectsDataLoader.isLoading || !projectsDataLoader.isReady)}
           isLoadingFallback={<SkeletonTable />}
@@ -218,7 +249,7 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
           hasNoData={!rows.length}
           hasNoDataFallback={
             <NoDataOverlay
-              height="400px"
+              height="100%"
               title="Create or Join Projects"
               subtitle="You currently have no projects. Once you create or get invited to projects, they will be displayed here"
               icon={mdiArrowTopRight}

@@ -3,6 +3,7 @@ import { PROJECT_PERMISSION, PROJECT_ROLE } from 'constants/roles';
 import { IProjectDetailsForm } from 'features/projects/components/ProjectDetailsForm';
 import { IProjectIUCNForm } from 'features/projects/components/ProjectIUCNForm';
 import { IProjectObjectivesForm } from 'features/projects/components/ProjectObjectivesForm';
+import { Feature, FeatureCollection } from 'geojson';
 import { ApiPaginationResponseParams } from 'types/misc';
 
 export interface IGetProjectAttachment {
@@ -69,6 +70,19 @@ export interface IGetUserProjectsListResponse {
 }
 
 /**
+ * Get project geometriesresponse object.
+ *
+ * @export
+ * @interface IGetUserProjectGeometriesResponse
+ */
+export interface IGetUserProjectGeometriesResponse {
+  project_participation_id: number;
+  project_id: number;
+  survey_id: string;
+  geometry: FeatureCollection;
+}
+
+/**
  * Get surveys list response object.
  *
  * @export
@@ -103,7 +117,6 @@ export interface IFindProjectsResponse {
   projects: IProjectsListItemData[];
   pagination: ApiPaginationResponseParams;
 }
-
 export interface IProjectsListItemData {
   project_id: number;
   /**
@@ -134,6 +147,18 @@ export interface IProjectsListItemData {
    * Members of the project
    */
   members: { system_user_id: number; display_name: string }[];
+}
+
+export interface IProjectGeometryItem {
+  project_id: number;
+  /**
+   * The survey that the geometry comes from
+   */
+  survey_id: string;
+  /**
+   * Feature collection for the potentially many geometry in a Survey
+   */
+  geojson: Feature;
 }
 
 export interface IProjectUserRoles {

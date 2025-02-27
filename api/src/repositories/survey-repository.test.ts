@@ -215,6 +215,131 @@ describe('SurveyRepository', () => {
     });
   });
 
+  describe('findSurveys', () => {
+    it('should return a list of projects', async () => {
+      const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ knex: () => mockResponse });
+
+      const repository = new SurveyRepository(dbConnection);
+
+      const input = {
+        project_name: 'string',
+        keyword: 'string'
+      };
+
+      const response = await repository.findSurveys(false, 1, input);
+
+      expect(response).to.eql([{ id: 1 }]);
+    });
+
+    it('should return a list of projects using different filter fields', async () => {
+      const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ knex: () => mockResponse });
+
+      const repository = new SurveyRepository(dbConnection);
+
+      const input = {
+        project_name: 'string',
+        keyword: 'string'
+      };
+
+      const response = await repository.findSurveys(true, 1, input);
+
+      expect(response).to.eql([{ id: 1 }]);
+    });
+
+    it('should return result with both data fields', async () => {
+      const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ knex: () => mockResponse });
+
+      const repository = new SurveyRepository(dbConnection);
+
+      const input = {
+        keyword: 'a'
+      };
+
+      const response = await repository.findSurveys(true, 1, input);
+
+      expect(response).to.eql([]);
+    });
+  });
+
+  describe('findSurveysSpatial', () => {
+    it('should return list of survey geometries', async () => {
+      const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ knex: () => mockResponse });
+
+      const repository = new SurveyRepository(dbConnection);
+
+      const input = {
+        project_name: 'string',
+        keyword: 'string'
+      };
+
+      const response = await repository.findSurveysSpatial(false, 1, input);
+
+      expect(response).to.eql([{ id: 1 }]);
+    });
+
+    it('should return a list of survey geometries using different filter fields', async () => {
+      const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ knex: () => mockResponse });
+
+      const repository = new SurveyRepository(dbConnection);
+
+      const input = {
+        project_name: 'string',
+        keyword: 'string'
+      };
+
+      const response = await repository.findSurveysSpatial(true, 1, input);
+
+      expect(response).to.eql([{ id: 1 }]);
+    });
+
+    it('should return result with both data fields', async () => {
+      const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ knex: () => mockResponse });
+
+      const repository = new SurveyRepository(dbConnection);
+
+      const input = {
+        keyword: 'a'
+      };
+
+      const response = await repository.findSurveysSpatial(true, 1, input);
+
+      expect(response).to.eql([]);
+    });
+  });
+
+  describe('findSurveysCount', () => {
+    it('should return a survey count', async () => {
+      const mockResponse = { rows: [{ count: 10 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ knex: () => mockResponse });
+
+      const repository = new SurveyRepository(dbConnection);
+
+      const response = await repository.findSurveysCount(false, 1001, {});
+
+      expect(response).to.eql(10);
+    });
+
+    it('should throw an error', async () => {
+      const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ knex: () => mockResponse });
+
+      const repository = new SurveyRepository(dbConnection);
+
+      try {
+        await repository.findSurveysCount(true, 1001, {});
+        expect.fail();
+      } catch (error) {
+        expect((error as Error).message).to.equal('Failed to get survey count');
+      }
+    });
+  });
+
   describe('getSurveyProprietorDataForView', () => {
     it('should return result', async () => {
       const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
