@@ -2,6 +2,7 @@ import { AnimalPageContext, IAnimalPageContext } from 'contexts/animalPageContex
 import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { ConfigContext, IConfig } from 'contexts/configContext';
 import { DialogContext, IDialogContext } from 'contexts/dialogContext';
+import { HabitatFeatureTableContext, IHabitatFeatureTableContext } from 'contexts/habitatFeatureTableContext';
 import { IObservationsContext, ObservationsContext } from 'contexts/observationsContext';
 import { IObservationsPageContext, ObservationsPageContext } from 'contexts/observationsPageContext';
 import { IObservationsTableContext, ObservationsTableContext } from 'contexts/observationsTableContext';
@@ -192,6 +193,23 @@ export const useAnimalPageContext = (): IAnimalPageContext => {
   if (!context) {
     throw Error(
       'AnimalPageContext is undefined, please verify you are calling useAnimalPageContext() as child of an <AnimalPageContextProvider> component.'
+    );
+  }
+
+  return context;
+};
+
+/**
+ * Returns an instance of `IHabitatFeatureTableContext` from `HabitatFeatureTableContext`.
+ *
+ * @return {*} {IHabitatFeatureTableContext}
+ */
+export const useHabitatFeatureTableContext = (): IHabitatFeatureTableContext => {
+  const context = useContext(HabitatFeatureTableContext);
+
+  if (!context) {
+    throw Error(
+      'HabitatFeatureTableContxt is undefined, please verify you are calling useObservationsTableContext() as child of an <ObservationsTableContextProvider> component.'
     );
   }
 

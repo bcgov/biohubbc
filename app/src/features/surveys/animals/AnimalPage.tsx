@@ -64,7 +64,7 @@ export const SurveyAnimalPage = () => {
         survey_id={surveyContext.surveyId}
         survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
       />
-      <Stack direction="row" gap={1.5} sx={{ flex: '1 1 auto', p: 1, mr: 1 }}>
+      <Stack direction="row" gap={1} sx={{ flex: '1 1 auto', p: 1, mr: 1 }}>
         <Box minWidth="400px" maxWidth="30%">
           <AnimalListContainer />
         </Box>

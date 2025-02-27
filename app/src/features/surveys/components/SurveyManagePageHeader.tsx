@@ -32,6 +32,7 @@ interface SurveymanagePageHeaderProps {
 export const SurveyManagePageHeader = (props: SurveymanagePageHeaderProps): JSX.Element => {
   /**
    * Returns the menu items for the current page.
+   *
    * Note: The current page is excluded from the menu items.
    *
    * @param {SurveyManagePageEnum} currentPage
