@@ -1,5 +1,6 @@
 import { Box, CircularProgress, Stack } from '@mui/material';
 import { DialogContextProvider } from 'contexts/dialogContext';
+import { HabitatFeatureTableContextProvider } from 'contexts/habitatFeatureTableContext';
 import { ProjectContext } from 'contexts/projectContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useContext } from 'react';
@@ -54,7 +55,9 @@ export const SurveyHabitatFeaturePage = (): JSX.Element => {
 
         {/* Survey Habitat Feature Table */}
         <Box flex="1 1 auto">
-          <SurveyHabitatFeatureTableContainer />
+          <HabitatFeatureTableContextProvider>
+            <SurveyHabitatFeatureTableContainer />
+          </HabitatFeatureTableContextProvider>
         </Box>
       </Stack>
     </Stack>
