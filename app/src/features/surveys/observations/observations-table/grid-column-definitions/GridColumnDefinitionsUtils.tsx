@@ -104,7 +104,13 @@ export const getEnvironmentColumnDefinitions = (
   for (const environment of environments.quantitative_environments) {
     colDefs.push(
       ObservationQuantitativeEnvironmentColDef({
-        environment: environment,
+        environment: {
+          ...environment,
+          name: environment.unit
+            ? `${environment.name} (${environment.unit}${environment.unit.endsWith('er') ? 's' : ''})`
+            : environment.name,
+          description: environment.description
+        },
         hasError: hasError
       })
     );
