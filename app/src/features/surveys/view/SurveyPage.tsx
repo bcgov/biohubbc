@@ -39,13 +39,13 @@ const SurveyPage: React.FC = () => {
         <SystemAlertBanner alertTypes={[SystemAlertBannerEnum.SURVEYS]} />
         <Stack gap={3}>
           <Paper>
-            <TaxonomyContextProvider>
-              <SurveySpatialContainer />
-            </TaxonomyContextProvider>
+            <SurveySamplingTableContainer />
           </Paper>
 
           <Paper>
-            <SurveySamplingTableContainer />
+            <TaxonomyContextProvider>
+              <SurveySpatialContainer />
+            </TaxonomyContextProvider>
           </Paper>
 
           <Paper>

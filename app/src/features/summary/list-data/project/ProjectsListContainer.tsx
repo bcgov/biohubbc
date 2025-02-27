@@ -136,7 +136,7 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
             }
           ]
         : [],
-    [geometryDataLoader.data?.surveys]
+    [geometryDataLoader.data]
   );
 
   // Define the columns for the DataGrid

@@ -284,11 +284,11 @@ export interface IFindSurveysSpatialResponse {
 
 export interface ISurveySpatialItem {
   /**
-   * The project that the geometry comes from
+   * The project of the geometry
    */
   project_id: number;
   /**
-   * The survey that the geometry comes from
+   * The survey of the geometry
    */
   survey_id: string;
   /**
@@ -296,7 +296,7 @@ export interface ISurveySpatialItem {
    */
   survey_location_id: string;
   /**
-   * Feature collection for the potentially many geometry in a Survey
+   * GeoJSON of the feature
    */
   geojson: Feature[];
 }

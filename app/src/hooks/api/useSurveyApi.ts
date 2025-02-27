@@ -88,11 +88,11 @@ const useSurveyApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Get survey geometries for a system user id.
+   * Get survey spatial geometries for a system user id.
    *
    * @param {ApiPaginationRequestOptions} [pagination]
    * @param {ISurveyAdvancedFilters} filterFieldData
-   * @return {*} {Promise<IFindProjectsResponse[]>}
+   * @return {*} {Promise<IFindSurveysSpatialResponse>}
    */
   const findSurveysSpatial = async (
     pagination?: ApiPaginationRequestOptions,

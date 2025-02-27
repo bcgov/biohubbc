@@ -135,7 +135,7 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
             }
           ]
         : [],
-    [geometryDataLoader.data?.surveys]
+    [geometryDataLoader.data]
   );
 
   // Fetch projects when either the pagination, sort, or advanced filters change

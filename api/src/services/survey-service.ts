@@ -329,7 +329,7 @@ export class SurveyService extends DBService {
    * @param {(number | null)} systemUserId The system user id of the user making the request
    * @param {ISurveyAdvancedFilters} filterFields
    * @param {ApiPaginationOptions} [pagination]
-   * @returns {*} {Promise<{id: number}[]>}
+   * @returns {*} {Promise<FindSurveysResponse[]>}
    * @memberof SurveyRepository
    */
   async findSurveys(
@@ -349,7 +349,7 @@ export class SurveyService extends DBService {
    * @param {(number | null)} systemUserId The system user id of the user making the request
    * @param {ISurveyAdvancedFilters} filterFields
    * @param {ApiPaginationOptions} [pagination]
-   * @returns {*} {Promise<{id: number}[]>}
+   * @returns {*} {Promise<FindSurveysSpatialResponse[]>}
    * @memberof SurveyRepository
    */
   async findSurveysSpatial(

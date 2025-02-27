@@ -216,7 +216,7 @@ describe('SurveyRepository', () => {
   });
 
   describe('findSurveys', () => {
-    it('should return a list of projects', async () => {
+    it('should return a list of surveys', async () => {
       const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ knex: () => mockResponse });
 

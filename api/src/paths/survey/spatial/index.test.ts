@@ -18,7 +18,7 @@ describe('findSurveysSpatial', () => {
     sinon.restore();
   });
 
-  it('finds and returns projects', async () => {
+  it('finds and returns survey spatial geometries', async () => {
     const mockFindSurveysSpatialResponse: FindSurveysSpatialResponse[] = [
       {
         survey_id: 1,
@@ -45,12 +45,16 @@ describe('findSurveysSpatial', () => {
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
-    mockReq.query = {
+    const mockFilters = {
       keyword: 'keyword',
       itis_tsns: ['123456'],
       system_user_id: '11',
       survey_name: 'survey name',
-      sproject_name: 'project name',
+      project_name: 'project name'
+    };
+
+    mockReq.query = {
+      ...mockFilters,
       page: '2',
       limit: '10',
       sort: undefined,
@@ -79,7 +83,12 @@ describe('findSurveysSpatial', () => {
     expect(mockDBConnection.open).to.have.been.calledOnce;
     expect(mockDBConnection.commit).to.have.been.calledOnce;
 
-    expect(findSurveysSpatialStub).to.have.been.calledOnceWith(true, 20, sinon.match.object, sinon.match.object);
+    expect(findSurveysSpatialStub).to.have.been.calledOnceWith(
+      true,
+      20,
+      { ...mockFilters, system_user_id: Number(mockFilters.system_user_id) },
+      sinon.match.object
+    );
     expect(findSurveysSpatialCountStub).to.have.been.calledOnceWith(true, 20, sinon.match.object);
 
     expect(mockRes.jsonValue.surveys).to.eql(mockFindSurveysSpatialResponse);
@@ -118,17 +127,15 @@ describe('findSurveysSpatial', () => {
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
-    mockReq.query = {
+    const mockFilters = {
       keyword: 'keyword',
       itis_tsns: ['123456'],
       system_user_id: '11',
       project_name: 'project name',
-      survey_name: 'survey name',
-      page: '2',
-      limit: '10',
-      sort: undefined,
-      order: undefined
+      survey_name: 'survey name'
     };
+
+    mockReq.query = { ...mockFilters, page: '2', limit: '10', sort: undefined, order: undefined };
     mockReq.keycloak_token = {} as KeycloakUserInformation;
     mockReq.system_user = {
       system_user_id: 20,
@@ -153,7 +160,12 @@ describe('findSurveysSpatial', () => {
     } catch (actualError) {
       expect(mockDBConnection.open).to.have.been.calledOnce;
 
-      expect(findSurveysSpatialStub).to.have.been.calledOnceWith(false, 20, sinon.match.object, sinon.match.object);
+      expect(findSurveysSpatialStub).to.have.been.calledOnceWith(
+        false,
+        20,
+        { ...mockFilters, system_user_id: Number(mockFilters.system_user_id) },
+        sinon.match.object
+      );
       expect(findSurveysSpatialCountStub).to.have.been.calledOnceWith(false, 20, sinon.match.object);
 
       expect(mockDBConnection.rollback).to.have.been.calledOnce;

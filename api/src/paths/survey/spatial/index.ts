@@ -151,7 +151,7 @@ GET.apiDoc = {
 };
 
 /**
- * Get all project geometries (potentially based on filter criteria).
+ * Get all survey spatial geometries (potentially based on filter criteria).
  *
  * @returns {RequestHandler}
  */
@@ -196,7 +196,7 @@ export function findSurveysSpatial(): RequestHandler {
         pagination: makePaginationResponse(surveysTotalCount, paginationOptions)
       };
 
-      // Allow browsers to cache this response for 30 seconds
+      // Allow browsers to cache this response for 5 seconds
       res.setHeader('Cache-Control', 'private, max-age=5');
 
       return res.status(200).json(response);
