@@ -1,5 +1,10 @@
 import { AxiosInstance } from 'axios';
-import { IEnvironmentStandards, IMethodStandard, ISpeciesStandards } from 'interfaces/useStandardsApi.interface';
+import {
+  IEnvironmentStandards,
+  IMarkingsStandards,
+  IMethodStandard,
+  ISpeciesStandards
+} from 'interfaces/useStandardsApi.interface';
 import qs from 'qs';
 
 /**
@@ -55,10 +60,28 @@ const useStandardsApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Fetch markings
+   *
+   * @param {string} keyword
+   * @return {*}  {Promise<IMarkingsStandards>}
+   */
+  const getMarkingsStandards = async (keyword?: string): Promise<IMarkingsStandards> => {
+    const params = { keyword };
+
+    const { data } = await axios.get('/api/standards/markings', {
+      params,
+      paramsSerializer: (params) => qs.stringify(params)
+    });
+
+    return data;
+  };
+
   return {
     getSpeciesStandards,
     getEnvironmentStandards,
-    getMethodStandards
+    getMethodStandards,
+    getMarkingsStandards
   };
 };
 

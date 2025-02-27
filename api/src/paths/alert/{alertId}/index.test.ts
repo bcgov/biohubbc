@@ -5,9 +5,10 @@ import sinonChai from 'sinon-chai';
 import { deleteAlert, getAlertById, updateAlert } from '.';
 import { SYSTEM_IDENTITY_SOURCE } from '../../../constants/database';
 import { SYSTEM_ROLE } from '../../../constants/roles';
+import { AlertSeverity } from '../../../database-units/alert_severity';
 import * as db from '../../../database/db';
 import { HTTPError } from '../../../errors/http-error';
-import { IAlertSeverity, IAlertStatus } from '../../../models/alert-view';
+import { AlertRecordWithStatus } from '../../../models/alert-view';
 import { AlertService } from '../../../services/alert-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../__mocks__/db';
 
@@ -20,13 +21,13 @@ describe('getAlerts', () => {
 
   describe('as a system user', () => {
     it('returns a single system alert', async () => {
-      const mockAlert = {
+      const mockAlert: AlertRecordWithStatus = {
         alert_id: 1,
         name: 'Alert 1',
         message: 'Message 1',
         alert_type_id: 1,
-        severity: 'error' as IAlertSeverity,
-        status: 'active' as IAlertStatus,
+        severity: AlertSeverity.ERROR,
+        status: 'active',
         data: null,
         record_end_date: null,
         create_date: '2020-01-01T10:10:10'

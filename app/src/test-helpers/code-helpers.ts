@@ -5,7 +5,7 @@ export const codes: IGetAllCodeSetsResponse = {
   first_nations: [{ id: 1, name: 'First nations code' }],
   agency: [{ id: 1, name: 'Funding source code' }],
   investment_action_category: [{ id: 1, agency_id: 1, name: 'Investment action category' }],
-  type: [{ id: 1, name: 'Type code' }],
+  survey_data_type: [{ id: 1, name: 'Type code', description: 'Type code description' }],
   proprietor_type: [
     { id: 1, name: 'Proprietor code 1', is_first_nation: false },
     { id: 2, name: 'First Nations Land', is_first_nation: true }
@@ -27,8 +27,8 @@ export const codes: IGetAllCodeSetsResponse = {
     { id: 2, name: 'Role 2' }
   ],
   project_roles: [
-    { id: 1, name: 'Project Role 1' },
-    { id: 2, name: 'Project Role 2' }
+    { id: 1, name: 'Project Role 1', description: 'Description 1' },
+    { id: 2, name: 'Project Role 2', description: 'Description 2' }
   ],
   administrative_activity_status_type: [
     { id: 1, name: 'Pending' },
@@ -40,12 +40,12 @@ export const codes: IGetAllCodeSetsResponse = {
     { id: 2, name: 'Intended Outcome 2', description: 'Description 2' }
   ],
   survey_jobs: [
-    { id: 1, name: 'Survey Job 1' },
-    { id: 2, name: 'Survey Job 2' }
+    { id: 1, name: 'Survey Job 1', description: 'Description 1' },
+    { id: 2, name: 'Survey Job 2', description: 'Description 2' }
   ],
   site_selection_strategies: [
-    { id: 1, name: 'Strategy 1' },
-    { id: 2, name: 'Strategy 2' }
+    { id: 1, name: 'Strategy 1', description: 'Description 1' },
+    { id: 2, name: 'Strategy 2', description: 'Description 2' }
   ],
   sample_methods: [
     { id: 1, name: 'Camera Trap', description: 'Description 1' },
