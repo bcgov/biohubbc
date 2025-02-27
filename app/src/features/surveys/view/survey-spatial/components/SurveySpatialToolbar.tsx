@@ -1,4 +1,4 @@
-import { mdiChevronDown, mdiCog, mdiEye, mdiPaw, mdiWifiMarker } from '@mdi/js';
+import { mdiChevronDown, mdiCog } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -21,13 +21,19 @@ import { Link as RouterLink } from 'react-router-dom';
 export enum SurveySpatialDatasetViewEnum {
   OBSERVATIONS = 'OBSERVATIONS',
   TELEMETRY = 'TELEMETRY',
-  ANIMALS = 'ANIMALS'
+  ANIMALS = 'ANIMALS',
+  HABITAT_FEATURES = 'HABITAT_FEATURES'
 }
 
 interface ISurveySpatialToolbarProps {
   activeView: SurveySpatialDatasetViewEnum;
   setActiveView: (view: SurveySpatialDatasetViewEnum) => void;
-  views: ToggleButtonView<SurveySpatialDatasetViewEnum>[];
+  views: Array<
+    ToggleButtonView<SurveySpatialDatasetViewEnum> & {
+      // The route to link to when a menu button is clicked
+      to: string;
+    }
+  >;
 }
 
 /**
@@ -78,24 +84,16 @@ export const SurveySpatialToolbar = (props: ISurveySpatialToolbarProps) => {
             }
           }
         }}>
-        <MenuItem component={RouterLink} to="observations">
-          <ListItemIcon>
-            <Icon path={mdiEye} size={0.8} />
-          </ListItemIcon>
-          <ListItemText>Observations</ListItemText>
-        </MenuItem>
-        <MenuItem component={RouterLink} to="animals">
-          <ListItemIcon>
-            <Icon path={mdiPaw} size={0.8} />
-          </ListItemIcon>
-          <ListItemText>Animals</ListItemText>
-        </MenuItem>
-        <MenuItem component={RouterLink} to="telemetry">
-          <ListItemIcon>
-            <Icon path={mdiWifiMarker} size={0.8} />
-          </ListItemIcon>
-          <ListItemText>Telemetry</ListItemText>
-        </MenuItem>
+        {views.map((view) => (
+          <MenuItem component={RouterLink} to={view.to}>
+            {view.icon && (
+              <ListItemIcon>
+                <Icon path={view.icon} size={0.8} />
+              </ListItemIcon>
+            )}
+            <ListItemText>{view.label}</ListItemText>
+          </MenuItem>
+        ))}
       </Menu>
       <Box
         sx={{

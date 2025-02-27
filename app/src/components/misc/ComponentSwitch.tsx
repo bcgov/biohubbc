@@ -8,9 +8,9 @@ interface ComponentSwitchProps<T extends string | number> {
   /**
    * A record of components to switch between.
    *
-   * @type {Record<T, JSX.Element>} A record of components to switch between.
+   * @type {Partial<Record<T, JSX.Element>>} A record of components to switch between.
    */
-  components: Record<T, JSX.Element>;
+  components: Partial<Record<T, JSX.Element>>;
 }
 
 /**
@@ -21,11 +21,11 @@ interface ComponentSwitchProps<T extends string | number> {
  * @returns {JSX.Element | null} The rendered component.
  */
 export const ComponentSwitch = <T extends string>(props: ComponentSwitchProps<T>): JSX.Element | null => {
-  // If the current switch value is not in the list of components, return null
-  if (!props.components[props.switch]) {
+  const component = props.components[props.switch];
+
+  if (!component) {
     return null;
   }
 
-  // Otherwise, return the current view
-  return props.components[props.switch];
+  return component;
 };

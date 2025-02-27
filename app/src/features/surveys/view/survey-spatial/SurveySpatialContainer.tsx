@@ -1,4 +1,4 @@
-import { mdiEye, mdiPaw, mdiWifiMarker } from '@mdi/js';
+import { mdiEye, mdiPaw, mdiPineTree, mdiWifiMarker } from '@mdi/js';
 import { ComponentSwitch } from 'components/misc/ComponentSwitch';
 import { SurveySpatialAnimal } from 'features/surveys/view/survey-spatial/components/animal/SurveySpatialAnimal';
 import { SurveySpatialObservation } from 'features/surveys/view/survey-spatial/components/observation/SurveySpatialObservation';
@@ -12,6 +12,7 @@ import { useSurveyContext, useTaxonomyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { useEffect, useMemo, useState } from 'react';
 import { ApiPaginationRequestOptions } from 'types/misc';
+import { SurveySpatialHabitatFeature } from './components/habitat-feature/SurveySpatialHabitatFeature';
 import { useSamplingSiteStaticLayer } from './components/map/useSamplingSiteStaticLayer';
 import { useStudyAreaStaticLayer } from './components/map/useStudyAreaStaticLayer';
 
@@ -76,9 +77,15 @@ export const SurveySpatialContainer = (): JSX.Element => {
         activeView={activeView}
         setActiveView={setActiveView}
         views={[
-          { value: SurveySpatialDatasetViewEnum.OBSERVATIONS, label: 'Observations', icon: mdiEye },
-          { value: SurveySpatialDatasetViewEnum.ANIMALS, label: 'Animals', icon: mdiPaw },
-          { value: SurveySpatialDatasetViewEnum.TELEMETRY, label: 'Telemetry', icon: mdiWifiMarker }
+          { value: SurveySpatialDatasetViewEnum.OBSERVATIONS, label: 'Observations', icon: mdiEye, to: 'obersations' },
+          { value: SurveySpatialDatasetViewEnum.ANIMALS, label: 'Animals', icon: mdiPaw, to: 'animals' },
+          { value: SurveySpatialDatasetViewEnum.TELEMETRY, label: 'Telemetry', icon: mdiWifiMarker, to: 'telemetry' },
+          {
+            value: SurveySpatialDatasetViewEnum.HABITAT_FEATURES,
+            label: 'Habitat Features',
+            icon: mdiPineTree,
+            to: 'habitat-features'
+          }
         ]}
       />
 
@@ -87,7 +94,8 @@ export const SurveySpatialContainer = (): JSX.Element => {
         components={{
           [SurveySpatialDatasetViewEnum.OBSERVATIONS]: <SurveySpatialObservation staticLayers={staticLayers} />,
           [SurveySpatialDatasetViewEnum.TELEMETRY]: <SurveySpatialTelemetry staticLayers={staticLayers} />,
-          [SurveySpatialDatasetViewEnum.ANIMALS]: <SurveySpatialAnimal staticLayers={staticLayers} />
+          [SurveySpatialDatasetViewEnum.ANIMALS]: <SurveySpatialAnimal staticLayers={staticLayers} />,
+          [SurveySpatialDatasetViewEnum.HABITAT_FEATURES]: <SurveySpatialHabitatFeature staticLayers={staticLayers} />
         }}
       />
     </>
