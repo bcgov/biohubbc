@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
 import { IStaticLayer } from 'components/map/components/StaticLayers';
 import SurveyMap from 'features/surveys/view/SurveyMap';
-import { SurveyHabitatFeatureTable } from './SurveyHabitatFeatureTable';
+import { SurveyHabitatFeatureTable } from '../../../../habitat-features/components/SurveyHabitatFeatureTable';
 
 /**
  * Array of additional static layers to be added to the map.

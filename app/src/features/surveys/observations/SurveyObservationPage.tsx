@@ -8,7 +8,7 @@ import { ProjectContext } from 'contexts/projectContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { TaxonomyContextProvider } from 'contexts/taxonomyContext';
 import { useContext } from 'react';
-import SurveyObservationHeader from './components/SurveyObservationHeader';
+import { SurveyManagePageEnum, SurveyManagePageHeader } from '../components/SurveyManagePageHeader';
 import ObservationsTableContainer from './observations-table/ObservationsTableContainer';
 import { SamplingSiteListContainer } from './sampling-sites/SamplingSiteListContainer';
 
@@ -30,7 +30,8 @@ export const SurveyObservationPage = () => {
           maxWidth: 'none'
         }
       }}>
-      <SurveyObservationHeader
+      <SurveyManagePageHeader
+        page={SurveyManagePageEnum.OBSERVATIONS}
         project_id={surveyContext.projectId}
         project_name={projectContext.projectDataLoader.data.projectData.project.project_name}
         survey_id={surveyContext.surveyId}
