@@ -1,5 +1,6 @@
 import { Box, Divider, Paper, Stack, Toolbar, Typography } from '@mui/material';
 import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
+import { useHabitatFeatureTableContext } from 'hooks/useContext';
 import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import { SurveyHabitatFeatureTable } from './SurveyHabitatFeatureTable';
 
@@ -9,6 +10,8 @@ import { SurveyHabitatFeatureTable } from './SurveyHabitatFeatureTable';
  * @return {*} {JSX.Element}
  */
 export const SurveyHabitatFeatureTableContainer = (): JSX.Element => {
+  const habitatFeatureTableContext = useHabitatFeatureTableContext();
+
   return (
     <Paper component={Stack} flexDirection="column" flex="1 1 auto" height="100%">
       <Toolbar
@@ -25,7 +28,7 @@ export const SurveyHabitatFeatureTableContainer = (): JSX.Element => {
           }}>
           Observations &zwnj;
           <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
-            (TODO)
+            ({habitatFeatureTableContext.rowCount})
           </Typography>
         </Typography>
 

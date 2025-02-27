@@ -10,11 +10,12 @@ export interface IHabitatFeatureRow {
   longitude: number | null;
   observed_date: string;
   observed_time: string;
+  // TODO: Mac: Add the qualitative / quantitative arrays
 }
 
 export interface IHabitatFeatureTableContext {
-  columns: any[];
-  rows: any[];
+  columns: GridColDef<IHabitatFeatureRow>[];
+  rows: IHabitatFeatureRow[];
   rowCount: number;
   isLoading: boolean;
 }
@@ -49,14 +50,14 @@ export const HabitatFeatureTableContextProvider = (props: IHabitatFeatureTableCo
     },
     {
       field: 'latitude',
-      headerName: 'Latitude', // TODO: Mac: Should this lat
+      headerName: 'Latitude',
       headerAlign: 'right',
       align: 'right',
       maxWidth: 100
     },
     {
       field: 'longitude',
-      headerName: 'Longitude', // TODO: Mac: Should this be long
+      headerName: 'Longitude',
       headerAlign: 'right',
       align: 'right',
       maxWidth: 100
@@ -73,6 +74,7 @@ export const HabitatFeatureTableContextProvider = (props: IHabitatFeatureTableCo
       align: 'right',
       maxWidth: 100
     }
+    // TODO: Mac: Dynamically add the qualitative / quantitative columns
   ];
 
   // TODO: Implement the context with the actual data

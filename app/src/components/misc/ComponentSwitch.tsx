@@ -8,6 +8,8 @@ interface ComponentSwitchProps<T extends string | number> {
   /**
    * A record of components to switch between.
    *
+   * Note: Partial allows switches of an `enum` type to not require components for all values.
+   *
    * @type {Partial<Record<T, JSX.Element>>} A record of components to switch between.
    */
   components: Partial<Record<T, JSX.Element>>;
