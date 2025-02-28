@@ -31,7 +31,7 @@ import { firstOrNull } from 'utils/Utils';
 const pageSizeOptions = [10, 25, 50, 1000];
 
 interface SamplingSiteListProps {
-  isMenuDisabled: boolean;
+  isDisabled: boolean;
 }
 
 /**
@@ -286,7 +286,7 @@ export const SamplingSiteList = (props: SamplingSiteListProps) => {
           vertical: 'top',
           horizontal: 'right'
         }}>
-        <MenuItem onClick={handlePromptConfirmBulkDelete} disabled={props.isMenuDisabled}>
+        <MenuItem onClick={handlePromptConfirmBulkDelete} disabled={props.isDisabled}>
           <ListItemIcon>
             <Icon path={mdiTrashCanOutline} size={1} />
           </ListItemIcon>
@@ -320,7 +320,7 @@ export const SamplingSiteList = (props: SamplingSiteListProps) => {
             component={RouterLink}
             to={'sampling'}
             startIcon={<Icon path={mdiCog} size={0.8} />}
-            disabled={props.isMenuDisabled}>
+            disabled={props.isDisabled}>
             Manage
           </Button>
           <IconButton

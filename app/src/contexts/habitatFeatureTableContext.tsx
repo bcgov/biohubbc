@@ -39,25 +39,27 @@ export const HabitatFeatureTableContextProvider = (props: IHabitatFeatureTableCo
       maxWidth: 200,
       valueGetter: (params) => {
         return params.row.habitat_feature_id; // TODO: Mac: Replace this with the actual habitat feature name
-      }
+      },
+      flex: 1
     },
     {
       field: 'count',
       headerName: 'Count',
       headerAlign: 'right',
       align: 'right',
-      maxWidth: 100
+      maxWidth: 100,
+      flex: 1
     },
     {
       field: 'latitude',
-      headerName: 'Latitude',
+      headerName: 'Lat',
       headerAlign: 'right',
       align: 'right',
       maxWidth: 100
     },
     {
       field: 'longitude',
-      headerName: 'Longitude',
+      headerName: 'Long',
       headerAlign: 'right',
       align: 'right',
       maxWidth: 100

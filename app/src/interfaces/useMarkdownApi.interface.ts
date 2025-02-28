@@ -6,6 +6,9 @@ export interface IGetMarkdownResponse {
     participated: boolean;
   };
 }
+
+export type MarkdownPayload = IGetMarkdownResponse['markdown'];
+
 export interface IMarkdownFilterObject {
   typeName: string;
 }

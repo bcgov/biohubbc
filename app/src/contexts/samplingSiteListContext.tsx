@@ -12,6 +12,10 @@ export interface ISamplingSiteListContext {
    * @return {*} {JSX.Element}
    */
   getSamplePeriodImportButton: (surveySamplePeriodId: number) => JSX.Element;
+  /**
+   * Flag to disable the
+   */
+  isDisabled?: boolean;
 }
 
 type ISamplingSiteListContextProviderProps = ISamplingSiteListContext & PropsWithChildren;

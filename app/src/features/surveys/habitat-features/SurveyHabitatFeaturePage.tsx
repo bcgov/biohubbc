@@ -48,11 +48,8 @@ export const SurveyHabitatFeaturePage = (): JSX.Element => {
         {/* Sampling Site List */}
         <Box flex="0 0 auto" width="400px">
           <DialogContextProvider>
-            {/* TODO: Mac: Update isMenuDisabled with correct value */}
-            <SamplingSiteListContainer
-              isMenuDisabled={false}
-              getSamplePeriodImportButton={() => <Button>test</Button>}
-            />
+            {/* TODO: Mac: Update isDisabled with correct value */}
+            <SamplingSiteListContainer isDisabled={false} getSamplePeriodImportButton={() => <Button>test</Button>} />
           </DialogContextProvider>
         </Box>
 

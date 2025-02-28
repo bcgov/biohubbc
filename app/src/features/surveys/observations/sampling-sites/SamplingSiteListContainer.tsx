@@ -2,7 +2,7 @@ import { SamplingSiteListProvider } from 'contexts/samplingSiteListContext';
 import { SamplingSiteList } from './SamplingSiteList';
 
 interface ISamplingSiteListContainerProps {
-  isMenuDisabled: boolean;
+  isDisabled: boolean;
   getSamplePeriodImportButton: (samplePeriodId: number) => JSX.Element;
 }
 
@@ -16,7 +16,7 @@ interface ISamplingSiteListContainerProps {
 export const SamplingSiteListContainer = (props: ISamplingSiteListContainerProps): JSX.Element => {
   return (
     <SamplingSiteListProvider getSamplePeriodImportButton={props.getSamplePeriodImportButton}>
-      <SamplingSiteList isMenuDisabled={props.isMenuDisabled} />
+      <SamplingSiteList isDisabled={props.isDisabled} />
     </SamplingSiteListProvider>
   );
 };

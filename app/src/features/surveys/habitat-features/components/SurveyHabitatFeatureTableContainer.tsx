@@ -26,7 +26,7 @@ export const SurveyHabitatFeatureTableContainer = (): JSX.Element => {
             fontSize: '1.125rem',
             fontWeight: 700
           }}>
-          Observations &zwnj;
+          Habitat Features &zwnj;
           <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
             ({habitatFeatureTableContext.rowCount})
           </Typography>
@@ -41,7 +41,6 @@ export const SurveyHabitatFeatureTableContainer = (): JSX.Element => {
 
       <Box display="flex" flexDirection="column" flex="1 1 auto" position="relative">
         <Box position="absolute" width="100%" height="100%">
-          {/* TODO: Mac: Update isLoading with correct value from habitatFeature context */}
           <SurveyHabitatFeatureTable />
         </Box>
       </Box>

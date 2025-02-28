@@ -59,7 +59,7 @@ export const SurveyObservationPage = () => {
                 <Box flex="0 0 auto" width="400px">
                   <DialogContextProvider>
                     <SamplingSiteListContainer
-                      isMenuDisabled={observationsPageContext.isDisabled}
+                      isDisabled={observationsPageContext.isDisabled}
                       getSamplePeriodImportButton={(samplePeriodId) => (
                         <ImportObservationsButton
                           disabled={observationsPageContext.isDisabled}
