@@ -13,7 +13,9 @@ export interface ISamplingSiteListContext {
    */
   getSamplePeriodImportButton: (surveySamplePeriodId: number) => JSX.Element;
   /**
-   * Flag to disable the
+   * Flag to disable the Sampling Site List UI controls.
+   *
+   * @type {boolean}
    */
   isDisabled?: boolean;
 }
