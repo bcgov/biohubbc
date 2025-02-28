@@ -7,6 +7,7 @@ import { IObservationsContext, ObservationsContext } from 'contexts/observations
 import { IObservationsPageContext, ObservationsPageContext } from 'contexts/observationsPageContext';
 import { IObservationsTableContext, ObservationsTableContext } from 'contexts/observationsTableContext';
 import { IProjectContext, ProjectContext } from 'contexts/projectContext';
+import { ISamplingSiteListContext, SamplingSiteListContext } from 'contexts/samplingSiteListContext';
 import { ISurveyContext, SurveyContext } from 'contexts/surveyContext';
 import { ITaxonomyContext, TaxonomyContext } from 'contexts/taxonomyContext';
 import { IAllTelemetryTableContext, TelemetryTableContext } from 'contexts/telemetryTableContext';
@@ -209,7 +210,24 @@ export const useHabitatFeatureTableContext = (): IHabitatFeatureTableContext => 
 
   if (!context) {
     throw Error(
-      'HabitatFeatureTableContxt is undefined, please verify you are calling useObservationsTableContext() as child of an <ObservationsTableContextProvider> component.'
+      'HabitatFeatureTableContxt is undefined, please verify you are calling useHabitatFeatureTableContext() as child of an <HabitatFeatureTableContextProvider> component.'
+    );
+  }
+
+  return context;
+};
+
+/**
+ * Returns an instance of `ISampligSiteListContext` from `SamplingSiteListContext`.
+ *
+ * @return {*} {ISamplingSiteListContext}
+ */
+export const useSamplingSiteListContext = (): ISamplingSiteListContext => {
+  const context = useContext(SamplingSiteListContext);
+
+  if (!context) {
+    throw Error(
+      'SamplingSiteListContext is undefined, please verify you are calling useSamplingSiteListContext() as child of an <SamplingSiteListContextProvider> component.'
     );
   }
 

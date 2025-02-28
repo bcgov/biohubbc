@@ -1,11 +1,11 @@
-import { Box, CircularProgress, Stack } from '@mui/material';
+import { Box, Button, CircularProgress, Stack } from '@mui/material';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { HabitatFeatureTableContextProvider } from 'contexts/habitatFeatureTableContext';
 import { ProjectContext } from 'contexts/projectContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useContext } from 'react';
 import { SurveyManagePageEnum, SurveyManagePageHeader } from '../components/SurveyManagePageHeader';
-import { SamplingSiteList } from '../observations/sampling-sites/SamplingSiteList';
+import { SamplingSiteListContainer } from '../observations/sampling-sites/SamplingSiteListContainer';
 import { SurveyHabitatFeatureTableContainer } from './components/SurveyHabitatFeatureTableContainer';
 
 /**
@@ -49,7 +49,10 @@ export const SurveyHabitatFeaturePage = (): JSX.Element => {
         <Box flex="0 0 auto" width="400px">
           <DialogContextProvider>
             {/* TODO: Mac: Update isMenuDisabled with correct value */}
-            <SamplingSiteList isMenuDisabled={false} />
+            <SamplingSiteListContainer
+              isMenuDisabled={false}
+              getSamplePeriodImportButton={() => <Button>test</Button>}
+            />
           </DialogContextProvider>
         </Box>
 

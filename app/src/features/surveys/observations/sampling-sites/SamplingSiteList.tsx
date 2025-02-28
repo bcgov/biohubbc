@@ -30,7 +30,7 @@ import { firstOrNull } from 'utils/Utils';
 
 const pageSizeOptions = [10, 25, 50, 1000];
 
-interface ISamplingSiteListContainerProps {
+interface SamplingSiteListProps {
   isMenuDisabled: boolean;
 }
 
@@ -39,7 +39,7 @@ interface ISamplingSiteListContainerProps {
  *
  * @return {*}
  */
-export const SamplingSiteList = (props: ISamplingSiteListContainerProps) => {
+export const SamplingSiteList = (props: SamplingSiteListProps) => {
   const surveyContext = useSurveyContext();
   const dialogContext = useDialogContext();
   const biohubApi = useBiohubApi();
