@@ -229,7 +229,7 @@ export class SurveyHabitatFeatureRepository extends BaseRepository {
   }
 
   /**
-   * Delete existing survey habitat feature records, for a survey.
+   * Delete existing survey habitat feature records, for a survey, and all dependent records.
    *
    * @param {number} surveyId
    * @param {number[]} surveyHabitatFeatureIds
@@ -242,6 +242,24 @@ export class SurveyHabitatFeatureRepository extends BaseRepository {
     const query = knex.queryBuilder();
 
     query
+      .with('w_delete_survey_habitat_feature_taxon', (qb) => {
+        qb.delete()
+          .from('survey_habitat_feature_taxon')
+          .whereIn('survey_habitat_feature_id', surveyHabitatFeatureIds)
+          .andWhere('survey_id', surveyId);
+      })
+      .with('w_delete_survey_habitat_feature_quantitative_value', (qb) => {
+        qb.delete()
+          .from('survey_habitat_feature_quantitative_value')
+          .whereIn('survey_habitat_feature_id', surveyHabitatFeatureIds)
+          .andWhere('survey_id', surveyId);
+      })
+      .with('w_delete_survey_habitat_feature_qualitative_value', (qb) => {
+        qb.delete()
+          .from('survey_habitat_feature_qualitative_value')
+          .whereIn('survey_habitat_feature_id', surveyHabitatFeatureIds)
+          .andWhere('survey_id', surveyId);
+      })
       .delete()
       .from('survey_habitat_feature')
       .whereIn('survey_habitat_feature_id', surveyHabitatFeatureIds)

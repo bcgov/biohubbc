@@ -91,7 +91,7 @@ const useSurveyHabitatFeature = (axios: AxiosInstance) => {
    *
    * @param {number} projectId
    * @param {number} surveyId
-   * @param {number} surveyHabitatFeatureId
+   * @param {number[]} surveyHabitatFeatureIds
    * @return {*}  {Promise<void>}
    */
   const deleteSurveyHabitatFeatures = async (
