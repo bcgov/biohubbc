@@ -4,29 +4,61 @@ import { OpenAPIV3 } from 'openapi-types';
  * Defines the schema for a survey habitat feature object, used for inserting a new survey habitat feature record.
  */
 export const insertHabitatFeatureSchema: OpenAPIV3.SchemaObject = {
+  description: 'A survey habitat feature record to insert.',
   type: 'object',
   additionalProperties: false,
-  required: [
-    'survey_id',
-    'itis_tsn',
-    'itis_scientific_name',
-    'latitude',
-    'longitude',
-    'count',
-    'observed_date',
-    'observed_time'
-  ],
+  required: ['habitat_feature_type_id', 'latitude', 'longitude', 'count', 'observed_date', 'observed_time'],
   properties: {
+    habitat_feature_type_id: {
+      type: 'integer',
+      minimum: 1
+    },
     survey_id: {
       type: 'integer',
       minimum: 1
     },
-    itis_tsn: {
+    latitude: {
+      type: 'number',
+      nullable: true,
+      minimum: -90,
+      maximum: 90
+    },
+    longitude: {
+      type: 'number',
+      nullable: true,
+      minimum: -180,
+      maximum: 180
+    },
+    count: {
       type: 'integer'
     },
-    itis_scientific_name: {
+    observed_date: {
       type: 'string',
       nullable: true
+    },
+    observed_time: {
+      type: 'string',
+      nullable: true
+    }
+  }
+};
+
+/**
+ * Defines the schema for a survey habitat feature object, used for updating an existing survey habitat feature record.
+ */
+export const updateHabitatFeatureSchema: OpenAPIV3.SchemaObject = {
+  description: 'A survey habitat feature record to update.',
+  type: 'object',
+  additionalProperties: false,
+  required: ['habitat_feature_type_id', 'latitude', 'longitude', 'count', 'observed_date', 'observed_time'],
+  properties: {
+    habitat_feature_type_id: {
+      type: 'integer',
+      minimum: 1
+    },
+    survey_id: {
+      type: 'integer',
+      minimum: 1
     },
     latitude: {
       type: 'number',
@@ -162,14 +194,14 @@ export const SurveyHabitatFeaturesWithTaxonsSchema: OpenAPIV3.SchemaObject = {
 export const surveyHabitatFeaturesSupplementaryDataSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
   additionalProperties: false,
-  required: ['count', 'habitatFeatureQuantitativeDefinition', 'habitatFeatureQualitativeDefinition'],
+  required: ['count', 'habitatFeatureQuantitativeDefinitions', 'habitatFeatureQualitativeDefinitions'],
   properties: {
     count: {
       description: 'The total count of survey habitat features for the survey.',
       type: 'integer',
       minimum: 0
     },
-    habitatFeatureQuantitativeDefinition: {
+    habitatFeatureQuantitativeDefinitions: {
       description: 'All quantitative habitat feature definitions for the survey habitat features.',
       type: 'array',
       items: {
@@ -216,7 +248,7 @@ export const surveyHabitatFeaturesSupplementaryDataSchema: OpenAPIV3.SchemaObjec
         }
       }
     },
-    habitatFeatureQualitativeDefinition: {
+    habitatFeatureQualitativeDefinitions: {
       description: 'All qualitative habitat feature definitions for the survey habitat features.',
       type: 'array',
       items: {

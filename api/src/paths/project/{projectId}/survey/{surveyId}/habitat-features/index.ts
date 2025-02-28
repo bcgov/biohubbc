@@ -7,11 +7,13 @@ import {
   paginationResponseSchema
 } from '../../../../../../openapi/schemas/pagination';
 import {
+  insertHabitatFeatureSchema,
   surveyHabitatFeaturesSupplementaryDataSchema,
   SurveyHabitatFeaturesWithTaxonsSchema
 } from '../../../../../../openapi/schemas/survey-habitat-feature';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 
+import { InsertSurveyHabitatFeature } from '../../../../../../repositories/habitat-feature-repository/survey-habitat-feature-repository.interface';
 import { SurveyHabitatFeatureService } from '../../../../../../services/habitat-feature-services/survey-habitat-feature-service';
 import { getLogger } from '../../../../../../utils/logger';
 import {
@@ -20,7 +22,26 @@ import {
   makePaginationResponse
 } from '../../../../../../utils/pagination';
 
-const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation');
+const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/habitat-features');
+
+export const POST: Operation = [
+  authorizeRequestHandler((req) => {
+    return {
+      or: [
+        {
+          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR],
+          surveyId: Number(req.params.surveyId),
+          discriminator: 'ProjectPermission'
+        },
+        {
+          validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
+          discriminator: 'SystemRole'
+        }
+      ]
+    };
+  }),
+  postSurveyHabitatFeatures()
+];
 
 export const GET: Operation = [
   authorizeRequestHandler((req) => {
@@ -44,6 +65,76 @@ export const GET: Operation = [
   }),
   getSurveyHabitatFeatures()
 ];
+
+POST.apiDoc = {
+  description: 'Insert habitat features for the survey.',
+  tags: ['habitat-feature'],
+  security: [
+    {
+      Bearer: []
+    }
+  ],
+  parameters: [
+    {
+      in: 'path',
+      name: 'projectId',
+      schema: {
+        type: 'integer',
+        minimum: 1
+      },
+      required: true
+    },
+    {
+      in: 'path',
+      name: 'surveyId',
+      schema: {
+        type: 'integer',
+        minimum: 1
+      },
+      required: true
+    }
+  ],
+  requestBody: {
+    description: 'Create survey habitat feature records request data',
+    required: true,
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          additionalProperties: false,
+          properties: {
+            surveyHabitatFeatures: {
+              description: 'Survey habitat feature records.',
+              type: 'array',
+              items: insertHabitatFeatureSchema,
+              minItems: 1
+            }
+          }
+        }
+      }
+    }
+  },
+  responses: {
+    204: {
+      description: 'Create OK'
+    },
+    400: {
+      $ref: '#/components/responses/400'
+    },
+    401: {
+      $ref: '#/components/responses/401'
+    },
+    403: {
+      $ref: '#/components/responses/403'
+    },
+    500: {
+      $ref: '#/components/responses/500'
+    },
+    default: {
+      $ref: '#/components/responses/default'
+    }
+  }
+};
 
 GET.apiDoc = {
   description: 'Get paginated survey habitat feature records for a survey.',
@@ -109,6 +200,42 @@ GET.apiDoc = {
     }
   }
 };
+
+/**
+ * Creates new survey habitat feature records for a survey.
+ *
+ * @export
+ * @return {*}  {RequestHandler}
+ */
+export function postSurveyHabitatFeatures(): RequestHandler {
+  return async (req, res) => {
+    const surveyId = Number(req.params.surveyId);
+
+    defaultLog.debug({ label: 'postSurveyHabitatFeatures', surveyId });
+
+    const insertSurveyHabitatFeatureObjects: InsertSurveyHabitatFeature[] = req.body.surveyHabitatFeatures;
+
+    const connection = getDBConnection(req.keycloak_token);
+
+    try {
+      await connection.open();
+
+      const surveyHabitatFeatureService = new SurveyHabitatFeatureService(connection);
+
+      await surveyHabitatFeatureService.insertSurveyHabitatFeatures(surveyId, insertSurveyHabitatFeatureObjects);
+
+      await connection.commit();
+
+      return res.status(204).send();
+    } catch (error) {
+      defaultLog.error({ label: 'postSurveyHabitatFeatures', message: 'error', error });
+      await connection.rollback();
+      throw error;
+    } finally {
+      connection.release();
+    }
+  };
+}
 
 /**
  * Get paginated survey habitat feature records for a survey.

@@ -4,12 +4,20 @@ import { SurveyHabitatFeatureRepository } from '../../repositories/habitat-featu
 import {
   InsertSurveyHabitatFeature,
   SurveyHabitatFeaturesWithSupplementaryData,
-  SurveyHabitatFeatureWithTaxons
+  SurveyHabitatFeatureWithTaxons,
+  UpdateSurveyHabitatFeature
 } from '../../repositories/habitat-feature-repository/survey-habitat-feature-repository.interface';
 import { ApiPaginationOptions } from '../../zod-schema/pagination';
 import { DBService } from '../db-service';
 import { HabitatFeatureService } from './habitat-feature-service';
 
+/**
+ * Service class for working with survey habitat feature records.
+ *
+ * @export
+ * @class SurveyHabitatFeatureService
+ * @extends {DBService}
+ */
 export class SurveyHabitatFeatureService extends DBService {
   surveyHabitatFeatureRepository: SurveyHabitatFeatureRepository;
 
@@ -88,8 +96,9 @@ export class SurveyHabitatFeatureService extends DBService {
       surveyHabitatFeatures: surveyHabitatFeatures,
       supplementaryData: {
         count: surveyHabitatFeaturesCount,
-        habitatFeatureQuantitativeDefinition: surveyHabitatFeatureTypeDefinitions.habitatFeatureQuantitativeDefinition,
-        habitatFeatureQualitativeDefinition: surveyHabitatFeatureTypeDefinitions.habitatFeatureQualitativeDefinition
+        habitatFeatureQuantitativeDefinitions:
+          surveyHabitatFeatureTypeDefinitions.habitatFeatureQuantitativeDefinitions,
+        habitatFeatureQualitativeDefinitions: surveyHabitatFeatureTypeDefinitions.habitatFeatureQualitativeDefinitions
       }
     };
   }
@@ -105,5 +114,46 @@ export class SurveyHabitatFeatureService extends DBService {
     const habitatFeatureService = new HabitatFeatureService(this.connection);
 
     return habitatFeatureService.findHabitatFeatureDefinitions({ survey_id: surveyId });
+  }
+
+  /**
+   * Update an existing survey habitat feature record, for a survey.
+   *
+   * @param {number} surveyId
+   * @param {number} surveyHabitatFeatureId
+   * @param {UpdateSurveyHabitatFeature} habitatFeature
+   * @return {*}  {Promise<void>}
+   * @memberof SurveyHabitatFeatureService
+   */
+  async updateSurveyHabitatFeature(
+    surveyId: number,
+    surveyHabitatFeatureId: number,
+    habitatFeature: UpdateSurveyHabitatFeature
+  ): Promise<void> {
+    this.surveyHabitatFeatureRepository.updateSurveyHabitatFeature(surveyId, surveyHabitatFeatureId, habitatFeature);
+  }
+
+  /**
+   * Delete an existing survey habitat feature record, for a survey.
+   *
+   * @param {number} surveyId
+   * @param {number} surveyHabitatFeatureId
+   * @return {*}  {Promise<void>}
+   * @memberof SurveyHabitatFeatureService
+   */
+  async deleteSurveyHabitatFeature(surveyId: number, surveyHabitatFeatureId: number): Promise<void> {
+    this.deleteSurveyHabitatFeatures(surveyId, [surveyHabitatFeatureId]);
+  }
+
+  /**
+   * Delete an existing survey habitat feature record, for a survey.
+   *
+   * @param {number} surveyId
+   * @param {number} surveyHabitatFeatureIds
+   * @return {*}  {Promise<void>}
+   * @memberof SurveyHabitatFeatureService
+   */
+  async deleteSurveyHabitatFeatures(surveyId: number, surveyHabitatFeatureIds: number[]): Promise<void> {
+    this.surveyHabitatFeatureRepository.deleteSurveyHabitatFeatures(surveyId, surveyHabitatFeatureIds);
   }
 }

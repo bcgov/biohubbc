@@ -9,6 +9,13 @@ import {
 import { ApiPaginationOptions } from '../../zod-schema/pagination';
 import { DBService } from '../db-service';
 
+/**
+ * Service class for working with habitat feature records.
+ *
+ * @export
+ * @class HabitatFeatureService
+ * @extends {DBService}
+ */
 export class HabitatFeatureService extends DBService {
   habitatFeatureRepository: HabitatFeatureRepository;
 

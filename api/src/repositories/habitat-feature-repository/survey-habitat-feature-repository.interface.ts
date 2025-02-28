@@ -5,13 +5,12 @@ import { FindHabitatFeatureDefinitions } from './habitat-feature-repository.inte
 
 export type InsertSurveyHabitatFeature = Pick<
   SurveyHabitatFeatureRecord,
-  | 'survey_habitat_feature_id'
-  | 'habitat_feature_type_id'
-  | 'count'
-  | 'latitude'
-  | 'longitude'
-  | 'observed_date'
-  | 'observed_time'
+  'habitat_feature_type_id' | 'count' | 'latitude' | 'longitude' | 'observed_date' | 'observed_time'
+>;
+
+export type UpdateSurveyHabitatFeature = Pick<
+  SurveyHabitatFeatureRecord,
+  'habitat_feature_type_id' | 'count' | 'latitude' | 'longitude' | 'observed_date' | 'observed_time'
 >;
 
 export const SurveyHabitatFeatureCount = z.object({
