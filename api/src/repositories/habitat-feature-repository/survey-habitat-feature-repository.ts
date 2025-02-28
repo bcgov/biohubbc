@@ -184,4 +184,69 @@ export class SurveyHabitatFeatureRepository extends BaseRepository {
 
     return response.rows[0].count;
   }
+
+  /**
+   * Update an existing survey habitat feature record, for a survey.
+   *
+   * @param {number} surveyId
+   * @param {number} surveyHabitatFeatureId
+   * @param {InsertSurveyHabitatFeature} habitatFeature
+   * @return {*}  {Promise<void>}
+   * @memberof SurveyHabitatFeatureRepository
+   */
+  async updateSurveyHabitatFeature(
+    surveyId: number,
+    surveyHabitatFeatureId: number,
+    habitatFeature: InsertSurveyHabitatFeature
+  ): Promise<void> {
+    const knex = getKnex();
+
+    const query = knex.queryBuilder();
+
+    query
+      .update({
+        ...habitatFeature
+      })
+      .from('survey_habitat_feature')
+      .where('survey_habitat_feature_id', surveyHabitatFeatureId)
+      .andWhere('survey_id', surveyId);
+
+    const response = await this.connection.knex(query);
+
+    if (response.rowCount !== 1) {
+      throw new ApiExecuteSQLError('Failed to update survey habitat feature', [
+        'SurveyHabitatFeatureRepository->updateSurveyHabitatFeature',
+        `rowCount was ${response.rowCount}, expected rowCount = 1`
+      ]);
+    }
+  }
+
+  /**
+   * Delete existing survey habitat feature records, for a survey.
+   *
+   * @param {number} surveyId
+   * @param {number[]} surveyHabitatFeatureIds
+   * @return {*}  {Promise<void>}
+   * @memberof SurveyHabitatFeatureRepository
+   */
+  async deleteSurveyHabitatFeatures(surveyId: number, surveyHabitatFeatureIds: number[]): Promise<void> {
+    const knex = getKnex();
+
+    const query = knex.queryBuilder();
+
+    query
+      .delete()
+      .from('survey_habitat_feature')
+      .whereIn('survey_habitat_feature_id', surveyHabitatFeatureIds)
+      .andWhere('survey_id', surveyId);
+
+    const response = await this.connection.knex(query);
+
+    if (response.rowCount !== surveyHabitatFeatureIds.length) {
+      throw new ApiExecuteSQLError('Failed to delete survey habitat features', [
+        'SurveyHabitatFeatureRepository->deleteSurveyHabitatFeatures',
+        `rowCount was ${response.rowCount}, expected rowCount = ${surveyHabitatFeatureIds.length}`
+      ]);
+    }
+  }
 }
