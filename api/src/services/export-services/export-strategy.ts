@@ -13,7 +13,26 @@ export type ExportDataQuery = {
    * The file name to use for the exported data when it is saved to S3.
    */
   fileName: string;
+  /**
+   * The data CSV file header.
+   */
+  csvHeader: string;
+
+  /**
+   * Function that transforms the query data stram into CVS
+   *
+   * @type {TransformFunction}
+   */
+  transformFunction: TransformFunction;
 };
+
+/**
+ * Function that transforms the result query data into CSV
+ *
+ * @export
+ * @typedef {TransformFunction}
+ */
+export type TransformFunction = (chunk: Record<string, any>) => string;
 
 export type ExportDataStreamOptions = {
   /**

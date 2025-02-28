@@ -1,3 +1,4 @@
+import { Knex } from 'knex';
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { SurveyObservationModel, SurveyObservationRecord } from '../../database-models/survey_observation';
@@ -684,5 +685,100 @@ export class ObservationRepository extends BaseRepository {
     }
 
     return response.rows[0].count;
+  }
+
+  /**
+   * Build the export observation records query
+   *
+   * @static
+   * @param {Knex} knex
+   * @param {number} surveyId
+   * @returns {Knex.QueryBuilder}
+   * @memberof ObservationRepository
+   */
+  static buildObservationQuery(knex: Knex, surveyId: number): Knex.QueryBuilder {
+    return knex
+      .queryBuilder()
+      .select([
+        knex.raw('survey_observation.survey_observation_id as observation_id'),
+        knex.raw('observation_subcount.observation_subcount_id as subcount_id'),
+        knex.raw('survey_observation.itis_scientific_name as species'),
+        knex.raw('survey_sample_site.name as site'),
+        knex.raw('method_technique.name as technique'),
+        'survey_sample_period.start_date',
+        'survey_sample_period.end_date',
+        knex.raw('observation_subcount_sign.name as sign'),
+        'survey_observation.count',
+        'survey_observation.observation_date',
+        'survey_observation.observation_time',
+        'survey_observation.latitude',
+        'survey_observation.longitude',
+        'observation_subcount.comment',
+        knex.raw(
+          'observation_subcount_qualitative_measurement.critterbase_taxon_measurement_id as qualitative_critter_taxon_measurement_id'
+        ),
+        knex.raw(
+          'observation_subcount_qualitative_measurement.critterbase_measurement_qualitative_option_id as qualitative_critter_taxon_measurement_option_id'
+        ),
+        knex.raw(
+          'observation_subcount_quantitative_measurement.critterbase_taxon_measurement_id as quantitative_critter_taxon_measurement_id'
+        ),
+
+        knex.raw(
+          'observation_subcount_qualitative_environment.environment_qualitative_id as qualitative_environment_id'
+        ),
+        knex.raw(
+          'observation_subcount_qualitative_environment.environment_qualitative_option_id as qualitative_environment_option_id'
+        ),
+        knex.raw(
+          'observation_subcount_quantitative_environment.environment_quantitative_id as quantitative_environment_id'
+        )
+      ])
+      .from('survey_observation')
+      .leftJoin(
+        'observation_subcount',
+        'survey_observation.survey_observation_id',
+        '=',
+        'observation_subcount.survey_observation_id'
+      )
+      .leftJoin('survey_sample_site', 'survey_observation.survey_id', '=', 'survey_sample_site.survey_id')
+      .leftJoin('method_technique', 'survey_observation.survey_id', '=', 'method_technique.survey_id')
+      .leftJoin(
+        'survey_sample_period',
+        'survey_observation.survey_sample_period_id',
+        '=',
+        'survey_sample_period.survey_sample_period_id'
+      )
+      .leftJoin(
+        'observation_subcount_sign',
+        'observation_subcount.observation_subcount_sign_id',
+        '=',
+        'observation_subcount_sign.observation_subcount_sign_id'
+      )
+      .leftJoin(
+        'observation_subcount_qualitative_measurement',
+        'observation_subcount.observation_subcount_id',
+        '=',
+        'observation_subcount_qualitative_measurement.observation_subcount_id'
+      )
+      .leftJoin(
+        'observation_subcount_quantitative_measurement',
+        'observation_subcount.observation_subcount_id',
+        '=',
+        'observation_subcount_quantitative_measurement.observation_subcount_id'
+      )
+      .leftJoin(
+        'observation_subcount_qualitative_environment',
+        'observation_subcount.observation_subcount_id',
+        '=',
+        'observation_subcount_qualitative_environment.observation_subcount_id'
+      )
+      .leftJoin(
+        'observation_subcount_quantitative_environment',
+        'observation_subcount.observation_subcount_id',
+        '=',
+        'observation_subcount_quantitative_environment.observation_subcount_id'
+      )
+      .where('survey_observation.survey_id', surveyId);
   }
 }

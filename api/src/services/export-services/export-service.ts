@@ -71,14 +71,14 @@ export class ExportService extends DBService {
 
               registerStreamErrorHandler(queryStream);
 
-              const jsonStringifyTransformStream = getJsonStringifyTransformStream();
+              const csvTransformStream = getCsvTransformStream(queryConfig.transformFunction, queryConfig.csvHeader);
 
-              registerStreamErrorHandler(jsonStringifyTransformStream);
+              registerStreamErrorHandler(csvTransformStream);
 
-              queryStream.pipe(jsonStringifyTransformStream);
+              queryStream.pipe(csvTransformStream);
 
               // Append the file stream to the archive stream
-              archiveStream.append(jsonStringifyTransformStream, {
+              archiveStream.append(csvTransformStream, {
                 name: queryConfig.fileName
               });
 
@@ -95,14 +95,14 @@ export class ExportService extends DBService {
 
               registerStreamErrorHandler(stream);
 
-              const csvTransformStream = getCsvTransformStream();
+              const jsonTransformStream = getJsonStringifyTransformStream();
 
-              registerStreamErrorHandler(csvTransformStream);
+              registerStreamErrorHandler(jsonTransformStream);
 
-              stream.pipe(csvTransformStream);
+              stream.pipe(jsonTransformStream);
 
               // Append the stream output to the archive stream
-              archiveStream.append(csvTransformStream, { name: streamConfig.fileName });
+              archiveStream.append(jsonTransformStream, { name: streamConfig.fileName });
             }
           }
         })

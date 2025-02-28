@@ -1,4 +1,5 @@
 import { getKnex, IDBConnection } from '../../../database/db';
+import { ObservationRepository } from '../../../repositories/observation-repository/observation-repository';
 import { getLogger } from '../../../utils/logger';
 import { DBService } from '../../db-service';
 import { ExportStrategy, ExportStrategyConfig } from '../export-strategy';
@@ -39,7 +40,27 @@ export class ExportObservationStrategy extends DBService implements ExportStrate
         queries: [
           {
             sql: this._getSql(),
-            fileName: 'observations.json'
+            fileName: 'observations.csv',
+            csvHeader: [
+              'Observation ID',
+              'Subcount ID',
+              'Species',
+              'Site',
+              'Technique',
+              'Period',
+              'Sign',
+              'Count',
+              'Date',
+              'Time',
+              'Latitude',
+              'Longitude',
+              'Comment',
+              'All qualitative measurements',
+              'All quantitative measurements',
+              'All qualitative environments',
+              'All quantitative environments'
+            ].join(','),
+            transformFunction: ExportObservationStrategy.observationCsvTransformation
           }
         ]
       };
@@ -61,13 +82,38 @@ export class ExportObservationStrategy extends DBService implements ExportStrate
    */
   _getSql = () => {
     const knex = getKnex();
+    return ObservationRepository.buildObservationQuery(knex, this.config.surveyId);
+  };
 
-    const queryBuilder = knex
-      .queryBuilder()
-      .select('*')
-      .from('survey_observation')
-      .where('survey_id', this.config.surveyId);
-
-    return queryBuilder;
+  /**
+   * Transform query result record into CSV
+   *
+   * @static
+   * @param {Record<string, any>} item
+   * @returns {string}
+   * @memberof ExportObservationStrategy
+   */
+  static readonly observationCsvTransformation = (item: Record<string, any>): string => {
+    return [
+      item.observation_id,
+      item.subcount_id,
+      item.species,
+      item.site,
+      item.technique,
+      (item.start_date ? `${item.start_date} - ` : '') + (item.end_date || ''),
+      item.sign,
+      item.count,
+      item.observation_date,
+      item.observation_time,
+      item.latitude,
+      item.longitude,
+      item.comment,
+      item.qualitative_critter_taxon_measurement_id,
+      item.qualitative_critter_taxon_measurement_option_id,
+      item.quantitative_critter_taxon_measurement_id,
+      item.qualitative_environment_id,
+      item.qualitative_environment_option_id,
+      item.quantitative_environment_id
+    ].join(',');
   };
 }

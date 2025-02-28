@@ -21,7 +21,7 @@ describe('ExportObservationStrategy', () => {
       const result = await exportObservationStrategy.getExportStrategyConfig();
 
       expect(result.queries?.length).to.equal(1);
-      expect(result.queries?.[0].fileName).to.equal('observations.json');
+      expect(result.queries?.[0].fileName).to.equal('observations.csv');
     });
   });
 });

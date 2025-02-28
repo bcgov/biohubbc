@@ -4,6 +4,7 @@ import QueryStream from 'pg-query-stream';
 import { SQLStatement } from 'sql-template-strings';
 import { Readable, Transform } from 'stream';
 import { getLogger } from '../../utils/logger';
+import { TransformFunction } from './export-strategy';
 
 const defaultLog = getLogger('export-utils.ts');
 
@@ -75,19 +76,25 @@ export function getJsonStringifyTransformStream(): Transform {
 }
 
 /**
- * Get a CSV transform stream, that expects objects and outputs csv.
+ * Get a query data record transform stream, that expects objects and outputs csv.
  *
  * Note: The incoming data stream must yield objects, or this will throw an error.
  *
  * @export
  * @returns {Transform}
  */
-export function getCsvTransformStream(): Transform {
+export function getCsvTransformStream(transformFunction: TransformFunction, header: string): Transform {
+  let headerStreamed = false;
   const transformStream = new Transform({
     objectMode: true, // Expects objects
     transform(chunk, _encoding, callback) {
+      if (header && !headerStreamed) {
+        // Push the header into stream only once
+        this.push(header + '\r\n');
+        headerStreamed = true;
+      }
       // the chunk and push it to the next stream
-      callback(null, chunk.toString() + '\r\n');
+      callback(null, transformFunction(chunk) + '\r\n');
     }
   });
 
@@ -131,11 +138,11 @@ export function registerStreamErrorHandler(stream: Readable): Readable {
 /**
  * Parse date and time strings from timestamp
  *
- * @param {string} inputDate
+ * @param {string} timestamp
  * @returns {{ dateStr: string; timeStr: string }}
  */
-export const parseDateAndTimeString = (inputDate: string): { dateStr: string; timeStr: string } => {
-  const date = new Date(inputDate);
+export const parseTimestampString = (timestamp: string): { dateStr: string; timeStr: string } => {
+  const date = new Date(timestamp);
   const dateStr = new Intl.DateTimeFormat('en-CA').format(date);
 
   // Format the time part (HH:mm:ss) with Canada PST timezone
@@ -144,7 +151,7 @@ export const parseDateAndTimeString = (inputDate: string): { dateStr: string; ti
     hour: '2-digit',
     minute: '2-digit',
     second: '2-digit',
-    hour12: true,
+    hour12: false,
     timeZoneName: 'short' // Include timezone abbreviation
   }).format(date);
 
