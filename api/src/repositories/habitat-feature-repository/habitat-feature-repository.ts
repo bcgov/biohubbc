@@ -8,6 +8,13 @@ import {
   FindHabitatFeatureQuantitativeDefinition
 } from './habitat-feature-repository.interface';
 
+/**
+ * Repository class for working with habitat feature records.
+ *
+ * @export
+ * @class HabitatFeatureRepository
+ * @extends {BaseRepository}
+ */
 export class HabitatFeatureRepository extends BaseRepository {
   /**
    * Find habitat feature quantitative definitions.
@@ -199,8 +206,8 @@ export class HabitatFeatureRepository extends BaseRepository {
     ]);
 
     return {
-      habitatFeatureQuantitativeDefinition: quantitativeDefinitions,
-      habitatFeatureQualitativeDefinition: qualitativeDefinitions
+      habitatFeatureQuantitativeDefinitions: quantitativeDefinitions,
+      habitatFeatureQualitativeDefinitions: qualitativeDefinitions
     };
   }
 }

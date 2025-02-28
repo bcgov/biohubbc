@@ -11,6 +11,13 @@ import { ApiPaginationOptions } from '../../zod-schema/pagination';
 import { DBService } from '../db-service';
 import { HabitatFeatureService } from './habitat-feature-service';
 
+/**
+ * Service class for working with survey habitat feature records.
+ *
+ * @export
+ * @class SurveyHabitatFeatureService
+ * @extends {DBService}
+ */
 export class SurveyHabitatFeatureService extends DBService {
   surveyHabitatFeatureRepository: SurveyHabitatFeatureRepository;
 
@@ -89,8 +96,9 @@ export class SurveyHabitatFeatureService extends DBService {
       surveyHabitatFeatures: surveyHabitatFeatures,
       supplementaryData: {
         count: surveyHabitatFeaturesCount,
-        habitatFeatureQuantitativeDefinition: surveyHabitatFeatureTypeDefinitions.habitatFeatureQuantitativeDefinition,
-        habitatFeatureQualitativeDefinition: surveyHabitatFeatureTypeDefinitions.habitatFeatureQualitativeDefinition
+        habitatFeatureQuantitativeDefinitions:
+          surveyHabitatFeatureTypeDefinitions.habitatFeatureQuantitativeDefinitions,
+        habitatFeatureQualitativeDefinitions: surveyHabitatFeatureTypeDefinitions.habitatFeatureQualitativeDefinitions
       }
     };
   }

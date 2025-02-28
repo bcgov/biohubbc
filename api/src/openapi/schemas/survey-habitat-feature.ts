@@ -194,14 +194,14 @@ export const SurveyHabitatFeaturesWithTaxonsSchema: OpenAPIV3.SchemaObject = {
 export const surveyHabitatFeaturesSupplementaryDataSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
   additionalProperties: false,
-  required: ['count', 'habitatFeatureQuantitativeDefinition', 'habitatFeatureQualitativeDefinition'],
+  required: ['count', 'habitatFeatureQuantitativeDefinitions', 'habitatFeatureQualitativeDefinitions'],
   properties: {
     count: {
       description: 'The total count of survey habitat features for the survey.',
       type: 'integer',
       minimum: 0
     },
-    habitatFeatureQuantitativeDefinition: {
+    habitatFeatureQuantitativeDefinitions: {
       description: 'All quantitative habitat feature definitions for the survey habitat features.',
       type: 'array',
       items: {
@@ -248,7 +248,7 @@ export const surveyHabitatFeaturesSupplementaryDataSchema: OpenAPIV3.SchemaObjec
         }
       }
     },
-    habitatFeatureQualitativeDefinition: {
+    habitatFeatureQualitativeDefinitions: {
       description: 'All qualitative habitat feature definitions for the survey habitat features.',
       type: 'array',
       items: {

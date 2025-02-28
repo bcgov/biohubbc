@@ -9,6 +9,13 @@ import {
   SurveyHabitatFeatureWithTaxons
 } from './survey-habitat-feature-repository.interface';
 
+/**
+ * Repository class for working with survey habitat feature records.
+ *
+ * @export
+ * @class SurveyHabitatFeatureRepository
+ * @extends {BaseRepository}
+ */
 export class SurveyHabitatFeatureRepository extends BaseRepository {
   /**
    * Insert survey habitat feature records for the provided survey id.

@@ -33,7 +33,7 @@ export const FindHabitatFeatureQualitativeDefinition = HabitatFeatureQualitative
 export type FindHabitatFeatureQualitativeDefinition = z.infer<typeof FindHabitatFeatureQualitativeDefinition>;
 
 export const FindHabitatFeatureDefinitions = z.object({
-  habitatFeatureQuantitativeDefinition: z.array(HabitatFeatureQuantitativeDefinitionRecord),
-  habitatFeatureQualitativeDefinition: z.array(FindHabitatFeatureQualitativeDefinition)
+  habitatFeatureQuantitativeDefinitions: z.array(HabitatFeatureQuantitativeDefinitionRecord),
+  habitatFeatureQualitativeDefinitions: z.array(FindHabitatFeatureQualitativeDefinition)
 });
 export type FindHabitatFeatureDefinitions = z.infer<typeof FindHabitatFeatureDefinitions>;
