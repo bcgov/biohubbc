@@ -136,6 +136,9 @@ export async function seed(knex: Knex): Promise<void> {
             await knex.raw(insertObservationSubCount(createObservationResponse.rows[0].survey_observation_id));
           }
         }
+
+        // Insert survey habitat features
+        await knex.raw(insertSurveyHabitatFeaturesData(surveyId));
       }
     }
   }
@@ -1120,3 +1123,66 @@ const insertSystemAlert = () => `
     (SELECT system_user_id FROM "system_user" ORDER BY random() LIMIT 1)
   );
 `;
+
+/**
+ * Insert 3 survey_habitat_feature records, with 3 different random habitat_feature_types.
+ *
+ * @param {number} surveyId
+ * @return {*}
+ */
+const insertSurveyHabitatFeaturesData = (surveyId: number) => {
+  return `
+    WITH w_habitat_features AS (
+        SELECT * FROM habitat_feature_type ORDER BY random() LIMIT 3
+    )
+    INSERT INTO survey_habitat_feature
+    (
+        survey_id,
+        habitat_feature_type_id,
+        count,
+        latitude,
+        longitude,
+        observed_date,
+        observed_time
+    )
+    VALUES (
+        ${surveyId},
+        (SELECT habitat_feature_type_id FROM w_habitat_features LIMIT 1 OFFSET 0),
+        ${faker.number.int({ min: 1, max: 20 })},
+        ${faker.location.latitude()},
+        ${faker.location.longitude()},
+        $$${faker.date
+          .between({ from: '2000-01-01T00:00:00-08:00', to: '2001-01-01T00:00:00-08:00' })
+          .toISOString()}$$::date,
+        timestamp $$${faker.date
+          .between({ from: '2002-01-01T00:00:00-08:00', to: '2005-01-01T00:00:00-08:00' })
+          .toISOString()}$$::time
+    ),
+    (
+        ${surveyId},
+        (SELECT habitat_feature_type_id FROM w_habitat_features LIMIT 1 OFFSET 1),
+        ${faker.number.int({ min: 1, max: 20 })},
+        ${faker.location.latitude()},
+        ${faker.location.longitude()},
+        $$${faker.date
+          .between({ from: '2000-01-01T00:00:00-08:00', to: '2001-01-01T00:00:00-08:00' })
+          .toISOString()}$$::date,
+        timestamp $$${faker.date
+          .between({ from: '2002-01-01T00:00:00-08:00', to: '2005-01-01T00:00:00-08:00' })
+          .toISOString()}$$::time
+    ),
+    (
+        ${surveyId},
+        (SELECT habitat_feature_type_id FROM w_habitat_features LIMIT 1 OFFSET 2),
+        ${faker.number.int({ min: 1, max: 20 })},
+        ${faker.location.latitude()},
+        ${faker.location.longitude()},
+        $$${faker.date
+          .between({ from: '2000-01-01T00:00:00-08:00', to: '2001-01-01T00:00:00-08:00' })
+          .toISOString()}$$::date,
+        timestamp $$${faker.date
+          .between({ from: '2002-01-01T00:00:00-08:00', to: '2005-01-01T00:00:00-08:00' })
+          .toISOString()}$$::time
+    );
+  `;
+};

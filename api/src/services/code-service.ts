@@ -52,7 +52,8 @@ export class CodeService extends DBService {
       telemetry_device_makes: this.codeRepository.getActiveTelemetryDeviceMakes(),
       frequency_units: this.codeRepository.getFrequencyUnits(),
       alert_types: this.codeRepository.getAlertTypes(),
-      vantages: this.codeRepository.getVantages()
+      vantages: this.codeRepository.getVantages(),
+      habitat_feature_types: this.codeRepository.getHabitatFeatureTypes()
     };
 
     // Fetch all code sets in parallel
