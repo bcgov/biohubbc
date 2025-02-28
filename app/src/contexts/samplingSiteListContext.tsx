@@ -2,6 +2,15 @@ import { PropsWithChildren } from '@react-leaflet/core/lib/component';
 import { createContext } from 'react';
 
 export interface ISamplingSiteListContext {
+  /**
+   * Callback to return the import button for the sample period.
+   *
+   * @see `SamplingSiteListPeriod`
+   * @see `ImportObservationsButton` and `ImportHabitatFeaturesButton`
+   *
+   * @param {number} surveySamplePeriodId
+   * @return {*} {JSX.Element}
+   */
   getSamplePeriodImportButton: (surveySamplePeriodId: number) => JSX.Element;
 }
 
@@ -11,6 +20,10 @@ export const SamplingSiteListContext = createContext<ISamplingSiteListContext | 
 
 /**
  * Provider for the Sampling Site List Context
+ *
+ * Why? Observations and Habitat Features have a similar UI pattern for importing data. This context
+ * provides a way to share the UI pattern between the two features, while allowing for custom
+ * import button functionality.
  *
  * @param {ISamplingSiteListContextProviderProps} props
  * @return {*} {JSX.Element}

@@ -44,6 +44,16 @@ const SurveyRouter: React.FC = () => {
         </ProjectRoleRouteGuard>
       </RouteWithTitle>
 
+      <RouteWithTitle exact path="/admin/projects/:id/surveys/:survey_id/edit" title={getTitle('Edit Survey')}>
+        <ProjectRoleRouteGuard
+          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+          validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+          <DialogContextProvider>
+            <EditSurveyPage />
+          </DialogContextProvider>
+        </ProjectRoleRouteGuard>
+      </RouteWithTitle>
+
       {/* Animals Routes */}
       <RouteWithTitle path="/admin/projects/:id/surveys/:survey_id/animals" title={getTitle('Manage Animals')}>
         <ProjectRoleRouteGuard
@@ -117,16 +127,6 @@ const SurveyRouter: React.FC = () => {
           ]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <SamplingRouter />
-        </ProjectRoleRouteGuard>
-      </RouteWithTitle>
-
-      <RouteWithTitle exact path="/admin/projects/:id/surveys/:survey_id/edit" title={getTitle('Edit Survey')}>
-        <ProjectRoleRouteGuard
-          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
-          validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-          <DialogContextProvider>
-            <EditSurveyPage />
-          </DialogContextProvider>
         </ProjectRoleRouteGuard>
       </RouteWithTitle>
     </Switch>
