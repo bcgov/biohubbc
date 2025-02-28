@@ -25,7 +25,7 @@ GET.apiDoc = {
               'first_nations',
               'agency',
               'investment_action_category',
-              'type',
+              'survey_data_type',
               'iucn_conservation_action_level_1_classification',
               'iucn_conservation_action_level_2_subclassification',
               'iucn_conservation_action_level_3_subclassification',
@@ -110,7 +110,7 @@ GET.apiDoc = {
                   }
                 }
               },
-              type: {
+              survey_data_type: {
                 type: 'array',
                 description: 'Types of surveys',
                 items: {
@@ -121,6 +121,9 @@ GET.apiDoc = {
                       type: 'number'
                     },
                     name: {
+                      type: 'string'
+                    },
+                    description: {
                       type: 'string'
                     }
                   }
@@ -221,6 +224,9 @@ GET.apiDoc = {
                     },
                     name: {
                       type: 'string'
+                    },
+                    description: {
+                      type: 'string'
                     }
                   }
                 }
@@ -269,6 +275,9 @@ GET.apiDoc = {
                     },
                     name: {
                       type: 'string'
+                    },
+                    description: {
+                      type: 'string'
                     }
                   }
                 }
@@ -283,6 +292,9 @@ GET.apiDoc = {
                       type: 'number'
                     },
                     name: {
+                      type: 'string'
+                    },
+                    description: {
                       type: 'string'
                     }
                   }

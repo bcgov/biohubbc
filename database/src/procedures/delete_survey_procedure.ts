@@ -243,6 +243,23 @@ export async function seed(knex: Knex): Promise<void> {
         DELETE FROM survey_observation
         WHERE survey_id = p_survey_id;
 
+        -------- delete habitat feature data --------
+
+        DELETE FROM survey_habitat_feature_qualitative
+        WHERE survey_habitat_feature_id IN (
+          SELECT survey_habitat_feature_id FROM survey_habitat_feature
+          WHERE survey_id = p_survey_id
+        );
+
+        DELETE FROM survey_habitat_feature_quantitative
+        WHERE survey_habitat_feature_id IN (
+          SELECT survey_habitat_feature_id FROM survey_habitat_feature
+          WHERE survey_id = p_survey_id
+        );
+
+        DELETE FROM survey_habitat_feature
+        WHERE survey_id = p_survey_id;
+
         -------- delete sample blocks and stratums --------
 
         DELETE FROM survey_sample_block

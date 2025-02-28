@@ -86,14 +86,7 @@ GET.apiDoc = {
               'itis_scientific_name',
               'observation_date',
               'observation_time',
-              'survey_sample_site_id',
-              'method_technique_id',
-              'survey_sample_period_id',
-              'create_user',
-              'create_date',
-              'update_user',
-              'update_date',
-              'revision_count'
+              'survey_sample_period_id'
             ],
             properties: {
               survey_observation_id: {
@@ -124,39 +117,9 @@ GET.apiDoc = {
               observation_time: {
                 type: 'string'
               },
-              survey_sample_site_id: {
-                type: 'integer',
-                nullable: true
-              },
-              method_technique_id: {
-                type: 'integer',
-                nullable: true
-              },
               survey_sample_period_id: {
                 type: 'integer',
                 nullable: true
-              },
-              create_date: {
-                type: 'string',
-                description: 'ISO 8601 date string'
-              },
-              create_user: {
-                type: 'integer',
-                minimum: 1
-              },
-              update_date: {
-                type: 'string',
-                description: 'ISO 8601 date string',
-                nullable: true
-              },
-              update_user: {
-                type: 'integer',
-                minimum: 1,
-                nullable: true
-              },
-              revision_count: {
-                type: 'integer',
-                minimum: 0
               }
             }
           }

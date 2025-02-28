@@ -1,25 +1,8 @@
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
+import { QuantitativeUnitType } from '../database-units/quantitative_unit';
 import { getKnex } from '../database/db';
 import { BaseRepository } from './base-repository';
-
-// Environment unit type definition.
-export const EnvironmentUnit = z.enum([
-  // Should be kept in sync with the database table `environment_unit`
-  'millimeter',
-  'centimeter',
-  'meter',
-  'milligram',
-  'gram',
-  'kilogram',
-  'percent',
-  'celsius',
-  'ppt',
-  'SCF',
-  'degrees',
-  'pH'
-]);
-export type EnvironmentUnit = z.infer<typeof EnvironmentUnit>;
 
 // Qualitative environment option type definition.
 const QualitativeEnvironmentOption = z.object({
@@ -46,7 +29,7 @@ const QuantitativeEnvironmentTypeDefinition = z.object({
   description: z.string().nullable(),
   min: z.number().nullable(),
   max: z.number().nullable(),
-  unit: EnvironmentUnit.nullable()
+  unit: QuantitativeUnitType.nullable()
 });
 export type QuantitativeEnvironmentTypeDefinition = z.infer<typeof QuantitativeEnvironmentTypeDefinition>;
 

@@ -8,7 +8,7 @@ import Paper from '@mui/material/Paper';
 import Select from '@mui/material/Select';
 import Typography from '@mui/material/Typography';
 import { PROJECT_ROLE_ICONS } from 'constants/roles';
-import { ICode } from 'interfaces/useCodesApi.interface';
+import { ICodeWithDescription } from 'interfaces/useCodesApi.interface';
 import { IGetProjectParticipant } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyParticipant } from 'interfaces/useSurveyApi.interface';
 import { ISystemUser } from 'interfaces/useUserApi.interface';
@@ -18,11 +18,12 @@ interface IUserRoleSelectorProps {
   index: number;
   user: ISystemUser | IGetProjectParticipant | IGetSurveyParticipant;
   selectedRole: string;
-  roles: ICode[];
+  roles: ICodeWithDescription[];
   error: JSX.Element | undefined;
   handleAdd: (role: string, index: number) => void;
   handleRemove: (id: number) => void;
   label: string;
+  description?: string;
 }
 
 const UserRoleSelector: React.FC<IUserRoleSelectorProps> = (props) => {
@@ -79,14 +80,26 @@ const UserRoleSelector: React.FC<IUserRoleSelectorProps> = (props) => {
                 );
               }}>
               {roles.map((item) => (
-                <MenuItem key={item.id} value={item.name}>
-                  {item.name}
-                  {PROJECT_ROLE_ICONS[item.name] && (
-                    <>
-                      &nbsp;
-                      <Icon path={PROJECT_ROLE_ICONS[item.name] ?? ''} size={0.75} color={grey[600]} />
-                    </>
-                  )}
+                <MenuItem
+                  key={item.id}
+                  value={item.name}
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'flex-start'
+                  }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+                    {item.name}
+                    {PROJECT_ROLE_ICONS[item.name] && (
+                      <>
+                        &nbsp;
+                        <Icon path={PROJECT_ROLE_ICONS[item.name] ?? ''} size={0.75} color={grey[600]} />
+                      </>
+                    )}
+                  </Box>
+                  <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5 }}>
+                    {item.description}
+                  </Typography>
                 </MenuItem>
               ))}
             </Select>
