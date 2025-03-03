@@ -15,7 +15,7 @@ import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useAnimalPageContext, useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
-import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
+import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { ICreateEditAnimalRequest } from 'interfaces/useCritterApi.interface';
 import { useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
@@ -46,7 +46,7 @@ export const CreateAnimalPage = () => {
   const dialogContext = useDialogContext();
   const animalPageContext = useAnimalPageContext();
 
-  const { locationChangeInterceptor } = useUnsavedChangesDialog();
+  const { locationChangeInterceptor, skipUnsavedChangesDialog } = useUnsavedChangesDialog();
 
   const [isSaving, setIsSaving] = useState(false);
 
@@ -124,7 +124,8 @@ export const CreateAnimalPage = () => {
       // Refresh the context, so the next page loads with the latest data
       surveyContext.critterDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
 
-      history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals`, SKIP_CONFIRMATION_DIALOG);
+      skipUnsavedChangesDialog();
+      history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals`);
     } catch (error) {
       const apiError = error as APIError;
       showCreateErrorDialog({

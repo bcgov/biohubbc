@@ -12,7 +12,7 @@ import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
-import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
+import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { ICreateAnimalDeployment } from 'interfaces/useTelemetryApi.interface';
 import { useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
@@ -31,7 +31,7 @@ export const EditDeploymentPage = () => {
   const projectContext = useProjectContext();
   const surveyContext = useSurveyContext();
 
-  const { locationChangeInterceptor } = useUnsavedChangesDialog();
+  const { locationChangeInterceptor, skipUnsavedChangesDialog } = useUnsavedChangesDialog();
 
   const urlParams: Record<string, string | number | undefined> = useParams();
   const deploymentId: number | undefined = Number(urlParams['deployment_id']);
@@ -96,10 +96,8 @@ export const EditDeploymentPage = () => {
       );
 
       // edit complete, navigate back to telemetry page
-      history.push(
-        `/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry/manage`,
-        SKIP_CONFIRMATION_DIALOG
-      );
+      skipUnsavedChangesDialog();
+      history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry/manage`);
     } catch (error) {
       dialogContext.setErrorDialog({
         dialogTitle: EditAnimalDeploymentI18N.createErrorTitle,
