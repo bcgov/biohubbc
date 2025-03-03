@@ -29,3 +29,62 @@ export const SurveyHabitatFeatureWithTaxons = SurveyHabitatFeatureRecord.extend(
   survey_habitat_feature_taxons: z.array(SurveyHabitatFeatureTaxonRecord)
 });
 export type SurveyHabitatFeatureWithTaxons = z.infer<typeof SurveyHabitatFeatureWithTaxons>;
+
+export type FindSurveyHabitatFeatureAdvancedFilters = {
+  /**
+   * Filter results by keyword.
+   *
+   * @type {string}
+   */
+  keyword?: string;
+  /**
+   * Filter results by ITIS TSNs.
+   *
+   * @type {number[]}
+   */
+  habitat_feature_type_ids?: number[];
+  /**
+   * Filter results by ITIS TSNs.
+   *
+   * @type {number[]}
+   */
+  itis_tsns?: number[];
+  /**
+   * Filter results by start date.
+   *
+   * @type {string}
+   */
+  start_date?: string;
+  /**
+   * Filter results by end date.
+   *
+   * @type {string}
+   */
+  end_date?: string;
+  /**
+   * Filter results by start time.
+   *
+   * @type {string}
+   */
+  start_time?: string;
+  /**
+   * Filter results by end time.
+   *
+   * @type {string}
+   */
+  end_time?: string;
+  /**
+   * Filter results by minimum count.
+   *
+   * @type {number}
+   */
+  min_count?: number;
+  /**
+   * Filter results by system user id.
+   *
+   * Note: This is not the id of the user making the request.
+   *
+   * @type {number}
+   */
+  system_user_id?: number;
+};

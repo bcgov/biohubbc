@@ -1,9 +1,12 @@
 import { AxiosInstance } from 'axios';
 import {
   CreateSurveyHabitatFeature,
+  FindSurveyHabitatFeatures,
   getSurveyHabitatFeaturesWithSupplementaryData,
+  SurveyHabitatFeaturesAdvancedFilters,
   UpdateSurveyHabitatFeature
 } from 'interfaces/useSurveyHabitatFeature.interface';
+import { ApiPaginationRequestOptions } from 'types/misc';
 
 /**
  * Returns a set of supported api methods for working with survey habitat feature records.
@@ -58,10 +61,44 @@ const useSurveyHabitatFeature = (axios: AxiosInstance) => {
    *
    * @param {number} projectId
    * @param {number} surveyId
+   * @param {ApiPaginationRequestOptions} [pagination]
    * @return {*}  {Promise<void>}
    */
-  const getSurveyHabitatFeaturesWithSupplementaryData = async (projectId: number, surveyId: number): Promise<void> => {
-    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/habitat-features`);
+  const getSurveyHabitatFeaturesWithSupplementaryData = async (
+    projectId: number,
+    surveyId: number,
+    pagination?: ApiPaginationRequestOptions
+  ): Promise<void> => {
+    const params = {
+      ...pagination
+    };
+
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/habitat-features`, { params });
+
+    return data;
+  };
+
+  /**
+   * Find survey habitat feature records.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {ApiPaginationRequestOptions} [pagination]
+   * @param {SurveyHabitatFeaturesAdvancedFilters} [filterFieldData]
+   * @return {*}  {Promise<FindSurveyHabitatFeatures>}
+   */
+  const findSurveyHabitatFeatures = async (
+    projectId: number,
+    surveyId: number,
+    pagination?: ApiPaginationRequestOptions,
+    filterFieldData?: SurveyHabitatFeaturesAdvancedFilters
+  ): Promise<FindSurveyHabitatFeatures> => {
+    const params = {
+      ...pagination,
+      ...filterFieldData
+    };
+
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/habitat-features`, { params });
 
     return data;
   };
@@ -110,6 +147,7 @@ const useSurveyHabitatFeature = (axios: AxiosInstance) => {
     createSurveyHabitatFeatures,
     updateSurveyHabitatFeature,
     getSurveyHabitatFeaturesWithSupplementaryData,
+    findSurveyHabitatFeatures,
     deleteSurveyHabitatFeature,
     deleteSurveyHabitatFeatures
   };

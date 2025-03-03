@@ -4,10 +4,12 @@ import { ApiExecuteSQLError } from '../../errors/api-error';
 import { ApiPaginationOptions } from '../../zod-schema/pagination';
 import { BaseRepository } from '../base-repository';
 import {
+  FindSurveyHabitatFeatureAdvancedFilters,
   InsertSurveyHabitatFeature,
   SurveyHabitatFeatureCount,
   SurveyHabitatFeatureWithTaxons
 } from './survey-habitat-feature-repository.interface';
+import { makeFindSurveyHabitatFeaturesQuery } from './utils';
 
 /**
  * Repository class for working with survey habitat feature records.
@@ -44,6 +46,42 @@ export class SurveyHabitatFeatureRepository extends BaseRepository {
       throw new ApiExecuteSQLError('Failed to insert survey habitat feature records', [
         'SurveyHabitatFeatureRepository->insertSurveyHabitatFeatures',
         `rowCount was ${response.rowCount}, expected rowCount = ${habitatFeatures.length}`
+      ]);
+    }
+  }
+
+  /**
+   * Update an existing survey habitat feature record, for a survey.
+   *
+   * @param {number} surveyId
+   * @param {number} surveyHabitatFeatureId
+   * @param {InsertSurveyHabitatFeature} habitatFeature
+   * @return {*}  {Promise<void>}
+   * @memberof SurveyHabitatFeatureRepository
+   */
+  async updateSurveyHabitatFeature(
+    surveyId: number,
+    surveyHabitatFeatureId: number,
+    habitatFeature: InsertSurveyHabitatFeature
+  ): Promise<void> {
+    const knex = getKnex();
+
+    const query = knex.queryBuilder();
+
+    query
+      .update({
+        ...habitatFeature
+      })
+      .from('survey_habitat_feature')
+      .where('survey_habitat_feature_id', surveyHabitatFeatureId)
+      .andWhere('survey_id', surveyId);
+
+    const response = await this.connection.knex(query);
+
+    if (response.rowCount !== 1) {
+      throw new ApiExecuteSQLError('Failed to update survey habitat feature', [
+        'SurveyHabitatFeatureRepository->updateSurveyHabitatFeature',
+        `rowCount was ${response.rowCount}, expected rowCount = 1`
       ]);
     }
   }
@@ -193,39 +231,69 @@ export class SurveyHabitatFeatureRepository extends BaseRepository {
   }
 
   /**
-   * Update an existing survey habitat feature record, for a survey.
+   * Get survey habitat feature records for the current user, based on their permissions and filter criteria.
    *
-   * @param {number} surveyId
-   * @param {number} surveyHabitatFeatureId
-   * @param {InsertSurveyHabitatFeature} habitatFeature
-   * @return {*}  {Promise<void>}
+   * @param {boolean} isUserAdmin
+   * @param {number} systemUserId
+   * @param {FindSurveyHabitatFeatureAdvancedFilters} filterFields
+   * @param {ApiPaginationOptions} [pagination]
+   * @return {*}  {Promise<SurveyHabitatFeatureWithTaxons[]>}
    * @memberof SurveyHabitatFeatureRepository
    */
-  async updateSurveyHabitatFeature(
-    surveyId: number,
-    surveyHabitatFeatureId: number,
-    habitatFeature: InsertSurveyHabitatFeature
-  ): Promise<void> {
+  async findSurveyHabitatFeatures(
+    isUserAdmin: boolean,
+    systemUserId: number,
+    filterFields: FindSurveyHabitatFeatureAdvancedFilters,
+    pagination?: ApiPaginationOptions
+  ): Promise<SurveyHabitatFeatureWithTaxons[]> {
+    const query = makeFindSurveyHabitatFeaturesQuery(isUserAdmin, systemUserId, filterFields);
+
+    if (pagination) {
+      query.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
+
+      if (pagination.sort && pagination.order) {
+        query.orderBy(pagination.sort, pagination.order);
+      }
+    }
+
+    const response = await this.connection.knex(query, SurveyHabitatFeatureWithTaxons);
+
+    return response.rows;
+  }
+
+  /**
+   * Get the total count of survey habitat feature records for the current user, based on their permissions and filter
+   * criteria.
+   *
+   * @param {boolean} isUserAdmin
+   * @param {number} systemUserId
+   * @param {FindSurveyHabitatFeatureAdvancedFilters} filterFields
+   * @return {*}  {Promise<number>}
+   * @memberof SurveyHabitatFeatureRepository
+   */
+  async findSurveyHabitatFeaturesCount(
+    isUserAdmin: boolean,
+    systemUserId: number,
+    filterFields: FindSurveyHabitatFeatureAdvancedFilters
+  ): Promise<number> {
+    const findSurveyHabitatFeaturesQuery = makeFindSurveyHabitatFeaturesQuery(isUserAdmin, systemUserId, filterFields);
+
     const knex = getKnex();
 
-    const query = knex.queryBuilder();
+    const queryBuilder = knex
+      .from(findSurveyHabitatFeaturesQuery.as('fshfq'))
+      .select(knex.raw('count(*)::integer as count'));
 
-    query
-      .update({
-        ...habitatFeature
-      })
-      .from('survey_habitat_feature')
-      .where('survey_habitat_feature_id', surveyHabitatFeatureId)
-      .andWhere('survey_id', surveyId);
+    const response = await this.connection.knex(queryBuilder, SurveyHabitatFeatureCount);
 
-    const response = await this.connection.knex(query);
-
-    if (response.rowCount !== 1) {
-      throw new ApiExecuteSQLError('Failed to update survey habitat feature', [
-        'SurveyHabitatFeatureRepository->updateSurveyHabitatFeature',
-        `rowCount was ${response.rowCount}, expected rowCount = 1`
+    if (!response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to get survey habitat features count', [
+        'SurveyHabitatFeatureRepository->findSurveyHabitatFeaturesCount',
+        'rowCount was null or undefined, expected rows != null'
       ]);
     }
+
+    return response.rows[0].count;
   }
 
   /**

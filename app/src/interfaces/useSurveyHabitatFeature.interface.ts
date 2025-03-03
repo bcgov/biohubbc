@@ -75,3 +75,20 @@ export type getSurveyHabitatFeaturesWithSupplementaryData = {
   supplementaryData: SurveyHabitatFeatureSupplementaryData;
   pagination: ApiPaginationResponseParams;
 };
+
+export type FindSurveyHabitatFeatures = {
+  surveyHabitatFeatures: SurveyHabitatFeature[];
+  pagination: ApiPaginationResponseParams;
+};
+
+export type SurveyHabitatFeaturesAdvancedFilters = {
+  keyword?: string;
+  habitat_feature_type_ids?: number[];
+  itis_tsns?: number[];
+  start_date?: string;
+  end_date?: string;
+  start_time?: string;
+  end_time?: string;
+  min_count?: string;
+  system_user_id?: number;
+};

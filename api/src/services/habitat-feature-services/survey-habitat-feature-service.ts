@@ -2,6 +2,7 @@ import { IDBConnection } from '../../database/db';
 import { FindHabitatFeatureDefinitions } from '../../repositories/habitat-feature-repository/habitat-feature-repository.interface';
 import { SurveyHabitatFeatureRepository } from '../../repositories/habitat-feature-repository/survey-habitat-feature-repository';
 import {
+  FindSurveyHabitatFeatureAdvancedFilters,
   InsertSurveyHabitatFeature,
   SurveyHabitatFeaturesWithSupplementaryData,
   SurveyHabitatFeatureWithTaxons,
@@ -28,6 +29,23 @@ export class SurveyHabitatFeatureService extends DBService {
 
   async insertSurveyHabitatFeatures(surveyId: number, habitatFeatures: InsertSurveyHabitatFeature[]): Promise<void> {
     this.surveyHabitatFeatureRepository.insertSurveyHabitatFeatures(surveyId, habitatFeatures);
+  }
+
+  /**
+   * Update an existing survey habitat feature record, for a survey.
+   *
+   * @param {number} surveyId
+   * @param {number} surveyHabitatFeatureId
+   * @param {UpdateSurveyHabitatFeature} habitatFeature
+   * @return {*}  {Promise<void>}
+   * @memberof SurveyHabitatFeatureService
+   */
+  async updateSurveyHabitatFeature(
+    surveyId: number,
+    surveyHabitatFeatureId: number,
+    habitatFeature: UpdateSurveyHabitatFeature
+  ): Promise<void> {
+    this.surveyHabitatFeatureRepository.updateSurveyHabitatFeature(surveyId, surveyHabitatFeatureId, habitatFeature);
   }
 
   /**
@@ -77,14 +95,14 @@ export class SurveyHabitatFeatureService extends DBService {
    * @param {number} surveyId
    * @param {ApiPaginationOptions} [pagination]
    * @return {*}  {Promise<SurveyHabitatFeaturesWithSupplementaryData>}
-   * @memberof ObservationService
+   * @memberof SurveyHabitatFeatureService
    */
   async getSurveyHabitatFeaturesWithSupplementaryData(
     surveyId: number,
     pagination?: ApiPaginationOptions
   ): Promise<SurveyHabitatFeaturesWithSupplementaryData> {
     const [surveyHabitatFeatures, surveyHabitatFeaturesCount, surveyHabitatFeatureTypeDefinitions] = await Promise.all([
-      // Fetch observations
+      // Fetch survey habitat feature records
       this.getSurveyHabitatFeatures(surveyId, pagination),
       // Fetch pagination count data
       this.getSurveyHabitatFeaturesCount(surveyId),
@@ -117,20 +135,45 @@ export class SurveyHabitatFeatureService extends DBService {
   }
 
   /**
-   * Update an existing survey habitat feature record, for a survey.
+   * Get survey habitat features for the current user, based on their permissions and filter criteria.
    *
-   * @param {number} surveyId
-   * @param {number} surveyHabitatFeatureId
-   * @param {UpdateSurveyHabitatFeature} habitatFeature
-   * @return {*}  {Promise<void>}
+   * @param {boolean} isUserAdmin
+   * @param {number} systemUserId
+   * @param {FindSurveyHabitatFeatureAdvancedFilters} filterFields
+   * @param {ApiPaginationOptions} [pagination]
+   * @return {*}  {Promise<SurveyHabitatFeatureWithTaxons[]>}
    * @memberof SurveyHabitatFeatureService
    */
-  async updateSurveyHabitatFeature(
-    surveyId: number,
-    surveyHabitatFeatureId: number,
-    habitatFeature: UpdateSurveyHabitatFeature
-  ): Promise<void> {
-    this.surveyHabitatFeatureRepository.updateSurveyHabitatFeature(surveyId, surveyHabitatFeatureId, habitatFeature);
+  async findSurveyHabitatFeatures(
+    isUserAdmin: boolean,
+    systemUserId: number,
+    filterFields: FindSurveyHabitatFeatureAdvancedFilters,
+    pagination?: ApiPaginationOptions
+  ): Promise<SurveyHabitatFeatureWithTaxons[]> {
+    return this.surveyHabitatFeatureRepository.findSurveyHabitatFeatures(
+      isUserAdmin,
+      systemUserId,
+      filterFields,
+      pagination
+    );
+  }
+
+  /**
+   * Get the total count of survey habitat features for the current user, based on their permissions and filter
+   * criteria.
+   *
+   * @param {boolean} isUserAdmin
+   * @param {number} systemUserId
+   * @param {FindSurveyHabitatFeatureAdvancedFilters} filterFields
+   * @return {*}  {Promise<number>}
+   * @memberof SurveyHabitatFeatureService
+   */
+  async findSurveyHabitatFeaturesCount(
+    isUserAdmin: boolean,
+    systemUserId: number,
+    filterFields: FindSurveyHabitatFeatureAdvancedFilters
+  ): Promise<number> {
+    return this.surveyHabitatFeatureRepository.findSurveyHabitatFeaturesCount(isUserAdmin, systemUserId, filterFields);
   }
 
   /**
