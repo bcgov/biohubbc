@@ -23,6 +23,7 @@ import useSamplingSiteApi from './api/useSamplingSiteApi';
 import useSpatialApi from './api/useSpatialApi';
 import useStandardsApi from './api/useStandardsApi';
 import useSurveyApi from './api/useSurveyApi';
+import useSurveyHabitatFeature from './api/useSurveyHabitatFeature';
 import useTaxonomyApi from './api/useTaxonomyApi';
 import useTechniqueApi from './api/useTechniqueApi';
 import useTelemetryApi from './api/useTelemetryApi';
@@ -87,6 +88,8 @@ export const useBiohubApi = () => {
 
   const alert = useAlertApi(apiAxios);
 
+  const habitatFeatureApi = useSurveyHabitatFeature(apiAxios);
+
   return useMemo(
     () => ({
       analytics,
@@ -113,7 +116,8 @@ export const useBiohubApi = () => {
       telemetryDevice,
       markdown,
       alert,
-      samplingPeriod
+      samplingPeriod,
+      habitatFeatureApi
     }),
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
