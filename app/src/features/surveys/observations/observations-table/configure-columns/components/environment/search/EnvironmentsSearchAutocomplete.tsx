@@ -2,6 +2,7 @@ import { mdiMagnify } from '@mdi/js';
 import Icon from '@mdi/react';
 import Autocomplete from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
 import ListItem from '@mui/material/ListItem';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
@@ -71,7 +72,16 @@ export const EnvironmentsSearchAutocomplete = (props: IEnvironmentsSearchAutocom
 
   const loadAllOptions = async () => {
     const response = await getOptions('');
-    setOptions([...response.qualitative_environments, ...response.quantitative_environments]);
+    const allOptions = [...response.qualitative_environments, ...response.quantitative_environments];
+
+    const sortedOptions = allOptions.sort((a, b) => a.name.localeCompare(b.name));
+    setOptions(sortedOptions);
+  };
+
+  // This function is a repeat of a function in another file for pluralising. It should be edited to an imported function. GridColumnDefinitionsUtils.tsx when PR goes through
+  const getFormattedUnit = (unit: string) => {
+    const unitSuffix = unit.endsWith('er') ? 's' : '';
+    return `${unit}${unitSuffix}`;
   };
 
   return (
@@ -124,7 +134,7 @@ export const EnvironmentsSearchAutocomplete = (props: IEnvironmentsSearchAutocom
 
         if (reason === 'clear') {
           setInputValue('');
-          return; 
+          return;
         }
 
         setInputValue(value);
@@ -164,8 +174,8 @@ export const EnvironmentsSearchAutocomplete = (props: IEnvironmentsSearchAutocom
                 : renderOption.environment_quantitative_id
             }`}
             data-testid="environments-autocomplete-option">
-            <Stack gap={0.75} mt={-0.25}>
-              <Box>
+            <Stack direction="row" alignItems="center" justifyContent="space-between" width="100%" gap={2}>
+              <Box flex={1}>
                 <Typography component="div" variant="body1" fontWeight={700}>
                   {renderOption.name}
                 </Typography>
@@ -183,6 +193,20 @@ export const EnvironmentsSearchAutocomplete = (props: IEnvironmentsSearchAutocom
                   {renderOption.description}
                 </Typography>
               </Box>
+              {'environment_quantitative_id' in renderOption && renderOption.unit && (
+                <Chip
+                  label={getFormattedUnit(renderOption.unit)}
+                  size="small"
+                  sx={{
+                    bgcolor: 'grey.200',
+                    color: 'text.secondary',
+                    height: '24px',
+                    borderRadius: '12px',
+                    fontWeight: 500
+                    // This font is not bold enough, but 600 value jumps to super bold and I gave up. Doesn't look right imo
+                  }}
+                />
+              )}
             </Stack>
           </ListItem>
         );
