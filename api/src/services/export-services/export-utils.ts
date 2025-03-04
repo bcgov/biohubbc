@@ -90,6 +90,7 @@ export function getCsvTransformStream(transformFunction: TransformFunction, head
     transform(chunk, _encoding, callback) {
       if (header && !headerStreamed) {
         const envHeaders = [];
+        // Using an indexed for loop structure as it is the fastest
         for (let i = 0; i < chunk.env_data.length; i++) {
           const envItem = chunk.env_data[i];
           envHeaders.push(envItem.env_header);
