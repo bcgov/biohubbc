@@ -96,21 +96,35 @@ export const getMeasurementColumnDefinitions = (
   return colDefs;
 };
 
+const getQuantitativeEnvironmentHeaderName = (name: string, unit?: string): string => {
+  if (!unit) {
+    return name;
+  }
+
+  const unitSuffix = unit.endsWith('er') ? 's' : '';
+  return `${name} (${unit}${unitSuffix})`;
+};
+
+const formatQuantitativeEnvironment = (environment: EnvironmentQuantitativeTypeDefinition) => {
+  return {
+    ...environment,
+    name: getQuantitativeEnvironmentHeaderName(environment.name, environment.unit ?? undefined),
+    description: environment.description
+  };
+};
+
 export const getEnvironmentColumnDefinitions = (
   environments: EnvironmentType,
   hasError: (params: GridCellParams) => boolean
 ): GridColDef<IObservationTableRow>[] => {
   const colDefs: GridColDef<IObservationTableRow>[] = [];
+
   for (const environment of environments.quantitative_environments) {
+    const formattedEnvironment = formatQuantitativeEnvironment(environment);
+
     colDefs.push(
       ObservationQuantitativeEnvironmentColDef({
-        environment: {
-          ...environment,
-          name: environment.unit
-            ? `${environment.name} (${environment.unit}${environment.unit.endsWith('er') ? 's' : ''})`
-            : environment.name,
-          description: environment.description
-        },
+        environment: formattedEnvironment,
         hasError: hasError
       })
     );
