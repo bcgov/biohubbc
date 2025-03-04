@@ -21,7 +21,7 @@ import {
   useTaxonomyContext
 } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
-import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
+import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { ICreateEditAnimalRequest } from 'interfaces/useCritterApi.interface';
 import { useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
@@ -45,7 +45,7 @@ export const EditAnimalPage = () => {
   const urlParams: Record<string, string | number | undefined> = useParams();
   const surveyCritterId: number | undefined = Number(urlParams['critter_id']);
 
-  const { locationChangeInterceptor } = useUnsavedChangesDialog();
+  const { locationChangeInterceptor, skipUnsavedChangesDialog } = useUnsavedChangesDialog();
 
   const [isSaving, setIsSaving] = useState(false);
 
@@ -152,7 +152,8 @@ export const EditAnimalPage = () => {
       surveyContext.critterDataLoader.refresh(projectId, surveyId);
       animalPageContext.critterDataLoader.refresh(projectId, surveyId, critter.critter_id);
 
-      history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals`, SKIP_CONFIRMATION_DIALOG);
+      skipUnsavedChangesDialog();
+      history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals`);
     } catch (error) {
       const apiError = error as APIError;
       showCreateErrorDialog({

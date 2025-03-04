@@ -6,7 +6,7 @@ import { Formik, FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
-import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
+import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { ICreateSamplingSiteRequest, ISurveySampleSite } from 'interfaces/useSamplingSiteApi.interface';
 import { IGetSurveyBlock, IGetSurveyStratum } from 'interfaces/useSurveyApi.interface';
 import { useRef, useState } from 'react';
@@ -43,7 +43,7 @@ export const CreateSamplingSitePage = () => {
   const formikRef = useRef<FormikProps<ICreateSampleSiteFormData>>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { locationChangeInterceptor } = useUnsavedChangesDialog();
+  const { locationChangeInterceptor, skipUnsavedChangesDialog } = useUnsavedChangesDialog();
 
   if (!surveyContext.surveyDataLoader.data || !projectContext.projectDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
@@ -77,10 +77,8 @@ export const CreateSamplingSitePage = () => {
       await biohubApi.samplingSite.createSamplingSites(surveyContext.projectId, surveyContext.surveyId, requestData);
 
       // create complete, navigate back to observations page
-      history.push(
-        `/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling`,
-        SKIP_CONFIRMATION_DIALOG
-      );
+      skipUnsavedChangesDialog();
+      history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling`);
     } catch (error) {
       showCreateErrorDialog({
         dialogTitle: CreateSamplingSiteI18N.createErrorTitle,

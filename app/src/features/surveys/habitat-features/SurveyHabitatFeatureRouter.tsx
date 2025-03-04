@@ -27,6 +27,12 @@ export const HabitatFeatureRouter = () => {
         to="/admin/projects/:id/surveys/:survey_id/sampling/:survey_sample_site_id/edit"
       />
 
+      <Redirect
+        exact
+        from="/admin/projects/:id/surveys/:survey_id/habitat-features/sampling"
+        to="/admin/projects/:id/surveys/:survey_id/sampling"
+      />
+
       <RouteWithTitle
         exact
         path="/admin/projects/:id/surveys/:survey_id/habitat-features/details"
