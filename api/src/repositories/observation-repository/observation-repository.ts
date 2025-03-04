@@ -1,5 +1,5 @@
 import { Knex } from 'knex';
-import SQL from 'sql-template-strings';
+import SQL, { SQLStatement } from 'sql-template-strings';
 import { z } from 'zod';
 import { SurveyObservationModel, SurveyObservationRecord } from '../../database-models/survey_observation';
 import { getKnex } from '../../database/db';
@@ -696,7 +696,7 @@ export class ObservationRepository extends BaseRepository {
    * @returns {Knex.QueryBuilder}
    * @memberof ObservationRepository
    */
-  static buildObservationQuery(knex: Knex, surveyId: number): Knex.QueryBuilder {
+  static buildObservationQueryW(knex: Knex, surveyId: number): Knex.QueryBuilder {
     return knex
       .queryBuilder()
       .select([
@@ -715,39 +715,47 @@ export class ObservationRepository extends BaseRepository {
         'survey_observation.longitude',
         'observation_subcount.comment',
         knex.raw(
-          'observation_subcount_qualitative_measurement.critterbase_taxon_measurement_id as qualitative_critter_taxon_measurement_id'
+          'observation_subcount_qualitative_measurement.critterbase_taxon_measurement_id as critter_taxon_qualitative_measurement_id'
         ),
         knex.raw(
-          'observation_subcount_qualitative_measurement.critterbase_measurement_qualitative_option_id as qualitative_critter_taxon_measurement_option_id'
+          'observation_subcount_qualitative_measurement.critterbase_measurement_qualitative_option_id as critter_taxon_qualitative_measurement_option_id'
         ),
         knex.raw(
-          'observation_subcount_quantitative_measurement.critterbase_taxon_measurement_id as quantitative_critter_taxon_measurement_id'
+          'observation_subcount_quantitative_measurement.critterbase_taxon_measurement_id as critter_taxon_quantitative_measurement_id'
         ),
+        // 'observation_subcount_qualitative_environment.environment_qualitative_id',
+        // 'observation_subcount_qualitative_environment.environment_qualitative_option_id',
+        // 'observation_subcount_quantitative_environment.environment_quantitative_id'
+        knex.raw('environment_qualitative.name AS environment_qualitative_header'),
+        knex.raw('environment_qualitative_option.name AS environment_qualitative_option_value'),
 
-        knex.raw(
-          'observation_subcount_qualitative_environment.environment_qualitative_id as qualitative_environment_id'
-        ),
-        knex.raw(
-          'observation_subcount_qualitative_environment.environment_qualitative_option_id as qualitative_environment_option_id'
-        ),
-        knex.raw(
-          'observation_subcount_quantitative_environment.environment_quantitative_id as quantitative_environment_id'
-        )
+        knex.raw('environment_quantitative.name AS environment_quantitative_header'),
+        knex.raw('observation_subcount_quantitative_environment.value AS environment_quantitative_value')
       ])
       .from('survey_observation')
-      .leftJoin(
+      .join(
         'observation_subcount',
         'survey_observation.survey_observation_id',
         '=',
         'observation_subcount.survey_observation_id'
       )
-      .leftJoin('survey_sample_site', 'survey_observation.survey_id', '=', 'survey_sample_site.survey_id')
-      .leftJoin('method_technique', 'survey_observation.survey_id', '=', 'method_technique.survey_id')
       .leftJoin(
         'survey_sample_period',
         'survey_observation.survey_sample_period_id',
         '=',
         'survey_sample_period.survey_sample_period_id'
+      )
+      .leftJoin(
+        'survey_sample_site',
+        'survey_sample_period.survey_sample_site_id',
+        '=',
+        'survey_sample_site.survey_sample_site_id'
+      )
+      .leftJoin(
+        'method_technique',
+        'survey_sample_period.method_technique_id',
+        '=',
+        'method_technique.method_technique_id'
       )
       .leftJoin(
         'observation_subcount_sign',
@@ -779,6 +787,171 @@ export class ObservationRepository extends BaseRepository {
         '=',
         'observation_subcount_quantitative_environment.observation_subcount_id'
       )
+      .leftJoin(
+        'environment_qualitative',
+        'observation_subcount_qualitative_environment.environment_qualitative_id',
+        '=',
+        'environment_qualitative.environment_qualitative_id'
+      )
+      .leftJoin(
+        'environment_qualitative_option',
+        'observation_subcount_qualitative_environment.environment_qualitative_option_id',
+        '=',
+        'environment_qualitative_option.environment_qualitative_option_id'
+      )
+      .leftJoin(
+        'environment_quantitative',
+        'observation_subcount_quantitative_environment.environment_quantitative_id',
+        '=',
+        'environment_quantitative.environment_quantitative_id'
+      )
+
       .where('survey_observation.survey_id', surveyId);
+  }
+
+  static buildObservationQuery(surveyId: number): SQLStatement {
+    return SQL`
+      WITH aggregated_data AS (
+    SELECT 
+        survey_observation.survey_observation_id AS observation_id,
+        observation_subcount.observation_subcount_id as subcount_id,
+        survey_observation.itis_tsn as tsn,
+        survey_observation.itis_scientific_name as species,
+        survey_sample_site.name as site,
+        method_technique.name as technique,
+        survey_sample_period.start_date,
+        survey_sample_period.end_date,
+        observation_subcount_sign.name as sign,
+        survey_observation.count,
+        survey_observation.observation_date,
+        survey_observation.observation_time,
+        survey_observation.latitude,
+        survey_observation.longitude,
+        observation_subcount.comment,
+        jsonb_agg(
+            jsonb_build_object(
+                'env_header', environment_qualitative.name, 
+                'env_value', environment_qualitative_option.name
+            )
+        ) FILTER (
+            WHERE 
+                NOT (environment_qualitative.name IS NULL AND environment_qualitative_option.name IS NULL)
+        ) AS env_qual_data,
+        
+        jsonb_agg(
+            jsonb_build_object(
+                'env_header', environment_quantitative.name, 
+                'env_value', observation_subcount_quantitative_environment.value
+            )
+        ) FILTER (
+            WHERE 
+                NOT (environment_quantitative.name IS NULL AND observation_subcount_quantitative_environment.value IS NULL)
+        ) AS env_quan_data
+        
+        
+    FROM "survey_observation"
+    INNER JOIN "observation_subcount" 
+        ON "survey_observation"."survey_observation_id" = "observation_subcount"."survey_observation_id"
+      
+    LEFT JOIN "survey_sample_period" ON "survey_observation"."survey_sample_period_id" = "survey_sample_period"."survey_sample_period_id"
+    LEFT JOIN "survey_sample_site" ON "survey_sample_period"."survey_sample_site_id" = "survey_sample_site"."survey_sample_site_id"
+    LEFT JOIN "method_technique" ON "survey_sample_period"."method_technique_id" = "method_technique"."method_technique_id"
+    LEFT JOIN "observation_subcount_sign" ON "observation_subcount"."observation_subcount_sign_id" = "observation_subcount_sign"."observation_subcount_sign_id"
+   
+    LEFT JOIN "observation_subcount_qualitative_environment" 
+        ON "observation_subcount"."observation_subcount_id" = "observation_subcount_qualitative_environment"."observation_subcount_id"
+    LEFT JOIN "observation_subcount_quantitative_environment" 
+        ON "observation_subcount"."observation_subcount_id" = "observation_subcount_quantitative_environment"."observation_subcount_id"
+    LEFT JOIN "environment_qualitative" 
+        ON "observation_subcount_qualitative_environment"."environment_qualitative_id" = "environment_qualitative"."environment_qualitative_id"
+    LEFT JOIN "environment_qualitative_option" 
+        ON "observation_subcount_qualitative_environment"."environment_qualitative_option_id" = "environment_qualitative_option"."environment_qualitative_option_id"
+    LEFT JOIN "environment_quantitative" 
+        ON "observation_subcount_quantitative_environment"."environment_quantitative_id" = "environment_quantitative"."environment_quantitative_id"
+    
+  
+    WHERE "survey_observation"."survey_id" = ${surveyId}
+    GROUP BY 
+        survey_observation.survey_observation_id, 
+        observation_subcount.observation_subcount_id,
+        survey_observation.itis_tsn,
+        survey_observation.itis_scientific_name,
+        survey_sample_site.name,
+        method_technique.name,
+        survey_sample_period.start_date,
+        survey_sample_period.end_date,
+        observation_subcount_sign.name,
+        survey_observation.count,
+        survey_observation.observation_date,
+        survey_observation.observation_time,
+        survey_observation.latitude,
+        survey_observation.longitude,
+        observation_subcount.comment
+),
+unique_env_headers AS (
+    SELECT DISTINCT
+        environment_qualitative.name AS header_name,
+        'qualitative' AS source
+    FROM environment_qualitative
+    JOIN "observation_subcount_qualitative_environment" 
+        ON environment_qualitative.environment_qualitative_id = "observation_subcount_qualitative_environment".environment_qualitative_id
+    UNION
+    SELECT DISTINCT
+        environment_quantitative.name AS header_name,
+        'quantitative' AS source
+    FROM environment_quantitative
+    JOIN "observation_subcount_quantitative_environment" 
+        ON environment_quantitative.environment_quantitative_id = "observation_subcount_quantitative_environment".environment_quantitative_id
+)
+SELECT 
+    observation_id,
+    subcount_id,
+    tsn,
+    species,
+    site,
+    technique,
+    start_date,
+    end_date,
+    sign,
+    count,
+    observation_date,
+    observation_time,
+    latitude,
+    longitude,
+    comment,
+	 jsonb_agg(
+        jsonb_build_object(
+            'env_value', 
+            COALESCE(
+                -- Look for env_value in env_qual_data (qualitative)
+                (SELECT e->>'env_value' FROM jsonb_array_elements(env_qual_data) AS e WHERE e->>'env_header' = unique_env_headers.header_name LIMIT 1), 
+                -- Look for env_value in env_quan_data (quantitative)
+                (SELECT e->>'env_value' FROM jsonb_array_elements(env_quan_data) AS e WHERE e->>'env_header' = unique_env_headers.header_name LIMIT 1),
+                NULL
+            ),
+            'env_header', unique_env_headers.header_name
+        )
+    ) AS env_data
+FROM aggregated_data
+JOIN unique_env_headers 
+    ON unique_env_headers.header_name IS NOT NULL
+GROUP BY 
+    observation_id,
+    subcount_id,
+    tsn,
+    species,
+    site,
+    technique,
+    start_date,
+    end_date,
+    sign,
+    count,
+    observation_date,
+    observation_time,
+    latitude,
+    longitude,
+    comment
+ORDER BY observation_id;
+    `;
   }
 }

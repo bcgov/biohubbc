@@ -89,8 +89,14 @@ export function getCsvTransformStream(transformFunction: TransformFunction, head
     objectMode: true, // Expects objects
     transform(chunk, _encoding, callback) {
       if (header && !headerStreamed) {
-        // Push the header into stream only once
-        this.push(header + '\r\n');
+        const envHeaders = [];
+        for (let i = 0; i < chunk.env_data.length; i++) {
+          const envItem = chunk.env_data[i];
+          envHeaders.push(envItem.env_header);
+        }
+
+        // Push the headers into stream only once
+        this.push(header + ',' + envHeaders.join(',') + '\r\n');
         headerStreamed = true;
       }
       // the chunk and push it to the next stream

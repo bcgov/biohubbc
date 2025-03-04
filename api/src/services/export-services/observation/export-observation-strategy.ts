@@ -1,4 +1,4 @@
-import { getKnex, IDBConnection } from '../../../database/db';
+import { IDBConnection } from '../../../database/db';
 import { ObservationRepository } from '../../../repositories/observation-repository/observation-repository';
 import { getLogger } from '../../../utils/logger';
 import { DBService } from '../../db-service';
@@ -44,6 +44,7 @@ export class ExportObservationStrategy extends DBService implements ExportStrate
             csvHeader: [
               'Observation ID',
               'Subcount ID',
+              'Tsn',
               'Species',
               'Site',
               'Technique',
@@ -54,11 +55,7 @@ export class ExportObservationStrategy extends DBService implements ExportStrate
               'Time',
               'Latitude',
               'Longitude',
-              'Comment',
-              'All qualitative measurements',
-              'All quantitative measurements',
-              'All qualitative environments',
-              'All quantitative environments'
+              'Comment'
             ].join(','),
             transformFunction: ExportObservationStrategy.observationCsvTransformation
           }
@@ -81,8 +78,7 @@ export class ExportObservationStrategy extends DBService implements ExportStrate
    * @memberof ExportObservationStrategy
    */
   _getSql = () => {
-    const knex = getKnex();
-    return ObservationRepository.buildObservationQuery(knex, this.config.surveyId);
+    return ObservationRepository.buildObservationQuery(this.config.surveyId);
   };
 
   /**
@@ -94,9 +90,16 @@ export class ExportObservationStrategy extends DBService implements ExportStrate
    * @memberof ExportObservationStrategy
    */
   static readonly observationCsvTransformation = (item: Record<string, any>): string => {
+    const envValues = [];
+    for (let i = 0; i < item.env_data.length; i++) {
+      const envItem = item.env_data[i];
+      envValues.push(envItem.env_value);
+    }
+
     return [
       item.observation_id,
       item.subcount_id,
+      item.tsn,
       item.species,
       item.site,
       item.technique,
@@ -108,12 +111,7 @@ export class ExportObservationStrategy extends DBService implements ExportStrate
       item.latitude,
       item.longitude,
       item.comment,
-      item.qualitative_critter_taxon_measurement_id,
-      item.qualitative_critter_taxon_measurement_option_id,
-      item.quantitative_critter_taxon_measurement_id,
-      item.qualitative_environment_id,
-      item.qualitative_environment_option_id,
-      item.quantitative_environment_id
+      ...envValues
     ].join(',');
   };
 }
