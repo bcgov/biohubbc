@@ -23,22 +23,24 @@ export const HabitatFeatureGeneralInformationForm = <
   return (
     <Grid container spacing={3}>
       <Grid item xs={12} display="flex" gap={1}>
-        <AutocompleteField
-          id="habitat_feature_type_id"
-          name="habitat_feature_type_id"
-          label="Habitat feature type"
-          helpText="The type of habitat feature"
-          showValue
-          required
-          loading={codesContext.codesDataLoader.isLoading}
-          options={
-            codesContext.codesDataLoader.data?.habitat_feature_types.map((featureType) => ({
-              value: featureType.id,
-              label: featureType.name,
-              description: featureType.description
-            })) ?? []
-          }
-        />
+        <Grid item xs={8}>
+          <AutocompleteField
+            id="habitat_feature_type_id"
+            name="habitat_feature_type_id"
+            label="Habitat feature"
+            helpText="The type of habitat feature"
+            showValue
+            required
+            loading={codesContext.codesDataLoader.isLoading}
+            options={
+              codesContext.codesDataLoader.data?.habitat_feature_types.map((featureType) => ({
+                value: featureType.id,
+                label: featureType.name,
+                description: featureType.description
+              })) ?? []
+            }
+          />
+        </Grid>
 
         <Grid item xs={4}>
           <CustomTextField name="count" label="Observed count" other={{ type: 'number' }} />

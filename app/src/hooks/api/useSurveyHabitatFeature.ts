@@ -25,7 +25,9 @@ const useSurveyHabitatFeature = (axios: AxiosInstance) => {
     surveyId: number,
     habitatFeatures: CreateSurveyHabitatFeature[]
   ): Promise<void> => {
-    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/habitat-features`, habitatFeatures);
+    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/habitat-features`, {
+      surveyHabitatFeatures: habitatFeatures
+    });
 
     return data;
   };
@@ -47,7 +49,9 @@ const useSurveyHabitatFeature = (axios: AxiosInstance) => {
   ): Promise<void> => {
     const { data } = await axios.put(
       `/api/project/${projectId}/survey/${surveyId}/habitat-features/${surveyHabitatFeatureId}`,
-      habitatFeature
+      {
+        surveyhabitatfeature: habitatFeature
+      }
     );
 
     return data;

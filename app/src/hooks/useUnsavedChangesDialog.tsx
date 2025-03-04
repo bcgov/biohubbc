@@ -39,6 +39,7 @@ export const useUnsavedChangesDialog = () => {
    * @return {*}
    */
   const locationChangeInterceptor = (location: History.Location) => {
+    // Allow the location change if the ref is set to true
     if (skipUnsavedChangesDialogRef.current) {
       skipUnsavedChangesDialogRef.current = false;
       return true;

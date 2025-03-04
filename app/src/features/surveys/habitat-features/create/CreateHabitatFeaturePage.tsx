@@ -8,11 +8,13 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import PageHeader from 'components/layout/PageHeader';
+import { DialogContext } from 'contexts/dialogContext';
 import { FormikProps } from 'formik';
+import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useProjectContext, useSurveyContext } from 'hooks/useContext';
 import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
-import { useRef, useState } from 'react';
+import { useContext, useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 import { CreateHabitatFeatureFormValues, HabitatFeatureFormContainer } from '../components/HabitatFeatureFormContainer';
@@ -26,6 +28,11 @@ const initialHabitatFeatureFormValues: CreateHabitatFeatureFormValues = {
   observed_time: ''
 };
 
+/**
+ * Page for creating a new habitat feature.
+ *
+ * @return {*} {JSX.Element}
+ */
 export const CreateHabitatFeaturePage = (): JSX.Element => {
   const history = useHistory();
   const biohubApi = useBiohubApi();
@@ -33,14 +40,21 @@ export const CreateHabitatFeaturePage = (): JSX.Element => {
   const projectContext = useProjectContext();
   const surveyContext = useSurveyContext();
 
-  const { locationChangeInterceptor } = useUnsavedChangesDialog();
+  const dialogContext = useContext(DialogContext);
+
+  const { locationChangeInterceptor, skipUnsavedChangesDialog } = useUnsavedChangesDialog();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const formikRef = useRef<FormikProps<CreateHabitatFeatureFormValues>>(null);
 
-  const handleSubmit = async (values: CreateHabitatFeatureFormValues) => {
-    console.log({ values });
+  /**
+   * Handle the create habitat feature form submission.
+   *
+   * @param {CreateHabitatFeatureFormValues} values
+   * @returns {*} {Promise<void>}
+   */
+  const handleSubmit = async (values: CreateHabitatFeatureFormValues): Promise<void> => {
     try {
       setIsSubmitting(true);
       await biohubApi.habitatFeature.createSurveyHabitatFeatures(surveyContext.projectId, surveyContext.surveyId, [
@@ -54,9 +68,22 @@ export const CreateHabitatFeaturePage = (): JSX.Element => {
           observed_time: values.observed_time
         }
       ]);
-    } catch (err) {
-      // TODO: Mac: Update with a dialog
-      console.log(err);
+
+      skipUnsavedChangesDialog();
+      history.goBack();
+
+      dialogContext.setSnackbar({
+        open: true,
+        snackbarMessage: 'Successfully created habitat feature'
+      });
+    } catch (error: unknown) {
+      dialogContext.setErrorDialog({
+        open: true,
+        dialogTitle: 'Error creating habitat feature',
+        dialogText: 'An error occurred while creating the habitat feature',
+        dialogError: error instanceof Error ? error.message : undefined,
+        dialogErrorDetails: error instanceof APIError ? error.errors : undefined
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -70,7 +97,7 @@ export const CreateHabitatFeaturePage = (): JSX.Element => {
     <>
       <Prompt when={true} message={locationChangeInterceptor} />
       <PageHeader
-        title="Create New Habitat Feature"
+        title="Create Habitat Feature"
         breadCrumbJSX={
           <Breadcrumbs
             aria-label="breadcrumb"
@@ -110,13 +137,7 @@ export const CreateHabitatFeaturePage = (): JSX.Element => {
               onClick={() => formikRef.current?.submitForm()}>
               Save and Exit
             </LoadingButton>
-            <Button
-              disabled={isSubmitting}
-              color="primary"
-              variant="outlined"
-              onClick={() =>
-                history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling`)
-              }>
+            <Button disabled={isSubmitting} color="primary" variant="outlined" onClick={() => history.goBack()}>
               Cancel
             </Button>
           </Stack>
@@ -145,7 +166,7 @@ export const CreateHabitatFeaturePage = (): JSX.Element => {
               variant="outlined"
               color="primary"
               onClick={() => {
-                history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling`);
+                history.goBack();
               }}>
               Cancel
             </Button>

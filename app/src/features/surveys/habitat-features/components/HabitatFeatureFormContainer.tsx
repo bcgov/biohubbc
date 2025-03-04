@@ -8,12 +8,12 @@ import { HabitatFeatureForm } from './HabitatFeatureForm';
 
 // Habitat Feature Yup schema
 export const HabitatFeatureYupSchema = yup.object({
-  habitat_feature_type_id: yup.number().required('Habitat Feature Type is required'),
+  habitat_feature_type_id: yup.number().required('Habitat feature type is required'),
   latitude: yup.number().min(-90).max(90).required('Latitude is required'),
   longitude: yup.number().min(-180).max(180).required('Longitude is required'),
   count: yup.number().required('Count is required'),
-  observed_date: yup.string().required('Observed Date is required'),
-  observed_time: yup.string().required('Observed Time is required')
+  observed_date: yup.string().required('Observed date is required'),
+  observed_time: yup.string().required('Observed time is required')
 });
 
 // Create Habitat Feature form values
@@ -50,11 +50,13 @@ export const HabitatFeatureFormContainer = (props: IHabitatFeatureFormContainerP
       validateOnBlur={false}
       validateOnChange={false}
       onSubmit={props.handleSubmit}>
-      <Stack gap={5}>
+      <>
+        <Stack gap={5}>
+          <FormikErrorSnackbar />
+          <HabitatFeatureForm />
+        </Stack>
         <FormikDevDebugger />
-        <FormikErrorSnackbar />
-        <HabitatFeatureForm />
-      </Stack>
+      </>
     </Formik>
   );
 };
