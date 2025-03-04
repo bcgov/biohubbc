@@ -3,6 +3,7 @@ import FormikErrorSnackbar from 'components/alert/FormikErrorSnackbar';
 import { Formik, FormikProps } from 'formik';
 import { CreateSurveyHabitatFeature, UpdateSurveyHabitatFeature } from 'interfaces/useSurveyHabitatFeature.interface';
 import yup from 'utils/YupSchema';
+import { HabitatFeatureForm } from './HabitatFeatureForm';
 
 // Habitat Feature Yup schema
 export const HabitatFeatureYupSchema = yup.object({
@@ -16,10 +17,10 @@ export const HabitatFeatureYupSchema = yup.object({
 });
 
 // Create Habitat Feature form values
-export type CreateHabitatFeatureFormValues = CreateSurveyHabitatFeature;
+export type CreateHabitatFeatureFormValues = Omit<CreateSurveyHabitatFeature, 'survey_id'>;
 
 // Update Habitat Feature form values - includes the survey_habitat_feature_id
-export type UpdateHabitatFeatureFormValues = UpdateSurveyHabitatFeature & {
+export type UpdateHabitatFeatureFormValues = Omit<UpdateSurveyHabitatFeature, 'survey_id'> & {
   survey_habitat_feature_id: number;
 };
 
@@ -51,7 +52,7 @@ export const HabitatFeatureFormContainer = (props: IHabitatFeatureFormContainerP
       onSubmit={props.handleSubmit}>
       <Stack gap={5}>
         <FormikErrorSnackbar />
-        <></>
+        <HabitatFeatureForm />
       </Stack>
     </Formik>
   );

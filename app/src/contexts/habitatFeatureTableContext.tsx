@@ -83,7 +83,7 @@ export const HabitatFeatureTableContextProvider = (props: IHabitatFeatureTableCo
   );
 
   const habitatFeatureDataLoader = useDataLoader(() =>
-    biohubApi.habitatFeatureApi.getSurveyHabitatFeaturesWithSupplementaryData(projectId, surveyId)
+    biohubApi.habitatFeature.getSurveyHabitatFeaturesWithSupplementaryData(projectId, surveyId)
   );
 
   useEffect(() => {

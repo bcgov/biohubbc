@@ -15,11 +15,10 @@ import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
-import { CreateHabitatFeatureFormValues, HabitatFeatureFormContainer } from './components/HabitatFeatureFormContainer';
+import { CreateHabitatFeatureFormValues, HabitatFeatureFormContainer } from '../components/HabitatFeatureFormContainer';
 
 const initialHabitatFeatureFormValues: CreateHabitatFeatureFormValues = {
   habitat_feature_type_id: '' as unknown as number,
-  survey_id: '' as unknown as number,
   latitude: '' as unknown as number,
   longitude: '' as unknown as number,
   count: '' as unknown as number,
@@ -40,10 +39,22 @@ export const CreateHabitatFeaturePage = (): JSX.Element => {
 
   const formikRef = useRef<FormikProps<CreateHabitatFeatureFormValues>>(null);
 
-  const handleSubmit = async (_values: any) => {
+  const handleSubmit = async (values: CreateHabitatFeatureFormValues) => {
     try {
       setIsSubmitting(true);
+      await biohubApi.habitatFeature.createSurveyHabitatFeatures(surveyContext.projectId, surveyContext.surveyId, [
+        {
+          habitat_feature_type_id: values.habitat_feature_type_id,
+          survey_id: surveyContext.surveyId,
+          latitude: values.latitude,
+          longitude: values.longitude,
+          count: values.count,
+          observed_date: values.observed_date,
+          observed_time: values.observed_time
+        }
+      ]);
     } catch (err) {
+      // TODO: Mac: Update with a dialog
       console.log(err);
     } finally {
       setIsSubmitting(false);
@@ -80,7 +91,7 @@ export const CreateHabitatFeaturePage = (): JSX.Element => {
             </Link>
             <Link
               component={RouterLink}
-              to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/habitat-feature`}
+              to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/habitat-features/details`}
               underline="none">
               Manage Habitat Features
             </Link>
