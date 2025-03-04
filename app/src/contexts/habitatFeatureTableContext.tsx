@@ -1,10 +1,11 @@
-import { GridColDef } from '@mui/x-data-grid';
+import { GridColDef, GridRowId } from '@mui/x-data-grid';
 import { createContext, PropsWithChildren } from 'react';
 
 export interface IHabitatFeatureRow {
+  id: GridRowId;
   survey_habitat_feature_id: number;
   survey_id: number;
-  habitat_feature_id: number;
+  habitat_feature_type_id: number;
   count: number;
   latitude: number | null;
   longitude: number | null;
@@ -33,12 +34,12 @@ export const HabitatFeatureTableContext = createContext<IHabitatFeatureTableCont
 export const HabitatFeatureTableContextProvider = (props: IHabitatFeatureTableContextProviderProps) => {
   const columns: GridColDef<IHabitatFeatureRow>[] = [
     {
-      field: 'habitat_feature_id',
+      field: 'habitat_feature_type_id',
       headerName: 'Habitat Feature',
       align: 'left',
       maxWidth: 200,
       valueGetter: (params) => {
-        return params.row.habitat_feature_id; // TODO: Mac: Replace this with the actual habitat feature name
+        return params.row.habitat_feature_type_id; // TODO: Mac: Replace this with the actual habitat feature name
       },
       flex: 1
     },
