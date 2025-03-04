@@ -1,4 +1,4 @@
-import { Box, Button, CircularProgress, Stack } from '@mui/material';
+import { Box, CircularProgress, Stack } from '@mui/material';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { HabitatFeatureTableContextProvider } from 'contexts/habitatFeatureTableContext';
 import { ProjectContext } from 'contexts/projectContext';
@@ -49,7 +49,7 @@ export const SurveyHabitatFeaturePage = (): JSX.Element => {
         <Box flex="0 0 auto" width="400px">
           <DialogContextProvider>
             {/* TODO: Mac: Update isDisabled with correct value */}
-            <SamplingSiteListContainer isDisabled={false} getSamplePeriodImportButton={() => <Button>test</Button>} />
+            <SamplingSiteListContainer isDisabled={false} getSamplePeriodImportButton={() => <></>} />
           </DialogContextProvider>
         </Box>
 
