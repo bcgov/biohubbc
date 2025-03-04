@@ -22,6 +22,8 @@ export const useUnsavedChangesDialog = () => {
   /**
    * Skip the unsaved changes dialog
    *
+   * Note: This needs to be called before history.push/go/goBack to prevent the dialog from showing
+   *
    * @returns {*} {void}
    */
   const skipUnsavedChangesDialog = (): void => {
@@ -42,7 +44,7 @@ export const useUnsavedChangesDialog = () => {
       return true;
     }
 
-    // Dialog will trigger a another location change if yes selected
+    // Unsaved changes confirmation dialog
     dialogContext.setYesNoDialog({
       dialogTitle: CancelDialogI18N.cancelTitle,
       dialogText: CancelDialogI18N.cancelText,

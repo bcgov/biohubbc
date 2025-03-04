@@ -1,8 +1,11 @@
-import { GridColDef } from '@mui/x-data-grid';
+import { GridColDef, GridColumnVisibilityModel, useGridApiRef } from '@mui/x-data-grid';
+import { GridApiCommunity } from '@mui/x-data-grid/internals';
+import { SIMS_HABITAT_FEATURES_HIDDEN_COLUMNS } from 'constants/session-storage';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
-import { createContext, PropsWithChildren, useEffect, useMemo } from 'react';
+import { usePersistentState } from 'hooks/usePersistentState';
+import { createContext, PropsWithChildren, useCallback, useEffect, useMemo } from 'react';
 
 export interface IHabitatFeatureRow {
   survey_habitat_feature_id: number;
@@ -18,10 +21,42 @@ export interface IHabitatFeatureRow {
 }
 
 export interface IHabitatFeatureTableContext {
+  /**
+   * API ref used to interface with an MUI DataGrid representing the habitat feature records
+   */
+  _muiDataGridApiRef: React.MutableRefObject<GridApiCommunity>;
+  /**
+   * The columns of the table
+   */
   columns: GridColDef<IHabitatFeatureRow>[];
+  /**
+   * The columns that are currently hidden
+   */
+  hiddenColumns: string[];
+  /**
+   * The rows of the table
+   */
   rows: IHabitatFeatureRow[];
+  /**
+   * The total number of rows the server has
+   */
   rowCount: number;
+  /**
+   * Indicates if the data is currently loading
+   */
   isLoading: boolean;
+  /**
+   * The column visibility model, which defines which columns are visible
+   */
+  columnVisibilityModel: GridColumnVisibilityModel;
+  /**
+   * Callback fired when column visibility model changes
+   */
+  onColumnVisibilityModelChange: (model: GridColumnVisibilityModel) => void;
+  /**
+   * Toggle a columns visibility
+   */
+  toggleColumnVisibility: (column: string) => void;
 }
 
 type IHabitatFeatureTableContextProviderProps = PropsWithChildren;
@@ -35,9 +70,17 @@ export const HabitatFeatureTableContext = createContext<IHabitatFeatureTableCont
  * @returns {*}
  */
 export const HabitatFeatureTableContextProvider = (props: IHabitatFeatureTableContextProviderProps) => {
+  const _muiDataGridApiRef = useGridApiRef();
+
   const biohubApi = useBiohubApi();
   const codesContext = useCodesContext();
   const { projectId, surveyId } = useSurveyContext();
+
+  // Stores the column visibility state in local storage
+  const [columnVisibilityModel, setColumnVisibilityModel] = usePersistentState<GridColumnVisibilityModel>(
+    SIMS_HABITAT_FEATURES_HIDDEN_COLUMNS,
+    {}
+  );
 
   const habitatFeatureDataLoader = useDataLoader(() =>
     biohubApi.habitatFeatureApi.getSurveyHabitatFeaturesWithSupplementaryData(projectId, surveyId)
@@ -50,6 +93,29 @@ export const HabitatFeatureTableContextProvider = (props: IHabitatFeatureTableCo
   useEffect(() => {
     habitatFeatureDataLoader.load();
   }, [habitatFeatureDataLoader]);
+
+  // Columns hidden from table view
+  const hiddenColumns = useMemo(() => {
+    const columns = Object.keys(columnVisibilityModel);
+    return columns.filter((column) => !columnVisibilityModel[column]);
+  }, [columnVisibilityModel]);
+
+  /**
+   * Toggle the table columns visibility
+   *
+   * @param {{columns: string[]}} [config] - Array of columns to hide
+   * @returns {void}
+   */
+  const toggleColumnsVisibility = useCallback(
+    (column: string) => {
+      const updatedVisibilityModel = { ...columnVisibilityModel };
+
+      updatedVisibilityModel[column] = !updatedVisibilityModel[column];
+
+      setColumnVisibilityModel(updatedVisibilityModel);
+    },
+    [columnVisibilityModel, setColumnVisibilityModel]
+  );
 
   // Create a map of habitat feature type ids to their respective names
   const habitatFeatureTypeMap: Map<number, string> = useMemo(() => {
@@ -170,16 +236,26 @@ export const HabitatFeatureTableContextProvider = (props: IHabitatFeatureTableCo
   // Create the memoized context object
   const habitatFeatureTableContxt: IHabitatFeatureTableContext = useMemo(() => {
     return {
+      _muiDataGridApiRef: _muiDataGridApiRef,
       columns: habitatFeatureTableColumns,
       rows: habitatFeatureTableRows,
       rowCount: habitatFeatureDataLoader.data?.pagination.total ?? 0,
-      isLoading: habitatFeatureDataLoader.isLoading
+      isLoading: habitatFeatureDataLoader.isLoading,
+      columnVisibilityModel: columnVisibilityModel,
+      onColumnVisibilityModelChange: setColumnVisibilityModel,
+      hiddenColumns: hiddenColumns,
+      toggleColumnVisibility: toggleColumnsVisibility
     };
   }, [
+    _muiDataGridApiRef,
     habitatFeatureTableColumns,
     habitatFeatureTableRows,
     habitatFeatureDataLoader.data?.pagination.total,
-    habitatFeatureDataLoader.isLoading
+    habitatFeatureDataLoader.isLoading,
+    columnVisibilityModel,
+    setColumnVisibilityModel,
+    hiddenColumns,
+    toggleColumnsVisibility
   ]);
 
   return (
