@@ -63,19 +63,24 @@ export const TelemetryTable = (props: IManualTelemetryTableProps) => {
     return critterDeployments;
   }, [critterDataLoader.data, deploymentDataLoader.data]);
 
-  const columns: GridColDef<IManualTelemetryTableRow>[] = useMemo(
-    () => [
-      DeploymentColDef({ critterDeployments, hasError: telemetryTableContext.hasError }),
+  const columns: GridColDef<IManualTelemetryTableRow>[] = useMemo(() => {
+    const deployments = deploymentDataLoader.data?.deployments ?? [];
+
+    return [
+      DeploymentColDef({
+        critterDeployments,
+        deployments,
+        hasError: telemetryTableContext.hasError
+      }),
       // TODO: Show animal nickname as a column
-      DeviceColDef({ critterDeployments }),
+      DeviceColDef(),
       GenericDateColDef({ field: 'date', headerName: 'Date', hasError: telemetryTableContext.hasError }),
       GenericTimeColDef({ field: 'time', headerName: 'Time', hasError: telemetryTableContext.hasError }),
       GenericLatitudeColDef({ field: 'latitude', headerName: 'Latitude', hasError: telemetryTableContext.hasError }),
       GenericLongitudeColDef({ field: 'longitude', headerName: 'Longitude', hasError: telemetryTableContext.hasError }),
       TelemetryTypeColDef()
-    ],
-    [critterDeployments, telemetryTableContext.hasError]
-  );
+    ];
+  }, [critterDeployments, deploymentDataLoader.data, telemetryTableContext.hasError]);
 
   return (
     <DataGrid
