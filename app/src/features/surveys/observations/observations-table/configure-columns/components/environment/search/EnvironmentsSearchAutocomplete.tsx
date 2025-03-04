@@ -69,6 +69,11 @@ export const EnvironmentsSearchAutocomplete = (props: IEnvironmentsSearchAutocom
     [getOptions]
   );
 
+  const loadAllOptions = async () => {
+    const response = await getOptions('');
+    setOptions([...response.qualitative_environments, ...response.quantitative_environments]);
+  };
+
   return (
     <Autocomplete
       id="environments-autocomplete"
@@ -119,14 +124,16 @@ export const EnvironmentsSearchAutocomplete = (props: IEnvironmentsSearchAutocom
 
         if (reason === 'clear') {
           setInputValue('');
-          setOptions([]);
-          return;
+          return; 
         }
 
         setInputValue(value);
         handleSearch(value, (newOptions) => {
           setOptions(() => newOptions);
         });
+      }}
+      onFocus={() => {
+        loadAllOptions();
       }}
       value={null} // The selected value is not displayed in the input field or tracked by this component
       onChange={(_, value) => {
