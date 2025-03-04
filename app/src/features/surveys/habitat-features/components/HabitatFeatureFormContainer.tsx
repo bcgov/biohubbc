@@ -1,5 +1,6 @@
 import { Stack } from '@mui/system';
 import FormikErrorSnackbar from 'components/alert/FormikErrorSnackbar';
+import FormikDevDebugger from 'components/formik/FormikDevDebugger';
 import { Formik, FormikProps } from 'formik';
 import { CreateSurveyHabitatFeature, UpdateSurveyHabitatFeature } from 'interfaces/useSurveyHabitatFeature.interface';
 import yup from 'utils/YupSchema';
@@ -8,7 +9,6 @@ import { HabitatFeatureForm } from './HabitatFeatureForm';
 // Habitat Feature Yup schema
 export const HabitatFeatureYupSchema = yup.object({
   habitat_feature_type_id: yup.number().required('Habitat Feature Type is required'),
-  survey_id: yup.number().required('Survey ID is required'),
   latitude: yup.number().min(-90).max(90).required('Latitude is required'),
   longitude: yup.number().min(-180).max(180).required('Longitude is required'),
   count: yup.number().required('Count is required'),
@@ -51,6 +51,7 @@ export const HabitatFeatureFormContainer = (props: IHabitatFeatureFormContainerP
       validateOnChange={false}
       onSubmit={props.handleSubmit}>
       <Stack gap={5}>
+        <FormikDevDebugger />
         <FormikErrorSnackbar />
         <HabitatFeatureForm />
       </Stack>

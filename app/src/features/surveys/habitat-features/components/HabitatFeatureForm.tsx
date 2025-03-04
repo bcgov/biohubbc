@@ -1,6 +1,7 @@
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
+import { HabitatFeatureGeneralInformationForm } from './general-information/HabitatFeatureGeneralInformationForm';
 
 /**
  * Habitat Feature form.
@@ -12,7 +13,9 @@ export const HabitatFeatureForm = () => {
     <Stack>
       <HorizontalSplitFormComponent
         title="General Information"
-        summary="Enter general information about the habitat feature"></HorizontalSplitFormComponent>
+        summary="Enter general information about the habitat feature">
+        <HabitatFeatureGeneralInformationForm />
+      </HorizontalSplitFormComponent>
 
       <Divider sx={{ my: 5 }} />
 

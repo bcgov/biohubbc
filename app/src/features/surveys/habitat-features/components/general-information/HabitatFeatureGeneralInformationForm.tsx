@@ -1,1 +1,69 @@
-export const GeneralInformationForm = () => {};
+import { mdiCalendar } from '@mdi/js';
+import { Grid } from '@mui/material';
+import AutocompleteField from 'components/fields/AutocompleteField';
+import CustomTextField from 'components/fields/CustomTextField';
+import { DateTimeFields } from 'components/fields/DateTimeFields';
+import { useFormikContext } from 'formik';
+import { useCodesContext } from 'hooks/useContext';
+import { HabitatFeatureFormValues } from '../HabitatFeatureFormContainer';
+
+/**
+ * Habitat Feature general information form.
+ *
+ * @return {*} {JSX.Element}
+ */
+export const HabitatFeatureGeneralInformationForm = <
+  HabitatFeatureFormValuesType extends HabitatFeatureFormValues
+>(): JSX.Element => {
+  const codesContext = useCodesContext();
+  const formikProps = useFormikContext<HabitatFeatureFormValuesType>();
+
+  codesContext.codesDataLoader.load();
+
+  return (
+    <Grid container spacing={3}>
+      <Grid item xs={12} display="flex" gap={1}>
+        <AutocompleteField
+          id="habitat_feature_type_id"
+          name="habitat_feature_type_id"
+          label="Habitat feature type"
+          helpText="The type of habitat feature"
+          showValue
+          required
+          loading={codesContext.codesDataLoader.isLoading}
+          options={
+            codesContext.codesDataLoader.data?.habitat_feature_types.map((featureType) => ({
+              value: featureType.id,
+              label: featureType.name,
+              description: featureType.description
+            })) ?? []
+          }
+        />
+
+        <Grid item xs={4}>
+          <CustomTextField name="count" label="Observed count" other={{ type: 'number' }} />
+        </Grid>
+      </Grid>
+
+      <Grid item xs={12}>
+        <DateTimeFields
+          formikProps={formikProps}
+          date={{
+            dateLabel: 'Observed date',
+            dateName: 'observed_date',
+            dateId: 'observed_date',
+            dateRequired: true,
+            dateIcon: mdiCalendar
+          }}
+          time={{
+            timeLabel: 'Observed time',
+            timeName: 'observed_time',
+            timeId: 'observed_time',
+            timeRequired: true,
+            timeIcon: mdiCalendar
+          }}
+        />
+      </Grid>
+    </Grid>
+  );
+};

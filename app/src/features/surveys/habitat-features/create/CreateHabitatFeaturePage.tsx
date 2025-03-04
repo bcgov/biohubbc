@@ -40,6 +40,7 @@ export const CreateHabitatFeaturePage = (): JSX.Element => {
   const formikRef = useRef<FormikProps<CreateHabitatFeatureFormValues>>(null);
 
   const handleSubmit = async (values: CreateHabitatFeatureFormValues) => {
+    console.log({ values });
     try {
       setIsSubmitting(true);
       await biohubApi.habitatFeature.createSurveyHabitatFeatures(surveyContext.projectId, surveyContext.surveyId, [
