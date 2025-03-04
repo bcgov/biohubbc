@@ -1,3 +1,4 @@
+import { Point } from 'geojson';
 import { ApiPaginationResponseParams } from 'types/misc';
 
 export type HabitatFeatureQuantitativeDefinition = {
@@ -74,6 +75,16 @@ export type getSurveyHabitatFeaturesWithSupplementaryData = {
   surveyHabitatFeatures: SurveyHabitatFeature[];
   supplementaryData: SurveyHabitatFeatureSupplementaryData;
   pagination: ApiPaginationResponseParams;
+};
+
+type SurveyHabitatFeatureGeometry = {
+  survey_habitat_feature_id: number;
+  geometry: Point;
+};
+
+export type SurveyHabitatFeaturesGeometry = {
+  surveyHabitatFeaturesGeometry: SurveyHabitatFeatureGeometry[];
+  count: number;
 };
 
 export type FindSurveyHabitatFeatures = {

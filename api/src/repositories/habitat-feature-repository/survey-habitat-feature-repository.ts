@@ -7,6 +7,7 @@ import {
   FindSurveyHabitatFeatureAdvancedFilters,
   InsertSurveyHabitatFeature,
   SurveyHabitatFeatureCount,
+  SurveyHabitatFeatureGeometry,
   SurveyHabitatFeatureWithTaxons
 } from './survey-habitat-feature-repository.interface';
 import { makeFindSurveyHabitatFeaturesQuery } from './utils';
@@ -228,6 +229,31 @@ export class SurveyHabitatFeatureRepository extends BaseRepository {
     const response = await this.connection.sql(sqlStatement, SurveyHabitatFeatureCount);
 
     return response.rows[0].count;
+  }
+
+  /**
+   * Get habitat feature spatial data, for a survey.
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<SurveyHabitatFeatureGeometry[]>}
+   * @memberof SurveyHabitatFeatureRepository
+   */
+  async getSurveyHabitatFeaturesGeometry(surveyId: number): Promise<SurveyHabitatFeatureGeometry[]> {
+    const knex = getKnex();
+
+    const query = knex.queryBuilder();
+
+    query
+      .select([
+        'survey_habitat_feature_id',
+        knex.raw("json_build_object('type', 'Point', 'coordinates', json_build_array(longitude, latitude)) as geometry")
+      ])
+      .from('survey_habitat_feature')
+      .where('survey_id', surveyId);
+
+    const response = await this.connection.knex(query, SurveyHabitatFeatureGeometry);
+
+    return response.rows;
   }
 
   /**

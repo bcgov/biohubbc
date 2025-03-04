@@ -20,6 +20,7 @@ import {
   FindSurveyHabitatFeatures,
   SurveyHabitatFeaturesAdvancedFilters
 } from 'interfaces/useSurveyHabitatFeatureApi.interface';
+import qs from 'qs';
 import { useCallback, useState } from 'react';
 import { ApiPaginationRequestOptions, StringValues } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
@@ -89,10 +90,10 @@ const HabitatFeaturesListContainer = (props: IHabitatFeaturesListContainerProps)
   const [advancedFiltersModel, setAdvancedFiltersModel] = useState<SurveyHabitatFeaturesAdvancedFilters>({
     keyword: searchParams.get('h_keyword') ?? SurveyHabitatFeaturesAdvancedFiltersInitialValues.keyword,
     habitat_feature_type_ids: searchParams.get('h_habitat_feature_type_ids')
-      ? [Number(searchParams.get('h_habitat_feature_type_ids'))]
+      ? Object.values(qs.parse(searchParams.get('h_habitat_feature_type_ids') ?? '')).map(Number)
       : SurveyHabitatFeaturesAdvancedFiltersInitialValues.habitat_feature_type_ids,
     itis_tsns: searchParams.get('h_itis_tsns')
-      ? [Number(searchParams.get('h_itis_tsns'))]
+      ? Object.values(qs.parse(searchParams.get('h_itis_tsns') ?? '')).map(Number)
       : SurveyHabitatFeaturesAdvancedFiltersInitialValues.itis_tsns,
     start_date: searchParams.get('h_start_date') ?? SurveyHabitatFeaturesAdvancedFiltersInitialValues.start_date,
     end_date: searchParams.get('h_end_date') ?? SurveyHabitatFeaturesAdvancedFiltersInitialValues.end_date,
@@ -134,8 +135,6 @@ const HabitatFeaturesListContainer = (props: IHabitatFeaturesListContainerProps)
   );
 
   const rows = habitatFeaturesDataLoader.data ? getRowsFromHabitatFeatures(habitatFeaturesDataLoader.data) : [];
-
-  console.log(rows);
 
   const columns: GridColDef<IHabitatFeatureRow>[] = [
     {

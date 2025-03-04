@@ -4,6 +4,7 @@ import {
   FindSurveyHabitatFeatures,
   getSurveyHabitatFeaturesWithSupplementaryData,
   SurveyHabitatFeaturesAdvancedFilters,
+  SurveyHabitatFeaturesGeometry,
   UpdateSurveyHabitatFeature
 } from 'interfaces/useSurveyHabitatFeatureApi.interface';
 import { ApiPaginationRequestOptions } from 'types/misc';
@@ -79,6 +80,22 @@ const useSurveyHabitatFeatureApi = (axios: AxiosInstance) => {
   };
 
   /**
+   * Get habitat feature spatial data, for a survey.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @return {*}  {Promise<SurveyHabitatFeaturesGeometry>}
+   */
+  const getSurveyHabitatFeaturesGeometry = async (
+    projectId: number,
+    surveyId: number
+  ): Promise<SurveyHabitatFeaturesGeometry> => {
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/habitat-features/spatial`);
+
+    return data;
+  };
+
+  /**
    * Find survey habitat feature records.
    *
    * @param {ApiPaginationRequestOptions} [pagination]
@@ -143,6 +160,7 @@ const useSurveyHabitatFeatureApi = (axios: AxiosInstance) => {
     createSurveyHabitatFeatures,
     updateSurveyHabitatFeature,
     getSurveyHabitatFeaturesWithSupplementaryData,
+    getSurveyHabitatFeaturesGeometry,
     findSurveyHabitatFeatures,
     deleteSurveyHabitatFeature,
     deleteSurveyHabitatFeatures

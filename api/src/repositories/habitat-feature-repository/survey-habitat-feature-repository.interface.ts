@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { SurveyHabitatFeatureRecord } from '../../database-models/survey_habitat_feature';
 import { SurveyHabitatFeatureTaxonRecord } from '../../database-models/survey_habitat_feature_taxon';
+import { GeoJSONPointZodSchema } from '../../zod-schema/geoJsonZodSchema';
 import { FindHabitatFeatureDefinitions } from './habitat-feature-repository.interface';
 
 export type InsertSurveyHabitatFeature = Pick<
@@ -29,6 +30,22 @@ export const SurveyHabitatFeatureWithTaxons = SurveyHabitatFeatureRecord.extend(
   survey_habitat_feature_taxons: z.array(SurveyHabitatFeatureTaxonRecord)
 });
 export type SurveyHabitatFeatureWithTaxons = z.infer<typeof SurveyHabitatFeatureWithTaxons>;
+
+export const SurveyHabitatFeatureGeometry = z.object({
+  survey_habitat_feature_id: z.number(),
+  geometry: GeoJSONPointZodSchema
+});
+
+export type SurveyHabitatFeatureGeometry = z.infer<typeof SurveyHabitatFeatureGeometry>;
+
+export const SurveyHabitatFeaturesGeometryWithSupplementaryData = z.object({
+  surveyHabitatFeaturesGeometry: z.array(SurveyHabitatFeatureGeometry),
+  supplementaryData: SurveyHabitatFeatureCount
+});
+
+export type SurveyHabitatFeaturesGeometryWithSupplementaryData = z.infer<
+  typeof SurveyHabitatFeaturesGeometryWithSupplementaryData
+>;
 
 export type FindSurveyHabitatFeatureAdvancedFilters = {
   /**
