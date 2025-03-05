@@ -15,7 +15,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useHabitatFeatureTableContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
-import { useContext, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 import {
@@ -46,14 +46,16 @@ export const EditHabitatFeaturePage = (): JSX.Element => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const habitatFeatureDataLoader = useDataLoader(() =>
-    biohubApi.habitatFeature.getSurveyHabitatFeatureWithSupplementaryData(
+    biohubApi.habitatFeature.getSurveyHabitatFeature(
       surveyContext.projectId,
       surveyContext.surveyId,
       surveyHabitatFeatureId
     )
   );
 
-  habitatFeatureDataLoader.load();
+  useEffect(() => {
+    habitatFeatureDataLoader.load();
+  }, [habitatFeatureDataLoader]);
 
   if (
     !surveyContext.surveyDataLoader.data ||
@@ -63,7 +65,6 @@ export const EditHabitatFeaturePage = (): JSX.Element => {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
-  // Set the initial form values
   const initialHabitatFeatureFormValues: UpdateHabitatFeatureFormValues = {
     habitat_feature_type_id: habitatFeatureDataLoader.data.habitat_feature_type_id,
     latitude: habitatFeatureDataLoader.data.latitude,

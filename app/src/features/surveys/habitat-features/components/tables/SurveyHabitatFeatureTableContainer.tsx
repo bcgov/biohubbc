@@ -1,4 +1,4 @@
-import { mdiCogOutline, mdiPlus } from '@mdi/js';
+import { mdiCogOutline, mdiPencil, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Box, Button, Divider, IconButton, Paper, Stack, Toolbar, Tooltip, Typography } from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
@@ -9,7 +9,7 @@ import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
 import { useHabitatFeatureTableContext, useSurveyContext } from 'hooks/useContext';
 import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import { useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useHistory } from 'react-router-dom';
 import { SurveyHabitatFeatureTable } from './SurveyHabitatFeatureTable';
 
 /**
@@ -18,6 +18,7 @@ import { SurveyHabitatFeatureTable } from './SurveyHabitatFeatureTable';
  * @return {*} {JSX.Element}
  */
 export const SurveyHabitatFeatureTableContainer = (): JSX.Element => {
+  const history = useHistory();
   const habitatFeatureTableContext = useHabitatFeatureTableContext();
   const surveyContext = useSurveyContext();
 
@@ -56,6 +57,21 @@ export const SurveyHabitatFeatureTableContainer = (): JSX.Element => {
             component={RouterLink}
             to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/habitat-features/create`}>
             Add
+          </Button>
+
+          <Button
+            variant="outlined"
+            color="primary"
+            startIcon={<Icon path={mdiPencil} size={1} />}
+            onClick={() => {
+              // Currently only supports editing one row at a time
+              if (habitatFeatureTableContext.rowSelectionModel.length !== 1) {
+                return;
+              }
+
+              history.push(`${habitatFeatureTableContext.rowSelectionModel[0]}/edit`);
+            }}>
+            Edit
           </Button>
 
           <Tooltip title="Toggle column visibility">
