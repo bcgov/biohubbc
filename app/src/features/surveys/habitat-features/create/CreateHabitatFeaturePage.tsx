@@ -17,7 +17,10 @@ import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { useContext, useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
-import { CreateHabitatFeatureFormValues, HabitatFeatureFormContainer } from '../components/HabitatFeatureFormContainer';
+import {
+  CreateHabitatFeatureFormValues,
+  HabitatFeatureFormContainer
+} from '../components/forms/HabitatFeatureFormContainer';
 
 const initialHabitatFeatureFormValues: CreateHabitatFeatureFormValues = {
   habitat_feature_type_id: '' as unknown as number,

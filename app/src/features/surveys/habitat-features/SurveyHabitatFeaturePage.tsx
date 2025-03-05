@@ -6,7 +6,7 @@ import { SurveyContext } from 'contexts/surveyContext';
 import { useContext } from 'react';
 import { SurveyManagePageEnum, SurveyManagePageHeader } from '../components/SurveyManagePageHeader';
 import { SamplingSiteListContainer } from '../observations/sampling-sites/SamplingSiteListContainer';
-import { SurveyHabitatFeatureTableContainer } from './components/SurveyHabitatFeatureTableContainer';
+import { SurveyHabitatFeatureTableContainer } from './components/tables/SurveyHabitatFeatureTableContainer';
 
 /**
  * Returns the page for managing Habitat Features
