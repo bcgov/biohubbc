@@ -13,6 +13,7 @@ export const SurveyHabitatFeatureTable = (): JSX.Element => {
 
   return (
     <StyledDataGrid
+      apiRef={habitatFeatureTableContext._muiDataGridApiRef}
       noRowsMessage="No habitat features found"
       columnHeaderHeight={rowHeight}
       rowHeight={rowHeight}
@@ -24,6 +25,9 @@ export const SurveyHabitatFeatureTable = (): JSX.Element => {
           paginationModel: { page: 0, pageSize: 10 }
         }
       }}
+      // Column visibility
+      columnVisibilityModel={habitatFeatureTableContext.columnVisibilityModel}
+      onColumnVisibilityModelChange={habitatFeatureTableContext.onColumnVisibilityModelChange}
       pageSizeOptions={[10, 25, 50]}
       rowSelection={false}
       autoHeight={false}

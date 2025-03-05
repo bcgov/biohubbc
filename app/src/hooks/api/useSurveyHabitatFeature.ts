@@ -25,7 +25,9 @@ const useSurveyHabitatFeature = (axios: AxiosInstance) => {
     surveyId: number,
     habitatFeatures: CreateSurveyHabitatFeature[]
   ): Promise<void> => {
-    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/habitat-features`, habitatFeatures);
+    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/habitat-features`, {
+      surveyHabitatFeatures: habitatFeatures
+    });
 
     return data;
   };
@@ -44,10 +46,12 @@ const useSurveyHabitatFeature = (axios: AxiosInstance) => {
     surveyId: number,
     surveyHabitatFeatureId: number,
     habitatFeature: UpdateSurveyHabitatFeature
-  ): Promise<getSurveyHabitatFeaturesWithSupplementaryData> => {
+  ): Promise<void> => {
     const { data } = await axios.put(
       `/api/project/${projectId}/survey/${surveyId}/habitat-features/${surveyHabitatFeatureId}`,
-      habitatFeature
+      {
+        surveyhabitatfeature: habitatFeature
+      }
     );
 
     return data;
@@ -58,9 +62,12 @@ const useSurveyHabitatFeature = (axios: AxiosInstance) => {
    *
    * @param {number} projectId
    * @param {number} surveyId
-   * @return {*}  {Promise<void>}
+   * @return {*}  {Promise<getSurveyHabitatFeaturesWithSupplementaryData>}
    */
-  const getSurveyHabitatFeaturesWithSupplementaryData = async (projectId: number, surveyId: number): Promise<void> => {
+  const getSurveyHabitatFeaturesWithSupplementaryData = async (
+    projectId: number,
+    surveyId: number
+  ): Promise<getSurveyHabitatFeaturesWithSupplementaryData> => {
     const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/habitat-features`);
 
     return data;

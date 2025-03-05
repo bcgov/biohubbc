@@ -1,12 +1,10 @@
-import { Box, Button, CircularProgress, Stack } from '@mui/material';
-import { DialogContextProvider } from 'contexts/dialogContext';
-import { HabitatFeatureTableContextProvider } from 'contexts/habitatFeatureTableContext';
+import { Box, CircularProgress, Stack } from '@mui/material';
 import { ProjectContext } from 'contexts/projectContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useContext } from 'react';
 import { SurveyManagePageEnum, SurveyManagePageHeader } from '../components/SurveyManagePageHeader';
 import { SamplingSiteListContainer } from '../observations/sampling-sites/SamplingSiteListContainer';
-import { SurveyHabitatFeatureTableContainer } from './components/SurveyHabitatFeatureTableContainer';
+import { SurveyHabitatFeatureTableContainer } from './components/tables/SurveyHabitatFeatureTableContainer';
 
 /**
  * Returns the page for managing Habitat Features
@@ -47,17 +45,13 @@ export const SurveyHabitatFeaturePage = (): JSX.Element => {
         }}>
         {/* Sampling Site List */}
         <Box flex="0 0 auto" width="400px">
-          <DialogContextProvider>
-            {/* TODO: Mac: Update isDisabled with correct value */}
-            <SamplingSiteListContainer isDisabled={false} getSamplePeriodImportButton={() => <Button>test</Button>} />
-          </DialogContextProvider>
+          {/* TODO: Mac: Update isDisabled with correct value */}
+          <SamplingSiteListContainer isDisabled={false} getSamplePeriodImportButton={() => <></>} />
         </Box>
 
         {/* Survey Habitat Feature Table */}
         <Box flex="1 1 auto">
-          <HabitatFeatureTableContextProvider>
-            <SurveyHabitatFeatureTableContainer />
-          </HabitatFeatureTableContextProvider>
+          <SurveyHabitatFeatureTableContainer />
         </Box>
       </Stack>
     </Stack>
