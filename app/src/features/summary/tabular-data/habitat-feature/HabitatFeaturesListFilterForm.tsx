@@ -8,9 +8,9 @@ import { useCodesContext, useTaxonomyContext } from 'hooks/useContext';
 import { FindSurveyHabitatFeaturesFilters } from 'interfaces/useSurveyHabitatFeatureApi.interface';
 import { useEffect } from 'react';
 
-export type SurveyHabitatFeaturesAdvancedFilters = Pick<
+export type SurveyHabitatFeaturesAdvancedFilters = Omit<
   FindSurveyHabitatFeaturesFilters,
-  'keyword' | 'start_date' | 'end_date' | 'start_time' | 'end_time' | 'min_count' | 'system_user_id'
+  'habitat_feature_type_ids' | 'itis_tsns'
 > & {
   habitat_feature_type_id?: number;
   itis_tsn?: number;
@@ -70,15 +70,15 @@ export const HabitatFeaturesListFilterForm = (props: IHabitatFeaturesListFilterF
               key="habitat-features-keyword-filter"
             />,
             <AutocompleteField
-              id="habitat_feature_type_ids"
-              name="habitat_feature_type_ids"
+              id="habitat_feature_type_id"
+              name="habitat_feature_type_id"
               label="Type"
               options={habitatFeatureTypeOptions}
               key="habitat-features-habitat-feature-type-filter"
             />,
             <SpeciesAutocompleteField
-              formikFieldName={'itis_tsns'}
-              label={'Species'}
+              formikFieldName="itis_tsn"
+              label="Species"
               placeholder="Search by taxon"
               defaultSpecies={
                 (initialValues?.itis_tsn &&
@@ -87,11 +87,11 @@ export const HabitatFeaturesListFilterForm = (props: IHabitatFeaturesListFilterF
               }
               handleSpecies={(value) => {
                 if (value?.tsn) {
-                  formikProps.setFieldValue('itis_tsns', value.tsn);
+                  formikProps.setFieldValue('itis_tsn', value.tsn);
                 }
               }}
               handleClear={() => {
-                formikProps.setFieldValue('itis_tsns', undefined);
+                formikProps.setFieldValue('itis_tsn', undefined);
               }}
               key="habitat-features-tsn-filter"
             />,

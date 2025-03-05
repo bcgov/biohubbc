@@ -4,6 +4,7 @@ import {
   FindSurveyHabitatFeatures,
   FindSurveyHabitatFeaturesFilters,
   getSurveyHabitatFeaturesWithSupplementaryData,
+  SurveyHabitatFeature,
   SurveyHabitatFeaturesGeometry,
   UpdateSurveyHabitatFeature
 } from 'interfaces/useSurveyHabitatFeatureApi.interface';
@@ -56,6 +57,26 @@ const useSurveyHabitatFeatureApi = (axios: AxiosInstance) => {
       {
         surveyhabitatfeature: habitatFeature
       }
+    );
+
+    return data;
+  };
+
+  /**
+   * Get a survey habitat feature record.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {number} surveyHabitatFeatureId
+   * @return {*}  {Promise<{ surveyHabitatFeature: SurveyHabitatFeature }>}
+   */
+  const getSurveyHabitatFeature = async (
+    projectId: number,
+    surveyId: number,
+    surveyHabitatFeatureId: number
+  ): Promise<{ surveyHabitatFeature: SurveyHabitatFeature }> => {
+    const { data } = await axios.get(
+      `/api/project/${projectId}/survey/${surveyId}/habitat-features/${surveyHabitatFeatureId}`
     );
 
     return data;
@@ -163,6 +184,7 @@ const useSurveyHabitatFeatureApi = (axios: AxiosInstance) => {
   return {
     createSurveyHabitatFeatures,
     updateSurveyHabitatFeature,
+    getSurveyHabitatFeature,
     getSurveyHabitatFeaturesWithSupplementaryData,
     getSurveyHabitatFeaturesGeometry,
     findSurveyHabitatFeatures,

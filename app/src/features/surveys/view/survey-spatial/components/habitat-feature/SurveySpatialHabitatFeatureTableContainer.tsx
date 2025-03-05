@@ -3,27 +3,17 @@ import Box from '@mui/material/Box';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
-import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useHabitatFeatureTableContext, useSurveyContext } from 'hooks/useContext';
-import useDataLoader from 'hooks/useDataLoader';
-import { SurveyHabitatFeatureTable } from '../../../../habitat-features/components/tables/SurveyHabitatFeatureTable';
+import { SurveyHabitatFeatureTable } from 'features/surveys/habitat-features/components/tables/SurveyHabitatFeatureTable';
+import { useHabitatFeatureTableContext } from 'hooks/useContext';
 
 /**
  * Container for the Survey Spatial Habitat Feature Table.
  *
+ * @param {ISurveySpatialHabitatFeatureTableContainerProps} props
  * @returns {JSX.Element}
  */
 export const SurveySpatialHabitatFeatureTableContainer = () => {
-  const surveyContext = useSurveyContext();
   const habitatFeatureTableContext = useHabitatFeatureTableContext();
-
-  const biohubApi = useBiohubApi();
-
-  const habitatFeaturesGeometryDataLoader = useDataLoader(() =>
-    biohubApi.habitatFeature.getSurveyHabitatFeaturesGeometry(surveyContext.projectId, surveyContext.surveyId)
-  );
-
-  habitatFeaturesGeometryDataLoader.load();
 
   return (
     <LoadingGuard
@@ -44,9 +34,7 @@ export const SurveySpatialHabitatFeatureTableContainer = () => {
           />
         </Box>
       }>
-      <Box flex="1 1 auto" overflow="hidden">
-        <SurveyHabitatFeatureTable />
-      </Box>
+      <SurveyHabitatFeatureTable />
     </LoadingGuard>
   );
 };
