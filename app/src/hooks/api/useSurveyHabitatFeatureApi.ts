@@ -1,9 +1,13 @@
 import { AxiosInstance } from 'axios';
 import {
   CreateSurveyHabitatFeature,
+  FindSurveyHabitatFeatures,
+  FindSurveyHabitatFeaturesFilters,
   getSurveyHabitatFeaturesWithSupplementaryData,
+  SurveyHabitatFeaturesGeometry,
   UpdateSurveyHabitatFeature
-} from 'interfaces/useSurveyHabitatFeature.interface';
+} from 'interfaces/useSurveyHabitatFeatureApi.interface';
+import { ApiPaginationRequestOptions } from 'types/misc';
 
 /**
  * Returns a set of supported api methods for working with survey habitat feature records.
@@ -11,7 +15,7 @@ import {
  * @param {AxiosInstance} axios
  * @return {*} object whose properties are supported api methods.
  */
-const useSurveyHabitatFeature = (axios: AxiosInstance) => {
+const useSurveyHabitatFeatureApi = (axios: AxiosInstance) => {
   /**
    * Create new survey habitat feature records.
    *
@@ -62,13 +66,56 @@ const useSurveyHabitatFeature = (axios: AxiosInstance) => {
    *
    * @param {number} projectId
    * @param {number} surveyId
+   * @param {ApiPaginationRequestOptions} [pagination]
    * @return {*}  {Promise<getSurveyHabitatFeaturesWithSupplementaryData>}
    */
   const getSurveyHabitatFeaturesWithSupplementaryData = async (
     projectId: number,
-    surveyId: number
+    surveyId: number,
+    pagination?: ApiPaginationRequestOptions
   ): Promise<getSurveyHabitatFeaturesWithSupplementaryData> => {
-    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/habitat-features`);
+    const params = {
+      ...pagination
+    };
+
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/habitat-features`, { params });
+
+    return data;
+  };
+
+  /**
+   * Get habitat feature spatial data, for a survey.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @return {*}  {Promise<SurveyHabitatFeaturesGeometry>}
+   */
+  const getSurveyHabitatFeaturesGeometry = async (
+    projectId: number,
+    surveyId: number
+  ): Promise<SurveyHabitatFeaturesGeometry> => {
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/habitat-features/spatial`);
+
+    return data;
+  };
+
+  /**
+   * Find survey habitat feature records.
+   *
+   * @param {ApiPaginationRequestOptions} [pagination]
+   * @param {FindSurveyHabitatFeaturesFilters} [filterFieldData]
+   * @return {*}  {Promise<FindSurveyHabitatFeatures>}
+   */
+  const findSurveyHabitatFeatures = async (
+    pagination?: ApiPaginationRequestOptions,
+    filterFieldData?: FindSurveyHabitatFeaturesFilters
+  ): Promise<FindSurveyHabitatFeatures> => {
+    const params = {
+      ...pagination,
+      ...filterFieldData
+    };
+
+    const { data } = await axios.get(`/api/habitat-features`, { params });
 
     return data;
   };
@@ -117,9 +164,11 @@ const useSurveyHabitatFeature = (axios: AxiosInstance) => {
     createSurveyHabitatFeatures,
     updateSurveyHabitatFeature,
     getSurveyHabitatFeaturesWithSupplementaryData,
+    getSurveyHabitatFeaturesGeometry,
+    findSurveyHabitatFeatures,
     deleteSurveyHabitatFeature,
     deleteSurveyHabitatFeatures
   };
 };
 
-export default useSurveyHabitatFeature;
+export default useSurveyHabitatFeatureApi;

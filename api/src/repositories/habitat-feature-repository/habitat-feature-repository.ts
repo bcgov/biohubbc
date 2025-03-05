@@ -44,10 +44,21 @@ export class HabitatFeatureRepository extends BaseRepository {
       ])
       .from('habitat_feature_quantitative_definition');
 
-    if (filterFields.keyword) {
-      query
-        .where('habitat_feature_quantitative_definition.name', 'ilike', `%${filterFields.keyword}%`)
-        .orWhere('habitat_feature_quantitative_definition.description', 'ilike', `%${filterFields.keyword}%`);
+    const searchConditions = [];
+
+    if (filterFields.keywords?.length) {
+      for (const keyword of filterFields.keywords) {
+        searchConditions.push(
+          knex.raw(
+            'habitat_feature_quantitative_definition.name ILIKE ? OR habitat_feature_quantitative_definition.description ILIKE ?',
+            [`%${keyword}%`, `%${keyword}%`]
+          )
+        );
+      }
+    }
+
+    if (searchConditions.length > 0) {
+      query.whereRaw(searchConditions.join(' OR '));
     }
 
     if (filterFields.survey_id || filterFields.itis_tsns?.length) {
@@ -123,28 +134,34 @@ export class HabitatFeatureRepository extends BaseRepository {
                 'description', habitat_feature_qualitative_definition_option.description,
                 'record_end_date', habitat_feature_qualitative_definition_option.record_end_date
               )
-            ), 
+            ) FILTER (WHERE habitat_feature_qualitative_definition_option.habitat_feature_qualitative_definition_id IS NOT NULL), 
             '[]'::json
           ) as options
         `)
       )
       .from('habitat_feature_qualitative_definition')
-      .join(
+      .innerJoin(
         'habitat_feature_qualitative_definition_option',
         'habitat_feature_qualitative_definition.habitat_feature_qualitative_definition_id',
         'habitat_feature_qualitative_definition_option.habitat_feature_qualitative_definition_id'
       )
-      .groupBy([
-        'habitat_feature_qualitative_definition.habitat_feature_qualitative_definition_id',
-        'habitat_feature_qualitative_definition.name',
-        'habitat_feature_qualitative_definition.description',
-        'habitat_feature_qualitative_definition.record_end_date'
-      ]);
+      .groupBy(['habitat_feature_qualitative_definition.habitat_feature_qualitative_definition_id']);
 
-    if (filterFields.keyword) {
-      query
-        .where('habitat_feature_qualitative_definition.name', 'ilike', `%${filterFields.keyword}%`)
-        .orWhere('habitat_feature_qualitative_definition.description', 'ilike', `%${filterFields.keyword}%`);
+    const searchConditions = [];
+
+    if (filterFields.keywords?.length) {
+      for (const keyword of filterFields.keywords) {
+        searchConditions.push(
+          knex.raw(
+            'habitat_feature_qualitative_definition.name ILIKE ? OR habitat_feature_qualitative_definition.description ILIKE ?',
+            [`%${keyword}%`, `%${keyword}%`]
+          )
+        );
+      }
+    }
+
+    if (searchConditions.length > 0) {
+      query.whereRaw(searchConditions.join(' OR '));
     }
 
     if (filterFields.survey_id || filterFields.itis_tsns?.length) {

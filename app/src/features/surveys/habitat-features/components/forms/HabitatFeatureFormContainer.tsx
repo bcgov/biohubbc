@@ -2,7 +2,10 @@ import { Stack } from '@mui/system';
 import FormikErrorSnackbar from 'components/alert/FormikErrorSnackbar';
 import FormikDevDebugger from 'components/formik/FormikDevDebugger';
 import { Formik, FormikProps } from 'formik';
-import { CreateSurveyHabitatFeature, UpdateSurveyHabitatFeature } from 'interfaces/useSurveyHabitatFeature.interface';
+import {
+  CreateSurveyHabitatFeature,
+  UpdateSurveyHabitatFeature
+} from 'interfaces/useSurveyHabitatFeatureApi.interface';
 import yup from 'utils/YupSchema';
 import { HabitatFeatureForm } from './HabitatFeatureForm';
 

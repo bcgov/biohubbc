@@ -3,7 +3,7 @@ import { OpenAPIV3 } from 'openapi-types';
 /**
  * Defines the schema for a survey habitat feature object, used for inserting a new survey habitat feature record.
  */
-export const insertHabitatFeatureSchema: OpenAPIV3.SchemaObject = {
+export const InsertHabitatFeatureSchema: OpenAPIV3.SchemaObject = {
   description: 'A survey habitat feature record to insert.',
   type: 'object',
   additionalProperties: false,
@@ -46,7 +46,7 @@ export const insertHabitatFeatureSchema: OpenAPIV3.SchemaObject = {
 /**
  * Defines the schema for a survey habitat feature object, used for updating an existing survey habitat feature record.
  */
-export const updateHabitatFeatureSchema: OpenAPIV3.SchemaObject = {
+export const UpdateHabitatFeatureSchema: OpenAPIV3.SchemaObject = {
   description: 'A survey habitat feature record to update.',
   type: 'object',
   additionalProperties: false,
@@ -89,7 +89,7 @@ export const updateHabitatFeatureSchema: OpenAPIV3.SchemaObject = {
 /**
  * A single survey habitat feature taxon object.
  */
-export const surveyHabitatFeatureTaxonSchema: OpenAPIV3.SchemaObject = {
+export const SurveyHabitatFeatureTaxonSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
   additionalProperties: false,
   required: [
@@ -124,7 +124,7 @@ export const surveyHabitatFeatureTaxonSchema: OpenAPIV3.SchemaObject = {
 /**
  * A single survey habitat feature object, with an array of survey habitat feature taxons.
  */
-export const surveyHabitatFeatureWithTaxonsSchema: OpenAPIV3.SchemaObject = {
+export const SurveyHabitatFeatureWithTaxonsSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
   additionalProperties: false,
   required: [
@@ -175,7 +175,7 @@ export const surveyHabitatFeatureWithTaxonsSchema: OpenAPIV3.SchemaObject = {
     },
     survey_habitat_feature_taxons: {
       type: 'array',
-      items: surveyHabitatFeatureTaxonSchema
+      items: SurveyHabitatFeatureTaxonSchema
     }
   }
 };
@@ -185,13 +185,13 @@ export const surveyHabitatFeatureWithTaxonsSchema: OpenAPIV3.SchemaObject = {
  */
 export const SurveyHabitatFeaturesWithTaxonsSchema: OpenAPIV3.SchemaObject = {
   type: 'array',
-  items: surveyHabitatFeatureWithTaxonsSchema
+  items: SurveyHabitatFeatureWithTaxonsSchema
 };
 
 /**
  * Supplementary data for survey habitat feature objects.
  */
-export const surveyHabitatFeaturesSupplementaryDataSchema: OpenAPIV3.SchemaObject = {
+export const SurveyHabitatFeaturesSupplementaryDataSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
   additionalProperties: false,
   required: ['count', 'habitatFeatureQuantitativeDefinitions', 'habitatFeatureQualitativeDefinitions'],
