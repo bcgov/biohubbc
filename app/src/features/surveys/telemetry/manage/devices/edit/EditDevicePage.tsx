@@ -9,7 +9,7 @@ import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
-import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
+import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { UpdateTelemetryDevice } from 'interfaces/useTelemetryDeviceApi.interface';
 import { useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
@@ -31,7 +31,7 @@ export const EditDevicePage = () => {
   const formikRef = useRef<FormikProps<UpdateTelemetryDevice>>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { locationChangeInterceptor } = useUnsavedChangesDialog();
+  const { locationChangeInterceptor, skipUnsavedChangesDialog } = useUnsavedChangesDialog();
 
   const urlParams: Record<string, string | number | undefined> = useParams();
   const deviceId: number | undefined = Number(urlParams['device_id']);
@@ -67,12 +67,8 @@ export const EditDevicePage = () => {
         comment: values.comment
       });
 
-      //   telemetryDataContext.devicesDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
-
-      history.push(
-        `/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry/manage`,
-        SKIP_CONFIRMATION_DIALOG
-      );
+      skipUnsavedChangesDialog();
+      history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry/manage`);
     } catch (error) {
       dialogContext.setErrorDialog({
         dialogTitle: TelemetryDeviceI18N.createErrorTitle,

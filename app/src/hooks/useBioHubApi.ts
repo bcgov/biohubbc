@@ -24,6 +24,7 @@ import useSamplingSiteApi from './api/useSamplingSiteApi';
 import useSpatialApi from './api/useSpatialApi';
 import useStandardsApi from './api/useStandardsApi';
 import useSurveyApi from './api/useSurveyApi';
+import useSurveyHabitatFeature from './api/useSurveyHabitatFeature';
 import useTaxonomyApi from './api/useTaxonomyApi';
 import useTechniqueApi from './api/useTechniqueApi';
 import useTelemetryApi from './api/useTelemetryApi';

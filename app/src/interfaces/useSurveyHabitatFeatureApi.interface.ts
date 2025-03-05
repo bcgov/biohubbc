@@ -57,6 +57,7 @@ export type CreateSurveyHabitatFeature = {
   habitat_feature_type_id: number;
   survey_id: number;
   latitude: number;
+  longitude: number;
   count: number;
   observed_date: string;
   observed_time: string;
@@ -66,6 +67,7 @@ export type UpdateSurveyHabitatFeature = {
   habitat_feature_type_id: number;
   survey_id: number;
   latitude: number;
+  longitude: number;
   count: number;
   observed_date: string;
   observed_time: string;

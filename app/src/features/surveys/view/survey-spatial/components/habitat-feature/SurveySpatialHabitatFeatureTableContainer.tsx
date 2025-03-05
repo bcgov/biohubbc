@@ -6,7 +6,7 @@ import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useHabitatFeatureTableContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
-import { SurveyHabitatFeatureTable } from '../../../../habitat-features/components/SurveyHabitatFeatureTable';
+import { SurveyHabitatFeatureTable } from '../../../../habitat-features/components/tables/SurveyHabitatFeatureTable';
 
 /**
  * Container for the Survey Spatial Habitat Feature Table.
