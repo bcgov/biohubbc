@@ -88,7 +88,7 @@ export const useBiohubApi = () => {
 
   const alert = useAlertApi(apiAxios);
 
-  const habitatFeatureApi = useSurveyHabitatFeature(apiAxios);
+  const habitatFeature = useSurveyHabitatFeature(apiAxios);
 
   return useMemo(
     () => ({
@@ -117,7 +117,7 @@ export const useBiohubApi = () => {
       markdown,
       alert,
       samplingPeriod,
-      habitatFeatureApi
+      habitatFeature
     }),
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

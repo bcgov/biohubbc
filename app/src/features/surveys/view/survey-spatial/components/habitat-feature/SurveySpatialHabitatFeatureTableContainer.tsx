@@ -4,7 +4,7 @@ import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { useHabitatFeatureTableContext } from 'hooks/useContext';
-import { SurveyHabitatFeatureTable } from '../../../../habitat-features/components/SurveyHabitatFeatureTable';
+import { SurveyHabitatFeatureTable } from '../../../../habitat-features/components/tables/SurveyHabitatFeatureTable';
 
 /**
  * Container for the Survey Spatial Habitat Feature Table.

@@ -1,14 +1,15 @@
-import { mdiCogOutline } from '@mdi/js';
+import { mdiCogOutline, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Box, Divider, IconButton, Paper, Stack, Toolbar, Tooltip, Typography } from '@mui/material';
+import { Box, Button, Divider, IconButton, Paper, Stack, Toolbar, Tooltip, Typography } from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
 import ListItemText from '@mui/material/ListItemText';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
-import { useHabitatFeatureTableContext } from 'hooks/useContext';
+import { useHabitatFeatureTableContext, useSurveyContext } from 'hooks/useContext';
 import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import { useState } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import { SurveyHabitatFeatureTable } from './SurveyHabitatFeatureTable';
 
 /**
@@ -18,6 +19,7 @@ import { SurveyHabitatFeatureTable } from './SurveyHabitatFeatureTable';
  */
 export const SurveyHabitatFeatureTableContainer = (): JSX.Element => {
   const habitatFeatureTableContext = useHabitatFeatureTableContext();
+  const surveyContext = useSurveyContext();
 
   const [columnVisibilityMenuAnchorEl, setColumnVisibilityMenuAnchorEl] = useState<Element | null>(null);
 
@@ -47,6 +49,14 @@ export const SurveyHabitatFeatureTableContainer = (): JSX.Element => {
 
         <Stack flexDirection="row" alignItems="center" gap={1} whiteSpace="nowrap">
           <HelpButtonDialog markdownType={MarkdownTypeNameEnum.HABITAT_FEATURES} />
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<Icon path={mdiPlus} size={1} />}
+            component={RouterLink}
+            to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/habitat-features/create`}>
+            Add
+          </Button>
 
           <Tooltip title="Toggle column visibility">
             <IconButton onClick={(event) => setColumnVisibilityMenuAnchorEl(event.currentTarget)}>
