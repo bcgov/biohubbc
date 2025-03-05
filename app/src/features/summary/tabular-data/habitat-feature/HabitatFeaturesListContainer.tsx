@@ -109,8 +109,6 @@ const HabitatFeaturesListContainer = (props: IHabitatFeaturesListContainerProps)
       : SurveyHabitatFeaturesAdvancedFiltersInitialValues.system_user_id
   });
 
-  console.log(advancedFiltersModel);
-
   const sort = firstOrNull(sortModel);
   const paginationSort: ApiPaginationRequestOptions = {
     limit: paginationModel.pageSize,

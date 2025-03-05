@@ -387,7 +387,6 @@ export function deleteSurveyHabitatFeature(): RequestHandler {
 
       return res.status(204).send();
     } catch (error) {
-      console.log('000000000000000000000000000000000', error);
       defaultLog.error({ label: 'deleteSurveyHabitatFeature', message: 'error', error });
       await connection.rollback();
       //   throw error;
