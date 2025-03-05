@@ -2,8 +2,8 @@ import { AxiosInstance } from 'axios';
 import {
   CreateSurveyHabitatFeature,
   FindSurveyHabitatFeatures,
+  FindSurveyHabitatFeaturesFilters,
   getSurveyHabitatFeaturesWithSupplementaryData,
-  SurveyHabitatFeaturesAdvancedFilters,
   SurveyHabitatFeaturesGeometry,
   UpdateSurveyHabitatFeature
 } from 'interfaces/useSurveyHabitatFeatureApi.interface';
@@ -67,13 +67,13 @@ const useSurveyHabitatFeatureApi = (axios: AxiosInstance) => {
    * @param {number} projectId
    * @param {number} surveyId
    * @param {ApiPaginationRequestOptions} [pagination]
-   * @return {*}  {Promise<void>}
+   * @return {*}  {Promise<getSurveyHabitatFeaturesWithSupplementaryData>}
    */
   const getSurveyHabitatFeaturesWithSupplementaryData = async (
     projectId: number,
     surveyId: number,
     pagination?: ApiPaginationRequestOptions
-  ): Promise<void> => {
+  ): Promise<getSurveyHabitatFeaturesWithSupplementaryData> => {
     const params = {
       ...pagination
     };
@@ -103,12 +103,12 @@ const useSurveyHabitatFeatureApi = (axios: AxiosInstance) => {
    * Find survey habitat feature records.
    *
    * @param {ApiPaginationRequestOptions} [pagination]
-   * @param {SurveyHabitatFeaturesAdvancedFilters} [filterFieldData]
+   * @param {FindSurveyHabitatFeaturesFilters} [filterFieldData]
    * @return {*}  {Promise<FindSurveyHabitatFeatures>}
    */
   const findSurveyHabitatFeatures = async (
     pagination?: ApiPaginationRequestOptions,
-    filterFieldData?: SurveyHabitatFeaturesAdvancedFilters
+    filterFieldData?: FindSurveyHabitatFeaturesFilters
   ): Promise<FindSurveyHabitatFeatures> => {
     const params = {
       ...pagination,

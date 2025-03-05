@@ -13,19 +13,17 @@ import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { IHabitatFeatureRow } from 'contexts/habitatFeatureTableContext';
 import dayjs from 'dayjs';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useCodesContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
 import { useSearchParams } from 'hooks/useSearchParams';
-import {
-  FindSurveyHabitatFeatures,
-  SurveyHabitatFeaturesAdvancedFilters
-} from 'interfaces/useSurveyHabitatFeatureApi.interface';
-import qs from 'qs';
-import { useCallback, useState } from 'react';
+import { FindSurveyHabitatFeatures } from 'interfaces/useSurveyHabitatFeatureApi.interface';
+import { useCallback, useEffect, useState } from 'react';
 import { ApiPaginationRequestOptions, StringValues } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
 import {
   HabitatFeaturesListFilterForm,
+  SurveyHabitatFeaturesAdvancedFilters,
   SurveyHabitatFeaturesAdvancedFiltersInitialValues
 } from './HabitatFeaturesListFilterForm';
 
@@ -34,8 +32,8 @@ import {
 type HabitatFeatureDataTableURLParams = {
   // filter
   h_keyword?: string;
-  h_habitat_feature_type_ids?: number;
-  h_itis_tsns?: number;
+  h_habitat_feature_type_id?: number;
+  h_itis_tsn?: number;
   h_start_date?: string;
   h_end_date?: string;
   h_start_time?: string;
@@ -71,6 +69,12 @@ const initialPaginationParams: Required<ApiPaginationRequestOptions> = {
 const HabitatFeaturesListContainer = (props: IHabitatFeaturesListContainerProps) => {
   const { showSearch } = props;
 
+  const codesContext = useCodesContext();
+
+  useEffect(() => {
+    codesContext.codesDataLoader.load();
+  }, [codesContext.codesDataLoader]);
+
   const biohubApi = useBiohubApi();
 
   const { searchParams, setSearchParams } = useSearchParams<StringValues<HabitatFeatureDataTableURLParams>>();
@@ -89,12 +93,12 @@ const HabitatFeaturesListContainer = (props: IHabitatFeaturesListContainerProps)
 
   const [advancedFiltersModel, setAdvancedFiltersModel] = useState<SurveyHabitatFeaturesAdvancedFilters>({
     keyword: searchParams.get('h_keyword') ?? SurveyHabitatFeaturesAdvancedFiltersInitialValues.keyword,
-    habitat_feature_type_ids: searchParams.get('h_habitat_feature_type_ids')
-      ? Object.values(qs.parse(searchParams.get('h_habitat_feature_type_ids') ?? '')).map(Number)
-      : SurveyHabitatFeaturesAdvancedFiltersInitialValues.habitat_feature_type_ids,
-    itis_tsns: searchParams.get('h_itis_tsns')
-      ? Object.values(qs.parse(searchParams.get('h_itis_tsns') ?? '')).map(Number)
-      : SurveyHabitatFeaturesAdvancedFiltersInitialValues.itis_tsns,
+    habitat_feature_type_id: searchParams.get('h_habitat_feature_type_id')
+      ? Number(searchParams.get('h_habitat_feature_type_id'))
+      : SurveyHabitatFeaturesAdvancedFiltersInitialValues.habitat_feature_type_id,
+    itis_tsn: searchParams.get('h_itis_tsn')
+      ? Number(searchParams.get('h_itis_tsn'))
+      : SurveyHabitatFeaturesAdvancedFiltersInitialValues.itis_tsn,
     start_date: searchParams.get('h_start_date') ?? SurveyHabitatFeaturesAdvancedFiltersInitialValues.start_date,
     end_date: searchParams.get('h_end_date') ?? SurveyHabitatFeaturesAdvancedFiltersInitialValues.end_date,
     start_time: searchParams.get('h_start_time') ?? SurveyHabitatFeaturesAdvancedFiltersInitialValues.start_time,
@@ -104,6 +108,8 @@ const HabitatFeaturesListContainer = (props: IHabitatFeaturesListContainerProps)
       ? Number(searchParams.get('h_system_user_id'))
       : SurveyHabitatFeaturesAdvancedFiltersInitialValues.system_user_id
   });
+
+  console.log(advancedFiltersModel);
 
   const sort = firstOrNull(sortModel);
   const paginationSort: ApiPaginationRequestOptions = {
@@ -128,6 +134,9 @@ const HabitatFeaturesListContainer = (props: IHabitatFeaturesListContainerProps)
       habitatFeaturesData.surveyHabitatFeatures?.flatMap((habitatFeatureRow) => {
         return {
           id: String(habitatFeatureRow.survey_habitat_feature_id),
+          habitat_feature_taxons: habitatFeatureRow.survey_habitat_feature_taxons.map(
+            (taxon) => taxon.itis_scientific_name
+          ),
           ...habitatFeatureRow
         };
       }),
@@ -152,6 +161,18 @@ const HabitatFeaturesListContainer = (props: IHabitatFeaturesListContainerProps)
           {params.row.survey_habitat_feature_id}
         </Typography>
       )
+    },
+    {
+      field: 'habitat_feature_type_id',
+      headerName: 'Type',
+      flex: 1,
+      renderCell: (params) => {
+        const habitatFeatureTypeCode = codesContext.codesDataLoader.data?.habitat_feature_types.find(
+          (item) => item.id === params.row.habitat_feature_type_id
+        );
+
+        return <Typography variant="body2">{habitatFeatureTypeCode?.name ?? ''}</Typography>;
+      }
     },
     {
       field: 'count',
@@ -194,8 +215,8 @@ const HabitatFeaturesListContainer = (props: IHabitatFeaturesListContainerProps)
               setSearchParams(
                 searchParams
                   .setOrDelete('h_keyword', values.keyword)
-                  .setOrDelete('h_habitat_feature_type_ids', values.habitat_feature_type_ids)
-                  .setOrDelete('h_itis_tsns', values.itis_tsns)
+                  .setOrDelete('h_habitat_feature_type_id', values.habitat_feature_type_id)
+                  .setOrDelete('h_itis_tsn', values.itis_tsn)
                   .setOrDelete('h_min_count', values.min_count)
                   .setOrDelete('h_start_date', values.start_date)
                   .setOrDelete('h_end_date', values.end_date)

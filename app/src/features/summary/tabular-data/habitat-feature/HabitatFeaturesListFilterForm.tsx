@@ -5,13 +5,21 @@ import SpeciesAutocompleteField from 'components/species/components/SpeciesAutoc
 import { FilterFieldsContainer } from 'features/summary/components/FilterFieldsContainer';
 import { Formik } from 'formik';
 import { useCodesContext, useTaxonomyContext } from 'hooks/useContext';
-import { SurveyHabitatFeaturesAdvancedFilters } from 'interfaces/useSurveyHabitatFeatureApi.interface';
+import { FindSurveyHabitatFeaturesFilters } from 'interfaces/useSurveyHabitatFeatureApi.interface';
 import { useEffect } from 'react';
+
+export type SurveyHabitatFeaturesAdvancedFilters = Pick<
+  FindSurveyHabitatFeaturesFilters,
+  'keyword' | 'start_date' | 'end_date' | 'start_time' | 'end_time' | 'min_count' | 'system_user_id'
+> & {
+  habitat_feature_type_id?: number;
+  itis_tsn?: number;
+};
 
 export const SurveyHabitatFeaturesAdvancedFiltersInitialValues: SurveyHabitatFeaturesAdvancedFilters = {
   keyword: undefined,
-  habitat_feature_type_ids: undefined,
-  itis_tsns: undefined,
+  habitat_feature_type_id: undefined,
+  itis_tsn: undefined,
   start_date: undefined,
   end_date: undefined,
   start_time: undefined,
@@ -73,8 +81,8 @@ export const HabitatFeaturesListFilterForm = (props: IHabitatFeaturesListFilterF
               label={'Species'}
               placeholder="Search by taxon"
               defaultSpecies={
-                (initialValues?.itis_tsns?.length &&
-                  taxonomyContext.getCachedSpeciesTaxonomyByIdAsync(Number(initialValues.itis_tsns[0]))) ||
+                (initialValues?.itis_tsn &&
+                  taxonomyContext.getCachedSpeciesTaxonomyByIdAsync(Number(initialValues.itis_tsn))) ||
                 undefined
               }
               handleSpecies={(value) => {

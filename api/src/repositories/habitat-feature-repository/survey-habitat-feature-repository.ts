@@ -7,6 +7,7 @@ import {
   FindSurveyHabitatFeatureAdvancedFilters,
   InsertSurveyHabitatFeature,
   SurveyHabitatFeatureCount,
+  SurveyHabitatFeatureGeometry,
   SurveyHabitatFeatureWithTaxons,
   UpdateSurveyHabitatFeature
 } from './survey-habitat-feature-repository.interface';

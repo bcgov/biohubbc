@@ -94,7 +94,7 @@ export type FindSurveyHabitatFeatures = {
   pagination: ApiPaginationResponseParams;
 };
 
-export type SurveyHabitatFeaturesAdvancedFilters = {
+export type FindSurveyHabitatFeaturesFilters = {
   keyword?: string;
   habitat_feature_type_ids?: number[];
   itis_tsns?: number[];
