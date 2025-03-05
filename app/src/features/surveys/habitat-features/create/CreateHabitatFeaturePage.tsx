@@ -71,15 +71,15 @@ export const CreateHabitatFeaturePage = (): JSX.Element => {
         }
       ]);
 
-      skipUnsavedChangesDialog();
-      history.goBack();
+      habitatFeatureContext.refreshData();
 
       dialogContext.setSnackbar({
         open: true,
         snackbarMessage: 'Successfully created habitat feature'
       });
 
-      await habitatFeatureContext.refreshData();
+      skipUnsavedChangesDialog();
+      history.goBack();
     } catch (error) {
       dialogContext.setErrorDialog({
         open: true,
