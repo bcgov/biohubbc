@@ -90,12 +90,10 @@ export class ExportObservationStrategy extends DBService implements ExportStrate
    * @memberof ExportObservationStrategy
    */
   static readonly observationCsvTransformation = (item: Record<string, any>): string => {
-    const envValues = [];
-    // Using an indexed for loop structure as it is the fastest
-    for (let i = 0; i < item.env_data.length; i++) {
-      const envItem = item.env_data[i];
-      envValues.push(envItem.env_value);
-    }
+    // extract environment qualitative and quantitative values
+    const envValues: string[] = item.env_data.map((envItem: { ev: string }) => envItem.ev);
+    // extract measurments qualitative and quantitative values
+    const measValues: string[] = item.meas_data.map((measItem: { mv: string }) => measItem.mv);
 
     return [
       item.observation_id,
@@ -112,7 +110,8 @@ export class ExportObservationStrategy extends DBService implements ExportStrate
       item.latitude,
       item.longitude,
       item.comment,
-      ...envValues
+      ...envValues,
+      ...measValues
     ].join(',');
   };
 }

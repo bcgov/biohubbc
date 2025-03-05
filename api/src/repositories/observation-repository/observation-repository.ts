@@ -699,173 +699,195 @@ export class ObservationRepository extends BaseRepository {
     return SQL`
       WITH aggregated_data AS (
           SELECT 
-              survey_observation.survey_observation_id AS observation_id,
-              observation_subcount.observation_subcount_id AS subcount_id,
-              survey_observation.itis_tsn AS tsn,
-              survey_observation.itis_scientific_name AS species,
-              survey_sample_site.name AS site,
-              method_technique.name AS technique,
-              survey_sample_period.start_date,
-              survey_sample_period.end_date,
-              observation_subcount_sign.name AS SIGN,
-              survey_observation.count,
-              survey_observation.observation_date,
-              survey_observation.observation_time,
-              survey_observation.latitude,
-              survey_observation.longitude,
-              observation_subcount.comment,
-              observation_subcount_qualitative_measurement.critterbase_taxon_measurement_id AS qual_crit_meas_id,
-              observation_subcount_qualitative_measurement.critterbase_measurement_qualitative_option_id AS qual_crit_meas_option_id, 
-              observation_subcount_quantitative_measurement.critterbase_taxon_measurement_id AS quan_crit_meas_id,
-              
+              so.survey_observation_id AS observation_id,
+              osc.observation_subcount_id AS subcount_id,
+              so.itis_tsn AS tsn,
+              so.itis_scientific_name AS species,
+              sss.name AS site,
+              mt.name AS technique,
+              ssp.start_date,
+              ssp.end_date,
+              os_sign.name AS sign,
+              so.count,
+              so.observation_date,
+              so.observation_time,
+              so.latitude,
+              so.longitude,
+              osc.comment,
+              -- Aggregate qualitative measurements as JSON mh=meas header mv=meas value 
               jsonb_agg(
                   jsonb_build_object(
-                      'env_header', environment_qualitative.name, 
-                      'env_value', environment_qualitative_option.name
+                      'mh', oscqm.critterbase_taxon_measurement_id::TEXT, 
+                      'mv', oscqm.critterbase_measurement_qualitative_option_id::TEXT
                   )
               ) FILTER (
-                  WHERE environment_qualitative.name IS NOT NULL AND environment_qualitative_option.name IS NOT NULL
+                  WHERE oscqm.critterbase_taxon_measurement_id IS NOT NULL AND 
+                        oscqm.critterbase_measurement_qualitative_option_id IS NOT NULL
+              ) AS meas_qual_data,
+              -- Aggregate quantitative measurements as JSON
+              jsonb_agg(
+                  jsonb_build_object(
+                      'mh', oscqmm.critterbase_taxon_measurement_id::TEXT, 
+                      'mv', oscqmm.value::TEXT
+                  )
+              ) FILTER (
+                  WHERE oscqmm.critterbase_taxon_measurement_id IS NOT NULL AND 
+                        oscqmm.value IS NOT NULL
+              ) AS meas_quan_data,
+              -- Aggregate environmental qualitative data as JSON eh=environment header ev=environment value 
+              jsonb_agg(
+                  jsonb_build_object(
+                      'eh', eq.name, 
+                      'ev', eqo.name
+                  )
+              ) FILTER (
+                  WHERE eq.name IS NOT NULL AND eqo.name IS NOT NULL
               ) AS env_qual_data,
-              
+              -- Aggregate environmental quantitative data as JSON
               jsonb_agg(
                   jsonb_build_object(
-                      'env_header', environment_quantitative.name, 
-                      'env_value', observation_subcount_quantitative_environment.value
+                      'eh', eqt.name, 
+                      'ev', oscq.value
                   )
               ) FILTER (
-                  WHERE environment_quantitative.name IS NOT NULL AND observation_subcount_quantitative_environment.value IS NOT NULL
+                  WHERE eqt.name IS NOT NULL AND oscq.value IS NOT NULL
               ) AS env_quan_data
-
-          FROM "survey_observation"
-          INNER JOIN "observation_subcount" 
-              ON "survey_observation"."survey_observation_id" = "observation_subcount"."survey_observation_id"
-          LEFT JOIN "survey_sample_period" 
-              ON "survey_observation"."survey_sample_period_id" = "survey_sample_period"."survey_sample_period_id"
-          LEFT JOIN "survey_sample_site" 
-              ON "survey_sample_period"."survey_sample_site_id" = "survey_sample_site"."survey_sample_site_id"
-          LEFT JOIN "method_technique" 
-              ON "survey_sample_period"."method_technique_id" = "method_technique"."method_technique_id"
-          LEFT JOIN "observation_subcount_sign" 
-              ON "observation_subcount"."observation_subcount_sign_id" = "observation_subcount_sign"."observation_subcount_sign_id"
-          LEFT JOIN "observation_subcount_qualitative_environment" 
-              ON "observation_subcount"."observation_subcount_id" = "observation_subcount_qualitative_environment"."observation_subcount_id"
-          LEFT JOIN "observation_subcount_quantitative_environment" 
-              ON "observation_subcount"."observation_subcount_id" = "observation_subcount_quantitative_environment"."observation_subcount_id"
-          LEFT JOIN "environment_qualitative" 
-              ON "observation_subcount_qualitative_environment"."environment_qualitative_id" = "environment_qualitative"."environment_qualitative_id"
-          LEFT JOIN "environment_qualitative_option" 
-              ON "observation_subcount_qualitative_environment"."environment_qualitative_option_id" = "environment_qualitative_option"."environment_qualitative_option_id"
-          LEFT JOIN "environment_quantitative" 
-              ON "observation_subcount_quantitative_environment"."environment_quantitative_id" = "environment_quantitative"."environment_quantitative_id"
-          LEFT JOIN "observation_subcount_qualitative_measurement" 
-              ON "observation_subcount"."observation_subcount_id" = "observation_subcount_qualitative_measurement"."observation_subcount_id"
-          LEFT JOIN "observation_subcount_quantitative_measurement" 
-              ON "observation_subcount"."observation_subcount_id" = "observation_subcount_quantitative_measurement"."observation_subcount_id"
-          
-          WHERE "survey_observation"."survey_id" = ${surveyId}
-          
+          FROM survey_observation so
+          INNER JOIN observation_subcount osc ON so.survey_observation_id = osc.survey_observation_id
+          LEFT JOIN survey_sample_period ssp ON so.survey_sample_period_id = ssp.survey_sample_period_id
+          LEFT JOIN survey_sample_site sss ON ssp.survey_sample_site_id = sss.survey_sample_site_id
+          LEFT JOIN method_technique mt ON ssp.method_technique_id = mt.method_technique_id
+          LEFT JOIN observation_subcount_sign os_sign ON osc.observation_subcount_sign_id = os_sign.observation_subcount_sign_id
+          LEFT JOIN observation_subcount_qualitative_environment oscqe ON osc.observation_subcount_id = oscqe.observation_subcount_id
+          LEFT JOIN observation_subcount_quantitative_environment oscq ON osc.observation_subcount_id = oscq.observation_subcount_id
+          LEFT JOIN environment_qualitative eq ON oscqe.environment_qualitative_id = eq.environment_qualitative_id
+          LEFT JOIN environment_qualitative_option eqo ON oscqe.environment_qualitative_option_id = eqo.environment_qualitative_option_id
+          LEFT JOIN environment_quantitative eqt ON oscq.environment_quantitative_id = eqt.environment_quantitative_id
+          LEFT JOIN observation_subcount_qualitative_measurement oscqm ON osc.observation_subcount_id = oscqm.observation_subcount_id
+          LEFT JOIN observation_subcount_quantitative_measurement oscqmm ON osc.observation_subcount_id = oscqmm.observation_subcount_id
+          WHERE so.survey_id = ${surveyId}
           GROUP BY 
-              survey_observation.survey_observation_id, 
-              observation_subcount.observation_subcount_id,
-              survey_observation.itis_tsn,
-              survey_observation.itis_scientific_name,
-              survey_sample_site.name,
-              method_technique.name,
-              survey_sample_period.start_date,
-              survey_sample_period.end_date,
-              observation_subcount_sign.name,
-              survey_observation.count,
-              survey_observation.observation_date,
-              survey_observation.observation_time,
-              survey_observation.latitude,
-              survey_observation.longitude,
-              observation_subcount.comment,
-              observation_subcount_qualitative_measurement.critterbase_taxon_measurement_id,
-              observation_subcount_qualitative_measurement.critterbase_measurement_qualitative_option_id,
-              observation_subcount_quantitative_measurement.critterbase_taxon_measurement_id
+              so.survey_observation_id,
+              osc.observation_subcount_id,
+              so.itis_tsn,
+              so.itis_scientific_name,
+              sss.name,
+              mt.name,
+              ssp.start_date,
+              ssp.end_date,
+              os_sign.name,
+              so.count,
+              so.observation_date,
+              so.observation_time,
+              so.latitude,
+              so.longitude,
+              osc.comment
       ),
       unique_env_headers AS (
-          SELECT 
-              environment_qualitative.name AS header_name,
+          SELECT DISTINCT
+              eq.name AS header_name,
               'qualitative' AS source
-          FROM environment_qualitative
-          JOIN "observation_subcount_qualitative_environment" 
-              ON environment_qualitative.environment_qualitative_id = "observation_subcount_qualitative_environment".environment_qualitative_id
-          
-          UNION ALL
-
-          SELECT 
-              environment_quantitative.name AS header_name,
+          FROM environment_qualitative eq
+          JOIN observation_subcount_qualitative_environment oscqe ON eq.environment_qualitative_id = oscqe.environment_qualitative_id
+          UNION
+          SELECT DISTINCT
+              eqt.name AS header_name,
               'quantitative' AS source
-          FROM environment_quantitative
-          JOIN "observation_subcount_quantitative_environment" 
-              ON environment_quantitative.environment_quantitative_id = "observation_subcount_quantitative_environment".environment_quantitative_id
+          FROM environment_quantitative eqt
+          JOIN observation_subcount_quantitative_environment oscq ON eqt.environment_quantitative_id = oscq.environment_quantitative_id
+      ),
+      unique_meas_headers AS (
+          SELECT DISTINCT
+              oscqm.critterbase_taxon_measurement_id::TEXT AS header_name,
+              'qualitative' AS source
+          FROM observation_subcount_qualitative_measurement oscqm
+          UNION
+          SELECT DISTINCT
+              oscqmm.critterbase_taxon_measurement_id::TEXT AS header_name,
+              'quantitative' AS source
+          FROM observation_subcount_quantitative_measurement oscqmm
+      ),
+      combined_env_data AS (
+          SELECT
+              ad.observation_id,
+              ad.subcount_id,
+              ad.tsn,
+              ad.species,
+              ad.site,
+              ad.technique,
+              ad.start_date,
+              ad.end_date,
+              ad.sign,
+              ad.count,
+              ad.observation_date,
+              ad.observation_time,
+              ad.latitude,
+              ad.longitude,
+              ad.comment,
+              jsonb_agg(
+                  jsonb_build_object(
+                      'eh', e.header_name,
+                      'ev', COALESCE(
+                          (SELECT e2->>'ev' FROM jsonb_array_elements(ad.env_qual_data) AS e2 WHERE e2->>'eh' = e.header_name LIMIT 1),
+                          (SELECT e2->>'ev' FROM jsonb_array_elements(ad.env_quan_data) AS e2 WHERE e2->>'eh' = e.header_name LIMIT 1)
+                      )
+                  )
+              ) AS env_data
+          FROM aggregated_data ad
+          LEFT JOIN unique_env_headers e ON e.header_name IS NOT NULL
+          GROUP BY ad.observation_id, ad.subcount_id, ad.tsn, ad.species, ad.site, ad.technique, ad.start_date, ad.end_date, ad.sign, ad.count, ad.observation_date, ad.observation_time, ad.latitude, ad.longitude, ad.comment
+      ),
+      combined_meas_data AS (
+          SELECT 
+              ad.observation_id,
+              ad.subcount_id,
+              ad.tsn,
+              ad.species,
+              ad.site,
+              ad.technique,
+              ad.start_date,
+              ad.end_date,
+              ad.sign,
+              ad.count,
+              ad.observation_date,
+              ad.observation_time,
+              ad.latitude,
+              ad.longitude,
+              ad.comment,
+              jsonb_agg(
+                  jsonb_build_object(
+                      'mh', m.header_name,
+                      'mv', COALESCE(
+                          (SELECT e2->>'mv' FROM jsonb_array_elements(ad.meas_qual_data) AS e2 WHERE e2->>'mh' = m.header_name LIMIT 1),
+                          (SELECT e2->>'mv' FROM jsonb_array_elements(ad.meas_quan_data) AS e2 WHERE e2->>'mh' = m.header_name LIMIT 1)
+                      )
+                  )
+              ) AS meas_data
+          FROM aggregated_data ad
+          LEFT JOIN unique_meas_headers m ON m.header_name IS NOT NULL
+          GROUP BY ad.observation_id, ad.subcount_id, ad.tsn, ad.species, ad.site, ad.technique, ad.start_date, ad.end_date, ad.sign, ad.count, ad.observation_date, ad.observation_time, ad.latitude, ad.longitude, ad.comment
       )
       SELECT 
-          observation_id,
-          subcount_id,
-          tsn,
-          species,
-          site,
-          technique,
-          start_date,
-          end_date,
-          SIGN, 
-          COUNT,
-          observation_date,
-          observation_time,
-          latitude,
-          longitude, 
-          COMMENT,
-          qual_crit_meas_id,
-          qual_crit_meas_option_id,
-          quan_crit_meas_id,
-          jsonb_agg(
-              jsonb_build_object(
-                  'env_value', 
-                  COALESCE(
-                      -- Fetch env_value from env_qual_data
-                      (
-                          SELECT e->>'env_value'
-                          FROM jsonb_array_elements(env_qual_data) AS e
-                          WHERE e->>'env_header' = unique_env_headers.header_name
-                          LIMIT 1
-                      ),
-                      -- Fetch env_value from env_quan_data
-                      (
-                          SELECT e->>'env_value'
-                          FROM jsonb_array_elements(env_quan_data) AS e
-                          WHERE e->>'env_header' = unique_env_headers.header_name
-                          LIMIT 1
-                      ),
-                      NULL
-                  ),
-                  'env_header', unique_env_headers.header_name
-              )
-          ) AS env_data
-      FROM aggregated_data
-      JOIN unique_env_headers 
-          ON unique_env_headers.header_name IS NOT NULL
-      GROUP BY 
-          observation_id,
-          subcount_id,
-          tsn,
-          species,
-          site,
-          technique,
-          start_date,
-          end_date,
-          SIGN, 
-          COUNT,
-          observation_date,
-          observation_time,
-          latitude,
-          longitude, 
-          COMMENT,
-          qual_crit_meas_id,
-          qual_crit_meas_option_id,
-          quan_crit_meas_id
-      ORDER BY observation_id;
+          e.observation_id,
+          e.subcount_id,
+          e.tsn,
+          e.species,
+          e.site,
+          e.technique,
+          e.start_date,
+          e.end_date,
+          e.sign,
+          e.count,
+          e.observation_date,
+          e.observation_time,
+          e.latitude,
+          e.longitude,
+          e.comment,
+          e.env_data,
+          m.meas_data
+      FROM combined_env_data e
+      JOIN combined_meas_data m ON e.observation_id = m.observation_id AND e.subcount_id = m.subcount_id
+      ORDER BY e.observation_id;
     `;
   }
 }
