@@ -5,7 +5,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { usePersistentState } from 'hooks/usePersistentState';
-import { createContext, PropsWithChildren, useCallback, useMemo, useState } from 'react';
+import { createContext, PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react';
 
 export interface IHabitatFeatureRow {
   survey_habitat_feature_id: number;
@@ -96,8 +96,13 @@ export const HabitatFeatureTableContextProvider = (props: IHabitatFeatureTableCo
   );
 
   // Load the codes and habitat feature data
-  codesContext.codesDataLoader.load();
-  habitatFeatureDataLoader.load();
+  useEffect(() => {
+    codesContext.codesDataLoader.load();
+  }, [codesContext.codesDataLoader]);
+
+  useEffect(() => {
+    habitatFeatureDataLoader.load();
+  }, [habitatFeatureDataLoader]);
 
   // Columns hidden from table view
   const hiddenColumns = useMemo(() => {

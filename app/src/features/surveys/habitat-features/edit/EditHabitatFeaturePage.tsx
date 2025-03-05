@@ -37,7 +37,7 @@ export const EditHabitatFeaturePage = (): JSX.Element => {
   const dialogContext = useContext(DialogContext);
 
   const urlParams = useParams<Record<string, string | undefined>>();
-  const surveyHabitatFeatureId = Number(urlParams.survey_habitat_feature_id);
+  const habitatFeatureId = Number(urlParams.habitat_feature_id);
 
   const { locationChangeInterceptor, skipUnsavedChangesDialog } = useUnsavedChangesDialog();
 
@@ -46,11 +46,7 @@ export const EditHabitatFeaturePage = (): JSX.Element => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const habitatFeatureDataLoader = useDataLoader(() =>
-    biohubApi.habitatFeature.getSurveyHabitatFeature(
-      surveyContext.projectId,
-      surveyContext.surveyId,
-      surveyHabitatFeatureId
-    )
+    biohubApi.habitatFeature.getSurveyHabitatFeature(surveyContext.projectId, surveyContext.surveyId, habitatFeatureId)
   );
 
   useEffect(() => {
@@ -60,7 +56,8 @@ export const EditHabitatFeaturePage = (): JSX.Element => {
   if (
     !surveyContext.surveyDataLoader.data ||
     !projectContext.projectDataLoader.data ||
-    !habitatFeatureDataLoader.data
+    !habitatFeatureDataLoader.data ||
+    habitatFeatureDataLoader.isLoading
   ) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
@@ -86,7 +83,7 @@ export const EditHabitatFeaturePage = (): JSX.Element => {
       await biohubApi.habitatFeature.updateSurveyHabitatFeature(
         surveyContext.projectId,
         surveyContext.surveyId,
-        surveyHabitatFeatureId,
+        habitatFeatureId,
         {
           habitat_feature_type_id: values.habitat_feature_type_id,
           survey_id: surveyContext.surveyId,

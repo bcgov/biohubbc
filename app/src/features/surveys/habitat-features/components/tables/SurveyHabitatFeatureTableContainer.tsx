@@ -1,14 +1,17 @@
-import { mdiCogOutline, mdiPencil, mdiPlus } from '@mdi/js';
+import { mdiCogOutline, mdiPencil, mdiPlus, mdiTrashCan } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Box, Button, Divider, IconButton, Paper, Stack, Toolbar, Tooltip, Typography } from '@mui/material';
+import { Box, Button, Collapse, Divider, IconButton, Paper, Stack, Toolbar, Tooltip, Typography } from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
 import ListItemText from '@mui/material/ListItemText';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
+import { DialogContext } from 'contexts/dialogContext';
+import { APIError } from 'hooks/api/useAxios';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useHabitatFeatureTableContext, useSurveyContext } from 'hooks/useContext';
 import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { Link as RouterLink, useHistory } from 'react-router-dom';
 import { SurveyHabitatFeatureTable } from './SurveyHabitatFeatureTable';
 
@@ -19,14 +22,59 @@ import { SurveyHabitatFeatureTable } from './SurveyHabitatFeatureTable';
  */
 export const SurveyHabitatFeatureTableContainer = (): JSX.Element => {
   const history = useHistory();
+  const biohubApi = useBiohubApi();
+  const dialogContext = useContext(DialogContext);
   const habitatFeatureTableContext = useHabitatFeatureTableContext();
   const surveyContext = useSurveyContext();
 
   const [columnVisibilityMenuAnchorEl, setColumnVisibilityMenuAnchorEl] = useState<Element | null>(null);
+  const [openDeleteHabitatFeatureDialog, setOpenDeleteHabitatFeatureDialog] = useState(false);
 
   const handleCloseColumnVisibilityMenu = () => {
     setColumnVisibilityMenuAnchorEl(null);
   };
+
+  /**
+   * Delete multiple habitat features.
+   *
+   * @param {number[]} habitatFeatureIds
+   * @return {*} {Promise<void>}
+   */
+  const deleteHabitatFeatures = async (habitatFeatureIds: number[]) => {
+    try {
+      await biohubApi.habitatFeature.deleteSurveyHabitatFeatures(
+        surveyContext.projectId,
+        surveyContext.surveyId,
+        habitatFeatureIds
+      );
+
+      habitatFeatureTableContext.refreshData();
+    } catch (error) {
+      dialogContext.setErrorDialog({
+        open: true,
+        dialogTitle: 'Error Deleting Habitat Features',
+        dialogText: 'An error occurred while deleting the habitat features.',
+        dialogError: error instanceof Error ? error.message : undefined,
+        dialogErrorDetails: error instanceof APIError ? error.errors : undefined
+      });
+    } finally {
+      setOpenDeleteHabitatFeatureDialog(false);
+    }
+  };
+
+  dialogContext.setYesNoDialog({
+    open: openDeleteHabitatFeatureDialog,
+    dialogTitle: 'Are you sure you want to delete these habitat features?',
+    onYes: async () => {
+      await deleteHabitatFeatures(habitatFeatureTableContext.rowSelectionModel.map((id) => Number(id)));
+    },
+    onClose: () => {
+      setOpenDeleteHabitatFeatureDialog(false);
+    },
+    onNo: () => {
+      setOpenDeleteHabitatFeatureDialog(false);
+    }
+  });
 
   return (
     <Paper component={Stack} flexDirection="column" flex="1 1 auto" height="100%">
@@ -59,20 +107,25 @@ export const SurveyHabitatFeatureTableContainer = (): JSX.Element => {
             Add
           </Button>
 
-          <Button
-            variant="outlined"
-            color="primary"
-            startIcon={<Icon path={mdiPencil} size={1} />}
-            onClick={() => {
-              // Currently only supports editing one row at a time
-              if (habitatFeatureTableContext.rowSelectionModel.length !== 1) {
-                return;
-              }
-
-              history.push(`${habitatFeatureTableContext.rowSelectionModel[0]}/edit`);
-            }}>
-            Edit
-          </Button>
+          <Collapse in={habitatFeatureTableContext.rowSelectionModel.length === 1} orientation="horizontal">
+            <Button
+              variant="outlined"
+              color="primary"
+              startIcon={<Icon path={mdiPencil} size={1} />}
+              onClick={() => {
+                history.push(`${habitatFeatureTableContext.rowSelectionModel[0]}/edit`);
+              }}>
+              Edit
+            </Button>
+            <Button
+              variant="outlined"
+              color="error"
+              startIcon={<Icon path={mdiTrashCan} size={1} />}
+              onClick={() => setOpenDeleteHabitatFeatureDialog(true)}
+              sx={{ ml: 1 }}>
+              Delete
+            </Button>
+          </Collapse>
 
           <Tooltip title="Toggle column visibility">
             <IconButton onClick={(event) => setColumnVisibilityMenuAnchorEl(event.currentTarget)}>

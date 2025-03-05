@@ -67,7 +67,7 @@ export const HabitatFeatureRouter = () => {
 
       <RouteWithTitle
         exact
-        path="/admin/projects/:id/surveys/:survey_id/habitat-features/:survey_habitat_feature_id/edit"
+        path="/admin/projects/:id/surveys/:survey_id/habitat-features/:habitat_feature_id/edit"
         title={getTitle('Edit Habitat Feature')}>
         <ProjectRoleRouteGuard
           validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
