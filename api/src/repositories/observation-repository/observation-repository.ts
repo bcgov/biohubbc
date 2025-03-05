@@ -784,28 +784,56 @@ export class ObservationRepository extends BaseRepository {
               osc.comment
       ),
       unique_env_headers AS (
-          SELECT DISTINCT
+          SELECT 
               eq.name AS header_name,
               'qualitative' AS source
           FROM environment_qualitative eq
-          JOIN observation_subcount_qualitative_environment oscqe ON eq.environment_qualitative_id = oscqe.environment_qualitative_id
+          WHERE EXISTS (
+              SELECT 1
+              FROM observation_subcount_qualitative_environment oscqe
+              JOIN observation_subcount osc ON oscqe.observation_subcount_id = osc.observation_subcount_id
+              JOIN survey_observation so ON osc.survey_observation_id = so.survey_observation_id
+              WHERE so.survey_id = ${surveyId}
+              AND eq.environment_qualitative_id = oscqe.environment_qualitative_id
+          )
           UNION
-          SELECT DISTINCT
+          SELECT 
               eqt.name AS header_name,
               'quantitative' AS source
           FROM environment_quantitative eqt
-          JOIN observation_subcount_quantitative_environment oscq ON eqt.environment_quantitative_id = oscq.environment_quantitative_id
+          WHERE EXISTS (
+              SELECT 1
+              FROM observation_subcount_quantitative_environment oscq
+              JOIN observation_subcount osc ON oscq.observation_subcount_id = osc.observation_subcount_id
+              JOIN survey_observation so ON osc.survey_observation_id = so.survey_observation_id
+              WHERE so.survey_id = ${surveyId}
+              AND eqt.environment_quantitative_id = oscq.environment_quantitative_id
+          )
       ),
       unique_meas_headers AS (
-          SELECT DISTINCT
+          SELECT 
               oscqm.critterbase_taxon_measurement_id::TEXT AS header_name,
               'qualitative' AS source
           FROM observation_subcount_qualitative_measurement oscqm
+          WHERE EXISTS (
+              SELECT 1
+              FROM observation_subcount osc
+              JOIN survey_observation so ON osc.survey_observation_id = so.survey_observation_id
+              WHERE so.survey_id = ${surveyId}
+              AND osc.observation_subcount_id = oscqm.observation_subcount_id
+          )
           UNION
-          SELECT DISTINCT
+          SELECT 
               oscqmm.critterbase_taxon_measurement_id::TEXT AS header_name,
               'quantitative' AS source
           FROM observation_subcount_quantitative_measurement oscqmm
+          WHERE EXISTS (
+              SELECT 1
+              FROM observation_subcount osc
+              JOIN survey_observation so ON osc.survey_observation_id = so.survey_observation_id
+              WHERE so.survey_id = ${surveyId}
+              AND osc.observation_subcount_id = oscqmm.observation_subcount_id
+          )
       ),
       combined_env_data AS (
           SELECT
@@ -826,15 +854,27 @@ export class ObservationRepository extends BaseRepository {
               ad.comment,
               jsonb_agg(
                   jsonb_build_object(
-                      'eh', e.header_name,
+                      'eh', eh.header_name,
                       'ev', COALESCE(
-                          (SELECT e2->>'ev' FROM jsonb_array_elements(ad.env_qual_data) AS e2 WHERE e2->>'eh' = e.header_name LIMIT 1),
-                          (SELECT e2->>'ev' FROM jsonb_array_elements(ad.env_quan_data) AS e2 WHERE e2->>'eh' = e.header_name LIMIT 1)
+                          eqd.eh_value,
+                          eqd2.eh_value
                       )
                   )
               ) AS env_data
           FROM aggregated_data ad
-          LEFT JOIN unique_env_headers e ON e.header_name IS NOT NULL
+          LEFT JOIN unique_env_headers eh ON eh.header_name IS NOT NULL
+          LEFT JOIN LATERAL (
+              SELECT e2->>'ev' AS eh_value
+              FROM jsonb_array_elements(ad.env_qual_data) AS e2
+              WHERE e2->>'eh' = eh.header_name
+              LIMIT 1
+          ) eqd ON true
+          LEFT JOIN LATERAL (
+              SELECT e2->>'ev' AS eh_value
+              FROM jsonb_array_elements(ad.env_quan_data) AS e2
+              WHERE e2->>'eh' = eh.header_name
+              LIMIT 1
+          ) eqd2 ON true
           GROUP BY ad.observation_id, ad.subcount_id, ad.tsn, ad.species, ad.site, ad.technique, ad.start_date, ad.end_date, ad.sign, ad.count, ad.observation_date, ad.observation_time, ad.latitude, ad.longitude, ad.comment
       ),
       combined_meas_data AS (
@@ -856,38 +896,50 @@ export class ObservationRepository extends BaseRepository {
               ad.comment,
               jsonb_agg(
                   jsonb_build_object(
-                      'mh', m.header_name,
+                      'mh', mh.header_name,
                       'mv', COALESCE(
-                          (SELECT e2->>'mv' FROM jsonb_array_elements(ad.meas_qual_data) AS e2 WHERE e2->>'mh' = m.header_name LIMIT 1),
-                          (SELECT e2->>'mv' FROM jsonb_array_elements(ad.meas_quan_data) AS e2 WHERE e2->>'mh' = m.header_name LIMIT 1)
+                          mqd.mh_value,
+                          mqd2.mh_value
                       )
                   )
               ) AS meas_data
           FROM aggregated_data ad
-          LEFT JOIN unique_meas_headers m ON m.header_name IS NOT NULL
+          LEFT JOIN unique_meas_headers mh ON mh.header_name IS NOT NULL
+          LEFT JOIN LATERAL (
+              SELECT e2->>'mv' AS mh_value
+              FROM jsonb_array_elements(ad.meas_qual_data) AS e2
+              WHERE e2->>'mh' = mh.header_name
+              LIMIT 1
+          ) mqd ON true
+          LEFT JOIN LATERAL (
+              SELECT e2->>'mv' AS mh_value
+              FROM jsonb_array_elements(ad.meas_quan_data) AS e2
+              WHERE e2->>'mh' = mh.header_name
+              LIMIT 1
+          ) mqd2 ON true
           GROUP BY ad.observation_id, ad.subcount_id, ad.tsn, ad.species, ad.site, ad.technique, ad.start_date, ad.end_date, ad.sign, ad.count, ad.observation_date, ad.observation_time, ad.latitude, ad.longitude, ad.comment
       )
       SELECT 
-          e.observation_id,
-          e.subcount_id,
-          e.tsn,
-          e.species,
-          e.site,
-          e.technique,
-          e.start_date,
-          e.end_date,
-          e.sign,
-          e.count,
-          e.observation_date,
-          e.observation_time,
-          e.latitude,
-          e.longitude,
-          e.comment,
-          e.env_data,
-          m.meas_data
-      FROM combined_env_data e
-      JOIN combined_meas_data m ON e.observation_id = m.observation_id AND e.subcount_id = m.subcount_id
-      ORDER BY e.observation_id;
+          ce.observation_id,
+          ce.subcount_id,
+          ce.tsn,
+          ce.species,
+          ce.site,
+          ce.technique,
+          ce.start_date,
+          ce.end_date,
+          ce.sign,
+          ce.count,
+          ce.observation_date,
+          ce.observation_time,
+          ce.latitude,
+          ce.longitude,
+          ce.comment,
+          ce.env_data,
+          cm.meas_data
+      FROM combined_env_data ce
+      JOIN combined_meas_data cm ON ce.observation_id = cm.observation_id AND ce.subcount_id = cm.subcount_id
+      ORDER BY ce.observation_id;
     `;
   }
 }
