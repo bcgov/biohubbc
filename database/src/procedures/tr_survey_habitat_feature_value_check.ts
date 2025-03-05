@@ -41,7 +41,7 @@ export async function seed(knex: Knex): Promise<void> {
       END IF;
       
       -- No matching record found, raise an exception
-      RAISE EXCEPTION 'The habitat_feature_id of the incoming survey_habitat_feature_id does not support the incoming habitat_feature_quantitative_definition_id.';
+      RAISE EXCEPTION 'The habitat_feature_type_id of the incoming survey_habitat_feature_id does not support the incoming habitat_feature_quantitative_definition_id.';
     END;
     $$;
 
@@ -74,7 +74,7 @@ export async function seed(knex: Knex): Promise<void> {
       END IF;
 
       -- No matching record found, raise an exception
-      RAISE EXCEPTION 'The habitat_feature_id of the incoming survey_habitat_feature_id does not support the incoming habitat_feature_qualitative_definition_id.';    
+      RAISE EXCEPTION 'The habitat_feature_type_id of the incoming survey_habitat_feature_id does not support the incoming habitat_feature_qualitative_definition_id.';    
     END;
     $$;
 

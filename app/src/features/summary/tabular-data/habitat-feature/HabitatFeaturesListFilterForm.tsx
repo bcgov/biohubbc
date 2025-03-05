@@ -1,0 +1,98 @@
+import AutocompleteField from 'components/fields/AutocompleteField';
+import CustomTextField from 'components/fields/CustomTextField';
+import SingleDateField from 'components/fields/SingleDateField';
+import SpeciesAutocompleteField from 'components/species/components/SpeciesAutocompleteField';
+import { FilterFieldsContainer } from 'features/summary/components/FilterFieldsContainer';
+import { Formik } from 'formik';
+import { useCodesContext, useTaxonomyContext } from 'hooks/useContext';
+import { SurveyHabitatFeaturesAdvancedFilters } from 'interfaces/useSurveyHabitatFeatureApi.interface';
+import { useEffect } from 'react';
+
+export const SurveyHabitatFeaturesAdvancedFiltersInitialValues: SurveyHabitatFeaturesAdvancedFilters = {
+  keyword: undefined,
+  habitat_feature_type_ids: undefined,
+  itis_tsns: undefined,
+  start_date: undefined,
+  end_date: undefined,
+  start_time: undefined,
+  end_time: undefined,
+  min_count: undefined,
+  system_user_id: undefined
+};
+
+export interface IHabitatFeaturesListFilterFormProps {
+  handleSubmit: (filterValues: SurveyHabitatFeaturesAdvancedFilters) => void;
+  initialValues?: SurveyHabitatFeaturesAdvancedFilters;
+}
+
+/**
+ * HabitatFeature advanced filters
+ *
+ * @param {IHabitatFeaturesListFilterFormProps} props
+ * @return {*}
+ */
+export const HabitatFeaturesListFilterForm = (props: IHabitatFeaturesListFilterFormProps) => {
+  const { handleSubmit, initialValues } = props;
+
+  const codesContext = useCodesContext();
+  const taxonomyContext = useTaxonomyContext();
+
+  useEffect(() => {
+    codesContext.codesDataLoader.load();
+  }, [codesContext.codesDataLoader]);
+
+  const habitatFeatureTypeOptions =
+    codesContext.codesDataLoader.data?.habitat_feature_types.map((item) => {
+      return {
+        value: item.id,
+        label: item.name,
+        description: item.description
+      };
+    }) ?? [];
+
+  return (
+    <Formik initialValues={initialValues ?? SurveyHabitatFeaturesAdvancedFiltersInitialValues} onSubmit={handleSubmit}>
+      {(formikProps) => (
+        <FilterFieldsContainer
+          fields={[
+            <CustomTextField
+              name="keyword"
+              label="Keyword"
+              other={{ placeholder: 'Search by keyword' }}
+              key="habitat-features-keyword-filter"
+            />,
+            <AutocompleteField
+              id="habitat_feature_type_ids"
+              name="habitat_feature_type_ids"
+              label="Type"
+              options={habitatFeatureTypeOptions}
+              key="habitat-features-habitat-feature-type-filter"
+            />,
+            <SpeciesAutocompleteField
+              formikFieldName={'itis_tsns'}
+              label={'Species'}
+              placeholder="Search by taxon"
+              defaultSpecies={
+                (initialValues?.itis_tsns?.length &&
+                  taxonomyContext.getCachedSpeciesTaxonomyByIdAsync(Number(initialValues.itis_tsns[0]))) ||
+                undefined
+              }
+              handleSpecies={(value) => {
+                if (value?.tsn) {
+                  formikProps.setFieldValue('itis_tsns', value.tsn);
+                }
+              }}
+              handleClear={() => {
+                formikProps.setFieldValue('itis_tsns', undefined);
+              }}
+              key="habitat-features-tsn-filter"
+            />,
+
+            <SingleDateField name={'start_date'} label={'Observed after'} key="habitat-features-start-date-filter" />,
+            <SingleDateField name={'end_date'} label={'Observed before'} key="habitat-features-end-date-filter" />
+          ]}
+        />
+      )}
+    </Formik>
+  );
+};

@@ -4,6 +4,7 @@ import { SurveyHabitatFeatureRepository } from '../../repositories/habitat-featu
 import {
   FindSurveyHabitatFeatureAdvancedFilters,
   InsertSurveyHabitatFeature,
+  SurveyHabitatFeaturesGeometryWithSupplementaryData,
   SurveyHabitatFeaturesWithSupplementaryData,
   SurveyHabitatFeatureWithTaxons,
   UpdateSurveyHabitatFeature
@@ -136,6 +137,29 @@ export class SurveyHabitatFeatureService extends DBService {
     const habitatFeatureService = new HabitatFeatureService(this.connection);
 
     return habitatFeatureService.findHabitatFeatureDefinitions({ survey_id: surveyId });
+  }
+
+  /**
+   * Get habitat feature spatial data, for a survey.
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<SurveyHabitatFeaturesGeometryWithSupplementaryData>}
+   * @memberof SurveyHabitatFeatureService
+   */
+  async getSurveyHabitatFeaturesGeometry(
+    surveyId: number
+  ): Promise<SurveyHabitatFeaturesGeometryWithSupplementaryData> {
+    const [surveyHabitatFeaturesGeometry, surveyHabitatFeaturesCount] = await Promise.all([
+      this.surveyHabitatFeatureRepository.getSurveyHabitatFeaturesGeometry(surveyId),
+      this.getSurveyHabitatFeaturesCount(surveyId)
+    ]);
+
+    return {
+      surveyHabitatFeaturesGeometry: surveyHabitatFeaturesGeometry,
+      supplementaryData: {
+        count: surveyHabitatFeaturesCount
+      }
+    };
   }
 
   /**
