@@ -9,8 +9,7 @@ import { useHabitatFeatureTableContext } from 'hooks/useContext';
 /**
  * Container for the Survey Spatial Habitat Feature Table.
  *
- * @param {ISurveySpatialHabitatFeatureTableContainerProps} props
- * @returns {JSX.Element}
+ * @return {*}
  */
 export const SurveySpatialHabitatFeatureTableContainer = () => {
   const habitatFeatureTableContext = useHabitatFeatureTableContext();
