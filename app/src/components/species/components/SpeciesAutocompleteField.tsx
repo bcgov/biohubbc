@@ -277,7 +277,8 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
             sx={{
               '& + li': {
                 borderTop: '1px solid' + grey[300]
-              }
+              },
+              width: '700px'
             }}
             {...renderProps}
             key={`${renderOption.tsn}-${renderOption.scientificName}`}>

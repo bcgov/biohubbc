@@ -7,8 +7,8 @@ import {
   paginationResponseSchema
 } from '../../../../../../openapi/schemas/pagination';
 import {
-  insertHabitatFeatureSchema,
-  surveyHabitatFeaturesSupplementaryDataSchema,
+  InsertHabitatFeatureSchema,
+  SurveyHabitatFeaturesSupplementaryDataSchema,
   SurveyHabitatFeaturesWithTaxonsSchema
 } from '../../../../../../openapi/schemas/survey-habitat-feature';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
@@ -106,7 +106,7 @@ POST.apiDoc = {
             surveyHabitatFeatures: {
               description: 'Survey habitat feature records.',
               type: 'array',
-              items: insertHabitatFeatureSchema,
+              items: InsertHabitatFeatureSchema,
               minItems: 1
             }
           }
@@ -176,7 +176,7 @@ GET.apiDoc = {
             required: ['surveyHabitatFeatures', 'supplementaryData', 'pagination'],
             properties: {
               surveyHabitatFeatures: SurveyHabitatFeaturesWithTaxonsSchema,
-              supplementaryData: surveyHabitatFeaturesSupplementaryDataSchema,
+              supplementaryData: SurveyHabitatFeaturesSupplementaryDataSchema,
               pagination: paginationResponseSchema
             }
           }

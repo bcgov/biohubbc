@@ -1,5 +1,6 @@
 import axios from 'axios';
 import useReferenceApi from 'hooks/api/useReferenceApi';
+import useSurveyHabitatFeatureApi from 'hooks/api/useSurveyHabitatFeatureApi';
 import { useTelemetryDeploymentApi } from 'hooks/api/useTelemetryDeploymentApi';
 import { useTelemetryDeviceApi } from 'hooks/api/useTelemetryDeviceApi';
 import { useConfigContext } from 'hooks/useContext';
@@ -23,7 +24,6 @@ import useSamplingSiteApi from './api/useSamplingSiteApi';
 import useSpatialApi from './api/useSpatialApi';
 import useStandardsApi from './api/useStandardsApi';
 import useSurveyApi from './api/useSurveyApi';
-import useSurveyHabitatFeature from './api/useSurveyHabitatFeature';
 import useTaxonomyApi from './api/useTaxonomyApi';
 import useTechniqueApi from './api/useTechniqueApi';
 import useTelemetryApi from './api/useTelemetryApi';
@@ -88,7 +88,7 @@ export const useBiohubApi = () => {
 
   const alert = useAlertApi(apiAxios);
 
-  const habitatFeature = useSurveyHabitatFeature(apiAxios);
+  const habitatFeature = useSurveyHabitatFeatureApi(apiAxios);
 
   return useMemo(
     () => ({
