@@ -12,7 +12,7 @@ import { DialogContext } from 'contexts/dialogContext';
 import { FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useProjectContext, useSurveyContext } from 'hooks/useContext';
+import { useHabitatFeatureTableContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { useContext, useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
@@ -37,19 +37,18 @@ const initialHabitatFeatureFormValues: CreateHabitatFeatureFormValues = {
  * @return {*} {JSX.Element}
  */
 export const CreateHabitatFeaturePage = (): JSX.Element => {
-  const history = useHistory();
   const biohubApi = useBiohubApi();
-
+  const history = useHistory();
   const projectContext = useProjectContext();
   const surveyContext = useSurveyContext();
-
+  const habitatFeatureContext = useHabitatFeatureTableContext();
   const dialogContext = useContext(DialogContext);
 
   const { locationChangeInterceptor, skipUnsavedChangesDialog } = useUnsavedChangesDialog();
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
   const formikRef = useRef<FormikProps<CreateHabitatFeatureFormValues>>(null);
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   /**
    * Handle the create habitat feature form submission.
@@ -79,7 +78,9 @@ export const CreateHabitatFeaturePage = (): JSX.Element => {
         open: true,
         snackbarMessage: 'Successfully created habitat feature'
       });
-    } catch (error: unknown) {
+
+      await habitatFeatureContext.refreshData();
+    } catch (error) {
       dialogContext.setErrorDialog({
         open: true,
         dialogTitle: 'Error creating habitat feature',

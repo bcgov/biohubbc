@@ -5,7 +5,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { usePersistentState } from 'hooks/usePersistentState';
-import { createContext, PropsWithChildren, useCallback, useEffect, useMemo } from 'react';
+import { createContext, PropsWithChildren, useCallback, useMemo } from 'react';
 
 export interface IHabitatFeatureRow {
   survey_habitat_feature_id: number;
@@ -57,6 +57,10 @@ export interface IHabitatFeatureTableContext {
    * Toggle a columns visibility
    */
   toggleColumnVisibility: (column: string) => void;
+  /**
+   * Refresh the data in the table
+   */
+  refreshData: () => Promise<void>;
 }
 
 type IHabitatFeatureTableContextProviderProps = PropsWithChildren;
@@ -86,13 +90,9 @@ export const HabitatFeatureTableContextProvider = (props: IHabitatFeatureTableCo
     biohubApi.habitatFeature.getSurveyHabitatFeaturesWithSupplementaryData(projectId, surveyId)
   );
 
-  useEffect(() => {
-    codesContext.codesDataLoader.load();
-  }, [codesContext.codesDataLoader]);
-
-  useEffect(() => {
-    habitatFeatureDataLoader.load();
-  }, [habitatFeatureDataLoader]);
+  // Load the codes and habitat feature data
+  codesContext.codesDataLoader.load();
+  habitatFeatureDataLoader.load();
 
   // Columns hidden from table view
   const hiddenColumns = useMemo(() => {
@@ -244,14 +244,16 @@ export const HabitatFeatureTableContextProvider = (props: IHabitatFeatureTableCo
       columnVisibilityModel: columnVisibilityModel,
       onColumnVisibilityModelChange: setColumnVisibilityModel,
       hiddenColumns: hiddenColumns,
-      toggleColumnVisibility: toggleColumnsVisibility
+      toggleColumnVisibility: toggleColumnsVisibility,
+      refreshData: async () => {
+        await habitatFeatureDataLoader.refresh();
+      }
     };
   }, [
     _muiDataGridApiRef,
     habitatFeatureTableColumns,
     habitatFeatureTableRows,
-    habitatFeatureDataLoader.data?.pagination.total,
-    habitatFeatureDataLoader.isLoading,
+    habitatFeatureDataLoader,
     columnVisibilityModel,
     setColumnVisibilityModel,
     hiddenColumns,
