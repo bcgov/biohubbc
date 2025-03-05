@@ -74,6 +74,26 @@ const useSurveyHabitatFeature = (axios: AxiosInstance) => {
   };
 
   /**
+   * Get a single survey habitat feature record, with supplementary data.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {number} surveyHabitatFeatureId
+   * @return {*} {Promise<getSurveyHabitatFeaturesWithSupplementaryData>}
+   */
+  const getSurveyHabitatFeatureWithSupplementaryData = async (
+    projectId: number,
+    surveyId: number,
+    surveyHabitatFeatureId: number
+  ) => {
+    const { data } = await axios.get(
+      `/api/project/${projectId}/survey/${surveyId}/habitat-features/${surveyHabitatFeatureId}`
+    );
+
+    return data;
+  };
+
+  /**
    * Delete an existing survey habitat feature record.
    *
    * @param {number} projectId
@@ -117,6 +137,7 @@ const useSurveyHabitatFeature = (axios: AxiosInstance) => {
     createSurveyHabitatFeatures,
     updateSurveyHabitatFeature,
     getSurveyHabitatFeaturesWithSupplementaryData,
+    getSurveyHabitatFeatureWithSupplementaryData,
     deleteSurveyHabitatFeature,
     deleteSurveyHabitatFeatures
   };
