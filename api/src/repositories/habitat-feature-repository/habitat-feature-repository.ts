@@ -44,10 +44,21 @@ export class HabitatFeatureRepository extends BaseRepository {
       ])
       .from('habitat_feature_quantitative_definition');
 
-    if (filterFields.keyword) {
-      query
-        .where('habitat_feature_quantitative_definition.name', 'ilike', `%${filterFields.keyword}%`)
-        .orWhere('habitat_feature_quantitative_definition.description', 'ilike', `%${filterFields.keyword}%`);
+    const searchConditions = [];
+
+    if (filterFields.keywords?.length) {
+      for (const keyword of filterFields.keywords) {
+        searchConditions.push(
+          knex.raw(
+            'habitat_feature_quantitative_definition.name ILIKE ? OR habitat_feature_quantitative_definition.description ILIKE ?',
+            [`%${keyword}%`, `%${keyword}%`]
+          )
+        );
+      }
+    }
+
+    if (searchConditions.length > 0) {
+      query.whereRaw(searchConditions.join(' OR '));
     }
 
     if (filterFields.survey_id || filterFields.itis_tsns?.length) {
@@ -136,10 +147,21 @@ export class HabitatFeatureRepository extends BaseRepository {
       )
       .groupBy(['habitat_feature_qualitative_definition.habitat_feature_qualitative_definition_id']);
 
-    if (filterFields.keyword) {
-      query
-        .where('habitat_feature_qualitative_definition.name', 'ilike', `%${filterFields.keyword}%`)
-        .orWhere('habitat_feature_qualitative_definition.description', 'ilike', `%${filterFields.keyword}%`);
+    const searchConditions = [];
+
+    if (filterFields.keywords?.length) {
+      for (const keyword of filterFields.keywords) {
+        searchConditions.push(
+          knex.raw(
+            'habitat_feature_qualitative_definition.name ILIKE ? OR habitat_feature_qualitative_definition.description ILIKE ?',
+            [`%${keyword}%`, `%${keyword}%`]
+          )
+        );
+      }
+    }
+
+    if (searchConditions.length > 0) {
+      query.whereRaw(searchConditions.join(' OR '));
     }
 
     if (filterFields.survey_id || filterFields.itis_tsns?.length) {

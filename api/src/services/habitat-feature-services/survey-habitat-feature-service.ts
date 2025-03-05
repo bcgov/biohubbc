@@ -36,20 +36,24 @@ export class SurveyHabitatFeatureService extends DBService {
    *
    * @param {number} surveyId
    * @param {number} surveyHabitatFeatureId
-   * @param {UpdateSurveyHabitatFeature} habitatFeature
+   * @param {UpdateSurveyHabitatFeature} surveyHabitatFeatures
    * @return {*}  {Promise<void>}
    * @memberof SurveyHabitatFeatureService
    */
   async updateSurveyHabitatFeature(
     surveyId: number,
     surveyHabitatFeatureId: number,
-    habitatFeature: UpdateSurveyHabitatFeature
+    surveyHabitatFeatures: UpdateSurveyHabitatFeature
   ): Promise<void> {
-    this.surveyHabitatFeatureRepository.updateSurveyHabitatFeature(surveyId, surveyHabitatFeatureId, habitatFeature);
+    this.surveyHabitatFeatureRepository.updateSurveyHabitatFeature(
+      surveyId,
+      surveyHabitatFeatureId,
+      surveyHabitatFeatures
+    );
   }
 
   /**
-   * Get a single survey habitat feature record.
+   * Get an existing survey habitat feature record.
    *
    * @param {number} surveyId
    * @param {number} surveyHabitatFeatureId

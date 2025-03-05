@@ -5,17 +5,17 @@ import { HabitatFeatureQuantitativeDefinitionRecord } from '../../database-model
 
 export type FindHabitatFeatureDefinitionAdvancedFilters = {
   /**
-   * Filter results by keyword.
+   * Filter results by keywords.
    *
    * @type {string}
    */
-  keyword?: string;
+  keywords?: string[];
   /**
    * Filter results by survey ID.
    *
    * @type {number}
    */
-  survey_id: number;
+  survey_id?: number;
   /**
    * Filter results by ITIS TSNs.
    *
@@ -27,13 +27,18 @@ export type FindHabitatFeatureDefinitionAdvancedFilters = {
 export const FindHabitatFeatureQuantitativeDefinition = HabitatFeatureQuantitativeDefinitionRecord;
 export type FindHabitatFeatureQuantitativeDefinition = z.infer<typeof FindHabitatFeatureQuantitativeDefinition>;
 
-export const FindHabitatFeatureQualitativeDefinition = HabitatFeatureQualitativeDefinitionRecord.extend({
+export const HabitatFeatureQualitativeDefinitionWithOptions = HabitatFeatureQualitativeDefinitionRecord.extend({
   options: z.array(HabitatFeatureQualitativeDefinitionOptionRecord)
 });
+export type HabitatFeatureQualitativeDefinitionWithOptions = z.infer<
+  typeof HabitatFeatureQualitativeDefinitionWithOptions
+>;
+
+export const FindHabitatFeatureQualitativeDefinition = HabitatFeatureQualitativeDefinitionWithOptions;
 export type FindHabitatFeatureQualitativeDefinition = z.infer<typeof FindHabitatFeatureQualitativeDefinition>;
 
 export const FindHabitatFeatureDefinitions = z.object({
   habitatFeatureQuantitativeDefinitions: z.array(HabitatFeatureQuantitativeDefinitionRecord),
-  habitatFeatureQualitativeDefinitions: z.array(FindHabitatFeatureQualitativeDefinition)
+  habitatFeatureQualitativeDefinitions: z.array(HabitatFeatureQualitativeDefinitionWithOptions)
 });
 export type FindHabitatFeatureDefinitions = z.infer<typeof FindHabitatFeatureDefinitions>;

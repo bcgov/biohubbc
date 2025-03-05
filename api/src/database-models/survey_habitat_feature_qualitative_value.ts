@@ -1,15 +1,15 @@
 import { z } from 'zod';
 
 /**
- * Habitat Feature Type Qualitative Option Model.
+ * Survey Habitat Feature Qualitative Value Model.
  *
- * @description Data model for `habitat_feature_type_qualitative_option`.
+ * @description Data model for `survey_habitat_feature_qualitative_value`.
  */
-export const HabitatFeatureTypeQualitativeOptionModel = z.object({
-  habitat_feature_type_qualitative_option_id: z.number(),
+export const SurveyHabitatFeatureQualitativeValueModel = z.object({
+  survey_habitat_feature_qualitative_value_id: z.number(),
+  survey_habitat_feature_id: z.number(),
   habitat_feature_qualitative_definition_id: z.string().uuid(),
-  habitat_feature_type_id: z.number(),
-  record_end_date: z.string().nullable(),
+  habitat_feature_qualitative_definition_option_id: z.string().uuid(),
   create_date: z.string(),
   create_user: z.number(),
   update_date: z.string().nullable(),
@@ -17,14 +17,14 @@ export const HabitatFeatureTypeQualitativeOptionModel = z.object({
   revision_count: z.number()
 });
 
-export type HabitatFeatureTypeQualitativeOptionModel = z.infer<typeof HabitatFeatureTypeQualitativeOptionModel>;
+export type SurveyHabitatFeatureQualitativeValueModel = z.infer<typeof SurveyHabitatFeatureQualitativeValueModel>;
 
 /**
- * Habitat Feature Type Qualitative Option Record.
+ * Survey Habitat Feature Qualitative Value Record.
  *
- * @description Data record for `habitat_feature_type_qualitative_option`.
+ * @description Data record for `survey_habitat_feature_qualitative_value`.
  */
-export const HabitatFeatureTypeQualitativeOptionRecord = HabitatFeatureTypeQualitativeOptionModel.omit({
+export const SurveyHabitatFeatureQualitativeValueRecord = SurveyHabitatFeatureQualitativeValueModel.omit({
   create_date: true,
   create_user: true,
   update_date: true,
@@ -32,4 +32,4 @@ export const HabitatFeatureTypeQualitativeOptionRecord = HabitatFeatureTypeQuali
   revision_count: true
 });
 
-export type HabitatFeatureTypeQualitativeOptionRecord = z.infer<typeof HabitatFeatureTypeQualitativeOptionRecord>;
+export type SurveyHabitatFeatureQualitativeValueRecord = z.infer<typeof SurveyHabitatFeatureQualitativeValueRecord>;

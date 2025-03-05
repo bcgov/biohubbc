@@ -127,8 +127,8 @@ export function getSurveyHabitatFeaturesBaseQuery(
       knex.raw(`
         COALESCE(
           (
-            SELECT jsonb_agg(
-              jsonb_build_object(
+            json_agg(
+              json_build_object(
                 'survey_habitat_feature_taxon_id', survey_habitat_feature_taxon.survey_habitat_feature_taxon_id,
                 'survey_habitat_feature_id', survey_habitat_feature_taxon.survey_habitat_feature_id,
                 'itis_tsn', survey_habitat_feature_taxon.itis_tsn,
@@ -137,7 +137,7 @@ export function getSurveyHabitatFeaturesBaseQuery(
               )
             ) FILTER (WHERE survey_habitat_feature_taxon.survey_habitat_feature_taxon_id IS NOT NULL)
           ),
-          '[]'::jsonb
+          '[]'::json
         ) AS survey_habitat_feature_taxons
       `)
     ])

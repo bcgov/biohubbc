@@ -7,9 +7,10 @@ import {
   FindSurveyHabitatFeatureAdvancedFilters,
   InsertSurveyHabitatFeature,
   SurveyHabitatFeatureCount,
-  SurveyHabitatFeatureWithTaxons
+  SurveyHabitatFeatureWithTaxons,
+  UpdateSurveyHabitatFeature
 } from './survey-habitat-feature-repository.interface';
-import { makeFindSurveyHabitatFeaturesQuery } from './utils';
+import { getSurveyHabitatFeaturesBaseQuery, makeFindSurveyHabitatFeaturesQuery } from './utils';
 
 /**
  * Repository class for working with survey habitat feature records.
@@ -23,17 +24,17 @@ export class SurveyHabitatFeatureRepository extends BaseRepository {
    * Insert survey habitat feature records for the provided survey id.
    *
    * @param {number} surveyId The ID of the survey under which the habitat features are being inserted.
-   * @param {InsertSurveyHabitatFeature[]} habitatFeatures The habitat features to insert.
+   * @param {InsertSurveyHabitatFeature[]} surveyHabitatFeatures The habitat features to insert.
    * @memberof SurveyHabitatFeatureRepository
    */
-  async insertSurveyHabitatFeatures(surveyId: number, habitatFeatures: InsertSurveyHabitatFeature[]) {
+  async insertSurveyHabitatFeatures(surveyId: number, surveyHabitatFeatures: InsertSurveyHabitatFeature[]) {
     const knex = getKnex();
 
     const query = knex.queryBuilder();
 
     query
       .insert(
-        habitatFeatures.map((habitatFeature) => ({
+        surveyHabitatFeatures.map((habitatFeature) => ({
           survey_id: surveyId,
           ...habitatFeature
         }))
@@ -42,10 +43,10 @@ export class SurveyHabitatFeatureRepository extends BaseRepository {
 
     const response = await this.connection.knex(query);
 
-    if (response.rowCount !== habitatFeatures.length) {
+    if (response.rowCount !== surveyHabitatFeatures.length) {
       throw new ApiExecuteSQLError('Failed to insert survey habitat feature records', [
         'SurveyHabitatFeatureRepository->insertSurveyHabitatFeatures',
-        `rowCount was ${response.rowCount}, expected rowCount = ${habitatFeatures.length}`
+        `rowCount was ${response.rowCount}, expected rowCount = ${surveyHabitatFeatures.length}`
       ]);
     }
   }
@@ -55,14 +56,14 @@ export class SurveyHabitatFeatureRepository extends BaseRepository {
    *
    * @param {number} surveyId
    * @param {number} surveyHabitatFeatureId
-   * @param {InsertSurveyHabitatFeature} habitatFeature
+   * @param {UpdateSurveyHabitatFeature} habitatFeature
    * @return {*}  {Promise<void>}
    * @memberof SurveyHabitatFeatureRepository
    */
   async updateSurveyHabitatFeature(
     surveyId: number,
     surveyHabitatFeatureId: number,
-    habitatFeature: InsertSurveyHabitatFeature
+    habitatFeature: UpdateSurveyHabitatFeature
   ): Promise<void> {
     const knex = getKnex();
 
@@ -87,7 +88,7 @@ export class SurveyHabitatFeatureRepository extends BaseRepository {
   }
 
   /**
-   * Get a single survey habitat feature record.
+   * Get an existing survey habitat feature record, for a survey.
    *
    * @param {number} surveyId
    * @param {number} surveyHabitatFeatureId
@@ -100,40 +101,14 @@ export class SurveyHabitatFeatureRepository extends BaseRepository {
   ): Promise<SurveyHabitatFeatureWithTaxons> {
     const knex = getKnex();
 
-    const query = knex.queryBuilder();
+    const getSurveyIdsQuery = knex
+      .select<any, { survey_id: number }>(['survey_id'])
+      .from('survey')
+      .where('survey_id', surveyId);
 
-    query
-      .select([
-        'survey_habitat_feature_id',
-        'survey_id',
-        'habitat_feature_type_id',
-        'count',
-        'latitude',
-        'longitude',
-        'observed_date',
-        'observed_time',
-        knex.raw(`
-          COALESCE(
-            (
-              SELECT jsonb_agg(
-                jsonb_build_object(
-                  'survey_habitat_feature_taxon_id', survey_habitat_feature_taxon.survey_habitat_feature_taxon_id,
-                  'survey_habitat_feature_id', survey_habitat_feature_taxon.survey_habitat_feature_id,
-                  'itis_tsn', survey_habitat_feature_taxon.itis_tsn,
-                  'itis_scientific_name', survey_habitat_feature_taxon.itis_scientific_name,
-                  'comment', survey_habitat_feature_taxon.comment
-                )
-              )
-              FROM survey_habitat_feature_taxon
-              WHERE survey_habitat_feature_taxon.survey_habitat_feature_id = survey_habitat_feature.survey_habitat_feature_id
-            ),
-            '[]'::jsonb
-          ) AS survey_habitat_feature_taxons
-        `)
-      ])
-      .from('survey_habitat_feature')
-      .where('survey_habitat_feature.survey_habitat_feature_id', surveyHabitatFeatureId)
-      .andWhere('survey_id', surveyId);
+    const query = getSurveyHabitatFeaturesBaseQuery(knex, getSurveyIdsQuery);
+
+    query.where('survey_habitat_feature.survey_habitat_feature_id', surveyHabitatFeatureId);
 
     const response = await this.connection.knex(query, SurveyHabitatFeatureWithTaxons);
 
@@ -161,39 +136,12 @@ export class SurveyHabitatFeatureRepository extends BaseRepository {
   ): Promise<SurveyHabitatFeatureWithTaxons[]> {
     const knex = getKnex();
 
-    const query = knex.queryBuilder();
-
-    query
-      .select([
-        'survey_habitat_feature_id',
-        'survey_id',
-        'habitat_feature_type_id',
-        'count',
-        'latitude',
-        'longitude',
-        'observed_date',
-        'observed_time',
-        knex.raw(`
-          COALESCE(
-            (
-              SELECT jsonb_agg(
-                jsonb_build_object(
-                  'survey_habitat_feature_taxon_id', survey_habitat_feature_taxon.survey_habitat_feature_taxon_id,
-                  'survey_habitat_feature_id', survey_habitat_feature_taxon.survey_habitat_feature_id,
-                  'itis_tsn', survey_habitat_feature_taxon.itis_tsn,
-                  'itis_scientific_name', survey_habitat_feature_taxon.itis_scientific_name,
-                  'comment', survey_habitat_feature_taxon.comment
-                )
-              )
-              FROM survey_habitat_feature_taxon
-              WHERE survey_habitat_feature_taxon.survey_habitat_feature_id = survey_habitat_feature.survey_habitat_feature_id
-            ),
-            '[]'::jsonb
-          ) AS survey_habitat_feature_taxons
-        `)
-      ])
-      .from('survey_habitat_feature')
+    const getSurveyIdsQuery = knex
+      .select<any, { survey_id: number }>(['survey_id'])
+      .from('survey')
       .where('survey_id', surveyId);
+
+    const query = getSurveyHabitatFeaturesBaseQuery(knex, getSurveyIdsQuery);
 
     if (pagination) {
       query.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
@@ -297,7 +245,7 @@ export class SurveyHabitatFeatureRepository extends BaseRepository {
   }
 
   /**
-   * Delete existing survey habitat feature records, for a survey, and all dependent records.
+   * Delete existing survey habitat feature records and all dependent records, for a survey.
    *
    * @param {number} surveyId
    * @param {number[]} surveyHabitatFeatureIds
@@ -307,33 +255,47 @@ export class SurveyHabitatFeatureRepository extends BaseRepository {
   async deleteSurveyHabitatFeatures(surveyId: number, surveyHabitatFeatureIds: number[]): Promise<void> {
     const knex = getKnex();
 
-    const query = knex.queryBuilder();
-
-    query
+    const query1 = knex
+      .queryBuilder()
+      // Select all survey habitat feature ids that are valid for deletion
+      .with('w_survey_habitat_feature_ids', (qb) => {
+        qb.select('survey_habitat_feature_id')
+          .from('survey_habitat_feature')
+          .where('survey_id', surveyId)
+          .whereIn('survey_habitat_feature_id', surveyHabitatFeatureIds);
+      })
       .with('w_delete_survey_habitat_feature_taxon', (qb) => {
         qb.delete()
           .from('survey_habitat_feature_taxon')
-          .whereIn('survey_habitat_feature_id', surveyHabitatFeatureIds)
-          .andWhere('survey_id', surveyId);
+          .whereIn('survey_habitat_feature_id', (qb) => {
+            qb.select('survey_habitat_feature_id').from('w_survey_habitat_feature_ids');
+          });
       })
       .with('w_delete_survey_habitat_feature_quantitative_value', (qb) => {
         qb.delete()
           .from('survey_habitat_feature_quantitative_value')
-          .whereIn('survey_habitat_feature_id', surveyHabitatFeatureIds)
-          .andWhere('survey_id', surveyId);
+          .whereIn('survey_habitat_feature_id', (qb) => {
+            qb.select('survey_habitat_feature_id').from('w_survey_habitat_feature_ids');
+          });
       })
-      .with('w_delete_survey_habitat_feature_qualitative_value', (qb) => {
-        qb.delete()
-          .from('survey_habitat_feature_qualitative_value')
-          .whereIn('survey_habitat_feature_id', surveyHabitatFeatureIds)
-          .andWhere('survey_id', surveyId);
-      })
+      .delete()
+      .from('survey_habitat_feature_qualitative_value')
+      .whereIn('survey_habitat_feature_id', (qb) => {
+        qb.select('survey_habitat_feature_id').from('w_survey_habitat_feature_ids');
+      });
+
+    // Delete child records, if any
+    await this.connection.knex(query1);
+
+    const query2 = knex
+      .queryBuilder()
       .delete()
       .from('survey_habitat_feature')
       .whereIn('survey_habitat_feature_id', surveyHabitatFeatureIds)
       .andWhere('survey_id', surveyId);
 
-    const response = await this.connection.knex(query);
+    // Delete the parent survey habitat feature records
+    const response = await this.connection.knex(query2);
 
     if (response.rowCount !== surveyHabitatFeatureIds.length) {
       throw new ApiExecuteSQLError('Failed to delete survey habitat features', [

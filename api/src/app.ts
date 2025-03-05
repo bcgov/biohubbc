@@ -138,12 +138,14 @@ const openAPIFramework = initialize({
     }
   },
   errorTransformer: function (_, ajvError: object): object {
+    console.log('44444444444444444444444');
     // Transform openapi-request-validator or openapi-response-validator errors
     return ajvError;
   },
   // If `next` is not included express will silently skip calling the `errorMiddleware` entirely.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   errorMiddleware: function (error, req, res, next) {
+    console.log('1111111111111111111111');
     defaultLog.error({
       label: 'errorMiddleware',
       message: 'error',
@@ -160,7 +162,7 @@ const openAPIFramework = initialize({
       // response has already been sent
       return;
     }
-
+    console.log('22222222222222222222222222');
     res
       .status(httpError.status)
       .json({ name: httpError.name, status: httpError.status, message: httpError.message, errors: httpError.errors });
@@ -178,6 +180,7 @@ try {
     defaultLog.info({ label: 'start api', message: `started api on ${HOST}:${PORT}/api` });
   });
 } catch (error) {
+  console.log('33333333333333333333333', error);
   defaultLog.error({ label: 'start api', message: 'error', error });
   process.exit(1);
 }
