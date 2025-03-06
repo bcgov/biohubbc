@@ -53,7 +53,13 @@ export interface IHabitatFeatureTableContext {
    * Callback fired when column visibility model changes
    */
   onColumnVisibilityModelChange: (model: GridColumnVisibilityModel) => void;
+  /**
+   * The row selection model - an array of row ids
+   */
   rowSelectionModel: GridRowSelectionModel;
+  /**
+   * Callback fired when row selection model changes
+   */
   onRowSelectionModelChange: (model: GridRowSelectionModel) => void;
   /**
    * Toggle a columns visibility
@@ -78,7 +84,6 @@ export const HabitatFeatureTableContext = createContext<IHabitatFeatureTableCont
 export const HabitatFeatureTableContextProvider = (props: IHabitatFeatureTableContextProviderProps) => {
   const _muiDataGridApiRef = useGridApiRef();
 
-  // const history = useHistory();
   const biohubApi = useBiohubApi();
   const codesContext = useCodesContext();
   const { projectId, surveyId } = useSurveyContext();
