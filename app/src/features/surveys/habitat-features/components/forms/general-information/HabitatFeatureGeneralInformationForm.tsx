@@ -3,9 +3,10 @@ import { Grid } from '@mui/material';
 import AutocompleteField from 'components/fields/AutocompleteField';
 import CustomTextField from 'components/fields/CustomTextField';
 import { DateTimeFields } from 'components/fields/DateTimeFields';
+import SpeciesAutocompleteField from 'components/species/components/SpeciesAutocompleteField';
 import { useFormikContext } from 'formik';
 import { useCodesContext } from 'hooks/useContext';
-import { HabitatFeatureFormValues } from '../HabitatFeatureFormContainer';
+import { CreateHabitatFeatureFormValues, UpdateHabitatFeatureFormValues } from '../HabitatFeatureFormContainer';
 
 /**
  * Habitat Feature general information form.
@@ -13,7 +14,7 @@ import { HabitatFeatureFormValues } from '../HabitatFeatureFormContainer';
  * @return {*} {JSX.Element}
  */
 export const HabitatFeatureGeneralInformationForm = <
-  HabitatFeatureFormValuesType extends HabitatFeatureFormValues
+  HabitatFeatureFormValuesType extends CreateHabitatFeatureFormValues | UpdateHabitatFeatureFormValues
 >(): JSX.Element => {
   const codesContext = useCodesContext();
   const formikProps = useFormikContext<HabitatFeatureFormValuesType>();
@@ -64,6 +65,14 @@ export const HabitatFeatureGeneralInformationForm = <
             timeRequired: true,
             timeIcon: mdiCalendar
           }}
+        />
+      </Grid>
+
+      <Grid item xs={12}>
+        <SpeciesAutocompleteField
+          formikFieldName={'test'}
+          label={'Associated Species'}
+          handleSpecies={(taxon) => console.log(taxon)}
         />
       </Grid>
     </Grid>

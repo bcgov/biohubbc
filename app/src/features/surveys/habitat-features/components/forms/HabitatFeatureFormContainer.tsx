@@ -25,11 +25,10 @@ export type CreateHabitatFeatureFormValues = Omit<CreateSurveyHabitatFeature, 's
 // Update Habitat Feature form values
 export type UpdateHabitatFeatureFormValues = Omit<UpdateSurveyHabitatFeature, 'survey_id'>;
 
-// Habitat Feature form values - either create or update
-export type HabitatFeatureFormValues = CreateHabitatFeatureFormValues | UpdateHabitatFeatureFormValues;
-
 // Habitat Feature form container props - either create or update
-export interface IHabitatFeatureFormContainerProps<HabitatFeatureFormValuesType extends HabitatFeatureFormValues> {
+export interface IHabitatFeatureFormContainerProps<
+  HabitatFeatureFormValuesType extends CreateHabitatFeatureFormValues | UpdateHabitatFeatureFormValues
+> {
   initialData: HabitatFeatureFormValuesType;
   handleSubmit: (formikData: HabitatFeatureFormValuesType) => void;
   formikRef: React.RefObject<FormikProps<HabitatFeatureFormValuesType>>;
@@ -38,11 +37,15 @@ export interface IHabitatFeatureFormContainerProps<HabitatFeatureFormValuesType 
 /**
  * Container for the Habitat Feature Form.
  *
- * @template HabitatFeatureFormValues
- * @param {HabitatFeatureFormContainerProps<HabitatFeatureFormValues>} props
+ * @template HabitatFeatureFormType
+ * @param {HabitatFeatureFormContainerProps<HabitatFeatureFormType>} props
  * @return {*} {JSX.Element}
  */
-export const HabitatFeatureFormContainer = (props: IHabitatFeatureFormContainerProps<HabitatFeatureFormValues>) => {
+export const HabitatFeatureFormContainer = <
+  HabitatFeatureFormType extends CreateHabitatFeatureFormValues | UpdateHabitatFeatureFormValues
+>(
+  props: IHabitatFeatureFormContainerProps<HabitatFeatureFormType>
+) => {
   return (
     <Formik
       innerRef={props.formikRef}

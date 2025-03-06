@@ -35,6 +35,21 @@ export type SurveyHabitatFeatureTaxon = {
   comment: string;
 };
 
+export type CreateSurveyHabitatFeatureTaxon = {
+  survey_habitat_feature_id: number;
+  itis_tsn: number;
+  itis_scientific_name: string;
+  comment: string;
+};
+
+export type UpdateSurveyHabitatFeatureTaxon = {
+  survey_habitat_feature_taxon_id: number;
+  survey_habitat_feature_id: number;
+  itis_tsn: number;
+  itis_scientific_name: string;
+  comment: string;
+};
+
 export type SurveyHabitatFeature = {
   survey_habitat_feature_id: number;
   survey_id: number;
@@ -61,6 +76,7 @@ export type CreateSurveyHabitatFeature = {
   count: number;
   observed_date: string;
   observed_time: string;
+  habitat_feature_taxons: CreateSurveyHabitatFeatureTaxon[];
 };
 
 export type UpdateSurveyHabitatFeature = {
@@ -71,6 +87,7 @@ export type UpdateSurveyHabitatFeature = {
   count: number;
   observed_date: string;
   observed_time: string;
+  habitat_feature_taxons: UpdateSurveyHabitatFeatureTaxon[];
 };
 
 export type getSurveyHabitatFeaturesWithSupplementaryData = {

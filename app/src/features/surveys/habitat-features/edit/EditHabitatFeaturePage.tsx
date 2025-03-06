@@ -67,7 +67,9 @@ export const EditHabitatFeaturePage = (): JSX.Element => {
     longitude: habitatFeatureDataLoader.data.surveyHabitatFeature.longitude,
     count: habitatFeatureDataLoader.data.surveyHabitatFeature.count,
     observed_date: habitatFeatureDataLoader.data.surveyHabitatFeature.observed_date,
-    observed_time: habitatFeatureDataLoader.data.surveyHabitatFeature.observed_time
+    observed_time: habitatFeatureDataLoader.data.surveyHabitatFeature.observed_time,
+    // TODO: Mac: Add habitat_feature_taxons to the habitat feature data loader
+    habitat_feature_taxons: []
   };
 
   /**
@@ -90,7 +92,8 @@ export const EditHabitatFeaturePage = (): JSX.Element => {
           longitude: values.longitude,
           count: values.count,
           observed_date: values.observed_date,
-          observed_time: values.observed_time
+          observed_time: values.observed_time,
+          habitat_feature_taxons: values.habitat_feature_taxons
         }
       );
 
