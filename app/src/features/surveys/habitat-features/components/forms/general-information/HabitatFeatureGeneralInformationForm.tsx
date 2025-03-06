@@ -3,10 +3,10 @@ import { Grid } from '@mui/material';
 import AutocompleteField from 'components/fields/AutocompleteField';
 import CustomTextField from 'components/fields/CustomTextField';
 import { DateTimeFields } from 'components/fields/DateTimeFields';
-import SpeciesAutocompleteField from 'components/species/components/SpeciesAutocompleteField';
-import { FieldArray, useFormikContext } from 'formik';
+import { useFormikContext } from 'formik';
 import { useCodesContext } from 'hooks/useContext';
 import { CreateHabitatFeatureFormValues, UpdateHabitatFeatureFormValues } from '../HabitatFeatureFormContainer';
+import { HabitatFeatureSpeciesForm } from './HabitatFeatureSpeciesForm';
 
 /**
  * Habitat Feature general information form.
@@ -69,23 +69,7 @@ export const HabitatFeatureGeneralInformationForm = <
       </Grid>
 
       <Grid item xs={12}>
-        <FieldArray
-          name="survey_habitat_feature_taxons"
-          render={() => {
-            return (
-              <>
-                <SpeciesAutocompleteField
-                  formikFieldName={'survey_habitat_feature_taxons'}
-                  label={'Related Species'}
-                  helpText={'The species associated with the habitat feature ie: "Bald Eagle" nest'}
-                  clearOnSelect={true}
-                  required={false}
-                  handleSpecies={(taxon) => {}}
-                />
-              </>
-            );
-          }}
-        />
+        <HabitatFeatureSpeciesForm />
       </Grid>
     </Grid>
   );

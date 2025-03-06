@@ -23,15 +23,11 @@ export type CreateHabitatFeatureFormValues = {
   count: number;
   observed_date: string;
   observed_time: string;
-  survey_habitat_feature_taxons: Array<{
+  survey_habitat_feature_taxons: {
     itis_tsn: number;
     itis_scientific_name: string;
-    comment: string;
-    // Additional taxon metadata for form display
-    commonNames: string[];
-    rank: string;
-    kingdom: string;
-  }>;
+    comment: string | null;
+  }[];
 };
 
 // Update Habitat Feature form values
@@ -42,16 +38,11 @@ export type UpdateHabitatFeatureFormValues = {
   count: number;
   observed_date: string;
   observed_time: string;
-  survey_habitat_feature_taxons: Array<{
-    survey_habitat_feature_taxon_id: number;
+  survey_habitat_feature_taxons: {
     itis_tsn: number;
     itis_scientific_name: string;
-    comment: string;
-    // Additional taxon metadata for form display
-    commonNames: string[];
-    rank: string;
-    kingdom: string;
-  }>;
+    comment: string | null;
+  }[];
 };
 
 // Habitat Feature form container props - either create or update

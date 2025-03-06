@@ -94,7 +94,6 @@ export const EditHabitatFeaturePage = (): JSX.Element => {
           observed_date: values.observed_date,
           observed_time: values.observed_time,
           survey_habitat_feature_taxons: values.survey_habitat_feature_taxons.map((formTaxon) => ({
-            survey_habitat_feature_taxon_id: formTaxon.survey_habitat_feature_taxon_id,
             itis_tsn: formTaxon.itis_tsn,
             itis_scientific_name: formTaxon.itis_scientific_name,
             comment: formTaxon.comment

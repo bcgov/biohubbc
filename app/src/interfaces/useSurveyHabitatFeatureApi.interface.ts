@@ -38,14 +38,7 @@ export type SurveyHabitatFeatureTaxon = {
 export type CreateSurveyHabitatFeatureTaxon = {
   itis_tsn: number;
   itis_scientific_name: string;
-  comment: string;
-};
-
-export type UpdateSurveyHabitatFeatureTaxon = {
-  survey_habitat_feature_taxon_id: number;
-  itis_tsn: number;
-  itis_scientific_name: string;
-  comment: string;
+  comment: string | null;
 };
 
 export type SurveyHabitatFeature = {
@@ -85,7 +78,8 @@ export type UpdateSurveyHabitatFeature = {
   count: number;
   observed_date: string;
   observed_time: string;
-  survey_habitat_feature_taxons: UpdateSurveyHabitatFeatureTaxon[];
+  // Note: The old values will be replaced with these new values
+  survey_habitat_feature_taxons: CreateSurveyHabitatFeatureTaxon[];
 };
 
 export type getSurveyHabitatFeaturesWithSupplementaryData = {
