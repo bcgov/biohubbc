@@ -1,4 +1,3 @@
-import { default as useCritterbaseUserWrapper } from 'hooks/useCritterbaseUserWrapper';
 import useSimsUserWrapper, { ISimsUserWrapper } from 'hooks/useSimsUserWrapper';
 import React from 'react';
 import { AuthContextProps, useAuth } from 'react-oidc-context';
@@ -18,13 +17,6 @@ export interface IAuthState {
    * @memberof IAuthState
    */
   simsUserWrapper: ISimsUserWrapper;
-  /**
-   * THe logged in user's Critterbase user information.
-   *
-   * @type {ReturnType<typeof useCritterbaseUserWrapper>}
-   * @memberof IAuthState
-   */
-  critterbaseUserWrapper: ReturnType<typeof useCritterbaseUserWrapper>;
 }
 
 export const AuthStateContext = React.createContext<IAuthState | undefined>(undefined);
@@ -38,16 +30,19 @@ export const AuthStateContext = React.createContext<IAuthState | undefined>(unde
 export const AuthStateContextProvider: React.FC<React.PropsWithChildren> = (props) => {
   const auth = useAuth();
 
-  const simsUserWrapper = useSimsUserWrapper();
+  // Add event listener for silent renew errors
+  auth.events.addSilentRenewError(() => {
+    // If the silent renew fails, ensure the user is signed out and redirect to the home page
+    auth.signoutRedirect();
+  });
 
-  const critterbaseUserWrapper = useCritterbaseUserWrapper(simsUserWrapper);
+  const simsUserWrapper = useSimsUserWrapper();
 
   return (
     <AuthStateContext.Provider
       value={{
         auth,
-        simsUserWrapper,
-        critterbaseUserWrapper
+        simsUserWrapper
       }}>
       {props.children}
     </AuthStateContext.Provider>

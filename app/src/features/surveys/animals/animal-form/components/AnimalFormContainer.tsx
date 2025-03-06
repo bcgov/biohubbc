@@ -39,7 +39,7 @@ export interface IAnimalFormProps {
 }
 
 const AnimalFormYupSchema = yup.object({
-  nickname: yup.string().trim().min(3, 'Nickname must be at least 3 letters').required('Nickname is required'),
+  nickname: yup.string().trim().min(1, 'Nickname is required').required('Nickname is required'),
   species: yup
     .object()
     .shape({
@@ -53,6 +53,7 @@ const AnimalFormYupSchema = yup.object({
     .nullable()
     .required('Species is required'),
   critter_comment: yup.string().nullable(),
+  sex_qualitative_option_id: yup.string().nullable(),
   ecological_units: yup.array(
     yup
       .object()
@@ -111,9 +112,10 @@ export const AnimalFormContainer = (props: IAnimalFormProps) => {
           summary="Enter information to identify the animal"
           component={<AnimalGeneralInformationForm isEdit={isEdit} />}
         />
+        <Divider />
         <HorizontalSplitFormComponent
           title="Ecological Units"
-          summary="Enter ecological units that the animal belongs to"
+          summary="Select populations, subpopulations, or other ecological units that the animal belongs to."
           component={<EcologicalUnitsForm />}
         />
         <Divider />

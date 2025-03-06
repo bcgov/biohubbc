@@ -1,5 +1,6 @@
 import { DatabaseError } from 'pg';
-import { ApiError } from './api-error';
+import { CSVError } from '../utils/csv-utils/csv-config-validation.interface';
+import { ApiConflictError, ApiError } from './api-error';
 import { BaseError } from './base-error';
 
 export enum HTTPErrorType {
@@ -10,10 +11,20 @@ export enum HTTPErrorType {
   INTERNAL_SERVER_ERROR = 'Internal Server Error'
 }
 
+export enum HTTPCustomErrorType {
+  CSV_VALIDATION_ERROR = 'CSV Validation Error'
+}
+
 export class HTTPError extends BaseError {
   status: number;
 
-  constructor(name: HTTPErrorType, status: number, message: string, errors?: (string | object)[], stack?: string) {
+  constructor(
+    name: HTTPErrorType | HTTPCustomErrorType,
+    status: number,
+    message: string,
+    errors?: (string | object)[],
+    stack?: string
+  ) {
     super(name, message, errors, stack);
 
     this.status = status;
@@ -28,8 +39,12 @@ export class HTTPError extends BaseError {
  * @extends {HTTPError}
  */
 export class HTTP400 extends HTTPError {
-  constructor(message: string, errors?: (string | object)[]) {
-    super(HTTPErrorType.BAD_REQUEST, 400, message, errors);
+  constructor(message: string, errors?: (string | object)[], stack?: string) {
+    super(HTTPErrorType.BAD_REQUEST, 400, message, errors, stack);
+  }
+
+  static fromApiError(apiError: ApiError) {
+    return new HTTP400(apiError.message, apiError.errors, apiError.stack);
   }
 }
 
@@ -41,8 +56,12 @@ export class HTTP400 extends HTTPError {
  * @extends {HTTPError}
  */
 export class HTTP401 extends HTTPError {
-  constructor(message: string, errors?: (string | object)[]) {
-    super(HTTPErrorType.UNAUTHORIZE, 401, message, errors);
+  constructor(message: string, errors?: (string | object)[], stack?: string) {
+    super(HTTPErrorType.UNAUTHORIZE, 401, message, errors, stack);
+  }
+
+  static fromApiError(apiError: ApiError) {
+    return new HTTP401(apiError.message, apiError.errors, apiError.stack);
   }
 }
 
@@ -54,8 +73,12 @@ export class HTTP401 extends HTTPError {
  * @extends {HTTPError}
  */
 export class HTTP403 extends HTTPError {
-  constructor(message: string, errors?: (string | object)[]) {
-    super(HTTPErrorType.FORBIDDEN, 403, message, errors);
+  constructor(message: string, errors?: (string | object)[], stack?: string) {
+    super(HTTPErrorType.FORBIDDEN, 403, message, errors, stack);
+  }
+
+  static fromApiError(apiError: ApiError) {
+    return new HTTP403(apiError.message, apiError.errors, apiError.stack);
   }
 }
 
@@ -67,8 +90,12 @@ export class HTTP403 extends HTTPError {
  * @extends {HTTPError}
  */
 export class HTTP409 extends HTTPError {
-  constructor(message: string, errors?: (string | object)[]) {
-    super(HTTPErrorType.CONFLICT, 409, message, errors);
+  constructor(message: string, errors?: (string | object)[], stack?: string) {
+    super(HTTPErrorType.CONFLICT, 409, message, errors, stack);
+  }
+
+  static fromApiError(apiError: ApiError) {
+    return new HTTP409(apiError.message, apiError.errors, apiError.stack);
   }
 }
 
@@ -80,8 +107,25 @@ export class HTTP409 extends HTTPError {
  * @extends {HTTPError}
  */
 export class HTTP500 extends HTTPError {
-  constructor(message: string, errors?: (string | object)[]) {
-    super(HTTPErrorType.INTERNAL_SERVER_ERROR, 500, message, errors);
+  constructor(message: string, errors?: (string | object)[], stack?: string) {
+    super(HTTPErrorType.INTERNAL_SERVER_ERROR, 500, message, errors, stack);
+  }
+
+  static fromApiError(apiError: ApiError) {
+    return new HTTP500(apiError.message, apiError.errors, apiError.stack);
+  }
+}
+
+/**
+ * A HTTP `422 CSV Validation Error` error.
+ *
+ * @export
+ * @class CSVValidationError
+ * @extends {HTTPError}
+ */
+export class HTTP422CSVValidationError extends HTTPError {
+  constructor(message: string, errors: CSVError[], stack?: string) {
+    super(HTTPCustomErrorType.CSV_VALIDATION_ERROR, 422, message, errors, stack);
   }
 }
 
@@ -101,8 +145,12 @@ export const ensureHTTPError = (error: HTTPError | ApiError | Error | any): HTTP
     return error;
   }
 
+  if (error instanceof ApiConflictError) {
+    return HTTP409.fromApiError(error);
+  }
+
   if (error instanceof ApiError) {
-    return new HTTPError(HTTPErrorType.INTERNAL_SERVER_ERROR, 500, error.message, error.errors, error.stack);
+    return HTTP500.fromApiError(error);
   }
 
   if (error instanceof DatabaseError) {

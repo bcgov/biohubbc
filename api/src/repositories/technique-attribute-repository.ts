@@ -1,5 +1,14 @@
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
+import { MethodLookupRecord } from '../database-models/method_lookup';
+import { MethodLookupAttributeQualitativeRecord } from '../database-models/method_lookup_attribute_qualitative';
+import { MethodLookupAttributeQualitativeOptionRecord } from '../database-models/method_lookup_attribute_qualitative_option';
+import { MethodLookupAttributeQuantitativeRecord } from '../database-models/method_lookup_attribute_quantitative';
+import { MethodTechniqueAttributeQualitativeRecord } from '../database-models/method_technique_attribute_qualitative';
+import { MethodTechniqueAttributeQuantitativeRecord } from '../database-models/method_technique_attribute_quantitative';
+import { TechniqueAttributeQualitativeRecord } from '../database-models/technique_attribute_qualitative';
+import { TechniqueAttributeQualitativeOptionRecord } from '../database-models/technique_attribute_qualitative_option';
+import { TechniqueAttributeQuantitativeRecord } from '../database-models/technique_attribute_quantitative';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { getLogger } from '../utils/logger';
@@ -7,65 +16,92 @@ import { BaseRepository } from './base-repository';
 
 const defaultLog = getLogger('repositories/technique-attribute-repository');
 
-export interface IQuantitativeAttributePostData {
-  method_technique_attribute_quantitative_id?: number;
-  method_lookup_attribute_quantitative_id: string;
-  value: number;
-}
-
-export interface IQualitativeAttributePostData {
-  method_technique_attribute_qualitative_id?: number;
-  method_lookup_attribute_qualitative_option_id: string;
-  method_lookup_attribute_qualitative_id: string;
-}
-
-const TechniqueAttributeQuantitative = z.object({
-  method_lookup_attribute_quantitative_id: z.string().uuid(),
-  name: z.string(),
-  description: z.string().nullable(),
-  unit: z.string().nullable(),
-  min: z.number().nullable(),
-  max: z.number().nullable()
+const IQuantitativeAttributePostData = MethodTechniqueAttributeQuantitativeRecord.pick({
+  method_technique_attribute_quantitative_id: true,
+  method_lookup_attribute_quantitative_id: true,
+  value: true
+}).extend({
+  // Extend to allow `method_technique_attribute_quantitative_id` to be undefined, when creating new records
+  method_technique_attribute_quantitative_id:
+    MethodTechniqueAttributeQuantitativeRecord.shape.method_technique_attribute_quantitative_id.optional()
 });
 
-const TechniqueAttributeQualitativeOption = z.object({
-  method_lookup_attribute_qualitative_option_id: z.string(),
-  name: z.string(),
-  description: z.string().nullable()
+export type IQuantitativeAttributePostData = z.infer<typeof IQuantitativeAttributePostData>;
+
+const IQualitativeAttributePostData = MethodTechniqueAttributeQualitativeRecord.pick({
+  method_technique_attribute_qualitative_id: true,
+  method_lookup_attribute_qualitative_option_id: true,
+  method_lookup_attribute_qualitative_id: true
+}).extend({
+  // Extend to allow `method_technique_attribute_qualitative_id` to be undefined, when creating new records
+  method_technique_attribute_qualitative_id:
+    MethodTechniqueAttributeQualitativeRecord.shape.method_technique_attribute_qualitative_id.optional()
 });
 
-const TechniqueAttributeQualitative = z.object({
-  method_lookup_attribute_qualitative_id: z.string().uuid(),
-  name: z.string(),
-  description: z.string().nullable(),
-  options: z.array(TechniqueAttributeQualitativeOption)
-});
+export type IQualitativeAttributePostData = z.infer<typeof IQualitativeAttributePostData>;
 
-export const TechniqueAttributesLookupObject = z.object({
-  method_lookup_id: z.number(),
+const TechniqueAttributeQuantitative = MethodLookupAttributeQuantitativeRecord.pick({
+  method_lookup_attribute_quantitative_id: true,
+  min: true,
+  max: true,
+  unit: true
+}).merge(
+  TechniqueAttributeQuantitativeRecord.pick({
+    name: true,
+    description: true
+  })
+);
+
+const TechniqueAttributeQualitativeOption = MethodLookupAttributeQualitativeOptionRecord.pick({
+  method_lookup_attribute_qualitative_option_id: true
+}).merge(
+  TechniqueAttributeQualitativeOptionRecord.pick({
+    name: true,
+    description: true
+  })
+);
+
+const TechniqueAttributeQualitative = MethodLookupAttributeQualitativeRecord.pick({
+  method_lookup_attribute_qualitative_id: true
+})
+  .merge(
+    TechniqueAttributeQualitativeRecord.pick({
+      name: true,
+      description: true
+    })
+  )
+  .extend({
+    options: z.array(TechniqueAttributeQualitativeOption)
+  });
+
+const TechniqueAttributesLookupObject = MethodLookupRecord.pick({
+  method_lookup_id: true
+}).extend({
   quantitative_attributes: z.array(TechniqueAttributeQuantitative),
   qualitative_attributes: z.array(TechniqueAttributeQualitative)
 });
+
 export type TechniqueAttributesLookupObject = z.infer<typeof TechniqueAttributesLookupObject>;
 
-export const TechniqueAttributesObject = z.object({
+const TechniqueAttributesObject = z.object({
   quantitative_attributes: z.array(
-    z.object({
-      method_technique_attribute_quantitative_id: z.number(),
-      method_technique_id: z.number(),
-      method_lookup_attribute_quantitative_id: z.string().uuid(),
-      value: z.number()
+    MethodTechniqueAttributeQuantitativeRecord.pick({
+      method_technique_attribute_quantitative_id: true,
+      method_technique_id: true,
+      method_lookup_attribute_quantitative_id: true,
+      value: true
     })
   ),
   qualitative_attributes: z.array(
-    z.object({
-      method_technique_attribute_qualitative_id: z.number(),
-      method_technique_id: z.number(),
-      method_lookup_attribute_qualitative_id: z.string().uuid(),
-      method_lookup_attribute_qualitative_option_id: z.string()
+    MethodTechniqueAttributeQualitativeRecord.pick({
+      method_technique_attribute_qualitative_id: true,
+      method_technique_id: true,
+      method_lookup_attribute_qualitative_id: true,
+      method_lookup_attribute_qualitative_option_id: true
     })
   )
 });
+
 export type TechniqueAttributesObject = z.infer<typeof TechniqueAttributesObject>;
 
 export class TechniqueAttributeRepository extends BaseRepository {
@@ -114,15 +150,20 @@ export class TechniqueAttributeRepository extends BaseRepository {
             'method_lookup_attribute_qualitative_id',
             knex.raw(`
               json_agg(json_build_object(
-                'method_lookup_attribute_qualitative_option_id', method_lookup_attribute_qualitative_option_id,
-                'name', name,
-                'description', description
+                'method_lookup_attribute_qualitative_option_id', mlaqo.method_lookup_attribute_qualitative_option_id,
+                'name', taqo.name,
+                'description', taqo.description
               )) as options
             `)
           )
-          .from('method_lookup_attribute_qualitative_option')
-          .where('record_end_date', null)
-          .groupBy('method_lookup_attribute_qualitative_id')
+          .from('method_lookup_attribute_qualitative_option as mlaqo')
+          .join(
+            'technique_attribute_qualitative_option as taqo',
+            'taqo.technique_attribute_qualitative_option_id',
+            'mlaqo.technique_attribute_qualitative_option_id'
+          )
+          .where('mlaqo.record_end_date', null)
+          .groupBy('mlaqo.method_lookup_attribute_qualitative_id')
       )
       .with(
         'w_qualitative_attributes',
@@ -212,14 +253,19 @@ export class TechniqueAttributeRepository extends BaseRepository {
             'method_lookup_attribute_qualitative_id',
             knex.raw(`
               json_agg(json_build_object(
-                'method_lookup_attribute_qualitative_option_id', method_lookup_attribute_qualitative_option_id,
-                'name', name,
-                'description', description
+                'method_lookup_attribute_qualitative_option_id', mlaqo.method_lookup_attribute_qualitative_option_id,
+                'name', taqo.name,
+                'description', taqo.description
               )) as options
             `)
           )
-          .from('method_lookup_attribute_qualitative_option')
-          .where('record_end_date', null)
+          .from('method_lookup_attribute_qualitative_option as mlaqo')
+          .join(
+            'technique_attribute_qualitative_option as taqo',
+            'taqo.technique_attribute_qualitative_option_id',
+            'mlaqo.technique_attribute_qualitative_option_id'
+          )
+          .where('mlaqo.record_end_date', null)
           .groupBy('method_lookup_attribute_qualitative_id')
       )
       .with(
@@ -476,13 +522,13 @@ export class TechniqueAttributeRepository extends BaseRepository {
     defaultLog.debug({ label: 'deleteQualitativeAttributesForTechnique', methodTechniqueId });
 
     const queryBuilder = getKnex()
-      .del()
+      .delete()
       .from('method_technique_attribute_qualitative as mtaq')
       .leftJoin('method_technique as mt', 'mt.method_technique_id', 'mtaq.method_technique_id')
-      .whereIn('method_technique_attribute_qualitative_id', methodTechniqueAttributeQualitativeIds)
+      .whereIn('mtaq.method_technique_attribute_qualitative_id', methodTechniqueAttributeQualitativeIds)
       .andWhere('mtaq.method_technique_id', methodTechniqueId)
       .andWhere('mt.survey_id', surveyId)
-      .returning('method_technique_attribute_qualitative.method_technique_attribute_qualitative_id');
+      .returning('mtaq.method_technique_attribute_qualitative_id');
 
     const response = await this.connection.knex(
       queryBuilder,
@@ -518,13 +564,13 @@ export class TechniqueAttributeRepository extends BaseRepository {
     defaultLog.debug({ label: 'deleteQuantitativeAttributesForTechnique', methodTechniqueId });
 
     const queryBuilder = getKnex()
-      .del()
+      .delete()
       .from('method_technique_attribute_quantitative as mtaq')
       .leftJoin('method_technique as mt', 'mt.method_technique_id', 'mtaq.method_technique_id')
-      .whereIn('method_technique_attribute_quantitative_id', methodTechniqueAttributeQuantitativeIds)
+      .whereIn('mtaq.method_technique_attribute_quantitative_id', methodTechniqueAttributeQuantitativeIds)
       .andWhere('mtaq.method_technique_id', methodTechniqueId)
       .andWhere('mt.survey_id', surveyId)
-      .returning('method_technique_attribute_quantitative.method_technique_attribute_quantitative_id');
+      .returning('mtaq.method_technique_attribute_quantitative_id');
 
     const response = await this.connection.knex(
       queryBuilder,

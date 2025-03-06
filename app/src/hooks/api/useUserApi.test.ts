@@ -45,28 +45,41 @@ describe('useUserApi', () => {
     expect(result.role_names).toEqual(['role 1', 'role 2']);
   });
 
+  // Update the test to match the correct interface
   it('getUsersList works as expected', async () => {
-    mock.onGet('/api/user/list').reply(200, [
-      {
-        system_user_id: 1,
-        user_identifier: 'myidirboss',
-        role_names: ['role 1', 'role 2']
-      },
-      {
-        system_user_id: 2,
-        user_identifier: 'myidirbossagain',
-        role_names: ['role 1', 'role 4']
+    const mockResponse = {
+      users: [
+        {
+          system_user_id: 1,
+          user_identifier: 'myidirboss',
+          role_names: ['role 1', 'role 2']
+        },
+        {
+          system_user_id: 2
+        }
+      ],
+      pagination: {
+        total: 2,
+        current_page: 1,
+        last_page: 1,
+        per_page: 10
       }
-    ]);
+    };
 
-    const result = await useUserApi(axios).getUsersList();
+    // Mock axios response
+    mock.onGet('/api/user/list').reply(200, mockResponse);
 
-    expect(result[0].system_user_id).toEqual(1);
-    expect(result[0].user_identifier).toEqual('myidirboss');
-    expect(result[0].role_names).toEqual(['role 1', 'role 2']);
-    expect(result[1].system_user_id).toEqual(2);
-    expect(result[1].user_identifier).toEqual('myidirbossagain');
-    expect(result[1].role_names).toEqual(['role 1', 'role 4']);
+    const result = await useUserApi(axios).getUsersList(
+      {},
+      { page: 0, limit: 10, sort: 'system_user_id', order: 'desc' }
+    );
+
+    expect(result.users[0].system_user_id).toEqual(1);
+    expect(result.users[0].user_identifier).toEqual('myidirboss');
+    expect(result.users[0].role_names).toEqual(['role 1', 'role 2']);
+    expect(result.users[1].system_user_id).toEqual(2);
+    expect(result.pagination.total).toEqual(2);
+    expect(result.pagination.current_page).toEqual(1);
   });
 
   it('getProjectList works as expected', async () => {

@@ -3,13 +3,14 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { ObservationRecord } from '../repositories/observation-repository/observation-repository';
+import { SurveyObservationRecord } from '../database-models/survey_observation';
+import * as envConfig from '../utils/env-config';
 import * as featureFlagUtils from '../utils/feature-flag-utils';
 import { getMockDBConnection } from '../__mocks__/db';
 import { AttachmentService } from './attachment-service';
 import { HistoryPublishService } from './history-publish-service';
 import { KeycloakService } from './keycloak-service';
-import { ObservationService } from './observation-service';
+import { ObservationService } from './observation-services/observation-service';
 import { PlatformService } from './platform-service';
 import { SurveyService } from './survey-service';
 
@@ -18,6 +19,90 @@ chai.use(sinonChai);
 describe('PlatformService', () => {
   afterEach(() => {
     sinon.restore();
+  });
+
+  describe('getTaxonByScientificName', () => {
+    it('should return a taxon by scientific name', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      const mockAxiosResponse = {
+        data: {
+          searchResponse: [
+            {
+              tsn: 1,
+              scientificName: 'alces alces'
+            }
+          ]
+        }
+      };
+
+      const getEnvironmentVariableStub = sinon.stub(envConfig, 'getEnvironmentVariable');
+      sinon.stub(KeycloakService.prototype, 'getKeycloakServiceToken').resolves('token');
+
+      const axiosStub = sinon.stub(axios, 'get').resolves(mockAxiosResponse);
+
+      getEnvironmentVariableStub.onCall(0).returns('/taxon');
+      getEnvironmentVariableStub.onCall(1).returns('https://url.com');
+
+      const taxon = await platformService.getTaxonByScientificName('Alces alces');
+
+      expect(axiosStub.getCall(0).args[1]?.headers?.authorization).to.equal('Bearer token');
+      expect(axiosStub.getCall(0).args[1]?.params.terms).to.deep.equal(['Alces', 'alces']);
+
+      expect(taxon).to.deep.equal({ tsn: 1, scientificName: 'alces alces' });
+    });
+
+    it('should return a null when unable to find match by scientific name', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      const mockAxiosResponse = {
+        data: {
+          searchResponse: [
+            {
+              tsn: 1,
+              scientificName: 'unknown taxon'
+            }
+          ]
+        }
+      };
+
+      const getEnvironmentVariableStub = sinon.stub(envConfig, 'getEnvironmentVariable');
+      sinon.stub(KeycloakService.prototype, 'getKeycloakServiceToken').resolves('token');
+
+      const axiosStub = sinon.stub(axios, 'get').resolves(mockAxiosResponse);
+
+      getEnvironmentVariableStub.onCall(0).returns('/taxon');
+      getEnvironmentVariableStub.onCall(1).returns('https://url.com');
+
+      const taxon = await platformService.getTaxonByScientificName('Alces alces');
+
+      expect(axiosStub.getCall(0).args[1]?.headers?.authorization).to.equal('Bearer token');
+      expect(axiosStub.getCall(0).args[1]?.params.terms).to.deep.equal(['Alces', 'alces']);
+
+      expect(taxon).to.equal(null);
+    });
+
+    it('should return a null error thrown', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      const getEnvironmentVariableStub = sinon.stub(envConfig, 'getEnvironmentVariable');
+      sinon.stub(KeycloakService.prototype, 'getKeycloakServiceToken').resolves('token');
+
+      const axiosStub = sinon.stub(axios, 'get').rejects(new Error('error'));
+
+      getEnvironmentVariableStub.onCall(0).returns('/taxon');
+      getEnvironmentVariableStub.onCall(1).returns('https://url.com');
+
+      const taxon = await platformService.getTaxonByScientificName('Alces alces');
+
+      expect(axiosStub.getCall(0).args[1]?.headers?.authorization).to.equal('Bearer token');
+      expect(axiosStub.getCall(0).args[1]?.params.terms).to.deep.equal(['Alces', 'alces']);
+
+      expect(taxon).to.equal(null);
+    });
   });
 
   describe('submitSurveyToBioHub', () => {
@@ -131,7 +216,7 @@ describe('PlatformService', () => {
 
       const getAllSurveyObservationsStub = sinon
         .stub(ObservationService.prototype, 'getAllSurveyObservations')
-        .resolves([{ survey_observation_id: 2 } as unknown as ObservationRecord]);
+        .resolves([{ survey_observation_id: 2 } as unknown as SurveyObservationRecord]);
 
       const getSurveyLocationsDataStub = sinon
         .stub(SurveyService.prototype, 'getSurveyLocationsData')
@@ -171,8 +256,6 @@ describe('PlatformService', () => {
               properties: {
                 survey_id: undefined,
                 taxonomy: undefined,
-                survey_sample_site_id: null,
-                survey_sample_method_id: null,
                 survey_sample_period_id: null,
                 latitude: undefined,
                 longitude: undefined,

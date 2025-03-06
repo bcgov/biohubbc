@@ -20,8 +20,6 @@ import { authorizeRequestHandler } from '../../../../../request-handlers/securit
 import { SurveyService } from '../../../../../services/survey-service';
 import { getLogger } from '../../../../../utils/logger';
 
-('../../../../../openapi/schemas/survey');
-
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/view');
 
 export const GET: Operation = [
@@ -164,16 +162,18 @@ export function getSurvey(): RequestHandler {
 
       const surveyService = new SurveyService(connection);
 
-      const surveyData = await surveyService.getSurveyById(surveyId);
-
       // @TODO safe to delete survey supplementary data code?
-      const surveySupplementaryData = await surveyService.getSurveySupplementaryDataById(Number(req.params.surveyId));
+      const [surveyData, surveySupplementaryData] = await Promise.all([
+        surveyService.getSurveyById(surveyId),
+        surveyService.getSurveySupplementaryDataById(surveyId)
+      ]);
 
       await connection.commit();
 
       return res.status(200).json({ surveyData: surveyData, surveySupplementaryData: surveySupplementaryData });
     } catch (error) {
       defaultLog.error({ label: 'getSurveyForView', message: 'error', error });
+      await connection.rollback();
       throw error;
     } finally {
       connection.release();

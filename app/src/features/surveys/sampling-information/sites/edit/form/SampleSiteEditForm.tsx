@@ -6,16 +6,25 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { SurveyContext } from 'contexts/surveyContext';
-import { SamplingSiteMethodYupSchema } from 'features/surveys/sampling-information/methods/components/SamplingMethodForm';
-import { SamplingMethodFormContainer } from 'features/surveys/sampling-information/methods/SamplingMethodFormContainer';
 import { SamplingSiteGroupingsForm } from 'features/surveys/sampling-information/sites/components/site-groupings/SamplingSiteGroupingsForm';
 import { useFormikContext } from 'formik';
-import { IGetSampleLocationDetailsForUpdate } from 'interfaces/useSamplingSiteApi.interface';
+import { Feature } from 'geojson';
+import { IGetSampleBlockDetails, IGetSampleStratumDetails } from 'interfaces/useSamplingSiteApi.interface';
 import { useContext } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import yup from 'utils/YupSchema';
 import SurveySamplingSiteEditForm from '../../components/map/SurveySampleSiteEditForm';
-import SampleSiteGeneralInformationForm from './SampleSiteGeneralInformationForm';
+import SampleSiteGeneralInformationEditForm from './SampleSiteGeneralInformationForm';
+
+export interface IEditSampleSiteFormData {
+  survey_sample_site_id: number | null;
+  survey_id: number;
+  name: string;
+  description: string;
+  geojson: Feature;
+  blocks: IGetSampleBlockDetails[];
+  stratums: IGetSampleStratumDetails[];
+}
 
 export const SampleSiteEditFormYupSchema = yup.object({
   name: yup.string().default('').min(1, 'Minimum 1 character.').max(50, 'Maximum 50 characters.'),
@@ -23,10 +32,7 @@ export const SampleSiteEditFormYupSchema = yup.object({
   survey_sample_sites: yup
     .array(yup.object())
     .min(1, 'At least one sampling site location is required')
-    .max(1, 'Only one location is permitted per sampling site'),
-  sample_methods: yup
-    .array(yup.object().concat(SamplingSiteMethodYupSchema))
-    .min(1, 'At least one sampling method is required')
+    .max(1, 'Only one location is permitted per sampling site')
 });
 
 export interface ISampleSiteEditFormProps {
@@ -41,7 +47,7 @@ export interface ISampleSiteEditFormProps {
  */
 const SampleSiteEditForm = (props: ISampleSiteEditFormProps) => {
   const surveyContext = useContext(SurveyContext);
-  const { submitForm } = useFormikContext<IGetSampleLocationDetailsForUpdate>();
+  const { submitForm } = useFormikContext<IEditSampleSiteFormData>();
 
   return (
     <Container maxWidth="xl" sx={{ py: 3 }}>
@@ -50,7 +56,7 @@ const SampleSiteEditForm = (props: ISampleSiteEditFormProps) => {
           <HorizontalSplitFormComponent
             title="General Information"
             summary="Specify the name and description for this sampling site">
-            <SampleSiteGeneralInformationForm />
+            <SampleSiteGeneralInformationEditForm />
           </HorizontalSplitFormComponent>
 
           <Divider />
@@ -59,14 +65,6 @@ const SampleSiteEditForm = (props: ISampleSiteEditFormProps) => {
             title="Site Location"
             summary="Import or draw sampling site locations used for this survey.">
             <SurveySamplingSiteEditForm />
-          </HorizontalSplitFormComponent>
-
-          <Divider />
-
-          <HorizontalSplitFormComponent
-            title="Sampling Methods"
-            summary="Specify sampling methods that were used to collect data.">
-            <SamplingMethodFormContainer />
           </HorizontalSplitFormComponent>
 
           <Divider />

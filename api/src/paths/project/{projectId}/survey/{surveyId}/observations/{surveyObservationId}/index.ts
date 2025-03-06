@@ -3,7 +3,7 @@ import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
-import { ObservationService } from '../../../../../../../services/observation-service';
+import { ObservationService } from '../../../../../../../services/observation-services/observation-service';
 import { getLogger } from '../../../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/{surveyObservationId}');
@@ -86,14 +86,7 @@ GET.apiDoc = {
               'itis_scientific_name',
               'observation_date',
               'observation_time',
-              'survey_sample_site_id',
-              'survey_sample_method_id',
-              'survey_sample_period_id',
-              'create_user',
-              'create_date',
-              'update_user',
-              'update_date',
-              'revision_count'
+              'survey_sample_period_id'
             ],
             properties: {
               survey_observation_id: {
@@ -124,39 +117,9 @@ GET.apiDoc = {
               observation_time: {
                 type: 'string'
               },
-              survey_sample_site_id: {
-                type: 'integer',
-                nullable: true
-              },
-              survey_sample_method_id: {
-                type: 'integer',
-                nullable: true
-              },
               survey_sample_period_id: {
                 type: 'integer',
                 nullable: true
-              },
-              create_date: {
-                type: 'string',
-                description: 'ISO 8601 date string'
-              },
-              create_user: {
-                type: 'integer',
-                minimum: 1
-              },
-              update_date: {
-                type: 'string',
-                description: 'ISO 8601 date string',
-                nullable: true
-              },
-              update_user: {
-                type: 'integer',
-                minimum: 1,
-                nullable: true
-              },
-              revision_count: {
-                type: 'integer',
-                minimum: 0
               }
             }
           }
@@ -202,6 +165,8 @@ export function getSurveyObservation(): RequestHandler {
       const observationService = new ObservationService(connection);
 
       const observationData = await observationService.getSurveyObservationById(surveyId, surveyObservationId);
+
+      await connection.commit();
 
       return res.status(200).json(observationData);
     } catch (error) {

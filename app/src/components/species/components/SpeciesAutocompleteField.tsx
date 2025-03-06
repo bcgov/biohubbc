@@ -5,11 +5,12 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import grey from '@mui/material/colors/grey';
 import TextField from '@mui/material/TextField';
+import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
 import SpeciesCard from 'components/species/components/SpeciesCard';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useIsMounted from 'hooks/useIsMounted';
 import { IPartialTaxonomy, ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
-import { debounce, startCase } from 'lodash-es';
+import { debounce } from 'lodash-es';
 import { useEffect, useMemo, useState } from 'react';
 
 export interface ISpeciesAutocompleteFieldProps {
@@ -33,7 +34,7 @@ export interface ISpeciesAutocompleteFieldProps {
    * @type {(species: ITaxonomy | IPartialTaxonomy) => void}
    * @memberof ISpeciesAutocompleteFieldProps
    */
-  handleSpecies: (species?: ITaxonomy | IPartialTaxonomy) => void;
+  handleSpecies: (species: ITaxonomy | IPartialTaxonomy) => void;
   /**
    * Optional callback to fire on species option being cleared
    *
@@ -67,6 +68,13 @@ export interface ISpeciesAutocompleteFieldProps {
    * @memberof ISpeciesAutocompleteFieldProps
    */
   required?: boolean;
+  /**
+   * Optional help text to be displayed in a tooltip
+   *
+   * @type {string}
+   * @memberof  ISystemUserAutocompleteFieldProps
+   */
+  helpText?: string;
   /**
    * If field is disabled.
    *
@@ -116,6 +124,7 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
     error,
     placeholder,
     disabled,
+    helpText,
     handleSpecies,
     handleClear,
     defaultSpecies,
@@ -126,7 +135,7 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
   const isMounted = useIsMounted();
 
   // A default species has been provided and it is not a promise
-  const isDefaultSpecies = defaultSpecies && !('then' in defaultSpecies);
+  const isDefaultSpecies = defaultSpecies && !(defaultSpecies instanceof Promise);
 
   const [hasLoadedDefaultSpecies, setHasLoadedDefaultSpecies] = useState(false);
   // The input field value
@@ -137,7 +146,7 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (defaultSpecies && 'then' in defaultSpecies) {
+    if (defaultSpecies instanceof Promise) {
       // A default species has been provided and it is a promise
       defaultSpecies.then((taxonomy) => {
         if (hasLoadedDefaultSpecies) {
@@ -186,27 +195,37 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
       id={formikFieldName}
       disabled={disabled}
       data-testid={formikFieldName}
-      filterSelectedOptions
-      noOptionsText="No matching options"
+      noOptionsText={isLoading ? 'Loading...' : 'No matching options'}
       options={options}
       getOptionLabel={(option) => option.scientificName}
-      isOptionEqualToValue={(option, value) => {
-        return option.tsn === value.tsn;
-      }}
       filterOptions={(item) => item}
       inputValue={inputValue}
+      fullWidth
       // Text field value changed
       onInputChange={(_, value, reason) => {
         if (reason === 'reset') {
-          if (clearOnSelect) {
-            setInputValue('');
-            setOptions([]);
-            handleClear?.();
+          if (!clearOnSelect) {
+            return;
           }
+
+          if (inputValue === '' && options.length === 0) {
+            // Nothing to clear
+            return;
+          }
+
+          setInputValue('');
+          setOptions([]);
+          handleClear?.();
+
           return;
         }
 
         if (reason === 'clear') {
+          if (inputValue === '' && options.length === 0) {
+            // Nothing to clear
+            return;
+          }
+
           setInputValue('');
           setOptions([]);
           handleClear?.();
@@ -214,6 +233,11 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
         }
 
         if (!value) {
+          if (inputValue === '' && options.length === 0) {
+            // Nothing to clear
+            return;
+          }
+
           setInputValue('');
           setOptions([]);
           return;
@@ -226,7 +250,7 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
             return;
           }
 
-          setOptions(() => newOptions);
+          setOptions(newOptions);
           setIsLoading(false);
         });
       }}
@@ -244,7 +268,7 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
           return;
         }
 
-        setInputValue(startCase(option?.commonNames?.length ? option.commonNames[0] : option.scientificName));
+        setInputValue(option?.commonNames?.length ? option.commonNames[0] : option.scientificName);
       }}
       renderOption={(renderProps, renderOption) => {
         return (
@@ -255,8 +279,8 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
                 borderTop: '1px solid' + grey[300]
               }
             }}
-            key={`${renderOption.tsn}-${renderOption.scientificName}`}
-            {...renderProps}>
+            {...renderProps}
+            key={`${renderOption.tsn}-${renderOption.scientificName}`}>
             <Box py={1} width={'100%'}>
               <SpeciesCard taxon={renderOption} />
             </Box>
@@ -269,14 +293,9 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
           name={formikFieldName}
           required={required}
           label={label}
-          sx={{
-            '& .MuiAutocomplete-input': {
-              fontStyle: inputValue.split(' ').length > 1 ? 'italic' : 'normal'
-            }
-          }}
           variant="outlined"
           fullWidth
-          placeholder={placeholder || 'Enter a species or taxon'}
+          placeholder={placeholder ?? 'Enter a species or taxon'}
           InputProps={{
             ...params.InputProps,
             startAdornment: showStartAdornment && (
@@ -287,6 +306,7 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
             endAdornment: (
               <>
                 {inputValue && isLoading ? <CircularProgress color="inherit" size={20} /> : null}
+                {helpText && <HelpButtonTooltip content={helpText} iconSx={{ mr: -1 }} />}
                 {params.InputProps.endAdornment}
               </>
             )

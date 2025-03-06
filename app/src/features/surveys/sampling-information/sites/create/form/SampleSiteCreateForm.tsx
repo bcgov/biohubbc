@@ -1,20 +1,20 @@
 import LoadingButton from '@mui/lab/LoadingButton/LoadingButton';
 import Button from '@mui/material/Button';
+import Collapse from '@mui/material/Collapse';
 import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
-import { SamplingSiteMethodYupSchema } from 'features/surveys/sampling-information/methods/components/SamplingMethodForm';
-import { SamplingMethodFormContainer } from 'features/surveys/sampling-information/methods/SamplingMethodFormContainer';
-import { SamplingSiteMethodPeriodYupSchema } from 'features/surveys/sampling-information/periods/SamplingPeriodFormContainer';
 import { SamplingSiteGroupingsForm } from 'features/surveys/sampling-information/sites/components/site-groupings/SamplingSiteGroupingsForm';
 import { ICreateSampleSiteFormData } from 'features/surveys/sampling-information/sites/create/CreateSamplingSitePage';
 import { SampleSiteImportForm } from 'features/surveys/sampling-information/sites/create/form/SampleSiteImportForm';
 import { useFormikContext } from 'formik';
 import { useSurveyContext } from 'hooks/useContext';
 import { useHistory } from 'react-router';
+import { TransitionGroup } from 'react-transition-group';
 import yup from 'utils/YupSchema';
+import SampleSiteGeneralInformationCreateForm from './SampleSiteGeneralInformationCreateForm';
 
 export const SampleSiteCreateFormYupSchema = yup.object({
   survey_sample_sites: yup
@@ -25,21 +25,7 @@ export const SampleSiteCreateFormYupSchema = yup.object({
         geojson: yup.object({})
       })
     )
-    .min(1, 'At least one sampling site location is required'),
-  sample_methods: yup
-    .array()
-    .of(
-      SamplingSiteMethodYupSchema.shape({
-        sample_periods: yup
-          .array()
-          .of(SamplingSiteMethodPeriodYupSchema)
-          .min(
-            1,
-            'At least one sampling period is required for each method, describing when exactly this method was done'
-          )
-      })
-    ) // Ensure each item in the array conforms to SamplingSiteMethodYupSchema
-    .min(1, 'At least one sampling method is required') // Add check for at least one item in the array
+    .min(1, 'At least one sampling site location is required')
 });
 
 interface ISampleSiteCreateFormProps {
@@ -56,30 +42,35 @@ const SampleSiteCreateForm = (props: ISampleSiteCreateFormProps) => {
   const { isSubmitting } = props;
 
   const history = useHistory();
-  const { submitForm } = useFormikContext<ICreateSampleSiteFormData>();
+  const { submitForm, values } = useFormikContext<ICreateSampleSiteFormData>();
 
   const surveyContext = useSurveyContext();
 
   return (
     <Container maxWidth="xl" sx={{ py: 3 }}>
       <Paper sx={{ p: 5 }}>
+        <HorizontalSplitFormComponent
+          title="Site Location"
+          summary="Import or draw sampling site locations used for this survey.">
+          <SampleSiteImportForm />
+        </HorizontalSplitFormComponent>
+
+        <Divider sx={{ my: 5 }} />
+
+        <TransitionGroup>
+          {values.survey_sample_sites.length === 1 && (
+            <Collapse>
+              <HorizontalSplitFormComponent
+                title="General Information"
+                summary="Enter a name and description for the sampling site.">
+                <SampleSiteGeneralInformationCreateForm />
+              </HorizontalSplitFormComponent>
+              <Divider sx={{ my: 5 }} />
+            </Collapse>
+          )}
+        </TransitionGroup>
+
         <Stack gap={5}>
-          <HorizontalSplitFormComponent
-            title="Site Location"
-            summary="Import or draw sampling site locations used for this survey.">
-            <SampleSiteImportForm />
-          </HorizontalSplitFormComponent>
-
-          <Divider />
-
-          <HorizontalSplitFormComponent
-            title="Sampling Methods"
-            summary="Specify sampling methods that were used to collect data.">
-            <SamplingMethodFormContainer />
-          </HorizontalSplitFormComponent>
-
-          <Divider />
-
           <HorizontalSplitFormComponent
             title="Sampling Site Groupings"
             summary="Group similar sites by assigning them to groups or strata, which you can add when creating or editing your Survey.">

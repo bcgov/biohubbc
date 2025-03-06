@@ -6,16 +6,19 @@ import qs from 'qs';
 import { URL } from 'url';
 import { IDBConnection } from '../database/db';
 import { ApiError, ApiErrorType, ApiGeneralError } from '../errors/api-error';
+import { formatAxiosError } from '../errors/axios-error';
 import { PostSurveySubmissionToBioHubObject } from '../models/biohub-create';
 import { ISurveyAttachment, ISurveyReportAttachment } from '../repositories/attachment-repository';
+import { getEnvironmentVariable } from '../utils/env-config';
 import { isFeatureFlagPresent } from '../utils/feature-flag-utils';
 import { getFileFromS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
 import { AttachmentService } from './attachment-service';
+import { IPostCollectionUnit } from './critterbase-service';
 import { DBService } from './db-service';
 import { HistoryPublishService } from './history-publish-service';
 import { KeycloakService } from './keycloak-service';
-import { ObservationService } from './observation-service';
+import { ObservationService } from './observation-services/observation-service';
 import { SurveyService } from './survey-service';
 
 const defaultLog = getLogger('services/platform-service');
@@ -44,7 +47,7 @@ export interface IArtifact {
 }
 
 export interface IItisSearchResult {
-  tsn: string;
+  tsn: number;
   commonNames?: string[];
   scientificName: string;
 }
@@ -57,10 +60,15 @@ export interface ITaxonomy {
   kingdom: string;
 }
 
-const getBackboneInternalApiHost = () => process.env.BACKBONE_INTERNAL_API_HOST || '';
-const getBackboneArtifactIntakePath = () => process.env.BACKBONE_ARTIFACT_INTAKE_PATH || '';
-const getBackboneSurveyIntakePath = () => process.env.BACKBONE_INTAKE_PATH || '';
-const getBackboneTaxonTsnPath = () => process.env.BIOHUB_TAXON_TSN_PATH || '';
+export interface ITaxonomyWithEcologicalUnits extends ITaxonomy {
+  ecological_units: IPostCollectionUnit[];
+}
+
+const getBackboneInternalApiHost = () => getEnvironmentVariable('BACKBONE_INTERNAL_API_HOST');
+const getBackboneArtifactIntakePath = () => getEnvironmentVariable('BACKBONE_ARTIFACT_INTAKE_PATH');
+const getBackboneSurveyIntakePath = () => getEnvironmentVariable('BACKBONE_INTAKE_PATH');
+const getBackboneTaxonTsnPath = () => getEnvironmentVariable('BIOHUB_TAXON_TSN_PATH');
+const getBackboneTaxonPath = () => getEnvironmentVariable('BIOHUB_TAXON_PATH');
 
 export class PlatformService extends DBService {
   attachmentService: AttachmentService;
@@ -109,6 +117,58 @@ export class PlatformService extends DBService {
       return data.searchResponse;
     } catch (error) {
       return [];
+    }
+  }
+
+  /**
+   * Get taxon by scientific name from the BioHub.
+   *
+   * @param {string} scientificName - The scientific name of the taxon to search for
+   * @returns {*} {Promise<IItisSearchResult | null>} The first matching taxon by scientific name or null if not found
+   */
+  async getTaxonByScientificName(scientificName: string): Promise<IItisSearchResult | null> {
+    defaultLog.debug({ label: 'getTaxonomyByScientificName', scientificName });
+
+    if (!scientificName) {
+      return null;
+    }
+
+    try {
+      const keycloakService = new KeycloakService();
+
+      const token = await keycloakService.getKeycloakServiceToken();
+
+      const backboneTaxonSearchUrl = new URL(getBackboneTaxonPath(), getBackboneInternalApiHost()).href;
+
+      const { data } = await axios.get<{ searchResponse: IItisSearchResult[] }>(backboneTaxonSearchUrl, {
+        headers: {
+          authorization: `Bearer ${token}`
+        },
+        params: {
+          // Biohub searches ITIS by "terms" -> "alces alces" -> ["alces", "alces"]
+          terms: scientificName.split(' ')
+        },
+        paramsSerializer: (params) => {
+          return qs.stringify(params);
+        }
+      });
+
+      // Find a matching taxon by scientific name (case-insensitive)
+      const matchingTaxon = data.searchResponse.find(
+        (taxon) => taxon.scientificName.toLowerCase() === scientificName.toLowerCase()
+      );
+
+      defaultLog.debug({ label: 'getTaxonByScientificName', matchingTaxon });
+
+      if (!matchingTaxon) {
+        return null;
+      }
+
+      return matchingTaxon;
+    } catch (error) {
+      defaultLog.error({ label: 'getTaxonByScientificName', error: formatAxiosError(error) });
+
+      return null;
     }
   }
 

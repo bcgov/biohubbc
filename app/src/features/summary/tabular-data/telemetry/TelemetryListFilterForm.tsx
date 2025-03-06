@@ -1,75 +1,58 @@
 import CustomTextField from 'components/fields/CustomTextField';
-import SpeciesAutocompleteField from 'components/species/components/SpeciesAutocompleteField';
+import SingleDateField from 'components/fields/SingleDateField';
 import { FilterFieldsContainer } from 'features/summary/components/FilterFieldsContainer';
 import { Formik } from 'formik';
-import { useTaxonomyContext } from 'hooks/useContext';
 
-export type ITelemetryAdvancedFilters = {
+export type IAllTelemetryAdvancedFilters = {
+  keyword?: string;
   itis_tsn?: number;
+  start_date?: string;
+  end_date?: string;
+  start_time?: string;
+  end_time?: string;
+  system_user_id?: number;
 };
 
-export const TelemetryAdvancedFiltersInitialValues: ITelemetryAdvancedFilters = {
-  itis_tsn: undefined
+export const TelemetryAdvancedFiltersInitialValues: IAllTelemetryAdvancedFilters = {
+  keyword: undefined,
+  itis_tsn: undefined,
+  start_date: undefined,
+  end_date: undefined,
+  start_time: undefined,
+  end_time: undefined,
+  system_user_id: undefined
 };
 
-export interface ITelemetryListFilterFormProps {
-  handleSubmit: (filterValues: ITelemetryAdvancedFilters) => void;
-  initialValues?: ITelemetryAdvancedFilters;
+export interface IAllTelemetryListFilterFormProps {
+  handleSubmit: (filterValues: IAllTelemetryAdvancedFilters) => void;
+  initialValues?: IAllTelemetryAdvancedFilters;
 }
 
 /**
  * Telemetry advanced filters
  *
- * TODO: The filter fields are disabled for now. The fields are functional (the values are captured and passed to the
- * backend), but the backend does not currently use them for filtering.
- *
- * @param {ITelemetryListFilterFormProps} props
+ * @param {IAllTelemetryListFilterFormProps} props
  * @return {*}
  */
-const TelemetryListFilterForm = (props: ITelemetryListFilterFormProps) => {
+export const TelemetryListFilterForm = (props: IAllTelemetryListFilterFormProps) => {
   const { handleSubmit, initialValues } = props;
-
-  const taxonomyContext = useTaxonomyContext();
 
   return (
     <Formik initialValues={initialValues ?? TelemetryAdvancedFiltersInitialValues} onSubmit={handleSubmit}>
-      {(formikProps) => (
-        <FilterFieldsContainer
-          fields={[
-            <CustomTextField
-              name="keyword"
-              label="Keyword"
-              other={{
-                placeholder: 'Type any keyword',
-                disabled: true // See TODO
-              }}
-              key="telemetry-keyword-filter"
-            />,
-            <SpeciesAutocompleteField
-              formikFieldName={'itis_tsns'}
-              label={'Species'}
-              placeholder="Search by taxon"
-              defaultSpecies={
-                (initialValues?.itis_tsn &&
-                  taxonomyContext.getCachedSpeciesTaxonomyByIdAsync(Number(initialValues.itis_tsn))) ||
-                undefined
-              }
-              handleSpecies={(value) => {
-                if (value?.tsn) {
-                  formikProps.setFieldValue('itis_tsns', value.tsn);
-                }
-              }}
-              handleClear={() => {
-                formikProps.setFieldValue('itis_tsns', undefined);
-              }}
-              disabled={true} // See TODO
-              key="telemetry-tsn-filter"
-            />
-          ]}
-        />
-      )}
+      <FilterFieldsContainer
+        fields={[
+          <CustomTextField
+            name="keyword"
+            label="Keyword"
+            other={{
+              placeholder: 'Search by keyword'
+            }}
+            key="telemetry-keyword-filter"
+          />,
+          <SingleDateField name={'start_date'} label={'Recorded after'} key="telemetry-start-date-filter" />,
+          <SingleDateField name={'end_date'} label={'Recorded before'} key="telemetry-end-date-filter" />
+        ]}
+      />
     </Formik>
   );
 };
-
-export default TelemetryListFilterForm;

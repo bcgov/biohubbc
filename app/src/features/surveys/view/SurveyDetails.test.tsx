@@ -16,6 +16,12 @@ const history = createMemoryHistory({ initialEntries: ['/admin/projects/1/survey
 vi.mock('../../../hooks/useBioHubApi');
 const mockBiohubApi = useBiohubApi as Mock;
 
+jest.mock('../../../components/markdown/CustomMarkdown', () => {
+  // Overriding this component because it is ESM only and Jest does not support ESM.
+  // See https://github.com/orgs/remarkjs/discussions/1247 for more information.
+  return {};
+});
+
 const mockUseApi = {
   spatial: {
     getRegions: vi.fn()
@@ -51,10 +57,7 @@ describe('SurveyDetails', () => {
     }
   } as DataLoader<any, IGetSurveyForViewResponse, any>;
   const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
-  const mockSampleSiteDataLoader = { data: null } as DataLoader<any, any, any>;
   const mockCritterDataLoader = { data: [] } as DataLoader<any, any, any>;
-  const mockDeploymentDataLoader = { data: [] } as DataLoader<any, any, any>;
-  const mockTechniqueDataLoader = { data: [] } as DataLoader<any, any, any>;
 
   it('renders correctly', async () => {
     const { getByText } = render(
@@ -63,13 +66,9 @@ describe('SurveyDetails', () => {
           value={{
             projectId: 1,
             surveyId: 1,
-            critterDeployments: [],
             surveyDataLoader: mockSurveyDataLoader,
             artifactDataLoader: mockArtifactDataLoader,
-            sampleSiteDataLoader: mockSampleSiteDataLoader,
-            techniqueDataLoader: mockTechniqueDataLoader,
-            critterDataLoader: mockCritterDataLoader,
-            deploymentDataLoader: mockDeploymentDataLoader
+            critterDataLoader: mockCritterDataLoader
           }}>
           <CodesContext.Provider value={mockCodesContext}>
             <SurveyDetails />

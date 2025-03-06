@@ -10,7 +10,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Link from '@mui/material/Link';
 import List from '@mui/material/List';
 import Stack from '@mui/material/Stack';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 export interface IErrorDialogProps {
   /**
@@ -81,6 +81,13 @@ export const ErrorDialog = (props: IErrorDialogProps) => {
 
     return <List sx={{ p: 0 }}>{items}</List>;
   };
+
+  useEffect(() => {
+    if (isExpanded && !props.open) {
+      // If the detailed error section was open, and the dialog was closed, close the detailed error section
+      setIsExpanded(false);
+    }
+  }, [isExpanded, props.open]);
 
   if (!props.open) {
     return <></>;

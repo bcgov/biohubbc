@@ -48,12 +48,13 @@ export interface IDropZoneConfigProps {
   /**
    * Comma separated list of allowed file extensions.
    *
-   * Example: `'.pdf, .txt'`
+   * @example '.pdf, .txt'
+   * @example ['.pdf', '.txt']
    *
-   * @type {string}
+   * @type {(string | string[])}
    * @memberof IDropZoneConfigProps
    */
-  acceptedFileExtensions?: string;
+  acceptedFileExtensions?: string | string[];
 }
 
 export const DropZone: React.FC<IDropZoneProps & IDropZoneConfigProps> = (props) => {

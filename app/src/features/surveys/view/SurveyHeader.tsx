@@ -1,4 +1,11 @@
-import { mdiCalendarRange, mdiChevronDown, mdiCogOutline, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
+import {
+  mdiCalendarRange,
+  mdiChevronDown,
+  mdiCogOutline,
+  mdiPencilOutline,
+  mdiTrashCanOutline,
+  mdiTrayArrowDown
+} from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
@@ -11,6 +18,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import PageHeader from 'components/layout/PageHeader';
 import PublishSurveyIdDialog from 'components/publish/PublishSurveyDialog';
@@ -21,8 +29,10 @@ import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { DialogContext } from 'contexts/dialogContext';
 import { ProjectContext } from 'contexts/projectContext';
 import { SurveyContext } from 'contexts/surveyContext';
+import { SurveyExportDialog } from 'features/surveys/view/survey-export/SurveyExportDialog';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import React, { useContext, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
@@ -46,6 +56,8 @@ const SurveyHeader = () => {
   const biohubApi = useBiohubApi();
 
   const dialogContext = useContext(DialogContext);
+
+  const [openSurveyExportDialog, setOpenSurveyExportDialog] = useState(false);
 
   const defaultYesNoDialogProps = {
     dialogTitle: DeleteSurveyI18N.deleteTitle,
@@ -159,6 +171,7 @@ const SurveyHeader = () => {
             validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
             validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
             <Stack flexDirection="row" alignItems="center" gap={2}>
+              <HelpButtonDialog markdownType={MarkdownTypeNameEnum.SURVEY_PAGE} />
               <FeatureFlagGuard featureFlags={['APP_FF_SUBMIT_BIOHUB']}>
                 <ProjectRoleGuard
                   validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR]}
@@ -208,6 +221,14 @@ const SurveyHeader = () => {
               Settings
             </Button>
 
+            <SurveyExportDialog
+              open={openSurveyExportDialog}
+              onCancel={() => {
+                setOpenSurveyExportDialog(false);
+                setMenuAnchorEl(null);
+              }}
+            />
+
             <Menu
               id="surveySettingsMenu"
               aria-labelledby="survey_settings_button"
@@ -238,6 +259,16 @@ const SurveyHeader = () => {
                     <Icon path={mdiTrashCanOutline} size={1} />
                   </ListItemIcon>
                   <Typography variant="inherit">Delete Survey</Typography>
+                </MenuItem>
+              </ProjectRoleGuard>
+              <ProjectRoleGuard
+                validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+                validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                <MenuItem data-testid="export-survey-button" onClick={() => setOpenSurveyExportDialog(true)}>
+                  <ListItemIcon>
+                    <Icon path={mdiTrayArrowDown} size={1} />
+                  </ListItemIcon>
+                  <Typography variant="inherit">Export Survey</Typography>
                 </MenuItem>
               </ProjectRoleGuard>
             </Menu>

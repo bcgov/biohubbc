@@ -2,14 +2,13 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
-import { HTTP409 } from '../../../../../../../errors/http-error';
 import { techniqueUpdateSchema, techniqueViewSchema } from '../../../../../../../openapi/schemas/technique';
 import { ITechniquePutData } from '../../../../../../../repositories/technique-repository';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { AttractantService } from '../../../../../../../services/attractants-service';
-import { ObservationService } from '../../../../../../../services/observation-service';
 import { TechniqueAttributeService } from '../../../../../../../services/technique-attributes-service';
 import { TechniqueService } from '../../../../../../../services/technique-service';
+import { TechniqueVantageService } from '../../../../../../../services/technique-vantage-service';
 import { getLogger } from '../../../../../../../utils/logger';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/technique/{techniqueId}/index');
@@ -103,23 +102,12 @@ DELETE.apiDoc = {
  */
 export function deleteTechnique(): RequestHandler {
   return async (req, res) => {
-    const connection = getDBConnection(req['keycloak_token']);
+    const methodTechniqueId = Number(req.params.techniqueId);
+    const surveyId = Number(req.params.surveyId);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
-
-      const methodTechniqueId = Number(req.params.techniqueId);
-      const surveyId = Number(req.params.surveyId);
-
-      const observationService = new ObservationService(connection);
-
-      const observationCount = await observationService.getObservationsCountByTechniqueIds(surveyId, [
-        methodTechniqueId
-      ]);
-
-      if (observationCount > 0) {
-        throw new HTTP409('Cannot delete a technique that is associated with an observation');
-      }
 
       const techniqueService = new TechniqueService(connection);
 
@@ -129,7 +117,7 @@ export function deleteTechnique(): RequestHandler {
 
       return res.status(200).send();
     } catch (error) {
-      defaultLog.error({ label: 'getSurveyTechniques', message: 'error', error });
+      defaultLog.error({ label: 'deleteTechnique', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
@@ -191,11 +179,11 @@ PUT.apiDoc = {
         type: 'integer',
         minimum: 1
       },
-      description: 'An array of method technique IDs',
       required: true
     }
   ],
   requestBody: {
+    required: true,
     content: {
       'application/json': {
         schema: {
@@ -239,17 +227,15 @@ PUT.apiDoc = {
  */
 export function updateTechnique(): RequestHandler {
   return async (req, res) => {
-    const connection = getDBConnection(req['keycloak_token']);
+    const surveyId = Number(req.params.surveyId);
+    const methodTechniqueId = Number(req.params.techniqueId);
+    const technique: ITechniquePutData = req.body.technique;
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
 
-      const surveyId = Number(req.params.surveyId);
-      const methodTechniqueId = Number(req.params.techniqueId);
-
-      const technique: ITechniquePutData = req.body.technique;
-
-      const { attributes, attractants, ...techniqueRow } = technique;
+      const { attributes, attractants, vantage_methods, ...techniqueRow } = technique;
 
       // Update the technique record
       const techniqueService = new TechniqueService(connection);
@@ -258,6 +244,8 @@ export function updateTechnique(): RequestHandler {
       // Update the technique's attributes and attractants
       const attractantsService = new AttractantService(connection);
       const techniqueAttributeService = new TechniqueAttributeService(connection);
+      const techniqueVantageService = new TechniqueVantageService(connection);
+
       await Promise.all([
         // Update attractants
         attractantsService.updateTechniqueAttractants(surveyId, methodTechniqueId, attractants),
@@ -272,7 +260,9 @@ export function updateTechnique(): RequestHandler {
           surveyId,
           methodTechniqueId,
           attributes.quantitative_attributes
-        )
+        ),
+        // Update vantages
+        techniqueVantageService.updateVantagesForTechnique(surveyId, methodTechniqueId, vantage_methods)
       ]);
 
       await connection.commit();
@@ -345,7 +335,6 @@ GET.apiDoc = {
         type: 'integer',
         minimum: 1
       },
-      description: 'An array of method technique IDs',
       required: true
     }
   ],
@@ -383,13 +372,12 @@ GET.apiDoc = {
  */
 export function getTechniqueById(): RequestHandler {
   return async (req, res) => {
-    const connection = getDBConnection(req['keycloak_token']);
+    const surveyId = Number(req.params.surveyId);
+    const methodTechniqueId = Number(req.params.techniqueId);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
-
-      const surveyId = Number(req.params.surveyId);
-      const methodTechniqueId = Number(req.params.techniqueId);
 
       const techniqueService = new TechniqueService(connection);
       const sampleSite = await techniqueService.getTechniqueById(surveyId, methodTechniqueId);

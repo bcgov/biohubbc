@@ -2,30 +2,38 @@ import Typography from '@mui/material/Typography';
 import {
   GridCellParams,
   GridColumnVisibilityModel,
+  GridPaginationModel,
   GridRowId,
   GridRowModes,
   GridRowModesModel,
   GridRowSelectionModel,
+  GridSortModel,
   GridValidRowModel,
   useGridApiRef
 } from '@mui/x-data-grid';
 import { GridApiCommunity, GridStateColDef } from '@mui/x-data-grid/internals';
+import { RowValidationError, TableValidationModel } from 'components/data-grid/DataGridValidationAlert';
 import { TelemetryTableI18N } from 'constants/i18n';
 import { SIMS_TELEMETRY_HIDDEN_COLUMNS } from 'constants/session-storage';
-import { DialogContext } from 'contexts/dialogContext';
 import { default as dayjs } from 'dayjs';
 import { APIError } from 'hooks/api/useAxios';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useDialogContext, useSurveyContext } from 'hooks/useContext';
+import useDataLoader from 'hooks/useDataLoader';
 import { usePersistentState } from 'hooks/usePersistentState';
-import { useTelemetryApi } from 'hooks/useTelemetryApi';
-import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { GetSurveyTelemetryResponse } from 'interfaces/useTelemetryApi.interface';
+import { createContext, PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { ApiPaginationRequestOptions } from 'types/misc';
+import { firstOrNull } from 'utils/Utils';
 import { v4 as uuidv4 } from 'uuid';
-import { RowValidationError, TableValidationModel } from '../components/data-grid/DataGridValidationAlert';
-import { TelemetryDataContext } from './telemetryDataContext';
+
+export const MANUAL_TELEMETRY_TYPE = 'manual';
 
 export interface IManualTelemetryRecord {
-  deployment_id: string;
-  latitude: number;
-  longitude: number;
+  deployment_id: number;
+  serial: string;
+  latitude: number | null;
+  longitude: number | null;
   date: string;
   time: string;
   telemetry_type: string;
@@ -38,7 +46,7 @@ export interface IManualTelemetryTableRow extends Partial<IManualTelemetryRecord
 export type TelemetryTableValidationModel = TableValidationModel<IManualTelemetryTableRow>;
 export type TelemetryRowValidationError = RowValidationError<IManualTelemetryTableRow>;
 
-export type ITelemetryTableContext = {
+export type IAllTelemetryTableContext = {
   /**
    * API ref used to interface with an MUI DataGrid representing the telemetry records
    */
@@ -68,8 +76,23 @@ export type ITelemetryTableContext = {
    */
   recordCount: number;
   /**
+   * The pagination model, which defines which telemetry records to fetch and load in the table.
+   */
+  paginationModel: GridPaginationModel;
+  /**
+   * Sets the pagination model.
+   */
+  setPaginationModel: (model: GridPaginationModel) => void;
+  /**
+   * The sort model, which defines how the telemetry records should be sorted.
+   */
+  sortModel: GridSortModel;
+  /**
+   * Sets the sort model.
+   */
+  setSortModel: (mode: GridSortModel) => void;
+  /**
    * Columns hidden from table view
-   *
    */
   hiddenColumns: string[];
   /**
@@ -99,7 +122,7 @@ export type ITelemetryTableContext = {
   /**
    * Refreshes the Telemetry Table with already existing records
    */
-  refreshRecords: () => Promise<void>;
+  refreshRecords: () => Promise<GetSurveyTelemetryResponse | undefined>;
   /**
    * The IDs of the selected telemetry table rows
    */
@@ -143,21 +166,30 @@ export type ITelemetryTableContext = {
   onRowEditStart: (id: GridRowId) => void;
 };
 
-export const TelemetryTableContext = createContext<ITelemetryTableContext | undefined>(undefined);
+export const TelemetryTableContext = createContext<IAllTelemetryTableContext | undefined>(undefined);
 
-type ITelemetryTableContextProviderProps = PropsWithChildren<{
-  deployment_ids: string[];
-}>;
+type IAllTelemetryTableContextProviderProps = PropsWithChildren;
 
-export const TelemetryTableContextProvider = (props: ITelemetryTableContextProviderProps) => {
-  const { children, deployment_ids } = props;
+export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextProviderProps) => {
+  const { children } = props;
 
   const _muiDataGridApiRef = useGridApiRef();
 
-  const telemetryApi = useTelemetryApi();
+  const biohubApi = useBiohubApi();
 
-  const telemetryDataContext = useContext(TelemetryDataContext);
-  const dialogContext = useContext(DialogContext);
+  const surveyContext = useSurveyContext();
+  const dialogContext = useDialogContext();
+
+  const telemetryDataLoader = useDataLoader((pagination?: ApiPaginationRequestOptions) =>
+    biohubApi.telemetry.getTelemetryForSurvey(surveyContext.projectId, surveyContext.surveyId, pagination)
+  );
+
+  const {
+    data: telemetryData,
+    isLoading: isLoadingTelemetryData,
+    hasLoaded: hasLoadedTelemetryData,
+    refresh: refreshTelemetryData
+  } = telemetryDataLoader;
 
   // The data grid rows
   const [rows, setRows] = useState<IManualTelemetryTableRow[]>([]);
@@ -187,10 +219,16 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
   const _isSavingData = useRef(false);
 
   // Count of table records
-  const recordCount = rows.length;
+  const recordCount = telemetryData?.count ?? 0;
 
-  // True if telemetry is fetching
-  const isLoading = telemetryDataContext.telemetryDataLoader.isLoading;
+  // Pagination model
+  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
+    page: 0,
+    pageSize: 25
+  });
+
+  // Sort model
+  const [sortModel, setSortModel] = useState<GridSortModel>([{ field: 'date', sort: 'desc' }]);
 
   // True if table has unsaved changes, deferring value to prevent ui issue with controls rendering
   const hasUnsavedChanges = _modifiedRowIds.current.length > 0 || _stagedRowIds.current.length > 0;
@@ -347,33 +385,6 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
   }, []);
 
   /**
-   * Refresh the telemetry records and pre-parse to table date format
-   *
-   * @async
-   * @returns {Promise<void>}
-   */
-  const refreshRecords = useCallback(async () => {
-    const telemetry = (await telemetryDataContext.telemetryDataLoader.refresh(deployment_ids)) ?? [];
-
-    // Format the rows to use date and time
-    const rows: IManualTelemetryTableRow[] = telemetry.map((item) => {
-      return {
-        id: item.id,
-        deployment_id: item.deployment_id,
-        latitude: item.latitude,
-        longitude: item.longitude,
-        date: dayjs(item.acquisition_date).format('YYYY-MM-DD'),
-        time: dayjs(item.acquisition_date).format('HH:mm:ss'),
-        telemetry_type: item.telemetry_type
-      };
-    });
-
-    // Set initial rows for the table context
-    setRows(rows);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [deployment_ids]);
-
-  /**
    * Validates all edited rows of table.
    *
    * @returns {TelemetryTableValidationModel | null} Validation model or null (if passes validation)
@@ -449,7 +460,11 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
 
       try {
         if (modifiedRowIdsToDelete.length) {
-          await telemetryApi.deleteManualTelemetry(modifiedRowIdsToDelete);
+          await biohubApi.telemetry.deleteManualTelemetry(
+            surveyContext.projectId,
+            surveyContext.surveyId,
+            modifiedRowIdsToDelete
+          );
         }
 
         // Remove row IDs from validation model
@@ -498,7 +513,7 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
         });
       }
     },
-    [dialogContext, telemetryApi]
+    [biohubApi.telemetry, dialogContext, surveyContext.projectId, surveyContext.surveyId]
   );
 
   /**
@@ -567,12 +582,12 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
 
     const newRecord: IManualTelemetryTableRow = {
       id,
-      deployment_id: '',
+      deployment_id: '' as unknown as number,
       latitude: '' as unknown as number, // empty strings to satisfy text fields
       longitude: '' as unknown as number,
       date: '',
       time: '',
-      telemetry_type: 'MANUAL'
+      telemetry_type: MANUAL_TELEMETRY_TYPE
     };
 
     // Append new record to initial rows
@@ -605,7 +620,36 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
   }, [rows, _updateRowsMode, _modifiedRowIds]);
 
   /**
-   * Dispatches update and create requests to BCTW
+   * Refreshes the observations table with the latest records from the server.
+   *
+   * @return {*}
+   */
+  const refreshTelemetryRecords = useCallback(async () => {
+    const sort = firstOrNull(sortModel);
+
+    let sortField = sort?.field;
+
+    // Convert frontend column names to the backend column names supported by the api
+    if (sortField === 'date') {
+      sortField = 'acquisition_date';
+    } else if (sortField === 'time') {
+      sortField = 'acquisition_time';
+    } else if (sortField === 'telemetry_type') {
+      sortField = 'vendor';
+    }
+
+    return refreshTelemetryData({
+      limit: paginationModel.pageSize,
+      sort: sortField || undefined,
+      order: sort?.sort || undefined,
+
+      // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
+      page: paginationModel.page + 1
+    });
+  }, [paginationModel.page, paginationModel.pageSize, refreshTelemetryData, sortModel]);
+
+  /**
+   * Dispatches update and create requests to SIMS
    *
    * @param {GridValidRowModel[]} createRows - Rows to create
    * @param {GridValidRowModel[]} updateRows - Rows to update
@@ -616,26 +660,29 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
       try {
         // create a new records
         const createData = createRows.map((row) => ({
-          deployment_id: String(row.deployment_id),
+          deployment_id: row.deployment_id,
           latitude: Number(row.latitude),
           longitude: Number(row.longitude),
-          acquisition_date: dayjs(`${row.date}T${row.time}`).toISOString()
+          acquisition_date: dayjs(`${row.date}T${row.time}`).toISOString(),
+          transmission_date: null
         }));
 
         // update existing records
         const updateData = updateRows.map((row) => ({
           telemetry_manual_id: String(row.id),
+          deployment_id: row.deployment_id,
           latitude: Number(row.latitude),
           longitude: Number(row.longitude),
-          acquisition_date: dayjs(`${row.date}T${row.time}`).toISOString()
+          acquisition_date: dayjs(`${row.date}T${row.time}`).toISOString(),
+          transmission_date: null
         }));
 
         if (createData.length) {
-          await telemetryApi.createManualTelemetry(createData);
+          await biohubApi.telemetry.createManualTelemetry(surveyContext.projectId, surveyContext.surveyId, createData);
         }
 
         if (updateData.length) {
-          await telemetryApi.updateManualTelemetry(updateData);
+          await biohubApi.telemetry.updateManualTelemetry(surveyContext.projectId, surveyContext.surveyId, updateData);
         }
 
         revertRecords();
@@ -649,7 +696,7 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
           open: true
         });
 
-        return refreshRecords();
+        return refreshTelemetryRecords();
       } catch (error) {
         _updateRowsMode(_modifiedRowIds.current, GridRowModes.Edit, true);
         const apiError = error as APIError;
@@ -665,7 +712,15 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
         _isSavingData.current = false;
       }
     },
-    [dialogContext, _updateRowsMode, _isSavingData, revertRecords, refreshRecords, telemetryApi]
+    [
+      _updateRowsMode,
+      biohubApi.telemetry,
+      dialogContext,
+      refreshTelemetryRecords,
+      revertRecords,
+      surveyContext.projectId,
+      surveyContext.surveyId
+    ]
   );
 
   /**
@@ -700,16 +755,46 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
   }, [_validateRows, _getEditedIds, _getEditedRows, _saveRecords]);
 
   /**
-   * Refetch the telemetry when the deployment ids change
+   * Fetch new rows based on sort/ pagination model changes
+   */
+  useEffect(() => {
+    refreshTelemetryRecords();
+    // Should not re-run this effect on `refreshObservationRecords` changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paginationModel, sortModel]);
+
+  /**
+   * Parse the telemetry data to the table format and set the rows.
    *
    */
   useEffect(() => {
-    if (deployment_ids.length) {
-      refreshRecords();
+    if (!hasLoadedTelemetryData) {
+      // Existing telemetry records have not yet loaded
+      return;
     }
-  }, [deployment_ids, refreshRecords]);
 
-  const telemetryTableContext: ITelemetryTableContext = useMemo(
+    if (!telemetryData?.telemetry) {
+      // Existing telemetry data doesn't exist
+      return;
+    }
+
+    const rows: IManualTelemetryTableRow[] = telemetryData.telemetry.map((item) => {
+      return {
+        id: item.telemetry_id,
+        deployment_id: item.deployment_id,
+        serial: item.serial,
+        latitude: item.latitude,
+        longitude: item.longitude,
+        date: dayjs(item.acquisition_date).format('YYYY-MM-DD'),
+        time: dayjs(item.acquisition_date).format('HH:mm:ss'),
+        telemetry_type: item.vendor
+      };
+    });
+
+    setRows(rows);
+  }, [hasLoadedTelemetryData, telemetryData]);
+
+  const telemetryTableContext: IAllTelemetryTableContext = useMemo(
     () => ({
       _muiDataGridApiRef,
       rows,
@@ -721,7 +806,7 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
       deleteRecords,
       deleteSelectedRecords,
       revertRecords,
-      refreshRecords,
+      refreshRecords: refreshTelemetryRecords,
       hasUnsavedChanges,
       rowSelectionModel,
       onRowSelectionModelChange: setRowSelectionModel,
@@ -729,36 +814,42 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
       onRowModesModelChange: setRowModesModel,
       columnVisibilityModel,
       onColumnVisibilityModelChange: setColumnVisibilityModel,
-      isLoading,
+      isLoading: isLoadingTelemetryData,
       isSaving: _isSavingData.current,
       validationModel,
       recordCount,
+      paginationModel,
+      setPaginationModel,
+      sortModel,
+      setSortModel,
       toggleColumnsVisibility,
       hiddenColumns,
       onRowEditStart
     }),
     [
       _muiDataGridApiRef,
-      rows,
-      getColumns,
       addRecord,
-      hasError,
-      saveRecords,
+      columnVisibilityModel,
       deleteRecords,
       deleteSelectedRecords,
-      revertRecords,
-      refreshRecords,
+      getColumns,
+      hasError,
       hasUnsavedChanges,
-      rowSelectionModel,
-      rowModesModel,
-      isLoading,
-      validationModel,
-      recordCount,
-      columnVisibilityModel,
-      setColumnVisibilityModel,
-      toggleColumnsVisibility,
       hiddenColumns,
-      onRowEditStart
+      isLoadingTelemetryData,
+      onRowEditStart,
+      paginationModel,
+      recordCount,
+      refreshTelemetryRecords,
+      revertRecords,
+      rowModesModel,
+      rowSelectionModel,
+      rows,
+      saveRecords,
+      setColumnVisibilityModel,
+      sortModel,
+      toggleColumnsVisibility,
+      validationModel
     ]
   );
 

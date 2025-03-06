@@ -6,6 +6,7 @@ import {
   EnvironmentQualitativeTypeDefinition,
   EnvironmentQuantitativeTypeDefinition
 } from 'interfaces/useReferenceApi.interface';
+import { GetSamplingPeriod } from 'interfaces/useSamplingPeriodApi.interface';
 import { ApiPaginationResponseParams } from 'types/misc';
 export interface IGetSurveyObservationsResponse {
   surveyObservations: ObservationRecordWithSamplingAndSubcountData[];
@@ -13,17 +14,19 @@ export interface IGetSurveyObservationsResponse {
   pagination: ApiPaginationResponseParams;
 }
 
+export interface IGetSurveyObservationsGeometryObject {
+  survey_observation_id: number;
+  geometry: GeoJSON.Point;
+}
+
 export interface IGetSurveyObservationsGeometryResponse {
-  surveyObservationsGeometry: {
-    survey_observation_id: number;
-    geometry: GeoJSON.Point;
-  }[];
-  supplementaryObservationData: SupplementaryObservationData;
+  surveyObservationsGeometry: IGetSurveyObservationsGeometryObject[];
+  supplementaryObservationData: SupplementaryObservationCountData;
 }
 
 type ObservationSamplingData = {
   survey_sample_site_name: string | null;
-  survey_sample_method_name: string | null;
+  method_technique_name: string | null;
   survey_sample_period_start_datetime: string | null;
 };
 
@@ -31,18 +34,18 @@ export type StandardObservationColumns = {
   survey_observation_id: number;
   itis_tsn: number | null;
   itis_scientific_name: string | null;
-  survey_sample_site_id: number | null;
-  survey_sample_method_id: number | null;
   survey_sample_period_id: number | null;
   count: number | null;
-  observation_date: string;
-  observation_time: string;
+  observation_date: string | null;
+  observation_time: string | null;
   latitude: number | null;
   longitude: number | null;
 };
 
 export type SubcountObservationColumns = {
   observation_subcount_id: number | null;
+  observation_subcount_sign_id: number;
+  comment: string | null;
   subcount: number | null;
   qualitative_measurements: {
     field: string;
@@ -62,6 +65,10 @@ export type SupplementaryObservationCountData = {
   observationCount: number;
 };
 
+export type ObservationSamplingSupplementaryData = {
+  sampling_data: GetSamplingPeriod[];
+};
+
 export type SupplementaryObservationMeasurementData = {
   qualitative_measurements: CBQualitativeMeasurementTypeDefinition[];
   quantitative_measurements: CBQuantitativeMeasurementTypeDefinition[];
@@ -69,7 +76,9 @@ export type SupplementaryObservationMeasurementData = {
   quantitative_environments: EnvironmentQuantitativeTypeDefinition[];
 };
 
-export type SupplementaryObservationData = SupplementaryObservationCountData & SupplementaryObservationMeasurementData;
+export type SupplementaryObservationData = SupplementaryObservationCountData &
+  SupplementaryObservationMeasurementData &
+  ObservationSamplingSupplementaryData;
 
 type ObservationSubCountQualitativeMeasurementRecord = {
   observation_subcount_id: number;
@@ -129,7 +138,7 @@ type ObservationSubCountQuantitativeEnvironmentRecord = {
 
 type ObservationSubcountQualitativeEnvironmentObject = Pick<
   ObservationSubCountQualitativeEnvironmentRecord,
-  'environment_qualitative_id' | 'environment_qualitative_option_id'
+  'observation_subcount_qualitative_environment_id' | 'environment_qualitative_id' | 'environment_qualitative_option_id'
 >;
 
 type ObservationSubcountQuantitativeEnvironmentObject = Pick<
@@ -140,6 +149,8 @@ type ObservationSubcountQuantitativeEnvironmentObject = Pick<
 type ObservationSubcountRecord = {
   observation_subcount_id: number;
   survey_observation_id: number;
+  observation_subcount_sign_id: number;
+  comment: string;
   subcount: number | null;
   create_date: string;
   create_user: number;
@@ -150,6 +161,8 @@ type ObservationSubcountRecord = {
 
 type ObservationSubcountObject = {
   observation_subcount_id: ObservationSubcountRecord['observation_subcount_id'];
+  observation_subcount_sign_id: ObservationSubcountRecord['observation_subcount_sign_id'];
+  comment: ObservationSubcountRecord['comment'];
   subcount: ObservationSubcountRecord['subcount'];
   qualitative_measurements: ObservationSubcountQualitativeMeasurementObject[];
   quantitative_measurements: ObservationSubcountQuantitativeMeasurementObject[];

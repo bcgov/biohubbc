@@ -1,10 +1,10 @@
 import EditDialog from 'components/dialog/EditDialog';
 import BlockForm from './BlockForm';
-import { BlockEditYupSchema, ISurveyBlock } from './SurveyBlockForm';
+import { BlockEditYupSchema, IPostSurveyBlock } from './SurveyBlockForm';
 
 interface IEditBlockProps {
   open: boolean;
-  initialData?: ISurveyBlock;
+  initialData?: IPostSurveyBlock;
   onSave: (data: any, index?: number) => void;
   onClose: () => void;
 }
@@ -23,6 +23,7 @@ const EditSurveyBlockDialog: React.FC<IEditBlockProps> = (props) => {
             survey_block_id: initialData?.block.survey_block_id || null,
             name: initialData?.block.name || '',
             description: initialData?.block.description || '',
+            geojson: initialData?.block.geojson || '',
             sample_block_count: initialData?.block.sample_block_count
           },
           validationSchema: BlockEditYupSchema

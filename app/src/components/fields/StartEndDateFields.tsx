@@ -6,11 +6,11 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DATE_FORMAT, DATE_LIMIT } from 'constants/dateTimeFormats';
 import { default as dayjs } from 'dayjs';
+import { useFormikContext } from 'formik';
 import get from 'lodash-es/get';
 import React from 'react';
 
 interface IStartEndDateFieldsProps {
-  formikProps: any;
   startName: string;
   endName: string;
   startRequired: boolean;
@@ -30,13 +30,9 @@ const CalendarEndIcon = () => {
  *
  */
 const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
-  const {
-    formikProps: { values, errors, touched, setFieldValue },
-    startName,
-    endName,
-    startRequired,
-    endRequired
-  } = props;
+  const { startName, endName, startRequired, endRequired } = props;
+
+  const { values, errors, touched, setFieldValue } = useFormikContext();
 
   const rawStartDateValue = get(values, startName);
   const rawEndDateValue = get(values, endName);
@@ -55,7 +51,14 @@ const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Grid container item spacing={3}>
+      <Grid
+        container
+        item
+        spacing={3}
+        sx={{
+          '& .MuiInputAdornment-root.MuiInputAdornment-positionStart': { mr: -1 },
+          '& .MuiInputAdornment-root': { mr: 1 }
+        }}>
         <Grid item xs={6}>
           <DatePicker
             slots={{
@@ -72,11 +75,13 @@ const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
                 inputProps: {
                   'data-testid': 'start_date'
                 },
+
                 InputLabelProps: {
                   shrink: true
                 },
                 fullWidth: true
-              }
+              },
+              popper: { placement: 'bottom-end' }
             }}
             label="Start Date"
             format={DATE_FORMAT.ShortDateFormat}

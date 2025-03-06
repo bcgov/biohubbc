@@ -16,14 +16,14 @@ export interface IConditionalAutocompleteDataGridViewCellProps<
    */
   dataGridProps: GridRenderCellParams<DataGridType>;
   /**
-   *
+   * All possible options for the autocomplete control.
    *
    * @type {OptionsType[]}
    * @memberof IConditionalAutocompleteDataGridViewCellProps
    */
   allOptions: OptionsType[];
   /**
-   *
+   * Given a row and list of all possible options, return the matching options for the autocomplete control.
    *
    * @memberof IConditionalAutocompleteDataGridViewCellProps
    */

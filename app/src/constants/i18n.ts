@@ -63,6 +63,20 @@ export const AttachmentsI18N = {
     'An error has occurred while attempting to download an attachment, please try again. If the error persists, please contact your system administrator.'
 };
 
+export const ReportI18N = {
+  cancelTitle: 'Cancel Upload',
+  cancelText: 'Are you sure you want to cancel?',
+  uploadErrorTitle: 'Error Uploading Report',
+  uploadErrorText:
+    'An error has occurred while attempting to upload the report, please try again. If the error persists, please contact your system administrator.',
+  deleteErrorTitle: 'Error Deleting Report',
+  deleteErrorText:
+    'An error has occurred while attempting to delete the report, please try again. If the error persists, please contact your system administrator.',
+  downloadErrorTitle: 'Error Downloading Report',
+  downloadErrorText:
+    'An error has occurred while attempting to download the report, please try again. If the error persists, please contact your system administrator.'
+};
+
 export const AccessRequestI18N = {
   requestTitle: 'Access Request',
   requestText: 'Error requesting access',
@@ -447,5 +461,109 @@ export const TelemetryTableI18N = {
   saveRecordsSuccessSnackbarMessage: 'Telemetry updated successfully.',
   deleteSingleRecordSuccessSnackbarMessage: 'Deleted telemetry record successfully.',
   deleteMultipleRecordSuccessSnackbarMessage: (count: number) =>
-    `Deleted ${count} telemetry ${p(count, 'record')} successfully.`
+    `Deleted ${count} telemetry ${p(count, 'record')} successfully.`,
+  // Animal CSV import strings
+  importRecordsSuccessSnackbarMessage: 'Telemetry imported successfully.',
+  importRecordsErrorDialogTitle: 'Error Importing telemetry Records',
+  importRecordsErrorDialogText: 'An error occurred while importing telemetry records.'
+};
+
+export const TelemetryDeviceKeyFileI18N = {
+  uploadErrorTitle: 'Error Uploading Telemetry Device Key File',
+  uploadErrorText:
+    'An error has occurred while attempting to upload the device key file, please try again. If the error persists, please contact your system administrator.',
+  downloadErrorTitle: 'Error Downloading Telemetry Device Key File',
+  downloadErrorText:
+    'An error has occurred while attempting to download the device key file, please try again. If the error persists, please contact your system administrator.'
+};
+
+export const TelemetryDeviceI18N = {
+  cancelTitle: 'Discard changes and exit?',
+  cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
+  createErrorTitle: 'Error Creating Device',
+  createErrorText:
+    'An error has occurred while attempting to create your device. Please try again. If the error persists, please contact your system administrator.',
+  editErrorTitle: 'Error Editing Device',
+  editErrorText:
+    'An error has occurred while attempting to edit your device. Please try again. If the error persists, please contact your system administrator.'
+};
+
+export const CreateAnimalDeploymentI18N = {
+  cancelTitle: 'Discard changes and exit?',
+  cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
+  createErrorTitle: 'Error Creating Deployment',
+  createErrorText:
+    'An error has occurred while attempting to create your deployment. Please try again. If the error persists, please contact your system administrator.'
+};
+
+export const EditAnimalDeploymentI18N = {
+  cancelTitle: 'Discard changes and exit?',
+  cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
+  createErrorTitle: 'Error Creating Deployment',
+  createErrorText:
+    'An error has occurred while attempting to edit your deployment. Please try again. If the error persists, please contact your system administrator.'
+};
+
+export const SurveyExportI18N = {
+  exportErrorTitle: 'Error Exporting Survey Data',
+  exportErrorText:
+    'An error has occurred while attempting to export survey data. Please try again. If the error persists, please contact your system administrator.'
+};
+
+export const AlertI18N = {
+  cancelTitle: 'Discard changes and exit?',
+  cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
+
+  createAlertDialogTitle: 'Create Alert',
+  createAlertDialogText:
+    'Enter a name, message, and type for the alert. The name and message will be displayed on the alert banner.',
+  createErrorTitle: 'Error Creating Alert',
+  createErrorText:
+    'An error has occurred while attempting to create your alert, please try again. If the error persists, please contact your system administrator.',
+
+  updateAlertDialogTitle: 'Edit Alert Details',
+  updateAlertDialogText: 'Edit the name, description and effective dates for this alert.',
+  updateErrorTitle: 'Error Updating Alert',
+  updateErrorText:
+    'An error has occurred while attempting to update your Alert, please try again. If the error persists, please contact your system administrator.',
+
+  deleteAlertErrorTitle: 'Error Deleting a Alert',
+  deleteAlertErrorText:
+    'An error has occurred while attempting to delete the Alerts, please try again. If the error persists, please contact your system administrator.',
+  deleteAlertDialogTitle: 'Delete Alert?',
+  deleteAlertDialogText: 'Are you sure you want to permanently delete this alert? This action cannot be undone.'
+};
+
+export const SamplePeriodI18N = {
+  cancelTitle: 'Discard changes and exit?',
+  cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
+
+  createSamplePeriodTitle: 'Create Sample Period',
+  createSamplePeriodText:
+    'Enter a name, message, and type for the alert. The name and message will be displayed on the alert banner.',
+  createErrorTitle: 'Error Creating Sample Period',
+  createErrorText:
+    'An error has occurred while attempting to create your alert, please try again. If the error persists, please contact your system administrator.',
+
+  updateSamplePeriodTitle: 'Edit Sample Period Details',
+  updateSamplePeriodText: 'Edit the name, description and effective dates for this alert.',
+  updateErrorTitle: 'Error Updating Sample Period',
+  updateErrorText:
+    'An error has occurred while attempting to update your Sample Period, please try again. If the error persists, please contact your system administrator.',
+
+  bulkDeleteSamplePeriodErrorTitle: 'Error Deleting a Sample Period',
+  bulkDeleteSamplePeriodErrorText:
+    'An error has occurred while attempting to delete the Sample Periods, please try again. If the error persists, please contact your system administrator.',
+  bulkDeleteSamplePeriodTitle: 'Delete Sample Periods?',
+  bulkDeleteSamplePeriodText:
+    'Are you sure you want to permanently delete the selected periods? This action cannot be undone.',
+
+  deleteSamplePeriodErrorTitle: 'Error Deleting a Sample Period',
+  deleteSamplePeriodErrorText:
+    'An error has occurred while attempting to delete the Sample Periods, please try again. If the error persists, please contact your system administrator.',
+  deleteSamplePeriodTitle: 'Delete Sample Period?',
+  deleteSamplePeriodText: 'Are you sure you want to permanently delete this period? This action cannot be undone.',
+
+  deleteSamplePeriodYesButtonLabel: 'Delete',
+  deleteSamplePeriodNoButtonLabel: 'Cancel'
 };

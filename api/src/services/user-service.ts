@@ -1,8 +1,10 @@
 import { SYSTEM_ROLE } from '../constants/roles';
 import { IDBConnection } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
-import { SystemUser, UserRepository, UserSearchCriteria } from '../repositories/user-repository';
+import { ISystemUserFilterObject, SystemUserWithRoles, UserSearchCriteria } from '../models/system-user-view';
+import { UserRepository } from '../repositories/user-repository';
 import { getLogger } from '../utils/logger';
+import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { DBService } from './db-service';
 
 const defaultLog = getLogger('services/user-service');
@@ -19,10 +21,10 @@ export class UserService extends DBService {
   /**
    * Checks if the given system user is an admin (has an admin level system role).
    *
-   * @param {SystemUser} systemUser
+   * @param {SystemUserWithRoles} systemUser
    * @return {*}  {boolean} `true` if the user is an admin, `false` otherwise.
    */
-  static isAdmin(systemUser: SystemUser): boolean {
+  static isAdmin(systemUser: SystemUserWithRoles): boolean {
     return (
       systemUser.role_names.includes(SYSTEM_ROLE.SYSTEM_ADMIN) ||
       systemUser.role_names.includes(SYSTEM_ROLE.DATA_ADMINISTRATOR)
@@ -33,10 +35,10 @@ export class UserService extends DBService {
    * Fetch a single system user by their system user ID.
    *
    * @param {number} systemUserId
-   * @return {*}  {(Promise<SystemUser>)}
+   * @return {*}  {(Promise<SystemUserWithRoles>)}
    * @memberof UserService
    */
-  async getUserById(systemUserId: number): Promise<SystemUser> {
+  async getUserById(systemUserId: number): Promise<SystemUserWithRoles> {
     const response = await this.userRepository.getUserById(systemUserId);
 
     return response;
@@ -46,10 +48,10 @@ export class UserService extends DBService {
    * Get an existing system user by their GUID.
    *
    * @param {string} userGuid The user's GUID
-   * @return {*}  {(Promise<SystemUser | null>)}
+   * @return {*}  {(Promise<SystemUserWithRoles | null>)}
    * @memberof UserService
    */
-  async getUserByGuid(userGuid: string): Promise<SystemUser | null> {
+  async getUserByGuid(userGuid: string): Promise<SystemUserWithRoles | null> {
     defaultLog.debug({ label: 'getUserByGuid', userGuid });
 
     const response = await this.userRepository.getUserByGuid(userGuid);
@@ -66,10 +68,10 @@ export class UserService extends DBService {
    *
    * @param userIdentifier the user's identifier
    * @param identitySource the user's identity source, e.g. `'IDIR'`
-   * @return {*}  {(Promise<SystemUser | null>)} Promise resolving the User, or `null` if the user wasn't found.
+   * @return {*}  {(Promise<SystemUserWithRoles | null>)} Promise resolving the User, or `null` if the user wasn't found.
    * @memberof UserService
    */
-  async getUserByIdentifier(userIdentifier: string, identitySource: string): Promise<SystemUser | null> {
+  async getUserByIdentifier(userIdentifier: string, identitySource: string): Promise<SystemUserWithRoles | null> {
     defaultLog.debug({ label: 'getUserByIdentifier', userIdentifier, identitySource });
 
     const response = await this.userRepository.getUserByIdentifier(userIdentifier, identitySource);
@@ -119,13 +121,27 @@ export class UserService extends DBService {
   /**
    * Get a list of all system users.
    *
-   * @return {*}  {Promise<SystemUser[]>}
+   * @param {ISystemUserFilterObject} filters
+   * @param {ApiPaginationOptions} pagination
+   * @return {*}  {Promise<SystemUserWithRoles[]>}
    * @memberof UserService
    */
-  async listSystemUsers(): Promise<SystemUser[]> {
-    const response = await this.userRepository.listSystemUsers();
+  async listSystemUsers(
+    filters: ISystemUserFilterObject,
+    pagination?: ApiPaginationOptions
+  ): Promise<SystemUserWithRoles[]> {
+    return this.userRepository.listSystemUsers(filters, pagination);
+  }
 
-    return response;
+  /**
+   * Get system users count
+   *
+   * @param {ISystemUserFilterObject} filters
+   * @return {*}  {Promise<number>}
+   * @memberof UserService
+   */
+  async getSystemUsersCount(filters: ISystemUserFilterObject): Promise<number> {
+    return this.userRepository.getSystemUsersCount(filters);
   }
 
   /**
@@ -137,7 +153,7 @@ export class UserService extends DBService {
    * @param {string} identitySource
    * @param {string} displayName
    * @param {string} email
-   * @return {*}  {Promise<SystemUser>}
+   * @return {*}  {Promise<SystemUserWithRoles>}
    * @memberof UserService
    */
   async ensureSystemUser(
@@ -148,7 +164,7 @@ export class UserService extends DBService {
     email: string,
     givenName?: string,
     familyName?: string
-  ): Promise<SystemUser> {
+  ): Promise<SystemUserWithRoles> {
     // Check if the user exists in SIMS
     const existingUser = userGuid
       ? await this.getUserByGuid(userGuid)
@@ -257,6 +273,13 @@ export class UserService extends DBService {
     return this.userRepository.deleteAllProjectRoles(systemUserId);
   }
 
+  /**
+   * Get users matching search criteria
+   *
+   * @param {UserSearchCriteria} searchCriteria
+   * @return {*}
+   * @memberof UserService
+   */
   async getUsers(searchCriteria: UserSearchCriteria) {
     return this.userRepository.getUsers(searchCriteria);
   }

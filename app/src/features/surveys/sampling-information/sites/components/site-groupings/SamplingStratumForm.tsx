@@ -9,11 +9,12 @@ import { grey } from '@mui/material/colors';
 import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import HelpButtonStack from 'components/buttons/HelpButtonStack';
 import { SurveyContext } from 'contexts/surveyContext';
 import { BlockStratumCard } from 'features/surveys/sampling-information/sites/components/site-groupings/BlockStratumCard';
 import { useFormikContext } from 'formik';
-import { IGetSampleLocationDetails, IGetSampleStratumDetails } from 'interfaces/useSamplingSiteApi.interface';
-import { IGetSurveyStratum } from 'interfaces/useSurveyApi.interface';
+import { IGetSampleSiteDetails, IGetSampleStratumDetails } from 'interfaces/useSamplingSiteApi.interface';
+import { IGetSurveyStratum, IPostSurveyStratum } from 'interfaces/useSurveyApi.interface';
 import { useContext, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 
@@ -23,14 +24,14 @@ import { TransitionGroup } from 'react-transition-group';
  * @returns
  */
 export const SamplingStratumForm = () => {
-  const { values, setFieldValue } = useFormikContext<IGetSampleLocationDetails>();
+  const { values, setFieldValue } = useFormikContext<IGetSampleSiteDetails>();
   const surveyContext = useContext(SurveyContext);
 
   const options = surveyContext.surveyDataLoader?.data?.surveyData?.site_selection?.stratums || [];
 
   const [searchText, setSearchText] = useState('');
 
-  const handleAddStratum = (stratum: IGetSurveyStratum) => {
+  const handleAddStratum = (stratum: IPostSurveyStratum | IGetSurveyStratum) => {
     setFieldValue(`stratums[${values.stratums.length}]`, stratum);
   };
   const handleRemoveItem = (stratum: IGetSurveyStratum | IGetSampleStratumDetails) => {
@@ -42,7 +43,11 @@ export const SamplingStratumForm = () => {
 
   return (
     <>
-      <Typography component="legend">Assign to Stratum</Typography>
+      <HelpButtonStack
+        helpText="After adding strata to the Survey, you can assign sampling sites to those strata."
+        mb={1}>
+        <Typography fontWeight={700}>Assign to Strata</Typography>
+      </HelpButtonStack>
       <Typography
         variant="body1"
         color="textSecondary"
@@ -59,7 +64,7 @@ export const SamplingStratumForm = () => {
         noOptionsText="No records found"
         options={options}
         filterOptions={(options, state) => {
-          const searchFilter = createFilterOptions<IGetSurveyStratum>({ ignoreCase: true });
+          const searchFilter = createFilterOptions<IPostSurveyStratum | IGetSurveyStratum>({ ignoreCase: true });
           const unselectedOptions = options.filter((option) =>
             values.stratums.every((existing) => existing.survey_stratum_id !== option.survey_stratum_id)
           );

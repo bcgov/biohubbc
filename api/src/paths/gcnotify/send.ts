@@ -33,6 +33,7 @@ POST.apiDoc = {
   ],
   requestBody: {
     description: 'Send notification to given recipient',
+    required: true,
     content: {
       'application/json': {
         schema: {
@@ -145,7 +146,7 @@ POST.apiDoc = {
 export function sendNotification(): RequestHandler {
   return async (req, res) => {
     const recipient = req.body?.recipient || null;
-    const message = { ...req.body?.message, footer: `To access the site, [${APP_HOST}](${APP_HOST})` } || null;
+    const message = { ...req.body?.message, footer: `To access the site, [${APP_HOST}](${APP_HOST})` };
 
     try {
       const gcnotifyService = new GCNotifyService();

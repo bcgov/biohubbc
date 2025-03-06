@@ -13,7 +13,7 @@ import { IObservationAdvancedFilters } from '../../models/observation-view';
 export function makeFindObservationsQuery(
   isUserAdmin: boolean,
   systemUserId: number | null,
-  filterFields: IObservationAdvancedFilters
+  filterFields?: IObservationAdvancedFilters
 ): Knex.QueryBuilder {
   const knex = getKnex();
 
@@ -30,7 +30,7 @@ export function makeFindObservationsQuery(
     );
   }
 
-  if (filterFields.system_user_id) {
+  if (filterFields?.system_user_id) {
     getSurveyIdsQuery.whereIn('p.project_id', (subQueryBuilder) => {
       subQueryBuilder
         .select('project_id')
@@ -41,19 +41,19 @@ export function makeFindObservationsQuery(
 
   const getObservationsQuery = getSurveyObservationsBaseQuery(knex, getSurveyIdsQuery);
 
-  if (filterFields.min_count) {
+  if (filterFields?.min_count) {
     getObservationsQuery.andWhere('subcount', '>=', filterFields.min_count);
   }
 
-  if (filterFields.start_date) {
+  if (filterFields?.start_date) {
     getObservationsQuery.andWhere('observation_date', '>=', filterFields.start_date);
   }
 
-  if (filterFields.end_date) {
+  if (filterFields?.end_date) {
     getObservationsQuery.andWhere('observation_date', '<=', filterFields.end_date);
   }
 
-  if (filterFields.keyword) {
+  if (filterFields?.keyword) {
     getObservationsQuery.where((subqueryBuilder) => {
       subqueryBuilder.where('itis_scientific_name', 'ilike', `%${filterFields.keyword}%`);
       if (!isNaN(Number(filterFields.keyword))) {
@@ -62,19 +62,19 @@ export function makeFindObservationsQuery(
     });
   }
 
-  if (filterFields.start_time) {
+  if (filterFields?.start_time) {
     getObservationsQuery.andWhere('time', '>=', filterFields.start_time);
   }
 
-  if (filterFields.end_time) {
+  if (filterFields?.end_time) {
     getObservationsQuery.andWhere('time', '<=', filterFields.end_time);
   }
 
   // Focal Species filter
-  if (filterFields.itis_tsns?.length) {
+  if (filterFields?.itis_tsns?.length) {
     // multiple
     getObservationsQuery.whereIn('itis_tsn', filterFields.itis_tsns);
-  } else if (filterFields.itis_tsn) {
+  } else if (filterFields?.itis_tsn) {
     // single
     getObservationsQuery.where('itis_tsn', filterFields.itis_tsn);
   }
@@ -97,53 +97,35 @@ export function getSurveyObservationsBaseQuery(
 ): Knex.QueryBuilder {
   return (
     knex
-      // Get all sample sites for the survey
+      // Get all sampling information (sites, periods, techniques) for the matching observations
       .with(
-        'w_survey_sample_site',
-        knex
-          .select('survey_sample_site_id', 'name as survey_sample_site_name')
-          .from('survey_sample_site')
-          .whereIn('survey_id', getSurveyIdsQuery)
-      )
-      // Get all sample methods for the sample sites, and additionally fetch the method name
-      .with(
-        'w_survey_sample_method',
+        'w_sampling_data',
         knex
           .select(
-            'survey_sample_method.survey_sample_site_id',
-            'survey_sample_method.survey_sample_method_id',
-            'method_technique.name as survey_sample_method_name'
-          )
-          .from('survey_sample_method')
-          .innerJoin(
-            'method_technique',
-            'survey_sample_method.method_technique_id',
-            'method_technique.method_technique_id'
-          )
-          .innerJoin(
-            'w_survey_sample_site',
-            'survey_sample_method.survey_sample_site_id',
-            'w_survey_sample_site.survey_sample_site_id'
-          )
-      )
-      // Get all sample periods for the sample methods, and additionally create a datetime field from the start date and time
-      .with(
-        'w_survey_sample_period',
-        knex
-          .select(
-            'w_survey_sample_method.survey_sample_site_id',
-            'survey_sample_period.survey_sample_method_id',
+            // Period data
             'survey_sample_period.survey_sample_period_id',
             knex.raw(
               `(survey_sample_period.start_date::date + COALESCE(survey_sample_period.start_time, '00:00:00')::time)::timestamp as survey_sample_period_start_datetime`
-            )
+            ),
+            // Site data
+            'survey_sample_period.survey_sample_site_id',
+            'survey_sample_site.name as survey_sample_site_name',
+            // Technique data
+            'survey_sample_period.method_technique_id',
+            'method_technique.name as method_technique_name'
           )
           .from('survey_sample_period')
-          .innerJoin(
-            'w_survey_sample_method',
-            'survey_sample_period.survey_sample_method_id',
-            'w_survey_sample_method.survey_sample_method_id'
+          .leftJoin(
+            'survey_sample_site',
+            'survey_sample_site.survey_sample_site_id',
+            'survey_sample_period.survey_sample_site_id'
           )
+          .leftJoin(
+            'method_technique',
+            'method_technique.method_technique_id',
+            'survey_sample_period.method_technique_id'
+          )
+          .whereIn('survey_sample_period.survey_id', getSurveyIdsQuery)
       )
       // Get all qualitative measurements for all subcounts associated to all observations for the survey
       .with(
@@ -252,6 +234,8 @@ export function getSurveyObservationsBaseQuery(
             knex.raw(`
               json_agg(json_build_object(
                 'observation_subcount_id', observation_subcount.observation_subcount_id,
+                'observation_subcount_sign_id', observation_subcount.observation_subcount_sign_id,
+                'comment', observation_subcount.comment,
                 'subcount', subcount,
                 'qualitative_measurements', COALESCE(w_qualitative_measurements.qualitative_measurements, '[]'::json),
                 'quantitative_measurements', COALESCE(w_quantitative_measurements.quantitative_measurements, '[]'::json),
@@ -289,38 +273,33 @@ export function getSurveyObservationsBaseQuery(
       )
       // Return all observations for the surveys, including the additional sampling data, and rolled up subcount data
       .select(
+        // Observation data
         'survey_observation.survey_observation_id',
         'survey_observation.survey_id',
         'survey_observation.itis_tsn',
         'survey_observation.itis_scientific_name',
-        'survey_observation.survey_sample_site_id',
-        'survey_observation.survey_sample_method_id',
-        'survey_observation.survey_sample_period_id',
         'survey_observation.latitude',
         'survey_observation.longitude',
         'survey_observation.count',
         'survey_observation.observation_date',
         'survey_observation.observation_time',
-        'w_survey_sample_site.survey_sample_site_name',
-        'w_survey_sample_method.survey_sample_method_name',
-        'w_survey_sample_period.survey_sample_period_start_datetime',
-        knex.raw(`COALESCE(w_subcounts.subcounts, '[]'::json) as subcounts`)
+        // Observation subcount data
+        knex.raw(`COALESCE(w_subcounts.subcounts, '[]'::json) as subcounts`),
+        // Site data
+        'w_sampling_data.survey_sample_site_id',
+        'w_sampling_data.survey_sample_site_name',
+        // Technique data
+        'w_sampling_data.method_technique_id',
+        'w_sampling_data.method_technique_name',
+        // Period data
+        'w_sampling_data.survey_sample_period_id',
+        'w_sampling_data.survey_sample_period_start_datetime'
       )
       .from('survey_observation')
       .leftJoin(
-        'w_survey_sample_site',
-        'survey_observation.survey_sample_site_id',
-        'w_survey_sample_site.survey_sample_site_id'
-      )
-      .leftJoin(
-        'w_survey_sample_method',
-        'survey_observation.survey_sample_method_id',
-        'w_survey_sample_method.survey_sample_method_id'
-      )
-      .leftJoin(
-        'w_survey_sample_period',
+        'w_sampling_data',
         'survey_observation.survey_sample_period_id',
-        'w_survey_sample_period.survey_sample_period_id'
+        'w_sampling_data.survey_sample_period_id'
       )
       // Note: inner join requires every observation record to have at least one subcount record, otherwise use left join
       .innerJoin('w_subcounts', 'w_subcounts.survey_observation_id', 'survey_observation.survey_observation_id')

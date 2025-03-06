@@ -28,7 +28,7 @@ const request = require('request');
  * This includes a health check endpoint that OpenShift uses to determine if the app is healthy.
  *
  * This file is only used when serving the app in OpenShift.
- * When running the app locally, the app is served by docker-compose, and doesn't use this file at all.
+ * When running the app locally, the app is served by compose.yml, and doesn't use this file at all.
  *
  * Note: All changes to env vars here must also be reflected in the `app/src/contexts/configContext.tsx` file, so that
  * the app has access to the same env vars when running in both OpenShift and local development.

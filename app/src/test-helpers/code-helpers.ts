@@ -5,14 +5,14 @@ export const codes: IGetAllCodeSetsResponse = {
   first_nations: [{ id: 1, name: 'First nations code' }],
   agency: [{ id: 1, name: 'Funding source code' }],
   investment_action_category: [{ id: 1, agency_id: 1, name: 'Investment action category' }],
-  type: [{ id: 1, name: 'Type code' }],
+  survey_data_type: [{ id: 1, name: 'Type code', description: 'Type code description' }],
   proprietor_type: [
     { id: 1, name: 'Proprietor code 1', is_first_nation: false },
     { id: 2, name: 'First Nations Land', is_first_nation: true }
   ],
   iucn_conservation_action_level_1_classification: [
     { id: 1, name: 'IUCN class 1' },
-    { id: 12, name: 'IUCN class 2' }
+    { id: 2, name: 'IUCN class 2' }
   ],
   iucn_conservation_action_level_2_subclassification: [
     { id: 1, iucn1_id: 1, name: 'IUCN subclass 1 - 1' },
@@ -27,29 +27,25 @@ export const codes: IGetAllCodeSetsResponse = {
     { id: 2, name: 'Role 2' }
   ],
   project_roles: [
-    { id: 1, name: 'Project Role 1' },
-    { id: 2, name: 'Project Role 2' }
+    { id: 1, name: 'Project Role 1', description: 'Description 1' },
+    { id: 2, name: 'Project Role 2', description: 'Description 2' }
   ],
   administrative_activity_status_type: [
     { id: 1, name: 'Pending' },
     { id: 2, name: 'Actioned' },
     { id: 3, name: 'Rejected' }
   ],
-  vantage_codes: [
-    { id: 1, name: 'Vantage Code 1' },
-    { id: 2, name: 'Vantage Code 2' }
-  ],
   intended_outcomes: [
     { id: 1, name: 'Intended Outcome 1', description: 'Description 1' },
     { id: 2, name: 'Intended Outcome 2', description: 'Description 2' }
   ],
   survey_jobs: [
-    { id: 1, name: 'Survey Job 1' },
-    { id: 2, name: 'Survey Job 2' }
+    { id: 1, name: 'Survey Job 1', description: 'Description 1' },
+    { id: 2, name: 'Survey Job 2', description: 'Description 2' }
   ],
   site_selection_strategies: [
-    { id: 1, name: 'Strategy 1' },
-    { id: 2, name: 'Strategy 2' }
+    { id: 1, name: 'Strategy 1', description: 'Description 1' },
+    { id: 2, name: 'Strategy 2', description: 'Description 2' }
   ],
   sample_methods: [
     { id: 1, name: 'Camera Trap', description: 'Description 1' },
@@ -65,6 +61,26 @@ export const codes: IGetAllCodeSetsResponse = {
   ],
   attractants: [
     { id: 1, name: 'Bait', description: 'Consumable bait or food used as a lure.' },
-    { id: 1, name: 'Scent', description: 'A scent used as a lure.' }
+    { id: 2, name: 'Scent', description: 'A scent used as a lure.' }
+  ],
+  observation_subcount_signs: [
+    { id: 1, name: 'Scat', description: 'Scat left by the species.' },
+    { id: 2, name: 'Direct sighting', description: 'A direct sighting of the species.' }
+  ],
+  telemetry_device_makes: [
+    { id: 1, name: 'Vectronic', description: 'Vectronic device make.' },
+    { id: 2, name: 'Lotek', description: 'Lotek device make.' }
+  ],
+  frequency_units: [
+    { id: 1, name: 'Hz', description: 'Hertz' },
+    { id: 2, name: 'Mhz', description: 'Megahertz' }
+  ],
+  alert_types: [
+    { id: 1, name: 'Survey', description: 'Alert about surveys.' },
+    { id: 2, name: 'General', description: 'General alert.' }
+  ],
+  vantages: [
+    { id: 1, name: 'Vantage 1', description: 'Vantage point 1.' },
+    { id: 2, name: 'Vantage 2', description: 'Vantage point 2.' }
   ]
 };

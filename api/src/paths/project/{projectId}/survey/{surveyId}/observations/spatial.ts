@@ -1,10 +1,9 @@
-import { SchemaObject } from 'ajv';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { ObservationService } from '../../../../../../services/observation-service';
+import { ObservationService } from '../../../../../../services/observation-services/observation-service';
 import { getLogger } from '../../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation');
@@ -31,123 +30,6 @@ export const GET: Operation = [
   }),
   getSurveyObservationsGeometry()
 ];
-
-export const surveyObservationsSupplementaryData: SchemaObject = {
-  type: 'object',
-  additionalProperties: false,
-  required: ['observationCount'],
-  properties: {
-    observationCount: {
-      type: 'integer',
-      minimum: 0
-    },
-    measurementColumns: {
-      type: 'array',
-      items: {
-        anyOf: [
-          {
-            description: 'A quantitative (number) measurement, with possible min/max constraint.',
-            type: 'object',
-            additionalProperties: false,
-            required: [
-              'itis_tsn',
-              'taxon_measurement_id',
-              'measurement_name',
-              'measurement_desc',
-              'min_value',
-              'max_value',
-              'unit'
-            ],
-            properties: {
-              itis_tsn: {
-                type: 'number',
-                nullable: true
-              },
-              taxon_measurement_id: {
-                type: 'string'
-              },
-              measurement_name: {
-                type: 'string'
-              },
-              measurement_desc: {
-                type: 'string',
-                nullable: true
-              },
-              min_value: {
-                type: 'number',
-                nullable: true
-              },
-              max_value: {
-                type: 'number',
-                nullable: true
-              },
-              unit: {
-                type: 'string',
-                nullable: true
-              }
-            }
-          },
-          {
-            description: 'A qualitative (string) measurement, with array of valid/accepted options',
-            type: 'object',
-            additionalProperties: false,
-            required: ['itis_tsn', 'taxon_measurement_id', 'measurement_name', 'measurement_desc', 'options'],
-            properties: {
-              itis_tsn: {
-                type: 'number',
-                nullable: true
-              },
-              taxon_measurement_id: {
-                type: 'string'
-              },
-              measurement_name: {
-                type: 'string'
-              },
-              measurement_desc: {
-                type: 'string',
-                nullable: true
-              },
-              options: {
-                description: 'Valid options for the measurement.',
-                type: 'array',
-                items: {
-                  type: 'object',
-                  additionalProperties: false,
-                  required: [
-                    'taxon_measurement_id',
-                    'qualitative_option_id',
-                    'option_label',
-                    'option_value',
-                    'option_desc'
-                  ],
-                  properties: {
-                    taxon_measurement_id: {
-                      type: 'string'
-                    },
-                    qualitative_option_id: {
-                      type: 'string'
-                    },
-                    option_label: {
-                      type: 'string',
-                      nullable: true
-                    },
-                    option_value: {
-                      type: 'number'
-                    },
-                    option_desc: {
-                      type: 'string',
-                      nullable: true
-                    }
-                  }
-                }
-              }
-            }
-          }
-        ]
-      }
-    }
-  }
-};
 
 GET.apiDoc = {
   description: 'Get all observations for the survey.',
@@ -258,6 +140,8 @@ export function getSurveyObservationsGeometry(): RequestHandler {
       const observationService = new ObservationService(connection);
 
       const observationData = await observationService.getSurveyObservationsGeometryWithSupplementaryData(surveyId);
+
+      await connection.commit();
 
       return res.status(200).json(observationData);
     } catch (error) {

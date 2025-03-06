@@ -6,16 +6,60 @@ import { SiteSelectionData } from '../repositories/site-selection-strategy-repos
 import { SurveyBlockRecord } from '../repositories/survey-block-repository';
 import { SurveyLocationRecord } from '../repositories/survey-location-repository';
 import { SurveyUser } from '../repositories/survey-participation-repository';
-import { SystemUser } from '../repositories/user-repository';
-import { ITaxonomy } from '../services/platform-service';
+import { ITaxonomyWithEcologicalUnits } from '../services/platform-service';
+import { SystemUserWithRoles } from './system-user-view';
 
 export interface ISurveyAdvancedFilters {
+  /**
+   * Filter results by keyword.
+   *
+   * @type {string}
+   * @memberof ISurveyAdvancedFilters
+   */
   keyword?: string;
+  /**
+   * Filter results by ITIS TSN.
+   *
+   * @type {number}
+   * @memberof ISurveyAdvancedFilters
+   */
   itis_tsn?: number;
+  /**
+   * Filter results by ITIS TSNs.
+   *
+   * @type {number[]}
+   * @memberof ISurveyAdvancedFilters
+   */
   itis_tsns?: number[];
+  /**
+   * Filter results by start date.
+   *
+   * @type {string}
+   * @memberof ISurveyAdvancedFilters
+   */
   start_date?: string;
+  /**
+   * Filter results by end date.
+   *
+   * @type {string}
+   * @memberof ISurveyAdvancedFilters
+   */
   end_date?: string;
+  /**
+   * Filter results by survey name.
+   *
+   * @type {string}
+   * @memberof ISurveyAdvancedFilters
+   */
   survey_name?: string;
+  /**
+   * Filter results by system user id.
+   *
+   * Note: This is not the id of the user making the request.
+   *
+   * @type {number}
+   * @memberof ISurveyAdvancedFilters
+   */
   system_user_id?: number;
 }
 
@@ -35,13 +79,13 @@ export type FindSurveysResponse = z.infer<typeof FindSurveysResponse>;
 
 export type SurveyObject = {
   survey_details: GetSurveyData;
-  species: GetFocalSpeciesData & GetAncillarySpeciesData;
+  species: GetFocalSpeciesData;
   permit: GetPermitData;
   funding_sources: GetSurveyFundingSourceData[];
   purpose_and_methodology: GetSurveyPurposeAndMethodologyData;
   proprietor: GetSurveyProprietorData | null;
   locations: SurveyLocationRecord[];
-  participants: (SurveyUser & SystemUser)[];
+  participants: (SurveyUser & SystemUserWithRoles)[];
   partnerships: ISurveyPartnerships;
   site_selection: SiteSelectionData;
   blocks: SurveyBlockRecord[];
@@ -80,7 +124,6 @@ export class GetSurveyFundingSourceData {
   survey_funding_source_id: number;
   survey_id: number;
   funding_source_id: number;
-  amount: number;
   revision_count?: number;
   funding_source_name?: string;
   start_date?: string | null;
@@ -91,7 +134,6 @@ export class GetSurveyFundingSourceData {
     this.survey_funding_source_id = obj?.survey_funding_source_id || null;
     this.funding_source_id = obj?.funding_source_id || null;
     this.survey_id = obj?.survey_id || null;
-    this.amount = obj?.amount ?? null;
     this.revision_count = obj?.revision_count || 0;
     this.funding_source_name = obj?.funding_source_name || null;
     this.start_date = obj?.start_date || null;
@@ -101,7 +143,7 @@ export class GetSurveyFundingSourceData {
 }
 
 export class GetFocalSpeciesData {
-  focal_species: ITaxonomy[];
+  focal_species: ITaxonomyWithEcologicalUnits[];
 
   constructor(obj?: any[]) {
     this.focal_species = [];
@@ -113,18 +155,6 @@ export class GetFocalSpeciesData {
   }
 }
 
-export class GetAncillarySpeciesData {
-  ancillary_species: ITaxonomy[];
-
-  constructor(obj?: any[]) {
-    this.ancillary_species = [];
-
-    obj?.length &&
-      obj.forEach((item: any) => {
-        this.ancillary_species.push(item);
-      });
-  }
-}
 export class GetPermitData {
   permits: {
     permit_id: IPermitModel['permit_id'];
@@ -146,12 +176,10 @@ export class GetSurveyPurposeAndMethodologyData {
   intended_outcome_ids: number[];
   additional_details: string;
   revision_count: number;
-  vantage_code_ids: number[];
 
   constructor(obj?: any) {
     this.intended_outcome_ids = (obj?.intended_outcome_ids?.length && obj?.intended_outcome_ids) || [];
     this.additional_details = obj?.additional_details || '';
-    this.vantage_code_ids = (obj?.vantage_ids?.length && obj.vantage_ids) || [];
     this.revision_count = obj?.revision_count ?? 0;
   }
 }
@@ -260,7 +288,8 @@ export class GetReportAttachmentsData {
             year: item.year,
             description: item.description,
             key: item.key,
-            file_size: item.file_size
+            file_size: item.file_size,
+            authors: undefined
           };
 
           if (item.authors?.length) {

@@ -1,24 +1,15 @@
-import { mdiMagnify } from '@mdi/js';
-import Icon from '@mdi/react';
-import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
-import grey from '@mui/material/colors/grey';
-import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import AlertBar from 'components/alert/AlertBar';
-import UserCard from 'components/user/UserCard';
+import { SystemUserAutocompleteField } from 'components/fields/SystemUserAutocompleteField';
 import UserRoleSelector from 'components/user/UserRoleSelector';
 import { PROJECT_ROLE } from 'constants/roles';
 import { useFormikContext } from 'formik';
-import { useBiohubApi } from 'hooks/useBioHubApi';
-import useDataLoader from 'hooks/useDataLoader';
-import { ICode } from 'interfaces/useCodesApi.interface';
+import { ICodeWithDescription } from 'interfaces/useCodesApi.interface';
 import { ICreateProjectRequest, IGetProjectParticipant } from 'interfaces/useProjectApi.interface';
 import { ISystemUser } from 'interfaces/useUserApi.interface';
-import { useEffect, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
-import { alphabetizeObjects } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 
 export const ProjectUserRoleYupSchema = yup.object().shape({
@@ -39,28 +30,16 @@ export const ProjectUserRoleYupSchema = yup.object().shape({
 });
 
 interface IProjectUserFormProps {
-  roles: ICode[];
+  roles: ICodeWithDescription[];
+  description?: string;
 }
 
 export const ProjectUserRoleFormInitialValues = {
   participants: []
 };
 
-const ProjectUserForm = (props: IProjectUserFormProps) => {
+const ProjectUserForm = (props: IProjectUserFormProps): JSX.Element => {
   const { handleSubmit, values, setFieldValue, errors, setErrors } = useFormikContext<ICreateProjectRequest>();
-  const biohubApi = useBiohubApi();
-
-  const searchUserDataLoader = useDataLoader((keyword: string) => biohubApi.user.searchSystemUser(keyword));
-
-  const [searchText, setSearchText] = useState('');
-
-  const [sortedUsers, setSortedUsers] = useState<ISystemUser[]>([]);
-
-  useEffect(() => {
-    if (searchUserDataLoader.data) {
-      setSortedUsers(alphabetizeObjects(searchUserDataLoader.data, 'display_name'));
-    }
-  }, [searchUserDataLoader.data]);
 
   const handleAddUser = (user: ISystemUser | IGetProjectParticipant) => {
     setFieldValue(`participants[${values.participants.length}]`, {
@@ -161,76 +140,19 @@ const ProjectUserForm = (props: IProjectUserFormProps) => {
           </Box>
         )}
         <Box mt={3}>
-          <Autocomplete
-            id={'autocomplete-user-role-search'}
-            data-testid={'autocomplete-user-role-search'}
-            filterSelectedOptions
-            noOptionsText={'No records found'}
-            options={sortedUsers}
-            filterOptions={(options, state) => {
-              const searchFilter = createFilterOptions<ISystemUser>({ ignoreCase: true });
-              const unselectedOptions = options.filter(
-                (item) => !values.participants.some((existing) => existing.system_user_id === item.system_user_id)
-              );
-              return searchFilter(unselectedOptions, state);
-            }}
-            getOptionLabel={(option) => option.display_name}
-            inputValue={searchText}
-            onInputChange={(_, value, reason) => {
-              if (reason === 'reset') {
-                setSearchText('');
-              } else {
-                setSearchText(value);
-
-                if (value.length >= 3) {
-                  // Only search if the search text is at least 3 characters long
-                  searchUserDataLoader.refresh(value);
-                }
+          <SystemUserAutocompleteField
+            formikFieldName="system_user_id"
+            label="Team Member"
+            placeholder="Search by user"
+            helpText={`Only active users who have requested access to the Species Inventory Management System before can be invited`}
+            selectedUsers={values.participants.map((participant) => participant.system_user_id)}
+            clearOnSelect
+            onSelect={(value) => {
+              if (value) {
+                handleAddUser(value);
               }
             }}
-            onChange={(_, option) => {
-              if (option) {
-                handleAddUser(option);
-              }
-            }}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                variant="outlined"
-                placeholder={'Find team members'}
-                fullWidth
-                InputProps={{
-                  ...params.InputProps,
-                  startAdornment: (
-                    <Box mx={1} mt="6px">
-                      <Icon path={mdiMagnify} size={1}></Icon>
-                    </Box>
-                  )
-                }}
-              />
-            )}
-            renderOption={(renderProps, renderOption) => {
-              return (
-                <Box
-                  component="li"
-                  sx={{
-                    '& + li': {
-                      borderTop: '1px solid' + grey[300]
-                    }
-                  }}
-                  key={renderOption.system_user_id}
-                  {...renderProps}>
-                  <Box py={0.5} width="100%">
-                    <UserCard
-                      name={renderOption.display_name}
-                      email={renderOption.email}
-                      agency={renderOption.agency}
-                      type={renderOption.identity_source}
-                    />
-                  </Box>
-                </Box>
-              );
-            }}
+            key="project-user-filter"
           />
         </Box>
         <Box>
@@ -254,6 +176,7 @@ const ProjectUserForm = (props: IProjectUserFormProps) => {
                       index={index}
                       user={user}
                       roles={props.roles}
+                      description={props.description}
                       error={error}
                       selectedRole={getSelectedRole(index)}
                       handleAdd={handleAddUserRole}

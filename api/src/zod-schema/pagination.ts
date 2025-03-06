@@ -12,7 +12,7 @@ export type ApiPaginationSorting = z.infer<typeof ApiPaginationSorting>;
  */
 export const ApiPaginationOptions = ApiPaginationSorting.extend({
   limit: z.number(),
-  page: z.number()
+  page: z.number().min(1)
 });
 
 export type ApiPaginationOptions = z.infer<typeof ApiPaginationOptions>;

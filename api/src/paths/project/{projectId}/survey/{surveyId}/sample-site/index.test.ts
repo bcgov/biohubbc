@@ -4,36 +4,19 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../../../../../database/db';
 import { HTTPError } from '../../../../../../errors/http-error';
-import { SampleLocationService } from '../../../../../../services/sample-location-service';
+import { SampleSiteService } from '../../../../../../services/sample-site-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
 import * as create_survey_sample_site_record from './index';
 import * as get_survey_sample_site_record from './index';
 
 chai.use(sinonChai);
 
-describe('getSurveySampleLocationRecord', () => {
+describe('getSurveySampleSitesForSurvey', () => {
   afterEach(() => {
     sinon.restore();
   });
 
-  it('should throw a 400 error when no surveyId is provided', async () => {
-    const dbConnectionObj = getMockDBConnection();
-
-    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
-
-    try {
-      const requestHandler = get_survey_sample_site_record.getSurveySampleLocationRecord();
-      await requestHandler(mockReq, mockRes, mockNext);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Missing required param `surveyId`');
-    }
-  });
-
-  it('should catch and re-throw an error if SampleLocationService throws an error', async () => {
+  it('should catch and re-throw an error if SampleSiteService throws an error', async () => {
     const dbConnectionObj = getMockDBConnection();
 
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
@@ -45,10 +28,10 @@ describe('getSurveySampleLocationRecord', () => {
       surveyId: '1'
     };
 
-    sinon.stub(SampleLocationService.prototype, 'getSampleLocationsForSurveyId').rejects(new Error('an error'));
+    sinon.stub(SampleSiteService.prototype, 'getSampleSitesForSurveyId').rejects(new Error('an error'));
 
     try {
-      const requestHandler = get_survey_sample_site_record.getSurveySampleLocationRecord();
+      const requestHandler = get_survey_sample_site_record.getSurveySampleSitesForSurvey();
 
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
@@ -57,7 +40,7 @@ describe('getSurveySampleLocationRecord', () => {
     }
   });
 
-  it('should return sampleLocations on success', async () => {
+  it('should return sample sites on success', async () => {
     const dbConnectionObj = getMockDBConnection();
 
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
@@ -68,32 +51,26 @@ describe('getSurveySampleLocationRecord', () => {
       surveyId: '1'
     };
 
-    const sampleLocation = {
+    const sampleSite = {
       survey_sample_site_id: 1,
       survey_id: 1,
       name: 'name',
       description: 'description',
       geojson: 'geojson',
-      geography: 'geography',
-      create_date: 'create_date',
-      create_user: 1,
-      update_date: 'update_date',
-      update_user: 2,
-      revision_count: 1,
-      sample_methods: [],
+      geometry_type: 'Point',
       blocks: [],
       stratums: []
     };
 
-    sinon.stub(SampleLocationService.prototype, 'getSampleLocationsCountBySurveyId').resolves(1);
-    sinon.stub(SampleLocationService.prototype, 'getSampleLocationsForSurveyId').resolves([sampleLocation]);
+    sinon.stub(SampleSiteService.prototype, 'getSampleSitesCountBySurveyId').resolves(1);
+    sinon.stub(SampleSiteService.prototype, 'getSampleSitesForSurveyId').resolves([sampleSite]);
 
-    const requestHandler = get_survey_sample_site_record.getSurveySampleLocationRecord();
+    const requestHandler = get_survey_sample_site_record.getSurveySampleSitesForSurvey();
 
     await requestHandler(mockReq, mockRes, mockNext);
 
     expect(mockRes.jsonValue).to.eql({
-      sampleSites: [sampleLocation],
+      sampleSites: [sampleSite],
       pagination: {
         current_page: 1,
         last_page: 1,
@@ -109,41 +86,14 @@ describe('getSurveySampleLocationRecord', () => {
 describe('createSurveySampleSiteRecord', () => {
   const dbConnectionObj = getMockDBConnection();
 
-  const sampleReq = {
-    keycloak_token: {},
-    body: {
-      participants: [[1, 1, 'job']]
-    },
-    params: {
-      surveyId: 1
-    }
-  } as any;
-
   afterEach(() => {
     sinon.restore();
-  });
-
-  it('should throw a 400 error when no surveyId in the param', async () => {
-    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-    try {
-      const result = create_survey_sample_site_record.createSurveySampleSiteRecord();
-      await result(
-        { ...sampleReq, params: { ...sampleReq.params, surveyId: null } },
-        null as unknown as any,
-        null as unknown as any
-      );
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Missing required path param `surveyId`');
-    }
   });
 
   it('should work', async () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-    const insertSurveyParticipantStub = sinon.stub(SampleLocationService.prototype, 'insertSampleLocations').resolves();
+    const insertSurveyParticipantStub = sinon.stub(SampleSiteService.prototype, 'createSampleSite').resolves();
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 

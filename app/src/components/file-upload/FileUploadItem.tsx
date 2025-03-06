@@ -1,18 +1,11 @@
-import { mdiFileOutline } from '@mdi/js';
-import Icon from '@mdi/react';
-import Box from '@mui/material/Box';
-import { grey } from '@mui/material/colors';
-import ListItem from '@mui/material/ListItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
 import axios, { AxiosProgressEvent, CancelTokenSource } from 'axios';
-import FileUploadItemErrorDetails from 'components/file-upload/FileUploadItemErrorDetails';
 import FileUploadItemSubtext from 'components/file-upload/FileUploadItemSubtext';
 import { APIError } from 'hooks/api/useAxios';
 import useIsMounted from 'hooks/useIsMounted';
 import React, { useCallback, useEffect, useState } from 'react';
 import { v4 } from 'uuid';
 import FileUploadItemActionButton from './FileUploadItemActionButton';
+import { FileUploadItemContent } from './FileUploadItemContent';
 import FileUploadItemProgressBar from './FileUploadItemProgressBar';
 
 export enum UploadFileStatus {
@@ -283,56 +276,18 @@ const FileUploadItem = (props: IFileUploadItemProps) => {
   }, [initiateCancel, isSafeToCancel, props]);
 
   return (
-    <ListItem
-      key={file.name}
-      secondaryAction={<MemoizedActionButton status={status} onCancel={() => setInitiateCancel(true)} />}
-      sx={{
-        flexWrap: 'wrap',
-        borderStyle: 'solid',
-        borderWidth: '1px',
-        borderRadius: '6px',
-        background: grey[100],
-        borderColor: grey[300],
-        '& + li': {
-          mt: 1
-        },
-        '& .MuiListItemSecondaryAction-root': {
-          top: '36px'
-        },
-        '&:last-child': {
-          borderBottomStyle: 'solid',
-          borderBottomWidth: '1px',
-          borderBottomColor: grey[300]
-        }
-      }}>
-      <ListItemIcon>
-        <Icon path={mdiFileOutline} size={1.25} style={error ? { color: 'error.main' } : { color: 'text.secondary' }} />
-      </ListItemIcon>
-      <ListItemText
-        primary={file.name}
-        secondary={<Subtext file={file} status={status} progress={progress} error={error} />}
-        sx={{
-          '& .MuiListItemText-primary': {
-            fontWeight: 700
-          }
-        }}></ListItemText>
-
-      <Box
-        sx={{
-          ml: 5,
-          width: '100%',
-          '& .MuiLinearProgress-root': {
-            mb: 1
-          }
-        }}>
-        <MemoizedProgressBar status={status} progress={progress} />
-      </Box>
-      {props.enableErrorDetails && (
-        <Box sx={{ mt: 1, ml: 5, width: '100%' }}>
-          <FileUploadItemErrorDetails error={error} errorDetails={errorDetails} />
-        </Box>
-      )}
-    </ListItem>
+    <FileUploadItemContent
+      file={file}
+      status={status}
+      progress={progress}
+      error={error}
+      errorDetails={errorDetails}
+      enableErrorDetails={props.enableErrorDetails}
+      onCancel={() => setInitiateCancel(true)}
+      SubtextComponent={Subtext}
+      ActionButtonComponent={MemoizedActionButton as any}
+      ProgressBarComponent={MemoizedProgressBar as any}
+    />
   );
 };
 

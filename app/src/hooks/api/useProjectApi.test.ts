@@ -6,7 +6,7 @@ import { IProjectIUCNForm } from 'features/projects/components/ProjectIUCNForm';
 import { IProjectObjectivesForm } from 'features/projects/components/ProjectObjectivesForm';
 import { ICreateProjectRequest, IFindProjectsResponse, UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
-import { ISurveyPermitForm } from '../../features/surveys/SurveyPermitForm';
+import { ISurveyPermitForm } from '../../features/surveys/components/permit/SurveyPermitForm';
 import useProjectApi from './useProjectApi';
 
 describe('useProjectApi', () => {
@@ -66,7 +66,8 @@ describe('useProjectApi', () => {
           end_date: '2021-12-31',
           regions: [],
           focal_species: [123, 456],
-          types: [1, 2, 3]
+          types: [1, 2, 3],
+          members: [{ system_user_id: 1, display_name: 'John doe' }]
         }
       ],
       pagination: {

@@ -2,7 +2,7 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
 import { useFormikContext } from 'formik';
-import { IGetSampleLocationDetails } from 'interfaces/useSamplingSiteApi.interface';
+import { IGetSampleSiteDetails } from 'interfaces/useSamplingSiteApi.interface';
 import SamplingSiteEditMapControl from './SamplingSiteEditMapControl';
 
 /**
@@ -12,7 +12,7 @@ import SamplingSiteEditMapControl from './SamplingSiteEditMapControl';
  * @returns
  */
 const SurveySamplingSiteEditForm = () => {
-  const formikProps = useFormikContext<IGetSampleLocationDetails>();
+  const formikProps = useFormikContext<IGetSampleSiteDetails>();
 
   if (!formikProps.values) {
     return <CircularProgress className="pageProgress" size={40} />;

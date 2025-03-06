@@ -2,15 +2,13 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
-import { HTTP400 } from '../../../../../../errors/http-error';
 import { GeoJSONFeature } from '../../../../../../openapi/schemas/geoJson';
 import {
   paginationRequestQueryParamSchema,
   paginationResponseSchema
 } from '../../../../../../openapi/schemas/pagination';
-import { techniqueSimpleViewSchema } from '../../../../../../openapi/schemas/technique';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { PostSampleLocations, SampleLocationService } from '../../../../../../services/sample-location-service';
+import { CreateSampleSiteObject, SampleSiteService } from '../../../../../../services/sample-site-service';
 import { getLogger } from '../../../../../../utils/logger';
 import {
   ensureCompletePaginationOptions,
@@ -18,7 +16,7 @@ import {
   makePaginationResponse
 } from '../../../../../../utils/pagination';
 
-const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/sample-site/');
+export const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/sample-site/');
 
 export const GET: Operation = [
   authorizeRequestHandler((req) => {
@@ -40,11 +38,11 @@ export const GET: Operation = [
       ]
     };
   }),
-  getSurveySampleLocationRecord()
+  getSurveySampleSitesForSurvey()
 ];
 
 GET.apiDoc = {
-  description: 'Get all survey sample sites.',
+  description: 'Get survey sample sites.',
   tags: ['survey'],
   security: [
     {
@@ -70,6 +68,16 @@ GET.apiDoc = {
       },
       required: true
     },
+    {
+      in: 'query',
+      name: 'keyword',
+      schema: {
+        type: 'string',
+        description:
+          'A keyword to search for in the sample site name or description. If provided, pagination will be ignored.'
+      },
+      required: false
+    },
     ...paginationRequestQueryParamSchema
   ],
   responses: {
@@ -86,7 +94,7 @@ GET.apiDoc = {
                 items: {
                   type: 'object',
                   additionalProperties: false,
-                  required: ['survey_sample_site_id', 'survey_id', 'name', 'description', 'geojson'],
+                  required: ['survey_sample_site_id', 'survey_id', 'name', 'description', 'geometry_type'],
                   properties: {
                     survey_sample_site_id: {
                       type: 'integer',
@@ -104,80 +112,9 @@ GET.apiDoc = {
                       type: 'string',
                       maxLength: 250
                     },
-                    geojson: {
-                      ...(GeoJSONFeature as object)
-                    },
-                    sample_methods: {
-                      type: 'array',
-                      required: [
-                        'survey_sample_method_id',
-                        'survey_sample_site_id',
-                        'technique',
-                        'method_response_metric_id',
-                        'sample_periods'
-                      ],
-                      items: {
-                        type: 'object',
-                        additionalProperties: false,
-                        properties: {
-                          survey_sample_method_id: {
-                            type: 'integer',
-                            minimum: 1
-                          },
-                          survey_sample_site_id: {
-                            type: 'integer',
-                            minimum: 1
-                          },
-                          technique: techniqueSimpleViewSchema,
-                          method_response_metric_id: {
-                            type: 'integer',
-                            minimum: 1
-                          },
-                          description: {
-                            type: 'string',
-                            maxLength: 250
-                          },
-                          sample_periods: {
-                            type: 'array',
-                            required: [
-                              'survey_sample_period_id',
-                              'survey_sample_method_id',
-                              'start_date',
-                              'start_time',
-                              'end_date',
-                              'end_time'
-                            ],
-                            items: {
-                              type: 'object',
-                              additionalProperties: false,
-                              properties: {
-                                survey_sample_period_id: {
-                                  type: 'integer',
-                                  minimum: 1
-                                },
-                                survey_sample_method_id: {
-                                  type: 'integer',
-                                  minimum: 1
-                                },
-                                start_date: {
-                                  type: 'string'
-                                },
-                                start_time: {
-                                  type: 'string',
-                                  nullable: true
-                                },
-                                end_date: {
-                                  type: 'string'
-                                },
-                                end_time: {
-                                  type: 'string',
-                                  nullable: true
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
+                    geometry_type: {
+                      type: 'string',
+                      maxLength: 50
                     },
                     blocks: {
                       type: 'array',
@@ -257,31 +194,30 @@ GET.apiDoc = {
 };
 
 /**
- * Get all survey sample sites.
+ * Get all survey sample sites, paginated or filtered by keyword.
  *
  * @returns {RequestHandler}
  */
-export function getSurveySampleLocationRecord(): RequestHandler {
+export function getSurveySampleSitesForSurvey(): RequestHandler {
   return async (req, res) => {
-    if (!req.params.surveyId) {
-      throw new HTTP400('Missing required param `surveyId`');
-    }
-
     const connection = getDBConnection(req.keycloak_token);
 
     try {
-      await connection.open();
-
       const surveyId = Number(req.params.surveyId);
+
+      const keyword = req.query.keyword as string | undefined;
+
       const paginationOptions = makePaginationOptionsFromRequest(req);
 
-      const sampleLocationService = new SampleLocationService(connection);
-      const sampleSites = await sampleLocationService.getSampleLocationsForSurveyId(
-        surveyId,
-        ensureCompletePaginationOptions(paginationOptions)
-      );
+      await connection.open();
 
-      const sampleSitesTotalCount = await sampleLocationService.getSampleLocationsCountBySurveyId(surveyId);
+      const sampleSiteService = new SampleSiteService(connection);
+      const sampleSites = await sampleSiteService.getSampleSitesForSurveyId(surveyId, {
+        keyword: keyword,
+        pagination: ensureCompletePaginationOptions(paginationOptions)
+      });
+
+      const sampleSitesTotalCount = await sampleSiteService.getSampleSitesCountBySurveyId(surveyId);
 
       await connection.commit();
 
@@ -290,7 +226,7 @@ export function getSurveySampleLocationRecord(): RequestHandler {
         pagination: makePaginationResponse(sampleSitesTotalCount, paginationOptions)
       });
     } catch (error) {
-      defaultLog.error({ label: 'getSurveySampleLocationRecord', message: 'error', error });
+      defaultLog.error({ label: 'getSurveySampleSitesForSurvey', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
@@ -347,171 +283,19 @@ POST.apiDoc = {
     }
   ],
   requestBody: {
+    required: true,
     content: {
       'application/json': {
         schema: {
           type: 'object',
           additionalProperties: false,
-          required: ['sample_methods', 'survey_sample_sites'],
+          required: ['survey_sample_sites', 'blocks', 'stratums'],
           properties: {
-            survey_id: {
-              type: 'integer'
-            },
             name: {
               type: 'string'
             },
             description: {
               type: 'string'
-            },
-            sample_methods: {
-              type: 'array',
-              minItems: 1,
-              items: {
-                type: 'object',
-                additionalProperties: false,
-                required: ['method_technique_id', 'description', 'sample_periods', 'method_response_metric_id'],
-                properties: {
-                  survey_sample_site_id: {
-                    type: 'integer',
-                    nullable: true
-                  },
-                  survey_sample_method_id: {
-                    type: 'integer',
-                    nullable: true
-                  },
-                  description: {
-                    type: 'string'
-                  },
-                  method_technique_id: {
-                    type: 'integer'
-                  },
-                  sample_periods: {
-                    type: 'array',
-                    minItems: 1,
-                    items: {
-                      type: 'object',
-                      additionalProperties: false,
-                      required: ['start_date', 'end_date'],
-                      properties: {
-                        survey_sample_period_id: {
-                          type: 'integer',
-                          nullable: true
-                        },
-                        survey_sample_method_id: {
-                          type: 'integer',
-                          nullable: true
-                        },
-                        start_date: {
-                          type: 'string'
-                        },
-                        end_date: {
-                          type: 'string'
-                        },
-                        start_time: {
-                          type: 'string',
-                          nullable: true
-                        },
-                        end_time: {
-                          type: 'string',
-                          nullable: true
-                        }
-                      }
-                    }
-                  },
-                  method_response_metric_id: {
-                    type: 'integer',
-                    minimum: 1
-                  }
-                }
-              }
-            },
-            blocks: {
-              type: 'array',
-              items: {
-                type: 'object',
-                additionalProperties: false,
-                required: ['survey_block_id'],
-                properties: {
-                  survey_block_id: {
-                    type: 'number'
-                  },
-                  survey_id: {
-                    type: 'integer'
-                  },
-                  name: {
-                    type: 'string'
-                  },
-                  description: {
-                    type: 'string'
-                  },
-                  sample_block_count: {
-                    type: 'number'
-                  },
-                  create_date: {
-                    type: 'string',
-                    nullable: true
-                  },
-                  create_user: {
-                    type: 'integer',
-                    nullable: true
-                  },
-                  update_date: {
-                    type: 'string',
-                    nullable: true
-                  },
-                  update_user: {
-                    type: 'integer',
-                    nullable: true
-                  },
-                  revision_count: {
-                    type: 'number'
-                  }
-                }
-              }
-            },
-            stratums: {
-              type: 'array',
-              items: {
-                type: 'object',
-                additionalProperties: false,
-                required: ['survey_stratum_id'],
-                properties: {
-                  survey_id: {
-                    type: 'integer'
-                  },
-                  survey_stratum_id: {
-                    type: 'number'
-                  },
-                  sample_stratum_count: {
-                    type: 'number'
-                  },
-                  name: {
-                    type: 'string'
-                  },
-                  description: {
-                    type: 'string'
-                  },
-                  create_date: {
-                    type: 'string',
-                    nullable: true
-                  },
-                  create_user: {
-                    type: 'integer',
-                    nullable: true
-                  },
-                  update_date: {
-                    type: 'string',
-                    nullable: true
-                  },
-                  update_user: {
-                    type: 'integer',
-                    nullable: true
-                  },
-                  revision_count: {
-                    type: 'number'
-                  }
-                }
-              }
             },
             survey_sample_sites: {
               type: 'array',
@@ -527,6 +311,32 @@ POST.apiDoc = {
                     type: 'string'
                   },
                   geojson: { ...(GeoJSONFeature as object) }
+                }
+              }
+            },
+            blocks: {
+              type: 'array',
+              items: {
+                type: 'object',
+                additionalProperties: false,
+                required: ['survey_block_id'],
+                properties: {
+                  survey_block_id: {
+                    type: 'number'
+                  }
+                }
+              }
+            },
+            stratums: {
+              type: 'array',
+              items: {
+                type: 'object',
+                additionalProperties: false,
+                required: ['survey_stratum_id'],
+                properties: {
+                  survey_stratum_id: {
+                    type: 'number'
+                  }
                 }
               }
             }
@@ -559,29 +369,25 @@ POST.apiDoc = {
 
 export function createSurveySampleSiteRecord(): RequestHandler {
   return async (req, res) => {
-    if (!req.params.surveyId) {
-      throw new HTTP400('Missing required path param `surveyId`');
-    }
-
     const connection = getDBConnection(req.keycloak_token);
 
     try {
-      const sampleSite: PostSampleLocations = {
+      const sampleSite: CreateSampleSiteObject = {
         ...req.body,
         survey_id: Number(req.params.surveyId)
       };
 
       await connection.open();
 
-      const sampleLocationService = new SampleLocationService(connection);
+      const sampleSiteService = new SampleSiteService(connection);
 
-      await sampleLocationService.insertSampleLocations(sampleSite);
+      await sampleSiteService.createSampleSite(sampleSite);
 
       await connection.commit();
 
       return res.status(201).send();
     } catch (error) {
-      defaultLog.error({ label: 'insertProjectParticipants', message: 'error', error });
+      defaultLog.error({ label: 'createSurveySampleSiteRecord', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

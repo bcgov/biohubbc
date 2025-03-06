@@ -1,7 +1,6 @@
 import { GridColDef } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { IGetFundingSourcesResponse } from 'interfaces/useFundingSourceApi.interface';
-import { getFormattedAmount } from 'utils/Utils';
 import TableActionsMenu from './FundingSourcesTableActionsMenu';
 
 export interface IFundingSourcesTableTableProps {
@@ -15,7 +14,6 @@ export interface IFundingSourcesTableEntry {
   funding_source_id: number;
   name: string;
   survey_reference_count: number;
-  survey_reference_amount_total: number;
 }
 
 const FundingSourcesTable = (props: IFundingSourcesTableTableProps) => {
@@ -24,17 +22,6 @@ const FundingSourcesTable = (props: IFundingSourcesTableTableProps) => {
       field: 'name',
       headerName: 'Name',
       flex: 1
-    },
-    {
-      field: 'survey_reference_amount_total',
-      headerName: 'Amount Distributed',
-      description: 'Known amount of funding that has been distributed to one or more surveys.',
-      flex: 1,
-      headerAlign: 'right',
-      align: 'right',
-      valueGetter: (params) => {
-        return getFormattedAmount(params.value, { maximumFractionDigits: 2 });
-      }
     },
     {
       field: 'survey_reference_count',

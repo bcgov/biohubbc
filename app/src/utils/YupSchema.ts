@@ -3,10 +3,13 @@
  * - See types/yup.d.ts
  */
 
-import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import { default as dayjs } from 'dayjs';
+import { DATE_FORMAT, TIME_FORMAT } from 'constants/dateTimeFormats';
+import dayjs from 'dayjs';
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import { isValidCoordinates } from 'utils/spatial-utils';
 import * as yup from 'yup';
+
+dayjs.extend(isSameOrBefore);
 
 yup.addMethod(yup.array, 'isUniqueIUCNClassificationDetail', function (message: string) {
   return this.test('is-unique-iucn-classification-detail', message, (values) => {
@@ -21,24 +24,6 @@ yup.addMethod(yup.array, 'isUniqueIUCNClassificationDetail', function (message: 
       .some((iucn, _, array) => {
         return array.indexOf(iucn) !== array.lastIndexOf(iucn);
       });
-
-    return !hasDuplicates;
-  });
-});
-
-yup.addMethod(yup.array, 'isUniqueFocalAncillarySpecies', function (message: string) {
-  return this.test('is-unique-focal-ancillary-species', message, function (values) {
-    if (!values || !values.length) {
-      return true;
-    }
-
-    let hasDuplicates = false;
-
-    this.parent.focal_species.forEach((species: number) => {
-      if (values.includes(species)) {
-        hasDuplicates = true;
-      }
-    });
 
     return !hasDuplicates;
   });
@@ -68,11 +53,11 @@ yup.addMethod(
         return true;
       }
 
-      const endDateTime = dayjs(`2020-10-20 ${this.parent.end_time}`, DATE_FORMAT.ShortDateTimeFormat);
-      const startDateTime = dayjs(`2020-10-20 ${this.parent[startTimeName]}`, DATE_FORMAT.ShortDateTimeFormat);
+      const endDateTime = dayjs(this.parent.end_time, TIME_FORMAT.LongTimeFormat24Hour);
+      const startDateTime = dayjs(this.parent[startTimeName], TIME_FORMAT.LongTimeFormat24Hour);
 
       // compare valid start and end times
-      return startDateTime.isBefore(endDateTime);
+      return startDateTime.isSameOrBefore(endDateTime);
     });
   }
 );
@@ -97,7 +82,7 @@ yup.addMethod(
       }
 
       // compare valid start and end dates
-      return dayjs(this.parent[startDateName], dateFormat, true).isBefore(dayjs(value, dateFormat, true));
+      return dayjs(this.parent[startDateName], dateFormat, true).isSameOrBefore(dayjs(value, dateFormat, true));
     });
   }
 );

@@ -1,6 +1,7 @@
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
 import Typography from '@mui/material/Typography';
+import HelpButtonStack from 'components/buttons/HelpButtonStack';
 import { useState } from 'react';
 import SurveyBlockSection from './blocks/SurveyBlockForm';
 import SurveyStratumForm from './stratums/SurveyStratumForm';
@@ -11,13 +12,12 @@ const SamplingStrategyForm = () => {
 
   return (
     <>
-      <Box component="fieldset">
-        <Typography component="legend">Site Selection Strategies</Typography>
-        <SurveySiteSelectionForm onChangeStratumEntryVisibility={setShowStratumForm} />
-      </Box>
+      <SurveySiteSelectionForm onChangeStratumEntryVisibility={setShowStratumForm} />
       <Collapse in={showStratumForm}>
         <Box component="fieldset" mt={5}>
-          <Typography component="legend">Add Stratum</Typography>
+          <HelpButtonStack helpText="Strata provide a framework to focus effort and minimize variability. Each stratum is homogeneous within, but distinct from, others.">
+            <Typography fontWeight={700}>Add Stratum</Typography>
+          </HelpButtonStack>
           <Typography
             sx={{
               mb: 2
@@ -30,13 +30,7 @@ const SamplingStrategyForm = () => {
         </Box>
       </Collapse>
       <Box component="fieldset" mt={5}>
-        <Typography
-          component="legend"
-          sx={{
-            mb: 0
-          }}>
-          Add Blocks (Optional)
-        </Typography>
+        <Typography fontWeight={700}>Add Blocks (optional)</Typography>
         <Typography
           sx={{
             mb: 2

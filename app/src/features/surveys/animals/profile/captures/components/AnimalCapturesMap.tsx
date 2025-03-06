@@ -20,7 +20,7 @@ export const AnimalCapturesMap = (props: IAnimalCapturesMapProps) => {
   const { captures, isLoading } = props;
 
   // Only include captures with valid locations
-  const captureMapFeatures: Feature[] = [];
+  const captureMapFeatures = [];
 
   for (const capture of captures) {
     if (
@@ -28,7 +28,8 @@ export const AnimalCapturesMap = (props: IAnimalCapturesMapProps) => {
       isDefined(capture.capture_location.latitude) &&
       isDefined(capture.capture_location.longitude)
     ) {
-      const feature: Feature = {
+      const feature = {
+        id: capture.capture_id,
         type: 'Feature',
         geometry: {
           type: 'Point',
@@ -45,15 +46,16 @@ export const AnimalCapturesMap = (props: IAnimalCapturesMapProps) => {
     popupRecordTitle: 'Capture Location',
     features: [
       {
-        key: `${feature.geometry}-${index}`,
-        geoJSON: feature
+        id: feature.id,
+        key: `capture-location-${feature.geometry}-${index}`,
+        geoJSON: feature as Feature
       }
     ]
   }));
 
   return (
     <Box height={{ sm: 250, md: 400 }} position="relative">
-      <SurveyMap isLoading={isLoading} staticLayers={staticLayers} supplementaryLayers={[]} />
+      <SurveyMap isLoading={isLoading} staticLayers={staticLayers} />
     </Box>
   );
 };

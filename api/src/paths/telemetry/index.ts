@@ -2,10 +2,10 @@ import { Request, RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
-import { ITelemetryAdvancedFilters } from '../../models/telemetry-view';
+import { IAllTelemetryAdvancedFilters } from '../../models/telemetry-view';
 import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../../openapi/schemas/pagination';
 import { authorizeRequestHandler, userHasValidRole } from '../../request-handlers/security/authorization';
-import { TelemetryService } from '../../services/telemetry-service';
+import { TelemetryVendorService } from '../../services/telemetry-services/telemetry-vendor-service';
 import { getLogger } from '../../utils/logger';
 import {
   ensureCompletePaginationOptions,
@@ -72,6 +72,28 @@ GET.apiDoc = {
     },
     {
       in: 'query',
+      name: 'start_date',
+      description: 'ISO 8601 date string',
+      required: false,
+      schema: {
+        type: 'string',
+        nullable: true
+      },
+      example: '2021-01-01'
+    },
+    {
+      in: 'query',
+      name: 'end_date',
+      description: 'ISO 8601 date string',
+      required: false,
+      schema: {
+        type: 'string',
+        nullable: true
+      },
+      example: '2021-02-01'
+    },
+    {
+      in: 'query',
       name: 'system_user_id',
       required: false,
       schema: {
@@ -97,58 +119,66 @@ GET.apiDoc = {
                 items: {
                   type: 'object',
                   additionalProperties: false,
+                  required: [
+                    'telemetry_id',
+                    'deployment_id',
+                    'critter_id',
+                    'vendor',
+                    'serial',
+                    'acquisition_date',
+                    'latitude',
+                    'longitude',
+                    'elevation',
+                    'temperature'
+                  ],
                   properties: {
                     telemetry_id: {
-                      type: 'number',
-                      description: 'The BCTW telemetry record ID.'
-                    },
-                    acquisition_date: {
-                      type: 'string',
-                      nullable: true,
-                      description: 'The BCTW telemetry record acquisition date.'
-                    },
-                    latitude: {
-                      type: 'number',
-                      nullable: true,
-                      description: 'The BCTW telemetry record latitude.'
-                    },
-                    longitude: {
-                      type: 'number',
-                      nullable: true,
-                      description: 'The BCTW telemetry record longitude.'
-                    },
-                    telemetry_type: {
-                      type: 'string',
-                      description: 'The BCTW telemetry type.'
-                    },
-                    device_id: {
-                      type: 'number',
-                      description: 'The BCTW device ID.'
-                    },
-                    bctw_deployment_id: {
                       type: 'string',
                       format: 'uuid',
-                      description: 'The BCTW deployment ID.'
+                      description: 'The telemetry record ID.'
+                    },
+                    deployment_id: {
+                      type: 'number',
+                      minimum: 1,
+                      description: 'The deployment record ID.'
                     },
                     critter_id: {
                       type: 'number',
                       minimum: 1,
                       description: 'The SIMS critter record ID.'
                     },
-                    deployment_id: {
-                      type: 'number',
-                      minimum: 1,
-                      description: 'The SIMS deployment record ID.'
-                    },
-                    critterbase_critter_id: {
+                    vendor: {
                       type: 'string',
-                      format: 'uuid',
-                      description: 'The Critterbase critter ID.'
+                      description: 'The telemetry device vendor.'
                     },
-                    animal_id: {
+                    serial: {
+                      type: 'string',
+                      description: 'The telemetry device serial number.'
+                    },
+                    acquisition_date: {
                       type: 'string',
                       nullable: true,
-                      description: 'The Critterbase animal ID.'
+                      description: 'The date the telemetry record was recorded by the telemetry device.'
+                    },
+                    latitude: {
+                      type: 'number',
+                      nullable: true,
+                      description: 'The latitude of the telemetry record.'
+                    },
+                    longitude: {
+                      type: 'number',
+                      nullable: true,
+                      description: 'The longitude of the telemetry record.'
+                    },
+                    elevation: {
+                      type: 'number',
+                      description: 'The elevation of the telemetry point.',
+                      nullable: true
+                    },
+                    temperature: {
+                      type: 'number',
+                      description: 'The temperature of the telemetry point.',
+                      nullable: true
                     }
                   }
                 }
@@ -204,14 +234,17 @@ export function findTelemetry(): RequestHandler {
 
       const paginationOptions = makePaginationOptionsFromRequest(req);
 
-      const telemetryService = new TelemetryService(connection);
+      const telemetryVendorService = new TelemetryVendorService(connection);
 
-      const telemetry = await telemetryService.findTelemetry(
-        isUserAdmin,
-        systemUserId,
-        filterFields,
-        ensureCompletePaginationOptions(paginationOptions)
-      );
+      const [telemetry, telemetryCount] = await Promise.all([
+        telemetryVendorService.findTelemetry(
+          isUserAdmin,
+          systemUserId,
+          filterFields,
+          ensureCompletePaginationOptions(paginationOptions)
+        ),
+        telemetryVendorService.findTelemetryCount(isUserAdmin, systemUserId, filterFields)
+      ]);
 
       await connection.commit();
 
@@ -220,7 +253,7 @@ export function findTelemetry(): RequestHandler {
 
       return res
         .status(200)
-        .json({ telemetry: telemetry, pagination: makePaginationResponse(telemetry.length, paginationOptions) });
+        .json({ telemetry: telemetry, pagination: makePaginationResponse(telemetryCount, paginationOptions) });
     } catch (error) {
       defaultLog.error({ label: 'findTelemetry', message: 'error', error });
       await connection.rollback();
@@ -234,16 +267,18 @@ export function findTelemetry(): RequestHandler {
 /**
  * Parse the query parameters from the request into the expected format.
  *
- * @param {Request<unknown, unknown, unknown, ITelemetryAdvancedFilters>} req
- * @return {*}  {ITelemetryAdvancedFilters}
+ * @param {Request<unknown, unknown, unknown, IAllTelemetryAdvancedFilters>} req
+ * @return {*}  {IAllTelemetryAdvancedFilters}
  */
 function parseQueryParams(
-  req: Request<unknown, unknown, unknown, ITelemetryAdvancedFilters>
-): ITelemetryAdvancedFilters {
+  req: Request<unknown, unknown, unknown, IAllTelemetryAdvancedFilters>
+): IAllTelemetryAdvancedFilters {
   return {
     keyword: req.query.keyword ?? undefined,
     itis_tsns: req.query.itis_tsns ?? undefined,
     itis_tsn: (req.query.itis_tsn && Number(req.query.itis_tsn)) ?? undefined,
-    system_user_id: req.query.system_user_id ?? undefined
+    start_date: req.query.start_date ?? undefined,
+    end_date: req.query.end_date ?? undefined,
+    system_user_id: (req.query.system_user_id && Number(req.query.system_user_id)) ?? undefined
   };
 }

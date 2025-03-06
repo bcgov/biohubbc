@@ -1,20 +1,22 @@
 import { AuthStateContext } from 'contexts/authStateContext';
 import { Formik } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { ICode } from 'interfaces/useCodesApi.interface';
+import { ICodeWithDescription } from 'interfaces/useCodesApi.interface';
 import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import { render, waitFor } from 'test-helpers/test-utils';
 import { Mock } from 'vitest';
 import SurveyUserForm, { SurveyUserJobYupSchema } from './SurveyUserForm';
 
-const mockJobs: ICode[] = [
+const mockJobs: ICodeWithDescription[] = [
   {
     id: 1,
-    name: 'Pilot'
+    name: 'Pilot',
+    description: 'Conducts surveys'
   },
   {
     id: 2,
-    name: 'Biologist'
+    name: 'Biologist',
+    description: 'Observes survey activities'
   }
 ];
 
@@ -96,7 +98,7 @@ describe('SurveyUserForm', () => {
     );
 
     await waitFor(async () => {
-      expect(getByTestId('autocomplete-user-role-search')).toBeVisible();
+      expect(getByTestId('participants')).toBeVisible();
       expect(getByText('Test User', { exact: false })).toBeVisible();
     });
   });
@@ -137,7 +139,7 @@ describe('SurveyUserForm', () => {
     );
 
     await waitFor(async () => {
-      expect(getByTestId('autocomplete-user-role-search')).toBeVisible();
+      expect(getByTestId('participants')).toBeVisible();
       expect(getByTestId('remove-user-role-button-0')).toBeVisible();
     });
   });

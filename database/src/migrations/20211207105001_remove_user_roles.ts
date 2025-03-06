@@ -43,7 +43,7 @@ export async function up(knex: Knex): Promise<void> {
     system_role_id = (select system_role_id from system_role where name = '${OLD_SYSTEM_ROLE.PUBLIC_USER}');
 
 
-  --Delete from system_user
+  --Delete from "system_user"
 
   DELETE FROM system_role WHERE name = '${OLD_SYSTEM_ROLE.GOVERNMENT_USER}';
   DELETE FROM system_role WHERE name = '${OLD_SYSTEM_ROLE.EXTERNAL_USER}';

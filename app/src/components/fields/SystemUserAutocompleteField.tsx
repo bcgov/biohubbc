@@ -5,6 +5,7 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import grey from '@mui/material/colors/grey';
 import TextField from '@mui/material/TextField';
+import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
 import UserCard from 'components/user/UserCard';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useIsMounted from 'hooks/useIsMounted';
@@ -27,6 +28,13 @@ interface ISystemUserAutocompleteFieldProps {
    * @memberof ISystemUserAutocompleteFieldProps
    */
   label: string;
+  /**
+   * Users to filter from the options because they have already been selected
+   *
+   * @type {number[]}
+   * @memberof ISystemUserAutocompleteFieldProps
+   */
+  selectedUsers?: number[];
   /**
    * Callback fired on option selection.
    *
@@ -62,6 +70,13 @@ interface ISystemUserAutocompleteFieldProps {
    */
   clearOnSelect?: boolean;
   /**
+   * Optional help text to be displayed in a tooltip
+   *
+   * @type {string}
+   * @memberof  ISystemUserAutocompleteFieldProps
+   */
+  helpText?: string;
+  /**
    * Whether to show start adornment magnifying glass or not
    * Defaults to false
    *
@@ -85,7 +100,18 @@ interface ISystemUserAutocompleteFieldProps {
  * @return {*}
  */
 export const SystemUserAutocompleteField = (props: ISystemUserAutocompleteFieldProps) => {
-  const { formikFieldName, disabled, label, showStartAdornment, placeholder, onSelect, onClear, clearOnSelect } = props;
+  const {
+    formikFieldName,
+    disabled,
+    label,
+    showStartAdornment,
+    placeholder,
+    onSelect,
+    onClear,
+    clearOnSelect,
+    helpText,
+    selectedUsers
+  } = props;
 
   const biohubApi = useBiohubApi();
   const isMounted = useIsMounted();
@@ -115,15 +141,18 @@ export const SystemUserAutocompleteField = (props: ISystemUserAutocompleteFieldP
       disabled={disabled}
       data-testid={formikFieldName}
       filterSelectedOptions
-      noOptionsText={inputValue.length > 2 ? 'No matching options' : 'Enter at least 3 letters'}
+      clearOnBlur={false}
+      noOptionsText={inputValue && inputValue.length > 2 ? 'No matching options' : 'Enter at least 3 letters'}
       options={options}
-      getOptionLabel={(option) => option.display_name}
-      isOptionEqualToValue={(option, value) => {
-        return option.system_user_id === value.system_user_id;
+      getOptionLabel={(option) => option.display_name || ''}
+      isOptionEqualToValue={(option, value) => option.system_user_id === value.system_user_id}
+      filterOptions={(options) => {
+        if (selectedUsers) {
+          return options.filter((item) => !selectedUsers.includes(item.system_user_id));
+        }
+        return options;
       }}
-      filterOptions={(item) => item}
-      inputValue={inputValue}
-      // Text field value changed
+      inputValue={inputValue || ''} // Control the text field value separately
       onInputChange={(_, value, reason) => {
         if (clearOnSelect && reason === 'reset') {
           setInputValue('');
@@ -145,20 +174,22 @@ export const SystemUserAutocompleteField = (props: ISystemUserAutocompleteFieldP
           return;
         }
 
-        setIsLoading(true);
-        setInputValue(value);
-        handleSearch(value, (newOptions) => {
-          if (value.length < 3) {
-            return;
-          }
-          if (!isMounted()) {
-            return;
-          }
-          setOptions(() => newOptions);
-          setIsLoading(false);
-        });
+        // reason === 'input' is only true when the change comes from typing in the text field, not from a state change (ie. not from the useState value changing)
+        if (reason === 'input') {
+          setIsLoading(true);
+          setInputValue(value);
+          handleSearch(value, (newOptions) => {
+            if (value.length < 3) {
+              return;
+            }
+            if (!isMounted()) {
+              return;
+            }
+            setOptions(newOptions);
+          });
+        }
+        setIsLoading(false);
       }}
-      // Option selected from dropdown
       onChange={(_, option) => {
         if (!option) {
           onClear?.();
@@ -166,6 +197,7 @@ export const SystemUserAutocompleteField = (props: ISystemUserAutocompleteFieldP
         }
 
         onSelect(option);
+        setIsLoading(false);
 
         if (clearOnSelect) {
           setInputValue('');
@@ -182,8 +214,8 @@ export const SystemUserAutocompleteField = (props: ISystemUserAutocompleteFieldP
               borderTop: '1px solid' + grey[300]
             }
           }}
-          key={renderOption.system_user_id}
-          {...renderProps}>
+          {...renderProps}
+          key={renderOption.system_user_id}>
           <Box py={0.5} width="100%">
             <UserCard
               name={renderOption.display_name}
@@ -199,7 +231,7 @@ export const SystemUserAutocompleteField = (props: ISystemUserAutocompleteFieldP
           {...params}
           variant="outlined"
           label={label}
-          placeholder={placeholder || 'Search by user'}
+          placeholder={placeholder ?? 'Search by user'}
           fullWidth
           InputProps={{
             ...params.InputProps,
@@ -211,6 +243,7 @@ export const SystemUserAutocompleteField = (props: ISystemUserAutocompleteFieldP
             endAdornment: (
               <>
                 {isLoading ? <CircularProgress color="inherit" size={20} /> : null}
+                {helpText && <HelpButtonTooltip content={helpText} />}
                 {params.InputProps.endAdornment}
               </>
             )

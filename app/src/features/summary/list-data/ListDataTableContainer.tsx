@@ -2,12 +2,14 @@ import { mdiFolder, mdiListBoxOutline, mdiMagnify } from '@mdi/js';
 import Icon from '@mdi/react';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
-import ToggleButton from '@mui/material/ToggleButton';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
+import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
+import CustomToggleButtonGroup from 'components/toolbar/CustomToggleButtonGroup';
 import ProjectsListContainer from 'features/summary/list-data/project/ProjectsListContainer';
 import SurveysListContainer from 'features/summary/list-data/survey/SurveysListContainer';
 import { useSearchParams } from 'hooks/useSearchParams';
+import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import { useState } from 'react';
 
 export const ACTIVE_VIEW_KEY = 'lvk';
@@ -28,16 +30,6 @@ type ListDataTableURLParams = {
   [SHOW_SEARCH_KEY]: SHOW_SEARCH_VALUE;
 };
 
-const buttonSx = {
-  py: 0.5,
-  px: 1.5,
-  border: 'none !important',
-  fontWeight: 700,
-  borderRadius: '4px !important',
-  fontSize: '0.875rem',
-  letterSpacing: '0.02rem'
-};
-
 /**
  * Data table component for list data (ie: projects, surveys).
  *
@@ -46,7 +38,9 @@ const buttonSx = {
 export const ListDataTableContainer = () => {
   const { searchParams, setSearchParams } = useSearchParams<ListDataTableURLParams>();
 
-  const [activeView, setActiveView] = useState(searchParams.get(ACTIVE_VIEW_KEY) ?? ACTIVE_VIEW_VALUE.projects);
+  const [activeView, setActiveView] = useState(
+    (searchParams.get(ACTIVE_VIEW_KEY) as ACTIVE_VIEW_VALUE | null) ?? ACTIVE_VIEW_VALUE.projects
+  );
   const [showSearch, setShowSearch] = useState<boolean>(searchParams.get(SHOW_SEARCH_KEY) === SHOW_SEARCH_VALUE.true);
 
   const views = [
@@ -54,53 +48,34 @@ export const ListDataTableContainer = () => {
     { value: ACTIVE_VIEW_VALUE.surveys, label: 'surveys', icon: mdiListBoxOutline }
   ];
 
-  const onChangeView = (_: React.MouseEvent<HTMLElement>, value: ACTIVE_VIEW_VALUE) => {
-    if (!value) {
-      // User has clicked the active view, do nothing
-      return;
-    }
-
-    setSearchParams(searchParams.set(ACTIVE_VIEW_KEY, value));
-    setActiveView(value);
-  };
-
   return (
     <>
       <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <ToggleButtonGroup
-          value={activeView}
-          onChange={onChangeView}
-          exclusive
-          sx={{
-            display: 'flex',
-            gap: 1,
-            '& .MuiButton-root': buttonSx
-          }}>
-          {views.map((view) => (
-            <ToggleButton
-              key={view.label}
-              component={Button}
-              color="primary"
-              startIcon={<Icon path={view.icon} size={0.75} />}
-              value={view.value}>
-              {view.label}
-            </ToggleButton>
-          ))}
-        </ToggleButtonGroup>
-
-        <Button
-          color="primary"
-          sx={buttonSx}
-          onClick={() => {
-            setSearchParams(
-              searchParams.set(SHOW_SEARCH_KEY, showSearch ? SHOW_SEARCH_VALUE.false : SHOW_SEARCH_VALUE.true)
-            );
-            setShowSearch(!showSearch);
+        <CustomToggleButtonGroup
+          views={views}
+          activeView={activeView}
+          onViewChange={(view) => {
+            setSearchParams(searchParams.set(ACTIVE_VIEW_KEY, view));
+            setActiveView(view);
           }}
-          component={Button}
-          startIcon={<Icon path={mdiMagnify} size={1} />}>
-          Search
-        </Button>
+          orientation="horizontal"
+        />
+        <Stack gap={1} direction="row">
+          <HelpButtonDialog markdownType={MarkdownTypeNameEnum.PROJECTS_AND_SURVEYS} />
+          <Button
+            color="primary"
+            variant="outlined"
+            onClick={() => {
+              setSearchParams(
+                searchParams.set(SHOW_SEARCH_KEY, showSearch ? SHOW_SEARCH_VALUE.false : SHOW_SEARCH_VALUE.true)
+              );
+              setShowSearch(!showSearch);
+            }}
+            component={Button}
+            startIcon={<Icon path={mdiMagnify} size={1} />}>
+            Search
+          </Button>
+        </Stack>
       </Toolbar>
       <Divider />
       {activeView === ACTIVE_VIEW_VALUE.projects && <ProjectsListContainer showSearch={showSearch} />}

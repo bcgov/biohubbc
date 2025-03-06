@@ -8,11 +8,11 @@ import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { DataGrid, GridColDef, GridOverlay } from '@mui/x-data-grid';
+import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { IGetFundingSourceResponse } from 'interfaces/useFundingSourceApi.interface';
 import { debounce } from 'lodash';
 import { useCallback, useMemo, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { getFormattedAmount } from 'utils/Utils';
 
 const useStyles = () => {
   return {
@@ -48,7 +48,6 @@ interface IFundingSourceSurveyReferencesTableEntry {
   project_id: number;
   survey_id: number;
   survey_name: string;
-  amount: number;
 }
 
 const NoRowsOverlay = (props: { sx: Record<string, any> }) => (
@@ -83,14 +82,6 @@ const FundingSourceSurveyReferences = (props: IFundingSourceSurveyReferencesProp
           children={params.row.survey_name}
         />
       )
-    },
-    {
-      field: 'amount',
-      headerName: 'Amount',
-      flex: 1,
-      valueGetter: (params) => {
-        return getFormattedAmount(params.value, { maximumFractionDigits: 2 });
-      }
     }
   ];
 
@@ -149,22 +140,24 @@ const FundingSourceSurveyReferences = (props: IFundingSourceSurveyReferencesProp
             fullWidth={true}
           />
         </Box>
-        {fundingSourceSurveyReferences.length === 0 ? (
-          <Box>
-            <Paper
-              elevation={0}
-              variant="outlined"
-              sx={{
-                padding: '24px',
-                textAlign: 'center',
-                background: grey[100]
-              }}>
-              <Typography variant="body1" color="textSecondary">
-                No surveys found
-              </Typography>
-            </Paper>
-          </Box>
-        ) : (
+        <LoadingGuard
+          hasNoData={!fundingSourceSurveyReferences.length}
+          hasNoDataFallback={
+            <Box>
+              <Paper
+                elevation={0}
+                variant="outlined"
+                sx={{
+                  padding: '24px',
+                  textAlign: 'center',
+                  background: grey[100]
+                }}>
+                <Typography variant="body1" color="textSecondary">
+                  No surveys found
+                </Typography>
+              </Paper>
+            </Box>
+          }>
           <Paper elevation={0} variant="outlined">
             <Box>
               <DataGrid
@@ -188,7 +181,7 @@ const FundingSourceSurveyReferences = (props: IFundingSourceSurveyReferencesProp
               />
             </Box>
           </Paper>
-        )}
+        </LoadingGuard>
       </Box>
     </>
   );

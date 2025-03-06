@@ -54,6 +54,10 @@ describe('createTechniques', () => {
             {
               attractant_lookup_id: 111
             }
+          ],
+          vantage_methods: [
+            { vantage_method_id: 101, description: 'Mode 1' },
+            { vantage_method_id: 102, description: 'Mode 2' }
           ]
         }
       ]
@@ -113,6 +117,10 @@ describe('createTechniques', () => {
             {
               attractant_lookup_id: 111
             }
+          ],
+          vantage_methods: [
+            { vantage_method_id: 101, description: 'Mode 1' },
+            { vantage_method_id: 102, description: 'Mode 2' }
           ]
         }
       ]
@@ -152,6 +160,7 @@ describe('getTechniques', () => {
       description: 'description',
       distance_threshold: 200,
       method_lookup_id: 33,
+      method_response_metric_id: 22,
       attractants: [
         {
           attractant_lookup_id: 111
@@ -172,7 +181,19 @@ describe('getTechniques', () => {
             method_lookup_attribute_qualitative_option_id: '123-456-99'
           }
         ]
-      }
+      },
+      vantage_methods: [
+        {
+          method_technique_vantage_id: 1,
+          vantage_method_id: 101,
+          vantage_category_id: 2
+        },
+        {
+          method_technique_vantage_id: 2,
+          vantage_method_id: 102,
+          vantage_category_id: 1
+        }
+      ]
     };
 
     const getTechniquesForSurveyIdStub = sinon
@@ -213,6 +234,7 @@ describe('getTechniques', () => {
       description: 'description',
       distance_threshold: 200,
       method_lookup_id: 33,
+      method_response_metric_id: 22,
       attractants: [
         {
           attractant_lookup_id: 111
@@ -233,7 +255,19 @@ describe('getTechniques', () => {
             method_lookup_attribute_qualitative_option_id: '123-456-99'
           }
         ]
-      }
+      },
+      vantage_methods: [
+        {
+          method_technique_vantage_id: 1,
+          vantage_method_id: 101,
+          vantage_category_id: 2
+        },
+        {
+          method_technique_vantage_id: 2,
+          vantage_method_id: 102,
+          vantage_category_id: 1
+        }
+      ]
     };
 
     const getTechniquesForSurveyIdStub = sinon
@@ -253,7 +287,6 @@ describe('getTechniques', () => {
 
     expect(mockRes.jsonValue).to.eql({
       techniques: [techniqueRecord],
-      count: 1,
       pagination: {
         total: 1,
         per_page: 1,

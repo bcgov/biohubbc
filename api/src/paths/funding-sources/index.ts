@@ -75,12 +75,6 @@ GET.apiDoc = {
                   minimum: 0,
                   description: 'The number of surveys that reference this funding source.',
                   nullable: true
-                },
-                survey_reference_amount_total: {
-                  type: 'number',
-                  minimum: 0,
-                  description: 'The total amount from all references to this funding source by all surveys.',
-                  nullable: true
                 }
               }
             }
@@ -154,7 +148,6 @@ function removeNonAdminFieldsFromFundingSourcesResponse(
 ): (FundingSource & FundingSourceSupplementaryData)[] {
   return fundingSources.map((item) => {
     delete item.survey_reference_count;
-    delete item.survey_reference_amount_total;
     return item;
   });
 }
@@ -183,6 +176,7 @@ POST.apiDoc = {
   ],
   requestBody: {
     description: 'Funding source post request object.',
+    required: true,
     content: {
       'application/json': {
         schema: {

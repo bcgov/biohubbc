@@ -106,7 +106,16 @@ GET.apiDoc = {
                 items: {
                   type: 'object',
                   additionalProperties: false,
-                  required: ['project_id', 'name', 'start_date', 'end_date', 'focal_species', 'regions', 'types'],
+                  required: [
+                    'project_id',
+                    'name',
+                    'start_date',
+                    'end_date',
+                    'focal_species',
+                    'regions',
+                    'types',
+                    'members'
+                  ],
                   properties: {
                     project_id: {
                       type: 'integer',
@@ -146,6 +155,19 @@ GET.apiDoc = {
                       description: 'The types of the surveys in the project',
                       items: {
                         type: 'integer'
+                      }
+                    },
+                    members: {
+                      type: 'array',
+                      description: 'Members of the Project',
+                      items: {
+                        type: 'object',
+                        additionalProperties: false,
+                        required: ['system_user_id', 'display_name'],
+                        properties: {
+                          system_user_id: { type: 'number' },
+                          display_name: { type: 'string' }
+                        }
                       }
                     }
                   }
@@ -247,6 +269,6 @@ function parseQueryParams(req: Request<unknown, unknown, unknown, IProjectAdvanc
     itis_tsns: req.query.itis_tsns ?? undefined,
     itis_tsn: (req.query.itis_tsn && Number(req.query.itis_tsn)) ?? undefined,
     project_name: req.query.project_name ?? undefined,
-    system_user_id: req.query.system_user_id ?? undefined
+    system_user_id: (req.query.system_user_id && Number(req.query.system_user_id)) ?? undefined
   };
 }

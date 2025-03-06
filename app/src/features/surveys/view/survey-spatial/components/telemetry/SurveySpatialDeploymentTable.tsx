@@ -1,0 +1,240 @@
+import { mdiArrowTopRight } from '@mdi/js';
+import Typography from '@mui/material/Typography';
+import { GridColDef, GridSortModel } from '@mui/x-data-grid';
+import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
+import { LoadingGuard } from 'components/loading/LoadingGuard';
+import { SkeletonTable } from 'components/loading/SkeletonLoaders';
+import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
+import { DATE_FORMAT } from 'constants/dateTimeFormats';
+import dayjs from 'dayjs';
+import { ScientificNameTypography } from 'features/surveys/animals/components/ScientificNameTypography';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useCodesContext, useSurveyContext } from 'hooks/useContext';
+import useDataLoader from 'hooks/useDataLoader';
+import { IAnimalDeploymentWithCritter } from 'interfaces/useSurveyApi.interface';
+import { useEffect, useMemo, useState } from 'react';
+
+// Set height so the skeleton loader will match table rows
+const rowHeight = 52;
+
+interface ITelemetryData {
+  id: number;
+  critter_id: number | null;
+  device_id: number;
+  frequency: number | null;
+  frequency_unit: string | null;
+  start_date: string;
+  end_date: string;
+  itis_scientific_name: string;
+}
+
+/**
+ * Component to display deployment data in a table format.
+ *
+ * @returns {*} The rendered component.
+ */
+export const SurveySpatialDeploymentTable = () => {
+  const codesContext = useCodesContext();
+  const surveyContext = useSurveyContext();
+
+  const biohubApi = useBiohubApi();
+
+  const [page, setPage] = useState<number>(0);
+  const [pageSize, setPageSize] = useState<number>(10);
+  const [sortModel, setSortModel] = useState<GridSortModel>([]);
+
+  const deploymentsDataLoader = useDataLoader((page: number, limit: number, sort?: string, order?: 'asc' | 'desc') =>
+    biohubApi.telemetryDeployment.getDeploymentsInSurvey(surveyContext.projectId, surveyContext.surveyId, {
+      page: page + 1, // This fixes an off-by-one error between the front end and the back end
+      limit,
+      sort,
+      order
+    })
+  );
+
+  // Page information has changed, fetch more data
+  useEffect(() => {
+    if (sortModel.length > 0) {
+      if (sortModel[0].sort) {
+        deploymentsDataLoader.refresh(page, pageSize, sortModel[0].field, sortModel[0].sort);
+      }
+    } else {
+      deploymentsDataLoader.refresh(page, pageSize);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, pageSize, sortModel]);
+
+  const critterDataLoader = useDataLoader(biohubApi.survey.getSurveyCritters);
+
+  useEffect(() => {
+    critterDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
+  }, [deploymentsDataLoader, critterDataLoader, surveyContext.projectId, surveyContext.surveyId]);
+
+  /**
+   * Merges critters with associated deployments
+   *
+   * @returns {ICritterDeployment[]} Critter deployments
+   */
+  const critterDeployments: IAnimalDeploymentWithCritter[] = useMemo(() => {
+    const critterDeployments: IAnimalDeploymentWithCritter[] = [];
+
+    const critters = critterDataLoader.data ?? [];
+    const deployments = deploymentsDataLoader.data?.deployments ?? [];
+
+    if (!critters.length || !deployments.length) {
+      return [];
+    }
+
+    const critterMap = new Map(critters.map((critter) => [critter.critterbase_critter_id, critter]));
+
+    deployments.forEach((deployment) => {
+      const critter = critterMap.get(String(deployment.critterbase_critter_id));
+      if (critter) {
+        critterDeployments.push({ critter, deployment });
+      }
+    });
+
+    return critterDeployments;
+  }, [critterDataLoader.data, deploymentsDataLoader.data]);
+
+  /**
+   * Memoized calculation of table rows based on critter deployments data.
+   * Formats dates and combines necessary fields for display.
+   */
+  const rows: ITelemetryData[] = useMemo(() => {
+    return critterDeployments.map((item) => {
+      return {
+        // Critters in this table may use multiple devices across multiple timespans
+        id: item.deployment.deployment_id,
+        critter_id: item.critter.critter_id,
+        animal_id: item.critter.animal_id,
+        device_id: item.deployment.device_id,
+        start_date: item.deployment.attachment_start_date
+          ? dayjs(item.deployment.attachment_start_date).format(DATE_FORMAT.MediumDateFormat)
+          : '',
+        end_date: item.deployment.attachment_end_date
+          ? dayjs(item.deployment.attachment_end_date).format(DATE_FORMAT.MediumDateFormat)
+          : '',
+        frequency: item.deployment.frequency ?? null,
+        frequency_unit:
+          codesContext.codesDataLoader.data?.frequency_units?.find(
+            (frequencyUnit) => frequencyUnit.id === item.deployment.frequency_unit_id
+          )?.name ?? null,
+        itis_scientific_name: item.critter.itis_scientific_name
+      };
+    });
+  }, [codesContext.codesDataLoader.data?.frequency_units, critterDeployments]);
+
+  const rowCount = deploymentsDataLoader.data?.pagination.total ?? 0;
+
+  // Define table columns
+  const columns: GridColDef<ITelemetryData>[] = [
+    {
+      field: 'animal_id',
+      headerName: 'Nickname',
+      flex: 1
+    },
+    {
+      field: 'itis_scientific_name',
+      headerName: 'Species',
+      flex: 1,
+      renderCell: (param) => {
+        return (
+          <ScientificNameTypography
+            name={param.row.itis_scientific_name}
+            textOverflow="ellipsis"
+            noWrap
+            overflow="hidden"
+          />
+        );
+      }
+    },
+    {
+      field: 'device_id',
+      headerName: 'Device ID',
+      flex: 1
+    },
+    {
+      field: 'frequency',
+      headerName: 'Frequency',
+      flex: 1,
+      renderCell: (param) => {
+        return (
+          <Typography>
+            {param.row.frequency}&nbsp;
+            <Typography component="span" color="textSecondary">
+              {param.row.frequency_unit}
+            </Typography>
+          </Typography>
+        );
+      }
+    },
+    {
+      field: 'start_date',
+      headerName: 'Start Date',
+      flex: 1
+    },
+    {
+      field: 'end_date',
+      headerName: 'End Date',
+      flex: 1
+    }
+  ];
+
+  return (
+    <LoadingGuard
+      isLoading={
+        deploymentsDataLoader.isLoading ||
+        !deploymentsDataLoader.isReady ||
+        critterDataLoader.isLoading ||
+        !critterDataLoader.isReady
+      }
+      isLoadingFallback={<SkeletonTable />}
+      isLoadingFallbackDelay={100}
+      hasNoData={!rows.length}
+      hasNoDataFallback={
+        <NoDataOverlay
+          height="100%"
+          title="Add Telemetry"
+          subtitle="Add deployments by assigning telemetry devices to animals"
+          icon={mdiArrowTopRight}
+        />
+      }
+      hasNoDataFallbackDelay={100}>
+      <StyledDataGrid
+        noRowsMessage={'No telemetry records found'}
+        // columns
+        columns={columns}
+        columnHeaderHeight={rowHeight}
+        // rows
+        rows={rows}
+        rowCount={rowCount}
+        rowHeight={rowHeight}
+        rowSelection={false}
+        getRowId={(row) => row.id}
+        autoHeight={false}
+        // pagination
+        paginationMode="server"
+        paginationModel={{ pageSize, page }}
+        pageSizeOptions={[10, 25, 50]}
+        onPaginationModelChange={(model) => {
+          setPage(model.page);
+          setPageSize(model.pageSize);
+        }}
+        // sorting
+        sortingMode="server"
+        sortingOrder={['asc', 'desc']}
+        sortModel={sortModel}
+        onSortModelChange={(model) => setSortModel(model)}
+        // misc
+        checkboxSelection={false}
+        disableRowSelectionOnClick
+        disableColumnSelector
+        disableColumnFilter
+        disableColumnMenu
+        disableVirtualization
+        data-testid="survey-spatial-telemetry-data-table"
+      />
+    </LoadingGuard>
+  );
+};

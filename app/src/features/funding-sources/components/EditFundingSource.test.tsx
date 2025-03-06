@@ -44,8 +44,7 @@ describe('EditFundingSource', () => {
         start_date: null,
         end_date: null,
         revision_count: 1,
-        survey_reference_count: 0,
-        survey_reference_amount_total: 0
+        survey_reference_count: 0
       },
       funding_source_survey_references: []
     });
@@ -79,8 +78,7 @@ describe('EditFundingSource', () => {
         start_date: null,
         end_date: null,
         revision_count: 1,
-        survey_reference_count: 0,
-        survey_reference_amount_total: 0
+        survey_reference_count: 0
       },
       funding_source_survey_references: []
     });

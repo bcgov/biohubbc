@@ -1,5 +1,6 @@
 import { AxiosInstance } from 'axios';
 import { IBulkCreate, IBulkUpdate, ICreateCritter } from 'features/surveys/view/survey-animals/animal';
+import { IGetCaptureMortalityGeometryResponse } from 'interfaces/useAnimalApi.interface';
 import { ICritterDetailedResponse, ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 
 const useCritterApi = (axios: AxiosInstance) => {
@@ -52,6 +53,18 @@ const useCritterApi = (axios: AxiosInstance) => {
   };
 
   /**
+   * Get a critter with simple response.
+   *
+   * @async
+   * @param {string} critter_id - Critter identifier.
+   * @returns {Promise<ICritterSimpleResponse>}
+   */
+  const getCritterSimple = async (critter_id: string): Promise<ICritterSimpleResponse> => {
+    const { data } = await axios.get(`/api/critterbase/critters/${critter_id}`);
+    return data;
+  };
+
+  /**
    * Get a critter with detailed response.
    * Includes all markings, captures, mortalities etc.
    *
@@ -69,16 +82,34 @@ const useCritterApi = (axios: AxiosInstance) => {
    *
    * @async
    * @param {string[]} critter_ids - Critter identifiers.
-   * @returns {Promise<ICritterSimpleResponse>}
+   * @returns {Promise<ICritterDetailedResponse>}
    */
-  const getMultipleCrittersByIds = async (critter_ids: string[]): Promise<ICritterSimpleResponse[]> => {
-    const { data } = await axios.post(`/api/critterbase/critters`, { critter_ids });
+  // TODO: Fix critterbase bug. This endpoint returns an empty array when ?format=detailed.
+  const getMultipleCrittersByIds = async (critter_ids: string[]): Promise<ICritterDetailedResponse[]> => {
+    const { data } = await axios.post(`/api/critterbase/critters?format=detailed`, { critter_ids });
+    return data;
+  };
+
+  /**
+   * Get capture and mortality geometry for multiple critter Ids.
+   *
+   * @async
+   * @param {string[]} critter_ids - Critter identifiers.
+   * @returns {Promise<IGetCaptureMortalityGeometryResponse>}
+   */
+  // TODO: Fix critterbase bug. This endpoint returns an empty array when ?format=detailed.
+  const getMultipleCrittersGeometryByIds = async (
+    critter_ids: string[]
+  ): Promise<IGetCaptureMortalityGeometryResponse> => {
+    const { data } = await axios.post(`/api/critterbase/critters/spatial`, { critter_ids });
     return data;
   };
 
   return {
+    getCritterSimple,
     getDetailedCritter,
     getMultipleCrittersByIds,
+    getMultipleCrittersGeometryByIds,
     createCritter,
     updateCritter,
     bulkCreate,

@@ -19,16 +19,15 @@ describe('useTelemetryApi', () => {
       telemetry: [
         {
           telemetry_id: '123',
+          deployment_id: 3,
+          critter_id: 2,
+          vendor: 'lotek',
+          serial: '12345',
           acquisition_date: '2021-01-01',
           latitude: 49.123,
           longitude: -126.123,
-          telemetry_type: 'vendor',
-          device_id: 12345,
-          bctw_deployment_id: '123-123-123',
-          critter_id: 2,
-          deployment_id: 3,
-          critterbase_critter_id: '345-345-345-',
-          animal_id: '567234-234'
+          elevation: 100,
+          temperature: null
         }
       ],
       pagination: {
@@ -44,5 +43,22 @@ describe('useTelemetryApi', () => {
     const result = await useTelemetryApi(axios).findTelemetry({ limit: 25, page: 2 }, { itis_tsn: 12345 });
 
     expect(result).toEqual(mockResponse);
+  });
+
+  describe('uploadTelemetryDeviceCredentialFile', () => {
+    it('should upload a keyx file', async () => {
+      const projectId = 1;
+      const surveyId = 2;
+
+      const file = new File([''], 'file.keyx', { type: 'application/keyx' });
+      const response = {
+        attachmentId: 'attachment',
+        revision_count: 1
+      };
+      mock.onPost(`/api/project/${projectId}/survey/${surveyId}/attachments/telemetry`).reply(201, response);
+
+      const result = await useTelemetryApi(axios).uploadTelemetryDeviceCredentialFile(projectId, surveyId, file);
+      expect(result).toEqual(response);
+    });
   });
 });

@@ -272,7 +272,7 @@ describe('GetReportAttachmentsData', () => {
     });
   });
 
-  describe('some attachmentDetails asdasdsadsasd values provided', () => {
+  describe('some attachmentDetails values provided', () => {
     it('sets file_name', function () {
       const attachmentDetails = [{ file_name: 1 }, { file_name: 2 }];
 
@@ -284,7 +284,8 @@ describe('GetReportAttachmentsData', () => {
           year: undefined,
           description: undefined,
           key: undefined,
-          file_size: undefined
+          file_size: undefined,
+          authors: undefined
         },
         {
           file_name: 2,
@@ -292,7 +293,8 @@ describe('GetReportAttachmentsData', () => {
           year: undefined,
           description: undefined,
           key: undefined,
-          file_size: undefined
+          file_size: undefined,
+          authors: undefined
         }
       ]);
     });

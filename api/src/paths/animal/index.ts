@@ -116,15 +116,32 @@ GET.apiDoc = {
                     },
                     animal_id: {
                       type: 'string',
-                      description: 'The Critterbase critter animal ID.'
+                      description: 'The Critterbase critter animal ID.',
+                      nullable: true
                     },
                     sex: {
-                      type: 'string',
-                      description: 'The Critterbase critter sex.'
+                      type: 'object',
+                      description: 'The Critterbase critter sex object.',
+                      required: ['qualitative_option_id', 'label'],
+                      additionalProperties: false,
+                      properties: {
+                        qualitative_option_id: {
+                          type: 'string',
+                          format: 'uuid',
+                          description: 'The critterbase sex qualitative option id.'
+                        },
+                        label: {
+                          type: 'string',
+                          description: 'The sex option label.',
+                          example: 'Female'
+                        }
+                      },
+                      nullable: true
                     },
                     itis_tsn: {
                       type: 'number',
-                      description: 'The Critterbase critter ITIS TSN.'
+                      description: 'The Critterbase critter ITIS TSN.',
+                      minimum: 1
                     },
                     itis_scientific_name: {
                       type: 'string',
@@ -132,7 +149,8 @@ GET.apiDoc = {
                     },
                     critter_comment: {
                       type: 'string',
-                      description: 'The Critterbase critter comment.'
+                      description: 'The Critterbase critter comment.',
+                      nullable: true
                     },
                     critter_id: {
                       type: 'integer',
@@ -244,6 +262,6 @@ function parseQueryParams(req: Request<unknown, unknown, unknown, IAnimalAdvance
     keyword: req.query.keyword ?? undefined,
     itis_tsns: req.query.itis_tsns ?? undefined,
     itis_tsn: (req.query.itis_tsn && Number(req.query.itis_tsn)) ?? undefined,
-    system_user_id: req.query.system_user_id ?? undefined
+    system_user_id: (req.query.system_user_id && Number(req.query.system_user_id)) ?? undefined
   };
 }

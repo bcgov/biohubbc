@@ -1,4 +1,5 @@
 import { OpenAPIV3 } from 'openapi-types';
+import { GeoJSONFeature } from './geoJson';
 import { updateCreateUserPropertiesSchema } from './user';
 
 export const surveyDetailsSchema: OpenAPIV3.SchemaObject = {
@@ -55,11 +56,35 @@ export const surveyDetailsSchema: OpenAPIV3.SchemaObject = {
   }
 };
 
+/**
+ * Schema for creating, updating and retrieving ecological units for focal species in a SIMS survey.
+ * Prefixed with critterbase_* to match database field names in SIMS.
+ *
+ */
+export const SurveyEcologicalUnitsSchema: OpenAPIV3.SchemaObject = {
+  type: 'array',
+  items: {
+    type: 'object',
+    additionalProperties: false,
+    required: ['critterbase_collection_category_id', 'critterbase_collection_unit_id'],
+    properties: {
+      critterbase_collection_category_id: {
+        type: 'string',
+        format: 'uuid'
+      },
+      critterbase_collection_unit_id: {
+        type: 'string',
+        format: 'uuid'
+      }
+    }
+  }
+};
+
 export const surveyFundingSourceSchema: OpenAPIV3.SchemaObject = {
   title: 'survey funding source response object',
   type: 'object',
   additionalProperties: false,
-  required: ['survey_funding_source_id', 'survey_id', 'funding_source_id', 'amount'],
+  required: ['survey_funding_source_id', 'survey_id', 'funding_source_id'],
   properties: {
     survey_funding_source_id: {
       description: 'Survey funding source id',
@@ -75,11 +100,6 @@ export const surveyFundingSourceSchema: OpenAPIV3.SchemaObject = {
       description: 'Funding source id',
       type: 'integer',
       minimum: 1
-    },
-    amount: {
-      description: 'Funding source amount',
-      type: 'number',
-      minimum: 0
     },
     revision_count: {
       description: 'The integer of times the record has been revised.',
@@ -112,7 +132,7 @@ export const focalSpeciesSchema: OpenAPIV3.SchemaObject = {
   title: 'focal species response object',
   type: 'object',
   additionalProperties: false,
-  required: ['tsn', 'commonNames', 'scientificName'],
+  required: ['tsn', 'commonNames', 'scientificName', 'ecological_units'],
   properties: {
     tsn: {
       description: 'Taxonomy tsn',
@@ -137,40 +157,8 @@ export const focalSpeciesSchema: OpenAPIV3.SchemaObject = {
     kingdom: {
       description: 'Taxonomy kingdom name',
       type: 'string'
-    }
-  }
-};
-
-export const ancillarySpeciesSchema: OpenAPIV3.SchemaObject = {
-  title: 'ancillary species response object',
-  type: 'object',
-  additionalProperties: false,
-  required: ['tsn', 'commonNames', 'scientificName'],
-  properties: {
-    tsn: {
-      description: 'Taxonomy tsn',
-      type: 'number'
     },
-    commonNames: {
-      description: 'Taxonomy common names',
-      type: 'array',
-      items: {
-        type: 'string'
-      },
-      nullable: true
-    },
-    scientificName: {
-      description: 'Taxonomy scientific name',
-      type: 'string'
-    },
-    rank: {
-      description: 'Taxonomy rank name',
-      type: 'string'
-    },
-    kingdom: {
-      description: 'Taxonomy kingdom name',
-      type: 'string'
-    }
+    ecological_units: SurveyEcologicalUnitsSchema
   }
 };
 
@@ -178,13 +166,8 @@ export const surveySpeciesSchema: OpenAPIV3.SchemaObject = {
   description: 'Survey Species',
   type: 'object',
   additionalProperties: false,
-  required: ['focal_species', 'ancillary_species'],
+  required: ['focal_species'],
   properties: {
-    ancillary_species: {
-      nullable: true,
-      type: 'array',
-      items: ancillarySpeciesSchema
-    },
     focal_species: {
       type: 'array',
       items: focalSpeciesSchema
@@ -228,7 +211,7 @@ export const surveyFundingSourceDataSchema: OpenAPIV3.SchemaObject = {
   title: 'survey funding source response object',
   type: 'object',
   additionalProperties: false,
-  required: ['funding_source_id', 'amount'],
+  required: ['funding_source_id'],
   properties: {
     survey_funding_source_id: {
       description: 'Survey funding source id',
@@ -245,11 +228,6 @@ export const surveyFundingSourceDataSchema: OpenAPIV3.SchemaObject = {
       description: 'Funding source id',
       type: 'integer',
       minimum: 1
-    },
-    amount: {
-      description: 'Funding source amount',
-      type: 'number',
-      minimum: 0
     },
     revision_count: {
       description: 'The integer of times the record has been revised.',
@@ -282,7 +260,7 @@ export const surveyPurposeAndMethodologySchema: OpenAPIV3.SchemaObject = {
   title: 'survey purpose and methodology response object',
   type: 'object',
   additionalProperties: false,
-  required: ['intended_outcome_ids', 'additional_details', 'vantage_code_ids'],
+  required: ['intended_outcome_ids', 'additional_details'],
   properties: {
     intended_outcome_ids: {
       description: 'Intended outcome ids',
@@ -301,14 +279,6 @@ export const surveyPurposeAndMethodologySchema: OpenAPIV3.SchemaObject = {
       description: 'The integer of times the record has been revised.',
       type: 'integer',
       minimum: 0
-    },
-    vantage_code_ids: {
-      description: 'Vantage code ids',
-      type: 'array',
-      items: {
-        type: 'integer',
-        minimum: 1
-      }
     }
   }
 };
@@ -504,7 +474,7 @@ export const surveyBlockSchema: OpenAPIV3.SchemaObject = {
   title: 'Survey Block',
   type: 'object',
   additionalProperties: false,
-  required: ['name', 'description'],
+  required: ['name', 'description', 'geojson'],
   properties: {
     survey_block_id: {
       description: 'Survey block id',
@@ -515,16 +485,19 @@ export const surveyBlockSchema: OpenAPIV3.SchemaObject = {
     survey_id: {
       description: 'Survey id',
       type: 'integer',
-      nullable: true
+      minimum: 1
     },
     name: {
       description: 'Name',
-      type: 'string',
-      nullable: true
+      type: 'string'
     },
     description: {
       description: 'Description',
       type: 'string',
+      nullable: true
+    },
+    geojson: {
+      ...(GeoJSONFeature as object),
       nullable: true
     },
     sample_block_count: {

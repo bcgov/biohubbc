@@ -2,7 +2,6 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import CustomTextField from 'components/fields/CustomTextField';
 import StartEndDateFields from 'components/fields/StartEndDateFields';
-import { useFormikContext } from 'formik';
 import React from 'react';
 
 export interface IFundingSourceData {
@@ -15,8 +14,6 @@ export interface IFundingSourceData {
 }
 
 const FundingSourceForm: React.FC = () => {
-  const formikProps = useFormikContext<IFundingSourceData>();
-
   return (
     <form>
       <Box>
@@ -41,13 +38,7 @@ const FundingSourceForm: React.FC = () => {
         <Box component={'fieldset'}>
           <Typography component="legend">Effective Dates</Typography>
           <Box mt={0.5}>
-            <StartEndDateFields
-              formikProps={formikProps}
-              startName="start_date"
-              endName="end_date"
-              startRequired={false}
-              endRequired={false}
-            />
+            <StartEndDateFields startName="start_date" endName="end_date" startRequired={false} endRequired={false} />
           </Box>
         </Box>
       </Box>

@@ -1,6 +1,9 @@
+import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
+import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
 import { useFormikContext } from 'formik';
 import get from 'lodash-es/get';
+import { useMemo } from 'react';
 export interface ICustomTextField {
   /**
    * Label for the text field
@@ -9,6 +12,13 @@ export interface ICustomTextField {
    * @memberof ICustomTextField
    */
   label: string;
+  /**
+   * Placeholder for the text field
+   *
+   * @type {string}
+   * @memberof ICustomTextField
+   */
+  placeholder?: string;
   /**
    * Name of the text field, typically this is used to identify the field in the formik context.
    *
@@ -23,6 +33,13 @@ export interface ICustomTextField {
    * @memberof ICustomTextField
    */
   maxLength?: number;
+  /**
+   * Optional help text to be displayed in a tooltip
+   *
+   * @type {string}
+   * @memberof ICustomTextField
+   */
+  helpText?: string;
   /*
    * TODO: Needed fix: Add correct hardcoded type
    * Note: TextFieldProps causes build compile issue
@@ -34,14 +51,28 @@ export interface ICustomTextField {
 const CustomTextField = (props: React.PropsWithChildren<ICustomTextField>) => {
   const { touched, errors, values, handleChange, handleBlur } = useFormikContext<any>();
 
-  const { name, label, other } = props;
+  const { name, label, other, placeholder, helpText } = props;
+
+  // Used to avoid the tooltip adornment overlapping with MUI's default number control adornment
+  const isNumber = useMemo(() => other?.type === 'number', [other]);
 
   return (
     <TextField
       name={name}
       label={label}
       id={name}
-      inputProps={{ 'data-testid': name, maxLength: props.maxLength || undefined }} // targets the internal input rather than the react component
+      placeholder={placeholder}
+      inputProps={{
+        'data-testid': name,
+        maxLength: props.maxLength || undefined
+      }}
+      InputProps={{
+        endAdornment: helpText && (
+          <InputAdornment position="start">
+            <HelpButtonTooltip content={helpText} />
+          </InputAdornment>
+        )
+      }}
       onChange={handleChange}
       onBlur={handleBlur}
       variant="outlined"
@@ -49,6 +80,17 @@ const CustomTextField = (props: React.PropsWithChildren<ICustomTextField>) => {
       fullWidth={true}
       error={get(touched, name) && Boolean(get(errors, name))}
       helperText={get(touched, name) && get(errors, name)}
+      sx={{
+        '& .MuiInputAdornment-root': {
+          mr: isNumber ? 3 : 0,
+          height: '100%',
+          alignSelf: 'flex-start',
+          position: 'absolute',
+          top: 12,
+          right: 12
+        },
+        ...other?.sx
+      }}
       {...other}
     />
   );

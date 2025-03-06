@@ -56,14 +56,46 @@ export class ObservationSubCountEnvironmentService extends DBService {
   }
 
   /**
+   * Get environment qualitative type definitions for the given environment record ids (uuid).
+   *
+   * @param {string[]} environmentQualitativeIds
+   * @return {*}  {Promise<QualitativeEnvironmentTypeDefinition[]>}
+   * @memberof ObservationSubCountEnvironmentService
+   */
+  async getQualitativeEnvironmentTypeDefinitions(
+    environmentQualitativeIds: string[]
+  ): Promise<QualitativeEnvironmentTypeDefinition[]> {
+    return this.observationSubCountEnvironmentRepository.getQualitativeEnvironmentTypeDefinitions(
+      environmentQualitativeIds
+    );
+  }
+
+  /**
+   * Find environment quantitative type definitions for the given environment record ids (uuid)
+   *
+   * @param {string[]} searchTerms
+   * @return {*}  {Promise<QuantitativeEnvironmentTypeDefinition[]>}
+   * @memberof ObservationSubCountEnvironmentService
+   */
+  async getQuantitativeEnvironmentTypeDefinitions(
+    environmentQuantitativeIds: string[]
+  ): Promise<QuantitativeEnvironmentTypeDefinition[]> {
+    return this.observationSubCountEnvironmentRepository.getQuantitativeEnvironmentTypeDefinitions(
+      environmentQuantitativeIds
+    );
+  }
+
+  /**
    * Get all distinct environment qualitative type definitions for all qualitative environments for a given survey.
    *
    * @param {number} surveyId
    * @return {*}  {Promise<QualitativeEnvironmentTypeDefinition[]>}
    * @memberof ObservationSubCountEnvironmentService
    */
-  async getQualitativeEnvironmentTypeDefinitions(surveyId: number): Promise<QualitativeEnvironmentTypeDefinition[]> {
-    return this.observationSubCountEnvironmentRepository.getQualitativeEnvironmentTypeDefinitions(surveyId);
+  async getQualitativeEnvironmentTypeDefinitionsForSurvey(
+    surveyId: number
+  ): Promise<QualitativeEnvironmentTypeDefinition[]> {
+    return this.observationSubCountEnvironmentRepository.getQualitativeEnvironmentTypeDefinitionsForSurvey(surveyId);
   }
 
   /**
@@ -73,8 +105,10 @@ export class ObservationSubCountEnvironmentService extends DBService {
    * @return {*}  {Promise<QuantitativeEnvironmentTypeDefinition[]>}
    * @memberof ObservationSubCountEnvironmentService
    */
-  async getQuantitativeEnvironmentTypeDefinitions(surveyId: number): Promise<QuantitativeEnvironmentTypeDefinition[]> {
-    return this.observationSubCountEnvironmentRepository.getQuantitativeEnvironmentTypeDefinitions(surveyId);
+  async getQuantitativeEnvironmentTypeDefinitionsForSurvey(
+    surveyId: number
+  ): Promise<QuantitativeEnvironmentTypeDefinition[]> {
+    return this.observationSubCountEnvironmentRepository.getQuantitativeEnvironmentTypeDefinitionsForSurvey(surveyId);
   }
 
   /**

@@ -4,6 +4,23 @@ import { useFormikContext } from 'formik';
 import { useEffect, useState } from 'react';
 import { logIfDevelopment } from 'utils/developer-utils';
 
+/**
+ * Plug-and-play Formik error snackbar component.
+ *
+ * Adds a snackbar that displays when there are form validation errors.
+ *
+ * Additionally, when in NODE_ENV=development, logs the formik values and errors to the console.
+ *
+ * @example
+ * ```tsx
+ * <Formik>
+ *   <FormikErrorSnackbar />
+ *   <Form />
+ * </Formik>
+ * ```
+ *
+ * @return {*}
+ */
 const FormikErrorSnackbar = () => {
   const formikProps = useFormikContext<any>();
   const { values, errors, submitCount, isSubmitting } = formikProps;

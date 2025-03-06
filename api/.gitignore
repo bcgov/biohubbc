@@ -12,6 +12,9 @@ dist
 # Testing
 coverage
 
+# persistent storage
+data
+
 # SonarQube
 .sonarqube
 

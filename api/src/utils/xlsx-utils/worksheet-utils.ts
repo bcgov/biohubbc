@@ -1,43 +1,40 @@
-import { default as dayjs } from 'dayjs';
-import xlsx, { CellObject } from 'xlsx';
-import { getLogger } from '../logger';
+import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+import xlsx from 'xlsx';
 import { MediaFile } from '../media/media-file';
-import { DEFAULT_XLSX_SHEET_NAME } from '../media/xlsx/xlsx-file';
-import { safeToLowerCase } from '../string-utils';
 import { replaceCellDates, trimCellWhitespace } from './cell-utils';
 
-const defaultLog = getLogger('src/utils/xlsx-utils/worksheet-utils');
+dayjs.extend(customParseFormat);
 
-export interface IXLSXCSVValidator {
-  /**
-   * Uppercase column headers
-   *
-   * @see column-cell-utils.ts
-   *
-   */
-  columnNames: Uppercase<string>[];
-  /**
-   * Supported column cell types
-   *
-   */
-  columnTypes: Array<'string' | 'number' | 'date'>;
-  /**
-   * Allowed aliases / mappings for column headers.
-   *
-   */
-  columnAliases?: Record<Uppercase<string>, Uppercase<string>[]>;
-}
+export const DEFAULT_XLSX_SHEET_NAME = 'Sheet1';
+export const CUSTOM_XLSX_DATE_FORMAT = 'YYYY-MM-DD';
+
+export const WorksheetRowIndexSymbol = Symbol('WorksheetRowIndex');
 
 /**
- * Returns true if the given cell is a date type cell.
+ * Construct the XLSX workbook.
  *
  * @export
  * @param {MediaFile} file
- * @param {xlsx.ParsingOptions} [options]
  * @return {*}  {xlsx.WorkBook}
  */
-export const constructXLSXWorkbook = (file: MediaFile, options?: xlsx.ParsingOptions): xlsx.WorkBook => {
-  return xlsx.read(file.buffer, { cellDates: true, cellNF: true, cellHTML: false, ...options });
+export const constructXLSXWorkbook = (file: MediaFile): xlsx.WorkBook => {
+  return xlsx.read(
+    file.buffer,
+    // WARNING: Changing these options will affect the XLSX parsing and may cause unexpected results
+    {
+      // Custom date format
+      dateNF: CUSTOM_XLSX_DATE_FORMAT,
+      // Return date cells as epoch numbers (epoch start: `1900-01-01`)
+      cellDates: false,
+      // Include the number format (if any) of the value (.z field)
+      cellNF: true,
+      // Include the raw string version of the value (.w field)
+      cellText: true,
+      // Don't return raw, as this will return every cell as a string, even if it's a number or date
+      raw: false
+    }
+  );
 };
 
 /**
@@ -67,57 +64,66 @@ export const getHeadersUpperCase = (worksheet: xlsx.WorkSheet): string[] => {
     // Parse the headers array from the array of arrays produced by calling `xlsx.utils.sheet_to_json`
     headers = aoaHeaders[0]
       .map(String)
-      .filter(Boolean)
-      .map((header) => header.trim().toUpperCase());
+      .map((header) => header.trim().toUpperCase())
+      .filter(Boolean);
   }
 
   return headers;
 };
 
 /**
- * Get the lowercase headers (column names) for the given worksheet.
- *
- * @export
- * @param {xlsx.WorkSheet} worksheet
- * @return {*}  {string[]}
- */
-export const getHeadersLowerCase = (worksheet: xlsx.WorkSheet): string[] => {
-  return getHeadersUpperCase(worksheet).map(safeToLowerCase);
-};
-
-/**
- * Get the index of the given header name.
- *
- * @export
- * @param {xlsx.WorkSheet} worksheet
- * @param {string} headerName
- * @return {*}  {number}
- */
-export const getHeaderIndex = (worksheet: xlsx.WorkSheet, headerName: string): number => {
-  return getHeadersUpperCase(worksheet).indexOf(headerName);
-};
-
-/**
  * Return an array of row value arrays.
  *
+ * Note: The column headers will be transformed to UPPERCASE.
+ * Note: Rows with no non-empty cells will be excluded.
+ * Note: A `RowIndex` symbol will be added to each row object with the original row index.
+ *
+ * @example
+ * [
+ *   {
+ *     "HEADER1": "value1",
+ *     "HEADER2": "value2",
+ *     "HEADER3": "value3"
+ *     [RowIndex]: 1
+ *   },
+ *   // Empty row 2 was excluded
+ *   {
+ *     "HEADER1": "value4",
+ *     "HEADER2": "value5",
+ *     "HEADER3": "value6"
+ *     [RowIndex]: 3
+ *   }
+ * ]
+ *
  * @export
  * @param {xlsx.WorkSheet} worksheet
- * @return {*}  {string[][]}
+ * @return {*}  {Record<symbol | string, any>[]}
  */
-export const getWorksheetRows = (worksheet: xlsx.WorkSheet): string[][] => {
+export const getWorksheetRowObjects = (worksheet: xlsx.WorkSheet): Record<symbol | string, any>[] => {
   const originalRange = getWorksheetRange(worksheet);
 
   if (!originalRange) {
     return [];
   }
 
-  const rowsToReturn: string[][] = [];
+  const headers = getHeadersUpperCase(worksheet);
+
+  const rowObjectsArray: Record<symbol | string, any>[] = [];
 
   for (let i = 1; i <= originalRange.e.r; i++) {
-    const row = new Array(getHeadersUpperCase(worksheet).length);
+    const rowObject: Record<symbol | string, any> = {};
+
     let rowHasValues = false;
 
     for (let j = 0; j <= originalRange.e.c; j++) {
+      // Skip empty headers
+      if (!headers[j]) {
+        continue;
+      }
+
+      // Inject the header into the row object
+      rowObject[headers[j]] = undefined;
+
       const cellAddress = { c: j, r: i };
       const cellRef = xlsx.utils.encode_cell(cellAddress);
       const cell = worksheet[cellRef];
@@ -126,117 +132,24 @@ export const getWorksheetRows = (worksheet: xlsx.WorkSheet): string[][] => {
         continue;
       }
 
-      row[j] = trimCellWhitespace(replaceCellDates(cell)).v;
+      // Set the cell value for the header, if the cell exists
+      rowObject[headers[j]] = trimCellWhitespace(replaceCellDates(cell)).v;
 
+      // If at least one cell has a value, then the row is not empty
       rowHasValues = true;
     }
 
-    if (row.length && rowHasValues) {
-      rowsToReturn.push(row);
+    if (rowHasValues) {
+      // Add the original row index to the row object
+      // Symbols are non-enumerable, so they will be `hidden` in the rowObject
+      rowObject[WorksheetRowIndexSymbol] = i;
+
+      // Add the row object to the array if it has at least one non-empty cell
+      rowObjectsArray.push(rowObject);
     }
-  }
-
-  return rowsToReturn;
-};
-
-/**
- * Return an array of row value arrays.
- *
- * Note: The column headers will be transformed to UPPERCASE.
- *
- * @example
- * [
- *   {
- *     "HEADER1": "value1",
- *     "HEADER2": "value2",
- *     "HEADER3": "value3"
- *   },
- *   {
- *     "HEADER1": "value4",
- *     "HEADER2": "value5",
- *     "HEADER3": "value6"
- *   }
- * ]
- *
- * @export
- * @param {xlsx.WorkSheet} worksheet
- * @return {*}  {Record<string, any>[]}
- */
-export const getWorksheetRowObjects = (worksheet: xlsx.WorkSheet): Record<string, any>[] => {
-  const ref = worksheet['!ref'];
-
-  if (!ref) {
-    return [];
-  }
-
-  const rowObjectsArray: Record<string, any>[] = [];
-  const rows = getWorksheetRows(worksheet);
-  const headers = getHeadersUpperCase(worksheet);
-
-  for (let i = 0; i < rows.length; i++) {
-    const rowObject: Record<string, any> = {};
-
-    for (let j = 0; j < headers.length; j++) {
-      rowObject[headers[j]] = rows[i][j];
-    }
-
-    rowObjectsArray.push(rowObject);
   }
 
   return rowObjectsArray;
-};
-
-/**
- * Return boolean indicating whether the worksheet has the expected headers.
- *
- * @export
- * @param {xlsx.WorkSheet} worksheet
- * @param {IXLSXCSVValidator} columnValidator
- * @return {*}  {boolean}
- */
-export const validateWorksheetHeaders = (worksheet: xlsx.WorkSheet, columnValidator: IXLSXCSVValidator): boolean => {
-  const { columnNames, columnAliases } = columnValidator;
-
-  const worksheetHeaders = getHeadersUpperCase(worksheet);
-
-  return columnNames.every((expectedHeader) => {
-    return (
-      columnAliases?.[expectedHeader]?.some((alias) => worksheetHeaders.includes(alias)) ||
-      worksheetHeaders.includes(expectedHeader)
-    );
-  });
-};
-
-/**
- * Return boolean indicating whether the worksheet has correct column types. This only checks the required columns in the `columnValidator`
- *
- * @export
- * @param {xlsx.WorkSheet} worksheet
- * @param {IXLSXCSVValidator[]} columnValidator
- * @return {*}  {boolean}
- */
-export const validateWorksheetColumnTypes = (
-  worksheet: xlsx.WorkSheet,
-  columnValidator: IXLSXCSVValidator
-): boolean => {
-  const rowValueTypes: string[] = columnValidator.columnTypes;
-  const worksheetRows = getWorksheetRows(worksheet);
-
-  return worksheetRows.every((row) => {
-    return Object.values(columnValidator.columnNames).every((_, index) => {
-      const value = row[index];
-      const type = typeof value;
-      if (rowValueTypes[index] === 'date') {
-        return dayjs(value).isValid();
-      }
-
-      if (rowValueTypes[index] === type) {
-        return true;
-      }
-
-      return false;
-    });
-  });
 };
 
 /**
@@ -250,18 +163,6 @@ export const getDefaultWorksheet = (workbook: xlsx.WorkBook, defaultSheetNameOve
   return (
     workbook.Sheets[defaultSheetNameOverride ?? DEFAULT_XLSX_SHEET_NAME] || workbook.Sheets[workbook.SheetNames[0]]
   );
-};
-
-/**
- * Get a worksheet by name.
- *
- * @export
- * @param {xlsx.WorkBook} workbook
- * @param {string} sheetName
- * @return {*}  {xlsx.WorkSheet}
- */
-export const getWorksheetByName = (workbook: xlsx.WorkBook, sheetName: string): xlsx.WorkSheet => {
-  return workbook.Sheets[sheetName];
 };
 
 /**
@@ -280,85 +181,3 @@ export const getWorksheetRange = (worksheet: xlsx.WorkSheet): xlsx.Range | undef
 
   return xlsx.utils.decode_range(ref);
 };
-/**
- * Iterates over the cells in the worksheet and:
- * - Trims whitespace from cell values.
- * - Converts `Date` objects to ISO strings.
- *
- * https://stackoverflow.com/questions/61789174/how-can-i-remove-all-the-spaces-in-the-cells-of-excelsheet-using-nodejs-code
- * @param worksheet
- */
-export const prepareWorksheetCells = (worksheet: xlsx.WorkSheet) => {
-  const range = getWorksheetRange(worksheet);
-
-  if (!range) {
-    return undefined;
-  }
-
-  for (let r = range.s.r; r < range.e.r; r++) {
-    for (let c = range.s.c; c < range.e.c; c++) {
-      const coord = xlsx.utils.encode_cell({ r, c });
-      let cell: CellObject = worksheet[coord];
-
-      if (!cell?.v) {
-        // Cell is null or has no raw value
-        continue;
-      }
-
-      cell = replaceCellDates(cell);
-
-      cell = trimCellWhitespace(cell);
-    }
-  }
-};
-
-/**
- * Validates the given CSV file against the given column validator
- *
- * @export
- * @param {xlsx.WorkSheet} xlsxWorksheet
- * @param {IXLSXCSVValidator} columnValidator
- * @return {*}  {boolean}
- */
-export function validateCsvFile(xlsxWorksheet: xlsx.WorkSheet, columnValidator: IXLSXCSVValidator): boolean {
-  // Validate the worksheet headers
-  if (!validateWorksheetHeaders(xlsxWorksheet, columnValidator)) {
-    defaultLog.debug({ label: 'validateCsvFile', message: 'Invalid: Headers' });
-    return false;
-  }
-
-  // Validate the worksheet column types
-  if (!validateWorksheetColumnTypes(xlsxWorksheet, columnValidator)) {
-    defaultLog.debug({ label: 'validateCsvFile', message: 'Invalid: Column types' });
-    return false;
-  }
-
-  return true;
-}
-
-/**
- * This function pulls out any non-standard columns from a CSV so they can be processed separately.
- *
- * @param {xlsx.WorkSheet} xlsxWorksheet The worksheet to pull the columns from
- * @param {IXLSXCSVValidator} columnValidator The column validator
- * @returns {*} string[] The list of non-standard columns found in the CSV
- */
-export function getNonStandardColumnNamesFromWorksheet(
-  xlsxWorksheet: xlsx.WorkSheet,
-  columnValidator: IXLSXCSVValidator
-): string[] {
-  const columns = getHeadersUpperCase(xlsxWorksheet);
-
-  let aliasColumns: string[] = [];
-
-  // Create a list of all column names and aliases
-  if (columnValidator.columnAliases) {
-    aliasColumns = Object.values(columnValidator.columnAliases).flat();
-  }
-
-  // Combine the column validator headers and all aliases
-  const standardColumNames = [...columnValidator.columnNames, ...aliasColumns];
-
-  // Only return column names not in the validation CSV Column validator (ie: only return the non-standard columns)
-  return columns.filter((column) => !standardColumNames.includes(column));
-}

@@ -23,6 +23,7 @@ describe('SurveyBlockRepository', () => {
             survey_id: 1,
             name: '',
             description: '',
+            geojson: '',
             create_date: '',
             create_user: 1,
             update_date: '',
@@ -82,7 +83,18 @@ describe('SurveyBlockRepository', () => {
       });
 
       const repo = new SurveyBlockRepository(dbConnection);
-      const block: PostSurveyBlock = { survey_block_id: 1, survey_id: 1, name: 'Updated name', description: 'block' };
+      const block: PostSurveyBlock = {
+        survey_block_id: 1,
+        survey_id: 1,
+        name: 'Updated name',
+        description: 'block',
+        geojson: {
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [0, 0] },
+          properties: {},
+          id: 'testid1'
+        }
+      };
       const response = await repo.updateSurveyBlock(block);
       expect(response.survey_block_id).to.be.eql(1);
       expect(response.name).to.be.eql('Updated name');
@@ -98,7 +110,18 @@ describe('SurveyBlockRepository', () => {
       });
 
       const repo = new SurveyBlockRepository(dbConnection);
-      const block: PostSurveyBlock = { survey_block_id: null, survey_id: 1, name: 'new', description: 'block' };
+      const block: PostSurveyBlock = {
+        survey_block_id: null,
+        survey_id: 1,
+        name: 'new',
+        description: 'block',
+        geojson: {
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [0, 0] },
+          properties: {},
+          id: 'testid1'
+        }
+      };
       try {
         await repo.updateSurveyBlock(block);
         expect.fail();
@@ -131,7 +154,18 @@ describe('SurveyBlockRepository', () => {
       });
       const repo = new SurveyBlockRepository(dbConnection);
 
-      const block: PostSurveyBlock = { survey_block_id: null, survey_id: 1, name: 'new', description: 'block' };
+      const block: PostSurveyBlock = {
+        survey_block_id: null,
+        survey_id: 1,
+        name: 'new',
+        description: 'block',
+        geojson: {
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [0, 0] },
+          properties: {},
+          id: 'testid1'
+        }
+      };
       const response = await repo.insertSurveyBlock(block);
 
       expect(response.name).to.be.eql('new');
@@ -143,18 +177,29 @@ describe('SurveyBlockRepository', () => {
         rows: [],
         rowCount: 0
       } as any as Promise<QueryResult<any>>;
+
       const dbConnection = getMockDBConnection({
         sql: () => mockResponse
       });
+
       const repo = new SurveyBlockRepository(dbConnection);
+
       try {
         const block = {
           survey_block_id: null,
           survey_id: 1,
           name: null,
-          description: null
+          description: null,
+          geojson: {
+            type: 'Feature',
+            geometry: { type: 'Point', coordinates: [0, 0] },
+            properties: {},
+            id: 'testid1'
+          }
         } as any as PostSurveyBlock;
+
         await repo.insertSurveyBlock(block);
+
         expect.fail();
       } catch (error) {
         expect((error as any as ApiExecuteSQLError).message).to.be.eq('Failed to insert survey block');

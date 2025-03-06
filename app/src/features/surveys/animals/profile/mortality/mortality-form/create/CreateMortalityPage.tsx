@@ -62,7 +62,7 @@ export const CreateMortalityPage = () => {
   const animalPageContext = useAnimalPageContext();
 
   const urlParams: Record<string, string | number | undefined> = useParams();
-  const surveyCritterId: number | undefined = Number(urlParams['survey_critter_id']);
+  const surveyCritterId: number | undefined = Number(urlParams['critter_id']);
 
   const { locationChangeInterceptor } = useUnsavedChangesDialog();
 
@@ -182,7 +182,7 @@ export const CreateMortalityPage = () => {
       }
 
       // Refresh page
-      animalPageContext.critterDataLoader.refresh(critterbaseCritterId);
+      animalPageContext.critterDataLoader.refresh(projectId, surveyId, surveyCritterId);
 
       history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals/details`, SKIP_CONFIRMATION_DIALOG);
     } catch (error) {

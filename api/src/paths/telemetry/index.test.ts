@@ -5,8 +5,11 @@ import sinonChai from 'sinon-chai';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import * as db from '../../database/db';
 import { HTTPError } from '../../errors/http-error';
-import { SystemUser } from '../../repositories/user-repository';
-import { FindTelemetryResponse, TelemetryService } from '../../services/telemetry-service';
+import {
+  Telemetry,
+  TelemetryVendorEnum
+} from '../../repositories/telemetry-repositories/telemetry-vendor-repository.interface';
+import { TelemetryVendorService } from '../../services/telemetry-services/telemetry-vendor-service';
 import { KeycloakUserInformation } from '../../utils/keycloak-utils';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
 import { findTelemetry } from './index';
@@ -19,19 +22,18 @@ describe('findTelemetry', () => {
   });
 
   it('finds and returns telemetry', async () => {
-    const mockFindTelemetryResponse: FindTelemetryResponse[] = [
+    const mockFindTelemetryResponse: Telemetry[] = [
       {
         telemetry_id: '789-789-789',
+        deployment_id: 2,
+        critter_id: 3,
         acquisition_date: '2021-01-01',
+        vendor: TelemetryVendorEnum.MANUAL,
+        serial: '123',
         latitude: 49.123,
         longitude: -126.123,
-        telemetry_type: 'vendor',
-        device_id: 123,
-        bctw_deployment_id: '123-123-123',
-        critter_id: 1,
-        deployment_id: 2,
-        critterbase_critter_id: '456-456-456',
-        animal_id: '678-678-678'
+        elevation: null,
+        temperature: null
       }
     ];
 
@@ -45,14 +47,17 @@ describe('findTelemetry', () => {
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
     const findTelemetryStub = sinon
-      .stub(TelemetryService.prototype, 'findTelemetry')
+      .stub(TelemetryVendorService.prototype, 'findTelemetry')
       .resolves(mockFindTelemetryResponse);
+
+    const findTelemetryCountStub = sinon.stub(TelemetryVendorService.prototype, 'findTelemetryCount').resolves(1);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     mockReq.query = {
       keyword: 'keyword',
-      itis_tsns: ['123456'],
+      start_date: '2021-01-01',
+      end_date: '2021-02-01',
       system_user_id: '11',
       page: '2',
       limit: '10',
@@ -61,8 +66,19 @@ describe('findTelemetry', () => {
     };
     mockReq.keycloak_token = {} as KeycloakUserInformation;
     mockReq.system_user = {
+      system_user_id: 20,
+      user_guid: '123-456-789',
+      user_identifier: 'test-identifier',
+      identity_source: 'IDIR',
+      display_name: 'test-user',
+      given_name: 'test-given',
+      family_name: 'test-family',
+      email: 'test-email',
+      agency: 'test-agency',
+      record_end_date: null,
+      role_ids: [1],
       role_names: [SYSTEM_ROLE.SYSTEM_ADMIN]
-    } as SystemUser;
+    };
 
     const requestHandler = findTelemetry();
 
@@ -72,6 +88,7 @@ describe('findTelemetry', () => {
     expect(mockDBConnection.commit).to.have.been.calledOnce;
 
     expect(findTelemetryStub).to.have.been.calledOnceWith(true, 20, sinon.match.object, sinon.match.object);
+    expect(findTelemetryCountStub).to.have.been.calledOnceWith(true, 20, sinon.match.object);
 
     expect(mockRes.jsonValue.telemetry).to.eql(mockFindTelemetryResponse);
     expect(mockRes.jsonValue.pagination).not.to.be.null;
@@ -91,14 +108,15 @@ describe('findTelemetry', () => {
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
     const findTelemetryStub = sinon
-      .stub(TelemetryService.prototype, 'findTelemetry')
+      .stub(TelemetryVendorService.prototype, 'findTelemetry')
       .rejects(new Error('a test error'));
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     mockReq.query = {
       keyword: 'keyword',
-      itis_tsns: ['123456'],
+      start_date: '2021-01-01',
+      end_date: '2021-02-01',
       system_user_id: '11',
       page: '2',
       limit: '10',
@@ -107,8 +125,19 @@ describe('findTelemetry', () => {
     };
     mockReq.keycloak_token = {} as KeycloakUserInformation;
     mockReq.system_user = {
+      system_user_id: 20,
+      user_guid: '123-456-789',
+      user_identifier: 'test-identifier',
+      identity_source: 'IDIR',
+      display_name: 'test-user',
+      given_name: 'test-given',
+      family_name: 'test-family',
+      email: 'test-email',
+      agency: 'test-agency',
+      record_end_date: null,
+      role_ids: [3],
       role_names: [SYSTEM_ROLE.PROJECT_CREATOR]
-    } as SystemUser;
+    };
 
     const requestHandler = findTelemetry();
 

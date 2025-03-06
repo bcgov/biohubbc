@@ -1,24 +1,22 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
 import * as db from '../../../../../../database/db';
-import { HTTP400 } from '../../../../../../errors/http-error';
-import { ImportCrittersService } from '../../../../../../services/import-services/import-critters-service';
-import { parseMulterFile } from '../../../../../../utils/media/media-utils';
+import { ImportCrittersService } from '../../../../../../services/import-services/critter/import-critters-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
-import { importCsv } from './import';
-
-import * as fileUtils from '../../../../../../utils/file-utils';
+import { importCritterCSV } from './import';
 
 describe('importCsv', () => {
   afterEach(() => {
     sinon.restore();
   });
 
-  it('returns imported critters', async () => {
+  it('status 200 when successful', async () => {
     const mockDBConnection = getMockDBConnection({ open: sinon.stub(), commit: sinon.stub(), release: sinon.stub() });
-    const mockGetDBConnection = sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
-    const mockImportCsv = sinon.stub(ImportCrittersService.prototype, 'import').resolves([1, 2]);
-    const mockFileScan = sinon.stub(fileUtils, 'scanFileForVirus').resolves(true);
+    const getDBConnectionStub = sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
+
+    const importCSVWorksheetStub = sinon.stub(ImportCrittersService.prototype, 'importCSVWorksheet');
+
+    importCSVWorksheetStub.resolves([]);
 
     const mockFile = { originalname: 'test.csv', mimetype: 'test.csv', buffer: Buffer.alloc(1) } as Express.Multer.File;
 
@@ -27,64 +25,20 @@ describe('importCsv', () => {
     mockReq.files = [mockFile];
     mockReq.params.surveyId = '1';
 
-    const requestHandler = importCsv();
+    const requestHandler = importCritterCSV();
 
     await requestHandler(mockReq, mockRes, mockNext);
 
     expect(mockDBConnection.open).to.have.been.calledOnce;
 
-    expect(mockFileScan).to.have.been.calledOnceWithExactly(mockFile);
+    expect(getDBConnectionStub).to.have.been.calledOnce;
 
-    expect(mockGetDBConnection.calledOnce).to.be.true;
-    expect(mockImportCsv).to.have.been.calledOnceWithExactly(1, parseMulterFile(mockFile));
-    expect(mockRes.json).to.have.been.calledOnceWithExactly({ survey_critter_ids: [1, 2] });
+    expect(importCSVWorksheetStub).to.have.been.calledOnce;
+
+    expect(mockRes.status).to.have.been.calledOnceWithExactly(200);
+    expect(mockRes.send).to.have.been.calledOnceWithExactly();
 
     expect(mockDBConnection.commit).to.have.been.calledOnce;
     expect(mockDBConnection.release).to.have.been.calledOnce;
-  });
-
-  it('should catch error and rollback if file contains malware', async () => {
-    const mockDBConnection = getMockDBConnection({
-      open: sinon.stub(),
-      commit: sinon.stub(),
-      release: sinon.stub(),
-      rollback: sinon.stub()
-    });
-    const mockGetDBConnection = sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
-    const mockImportCsv = sinon.stub(ImportCrittersService.prototype, 'import').resolves([1, 2]);
-
-    const mockFileScan = sinon.stub(fileUtils, 'scanFileForVirus').resolves(false);
-
-    const mockFile = {
-      originalname: 'test.csv',
-      mimetype: 'test.csv',
-      buffer: Buffer.alloc(1)
-    } as Express.Multer.File;
-
-    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
-
-    mockReq.files = [mockFile];
-    mockReq.params.surveyId = '1';
-
-    const requestHandler = importCsv();
-
-    try {
-      await requestHandler(mockReq, mockRes, mockNext);
-      expect.fail();
-    } catch (err: any) {
-      expect(err).to.be.instanceof(HTTP400);
-      expect(err.message).to.be.contains('Malicious content detected');
-    }
-
-    expect(mockDBConnection.open).to.have.been.calledOnce;
-    expect(mockFileScan).to.have.been.calledOnceWithExactly(mockFile);
-
-    expect(mockGetDBConnection.calledOnce).to.be.true;
-    expect(mockImportCsv).to.not.have.been.called;
-    expect(mockRes.json).to.not.have.been.called;
-
-    expect(mockDBConnection.rollback).to.have.been.called;
-    expect(mockDBConnection.commit).to.not.have.been.called;
-    expect(mockDBConnection.release).to.have.been.called;
   });
 });

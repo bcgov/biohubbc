@@ -18,15 +18,10 @@ const focalTaxonIdOptions = [
   { itis_tsn: 180543, itis_scientific_name: 'Ursus arctos' } // Grizzly bear
 ];
 
-const ancillaryTaxonIdOptions = [
-  { itis_tsn: 180703, itis_scientific_name: 'Alces alces' }, // Moose
-  { itis_tsn: 180596, itis_scientific_name: 'Canis lupus' }, // Wolf
-  { itis_tsn: 180713, itis_scientific_name: 'Oreamnos americanus' }, // Rocky Mountain goat
-  { itis_tsn: 180543, itis_scientific_name: 'Ursus arctos' } // Grizzly bear
-];
-
 const surveyRegionsA = ['Kootenay-Boundary Natural Resource Region', 'West Coast Natural Resource Region'];
 const surveyRegionsB = ['Cariboo Natural Resource Region', 'South Coast Natural Resource Region'];
+
+const identitySources = ['IDIR', 'BCEIDBUSINESS', 'BCEIDBASIC'];
 
 /**
  * Add spatial transform
@@ -51,11 +46,23 @@ export async function seed(knex: Knex): Promise<void> {
     `);
   }
 
-  // Check if at least 1 project already exists
-  const checkProjectsResponse = await knex.raw(checkAnyProjectExists());
+  // Insert access requests
+  for (let i = 0; i < 8; i++) {
+    await knex.raw(`${insertAccessRequest()}`);
+  }
 
-  if (!checkProjectsResponse.rows.length) {
-    for (let i = 0; i < NUM_SEED_PROJECTS; i++) {
+  // Insert system alerts
+  for (let i = 0; i < 8; i++) {
+    await knex.raw(`${insertSystemAlert()}`);
+  }
+
+  const checkProjectsResponse = await knex.raw(getProjectCount());
+  // The number of projects that already exist
+  const numberOfProjects = checkProjectsResponse.rows[0].count;
+
+  // If the number of projects that exist is less than the target number of seed projects
+  if (numberOfProjects < NUM_SEED_PROJECTS) {
+    for (let i = numberOfProjects; i < NUM_SEED_PROJECTS; i++) {
       // Insert project data
       const createProjectResponse = await knex.raw(insertProjectData(faker.lorem.words(8)));
       const projectId = createProjectResponse.rows[0].project_id;
@@ -66,8 +73,12 @@ export async function seed(knex: Knex): Promise<void> {
         ${insertProjectParticipationData(projectId)}
       `);
 
-      // Insert survey data
-      for (let j = 0; j < NUM_SEED_SURVEYS_PER_PROJECT; j++) {
+      const checkSurveysResponse = await knex.raw(getSurveyCount(projectId));
+      // The number of projects that already exist
+      const numberOfSurveys = checkSurveysResponse.rows[0].count;
+
+      // If the number of surveys that exists for this project is less than the target number of seed surveys
+      for (let j = numberOfSurveys; j < NUM_SEED_SURVEYS_PER_PROJECT; j++) {
         const createSurveyResponse = await knex.raw(insertSurveyData(projectId, faker.lorem.words(8)));
         const surveyId = createSurveyResponse.rows[0].survey_id;
 
@@ -75,20 +86,18 @@ export async function seed(knex: Knex): Promise<void> {
           ${insertSurveyTypeData(surveyId)}
           ${insertSurveyPermitData(surveyId)}
           ${insertSurveyFocalSpeciesData(surveyId)}
-          ${insertSurveyAncillarySpeciesData(surveyId)}
           ${insertSurveyFundingData(surveyId)}
           ${insertSurveyProprietorData(surveyId)}
           ${insertSurveyFirstNationData(surveyId)}
           ${insertSurveyStakeholderData(surveyId)}
-          ${insertSurveyVantageData(surveyId)}
           ${insertSurveyParticipationData(surveyId)}
           ${insertSurveyLocationData(surveyId)}
           ${insertSurveySiteStrategy(surveyId)}
           ${insertSurveyIntendedOutcome(surveyId)}
           ${insertSurveySamplingSiteData(surveyId)}
           ${insertMethodTechnique(surveyId)}
-          ${insertSurveySamplingMethodData(surveyId)}
           ${insertSurveySamplePeriodData(surveyId)}
+          ${insertSurveyBlockData(surveyId)}
         `);
 
         // Insert regions into surveys
@@ -139,11 +148,20 @@ const checkAnyFundingSourceExists = () => `
     funding_source;
 `;
 
-const checkAnyProjectExists = () => `
+const getProjectCount = () => `
   SELECT
-    project_id
+    count(*)::integer as count
   FROM
     project;
+`;
+
+const getSurveyCount = (projectId: number) => `
+  SELECT
+    count(*)::integer as count
+  FROM
+    survey
+  WHERE 
+    project_id = ${projectId};
 `;
 
 const insertSurveySiteStrategy = (surveyId: number) => `
@@ -169,30 +187,57 @@ const insertSurveyParticipationData = (surveyId: number) => `
           SELECT
             system_user_id
           FROM
-            system_user su
+            "system_user" su
           WHERE
             su.user_identifier = '${PROJECT_SEEDER_USER_IDENTIFIER}'
         ), 1)
       ),
-      1
+      (SELECT survey_job_id FROM survey_job LIMIT 1)
     )
   ;
 `;
 
-/**
- * SQL to insert Survey Vantage data
- *
- */
-const insertSurveyVantageData = (surveyId: number) => `
-  INSERT into survey_vantage
+const insertSurveyBlockData = (surveyId: number) => `
+  INSERT into survey_block
+    ( survey_id, name, description, geojson )
+  VALUES
     (
-      survey_id,
-      vantage_id
+      ${surveyId},
+      '${faker.lorem.words(2)}',
+      '${faker.lorem.words(10)}',
+      '{
+          "type": "Feature",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  -121.904297,
+                  50.930738
+                ],
+                [
+                  -121.904297,
+                  51.971346
+                ],
+                [
+                  -120.19043,
+                  51.971346
+                ],
+                [
+                  -120.19043,
+                  50.930738
+                ],
+                [
+                  -121.904297,
+                  50.930738
+                ]
+              ]
+            ]
+          },
+          "properties": {}
+      }'
     )
-  VALUES (
-    ${surveyId},
-    (select vantage_id from vantage order by random() limit 1)
-  );
+  ;
 `;
 
 /**
@@ -239,13 +284,11 @@ const insertSurveyFundingData = (surveyId: number) => `
   INSERT into survey_funding_source
     (
       survey_id,
-      funding_source_id,
-      amount
+      funding_source_id
     )
   VALUES (
     ${surveyId},
-    (select funding_source_id from funding_source order by random() limit 1),
-    ${faker.commerce.price({ min: 100, max: 99999999, dec: 0 })}
+    (select funding_source_id from funding_source order by random() limit 1)
   );
 `;
 
@@ -267,23 +310,6 @@ const insertSurveyFocalSpeciesData = (surveyId: number) => {
       ${surveyId},
       ${focalSpecies.itis_tsn},
       'Y'
-    );
-  `;
-};
-
-const insertSurveyAncillarySpeciesData = (surveyId: number) => {
-  const ancillarySpecies = ancillaryTaxonIdOptions[Math.floor(Math.random() * ancillaryTaxonIdOptions.length)];
-  return `
-    INSERT into study_species
-      (
-        survey_id,
-        itis_tsn,
-        is_focal
-      )
-    VALUES (
-      ${surveyId},
-      ${ancillarySpecies.itis_tsn},
-      'N'
     );
   `;
 };
@@ -421,7 +447,7 @@ const insertProjectParticipationData = (projectId: number) => `
           SELECT
             system_user_id
           FROM
-            system_user su
+            "system_user" su
           WHERE
             su.user_identifier = '${PROJECT_SEEDER_USER_IDENTIFIER}'
         ), 1)
@@ -506,9 +532,11 @@ const insertSurveyStakeholderData = (surveyId: number) => `
 /**
  * SQL to insert survey sampling site data.
  *
+ * Note: inserts 2 records.
  */
-const insertSurveySamplingSiteData = (surveyId: number) =>
-  `INSERT INTO survey_sample_site
+const insertSurveySamplingSiteData = (surveyId: number) => {
+  return `
+  INSERT INTO survey_sample_site
   (
     survey_id,
     name,
@@ -517,7 +545,7 @@ const insertSurveySamplingSiteData = (surveyId: number) =>
     geography
   ) VALUES (
     ${surveyId},
-    'Seed Sampling Site',
+    'Seed Sampling Site 1',
     $$${faker.lorem.sentences(2)}$$,
     '
     {
@@ -558,71 +586,339 @@ const insertSurveySamplingSiteData = (surveyId: number) =>
         )
       )
     )
-  );`;
+  );
+
+  INSERT INTO survey_sample_site
+  (
+    survey_id,
+    name,
+    description,
+    geojson,
+    geography
+  ) VALUES (
+    ${surveyId},
+    'Seed Sampling Site 2',
+    $$${faker.lorem.sentences(2)}$$,
+    '
+    {
+      "type": "Feature",
+      "properties": {},
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -123.48670808782796,
+              48.57587832003665
+            ],
+            [
+              -123.50584369160048,
+              48.55310156995935
+            ],
+            [
+              -123.5394224642383,
+              48.544478508078555
+            ],
+            [
+              -123.53316946214912,
+              48.5184960860976
+            ],
+            [
+              -123.55000254581361,
+              48.491415617637415
+            ],
+            [
+              -123.54703259433052,
+              48.46504865533649
+            ],
+            [
+              -123.52571395237894,
+              48.48347577552943
+            ],
+            [
+              -123.49743487585154,
+              48.4840592739221
+            ],
+            [
+              -123.49743154915066,
+              48.472392710482666
+            ],
+            [
+              -123.48304409323536,
+              48.47145764800945
+            ],
+            [
+              -123.46122716654514,
+              48.46038142451289
+            ],
+            [
+              -123.44031357811758,
+              48.47667084086717
+            ],
+            [
+              -123.44773813958989,
+              48.48005214284231
+            ],
+            [
+              -123.442625179115,
+              48.48835907306312
+            ],
+            [
+              -123.48025615900829,
+              48.4942114332614
+            ],
+            [
+              -123.47886647515259,
+              48.4988258772064
+            ],
+            [
+              -123.46163788603168,
+              48.50189215858808
+            ],
+            [
+              -123.45787982438264,
+              48.532702865209444
+            ],
+            [
+              -123.47604105914064,
+              48.54223406745959
+            ],
+            [
+              -123.45922661296157,
+              48.54106867209509
+            ],
+            [
+              -123.46379796562738,
+              48.559419578754046
+            ],
+            [
+              -123.47692623718274,
+              48.5596095679106
+            ],
+            [
+              -123.47593508866987,
+              48.572778325814596
+            ],
+            [
+              -123.48670808782796,
+              48.57587832003665
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      }
+    }
+  ',
+    public.geography(
+      public.ST_Force2D(
+        public.ST_SetSRID(
+          public.ST_Force2D(public.ST_GeomFromGeoJSON('
+            {
+            "coordinates": [
+                [
+                [
+                    -123.48670808782796,
+                    48.57587832003665
+                ],
+                [
+                    -123.50584369160048,
+                    48.55310156995935
+                ],
+                [
+                    -123.5394224642383,
+                    48.544478508078555
+                ],
+                [
+                    -123.53316946214912,
+                    48.5184960860976
+                ],
+                [
+                    -123.55000254581361,
+                    48.491415617637415
+                ],
+                [
+                    -123.54703259433052,
+                    48.46504865533649
+                ],
+                [
+                    -123.52571395237894,
+                    48.48347577552943
+                ],
+                [
+                    -123.49743487585154,
+                    48.4840592739221
+                ],
+                [
+                    -123.49743154915066,
+                    48.472392710482666
+                ],
+                [
+                    -123.48304409323536,
+                    48.47145764800945
+                ],
+                [
+                    -123.46122716654514,
+                    48.46038142451289
+                ],
+                [
+                    -123.44031357811758,
+                    48.47667084086717
+                ],
+                [
+                    -123.44773813958989,
+                    48.48005214284231
+                ],
+                [
+                    -123.442625179115,
+                    48.48835907306312
+                ],
+                [
+                    -123.48025615900829,
+                    48.4942114332614
+                ],
+                [
+                    -123.47886647515259,
+                    48.4988258772064
+                ],
+                [
+                    -123.46163788603168,
+                    48.50189215858808
+                ],
+                [
+                    -123.45787982438264,
+                    48.532702865209444
+                ],
+                [
+                    -123.47604105914064,
+                    48.54223406745959
+                ],
+                [
+                    -123.45922661296157,
+                    48.54106867209509
+                ],
+                [
+                    -123.46379796562738,
+                    48.559419578754046
+                ],
+                [
+                    -123.47692623718274,
+                    48.5596095679106
+                ],
+                [
+                    -123.47593508866987,
+                    48.572778325814596
+                ],
+                [
+                    -123.48670808782796,
+                    48.57587832003665
+                ]
+                ]
+            ],
+            "type": "Polygon"
+            }
+          ')
+          ), 4326
+        )
+      )
+    )
+  );
+`;
+};
 
 /**
  * SQL to insert method_technique. Requires method lookup.
  *
+ * Note: Inserts 2 records.
  */
-const insertMethodTechnique = (surveyId: number) =>
-  `
- INSERT INTO method_technique
- (
-  survey_id,
-  method_lookup_id,
-  name,
-  description,
-  distance_threshold
- )
- VALUES
- (
-    ${surveyId},
-    (SELECT method_lookup_id FROM method_lookup ORDER BY random() LIMIT 1),
-    $$${faker.lorem.word(10)}$$,
-    $$${faker.lorem.sentences(2)}$$,
-    $$${faker.number.int({ min: 1, max: 50 })}$$
- );
-`;
+const insertMethodTechnique = (surveyId: number) => {
+  return `
+    INSERT INTO method_technique
+    (
+        survey_id,
+        method_lookup_id,
+        name,
+        description,
+        distance_threshold,
+        method_response_metric_id
+    )
+    VALUES
+    (
+        ${surveyId},
+        (SELECT method_lookup_id FROM method_lookup ORDER BY random() LIMIT 1),
+        $$${faker.lorem.word(10)}$$,
+        $$${faker.lorem.sentences(2)}$$,
+        $$${faker.number.int({ min: 1, max: 50 })}$$,
+        (SELECT method_response_metric_id FROM method_response_metric ORDER BY random() LIMIT 1)
+    );
+
+    INSERT INTO method_technique
+    (
+        survey_id,
+        method_lookup_id,
+        name,
+        description,
+        distance_threshold,
+        method_response_metric_id
+    )
+    VALUES
+    (
+        ${surveyId},
+        (SELECT method_lookup_id FROM method_lookup ORDER BY random() LIMIT 1),
+        $$${faker.lorem.word(5)}$$,
+        $$${faker.lorem.sentences(1)}$$,
+        $$${faker.number.int({ min: 50, max: 99 })}$$,
+        (SELECT method_response_metric_id FROM method_response_metric ORDER BY random() LIMIT 1)
+    );
+  `;
+};
 
 /**
- * SQL to insert survey sampling method data. Requires sampling site.
+ * SQL to insert survey sampling period data. Requires survey_sampling_site and method_technique.
  *
+ * Note: inserts 3 records, one with only a survey_sample_site_id, one with a survey_sample_site_id and
+ * method_technique_id, and one with all fields set.
  */
-const insertSurveySamplingMethodData = (surveyId: number) =>
-  `
- INSERT INTO survey_sample_method
- (
-  survey_sample_site_id,
-  description,
-  method_response_metric_id,
-  method_technique_id
- )
- VALUES
- (
-    (SELECT survey_sample_site_id FROM survey_sample_site WHERE survey_id = ${surveyId} LIMIT 1),
-    $$${faker.lorem.sentences(2)}$$,
-    $$${faker.number.int({ min: 1, max: 4 })}$$,
-    (SELECT method_technique_id FROM method_technique WHERE survey_id = ${surveyId} LIMIT 1)
- );
-`;
-
-/**
- * SQL to insert survey sampling period data. Requires sampling method.
- *
- */
-const insertSurveySamplePeriodData = (surveyId: number) =>
-  `
+const insertSurveySamplePeriodData = (surveyId: number) => {
+  return `
+  -- Partial record where only a survey_sample_site_id is set
   INSERT INTO survey_sample_period
   (
-    survey_sample_method_id,
+    survey_id,
+    survey_sample_site_id
+  )
+  VALUES
+  (
+    ${surveyId},
+    (SELECT survey_sample_site_id FROM survey_sample_site WHERE survey_id = ${surveyId} LIMIT 1)
+  );
+  
+  -- Partial record where only a survey_sample_site_id and method_technique_id is set
+  INSERT INTO survey_sample_period
+  (
+    survey_id,
+    survey_sample_site_id,
+    method_technique_id
+  )
+  VALUES
+  (
+    ${surveyId},
+    (SELECT survey_sample_site_id FROM survey_sample_site WHERE survey_id = ${surveyId} LIMIT 1),
+    (SELECT method_technique_id FROM method_technique WHERE survey_id = ${surveyId} LIMIT 1)
+  );
+
+  -- Full record where all fields are set
+  INSERT INTO survey_sample_period
+  (
+    survey_id,
+    survey_sample_site_id,
+    method_technique_id,
     start_date,
     end_date
   )
   VALUES
   (
-    (SELECT survey_sample_method_id FROM survey_sample_method WHERE survey_sample_site_id = (
-      SELECT survey_sample_site_id FROM survey_sample_site WHERE survey_id = ${surveyId} LIMIT 1
-    ) LIMIT 1),
+    ${surveyId},
+    (SELECT survey_sample_site_id FROM survey_sample_site WHERE survey_id = ${surveyId} LIMIT 1),
+    (SELECT method_technique_id FROM method_technique WHERE survey_id = ${surveyId} LIMIT 1),
     $$${faker.date
       .between({ from: '2000-01-01T00:00:00-08:00', to: '2001-01-01T00:00:00-08:00' })
       .toISOString()}$$::date,
@@ -630,7 +926,8 @@ const insertSurveySamplePeriodData = (surveyId: number) =>
       .between({ from: '2002-01-01T00:00:00-08:00', to: '2005-01-01T00:00:00-08:00' })
       .toISOString()}$$::date
   );
-`;
+  `;
+};
 
 const insertObservationSubCount = (surveyObservationId: number) => `
   INSERT INTO observation_subcount
@@ -643,7 +940,7 @@ const insertObservationSubCount = (surveyObservationId: number) => `
   (
     ${surveyObservationId},
     $$${faker.number.int({ min: 1, max: 20 })}$$,
-    $$${faker.number.int({ min: 1, max: 3 })}$$
+    (SELECT observation_subcount_sign_id FROM observation_subcount_sign ORDER BY random() LIMIT 1)
   );
 `;
 
@@ -652,6 +949,9 @@ const insertObservationSubCount = (surveyObservationId: number) => `
  *
  */
 const insertSurveyObservationData = (surveyId: number, count: number) => {
+  // Randomly select a species
+  const species = focalTaxonIdOptions[Math.floor(Math.random() * focalTaxonIdOptions.length)];
+
   return `
   INSERT INTO survey_observation
   (
@@ -663,15 +963,13 @@ const insertSurveyObservationData = (surveyId: number, count: number) => {
     count,
     observation_date,
     observation_time,
-    survey_sample_site_id,
-    survey_sample_method_id,
     survey_sample_period_id
   )
   VALUES
   (
     ${surveyId},
-    $$${focalTaxonIdOptions[0].itis_tsn}$$,
-    $$${focalTaxonIdOptions[0].itis_scientific_name}$$,
+    $$${species.itis_tsn}$$,
+    $$${species.itis_scientific_name}$$,
     $$${faker.number.int({ min: 48, max: 60 })}$$,
     $$${faker.number.int({ min: -132, max: -116 })}$$,
     $$${count}$$,
@@ -681,18 +979,7 @@ const insertSurveyObservationData = (surveyId: number, count: number) => {
     timestamp $$${faker.date
       .between({ from: '2000-01-01T00:00:00-08:00', to: '2005-01-01T00:00:00-08:00' })
       .toISOString()}$$::time,
-
-    (SELECT survey_sample_site_id FROM survey_sample_site WHERE survey_id = ${surveyId} LIMIT 1),
-
-    (SELECT survey_sample_method_id FROM survey_sample_method WHERE survey_sample_site_id = (
-      SELECT survey_sample_site_id FROM survey_sample_site WHERE survey_id = ${surveyId} LIMIT 1
-    ) LIMIT 1),
-
-    (SELECT survey_sample_period_id FROM survey_sample_period WHERE survey_sample_method_id = (
-      SELECT survey_sample_method_id FROM survey_sample_method WHERE survey_sample_site_id = (
-        SELECT survey_sample_site_id FROM survey_sample_site WHERE survey_id = ${surveyId} LIMIT 1
-      ) LIMIT 1
-    ) LIMIT 1)
+    (SELECT survey_sample_period_id FROM survey_sample_period WHERE survey_id = ${surveyId} ORDER BY random() LIMIT 1)
   )
   RETURNING survey_observation_id;
 `;
@@ -770,4 +1057,66 @@ const insertSurveyRegionData = (surveyId: string, region: string) => `
     region_lookup
   WHERE
     region_name = $$${region}$$;
+`;
+
+/**
+ * SQL to insert system access requests
+ *
+ */
+const insertAccessRequest = () => `
+  INSERT INTO administrative_activity
+    (
+      administrative_activity_status_type_id,
+      administrative_activity_type_id,
+      reported_system_user_id,
+      assigned_system_user_id,
+      description,
+      data,
+      notes
+    )
+  VALUES (
+    (SELECT administrative_activity_status_type_id FROM administrative_activity_status_type ORDER BY random() LIMIT 1),
+    (SELECT administrative_activity_type_id FROM administrative_activity_type WHERE name = 'System Access'),
+    (SELECT system_user_id FROM "system_user" ORDER BY random() LIMIT 1),
+    (SELECT system_user_id FROM "system_user" ORDER BY random() LIMIT 1),
+    $$${faker.lorem.sentences(2)}$$,
+    jsonb_build_object(
+        'reason', '${faker.lorem.sentences(1)}',
+        'userGuid', '${faker.string.uuid()}',
+        'name', '${faker.lorem.words(2)}',
+        'username', '${faker.lorem.words(1)}',
+        'email', 'default',
+        'identitySource', '${identitySources[faker.number.int({ min: 0, max: identitySources.length - 1 })]}',
+        'displayName', '${faker.lorem.words(1)}'
+    ),
+    $$${faker.lorem.sentences(2)}$$
+  );
+  `;
+
+/**
+ * SQL to insert a fake system alert
+ *
+ */
+const insertSystemAlert = () => `
+  INSERT INTO alert
+    (
+      alert_type_id,
+      name,
+      message,
+      data,
+      severity,
+      record_end_date,
+      create_user,
+      update_user
+    )
+  VALUES (
+    (SELECT alert_type_id FROM alert_type ORDER BY random() LIMIT 1),
+    $$${faker.lorem.words(3)}$$,
+    $$${faker.lorem.sentences(2)}$$,
+    NULL,
+    '${faker.helpers.arrayElement(['info', 'success', 'warning', 'error'])}',
+    (CASE WHEN random() < 0.5 THEN NULL ELSE (CURRENT_DATE - INTERVAL '30 days') END),
+    (SELECT system_user_id FROM "system_user" ORDER BY random() LIMIT 1),
+    (SELECT system_user_id FROM "system_user" ORDER BY random() LIMIT 1)
+  );
 `;

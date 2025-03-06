@@ -16,14 +16,14 @@ export interface IConditionalAutocompleteDataGridEditCellProps<
    */
   dataGridProps: GridRenderCellParams<DataGridType>;
   /**
-   *
+   * All possible options for the autocomplete control.
    *
    * @type {OptionsType[]}
    * @memberof IConditionalAutocompleteDataGridEditCellProps
    */
   allOptions: OptionsType[];
   /**
-   *
+   * Given a row and list of all possible options, return the matching options for the autocomplete control.
    *
    * @memberof IConditionalAutocompleteDataGridEditCellProps
    */

@@ -23,6 +23,7 @@ POST.apiDoc = {
   ],
   requestBody: {
     description: 'Administrative Activity post request object.',
+    required: true,
     content: {
       'application/json': {
         schema: {
@@ -36,6 +37,7 @@ POST.apiDoc = {
             username: { type: 'string' },
             email: { type: 'string' },
             identitySource: { type: 'string', description: 'Whether the account is an IDIR or BCeID.' },
+            company: { type: 'string', description: 'The company that the user belongs to.', nullable: true },
             displayName: { type: 'string' }
           }
         }
@@ -201,6 +203,7 @@ export function getAdministrativeActivityStanding(): RequestHandler {
       return res.status(200).json(response);
     } catch (error) {
       defaultLog.error({ label: 'getAdministrativeActivityStanding', message: 'error', error });
+      await connection.rollback();
       throw error;
     } finally {
       connection.release();

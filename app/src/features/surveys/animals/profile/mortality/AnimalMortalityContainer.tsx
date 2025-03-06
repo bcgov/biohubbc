@@ -66,7 +66,7 @@ const AnimalMortalityContainer = () => {
       }
     })) || [];
 
-  const handleDelete = async (selectedMortality: string, critterbase_critter_id: string) => {
+  const handleDelete = async (selectedMortality: string, critterId: number) => {
     // Delete markings and measurements associated with the mortality to avoid foreign key constraint error
     await critterbaseApi.critters.bulkUpdate({
       markings: data?.markings
@@ -96,7 +96,9 @@ const AnimalMortalityContainer = () => {
     await critterbaseApi.mortality.deleteMortality(selectedMortality);
 
     // Refresh mortality container
-    animalPageContext.critterDataLoader.refresh(critterbase_critter_id);
+    if (critterId) {
+      animalPageContext.critterDataLoader.refresh(projectId, surveyId, critterId);
+    }
   };
 
   return (
@@ -105,7 +107,7 @@ const AnimalMortalityContainer = () => {
         mortalityCount={mortality.length}
         onAddAnimalMortality={() => {
           history.push(
-            `/admin/projects/${projectId}/surveys/${surveyId}/animals/${selectedAnimal.survey_critter_id}/mortality/create`
+            `/admin/projects/${projectId}/surveys/${surveyId}/animals/${selectedAnimal.critter_id}/mortality/create`
           );
         }}
       />

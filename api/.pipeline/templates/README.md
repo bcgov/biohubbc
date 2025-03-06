@@ -10,3 +10,9 @@ The pipeline code builds and deploys all pods/images/storage/etc needed to deplo
 - Create ObjectStore Secret
 
 The included templates under `prereqs` can be imported via the "Import YAML" page in OpenShift.
+
+## Telemetry Cronjob
+
+How to manually trigger cronjob?
+
+- `oc create job --from=cronjob/biohubbc-telemetry-cronjob-<suffix> <name of job>`

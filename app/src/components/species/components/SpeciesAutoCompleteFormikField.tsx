@@ -17,7 +17,7 @@ type SpeciesAutoCompleteFormikFieldProps = Pick<
  *
  * Must be a child of a Formik form.
  *
- * @param {AnimalFormProps<IMarkingResponse>} props - Subset of SpeciesAutocompleteFieldProps.
+ * @param {SpeciesAutoCompleteFormikFieldProps} props
  * @returns {*}
  */
 export const SpeciesAutoCompleteFormikField = (props: SpeciesAutoCompleteFormikFieldProps) => {

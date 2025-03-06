@@ -5,12 +5,13 @@ import Stack from '@mui/material/Stack';
 import { CodesContext } from 'contexts/codesContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { TaxonomyContextProvider } from 'contexts/taxonomyContext';
+import { SystemAlertBanner } from 'features/alert/banner/SystemAlertBanner';
+import { SurveySamplingTableContainer } from 'features/surveys/view/survey-sampling/SurveySamplingTableContainer';
 import SurveyDetails from 'features/surveys/view/SurveyDetails';
+import { SystemAlertBannerEnum } from 'interfaces/useAlertApi.interface';
 import React, { useContext, useEffect } from 'react';
-import { SurveySamplingContainer } from './components/sampling-data/SurveySamplingContainer';
-import SurveySpatialData from './components/spatial-data/SurveySpatialData';
 import SurveyStudyArea from './components/SurveyStudyArea';
-import SurveyAnimals from './SurveyAnimals';
+import { SurveySpatialContainer } from './survey-spatial/SurveySpatialContainer';
 import SurveyAttachments from './SurveyAttachments';
 import SurveyHeader from './SurveyHeader';
 
@@ -35,17 +36,16 @@ const SurveyPage: React.FC = () => {
     <>
       <SurveyHeader />
       <Container maxWidth="xl" sx={{ py: 3 }}>
+        <SystemAlertBanner alertTypes={[SystemAlertBannerEnum.SURVEYS]} />
         <Stack gap={3}>
           <Paper>
-            <SurveySamplingContainer />
+            <SurveySamplingTableContainer />
           </Paper>
 
-          <TaxonomyContextProvider>
-            <SurveySpatialData />
-          </TaxonomyContextProvider>
-
           <Paper>
-            <SurveyAnimals />
+            <TaxonomyContextProvider>
+              <SurveySpatialContainer />
+            </TaxonomyContextProvider>
           </Paper>
 
           <Paper>

@@ -2,68 +2,69 @@ import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { BaseRepository } from './base-repository';
 
-export const ICode = z.object({
-  id: z.number(),
-  name: z.string()
-});
-export type ICode = z.infer<typeof ICode>;
-
-export const CodeSet = <T extends z.ZodRawShape>(zodSchema?: T) => {
-  return (zodSchema && z.array(zodSchema.shape)) || z.array(ICode);
-};
-
-const InvestmentActionCategoryCode = ICode.extend({ agency_id: z.number() });
-const ProprietorTypeCode = ICode.extend({ is_first_nation: z.boolean() });
-const IucnConservationActionLevel2SubclassificationCode = ICode.extend({ iucn1_id: z.number() });
-const IucnConservationActionLevel3SubclassificationCode = ICode.extend({ iucn2_id: z.number() });
-const IntendedOutcomeCode = ICode.extend({ description: z.string() });
-const SampleMethodsCode = ICode.extend({ description: z.string() });
-const SurveyProgressCode = ICode.extend({ description: z.string() });
-const MethodResponseMetricsCode = ICode.extend({ description: z.string() });
-const AttractantCode = ICode.extend({ description: z.string() });
-
-export const IAllCodeSets = z.object({
-  management_action_type: CodeSet(),
-  first_nations: CodeSet(),
-  agency: CodeSet(),
-  investment_action_category: CodeSet(InvestmentActionCategoryCode.shape),
-  type: CodeSet(),
-  proprietor_type: CodeSet(ProprietorTypeCode.shape),
-  iucn_conservation_action_level_1_classification: CodeSet(),
-  iucn_conservation_action_level_2_subclassification: CodeSet(IucnConservationActionLevel2SubclassificationCode.shape),
-  iucn_conservation_action_level_3_subclassification: CodeSet(IucnConservationActionLevel3SubclassificationCode.shape),
-  system_roles: CodeSet(),
-  project_roles: CodeSet(),
-  administrative_activity_status_type: CodeSet(),
-  intended_outcomes: CodeSet(IntendedOutcomeCode.shape),
-  vantage_codes: CodeSet(),
-  survey_jobs: CodeSet(),
-  site_selection_strategies: CodeSet(),
-  sample_methods: CodeSet(SampleMethodsCode.shape),
-  survey_progress: CodeSet(SurveyProgressCode.shape),
-  method_response_metrics: CodeSet(MethodResponseMetricsCode.shape),
-  attractants: CodeSet(AttractantCode.shape)
-});
+// Code types
+export type ICode = z.infer<typeof Code>;
+export type ICodeDescription = z.infer<typeof CodeDescription>;
 export type IAllCodeSets = z.infer<typeof IAllCodeSets>;
+
+// Code without description
+export const Code = z.object({ id: z.number(), name: z.string() });
+
+// Code with description
+export const CodeDescription = Code.extend({ description: z.string() });
+
+// Codes which need to include additional properties
+const InvestmentActionCategoryCode = Code.extend({ agency_id: z.number() });
+const ProprietorTypeCode = Code.extend({ is_first_nation: z.boolean() });
+const IucnConservationActionLevel2SubclassificationCode = Code.extend({ iucn1_id: z.number() });
+const IucnConservationActionLevel3SubclassificationCode = Code.extend({ iucn2_id: z.number() });
+
+// All code sets
+export const IAllCodeSets = z.object({
+  management_action_type: Code.array(),
+  first_nations: Code.array(),
+  agency: Code.array(),
+  investment_action_category: InvestmentActionCategoryCode.array(),
+  survey_data_type: CodeDescription.array(),
+  proprietor_type: ProprietorTypeCode.array(),
+  iucn_conservation_action_level_1_classification: Code.array(),
+  iucn_conservation_action_level_2_subclassification: IucnConservationActionLevel2SubclassificationCode.array(),
+  iucn_conservation_action_level_3_subclassification: IucnConservationActionLevel3SubclassificationCode.array(),
+  system_roles: Code.array(),
+  project_roles: CodeDescription.array(),
+  administrative_activity_status_type: Code.array(),
+  intended_outcomes: CodeDescription.array(),
+  survey_jobs: CodeDescription.array(),
+  site_selection_strategies: Code.array(),
+  sample_methods: CodeDescription.array(),
+  survey_progress: CodeDescription.array(),
+  method_response_metrics: CodeDescription.array(),
+  attractants: CodeDescription.array(),
+  observation_subcount_signs: CodeDescription.array(),
+  telemetry_device_makes: CodeDescription.array(),
+  frequency_units: CodeDescription.array(),
+  alert_types: CodeDescription.array(),
+  vantages: CodeDescription.array()
+});
 
 export class CodeRepository extends BaseRepository {
   /**
    * Fetch sample method codes.
    *
-   * @return {*}
+   * @return {*} {Promise<ICodeDescription[]>}
    * @memberof CodeRepository
    */
-  async getSampleMethods() {
+  async getSampleMethods(): Promise<ICodeDescription[]> {
     const sql = SQL`
-      SELECT 
-        method_lookup_id as id, 
-        name, 
-        description 
+      SELECT
+        method_lookup_id as id,
+        name,
+        description
       FROM method_lookup
       ORDER BY name ASC;
     `;
 
-    const response = await this.connection.sql(sql);
+    const response = await this.connection.sql(sql, CodeDescription);
 
     return response.rows;
   }
@@ -71,10 +72,10 @@ export class CodeRepository extends BaseRepository {
   /**
    * Fetch management action type codes.
    *
-   * @return {*}
+   * @return {*} {Promise<ICode[]>}
    * @memberof CodeRepository
    */
-  async getManagementActionType() {
+  async getManagementActionType(): Promise<ICode[]> {
     const sqlStatement = SQL`
       SELECT
         management_action_type_id as id,
@@ -83,7 +84,7 @@ export class CodeRepository extends BaseRepository {
       WHERE record_end_date is null;
     `;
 
-    const response = await this.connection.sql(sqlStatement, ICode);
+    const response = await this.connection.sql(sqlStatement, Code);
 
     return response.rows;
   }
@@ -91,20 +92,20 @@ export class CodeRepository extends BaseRepository {
   /**
    * Fetch first nation codes.
    *
-   * @return {*}
+   * @return {*} {Promise<ICode[]>}
    * @memberof CodeRepository
    */
-  async getFirstNations() {
+  async getFirstNations(): Promise<ICode[]> {
     const sqlStatement = SQL`
       SELECT
         first_nations_id as id,
         name
       FROM first_nations
-      WHERE record_end_date is null 
+      WHERE record_end_date is null
       ORDER BY name ASC;
     `;
 
-    const response = await this.connection.sql(sqlStatement, ICode);
+    const response = await this.connection.sql(sqlStatement, Code);
 
     return response.rows;
   }
@@ -112,20 +113,20 @@ export class CodeRepository extends BaseRepository {
   /**
    * Fetch agency codes.
    *
-   * @return {*}
+   * @return {*} {Promise<ICode[]>}
    * @memberof CodeRepository
    */
-  async getAgency() {
+  async getAgency(): Promise<ICode[]> {
     const sqlStatement = SQL`
       SELECT
         agency_id as id,
         name
       FROM agency
-      WHERE record_end_date is null 
+      WHERE record_end_date is null
       ORDER BY name ASC;
     `;
 
-    const response = await this.connection.sql(sqlStatement, ICode);
+    const response = await this.connection.sql(sqlStatement, Code);
 
     return response.rows;
   }
@@ -133,14 +134,14 @@ export class CodeRepository extends BaseRepository {
   /**
    * Fetch proprietor type codes.
    *
-   * @return {*}
+   * @return {*} {Promise<z.infer<typeof ProprietorTypeCode>[]>}
    * @memberof CodeRepository
    */
-  async getProprietorType() {
+  async getProprietorType(): Promise<z.infer<typeof ProprietorTypeCode>[]> {
     const sqlStatement = SQL`
       SELECT
         proprietor_type_id as id,
-        name, 
+        name,
         is_first_nation
       FROM proprietor_type
       WHERE record_end_date is null;
@@ -152,42 +153,25 @@ export class CodeRepository extends BaseRepository {
   }
 
   /**
-   * Fetch activity codes.
+   * Fetch survey data type.
    *
-   * @return {*}
+   * TODO: Rename this table to something more specific ie: not 'type'
+   *
+   * @return {*} {Promise<ICodeDescription[]>}
    * @memberof CodeRepository
    */
-  async getType() {
+  async getSurveyDataType(): Promise<ICodeDescription[]> {
     const sqlStatement = SQL`
       SELECT
         type_id as id,
-        name
+        name,
+        description
       FROM
         type
       WHERE record_end_date is null;
     `;
 
-    const response = await this.connection.sql(sqlStatement, ICode);
-
-    return response.rows;
-  }
-
-  /**
-   * Fetch vantage codes.
-   *
-   * @return {*}
-   * @memberof CodeRepository
-   */
-  async getVantageCodes() {
-    const sqlStatement = SQL`
-      SELECT
-        vantage_id as id,
-        name
-      FROM vantage
-      WHERE record_end_date is null;
-    `;
-
-    const response = await this.connection.sql(sqlStatement, ICode);
+    const response = await this.connection.sql(sqlStatement, CodeDescription);
 
     return response.rows;
   }
@@ -195,20 +179,20 @@ export class CodeRepository extends BaseRepository {
   /**
    * Fetch intended outcomes codes.
    *
-   * @return {*}
+   * @return {*} {Promise<ICodeDescription[]>}
    * @memberof CodeRepository
    */
-  async getIntendedOutcomes() {
+  async getIntendedOutcomes(): Promise<ICodeDescription[]> {
     const sqlStatement = SQL`
       SELECT
         intended_outcome_id as id,
-        name, 
+        name,
         description
       FROM intended_outcome
       WHERE record_end_date is null;
     `;
 
-    const response = await this.connection.sql(sqlStatement, IntendedOutcomeCode);
+    const response = await this.connection.sql(sqlStatement, CodeDescription);
 
     return response.rows;
   }
@@ -216,17 +200,17 @@ export class CodeRepository extends BaseRepository {
   /**
    * Fetch investment action category codes.
    *
-   * @return {*}
+   * @return {*} {Promise<z.infer<typeof InvestmentActionCategoryCode>[]>}
    * @memberof CodeRepository
    */
-  async getInvestmentActionCategory() {
+  async getInvestmentActionCategory(): Promise<z.infer<typeof InvestmentActionCategoryCode>[]> {
     const sqlStatement = SQL`
       SELECT
         investment_action_category_id as id,
         agency_id,
         name
       FROM investment_action_category
-      WHERE record_end_date is null 
+      WHERE record_end_date is null
       ORDER BY name ASC;
     `;
 
@@ -238,10 +222,10 @@ export class CodeRepository extends BaseRepository {
   /**
    * Fetch IUCN conservation action level 1 classification codes.
    *
-   * @return {*}
+   * @return {*} {Promise<ICode[]>}
    * @memberof CodeRepository
    */
-  async getIUCNConservationActionLevel1Classification() {
+  async getIUCNConservationActionLevel1Classification(): Promise<ICode[]> {
     const sqlStatement = SQL`
       SELECT
         iucn_conservation_action_level_1_classification_id as id,
@@ -250,7 +234,7 @@ export class CodeRepository extends BaseRepository {
       WHERE record_end_date is null;
     `;
 
-    const response = await this.connection.sql(sqlStatement, ICode);
+    const response = await this.connection.sql(sqlStatement, Code);
 
     return response.rows;
   }
@@ -258,10 +242,12 @@ export class CodeRepository extends BaseRepository {
   /**
    * Fetch IUCN conservation action level 2 sub-classification codes.
    *
-   * @return {*}
+   * @return {*} {Promise<z.infer<typeof IucnConservationActionLevel2SubclassificationCode>[]}
    * @memberof CodeRepository
    */
-  async getIUCNConservationActionLevel2Subclassification() {
+  async getIUCNConservationActionLevel2Subclassification(): Promise<
+    z.infer<typeof IucnConservationActionLevel2SubclassificationCode>[]
+  > {
     const sqlStatement = SQL`
       SELECT
         iucn_conservation_action_level_2_subclassification_id as id,
@@ -279,10 +265,12 @@ export class CodeRepository extends BaseRepository {
   /**
    * Fetch IUCN conservation action level 3 sub-classification codes.
    *
-   * @return {*}
+   * @return {*} {Promise<z.infer<typeof IucnConservationActionLevel3SubclassificationCode>[]}
    * @memberof CodeRepository
    */
-  async getIUCNConservationActionLevel3Subclassification() {
+  async getIUCNConservationActionLevel3Subclassification(): Promise<
+    z.infer<typeof IucnConservationActionLevel3SubclassificationCode>[]
+  > {
     const sqlStatement = SQL`
       SELECT
         iucn_conservation_action_level_3_subclassification_id as id,
@@ -300,10 +288,10 @@ export class CodeRepository extends BaseRepository {
   /**
    * Fetch system role codes.
    *
-   * @return {*}
+   * @return {*} {Promise<ICode[]>}
    * @memberof CodeRepository
    */
-  async getSystemRoles() {
+  async getSystemRoles(): Promise<ICode[]> {
     const sqlStatement = SQL`
       SELECT
         system_role_id as id,
@@ -312,7 +300,7 @@ export class CodeRepository extends BaseRepository {
       WHERE record_end_date is null;
     `;
 
-    const response = await this.connection.sql(sqlStatement, ICode);
+    const response = await this.connection.sql(sqlStatement, Code);
 
     return response.rows;
   }
@@ -320,21 +308,22 @@ export class CodeRepository extends BaseRepository {
   /**
    * Fetch project role codes.
    *
-   * @return {*}
+   * @return {*} {Promise<ICodeDescription[]>}
    * @memberof CodeRepository
    */
-  async getProjectRoles() {
+  async getProjectRoles(): Promise<ICodeDescription[]> {
     const sqlStatement = SQL`
       SELECT
         project_role_id as id,
-        name
+        name,
+        description
       FROM project_role
       WHERE record_end_date is null
-      ORDER BY 
+      ORDER BY
         CASE WHEN name = 'Coordinator' THEN 0 ELSE 1 END;
     `;
 
-    const response = await this.connection.sql(sqlStatement, ICode);
+    const response = await this.connection.sql(sqlStatement, CodeDescription);
 
     return response.rows;
   }
@@ -342,19 +331,20 @@ export class CodeRepository extends BaseRepository {
   /**
    * Fetch survey job codes.
    *
-   * @return {*}
+   * @return {*} {Promise<ICodeDescription[]>}
    * @memberof CodeRepository
    */
-  async getSurveyJobs() {
+  async getSurveyJobs(): Promise<ICodeDescription[]> {
     const sqlStatement = SQL`
       SELECT
         survey_job_id as id,
-        name
+        name,
+        description
       FROM survey_job
       WHERE record_end_date is null;
     `;
 
-    const response = await this.connection.sql(sqlStatement, ICode);
+    const response = await this.connection.sql(sqlStatement, CodeDescription);
 
     return response.rows;
   }
@@ -362,19 +352,20 @@ export class CodeRepository extends BaseRepository {
   /**
    * Fetch site selection strategy codes
    *
-   * @return {*}
+   * @return {*} {Promise<ICode[]>}
    * @memberof CodeRepository
    */
-  async getSiteSelectionStrategies() {
+  async getSiteSelectionStrategies(): Promise<ICode[]> {
     const sqlStatement = SQL`
       SELECT
         ss.site_strategy_id as id,
-        ss.name
+        ss.name,
+        ss.description
       FROM site_strategy ss
       WHERE record_end_date is null;
     `;
 
-    const response = await this.connection.sql(sqlStatement, ICode);
+    const response = await this.connection.sql(sqlStatement, CodeDescription);
 
     return response.rows;
   }
@@ -382,10 +373,10 @@ export class CodeRepository extends BaseRepository {
   /**
    * Fetch administrative activity status type codes.
    *
-   * @return {*}
+   * @return {*} {Promise<ICode[]>}
    * @memberof CodeRepository
    */
-  async getAdministrativeActivityStatusType() {
+  async getAdministrativeActivityStatusType(): Promise<ICode[]> {
     const sqlStatement = SQL`
       SELECT
         administrative_activity_status_type_id as id,
@@ -394,7 +385,7 @@ export class CodeRepository extends BaseRepository {
       WHERE record_end_date is null;
     `;
 
-    const response = await this.connection.sql(sqlStatement, ICode);
+    const response = await this.connection.sql(sqlStatement, Code);
 
     return response.rows;
   }
@@ -402,10 +393,10 @@ export class CodeRepository extends BaseRepository {
   /**
    * Fetch survey progress codes.
    *
-   * @return {*}
+   * @return {*} {Promise<ICodeDescription[]>}
    * @memberof CodeRepository
    */
-  async getSurveyProgress() {
+  async getSurveyProgress(): Promise<ICodeDescription[]> {
     const sqlStatement = SQL`
       SELECT
         survey_progress_id as id,
@@ -415,7 +406,7 @@ export class CodeRepository extends BaseRepository {
       WHERE record_end_date is null;
     `;
 
-    const response = await this.connection.sql(sqlStatement, SurveyProgressCode);
+    const response = await this.connection.sql(sqlStatement, CodeDescription);
 
     return response.rows;
   }
@@ -423,10 +414,10 @@ export class CodeRepository extends BaseRepository {
   /**
    * Fetch method response metrics codes.
    *
-   * @return {*}
+   * @return {*} {Promise<ICodeDescription[]>}
    * @memberof CodeRepository
    */
-  async getMethodResponseMetrics() {
+  async getMethodResponseMetrics(): Promise<ICodeDescription[]> {
     const sqlStatement = SQL`
       SELECT
         method_response_metric_id AS id,
@@ -436,7 +427,7 @@ export class CodeRepository extends BaseRepository {
       WHERE record_end_date IS null;
     `;
 
-    const response = await this.connection.sql(sqlStatement, MethodResponseMetricsCode);
+    const response = await this.connection.sql(sqlStatement, CodeDescription);
 
     return response.rows;
   }
@@ -444,10 +435,10 @@ export class CodeRepository extends BaseRepository {
   /**
    * Fetch attractants codes.
    *
-   * @return {*}
+   * @return {*} {Promise<ICodeDescription[]>}
    * @memberof CodeRepository
    */
-  async getAttractants() {
+  async getAttractants(): Promise<ICodeDescription[]> {
     const sqlStatement = SQL`
       SELECT
         attractant_lookup_id AS id,
@@ -457,7 +448,115 @@ export class CodeRepository extends BaseRepository {
       WHERE record_end_date IS null;
     `;
 
-    const response = await this.connection.sql(sqlStatement, AttractantCode);
+    const response = await this.connection.sql(sqlStatement, CodeDescription);
+
+    return response.rows;
+  }
+
+  /**
+   * Fetch observation subcount sign codes.
+   *
+   * @return {*} {Promise<ICodeDescription[]>}
+   * @memberof CodeRepository
+   */
+  async getObservationSubcountSigns(): Promise<ICodeDescription[]> {
+    const sqlStatement = SQL`
+      SELECT
+        observation_subcount_sign_id AS id,
+        name,
+        description
+      FROM observation_subcount_sign
+      WHERE record_end_date IS null;
+    `;
+
+    const response = await this.connection.sql(sqlStatement, CodeDescription);
+
+    return response.rows;
+  }
+
+  /**
+   * Get active telemetry device makes.
+   *
+   * @return {*} {Promise<ICodeDescription[]>}
+   * @memberof CodeRepository
+   */
+  async getActiveTelemetryDeviceMakes(): Promise<ICodeDescription[]> {
+    const sqlStatement = SQL`
+      SELECT
+        device_make_id as id,
+        name,
+        description
+      FROM device_make
+      WHERE record_end_date is null
+      -- Some legacy device makes have no effective date, as they are no longer supported, and must be excluded
+      AND record_effective_date IS NOT NULL;
+    `;
+
+    const response = await this.connection.sql(sqlStatement, CodeDescription);
+
+    return response.rows;
+  }
+
+  /**
+   * Get frequency unit codes.
+   *
+   * @return {*} {Promise<ICodeDescription[]>}
+   * @memberof CodeRepository
+   */
+  async getFrequencyUnits(): Promise<ICodeDescription[]> {
+    const sqlStatement = SQL`
+      SELECT
+        frequency_unit_id as id,
+        name,
+        description
+      FROM frequency_unit
+      WHERE record_end_date is null;
+    `;
+
+    const response = await this.connection.sql(sqlStatement, CodeDescription);
+
+    return response.rows;
+  }
+
+  /**
+   * Fetch alert type codes
+   *
+   * @return {*} {Promise<ICodeDescription[]>}
+   * @memberof CodeRepository
+   */
+  async getAlertTypes(): Promise<ICodeDescription[]> {
+    const sqlStatement = SQL`
+      SELECT
+        alert_type_id AS id,
+        name,
+        description
+      FROM alert_type
+      WHERE record_end_date IS null
+      ORDER BY name ASC;
+    `;
+
+    const response = await this.connection.sql(sqlStatement, CodeDescription);
+
+    return response.rows;
+  }
+
+  /**
+   * Fetch vantages associated with vantages
+   *
+   * @return {*} {Promise<ICodeDescription[]>}
+   * @memberof CodeRepository
+   */
+  async getVantages(): Promise<ICodeDescription[]> {
+    const sqlStatement = SQL`
+      SELECT
+        vantage_category_id AS id,
+        name,
+        description
+      FROM vantage
+      WHERE record_end_date IS null;
+    `;
+
+    const response = await this.connection.sql(sqlStatement, CodeDescription);
 
     return response.rows;
   }

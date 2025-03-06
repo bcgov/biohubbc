@@ -18,14 +18,14 @@ import { asyncErrorWrapper, getGenericizedKeycloakUserInformation, syncErrorWrap
 const defaultLog = getLogger('database/db');
 
 const getDbHost = () => process.env.DB_HOST;
-const getDbPort = () => Number(process.env.DB_PORT);
+const getDbPort = () => process.env.DB_PORT;
 const getDbUsername = () => process.env.DB_USER_API;
 const getDbPassword = () => process.env.DB_USER_API_PASS;
 const getDbDatabase = () => process.env.DB_DATABASE;
 
-const DB_POOL_SIZE: number = Number(process.env.DB_POOL_SIZE) || 20;
-const DB_CONNECTION_TIMEOUT: number = Number(process.env.DB_CONNECTION_TIMEOUT) || 0;
-const DB_IDLE_TIMEOUT: number = Number(process.env.DB_IDLE_TIMEOUT) || 10000;
+const DB_POOL_SIZE = 20;
+const DB_CONNECTION_TIMEOUT = 0;
+const DB_IDLE_TIMEOUT = 10000;
 
 export const DB_CLIENT = 'pg';
 
@@ -72,15 +72,15 @@ let DBPool: pg.Pool | undefined;
  * If the pool cannot be created successfully, `process.exit(1)` is called to terminate the API.
  * Why? The API is of no use if the database can't be reached.
  *
- * @param {pg.PoolConfig} [poolConfig]
+ * @param {pg.PoolConfig} poolConfig
  */
-export const initDBPool = function (poolConfig?: pg.PoolConfig): void {
+export const initDBPool = function (poolConfig: pg.PoolConfig): void {
   if (DBPool) {
     // the pool has already been initialized, do nothing
     return;
   }
 
-  defaultLog.debug({ label: 'create db pool', message: 'pool config', poolConfig });
+  defaultLog.debug({ label: 'create db pool', message: 'pool config', poolConfig: { ...poolConfig, password: '***' } });
 
   try {
     DBPool = new pg.Pool(poolConfig);
@@ -103,13 +103,32 @@ export const getDBPool = function (): pg.Pool | undefined {
 
 export interface IDBConnection {
   /**
-   * Opens a new connection, begins a transaction, and sets the user context.
+   * Get a new pg client.
    *
-   * Note: Does nothing if the connection is already open.
+   * Note: This is not the same client that is initialized when calling `.open()`, and must be released manually by
+   * calling `client.release()`.
    *
    * @memberof IDBConnection
    */
-  open: () => Promise<void>;
+  getClient: () => Promise<pg.PoolClient>;
+  /**
+   * Opens a new connection, begins a transaction, and sets the user context.
+   *
+   * Note: Transaction bypassed if `config.transaction` is `false`.
+   * Note: Does nothing if the connection is already open.
+   *
+   * @param {{transaction: boolean}} [config] Optional configuration object (contains transaction flag)
+   * @memberof IDBConnection
+   */
+  open: (config?: { transaction: boolean }) => Promise<void>;
+
+  /**
+   * Check if the connection is opened
+   *
+   * @memberof IDBConnection
+   */
+  isConnectionOpen: () => boolean;
+
   /**
    * Releases (closes) the connection.
    *
@@ -132,17 +151,6 @@ export interface IDBConnection {
    * @memberof IDBConnection
    */
   rollback: () => Promise<void>;
-  /**
-   * Performs a query against this connection, returning the results.
-   *
-   * @param {string} text SQL text
-   * @param {any[]} [values] SQL values array (optional)
-   * @return {*}  {(Promise<QueryResult<any>>)}
-   * @throws If the connection is not open.
-   * @deprecated Prefer using `.sql` (pass entire statement object) or `.knex` (pass knex query builder object)
-   * @memberof IDBConnection
-   */
-  query: <T extends pg.QueryResultRow = any>(text: string, values?: any[]) => Promise<pg.QueryResult<T>>;
   /**
    * Performs a query against this connection, returning the results.
    *
@@ -234,16 +242,34 @@ export const getDBConnection = function (keycloakToken?: KeycloakUserInformation
   let _isOpen = false;
   let _isReleased = false;
   let _systemUserId: number | null = null;
+  let _isTransaction = false;
   const _token = keycloakToken;
+
+  /**
+   * Get a new pg client.
+   *
+   * @return {*}
+   */
+  const _getClient = async () => {
+    const pool = getDBPool();
+
+    if (!pool) {
+      throw Error('DBPool is not initialized');
+    }
+
+    return pool.connect();
+  };
 
   /**
    * Opens a new connection, begins a transaction, and sets the user context.
    *
+   * Note: Transaction bypassed if `config.transaction` is `false`.
    * Note: Does nothing if the connection is already open.
    *
+   * @param {{transaction: boolean}} config Configuration object (contains transaction flag)
    * @throws {Error} if called when the DBPool has not been initialized via `initDBPool`
    */
-  const _open = async () => {
+  const _open = async (config = { transaction: true }) => {
     if (_client || _isOpen) {
       return;
     }
@@ -257,9 +283,17 @@ export const getDBConnection = function (keycloakToken?: KeycloakUserInformation
     _client = await pool.connect();
     _isOpen = true;
     _isReleased = false;
+    _isTransaction = config.transaction;
 
     await _setUserContext();
-    await _client.query('BEGIN');
+
+    if (config.transaction) {
+      await _client.query('BEGIN');
+    }
+  };
+
+  const _isConnectionOpen = () => {
+    return _isOpen;
   };
 
   /**
@@ -279,6 +313,7 @@ export const getDBConnection = function (keycloakToken?: KeycloakUserInformation
     _client.release();
     _isOpen = false;
     _isReleased = true;
+    _isTransaction = false;
   };
 
   /**
@@ -289,6 +324,10 @@ export const getDBConnection = function (keycloakToken?: KeycloakUserInformation
   const _commit = async () => {
     if (!_client || !_isOpen) {
       throw Error('DBConnection is not open');
+    }
+
+    if (!_isTransaction) {
+      throw Error('DBConnection is not a transaction');
     }
 
     await _client.query('COMMIT');
@@ -302,6 +341,10 @@ export const getDBConnection = function (keycloakToken?: KeycloakUserInformation
   const _rollback = async () => {
     if (!_client || !_isOpen) {
       throw Error('DBConnection is not open');
+    }
+
+    if (!_isTransaction) {
+      throw Error('DBConnection is not a transaction');
     }
 
     await _client.query('ROLLBACK');
@@ -553,8 +596,9 @@ export const getDBConnection = function (keycloakToken?: KeycloakUserInformation
   };
 
   return {
+    getClient: asyncErrorWrapper(_getClient),
     open: asyncErrorWrapper(_open),
-    query: asyncErrorWrapper(_query),
+    isConnectionOpen: syncErrorWrapper(_isConnectionOpen),
     sql: asyncErrorWrapper(_sql),
     knex: asyncErrorWrapper(_knex),
     release: syncErrorWrapper(_release),

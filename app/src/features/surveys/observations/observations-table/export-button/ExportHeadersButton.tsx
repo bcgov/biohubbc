@@ -1,6 +1,6 @@
 import { mdiTrayArrowDown } from '@mdi/js';
 import Icon from '@mdi/react';
-import IconButton from '@mui/material/IconButton';
+import Button from '@mui/material/Button';
 import dayjs from 'dayjs';
 import { useObservationsTableContext } from 'hooks/useContext';
 import { makeCsvObjectUrl } from 'utils/Utils';
@@ -9,7 +9,7 @@ import { makeCsvObjectUrl } from 'utils/Utils';
 const excludedFields = [
   '__check__',
   'survey_sample_site_id',
-  'survey_sample_method_id',
+  'method_technique_id',
   'survey_sample_period_id',
   'actions'
 ];
@@ -22,7 +22,12 @@ const ExportHeadersButton = () => {
 
     const headerNames = tableColumns
       .filter((column) => !excludedFields.includes(column.field))
-      .map((column) => column.headerName);
+      .map((column) => column.headerName)
+      // Remove action columns that do not have a label, replaced below
+      .filter(Boolean);
+
+    // Inject action columns that do not have a label (eg. comment)
+    headerNames.push('comment');
 
     const csvObject: Record<string, ''>[] = [Object.fromEntries(headerNames.map((headerName) => [headerName, '']))];
 
@@ -37,9 +42,14 @@ const ExportHeadersButton = () => {
   };
 
   return (
-    <IconButton title="Download Observation CSV" onClick={handleDownload} aria-label="Download Observation CSV">
-      <Icon path={mdiTrayArrowDown} size={1} />
-    </IconButton>
+    <Button
+      title="Download Observation CSV"
+      variant="outlined"
+      onClick={handleDownload}
+      startIcon={<Icon path={mdiTrayArrowDown} size={1} />}
+      aria-label="Download Observation CSV">
+      Template
+    </Button>
   );
 };
 

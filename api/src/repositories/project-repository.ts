@@ -48,8 +48,16 @@ export class ProjectRepository extends BaseRepository {
         knex.raw(`MIN(s.start_date) as start_date`),
         knex.raw('MAX(s.end_date) as end_date'),
         knex.raw(`COALESCE(array_remove(array_agg(DISTINCT rl.region_name), null), '{}') as regions`),
-        knex.raw('array_remove(array_agg(distinct sp.itis_tsn), null) as focal_species'),
-        knex.raw('array_remove(array_agg(distinct st.type_id), null) as types')
+        knex.raw('array_remove(array_agg(DISTINCT sp.itis_tsn), null) as focal_species'),
+        knex.raw('array_remove(array_agg(DISTINCT st.type_id), null) as types'),
+        knex.raw(`
+          array_agg(
+            DISTINCT jsonb_build_object(
+              'system_user_id', su.system_user_id,
+              'display_name', su.display_name
+            )
+          ) as members
+        `)
       ])
       .from('project as p')
       .leftJoin('survey as s', 's.project_id', 'p.project_id')
@@ -58,7 +66,8 @@ export class ProjectRepository extends BaseRepository {
       .leftJoin('survey_region as sr', 'sr.survey_id', 's.survey_id')
       .leftJoin('region_lookup as rl', 'sr.region_id', 'rl.region_id')
       .leftJoin('project_participation as ppa', 'p.project_id', 'ppa.project_id')
-      .groupBy(['p.project_id', 'p.name', 'p.objectives']);
+      .leftJoin('system_user as su', 'ppa.system_user_id', 'su.system_user_id')
+      .groupBy(['p.project_id', 'p.name']);
 
     // Ensure that users can only see projects that they are participating in, unless they are an administrator.
     if (!isUserAdmin) {

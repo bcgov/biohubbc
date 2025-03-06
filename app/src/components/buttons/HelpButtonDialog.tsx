@@ -1,0 +1,55 @@
+import { mdiHelpCircleOutline } from '@mdi/js';
+import { Icon } from '@mdi/react';
+import { Button } from '@mui/material';
+import { CustomMarkdown } from 'components/markdown/CustomMarkdown';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useDialogContext } from 'hooks/useContext';
+import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
+import { PropsWithChildren } from 'react';
+
+interface IHelpButtonDialogProps {
+  markdownType: MarkdownTypeNameEnum;
+}
+
+/**
+ * Returns a button that opens a dialog containing markdown, allowing the user to score the markdown text if they haven't scored it yet.
+ *
+ * @param {PropsWithChildren<IHelpButtonDialogProps>} props
+ * @returns {*}
+ */
+const HelpButtonDialog = (props: PropsWithChildren<IHelpButtonDialogProps>) => {
+  const { markdownType, children } = props;
+
+  const dialogContext = useDialogContext();
+  const biohubApi = useBiohubApi();
+
+  const createDialogConfig = (markdown: any) => ({
+    open: true,
+    dialogContent: <CustomMarkdown markdown={markdown.data} />,
+    hasSubmitted: markdown.participated,
+    onSubmit: async (score: number) => {
+      await biohubApi.markdown.insertScore({ markdownId: markdown.markdown_id, score });
+      dialogContext.setScoreDialog({ hasSubmitted: true });
+    },
+    onOk: () => {
+      dialogContext.setScoreDialog({ open: false });
+    }
+  });
+
+  // Open the markdown dialog
+  const handleOpenDialog = async () => {
+    const { markdown } = await biohubApi.markdown.getMarkdown({ typeName: markdownType });
+
+    if (markdown) {
+      dialogContext.setScoreDialog(createDialogConfig(markdown));
+    }
+  };
+
+  return (
+    <Button variant="outlined" startIcon={<Icon path={mdiHelpCircleOutline} size={1} />} onClick={handleOpenDialog}>
+      {children ?? 'Help'}
+    </Button>
+  );
+};
+
+export default HelpButtonDialog;

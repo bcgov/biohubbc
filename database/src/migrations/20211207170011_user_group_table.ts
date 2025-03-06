@@ -780,7 +780,7 @@ export async function up(knex: Knex): Promise<void> {
 
     ALTER TABLE user_user_group ADD CONSTRAINT "Refsystem_uug_1"
     FOREIGN KEY (system_user_id)
-    REFERENCES system_user(system_user_id)
+    REFERENCES "system_user"(system_user_id)
   ;
 
   ALTER TABLE user_user_group ADD CONSTRAINT "Refuug_2"

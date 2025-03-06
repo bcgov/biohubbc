@@ -1,11 +1,9 @@
 import { ProjectRoleRouteGuard, SystemRoleRouteGuard } from 'components/security/RouteGuards';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { DialogContextProvider } from 'contexts/dialogContext';
-import { ObservationsContextProvider } from 'contexts/observationsContext';
 import { ProjectAuthStateContextProvider } from 'contexts/projectAuthStateContext';
 import { ProjectContextProvider } from 'contexts/projectContext';
 import { SurveyContextProvider } from 'contexts/surveyContext';
-import { TelemetryDataContextProvider } from 'contexts/telemetryDataContext';
 import ProjectPage from 'features/projects/view/ProjectPage';
 import CreateSurveyPage from 'features/surveys/CreateSurveyPage';
 import SurveyRouter from 'features/surveys/SurveyRouter';
@@ -94,11 +92,7 @@ const ProjectsRouter: React.FC = () => {
                   ]}
                   validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                   <SurveyContextProvider>
-                    <ObservationsContextProvider>
-                      <TelemetryDataContextProvider>
-                        <SurveyRouter />
-                      </TelemetryDataContextProvider>
-                    </ObservationsContextProvider>
+                    <SurveyRouter />
                   </SurveyContextProvider>
                 </ProjectRoleRouteGuard>
               </RouteWithTitle>

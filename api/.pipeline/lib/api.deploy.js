@@ -25,23 +25,28 @@ const apiDeploy = async (settings) => {
   objects.push(
     ...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/api.dc.yaml`, {
       param: {
+        NAMESPACE: phases[phase].namespace,
         NAME: phases[phase].name,
         SUFFIX: phases[phase].suffix,
         VERSION: phases[phase].tag,
         HOST: phases[phase].host,
         APP_HOST: phases[phase].appHost,
         CHANGE_ID: phases.build.changeId || changeId,
+        // Cronjobs
+        TELEMETRY_CRONJOB_SCHEDULE: phases[phase].telemetryCronjobSchedule,
+        TELEMETRY_CRONJOB_DISABLED: phases[phase].telemetryCronjobDisabled,
         // Node
         NODE_ENV: phases[phase].nodeEnv,
         NODE_OPTIONS: phases[phase].nodeOptions,
+        // Persistent Volume
+        VOLUME_CAPACITY: phases[phase].volumeCapacity,
         // BioHub Platform (aka: Backbone)
         BACKBONE_INTERNAL_API_HOST: phases[phase].backboneInternalApiHost,
         BACKBONE_INTAKE_PATH: phases[phase].backboneIntakePath,
         BACKBONE_ARTIFACT_INTAKE_PATH: phases[phase].backboneArtifactIntakePath,
         BIOHUB_TAXON_PATH: phases[phase].biohubTaxonPath,
         BIOHUB_TAXON_TSN_PATH: phases[phase].biohubTaxonTsnPath,
-        // BCTW / Critterbase
-        BCTW_API_HOST: phases[phase].bctwApiHost,
+        // Critterbase
         CB_API_HOST: phases[phase].critterbaseApiHost,
         // S3
         S3_KEY_PREFIX: phases[phase].s3KeyPrefix,
@@ -65,6 +70,13 @@ const apiDeploy = async (settings) => {
         KEYCLOAK_API_ENVIRONMENT: phases[phase].sso.cssApi.cssApiEnvironment,
         // Log Level
         LOG_LEVEL: phases[phase].logLevel,
+        LOG_LEVEL_FILE: phases[phase].logLevelFile,
+        LOG_FILE_DIR: phases[phase].logFileDir,
+        LOG_FILE_NAME: phases[phase].logFileName,
+        LOG_FILE_DATE_PATTERN: phases[phase].logFileDatePattern,
+        LOG_FILE_MAX_SIZE: phases[phase].logFileMaxSize,
+        LOG_FILE_MAX_FILES: phases[phase].logFileMaxFiles,
+        // Api Validation
         API_RESPONSE_VALIDATION_ENABLED: phases[phase].apiResponseValidationEnabled,
         DATABASE_RESPONSE_VALIDATION_ENABLED: phases[phase].databaseResponseValidationEnabled,
         // Feature Flags

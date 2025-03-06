@@ -1,18 +1,14 @@
 import { mdiCog, mdiLeaf, mdiRuler } from '@mdi/js';
-import Icon from '@mdi/react';
-import Button from '@mui/material/Button';
-import Divider from '@mui/material/Divider';
-import Grid from '@mui/material/Grid';
-import ToggleButton from '@mui/material/ToggleButton';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
-import { GridColDef } from '@mui/x-data-grid';
-import { IObservationTableRow } from 'contexts/observationsTableContext';
+import Box from '@mui/material/Box';
+import Stack from '@mui/material/Stack';
+import CustomToggleButtonGroup from 'components/toolbar/CustomToggleButtonGroup';
 import { ConfigureEnvironmentColumns } from 'features/surveys/observations/observations-table/configure-columns/components/environment/ConfigureEnvironmentColumns';
 import { ConfigureGeneralColumns } from 'features/surveys/observations/observations-table/configure-columns/components/general/ConfigureGeneralColumns';
 import { ConfigureMeasurementColumns } from 'features/surveys/observations/observations-table/configure-columns/components/measurements/ConfigureMeasurementColumns';
 import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
 import { EnvironmentType, EnvironmentTypeIds } from 'interfaces/useReferenceApi.interface';
 import { useState } from 'react';
+import { IHideableColumn } from '../ConfigureColumnsButton';
 
 export enum ConfigureColumnsViewEnum {
   MEASUREMENTS = 'MEASUREMENTS',
@@ -38,10 +34,10 @@ export interface IConfigureColumnsPageProps {
   /**
    * The column definitions of the columns that may be toggled to hidden or visible.
    *
-   * @type {GridColDef<IObservationTableRow>[]}
+   * @type {IHideableColumn[]}
    * @memberof IConfigureColumnsProps
    */
-  hideableColumns: GridColDef<IObservationTableRow>[];
+  hideableColumns: IHideableColumn[];
   /**
    * Callback fired on toggling the visibility of all columns.
    *
@@ -54,12 +50,6 @@ export interface IConfigureColumnsPageProps {
    * @memberof IConfigureColumnsPageProps
    */
   onToggleColumnVisibility: (field: string) => void;
-  /**
-   * Callback fired on removing measurements.
-   *
-   * @memberof IConfigureColumnsPageProps
-   */
-  onRemoveMeasurements: (measurementColumnsToRemove: string[]) => void;
   /**
    * The measurement columns.
    *
@@ -115,7 +105,6 @@ export const ConfigureColumnsPage = (props: IConfigureColumnsPageProps) => {
     hideableColumns,
     onToggleShowHideAll,
     onToggleColumnVisibility,
-    onRemoveMeasurements,
     measurementColumns,
     onAddMeasurementColumns,
     onRemoveMeasurementColumns,
@@ -126,68 +115,23 @@ export const ConfigureColumnsPage = (props: IConfigureColumnsPageProps) => {
 
   const [activeView, setActiveView] = useState(ConfigureColumnsViewEnum.GENERAL);
 
-  return (
-    <Grid container justifyContent="space-between" pr={2}>
-      <Grid item>
-        <ToggleButtonGroup
-          value={activeView}
-          onChange={(_, view) => {
-            if (!view) {
-              // An active view must be selected at all times
-              return;
-            }
+  const views = [
+    { value: ConfigureColumnsViewEnum.GENERAL, label: 'General', icon: mdiCog },
+    { value: ConfigureColumnsViewEnum.MEASUREMENTS, label: 'Species Attributes', icon: mdiRuler },
+    { value: ConfigureColumnsViewEnum.ENVIRONMENT, label: 'Environment', icon: mdiLeaf }
+  ];
 
-            setActiveView(view);
-          }}
-          exclusive
+  return (
+    <Stack direction="row" justifyContent="space-between" pr={2} mt={1} height="100%" spacing={5}>
+      <Box sx={{ minWidth: '250px', flex: 0.2 }}>
+        <CustomToggleButtonGroup
+          views={views}
+          activeView={activeView}
+          onViewChange={(view) => setActiveView(view)}
           orientation="vertical"
-          sx={{
-            width: '100%',
-            gap: 1,
-            '& Button': {
-              textAlign: 'left',
-              display: 'flex',
-              justifyContent: 'flex-start',
-              py: 1,
-              px: 2,
-              border: 'none',
-              borderRadius: '4px !important',
-              fontSize: '0.875rem',
-              fontWeight: 700,
-              letterSpacing: '0.02rem'
-            }
-          }}>
-          <ToggleButton
-            key={ConfigureColumnsViewEnum.GENERAL}
-            component={Button}
-            color="primary"
-            startIcon={<Icon path={mdiCog} size={0.75} />}
-            disabled={disabled}
-            value={ConfigureColumnsViewEnum.GENERAL}>
-            General
-          </ToggleButton>
-          <ToggleButton
-            key={ConfigureColumnsViewEnum.MEASUREMENTS}
-            component={Button}
-            color="primary"
-            startIcon={<Icon path={mdiRuler} size={0.75} />}
-            disabled={disabled}
-            value={ConfigureColumnsViewEnum.MEASUREMENTS}>
-            Measurements
-          </ToggleButton>
-          <ToggleButton
-            key={ConfigureColumnsViewEnum.ENVIRONMENT}
-            component={Button}
-            color="primary"
-            startIcon={<Icon path={mdiLeaf} size={0.75} />}
-            disabled={disabled}
-            value={ConfigureColumnsViewEnum.ENVIRONMENT}>
-            Environment
-          </ToggleButton>
-        </ToggleButtonGroup>
-      </Grid>
-      <Divider orientation="vertical" flexItem />
-      <Grid item xs={9.5}>
+        />
+      </Box>
+      <Box height="100%" flex={0.8}>
         {activeView === ConfigureColumnsViewEnum.GENERAL && (
           <ConfigureGeneralColumns
             key={ConfigureColumnsViewEnum.GENERAL}
@@ -196,10 +140,6 @@ export const ConfigureColumnsPage = (props: IConfigureColumnsPageProps) => {
             hideableColumns={hideableColumns}
             onToggleShowHideAll={onToggleShowHideAll}
             onToggleColumnVisibility={onToggleColumnVisibility}
-            onRemoveMeasurements={onRemoveMeasurements}
-            measurementColumns={measurementColumns}
-            onRemoveEnvironmentColumns={onRemoveEnvironmentColumns}
-            environmentColumns={environmentColumns}
           />
         )}
         {activeView === ConfigureColumnsViewEnum.MEASUREMENTS && (
@@ -218,7 +158,7 @@ export const ConfigureColumnsPage = (props: IConfigureColumnsPageProps) => {
             onRemoveEnvironmentColumns={onRemoveEnvironmentColumns}
           />
         )}
-      </Grid>
-    </Grid>
+      </Box>
+    </Stack>
   );
 };

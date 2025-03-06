@@ -5,7 +5,7 @@ import { OpenAPIV3 } from 'openapi-types';
 import path from 'path';
 import swaggerUIExperss from 'swagger-ui-express';
 import { defaultPoolConfig, initDBPool } from './database/db';
-import { ensureHTTPError, HTTP500 } from './errors/http-error';
+import { ensureHTTPError, HTTP400, HTTP500 } from './errors/http-error';
 import {
   authorizeAndAuthenticateMiddleware,
   getCritterbaseProxyMiddleware,
@@ -13,27 +13,31 @@ import {
 } from './middleware/critterbase-proxy';
 import { rootAPIDoc } from './openapi/root-api-doc';
 import { authenticateRequest, authenticateRequestOptional } from './request-handlers/security/authentication';
+import { initRequestStorage } from './utils/async-request-storage';
+import { loadEnvironmentVariables } from './utils/env-config';
+import { scanFileForVirus } from './utils/file-utils';
 import { getLogger } from './utils/logger';
+
+// Load and validate the environment variables
+loadEnvironmentVariables();
 
 const defaultLog = getLogger('app');
 
 const HOST = process.env.API_HOST;
-const PORT = Number(process.env.API_PORT);
+const PORT = process.env.API_PORT;
 
 // Max size of the body of the request (bytes)
-const MAX_REQ_BODY_SIZE = Number(process.env.MAX_REQ_BODY_SIZE) || 52428800;
+const MAX_REQ_BODY_SIZE = process.env.MAX_REQ_BODY_SIZE;
 // Max number of files in a single request
-const MAX_UPLOAD_NUM_FILES = Number(process.env.MAX_UPLOAD_NUM_FILES) || 10;
+const MAX_UPLOAD_NUM_FILES = process.env.MAX_UPLOAD_NUM_FILES;
 // Max size of a single file (bytes)
-const MAX_UPLOAD_FILE_SIZE = Number(process.env.MAX_UPLOAD_FILE_SIZE) || 52428800;
+const MAX_UPLOAD_FILE_SIZE = process.env.MAX_UPLOAD_FILE_SIZE;
 
 // Get initial express app
 const app: express.Express = express();
 
 // Enable CORS
 app.use(function (req: Request, res: Response, next: NextFunction) {
-  defaultLog.debug(`${req.method} ${req.url}`);
-
   res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Authorization, responseType');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE, HEAD');
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -43,6 +47,8 @@ app.use(function (req: Request, res: Response, next: NextFunction) {
     res.status(200).end();
     return;
   }
+
+  defaultLog.debug({ message: 'request', label: 'api-middleware', method: req.method, url: req.url });
 
   next();
 });
@@ -75,7 +81,7 @@ const openAPIFramework = initialize({
     'application/json': express.json({ limit: MAX_REQ_BODY_SIZE }),
     'multipart/form-data': function (req, res, next) {
       const multerRequestHandler = multer({
-        storage: multer.memoryStorage(),
+        storage: multer.memoryStorage(), // TODO change to local/PVC storage and stream file uploads to S3?
         limits: { fileSize: MAX_UPLOAD_FILE_SIZE }
       }).array('media', MAX_UPLOAD_NUM_FILES);
 
@@ -89,8 +95,24 @@ const openAPIFramework = initialize({
        *
        * @see https://www.npmjs.com/package/express-openapi#argsconsumesmiddleware
        */
-      multerRequestHandler(req, res, (error?: any) => {
+      multerRequestHandler(req, res, async (error?: any) => {
         if (error) {
+          return next(error);
+        }
+
+        // Scan files for malicious content, if enabled
+        const virusScanPromises = (req.files as Express.Multer.File[]).map(async function (file) {
+          const isSafe = await scanFileForVirus(file);
+
+          if (!isSafe) {
+            throw new HTTP400('Malicious file content detected.', [{ file_name: file.originalname }]);
+          }
+        });
+
+        try {
+          await Promise.all(virusScanPromises);
+        } catch (error) {
+          // If a virus is detected, return error and do not continue
           return next(error);
         }
 
@@ -98,7 +120,7 @@ const openAPIFramework = initialize({
         const multerFiles = req.files ?? [];
 
         req.files = multerFiles;
-        req.body.media = multerFiles;
+        req.body = { ...req.body, media: multerFiles };
 
         return next();
       });
@@ -167,6 +189,9 @@ try {
  */
 function getAdditionalMiddleware(): express.RequestHandler[] {
   const additionalMiddleware = [];
+
+  // Initialize the request storage for each request
+  additionalMiddleware.push(initRequestStorage);
 
   if (process.env.API_RESPONSE_VALIDATION_ENABLED === 'true') {
     // Validate endpoint responses against openapi spec

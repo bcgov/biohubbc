@@ -341,7 +341,7 @@ describe('FundingSourceRepository', () => {
 
   describe('getFundingSourceSupplementaryData', () => {
     it('returns a single funding source basic supplementary data', async () => {
-      const expectedResult = { survey_reference_count: 1, survey_reference_amount_total: 1 };
+      const expectedResult = { survey_reference_count: 1 };
 
       const mockResponse = { rowCount: 1, rows: [expectedResult] } as unknown as Promise<QueryResult<any>>;
 
@@ -382,7 +382,6 @@ describe('FundingSourceRepository', () => {
           survey_funding_source_id: 1,
           survey_id: 1,
           funding_source_id: 1,
-          amount: 1,
           revision_count: 1
         }
       ];
@@ -407,7 +406,7 @@ describe('FundingSourceRepository', () => {
 
       const fundingSourceRepository = new FundingSourceRepository(dbConnection);
 
-      const response = await fundingSourceRepository.postSurveyFundingSource(1, 1, 100);
+      const response = await fundingSourceRepository.postSurveyFundingSource(1, 1);
 
       expect(response).to.eql(undefined);
     });
@@ -420,7 +419,7 @@ describe('FundingSourceRepository', () => {
       const fundingSourceRepository = new FundingSourceRepository(dbConnection);
 
       try {
-        await fundingSourceRepository.postSurveyFundingSource(1, 1, 100);
+        await fundingSourceRepository.postSurveyFundingSource(1, 1);
 
         expect.fail();
       } catch (error) {
@@ -437,7 +436,7 @@ describe('FundingSourceRepository', () => {
 
       const fundingSourceRepository = new FundingSourceRepository(dbConnection);
 
-      const response = await fundingSourceRepository.putSurveyFundingSource(1, 1, 100, 1);
+      const response = await fundingSourceRepository.putSurveyFundingSource(1, 1, 1);
 
       expect(response).to.eql(undefined);
     });
@@ -450,7 +449,7 @@ describe('FundingSourceRepository', () => {
       const fundingSourceRepository = new FundingSourceRepository(dbConnection);
 
       try {
-        await fundingSourceRepository.putSurveyFundingSource(1, 1, 100, 1);
+        await fundingSourceRepository.putSurveyFundingSource(1, 1, 1);
 
         expect.fail();
       } catch (error) {

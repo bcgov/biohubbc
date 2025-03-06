@@ -17,7 +17,7 @@ export interface IHorizontalSplitFormComponentProps {
    * @type {string}
    * @memberof IHorizontalSplitFormComponentProps
    */
-  summary?: string;
+  summary?: string | ReactElement;
   /**
    * The form component to render
    *
@@ -43,7 +43,7 @@ const HorizontalSplitFormComponent = (props: PropsWithChildren<IHorizontalSplitF
           {title}
         </Typography>
         {summary && (
-          <Box pt={1.25} maxWidth="55ch">
+          <Box pt={1.25} maxWidth="55ch" width="85%">
             <Typography variant="body1" color="textSecondary">
               {summary}
             </Typography>

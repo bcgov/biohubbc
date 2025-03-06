@@ -1,43 +1,17 @@
+import { Knex } from 'knex';
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
+import {
+  IGetRoles,
+  ISystemUserFilterObject,
+  SystemUserWithRoles,
+  UserSearchCriteria
+} from '../models/system-user-view';
+import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { BaseRepository } from './base-repository';
-
-export const SystemUser = z.object({
-  system_user_id: z.number(),
-  user_identifier: z.string(),
-  user_guid: z.string().nullable(),
-  identity_source: z.string(),
-  record_end_date: z.string().nullable(),
-  role_ids: z.array(z.number()),
-  role_names: z.array(z.string()),
-  email: z.string(),
-  display_name: z.string(),
-  given_name: z.string().nullable(),
-  family_name: z.string().nullable(),
-  agency: z.string().nullable()
-});
-
-export type SystemUser = z.infer<typeof SystemUser>;
-
-export interface IInsertUser {
-  system_user_id: number;
-  user_identity_source_id: number;
-  user_identifier: number;
-  record_effective_date: string;
-  record_end_date: string;
-}
-
-export interface IGetRoles {
-  system_role_id: number;
-  name: string;
-}
-
-export interface UserSearchCriteria {
-  keyword?: 'string';
-}
 
 export class UserRepository extends BaseRepository {
   /**
@@ -64,10 +38,10 @@ export class UserRepository extends BaseRepository {
    * Fetch a single system user by their system user ID.
    *
    * @param {number} systemUserId
-   * @return {*}  {Promise<SystemUser>}
+   * @return {*}  {Promise<SystemUserWithRoles>}
    * @memberof UserRepository
    */
-  async getUserById(systemUserId: number): Promise<SystemUser> {
+  async getUserById(systemUserId: number): Promise<SystemUserWithRoles> {
     const sqlStatement = SQL`
     SELECT
       su.system_user_id,
@@ -83,7 +57,7 @@ export class UserRepository extends BaseRepository {
       su.family_name,
       su.agency
     FROM
-      system_user su
+      "system_user" su
     LEFT JOIN
       system_user_role sur
     ON
@@ -113,7 +87,7 @@ export class UserRepository extends BaseRepository {
       su.agency;
   `;
 
-    const response = await this.connection.sql(sqlStatement, SystemUser);
+    const response = await this.connection.sql(sqlStatement, SystemUserWithRoles);
 
     if (response.rowCount !== 1) {
       throw new ApiExecuteSQLError('Failed to get user by id', [
@@ -128,10 +102,10 @@ export class UserRepository extends BaseRepository {
    * Get an existing system user by their GUID.
    *
    * @param {string} userGuid the user's GUID
-   * @return {*}  {Promise<SystemUser>}
+   * @return {*}  {Promise<SystemUserWithRoles>}
    * @memberof UserRepository
    */
-  async getUserByGuid(userGuid: string): Promise<SystemUser[]> {
+  async getUserByGuid(userGuid: string): Promise<SystemUserWithRoles[]> {
     const sqlStatement = SQL`
     SELECT
       su.system_user_id,
@@ -147,7 +121,7 @@ export class UserRepository extends BaseRepository {
       su.family_name,
       su.agency
     FROM
-      system_user su
+      "system_user" su
     LEFT JOIN
       system_user_role sur
     ON
@@ -175,7 +149,7 @@ export class UserRepository extends BaseRepository {
       su.agency;
   `;
 
-    const response = await this.connection.sql(sqlStatement, SystemUser);
+    const response = await this.connection.sql(sqlStatement, SystemUserWithRoles);
 
     return response.rows;
   }
@@ -185,11 +159,11 @@ export class UserRepository extends BaseRepository {
    *
    * @param userIdentifier the user's identifier
    * @param identitySource the user's identity source, e.g. `'IDIR'`
-   * @return {*} {(Promise<SystemUser[]>)} Promise resolving an array containing the user, if they match the
+   * @return {*} {(Promise<SystemUserWithRoles[]>)} Promise resolving an array containing the user, if they match the
    * search criteria.
    * @memberof UserService
    */
-  async getUserByIdentifier(userIdentifier: string, identitySource: string): Promise<SystemUser[]> {
+  async getUserByIdentifier(userIdentifier: string, identitySource: string): Promise<SystemUserWithRoles[]> {
     const sqlStatement = SQL`
       SELECT
         su.system_user_id,
@@ -205,7 +179,7 @@ export class UserRepository extends BaseRepository {
         su.family_name,
         su.agency
       FROM
-        system_user su
+        "system_user" su
       LEFT JOIN
         system_user_role sur
       ON
@@ -235,7 +209,7 @@ export class UserRepository extends BaseRepository {
         su.agency;
     `;
 
-    const response = await this.connection.sql(sqlStatement, SystemUser);
+    const response = await this.connection.sql(sqlStatement, SystemUserWithRoles);
 
     return response.rows;
   }
@@ -264,7 +238,7 @@ export class UserRepository extends BaseRepository {
   ): Promise<{ system_user_id: number }> {
     const sqlStatement = SQL`
     INSERT INTO
-      system_user
+      "system_user"
     (
       user_guid,
       user_identity_source_id,
@@ -307,57 +281,118 @@ export class UserRepository extends BaseRepository {
   }
 
   /**
-   * Get a list of all system users.
+   * Builds the base query for system users without filtering any records.
    *
-   * @return {*}  {Promise<SystemUser[]>}
+   * @return {*}  {Knex.QueryBuilder}
    * @memberof UserRepository
    */
-  async listSystemUsers(): Promise<SystemUser[]> {
-    const sqlStatement = SQL`
-    SELECT
-      su.system_user_id,
-      su.user_guid,
-      su.user_identifier,
-      su.record_end_date,
-      uis.name AS identity_source,
-      array_remove(array_agg(sr.system_role_id), NULL) AS role_ids,
-      array_remove(array_agg(sr.name), NULL) AS role_names,
-      su.email,
-      su.display_name,
-      su.given_name,
-      su.family_name,
-      su.agency
-    FROM
-      system_user su
-    LEFT JOIN
-      system_user_role sur
-    ON
-      su.system_user_id = sur.system_user_id
-    LEFT JOIN
-      system_role sr
-    ON
-      sur.system_role_id = sr.system_role_id
-    LEFT JOIN
-      user_identity_source uis
-    ON
-      su.user_identity_source_id = uis.user_identity_source_id
-    WHERE
-      su.record_end_date IS NULL AND uis.name not in (${SYSTEM_IDENTITY_SOURCE.DATABASE})
-    GROUP BY
-      su.system_user_id,
-      su.user_guid,
-      su.record_end_date,
-      su.user_identifier,
-      uis.name,
-      su.email,
-      su.display_name,
-      su.given_name,
-      su.family_name,
-      su.agency;
-  `;
-    const response = await this.connection.sql(sqlStatement, SystemUser);
+  private _getSystemUsersBaseQuery(): Knex.QueryBuilder {
+    const knex = getKnex();
+
+    const queryBuilder = knex
+      .select(
+        'su.system_user_id',
+        'su.user_guid',
+        'su.user_identifier',
+        'su.record_end_date',
+        'uis.name as identity_source',
+        knex.raw('array_remove(array_agg(sr.system_role_id), NULL) as role_ids'),
+        knex.raw('array_remove(array_agg(sr.name), NULL) as role_names'),
+        'su.email',
+        'su.display_name',
+        'su.given_name',
+        'su.family_name',
+        'su.agency'
+      )
+      .from('system_user as su')
+      .leftJoin('system_user_role as sur', 'su.system_user_id', 'sur.system_user_id')
+      .leftJoin('system_role as sr', 'sur.system_role_id', 'sr.system_role_id')
+      .leftJoin('user_identity_source as uis', 'su.user_identity_source_id', 'uis.user_identity_source_id')
+      .whereNull('su.record_end_date')
+      .whereNotIn('uis.name', [SYSTEM_IDENTITY_SOURCE.DATABASE, SYSTEM_IDENTITY_SOURCE.SYSTEM])
+      .groupBy(
+        'su.system_user_id',
+        'su.user_guid',
+        'su.user_identifier',
+        'su.record_end_date',
+        'uis.name',
+        'su.email',
+        'su.display_name',
+        'su.given_name',
+        'su.family_name',
+        'su.agency'
+      );
+
+    return queryBuilder;
+  }
+
+  /**
+   * Get a list of all system users.
+   *
+   * @param {ISystemUserFilterObject} filters
+   * @param {ApiPaginationOptions} pagination
+   * @return {*}  {Promise<SystemUserWithRoles[]>}
+   * @memberof UserRepository
+   */
+  async listSystemUsers(
+    filters: ISystemUserFilterObject,
+    pagination?: ApiPaginationOptions
+  ): Promise<SystemUserWithRoles[]> {
+    const queryBuilder = this._getSystemUsersBaseQuery();
+
+    if (filters.system_roles?.length) {
+      queryBuilder.whereRaw('LOWER(sr.name) LIKE ANY (?)', [
+        filters.system_roles.map((role) => `%${role.toLowerCase()}%`)
+      ]);
+    }
+
+    if (filters.system_user_ids?.length) {
+      queryBuilder.whereIn('su.system_user_id', filters.system_user_ids);
+    }
+
+    if (pagination) {
+      queryBuilder.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
+
+      if (pagination.sort && pagination.order) {
+        queryBuilder.orderBy(pagination.sort, pagination.order);
+      } else {
+        queryBuilder.orderBy('su.system_user_id', 'desc');
+      }
+    }
+
+    const response = await this.connection.knex(queryBuilder, SystemUserWithRoles);
 
     return response.rows;
+  }
+
+  /**
+   * Get system users count
+   *
+   * @param {ISystemUserFilterObject} filters
+   * @return {*}  {Promise<number>}
+   * @memberof UserRepository
+   */
+  async getSystemUsersCount(filters: ISystemUserFilterObject): Promise<number> {
+    const knex = getKnex();
+
+    const queryBuilder = this._getSystemUsersBaseQuery();
+
+    if (filters.system_roles?.length) {
+      queryBuilder.whereRaw('LOWER(sr.name) LIKE ANY (?)', [
+        filters.system_roles.map((role) => `%${role.toLowerCase()}%`)
+      ]);
+    }
+
+    if (filters.system_user_ids?.length) {
+      queryBuilder.whereIn('su.system_user_id', filters.system_user_ids);
+    }
+
+    // Subquery to count the records
+    const countQuery = knex.from(queryBuilder.as('qb')).select(knex.raw('count(*)::integer as count'));
+
+    const response = await this.connection.knex(countQuery, z.object({ count: z.number() }));
+
+    return response.rows[0].count;
   }
 
   /**
@@ -369,7 +404,7 @@ export class UserRepository extends BaseRepository {
   async activateSystemUser(systemUserId: number) {
     const sqlStatement = SQL`
       UPDATE
-        system_user
+        "system_user"
       SET
         record_end_date = NULL
       WHERE
@@ -401,7 +436,7 @@ export class UserRepository extends BaseRepository {
   async deactivateSystemUser(systemUserId: number) {
     const sqlStatement = SQL`
       UPDATE
-        system_user
+        "system_user"
       SET
         record_end_date = now()
       WHERE
@@ -520,10 +555,10 @@ export class UserRepository extends BaseRepository {
    * Get an array of users based on search criteria.
    *
    * @param {UserSearchCriteria} searchCriteria
-   * @return {*}  {Promise<SystemUser[]>}
+   * @return {*}  {Promise<SystemUserWithRoles[]>}
    * @memberof UserRepository
    */
-  async getUsers(searchCriteria: UserSearchCriteria): Promise<SystemUser[]> {
+  async getUsers(searchCriteria: UserSearchCriteria): Promise<SystemUserWithRoles[]> {
     const knex = getKnex();
     const queryBuilder = knex.queryBuilder();
 
@@ -582,7 +617,7 @@ export class UserRepository extends BaseRepository {
 
     queryBuilder.limit(50);
 
-    const response = await this.connection.knex(queryBuilder, SystemUser);
+    const response = await this.connection.knex(queryBuilder, SystemUserWithRoles);
 
     return response.rows;
   }

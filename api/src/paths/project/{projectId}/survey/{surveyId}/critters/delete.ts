@@ -47,6 +47,7 @@ POST.apiDoc = {
   ],
   requestBody: {
     description: 'Array of survey critter Ids to be deleted.',
+    required: true,
     content: {
       'application/json': {
         schema: {

@@ -90,38 +90,6 @@ export interface ILatLong {
   long: number;
 }
 
-const LAT_LONG_STRING_FORMAT = RegExp(/^[+-]?(\d*[.])?\d+ [+-]?(\d*[.])?\d+$/i);
-
-/**
- * Parses a `latitude longitude` string of the form: `49.116906	-122.62887`
- *
- * @export
- * @param {string} latLong
- * @return {*}  {(ILatLong | null)}
- */
-export function parseLatLongString(latLong: string): ILatLong | null {
-  if (!latLong || !LAT_LONG_STRING_FORMAT.test(latLong)) {
-    // latLong string is null or does not match the expected format
-    return null;
-  }
-
-  const latLongParts = latLong.split(' ');
-
-  const lat = Number(latLongParts[0]);
-  if (lat < -90 || lat > 90) {
-    // latitude is invalid
-    return null;
-  }
-
-  const long = Number(latLongParts[1]);
-  if (long < -180 || long > 180) {
-    // longitude is invalid
-    return null;
-  }
-
-  return { lat, long };
-}
-
 /**
  * Function to generate the SQL for insertion of a geometry collection
  *

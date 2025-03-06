@@ -4,11 +4,13 @@ import { DialogContextProvider } from 'contexts/dialogContext';
 import { SamplingSiteManagePage } from 'features/surveys/sampling-information/manage/SamplingSiteManagePage';
 import { CreateSamplingSitePage } from 'features/surveys/sampling-information/sites/create/CreateSamplingSitePage';
 import { EditSamplingSitePage } from 'features/surveys/sampling-information/sites/edit/EditSamplingSitePage';
-import { CreateTechniquePage } from 'features/surveys/sampling-information/techniques/form/create/CreateTechniquePage';
-import { EditTechniquePage } from 'features/surveys/sampling-information/techniques/form/edit/EditTechniquePage';
+import { CreateTechniquePage } from 'features/surveys/sampling-information/techniques/create/CreateTechniquePage';
+import { EditTechniquePage } from 'features/surveys/sampling-information/techniques/edit/EditTechniquePage';
 import { Switch } from 'react-router';
 import RouteWithTitle from 'utils/RouteWithTitle';
 import { getTitle } from 'utils/Utils';
+import { CreateSamplePeriodPage } from './periods/create/CreateSamplePeriodPage';
+import { EditSamplePeriodPage } from './periods/edit/EditSamplePeriodPage';
 
 /**
  * Router for all `/admin/projects/:id/surveys/:survey_id/sampling/*` pages.
@@ -22,18 +24,26 @@ export const SamplingRouter = () => {
         exact
         path="/admin/projects/:id/surveys/:survey_id/sampling"
         title={getTitle('Manage Sampling Information')}>
-        <DialogContextProvider>
-          <SamplingSiteManagePage />
-        </DialogContextProvider>
+        <ProjectRoleRouteGuard
+          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+          validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+          <DialogContextProvider>
+            <SamplingSiteManagePage />
+          </DialogContextProvider>
+        </ProjectRoleRouteGuard>
       </RouteWithTitle>
 
       <RouteWithTitle
         exact
         path="/admin/projects/:id/surveys/:survey_id/sampling/create"
         title={getTitle('Create Sampling Sites')}>
-        <DialogContextProvider>
-          <CreateSamplingSitePage />
-        </DialogContextProvider>
+        <ProjectRoleRouteGuard
+          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+          validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+          <DialogContextProvider>
+            <CreateSamplingSitePage />
+          </DialogContextProvider>
+        </ProjectRoleRouteGuard>
       </RouteWithTitle>
 
       <RouteWithTitle
@@ -53,17 +63,43 @@ export const SamplingRouter = () => {
         exact
         path="/admin/projects/:id/surveys/:survey_id/sampling/techniques/create"
         title={getTitle('Create Technique')}>
-        <DialogContextProvider>
-          <CreateTechniquePage />
-        </DialogContextProvider>
+        <ProjectRoleRouteGuard
+          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+          validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+          <DialogContextProvider>
+            <CreateTechniquePage />
+          </DialogContextProvider>
+        </ProjectRoleRouteGuard>
       </RouteWithTitle>
 
       <RouteWithTitle
         exact
         path="/admin/projects/:id/surveys/:survey_id/sampling/techniques/:method_technique_id/edit"
         title={getTitle('Edit Technique')}>
+        <ProjectRoleRouteGuard
+          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+          validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+          <DialogContextProvider>
+            <EditTechniquePage />
+          </DialogContextProvider>
+        </ProjectRoleRouteGuard>
+      </RouteWithTitle>
+
+      <RouteWithTitle
+        exact
+        path="/admin/projects/:id/surveys/:survey_id/sampling/period/create"
+        title={getTitle('Create Periods')}>
         <DialogContextProvider>
-          <EditTechniquePage />
+          <CreateSamplePeriodPage />
+        </DialogContextProvider>
+      </RouteWithTitle>
+
+      <RouteWithTitle
+        exact
+        path="/admin/projects/:id/surveys/:survey_id/sampling/period/:survey_sample_period_id/edit"
+        title={getTitle('Edit Period')}>
+        <DialogContextProvider>
+          <EditSamplePeriodPage />
         </DialogContextProvider>
       </RouteWithTitle>
     </Switch>

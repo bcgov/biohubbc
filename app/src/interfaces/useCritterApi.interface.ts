@@ -2,20 +2,21 @@ import { ICreateCritterCollectionUnit } from 'features/surveys/view/survey-anima
 import { Feature } from 'geojson';
 import { IPartialTaxonomy } from './useTaxonomyApi.interface';
 
-export interface ICritterCreate {
+export type ICritterCreate = {
   critter_id?: string;
   wlh_id?: string | null;
   animal_id?: string | null;
-  sex: string;
+  sex_qualitative_option_id: string | null;
   itis_tsn: number;
   responsible_region_nr_id?: string | null;
   critter_comment?: string | null;
-}
+};
 
 export interface ICreateEditAnimalRequest {
   critter_id?: string;
   nickname: string;
   species: IPartialTaxonomy | null;
+  sex_qualitative_option_id: string | null;
   ecological_units: ICreateCritterCollectionUnit[];
   wildlife_health_id: string | null;
   critter_comment: string | null;
@@ -88,10 +89,22 @@ export interface IMeasurementsUpdate {
 }
 
 export interface ICreateCaptureRequest extends IMarkings, IMeasurementsCreate {
+  attachments: {
+    capture_attachments: {
+      create: Record<string, File>;
+      delete?: never;
+    };
+  };
   capture: ICapturePostData;
 }
 
 export interface IEditCaptureRequest extends IMarkings, IMeasurementsUpdate {
+  attachments: {
+    capture_attachments: {
+      create: Record<string, File>;
+      delete: number[];
+    };
+  };
   capture: ICapturePostData;
 }
 
@@ -102,6 +115,27 @@ export interface ICreateMortalityRequest extends IMarkings, IMeasurementsCreate 
 export interface IEditMortalityRequest extends IMarkings, IMeasurementsUpdate {
   mortality: IMortalityPostData;
 }
+
+export interface ICollectionUnitMultiTsnResponse {
+  tsn: number;
+  categories: ICollectionCategory[];
+}
+
+interface ICritterAttachmentBase {
+  uuid: string;
+  critter_id: number;
+  file_type: string;
+  file_name: string;
+  file_size: number;
+  title: string | null;
+  description: string | null;
+  key: string;
+}
+
+export type ICritterCaptureAttachment = {
+  critter_capture_attachment_id: number;
+  critterbase_capture_id: string;
+} & ICritterAttachmentBase;
 
 export interface ICollectionCategory {
   collection_category_id: string;
@@ -146,7 +180,21 @@ type ILocationResponse = {
   wmu_id: string | null;
 };
 
+export type ILocationCreate = {
+  location_id?: string;
+  latitude: number;
+  longitude: number;
+  coordinate_uncertainty?: number | null;
+  coordinate_uncertainty_unit?: string;
+  temperature?: number | null;
+  location_comment?: string | null;
+  region_env_id?: string | null;
+  region_nr_id?: string | null;
+  wmu_id?: string | null;
+};
+
 export type ICaptureResponse = {
+  critter_id: string;
   capture_id: string;
   capture_date: string;
   capture_method_id: string | null;
@@ -243,6 +291,7 @@ export type ICauseOfDeathOption = {
 };
 
 export type IMortalityResponse = {
+  critter_id: string;
   mortality_id: string;
   location_id: string | null;
   mortality_timestamp: string;
@@ -268,13 +317,19 @@ export type IFamilyChildResponse = {
   child_critter_id: string;
 };
 
+export interface ISex {
+  qualitative_option_id: string;
+  label: string;
+}
+
 export type ICritterDetailedResponse = {
-  critter_id: string;
+  critter_id: number;
+  critterbase_critter_id: string;
   itis_tsn: number;
   itis_scientific_name: string;
   wlh_id: string | null;
   animal_id: string | null;
-  sex: string;
+  sex: ISex | null;
   responsible_region_nr_id: string;
   critter_comment: string | null;
   collection_units: ICritterCollectionUnitResponse[];
@@ -287,13 +342,17 @@ export type ICritterDetailedResponse = {
   };
   family_parent: IFamilyParentResponse[];
   family_child: IFamilyChildResponse[];
+  attachments: {
+    capture_attachments: ICritterCaptureAttachment[];
+  };
 };
 
 export interface ICritterSimpleResponse {
-  critter_id: string;
+  critter_id: number;
+  critterbase_critter_id: string;
   wlh_id: string | null;
   animal_id: string | null;
-  sex: string;
+  sex: ISex;
   itis_tsn: number;
   itis_scientific_name: string;
   responsible_region_nr_id: string | null;
@@ -386,6 +445,6 @@ export type CBMeasurementSearchByTsnResponse = {
  * Response object when searching for measurement type definitions by search term.
  */
 export type CBMeasurementSearchByTermResponse = {
-  qualitative: (CBQualitativeMeasurementTypeDefinition & { tsnHierarchy: number[] })[];
-  quantitative: (CBQuantitativeMeasurementTypeDefinition & { tsnHierarchy: number[] })[];
+  qualitative: CBQualitativeMeasurementTypeDefinition[];
+  quantitative: CBQuantitativeMeasurementTypeDefinition[];
 };

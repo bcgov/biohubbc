@@ -11,8 +11,10 @@ import {
   TechniqueRepository
 } from '../repositories/technique-repository';
 import { AttractantService } from './attractants-service';
+import { SamplePeriodService } from './sample-period-service';
 import { TechniqueAttributeService } from './technique-attributes-service';
 import { TechniqueService } from './technique-service';
+import { TechniqueVantageService } from './technique-vantage-service';
 
 chai.use(sinonChai);
 
@@ -29,11 +31,13 @@ describe('TechniqueService', () => {
         name: 'name',
         description: 'desc',
         distance_threshold: 200,
+        method_response_metric_id: 3,
         attractants: [],
         attributes: {
           qualitative_attributes: [],
           quantitative_attributes: []
-        }
+        },
+        vantage_methods: []
       };
 
       sinon.stub(TechniqueRepository.prototype, 'getTechniqueById').resolves(mockRecord);
@@ -59,11 +63,13 @@ describe('TechniqueService', () => {
         name: 'name',
         description: 'desc',
         distance_threshold: 200,
+        method_response_metric_id: 3,
         attractants: [],
         attributes: {
           qualitative_attributes: [],
           quantitative_attributes: []
-        }
+        },
+        vantage_methods: []
       };
 
       sinon.stub(TechniqueRepository.prototype, 'getTechniquesForSurveyId').resolves([mockRecord]);
@@ -113,6 +119,9 @@ describe('TechniqueService', () => {
       const insertQuantitativeAttributesForTechniqueStub = sinon
         .stub(TechniqueAttributeService.prototype, 'insertQuantitativeAttributesForTechnique')
         .resolves();
+      const insertVantagesForTechniqueStub = sinon
+        .stub(TechniqueVantageService.prototype, 'insertVantagesForTechnique')
+        .resolves();
 
       const dbConnection = getMockDBConnection();
 
@@ -125,6 +134,7 @@ describe('TechniqueService', () => {
           description: 'desc',
           distance_threshold: 200,
           method_lookup_id: 2,
+          method_response_metric_id: 3,
           attractants: [
             {
               attractant_lookup_id: 111
@@ -133,19 +143,24 @@ describe('TechniqueService', () => {
           attributes: {
             quantitative_attributes: [
               {
-                method_technique_attribute_quantitative_id: 44,
                 method_lookup_attribute_quantitative_id: '123-456-55',
                 value: 66
               }
             ],
             qualitative_attributes: [
               {
-                method_technique_attribute_qualitative_id: 77,
                 method_lookup_attribute_qualitative_id: '123-456-88',
                 method_lookup_attribute_qualitative_option_id: '123-456-99'
               }
             ]
-          }
+          },
+          vantage_methods: [
+            {
+              method_technique_vantage_id: 1,
+              vantage_method_id: 2,
+              vantage_category_id: 3
+            }
+          ]
         }
       ];
 
@@ -155,7 +170,8 @@ describe('TechniqueService', () => {
         name: 'name',
         description: 'desc',
         distance_threshold: 200,
-        method_lookup_id: 2
+        method_lookup_id: 2,
+        method_response_metric_id: 3
       });
       expect(insertTechniqueAttractantsStub).to.have.been.calledOnceWith(surveyId, 11, techniques[0].attractants);
       expect(insertQualitativeAttributesForTechniqueStub).to.have.been.calledOnceWith(
@@ -166,6 +182,13 @@ describe('TechniqueService', () => {
         11,
         techniques[0].attributes.quantitative_attributes
       );
+      expect(insertVantagesForTechniqueStub).to.have.been.calledOnceWith(surveyId, 11, [
+        {
+          method_technique_vantage_id: 1,
+          vantage_method_id: 2,
+          vantage_category_id: 3
+        }
+      ]);
 
       expect(response).to.eql([mockRecord]);
     });
@@ -187,7 +210,8 @@ describe('TechniqueService', () => {
         name: 'name',
         description: 'desc',
         distance_threshold: 200,
-        method_lookup_id: 2
+        method_lookup_id: 2,
+        method_response_metric_id: 3
       };
 
       const response = await service.updateTechnique(surveyId, techniqueObject);
@@ -197,14 +221,21 @@ describe('TechniqueService', () => {
   });
 
   describe('deleteTechnique', () => {
-    it('should run successfully', async () => {
+    it('should successfully delete the technique', async () => {
       const mockRecord = { method_technique_id: 1 };
+
+      const findSamplePeriodsCountStub = sinon
+        .stub(SamplePeriodService.prototype, 'findSamplePeriodsCount')
+        .resolves(0);
 
       const deleteAllTechniqueAttractantsStub = sinon
         .stub(AttractantService.prototype, 'deleteAllTechniqueAttractants')
         .resolves();
       const deleteAllTechniqueAttributesStub = sinon
         .stub(TechniqueAttributeService.prototype, 'deleteAllTechniqueAttributes')
+        .resolves();
+      const deleteAllVantagesForTechniqueStub = sinon
+        .stub(TechniqueVantageService.prototype, 'deleteAllVantagesForTechnique')
         .resolves();
       const deleteTechniqueStub = sinon.stub(TechniqueRepository.prototype, 'deleteTechnique').resolves(mockRecord);
 
@@ -217,8 +248,11 @@ describe('TechniqueService', () => {
 
       const response = await service.deleteTechnique(surveyId, methodTechniqueId);
 
+      expect(findSamplePeriodsCountStub).to.have.been.calledOnce;
+
       expect(deleteAllTechniqueAttractantsStub).to.have.been.calledOnceWith(surveyId, methodTechniqueId);
       expect(deleteAllTechniqueAttributesStub).to.have.been.calledOnceWith(surveyId, methodTechniqueId);
+      expect(deleteAllVantagesForTechniqueStub).to.have.been.calledOnceWith(surveyId, methodTechniqueId);
       expect(deleteTechniqueStub).to.have.been.calledOnceWith(surveyId, methodTechniqueId);
 
       expect(response).to.eql(mockRecord);

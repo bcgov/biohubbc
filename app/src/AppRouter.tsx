@@ -2,12 +2,13 @@ import { AuthenticatedRouteGuard, SystemRoleRouteGuard } from 'components/securi
 import { SYSTEM_ROLE } from 'constants/roles';
 import { CodesContextProvider } from 'contexts/codesContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
-import AdminUsersRouter from 'features/admin/AdminUsersRouter';
+import AdminRouter from 'features/admin/AdminRouter';
 import FundingSourcesRouter from 'features/funding-sources/FundingSourcesRouter';
 import ProjectsRouter from 'features/projects/ProjectsRouter';
 import ResourcesPage from 'features/resources/ResourcesPage';
-import SpeciesStandardsPage from 'features/standards/SpeciesStandardsPage';
+import StandardsPage from 'features/standards/StandardsPage';
 import SummaryRouter from 'features/summary/SummaryRouter';
+import { SupportPage } from 'features/support/SupportPage';
 import BaseLayout from 'layouts/BaseLayout';
 import AccessDenied from 'pages/403/AccessDenied';
 import NotFoundPage from 'pages/404/NotFoundPage';
@@ -78,12 +79,14 @@ const AppRouter: React.FC = () => {
         </BaseLayout>
       </RouteWithTitle>
 
-      <RouteWithTitle path="/admin/users" title={getTitle('Users')}>
+      <RouteWithTitle path="/admin/manage" title={getTitle('Users')}>
         <BaseLayout>
           <AuthenticatedRouteGuard>
             <SystemRoleRouteGuard validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN]}>
               <DialogContextProvider>
-                <AdminUsersRouter />
+                <CodesContextProvider>
+                  <AdminRouter />
+                </CodesContextProvider>
               </DialogContextProvider>
             </SystemRoleRouteGuard>
           </AuthenticatedRouteGuard>
@@ -112,7 +115,13 @@ const AppRouter: React.FC = () => {
 
       <RouteWithTitle path="/standards" title={getTitle('Standards')}>
         <BaseLayout>
-          <SpeciesStandardsPage />
+          <StandardsPage />
+        </BaseLayout>
+      </RouteWithTitle>
+
+      <RouteWithTitle path="/support" title={getTitle('Support')}>
+        <BaseLayout>
+          <SupportPage />
         </BaseLayout>
       </RouteWithTitle>
 

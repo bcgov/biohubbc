@@ -1,19 +1,57 @@
 import { z } from 'zod';
 import { ProjectUser } from '../repositories/project-participation-repository';
-import { SystemUser } from '../repositories/user-repository';
+import { SystemUserWithRoles } from './system-user-view';
 
 export interface IProjectAdvancedFilters {
+  /**
+   * Filter results by keyword.
+   *
+   * @type {string}
+   * @memberof IProjectAdvancedFilters
+   */
   keyword?: string;
+  /**
+   * Filter results by ITIS TSN.
+   *
+   * @type {number}
+   * @memberof IProjectAdvancedFilters
+   */
   itis_tsn?: number;
+  /**
+   * Filter results by ITIS TSNs
+   *
+   * @type {number[]}
+   * @memberof IProjectAdvancedFilters
+   */
   itis_tsns?: number[];
+  /**
+   * Filter results by system user id.
+   *
+   * Note: This is not the id of the uexport interface IPeriodAdvancedFilters {
+  survey_id?: number;
+  sample_site_id?: number;
+  method_technique_id?: number;
   system_user_id?: number;
+}
+ser making the request.
+   *
+   * @type {number}
+   * @memberof IProjectAdvancedFilters
+   */
+  system_user_id?: number;
+  /**
+   * Filter results by project name.
+   *
+   * @type {string}
+   * @memberof IProjectAdvancedFilters
+   */
   project_name?: string;
 }
 
 export interface IGetProject {
   project: ProjectData;
   objectives: GetObjectivesData;
-  participants: (ProjectUser & SystemUser)[];
+  participants: (ProjectUser & SystemUserWithRoles)[];
   iucn: GetIUCNClassificationData;
 }
 
@@ -34,7 +72,8 @@ export const FindProjectsResponse = z.object({
   end_date: z.string().nullable(),
   regions: z.array(z.string()),
   focal_species: z.array(z.number()),
-  types: z.array(z.number())
+  types: z.array(z.number()),
+  members: z.array(z.object({ system_user_id: z.number(), display_name: z.string() }))
 });
 
 export type FindProjectsResponse = z.infer<typeof FindProjectsResponse>;
@@ -146,7 +185,8 @@ export class GetReportAttachmentsData {
             year: item.year,
             description: item.description,
             key: item.key,
-            file_size: item.file_size
+            file_size: item.file_size,
+            authors: undefined
           };
 
           if (item.authors?.length) {

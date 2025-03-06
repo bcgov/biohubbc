@@ -1,18 +1,24 @@
 import axios from 'axios';
 import useReferenceApi from 'hooks/api/useReferenceApi';
+import { useTelemetryDeploymentApi } from 'hooks/api/useTelemetryDeploymentApi';
+import { useTelemetryDeviceApi } from 'hooks/api/useTelemetryDeviceApi';
 import { useConfigContext } from 'hooks/useContext';
 import { useMemo } from 'react';
 import useAdminApi from './api/useAdminApi';
+import { useAlertApi } from './api/useAlertApi';
+import useAnalyticsApi from './api/useAnalyticsApi';
 import useAnimalApi from './api/useAnimalApi';
 import useAxios from './api/useAxios';
 import useCodesApi from './api/useCodesApi';
 import useExternalApi from './api/useExternalApi';
 import useFundingSourceApi from './api/useFundingSourceApi';
+import { useMarkdownApi } from './api/useMarkdownApi';
 import useObservationApi from './api/useObservationApi';
 import useProjectApi from './api/useProjectApi';
 import useProjectParticipationApi from './api/useProjectParticipationApi';
 import usePublishApi from './api/usePublishApi';
 import useResourcesApi from './api/useResourcesApi';
+import { useSamplingPeriodApi } from './api/useSamplingPeriodApi';
 import useSamplingSiteApi from './api/useSamplingSiteApi';
 import useSpatialApi from './api/useSpatialApi';
 import useStandardsApi from './api/useStandardsApi';
@@ -30,6 +36,8 @@ import useUserApi from './api/useUserApi';
 export const useBiohubApi = () => {
   const config = useConfigContext();
   const apiAxios = useAxios(config.API_HOST);
+
+  const analytics = useAnalyticsApi(apiAxios);
 
   const project = useProjectApi(apiAxios);
 
@@ -59,6 +67,8 @@ export const useBiohubApi = () => {
 
   const samplingSite = useSamplingSiteApi(apiAxios);
 
+  const samplingPeriod = useSamplingPeriodApi(apiAxios);
+
   const technique = useTechniqueApi(apiAxios);
 
   const standards = useStandardsApi(apiAxios);
@@ -69,8 +79,17 @@ export const useBiohubApi = () => {
 
   const telemetry = useTelemetryApi(apiAxios);
 
+  const telemetryDeployment = useTelemetryDeploymentApi(apiAxios);
+
+  const telemetryDevice = useTelemetryDeviceApi(apiAxios);
+
+  const markdown = useMarkdownApi(apiAxios);
+
+  const alert = useAlertApi(apiAxios);
+
   return useMemo(
     () => ({
+      analytics,
       project,
       projectParticipants,
       taxonomy,
@@ -89,7 +108,12 @@ export const useBiohubApi = () => {
       samplingSite,
       standards,
       reference,
-      telemetry
+      telemetry,
+      telemetryDeployment,
+      telemetryDevice,
+      markdown,
+      alert,
+      samplingPeriod
     }),
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

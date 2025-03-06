@@ -1,9 +1,18 @@
 import { Divider } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import FormikErrorSnackbar from 'components/alert/FormikErrorSnackbar';
+import { AttachmentTableDropzone } from 'components/attachments/AttachmentTableDropzone';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { Formik, FormikProps } from 'formik';
-import { ICreateCaptureRequest, IEditCaptureRequest } from 'interfaces/useCritterApi.interface';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useSurveyContext } from 'hooks/useContext';
+import { useS3FileDownload } from 'hooks/useS3Download';
+import {
+  ICreateCaptureRequest,
+  ICritterCaptureAttachment,
+  IEditCaptureRequest
+} from 'interfaces/useCritterApi.interface';
+import { useState } from 'react';
 import { isDefined } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import { MarkingsForm } from '../../../markings/MarkingsForm';
@@ -12,10 +21,13 @@ import { CaptureGeneralInformationForm } from './general-information/CaptureGene
 import { CaptureLocationForm } from './location/CaptureLocationForm';
 import { ReleaseLocationForm } from './location/ReleaseLocationForm';
 
+const CRITTER_CAPTURE_ATTACHMENT_TYPE = 'Capture';
+
 export interface IAnimalCaptureFormProps<FormikValuesType extends ICreateCaptureRequest | IEditCaptureRequest> {
   initialCaptureData: FormikValuesType;
   handleSubmit: (formikData: FormikValuesType) => void;
   formikRef: React.RefObject<FormikProps<FormikValuesType>>;
+  captureAttachments?: ICritterCaptureAttachment[];
 }
 
 /**
@@ -28,9 +40,23 @@ export interface IAnimalCaptureFormProps<FormikValuesType extends ICreateCapture
 export const AnimalCaptureForm = <FormikValuesType extends ICreateCaptureRequest | IEditCaptureRequest>(
   props: IAnimalCaptureFormProps<FormikValuesType>
 ) => {
+  const biohubApi = useBiohubApi();
+  const { projectId, surveyId } = useSurveyContext();
+
+  const { downloadS3File } = useS3FileDownload();
+
+  // Track the capture attachment ids that are flagged for deletion (formik ref is not stateful)
+  const [captureDeleteIds, setCaptureDeleteIds] = useState<number[]>([]);
+
   const animalCaptureYupSchema = yup.object({
+    attachments: yup.object({
+      capture_attachments: yup.object({
+        create: yup.mixed(),
+        delete: yup.array().of(yup.number())
+      })
+    }),
     capture: yup.object({
-      capture_id: yup.string().nullable(),
+      capture_id: yup.string(),
       capture_date: yup.string().required('Capture date is required'),
       capture_time: yup.string().nullable(),
       capture_comment: yup.string().required('Capture comment is required'),
@@ -136,6 +162,47 @@ export const AnimalCaptureForm = <FormikValuesType extends ICreateCaptureRequest
     )
   });
 
+  /**
+   * Add the file to the create attachments list. (Create)
+   *
+   * @param {File | null} file - Uploaded file
+   * @return {void}
+   */
+  const addStagedFile = (file: File | null) => {
+    if (!file) return;
+
+    props.formikRef.current?.setFieldValue(`attachments.capture_attachments.create['${file.name}']`, file);
+  };
+
+  /**
+   * Remove a staged file. (Create)
+
+   * @param {string} fileName
+   * @return {void}
+   */
+  const removeStagedFile = (fileName: string) => {
+    props.formikRef.current?.setFieldValue(`attachments.capture_attachments.create['${fileName}']`, undefined);
+  };
+
+  /**
+   * Flag uploaded file for delete. (Edit)
+   *
+   * @param {number} attachmentId
+   * @return {void}
+   */
+  const flagUploadedFileForDelete = (attachmentId: number) => {
+    // If the attachment is not already flagged for deletion, add it to the list
+    if (!captureDeleteIds.includes(attachmentId)) {
+      const newDeleteIds = [...captureDeleteIds, attachmentId];
+
+      // Update the state of the deleted ids
+      setCaptureDeleteIds(newDeleteIds);
+
+      // Update the formik field
+      props.formikRef.current?.setFieldValue(`attachments.capture_attachments.delete`, newDeleteIds);
+    }
+  };
+
   return (
     <Formik
       innerRef={props.formikRef}
@@ -156,6 +223,38 @@ export const AnimalCaptureForm = <FormikValuesType extends ICreateCaptureRequest
           title="Capture Location"
           summary="Enter where the animal was captured"
           component={<CaptureLocationForm />}
+        />
+        <Divider />
+        <HorizontalSplitFormComponent
+          title="Attachments"
+          summary="Upload attachments related to the capture"
+          component={
+            <AttachmentTableDropzone
+              attachments={props.captureAttachments
+                ?.map((attachment) => ({
+                  id: attachment.critter_capture_attachment_id,
+                  s3Key: attachment.key,
+                  name: attachment.file_name ?? 'Unknown',
+                  size: attachment.file_size,
+                  type: attachment.file_type
+                }))
+                // Filter out attachments that are flagged for deletion
+                .filter((attachment) => !captureDeleteIds.includes(attachment.id))}
+              onStagedAttachment={addStagedFile}
+              onRemoveStagedAttachment={removeStagedFile}
+              onRemoveUploadedAttachment={flagUploadedFileForDelete}
+              onDownloadAttachment={(id) =>
+                downloadS3File(
+                  biohubApi.survey.getSurveyAttachmentSignedURL(
+                    projectId,
+                    surveyId,
+                    id,
+                    CRITTER_CAPTURE_ATTACHMENT_TYPE
+                  )
+                )
+              }
+            />
+          }
         />
         <Divider />
         <HorizontalSplitFormComponent

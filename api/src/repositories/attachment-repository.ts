@@ -1,9 +1,11 @@
 import { QueryResult } from 'pg';
 import SQL from 'sql-template-strings';
-import { ATTACHMENT_TYPE } from '../constants/attachments';
+import { z } from 'zod';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { PostReportAttachmentMetadata, PutReportAttachmentMetadata } from '../models/project-survey-attachments';
+import { IDeviceKeyData } from '../services/attachment-service';
+import { IValidationData } from '../services/telemetry-services/telemetry-utils';
 import { getLogger } from '../utils/logger';
 import { BaseRepository } from './base-repository';
 
@@ -69,6 +71,20 @@ export interface ISurveyReportAttachmentAuthor {
   update_date: string;
   revision_count: number;
 }
+
+export const SurveyTelemetryCredentialAttachment = z.object({
+  survey_telemetry_credential_attachment_id: z.number(),
+  uuid: z.string().uuid(),
+  file_name: z.string(),
+  file_type: z.string(),
+  file_size: z.number(),
+  create_date: z.string(),
+  update_date: z.string().nullable(),
+  title: z.string().nullable(),
+  description: z.string().nullable(),
+  key: z.string()
+});
+export type SurveyTelemetryCredentialAttachment = z.infer<typeof SurveyTelemetryCredentialAttachment>;
 
 const defaultLog = getLogger('repositories/attachment-repository');
 
@@ -461,9 +477,7 @@ export class AttachmentRepository extends BaseRepository {
       FROM
         survey_attachment
       WHERE
-        survey_id = ${surveyId}
-      AND
-        LOWER(file_type) != LOWER(${ATTACHMENT_TYPE.KEYX});
+        survey_id = ${surveyId};
     `;
 
     const response = await this.connection.sql<ISurveyAttachment>(sqlStatement);
@@ -644,6 +658,38 @@ export class AttachmentRepository extends BaseRepository {
     return response.rows;
   }
 
+  /**
+   * Get survey telemetry credential attachments.
+   *
+   * @param {number} surveyId The survey ID
+   * @return {Promise<SurveyTelemetryCredentialAttachment[]>} Promise resolving all survey telemetry attachments
+   * @memberof AttachmentRepository
+   */
+  async getSurveyTelemetryCredentialAttachments(surveyId: number): Promise<SurveyTelemetryCredentialAttachment[]> {
+    defaultLog.debug({ label: 'getSurveyTelemetryCredentialAttachments' });
+
+    const sqlStatement = SQL`
+      SELECT
+        survey_telemetry_credential_attachment_id,
+        uuid,
+        file_name,
+        file_type,
+        file_size,
+        create_date,
+        update_date,
+        title,
+        description,
+        key
+      FROM
+        survey_telemetry_credential_attachment
+      WHERE
+        survey_id = ${surveyId};
+    `;
+
+    const response = await this.connection.sql(sqlStatement, SurveyTelemetryCredentialAttachment);
+
+    return response.rows;
+  }
   /**
    * Insert new Project Attachment
    *
@@ -1568,5 +1614,153 @@ export class AttachmentRepository extends BaseRepository {
     const response = await this.connection.sql(sqlStatement);
 
     return response;
+  }
+
+  /**
+   * Update survey telemetry credential attachment record.
+   *
+   * @param {number} surveyId
+   * @param {string} fileName
+   * @param {string} fileType
+   * @return {*}  {Promise<{ survey_telemetry_credential_attachment_id: number }>}
+   * @memberof AttachmentRepository
+   */
+  async updateSurveyTelemetryCredentialAttachment(
+    surveyId: number,
+    fileName: string,
+    fileData: IValidationData
+  ): Promise<{ survey_telemetry_credential_attachment_id: number }> {
+    const sqlStatement = SQL`
+      UPDATE
+        survey_telemetry_credential_attachment
+      SET
+        file_name = ${fileName},
+        file_type = ${fileData.type}
+      WHERE
+        file_name = ${fileName}
+      AND
+        survey_id = ${surveyId}
+      RETURNING
+        survey_telemetry_credential_attachment_id;
+    `;
+
+    const response = await this.connection.sql(
+      sqlStatement,
+      z.object({ survey_telemetry_credential_attachment_id: z.number() })
+    );
+
+    if (!response?.rows?.[0]) {
+      throw new ApiExecuteSQLError('Failed to update survey attachment data', [
+        'AttachmentRepository->updateSurveyTelemetryCredentialAttachment',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response.rows[0];
+  }
+
+  /**
+   * Inserts uploaded device key attachment file
+   *
+   * @async
+   * @param {IDeviceKeyData} deviceKeyData
+   * @returns {Promise<number>}
+   */
+  async insertSurveyTelemetryCredentialAttachment(deviceKeyData: IDeviceKeyData): Promise<number> {
+    const sqlStatement = SQL`
+    INSERT INTO survey_telemetry_credential_attachment (
+      survey_id,
+      file_name,
+      file_size,
+      file_type,
+      key
+    ) VALUES (
+      ${deviceKeyData.surveyId},
+      ${deviceKeyData.fileName},
+      ${deviceKeyData.fileSize},
+      ${deviceKeyData.fileData.type},
+      ${deviceKeyData.key}
+    )
+    RETURNING
+      survey_telemetry_credential_attachment_id;
+  `;
+
+    const response = await this.connection.sql(
+      sqlStatement,
+      z.object({ survey_telemetry_credential_attachment_id: z.number() })
+    );
+
+    if (!response?.rows?.[0]) {
+      throw new ApiExecuteSQLError('Failed to insert survey attachment data', [
+        'AttachmentRepository->insertSurveyTelemetryCredentialAttachment',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response?.rows?.[0].survey_telemetry_credential_attachment_id;
+  }
+
+  /**
+   * Get Survey Telemetry Attachment By File Name
+   *
+   * @param {string} fileName
+   * @param {number} surveyId
+   * @return {*}  {Promise<QueryResult>}
+   * @memberof AttachmentRepository
+   */
+  async getSurveyTelemetryCredentialAttachmentByFileName(fileName: string, surveyId: number): Promise<QueryResult> {
+    const sqlStatement = SQL`
+      SELECT
+        survey_telemetry_credential_attachment_id,
+        uuid,
+        file_name,
+        title,
+        description,
+        update_date,
+        create_date,
+        file_size
+      FROM
+        survey_telemetry_credential_attachment
+      WHERE
+        survey_id = ${surveyId}
+      AND
+        file_name ILIKE ${fileName};
+    `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    return response;
+  }
+
+  /**
+   * Get survey telemetry credential attachment S3 key
+   *
+   * @param {number} surveyId
+   * @param {number} attachmentId
+   * @return {*}  {Promise<string>}
+   * @memberof AttachmentRepository
+   */
+  async getSurveyTelemetryCredentialAttachmentS3Key(surveyId: number, attachmentId: number): Promise<string> {
+    const sqlStatement = SQL`
+      SELECT
+        key
+      FROM
+        survey_telemetry_credential_attachment
+      WHERE
+        survey_telemetry_credential_attachment_id = ${attachmentId}
+      AND
+        survey_id = ${surveyId};
+    `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    if (!response?.rows?.[0]) {
+      throw new ApiExecuteSQLError('Failed to get Survey Telemetry Credential Attachment S3 Key', [
+        'AttachmentRepository->getSurveyTelemetryCredentialAttachmentS3Key',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response.rows[0].key;
   }
 }

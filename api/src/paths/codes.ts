@@ -25,7 +25,7 @@ GET.apiDoc = {
               'first_nations',
               'agency',
               'investment_action_category',
-              'type',
+              'survey_data_type',
               'iucn_conservation_action_level_1_classification',
               'iucn_conservation_action_level_2_subclassification',
               'iucn_conservation_action_level_3_subclassification',
@@ -34,11 +34,17 @@ GET.apiDoc = {
               'project_roles',
               'administrative_activity_status_type',
               'intended_outcomes',
-              'vantage_codes',
+              'survey_jobs',
               'site_selection_strategies',
+              'sample_methods',
               'survey_progress',
               'method_response_metrics',
-              'attractants'
+              'attractants',
+              'observation_subcount_signs',
+              'telemetry_device_makes',
+              'frequency_units',
+              'alert_types',
+              'vantages'
             ],
             properties: {
               management_action_type: {
@@ -104,7 +110,7 @@ GET.apiDoc = {
                   }
                 }
               },
-              type: {
+              survey_data_type: {
                 type: 'array',
                 description: 'Types of surveys',
                 items: {
@@ -115,6 +121,9 @@ GET.apiDoc = {
                       type: 'number'
                     },
                     name: {
+                      type: 'string'
+                    },
+                    description: {
                       type: 'string'
                     }
                   }
@@ -215,6 +224,9 @@ GET.apiDoc = {
                     },
                     name: {
                       type: 'string'
+                    },
+                    description: {
+                      type: 'string'
                     }
                   }
                 }
@@ -252,21 +264,6 @@ GET.apiDoc = {
                   }
                 }
               },
-              vantage_codes: {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  additionalProperties: false,
-                  properties: {
-                    id: {
-                      type: 'number'
-                    },
-                    name: {
-                      type: 'string'
-                    }
-                  }
-                }
-              },
               survey_jobs: {
                 type: 'array',
                 items: {
@@ -277,6 +274,9 @@ GET.apiDoc = {
                       type: 'number'
                     },
                     name: {
+                      type: 'string'
+                    },
+                    description: {
                       type: 'string'
                     }
                   }
@@ -292,6 +292,9 @@ GET.apiDoc = {
                       type: 'number'
                     },
                     name: {
+                      type: 'string'
+                    },
+                    description: {
                       type: 'string'
                     }
                   }
@@ -359,6 +362,112 @@ GET.apiDoc = {
               attractants: {
                 type: 'array',
                 description: 'Describes the attractants that can be used by a sampling technique.',
+                items: {
+                  type: 'object',
+                  additionalProperties: false,
+                  required: ['id', 'name', 'description'],
+                  properties: {
+                    id: {
+                      type: 'integer',
+                      minimum: 1
+                    },
+                    name: {
+                      type: 'string'
+                    },
+                    description: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
+              observation_subcount_signs: {
+                type: 'array',
+                description:
+                  'Possible observation subcount sign ids, indicating whether the subcount was a direct sighting, footprints, scat, etc.',
+                items: {
+                  type: 'object',
+                  additionalProperties: false,
+                  required: ['id', 'name', 'description'],
+                  properties: {
+                    id: {
+                      type: 'integer',
+                      minimum: 1
+                    },
+                    name: {
+                      type: 'string'
+                    },
+                    description: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
+              telemetry_device_makes: {
+                type: 'array',
+                description: 'Active telemetry device manufacturers / makes / vendors.',
+                items: {
+                  type: 'object',
+                  additionalProperties: false,
+                  required: ['id', 'name', 'description'],
+                  properties: {
+                    id: {
+                      type: 'integer',
+                      minimum: 1
+                    },
+                    name: {
+                      type: 'string'
+                    },
+                    description: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
+              frequency_units: {
+                type: 'array',
+                description: 'Frequency unit types.',
+                items: {
+                  type: 'object',
+                  additionalProperties: false,
+                  required: ['id', 'name'],
+                  properties: {
+                    id: {
+                      type: 'integer',
+                      minimum: 1
+                    },
+                    name: {
+                      type: 'string'
+                    },
+                    description: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
+              alert_types: {
+                type: 'array',
+                description: 'Alert type options for system administrators managing alert messages.',
+                items: {
+                  type: 'object',
+                  additionalProperties: false,
+                  required: ['id', 'name', 'description'],
+                  properties: {
+                    id: {
+                      type: 'integer',
+                      minimum: 1
+                    },
+                    name: {
+                      type: 'string'
+                    },
+                    description: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
+              vantages: {
+                type: 'array',
+                description: 'Vantages that vantages belong to.',
                 items: {
                   type: 'object',
                   additionalProperties: false,

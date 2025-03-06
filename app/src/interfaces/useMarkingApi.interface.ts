@@ -11,12 +11,8 @@ export type IMarkingBodyLocationResponse = {
 };
 
 export type IMarkingColourOption = {
-  colour: string;
   colour_id: string;
-  create_timestamp: string;
-  create_user: string;
+  colour: string;
   description: string | null;
   hex_code: string | null;
-  update_timestamp: string | null;
-  update_user: string | null;
 };

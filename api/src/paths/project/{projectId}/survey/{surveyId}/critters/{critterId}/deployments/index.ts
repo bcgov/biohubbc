@@ -1,14 +1,14 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { v4 } from 'uuid';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../../../../request-handlers/security/authorization';
-import { BctwService } from '../../../../../../../../services/bctw-service';
-import { ICritterbaseUser } from '../../../../../../../../services/critterbase-service';
-import { SurveyCritterService } from '../../../../../../../../services/survey-critter-service';
+import { TelemetryDeploymentService } from '../../../../../../../../services/telemetry-services/telemetry-deployment-service';
 import { getLogger } from '../../../../../../../../utils/logger';
+import { numberOrNull } from '../../../../../../../../utils/string-utils';
+
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/critters/{critterId}/deployments');
+
 export const POST: Operation = [
   authorizeRequestHandler((req) => {
     return {
@@ -25,13 +25,12 @@ export const POST: Operation = [
       ]
     };
   }),
-  deployDevice()
+  createDeployment()
 ];
 
 POST.apiDoc = {
-  description:
-    'Deploys a device, creating a record of the insertion in the SIMS deployment table. Will also upsert a collar in BCTW as well as insert a new deployment under the resultant collar_id.',
-  tags: ['critterbase'],
+  description: 'Creates a new deployment.',
+  tags: ['deployment'],
   security: [
     {
       Bearer: []
@@ -40,9 +39,19 @@ POST.apiDoc = {
   parameters: [
     {
       in: 'path',
+      name: 'projectId',
+      schema: {
+        type: 'integer',
+        minimum: 1
+      },
+      required: true
+    },
+    {
+      in: 'path',
       name: 'surveyId',
       schema: {
-        type: 'number'
+        type: 'integer',
+        minimum: 1
       },
       required: true
     },
@@ -50,148 +59,93 @@ POST.apiDoc = {
       in: 'path',
       name: 'critterId',
       schema: {
-        type: 'number'
-      }
+        type: 'integer',
+        minimum: 1
+      },
+      required: true
     }
   ],
   requestBody: {
-    description: 'Specifies a critter, device, and timespan to complete deployment.',
+    description: 'Object with device information and associated captures to create a deployment',
+    required: true,
     content: {
       'application/json': {
         schema: {
           title: 'Deploy device request object',
           type: 'object',
           additionalProperties: false,
+          required: [
+            'device_id',
+            'frequency',
+            'frequency_unit_id',
+            'attachment_start_date',
+            'attachment_start_time',
+            'attachment_end_date',
+            'attachment_end_time',
+            'critterbase_start_capture_id',
+            'critterbase_end_capture_id',
+            'critterbase_end_mortality_id'
+          ],
           properties: {
-            critter_id: {
-              type: 'string',
-              format: 'uuid'
-            },
-            attachment_start: {
-              type: 'string'
-            },
-            attachment_end: {
-              type: 'string'
-            },
             device_id: {
-              type: 'integer'
+              type: 'integer',
+              description: 'The ID of the device.',
+              minimum: 1
             },
             frequency: {
-              type: 'number'
+              type: 'number',
+              description:
+                'The frequency of the device. Property "frequency_unit_id" must also be provided if this is provided.',
+              nullable: true
             },
-            frequency_unit: {
-              type: 'string'
+            frequency_unit_id: {
+              type: 'integer',
+              description:
+                'The ID of a frequency unit code. Property "frequency" must also be provided if this is provided.',
+              minimum: 1,
+              nullable: true
             },
-            device_make: {
-              type: 'string'
-            },
-            device_model: {
-              type: 'string'
-            }
-          }
-        }
-      }
-    }
-  },
-  responses: {
-    201: {
-      description: 'Responds with count of rows created in SIMS DB Deployments.',
-      content: {
-        'application/json': {
-          schema: {
-            title: 'Deployment response object',
-            type: 'object',
-            additionalProperties: false,
-            properties: {
-              message: {
-                type: 'string'
-              }
-            }
-          }
-        }
-      }
-    },
-    400: {
-      $ref: '#/components/responses/400'
-    },
-    401: {
-      $ref: '#/components/responses/401'
-    },
-    403: {
-      $ref: '#/components/responses/403'
-    },
-    500: {
-      $ref: '#/components/responses/500'
-    },
-    default: {
-      $ref: '#/components/responses/default'
-    }
-  }
-};
-
-export const PATCH: Operation = [
-  authorizeRequestHandler((req) => {
-    return {
-      or: [
-        {
-          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR],
-          surveyId: Number(req.params.surveyId),
-          discriminator: 'ProjectPermission'
-        },
-        {
-          validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
-          discriminator: 'SystemRole'
-        }
-      ]
-    };
-  }),
-  updateDeployment()
-];
-
-PATCH.apiDoc = {
-  description:
-    'Allows you to update the deployment timespan for a device. Effectively ends a deployment if the attachment end is filled in, but should not delete anything.',
-  tags: ['critterbase'],
-  security: [
-    {
-      Bearer: []
-    }
-  ],
-  parameters: [
-    {
-      in: 'path',
-      name: 'surveyId',
-      schema: {
-        type: 'integer'
-      },
-      required: true
-    },
-    {
-      in: 'path',
-      name: 'critterId',
-      schema: {
-        type: 'integer'
-      }
-    }
-  ],
-  requestBody: {
-    description: 'Specifies a deployment id and the new timerange to update it with.',
-    content: {
-      'application/json': {
-        schema: {
-          title: 'Deploy device request object',
-          type: 'object',
-          additionalProperties: false,
-          properties: {
-            deployment_id: {
+            attachment_start_date: {
               type: 'string',
+              description: 'Start date of the deployment (without time component).',
+              example: '2021-01-01'
+            },
+            attachment_start_time: {
+              type: 'string',
+              description: 'Start time of the deployment.',
+              example: '12:00:00',
+              nullable: true
+            },
+            attachment_end_date: {
+              type: 'string',
+              description: 'End date of the deployment (without time component).',
+              example: '2021-01-01',
+              nullable: true
+            },
+            attachment_end_time: {
+              type: 'string',
+              description: 'End time of the deployment.',
+              example: '12:00:00',
+              nullable: true
+            },
+            critterbase_start_capture_id: {
+              type: 'string',
+              description:
+                'Critterbase capture event. The capture event during which the device was attached to the animal.',
               format: 'uuid'
             },
-            attachment_start: {
-              type: 'string'
-            },
-            attachment_end: {
+            critterbase_end_capture_id: {
               type: 'string',
+              description:
+                'Critterbase capture event. The capture event during which the device was removed from the animal. Only one of critterbase_end_capture_id or critterbase_end_mortality_id can be provided.',
+              format: 'uuid',
+              nullable: true
+            },
+            critterbase_end_mortality_id: {
+              type: 'string',
+              description:
+                'Critterbase mortality event. The mortality event during which the device was removed from the animal. Only one of critterbase_end_capture_id or critterbase_end_mortality_id can be provided.',
+              format: 'uuid',
               nullable: true
             }
           }
@@ -201,21 +155,7 @@ PATCH.apiDoc = {
   },
   responses: {
     200: {
-      description: 'Responds with count of rows created or updated in SIMS DB Deployments.',
-      content: {
-        'application/json': {
-          schema: {
-            title: 'Deployment response object',
-            type: 'object',
-            additionalProperties: false,
-            properties: {
-              message: {
-                type: 'string'
-              }
-            }
-          }
-        }
-      }
+      description: 'Deployment created OK.'
     },
     400: {
       $ref: '#/components/responses/400'
@@ -235,68 +175,59 @@ PATCH.apiDoc = {
   }
 };
 
-export function deployDevice(): RequestHandler {
+/**
+ * Creates a new deployment.
+ *
+ * @export
+ * @return {*}  {RequestHandler}
+ */
+export function createDeployment(): RequestHandler {
   return async (req, res) => {
+    const surveyId = Number(req.params.surveyId);
     const critterId = Number(req.params.critterId);
-    const newDeploymentId = v4(); // New deployment ID
-    const newDeploymentDevice = {
-      ...req.body,
-      deploymentId: newDeploymentId
-    };
+
+    const deviceId = Number(req.body.device_id);
+    const frequency = numberOrNull(req.body.frequency);
+    const frequencyUnitId = numberOrNull(req.body.frequency_unit_id);
+    const attachmentStartDate = req.body.attachment_start_date;
+    const attachmentStartTime = req.body.attachment_start_time;
+    const attachmentEndDate = req.body.attachment_end_date;
+    const attachmentEndTime = req.body.attachment_end_time;
+    const critterbaseStartCaptureId = req.body.critterbase_start_capture_id;
+    const critterbaseEndCaptureId = req.body.critterbase_end_capture_id;
+    const critterbaseEndMortalityId = req.body.critterbase_end_mortality_id;
 
     const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
 
-      const user: ICritterbaseUser = {
-        keycloak_guid: connection.systemUserGUID(),
-        username: connection.systemUserIdentifier()
-      };
+      const telemetryDeploymentService = new TelemetryDeploymentService(connection);
 
-      const surveyCritterService = new SurveyCritterService(connection);
-      await surveyCritterService.upsertDeployment(critterId, newDeploymentId);
+      // TODO - Do we need to verify that the incoming 'critterbase...Id' values exist and are associated to the critter_id??
 
-      const bctwService = new BctwService(user);
-      await bctwService.deployDevice(newDeploymentDevice);
+      await telemetryDeploymentService.createDeployment({
+        survey_id: surveyId,
+        critter_id: critterId,
+        device_id: deviceId,
+        frequency: frequency,
+        frequency_unit_id: frequencyUnitId,
+        attachment_start_date: attachmentStartDate,
+        attachment_start_time: attachmentStartTime,
+        attachment_end_date: attachmentEndDate,
+        attachment_end_time: attachmentEndTime,
+        critterbase_start_capture_id: critterbaseStartCaptureId,
+        critterbase_end_capture_id: critterbaseEndCaptureId,
+        critterbase_end_mortality_id: critterbaseEndMortalityId
+      });
 
       await connection.commit();
-      return res.status(201).json({ message: 'Deployment created.' });
+
+      return res.status(200).send();
     } catch (error) {
-      defaultLog.error({ label: 'addDeployment', message: 'error', error });
+      defaultLog.error({ label: 'createDeployment', message: 'error', error });
       await connection.rollback();
 
-      throw error;
-    } finally {
-      connection.release();
-    }
-  };
-}
-
-export function updateDeployment(): RequestHandler {
-  return async (req, res) => {
-    const critterId = Number(req.params.critterId);
-
-    const connection = getDBConnection(req.keycloak_token);
-
-    try {
-      await connection.open();
-
-      const user: ICritterbaseUser = {
-        keycloak_guid: connection.systemUserGUID(),
-        username: connection.systemUserIdentifier()
-      };
-
-      const surveyCritterService = new SurveyCritterService(connection);
-      const bctw = new BctwService(user);
-
-      await surveyCritterService.upsertDeployment(critterId, req.body.deployment_id);
-      await bctw.updateDeployment(req.body);
-      await connection.commit();
-      return res.status(200).json({ message: 'Deployment updated.' });
-    } catch (error) {
-      defaultLog.error({ label: 'updateDeployment', message: 'error', error });
-      await connection.rollback();
       throw error;
     } finally {
       connection.release();

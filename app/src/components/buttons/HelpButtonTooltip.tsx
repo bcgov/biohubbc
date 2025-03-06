@@ -4,11 +4,10 @@ import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import Zoom from '@mui/material/Zoom';
-import { ReactNode } from 'react';
+import { useState } from 'react';
 
 interface HelpButtonTooltipProps {
   content: string;
-  children?: ReactNode;
   iconSx?: object;
 }
 
@@ -19,31 +18,23 @@ interface HelpButtonTooltipProps {
  * @param {HelpButtonTooltipProps}
  * @return {*}
  */
-//TODO: Update positioning of the tooltip to be more dynamic (Add Animal form)
-const HelpButtonTooltip = ({ content, children, iconSx }: HelpButtonTooltipProps) => {
+const HelpButtonTooltip = ({ content, iconSx }: HelpButtonTooltipProps) => {
+  const [renderTooltip, setRenderTooltip] = useState(false);
+
   return (
     <Box
       sx={{
         position: 'relative',
-        '& input': {
-          pr: 7,
-          overflow: 'hidden',
-          textOverflow: 'ellipsis'
-        },
-        '& .MuiSelect-select': {
-          pr: '80px !important',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis'
-        },
-        '& .MuiSelect-icon': {
-          right: '52px'
-        }
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
       }}>
-      {children}
+      {/* Tooltip should always be there, but only show when hovering */}
       <Tooltip
         arrow
         title={content}
-        placement={'right-start'}
+        placement="right-start"
+        open={renderTooltip}
         TransitionComponent={Zoom}
         PopperProps={{
           sx: {
@@ -58,11 +49,11 @@ const HelpButtonTooltip = ({ content, children, iconSx }: HelpButtonTooltipProps
             }
           }
         }}>
+        {/* IconButton is always displayed */}
         <IconButton
+          onMouseEnter={() => setRenderTooltip(true)}
+          onMouseLeave={() => setRenderTooltip(false)}
           sx={{
-            position: 'absolute',
-            top: '8px',
-            right: '8px',
             color: '#38598A',
             ...iconSx
           }}>

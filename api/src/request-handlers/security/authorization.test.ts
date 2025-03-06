@@ -3,8 +3,9 @@ import { Request } from 'express';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { SYSTEM_ROLE } from '../../constants/roles';
 import { HTTPError } from '../../errors/http-error';
-import { SystemUser } from '../../repositories/user-repository';
+import { SystemUserWithRoles } from '../../models/system-user-view';
 import { AuthorizationService } from '../../services/authorization-service';
 import { getRequestHandlerMocks, registerMockDBConnection } from '../../__mocks__/db';
 import * as authorization from './authorization';
@@ -67,7 +68,7 @@ describe('authorizeRequest', function () {
   it('returns false if systemUserObject is null', async function () {
     registerMockDBConnection();
 
-    const mockSystemUserObject = undefined as unknown as SystemUser;
+    const mockSystemUserObject = undefined as unknown as SystemUserWithRoles;
     sinon.stub(AuthorizationService.prototype, 'getSystemUserObject').resolves(mockSystemUserObject);
 
     const mockReq = { authorization_scheme: {} } as unknown as Request;
@@ -79,7 +80,20 @@ describe('authorizeRequest', function () {
   it('returns true if the user is a system administrator', async function () {
     registerMockDBConnection();
 
-    const mockSystemUserObject = { role_names: [] } as unknown as SystemUser;
+    const mockSystemUserObject: SystemUserWithRoles = {
+      system_user_id: 20,
+      user_guid: '123-456-789',
+      user_identifier: 'test-identifier',
+      identity_source: 'IDIR',
+      display_name: 'test-user',
+      given_name: 'test-given',
+      family_name: 'test-family',
+      email: 'test-email',
+      agency: 'test-agency',
+      record_end_date: null,
+      role_ids: [1],
+      role_names: [SYSTEM_ROLE.SYSTEM_ADMIN]
+    };
     sinon.stub(AuthorizationService.prototype, 'getSystemUserObject').resolves(mockSystemUserObject);
 
     sinon.stub(AuthorizationService.prototype, 'authorizeSystemAdministrator').resolves(true);
@@ -93,7 +107,20 @@ describe('authorizeRequest', function () {
   it('returns true if the authorization_scheme is undefined', async function () {
     registerMockDBConnection();
 
-    const mockSystemUserObject = { role_names: [] } as unknown as SystemUser;
+    const mockSystemUserObject: SystemUserWithRoles = {
+      system_user_id: 20,
+      user_guid: '123-456-789',
+      user_identifier: 'test-identifier',
+      identity_source: 'IDIR',
+      display_name: 'test-user',
+      given_name: 'test-given',
+      family_name: 'test-family',
+      email: 'test-email',
+      agency: 'test-agency',
+      record_end_date: null,
+      role_ids: [],
+      role_names: []
+    };
     sinon.stub(AuthorizationService.prototype, 'getSystemUserObject').resolves(mockSystemUserObject);
 
     sinon.stub(AuthorizationService.prototype, 'authorizeSystemAdministrator').resolves(false);
@@ -107,7 +134,20 @@ describe('authorizeRequest', function () {
   it('returns true if the user is authorized against the authorization_scheme', async function () {
     registerMockDBConnection();
 
-    const mockSystemUserObject = { role_names: [] } as unknown as SystemUser;
+    const mockSystemUserObject: SystemUserWithRoles = {
+      system_user_id: 20,
+      user_guid: '123-456-789',
+      user_identifier: 'test-identifier',
+      identity_source: 'IDIR',
+      display_name: 'test-user',
+      given_name: 'test-given',
+      family_name: 'test-family',
+      email: 'test-email',
+      agency: 'test-agency',
+      record_end_date: null,
+      role_ids: [1],
+      role_names: [SYSTEM_ROLE.SYSTEM_ADMIN]
+    };
     sinon.stub(AuthorizationService.prototype, 'getSystemUserObject').resolves(mockSystemUserObject);
 
     sinon.stub(AuthorizationService.prototype, 'authorizeSystemAdministrator').resolves(false);
@@ -123,7 +163,20 @@ describe('authorizeRequest', function () {
   it('returns false if the user is not authorized against the authorization_scheme', async function () {
     registerMockDBConnection();
 
-    const mockSystemUserObject = { role_names: [] } as unknown as SystemUser;
+    const mockSystemUserObject: SystemUserWithRoles = {
+      system_user_id: 20,
+      user_guid: '123-456-789',
+      user_identifier: 'test-identifier',
+      identity_source: 'IDIR',
+      display_name: 'test-user',
+      given_name: 'test-given',
+      family_name: 'test-family',
+      email: 'test-email',
+      agency: 'test-agency',
+      record_end_date: null,
+      role_ids: [3],
+      role_names: [SYSTEM_ROLE.PROJECT_CREATOR]
+    };
     sinon.stub(AuthorizationService.prototype, 'getSystemUserObject').resolves(mockSystemUserObject);
 
     sinon.stub(AuthorizationService.prototype, 'authorizeSystemAdministrator').resolves(false);

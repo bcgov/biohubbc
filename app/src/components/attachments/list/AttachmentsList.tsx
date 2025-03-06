@@ -107,6 +107,7 @@ const AttachmentsList = <T extends IGetProjectAttachment | IGetSurveyAttachment>
       columns={attachmentsListColumnDefs}
       rows={attachments}
       pageSizeOptions={pageSizeOptions}
+      disableRowSelectionOnClick
       initialState={{
         pagination: {
           paginationModel: {

@@ -134,7 +134,6 @@ const appTheme = createTheme({
             textOverflow: 'ellipsis'
           },
           '& span': {
-            display: 'block',
             fontSize: '0.9rem',
             overflow: 'hidden',
             textOverflow: 'ellipsis'
@@ -210,7 +209,8 @@ const appTheme = createTheme({
     MuiDialogTitle: {
       styleOverrides: {
         root: {
-          paddingTop: '24px'
+          paddingTop: '24px',
+          paddingBottom: '8px'
         }
       }
     },

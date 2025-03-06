@@ -77,9 +77,22 @@ const parseError = (error: any) => {
       throw new ApiExecuteSQLError('Failed to update stale data', [error]);
     }
 
+    if (error.code === '23505') {
+      // error thrown by DB when query fails due: duplicate key value violates unique constraint "telemetry_credential_vectronic_idx1"
+      throw new ApiExecuteSQLError('Duplicate device key found in file', [error]);
+    }
+
     if (error.code === '23503') {
       // error thrown by DB when query fails due to foreign key constraint
       throw new ApiExecuteSQLError('Failed to delete record due to foreign key constraint', [error]);
+    }
+
+    if (error.constraint === 'check_no_device_attachment_date_overlap') {
+      // error thrown by DB when constraint 'check_no_device_attachment_date_overlap' fails
+      throw new ApiExecuteSQLError(
+        'This device is already being used in another deployment, and the dates overlap. Please update the conflicting deployment or adjust the deployment dates.',
+        [error]
+      );
     }
   }
 

@@ -2,7 +2,6 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
-import { HTTP400 } from '../../../../../../errors/http-error';
 import {
   paginationRequestQueryParamSchema,
   paginationResponseSchema
@@ -39,7 +38,7 @@ export const POST: Operation = [
 ];
 
 POST.apiDoc = {
-  description: 'Insert a new technique for a survey.',
+  description: 'Insert new techniques for a survey.',
   tags: ['technique'],
   security: [
     {
@@ -67,6 +66,7 @@ POST.apiDoc = {
     }
   ],
   requestBody: {
+    required: true,
     content: {
       'application/json': {
         schema: {
@@ -85,7 +85,7 @@ POST.apiDoc = {
   },
   responses: {
     201: {
-      description: 'Technique created OK.'
+      description: 'Techniques created OK.'
     },
     400: {
       $ref: '#/components/responses/400'
@@ -112,12 +112,12 @@ POST.apiDoc = {
  */
 export function createTechniques(): RequestHandler {
   return async (req, res) => {
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
-      await connection.open();
-
       const surveyId = Number(req.params.surveyId);
+
+      await connection.open();
 
       const techniqueService = new TechniqueService(connection);
       await techniqueService.insertTechniquesForSurvey(surveyId, req.body.techniques);
@@ -194,18 +194,14 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
-            required: ['techniques', 'count'],
+            required: ['techniques', 'pagination'],
             additionalProperties: false,
             properties: {
               techniques: {
                 type: 'array',
                 items: techniqueViewSchema
               },
-              count: {
-                type: 'number',
-                description: 'Count of method techniques in the respective survey.'
-              },
-              pagination: { ...paginationResponseSchema }
+              pagination: paginationResponseSchema
             }
           }
         }
@@ -236,16 +232,12 @@ GET.apiDoc = {
  */
 export function getTechniques(): RequestHandler {
   return async (req, res) => {
-    if (!req.params.surveyId) {
-      throw new HTTP400('Missing required param `surveyId`');
-    }
-
-    const connection = getDBConnection(req['keycloak_token']);
+    const surveyId = Number(req.params.surveyId);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
 
-      const surveyId = Number(req.params.surveyId);
       const paginationOptions = makePaginationOptionsFromRequest(req);
 
       const techniqueService = new TechniqueService(connection);
@@ -259,7 +251,6 @@ export function getTechniques(): RequestHandler {
 
       return res.status(200).json({
         techniques,
-        count: techniquesCount,
         pagination: makePaginationResponse(techniquesCount, paginationOptions)
       });
     } catch (error) {

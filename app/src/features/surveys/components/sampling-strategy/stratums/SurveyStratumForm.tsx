@@ -13,7 +13,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import YesNoDialog from 'components/dialog/YesNoDialog';
 import { FormikProps, useFormikContext } from 'formik';
-import { IEditSurveyRequest, IGetSurveyStratum, IGetSurveyStratumForm } from 'interfaces/useSurveyApi.interface';
+import { IEditSurveyRequest, IGetSurveyStratumForm } from 'interfaces/useSurveyApi.interface';
 import get from 'lodash-es/get';
 import { useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
@@ -192,7 +192,7 @@ const SurveyStratumForm = () => {
           </Box>
         )}
         <TransitionGroup>
-          {values.site_selection.stratums.map((stratum: IGetSurveyStratum, index: number) => {
+          {values.site_selection.stratums.map((stratum, index: number) => {
             const key = `${stratum.name}-${index}`;
 
             return (

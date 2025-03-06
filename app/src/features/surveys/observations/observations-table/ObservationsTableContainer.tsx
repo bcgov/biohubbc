@@ -9,40 +9,41 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { GridColDef } from '@mui/x-data-grid';
+import { GridColDef, GridRenderEditCellParams } from '@mui/x-data-grid';
+import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
 import DataGridValidationAlert from 'components/data-grid/DataGridValidationAlert';
 import {
+  GenericCommentColDef,
   GenericDateColDef,
   GenericLatitudeColDef,
   GenericLongitudeColDef,
   GenericTimeColDef
 } from 'components/data-grid/GenericGridColumnDefinitions';
 import { IObservationTableRow } from 'contexts/observationsTableContext';
-import { SurveyContext } from 'contexts/surveyContext';
 import { BulkActionsButton } from 'features/surveys/observations/observations-table/bulk-actions/BulkActionsButton';
 import { DiscardChangesButton } from 'features/surveys/observations/observations-table/discard-changes/DiscardChangesButton';
 import {
-  ISampleMethodOption,
-  ISamplePeriodOption,
-  ISampleSiteOption,
+  MethodTechniqueColDef,
   ObservationCountColDef,
-  SampleMethodColDef,
+  ObservationSubcountSignColDef,
   SamplePeriodColDef,
   SampleSiteColDef,
   TaxonomyColDef
 } from 'features/surveys/observations/observations-table/grid-column-definitions/GridColumnDefinitions';
-import { ImportObservationsButton } from 'features/surveys/observations/observations-table/import-obsevations/ImportObservationsButton';
+import { useSamplingInformationCache } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/useSamplingInformationCache';
 import ObservationsTable from 'features/surveys/observations/observations-table/ObservationsTable';
-import { useCodesContext, useObservationsPageContext, useObservationsTableContext } from 'hooks/useContext';
 import {
-  IGetSampleLocationDetails,
-  IGetSampleMethodDetails,
-  IGetSamplePeriodRecord
-} from 'interfaces/useSamplingSiteApi.interface';
-import { useContext } from 'react';
-import { getCodesName } from 'utils/Utils';
+  useCodesContext,
+  useObservationsContext,
+  useObservationsPageContext,
+  useObservationsTableContext
+} from 'hooks/useContext';
+import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
+import { useEffect, useMemo } from 'react';
+import { ImportObservationsButton } from '../components/ImportObservationsButton';
 import { ConfigureColumnsButton } from './configure-columns/ConfigureColumnsButton';
 import ExportHeadersButton from './export-button/ExportHeadersButton';
+import { ObservationSubcountCommentDialog } from './grid-column-definitions/comment/ObservationSubcountCommentDialog';
 import {
   getEnvironmentColumnDefinitions,
   getMeasurementColumnDefinitions
@@ -51,62 +52,114 @@ import {
 const ObservationsTableContainer = () => {
   const codesContext = useCodesContext();
 
-  const surveyContext = useContext(SurveyContext);
-
   const observationsPageContext = useObservationsPageContext();
   const observationsTableContext = useObservationsTableContext();
+  const observationsContext = useObservationsContext();
 
-  // Collect sample sites
-  const surveySampleSites: IGetSampleLocationDetails[] = surveyContext.sampleSiteDataLoader.data?.sampleSites ?? [];
-  const sampleSiteOptions: ISampleSiteOption[] =
-    surveySampleSites.map((site) => ({
-      survey_sample_site_id: site.survey_sample_site_id,
-      sample_site_name: site.name
-    })) ?? [];
+  useEffect(() => {
+    codesContext.codesDataLoader.load();
+  }, [codesContext.codesDataLoader]);
 
-  // Collect sample methods
-  const surveySampleMethods: IGetSampleMethodDetails[] = surveySampleSites
-    .filter((sampleSite) => Boolean(sampleSite.sample_methods))
-    .map((sampleSite) => sampleSite.sample_methods as IGetSampleMethodDetails[])
-    .flat(2);
-  const sampleMethodOptions: ISampleMethodOption[] = surveySampleMethods.map((method) => ({
-    survey_sample_method_id: method.survey_sample_method_id,
-    survey_sample_site_id: method.survey_sample_site_id,
-    sample_method_name: method.technique.name,
-    response_metric:
-      getCodesName(codesContext.codesDataLoader.data, 'method_response_metrics', method.method_response_metric_id) ?? ''
-  }));
+  const observationSubcountSignOptions = useMemo(
+    () =>
+      codesContext.codesDataLoader.data?.observation_subcount_signs.map((option) => ({
+        observation_subcount_sign_id: option.id,
+        name: option.name
+      })) ?? [],
+    [codesContext.codesDataLoader.data?.observation_subcount_signs]
+  );
 
-  // Collect sample periods
-  const samplePeriodOptions: ISamplePeriodOption[] = surveySampleMethods
-    .filter((sampleMethod) => Boolean(sampleMethod.sample_periods))
-    .map((sampleMethod) => sampleMethod.sample_periods as IGetSamplePeriodRecord[])
-    .flat(2)
-    .map((samplePeriod: IGetSamplePeriodRecord) => ({
-      survey_sample_period_id: samplePeriod.survey_sample_period_id,
-      survey_sample_method_id: samplePeriod.survey_sample_method_id,
-      sample_period_name: `${samplePeriod.start_date} ${samplePeriod.start_time ?? ''} - ${samplePeriod.end_date} ${
-        samplePeriod.end_time ?? ''
-      }`
-    }));
+  const samplingInformationCache = useSamplingInformationCache();
+
+  useEffect(() => {
+    if (!observationsContext.observationsDataLoader.data?.supplementaryObservationData.sampling_data?.length) {
+      return;
+    }
+
+    samplingInformationCache.initCachedSamplingInformationRef({
+      periods: observationsContext.observationsDataLoader.data.supplementaryObservationData.sampling_data
+    });
+  }, [
+    observationsContext.observationsDataLoader.data?.supplementaryObservationData.sampling_data,
+    samplingInformationCache
+  ]);
 
   // The column definitions of the columns to render in the observations table
-  const columns: GridColDef<IObservationTableRow>[] = [
-    // Add standard observation columns to the table
-    TaxonomyColDef({ hasError: observationsTableContext.hasError }),
-    SampleSiteColDef({ sampleSiteOptions, hasError: observationsTableContext.hasError }),
-    SampleMethodColDef({ sampleMethodOptions, hasError: observationsTableContext.hasError }),
-    SamplePeriodColDef({ samplePeriodOptions, hasError: observationsTableContext.hasError }),
-    ObservationCountColDef({ sampleMethodOptions, hasError: observationsTableContext.hasError }),
-    GenericDateColDef({ field: 'observation_date', headerName: 'Date', hasError: observationsTableContext.hasError }),
-    GenericTimeColDef({ field: 'observation_time', headerName: 'Time', hasError: observationsTableContext.hasError }),
-    GenericLatitudeColDef({ field: 'latitude', headerName: 'Lat', hasError: observationsTableContext.hasError }),
-    GenericLongitudeColDef({ field: 'longitude', headerName: 'Long', hasError: observationsTableContext.hasError }),
-    // Add measurement columns to the table
-    ...getMeasurementColumnDefinitions(observationsTableContext.measurementColumns, observationsTableContext.hasError),
-    // Add environment columns to the table
-    ...getEnvironmentColumnDefinitions(observationsTableContext.environmentColumns, observationsTableContext.hasError)
-  ];
+  const columns: GridColDef<IObservationTableRow>[] = useMemo(
+    () => {
+      return [
+        // Add standard observation columns to the table
+        TaxonomyColDef({ hasError: observationsTableContext.hasError }),
+        SampleSiteColDef({
+          samplingInformationCache: samplingInformationCache,
+          hasError: observationsTableContext.hasError
+        }),
+        MethodTechniqueColDef({
+          samplingInformationCache: samplingInformationCache,
+          hasError: observationsTableContext.hasError
+        }),
+        SamplePeriodColDef({
+          samplingInformationCache: samplingInformationCache,
+          hasError: observationsTableContext.hasError
+        }),
+        ObservationSubcountSignColDef({ observationSubcountSignOptions, hasError: observationsTableContext.hasError }),
+        ObservationCountColDef({
+          samplingInformationCache: samplingInformationCache,
+          hasError: observationsTableContext.hasError
+        }),
+        GenericDateColDef({
+          field: 'observation_date',
+          headerName: 'Date',
+          hasError: observationsTableContext.hasError,
+          description: 'The date when the observation was made'
+        }),
+        GenericTimeColDef({
+          field: 'observation_time',
+          headerName: 'Time',
+          hasError: observationsTableContext.hasError,
+          description: 'The time of day when the observation was made'
+        }),
+        GenericLatitudeColDef({
+          field: 'latitude',
+          headerName: 'Latitude',
+          hasError: observationsTableContext.hasError,
+          description: 'The latitude where the observation was made'
+        }),
+        GenericLongitudeColDef({
+          field: 'longitude',
+          headerName: 'Longitude',
+          hasError: observationsTableContext.hasError,
+          description: 'The longitude where the observation was made'
+        }),
+        // Add measurement columns to the table
+        ...getMeasurementColumnDefinitions(
+          observationsTableContext.measurementColumns,
+          observationsTableContext.hasError
+        ),
+        // Add environment columns to the table
+        ...getEnvironmentColumnDefinitions(
+          observationsTableContext.environmentColumns,
+          observationsTableContext.hasError
+        ),
+        GenericCommentColDef({
+          field: 'comment',
+          headerName: '',
+          hasError: observationsTableContext.hasError,
+          handleOpen: (params: GridRenderEditCellParams) => observationsTableContext.setCommentDialogParams(params),
+          handleClose: () => observationsTableContext.setCommentDialogParams(null)
+        })
+      ];
+    },
+    // observationsTableContext is listed as a missing dependency
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      observationSubcountSignOptions,
+      observationsTableContext.environmentColumns,
+      observationsTableContext.hasError,
+      observationsTableContext.measurementColumns,
+      observationsTableContext.setCommentDialogParams
+    ]
+  );
 
   return (
     <Paper component={Stack} flexDirection="column" flex="1 1 auto" height="100%">
@@ -129,6 +182,7 @@ const ObservationsTableContainer = () => {
         </Typography>
 
         <Stack flexDirection="row" alignItems="center" gap={1} whiteSpace="nowrap">
+          <HelpButtonDialog markdownType={MarkdownTypeNameEnum.OBSERVATIONS} />
           <ImportObservationsButton
             disabled={observationsTableContext.isSaving || observationsTableContext.isDisabled}
             onStart={() => observationsPageContext.setIsDisabled(true)}
@@ -141,7 +195,7 @@ const ObservationsTableContainer = () => {
             startIcon={<Icon path={mdiPlus} size={1} />}
             onClick={() => observationsTableContext.addObservationRecord()}
             disabled={observationsTableContext.isSaving || observationsTableContext.isDisabled}>
-            Add Record
+            Add
           </Button>
           <Collapse in={observationsTableContext.hasUnsavedChanges} orientation="horizontal" sx={{ mr: -1 }}>
             <Box whiteSpace="nowrap" display="flex" sx={{ gap: 1, pr: 1 }}>
@@ -175,15 +229,35 @@ const ObservationsTableContainer = () => {
         muiDataGridApiRef={observationsTableContext._muiDataGridApiRef.current}
       />
 
+      <ObservationSubcountCommentDialog
+        // The key prop is necessary for the dialog to correctly reset if the user discards changes
+        key={observationsTableContext.commentDialogParams?.id ?? 'comment-dialog-key'}
+        open={Boolean(observationsTableContext.commentDialogParams)}
+        initialValue={observationsTableContext.commentDialogParams?.value}
+        handleClose={() => observationsTableContext.setCommentDialogParams(null)}
+        handleSave={(value) => {
+          if (!observationsTableContext.commentDialogParams) {
+            return;
+          }
+
+          observationsTableContext.commentDialogParams.api.setEditCellValue({
+            value,
+            id: observationsTableContext.commentDialogParams.id,
+            field: observationsTableContext.commentDialogParams.field
+          });
+        }}
+      />
+
       <Box display="flex" flexDirection="column" flex="1 1 auto" position="relative">
         <Box position="absolute" width="100%" height="100%">
           <ObservationsTable
             isLoading={
               observationsTableContext.isLoading ||
               observationsTableContext.isSaving ||
-              observationsTableContext.isDisabled
+              observationsTableContext.isDisabled ||
+              codesContext.codesDataLoader.isLoading
             }
-            columns={columns}
+            columns={[...columns]}
           />
         </Box>
       </Box>

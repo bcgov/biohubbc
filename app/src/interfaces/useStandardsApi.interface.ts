@@ -3,14 +3,28 @@ import {
   CBQuantitativeMeasurementTypeDefinition,
   ICollectionUnit
 } from './useCritterApi.interface';
+import { IMarkingColourOption, IMarkingTypeResponse } from './useMarkingApi.interface';
+
+interface IStandardNameDescription {
+  name: string;
+  description: string;
+}
+
+interface IQualitativeAttributeStandard extends IStandardNameDescription {
+  options: IStandardNameDescription[];
+}
+
+interface IQuantitativeAttributeStandard extends IStandardNameDescription {
+  unit: string;
+}
 
 /**
  * Data standards for a taxon
  *
  * @export
- * @interface IGetSpeciesStandardsResponse
+ * @interface ISpeciesStandards
  */
-export interface IGetSpeciesStandardsResponse {
+export interface ISpeciesStandards {
   tsn: number;
   scientificName: string;
   measurements: {
@@ -22,5 +36,38 @@ export interface IGetSpeciesStandardsResponse {
     key: string;
     value: string;
   }[];
-  ecological_units: ICollectionUnit[];
+  ecologicalUnits: ICollectionUnit[];
+}
+
+/**
+ * Data standards for methods
+ *
+ * @export
+ * @interface IMethodStandard
+ */
+export interface IMethodStandard extends IStandardNameDescription {
+  method_lookup_id: number;
+  attributes: { qualitative: IQualitativeAttributeStandard[]; quantitative: IQuantitativeAttributeStandard[] };
+}
+
+/**
+ * Data standards for environments
+ *
+ * @export
+ * @interface IEnvironmentStandards
+ */
+export interface IEnvironmentStandards {
+  qualitative: IQualitativeAttributeStandard[];
+  quantitative: IQuantitativeAttributeStandard[];
+}
+
+/**
+ * Data standards for markings
+ *
+ * @export
+ * @interface IMarkingsStandards
+ */
+export interface IMarkingsStandards {
+  types: IMarkingTypeResponse[];
+  colours: IMarkingColourOption[];
 }

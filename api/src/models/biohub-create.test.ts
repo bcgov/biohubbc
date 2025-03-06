@@ -1,7 +1,8 @@
 import { expect } from 'chai';
 import { FeatureCollection } from 'geojson';
 import { describe } from 'mocha';
-import { ObservationRecord } from '../repositories/observation-repository/observation-repository';
+
+import { SurveyObservationRecord } from '../database-models/survey_observation';
 import {
   PostSurveyObservationToBiohubObject,
   PostSurveySubmissionToBioHubObject,
@@ -13,24 +14,18 @@ describe('PostSurveyObservationToBiohubObject', () => {
   describe('All values provided', () => {
     let data: PostSurveyObservationToBiohubObject;
 
-    const obj = {
+    const obj: SurveyObservationRecord = {
       survey_observation_id: 1,
       survey_id: 1,
-      survey_sample_site_id: 1,
-      survey_sample_method_id: 1,
       survey_sample_period_id: 1,
       latitude: 1,
       longitude: 1,
       count: 1,
       itis_tsn: 1,
+      itis_scientific_name: 'itis_scientific_name',
       observation_time: 'observation_time',
-      observation_date: 'observation_date',
-      create_date: 'create_date',
-      create_user: 1,
-      update_date: 'update_date',
-      update_user: 1,
-      revision_count: 1
-    } as ObservationRecord;
+      observation_date: 'observation_date'
+    };
 
     before(() => {
       data = new PostSurveyObservationToBiohubObject(obj);
@@ -48,8 +43,6 @@ describe('PostSurveyObservationToBiohubObject', () => {
       expect(data.properties).to.eql({
         survey_id: 1,
         taxonomy: 1,
-        survey_sample_site_id: 1,
-        survey_sample_method_id: 1,
         survey_sample_period_id: 1,
         latitude: 1,
         longitude: 1,
@@ -78,25 +71,20 @@ describe('PostSurveyToBiohubObject', () => {
   describe('All values provided', () => {
     let data: PostSurveyToBiohubObject;
 
-    const observation_obj = {
+    const observation_obj: SurveyObservationRecord = {
       survey_observation_id: 1,
       survey_id: 1,
-      survey_sample_site_id: 1,
-      survey_sample_method_id: 1,
       survey_sample_period_id: 1,
       latitude: 1,
       longitude: 1,
       count: 1,
+      itis_tsn: 1,
+      itis_scientific_name: 'itis_scientific_name',
       observation_time: 'observation_time',
-      observation_date: 'observation_date',
-      create_date: 'create_date',
-      create_user: 1,
-      update_date: 'update_date',
-      update_user: 1,
-      revision_count: 1
-    } as ObservationRecord;
+      observation_date: 'observation_date'
+    };
 
-    const survey_obj = {
+    const survey_obj: GetSurveyData = {
       id: 1,
       uuid: '1',
       project_id: 1,
@@ -154,12 +142,10 @@ describe('PostSurveySubmissionToBioHubObject', () => {
   describe('All values provided', () => {
     let data: PostSurveySubmissionToBioHubObject;
 
-    const observation_obj: ObservationRecord[] = [
+    const observation_obj: SurveyObservationRecord[] = [
       {
         survey_observation_id: 1,
         survey_id: 1,
-        survey_sample_site_id: 1,
-        survey_sample_method_id: 1,
         survey_sample_period_id: 1,
         latitude: 1,
         longitude: 1,
@@ -167,12 +153,7 @@ describe('PostSurveySubmissionToBioHubObject', () => {
         itis_tsn: 2,
         itis_scientific_name: 'itis_scientific_name',
         observation_time: 'observation_time',
-        observation_date: 'observation_date',
-        create_date: 'create_date',
-        create_user: 1,
-        update_date: 'update_date',
-        update_user: 1,
-        revision_count: 1
+        observation_date: 'observation_date'
       }
     ];
 
@@ -191,8 +172,7 @@ describe('PostSurveySubmissionToBioHubObject', () => {
     const purpose_and_methodology: GetSurveyPurposeAndMethodologyData = {
       intended_outcome_ids: [],
       additional_details: 'A description of the purpose',
-      revision_count: 0,
-      vantage_code_ids: []
+      revision_count: 0
     };
 
     const survey_geometry: FeatureCollection = {

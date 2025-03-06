@@ -1,5 +1,5 @@
 # ########################################################################################################
-# This DockerFile is used for local development (via docker-compose) only.
+# This DockerFile is used for local development (via compose.yml) only.
 # ########################################################################################################
 
 FROM node:20

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { QueryResult } from 'pg';
+import { PoolClient, QueryResult } from 'pg';
 import sinon from 'sinon';
 import * as db from '../database/db';
 import { IDBConnection } from '../database/db';
@@ -35,8 +35,14 @@ export const getMockDBConnection = (config?: Partial<IDBConnection>): IDBConnect
     systemUserIdentifier: () => {
       return null as unknown as string;
     },
+    getClient: async () => {
+      return null as unknown as PoolClient;
+    },
     open: async () => {
       // do nothing
+    },
+    isConnectionOpen: () => {
+      return null as unknown as boolean;
     },
     release: () => {
       // do nothing
@@ -46,9 +52,6 @@ export const getMockDBConnection = (config?: Partial<IDBConnection>): IDBConnect
     },
     rollback: async () => {
       // do nothing
-    },
-    query: async () => {
-      return undefined as unknown as QueryResult<any>;
     },
     sql: async () => {
       return undefined as unknown as QueryResult<any>;

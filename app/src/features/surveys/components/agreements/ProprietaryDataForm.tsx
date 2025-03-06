@@ -1,6 +1,5 @@
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormHelperText from '@mui/material/FormHelperText';
@@ -8,6 +7,7 @@ import Grid from '@mui/material/Grid';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import Typography from '@mui/material/Typography';
+import HelpButtonStack from 'components/buttons/HelpButtonStack';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import AutocompleteField, { IAutocompleteFieldOption } from 'components/fields/AutocompleteField';
 import CustomTextField from 'components/fields/CustomTextField';
@@ -16,25 +16,6 @@ import { get } from 'lodash-es';
 import React, { useState } from 'react';
 import { StringBoolean } from 'types/misc';
 import yup from 'utils/YupSchema';
-
-const useStyles = () => {
-  return {
-    alignCenter: {
-      display: 'flex',
-      alignItems: 'center'
-    },
-    learnMoreBtn: {
-      textDecoration: 'underline',
-      lineHeight: 'auto',
-      '&:hover': {
-        textDecoration: 'underline'
-      }
-    },
-    dialogText: {
-      maxWidth: '72ch'
-    }
-  };
-};
 
 export interface IProprietaryDataForm {
   proprietor: {
@@ -95,7 +76,6 @@ export interface IProprietaryDataFormProps {
  */
 const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
   const [openDialog, setOpenDialog] = useState(false);
-  const classes = useStyles();
 
   const { values, touched, errors, handleChange, setFieldValue, setFieldTouched, setFieldError } =
     useFormikContext<IProprietaryDataForm>();
@@ -122,16 +102,6 @@ const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
               error={
                 touched.proprietor?.survey_data_proprietary && Boolean(errors.proprietor?.survey_data_proprietary)
               }>
-              <Typography variant="body1" sx={classes.alignCenter}>
-                <span>Is the data captured in this survey proprietary?</span>
-                <Button
-                  color="primary"
-                  sx={classes.learnMoreBtn}
-                  data-testid="prop-dialog-btn"
-                  onClick={() => setOpenDialog(true)}>
-                  <Typography component="span">Learn more</Typography>
-                </Button>
-              </Typography>
               <Box mt={1}>
                 <RadioGroup
                   name="proprietor.survey_data_proprietary"
@@ -148,8 +118,8 @@ const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
                     }
                     handleChange(event);
                   }}>
-                  <FormControlLabel value="false" control={<Radio required={true} color="primary" />} label="No" />
-                  <FormControlLabel value="true" control={<Radio required={true} color="primary" />} label="Yes" />
+                  <FormControlLabel value="false" control={<Radio color="primary" />} label="No" />
+                  <FormControlLabel value="true" control={<Radio color="primary" />} label="Yes" />
                   <FormHelperText>{errors.proprietor?.survey_data_proprietary}</FormHelperText>
                 </RadioGroup>
               </Box>
@@ -236,10 +206,10 @@ const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
                   required={true}
                   component="fieldset"
                   error={touched.proprietor?.disa_required && Boolean(errors.proprietor?.disa_required)}>
-                  <Typography component="legend" variant="h5">
-                    Data and Information Sharing Agreement (DISA)
-                  </Typography>
-                  <Typography variant="body1" color="textSecondary">
+                  <HelpButtonStack helpText="A DISA serves to document the terms and conditions with respect to the ownership, custodianship, storage, sharing, use, and disclosure of data and information.">
+                    <Typography variant="h5">Data and Information Sharing Agreement (DISA)</Typography>
+                  </HelpButtonStack>
+                  <Typography color="textSecondary">
                     Do you require a data and information sharing agreement?
                   </Typography>
                   <Box mt={2}>

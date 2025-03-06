@@ -2,9 +2,12 @@ import { AxiosInstance } from 'axios';
 import {
   ICreateSamplingSiteRequest,
   IEditSampleSiteRequest,
-  IGetSampleLocationDetails,
-  IGetSampleSiteResponse
+  IFindSampleSiteResponse,
+  IGetSampleSiteDetails,
+  IGetSampleSiteGeometryResponse,
+  IGetSampleSiteRecordExtendedNonSpatialResponse
 } from 'interfaces/useSamplingSiteApi.interface';
+import { ApiPaginationRequestOptions } from 'types/misc';
 
 /**
  * Returns a set of supported api methods for working with search functionality
@@ -30,14 +33,45 @@ const useSamplingSiteApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Get Sample Sites
+   * Get Sample Sites, paginated or filtered by keyword.
    *
    * @param {number} projectId
    * @param {number} surveyId
-   * @return {*}  {Promise<void>}
+   * @param {ApiPaginationRequestOptions} pagination
+   * @return {*}  {Promise<IGetSampleSiteRecordExtendedNonSpatialResponse>}
    */
-  const getSampleSites = async (projectId: number, surveyId: number): Promise<IGetSampleSiteResponse> => {
-    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/sample-site`);
+  const getSampleSites = async (
+    projectId: number,
+    surveyId: number,
+    options?: {
+      keyword?: string;
+      pagination?: ApiPaginationRequestOptions;
+    }
+  ): Promise<IGetSampleSiteRecordExtendedNonSpatialResponse> => {
+    const params = {
+      keyword: options?.keyword,
+      ...options?.pagination
+    };
+
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/sample-site`, {
+      params
+    });
+
+    return data;
+  };
+
+  /**
+   * Get Sample Sites geometry data
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @return {*}  {Promise<IGetSampleSiteGeometryResponse>}
+   */
+  const getSampleSitesGeometry = async (
+    projectId: number,
+    surveyId: number
+  ): Promise<IGetSampleSiteGeometryResponse> => {
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/sample-site/spatial`);
 
     return data;
   };
@@ -48,14 +82,45 @@ const useSamplingSiteApi = (axios: AxiosInstance) => {
    * @param {number} projectId
    * @param {number} surveyId
    * @param {number} sampleSiteId
-   * @return {*}  {Promise<void>}
+   * @return {*}  {Promise<IGetSampleSiteDetails>}
    */
   const getSampleSiteById = async (
     projectId: number,
     surveyId: number,
     sampleSiteId: number
-  ): Promise<IGetSampleLocationDetails> => {
+  ): Promise<IGetSampleSiteDetails> => {
     const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/sample-site/${sampleSiteId}`);
+    return data;
+  };
+
+  /**
+   * Find sample sites.
+   *
+   * @param {{
+   *       survey_id?: number;
+   *       keyword?: string;
+   *       system_user_id?: number;
+   *     }} [filterFieldData]
+   * @param {ApiPaginationRequestOptions} [pagination]
+   * @return {*}  {Promise<IFindSampleSiteResponse>}
+   */
+  const findSampleSites = async (
+    filterFieldData?: {
+      survey_id?: number;
+      keyword?: string;
+      system_user_id?: number;
+    },
+    pagination?: ApiPaginationRequestOptions
+  ): Promise<IFindSampleSiteResponse> => {
+    const params = {
+      ...filterFieldData,
+      ...pagination
+    };
+
+    const { data } = await axios.get(`/api/sites`, {
+      params
+    });
+
     return data;
   };
 
@@ -109,6 +174,8 @@ const useSamplingSiteApi = (axios: AxiosInstance) => {
     createSamplingSites,
     getSampleSites,
     getSampleSiteById,
+    getSampleSitesGeometry,
+    findSampleSites,
     editSampleSite,
     deleteSampleSite,
     deleteSampleSites

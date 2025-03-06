@@ -21,6 +21,17 @@ const CreateSurveyBlockDialog: React.FC<ICreateBlockProps> = (props) => {
             survey_block_id: null,
             name: '',
             description: '',
+            geojson: {
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: [0, 0]
+              },
+              properties: {
+                name: 'Sample',
+                description: 'This is a placeholder.'
+              }
+            },
             sample_block_count: 0
           },
           validationSchema: BlockCreateYupSchema

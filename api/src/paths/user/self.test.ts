@@ -6,7 +6,7 @@ import * as db from '../../database/db';
 import { HTTPError } from '../../errors/http-error';
 import { UserService } from '../../services/user-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
-import * as self from './self';
+import { getSelf } from './self';
 
 chai.use(sinonChai);
 
@@ -23,7 +23,7 @@ describe('getUser', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     try {
-      const requestHandler = self.getUser();
+      const requestHandler = getSelf();
 
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
@@ -57,7 +57,7 @@ describe('getUser', () => {
       agency: null
     });
 
-    const requestHandler = self.getUser();
+    const requestHandler = getSelf();
 
     await requestHandler(mockReq, mockRes, mockNext);
 
@@ -84,7 +84,7 @@ describe('getUser', () => {
     });
 
     try {
-      const requestHandler = self.getUser();
+      const requestHandler = getSelf();
 
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();

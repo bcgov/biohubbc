@@ -71,7 +71,6 @@ const SurveysListFilterForm = (props: ISurveysListFilterFormProps) => {
             <SystemUserAutocompleteField
               formikFieldName="system_user_id"
               label="User"
-              placeholder="Search by user"
               onSelect={(value) => {
                 if (value?.system_user_id) {
                   formikProps.setFieldValue('system_user_id', value.system_user_id);

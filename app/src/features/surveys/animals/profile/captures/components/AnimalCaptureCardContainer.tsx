@@ -27,7 +27,7 @@ import { AnimalCaptureCardDetailsContainer } from './capture-card-details/Animal
 interface IAnimalCaptureCardContainer {
   captures: ICaptureWithSupplementaryData[];
   selectedAnimal: ISurveyCritter;
-  handleDelete: (selectedCapture: string, critterbase_critter_id: string) => Promise<void>;
+  handleDelete: (selectedCapture: string, critter_id: number) => Promise<void>;
 }
 /**
  * Returns accordion cards for displaying animal capture details on the animal profile page
@@ -77,7 +77,7 @@ export const AnimalCaptureCardContainer = (props: IAnimalCaptureCardContainer) =
               }
             }}>
             <RouterLink
-              to={`/admin/projects/${projectId}/surveys/${surveyId}/animals/${selectedAnimal.survey_critter_id}/capture/${selectedCapture}/edit`}>
+              to={`/admin/projects/${projectId}/surveys/${surveyId}/animals/${selectedAnimal.critter_id}/capture/${selectedCapture}/edit`}>
               <ListItemIcon>
                 <Icon path={mdiPencilOutline} size={1} />
               </ListItemIcon>
@@ -111,7 +111,7 @@ export const AnimalCaptureCardContainer = (props: IAnimalCaptureCardContainer) =
           open={Boolean(captureForDelete)}
           onYes={() => {
             setCaptureForDelete(false);
-            handleDelete(selectedCapture, selectedAnimal.critterbase_critter_id);
+            handleDelete(selectedCapture, selectedAnimal.critter_id);
           }}
           onClose={() => setCaptureForDelete(false)}
           onNo={() => setCaptureForDelete(false)}

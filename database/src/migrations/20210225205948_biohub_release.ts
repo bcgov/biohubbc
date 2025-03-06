@@ -3,7 +3,6 @@ import { Knex } from 'knex';
 import path from 'path';
 
 const DB_USER_API_PASS = process.env.DB_USER_API_PASS;
-const DB_USER_API = process.env.DB_USER_API;
 
 const DB_RELEASE = 'release.0.34';
 
@@ -117,29 +116,39 @@ export async function up(knex: Knex): Promise<void> {
     -- set up spatial extensions
     ${create_spatial_extensions}
 
-    -- set up biohub schema
-    create schema if not exists biohub;
+    -- Set up biohub schema
+    CREATE SCHEMA IF NOT EXISTS biohub;
+
+    -- Grant postgres user full access to biohub schema
     GRANT ALL ON SCHEMA biohub TO postgres;
-    set search_path = biohub, public;
+    -- Set search path for postgres user
+    SET search_path = biohub, public;
 
-    -- setup biohub api schema
-    create schema if not exists biohub_dapi_v1;
+    -- Set up biohub API schema
+    CREATE SCHEMA IF NOT EXISTS biohub_dapi_v1;
 
-    -- setup api user
-    create user ${DB_USER_API} password '${DB_USER_API_PASS}';
-    alter schema biohub_dapi_v1 owner to ${DB_USER_API};
+    -- Setup biohub_api user
+    CREATE USER biohub_api PASSWORD '${DB_USER_API_PASS}';
+    ALTER SCHEMA biohub_dapi_v1 OWNER TO biohub_api;
+    GRANT USAGE ON SCHEMA biohub TO biohub_api;
+    -- Set search path for biohub_api user
+    ALTER ROLE biohub_api SET search_path TO biohub, public, biohub_dapi_v1;
 
-    -- Grant rights on biohub_dapi_v1 to biohub_api user
-    grant all on schema biohub_dapi_v1 to ${DB_USER_API};
-    grant all on schema biohub_dapi_v1 to postgres;
-    alter DEFAULT PRIVILEGES in SCHEMA biohub_dapi_v1 grant ALL on tables to ${DB_USER_API};
-    alter DEFAULT PRIVILEGES in SCHEMA biohub_dapi_v1 grant ALL on tables to postgres;
+    -- Grant postgres user full access to biohub_dapi_v1 schema
+    GRANT ALL ON SCHEMA biohub_dapi_v1 TO biohub_api;
+    -- Alter default privileges for postgres user to grant access to future biohub_dapi_v1 schema objects
+    ALTER DEFAULT PRIVILEGES IN SCHEMA biohub_dapi_v1 GRANT ALL ON TABLES TO biohub_api;
 
-    -- Biohub grants
-    GRANT USAGE ON SCHEMA biohub TO ${DB_USER_API};
-    ALTER DEFAULT PRIVILEGES IN SCHEMA biohub GRANT ALL ON TABLES TO ${DB_USER_API};
+    -- Grant biohub_api user full access to biohub_dapi_v1 schema
+    GRANT ALL ON SCHEMA biohub_dapi_v1 TO postgres;
+    -- Alter default privileges for biohub_api user to grant access to future biohub_dapi_v1 schema objects
+    ALTER DEFAULT PRIVILEGES IN SCHEMA biohub_dapi_v1 GRANT ALL ON TABLES TO postgres;
 
-    alter role ${DB_USER_API} set search_path to biohub_dapi_v1, biohub, public, topology;
+    -- Alter default privileges for biohub_api user to grant access to future biohub schema objects
+    ALTER DEFAULT PRIVILEGES IN SCHEMA biohub, public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO biohub_api;
+    ALTER DEFAULT PRIVILEGES IN SCHEMA biohub, public GRANT EXECUTE ON FUNCTIONS TO biohub_api;
+    ALTER DEFAULT PRIVILEGES IN SCHEMA biohub, public GRANT USAGE ON TYPES TO biohub_api;
+    ALTER DEFAULT PRIVILEGES IN SCHEMA biohub, public GRANT USAGE, SELECT ON SEQUENCES TO biohub_api;
 
     ${biohub_ddl}
     ${populate_user_identity_source}
@@ -205,7 +214,7 @@ export async function up(knex: Knex): Promise<void> {
 
     set role postgres;
     set search_path = biohub;
-    grant execute on function biohub.api_set_context(_system_user_identifier system_user.user_identifier%type, _user_identity_source_name user_identity_source.name%type) to ${DB_USER_API};
+    grant execute on function biohub.api_set_context(_system_user_identifier "system_user".user_identifier%type, _user_identity_source_name user_identity_source.name%type) to biohub_api;
   `);
 }
 
@@ -213,6 +222,6 @@ export async function down(knex: Knex): Promise<void> {
   await knex.raw(`
     DROP SCHEMA IF EXISTS biohub CASCADE;
     DROP SCHEMA IF EXISTS biohub_dapi_v1 CASCADE;
-    DROP USER IF EXISTS ${DB_USER_API};
+    DROP USER IF EXISTS biohub_api;
   `);
 }

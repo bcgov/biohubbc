@@ -2,24 +2,22 @@ import { PROJECT_ROLE } from 'constants/roles';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { Formik } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { ICode } from 'interfaces/useCodesApi.interface';
+import { ICodeWithDescription } from 'interfaces/useCodesApi.interface';
 import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import { render, waitFor } from 'test-helpers/test-utils';
 import { Mock } from 'vitest';
 import ProjectUserForm, { ProjectUserRoleYupSchema } from './ProjectUserForm';
 
-const mockRoles: ICode[] = [
+const mockRoles: ICodeWithDescription[] = [
   {
     id: 1,
-    name: PROJECT_ROLE.COLLABORATOR
+    name: 'Project Manager',
+    description: 'Manages the project'
   },
   {
     id: 2,
-    name: PROJECT_ROLE.COORDINATOR
-  },
-  {
-    id: 3,
-    name: PROJECT_ROLE.OBSERVER
+    name: 'Team Member',
+    description: 'Regular team member'
   }
 ];
 
@@ -100,7 +98,7 @@ describe('ProjectUserForm', () => {
     );
 
     await waitFor(async () => {
-      expect(getByTestId('autocomplete-user-role-search')).toBeVisible();
+      expect(getByTestId('system_user_id')).toBeVisible();
       expect(getByText('Test User', { exact: false })).toBeVisible();
     });
   });
@@ -140,7 +138,7 @@ describe('ProjectUserForm', () => {
     );
 
     await waitFor(async () => {
-      expect(getByTestId('autocomplete-user-role-search')).toBeVisible();
+      expect(getByTestId('system_user_id')).toBeVisible();
       expect(getByTestId('remove-user-role-button-0')).toBeVisible();
     });
   });

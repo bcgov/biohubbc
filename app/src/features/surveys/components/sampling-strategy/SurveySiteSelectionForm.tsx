@@ -65,7 +65,7 @@ const SurveySiteSelectionForm = (props: ISurveySiteSelectionFormProps) => {
   assert(codesContext.codesDataLoader.data);
 
   const siteStrategies = codesContext.codesDataLoader.data.site_selection_strategies.map((code) => {
-    return { label: code.name, value: code.name };
+    return { label: code.name, value: code.name, description: code.description };
   });
   const selectedSiteStrategies = siteStrategies.filter((item) => values.site_selection.strategies.includes(item.value));
 
@@ -116,8 +116,9 @@ const SurveySiteSelectionForm = (props: ISurveySiteSelectionFormProps) => {
       />
       <MultiAutocompleteField
         id="site_selection.strategies"
-        label="Site Selection Strategies"
+        label="Site selection strategy"
         options={siteStrategies}
+        helpText="Select how the locations of sampling sites were chosen."
         selectedOptions={selectedSiteStrategies}
         required={true}
         onChange={(_, selectedOptions, reason) => {

@@ -4,6 +4,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import grey from '@mui/material/colors/grey';
 import TextField, { TextFieldProps } from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
 import { useFormikContext } from 'formik';
 import get from 'lodash-es/get';
 import { SyntheticEvent } from 'react';
@@ -19,13 +20,19 @@ export interface IAutocompleteField<T extends string | number> {
   label: string;
   name: string;
   options: IAutocompleteFieldOption<T>[];
+  /**
+   * Selected options are filtered from the options list, so they cannot be selected again
+   */
+  selectedOptions?: T[];
   disabled?: boolean;
   loading?: boolean;
   sx?: TextFieldProps['sx']; //https://github.com/TypeStrong/fork-ts-checker-webpack-plugin/issues/271#issuecomment-1561891271
   required?: boolean;
   filterLimit?: number;
   showValue?: boolean;
+  disableClearable?: boolean;
   optionFilter?: 'value' | 'label'; // used to filter existing/ set data for the AutocompleteField, defaults to value in getExistingValue function
+  helpText?: string;
   getOptionDisabled?: (option: IAutocompleteFieldOption<T>) => boolean;
   onChange?: (event: SyntheticEvent<Element, Event>, option: IAutocompleteFieldOption<T> | null) => void;
   renderOption?: (params: React.HTMLAttributes<HTMLLIElement>, option: IAutocompleteFieldOption<T>) => React.ReactNode;
@@ -46,6 +53,11 @@ const AutocompleteField = <T extends string | number>(props: IAutocompleteField<
     return result;
   };
 
+  // Filter out selected options from the available options
+  const filteredOptions = props.options.filter((option) =>
+    props.selectedOptions && props.selectedOptions.includes(option.value) ? false : true
+  );
+
   const handleGetOptionSelected = (
     option: IAutocompleteFieldOption<T>,
     value: IAutocompleteFieldOption<T>
@@ -63,15 +75,17 @@ const AutocompleteField = <T extends string | number>(props: IAutocompleteField<
       blurOnSelect
       handleHomeEndKeys
       id={props.id}
+      fullWidth
       data-testid={props.id}
       value={getExistingValue(get(values, props.name))}
-      options={props.options}
+      options={filteredOptions}
       getOptionLabel={(option) => option.label}
+      disableClearable={props.disableClearable}
       isOptionEqualToValue={handleGetOptionSelected}
       getOptionDisabled={props.getOptionDisabled}
       filterOptions={createFilterOptions({ limit: props.filterLimit })}
       disabled={props?.disabled || false}
-      sx={props.sx}
+      sx={{ flex: '1 1 auto', ...props.sx }}
       loading={props.loading}
       onInputChange={(_event, _value, reason) => {
         if (reason === 'reset') {
@@ -135,6 +149,7 @@ const AutocompleteField = <T extends string | number>(props: IAutocompleteField<
               endAdornment: (
                 <>
                   {props.loading ? <CircularProgress color="inherit" size={20} /> : null}
+                  {props.helpText && <HelpButtonTooltip content={props.helpText} />}
                   {params.InputProps.endAdornment}
                 </>
               )

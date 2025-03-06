@@ -8,6 +8,7 @@ import {
   CBQuantitativeMeasurementTypeDefinition
 } from 'interfaces/useCritterApi.interface';
 import { EnvironmentType } from 'interfaces/useReferenceApi.interface';
+import { isValidLatitude, isValidLongitude } from 'utils/spatial-utils';
 
 /**
  * Validates a given observation table row against the given measurement columns.
@@ -34,7 +35,7 @@ export const validateObservationTableRowMeasurements = async (
     return [];
   }
 
-  const taxonMeasurements = await getTsnMeasurementTypeDefinitionMap(Number(row.itis_tsn));
+  const taxonMeasurements = await getTsnMeasurementTypeDefinitionMap(row.itis_tsn);
 
   if (!taxonMeasurements) {
     // This taxon has no valid measurements, return an error
@@ -259,11 +260,18 @@ export const findMissingSamplingColumns = (
   tableColumns: GridColDef[]
 ): ObservationRowValidationError[] => {
   const errors: ObservationRowValidationError[] = [];
-  // if this row has survey_sample_site_id we need to validate that the other 2 sampling columns are also present
-  if (row['survey_sample_site_id']) {
-    if (!row['survey_sample_method_id']) {
-      const header = tableColumns.find((tc) => tc.field === 'survey_sample_method_id')?.headerName;
-      errors.push({ field: 'survey_sample_method_id', message: `Missing column: ${header}` });
+  // If the row has any of the sampling columns set, then all of them must be set.
+  // Technically, only the period is required, but a period can only be selected if the site and technique are
+  // selected as well.
+  if (row['survey_sample_site_id'] || row['method_technique_id'] || row['survey_sample_period_id']) {
+    if (!row['survey_sample_site_id']) {
+      const header = tableColumns.find((tc) => tc.field === 'survey_sample_site_id')?.headerName;
+      errors.push({ field: 'survey_sample_site_id', message: `Missing column: ${header}` });
+    }
+
+    if (!row['method_technique_id']) {
+      const header = tableColumns.find((tc) => tc.field === 'method_technique_id')?.headerName;
+      errors.push({ field: 'method_technique_id', message: `Missing column: ${header}` });
     }
 
     if (!row['survey_sample_period_id']) {
@@ -328,6 +336,16 @@ export const validateObservationTableRow = (
   // Validate time value
   if (row.observation_time === 'Invalid date') {
     errors.push({ field: 'observation_time', message: 'Invalid time' });
+  }
+
+  // Validate latitude
+  if (!isValidLatitude(row.latitude)) {
+    errors.push({ field: 'latitude', message: 'Latitude must be between -90 and 90' });
+  }
+
+  // Validate longitude
+  if (!isValidLongitude(row.longitude)) {
+    errors.push({ field: 'longitude', message: 'Longitude must be between -180 and 180' });
   }
 
   return errors;

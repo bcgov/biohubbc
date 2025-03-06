@@ -24,7 +24,7 @@ import { Feature } from 'geojson';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
-import { IGetSampleLocationDetails } from 'interfaces/useSamplingSiteApi.interface';
+import { IGetSampleSiteDetails } from 'interfaces/useSamplingSiteApi.interface';
 import { DrawEvents, LatLngBoundsExpression } from 'leaflet';
 import get from 'lodash-es/get';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -52,7 +52,7 @@ const useStyles = () => {
 export interface ISamplingSiteEditMapControlProps {
   name: string;
   mapId: string;
-  formikProps: FormikContextType<IGetSampleLocationDetails>;
+  formikProps: FormikContextType<IGetSampleSiteDetails>;
 }
 
 /**
@@ -107,7 +107,11 @@ const SamplingSiteEditMapControl = (props: ISamplingSiteEditMapControlProps) => 
         const staticLayers: IStaticLayer[] = [
           {
             layerName: 'Sampling Sites',
-            features: samplingSiteGeoJsonFeatures.map((feature: Feature, index) => ({ geoJSON: feature, key: index }))
+            features: samplingSiteGeoJsonFeatures.map((feature: Feature, index) => ({
+              id: feature.id || index,
+              key: `sampling-site-${feature.id || index}`,
+              geoJSON: feature
+            }))
           }
         ];
 

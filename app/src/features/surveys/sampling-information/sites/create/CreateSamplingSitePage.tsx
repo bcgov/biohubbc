@@ -2,7 +2,6 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { CreateSamplingSiteI18N } from 'constants/i18n';
-import { ISurveySampleMethodFormData } from 'features/surveys/sampling-information/methods/components/SamplingMethodForm';
 import { Formik, FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -24,7 +23,6 @@ import SampleSiteCreateForm, { SampleSiteCreateFormYupSchema } from './form/Samp
 export interface ICreateSampleSiteFormData {
   survey_id: number;
   survey_sample_sites: ISurveySampleSite[]; // extracted list from shape files
-  sample_methods: ISurveySampleMethodFormData[];
   blocks: IGetSurveyBlock[];
   stratums: IGetSurveyStratum[];
 }
@@ -70,25 +68,13 @@ export const CreateSamplingSitePage = () => {
     try {
       setIsSubmitting(true);
 
-      // Remove internal _id property of newly created sample_methods used only as a unique key prop
-      const { sample_methods, ...otherValues } = values;
-
-      const data: ICreateSamplingSiteRequest = {
-        ...otherValues,
-        sample_methods: sample_methods.map((method) => ({
-          survey_sample_method_id: method.survey_sample_method_id,
-          survey_sample_site_id: method.survey_sample_site_id,
-          method_technique_id: method.technique.method_technique_id,
-          description: method.description,
-          sample_periods: method.sample_periods,
-          method_response_metric_id: method.method_response_metric_id
-        }))
+      const requestData: ICreateSamplingSiteRequest = {
+        survey_sample_sites: values.survey_sample_sites,
+        blocks: values.blocks.map((block) => ({ survey_block_id: block.survey_block_id })),
+        stratums: values.stratums.map((stratum) => ({ survey_stratum_id: stratum.survey_stratum_id }))
       };
 
-      await biohubApi.samplingSite.createSamplingSites(surveyContext.projectId, surveyContext.surveyId, data);
-
-      // Refresh the context, so the next page loads with the latest data
-      surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+      await biohubApi.samplingSite.createSamplingSites(surveyContext.projectId, surveyContext.surveyId, requestData);
 
       // create complete, navigate back to observations page
       history.push(
@@ -116,7 +102,6 @@ export const CreateSamplingSitePage = () => {
           name: '',
           description: '',
           survey_sample_sites: [],
-          sample_methods: [],
           blocks: [],
           stratums: []
         }}
@@ -124,7 +109,7 @@ export const CreateSamplingSitePage = () => {
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={handleSubmit}>
-        <Box display="flex" flexDirection="column" height="100%">
+        <Box display="flex" flexDirection="column">
           <SamplingSiteHeader
             project_id={surveyContext.projectId}
             survey_id={surveyContext.surveyId}

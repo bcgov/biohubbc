@@ -1,19 +1,24 @@
 import { AxiosInstance, AxiosProgressEvent, CancelTokenSource } from 'axios';
 import { IObservationsAdvancedFilters } from 'features/summary/tabular-data/observation/ObservationsListFilterForm';
 import {
+  CBQualitativeMeasurementTypeDefinition,
+  CBQuantitativeMeasurementTypeDefinition
+} from 'interfaces/useCritterApi.interface';
+import {
   IGetSurveyObservationsGeometryResponse,
   IGetSurveyObservationsResponse,
   ObservationRecord,
-  StandardObservationColumns,
-  SupplementaryObservationCountData
+  StandardObservationColumns
 } from 'interfaces/useObservationApi.interface';
 import { EnvironmentTypeIds } from 'interfaces/useReferenceApi.interface';
+import { IPartialTaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import qs from 'qs';
 import { ApiPaginationRequestOptions } from 'types/misc';
 
 export interface SubcountToSave {
   observation_subcount_id: number | null;
   subcount: number | null;
+  comment: string | null;
   qualitative_measurements: {
     measurement_id: string;
     measurement_option_id: string;
@@ -99,24 +104,53 @@ const useObservationApi = (axios: AxiosInstance) => {
     surveyId: number,
     pagination?: ApiPaginationRequestOptions
   ): Promise<IGetSurveyObservationsResponse> => {
-    let urlParamsString = '';
-
-    if (pagination) {
-      const params = new URLSearchParams();
-      params.append('page', pagination.page.toString());
-      params.append('limit', pagination.limit.toString());
-      if (pagination.sort) {
-        params.append('sort', pagination.sort);
-      }
-      if (pagination.order) {
-        params.append('order', pagination.order);
-      }
-      urlParamsString = `?${params.toString()}`;
-    }
+    const params = {
+      ...pagination
+    };
 
     const { data } = await axios.get<IGetSurveyObservationsResponse>(
-      `/api/project/${projectId}/survey/${surveyId}/observations${urlParamsString}`
+      `/api/project/${projectId}/survey/${surveyId}/observations`,
+      {
+        params
+      }
     );
+
+    return data;
+  };
+
+  /**
+   * Retrieves species observed in a given survey
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @return {*}  {Promise<IPartialTaxonomy>}
+   */
+  const getObservedSpecies = async (projectId: number, surveyId: number): Promise<IPartialTaxonomy[]> => {
+    const { data } = await axios.get<IPartialTaxonomy[]>(
+      `/api/project/${projectId}/survey/${surveyId}/observations/taxon`
+    );
+
+    return data;
+  };
+
+  /**
+   * Retrieves all measurements associated with all observation records
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @return {*}  {Promise<IObservationTableRow[]>}
+   */
+  const getObservationMeasurementDefinitions = async (
+    projectId: number,
+    surveyId: number
+  ): Promise<{
+    qualitative_measurements: CBQualitativeMeasurementTypeDefinition[];
+    quantitative_measurements: CBQuantitativeMeasurementTypeDefinition[];
+  }> => {
+    const { data } = await axios.get<{
+      qualitative_measurements: CBQualitativeMeasurementTypeDefinition[];
+      quantitative_measurements: CBQuantitativeMeasurementTypeDefinition[];
+    }>(`/api/project/${projectId}/survey/${surveyId}/observations/measurements`);
 
     return data;
   };
@@ -161,66 +195,38 @@ const useObservationApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Uploads an observation CSV for import.
+   * Imports observation records from a CSV file.
    *
-   * @param {number} projectId
-   * @param {number} surveyId
-   * @param {File} file
    * @param {{
-   *       samplingPeriodId: number;
-   *     }} [options]
-   * @param {CancelTokenSource} [cancelTokenSource]
-   * @param {(progressEvent: AxiosProgressEvent) => void} [onProgress]
+   *    projectId: number;
+   *    surveyId: number;
+   *    file: File; // The CSV file to import.
+   *    surveySamplePeriodId?: number; // Optional sample period id to associate all imported records with.
+   *    cancelTokenSource?: CancelTokenSource;
+   *    onProgress?: (progressEvent: AxiosProgressEvent) => void;
+   * }} params
    * @return {*}  {Promise<{ submissionId: number }>}
    */
-  const uploadCsvForImport = async (
-    projectId: number,
-    surveyId: number,
-    file: File,
-    cancelTokenSource?: CancelTokenSource,
-    onProgress?: (progressEvent: AxiosProgressEvent) => void
-  ): Promise<{ submissionId: number }> => {
+  const importObservationCSV = async (params: {
+    projectId: number;
+    surveyId: number;
+    file: File;
+    surveySamplePeriodId?: number;
+    cancelTokenSource?: CancelTokenSource;
+    onProgress?: (progressEvent: AxiosProgressEvent) => void;
+  }): Promise<void> => {
     const formData = new FormData();
 
-    formData.append('media', file);
+    formData.append('media', params.file);
 
-    const { data } = await axios.post<{ submissionId: number }>(
-      `/api/project/${projectId}/survey/${surveyId}/observations/upload`,
-      formData,
-      {
-        cancelToken: cancelTokenSource?.token,
-        onUploadProgress: onProgress
-      }
-    );
-
-    return data;
-  };
-
-  /**
-   * Begins processing an uploaded observation CSV for import
-   *
-   * @param {number} projectId
-   * @param {number} surveyId
-   * @param {number} submissionId
-   * @param {{
-   *       surveySamplePeriodId?: number;
-   *     }} [options]
-   * @return {*}  {Promise<void>}
-   */
-  const processCsvSubmission = async (
-    projectId: number,
-    surveyId: number,
-    submissionId: number,
-    options?: {
-      surveySamplePeriodId?: number;
+    if (params.surveySamplePeriodId) {
+      formData.append('surveySamplePeriodId', params.surveySamplePeriodId.toString());
     }
-  ): Promise<void> => {
-    const { data } = await axios.post<void>(`/api/project/${projectId}/survey/${surveyId}/observations/process`, {
-      observation_submission_id: submissionId,
-      options
-    });
 
-    return data;
+    await axios.post(`/api/project/${params.projectId}/survey/${params.surveyId}/observations/import`, formData, {
+      cancelToken: params.cancelTokenSource?.token,
+      onUploadProgress: params.onProgress
+    });
   };
 
   /**
@@ -229,19 +235,14 @@ const useObservationApi = (axios: AxiosInstance) => {
    * @param {number} projectId
    * @param {number} surveyId
    * @param {((string | number)[])} surveyObservationIds
-   * @return {*}  {Promise<{ supplementaryObservationData: SupplementaryObservationCountData }>}
+   * @return {*}  {Promise<void>}
    */
   const deleteObservationRecords = async (
     projectId: number,
     surveyId: number,
     surveyObservationIds: (string | number)[]
-  ): Promise<{ supplementaryObservationData: SupplementaryObservationCountData }> => {
-    const { data } = await axios.post<{ supplementaryObservationData: SupplementaryObservationCountData }>(
-      `/api/project/${projectId}/survey/${surveyId}/observations/delete`,
-      { surveyObservationIds }
-    );
-
-    return data;
+  ): Promise<void> => {
+    await axios.post(`/api/project/${projectId}/survey/${surveyId}/observations/delete`, { surveyObservationIds });
   };
 
   /**
@@ -295,13 +296,14 @@ const useObservationApi = (axios: AxiosInstance) => {
     insertUpdateObservationRecords,
     getObservationRecords,
     getObservationRecord,
+    getObservedSpecies,
     findObservations,
     getObservationsGeometry,
+    getObservationMeasurementDefinitions,
     deleteObservationRecords,
     deleteObservationMeasurements,
     deleteObservationEnvironments,
-    uploadCsvForImport,
-    processCsvSubmission
+    importObservationCSV
   };
 };
 

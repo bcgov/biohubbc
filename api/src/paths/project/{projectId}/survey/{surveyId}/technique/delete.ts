@@ -2,13 +2,11 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
-import { HTTP409 } from '../../../../../../errors/http-error';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { ObservationService } from '../../../../../../services/observation-service';
 import { TechniqueService } from '../../../../../../services/technique-service';
 import { getLogger } from '../../../../../../utils/logger';
 
-const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/sample-site/delete');
+const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/technique/delete');
 
 export const POST: Operation = [
   authorizeRequestHandler((req) => {
@@ -59,6 +57,7 @@ POST.apiDoc = {
   ],
   requestBody: {
     description: 'Survey technique delete request object.',
+    required: true,
     content: {
       'application/json': {
         schema: {
@@ -109,34 +108,20 @@ export function deleteSurveyTechniqueRecords(): RequestHandler {
     const surveyId = Number(req.params.surveyId);
     const methodTechniqueIds = req.body.methodTechniqueIds as number[];
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
 
-      const observationService = new ObservationService(connection);
-
-      const observationCount = await observationService.getObservationsCountByTechniqueIds(
-        surveyId,
-        methodTechniqueIds
-      );
-
-      if (observationCount > 0) {
-        throw new HTTP409('Cannot delete a technique that is associated with an observation');
-      }
-
       const techniqueService = new TechniqueService(connection);
 
-      // TODO Update to handle all deletes in one request rather than one at a time
-      for (const methodTechniqueId of methodTechniqueIds) {
-        await techniqueService.deleteTechnique(surveyId, methodTechniqueId);
-      }
+      await techniqueService.deleteTechniques(surveyId, methodTechniqueIds);
 
       await connection.commit();
 
       return res.status(204).send();
     } catch (error) {
-      defaultLog.error({ label: 'deleteSurveySampleSiteRecords', message: 'error', error });
+      defaultLog.error({ label: 'deleteSurveyTechniqueRecords', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

@@ -74,7 +74,7 @@ const dbSetupDeploy = async (settings) => {
         CPU_REQUEST: '50m',
         CPU_LIMIT: '1000m',
         MEMORY_REQUEST: '100Mi',
-        MEMORY_LIMIT: '1.5Gi'
+        MEMORY_LIMIT: '1.75Gi'
       }
     })
   );

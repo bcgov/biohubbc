@@ -1,162 +1,13 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { OpenAPIV3 } from 'openapi-types';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
-import { HTTP400 } from '../../../../../../../errors/http-error';
-import { GeoJSONFeatureCollection } from '../../../../../../../openapi/schemas/geoJson';
+import { paginationRequestQueryParamSchema } from '../../../../../../../openapi/schemas/pagination';
+import { TelemetrySchema } from '../../../../../../../openapi/schemas/telemetry';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
-import { BctwService } from '../../../../../../../services/bctw-service';
-import { ICritterbaseUser } from '../../../../../../../services/critterbase-service';
-import { SurveyCritterService } from '../../../../../../../services/survey-critter-service';
+import { TelemetryVendorService } from '../../../../../../../services/telemetry-services/telemetry-vendor-service';
 import { getLogger } from '../../../../../../../utils/logger';
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/critters/{critterId}/telemetry');
-
-const GeoJSONFeatureCollectionFeaturesItems = (
-  GeoJSONFeatureCollection.properties?.features as OpenAPIV3.ArraySchemaObject
-)?.items as OpenAPIV3.SchemaObject;
-
-const GeoJSONTelemetryPointsAPISchema: OpenAPIV3.SchemaObject = {
-  ...GeoJSONFeatureCollection,
-  properties: {
-    ...GeoJSONFeatureCollection.properties,
-    features: {
-      type: 'array',
-      items: {
-        ...GeoJSONFeatureCollectionFeaturesItems,
-        properties: {
-          ...GeoJSONFeatureCollectionFeaturesItems?.properties,
-          properties: {
-            type: 'object',
-            additionalProperties: false,
-            required: ['collar_id', 'device_id', 'date_recorded', 'deployment_id', 'critter_id'],
-            properties: {
-              collar_id: {
-                type: 'string',
-                format: 'uuid'
-              },
-              device_id: {
-                type: 'integer'
-              },
-              elevation: {
-                type: 'number',
-                nullable: true
-              },
-              frequency: {
-                type: 'number',
-                nullable: true
-              },
-              critter_id: {
-                type: 'string',
-                format: 'uuid'
-              },
-              date_recorded: {
-                type: 'string'
-              },
-              deployment_id: {
-                type: 'string',
-                format: 'uuid'
-              },
-              device_status: {
-                type: 'string',
-                nullable: true
-              },
-              device_vendor: {
-                type: 'string',
-                nullable: true
-              },
-              frequency_unit: {
-                type: 'string',
-                nullable: true
-              },
-              wlh_id: {
-                type: 'string',
-                nullable: true
-              },
-              animal_id: {
-                type: 'string',
-                nullable: true
-              },
-              sex: {
-                type: 'string'
-              },
-              taxon: {
-                type: 'string'
-              },
-              collection_units: {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  additionalProperties: false,
-                  properties: {
-                    collection_unit_id: {
-                      type: 'string',
-                      format: 'uuid'
-                    },
-                    unit_name: {
-                      type: 'string'
-                    },
-                    collection_category_id: {
-                      type: 'string',
-                      format: 'uuid'
-                    },
-                    category_name: {
-                      type: 'string'
-                    }
-                  }
-                }
-              },
-              mortality_timestamp: {
-                type: 'string',
-                nullable: true
-              },
-              _merged: {
-                type: 'boolean'
-              },
-              map_colour: {
-                type: 'string'
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-};
-
-const GeoJSONTelemetryTracksAPISchema: OpenAPIV3.SchemaObject = {
-  ...GeoJSONFeatureCollection,
-  properties: {
-    ...GeoJSONFeatureCollection.properties,
-    features: {
-      type: 'array',
-      items: {
-        ...GeoJSONFeatureCollectionFeaturesItems,
-        properties: {
-          ...GeoJSONFeatureCollectionFeaturesItems?.properties,
-          properties: {
-            type: 'object',
-            additionalProperties: false,
-            required: ['critter_id', 'deployment_id'],
-            properties: {
-              critter_id: {
-                type: 'string',
-                format: 'uuid'
-              },
-              deployment_id: {
-                type: 'string',
-                format: 'uuid'
-              },
-              map_colour: {
-                type: 'string'
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-};
 
 export const GET: Operation = [
   authorizeRequestHandler((req) => {
@@ -179,7 +30,7 @@ export const GET: Operation = [
 
 GET.apiDoc = {
   description: 'Get telemetry points for a specific critter.',
-  tags: ['bctw'],
+  tags: ['telemetry'],
   security: [
     {
       Bearer: []
@@ -205,7 +56,6 @@ GET.apiDoc = {
     {
       in: 'query',
       name: 'startDate',
-      required: true,
       schema: {
         type: 'string'
       }
@@ -213,25 +63,26 @@ GET.apiDoc = {
     {
       in: 'query',
       name: 'endDate',
-      required: true,
       schema: {
         type: 'string'
       }
-    }
+    },
+    ...paginationRequestQueryParamSchema
   ],
   responses: {
     200: {
-      description: 'Responds with count of rows created in SIMS DB Deployments.',
+      description: 'Responds with telemetry points for a specific critter.',
       content: {
         'application/json': {
           schema: {
-            title: 'Telemetry response',
             type: 'object',
+            required: ['telemetry'],
             additionalProperties: false,
-            required: ['tracks', 'points'],
             properties: {
-              points: GeoJSONTelemetryPointsAPISchema,
-              tracks: GeoJSONTelemetryTracksAPISchema
+              telemetry: {
+                type: 'array',
+                items: TelemetrySchema
+              }
             }
           }
         }
@@ -259,39 +110,28 @@ export function getCritterTelemetry(): RequestHandler {
   return async (req, res) => {
     const critterId = Number(req.params.critterId);
     const surveyId = Number(req.params.surveyId);
+    const startDate = req.query.startDate && String(req.query.startDate);
+    const endDate = req.query.endDate && String(req.query.endDate);
 
     const connection = getDBConnection(req.keycloak_token);
-
     try {
       await connection.open();
 
-      const user: ICritterbaseUser = {
-        keycloak_guid: connection.systemUserGUID(),
-        username: connection.systemUserIdentifier()
-      };
+      const telemetryVendorService = new TelemetryVendorService(connection);
 
-      const surveyCritterService = new SurveyCritterService(connection);
-      const surveyCritters = await surveyCritterService.getCrittersInSurvey(surveyId);
-
-      const critter = surveyCritters.find((surveyCritter) => surveyCritter.critter_id === critterId);
-      if (!critter) {
-        throw new HTTP400('Specified critter was not part of this survey.');
-      }
-
-      const startDate = new Date(String(req.query.startDate));
-      const endDate = new Date(String(req.query.endDate));
-
-      const bctwService = new BctwService(user);
-      const points = await bctwService.getCritterTelemetryPoints(critter.critterbase_critter_id, startDate, endDate);
-      const tracks = await bctwService.getCritterTelemetryTracks(critter.critterbase_critter_id, startDate, endDate);
+      const telemetry = await telemetryVendorService.getTelemetryForCritter(surveyId, critterId, {
+        dateRange: {
+          startDate,
+          endDate
+        }
+      });
 
       await connection.commit();
 
-      return res.status(200).json({ points, tracks });
+      return res.status(200).json({ telemetry: telemetry });
     } catch (error) {
       defaultLog.error({ label: 'telemetry', message: 'error', error });
       await connection.rollback();
-
       throw error;
     } finally {
       connection.release();

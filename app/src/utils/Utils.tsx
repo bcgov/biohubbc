@@ -1,4 +1,5 @@
 import Typography from '@mui/material/Typography';
+import { AxiosProgressEvent } from 'axios';
 import { SYSTEM_IDENTITY_SOURCE } from 'constants/auth';
 import { DATE_FORMAT, TIME_FORMAT } from 'constants/dateTimeFormats';
 import { default as dayjs } from 'dayjs';
@@ -98,10 +99,14 @@ export const getFormattedDateRangeString = (
  * Get a formatted date string.
  *
  * @param {DATE_FORMAT} dateFormat
- * @param {string} date ISO 8601 date string
+ * @param {(string | null)} date ISO 8601 date string
  * @return {string} formatted date string, or an empty string if unable to parse the date
  */
-export const getFormattedDate = (dateFormat: DATE_FORMAT, date: string): string => {
+export const getFormattedDate = (dateFormat: DATE_FORMAT, date: string | null): string => {
+  if (!date) {
+    return '';
+  }
+
   const dateJs = dayjs(date);
 
   if (!dateJs.isValid()) {
@@ -461,9 +466,10 @@ export const firstOrNull = <T,>(arr: T[]): T | null => (arr.length > 0 ? arr[0] 
  * @param seed
  * @returns
  */
-export const getRandomHexColor = (seed: number, min = 100, max = 170): string => {
+export const getRandomHexColor = (seed: number, min = 120, max = 180): string => {
   const randomChannel = (): string => {
-    const x = Math.sin(seed++) * 10000;
+    // Change the multiplier to change the colour boldness
+    const x = Math.sin(seed++) * 1000;
     return (Math.floor((x - Math.floor(x)) * (max - min + 1)) + min).toString(16).padStart(2, '0');
   };
 
@@ -478,3 +484,33 @@ export const getRandomHexColor = (seed: number, min = 100, max = 170): string =>
  * @return {*}  {value is T}
  */
 export const isDefined = <T,>(value: T | undefined | null): value is T => value !== undefined && value !== null;
+
+/**
+ * Gets the progress percentage from an Axios ProgressEvent.
+ *
+ * Note: Axios will fire a `progress event` 3 times a second.
+ *
+ * @param {AxiosProgressEvent} progressEvent - Axios progress event
+ *
+ */
+export const getAxiosProgress = (progressEvent: AxiosProgressEvent) => {
+  return Math.round((progressEvent.loaded / (progressEvent.total || 1)) * 100);
+};
+
+/**
+ * Wait for the render cycle to complete before continuing.
+ *
+ * How? React updates the DOM asynchronously by queing updates in the event loop.
+ * Awaiting this promise allows react to complete its currently queued tasks (state updates) before continuing.
+ *
+ * Note: The `delayMs` is used to wait AFTER the render cycle updates. This is useful when you want to wait for
+ * the render cycle to complete and then perform some action after a delay, useful for animation or state timing.
+ *
+ * @see https://www.justjeb.com/post/why-does-settimeout-work
+ * @async
+ * @param {number} [delayMs=0] - Delay in milliseconds to wait AFTER the render cycle updates
+ * @returns {*} {Promise<void>}
+ */
+export const waitForRenderCycle = async (delayMs = 0) => {
+  return new Promise((resolve) => setTimeout(resolve, delayMs));
+};

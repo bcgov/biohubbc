@@ -33,6 +33,7 @@ POST.apiDoc = {
   ],
   requestBody: {
     description: 'attachment submission file to delete or resubmit',
+    required: true,
     content: {
       'application/json': {
         schema: {

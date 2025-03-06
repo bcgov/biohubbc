@@ -6,8 +6,10 @@ import Paper from '@mui/material/Paper';
 import PageHeader from 'components/layout/PageHeader';
 import { SystemRoleGuard } from 'components/security/Guards';
 import { SYSTEM_ROLE } from 'constants/roles';
+import { SystemAlertBanner } from 'features/alert/banner/SystemAlertBanner';
 import { ListDataTableContainer } from 'features/summary/list-data/ListDataTableContainer';
 import { TabularDataTableContainer } from 'features/summary/tabular-data/TabularDataTableContainer';
+import { SystemAlertBannerEnum } from 'interfaces/useAlertApi.interface';
 import { Link as RouterLink } from 'react-router-dom';
 
 /**
@@ -36,6 +38,8 @@ const SummaryPage = () => {
       />
 
       <Container maxWidth="xl" sx={{ py: 3 }}>
+        <SystemAlertBanner alertTypes={[SystemAlertBannerEnum.SUMMARY]} />
+
         <Paper>
           <ListDataTableContainer />
         </Paper>

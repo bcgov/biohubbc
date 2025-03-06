@@ -12,6 +12,7 @@ import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import YesNoDialog from 'components/dialog/YesNoDialog';
 import { useFormikContext } from 'formik';
+import { Feature } from 'geojson';
 import { IEditSurveyRequest } from 'interfaces/useSurveyApi.interface';
 import React, { useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
@@ -28,6 +29,7 @@ export const SurveyBlockInitialValues = {
 export const BlockCreateYupSchema = yup.object({
   name: yup.string().required('Name is required').max(50, 'Maximum 50 characters'),
   description: yup.string().required('Description is required').max(250, 'Maximum 250 characters')
+  // TODO: Include geojson in validation after adding map control for blocks
 });
 
 // Form validation for Block Item
@@ -35,12 +37,13 @@ export const BlockEditYupSchema = BlockCreateYupSchema.shape({
   sample_block_count: yup.number().required('Sample block count is required.')
 });
 
-export interface ISurveyBlock {
+export interface IPostSurveyBlock {
   index: number;
   block: {
     survey_block_id: number | null;
     name: string;
     description: string;
+    geojson: Feature;
     sample_block_count: number;
   };
 }
@@ -50,7 +53,7 @@ const SurveyBlockForm: React.FC = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isYesNoDialogOpen, setIsYesNoDialogOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
-  const [editData, setEditData] = useState<ISurveyBlock | undefined>(undefined);
+  const [editData, setEditData] = useState<IPostSurveyBlock | undefined>(undefined);
 
   const formikProps = useFormikContext<IEditSurveyRequest>();
   const { values, handleSubmit, setFieldValue } = formikProps;

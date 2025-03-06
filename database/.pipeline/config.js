@@ -97,6 +97,25 @@ const phases = {
     memoryLimit: '5Gi',
     replicas: '1'
   },
+  'test-spi': {
+    namespace: 'af2668-test',
+    name: `${name}-spi`,
+    phase: 'test-spi',
+    changeId: deployChangeId,
+    suffix: '-test-spi',
+    instance: `${name}-spi-test-spi`,
+    version: `${version}`,
+    tag: `test-spi-${version}`,
+    nodeEnv: 'production',
+    tz: config.timezone.db,
+    dbSetupDockerfilePath: dbSetupDockerfilePath,
+    volumeCapacity: '20Gi',
+    cpuRequest: '50m',
+    cpuLimit: '2000m',
+    memoryRequest: '100Mi',
+    memoryLimit: '5Gi',
+    replicas: '1'
+  },
   prod: {
     namespace: 'af2668-prod',
     name: `${name}`,

@@ -3,10 +3,10 @@ import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
 import { IObservationAdvancedFilters } from '../../models/observation-view';
-import { observervationsWithSubcountDataSchema } from '../../openapi/schemas/observation';
-import { paginationRequestQueryParamSchema } from '../../openapi/schemas/pagination';
+import { findObservationsSchema } from '../../openapi/schemas/observation';
+import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../../openapi/schemas/pagination';
 import { authorizeRequestHandler, userHasValidRole } from '../../request-handlers/security/authorization';
-import { ObservationService } from '../../services/observation-service';
+import { ObservationService } from '../../services/observation-services/observation-service';
 import { getLogger } from '../../utils/logger';
 import {
   ensureCompletePaginationOptions,
@@ -139,7 +139,15 @@ GET.apiDoc = {
       description: 'Observation response object.',
       content: {
         'application/json': {
-          schema: observervationsWithSubcountDataSchema
+          schema: {
+            type: 'object',
+            additionalProperties: false,
+            required: ['surveyObservations', 'pagination'],
+            properties: {
+              surveyObservations: findObservationsSchema,
+              pagination: paginationResponseSchema
+            }
+          }
         }
       }
     },
@@ -204,13 +212,6 @@ export function findObservations(): RequestHandler {
 
       const response = {
         surveyObservations: observations,
-        supplementaryObservationData: {
-          observationCount: observationsTotalCount,
-          qualitative_measurements: [],
-          quantitative_measurements: [],
-          qualitative_environments: [],
-          quantitative_environments: []
-        },
         pagination: makePaginationResponse(observationsTotalCount, paginationOptions)
       };
 
@@ -246,6 +247,6 @@ function parseQueryParams(
     start_time: req.query.start_time ?? undefined,
     end_time: req.query.end_time ?? undefined,
     min_count: (req.query.min_count && Number(req.query.min_count)) ?? undefined,
-    system_user_id: req.query.system_user_id ?? undefined
+    system_user_id: (req.query.system_user_id && Number(req.query.system_user_id)) ?? undefined
   };
 }

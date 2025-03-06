@@ -140,6 +140,7 @@ export function getSurveyParticipants(): RequestHandler {
       return res.status(200).json({ participants: result });
     } catch (error) {
       defaultLog.error({ label: 'getSurveyParticipants', message: 'error', error });
+      await connection.rollback();
       throw error;
     } finally {
       connection.release();
@@ -195,6 +196,7 @@ POST.apiDoc = {
     }
   ],
   requestBody: {
+    required: true,
     content: {
       'application/json': {
         schema: {
@@ -282,6 +284,7 @@ export function createSurveyParticipants(): RequestHandler {
       return res.status(200).send();
     } catch (error) {
       defaultLog.error({ label: 'insertProjectParticipants', message: 'error', error });
+      await connection.rollback();
       throw error;
     } finally {
       connection.release();

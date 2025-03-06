@@ -1,10 +1,10 @@
-import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
 import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormHelperText from '@mui/material/FormHelperText';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
+import HelpButtonStack from 'components/buttons/HelpButtonStack';
 import { useFormikContext } from 'formik';
 import { StringBoolean } from 'types/misc';
 import yup from 'utils/YupSchema';
@@ -60,9 +60,11 @@ const AgreementsForm = () => {
     <form>
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <Typography component="h3" variant="h5">
-            Species and Ecosystems Data and Information Security (SEDIS) Procedures
-          </Typography>
+          <HelpButtonStack helpText="The SEDIS procedures ensure that data and information regarding species and ecosystems susceptible to persecution and harm are managed appropriately.">
+            <Typography component="h3" variant="h5">
+              Species and Ecosystems Data and Information Security (SEDIS) Procedures
+            </Typography>
+          </HelpButtonStack>
         </Grid>
         <Grid item xs={12}>
           <FormControl
@@ -92,11 +94,11 @@ const AgreementsForm = () => {
           </FormControl>
         </Grid>
         <Grid item xs={12}>
-          <Box>
+          <HelpButtonStack helpText="You must not upload personal information and are responsible for responding to Freedom of Information Requests with relevant information, excluding information that meets the exemption criteria.">
             <Typography component="h3" variant="h5">
               Freedom of Information and Protection of Privacy Act (FOIPPA) Requirements
             </Typography>
-          </Box>
+          </HelpButtonStack>
         </Grid>
         <Grid item xs={12}>
           <FormControl

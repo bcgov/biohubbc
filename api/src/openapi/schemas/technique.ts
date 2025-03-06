@@ -78,6 +78,30 @@ const techniqueAttributesSchema: OpenAPIV3.SchemaObject = {
   }
 };
 
+export const techniqueVantagesSchema: OpenAPIV3.SchemaObject = {
+  type: 'array',
+  description: 'Vantages from which a method is done, like water, air, or ground.',
+  items: {
+    type: 'object',
+    required: ['vantage_method_id', 'vantage_category_id'],
+    additionalProperties: false,
+    properties: {
+      method_technique_vantage_id: {
+        type: 'integer',
+        minimum: 1
+      },
+      vantage_method_id: {
+        type: 'integer',
+        minimum: 1
+      },
+      vantage_category_id: {
+        type: 'integer',
+        minimum: 1
+      }
+    }
+  }
+};
+
 export const techniqueSimpleViewSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
   required: ['method_technique_id', 'name', 'description', 'attractants'],
@@ -102,7 +126,16 @@ export const techniqueSimpleViewSchema: OpenAPIV3.SchemaObject = {
 
 export const techniqueCreateSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
-  required: ['name', 'description', 'method_lookup_id', 'distance_threshold', 'attractants', 'attributes'],
+  required: [
+    'name',
+    'description',
+    'method_lookup_id',
+    'method_response_metric_id',
+    'distance_threshold',
+    'attractants',
+    'attributes',
+    'vantage_methods'
+  ],
   additionalProperties: false,
   properties: {
     name: {
@@ -119,13 +152,19 @@ export const techniqueCreateSchema: OpenAPIV3.SchemaObject = {
       description: 'The ID of a known method type.',
       minimum: 1
     },
+    method_response_metric_id: {
+      type: 'integer',
+      description: 'The ID of a known method response metric type.',
+      minimum: 1
+    },
     distance_threshold: {
       type: 'number',
       description: 'Maximum detection distance (meters).',
       nullable: true
     },
     attractants: techniqueAttractantsSchema,
-    attributes: techniqueAttributesSchema
+    attributes: techniqueAttributesSchema,
+    vantage_methods: techniqueVantagesSchema
   }
 };
 

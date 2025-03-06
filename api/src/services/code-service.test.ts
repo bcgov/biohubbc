@@ -31,7 +31,7 @@ describe('CodeService', () => {
         'agency',
         'attractants',
         'investment_action_category',
-        'type',
+        'survey_data_type',
         'proprietor_type',
         'iucn_conservation_action_level_1_classification',
         'iucn_conservation_action_level_2_subclassification',
@@ -40,12 +40,16 @@ describe('CodeService', () => {
         'project_roles',
         'administrative_activity_status_type',
         'intended_outcomes',
-        'vantage_codes',
         'site_selection_strategies',
         'survey_jobs',
         'sample_methods',
         'survey_progress',
-        'method_response_metrics'
+        'method_response_metrics',
+        'observation_subcount_signs',
+        'telemetry_device_makes',
+        'frequency_units',
+        'alert_types',
+        'vantages'
       );
     });
   });

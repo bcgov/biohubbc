@@ -685,11 +685,11 @@ describe('BcgwLayerService', () => {
 
       const regions = await service.getIntersectingNrmRegionNamesFromFeatures([featureA, featureB], mockDbConnection);
 
-      expect(mockGetGeoJsonString.firstCall.calledWithExactly(featureA.geometry, Srid3005)).to.be.true;
-      expect(mockGetGeoJsonString.secondCall.calledWithExactly(featureB.geometry, Srid3005)).to.be.true;
+      expect(mockGetGeoJsonString.firstCall).to.have.been.calledWithExactly(featureA.geometry, Srid3005);
+      expect(mockGetGeoJsonString.secondCall).to.have.been.calledWithExactly(featureB.geometry, Srid3005);
 
-      expect(mockGetNrmRegionNames.firstCall.calledWithExactly('A')).to.be.true;
-      expect(mockGetNrmRegionNames.secondCall.calledWithExactly('B')).to.be.true;
+      expect(mockGetNrmRegionNames.firstCall).to.have.been.calledWithExactly('A');
+      expect(mockGetNrmRegionNames.secondCall).to.have.been.calledWithExactly('B');
 
       expect(regions).to.eqls(['Cariboo', 'South']);
     });

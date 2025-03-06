@@ -19,10 +19,6 @@ export interface IUploadFile {
   error?: string;
 }
 
-export interface IUploadFileListProps {
-  files: IUploadFile[];
-}
-
 export type IReplaceHandler = () => void;
 
 export interface IFileUploadProps {
@@ -41,7 +37,7 @@ export interface IFileUploadProps {
    */
   fileHandler?: IFileHandler;
   /**
-   * Callback fired when `uploadHandler` runs successfully fora  given file. Will run once for each file that is
+   * Callback fired when `uploadHandler` runs successfully for a given file. Will run once for each file that is
    * uploaded.
    *
    * @type {IOnUploadSuccess}

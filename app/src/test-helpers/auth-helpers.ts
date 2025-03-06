@@ -33,10 +33,6 @@ export const UnauthenticatedUserAuthState: IAuthState = {
     refresh: () => {
       // do nothing
     }
-  },
-  critterbaseUserWrapper: {
-    isLoading: false,
-    critterbaseUserUuid: 'fakeguid'
   }
 };
 
@@ -73,10 +69,6 @@ export const SystemUserAuthState: IAuthState = {
     refresh: () => {
       // do nothing
     }
-  },
-  critterbaseUserWrapper: {
-    isLoading: false,
-    critterbaseUserUuid: 'fakeguid'
   }
 };
 
@@ -113,10 +105,6 @@ export const SystemAdminAuthState: IAuthState = {
     refresh: () => {
       // do nothing
     }
-  },
-  critterbaseUserWrapper: {
-    isLoading: false,
-    critterbaseUserUuid: 'fakeguid'
   }
 };
 
@@ -144,10 +132,6 @@ export const getMockAuthState = (options: { base: IAuthState; overrides?: Subset
     simsUserWrapper: {
       ...base.simsUserWrapper,
       ...overrides?.simsUserWrapper
-    },
-    critterbaseUserWrapper: {
-      ...base.simsUserWrapper,
-      ...overrides?.critterbaseUserWrapper
     }
   } as unknown as IAuthState;
 };

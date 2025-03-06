@@ -6,13 +6,11 @@ import { PostSurveyObject } from '../../../../models/survey-create';
 import {
   surveyBlockSchema,
   surveyDetailsSchema,
-  surveyFundingSourceDataSchema,
   surveyLocationSchema,
   surveyPartnershipsSchema,
   surveyPermitSchema,
   surveyProprietorSchema,
   surveyPurposeAndMethodologySchema,
-  surveySiteSelectionSchema,
   surveySpeciesSchema
 } from '../../../../openapi/schemas/survey';
 import { surveyParticipationAndSystemUserSchema } from '../../../../openapi/schemas/user';
@@ -62,6 +60,7 @@ POST.apiDoc = {
   ],
   requestBody: {
     description: 'Survey post request object.',
+    required: true,
     content: {
       'application/json': {
         schema: {
@@ -94,7 +93,18 @@ POST.apiDoc = {
             permit: surveyPermitSchema,
             funding_sources: {
               type: 'array',
-              items: surveyFundingSourceDataSchema
+              items: {
+                type: 'object',
+                additionalProperties: false,
+                required: ['funding_source_id'],
+                properties: {
+                  funding_source_id: {
+                    description: 'Funding source id',
+                    type: 'integer',
+                    minimum: 1
+                  }
+                }
+              }
             },
             partnerships: surveyPartnershipsSchema,
             proprietor: surveyProprietorSchema,
@@ -104,7 +114,56 @@ POST.apiDoc = {
               type: 'array',
               items: surveyLocationSchema
             },
-            site_selection: surveySiteSelectionSchema,
+            site_selection: {
+              title: 'survey site selection response object',
+              type: 'object',
+              additionalProperties: false,
+              required: ['strategies', 'stratums'],
+              properties: {
+                strategies: {
+                  description: 'Strategies',
+                  type: 'array',
+                  items: {
+                    type: 'string'
+                  }
+                },
+                stratums: {
+                  description: 'Stratums',
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    additionalProperties: false,
+                    required: ['name', 'description'],
+                    properties: {
+                      name: {
+                        description: 'Name',
+                        type: 'string'
+                      },
+                      description: {
+                        description: 'Description',
+                        type: 'string',
+                        nullable: true
+                      },
+                      survey_id: {
+                        description: 'Survey id',
+                        type: 'integer',
+                        nullable: true
+                      },
+                      survey_stratum_id: {
+                        description: 'Survey stratum id',
+                        type: 'integer',
+                        nullable: true,
+                        minimum: 1
+                      },
+                      revision_count: {
+                        description: 'Revision count',
+                        type: 'integer'
+                      }
+                    }
+                  }
+                }
+              }
+            },
             participants: {
               type: 'array',
               items: {

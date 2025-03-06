@@ -84,11 +84,9 @@ A centralized logger has been created (see `api/utils/logger.ts`).
 
 ## Logger configuration
 
-The loggers log level can be configured via an environment variable: `LOG_LEVEL`
+The loggers log level can be configured via environment variables: `LOG_LEVEL` and `LOG_LEVEL_FILE`
 
 Set this variable to one of: `silent`, `error`, `warn`, `info`, `debug`, `silly`
-
-Default value: `info`
 
 ## Instantiating the logger in your class/file
 

@@ -1,48 +1,46 @@
+import { SAMPLING_SITE_SPATIAL_TYPE } from 'constants/spatial';
 import { Feature, Point } from 'geojson';
-import { isDefined } from 'utils/Utils';
+import { isDefined } from './Utils';
 
 /**
- * Get a point feature from the given latitude and longitude.
+ * Checks whether a latitude value is valid.
  *
- * @template Return00PointType
- * @param {{
- *   latitude?: number; // Latitude of the point
- *   longitude?: number; // Longitude of the point
- *   properties?: Record<string, any>; // Properties of the point feature
- *   return00Point?: Return00PointType; // By default, if latitude or longitude is not defined, return null. If this is
- *   set to true, the default value for latitude and longitude will be 0, and a non-null point feature will be returned.
- * }} params
- * @return {*}  {(Return00PointType extends true ? Feature : Feature | null)}
+ * A valid latitude is between -90 and 90 degrees, inclusive.
+ *
+ * @param {(number | null | undefined)} latitude
+ * @return {*}  {boolean} 'true' if the latitude is valid, 'false' otherwise.
  */
-export const getPointFeature = <Return00PointType extends boolean = false>(params: {
-  latitude?: number;
-  longitude?: number;
-  properties?: Record<string, any>;
-  return00Point?: Return00PointType;
-}): Return00PointType extends true ? Feature : Feature | null => {
-  if (!params.return00Point && (!isDefined(params.latitude) || !isDefined(params.longitude))) {
-    return null as Return00PointType extends true ? Feature : Feature | null;
-  }
-
-  return {
-    type: 'Feature',
-    geometry: {
-      type: 'Point',
-      coordinates: [params.longitude ?? 0, params.latitude ?? 0]
-    },
-    properties: { ...params.properties }
-  };
+export const isValidLatitude = (latitude: number | null | undefined): boolean => {
+  return isDefined(latitude) && latitude >= -90 && latitude <= 90;
 };
 
 /**
- * Checks whether a latitude-longitude pair of coordinates is valid
+ * Checks whether a longitude value is valid.
  *
- * @param {number} latitude
- * @param {number} longitude
- * @returns boolean
+ * A valid longitude is between -180 and 180 degrees, inclusive.
+ *
+ * @param {(number | null | undefined)} longitude
+ * @return {*}  {boolean} 'true' if the longitude is valid, 'false' otherwise.
  */
-export const isValidCoordinates = (latitude: number | undefined, longitude: number | undefined) => {
-  return latitude && longitude && latitude > -90 && latitude < 90 && longitude > -180 && longitude < 180 ? true : false;
+export const isValidLongitude = (longitude: number | null | undefined): boolean => {
+  return isDefined(longitude) && longitude >= -180 && longitude <= 180;
+};
+
+/**
+ * Checks whether a latitude-longitude pair of coordinates is valid.
+ *
+ * A valid latitude is between -90 and 90 degrees, inclusive.
+ * A valid longitude is between -180 and 180 degrees, inclusive.
+ *
+ * @param {(number | null | undefined)} latitude
+ * @param {(number | null | undefined)} longitude
+ * @return {*}  {boolean} 'true' if the coordinates are valid, 'false' otherwise.
+ */
+export const isValidCoordinates = (
+  latitude: number | null | undefined,
+  longitude: number | null | undefined
+): boolean => {
+  return isValidLatitude(latitude) && isValidLongitude(longitude);
 };
 
 /**
@@ -52,18 +50,40 @@ export const isValidCoordinates = (latitude: number | undefined, longitude: numb
  * @return {*}  {{ latitude: number; longitude: number }}
  */
 export const getCoordinatesFromGeoJson = (feature: Feature<Point>): { latitude: number; longitude: number } => {
-  const lon = feature.geometry.coordinates[0];
-  const lat = feature.geometry.coordinates[1];
+  const longitude = feature.geometry.coordinates[0];
+  const latitude = feature.geometry.coordinates[1];
 
-  return { latitude: lat as number, longitude: lon as number };
+  return { latitude, longitude };
 };
 
 /**
  * Checks if the given feature is a GeoJson Feature containing a Point.
  *
- * @param {(Feature | any)} [feature]
+ * @param {(unknown)} [feature]
  * @return {*}  {feature is Feature<Point>}
  */
-export const isGeoJsonPointFeature = (feature?: Feature | any): feature is Feature<Point> => {
-  return (feature as Feature)?.geometry.type === 'Point';
+export const isGeoJsonPointFeature = (feature?: unknown): feature is Feature<Point> => {
+  return (feature as Feature)?.geometry?.type === 'Point';
+};
+
+/**
+ * Get the spatial type of a sampling site feature (Point, Transect, Area, etc).
+ *
+ * @param {Feature} feature
+ * @return {*}  {(SAMPLING_SITE_SPATIAL_TYPE | null)}
+ */
+export const getSamplingSiteSpatialType = (type: string): SAMPLING_SITE_SPATIAL_TYPE | null => {
+  if (['MultiLineString', 'LineString'].includes(type)) {
+    return SAMPLING_SITE_SPATIAL_TYPE.TRANSECT;
+  }
+
+  if (['Point', 'MultiPoint'].includes(type)) {
+    return SAMPLING_SITE_SPATIAL_TYPE.POINT;
+  }
+
+  if (['Polygon', 'MultiPolygon'].includes(type)) {
+    return SAMPLING_SITE_SPATIAL_TYPE.AREA;
+  }
+
+  return null;
 };

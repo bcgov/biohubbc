@@ -70,8 +70,8 @@ export async function up(knex: Knex): Promise<void> {
     -- Alter tables
     ----------------------------------------------------------------------------------------
 
-    -- Note: Include default value temporarily to satisfy existing system_user rows. Default will be removed afterwards.
-    alter table system_user
+    -- Note: Include default value temporarily to satisfy existing "system_user" rows. Default will be removed afterwards.
+    alter table "system_user"
       ADD   COLUMN display_name     varchar(100)   NOT NULL DEFAULT 'default',
       ADD   COLUMN given_name       varchar(100),
       ADD   COLUMN family_name      varchar(100),
@@ -80,15 +80,15 @@ export async function up(knex: Knex): Promise<void> {
       ADD   COLUMN notes            varchar(250),
       ALTER COLUMN user_identifier                 DROP NOT NULL;
 
-    COMMENT ON COLUMN system_user.display_name             IS 'The display name of the user (their IDIR/BCeID display name OR their first and last names combined).';
-    COMMENT ON COLUMN system_user.given_name               IS 'The given name of the user (often their first name).';
-    COMMENT ON COLUMN system_user.family_name              IS 'The family name of the user (often their last name).';
-    COMMENT ON COLUMN system_user.email                    IS 'The email address of the user.';
-    COMMENT ON COLUMN system_user.agency                   IS 'The agency the user is associated with.';
-    COMMENT ON COLUMN system_user.notes                    IS 'Notes associated with the record.';
-    COMMENT ON COLUMN system_user.user_identifier          IS 'The identifier of the user (their IDIR/BCeID username)';
-    COMMENT ON COLUMN system_user.user_identity_source_id  IS 'Foreign key referencing the user identity source table.';
-    COMMENT ON COLUMN system_user.user_guid                IS 'The Keycloak GUID of the user.';
+    COMMENT ON COLUMN "system_user".display_name             IS 'The display name of the user (their IDIR/BCeID display name OR their first and last names combined).';
+    COMMENT ON COLUMN "system_user".given_name               IS 'The given name of the user (often their first name).';
+    COMMENT ON COLUMN "system_user".family_name              IS 'The family name of the user (often their last name).';
+    COMMENT ON COLUMN "system_user".email                    IS 'The email address of the user.';
+    COMMENT ON COLUMN "system_user".agency                   IS 'The agency the user is associated with.';
+    COMMENT ON COLUMN "system_user".notes                    IS 'Notes associated with the record.';
+    COMMENT ON COLUMN "system_user".user_identifier          IS 'The identifier of the user (their IDIR/BCeID username)';
+    COMMENT ON COLUMN "system_user".user_identity_source_id  IS 'Foreign key referencing the user identity source table.';
+    COMMENT ON COLUMN "system_user".user_guid                IS 'The Keycloak GUID of the user.';
 
     ----------------------------------------------------------------------------------------
     -- Create Indexes and Constraints for table: system_permission
@@ -138,7 +138,7 @@ export async function up(knex: Knex): Promise<void> {
 
     create or replace view system_role_permission as select * from biohub.system_role_permission;
 
-    create or replace view system_user as select * from biohub.system_user;
+    create or replace view "system_user" as select * from biohub."system_user";
 
     ----------------------------------------------------------------------------------------
     -- Populate Tables
@@ -187,8 +187,8 @@ export async function up(knex: Knex): Promise<void> {
     -- Cleanup Temporary Defaults
     ----------------------------------------------------------------------------------------
 
-    -- Note: Removing default value temporarily added to satisfy existing system_user rows.
-    alter table system_user
+    -- Note: Removing default value temporarily added to satisfy existing "system_user" rows.
+    alter table "system_user"
       ALTER COLUMN display_name  DROP DEFAULT,
       ALTER COLUMN email         DROP DEFAULT;
   `);

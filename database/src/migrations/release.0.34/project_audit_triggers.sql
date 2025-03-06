@@ -48,7 +48,7 @@
  create trigger audit_template before insert or update or delete on biohub.template for each row execute procedure tr_audit_trigger();
  create trigger audit_survey_summary_submission_message before insert or update or delete on biohub.survey_summary_submission_message for each row execute procedure tr_audit_trigger();
  create trigger audit_system_user_role before insert or update or delete on biohub.system_user_role for each row execute procedure tr_audit_trigger();
- create trigger audit_system_user before insert or update or delete on biohub.system_user for each row execute procedure tr_audit_trigger();
+ create trigger audit_system_user before insert or update or delete on biohub."system_user" for each row execute procedure tr_audit_trigger();
  create trigger audit_template_methodology_species before insert or update or delete on biohub.template_methodology_species for each row execute procedure tr_audit_trigger();
  create trigger audit_user_identity_source before insert or update or delete on biohub.user_identity_source for each row execute procedure tr_audit_trigger();
  create trigger audit_system_role before insert or update or delete on biohub.system_role for each row execute procedure tr_audit_trigger();
