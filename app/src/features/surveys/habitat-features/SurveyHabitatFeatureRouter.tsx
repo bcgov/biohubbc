@@ -6,6 +6,7 @@ import { Redirect, Switch } from 'react-router';
 import RouteWithTitle from 'utils/RouteWithTitle';
 import { getTitle } from 'utils/Utils';
 import { CreateHabitatFeaturePage } from './create/CreateHabitatFeaturePage';
+import { EditHabitatFeaturePage } from './edit/EditHabitatFeaturePage';
 import { SurveyHabitatFeaturePage } from './SurveyHabitatFeaturePage';
 
 /**
@@ -59,6 +60,21 @@ export const HabitatFeatureRouter = () => {
           <DialogContextProvider>
             <HabitatFeatureTableContextProvider>
               <CreateHabitatFeaturePage />
+            </HabitatFeatureTableContextProvider>
+          </DialogContextProvider>
+        </ProjectRoleRouteGuard>
+      </RouteWithTitle>
+
+      <RouteWithTitle
+        exact
+        path="/admin/projects/:id/surveys/:survey_id/habitat-features/:habitat_feature_id/edit"
+        title={getTitle('Edit Habitat Feature')}>
+        <ProjectRoleRouteGuard
+          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+          validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+          <DialogContextProvider>
+            <HabitatFeatureTableContextProvider>
+              <EditHabitatFeaturePage />
             </HabitatFeatureTableContextProvider>
           </DialogContextProvider>
         </ProjectRoleRouteGuard>

@@ -55,7 +55,7 @@ const useSurveyHabitatFeatureApi = (axios: AxiosInstance) => {
     const { data } = await axios.put(
       `/api/project/${projectId}/survey/${surveyId}/habitat-features/${surveyHabitatFeatureId}`,
       {
-        surveyhabitatfeature: habitatFeature
+        surveyHabitatFeature: habitatFeature
       }
     );
 

@@ -1,11 +1,11 @@
-import { GridColDef, GridColumnVisibilityModel, useGridApiRef } from '@mui/x-data-grid';
+import { GridColDef, GridColumnVisibilityModel, GridRowSelectionModel, useGridApiRef } from '@mui/x-data-grid';
 import { GridApiCommunity } from '@mui/x-data-grid/internals';
 import { SIMS_HABITAT_FEATURES_HIDDEN_COLUMNS } from 'constants/session-storage';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { usePersistentState } from 'hooks/usePersistentState';
-import { createContext, PropsWithChildren, useCallback, useMemo } from 'react';
+import { createContext, PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react';
 
 export interface IHabitatFeatureRow {
   survey_habitat_feature_id: number;
@@ -54,6 +54,14 @@ export interface IHabitatFeatureTableContext {
    */
   onColumnVisibilityModelChange: (model: GridColumnVisibilityModel) => void;
   /**
+   * The row selection model - an array of row ids
+   */
+  rowSelectionModel: GridRowSelectionModel;
+  /**
+   * Callback fired when row selection model changes
+   */
+  onRowSelectionModelChange: (model: GridRowSelectionModel) => void;
+  /**
    * Toggle a columns visibility
    */
   toggleColumnVisibility: (column: string) => void;
@@ -80,6 +88,8 @@ export const HabitatFeatureTableContextProvider = (props: IHabitatFeatureTableCo
   const codesContext = useCodesContext();
   const { projectId, surveyId } = useSurveyContext();
 
+  const [rowSelectionModel, setRowSelectionModel] = useState<GridRowSelectionModel>([]);
+
   // Stores the column visibility state in local storage
   const [columnVisibilityModel, setColumnVisibilityModel] = usePersistentState<GridColumnVisibilityModel>(
     SIMS_HABITAT_FEATURES_HIDDEN_COLUMNS,
@@ -91,8 +101,13 @@ export const HabitatFeatureTableContextProvider = (props: IHabitatFeatureTableCo
   );
 
   // Load the codes and habitat feature data
-  codesContext.codesDataLoader.load();
-  habitatFeatureDataLoader.load();
+  useEffect(() => {
+    codesContext.codesDataLoader.load();
+  }, [codesContext.codesDataLoader]);
+
+  useEffect(() => {
+    habitatFeatureDataLoader.load();
+  }, [habitatFeatureDataLoader]);
 
   // Columns hidden from table view
   const hiddenColumns = useMemo(() => {
@@ -241,6 +256,8 @@ export const HabitatFeatureTableContextProvider = (props: IHabitatFeatureTableCo
       rows: habitatFeatureTableRows,
       rowCount: habitatFeatureDataLoader.data?.pagination.total ?? 0,
       isLoading: habitatFeatureDataLoader.isLoading,
+      rowSelectionModel: rowSelectionModel,
+      onRowSelectionModelChange: setRowSelectionModel,
       columnVisibilityModel: columnVisibilityModel,
       onColumnVisibilityModelChange: setColumnVisibilityModel,
       hiddenColumns: hiddenColumns,
@@ -254,6 +271,7 @@ export const HabitatFeatureTableContextProvider = (props: IHabitatFeatureTableCo
     habitatFeatureTableColumns,
     habitatFeatureTableRows,
     habitatFeatureDataLoader,
+    rowSelectionModel,
     columnVisibilityModel,
     setColumnVisibilityModel,
     hiddenColumns,

@@ -12,30 +12,22 @@ import { FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useHabitatFeatureTableContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
+import useDataLoader from 'hooks/useDataLoader';
 import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
-import { useRef, useState } from 'react';
-import { Prompt, useHistory } from 'react-router';
+import { useEffect, useRef, useState } from 'react';
+import { Prompt, useHistory, useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 import {
-  CreateHabitatFeatureFormValues,
-  HabitatFeatureFormContainer
+  HabitatFeatureFormContainer,
+  UpdateHabitatFeatureFormValues
 } from '../components/forms/HabitatFeatureFormContainer';
 
-const initialHabitatFeatureFormValues: CreateHabitatFeatureFormValues = {
-  habitat_feature_type_id: '' as unknown as number,
-  latitude: '' as unknown as number,
-  longitude: '' as unknown as number,
-  count: '' as unknown as number,
-  observed_date: '',
-  observed_time: ''
-};
-
 /**
- * Page for creating a new habitat feature.
+ * Page for editing a habitat feature.
  *
  * @return {*} {JSX.Element}
  */
-export const CreateHabitatFeaturePage = (): JSX.Element => {
+export const EditHabitatFeaturePage = (): JSX.Element => {
   const biohubApi = useBiohubApi();
   const history = useHistory();
   const projectContext = useProjectContext();
@@ -43,22 +35,54 @@ export const CreateHabitatFeaturePage = (): JSX.Element => {
   const habitatFeatureContext = useHabitatFeatureTableContext();
   const dialogContext = useDialogContext();
 
+  const urlParams = useParams<Record<string, string | undefined>>();
+  const habitatFeatureId = Number(urlParams.habitat_feature_id);
+
   const { locationChangeInterceptor, skipUnsavedChangesDialog } = useUnsavedChangesDialog();
 
-  const formikRef = useRef<FormikProps<CreateHabitatFeatureFormValues>>(null);
+  const formikRef = useRef<FormikProps<UpdateHabitatFeatureFormValues>>(null);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const habitatFeatureDataLoader = useDataLoader(() =>
+    biohubApi.habitatFeature.getSurveyHabitatFeature(surveyContext.projectId, surveyContext.surveyId, habitatFeatureId)
+  );
+
+  useEffect(() => {
+    habitatFeatureDataLoader.load();
+  }, [habitatFeatureDataLoader]);
+
+  if (
+    !surveyContext.surveyDataLoader.data ||
+    !projectContext.projectDataLoader.data ||
+    !habitatFeatureDataLoader.data ||
+    habitatFeatureDataLoader.isLoading
+  ) {
+    return <CircularProgress className="pageProgress" size={40} />;
+  }
+
+  const initialHabitatFeatureFormValues: UpdateHabitatFeatureFormValues = {
+    habitat_feature_type_id: habitatFeatureDataLoader.data.surveyHabitatFeature.habitat_feature_type_id,
+    latitude: habitatFeatureDataLoader.data.surveyHabitatFeature.latitude,
+    longitude: habitatFeatureDataLoader.data.surveyHabitatFeature.longitude,
+    count: habitatFeatureDataLoader.data.surveyHabitatFeature.count,
+    observed_date: habitatFeatureDataLoader.data.surveyHabitatFeature.observed_date,
+    observed_time: habitatFeatureDataLoader.data.surveyHabitatFeature.observed_time
+  };
 
   /**
    * Handle the create habitat feature form submission.
    *
-   * @param {CreateHabitatFeatureFormValues} values
+   * @param {UpdateHabitatFeatureFormValues} values
    * @returns {*} {Promise<void>}
    */
-  const handleSubmit = async (values: CreateHabitatFeatureFormValues): Promise<void> => {
+  const handleSubmit = async (values: UpdateHabitatFeatureFormValues): Promise<void> => {
     try {
       setIsSubmitting(true);
-      await biohubApi.habitatFeature.createSurveyHabitatFeatures(surveyContext.projectId, surveyContext.surveyId, [
+      await biohubApi.habitatFeature.updateSurveyHabitatFeature(
+        surveyContext.projectId,
+        surveyContext.surveyId,
+        habitatFeatureId,
         {
           habitat_feature_type_id: values.habitat_feature_type_id,
           survey_id: surveyContext.surveyId,
@@ -68,13 +92,13 @@ export const CreateHabitatFeaturePage = (): JSX.Element => {
           observed_date: values.observed_date,
           observed_time: values.observed_time
         }
-      ]);
+      );
 
       habitatFeatureContext.refreshData();
 
       dialogContext.setSnackbar({
         open: true,
-        snackbarMessage: 'Successfully created habitat feature'
+        snackbarMessage: 'Successfully updated habitat feature'
       });
 
       skipUnsavedChangesDialog();
@@ -82,8 +106,8 @@ export const CreateHabitatFeaturePage = (): JSX.Element => {
     } catch (error) {
       dialogContext.setErrorDialog({
         open: true,
-        dialogTitle: 'Error creating habitat feature',
-        dialogText: 'An error occurred while creating the habitat feature',
+        dialogTitle: 'Error editing habitat feature',
+        dialogText: 'An error occurred while editing the habitat feature',
         dialogError: error instanceof Error ? error.message : undefined,
         dialogErrorDetails: error instanceof APIError ? error.errors : undefined
       });
@@ -92,15 +116,11 @@ export const CreateHabitatFeaturePage = (): JSX.Element => {
     }
   };
 
-  if (!surveyContext.surveyDataLoader.data || !projectContext.projectDataLoader.data) {
-    return <CircularProgress className="pageProgress" size={40} />;
-  }
-
   return (
     <>
       <Prompt when={true} message={locationChangeInterceptor} />
       <PageHeader
-        title="Create Habitat Feature"
+        title="Edit Habitat Feature"
         breadCrumbJSX={
           <Breadcrumbs
             aria-label="breadcrumb"
@@ -127,7 +147,7 @@ export const CreateHabitatFeaturePage = (): JSX.Element => {
               Manage Habitat Features
             </Link>
             <Typography component="span" variant="body2" color="textSecondary">
-              Create Habitat Feature
+              Edit Habitat Feature
             </Typography>
           </Breadcrumbs>
         }
