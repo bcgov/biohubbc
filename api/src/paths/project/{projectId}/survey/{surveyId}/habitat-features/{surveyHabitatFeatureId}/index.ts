@@ -389,7 +389,7 @@ export function deleteSurveyHabitatFeature(): RequestHandler {
     } catch (error) {
       defaultLog.error({ label: 'deleteSurveyHabitatFeature', message: 'error', error });
       await connection.rollback();
-      //   throw error;
+      throw error;
     } finally {
       connection.release();
     }
