@@ -20,10 +20,10 @@ export const HabitatFeatureYupSchema = yup.object({
 });
 
 // Create Habitat Feature form values
-export type CreateHabitatFeatureFormValues = Omit<CreateSurveyHabitatFeature, 'survey_id'>;
+export type CreateHabitatFeatureFormValues = CreateSurveyHabitatFeature;
 
 // Update Habitat Feature form values
-export type UpdateHabitatFeatureFormValues = Omit<UpdateSurveyHabitatFeature, 'survey_id'>;
+export type UpdateHabitatFeatureFormValues = UpdateSurveyHabitatFeature;
 
 // Habitat Feature form values - either create or update
 export type HabitatFeatureFormValues = CreateHabitatFeatureFormValues | UpdateHabitatFeatureFormValues;

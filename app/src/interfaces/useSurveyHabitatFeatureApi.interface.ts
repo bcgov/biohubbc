@@ -55,7 +55,6 @@ export type SurveyHabitatFeatureSupplementaryData = {
 
 export type CreateSurveyHabitatFeature = {
   habitat_feature_type_id: number;
-  survey_id: number;
   latitude: number;
   longitude: number;
   count: number;
@@ -65,7 +64,6 @@ export type CreateSurveyHabitatFeature = {
 
 export type UpdateSurveyHabitatFeature = {
   habitat_feature_type_id: number;
-  survey_id: number;
   latitude: number;
   longitude: number;
   count: number;
