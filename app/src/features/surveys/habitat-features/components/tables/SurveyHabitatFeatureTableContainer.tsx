@@ -1,15 +1,17 @@
-import { mdiCogOutline, mdiPlus } from '@mdi/js';
+import { mdiCogOutline, mdiPencil, mdiPlus, mdiTrashCan } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Box, Button, Divider, IconButton, Paper, Stack, Toolbar, Tooltip, Typography } from '@mui/material';
+import { Box, Button, Collapse, Divider, IconButton, Paper, Stack, Toolbar, Tooltip, Typography } from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
 import ListItemText from '@mui/material/ListItemText';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
-import { useHabitatFeatureTableContext, useSurveyContext } from 'hooks/useContext';
+import { APIError } from 'hooks/api/useAxios';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useDialogContext, useHabitatFeatureTableContext, useSurveyContext } from 'hooks/useContext';
 import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import { useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useHistory } from 'react-router-dom';
 import { SurveyHabitatFeatureTable } from './SurveyHabitatFeatureTable';
 
 /**
@@ -18,6 +20,9 @@ import { SurveyHabitatFeatureTable } from './SurveyHabitatFeatureTable';
  * @return {*} {JSX.Element}
  */
 export const SurveyHabitatFeatureTableContainer = (): JSX.Element => {
+  const history = useHistory();
+  const biohubApi = useBiohubApi();
+  const dialogContext = useDialogContext();
   const habitatFeatureTableContext = useHabitatFeatureTableContext();
   const surveyContext = useSurveyContext();
 
@@ -25,6 +30,53 @@ export const SurveyHabitatFeatureTableContainer = (): JSX.Element => {
 
   const handleCloseColumnVisibilityMenu = () => {
     setColumnVisibilityMenuAnchorEl(null);
+  };
+
+  /**
+   * Delete habitat features.
+   *
+   * @param {number[]} habitatFeatureIds
+   * @returns {*} {Promise<void>}
+   */
+  const deleteHabitatFeatures = (habitatFeatureIds: number[]): void => {
+    dialogContext.setYesNoDialog({
+      open: true,
+      dialogTitle: 'Delete habitat features?',
+      dialogText: 'This action will permanently delete the selected habitat features.',
+      onYes: async () => {
+        dialogContext.setYesNoDialog({ open: false });
+
+        try {
+          await biohubApi.habitatFeature.deleteSurveyHabitatFeatures(
+            surveyContext.projectId,
+            surveyContext.surveyId,
+            habitatFeatureIds
+          );
+
+          habitatFeatureTableContext.refreshData();
+        } catch (error) {
+          dialogContext.setErrorDialog({
+            open: true,
+            dialogTitle: 'Error deleting habitat features',
+            dialogText: 'An error occurred while deleting the habitat features.',
+            dialogError: error instanceof Error ? error.message : undefined,
+            dialogErrorDetails: error instanceof APIError ? error.errors : undefined,
+            onClose: () => {
+              dialogContext.setErrorDialog({ open: false });
+            },
+            onOk: () => {
+              dialogContext.setErrorDialog({ open: false });
+            }
+          });
+        }
+      },
+      onClose: () => {
+        dialogContext.setYesNoDialog({ open: false });
+      },
+      onNo: () => {
+        dialogContext.setYesNoDialog({ open: false });
+      }
+    });
   };
 
   return (
@@ -57,6 +109,28 @@ export const SurveyHabitatFeatureTableContainer = (): JSX.Element => {
             to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/habitat-features/create`}>
             Add
           </Button>
+
+          <Collapse in={habitatFeatureTableContext.rowSelectionModel.length === 1} orientation="horizontal">
+            <Button
+              variant="outlined"
+              color="primary"
+              startIcon={<Icon path={mdiPencil} size={1} />}
+              onClick={() => {
+                history.push(`${habitatFeatureTableContext.rowSelectionModel[0]}/edit`);
+              }}>
+              Edit
+            </Button>
+            <Button
+              variant="outlined"
+              color="error"
+              startIcon={<Icon path={mdiTrashCan} size={1} />}
+              onClick={() =>
+                deleteHabitatFeatures(habitatFeatureTableContext.rowSelectionModel.map((id) => Number(id)))
+              }
+              sx={{ ml: 1 }}>
+              Delete
+            </Button>
+          </Collapse>
 
           <Tooltip title="Toggle column visibility">
             <IconButton onClick={(event) => setColumnVisibilityMenuAnchorEl(event.currentTarget)}>

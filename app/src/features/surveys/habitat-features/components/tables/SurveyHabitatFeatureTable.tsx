@@ -28,17 +28,25 @@ export const SurveyHabitatFeatureTable = (): JSX.Element => {
       // Column visibility
       columnVisibilityModel={habitatFeatureTableContext.columnVisibilityModel}
       onColumnVisibilityModelChange={habitatFeatureTableContext.onColumnVisibilityModelChange}
+      // Row selection
+      rowSelectionModel={habitatFeatureTableContext.rowSelectionModel}
+      onRowSelectionModelChange={habitatFeatureTableContext.onRowSelectionModelChange}
+      // Pagination
       pageSizeOptions={[10, 25, 50]}
-      rowSelection={false}
+      rowSelection={true}
       autoHeight={false}
       checkboxSelection={false}
-      disableRowSelectionOnClick
       disableColumnSelector
       disableColumnFilter
       disableColumnMenu
       disableVirtualization
       sortingOrder={['asc', 'desc']}
       data-testid="survey-habitat-features-data-table"
+      sx={{
+        '& .MuiDataGrid-row:hover': {
+          cursor: 'pointer'
+        }
+      }}
     />
   );
 };
