@@ -236,4 +236,14 @@ export class CSVConfigUtils<StaticHeaderType extends Uppercase<string> = Upperca
     const dictionaryKey = String(cell).toLowerCase();
     return uniqueDictionary[dictionaryKey] === 1 || uniqueDictionary[dictionaryKey] === undefined;
   }
+
+  /**
+   * Check if a cell is optional.
+   *
+   * @param {StaticHeaderType} header - The header name
+   * @return {boolean} - Whether the cell is optional
+   */
+  isCellOptional(header: StaticHeaderType): boolean {
+    return this.config.staticHeadersConfig[header]?.optional ?? false;
+  }
 }

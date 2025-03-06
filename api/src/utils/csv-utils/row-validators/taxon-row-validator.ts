@@ -27,6 +27,10 @@ export const getTaxonRowValidator = <StaticHeaderType extends Uppercase<string> 
     const taxonHeader = utils.getWorksheetHeader(taxonStaticHeader, params.row);
 
     if (taxonIdentifierCell === undefined) {
+      if (utils.isCellOptional(taxonStaticHeader)) {
+        return [];
+      }
+
       return [
         {
           error: 'Cell is required',
