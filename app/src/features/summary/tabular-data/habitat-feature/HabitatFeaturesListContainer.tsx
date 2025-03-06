@@ -17,7 +17,10 @@ import { useCodesContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
 import { useSearchParams } from 'hooks/useSearchParams';
-import { FindSurveyHabitatFeatures } from 'interfaces/useSurveyHabitatFeatureApi.interface';
+import {
+  FindSurveyHabitatFeatures,
+  FindSurveyHabitatFeaturesFilters
+} from 'interfaces/useSurveyHabitatFeatureApi.interface';
 import { useCallback, useEffect, useState } from 'react';
 import { ApiPaginationRequestOptions, StringValues } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
@@ -119,7 +122,19 @@ const HabitatFeaturesListContainer = (props: IHabitatFeaturesListContainerProps)
 
   const habitatFeaturesDataLoader = useDataLoader(
     (pagination: ApiPaginationRequestOptions, filter?: SurveyHabitatFeaturesAdvancedFilters) => {
-      return biohubApi.habitatFeature.findSurveyHabitatFeatures(pagination, filter);
+      const findFilters: FindSurveyHabitatFeaturesFilters = {
+        keyword: filter?.keyword,
+        habitat_feature_type_ids: filter?.habitat_feature_type_id ? [filter.habitat_feature_type_id] : undefined,
+        itis_tsns: filter?.itis_tsn ? [filter.itis_tsn] : undefined,
+        start_date: filter?.start_date,
+        end_date: filter?.end_date,
+        start_time: filter?.start_time,
+        end_time: filter?.end_time,
+        min_count: filter?.min_count,
+        system_user_id: filter?.system_user_id
+      };
+
+      return biohubApi.habitatFeature.findSurveyHabitatFeatures(pagination, findFilters);
     }
   );
 

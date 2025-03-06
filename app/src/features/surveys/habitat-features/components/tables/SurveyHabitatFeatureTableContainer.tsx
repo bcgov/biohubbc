@@ -28,53 +28,57 @@ export const SurveyHabitatFeatureTableContainer = (): JSX.Element => {
   const surveyContext = useSurveyContext();
 
   const [columnVisibilityMenuAnchorEl, setColumnVisibilityMenuAnchorEl] = useState<Element | null>(null);
-  const [openDeleteHabitatFeatureDialog, setOpenDeleteHabitatFeatureDialog] = useState(false);
 
   const handleCloseColumnVisibilityMenu = () => {
     setColumnVisibilityMenuAnchorEl(null);
   };
 
   /**
-   * Delete multiple habitat features.
+   * Delete habitat features.
    *
    * @param {number[]} habitatFeatureIds
-   * @return {*} {Promise<void>}
+   * @returns {*} {Promise<void>}
    */
-  const deleteHabitatFeatures = async (habitatFeatureIds: number[]) => {
-    try {
-      await biohubApi.habitatFeature.deleteSurveyHabitatFeatures(
-        surveyContext.projectId,
-        surveyContext.surveyId,
-        habitatFeatureIds
-      );
+  const deleteHabitatFeatures = (habitatFeatureIds: number[]): void => {
+    dialogContext.setYesNoDialog({
+      open: true,
+      dialogTitle: 'Delete habitat features?',
+      dialogText: 'This action will permanently delete the selected habitat features.',
+      onYes: async () => {
+        dialogContext.setYesNoDialog({ open: false });
 
-      habitatFeatureTableContext.refreshData();
-    } catch (error) {
-      dialogContext.setErrorDialog({
-        open: true,
-        dialogTitle: 'Error Deleting Habitat Features',
-        dialogText: 'An error occurred while deleting the habitat features.',
-        dialogError: error instanceof Error ? error.message : undefined,
-        dialogErrorDetails: error instanceof APIError ? error.errors : undefined
-      });
-    } finally {
-      setOpenDeleteHabitatFeatureDialog(false);
-    }
+        try {
+          await biohubApi.habitatFeature.deleteSurveyHabitatFeatures(
+            surveyContext.projectId,
+            surveyContext.surveyId,
+            habitatFeatureIds
+          );
+
+          habitatFeatureTableContext.refreshData();
+        } catch (error) {
+          dialogContext.setErrorDialog({
+            open: true,
+            dialogTitle: 'Error deleting habitat features',
+            dialogText: 'An error occurred while deleting the habitat features.',
+            dialogError: error instanceof Error ? error.message : undefined,
+            dialogErrorDetails: error instanceof APIError ? error.errors : undefined,
+            onClose: () => {
+              dialogContext.setErrorDialog({ open: false });
+            },
+            onOk: () => {
+              dialogContext.setErrorDialog({ open: false });
+            }
+          });
+        }
+      },
+      onClose: () => {
+        dialogContext.setYesNoDialog({ open: false });
+      },
+      onNo: () => {
+        dialogContext.setYesNoDialog({ open: false });
+      }
+    });
   };
-
-  dialogContext.setYesNoDialog({
-    open: openDeleteHabitatFeatureDialog,
-    dialogTitle: 'Are you sure you want to delete these habitat features?',
-    onYes: async () => {
-      await deleteHabitatFeatures(habitatFeatureTableContext.rowSelectionModel.map((id) => Number(id)));
-    },
-    onClose: () => {
-      setOpenDeleteHabitatFeatureDialog(false);
-    },
-    onNo: () => {
-      setOpenDeleteHabitatFeatureDialog(false);
-    }
-  });
 
   return (
     <Paper component={Stack} flexDirection="column" flex="1 1 auto" height="100%">
@@ -121,7 +125,9 @@ export const SurveyHabitatFeatureTableContainer = (): JSX.Element => {
               variant="outlined"
               color="error"
               startIcon={<Icon path={mdiTrashCan} size={1} />}
-              onClick={() => setOpenDeleteHabitatFeatureDialog(true)}
+              onClick={() =>
+                deleteHabitatFeatures(habitatFeatureTableContext.rowSelectionModel.map((id) => Number(id)))
+              }
               sx={{ ml: 1 }}>
               Delete
             </Button>

@@ -18,26 +18,6 @@ import { ApiPaginationRequestOptions } from 'types/misc';
  */
 const useSurveyHabitatFeatureApi = (axios: AxiosInstance) => {
   /**
-   * Get a single survey habitat feature record.
-   *
-   * @param {number} projectId
-   * @param {number} surveyId
-   * @param {number} surveyHabitatFeatureId
-   * @return {*} {Promise<SurveyHabitatFeature>}
-   */
-  const getSurveyHabitatFeature = async (
-    projectId: number,
-    surveyId: number,
-    surveyHabitatFeatureId: number
-  ): Promise<SurveyHabitatFeature> => {
-    const { data } = await axios.get(
-      `/api/project/${projectId}/survey/${surveyId}/habitat-features/${surveyHabitatFeatureId}`
-    );
-
-    return data.surveyHabitatFeature;
-  };
-
-  /**
    * Create new survey habitat feature records.
    *
    * @param {number} projectId
@@ -77,6 +57,26 @@ const useSurveyHabitatFeatureApi = (axios: AxiosInstance) => {
       {
         surveyHabitatFeature: habitatFeature
       }
+    );
+
+    return data;
+  };
+
+  /**
+   * Get a survey habitat feature record.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {number} surveyHabitatFeatureId
+   * @return {*}  {Promise<{ surveyHabitatFeature: SurveyHabitatFeature }>}
+   */
+  const getSurveyHabitatFeature = async (
+    projectId: number,
+    surveyId: number,
+    surveyHabitatFeatureId: number
+  ): Promise<{ surveyHabitatFeature: SurveyHabitatFeature }> => {
+    const { data } = await axios.get(
+      `/api/project/${projectId}/survey/${surveyId}/habitat-features/${surveyHabitatFeatureId}`
     );
 
     return data;
@@ -182,9 +182,9 @@ const useSurveyHabitatFeatureApi = (axios: AxiosInstance) => {
   };
 
   return {
-    getSurveyHabitatFeature,
     createSurveyHabitatFeatures,
     updateSurveyHabitatFeature,
+    getSurveyHabitatFeature,
     getSurveyHabitatFeaturesWithSupplementaryData,
     getSurveyHabitatFeaturesGeometry,
     findSurveyHabitatFeatures,

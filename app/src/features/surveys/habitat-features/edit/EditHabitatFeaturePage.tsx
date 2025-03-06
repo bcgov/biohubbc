@@ -63,12 +63,12 @@ export const EditHabitatFeaturePage = (): JSX.Element => {
   }
 
   const initialHabitatFeatureFormValues: UpdateHabitatFeatureFormValues = {
-    habitat_feature_type_id: habitatFeatureDataLoader.data.habitat_feature_type_id,
-    latitude: habitatFeatureDataLoader.data.latitude,
-    longitude: habitatFeatureDataLoader.data.longitude,
-    count: habitatFeatureDataLoader.data.count,
-    observed_date: habitatFeatureDataLoader.data.observed_date,
-    observed_time: habitatFeatureDataLoader.data.observed_time
+    habitat_feature_type_id: habitatFeatureDataLoader.data.surveyHabitatFeature.habitat_feature_type_id,
+    latitude: habitatFeatureDataLoader.data.surveyHabitatFeature.latitude,
+    longitude: habitatFeatureDataLoader.data.surveyHabitatFeature.longitude,
+    count: habitatFeatureDataLoader.data.surveyHabitatFeature.count,
+    observed_date: habitatFeatureDataLoader.data.surveyHabitatFeature.observed_date,
+    observed_time: habitatFeatureDataLoader.data.surveyHabitatFeature.observed_time
   };
 
   /**
