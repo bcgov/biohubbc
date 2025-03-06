@@ -13,10 +13,6 @@ export const InsertHabitatFeatureSchema: OpenAPIV3.SchemaObject = {
       type: 'integer',
       minimum: 1
     },
-    survey_id: {
-      type: 'integer',
-      minimum: 1
-    },
     latitude: {
       type: 'number',
       nullable: true,
@@ -53,10 +49,6 @@ export const UpdateHabitatFeatureSchema: OpenAPIV3.SchemaObject = {
   required: ['habitat_feature_type_id', 'latitude', 'longitude', 'count', 'observed_date', 'observed_time'],
   properties: {
     habitat_feature_type_id: {
-      type: 'integer',
-      minimum: 1
-    },
-    survey_id: {
       type: 'integer',
       minimum: 1
     },
