@@ -71,7 +71,11 @@ export class ExportService extends DBService {
 
               registerStreamErrorHandler(queryStream);
 
-              const csvTransformStream = getCsvTransformStream(queryConfig.transformFunction, queryConfig.csvHeader);
+              const csvTransformStream = getCsvTransformStream(
+                queryConfig.transformFunction,
+                queryConfig.csvHeader,
+                queryConfig.measurementsMap
+              );
 
               registerStreamErrorHandler(csvTransformStream);
 

@@ -10,6 +10,13 @@ export type ExportDataQuery = {
    */
   sql: SQLStatement | Knex.QueryBuilder;
   /**
+   * Optional, applies only for observations export
+   * map to look up observations qualitative measurments labels by Id
+   *
+   * @type {?Map<string, string>}
+   */
+  measurementsMap?: Map<string, string>;
+  /**
    * The file name to use for the exported data when it is saved to S3.
    */
   fileName: string;

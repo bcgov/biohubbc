@@ -83,20 +83,45 @@ export function getJsonStringifyTransformStream(): Transform {
  * @export
  * @returns {Transform}
  */
-export function getCsvTransformStream(transformFunction: TransformFunction, header: string): Transform {
+export function getCsvTransformStream(
+  transformFunction: TransformFunction,
+  header: string,
+  measurementsMap?: Map<string, string>
+): Transform {
+  // Function to get either option_label or measurement_name by id
+  const getLabelById = (id: string): string | undefined => {
+    return measurementsMap ? measurementsMap.get(id) : undefined;
+  };
+
   let headerStreamed = false;
   const transformStream = new Transform({
     objectMode: true, // Expects objects
     transform(chunk, _encoding, callback) {
       if (header && !headerStreamed) {
-        const envHeaders: string[] = chunk.env_data.map((envItem: { eh: string }) => envItem.eh);
-        const measHeaders: string[] = chunk.meas_data.map((measItem: { mh: string }) => measItem.mh);
+        // This block is executed only once
+        const envHeaders: string[] = chunk.env_data ? chunk.env_data.map((envItem: { eh: string }) => envItem.eh) : [];
+        const measHeaders: string[] = chunk.meas_data
+          ? chunk.meas_data.map((measItem: { mh: string }) => getLabelById(measItem.mh))
+          : [];
 
-        // Push the headers into stream only once
+        // Push the headers into stream
         this.push([header, ...envHeaders, ...measHeaders].join(',') + '\r\n');
         headerStreamed = true;
       }
-      // the chunk and push it to the next stream
+
+      // check if there are any uuids for the qulitative measurments values 'mv' and get the label from map
+      if (chunk.meas_data) {
+        // Note: using indexed for loop as it is the fastest
+        for (let i = 0; i < chunk.meas_data.length; i++) {
+          const measItem = chunk.meas_data[i];
+          if (!isUUID(measItem.mv)) {
+            continue;
+          }
+          measItem.mv = getLabelById(measItem.mv);
+        }
+      }
+
+      // push it to the next stream
       callback(null, transformFunction(chunk) + '\r\n');
     }
   });
@@ -159,4 +184,35 @@ export const parseTimestampString = (timestamp: string): { dateStr: string; time
   }).format(date);
 
   return { dateStr, timeStr };
+};
+
+/**
+ * Check if a value is a uuid or not.
+ * Optimized for performance
+ *
+ * @param {string} uuid
+ * @returns {boolean} true if it is a uuid
+ */
+export const isUUID = (uuid: string): boolean => {
+  // UUID must not be null length must be 36 characters
+  if (!uuid || uuid.length !== 36) {
+    return false;
+  }
+
+  // Check fixed positions for hyphens and uuid version 4
+  if (uuid[8] !== '-' || uuid[13] !== '-' || uuid[14] !== '4' || uuid[18] !== '-' || uuid[23] !== '-') {
+    return false;
+  }
+
+  // Check if the remaining characters are valid hexadecimal digits
+  // Note: using indexed for loop as it is the fastest
+  uuid = uuid.split('-').join('').toLowerCase();
+  const hexChars = new Set('0123456789abcdef');
+  for (let i = 0; i < uuid.length; i++) {
+    if (!hexChars.has(uuid[i])) {
+      return false;
+    }
+  }
+
+  return true;
 };
