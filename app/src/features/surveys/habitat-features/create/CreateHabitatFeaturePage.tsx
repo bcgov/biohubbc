@@ -28,7 +28,7 @@ const initialHabitatFeatureFormValues: CreateHabitatFeatureFormValues = {
   count: '' as unknown as number,
   observed_date: '',
   observed_time: '',
-  habitat_feature_taxons: []
+  survey_habitat_feature_taxons: []
 };
 
 /**
@@ -68,7 +68,7 @@ export const CreateHabitatFeaturePage = (): JSX.Element => {
           count: values.count,
           observed_date: values.observed_date,
           observed_time: values.observed_time,
-          habitat_feature_taxons: values.habitat_feature_taxons
+          survey_habitat_feature_taxons: values.survey_habitat_feature_taxons
         }
       ]);
 

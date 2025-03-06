@@ -68,8 +68,8 @@ export const EditHabitatFeaturePage = (): JSX.Element => {
     count: habitatFeatureDataLoader.data.surveyHabitatFeature.count,
     observed_date: habitatFeatureDataLoader.data.surveyHabitatFeature.observed_date,
     observed_time: habitatFeatureDataLoader.data.surveyHabitatFeature.observed_time,
-    // TODO: Mac: Add habitat_feature_taxons to the habitat feature data loader
-    habitat_feature_taxons: []
+    // TODO: Mac: Add survey_habitat_feature_taxons to the habitat feature data loader
+    survey_habitat_feature_taxons: []
   };
 
   /**
@@ -93,7 +93,12 @@ export const EditHabitatFeaturePage = (): JSX.Element => {
           count: values.count,
           observed_date: values.observed_date,
           observed_time: values.observed_time,
-          habitat_feature_taxons: values.habitat_feature_taxons
+          survey_habitat_feature_taxons: values.survey_habitat_feature_taxons.map((formTaxon) => ({
+            survey_habitat_feature_taxon_id: formTaxon.survey_habitat_feature_taxon_id,
+            itis_tsn: formTaxon.itis_tsn,
+            itis_scientific_name: formTaxon.itis_scientific_name,
+            comment: formTaxon.comment
+          }))
         }
       );
 

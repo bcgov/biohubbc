@@ -2,10 +2,6 @@ import { Stack } from '@mui/system';
 import FormikErrorSnackbar from 'components/alert/FormikErrorSnackbar';
 import FormikDevDebugger from 'components/formik/FormikDevDebugger';
 import { Formik, FormikProps } from 'formik';
-import {
-  CreateSurveyHabitatFeature,
-  UpdateSurveyHabitatFeature
-} from 'interfaces/useSurveyHabitatFeatureApi.interface';
 import yup from 'utils/YupSchema';
 import { HabitatFeatureForm } from './HabitatFeatureForm';
 
@@ -20,10 +16,43 @@ export const HabitatFeatureYupSchema = yup.object({
 });
 
 // Create Habitat Feature form values
-export type CreateHabitatFeatureFormValues = Omit<CreateSurveyHabitatFeature, 'survey_id'>;
+export type CreateHabitatFeatureFormValues = {
+  habitat_feature_type_id: number;
+  latitude: number;
+  longitude: number;
+  count: number;
+  observed_date: string;
+  observed_time: string;
+  survey_habitat_feature_taxons: Array<{
+    itis_tsn: number;
+    itis_scientific_name: string;
+    comment: string;
+    // Additional taxon metadata for form display
+    commonNames: string[];
+    rank: string;
+    kingdom: string;
+  }>;
+};
 
 // Update Habitat Feature form values
-export type UpdateHabitatFeatureFormValues = Omit<UpdateSurveyHabitatFeature, 'survey_id'>;
+export type UpdateHabitatFeatureFormValues = {
+  habitat_feature_type_id: number;
+  latitude: number;
+  longitude: number;
+  count: number;
+  observed_date: string;
+  observed_time: string;
+  survey_habitat_feature_taxons: Array<{
+    survey_habitat_feature_taxon_id: number;
+    itis_tsn: number;
+    itis_scientific_name: string;
+    comment: string;
+    // Additional taxon metadata for form display
+    commonNames: string[];
+    rank: string;
+    kingdom: string;
+  }>;
+};
 
 // Habitat Feature form container props - either create or update
 export interface IHabitatFeatureFormContainerProps<
