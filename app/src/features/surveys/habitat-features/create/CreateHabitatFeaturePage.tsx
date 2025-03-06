@@ -8,13 +8,12 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import PageHeader from 'components/layout/PageHeader';
-import { DialogContext } from 'contexts/dialogContext';
 import { FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useHabitatFeatureTableContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
+import { useDialogContext, useHabitatFeatureTableContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
-import { useContext, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 import {
@@ -42,7 +41,7 @@ export const CreateHabitatFeaturePage = (): JSX.Element => {
   const projectContext = useProjectContext();
   const surveyContext = useSurveyContext();
   const habitatFeatureContext = useHabitatFeatureTableContext();
-  const dialogContext = useContext(DialogContext);
+  const dialogContext = useDialogContext();
 
   const { locationChangeInterceptor, skipUnsavedChangesDialog } = useUnsavedChangesDialog();
 

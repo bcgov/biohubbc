@@ -6,12 +6,11 @@ import ListItemText from '@mui/material/ListItemText';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
-import { DialogContext } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useHabitatFeatureTableContext, useSurveyContext } from 'hooks/useContext';
+import { useDialogContext, useHabitatFeatureTableContext, useSurveyContext } from 'hooks/useContext';
 import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import { Link as RouterLink, useHistory } from 'react-router-dom';
 import { SurveyHabitatFeatureTable } from './SurveyHabitatFeatureTable';
 
@@ -23,7 +22,7 @@ import { SurveyHabitatFeatureTable } from './SurveyHabitatFeatureTable';
 export const SurveyHabitatFeatureTableContainer = (): JSX.Element => {
   const history = useHistory();
   const biohubApi = useBiohubApi();
-  const dialogContext = useContext(DialogContext);
+  const dialogContext = useDialogContext();
   const habitatFeatureTableContext = useHabitatFeatureTableContext();
   const surveyContext = useSurveyContext();
 
