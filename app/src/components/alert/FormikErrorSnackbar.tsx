@@ -9,7 +9,7 @@ import { logIfDevelopment } from 'utils/developer-utils';
  *
  * Adds a snackbar that displays when there are form validation errors.
  *
- * Additionally, when in NODE_ENV=development, logs the formik values and errors to the console.
+ * Additionally, when in MODE=development, logs the formik values and errors to the console.
  *
  * @example
  * ```tsx

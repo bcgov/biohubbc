@@ -66,7 +66,7 @@ const getLocalConfig = (): IConfig => {
   return {
     API_HOST: ensureProtocol(API_URL, 'http://'),
     CHANGE_VERSION: import.meta.env.CHANGE_VERSION || 'NA',
-    NODE_ENV: import.meta.env.NODE_ENV,
+    NODE_ENV: import.meta.env.MODE,
     VITE_APP_NODE_ENV: import.meta.env.VITE_APP_NODE_ENV || 'dev',
     VERSION: `${import.meta.env.VERSION || 'NA'}(build #${import.meta.env.CHANGE_VERSION || 'NA'})`,
     KEYCLOAK_CONFIG: {
@@ -109,12 +109,12 @@ const getDeployedConfig = async (): Promise<IConfig> => {
 };
 
 /**
- * Return true if NODE_ENV=development, false otherwise.
+ * Return true if MODE=development, false otherwise.
  *
  * @return {*}  {boolean}
  */
 const isDevelopment = (): boolean => {
-  if (import.meta.env.NODE_ENV === 'development') {
+  if (import.meta.env.MODE === 'development') {
     return true;
   }
 
@@ -124,8 +124,8 @@ const isDevelopment = (): boolean => {
 /**
  * Provides environment variables.
  *
- * This will fetch env vars from either `process.env` if running with NODE_ENV=development, or from
- * `app/server/index.js` if running as a deployed NODE_ENV=production build.
+ * This will fetch env vars from either `import.meta.env` if running with MODE=development, or from
+ * `app/server/index.js` if running as a deployed MODE=production build.
  *
  * @param {*} props
  * @return {*}

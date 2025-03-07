@@ -144,8 +144,9 @@ services:
     environment:
       - NODE_ENV=${NODE_ENV}
       - NODE_OPTIONS=${APP_NODE_OPTIONS}
-      - VITE_APP_NODE_ENV=${NODE_ENV}
       - PORT=${APP_PORT}
+      - VITE_PORT=${APP_PORT}
+      - VITE_APP_NODE_ENV=${NODE_ENV}
       - VITE_APP_API_HOST=${API_HOST}
       - VITE_APP_API_PORT=${API_PORT}
       - VITE_APP_MAX_UPLOAD_NUM_FILES=${MAX_UPLOAD_NUM_FILES}

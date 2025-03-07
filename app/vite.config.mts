@@ -3,27 +3,31 @@ import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfil
 import inject from '@rollup/plugin-inject';
 import react from '@vitejs/plugin-react-swc';
 import { defineConfig } from 'vite';
-import { nodePolyfills } from 'vite-plugin-node-polyfills';
+// import { nodePolyfills } from 'vite-plugin-node-polyfills';
 import svgr from 'vite-plugin-svgr';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
+  server: {
+    host: '0.0.0.0',
+    port: Number(process.env.VITE_PORT) || 5173
+  },
   plugins: [
     react(),
     tsconfigPaths(),
     svgr(),
-    nodePolyfills(),
+    // nodePolyfills(),
     inject({
       Buffer: ['buffer', 'Buffer']
     })
   ],
   resolve: {
     alias: {
-      assert: require.resolve('assert'),
-      constants: require.resolve('fs-constants'),
-      fs: require.resolve('fs-extra'),
-      path: require.resolve('path-browserify'),
-      stream: require.resolve('stream-browserify')
+      assert: 'assert',
+      'fs-constants': 'fs-constants',
+      fs: 'fs-extra',
+      path: 'path-browserify',
+      stream: 'stream-browserify'
     }
   },
   build: {
@@ -31,6 +35,7 @@ export default defineConfig({
       plugins: []
     }
   },
+  logLevel: 'warn',
   optimizeDeps: {
     esbuildOptions: {
       define: {

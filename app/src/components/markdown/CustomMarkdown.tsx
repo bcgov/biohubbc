@@ -8,12 +8,12 @@ interface CustomMarkdownProps {
 }
 
 /**
- * This file must be mocked if tested with Jest because it is ESM only and Jest does not support ESM.
+ * This file must be mocked if tested with Jest (vi?) because it is ESM only and Jest (vi?) does not support ESM.
  *
  * Example code to include in test files that import this component:
  *
  * ```
- * jest.mock('../../../components/markdown/CustomMarkdown', () => {
+ * vi.mock('../../../components/markdown/CustomMarkdown', () => {
  * return {};
  * });
  * ```

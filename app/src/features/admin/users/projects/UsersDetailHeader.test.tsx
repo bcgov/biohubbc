@@ -5,12 +5,11 @@ import { ISystemUser } from 'interfaces/useUserApi.interface';
 import { Router } from 'react-router';
 import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import { Mock } from 'vitest';
-import { useBiohubApi } from '../../../hooks/useBioHubApi';
 import UsersDetailHeader from './UsersDetailHeader';
 
 const history = createMemoryHistory();
 
-vi.mock('../../../hooks/useBioHubApi');
+vi.mock('../../../../hooks/useBioHubApi');
 
 const mockBiohubApi = useBiohubApi as Mock;
 

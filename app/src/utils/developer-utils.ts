@@ -20,13 +20,13 @@ type LogIfDevelopmentParams = {
 };
 
 /**
- * Logs to the console if NODE_ENV = 'development'. Does nothing otherwise.
+ * Logs to the console if MODE = 'development'. Does nothing otherwise.
  *
  * @param {LogIfDevelopmentParams} params
  * @return {*}
  */
 export const logIfDevelopment = (params: LogIfDevelopmentParams) => {
-  if (import.meta.env.NODE_ENV !== 'development') {
+  if (import.meta.env.MODE !== 'development') {
     return;
   }
 
