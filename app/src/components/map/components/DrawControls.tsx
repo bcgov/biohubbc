@@ -5,6 +5,10 @@ import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef } from 'react';
 import { coloredCustomMarker } from 'utils/mapUtils';
+// Setting window.type to fix leaflet draw bug: https://github.com/Leaflet/Leaflet.draw/issues/1026#issuecomment-986702652
+// @ts-ignore
+// eslint-disable-next-line
+window.type = '';
 
 /**
  * Custom subset of `L.Control.DrawConstructorOptions` that omits `edit.featureGroup` as this will be added automatically

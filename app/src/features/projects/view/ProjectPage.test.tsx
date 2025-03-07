@@ -14,12 +14,6 @@ const history = createMemoryHistory({ initialEntries: ['/admin/projects/1'] });
 vi.mock('../../../hooks/useBioHubApi');
 const mockBiohubApi = useBiohubApi as Mock;
 
-vi.mock('../../../components/markdown/CustomMarkdown', () => {
-  // Overriding this component because it is ESM only and Jest (vi?) does not support ESM.
-  // See https://github.com/orgs/remarkjs/discussions/1247 for more information.
-  return {};
-});
-
 const mockUseApi = {
   project: {
     getProjectForView: vi.fn(),
