@@ -18,9 +18,10 @@
 /**
  * Imports
  */
-const express = require('express');
-const path = require('path');
-const request = require('request');
+import express from 'express';
+import path from 'path';
+import request from 'request';
+import { fileURLToPath } from 'url';
 
 /**
  * An immediately invoked function that runs a simple express server to serve the app static build files.
@@ -34,13 +35,13 @@ const request = require('request');
  * the app has access to the same env vars when running in both OpenShift and local development.
  */
 (() => {
-  process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
+  import.meta.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
   // Express APP
   const app = express();
   // Getting Port
   const port = import.meta.env.VITE_APP_PORT;
   // Resource path
-  const resourcePath = path.resolve(__dirname, '../build');
+  const resourcePath = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../build');
   // Setting express static
   app.use(express.static(resourcePath));
 
