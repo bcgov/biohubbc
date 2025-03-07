@@ -19,6 +19,7 @@
  * Imports
  */
 import express from 'express';
+import console from 'node:console';
 import process from 'node:process';
 import path from 'path';
 import request from 'request';
