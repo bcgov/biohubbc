@@ -8,6 +8,11 @@ import { useRef } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { CreateHabitatFeatureFormValues, UpdateHabitatFeatureFormValues } from '../HabitatFeatureFormContainer';
 
+/**
+ * Form control for selecting species associated with a habitat feature.
+ *
+ * @returns {*} {JSX.Element}
+ */
 export const HabitatFeatureSpeciesForm = <
   HabitatFeatureFormValuesType extends CreateHabitatFeatureFormValues | UpdateHabitatFeatureFormValues
 >(): JSX.Element => {

@@ -87,7 +87,13 @@ export const CreateHabitatFeaturePage = (): JSX.Element => {
         dialogTitle: 'Error creating habitat feature',
         dialogText: 'An error occurred while creating the habitat feature',
         dialogError: error instanceof Error ? error.message : undefined,
-        dialogErrorDetails: error instanceof APIError ? error.errors : undefined
+        dialogErrorDetails: error instanceof APIError ? error.errors : undefined,
+        onClose: () => {
+          dialogContext.setErrorDialog({ open: false });
+        },
+        onOk: () => {
+          dialogContext.setErrorDialog({ open: false });
+        }
       });
     } finally {
       setIsSubmitting(false);

@@ -1,4 +1,5 @@
 import { IDBConnection } from '../../database/db';
+import { ApiGeneralError } from '../../errors/api-error';
 import { FindHabitatFeatureDefinitions } from '../../repositories/habitat-feature-repository/habitat-feature-repository.interface';
 import { SurveyHabitatFeatureRepository } from '../../repositories/habitat-feature-repository/survey-habitat-feature-repository';
 import {
@@ -11,6 +12,7 @@ import {
 } from '../../repositories/habitat-feature-repository/survey-habitat-feature-repository.interface';
 import { ApiPaginationOptions } from '../../zod-schema/pagination';
 import { DBService } from '../db-service';
+import { PlatformService } from '../platform-service';
 import { HabitatFeatureService } from './habitat-feature-service';
 
 /**
@@ -22,14 +24,49 @@ import { HabitatFeatureService } from './habitat-feature-service';
  */
 export class SurveyHabitatFeatureService extends DBService {
   surveyHabitatFeatureRepository: SurveyHabitatFeatureRepository;
+  platformService: PlatformService;
 
   constructor(connection: IDBConnection) {
     super(connection);
     this.surveyHabitatFeatureRepository = new SurveyHabitatFeatureRepository(connection);
+    this.platformService = new PlatformService(connection);
   }
 
-  async insertSurveyHabitatFeatures(surveyId: number, habitatFeatures: InsertSurveyHabitatFeature[]): Promise<void> {
-    this.surveyHabitatFeatureRepository.insertSurveyHabitatFeatures(surveyId, habitatFeatures);
+  /**
+   * Insert new survey habitat feature records, for a survey.
+   *
+   * Note: This method will validate the taxon TSNs are valid before inserting the records.
+   *
+   * @throws {ApiGeneralError} - If invalid taxon TSNs are provided
+   * @param {number} surveyId
+   * @param {InsertSurveyHabitatFeature[]} surveyHabitatFeatures
+   * @return {*} {Promise<void>}
+   */
+  async insertSurveyHabitatFeatures(
+    surveyId: number,
+    surveyHabitatFeatures: InsertSurveyHabitatFeature[]
+  ): Promise<void> {
+    // Get all unique taxon TSNs from the habitat features
+    const habitatFeatureTsns = new Set(
+      surveyHabitatFeatures.flatMap((surveyHabitatFeature) =>
+        surveyHabitatFeature.survey_habitat_feature_taxons.map((taxon) => taxon.itis_tsn)
+      )
+    );
+
+    // Fetch taxon data for all unique TSNs
+    const validatedTaxons = await this.platformService.getTaxonomyByTsns(Array.from(habitatFeatureTsns));
+
+    if (validatedTaxons.length !== habitatFeatureTsns.size) {
+      throw new ApiGeneralError('Invalid taxon TSNs provided', [
+        'SurveyHabitatFeatureService->insertSurveyHabitatFeatures'
+      ]);
+    }
+
+    Promise.all(
+      surveyHabitatFeatures.map((surveyHabitatFeature) =>
+        this.surveyHabitatFeatureRepository.insertSurveyHabitatFeature(surveyId, surveyHabitatFeature)
+      )
+    );
   }
 
   /**

@@ -7,7 +7,15 @@ export const InsertHabitatFeatureSchema: OpenAPIV3.SchemaObject = {
   description: 'A survey habitat feature record to insert.',
   type: 'object',
   additionalProperties: false,
-  required: ['habitat_feature_type_id', 'latitude', 'longitude', 'count', 'observed_date', 'observed_time'],
+  required: [
+    'habitat_feature_type_id',
+    'latitude',
+    'longitude',
+    'count',
+    'observed_date',
+    'observed_time',
+    'survey_habitat_feature_taxons'
+  ],
   properties: {
     habitat_feature_type_id: {
       type: 'integer',
@@ -39,6 +47,27 @@ export const InsertHabitatFeatureSchema: OpenAPIV3.SchemaObject = {
     observed_time: {
       type: 'string',
       nullable: true
+    },
+    survey_habitat_feature_taxons: {
+      type: 'array',
+      items: {
+        type: 'object',
+        additionalProperties: false,
+        required: ['itis_tsn', 'itis_scientific_name', 'comment'],
+        properties: {
+          itis_tsn: {
+            type: 'integer',
+            minimum: 1
+          },
+          itis_scientific_name: {
+            type: 'string'
+          },
+          comment: {
+            type: 'string',
+            nullable: true
+          }
+        }
+      }
     }
   }
 };
