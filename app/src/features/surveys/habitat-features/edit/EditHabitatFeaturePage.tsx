@@ -68,8 +68,7 @@ export const EditHabitatFeaturePage = (): JSX.Element => {
     count: habitatFeatureDataLoader.data.surveyHabitatFeature.count,
     observed_date: habitatFeatureDataLoader.data.surveyHabitatFeature.observed_date,
     observed_time: habitatFeatureDataLoader.data.surveyHabitatFeature.observed_time,
-    // TODO: Mac: Add survey_habitat_feature_taxons to the habitat feature data loader
-    survey_habitat_feature_taxons: []
+    survey_habitat_feature_taxons: habitatFeatureDataLoader.data.surveyHabitatFeature.survey_habitat_feature_taxons
   };
 
   /**

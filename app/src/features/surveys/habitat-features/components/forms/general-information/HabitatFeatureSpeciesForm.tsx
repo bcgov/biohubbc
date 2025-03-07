@@ -3,8 +3,10 @@ import { grey } from '@mui/material/colors';
 import SpeciesAutocompleteField from 'components/species/components/SpeciesAutocompleteField';
 import SpeciesSelectedCard from 'components/species/components/SpeciesSelectedCard';
 import { FieldArray, useFormikContext } from 'formik';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import useDataLoader from 'hooks/useDataLoader';
 import { IPartialTaxonomy, ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { CreateHabitatFeatureFormValues, UpdateHabitatFeatureFormValues } from '../HabitatFeatureFormContainer';
 
@@ -16,9 +18,42 @@ import { CreateHabitatFeatureFormValues, UpdateHabitatFeatureFormValues } from '
 export const HabitatFeatureSpeciesForm = <
   HabitatFeatureFormValuesType extends CreateHabitatFeatureFormValues | UpdateHabitatFeatureFormValues
 >(): JSX.Element => {
+  const biohubApi = useBiohubApi();
+
   const formikProps = useFormikContext<HabitatFeatureFormValuesType>();
-  // Caches selected taxons (tsn -> taxon)
+
+  const taxonDataLoader = useDataLoader(() =>
+    biohubApi.taxonomy.getSpeciesFromIds(
+      formikProps.initialValues.survey_habitat_feature_taxons.map((taxon) => taxon.itis_tsn)
+    )
+  );
+
+  // Caches current and newly selected taxons (tsn -> taxon)
   const taxonCache = useRef(new Map<number, ITaxonomy | IPartialTaxonomy>());
+
+  useEffect(() => {
+    const loadTaxons = async () => {
+      if (taxonDataLoader.hasLoaded) {
+        return;
+      }
+
+      const taxons = await taxonDataLoader.load();
+
+      if (!taxons) {
+        return;
+      }
+
+      for (const taxon of taxons) {
+        taxonCache.current.set(taxon.tsn, taxon);
+      }
+    };
+
+    loadTaxons();
+  }, [taxonDataLoader]);
+
+  if (!taxonDataLoader.hasLoaded) {
+    return <></>;
+  }
 
   return (
     <FieldArray
@@ -44,28 +79,29 @@ export const HabitatFeatureSpeciesForm = <
               }}
             />
             <TransitionGroup>
-              {formikProps.values.survey_habitat_feature_taxons.map((taxon, index) => {
-                const cachedTaxon = taxonCache.current.get(taxon.itis_tsn);
+              {taxonDataLoader.hasLoaded &&
+                formikProps.values.survey_habitat_feature_taxons.map((taxon, index) => {
+                  const cachedTaxon = taxonCache.current.get(taxon.itis_tsn);
 
-                if (!cachedTaxon) {
-                  throw new Error('Invalid taxon cache: HabitatFeaturesSpeciesForm');
-                }
+                  if (!cachedTaxon) {
+                    throw new Error('Invalid taxon cache: HabitatFeaturesSpeciesForm');
+                  }
 
-                return (
-                  <Collapse key={taxon.itis_tsn}>
-                    <Paper variant="outlined" sx={{ px: 3, py: 2, mt: 1, background: grey[50] }}>
-                      <SpeciesSelectedCard
-                        species={cachedTaxon}
-                        index={index}
-                        handleRemove={() => {
-                          arrayHelpers.remove(index);
-                          taxonCache.current.delete(taxon.itis_tsn);
-                        }}
-                      />
-                    </Paper>
-                  </Collapse>
-                );
-              })}
+                  return (
+                    <Collapse key={taxon.itis_tsn}>
+                      <Paper variant="outlined" sx={{ px: 3, py: 2, mt: 1, background: grey[50] }}>
+                        <SpeciesSelectedCard
+                          species={cachedTaxon}
+                          index={index}
+                          handleRemove={() => {
+                            arrayHelpers.remove(index);
+                            taxonCache.current.delete(taxon.itis_tsn);
+                          }}
+                        />
+                      </Paper>
+                    </Collapse>
+                  );
+                })}
             </TransitionGroup>
           </>
         );
