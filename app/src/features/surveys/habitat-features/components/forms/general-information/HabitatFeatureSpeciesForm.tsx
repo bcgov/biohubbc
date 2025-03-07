@@ -28,21 +28,28 @@ export const HabitatFeatureSpeciesForm = <
     )
   );
 
-  // Caches current and newly selected taxons (tsn -> taxon)
+  // Ref to cache the current and newly selected taxons (tsn -> taxon)
   const taxonCache = useRef(new Map<number, ITaxonomy | IPartialTaxonomy>());
 
   useEffect(() => {
-    const loadTaxons = async () => {
+    /**
+     * Load taxons from the API and cache them.
+     *
+     * @returns {Promise<void>}
+     */
+    const loadTaxons = async (): Promise<void> => {
       if (taxonDataLoader.hasLoaded) {
         return;
       }
 
       const taxons = await taxonDataLoader.load();
 
+      // nothing to cache
       if (!taxons) {
         return;
       }
 
+      // cache the taxons
       for (const taxon of taxons) {
         taxonCache.current.set(taxon.tsn, taxon);
       }
@@ -50,10 +57,6 @@ export const HabitatFeatureSpeciesForm = <
 
     loadTaxons();
   }, [taxonDataLoader]);
-
-  if (!taxonDataLoader.hasLoaded) {
-    return <></>;
-  }
 
   return (
     <FieldArray
@@ -78,30 +81,30 @@ export const HabitatFeatureSpeciesForm = <
                 });
               }}
             />
+
             <TransitionGroup>
-              {taxonDataLoader.hasLoaded &&
-                formikProps.values.survey_habitat_feature_taxons.map((taxon, index) => {
-                  const cachedTaxon = taxonCache.current.get(taxon.itis_tsn);
+              {formikProps.values.survey_habitat_feature_taxons.map((taxon, index) => {
+                const cachedTaxon = taxonCache.current.get(taxon.itis_tsn) ?? {
+                  tsn: taxon.itis_tsn,
+                  scientificName: taxon.itis_scientific_name,
+                  commonNames: []
+                };
 
-                  if (!cachedTaxon) {
-                    throw new Error('Invalid taxon cache: HabitatFeaturesSpeciesForm');
-                  }
-
-                  return (
-                    <Collapse key={taxon.itis_tsn}>
-                      <Paper variant="outlined" sx={{ px: 3, py: 2, mt: 1, background: grey[50] }}>
-                        <SpeciesSelectedCard
-                          species={cachedTaxon}
-                          index={index}
-                          handleRemove={() => {
-                            arrayHelpers.remove(index);
-                            taxonCache.current.delete(taxon.itis_tsn);
-                          }}
-                        />
-                      </Paper>
-                    </Collapse>
-                  );
-                })}
+                return (
+                  <Collapse key={taxon.itis_tsn}>
+                    <Paper variant="outlined" sx={{ px: 3, py: 2, mt: 1, background: grey[50] }}>
+                      <SpeciesSelectedCard
+                        species={cachedTaxon}
+                        index={index}
+                        handleRemove={() => {
+                          arrayHelpers.remove(index);
+                          taxonCache.current.delete(taxon.itis_tsn);
+                        }}
+                      />
+                    </Paper>
+                  </Collapse>
+                );
+              })}
             </TransitionGroup>
           </>
         );

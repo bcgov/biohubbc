@@ -19,8 +19,6 @@ export const HabitatFeatureGeneralInformationForm = <
   const codesContext = useCodesContext();
   const formikProps = useFormikContext<HabitatFeatureFormValuesType>();
 
-  codesContext.codesDataLoader.load();
-
   return (
     <Grid container spacing={3}>
       <Grid item xs={12} display="flex" gap={1}>

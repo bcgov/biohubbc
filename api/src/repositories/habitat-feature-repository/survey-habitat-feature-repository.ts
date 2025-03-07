@@ -77,26 +77,59 @@ export class SurveyHabitatFeatureRepository extends BaseRepository {
    *
    * @param {number} surveyId
    * @param {number} surveyHabitatFeatureId
-   * @param {UpdateSurveyHabitatFeature} habitatFeature
+   * @param {UpdateSurveyHabitatFeature} surveyHabitatFeature
    * @return {*}  {Promise<void>}
    * @memberof SurveyHabitatFeatureRepository
    */
   async updateSurveyHabitatFeature(
     surveyId: number,
     surveyHabitatFeatureId: number,
-    habitatFeature: UpdateSurveyHabitatFeature
+    surveyHabitatFeature: UpdateSurveyHabitatFeature
   ): Promise<void> {
     const knex = getKnex();
 
     const query = knex.queryBuilder();
 
     query
-      .update({
-        ...habitatFeature
+      // Step 1: Update survey habitat feature
+      .with(`w_update_survey_habitat_feature`, (qb) => {
+        qb.from('survey_habitat_feature')
+          .update({
+            habitat_feature_type_id: surveyHabitatFeature.habitat_feature_type_id,
+            count: surveyHabitatFeature.count,
+            latitude: surveyHabitatFeature.latitude,
+            longitude: surveyHabitatFeature.longitude,
+            observed_date: surveyHabitatFeature.observed_date,
+            observed_time: surveyHabitatFeature.observed_time
+          })
+          .where('survey_habitat_feature_id', surveyHabitatFeatureId)
+          .andWhere('survey_id', surveyId)
+          .returning('*');
       })
-      .from('survey_habitat_feature')
-      .where('survey_habitat_feature_id', surveyHabitatFeatureId)
-      .andWhere('survey_id', surveyId);
+      // Step 2: Delete existing survey habitat feature taxons
+      .with(`w_delete_survey_habitat_feature_taxon`, (qb) => {
+        qb.delete().from('survey_habitat_feature_taxon').where('survey_habitat_feature_id', surveyHabitatFeatureId);
+      });
+
+    if (surveyHabitatFeature.survey_habitat_feature_taxons.length > 0) {
+      // Step 3: Insert new survey habitat feature taxons
+      query.with(`w_insert_survey_habitat_feature_taxon`, (qb) => {
+        qb.insert(
+          surveyHabitatFeature.survey_habitat_feature_taxons.map((taxon) => ({
+            survey_habitat_feature_id: surveyHabitatFeatureId,
+            itis_tsn: taxon.itis_tsn,
+            itis_scientific_name: taxon.itis_scientific_name,
+            comment: taxon.comment
+          }))
+        ).into('survey_habitat_feature_taxon');
+      });
+    }
+
+    query.select('*').from('w_update_survey_habitat_feature');
+
+    const { sql, bindings } = query.toSQL();
+
+    console.log(sql, bindings);
 
     const response = await this.connection.knex(query);
 

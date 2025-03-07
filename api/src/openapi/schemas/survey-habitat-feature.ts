@@ -111,6 +111,27 @@ export const UpdateHabitatFeatureSchema: OpenAPIV3.SchemaObject = {
     observed_time: {
       type: 'string',
       nullable: true
+    },
+    survey_habitat_feature_taxons: {
+      type: 'array',
+      items: {
+        type: 'object',
+        additionalProperties: false,
+        required: ['itis_tsn', 'itis_scientific_name', 'comment'],
+        properties: {
+          itis_tsn: {
+            type: 'integer',
+            minimum: 1
+          },
+          itis_scientific_name: {
+            type: 'string'
+          },
+          comment: {
+            type: 'string',
+            nullable: true
+          }
+        }
+      }
     }
   }
 };
