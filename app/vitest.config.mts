@@ -6,13 +6,14 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
-    setupFiles: './src/setupTests.ts',
+    setupFiles: './setupTests.ts',
     css: true,
-    reporters: ['verbose'],
+    reporters: ['verbose', ['vitest-sonar-reporter', { outputFile: 'coverage/sonar-report.xml' }]],
     coverage: {
-      reporter: ['text', 'lcov', ['vitest-sonar-reporter', { outputFile: 'coverage/sonar-report.xml' }]],
+      provider: 'v8',
+      reporter: ['text', 'lcov'],
       include: ['src/**/*'],
-      exclude: []
+      exclude: ['src/**/*.d.ts', 'src/**/*.test.{ts,tsx}']
     }
   }
 });
