@@ -81,12 +81,13 @@ export class ExportSurveyMetadataStrategy extends DBService implements ExportStr
     return [
       item.project_id,
       item.survey_id,
-      item.name,
+      `"${item.name ?? ''}"`,
       item.start_date,
       item.end_date,
-      item.lead_first_name,
-      item.lead_last_name,
+      `"${item.lead_first_name ?? ''}"`,
+      `"${item.lead_last_name ?? ''}"`,
       item.additional_details,
+      `"${item.additional_details ?? ''}"`,
       item.progress_id
     ].join(',');
   };

@@ -860,6 +860,7 @@ export class ObservationRepository extends BaseRepository {
                           eqd2.eh_value
                       )
                   )
+                  ORDER BY eh.header_name
               ) AS env_data
           FROM aggregated_data ad
           LEFT JOIN unique_env_headers eh ON eh.header_name IS NOT NULL
@@ -902,6 +903,7 @@ export class ObservationRepository extends BaseRepository {
                           mqd2.mh_value
                       )
                   )
+                  ORDER BY mh.header_name
               ) AS meas_data
           FROM aggregated_data ad
           LEFT JOIN unique_meas_headers mh ON mh.header_name IS NOT NULL
