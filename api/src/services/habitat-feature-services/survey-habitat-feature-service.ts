@@ -5,6 +5,7 @@ import { SurveyHabitatFeatureRepository } from '../../repositories/habitat-featu
 import {
   FindSurveyHabitatFeatureAdvancedFilters,
   InsertSurveyHabitatFeature,
+  InsertSurveyHabitatFeatureTaxon,
   SurveyHabitatFeaturesGeometryWithSupplementaryData,
   SurveyHabitatFeaturesWithSupplementaryData,
   SurveyHabitatFeatureWithTaxons,
@@ -46,17 +47,9 @@ export class SurveyHabitatFeatureService extends DBService {
     surveyId: number,
     surveyHabitatFeatures: InsertSurveyHabitatFeature[]
   ): Promise<void> {
-    // Get all unique taxon TSNs from the habitat features
-    const habitatFeatureTsns = new Set(
-      surveyHabitatFeatures.flatMap((surveyHabitatFeature) =>
-        surveyHabitatFeature.survey_habitat_feature_taxons.map((taxon) => taxon.itis_tsn)
-      )
-    );
+    const taxonsAreValid = await this._validateSurveyHabitatFeaturesTsns(surveyHabitatFeatures);
 
-    // Fetch taxon data for all unique TSNs
-    const validatedTaxons = await this.platformService.getTaxonomyByTsns(Array.from(habitatFeatureTsns));
-
-    if (validatedTaxons.length !== habitatFeatureTsns.size) {
+    if (!taxonsAreValid) {
       throw new ApiGeneralError('Invalid taxon TSNs provided', [
         'SurveyHabitatFeatureService->insertSurveyHabitatFeatures'
       ]);
@@ -74,19 +67,27 @@ export class SurveyHabitatFeatureService extends DBService {
    *
    * @param {number} surveyId
    * @param {number} surveyHabitatFeatureId
-   * @param {UpdateSurveyHabitatFeature} surveyHabitatFeatures
+   * @param {UpdateSurveyHabitatFeature} surveyHabitatFeature
    * @return {*}  {Promise<void>}
    * @memberof SurveyHabitatFeatureService
    */
   async updateSurveyHabitatFeature(
     surveyId: number,
     surveyHabitatFeatureId: number,
-    surveyHabitatFeatures: UpdateSurveyHabitatFeature
+    surveyHabitatFeature: UpdateSurveyHabitatFeature
   ): Promise<void> {
+    const taxonsAreValid = await this._validateSurveyHabitatFeaturesTsns([surveyHabitatFeature]);
+
+    if (!taxonsAreValid) {
+      throw new ApiGeneralError('Invalid taxon TSNs provided', [
+        'SurveyHabitatFeatureService->updateSurveyHabitatFeature'
+      ]);
+    }
+
     this.surveyHabitatFeatureRepository.updateSurveyHabitatFeature(
       surveyId,
       surveyHabitatFeatureId,
-      surveyHabitatFeatures
+      surveyHabitatFeature
     );
   }
 
@@ -263,5 +264,29 @@ export class SurveyHabitatFeatureService extends DBService {
    */
   async deleteSurveyHabitatFeatures(surveyId: number, surveyHabitatFeatureIds: number[]): Promise<void> {
     this.surveyHabitatFeatureRepository.deleteSurveyHabitatFeatures(surveyId, surveyHabitatFeatureIds);
+  }
+
+  /**
+   * Validate all TSNs in a list of survey habitat features against ITIS (Biohub PlatformService).
+   *
+   * @param {Array<{ survey_habitat_feature_taxons: InsertSurveyHabitatFeatureTaxon[] }>} surveyHabitatFeatures
+   * @return {*} {Promise<boolean>}
+   */
+  async _validateSurveyHabitatFeaturesTsns(
+    surveyHabitatFeatures: Array<{
+      survey_habitat_feature_taxons: InsertSurveyHabitatFeatureTaxon[];
+    }>
+  ): Promise<boolean> {
+    // Get all unique taxon TSNs from the habitat features
+    const habitatFeatureTsns = new Set(
+      surveyHabitatFeatures.flatMap((surveyHabitatFeature) =>
+        surveyHabitatFeature.survey_habitat_feature_taxons.map((taxon) => taxon.itis_tsn)
+      )
+    );
+
+    // Fetch taxon data for all unique TSNs
+    const validatedTaxons = await this.platformService.getTaxonomyByTsns(Array.from(habitatFeatureTsns));
+
+    return validatedTaxons.length === habitatFeatureTsns.size;
   }
 }

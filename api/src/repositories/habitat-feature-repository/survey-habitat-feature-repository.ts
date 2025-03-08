@@ -47,9 +47,11 @@ export class SurveyHabitatFeatureRepository extends BaseRepository {
         })
           .into('survey_habitat_feature')
           .returning(['survey_habitat_feature_id']);
-      })
-      // Step 2: Insert survey habitat feature taxons
-      .with(`w_insert_survey_habitat_feature_taxon`, (qb) => {
+      });
+
+    // Step 2: Insert survey habitat feature taxons
+    if (surveyHabitatFeature.survey_habitat_feature_taxons.length > 0) {
+      query.with(`w_insert_survey_habitat_feature_taxon`, (qb) => {
         qb.insert(
           surveyHabitatFeature.survey_habitat_feature_taxons.map((taxon) => ({
             survey_habitat_feature_id: knex.select(`survey_habitat_feature_id`).from(`w_insert_survey_habitat_feature`),
@@ -58,9 +60,10 @@ export class SurveyHabitatFeatureRepository extends BaseRepository {
             comment: taxon.comment
           }))
         ).into('survey_habitat_feature_taxon');
-      })
-      .select('*')
-      .from('w_insert_survey_habitat_feature');
+      });
+    }
+
+    query.select('*').from('w_insert_survey_habitat_feature');
 
     const response = await this.connection.knex(query);
 
@@ -111,8 +114,8 @@ export class SurveyHabitatFeatureRepository extends BaseRepository {
         qb.delete().from('survey_habitat_feature_taxon').where('survey_habitat_feature_id', surveyHabitatFeatureId);
       });
 
+    // Step 3: Insert new survey habitat feature taxons
     if (surveyHabitatFeature.survey_habitat_feature_taxons.length > 0) {
-      // Step 3: Insert new survey habitat feature taxons
       query.with(`w_insert_survey_habitat_feature_taxon`, (qb) => {
         qb.insert(
           surveyHabitatFeature.survey_habitat_feature_taxons.map((taxon) => ({
@@ -121,15 +124,14 @@ export class SurveyHabitatFeatureRepository extends BaseRepository {
             itis_scientific_name: taxon.itis_scientific_name,
             comment: taxon.comment
           }))
-        ).into('survey_habitat_feature_taxon');
+        )
+          .into('survey_habitat_feature_taxon')
+          .onConflict(['survey_habitat_feature_id', 'itis_tsn'])
+          .merge();
       });
     }
 
     query.select('*').from('w_update_survey_habitat_feature');
-
-    const { sql, bindings } = query.toSQL();
-
-    console.log(sql, bindings);
 
     const response = await this.connection.knex(query);
 

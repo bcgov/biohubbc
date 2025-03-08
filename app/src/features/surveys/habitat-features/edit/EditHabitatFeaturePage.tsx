@@ -68,7 +68,13 @@ export const EditHabitatFeaturePage = (): JSX.Element => {
     count: habitatFeatureDataLoader.data.surveyHabitatFeature.count,
     observed_date: habitatFeatureDataLoader.data.surveyHabitatFeature.observed_date,
     observed_time: habitatFeatureDataLoader.data.surveyHabitatFeature.observed_time,
-    survey_habitat_feature_taxons: habitatFeatureDataLoader.data.surveyHabitatFeature.survey_habitat_feature_taxons
+    survey_habitat_feature_taxons: habitatFeatureDataLoader.data.surveyHabitatFeature.survey_habitat_feature_taxons.map(
+      (taxon) => ({
+        itis_tsn: taxon.itis_tsn,
+        itis_scientific_name: taxon.itis_scientific_name,
+        comment: taxon.comment
+      })
+    )
   };
 
   /**
