@@ -1,7 +1,7 @@
 import { TaxonMap } from '../../../services/import-services/utils/taxon';
 import { CSVConfigUtils } from '../csv-config-utils';
 import { CSVRowParams, CSVRowValidator } from '../csv-config-validation.interface';
-import { updateCSVRowState } from '../csv-header-configs';
+import { CSVOptionalCell, updateCSVRowState } from '../csv-header-configs';
 
 /**
  * Get the taxon header cell validator.
@@ -15,19 +15,21 @@ import { updateCSVRowState } from '../csv-header-configs';
  * @param {TaxonMap} taxonMap The list of taxons
  * @param {CSVConfigUtils} utils The CSV config utils
  * @param {string} taxonStaticHeader The taxon static header
+ * @param {CSVOptionalCell} [options] Optional cell config override
  * @returns {*} {CSVCellValidator} The validate cell callback
  */
 export const getTaxonRowValidator = <StaticHeaderType extends Uppercase<string> = Uppercase<string>>(
   taxonMap: TaxonMap,
   utils: CSVConfigUtils<StaticHeaderType>,
-  taxonStaticHeader: StaticHeaderType
+  taxonStaticHeader: StaticHeaderType,
+  options?: CSVOptionalCell
 ): CSVRowValidator => {
   return (params: CSVRowParams) => {
     const taxonIdentifierCell = utils.getCellValue(taxonStaticHeader, params.row);
     const taxonHeader = utils.getWorksheetHeader(taxonStaticHeader, params.row);
 
     if (taxonIdentifierCell === undefined) {
-      if (utils.isCellOptional(taxonStaticHeader)) {
+      if (options?.optional) {
         return [];
       }
 

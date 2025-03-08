@@ -173,6 +173,6 @@ export class ImportHabitatFeaturesService extends DBService {
    */
   async _setHabitatFeatureRowValidators(taxonMap: TaxonMap) {
     // Inject the row validators - handles taxon, sampling information and location validation
-    this.utils.config.rowValidators = [getTaxonRowValidator(taxonMap, this.utils, 'SPECIES')];
+    this.utils.config.rowValidators = [getTaxonRowValidator(taxonMap, this.utils, 'SPECIES', { optional: true })];
   }
 }
