@@ -79,7 +79,15 @@ export const UpdateHabitatFeatureSchema: OpenAPIV3.SchemaObject = {
   description: 'A survey habitat feature record to update.',
   type: 'object',
   additionalProperties: false,
-  required: ['habitat_feature_type_id', 'latitude', 'longitude', 'count', 'observed_date', 'observed_time'],
+  required: [
+    'habitat_feature_type_id',
+    'latitude',
+    'longitude',
+    'count',
+    'observed_date',
+    'observed_time',
+    'survey_habitat_feature_taxons'
+  ],
   properties: {
     habitat_feature_type_id: {
       type: 'integer',

@@ -106,7 +106,8 @@ describe('import-habitat-features-service', () => {
           latitude: 1,
           longitude: 2,
           observed_date: '2021-01-01',
-          observed_time: '12:00:00'
+          observed_time: '12:00:00',
+          survey_habitat_feature_taxons: []
         }
       ]);
 
