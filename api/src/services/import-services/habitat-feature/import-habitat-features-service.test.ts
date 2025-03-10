@@ -160,7 +160,9 @@ describe('import-habitat-features-service', () => {
 
       await service._setHabitatFeatureRowValidators(taxonMap);
 
-      expect(taxonRowValidatorStub).to.have.been.calledOnceWithExactly(taxonMap, service.utils, 'SPECIES');
+      expect(taxonRowValidatorStub).to.have.been.calledOnceWithExactly(taxonMap, service.utils, 'SPECIES', {
+        optional: true
+      });
 
       expect(service.utils.config.rowValidators).to.be.an('array').and.to.have.length(1);
     });
