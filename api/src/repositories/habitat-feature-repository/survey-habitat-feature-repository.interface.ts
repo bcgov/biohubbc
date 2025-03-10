@@ -4,15 +4,24 @@ import { SurveyHabitatFeatureTaxonRecord } from '../../database-models/survey_ha
 import { GeoJSONPointZodSchema } from '../../zod-schema/geoJsonZodSchema';
 import { FindHabitatFeatureDefinitions } from './habitat-feature-repository.interface';
 
+export type InsertSurveyHabitatFeatureTaxon = Pick<
+  SurveyHabitatFeatureTaxonRecord,
+  'itis_tsn' | 'itis_scientific_name' | 'comment'
+>;
+
 export type InsertSurveyHabitatFeature = Pick<
   SurveyHabitatFeatureRecord,
   'habitat_feature_type_id' | 'count' | 'latitude' | 'longitude' | 'observed_date' | 'observed_time'
->;
+> & {
+  survey_habitat_feature_taxons: InsertSurveyHabitatFeatureTaxon[];
+};
 
 export type UpdateSurveyHabitatFeature = Pick<
   SurveyHabitatFeatureRecord,
   'habitat_feature_type_id' | 'count' | 'latitude' | 'longitude' | 'observed_date' | 'observed_time'
->;
+> & {
+  survey_habitat_feature_taxons: InsertSurveyHabitatFeatureTaxon[];
+};
 
 export const SurveyHabitatFeatureCount = z.object({
   count: z.number()

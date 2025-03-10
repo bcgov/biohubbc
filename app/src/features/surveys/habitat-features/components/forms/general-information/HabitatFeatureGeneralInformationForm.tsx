@@ -5,7 +5,8 @@ import CustomTextField from 'components/fields/CustomTextField';
 import { DateTimeFields } from 'components/fields/DateTimeFields';
 import { useFormikContext } from 'formik';
 import { useCodesContext } from 'hooks/useContext';
-import { HabitatFeatureFormValues } from '../HabitatFeatureFormContainer';
+import { CreateHabitatFeatureFormValues, UpdateHabitatFeatureFormValues } from '../HabitatFeatureFormContainer';
+import { HabitatFeatureSpeciesForm } from './HabitatFeatureSpeciesForm';
 
 /**
  * Habitat Feature general information form.
@@ -13,12 +14,10 @@ import { HabitatFeatureFormValues } from '../HabitatFeatureFormContainer';
  * @return {*} {JSX.Element}
  */
 export const HabitatFeatureGeneralInformationForm = <
-  HabitatFeatureFormValuesType extends HabitatFeatureFormValues
+  HabitatFeatureFormValuesType extends CreateHabitatFeatureFormValues | UpdateHabitatFeatureFormValues
 >(): JSX.Element => {
   const codesContext = useCodesContext();
   const formikProps = useFormikContext<HabitatFeatureFormValuesType>();
-
-  codesContext.codesDataLoader.load();
 
   return (
     <Grid container spacing={3}>
@@ -65,6 +64,10 @@ export const HabitatFeatureGeneralInformationForm = <
             timeIcon: mdiCalendar
           }}
         />
+      </Grid>
+
+      <Grid item xs={12}>
+        <HabitatFeatureSpeciesForm />
       </Grid>
     </Grid>
   );

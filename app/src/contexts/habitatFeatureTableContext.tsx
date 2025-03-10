@@ -125,7 +125,8 @@ export const HabitatFeatureTableContextProvider = (props: IHabitatFeatureTableCo
     (column: string) => {
       const updatedVisibilityModel = { ...columnVisibilityModel };
 
-      updatedVisibilityModel[column] = !updatedVisibilityModel[column];
+      updatedVisibilityModel[column] =
+        updatedVisibilityModel[column] === undefined ? false : !updatedVisibilityModel[column];
 
       setColumnVisibilityModel(updatedVisibilityModel);
     },

@@ -31,11 +31,11 @@ export const SurveyHabitatFeatureTable = (): JSX.Element => {
       // Row selection
       rowSelectionModel={habitatFeatureTableContext.rowSelectionModel}
       onRowSelectionModelChange={habitatFeatureTableContext.onRowSelectionModelChange}
+      checkboxSelection={false} // Disabled as we do not yet support multi-row bulk actions
       // Pagination
       pageSizeOptions={[10, 25, 50]}
       rowSelection={true}
       autoHeight={false}
-      checkboxSelection={false}
       disableColumnSelector
       disableColumnFilter
       disableColumnMenu
