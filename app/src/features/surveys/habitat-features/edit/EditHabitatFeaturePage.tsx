@@ -92,7 +92,6 @@ export const EditHabitatFeaturePage = (): JSX.Element => {
         habitatFeatureId,
         {
           habitat_feature_type_id: values.habitat_feature_type_id,
-          survey_id: surveyContext.surveyId,
           latitude: values.latitude,
           longitude: values.longitude,
           count: values.count,

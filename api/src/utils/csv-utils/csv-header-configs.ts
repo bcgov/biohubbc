@@ -12,7 +12,7 @@ import {
 } from './csv-config-validation.interface';
 
 // CSVOptionalCell - Optional cell config override
-type CSVOptionalCell = {
+export type CSVOptionalCell = {
   optional: boolean;
 };
 

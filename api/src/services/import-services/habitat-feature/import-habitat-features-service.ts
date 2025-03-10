@@ -58,13 +58,15 @@ export class ImportHabitatFeaturesService extends DBService {
 
     const initialConfig: CSVConfig<HabitatFeatureCSVStaticHeader> = {
       staticHeadersConfig: {
-        HABITAT_FEATURE_TYPE: { aliases: ['HABITAT_FEATURE_TYPE', 'TYPE'] },
+        HABITAT_FEATURE_TYPE: {
+          aliases: ['HABITAT FEATURE TYPE', 'FEATURE_TYPE', 'FEATURE TYPE', 'TYPE']
+        },
         COUNT: { aliases: [] },
         LATITUDE: { aliases: ['LAT'] },
         LONGITUDE: { aliases: ['LON', 'LONG', 'LNG'] },
-        OBSERVED_DATE: { aliases: [] },
-        OBSERVED_TIME: { aliases: [] },
-        SPECIES: { aliases: ['ITIS_TSN', 'ITIS TSN', 'TSN', 'TAXON'] }
+        OBSERVED_DATE: { aliases: ['OBSERVED DATE', 'DATE'] },
+        OBSERVED_TIME: { aliases: ['OBSERVED TIME', 'TIME'] },
+        SPECIES: { aliases: ['ITIS_TSN', 'ITIS TSN', 'TSN', 'TAXON'], optional: true }
       },
       ignoreDynamicHeaders: false
     };
@@ -153,9 +155,9 @@ export class ImportHabitatFeaturesService extends DBService {
     this.utils.setAllStaticHeaderConfigs({
       HABITAT_FEATURE_TYPE: { validateCell: getHabitatFeatureTypeCellValidator(habitatFeatureTypes) },
       COUNT: { validateCell: getPositiveNumberCellValidator() },
-      LATITUDE: { validateCell: getLatitudeCellValidator({ optional: true }) },
-      LONGITUDE: { validateCell: getLongitudeCellValidator({ optional: true }) },
-      OBSERVED_DATE: { validateCell: getDateCellValidator({ optional: true }) },
+      LATITUDE: { validateCell: getLatitudeCellValidator() },
+      LONGITUDE: { validateCell: getLongitudeCellValidator() },
+      OBSERVED_DATE: { validateCell: getDateCellValidator() },
       OBSERVED_TIME: { validateCell: getTimeCellValidator(), setCellValue: getTimeCellSetter() },
       // Species is pre-validated by the taxon row validator
       SPECIES: { validateCell: (params) => validateZodCell(params.cell, z.string().or(z.number())) }
@@ -172,6 +174,6 @@ export class ImportHabitatFeaturesService extends DBService {
    */
   async _setHabitatFeatureRowValidators(taxonMap: TaxonMap) {
     // Inject the row validators - handles taxon, sampling information and location validation
-    this.utils.config.rowValidators = [getTaxonRowValidator(taxonMap, this.utils, 'SPECIES')];
+    this.utils.config.rowValidators = [getTaxonRowValidator(taxonMap, this.utils, 'SPECIES', { optional: true })];
   }
 }

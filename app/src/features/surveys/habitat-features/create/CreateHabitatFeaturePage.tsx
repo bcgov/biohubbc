@@ -62,7 +62,6 @@ export const CreateHabitatFeaturePage = (): JSX.Element => {
       await biohubApi.habitatFeature.createSurveyHabitatFeatures(surveyContext.projectId, surveyContext.surveyId, [
         {
           habitat_feature_type_id: values.habitat_feature_type_id,
-          survey_id: surveyContext.surveyId,
           latitude: values.latitude,
           longitude: values.longitude,
           count: values.count,
