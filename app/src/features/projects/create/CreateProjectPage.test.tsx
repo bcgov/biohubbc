@@ -8,7 +8,7 @@ import { DataLoader } from 'hooks/useDataLoader';
 import { Router } from 'react-router';
 import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import { codes } from 'test-helpers/code-helpers';
-import { cleanup, findByText as rawFindByText, fireEvent, render, waitFor } from 'test-helpers/test-utils';
+import { cleanup, findByText, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import { Mock } from 'vitest';
 
 const history = createMemoryHistory();
@@ -97,15 +97,18 @@ describe('CreateProjectPage', () => {
       history.push('/home');
       history.push('/admin/projects/create');
 
-      const { findByText, getByRole, findAllByText } = renderContainer();
+      const { findByText: findByTextRender, getByRole, findAllByText } = renderContainer();
       const BackToProjectsButton = await findAllByText('Cancel');
 
       fireEvent.click(BackToProjectsButton[0]);
-      const AreYouSureTitle = await findByText('Discard changes and exit?');
-      const AreYouSureText = await findByText('Any changes you have made will not be saved. Do you want to proceed?', {
-        exact: false
-      });
-      const AreYouSureYesButton = await rawFindByText(getByRole('dialog'), 'Yes', { exact: false });
+      const AreYouSureTitle = await findByTextRender('Discard changes and exit?');
+      const AreYouSureText = await findByTextRender(
+        'Any changes you have made will not be saved. Do you want to proceed?',
+        {
+          exact: false
+        }
+      );
+      const AreYouSureYesButton = await findByText(getByRole('dialog'), 'Yes', { exact: false });
 
       expect(AreYouSureTitle).toBeVisible();
       expect(AreYouSureText).toBeVisible();
@@ -120,7 +123,7 @@ describe('CreateProjectPage', () => {
       const BackToProjectsButton = await findAllByText('Cancel');
 
       fireEvent.click(BackToProjectsButton[0]);
-      const AreYouSureYesButton = await rawFindByText(getByRole('dialog'), 'Yes', { exact: false });
+      const AreYouSureYesButton = await findByText(getByRole('dialog'), 'Yes', { exact: false });
 
       expect(history.location.pathname).toEqual('/admin/projects/create');
       fireEvent.click(AreYouSureYesButton);
@@ -135,7 +138,7 @@ describe('CreateProjectPage', () => {
       const BackToProjectsButton = await findAllByText('Cancel');
 
       fireEvent.click(BackToProjectsButton[0]);
-      const AreYouSureNoButton = await rawFindByText(getByRole('dialog'), 'No');
+      const AreYouSureNoButton = await findByText(getByRole('dialog'), 'No');
 
       expect(history.location.pathname).toEqual('/admin/projects/create');
       fireEvent.click(AreYouSureNoButton);

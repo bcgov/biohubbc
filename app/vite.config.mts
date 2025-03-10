@@ -20,10 +20,14 @@ export default defineConfig({
         process: true
       }
     }),
-    !process.env.VITEST ? checker({ typescript: true }) : undefined
-    // eslint: {
-    //   lintCommand: 'eslint "src/ --ext .jsx,.js,.ts,.tsx"'
-    // }
+    !process.env.VITEST ? checker({ typescript: true }) : undefined,
+    !process.env.VITEST
+      ? checker({
+          eslint: {
+            lintCommand: 'eslint src/ --ext .jsx,.js,.ts,.tsx'
+          }
+        })
+      : undefined
   ],
   build: {
     outDir: 'build',

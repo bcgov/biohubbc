@@ -73,7 +73,7 @@
     "react-window": "^1.8.6",
     "request": "^2.88.2",
     "shpjs": "^6.1.0",
-    "typescript": "^5.8.2",
+    "typescript": "^5.5.0",
     "uuid": "^11.0.5",
     "yup": "^0.32.9"
   },
