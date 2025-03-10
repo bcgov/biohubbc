@@ -27,7 +27,8 @@ const initialHabitatFeatureFormValues: CreateHabitatFeatureFormValues = {
   longitude: '' as unknown as number,
   count: '' as unknown as number,
   observed_date: '',
-  observed_time: ''
+  observed_time: '',
+  survey_habitat_feature_taxons: []
 };
 
 /**
@@ -66,7 +67,8 @@ export const CreateHabitatFeaturePage = (): JSX.Element => {
           longitude: values.longitude,
           count: values.count,
           observed_date: values.observed_date,
-          observed_time: values.observed_time
+          observed_time: values.observed_time,
+          survey_habitat_feature_taxons: values.survey_habitat_feature_taxons
         }
       ]);
 
@@ -85,7 +87,13 @@ export const CreateHabitatFeaturePage = (): JSX.Element => {
         dialogTitle: 'Error creating habitat feature',
         dialogText: 'An error occurred while creating the habitat feature',
         dialogError: error instanceof Error ? error.message : undefined,
-        dialogErrorDetails: error instanceof APIError ? error.errors : undefined
+        dialogErrorDetails: error instanceof APIError ? error.errors : undefined,
+        onClose: () => {
+          dialogContext.setErrorDialog({ open: false });
+        },
+        onOk: () => {
+          dialogContext.setErrorDialog({ open: false });
+        }
       });
     } finally {
       setIsSubmitting(false);

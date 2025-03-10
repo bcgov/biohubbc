@@ -1,17 +1,23 @@
 import { IDBConnection } from '../../database/db';
+import { ApiGeneralError } from '../../errors/api-error';
 import { FindHabitatFeatureDefinitions } from '../../repositories/habitat-feature-repository/habitat-feature-repository.interface';
 import { SurveyHabitatFeatureRepository } from '../../repositories/habitat-feature-repository/survey-habitat-feature-repository';
 import {
   FindSurveyHabitatFeatureAdvancedFilters,
   InsertSurveyHabitatFeature,
+  InsertSurveyHabitatFeatureTaxon,
   SurveyHabitatFeaturesGeometryWithSupplementaryData,
   SurveyHabitatFeaturesWithSupplementaryData,
   SurveyHabitatFeatureWithTaxons,
   UpdateSurveyHabitatFeature
 } from '../../repositories/habitat-feature-repository/survey-habitat-feature-repository.interface';
+import { getLogger } from '../../utils/logger';
 import { ApiPaginationOptions } from '../../zod-schema/pagination';
 import { DBService } from '../db-service';
+import { PlatformService } from '../platform-service';
 import { HabitatFeatureService } from './habitat-feature-service';
+
+const defaultLog = getLogger('survey-habitat-feature-service');
 
 /**
  * Service class for working with survey habitat feature records.
@@ -22,34 +28,73 @@ import { HabitatFeatureService } from './habitat-feature-service';
  */
 export class SurveyHabitatFeatureService extends DBService {
   surveyHabitatFeatureRepository: SurveyHabitatFeatureRepository;
+  platformService: PlatformService;
 
   constructor(connection: IDBConnection) {
     super(connection);
     this.surveyHabitatFeatureRepository = new SurveyHabitatFeatureRepository(connection);
+    this.platformService = new PlatformService(connection);
   }
 
-  async insertSurveyHabitatFeatures(surveyId: number, habitatFeatures: InsertSurveyHabitatFeature[]): Promise<void> {
-    this.surveyHabitatFeatureRepository.insertSurveyHabitatFeatures(surveyId, habitatFeatures);
+  /**
+   * Insert new survey habitat feature records, for a survey.
+   *
+   * Note: This method will validate the taxon TSNs are valid before inserting the records.
+   *
+   * @param {number} surveyId
+   * @param {InsertSurveyHabitatFeature[]} surveyHabitatFeatures
+   * @return {*} {Promise<void>}
+   * @throws {ApiGeneralError} - If Taxon TSNs are invalid, or fail to be validated
+   * @memberof SurveyHabitatFeatureService
+   */
+  async insertSurveyHabitatFeatures(
+    surveyId: number,
+    surveyHabitatFeatures: InsertSurveyHabitatFeature[]
+  ): Promise<void> {
+    const taxonsAreValid = await this._validateSurveyHabitatFeaturesTsns(surveyHabitatFeatures);
+
+    if (!taxonsAreValid) {
+      throw new ApiGeneralError('Invalid taxon TSNs provided', [
+        'SurveyHabitatFeatureService->insertSurveyHabitatFeatures'
+      ]);
+    }
+
+    Promise.all(
+      surveyHabitatFeatures.map((surveyHabitatFeature) =>
+        this.surveyHabitatFeatureRepository.insertSurveyHabitatFeature(surveyId, surveyHabitatFeature)
+      )
+    );
   }
 
   /**
    * Update an existing survey habitat feature record, for a survey.
    *
+   * Note: This method will validate the taxon TSNs are valid before inserting the records.
+   *
    * @param {number} surveyId
    * @param {number} surveyHabitatFeatureId
-   * @param {UpdateSurveyHabitatFeature} surveyHabitatFeatures
+   * @param {UpdateSurveyHabitatFeature} surveyHabitatFeature
    * @return {*}  {Promise<void>}
+   * @throws {ApiGeneralError} - If Taxon TSNs are invalid, or fail to be validated
    * @memberof SurveyHabitatFeatureService
    */
   async updateSurveyHabitatFeature(
     surveyId: number,
     surveyHabitatFeatureId: number,
-    surveyHabitatFeatures: UpdateSurveyHabitatFeature
+    surveyHabitatFeature: UpdateSurveyHabitatFeature
   ): Promise<void> {
+    const taxonsAreValid = await this._validateSurveyHabitatFeaturesTsns([surveyHabitatFeature]);
+
+    if (!taxonsAreValid) {
+      throw new ApiGeneralError('Invalid taxon TSNs provided', [
+        'SurveyHabitatFeatureService->updateSurveyHabitatFeature'
+      ]);
+    }
+
     this.surveyHabitatFeatureRepository.updateSurveyHabitatFeature(
       surveyId,
       surveyHabitatFeatureId,
-      surveyHabitatFeatures
+      surveyHabitatFeature
     );
   }
 
@@ -226,5 +271,40 @@ export class SurveyHabitatFeatureService extends DBService {
    */
   async deleteSurveyHabitatFeatures(surveyId: number, surveyHabitatFeatureIds: number[]): Promise<void> {
     this.surveyHabitatFeatureRepository.deleteSurveyHabitatFeatures(surveyId, surveyHabitatFeatureIds);
+  }
+
+  /**
+   * Validate all TSNs in a list of survey habitat features against ITIS (Biohub PlatformService).
+   *
+   * @param {Array<{ survey_habitat_feature_taxons: InsertSurveyHabitatFeatureTaxon[] }>} surveyHabitatFeatures
+   * @return {*} {Promise<boolean>}
+   * @memberof SurveyHabitatFeatureService
+   */
+  async _validateSurveyHabitatFeaturesTsns(
+    surveyHabitatFeatures: Array<{
+      survey_habitat_feature_taxons: InsertSurveyHabitatFeatureTaxon[];
+    }>
+  ): Promise<boolean> {
+    // Get all unique taxon TSNs from the habitat features
+    const habitatFeatureTsns = new Set(
+      surveyHabitatFeatures.flatMap((surveyHabitatFeature) =>
+        surveyHabitatFeature.survey_habitat_feature_taxons.map((taxon) => taxon.itis_tsn)
+      )
+    );
+
+    // Fetch taxon data for all unique TSNs
+    const validatedTaxons = await this.platformService.getTaxonomyByTsns(Array.from(habitatFeatureTsns));
+
+    // log the tsns that were not validated
+    defaultLog.debug({
+      label: '_validateSurveyHabitatFeaturesTsns',
+      message: 'Failed to validate all TSNs',
+      valid_tsns: validatedTaxons.map((validatedTaxon) => validatedTaxon.tsn),
+      invalid_tsns: Array.from(habitatFeatureTsns).filter(
+        (incomingTsn) => !validatedTaxons.find((validatedTaxon) => validatedTaxon.tsn === incomingTsn)
+      )
+    });
+
+    return validatedTaxons.length === habitatFeatureTsns.size;
   }
 }

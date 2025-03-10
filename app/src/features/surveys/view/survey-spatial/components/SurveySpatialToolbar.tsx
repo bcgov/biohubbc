@@ -85,7 +85,7 @@ export const SurveySpatialToolbar = (props: ISurveySpatialToolbarProps) => {
           }
         }}>
         {views.map((view) => (
-          <MenuItem component={RouterLink} to={view.to}>
+          <MenuItem component={RouterLink} to={view.to} key={view.label}>
             {view.icon && (
               <ListItemIcon>
                 <Icon path={view.icon} size={0.8} />

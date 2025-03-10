@@ -2,10 +2,6 @@ import { Stack } from '@mui/system';
 import FormikErrorSnackbar from 'components/alert/FormikErrorSnackbar';
 import FormikDevDebugger from 'components/formik/FormikDevDebugger';
 import { Formik, FormikProps } from 'formik';
-import {
-  CreateSurveyHabitatFeature,
-  UpdateSurveyHabitatFeature
-} from 'interfaces/useSurveyHabitatFeatureApi.interface';
 import yup from 'utils/YupSchema';
 import { HabitatFeatureForm } from './HabitatFeatureForm';
 
@@ -16,20 +12,50 @@ export const HabitatFeatureYupSchema = yup.object({
   longitude: yup.number().min(-180).max(180).required('Longitude is required'),
   count: yup.number().required('Count is required'),
   observed_date: yup.string().required('Observed date is required'),
-  observed_time: yup.string().required('Observed time is required')
+  observed_time: yup.string().required('Observed time is required'),
+  survey_habitat_feature_taxons: yup.array().of(
+    yup.object({
+      itis_tsn: yup.number().required('ITIS TSN is required'),
+      itis_scientific_name: yup.string().required('ITIS scientific name is required'),
+      comment: yup.string().nullable()
+    })
+  )
 });
 
 // Create Habitat Feature form values
-export type CreateHabitatFeatureFormValues = Omit<CreateSurveyHabitatFeature, 'survey_id'>;
+export type CreateHabitatFeatureFormValues = {
+  habitat_feature_type_id: number;
+  latitude: number;
+  longitude: number;
+  count: number;
+  observed_date: string;
+  observed_time: string;
+  survey_habitat_feature_taxons: {
+    itis_tsn: number;
+    itis_scientific_name: string;
+    comment: string | null;
+  }[];
+};
 
 // Update Habitat Feature form values
-export type UpdateHabitatFeatureFormValues = Omit<UpdateSurveyHabitatFeature, 'survey_id'>;
-
-// Habitat Feature form values - either create or update
-export type HabitatFeatureFormValues = CreateHabitatFeatureFormValues | UpdateHabitatFeatureFormValues;
+export type UpdateHabitatFeatureFormValues = {
+  habitat_feature_type_id: number;
+  latitude: number;
+  longitude: number;
+  count: number;
+  observed_date: string;
+  observed_time: string;
+  survey_habitat_feature_taxons: {
+    itis_tsn: number;
+    itis_scientific_name: string;
+    comment: string | null;
+  }[];
+};
 
 // Habitat Feature form container props - either create or update
-export interface IHabitatFeatureFormContainerProps<HabitatFeatureFormValuesType extends HabitatFeatureFormValues> {
+export interface IHabitatFeatureFormContainerProps<
+  HabitatFeatureFormValuesType extends CreateHabitatFeatureFormValues | UpdateHabitatFeatureFormValues
+> {
   initialData: HabitatFeatureFormValuesType;
   handleSubmit: (formikData: HabitatFeatureFormValuesType) => void;
   formikRef: React.RefObject<FormikProps<HabitatFeatureFormValuesType>>;
@@ -38,11 +64,15 @@ export interface IHabitatFeatureFormContainerProps<HabitatFeatureFormValuesType 
 /**
  * Container for the Habitat Feature Form.
  *
- * @template HabitatFeatureFormValues
- * @param {HabitatFeatureFormContainerProps<HabitatFeatureFormValues>} props
+ * @template HabitatFeatureFormType
+ * @param {HabitatFeatureFormContainerProps<HabitatFeatureFormType>} props
  * @return {*} {JSX.Element}
  */
-export const HabitatFeatureFormContainer = (props: IHabitatFeatureFormContainerProps<HabitatFeatureFormValues>) => {
+export const HabitatFeatureFormContainer = <
+  HabitatFeatureFormType extends CreateHabitatFeatureFormValues | UpdateHabitatFeatureFormValues
+>(
+  props: IHabitatFeatureFormContainerProps<HabitatFeatureFormType>
+) => {
   return (
     <Formik
       innerRef={props.formikRef}

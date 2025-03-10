@@ -101,8 +101,9 @@ export class ImportHabitatFeaturesService extends DBService {
         latitude: row.LATITUDE,
         longitude: row.LONGITUDE,
         observed_date: row.OBSERVED_DATE,
-        observed_time: row.OBSERVED_TIME
-        // TODO: Add taxon
+        observed_time: row.OBSERVED_TIME,
+        // TODO: Populate taxons from CSV
+        survey_habitat_feature_taxons: []
         // TODO: Add quantitative/qualitative values
       });
     }

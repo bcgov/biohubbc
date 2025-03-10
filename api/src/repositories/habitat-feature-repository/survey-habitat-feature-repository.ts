@@ -22,32 +22,55 @@ import { getSurveyHabitatFeaturesBaseQuery, makeFindSurveyHabitatFeaturesQuery }
  */
 export class SurveyHabitatFeatureRepository extends BaseRepository {
   /**
-   * Insert survey habitat feature records for the provided survey id.
+   * Insert a survey habitat feature record for the provided survey id.
    *
    * @param {number} surveyId The ID of the survey under which the habitat features are being inserted.
-   * @param {InsertSurveyHabitatFeature[]} surveyHabitatFeatures The habitat features to insert.
+   * @param {InsertSurveyHabitatFeature} surveyHabitatFeature The habitat feature to insert.
    * @memberof SurveyHabitatFeatureRepository
    */
-  async insertSurveyHabitatFeatures(surveyId: number, surveyHabitatFeatures: InsertSurveyHabitatFeature[]) {
+  async insertSurveyHabitatFeature(surveyId: number, surveyHabitatFeature: InsertSurveyHabitatFeature) {
     const knex = getKnex();
 
     const query = knex.queryBuilder();
 
     query
-      .insert(
-        surveyHabitatFeatures.map((habitatFeature) => ({
+      // Step 1: Insert single survey habitat feature
+      .with('w_insert_survey_habitat_feature', (qb) => {
+        qb.insert({
           survey_id: surveyId,
-          ...habitatFeature
-        }))
-      )
-      .into('survey_habitat_feature');
+          habitat_feature_type_id: surveyHabitatFeature.habitat_feature_type_id,
+          count: surveyHabitatFeature.count,
+          latitude: surveyHabitatFeature.latitude,
+          longitude: surveyHabitatFeature.longitude,
+          observed_date: surveyHabitatFeature.observed_date,
+          observed_time: surveyHabitatFeature.observed_time
+        })
+          .into('survey_habitat_feature')
+          .returning(['survey_habitat_feature_id']);
+      });
+
+    // Step 2: Insert survey habitat feature taxons
+    if (surveyHabitatFeature.survey_habitat_feature_taxons.length > 0) {
+      query.with('w_insert_survey_habitat_feature_taxon', (qb) => {
+        qb.insert(
+          surveyHabitatFeature.survey_habitat_feature_taxons.map((taxon) => ({
+            survey_habitat_feature_id: knex.select('survey_habitat_feature_id').from('w_insert_survey_habitat_feature'),
+            itis_tsn: taxon.itis_tsn,
+            itis_scientific_name: taxon.itis_scientific_name,
+            comment: taxon.comment
+          }))
+        ).into('survey_habitat_feature_taxon');
+      });
+    }
+
+    query.select('*').from('w_insert_survey_habitat_feature');
 
     const response = await this.connection.knex(query);
 
-    if (response.rowCount !== surveyHabitatFeatures.length) {
-      throw new ApiExecuteSQLError('Failed to insert survey habitat feature records', [
-        'SurveyHabitatFeatureRepository->insertSurveyHabitatFeatures',
-        `rowCount was ${response.rowCount}, expected rowCount = ${surveyHabitatFeatures.length}`
+    if (response.rowCount !== 1) {
+      throw new ApiExecuteSQLError('Failed to create survey habitat feature', [
+        'SurveyHabitatFeatureRepository->insertSurveyHabitatFeature',
+        `rowCount was ${response.rowCount}, expected rowCount = 1`
       ]);
     }
   }
@@ -57,26 +80,59 @@ export class SurveyHabitatFeatureRepository extends BaseRepository {
    *
    * @param {number} surveyId
    * @param {number} surveyHabitatFeatureId
-   * @param {UpdateSurveyHabitatFeature} habitatFeature
+   * @param {UpdateSurveyHabitatFeature} surveyHabitatFeature
    * @return {*}  {Promise<void>}
    * @memberof SurveyHabitatFeatureRepository
    */
   async updateSurveyHabitatFeature(
     surveyId: number,
     surveyHabitatFeatureId: number,
-    habitatFeature: UpdateSurveyHabitatFeature
+    surveyHabitatFeature: UpdateSurveyHabitatFeature
   ): Promise<void> {
     const knex = getKnex();
 
     const query = knex.queryBuilder();
 
     query
-      .update({
-        ...habitatFeature
-      })
-      .from('survey_habitat_feature')
-      .where('survey_habitat_feature_id', surveyHabitatFeatureId)
-      .andWhere('survey_id', surveyId);
+      // Step 1: Update survey habitat feature
+      .with('w_update_survey_habitat_feature', (qb) => {
+        qb.from('survey_habitat_feature')
+          .update({
+            habitat_feature_type_id: surveyHabitatFeature.habitat_feature_type_id,
+            count: surveyHabitatFeature.count,
+            latitude: surveyHabitatFeature.latitude,
+            longitude: surveyHabitatFeature.longitude,
+            observed_date: surveyHabitatFeature.observed_date,
+            observed_time: surveyHabitatFeature.observed_time
+          })
+          .where('survey_habitat_feature_id', surveyHabitatFeatureId)
+          .andWhere('survey_id', surveyId)
+          .returning('*');
+      });
+
+    // Step 2: Delete existing survey habitat feature taxons
+    query.with('w_delete_survey_habitat_feature_taxon', (qb) => {
+      qb.delete().from('survey_habitat_feature_taxon').where('survey_habitat_feature_id', surveyHabitatFeatureId);
+    });
+
+    // Step 3: Insert new survey habitat feature taxons
+    if (surveyHabitatFeature.survey_habitat_feature_taxons.length > 0) {
+      query.with('w_insert_survey_habitat_feature_taxon', (qb) => {
+        qb.insert(
+          surveyHabitatFeature.survey_habitat_feature_taxons.map((taxon) => ({
+            survey_habitat_feature_id: surveyHabitatFeatureId,
+            itis_tsn: taxon.itis_tsn,
+            itis_scientific_name: taxon.itis_scientific_name,
+            comment: taxon.comment
+          }))
+        )
+          .into('survey_habitat_feature_taxon')
+          .onConflict(['survey_habitat_feature_id', 'itis_tsn'])
+          .merge();
+      });
+    }
+
+    query.select('*').from('w_update_survey_habitat_feature');
 
     const response = await this.connection.knex(query);
 

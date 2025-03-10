@@ -67,7 +67,14 @@ export const EditHabitatFeaturePage = (): JSX.Element => {
     longitude: habitatFeatureDataLoader.data.surveyHabitatFeature.longitude,
     count: habitatFeatureDataLoader.data.surveyHabitatFeature.count,
     observed_date: habitatFeatureDataLoader.data.surveyHabitatFeature.observed_date,
-    observed_time: habitatFeatureDataLoader.data.surveyHabitatFeature.observed_time
+    observed_time: habitatFeatureDataLoader.data.surveyHabitatFeature.observed_time,
+    survey_habitat_feature_taxons: habitatFeatureDataLoader.data.surveyHabitatFeature.survey_habitat_feature_taxons.map(
+      (taxon) => ({
+        itis_tsn: taxon.itis_tsn,
+        itis_scientific_name: taxon.itis_scientific_name,
+        comment: taxon.comment
+      })
+    )
   };
 
   /**
@@ -90,7 +97,12 @@ export const EditHabitatFeaturePage = (): JSX.Element => {
           longitude: values.longitude,
           count: values.count,
           observed_date: values.observed_date,
-          observed_time: values.observed_time
+          observed_time: values.observed_time,
+          survey_habitat_feature_taxons: values.survey_habitat_feature_taxons.map((formTaxon) => ({
+            itis_tsn: formTaxon.itis_tsn,
+            itis_scientific_name: formTaxon.itis_scientific_name,
+            comment: formTaxon.comment
+          }))
         }
       );
 
@@ -109,7 +121,13 @@ export const EditHabitatFeaturePage = (): JSX.Element => {
         dialogTitle: 'Error editing habitat feature',
         dialogText: 'An error occurred while editing the habitat feature',
         dialogError: error instanceof Error ? error.message : undefined,
-        dialogErrorDetails: error instanceof APIError ? error.errors : undefined
+        dialogErrorDetails: error instanceof APIError ? error.errors : undefined,
+        onClose: () => {
+          dialogContext.setErrorDialog({ open: false });
+        },
+        onOk: () => {
+          dialogContext.setErrorDialog({ open: false });
+        }
       });
     } finally {
       setIsSubmitting(false);
