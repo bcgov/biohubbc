@@ -1,5 +1,6 @@
 import react from '@vitejs/plugin-react-swc';
 import { defineConfig } from 'vite';
+import checker from 'vite-plugin-checker';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
@@ -18,7 +19,11 @@ export default defineConfig({
         global: true,
         process: true
       }
-    })
+    }),
+    !process.env.VITEST ? checker({ typescript: true }) : undefined
+    // eslint: {
+    //   lintCommand: 'eslint "src/ --ext .jsx,.js,.ts,.tsx"'
+    // }
   ],
   build: {
     outDir: 'build',

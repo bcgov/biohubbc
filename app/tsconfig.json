@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "module": "esnext",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "baseUrl": "src",
     "outDir": "build",
     "jsx": "react-jsx",
@@ -23,8 +27,18 @@
     "noFallthroughCasesInSwitch": true,
     "noEmit": true,
     "strict": true,
-    "types": ["vitest/globals", "vite/client"],
-    "typeRoots": ["node_modules", "src/types"]
+    "types": [
+      "vitest/globals",
+      "vite/client",
+      "@testing-library/jest-dom"
+    ],
+    "typeRoots": [
+      "node_modules",
+      "src/types"
+    ]
   },
-  "include": ["src"]
+  "include": [
+    "src",
+    "./setupTests.ts"
+  ]
 }
