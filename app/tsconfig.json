@@ -27,18 +27,18 @@
     "noFallthroughCasesInSwitch": true,
     "noEmit": true,
     "strict": true,
-    "types": [
-      "vitest/globals",
-      "vite/client",
-      "@testing-library/jest-dom"
-    ],
     "typeRoots": [
       "node_modules",
       "src/types"
+    ],
+    "types": [
+      "vite/client",
+      "vitest/globals",
+      "@testing-library/jest-dom",
+      "@types/leaflet-fullscreen"
     ]
   },
   "include": [
-    "src",
-    "./setupTests.ts"
+    "src"
   ]
 }

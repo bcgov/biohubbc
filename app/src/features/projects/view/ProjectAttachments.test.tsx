@@ -429,7 +429,7 @@ describe('ProjectAttachments', () => {
     const background = getAllByRole('presentation')[0].firstChild;
 
     if (!background) {
-      fail('Failed to click background.');
+      expect.fail('Failed to click background.');
     }
 
     fireEvent.click(background);

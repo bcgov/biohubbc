@@ -40,7 +40,7 @@ export const parseShapeFile = async (file: File): Promise<Feature[]> => {
 
     reader.onload = (event) => {
       // The converter wants a buffer
-      const zip: Buffer = event?.target?.result as Buffer;
+      const zip: Buffer = event?.target?.result as unknown as Buffer;
 
       // Exit out if no zip
       if (!zip) {
