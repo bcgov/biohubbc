@@ -35,7 +35,7 @@ export class SurveyHabitatFeatureRepository extends BaseRepository {
 
     query
       // Step 1: Insert single survey habitat feature
-      .with(`w_insert_survey_habitat_feature`, (qb) => {
+      .with('w_insert_survey_habitat_feature', (qb) => {
         qb.insert({
           survey_id: surveyId,
           habitat_feature_type_id: surveyHabitatFeature.habitat_feature_type_id,
@@ -51,10 +51,10 @@ export class SurveyHabitatFeatureRepository extends BaseRepository {
 
     // Step 2: Insert survey habitat feature taxons
     if (surveyHabitatFeature.survey_habitat_feature_taxons.length > 0) {
-      query.with(`w_insert_survey_habitat_feature_taxon`, (qb) => {
+      query.with('w_insert_survey_habitat_feature_taxon', (qb) => {
         qb.insert(
           surveyHabitatFeature.survey_habitat_feature_taxons.map((taxon) => ({
-            survey_habitat_feature_id: knex.select(`survey_habitat_feature_id`).from(`w_insert_survey_habitat_feature`),
+            survey_habitat_feature_id: knex.select('survey_habitat_feature_id').from('w_insert_survey_habitat_feature'),
             itis_tsn: taxon.itis_tsn,
             itis_scientific_name: taxon.itis_scientific_name,
             comment: taxon.comment
@@ -95,7 +95,7 @@ export class SurveyHabitatFeatureRepository extends BaseRepository {
 
     query
       // Step 1: Update survey habitat feature
-      .with(`w_update_survey_habitat_feature`, (qb) => {
+      .with('w_update_survey_habitat_feature', (qb) => {
         qb.from('survey_habitat_feature')
           .update({
             habitat_feature_type_id: surveyHabitatFeature.habitat_feature_type_id,
@@ -108,15 +108,16 @@ export class SurveyHabitatFeatureRepository extends BaseRepository {
           .where('survey_habitat_feature_id', surveyHabitatFeatureId)
           .andWhere('survey_id', surveyId)
           .returning('*');
-      })
-      // Step 2: Delete existing survey habitat feature taxons
-      .with(`w_delete_survey_habitat_feature_taxon`, (qb) => {
-        qb.delete().from('survey_habitat_feature_taxon').where('survey_habitat_feature_id', surveyHabitatFeatureId);
       });
+
+    // Step 2: Delete existing survey habitat feature taxons
+    query.with('w_delete_survey_habitat_feature_taxon', (qb) => {
+      qb.delete().from('survey_habitat_feature_taxon').where('survey_habitat_feature_id', surveyHabitatFeatureId);
+    });
 
     // Step 3: Insert new survey habitat feature taxons
     if (surveyHabitatFeature.survey_habitat_feature_taxons.length > 0) {
-      query.with(`w_insert_survey_habitat_feature_taxon`, (qb) => {
+      query.with('w_insert_survey_habitat_feature_taxon', (qb) => {
         qb.insert(
           surveyHabitatFeature.survey_habitat_feature_taxons.map((taxon) => ({
             survey_habitat_feature_id: surveyHabitatFeatureId,

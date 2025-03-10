@@ -4,7 +4,10 @@ import { SurveyHabitatFeatureTaxonRecord } from '../../database-models/survey_ha
 import { GeoJSONPointZodSchema } from '../../zod-schema/geoJsonZodSchema';
 import { FindHabitatFeatureDefinitions } from './habitat-feature-repository.interface';
 
-export type InsertSurveyHabitatFeatureTaxon = Omit<SurveyHabitatFeatureTaxonRecord, 'survey_habitat_feature_taxon_id'>;
+export type InsertSurveyHabitatFeatureTaxon = Pick<
+  SurveyHabitatFeatureTaxonRecord,
+  'itis_tsn' | 'itis_scientific_name' | 'comment'
+>;
 
 export type InsertSurveyHabitatFeature = Pick<
   SurveyHabitatFeatureRecord,

@@ -11,10 +11,13 @@ import {
   SurveyHabitatFeatureWithTaxons,
   UpdateSurveyHabitatFeature
 } from '../../repositories/habitat-feature-repository/survey-habitat-feature-repository.interface';
+import { getLogger } from '../../utils/logger';
 import { ApiPaginationOptions } from '../../zod-schema/pagination';
 import { DBService } from '../db-service';
 import { PlatformService } from '../platform-service';
 import { HabitatFeatureService } from './habitat-feature-service';
+
+const defaultLog = getLogger('survey-habitat-feature-service');
 
 /**
  * Service class for working with survey habitat feature records.
@@ -38,10 +41,11 @@ export class SurveyHabitatFeatureService extends DBService {
    *
    * Note: This method will validate the taxon TSNs are valid before inserting the records.
    *
-   * @throws {ApiGeneralError} - If invalid taxon TSNs are provided
    * @param {number} surveyId
    * @param {InsertSurveyHabitatFeature[]} surveyHabitatFeatures
    * @return {*} {Promise<void>}
+   * @throws {ApiGeneralError} - If Taxon TSNs are invalid, or fail to be validated
+   * @memberof SurveyHabitatFeatureService
    */
   async insertSurveyHabitatFeatures(
     surveyId: number,
@@ -65,10 +69,13 @@ export class SurveyHabitatFeatureService extends DBService {
   /**
    * Update an existing survey habitat feature record, for a survey.
    *
+   * Note: This method will validate the taxon TSNs are valid before inserting the records.
+   *
    * @param {number} surveyId
    * @param {number} surveyHabitatFeatureId
    * @param {UpdateSurveyHabitatFeature} surveyHabitatFeature
    * @return {*}  {Promise<void>}
+   * @throws {ApiGeneralError} - If Taxon TSNs are invalid, or fail to be validated
    * @memberof SurveyHabitatFeatureService
    */
   async updateSurveyHabitatFeature(
@@ -271,6 +278,7 @@ export class SurveyHabitatFeatureService extends DBService {
    *
    * @param {Array<{ survey_habitat_feature_taxons: InsertSurveyHabitatFeatureTaxon[] }>} surveyHabitatFeatures
    * @return {*} {Promise<boolean>}
+   * @memberof SurveyHabitatFeatureService
    */
   async _validateSurveyHabitatFeaturesTsns(
     surveyHabitatFeatures: Array<{
@@ -286,6 +294,16 @@ export class SurveyHabitatFeatureService extends DBService {
 
     // Fetch taxon data for all unique TSNs
     const validatedTaxons = await this.platformService.getTaxonomyByTsns(Array.from(habitatFeatureTsns));
+
+    // log the tsns that were not validated
+    defaultLog.debug({
+      label: '_validateSurveyHabitatFeaturesTsns',
+      message: 'Failed to validate all TSNs',
+      valid_tsns: validatedTaxons.map((validatedTaxon) => validatedTaxon.tsn),
+      invalid_tsns: Array.from(habitatFeatureTsns).filter(
+        (incomingTsn) => !validatedTaxons.find((validatedTaxon) => validatedTaxon.tsn === incomingTsn)
+      )
+    });
 
     return validatedTaxons.length === habitatFeatureTsns.size;
   }

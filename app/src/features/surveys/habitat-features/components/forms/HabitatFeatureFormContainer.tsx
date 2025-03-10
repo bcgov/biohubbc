@@ -12,7 +12,14 @@ export const HabitatFeatureYupSchema = yup.object({
   longitude: yup.number().min(-180).max(180).required('Longitude is required'),
   count: yup.number().required('Count is required'),
   observed_date: yup.string().required('Observed date is required'),
-  observed_time: yup.string().required('Observed time is required')
+  observed_time: yup.string().required('Observed time is required'),
+  survey_habitat_feature_taxons: yup.array().of(
+    yup.object({
+      itis_tsn: yup.number().required('ITIS TSN is required'),
+      itis_scientific_name: yup.string().required('ITIS scientific name is required'),
+      comment: yup.string().nullable()
+    })
+  )
 });
 
 // Create Habitat Feature form values
