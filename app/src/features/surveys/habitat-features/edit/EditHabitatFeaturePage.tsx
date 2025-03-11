@@ -45,7 +45,11 @@ export const EditHabitatFeaturePage = (): JSX.Element => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const habitatFeatureDataLoader = useDataLoader(() =>
-    biohubApi.habitatFeature.getSurveyHabitatFeature(surveyContext.projectId, surveyContext.surveyId, habitatFeatureId)
+    biohubApi.habitatFeature.getSurveyHabitatFeatureWithSupplementaryData(
+      surveyContext.projectId,
+      surveyContext.surveyId,
+      habitatFeatureId
+    )
   );
 
   useEffect(() => {

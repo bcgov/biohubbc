@@ -1,4 +1,5 @@
 import { OpenAPIV3 } from 'openapi-types';
+import { GetPeriodResponseSchema } from './period';
 
 /**
  * Defines the schema for a survey habitat feature object, used for inserting a new survey habitat feature record.
@@ -182,9 +183,9 @@ export const SurveyHabitatFeatureTaxonSchema: OpenAPIV3.SchemaObject = {
 };
 
 /**
- * A single survey habitat feature object, with an array of survey habitat feature taxons.
+ * A single survey habitat feature object, with an array of survey habitat feature taxons, and sampling data.
  */
-export const SurveyHabitatFeatureWithTaxonsSchema: OpenAPIV3.SchemaObject = {
+export const SurveyHabitatFeatureWithTaxonsAndSamplingSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
   additionalProperties: false,
   required: [
@@ -196,7 +197,12 @@ export const SurveyHabitatFeatureWithTaxonsSchema: OpenAPIV3.SchemaObject = {
     'longitude',
     'observed_date',
     'observed_time',
+    'survey_sample_site_id',
+    'survey_sample_site_name',
+    'method_technique_id',
+    'method_technique_name',
     'survey_sample_period_id',
+    'survey_sample_period_start_datetime',
     'survey_habitat_feature_taxons'
   ],
   properties: {
@@ -235,8 +241,28 @@ export const SurveyHabitatFeatureWithTaxonsSchema: OpenAPIV3.SchemaObject = {
       type: 'string',
       nullable: true
     },
+    survey_sample_site_id: {
+      type: 'number',
+      nullable: true
+    },
+    survey_sample_site_name: {
+      type: 'string',
+      nullable: true
+    },
+    method_technique_id: {
+      type: 'number',
+      nullable: true
+    },
+    method_technique_name: {
+      type: 'string',
+      nullable: true
+    },
     survey_sample_period_id: {
       type: 'number',
+      nullable: true
+    },
+    survey_sample_period_start_datetime: {
+      type: 'string',
       nullable: true
     },
     survey_habitat_feature_taxons: {
@@ -251,7 +277,7 @@ export const SurveyHabitatFeatureWithTaxonsSchema: OpenAPIV3.SchemaObject = {
  */
 export const SurveyHabitatFeaturesWithTaxonsSchema: OpenAPIV3.SchemaObject = {
   type: 'array',
-  items: SurveyHabitatFeatureWithTaxonsSchema
+  items: SurveyHabitatFeatureWithTaxonsAndSamplingSchema
 };
 
 /**
@@ -375,6 +401,7 @@ export const SurveyHabitatFeaturesSupplementaryDataSchema: OpenAPIV3.SchemaObjec
           }
         }
       }
-    }
+    },
+    samplePeriod: GetPeriodResponseSchema
   }
 };

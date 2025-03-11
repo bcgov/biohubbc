@@ -8,7 +8,7 @@ import {
   InsertSurveyHabitatFeature,
   SurveyHabitatFeatureCount,
   SurveyHabitatFeatureGeometry,
-  SurveyHabitatFeatureWithTaxons,
+  SurveyHabitatFeatureWithTaxonsAndSampling,
   UpdateSurveyHabitatFeature
 } from './survey-habitat-feature-repository.interface';
 import { getSurveyHabitatFeaturesBaseQuery, makeFindSurveyHabitatFeaturesQuery } from './utils';
@@ -159,13 +159,13 @@ export class SurveyHabitatFeatureRepository extends BaseRepository {
    *
    * @param {number} surveyId
    * @param {number} surveyHabitatFeatureId
-   * @return {*}  {Promise<SurveyHabitatFeatureWithTaxons>}
+   * @return {*}  {Promise<SurveyHabitatFeatureWithTaxonsAndSampling>}
    * @memberof SurveyHabitatFeatureRepository
    */
   async getSurveyHabitatFeature(
     surveyId: number,
     surveyHabitatFeatureId: number
-  ): Promise<SurveyHabitatFeatureWithTaxons> {
+  ): Promise<SurveyHabitatFeatureWithTaxonsAndSampling> {
     const knex = getKnex();
 
     const getSurveyIdsQuery = knex
@@ -177,7 +177,7 @@ export class SurveyHabitatFeatureRepository extends BaseRepository {
 
     query.where('survey_habitat_feature.survey_habitat_feature_id', surveyHabitatFeatureId);
 
-    const response = await this.connection.knex(query, SurveyHabitatFeatureWithTaxons);
+    const response = await this.connection.knex(query, SurveyHabitatFeatureWithTaxonsAndSampling);
 
     if (response.rowCount !== 1) {
       throw new ApiExecuteSQLError('Failed to get survey habitat feature', [
@@ -194,13 +194,13 @@ export class SurveyHabitatFeatureRepository extends BaseRepository {
    *
    * @param {number} surveyId
    * @param {ApiPaginationOptions} [pagination]
-   * @return {*}  {Promise<SurveyHabitatFeatureWithTaxons[]>}
+   * @return {*}  {Promise<SurveyHabitatFeatureWithTaxonsAndSampling[]>}
    * @memberof SurveyHabitatFeatureRepository
    */
   async getSurveyHabitatFeatures(
     surveyId: number,
     pagination?: ApiPaginationOptions
-  ): Promise<SurveyHabitatFeatureWithTaxons[]> {
+  ): Promise<SurveyHabitatFeatureWithTaxonsAndSampling[]> {
     const knex = getKnex();
 
     const getSurveyIdsQuery = knex
@@ -218,7 +218,7 @@ export class SurveyHabitatFeatureRepository extends BaseRepository {
       }
     }
 
-    const response = await this.connection.knex(query, SurveyHabitatFeatureWithTaxons);
+    const response = await this.connection.knex(query, SurveyHabitatFeatureWithTaxonsAndSampling);
 
     return response.rows;
   }
@@ -282,7 +282,7 @@ export class SurveyHabitatFeatureRepository extends BaseRepository {
    * @param {number} systemUserId
    * @param {FindSurveyHabitatFeatureAdvancedFilters} filterFields
    * @param {ApiPaginationOptions} [pagination]
-   * @return {*}  {Promise<SurveyHabitatFeatureWithTaxons[]>}
+   * @return {*}  {Promise<SurveyHabitatFeatureWithTaxonsAndSampling[]>}
    * @memberof SurveyHabitatFeatureRepository
    */
   async findSurveyHabitatFeatures(
@@ -290,7 +290,7 @@ export class SurveyHabitatFeatureRepository extends BaseRepository {
     systemUserId: number,
     filterFields: FindSurveyHabitatFeatureAdvancedFilters,
     pagination?: ApiPaginationOptions
-  ): Promise<SurveyHabitatFeatureWithTaxons[]> {
+  ): Promise<SurveyHabitatFeatureWithTaxonsAndSampling[]> {
     const query = makeFindSurveyHabitatFeaturesQuery(isUserAdmin, systemUserId, filterFields);
 
     if (pagination) {
@@ -301,7 +301,7 @@ export class SurveyHabitatFeatureRepository extends BaseRepository {
       }
     }
 
-    const response = await this.connection.knex(query, SurveyHabitatFeatureWithTaxons);
+    const response = await this.connection.knex(query, SurveyHabitatFeatureWithTaxonsAndSampling);
 
     return response.rows;
   }

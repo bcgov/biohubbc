@@ -25,7 +25,7 @@ export const SurveySpatialHabitatFeaturePointPopup = (props: ISurveySpatialHabit
   const biohubApi = useBiohubApi();
 
   const habitatFeatureDataLoader = useDataLoader((surveyHabitatFeatureId: number) =>
-    biohubApi.habitatFeature.getSurveyHabitatFeature(
+    biohubApi.habitatFeature.getSurveyHabitatFeatureWithSupplementaryData(
       surveyContext.projectId,
       surveyContext.surveyId,
       surveyHabitatFeatureId
