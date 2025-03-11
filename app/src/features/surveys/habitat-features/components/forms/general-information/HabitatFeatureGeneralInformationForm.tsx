@@ -1,5 +1,5 @@
 import { mdiCalendar } from '@mdi/js';
-import { Grid } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import AutocompleteField from 'components/fields/AutocompleteField';
 import CustomTextField from 'components/fields/CustomTextField';
 import { DateTimeFields } from 'components/fields/DateTimeFields';

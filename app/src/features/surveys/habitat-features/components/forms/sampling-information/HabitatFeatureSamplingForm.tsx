@@ -1,7 +1,7 @@
 import { mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Skeleton } from '@mui/material';
 import Button from '@mui/material/Button';
+import Skeleton from '@mui/material/Skeleton';
 import Stack from '@mui/material/Stack';
 import {
   CreateHabitatFeatureFormValues,

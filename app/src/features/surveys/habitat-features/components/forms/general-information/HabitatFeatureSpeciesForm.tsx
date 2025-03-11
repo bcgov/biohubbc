@@ -1,5 +1,6 @@
-import { Collapse, Paper } from '@mui/material';
+import Collapse from '@mui/material/Collapse';
 import { grey } from '@mui/material/colors';
+import Paper from '@mui/material/Paper';
 import SpeciesAutocompleteField from 'components/species/components/SpeciesAutocompleteField';
 import SpeciesSelectedCard from 'components/species/components/SpeciesSelectedCard';
 import { FieldArray, useFormikContext } from 'formik';
