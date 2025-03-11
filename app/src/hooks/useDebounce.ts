@@ -1,33 +1,23 @@
-import { useCallback, useRef } from 'react';
+import { debounce, DebouncedFunc } from 'lodash-es';
+import { useEffect, useMemo } from 'react';
 
 /**
  * Returns a debounced version of the given callback.
  *
- * TODO: Investigate the lodash `debounce` function
- *
  * @template T The function arguments.
- * @param callback The function to debounce.
+ * @param callback The callback to debounce.
  * @param delayMs The debounce delay in milliseconds.
  * @returns A debounced callback function.
  */
-export const useDebounce = <T extends (...args: any[]) => void>(
-  callback: T,
-  delayMs: number
-): ((...args: Parameters<T>) => void) => {
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+export const useDebounce = <T extends (...args: any[]) => void>(callback: T, delayMs: number): DebouncedFunc<T> => {
+  const debouncedCallback = useMemo(() => debounce(callback, delayMs), [callback, delayMs]);
 
-  return useCallback(
-    (...args: Parameters<T>) => {
-      // clear the timeout if it exists
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
+  useEffect(() => {
+    // when the component unmounts, cancel the debounced callback
+    return () => {
+      debouncedCallback.cancel();
+    };
+  }, [debouncedCallback]);
 
-      // create or overwrite the existing timeout
-      timeoutRef.current = setTimeout(() => {
-        callback(...args);
-      }, delayMs);
-    },
-    [callback, delayMs]
-  );
+  return debouncedCallback;
 };
