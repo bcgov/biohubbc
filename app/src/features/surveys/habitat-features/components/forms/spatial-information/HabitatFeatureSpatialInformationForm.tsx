@@ -11,11 +11,16 @@ import { MapBaseCss } from 'components/map/styles/MapBaseCss';
 import { MAP_DEFAULT_CENTER, MAP_DEFAULT_ZOOM } from 'constants/spatial';
 import { useFormikContext } from 'formik';
 import { Feature } from 'geojson';
+import { useDebounce } from 'hooks/useDebounce';
 import { DrawEvents, LatLngBoundsExpression } from 'leaflet';
 import { useCallback, useRef, useState } from 'react';
 import { FeatureGroup, LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
+import { createPointFeature } from 'utils/spatial-utils';
+import { v4 } from 'uuid';
 import { CreateHabitatFeatureFormValues, UpdateHabitatFeatureFormValues } from '../HabitatFeatureFormContainer';
+
+const HABITAT_FEATURE_FORM_DEBOUNCE_MS_DELAY = 500;
 
 export interface IHabitatFeatureSpatialInformationFormProps {
   mapId: string;
@@ -33,42 +38,67 @@ export const HabitatFeatureSpatialInformationForm = <
 ): JSX.Element => {
   const formikProps = useFormikContext<FormikValuesType>();
 
-  const [updatedBounds, setUpdatedBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
-  const [leafletPointId, setLeafletPointId] = useState<number | undefined>(undefined);
-
   const drawControlsRef = useRef<IDrawControlsRef | undefined>(undefined);
 
-  const handleMapLocationChange = (feature: Feature) => {
-    if ('coordinates' in feature.geometry) {
-      formikProps.setFieldValue('latitude', String(feature.geometry.coordinates[1]));
-      formikProps.setFieldValue('longitude', String(feature.geometry.coordinates[0]));
+  const hasInitialLocation = Boolean(formikProps.values.latitude && formikProps.values.longitude);
 
+  const [leafletPointId, setLeafletPointId] = useState<number | undefined>(undefined);
+  const [updatedBounds, setUpdatedBounds] = useState<LatLngBoundsExpression | undefined>(
+    hasInitialLocation
+      ? calculateUpdatedMapBounds([
+          createPointFeature(Number(formikProps.values.latitude), Number(formikProps.values.longitude))
+        ])
+      : undefined
+  );
+
+  const setUpdatedBoundsDebounced = useDebounce(setUpdatedBounds, HABITAT_FEATURE_FORM_DEBOUNCE_MS_DELAY);
+
+  /**
+   * Handle the change of the location from the map.
+   *
+   * @param {Feature} feature
+   * @return {*} {void}
+   */
+  const handleMapLocationChange = (feature: Feature): void => {
+    if ('coordinates' in feature.geometry) {
+      formikProps.setFieldValue('latitude', Number(feature.geometry.coordinates[1]));
+      formikProps.setFieldValue('longitude', Number(feature.geometry.coordinates[0]));
+
+      // instantly update the bounds
       setUpdatedBounds(calculateUpdatedMapBounds([feature]));
     }
   };
 
+  /**
+   * Handle the change of the location from the form input.
+   *
+   * Note: Using null to prevent issues with empty strings being converted to 0.
+   *
+   * @param {number | null} latitude The latitude value from the form input
+   * @param {number | null} longitude The longitude value from the form input
+   * @return {*} {void}
+   */
   const handleFormInputLocationChange = useCallback(
-    (latitude: number, longitude: number) => {
-      if (!leafletPointId) {
+    (latitude: number | null, longitude: number | null) => {
+      // if the latitude or longitude is not
+      if (latitude === null || longitude === null) {
         return;
       }
 
-      drawControlsRef?.current?.deleteLayer(leafletPointId);
+      const feature = createPointFeature(latitude, longitude);
 
-      const feature: Feature = {
-        type: 'Feature',
-        properties: {},
-        geometry: {
-          type: 'Point',
-          coordinates: [longitude, latitude]
-        }
-      };
+      if (leafletPointId) {
+        // delete the existing layer if it exists
+        drawControlsRef?.current?.deleteLayer(leafletPointId);
+      }
 
+      // add the new layer and update the leaflet point id
       drawControlsRef?.current?.addLayer(feature, setLeafletPointId);
 
-      setUpdatedBounds(calculateUpdatedMapBounds([feature]));
+      // update the bounds after the user stops typing
+      setUpdatedBoundsDebounced(calculateUpdatedMapBounds([feature]));
     },
-    [leafletPointId]
+    [leafletPointId, setUpdatedBoundsDebounced]
   );
 
   return (
@@ -80,7 +110,11 @@ export const HabitatFeatureSpatialInformationForm = <
             label="Latitude"
             other={{ type: 'number' }}
             onChange={(event) => {
-              handleFormInputLocationChange(Number(event.target.value), Number(formikProps.values.longitude));
+              const latitude = formikProps.values.latitude ? Number(formikProps.values.latitude) : null;
+              const longitude = formikProps.values.longitude ? Number(formikProps.values.longitude) : null;
+
+              formikProps.handleChange(event);
+              handleFormInputLocationChange(latitude, longitude);
             }}
           />
         </Grid>
@@ -91,7 +125,11 @@ export const HabitatFeatureSpatialInformationForm = <
             label="Longitude"
             other={{ type: 'number' }}
             onChange={(event) => {
-              handleFormInputLocationChange(Number(formikProps.values.latitude), Number(event.target.value));
+              const latitude = formikProps.values.latitude ? Number(formikProps.values.latitude) : null;
+              const longitude = formikProps.values.longitude ? Number(formikProps.values.longitude) : null;
+
+              formikProps.handleChange(event);
+              handleFormInputLocationChange(latitude, longitude);
             }}
           />
         </Grid>
@@ -145,7 +183,27 @@ export const HabitatFeatureSpatialInformationForm = <
               </FeatureGroup>
 
               <LayersControl position="bottomright">
-                <StaticLayers layers={[]} />
+                <StaticLayers
+                  layers={
+                    !leafletPointId
+                      ? [
+                          {
+                            layerName: 'Habitat Feature Location',
+                            features: [
+                              {
+                                id: v4(),
+                                key: `habitat-feature-location-${v4()}`,
+                                geoJSON: createPointFeature(
+                                  Number(formikProps.values.latitude),
+                                  Number(formikProps.values.longitude)
+                                )
+                              }
+                            ]
+                          }
+                        ]
+                      : []
+                  }
+                />
                 <BaseLayerControls />
               </LayersControl>
             </LeafletMapContainer>

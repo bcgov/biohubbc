@@ -43,6 +43,8 @@ export interface ICustomTextField {
   /**
    * Optional onChange event handler for the text field
    *
+   * Note: If provided this will override the default `onChange` handler from formik
+   *
    * @type {(event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | undefined) => void}
    * @memberof ICustomTextField
    */
@@ -84,6 +86,7 @@ const CustomTextField = (props: React.PropsWithChildren<ICustomTextField>) => {
         // Call the optional onChange prop if it exists
         if (props.onChange) {
           props.onChange(event);
+          return;
         }
 
         handleChange(event);
