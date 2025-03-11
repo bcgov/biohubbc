@@ -14,12 +14,16 @@ export const InsertHabitatFeatureSchema: OpenAPIV3.SchemaObject = {
     'count',
     'observed_date',
     'observed_time',
+    'survey_sample_period_id',
     'survey_habitat_feature_taxons'
   ],
   properties: {
     habitat_feature_type_id: {
       type: 'integer',
       minimum: 1
+    },
+    count: {
+      type: 'integer'
     },
     latitude: {
       type: 'number',
@@ -33,15 +37,16 @@ export const InsertHabitatFeatureSchema: OpenAPIV3.SchemaObject = {
       minimum: -180,
       maximum: 180
     },
-    count: {
-      type: 'integer'
-    },
     observed_date: {
       type: 'string',
       nullable: true
     },
     observed_time: {
       type: 'string',
+      nullable: true
+    },
+    survey_sample_period_id: {
+      type: 'number',
       nullable: true
     },
     survey_habitat_feature_taxons: {
@@ -82,12 +87,16 @@ export const UpdateHabitatFeatureSchema: OpenAPIV3.SchemaObject = {
     'count',
     'observed_date',
     'observed_time',
+    'survey_sample_period_id',
     'survey_habitat_feature_taxons'
   ],
   properties: {
     habitat_feature_type_id: {
       type: 'integer',
       minimum: 1
+    },
+    count: {
+      type: 'integer'
     },
     latitude: {
       type: 'number',
@@ -101,15 +110,16 @@ export const UpdateHabitatFeatureSchema: OpenAPIV3.SchemaObject = {
       minimum: -180,
       maximum: 180
     },
-    count: {
-      type: 'integer'
-    },
     observed_date: {
       type: 'string',
       nullable: true
     },
     observed_time: {
       type: 'string',
+      nullable: true
+    },
+    survey_sample_period_id: {
+      type: 'number',
       nullable: true
     },
     survey_habitat_feature_taxons: {
@@ -185,7 +195,9 @@ export const SurveyHabitatFeatureWithTaxonsSchema: OpenAPIV3.SchemaObject = {
     'latitude',
     'longitude',
     'observed_date',
-    'observed_time'
+    'observed_time',
+    'survey_sample_period_id',
+    'survey_habitat_feature_taxons'
   ],
   properties: {
     survey_habitat_feature_id: {
@@ -221,6 +233,10 @@ export const SurveyHabitatFeatureWithTaxonsSchema: OpenAPIV3.SchemaObject = {
     },
     observed_time: {
       type: 'string',
+      nullable: true
+    },
+    survey_sample_period_id: {
+      type: 'number',
       nullable: true
     },
     survey_habitat_feature_taxons: {

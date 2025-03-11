@@ -29,6 +29,7 @@ describe('findSurveyHabitatFeatures', () => {
         longitude: 6,
         observed_date: '2023-01-01',
         observed_time: '12:00:00',
+        survey_sample_period_id: 7,
         survey_habitat_feature_taxons: [
           {
             survey_habitat_feature_taxon_id: 7,
@@ -127,6 +128,7 @@ describe('findSurveyHabitatFeatures', () => {
         longitude: 6,
         observed_date: '2023-01-01',
         observed_time: '12:00:00',
+        survey_sample_period_id: 7,
         survey_habitat_feature_taxons: [
           {
             survey_habitat_feature_taxon_id: 7,

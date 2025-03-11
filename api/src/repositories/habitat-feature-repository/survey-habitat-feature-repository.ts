@@ -43,7 +43,12 @@ export class SurveyHabitatFeatureRepository extends BaseRepository {
           latitude: surveyHabitatFeature.latitude,
           longitude: surveyHabitatFeature.longitude,
           observed_date: surveyHabitatFeature.observed_date,
-          observed_time: surveyHabitatFeature.observed_time
+          observed_time: surveyHabitatFeature.observed_time,
+          survey_sample_period_id: knex
+            .select('survey_sample_period_id')
+            .from('survey_sample_period')
+            .where('survey_sample_period_id', surveyHabitatFeature.survey_sample_period_id)
+            .andWhere('survey_id', surveyId)
         })
           .into('survey_habitat_feature')
           .returning(['survey_habitat_feature_id']);
@@ -103,7 +108,12 @@ export class SurveyHabitatFeatureRepository extends BaseRepository {
             latitude: surveyHabitatFeature.latitude,
             longitude: surveyHabitatFeature.longitude,
             observed_date: surveyHabitatFeature.observed_date,
-            observed_time: surveyHabitatFeature.observed_time
+            observed_time: surveyHabitatFeature.observed_time,
+            survey_sample_period_id: knex
+              .select('survey_sample_period_id')
+              .from('survey_sample_period')
+              .where('survey_sample_period_id', surveyHabitatFeature.survey_sample_period_id)
+              .andWhere('survey_id', surveyId)
           })
           .where('survey_habitat_feature_id', surveyHabitatFeatureId)
           .andWhere('survey_id', surveyId)
@@ -250,7 +260,12 @@ export class SurveyHabitatFeatureRepository extends BaseRepository {
     query
       .select([
         'survey_habitat_feature_id',
-        knex.raw("json_build_object('type', 'Point', 'coordinates', json_build_array(longitude, latitude)) as geometry")
+        knex.raw(`
+          json_build_object(
+            'type', 'Point', 
+            'coordinates', json_build_array(longitude, latitude)
+          ) as geometry
+        `)
       ])
       .from('survey_habitat_feature')
       .where('survey_id', surveyId);

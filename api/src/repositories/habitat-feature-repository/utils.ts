@@ -124,6 +124,7 @@ export function getSurveyHabitatFeaturesBaseQuery(
       'survey_habitat_feature.longitude',
       'survey_habitat_feature.observed_date',
       'survey_habitat_feature.observed_time',
+      'survey_habitat_feature.survey_sample_period_id',
       knex.raw(`
         COALESCE(
           (

@@ -11,14 +11,26 @@ export type InsertSurveyHabitatFeatureTaxon = Pick<
 
 export type InsertSurveyHabitatFeature = Pick<
   SurveyHabitatFeatureRecord,
-  'habitat_feature_type_id' | 'count' | 'latitude' | 'longitude' | 'observed_date' | 'observed_time'
+  | 'habitat_feature_type_id'
+  | 'count'
+  | 'latitude'
+  | 'longitude'
+  | 'observed_date'
+  | 'observed_time'
+  | 'survey_sample_period_id'
 > & {
   survey_habitat_feature_taxons: InsertSurveyHabitatFeatureTaxon[];
 };
 
 export type UpdateSurveyHabitatFeature = Pick<
   SurveyHabitatFeatureRecord,
-  'habitat_feature_type_id' | 'count' | 'latitude' | 'longitude' | 'observed_date' | 'observed_time'
+  | 'habitat_feature_type_id'
+  | 'count'
+  | 'latitude'
+  | 'longitude'
+  | 'observed_date'
+  | 'observed_time'
+  | 'survey_sample_period_id'
 > & {
   survey_habitat_feature_taxons: InsertSurveyHabitatFeatureTaxon[];
 };
@@ -35,7 +47,17 @@ export type SurveyHabitatFeaturesWithSupplementaryData = {
   supplementaryData: SurveyHabitatFeaturesSupplementaryData;
 };
 
-export const SurveyHabitatFeatureWithTaxons = SurveyHabitatFeatureRecord.extend({
+export const SurveyHabitatFeatureWithTaxons = SurveyHabitatFeatureRecord.pick({
+  survey_habitat_feature_id: true,
+  survey_id: true,
+  habitat_feature_type_id: true,
+  count: true,
+  latitude: true,
+  longitude: true,
+  observed_date: true,
+  observed_time: true,
+  survey_sample_period_id: true
+}).extend({
   survey_habitat_feature_taxons: z.array(SurveyHabitatFeatureTaxonRecord)
 });
 export type SurveyHabitatFeatureWithTaxons = z.infer<typeof SurveyHabitatFeatureWithTaxons>;

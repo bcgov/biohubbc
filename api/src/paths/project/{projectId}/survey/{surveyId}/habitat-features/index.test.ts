@@ -156,6 +156,7 @@ describe('getSurveyHabitatFeatures', () => {
           count: 99,
           observed_date: '1970-01-01',
           observed_time: '00:00:00',
+          survey_sample_period_id: 7,
           survey_habitat_feature_taxons: [
             {
               survey_habitat_feature_taxon_id: 1,
@@ -175,6 +176,7 @@ describe('getSurveyHabitatFeatures', () => {
           count: 88,
           observed_date: '2025-01-01',
           observed_time: '12:30:00',
+          survey_sample_period_id: 8,
           survey_habitat_feature_taxons: []
         }
       ],
@@ -224,6 +226,7 @@ describe('getSurveyHabitatFeatures', () => {
           count: 99,
           observed_date: '1970-01-01',
           observed_time: '00:00:00',
+          survey_sample_period_id: 7,
           survey_habitat_feature_taxons: [
             {
               survey_habitat_feature_taxon_id: 1,
@@ -243,6 +246,7 @@ describe('getSurveyHabitatFeatures', () => {
           count: 88,
           observed_date: '2025-01-01',
           observed_time: '12:30:00',
+          survey_sample_period_id: 8,
           survey_habitat_feature_taxons: []
         }
       ],
@@ -287,6 +291,7 @@ describe('getSurveyHabitatFeatures', () => {
           count: 99,
           observed_date: '1970-01-01',
           observed_time: '00:00:00',
+          survey_sample_period_id: 7,
           survey_habitat_feature_taxons: [
             {
               survey_habitat_feature_taxon_id: 1,
@@ -306,6 +311,7 @@ describe('getSurveyHabitatFeatures', () => {
           count: 88,
           observed_date: '2025-01-01',
           observed_time: '12:30:00',
+          survey_sample_period_id: 8,
           survey_habitat_feature_taxons: []
         }
       ],
@@ -353,6 +359,7 @@ describe('getSurveyHabitatFeatures', () => {
           count: 99,
           observed_date: '1970-01-01',
           observed_time: '00:00:00',
+          survey_sample_period_id: 7,
           survey_habitat_feature_taxons: [
             {
               survey_habitat_feature_taxon_id: 1,
@@ -372,6 +379,7 @@ describe('getSurveyHabitatFeatures', () => {
           count: 88,
           observed_date: '2025-01-01',
           observed_time: '12:30:00',
+          survey_sample_period_id: 8,
           survey_habitat_feature_taxons: []
         }
       ],
@@ -416,6 +424,7 @@ describe('getSurveyHabitatFeatures', () => {
           count: 99,
           observed_date: '1970-01-01',
           observed_time: '00:00:00',
+          survey_sample_period_id: 7,
           survey_habitat_feature_taxons: [
             {
               survey_habitat_feature_taxon_id: 1,
@@ -435,6 +444,7 @@ describe('getSurveyHabitatFeatures', () => {
           count: 88,
           observed_date: '2025-01-01',
           observed_time: '12:30:00',
+          survey_sample_period_id: 8,
           survey_habitat_feature_taxons: []
         }
       ],
@@ -472,6 +482,7 @@ describe('getSurveyHabitatFeatures', () => {
           count: 99,
           observed_date: '1970-01-01',
           observed_time: '00:00:00',
+          survey_sample_period_id: 7,
           survey_habitat_feature_taxons: [
             {
               survey_habitat_feature_taxon_id: 1,
@@ -491,6 +502,7 @@ describe('getSurveyHabitatFeatures', () => {
           count: 88,
           observed_date: '2025-01-01',
           observed_time: '12:30:00',
+          survey_sample_period_id: 8,
           survey_habitat_feature_taxons: []
         }
       ],

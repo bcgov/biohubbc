@@ -164,6 +164,7 @@ describe('getSurveyHabitatFeature', () => {
       longitude: -123,
       observed_date: '2024-12-01',
       observed_time: '08:00:00',
+      survey_sample_period_id: 3,
       survey_habitat_feature_taxons: [
         {
           survey_habitat_feature_taxon_id: 3,
