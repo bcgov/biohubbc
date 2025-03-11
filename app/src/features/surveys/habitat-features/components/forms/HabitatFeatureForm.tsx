@@ -23,7 +23,7 @@ export const HabitatFeatureForm = () => {
       <HorizontalSplitFormComponent
         title="Spatial Information"
         summary="Enter spatial information about the habitat feature">
-        <HabitatFeatureSpatialInformationForm />
+        <HabitatFeatureSpatialInformationForm mapId="habitat-feature-location-form" />
       </HorizontalSplitFormComponent>
 
       <Divider sx={{ my: 5 }} />

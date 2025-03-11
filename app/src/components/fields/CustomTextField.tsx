@@ -3,7 +3,7 @@ import TextField from '@mui/material/TextField';
 import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
 import { useFormikContext } from 'formik';
 import get from 'lodash-es/get';
-import { useMemo } from 'react';
+import { ChangeEvent, useMemo } from 'react';
 export interface ICustomTextField {
   /**
    * Label for the text field
@@ -40,6 +40,13 @@ export interface ICustomTextField {
    * @memberof ICustomTextField
    */
   helpText?: string;
+  /**
+   * Optional onChange event handler for the text field
+   *
+   * @type {(event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | undefined) => void}
+   * @memberof ICustomTextField
+   */
+  onChange?: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   /*
    * TODO: Needed fix: Add correct hardcoded type
    * Note: TextFieldProps causes build compile issue
@@ -73,7 +80,14 @@ const CustomTextField = (props: React.PropsWithChildren<ICustomTextField>) => {
           </InputAdornment>
         )
       }}
-      onChange={handleChange}
+      onChange={(event) => {
+        // Call the optional onChange prop if it exists
+        if (props.onChange) {
+          props.onChange(event);
+        }
+
+        handleChange(event);
+      }}
       onBlur={handleBlur}
       variant="outlined"
       value={get(values, name) ?? ''}
