@@ -157,6 +157,11 @@ describe('getSurveyHabitatFeatures', () => {
           observed_date: '1970-01-01',
           observed_time: '00:00:00',
           survey_sample_period_id: 7,
+          survey_sample_period_start_datetime: '2024-12-01T08:00:00Z',
+          survey_sample_site_id: 8,
+          survey_sample_site_name: 'site',
+          method_technique_id: 9,
+          method_technique_name: 'technique',
           survey_habitat_feature_taxons: [
             {
               survey_habitat_feature_taxon_id: 1,
@@ -176,7 +181,12 @@ describe('getSurveyHabitatFeatures', () => {
           count: 88,
           observed_date: '2025-01-01',
           observed_time: '12:30:00',
-          survey_sample_period_id: 8,
+          survey_sample_period_id: null,
+          survey_sample_period_start_datetime: null,
+          survey_sample_site_id: null,
+          survey_sample_site_name: null,
+          method_technique_id: null,
+          method_technique_name: null,
           survey_habitat_feature_taxons: []
         }
       ],
@@ -227,6 +237,11 @@ describe('getSurveyHabitatFeatures', () => {
           observed_date: '1970-01-01',
           observed_time: '00:00:00',
           survey_sample_period_id: 7,
+          survey_sample_period_start_datetime: '2024-12-01T08:00:00Z',
+          survey_sample_site_id: 8,
+          survey_sample_site_name: 'site',
+          method_technique_id: 9,
+          method_technique_name: 'technique',
           survey_habitat_feature_taxons: [
             {
               survey_habitat_feature_taxon_id: 1,
@@ -246,7 +261,12 @@ describe('getSurveyHabitatFeatures', () => {
           count: 88,
           observed_date: '2025-01-01',
           observed_time: '12:30:00',
-          survey_sample_period_id: 8,
+          survey_sample_period_id: null,
+          survey_sample_period_start_datetime: null,
+          survey_sample_site_id: null,
+          survey_sample_site_name: null,
+          method_technique_id: null,
+          method_technique_name: null,
           survey_habitat_feature_taxons: []
         }
       ],
@@ -292,6 +312,11 @@ describe('getSurveyHabitatFeatures', () => {
           observed_date: '1970-01-01',
           observed_time: '00:00:00',
           survey_sample_period_id: 7,
+          survey_sample_period_start_datetime: '2024-12-01T08:00:00Z',
+          survey_sample_site_id: 8,
+          survey_sample_site_name: 'site',
+          method_technique_id: 9,
+          method_technique_name: 'technique',
           survey_habitat_feature_taxons: [
             {
               survey_habitat_feature_taxon_id: 1,
@@ -311,7 +336,12 @@ describe('getSurveyHabitatFeatures', () => {
           count: 88,
           observed_date: '2025-01-01',
           observed_time: '12:30:00',
-          survey_sample_period_id: 8,
+          survey_sample_period_id: null,
+          survey_sample_period_start_datetime: null,
+          survey_sample_site_id: null,
+          survey_sample_site_name: null,
+          method_technique_id: null,
+          method_technique_name: null,
           survey_habitat_feature_taxons: []
         }
       ],
@@ -360,6 +390,11 @@ describe('getSurveyHabitatFeatures', () => {
           observed_date: '1970-01-01',
           observed_time: '00:00:00',
           survey_sample_period_id: 7,
+          survey_sample_period_start_datetime: '2024-12-01T08:00:00Z',
+          survey_sample_site_id: 8,
+          survey_sample_site_name: 'site',
+          method_technique_id: 9,
+          method_technique_name: 'technique',
           survey_habitat_feature_taxons: [
             {
               survey_habitat_feature_taxon_id: 1,
@@ -379,7 +414,12 @@ describe('getSurveyHabitatFeatures', () => {
           count: 88,
           observed_date: '2025-01-01',
           observed_time: '12:30:00',
-          survey_sample_period_id: 8,
+          survey_sample_period_id: null,
+          survey_sample_period_start_datetime: null,
+          survey_sample_site_id: null,
+          survey_sample_site_name: null,
+          method_technique_id: null,
+          method_technique_name: null,
           survey_habitat_feature_taxons: []
         }
       ],
@@ -425,6 +465,11 @@ describe('getSurveyHabitatFeatures', () => {
           observed_date: '1970-01-01',
           observed_time: '00:00:00',
           survey_sample_period_id: 7,
+          survey_sample_period_start_datetime: '2024-12-01T08:00:00Z',
+          survey_sample_site_id: 8,
+          survey_sample_site_name: 'site',
+          method_technique_id: 9,
+          method_technique_name: 'technique',
           survey_habitat_feature_taxons: [
             {
               survey_habitat_feature_taxon_id: 1,
@@ -444,7 +489,12 @@ describe('getSurveyHabitatFeatures', () => {
           count: 88,
           observed_date: '2025-01-01',
           observed_time: '12:30:00',
-          survey_sample_period_id: 8,
+          survey_sample_period_id: null,
+          survey_sample_period_start_datetime: null,
+          survey_sample_site_id: null,
+          survey_sample_site_name: null,
+          method_technique_id: null,
+          method_technique_name: null,
           survey_habitat_feature_taxons: []
         }
       ],
@@ -483,6 +533,11 @@ describe('getSurveyHabitatFeatures', () => {
           observed_date: '1970-01-01',
           observed_time: '00:00:00',
           survey_sample_period_id: 7,
+          survey_sample_period_start_datetime: '2024-12-01T08:00:00Z',
+          survey_sample_site_id: 8,
+          survey_sample_site_name: 'site',
+          method_technique_id: 9,
+          method_technique_name: 'technique',
           survey_habitat_feature_taxons: [
             {
               survey_habitat_feature_taxon_id: 1,
@@ -502,7 +557,12 @@ describe('getSurveyHabitatFeatures', () => {
           count: 88,
           observed_date: '2025-01-01',
           observed_time: '12:30:00',
-          survey_sample_period_id: 8,
+          survey_sample_period_id: null,
+          survey_sample_period_start_datetime: null,
+          survey_sample_site_id: null,
+          survey_sample_site_name: null,
+          method_technique_id: null,
+          method_technique_name: null,
           survey_habitat_feature_taxons: []
         }
       ],

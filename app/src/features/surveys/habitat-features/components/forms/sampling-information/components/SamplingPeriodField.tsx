@@ -12,7 +12,7 @@ import {
 import {
   SamplingInformationCache,
   SamplingInformationCachedPeriod
-} from 'features/surveys/habitat-features/components/forms/sampling/hooks/useSamplingInformationCache';
+} from 'features/surveys/habitat-features/components/forms/sampling-information/hooks/useSamplingInformationCache';
 import { useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
@@ -140,7 +140,7 @@ export const SamplingPeriodField = (props: ISamplingPeriodFieldProps) => {
 
   return (
     <Autocomplete
-      id="standardColumns.survey_sample_period_id"
+      id="survey_sample_period_id"
       noOptionsText="No matching options"
       autoHighlight
       fullWidth
@@ -163,7 +163,7 @@ export const SamplingPeriodField = (props: ISamplingPeriodFieldProps) => {
         setCurrentOption(selectedOption);
 
         // Set the data grid cell value for the selected sampling period option
-        setFieldValue('standardColumns.survey_sample_period_id', selectedOption?.value);
+        setFieldValue('survey_sample_period_id', selectedOption?.value);
 
         setIsLoading(false);
       }}
@@ -178,18 +178,12 @@ export const SamplingPeriodField = (props: ISamplingPeriodFieldProps) => {
       renderInput={(params) => (
         <TextField
           {...params}
-          name="standardColumns.survey_sample_period_id"
+          name="survey_sample_period_id"
           variant="outlined"
           fullWidth
           placeholder="Search for a period"
-          error={
-            get(touched, 'standardColumns.survey_sample_period_id') &&
-            Boolean(get(errors, 'standardColumns.survey_sample_period_id'))
-          }
-          helperText={
-            get(touched, 'standardColumns.survey_sample_period_id') &&
-            get(errors, 'standardColumns.survey_sample_period_id')
-          }
+          error={get(touched, 'survey_sample_period_id') && Boolean(get(errors, 'survey_sample_period_id'))}
+          helperText={get(touched, 'survey_sample_period_id') && get(errors, 'survey_sample_period_id')}
           InputProps={{
             ...params.InputProps,
             endAdornment: (

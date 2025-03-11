@@ -1,7 +1,12 @@
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
-import { HabitatFeatureSamplingForm } from 'features/surveys/habitat-features/components/forms/sampling/HabitatFeatureSamplingForm';
+import {
+  CreateHabitatFeatureFormValues,
+  UpdateHabitatFeatureFormValues
+} from 'features/surveys/habitat-features/components/forms/HabitatFeatureFormContainer';
+import { HabitatFeatureSamplingForm } from 'features/surveys/habitat-features/components/forms/sampling-information/HabitatFeatureSamplingForm';
+import { useFormikContext } from 'formik';
 import { useState } from 'react';
 import { HabitatFeatureGeneralInformationForm } from './general-information/HabitatFeatureGeneralInformationForm';
 import { HabitatFeatureSpatialInformationForm } from './spatial-information/HabitatFeatureSpatialInformationForm';
@@ -11,8 +16,14 @@ import { HabitatFeatureSpatialInformationForm } from './spatial-information/Habi
  *
  * @return {*} {JSX.Element}
  */
-export const HabitatFeatureForm = () => {
-  const [showSamplingInformation, setShowSamplingInformation] = useState(false);
+export const HabitatFeatureForm = <
+  HabitatFeatureFormValuesType extends CreateHabitatFeatureFormValues | UpdateHabitatFeatureFormValues
+>() => {
+  const formikProps = useFormikContext<HabitatFeatureFormValuesType>();
+
+  const surveySamplePeriodId = formikProps.initialValues.survey_sample_period_id;
+
+  const [showSamplingInformation, setShowSamplingInformation] = useState(surveySamplePeriodId !== null);
 
   return (
     <Stack>

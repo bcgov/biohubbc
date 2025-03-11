@@ -22,11 +22,13 @@ export const HabitatFeatureSpeciesForm = <
 
   const formikProps = useFormikContext<HabitatFeatureFormValuesType>();
 
-  const taxonDataLoader = useDataLoader(() =>
-    biohubApi.taxonomy.getSpeciesFromIds(
-      formikProps.initialValues.survey_habitat_feature_taxons.map((taxon) => taxon.itis_tsn)
-    )
-  );
+  const taxonDataLoader = useDataLoader(async (tsns: number[]) => {
+    if (!tsns.length) {
+      return [];
+    }
+
+    return biohubApi.taxonomy.getSpeciesFromIds(tsns);
+  });
 
   // Ref to cache the current and newly selected taxons (tsn -> taxon)
   const taxonCache = useRef(new Map<number, ITaxonomy | IPartialTaxonomy>());
@@ -42,7 +44,9 @@ export const HabitatFeatureSpeciesForm = <
         return;
       }
 
-      const taxons = await taxonDataLoader.load();
+      const tsns = formikProps.initialValues.survey_habitat_feature_taxons.map((taxon) => taxon.itis_tsn);
+
+      const taxons = await taxonDataLoader.load(tsns);
 
       // nothing to cache
       if (!taxons) {
@@ -56,7 +60,7 @@ export const HabitatFeatureSpeciesForm = <
     };
 
     loadTaxons();
-  }, [taxonDataLoader]);
+  }, [formikProps.initialValues.survey_habitat_feature_taxons, taxonDataLoader]);
 
   return (
     <FieldArray

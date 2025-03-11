@@ -349,7 +349,8 @@ export function getSurveyHabitatFeature(): RequestHandler {
       await connection.commit();
 
       const response = {
-        surveyHabitatFeature: surveyHabitatFeatureResponse
+        surveyHabitatFeature: surveyHabitatFeatureResponse.surveyHabitatFeature,
+        supplementaryData: surveyHabitatFeatureResponse.supplementaryData
       };
 
       return res.status(200).json(response);

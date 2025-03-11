@@ -5,7 +5,7 @@ import sinonChai from 'sinon-chai';
 import { deleteSurveyHabitatFeature, getSurveyHabitatFeature, putSurveyHabitatFeature } from '.';
 import * as db from '../../../../../../../database/db';
 import { HTTPError } from '../../../../../../../errors/http-error';
-import { SurveyHabitatFeatureWithTaxons } from '../../../../../../../repositories/habitat-feature-repository/survey-habitat-feature-repository.interface';
+import { SurveyHabitatFeatureWithTaxonsAndSampling } from '../../../../../../../repositories/habitat-feature-repository/survey-habitat-feature-repository.interface';
 import { SurveyHabitatFeatureService } from '../../../../../../../services/habitat-feature-services/survey-habitat-feature-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../__mocks__/db';
 
@@ -155,7 +155,7 @@ describe('getSurveyHabitatFeature', () => {
     });
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
-    const mockResponse: SurveyHabitatFeatureWithTaxons = {
+    const mockHabitatFeatureRecord: SurveyHabitatFeatureWithTaxonsAndSampling = {
       survey_habitat_feature_id: 1,
       habitat_feature_type_id: 2,
       survey_id: 4,
@@ -165,6 +165,11 @@ describe('getSurveyHabitatFeature', () => {
       observed_date: '2024-12-01',
       observed_time: '08:00:00',
       survey_sample_period_id: 3,
+      survey_sample_period_start_datetime: '2024-12-01T08:00:00Z',
+      survey_sample_site_id: 4,
+      survey_sample_site_name: 'site',
+      method_technique_id: 5,
+      method_technique_name: 'technique',
       survey_habitat_feature_taxons: [
         {
           survey_habitat_feature_taxon_id: 3,
@@ -174,6 +179,15 @@ describe('getSurveyHabitatFeature', () => {
           comment: 'comment'
         }
       ]
+    };
+
+    const mockResponse = {
+      surveyHabitatFeature: mockHabitatFeatureRecord,
+      supplementaryData: {
+        count: 1,
+        habitatFeatureQuantitativeDefinitions: [],
+        habitatFeatureQualitativeDefinitions: []
+      }
     };
 
     sinon.stub(SurveyHabitatFeatureService.prototype, 'getSurveyHabitatFeature').resolves(mockResponse);
@@ -192,9 +206,7 @@ describe('getSurveyHabitatFeature', () => {
     expect(mockDBConnection.open).to.have.been.calledOnce;
     expect(mockDBConnection.commit).to.have.been.calledOnce;
     expect(mockRes.statusValue).to.equal(200);
-    expect(mockRes.json).to.have.been.calledOnceWith({
-      surveyHabitatFeature: mockResponse
-    });
+    expect(mockRes.json).to.have.been.calledOnceWith(mockResponse);
     expect(mockDBConnection.release).to.have.been.calledOnce;
   });
 });
