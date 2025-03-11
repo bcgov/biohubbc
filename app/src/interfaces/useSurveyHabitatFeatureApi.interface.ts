@@ -46,10 +46,11 @@ export type SurveyHabitatFeature = {
   survey_id: number;
   habitat_feature_type_id: number;
   count: number;
-  latitude: number;
-  longitude: number;
-  observed_date: string;
-  observed_time: string;
+  latitude: number | null;
+  longitude: number | null;
+  observed_date: string | null;
+  observed_time: string | null;
+  survey_sample_period_id: number | null;
   survey_habitat_feature_taxons: SurveyHabitatFeatureTaxon[];
 };
 
@@ -61,21 +62,23 @@ export type SurveyHabitatFeatureSupplementaryData = {
 
 export type CreateSurveyHabitatFeature = {
   habitat_feature_type_id: number;
-  latitude: number;
-  longitude: number;
   count: number;
-  observed_date: string;
-  observed_time: string;
+  latitude: number | null;
+  longitude: number | null;
+  observed_date: string | null;
+  observed_time: string | null;
+  survey_sample_period_id: number | null;
   survey_habitat_feature_taxons: CreateSurveyHabitatFeatureTaxon[];
 };
 
 export type UpdateSurveyHabitatFeature = {
   habitat_feature_type_id: number;
-  latitude: number;
-  longitude: number;
   count: number;
-  observed_date: string;
-  observed_time: string;
+  latitude: number | null;
+  longitude: number | null;
+  observed_date: string | null;
+  observed_time: string | null;
+  survey_sample_period_id: number | null;
   // Note: The old values will be replaced with these new values
   survey_habitat_feature_taxons: CreateSurveyHabitatFeatureTaxon[];
 };

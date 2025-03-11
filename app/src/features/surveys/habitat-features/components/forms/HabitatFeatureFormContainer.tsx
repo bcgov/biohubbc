@@ -8,11 +8,12 @@ import { HabitatFeatureForm } from './HabitatFeatureForm';
 // Habitat Feature Yup schema
 export const HabitatFeatureYupSchema = yup.object({
   habitat_feature_type_id: yup.number().required('Habitat feature type is required'),
-  latitude: yup.number().min(-90).max(90).required('Latitude is required'),
-  longitude: yup.number().min(-180).max(180).required('Longitude is required'),
   count: yup.number().required('Count is required'),
-  observed_date: yup.string().required('Observed date is required'),
-  observed_time: yup.string().required('Observed time is required'),
+  latitude: yup.number().min(-90).max(90).nullable(),
+  longitude: yup.number().min(-180).max(180).nullable(),
+  observed_date: yup.string().nullable(),
+  observed_time: yup.string().nullable(),
+  survey_sample_period_id: yup.number().nullable(),
   survey_habitat_feature_taxons: yup.array().of(
     yup.object({
       itis_tsn: yup.number().required('ITIS TSN is required'),
@@ -25,11 +26,14 @@ export const HabitatFeatureYupSchema = yup.object({
 // Create Habitat Feature form values
 export type CreateHabitatFeatureFormValues = {
   habitat_feature_type_id: number;
-  latitude: number;
-  longitude: number;
   count: number;
-  observed_date: string;
-  observed_time: string;
+  latitude: number | null;
+  longitude: number | null;
+  observed_date: string | null;
+  observed_time: string | null;
+  survey_sample_site_id: number | null;
+  method_technique_id: number | null;
+  survey_sample_period_id: number | null;
   survey_habitat_feature_taxons: {
     itis_tsn: number;
     itis_scientific_name: string;
@@ -40,11 +44,14 @@ export type CreateHabitatFeatureFormValues = {
 // Update Habitat Feature form values
 export type UpdateHabitatFeatureFormValues = {
   habitat_feature_type_id: number;
-  latitude: number;
-  longitude: number;
   count: number;
-  observed_date: string;
-  observed_time: string;
+  latitude: number | null;
+  longitude: number | null;
+  observed_date: string | null;
+  observed_time: string | null;
+  survey_sample_site_id: number | null;
+  method_technique_id: number | null;
+  survey_sample_period_id: number | null;
   survey_habitat_feature_taxons: {
     itis_tsn: number;
     itis_scientific_name: string;

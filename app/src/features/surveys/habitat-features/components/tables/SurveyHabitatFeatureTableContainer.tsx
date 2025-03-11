@@ -147,7 +147,7 @@ export const SurveyHabitatFeatureTableContainer = (): JSX.Element => {
               vertical: 'top',
               horizontal: 'right'
             }}
-            id="survey-observations-table-actions-menu"
+            id="survey-habitat-features-table-actions-menu"
             anchorEl={columnVisibilityMenuAnchorEl}
             open={Boolean(columnVisibilityMenuAnchorEl)}
             onClose={handleCloseColumnVisibilityMenu}
