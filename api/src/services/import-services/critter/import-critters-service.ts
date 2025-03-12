@@ -147,7 +147,7 @@ export class ImportCrittersService extends DBService {
       ALIAS: aliasHeaderConfig,
       SEX: sexHeaderConfig,
       WLH_ID: { validateCell: getWlhIDCellValidator(this.utils) },
-      DESCRIPTION: { validateCell: getDescriptionCellValidator() }
+      DESCRIPTION: { validateCell: getDescriptionCellValidator({ optional: true }) }
     });
 
     // Add the taxon row validator - validates the taxon / tsn and sets the TSN in the row state

@@ -295,8 +295,6 @@ export type CSVCellValidatorOptions = {
    * @type {boolean}
    */
   optional: boolean;
-
-  onChangeRowState?: (row: CSVRow, state: Record<string, any>) => void;
 };
 
 /**
@@ -311,5 +309,4 @@ export type CSVArrayCellValidatorOptions = {
    * @type {string}
    */
   delimiter: string;
-  onChangeRowState?: (row: CSVRow, state: Record<string, any>) => void;
 };

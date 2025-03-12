@@ -118,7 +118,8 @@ export const getTsnCellValidator = (tsns: Set<number>): CSVCellValidator => {
  * TODO: Add optional flag to allow undefined values conditionally
  *
  * Rules:
- *  1. The cell must be a string with a maximum length of 250 or undefined
+ *  1. The cell must be a string with a maximum length of 250
+ *  2. The cell is optional if the optional flag is set
  *
  * @param {CSVCellValidatorOptions} [options] Optional cell config override
  * @returns {*} {CSVCellValidator} The validate cell callback
@@ -134,7 +135,7 @@ export const getDescriptionCellValidator = (options?: CSVCellValidatorOptions): 
       params.mutateCell = String(params.cell);
     }
 
-    return validateZodCell(params.mutateCell, z.string().trim().min(1).max(250).optional());
+    return validateZodCell(params.mutateCell, z.string().trim().min(1).max(250));
   };
 };
 

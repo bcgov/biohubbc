@@ -222,7 +222,7 @@ export class ImportObservationsService extends DBService {
       SAMPLE_SITE: { validateCell: getNonEmptyStringCellValidator({ optional: true }) },
       // Method technique is pre-validated by the sampling information row validator
       METHOD_TECHNIQUE: { validateCell: getNonEmptyStringCellValidator({ optional: true }) },
-      COMMENT: { validateCell: getDescriptionCellValidator() }
+      COMMENT: { validateCell: getDescriptionCellValidator({ optional: true }) }
     });
   }
 

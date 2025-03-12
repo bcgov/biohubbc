@@ -111,7 +111,7 @@ describe('CSVHeaderConfigs', () => {
 
   describe('getDescriptionCellValidator', () => {
     it('should return an empty array if the cell is valid', () => {
-      const descriptionValidator = getDescriptionCellValidator();
+      const descriptionValidator = getDescriptionCellValidator({ optional: true });
 
       const validDescriptions = ['description', '1', 1, undefined, ' test'];
 
@@ -132,7 +132,7 @@ describe('CSVHeaderConfigs', () => {
       const badDescriptions = ['', null, ' '];
 
       for (const badDescription of badDescriptions) {
-        const descriptionValidator = getDescriptionCellValidator();
+        const descriptionValidator = getDescriptionCellValidator({ optional: true });
 
         const result = descriptionValidator({
           cell: badDescription,
