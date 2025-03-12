@@ -464,26 +464,26 @@ export const getArrayCellValidator: CSVArrayCellValidator = (
     const stringCellValidator = getNonEmptyStringCellValidator(csvCellValidator.options);
 
     // Validate that the cell is a string, which is a pre-req to being an array of values
-    const errors1 = stringCellValidator(params);
+    const preReqErrors = stringCellValidator(params);
 
-    if (errors1.length > 0) {
-      return errors1;
+    if (preReqErrors.length > 0) {
+      return preReqErrors;
     }
 
-    const cellValue = params.cell as string;
+    const cellValue = params.cell;
 
     // Split the original cell value by the delimiter, trimming whitespace and removing empty values
-    const cellValues = cellValue
+    const cellValues = String(cellValue)
       .split(options.delimiter)
       .map((value) => value.trim())
       .filter((value) => value.length > 0);
 
     // Execute the cell validator on each element in the array, providing the original params with the split cell value
-    const errors2 = cellValues.flatMap((value) => {
+    const arrayCellValueErrors = cellValues.flatMap((value) => {
       return csvCellValidator.validator({ ...params, cell: value });
     });
 
     // Return the accumulated errors, if any
-    return errors2;
+    return arrayCellValueErrors;
   };
 };
