@@ -43,7 +43,7 @@ POST.apiDoc = {
   ],
   responses: {
     200: {
-      description: 'Deactivated system user from system OK.'
+      description: 'Activated system user from system OK.'
     },
     400: {
       $ref: '#/components/responses/400'

@@ -203,12 +203,12 @@ const ActiveUsersTable = (props: IActiveUsersTableProps) => {
                     state: params.row
                   })
               },
+              activationMenuItem,
               {
                 menuIcon: <Icon path={mdiTrashCanOutline} size={1} />,
                 menuLabel: 'Remove User',
                 menuOnClick: () => onRemoveUserClick(params.row)
-              },
-              activationMenuItem
+              }
             ]}
           />
         );
