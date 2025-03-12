@@ -108,7 +108,7 @@ export const SurveyDeploymentListItem = (props: ISurveyDeploymentListItemProps) 
                 </Typography>
               </Stack>
               <Typography variant="body2" color="textSecondary" title="Animal">
-                {`${deployment.deployment_id}: ${animal?.animal_id || 'Unknown'}`}
+                {`${deployment.deployment_id}: ${animal?.animal_id || deployment.critter_id}`}
               </Typography>
             </Box>
           </Stack>

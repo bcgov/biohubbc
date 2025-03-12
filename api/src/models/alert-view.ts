@@ -1,9 +1,12 @@
 import { z } from 'zod';
 import { AlertRecord } from '../database-models/alert';
 
+export const AlertStatus = z.enum(['active', 'expired']);
+export type AlertStatus = z.infer<typeof AlertStatus>;
+
 export const AlertRecordWithStatus = AlertRecord.extend({
   create_date: z.string(),
-  status: z.enum(['active', 'expired'])
+  status: AlertStatus
 });
 export type AlertRecordWithStatus = z.infer<typeof AlertRecordWithStatus>;
 
@@ -17,7 +20,3 @@ export interface IAlertFilterObject {
   expiresAfter?: string;
   types?: string[];
 }
-
-// Define severity and status types
-export type IAlertSeverity = 'info' | 'success' | 'error' | 'warning';
-export type IAlertStatus = 'active' | 'expired';

@@ -21,16 +21,51 @@ import { useHistory } from 'react-router';
 const pageSizeOptions = [10, 25, 50];
 
 export interface IActiveUsersTableProps {
+  /**
+   * The list of active users to display in the table.
+   */
   activeUsers: ISystemUser[];
+  /**
+   * The list of system role codes.
+   */
   systemRoles: ICode[];
+  /**
+   * Callback fired when the remove user button is clicked.
+   */
   onRemoveUserClick: (user: ISystemUser) => void;
+  /**
+   * Callback fired when a user is soft deleted (blocked from logging in)
+   */
   onDeactivateUserClick: (user: ISystemUser) => void;
+  /**
+   * Callback fired when an existing, deactivated user is reactivated (record_end_end becomes null)
+   */
   onActivateUserClick: (user: ISystemUser) => void;
+  /**
+   * Callback fired when a role is selected from the user permission control.
+   */
   handleChangeUserPermissionsClick: (user: ISystemUser, newRoleName: string, newRoleId: number) => void;
+  /**
+   * The current pagination model for the table.
+   */
   pagination: GridPaginationModel;
+  /**
+   * Callback fired when the pagination model is updated.
+   */
   setPagination: (newPagination: GridPaginationModel) => void;
+  /**
+   * The current sort model for the table.
+   */
   sortModel: GridSortModel;
+  /**
+   * Callback fired when the sort model is updated.
+   */
   setSortModel: (newSortModel: GridSortModel) => void;
+  /**
+   * The total number of rows in the table. This will be used to determine the number of pages in the pagination
+   * control.
+   */
+  rowCount: number;
 }
 
 /**
@@ -52,7 +87,8 @@ const ActiveUsersTable = (props: IActiveUsersTableProps) => {
     pagination,
     setPagination,
     sortModel,
-    setSortModel
+    setSortModel,
+    rowCount
   } = props;
 
   const sortedSystemRoles = [...systemRoles].sort((item1, item2) => item1.name.localeCompare(item2.name));
@@ -186,10 +222,12 @@ const ActiveUsersTable = (props: IActiveUsersTableProps) => {
       columns={activeUsersColumnDefs}
       rows={activeUsers}
       getRowId={(row) => row.system_user_id}
+      paginationMode="server"
       paginationModel={pagination}
       onPaginationModelChange={setPagination}
       sortModel={sortModel}
       onSortModelChange={setSortModel}
+      rowCount={rowCount}
       pageSizeOptions={pageSizeOptions}
       disableRowSelectionOnClick
       rowSelection={false}

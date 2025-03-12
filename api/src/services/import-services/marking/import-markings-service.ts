@@ -124,11 +124,11 @@ export class ImportMarkingsService extends DBService {
     const bodyLocationDictionary = await this._getBodyLocationDictionary(surveyAliasMap);
 
     const markingTypes = new Set(
-      (await this.surveyCritterService.critterbaseService.getMarkingTypes()).map((type) => type.value)
+      (await this.surveyCritterService.critterbaseService.getFormattedMarkingTypes()).map((type) => type.value)
     );
 
     const colours = new Set(
-      (await this.surveyCritterService.critterbaseService.getColours()).map((colour) => colour.value)
+      (await this.surveyCritterService.critterbaseService.getFormattedColours()).map((colour) => colour.value)
     );
 
     this.utils.setStaticHeaderConfig('ALIAS', {

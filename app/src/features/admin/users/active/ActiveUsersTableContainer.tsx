@@ -82,8 +82,15 @@ const ActiveUsersTableContainer = () => {
 
   useEffect(() => {
     codesContext.codesDataLoader.load();
-    activeUsersDataLoader.load({}, paginationSort);
-  }, [codesContext.codesDataLoader, activeUsersDataLoader, paginationSort]);
+  }, [codesContext.codesDataLoader]);
+
+  useEffect(() => {
+    activeUsersDataLoader.refresh({}, paginationSort);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paginationSort]);
+
+  // The total number of active users in the system
+  const rowCount = activeUsersDataLoader.data?.pagination.total ?? 0;
 
   const handleRemoveUserClick = (user: ISystemUser) => {
     dialogContext.setYesNoDialog({
@@ -322,7 +329,7 @@ const ActiveUsersTableContainer = () => {
               sx={{
                 fontWeight: 400
               }}>
-              ({activeUsersDataLoader.data?.users.length ?? 0})
+              ({rowCount})
             </Typography>
           </Typography>
           <Button
@@ -356,6 +363,7 @@ const ActiveUsersTableContainer = () => {
             setPagination={setPaginationModel}
             sortModel={sortModel}
             setSortModel={setSortModel}
+            rowCount={rowCount}
           />
         </Box>
       </Paper>

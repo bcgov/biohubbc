@@ -65,7 +65,9 @@ const EditProjectForm = <InitialValuesType extends IUpdateProjectRequest | ICrea
         <HorizontalSplitFormComponent
           title="Team Members"
           summary="Specify team members and their associated role for this project."
-          component={<ProjectUserForm roles={codes?.project_roles ?? []} />}
+          component={
+            <ProjectUserForm roles={codes?.project_roles ?? []} description={codes?.project_roles?.[0]?.description} />
+          }
         />
 
         <Divider />
