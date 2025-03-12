@@ -1,7 +1,7 @@
 import { TaxonMap } from '../../../services/import-services/utils/taxon';
 import { CSVConfigUtils } from '../csv-config-utils';
 import { CSVCellValidatorOptions, CSVRowParams, CSVRowValidator } from '../csv-config-validation.interface';
-import { updateCSVRowState } from '../csv-header-configs';
+import { getTaxonCellValidator } from '../csv-header-configs';
 
 /**
  * Get the taxon header cell validator.
@@ -28,62 +28,21 @@ export const getTaxonRowValidator = <StaticHeaderType extends Uppercase<string> 
     const taxonIdentifierCell = utils.getCellValue(taxonStaticHeader, params.row);
     const taxonHeader = utils.getWorksheetHeader(taxonStaticHeader, params.row);
 
-    if (taxonIdentifierCell === undefined) {
-      if (options?.optional) {
-        return [];
-      }
+    const taxonCellValidator = getTaxonCellValidator(taxonMap, options);
 
-      return [
-        {
-          error: 'Cell is required',
-          solution: 'Use a valid ITIS TSN or scientific name',
-          header: taxonHeader,
-          cell: taxonIdentifierCell
-        }
-      ];
-    }
+    const errors = taxonCellValidator({
+      cell: taxonIdentifierCell,
+      mutateCell: taxonIdentifierCell,
+      header: taxonHeader as string,
+      row: params.row,
+      rowIndex: params.rowIndex
+    });
 
-    const taxon = taxonMap.get(taxonIdentifierCell);
-
-    // If a valid taxon
-    if (taxon) {
-      // Update the row state with the TSN and scientific name
-      updateCSVRowState(params.row, { itis_tsn: taxon.tsn, itis_scientific_name: taxon.scientificName });
-
-      return [];
-    }
-
-    // If an invalid TSN
-    if (typeof taxonIdentifierCell === 'number') {
-      return [
-        {
-          error: 'Invalid ITIS TSN',
-          solution: 'Use a valid ITIS TSN',
-          header: taxonHeader,
-          cell: taxonIdentifierCell
-        }
-      ];
-    }
-
-    // If an invalid scientific name
-    if (typeof taxonIdentifierCell === 'string') {
-      return [
-        {
-          error: 'Invalid scientific name',
-          solution: 'Use a valid scientific name',
-          header: taxonHeader,
-          cell: taxonIdentifierCell
-        }
-      ];
-    }
-
-    return [
-      {
-        error: 'Invalid species',
-        solution: 'Expecting a valid ITIS TSN or scientific name',
-        header: taxonHeader,
-        cell: taxonIdentifierCell
-      }
-    ];
+    return errors.map((error) => {
+      return {
+        ...error,
+        header: taxonHeader ?? null
+      };
+    });
   };
 };

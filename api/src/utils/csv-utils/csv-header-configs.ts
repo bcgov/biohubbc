@@ -4,7 +4,6 @@ import { TaxonMap } from '../../services/import-services/utils/taxon';
 import { CaseInsensitiveMap } from '../case-insensitive-map';
 import { formatTimeString, isDateString } from '../date-time-utils';
 import {
-  CSVArrayCellValidator,
   CSVArrayCellValidatorOptions,
   CSVCellSetter,
   CSVCellValidator,
@@ -375,8 +374,8 @@ export const getLookupIdCellValidator = (
  * Rules:
  *  1. The cell must be a valid ITIS TSN or scientific name
  *  2. The cell must be a valid species from the provided taxons
+ *  3. The row state will be updated with the TSN and scientific name
  *
- * @template StaticHeaderType
  * @param {TaxonMap} taxonMap The list of taxons
  * @param {CSVCellValidatorOptions} [options] cell validator options
  * @returns {*} {CSVCellValidator} The validate cell callback
@@ -405,6 +404,9 @@ export const getTaxonCellValidator = (taxonMap: TaxonMap, options?: CSVCellValid
 
     // If a valid taxon
     if (taxon) {
+      // Update the row state with the TSN and scientific name
+      updateCSVRowState(params.row, { itis_tsn: taxon.tsn, itis_scientific_name: taxon.scientificName });
+
       return [];
     }
 
@@ -446,44 +448,32 @@ export const getTaxonCellValidator = (taxonMap: TaxonMap, options?: CSVCellValid
  * Get an array-cell validator, which applies a cell validator to each array-value parsed from the cells original value.
  *
  * Rules:
- *  1. The cell must be a string, with optional values separated by a delimiter.
- *  2. The individual cell values (after splitting by delimiter) must satisfy the cell validator.
+ *  1. The array-cell values (after splitting by delimiter) must satisfy the cell validator function.
  *
- * @param {csvCellValidator} csvCellValidator The cell validator to apply to each element in the array
+ * @param {CSVCellValidator} csvCellValidator The cell validator to apply to each element in the array
  * @param {CSVArrayCellValidatorOptions} options The array-cell validator options
  * @returns {*} {CSVCellValidator} The validate cell callback
  */
-export const getArrayCellValidator: CSVArrayCellValidator = (
-  csvCellValidator: {
-    validator: CSVCellValidator;
-    options: CSVCellValidatorOptions;
-  },
+export const getArrayCellValidator = (
+  csvCellValidator: CSVCellValidator,
   options: CSVArrayCellValidatorOptions
 ): CSVCellValidator => {
   return (params: CSVParams) => {
-    const stringCellValidator = getNonEmptyStringCellValidator(csvCellValidator.options);
-
-    // Validate that the cell is a string, which is a pre-req to being an array of values
-    const preReqErrors = stringCellValidator(params);
-
-    if (preReqErrors.length > 0) {
-      return preReqErrors;
-    }
-
     const cellValue = params.cell;
 
-    // Split the original cell value by the delimiter, trimming whitespace and removing empty values
-    const cellValues = String(cellValue)
-      .split(options.delimiter)
-      .map((value) => value.trim())
-      .filter((value) => value.length > 0);
+    if (typeof cellValue === 'string') {
+      const cellValues = cellValue
+        .split(options.delimiter)
+        .map((value) => value.trim())
+        .filter((value) => value.length > 0);
 
-    // Execute the cell validator on each element in the array, providing the original params with the split cell value
-    const arrayCellValueErrors = cellValues.flatMap((value) => {
-      return csvCellValidator.validator({ ...params, cell: value });
-    });
+      // Execute the cell validator on each element in the array
+      return cellValues.flatMap((value) => {
+        return csvCellValidator({ ...params, cell: value });
+      });
+    }
 
-    // Return the accumulated errors, if any
-    return arrayCellValueErrors;
+    // Execute the cell validator on the original cell value
+    return csvCellValidator({ ...params, cell: cellValue });
   };
 };

@@ -213,16 +213,14 @@ export class CSVConfigUtils<StaticHeaderType extends Uppercase<string> = Upperca
    * @return {(string[] | undefined)} - The array-cell values or undefined if none found
    */
   getArrayCellValue(header: StaticHeaderType, row: CSVRow, options: { delimiter: string }): string[] | undefined {
-    let cellValue: CSVCell;
-
     // Static header or dynamic header exact match
-    if ((header as Uppercase<string>) in row) {
-      cellValue = row[header];
-    }
+    let cellValue = this.getCellValue(header, row);
 
-    // Attempt to find the array-cell values from the header aliases
-    for (const alias of this.config.staticHeadersConfig[header]?.aliases ?? []) {
-      cellValue = row[alias];
+    if (!cellValue) {
+      // Attempt to find the array-cell values from the header aliases
+      for (const alias of this.config.staticHeadersConfig[header]?.aliases ?? []) {
+        cellValue = row[alias];
+      }
     }
 
     if (!cellValue) {
@@ -253,8 +251,8 @@ export class CSVConfigUtils<StaticHeaderType extends Uppercase<string> = Upperca
    * @param {StaticHeaderType} header - The header name
    * @return {((string | undefined)[])} - The array-cell values
    */
-  getArrayCellValues(header: StaticHeaderType): (string | undefined)[] {
-    return this.worksheetRows.flatMap((row) => this.getArrayCellValue(header, row, { delimiter: ';' }));
+  getArrayCellValues(header: StaticHeaderType, options: { delimiter: string }): (string | undefined)[] {
+    return this.worksheetRows.flatMap((row) => this.getArrayCellValue(header, row, options));
   }
 
   /**
@@ -273,8 +271,8 @@ export class CSVConfigUtils<StaticHeaderType extends Uppercase<string> = Upperca
    * @param {StaticHeaderType} header - The header name
    * @returns {((string | undefined)[])} - The unique array-cell values
    */
-  getUniqueArrayCellValues(header: StaticHeaderType): (string | undefined)[] {
-    return [...new Set(this.getArrayCellValues(header))];
+  getUniqueArrayCellValues(header: StaticHeaderType, options: { delimiter: string }): (string | undefined)[] {
+    return [...new Set(this.getArrayCellValues(header, options))];
   }
 
   /**

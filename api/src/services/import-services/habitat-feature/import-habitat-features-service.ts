@@ -152,7 +152,9 @@ export class ImportHabitatFeaturesService extends DBService {
     const methodTechniqueSerice = new TechniqueService(this.connection);
 
     // Generate shared dependencies
-    const taxonIdentifiers = this.utils.getUniqueArrayCellValues('SPECIES').filter(Boolean) as string[];
+    const taxonIdentifiers = this.utils
+      .getUniqueArrayCellValues('SPECIES', { delimiter: ';' })
+      .filter(Boolean) as string[];
     const taxonMap = await getTaxonMap(taxonIdentifiers, platformService);
 
     // Inject the dependencies and set the static headers, row validators, and dynamic headers
@@ -189,10 +191,9 @@ export class ImportHabitatFeaturesService extends DBService {
       // Method technique is pre-validated by the sampling information row validator
       METHOD_TECHNIQUE: { validateCell: getNonEmptyStringCellValidator({ optional: true }) },
       SPECIES: {
-        validateCell: getArrayCellValidator(
-          { validator: getTaxonCellValidator(taxonMap), options: { optional: true } },
-          { delimiter: ';' }
-        )
+        validateCell: getArrayCellValidator(getTaxonCellValidator(taxonMap, { optional: true }), {
+          delimiter: ';'
+        })
       }
     });
   }

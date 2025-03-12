@@ -77,20 +77,6 @@ interface CSVStaticHeaderConfig {
 export type CSVCellValidator = (params: CSVParams) => CSVError[];
 
 /**
- * The CSV header config array-cell validator function
- *
- * @param {CSVParams} params - The CSV parameters
- * @returns {CSVError[]} - The list of CSV errors
- */
-export type CSVArrayCellValidator = (
-  csvCellValidator: {
-    validator: CSVCellValidator;
-    options: CSVCellValidatorOptions;
-  },
-  options: CSVArrayCellValidatorOptions
-) => CSVCellValidator;
-
-/**
  * The CSV row validator function
  *
  * @param {CSVRowParams} params - The CSV row parameters
@@ -317,7 +303,7 @@ export type CSVCellValidatorOptions = {
  */
 export type CSVArrayCellValidatorOptions = {
   /**
-   * The delimiter used to split the cell value.
+   * The delimiter used to split the array-cell value.
    *
    * @example ';'
    * @type {string}
