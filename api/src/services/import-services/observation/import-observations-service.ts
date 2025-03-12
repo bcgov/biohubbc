@@ -145,8 +145,8 @@ export class ImportObservationsService extends DBService {
       observations.push({
         standardColumns: {
           survey_id: this.surveyId,
-          itis_tsn: getTaxonFromRowState(row).itis_tsn,
-          itis_scientific_name: getTaxonFromRowState(row).itis_scientific_name,
+          itis_tsn: getTaxonFromRowState(row).taxon.itis_tsn,
+          itis_scientific_name: getTaxonFromRowState(row).taxon.itis_scientific_name,
           survey_sample_period_id: this.samplePeriodId ?? getSamplePeriodIdFromRowState(row).sample_period_id ?? null,
           latitude: row.LATITUDE,
           longitude: row.LONGITUDE,

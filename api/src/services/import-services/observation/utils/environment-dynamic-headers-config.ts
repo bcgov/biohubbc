@@ -5,7 +5,6 @@ import {
   QuantitativeEnvironmentTypeDefinition
 } from '../../../../repositories/observation-subcount-environment-repository';
 import { CSVCellValidator, CSVError, CSVParams } from '../../../../utils/csv-utils/csv-config-validation.interface';
-import { updateCSVRowState } from '../../../../utils/csv-utils/csv-header-configs';
 import {
   EnvironmentNameTypeDefinitionMap,
   isQualitativeEnvironmentTypeDefinition,
@@ -13,6 +12,7 @@ import {
 } from '../../utils/environment';
 import { validateQualitativeValue } from '../../utils/qualitative';
 import { validateQuantitativeValue } from '../../utils/quantitative';
+import { updateCSVRowState } from '../../utils/row-state';
 
 /**
  * Get the dynamic environment cell validator.

@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { ICritterDetailed } from '../../services/critterbase-service';
+import { updateCSVRowState } from '../../services/import-services/utils/row-state';
 import { TaxonMap } from '../../services/import-services/utils/taxon';
 import { CaseInsensitiveMap } from '../case-insensitive-map';
 import { formatTimeString, isDateString } from '../date-time-utils';
@@ -9,25 +10,8 @@ import {
   CSVCellValidator,
   CSVCellValidatorOptions,
   CSVError,
-  CSVParams,
-  CSVRow,
-  CSVRowState
+  CSVParams
 } from './csv-config-validation.interface';
-
-/**
- * Helper to update the CSV row state, if the state does not exist it will be created.
- *
- * Note: To remove a state value set it to `undefined`.
- *
- * @returns {*} {void}
- */
-export const updateCSVRowState = (row: CSVRow, state: Record<string, any>) => {
-  if (!row[CSVRowState]) {
-    row[CSVRowState] = {};
-  }
-
-  row[CSVRowState] = { ...row[CSVRowState], ...state };
-};
 
 /**
  * Utility function to validate a CSV cell using a Zod schema.
@@ -136,10 +120,15 @@ export const getTsnCellValidator = (tsns: Set<number>): CSVCellValidator => {
  * Rules:
  *  1. The cell must be a string with a maximum length of 250 or undefined
  *
+ * @param {CSVCellValidatorOptions} [options] Optional cell config override
  * @returns {*} {CSVCellValidator} The validate cell callback
  */
-export const getDescriptionCellValidator = (): CSVCellValidator => {
+export const getDescriptionCellValidator = (options?: CSVCellValidatorOptions): CSVCellValidator => {
   return (params: CSVParams) => {
+    if (options?.optional && params.cell === undefined) {
+      return [];
+    }
+
     if (typeof params.cell === 'number') {
       // Allow numbers to be converted to strings for descriptions
       params.mutateCell = String(params.cell);
@@ -405,7 +394,7 @@ export const getTaxonCellValidator = (taxonMap: TaxonMap, options?: CSVCellValid
     // If a valid taxon
     if (taxon) {
       // Update the row state with the TSN and scientific name
-      updateCSVRowState(params.row, { itis_tsn: taxon.tsn, itis_scientific_name: taxon.scientificName });
+      updateCSVRowState(params.row, { taxon: { itis_tsn: taxon.tsn, itis_scientific_name: taxon.scientificName } });
 
       return [];
     }

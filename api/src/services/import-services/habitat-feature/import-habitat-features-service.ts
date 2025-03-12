@@ -9,6 +9,7 @@ import {
   getArrayCellValidator,
   getDateCellValidator,
   getDateRangeCellValidator,
+  getDescriptionCellValidator,
   getLatitudeCellValidator,
   getLongitudeCellValidator,
   getNonEmptyStringCellValidator,
@@ -24,7 +25,7 @@ import { PlatformService } from '../../platform-service';
 import { SamplePeriodService } from '../../sample-period-service';
 import { SampleSiteService } from '../../sample-site-service';
 import { TechniqueService } from '../../technique-service';
-import { getSamplePeriodIdFromRowState } from '../utils/row-state';
+import { getSamplePeriodIdFromRowState, getTaxonArrayFromRowState } from '../utils/row-state';
 import { getTaxonMap, TaxonMap } from '../utils/taxon';
 import { getHabitatFeatureTypeCellValidator } from './utils/habitat-feature-header-configs';
 import { getHabitatFeatureSamplingInformationRowValidator } from './utils/habitat-feature-sampling-row-validator';
@@ -41,7 +42,8 @@ export type HabitatFeatureCSVStaticHeader =
   | 'SAMPLE_PERIOD'
   | 'SAMPLE_SITE'
   | 'METHOD_TECHNIQUE'
-  | 'SPECIES';
+  | 'SPECIES'
+  | 'COMMENT';
 
 /**
  * ImportHabitatFeaturesService - A service for importing Habitat Features from a CSV into SIMS.
@@ -84,7 +86,8 @@ export class ImportHabitatFeaturesService extends DBService {
           optional: true
         },
         METHOD_TECHNIQUE: { aliases: ['METHOD TECHNIQUE', 'METHOD', 'TECHNIQUE'], optional: true },
-        SPECIES: { aliases: ['ITIS_TSN', 'ITIS TSN', 'TSN', 'TAXON'], optional: true }
+        SPECIES: { aliases: ['ITIS_TSN', 'ITIS TSN', 'TSN', 'TAXON'], optional: true },
+        COMMENT: { aliases: [], optional: true }
       },
       ignoreDynamicHeaders: false
     };
@@ -115,6 +118,15 @@ export class ImportHabitatFeaturesService extends DBService {
     const surveyHabitatFeatures: InsertSurveyHabitatFeature[] = [];
 
     for (const row of rows) {
+      // Get the taxon data, if any, from the row state and format it for insertion
+      const taxonRowState = getTaxonArrayFromRowState(row);
+      const taxonArray = Array.isArray(taxonRowState.taxon) ? taxonRowState.taxon : [taxonRowState.taxon];
+      const surveyHabitatFeatureTaxons = taxonArray.map(({ itis_tsn, itis_scientific_name }) => ({
+        itis_tsn,
+        itis_scientific_name,
+        comment: row.COMMENT
+      }));
+
       surveyHabitatFeatures.push({
         habitat_feature_type_id: row.HABITAT_FEATURE_TYPE,
         count: row.COUNT,
@@ -123,8 +135,7 @@ export class ImportHabitatFeaturesService extends DBService {
         observed_date: row.OBSERVED_DATE,
         observed_time: row.OBSERVED_TIME,
         survey_sample_period_id: this.samplePeriodId ?? getSamplePeriodIdFromRowState(row).sample_period_id ?? null,
-        // TODO: Populate taxons from CSV
-        survey_habitat_feature_taxons: []
+        survey_habitat_feature_taxons: surveyHabitatFeatureTaxons
         // TODO: Add quantitative/qualitative values
       });
     }
@@ -194,7 +205,8 @@ export class ImportHabitatFeaturesService extends DBService {
         validateCell: getArrayCellValidator(getTaxonCellValidator(taxonMap, { optional: true }), {
           delimiter: ';'
         })
-      }
+      },
+      COMMENT: { validateCell: getDescriptionCellValidator({ optional: true }) }
     });
   }
 

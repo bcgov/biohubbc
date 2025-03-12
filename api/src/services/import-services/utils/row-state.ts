@@ -3,6 +3,54 @@ import { ApiGeneralError } from '../../../errors/api-error';
 import { CSVRow, CSVRowState } from '../../../utils/csv-utils/csv-config-validation.interface';
 
 /**
+ * Helper to update the CSV row state.
+ *
+ * For each key in the incoming state:
+ *  1. If the key does not existing in the row state, it will be added.
+ *  2. If the key does already existing in the row state, the existing value will be converted to an array, and the new
+ *     value will be appended.
+ *
+ * Note: To remove a state value set it to `undefined`.
+ *
+ * @example
+ * // rowState = undefined;
+ *
+ * updateCSVRowState(row, { critter_id: '123' });
+ * // rowState = { critter_id: '123' };
+ *
+ * updateCSVRowState(row, { capture_id: '456' });
+ * // rowState = { critter_id: '123', capture_id: '456' };
+ *
+ * updateCSVRowState(row, { critter_id: '789' });
+ * // rowState = { critter_id: ['123', '789'], capture_id: '456' };
+ *
+ * updateCSVRowState(row, { critter_id: undefined });
+ * // rowState = { capture_id: '456' };
+ *
+ * updateCSVRowState(row, { capture_id: undefined });
+ * // rowState = {};
+ *
+ * @returns {*} {void}
+ */
+export const updateCSVRowState = (row: CSVRow, state: Record<string, any>) => {
+  if (!row[CSVRowState]) {
+    // Initialize the row state if it does not exist
+    row[CSVRowState] = {};
+  }
+
+  for (const key in state) {
+    const newValue = state[key];
+    const existingValue = row[CSVRowState][key];
+
+    if (existingValue === undefined) {
+      row[CSVRowState][key] = newValue;
+    } else {
+      row[CSVRowState][key] = [].concat(existingValue, newValue);
+    }
+  }
+};
+
+/**
  * Create a row state getter
  *
  * Note: This function allows both the row and the row state to be passed in.
@@ -65,8 +113,28 @@ export const getCritterCaptureFromRowState = createRowStateGetter(
 // Taxon
 export const getTaxonFromRowState = createRowStateGetter(
   z.object({
-    itis_tsn: z.number(),
-    itis_scientific_name: z.string()
+    taxon: z.object({
+      itis_tsn: z.number(),
+      itis_scientific_name: z.string()
+    })
+  })
+);
+
+// Taxon array
+export const getTaxonArrayFromRowState = createRowStateGetter(
+  z.object({
+    taxon: z.union([
+      z.object({
+        itis_tsn: z.number(),
+        itis_scientific_name: z.string()
+      }),
+      z.array(
+        z.object({
+          itis_tsn: z.number(),
+          itis_scientific_name: z.string()
+        })
+      )
+    ])
   })
 );
 

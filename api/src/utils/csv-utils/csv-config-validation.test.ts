@@ -2,6 +2,7 @@ import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import xlsx, { WorkSheet } from 'xlsx';
+import { updateCSVRowState } from '../../services/import-services/utils/row-state';
 import { WorksheetRowIndexSymbol } from '../xlsx-utils/worksheet-utils';
 import {
   executeRowValidator,
@@ -13,7 +14,6 @@ import {
   validateCSVWorksheet
 } from './csv-config-validation';
 import { CSVConfig, CSVRowState } from './csv-config-validation.interface';
-import { updateCSVRowState } from './csv-header-configs';
 chai.use(sinonChai);
 
 describe('csv-config-validation', () => {

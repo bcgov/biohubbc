@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import { z } from 'zod';
+import { updateCSVRowState } from '../../services/import-services/utils/row-state';
 import { CSVParams, CSVRow, CSVRowState } from './csv-config-validation.interface';
 import {
   getDateRangeCellValidator,
@@ -11,7 +12,6 @@ import {
   getPositiveNumberCellValidator,
   getSurveyCritterAliasCellValidator,
   getTsnCellValidator,
-  updateCSVRowState,
   validateZodCell
 } from './csv-header-configs';
 

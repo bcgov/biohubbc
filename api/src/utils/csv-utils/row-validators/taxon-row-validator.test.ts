@@ -73,8 +73,8 @@ describe('getTaxonRowValidator', () => {
 
     const state = getTaxonFromRowState(rowMock);
 
-    expect(state.itis_tsn).to.equal(1);
-    expect(state.itis_scientific_name).to.equal('Alces alces');
+    expect(state.taxon.itis_tsn).to.equal(1);
+    expect(state.taxon.itis_scientific_name).to.equal('Alces alces');
   });
 
   it('should return an error for an invalid TSN', () => {
