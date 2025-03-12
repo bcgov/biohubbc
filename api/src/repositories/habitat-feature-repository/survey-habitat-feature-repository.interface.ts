@@ -1,6 +1,8 @@
 import { z } from 'zod';
+import { MethodTechniqueRecord } from '../../database-models/method_technique';
 import { SurveyHabitatFeatureRecord } from '../../database-models/survey_habitat_feature';
 import { SurveyHabitatFeatureTaxonRecord } from '../../database-models/survey_habitat_feature_taxon';
+import { SurveySampleSiteRecord } from '../../database-models/survey_sample_site';
 import { GeoJSONPointZodSchema } from '../../zod-schema/geoJsonZodSchema';
 import { FindHabitatFeatureDefinitions } from './habitat-feature-repository.interface';
 
@@ -11,14 +13,26 @@ export type InsertSurveyHabitatFeatureTaxon = Pick<
 
 export type InsertSurveyHabitatFeature = Pick<
   SurveyHabitatFeatureRecord,
-  'habitat_feature_type_id' | 'count' | 'latitude' | 'longitude' | 'observed_date' | 'observed_time'
+  | 'habitat_feature_type_id'
+  | 'count'
+  | 'latitude'
+  | 'longitude'
+  | 'observed_date'
+  | 'observed_time'
+  | 'survey_sample_period_id'
 > & {
   survey_habitat_feature_taxons: InsertSurveyHabitatFeatureTaxon[];
 };
 
 export type UpdateSurveyHabitatFeature = Pick<
   SurveyHabitatFeatureRecord,
-  'habitat_feature_type_id' | 'count' | 'latitude' | 'longitude' | 'observed_date' | 'observed_time'
+  | 'habitat_feature_type_id'
+  | 'count'
+  | 'latitude'
+  | 'longitude'
+  | 'observed_date'
+  | 'observed_time'
+  | 'survey_sample_period_id'
 > & {
   survey_habitat_feature_taxons: InsertSurveyHabitatFeatureTaxon[];
 };
@@ -30,15 +44,48 @@ export type SurveyHabitatFeatureCount = z.infer<typeof SurveyHabitatFeatureCount
 
 export type SurveyHabitatFeaturesSupplementaryData = SurveyHabitatFeatureCount & FindHabitatFeatureDefinitions;
 
+/**
+ * An array of survey habitat features with supplementary data.
+ */
 export type SurveyHabitatFeaturesWithSupplementaryData = {
-  surveyHabitatFeatures: SurveyHabitatFeatureWithTaxons[];
+  surveyHabitatFeatures: SurveyHabitatFeatureWithTaxonsAndSampling[];
   supplementaryData: SurveyHabitatFeaturesSupplementaryData;
 };
 
-export const SurveyHabitatFeatureWithTaxons = SurveyHabitatFeatureRecord.extend({
-  survey_habitat_feature_taxons: z.array(SurveyHabitatFeatureTaxonRecord)
+/**
+ * A survey habitat feature with supplementary data.
+ */
+export type SurveyHabitatFeatureWithSupplementaryData = {
+  surveyHabitatFeature: SurveyHabitatFeatureWithTaxonsAndSampling;
+  supplementaryData: SurveyHabitatFeaturesSupplementaryData;
+};
+
+export const SurveyHabitatFeatureSamplingData = z.object({
+  survey_sample_site_id: SurveySampleSiteRecord.shape.survey_sample_site_id.nullable(),
+  survey_sample_site_name: SurveySampleSiteRecord.shape.name.nullable(),
+  method_technique_id: MethodTechniqueRecord.shape.method_technique_id.nullable(),
+  method_technique_name: MethodTechniqueRecord.shape.name.nullable(),
+  // survey_sample_period_id is already included in the SurveyHabitatFeatureRecord
+  survey_sample_period_start_datetime: z.string().nullable()
 });
-export type SurveyHabitatFeatureWithTaxons = z.infer<typeof SurveyHabitatFeatureWithTaxons>;
+export type SurveyHabitatFeatureSamplingData = z.infer<typeof SurveyHabitatFeatureSamplingData>;
+
+export const SurveyHabitatFeatureWithTaxonsAndSampling = SurveyHabitatFeatureRecord.pick({
+  survey_habitat_feature_id: true,
+  survey_id: true,
+  habitat_feature_type_id: true,
+  count: true,
+  latitude: true,
+  longitude: true,
+  observed_date: true,
+  observed_time: true,
+  survey_sample_period_id: true
+})
+  .extend({
+    survey_habitat_feature_taxons: z.array(SurveyHabitatFeatureTaxonRecord)
+  })
+  .merge(SurveyHabitatFeatureSamplingData);
+export type SurveyHabitatFeatureWithTaxonsAndSampling = z.infer<typeof SurveyHabitatFeatureWithTaxonsAndSampling>;
 
 export const SurveyHabitatFeatureGeometry = z.object({
   survey_habitat_feature_id: z.number(),

@@ -1,5 +1,5 @@
 import { mdiCalendar } from '@mdi/js';
-import { Grid } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import AutocompleteField from 'components/fields/AutocompleteField';
 import CustomTextField from 'components/fields/CustomTextField';
 import { DateTimeFields } from 'components/fields/DateTimeFields';
@@ -42,7 +42,7 @@ export const HabitatFeatureGeneralInformationForm = <
         </Grid>
 
         <Grid item xs={4}>
-          <CustomTextField name="count" label="Observed count" other={{ type: 'number' }} />
+          <CustomTextField name="count" label="Observed count" other={{ type: 'number', required: true }} />
         </Grid>
       </Grid>
 

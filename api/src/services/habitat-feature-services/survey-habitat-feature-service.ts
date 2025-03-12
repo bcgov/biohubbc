@@ -8,7 +8,8 @@ import {
   InsertSurveyHabitatFeatureTaxon,
   SurveyHabitatFeaturesGeometryWithSupplementaryData,
   SurveyHabitatFeaturesWithSupplementaryData,
-  SurveyHabitatFeatureWithTaxons,
+  SurveyHabitatFeatureWithSupplementaryData,
+  SurveyHabitatFeatureWithTaxonsAndSampling,
   UpdateSurveyHabitatFeature
 } from '../../repositories/habitat-feature-repository/survey-habitat-feature-repository.interface';
 import { getLogger } from '../../utils/logger';
@@ -103,14 +104,29 @@ export class SurveyHabitatFeatureService extends DBService {
    *
    * @param {number} surveyId
    * @param {number} surveyHabitatFeatureId
-   * @return {*}  {Promise<SurveyHabitatFeatureWithTaxons[]>}
+   * @return {*}  {Promise<SurveyHabitatFeatureWithSupplementaryData>}
    * @memberof SurveyHabitatFeatureService
    */
   async getSurveyHabitatFeature(
     surveyId: number,
     surveyHabitatFeatureId: number
-  ): Promise<SurveyHabitatFeatureWithTaxons> {
-    return this.surveyHabitatFeatureRepository.getSurveyHabitatFeature(surveyId, surveyHabitatFeatureId);
+  ): Promise<SurveyHabitatFeatureWithSupplementaryData> {
+    const [surveyHabitatFeature, surveyHabitatFeatureTypeDefinitions] = await Promise.all([
+      // Fetch survey habitat feature records
+      this.surveyHabitatFeatureRepository.getSurveyHabitatFeature(surveyId, surveyHabitatFeatureId),
+      // Fetch habitat feature definitions applicable to this survey
+      this.getSurveyHabitatFeatureDefinitions(surveyId)
+    ]);
+
+    return {
+      surveyHabitatFeature: surveyHabitatFeature,
+      supplementaryData: {
+        count: 1,
+        habitatFeatureQuantitativeDefinitions:
+          surveyHabitatFeatureTypeDefinitions.habitatFeatureQuantitativeDefinitions,
+        habitatFeatureQualitativeDefinitions: surveyHabitatFeatureTypeDefinitions.habitatFeatureQualitativeDefinitions
+      }
+    };
   }
 
   /**
@@ -118,13 +134,13 @@ export class SurveyHabitatFeatureService extends DBService {
    *
    * @param {number} surveyId
    * @param {ApiPaginationOptions} [pagination]
-   * @return {*}  {Promise<SurveyHabitatFeatureWithTaxons[]>}
+   * @return {*}  {Promise<SurveyHabitatFeatureWithTaxonsAndSampling[]>}
    * @memberof SurveyHabitatFeatureService
    */
   async getSurveyHabitatFeatures(
     surveyId: number,
     pagination?: ApiPaginationOptions
-  ): Promise<SurveyHabitatFeatureWithTaxons[]> {
+  ): Promise<SurveyHabitatFeatureWithTaxonsAndSampling[]> {
     return this.surveyHabitatFeatureRepository.getSurveyHabitatFeatures(surveyId, pagination);
   }
 
@@ -214,7 +230,7 @@ export class SurveyHabitatFeatureService extends DBService {
    * @param {number} systemUserId
    * @param {FindSurveyHabitatFeatureAdvancedFilters} filterFields
    * @param {ApiPaginationOptions} [pagination]
-   * @return {*}  {Promise<SurveyHabitatFeatureWithTaxons[]>}
+   * @return {*}  {Promise<SurveyHabitatFeatureWithTaxonsAndSampling[]>}
    * @memberof SurveyHabitatFeatureService
    */
   async findSurveyHabitatFeatures(
@@ -222,7 +238,7 @@ export class SurveyHabitatFeatureService extends DBService {
     systemUserId: number,
     filterFields: FindSurveyHabitatFeatureAdvancedFilters,
     pagination?: ApiPaginationOptions
-  ): Promise<SurveyHabitatFeatureWithTaxons[]> {
+  ): Promise<SurveyHabitatFeatureWithTaxonsAndSampling[]> {
     return this.surveyHabitatFeatureRepository.findSurveyHabitatFeatures(
       isUserAdmin,
       systemUserId,
