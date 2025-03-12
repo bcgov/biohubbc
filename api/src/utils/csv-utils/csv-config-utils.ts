@@ -218,10 +218,13 @@ export class CSVConfigUtils<StaticHeaderType extends Uppercase<string> = Upperca
       return row[header];
     }
 
-    // Attempt to find the cell value from the header aliases
+    // Attempt to find the array-cell values from the header aliases
     for (const alias of this.config.staticHeadersConfig[header]?.aliases ?? []) {
       if (alias in row) {
-        return String(row[alias]).split(options.delimiter);
+        return String(row[alias])
+          .split(options.delimiter)
+          .map((value) => value.trim())
+          .filter((value) => value.length > 0);
       }
     }
   }
