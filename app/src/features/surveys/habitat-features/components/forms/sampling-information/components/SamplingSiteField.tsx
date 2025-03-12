@@ -95,12 +95,10 @@ export const SamplingSiteField = (props: ISamplingSiteFieldProps) => {
     getOptions('');
   }, [getOptions, isLoading, options.length]);
 
-  console.log(currentOption);
-
   return (
     <Autocomplete
       id="survey_sample_site_id"
-      noOptionsText="No matching options"
+      noOptionsText={isLoading ? 'Loading...' : 'No matching options'}
       autoHighlight
       fullWidth
       blurOnSelect
@@ -143,6 +141,7 @@ export const SamplingSiteField = (props: ISamplingSiteFieldProps) => {
           {...params}
           variant="outlined"
           fullWidth
+          label={'Sample Site'}
           placeholder="Search for a site"
           error={get(touched, 'survey_sample_site_id') && Boolean(get(errors, 'survey_sample_site_id'))}
           helperText={get(touched, 'survey_sample_site_id') && get(errors, 'survey_sample_site_id')}

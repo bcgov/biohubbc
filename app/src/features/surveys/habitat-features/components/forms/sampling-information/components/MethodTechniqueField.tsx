@@ -67,6 +67,8 @@ export const MethodTechniqueField = (props: IMethodTechniqueFieldProps) => {
         if (!surveySampleSiteId) {
           // Currently the control requires that a site be selected first, before techniques can be searched/selected
           setIsLoading(false);
+          // Set the options for the autocomplete
+          setOptions([]);
           return;
         }
 
@@ -107,6 +109,7 @@ export const MethodTechniqueField = (props: IMethodTechniqueFieldProps) => {
       // If the site not selected, then unset any selected technique, as its value is dependent
       // on the site.
       setCurrentOption(null);
+      setOptions([]);
       return;
     }
 
@@ -125,7 +128,7 @@ export const MethodTechniqueField = (props: IMethodTechniqueFieldProps) => {
   return (
     <Autocomplete
       id="method_technique_id"
-      noOptionsText="No matching options"
+      noOptionsText={isLoading ? 'Loading...' : 'No matching options'}
       autoHighlight
       fullWidth
       blurOnSelect
@@ -166,6 +169,7 @@ export const MethodTechniqueField = (props: IMethodTechniqueFieldProps) => {
           {...params}
           variant="outlined"
           fullWidth
+          label={'Method Technique'}
           placeholder="Search for a technique"
           error={get(touched, 'method_technique_id') && Boolean(get(errors, 'method_technique_id'))}
           helperText={get(touched, 'method_technique_id') && get(errors, 'method_technique_id')}
