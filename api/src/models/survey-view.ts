@@ -81,6 +81,8 @@ export type FindSurveysResponse = z.infer<typeof FindSurveysResponse>;
 export const FindSurveysSpatialResponse = z.object({
   project_id: z.number(),
   survey_id: z.number(),
+  project_name: z.string(),
+  survey_name: z.string(),
   survey_location_id: z.number(),
   geojson: z.any()
 });

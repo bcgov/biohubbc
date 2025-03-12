@@ -782,12 +782,16 @@ describe('SurveyService', () => {
         {
           project_id: 1,
           survey_id: 1,
+          project_name: 'name',
+          survey_name: 'name',
           survey_location_id: 1,
           geojson: []
         },
         {
           project_id: 2,
           survey_id: 2,
+          project_name: 'name',
+          survey_name: 'name',
           survey_location_id: 2,
           geojson: []
         }

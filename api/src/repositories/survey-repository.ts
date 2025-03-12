@@ -254,7 +254,14 @@ export class SurveyRepository extends BaseRepository {
     const knex = getKnex();
 
     const query = knex
-      .distinct('s.survey_id', 's.project_id', 'sl.survey_location_id', 'sl.geojson')
+      .distinct(
+        's.survey_id',
+        's.project_id',
+        's.name as survey_name',
+        'p.name as project_name',
+        'sl.survey_location_id',
+        'sl.geojson'
+      )
       .from('survey_location as sl')
       .join('survey as s', 'sl.survey_id', 's.survey_id')
       .leftJoin('project as p', 'p.project_id', 's.project_id')

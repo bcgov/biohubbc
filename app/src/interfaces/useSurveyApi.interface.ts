@@ -292,6 +292,14 @@ export interface ISurveySpatialItem {
    */
   survey_id: string;
   /**
+   * The name of the survey
+   */
+  survey_name: string;
+  /**
+   * The name of the project
+   */
+  project_name: string;
+  /**
    * The survey location id of the geometry
    */
   survey_location_id: string;

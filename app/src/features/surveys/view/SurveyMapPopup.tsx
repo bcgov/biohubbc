@@ -1,15 +1,19 @@
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import Skeleton from '@mui/material/Skeleton';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import { ReactNode } from 'react';
 
 export interface ISurveyMapPopupProps {
   isLoading: boolean;
   title: string;
   metadata: {
     label: string;
-    value: string | number | null;
+    value: string | number | null | ReactNode;
   }[];
+  actionButtonLabel?: string;
+  handleActionButtonClick?: () => void;
 }
 
 /**
@@ -19,7 +23,7 @@ export interface ISurveyMapPopupProps {
  * @return {*}
  */
 export const SurveyMapPopup = (props: ISurveyMapPopupProps) => {
-  const { isLoading, title, metadata } = props;
+  const { isLoading, title, metadata, actionButtonLabel, handleActionButtonClick } = props;
 
   return (
     <Box>
@@ -64,7 +68,7 @@ export const SurveyMapPopup = (props: ISurveyMapPopupProps) => {
             }}>
             {title}
           </Typography>
-          <Box component="dl" mt={1} mb={0}>
+          <Stack gap={1} component="dl" mt={1} mb={0}>
             {metadata.map((metadata) => (
               <Stack
                 key={`${metadata.label}-${metadata.value}`}
@@ -80,7 +84,12 @@ export const SurveyMapPopup = (props: ISurveyMapPopupProps) => {
                 </Box>
               </Stack>
             ))}
-          </Box>
+          </Stack>
+          {handleActionButtonClick && (
+            <Box mt={2}>
+              <Button fullWidth onClick={handleActionButtonClick} variant='contained'>{actionButtonLabel}</Button>
+            </Box>
+          )}
         </Box>
       )}
     </Box>

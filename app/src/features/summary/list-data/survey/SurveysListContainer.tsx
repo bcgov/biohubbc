@@ -19,6 +19,7 @@ import { NRM_REGION_APPENDED_TEXT } from 'constants/regions';
 import dayjs from 'dayjs';
 import { SurveyProgressChip } from 'features/surveys/components/SurveyProgressChip';
 import SurveyMap from 'features/surveys/view/SurveyMap';
+import SurveyMapTooltip from 'features/surveys/view/SurveyMapTooltip';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
@@ -29,6 +30,7 @@ import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions, StringValues } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
 import { IProjectAdvancedFilters } from '../project/ProjectsListFilterForm';
+import { SurveySpatialStudyAreaPopup } from './map-popup/SurveySpatialStudyAreaPopup';
 import SurveysListFilterForm, {
   ISurveyAdvancedFilters,
   SurveyAdvancedFiltersInitialValues
@@ -57,7 +59,7 @@ interface ISurveysListContainerProps {
 // Default pagination parameters
 const initialPaginationParams: Required<ApiPaginationRequestOptions> = {
   page: 0,
-  limit: 10,
+  limit: 25,
   sort: 'survey_id',
   order: 'desc'
 };
@@ -130,8 +132,28 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
               features: geometryDataLoader.data?.surveys.map((survey) => ({
                 id: survey.survey_location_id,
                 key: survey.survey_location_id,
-                geoJSON: survey.geojson[0]
-              }))
+                geoJSON: {
+                  ...survey.geojson[0],
+                  properties: {
+                    survey_id: survey.survey_id,
+                    project_id: survey.project_id,
+                    survey_name: survey.survey_name,
+                    project_name: survey.project_name
+                  }
+                }
+              })),
+              popup: (feature) => (
+                <SurveySpatialStudyAreaPopup
+                  surveyId={feature.geoJSON.properties?.survey_id}
+                  projectId={feature.geoJSON.properties?.project_id}
+                />
+              ),
+              tooltip: (feature) => (
+                <SurveyMapTooltip
+                  title={feature.geoJSON.properties?.survey_name}
+                  key={feature.id}
+                />
+              )
             }
           ]
         : [],

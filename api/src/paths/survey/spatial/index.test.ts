@@ -23,6 +23,8 @@ describe('findSurveysSpatial', () => {
       {
         survey_id: 1,
         project_id: 1,
+        project_name: 'name',
+        survey_name: 'name',
         survey_location_id: 1,
         geojson: []
       }
@@ -102,6 +104,8 @@ describe('findSurveysSpatial', () => {
       {
         survey_id: 1,
         project_id: 1,
+        project_name: 'name',
+        survey_name: 'name',
         survey_location_id: 1,
         geojson: []
       }
