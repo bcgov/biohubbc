@@ -88,7 +88,8 @@ PUT.apiDoc = {
             roleIds: {
               type: 'array',
               items: {
-                type: 'number'
+                type: 'number',
+                maxItems: 1
               },
               description:
                 'An array of role ids to add, if the access-request was approved. Ignored if the access-request was denied.'
@@ -157,13 +158,8 @@ export function approveAccessRequest(): RequestHandler {
         email
       );
 
-      // Filter out any system roles that have already been added to the user
-      const rolesIdsToAdd = roleIds.filter((roleId) => !systemUserObject.role_ids.includes(roleId));
-
-      if (rolesIdsToAdd?.length) {
-        // Add any missing roles (if any)
-        await userService.addUserSystemRoles(systemUserObject.system_user_id, rolesIdsToAdd);
-      }
+      await userService.deleteUserSystemRoles(systemUserObject.system_user_id);
+      await userService.addUserSystemRoles(systemUserObject.system_user_id, roleIds);
 
       // Update the access request record status
       await administrativeActivityService.putAdministrativeActivity(

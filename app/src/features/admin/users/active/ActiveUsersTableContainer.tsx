@@ -8,7 +8,13 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
 import EditDialog from 'components/dialog/EditDialog';
-import { AddSystemUserI18N, DeleteSystemUserI18N, UpdateSystemUserI18N } from 'constants/i18n';
+import {
+  ActivateSystemUserI18N,
+  AddSystemUserI18N,
+  DeactivateSystemUserI18N,
+  DeleteSystemUserI18N,
+  UpdateSystemUserI18N
+} from 'constants/i18n';
 import { ISnackbarProps } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useAuthStateContext } from 'hooks/useAuthStateContext';
@@ -81,14 +87,46 @@ const ActiveUsersTableContainer = () => {
 
   const handleRemoveUserClick = (user: ISystemUser) => {
     dialogContext.setYesNoDialog({
-      dialogTitle: 'Remove User?',
-      dialogContent: `Are you sure you want to remove ${user.display_name}?`,
-      yesButtonLabel: 'Remove',
+      dialogTitle: 'Delete User?',
+      dialogContent: `Are you sure you want to delete ${user.display_name}? This will permanently delete all references to ${user.display_name} from the database.`,
+      yesButtonLabel: 'Delete',
       noButtonLabel: 'Cancel',
       yesButtonProps: { color: 'error' },
       open: true,
       onYes: () => {
         removeUser(user);
+        dialogContext.setYesNoDialog({ open: false });
+      },
+      onNo: () => dialogContext.setYesNoDialog({ open: false })
+    });
+  };
+
+  const handleDeactivateUserClick = (user: ISystemUser) => {
+    dialogContext.setYesNoDialog({
+      dialogTitle: 'Block User?',
+      dialogContent: `Are you sure you want to block ${user.display_name}? This will prevent ${user.display_name} from logging in.`,
+      yesButtonLabel: 'Block',
+      noButtonLabel: 'Cancel',
+      yesButtonProps: { color: 'error' },
+      open: true,
+      onYes: () => {
+        deactivateUser(user);
+        dialogContext.setYesNoDialog({ open: false });
+      },
+      onNo: () => dialogContext.setYesNoDialog({ open: false })
+    });
+  };
+
+  const handleActivateUserClick = (user: ISystemUser) => {
+    dialogContext.setYesNoDialog({
+      dialogTitle: 'Reactivate User?',
+      dialogContent: `Are you sure you want to reactivate ${user.display_name}?`,
+      yesButtonLabel: 'Activate',
+      noButtonLabel: 'Cancel',
+      yesButtonProps: { color: 'error' },
+      open: true,
+      onYes: () => {
+        activateUser(user);
         dialogContext.setYesNoDialog({ open: false });
       },
       onNo: () => dialogContext.setYesNoDialog({ open: false })
@@ -103,7 +141,7 @@ const ActiveUsersTableContainer = () => {
 
       dialogContext.setSnackbar({
         open: true,
-        snackbarMessage: `User ${user.display_name} removed successfully.`
+        snackbarMessage: `User ${user.display_name} deleted successfully.`
       });
     } catch (error) {
       const apiError = error as APIError;
@@ -111,6 +149,54 @@ const ActiveUsersTableContainer = () => {
         open: true,
         dialogTitle: DeleteSystemUserI18N.deleteUserErrorTitle,
         dialogText: DeleteSystemUserI18N.deleteUserErrorText,
+        dialogError: apiError.message,
+        dialogErrorDetails: apiError.errors,
+        onOk: () => dialogContext.setErrorDialog({ open: false }),
+        onClose: () => dialogContext.setErrorDialog({ open: false })
+      });
+    }
+  };
+
+  const deactivateUser = async (user: ISystemUser) => {
+    try {
+      await biohubApi.user.deactivateSystemUser(user.system_user_id);
+
+      activeUsersDataLoader.refresh({}, paginationSort);
+
+      dialogContext.setSnackbar({
+        open: true,
+        snackbarMessage: `User ${user.display_name} blocked successfully.`
+      });
+    } catch (error) {
+      const apiError = error as APIError;
+      dialogContext.setErrorDialog({
+        open: true,
+        dialogTitle: DeactivateSystemUserI18N.deactivateUserErrorTitle,
+        dialogText: DeactivateSystemUserI18N.deactivateUserErrorText,
+        dialogError: apiError.message,
+        dialogErrorDetails: apiError.errors,
+        onOk: () => dialogContext.setErrorDialog({ open: false }),
+        onClose: () => dialogContext.setErrorDialog({ open: false })
+      });
+    }
+  };
+
+  const activateUser = async (user: ISystemUser) => {
+    try {
+      await biohubApi.user.activateSystemUser(user.system_user_id);
+
+      activeUsersDataLoader.refresh({}, paginationSort);
+
+      dialogContext.setSnackbar({
+        open: true,
+        snackbarMessage: `User ${user.display_name} activated successfully.`
+      });
+    } catch (error) {
+      const apiError = error as APIError;
+      dialogContext.setErrorDialog({
+        open: true,
+        dialogTitle: ActivateSystemUserI18N.activateUserErrorTitle,
+        dialogText: ActivateSystemUserI18N.activateUserErrorText,
         dialogError: apiError.message,
         dialogErrorDetails: apiError.errors,
         onOk: () => dialogContext.setErrorDialog({ open: false }),
@@ -263,6 +349,8 @@ const ActiveUsersTableContainer = () => {
             activeUsers={activeUsersDataLoader.data?.users ?? []}
             systemRoles={codesContext.codesDataLoader.data?.system_roles ?? []}
             onRemoveUserClick={handleRemoveUserClick}
+            onDeactivateUserClick={handleDeactivateUserClick}
+            onActivateUserClick={handleActivateUserClick}
             handleChangeUserPermissionsClick={handleChangeUserPermissionsClick}
             pagination={paginationModel}
             setPagination={setPaginationModel}

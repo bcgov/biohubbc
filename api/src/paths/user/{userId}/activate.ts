@@ -1,16 +1,14 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_ROLE, SYSTEM_ROLE } from '../../../constants/roles';
+import { SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
-import { HTTP400 } from '../../../errors/http-error';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
-import { ProjectParticipationService } from '../../../services/project-participation-service';
 import { UserService } from '../../../services/user-service';
 import { getLogger } from '../../../utils/logger';
 
-const defaultLog = getLogger('paths/user/{userId}/delete');
+const defaultLog = getLogger('paths/user/{userId}/reactivate');
 
-export const DELETE: Operation = [
+export const POST: Operation = [
   authorizeRequestHandler(() => {
     return {
       and: [
@@ -21,11 +19,11 @@ export const DELETE: Operation = [
       ]
     };
   }),
-  removeSystemUser()
+  activateSystemUser()
 ];
 
-DELETE.apiDoc = {
-  description: 'Remove a user from the system.',
+POST.apiDoc = {
+  description: 'Deactivate and block a system user from the system',
   tags: ['user'],
   security: [
     {
@@ -45,7 +43,7 @@ DELETE.apiDoc = {
   ],
   responses: {
     200: {
-      description: 'Remove system user from system OK.'
+      description: 'Deactivated system user from system OK.'
     },
     400: {
       $ref: '#/components/responses/400'
@@ -65,9 +63,9 @@ DELETE.apiDoc = {
   }
 };
 
-export function removeSystemUser(): RequestHandler {
+export function activateSystemUser(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'removeSystemUser', message: 'params', req_params: req.params });
+    defaultLog.debug({ label: 'activateSystemUser', message: 'params', req_params: req.params });
 
     const systemUserId = req.params && Number(req.params.userId);
 
@@ -75,31 +73,16 @@ export function removeSystemUser(): RequestHandler {
 
     try {
       await connection.open();
-      const projectParticipationService = new ProjectParticipationService(connection);
-
-      const isUserTheOnlyCoordinator = await projectParticipationService.isUserTheOnlyProjectCoordinatorOnAnyProject(
-        systemUserId
-      );
-
-      if (isUserTheOnlyCoordinator) {
-        throw new HTTP400(`Cannot remove user. User is the only ${PROJECT_ROLE.COORDINATOR} for one or more projects.`);
-      }
 
       const userService = new UserService(connection);
 
-      await userService.deleteAllProjectRoles(systemUserId);
-
-      await userService.deleteUserSystemRoles(systemUserId);
-
-      await userService.deleteAdministrativeActivities(systemUserId);
-
-      await userService.deleteSystemUser(systemUserId);
+      await userService.activateSystemUser(systemUserId);
 
       await connection.commit();
 
       return res.status(200).send();
     } catch (error) {
-      defaultLog.error({ label: 'removeSystemUser', message: 'error', error });
+      defaultLog.error({ label: 'activateSystemUser', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

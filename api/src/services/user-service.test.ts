@@ -477,4 +477,58 @@ describe('UserService', () => {
       expect(result).to.be.undefined;
     });
   });
+
+  describe('deleteAdministrativeActivities', function () {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('returns nothing on success', async function () {
+      const mockDBConnection = getMockDBConnection();
+      const mockUserRepository = sinon.stub(UserRepository.prototype, 'deleteAdministrativeActivities');
+      mockUserRepository.resolves();
+
+      const userService = new UserService(mockDBConnection);
+
+      const result = await userService.deleteAdministrativeActivities(1);
+
+      expect(result).to.be.undefined;
+    });
+  });
+
+  describe('deleteSystemUser', function () {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('returns nothing on success', async function () {
+      const mockDBConnection = getMockDBConnection();
+      const mockUserRepository = sinon.stub(UserRepository.prototype, 'deleteSystemUser');
+      mockUserRepository.resolves();
+
+      const userService = new UserService(mockDBConnection);
+
+      const result = await userService.deleteSystemUser(1);
+
+      expect(result).to.be.undefined;
+    });
+  });
+
+  describe('deactivateSystemUser', function () {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('returns nothing on success', async function () {
+      const mockDBConnection = getMockDBConnection();
+      const mockUserRepository = sinon.stub(UserRepository.prototype, 'deactivateSystemUser');
+      mockUserRepository.resolves();
+
+      const userService = new UserService(mockDBConnection);
+
+      const result = await userService.deactivateSystemUser(1);
+
+      expect(result).to.be.undefined;
+    });
+  });
 });
