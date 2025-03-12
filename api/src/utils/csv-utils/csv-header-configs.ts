@@ -1,20 +1,19 @@
 import { z } from 'zod';
 import { ICritterDetailed } from '../../services/critterbase-service';
+import { TaxonMap } from '../../services/import-services/utils/taxon';
 import { CaseInsensitiveMap } from '../case-insensitive-map';
 import { formatTimeString, isDateString } from '../date-time-utils';
 import {
+  CSVArrayCellValidator,
+  CSVArrayCellValidatorOptions,
   CSVCellSetter,
   CSVCellValidator,
+  CSVCellValidatorOptions,
   CSVError,
   CSVParams,
   CSVRow,
   CSVRowState
 } from './csv-config-validation.interface';
-
-// CSVOptionalCell - Optional cell config override
-export type CSVOptionalCell = {
-  optional: boolean;
-};
 
 /**
  * Helper to update the CSV row state, if the state does not exist it will be created.
@@ -72,10 +71,10 @@ export const validateZodCell = (cell: unknown, schema: z.ZodSchema, solution?: s
  *  1. The cell must be a positive number
  *  2. The cell is optional if the optional flag is set
  *
- * @param {CSVOptionalCell} [options] Optional cell config override
+ * @param {CSVCellValidatorOptions} [options] Optional cell config override
  * @returns {*} {CSVCellValidator} The validate cell callback
  */
-export const getPositiveNumberCellValidator = (options?: CSVOptionalCell): CSVCellValidator => {
+export const getPositiveNumberCellValidator = (options?: CSVCellValidatorOptions): CSVCellValidator => {
   return (params: CSVParams) => {
     if (options?.optional && params.cell === undefined) {
       return [];
@@ -92,10 +91,10 @@ export const getPositiveNumberCellValidator = (options?: CSVOptionalCell): CSVCe
  *  1. The cell must be a non-empty string
  *  2. The cell is optional if the optional flag is set
  *
- * @param {CSVOptionalCell} [options] Optional cell config override
+ * @param {CSVCellValidatorOptions} [options] Optional cell config override
  * @returns {*} {CSVCellValidator} The validate cell callback
  */
-export const getNonEmptyStringCellValidator = (options?: CSVOptionalCell) => {
+export const getNonEmptyStringCellValidator = (options?: CSVCellValidatorOptions) => {
   return (params: CSVParams) => {
     if (options?.optional && params.cell === undefined) {
       return [];
@@ -197,10 +196,10 @@ export const getTimeCellSetter = (): CSVCellSetter => {
  * Rules:
  *  1. The cell must be a number between -90 and 90 or undefined if optional
  *
- * @param {CSVOptionalCell} [options] - The CSV options
+ * @param {CSVCellValidatorOptions} [options] - The CSV options
  * @returns {*} {CSVCellValidator} The validate cell callback
  */
-export const getLatitudeCellValidator = (options?: CSVOptionalCell): CSVCellValidator => {
+export const getLatitudeCellValidator = (options?: CSVCellValidatorOptions): CSVCellValidator => {
   return (params) => {
     if (options?.optional && params.cell === undefined) {
       return [];
@@ -216,10 +215,10 @@ export const getLatitudeCellValidator = (options?: CSVOptionalCell): CSVCellVali
  * Rules:
  *  1. The cell must be a number between -180 and 180 or undefined if optional
  *
- * @param {CSVOptionalCell} [options] - The CSV options
+ * @param {CSVCellValidatorOptions} [options] - The CSV options
  * @returns {*} {CSVCellValidator} The validate cell callback
  */
-export const getLongitudeCellValidator = (options?: CSVOptionalCell): CSVCellValidator => {
+export const getLongitudeCellValidator = (options?: CSVCellValidatorOptions): CSVCellValidator => {
   return (params) => {
     if (options?.optional && params.cell === undefined) {
       return [];
@@ -235,10 +234,10 @@ export const getLongitudeCellValidator = (options?: CSVOptionalCell): CSVCellVal
  * Rules:
  *  1. The cell must be a valid date string (YYYY-MM-DD) or undefined if optional
  *
- * @param {CSVOptionalCell} [options] - The CSV options
+ * @param {CSVCellValidatorOptions} [options] - The CSV options
  * @returns {*} {CSVCellValidator} The validate cell callback
  */
-export const getDateCellValidator = (options?: CSVOptionalCell): CSVCellValidator => {
+export const getDateCellValidator = (options?: CSVCellValidatorOptions): CSVCellValidator => {
   return (params) => {
     if (options?.optional && params.cell === undefined) {
       return [];
@@ -288,11 +287,11 @@ export const getSurveyCritterAliasCellValidator = (surveyAliasMap: Map<string, I
  *    B. 'YYYY-MM-DD HH:mm:ss - YYYY-MM-DD HH:mm:ss'
  *  2. The cell is optional if the optional flag is set
  *
- * @param {CSVOptionalCell} [options] Optional cell config override
+ * @param {CSVCellValidatorOptions} [options] Optional cell config override
  * @returns {*} {CSVCellValidator} The validate cell callback
  *
  */
-export const getDateRangeCellValidator = (options?: CSVOptionalCell): CSVCellValidator => {
+export const getDateRangeCellValidator = (options?: CSVCellValidatorOptions): CSVCellValidator => {
   return (params) => {
     if (options?.optional && params.cell === undefined) {
       return [];
@@ -325,7 +324,7 @@ export const getDateRangeCellValidator = (options?: CSVOptionalCell): CSVCellVal
  *  2. The lookup values are case-insensitive
  *
  * @param {Array<{ name: string; id: string | number }>} values List of lookup value objects
- * @param {CSVOptionalCell & {
+ * @param {CSVCellValidatorOptions & {
  *  getError: (params: CSVParams) => string;
  *  getSolution: (params: CSVParams) => string }
  *  } options The cell options
@@ -333,7 +332,7 @@ export const getDateRangeCellValidator = (options?: CSVOptionalCell): CSVCellVal
  */
 export const getLookupIdCellValidator = (
   values: Array<{ name: string; id: string | number }>,
-  options: CSVOptionalCell & {
+  options: CSVCellValidatorOptions & {
     getError: (params: CSVParams) => string;
     getSolution: (params: CSVParams) => string;
   }
@@ -367,5 +366,124 @@ export const getLookupIdCellValidator = (
         values: lookupValues
       }
     ];
+  };
+};
+
+/**
+ * Get the taxon header cell validator.
+ *
+ * Rules:
+ *  1. The cell must be a valid ITIS TSN or scientific name
+ *  2. The cell must be a valid species from the provided taxons
+ *
+ * @template StaticHeaderType
+ * @param {TaxonMap} taxonMap The list of taxons
+ * @param {CSVCellValidatorOptions} [options] cell validator options
+ * @returns {*} {CSVCellValidator} The validate cell callback
+ */
+export const getTaxonCellValidator = (taxonMap: TaxonMap, options?: CSVCellValidatorOptions): CSVCellValidator => {
+  return (params) => {
+    const taxonIdentifierCell = params.cell;
+    const taxonHeader = params.header;
+
+    if (taxonIdentifierCell === undefined) {
+      if (options?.optional) {
+        return [];
+      }
+
+      return [
+        {
+          error: 'Cell is required',
+          solution: 'Use a valid ITIS TSN or scientific name',
+          header: taxonHeader,
+          cell: taxonIdentifierCell
+        }
+      ];
+    }
+
+    const taxon = taxonMap.get(String(taxonIdentifierCell));
+
+    // If a valid taxon
+    if (taxon) {
+      return [];
+    }
+
+    // If an invalid TSN
+    if (typeof taxonIdentifierCell === 'number') {
+      return [
+        {
+          error: 'Invalid ITIS TSN',
+          solution: 'Use a valid ITIS TSN',
+          header: taxonHeader,
+          cell: taxonIdentifierCell
+        }
+      ];
+    }
+
+    // If an invalid scientific name
+    if (typeof taxonIdentifierCell === 'string') {
+      return [
+        {
+          error: 'Invalid scientific name',
+          solution: 'Use a valid scientific name',
+          header: taxonHeader,
+          cell: taxonIdentifierCell
+        }
+      ];
+    }
+
+    return [
+      {
+        error: 'Invalid species',
+        solution: 'Expecting a valid ITIS TSN or scientific name',
+        header: taxonHeader,
+        cell: taxonIdentifierCell
+      }
+    ];
+  };
+};
+/**
+ * Get an array-cell validator, which applies a cell validator to each array-value parsed from the cells original value.
+ *
+ * Rules:
+ *  1. The cell must be a string, with optional values separated by a delimiter.
+ *  2. The individual cell values (after splitting by delimiter) must satisfy the cell validator.
+ *
+ * @param {csvCellValidator} csvCellValidator The cell validator to apply to each element in the array
+ * @param {CSVArrayCellValidatorOptions} options The array-cell validator options
+ * @returns {*} {CSVCellValidator} The validate cell callback
+ */
+export const getArrayCellValidator: CSVArrayCellValidator = (
+  csvCellValidator: {
+    validator: CSVCellValidator;
+    options: CSVCellValidatorOptions;
+  },
+  options: CSVArrayCellValidatorOptions
+): CSVCellValidator => {
+  return (params: CSVParams) => {
+    const stringCellValidator = getNonEmptyStringCellValidator(csvCellValidator.options);
+
+    // Validate that the cell is a string, which is a pre-req to being an array of values
+    const errors1 = stringCellValidator(params);
+
+    if (errors1.length > 0) {
+      return errors1;
+    }
+
+    const cellValue = params.cell as string;
+
+    // Split the original cell value by the delimiter, trimming whitespace and removing empty values
+    const cellValues = cellValue
+      .split(options.delimiter)
+      .map((value) => value.trim())
+      .filter((value) => value.length > 0);
+
+    // Execute the cell validator on each element in the array, providing the original params with the split cell value
+    const errors2 = cellValues.flatMap((value) => {
+      return csvCellValidator.validator({ ...params, cell: value });
+    });
+
+    // Return the accumulated errors, if any
+    return errors2;
   };
 };
