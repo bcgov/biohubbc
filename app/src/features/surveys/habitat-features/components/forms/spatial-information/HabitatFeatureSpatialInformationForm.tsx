@@ -110,7 +110,7 @@ export const HabitatFeatureSpatialInformationForm = <
             label="Latitude"
             other={{ type: 'number' }}
             onChange={(event) => {
-              const latitude = formikProps.values.latitude ? Number(formikProps.values.latitude) : null;
+              const latitude = formikProps.values.latitude ? Number(event.target.value) : null;
               const longitude = formikProps.values.longitude ? Number(formikProps.values.longitude) : null;
 
               formikProps.handleChange(event);
@@ -126,7 +126,7 @@ export const HabitatFeatureSpatialInformationForm = <
             other={{ type: 'number' }}
             onChange={(event) => {
               const latitude = formikProps.values.latitude ? Number(formikProps.values.latitude) : null;
-              const longitude = formikProps.values.longitude ? Number(formikProps.values.longitude) : null;
+              const longitude = formikProps.values.longitude ? Number(event.target.value) : null;
 
               formikProps.handleChange(event);
               handleFormInputLocationChange(latitude, longitude);
