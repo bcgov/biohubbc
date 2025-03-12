@@ -73,8 +73,10 @@ export const HabitatFeatureTaxonAssociationForm = <
           <>
             <SpeciesAutocompleteField
               formikFieldName={'survey_habitat_feature_taxons'}
-              label={'Taxon association'}
-              helpText={'The species associated with the habitat feature ie: "Bald Eagle" nest'}
+              label={'Species'}
+              helpText={
+                'The species associated with the habitat feature. If the habitat feature is a nest, enter "Bald Eagle" to observe a Bald Eagles nest'
+              }
               clearOnSelect={true}
               required={false}
               handleSpecies={(taxon) => {
@@ -114,9 +116,8 @@ export const HabitatFeatureTaxonAssociationForm = <
                       />
                       <Box sx={{ mt: 2 }}>
                         <CustomTextField
-                          label="Taxon comments"
+                          label="Species comments"
                           name={`survey_habitat_feature_taxons[${index}].comment`}
-                          helpText="Any additional comments about the taxon association"
                         />
                       </Box>
                     </Paper>

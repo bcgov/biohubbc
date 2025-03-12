@@ -26,7 +26,6 @@ export const HabitatFeatureGeneralInformationForm = <
             id="habitat_feature_type_id"
             name="habitat_feature_type_id"
             label="Habitat feature"
-            helpText="The type of habitat feature"
             showValue
             required
             loading={codesContext.codesDataLoader.isLoading}

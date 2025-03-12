@@ -37,8 +37,8 @@ export const HabitatFeatureForm = <
       <Divider sx={{ my: 5 }} />
 
       <HorizontalSplitFormComponent
-        title="Taxon Association Information"
-        summary="Enter any taxon associations for the habitat feature">
+        title="Associated Species"
+        summary="Enter any species associated with the habitat feature">
         <HabitatFeatureTaxonAssociationForm />
       </HorizontalSplitFormComponent>
 
