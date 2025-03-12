@@ -24,7 +24,7 @@ export const HabitatFeatureForm = <
 
   const surveySamplePeriodId = formikProps.initialValues.survey_sample_period_id;
 
-  const [showSamplingInformation, setShowSamplingInformation] = useState(surveySamplePeriodId !== null);
+  const [showSamplingInformation, setShowSamplingInformation] = useState(!!surveySamplePeriodId);
 
   return (
     <Stack>
