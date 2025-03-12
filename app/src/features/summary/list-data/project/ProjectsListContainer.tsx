@@ -56,7 +56,7 @@ interface IProjectsListContainerProps {
 // Default pagination parameters
 const initialPaginationParams: Required<ApiPaginationRequestOptions> = {
   page: 0,
-  limit: 25,
+  limit: 10,
   sort: 'project_id',
   order: 'desc'
 };
@@ -143,16 +143,9 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
                   }
                 }
               })),
-              popup: (feature) => (
-                <ProjectSpatialStudyAreaPopup
-                  projectId={feature.geoJSON.properties?.project_id}
-                />
-              ),
+              popup: (feature) => <ProjectSpatialStudyAreaPopup projectId={feature.geoJSON.properties?.project_id} />,
               tooltip: (feature) => (
-                <SurveyMapTooltip
-                  title={feature.geoJSON.properties?.project_name}
-                  key={feature.id}
-                />
+                <SurveyMapTooltip title={feature.geoJSON.properties?.project_name} key={feature.id} />
               )
             }
           ]
@@ -179,7 +172,7 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
       )
     },
     {
-      field: 'name',
+      field: 'project_name',
       headerName: 'Name',
       flex: 1,
       disableColumnMenu: true,
@@ -202,6 +195,7 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
     {
       field: 'members',
       headerName: 'Members',
+      sortable: false,
       flex: 0.4,
       renderCell: (params) => (
         <Stack direction="row" gap={0.5} flexWrap="wrap">
@@ -223,6 +217,7 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
     {
       field: 'regions',
       headerName: 'Region',
+      sortable: false,
       type: 'string',
       flex: 0.5,
       renderCell: (params) => (

@@ -33,16 +33,21 @@ export const ProjectSpatialStudyAreaPopup = (props: IProjectSpatialStudyAreaPopu
 
     return [
       { label: 'Project', value: projectDataLoader.data.projectData.project.project_name },
-      { label: 'Members', value: projectDataLoader.data.projectData.participants.map((participant) => <TeamMemberAvatar
-                    key={participant.system_user_id}
-                    tooltip={participant.display_name}
-                    label={participant.display_name
-                      .split(',')
-                      .map((name) => name.trim().slice(0, 1).toUpperCase())
-                      .reverse()
-                      .join('')}
-                    color={getRandomHexColor(participant.system_user_id)}
-                  />)}
+      {
+        label: 'Members',
+        value: projectDataLoader.data.projectData.participants.map((participant) => (
+          <TeamMemberAvatar
+            key={participant.system_user_id}
+            tooltip={participant.display_name}
+            label={participant.display_name
+              .split(',')
+              .map((name) => name.trim().slice(0, 1).toUpperCase())
+              .reverse()
+              .join('')}
+            color={getRandomHexColor(participant.system_user_id)}
+          />
+        ))
+      }
     ];
   }, [projectDataLoader.data]);
 

@@ -139,8 +139,12 @@ export class ProjectRepository extends BaseRepository {
     if (pagination) {
       query.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
 
-      if (pagination.sort && pagination.order) {
+      if (pagination.sort && pagination.order && pagination.sort !== 'project_name') {
         query.orderBy(pagination.sort, pagination.order);
+      }
+
+      if (pagination.sort === 'project_name') {
+        query.orderBy('p.name', pagination.order);
       }
     }
 

@@ -354,8 +354,16 @@ export class SurveyRepository extends BaseRepository {
     if (pagination) {
       query.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
 
-      if (pagination.sort && pagination.order) {
+      if (pagination.sort && pagination.order && !['survey_name', 'project_name'].includes(pagination.sort)) {
         query.orderBy(pagination.sort, pagination.order);
+      }
+
+      if (pagination.sort === 'survey_name') {
+        query.orderBy('s.name', pagination.order);
+      }
+
+      if (pagination.sort === 'project_name') {
+        query.orderBy('p.name', pagination.order);
       }
     }
 
@@ -386,8 +394,16 @@ export class SurveyRepository extends BaseRepository {
     if (pagination) {
       query.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
 
-      if (pagination.sort && pagination.order) {
+      if (pagination.sort && pagination.order && !['survey_name', 'project_name'].includes(pagination.sort)) {
         query.orderBy(pagination.sort, pagination.order);
+      }
+
+      if (pagination.sort === 'survey_name') {
+        query.orderBy('s.name', pagination.order);
+      }
+
+      if (pagination.sort === 'project_name') {
+        query.orderBy('p.name', pagination.order);
       }
     }
 

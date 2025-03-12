@@ -59,7 +59,7 @@ interface ISurveysListContainerProps {
 // Default pagination parameters
 const initialPaginationParams: Required<ApiPaginationRequestOptions> = {
   page: 0,
-  limit: 25,
+  limit: 10,
   sort: 'survey_id',
   order: 'desc'
 };
@@ -149,10 +149,7 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
                 />
               ),
               tooltip: (feature) => (
-                <SurveyMapTooltip
-                  title={feature.geoJSON.properties?.survey_name}
-                  key={feature.id}
-                />
+                <SurveyMapTooltip title={feature.geoJSON.properties?.survey_name} key={feature.id} />
               )
             }
           ]
@@ -183,7 +180,7 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
       )
     },
     {
-      field: 'name',
+      field: 'survey_name',
       headerName: 'Name',
       flex: 1,
       disableColumnMenu: true,

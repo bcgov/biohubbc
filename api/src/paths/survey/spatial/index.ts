@@ -119,10 +119,10 @@ GET.apiDoc = {
                       minimum: 1
                     },
                     survey_name: {
-                      type: 'string',
+                      type: 'string'
                     },
                     project_name: {
-                      type: 'string',
+                      type: 'string'
                     },
                     survey_location_id: {
                       type: 'integer',

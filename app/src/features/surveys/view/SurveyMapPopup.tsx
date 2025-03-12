@@ -87,7 +87,9 @@ export const SurveyMapPopup = (props: ISurveyMapPopupProps) => {
           </Stack>
           {handleActionButtonClick && (
             <Box mt={2}>
-              <Button fullWidth onClick={handleActionButtonClick} variant='contained'>{actionButtonLabel}</Button>
+              <Button fullWidth onClick={handleActionButtonClick} variant="contained">
+                {actionButtonLabel}
+              </Button>
             </Box>
           )}
         </Box>
