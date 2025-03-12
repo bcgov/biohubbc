@@ -71,7 +71,11 @@ export const CreateHabitatFeaturePage = (): JSX.Element => {
           observed_date: values.observed_date || null,
           observed_time: values.observed_time || null,
           survey_sample_period_id: values.survey_sample_period_id || null,
-          survey_habitat_feature_taxons: values.survey_habitat_feature_taxons
+          survey_habitat_feature_taxons: values.survey_habitat_feature_taxons.map((taxon) => ({
+            itis_tsn: taxon.itis_tsn,
+            itis_scientific_name: taxon.itis_scientific_name,
+            comment: taxon.comment || null
+          }))
         }
       ]);
 

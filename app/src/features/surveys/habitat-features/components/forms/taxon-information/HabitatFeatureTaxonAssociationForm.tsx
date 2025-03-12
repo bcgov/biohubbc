@@ -91,7 +91,7 @@ export const HabitatFeatureTaxonAssociationForm = <
                 arrayHelpers.push({
                   itis_tsn: taxon.tsn,
                   itis_scientific_name: taxon.scientificName,
-                  comment: undefined
+                  comment: ''
                 });
               }}
             />
