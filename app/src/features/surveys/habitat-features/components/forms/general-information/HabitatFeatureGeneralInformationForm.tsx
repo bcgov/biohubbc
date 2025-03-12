@@ -6,7 +6,6 @@ import { DateTimeFields } from 'components/fields/DateTimeFields';
 import { useFormikContext } from 'formik';
 import { useCodesContext } from 'hooks/useContext';
 import { CreateHabitatFeatureFormValues, UpdateHabitatFeatureFormValues } from '../HabitatFeatureFormContainer';
-import { HabitatFeatureSpeciesForm } from './HabitatFeatureSpeciesForm';
 
 /**
  * Habitat Feature general information form.
@@ -64,10 +63,6 @@ export const HabitatFeatureGeneralInformationForm = <
             timeIcon: mdiCalendar
           }}
         />
-      </Grid>
-
-      <Grid item xs={12}>
-        <HabitatFeatureSpeciesForm />
       </Grid>
     </Grid>
   );

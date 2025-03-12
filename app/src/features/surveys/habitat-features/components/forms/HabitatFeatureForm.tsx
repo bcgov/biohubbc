@@ -10,6 +10,7 @@ import { useFormikContext } from 'formik';
 import { useState } from 'react';
 import { HabitatFeatureGeneralInformationForm } from './general-information/HabitatFeatureGeneralInformationForm';
 import { HabitatFeatureSpatialInformationForm } from './spatial-information/HabitatFeatureSpatialInformationForm';
+import { HabitatFeatureTaxonAssociationForm } from './taxon-information/HabitatFeatureTaxonAssociationForm';
 
 /**
  * Habitat Feature form.
@@ -31,6 +32,14 @@ export const HabitatFeatureForm = <
         title="General Information"
         summary="Enter general information about the habitat feature">
         <HabitatFeatureGeneralInformationForm />
+      </HorizontalSplitFormComponent>
+
+      <Divider sx={{ my: 5 }} />
+
+      <HorizontalSplitFormComponent
+        title="Taxon Association Information"
+        summary="Enter any taxon associations for the habitat feature">
+        <HabitatFeatureTaxonAssociationForm />
       </HorizontalSplitFormComponent>
 
       <Divider sx={{ my: 5 }} />
