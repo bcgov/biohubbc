@@ -15,8 +15,12 @@ export interface IHabitatFeatureRow {
   count: number;
   latitude: number | null;
   longitude: number | null;
-  observed_date: string;
-  observed_time: string;
+  observed_date: string | null;
+  observed_time: string | null;
+  survey_sample_period_id: number | null;
+  survey_sample_period_start_datetime: string | null;
+  survey_sample_site_name: string | null;
+  method_technique_name: string | null;
   [habitatFeatureDefinitionUuid: string]: number | string | unknown;
 }
 
@@ -155,7 +159,11 @@ export const HabitatFeatureTableContextProvider = (props: IHabitatFeatureTableCo
       latitude: habitatFeature.latitude,
       longitude: habitatFeature.longitude,
       observed_date: habitatFeature.observed_date,
-      observed_time: habitatFeature.observed_time
+      observed_time: habitatFeature.observed_time,
+      survey_sample_period_id: habitatFeature.survey_sample_period_id,
+      survey_sample_period_start_datetime: habitatFeature.survey_sample_period_start_datetime,
+      survey_sample_site_name: habitatFeature.survey_sample_site_name,
+      method_technique_name: habitatFeature.method_technique_name
       // TODO: Mac: Add the qualitative and quantitative data to the row
     }));
   }, [habitatFeatureDataLoader.data]);
@@ -167,7 +175,7 @@ export const HabitatFeatureTableContextProvider = (props: IHabitatFeatureTableCo
         (quantitativeDefintion) => ({
           field: quantitativeDefintion.habitat_feature_quantitative_definition_id,
           headerName: quantitativeDefintion.name,
-          align: 'right' // Quantitative columns are numeric
+          align: 'left' // Quantitative columns are numeric
         })
       ) ?? [];
 
@@ -186,43 +194,59 @@ export const HabitatFeatureTableContextProvider = (props: IHabitatFeatureTableCo
         headerName: 'Habitat Feature',
         align: 'left',
         minWidth: 200,
-        valueGetter: (params) => habitatFeatureTypeMap.get(params.value),
-        flex: 1
+        flex: 1,
+        valueGetter: (params) => habitatFeatureTypeMap.get(params.value)
       },
       {
         field: 'habitat_feature_taxons',
         headerName: 'Species',
         align: 'left',
-        valueGetter: (params) => params.row.habitat_feature_taxons.join(', '),
+        minWidth: 180,
+        flex: 1,
+        valueGetter: (params) => params.row.habitat_feature_taxons.join(', ')
+      },
+      {
+        field: 'survey_sample_site_name',
+        headerName: 'Sample Site',
+        align: 'left',
+        minWidth: 180,
         flex: 1
       },
       {
-        field: 'survey_sample_site_id',
-        headerName: 'Sample Site',
+        field: 'method_technique_name',
+        headerName: 'Method Technique',
         align: 'left',
+        minWidth: 180,
+        flex: 1
+      },
+      {
+        field: 'survey_sample_period_start_datetime',
+        headerName: 'Sample Period',
+        align: 'left',
+        minWidth: 180,
         flex: 1
       },
       {
         field: 'count',
         headerName: 'Count',
-        headerAlign: 'right',
-        align: 'right',
+        headerAlign: 'left',
+        align: 'left',
         minWidth: 100,
         flex: 1
       },
       {
         field: 'latitude',
         headerName: 'Lat',
-        headerAlign: 'right',
-        align: 'right',
+        headerAlign: 'left',
+        align: 'left',
         minWidth: 150,
         flex: 1
       },
       {
         field: 'longitude',
         headerName: 'Long',
-        headerAlign: 'right',
-        align: 'right',
+        headerAlign: 'left',
+        align: 'left',
         minWidth: 150,
         flex: 1
       },
@@ -235,8 +259,8 @@ export const HabitatFeatureTableContextProvider = (props: IHabitatFeatureTableCo
       {
         field: 'observed_time',
         headerName: 'Time',
-        headerAlign: 'right',
-        align: 'right',
+        headerAlign: 'left',
+        align: 'left',
         minWidth: 120,
         flex: 1
       }

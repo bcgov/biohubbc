@@ -45,7 +45,11 @@ export const EditHabitatFeaturePage = (): JSX.Element => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const habitatFeatureDataLoader = useDataLoader(() =>
-    biohubApi.habitatFeature.getSurveyHabitatFeature(surveyContext.projectId, surveyContext.surveyId, habitatFeatureId)
+    biohubApi.habitatFeature.getSurveyHabitatFeatureWithSupplementaryData(
+      surveyContext.projectId,
+      surveyContext.surveyId,
+      habitatFeatureId
+    )
   );
 
   useEffect(() => {
@@ -63,11 +67,14 @@ export const EditHabitatFeaturePage = (): JSX.Element => {
 
   const initialHabitatFeatureFormValues: UpdateHabitatFeatureFormValues = {
     habitat_feature_type_id: habitatFeatureDataLoader.data.surveyHabitatFeature.habitat_feature_type_id,
+    count: habitatFeatureDataLoader.data.surveyHabitatFeature.count,
     latitude: habitatFeatureDataLoader.data.surveyHabitatFeature.latitude,
     longitude: habitatFeatureDataLoader.data.surveyHabitatFeature.longitude,
-    count: habitatFeatureDataLoader.data.surveyHabitatFeature.count,
     observed_date: habitatFeatureDataLoader.data.surveyHabitatFeature.observed_date,
     observed_time: habitatFeatureDataLoader.data.surveyHabitatFeature.observed_time,
+    survey_sample_site_id: habitatFeatureDataLoader.data.surveyHabitatFeature.survey_sample_site_id,
+    method_technique_id: habitatFeatureDataLoader.data.surveyHabitatFeature.method_technique_id,
+    survey_sample_period_id: habitatFeatureDataLoader.data.surveyHabitatFeature.survey_sample_period_id,
     survey_habitat_feature_taxons: habitatFeatureDataLoader.data.surveyHabitatFeature.survey_habitat_feature_taxons.map(
       (taxon) => ({
         itis_tsn: taxon.itis_tsn,
@@ -92,11 +99,12 @@ export const EditHabitatFeaturePage = (): JSX.Element => {
         habitatFeatureId,
         {
           habitat_feature_type_id: values.habitat_feature_type_id,
-          latitude: values.latitude,
-          longitude: values.longitude,
           count: values.count,
-          observed_date: values.observed_date,
-          observed_time: values.observed_time,
+          latitude: values.latitude || null,
+          longitude: values.longitude || null,
+          observed_date: values.observed_date || null,
+          observed_time: values.observed_time || null,
+          survey_sample_period_id: values.survey_sample_period_id || null,
           survey_habitat_feature_taxons: values.survey_habitat_feature_taxons.map((formTaxon) => ({
             itis_tsn: formTaxon.itis_tsn,
             itis_scientific_name: formTaxon.itis_scientific_name,

@@ -19,6 +19,35 @@ export function makeFindSurveyHabitatFeaturesQuery(
 ): Knex.QueryBuilder {
   const knex = getKnex();
 
+  // Get survey IDs query
+  const getSurveyIdsQuery = makeFindSurveyIdsQuery(isUserAdmin, systemUserId, filterFields);
+
+  // Get base query
+  const getSurveyHabitatFeaturesQuery = getSurveyHabitatFeaturesBaseQuery(knex, getSurveyIdsQuery);
+
+  // Append filter fields
+  appendFindSurveyHabitatFeaturesFilterFIelds(getSurveyHabitatFeaturesQuery, filterFields);
+
+  return getSurveyHabitatFeaturesQuery;
+}
+
+/**
+ * Generate a query to find survey habitat feature records for the current user, based on their permissions and filter
+ * criteria.
+ *
+ * @export
+ * @param {boolean} isUserAdmin
+ * @param {(number | null)} systemUserId
+ * @param {FindSurveyHabitatFeatureAdvancedFilters} [filterFields]
+ * @return {*}  {Knex.QueryBuilder}
+ */
+function makeFindSurveyIdsQuery(
+  isUserAdmin: boolean,
+  systemUserId: number | null,
+  filterFields?: FindSurveyHabitatFeatureAdvancedFilters
+): Knex.QueryBuilder {
+  const knex = getKnex();
+
   const getSurveyIdsQuery = knex.select<any, { survey_id: number }>(['survey_id']).from('survey');
 
   // Ensure that users can only see survey habitat feature records that they are participating in, unless they are an
@@ -42,9 +71,20 @@ export function makeFindSurveyHabitatFeaturesQuery(
     });
   }
 
-  // Get base query
-  const getSurveyHabitatFeaturesQuery = getSurveyHabitatFeaturesBaseQuery(knex, getSurveyIdsQuery);
+  return getSurveyIdsQuery;
+}
 
+/**
+ * Append filter fields to the query for finding survey habitat feature records.
+ *
+ * @export
+ * @param {Knex.QueryBuilder<any, any>} getSurveyHabitatFeaturesQuery
+ * @param {FindSurveyHabitatFeatureAdvancedFilters} [filterFields]
+ */
+function appendFindSurveyHabitatFeaturesFilterFIelds(
+  getSurveyHabitatFeaturesQuery: Knex.QueryBuilder<any, any>,
+  filterFields?: FindSurveyHabitatFeatureAdvancedFilters
+) {
   if (filterFields?.keyword || filterFields?.habitat_feature_type_ids?.length) {
     // Keyword filter
     if (filterFields?.keyword) {
@@ -96,8 +136,6 @@ export function makeFindSurveyHabitatFeaturesQuery(
   if (filterFields?.end_time) {
     getSurveyHabitatFeaturesQuery.andWhere('survey_habitat_feature.observed_time', '<=', filterFields.end_time);
   }
-
-  return getSurveyHabitatFeaturesQuery;
 }
 
 /**
@@ -114,48 +152,104 @@ export function getSurveyHabitatFeaturesBaseQuery(
   knex: Knex,
   getSurveyIdsQuery: Knex.QueryBuilder<any, { survey_id: number }>
 ): Knex.QueryBuilder {
-  return knex
-    .select([
-      'survey_habitat_feature.survey_habitat_feature_id',
-      'survey_habitat_feature.survey_id',
-      'survey_habitat_feature.habitat_feature_type_id',
-      'survey_habitat_feature.count',
-      'survey_habitat_feature.latitude',
-      'survey_habitat_feature.longitude',
-      'survey_habitat_feature.observed_date',
-      'survey_habitat_feature.observed_time',
-      knex.raw(`
-        COALESCE(
-          (
-            json_agg(
-              json_build_object(
-                'survey_habitat_feature_taxon_id', survey_habitat_feature_taxon.survey_habitat_feature_taxon_id,
-                'survey_habitat_feature_id', survey_habitat_feature_taxon.survey_habitat_feature_id,
-                'itis_tsn', survey_habitat_feature_taxon.itis_tsn,
-                'itis_scientific_name', survey_habitat_feature_taxon.itis_scientific_name,
-                'comment', survey_habitat_feature_taxon.comment
-              )
-            ) FILTER (WHERE survey_habitat_feature_taxon.survey_habitat_feature_taxon_id IS NOT NULL)
-          ),
-          '[]'::json
-        ) AS survey_habitat_feature_taxons
-      `)
-    ])
-    .from('survey_habitat_feature')
-    .leftJoin(
-      'survey_habitat_feature_taxon',
-      'survey_habitat_feature_taxon.survey_habitat_feature_id',
-      'survey_habitat_feature.survey_habitat_feature_id'
-    )
-    .whereIn('survey_habitat_feature.survey_id', getSurveyIdsQuery)
-    .groupBy([
-      'survey_habitat_feature.survey_habitat_feature_id',
-      'survey_habitat_feature.survey_id',
-      'survey_habitat_feature.habitat_feature_type_id',
-      'survey_habitat_feature.count',
-      'survey_habitat_feature.latitude',
-      'survey_habitat_feature.longitude',
-      'survey_habitat_feature.observed_date',
-      'survey_habitat_feature.observed_time'
-    ]);
+  return (
+    knex
+      // Get all sampling information (sites, periods, techniques) for the matching observations
+      .with(
+        'w_sampling_data',
+        knex
+          .select(
+            // Period data
+            'survey_sample_period.survey_sample_period_id',
+            knex.raw(
+              `(survey_sample_period.start_date::date + COALESCE(survey_sample_period.start_time, '00:00:00')::time)::timestamp as survey_sample_period_start_datetime`
+            ),
+            // Site data
+            'survey_sample_period.survey_sample_site_id',
+            'survey_sample_site.name as survey_sample_site_name',
+            // Technique data
+            'survey_sample_period.method_technique_id',
+            'method_technique.name as method_technique_name'
+          )
+          .from('survey_sample_period')
+          .leftJoin(
+            'survey_sample_site',
+            'survey_sample_site.survey_sample_site_id',
+            'survey_sample_period.survey_sample_site_id'
+          )
+          .leftJoin(
+            'method_technique',
+            'method_technique.method_technique_id',
+            'survey_sample_period.method_technique_id'
+          )
+          .whereIn('survey_sample_period.survey_id', getSurveyIdsQuery)
+      )
+      .select([
+        'survey_habitat_feature.survey_habitat_feature_id',
+        'survey_habitat_feature.survey_id',
+        'survey_habitat_feature.habitat_feature_type_id',
+        'survey_habitat_feature.count',
+        'survey_habitat_feature.latitude',
+        'survey_habitat_feature.longitude',
+        'survey_habitat_feature.observed_date',
+        'survey_habitat_feature.observed_time',
+        // Period data
+        'survey_habitat_feature.survey_sample_period_id',
+        'w_sampling_data.survey_sample_period_start_datetime',
+        // Site data
+        'w_sampling_data.survey_sample_site_id',
+        'w_sampling_data.survey_sample_site_name',
+        // Technique data
+        'w_sampling_data.method_technique_id',
+        'w_sampling_data.method_technique_name',
+        // Taxon data
+        knex.raw(`
+          COALESCE(
+            (
+              json_agg(
+                json_build_object(
+                  'survey_habitat_feature_taxon_id', survey_habitat_feature_taxon.survey_habitat_feature_taxon_id,
+                  'survey_habitat_feature_id', survey_habitat_feature_taxon.survey_habitat_feature_id,
+                  'itis_tsn', survey_habitat_feature_taxon.itis_tsn,
+                  'itis_scientific_name', survey_habitat_feature_taxon.itis_scientific_name,
+                  'comment', survey_habitat_feature_taxon.comment
+                )
+              ) FILTER (WHERE survey_habitat_feature_taxon.survey_habitat_feature_taxon_id IS NOT NULL)
+            ),
+            '[]'::json
+          ) AS survey_habitat_feature_taxons
+        `)
+      ])
+      .from('survey_habitat_feature')
+      .leftJoin(
+        'survey_habitat_feature_taxon',
+        'survey_habitat_feature_taxon.survey_habitat_feature_id',
+        'survey_habitat_feature.survey_habitat_feature_id'
+      )
+      .leftJoin(
+        'w_sampling_data',
+        'survey_habitat_feature.survey_sample_period_id',
+        'w_sampling_data.survey_sample_period_id'
+      )
+      .whereIn('survey_habitat_feature.survey_id', getSurveyIdsQuery)
+      .groupBy([
+        'survey_habitat_feature.survey_habitat_feature_id',
+        'survey_habitat_feature.survey_id',
+        'survey_habitat_feature.habitat_feature_type_id',
+        'survey_habitat_feature.count',
+        'survey_habitat_feature.latitude',
+        'survey_habitat_feature.longitude',
+        'survey_habitat_feature.observed_date',
+        'survey_habitat_feature.observed_time',
+        // Period data
+        'survey_habitat_feature.survey_sample_period_id',
+        'w_sampling_data.survey_sample_period_start_datetime',
+        // Site data
+        'w_sampling_data.survey_sample_site_id',
+        'w_sampling_data.survey_sample_site_name',
+        // Technique data
+        'w_sampling_data.method_technique_id',
+        'w_sampling_data.method_technique_name'
+      ])
+  );
 }

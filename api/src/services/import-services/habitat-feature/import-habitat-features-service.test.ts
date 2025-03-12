@@ -37,6 +37,9 @@ describe('import-habitat-features-service', () => {
         'LONGITUDE',
         'OBSERVED_DATE',
         'OBSERVED_TIME',
+        'SAMPLE_PERIOD',
+        'SAMPLE_SITE',
+        'METHOD_TECHNIQUE',
         'SPECIES'
       ]);
     });
@@ -107,6 +110,7 @@ describe('import-habitat-features-service', () => {
           longitude: 2,
           observed_date: '2021-01-01',
           observed_time: '12:00:00',
+          survey_sample_period_id: null,
           survey_habitat_feature_taxons: []
         }
       ]);
@@ -158,13 +162,29 @@ describe('import-habitat-features-service', () => {
       const taxonRowValidatorStub = sinon.stub(taxonRowValidator, 'getTaxonRowValidator').returns(() => []);
       const taxonMap = new CaseInsensitiveMap<string, IItisSearchResult>();
 
-      await service._setHabitatFeatureRowValidators(taxonMap);
+      const samplePeriodServiceStub: any = {
+        getSamplePeriodsForSurvey: sinon.stub().resolves([])
+      };
+      const sampleSiteServiceStub: any = {
+        getSampleSitesForSurveyId: sinon.stub().resolves([])
+      };
+
+      const methodTechniqueServiceStub: any = {
+        getTechniquesForSurveyId: sinon.stub().resolves([])
+      };
+
+      await service._setHabitatFeatureRowValidators(
+        taxonMap,
+        samplePeriodServiceStub,
+        sampleSiteServiceStub,
+        methodTechniqueServiceStub
+      );
 
       expect(taxonRowValidatorStub).to.have.been.calledOnceWithExactly(taxonMap, service.utils, 'SPECIES', {
         optional: true
       });
 
-      expect(service.utils.config.rowValidators).to.be.an('array').and.to.have.length(1);
+      expect(service.utils.config.rowValidators).to.be.an('array').and.to.have.length(2);
     });
   });
 });
