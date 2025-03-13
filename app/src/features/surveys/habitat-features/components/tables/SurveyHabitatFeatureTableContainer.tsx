@@ -14,13 +14,17 @@ import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
+import axios, { AxiosProgressEvent } from 'axios';
 import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
+import { CSVSingleImportDialog } from 'components/csv/CSVSingleImportDialog';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useHabitatFeatureTableContext, useSurveyContext } from 'hooks/useContext';
 import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import { useState } from 'react';
 import { Link as RouterLink, useHistory } from 'react-router-dom';
+import { getHabitatFeaturesCSVTemplate } from 'utils/csv-templates';
+import { downloadFile } from 'utils/file-utils';
 import { SurveyHabitatFeatureTable } from './SurveyHabitatFeatureTable';
 
 /**
@@ -35,6 +39,7 @@ export const SurveyHabitatFeatureTableContainer = (): JSX.Element => {
   const habitatFeatureTableContext = useHabitatFeatureTableContext();
   const surveyContext = useSurveyContext();
 
+  const [openImportDialog, setOpenImportDialog] = useState(false);
   const [columnVisibilityMenuAnchorEl, setColumnVisibilityMenuAnchorEl] = useState<Element | null>(null);
 
   const handleCloseColumnVisibilityMenu = () => {
@@ -88,109 +93,146 @@ export const SurveyHabitatFeatureTableContainer = (): JSX.Element => {
     });
   };
 
+  /**
+   * Handle the bulk import of habitat features.
+   *
+   * @param {File} file
+   * @param {(progressEvent: AxiosProgressEvent) => void} onProgress
+   * @return {*} {Promise<void>}
+   */
+  const handleBulkImportHabitatFeatures = async (
+    file: File,
+    onProgress: (progressEvent: AxiosProgressEvent) => void
+  ) => {
+    await biohubApi.habitatFeature.importHabitatFeaturesFromCsv(
+      file,
+      surveyContext.projectId,
+      surveyContext.surveyId,
+      axios.CancelToken.source(),
+      onProgress
+    );
+
+    habitatFeatureTableContext.refreshData();
+
+    setOpenImportDialog(false);
+  };
+
   return (
-    <Paper component={Stack} flexDirection="column" flex="1 1 auto" height="100%">
-      <Toolbar
-        disableGutters
-        sx={{
-          pl: 2,
-          pr: 3
-        }}>
-        <Typography
+    <>
+      <CSVSingleImportDialog
+        open={openImportDialog}
+        dialogTitle={'Import Habitat Features'}
+        dialogSummary={'Import habitat features data for a survey by uploading a CSV file matching the template'}
+        onClose={() => setOpenImportDialog(false)}
+        onImport={handleBulkImportHabitatFeatures}
+        onDownloadTemplate={() => downloadFile(getHabitatFeaturesCSVTemplate(), 'habitat-features-template.csv')}
+      />
+      <Paper component={Stack} flexDirection="column" flex="1 1 auto" height="100%">
+        <Toolbar
+          disableGutters
           sx={{
-            flexGrow: '1',
-            fontSize: '1.125rem',
-            fontWeight: 700
+            pl: 2,
+            pr: 3
           }}>
-          Habitat Features &zwnj;
-          <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
-            ({habitatFeatureTableContext.rowCount})
-          </Typography>
-        </Typography>
-
-        <Stack flexDirection="row" alignItems="center" gap={1} whiteSpace="nowrap">
-          <HelpButtonDialog markdownType={MarkdownTypeNameEnum.HABITAT_FEATURES} />
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<Icon path={mdiPlus} size={1} />}
-            component={RouterLink}
-            to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/habitat-features/create`}>
-            Add
-          </Button>
-
-          <Collapse in={habitatFeatureTableContext.rowSelectionModel.length === 1} orientation="horizontal">
-            <Button
-              variant="outlined"
-              color="primary"
-              startIcon={<Icon path={mdiPencil} size={1} />}
-              onClick={() => {
-                history.push(`${habitatFeatureTableContext.rowSelectionModel[0]}/edit`);
-              }}>
-              Edit
-            </Button>
-            <Button
-              variant="outlined"
-              color="error"
-              startIcon={<Icon path={mdiTrashCan} size={1} />}
-              onClick={() =>
-                deleteHabitatFeatures(habitatFeatureTableContext.rowSelectionModel.map((id) => Number(id)))
-              }
-              sx={{ ml: 1 }}>
-              Delete
-            </Button>
-          </Collapse>
-
-          <Tooltip title="Toggle column visibility">
-            <IconButton onClick={(event) => setColumnVisibilityMenuAnchorEl(event.currentTarget)}>
-              <Icon path={mdiCogOutline} size={1} />
-            </IconButton>
-          </Tooltip>
-
-          <Menu
-            anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'right'
-            }}
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'right'
-            }}
-            id="survey-habitat-features-table-actions-menu"
-            anchorEl={columnVisibilityMenuAnchorEl}
-            open={Boolean(columnVisibilityMenuAnchorEl)}
-            onClose={handleCloseColumnVisibilityMenu}
-            MenuListProps={{
-              'aria-labelledby': 'basic-button'
+          <Typography
+            sx={{
+              flexGrow: '1',
+              fontSize: '1.125rem',
+              fontWeight: 700
             }}>
-            <Box
-              sx={{
-                xs: { maxHeight: '300px' },
-                lg: { maxHeight: '400px' }
+            Habitat Features &zwnj;
+            <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
+              ({habitatFeatureTableContext.rowCount})
+            </Typography>
+          </Typography>
+
+          <Stack flexDirection="row" alignItems="center" gap={1} whiteSpace="nowrap">
+            <HelpButtonDialog markdownType={MarkdownTypeNameEnum.HABITAT_FEATURES} />
+            <Button variant="outlined" onClick={() => setOpenImportDialog(true)}>
+              Import
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<Icon path={mdiPlus} size={1} />}
+              component={RouterLink}
+              to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/habitat-features/create`}>
+              Add
+            </Button>
+
+            <Collapse in={habitatFeatureTableContext.rowSelectionModel.length === 1} orientation="horizontal">
+              <Button
+                variant="outlined"
+                color="primary"
+                startIcon={<Icon path={mdiPencil} size={1} />}
+                onClick={() => {
+                  history.push(`${habitatFeatureTableContext.rowSelectionModel[0]}/edit`);
+                }}>
+                Edit
+              </Button>
+              <Button
+                variant="outlined"
+                color="error"
+                startIcon={<Icon path={mdiTrashCan} size={1} />}
+                onClick={() =>
+                  deleteHabitatFeatures(habitatFeatureTableContext.rowSelectionModel.map((id) => Number(id)))
+                }
+                sx={{ ml: 1 }}>
+                Delete
+              </Button>
+            </Collapse>
+
+            <Tooltip title="Toggle column visibility">
+              <IconButton onClick={(event) => setColumnVisibilityMenuAnchorEl(event.currentTarget)}>
+                <Icon path={mdiCogOutline} size={1} />
+              </IconButton>
+            </Tooltip>
+
+            <Menu
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'right'
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right'
+              }}
+              id="survey-habitat-features-table-actions-menu"
+              anchorEl={columnVisibilityMenuAnchorEl}
+              open={Boolean(columnVisibilityMenuAnchorEl)}
+              onClose={handleCloseColumnVisibilityMenu}
+              MenuListProps={{
+                'aria-labelledby': 'basic-button'
               }}>
-              {habitatFeatureTableContext.columns.map((column) => {
-                return (
-                  <MenuItem
-                    dense
-                    key={column.field}
-                    onClick={() => habitatFeatureTableContext.toggleColumnVisibility(column.field)}>
-                    <Checkbox checked={!habitatFeatureTableContext.hiddenColumns.includes(column.field)} />
-                    <ListItemText>{column.headerName}</ListItemText>
-                  </MenuItem>
-                );
-              })}
-            </Box>
-          </Menu>
-        </Stack>
-      </Toolbar>
+              <Box
+                sx={{
+                  xs: { maxHeight: '300px' },
+                  lg: { maxHeight: '400px' }
+                }}>
+                {habitatFeatureTableContext.columns.map((column) => {
+                  return (
+                    <MenuItem
+                      dense
+                      key={column.field}
+                      onClick={() => habitatFeatureTableContext.toggleColumnVisibility(column.field)}>
+                      <Checkbox checked={!habitatFeatureTableContext.hiddenColumns.includes(column.field)} />
+                      <ListItemText>{column.headerName}</ListItemText>
+                    </MenuItem>
+                  );
+                })}
+              </Box>
+            </Menu>
+          </Stack>
+        </Toolbar>
 
-      <Divider flexItem></Divider>
+        <Divider flexItem></Divider>
 
-      <Box display="flex" flexDirection="column" flex="1 1 auto" position="relative">
-        <Box position="absolute" width="100%" height="100%">
-          <SurveyHabitatFeatureTable />
+        <Box display="flex" flexDirection="column" flex="1 1 auto" position="relative">
+          <Box position="absolute" width="100%" height="100%">
+            <SurveyHabitatFeatureTable />
+          </Box>
         </Box>
-      </Box>
-    </Paper>
+      </Paper>
+    </>
   );
 };

@@ -1,6 +1,9 @@
 import { z } from 'zod';
 import { ApiGeneralError } from '../../../errors/api-error';
 import { CSVRow, CSVRowState, CSVRowStateOptions } from '../../../utils/csv-utils/csv-config-validation.interface';
+import { getLogger } from '../../../utils/logger';
+
+const defaultLog = getLogger('import-services/utils/row-state');
 
 /**
  * Helper to update the CSV row state.
@@ -85,7 +88,7 @@ export const updateCSVRowState = (row: CSVRow, state: Record<string, any>, optio
  * @param {z.ZodSchema} schema - The Zod schema to validate the row state
  * @returns {*} {function} - The row state getter
  */
-export const createRowStateGetter = <SchemaType extends z.ZodSchema>(schema: SchemaType) => {
+export const createRowStateGetter = <SchemaType extends z.ZodSchema>(schema: SchemaType, label: string) => {
   return (rowOrState: CSVRow | CSVRow[typeof CSVRowState]): z.infer<SchemaType> => {
     let state = rowOrState;
 
@@ -100,6 +103,13 @@ export const createRowStateGetter = <SchemaType extends z.ZodSchema>(schema: Sch
 
     // Throw an error if unable to correctly parse the row state
     if (!parsedState.success) {
+      defaultLog.debug({
+        label: label,
+        message: 'Invalid CSV row state',
+        state: state,
+        errors: parsedState.error
+      });
+
       throw new ApiGeneralError('Invalid CSV row state', [
         {
           state: state,
@@ -127,7 +137,8 @@ export const getCritterCaptureFromRowState = createRowStateGetter(
   z.object({
     critter_id: z.string().uuid(),
     capture_id: z.string().uuid()
-  })
+  }),
+  'getCritterCaptureFromRowState'
 );
 
 // Taxon
@@ -137,25 +148,30 @@ export const getTaxonFromRowState = createRowStateGetter(
       itis_tsn: z.number(),
       itis_scientific_name: z.string()
     })
-  })
+  }),
+  'getTaxonFromRowState'
 );
 
 // Taxon array
 export const getTaxonArrayFromRowState = createRowStateGetter(
-  z.object({
-    taxon: z.union([
-      z.object({
-        itis_tsn: z.number(),
-        itis_scientific_name: z.string()
-      }),
-      z.array(
+  z.union([
+    z.undefined(),
+    z.object({
+      taxon: z.union([
         z.object({
           itis_tsn: z.number(),
           itis_scientific_name: z.string()
-        })
-      )
-    ])
-  })
+        }),
+        z.array(
+          z.object({
+            itis_tsn: z.number(),
+            itis_scientific_name: z.string()
+          })
+        )
+      ])
+    })
+  ]),
+  'getTaxonArrayFromRowState'
 );
 
 // Measurement
@@ -163,14 +179,16 @@ export const getQualitativeMeasurementFromRowState = createRowStateGetter(
   z.object({
     taxon_measurement_id: z.string().uuid(),
     qualitative_option_id: z.string().uuid()
-  })
+  }),
+  'getQualitativeMeasurementFromRowState'
 );
 
 export const getQuantitativeMeasurementFromRowState = createRowStateGetter(
   z.object({
     taxon_measurement_id: z.string().uuid(),
     value: z.number()
-  })
+  }),
+  'getQuantitativeMeasurementFromRowState'
 );
 
 // Environment
@@ -178,19 +196,22 @@ export const getQualitativeEnvironmentFromRowState = createRowStateGetter(
   z.object({
     environment_qualitative_id: z.string().uuid(),
     environment_qualitative_option_id: z.string().uuid()
-  })
+  }),
+  'getQualitativeEnvironmentFromRowState'
 );
 
 export const getQuantitativeEnvironmentFromRowState = createRowStateGetter(
   z.object({
     environment_quantitative_id: z.string().uuid(),
     value: z.number()
-  })
+  }),
+  'getQuantitativeEnvironmentFromRowState'
 );
 
 // Observation
 export const getSamplePeriodIdFromRowState = createRowStateGetter(
   z.object({
     sample_period_id: z.number().optional()
-  })
+  }),
+  'getSamplePeriodIdFromRowState'
 );

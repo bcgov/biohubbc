@@ -84,3 +84,23 @@ export const getSamplePeriodCSVTemplate = (): CSVEncodedTemplate => {
 export const getAnimalCSVTemplate = (): CSVEncodedTemplate => {
   return getCSVTemplate(['SPECIES', 'ALIAS', 'SEX', 'WLH_ID', 'DESCRIPTION']);
 };
+
+/**
+ * Get CSV template for Habitat Features.
+ *
+ * @returns {CSVEncodedTemplate} Encoded CSV template
+ */
+export const getHabitatFeaturesCSVTemplate = (): CSVEncodedTemplate => {
+  return getCSVTemplate([
+    'HABITAT_FEATURE',
+    'COUNT',
+    'DATE',
+    'TIME',
+    'LATITUDE',
+    'LONGITUDE',
+    'SITE',
+    'TECHNIQUE',
+    'PERIOD',
+    'COMMENT'
+  ]);
+};

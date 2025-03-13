@@ -1,3 +1,4 @@
+import { castArray, compact } from 'lodash';
 import { WorkSheet } from 'xlsx';
 import { IDBConnection } from '../../../database/db';
 import { CodeRepository } from '../../../repositories/code-repository';
@@ -25,7 +26,7 @@ import { PlatformService } from '../../platform-service';
 import { SamplePeriodService } from '../../sample-period-service';
 import { SampleSiteService } from '../../sample-site-service';
 import { TechniqueService } from '../../technique-service';
-import { getSamplePeriodIdFromRowState, getTaxonArrayFromRowState } from '../utils/row-state';
+import { getTaxonArrayFromRowState } from '../utils/row-state';
 import { getTaxonMap, TaxonMap } from '../utils/taxon';
 import { getHabitatFeatureTypeCellValidator } from './utils/habitat-feature-header-configs';
 import { getHabitatFeatureSamplingInformationRowValidator } from './utils/habitat-feature-sampling-row-validator';
@@ -122,11 +123,13 @@ export class ImportHabitatFeaturesService extends DBService {
     for (const row of rows) {
       // Get the taxon data, if any, from the row state and format it for insertion
       const taxonRowState = getTaxonArrayFromRowState(row);
-      const taxonArray = Array.isArray(taxonRowState.taxon) ? taxonRowState.taxon : [taxonRowState.taxon];
-      const surveyHabitatFeatureTaxons = taxonArray.map(({ itis_tsn, itis_scientific_name }) => ({
-        itis_tsn,
-        itis_scientific_name,
-        comment: row.COMMENT
+
+      // Convert the row state taxon into a list of survey habitat feature taxons
+      // Note: Taxon is either an object or an array of objects or undefined
+      const surveyHabitatFeatureTaxons = compact(castArray(taxonRowState?.taxon)).map((taxon) => ({
+        itis_tsn: taxon.itis_tsn,
+        itis_scientific_name: taxon.itis_scientific_name,
+        comment: row.COMMENT ?? null
       }));
 
       surveyHabitatFeatures.push({
@@ -136,7 +139,8 @@ export class ImportHabitatFeaturesService extends DBService {
         longitude: row.LONGITUDE,
         observed_date: row.OBSERVED_DATE,
         observed_time: row.OBSERVED_TIME,
-        survey_sample_period_id: this.samplePeriodId ?? getSamplePeriodIdFromRowState(row).sample_period_id ?? null,
+        // TODO: Wire this up to the sample period ID from the row state
+        survey_sample_period_id: null,
         survey_habitat_feature_taxons: surveyHabitatFeatureTaxons
         // TODO: Add quantitative/qualitative values
       });
