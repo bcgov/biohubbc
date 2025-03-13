@@ -1,7 +1,7 @@
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { useHabitatFeatureTableContext } from 'hooks/useContext';
 
-const rowHeight = 52;
+const HABITAT_FEATURE_ROW_HEIGHT = 52;
 
 /**
  * Renders the Survey Habitat Feature table.
@@ -15,16 +15,19 @@ export const SurveyHabitatFeatureTable = (): JSX.Element => {
     <StyledDataGrid
       apiRef={habitatFeatureTableContext._muiDataGridApiRef}
       noRowsMessage="No habitat features found"
-      columnHeaderHeight={rowHeight}
-      rowHeight={rowHeight}
-      rows={habitatFeatureTableContext.rows}
       getRowId={(row) => row.survey_habitat_feature_id}
+      rows={habitatFeatureTableContext.rows}
       columns={habitatFeatureTableContext.columns}
+      loading={habitatFeatureTableContext.isLoading}
       initialState={{
         pagination: {
-          paginationModel: { page: 0, pageSize: 10 }
+          paginationModel: habitatFeatureTableContext.paginationModel
         }
       }}
+      // Row heights
+      columnHeaderHeight={HABITAT_FEATURE_ROW_HEIGHT}
+      rowHeight={HABITAT_FEATURE_ROW_HEIGHT}
+      autoHeight={false}
       // Column visibility
       columnVisibilityModel={habitatFeatureTableContext.columnVisibilityModel}
       onColumnVisibilityModelChange={habitatFeatureTableContext.onColumnVisibilityModelChange}
@@ -32,15 +35,22 @@ export const SurveyHabitatFeatureTable = (): JSX.Element => {
       rowSelectionModel={habitatFeatureTableContext.rowSelectionModel}
       onRowSelectionModelChange={habitatFeatureTableContext.onRowSelectionModelChange}
       checkboxSelection={false} // Disabled as we do not yet support multi-row bulk actions
-      // Pagination
-      pageSizeOptions={[10, 25, 50]}
       rowSelection={true}
-      autoHeight={false}
+      // Pagination
+      paginationMode="server"
+      rowCount={habitatFeatureTableContext.rowCount}
+      paginationModel={habitatFeatureTableContext.paginationModel}
+      onPaginationModelChange={habitatFeatureTableContext.onPaginationModelChange}
+      pageSizeOptions={[1, 25, 50]}
+      // Sorting
+      sortModel={habitatFeatureTableContext.sortModel}
+      onSortModelChange={habitatFeatureTableContext.onSortModelChange}
+      sortingOrder={['asc', 'desc']}
+      // Disabled options
       disableColumnSelector
       disableColumnFilter
       disableColumnMenu
       disableVirtualization
-      sortingOrder={['asc', 'desc']}
       data-testid="survey-habitat-features-data-table"
       sx={{
         '& .MuiDataGrid-row:hover': {

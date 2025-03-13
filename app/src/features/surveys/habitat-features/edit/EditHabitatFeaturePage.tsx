@@ -105,7 +105,7 @@ export const EditHabitatFeaturePage = (): JSX.Element => {
         }
       );
 
-      habitatFeatureContext.refreshData();
+      habitatFeatureContext.refreshHabitatFeatureRecords();
 
       dialogContext.setSnackbar({
         open: true,

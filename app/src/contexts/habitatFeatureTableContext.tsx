@@ -1,11 +1,20 @@
-import { GridColDef, GridColumnVisibilityModel, GridRowSelectionModel, useGridApiRef } from '@mui/x-data-grid';
+import {
+  GridColDef,
+  GridColumnVisibilityModel,
+  GridPaginationModel,
+  GridRowSelectionModel,
+  GridSortModel,
+  useGridApiRef
+} from '@mui/x-data-grid';
 import { GridApiCommunity } from '@mui/x-data-grid/internals';
 import { SIMS_HABITAT_FEATURES_HIDDEN_COLUMNS } from 'constants/session-storage';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { usePersistentState } from 'hooks/usePersistentState';
+import { getSurveyHabitatFeaturesWithSupplementaryData } from 'interfaces/useSurveyHabitatFeatureApi.interface';
 import { createContext, PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react';
+import { firstOrNull } from 'utils/Utils';
 
 export interface IHabitatFeatureRow {
   survey_habitat_feature_id: number;
@@ -62,13 +71,29 @@ export interface IHabitatFeatureTableContext {
    */
   onRowSelectionModelChange: (model: GridRowSelectionModel) => void;
   /**
+   * The pagination model, which defines which observation records to fetch and load in the table.
+   */
+  paginationModel: GridPaginationModel;
+  /**
+   * Sets the pagination model.
+   */
+  onPaginationModelChange: (model: GridPaginationModel) => void;
+  /**
+   * The sort model, which defines the sorting of the table
+   */
+  sortModel: GridSortModel;
+  /**
+   * Sets the sort model
+   */
+  onSortModelChange: (model: GridSortModel) => void;
+  /**
    * Toggle a columns visibility
    */
   toggleColumnVisibility: (column: string) => void;
   /**
    * Refresh the data in the table
    */
-  refreshData: () => Promise<void>;
+  refreshHabitatFeatureRecords: () => Promise<getSurveyHabitatFeaturesWithSupplementaryData | undefined>;
 }
 
 type IHabitatFeatureTableContextProviderProps = PropsWithChildren;
@@ -96,9 +121,34 @@ export const HabitatFeatureTableContextProvider = (props: IHabitatFeatureTableCo
     {}
   );
 
-  const habitatFeatureDataLoader = useDataLoader(() =>
-    biohubApi.habitatFeature.getSurveyHabitatFeaturesWithSupplementaryData(projectId, surveyId)
+  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
+    page: 0,
+    pageSize: 1
+  });
+
+  const [sortModel, setSortModel] = useState<GridSortModel>([{ field: 'observed_date', sort: 'desc' }]);
+
+  const habitatFeatureDataLoader = useDataLoader(
+    biohubApi.habitatFeature.getSurveyHabitatFeaturesWithSupplementaryData
   );
+
+  /**
+   * Refreshes the observations table with the latest records from the server.
+   *
+   * @return {*}
+   */
+  const refreshHabitatFeatureRecords = useCallback(async () => {
+    const sort = firstOrNull(sortModel);
+
+    return habitatFeatureDataLoader.refresh(projectId, surveyId, {
+      limit: paginationModel.pageSize,
+      sort: sort?.field || undefined,
+      order: sort?.sort || undefined,
+
+      // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
+      page: paginationModel.page + 1
+    });
+  }, [habitatFeatureDataLoader, paginationModel.page, paginationModel.pageSize, projectId, sortModel, surveyId]);
 
   // Load the codes and habitat feature data
   useEffect(() => {
@@ -106,14 +156,12 @@ export const HabitatFeatureTableContextProvider = (props: IHabitatFeatureTableCo
   }, [codesContext.codesDataLoader]);
 
   useEffect(() => {
-    habitatFeatureDataLoader.load();
-  }, [habitatFeatureDataLoader]);
+    if (habitatFeatureDataLoader.hasLoaded) {
+      return;
+    }
 
-  // Columns hidden from table view
-  const hiddenColumns = useMemo(() => {
-    const columns = Object.keys(columnVisibilityModel);
-    return columns.filter((column) => !columnVisibilityModel[column]);
-  }, [columnVisibilityModel]);
+    refreshHabitatFeatureRecords();
+  }, [habitatFeatureDataLoader, refreshHabitatFeatureRecords]);
 
   /**
    * Toggle the table columns visibility
@@ -132,6 +180,12 @@ export const HabitatFeatureTableContextProvider = (props: IHabitatFeatureTableCo
     },
     [columnVisibilityModel, setColumnVisibilityModel]
   );
+
+  // Columns hidden from table view
+  const hiddenColumns = useMemo(() => {
+    const columns = Object.keys(columnVisibilityModel);
+    return columns.filter((column) => !columnVisibilityModel[column]);
+  }, [columnVisibilityModel]);
 
   // Create a map of habitat feature type ids to their respective names
   const habitatFeatureTypeMap: Map<number, string> = useMemo(() => {
@@ -261,22 +315,28 @@ export const HabitatFeatureTableContextProvider = (props: IHabitatFeatureTableCo
       onRowSelectionModelChange: setRowSelectionModel,
       columnVisibilityModel: columnVisibilityModel,
       onColumnVisibilityModelChange: setColumnVisibilityModel,
+      paginationModel: paginationModel,
+      onPaginationModelChange: setPaginationModel,
+      sortModel: sortModel,
+      onSortModelChange: setSortModel,
       hiddenColumns: hiddenColumns,
       toggleColumnVisibility: toggleColumnsVisibility,
-      refreshData: async () => {
-        await habitatFeatureDataLoader.refresh();
-      }
+      refreshHabitatFeatureRecords: refreshHabitatFeatureRecords
     };
   }, [
     _muiDataGridApiRef,
     habitatFeatureTableColumns,
     habitatFeatureTableRows,
-    habitatFeatureDataLoader,
+    habitatFeatureDataLoader.data?.pagination.total,
+    habitatFeatureDataLoader.isLoading,
     rowSelectionModel,
     columnVisibilityModel,
     setColumnVisibilityModel,
+    paginationModel,
+    sortModel,
     hiddenColumns,
-    toggleColumnsVisibility
+    toggleColumnsVisibility,
+    refreshHabitatFeatureRecords
   ]);
 
   return (

@@ -71,7 +71,7 @@ export const CreateHabitatFeaturePage = (): JSX.Element => {
         }
       ]);
 
-      habitatFeatureContext.refreshData();
+      habitatFeatureContext.refreshHabitatFeatureRecords();
 
       dialogContext.setSnackbar({
         open: true,
