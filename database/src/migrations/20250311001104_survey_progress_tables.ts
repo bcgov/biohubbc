@@ -164,23 +164,7 @@ export async function up(knex: Knex): Promise<void> {
     ----------------------------------------------------------------------------------------
     -- Create constraints/indexes on foreign keys
     ----------------------------------------------------------------------------------------
-        
-    ALTER TABLE survey_checklist ADD CONSTRAINT fk_survey_checklist_checklist
-        FOREIGN KEY (checklist_id) REFERENCES checklist(checklist_id);
-
-    ALTER TABLE checklist_definition ADD CONSTRAINT fk_checklist_definition_checklist
-        FOREIGN KEY (checklist_id) REFERENCES checklist(checklist_id);
-        
-    ALTER TABLE checklist_definition ADD CONSTRAINT fk_checklist_definition_item
-        FOREIGN KEY (checklist_item_id) REFERENCES checklist_item(checklist_item_id);
-
-    ALTER TABLE checklist_item ADD CONSTRAINT fk_checklist_item_category
-        FOREIGN KEY (checklist_item_category_id) REFERENCES checklist_item_category(checklist_item_category_id);
-
-    CREATE INDEX idx_survey_checklist_checklist_id ON survey_checklist(checklist_id);
-    CREATE INDEX idx_checklist_definition_checklist_id ON checklist_definition(checklist_id);
-    CREATE INDEX idx_checklist_definition_item_id ON checklist_definition(checklist_item_id);
-    CREATE INDEX idx_checklist_item_category_id ON checklist_item(checklist_item_category_id);
+  
   `);
 }
 
