@@ -55,9 +55,16 @@ export const updateCSVRowState = (row: CSVRow, state: Record<string, any>, optio
     const newValue = state[key];
     const existingValue = row[CSVRowState][key];
 
+    if (newValue === undefined) {
+      // If the new value is undefined, remove the key from the row state
+      row[CSVRowState][key] = undefined;
+      continue;
+    }
     if (existingValue === undefined) {
+      // If the existing value is undefined, add the new value to the row state
       row[CSVRowState][key] = newValue;
     } else {
+      // If the existing value is defined, append the new value to the existing value
       row[CSVRowState][key] = [].concat(existingValue, newValue);
     }
   }

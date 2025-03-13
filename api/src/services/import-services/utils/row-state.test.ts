@@ -6,7 +6,7 @@ import { createRowStateGetter, updateCSVRowState } from './row-state';
 describe('row-state', () => {
   describe('updateCSVRowState', () => {
     it('should create the state in the row and add the new value', () => {
-      const row = { TEST: 'cellValue' };
+      const row: CSVRow = { TEST: 'cellValue' };
 
       updateCSVRowState(row, { stateValue: 'value' });
 
@@ -14,7 +14,7 @@ describe('row-state', () => {
     });
 
     it('should update the state in the row and add the new value', () => {
-      const row = { TEST: 'cellValue', [CSVRowState]: { stateValue: 'oldValue' } };
+      const row: CSVRow = { TEST: 'cellValue', [CSVRowState]: { stateValue: 'oldValue' } };
 
       updateCSVRowState(row, { stateValue: 'newValue' });
 
@@ -22,7 +22,7 @@ describe('row-state', () => {
     });
 
     it('should remove the state in the row', () => {
-      const row = { TEST: 'cellValue', [CSVRowState]: { stateValue: 'oldValue' } };
+      const row: CSVRow = { TEST: 'cellValue', [CSVRowState]: { stateValue: 'oldValue' } };
 
       updateCSVRowState(row, { stateValue: undefined });
 
@@ -61,11 +61,22 @@ describe('row-state', () => {
 
       expect(row[CSVRowState]?.state).to.eql([{ value: 'oldValue' }, { value: 'newValue' }]);
     });
+
+    it('should remove the array state in the row', () => {
+      const row: CSVRow = {
+        TEST: 'cellValue',
+        [CSVRowState]: { state: [{ value: 'oldValue1' }, { value: 'oldValue2' }] }
+      };
+
+      updateCSVRowState(row, { state: undefined }, { append: true });
+
+      expect(row[CSVRowState]?.state).to.be.undefined;
+    });
   });
 
   describe('createRowStateGetter', () => {
     it('should not throw an error when the row state is valid', () => {
-      const row = {
+      const row: CSVRow = {
         [CSVRowState]: {
           id: '123'
         }
@@ -87,7 +98,7 @@ describe('row-state', () => {
     });
 
     it('should throw an error when the row state is invalid', () => {
-      const row = {
+      const row: CSVRow = {
         [CSVRowState]: {
           id: 123
         }

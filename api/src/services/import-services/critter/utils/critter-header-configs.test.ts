@@ -263,7 +263,7 @@ describe('critter-header-configs', () => {
 
       const result = cellValidator({
         cell: 'male',
-        row: { SPECIES: 2, [CSVRowState]: { itis_tsn: 2 } },
+        row: { SPECIES: 2, [CSVRowState]: { taxon: { itis_tsn: 2 } } },
         header: 'HEADER',
         rowIndex: 0,
         mutateCell: 'male'

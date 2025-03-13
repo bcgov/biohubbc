@@ -13,7 +13,7 @@ import * as habitatFeatureSamplingRowValidator from './utils/habitat-feature-sam
 
 chai.use(sinonChai);
 
-describe.only('import-habitat-features-service', () => {
+describe('import-habitat-features-service', () => {
   beforeEach(() => {
     sinon.restore();
   });
@@ -43,7 +43,8 @@ describe.only('import-habitat-features-service', () => {
         'SAMPLE_PERIOD',
         'SAMPLE_SITE',
         'METHOD_TECHNIQUE',
-        'SPECIES'
+        'SPECIES',
+        'COMMENT'
       ]);
     });
   });
@@ -96,20 +97,21 @@ describe.only('import-habitat-features-service', () => {
             LONGITUDE: 2,
             OBSERVED_DATE: '2021-01-01',
             OBSERVED_TIME: '12:00:00',
-            SAMPLE_PERIOD: 1,
-            SAMPLE_SITE: 2,
-            METHOD_TECHNIQUE: 3,
-            SPECIES: null,
+            SAMPLE_PERIOD: '2021-01-01 - 2021-01-02',
+            SAMPLE_SITE: 'Site B',
+            METHOD_TECHNIQUE: 'Fishing',
+            SPECIES: 'alces; alces alces',
             COMMENT: 'comment',
             [CSVRowState]: {
+              sample_period_id: 1,
               taxon: [
                 {
                   itis_tsn: 1,
-                  scientificName: 'alces'
+                  itis_scientific_name: 'alces'
                 },
                 {
                   itis_tsn: 2,
-                  scientificName: 'alces alces'
+                  itis_scientific_name: 'alces alces'
                 }
               ]
             }
@@ -134,12 +136,12 @@ describe.only('import-habitat-features-service', () => {
           survey_habitat_feature_taxons: [
             {
               itis_tsn: 1,
-              scientific_name: 'alces',
+              itis_scientific_name: 'alces',
               comment: 'comment'
             },
             {
               itis_tsn: 2,
-              scientific_name: 'alces alces',
+              itis_scientific_name: 'alces alces',
               comment: 'comment'
             }
           ]
