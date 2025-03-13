@@ -14,17 +14,14 @@ import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
-import axios, { AxiosProgressEvent } from 'axios';
 import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
-import { CSVSingleImportDialog } from 'components/csv/CSVSingleImportDialog';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useHabitatFeatureTableContext, useSurveyContext } from 'hooks/useContext';
 import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import { useState } from 'react';
 import { Link as RouterLink, useHistory } from 'react-router-dom';
-import { getHabitatFeaturesCSVTemplate } from 'utils/csv-templates';
-import { downloadFile } from 'utils/file-utils';
+import { ImportHabitatFeaturesButton } from '../../import/ImportHabitatFeaturesButton';
 import { SurveyHabitatFeatureTable } from './SurveyHabitatFeatureTable';
 
 /**
@@ -39,7 +36,6 @@ export const SurveyHabitatFeatureTableContainer = (): JSX.Element => {
   const habitatFeatureTableContext = useHabitatFeatureTableContext();
   const surveyContext = useSurveyContext();
 
-  const [openImportDialog, setOpenImportDialog] = useState(false);
   const [columnVisibilityMenuAnchorEl, setColumnVisibilityMenuAnchorEl] = useState<Element | null>(null);
 
   const handleCloseColumnVisibilityMenu = () => {
@@ -93,40 +89,8 @@ export const SurveyHabitatFeatureTableContainer = (): JSX.Element => {
     });
   };
 
-  /**
-   * Handle the bulk import of habitat features.
-   *
-   * @param {File} file
-   * @param {(progressEvent: AxiosProgressEvent) => void} onProgress
-   * @return {*} {Promise<void>}
-   */
-  const handleBulkImportHabitatFeatures = async (
-    file: File,
-    onProgress: (progressEvent: AxiosProgressEvent) => void
-  ) => {
-    await biohubApi.habitatFeature.importHabitatFeaturesFromCsv(
-      file,
-      surveyContext.projectId,
-      surveyContext.surveyId,
-      axios.CancelToken.source(),
-      onProgress
-    );
-
-    habitatFeatureTableContext.refreshData();
-
-    setOpenImportDialog(false);
-  };
-
   return (
     <>
-      <CSVSingleImportDialog
-        open={openImportDialog}
-        dialogTitle={'Import Habitat Features'}
-        dialogSummary={'Import habitat features data for a survey by uploading a CSV file matching the template'}
-        onClose={() => setOpenImportDialog(false)}
-        onImport={handleBulkImportHabitatFeatures}
-        onDownloadTemplate={() => downloadFile(getHabitatFeaturesCSVTemplate(), 'habitat-features-template.csv')}
-      />
       <Paper component={Stack} flexDirection="column" flex="1 1 auto" height="100%">
         <Toolbar
           disableGutters
@@ -148,9 +112,7 @@ export const SurveyHabitatFeatureTableContainer = (): JSX.Element => {
 
           <Stack flexDirection="row" alignItems="center" gap={1} whiteSpace="nowrap">
             <HelpButtonDialog markdownType={MarkdownTypeNameEnum.HABITAT_FEATURES} />
-            <Button variant="outlined" onClick={() => setOpenImportDialog(true)}>
-              Import
-            </Button>
+            <ImportHabitatFeaturesButton />
             <Button
               variant="contained"
               color="primary"

@@ -184,6 +184,8 @@ const useSurveyHabitatFeatureApi = (axios: AxiosInstance) => {
   /**
    * Bulk upload habitat features from a CSV file.
    *
+   * TODO: Add survey sample period id to this request
+   *
    * @param {File} file
    * @param {number} projectId
    * @param {number} surveyId
@@ -193,12 +195,17 @@ const useSurveyHabitatFeatureApi = (axios: AxiosInstance) => {
     file: File,
     projectId: number,
     surveyId: number,
+    surveySamplePeriodId?: number,
     cancelTokenSource?: CancelTokenSource,
     onProgress?: (progressEvent: AxiosProgressEvent) => void
   ): Promise<void> => {
     const formData = new FormData();
 
     formData.append('media', file);
+
+    if (surveySamplePeriodId) {
+      formData.append('surveySamplePeriodId', surveySamplePeriodId.toString());
+    }
 
     await axios.post(`/api/project/${projectId}/survey/${surveyId}/habitat-features/import`, formData, {
       cancelToken: cancelTokenSource?.token,

@@ -7,6 +7,7 @@ import { useContext } from 'react';
 import { SurveyManagePageEnum, SurveyManagePageHeader } from '../components/SurveyManagePageHeader';
 import { SamplingSiteListContainer } from '../observations/sampling-sites/SamplingSiteListContainer';
 import { SurveyHabitatFeatureTableContainer } from './components/tables/SurveyHabitatFeatureTableContainer';
+import { ImportHabitatFeaturesButton } from './import/ImportHabitatFeaturesButton';
 
 /**
  * Returns the page for managing Habitat Features
@@ -48,7 +49,23 @@ export const SurveyHabitatFeaturePage = (): JSX.Element => {
         {/* Sampling Site List */}
         <Box flex="0 0 auto" width="400px">
           {/* TODO: Mac: Update isDisabled with correct value */}
-          <SamplingSiteListContainer isDisabled={false} getSamplePeriodImportButton={() => <></>} />
+          <SamplingSiteListContainer
+            isDisabled={false}
+            getSamplePeriodImportButton={(samplePeriodId) => {
+              return (
+                <ImportHabitatFeaturesButton
+                  samplePeriodId={samplePeriodId}
+                  buttonProps={{
+                    size: 'small',
+                    sx: {
+                      borderRadius: '3px',
+                      fontSize: '0.6rem'
+                    }
+                  }}
+                />
+              );
+            }}
+          />
         </Box>
 
         {/* Survey Habitat Feature Table */}
