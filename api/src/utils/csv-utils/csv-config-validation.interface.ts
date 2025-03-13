@@ -276,10 +276,12 @@ export type CSVRow = Record<Uppercase<string>, any> & {
 /**
  * The validated CSV row keyed by the static headers
  *
+ * Once validated, CSVRowState will be defined and possibly contain additional row metadata. ie: {} or {...metadata}
+ *
  */
 export type CSVRowValidated<StaticHeaderType extends Uppercase<string>> = Record<StaticHeaderType, any> & {
   // The CSV row state symbol to store additional row metadata
-  [CSVRowState]?: Record<string, any>;
+  [CSVRowState]: Record<string, any>;
 };
 
 export type CSVCell = string | number | undefined;

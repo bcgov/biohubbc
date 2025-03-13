@@ -82,7 +82,7 @@ describe('row-state', () => {
         }
       };
 
-      const getRowState = createRowStateGetter(z.object({ id: z.string() }));
+      const getRowState = createRowStateGetter(z.object({ id: z.string() }), 'test');
 
       expect(getRowState(row)).to.deep.equal({ id: '123' });
     });
@@ -92,7 +92,7 @@ describe('row-state', () => {
         id: '123'
       };
 
-      const getRowState = createRowStateGetter(z.object({ id: z.string() }));
+      const getRowState = createRowStateGetter(z.object({ id: z.string() }), 'test');
 
       expect(getRowState(state)).to.deep.equal({ id: '123' });
     });
@@ -104,7 +104,7 @@ describe('row-state', () => {
         }
       };
 
-      const getRowState = createRowStateGetter(z.object({ id: z.string() }));
+      const getRowState = createRowStateGetter(z.object({ id: z.string() }), 'test');
 
       try {
         getRowState(row);

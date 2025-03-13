@@ -63,7 +63,7 @@ describe('csv-config-validation', () => {
         ALIAS: 'newValue',
         DYNAMIC_HEADER: 'newDynamicValue',
         OTHER_DYNAMIC_HEADER: 'newDynamicValue',
-        [CSVRowState]: undefined
+        [CSVRowState]: {}
       });
     });
 

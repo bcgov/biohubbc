@@ -124,21 +124,20 @@ export class ImportHabitatFeaturesService extends DBService {
     const surveyHabitatFeatures: InsertSurveyHabitatFeature[] = [];
 
     for (const row of rows) {
+      console.log(row);
       const surveyHabitatFeatureTaxons: InsertSurveyHabitatFeatureTaxon[] = [];
 
-      if (row.SPECIES) {
-        // Get the taxon data, if any, from the row state and format it for insertion
-        const taxonRowState = getTaxonArrayFromRowState(row);
+      // Get the taxon data, if any, from the row state and format it for insertion
+      const taxonRowState = getTaxonArrayFromRowState(row);
 
-        // Convert the row state taxon into a list of survey habitat feature taxons
-        // Note: Taxon is either an object or an array of objects
-        for (const taxon of compact(castArray(taxonRowState.taxon))) {
-          surveyHabitatFeatureTaxons.push({
-            itis_tsn: taxon.itis_tsn,
-            itis_scientific_name: taxon.itis_scientific_name,
-            comment: row.COMMENT ?? null
-          });
-        }
+      // Convert the row state taxon into a list of survey habitat feature taxons
+      // Note: Taxon is either an object or an array of objects
+      for (const taxon of compact(castArray(taxonRowState?.taxon))) {
+        surveyHabitatFeatureTaxons.push({
+          itis_tsn: taxon.itis_tsn,
+          itis_scientific_name: taxon.itis_scientific_name,
+          comment: row.COMMENT ?? null
+        });
       }
 
       surveyHabitatFeatures.push({
@@ -240,9 +239,11 @@ export class ImportHabitatFeaturesService extends DBService {
     methodTechniqueService: TechniqueService
   ) {
     // Generate the sample periods, sites, and method techniques
-    const samplePeriods = await samplePeriodService.getSamplePeriodsForSurvey(this.surveyId);
-    const sampleSites = await sampleSiteService.getSampleSitesForSurveyId(this.surveyId);
-    const methodTechniques = await methodTechniqueService.getTechniquesForSurveyId(this.surveyId);
+    const [samplePeriods, sampleSites, methodTechniques] = await Promise.all([
+      samplePeriodService.getSamplePeriodsForSurvey(this.surveyId),
+      sampleSiteService.getSampleSitesForSurveyId(this.surveyId),
+      methodTechniqueService.getTechniquesForSurveyId(this.surveyId)
+    ]);
 
     // Inject the row validators - handles taxon, sampling information and location validation
     this.utils.config.rowValidators = [
