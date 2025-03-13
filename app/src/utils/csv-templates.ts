@@ -93,14 +93,15 @@ export const getAnimalCSVTemplate = (): CSVEncodedTemplate => {
 export const getHabitatFeaturesCSVTemplate = (): CSVEncodedTemplate => {
   return getCSVTemplate([
     'HABITAT_FEATURE',
-    'COUNT',
-    'DATE',
-    'TIME',
-    'LATITUDE',
-    'LONGITUDE',
+    'SPECIES',
     'SITE',
     'TECHNIQUE',
     'PERIOD',
+    'COUNT',
+    'LATITUDE',
+    'LONGITUDE',
+    'DATE',
+    'TIME',
     'COMMENT'
   ]);
 };

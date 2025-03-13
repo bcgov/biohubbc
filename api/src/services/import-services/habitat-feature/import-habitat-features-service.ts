@@ -76,7 +76,7 @@ export class ImportHabitatFeaturesService extends DBService {
     const initialConfig: CSVConfig<HabitatFeatureCSVStaticHeader> = {
       staticHeadersConfig: {
         HABITAT_FEATURE_TYPE: {
-          aliases: ['HABITAT FEATURE TYPE', 'FEATURE_TYPE', 'FEATURE TYPE', 'TYPE']
+          aliases: ['HABITAT FEATURE TYPE', 'HABITAT_FEATURE', 'HABITAT FEATURE', 'FEATURE_TYPE', 'FEATURE TYPE']
         },
         COUNT: { aliases: [] },
         LATITUDE: { aliases: ['LAT'], optional: true },
