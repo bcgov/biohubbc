@@ -285,6 +285,21 @@ export type CSVRowValidated<StaticHeaderType extends Uppercase<string>> = Record
 export type CSVCell = string | number | undefined;
 
 /**
+ * The CSV row state options.
+ *
+ * Used with the `updateCSVRowState` function to modify its behaviour.
+ */
+export type CSVRowStateOptions = {
+  /**
+   * Set to true if you want to append the new value to the existing value (when keys are the same).
+   * Set to false, or leave undefined, to overwrite the existing value with the new value (when keys are the same).
+   *
+   * @type {boolean}
+   */
+  append?: boolean;
+};
+
+/**
  * The CSV cell validator options
  */
 export type CSVCellValidatorOptions = {

@@ -95,8 +95,10 @@ describe('import-observations-service', () => {
             TIME: '12:00:00',
             COUNT: 3,
             [CSVRowState]: {
-              itis_tsn: 4,
-              itis_scientific_name: 'alces',
+              taxon: {
+                itis_tsn: 4,
+                itis_scientific_name: 'alces'
+              },
               sample_period_id: 5
             }
           }

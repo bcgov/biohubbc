@@ -6,6 +6,7 @@ import { CaseInsensitiveMap } from '../case-insensitive-map';
 import { formatTimeString, isDateString } from '../date-time-utils';
 import {
   CSVArrayCellValidatorOptions,
+  CSVCell,
   CSVCellSetter,
   CSVCellValidator,
   CSVCellValidatorOptions,
@@ -364,7 +365,8 @@ export const getLookupIdCellValidator = (
  * Rules:
  *  1. The cell must be a valid ITIS TSN or scientific name
  *  2. The cell must be a valid species from the provided taxons
- *  3. The row state will be updated with the TSN and scientific name
+ *  3. The row state will be updated with the taxon (TSN and scientific name), appending the values to any existing
+ *     taxon state
  *
  * @param {TaxonMap} taxonMap The list of taxons
  * @param {CSVCellValidatorOptions} [options] cell validator options
@@ -372,7 +374,7 @@ export const getLookupIdCellValidator = (
  */
 export const getTaxonCellValidator = (taxonMap: TaxonMap, options?: CSVCellValidatorOptions): CSVCellValidator => {
   return (params) => {
-    const taxonIdentifierCell = params.cell;
+    const taxonIdentifierCell = params.cell as CSVCell;
     const taxonHeader = params.header;
 
     if (taxonIdentifierCell === undefined) {
@@ -390,12 +392,16 @@ export const getTaxonCellValidator = (taxonMap: TaxonMap, options?: CSVCellValid
       ];
     }
 
-    const taxon = taxonMap.get(String(taxonIdentifierCell));
+    const taxon = taxonMap.get(taxonIdentifierCell);
 
     // If a valid taxon
     if (taxon) {
       // Update the row state with the TSN and scientific name
-      updateCSVRowState(params.row, { taxon: { itis_tsn: taxon.tsn, itis_scientific_name: taxon.scientificName } });
+      updateCSVRowState(
+        params.row,
+        { taxon: { itis_tsn: taxon.tsn, itis_scientific_name: taxon.scientificName } },
+        { append: true }
+      );
 
       return [];
     }

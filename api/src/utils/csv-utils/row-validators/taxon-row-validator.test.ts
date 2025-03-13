@@ -14,6 +14,7 @@ describe('getTaxonRowValidator', () => {
 
   it('should handle undefined cell values when cell is optional', () => {
     const taxonMapMock = new CaseInsensitiveMap([[1, { tsn: 1, scientificName: 'Alces alces' }]]);
+
     const utilsMock: any = {
       getCellValue: sinon.stub().returns(undefined),
       getWorksheetHeader: sinon.stub().returns('SPECIES')

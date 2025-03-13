@@ -126,7 +126,7 @@ describe('critter-header-configs', () => {
       for (const cell of cellValues) {
         const result = cellValidator({
           cell: cell,
-          row: { SPECIES: 1, [CSVRowState]: { itis_tsn: 1 } },
+          row: { SPECIES: 1, [CSVRowState]: { taxon: { itis_tsn: 1 } } },
           header: 'HEADER',
           rowIndex: 0,
           mutateCell: cell
@@ -149,7 +149,7 @@ describe('critter-header-configs', () => {
 
       const result = cellValidator({
         cell: 'unit',
-        row: { SPECIES: 2, [CSVRowState]: { itis_tsn: 2 } },
+        row: { SPECIES: 2, [CSVRowState]: { taxon: { itis_tsn: 2 } } },
         header: 'HEADER',
         rowIndex: 0,
         mutateCell: 'unit'
@@ -171,7 +171,7 @@ describe('critter-header-configs', () => {
 
       const result = cellValidator({
         cell: 'unit',
-        row: { SPECIES: 1, [CSVRowState]: { itis_tsn: 1 } },
+        row: { SPECIES: 1, [CSVRowState]: { taxon: { itis_tsn: 1 } } },
         header: 'HEADER2',
         rowIndex: 0,
         mutateCell: 'unit'
@@ -193,7 +193,7 @@ describe('critter-header-configs', () => {
 
       const result = cellValidator({
         cell: 'unit2',
-        row: { SPECIES: 1, [CSVRowState]: { itis_tsn: 1 } },
+        row: { SPECIES: 1, [CSVRowState]: { taxon: { itis_tsn: 1 } } },
         header: 'HEADER',
         rowIndex: 0,
         mutateCell: 'unit2'
@@ -218,7 +218,7 @@ describe('critter-header-configs', () => {
       for (const cell of cellValues) {
         const result = cellValidator({
           cell: cell,
-          row: { SPECIES: 1, [CSVRowState]: { itis_tsn: 1 } },
+          row: { SPECIES: 1, [CSVRowState]: { taxon: { itis_tsn: 1 } } },
           header: 'HEADER',
           rowIndex: 0,
           mutateCell: cell
@@ -242,7 +242,7 @@ describe('critter-header-configs', () => {
       for (const cell of cellValues) {
         const result = cellValidator({
           cell: cell,
-          row: { SPECIES: 1, [CSVRowState]: { itis_tsn: 1 } },
+          row: { SPECIES: 1, [CSVRowState]: { taxon: { itis_tsn: 1 } } },
           header: 'HEADER',
           rowIndex: 0,
           mutateCell: cell
@@ -283,7 +283,7 @@ describe('critter-header-configs', () => {
 
       const result = cellValidator({
         cell: 'maled',
-        row: { SPECIES: 1, [CSVRowState]: { itis_tsn: 1 } },
+        row: { SPECIES: 1, [CSVRowState]: { taxon: { itis_tsn: 1 } } },
         header: 'HEADER',
         rowIndex: 0,
         mutateCell: 'maled'

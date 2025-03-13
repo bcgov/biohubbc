@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { ApiGeneralError } from '../../../errors/api-error';
-import { CSVRow, CSVRowState } from '../../../utils/csv-utils/csv-config-validation.interface';
+import { CSVRow, CSVRowState, CSVRowStateOptions } from '../../../utils/csv-utils/csv-config-validation.interface';
 
 /**
  * Helper to update the CSV row state.
@@ -15,29 +15,42 @@ import { CSVRow, CSVRowState } from '../../../utils/csv-utils/csv-config-validat
  * @example
  * // rowState = undefined;
  *
- * updateCSVRowState(row, { critter_id: '123' });
- * // rowState = { critter_id: '123' };
+ * updateCSVRowState(row, { critter_id: '111' });
+ * // rowState = { critter_id: '111' };
  *
- * updateCSVRowState(row, { capture_id: '456' });
- * // rowState = { critter_id: '123', capture_id: '456' };
+ * updateCSVRowState(row, { capture_id: '222' });
+ * // rowState = { critter_id: '111', capture_id: '222' };
  *
- * updateCSVRowState(row, { critter_id: '789' });
- * // rowState = { critter_id: ['123', '789'], capture_id: '456' };
+ * updateCSVRowState(row, { capture_id: '666' });
+ * // rowState = { critter_id: '111', capture_id: '666' };
+ *
+ * updateCSVRowState(row, { critter_id: '333' }, { append: true });
+ * // rowState = { critter_id: ['111', '333'], capture_id: '666' };
  *
  * updateCSVRowState(row, { critter_id: undefined });
- * // rowState = { capture_id: '456' };
+ * // rowState = { capture_id: '666' };
  *
  * updateCSVRowState(row, { capture_id: undefined });
  * // rowState = {};
  *
+ * @param {CSVRow} row - The CSV row
+ * @param {Record<string, any>} state - The state to add or update
+ * @param {CSVRowStateOptions} [options] - The options
  * @returns {*} {void}
  */
-export const updateCSVRowState = (row: CSVRow, state: Record<string, any>) => {
+export const updateCSVRowState = (row: CSVRow, state: Record<string, any>, options?: CSVRowStateOptions) => {
   if (!row[CSVRowState]) {
     // Initialize the row state if it does not exist
     row[CSVRowState] = {};
   }
 
+  if (!options?.append) {
+    // Set the state, overwriting any existing values with matching keys
+    row[CSVRowState] = { ...row[CSVRowState], ...state };
+    return;
+  }
+
+  // Set the state, appending any existing values with matching keys
   for (const key in state) {
     const newValue = state[key];
     const existingValue = row[CSVRowState][key];

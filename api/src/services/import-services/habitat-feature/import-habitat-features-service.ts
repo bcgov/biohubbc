@@ -32,6 +32,8 @@ import { getHabitatFeatureSamplingInformationRowValidator } from './utils/habita
 
 const defaultLog = getLogger('services/import-services/import-habitat-features-service');
 
+const DELIMITER = ';';
+
 export type HabitatFeatureCSVStaticHeader =
   | 'HABITAT_FEATURE_TYPE'
   | 'COUNT'
@@ -164,7 +166,7 @@ export class ImportHabitatFeaturesService extends DBService {
 
     // Generate shared dependencies
     const taxonIdentifiers = this.utils
-      .getUniqueArrayCellValues('SPECIES', { delimiter: ';' })
+      .getUniqueArrayCellValues('SPECIES', { delimiter: DELIMITER })
       .filter(Boolean) as string[];
     const taxonMap = await getTaxonMap(taxonIdentifiers, platformService);
 
@@ -203,7 +205,7 @@ export class ImportHabitatFeaturesService extends DBService {
       METHOD_TECHNIQUE: { validateCell: getNonEmptyStringCellValidator({ optional: true }) },
       SPECIES: {
         validateCell: getArrayCellValidator(getTaxonCellValidator(taxonMap, { optional: true }), {
-          delimiter: ';'
+          delimiter: DELIMITER
         })
       },
       COMMENT: { validateCell: getDescriptionCellValidator({ optional: true }) }

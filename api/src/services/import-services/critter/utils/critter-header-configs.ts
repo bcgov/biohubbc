@@ -72,7 +72,7 @@ export const getCritterCollectionUnitCellValidator = (rowDictionary: NestedRecor
     }
 
     // Get the ITIS TSN from the row state - set by the taxon row validator
-    const rowTsn: number | null = params.row[CSVRowState]?.itis_tsn ?? null;
+    const rowTsn: number | null = params.row[CSVRowState]?.taxon.itis_tsn ?? null;
 
     // Let the taxon row validator handle invalid TSNs (runs before this validator)
     if (!rowTsn) {
@@ -144,7 +144,7 @@ export const getCritterSexCellValidator = (rowDictionary: NestedRecord<string>):
     }
 
     // Get the ITIS TSN from the row state - set by the taxon row validator
-    const rowTsn: number | null = params.row[CSVRowState]?.itis_tsn ?? null;
+    const rowTsn: number | null = params.row[CSVRowState]?.taxon.itis_tsn ?? null;
 
     // Let the taxon row validator handle invalid TSNs (runs before this validator)
     if (!rowTsn) {

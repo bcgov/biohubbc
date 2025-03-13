@@ -214,14 +214,7 @@ export class CSVConfigUtils<StaticHeaderType extends Uppercase<string> = Upperca
    */
   getArrayCellValue(header: StaticHeaderType, row: CSVRow, options: { delimiter: string }): string[] | undefined {
     // Static header or dynamic header exact match
-    let cellValue = this.getCellValue(header, row);
-
-    if (!cellValue) {
-      // Attempt to find the array-cell values from the header aliases
-      for (const alias of this.config.staticHeadersConfig[header]?.aliases ?? []) {
-        cellValue = row[alias];
-      }
-    }
+    const cellValue = this.getCellValue(header, row);
 
     if (!cellValue) {
       // No cell value found
