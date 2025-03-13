@@ -2,7 +2,10 @@ import { castArray, compact } from 'lodash';
 import { WorkSheet } from 'xlsx';
 import { IDBConnection } from '../../../database/db';
 import { CodeRepository } from '../../../repositories/code-repository';
-import { InsertSurveyHabitatFeature } from '../../../repositories/habitat-feature-repository/survey-habitat-feature-repository.interface';
+import {
+  InsertSurveyHabitatFeature,
+  InsertSurveyHabitatFeatureTaxon
+} from '../../../repositories/habitat-feature-repository/survey-habitat-feature-repository.interface';
 import { CSVConfigUtils } from '../../../utils/csv-utils/csv-config-utils';
 import { validateCSVWorksheet } from '../../../utils/csv-utils/csv-config-validation';
 import { CSVConfig, CSVError } from '../../../utils/csv-utils/csv-config-validation.interface';
@@ -121,16 +124,22 @@ export class ImportHabitatFeaturesService extends DBService {
     const surveyHabitatFeatures: InsertSurveyHabitatFeature[] = [];
 
     for (const row of rows) {
-      // Get the taxon data, if any, from the row state and format it for insertion
-      const taxonRowState = getTaxonArrayFromRowState(row);
+      const surveyHabitatFeatureTaxons: InsertSurveyHabitatFeatureTaxon[] = [];
 
-      // Convert the row state taxon into a list of survey habitat feature taxons
-      // Note: Taxon is either an object or an array of objects or undefined
-      const surveyHabitatFeatureTaxons = compact(castArray(taxonRowState?.taxon)).map((taxon) => ({
-        itis_tsn: taxon.itis_tsn,
-        itis_scientific_name: taxon.itis_scientific_name,
-        comment: row.COMMENT ?? null
-      }));
+      if (row.SPECIES) {
+        // Get the taxon data, if any, from the row state and format it for insertion
+        const taxonRowState = getTaxonArrayFromRowState(row);
+
+        // Convert the row state taxon into a list of survey habitat feature taxons
+        // Note: Taxon is either an object or an array of objects
+        for (const taxon of compact(castArray(taxonRowState.taxon))) {
+          surveyHabitatFeatureTaxons.push({
+            itis_tsn: taxon.itis_tsn,
+            itis_scientific_name: taxon.itis_scientific_name,
+            comment: row.COMMENT ?? null
+          });
+        }
+      }
 
       surveyHabitatFeatures.push({
         habitat_feature_type_id: row.HABITAT_FEATURE_TYPE,

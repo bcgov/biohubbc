@@ -154,23 +154,20 @@ export const getTaxonFromRowState = createRowStateGetter(
 
 // Taxon array
 export const getTaxonArrayFromRowState = createRowStateGetter(
-  z.union([
-    z.undefined(),
-    z.object({
-      taxon: z.union([
+  z.object({
+    taxon: z.union([
+      z.object({
+        itis_tsn: z.number(),
+        itis_scientific_name: z.string()
+      }),
+      z.array(
         z.object({
           itis_tsn: z.number(),
           itis_scientific_name: z.string()
-        }),
-        z.array(
-          z.object({
-            itis_tsn: z.number(),
-            itis_scientific_name: z.string()
-          })
-        )
-      ])
-    })
-  ]),
+        })
+      )
+    ])
+  }),
   'getTaxonArrayFromRowState'
 );
 
