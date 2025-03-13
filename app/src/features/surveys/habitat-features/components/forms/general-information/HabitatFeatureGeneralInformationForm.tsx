@@ -6,7 +6,6 @@ import { DateTimeFields } from 'components/fields/DateTimeFields';
 import { useFormikContext } from 'formik';
 import { useCodesContext } from 'hooks/useContext';
 import { CreateHabitatFeatureFormValues, UpdateHabitatFeatureFormValues } from '../HabitatFeatureFormContainer';
-import { HabitatFeatureSpeciesForm } from './HabitatFeatureSpeciesForm';
 
 /**
  * Habitat Feature general information form.
@@ -27,7 +26,6 @@ export const HabitatFeatureGeneralInformationForm = <
             id="habitat_feature_type_id"
             name="habitat_feature_type_id"
             label="Habitat feature"
-            helpText="The type of habitat feature"
             showValue
             required
             loading={codesContext.codesDataLoader.isLoading}
@@ -64,10 +62,6 @@ export const HabitatFeatureGeneralInformationForm = <
             timeIcon: mdiCalendar
           }}
         />
-      </Grid>
-
-      <Grid item xs={12}>
-        <HabitatFeatureSpeciesForm />
       </Grid>
     </Grid>
   );

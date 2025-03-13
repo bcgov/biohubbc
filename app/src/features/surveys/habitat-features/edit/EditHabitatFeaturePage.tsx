@@ -108,7 +108,7 @@ export const EditHabitatFeaturePage = (): JSX.Element => {
           survey_habitat_feature_taxons: values.survey_habitat_feature_taxons.map((formTaxon) => ({
             itis_tsn: formTaxon.itis_tsn,
             itis_scientific_name: formTaxon.itis_scientific_name,
-            comment: formTaxon.comment
+            comment: formTaxon.comment || null
           }))
         }
       );

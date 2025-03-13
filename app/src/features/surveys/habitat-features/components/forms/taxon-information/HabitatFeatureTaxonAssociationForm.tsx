@@ -1,6 +1,8 @@
 import Collapse from '@mui/material/Collapse';
 import { grey } from '@mui/material/colors';
 import Paper from '@mui/material/Paper';
+import { Box } from '@mui/system';
+import CustomTextField from 'components/fields/CustomTextField';
 import SpeciesAutocompleteField from 'components/species/components/SpeciesAutocompleteField';
 import SpeciesSelectedCard from 'components/species/components/SpeciesSelectedCard';
 import { FieldArray, useFormikContext } from 'formik';
@@ -16,7 +18,7 @@ import { CreateHabitatFeatureFormValues, UpdateHabitatFeatureFormValues } from '
  *
  * @returns {*} {JSX.Element}
  */
-export const HabitatFeatureSpeciesForm = <
+export const HabitatFeatureTaxonAssociationForm = <
   HabitatFeatureFormValuesType extends CreateHabitatFeatureFormValues | UpdateHabitatFeatureFormValues
 >(): JSX.Element => {
   const biohubApi = useBiohubApi();
@@ -71,18 +73,25 @@ export const HabitatFeatureSpeciesForm = <
           <>
             <SpeciesAutocompleteField
               formikFieldName={'survey_habitat_feature_taxons'}
-              label={'Species association'}
-              helpText={'The species associated with the habitat feature ie: "Bald Eagle" nest'}
+              label={'Species'}
+              helpText={
+                'The species associated with the habitat feature. If the habitat feature is a nest, enter "Bald Eagle" to observe a Bald Eagles nest'
+              }
               clearOnSelect={true}
               required={false}
               handleSpecies={(taxon) => {
                 taxonCache.current.set(taxon.tsn, taxon);
 
+                // Check if the taxon is already in the formik array state
+                if (formikProps.values.survey_habitat_feature_taxons.some((t) => t.itis_tsn === taxon.tsn)) {
+                  return;
+                }
+
                 // Push the selected taxon into the formik array state
                 arrayHelpers.push({
                   itis_tsn: taxon.tsn,
                   itis_scientific_name: taxon.scientificName,
-                  comment: null // TODO: Add form control for comment
+                  comment: ''
                 });
               }}
             />
@@ -103,9 +112,14 @@ export const HabitatFeatureSpeciesForm = <
                         index={index}
                         handleRemove={() => {
                           arrayHelpers.remove(index);
-                          taxonCache.current.delete(taxon.itis_tsn);
                         }}
                       />
+                      <Box sx={{ mt: 2 }}>
+                        <CustomTextField
+                          label="Species comments"
+                          name={`survey_habitat_feature_taxons[${index}].comment`}
+                        />
+                      </Box>
                     </Paper>
                   </Collapse>
                 );
