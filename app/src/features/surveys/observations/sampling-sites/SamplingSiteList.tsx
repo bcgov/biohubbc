@@ -28,7 +28,7 @@ import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
 
-const pageSizeOptions = [10, 25, 50, 1000];
+const pageSizeOptions = [10, 25, 50, 100];
 
 interface SamplingSiteListProps {
   isDisabled: boolean;
@@ -229,6 +229,8 @@ export const SamplingSiteList = (props: SamplingSiteListProps) => {
     () => sampleSiteDataLoader.data?.pagination.total ?? 0,
     [sampleSiteDataLoader.data]
   );
+
+  console.log(pagination);
 
   return (
     <>
@@ -445,7 +447,7 @@ export const SamplingSiteList = (props: SamplingSiteListProps) => {
             onPageChange={handleChangePage}
             rowsPerPageOptions={pageSizeOptions}
             onRowsPerPageChange={handleChangeRowsPerPage}
-            count={sampleSiteDataLoader.data?.pagination.total ?? 0}
+            count={samplingSiteCount}
           />
         </Paper>
       </Paper>

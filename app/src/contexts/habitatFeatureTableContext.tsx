@@ -8,12 +8,14 @@ import {
 } from '@mui/x-data-grid';
 import { GridApiCommunity } from '@mui/x-data-grid/internals';
 import { SIMS_HABITAT_FEATURES_HIDDEN_COLUMNS } from 'constants/session-storage';
+import { HABITAT_FEATURE_TABLE_PAGE_SIZES } from 'features/surveys/habitat-features/components/tables/SurveyHabitatFeatureTable';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { usePersistentState } from 'hooks/usePersistentState';
 import { getSurveyHabitatFeaturesWithSupplementaryData } from 'interfaces/useSurveyHabitatFeatureApi.interface';
 import { createContext, PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react';
+import { ApiPaginationRequestOptions } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
 
 export interface IHabitatFeatureRow {
@@ -123,13 +125,13 @@ export const HabitatFeatureTableContextProvider = (props: IHabitatFeatureTableCo
 
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
-    pageSize: 1
+    pageSize: HABITAT_FEATURE_TABLE_PAGE_SIZES[0]
   });
 
   const [sortModel, setSortModel] = useState<GridSortModel>([{ field: 'observed_date', sort: 'desc' }]);
 
-  const habitatFeatureDataLoader = useDataLoader(
-    biohubApi.habitatFeature.getSurveyHabitatFeaturesWithSupplementaryData
+  const habitatFeatureDataLoader = useDataLoader((pagination: ApiPaginationRequestOptions) =>
+    biohubApi.habitatFeature.getSurveyHabitatFeaturesWithSupplementaryData(projectId, surveyId, pagination)
   );
 
   /**
@@ -140,7 +142,7 @@ export const HabitatFeatureTableContextProvider = (props: IHabitatFeatureTableCo
   const refreshHabitatFeatureRecords = useCallback(async () => {
     const sort = firstOrNull(sortModel);
 
-    return habitatFeatureDataLoader.refresh(projectId, surveyId, {
+    return habitatFeatureDataLoader.refresh({
       limit: paginationModel.pageSize,
       sort: sort?.field || undefined,
       order: sort?.sort || undefined,
@@ -148,7 +150,7 @@ export const HabitatFeatureTableContextProvider = (props: IHabitatFeatureTableCo
       // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
       page: paginationModel.page + 1
     });
-  }, [habitatFeatureDataLoader, paginationModel.page, paginationModel.pageSize, projectId, sortModel, surveyId]);
+  }, [habitatFeatureDataLoader, paginationModel.page, paginationModel.pageSize, sortModel]);
 
   // Load the codes and habitat feature data
   useEffect(() => {
@@ -156,12 +158,10 @@ export const HabitatFeatureTableContextProvider = (props: IHabitatFeatureTableCo
   }, [codesContext.codesDataLoader]);
 
   useEffect(() => {
-    if (habitatFeatureDataLoader.hasLoaded) {
-      return;
-    }
-
     refreshHabitatFeatureRecords();
-  }, [habitatFeatureDataLoader, refreshHabitatFeatureRecords]);
+    // Should not re-run this effect on `refreshHabitatFeatureRecords` changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paginationModel, sortModel]);
 
   /**
    * Toggle the table columns visibility

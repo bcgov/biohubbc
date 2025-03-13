@@ -1,7 +1,9 @@
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
+import { IHabitatFeatureRow } from 'contexts/habitatFeatureTableContext';
 import { useHabitatFeatureTableContext } from 'hooks/useContext';
 
-const HABITAT_FEATURE_ROW_HEIGHT = 52;
+const HABITAT_FEATURE_TABLE_ROW_HEIGHT = 52;
+export const HABITAT_FEATURE_TABLE_PAGE_SIZES = [10, 25, 50];
 
 /**
  * Renders the Survey Habitat Feature table.
@@ -15,7 +17,7 @@ export const SurveyHabitatFeatureTable = (): JSX.Element => {
     <StyledDataGrid
       apiRef={habitatFeatureTableContext._muiDataGridApiRef}
       noRowsMessage="No habitat features found"
-      getRowId={(row) => row.survey_habitat_feature_id}
+      getRowId={(row: IHabitatFeatureRow) => row.survey_habitat_feature_id}
       rows={habitatFeatureTableContext.rows}
       columns={habitatFeatureTableContext.columns}
       loading={habitatFeatureTableContext.isLoading}
@@ -25,8 +27,8 @@ export const SurveyHabitatFeatureTable = (): JSX.Element => {
         }
       }}
       // Row heights
-      columnHeaderHeight={HABITAT_FEATURE_ROW_HEIGHT}
-      rowHeight={HABITAT_FEATURE_ROW_HEIGHT}
+      columnHeaderHeight={HABITAT_FEATURE_TABLE_ROW_HEIGHT}
+      rowHeight={HABITAT_FEATURE_TABLE_ROW_HEIGHT}
       autoHeight={false}
       // Column visibility
       columnVisibilityModel={habitatFeatureTableContext.columnVisibilityModel}
@@ -41,7 +43,7 @@ export const SurveyHabitatFeatureTable = (): JSX.Element => {
       rowCount={habitatFeatureTableContext.rowCount}
       paginationModel={habitatFeatureTableContext.paginationModel}
       onPaginationModelChange={habitatFeatureTableContext.onPaginationModelChange}
-      pageSizeOptions={[1, 25, 50]}
+      pageSizeOptions={HABITAT_FEATURE_TABLE_PAGE_SIZES}
       // Sorting
       sortModel={habitatFeatureTableContext.sortModel}
       onSortModelChange={habitatFeatureTableContext.onSortModelChange}
