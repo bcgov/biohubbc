@@ -26,7 +26,7 @@ import { PlatformService } from '../../platform-service';
 import { SamplePeriodService } from '../../sample-period-service';
 import { SampleSiteService } from '../../sample-site-service';
 import { TechniqueService } from '../../technique-service';
-import { getTaxonArrayFromRowState } from '../utils/row-state';
+import { getSamplePeriodIdFromRowState, getTaxonArrayFromRowState } from '../utils/row-state';
 import { getTaxonMap, TaxonMap } from '../utils/taxon';
 import { getHabitatFeatureTypeCellValidator } from './utils/habitat-feature-header-configs';
 import { getHabitatFeatureSamplingInformationRowValidator } from './utils/habitat-feature-sampling-row-validator';
@@ -135,12 +135,11 @@ export class ImportHabitatFeaturesService extends DBService {
       surveyHabitatFeatures.push({
         habitat_feature_type_id: row.HABITAT_FEATURE_TYPE,
         count: row.COUNT,
-        latitude: row.LATITUDE,
-        longitude: row.LONGITUDE,
-        observed_date: row.OBSERVED_DATE,
-        observed_time: row.OBSERVED_TIME,
-        // TODO: Wire this up to the sample period ID from the row state
-        survey_sample_period_id: null,
+        latitude: row.LATITUDE ?? null,
+        longitude: row.LONGITUDE ?? null,
+        observed_date: row.OBSERVED_DATE ?? null,
+        observed_time: row.OBSERVED_TIME ?? null,
+        survey_sample_period_id: this.samplePeriodId ?? getSamplePeriodIdFromRowState(row).sample_period_id ?? null,
         survey_habitat_feature_taxons: surveyHabitatFeatureTaxons
         // TODO: Add quantitative/qualitative values
       });
@@ -197,9 +196,9 @@ export class ImportHabitatFeaturesService extends DBService {
     this.utils.setAllStaticHeaderConfigs({
       HABITAT_FEATURE_TYPE: { validateCell: getHabitatFeatureTypeCellValidator(habitatFeatureTypes) },
       COUNT: { validateCell: getPositiveNumberCellValidator() },
-      LATITUDE: { validateCell: getLatitudeCellValidator() },
-      LONGITUDE: { validateCell: getLongitudeCellValidator() },
-      OBSERVED_DATE: { validateCell: getDateCellValidator() },
+      LATITUDE: { validateCell: getLatitudeCellValidator({ optional: true }) },
+      LONGITUDE: { validateCell: getLongitudeCellValidator({ optional: true }) },
+      OBSERVED_DATE: { validateCell: getDateCellValidator({ optional: true }) },
       OBSERVED_TIME: { validateCell: getTimeCellValidator(), setCellValue: getTimeCellSetter() },
       // Sampling period is pre-validated by the sampling information row validator
       SAMPLE_PERIOD: { validateCell: getDateRangeCellValidator({ optional: true }) },
