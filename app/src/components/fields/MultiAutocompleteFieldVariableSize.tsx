@@ -3,6 +3,7 @@ import CheckBoxOutlineBlank from '@mui/icons-material/CheckBoxOutlineBlank';
 import Autocomplete, { AutocompleteInputChangeReason, createFilterOptions } from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
+import ListItemText from '@mui/material/ListItemText';
 import ListSubheader from '@mui/material/ListSubheader';
 import TextField from '@mui/material/TextField';
 import { FilterOptionsState } from '@mui/material/useAutocomplete';
@@ -12,13 +13,9 @@ import { DebouncedFunc } from 'lodash-es';
 import get from 'lodash-es/get';
 import React, { useEffect, useState } from 'react';
 import { ListChildComponentProps, VariableSizeList } from 'react-window';
+import { IMultiAutocompleteFieldOption } from './MultiAutocompleteField';
 
 const LISTBOX_PADDING = 8; // px
-
-export interface IMultiAutocompleteFieldOption {
-  value: string | number;
-  label: string;
-}
 
 // Params required to make MultiAutocompleteField use API to populate search results
 export type ApiSearchTypeParam = {
@@ -270,7 +267,7 @@ const MultiAutocompleteFieldVariableSize: React.FC<IMultiAutocompleteField> = (p
       filterOptions={handleFiltering}
       renderOption={(renderProps, renderOption, { selected }) => {
         return (
-          <Box component="li" {...renderProps}>
+          <Box component="li" {...renderProps} key={renderOption.value}>
             <Checkbox
               icon={<CheckBoxOutlineBlank fontSize="small" />}
               checkedIcon={<CheckBox fontSize="small" />}
@@ -280,7 +277,7 @@ const MultiAutocompleteFieldVariableSize: React.FC<IMultiAutocompleteField> = (p
               value={renderOption.value}
               color="default"
             />
-            {renderOption.label}
+            <ListItemText primary={renderOption.label} secondary={renderOption.description} />
           </Box>
         );
       }}

@@ -30,6 +30,9 @@ import {
   CBQuantitativeMeasurementTypeDefinition
 } from '../critterbase-service';
 import { DBService } from '../db-service';
+import { getTsnMeasurementDictionary } from '../import-services/utils/measurement';
+import { validateQuantitativeValue } from '../import-services/utils/quantitative';
+import { ObservationSubCountEnvironmentService } from '../observation-subcount-environment-service';
 import { ObservationEnvironmentService } from '../observation-environment-service';
 import { ObservationSubCountMeasurementService } from '../observation-subcount-measurement-service';
 import { SamplePeriodService } from '../sample-period-service';
@@ -108,6 +111,11 @@ export type ObservationSamplingSupplementaryData = {
 export type AllObservationSupplementaryData = ObservationCountSupplementaryData &
   ObservationMeasurementSupplementaryData &
   ObservationSamplingSupplementaryData;
+
+export interface IEnvironmentDataToValidate {
+  key: string;
+  value: string | number;
+}
 
 export class ObservationService extends DBService {
   observationRepository: ObservationRepository;
@@ -595,5 +603,69 @@ export class ObservationService extends DBService {
 
     // Delete survey_observation records
     return this.observationRepository.deleteObservationsByIds(surveyId, observationIds);
+  }
+
+  /**
+   * Validates all qualitative and quantitative measurements against fetched measurement definitions.
+   *
+   * @param {InsertUpdateObservations[]} observations The observations to validate
+   * @param {CritterbaseService} critterbaseService Used to fetch measurement definitions to validate against
+   * @return {*}  {Promise<boolean>} `true` if the observations are valid, `false` otherwise
+   */
+  async _validateObservationMeasurements(
+    observations: InsertUpdateObservations[],
+    critterbaseService: CritterbaseService
+  ) {
+    // Fetch all measurement type definitions from Critterbase for all unique TSNs
+    const tsns = observations.map((row) => row.standardColumns.itis_tsn);
+
+    const tsnMeasurementTypeDefinitionMap = await getTsnMeasurementDictionary(tsns, critterbaseService);
+
+    // Validate all qualitative measurements against fetched measurement definitions
+    const qualitativeMeasurementsAreAllValid = observations.every((observationRow) => {
+      return observationRow.subcounts.every((subcount) => {
+        return subcount.qualitative_measurements.every((qualitative_measurement) => {
+          const measurementDefinition = tsnMeasurementTypeDefinitionMap.get(
+            observationRow.standardColumns.itis_tsn,
+            qualitative_measurement.measurement_id
+          ) as CBQualitativeMeasurementTypeDefinition;
+
+          if (!measurementDefinition) {
+            return false;
+          }
+
+          return measurementDefinition.options.find(
+            (option) => option.qualitative_option_id === qualitative_measurement.measurement_option_id
+          );
+        });
+      });
+    });
+
+    // Validate all quantitative measurements against fetched measurement definitions
+    const quantitativeMeasurementsAreAllValid = observations.every((observationRow) => {
+      return observationRow.subcounts.every((subcount) => {
+        return subcount.quantitative_measurements.every((quantitative_measurement) => {
+          const measurementDefinition = tsnMeasurementTypeDefinitionMap.get(
+            observationRow.standardColumns.itis_tsn,
+            quantitative_measurement.measurement_id
+          ) as CBQuantitativeMeasurementTypeDefinition;
+
+          if (!measurementDefinition) {
+            return false;
+          }
+
+          // Validate the quantitative value against the measurement definition
+          const errors = validateQuantitativeValue(quantitative_measurement.measurement_value, {
+            min: measurementDefinition.min_value,
+            max: measurementDefinition.max_value
+          });
+
+          // Return false if there are any errors
+          return !Array.isArray(errors);
+        });
+      });
+    });
+
+    return qualitativeMeasurementsAreAllValid && quantitativeMeasurementsAreAllValid;
   }
 }

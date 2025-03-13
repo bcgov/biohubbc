@@ -124,11 +124,11 @@ export class ImportMarkingsService extends DBService {
     const bodyLocationDictionary = await this._getBodyLocationDictionary(surveyAliasMap);
 
     const markingTypes = new Set(
-      (await this.surveyCritterService.critterbaseService.getMarkingTypes()).map((type) => type.value)
+      (await this.surveyCritterService.critterbaseService.getFormattedMarkingTypes()).map((type) => type.value)
     );
 
     const colours = new Set(
-      (await this.surveyCritterService.critterbaseService.getColours()).map((colour) => colour.value)
+      (await this.surveyCritterService.critterbaseService.getFormattedColours()).map((colour) => colour.value)
     );
 
     this.utils.setStaticHeaderConfig('ALIAS', {
@@ -179,7 +179,7 @@ export class ImportMarkingsService extends DBService {
 
     // Get body locations for each unique TSN (in parallel)
     const taxonBodyLocationArrays = await Promise.all(
-      uniqueTsns.map((tsn) => this.surveyCritterService.critterbaseService.getTaxonBodyLocations(String(tsn)))
+      uniqueTsns.map((tsn) => this.surveyCritterService.critterbaseService.getTaxonBodyLocations(tsn))
     );
 
     // Loop through each TSN and set the dictionary: tsn -> body location -> id

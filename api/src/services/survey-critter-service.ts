@@ -4,7 +4,12 @@ import { IAllTelemetryAdvancedFilters } from '../models/telemetry-view';
 import { SurveyCritterRecord, SurveyCritterRepository } from '../repositories/survey-critter-repository';
 import { getLogger } from '../utils/logger';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
-import { CritterbaseService, ICritter, ICritterDetailed } from './critterbase-service';
+import {
+  CritterbaseService,
+  getCritterbaseUserFromConnection,
+  ICritter,
+  ICritterDetailed
+} from './critterbase-service';
 import { DBService } from './db-service';
 
 const defaultLog = getLogger('SurveyCritterService');
@@ -30,10 +35,7 @@ export class SurveyCritterService extends DBService {
     super(connection);
 
     this.critterRepository = new SurveyCritterRepository(connection);
-    this.critterbaseService = new CritterbaseService({
-      keycloak_guid: connection.systemUserGUID(),
-      username: connection.systemUserIdentifier()
-    });
+    this.critterbaseService = new CritterbaseService(getCritterbaseUserFromConnection(connection));
   }
 
   /**
@@ -91,23 +93,21 @@ export class SurveyCritterService extends DBService {
 
     const critterbaseCritterIds = simsCritters.map((critter) => critter.critterbase_critter_id);
 
-    const critterbaseService = new CritterbaseService({
-      keycloak_guid: this.connection.systemUserGUID(),
-      username: this.connection.systemUserIdentifier()
-    });
     // The detailed critter records from Critterbase
-    const critterbaseCritters = await critterbaseService.getMultipleCrittersByIds(critterbaseCritterIds);
+    const critterbaseCritters = await this.critterbaseService.getMultipleCrittersByIds(critterbaseCritterIds);
+
+    // Create a map of critter ID -> critter
+    const critterIdMap = new Map<string, ICritter>(critterbaseCritters.map((critter) => [critter.critter_id, critter]));
 
     // --- Step 3 -----------------------------
 
     // Parse/combine the telemetry, deployment, and critter records into the final response
     const response: FindCrittersResponse[] = [];
-    for (const critterbaseCritter of critterbaseCritters) {
-      const simsCritter = simsCritters.find(
-        (critter) => critter.critterbase_critter_id === critterbaseCritter.critter_id
-      );
 
-      if (!simsCritter) {
+    for (const simsCritter of simsCritters) {
+      const critterbaseCritter = critterIdMap.get(simsCritter.critterbase_critter_id);
+
+      if (!critterbaseCritter) {
         continue;
       }
 

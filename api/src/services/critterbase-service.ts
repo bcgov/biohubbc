@@ -286,6 +286,21 @@ export interface IAsSelectLookup {
   value: string;
 }
 
+// Critterbase colour lookup
+export interface IColour {
+  colour_id: string;
+  colour: string;
+  hex_code: string | null;
+  description: string | null;
+}
+
+// Critterbase marking type lookup
+export interface IMarkingType {
+  marking_type_id: string;
+  name: string;
+  description: string | null;
+}
+
 /**
  * A Critterbase quantitative measurement.
  */
@@ -462,13 +477,45 @@ export class CritterbaseService {
   }
 
   /**
-   * Fetches Critterbase colour lookup values.
+   * Fetches Critterbase colour lookup values formatted.
    *
    * @async
    * @returns {Promise<IAsSelectLookup[]>} AsSelect format
    */
-  async getColours(): Promise<IAsSelectLookup[]> {
+  async getFormattedColours(): Promise<IAsSelectLookup[]> {
     const response = await this.axiosInstance.get('/lookups/colours', {
+      params: { format: CritterbaseFormatEnum.AS_SELECT }
+    });
+
+    return response.data;
+  }
+
+  /**
+   * Get Critterbase colour lookup values.
+   *
+   * @async
+   * @returns {Promise<IColour>} Colour lookup values
+   */
+  async getColours(): Promise<IColour[]> {
+    const response = await this.axiosInstance.get<IColour[]>('/lookups/colours');
+
+    // Mapping to exclude critterbase audit columns
+    return response.data.map((colour) => ({
+      colour_id: colour.colour_id,
+      colour: colour.colour,
+      hex_code: colour.hex_code,
+      description: colour.description
+    }));
+  }
+
+  /**
+   * Fetches Critterbase marking type lookup values formatted.
+   *
+   * @async
+   * @returns {Promise<IAsSelectLookup[]>} AsSelect format
+   */
+  async getFormattedMarkingTypes(): Promise<IAsSelectLookup[]> {
+    const response = await this.axiosInstance.get('/lookups/marking-types', {
       params: { format: CritterbaseFormatEnum.AS_SELECT }
     });
 
@@ -479,23 +526,26 @@ export class CritterbaseService {
    * Fetches Critterbase marking type lookup values.
    *
    * @async
-   * @returns {Promise<IAsSelectLookup[]>} AsSelect format
+   * @returns {Promise<IMarkingType[]>} Critterbase marking type lookup values
    */
-  async getMarkingTypes(): Promise<IAsSelectLookup[]> {
-    const response = await this.axiosInstance.get('/lookups/marking-types', {
-      params: { format: CritterbaseFormatEnum.AS_SELECT }
-    });
+  async getMarkingTypes(): Promise<IMarkingType[]> {
+    const response = await this.axiosInstance.get<IMarkingType[]>('/lookups/marking-types');
 
-    return response.data;
+    // Mapping to exclude critterbase audit columns
+    return response.data.map((markingType) => ({
+      marking_type_id: markingType.marking_type_id,
+      name: markingType.name,
+      description: markingType.description
+    }));
   }
 
   /**
    * Fetches qualitative and quantitative measurements for the specified taxon.
    *
-   * @param {string} tsn - The taxon serial number (TSN).
+   * @param {number} tsn - The taxon serial number (TSN).
    * @returns {Promise<{ qualitative: CBQualitativeMeasurementTypeDefinition[], quantitative: CBQuantitativeMeasurementTypeDefinition[] }>} - The response data containing qualitative and quantitative measurements.
    */
-  async getTaxonMeasurements(tsn: string): Promise<{
+  async getTaxonMeasurements(tsn: number): Promise<{
     qualitative: CBQualitativeMeasurementTypeDefinition[];
     quantitative: CBQuantitativeMeasurementTypeDefinition[];
   }> {
@@ -507,10 +557,10 @@ export class CritterbaseService {
   /**
    * Fetches body location information for the specified taxon.
    *
-   * @param {string} tsn - The taxon serial number (TSN).
+   * @param {number} tsn - The taxon serial number (TSN).
    * @returns {Promise<IAsSelectLookup[]>} - The response data containing body location information.
    */
-  async getTaxonBodyLocations(tsn: string): Promise<IAsSelectLookup[]> {
+  async getTaxonBodyLocations(tsn: number): Promise<IAsSelectLookup[]> {
     const response = await this.axiosInstance.get('/xref/taxon-marking-body-locations', {
       params: { tsn, format: CritterbaseFormatEnum.AS_SELECT }
     });
@@ -704,10 +754,10 @@ export class CritterbaseService {
    * Find collection categories by tsn. Includes hierarchies.
    *
    * @async
-   * @param {string} tsn - ITIS TSN
+   * @param {number} tsn - ITIS TSN
    * @returns {Promise<ICollectionCategory[]>} Collection categories
    */
-  async findTaxonCollectionCategories(tsn: string): Promise<ICollectionCategory[]> {
+  async findTaxonCollectionCategories(tsn: number): Promise<ICollectionCategory[]> {
     const response = await this.axiosInstance.get(`/xref/taxon-collection-categories`, { params: { tsn } });
 
     return response.data;
@@ -717,10 +767,10 @@ export class CritterbaseService {
    * Find collection units by tsn. Includes hierarchies.
    *
    * @async
-   * @param {string} tsn - ITIS TSN
+   * @param {number} tsn - ITIS TSN
    * @returns {Promise<ICollectionUnitWithCategory[]>} Collection units
    */
-  async findTaxonCollectionUnits(tsn: string): Promise<ICollectionUnitWithCategory[]> {
+  async findTaxonCollectionUnits(tsn: number): Promise<ICollectionUnitWithCategory[]> {
     const response = await this.axiosInstance.get(`/xref/taxon-collection-units`, { params: { tsn } });
 
     return response.data;

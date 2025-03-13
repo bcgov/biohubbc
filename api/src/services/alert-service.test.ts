@@ -2,7 +2,8 @@ import chai, { expect } from 'chai';
 import { afterEach, describe, it } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { AlertRecordWithStatus, IAlertCreateObject, IAlertFilterObject, IAlertSeverity } from '../models/alert-view';
+import { AlertSeverity } from '../database-units/alert_severity';
+import { AlertRecordWithStatus, IAlertCreateObject, IAlertFilterObject } from '../models/alert-view';
 import { AlertRepository } from '../repositories/alert-repository';
 import { getMockDBConnection } from '../__mocks__/db';
 import { AlertService } from './alert-service';
@@ -26,7 +27,7 @@ describe('AlertService', () => {
           message: 'Message 1',
           alert_type_id: 1,
           data: {},
-          severity: 'error' as IAlertSeverity,
+          severity: AlertSeverity.ERROR,
           status: 'active',
           record_end_date: null,
           create_date: '2020-01-01T10:10:10'
@@ -73,7 +74,7 @@ describe('AlertService', () => {
         message: 'Message 1',
         alert_type_id: 1,
         data: {},
-        severity: 'error' as IAlertSeverity,
+        severity: AlertSeverity.ERROR,
         status: 'active',
         record_end_date: null,
         create_date: '2020-01-01T10:10:10'
@@ -99,7 +100,7 @@ describe('AlertService', () => {
         message: 'New alert message',
         alert_type_id: 1,
         data: {},
-        severity: 'error' as IAlertSeverity,
+        severity: AlertSeverity.ERROR,
         record_end_date: null
       };
 
@@ -124,7 +125,7 @@ describe('AlertService', () => {
         message: 'Updated message',
         alert_type_id: 1,
         data: {},
-        severity: 'error' as IAlertSeverity,
+        severity: AlertSeverity.ERROR,
         status: 'active',
         record_end_date: null,
         create_date: '2020-01-01T10:10:10'

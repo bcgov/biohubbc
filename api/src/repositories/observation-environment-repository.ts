@@ -1,6 +1,6 @@
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
-import { EnvironmentQualitativeRecord } from '../database-models/environment_qualitative';
+import { QuantitativeUnitType } from '../database-units/quantitative_unit';
 import { EnvironmentQualitativeOptionRecord } from '../database-models/environment_qualitative_option';
 import { EnvironmentQuantitativeRecord } from '../database-models/environment_quantitative';
 import { ObservationEnvironmentQualitativeModel } from '../database-models/observation_environment_qualitative';

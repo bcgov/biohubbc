@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { AlertSeverityType } from '../database-units/alert_severity';
 
 /**
  * Alert Model.
@@ -10,7 +11,7 @@ export const AlertModel = z.object({
   alert_type_id: z.number(),
   name: z.string(),
   message: z.string(),
-  severity: z.enum(['info', 'success', 'error', 'warning']),
+  severity: AlertSeverityType,
   data: z.object({}).nullable(),
   record_end_date: z.string().nullable(),
   create_date: z.string(),

@@ -4,9 +4,10 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { SYSTEM_IDENTITY_SOURCE } from '../../constants/database';
 import { SYSTEM_ROLE } from '../../constants/roles';
+import { AlertSeverity } from '../../database-units/alert_severity';
 import * as db from '../../database/db';
 import { HTTPError } from '../../errors/http-error';
-import { IAlertSeverity, IAlertStatus } from '../../models/alert-view';
+import { AlertRecordWithStatus } from '../../models/alert-view';
 import { AlertService } from '../../services/alert-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
 import { createAlert, getAlerts } from '../alert';
@@ -21,14 +22,14 @@ describe('getAlerts', () => {
   describe('as a system user', () => {
     it('returns a list of system alerts', async () => {
       const mockTotal = 10;
-      const mockAlerts = [
+      const mockAlerts: AlertRecordWithStatus[] = [
         {
           alert_id: 1,
           name: 'Alert 1',
           message: 'Message 1',
           alert_type_id: 1,
-          severity: 'error' as IAlertSeverity,
-          status: 'active' as IAlertStatus,
+          severity: AlertSeverity.ERROR,
+          status: 'active',
           data: null,
           record_end_date: null,
           create_date: '2020-01-01T10:10:10'
@@ -38,8 +39,8 @@ describe('getAlerts', () => {
           name: 'Alert 2',
           message: 'Message 2',
           alert_type_id: 2,
-          severity: 'error' as IAlertSeverity,
-          status: 'active' as IAlertStatus,
+          severity: AlertSeverity.ERROR,
+          status: 'active',
           data: null,
           record_end_date: null,
           create_date: '2020-01-01T10:10:10'
@@ -126,7 +127,7 @@ describe('createAlert', () => {
       name: 'New Alert',
       message: 'New alert message',
       alert_type_id: 1,
-      severity: 'medium'
+      severity: AlertSeverity.INFO
     };
 
     const mockDBConnection = getMockDBConnection({ open: sinon.stub(), commit: sinon.stub() });

@@ -1,4 +1,5 @@
 import { OpenAPIV3 } from 'openapi-types';
+import { AlertSeverity } from '../../database-units/alert_severity';
 
 /**
  * Base schema for system alerts
@@ -23,7 +24,7 @@ const baseSystemAlertSchema: OpenAPIV3.SchemaObject = {
     severity: {
       description: 'Severity level of the alert',
       type: 'string',
-      enum: ['info', 'success', 'warning', 'error']
+      enum: Object.values(AlertSeverity)
     },
     data: {
       description: 'Data associated with the alert',
