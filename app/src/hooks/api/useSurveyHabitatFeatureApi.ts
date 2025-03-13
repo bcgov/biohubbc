@@ -184,8 +184,6 @@ const useSurveyHabitatFeatureApi = (axios: AxiosInstance) => {
   /**
    * Bulk upload habitat features from a CSV file.
    *
-   * TODO: Add survey sample period id to this request
-   *
    * @param {File} file
    * @param {number} projectId
    * @param {number} surveyId
