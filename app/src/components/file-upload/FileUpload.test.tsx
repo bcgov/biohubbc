@@ -64,6 +64,10 @@ describe('FileUpload', () => {
       expect(getByText('testpng0.txt')).toBeVisible();
     });
 
+    await waitFor(() => {
+      expect(getByTitle('Cancel Upload')).toBeVisible();
+    });
+
     fireEvent.click(getByTitle('Cancel Upload'));
 
     await waitFor(() => {
