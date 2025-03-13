@@ -124,7 +124,6 @@ export class ImportHabitatFeaturesService extends DBService {
     const surveyHabitatFeatures: InsertSurveyHabitatFeature[] = [];
 
     for (const row of rows) {
-      console.log(row);
       const surveyHabitatFeatureTaxons: InsertSurveyHabitatFeatureTaxon[] = [];
 
       // Get the taxon data, if any, from the row state and format it for insertion
