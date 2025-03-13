@@ -1,7 +1,4 @@
-/**
- * A qualitative environment unit.
- */
-export type EnvironmentUnit = 'millimeter' | 'centimeter' | 'meter' | 'milligram' | 'gram' | 'kilogram';
+import { QuantitativeUnit } from 'interfaces/reference/quantitative.interface';
 
 /**
  * A quantitative environment type definition.
@@ -10,9 +7,9 @@ export type EnvironmentQuantitativeTypeDefinition = {
   environment_quantitative_id: string;
   name: string;
   description: string | null;
+  unit: QuantitativeUnit | null;
   min: number | null;
   max: number | null;
-  unit: EnvironmentUnit | null;
 };
 
 /**

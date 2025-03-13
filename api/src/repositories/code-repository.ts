@@ -469,7 +469,7 @@ export class CodeRepository extends BaseRepository {
       WHERE record_end_date IS null;
     `;
 
-    const response = await this.connection.sql(sqlStatement, ObservationSignCode);
+    const response = await this.connection.sql(sqlStatement, CodeDescription);
 
     return response.rows;
   }

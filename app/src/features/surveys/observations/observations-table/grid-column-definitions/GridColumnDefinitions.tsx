@@ -20,7 +20,7 @@ import {
   EnvironmentQuantitativeTypeDefinition
 } from 'interfaces/useReferenceApi.interface';
 
-type IObservationSubcountSignOption = {
+type IObservationSignOption = {
   observation_sign_id: number;
   name: string;
 };
@@ -202,7 +202,7 @@ export const ObservationSubcountColDef = (props: {
 };
 
 export const ObservationSignColDef = (props: {
-  observationSignOptions: IObservationSubcountSignOption[];
+  observationSignOptions: IObservationSignOption[];
   hasError: (params: GridCellParams) => boolean;
 }): GridColDef<IObservationTableRow> => {
   const { observationSignOptions, hasError } = props;

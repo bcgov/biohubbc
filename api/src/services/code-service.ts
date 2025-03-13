@@ -51,7 +51,7 @@ export class CodeService extends DBService {
       survey_progress: this.codeRepository.getSurveyProgress(),
       method_response_metrics: this.codeRepository.getMethodResponseMetrics(),
       attractants: this.codeRepository.getAttractants(),
-      observation_signsbcount_signs: this.codeRepository.getObservationSigns(),
+      observation_signs: this.codeRepository.getObservationSigns(),
       telemetry_device_makes: this.codeRepository.getActiveTelemetryDeviceMakes(),
       frequency_units: this.codeRepository.getFrequencyUnits(),
       alert_types: this.codeRepository.getAlertTypes(),

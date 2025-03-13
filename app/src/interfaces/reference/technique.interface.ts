@@ -1,3 +1,5 @@
+import { QuantitativeUnit } from 'interfaces/useReferenceApi.interface';
+
 /**
  * Technique quantitative attributes
  */
@@ -5,7 +7,7 @@ export interface ITechniqueAttributeQuantitative {
   method_lookup_attribute_quantitative_id: string;
   name: string;
   description: string | null;
-  unit: string | null;
+  unit: QuantitativeUnit | null;
   min: number | null;
   max: number | null;
 }

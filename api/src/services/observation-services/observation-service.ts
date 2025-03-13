@@ -27,12 +27,12 @@ import { getLogger } from '../../utils/logger';
 import { ApiPaginationOptions } from '../../zod-schema/pagination';
 import {
   CBQualitativeMeasurementTypeDefinition,
-  CBQuantitativeMeasurementTypeDefinition
+  CBQuantitativeMeasurementTypeDefinition,
+  CritterbaseService
 } from '../critterbase-service';
 import { DBService } from '../db-service';
 import { getTsnMeasurementDictionary } from '../import-services/utils/measurement';
 import { validateQuantitativeValue } from '../import-services/utils/quantitative';
-import { ObservationSubCountEnvironmentService } from '../observation-subcount-environment-service';
 import { ObservationEnvironmentService } from '../observation-environment-service';
 import { ObservationSubCountMeasurementService } from '../observation-subcount-measurement-service';
 import { SamplePeriodService } from '../sample-period-service';
