@@ -20,7 +20,7 @@ import { SurveySamplePeriodDetails } from '../sample-period-repository';
 
 export type SurveyObservationWithSupplementaryData = {
   surveyObservation: ObservationRecordWithSamplingAndSubcountData;
-  supplementaryData: AllObservationSupplementaryData;
+  supplementaryObservationData: AllObservationSupplementaryData;
 };
 
 export interface InsertObservationSubCount {

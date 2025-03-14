@@ -3,9 +3,7 @@ import { IDBConnection } from '../../database/db';
 import { IObservationAdvancedFilters } from '../../models/observation-view';
 import {
   InsertObservationQualitativeEnvironmentRecord,
-  InsertObservationQuantitativeEnvironmentRecord,
-  QualitativeEnvironmentTypeDefinition,
-  QuantitativeEnvironmentTypeDefinition
+  InsertObservationQuantitativeEnvironmentRecord
 } from '../../repositories/observation-environment-repository';
 import { ObservationRepository } from '../../repositories/observation-repository/observation-repository';
 import {
@@ -317,8 +315,9 @@ export class ObservationService extends DBService {
     surveyId: number,
     surveyObservationId: number
   ): Promise<SurveyObservationWithSupplementaryData> {
-    const samplePeriodService = new SamplePeriodService(this.connection);
     const subCountService = new SubCountService(this.connection);
+    const observationEnvironmentService = new ObservationEnvironmentService(this.connection);
+    const samplePeriodService = new SamplePeriodService(this.connection);
 
     const [surveyObservation, measurementTypeDefinitions, environmentTypeDefinitions, samplePeriods] =
       await Promise.all([
@@ -326,13 +325,13 @@ export class ObservationService extends DBService {
         this.observationRepository.getSurveyObservation(surveyId, surveyObservationId),
         // Fetch supplementary data
         subCountService.getMeasurementTypeDefinitionsForSurvey(surveyId),
-        this.getEnvironmentTypeDefinitionsForSurvey(surveyId),
+        observationEnvironmentService.getEnvironmentTypeDefinitionsForSurvey(surveyId),
         samplePeriodService.getSamplePeriodsForSurvey(surveyId)
       ]);
 
     return {
       surveyObservation: surveyObservation,
-      supplementaryData: {
+      supplementaryObservationData: {
         observationCount: 1,
         qualitative_measurements: measurementTypeDefinitions.qualitative_measurements,
         quantitative_measurements: measurementTypeDefinitions.quantitative_measurements,
@@ -361,8 +360,9 @@ export class ObservationService extends DBService {
     surveyObservations: ObservationRecordWithSamplingAndSubcountData[];
     supplementaryObservationData: AllObservationSupplementaryData;
   }> {
-    const samplePeriodService = new SamplePeriodService(this.connection);
     const subCountService = new SubCountService(this.connection);
+    const observationEnvironmentService = new ObservationEnvironmentService(this.connection);
+    const samplePeriodService = new SamplePeriodService(this.connection);
 
     const [
       surveyObservations,
@@ -377,7 +377,7 @@ export class ObservationService extends DBService {
       this.observationRepository.getSurveyObservationsCount(surveyId),
       // Fetch supplementary data
       subCountService.getMeasurementTypeDefinitionsForSurvey(surveyId),
-      this.getEnvironmentTypeDefinitionsForSurvey(surveyId),
+      observationEnvironmentService.getEnvironmentTypeDefinitionsForSurvey(surveyId),
       samplePeriodService.getSamplePeriodsForSurvey(surveyId)
     ]);
 
@@ -412,8 +412,9 @@ export class ObservationService extends DBService {
     surveyObservations: FlattenedObservationRecordWithSamplingAndSubcountData[];
     supplementaryObservationData: AllObservationSupplementaryData;
   }> {
-    const samplePeriodService = new SamplePeriodService(this.connection);
     const subCountService = new SubCountService(this.connection);
+    const observationEnvironmentService = new ObservationEnvironmentService(this.connection);
+    const samplePeriodService = new SamplePeriodService(this.connection);
 
     const [
       surveyObservations,
@@ -428,7 +429,7 @@ export class ObservationService extends DBService {
       this.observationRepository.getSurveyFlattenedObservationsCount(surveyId),
       // Fetch supplementary data
       subCountService.getMeasurementTypeDefinitionsForSurvey(surveyId),
-      this.getEnvironmentTypeDefinitionsForSurvey(surveyId),
+      observationEnvironmentService.getEnvironmentTypeDefinitionsForSurvey(surveyId),
       samplePeriodService.getSamplePeriodsForSurvey(surveyId)
     ]);
 
@@ -557,34 +558,6 @@ export class ObservationService extends DBService {
    */
   async getObservationsCountByTechniqueIds(surveyId: number, methodTechniqueIds: number[]): Promise<number> {
     return this.observationRepository.getObservationsCountByTechniqueIds(surveyId, methodTechniqueIds);
-  }
-
-  /**
-   * Returns a unique set of all environment type definitions for all environments of all observations in the given
-   * survey.
-   *
-   * @param {number} surveyId
-   * @return {*}  {Promise<{
-   *     qualitative_environments: QualitativeEnvironmentTypeDefinition[];
-   *     quantitative_environments: QuantitativeEnvironmentTypeDefinition[];
-   *   }>}
-   * @memberof ObservationService
-   */
-  async getEnvironmentTypeDefinitionsForSurvey(surveyId: number): Promise<{
-    qualitative_environments: QualitativeEnvironmentTypeDefinition[];
-    quantitative_environments: QuantitativeEnvironmentTypeDefinition[];
-  }> {
-    const observationEnvironmentService = new ObservationEnvironmentService(this.connection);
-
-    const [qualitativeEnvironmentTypeDefinitions, quantitativeEnvironmentTypeDefinitions] = await Promise.all([
-      observationEnvironmentService.getQualitativeEnvironmentTypeDefinitionsForSurvey(surveyId),
-      observationEnvironmentService.getQuantitativeEnvironmentTypeDefinitionsForSurvey(surveyId)
-    ]);
-
-    return {
-      qualitative_environments: qualitativeEnvironmentTypeDefinitions,
-      quantitative_environments: quantitativeEnvironmentTypeDefinitions
-    };
   }
 
   /**

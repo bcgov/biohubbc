@@ -153,4 +153,32 @@ export class ObservationEnvironmentService extends DBService {
   ): Promise<void> {
     return this.observationEnvironmentRepository.deleteEnvironmentsForEnvironmentIds(surveyId, environmentIds);
   }
+
+  /**
+   * Returns a unique set of all environment type definitions for all environments of all observations in the given
+   * survey.
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<{
+   *     qualitative_environments: QualitativeEnvironmentTypeDefinition[];
+   *     quantitative_environments: QuantitativeEnvironmentTypeDefinition[];
+   *   }>}
+   * @memberof ObservationService
+   */
+  async getEnvironmentTypeDefinitionsForSurvey(surveyId: number): Promise<{
+    qualitative_environments: QualitativeEnvironmentTypeDefinition[];
+    quantitative_environments: QuantitativeEnvironmentTypeDefinition[];
+  }> {
+    const observationEnvironmentService = new ObservationEnvironmentService(this.connection);
+
+    const [qualitativeEnvironmentTypeDefinitions, quantitativeEnvironmentTypeDefinitions] = await Promise.all([
+      observationEnvironmentService.getQualitativeEnvironmentTypeDefinitionsForSurvey(surveyId),
+      observationEnvironmentService.getQuantitativeEnvironmentTypeDefinitionsForSurvey(surveyId)
+    ]);
+
+    return {
+      qualitative_environments: qualitativeEnvironmentTypeDefinitions,
+      quantitative_environments: quantitativeEnvironmentTypeDefinitions
+    };
+  }
 }

@@ -3,7 +3,7 @@ import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
 import {
-  findObservationsSchema,
+  findObservationSchema,
   observationsSupplementaryDataSchema
 } from '../../../../../../../openapi/schemas/observation';
 import { UpdateSurveyObservation } from '../../../../../../../repositories/observation-repository/observation-repository.interface';
@@ -100,10 +100,9 @@ GET.apiDoc = {
           schema: {
             type: 'object',
             additionalProperties: false,
-
             required: ['surveyObservation', 'supplementaryObservationData'],
             properties: {
-              surveyObservation: findObservationsSchema,
+              surveyObservation: findObservationSchema,
               supplementaryObservationData: observationsSupplementaryDataSchema
             }
           }

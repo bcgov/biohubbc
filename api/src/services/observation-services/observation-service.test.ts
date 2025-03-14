@@ -4,6 +4,7 @@ import sinonChai from 'sinon-chai';
 import { ObservationRepository } from '../../repositories/observation-repository/observation-repository';
 import { ObservationRecordWithSamplingAndSubcountData } from '../../repositories/observation-repository/observation-repository.interface';
 import { getMockDBConnection } from '../../__mocks__/db';
+import { ObservationEnvironmentService } from '../observation-environment-service';
 import { SamplePeriodService } from '../sample-period-service';
 import { SubCountService } from '../subcount-service';
 import { ObservationService } from './observation-service';
@@ -94,7 +95,7 @@ describe('ObservationService', () => {
         .resolves({ qualitative_measurements: [], quantitative_measurements: [] });
 
       const getEnvironmentTypeDefinitionsForSurveyStub = sinon
-        .stub(ObservationService.prototype, 'getEnvironmentTypeDefinitionsForSurvey')
+        .stub(ObservationEnvironmentService.prototype, 'getEnvironmentTypeDefinitionsForSurvey')
         .resolves({ qualitative_environments: [], quantitative_environments: [] });
 
       const getSamplePeriodsForSurveyStub = sinon
