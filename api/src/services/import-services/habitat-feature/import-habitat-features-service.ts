@@ -1,29 +1,42 @@
+import { castArray, compact } from 'lodash';
 import { WorkSheet } from 'xlsx';
-import { z } from 'zod';
 import { IDBConnection } from '../../../database/db';
 import { CodeRepository } from '../../../repositories/code-repository';
-import { InsertSurveyHabitatFeature } from '../../../repositories/habitat-feature-repository/survey-habitat-feature-repository.interface';
+import {
+  InsertSurveyHabitatFeature,
+  InsertSurveyHabitatFeatureTaxon
+} from '../../../repositories/habitat-feature-repository/survey-habitat-feature-repository.interface';
 import { CSVConfigUtils } from '../../../utils/csv-utils/csv-config-utils';
 import { validateCSVWorksheet } from '../../../utils/csv-utils/csv-config-validation';
 import { CSVConfig, CSVError } from '../../../utils/csv-utils/csv-config-validation.interface';
 import {
+  getArrayCellValidator,
   getDateCellValidator,
+  getDateRangeCellValidator,
+  getDescriptionCellValidator,
   getLatitudeCellValidator,
   getLongitudeCellValidator,
+  getNonEmptyStringCellValidator,
   getPositiveNumberCellValidator,
+  getTaxonCellValidator,
   getTimeCellSetter,
-  getTimeCellValidator,
-  validateZodCell
+  getTimeCellValidator
 } from '../../../utils/csv-utils/csv-header-configs';
-import { getTaxonRowValidator } from '../../../utils/csv-utils/row-validators/taxon-row-validator';
 import { getLogger } from '../../../utils/logger';
 import { DBService } from '../../db-service';
 import { SurveyHabitatFeatureService } from '../../habitat-feature-services/survey-habitat-feature-service';
 import { PlatformService } from '../../platform-service';
+import { SamplePeriodService } from '../../sample-period-service';
+import { SampleSiteService } from '../../sample-site-service';
+import { TechniqueService } from '../../technique-service';
+import { getSamplePeriodIdFromRowState, getTaxonArrayFromRowState } from '../utils/row-state';
 import { getTaxonMap, TaxonMap } from '../utils/taxon';
 import { getHabitatFeatureTypeCellValidator } from './utils/habitat-feature-header-configs';
+import { getHabitatFeatureSamplingInformationRowValidator } from './utils/habitat-feature-sampling-row-validator';
 
 const defaultLog = getLogger('services/import-services/import-habitat-features-service');
+
+const DELIMITER = ';';
 
 export type HabitatFeatureCSVStaticHeader =
   | 'HABITAT_FEATURE_TYPE'
@@ -32,7 +45,11 @@ export type HabitatFeatureCSVStaticHeader =
   | 'LONGITUDE'
   | 'OBSERVED_DATE'
   | 'OBSERVED_TIME'
-  | 'SPECIES';
+  | 'SAMPLE_PERIOD'
+  | 'SAMPLE_SITE'
+  | 'METHOD_TECHNIQUE'
+  | 'SPECIES'
+  | 'COMMENT';
 
 /**
  * ImportHabitatFeaturesService - A service for importing Habitat Features from a CSV into SIMS.
@@ -59,14 +76,24 @@ export class ImportHabitatFeaturesService extends DBService {
     const initialConfig: CSVConfig<HabitatFeatureCSVStaticHeader> = {
       staticHeadersConfig: {
         HABITAT_FEATURE_TYPE: {
-          aliases: ['HABITAT FEATURE TYPE', 'FEATURE_TYPE', 'FEATURE TYPE', 'TYPE']
+          aliases: ['HABITAT FEATURE TYPE', 'HABITAT_FEATURE', 'HABITAT FEATURE', 'FEATURE_TYPE', 'FEATURE TYPE']
         },
         COUNT: { aliases: [] },
-        LATITUDE: { aliases: ['LAT'] },
-        LONGITUDE: { aliases: ['LON', 'LONG', 'LNG'] },
-        OBSERVED_DATE: { aliases: ['OBSERVED DATE', 'DATE'] },
-        OBSERVED_TIME: { aliases: ['OBSERVED TIME', 'TIME'] },
-        SPECIES: { aliases: ['ITIS_TSN', 'ITIS TSN', 'TSN', 'TAXON'], optional: true }
+        LATITUDE: { aliases: ['LAT'], optional: true },
+        LONGITUDE: { aliases: ['LON', 'LONG', 'LNG'], optional: true },
+        OBSERVED_DATE: { aliases: ['OBSERVED DATE', 'DATE'], optional: true },
+        OBSERVED_TIME: { aliases: ['OBSERVED TIME', 'TIME'], optional: true },
+        SAMPLE_PERIOD: {
+          aliases: ['SAMPLE PERIOD', 'SAMPLING PERIOD', 'SAMPLING_PERIOD', 'PERIOD', 'TIME PERIOD', 'SESSION'],
+          optional: true
+        },
+        SAMPLE_SITE: {
+          aliases: ['SAMPLE SITE', 'SAMPLING_SITE', 'SAMPLING SITE', 'SITE', 'LOCATION', 'STATION'],
+          optional: true
+        },
+        METHOD_TECHNIQUE: { aliases: ['METHOD TECHNIQUE', 'METHOD', 'TECHNIQUE'], optional: true },
+        SPECIES: { aliases: ['ITIS_TSN', 'ITIS TSN', 'TSN', 'TAXON'], optional: true },
+        COMMENT: { aliases: [], optional: true }
       },
       ignoreDynamicHeaders: false
     };
@@ -97,15 +124,30 @@ export class ImportHabitatFeaturesService extends DBService {
     const surveyHabitatFeatures: InsertSurveyHabitatFeature[] = [];
 
     for (const row of rows) {
+      const surveyHabitatFeatureTaxons: InsertSurveyHabitatFeatureTaxon[] = [];
+
+      // Get the taxon data, if any, from the row state and format it for insertion
+      const taxonRowState = getTaxonArrayFromRowState(row);
+
+      // Convert the row state taxon into a list of survey habitat feature taxons
+      // Note: Taxon is either an object or an array of objects
+      for (const taxon of compact(castArray(taxonRowState?.taxon))) {
+        surveyHabitatFeatureTaxons.push({
+          itis_tsn: taxon.itis_tsn,
+          itis_scientific_name: taxon.itis_scientific_name,
+          comment: row.COMMENT ?? null
+        });
+      }
+
       surveyHabitatFeatures.push({
         habitat_feature_type_id: row.HABITAT_FEATURE_TYPE,
         count: row.COUNT,
-        latitude: row.LATITUDE,
-        longitude: row.LONGITUDE,
-        observed_date: row.OBSERVED_DATE,
-        observed_time: row.OBSERVED_TIME,
-        // TODO: Populate taxons from CSV
-        survey_habitat_feature_taxons: []
+        latitude: row.LATITUDE ?? null,
+        longitude: row.LONGITUDE ?? null,
+        observed_date: row.OBSERVED_DATE ?? null,
+        observed_time: row.OBSERVED_TIME ?? null,
+        survey_sample_period_id: this.samplePeriodId ?? getSamplePeriodIdFromRowState(row).sample_period_id ?? null,
+        survey_habitat_feature_taxons: surveyHabitatFeatureTaxons
         // TODO: Add quantitative/qualitative values
       });
     }
@@ -128,15 +170,20 @@ export class ImportHabitatFeaturesService extends DBService {
     // Initialize the required services
     const platformService = new PlatformService(this.connection);
     const codeRepository = new CodeRepository(this.connection);
+    const samplePeriodService = new SamplePeriodService(this.connection);
+    const sampleSiteService = new SampleSiteService(this.connection);
+    const methodTechniqueSerice = new TechniqueService(this.connection);
 
     // Generate shared dependencies
-    const taxonIdentifiers = this.utils.getUniqueCellValues('SPECIES').filter(Boolean) as string[];
+    const taxonIdentifiers = this.utils
+      .getUniqueArrayCellValues('SPECIES', { delimiter: DELIMITER })
+      .filter(Boolean) as string[];
     const taxonMap = await getTaxonMap(taxonIdentifiers, platformService);
 
     // Inject the dependencies and set the static headers, row validators, and dynamic headers
     await Promise.all([
-      this._setHabitatFeatureStaticHeaderConfigs(codeRepository),
-      this._setHabitatFeatureRowValidators(taxonMap)
+      this._setHabitatFeatureStaticHeaderConfigs(taxonMap, codeRepository),
+      this._setHabitatFeatureRowValidators(samplePeriodService, sampleSiteService, methodTechniqueSerice)
     ]);
 
     // Return the final CSV config
@@ -146,21 +193,32 @@ export class ImportHabitatFeaturesService extends DBService {
   /**
    * Set the static headers for the Habitat Feature CSV.
    *
+   * @param {TaxonMap} taxonMap - The taxon map
    * @param {CodeRepository} codeRepository - The code repository
    * @returns {*} {Promise<void>}
    */
-  async _setHabitatFeatureStaticHeaderConfigs(codeRepository: CodeRepository) {
+  async _setHabitatFeatureStaticHeaderConfigs(taxonMap: TaxonMap, codeRepository: CodeRepository) {
     const habitatFeatureTypes = await codeRepository.getHabitatFeatureTypes();
 
     this.utils.setAllStaticHeaderConfigs({
       HABITAT_FEATURE_TYPE: { validateCell: getHabitatFeatureTypeCellValidator(habitatFeatureTypes) },
       COUNT: { validateCell: getPositiveNumberCellValidator() },
-      LATITUDE: { validateCell: getLatitudeCellValidator() },
-      LONGITUDE: { validateCell: getLongitudeCellValidator() },
-      OBSERVED_DATE: { validateCell: getDateCellValidator() },
+      LATITUDE: { validateCell: getLatitudeCellValidator({ optional: true }) },
+      LONGITUDE: { validateCell: getLongitudeCellValidator({ optional: true }) },
+      OBSERVED_DATE: { validateCell: getDateCellValidator({ optional: true }) },
       OBSERVED_TIME: { validateCell: getTimeCellValidator(), setCellValue: getTimeCellSetter() },
-      // Species is pre-validated by the taxon row validator
-      SPECIES: { validateCell: (params) => validateZodCell(params.cell, z.string().or(z.number())) }
+      // Sampling period is pre-validated by the sampling information row validator
+      SAMPLE_PERIOD: { validateCell: getDateRangeCellValidator({ optional: true }) },
+      // Sampling site is pre-validated by the sampling information row validator
+      SAMPLE_SITE: { validateCell: getNonEmptyStringCellValidator({ optional: true }) },
+      // Method technique is pre-validated by the sampling information row validator
+      METHOD_TECHNIQUE: { validateCell: getNonEmptyStringCellValidator({ optional: true }) },
+      SPECIES: {
+        validateCell: getArrayCellValidator(getTaxonCellValidator(taxonMap, { optional: true }), {
+          delimiter: DELIMITER
+        })
+      },
+      COMMENT: { validateCell: getDescriptionCellValidator({ optional: true }) }
     });
   }
 
@@ -169,11 +227,32 @@ export class ImportHabitatFeaturesService extends DBService {
    *
    * Note: Row validators run before static and dynamic header validators.
    *
-   * @param {TaxonMap} taxonMap - The taxon map
+   * @param {SamplePeriodService} samplePeriodService - The sample period service
+   * @param {SampleSiteService} sampleSiteService - The sample site service
+   * @param {TechniqueService} methodTechniqueService - The method technique service
    * @returns {*} {Promise<void>}
    */
-  async _setHabitatFeatureRowValidators(taxonMap: TaxonMap) {
+  async _setHabitatFeatureRowValidators(
+    samplePeriodService: SamplePeriodService,
+    sampleSiteService: SampleSiteService,
+    methodTechniqueService: TechniqueService
+  ) {
+    // Generate the sample periods, sites, and method techniques
+    const [samplePeriods, sampleSites, methodTechniques] = await Promise.all([
+      samplePeriodService.getSamplePeriodsForSurvey(this.surveyId),
+      sampleSiteService.getSampleSitesForSurveyId(this.surveyId),
+      methodTechniqueService.getTechniquesForSurveyId(this.surveyId)
+    ]);
+
     // Inject the row validators - handles taxon, sampling information and location validation
-    this.utils.config.rowValidators = [getTaxonRowValidator(taxonMap, this.utils, 'SPECIES', { optional: true })];
+    this.utils.config.rowValidators = [
+      getHabitatFeatureSamplingInformationRowValidator({
+        samplePeriods: samplePeriods,
+        sampleSites: sampleSites,
+        methodTechniques: methodTechniques,
+        utils: this.utils,
+        samplePeriodId: this.samplePeriodId
+      })
+    ];
   }
 }

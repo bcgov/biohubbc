@@ -1,12 +1,11 @@
 import { mdiCalendar } from '@mdi/js';
-import { Grid } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import AutocompleteField from 'components/fields/AutocompleteField';
 import CustomTextField from 'components/fields/CustomTextField';
 import { DateTimeFields } from 'components/fields/DateTimeFields';
 import { useFormikContext } from 'formik';
 import { useCodesContext } from 'hooks/useContext';
 import { CreateHabitatFeatureFormValues, UpdateHabitatFeatureFormValues } from '../HabitatFeatureFormContainer';
-import { HabitatFeatureSpeciesForm } from './HabitatFeatureSpeciesForm';
 
 /**
  * Habitat Feature general information form.
@@ -27,7 +26,6 @@ export const HabitatFeatureGeneralInformationForm = <
             id="habitat_feature_type_id"
             name="habitat_feature_type_id"
             label="Habitat feature"
-            helpText="The type of habitat feature"
             showValue
             required
             loading={codesContext.codesDataLoader.isLoading}
@@ -42,7 +40,7 @@ export const HabitatFeatureGeneralInformationForm = <
         </Grid>
 
         <Grid item xs={4}>
-          <CustomTextField name="count" label="Observed count" other={{ type: 'number' }} />
+          <CustomTextField name="count" label="Observed count" other={{ type: 'number', required: true }} />
         </Grid>
       </Grid>
 
@@ -64,10 +62,6 @@ export const HabitatFeatureGeneralInformationForm = <
             timeIcon: mdiCalendar
           }}
         />
-      </Grid>
-
-      <Grid item xs={12}>
-        <HabitatFeatureSpeciesForm />
       </Grid>
     </Grid>
   );

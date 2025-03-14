@@ -1,10 +1,10 @@
-import { AxiosInstance } from 'axios';
+import { AxiosInstance, AxiosProgressEvent, CancelTokenSource } from 'axios';
 import {
   CreateSurveyHabitatFeature,
   FindSurveyHabitatFeatures,
   FindSurveyHabitatFeaturesFilters,
   getSurveyHabitatFeaturesWithSupplementaryData,
-  SurveyHabitatFeature,
+  getSurveyHabitatFeatureWithSupplementaryData,
   SurveyHabitatFeaturesGeometry,
   UpdateSurveyHabitatFeature
 } from 'interfaces/useSurveyHabitatFeatureApi.interface';
@@ -68,13 +68,13 @@ const useSurveyHabitatFeatureApi = (axios: AxiosInstance) => {
    * @param {number} projectId
    * @param {number} surveyId
    * @param {number} surveyHabitatFeatureId
-   * @return {*}  {Promise<{ surveyHabitatFeature: SurveyHabitatFeature }>}
+   * @return {*}  {Promise<getSurveyHabitatFeatureWithSupplementaryData>}
    */
-  const getSurveyHabitatFeature = async (
+  const getSurveyHabitatFeatureWithSupplementaryData = async (
     projectId: number,
     surveyId: number,
     surveyHabitatFeatureId: number
-  ): Promise<{ surveyHabitatFeature: SurveyHabitatFeature }> => {
+  ): Promise<getSurveyHabitatFeatureWithSupplementaryData> => {
     const { data } = await axios.get(
       `/api/project/${projectId}/survey/${surveyId}/habitat-features/${surveyHabitatFeatureId}`
     );
@@ -181,15 +181,46 @@ const useSurveyHabitatFeatureApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Bulk upload habitat features from a CSV file.
+   *
+   * @param {File} file
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @return {*} {Promise<void>}
+   */
+  const importHabitatFeaturesFromCsv = async (
+    file: File,
+    projectId: number,
+    surveyId: number,
+    surveySamplePeriodId?: number,
+    cancelTokenSource?: CancelTokenSource,
+    onProgress?: (progressEvent: AxiosProgressEvent) => void
+  ): Promise<void> => {
+    const formData = new FormData();
+
+    formData.append('media', file);
+
+    if (surveySamplePeriodId) {
+      formData.append('surveySamplePeriodId', surveySamplePeriodId.toString());
+    }
+
+    await axios.post(`/api/project/${projectId}/survey/${surveyId}/habitat-features/import`, formData, {
+      cancelToken: cancelTokenSource?.token,
+      onUploadProgress: onProgress
+    });
+  };
+
   return {
     createSurveyHabitatFeatures,
     updateSurveyHabitatFeature,
-    getSurveyHabitatFeature,
+    getSurveyHabitatFeatureWithSupplementaryData,
     getSurveyHabitatFeaturesWithSupplementaryData,
     getSurveyHabitatFeaturesGeometry,
     findSurveyHabitatFeatures,
     deleteSurveyHabitatFeature,
-    deleteSurveyHabitatFeatures
+    deleteSurveyHabitatFeatures,
+    importHabitatFeaturesFromCsv
   };
 };
 

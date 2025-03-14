@@ -3,7 +3,8 @@ import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
 import {
-  SurveyHabitatFeatureWithTaxonsSchema,
+  SurveyHabitatFeaturesSupplementaryDataSchema,
+  SurveyHabitatFeatureWithTaxonsAndSamplingSchema,
   UpdateHabitatFeatureSchema
 } from '../../../../../../../openapi/schemas/survey-habitat-feature';
 import { UpdateSurveyHabitatFeature } from '../../../../../../../repositories/habitat-feature-repository/survey-habitat-feature-repository.interface';
@@ -195,7 +196,8 @@ GET.apiDoc = {
             additionalProperties: false,
             required: ['surveyHabitatFeature'],
             properties: {
-              surveyHabitatFeature: SurveyHabitatFeatureWithTaxonsSchema
+              surveyHabitatFeature: SurveyHabitatFeatureWithTaxonsAndSamplingSchema,
+              supplementaryData: SurveyHabitatFeaturesSupplementaryDataSchema
             }
           }
         }
@@ -347,7 +349,8 @@ export function getSurveyHabitatFeature(): RequestHandler {
       await connection.commit();
 
       const response = {
-        surveyHabitatFeature: surveyHabitatFeatureResponse
+        surveyHabitatFeature: surveyHabitatFeatureResponse.surveyHabitatFeature,
+        supplementaryData: surveyHabitatFeatureResponse.supplementaryData
       };
 
       return res.status(200).json(response);

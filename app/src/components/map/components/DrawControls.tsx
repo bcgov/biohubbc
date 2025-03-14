@@ -188,7 +188,7 @@ const DrawControls = forwardRef<IDrawControlsRef | undefined, IDrawControlsProps
   useImperativeHandle(
     ref,
     () => ({
-      addLayer: (feature: Feature) => {
+      addLayer: (feature: Feature, layerId: (id: number) => void) => {
         const featureGroup = getFeatureGroup();
 
         L.geoJSON(feature, {
@@ -201,6 +201,8 @@ const DrawControls = forwardRef<IDrawControlsRef | undefined, IDrawControlsProps
           },
           onEachFeature: function (_feature, layer) {
             featureGroup.addLayer(layer);
+            // Fire the layerId callback with the unique ID assigned to the layer
+            layerId(featureGroup.getLayerId(layer));
           }
         });
       },

@@ -23,11 +23,14 @@ import {
 
 const initialHabitatFeatureFormValues: CreateHabitatFeatureFormValues = {
   habitat_feature_type_id: '' as unknown as number,
+  count: '' as unknown as number,
   latitude: '' as unknown as number,
   longitude: '' as unknown as number,
-  count: '' as unknown as number,
   observed_date: '',
   observed_time: '',
+  survey_sample_site_id: '' as unknown as number,
+  method_technique_id: '' as unknown as number,
+  survey_sample_period_id: '' as unknown as number,
   survey_habitat_feature_taxons: []
 };
 
@@ -62,12 +65,17 @@ export const CreateHabitatFeaturePage = (): JSX.Element => {
       await biohubApi.habitatFeature.createSurveyHabitatFeatures(surveyContext.projectId, surveyContext.surveyId, [
         {
           habitat_feature_type_id: values.habitat_feature_type_id,
-          latitude: values.latitude,
-          longitude: values.longitude,
           count: values.count,
-          observed_date: values.observed_date,
-          observed_time: values.observed_time,
-          survey_habitat_feature_taxons: values.survey_habitat_feature_taxons
+          latitude: values.latitude || null,
+          longitude: values.longitude || null,
+          observed_date: values.observed_date || null,
+          observed_time: values.observed_time || null,
+          survey_sample_period_id: values.survey_sample_period_id || null,
+          survey_habitat_feature_taxons: values.survey_habitat_feature_taxons.map((taxon) => ({
+            itis_tsn: taxon.itis_tsn,
+            itis_scientific_name: taxon.itis_scientific_name,
+            comment: taxon.comment || null
+          }))
         }
       ]);
 

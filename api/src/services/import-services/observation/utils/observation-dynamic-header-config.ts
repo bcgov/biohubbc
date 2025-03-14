@@ -20,7 +20,7 @@ export const getObservationDynamicHeaderCellValidator = (
   environmentDictionary: EnvironmentNameTypeDefinitionMap
 ): CSVCellValidator => {
   return (params) => {
-    const critterTsn = getTaxonFromRowState(params.row).itis_tsn;
+    const critterTsn = getTaxonFromRowState(params.row).taxon.itis_tsn;
 
     // Check that the header is not a measurement AND an environment
     if (tsnMeasurementDictionary.has(critterTsn, params.header) && environmentDictionary.has(params.header)) {
