@@ -69,6 +69,8 @@ export const MethodTechniqueField = (props: IMethodTechniqueFieldProps) => {
         if (!surveySampleSiteId) {
           // Currently the control requires that a site be selected first, before techniques can be searched/selected
           setIsLoading(false);
+          // Set the options for the autocomplete
+          setOptions([]);
           return;
         }
 
@@ -117,6 +119,7 @@ export const MethodTechniqueField = (props: IMethodTechniqueFieldProps) => {
       // If the site not selected, then unset any selected technique, as its value is dependent
       // on the site.
       setCurrentOption(null);
+      setOptions([]);
       return;
     }
 

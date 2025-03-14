@@ -243,28 +243,28 @@ export class ObservationRepository extends BaseRepository {
         survey_observation
       (
         survey_id,
-        survey_sample_period_id,
-        count,
-        latitude,
-        longitude,
-        observation_date,
-        observation_time,
         itis_tsn,
         itis_scientific_name,
+        survey_sample_period_id,
+        latitude,
+        longitude,
+        count,
+        observation_date,
+        observation_time,
         observation_sign_id
       )
       VALUES
       (
         ${surveyId},
         ${observation.standardColumns.itis_tsn},
-        ${observation.standardColumns.itis_scientific_name ?? 'NULL'},
-        ${observation.standardColumns.survey_sample_period_id ?? 'NULL'},
-        ${observation.standardColumns.latitude ?? 'NULL'},
-        ${observation.standardColumns.longitude ?? 'NULL'},
+        ${observation.standardColumns.itis_scientific_name ?? null},
+        ${observation.standardColumns.survey_sample_period_id ?? null},
+        ${observation.standardColumns.latitude ?? null},
+        ${observation.standardColumns.longitude ?? null},
         ${observation.standardColumns.count},
-        ${observation.standardColumns.observation_date ?? 'NULL'},
-        ${observation.standardColumns.observation_time ?? 'NULL'},
-        ${observation.standardColumns.observation_sign_id ?? 'NULL'}
+        ${observation.standardColumns.observation_date ?? null},
+        ${observation.standardColumns.observation_time ?? null},
+        ${observation.standardColumns.observation_sign_id ?? null}
       )
       RETURNING   
         survey_observation_id,
@@ -309,14 +309,14 @@ export class ObservationRepository extends BaseRepository {
         survey_observation
       SET
         itis_tsn = ${observation.standardColumns.itis_tsn},
-        itis_scientific_name = ${observation.standardColumns.itis_scientific_name ?? 'NULL'},
-        survey_sample_period_id = ${observation.standardColumns.survey_sample_period_id ?? 'NULL'},
-        latitude = ${observation.standardColumns.latitude ?? 'NULL'},
-        longitude = ${observation.standardColumns.longitude ?? 'NULL'},
+        itis_scientific_name = ${observation.standardColumns.itis_scientific_name ?? null},
+        survey_sample_period_id = ${observation.standardColumns.survey_sample_period_id ?? null},
+        latitude = ${observation.standardColumns.latitude ?? null},
+        longitude = ${observation.standardColumns.longitude ?? null},
         count = ${observation.standardColumns.count},
-        observation_date = ${observation.standardColumns.observation_date ?? 'NULL'},
-        observation_time = ${observation.standardColumns.observation_time ?? 'NULL'},
-        observation_sign_id = ${observation.standardColumns.observation_sign_id ?? 'NULL'}
+        observation_date = ${observation.standardColumns.observation_date ?? null},
+        observation_time = ${observation.standardColumns.observation_time ?? null},
+        observation_sign_id = ${observation.standardColumns.observation_sign_id ?? null}
       WHERE
         survey_observation_id = ${observation.standardColumns.survey_observation_id}
       AND 
@@ -334,6 +334,9 @@ export class ObservationRepository extends BaseRepository {
         observation_date,
         observation_sign_id;
     `;
+
+    console.log(sqlStatement.text);
+    console.log(sqlStatement.values);
 
     const response = await this.connection.sql(sqlStatement, SurveyObservationRecord);
 

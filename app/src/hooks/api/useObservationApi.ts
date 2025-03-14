@@ -5,7 +5,6 @@ import {
   CBQuantitativeMeasurementTypeDefinition
 } from 'interfaces/useCritterApi.interface';
 import {
-  ICreateEditObservation,
   ICreateObservation,
   IEditObservation,
   IGetSurveyFlattenedObservationsResponse,
@@ -26,24 +25,6 @@ import { ApiPaginationRequestOptions } from 'types/misc';
  */
 const useObservationApi = (axios: AxiosInstance) => {
   /**
-   * Insert/updates all survey observation records for the given survey
-   *
-   * @param {number} projectId
-   * @param {number} surveyId
-   * @param {ICreateEditObservation[]} surveyObservations
-   * @return {*}  {Promise<void>}
-   */
-  const insertUpdateObservationRecords = async (
-    projectId: number,
-    surveyId: number,
-    surveyObservations: ICreateEditObservation[]
-  ): Promise<void> => {
-    await axios.put(`/api/project/${projectId}/survey/${surveyId}/observations`, {
-      surveyObservations
-    });
-  };
-
-  /**
    * Creates a new observation for the survey
    *
    * @param {number} projectId
@@ -56,7 +37,9 @@ const useObservationApi = (axios: AxiosInstance) => {
     surveyId: number,
     surveyObservation: ICreateObservation
   ): Promise<void> => {
-    await axios.post(`/api/project/${projectId}/survey/${surveyId}/observations`, surveyObservation);
+    await axios.post(`/api/project/${projectId}/survey/${surveyId}/observations`, {
+      surveyObservations: [surveyObservation]
+    });
   };
 
   /**
@@ -74,10 +57,9 @@ const useObservationApi = (axios: AxiosInstance) => {
     surveyObservationId: number,
     surveyObservation: IEditObservation
   ): Promise<void> => {
-    await axios.put(
-      `/api/project/${projectId}/survey/${surveyId}/observations/${surveyObservationId}`,
-      surveyObservation
-    );
+    await axios.put(`/api/project/${projectId}/survey/${surveyId}/observations/${surveyObservationId}`, {
+      surveyObservation: surveyObservation
+    });
   };
 
   /**
@@ -396,7 +378,6 @@ const useObservationApi = (axios: AxiosInstance) => {
   };
 
   return {
-    insertUpdateObservationRecords,
     getObservationRecords,
     getFlattenedObservationRecords,
     getObservationRecord,

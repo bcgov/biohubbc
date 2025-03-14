@@ -70,6 +70,8 @@ export const SamplingPeriodField = (props: ISamplingPeriodFieldProps) => {
           // Currently the control requires that a site and technique be selected first, before periods can be
           // searched/selected
           setIsLoading(false);
+          // Set the options for the autocomplete
+          setOptions([]);
           return;
         }
 
@@ -117,6 +119,7 @@ export const SamplingPeriodField = (props: ISamplingPeriodFieldProps) => {
       // If either the site or technique is not selected, then unset any selected period, as its value is dependent
       // on the site and technique.
       setCurrentOption(null);
+      setOptions([]);
       return;
     }
 

@@ -101,6 +101,324 @@ const ObservationSubcountSchema: OpenAPIV3.SchemaObject = {
   }
 };
 
+export const insertObservationSchema: OpenAPIV3.SchemaObject = {
+  description: 'Insert an observation record.',
+  type: 'object',
+  additionalProperties: false,
+  required: ['standardColumns', 'subcounts'],
+  properties: {
+    standardColumns: {
+      description: 'Standard column data for an observation record.',
+      type: 'object',
+      additionalProperties: false,
+      required: [
+        'itis_tsn',
+        'itis_scientific_name',
+        'survey_sample_period_id',
+        'count',
+        'latitude',
+        'longitude',
+        'observation_date',
+        'observation_time',
+        'observation_sign_id',
+        'qualitative_environments',
+        'quantitative_environments'
+      ],
+      properties: {
+        itis_tsn: {
+          type: 'integer'
+        },
+        itis_scientific_name: {
+          type: 'string',
+          nullable: true
+        },
+        survey_sample_period_id: {
+          type: 'integer',
+          minimum: 1,
+          nullable: true
+        },
+        count: {
+          type: 'integer',
+          description: "The observation record's count.",
+          nullable: true
+        },
+        latitude: {
+          type: 'number',
+          nullable: true
+        },
+        longitude: {
+          type: 'number',
+          nullable: true
+        },
+        observation_date: {
+          type: 'string',
+          nullable: true
+        },
+        observation_time: {
+          type: 'string',
+          nullable: true
+        },
+        observation_sign_id: {
+          type: 'integer',
+          minimum: 1,
+          description:
+            'The observation observation sign ID, indicating whether the observation was a direct sighting, footprints, scat, etc.',
+          nullable: true
+        },
+        qualitative_environments: {
+          type: 'array',
+          items: {
+            type: 'object',
+            additionalProperties: false,
+            required: ['environment_qualitative_id', 'environment_qualitative_option_id'],
+            properties: {
+              environment_qualitative_id: {
+                type: 'string',
+                format: 'uuid'
+              },
+              environment_qualitative_option_id: {
+                type: 'string',
+                format: 'uuid'
+              }
+            }
+          }
+        },
+        quantitative_environments: {
+          type: 'array',
+          items: {
+            type: 'object',
+            additionalProperties: false,
+            required: ['environment_quantitative_id', 'value'],
+            properties: {
+              environment_quantitative_id: {
+                type: 'string',
+                format: 'uuid'
+              },
+              value: {
+                type: 'number'
+              }
+            }
+          }
+        }
+      }
+    },
+    subcounts: {
+      description: 'An array of observation subcount records.',
+      type: 'array',
+      items: {
+        type: 'object',
+        additionalProperties: false,
+        required: ['subcount', 'comment', 'qualitative_measurements', 'quantitative_measurements'],
+        properties: {
+          subcount: {
+            type: 'number',
+            description: "The subcount record's count."
+          },
+          comment: {
+            type: 'string',
+            nullable: true,
+            description: 'A comment or note about the subcount'
+          },
+          qualitative_measurements: {
+            type: 'array',
+            items: {
+              type: 'object',
+              additionalProperties: false,
+              properties: {
+                measurement_id: {
+                  type: 'string'
+                },
+                measurement_option_id: {
+                  type: 'string'
+                }
+              }
+            }
+          },
+          quantitative_measurements: {
+            type: 'array',
+            items: {
+              type: 'object',
+              additionalProperties: false,
+              properties: {
+                measurement_id: {
+                  type: 'string'
+                },
+                measurement_value: {
+                  type: 'number'
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+};
+
+export const updateObservationSchema: OpenAPIV3.SchemaObject = {
+  description: 'Update an observation record.',
+  type: 'object',
+  additionalProperties: false,
+  required: ['standardColumns', 'subcounts'],
+  properties: {
+    standardColumns: {
+      description: 'Standard column data for an observation record.',
+      type: 'object',
+      additionalProperties: false,
+      required: [
+        'survey_observation_id',
+        'itis_tsn',
+        'itis_scientific_name',
+        'survey_sample_period_id',
+        'count',
+        'latitude',
+        'longitude',
+        'observation_date',
+        'observation_time',
+        'observation_sign_id',
+        'qualitative_environments',
+        'quantitative_environments'
+      ],
+      properties: {
+        survey_observation_id: {
+          type: 'integer',
+          minimum: 1
+        },
+        itis_tsn: {
+          type: 'integer'
+        },
+        itis_scientific_name: {
+          type: 'string',
+          nullable: true
+        },
+        survey_sample_period_id: {
+          type: 'integer',
+          minimum: 1,
+          nullable: true
+        },
+        count: {
+          type: 'integer',
+          description: "The observation record's count.",
+          nullable: true
+        },
+        latitude: {
+          type: 'number',
+          nullable: true
+        },
+        longitude: {
+          type: 'number',
+          nullable: true
+        },
+        observation_date: {
+          type: 'string',
+          nullable: true
+        },
+        observation_time: {
+          type: 'string',
+          nullable: true
+        },
+        observation_sign_id: {
+          type: 'integer',
+          minimum: 1,
+          description:
+            'The observation observation sign ID, indicating whether the observation was a direct sighting, footprints, scat, etc.',
+          nullable: true
+        },
+        qualitative_environments: {
+          type: 'array',
+          items: {
+            type: 'object',
+            additionalProperties: false,
+            required: ['environment_qualitative_id', 'environment_qualitative_option_id'],
+            properties: {
+              environment_qualitative_id: {
+                type: 'string',
+                format: 'uuid'
+              },
+              environment_qualitative_option_id: {
+                type: 'string',
+                format: 'uuid'
+              }
+            }
+          }
+        },
+        quantitative_environments: {
+          type: 'array',
+          items: {
+            type: 'object',
+            additionalProperties: false,
+            required: ['environment_quantitative_id', 'value'],
+            properties: {
+              environment_quantitative_id: {
+                type: 'string',
+                format: 'uuid'
+              },
+              value: {
+                type: 'number'
+              }
+            }
+          }
+        }
+      }
+    },
+    subcounts: {
+      description: 'An array of observation subcount records.',
+      type: 'array',
+      items: {
+        type: 'object',
+        additionalProperties: false,
+        required: ['subcount', 'comment', 'qualitative_measurements', 'quantitative_measurements'],
+        properties: {
+          observation_subcount_id: {
+            type: 'integer',
+            nullable: true,
+            minimum: 1
+          },
+          subcount: {
+            type: 'number',
+            description: "The subcount record's count."
+          },
+          comment: {
+            type: 'string',
+            nullable: true,
+            description: 'A comment or note about the subcount'
+          },
+          qualitative_measurements: {
+            type: 'array',
+            items: {
+              type: 'object',
+              additionalProperties: false,
+              properties: {
+                measurement_id: {
+                  type: 'string'
+                },
+                measurement_option_id: {
+                  type: 'string'
+                }
+              }
+            }
+          },
+          quantitative_measurements: {
+            type: 'array',
+            items: {
+              type: 'object',
+              additionalProperties: false,
+              properties: {
+                measurement_id: {
+                  type: 'string'
+                },
+                measurement_value: {
+                  type: 'number'
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+};
+
 export const findObservationSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
   additionalProperties: false,

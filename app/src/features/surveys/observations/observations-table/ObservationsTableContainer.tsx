@@ -193,7 +193,7 @@ const ObservationsTableContainer = () => {
             startIcon={<Icon path={mdiPlus} size={1} />}
             onClick={() => {
               // TODO: Nick: This is a temporary solution to allow editing of observations from the table
-              const selectedObservations = observationsTableContext.getSelectedObservationRecords();
+              const selectedObservations = observationsTableContext.getSelectedObservationSubcountRecords();
               if (selectedObservations.length === 1 && selectedObservations[0].survey_observation_id) {
                 history.push(
                   `/admin/projects/${projectId}/surveys/${surveyId}/observations/${selectedObservations[0].survey_observation_id}/edit`

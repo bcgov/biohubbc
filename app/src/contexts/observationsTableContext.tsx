@@ -78,7 +78,7 @@ export type IObservationsTableContext = {
   /**
    * Deletes all of the given records and removes them from the Observation table.
    */
-  deleteObservationRecords: (observationRecords: IObservationTableRow[]) => void;
+  deleteObservationSubcountRecords: (observationRecords: IObservationTableRow[]) => void;
   /**
    * Refreshes the Observation Table with already existing records
    */
@@ -86,7 +86,7 @@ export type IObservationsTableContext = {
   /**
    * Returns all of the observation table records that have been selected
    */
-  getSelectedObservationRecords: () => IObservationTableRow[];
+  getSelectedObservationSubcountRecords: () => IObservationTableRow[];
   /**
    * The IDs of the selected observation table rows
    */
@@ -298,7 +298,7 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
    *
    * @return {*}
    */
-  const getSelectedObservationRecords: () => IObservationTableRow[] = useCallback(() => {
+  const getSelectedObservationSubcountRecords: () => IObservationTableRow[] = useCallback(() => {
     if (!_muiDataGridApiRef?.current?.getRowModels) {
       // Data grid is not fully initialized
       return [];
@@ -331,7 +331,7 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
       try {
         if (savedRowIdsToDelete.length) {
           // Delete previously saved records from the server, if any
-          await biohubApi.observation.deleteObservationRecords(projectId, surveyId, savedRowIdsToDelete);
+          await biohubApi.observation.deleteObservationSubcountRecords(projectId, surveyId, savedRowIdsToDelete);
           // Refresh the table after deleting one or more records
           refreshObservationRecords();
         }
@@ -396,7 +396,7 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
    * @param {IObservationTableRow[]} observationRecords
    * @return {*}
    */
-  const deleteObservationRecords = useCallback(
+  const deleteObservationSubcountRecords = useCallback(
     (observationRecords: IObservationTableRow[]) => {
       if (!observationRecords.length) {
         return;
@@ -664,9 +664,9 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
       onRowModesModelChange,
       columnVisibilityModel,
       onColumnVisibilityModelChange,
-      deleteObservationRecords,
+      deleteObservationSubcountRecords,
       refreshObservationRecords,
-      getSelectedObservationRecords,
+      getSelectedObservationSubcountRecords,
       rowSelectionModel,
       onRowSelectionModelChange: setRowSelectionModel,
       isLoading,
@@ -691,9 +691,9 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
       onRowModesModelChange,
       columnVisibilityModel,
       onColumnVisibilityModelChange,
-      deleteObservationRecords,
+      deleteObservationSubcountRecords,
       refreshObservationRecords,
-      getSelectedObservationRecords,
+      getSelectedObservationSubcountRecords,
       rowSelectionModel,
       isLoading,
       observationCount,
