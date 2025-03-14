@@ -28,7 +28,7 @@ import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
 
-const pageSizeOptions = [10, 25, 50, 100];
+const pageSizeOptions = [10, 25, 50];
 
 interface SamplingSiteListProps {
   isDisabled: boolean;

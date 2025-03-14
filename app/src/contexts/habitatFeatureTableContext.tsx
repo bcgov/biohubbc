@@ -137,31 +137,48 @@ export const HabitatFeatureTableContextProvider = (props: IHabitatFeatureTableCo
   /**
    * Refreshes the observations table with the latest records from the server.
    *
-   * @return {*}
+   * @param {GridPaginationModel} paginationModel
+   * @param {GridSortModel} sortModel
+   * @return {*} {Promise<getSurveyHabitatFeaturesWithSupplementaryData | undefined>}
+   */
+  const refreshPaginatedHabitatFeatureRecords = useCallback(
+    async (paginationModel: GridPaginationModel, sortModel: GridSortModel) => {
+      const sort = firstOrNull(sortModel);
+
+      return habitatFeatureDataLoader.refresh({
+        limit: paginationModel.pageSize,
+        sort: sort?.field || undefined,
+        order: sort?.sort || undefined,
+
+        // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
+        page: paginationModel.page + 1
+      });
+    },
+    [habitatFeatureDataLoader]
+  );
+
+  /**
+   * Refreshes the observations table with the latest records from the server.
+   *
+   * @return {*} {Promise<getSurveyHabitatFeaturesWithSupplementaryData | undefined>}
    */
   const refreshHabitatFeatureRecords = useCallback(async () => {
-    const sort = firstOrNull(sortModel);
-
-    return habitatFeatureDataLoader.refresh({
-      limit: paginationModel.pageSize,
-      sort: sort?.field || undefined,
-      order: sort?.sort || undefined,
-
-      // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
-      page: paginationModel.page + 1
-    });
-  }, [habitatFeatureDataLoader, paginationModel.page, paginationModel.pageSize, sortModel]);
+    return refreshPaginatedHabitatFeatureRecords(paginationModel, sortModel);
+  }, [paginationModel, refreshPaginatedHabitatFeatureRecords, sortModel]);
 
   // Load the codes and habitat feature data
   useEffect(() => {
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
 
+  // Load the habitat feature data
   useEffect(() => {
+    if (habitatFeatureDataLoader.hasLoaded || habitatFeatureDataLoader.isLoading) {
+      return;
+    }
+
     refreshHabitatFeatureRecords();
-    // Should not re-run this effect on `refreshHabitatFeatureRecords` changes
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paginationModel, sortModel]);
+  }, [habitatFeatureDataLoader.hasLoaded, habitatFeatureDataLoader.isLoading, refreshHabitatFeatureRecords]);
 
   /**
    * Toggle the table columns visibility
@@ -316,9 +333,15 @@ export const HabitatFeatureTableContextProvider = (props: IHabitatFeatureTableCo
       columnVisibilityModel: columnVisibilityModel,
       onColumnVisibilityModelChange: setColumnVisibilityModel,
       paginationModel: paginationModel,
-      onPaginationModelChange: setPaginationModel,
+      onPaginationModelChange: (newPaginationModel) => {
+        setPaginationModel(newPaginationModel);
+        refreshPaginatedHabitatFeatureRecords(newPaginationModel, sortModel);
+      },
       sortModel: sortModel,
-      onSortModelChange: setSortModel,
+      onSortModelChange: (newSortModel) => {
+        setSortModel(newSortModel);
+        refreshPaginatedHabitatFeatureRecords(paginationModel, newSortModel);
+      },
       hiddenColumns: hiddenColumns,
       toggleColumnVisibility: toggleColumnsVisibility,
       refreshHabitatFeatureRecords: refreshHabitatFeatureRecords
@@ -336,7 +359,8 @@ export const HabitatFeatureTableContextProvider = (props: IHabitatFeatureTableCo
     sortModel,
     hiddenColumns,
     toggleColumnsVisibility,
-    refreshHabitatFeatureRecords
+    refreshHabitatFeatureRecords,
+    refreshPaginatedHabitatFeatureRecords
   ]);
 
   return (

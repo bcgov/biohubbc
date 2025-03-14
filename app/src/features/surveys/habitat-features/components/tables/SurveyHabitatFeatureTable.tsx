@@ -3,7 +3,7 @@ import { IHabitatFeatureRow } from 'contexts/habitatFeatureTableContext';
 import { useHabitatFeatureTableContext } from 'hooks/useContext';
 
 const HABITAT_FEATURE_TABLE_ROW_HEIGHT = 52;
-export const HABITAT_FEATURE_TABLE_PAGE_SIZES = [10, 25, 50];
+export const HABITAT_FEATURE_TABLE_PAGE_SIZES = [1, 25, 50];
 
 /**
  * Renders the Survey Habitat Feature table.
