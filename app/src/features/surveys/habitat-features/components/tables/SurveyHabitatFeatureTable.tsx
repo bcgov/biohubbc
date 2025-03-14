@@ -21,11 +21,6 @@ export const SurveyHabitatFeatureTable = (): JSX.Element => {
       rows={habitatFeatureTableContext.rows}
       columns={habitatFeatureTableContext.columns}
       loading={habitatFeatureTableContext.isLoading}
-      initialState={{
-        pagination: {
-          paginationModel: habitatFeatureTableContext.paginationModel
-        }
-      }}
       // Row heights
       columnHeaderHeight={HABITAT_FEATURE_TABLE_ROW_HEIGHT}
       rowHeight={HABITAT_FEATURE_TABLE_ROW_HEIGHT}
