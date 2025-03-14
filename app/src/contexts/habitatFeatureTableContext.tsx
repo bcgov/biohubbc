@@ -1,17 +1,28 @@
-import { GridColDef, GridColumnVisibilityModel, GridRowSelectionModel, useGridApiRef } from '@mui/x-data-grid';
+import {
+  GridColDef,
+  GridColumnVisibilityModel,
+  GridPaginationModel,
+  GridRowSelectionModel,
+  GridSortModel,
+  useGridApiRef
+} from '@mui/x-data-grid';
 import { GridApiCommunity } from '@mui/x-data-grid/internals';
 import { SIMS_HABITAT_FEATURES_HIDDEN_COLUMNS } from 'constants/session-storage';
+import { HABITAT_FEATURE_TABLE_PAGE_SIZES } from 'features/surveys/habitat-features/components/tables/SurveyHabitatFeatureTable';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { usePersistentState } from 'hooks/usePersistentState';
+import { getSurveyHabitatFeaturesWithSupplementaryData } from 'interfaces/useSurveyHabitatFeatureApi.interface';
 import { createContext, PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react';
+import { ApiPaginationRequestOptions } from 'types/misc';
+import { firstOrNull } from 'utils/Utils';
 
 export interface IHabitatFeatureRow {
   survey_habitat_feature_id: number;
   survey_id: number;
   habitat_feature_type_id: number;
-  habitat_feature_taxons: string[];
+  survey_habitat_feature_taxons: string[];
   count: number;
   latitude: number | null;
   longitude: number | null;
@@ -66,13 +77,29 @@ export interface IHabitatFeatureTableContext {
    */
   onRowSelectionModelChange: (model: GridRowSelectionModel) => void;
   /**
+   * The pagination model, which defines which observation records to fetch and load in the table.
+   */
+  paginationModel: GridPaginationModel;
+  /**
+   * Sets the pagination model.
+   */
+  onPaginationModelChange: (model: GridPaginationModel) => void;
+  /**
+   * The sort model, which defines the sorting of the table
+   */
+  sortModel: GridSortModel;
+  /**
+   * Sets the sort model
+   */
+  onSortModelChange: (model: GridSortModel) => void;
+  /**
    * Toggle a columns visibility
    */
   toggleColumnVisibility: (column: string) => void;
   /**
    * Refresh the data in the table
    */
-  refreshData: () => Promise<void>;
+  refreshHabitatFeatureRecords: () => Promise<getSurveyHabitatFeaturesWithSupplementaryData | undefined>;
 }
 
 type IHabitatFeatureTableContextProviderProps = PropsWithChildren;
@@ -100,24 +127,62 @@ export const HabitatFeatureTableContextProvider = (props: IHabitatFeatureTableCo
     {}
   );
 
-  const habitatFeatureDataLoader = useDataLoader(() =>
-    biohubApi.habitatFeature.getSurveyHabitatFeaturesWithSupplementaryData(projectId, surveyId)
+  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
+    page: 0,
+    pageSize: HABITAT_FEATURE_TABLE_PAGE_SIZES[0]
+  });
+
+  const [sortModel, setSortModel] = useState<GridSortModel>([{ field: 'observed_date', sort: 'desc' }]);
+
+  const habitatFeatureDataLoader = useDataLoader((pagination: ApiPaginationRequestOptions) =>
+    biohubApi.habitatFeature.getSurveyHabitatFeaturesWithSupplementaryData(projectId, surveyId, pagination)
   );
+
+  /**
+   * Refreshes the observations table with the latest records from the server.
+   *
+   * @param {GridPaginationModel} paginationModel
+   * @param {GridSortModel} sortModel
+   * @return {*} {Promise<getSurveyHabitatFeaturesWithSupplementaryData | undefined>}
+   */
+  const refreshPaginatedHabitatFeatureRecords = useCallback(
+    async (paginationModel: GridPaginationModel, sortModel: GridSortModel) => {
+      const sort = firstOrNull(sortModel);
+
+      return habitatFeatureDataLoader.refresh({
+        limit: paginationModel.pageSize,
+        sort: sort?.field || undefined,
+        order: sort?.sort || undefined,
+
+        // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
+        page: paginationModel.page + 1
+      });
+    },
+    [habitatFeatureDataLoader]
+  );
+
+  /**
+   * Refreshes the observations table with the latest records from the server.
+   *
+   * @return {*} {Promise<getSurveyHabitatFeaturesWithSupplementaryData | undefined>}
+   */
+  const refreshHabitatFeatureRecords = useCallback(async () => {
+    return refreshPaginatedHabitatFeatureRecords(paginationModel, sortModel);
+  }, [paginationModel, refreshPaginatedHabitatFeatureRecords, sortModel]);
 
   // Load the codes and habitat feature data
   useEffect(() => {
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
 
+  // Load the habitat feature data
   useEffect(() => {
-    habitatFeatureDataLoader.load();
-  }, [habitatFeatureDataLoader]);
+    if (habitatFeatureDataLoader.hasLoaded || habitatFeatureDataLoader.isLoading) {
+      return;
+    }
 
-  // Columns hidden from table view
-  const hiddenColumns = useMemo(() => {
-    const columns = Object.keys(columnVisibilityModel);
-    return columns.filter((column) => !columnVisibilityModel[column]);
-  }, [columnVisibilityModel]);
+    refreshHabitatFeatureRecords();
+  }, [habitatFeatureDataLoader.hasLoaded, habitatFeatureDataLoader.isLoading, refreshHabitatFeatureRecords]);
 
   /**
    * Toggle the table columns visibility
@@ -137,6 +202,12 @@ export const HabitatFeatureTableContextProvider = (props: IHabitatFeatureTableCo
     [columnVisibilityModel, setColumnVisibilityModel]
   );
 
+  // Columns hidden from table view
+  const hiddenColumns = useMemo(() => {
+    const columns = Object.keys(columnVisibilityModel);
+    return columns.filter((column) => !columnVisibilityModel[column]);
+  }, [columnVisibilityModel]);
+
   // Create a map of habitat feature type ids to their respective names
   const habitatFeatureTypeMap: Map<number, string> = useMemo(() => {
     return new Map(
@@ -154,7 +225,9 @@ export const HabitatFeatureTableContextProvider = (props: IHabitatFeatureTableCo
       survey_habitat_feature_id: habitatFeature.survey_habitat_feature_id,
       survey_id: habitatFeature.survey_id,
       habitat_feature_type_id: habitatFeature.habitat_feature_type_id,
-      habitat_feature_taxons: habitatFeature.survey_habitat_feature_taxons.map((taxon) => taxon.itis_scientific_name),
+      survey_habitat_feature_taxons: habitatFeature.survey_habitat_feature_taxons.map(
+        (taxon) => taxon.itis_scientific_name
+      ),
       count: habitatFeature.count,
       latitude: habitatFeature.latitude,
       longitude: habitatFeature.longitude,
@@ -198,32 +271,33 @@ export const HabitatFeatureTableContextProvider = (props: IHabitatFeatureTableCo
         valueGetter: (params) => habitatFeatureTypeMap.get(params.value)
       },
       {
-        field: 'habitat_feature_taxons',
+        field: 'survey_habitat_feature_taxons',
         headerName: 'Species',
         align: 'left',
-        minWidth: 180,
+        minWidth: 200,
         flex: 1,
-        valueGetter: (params) => params.row.habitat_feature_taxons.join(', ')
+        sortable: false, // Not supported by the API
+        valueGetter: (params) => params.row.survey_habitat_feature_taxons.join(', ')
       },
       {
         field: 'survey_sample_site_name',
         headerName: 'Sample Site',
         align: 'left',
-        minWidth: 180,
+        minWidth: 200,
         flex: 1
       },
       {
         field: 'method_technique_name',
         headerName: 'Method Technique',
         align: 'left',
-        minWidth: 180,
+        minWidth: 200,
         flex: 1
       },
       {
         field: 'survey_sample_period_start_datetime',
         headerName: 'Sample Period',
         align: 'left',
-        minWidth: 180,
+        minWidth: 200,
         flex: 1
       },
       {
@@ -285,22 +359,35 @@ export const HabitatFeatureTableContextProvider = (props: IHabitatFeatureTableCo
       onRowSelectionModelChange: setRowSelectionModel,
       columnVisibilityModel: columnVisibilityModel,
       onColumnVisibilityModelChange: setColumnVisibilityModel,
+      paginationModel: paginationModel,
+      onPaginationModelChange: (newPaginationModel) => {
+        setPaginationModel(newPaginationModel);
+        refreshPaginatedHabitatFeatureRecords(newPaginationModel, sortModel);
+      },
+      sortModel: sortModel,
+      onSortModelChange: (newSortModel) => {
+        setSortModel(newSortModel);
+        refreshPaginatedHabitatFeatureRecords(paginationModel, newSortModel);
+      },
       hiddenColumns: hiddenColumns,
       toggleColumnVisibility: toggleColumnsVisibility,
-      refreshData: async () => {
-        await habitatFeatureDataLoader.refresh();
-      }
+      refreshHabitatFeatureRecords: refreshHabitatFeatureRecords
     };
   }, [
     _muiDataGridApiRef,
     habitatFeatureTableColumns,
     habitatFeatureTableRows,
-    habitatFeatureDataLoader,
+    habitatFeatureDataLoader.data?.pagination.total,
+    habitatFeatureDataLoader.isLoading,
     rowSelectionModel,
     columnVisibilityModel,
     setColumnVisibilityModel,
+    paginationModel,
+    sortModel,
     hiddenColumns,
-    toggleColumnsVisibility
+    toggleColumnsVisibility,
+    refreshHabitatFeatureRecords,
+    refreshPaginatedHabitatFeatureRecords
   ]);
 
   return (

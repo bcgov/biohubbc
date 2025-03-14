@@ -63,7 +63,7 @@ export const SurveyHabitatFeatureTableContainer = (): JSX.Element => {
             habitatFeatureIds
           );
 
-          habitatFeatureTableContext.refreshData();
+          habitatFeatureTableContext.refreshHabitatFeatureRecords();
         } catch (error) {
           dialogContext.setErrorDialog({
             open: true,
