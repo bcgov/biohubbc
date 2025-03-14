@@ -227,10 +227,8 @@ export const SamplingSiteList = (props: SamplingSiteListProps) => {
 
   const samplingSiteCount = useMemo(
     () => sampleSiteDataLoader.data?.pagination.total ?? 0,
-    [sampleSiteDataLoader.data]
+    [sampleSiteDataLoader.data?.pagination.total]
   );
-
-  console.log(pagination);
 
   return (
     <>
