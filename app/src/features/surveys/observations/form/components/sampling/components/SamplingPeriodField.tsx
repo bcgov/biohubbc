@@ -9,7 +9,10 @@ import {
   SamplingInformationCache,
   SamplingInformationCachedPeriod
 } from 'features/surveys/observations/form/components/sampling/hooks/useSamplingInformationCache';
-import { ObservationFormData } from 'features/surveys/observations/form/ObservationForm.interface';
+import {
+  CreateObservationFormData,
+  UpdateObservationFormData
+} from 'features/surveys/observations/form/ObservationForm.interface';
 import { useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
@@ -32,7 +35,9 @@ export interface ISamplingPeriodFieldProps {
 export const SamplingPeriodField = (props: ISamplingPeriodFieldProps) => {
   const { samplingInformationCache } = props;
 
-  const { values, errors, touched, setFieldValue } = useFormikContext<ObservationFormData>();
+  const { values, errors, touched, setFieldValue } = useFormikContext<
+    CreateObservationFormData | UpdateObservationFormData
+  >();
 
   const biohubApi = useBiohubApi();
   const surveyContext = useSurveyContext();

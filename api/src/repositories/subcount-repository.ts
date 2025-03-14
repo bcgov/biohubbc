@@ -9,6 +9,20 @@ export type InsertObservationSubCount = Pick<
   'survey_observation_id' | 'subcount' | 'comment'
 >;
 
+export interface InsertSubCount {
+  observation_subcount_id: number | null;
+  comment: string | null;
+  subcount: number;
+  qualitative_measurements: {
+    measurement_id: string;
+    measurement_option_id: string;
+  }[];
+  quantitative_measurements: {
+    measurement_id: string;
+    measurement_value: number;
+  }[];
+}
+
 export class SubCountRepository extends BaseRepository {
   /**
    * Inserts a new observation_subcount record

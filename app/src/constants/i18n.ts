@@ -535,9 +535,15 @@ export const AlertI18N = {
 };
 
 export const CreateObservationI18N = {
-  createErrorTitle: 'Error Creating Observations',
+  createErrorTitle: 'Error Creating Observation',
   createErrorText:
     'An error has occurred while attempting to create observation data. Please try again. If the error persists, please contact your system administrator.'
+};
+
+export const EditObservationI18N = {
+  editErrorTitle: 'Error Editing Observation',
+  editErrorText:
+    'An error has occurred while attempting to edit observation data. Please try again. If the error persists, please contact your system administrator.'
 };
 
 export const SamplePeriodI18N = {

@@ -27,10 +27,12 @@ describe('useObservationApi', () => {
           observation_time: '12:00:00',
           latitude: 49.456,
           longitude: -123.456,
+          observation_sign_id: 1,
+          survey_sample_site_id: 4,
           survey_sample_site_name: 'site name',
+          method_technique_id: 5,
           method_technique_name: 'method name',
           survey_sample_period_start_datetime: '2021-01-01 12:00:00',
-          observation_sign_id: 1,
           qualitative_environments: [],
           quantitative_environments: [],
           subcounts: []

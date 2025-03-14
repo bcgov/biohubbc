@@ -8,7 +8,10 @@ import { ObservationLocationForm } from 'features/surveys/observations/form/comp
 import { ObservationSamplingForm } from 'features/surveys/observations/form/components/sampling/ObservationSamplingForm';
 import { ObservationSpeciesForm } from 'features/surveys/observations/form/components/species/ObservationSpeciesForm';
 import { SubcountsForm } from 'features/surveys/observations/form/components/subcounts/SubcountsForm';
-import { ObservationFormData } from 'features/surveys/observations/form/ObservationForm.interface';
+import {
+  CreateObservationFormData,
+  UpdateObservationFormData
+} from 'features/surveys/observations/form/ObservationForm.interface';
 import { Formik, FormikProps } from 'formik';
 import React, { useState } from 'react';
 import yup from 'utils/YupSchema';
@@ -130,9 +133,9 @@ export const ObservationYupSchema = yup.object({
 });
 
 interface IObservationFormProps {
-  initialFormData: ObservationFormData;
-  onSubmit: (formikData: ObservationFormData) => void;
-  formikRef: React.RefObject<FormikProps<ObservationFormData>>;
+  initialFormData: CreateObservationFormData | UpdateObservationFormData;
+  onSubmit: (formikData: CreateObservationFormData | UpdateObservationFormData) => void;
+  formikRef: React.RefObject<FormikProps<CreateObservationFormData | UpdateObservationFormData>>;
 }
 
 const ObservationForm = (props: IObservationFormProps) => {

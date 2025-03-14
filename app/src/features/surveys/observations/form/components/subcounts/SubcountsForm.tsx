@@ -11,7 +11,10 @@ import {
   SubcountForm,
   SubcountFormData
 } from 'features/surveys/observations/form/components/subcounts/subcount/SubcountForm';
-import { ObservationFormData } from 'features/surveys/observations/form/ObservationForm.interface';
+import {
+  CreateObservationFormData,
+  UpdateObservationFormData
+} from 'features/surveys/observations/form/ObservationForm.interface';
 import { FieldArray, useFormikContext } from 'formik';
 import { useFocalOrObservedSpeciesTsns } from 'hooks/useFocalOrObservedTsns';
 import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
@@ -39,7 +42,7 @@ export const initialSubcountsFormData: SubcountsFormData = {
  * @return {*}
  */
 export const SubcountsForm = () => {
-  const { values, setFieldValue } = useFormikContext<ObservationFormData>();
+  const { values, setFieldValue } = useFormikContext<CreateObservationFormData | UpdateObservationFormData>();
 
   const [, allSpeciesWithParentsTsns] = useFocalOrObservedSpeciesTsns();
 

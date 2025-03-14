@@ -2,7 +2,11 @@ import { WorkSheet } from 'xlsx';
 import { z } from 'zod';
 import { IDBConnection } from '../../../database/db';
 import { CodeRepository } from '../../../repositories/code-repository';
-import { InsertObservation } from '../../../repositories/observation-repository/observation-repository';
+import {
+  InsertObservationStandardColumns,
+  InsertUpdateObservations
+} from '../../../repositories/observation-repository/observation-repository.interface';
+import { InsertSubCount } from '../../../repositories/subcount-repository';
 import { CSVConfigUtils } from '../../../utils/csv-utils/csv-config-utils';
 import { validateCSVWorksheet } from '../../../utils/csv-utils/csv-config-validation';
 import { CSVConfig, CSVError, CSVRow, CSVRowState } from '../../../utils/csv-utils/csv-config-validation.interface';
@@ -23,11 +27,7 @@ import { getLogger } from '../../../utils/logger';
 import { CritterbaseService, getCritterbaseUserFromConnection } from '../../critterbase-service';
 import { DBService } from '../../db-service';
 import { ObservationEnvironmentService } from '../../observation-environment-service';
-import {
-  InsertSubCount,
-  InsertUpdateObservations,
-  ObservationService
-} from '../../observation-services/observation-service';
+import { ObservationService } from '../../observation-services/observation-service';
 import { PlatformService } from '../../platform-service';
 import { SamplePeriodService } from '../../sample-period-service';
 import { SampleSiteService } from '../../sample-site-service';
@@ -163,7 +163,7 @@ export class ImportObservationsService extends DBService {
 
     const observationService = new ObservationService(this.connection);
 
-    await observationService.insertUpdateManualSurveyObservations(this.surveyId, observations);
+    await observationService.insertObservations(this.surveyId, observations);
 
     return [];
   }
@@ -295,6 +295,7 @@ export class ImportObservationsService extends DBService {
    *
    * @param {CSVRow} row - The row to extract subcounts from
    * @returns {*} {InsertSubCount[]} The subcounts
+   * @memberof ImportObservationsService
    */
   _getRowSubcounts(row: CSVRow): InsertSubCount[] {
     const newSubcount: InsertSubCount = {
@@ -336,11 +337,17 @@ export class ImportObservationsService extends DBService {
   /**
    * Get the subcounts from a row.
    *
-   * @param {CSVRow} row - The row to extract subcounts from
-   * @returns {*} {InsertSubCount[]} The subcounts
+   * @param {CSVRow} row
+   * @return {*}  {(Pick<InsertObservationStandardColumns, 'qualitative_environments' | 'quantitative_environments'>)}
+   * @memberof ImportObservationsService
    */
-  _getRowEnvironments(row: CSVRow): Pick<InsertObservation, 'qualitative_environments' | 'quantitative_environments'> {
-    const environments: Pick<InsertObservation, 'qualitative_environments' | 'quantitative_environments'> = {
+  _getRowEnvironments(
+    row: CSVRow
+  ): Pick<InsertObservationStandardColumns, 'qualitative_environments' | 'quantitative_environments'> {
+    const environments: Pick<
+      InsertObservationStandardColumns,
+      'qualitative_environments' | 'quantitative_environments'
+    > = {
       qualitative_environments: [],
       quantitative_environments: []
     };

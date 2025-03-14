@@ -8,7 +8,10 @@ import {
   EnvironmentFormData,
   initialEnvironmentFormData
 } from 'features/surveys/observations/form/components/environments/environment/EnvironmentField';
-import { ObservationFormData } from 'features/surveys/observations/form/ObservationForm.interface';
+import {
+  CreateObservationFormData,
+  UpdateObservationFormData
+} from 'features/surveys/observations/form/ObservationForm.interface';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
@@ -30,7 +33,7 @@ export const initialEnvironmentsFormData = {
  * @return {*}
  */
 export const ObservationEnvironmentsForm = () => {
-  const { values } = useFormikContext<ObservationFormData>();
+  const { values } = useFormikContext<CreateObservationFormData | UpdateObservationFormData>();
 
   const biohubApi = useBiohubApi();
 

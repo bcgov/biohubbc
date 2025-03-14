@@ -6,7 +6,10 @@ import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import AutocompleteField, { IAutocompleteFieldOption } from 'components/fields/AutocompleteField';
 import CustomTextField from 'components/fields/CustomTextField';
-import { ObservationFormData } from 'features/surveys/observations/form/ObservationForm.interface';
+import {
+  CreateObservationFormData,
+  UpdateObservationFormData
+} from 'features/surveys/observations/form/ObservationForm.interface';
 import { useFormikContext } from 'formik';
 import {
   EnvironmentQualitativeTypeDefinition,
@@ -70,7 +73,7 @@ type EnvironmentCategoryOption = EnvironmentQuantitativeCategoryOption | Environ
 export const EnvironmentField = (props: IEnvironmentFormProps) => {
   const { formikFieldName, environmentTypeDefinitions, onDelete } = props;
 
-  const { values, setFieldValue } = useFormikContext<ObservationFormData>();
+  const { values, setFieldValue } = useFormikContext<CreateObservationFormData | UpdateObservationFormData>();
 
   // UI helper field to indicate the type of the environment field.
   const environmentUnitTypeFieldName = `${formikFieldName}._type`;

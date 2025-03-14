@@ -9,7 +9,10 @@ import {
   SamplingInformationCache,
   SamplingInformationCachedTechnique
 } from 'features/surveys/observations/form/components/sampling/hooks/useSamplingInformationCache';
-import { ObservationFormData } from 'features/surveys/observations/form/ObservationForm.interface';
+import {
+  CreateObservationFormData,
+  UpdateObservationFormData
+} from 'features/surveys/observations/form/ObservationForm.interface';
 import { useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
@@ -31,7 +34,9 @@ export interface IMethodTechniqueFieldProps {
 export const MethodTechniqueField = (props: IMethodTechniqueFieldProps) => {
   const { samplingInformationCache } = props;
 
-  const { values, errors, touched, setFieldValue } = useFormikContext<ObservationFormData>();
+  const { values, errors, touched, setFieldValue } = useFormikContext<
+    CreateObservationFormData | UpdateObservationFormData
+  >();
 
   const biohubApi = useBiohubApi();
   const surveyContext = useSurveyContext();

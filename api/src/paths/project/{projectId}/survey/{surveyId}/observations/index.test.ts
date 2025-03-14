@@ -4,128 +4,12 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../../../../../database/db';
 import { HTTPError } from '../../../../../../errors/http-error';
-import { ObservationRecordWithSamplingAndSubcountData } from '../../../../../../repositories/observation-repository/observation-repository';
+import { ObservationRecordWithSamplingAndSubcountData } from '../../../../../../repositories/observation-repository/observation-repository.interface';
 import { ObservationService } from '../../../../../../services/observation-services/observation-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
 import * as observationRecords from './index';
 
 chai.use(sinonChai);
-
-describe('insertUpdateManualSurveyObservations', () => {
-  afterEach(() => {
-    sinon.restore();
-  });
-
-  it('inserts and updates survey observations', async () => {
-    const dbConnectionObj = getMockDBConnection();
-
-    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-    const insertUpdateSurveyObservationsStub = sinon
-      .stub(ObservationService.prototype, 'insertUpdateManualSurveyObservations')
-      .resolves();
-
-    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
-
-    mockReq.params = {
-      projectId: '1',
-      surveyId: '2'
-    };
-
-    const surveyObservations = [
-      {
-        standardColumns: {
-          survey_observation_id: 1,
-          itis_tsn: 1234,
-          itis_scientific_name: '',
-          count: 99,
-          latitude: 48.103322,
-          longitude: -122.798892,
-          observation_date: '1970-01-01',
-          observation_time: '00:00:00',
-          survey_sample_site_id: 1,
-          survey_sample_method_id: 1,
-          survey_sample_period_id: 1
-        },
-        subcounts: []
-      },
-      {
-        standardColumns: {
-          itis_tsn: 1234,
-          itis_scientific_name: '',
-          count: 99,
-          latitude: 48.103322,
-          longitude: -122.798892,
-          observation_date: '1970-01-01',
-          observation_time: '00:00:00',
-          survey_sample_site_id: 1,
-          survey_sample_method_id: 1,
-          survey_sample_period_id: 1
-        },
-        subcounts: []
-      }
-    ];
-
-    mockReq.body = {
-      surveyObservations
-    };
-
-    const requestHandler = observationRecords.putObservations();
-
-    await requestHandler(mockReq, mockRes, mockNext);
-
-    expect(insertUpdateSurveyObservationsStub).to.have.been.calledOnceWith(2, surveyObservations);
-    expect(mockRes.statusValue).to.equal(204);
-    expect(mockRes.jsonValue).to.eql(undefined);
-  });
-
-  it('catches and re-throws error', async () => {
-    const dbConnectionObj = getMockDBConnection({ release: sinon.stub() });
-
-    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-    sinon.stub(ObservationService.prototype, 'insertUpdateManualSurveyObservations').rejects(new Error('a test error'));
-
-    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
-
-    mockReq.params = {
-      projectId: '1',
-      surveyId: '2'
-    };
-
-    mockReq.body = {
-      surveyObservations: [
-        {
-          standardColumns: {
-            itis_tsn: 1234,
-            itis_scientific_name: 'scientific name',
-            count: 99,
-            latitude: 48.103322,
-            longitude: -122.798892,
-            observation_date: '1970-01-01',
-            observation_time: '00:00:00',
-            subcount: 1,
-            survey_sample_period_id: 1,
-            survey_sample_method_id: 1,
-            survey_sample_site_id: 1
-          },
-          subcounts: []
-        }
-      ]
-    };
-
-    try {
-      const requestHandler = observationRecords.putObservations();
-
-      await requestHandler(mockReq, mockRes, mockNext);
-      expect.fail();
-    } catch (actualError) {
-      expect(dbConnectionObj.release).to.have.been.called;
-
-      expect((actualError as HTTPError).message).to.equal('a test error');
-    }
-  });
-});
 
 describe('getSurveyObservations', () => {
   afterEach(() => {

@@ -191,7 +191,7 @@ const ObservationsListContainer = (props: IObservationsListContainerProps) => {
       flex: 1,
       renderCell: (params) => (
         <Typography
-          key={params.row.observation_subcount_id}
+          key={params.row.itis_scientific_name}
           fontStyle={
             params.row.itis_scientific_name && params.row.itis_scientific_name.split(' ').length > 1
               ? 'italic'

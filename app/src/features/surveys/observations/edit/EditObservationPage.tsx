@@ -9,12 +9,12 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import PageHeader from 'components/layout/PageHeader';
-import { CreateObservationI18N } from 'constants/i18n';
+import { EditObservationI18N } from 'constants/i18n';
 import { CodesContext } from 'contexts/codesContext';
 import { DialogContext } from 'contexts/dialogContext';
 import { TaxonomyContextProvider } from 'contexts/taxonomyContext';
 import ObservationForm from 'features/surveys/observations/form/ObservationForm';
-import { CreateObservationFormData } from 'features/surveys/observations/form/ObservationForm.interface';
+import { UpdateObservationFormData } from 'features/surveys/observations/form/ObservationForm.interface';
 import {
   isSubcountQualitativeMeasurement,
   isSubcountQuantitativeMeasurement
@@ -23,56 +23,32 @@ import { FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useProjectContext, useSurveyContext } from 'hooks/useContext';
+import useDataLoader from 'hooks/useDataLoader';
 import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import {
-  ICreateObservation,
+  IEditObservation,
   ObservationEnvironmentQualitativeObject,
   ObservationEnvironmentQuantitativeObject,
   SubcountQualitativeMeasurement,
   SubcountQuantitativeMeasurement
 } from 'interfaces/useObservationApi.interface';
 import { useContext, useEffect, useRef, useState } from 'react';
-import { Prompt, useHistory } from 'react-router';
+import { Prompt, useHistory, useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 import { v4 } from 'uuid';
-
-export const initialSubcountValues = {
-  observation_subcount_id: null,
-  subcount: null,
-  comment: null,
-  measurements: [],
-  environments: [],
-  _id: v4()
-};
-
-const initialObservationFormData: CreateObservationFormData = {
-  standardColumns: {
-    survey_observation_id: null,
-    itis_tsn: null,
-    itis_scientific_name: null,
-    survey_sample_site_id: null,
-    method_technique_id: null,
-    survey_sample_period_id: null,
-    count: null,
-    observation_date: null,
-    observation_time: null,
-    latitude: null,
-    longitude: null,
-    observation_sign_id: null,
-    environments: []
-  },
-  subcounts: [initialSubcountValues]
-};
 
 /**
  * Page for creating an observation
  *
  * @return {*}
  */
-const CreateObservationPage = () => {
+const EditObservationPage = () => {
   const history = useHistory();
   const biohubApi = useBiohubApi();
-  const formikRef = useRef<FormikProps<CreateObservationFormData>>(null);
+  const formikRef = useRef<FormikProps<UpdateObservationFormData>>(null);
+
+  const urlParams = useParams<Record<string, string | undefined>>();
+  const observationId = Number(urlParams.observation_id);
 
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);
@@ -91,6 +67,14 @@ const CreateObservationPage = () => {
   const surveyName = surveyContext.surveyDataLoader.data?.surveyData.survey_details.survey_name;
   const { projectId, surveyId } = surveyContext;
 
+  const observationDataLoader = useDataLoader(() =>
+    biohubApi.observation.getObservationRecord(surveyContext.projectId, surveyContext.surveyId, observationId)
+  );
+
+  useEffect(() => {
+    observationDataLoader.load();
+  }, [observationDataLoader]);
+
   useEffect(() => {
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
@@ -104,10 +88,10 @@ const CreateObservationPage = () => {
     }
   };
 
-  const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
+  const showEditErrorDialog = (textDialogProps: Partial<IErrorDialogProps>) => {
     dialogContext.setErrorDialog({
-      dialogTitle: CreateObservationI18N.createErrorTitle,
-      dialogText: CreateObservationI18N.createErrorText,
+      dialogTitle: EditObservationI18N.editErrorTitle,
+      dialogText: EditObservationI18N.editErrorText,
       ...defaultErrorDialogProps,
       ...textDialogProps,
       open: true
@@ -119,12 +103,12 @@ const CreateObservationPage = () => {
   };
 
   /**
-   * Creates a new observation
+   * Edits an existing observation
    *
-   * @param {ICreateObservation} observationPostObject
+   * @param {IEditObservation} observationPostObject
    * @return {*}
    */
-  const createObservation = async (formData: CreateObservationFormData) => {
+  const editObservation = async (formData: UpdateObservationFormData) => {
     setIsSaving(true);
     try {
       const {
@@ -163,7 +147,8 @@ const CreateObservationPage = () => {
         }
       }
 
-      const standardColumns: ICreateObservation['standardColumns'] = {
+      const standardColumns: IEditObservation['standardColumns'] = {
+        survey_observation_id: observationId,
         itis_scientific_name,
         itis_tsn,
         observation_date,
@@ -177,7 +162,7 @@ const CreateObservationPage = () => {
         quantitative_environments
       };
 
-      const subcounts: ICreateObservation['subcounts'] = formData.subcounts.map((subcount) => {
+      const subcounts: IEditObservation['subcounts'] = formData.subcounts.map((subcount) => {
         const { measurements, ...subcountProps } = subcount;
 
         const quantitative_measurements: SubcountQuantitativeMeasurement[] = [];
@@ -208,6 +193,7 @@ const CreateObservationPage = () => {
         }
 
         return {
+          observation_subcount_id: subcountProps.observation_subcount_id ?? undefined,
           subcount: subcountProps.subcount,
           comment: subcountProps.comment,
           quantitative_measurements,
@@ -215,20 +201,20 @@ const CreateObservationPage = () => {
         };
       });
 
-      const createObservationPayload: ICreateObservation = {
+      const editObservationPayload: IEditObservation = {
         standardColumns,
         subcounts
       };
 
-      await biohubApi.observation.createObservation(projectId, surveyId, createObservationPayload);
+      await biohubApi.observation.updateObservation(projectId, surveyId, observationId, editObservationPayload);
 
       setEnableCancelCheck(false);
       history.push(`/admin/projects/${projectId}/surveys/${surveyId}/observations`, SKIP_CONFIRMATION_DIALOG);
     } catch (error) {
       const apiError = error as APIError;
-      showCreateErrorDialog({
-        dialogTitle: CreateObservationI18N.createErrorTitle,
-        dialogText: CreateObservationI18N.createErrorText,
+      showEditErrorDialog({
+        dialogTitle: EditObservationI18N.editErrorTitle,
+        dialogText: EditObservationI18N.editErrorText,
         dialogError: apiError.message,
         dialogErrorDetails: apiError.errors
       });
@@ -237,15 +223,65 @@ const CreateObservationPage = () => {
     }
   };
 
-  if (!codesContext.codesDataLoader.data) {
+  if (
+    !surveyContext.surveyDataLoader.data ||
+    !projectContext.projectDataLoader.data ||
+    !codesContext.codesDataLoader.data ||
+    !observationDataLoader.data ||
+    observationDataLoader.isLoading
+  ) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
+
+  const initialObservationFormValues: UpdateObservationFormData = {
+    standardColumns: {
+      survey_observation_id: observationDataLoader.data.surveyObservation.survey_observation_id,
+      count: observationDataLoader.data.surveyObservation.count,
+      latitude: observationDataLoader.data.surveyObservation.latitude,
+      longitude: observationDataLoader.data.surveyObservation.longitude,
+      observation_date: observationDataLoader.data.surveyObservation.observation_date,
+      observation_time: observationDataLoader.data.surveyObservation.observation_time,
+      itis_tsn: observationDataLoader.data.surveyObservation.itis_tsn,
+      itis_scientific_name: observationDataLoader.data.surveyObservation.itis_scientific_name,
+      observation_sign_id: observationDataLoader.data.surveyObservation.observation_sign_id,
+      survey_sample_site_id: observationDataLoader.data.surveyObservation.survey_sample_site_id,
+      method_technique_id: observationDataLoader.data.surveyObservation.method_technique_id,
+      survey_sample_period_id: observationDataLoader.data.surveyObservation.survey_sample_period_id,
+      environments: []
+    },
+    subcounts:
+      observationDataLoader.data.surveyObservation.subcounts.map((subcount) => {
+        return {
+          _id: v4(),
+          observation_subcount_id: subcount.observation_subcount_id,
+          subcount: subcount.subcount,
+          comment: subcount.comment,
+          measurements: [
+            ...subcount.quantitative_measurements.map((measurement) => {
+              return {
+                _id: v4(),
+                measurement_id: measurement.critterbase_taxon_measurement_id,
+                measurement_value: measurement.value
+              };
+            }),
+            ...subcount.qualitative_measurements.map((measurement) => {
+              return {
+                _id: v4(),
+                measurement_id: measurement.critterbase_measurement_qualitative_option_id,
+                measurement_option_id: measurement.critterbase_measurement_qualitative_option_id
+              };
+            })
+          ],
+          markings: []
+        };
+      }) ?? []
+  };
 
   return (
     <>
       <Prompt when={enableCancelCheck} message={locationChangeInterceptor} />
       <PageHeader
-        title="Create Observation"
+        title="Edit Observation"
         breadCrumbJSX={
           <Breadcrumbs aria-label="breadcrumb" separator={'>'}>
             <Link component={RouterLink} underline="hover" to={`/admin/projects/${projectId}/`}>
@@ -261,7 +297,7 @@ const CreateObservationPage = () => {
               Observations
             </Link>
             <Typography variant="body2" component="span" color="textSecondary" aria-current="page">
-              Create Observation
+              Edit Observation
             </Typography>
           </Breadcrumbs>
         }
@@ -287,9 +323,9 @@ const CreateObservationPage = () => {
         <Paper sx={{ p: 5 }}>
           <TaxonomyContextProvider>
             <ObservationForm
-              initialFormData={initialObservationFormData}
+              initialFormData={initialObservationFormValues}
               onSubmit={(formData) => {
-                createObservation(formData);
+                editObservation(formData);
               }}
               formikRef={formikRef}
             />
@@ -314,4 +350,4 @@ const CreateObservationPage = () => {
   );
 };
 
-export default CreateObservationPage;
+export default EditObservationPage;

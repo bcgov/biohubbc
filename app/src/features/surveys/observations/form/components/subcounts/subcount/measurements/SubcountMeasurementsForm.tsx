@@ -1,5 +1,8 @@
 import { SubcountMeasurementField } from 'features/surveys/observations/form/components/subcounts/subcount/measurements/SubcountMeasurementField';
-import { ObservationFormData } from 'features/surveys/observations/form/ObservationForm.interface';
+import {
+  CreateObservationFormData,
+  UpdateObservationFormData
+} from 'features/surveys/observations/form/ObservationForm.interface';
 import { FieldArray, useFormikContext } from 'formik';
 import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
 import {
@@ -50,7 +53,7 @@ export interface ISubcountMeasurementsFormProps {
 export const SubcountMeasurementsForm = (props: ISubcountMeasurementsFormProps) => {
   const { formikFieldName, measurementTypeDefinitions, onDeleteMeasurement, enableHeaders } = props;
 
-  const { values } = useFormikContext<ObservationFormData>();
+  const { values } = useFormikContext<CreateObservationFormData | UpdateObservationFormData>();
 
   const measurementsFieldName = `${formikFieldName}.measurements`;
 

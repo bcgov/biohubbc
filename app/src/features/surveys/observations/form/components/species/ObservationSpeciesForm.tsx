@@ -4,7 +4,10 @@ import Stack from '@mui/material/Stack';
 import AutocompleteField from 'components/fields/AutocompleteField';
 import SpeciesAutocompleteField from 'components/species/components/SpeciesAutocompleteField';
 import SpeciesSelectedCard from 'components/species/components/SpeciesSelectedCard';
-import { ObservationFormData } from 'features/surveys/observations/form/ObservationForm.interface';
+import {
+  CreateObservationFormData,
+  UpdateObservationFormData
+} from 'features/surveys/observations/form/ObservationForm.interface';
 import { useFormikContext } from 'formik';
 import { useCodesContext } from 'hooks/useContext';
 import { get } from 'lodash-es';
@@ -23,7 +26,7 @@ export const ObservationSpeciesForm = () => {
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
 
-  const { setFieldValue, values, errors } = useFormikContext<ObservationFormData>();
+  const { setFieldValue, values, errors } = useFormikContext<CreateObservationFormData | UpdateObservationFormData>();
 
   return (
     <Stack spacing={1}>

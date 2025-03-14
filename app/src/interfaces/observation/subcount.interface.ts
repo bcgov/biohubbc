@@ -32,7 +32,6 @@ export type SubcountObservationColumns = {
     critterbase_taxon_measurement_id: string;
     value: number;
   }[];
-  [key: string]: any;
 };
 
 export interface SubcountToSave {

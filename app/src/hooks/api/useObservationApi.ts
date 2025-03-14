@@ -7,10 +7,12 @@ import {
 import {
   ICreateEditObservation,
   ICreateObservation,
+  IEditObservation,
   IGetSurveyFlattenedObservationsResponse,
   IGetSurveyObservationsGeometryResponse,
   IGetSurveyObservationsResponse,
-  ObservationRecord
+  SurveyObservationBasic,
+  SurveyObservationWithSupplementaryData
 } from 'interfaces/useObservationApi.interface';
 import { EnvironmentTypeIds } from 'interfaces/useReferenceApi.interface';
 import { IPartialTaxonomy } from 'interfaces/useTaxonomyApi.interface';
@@ -55,6 +57,27 @@ const useObservationApi = (axios: AxiosInstance) => {
     surveyObservation: ICreateObservation
   ): Promise<void> => {
     await axios.post(`/api/project/${projectId}/survey/${surveyId}/observations`, surveyObservation);
+  };
+
+  /**
+   * Updates an existing observation for the survey
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {number} surveyObservationId
+   * @param {IEditObservation} surveyObservation
+   * @return {*}  {Promise<void>}
+   */
+  const updateObservation = async (
+    projectId: number,
+    surveyId: number,
+    surveyObservationId: number,
+    surveyObservation: IEditObservation
+  ): Promise<void> => {
+    await axios.put(
+      `/api/project/${projectId}/survey/${surveyId}/observations/${surveyObservationId}`,
+      surveyObservation
+    );
   };
 
   /**
@@ -195,20 +218,40 @@ const useObservationApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Retrieves all survey observation records for the given survey
+   * Get a survey observation record, with additional data.
    *
    * @param {number} projectId
    * @param {number} surveyId
-   * @param {ApiPaginationRequestOptions} [pagination]
-   * @return {*}  {Promise<ObservationRecord>}
+   * @param {number} surveyObservationId
+   * @return {*}  {Promise<SurveyObservationWithSupplementaryData>}
    */
   const getObservationRecord = async (
     projectId: number,
     surveyId: number,
     surveyObservationId: number
-  ): Promise<ObservationRecord> => {
-    const { data } = await axios.get<ObservationRecord>(
+  ): Promise<SurveyObservationWithSupplementaryData> => {
+    const { data } = await axios.get<SurveyObservationWithSupplementaryData>(
       `/api/project/${projectId}/survey/${surveyId}/observations/${surveyObservationId}`
+    );
+
+    return data;
+  };
+
+  /**
+   * Get a survey observation record.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {number} surveyObservationId
+   * @return {*}  {Promise<SurveyObservationBasic>}
+   */
+  const getBasicObservationRecord = async (
+    projectId: number,
+    surveyId: number,
+    surveyObservationId: number
+  ): Promise<SurveyObservationBasic> => {
+    const { data } = await axios.get<SurveyObservationBasic>(
+      `/api/project/${projectId}/survey/${surveyId}/observations/${surveyObservationId}/basic`
     );
 
     return data;
@@ -357,6 +400,7 @@ const useObservationApi = (axios: AxiosInstance) => {
     getObservationRecords,
     getFlattenedObservationRecords,
     getObservationRecord,
+    getBasicObservationRecord,
     getObservedSpecies,
     findObservations,
     findFlattenedObservations,
@@ -367,7 +411,8 @@ const useObservationApi = (axios: AxiosInstance) => {
     deleteObservationMeasurements,
     deleteObservationEnvironments,
     importObservationCSV,
-    createObservation
+    createObservation,
+    updateObservation
   };
 };
 

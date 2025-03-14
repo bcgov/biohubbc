@@ -7,32 +7,26 @@ import {
   QualitativeEnvironmentTypeDefinition,
   QuantitativeEnvironmentTypeDefinition
 } from '../../repositories/observation-environment-repository';
+import { ObservationRepository } from '../../repositories/observation-repository/observation-repository';
 import {
+  AllObservationSupplementaryData,
   FlattenedObservationRecordWithSamplingAndSubcountData,
-  InsertObservation,
+  InsertSurveyObservation,
+  ObservationCountSupplementaryData,
   ObservationGeometryRecord,
+  ObservationRecordWithSampling,
   ObservationRecordWithSamplingAndSubcountData,
-  ObservationRepository,
   ObservationSpecies,
-  ObservationSubmissionRecord,
-  UpdateObservation
-} from '../../repositories/observation-repository/observation-repository';
+  SurveyObservationWithSupplementaryData,
+  UpdateSurveyObservation
+} from '../../repositories/observation-repository/observation-repository.interface';
 import {
   InsertObservationSubCountQualitativeMeasurementRecord,
   InsertObservationSubCountQuantitativeMeasurementRecord
 } from '../../repositories/observation-subcount-measurement-repository';
-import { SurveySamplePeriodDetails } from '../../repositories/sample-period-repository';
-import { generateS3FileKey } from '../../utils/file-utils';
 import { getLogger } from '../../utils/logger';
 import { ApiPaginationOptions } from '../../zod-schema/pagination';
-import {
-  CBQualitativeMeasurementTypeDefinition,
-  CBQuantitativeMeasurementTypeDefinition,
-  CritterbaseService
-} from '../critterbase-service';
 import { DBService } from '../db-service';
-import { getTsnMeasurementDictionary } from '../import-services/utils/measurement';
-import { validateQuantitativeValue } from '../import-services/utils/quantitative';
 import { ObservationEnvironmentService } from '../observation-environment-service';
 import { ObservationSubCountMeasurementService } from '../observation-subcount-measurement-service';
 import { SamplePeriodService } from '../sample-period-service';
@@ -40,89 +34,198 @@ import { SubCountService } from '../subcount-service';
 
 export const defaultLog = getLogger('services/observation-services/observation-service');
 
-export interface InsertSubCount {
-  observation_subcount_id: number | null;
-  comment: string | null;
-  subcount: number;
-  qualitative_measurements: {
-    measurement_id: string;
-    measurement_option_id: string;
-  }[];
-  quantitative_measurements: {
-    measurement_id: string;
-    measurement_value: number;
-  }[];
-}
-
-export type InsertUpdateObservations = {
-  standardColumns: InsertObservation | UpdateObservation;
-  subcounts: InsertSubCount[];
-};
-
-export type InsertObservations = {
-  standardColumns: {
-    itis_tsn: number;
-    itis_scientific_name: string | null;
-    survey_sample_period_id: string | null;
-    count: string | null;
-    latitude: string | null;
-    longitude: string | null;
-    observation_date: string | null;
-    observation_time: string | null;
-    observation_sign_id: number | null;
-    qualitative_environments: {
-      environment_qualitative_id: string;
-      environment_qualitative_option_id: string;
-    }[];
-    quantitative_environments: {
-      environment_quantitative_id: string;
-      value: string;
-    }[];
-  };
-  subcounts: {
-    subcount: number;
-    comment: string | null;
-    qualitative_measurements: {
-      measurement_id: string;
-      measurement_option_id: string;
-    }[];
-    quantitative_measurements: {
-      measurement_id: string;
-      measurement_value: number;
-    }[];
-  }[];
-};
-
-export type ObservationCountSupplementaryData = {
-  observationCount: number;
-};
-
-export type ObservationMeasurementSupplementaryData = {
-  qualitative_measurements: CBQualitativeMeasurementTypeDefinition[];
-  quantitative_measurements: CBQuantitativeMeasurementTypeDefinition[];
-  qualitative_environments: QualitativeEnvironmentTypeDefinition[];
-  quantitative_environments: QuantitativeEnvironmentTypeDefinition[];
-};
-
-export type ObservationSamplingSupplementaryData = {
-  sampling_data: SurveySamplePeriodDetails[];
-};
-
-export type AllObservationSupplementaryData = ObservationCountSupplementaryData &
-  ObservationMeasurementSupplementaryData &
-  ObservationSamplingSupplementaryData;
-
-export interface IEnvironmentDataToValidate {
-  key: string;
-  value: string | number;
-}
-
 export class ObservationService extends DBService {
   observationRepository: ObservationRepository;
 
   constructor(connection: IDBConnection) {
     super(connection);
     this.observationRepository = new ObservationRepository(connection);
+  }
+
+  /**
+   * Inserts an observation record.
+   *
+   * @param {number} surveyId
+   * @param {InsertSurveyObservation} observation
+   * @return {*}  {Promise<void>}
+   * @memberof ObservationService
+   */
+  async insertObservation(surveyId: number, observation: InsertSurveyObservation): Promise<void> {
+    const subCountService = new SubCountService(this.connection);
+    const observationSubCountMeasurementService = new ObservationSubCountMeasurementService(this.connection);
+    const observationEnvironmentService = new ObservationEnvironmentService(this.connection);
+
+    // -- Observation Data --------------------------------------------------------------
+
+    // Upsert observation standard columns
+    const insertedObservationRecord = await this.observationRepository.insertSurveyObservation(surveyId, observation);
+
+    const surveyObservationId = insertedObservationRecord.survey_observation_id;
+
+    // -- Observation Environment Data --------------------------------------------------------------
+
+    // TODO: Update 'delete environment' process to fetch and find differences between incoming and existing data to
+    // only add, update or delete records as needed
+
+    // Delete old observation environment records
+    await observationEnvironmentService.deleteObservationEnvironments(surveyId, [surveyObservationId]);
+
+    const qualitativeEnvironmentData: InsertObservationQualitativeEnvironmentRecord[] =
+      observation.standardColumns.qualitative_environments.map((item) => ({
+        survey_observation_id: surveyObservationId,
+        environment_qualitative_id: item.environment_qualitative_id,
+        environment_qualitative_option_id: item.environment_qualitative_option_id
+      }));
+    await observationEnvironmentService.insertObservationQualitativeEnvironment(qualitativeEnvironmentData);
+
+    const quantitativeEnvironmentData: InsertObservationQuantitativeEnvironmentRecord[] =
+      observation.standardColumns.quantitative_environments.map((item) => ({
+        survey_observation_id: surveyObservationId,
+        environment_quantitative_id: item.environment_quantitative_id,
+        value: item.value
+      }));
+    await observationEnvironmentService.insertObservationQuantitativeEnvironment(quantitativeEnvironmentData);
+
+    // -- Observation Subcount Data --------------------------------------------------------------
+
+    // TODO: Update 'delete subcount' process to fetch and find differences between incoming and existing data to
+    // only add, update or delete records as needed
+
+    // Delete old observation subcount records (critters, measurements and subcounts)
+    await subCountService.deleteObservationSubCountRecordsByObservationId(surveyId, [surveyObservationId]);
+
+    for (const subcount of observation.subcounts) {
+      // -- Subcount Data --------------------------------------------------------------
+
+      // Insert observation subcount record for each subcount.
+      const observationSubCountRecord = await subCountService.insertObservationSubCount({
+        survey_observation_id: surveyObservationId,
+        subcount: subcount.subcount,
+        comment: subcount.comment
+      });
+
+      // -- Subcount Measurement Data --------------------------------------------------------------
+
+      if (subcount.qualitative_measurements.length) {
+        const qualitativeData: InsertObservationSubCountQualitativeMeasurementRecord[] =
+          subcount.qualitative_measurements.map((item) => ({
+            observation_subcount_id: observationSubCountRecord.observation_subcount_id,
+            critterbase_taxon_measurement_id: item.measurement_id,
+            critterbase_measurement_qualitative_option_id: item.measurement_option_id
+          }));
+        await observationSubCountMeasurementService.insertObservationSubCountQualitativeMeasurement(qualitativeData);
+      }
+
+      if (subcount.quantitative_measurements.length) {
+        const quantitativeData: InsertObservationSubCountQuantitativeMeasurementRecord[] =
+          subcount.quantitative_measurements.map((item) => ({
+            observation_subcount_id: observationSubCountRecord.observation_subcount_id,
+            critterbase_taxon_measurement_id: item.measurement_id,
+            value: item.measurement_value
+          }));
+        await observationSubCountMeasurementService.insertObservationSubCountQuantitativeMeasurement(quantitativeData);
+      }
+    }
+  }
+
+  /**
+   * Bulk inserts observation records.
+   *
+   * @param {number} surveyId
+   * @param {InsertSurveyObservation[]} observations
+   * @return {*}  {Promise<void>}
+   * @memberof ObservationService
+   */
+  async insertObservations(surveyId: number, observations: InsertSurveyObservation[]): Promise<void> {
+    for (const observation of observations) {
+      await this.insertObservation(surveyId, observation);
+    }
+  }
+
+  /**
+   * Updates a observation record.
+   *
+   * @param {number} surveyId
+   * @param {UpdateSurveyObservation} observation
+   * @return {*}  {Promise<void>}
+   * @memberof ObservationService
+   */
+  async updateObservation(surveyId: number, observation: UpdateSurveyObservation): Promise<void> {
+    const subCountService = new SubCountService(this.connection);
+    const observationSubCountMeasurementService = new ObservationSubCountMeasurementService(this.connection);
+    const observationEnvironmentService = new ObservationEnvironmentService(this.connection);
+
+    // -- Observation Data --------------------------------------------------------------
+
+    // Upsert observation standard columns
+    const insertedObservationRecord = await this.observationRepository.updateSurveyObservation(surveyId, observation);
+
+    const surveyObservationId = insertedObservationRecord.survey_observation_id;
+
+    // -- Observation Environment Data --------------------------------------------------------------
+
+    // TODO: Update 'delete environment' process to fetch and find differences between incoming and existing data to
+    // only add, update or delete records as needed
+
+    // Delete old observation environment records
+    await observationEnvironmentService.deleteObservationEnvironments(surveyId, [surveyObservationId]);
+
+    const qualitativeEnvironmentData: InsertObservationQualitativeEnvironmentRecord[] =
+      observation.standardColumns.qualitative_environments.map((item) => ({
+        survey_observation_id: surveyObservationId,
+        environment_qualitative_id: item.environment_qualitative_id,
+        environment_qualitative_option_id: item.environment_qualitative_option_id
+      }));
+    await observationEnvironmentService.insertObservationQualitativeEnvironment(qualitativeEnvironmentData);
+
+    const quantitativeEnvironmentData: InsertObservationQuantitativeEnvironmentRecord[] =
+      observation.standardColumns.quantitative_environments.map((item) => ({
+        survey_observation_id: surveyObservationId,
+        environment_quantitative_id: item.environment_quantitative_id,
+        value: item.value
+      }));
+    await observationEnvironmentService.insertObservationQuantitativeEnvironment(quantitativeEnvironmentData);
+
+    // -- Observation Subcount Data --------------------------------------------------------------
+
+    // TODO: Update 'delete subcount' process to fetch and find differences between incoming and existing data to
+    // only add, update or delete records as needed
+
+    // Delete old observation subcount records (critters, measurements and subcounts)
+    await subCountService.deleteObservationSubCountRecordsByObservationId(surveyId, [surveyObservationId]);
+
+    for (const subcount of observation.subcounts) {
+      // -- Subcount Data --------------------------------------------------------------
+
+      // Insert observation subcount record for each subcount.
+      const observationSubCountRecord = await subCountService.insertObservationSubCount({
+        survey_observation_id: surveyObservationId,
+        subcount: subcount.subcount,
+        comment: subcount.comment
+      });
+
+      // -- Subcount Measurement Data --------------------------------------------------------------
+
+      if (subcount.qualitative_measurements.length) {
+        const qualitativeData: InsertObservationSubCountQualitativeMeasurementRecord[] =
+          subcount.qualitative_measurements.map((item) => ({
+            observation_subcount_id: observationSubCountRecord.observation_subcount_id,
+            critterbase_taxon_measurement_id: item.measurement_id,
+            critterbase_measurement_qualitative_option_id: item.measurement_option_id
+          }));
+        await observationSubCountMeasurementService.insertObservationSubCountQualitativeMeasurement(qualitativeData);
+      }
+
+      if (subcount.quantitative_measurements.length) {
+        const quantitativeData: InsertObservationSubCountQuantitativeMeasurementRecord[] =
+          subcount.quantitative_measurements.map((item) => ({
+            observation_subcount_id: observationSubCountRecord.observation_subcount_id,
+            critterbase_taxon_measurement_id: item.measurement_id,
+            value: item.measurement_value
+          }));
+        await observationSubCountMeasurementService.insertObservationSubCountQuantitativeMeasurement(quantitativeData);
+      }
+    }
   }
 
   /**
@@ -166,101 +269,6 @@ export class ObservationService extends DBService {
   }
 
   /**
-   * Upserts the given observation records and their associated subcounts.
-   *
-   * @param {number} surveyId
-   * @param {InsertUpdateObservations[]} observations
-   * @return {*}  {Promise<void>}
-   * @memberof ObservationService
-   */
-  async insertUpdateManualSurveyObservations(
-    surveyId: number,
-    observations: InsertUpdateObservations[]
-  ): Promise<void> {
-    const subCountService = new SubCountService(this.connection);
-    const observationSubCountMeasurementService = new ObservationSubCountMeasurementService(this.connection);
-    const observationEnvironmentService = new ObservationEnvironmentService(this.connection);
-
-    for (const observation of observations) {
-      // -- Observation Data --------------------------------------------------------------
-
-      // Upsert observation standard columns
-      const upsertedObservationRecord = await this.observationRepository.insertUpdateSurveyObservations(surveyId, [
-        observation.standardColumns
-      ]);
-
-      const surveyObservationId = upsertedObservationRecord[0].survey_observation_id;
-
-      // -- Observation Environment Data --------------------------------------------------------------
-
-      // TODO: Update 'delete environment' process to fetch and find differences between incoming and existing data to
-      // only add, update or delete records as needed
-
-      // Delete old observation environment records
-      await observationEnvironmentService.deleteObservationEnvironments(surveyId, [surveyObservationId]);
-
-      const qualitativeEnvironmentData: InsertObservationQualitativeEnvironmentRecord[] =
-        observation.standardColumns.qualitative_environments.map((item) => ({
-          survey_observation_id: surveyObservationId,
-          environment_qualitative_id: item.environment_qualitative_id,
-          environment_qualitative_option_id: item.environment_qualitative_option_id
-        }));
-      await observationEnvironmentService.insertObservationQualitativeEnvironment(qualitativeEnvironmentData);
-
-      const quantitativeEnvironmentData: InsertObservationQuantitativeEnvironmentRecord[] =
-        observation.standardColumns.quantitative_environments.map((item) => ({
-          survey_observation_id: surveyObservationId,
-          environment_quantitative_id: item.environment_quantitative_id,
-          value: item.value
-        }));
-      await observationEnvironmentService.insertObservationQuantitativeEnvironment(quantitativeEnvironmentData);
-
-      // -- Observation Subcount Data --------------------------------------------------------------
-
-      // TODO: Update 'delete subcount' process to fetch and find differences between incoming and existing data to
-      // only add, update or delete records as needed
-
-      // Delete old observation subcount records (critters, measurements and subcounts)
-      await subCountService.deleteObservationSubCountRecordsByObservationId(surveyId, [surveyObservationId]);
-
-      for (const subcount of observation.subcounts) {
-        // -- Subcount Data --------------------------------------------------------------
-
-        // Insert observation subcount record for each subcount.
-        const observationSubCountRecord = await subCountService.insertObservationSubCount({
-          survey_observation_id: surveyObservationId,
-          subcount: subcount.subcount,
-          comment: subcount.comment
-        });
-
-        // -- Subcount Measurement Data --------------------------------------------------------------
-
-        if (subcount.qualitative_measurements.length) {
-          const qualitativeData: InsertObservationSubCountQualitativeMeasurementRecord[] =
-            subcount.qualitative_measurements.map((item) => ({
-              observation_subcount_id: observationSubCountRecord.observation_subcount_id,
-              critterbase_taxon_measurement_id: item.measurement_id,
-              critterbase_measurement_qualitative_option_id: item.measurement_option_id
-            }));
-          await observationSubCountMeasurementService.insertObservationSubCountQualitativeMeasurement(qualitativeData);
-        }
-
-        if (subcount.quantitative_measurements.length) {
-          const quantitativeData: InsertObservationSubCountQuantitativeMeasurementRecord[] =
-            subcount.quantitative_measurements.map((item) => ({
-              observation_subcount_id: observationSubCountRecord.observation_subcount_id,
-              critterbase_taxon_measurement_id: item.measurement_id,
-              value: item.measurement_value
-            }));
-          await observationSubCountMeasurementService.insertObservationSubCountQuantitativeMeasurement(
-            quantitativeData
-          );
-        }
-      }
-    }
-  }
-
-  /**
    * Retrieves all observation records for the given survey
    *
    * @param {number} surveyId
@@ -287,11 +295,52 @@ export class ObservationService extends DBService {
    *
    * @param {number} surveyId
    * @param {number} surveyObservationId
-   * @return {*}  {Promise<SurveyObservationRecord[]>}
+   * @return {*}  {Promise<ObservationRecordWithSampling[]>}
    * @memberof ObservationRepository
    */
-  async getSurveyObservationById(surveyId: number, surveyObservationId: number): Promise<SurveyObservationRecord> {
+  async getSurveyObservationById(
+    surveyId: number,
+    surveyObservationId: number
+  ): Promise<ObservationRecordWithSampling> {
     return this.observationRepository.getSurveyObservationById(surveyId, surveyObservationId);
+  }
+
+  /**
+   * Get a survey observation record, for as survyey.
+   *
+   * @param {number} surveyId
+   * @param {number} surveyObservationId
+   * @return {*}  {Promise<SurveyObservationWithSupplementaryData>}
+   * @memberof ObservationRepository
+   */
+  async getSurveyObservation(
+    surveyId: number,
+    surveyObservationId: number
+  ): Promise<SurveyObservationWithSupplementaryData> {
+    const samplePeriodService = new SamplePeriodService(this.connection);
+    const subCountService = new SubCountService(this.connection);
+
+    const [surveyObservation, measurementTypeDefinitions, environmentTypeDefinitions, samplePeriods] =
+      await Promise.all([
+        // Fetch observation
+        this.observationRepository.getSurveyObservation(surveyId, surveyObservationId),
+        // Fetch supplementary data
+        subCountService.getMeasurementTypeDefinitionsForSurvey(surveyId),
+        this.getEnvironmentTypeDefinitionsForSurvey(surveyId),
+        samplePeriodService.getSamplePeriodsForSurvey(surveyId)
+      ]);
+
+    return {
+      surveyObservation: surveyObservation,
+      supplementaryData: {
+        observationCount: 1,
+        qualitative_measurements: measurementTypeDefinitions.qualitative_measurements,
+        quantitative_measurements: measurementTypeDefinitions.quantitative_measurements,
+        qualitative_environments: environmentTypeDefinitions.qualitative_environments,
+        quantitative_environments: environmentTypeDefinitions.quantitative_environments,
+        sampling_data: samplePeriods
+      }
+    };
   }
 
   /**
@@ -476,51 +525,6 @@ export class ObservationService extends DBService {
   }
 
   /**
-   * Inserts a survey observation submission record into the database and returns the key
-   *
-   * @param {Express.Multer.File} file
-   * @param {number} projectId
-   * @param {number} surveyId
-   * @return {*}  {Promise<{ key: string }>}
-   * @memberof ObservationService
-   */
-  async insertSurveyObservationSubmission(
-    file: Express.Multer.File,
-    projectId: number,
-    surveyId: number
-  ): Promise<{ submission_id: number; key: string }> {
-    const submissionId = await this.observationRepository.getNextSubmissionId();
-
-    const key = generateS3FileKey({
-      projectId,
-      surveyId,
-      submissionId,
-      fileName: file.originalname
-    });
-
-    const insertResult = await this.observationRepository.insertSurveyObservationSubmission(
-      submissionId,
-      key,
-      surveyId,
-      file.originalname
-    );
-
-    return { submission_id: insertResult.submission_id, key };
-  }
-
-  /**
-   * Retrieves the observation submission record by the given submission ID.
-   *
-   * @param {number} surveyId
-   * @param {number} submissionId
-   * @return {*}  {Promise<ObservationSubmissionRecord>}
-   * @memberof ObservationService
-   */
-  async getObservationSubmissionById(surveyId: number, submissionId: number): Promise<ObservationSubmissionRecord> {
-    return this.observationRepository.getObservationSubmissionById(surveyId, submissionId);
-  }
-
-  /**
    * Retrieves observation records count for the given survey and sample site ids
    *
    * @param {number} surveyId
@@ -603,69 +607,5 @@ export class ObservationService extends DBService {
 
     // Delete survey_observation records
     return this.observationRepository.deleteObservationsByIds(surveyId, observationIds);
-  }
-
-  /**
-   * Validates all qualitative and quantitative measurements against fetched measurement definitions.
-   *
-   * @param {InsertUpdateObservations[]} observations The observations to validate
-   * @param {CritterbaseService} critterbaseService Used to fetch measurement definitions to validate against
-   * @return {*}  {Promise<boolean>} `true` if the observations are valid, `false` otherwise
-   */
-  async _validateObservationMeasurements(
-    observations: InsertUpdateObservations[],
-    critterbaseService: CritterbaseService
-  ) {
-    // Fetch all measurement type definitions from Critterbase for all unique TSNs
-    const tsns = observations.map((row) => row.standardColumns.itis_tsn);
-
-    const tsnMeasurementTypeDefinitionMap = await getTsnMeasurementDictionary(tsns, critterbaseService);
-
-    // Validate all qualitative measurements against fetched measurement definitions
-    const qualitativeMeasurementsAreAllValid = observations.every((observationRow) => {
-      return observationRow.subcounts.every((subcount) => {
-        return subcount.qualitative_measurements.every((qualitative_measurement) => {
-          const measurementDefinition = tsnMeasurementTypeDefinitionMap.get(
-            observationRow.standardColumns.itis_tsn,
-            qualitative_measurement.measurement_id
-          ) as CBQualitativeMeasurementTypeDefinition;
-
-          if (!measurementDefinition) {
-            return false;
-          }
-
-          return measurementDefinition.options.find(
-            (option) => option.qualitative_option_id === qualitative_measurement.measurement_option_id
-          );
-        });
-      });
-    });
-
-    // Validate all quantitative measurements against fetched measurement definitions
-    const quantitativeMeasurementsAreAllValid = observations.every((observationRow) => {
-      return observationRow.subcounts.every((subcount) => {
-        return subcount.quantitative_measurements.every((quantitative_measurement) => {
-          const measurementDefinition = tsnMeasurementTypeDefinitionMap.get(
-            observationRow.standardColumns.itis_tsn,
-            quantitative_measurement.measurement_id
-          ) as CBQuantitativeMeasurementTypeDefinition;
-
-          if (!measurementDefinition) {
-            return false;
-          }
-
-          // Validate the quantitative value against the measurement definition
-          const errors = validateQuantitativeValue(quantitative_measurement.measurement_value, {
-            min: measurementDefinition.min_value,
-            max: measurementDefinition.max_value
-          });
-
-          // Return false if there are any errors
-          return !Array.isArray(errors);
-        });
-      });
-    });
-
-    return qualitativeMeasurementsAreAllValid && quantitativeMeasurementsAreAllValid;
   }
 }

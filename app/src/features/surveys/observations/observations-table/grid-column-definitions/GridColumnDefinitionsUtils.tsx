@@ -1,4 +1,4 @@
-import { GridCellParams, GridColDef } from '@mui/x-data-grid';
+import { GridColDef } from '@mui/x-data-grid';
 import { IObservationTableRow } from 'contexts/observationsTableContext';
 import {
   ObservationQualitativeEnvironmentColDef,
@@ -69,16 +69,14 @@ export const isQualitativeEnvironmentTypeDefinition = (
 };
 
 export const getMeasurementColumnDefinitions = (
-  measurements: CBMeasurementType[],
-  hasError: (params: GridCellParams) => boolean
+  measurements: CBMeasurementType[]
 ): GridColDef<IObservationTableRow>[] => {
   const colDefs: GridColDef<IObservationTableRow>[] = [];
   for (const measurement of measurements) {
     if (isQuantitativeMeasurementTypeDefinition(measurement)) {
       colDefs.push(
         ObservationQuantitativeMeasurementColDef({
-          measurement: measurement,
-          hasError: hasError
+          measurement: measurement
         })
       );
     }
@@ -87,8 +85,7 @@ export const getMeasurementColumnDefinitions = (
       colDefs.push(
         ObservationQualitativeMeasurementColDef({
           measurement: measurement,
-          measurementOptions: measurement.options,
-          hasError: hasError
+          measurementOptions: measurement.options
         })
       );
     }
@@ -113,10 +110,7 @@ const formatQuantitativeEnvironment = (environment: EnvironmentQuantitativeTypeD
   };
 };
 
-export const getEnvironmentColumnDefinitions = (
-  environments: EnvironmentType,
-  hasError: (params: GridCellParams) => boolean
-): GridColDef<IObservationTableRow>[] => {
+export const getEnvironmentColumnDefinitions = (environments: EnvironmentType): GridColDef<IObservationTableRow>[] => {
   const colDefs: GridColDef<IObservationTableRow>[] = [];
 
   for (const environment of environments.quantitative_environments) {
@@ -124,8 +118,7 @@ export const getEnvironmentColumnDefinitions = (
 
     colDefs.push(
       ObservationQuantitativeEnvironmentColDef({
-        environment: formattedEnvironment,
-        hasError: hasError
+        environment: formattedEnvironment
       })
     );
   }
@@ -133,8 +126,7 @@ export const getEnvironmentColumnDefinitions = (
   for (const environment of environments.qualitative_environments) {
     colDefs.push(
       ObservationQualitativeEnvironmentColDef({
-        environment: environment,
-        hasError: hasError
+        environment: environment
       })
     );
   }
