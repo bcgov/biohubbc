@@ -3,7 +3,6 @@ import { SurveyHabitatFeatureQualitativeValueRecord } from '../../../../database
 import { SurveyHabitatFeatureQuantitativeValueRecord } from '../../../../database-models/survey_habitat_feature_quantitative_value';
 import { HabitatFeatureQualitativeDefinitionWithOptions } from '../../../../repositories/habitat-feature-repository/habitat-feature-repository.interface';
 import { CSVCellValidator, CSVError, CSVParams } from '../../../../utils/csv-utils/csv-config-validation.interface';
-import { updateCSVRowState } from '../../../../utils/csv-utils/csv-header-configs';
 import {
   HabitatFeatureDefinitionNameTypeDefinitionMap,
   isQualitativeHabitatFeatureTypeDefinition,
@@ -11,6 +10,7 @@ import {
 } from '../../utils/habitat-feature-attribute';
 import { validateQualitativeValue } from '../../utils/qualitative';
 import { validateQuantitativeValue } from '../../utils/quantitative';
+import { updateCSVRowState } from '../../utils/row-state';
 
 /**
  * Get the dynamic habitat feature cell validator.

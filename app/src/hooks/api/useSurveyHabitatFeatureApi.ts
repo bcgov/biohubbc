@@ -1,4 +1,4 @@
-import { AxiosInstance } from 'axios';
+import { AxiosInstance, AxiosProgressEvent, CancelTokenSource } from 'axios';
 import {
   CreateSurveyHabitatFeature,
   FindSurveyHabitatFeatures,
@@ -181,6 +181,36 @@ const useSurveyHabitatFeatureApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Bulk upload habitat features from a CSV file.
+   *
+   * @param {File} file
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @return {*} {Promise<void>}
+   */
+  const importHabitatFeaturesFromCsv = async (
+    file: File,
+    projectId: number,
+    surveyId: number,
+    surveySamplePeriodId?: number,
+    cancelTokenSource?: CancelTokenSource,
+    onProgress?: (progressEvent: AxiosProgressEvent) => void
+  ): Promise<void> => {
+    const formData = new FormData();
+
+    formData.append('media', file);
+
+    if (surveySamplePeriodId) {
+      formData.append('surveySamplePeriodId', surveySamplePeriodId.toString());
+    }
+
+    await axios.post(`/api/project/${projectId}/survey/${surveyId}/habitat-features/import`, formData, {
+      cancelToken: cancelTokenSource?.token,
+      onUploadProgress: onProgress
+    });
+  };
+
   return {
     createSurveyHabitatFeatures,
     updateSurveyHabitatFeature,
@@ -189,7 +219,8 @@ const useSurveyHabitatFeatureApi = (axios: AxiosInstance) => {
     getSurveyHabitatFeaturesGeometry,
     findSurveyHabitatFeatures,
     deleteSurveyHabitatFeature,
-    deleteSurveyHabitatFeatures
+    deleteSurveyHabitatFeatures,
+    importHabitatFeaturesFromCsv
   };
 };
 

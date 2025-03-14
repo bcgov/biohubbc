@@ -14,7 +14,6 @@ import {
   CSVRowParams,
   CSVRowValidator
 } from '../../../../utils/csv-utils/csv-config-validation.interface';
-import { updateCSVRowState } from '../../../../utils/csv-utils/csv-header-configs';
 import {
   formatDateString,
   isDateString,
@@ -22,6 +21,7 @@ import {
   isTimeString,
   newDayjs
 } from '../../../../utils/date-time-utils';
+import { updateCSVRowState } from '../../utils/row-state';
 import { HabitatFeatureCSVStaticHeader } from '../import-habitat-features-service';
 
 dayjs.extend(isSameOrAfter);

@@ -157,7 +157,7 @@ export class ImportMarkingsService extends DBService {
       validateCell: getMarkingColourCellValidator(colours)
     });
     this.utils.setStaticHeaderConfig('DESCRIPTION', {
-      validateCell: getDescriptionCellValidator()
+      validateCell: getDescriptionCellValidator({ optional: true })
     });
 
     // Return the final CSV config
