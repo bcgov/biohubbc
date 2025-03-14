@@ -22,7 +22,7 @@ export interface IHabitatFeatureRow {
   survey_habitat_feature_id: number;
   survey_id: number;
   habitat_feature_type_id: number;
-  habitat_feature_taxons: string[];
+  survey_habitat_feature_taxons: string[];
   count: number;
   latitude: number | null;
   longitude: number | null;
@@ -225,7 +225,9 @@ export const HabitatFeatureTableContextProvider = (props: IHabitatFeatureTableCo
       survey_habitat_feature_id: habitatFeature.survey_habitat_feature_id,
       survey_id: habitatFeature.survey_id,
       habitat_feature_type_id: habitatFeature.habitat_feature_type_id,
-      habitat_feature_taxons: habitatFeature.survey_habitat_feature_taxons.map((taxon) => taxon.itis_scientific_name),
+      survey_habitat_feature_taxons: habitatFeature.survey_habitat_feature_taxons.map(
+        (taxon) => taxon.itis_scientific_name
+      ),
       count: habitatFeature.count,
       latitude: habitatFeature.latitude,
       longitude: habitatFeature.longitude,
@@ -269,32 +271,33 @@ export const HabitatFeatureTableContextProvider = (props: IHabitatFeatureTableCo
         valueGetter: (params) => habitatFeatureTypeMap.get(params.value)
       },
       {
-        field: 'habitat_feature_taxons',
+        field: 'survey_habitat_feature_taxons',
         headerName: 'Species',
         align: 'left',
-        minWidth: 180,
+        minWidth: 200,
         flex: 1,
-        valueGetter: (params) => params.row.habitat_feature_taxons.join(', ')
+        sortable: false, // Not supported by the API
+        valueGetter: (params) => params.row.survey_habitat_feature_taxons.join(', ')
       },
       {
         field: 'survey_sample_site_name',
         headerName: 'Sample Site',
         align: 'left',
-        minWidth: 180,
+        minWidth: 200,
         flex: 1
       },
       {
         field: 'method_technique_name',
         headerName: 'Method Technique',
         align: 'left',
-        minWidth: 180,
+        minWidth: 200,
         flex: 1
       },
       {
         field: 'survey_sample_period_start_datetime',
         headerName: 'Sample Period',
         align: 'left',
-        minWidth: 180,
+        minWidth: 200,
         flex: 1
       },
       {

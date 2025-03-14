@@ -55,7 +55,7 @@ export const ImportHabitatFeaturesButton = (props: ImportHabitatFeaturesButtonPr
       onProgress
     );
 
-    habitatFeatureTableContext.refreshData();
+    habitatFeatureTableContext.refreshHabitatFeatureRecords();
 
     setOpenImportDialog(false);
   };

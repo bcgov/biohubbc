@@ -147,10 +147,10 @@ const HabitatFeaturesListContainer = (props: IHabitatFeaturesListContainerProps)
       habitatFeaturesData.surveyHabitatFeatures?.flatMap((habitatFeatureRow) => {
         return {
           id: String(habitatFeatureRow.survey_habitat_feature_id),
-          habitat_feature_taxons: habitatFeatureRow.survey_habitat_feature_taxons.map(
+          ...habitatFeatureRow,
+          survey_habitat_feature_taxons: habitatFeatureRow.survey_habitat_feature_taxons.map(
             (taxon) => taxon.itis_scientific_name
-          ),
-          ...habitatFeatureRow
+          )
         };
       }),
     []
