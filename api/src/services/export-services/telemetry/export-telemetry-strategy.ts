@@ -1,11 +1,9 @@
-import { Readable } from 'stream';
 import { getKnex, IDBConnection } from '../../../database/db';
 import { TelemetryVendorRepository } from '../../../repositories/telemetry-repositories/telemetry-vendor-repository';
 import { getLogger } from '../../../utils/logger';
 import { DBService } from '../../db-service';
 import { getTelemetryDeviceKey } from '../../telemetry-services/telemetry-utils';
-import { TelemetryVendorService } from '../../telemetry-services/telemetry-vendor-service';
-import { ExportDataStreamOptions, ExportStrategy, ExportStrategyConfig } from '../export-strategy';
+import { ExportStrategy, ExportStrategyConfig } from '../export-strategy';
 import { parseTimestampString } from '../export-utils';
 
 const defaultLog = getLogger('services/export-telemetry-strategy');
@@ -77,54 +75,6 @@ export class ExportTelemetryStrategy extends DBService implements ExportStrategy
 
     const knex = getKnex();
     return telemetryVendorRepository.buildTelemetryQuery(knex, isUserAdmin, systemUserId, filterFields);
-  };
-
-  /**
-   * Build and return the telemetry data stream.
-   *
-   * @param {ExportDataStreamOptions} _options
-   * @memberof ExportTelemetryStrategy
-   */
-  _getStream = (_options: ExportDataStreamOptions): Readable => {
-    const telemetryVendorService = new TelemetryVendorService(this.connection);
-
-    const isUserAdmin = this.config.isUserAdmin;
-    const systemUserId = this.connection.systemUserId();
-    const filterFields = {
-      survey_ids: [this.config.surveyId]
-    };
-
-    const csvTelemetryHeader = [
-      'Telemetry ID',
-      'Device ID',
-      'Deployment ID',
-      'Latitude',
-      'Logitude',
-      'Date',
-      'Time'
-    ].join(',');
-
-    const stream = new Readable({
-      objectMode: true,
-      read() {
-        telemetryVendorService
-          .findTelemetry(isUserAdmin, systemUserId, filterFields)
-          .then((telemetry) => {
-            this.push(csvTelemetryHeader);
-            for (const item of telemetry) {
-              this.push(ExportTelemetryStrategy.telemetryCsvTransformation(item));
-            }
-
-            // Signal the end of the stream
-            this.push(null);
-          })
-          .catch((error) => {
-            this.emit('error', error);
-          });
-      }
-    });
-
-    return stream;
   };
 
   /**

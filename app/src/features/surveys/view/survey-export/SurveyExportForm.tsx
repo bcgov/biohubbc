@@ -142,7 +142,7 @@ export const SurveyExportForm = (props: ISurveyExportFormProps) => {
             </Typography>
           </FormHelperText>
         </FormControl>
-        <FormControl sx={classes.exportInput} component="fieldset" disabled>
+        <FormControl sx={classes.exportInput} component="fieldset">
           <FormControlLabel
             label="Sampling information"
             control={
@@ -190,7 +190,7 @@ export const SurveyExportForm = (props: ISurveyExportFormProps) => {
             </Typography>
           </FormHelperText>
         </FormControl>
-        <FormControl sx={classes.exportInput} component="fieldset" disabled>
+        <FormControl sx={classes.exportInput} component="fieldset">
           <FormControlLabel
             label="Animals"
             control={

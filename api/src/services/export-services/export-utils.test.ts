@@ -8,8 +8,8 @@ import { Readable, Transform } from 'stream';
 import { getKnex } from '../../database/db';
 import {
   getArchiveStream,
-  getJsonStringifyTransformStream,
   getQueryStream,
+  getStreamCsvTransformStream,
   registerStreamErrorHandler
 } from './export-utils';
 
@@ -43,9 +43,9 @@ describe('getQueryStream', () => {
   });
 });
 
-describe('getJsonStringifyTransformStream', () => {
+describe('getStreamCsvTransformStream', () => {
   it('returns a transform stream', async () => {
-    const jsonTransform = getJsonStringifyTransformStream();
+    const jsonTransform = getStreamCsvTransformStream('', ['test']);
 
     expect(jsonTransform).to.be.instanceOf(Transform);
   });

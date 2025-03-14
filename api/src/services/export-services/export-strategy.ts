@@ -26,7 +26,7 @@ export type ExportDataQuery = {
   csvHeader: string;
 
   /**
-   * Function that transforms the query data stram into CVS
+   * Function that transforms the query data stream into CVS
    *
    * @type {TransformFunction}
    */
@@ -59,6 +59,24 @@ export type ExportDataStream = {
    * The file name to use for the exported data when it is saved to S3.
    */
   fileName: string;
+  /**
+   * The data base CSV file header.
+   */
+  csvHeader: string;
+  // /**
+  //  * Optional, applies only for animal export
+  //  * map to look up only the critter ids with mortality that belong to a survey
+  //  *
+  //  * @type {?Map<string, IMortalityMarkingsData>}
+  //  */
+  // mortalityMarkingsMap?: Map<string, IMortalityMarkingsData>;
+  /**
+   * Optional, applies only for animal export
+   * map to look up collection categories labels by tsn
+   *
+   * @type {?string[]}
+   */
+  collectionCategories?: string[];
 };
 
 export type ExportStrategyConfig = {

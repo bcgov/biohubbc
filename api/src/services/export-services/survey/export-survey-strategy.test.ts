@@ -100,7 +100,8 @@ describe('ExportSurveyStrategy', () => {
                 read() {}
               });
             },
-            fileName: 'telemetry.csv'
+            fileName: 'telemetry.csv',
+            csvHeader: 'test'
           }
         ]
       });

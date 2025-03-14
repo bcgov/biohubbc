@@ -1,6 +1,7 @@
 import { IDBConnection } from '../../../database/db';
 import { getLogger } from '../../../utils/logger';
 import { DBService } from '../../db-service';
+import { ExportAnimalStrategy } from '../animal/export-animal-strategy';
 import { ExportStrategy, ExportStrategyConfig } from '../export-strategy';
 import { ExportObservationStrategy } from '../observation/export-observation-strategy';
 import { ExportTelemetryStrategy } from '../telemetry/export-telemetry-strategy';
@@ -94,6 +95,14 @@ export class ExportSurveyStrategy extends DBService implements ExportStrategy {
 
       if (this.config.telemetry_data) {
         const strategy = new ExportTelemetryStrategy(
+          { surveyId: this.surveyId, isUserAdmin: this.isUserAdmin },
+          this.connection
+        );
+        strategyPromises.push(strategy.getExportStrategyConfig());
+      }
+
+      if (this.config.animal_data) {
+        const strategy = new ExportAnimalStrategy(
           { surveyId: this.surveyId, isUserAdmin: this.isUserAdmin },
           this.connection
         );

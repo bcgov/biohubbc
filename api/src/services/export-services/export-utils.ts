@@ -63,12 +63,23 @@ export function getQueryParams(query: SQLStatement | Knex.QueryBuilder): { text:
  * @export
  * @return {*}
  */
-export function getJsonStringifyTransformStream(): Transform {
+export function getStreamCsvTransformStream(header: string, collectionCategories?: string[]): Transform {
+  let headerStreamed = false;
   const transformStream = new Transform({
     objectMode: true, // Expects objects
     transform(chunk, _encoding, callback) {
-      // Stringify the chunk and push it to the next stream
-      callback(null, JSON.stringify(chunk));
+      if (header && !headerStreamed) {
+        // This block is executed only once
+        // Push the headers into stream
+        this.push([header, collectionCategories ?? []].join(',') + '\r\n');
+        headerStreamed = true;
+      }
+      // process chunk and push it to the next stream
+      let addLine = '\r\n';
+      if (!chunk) {
+        addLine = '';
+      }
+      callback(null, chunk + addLine);
     }
   });
 

@@ -46,7 +46,7 @@ export class ExportObservationStrategy extends DBService implements ExportStrate
             csvHeader: [
               'Observation ID',
               'Subcount ID',
-              'Tsn',
+              'ITIS TSN',
               'Species',
               'Site',
               'Technique',

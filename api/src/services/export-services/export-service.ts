@@ -8,8 +8,8 @@ import { ExportConfig } from './export-strategy';
 import {
   getArchiveStream,
   getCsvTransformStream,
-  getJsonStringifyTransformStream,
   getQueryStream,
+  getStreamCsvTransformStream,
   registerStreamErrorHandler
 } from './export-utils';
 
@@ -99,14 +99,17 @@ export class ExportService extends DBService {
 
               registerStreamErrorHandler(stream);
 
-              const jsonTransformStream = getJsonStringifyTransformStream();
+              const csvTransformStream = getStreamCsvTransformStream(
+                streamConfig.csvHeader,
+                streamConfig.collectionCategories
+              );
 
-              registerStreamErrorHandler(jsonTransformStream);
+              registerStreamErrorHandler(csvTransformStream);
 
-              stream.pipe(jsonTransformStream);
+              stream.pipe(csvTransformStream);
 
               // Append the stream output to the archive stream
-              archiveStream.append(jsonTransformStream, { name: streamConfig.fileName });
+              archiveStream.append(csvTransformStream, { name: streamConfig.fileName });
             }
           }
         })

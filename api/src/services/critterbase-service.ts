@@ -165,6 +165,20 @@ export interface IMarking {
 }
 
 /**
+ * Used to filter mortality markings for export
+ *
+ * @export
+ * @interface IMortalityMarkingsData
+ * @typedef {IMortalityMarkingsData}
+ */
+export interface IMortalityMarkingsData {
+  body_location: string;
+  primary_colour: string | null;
+  secondary_colour: string | null;
+  marking_type: string;
+}
+
+/**
  * This is the more flexible interface for bulk importing Markings.
  *
  * Note: Critterbase bulk-create endpoint will attempt to patch
@@ -774,5 +788,78 @@ export class CritterbaseService {
     const response = await this.axiosInstance.get(`/xref/taxon-collection-units`, { params: { tsn } });
 
     return response.data;
+  }
+
+  /**
+   * Get all the categories for a set of tsn numbers
+   *
+   * @async
+   * @param {number[]} uniqueItisTsn
+   * @returns {Promise<string[]>}
+   * @memberof CritterbaseService
+   */
+  async getUniqueCategoryNamesForTsnList(uniqueItisTsn: number[]): Promise<string[]> {
+    // Create an array of promises for each API call
+    const promises = uniqueItisTsn.map((itisTsn) =>
+      this.axiosInstance.get('/xref/taxon-collection-categories', {
+        params: { tsn: itisTsn }
+      })
+    );
+
+    const responses = await Promise.all(promises);
+
+    // collect unique category names
+    const uniqueCategoryNames = new Set<string>();
+
+    // extract unique category names
+    responses.forEach((response) => {
+      response.data.forEach((item: { category_name: string }) => {
+        uniqueCategoryNames.add(item.category_name);
+      });
+    });
+
+    // send back an array of categories
+    return Array.from(uniqueCategoryNames);
+  }
+
+  /**
+   * Get all the mortalities markings for a set of critter id numbers
+   *
+   * @async
+   * @param {number[]} critterIds
+   * @returns {Promise<string[]>}
+   * @memberof CritterbaseService
+   */
+  async getMortalityMarkingsByMultipleCritterIds(critterIds: string[]): Promise<Map<string, IMortalityMarkingsData[]>> {
+    // Create an array of promises for each API call
+    const promises = critterIds.map((critterId) => this.axiosInstance.get(`/markings/critter/${critterId}`));
+    const responses = await Promise.all(promises);
+
+    const mortalityMarkingsDataMap = new Map<string, IMortalityMarkingsData[]>();
+
+    // populate map
+    responses.forEach((response) => {
+      response.data.forEach((item: any) => {
+        // Only process items that match the requested critter_ids
+        if (critterIds.includes(item.critter_id)) {
+          // If this mortality_id is not already in the results map, initialize an empty array
+          if (!mortalityMarkingsDataMap.has(item.mortality_id)) {
+            mortalityMarkingsDataMap.set(item.mortality_id, []);
+          }
+
+          // Push the mortality data for the current item into the map's array for this mortality_id
+          const mortalityData: IMortalityMarkingsData = {
+            body_location: item.body_location,
+            primary_colour: item.primary_colour,
+            secondary_colour: item.secondary_colour,
+            marking_type: item.marking_type
+          };
+
+          mortalityMarkingsDataMap.get(item.mortality_id)?.push(mortalityData);
+        }
+      });
+    });
+
+    return mortalityMarkingsDataMap;
   }
 }
