@@ -446,6 +446,9 @@ export const getTaxonCellValidator = (taxonMap: TaxonMap, options?: CSVCellValid
  * Rules:
  *  1. The array-cell values (after splitting by delimiter) must satisfy the cell validator function.
  *
+ * Note:
+ *  - If the cell value is a string, the mutateCell value will be updated to the array of values.
+ *
  * @param {CSVCellValidator} csvCellValidator The cell validator to apply to each element in the array
  * @param {CSVArrayCellValidatorOptions} options The array-cell validator options
  * @returns {*} {CSVCellValidator} The validate cell callback
@@ -458,18 +461,25 @@ export const getArrayCellValidator = (
     const cellValue = params.cell;
 
     if (typeof cellValue === 'string') {
+      // Split the cell into an array of values
       const cellValues = cellValue
         .split(options.delimiter)
         .map((value) => value.trim())
         .filter((value) => value.length > 0);
 
       // Execute the cell validator on each element in the array
-      return cellValues.flatMap((value) => {
-        return csvCellValidator({ ...params, cell: value });
+      const errors = cellValues.flatMap((value) => {
+        return csvCellValidator({ ...params, cell: value, mutateCell: value });
       });
+
+      // Update the row mutate cell with the array values
+      params.mutateCell = cellValues;
+
+      return errors;
     }
 
-    // Execute the cell validator on the original cell value
+    // If the cell value is not a string, then there is nothing to split
+    // Execute the cell validator as a regular non-array value
     return csvCellValidator({ ...params, cell: cellValue });
   };
 };
