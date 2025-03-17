@@ -212,7 +212,7 @@ export class UserService extends DBService {
    * @return {*}
    * @memberof UserService
    */
-  async activateSystemUser(systemUserId: number) {
+  async activateSystemUser(systemUserId: number): Promise<void> {
     return this.userRepository.activateSystemUser(systemUserId);
   }
 
@@ -223,8 +223,19 @@ export class UserService extends DBService {
    * @return {*}
    * @memberof UserService
    */
-  async deactivateSystemUser(systemUserId: number) {
+  async deactivateSystemUser(systemUserId: number): Promise<void> {
     return this.userRepository.deactivateSystemUser(systemUserId);
+  }
+
+  /**
+   * Deletes an existing system user (hard delete).
+   *
+   * @param {number} systemUserId
+   * @return {*}
+   * @memberof UserService
+   */
+  async deleteSystemUser(systemUserId: number): Promise<void> {
+    return this.userRepository.deleteSystemUser(systemUserId);
   }
 
   /**
@@ -234,8 +245,19 @@ export class UserService extends DBService {
    * @return {*}
    * @memberof UserService
    */
-  async deleteUserSystemRoles(systemUserId: number) {
+  async deleteUserSystemRoles(systemUserId: number): Promise<void> {
     return this.userRepository.deleteUserSystemRoles(systemUserId);
+  }
+
+  /**
+   * Delete all administrative activities for the user.
+   *
+   * @param {number} systemUserId
+   * @return {*}
+   * @memberof UserService
+   */
+  async deleteAdministrativeActivities(systemUserId: number): Promise<void> {
+    return this.userRepository.deleteAdministrativeActivities(systemUserId);
   }
 
   /**

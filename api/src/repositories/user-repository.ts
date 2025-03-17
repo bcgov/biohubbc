@@ -72,8 +72,6 @@ export class UserRepository extends BaseRepository {
       uis.user_identity_source_id = su.user_identity_source_id
     WHERE
       su.system_user_id = ${systemUserId}
-    AND
-      su.record_end_date IS NULL
     GROUP BY
       su.system_user_id,
       uis.name,
@@ -308,7 +306,6 @@ export class UserRepository extends BaseRepository {
       .leftJoin('system_user_role as sur', 'su.system_user_id', 'sur.system_user_id')
       .leftJoin('system_role as sr', 'sur.system_role_id', 'sr.system_role_id')
       .leftJoin('user_identity_source as uis', 'su.user_identity_source_id', 'uis.user_identity_source_id')
-      .whereNull('su.record_end_date')
       .whereNotIn('uis.name', [SYSTEM_IDENTITY_SOURCE.DATABASE, SYSTEM_IDENTITY_SOURCE.SYSTEM])
       .groupBy(
         'su.system_user_id',
@@ -428,6 +425,32 @@ export class UserRepository extends BaseRepository {
   }
 
   /**
+   * Delete an existing system user (hard delete).
+   *
+   * @param {number} systemUserId
+   * @memberof UserRepository
+   */
+  async deleteSystemUser(systemUserId: number) {
+    const sqlStatement = SQL`
+      DELETE FROM
+        "system_user"
+      WHERE
+        system_user_id = ${systemUserId}
+      RETURNING
+        *;
+    `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    if (response.rowCount !== 1) {
+      throw new ApiExecuteSQLError('Failed to delete system user', [
+        'UserRepository->deleteSystemUser',
+        'rowCount was null or undefined, expected rowCount = 1'
+      ]);
+    }
+  }
+
+  /**
    * Deactivates an existing system user (soft delete).
    *
    * @param {number} systemUserId
@@ -470,6 +493,27 @@ export class UserRepository extends BaseRepository {
       RETURNING
         *;
     `;
+
+    await this.connection.sql(sqlStatement);
+  }
+
+  /**
+   * Delete all administrative activities for the user.
+   *
+   * @param {number} systemUserId
+   * @memberof UserRepository
+   */
+  async deleteAdministrativeActivities(systemUserId: number) {
+    const sqlStatement = SQL`
+        DELETE FROM
+          administrative_activity
+        WHERE
+          reported_system_user_id = ${systemUserId}
+        OR 
+          assigned_system_user_id = ${systemUserId}
+        RETURNING
+          *;
+      `;
 
     await this.connection.sql(sqlStatement);
   }
@@ -601,7 +645,6 @@ export class UserRepository extends BaseRepository {
       });
     }
 
-    queryBuilder.andWhere('su.record_end_date', null);
     queryBuilder.whereNotIn('uis.name', [SYSTEM_IDENTITY_SOURCE.DATABASE]);
 
     queryBuilder.groupBy('su.system_user_id');
