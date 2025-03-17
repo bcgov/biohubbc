@@ -81,6 +81,10 @@ export type IStaticLayer = {
    * Returned component must be wrapped in a `Tooltip` component from `react-leaflet`.
    */
   tooltip?: (feature: IStaticLayerFeature) => ReactElement;
+  /**
+   * Callback for when an individual feature on the map is clicked
+   */
+  handleClick?: (feature: Feature) => void;
 };
 
 export type IStaticLayersProps = {
@@ -119,6 +123,9 @@ const StaticLayers = (props: PropsWithChildren<IStaticLayersProps>) => {
                         coloredCustomMarker({ latlng, fillColor: layer.layerOptions?.fillColor })
                       }
                       data={feature.geoJSON}
+                      eventHandlers={{
+                        click: () => (layer.handleClick ? layer.handleClick(feature.geoJSON) : undefined)
+                      }}
                       {...feature.GeoJSONProps}>
                       {layer.tooltip?.(feature) ?? null}
                       {layer.popup?.(feature) ?? null}

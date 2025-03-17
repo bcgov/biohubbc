@@ -168,11 +168,12 @@ describe('SampleBlockService', () => {
         .stub(SampleBlockRepository.prototype, 'deleteSampleBlockRecordsByBlockIds')
         .resolves(mockSampleBlockRecords);
 
+      const mockSurveyId = 1;
       const surveyBlockId = [1];
       const sampleBlockService = new SampleBlockService(mockDBConnection);
-      const response = await sampleBlockService.deleteSampleBlockRecordsByBlockIds(surveyBlockId);
+      const response = await sampleBlockService.deleteSampleBlockRecordsByBlockIds(mockSurveyId, surveyBlockId);
 
-      expect(deleteSampleBlockRecordsByBlockIdsStub).to.be.calledOnceWith(surveyBlockId);
+      expect(deleteSampleBlockRecordsByBlockIdsStub).to.be.calledOnceWith(mockSurveyId, surveyBlockId);
       expect(response).to.eql(mockSampleBlockRecords);
     });
   });

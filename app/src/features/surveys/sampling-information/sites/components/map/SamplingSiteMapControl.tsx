@@ -20,11 +20,10 @@ import { SurveyContext } from 'contexts/surveyContext';
 import SampleSiteFileUploadItemActionButton from 'features/surveys/sampling-information/sites/components/map/file-upload/SampleSiteFileUploadItemActionButton';
 import SampleSiteFileUploadItemProgressBar from 'features/surveys/sampling-information/sites/components/map/file-upload/SampleSiteFileUploadItemProgressBar';
 import SampleSiteFileUploadItemSubtext from 'features/surveys/sampling-information/sites/components/map/file-upload/SampleSiteFileUploadItemSubtext';
-import { FormikContextType } from 'formik';
+import { useFormikContext } from 'formik';
 import { Feature } from 'geojson';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { ICreateSamplingSiteRequest, ISurveySampleSite } from 'interfaces/useSamplingSiteApi.interface';
 import { DrawEvents, LatLngBoundsExpression } from 'leaflet';
 import 'leaflet-fullscreen/dist/leaflet.fullscreen.css';
 import 'leaflet-fullscreen/dist/Leaflet.fullscreen.js';
@@ -34,6 +33,7 @@ import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { FeatureGroup, LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { boundaryUploadHelper, calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import { pluralize, shapeFileFeatureDesc, shapeFileFeatureName } from 'utils/Utils';
+import { ICreateSampleSiteFormData, IPostSurveySampleSite } from '../../create/CreateSamplingSitePage.interface';
 
 const useStyles = () => {
   return {
@@ -55,7 +55,6 @@ export interface ISamplingSiteMapControlProps {
   name: string;
   title: string;
   mapId: string;
-  formikProps: FormikContextType<ICreateSamplingSiteRequest>;
 }
 
 /**
@@ -67,6 +66,7 @@ export interface ISamplingSiteMapControlProps {
 const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
   const classes = useStyles();
 
+  const formikProps = useFormikContext<ICreateSampleSiteFormData>();
   const biohubApi = useBiohubApi();
 
   const surveyContext = useContext(SurveyContext);
@@ -74,7 +74,7 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
 
   const drawControlsRef = useRef<IDrawControlsRef>();
 
-  const { name, mapId, formikProps } = props;
+  const { name, mapId } = props;
 
   const { values, errors, setFieldValue, setFieldError } = formikProps;
 
@@ -96,7 +96,7 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
 
   // Array of sampling site features
   const samplingSiteGeoJsonFeatures: Feature[] = useMemo(
-    () => get(values, name).map((site: ISurveySampleSite) => site.geojson),
+    () => get(values, name).map((site: IPostSurveySampleSite) => site.geojson),
     [name, values]
   );
 
@@ -126,7 +126,7 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
                 setFieldValue(
                   name,
                   features.map((feature) => ({
-                    name: shapeFileFeatureName(feature) ?? `Sample Site ${++numSites}`,
+                    name: shapeFileFeatureName(feature) ?? `Sampling Site ${++numSites}`,
                     description: shapeFileFeatureDesc(feature) ?? '',
                     geojson: feature
                   }))
@@ -196,7 +196,7 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
                       const feature = event.layer.toGeoJSON();
                       setFieldValue(name, [
                         {
-                          name: `Sample Site ${++numSites}`,
+                          name: `Sampling Site ${++numSites}`,
                           description: '',
                           geojson: feature
                         }
@@ -209,7 +209,7 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
                         const feature = layer.toGeoJSON() as Feature;
                         setFieldValue(name, [
                           {
-                            name: `Sample Site ${++numSites}`,
+                            name: `Sampling Site ${++numSites}`,
                             description: '',
                             geojson: feature
                           }

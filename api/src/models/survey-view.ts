@@ -3,7 +3,6 @@ import { z } from 'zod';
 import { SurveyMetadataPublish } from '../repositories/history-publish-repository';
 import { IPermitModel } from '../repositories/permit-repository';
 import { SiteSelectionData } from '../repositories/site-selection-strategy-repository';
-import { SurveyBlockRecord } from '../repositories/survey-block-repository';
 import { SurveyLocationRecord } from '../repositories/survey-location-repository';
 import { SurveyUser } from '../repositories/survey-participation-repository';
 import { ITaxonomyWithEcologicalUnits } from '../services/platform-service';
@@ -88,7 +87,6 @@ export type SurveyObject = {
   participants: (SurveyUser & SystemUserWithRoles)[];
   partnerships: ISurveyPartnerships;
   site_selection: SiteSelectionData;
-  blocks: SurveyBlockRecord[];
 };
 
 export interface ISurveyPartnerships {

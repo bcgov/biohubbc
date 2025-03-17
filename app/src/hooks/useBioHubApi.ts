@@ -9,6 +9,7 @@ import { useAlertApi } from './api/useAlertApi';
 import useAnalyticsApi from './api/useAnalyticsApi';
 import useAnimalApi from './api/useAnimalApi';
 import useAxios from './api/useAxios';
+import useBlockApi from './api/useBlockApi';
 import useCodesApi from './api/useCodesApi';
 import useExternalApi from './api/useExternalApi';
 import useFundingSourceApi from './api/useFundingSourceApi';
@@ -67,6 +68,8 @@ export const useBiohubApi = () => {
 
   const samplingSite = useSamplingSiteApi(apiAxios);
 
+  const block = useBlockApi(apiAxios);
+
   const samplingPeriod = useSamplingPeriodApi(apiAxios);
 
   const technique = useTechniqueApi(apiAxios);
@@ -97,6 +100,7 @@ export const useBiohubApi = () => {
       observation,
       resources,
       codes,
+      block,
       animal,
       user,
       admin,

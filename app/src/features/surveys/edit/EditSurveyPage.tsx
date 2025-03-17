@@ -99,7 +99,6 @@ const EditSurveyPage = () => {
     try {
       // Remove the permit_used and funding_used properties
       const response = await biohubApi.survey.updateSurvey(projectContext.projectId, surveyId, {
-        blocks: values.blocks,
         funding_sources: values.funding_sources,
         locations: values.locations.map((location) => ({
           survey_location_id: location.survey_location_id,
@@ -208,7 +207,6 @@ const EditSurveyPage = () => {
               locations: surveyData.locations,
               participants: surveyData.participants,
               partnerships: surveyData.partnerships,
-              blocks: surveyData.blocks,
               proprietor: surveyData.proprietor,
               permit: surveyData.permit,
               permit_used: Boolean(surveyData.permit?.permits.length),

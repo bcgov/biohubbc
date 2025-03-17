@@ -17,7 +17,6 @@ import {
   SurveyObject,
   SurveySupplementaryData
 } from '../models/survey-view';
-import { PostSurveyBlock, SurveyBlockRecordWithCount } from '../repositories/survey-block-repository';
 import { SurveyLocationRecord } from '../repositories/survey-location-repository';
 import { ISurveyProprietorModel, SurveyBasicFields, SurveyRepository } from '../repositories/survey-repository';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
@@ -28,7 +27,6 @@ import { PermitService } from './permit-service';
 import { ITaxonomyWithEcologicalUnits, PlatformService } from './platform-service';
 import { RegionService } from './region-service';
 import { SiteSelectionStrategyService } from './site-selection-strategy-service';
-import { SurveyBlockService } from './survey-block-service';
 import { SurveyLocationService } from './survey-location-service';
 import { SurveyParticipationService } from './survey-participation-service';
 
@@ -82,8 +80,7 @@ export class SurveyService extends DBService {
       this.getSurveyProprietorDataForView(surveyId),
       this.getSurveyLocationsData(surveyId),
       this.surveyParticipationService.getSurveyParticipants(surveyId),
-      this.siteSelectionStrategyService.getSiteSelectionDataBySurveyId(surveyId),
-      this.getSurveyBlocksForSurveyId(surveyId)
+      this.siteSelectionStrategyService.getSiteSelectionDataBySurveyId(surveyId)
     ]);
 
     return {
@@ -96,14 +93,8 @@ export class SurveyService extends DBService {
       proprietor: surveyData[6],
       locations: surveyData[7],
       participants: surveyData[8],
-      site_selection: surveyData[9],
-      blocks: surveyData[10]
+      site_selection: surveyData[9]
     };
-  }
-
-  async getSurveyBlocksForSurveyId(surveyId: number): Promise<SurveyBlockRecordWithCount[]> {
-    const service = new SurveyBlockService(this.connection);
-    return service.getSurveyBlocksForSurveyId(surveyId);
   }
 
   async getSurveyPartnershipsData(surveyId: number): Promise<ISurveyPartnerships> {
@@ -464,11 +455,6 @@ export class SurveyService extends DBService {
       );
     }
 
-    // Handle blocks
-    if (postSurveyData.blocks) {
-      promises.push(this.upsertBlocks(surveyId, postSurveyData.blocks));
-    }
-
     await Promise.all(promises);
 
     return surveyId;
@@ -485,19 +471,6 @@ export class SurveyService extends DBService {
   async insertSurveyLocations(surveyId: number, data: PostSurveyLocationData): Promise<void> {
     const service = new SurveyLocationService(this.connection);
     return service.insertSurveyLocation(surveyId, data);
-  }
-
-  /**
-   * Insert, updates and deletes Survey Blocks for a given survey id
-   *
-   * @param {number} surveyId
-   * @param {SurveyBlock[]} blocks
-   * @returns {*} {Promise<void>}
-   * @memberof SurveyService
-   */
-  async upsertBlocks(surveyId: number, blocks: PostSurveyBlock[]): Promise<void> {
-    const service = new SurveyBlockService(this.connection);
-    return service.upsertSurveyBlocks(surveyId, blocks);
   }
 
   /**
@@ -692,11 +665,6 @@ export class SurveyService extends DBService {
           putSurveyData.site_selection.stratums
         )
       );
-    }
-
-    // Handle blocks
-    if (putSurveyData?.blocks) {
-      promises.push(this.upsertBlocks(surveyId, putSurveyData.blocks));
     }
 
     await Promise.all(promises);

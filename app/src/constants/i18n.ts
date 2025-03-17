@@ -348,6 +348,55 @@ export const CreateSamplingSiteI18N = {
     'An error has occurred while attempting to create your sampling site(s). Please try again. If the error persists, please contact your system administrator.'
 };
 
+export const CreateBlockI18N = {
+  cancelTitle: 'Discard changes and exit?',
+  cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
+  createErrorTitle: 'Error Creating Block(s)',
+  createErrorText:
+    'An error has occurred while attempting to create your block(s). Please try again. If the error persists, please contact your system administrator.',
+
+  importErrorTitle: 'Error Importing Blocks',
+  importErrorText:
+    'An error has occurred while attempting to import your blocks. Please try again. If the error persists, please contact your system administrator.'
+};
+
+export const EditBlockI18N = {
+  cancelTitle: 'Discard changes and exit?',
+  cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
+  createErrorTitle: 'Error Editing Block',
+  createErrorText:
+    'An error has occurred while attempting to edit your block. Please try again. If the error persists, please contact your system administrator.',
+
+  importErrorTitle: 'Error Importing Block',
+  importErrorText:
+    'An error has occurred while attempting to import your block. Please try again. If the error persists, please contact your system administrator.'
+};
+
+
+export const CreateStratumI18N = {
+  cancelTitle: 'Discard changes and exit?',
+  cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
+  createErrorTitle: 'Error Creating Stratum(s)',
+  createErrorText:
+    'An error has occurred while attempting to create your stratum(s). Please try again. If the error persists, please contact your system administrator.',
+
+  importErrorTitle: 'Error Importing Stratums',
+  importErrorText:
+    'An error has occurred while attempting to import your stratums. Please try again. If the error persists, please contact your system administrator.'
+};
+
+export const EditStratumI18N = {
+  cancelTitle: 'Discard changes and exit?',
+  cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
+  createErrorTitle: 'Error Editing Stratum',
+  createErrorText:
+    'An error has occurred while attempting to edit your stratum. Please try again. If the error persists, please contact your system administrator.',
+
+  importErrorTitle: 'Error Importing Stratum',
+  importErrorText:
+    'An error has occurred while attempting to import your stratum. Please try again. If the error persists, please contact your system administrator.'
+};
+
 export const CreateTechniqueI18N = {
   cancelTitle: 'Discard changes and exit?',
   cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',

@@ -3,7 +3,7 @@ import blueGrey from '@mui/material/colors/blueGrey';
 import { GridColDef, GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
-import { ISamplingSiteRowData } from 'features/surveys/sampling-information/sites/table/SamplingSiteTable';
+import { ISamplingSiteRowData } from 'features/surveys/sampling-information/sites/table/tabs/sites/SamplingSiteTable';
 import { IFindSampleSiteRecord } from 'interfaces/useSamplingSiteApi.interface';
 import { getSamplingSiteSpatialType } from 'utils/spatial-utils';
 

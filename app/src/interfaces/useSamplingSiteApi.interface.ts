@@ -1,20 +1,17 @@
+import {
+  IPostSiteBlockAssignment,
+  IPostSiteStratumAssignment,
+  IPostSurveyBlock,
+  IPostSurveySampleSite
+} from 'features/surveys/sampling-information/sites/create/CreateSamplingSitePage.interface';
 import { Feature } from 'geojson';
 import { ApiPaginationResponseParams } from 'types/misc';
 
-export interface ISurveySampleSite {
-  name: string;
-  description: string;
-  geojson: Feature;
-}
-
 export interface ICreateSamplingSiteRequest {
-  survey_sample_sites: ISurveySampleSite[]; // extracted list from shape files
-  blocks: {
-    survey_block_id: number;
-  }[];
-  stratums: {
-    survey_stratum_id: number;
-  }[];
+  survey_sample_sites: IPostSurveySampleSite[];
+  blocks: IPostSurveyBlock[]
+  site_block_assignments: IPostSiteBlockAssignment[];
+  site_stratum_assignments: IPostSiteStratumAssignment[]
 }
 
 export interface IEditSampleSiteRequest {

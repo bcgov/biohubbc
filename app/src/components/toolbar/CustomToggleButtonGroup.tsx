@@ -27,7 +27,7 @@ export interface ToggleButtonView<ViewValueType> {
   icon?: string;
 }
 
-interface CustomToggleButtonGroupProps<ViewValueType extends string> {
+interface CustomToggleButtonGroupProps<ViewValueType extends string | number> {
   /**
    * An array of views to display in the toggle button group.
    *
@@ -41,7 +41,7 @@ interface CustomToggleButtonGroupProps<ViewValueType extends string> {
    * @type {ViewValueType}
    * @memberof CustomToggleButtonGroupProps
    */
-  activeView: ViewValueType;
+  activeView: ViewValueType | null;
   /**
    * Callback fired when a toggle button is clicked.
    *
@@ -55,6 +55,13 @@ interface CustomToggleButtonGroupProps<ViewValueType extends string> {
    * @memberof CustomToggleButtonGroupProps
    */
   orientation: 'horizontal' | 'vertical';
+  /**
+   * Whether no value can be selected
+   *
+   * @type {('horizontal' | 'vertical')}
+   * @memberof CustomToggleButtonGroupProps
+   */
+  nullable?: boolean
 }
 
 /**
@@ -64,15 +71,15 @@ interface CustomToggleButtonGroupProps<ViewValueType extends string> {
  * @param {CustomToggleButtonGroupProps<ViewValueType>} props
  * @return {*}
  */
-const CustomToggleButtonGroup = <ViewValueType extends string>(props: CustomToggleButtonGroupProps<ViewValueType>) => {
-  const { views, activeView, onViewChange, orientation } = props;
+const CustomToggleButtonGroup = <ViewValueType extends string | number>(props: CustomToggleButtonGroupProps<ViewValueType>) => {
+  const { views, activeView, onViewChange, orientation, nullable } = props;
 
   return (
     <ToggleButtonGroup
       orientation={orientation}
       value={activeView}
       onChange={(_, view) => {
-        if (view) {
+        if (view || nullable) {
           onViewChange(view);
         }
       }}

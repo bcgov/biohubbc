@@ -14,7 +14,7 @@ interface IAlertBarProps extends AlertProps {
  * Returns an alert banner
  *
  * @param props {IAlertBarProps}
- * @returns
+ * @returns {*}
  */
 const AlertBar = (props: IAlertBarProps) => {
   const { severity, variant, title, text, ornament, ...alertProps } = props;

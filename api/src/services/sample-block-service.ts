@@ -58,12 +58,13 @@ export class SampleBlockService extends DBService {
   /**
    * Deletes all associations between a given Survey Block and any sampling site
    *
+   * @param {number} surveyId
    * @param {number} surveyBlockIds
    * @return {*}  {Promise<SampleBlockRecord>}
    * @memberof SampleBlockService
    */
-  async deleteSampleBlockRecordsByBlockIds(surveyBlockIds: number[]): Promise<SampleBlockRecord[]> {
-    return this.sampleBlockRepository.deleteSampleBlockRecordsByBlockIds(surveyBlockIds);
+  async deleteSampleBlockRecordsByBlockIds(surveyId: number, surveyBlockIds: number[]): Promise<SampleBlockRecord[]> {
+    return this.sampleBlockRepository.deleteSampleBlockRecordsByBlockIds(surveyId, surveyBlockIds);
   }
 
   /**

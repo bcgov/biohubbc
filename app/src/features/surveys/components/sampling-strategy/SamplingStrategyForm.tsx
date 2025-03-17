@@ -3,7 +3,6 @@ import Collapse from '@mui/material/Collapse';
 import Typography from '@mui/material/Typography';
 import HelpButtonStack from 'components/buttons/HelpButtonStack';
 import { useState } from 'react';
-import SurveyBlockSection from './blocks/SurveyBlockForm';
 import SurveyStratumForm from './stratums/SurveyStratumForm';
 import SurveySiteSelectionForm from './SurveySiteSelectionForm';
 
@@ -29,18 +28,6 @@ const SamplingStrategyForm = () => {
           <SurveyStratumForm />
         </Box>
       </Collapse>
-      <Box component="fieldset" mt={5}>
-        <Typography fontWeight={700}>Add Blocks (optional)</Typography>
-        <Typography
-          sx={{
-            mb: 2
-          }}
-          variant="body1"
-          color="textSecondary">
-          If required, specify each block included in this survey.
-        </Typography>
-        <SurveyBlockSection />
-      </Box>
     </>
   );
 };

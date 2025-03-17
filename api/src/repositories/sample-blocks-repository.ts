@@ -128,28 +128,37 @@ export class SampleBlockRepository extends BaseRepository {
   }
 
   /**
-   * Deletes all Sample Blocks referencing a given Survey Block
+   * Deletes all sample blocks referencing a given survey block, joining on survey to ensure
+   * the user is allowed to delete each block
    *
+   * @param {number} surveyId
    * @param {number} surveyBlockIds
-   * @return {*}  {Promise<SampleBlockRecord>}
+   * @return {*}  {Promise<SampleBlockRecord[]>}
    * @memberof sampleBlockRepository
    */
-  async deleteSampleBlockRecordsByBlockIds(surveyBlockIds: number[]): Promise<SampleBlockRecord[]> {
-    const queryBuilder = getKnex()
+  async deleteSampleBlockRecordsByBlockIds(surveyId: number, surveyBlockIds: number[]): Promise<SampleBlockRecord[]> {
+    const knex = getKnex();
+
+    const queryBuilder = knex('survey_sample_block')
       .delete()
-      .from('survey_sample_block')
-      .whereIn('survey_block_id', surveyBlockIds)
+      .using(['survey_block'])
+      .whereRaw('survey_sample_block.survey_block_id = survey_block.survey_block_id')
+      .whereIn(
+        ['survey_block.survey_block_id', 'survey_block.survey_id'],
+        surveyBlockIds.map((surveyBlockId) => [surveyBlockId, surveyId])
+      )
       .returning('*');
 
     const response = await this.connection.knex(queryBuilder, SampleBlockRecord);
 
     return response.rows;
   }
+
   /**
    * Deletes all Sample Block records in the array
    *
    * @param {number} surveySampleBlockIds
-   * @return {*}  {Promise<SampleBlockRecord>}
+   * @return {*}  {Promise<SampleBlockRecord[]>}
    * @memberof sampleBlockRepository
    */
   async deleteSampleBlockRecords(surveySampleBlockIds: number[]): Promise<SampleBlockRecord[]> {

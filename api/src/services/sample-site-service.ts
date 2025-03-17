@@ -2,7 +2,7 @@ import { Feature } from 'geojson';
 import { SurveySampleSiteModel } from '../database-models/survey_sample_site';
 import { IDBConnection } from '../database/db';
 import { ISiteAdvancedFilters } from '../models/site-view';
-import { InsertSampleBlockRecord, UpdateSampleBlockRecord } from '../repositories/sample-blocks-repository';
+import { UpdateSampleBlockRecord } from '../repositories/sample-blocks-repository';
 import {
   FindSampleSiteRecord,
   InsertSampleSiteRecord,
@@ -11,19 +11,32 @@ import {
   SampleSiteRecordExtendedNonSpatial,
   SampleSiteRepository
 } from '../repositories/sample-site-repository/sample-site-repository';
-import { InsertSampleStratumRecord, UpdateSampleStratumRecord } from '../repositories/sample-stratums-repository';
+import { UpdateSampleStratumRecord } from '../repositories/sample-stratums-repository';
 import { getLogger } from '../utils/logger';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { DBService } from './db-service';
 import { SampleBlockService } from './sample-block-service';
 import { SampleStratumService } from './sample-stratum-service';
+import { SurveyBlockService } from './survey-block-service';
+import { SurveyBlockRecord } from '../database-models/survey_block';
+import { PostSurveyBlock } from '../repositories/survey-block-repository';
+
+interface InsertSiteBlockAssignment {
+  site_assignment_id: string;
+  block_assignment_id: string;
+}
+
+interface InsertSiteStratumAssignment {
+  site_assignment_id: string;
+  stratum_assignment_id: string;
+}
 
 export interface CreateSampleSiteObject {
-  survey_sample_site_id: number | null;
   survey_id: number;
   survey_sample_sites: InsertSampleSiteRecord[];
-  blocks: InsertSampleBlockRecord[];
-  stratums: InsertSampleStratumRecord[];
+  blocks: PostSurveyBlock[];
+  site_block_assignments: InsertSiteBlockAssignment[];
+  site_stratum_assignments: InsertSiteStratumAssignment[];
 }
 
 /**
@@ -49,10 +62,14 @@ const defaultLog = getLogger('services/sample-site-service');
  */
 export class SampleSiteService extends DBService {
   sampleSiteRepository: SampleSiteRepository;
+  sampleBlockService: SampleBlockService;
+  surveyBlockService: SurveyBlockService;
 
   constructor(connection: IDBConnection) {
     super(connection);
     this.sampleSiteRepository = new SampleSiteRepository(connection);
+    this.sampleBlockService = new SampleBlockService(connection);
+    this.surveyBlockService = new SurveyBlockService(connection);
   }
 
   /**
@@ -205,12 +222,16 @@ export class SampleSiteService extends DBService {
     const sampleSiteRecords = await Promise.all(promises);
 
     const blockService = new SampleBlockService(this.connection);
-    const stratumService = new SampleStratumService(this.connection);
+    // const stratumService = new SampleStratumService(this.connection);
 
     // Loop through all newly created sample sites
     // For reach sample site, create associated sample blocks
     const blockPromises = sampleSiteRecords.map((sampleSiteRecord) =>
       sampleSites.blocks.map((item) => {
+        if (!item.survey_block_id) {
+          return;
+        }
+
         const sampleBlock = {
           survey_sample_site_id: sampleSiteRecord.survey_sample_site_id,
           survey_block_id: item.survey_block_id
@@ -219,21 +240,70 @@ export class SampleSiteService extends DBService {
       })
     );
 
-    // Loop through all newly created sample sites
-    // For reach sample site, create associated sample stratums
-    const stratumPromises = sampleSiteRecords.map((sampleSiteRecord) =>
-      sampleSites.stratums.map((item) => {
-        const sampleStratum = {
-          survey_sample_site_id: sampleSiteRecord.survey_sample_site_id,
-          survey_stratum_id: item.survey_stratum_id
-        };
-        return stratumService.insertSampleStratum(sampleStratum);
-      })
-    );
+    // // Loop through all newly created sample sites
+    // // For reach sample site, create associated sample stratums
+    // const stratumPromises = sampleSiteRecords.map((sampleSiteRecord) =>
+    //   sampleSites.stratums.map((item) => {
+    //     const sampleStratum = {
+    //       survey_sample_site_id: sampleSiteRecord.survey_sample_site_id,
+    //       survey_stratum_id: item.survey_stratum_id
+    //     };
+    //     return stratumService.insertSampleStratum(sampleStratum);
+    //   })
+    // );
+    const stratumPromises: any[] = [];
 
     await Promise.all([...blockPromises, ...stratumPromises]);
 
     return sampleSiteRecords;
+  }
+  /**
+   * Creates survey sample sites and associated blocks and stratums.
+   *
+   * @param {CreateSampleSiteObject} data - The data for sample sites, blocks, and assignments.
+   * @return {Promise<SurveySampleSiteModel[]>} - A promise that resolves to an array of created survey sample sites.
+   * @memberof SampleSiteService
+   */
+  async createSampleSitesAndBlocks(data: CreateSampleSiteObject): Promise<SurveySampleSiteModel[]> {
+    defaultLog.debug({ label: 'createSampleSite' });
+
+    // Step 1: Insert the sampling sites and store the mapping between site_assignment_id and inserted site.
+    const siteAssignmentsMap = new Map<string, SurveySampleSiteModel>();
+    const sitePromises = data.survey_sample_sites.map(async (site) => {
+      const insertedSite = await this.sampleSiteRepository.insertSampleSite(data.survey_id, site);
+      siteAssignmentsMap.set(site.site_assignment_id, insertedSite);
+    });
+
+    // Step 2: Insert each survey block and store the mapping between block_assignment_id and survey_block_id.
+    const blockAssignmentsMap = new Map<string, SurveyBlockRecord>();
+    const blockPromises = data.blocks.map(async (block) => {
+      const insertedBlock = await this.surveyBlockService.insertSurveyBlocks(data.survey_id, [block]);
+      if (block.assignment_id) {
+        blockAssignmentsMap.set(block.assignment_id, insertedBlock[0]);
+      }
+    });
+
+    // Step 3: Wait for both site and block insertions to complete in parallel.
+    await Promise.all([sitePromises, blockPromises]);
+
+    // Step 4: Join sampling sites to survey blocks by inserting site-block assignments.
+    const assignmentPromises = data.site_block_assignments.map(async (assignment) => {
+      const site = siteAssignmentsMap.get(assignment.site_assignment_id);
+      const block = blockAssignmentsMap.get(assignment.block_assignment_id);
+
+      if (site && block) {
+        await this.sampleBlockService.insertSampleBlock({
+          survey_block_id: block.survey_block_id,
+          survey_sample_site_id: site.survey_sample_site_id
+        });
+      }
+    });
+
+    // Step 5: Wait for all site-block assignments to be inserted
+    await Promise.all(assignmentPromises);
+
+    // Optionally, return the created sites if needed
+    return [...siteAssignmentsMap.values()];
   }
 
   /**

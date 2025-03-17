@@ -8,6 +8,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { Breakpoint } from '@mui/material/styles';
 import useTheme from '@mui/material/styles/useTheme';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import FormikErrorSnackbar from 'components/alert/FormikErrorSnackbar';
 import FormikDevDebugger from 'components/formik/FormikDevDebugger';
 import { Formik, FormikValues } from 'formik';
 import { PropsWithChildren } from 'react';
@@ -130,7 +131,10 @@ export const EditDialog = <T extends FormikValues>(props: PropsWithChildren<IEdi
         props.onSave(values);
       }}>
       {(formikProps) => {
+        // console.log(formikProps.errors)
         return (
+          <>
+        <FormikErrorSnackbar/>
           <Dialog
             data-testid="edit-dialog"
             fullScreen={fullScreen}
@@ -162,6 +166,7 @@ export const EditDialog = <T extends FormikValues>(props: PropsWithChildren<IEdi
             {props.dialogError && <DialogContent>{props.dialogError}</DialogContent>}
             {props.debug ? <FormikDevDebugger /> : null}
           </Dialog>
+          </>
         );
       }}
     </Formik>

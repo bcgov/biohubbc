@@ -77,7 +77,6 @@ describe('SurveyService', () => {
       const getSurveyParticipantsStub = sinon
         .stub(SurveyParticipationService.prototype, 'getSurveyParticipants')
         .resolves([{ data: 'participantData' } as any]);
-      const getSurveyBlockStub = sinon.stub(SurveyBlockService.prototype, 'getSurveyBlocksForSurveyId').resolves([]);
       const getSiteSelectionDataStub = sinon
         .stub(SiteSelectionStrategyService.prototype, 'getSiteSelectionDataBySurveyId')
         .resolves({ strategies: [], stratums: [] });
@@ -98,7 +97,6 @@ describe('SurveyService', () => {
       expect(getSurveyLocationsDataStub).to.be.calledOnce;
       expect(getSurveyParticipantsStub).to.be.calledOnce;
       expect(getSurveyPartnershipsDataStub).to.be.calledOnce;
-      expect(getSurveyBlockStub).to.be.calledOnce;
       expect(getSiteSelectionDataStub).to.be.calledOnce;
 
       expect(response).to.eql({
@@ -114,8 +112,7 @@ describe('SurveyService', () => {
         },
         participants: [{ data: 'participantData' } as any],
         locations: [],
-        site_selection: { stratums: [], strategies: [] },
-        blocks: []
+        site_selection: { stratums: [], strategies: [] }
       });
     });
   });
@@ -197,7 +194,6 @@ describe('SurveyService', () => {
       const upsertSurveyParticipantDataStub = sinon
         .stub(SurveyService.prototype, 'upsertSurveyParticipantData')
         .resolves();
-      const upsertBlocks = sinon.stub(SurveyBlockService.prototype, 'upsertSurveyBlocks').resolves();
       const replaceSurveyStratumsStub = sinon
         .stub(SiteSelectionStrategyService.prototype, 'replaceSurveySiteSelectionStratums')
         .resolves();
@@ -233,7 +229,6 @@ describe('SurveyService', () => {
       expect(upsertSurveyFundingSourceDataStub).to.have.been.calledOnce;
       expect(updateSurveyProprietorDataStub).to.have.been.calledOnce;
       expect(upsertSurveyParticipantDataStub).to.have.been.calledOnce;
-      expect(upsertBlocks).to.have.been.calledOnce;
       expect(replaceSurveyStratumsStub).to.have.been.calledOnce;
       expect(replaceSiteStrategiesStub).to.have.been.calledOnce;
       expect(insertUpdateDeleteSurveyLocationStub).to.have.been.calledOnce;

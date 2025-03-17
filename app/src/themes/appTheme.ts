@@ -173,6 +173,9 @@ const appTheme = createTheme({
         outlinedPrimary: {
           fontWeight: 700,
           letterSpacing: '0.02rem'
+        },
+        text: {
+          fontWeight: 700
         }
       }
     },

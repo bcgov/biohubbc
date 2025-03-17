@@ -26,7 +26,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
-import { SamplingSiteTable } from './table/SamplingSiteTable';
+import { SamplingSiteTable } from './table/tabs/sites/SamplingSiteTable';
 
 const pageSizeOptions = [10, 25, 50];
 
@@ -184,7 +184,6 @@ export const SamplingSiteContainer = () => {
           <Button
             variant="contained"
             color="primary"
-            disabled={Boolean(!techniquesDataLoader.data?.pagination.total)}
             component={RouterLink}
             to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling/create`}
             startIcon={<Icon path={mdiPlus} size={0.8} />}>

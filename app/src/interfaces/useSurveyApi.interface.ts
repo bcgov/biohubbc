@@ -30,7 +30,6 @@ export interface ICreateSurveyRequest
     IAgreementsForm,
     IParticipantsJobForm,
     ISurveyLocationForm,
-    ISurveyBlockForm,
     ISurveyPartnershipsForm,
     ISurveySiteSelectionForm,
     ISpeciesForm,
@@ -63,16 +62,6 @@ export interface ISurveySiteSelectionForm {
     strategies: string[];
     stratums: IPostSurveyStratum[];
   };
-}
-
-export interface ISurveyBlockForm {
-  blocks: {
-    survey_block_id: number | null;
-    name: string;
-    description: string;
-    geojson: Feature;
-    sample_block_count: number;
-  }[];
 }
 
 export interface IParticipantsJobForm {
@@ -134,16 +123,6 @@ export interface IGetSurveyLocation {
   revision_count: number;
 }
 
-export interface IGetSurveyBlock {
-  survey_block_id: number;
-  survey_id?: number;
-  name: string;
-  description: string;
-  revision_count: number;
-  geojson: Feature | null;
-  sample_block_count: number;
-}
-
 export interface IGetSurveyStratum {
   survey_stratum_id: number;
   name: string;
@@ -163,7 +142,6 @@ export interface SurveyViewObject {
   participants: IGetSurveyParticipant[];
   partnerships: IGetSurveyForViewResponsePartnerships;
   locations: IGetSurveyLocation[];
-  blocks: IGetSurveyBlock[];
 }
 
 export interface SurveyBasicFieldsObject {
@@ -216,12 +194,6 @@ export type IUpdateSurveyRequest = ISurveyLocationForm & {
     disa_required: StringBoolean;
   };
   participants: IGetSurveyParticipant[];
-  blocks: {
-    survey_block_id?: number | null;
-    name: string;
-    description: string;
-    geojson: Feature | null;
-  }[];
   site_selection: {
     strategies: string[];
     stratums: {
@@ -469,6 +441,5 @@ export type IEditSurveyRequest = IGeneralInformationForm &
   IProprietaryDataForm &
   IUpdateAgreementsForm & { partnerships: IGetSurveyForViewResponsePartnerships } & ISurveySiteSelectionForm &
   IParticipantsJobForm &
-  ISurveyBlockForm &
   ISurveyPermitForm &
   ISurveyFundingSourceForm;
