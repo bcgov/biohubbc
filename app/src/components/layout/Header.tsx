@@ -239,7 +239,12 @@ const Header: React.FC = () => {
               <MenuItem tabIndex={1} component={RouterLink} to="/" id="menu_home_sm">
                 Home
               </MenuItem>
-              <AuthGuard>
+              <SystemRoleGuard
+                validSystemRoles={[
+                  SYSTEM_ROLE.PROJECT_CREATOR,
+                  SYSTEM_ROLE.SYSTEM_ADMIN,
+                  SYSTEM_ROLE.DATA_ADMINISTRATOR
+                ]}>
                 <MenuItem
                   tabIndex={1}
                   component={RouterLink}
@@ -248,8 +253,8 @@ const Header: React.FC = () => {
                   onClick={hideMobileMenu}>
                   Projects
                 </MenuItem>
-              </AuthGuard>
-              <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+              </SystemRoleGuard>
+              <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN]}>
                 <MenuItem id="menu_admin_manage" component={RouterLink} to="/admin/manage" onClick={hideMobileMenu}>
                   Admin
                 </MenuItem>
@@ -321,17 +326,20 @@ const Header: React.FC = () => {
                   Home
                 </RouterLink>
               </UnAuthGuard>
-              <AuthGuard>
+              <SystemRoleGuard
+                validSystemRoles={[
+                  SYSTEM_ROLE.PROJECT_CREATOR,
+                  SYSTEM_ROLE.SYSTEM_ADMIN,
+                  SYSTEM_ROLE.DATA_ADMINISTRATOR
+                ]}>
                 <RouterLink to="/admin/summary" id="menu_projects">
                   Projects
                 </RouterLink>
-              </AuthGuard>
-              <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+              </SystemRoleGuard>
+              <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN]}>
                 <RouterLink to="/admin/manage" id="menu_admin_users">
                   Admin
                 </RouterLink>
-              </SystemRoleGuard>
-              <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                 <RouterLink to="/admin/funding-sources" id="menu_admin_funding_sources">
                   Funding Sources
                 </RouterLink>
