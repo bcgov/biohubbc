@@ -13,6 +13,9 @@ import { EditObservationI18N } from 'constants/i18n';
 import { CodesContext } from 'contexts/codesContext';
 import { DialogContext } from 'contexts/dialogContext';
 import { TaxonomyContextProvider } from 'contexts/taxonomyContext';
+import { EnvironmentFormData } from 'features/surveys/observations/form/components/environments/environment/EnvironmentField';
+import { getEnvironmentFormData } from 'features/surveys/observations/form/components/environments/environment/utils';
+import { getSubcountsFormData } from 'features/surveys/observations/form/components/subcounts/utils';
 import ObservationForm from 'features/surveys/observations/form/ObservationForm';
 import { UpdateObservationFormData } from 'features/surveys/observations/form/ObservationForm.interface';
 import {
@@ -23,8 +26,10 @@ import { FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useProjectContext, useSurveyContext } from 'hooks/useContext';
+import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
+import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
 import {
   IEditObservation,
   ObservationEnvironmentQualitativeObject,
@@ -35,7 +40,6 @@ import {
 import { useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
-import { v4 } from 'uuid';
 
 /**
  * Page for creating an observation
@@ -56,15 +60,18 @@ const EditObservationPage = () => {
 
   const { locationChangeInterceptor } = useUnsavedChangesDialog();
 
+  const critterbaseApi = useCritterbaseApi();
+
   const dialogContext = useContext(DialogContext);
   const codesContext = useContext(CodesContext);
 
-  // Project and survey details for breadcrumbs
   const projectContext = useProjectContext();
   const surveyContext = useSurveyContext();
 
+  // Project and survey details for breadcrumbs
   const projectName = projectContext.projectDataLoader.data?.projectData.project.project_name;
   const surveyName = surveyContext.surveyDataLoader.data?.surveyData.survey_details.survey_name;
+
   const { projectId, surveyId } = surveyContext;
 
   const observationDataLoader = useDataLoader(() =>
@@ -79,20 +86,51 @@ const EditObservationPage = () => {
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
 
-  const defaultErrorDialogProps = {
-    onClose: () => {
-      dialogContext.setErrorDialog({ open: false });
-    },
-    onOk: () => {
-      dialogContext.setErrorDialog({ open: false });
+  const measurementTypeDefinitionsDataLoader = useDataLoader(
+    async (data: { quantitativeTaxonMeasurementIds: string[]; qualitativeTaxonMeasurementIds: string[] }) => {
+      const [quantitativeMeasurementTypeDefinitions, qualitativeMeasurementTypeDefinitions] = await Promise.all([
+        critterbaseApi.xref.getQuantitativeMeasurementTypeDefinition(data.quantitativeTaxonMeasurementIds),
+        critterbaseApi.xref.getQualitativeMeasurementTypeDefinitions(data.qualitativeTaxonMeasurementIds)
+      ]);
+
+      const initialMeasurementTypeDefinitions: CBMeasurementType[] = [
+        ...quantitativeMeasurementTypeDefinitions,
+        ...qualitativeMeasurementTypeDefinitions
+      ];
+
+      console.log('2', initialMeasurementTypeDefinitions);
+
+      return initialMeasurementTypeDefinitions;
     }
-  };
+  );
+
+  useEffect(() => {
+    if (!observationDataLoader.data?.surveyObservation.subcounts) {
+      return;
+    }
+
+    measurementTypeDefinitionsDataLoader.load({
+      quantitativeTaxonMeasurementIds:
+        observationDataLoader.data?.surveyObservation.subcounts.flatMap((item) => {
+          return item.quantitative_measurements.map((measurement) => measurement.critterbase_taxon_measurement_id);
+        }) ?? [],
+      qualitativeTaxonMeasurementIds:
+        observationDataLoader.data?.surveyObservation.subcounts.flatMap((item) => {
+          return item.qualitative_measurements.map((measurement) => measurement.critterbase_taxon_measurement_id);
+        }) ?? []
+    });
+  }, [measurementTypeDefinitionsDataLoader, observationDataLoader.data?.surveyObservation.subcounts]);
 
   const showEditErrorDialog = (textDialogProps: Partial<IErrorDialogProps>) => {
     dialogContext.setErrorDialog({
       dialogTitle: EditObservationI18N.editErrorTitle,
       dialogText: EditObservationI18N.editErrorText,
-      ...defaultErrorDialogProps,
+      onClose: () => {
+        dialogContext.setErrorDialog({ open: false });
+      },
+      onOk: () => {
+        dialogContext.setErrorDialog({ open: false });
+      },
       ...textDialogProps,
       open: true
     });
@@ -233,7 +271,14 @@ const EditObservationPage = () => {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
-  const initialObservationFormValues: UpdateObservationFormData = {
+  const initialEnvironments: EnvironmentFormData[] = getEnvironmentFormData({
+    qualitative_environments: observationDataLoader.data.surveyObservation.qualitative_environments,
+    quantitative_environments: observationDataLoader.data.surveyObservation.quantitative_environments
+  });
+
+  const initialSubcounts = getSubcountsFormData(observationDataLoader.data.surveyObservation.subcounts);
+
+  const initialObservationFormData: UpdateObservationFormData = {
     standardColumns: {
       survey_observation_id: observationDataLoader.data.surveyObservation.survey_observation_id,
       count: observationDataLoader.data.surveyObservation.count,
@@ -247,34 +292,9 @@ const EditObservationPage = () => {
       survey_sample_site_id: observationDataLoader.data.surveyObservation.survey_sample_site_id,
       method_technique_id: observationDataLoader.data.surveyObservation.method_technique_id,
       survey_sample_period_id: observationDataLoader.data.surveyObservation.survey_sample_period_id,
-      environments: []
+      environments: initialEnvironments
     },
-    subcounts:
-      observationDataLoader.data.surveyObservation.subcounts.map((subcount) => {
-        return {
-          _id: v4(),
-          observation_subcount_id: subcount.observation_subcount_id,
-          subcount: subcount.subcount,
-          comment: subcount.comment,
-          measurements: [
-            ...subcount.quantitative_measurements.map((measurement) => {
-              return {
-                _id: v4(),
-                measurement_id: measurement.critterbase_taxon_measurement_id,
-                measurement_value: measurement.value
-              };
-            }),
-            ...subcount.qualitative_measurements.map((measurement) => {
-              return {
-                _id: v4(),
-                measurement_id: measurement.critterbase_measurement_qualitative_option_id,
-                measurement_option_id: measurement.critterbase_measurement_qualitative_option_id
-              };
-            })
-          ],
-          markings: []
-        };
-      }) ?? []
+    subcounts: initialSubcounts
   };
 
   return (
@@ -323,11 +343,13 @@ const EditObservationPage = () => {
         <Paper sx={{ p: 5 }}>
           <TaxonomyContextProvider>
             <ObservationForm
-              initialFormData={initialObservationFormValues}
+              initialFormData={initialObservationFormData}
               onSubmit={(formData) => {
                 editObservation(formData);
               }}
               formikRef={formikRef}
+              initialSupplementarySamplingData={observationDataLoader.data.supplementaryObservationData.sampling_data}
+              initialMeasurementTypeDefinitions={measurementTypeDefinitionsDataLoader.data}
             />
           </TaxonomyContextProvider>
           <Stack mt={4} flexDirection="row" justifyContent="flex-end" gap={1}>

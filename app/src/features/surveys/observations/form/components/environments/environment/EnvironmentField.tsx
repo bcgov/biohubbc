@@ -6,6 +6,7 @@ import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import AutocompleteField, { IAutocompleteFieldOption } from 'components/fields/AutocompleteField';
 import CustomTextField from 'components/fields/CustomTextField';
+import { getEnvironmentCategoryOptions } from 'features/surveys/observations/form/components/environments/environment/utils';
 import {
   CreateObservationFormData,
   UpdateObservationFormData
@@ -62,7 +63,7 @@ type EnvironmentQualitativeCategoryOption = EnvironmentQualitativeTypeDefinition
   _type: 'qualitative';
 } & IAutocompleteFieldOption<string>;
 
-type EnvironmentCategoryOption = EnvironmentQuantitativeCategoryOption | EnvironmentQualitativeCategoryOption;
+export type EnvironmentCategoryOption = EnvironmentQuantitativeCategoryOption | EnvironmentQualitativeCategoryOption;
 
 /**
  * Subcount Measurement Field component.
@@ -104,24 +105,7 @@ export const EnvironmentField = (props: IEnvironmentFormProps) => {
   }, [environmentCategoryValue, environmentQualitativeCategoryFieldName, environmentQuantitativeCategoryFieldName]);
 
   const environmentCategoryOptions = useMemo(
-    (): EnvironmentCategoryOption[] => [
-      ...(environmentTypeDefinitions.qualitative_environments.map((item) => {
-        return {
-          ...item,
-          label: item.name,
-          value: item.environment_qualitative_id,
-          _type: 'qualitative' as const
-        };
-      }) ?? []),
-      ...(environmentTypeDefinitions.quantitative_environments.map((item) => {
-        return {
-          ...item,
-          label: item.unit ? `${item.name} (${item.unit})` : item.name,
-          value: item.environment_quantitative_id,
-          _type: 'quantitative' as const
-        };
-      }) ?? [])
-    ],
+    (): EnvironmentCategoryOption[] => getEnvironmentCategoryOptions(environmentTypeDefinitions),
     [environmentTypeDefinitions]
   );
 

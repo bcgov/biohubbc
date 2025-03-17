@@ -4,7 +4,6 @@ import {
   GridPaginationModel,
   GridRenderEditCellParams,
   GridRowId,
-  GridRowModesModel,
   GridRowSelectionModel,
   GridSortModel,
   useGridApiRef
@@ -52,21 +51,13 @@ export type IObservationsTableContext = {
    */
   _muiDataGridApiRef: React.MutableRefObject<GridApiCommunity>;
   /**
-   * The perviously saved rows the data grid should render.
+   * The rows the data grid should render.
    */
-  savedRows: IObservationTableRow[];
+  rows: IObservationTableRow[];
   /**
    * Sets the previously saved rows.
    */
-  setSavedRows: React.Dispatch<React.SetStateAction<IObservationTableRow[]>>;
-  /**
-   * The row modes model, which defines which rows are in edit mode.
-   */
-  rowModesModel: GridRowModesModel;
-  /**
-   * Callback that must be provided to the MUI DataGrid component to handle row modes changes.
-   */
-  onRowModesModelChange: (model: GridRowModesModel) => void;
+  setRows: React.Dispatch<React.SetStateAction<IObservationTableRow[]>>;
   /**
    * The column visibility model, which defines which columns are visible or hidden.
    */
@@ -78,15 +69,15 @@ export type IObservationsTableContext = {
   /**
    * Deletes all of the given records and removes them from the Observation table.
    */
-  deleteObservationSubcountRecords: (observationRecords: IObservationTableRow[]) => void;
+  deleteRows: (observationRecords: IObservationTableRow[]) => void;
   /**
    * Refreshes the Observation Table with already existing records
    */
-  refreshObservationRecords: () => Promise<IGetSurveyFlattenedObservationsResponse | undefined>;
+  refreshRows: () => Promise<IGetSurveyFlattenedObservationsResponse | undefined>;
   /**
    * Returns all of the observation table records that have been selected
    */
-  getSelectedObservationSubcountRecords: () => IObservationTableRow[];
+  getSelectedRows: () => IObservationTableRow[];
   /**
    * The IDs of the selected observation table rows
    */
@@ -128,7 +119,7 @@ export type IObservationsTableContext = {
    */
   setMeasurementColumns: React.Dispatch<React.SetStateAction<CBMeasurementType[]>>;
   /**
-   * User-added measurement columns that are not part of the default observation table columns.
+   * User-added environment columns that are not part of the default observation table columns.
    */
   environmentColumns: EnvironmentType;
   /**
@@ -180,10 +171,7 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
   const biohubApi = useBiohubApi();
 
   // Existing rows
-  const [savedRows, setSavedRows] = useState<IObservationTableRow[]>([]);
-
-  // The row modes model, which defines which rows are in edit mode
-  const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
+  const [rows, setRows] = useState<IObservationTableRow[]>([]);
 
   // Stores the currently selected row ids
   const [rowSelectionModel, setRowSelectionModel] = useState<GridRowSelectionModel>([]);
@@ -247,7 +235,7 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
    *
    * @return {*}
    */
-  const refreshObservationRecords = useCallback(async () => {
+  const refreshRows = useCallback(async () => {
     const sort = firstOrNull(sortModel);
 
     return refreshObservationsData({
@@ -282,23 +270,11 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
   );
 
   /**
-   * Callback fired when the row modes model changes.
-   * The row modes model stores the `view` vs `edit` state of the rows.
-   *
-   * Note: Any row not included in the model will default to `view` mode.
-   *
-   * @param {GridRowModesModel} model
-   */
-  const onRowModesModelChange = useCallback((model: GridRowModesModel) => {
-    setRowModesModel(() => model);
-  }, []);
-
-  /**
    * Returns all of the rows that have been selected.
    *
    * @return {*}
    */
-  const getSelectedObservationSubcountRecords: () => IObservationTableRow[] = useCallback(() => {
+  const getSelectedRows: () => IObservationTableRow[] = useCallback(() => {
     if (!_muiDataGridApiRef?.current?.getRowModels) {
       // Data grid is not fully initialized
       return [];
@@ -326,29 +302,20 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
       const allRowIdsToDelete = observationRecords.map((item) => String(item.id));
 
       // Get all row ids that are new, which only need to be removed from local state
-      const savedRowIdsToDelete = allRowIdsToDelete.filter((id) => savedRows.map((item) => item.id).includes(id));
+      const savedRowIdsToDelete = allRowIdsToDelete.filter((id) => rows.map((item) => item.id).includes(id));
 
       try {
         if (savedRowIdsToDelete.length) {
           // Delete previously saved records from the server, if any
-          await biohubApi.observation.deleteObservationSubcountRecords(projectId, surveyId, savedRowIdsToDelete);
+          await biohubApi.observation.deleteRows(projectId, surveyId, savedRowIdsToDelete);
           // Refresh the table after deleting one or more records
-          refreshObservationRecords();
+          refreshRows();
         }
 
         // Update saved rows, removing any deleted rows
-        setSavedRows((currentSavedRows) =>
+        setRows((currentSavedRows) =>
           currentSavedRows.filter((savedRow) => !savedRowIdsToDelete.includes(String(savedRow.id)))
         );
-
-        // Updated row modes model, removing deleted rows
-        setRowModesModel((currentRowModesModel) => {
-          const newRowModesModel = { ...currentRowModesModel };
-          for (const rowIdToDelete of allRowIdsToDelete) {
-            delete newRowModesModel[rowIdToDelete];
-          }
-          return newRowModesModel;
-        });
 
         // Close yes-no dialog
         setYesNoDialog({ open: false });
@@ -378,16 +345,7 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
         });
       }
     },
-    [
-      savedRows,
-      setYesNoDialog,
-      setSnackbar,
-      biohubApi.observation,
-      projectId,
-      surveyId,
-      refreshObservationRecords,
-      setErrorDialog
-    ]
+    [rows, setYesNoDialog, setSnackbar, biohubApi.observation, projectId, surveyId, refreshRows, setErrorDialog]
   );
 
   /**
@@ -396,7 +354,7 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
    * @param {IObservationTableRow[]} observationRecords
    * @return {*}
    */
-  const deleteObservationSubcountRecords = useCallback(
+  const deleteRows = useCallback(
     (observationRecords: IObservationTableRow[]) => {
       if (!observationRecords.length) {
         return;
@@ -494,8 +452,8 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
    * Fetch new rows based on sort/ pagination model changes
    */
   useEffect(() => {
-    refreshObservationRecords();
-    // Should not re-run this effect on `refreshObservationRecords` changes
+    refreshRows();
+    // Should not re-run this effect on `refreshRows` changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paginationModel, sortModel]);
 
@@ -604,7 +562,7 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
     const rowsToDisplay = _getRowsToDisplay(observationsData);
 
     // Set initial rows for the table context
-    setSavedRows(rowsToDisplay);
+    setRows(rowsToDisplay);
 
     // Set initial observations count
     setObservationCount(observationsData.supplementaryObservationData.observationCount);
@@ -658,15 +616,13 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
   const observationsTableContext: IObservationsTableContext = useMemo(
     () => ({
       _muiDataGridApiRef,
-      savedRows,
-      setSavedRows,
-      rowModesModel,
-      onRowModesModelChange,
+      rows,
+      setRows,
       columnVisibilityModel,
       onColumnVisibilityModelChange,
-      deleteObservationSubcountRecords,
-      refreshObservationRecords,
-      getSelectedObservationSubcountRecords,
+      deleteRows,
+      refreshRows,
+      getSelectedRows,
       rowSelectionModel,
       onRowSelectionModelChange: setRowSelectionModel,
       isLoading,
@@ -686,14 +642,12 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
     }),
     [
       _muiDataGridApiRef,
-      savedRows,
-      rowModesModel,
-      onRowModesModelChange,
+      rows,
       columnVisibilityModel,
       onColumnVisibilityModelChange,
-      deleteObservationSubcountRecords,
-      refreshObservationRecords,
-      getSelectedObservationSubcountRecords,
+      deleteRows,
+      refreshRows,
+      getSelectedRows,
       rowSelectionModel,
       isLoading,
       observationCount,

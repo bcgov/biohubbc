@@ -1,5 +1,5 @@
 import { EnvironmentsFormData } from 'features/surveys/observations/form/components/environments/ObservationEnvironmentsForm';
-import { SubcountsFormData } from 'features/surveys/observations/form/components/subcounts/SubcountsForm';
+import { SubcountsFormData } from 'features/surveys/observations/form/components/subcounts/SubcountsForm.interface';
 import { StandardObservationColumns } from 'interfaces/useObservationApi.interface';
 
 /**

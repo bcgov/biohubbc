@@ -1,7 +1,7 @@
 import { mdiTableEdit } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Button } from '@mui/material';
-import { GridColDef, GridRowModes } from '@mui/x-data-grid';
+import { GridColDef } from '@mui/x-data-grid';
 import { IObservationTableRow } from 'contexts/observationsTableContext';
 import { useConfigureGeneralColumns } from 'features/surveys/observations/observations-table/configure-columns/components/general/useConfigureGeneralColumns';
 import { useCodesContext, useObservationsTableContext } from 'hooks/useContext';
@@ -101,18 +101,11 @@ export const ConfigureColumnsButton = (props: IConfigureColumnsButtonProps) => {
 
   const { onToggleShowHideAll, onToggleColumnVisibility } = useConfigureGeneralColumns({ hideableColumns });
 
-  // 'true' if any row is in edit mode
-  const isAnyRowInEditMode = useMemo(() => {
-    return Object.values(observationsTableContext.rowModesModel).some(
-      (innerObj) => innerObj.mode === GridRowModes.Edit
-    );
-  }, [observationsTableContext.rowModesModel]);
-
   return (
     <>
       <Button
         color="primary"
-        disabled={disabled || isAnyRowInEditMode}
+        disabled={disabled}
         variant="outlined"
         data-testid="observation-measurements-button"
         onClick={() => setIsOpen(true)}
@@ -123,7 +116,7 @@ export const ConfigureColumnsButton = (props: IConfigureColumnsButtonProps) => {
       <ConfigureColumnsDialog
         onClose={() => setIsOpen(false)}
         open={isOpen}
-        disabled={disabled || isAnyRowInEditMode}
+        disabled={disabled}
         hiddenFields={hiddenFields}
         hideableColumns={hideableColumns}
         onToggleShowHideAll={onToggleShowHideAll}

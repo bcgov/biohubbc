@@ -7,6 +7,7 @@ import {
   CritterbaseService
 } from './critterbase-service';
 import { DBService } from './db-service';
+import { ObservationService } from './observation-services/observation-service';
 import { ObservationSubCountMeasurementService } from './observation-subcount-measurement-service';
 
 export class SubCountService extends DBService {
@@ -26,6 +27,26 @@ export class SubCountService extends DBService {
    */
   async insertObservationSubCount(record: InsertObservationSubCount): Promise<ObservationSubcountRecord> {
     return this.subCountRepository.insertObservationSubCount(record);
+  }
+
+  /**
+   * Delete an observation subcount record.
+   *
+   * Note: If all observation subcount records are deleted for a given survey observation record, then the survey
+   * observation records will also be deleted, as all survey observations must have at least one subcount.
+   *
+   * @param {number} surveyId
+   * @param {number[]} observationSubcountIds
+   * @return {*}  {Promise<void>}
+   * @memberof ObservationRepository
+   */
+  async deleteObservationSubcount(surveyId: number, observationSubcountId: number): Promise<void> {
+    const observationIdsToDelete = await this.subCountRepository.deleteObservationSubcountRecords(surveyId, [
+      observationSubcountId
+    ]);
+
+    const observationService = new ObservationService(this.connection);
+    await observationService.deleteObservationsByIds(surveyId, observationIdsToDelete);
   }
 
   /**

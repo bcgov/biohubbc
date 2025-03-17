@@ -13,7 +13,7 @@ import { CreateObservationI18N } from 'constants/i18n';
 import { CodesContext } from 'contexts/codesContext';
 import { DialogContext } from 'contexts/dialogContext';
 import { TaxonomyContextProvider } from 'contexts/taxonomyContext';
-import ObservationForm from 'features/surveys/observations/form/ObservationForm';
+import ObservationForm, { initialObservationFormData } from 'features/surveys/observations/form/ObservationForm';
 import { CreateObservationFormData } from 'features/surveys/observations/form/ObservationForm.interface';
 import {
   isSubcountQualitativeMeasurement,
@@ -34,35 +34,6 @@ import {
 import { useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
-import { v4 } from 'uuid';
-
-export const initialSubcountValues = {
-  observation_subcount_id: null,
-  subcount: null,
-  comment: null,
-  measurements: [],
-  environments: [],
-  _id: v4()
-};
-
-const initialObservationFormData: CreateObservationFormData = {
-  standardColumns: {
-    survey_observation_id: null,
-    itis_tsn: null,
-    itis_scientific_name: null,
-    survey_sample_site_id: null,
-    method_technique_id: null,
-    survey_sample_period_id: null,
-    count: null,
-    observation_date: null,
-    observation_time: null,
-    latitude: null,
-    longitude: null,
-    observation_sign_id: null,
-    environments: []
-  },
-  subcounts: [initialSubcountValues]
-};
 
 /**
  * Page for creating an observation

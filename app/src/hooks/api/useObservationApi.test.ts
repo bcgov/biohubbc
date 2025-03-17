@@ -93,7 +93,7 @@ describe('useObservationApi', () => {
     });
   });
 
-  describe('deleteObservationSubcountRecords', () => {
+  describe('deleteRows', () => {
     it('works as expected', async () => {
       const projectId = 1;
       const surveyId = 2;
@@ -101,11 +101,7 @@ describe('useObservationApi', () => {
 
       mock.onPost(`/api/project/${projectId}/survey/${surveyId}/observations/subcounts/delete`).reply(200, undefined);
 
-      const result = await useObservationApi(axios).deleteObservationSubcountRecords(
-        projectId,
-        surveyId,
-        observationSubcountIds
-      );
+      const result = await useObservationApi(axios).deleteRows(projectId, surveyId, observationSubcountIds);
 
       expect(result).toEqual(undefined);
     });

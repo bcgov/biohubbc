@@ -320,7 +320,7 @@ const useObservationApi = (axios: AxiosInstance) => {
    * @param {((string | number)[])} observationSubcountIds
    * @return {*}  {Promise<void>}
    */
-  const deleteObservationSubcountRecords = async (
+  const deleteRows = async (
     projectId: number,
     surveyId: number,
     observationSubcountIds: (string | number)[]
@@ -388,7 +388,7 @@ const useObservationApi = (axios: AxiosInstance) => {
     getObservationsGeometry,
     getObservationMeasurementDefinitions,
     deleteObservationRecords,
-    deleteObservationSubcountRecords,
+    deleteRows,
     deleteObservationMeasurements,
     deleteObservationEnvironments,
     importObservationCSV,

@@ -6,11 +6,8 @@ import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import HelpButtonStack from 'components/buttons/HelpButtonStack';
-import {
-  initialSubcountFormData,
-  SubcountForm,
-  SubcountFormData
-} from 'features/surveys/observations/form/components/subcounts/subcount/SubcountForm';
+import { SubcountForm } from 'features/surveys/observations/form/components/subcounts/subcount/SubcountForm';
+import { SubcountFormData } from 'features/surveys/observations/form/components/subcounts/subcount/SubcountForm.interface';
 import {
   CreateObservationFormData,
   UpdateObservationFormData
@@ -19,35 +16,47 @@ import { FieldArray, useFormikContext } from 'formik';
 import { useFocalOrObservedSpeciesTsns } from 'hooks/useFocalOrObservedTsns';
 import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
 import get from 'lodash-es/get';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { v4 } from 'uuid';
 import { MeasurementsSearch } from '../../../observations-table/configure-columns/components/measurements/search/MeasurementsSearch';
 
-export type SubcountsFormData = {
-  subcounts: SubcountFormData[];
+export const initialSubcountFormData: SubcountFormData = {
+  _id: v4(),
+  observation_subcount_id: null,
+  subcount: null,
+  comment: null,
+  measurements: []
 };
 
-export const initialSubcountsFormData: SubcountsFormData = {
-  subcounts: [
-    {
-      _id: v4(),
-      ...initialSubcountFormData
-    }
-  ]
-};
+export interface ISubcountsFormProps {
+  initialMeasurementTypeDefinitions?: CBMeasurementType[];
+}
 
 /**
  * Form component for observation subcounts.
  *
  * @return {*}
  */
-export const SubcountsForm = () => {
+export const SubcountsForm = (props: ISubcountsFormProps) => {
+  const { initialMeasurementTypeDefinitions } = props;
+
   const { values, setFieldValue } = useFormikContext<CreateObservationFormData | UpdateObservationFormData>();
 
   const [, allSpeciesWithParentsTsns] = useFocalOrObservedSpeciesTsns();
 
-  // Keep selected measurements in state to get measurement names
-  const [selectedMeasurementTypeDefinitions, setSelectedMeasurementTypeDefinitions] = useState<CBMeasurementType[]>([]);
+  // The measurement type defintions that have either been selected by the user or passed in as props
+  const [selectedMeasurementTypeDefinitions, setSelectedMeasurementTypeDefinitions] = useState<CBMeasurementType[]>(
+    initialMeasurementTypeDefinitions ?? []
+  );
+
+  useEffect(() => {
+    if (!initialMeasurementTypeDefinitions?.length || selectedMeasurementTypeDefinitions.length) {
+      return;
+    }
+
+    // Set the selected measurements to the initial measurements if they are not already set
+    setSelectedMeasurementTypeDefinitions(initialMeasurementTypeDefinitions);
+  }, [initialMeasurementTypeDefinitions, selectedMeasurementTypeDefinitions.length]);
 
   // Performance: pre-parse the selected measurements into the structure expected by the subcount form.
   const selectedMeasurementsFormData = useMemo(() => {
@@ -57,7 +66,11 @@ export const SubcountsForm = () => {
     }));
   }, [selectedMeasurementTypeDefinitions]);
 
-  // Adds a new measurement column to the data grid
+  /**
+   * Adds a measurement column to the subcount form.
+   *
+   * @param {CBMeasurementType} measurement
+   */
   const handleAddMeasurement = (measurement: CBMeasurementType) => {
     // Add the measurement to selectedMeasurements state
     setSelectedMeasurementTypeDefinitions((prev) => [...prev, measurement]);
@@ -77,6 +90,11 @@ export const SubcountsForm = () => {
     setFieldValue('subcounts', subcounts);
   };
 
+  /**
+   * Removes a measurement column from the subcount form.
+   *
+   * @param {string} taxonMeasurementId
+   */
   const handleRemoveMeasurement = (taxonMeasurementId: string) => {
     // Remove the measurement from all subcounts
     const updatedSubcounts = values.subcounts.map((subcount) => ({

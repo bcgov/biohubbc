@@ -1,4 +1,4 @@
-import { cyan, grey } from '@mui/material/colors';
+import { grey } from '@mui/material/colors';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { IObservationTableRow } from 'contexts/observationsTableContext';
@@ -33,10 +33,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       columnVisibilityModel={observationsTableContext.columnVisibilityModel}
       onColumnVisibilityModelChange={observationsTableContext.onColumnVisibilityModelChange}
       // Rows
-      rows={observationsTableContext.savedRows}
-      // Row modes
-      rowModesModel={observationsTableContext.rowModesModel}
-      onRowModesModelChange={observationsTableContext.onRowModesModelChange}
+      rows={observationsTableContext.rows}
       // Pagination
       paginationMode="server"
       rowCount={observationsTableContext.observationCount}
@@ -59,7 +56,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       rowHeight={56}
       getRowHeight={() => 'auto'}
       // Loading
-      loading={observationsTableContext.isLoading}
+      loading={props.isLoading}
       slots={{
         loadingOverlay: SkeletonTable
       }}
@@ -96,48 +93,13 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         },
         '& .MuiDataGrid-cell': {
           py: 0.75,
-          background: '#fff',
-          '&.MuiDataGrid-cell--editing:focus-within': {
-            outline: 'none'
-          },
-          '&.MuiDataGrid-cell--editing': {
-            p: 0.5,
-            backgroundColor: cyan[100]
-          }
-        },
-        '& .MuiDataGrid-row--editing': {
-          boxShadow: 'none',
-          backgroundColor: cyan[50],
-          '& .MuiDataGrid-cell': {
-            backgroundColor: cyan[50]
-          },
-          '&.error': {
-            '& .MuiDataGrid-cell, .MuiDataGrid-cell--editing': {
-              backgroundColor: 'rgb(251, 237, 238)'
-            }
-          }
-        },
-        '& .MuiDataGrid-editInputCell': {
-          border: '1px solid #ccc',
-          '&:hover': {
-            borderColor: 'primary.main'
-          },
-          '&.Mui-focused': {
-            borderColor: 'primary.main',
-            outlineWidth: '2px',
-            outlineStyle: 'solid',
-            outlineColor: 'primary.main',
-            outlineOffset: '-2px'
-          }
+          background: '#fff'
         },
         '& .MuiInputBase-root': {
           height: '40px',
           borderRadius: '4px',
           background: '#fff',
-          fontSize: '0.875rem',
-          '&.MuiDataGrid-editInputCell': {
-            padding: 0
-          }
+          fontSize: '0.875rem'
         },
         '& .MuiOutlinedInput-root': {
           borderRadius: '4px',

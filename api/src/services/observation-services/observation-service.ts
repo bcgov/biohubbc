@@ -319,6 +319,8 @@ export class ObservationService extends DBService {
         samplePeriodService.getSamplePeriodsForSurvey(surveyId)
       ]);
 
+    console.log(measurementTypeDefinitions);
+
     return {
       surveyObservation: surveyObservation,
       supplementaryObservationData: {

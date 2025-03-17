@@ -32,6 +32,8 @@ export interface ISubcountMeasurementsFormProps {
   formikFieldName: string;
   /**
    * The measurement type definitions.
+   *
+   * Each measurement type definition will be rendered as a form field.
    */
   measurementTypeDefinitions: CBMeasurementType[];
   /**
@@ -55,6 +57,7 @@ export const SubcountMeasurementsForm = (props: ISubcountMeasurementsFormProps) 
 
   const { values } = useFormikContext<CreateObservationFormData | UpdateObservationFormData>();
 
+  // The formik field name for the measurements array
   const measurementsFieldName = `${formikFieldName}.measurements`;
 
   const measurements: (SubcountQualitativeMeasurement | SubcountQuantitativeMeasurement)[] | undefined = get(
@@ -71,21 +74,19 @@ export const SubcountMeasurementsForm = (props: ISubcountMeasurementsFormProps) 
     <FieldArray
       name={measurementsFieldName}
       render={() => {
-        return measurements.map((measurement, index) => {
-          const measurementTypeDefinition = measurementTypeDefinitions.find(
-            (measurementTypeDefinition) => measurementTypeDefinition.taxon_measurement_id === measurement.measurement_id
+        // Render a form field for each measurement type definition
+        return measurementTypeDefinitions.map((measurementTypeDefinition, index) => {
+          // Find the corresponding formik value for this measurement type definition, if one exists
+          const measurementFormValue = measurements.find(
+            (measurement) => measurementTypeDefinition.taxon_measurement_id === measurement.measurement_id
           );
 
-          if (!measurementTypeDefinition) {
-            // Failed to find the corresponding measurement type definition for the measurement form field
-            return null;
-          }
-
+          // The formik field name for this specific measurement field, in the measurements array
           const measurementsArrayFieldName = `${measurementsFieldName}[${index}]`;
 
           return (
             <SubcountMeasurementField
-              key={measurement.measurement_id}
+              key={measurementFormValue?.measurement_id ?? index}
               formikFieldName={measurementsArrayFieldName}
               measurementTypeDefinition={measurementTypeDefinition}
               onDelete={() => onDeleteMeasurement(measurementTypeDefinition.taxon_measurement_id)}

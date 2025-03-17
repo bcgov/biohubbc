@@ -7,14 +7,38 @@ import { ObservationEnvironmentsForm } from 'features/surveys/observations/form/
 import { ObservationLocationForm } from 'features/surveys/observations/form/components/location/ObservationLocationForm';
 import { ObservationSamplingForm } from 'features/surveys/observations/form/components/sampling/ObservationSamplingForm';
 import { ObservationSpeciesForm } from 'features/surveys/observations/form/components/species/ObservationSpeciesForm';
-import { SubcountsForm } from 'features/surveys/observations/form/components/subcounts/SubcountsForm';
+import {
+  initialSubcountFormData,
+  SubcountsForm
+} from 'features/surveys/observations/form/components/subcounts/SubcountsForm';
 import {
   CreateObservationFormData,
   UpdateObservationFormData
 } from 'features/surveys/observations/form/ObservationForm.interface';
 import { Formik, FormikProps } from 'formik';
-import React, { useState } from 'react';
+import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
+import { GetSamplingPeriod } from 'interfaces/useSamplingPeriodApi.interface';
+import React from 'react';
 import yup from 'utils/YupSchema';
+
+export const initialObservationFormData: CreateObservationFormData = {
+  standardColumns: {
+    survey_observation_id: null,
+    itis_tsn: null,
+    itis_scientific_name: null,
+    survey_sample_site_id: null,
+    method_technique_id: null,
+    survey_sample_period_id: null,
+    count: null,
+    observation_date: null,
+    observation_time: null,
+    latitude: null,
+    longitude: null,
+    observation_sign_id: null,
+    environments: []
+  },
+  subcounts: [initialSubcountFormData]
+};
 
 // Define the full validation schema for the observation
 export const ObservationYupSchema = yup.object({
@@ -133,15 +157,36 @@ export const ObservationYupSchema = yup.object({
 });
 
 interface IObservationFormProps {
+  /**
+   * The initial form data to populate the form with.
+   */
   initialFormData: CreateObservationFormData | UpdateObservationFormData;
+  /**
+   * The function to call when the form is submitted.
+   */
   onSubmit: (formikData: CreateObservationFormData | UpdateObservationFormData) => void;
+  /**
+   * A reference to the Formik instance.
+   */
   formikRef: React.RefObject<FormikProps<CreateObservationFormData | UpdateObservationFormData>>;
+  /**
+   * The initial supplementary sampling data to populate the sampling form with.
+   */
+  initialSupplementarySamplingData?: GetSamplingPeriod[];
+  initialMeasurementTypeDefinitions?: CBMeasurementType[];
 }
 
+/**
+ * Form component for an observation.
+ *
+ * @param {IObservationFormProps} props
+ * @return {*}
+ */
 const ObservationForm = (props: IObservationFormProps) => {
-  const { initialFormData, onSubmit, formikRef } = props;
+  const { initialFormData, onSubmit, formikRef, initialSupplementarySamplingData, initialMeasurementTypeDefinitions } =
+    props;
 
-  const [showSamplingInformation, setShowSamplingInformation] = useState(false);
+  console.log('3', initialMeasurementTypeDefinitions);
 
   return (
     <Formik
@@ -165,10 +210,7 @@ const ObservationForm = (props: IObservationFormProps) => {
         <HorizontalSplitFormComponent
           title="Sampling Details"
           summary="Add details about the sampling site, technique, and period">
-          <ObservationSamplingForm
-            showSamplingInformation={showSamplingInformation}
-            setShowSamplingInformation={setShowSamplingInformation}
-          />
+          <ObservationSamplingForm initialSupplementarySamplingData={initialSupplementarySamplingData} />
         </HorizontalSplitFormComponent>
 
         <Divider />
@@ -198,7 +240,7 @@ const ObservationForm = (props: IObservationFormProps) => {
 
         {/* Subcounts Form */}
         <HorizontalSplitFormComponent title="Subcounts" summary="Add subcounts to the observation">
-          <SubcountsForm />
+          <SubcountsForm initialMeasurementTypeDefinitions={[...(initialMeasurementTypeDefinitions ?? [])]} />
         </HorizontalSplitFormComponent>
 
         <Divider />

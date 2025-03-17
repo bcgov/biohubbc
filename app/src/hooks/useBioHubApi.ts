@@ -1,4 +1,5 @@
 import axios from 'axios';
+import useObservationSubcountApi from 'hooks/api/useObservationSubcountApi';
 import useReferenceApi from 'hooks/api/useReferenceApi';
 import { useTelemetryDeploymentApi } from 'hooks/api/useTelemetryDeploymentApi';
 import { useTelemetryDeviceApi } from 'hooks/api/useTelemetryDeviceApi';
@@ -55,6 +56,8 @@ export const useBiohubApi = () => {
 
   const observation = useObservationApi(apiAxios);
 
+  const observationSubcount = useObservationSubcountApi(apiAxios);
+
   const resources = useResourcesApi(apiAxios);
 
   const external = useExternalApi(axios);
@@ -95,6 +98,7 @@ export const useBiohubApi = () => {
       taxonomy,
       survey,
       observation,
+      observationSubcount,
       resources,
       codes,
       animal,

@@ -6,11 +6,19 @@ import { MethodTechniqueField } from 'features/surveys/observations/form/compone
 import { SamplingPeriodField } from 'features/surveys/observations/form/components/sampling/components/SamplingPeriodField';
 import { SamplingSiteField } from 'features/surveys/observations/form/components/sampling/components/SamplingSiteField';
 import { useSamplingInformationCache } from 'features/surveys/observations/form/components/sampling/hooks/useSamplingInformationCache';
-import React from 'react';
+import {
+  CreateObservationFormData,
+  UpdateObservationFormData
+} from 'features/surveys/observations/form/ObservationForm.interface';
+import { useFormikContext } from 'formik';
+import { GetSamplingPeriod } from 'interfaces/useSamplingPeriodApi.interface';
+import { useState } from 'react';
 
-interface IObservationSamplingFormProps {
-  showSamplingInformation: boolean;
-  setShowSamplingInformation: React.Dispatch<React.SetStateAction<boolean>>;
+export interface IObservationSamplingFormProps {
+  /**
+   * The initial supplementary sampling data to populate the sampling autocomplete fields with.
+   */
+  initialSupplementarySamplingData?: GetSamplingPeriod[];
 }
 
 /**
@@ -20,13 +28,23 @@ interface IObservationSamplingFormProps {
  * @return {*}
  */
 export const ObservationSamplingForm = (props: IObservationSamplingFormProps) => {
-  const { showSamplingInformation, setShowSamplingInformation } = props;
+  const { initialSupplementarySamplingData } = props;
+
+  const { values } = useFormikContext<CreateObservationFormData | UpdateObservationFormData>();
+
+  const [showSamplingInformation, setShowSamplingInformation] = useState(
+    !!(
+      values.standardColumns.survey_sample_site_id ||
+      values.standardColumns.survey_sample_period_id ||
+      values.standardColumns.method_technique_id
+    ) || false
+  );
 
   const samplingInformationCache = useSamplingInformationCache();
 
   // Initialize the cached sampling information.
   // Optional when creating new records. Necessary when editing existing records.
-  samplingInformationCache.initCachedSamplingInformationRef({ periods: [] });
+  samplingInformationCache.initCachedSamplingInformationRef({ periods: initialSupplementarySamplingData ?? [] });
 
   return (
     <>

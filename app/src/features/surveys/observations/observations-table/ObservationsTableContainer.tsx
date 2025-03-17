@@ -176,7 +176,7 @@ const ObservationsTableContainer = () => {
           <ImportObservationsButton
             disabled={observationsTableContext.isDisabled}
             onStart={() => observationsPageContext.setIsDisabled(true)}
-            onSuccess={() => observationsTableContext.refreshObservationRecords()}
+            onSuccess={() => observationsTableContext.refreshRows()}
             onFinish={() => observationsPageContext.setIsDisabled(false)}
           />
           <Button
@@ -193,7 +193,7 @@ const ObservationsTableContainer = () => {
             startIcon={<Icon path={mdiPlus} size={1} />}
             onClick={() => {
               // TODO: Nick: This is a temporary solution to allow editing of observations from the table
-              const selectedObservations = observationsTableContext.getSelectedObservationSubcountRecords();
+              const selectedObservations = observationsTableContext.getSelectedRows();
               if (selectedObservations.length === 1 && selectedObservations[0].survey_observation_id) {
                 history.push(
                   `/admin/projects/${projectId}/surveys/${surveyId}/observations/${selectedObservations[0].survey_observation_id}/edit`
@@ -223,9 +223,10 @@ const ObservationsTableContainer = () => {
         <Box position="absolute" width="100%" height="100%">
           <ObservationsTable
             isLoading={
-              observationsTableContext.isLoading ||
-              observationsTableContext.isDisabled ||
-              codesContext.codesDataLoader.isLoading
+              !observationsContext.observationsDataLoader.data &&
+              (observationsTableContext.isLoading ||
+                observationsTableContext.isDisabled ||
+                codesContext.codesDataLoader.isLoading)
             }
             columns={[...columns]}
           />
