@@ -137,6 +137,18 @@ export const DeleteSystemUserI18N = {
     'An error has occurred while attempting to delete the system user. If the error persists, please contact your system administrator.'
 };
 
+export const DeactivateSystemUserI18N = {
+  deactivateUserErrorTitle: 'Error Blocking System User',
+  deactivateUserErrorText:
+    'An error has occurred while attempting to block the system user. If the error persists, please contact your system administrator.'
+};
+
+export const ActivateSystemUserI18N = {
+  activateUserErrorTitle: 'Error Activating System User',
+  activateUserErrorText:
+    'An error has occurred while attempting to reactivate the system user. If the error persists, please contact your system administrator.'
+};
+
 export const ProjectParticipantsI18N = {
   getParticipantsErrorTitle: 'Error Fetching Project Team Members',
   getParticipantsErrorText:
