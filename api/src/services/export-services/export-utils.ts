@@ -71,7 +71,7 @@ export function getStreamCsvTransformStream(header: string, collectionCategories
       if (header && !headerStreamed) {
         // This block is executed only once
         // Push the headers into stream
-        this.push([header, collectionCategories ?? []].join(',') + '\r\n');
+        this.push([header, ...(collectionCategories ?? [])].join(',') + '\r\n');
         headerStreamed = true;
       }
       // process chunk and push it to the next stream

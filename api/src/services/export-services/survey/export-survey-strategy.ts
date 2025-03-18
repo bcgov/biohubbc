@@ -4,6 +4,7 @@ import { DBService } from '../../db-service';
 import { ExportAnimalStrategy } from '../animal/export-animal-strategy';
 import { ExportStrategy, ExportStrategyConfig } from '../export-strategy';
 import { ExportObservationStrategy } from '../observation/export-observation-strategy';
+import { ExportSamplingStrategy } from '../sampling/export-sampling-strategy';
 import { ExportTelemetryStrategy } from '../telemetry/export-telemetry-strategy';
 import { ExportSurveyMetadataStrategy } from './export-survey-metadata-strategy';
 
@@ -103,6 +104,14 @@ export class ExportSurveyStrategy extends DBService implements ExportStrategy {
 
       if (this.config.animal_data) {
         const strategy = new ExportAnimalStrategy(
+          { surveyId: this.surveyId, isUserAdmin: this.isUserAdmin },
+          this.connection
+        );
+        strategyPromises.push(strategy.getExportStrategyConfig());
+      }
+
+      if (this.config.sampling_data) {
+        const strategy = new ExportSamplingStrategy(
           { surveyId: this.surveyId, isUserAdmin: this.isUserAdmin },
           this.connection
         );

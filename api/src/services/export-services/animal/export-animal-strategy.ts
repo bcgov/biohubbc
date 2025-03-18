@@ -1,7 +1,7 @@
 import { Readable } from 'stream';
 import { IDBConnection } from '../../../database/db';
 import { getLogger } from '../../../utils/logger';
-import { CritterbaseService, IMortalityMarkingsData } from '../../critterbase-service';
+import { CritterbaseService, IMortalityLocationsData, IMortalityMarkingsData } from '../../critterbase-service';
 import { DBService } from '../../db-service';
 import { SurveyCritterService } from '../../survey-critter-service';
 import { ExportDataStreamOptions, ExportStrategy, ExportStrategyConfig } from '../export-strategy';
@@ -14,6 +14,14 @@ export type ExportAnimalConfig = {
   isUserAdmin: boolean;
 };
 
+interface ICaptureExport {
+  capture_date?: string;
+  capture_time?: string;
+  capture_location: {
+    latitude?: string;
+    longitude?: string;
+  };
+}
 interface IMarkingExport {
   taxon_marking_body_location: string;
   primary_colour: string;
@@ -21,7 +29,7 @@ interface IMarkingExport {
   marking_type: string;
 }
 
-interface ICaptureExport {
+interface ICaptureMarkingsExport {
   capture_id: string;
   markings: IMarkingExport[];
 }
@@ -100,16 +108,15 @@ export class ExportAnimalStrategy extends DBService implements ExportStrategy {
   }
 
   /**
-   * Build and return the lookup measurements map with all pertinent uuids for the survey
+   * Build and return the lookup mortality markings map with all pertinent uuids for the survey
    *
    * @async
    * @returns {Map<string, string>}
    * @memberof ExportAnimalStrategy
    */
   _getMortalityMarkingsMap = async () => {
-    console.time('Create mortality markings map');
     const surveyCritterService = new SurveyCritterService(this.connection);
-    // Fetch all collection categories definitions from Critterbase for all survey tsn numbers
+
     const crittersSurvey = await surveyCritterService.findCritters(
       this.config.isUserAdmin,
       this.connection.systemUserId(),
@@ -117,6 +124,7 @@ export class ExportAnimalStrategy extends DBService implements ExportStrategy {
         survey_ids: [this.config.surveyId]
       }
     );
+
     // extract list of critter ids
     const critterbaseCritterIds: string[] = crittersSurvey.map((critter) => critter.critterbase_critter_id);
 
@@ -129,9 +137,62 @@ export class ExportAnimalStrategy extends DBService implements ExportStrategy {
       critterbaseCritterIds
     );
 
-    console.timeEnd('Create mortality markings map');
-
     return mortalityMarkingsMap;
+  };
+
+  /**
+   * Build and return the lookup mortality locations map with all pertinent uuids for the survey
+   *
+   * @async
+   * @returns {Map<string, string>}
+   * @memberof ExportAnimalStrategy
+   */
+  _getMortalitiesLocationMap = async () => {
+    const surveyCritterService = new SurveyCritterService(this.connection);
+
+    const crittersSurvey = await surveyCritterService.findCritters(
+      this.config.isUserAdmin,
+      this.connection.systemUserId(),
+      {
+        survey_ids: [this.config.surveyId]
+      }
+    );
+    // extract list of critter ids
+    const critterIds: string[] = crittersSurvey.map((critter) => critter.critterbase_critter_id);
+
+    const critterbaseService = new CritterbaseService({
+      keycloak_guid: this.connection.systemUserGUID(),
+      username: this.connection.systemUserIdentifier()
+    });
+
+    const mortalityLocationsMap = await critterbaseService.getMortalityLocationsByMultipleCritterIds(critterIds);
+
+    return mortalityLocationsMap;
+  };
+
+  /**
+   * Build and return the lookup collection categories map with all definitions for the survey
+   *
+   * @async
+   * @returns {string[]}
+   * @memberof ExportAnimalStrategy
+   */
+  _getCollectionCategoriesList = async () => {
+    const surveyCritterService = new SurveyCritterService(this.connection);
+    // Fetch all collection categories definitions from Critterbase for all survey tsn numbers
+    const response = await surveyCritterService.findCritters(this.config.isUserAdmin, this.connection.systemUserId(), {
+      survey_ids: [this.config.surveyId]
+    });
+
+    const uniqueItisTsn = [...new Set(response.map((item) => item.itis_tsn))];
+
+    const critterbaseService = new CritterbaseService({
+      keycloak_guid: this.connection.systemUserGUID(),
+      username: this.connection.systemUserIdentifier()
+    });
+    const categoryNames = await critterbaseService.getUniqueCategoryNamesForTsnList(uniqueItisTsn);
+
+    return categoryNames;
   };
 
   /**
@@ -223,18 +284,28 @@ export class ExportAnimalStrategy extends DBService implements ExportStrategy {
       survey_ids: [this.config.surveyId]
     };
 
+    const mortalitiesLocationsMapPromise = this._getMortalitiesLocationMap();
+
     const stream = new Readable({
       objectMode: true,
       read() {
-        surveyCritterService
-          .findCrittersDetails(isUserAdmin, systemUserId, filterFields)
-          .then((critter) => {
-            for (const item of critter) {
-              this.push(ExportAnimalStrategy.mortalitiesCsvTransformation(item));
-            }
+        // Use mortalityLocationsMap once the promise resolves
+        mortalitiesLocationsMapPromise
+          .then((mortalityLocationsMap) => {
+            // Handle the critter details retrieval after mortalityMarkingsMap promise is resolved
+            surveyCritterService
+              .findCrittersDetails(isUserAdmin, systemUserId, filterFields)
+              .then((critter) => {
+                for (const item of critter) {
+                  this.push(ExportAnimalStrategy.mortalitiesCsvTransformation(item, mortalityLocationsMap));
+                }
 
-            // Signal the end of the stream
-            this.push(null);
+                // Signal the end of the stream
+                this.push(null);
+              })
+              .catch((error) => {
+                this.emit('error', error);
+              });
           })
           .catch((error) => {
             this.emit('error', error);
@@ -293,34 +364,7 @@ export class ExportAnimalStrategy extends DBService implements ExportStrategy {
   };
 
   /**
-   * Build and return the lookup collection categories map with all definitions for the survey
-   *
-   * @async
-   * @returns {string[]}
-   * @memberof ExportAnimalStrategy
-   */
-  _getCollectionCategoriesList = async () => {
-    console.time('Get list of TSN time');
-    const surveyCritterService = new SurveyCritterService(this.connection);
-    // Fetch all collection categories definitions from Critterbase for all survey tsn numbers
-    const response = await surveyCritterService.findCritters(this.config.isUserAdmin, this.connection.systemUserId(), {
-      survey_ids: [this.config.surveyId]
-    });
-
-    const uniqueItisTsn = [...new Set(response.map((item) => item.itis_tsn))];
-
-    console.time('Get Category names time');
-    const critterbaseService = new CritterbaseService({
-      keycloak_guid: this.connection.systemUserGUID(),
-      username: this.connection.systemUserIdentifier()
-    });
-    const categoryNames = await critterbaseService.getUniqueCategoryNamesForTsnList(uniqueItisTsn);
-
-    return categoryNames;
-  };
-
-  /**
-   * Transform query result record into CSV
+   * Transform stream result record into CSV
    *
    * @static
    * @param {Record<string, any>} item
@@ -340,32 +384,75 @@ export class ExportAnimalStrategy extends DBService implements ExportStrategy {
     ].join(',');
   };
 
+  /**
+   * Transform stream captures result record into CSV
+   *
+   * @static
+   * @param {Record<string, any>} item
+   * @returns {string}
+   * @memberof ExportAnimalStrategy
+   */
   static readonly capturesCsvTransformation = (item: Record<string, any>): string => {
-    if (item.captures.length) {
-      return [
-        item.animal_id,
-        item.captures[0].capture_date ?? '',
-        item.captures[0].capture_time ?? '',
-        item.captures[0].capture_location.latitude ?? '',
-        item.captures[0].capture_location.longitude ?? ''
-      ].join(',');
+    if (item.captures && item.captures.length) {
+      // Create an array to hold the CSV lines
+      const csvLines = item.captures.map((capture: ICaptureExport) => {
+        return [
+          item.animal_id,
+          capture.capture_date ?? '',
+          capture.capture_time ?? '',
+          capture.capture_location.latitude ?? '',
+          capture.capture_location.longitude ?? ''
+        ].join(',');
+      });
+
+      return csvLines.join('\r\n');
     }
     return '';
   };
 
-  static readonly mortalitiesCsvTransformation = (item: Record<string, any>): string => {
-    let dateStr = '';
-    let timeStr = '';
-    if (item.mortality.length && item.mortality[0]?.mortality_timestamp) {
-      ({ dateStr, timeStr } = parseTimestampString(item.mortality[0].mortality_timestamp));
-
-      return [item.animal_id, dateStr, timeStr, item.mortality.length ? 55 : '', item.mortality.length ? 120 : ''].join(
-        ','
-      );
+  /**
+   * Transform stream mortalities result record into CSV
+   *
+   * @static
+   * @param {Record<string, any>} item
+   * @returns {string}
+   * @memberof ExportAnimalStrategy
+   */
+  static readonly mortalitiesCsvTransformation = (
+    item: Record<string, any>,
+    mortalityLocationsMap?: Map<string, IMortalityLocationsData>
+  ): string => {
+    if (!(item.mortality.length > 0)) {
+      return ''; // nothing to write out, no mortalities
     }
-    return '';
+
+    let csvLines = ''; // Using a StringBuilder as it is faster than an array
+
+    item.mortality.forEach((mortalityItem: { mortality_id: string; mortality_timestamp: string }) => {
+      let dateStr = '';
+      let timeStr = '';
+
+      ({ dateStr, timeStr } = parseTimestampString(mortalityItem.mortality_timestamp));
+      // Look up the mortality_id in the map to get the associated location
+      const locationData = mortalityLocationsMap?.get(mortalityItem.mortality_id);
+
+      if (locationData) {
+        csvLines = `${item.animal_id},${dateStr},${timeStr},${locationData.latitude},${locationData.longitude}\r\n`;
+      }
+    });
+
+    return csvLines.trim(); // Remove the last \r\n
   };
 
+  /**
+   * Transform stream markings result record into CSV
+   *
+   * @static
+   * @param {Record<string, any>} item
+   * @param {?Map<string, IMortalityMarkingsData[]>} [mortalityMarkingsMap]
+   * @returns {string}
+   * @memberof ExportAnimalStrategy
+   */
   static readonly markingsCsvTransformation = (
     item: Record<string, any>,
     mortalityMarkingsMap?: Map<string, IMortalityMarkingsData[]>
@@ -378,7 +465,7 @@ export class ExportAnimalStrategy extends DBService implements ExportStrategy {
     const animalId = item.animal_id;
 
     // Iterate through captures
-    item.captures.forEach((capture: ICaptureExport) => {
+    item.captures.forEach((capture: ICaptureMarkingsExport) => {
       const captureId = capture.capture_id;
       // If there are markings, generate a row for each marking
       if (capture.markings.length > 0) {
@@ -406,8 +493,6 @@ export class ExportAnimalStrategy extends DBService implements ExportStrategy {
       });
     });
 
-    csvLine = csvLine.slice(0, -2); // Remove the last \r\n
-
-    return csvLine;
+    return csvLine.trim(); // Remove the last \r\n
   };
 }

@@ -162,6 +162,10 @@ export interface IMarking {
   comment: string;
   attached_timestamp: string;
   removed_timestamp: string;
+  body_location: string;
+  marking_type: string;
+  primary_colour: string | null;
+  secondary_colour: string | null;
 }
 
 /**
@@ -176,6 +180,18 @@ export interface IMortalityMarkingsData {
   primary_colour: string | null;
   secondary_colour: string | null;
   marking_type: string;
+}
+
+/**
+ * Used to filter mortality locations for export
+ *
+ * @export
+ * @interface IMortalityLocationsData
+ * @typedef {IMortalityLocationsData}
+ */
+export interface IMortalityLocationsData {
+  latitude: number;
+  longitude: number;
 }
 
 /**
@@ -823,11 +839,11 @@ export class CritterbaseService {
   }
 
   /**
-   * Get all the mortalities markings for a set of critter id numbers
+   * Get all the mortalities markings for a set of critter ids
    *
    * @async
-   * @param {number[]} critterIds
-   * @returns {Promise<string[]>}
+   * @param {string[]} critterIds
+   * @returns {Promise<Map<string, IMortalityMarkingsData[]>}
    * @memberof CritterbaseService
    */
   async getMortalityMarkingsByMultipleCritterIds(critterIds: string[]): Promise<Map<string, IMortalityMarkingsData[]>> {
@@ -839,8 +855,7 @@ export class CritterbaseService {
 
     // populate map
     responses.forEach((response) => {
-      response.data.forEach((item: any) => {
-        // Only process items that match the requested critter_ids
+      response.data.forEach((item: IMarking) => {
         if (critterIds.includes(item.critter_id)) {
           // If this mortality_id is not already in the results map, initialize an empty array
           if (!mortalityMarkingsDataMap.has(item.mortality_id)) {
@@ -861,5 +876,41 @@ export class CritterbaseService {
     });
 
     return mortalityMarkingsDataMap;
+  }
+
+  /**
+   * Get all the mortalities location for a set of mortality ids
+   *
+   * @async
+   * @param {string[]} critterIds
+   * @returns {Promise<Map<string, IMortalityLocationsData>>}
+   * @memberof CritterbaseService
+   */
+  async getMortalityLocationsByMultipleCritterIds(critterIds: string[]): Promise<Map<string, IMortalityLocationsData>> {
+    // Create an array of promises for each mortality API call
+    const promises = critterIds.map((critterId) => this.axiosInstance.get(`/mortality/critter/${critterId}`));
+    const responses = await Promise.all(promises);
+
+    const mortalityLocationsDataMap = new Map<string, IMortalityLocationsData>();
+
+    // populate map
+    responses.forEach((response) => {
+      if (!(response.data.length > 0)) {
+        return;
+      }
+
+      response.data.forEach((item: any) => {
+        if (critterIds.includes(item.critter_id)) {
+          const mortalityLocationData: IMortalityLocationsData = {
+            latitude: item.location.latitude,
+            longitude: item.location.longitude
+          };
+
+          mortalityLocationsDataMap.set(item.mortality_id, mortalityLocationData);
+        }
+      });
+    });
+
+    return mortalityLocationsDataMap;
   }
 }

@@ -1,5 +1,5 @@
 import { Knex } from 'knex';
-import SQL from 'sql-template-strings';
+import SQL, { SQLStatement } from 'sql-template-strings';
 import { z } from 'zod';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
@@ -1281,5 +1281,22 @@ export class SurveyRepository extends BaseRepository {
     const response = await this.connection.knex(queryBuilder);
 
     return response.rowCount ?? 0;
+  }
+
+  /**
+   * Build the survey export periods records query
+   *
+   * @static
+   * @param {number} surveyId
+   * @returns {SQLStatement}
+   * @memberof SurveyRepository
+   */
+  static getSamplePeriodsBySurveyId(surveyId: number): SQLStatement {
+    return SQL`
+        SELECT * FROM
+          survey_sample_period
+        WHERE
+          survey_id = ${surveyId};
+      `;
   }
 }

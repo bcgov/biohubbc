@@ -687,12 +687,11 @@ export class ObservationRepository extends BaseRepository {
   }
 
   /**
-   * Build the export observation records query
+   * Build the survey export observation records query
    *
    * @static
-   * @param {Knex} knex
    * @param {number} surveyId
-   * @returns {Knex.QueryBuilder}
+   * @returns {SQLStatement}
    * @memberof ObservationRepository
    */
   static buildObservationQuery(surveyId: number): SQLStatement {
