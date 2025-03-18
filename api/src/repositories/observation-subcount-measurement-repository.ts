@@ -1,4 +1,3 @@
-import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { getKnex } from '../database/db';
 import { BaseRepository } from './base-repository';
@@ -87,34 +86,46 @@ export class ObservationSubCountMeasurementRepository extends BaseRepository {
    * Get all distinct taxon_measurment_ids for all qualitative measurements for a given survey.
    *
    * @param {number} surveyId
+   * @param {{
+   *       filterFields?: {
+   *         surveyObservationIds?: number[];
+   *       };
+   *     }} [options] Optional fields to additionally filter results by
    * @return {*}  {Promise<string[]>}
    * @memberof ObservationSubCountMeasurementRepository
    */
-  async getObservationSubCountQualitativeTaxonMeasurementIds(surveyId: number): Promise<string[]> {
-    const sqlStatement = SQL`
-      SELECT
-        DISTINCT critterbase_taxon_measurement_id
-      FROM
-        observation_subcount_qualitative_measurement
-      WHERE
-        observation_subcount_id in (
-          select
-            observation_subcount_id
-          FROM
-            observation_subcount
-          WHERE
-            survey_observation_id in (
-              SELECT
-                survey_observation_id
-              FROM
-                survey_observation
-              WHERE
-                survey_id = ${surveyId}
-            )
-        )
-    `;
+  async getObservationSubCountQualitativeTaxonMeasurementIds(
+    surveyId: number,
+    options?: {
+      filterFields?: {
+        surveyObservationIds?: number[];
+      };
+    }
+  ): Promise<string[]> {
+    const knex = getKnex();
 
-    const response = await this.connection.sql(sqlStatement);
+    const query = knex.queryBuilder();
+
+    query
+      .distinct('critterbase_taxon_measurement_id')
+      .from('observation_subcount_qualitative_measurement')
+      .whereIn('observation_subcount_id', (qb1) => {
+        qb1
+          .select('observation_subcount_id')
+          .from('observation_subcount')
+          .whereIn('survey_observation_id', (qb2) => {
+            qb2.select('survey_observation_id').from('survey_observation').where('survey_id', surveyId);
+
+            if (options?.filterFields?.surveyObservationIds) {
+              qb2.whereIn('survey_observation_id', options.filterFields.surveyObservationIds);
+            }
+          });
+      });
+
+    const response = await this.connection.knex(
+      query,
+      z.object({ critterbase_taxon_measurement_id: z.string().uuid() })
+    );
 
     return response.rows.map((item) => item.critterbase_taxon_measurement_id);
   }
@@ -123,34 +134,46 @@ export class ObservationSubCountMeasurementRepository extends BaseRepository {
    * Get all distinct taxon_measurment_ids for all quantitative measurements for a given survey.
    *
    * @param {number} surveyId
+   * @param {{
+   *       filterFields?: {
+   *         surveyObservationIds?: number[];
+   *       };
+   *     }} [options] Optional fields to additionally filter results by
    * @return {*}  {Promise<string[]>}
    * @memberof ObservationSubCountMeasurementRepository
    */
-  async getObservationSubCountQuantitativeTaxonMeasurementIds(surveyId: number): Promise<string[]> {
-    const sqlStatement = SQL`
-      SELECT
-        DISTINCT critterbase_taxon_measurement_id
-      FROM
-        observation_subcount_quantitative_measurement
-      WHERE
-        observation_subcount_id in (
-          select
-            observation_subcount_id
-          FROM
-            observation_subcount
-          WHERE
-            survey_observation_id in (
-              SELECT
-                survey_observation_id
-              FROM
-                survey_observation
-              WHERE
-                survey_id = ${surveyId}
-            )
-        )
-    `;
+  async getObservationSubCountQuantitativeTaxonMeasurementIds(
+    surveyId: number,
+    options?: {
+      filterFields?: {
+        surveyObservationIds?: number[];
+      };
+    }
+  ): Promise<string[]> {
+    const knex = getKnex();
 
-    const response = await this.connection.sql(sqlStatement);
+    const query = knex.queryBuilder();
+
+    query
+      .distinct('critterbase_taxon_measurement_id')
+      .from('observation_subcount_quantitative_measurement')
+      .whereIn('observation_subcount_id', (qb1) => {
+        qb1
+          .select('observation_subcount_id')
+          .from('observation_subcount')
+          .whereIn('survey_observation_id', (qb2) => {
+            qb2.select('survey_observation_id').from('survey_observation').where('survey_id', surveyId);
+
+            if (options?.filterFields?.surveyObservationIds) {
+              qb2.whereIn('survey_observation_id', options.filterFields.surveyObservationIds);
+            }
+          });
+      });
+
+    const response = await this.connection.knex(
+      query,
+      z.object({ critterbase_taxon_measurement_id: z.string().uuid() })
+    );
 
     return response.rows.map((item) => item.critterbase_taxon_measurement_id);
   }

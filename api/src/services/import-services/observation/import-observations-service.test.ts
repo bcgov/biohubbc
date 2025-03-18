@@ -83,7 +83,7 @@ describe('import-observations-service', () => {
       const service = new ImportObservationsService(mockConnection, {}, 1);
 
       const getCSVConfigStub = sinon.stub(service, 'getCSVConfig').resolves({} as any);
-      const insertObservationStub = sinon.stub(ObservationService.prototype, 'insertUpdateManualSurveyObservations');
+      const insertObservationStub = sinon.stub(ObservationService.prototype, 'insertObservations').resolves();
       const getRowSubcountsStub = sinon.stub(service, '_getRowSubcounts').returns([]);
       const validateCSVWorksheetStub = sinon.stub(validate, 'validateCSVWorksheet').returns({
         errors: [],

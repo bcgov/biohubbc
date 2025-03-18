@@ -34,7 +34,7 @@ export const GET: Operation = [
       ]
     };
   }),
-  getSurveyObservation()
+  getSurveyObservationByIdWithSupplementaryData()
 ];
 
 export const PUT: Operation = [
@@ -208,7 +208,7 @@ PUT.apiDoc = {
  * @export
  * @return {*}  {RequestHandler}
  */
-export function getSurveyObservation(): RequestHandler {
+export function getSurveyObservationByIdWithSupplementaryData(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
     const surveyObservationId = Number(req.params.surveyObservationId);
@@ -220,13 +220,16 @@ export function getSurveyObservation(): RequestHandler {
 
       const observationService = new ObservationService(connection);
 
-      const observationData = await observationService.getSurveyObservation(surveyId, surveyObservationId);
+      const observationData = await observationService.getSurveyObservationByIdWithSupplementaryData(
+        surveyId,
+        surveyObservationId
+      );
 
       await connection.commit();
 
       return res.status(200).json(observationData);
     } catch (error) {
-      defaultLog.error({ label: 'getSurveyObservation', message: 'error', error });
+      defaultLog.error({ label: 'getSurveyObservationByIdWithSupplementaryData', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
@@ -248,8 +251,6 @@ export function putSurveyObservation(): RequestHandler {
     try {
       const surveyId = Number(req.params.surveyId);
       const updateSurveyObservationObject: UpdateSurveyObservation = req.body.surveyObservation;
-
-      console.log({ updateSurveyObservationObject });
 
       await connection.open();
 

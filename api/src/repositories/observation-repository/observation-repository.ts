@@ -94,7 +94,7 @@ export class ObservationRepository extends BaseRepository {
    * @return {*}  {Promise<ObservationRecordWithSamplingAndSubcountData>}
    * @memberof ObservationRepository
    */
-  async getSurveyObservation(
+  async getSurveyObservationByIdWithSupplementaryData(
     surveyId: number,
     surveyObservationId: number
   ): Promise<ObservationRecordWithSamplingAndSubcountData> {
@@ -113,7 +113,7 @@ export class ObservationRepository extends BaseRepository {
 
     if (response.rowCount !== 1) {
       throw new ApiExecuteSQLError('Failed to get survey observation', [
-        'ObservationRepository->getSurveyObservation',
+        'ObservationRepository->getSurveyObservationByIdWithSupplementaryData',
         `rowCount was ${response.rowCount}, expected rowCount = 1`
       ]);
     }
@@ -334,9 +334,6 @@ export class ObservationRepository extends BaseRepository {
         observation_date,
         observation_sign_id;
     `;
-
-    console.log(sqlStatement.text);
-    console.log(sqlStatement.values);
 
     const response = await this.connection.sql(sqlStatement, SurveyObservationRecord);
 

@@ -8,6 +8,7 @@ import {
   QualitativeEnvironmentTypeDefinition,
   QuantitativeEnvironmentTypeDefinition
 } from '../repositories/observation-environment-repository';
+import { ObservationEnvironments } from '../repositories/observation-repository/observation-repository.interface';
 import { DBService } from './db-service';
 
 export class ObservationEnvironmentService extends DBService {
@@ -85,26 +86,46 @@ export class ObservationEnvironmentService extends DBService {
    * Get all distinct environment qualitative type definitions for all qualitative environments for a given survey.
    *
    * @param {number} surveyId
+   * @param {{
+   *       filterFields?: {
+   *         surveyObservationIds?: number[];
+   *       };
+   *     }} [options] Optional fields to additionally filter results by
    * @return {*}  {Promise<QualitativeEnvironmentTypeDefinition[]>}
    * @memberof ObservationEnvironmentService
    */
   async getQualitativeEnvironmentTypeDefinitionsForSurvey(
-    surveyId: number
+    surveyId: number,
+    options?: {
+      filterFields?: {
+        surveyObservationIds?: number[];
+      };
+    }
   ): Promise<QualitativeEnvironmentTypeDefinition[]> {
-    return this.observationEnvironmentRepository.getQualitativeEnvironmentTypeDefinitionsForSurvey(surveyId);
+    return this.observationEnvironmentRepository.getQualitativeEnvironmentTypeDefinitionsForSurvey(surveyId, options);
   }
 
   /**
    * Get all distinct environment quantitative type definitions for all quantitative environments for a given survey.
    *
    * @param {number} surveyId
+   * @param {{
+   *       filterFields?: {
+   *         surveyObservationIds?: number[];
+   *       };
+   *     }} [options] Optional fields to additionally filter results by
    * @return {*}  {Promise<QuantitativeEnvironmentTypeDefinition[]>}
    * @memberof ObservationEnvironmentService
    */
   async getQuantitativeEnvironmentTypeDefinitionsForSurvey(
-    surveyId: number
+    surveyId: number,
+    options?: {
+      filterFields?: {
+        surveyObservationIds?: number[];
+      };
+    }
   ): Promise<QuantitativeEnvironmentTypeDefinition[]> {
-    return this.observationEnvironmentRepository.getQuantitativeEnvironmentTypeDefinitionsForSurvey(surveyId);
+    return this.observationEnvironmentRepository.getQuantitativeEnvironmentTypeDefinitionsForSurvey(surveyId, options);
   }
 
   /**
@@ -159,21 +180,27 @@ export class ObservationEnvironmentService extends DBService {
    * survey.
    *
    * @param {number} surveyId
-   * @return {*}  {Promise<{
-   *     qualitative_environments: QualitativeEnvironmentTypeDefinition[];
-   *     quantitative_environments: QuantitativeEnvironmentTypeDefinition[];
-   *   }>}
-   * @memberof ObservationService
+   * @param {{
+   *       filterFields?: {
+   *         surveyObservationIds?: number[];
+   *       };
+   *     }} [options] Optional fields to additionally filter results by
+   * @return {*}  {Promise<ObservationEnvironments>}
+   * @memberof ObservationEnvironmentService
    */
-  async getEnvironmentTypeDefinitionsForSurvey(surveyId: number): Promise<{
-    qualitative_environments: QualitativeEnvironmentTypeDefinition[];
-    quantitative_environments: QuantitativeEnvironmentTypeDefinition[];
-  }> {
+  async getEnvironmentTypeDefinitionsForSurvey(
+    surveyId: number,
+    options?: {
+      filterFields?: {
+        surveyObservationIds?: number[];
+      };
+    }
+  ): Promise<ObservationEnvironments> {
     const observationEnvironmentService = new ObservationEnvironmentService(this.connection);
 
     const [qualitativeEnvironmentTypeDefinitions, quantitativeEnvironmentTypeDefinitions] = await Promise.all([
-      observationEnvironmentService.getQualitativeEnvironmentTypeDefinitionsForSurvey(surveyId),
-      observationEnvironmentService.getQuantitativeEnvironmentTypeDefinitionsForSurvey(surveyId)
+      observationEnvironmentService.getQualitativeEnvironmentTypeDefinitionsForSurvey(surveyId, options),
+      observationEnvironmentService.getQuantitativeEnvironmentTypeDefinitionsForSurvey(surveyId, options)
     ]);
 
     return {

@@ -5,7 +5,7 @@ import sinonChai from 'sinon-chai';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import * as db from '../../database/db';
 import { HTTPError } from '../../errors/http-error';
-import { ObservationRecordWithSamplingAndSubcountData } from '../../repositories/observation-repository/observation-repository';
+import { ObservationRecordWithSamplingAndSubcountData } from '../../repositories/observation-repository/observation-repository.interface';
 import { ObservationService } from '../../services/observation-services/observation-service';
 import { KeycloakUserInformation } from '../../utils/keycloak-utils';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';

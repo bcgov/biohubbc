@@ -28,7 +28,7 @@ export const GET: Operation = [
       ]
     };
   }),
-  getSurveyObservation()
+  getSurveyObservationByIdWithSupplementaryData()
 ];
 
 GET.apiDoc = {
@@ -187,7 +187,7 @@ GET.apiDoc = {
  * @export
  * @return {*}  {RequestHandler}
  */
-export function getSurveyObservation(): RequestHandler {
+export function getSurveyObservationByIdWithSupplementaryData(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
     const surveyObservationId = Number(req.params.surveyObservationId);
@@ -205,7 +205,7 @@ export function getSurveyObservation(): RequestHandler {
 
       return res.status(200).json(observationData);
     } catch (error) {
-      defaultLog.error({ label: 'getSurveyObservation', message: 'error', error });
+      defaultLog.error({ label: 'getSurveyObservationByIdWithSupplementaryData', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

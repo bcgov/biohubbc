@@ -56,18 +56,23 @@ export type ObservationCountSupplementaryData = {
   observationCount: number;
 };
 
-export type ObservationMeasurementSupplementaryData = {
-  qualitative_measurements: CBQualitativeMeasurementTypeDefinition[];
-  quantitative_measurements: CBQuantitativeMeasurementTypeDefinition[];
+export type ObservationEnvironments = {
   qualitative_environments: QualitativeEnvironmentTypeDefinition[];
   quantitative_environments: QuantitativeEnvironmentTypeDefinition[];
 };
+
+export type ObservationSubcountMeasurements = {
+  qualitative_measurements: CBQualitativeMeasurementTypeDefinition[];
+  quantitative_measurements: CBQuantitativeMeasurementTypeDefinition[];
+};
+
 export type ObservationSamplingSupplementaryData = {
   sampling_data: SurveySamplePeriodDetails[];
 };
 
 export type AllObservationSupplementaryData = ObservationCountSupplementaryData &
-  ObservationMeasurementSupplementaryData &
+  ObservationEnvironments &
+  ObservationSubcountMeasurements &
   ObservationSamplingSupplementaryData;
 
 export interface IEnvironmentDataToValidate {

@@ -1,11 +1,8 @@
 import { ObservationSubcountRecord } from '../database-models/observation_subcount';
 import { IDBConnection } from '../database/db';
+import { ObservationSubcountMeasurements } from '../repositories/observation-repository/observation-repository.interface';
 import { InsertObservationSubCount, SubCountRepository } from '../repositories/subcount-repository';
-import {
-  CBQualitativeMeasurementTypeDefinition,
-  CBQuantitativeMeasurementTypeDefinition,
-  CritterbaseService
-} from './critterbase-service';
+import { CritterbaseService } from './critterbase-service';
 import { DBService } from './db-service';
 import { ObservationService } from './observation-services/observation-service';
 import { ObservationSubCountMeasurementService } from './observation-subcount-measurement-service';
@@ -96,22 +93,34 @@ export class SubCountService extends DBService {
    * survey.
    *
    * @param {number} surveyId
-   * @return {*}  {Promise<{
-   *     qualitative_measurements: CBQualitativeMeasurementTypeDefinition[];
-   *     quantitative_measurements: CBQuantitativeMeasurementTypeDefinition[];
-   *   }>}
+   * @param {{
+   *       filterFields?: {
+   *         surveyObservationIds?: number[];
+   *       };
+   *     }} [options] Optional fields to additionally filter results by
+   * @return {*}  {Promise<ObservationSubcountMeasurements>}
    * @memberof SubCountService
    */
-  async getMeasurementTypeDefinitionsForSurvey(surveyId: number): Promise<{
-    qualitative_measurements: CBQualitativeMeasurementTypeDefinition[];
-    quantitative_measurements: CBQuantitativeMeasurementTypeDefinition[];
-  }> {
+  async getMeasurementTypeDefinitionsForSurvey(
+    surveyId: number,
+    options?: {
+      filterFields?: {
+        surveyObservationIds?: number[];
+      };
+    }
+  ): Promise<ObservationSubcountMeasurements> {
     const observationSubCountMeasurementService = new ObservationSubCountMeasurementService(this.connection);
 
     // Fetch all unique taxon_measurement_ids for qualitative and quantitative measurements
     const [qualitativeTaxonMeasurementIds, quantitativeTaxonMeasurementIds] = await Promise.all([
-      observationSubCountMeasurementService.getObservationSubCountQualitativeTaxonMeasurementIds(surveyId),
-      observationSubCountMeasurementService.getObservationSubCountQuantitativeTaxonMeasurementIds(surveyId)
+      observationSubCountMeasurementService.getObservationSubCountQualitativeTaxonMeasurementIdsForSurvey(
+        surveyId,
+        options
+      ),
+      observationSubCountMeasurementService.getObservationSubCountQuantitativeTaxonMeasurementIdsForSurvey(
+        surveyId,
+        options
+      )
     ]);
 
     const critterbaseService = new CritterbaseService({

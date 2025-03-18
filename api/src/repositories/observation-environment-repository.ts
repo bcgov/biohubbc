@@ -161,45 +161,74 @@ export class ObservationEnvironmentRepository extends BaseRepository {
    * associated to a given survey.
    *
    * @param {number} surveyId
+   * @param {{
+   *       filterFields?: {
+   *         surveyObservationIds?: number[];
+   *       };
+   *     }} [options] Optional fields to additionally filter results by
    * @return {*}  {Promise<QualitativeEnvironmentTypeDefinition[]>}
    * @memberof ObservationEnvironmentRepository
    */
   async getQualitativeEnvironmentTypeDefinitionsForSurvey(
-    surveyId: number
+    surveyId: number,
+    options?: {
+      filterFields?: {
+        surveyObservationIds?: number[];
+      };
+    }
   ): Promise<QualitativeEnvironmentTypeDefinition[]> {
-    const sqlStatement = SQL`
-      WITH w_observation_environment_qualitative AS (
-        SELECT DISTINCT
-          environment_qualitative_id
-        FROM
-          survey_observation
-          LEFT JOIN observation_environment_qualitative ON observation_environment_qualitative.survey_observation_id = survey_observation.survey_observation_id
-        WHERE
-          survey_observation.survey_id = ${surveyId}
-      )
-      SELECT
-        environment_qualitative.environment_qualitative_id,
-        environment_qualitative.name,
-        environment_qualitative.description,
-        json_agg(
-          json_build_object(
-            'environment_qualitative_option_id', environment_qualitative_option.environment_qualitative_option_id,
-            'environment_qualitative_id', environment_qualitative_option.environment_qualitative_id,
-            'name', environment_qualitative_option.name,
-            'description', environment_qualitative_option.description
-          )
-        ) AS options
-      FROM
-        w_observation_environment_qualitative
-        INNER JOIN environment_qualitative ON environment_qualitative.environment_qualitative_id = w_observation_environment_qualitative.environment_qualitative_id
-        INNER JOIN environment_qualitative_option ON environment_qualitative.environment_qualitative_id = environment_qualitative_option.environment_qualitative_id
-      GROUP BY
-        environment_qualitative.environment_qualitative_id,
-        environment_qualitative.name,
-        environment_qualitative.description;
-    `;
+    const knex = getKnex();
+    const query = knex.queryBuilder();
 
-    const response = await this.connection.sql(sqlStatement, QualitativeEnvironmentTypeDefinition);
+    query
+      .with('w_observation_environment_qualitative', (qb1) => {
+        qb1
+          .distinct('environment_qualitative_id')
+          .from('survey_observation')
+          .leftJoin(
+            'observation_environment_qualitative',
+            'observation_environment_qualitative.survey_observation_id',
+            'survey_observation.survey_observation_id'
+          )
+          .where('survey_observation.survey_id', surveyId);
+
+        if (options?.filterFields?.surveyObservationIds) {
+          qb1.whereIn('survey_observation.survey_observation_id', options.filterFields.surveyObservationIds);
+        }
+      })
+      .select(
+        'environment_qualitative.environment_qualitative_id',
+        'environment_qualitative.name',
+        'environment_qualitative.description',
+        knex.raw(`
+          json_agg(
+            json_build_object(
+              'environment_qualitative_option_id', environment_qualitative_option.environment_qualitative_option_id,
+              'environment_qualitative_id', environment_qualitative_option.environment_qualitative_id,
+              'name', environment_qualitative_option.name,
+              'description', environment_qualitative_option.description
+            )
+          ) AS options
+        `)
+      )
+      .from('w_observation_environment_qualitative')
+      .innerJoin(
+        'environment_qualitative',
+        'environment_qualitative.environment_qualitative_id',
+        'w_observation_environment_qualitative.environment_qualitative_id'
+      )
+      .innerJoin(
+        'environment_qualitative_option',
+        'environment_qualitative.environment_qualitative_id',
+        'environment_qualitative_option.environment_qualitative_id'
+      )
+      .groupBy(
+        'environment_qualitative.environment_qualitative_id',
+        'environment_qualitative.name',
+        'environment_qualitative.description'
+      );
+
+    const response = await this.connection.knex(query, QualitativeEnvironmentTypeDefinition);
 
     return response.rows;
   }
@@ -209,31 +238,52 @@ export class ObservationEnvironmentRepository extends BaseRepository {
    * given survey.
    *
    * @param {number} surveyId
+   * @param {{
+   *       filterFields?: {
+   *         surveyObservationIds?: number[];
+   *       };
+   *     }} [options] Optional fields to additionally filter results by
    * @return {*}  {Promise<QuantitativeEnvironmentTypeDefinition[]>}
    * @memberof ObservationEnvironmentRepository
    */
   async getQuantitativeEnvironmentTypeDefinitionsForSurvey(
-    surveyId: number
+    surveyId: number,
+    options?: {
+      filterFields?: {
+        surveyObservationIds?: number[];
+      };
+    }
   ): Promise<QuantitativeEnvironmentTypeDefinition[]> {
-    const sqlStatement = SQL`
-      SELECT DISTINCT
-        environment_quantitative.environment_quantitative_id,
-        environment_quantitative.name,
-        environment_quantitative.description,
-        environment_quantitative.min,
-        environment_quantitative.max,
-        environment_quantitative.unit
-      FROM
-        survey_observation
-        INNER JOIN observation_environment_quantitative
-          ON survey_observation.survey_observation_id = observation_environment_quantitative.survey_observation_id
-        INNER JOIN environment_quantitative
-          ON observation_environment_quantitative.environment_quantitative_id = environment_quantitative.environment_quantitative_id
-      WHERE
-        survey_observation.survey_id = ${surveyId};
-  `;
+    const knex = getKnex();
+    const query = knex.queryBuilder();
 
-    const response = await this.connection.sql(sqlStatement, QuantitativeEnvironmentTypeDefinition);
+    query
+      .distinct(
+        'environment_quantitative.environment_quantitative_id',
+        'environment_quantitative.name',
+        'environment_quantitative.description',
+        'environment_quantitative.min',
+        'environment_quantitative.max',
+        'environment_quantitative.unit'
+      )
+      .from('survey_observation')
+      .innerJoin(
+        'observation_environment_quantitative',
+        'survey_observation.survey_observation_id',
+        'observation_environment_quantitative.survey_observation_id'
+      )
+      .innerJoin(
+        'environment_quantitative',
+        'observation_environment_quantitative.environment_quantitative_id',
+        'environment_quantitative.environment_quantitative_id'
+      )
+      .where('survey_observation.survey_id', surveyId);
+
+    if (options?.filterFields?.surveyObservationIds) {
+      query.whereIn('survey_observation.survey_observation_id', options.filterFields.surveyObservationIds);
+    }
+
+    const response = await this.connection.knex(query, QuantitativeEnvironmentTypeDefinition);
 
     return response.rows;
   }

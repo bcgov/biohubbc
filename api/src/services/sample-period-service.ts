@@ -52,9 +52,29 @@ export class SamplePeriodService extends DBService {
    */
   async getSamplePeriodsForSurvey(
     surveyId: number,
-    options?: { pagination?: ApiPaginationOptions }
+    options?: {
+      filterFields?: {
+        surveyObservationIds?: number[];
+      };
+      pagination?: ApiPaginationOptions;
+    }
   ): Promise<SurveySamplePeriodDetails[]> {
     return this.samplePeriodRepository.getSamplePeriodsForSurvey(surveyId, options);
+  }
+
+  /**
+   * Gets all survey Sample periods for a given observation.
+   *
+   * @param {number} surveyId
+   * @param {number} surveyObservationId
+   * @return {*}  {Promise<SurveySamplePeriodDetails[]>}
+   * @memberof SamplePeriodService
+   */
+  async getSamplePeriodsForObservation(
+    surveyId: number,
+    surveyObservationId: number
+  ): Promise<SurveySamplePeriodDetails[]> {
+    return this.samplePeriodRepository.getSamplePeriodsForObservation(surveyId, surveyObservationId);
   }
 
   /**

@@ -294,14 +294,14 @@ export class ObservationService extends DBService {
   }
 
   /**
-   * Get a survey observation record, for as survyey.
+   * Get a survey observation record, for as survey.
    *
    * @param {number} surveyId
    * @param {number} surveyObservationId
    * @return {*}  {Promise<SurveyObservationWithSupplementaryData>}
    * @memberof ObservationRepository
    */
-  async getSurveyObservation(
+  async getSurveyObservationByIdWithSupplementaryData(
     surveyId: number,
     surveyObservationId: number
   ): Promise<SurveyObservationWithSupplementaryData> {
@@ -312,14 +312,16 @@ export class ObservationService extends DBService {
     const [surveyObservation, measurementTypeDefinitions, environmentTypeDefinitions, samplePeriods] =
       await Promise.all([
         // Fetch observation
-        this.observationRepository.getSurveyObservation(surveyId, surveyObservationId),
+        this.observationRepository.getSurveyObservationByIdWithSupplementaryData(surveyId, surveyObservationId),
         // Fetch supplementary data
-        subCountService.getMeasurementTypeDefinitionsForSurvey(surveyId),
-        observationEnvironmentService.getEnvironmentTypeDefinitionsForSurvey(surveyId),
-        samplePeriodService.getSamplePeriodsForSurvey(surveyId)
+        subCountService.getMeasurementTypeDefinitionsForSurvey(surveyId, {
+          filterFields: { surveyObservationIds: [surveyObservationId] }
+        }),
+        observationEnvironmentService.getEnvironmentTypeDefinitionsForSurvey(surveyId, {
+          filterFields: { surveyObservationIds: [surveyObservationId] }
+        }),
+        samplePeriodService.getSamplePeriodsForObservation(surveyId, surveyObservationId)
       ]);
-
-    console.log(measurementTypeDefinitions);
 
     return {
       surveyObservation: surveyObservation,
@@ -408,22 +410,23 @@ export class ObservationService extends DBService {
     const observationEnvironmentService = new ObservationEnvironmentService(this.connection);
     const samplePeriodService = new SamplePeriodService(this.connection);
 
-    const [
-      surveyObservations,
-      observationCount,
-      measurementTypeDefinitions,
-      environmentTypeDefinitions,
-      samplePeriods
-    ] = await Promise.all([
-      // Fetch observations
-      this.observationRepository.getSurveyFlattenedObservations(surveyId, pagination),
-      // Fetch pagination count data
-      this.observationRepository.getSurveyFlattenedObservationsCount(surveyId),
-      // Fetch supplementary data
-      subCountService.getMeasurementTypeDefinitionsForSurvey(surveyId),
-      observationEnvironmentService.getEnvironmentTypeDefinitionsForSurvey(surveyId),
-      samplePeriodService.getSamplePeriodsForSurvey(surveyId)
-    ]);
+    // Fetch observations
+    const surveyObservations = await this.observationRepository.getSurveyFlattenedObservations(surveyId, pagination);
+
+    const surveyObservationIds = surveyObservations.map((item) => item.survey_observation_id);
+
+    const [observationCount, measurementTypeDefinitions, environmentTypeDefinitions, samplePeriods] = await Promise.all(
+      [
+        // Fetch pagination count data
+        this.observationRepository.getSurveyFlattenedObservationsCount(surveyId),
+        // Fetch supplementary data
+        subCountService.getMeasurementTypeDefinitionsForSurvey(surveyId, { filterFields: { surveyObservationIds } }),
+        observationEnvironmentService.getEnvironmentTypeDefinitionsForSurvey(surveyId, {
+          filterFields: { surveyObservationIds }
+        }),
+        samplePeriodService.getSamplePeriodsForSurvey(surveyId, { filterFields: { surveyObservationIds } })
+      ]
+    );
 
     return {
       surveyObservations: surveyObservations,
