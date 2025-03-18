@@ -101,9 +101,7 @@ const ObservationsTableContainer = () => {
           samplingInformationCache: samplingInformationCache
         }),
         ObservationSignColDef({ observationSignOptions }),
-        ObservationSubcountColDef({
-          samplingInformationCache: samplingInformationCache
-        }),
+        ObservationSubcountColDef(),
         GenericDateColDef({
           field: 'observation_date',
           headerName: 'Date',

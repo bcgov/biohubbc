@@ -6,6 +6,7 @@ import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import HelpButtonStack from 'components/buttons/HelpButtonStack';
+import { MeasurementsSearch } from 'features/surveys/observations/form/components/subcounts/subcount/measurements/search/MeasurementsSearch';
 import { SubcountForm } from 'features/surveys/observations/form/components/subcounts/subcount/SubcountForm';
 import { SubcountFormData } from 'features/surveys/observations/form/components/subcounts/subcount/SubcountForm.interface';
 import {
@@ -18,7 +19,6 @@ import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
 import get from 'lodash-es/get';
 import { useEffect, useMemo, useState } from 'react';
 import { v4 } from 'uuid';
-import { MeasurementsSearch } from '../../../observations-table/configure-columns/components/measurements/search/MeasurementsSearch';
 
 export const initialSubcountFormData: SubcountFormData = {
   _id: v4(),

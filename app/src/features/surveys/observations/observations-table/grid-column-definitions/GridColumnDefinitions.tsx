@@ -1,17 +1,10 @@
 import Typography from '@mui/material/Typography';
 import { GridColDef } from '@mui/x-data-grid';
-import AutocompleteDataGridEditCell from 'components/data-grid/autocomplete/AutocompleteDataGridEditCell';
 import AutocompleteDataGridViewCell from 'components/data-grid/autocomplete/AutocompleteDataGridViewCell';
-import TaxonomyDataGridEditCell from 'components/data-grid/taxonomy/TaxonomyDataGridEditCell';
 import TaxonomyDataGridViewCell from 'components/data-grid/taxonomy/TaxonomyDataGridViewCell';
-import TextFieldDataGrid from 'components/data-grid/TextFieldDataGrid';
 import { IObservationTableRow } from 'contexts/observationsTableContext';
-import { ObservationCountDataGridEditCell } from 'features/surveys/observations/observations-table/grid-column-definitions/count/ObservationCountDataGridEditCell';
-import { SamplePeriodDataGridEditCell } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/periods/SamplePeriodDataGridEditCell';
 import { SamplePeriodDataGridViewCell } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/periods/SamplePeriodDataGridViewCell';
-import { SampleSiteDataGridEditCell } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/sites/SampleSiteDataGridEditCell';
 import { SampleSiteDataGridViewCell } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/sites/SampleSiteDataGridViewCell';
-import { MethodTechniqueDataGridEditCell } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/techniques/MethodTechniqueDataGridEditCell';
 import { MethodTechniqueDataGridViewCell } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/techniques/MethodTechniqueDataGridViewCell';
 import { SamplingInformationCache } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/useSamplingInformationCache';
 import { CBMeasurementType, CBQualitativeOption } from 'interfaces/useCritterApi.interface';
@@ -42,9 +35,6 @@ export const TaxonomyColDef = (): GridColDef<IObservationTableRow> => {
     },
     renderCell: (params) => {
       return <TaxonomyDataGridViewCell dataGridProps={params} />;
-    },
-    renderEditCell: (params) => {
-      return <TaxonomyDataGridEditCell dataGridProps={params} />;
     }
   };
 };
@@ -67,9 +57,6 @@ export const SampleSiteColDef = (props: {
     align: 'left',
     renderCell: (params) => {
       return <SampleSiteDataGridViewCell dataGridProps={params} samplingInformationCache={samplingInformationCache} />;
-    },
-    renderEditCell: (params) => {
-      return <SampleSiteDataGridEditCell dataGridProps={params} samplingInformationCache={samplingInformationCache} />;
     }
   };
 };
@@ -93,11 +80,6 @@ export const MethodTechniqueColDef = (props: {
     renderCell: (params) => {
       return (
         <MethodTechniqueDataGridViewCell dataGridProps={params} samplingInformationCache={samplingInformationCache} />
-      );
-    },
-    renderEditCell: (params) => {
-      return (
-        <MethodTechniqueDataGridEditCell dataGridProps={params} samplingInformationCache={samplingInformationCache} />
       );
     }
   };
@@ -123,20 +105,11 @@ export const SamplePeriodColDef = (props: {
       return (
         <SamplePeriodDataGridViewCell dataGridProps={params} samplingInformationCache={samplingInformationCache} />
       );
-    },
-    renderEditCell: (params) => {
-      return (
-        <SamplePeriodDataGridEditCell dataGridProps={params} samplingInformationCache={samplingInformationCache} />
-      );
     }
   };
 };
 
-export const ObservationSubcountColDef = (props: {
-  samplingInformationCache: SamplingInformationCache;
-}): GridColDef<IObservationTableRow> => {
-  const { samplingInformationCache } = props;
-
+export const ObservationSubcountColDef = (): GridColDef<IObservationTableRow> => {
   return {
     field: 'subcount',
     headerName: 'Count',
@@ -152,12 +125,7 @@ export const ObservationSubcountColDef = (props: {
       <Typography variant="body2" sx={{ fontSize: 'inherit' }}>
         {params.value}
       </Typography>
-    ),
-    renderEditCell: (params) => {
-      return (
-        <ObservationCountDataGridEditCell dataGridProps={params} samplingInformationCache={samplingInformationCache} />
-      );
-    }
+    )
   };
 };
 
@@ -183,9 +151,6 @@ export const ObservationSignColDef = (props: {
     align: 'left',
     renderCell: (params) => {
       return <AutocompleteDataGridViewCell dataGridProps={params} options={signOptions} />;
-    },
-    renderEditCell: (params) => {
-      return <AutocompleteDataGridEditCell dataGridProps={params} options={signOptions} />;
     }
   };
 };
@@ -210,29 +175,7 @@ export const ObservationQuantitativeMeasurementColDef = (props: {
       <Typography variant="body2" sx={{ fontSize: 'inherit' }}>
         {params.value}
       </Typography>
-    ),
-    renderEditCell: (params) => {
-      return (
-        <TextFieldDataGrid
-          dataGridProps={params}
-          textFieldProps={{
-            name: params.field,
-            onChange: (event) => {
-              if (!/^\d{0,7}$/.test(event.target.value)) {
-                // If the value is not a number, return
-                return;
-              }
-
-              params.api.setEditCellValue({
-                id: params.id,
-                field: params.field,
-                value: event.target.value
-              });
-            }
-          }}
-        />
-      );
-    }
+    )
   };
 };
 
@@ -260,9 +203,6 @@ export const ObservationQualitativeMeasurementColDef = (props: {
     align: 'left',
     renderCell: (params) => {
       return <AutocompleteDataGridViewCell dataGridProps={params} options={qualitativeOptions} />;
-    },
-    renderEditCell: (params) => {
-      return <AutocompleteDataGridEditCell dataGridProps={params} options={qualitativeOptions} />;
     }
   };
 };
@@ -287,29 +227,7 @@ export const ObservationQuantitativeEnvironmentColDef = (props: {
       <Typography variant="body2" sx={{ fontSize: 'inherit' }}>
         {params.value}
       </Typography>
-    ),
-    renderEditCell: (params) => {
-      return (
-        <TextFieldDataGrid
-          dataGridProps={params}
-          textFieldProps={{
-            name: params.field,
-            onChange: (event) => {
-              if (!/^\d{0,7}$/.test(event.target.value)) {
-                // If the value is not a number, return
-                return;
-              }
-
-              params.api.setEditCellValue({
-                id: params.id,
-                field: params.field,
-                value: event.target.value
-              });
-            }
-          }}
-        />
-      );
-    }
+    )
   };
 };
 
@@ -336,9 +254,6 @@ export const ObservationQualitativeEnvironmentColDef = (props: {
     align: 'left',
     renderCell: (params) => {
       return <AutocompleteDataGridViewCell dataGridProps={params} options={qualitativeOptions} />;
-    },
-    renderEditCell: (params) => {
-      return <AutocompleteDataGridEditCell dataGridProps={params} options={qualitativeOptions} />;
     }
   };
 };

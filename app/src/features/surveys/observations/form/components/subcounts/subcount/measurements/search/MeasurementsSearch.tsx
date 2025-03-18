@@ -1,6 +1,6 @@
 import green from '@mui/material/colors/green';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
-import { MeasurementsSearchAutocomplete } from 'features/surveys/observations/observations-table/configure-columns/components/measurements/search/MeasurementsSearchAutocomplete';
+import { MeasurementsSearchAutocomplete } from 'features/surveys/observations/form/components/subcounts/subcount/measurements/search/MeasurementsSearchAutocomplete';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
