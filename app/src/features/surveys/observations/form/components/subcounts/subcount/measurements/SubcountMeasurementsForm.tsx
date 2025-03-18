@@ -89,8 +89,8 @@ export const SubcountMeasurementsForm = (props: ISubcountMeasurementsFormProps) 
               key={measurementFormValue?.measurement_id ?? index}
               formikFieldName={measurementsArrayFieldName}
               measurementTypeDefinition={measurementTypeDefinition}
-              onDelete={() => onDeleteMeasurement(measurementTypeDefinition.taxon_measurement_id)}
               displayHeader={enableHeaders}
+              onDelete={() => onDeleteMeasurement(measurementTypeDefinition.taxon_measurement_id)}
             />
           );
         });

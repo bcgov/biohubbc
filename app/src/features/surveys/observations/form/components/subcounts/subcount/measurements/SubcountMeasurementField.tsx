@@ -6,7 +6,12 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { SubcountQualitativeMeasurementField } from 'features/surveys/observations/form/components/subcounts/subcount/measurements/SubcountQualitativeMeasurementField';
 import { SubcountQuantitativeMeasurementField } from 'features/surveys/observations/form/components/subcounts/subcount/measurements/SubcountQuantitativeMeasurementField';
+import {
+  CreateObservationFormData,
+  UpdateObservationFormData
+} from 'features/surveys/observations/form/ObservationForm.interface';
 import { isCBQualitativeMeasurementTypeDefinition } from 'features/surveys/observations/utils/type-guard-utils';
+import { useFormikContext } from 'formik';
 import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
 
 export interface ISubcountMeasurementFieldProps {
@@ -37,7 +42,9 @@ export interface ISubcountMeasurementFieldProps {
  * @return {*}
  */
 export const SubcountMeasurementField = (props: ISubcountMeasurementFieldProps) => {
-  const { formikFieldName, measurementTypeDefinition, onDelete, displayHeader } = props;
+  const { formikFieldName, measurementTypeDefinition, displayHeader, onDelete } = props;
+
+  const { setFieldValue } = useFormikContext<CreateObservationFormData | UpdateObservationFormData>();
 
   const isQualitativeMeasurement = isCBQualitativeMeasurementTypeDefinition(measurementTypeDefinition);
 
@@ -62,11 +69,23 @@ export const SubcountMeasurementField = (props: ISubcountMeasurementFieldProps) 
         <SubcountQualitativeMeasurementField
           formikFieldName={formikFieldName}
           measurementTypeDefinition={measurementTypeDefinition}
+          onChange={(_, option) => {
+            setFieldValue(formikFieldName, {
+              measurement_id: measurementTypeDefinition.taxon_measurement_id,
+              measurement_option_id: option?.value ?? null
+            });
+          }}
         />
       ) : (
         <SubcountQuantitativeMeasurementField
           formikFieldName={formikFieldName}
           measurementTypeDefinition={measurementTypeDefinition}
+          onChange={(event) => {
+            setFieldValue(formikFieldName, {
+              measurement_id: measurementTypeDefinition.taxon_measurement_id,
+              measurement_value: event.target.value ?? null
+            });
+          }}
         />
       )}
     </Box>

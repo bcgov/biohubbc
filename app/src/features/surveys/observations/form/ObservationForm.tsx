@@ -186,8 +186,6 @@ const ObservationForm = (props: IObservationFormProps) => {
   const { initialFormData, onSubmit, formikRef, initialSupplementarySamplingData, initialMeasurementTypeDefinitions } =
     props;
 
-  console.log('3', initialMeasurementTypeDefinitions);
-
   return (
     <Formik
       innerRef={formikRef}

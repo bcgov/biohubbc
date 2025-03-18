@@ -98,8 +98,6 @@ const EditObservationPage = () => {
         ...qualitativeMeasurementTypeDefinitions
       ];
 
-      console.log('2', initialMeasurementTypeDefinitions);
-
       return initialMeasurementTypeDefinitions;
     }
   );

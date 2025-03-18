@@ -1,9 +1,11 @@
 import CustomTextField from 'components/fields/CustomTextField';
 import { CBQuantitativeMeasurementTypeDefinition } from 'interfaces/useCritterApi.interface';
+import { ChangeEvent } from 'react';
 
 export interface ISubcountQuantitativeMeasurementFieldProps {
   formikFieldName: string;
   measurementTypeDefinition: CBQuantitativeMeasurementTypeDefinition;
+  onChange?: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
 }
 
 /**
@@ -13,7 +15,7 @@ export interface ISubcountQuantitativeMeasurementFieldProps {
  * @return {*}
  */
 export const SubcountQuantitativeMeasurementField = (props: ISubcountQuantitativeMeasurementFieldProps) => {
-  const { formikFieldName, measurementTypeDefinition } = props;
+  const { formikFieldName, measurementTypeDefinition, onChange } = props;
 
   const subcountQuantitativeMeasurementFieldName = `${formikFieldName}.measurement_value`;
 
@@ -23,6 +25,7 @@ export const SubcountQuantitativeMeasurementField = (props: ISubcountQuantitativ
         measurementTypeDefinition.unit ? `(${measurementTypeDefinition.unit})` : ''
       }`}
       name={subcountQuantitativeMeasurementFieldName}
+      onChange={onChange}
       other={{ type: 'number' }}
     />
   );
