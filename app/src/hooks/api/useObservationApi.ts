@@ -320,7 +320,7 @@ const useObservationApi = (axios: AxiosInstance) => {
    * @param {((string | number)[])} observationSubcountIds
    * @return {*}  {Promise<void>}
    */
-  const deleteRows = async (
+  const deleteObservationSubcounts = async (
     projectId: number,
     surveyId: number,
     observationSubcountIds: (string | number)[]
@@ -328,29 +328,6 @@ const useObservationApi = (axios: AxiosInstance) => {
     await axios.post(`/api/project/${projectId}/survey/${surveyId}/observations/subcounts/delete`, {
       observationSubcountIds
     });
-  };
-
-  /**
-   * Deletes all of the observation measurements, from all observation records, having the given taxon measurement id.
-   *
-   * @param {number} projectId
-   * @param {number} surveyId
-   * @param {string[]} measurementIds The critterbase taxon measurement ids to delete.
-   * @return {*}  {Promise<void>}
-   */
-  const deleteObservationMeasurements = async (
-    projectId: number,
-    surveyId: number,
-    measurementIds: string[]
-  ): Promise<void> => {
-    const { data } = await axios.post<void>(
-      `/api/project/${projectId}/survey/${surveyId}/observations/measurements/delete`,
-      {
-        measurement_ids: measurementIds
-      }
-    );
-
-    return data;
   };
 
   /**
@@ -388,8 +365,7 @@ const useObservationApi = (axios: AxiosInstance) => {
     getObservationsGeometry,
     getObservationMeasurementDefinitions,
     deleteObservationRecords,
-    deleteRows,
-    deleteObservationMeasurements,
+    deleteObservationSubcounts,
     deleteObservationEnvironments,
     importObservationCSV,
     createObservation,

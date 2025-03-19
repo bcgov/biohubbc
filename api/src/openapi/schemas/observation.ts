@@ -498,7 +498,8 @@ export const findObservationSchema: OpenAPIV3.SchemaObject = {
       type: 'integer',
       minimum: 1,
       description:
-        'The observation sign ID, indicating whether the observation was a direct sighting, footprints, scat, etc.'
+        'The observation sign ID, indicating whether the observation was a direct sighting, footprints, scat, etc.',
+      nullable: true
     },
     // Observation environment data
     qualitative_environments: {
@@ -616,7 +617,8 @@ export const findFlattenedObservationsSchema: OpenAPIV3.SchemaObject = {
         type: 'integer',
         minimum: 1,
         description:
-          'The observation sign ID, indicating whether the observation was a direct sighting, footprints, scat, etc.'
+          'The observation sign ID, indicating whether the observation was a direct sighting, footprints, scat, etc.',
+        nullable: true
       },
       qualitative_environments: {
         type: 'array',

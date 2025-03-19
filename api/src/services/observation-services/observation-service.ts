@@ -1,5 +1,6 @@
+import { z } from 'zod';
 import { SurveyObservationRecord } from '../../database-models/survey_observation';
-import { IDBConnection } from '../../database/db';
+import { getKnex, IDBConnection } from '../../database/db';
 import { IObservationAdvancedFilters } from '../../models/observation-view';
 import {
   InsertObservationQualitativeEnvironmentRecord,
@@ -553,6 +554,49 @@ export class ObservationService extends DBService {
    */
   async getObservationsCountByTechniqueIds(surveyId: number, methodTechniqueIds: number[]): Promise<number> {
     return this.observationRepository.getObservationsCountByTechniqueIds(surveyId, methodTechniqueIds);
+  }
+
+  /**
+   * Get the survey observation ids that have no subcount records, for the given survey and set of survey observation
+   * ids.
+   *
+   * @param {number} surveyId
+   * @param {{
+   *       filterFields?: {
+   *         surveyObservationIds?: number[];
+   *       };
+   *     }} [options] Optional fields to additionally filter results by
+   * @return {*}  {Promise<number[]>}
+   * @memberof SubCountRepository
+   */
+  async getOrphanedSurveyObservationIds(
+    surveyId: number,
+    options?: {
+      filterFields?: {
+        surveyObservationIds?: number[];
+      };
+    }
+  ): Promise<number[]> {
+    const knex = getKnex();
+    const queryBuilder = knex.queryBuilder();
+
+    queryBuilder
+      .select('survey_observation.survey_observation_id')
+      .from('survey_observation')
+      .where('survey_observation.survey_id', surveyId)
+      .whereNotExists((qb) => {
+        qb.select(knex.raw('1'))
+          .from('observation_subcount')
+          .whereRaw('observation_subcount.survey_observation_id = survey_observation.survey_observation_id');
+      });
+
+    if (options?.filterFields?.surveyObservationIds) {
+      queryBuilder.whereIn('survey_observation.survey_observation_id', options.filterFields.surveyObservationIds);
+    }
+
+    const response = await this.connection.knex(queryBuilder, z.object({ survey_observation_id: z.number() }));
+
+    return response.rows.map((row) => row.survey_observation_id);
   }
 
   /**

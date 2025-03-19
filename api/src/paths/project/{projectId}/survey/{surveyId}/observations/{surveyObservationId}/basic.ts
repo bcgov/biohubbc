@@ -120,20 +120,27 @@ GET.apiDoc = {
                 type: 'integer'
               },
               latitude: {
-                type: 'number'
+                type: 'number',
+                nullable: true
               },
               longitude: {
-                type: 'number'
+                type: 'number',
+                nullable: true
               },
               observation_date: {
-                type: 'string'
+                type: 'string',
+                nullable: true
               },
               observation_time: {
-                type: 'string'
+                type: 'string',
+                nullable: true
               },
               observation_sign_id: {
                 type: 'integer',
-                minimum: 1
+                minimum: 1,
+                description:
+                  'The observation sign ID, indicating whether the observation was a direct sighting, footprints, scat, etc.',
+                nullable: true
               },
               // Additional sampling data
               survey_sample_site_id: {

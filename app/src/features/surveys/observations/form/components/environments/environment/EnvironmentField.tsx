@@ -10,7 +10,7 @@ import { getEnvironmentCategoryOptions } from 'features/surveys/observations/for
 import {
   CreateObservationFormData,
   UpdateObservationFormData
-} from 'features/surveys/observations/form/ObservationForm.interface';
+} from 'features/surveys/observations/form/components/ObservationForm.interface';
 import { useFormikContext } from 'formik';
 import {
   EnvironmentQualitativeTypeDefinition,

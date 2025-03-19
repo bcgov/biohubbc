@@ -4,12 +4,12 @@ import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { SubcountQualitativeMeasurementField } from 'features/surveys/observations/form/components/subcounts/subcount/measurements/SubcountQualitativeMeasurementField';
-import { SubcountQuantitativeMeasurementField } from 'features/surveys/observations/form/components/subcounts/subcount/measurements/SubcountQuantitativeMeasurementField';
 import {
   CreateObservationFormData,
   UpdateObservationFormData
-} from 'features/surveys/observations/form/ObservationForm.interface';
+} from 'features/surveys/observations/form/components/ObservationForm.interface';
+import { SubcountQualitativeMeasurementField } from 'features/surveys/observations/form/components/subcounts/subcount/measurements/components/SubcountQualitativeMeasurementField';
+import { SubcountQuantitativeMeasurementField } from 'features/surveys/observations/form/components/subcounts/subcount/measurements/components/SubcountQuantitativeMeasurementField';
 import { isCBQualitativeMeasurementTypeDefinition } from 'features/surveys/observations/utils/type-guard-utils';
 import { useFormikContext } from 'formik';
 import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
@@ -81,9 +81,14 @@ export const SubcountMeasurementField = (props: ISubcountMeasurementFieldProps) 
           formikFieldName={formikFieldName}
           measurementTypeDefinition={measurementTypeDefinition}
           onChange={(event) => {
+            let value: number | null = null;
+            if (event.target.value !== '') {
+              value = Number(event.target.value);
+            }
+
             setFieldValue(formikFieldName, {
               measurement_id: measurementTypeDefinition.taxon_measurement_id,
-              measurement_value: event.target.value ?? null
+              measurement_value: value
             });
           }}
         />

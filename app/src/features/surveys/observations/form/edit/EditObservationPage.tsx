@@ -7,7 +7,6 @@ import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import PageHeader from 'components/layout/PageHeader';
 import { EditObservationI18N } from 'constants/i18n';
 import { CodesContext } from 'contexts/codesContext';
@@ -15,9 +14,9 @@ import { DialogContext } from 'contexts/dialogContext';
 import { TaxonomyContextProvider } from 'contexts/taxonomyContext';
 import { EnvironmentFormData } from 'features/surveys/observations/form/components/environments/environment/EnvironmentField';
 import { getEnvironmentFormData } from 'features/surveys/observations/form/components/environments/environment/utils';
+import ObservationForm from 'features/surveys/observations/form/components/ObservationForm';
+import { UpdateObservationFormData } from 'features/surveys/observations/form/components/ObservationForm.interface';
 import { getSubcountsFormData } from 'features/surveys/observations/form/components/subcounts/utils';
-import ObservationForm from 'features/surveys/observations/form/ObservationForm';
-import { UpdateObservationFormData } from 'features/surveys/observations/form/ObservationForm.interface';
 import {
   isSubcountQualitativeMeasurement,
   isSubcountQuantitativeMeasurement
@@ -29,7 +28,10 @@ import { useProjectContext, useSurveyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
-import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
+import {
+  CBQualitativeMeasurementTypeDefinition,
+  CBQuantitativeMeasurementTypeDefinition
+} from 'interfaces/useCritterApi.interface';
 import {
   IEditObservation,
   ObservationEnvironmentQualitativeObject,
@@ -37,7 +39,8 @@ import {
   SubcountQualitativeMeasurement,
   SubcountQuantitativeMeasurement
 } from 'interfaces/useObservationApi.interface';
-import { useContext, useEffect, useRef, useState } from 'react';
+import { GetSamplingPeriod } from 'interfaces/useSamplingPeriodApi.interface';
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 
@@ -87,18 +90,14 @@ const EditObservationPage = () => {
   }, [codesContext.codesDataLoader]);
 
   const measurementTypeDefinitionsDataLoader = useDataLoader(
-    async (data: { quantitativeTaxonMeasurementIds: string[]; qualitativeTaxonMeasurementIds: string[] }) => {
+    async (quantitativeTaxonMeasurementIds: string[], qualitativeTaxonMeasurementIds: string[]) => {
+      // Get the measurement type definitions for the provided measurement ids
       const [quantitativeMeasurementTypeDefinitions, qualitativeMeasurementTypeDefinitions] = await Promise.all([
-        critterbaseApi.xref.getQuantitativeMeasurementTypeDefinition(data.quantitativeTaxonMeasurementIds),
-        critterbaseApi.xref.getQualitativeMeasurementTypeDefinitions(data.qualitativeTaxonMeasurementIds)
+        critterbaseApi.xref.getQuantitativeMeasurementTypeDefinition(quantitativeTaxonMeasurementIds),
+        critterbaseApi.xref.getQualitativeMeasurementTypeDefinitions(qualitativeTaxonMeasurementIds)
       ]);
 
-      const initialMeasurementTypeDefinitions: CBMeasurementType[] = [
-        ...quantitativeMeasurementTypeDefinitions,
-        ...qualitativeMeasurementTypeDefinitions
-      ];
-
-      return initialMeasurementTypeDefinitions;
+      return [...quantitativeMeasurementTypeDefinitions, ...qualitativeMeasurementTypeDefinitions];
     }
   );
 
@@ -107,32 +106,21 @@ const EditObservationPage = () => {
       return;
     }
 
-    measurementTypeDefinitionsDataLoader.load({
-      quantitativeTaxonMeasurementIds:
-        observationDataLoader.data?.surveyObservation.subcounts.flatMap((item) => {
-          return item.quantitative_measurements.map((measurement) => measurement.critterbase_taxon_measurement_id);
-        }) ?? [],
-      qualitativeTaxonMeasurementIds:
-        observationDataLoader.data?.surveyObservation.subcounts.flatMap((item) => {
-          return item.qualitative_measurements.map((measurement) => measurement.critterbase_taxon_measurement_id);
-        }) ?? []
-    });
-  }, [measurementTypeDefinitionsDataLoader, observationDataLoader.data?.surveyObservation.subcounts]);
+    // Get all the quantitative measurement ids for the observation subcounts
+    const quantitativeTaxonMeasurementIds =
+      observationDataLoader.data?.surveyObservation.subcounts.flatMap((item) => {
+        return item.quantitative_measurements.map((measurement) => measurement.critterbase_taxon_measurement_id);
+      }) ?? [];
 
-  const showEditErrorDialog = (textDialogProps: Partial<IErrorDialogProps>) => {
-    dialogContext.setErrorDialog({
-      dialogTitle: EditObservationI18N.editErrorTitle,
-      dialogText: EditObservationI18N.editErrorText,
-      onClose: () => {
-        dialogContext.setErrorDialog({ open: false });
-      },
-      onOk: () => {
-        dialogContext.setErrorDialog({ open: false });
-      },
-      ...textDialogProps,
-      open: true
-    });
-  };
+    // Get all the qualitative measurement ids for the observation subcounts
+    const qualitativeTaxonMeasurementIds =
+      observationDataLoader.data?.surveyObservation.subcounts.flatMap((item) => {
+        return item.qualitative_measurements.map((measurement) => measurement.critterbase_taxon_measurement_id);
+      }) ?? [];
+
+    // Load the measurement type definitions
+    measurementTypeDefinitionsDataLoader.load(quantitativeTaxonMeasurementIds, qualitativeTaxonMeasurementIds);
+  }, [measurementTypeDefinitionsDataLoader, observationDataLoader.data?.surveyObservation.subcounts]);
 
   const handleCancel = () => {
     history.push(`/admin/projects/${projectId}/surveys/${surveyId}/observations`);
@@ -144,7 +132,7 @@ const EditObservationPage = () => {
    * @param {IEditObservation} observationPostObject
    * @return {*}
    */
-  const editObservation = async (formData: UpdateObservationFormData) => {
+  const handleSubmit = async (formData: UpdateObservationFormData) => {
     setIsSaving(true);
     try {
       const {
@@ -163,16 +151,16 @@ const EditObservationPage = () => {
 
       for (const environment of environments) {
         if (environment._type === 'quantitative') {
-          if (!environment.environment_quantitative_id || !environment.value) {
+          if (!environment.environment_quantitative_id || environment.value === null) {
             continue;
           }
 
           quantitative_environments.push({
             environment_quantitative_id: environment.environment_quantitative_id,
-            value: environment.value
+            value: Number(environment.value)
           });
         } else if (environment._type === 'qualitative') {
-          if (!environment.environment_qualitative_id || !environment.environment_qualitative_option_id) {
+          if (!environment.environment_qualitative_id || environment.environment_qualitative_option_id === null) {
             continue;
           }
 
@@ -206,17 +194,17 @@ const EditObservationPage = () => {
 
         for (const measurement of measurements) {
           if (isSubcountQuantitativeMeasurement(measurement)) {
-            if (!measurement.measurement_value) {
+            if (measurement.measurement_value === null) {
               // No value was entered for the quantitative measurement, skip it
               continue;
             }
 
             quantitative_measurements.push({
               measurement_id: measurement.measurement_id,
-              measurement_value: measurement.measurement_value
+              measurement_value: Number(measurement.measurement_value)
             });
           } else if (isSubcountQualitativeMeasurement(measurement)) {
-            if (!measurement.measurement_option_id) {
+            if (measurement.measurement_option_id === null) {
               // No value was selected for the qualitative measurement, skip it
               continue;
             }
@@ -248,52 +236,87 @@ const EditObservationPage = () => {
       history.push(`/admin/projects/${projectId}/surveys/${surveyId}/observations`, SKIP_CONFIRMATION_DIALOG);
     } catch (error) {
       const apiError = error as APIError;
-      showEditErrorDialog({
+      dialogContext.setErrorDialog({
         dialogTitle: EditObservationI18N.editErrorTitle,
         dialogText: EditObservationI18N.editErrorText,
         dialogError: apiError.message,
-        dialogErrorDetails: apiError.errors
+        dialogErrorDetails: apiError.errors,
+        onClose: () => {
+          dialogContext.setErrorDialog({ open: false });
+        },
+        onOk: () => {
+          dialogContext.setErrorDialog({ open: false });
+        },
+        open: true
       });
     } finally {
       setIsSaving(false);
     }
   };
 
-  if (
-    !surveyContext.surveyDataLoader.data ||
-    !projectContext.projectDataLoader.data ||
-    !codesContext.codesDataLoader.data ||
-    !observationDataLoader.data ||
-    observationDataLoader.isLoading
-  ) {
+  // The initial environment form data to render in the form
+  const _initialEnvironmentsFormData: EnvironmentFormData[] | undefined = useMemo(() => {
+    if (
+      !observationDataLoader.data?.surveyObservation.qualitative_environments ||
+      !observationDataLoader.data?.surveyObservation.quantitative_environments
+    ) {
+      return undefined;
+    }
+
+    return getEnvironmentFormData({
+      qualitative_environments: observationDataLoader.data.surveyObservation.qualitative_environments,
+      quantitative_environments: observationDataLoader.data.surveyObservation.quantitative_environments
+    });
+  }, [
+    observationDataLoader.data?.surveyObservation.qualitative_environments,
+    observationDataLoader.data?.surveyObservation.quantitative_environments
+  ]);
+
+  const _initialSubcountsFormData = useMemo(() => {
+    if (!observationDataLoader.data?.surveyObservation.subcounts) {
+      return undefined;
+    }
+
+    return getSubcountsFormData(observationDataLoader.data.surveyObservation.subcounts);
+  }, [observationDataLoader.data?.surveyObservation.subcounts]);
+
+  const initialObservationFormData: UpdateObservationFormData | undefined = useMemo(() => {
+    if (!observationDataLoader.data?.surveyObservation || !_initialSubcountsFormData || !_initialEnvironmentsFormData) {
+      return undefined;
+    }
+
+    return {
+      standardColumns: {
+        survey_observation_id: observationDataLoader.data.surveyObservation.survey_observation_id,
+        count: observationDataLoader.data.surveyObservation.count,
+        latitude: observationDataLoader.data.surveyObservation.latitude,
+        longitude: observationDataLoader.data.surveyObservation.longitude,
+        observation_date: observationDataLoader.data.surveyObservation.observation_date,
+        observation_time: observationDataLoader.data.surveyObservation.observation_time,
+        itis_tsn: observationDataLoader.data.surveyObservation.itis_tsn,
+        itis_scientific_name: observationDataLoader.data.surveyObservation.itis_scientific_name,
+        observation_sign_id: observationDataLoader.data.surveyObservation.observation_sign_id,
+        survey_sample_site_id: observationDataLoader.data.surveyObservation.survey_sample_site_id,
+        method_technique_id: observationDataLoader.data.surveyObservation.method_technique_id,
+        survey_sample_period_id: observationDataLoader.data.surveyObservation.survey_sample_period_id,
+        environments: _initialEnvironmentsFormData
+      },
+      subcounts: _initialSubcountsFormData
+    };
+  }, [_initialEnvironmentsFormData, _initialSubcountsFormData, observationDataLoader.data]);
+
+  // The initial sampling data to use when rendering the form
+  const initialSupplementarySamplingData: GetSamplingPeriod[] | undefined =
+    observationDataLoader.data?.supplementaryObservationData.sampling_data;
+
+  // The initial measurement type definitions to use when rendering the form
+  const initialMeasurementTypeDefinitions:
+    | (CBQualitativeMeasurementTypeDefinition | CBQuantitativeMeasurementTypeDefinition)[]
+    | undefined = measurementTypeDefinitionsDataLoader.data;
+
+  if (!initialObservationFormData || !initialSupplementarySamplingData || !initialMeasurementTypeDefinitions) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
-
-  const initialEnvironments: EnvironmentFormData[] = getEnvironmentFormData({
-    qualitative_environments: observationDataLoader.data.surveyObservation.qualitative_environments,
-    quantitative_environments: observationDataLoader.data.surveyObservation.quantitative_environments
-  });
-
-  const initialSubcounts = getSubcountsFormData(observationDataLoader.data.surveyObservation.subcounts);
-
-  const initialObservationFormData: UpdateObservationFormData = {
-    standardColumns: {
-      survey_observation_id: observationDataLoader.data.surveyObservation.survey_observation_id,
-      count: observationDataLoader.data.surveyObservation.count,
-      latitude: observationDataLoader.data.surveyObservation.latitude,
-      longitude: observationDataLoader.data.surveyObservation.longitude,
-      observation_date: observationDataLoader.data.surveyObservation.observation_date,
-      observation_time: observationDataLoader.data.surveyObservation.observation_time,
-      itis_tsn: observationDataLoader.data.surveyObservation.itis_tsn,
-      itis_scientific_name: observationDataLoader.data.surveyObservation.itis_scientific_name,
-      observation_sign_id: observationDataLoader.data.surveyObservation.observation_sign_id,
-      survey_sample_site_id: observationDataLoader.data.surveyObservation.survey_sample_site_id,
-      method_technique_id: observationDataLoader.data.surveyObservation.method_technique_id,
-      survey_sample_period_id: observationDataLoader.data.surveyObservation.survey_sample_period_id,
-      environments: initialEnvironments
-    },
-    subcounts: initialSubcounts
-  };
 
   return (
     <>
@@ -343,11 +366,11 @@ const EditObservationPage = () => {
             <ObservationForm
               initialFormData={initialObservationFormData}
               onSubmit={(formData) => {
-                editObservation(formData);
+                handleSubmit(formData);
               }}
               formikRef={formikRef}
-              initialSupplementarySamplingData={observationDataLoader.data.supplementaryObservationData.sampling_data}
-              initialMeasurementTypeDefinitions={measurementTypeDefinitionsDataLoader.data}
+              initialSupplementarySamplingData={initialSupplementarySamplingData}
+              initialMeasurementTypeDefinitions={initialMeasurementTypeDefinitions}
             />
           </TaxonomyContextProvider>
           <Stack mt={4} flexDirection="row" justifyContent="flex-end" gap={1}>

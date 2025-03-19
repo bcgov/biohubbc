@@ -29,7 +29,7 @@ export const POST: Operation = [
 
 POST.apiDoc = {
   description:
-    'Delete observation subcount records. An observation must have at least one subcount. If all subcount recirds are deleted, the observation record will also be deleted.',
+    'Delete observation subcount records. An observation must have at least one subcount. If all subcount records are deleted, the observation record will also be deleted.',
   tags: ['observation'],
   security: [
     {
@@ -62,14 +62,8 @@ POST.apiDoc = {
               type: 'array',
               minItems: 1,
               items: {
-                anyOf: [
-                  {
-                    type: 'integer'
-                  },
-                  {
-                    type: 'string'
-                  }
-                ]
+                type: 'integer',
+                minimum: 1
               }
             }
           }
@@ -111,6 +105,7 @@ POST.apiDoc = {
 export function deleteObservationSubcounts(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
+    const observationSubcountIds = req.body.observationSubcountIds as number[];
 
     defaultLog.debug({ label: 'deleteObservationSubcounts', surveyId });
 
@@ -120,11 +115,6 @@ export function deleteObservationSubcounts(): RequestHandler {
       await connection.open();
 
       const subcountService = new SubCountService(connection);
-
-      const observationSubcountIds =
-        req.body?.observationSubcountIds?.map((observationSubcountId: string | number) =>
-          Number(observationSubcountId)
-        ) ?? [];
 
       await subcountService.deleteObservationSubcountRecords(surveyId, observationSubcountIds);
 

@@ -7,7 +7,7 @@ import SpeciesSelectedCard from 'components/species/components/SpeciesSelectedCa
 import {
   CreateObservationFormData,
   UpdateObservationFormData
-} from 'features/surveys/observations/form/ObservationForm.interface';
+} from 'features/surveys/observations/form/components/ObservationForm.interface';
 import { useFormikContext } from 'formik';
 import { useCodesContext } from 'hooks/useContext';
 import { get } from 'lodash-es';

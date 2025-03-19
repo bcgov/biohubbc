@@ -1,7 +1,8 @@
-import { mdiPlus } from '@mdi/js';
+import { mdiPencil, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import Collapse from '@mui/material/Collapse';
 import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
@@ -84,6 +85,15 @@ const ObservationsTableContainer = () => {
     observationsContext.observationsDataLoader.data?.supplementaryObservationData.sampling_data,
     samplingInformationCache
   ]);
+
+  // Determine if the edit button should be enabled, and if so, which observation ID it should link to
+  const editButtonObservationId: number | false = useMemo(() => {
+    const selectedObservations = observationsTableContext.getSelectedRows();
+    if (selectedObservations.length === 1 && selectedObservations[0].survey_observation_id) {
+      return selectedObservations[0].survey_observation_id;
+    }
+    return false;
+  }, [observationsTableContext]);
 
   // The column definitions of the columns to render in the observations table
   const columns: GridColDef<IObservationTableRow>[] = useMemo(
@@ -185,22 +195,27 @@ const ObservationsTableContainer = () => {
             disabled={observationsTableContext.isDisabled}>
             Add
           </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<Icon path={mdiPlus} size={1} />}
-            onClick={() => {
-              // TODO: Nick: This is a temporary solution to allow editing of observations from the table
-              const selectedObservations = observationsTableContext.getSelectedRows();
-              if (selectedObservations.length === 1 && selectedObservations[0].survey_observation_id) {
+          <Collapse
+            in={!!editButtonObservationId}
+            orientation="horizontal"
+            sx={{
+              // When the edit button is not visible, we need to compensate for the Stack 'gap' property by applying
+              // a negative margin to this button.
+              marginLeft: editButtonObservationId ? 0 : -1
+            }}>
+            <Button
+              variant="outlined"
+              color="primary"
+              startIcon={<Icon path={mdiPencil} size={1} />}
+              onClick={() => {
                 history.push(
-                  `/admin/projects/${projectId}/surveys/${surveyId}/observations/${selectedObservations[0].survey_observation_id}/edit`
+                  `/admin/projects/${projectId}/surveys/${surveyId}/observations/${editButtonObservationId}/edit`
                 );
-              }
-            }}
-            disabled={observationsTableContext.isDisabled}>
-            Edit
-          </Button>
+              }}
+              disabled={observationsTableContext.isDisabled}>
+              Edit
+            </Button>
+          </Collapse>
           <ConfigureColumnsButton disabled={observationsTableContext.isDisabled} columns={columns} />
           <ExportHeadersButton />
           <BulkActionsButton disabled={observationsTableContext.isDisabled} />

@@ -299,23 +299,16 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
         return;
       }
 
-      const allRowIdsToDelete = observationRecords.map((item) => String(item.id));
-
-      // Get all row ids that are new, which only need to be removed from local state
-      const savedRowIdsToDelete = allRowIdsToDelete.filter((id) => rows.map((item) => item.id).includes(id));
-
       try {
-        if (savedRowIdsToDelete.length) {
+        const observationSubcountIdsToDelete = observationRecords.map((item) => Number(item.id));
+
+        if (observationSubcountIdsToDelete.length) {
           // Delete previously saved records from the server, if any
-          await biohubApi.observation.deleteRows(projectId, surveyId, savedRowIdsToDelete);
+          await biohubApi.observation.deleteObservationSubcounts(projectId, surveyId, observationSubcountIdsToDelete);
+
           // Refresh the table after deleting one or more records
           refreshRows();
         }
-
-        // Update saved rows, removing any deleted rows
-        setRows((currentSavedRows) =>
-          currentSavedRows.filter((savedRow) => !savedRowIdsToDelete.includes(String(savedRow.id)))
-        );
 
         // Close yes-no dialog
         setYesNoDialog({ open: false });
@@ -345,7 +338,7 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
         });
       }
     },
-    [rows, setYesNoDialog, setSnackbar, biohubApi.observation, projectId, surveyId, refreshRows, setErrorDialog]
+    [setYesNoDialog, setSnackbar, biohubApi.observation, projectId, surveyId, refreshRows, setErrorDialog]
   );
 
   /**

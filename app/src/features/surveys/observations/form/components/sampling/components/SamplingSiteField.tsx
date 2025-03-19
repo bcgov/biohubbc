@@ -6,13 +6,13 @@ import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import {
+  CreateObservationFormData,
+  UpdateObservationFormData
+} from 'features/surveys/observations/form/components/ObservationForm.interface';
+import {
   SamplingInformationCache,
   SamplingInformationCachedSite
 } from 'features/surveys/observations/form/components/sampling/hooks/useSamplingInformationCache';
-import {
-  CreateObservationFormData,
-  UpdateObservationFormData
-} from 'features/surveys/observations/form/ObservationForm.interface';
 import { useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';

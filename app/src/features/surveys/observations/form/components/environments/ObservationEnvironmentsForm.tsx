@@ -11,7 +11,7 @@ import {
 import {
   CreateObservationFormData,
   UpdateObservationFormData
-} from 'features/surveys/observations/form/ObservationForm.interface';
+} from 'features/surveys/observations/form/components/ObservationForm.interface';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';

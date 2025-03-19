@@ -6,6 +6,7 @@ import { CritterbaseService } from './critterbase-service';
 import { DBService } from './db-service';
 import { ObservationService } from './observation-services/observation-service';
 import { ObservationSubCountMeasurementService } from './observation-subcount-measurement-service';
+import { SubcountCritterService } from './subcount-critter-service';
 
 export class SubCountService extends DBService {
   subCountRepository: SubCountRepository;
@@ -33,23 +34,62 @@ export class SubCountService extends DBService {
    * observation records will also be deleted, as all survey observations must have at least one subcount.
    *
    * @param {number} surveyId
-   * @param {number[]} observationSubcountIds
+   * @param {number} observationSubcountId
    * @return {*}  {Promise<void>}
    * @memberof ObservationRepository
    */
   async deleteObservationSubcount(surveyId: number, observationSubcountId: number): Promise<void> {
-    const observationIdsToDelete = await this.subCountRepository.deleteObservationSubcountRecords(surveyId, [
-      observationSubcountId
+    await this.deleteObservationSubcountRecords(surveyId, [observationSubcountId]);
+  }
+
+  /**
+   * Deletes all observation subcount records for the given observation subcount ids, and dependent records.
+   *
+   * Note: If all subcount records are deleted for a given survey observation record, then the survey observation
+   * records will also be deleted, as all survey observations should have at least one subcount.
+   *
+   * @param {number} surveyId
+   * @param {number[]} observationSubcountIds
+   * @return {*}  {Promise<void>}
+   * @memberof ObservationRepository
+   */
+  async deleteObservationSubcountRecords(surveyId: number, observationSubcountIds: number[]): Promise<void> {
+    const subCountCritterService = new SubcountCritterService(this.connection);
+    const observationSubCountMeasurementService = new ObservationSubCountMeasurementService(this.connection);
+
+    // Delete child records
+    await Promise.all([
+      // Delete child subcount_critter records, if any
+      subCountCritterService.deleteSubcountCrittersByObservationSubcountId(surveyId, observationSubcountIds),
+      // Delete child observation measurements, if any
+      observationSubCountMeasurementService.deleteMeasurementsByObservationSubCountId(surveyId, observationSubcountIds)
     ]);
 
+    // Delete subcount records
+    const surveyObservationIdsAffected = await this.subCountRepository.deleteObservationSubcountRecords(
+      surveyId,
+      observationSubcountIds
+    );
+
     const observationService = new ObservationService(this.connection);
-    await observationService.deleteObservationsByIds(surveyId, observationIdsToDelete);
+
+    // Get all survey observation ids that no longer have any subcount records
+    const surveyObservationIdsToDelete = await observationService.getOrphanedSurveyObservationIds(surveyId, {
+      filterFields: {
+        surveyObservationIds: surveyObservationIdsAffected
+      }
+    });
+
+    // Delete orphaned survey observation records
+    await observationService.deleteObservationsByIds(surveyId, surveyObservationIdsToDelete);
   }
 
   /**
    * Delete observation_subcount records for the given set of survey observation ids.
    *
-   * Note: Also deletes all related child records.
+   * Note: This does NOT delete the parent survey observation records, even if they no longer have any subcount records.
+   * All survey observation records should have at least one subcount record. The calling function needs to handle this
+   * case, as needed.
    *
    * @param {number} surveyId
    * @param {number[]} surveyObservationIds
@@ -71,21 +111,6 @@ export class SubCountService extends DBService {
 
     // Delete observation_subcount records, if any
     return this.subCountRepository.deleteObservationSubCountRecordsByObservationId(surveyId, surveyObservationIds);
-  }
-
-  /**
-   * Deletes all observation subcount records for the given observation subcount ids, and dependent records.
-   *
-   * Note: If all subcount records are deleted for a given survey observation record, then the survey observation
-   * records will also be deleted, as all survey observations should have at least one subcount.
-   *
-   * @param {number} surveyId
-   * @param {number[]} observationSubcountIds
-   * @return {*}  {Promise<void>}
-   * @memberof ObservationRepository
-   */
-  async deleteObservationSubcountRecords(surveyId: number, observationSubcountIds: number[]): Promise<void> {
-    await this.subCountRepository.deleteObservationSubcountRecords(surveyId, observationSubcountIds);
   }
 
   /**

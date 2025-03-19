@@ -1,6 +1,6 @@
 import green from '@mui/material/colors/green';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
-import { MeasurementsSearchAutocomplete } from 'features/surveys/observations/form/components/subcounts/subcount/measurements/search/MeasurementsSearchAutocomplete';
+import { MeasurementsSearchAutocomplete } from 'features/surveys/observations/form/components/subcounts/subcount/search/MeasurementsSearchAutocomplete';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
@@ -9,26 +9,19 @@ export interface IMeasurementsSearchProps {
   /**
    * The selected measurements.
    *
-   * @type {CBMeasurementType[]}
-   * @memberof IMeasurementsSearchProps
+   * Used to filter out measurements that have already been selected.
    */
   selectedMeasurements: CBMeasurementType[];
   /**
    * Callback fired on select options.
-   *
-   * @memberof IMeasurementsSearchProps
    */
   onAddMeasurementColumn: (measurementColumn: CBMeasurementType) => void;
   /**
-   * TSNs to retrieve measurements for, if the search needs to be more specified than all focal or observed species
-   *
-   * @memberof IMeasurementsSearchProps
+   * A list of TSNs to filter the measurements by.
    */
   tsns?: number[];
   /**
-   * TSNs to retrieve measurements for, if the search needs to be more specified than all focal or observed species
-   *
-   * @memberof IMeasurementsSearchProps
+   * A list of TSNs whose measurements should be highlighted in dropdown list.
    */
   applicableTsns?: number[];
 }

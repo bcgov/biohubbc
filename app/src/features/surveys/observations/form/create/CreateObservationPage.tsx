@@ -7,14 +7,15 @@ import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import PageHeader from 'components/layout/PageHeader';
 import { CreateObservationI18N } from 'constants/i18n';
 import { CodesContext } from 'contexts/codesContext';
 import { DialogContext } from 'contexts/dialogContext';
 import { TaxonomyContextProvider } from 'contexts/taxonomyContext';
-import ObservationForm, { initialObservationFormData } from 'features/surveys/observations/form/ObservationForm';
-import { CreateObservationFormData } from 'features/surveys/observations/form/ObservationForm.interface';
+import ObservationForm, {
+  initialObservationFormData
+} from 'features/surveys/observations/form/components/ObservationForm';
+import { CreateObservationFormData } from 'features/surveys/observations/form/components/ObservationForm.interface';
 import {
   isSubcountQualitativeMeasurement,
   isSubcountQuantitativeMeasurement
@@ -66,25 +67,6 @@ const CreateObservationPage = () => {
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
 
-  const defaultErrorDialogProps = {
-    onClose: () => {
-      dialogContext.setErrorDialog({ open: false });
-    },
-    onOk: () => {
-      dialogContext.setErrorDialog({ open: false });
-    }
-  };
-
-  const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
-    dialogContext.setErrorDialog({
-      dialogTitle: CreateObservationI18N.createErrorTitle,
-      dialogText: CreateObservationI18N.createErrorText,
-      ...defaultErrorDialogProps,
-      ...textDialogProps,
-      open: true
-    });
-  };
-
   const handleCancel = () => {
     history.push(`/admin/projects/${projectId}/surveys/${surveyId}/observations`);
   };
@@ -95,7 +77,7 @@ const CreateObservationPage = () => {
    * @param {ICreateObservation} observationPostObject
    * @return {*}
    */
-  const createObservation = async (formData: CreateObservationFormData) => {
+  const handleSubmit = async (formData: CreateObservationFormData) => {
     setIsSaving(true);
     try {
       const {
@@ -197,11 +179,18 @@ const CreateObservationPage = () => {
       history.push(`/admin/projects/${projectId}/surveys/${surveyId}/observations`, SKIP_CONFIRMATION_DIALOG);
     } catch (error) {
       const apiError = error as APIError;
-      showCreateErrorDialog({
+      dialogContext.setErrorDialog({
         dialogTitle: CreateObservationI18N.createErrorTitle,
         dialogText: CreateObservationI18N.createErrorText,
         dialogError: apiError.message,
-        dialogErrorDetails: apiError.errors
+        dialogErrorDetails: apiError.errors,
+        onClose: () => {
+          dialogContext.setErrorDialog({ open: false });
+        },
+        onOk: () => {
+          dialogContext.setErrorDialog({ open: false });
+        },
+        open: true
       });
     } finally {
       setIsSaving(false);
@@ -260,7 +249,7 @@ const CreateObservationPage = () => {
             <ObservationForm
               initialFormData={initialObservationFormData}
               onSubmit={(formData) => {
-                createObservation(formData);
+                handleSubmit(formData);
               }}
               formikRef={formikRef}
             />

@@ -74,8 +74,7 @@ export class SubCountRepository extends BaseRepository {
    *
    * @param {number} surveyId
    * @param {number[]} observationSubcountIds
-   * @return {*}  {Promise<number[]>} The parent survey observation record ids that no longer have any subcount records,
-   * and should therefore be deleted.
+   * @return {*}  {Promise<number[]>} The parent survey observation record ids that had subcount records deleted
    * @memberof SubCountRepository
    */
   async deleteObservationSubcountRecords(surveyId: number, observationSubcountIds: number[]): Promise<number[]> {
@@ -83,47 +82,16 @@ export class SubCountRepository extends BaseRepository {
     const queryBuilder = knex.queryBuilder();
 
     queryBuilder
-      // Delete observation subcount critter records by observation subcount ids
-      .with('w_delete_subcount_critter', (qb1) => {
-        qb1.delete().from('subcount_critter').whereIn('observation_subcount_id', observationSubcountIds);
-      })
-      // Delete observation subcount qualitative measurement records by observation subcount ids
-      .with('w_delete_observation_subcount_qualitative_measurement', (qb1) => {
-        qb1
-          .delete()
-          .from('observation_subcount_qualitative_measurement')
-          .whereIn('observation_subcount_id', observationSubcountIds);
-      })
-      // Delete observation subcount quantitative measurement records by observation subcount ids
-      .with('w_delete_observation_subcount_quantitative_measurement', (qb1) => {
-        qb1
-          .delete()
-          .from('observation_subcount_quantitative_measurement')
-          .whereIn('observation_subcount_id', observationSubcountIds);
-      })
-      .with('w_delete_observation_subcount', (qb1) => {
-        // Delete observation subcount records by observation subcount ids
-        qb1
-          .delete()
-          .from('observation_subcount')
-          .innerJoin(
-            'survey_observation',
-            'observation_subcount.survey_observation_id',
-            'survey_observation.survey_observation_id'
-          )
-          .whereIn('observation_subcount.observation_subcount_id', observationSubcountIds)
-          .andWhere('survey_observation.survey_id', surveyId)
-          .returning('survey_observation.survey_observation_id');
-      })
-      // Get survey observation records that no longer have any subcount records
-      .distinct('survey_observation_id')
-      .from('w_delete_observation_subcount')
-      .whereNotExists((qb1) => {
-        qb1
-          .select(knex.raw('1'))
-          .from('observation_subcount')
-          .whereRaw('observation_subcount.survey_observation_id = w_delete_observation_subcount.survey_observation_id');
-      });
+      .delete()
+      .from('observation_subcount')
+      .innerJoin(
+        'survey_observation',
+        'observation_subcount.survey_observation_id',
+        'survey_observation.survey_observation_id'
+      )
+      .whereIn('observation_subcount.observation_subcount_id', observationSubcountIds)
+      .andWhere('survey_observation.survey_id', surveyId)
+      .returning('survey_observation.survey_observation_id');
 
     const response = await this.connection.knex(queryBuilder, z.object({ survey_observation_id: z.number() }));
 

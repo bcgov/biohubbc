@@ -17,43 +17,25 @@ export interface IMeasurementsSearchAutocompleteProps {
   /**
    * The selected measurements.
    *
-   * @type {CBMeasurementType[]}
-   * @memberof IMeasurementsSearchAutocompleteProps
+   * Used to filter out measurements that have already been selected.
    */
   selectedOptions: CBMeasurementType[];
   /**
    * An async function that returns an array of options, based on the provided input value.
-   *
-   * @memberof IMeasurementsSearchAutocompleteProps
    */
   getOptions: (inputValue: string) => Promise<CBMeasurementType[]>;
   /**
    * Callback fired on selecting options.
    *
    * Note: this is not fired until the user un-focuses the component.
-   *
-   * @memberof IMeasurementsSearchAutocompleteProps
    */
   onAddMeasurementColumn: (measurementColumn: CBMeasurementType) => void;
   /**
-   * The species to filter measurement options for
-   *
-   * @type {number[]}
-   * @memberof IMeasurementsSearchAutocompleteProps
-   */
-  speciesTsn?: number[];
-  /**
-   * Measurements applied to any of these TSNs will have the ornament applied to them in the options list
-   *
-   * @type {number[]}
-   * @memberof IMeasurementsSearchAutocompleteProps
+   * A list of TSNs whose measurements should be highlighted in dropdown list.
    */
   applicableTsns?: number[];
   /**
    * Ornament to display on the option card, typically indicating whether focal species can have the measurement
-   *
-   * @type {JSX.Element}
-   * @memberof IMeasurementSearchAutocompleteProps
    */
   ornament?: JSX.Element;
 }

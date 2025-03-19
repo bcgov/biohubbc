@@ -34,22 +34,14 @@ export type SubcountObservationColumns = {
   }[];
 };
 
-export interface SubcountToSave {
-  observation_subcount_id: number | null;
-  subcount: number | null;
-  comment: string | null;
-  qualitative_measurements: SubcountQualitativeMeasurement[];
-  quantitative_measurements: SubcountQuantitativeMeasurement[];
-}
-
 export interface SubcountQualitativeMeasurement {
   measurement_id: string;
-  measurement_option_id: string;
+  measurement_option_id: string | null;
 }
 
 export interface SubcountQuantitativeMeasurement {
   measurement_id: string;
-  measurement_value: number;
+  measurement_value: number | null;
 }
 
 export type ObservationSubcountQualitativeMeasurementObject = Pick<

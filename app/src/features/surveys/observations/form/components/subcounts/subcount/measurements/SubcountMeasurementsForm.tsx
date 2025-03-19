@@ -1,15 +1,10 @@
-import { SubcountMeasurementField } from 'features/surveys/observations/form/components/subcounts/subcount/measurements/SubcountMeasurementField';
-import {
-  CreateObservationFormData,
-  UpdateObservationFormData
-} from 'features/surveys/observations/form/ObservationForm.interface';
-import { FieldArray, useFormikContext } from 'formik';
+import { SubcountMeasurementField } from 'features/surveys/observations/form/components/subcounts/subcount/measurements/components/SubcountMeasurementField';
+import { FieldArray } from 'formik';
 import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
 import {
   SubcountQualitativeMeasurement,
   SubcountQuantitativeMeasurement
 } from 'interfaces/useObservationApi.interface';
-import get from 'lodash-es/get';
 
 export interface SubcountMeasurementsForm {
   /**
@@ -55,38 +50,26 @@ export interface ISubcountMeasurementsFormProps {
 export const SubcountMeasurementsForm = (props: ISubcountMeasurementsFormProps) => {
   const { formikFieldName, measurementTypeDefinitions, onDeleteMeasurement, enableHeaders } = props;
 
-  const { values } = useFormikContext<CreateObservationFormData | UpdateObservationFormData>();
-
-  // The formik field name for the measurements array
-  const measurementsFieldName = `${formikFieldName}.measurements`;
-
-  const measurements: (SubcountQualitativeMeasurement | SubcountQuantitativeMeasurement)[] | undefined = get(
-    values,
-    measurementsFieldName
-  );
-
-  if (!measurements?.length) {
-    // No measurement fields to render
+  if (!measurementTypeDefinitions.length) {
+    // No measurement type definitions, therefore no measurement fields to render
     return null;
   }
+
+  // The formik field name for the measurements array, for the current subcount record
+  const measurementsFieldName = `${formikFieldName}.measurements`;
 
   return (
     <FieldArray
       name={measurementsFieldName}
       render={() => {
-        // Render a form field for each measurement type definition
+        // For each measurement type definition, render a form field
         return measurementTypeDefinitions.map((measurementTypeDefinition, index) => {
-          // Find the corresponding formik value for this measurement type definition, if one exists
-          const measurementFormValue = measurements.find(
-            (measurement) => measurementTypeDefinition.taxon_measurement_id === measurement.measurement_id
-          );
-
           // The formik field name for this specific measurement field, in the measurements array
           const measurementsArrayFieldName = `${measurementsFieldName}[${index}]`;
 
           return (
             <SubcountMeasurementField
-              key={measurementFormValue?.measurement_id ?? index}
+              key={measurementTypeDefinition.taxon_measurement_id}
               formikFieldName={measurementsArrayFieldName}
               measurementTypeDefinition={measurementTypeDefinition}
               displayHeader={enableHeaders}

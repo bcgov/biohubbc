@@ -11,8 +11,7 @@ import {
   ObservationSubcountObject,
   SubcountObservationColumns,
   SubcountQualitativeMeasurement,
-  SubcountQuantitativeMeasurement,
-  SubcountToSave
+  SubcountQuantitativeMeasurement
 } from 'interfaces/useObservationApi.interface';
 import {
   EnvironmentQualitativeTypeDefinition,
@@ -141,11 +140,6 @@ type ObservationRecordWithSamplingAndSubcountData = StandardObservationColumns &
 type FlattenedObservationRecordWithSamplingAndSubcountData = StandardObservationColumns &
   ObservationEnvironmentData &
   ObservationSamplingData & { subcount: ObservationSubcountObject };
-
-export interface ICreateEditObservation {
-  standardColumns: StandardObservationColumns & ObservationEnvironmentData;
-  subcounts: SubcountToSave[];
-}
 
 export interface ICreateObservation {
   standardColumns: {

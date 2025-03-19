@@ -5,16 +5,16 @@ import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormC
 import { ObservationDateTimeForm } from 'features/surveys/observations/form/components/date/ObservationDateTimeForm';
 import { ObservationEnvironmentsForm } from 'features/surveys/observations/form/components/environments/ObservationEnvironmentsForm';
 import { ObservationLocationForm } from 'features/surveys/observations/form/components/location/ObservationLocationForm';
+import {
+  CreateObservationFormData,
+  UpdateObservationFormData
+} from 'features/surveys/observations/form/components/ObservationForm.interface';
 import { ObservationSamplingForm } from 'features/surveys/observations/form/components/sampling/ObservationSamplingForm';
 import { ObservationSpeciesForm } from 'features/surveys/observations/form/components/species/ObservationSpeciesForm';
 import {
   initialSubcountFormData,
   SubcountsForm
 } from 'features/surveys/observations/form/components/subcounts/SubcountsForm';
-import {
-  CreateObservationFormData,
-  UpdateObservationFormData
-} from 'features/surveys/observations/form/ObservationForm.interface';
 import { Formik, FormikProps } from 'formik';
 import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
 import { GetSamplingPeriod } from 'interfaces/useSamplingPeriodApi.interface';
@@ -173,6 +173,9 @@ interface IObservationFormProps {
    * The initial supplementary sampling data to populate the sampling form with.
    */
   initialSupplementarySamplingData?: GetSamplingPeriod[];
+  /**
+   * The initial measurement type definitions to populate the subcounts form with.
+   */
   initialMeasurementTypeDefinitions?: CBMeasurementType[];
 }
 
@@ -238,7 +241,7 @@ const ObservationForm = (props: IObservationFormProps) => {
 
         {/* Subcounts Form */}
         <HorizontalSplitFormComponent title="Subcounts" summary="Add subcounts to the observation">
-          <SubcountsForm initialMeasurementTypeDefinitions={[...(initialMeasurementTypeDefinitions ?? [])]} />
+          <SubcountsForm initialMeasurementTypeDefinitions={initialMeasurementTypeDefinitions} />
         </HorizontalSplitFormComponent>
 
         <Divider />

@@ -9,9 +9,11 @@ import {
 } from 'features/surveys/observations/form/components/subcounts/subcount/measurements/SubcountMeasurementsForm';
 import { SubcountFormData } from 'features/surveys/observations/form/components/subcounts/subcount/SubcountForm.interface';
 import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
+import { v4 } from 'uuid';
 import { SubcountCommentForm } from './comment/SubcountCommentForm';
 
 export const initialSubcountFormData: SubcountFormData = {
+  _id: v4(),
   observation_subcount_id: null,
   subcount: null,
   comment: null,
