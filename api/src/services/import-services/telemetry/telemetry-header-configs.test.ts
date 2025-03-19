@@ -36,11 +36,17 @@ describe('TelemetryHeaderConfigs', () => {
         }
       ];
 
+      const surveyCritterAliasMap = new Map();
+
       const utils = {
         getCellValue: () => 'lotek'
       };
 
-      const cellValidator = getTelemetrySerialCellValidator(deployments as ExtendedDeploymentRecord[], utils as any);
+      const cellValidator = getTelemetrySerialCellValidator(
+        deployments as ExtendedDeploymentRecord[],
+        surveyCritterAliasMap,
+        utils as any
+      );
 
       const result = cellValidator({ cell: 5555 } as CSVParams);
       expect(result).to.deep.equal([
@@ -58,11 +64,17 @@ describe('TelemetryHeaderConfigs', () => {
         }
       ];
 
+      const surveyCritterAliasMap = new Map();
+
       const utils = {
         getCellValue: () => 'lotek'
       };
 
-      const cellValidator = getTelemetrySerialCellValidator(deployments as ExtendedDeploymentRecord[], utils as any);
+      const cellValidator = getTelemetrySerialCellValidator(
+        deployments as ExtendedDeploymentRecord[],
+        surveyCritterAliasMap,
+        utils as any
+      );
 
       const result = cellValidator({ cell: 1234 } as CSVParams);
       expect(result).to.deep.equal([]);
@@ -76,11 +88,17 @@ describe('TelemetryHeaderConfigs', () => {
         }
       ];
 
+      const surveyCritterAliasMap = new Map();
+
       const utils = {
         getCellValue: () => 'lotek'
       };
 
-      const cellValidator = getTelemetrySerialCellValidator(deployments as ExtendedDeploymentRecord[], utils as any);
+      const cellValidator = getTelemetrySerialCellValidator(
+        deployments as ExtendedDeploymentRecord[],
+        surveyCritterAliasMap,
+        utils as any
+      );
 
       const params = { cell: 1234, row: {} } as CSVParams;
       cellValidator(params);
