@@ -4,7 +4,7 @@ import { IDBConnection } from '../../../database/db';
 import { CodeRepository } from '../../../repositories/code-repository';
 import {
   InsertObservationStandardColumns,
-  InsertUpdateObservations
+  InsertSurveyObservation
 } from '../../../repositories/observation-repository/observation-repository.interface';
 import { InsertSubCount } from '../../../repositories/subcount-repository';
 import { CSVConfigUtils } from '../../../utils/csv-utils/csv-config-utils';
@@ -138,7 +138,7 @@ export class ImportObservationsService extends DBService {
       return errors;
     }
 
-    const observations: InsertUpdateObservations[] = [];
+    const observations: InsertSurveyObservation[] = [];
 
     for (const row of rows) {
       observations.push({

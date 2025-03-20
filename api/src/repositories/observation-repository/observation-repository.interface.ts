@@ -37,11 +37,6 @@ export interface InsertObservationSubCount {
   }[];
 }
 
-export type InsertUpdateObservations = {
-  standardColumns: InsertObservationStandardColumns | UpdateObservationStandardColumns;
-  subcounts: InsertObservationSubCount[];
-};
-
 export type InsertSurveyObservation = {
   standardColumns: InsertObservationStandardColumns;
   subcounts: InsertObservationSubCount[];
