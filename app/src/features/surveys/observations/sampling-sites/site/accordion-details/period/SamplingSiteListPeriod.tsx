@@ -4,16 +4,12 @@ import { Timeline, TimelineConnector, TimelineContent, TimelineDot, TimelineItem
 import Box from '@mui/material/Box';
 import grey from '@mui/material/colors/grey';
 import Typography from '@mui/material/Typography';
-import { IObservationsContext } from 'contexts/observationsContext';
-import { IObservationsPageContext } from 'contexts/observationsPageContext';
 import dayjs from 'dayjs';
-import { ImportObservationsButton } from 'features/surveys/observations/components/ImportObservationsButton';
+import { useSamplingSiteListContext } from 'hooks/useContext';
 import { GetSamplingPeriod } from 'interfaces/useSamplingPeriodApi.interface';
 
 interface ISamplingSiteListPeriodProps {
   samplePeriods: GetSamplingPeriod[];
-  observationsPageContext?: IObservationsPageContext;
-  observationsContext?: IObservationsContext;
 }
 /**
  * Renders a timeline of sampling period dates.
@@ -24,9 +20,9 @@ interface ISamplingSiteListPeriodProps {
  * @returns
  */
 export const SamplingSiteListPeriod = (props: ISamplingSiteListPeriodProps) => {
-  const formatDate = (dt: Date, time: boolean) => dayjs(dt).format(time ? 'MMM D, YYYY h:mm A' : 'MMM D, YYYY');
+  const samplingSiteListContext = useSamplingSiteListContext();
 
-  const { samplePeriods, observationsPageContext, observationsContext } = props;
+  const formatDate = (dt: Date, time: boolean) => dayjs(dt).format(time ? 'MMM D, YYYY h:mm A' : 'MMM D, YYYY');
 
   const dateSx = {
     fontSize: '0.85rem',
@@ -38,7 +34,7 @@ export const SamplingSiteListPeriod = (props: ISamplingSiteListPeriodProps) => {
     color: 'text.secondary'
   };
 
-  const sortedSamplePeriods = samplePeriods.sort((a, b) => {
+  const sortedSamplePeriods = props.samplePeriods.sort((a, b) => {
     if (!a.start_date && !b.start_date) {
       return 0;
     }
@@ -79,10 +75,10 @@ export const SamplingSiteListPeriod = (props: ISamplingSiteListPeriodProps) => {
           }}
           key={`sample-period-${samplePeriod.survey_sample_period_id}`}>
           <TimelineSeparator sx={{ minWidth: 0, ml: 1, mr: 0.5 }}>
-            {samplePeriods.length > 1 ? (
+            {props.samplePeriods.length > 1 ? (
               <Box display="flex" justifyContent="center">
                 <TimelineDot sx={{ bgcolor: grey[400], boxShadow: 'none' }} />
-                {index < samplePeriods.length - 1 && (
+                {index < props.samplePeriods.length - 1 && (
                   <TimelineConnector
                     sx={{
                       bgcolor: grey[400],
@@ -130,30 +126,10 @@ export const SamplingSiteListPeriod = (props: ISamplingSiteListPeriodProps) => {
                   {samplePeriod.end_time}
                 </Typography>
               </Box>
-              {observationsPageContext && observationsContext && samplePeriod?.survey_sample_period_id && (
+              {samplingSiteListContext && samplePeriod?.survey_sample_period_id && (
                 <Box mt={-0.25}>
-                  <ImportObservationsButton
-                    disabled={observationsPageContext.isDisabled}
-                    onStart={() => {
-                      observationsPageContext.setIsDisabled(true);
-                      observationsPageContext.setIsLoading(true);
-                    }}
-                    onSuccess={() => {
-                      observationsContext.observationsDataLoader.refresh();
-                    }}
-                    onFinish={() => {
-                      observationsPageContext.setIsDisabled(false);
-                      observationsPageContext.setIsLoading(false);
-                    }}
-                    surveySamplePeriodId={samplePeriod.survey_sample_period_id}
-                    buttonProps={{
-                      size: 'small',
-                      sx: {
-                        borderRadius: '3px',
-                        fontSize: '0.6rem'
-                      }
-                    }}
-                  />
+                  {/* The button to handle importing sample period related data - provided by the context */}
+                  {samplingSiteListContext.getSamplePeriodImportButton(samplePeriod.survey_sample_period_id)}
                 </Box>
               )}
             </Box>

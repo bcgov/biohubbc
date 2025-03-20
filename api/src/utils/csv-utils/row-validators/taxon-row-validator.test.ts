@@ -12,14 +12,31 @@ describe('getTaxonRowValidator', () => {
     sinon.restore();
   });
 
-  it('should handle undefined cell values', () => {
+  it('should handle undefined cell values when cell is optional', () => {
+    const taxonMapMock = new CaseInsensitiveMap([[1, { tsn: 1, scientificName: 'Alces alces' }]]);
+
+    const utilsMock: any = {
+      getCellValue: sinon.stub().returns(undefined),
+      getWorksheetHeader: sinon.stub().returns('SPECIES')
+    };
+
+    const rowMock = {};
+
+    const rowValidator = getTaxonRowValidator(taxonMapMock, utilsMock, 'SPECIES', { optional: true });
+
+    const errors = rowValidator({ row: rowMock } as any);
+
+    expect(errors).to.be.an('array').that.is.empty;
+  });
+
+  it('should handle undefined cell values when cell is not optional', () => {
     const taxonMapMock = new CaseInsensitiveMap([[1, { tsn: 1, scientificName: 'Alces alces' }]]);
     const utilsMock: any = {
       getCellValue: sinon.stub().returns(undefined),
       getWorksheetHeader: sinon.stub().returns('SPECIES')
     };
 
-    const rowValidator = getTaxonRowValidator(taxonMapMock, utilsMock, 'SPECIES');
+    const rowValidator = getTaxonRowValidator(taxonMapMock, utilsMock, 'SPECIES', { optional: false });
 
     const errors = rowValidator({} as any);
 
@@ -57,8 +74,8 @@ describe('getTaxonRowValidator', () => {
 
     const state = getTaxonFromRowState(rowMock);
 
-    expect(state.itis_tsn).to.equal(1);
-    expect(state.itis_scientific_name).to.equal('Alces alces');
+    expect(state.taxon.itis_tsn).to.equal(1);
+    expect(state.taxon.itis_scientific_name).to.equal('Alces alces');
   });
 
   it('should return an error for an invalid TSN', () => {

@@ -50,6 +50,10 @@ export interface ISimsUserWrapper {
    */
   hasOneOrMoreProjectRoles: boolean;
   /**
+   * Set to `null` if the user record is active, otherwise the date when the user record was invalidated. If not null, users cannot request access or access the application.
+   */
+  recordEndDate: string | null | undefined;
+  /**
    * Force this sims user wrapper to refresh its data.
    */
   refresh: () => void;
@@ -101,6 +105,8 @@ function useSimsUserWrapper(): ISimsUserWrapper {
 
   const hasOneOrMoreProjectRoles = !!administrativeActivityStandingDataLoader.data?.has_one_or_more_project_roles;
 
+  const recordEndDate = simsUserDataLoader.data?.record_end_date;
+
   const refresh = () => {
     simsUserDataLoader.refresh();
     administrativeActivityStandingDataLoader.refresh();
@@ -118,6 +124,7 @@ function useSimsUserWrapper(): ISimsUserWrapper {
     identitySource,
     hasAccessRequest,
     hasOneOrMoreProjectRoles,
+    recordEndDate,
     refresh
   };
 }

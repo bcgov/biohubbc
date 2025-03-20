@@ -1,7 +1,11 @@
-import { expect } from 'chai';
+import chai, { expect } from 'chai';
+import sinon from 'sinon';
+import sinonChai from 'sinon-chai';
 import { z } from 'zod';
-import { CSVParams, CSVRow, CSVRowState } from './csv-config-validation.interface';
+import { CaseInsensitiveMap } from '../case-insensitive-map';
+import { CSVCellValidator, CSVParams, CSVRowState } from './csv-config-validation.interface';
 import {
+  getArrayCellValidator,
   getDateRangeCellValidator,
   getDescriptionCellValidator,
   getLatitudeCellValidator,
@@ -10,63 +14,13 @@ import {
   getNonEmptyStringCellValidator,
   getPositiveNumberCellValidator,
   getSurveyCritterAliasCellValidator,
+  getTaxonCellValidator,
   getTsnCellValidator,
-  updateCSVRowState,
   validateZodCell
 } from './csv-header-configs';
+chai.use(sinonChai);
 
 describe('CSVHeaderConfigs', () => {
-  describe('updateRowState', () => {
-    it('should create the state in the row and add the new value', () => {
-      const row = { TEST: 'cellValue' };
-
-      updateCSVRowState(row, { stateValue: 'value' });
-
-      expect(row[CSVRowState]?.stateValue).to.equal('value');
-    });
-
-    it('should update the state in the row and add the new value', () => {
-      const row = { TEST: 'cellValue', [CSVRowState]: { stateValue: 'oldValue' } };
-
-      updateCSVRowState(row, { stateValue: 'newValue' });
-
-      expect(row[CSVRowState]?.stateValue).to.equal('newValue');
-    });
-
-    it('should remove the state in the row', () => {
-      const row = { TEST: 'cellValue', [CSVRowState]: { stateValue: 'oldValue' } };
-
-      updateCSVRowState(row, { stateValue: undefined });
-
-      expect(row[CSVRowState]?.stateValue).to.be.undefined;
-    });
-
-    it('should add additional state values', () => {
-      const row: CSVRow = { TEST: 'cellValue', [CSVRowState]: { stateValue: 'oldValue' } };
-
-      updateCSVRowState(row, { stateValue: 'newValue', additionalValue: 'value' });
-
-      expect(row[CSVRowState]?.stateValue).to.equal('newValue');
-      expect(row[CSVRowState]?.additionalValue).to.equal('value');
-    });
-
-    it('should set nested state values', () => {
-      const row: CSVRow = { TEST: 'cellValue' };
-
-      updateCSVRowState(row, { state: { value: 'newValue' } });
-
-      expect(row[CSVRowState]?.state?.value).to.equal('newValue');
-    });
-
-    it('should update nested state values', () => {
-      const row: CSVRow = { TEST: 'cellValue', [CSVRowState]: { state: { value: 'oldValue' } } };
-
-      updateCSVRowState(row, { state: { value: 'newValue' } });
-
-      expect(row[CSVRowState]?.state?.value).to.equal('newValue');
-    });
-  });
-
   describe('validateZodCell', () => {
     it('should return an empty array if the cell is valid', () => {
       const result = validateZodCell(123, z.number());
@@ -111,7 +65,7 @@ describe('CSVHeaderConfigs', () => {
 
   describe('getDescriptionCellValidator', () => {
     it('should return an empty array if the cell is valid', () => {
-      const descriptionValidator = getDescriptionCellValidator();
+      const descriptionValidator = getDescriptionCellValidator({ optional: true });
 
       const validDescriptions = ['description', '1', 1, undefined, ' test'];
 
@@ -132,7 +86,7 @@ describe('CSVHeaderConfigs', () => {
       const badDescriptions = ['', null, ' '];
 
       for (const badDescription of badDescriptions) {
-        const descriptionValidator = getDescriptionCellValidator();
+        const descriptionValidator = getDescriptionCellValidator({ optional: true });
 
         const result = descriptionValidator({
           cell: badDescription,
@@ -407,6 +361,278 @@ describe('CSVHeaderConfigs', () => {
 
       expect(result.length).to.be.equal(1);
       expect(result[0].error).to.be.equal('error');
+    });
+  });
+
+  describe('getTaxonCellValidator', () => {
+    it('should return an empty array if the cell is undefined and optional', () => {
+      const taxonMapMock = new CaseInsensitiveMap<string | number, any>([
+        [1, { tsn: 1, scientificName: 'Alces alces' }],
+        ['alces alces', { tsn: 1, scientificName: 'Alces alces' }]
+      ]);
+      const taxonCellValidator = getTaxonCellValidator(taxonMapMock, {
+        optional: true
+      });
+
+      const params: CSVParams = {
+        cell: undefined,
+        row: {},
+        header: 'HEADER',
+        rowIndex: 0,
+        mutateCell: undefined
+      };
+
+      const result = taxonCellValidator(params);
+
+      expect(result.length).to.be.equal(0);
+    });
+
+    it('should return an error if the cell is undefined and not optional', () => {
+      const taxonMapMock = new CaseInsensitiveMap<string | number, any>([
+        [1, { tsn: 1, scientificName: 'Alces alces' }],
+        ['alces alces', { tsn: 1, scientificName: 'Alces alces' }]
+      ]);
+      const taxonCellValidator = getTaxonCellValidator(taxonMapMock, {
+        optional: false
+      });
+
+      const params: CSVParams = {
+        cell: undefined,
+        row: {},
+        header: 'HEADER',
+        rowIndex: 0,
+        mutateCell: undefined
+      };
+
+      const result = taxonCellValidator(params);
+
+      expect(result.length).to.be.equal(1);
+    });
+
+    it('should update row state and return an empty array if the cell is a valid tsn', () => {
+      const taxonMapMock = new CaseInsensitiveMap<string | number, any>([
+        [1, { tsn: 1, scientificName: 'Alces alces' }],
+        ['alces alces', { tsn: 1, scientificName: 'Alces alces' }]
+      ]);
+      const taxonCellValidator = getTaxonCellValidator(taxonMapMock, {
+        optional: true
+      });
+
+      const params: CSVParams = {
+        cell: 1,
+        row: {},
+        header: 'HEADER',
+        rowIndex: 0,
+        mutateCell: 1
+      };
+
+      const result = taxonCellValidator(params);
+
+      expect(result).to.be.deep.equal([]);
+      expect(params.row[CSVRowState]?.taxon).to.be.eql({
+        itis_tsn: 1,
+        itis_scientific_name: 'Alces alces'
+      });
+    });
+
+    it('should update row state and return an empty array if the cell is a valid scientific name', () => {
+      const taxonMapMock = new CaseInsensitiveMap<string | number, any>([
+        [1, { tsn: 1, scientificName: 'Alces alces' }],
+        ['alces alces', { tsn: 1, scientificName: 'Alces alces' }]
+      ]);
+      const taxonCellValidator = getTaxonCellValidator(taxonMapMock, {
+        optional: false
+      });
+
+      const params: CSVParams = {
+        cell: 'alces alces',
+        row: {},
+        header: 'HEADER',
+        rowIndex: 0,
+        mutateCell: 'alces alces'
+      };
+
+      const result = taxonCellValidator(params);
+
+      expect(result.length).to.be.equal(0);
+      expect(params.row[CSVRowState]?.taxon).to.be.eql({
+        itis_tsn: 1,
+        itis_scientific_name: 'Alces alces'
+      });
+
+      it('should not update row state and should return an error if the cell is invalid', () => {
+        const taxonMapMock = new CaseInsensitiveMap<string | number, any>([
+          [1, { tsn: 1, scientificName: 'Alces alces' }],
+          ['alces alces', { tsn: 1, scientificName: 'Alces alces' }]
+        ]);
+        const taxonCellValidator = getTaxonCellValidator(taxonMapMock, {
+          optional: false
+        });
+
+        const params: CSVParams = {
+          cell: 2, // not in taxonMapMock
+          row: {},
+          header: 'HEADER',
+          rowIndex: 0,
+          mutateCell: 2
+        };
+
+        const result = taxonCellValidator(params);
+
+        expect(result.length).to.be.equal(1);
+        expect(params.row[CSVRowState]?.taxon).to.be.eql({});
+      });
+    });
+  });
+
+  describe('getArrayCellValidator', () => {
+    it('should return an empty array if the cell is a valid string with multiple elements', () => {
+      const csvCellValidatorStub: CSVCellValidator = sinon.stub().returns([]);
+
+      const arrayCellValidator = getArrayCellValidator(csvCellValidatorStub, { delimiter: ';' });
+
+      const params: CSVParams = {
+        cell: '1;2;3',
+        row: {},
+        header: 'HEADER',
+        rowIndex: 0,
+        mutateCell: '1;2;3'
+      };
+
+      const result = arrayCellValidator(params);
+
+      expect(result.length).to.be.equal(0);
+      expect(csvCellValidatorStub).to.be.calledWith({
+        cell: '1',
+        row: {},
+        header: 'HEADER',
+        rowIndex: 0,
+        mutateCell: '1'
+      });
+      expect(csvCellValidatorStub).to.be.calledWith({
+        cell: '2',
+        row: {},
+        header: 'HEADER',
+        rowIndex: 0,
+        mutateCell: '2'
+      });
+      expect(csvCellValidatorStub).to.be.calledWith({
+        cell: '3',
+        row: {},
+        header: 'HEADER',
+        rowIndex: 0,
+        mutateCell: '3'
+      });
+      expect(params.mutateCell).to.be.eql(['1', '2', '3']);
+    });
+
+    it('should return an empty array if the cell is a valid string with a single element', () => {
+      const csvCellValidatorStub: CSVCellValidator = sinon.stub().returns([]);
+
+      const arrayCellValidator = getArrayCellValidator(csvCellValidatorStub, { delimiter: ';' });
+
+      const params: CSVParams = {
+        cell: '1',
+        row: {},
+        header: 'HEADER',
+        rowIndex: 0,
+        mutateCell: '1'
+      };
+
+      const result = arrayCellValidator(params);
+
+      expect(result.length).to.be.equal(0);
+      expect(csvCellValidatorStub).to.be.calledWith({
+        cell: '1',
+        row: {},
+        header: 'HEADER',
+        rowIndex: 0,
+        mutateCell: '1'
+      });
+      expect(params.mutateCell).to.be.eql(['1']);
+    });
+
+    it('should return an empty array if the cell is a valid non-string value', () => {
+      const csvCellValidatorStub: CSVCellValidator = sinon.stub().returns([]);
+
+      const arrayCellValidator = getArrayCellValidator(csvCellValidatorStub, { delimiter: ';' });
+
+      const params: CSVParams = {
+        cell: 1,
+        row: {},
+        header: 'HEADER',
+        rowIndex: 0,
+        mutateCell: 1
+      };
+
+      const result = arrayCellValidator(params);
+
+      expect(result.length).to.be.equal(0);
+      expect(csvCellValidatorStub).to.be.calledWith({
+        cell: 1,
+        row: {},
+        header: 'HEADER',
+        rowIndex: 0,
+        mutateCell: 1
+      });
+      expect(params.mutateCell).to.be.eql(1);
+    });
+
+    it('should return an error for each item in the array that is invalid', () => {
+      const csvCellValidatorStub: CSVCellValidator = sinon
+        .stub()
+        .onFirstCall()
+        .returns([
+          {
+            error: 'error1',
+            solution: 'solution1'
+          }
+        ])
+        .onSecondCall()
+        .returns([])
+        .onThirdCall()
+        .returns([
+          {
+            error: 'error2',
+            solution: 'solution2'
+          }
+        ]);
+
+      const arrayCellValidator = getArrayCellValidator(csvCellValidatorStub, { delimiter: ';' });
+
+      const params: CSVParams = {
+        cell: '1;2;3',
+        row: {},
+        header: 'HEADER',
+        rowIndex: 0,
+        mutateCell: '1;2;3'
+      };
+
+      const result = arrayCellValidator(params);
+
+      expect(result.length).to.be.equal(2);
+      expect(csvCellValidatorStub).to.be.calledWith({
+        cell: '1',
+        row: {},
+        header: 'HEADER',
+        rowIndex: 0,
+        mutateCell: '1'
+      });
+      expect(csvCellValidatorStub).to.be.calledWith({
+        cell: '2',
+        row: {},
+        header: 'HEADER',
+        rowIndex: 0,
+        mutateCell: '2'
+      });
+      expect(csvCellValidatorStub).to.be.calledWith({
+        cell: '3',
+        row: {},
+        header: 'HEADER',
+        rowIndex: 0,
+        mutateCell: '3'
+      });
+      expect(params.mutateCell).to.be.eql(['1', '2', '3']);
     });
   });
 });

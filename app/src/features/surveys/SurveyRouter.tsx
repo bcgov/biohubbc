@@ -12,6 +12,7 @@ import React from 'react';
 import { Redirect, Switch } from 'react-router';
 import RouteWithTitle from 'utils/RouteWithTitle';
 import { getTitle } from 'utils/Utils';
+import { HabitatFeatureRouter } from './habitat-features/SurveyHabitatFeatureRouter';
 import { TelemetryRouter } from './telemetry/TelemetryRouter';
 
 /**
@@ -39,6 +40,16 @@ const SurveyRouter: React.FC = () => {
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <DialogContextProvider>
             <SurveyPage />
+          </DialogContextProvider>
+        </ProjectRoleRouteGuard>
+      </RouteWithTitle>
+
+      <RouteWithTitle exact path="/admin/projects/:id/surveys/:survey_id/edit" title={getTitle('Edit Survey')}>
+        <ProjectRoleRouteGuard
+          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+          validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+          <DialogContextProvider>
+            <EditSurveyPage />
           </DialogContextProvider>
         </ProjectRoleRouteGuard>
       </RouteWithTitle>
@@ -73,6 +84,21 @@ const SurveyRouter: React.FC = () => {
         </ProjectRoleRouteGuard>
       </RouteWithTitle>
 
+      {/* Habitat Features Routes */}
+      <RouteWithTitle
+        path="/admin/projects/:id/surveys/:survey_id/habitat-features"
+        title={getTitle('Manage Habitat Features')}>
+        <ProjectRoleRouteGuard
+          validProjectPermissions={[
+            PROJECT_PERMISSION.COORDINATOR,
+            PROJECT_PERMISSION.COLLABORATOR,
+            PROJECT_PERMISSION.OBSERVER
+          ]}
+          validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+          <HabitatFeatureRouter />
+        </ProjectRoleRouteGuard>
+      </RouteWithTitle>
+
       {/* Observations Routes */}
       <RouteWithTitle
         exact
@@ -101,16 +127,6 @@ const SurveyRouter: React.FC = () => {
           ]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <SamplingRouter />
-        </ProjectRoleRouteGuard>
-      </RouteWithTitle>
-
-      <RouteWithTitle exact path="/admin/projects/:id/surveys/:survey_id/edit" title={getTitle('Edit Survey')}>
-        <ProjectRoleRouteGuard
-          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
-          validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-          <DialogContextProvider>
-            <EditSurveyPage />
-          </DialogContextProvider>
         </ProjectRoleRouteGuard>
       </RouteWithTitle>
     </Switch>

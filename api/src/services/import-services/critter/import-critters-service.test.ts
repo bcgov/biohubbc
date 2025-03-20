@@ -183,8 +183,10 @@ describe('ImportCrittersService', () => {
           POPULATION_UNIT: 'unit',
           COLLECTION_UNIT: 'collection',
           [CSVRowState]: {
-            itis_tsn: 1234,
-            itis_scientific_name: 'species'
+            taxon: {
+              itis_tsn: 1234,
+              itis_scientific_name: 'species'
+            }
           }
         }
       ];

@@ -115,6 +115,14 @@ export const DateTimeFields = <FormikPropsType,>(props: IDateTimeFieldsProps<For
                 return;
               }
 
+              const formattedValue = dayjs(value).format(DATE_FORMAT.ShortDateFormat);
+
+              if (!formattedValue || formattedValue === 'Invalid Date') {
+                // Check if the formatted value is null or invalid, and if so, clear the field.
+                setFieldValue(dateName, null);
+                return;
+              }
+
               setFieldValue(dateName, dayjs(value).format(DATE_FORMAT.ShortDateFormat));
             }}
           />
