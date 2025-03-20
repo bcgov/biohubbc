@@ -85,7 +85,7 @@ describe('Header', () => {
   describe('Log out', () => {
     describe('expanded menu button', () => {
       it('calls logout', async () => {
-        const signoutRedirectStub = jest.fn();
+        const signoutRedirectStub = vi.fn();
 
         const authState = getMockAuthState({
           base: SystemUserAuthState,
@@ -114,7 +114,7 @@ describe('Header', () => {
 
     describe('collapsed menu button', () => {
       it('calls logout', async () => {
-        const signoutRedirectStub = jest.fn();
+        const signoutRedirectStub = vi.fn();
 
         const authState = getMockAuthState({
           base: SystemUserAuthState,

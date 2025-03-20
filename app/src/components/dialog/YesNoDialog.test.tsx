@@ -1,9 +1,9 @@
 import YesNoDialog from 'components/dialog/YesNoDialog';
 import { fireEvent, render, waitFor } from 'test-helpers/test-utils';
 
-const handleOnYes = jest.fn();
-const handleOnNo = jest.fn();
-const handleOnClose = jest.fn();
+const handleOnYes = vi.fn();
+const handleOnNo = vi.fn();
+const handleOnClose = vi.fn();
 
 const renderContainer = ({
   dialogTitle,

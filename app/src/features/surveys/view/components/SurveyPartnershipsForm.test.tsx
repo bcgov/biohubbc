@@ -2,21 +2,21 @@ import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { Formik } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { codes } from 'test-helpers/code-helpers';
 import { render } from 'test-helpers/test-utils';
+import { Mock } from 'vitest';
 import SurveyPartnershipsForm, {
   ISurveyPartnershipsForm,
   SurveyPartnershipsFormInitialValues,
   SurveyPartnershipsFormYupSchema
 } from './SurveyPartnershipsForm';
 
-jest.mock('../../../../hooks/useBioHubApi');
-const mockBiohubApi = useBiohubApi as jest.Mock;
+vi.mock('../../../../hooks/useBioHubApi');
+const mockBiohubApi = useBiohubApi as Mock;
 
 const mockUseApi = {
   codes: {
-    getAllCodeSets: jest.fn<Promise<IGetAllCodeSetsResponse>, []>()
+    getAllCodeSets: vi.fn()
   }
 };
 

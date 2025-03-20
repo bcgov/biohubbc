@@ -5,8 +5,8 @@ const KEY = 'KEY';
 const VALUE = 'VALUE';
 
 describe('usePersistentState', () => {
-  const lsGetItemMock = jest.spyOn(window.localStorage.__proto__, 'getItem');
-  const lsSetItemMock = jest.spyOn(window.localStorage.__proto__, 'setItem');
+  const lsGetItemMock = vi.spyOn(window.localStorage.__proto__, 'getItem');
+  const lsSetItemMock = vi.spyOn(window.localStorage.__proto__, 'setItem');
 
   beforeEach(() => {
     lsGetItemMock.mockClear();

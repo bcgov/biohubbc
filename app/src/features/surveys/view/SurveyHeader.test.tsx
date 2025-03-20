@@ -17,23 +17,17 @@ import { codes } from 'test-helpers/code-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import { getSurveyForViewResponse } from 'test-helpers/survey-helpers';
 import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
+import { Mock } from 'vitest';
 
 const history = createMemoryHistory({ initialEntries: ['/admin/projects/1/surveys/2'] });
 
-jest.mock('../../../hooks/useBioHubApi');
-
-jest.mock('../../../components/markdown/CustomMarkdown', () => {
-  // Overriding this component because it is ESM only and Jest does not support ESM.
-  // See https://github.com/orgs/remarkjs/discussions/1247 for more information.
-  return {};
-});
-
-const mockBiohubApi = useBiohubApi as jest.Mock;
+vi.mock('../../../hooks/useBioHubApi');
+const mockBiohubApi = useBiohubApi as Mock;
 
 const mockUseApi = {
   survey: {
-    publishSurvey: jest.fn(),
-    deleteSurvey: jest.fn()
+    publishSurvey: vi.fn(),
+    deleteSurvey: vi.fn()
   }
 };
 
