@@ -1,5 +1,5 @@
-apiVersion: template.openshift.io/v1
 kind: Template
+apiVersion: template.openshift.io/v1
 metadata:
   name: biohubbc-db-setup-bc
   labels:
@@ -68,6 +68,7 @@ objects:
           importPolicy: {}
           referencePolicy:
             type: Local
+
   - kind: ImageStream
     apiVersion: image.openshift.io/v1
     metadata:
@@ -79,6 +80,7 @@ objects:
     spec:
       lookupPolicy:
         local: false
+
   - apiVersion: build.openshift.io/v1
     kind: BuildConfig
     metadata:

@@ -1,5 +1,5 @@
-apiVersion: template.openshift.io/v1
 kind: Template
+apiVersion: template.openshift.io/v1
 metadata:
   name: biohubbc-app-dc
   labels:
@@ -90,8 +90,6 @@ objects:
     spec:
       lookupPolicy:
         local: false
-      status:
-        dockerImageRepository: null
 
   - kind: Deployment
     apiVersion: apps/v1
@@ -177,26 +175,36 @@ objects:
                 limits:
                   cpu: ${CPU_LIMIT}
                   memory: ${MEMORY_LIMIT}
+              startupProbe:
+                httpGet:
+                  path: /
+                  port: ${{APP_PORT_DEFAULT}}
+                  scheme: HTTP
+                initialDelaySeconds: 30
+                periodSeconds: 10
+                timeoutSeconds: 10
+                successThreshold: 1
+                failureThreshold: 30
               readinessProbe:
                 httpGet:
                   path: /
                   port: ${{APP_PORT_DEFAULT}}
                   scheme: HTTP
-                initialDelaySeconds: 60
+                initialDelaySeconds: 0
                 periodSeconds: 30
-                timeoutSeconds: 15
+                timeoutSeconds: 10
                 successThreshold: 1
-                failureThreshold: 20
+                failureThreshold: 3
               livenessProbe:
                 httpGet:
                   path: /
                   port: ${{APP_PORT_DEFAULT}}
                   scheme: HTTP
-                initialDelaySeconds: 60
+                initialDelaySeconds: 0
                 periodSeconds: 30
-                timeoutSeconds: 15
+                timeoutSeconds: 10
                 successThreshold: 1
-                failureThreshold: 20
+                failureThreshold: 3
               terminationMessagePath: /dev/termination-log
               terminationMessagePolicy: File
           dnsPolicy: ClusterFirst
@@ -225,8 +233,6 @@ objects:
         deployment: ${NAME}${SUFFIX}
       sessionAffinity: None
       type: ClusterIP
-    status:
-      loadBalancer: {}
 
   - kind: Route
     apiVersion: route.openshift.io/v1
@@ -246,8 +252,6 @@ objects:
         name: ${NAME}${SUFFIX}
         weight: 100
       wildcardPolicy: None
-    status:
-      ingress: null
 
   # Disable the HPA for now, as it is preferrable to run an exact number of pods (e.g. min:2, max:2)
   # - kind: HorizontalPodAutoscaler
