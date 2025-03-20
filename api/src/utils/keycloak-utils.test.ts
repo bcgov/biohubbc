@@ -81,7 +81,7 @@ describe('keycloakUtils', () => {
       const keycloakUserInformation: DatabaseUserInformation = {
         database_user_guid: '123456789',
         identity_provider: 'database',
-        username: 'biohub_dapi_v1'
+        username: 'biohub_api'
       };
 
       const response = getUserGuid(keycloakUserInformation);
@@ -154,12 +154,12 @@ describe('keycloakUtils', () => {
       const keycloakUserInformation: DatabaseUserInformation = {
         database_user_guid: '123456789',
         identity_provider: 'database',
-        username: 'biohub_dapi_v1'
+        username: 'biohub_api'
       };
 
       const response = getUserIdentifier(keycloakUserInformation);
 
-      expect(response).to.equal('biohub_dapi_v1');
+      expect(response).to.equal('biohub_api');
     });
   });
 
@@ -227,7 +227,7 @@ describe('keycloakUtils', () => {
       const keycloakUserInformation: DatabaseUserInformation = {
         database_user_guid: '123456789',
         identity_provider: 'database',
-        username: 'biohub_dapi_v1'
+        username: 'biohub_api'
       };
 
       const response = getUserIdentitySource(keycloakUserInformation);
@@ -327,7 +327,7 @@ describe('keycloakUtils', () => {
       const keycloakUserInformation: DatabaseUserInformation = {
         database_user_guid: '123456789',
         identity_provider: 'database',
-        username: 'biohub_dapi_v1'
+        username: 'biohub_api'
       };
 
       const response = isIdirUserInformation(keycloakUserInformation);
@@ -400,7 +400,7 @@ describe('keycloakUtils', () => {
       const keycloakUserInformation: DatabaseUserInformation = {
         database_user_guid: '123456789',
         identity_provider: 'database',
-        username: 'biohub_dapi_v1'
+        username: 'biohub_api'
       };
 
       const response = isBceidBasicUserInformation(keycloakUserInformation);
@@ -473,7 +473,7 @@ describe('keycloakUtils', () => {
       const keycloakUserInformation: DatabaseUserInformation = {
         database_user_guid: '123456789',
         identity_provider: 'database',
-        username: 'biohub_dapi_v1'
+        username: 'biohub_api'
       };
 
       const response = isBceidBusinessUserInformation(keycloakUserInformation);
@@ -546,7 +546,7 @@ describe('keycloakUtils', () => {
       const keycloakUserInformation: DatabaseUserInformation = {
         database_user_guid: '123456789',
         identity_provider: 'database',
-        username: 'biohub_dapi_v1'
+        username: 'biohub_api'
       };
 
       const response = isDatabaseUserInformation(keycloakUserInformation);

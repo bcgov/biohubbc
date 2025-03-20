@@ -20,7 +20,7 @@ export class APIError extends Error {
 }
 
 // Max allowed refresh/re-send attempts when a request fails due to a 401 or 403 error
-const AXIOS_AUTH_REFRESH_ATTEMPTS_MAX = Number(process.env.REACT_APP_AXIOS_AUTH_REFRESH_ATTEMPTS_MAX) || 1;
+const AXIOS_AUTH_REFRESH_ATTEMPTS_MAX = Number(import.meta.env.VITE_APP_AXIOS_AUTH_REFRESH_ATTEMPTS_MAX) || 1;
 
 /**
  * Returns an instance of axios with baseURL and authorization headers set.

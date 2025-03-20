@@ -2,7 +2,7 @@ import { ConfigContext, IConfig } from 'contexts/configContext';
 import { fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import DropZone from './DropZone';
 
-const onFiles = jest.fn();
+const onFiles = vi.fn();
 
 const renderContainer = () => {
   return render(

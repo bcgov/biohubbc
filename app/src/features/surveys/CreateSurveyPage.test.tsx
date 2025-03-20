@@ -2,42 +2,39 @@ import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { IProjectContext, ProjectContext } from 'contexts/projectContext';
 import { createMemoryHistory } from 'history';
-import { GetRegionsResponse } from 'hooks/api/useSpatialApi';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import { ICreateSurveyResponse, ISurveyPermits } from 'interfaces/useSurveyApi.interface';
 import { MemoryRouter, Router } from 'react-router';
 import { codes } from 'test-helpers/code-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import { getSurveyForListResponse } from 'test-helpers/survey-helpers';
 import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
+import { Mock } from 'vitest';
 import CreateSurveyPage from './CreateSurveyPage';
 
 const history = createMemoryHistory();
 
-jest.mock('../../hooks/useBioHubApi');
+vi.mock('../../hooks/useBioHubApi');
 
-const mockBiohubApi = useBiohubApi as jest.Mock;
+const mockBiohubApi = useBiohubApi as Mock;
 
 const mockUseApi = {
   project: {
-    getProjectForView: jest.fn<Promise<IGetProjectForViewResponse>, [number]>()
+    getProjectForView: vi.fn()
   },
   codes: {
-    getAllCodeSets: jest.fn<Promise<IGetAllCodeSetsResponse>, []>()
+    getAllCodeSets: vi.fn()
   },
   survey: {
-    getSurveyPermits: jest.fn<Promise<ISurveyPermits>, []>(),
-    createSurvey: jest.fn<Promise<ICreateSurveyResponse>, []>()
+    getSurveyPermits: vi.fn(),
+    createSurvey: vi.fn()
   },
   taxonomy: {
-    searchSpecies: jest.fn().mockResolvedValue({ searchResponse: [] }),
-    getSpeciesFromIds: jest.fn().mockResolvedValue({ searchResponse: [] })
+    searchSpecies: vi.fn().mockResolvedValue({ searchResponse: [] }),
+    getSpeciesFromIds: vi.fn().mockResolvedValue({ searchResponse: [] })
   },
   spatial: {
-    getRegions: jest.fn<Promise<GetRegionsResponse>, []>()
+    getRegions: vi.fn()
   }
 };
 
@@ -84,7 +81,7 @@ describe.skip('CreateSurveyPage', () => {
       regions: []
     });
 
-    jest.spyOn(console, 'debug').mockImplementation(() => {});
+    vi.spyOn(console, 'debug').mockImplementation(() => {});
   });
 
   afterEach(() => {

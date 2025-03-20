@@ -134,7 +134,7 @@ export class TypedURLSearchParams<
   }
 
   entries<K extends keyof ParamType & string>() {
-    return super.entries() as IterableIterator<[K, ParamType[K]]>;
+    return super.entries() as URLSearchParamsIterator<[string, ParamType[K]]>;
   }
 
   forEach<K extends keyof ParamType & string>(
@@ -153,7 +153,7 @@ export class TypedURLSearchParams<
   }
 
   keys<K extends keyof ParamType & string>() {
-    return super.keys() as IterableIterator<K>;
+    return super.keys() as URLSearchParamsIterator<K>;
   }
 
   sort() {
@@ -161,7 +161,7 @@ export class TypedURLSearchParams<
     return this;
   }
 
-  values<K extends keyof ParamType & string>(): IterableIterator<ParamType[K]> {
-    return super.values() as IterableIterator<ParamType[K]>;
+  values<K extends keyof ParamType & string>(): URLSearchParamsIterator<ParamType[K]> {
+    return super.values() as URLSearchParamsIterator<ParamType[K]>;
   }
 }

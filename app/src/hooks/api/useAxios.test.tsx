@@ -4,6 +4,7 @@ import MockAdapter from 'axios-mock-adapter';
 import { User } from 'oidc-client-ts';
 import { PropsWithChildren } from 'react';
 import { AuthContextProps, AuthProvider, AuthProviderProps, useAuth } from 'react-oidc-context';
+import { Mock } from 'vitest';
 import useAxios, { APIError } from './useAxios';
 
 describe('APIError', () => {
@@ -30,31 +31,23 @@ describe('APIError', () => {
   });
 });
 
-jest.mock('react-oidc-context');
+vi.mock('react-oidc-context');
 
 describe('useAxios', () => {
-  /// Mock `axios` instance
-  let axiosMock: MockAdapter;
-
   const authConfig: AuthProviderProps = {
     authority: 'authority',
     client_id: 'client',
     redirect_uri: 'redirect'
   };
 
-  const mockAuthProvider = AuthProvider as jest.Mock;
-  const mockUseAuth = useAuth as jest.Mock<Partial<AuthContextProps>>;
+  const mockAuthProvider = AuthProvider as Mock;
+  const mockUseAuth = useAuth as Mock<() => Partial<AuthContextProps>>;
 
-  const mockSigninSilent = jest.fn<
-    ReturnType<AuthContextProps['signinSilent']>,
-    Parameters<AuthContextProps['signinSilent']>
-  >();
+  const mockSigninSilent = vi.fn();
 
   beforeEach(() => {
-    axiosMock = new MockAdapter(axios);
-
     // Assign the real implementation of `AuthProvider`
-    const { AuthProvider } = jest.requireActual('react-oidc-context');
+    const { AuthProvider } = vi.importActual('react-oidc-context') as any;
     mockAuthProvider.mockImplementation(AuthProvider);
 
     // Assign a mock implementation of `useAuth`
@@ -64,12 +57,13 @@ describe('useAxios', () => {
   });
 
   afterEach(() => {
-    axiosMock.restore();
     cleanup();
+    vi.clearAllMocks();
   });
 
   it('should make an http get request and return the response', async () => {
-    axiosMock.onAny().reply(200, { value: 'test value' });
+    const axiosMock = new MockAdapter(axios);
+    axiosMock.onGet('/some/url').reply(200, { value: 'test value' });
 
     const baseUrl = 'http://baseurl.com';
 
@@ -84,14 +78,17 @@ describe('useAxios', () => {
       expect(response.status).toEqual(200);
       expect(response.data).toEqual({ value: 'test value' });
     });
+
+    axiosMock.restore();
   });
 
   it('should retry once if the call fails with a 401', async () => {
     // Simulate `signinSilent` call success
     mockSigninSilent.mockResolvedValue({} as unknown as User);
 
+    const axiosMock = new MockAdapter(axios);
     // Return 401 once
-    axiosMock.onAny().replyOnce(401).onAny().replyOnce(200, { value: 'test value' });
+    axiosMock.onGet('/some/url').replyOnce(401).onGet('/some/url').reply(200, { value: 'test value' });
 
     const baseUrl = 'http://baseurl.com';
 
@@ -110,14 +107,17 @@ describe('useAxios', () => {
       expect(response.status).toEqual(200);
       expect(response.data).toEqual({ value: 'test value' });
     });
+
+    axiosMock.restore();
   });
 
   it('should retry once and fail if the call continues to return 401', async () => {
     // Simulate `signinSilent` call success
     mockSigninSilent.mockResolvedValue({} as unknown as User);
 
+    const axiosMock = new MockAdapter(axios);
     // Return 401 always
-    axiosMock.onAny().reply(401);
+    axiosMock.onGet('/some/url').reply(401);
 
     const baseUrl = 'http://baseurl.com';
 
@@ -137,14 +137,17 @@ describe('useAxios', () => {
         expect(mockSigninSilent).toHaveBeenCalledTimes(1);
       }
     });
+
+    axiosMock.restore();
   });
 
   it('should retry once and fail if the update token call fails', async () => {
     // Simulate `signinSilent` call failure
     mockSigninSilent.mockResolvedValue(null);
 
+    const axiosMock = new MockAdapter(axios);
     // Return 403 once
-    axiosMock.onAny().replyOnce(401).onAny().replyOnce(200, { value: 'test value' });
+    axiosMock.onGet('/some/url').reply(401);
 
     const baseUrl = 'http://baseurl.com';
 
@@ -164,5 +167,7 @@ describe('useAxios', () => {
         expect(mockSigninSilent).toHaveBeenCalledTimes(1);
       }
     });
+
+    axiosMock.restore();
   });
 });

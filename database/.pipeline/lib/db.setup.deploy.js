@@ -69,7 +69,6 @@ const dbSetupDeploy = async (settings) => {
         NODE_ENV: phases[phase].nodeEnv,
         DB_SERVICE_NAME: dbName,
         DB_SCHEMA: 'biohub',
-        DB_SCHEMA_DAPI_V1: 'biohub_dapi_v1',
         IMAGE: dbSetupImageStream.image.dockerImageReference,
         CPU_REQUEST: '50m',
         CPU_LIMIT: '1000m',
