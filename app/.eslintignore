@@ -8,5 +8,3 @@ sonar-runner
 uploads
 
 .vscode
-
-src/serviceWorker.ts
