@@ -3,7 +3,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { WorkSheet } from 'xlsx';
 import * as csv from '../../../utils/csv-utils/csv-config-validation';
-import { CSVConfig } from '../../../utils/csv-utils/csv-config-validation.interface';
+import { CSVConfig, CSVRowState } from '../../../utils/csv-utils/csv-config-validation.interface';
 import { getMockDBConnection } from '../../../__mocks__/db';
 import { SamplePeriodService } from '../../sample-period-service';
 import { SampleSiteService } from '../../sample-site-service';
@@ -38,7 +38,8 @@ describe('import-sample-periods-service', () => {
             START_DATE: '2021-01-01',
             START_TIME: '12:00:00',
             END_DATE: '2021-01-01',
-            END_TIME: null
+            END_TIME: null,
+            [CSVRowState]: {}
           }
         ]
       });

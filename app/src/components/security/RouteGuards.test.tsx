@@ -31,6 +31,7 @@ const nullAuthState = getMockAuthState({
       identitySource: null,
       hasAccessRequest: false,
       hasOneOrMoreProjectRoles: false,
+      recordEndDate: null,
       refresh: () => {
         // do nothing
       }

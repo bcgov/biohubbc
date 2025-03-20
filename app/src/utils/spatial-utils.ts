@@ -87,3 +87,21 @@ export const getSamplingSiteSpatialType = (type: string): SAMPLING_SITE_SPATIAL_
 
   return null;
 };
+
+/**
+ * Create a GeoJson Point Feature.
+ *
+ * @param {number} latitude
+ * @param {number} longitude
+ * @return {*}  {Feature<Point>}
+ */
+export const createPointFeature = (latitude: number, longitude: number): Feature<Point> => {
+  return {
+    type: 'Feature',
+    properties: {},
+    geometry: {
+      type: 'Point',
+      coordinates: [longitude, latitude]
+    }
+  };
+};

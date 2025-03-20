@@ -42,7 +42,10 @@ export const validateCSVWorksheet = <StaticHeaderType extends Uppercase<string>>
       errors.push(...executeRowValidator(rowParams, rowValidator));
     });
 
-    const validatedRow: CSVRow = {};
+    const validatedRow: CSVRowValidated<Uppercase<string>> = {
+      // Initialize the empty row state
+      [CSVRowState]: {}
+    };
 
     // Iterate over each cell in the row and validate + set cell values
     forEachCSVRowCell(rowParams.row, rowParams.rowIndex, config, (cellParams, headerConfig) => {
@@ -61,8 +64,11 @@ export const validateCSVWorksheet = <StaticHeaderType extends Uppercase<string>>
       // Set the header and cell value in the validated row
       // Note: The header is either the static header or the dynamic header ie: the CSV header
       validatedRow[header] = cell;
-      // Copy the row state to the validated row
-      validatedRow[CSVRowState] = rowParams.row[CSVRowState];
+
+      if (rowParams.row[CSVRowState]) {
+        // Copy the row state to the validated row if it exists
+        validatedRow[CSVRowState] = rowParams.row[CSVRowState];
+      }
     });
 
     rows.push(validatedRow);

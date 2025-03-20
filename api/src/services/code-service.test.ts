@@ -49,7 +49,8 @@ describe('CodeService', () => {
         'telemetry_device_makes',
         'frequency_units',
         'alert_types',
-        'vantages'
+        'vantages',
+        'habitat_feature_types'
       );
     });
   });

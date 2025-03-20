@@ -196,7 +196,7 @@ export const DialogContextProvider: React.FC<React.PropsWithChildren> = (props) 
           horizontal: 'center'
         }}
         open={snackbarProps.open}
-        autoHideDuration={snackbarProps?.snackbarAutoCloseMs ?? 6000}
+        autoHideDuration={snackbarProps?.snackbarAutoCloseMs ?? 3000}
         onClose={snackbarProps.onClose}
         message={snackbarProps.snackbarMessage}
         action={

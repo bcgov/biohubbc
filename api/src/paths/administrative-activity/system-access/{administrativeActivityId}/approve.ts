@@ -88,7 +88,13 @@ PUT.apiDoc = {
             roleIds: {
               type: 'array',
               items: {
-                type: 'number'
+                type: 'number',
+                // The backend allows a user to have multiple roles, but the frontend user controls are
+                // better designed for a user to have one role. Setting max items = 1 to prevent users from having multiple roles,
+                // though it is technically allowed.
+                maxItems: 1,
+                // Min items = 1 to prevent users from having no role, which is technically feasible but undesired.
+                minItems: 1
               },
               description:
                 'An array of role ids to add, if the access-request was approved. Ignored if the access-request was denied.'
@@ -157,13 +163,11 @@ export function approveAccessRequest(): RequestHandler {
         email
       );
 
-      // Filter out any system roles that have already been added to the user
-      const rolesIdsToAdd = roleIds.filter((roleId) => !systemUserObject.role_ids.includes(roleId));
+      // Delete any existing roles for the user
+      await userService.deleteUserSystemRoles(systemUserObject.system_user_id);
 
-      if (rolesIdsToAdd?.length) {
-        // Add any missing roles (if any)
-        await userService.addUserSystemRoles(systemUserObject.system_user_id, rolesIdsToAdd);
-      }
+      // Add the single new role
+      await userService.addUserSystemRoles(systemUserObject.system_user_id, roleIds);
 
       // Update the access request record status
       await administrativeActivityService.putAdministrativeActivity(

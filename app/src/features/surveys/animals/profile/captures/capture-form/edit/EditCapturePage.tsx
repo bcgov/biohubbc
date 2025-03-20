@@ -17,7 +17,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useAnimalPageContext, useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
+import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { IEditCaptureRequest } from 'interfaces/useCritterApi.interface';
 import { useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
@@ -45,7 +45,7 @@ export const EditCapturePage = () => {
   const surveyCritterId: number | undefined = Number(urlParams['critter_id']);
   const captureId: string | undefined = String(urlParams['capture_id']);
 
-  const { locationChangeInterceptor } = useUnsavedChangesDialog();
+  const { locationChangeInterceptor, skipUnsavedChangesDialog } = useUnsavedChangesDialog();
 
   const [isSaving, setIsSaving] = useState(false);
 
@@ -212,7 +212,8 @@ export const EditCapturePage = () => {
         animalPageContext.critterDataLoader.refresh(projectId, surveyId, surveyCritterId);
       }
 
-      history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals/details`, SKIP_CONFIRMATION_DIALOG);
+      skipUnsavedChangesDialog();
+      history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals/details`);
     } catch (error) {
       const apiError = error as APIError;
 

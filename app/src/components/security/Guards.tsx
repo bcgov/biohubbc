@@ -71,7 +71,7 @@ export const SystemRoleGuard = (props: PropsWithChildren<ISystemRoleGuardProps>)
 
   const hasSystemRole = hasAtLeastOneValidValue(validSystemRoles, authStateContext.simsUserWrapper.roleNames);
 
-  if (!hasSystemRole) {
+  if (!hasSystemRole || authStateContext.simsUserWrapper.recordEndDate) {
     if (props.fallback) {
       return <>{props.fallback}</>;
     }
