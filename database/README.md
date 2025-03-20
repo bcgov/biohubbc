@@ -152,10 +152,7 @@ This application has main 3 schemas to be aware of.
 
 1. `biohub`
    1. The main schema that contains the database for the application
-2. `biohub_dapi_v1`
-   1. A schema containing only Views of the real tables from the `biohub` schema.
-   2. This is done as an added level of security. The application API makes calls against the `biohub_dapi_v1`, where it has reduced permissions. This way, it should be impossible for the API to execute a query that makes model changes or deletes tables, etc.
-3. `public`
+2. `public`
    1. The standard default schema. Contains the PostGIS functions and the Knex migration tables.
 
 ## Common migrations
@@ -163,13 +160,6 @@ This application has main 3 schemas to be aware of.
 ### Add/remove columns or column constraints on an existing database table
 
 ```
-----------------------------------------------------------------------------------------
--- Drop existing views
-----------------------------------------------------------------------------------------
-set search_path=biohub_dapi_v1;
-
-drop view biohub_dapi_v1.<table_name>;
-
 ----------------------------------------------------------------------------------------
 -- Update/alter tables/columns
 ----------------------------------------------------------------------------------------
@@ -192,13 +182,6 @@ COMMENT ON TABLE <column_name_4> IS '<comment_4>';
 COMMENT ON TABLE <column_name_5> IS '<comment_5>';
 COMMENT ON TABLE <column_name_6> IS '<comment_6>';
 COMMENT ON TABLE <column_name_7> IS '<comment_7>';
-
-----------------------------------------------------------------------------------------
--- Create views
-----------------------------------------------------------------------------------------
-set search_path=biohub_dapi_v1;
-
-create or replace view <table_name> as select * from biohub.<table_name>;
 ```
 
 ### Adding a unique end-date key constraint
@@ -325,14 +308,6 @@ CREATE INDEX <table_name_2>_idx1 ON <table_name_2>(<column_name_2>);
 -- Create audit and journal triggers
 create trigger audit_<table_name_2> before insert or update or delete on <table_name_2> for each row execute procedure tr_audit_trigger();
 create trigger journal_<table_name_2> after insert or update or delete on <table_name_2> for each row execute procedure tr_journal_trigger();
-
-----------------------------------------------------------------------------------------
--- Create views
-----------------------------------------------------------------------------------------
-set search_path=biohub_dapi_v1;
-
-create or replace view <table_name_1> as select * from biohub.<table_name_1>;
-create or replace view <table_name_2> as select * from biohub.<table_name_2>;
 ```
 
 ### Create new join table
@@ -387,14 +362,6 @@ ALTER TABLE <table_name_1> ADD CONSTRAINT <table_name_1>_fk2
 CREATE INDEX <table_name_1>_idx1 ON <table_name_1>(<foreign_column_1>);
 
 CREATE INDEX <table_name_1>_idx2 ON <table_name_1>(<foreign_column_2>);
-
-----------------------------------------------------------------------------------------
--- Create views
-----------------------------------------------------------------------------------------
-set search_path=biohub_dapi_v1;
-
-create or replace view <table_name_1> as select * from biohub.<table_name_1>;
-
 ```
 
 ## Miscellaneous Migration Snippets

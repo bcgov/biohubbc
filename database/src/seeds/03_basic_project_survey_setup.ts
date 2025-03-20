@@ -2,7 +2,6 @@ import { faker } from '@faker-js/faker';
 import { Knex } from 'knex';
 
 const DB_SCHEMA = process.env.DB_SCHEMA;
-const DB_SCHEMA_DAPI_V1 = process.env.DB_SCHEMA_DAPI_V1;
 const PROJECT_SEEDER_USER_IDENTIFIER = process.env.PROJECT_SEEDER_USER_IDENTIFIER;
 
 const NUM_SEED_PROJECTS = Number(process.env.NUM_SEED_PROJECTS ?? 2);
@@ -40,7 +39,7 @@ const identitySources = ['IDIR', 'BCEIDBUSINESS', 'BCEIDBASIC'];
 export async function seed(knex: Knex): Promise<void> {
   await knex.raw(`
     SET SCHEMA '${DB_SCHEMA}';
-    SET SEARCH_PATH=${DB_SCHEMA},${DB_SCHEMA_DAPI_V1};
+    SET SEARCH_PATH=${DB_SCHEMA};
   `);
 
   // Check if at least 1 funding sources already exists
