@@ -233,7 +233,8 @@ export const MortalityLocationMapControl = <FormikValuesType extends ICreateMort
                   ref={drawControlsRef}
                   options={{
                     // Always disable circle, circlemarker and line
-                    draw: { circle: false, circlemarker: false, polygon: false, rectangle: false, polyline: false }
+                    draw: { circle: false, circlemarker: false, polygon: false, rectangle: false, polyline: false },
+                    edit: { edit: false, remove: false }
                   }}
                   onLayerAdd={(event: DrawEvents.Created, id: number) => {
                     if (lastDrawn) {

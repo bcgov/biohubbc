@@ -51,4 +51,5 @@ export interface IGetAllCodeSetsResponse {
   frequency_units: CodeSet<{ id: number; name: string; description: string }>;
   alert_types: CodeSet<{ id: number; name: string; description: string }>;
   vantages: CodeSet<{ id: number; name: string; description: string }>;
+  habitat_feature_types: CodeSet<{ id: number; name: string; description: string }>;
 }

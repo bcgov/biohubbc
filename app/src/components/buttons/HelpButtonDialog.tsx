@@ -4,7 +4,7 @@ import { Button } from '@mui/material';
 import { CustomMarkdown } from 'components/markdown/CustomMarkdown';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext } from 'hooks/useContext';
-import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
+import { MarkdownPayload, MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import { PropsWithChildren } from 'react';
 
 interface IHelpButtonDialogProps {
@@ -23,7 +23,7 @@ const HelpButtonDialog = (props: PropsWithChildren<IHelpButtonDialogProps>) => {
   const dialogContext = useDialogContext();
   const biohubApi = useBiohubApi();
 
-  const createDialogConfig = (markdown: any) => ({
+  const createDialogConfig = (markdown: MarkdownPayload) => ({
     open: true,
     dialogContent: <CustomMarkdown markdown={markdown.data} />,
     hasSubmitted: markdown.participated,

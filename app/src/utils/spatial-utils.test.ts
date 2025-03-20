@@ -1,6 +1,6 @@
 import { SAMPLING_SITE_SPATIAL_TYPE } from 'constants/spatial';
 import { Feature, Point } from 'geojson';
-import { getSamplingSiteSpatialType, isValidLatitude, isValidLongitude } from 'utils/spatial-utils';
+import { createPointFeature, getSamplingSiteSpatialType, isValidLatitude, isValidLongitude } from 'utils/spatial-utils';
 import { getCoordinatesFromGeoJson, isGeoJsonPointFeature, isValidCoordinates } from './spatial-utils';
 
 describe('isValidLatitude', () => {
@@ -349,5 +349,23 @@ describe('getSamplingSiteSpatialType', () => {
     const response = getSamplingSiteSpatialType(feature.geometry.type);
 
     expect(response).toEqual(SAMPLING_SITE_SPATIAL_TYPE.AREA);
+  });
+
+  describe('createPointFeature', () => {
+    it('creates a GeoJson Point Feature', () => {
+      const latitude = 0;
+      const longitude = 0;
+
+      const response = createPointFeature(latitude, longitude);
+
+      expect(response).toStrictEqual({
+        type: 'Feature',
+        properties: {},
+        geometry: {
+          type: 'Point',
+          coordinates: [0, 0]
+        }
+      });
+    });
   });
 });

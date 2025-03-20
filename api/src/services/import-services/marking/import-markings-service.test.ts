@@ -3,7 +3,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { WorkSheet } from 'xlsx';
 import * as csv from '../../../utils/csv-utils/csv-config-validation';
-import { CSVConfig } from '../../../utils/csv-utils/csv-config-validation.interface';
+import { CSVConfig, CSVRowState } from '../../../utils/csv-utils/csv-config-validation.interface';
 import { NestedRecord } from '../../../utils/nested-record';
 import { getMockDBConnection } from '../../../__mocks__/db';
 import { IAsSelectLookup } from '../../critterbase-service';
@@ -51,7 +51,8 @@ describe('import-markings-service', () => {
             IDENTIFIER: 'id',
             PRIMARY_COLOUR: 'red',
             SECONDARY_COLOUR: 'blue',
-            DESCRIPTION: 'comments'
+            DESCRIPTION: 'comments',
+            [CSVRowState]: {}
           }
         ]
       });

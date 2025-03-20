@@ -23,6 +23,11 @@ export const SIMS_OBSERVATIONS_MEASUREMENT_COLUMNS = 'SIMS_OBSERVATIONS_MEASUREM
 export const SIMS_OBSERVATIONS_ENVIRONMENT_COLUMNS = 'SIMS_OBSERVATIONS_ENVIRONMENT_COLUMNS';
 
 /**
+ * Key used to cache habitat feature column visiblity in sessionStorage
+ */
+export const SIMS_HABITAT_FEATURES_HIDDEN_COLUMNS = 'SIMS_HABITAT_FEATURES_HIDDEN_COLUMNS';
+
+/**
  * Get a session storage key which is unique to the provided survey id.
  *
  * @param {number} surveyId

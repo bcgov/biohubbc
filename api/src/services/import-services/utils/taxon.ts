@@ -17,8 +17,15 @@ export const getTaxonMap = async (
 ): Promise<TaxonMap> => {
   const taxonMap = new CaseInsensitiveMap<string | number, IItisSearchResult>();
 
+  // Why? In some scenarios, the taxonIdentifiers will include itis_tsn values as strings and we need to convert them
+  // to numbers to match the TSNs returned by the external taxonomy API.
+  const preParseTaxonIdentifiers = taxonIdentifiers.map((item) => {
+    const asNumber = Number(item);
+    return isNaN(asNumber) ? item : asNumber;
+  });
+
   // Partition the values into tsns (numbers) and scientific names (strings)
-  const [tsns, scientificNames] = partition(taxonIdentifiers, isNumber);
+  const [tsns, scientificNames] = partition(preParseTaxonIdentifiers, isNumber);
 
   const uniqueScientificNames = [...new Set(scientificNames.map((name) => name.toLowerCase()))];
 
