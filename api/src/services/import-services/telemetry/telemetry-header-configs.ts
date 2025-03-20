@@ -39,20 +39,20 @@ export const getTelemetryVendorCellValidator = (vendors: Set<string>): CSVCellVa
  *  1. The serial and vendor must generate a valid device key
  *  2. The device key must exist in the deployment dictionary
  *
- * @param {ExtendedDeploymentRecord[]} deployments Telemetry device deployments
+ * @param {ExtendedDeploymentRecord[]} matchingDeployments Telemetry device matchingDeployments
  * @param {Map<string, ICritterDetailed>} surveyCritterAliasMap The critter alias map
  * @param {CSVConfigUtils<TelemetryCSVStaticHeader>} utils The CSV config utils
  * @returns {*} {CSVCellValidator} The validate cell callback
  */
 export const getTelemetrySerialCellValidator = (
-  deployments: ExtendedDeploymentRecord[],
+  matchingDeployments: ExtendedDeploymentRecord[],
   surveyCritterAliasMap: Map<string, ICritterDetailed>,
   utils: CSVConfigUtils<TelemetryCSVStaticHeader>
 ): CSVCellValidator => {
   const deploymentMap = new CaseInsensitiveMap<string, ExtendedDeploymentRecord[]>();
 
   // Populate the dictionary: device_key -> deployment[]
-  for (const deployment of deployments) {
+  for (const deployment of matchingDeployments) {
     const existingDeployment = deploymentMap.get(deployment.device_key);
 
     // Append to the existing deployment list
@@ -76,10 +76,10 @@ export const getTelemetrySerialCellValidator = (
 
     const deviceKey = getTelemetryDeviceKey({ vendor, serial });
 
-    const deployments = deploymentMap.get(deviceKey);
+    let matchingDeployments = deploymentMap.get(deviceKey);
 
-    // Device does not match any deployments
-    if (!deployments || deployments.length === 0) {
+    // Device does not match any matchingDeployments
+    if (!matchingDeployments || matchingDeployments.length === 0) {
       return [
         {
           error: `Device not found in deployments`,
@@ -88,14 +88,33 @@ export const getTelemetrySerialCellValidator = (
       ];
     }
 
-    // Device matches a single deployment
-    if (deployments.length === 1) {
-      params.mutateCell = deployments[0].deployment_id;
+    // If an alias is provided, attempt to match the alias to a deployment
+    if (alias) {
+      const critter = surveyCritterAliasMap.get(alias);
+
+      // reduce the matchingDeployments to only those that match the critter alias
+      matchingDeployments = matchingDeployments.filter(
+        (deployment) => deployment.critterbase_critter_id === critter?.critter_id
+      );
+
+      if (matchingDeployments.length === 0) {
+        return [
+          {
+            error: `Device and alias does not match any deployments for the critter`,
+            solution: `Check that the serial number and vendor match a deployment in the Survey`
+          }
+        ];
+      }
+    }
+
+    // Found single deployment
+    if (matchingDeployments.length === 1) {
+      params.mutateCell = matchingDeployments[0].deployment_id;
       return [];
     }
 
-    // Filter the deployments by the telemetry acquisition date
-    const deploymentsMatchingAcquisitionTimestamp = deployments.filter((deployment) => {
+    // Filter the matchingDeployments by the telemetry acquisition date
+    const deploymentsMatchingAcquisitionTimestamp = matchingDeployments.filter((deployment) => {
       const startDate = dayjs(deployment.attachment_start_timestamp);
 
       if (deployment.attachment_end_timestamp === null) {
@@ -107,26 +126,10 @@ export const getTelemetrySerialCellValidator = (
       return acquisitionTimestamp.isSameOrBefore(endDate) && acquisitionTimestamp.isSameOrAfter(startDate);
     });
 
-    // Device matches multiple deployments, but telemetry is between the deployment start and end dates
+    // Device matches multiple matchingDeployments, but telemetry is between the deployment start and end dates
     if (deploymentsMatchingAcquisitionTimestamp.length === 1) {
       params.mutateCell = deploymentsMatchingAcquisitionTimestamp[0].deployment_id;
       return [];
-    }
-
-    // If an alias is provided, attempt to match the alias to a deployment
-    if (alias) {
-      const critter = surveyCritterAliasMap.get(alias);
-
-      // Question: Should this filter the initial deployments or the deployments matching the acquisition date?
-      const critterDeployments = deployments.filter(
-        (deployment) => deployment.critterbase_critter_id === critter?.critter_id
-      );
-
-      // Device matches multiple deployments, but only one matches the critter (alias)
-      if (critterDeployments.length === 1) {
-        params.mutateCell = critterDeployments[0].deployment_id;
-        return [];
-      }
     }
 
     return [

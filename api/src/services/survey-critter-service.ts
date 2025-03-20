@@ -1,10 +1,11 @@
 import { IDBConnection } from '../database/db';
+import { ApiGeneralError } from '../errors/api-error';
 import { IAnimalAdvancedFilters } from '../models/animal-view';
 import { IAllTelemetryAdvancedFilters } from '../models/telemetry-view';
 import { SurveyCritterRecord, SurveyCritterRepository } from '../repositories/survey-critter-repository';
 import { getLogger } from '../utils/logger';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
-import { CritterbaseService, ICritter, ICritterDetailed } from './critterbase-service';
+import { CritterbaseService, ICreateCritter, ICritter, ICritterDetailed } from './critterbase-service';
 import { DBService } from './db-service';
 
 const defaultLog = getLogger('SurveyCritterService');
@@ -144,21 +145,39 @@ export class SurveyCritterService extends DBService {
   }
 
   /**
-   * Add a critter as part of this survey. Does not create anything in the external system.
+   * Create a Critterbse critter and then add it to the survey.
+   *
+   * Note: This DOES check the Critter alias uniqueness in the survey.
    *
    * @param {number} surveyId
-   * @param {string} critterBaseCritterId
-   * @return {*}  {Promise<number>}
+   * @param {ICreateCritter} critter
+   * @return {*} {Promise<{critterbaseCritterId: string; surveyCritterId: number}>}
    * @memberof SurveyCritterService
    */
-  async addCritterToSurvey(surveyId: number, critterBaseCritterId: string): Promise<number> {
-    const response = await this.critterRepository.addCrittersToSurvey(surveyId, [critterBaseCritterId]);
+  async createCritterAndAddToSurvey(
+    surveyId: number,
+    critter: ICreateCritter
+  ): Promise<{ critterbaseCritterId: string; surveyCritterId: number }> {
+    const surveyCritterAliasMap = await this.getSurveyCritterAliasMap(surveyId);
 
-    return response[0];
+    // Only allow unique critter aliases in the survey
+    if (surveyCritterAliasMap.has(critter.animal_id.toLowerCase())) {
+      throw new ApiGeneralError(`Critter alias: ${critter.animal_id} already exists in survey`, [
+        'SurveyCritterService->createCritterAndAddToSurvey'
+      ]);
+    }
+
+    const critterbaseCritter = await this.critterbaseService.createCritter(critter);
+
+    const response = await this.critterRepository.addCrittersToSurvey(surveyId, [critterbaseCritter.critter_id]);
+
+    return { critterbaseCritterId: critterbaseCritter.critter_id, surveyCritterId: response[0] };
   }
 
   /**
    * Add multiple critters to a survey. Does not create anything in the external system.
+   *
+   * Note: This does NOT check the Critter alias uniqueness in the survey.
    *
    * @param {number} surveyId
    * @param {string} critterBaseCritterIds

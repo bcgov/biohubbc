@@ -4,7 +4,6 @@ import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/rol
 import { getDBConnection } from '../../../../../../database/db';
 import { critterSchema } from '../../../../../../openapi/schemas/critter';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { CritterbaseService, ICritterbaseUser } from '../../../../../../services/critterbase-service';
 import { SurveyCritterService } from '../../../../../../services/survey-critter-service';
 import { getLogger } from '../../../../../../utils/logger';
 
@@ -285,32 +284,37 @@ export function getCrittersFromSurvey(): RequestHandler {
 export function addCritterToSurvey(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
-    let critterId = req.body.critter_id;
+    let critterbaseCritterId: string = req.body.critter_id;
+    let surveyCritterId: number | null = null;
 
     const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
 
-      const user: ICritterbaseUser = {
-        keycloak_guid: connection.systemUserGUID(),
-        username: connection.systemUserIdentifier()
-      };
+      const surveyCritterService = new SurveyCritterService(connection);
 
-      const critterbaseService = new CritterbaseService(user);
+      if (critterbaseCritterId) {
+        // If Critterbase critter_id is provided, add the critter to the survey
+        const surveyCritterIds = await surveyCritterService.addCrittersToSurvey(surveyId, [critterbaseCritterId]);
 
-      // If request does not include critter ID, create a new critter and use its critter ID
-      let result = null;
-      if (!critterId) {
-        result = await critterbaseService.createCritter(req.body);
-        critterId = result.critter_id;
+        surveyCritterId = surveyCritterIds[0];
+      } else {
+        // If Critterbase critter_id is not provided, create a new critter in Critterbase and add it to the survey
+        const critterIdentifiers = await surveyCritterService.createCritterAndAddToSurvey(surveyId, {
+          wlh_id: req.body.wlh_id,
+          animal_id: req.body.animal_id,
+          sex_qualitative_option_id: req.body.sex_qualitative_option_id,
+          itis_tsn: req.body.itis_tsn,
+          critter_comment: req.body.critter_comment
+        });
+
+        critterbaseCritterId = critterIdentifiers.critterbaseCritterId;
+        surveyCritterId = critterIdentifiers.surveyCritterId;
       }
 
-      const surveyService = new SurveyCritterService(connection);
-      const surveyCritterId = await surveyService.addCritterToSurvey(surveyId, critterId);
-
       await connection.commit();
-      return res.status(201).json({ critterbase_critter_id: critterId, critter_id: surveyCritterId });
+      return res.status(201).json({ critterbase_critter_id: critterbaseCritterId, critter_id: surveyCritterId });
     } catch (error) {
       defaultLog.error({ label: 'addCritterToSurvey', message: 'error', error });
       await connection.rollback();
