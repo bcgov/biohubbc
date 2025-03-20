@@ -11,8 +11,15 @@ const NUM_SEED_SURVEYS_PER_PROJECT = Number(process.env.NUM_SEED_SURVEYS_PER_PRO
 const NUM_SEED_OBSERVATIONS_PER_SURVEY = Number(process.env.NUM_SEED_OBSERVATIONS_PER_SURVEY ?? 3);
 const NUM_SEED_SUBCOUNTS_PER_OBSERVATION = Number(process.env.NUM_SEED_SUBCOUNTS_PER_OBSERVATION ?? 1);
 
-const focalTaxonIdOptions = [
+type FocalTaxonIdOption = {
+  itis_tsn: number;
+  itis_scientific_name: string;
+};
+
+const focalTaxonIdOptions: FocalTaxonIdOption[] = [
   { itis_tsn: 180703, itis_scientific_name: 'Alces alces' }, // Moose
+  { itis_tsn: 180700, itis_scientific_name: 'Rangifer' }, // Reindeer (genus)
+  { itis_tsn: 180701, itis_scientific_name: 'Rangifer tarandus' }, // Reindeer (species)
   { itis_tsn: 180596, itis_scientific_name: 'Canis lupus' }, // Wolf
   { itis_tsn: 180713, itis_scientific_name: 'Oreamnos americanus' }, // Rocky Mountain goat
   { itis_tsn: 180543, itis_scientific_name: 'Ursus arctos' } // Grizzly bear
@@ -140,6 +147,18 @@ export async function seed(knex: Knex): Promise<void> {
           for (let l = 0; l < NUM_SEED_SUBCOUNTS_PER_OBSERVATION; l++) {
             await knex.raw(insertObservationSubCount(createObservationResponse.rows[0].survey_observation_id));
           }
+        }
+
+        // Insert 3 random survey habitat feature records for each survey
+        const resopnse4 = await knex.raw(insertSurveyHabitatFeaturesData(surveyId));
+        // Insert 0-3 habitat feature taxon records for each survey habitat feature record
+        const surveyHabitatFeatureIds = resopnse4.rows.map((row: any) => row.survey_habitat_feature_id);
+        for (let m = 0; m < surveyHabitatFeatureIds.length; m++) {
+          const query = insertSurveyHabitatFeatureTaxonsData(surveyHabitatFeatureIds[m]);
+          if (!query) {
+            continue;
+          }
+          await knex.raw(query);
         }
       }
     }
@@ -1199,3 +1218,117 @@ const insertSystemAlert = () => `
     (SELECT system_user_id FROM "system_user" ORDER BY random() LIMIT 1)
   );
 `;
+
+/**
+ * Insert 3 survey_habitat_feature records, with 3 different random habitat_feature_types.
+ *
+ * @param {number} surveyId
+ * @return {*}
+ */
+const insertSurveyHabitatFeaturesData = (surveyId: number) => {
+  return `
+    WITH w_habitat_features AS (
+        SELECT * FROM habitat_feature_type ORDER BY random() LIMIT 3
+    )
+    INSERT INTO survey_habitat_feature
+    (
+        survey_id,
+        habitat_feature_type_id,
+        count,
+        latitude,
+        longitude,
+        observed_date,
+        observed_time
+    )
+    VALUES (
+        ${surveyId},
+        (SELECT habitat_feature_type_id FROM w_habitat_features LIMIT 1 OFFSET 0),
+        ${faker.number.int({ min: 1, max: 20 })},
+        ${faker.location.latitude()},
+        ${faker.location.longitude()},
+        $$${faker.date
+          .between({ from: '2000-01-01T00:00:00-08:00', to: '2001-01-01T00:00:00-08:00' })
+          .toISOString()}$$::date,
+        timestamp $$${faker.date
+          .between({ from: '2002-01-01T00:00:00-08:00', to: '2005-01-01T00:00:00-08:00' })
+          .toISOString()}$$::time
+    ),
+    (
+        ${surveyId},
+        (SELECT habitat_feature_type_id FROM w_habitat_features LIMIT 1 OFFSET 1),
+        ${faker.number.int({ min: 1, max: 20 })},
+        ${faker.location.latitude()},
+        ${faker.location.longitude()},
+        $$${faker.date
+          .between({ from: '2000-01-01T00:00:00-08:00', to: '2001-01-01T00:00:00-08:00' })
+          .toISOString()}$$::date,
+        timestamp $$${faker.date
+          .between({ from: '2002-01-01T00:00:00-08:00', to: '2005-01-01T00:00:00-08:00' })
+          .toISOString()}$$::time
+    ),
+    (
+        ${surveyId},
+        (SELECT habitat_feature_type_id FROM w_habitat_features LIMIT 1 OFFSET 2),
+        ${faker.number.int({ min: 1, max: 20 })},
+        ${faker.location.latitude()},
+        ${faker.location.longitude()},
+        $$${faker.date
+          .between({ from: '2000-01-01T00:00:00-08:00', to: '2001-01-01T00:00:00-08:00' })
+          .toISOString()}$$::date,
+        timestamp $$${faker.date
+          .between({ from: '2002-01-01T00:00:00-08:00', to: '2005-01-01T00:00:00-08:00' })
+          .toISOString()}$$::time
+    )
+    RETURNING survey_habitat_feature_id;
+  `;
+};
+
+const insertSurveyHabitatFeatureTaxonsData = (surveyHabitatFeatureId: number): string | null => {
+  // Randomly select species items
+  const randomSpecies: FocalTaxonIdOption[] = getRandomElementsFromArray(focalTaxonIdOptions, 0, 3);
+
+  const getValueSection = (surveyHabitatFeatureId: number, species: FocalTaxonIdOption) => {
+    return `
+        (
+            ${surveyHabitatFeatureId},
+            ${species.itis_tsn},
+            $$${species.itis_scientific_name}$$,
+            $$${faker.lorem.sentences(1)}$$
+        )
+    `;
+  };
+
+  const valueSections = [];
+  for (let i = 0; i < randomSpecies.length; i++) {
+    valueSections.push(getValueSection(surveyHabitatFeatureId, randomSpecies[i]));
+  }
+
+  if (valueSections.length === 0) {
+    // Nothing to insert
+    return null;
+  }
+
+  return (
+    `
+        INSERT INTO survey_habitat_feature_taxon
+        (
+            survey_habitat_feature_id,
+            itis_tsn,
+            itis_scientific_name,
+            comment
+        ) VALUES 
+    ` + valueSections.join(',')
+  );
+};
+
+const getRandomNumber = (min: number, max: number) => {
+  return Math.random() * (max - min) + min;
+};
+
+const getRandomElementsFromArray = (array: any[], min: number, max: number): any[] => {
+  const numberOfElements = getRandomNumber(min, max);
+
+  const randomlySorted = array.sort(() => 0.5 - Math.random());
+
+  return randomlySorted.slice(0, numberOfElements);
+};

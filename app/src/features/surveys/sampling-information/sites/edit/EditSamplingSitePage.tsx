@@ -10,7 +10,7 @@ import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
-import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
+import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import {
   IEditSampleSiteRequest,
   IGetSampleBlockDetails,
@@ -54,7 +54,7 @@ export const EditSamplingSitePage = () => {
   const projectContext = useProjectContext();
   const dialogContext = useDialogContext();
 
-  const { locationChangeInterceptor } = useUnsavedChangesDialog();
+  const { locationChangeInterceptor, skipUnsavedChangesDialog } = useUnsavedChangesDialog();
 
   const formikRef = useRef<FormikProps<IEditSampleSiteFormData>>(null);
 
@@ -115,11 +115,8 @@ export const EditSamplingSitePage = () => {
         .then(() => {
           setIsSubmitting(false);
 
-          // create complete, navigate back to observations page
-          history.push(
-            `/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling`,
-            SKIP_CONFIRMATION_DIALOG
-          );
+          skipUnsavedChangesDialog();
+          history.goBack();
         })
         .catch((error: any) => {
           dialogContext.setYesNoDialog({ open: false });

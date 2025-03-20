@@ -14,7 +14,7 @@ import { useAnimalPageContext, useProjectContext, useSurveyContext } from 'hooks
 import useDataLoader from 'hooks/useDataLoader';
 import { useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { AnimalHeader } from './AnimalHeader';
+import { SurveyManagePageEnum, SurveyManagePageHeader } from '../components/SurveyManagePageHeader';
 import { AnimalListContainer } from './list/AnimalListContainer';
 import { AnimalProfileContainer } from './profile/AnimalProfileContainer';
 /**
@@ -57,13 +57,14 @@ export const SurveyAnimalPage = () => {
           maxWidth: 'none'
         }
       }}>
-      <AnimalHeader
+      <SurveyManagePageHeader
+        page={SurveyManagePageEnum.ANIMALS}
         project_id={surveyContext.projectId}
         project_name={projectContext.projectDataLoader.data.projectData.project.project_name}
         survey_id={surveyContext.surveyId}
         survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
       />
-      <Stack direction="row" gap={1.5} sx={{ flex: '1 1 auto', p: 1, mr: 1 }}>
+      <Stack direction="row" gap={1} sx={{ flex: '1 1 auto', p: 1, mr: 1 }}>
         <Box minWidth="400px" maxWidth="30%">
           <AnimalListContainer />
         </Box>

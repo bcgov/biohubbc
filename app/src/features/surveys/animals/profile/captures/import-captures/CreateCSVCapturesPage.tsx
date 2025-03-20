@@ -13,7 +13,7 @@ import { FileUploadSingleItem } from 'components/file-upload/FileUploadSingleIte
 import PageHeader from 'components/layout/PageHeader';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useAnimalPageContext, useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
-import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
+import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { useCallback, useMemo, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
@@ -60,7 +60,7 @@ export const CreateCSVCapturesPage = () => {
   const history = useHistory();
   const biohubApi = useBiohubApi();
 
-  const { locationChangeInterceptor } = useUnsavedChangesDialog();
+  const { locationChangeInterceptor, skipUnsavedChangesDialog } = useUnsavedChangesDialog();
   const dialogContext = useDialogContext();
 
   const projectContext = useProjectContext();
@@ -189,7 +189,8 @@ export const CreateCSVCapturesPage = () => {
       animalPageContext.critterDataLoader.refresh(projectId, surveyId, animalPageContext.selectedAnimal.critter_id);
     }
 
-    history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals`, SKIP_CONFIRMATION_DIALOG);
+    skipUnsavedChangesDialog();
+    history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals`);
   };
 
   /**

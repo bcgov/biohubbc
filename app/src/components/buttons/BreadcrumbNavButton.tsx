@@ -7,7 +7,7 @@ import MenuItem from '@mui/material/MenuItem';
 import { PropsWithChildren, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
-interface IBreadcrumbNavButtonProps {
+export interface IBreadcrumbNavButtonProps {
   menuItems: { label: string; to: string; icon?: string }[];
 }
 

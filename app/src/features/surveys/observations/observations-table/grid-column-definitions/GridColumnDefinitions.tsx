@@ -119,8 +119,8 @@ export const ObservationSubcountColDef = (): GridColDef<IObservationTableRow> =>
     type: 'number',
     minWidth: 110,
     disableColumnMenu: true,
-    headerAlign: 'right',
-    align: 'right',
+    headerAlign: 'left',
+    align: 'left',
     renderCell: (params) => (
       <Typography variant="body2" sx={{ fontSize: 'inherit' }}>
         {params.value}
@@ -169,8 +169,8 @@ export const ObservationQuantitativeMeasurementColDef = (props: {
     type: 'number',
     minWidth: Math.min(300, Math.max(110, measurement.measurement_name.length * 10 + 20)),
     disableColumnMenu: true,
-    headerAlign: 'right',
-    align: 'right',
+    headerAlign: 'left',
+    align: 'left',
     renderCell: (params) => (
       <Typography variant="body2" sx={{ fontSize: 'inherit' }}>
         {params.value}
@@ -221,8 +221,8 @@ export const ObservationQuantitativeEnvironmentColDef = (props: {
     type: 'number',
     minWidth: Math.min(300, Math.max(110, environment.name.length * 10 + 20)),
     disableColumnMenu: true,
-    headerAlign: 'right',
-    align: 'right',
+    headerAlign: 'left',
+    align: 'left',
     renderCell: (params) => (
       <Typography variant="body2" sx={{ fontSize: 'inherit' }}>
         {params.value}

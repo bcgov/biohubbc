@@ -44,7 +44,8 @@ export const IAllCodeSets = z.object({
   telemetry_device_makes: CodeDescription.array(),
   frequency_units: CodeDescription.array(),
   alert_types: CodeDescription.array(),
-  vantages: CodeDescription.array()
+  vantages: CodeDescription.array(),
+  habitat_feature_types: CodeDescription.array()
 });
 
 export class CodeRepository extends BaseRepository {
@@ -555,6 +556,27 @@ export class CodeRepository extends BaseRepository {
       FROM vantage
       WHERE record_end_date IS null;
     `;
+
+    const response = await this.connection.sql(sqlStatement, CodeDescription);
+
+    return response.rows;
+  }
+
+  /**
+   * Fetch habitat feature type codes.
+   *
+   * @return {*} {Promise<ICodeDescription[]>}
+   * @memberof CodeRepository
+   */
+  async getHabitatFeatureTypes(): Promise<ICodeDescription[]> {
+    const sqlStatement = SQL`
+          SELECT
+            habitat_feature_type_id AS id,
+            name,
+            description
+          FROM habitat_feature_type
+          WHERE record_end_date IS null;
+        `;
 
     const response = await this.connection.sql(sqlStatement, CodeDescription);
 

@@ -1,5 +1,4 @@
 import { CSVCellValidator, CSVError, CSVParams } from '../../../../utils/csv-utils/csv-config-validation.interface';
-import { updateCSVRowState } from '../../../../utils/csv-utils/csv-header-configs';
 import { NestedRecord } from '../../../../utils/nested-record';
 import {
   CBQualitativeMeasurement,
@@ -13,6 +12,7 @@ import {
 } from '../../utils/measurement';
 import { validateQualitativeValue } from '../../utils/qualitative';
 import { validateQuantitativeValue } from '../../utils/quantitative';
+import { updateCSVRowState } from '../../utils/row-state';
 
 export type TSNMeasurementDictionary = NestedRecord<
   CBQualitativeMeasurementTypeDefinition | CBQuantitativeMeasurementTypeDefinition

@@ -96,8 +96,10 @@ describe('import-observations-service', () => {
             COUNT: 3,
             OBSERVATION_SIGN: 7,
             [CSVRowState]: {
-              itis_tsn: 4,
-              itis_scientific_name: 'alces',
+              taxon: {
+                itis_tsn: 4,
+                itis_scientific_name: 'alces'
+              },
               sample_period_id: 5
             }
           }

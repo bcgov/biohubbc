@@ -121,8 +121,8 @@ export const SurveySpatialObservationDeployment = () => {
         {
           field: 'count',
           headerName: 'Count',
-          headerAlign: 'right',
-          align: 'right',
+          headerAlign: 'left',
+          align: 'left',
           maxWidth: 100
         },
         {
@@ -133,22 +133,22 @@ export const SurveySpatialObservationDeployment = () => {
         {
           field: 'observation_time',
           headerName: 'Time',
-          headerAlign: 'right',
-          align: 'right',
+          headerAlign: 'left',
+          align: 'left',
           maxWidth: 100
         },
         {
           field: 'latitude',
           headerName: 'Lat',
-          headerAlign: 'right',
-          align: 'right',
+          headerAlign: 'left',
+          align: 'left',
           maxWidth: 100
         },
         {
           field: 'longitude',
           headerName: 'Long',
-          headerAlign: 'right',
-          align: 'right',
+          headerAlign: 'left',
+          align: 'left',
           maxWidth: 100
         }
       ]);

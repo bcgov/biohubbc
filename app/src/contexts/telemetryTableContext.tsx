@@ -325,7 +325,8 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
       // If specific columns are passed to hide, toggle their visibility
       if (config?.columns) {
         config.columns.forEach((column) => {
-          updatedVisibilityModel[column] = !updatedVisibilityModel[column];
+          updatedVisibilityModel[column] =
+            updatedVisibilityModel[column] === undefined ? false : !updatedVisibilityModel[column];
         });
       } else {
         // If no specific columns are passed, toggle visibility of all columns

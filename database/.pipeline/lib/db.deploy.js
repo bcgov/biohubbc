@@ -31,7 +31,7 @@ const dbDeploy = async (settings) => {
         DATABASE_SERVICE_NAME: `${name}-postgresql${phases[phase].suffix}`,
         IMAGE_STREAM_NAME: name,
         IMAGE_STREAM_VERSION: phases.build.tag,
-        POSTGRES_DB: 'biohubbc',
+        POSTGRESQL_DATABASE: 'biohubbc',
         TZ: phases[phase].tz,
         NAMESPACE: phases.build.namespace,
         VOLUME_CAPACITY: phases[phase].volumeCapacity,

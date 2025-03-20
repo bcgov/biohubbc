@@ -44,7 +44,8 @@ GET.apiDoc = {
               'telemetry_device_makes',
               'frequency_units',
               'alert_types',
-              'vantages'
+              'vantages',
+              'habitat_feature_types'
             ],
             properties: {
               management_action_type: {
@@ -468,6 +469,27 @@ GET.apiDoc = {
               vantages: {
                 type: 'array',
                 description: 'Vantages that vantages belong to.',
+                items: {
+                  type: 'object',
+                  additionalProperties: false,
+                  required: ['id', 'name', 'description'],
+                  properties: {
+                    id: {
+                      type: 'integer',
+                      minimum: 1
+                    },
+                    name: {
+                      type: 'string'
+                    },
+                    description: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
+              habitat_feature_types: {
+                type: 'array',
+                description: 'Habitat feature type codes.',
                 items: {
                   type: 'object',
                   additionalProperties: false,

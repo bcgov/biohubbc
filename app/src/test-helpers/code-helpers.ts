@@ -82,5 +82,9 @@ export const codes: IGetAllCodeSetsResponse = {
   vantages: [
     { id: 1, name: 'Vantage 1', description: 'Vantage point 1.' },
     { id: 2, name: 'Vantage 2', description: 'Vantage point 2.' }
+  ],
+  habitat_feature_types: [
+    { id: 1, name: 'Habitat feature 1', description: 'Habitat feature 1.' },
+    { id: 2, name: 'Habitat feature 2', description: 'Habitat feature 2.' }
   ]
 };
