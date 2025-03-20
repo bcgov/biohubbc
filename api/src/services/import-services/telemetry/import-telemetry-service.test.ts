@@ -4,7 +4,7 @@ import sinonChai from 'sinon-chai';
 import { WorkSheet } from 'xlsx';
 import { ExtendedDeploymentRecord } from '../../../repositories/telemetry-repositories/telemetry-deployment-repository.interface';
 import * as csv from '../../../utils/csv-utils/csv-config-validation';
-import { CSVConfig } from '../../../utils/csv-utils/csv-config-validation.interface';
+import { CSVConfig, CSVRowState } from '../../../utils/csv-utils/csv-config-validation.interface';
 import { getMockDBConnection } from '../../../__mocks__/db';
 import { ImportTelemetryService } from './import-telemetry-service';
 
@@ -65,7 +65,8 @@ describe('ImportTelemetryService', () => {
             LATITUDE: 1.234,
             LONGITUDE: 2.345,
             DATE: '2021-01-01',
-            TIME: '12:00:00'
+            TIME: '12:00:00',
+            [CSVRowState]: {}
           }
         ]
       });

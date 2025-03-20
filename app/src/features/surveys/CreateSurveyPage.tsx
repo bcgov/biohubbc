@@ -18,7 +18,7 @@ import { SurveyPartnershipsFormInitialValues } from 'features/surveys/view/compo
 import { FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
+import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { ICreateSurveyRequest, IEditSurveyRequest } from 'interfaces/useSurveyApi.interface';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
@@ -78,7 +78,7 @@ const CreateSurveyPage = () => {
 
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
   const [enableCancelCheck, setEnableCancelCheck] = useState<boolean>(true);
-  const { locationChangeInterceptor } = useUnsavedChangesDialog();
+  const { locationChangeInterceptor, skipUnsavedChangesDialog } = useUnsavedChangesDialog();
 
   const [isSaving, setIsSaving] = useState(false);
 
@@ -151,10 +151,8 @@ const CreateSurveyPage = () => {
 
       setEnableCancelCheck(false);
 
-      history.push(
-        `/admin/projects/${projectData?.project.project_id}/surveys/${response.id}/details`,
-        SKIP_CONFIRMATION_DIALOG
-      );
+      skipUnsavedChangesDialog();
+      history.push(`/admin/projects/${projectData?.project.project_id}/surveys/${response.id}/details`);
     } catch (error) {
       const apiError = error as APIError;
       showCreateErrorDialog({

@@ -60,7 +60,7 @@ describe('approveAccessRequest', () => {
     mockReq.body = {
       userIdentifier: 'username',
       identitySource: 'bceid',
-      roleIds: [1, 3]
+      roleIds: [3]
     };
 
     const systemUserId = 4;

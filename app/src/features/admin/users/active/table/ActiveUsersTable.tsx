@@ -1,7 +1,17 @@
-import { mdiAccountDetailsOutline, mdiChevronDown, mdiDotsVertical, mdiTrashCanOutline } from '@mdi/js';
+import {
+  mdiAccountDetailsOutline,
+  mdiCheck,
+  mdiChevronDown,
+  mdiClose,
+  mdiDotsVertical,
+  mdiTrashCanOutline
+} from '@mdi/js';
 import Icon from '@mdi/react';
+import green from '@mui/material/colors/green';
+import red from '@mui/material/colors/red';
 import Typography from '@mui/material/Typography';
 import { GridColDef, GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
+import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { CustomMenuButton, CustomMenuIconButton } from 'components/toolbar/ActionToolbars';
 import { ICode } from 'interfaces/useCodesApi.interface';
@@ -11,14 +21,51 @@ import { useHistory } from 'react-router';
 const pageSizeOptions = [10, 25, 50];
 
 export interface IActiveUsersTableProps {
+  /**
+   * The list of active users to display in the table.
+   */
   activeUsers: ISystemUser[];
+  /**
+   * The list of system role codes.
+   */
   systemRoles: ICode[];
+  /**
+   * Callback fired when the remove user button is clicked.
+   */
   onRemoveUserClick: (user: ISystemUser) => void;
+  /**
+   * Callback fired when a user is soft deleted (blocked from logging in)
+   */
+  onDeactivateUserClick: (user: ISystemUser) => void;
+  /**
+   * Callback fired when an existing, deactivated user is reactivated (record_end_end becomes null)
+   */
+  onActivateUserClick: (user: ISystemUser) => void;
+  /**
+   * Callback fired when a role is selected from the user permission control.
+   */
   handleChangeUserPermissionsClick: (user: ISystemUser, newRoleName: string, newRoleId: number) => void;
+  /**
+   * The current pagination model for the table.
+   */
   pagination: GridPaginationModel;
+  /**
+   * Callback fired when the pagination model is updated.
+   */
   setPagination: (newPagination: GridPaginationModel) => void;
+  /**
+   * The current sort model for the table.
+   */
   sortModel: GridSortModel;
+  /**
+   * Callback fired when the sort model is updated.
+   */
   setSortModel: (newSortModel: GridSortModel) => void;
+  /**
+   * The total number of rows in the table. This will be used to determine the number of pages in the pagination
+   * control.
+   */
+  rowCount: number;
 }
 
 /**
@@ -33,12 +80,15 @@ const ActiveUsersTable = (props: IActiveUsersTableProps) => {
   const {
     activeUsers,
     onRemoveUserClick,
+    onDeactivateUserClick,
+    onActivateUserClick,
     systemRoles,
     handleChangeUserPermissionsClick,
     pagination,
     setPagination,
     sortModel,
-    setSortModel
+    setSortModel,
+    rowCount
   } = props;
 
   const sortedSystemRoles = [...systemRoles].sort((item1, item2) => item1.name.localeCompare(item2.name));
@@ -82,6 +132,19 @@ const ActiveUsersTable = (props: IActiveUsersTableProps) => {
       valueGetter: (params) => params.row.user_identifier
     },
     {
+      field: 'record_end_date',
+      headerName: 'Status',
+      flex: 1,
+      disableColumnMenu: true,
+      valueGetter: (params) => params.row.record_end_date,
+      renderCell: (params) => (
+        <ColouredRectangleChip
+          colour={params.row.record_end_date ? red : green}
+          label={params.row.record_end_date ? 'Blocked' : 'Active'}
+        />
+      )
+    },
+    {
       field: 'role_names',
       flex: 1,
       headerName: 'Role',
@@ -114,6 +177,18 @@ const ActiveUsersTable = (props: IActiveUsersTableProps) => {
       sortable: false,
       disableColumnMenu: true,
       renderCell: (params) => {
+        // Button for activating or reactivating the user, depending on their current state
+        const activationMenuItem = params.row.record_end_date
+          ? {
+              menuIcon: <Icon path={mdiCheck} size={1} />,
+              menuLabel: 'Reactivate User',
+              menuOnClick: () => onActivateUserClick(params.row)
+            }
+          : {
+              menuIcon: <Icon path={mdiClose} size={1} />,
+              menuLabel: 'Block User',
+              menuOnClick: () => onDeactivateUserClick(params.row)
+            };
         return (
           <CustomMenuIconButton
             buttonTitle="Actions"
@@ -128,6 +203,7 @@ const ActiveUsersTable = (props: IActiveUsersTableProps) => {
                     state: params.row
                   })
               },
+              activationMenuItem,
               {
                 menuIcon: <Icon path={mdiTrashCanOutline} size={1} />,
                 menuLabel: 'Remove User',
@@ -146,10 +222,12 @@ const ActiveUsersTable = (props: IActiveUsersTableProps) => {
       columns={activeUsersColumnDefs}
       rows={activeUsers}
       getRowId={(row) => row.system_user_id}
+      paginationMode="server"
       paginationModel={pagination}
       onPaginationModelChange={setPagination}
       sortModel={sortModel}
       onSortModelChange={setSortModel}
+      rowCount={rowCount}
       pageSizeOptions={pageSizeOptions}
       disableRowSelectionOnClick
       rowSelection={false}

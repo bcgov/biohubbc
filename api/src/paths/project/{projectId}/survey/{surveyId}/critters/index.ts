@@ -281,6 +281,12 @@ export function getCrittersFromSurvey(): RequestHandler {
   };
 }
 
+/**
+ * Adds a critter to a survey in SIMS. Will create a new critter in Critterbase if critter_id is not provided.
+ *
+ * @export
+ * @returns {*} {RequestHandler}
+ */
 export function addCritterToSurvey(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);

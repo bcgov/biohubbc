@@ -104,45 +104,6 @@ describe('removeSystemUser', () => {
     }
   });
 
-  it('should throw a 400 error when user record has expired', async () => {
-    const dbConnectionObj = getMockDBConnection();
-
-    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
-
-    mockReq.params = { userId: '1' };
-    mockReq.body = { roles: [1, 2] };
-
-    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-    sinon.stub(ProjectParticipationService.prototype, 'isUserTheOnlyProjectCoordinatorOnAnyProject').resolves();
-
-    sinon.stub(UserService.prototype, 'getUserById').resolves({
-      system_user_id: 1,
-      user_identifier: 'testname',
-      user_guid: '123-456-789',
-      identity_source: 'idir',
-      record_end_date: '2010-10-10',
-      role_ids: [1, 2],
-      role_names: ['System Admin', 'Coordinator'],
-      email: 'email@email.com',
-      family_name: 'lname',
-      given_name: 'fname',
-      display_name: 'test name',
-      agency: null
-    });
-
-    try {
-      const requestHandler = delete_endpoint.removeSystemUser();
-
-      await requestHandler(mockReq, mockRes, mockNext);
-
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('The system user is not active');
-    }
-  });
-
   it('should catch and re-throw an error if the database fails to delete all project roles', async () => {
     const dbConnectionObj = getMockDBConnection();
 
@@ -225,7 +186,7 @@ describe('removeSystemUser', () => {
     }
   });
 
-  it('should catch and re-throw an error if the database fails to deactivate the system user', async () => {
+  it('should catch and re-throw an error if the database fails to delete the system user', async () => {
     const dbConnectionObj = getMockDBConnection();
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
@@ -256,7 +217,7 @@ describe('removeSystemUser', () => {
     sinon.stub(UserService.prototype, 'deleteUserSystemRoles').resolves();
 
     const expectedError = new Error('A database error');
-    sinon.stub(UserService.prototype, 'deactivateSystemUser').rejects(expectedError);
+    sinon.stub(UserService.prototype, 'deleteSystemUser').rejects(expectedError);
 
     try {
       const requestHandler = delete_endpoint.removeSystemUser();
@@ -297,7 +258,7 @@ describe('removeSystemUser', () => {
 
     sinon.stub(UserService.prototype, 'deleteAllProjectRoles').resolves();
     sinon.stub(UserService.prototype, 'deleteUserSystemRoles').resolves();
-    sinon.stub(UserService.prototype, 'deactivateSystemUser').resolves();
+    sinon.stub(UserService.prototype, 'deleteSystemUser').resolves();
 
     const requestHandler = delete_endpoint.removeSystemUser();
 

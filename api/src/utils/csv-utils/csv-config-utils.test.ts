@@ -103,6 +103,72 @@ describe('CSVConfigUtils', () => {
     });
   });
 
+  describe('getArrayCellValue', () => {
+    it('should get the cell value from a CSV row', () => {
+      const worksheet: WorkSheet = xlsx.utils.json_to_sheet([{ TEST: 'cellValue', DYNAMIC_HEADER: 'dynamicValue' }]);
+      const mockConfig = {
+        staticHeadersConfig: {
+          TEST: { aliases: [] }
+        },
+        ignoreDynamicHeaders: false
+      };
+
+      const utils = new CSVConfigUtils(worksheet, mockConfig);
+
+      const cellValue = utils.getArrayCellValue('TEST', { TEST: 'cellValue1' }, { delimiter: ';' });
+
+      expect(cellValue).to.be.eql(['cellValue1']);
+    });
+
+    it('should return undefined if the header does not exist', () => {
+      const worksheet: WorkSheet = xlsx.utils.json_to_sheet([{ TEST: 'cellValue', DYNAMIC_HEADER: 'dynamicValue' }]);
+      const mockConfig = {
+        staticHeadersConfig: {
+          TEST: { aliases: [] }
+        },
+        ignoreDynamicHeaders: false
+      };
+
+      const utils = new CSVConfigUtils(worksheet, mockConfig);
+
+      const cellValue = utils.getArrayCellValue('UNKNOWN' as any, { TEST: 'cellValue' }, { delimiter: ';' });
+
+      expect(cellValue).to.be.equal(undefined);
+    });
+
+    it('should get the cell value by the alias', () => {
+      const worksheet: WorkSheet = xlsx.utils.json_to_sheet([{ TEST_ALIAS: 'cellValue' }]);
+      const mockConfig: CSVConfig = {
+        staticHeadersConfig: {
+          TEST: { aliases: ['OTHER_ALIAS', 'TEST_ALIAS'] }
+        },
+        ignoreDynamicHeaders: false
+      };
+
+      const utils = new CSVConfigUtils(worksheet, mockConfig);
+
+      const cellValue = utils.getArrayCellValue('TEST', { TEST_ALIAS: ';;cellValue1;cellValue2' }, { delimiter: ';' });
+
+      expect(cellValue).to.be.eql(['cellValue1', 'cellValue2']);
+    });
+
+    it('should return undefined for a bad header / alias', () => {
+      const worksheet: WorkSheet = xlsx.utils.json_to_sheet([{ TEST_ALIAS: 'cellValue' }]);
+      const mockConfig: CSVConfig = {
+        staticHeadersConfig: {
+          TEST: { aliases: ['OTHER_ALIAS'] }
+        },
+        ignoreDynamicHeaders: false
+      };
+
+      const utils = new CSVConfigUtils(worksheet, mockConfig);
+
+      const cellValue = utils.getArrayCellValue('NOT_FOUND', { TEST_ALIAS: 'cellValue' }, { delimiter: ';' });
+
+      expect(cellValue).to.be.equal(undefined);
+    });
+  });
+
   describe('getCellValues', () => {
     it('should get the cell values from a CSV row', () => {
       const worksheet: WorkSheet = xlsx.utils.json_to_sheet([{ TEST: 'cellValue', DYNAMIC_HEADER: 'dynamicValue' }]);
@@ -122,7 +188,8 @@ describe('CSVConfigUtils', () => {
 
     it('should get the cell values from a CSV row when using alias', () => {
       const worksheet: WorkSheet = xlsx.utils.json_to_sheet([
-        { TEST_ALIAS: 'cellValue', DYNAMIC_HEADER: 'dynamicValue' }
+        { TEST_ALIAS: 'cellValue1', DYNAMIC_HEADER: 'dynamicValue' },
+        { TEST_ALIAS: 'cellValue2', DYNAMIC_HEADER: 'dynamicValue' }
       ]);
 
       const mockConfig: CSVConfig = {
@@ -136,7 +203,48 @@ describe('CSVConfigUtils', () => {
 
       const cellValues = utils.getCellValues('TEST');
 
-      expect(cellValues).to.be.deep.equal(['cellValue']);
+      expect(cellValues).to.be.deep.equal(['cellValue1', 'cellValue2']);
+    });
+  });
+
+  describe('getArrayCellValues', () => {
+    it('should get the cell values from a CSV row', () => {
+      const worksheet: WorkSheet = xlsx.utils.json_to_sheet([
+        { TEST: 'cellValue1; cellValue2;cellValue3;;', DYNAMIC_HEADER: 'dynamicValue' },
+        { TEST: 'cellValue4', DYNAMIC_HEADER: 'dynamicValue' }
+      ]);
+      const mockConfig = {
+        staticHeadersConfig: {
+          TEST: { aliases: [] }
+        },
+        ignoreDynamicHeaders: false
+      };
+
+      const utils = new CSVConfigUtils(worksheet, mockConfig);
+
+      const cellValues = utils.getArrayCellValues('TEST', { delimiter: ';' });
+
+      expect(cellValues).to.be.deep.equal(['cellValue1', 'cellValue2', 'cellValue3', 'cellValue4']);
+    });
+
+    it('should get the cell values from a CSV row when using alias', () => {
+      const worksheet: WorkSheet = xlsx.utils.json_to_sheet([
+        { TEST_ALIAS: 'cellValue1; cellValue2;cellValue3;;', DYNAMIC_HEADER: 'dynamicValue' },
+        { TEST_ALIAS: 'cellValue4', DYNAMIC_HEADER: 'dynamicValue' }
+      ]);
+
+      const mockConfig: CSVConfig = {
+        staticHeadersConfig: {
+          TEST: { aliases: ['TEST_ALIAS'] }
+        },
+        ignoreDynamicHeaders: false
+      };
+
+      const utils = new CSVConfigUtils(worksheet, mockConfig);
+
+      const cellValues = utils.getArrayCellValues('TEST', { delimiter: ';' });
+
+      expect(cellValues).to.be.deep.equal(['cellValue1', 'cellValue2', 'cellValue3', 'cellValue4']);
     });
   });
 
@@ -160,6 +268,29 @@ describe('CSVConfigUtils', () => {
       const cellValues = utils.getUniqueCellValues('TEST');
 
       expect(cellValues).to.be.deep.equal(['cellValue', 'cellValue2']);
+    });
+  });
+
+  describe('getUniqueArrayCellValues', () => {
+    it('should get the unique cell values from a CSV row', () => {
+      const worksheet: WorkSheet = xlsx.utils.json_to_sheet([
+        { TEST: 'cellValue1;cellValue2', DYNAMIC_HEADER: 'dynamicValue' },
+        { TEST: 'cellValue', DYNAMIC_HEADER: 'dynamicValue' },
+        { TEST: 'cellValue2', DYNAMIC_HEADER: 'dynamicValue' }
+      ]);
+
+      const mockConfig = {
+        staticHeadersConfig: {
+          TEST: { aliases: [] }
+        },
+        ignoreDynamicHeaders: false
+      };
+
+      const utils = new CSVConfigUtils(worksheet, mockConfig);
+
+      const cellValues = utils.getUniqueArrayCellValues('TEST', { delimiter: ';' });
+
+      expect(cellValues).to.be.deep.equal(['cellValue1', 'cellValue2', 'cellValue']);
     });
   });
 

@@ -40,22 +40,8 @@ const useStyles = () => {
       }
     },
     pendingRequestAlert: {
-      alignItems: 'center',
       maxWidth: '63ch',
-      color: theme.palette.primary.contrastText,
-      backgroundColor: '#006edc',
-      lineHeight: '1.5em',
-      margin: '1em 0',
-      '& .MuiAlertTitle-root': {
-        marginBottom: '0.25em',
-        fontSize: '1rem'
-      },
-      '& .MuiAlert-icon': {
-        color: theme.palette.common.white
-      },
-      '& .MuiAlert-message': {
-        padding: '4px 0'
-      }
+      mt: 1
     }
   };
 };
@@ -74,15 +60,16 @@ const LandingActions = () => {
     [SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN],
     authStateContext.simsUserWrapper.roleNames
   );
-
+  const isInvalidUser = !!authStateContext.simsUserWrapper.recordEndDate;
   const mayBelongToOneOrMoreProjects = isSystemUser ?? authStateContext.simsUserWrapper.hasOneOrMoreProjectRoles;
   const hasProjectCreationRole =
     hasAdministrativeRole ||
     hasAtLeastOneValidValue([SYSTEM_ROLE.PROJECT_CREATOR], authStateContext.simsUserWrapper.roleNames);
   const isReturningUser = isSystemUser || hasPendingAccessRequest || mayBelongToOneOrMoreProjects;
-  const mayViewProjects = isSystemUser || mayBelongToOneOrMoreProjects;
-  const mayMakeAccessRequest = !mayViewProjects && !hasPendingAccessRequest;
-  const isAwaitingAccessApproval = hasPendingAccessRequest && !isSystemUser && !mayBelongToOneOrMoreProjects;
+  const mayViewProjects = (isSystemUser || mayBelongToOneOrMoreProjects) && !isInvalidUser;
+  const mayMakeAccessRequest = !mayViewProjects && !hasPendingAccessRequest && !isInvalidUser;
+  const isAwaitingAccessApproval =
+    hasPendingAccessRequest && !isSystemUser && !mayBelongToOneOrMoreProjects && !isInvalidUser;
 
   return (
     <Box sx={classes.actionsContainer}>
@@ -132,10 +119,21 @@ const LandingActions = () => {
         {isAwaitingAccessApproval && (
           <Alert
             severity="info"
+            variant="filled"
             sx={classes.pendingRequestAlert}
-            icon={<Icon path={mdiInformationOutline} size={1.25} />}>
+            icon={<Icon path={mdiInformationOutline} size={1} />}>
             <AlertTitle>Access request pending</AlertTitle>
             Your request is currently pending a review by an administrator.
+          </Alert>
+        )}
+        {isInvalidUser && (
+          <Alert
+            severity="error"
+            variant="filled"
+            sx={classes.pendingRequestAlert}
+            icon={<Icon path={mdiInformationOutline} size={1} />}>
+            <AlertTitle>Access Denied</AlertTitle>
+            You cannot request access. Please contact a system administrator.
           </Alert>
         )}
         <Box sx={classes.heroActions}>

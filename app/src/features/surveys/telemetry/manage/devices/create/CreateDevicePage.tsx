@@ -13,7 +13,7 @@ import { Formik, FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
-import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
+import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { CreateTelemetryDevice } from 'interfaces/useTelemetryDeviceApi.interface';
 import { useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
@@ -35,7 +35,7 @@ export const CreateDevicePage = () => {
   const formikRef = useRef<FormikProps<CreateTelemetryDevice>>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { locationChangeInterceptor } = useUnsavedChangesDialog();
+  const { locationChangeInterceptor, skipUnsavedChangesDialog } = useUnsavedChangesDialog();
 
   if (!surveyContext.surveyDataLoader.data || !projectContext.projectDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
@@ -52,10 +52,8 @@ export const CreateDevicePage = () => {
         comment: values.comment
       });
 
-      history.push(
-        `/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry/manage`,
-        SKIP_CONFIRMATION_DIALOG
-      );
+      skipUnsavedChangesDialog();
+      history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry/manage`);
     } catch (error) {
       dialogContext.setErrorDialog({
         dialogTitle: TelemetryDeviceI18N.createErrorTitle,

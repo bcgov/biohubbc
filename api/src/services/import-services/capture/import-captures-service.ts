@@ -157,12 +157,12 @@ export class ImportCapturesService extends DBService {
       CAPTURE_TIME: { validateCell: getTimeCellValidator(), setCellValue: getTimeCellSetter() },
       CAPTURE_LATITUDE: { validateCell: getLatitudeCellValidator() },
       CAPTURE_LONGITUDE: { validateCell: getLongitudeCellValidator() },
-      CAPTURE_COMMENT: { validateCell: getDescriptionCellValidator() },
+      CAPTURE_COMMENT: { validateCell: getDescriptionCellValidator({ optional: true }) },
       RELEASE_DATE: { validateCell: getDateCellValidator({ optional: true }) },
       RELEASE_TIME: { validateCell: getTimeCellValidator(), setCellValue: getTimeCellSetter() },
       RELEASE_LATITUDE: { validateCell: getLatitudeCellValidator({ optional: true }) },
       RELEASE_LONGITUDE: { validateCell: getLongitudeCellValidator({ optional: true }) },
-      RELEASE_COMMENT: { validateCell: getDescriptionCellValidator() }
+      RELEASE_COMMENT: { validateCell: getDescriptionCellValidator({ optional: true }) }
     });
 
     // Return the final CSV config

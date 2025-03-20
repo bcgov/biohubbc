@@ -101,7 +101,7 @@ export const getTelemetrySerialCellValidator = (
         return [
           {
             error: `Device and alias does not match any deployments for the critter`,
-            solution: `Check that the serial number and vendor match a deployment in the Survey`
+            solution: `Check that the serial number, vendor and critter alias match a deployment in the Survey`
           }
         ];
       }

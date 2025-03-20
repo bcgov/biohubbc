@@ -54,13 +54,13 @@ export class ImportTelemetryService extends DBService {
 
     const initialConfig: CSVConfig<TelemetryCSVStaticHeader> = {
       staticHeadersConfig: {
-        SERIAL: { aliases: ['DEVICE_ID', 'DEVICE ID', 'DEVICE', 'COLLAR', 'COLLAR ID'] },
+        SERIAL: { aliases: ['DEVICE_ID', 'DEVICE ID', 'DEVICE', 'COLLAR', 'COLLAR ID', 'COLLAR_ID'] },
         VENDOR: { aliases: ['MAKE', 'MANUFACTURER'] },
         ALIAS: { aliases: ['NICKNAME', 'ANIMAL'], optional: true },
         LATITUDE: { aliases: ['LAT'] },
         LONGITUDE: { aliases: ['LON', 'LONG', 'LNG'] },
-        DATE: { aliases: [] },
-        TIME: { aliases: [], optional: true }
+        DATE: { aliases: ['ACQUISITION_DATE', 'ACQUISITION DATE'] },
+        TIME: { aliases: ['ACQUISITION_TIME', 'ACQUISITION TIME'], optional: true }
       },
       ignoreDynamicHeaders: false
     };
@@ -122,27 +122,14 @@ export class ImportTelemetryService extends DBService {
     const vendors = await this.codeRepository.getActiveTelemetryDeviceMakes();
     const vendorsSet = new Set(vendors.map((vendor) => vendor.name.toLowerCase()));
 
-    this.utils.setStaticHeaderConfig('SERIAL', {
-      validateCell: getTelemetrySerialCellValidator(deployments, surveyCritterAliasMap, this.utils)
-    });
-    this.utils.setStaticHeaderConfig('ALIAS', {
-      validateCell: getSurveyCritterAliasCellValidator(surveyCritterAliasMap)
-    });
-    this.utils.setStaticHeaderConfig('VENDOR', {
-      validateCell: getTelemetryVendorCellValidator(vendorsSet)
-    });
-    this.utils.setStaticHeaderConfig('LATITUDE', {
-      validateCell: getLatitudeCellValidator()
-    });
-    this.utils.setStaticHeaderConfig('LONGITUDE', {
-      validateCell: getLongitudeCellValidator()
-    });
-    this.utils.setStaticHeaderConfig('DATE', {
-      validateCell: getDateCellValidator()
-    });
-    this.utils.setStaticHeaderConfig('TIME', {
-      validateCell: getTimeCellValidator(),
-      setCellValue: getTimeCellSetter()
+    this.utils.setAllStaticHeaderConfigs({
+      SERIAL: { validateCell: getTelemetrySerialCellValidator(deployments, surveyCritterAliasMap, this.utils) },
+      ALIAS: { validateCell: getSurveyCritterAliasCellValidator(surveyCritterAliasMap, { optional: true }) },
+      VENDOR: { validateCell: getTelemetryVendorCellValidator(vendorsSet) },
+      LATITUDE: { validateCell: getLatitudeCellValidator() },
+      LONGITUDE: { validateCell: getLongitudeCellValidator() },
+      DATE: { validateCell: getDateCellValidator() },
+      TIME: { validateCell: getTimeCellValidator(), setCellValue: getTimeCellSetter() }
     });
 
     // Return the final CSV config
