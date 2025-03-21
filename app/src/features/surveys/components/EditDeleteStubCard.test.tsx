@@ -1,7 +1,7 @@
 import { fireEvent, render } from 'test-helpers/test-utils';
 import { EditDeleteStubCard } from './EditDeleteStubCard';
 
-const handle = jest.fn();
+const handle = vi.fn();
 
 describe('EditDeleteStubCard', () => {
   it('renders delete icon when delete handler provided', () => {

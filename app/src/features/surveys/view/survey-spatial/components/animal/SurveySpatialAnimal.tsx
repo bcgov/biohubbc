@@ -15,7 +15,7 @@ import { SurveySpatialAnimalTable } from './SurveySpatialAnimalTable';
 /**
  * Array of additional static layers to be added to the map.
  */
-interface ISurveySpatialAnimalMapProps {
+interface ISurveySpatialAnimalProps {
   staticLayers?: IStaticLayer[];
 }
 
@@ -25,7 +25,7 @@ interface ISurveySpatialAnimalMapProps {
  * @param {ISurveySpatialAnimalProps} props
  * @returns
  */
-export const SurveySpatialAnimal = (props: ISurveySpatialAnimalMapProps) => {
+export const SurveySpatialAnimal = (props: ISurveySpatialAnimalProps) => {
   const surveyContext = useSurveyContext();
   const crittersApi = useCritterbaseApi();
 

@@ -3,7 +3,6 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import { SamplingSiteListPeriod } from 'features/surveys/observations/sampling-sites/site/accordion-details/period/SamplingSiteListPeriod';
-import { useObservationsContext, useObservationsPageContext } from 'hooks/useContext';
 import { GetSamplingPeriod } from 'interfaces/useSamplingPeriodApi.interface';
 
 export interface ISamplingSiteListPeriodContainerProps {
@@ -17,16 +16,12 @@ export interface ISamplingSiteListPeriodContainerProps {
  * @return {*}
  */
 export const SamplingSiteListPeriodContainer = (props: ISamplingSiteListPeriodContainerProps) => {
-  const { samplePeriods } = props;
-
-  const observationsPageContext = useObservationsPageContext();
-  const observationsContext = useObservationsContext();
-
   // Group sample periods by technique name
   // Exclude sample periods that have no technique or have no start or end date. These records are incomplete, and
   // users should not be able to upload observations against them.
   const samplePeriodsByTechniqueMap = new Map<string, Set<GetSamplingPeriod>>();
-  samplePeriods.forEach((samplePeriod) => {
+
+  props.samplePeriods.forEach((samplePeriod) => {
     const techniqueName = samplePeriod.method_technique?.name;
 
     if (!techniqueName) {
@@ -81,11 +76,7 @@ export const SamplingSiteListPeriodContainer = (props: ISamplingSiteListPeriodCo
               primary={techniqueName}
             />
             <List disablePadding sx={{ ml: 0.5 }}>
-              <SamplingSiteListPeriod
-                samplePeriods={samplePeriods}
-                observationsContext={observationsContext}
-                observationsPageContext={observationsPageContext}
-              />
+              <SamplingSiteListPeriod samplePeriods={samplePeriods} />
             </List>
           </ListItem>
         );

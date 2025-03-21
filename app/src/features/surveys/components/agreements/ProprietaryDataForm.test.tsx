@@ -6,7 +6,7 @@ import { Formik } from 'formik';
 import { codes } from 'test-helpers/code-helpers';
 import { fireEvent, render, screen, waitFor, within } from 'test-helpers/test-utils';
 
-const handleSaveAndNext = jest.fn();
+const handleSaveAndNext = vi.fn();
 
 const proprietaryDataFilledValues: IProprietaryDataForm = {
   proprietor: {

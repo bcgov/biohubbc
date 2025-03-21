@@ -170,11 +170,11 @@ describe('useProjectApi', () => {
   it('getAttachmentSignedURL works as expected for authenticated access', async () => {
     mock
       .onGet(`/api/project/${projectId}/attachments/${attachmentId}/getSignedUrl`, {
-        query: { attachmentType: 'Other' }
+        params: { attachmentType: attachmentType }
       })
       .reply(200, 'www.signedurl.com');
 
-    const result = await useProjectApi(axios).getAttachmentSignedURL(projectId, attachmentId, 'Other');
+    const result = await useProjectApi(axios).getAttachmentSignedURL(projectId, attachmentId, attachmentType);
 
     expect(result).toEqual('www.signedurl.com');
   });

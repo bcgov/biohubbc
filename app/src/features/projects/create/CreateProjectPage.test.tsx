@@ -3,34 +3,31 @@ import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import CreateProjectPage from 'features/projects/create/CreateProjectPage';
 import { createMemoryHistory } from 'history';
-import { GetRegionsResponse } from 'hooks/api/useSpatialApi';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { ICreateProjectResponse } from 'interfaces/useProjectApi.interface';
-import { ISystemUser } from 'interfaces/useUserApi.interface';
 import { Router } from 'react-router';
 import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import { codes } from 'test-helpers/code-helpers';
-import { cleanup, findByText as rawFindByText, fireEvent, render, waitFor } from 'test-helpers/test-utils';
+import { cleanup, findByText, fireEvent, render, waitFor } from 'test-helpers/test-utils';
+import { Mock } from 'vitest';
 
 const history = createMemoryHistory();
 
-jest.mock('../../../hooks/useBioHubApi');
-const mockBiohubApi = useBiohubApi as jest.Mock;
+vi.mock('../../../hooks/useBioHubApi');
+const mockBiohubApi = useBiohubApi as Mock;
 
 const mockUseApi = {
   spatial: {
-    getRegions: jest.fn<Promise<GetRegionsResponse>, []>()
+    getRegions: vi.fn()
   },
   codes: {
-    getAllCodeSets: jest.fn<Promise<IGetAllCodeSetsResponse>, []>()
+    getAllCodeSets: vi.fn()
   },
   project: {
-    createProject: jest.fn<Promise<ICreateProjectResponse>, []>()
+    createProject: vi.fn()
   },
   user: {
-    searchSystemUser: jest.fn<Promise<ISystemUser[]>, []>()
+    searchSystemUser: vi.fn()
   }
 };
 
@@ -71,7 +68,7 @@ describe('CreateProjectPage', () => {
 
     mockUseApi.codes.getAllCodeSets.mockResolvedValue(codes);
 
-    jest.spyOn(console, 'debug').mockImplementation(() => {});
+    vi.spyOn(console, 'debug').mockImplementation(() => {});
   });
 
   afterEach(() => {
@@ -100,15 +97,18 @@ describe('CreateProjectPage', () => {
       history.push('/home');
       history.push('/admin/projects/create');
 
-      const { findByText, getByRole, findAllByText } = renderContainer();
+      const { findByText: findByTextRender, getByRole, findAllByText } = renderContainer();
       const BackToProjectsButton = await findAllByText('Cancel');
 
       fireEvent.click(BackToProjectsButton[0]);
-      const AreYouSureTitle = await findByText('Discard changes and exit?');
-      const AreYouSureText = await findByText('Any changes you have made will not be saved. Do you want to proceed?', {
-        exact: false
-      });
-      const AreYouSureYesButton = await rawFindByText(getByRole('dialog'), 'Yes', { exact: false });
+      const AreYouSureTitle = await findByTextRender('Discard changes and exit?');
+      const AreYouSureText = await findByTextRender(
+        'Any changes you have made will not be saved. Do you want to proceed?',
+        {
+          exact: false
+        }
+      );
+      const AreYouSureYesButton = await findByText(getByRole('dialog'), 'Yes', { exact: false });
 
       expect(AreYouSureTitle).toBeVisible();
       expect(AreYouSureText).toBeVisible();
@@ -123,7 +123,7 @@ describe('CreateProjectPage', () => {
       const BackToProjectsButton = await findAllByText('Cancel');
 
       fireEvent.click(BackToProjectsButton[0]);
-      const AreYouSureYesButton = await rawFindByText(getByRole('dialog'), 'Yes', { exact: false });
+      const AreYouSureYesButton = await findByText(getByRole('dialog'), 'Yes', { exact: false });
 
       expect(history.location.pathname).toEqual('/admin/projects/create');
       fireEvent.click(AreYouSureYesButton);
@@ -138,7 +138,7 @@ describe('CreateProjectPage', () => {
       const BackToProjectsButton = await findAllByText('Cancel');
 
       fireEvent.click(BackToProjectsButton[0]);
-      const AreYouSureNoButton = await rawFindByText(getByRole('dialog'), 'No');
+      const AreYouSureNoButton = await findByText(getByRole('dialog'), 'No');
 
       expect(history.location.pathname).toEqual('/admin/projects/create');
       fireEvent.click(AreYouSureNoButton);

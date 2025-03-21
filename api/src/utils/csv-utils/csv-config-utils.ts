@@ -188,7 +188,7 @@ export class CSVConfigUtils<StaticHeaderType extends Uppercase<string> = Upperca
    *
    * @param {StaticHeaderType} header - The header name
    * @param {CSVRow} row - The CSV row
-   * @returns {any} - The cell value
+   * @returns {CSVCell} - The cell value
    */
   getCellValue(header: StaticHeaderType, row: CSVRow): CSVCell {
     // Static header or dynamic header exact match
@@ -205,23 +205,67 @@ export class CSVConfigUtils<StaticHeaderType extends Uppercase<string> = Upperca
   }
 
   /**
+   * Get the array-cell values from a CSV row.
+   *
+   * @param {StaticHeaderType} header - The header name
+   * @param {CSVRow} row - The CSV row
+   * @param {{ delimiter: string }} options - The options
+   * @return {(string[] | undefined)} - The array-cell values or undefined if none found
+   */
+  getArrayCellValue(header: StaticHeaderType, row: CSVRow, options: { delimiter: string }): string[] | undefined {
+    // Static header or dynamic header exact match
+    const cellValue = this.getCellValue(header, row);
+
+    if (!cellValue) {
+      // No cell value found
+      return undefined;
+    }
+
+    // Split the original cell value by the delimiter, trimming whitespace and removing empty values
+    return String(cellValue)
+      .split(options.delimiter)
+      .map((value) => value.trim())
+      .filter((value) => value.length > 0);
+  }
+
+  /**
    * Get all the cell values from a static header.
    *
    * @param {StaticHeaderType} header - The header name
-   * @returns {any[]} - The cell values
+   * @returns {CSVCell[]} - The cell values
    */
   getCellValues(header: StaticHeaderType): CSVCell[] {
     return this.worksheetRows.map((row) => this.getCellValue(header, row));
   }
 
   /**
+   * Get all the array-cell values from a static header.
+   *
+   * @param {StaticHeaderType} header - The header name
+   * @return {((string | undefined)[])} - The array-cell values
+   */
+  getArrayCellValues(header: StaticHeaderType, options: { delimiter: string }): (string | undefined)[] {
+    return this.worksheetRows.flatMap((row) => this.getArrayCellValue(header, row, options));
+  }
+
+  /**
    * Get all the unique cell values from a static header - case sensitive.
    *
    * @param {StaticHeaderType} header - The header name
-   * @returns {any[]} - The unique cell values
+   * @returns {CSVCell[]} - The unique cell values
    */
   getUniqueCellValues(header: StaticHeaderType): CSVCell[] {
     return [...new Set(this.getCellValues(header))];
+  }
+
+  /**
+   * Get all the unique array-cell values from a static header - case sensitive.
+   *
+   * @param {StaticHeaderType} header - The header name
+   * @returns {((string | undefined)[])} - The unique array-cell values
+   */
+  getUniqueArrayCellValues(header: StaticHeaderType, options: { delimiter: string }): (string | undefined)[] {
+    return [...new Set(this.getArrayCellValues(header, options))];
   }
 
   /**

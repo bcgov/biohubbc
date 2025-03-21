@@ -18,7 +18,7 @@ describe('getGenericizedKeycloakUserInformation', () => {
     const keycloakUserInformation: DatabaseUserInformation = {
       database_user_guid: '123456789',
       identity_provider: 'database',
-      username: 'biohub_dapi_v1'
+      username: 'biohub_api'
     };
 
     const result = getGenericizedKeycloakUserInformation(keycloakUserInformation);

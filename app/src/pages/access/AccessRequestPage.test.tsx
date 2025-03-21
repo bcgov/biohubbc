@@ -7,16 +7,17 @@ import { Router } from 'react-router';
 import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import { cleanup, fireEvent, render, waitFor, within } from 'test-helpers/test-utils';
 import appTheme from 'themes/appTheme';
+import { Mock } from 'vitest';
 import AccessRequestPage from './AccessRequestPage';
 
 const history = createMemoryHistory();
 
-jest.mock('../../hooks/useBioHubApi');
-const mockBiohubApi = useBiohubApi as jest.Mock;
+vi.mock('../../hooks/useBioHubApi');
+const mockBiohubApi = useBiohubApi as Mock;
 
 const mockUseApi = {
   admin: {
-    createAdministrativeActivity: jest.fn()
+    createAdministrativeActivity: vi.fn()
   }
 };
 
@@ -50,7 +51,7 @@ describe('AccessRequestPage', () => {
     const history = createMemoryHistory();
 
     it('should call the auth signoutRedirect function', async () => {
-      const signoutRedirectStub = jest.fn();
+      const signoutRedirectStub = vi.fn();
 
       const authState = getMockAuthState({
         base: SystemAdminAuthState,
@@ -124,7 +125,7 @@ describe('AccessRequestPage', () => {
   });
 
   it.skip('shows error dialog with api error message when submission fails', async () => {
-    mockUseApi.admin.createAdministrativeActivity = jest.fn(() => Promise.reject(new Error('API Error is Here')));
+    mockUseApi.admin.createAdministrativeActivity = vi.fn(() => Promise.reject(new Error('API Error is Here')));
 
     const { getByText, getAllByRole, getByRole, queryByText } = renderContainer();
 
