@@ -38,30 +38,32 @@ export const getTelemetryVendorCellValidator = (vendors: Set<string>): CSVCellVa
  * Rules:
  *  1. The serial and vendor must generate a valid device key
  *  2. The device key must exist in the deployment dictionary
+ *  3. If the device matches multiple deployments and an alias is provided, the alias must match the critter alias in the deployment
+ *  4. If the device matches multiple deployments, the acquisition date must be between the deployment start and end dates
  *
- * @param {ExtendedDeploymentRecord[]} matchingDeployments Telemetry device matchingDeployments
+ * @param {ExtendedDeploymentRecord[]} deployments Telemetry device deployments
  * @param {Map<string, ICritterDetailed>} surveyCritterAliasMap The critter alias map
  * @param {CSVConfigUtils<TelemetryCSVStaticHeader>} utils The CSV config utils
  * @returns {*} {CSVCellValidator} The validate cell callback
  */
 export const getTelemetrySerialCellValidator = (
-  matchingDeployments: ExtendedDeploymentRecord[],
+  deployments: ExtendedDeploymentRecord[],
   surveyCritterAliasMap: Map<string, ICritterDetailed>,
   utils: CSVConfigUtils<TelemetryCSVStaticHeader>
 ): CSVCellValidator => {
   const deploymentMap = new CaseInsensitiveMap<string, ExtendedDeploymentRecord[]>();
 
   // Populate the dictionary: device_key -> deployment[]
-  for (const deployment of matchingDeployments) {
-    const existingDeployment = deploymentMap.get(deployment.device_key);
+  for (const deployment of deployments) {
+    const existingDeployments = deploymentMap.get(deployment.device_key);
 
-    // Append to the existing deployment list
-    if (existingDeployment) {
-      deploymentMap.set(deployment.device_key, [...existingDeployment, deployment]);
+    // Append to the existing deployment to the device deployments map
+    if (existingDeployments) {
+      deploymentMap.set(deployment.device_key, [...existingDeployments, deployment]);
       continue;
     }
 
-    // Create a new list for the deployment
+    // Create a new entry in the device deployments map
     deploymentMap.set(deployment.device_key, [deployment]);
   }
 
@@ -73,9 +75,7 @@ export const getTelemetrySerialCellValidator = (
     const acquisitionTime = utils.getCellValue('TIME', params.row) as string | undefined;
 
     const acquisitionTimestamp = newDayjs(acquisitionDate, acquisitionTime);
-
     const deviceKey = getTelemetryDeviceKey({ vendor, serial });
-
     let matchingDeployments = deploymentMap.get(deviceKey);
 
     // Device does not match any matchingDeployments
@@ -92,11 +92,12 @@ export const getTelemetrySerialCellValidator = (
     if (alias) {
       const critter = surveyCritterAliasMap.get(alias);
 
-      // reduce the matchingDeployments to only those that match the critter alias
+      // Reduce the matchingDeployments to only those that match the critter alias
       matchingDeployments = matchingDeployments.filter(
         (deployment) => deployment.critterbase_critter_id === critter?.critter_id
       );
 
+      // Device matches multiple matchingDeployments, but the critter does not match the critter in the deployment
       if (matchingDeployments.length === 0) {
         return [
           {
@@ -113,16 +114,18 @@ export const getTelemetrySerialCellValidator = (
       return [];
     }
 
-    // Filter the matchingDeployments by the telemetry acquisition date
+    // Filter the matchingDeployments to only those that have the telemetry acquisition date between the deployment start and end dates
     const deploymentsMatchingAcquisitionTimestamp = matchingDeployments.filter((deployment) => {
       const startDate = dayjs(deployment.attachment_start_timestamp);
 
+      // When the deployment has no end date, the telemetry acquisition date must be after the start date
       if (deployment.attachment_end_timestamp === null) {
         return acquisitionTimestamp.isSameOrAfter(startDate);
       }
 
       const endDate = dayjs(deployment.attachment_end_timestamp);
 
+      // Telemetry acquisition date must be between the deployment start and end dates
       return acquisitionTimestamp.isSameOrBefore(endDate) && acquisitionTimestamp.isSameOrAfter(startDate);
     });
 

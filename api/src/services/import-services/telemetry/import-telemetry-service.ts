@@ -13,6 +13,7 @@ import {
   getTimeCellSetter,
   getTimeCellValidator
 } from '../../../utils/csv-utils/csv-header-configs';
+import { getAllAliases } from '../../../utils/csv-utils/csv-helpers';
 import { getLogger } from '../../../utils/logger';
 import { DBService } from '../../db-service';
 import { SurveyCritterService } from '../../survey-critter-service';
@@ -54,7 +55,7 @@ export class ImportTelemetryService extends DBService {
 
     const initialConfig: CSVConfig<TelemetryCSVStaticHeader> = {
       staticHeadersConfig: {
-        SERIAL: { aliases: ['DEVICE_ID', 'DEVICE ID', 'DEVICE', 'COLLAR', 'COLLAR ID', 'COLLAR_ID'] },
+        SERIAL: { aliases: getAllAliases(['DEVICE_ID', 'DEVICE', 'COLLAR', 'COLLAR_ID']) },
         VENDOR: { aliases: ['MAKE', 'MANUFACTURER'] },
         ALIAS: { aliases: ['NICKNAME', 'ANIMAL'], optional: true },
         LATITUDE: { aliases: ['LAT'] },
