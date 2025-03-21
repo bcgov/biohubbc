@@ -21,6 +21,7 @@ import { IObservationTableRow } from 'contexts/observationsTableContext';
 import { BulkActionsButton } from 'features/surveys/observations/observations-table/bulk-actions/BulkActionsButton';
 import {
   MethodTechniqueColDef,
+  ObservationIDColDef,
   ObservationSignColDef,
   ObservationSubcountColDef,
   SamplePeriodColDef,
@@ -100,6 +101,7 @@ const ObservationsTableContainer = () => {
     () => {
       return [
         // Add standard observation columns to the table
+        ObservationIDColDef(),
         TaxonomyColDef(),
         SampleSiteColDef({
           samplingInformationCache: samplingInformationCache

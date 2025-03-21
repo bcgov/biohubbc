@@ -1,3 +1,4 @@
+import { grey } from '@mui/material/colors';
 import Typography from '@mui/material/Typography';
 import { GridColDef } from '@mui/x-data-grid';
 import AutocompleteDataGridViewCell from 'components/data-grid/autocomplete/AutocompleteDataGridViewCell';
@@ -16,6 +17,25 @@ import {
 type IObservationSignOption = {
   observation_sign_id: number;
   name: string;
+};
+
+export const ObservationIDColDef = (): GridColDef<IObservationTableRow> => {
+  return {
+    field: 'survey_observation_id',
+    headerName: 'ID',
+    width: 85,
+    minWidth: 85,
+    renderHeader: () => (
+      <Typography color={grey[500]} variant="body2" fontWeight={700}>
+        ID
+      </Typography>
+    ),
+    renderCell: (params) => (
+      <Typography color={grey[500]} variant="body2">
+        {params.row.survey_observation_id}
+      </Typography>
+    )
+  };
 };
 
 export const TaxonomyColDef = (): GridColDef<IObservationTableRow> => {
