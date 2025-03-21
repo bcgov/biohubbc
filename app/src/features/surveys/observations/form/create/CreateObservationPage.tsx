@@ -24,7 +24,7 @@ import { FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useProjectContext, useSurveyContext } from 'hooks/useContext';
-import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
+import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import {
   ICreateObservation,
   ObservationEnvironmentQualitativeObject,
@@ -50,7 +50,7 @@ const CreateObservationPage = () => {
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
-  const { locationChangeInterceptor } = useUnsavedChangesDialog();
+  const { locationChangeInterceptor, skipUnsavedChangesDialog } = useUnsavedChangesDialog();
 
   const dialogContext = useContext(DialogContext);
   const codesContext = useContext(CodesContext);
@@ -176,7 +176,9 @@ const CreateObservationPage = () => {
       await biohubApi.observation.createObservation(projectId, surveyId, createObservationPayload);
 
       setEnableCancelCheck(false);
-      history.push(`/admin/projects/${projectId}/surveys/${surveyId}/observations`, SKIP_CONFIRMATION_DIALOG);
+
+      skipUnsavedChangesDialog();
+      history.push(`/admin/projects/${projectId}/surveys/${surveyId}/observations`);
     } catch (error) {
       const apiError = error as APIError;
       dialogContext.setErrorDialog({
