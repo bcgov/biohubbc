@@ -31,7 +31,7 @@ export const SubcountCountField = (props: ISubcountCountFieldProps) => {
           </Typography>
         </HelpButtonStack>
       )}
-      <CustomTextField label="Subcount" name={subcountCountFieldName} other={{ type: 'number' }} />
+      <CustomTextField label="Subcount" name={subcountCountFieldName} other={{ type: 'number', required: true }} />
     </>
   );
 };

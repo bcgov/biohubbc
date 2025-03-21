@@ -184,6 +184,7 @@ export const MethodTechniqueField = (props: IMethodTechniqueFieldProps) => {
           {...params}
           variant="outlined"
           fullWidth
+          label="Method Technique"
           placeholder="Search for a technique"
           error={
             get(touched, 'standardColumns.method_technique_id') &&

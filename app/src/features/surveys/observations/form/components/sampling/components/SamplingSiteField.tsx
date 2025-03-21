@@ -143,6 +143,7 @@ export const SamplingSiteField = (props: ISamplingSiteFieldProps) => {
           {...params}
           variant="outlined"
           fullWidth
+          label="Sample Site"
           placeholder="Search for a site"
           error={
             get(touched, 'standardColumns.survey_sample_site_id') &&

@@ -188,6 +188,7 @@ export const SamplingPeriodField = (props: ISamplingPeriodFieldProps) => {
           name="standardColumns.survey_sample_period_id"
           variant="outlined"
           fullWidth
+          label="Sample Period"
           placeholder="Search for a period"
           error={
             get(touched, 'standardColumns.survey_sample_period_id') &&
