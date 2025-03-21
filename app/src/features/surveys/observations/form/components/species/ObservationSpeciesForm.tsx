@@ -67,7 +67,8 @@ export const ObservationSpeciesForm = () => {
         options={
           codesContext.codesDataLoader.data?.observation_signs.map((sign) => ({
             label: sign.name,
-            value: sign.id
+            value: sign.id,
+            description: sign.description
           })) ?? []
         }
         helpText="Select the type of evidence that was observed."
