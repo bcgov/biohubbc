@@ -117,9 +117,12 @@ export class ImportTelemetryService extends DBService {
    * @returns {Promise<CSVConfig<TelemetryCSVStaticHeader>>} The CSV configuration
    */
   async getCSVConfig(): Promise<CSVConfig<TelemetryCSVStaticHeader>> {
-    const deployments = await this.deploymentService.getDeploymentsForSurvey(this.surveyId);
-    const surveyCritterAliasMap = await this.surveyCritterService.getSurveyCritterAliasMap(this.surveyId);
-    const vendors = await this.codeRepository.getActiveTelemetryDeviceMakes();
+    const [deployments, surveyCritterAliasMap, vendors] = await Promise.all([
+      this.deploymentService.getDeploymentsForSurvey(this.surveyId),
+      this.surveyCritterService.getSurveyCritterAliasMap(this.surveyId),
+      this.codeRepository.getActiveTelemetryDeviceMakes()
+    ]);
+
     const vendorsSet = new Set(vendors.map((vendor) => vendor.name.toLowerCase()));
 
     this.utils.setAllStaticHeaderConfigs({

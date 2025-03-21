@@ -8,19 +8,10 @@ interface CustomMarkdownProps {
 }
 
 /**
- * This file must be mocked if tested with Jest because it is ESM only and Jest does not support ESM.
+ * Renders a markdown string with custom styling.
  *
- * Example code to include in test files that import this component:
- *
- * ```
- * jest.mock('../../../components/markdown/CustomMarkdown', () => {
- * return {};
- * });
- * ```
- * See SurveyHeader.test.tsx for an example
- *
- * @param param
- * @returns
+ * @param {CustomMarkdownProps} { markdown }
+ * @return {*}
  */
 export const CustomMarkdown = ({ markdown }: CustomMarkdownProps) => {
   const sx = {

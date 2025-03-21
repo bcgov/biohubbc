@@ -11,22 +11,17 @@ import { codes } from 'test-helpers/code-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import { getSurveyForListResponse } from 'test-helpers/survey-helpers';
 import { cleanup, render, waitFor } from 'test-helpers/test-utils';
+import { Mock } from 'vitest';
 import SurveysListPage from './SurveysListPage';
 
 const history = createMemoryHistory();
 
-jest.mock('../../../hooks/useBioHubApi');
-const mockBiohubApi = useBiohubApi as jest.Mock;
-
-jest.mock('../../../components/markdown/CustomMarkdown', () => {
-  // Overriding this component because it is ESM only and Jest does not support ESM.
-  // See https://github.com/orgs/remarkjs/discussions/1247 for more information.
-  return {};
-});
+vi.mock('../../../hooks/useBioHubApi');
+const mockBiohubApi = useBiohubApi as Mock;
 
 const mockUseApi = {
   survey: {
-    getSurveysBasicFieldsByProjectId: jest.fn()
+    getSurveysBasicFieldsByProjectId: vi.fn()
   }
 };
 
@@ -51,7 +46,7 @@ describe('SurveysListPage', () => {
       projectDataLoader: {
         data: getProjectForViewResponse
       } as DataLoader<any, any, any>,
-      surveysListDataLoader: { data: [], isLoading: false, isReady: true, refresh: jest.fn() } as unknown as DataLoader<
+      surveysListDataLoader: { data: [], isLoading: false, isReady: true, refresh: vi.fn() } as unknown as DataLoader<
         any,
         any,
         any
@@ -117,7 +112,7 @@ describe('SurveysListPage', () => {
         data: getSurveyForListResponse,
         isLoading: false,
         isReady: true,
-        refresh: jest.fn()
+        refresh: vi.fn()
       } as unknown as DataLoader<any, any, any>,
       artifactDataLoader: { data: null } as DataLoader<any, any, any>,
       projectId: 1

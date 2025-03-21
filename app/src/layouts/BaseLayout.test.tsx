@@ -9,7 +9,7 @@ const history = createMemoryHistory();
 
 describe('BaseLayout', () => {
   it('renders correctly', () => {
-    process.env.REACT_APP_NODE_ENV = 'local';
+    import.meta.env.VITE_APP_NODE_ENV = 'local';
 
     const authState = getMockAuthState({ base: SystemAdminAuthState });
 
