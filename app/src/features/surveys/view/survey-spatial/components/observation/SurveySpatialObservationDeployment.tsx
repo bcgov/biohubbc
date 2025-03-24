@@ -31,6 +31,8 @@ interface IObservationTableRow {
 /**
  * Component to display observation data in a table with server-side pagination and sorting.
  *
+ * TODO: Deprecated? This is not used anywhere in the codebase.
+ *
  * @returns {*}
  */
 export const SurveySpatialObservationDeployment = () => {

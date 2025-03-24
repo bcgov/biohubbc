@@ -24,7 +24,7 @@ describe('deleteSurveyObservations', () => {
     });
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
-    const deleteTechniquesStub = sinon
+    const deleteObservationsByIdsStub = sinon
       .stub(ObservationService.prototype, 'deleteObservationsByIds')
       .rejects(new Error('a test error'));
 
@@ -47,7 +47,7 @@ describe('deleteSurveyObservations', () => {
     } catch (actualError) {
       expect(mockDBConnection.open).to.have.been.calledOnce;
 
-      expect(deleteTechniquesStub).to.have.been.calledOnce;
+      expect(deleteObservationsByIdsStub).to.have.been.calledOnce;
 
       expect(mockDBConnection.rollback).to.have.been.calledOnce;
       expect(mockDBConnection.release).to.have.been.calledOnce;
@@ -60,7 +60,7 @@ describe('deleteSurveyObservations', () => {
     const mockDBConnection = getMockDBConnection({ open: sinon.stub(), commit: sinon.stub(), release: sinon.stub() });
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
-    const deleteTechniquesStub = sinon.stub(ObservationService.prototype, 'deleteObservationsByIds').resolves();
+    const deleteObservationsByIdsStub = sinon.stub(ObservationService.prototype, 'deleteObservationsByIds').resolves();
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -79,7 +79,7 @@ describe('deleteSurveyObservations', () => {
 
     expect(mockDBConnection.open).to.have.been.calledOnce;
 
-    expect(deleteTechniquesStub).to.have.been.calledOnce;
+    expect(deleteObservationsByIdsStub).to.have.been.calledOnce;
 
     expect(mockDBConnection.commit).to.have.been.calledOnce;
 

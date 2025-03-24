@@ -220,7 +220,7 @@ export function findObservations(): RequestHandler {
 
       return res.status(200).json(response);
     } catch (error) {
-      defaultLog.error({ label: 'getObservations', message: 'error', error });
+      defaultLog.error({ label: 'findObservations', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

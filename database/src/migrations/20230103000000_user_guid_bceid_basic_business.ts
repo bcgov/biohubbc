@@ -1,7 +1,6 @@
 import { Knex } from 'knex';
 
 const DB_SCHEMA = process.env.DB_SCHEMA;
-const DB_SCHEMA_DAPI_V1 = process.env.DB_SCHEMA_DAPI_V1;
 
 /**
  * Change 'BCEID' to 'BCEIDBASIC'
@@ -13,7 +12,7 @@ const DB_SCHEMA_DAPI_V1 = process.env.DB_SCHEMA_DAPI_V1;
 export async function up(knex: Knex): Promise<void> {
   await knex.raw(`
     SET SCHEMA '${DB_SCHEMA}';
-    SET SEARCH_PATH = ${DB_SCHEMA_DAPI_V1};
+    SET SEARCH_PATH = biohub_dapi_v1;
 
     DROP VIEW IF EXISTS "system_user";
     DROP VIEW IF EXISTS user_identity_source;
@@ -136,7 +135,7 @@ export async function up(knex: Knex): Promise<void> {
 
   // Update table views
   await knex.raw(`
-    SET SEARCH_PATH = ${DB_SCHEMA_DAPI_V1};
+    SET SEARCH_PATH = biohub_dapi_v1;
 
     CREATE OR REPLACE VIEW "system_user" AS SELECT * FROM biohub."system_user";
     CREATE OR REPLACE VIEW user_identity_source AS SELECT * FROM biohub.user_identity_source;

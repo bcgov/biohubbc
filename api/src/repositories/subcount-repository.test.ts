@@ -3,16 +3,11 @@ import { describe } from 'mocha';
 import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { ObservationSubcountRecord } from '../database-models/observation_subcount';
+import { SubcountCritterRecord } from '../database-models/subcount_critter';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { getMockDBConnection } from '../__mocks__/db';
-import {
-  InsertObservationSubCount,
-  InsertSubCountEvent,
-  ObservationSubCountRecord,
-  SubCountCritterRecord,
-  SubCountEventRecord,
-  SubCountRepository
-} from './subcount-repository';
+import { InsertObservationSubCount, SubCountRepository } from './subcount-repository';
 
 chai.use(sinonChai);
 
@@ -23,17 +18,11 @@ describe('SubCountRepository', () => {
 
   describe('insertObservationSubCount', () => {
     it('should successfully insert observation subcount', async () => {
-      const mockSubcount: ObservationSubCountRecord = {
+      const mockSubcount: ObservationSubcountRecord = {
         observation_subcount_id: 1,
         survey_observation_id: 1,
         comment: 'comment',
-        subcount: 5,
-        observation_subcount_sign_id: null,
-        create_date: '1970-01-01',
-        create_user: 1,
-        update_date: null,
-        update_user: null,
-        revision_count: 1
+        subcount: 5
       };
 
       const mockResponse = {
@@ -70,69 +59,12 @@ describe('SubCountRepository', () => {
     });
   });
 
-  describe('insertSubCountEvent', () => {
-    it('should successfully insert subcount_event record', async () => {
-      const mockInsertSubcountEvent: InsertSubCountEvent = {
-        observation_subcount_id: 1,
-        critterbase_event_id: 'aaaa'
-      };
-
-      const mockSubcountEvent: SubCountEventRecord = {
-        observation_subcount_id: 1,
-        create_date: '1970-01-01',
-        create_user: 1,
-        update_date: null,
-        update_user: null,
-        revision_count: 1,
-        subcount_event_id: 1,
-        critterbase_event_id: 'aaaa'
-      };
-
-      const mockResponse = {
-        rows: [mockSubcountEvent],
-        rowCount: 1
-      } as any as Promise<QueryResult<any>>;
-
-      const dbConnection = getMockDBConnection({
-        knex: () => mockResponse
-      });
-
-      const repo = new SubCountRepository(dbConnection);
-      const response = await repo.insertSubCountEvent(mockInsertSubcountEvent);
-
-      expect(response).to.eql(mockSubcountEvent);
-    });
-
-    it('should catch query errors and throw an ApiExecuteSQLError', async () => {
-      const mockResponse = {
-        rows: [],
-        rowCount: 0
-      } as any as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({
-        knex: () => mockResponse
-      });
-
-      const repo = new SubCountRepository(dbConnection);
-      try {
-        await repo.insertSubCountEvent(null as unknown as InsertSubCountEvent);
-        expect.fail();
-      } catch (error) {
-        expect((error as any as ApiExecuteSQLError).message).to.be.eq('Failed to insert subcount event');
-      }
-    });
-  });
-
   describe('insertSubCountCritter', () => {
     it('should successfully insert a subcount_critter record', async () => {
-      const mockSubcountCritterRecord: SubCountCritterRecord = {
+      const mockSubcountCritterRecord: SubcountCritterRecord = {
         subcount_critter_id: 1,
         observation_subcount_id: 1,
-        critter_id: 1,
-        create_date: '1970-01-01',
-        create_user: 1,
-        update_date: null,
-        update_user: null,
-        revision_count: 1
+        critter_id: 1
       };
 
       const mockResponse = {
@@ -161,7 +93,7 @@ describe('SubCountRepository', () => {
 
       const repo = new SubCountRepository(dbConnection);
       try {
-        await repo.insertSubCountCritter(null as unknown as SubCountCritterRecord);
+        await repo.insertSubCountCritter(null as unknown as SubcountCritterRecord);
         expect.fail();
       } catch (error) {
         expect((error as any as ApiExecuteSQLError).message).to.be.eq('Failed to insert subcount critter');
