@@ -5,6 +5,7 @@ import { DialogContextProvider } from 'contexts/dialogContext';
 import { ObservationsContextProvider } from 'contexts/observationsContext';
 import { AnimalRouter } from 'features/surveys/animals/AnimalRouter';
 import EditSurveyPage from 'features/surveys/edit/EditSurveyPage';
+import EditObservationPage from 'features/surveys/observations/form/edit/EditObservationPage';
 import { SurveyObservationPage } from 'features/surveys/observations/SurveyObservationPage';
 import { SamplingRouter } from 'features/surveys/sampling-information/SamplingRouter';
 import SurveyPage from 'features/surveys/view/SurveyPage';
@@ -13,6 +14,7 @@ import { Redirect, Switch } from 'react-router';
 import RouteWithTitle from 'utils/RouteWithTitle';
 import { getTitle } from 'utils/Utils';
 import { HabitatFeatureRouter } from './habitat-features/SurveyHabitatFeatureRouter';
+import CreateObservationPage from './observations/form/create/CreateObservationPage';
 import { TelemetryRouter } from './telemetry/TelemetryRouter';
 
 /**
@@ -114,6 +116,28 @@ const SurveyRouter: React.FC = () => {
           <ObservationsContextProvider>
             <SurveyObservationPage />
           </ObservationsContextProvider>
+        </ProjectRoleRouteGuard>
+      </RouteWithTitle>
+
+      <RouteWithTitle
+        exact
+        path="/admin/projects/:id/surveys/:survey_id/observations/create"
+        title={getTitle('Create Observation')}>
+        <ProjectRoleRouteGuard
+          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+          validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+          <CreateObservationPage />
+        </ProjectRoleRouteGuard>
+      </RouteWithTitle>
+
+      <RouteWithTitle
+        exact
+        path="/admin/projects/:id/surveys/:survey_id/observations/:observation_id/edit"
+        title={getTitle('Edit Observation')}>
+        <ProjectRoleRouteGuard
+          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+          validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+          <EditObservationPage />
         </ProjectRoleRouteGuard>
       </RouteWithTitle>
 

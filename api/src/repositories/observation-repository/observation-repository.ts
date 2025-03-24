@@ -4,140 +4,23 @@ import { SurveyObservationModel, SurveyObservationRecord } from '../../database-
 import { getKnex } from '../../database/db';
 import { ApiExecuteSQLError } from '../../errors/api-error';
 import { IObservationAdvancedFilters } from '../../models/observation-view';
-import { getLogger } from '../../utils/logger';
-import { GeoJSONPointZodSchema } from '../../zod-schema/geoJsonZodSchema';
 import { ApiPaginationOptions } from '../../zod-schema/pagination';
 import { BaseRepository } from '../base-repository';
 import {
-  ObservationSubCountQualitativeEnvironmentRecord,
-  ObservationSubCountQuantitativeEnvironmentRecord
-} from '../observation-subcount-environment-repository';
+  FlattenedObservationRecordWithSamplingAndSubcountData,
+  InsertSurveyObservation,
+  ObservationGeometryRecord,
+  ObservationRecordWithSampling,
+  ObservationRecordWithSamplingAndSubcountData,
+  ObservationSpecies,
+  UpdateSurveyObservation
+} from './observation-repository.interface';
 import {
-  ObservationSubCountQualitativeMeasurementRecord,
-  ObservationSubCountQuantitativeMeasurementRecord
-} from '../observation-subcount-measurement-repository';
-import { ObservationSubCountRecord } from '../subcount-repository';
-import { getSurveyObservationsBaseQuery, makeFindObservationsQuery } from './utils';
-
-const defaultLog = getLogger('repositories/observation-repository');
-
-export const ObservationSpecies = z.object({
-  itis_tsn: z.number()
-});
-
-export type ObservationSpecies = z.infer<typeof ObservationSpecies>;
-
-const ObservationSamplingData = z.object({
-  survey_sample_site_id: z.number().nullable(),
-  survey_sample_site_name: z.string().nullable(),
-  method_technique_id: z.number().nullable(),
-  method_technique_name: z.string().nullable(),
-  // survey_sample_period_id is already included in the SurveyObservationRecord
-  survey_sample_period_start_datetime: z.string().nullable()
-});
-
-const ObservationSubcountQualitativeMeasurementObject = ObservationSubCountQualitativeMeasurementRecord.pick({
-  critterbase_taxon_measurement_id: true,
-  critterbase_measurement_qualitative_option_id: true
-});
-
-const ObservationSubcountQuantitativeMeasurementObject = ObservationSubCountQuantitativeMeasurementRecord.pick({
-  critterbase_taxon_measurement_id: true,
-  value: true
-});
-
-const ObservationSubcountQualitativeEnvironmentObject = ObservationSubCountQualitativeEnvironmentRecord.pick({
-  observation_subcount_qualitative_environment_id: true,
-  environment_qualitative_id: true,
-  environment_qualitative_option_id: true
-});
-
-const ObservationSubcountQuantitativeEnvironmentObject = ObservationSubCountQuantitativeEnvironmentRecord.pick({
-  observation_subcount_quantitative_environment_id: true,
-  environment_quantitative_id: true,
-  value: true
-});
-
-const ObservationSubcountObject = z.object({
-  observation_subcount_id: ObservationSubCountRecord.shape.observation_subcount_id,
-  observation_subcount_sign_id: ObservationSubCountRecord.shape.observation_subcount_sign_id,
-  comment: ObservationSubCountRecord.shape.comment,
-  subcount: ObservationSubCountRecord.shape.subcount,
-  qualitative_measurements: z.array(ObservationSubcountQualitativeMeasurementObject),
-  quantitative_measurements: z.array(ObservationSubcountQuantitativeMeasurementObject),
-  qualitative_environments: z.array(ObservationSubcountQualitativeEnvironmentObject),
-  quantitative_environments: z.array(ObservationSubcountQuantitativeEnvironmentObject)
-});
-
-const ObservationSubcountsObject = z.object({
-  subcounts: z.array(ObservationSubcountObject)
-});
-
-/**
- * An extended observation record.
- * Includes:
- * - fields from the observation record
- * - additional fields about the survey_sample_* data for the observation record
- * - additional fields about the subcount records for the observation record
- */
-export const ObservationRecordWithSamplingAndSubcountData = SurveyObservationRecord.extend(
-  ObservationSamplingData.shape
-).extend(ObservationSubcountsObject.shape);
-export type ObservationRecordWithSamplingAndSubcountData = z.infer<typeof ObservationRecordWithSamplingAndSubcountData>;
-
-export const ObservationGeometryRecord = z.object({
-  survey_observation_id: z.number(),
-  geometry: GeoJSONPointZodSchema
-});
-export type ObservationGeometryRecord = z.infer<typeof ObservationGeometryRecord>;
-
-/**
- * Interface reflecting survey observations that are being inserted into the database
- */
-export type InsertObservation = Pick<
-  SurveyObservationRecord,
-  | 'itis_tsn'
-  | 'itis_scientific_name'
-  | 'survey_id'
-  | 'latitude'
-  | 'longitude'
-  | 'count'
-  | 'observation_date'
-  | 'observation_time'
-  | 'survey_sample_period_id'
->;
-
-/**
- * Interface reflecting survey observations that are being updated in the database
- */
-export type UpdateObservation = Pick<
-  SurveyObservationRecord,
-  | 'itis_tsn'
-  | 'itis_scientific_name'
-  | 'survey_observation_id'
-  | 'latitude'
-  | 'longitude'
-  | 'count'
-  | 'observation_date'
-  | 'observation_time'
-  | 'survey_sample_period_id'
->;
-
-/**
- * Interface reflecting survey observations retrieved from the database
- */
-export const ObservationSubmissionRecord = z.object({
-  submission_id: z.number(),
-  survey_id: z.number(),
-  key: z.string(),
-  original_filename: z.string(),
-  create_date: z.string(),
-  create_user: z.number(),
-  update_date: z.string().nullable(),
-  update_user: z.number().nullable()
-});
-
-export type ObservationSubmissionRecord = z.infer<typeof ObservationSubmissionRecord>;
+  getSurveyFlattenedObservationsBaseQuery,
+  getSurveyObservationsBaseQuery,
+  makeFindFlattenedObservationsQuery,
+  makeFindObservationsQuery
+} from './utils';
 
 export class ObservationRepository extends BaseRepository {
   /** Retrieve the list of observations that the user has access to, based on filters and pagination options.
@@ -169,6 +52,75 @@ export class ObservationRepository extends BaseRepository {
     return response.rows;
   }
 
+  /** Retrieve the list of observations that the user has access to, based on filters and pagination options.
+   *
+   * @param {boolean} isUserAdmin Whether the user is an admin.
+   * @param {number | null} systemUserId The user's ID.
+   * @param {IObservationAdvancedFilters} filterFields The filter fields to apply.
+   * @param {ApiPaginationOptions} [pagination] The pagination options.
+   * @return {Promise<FlattenedObservationRecordWithSamplingAndSubcountData[]>} A promise resolving to the list of observations.
+   */
+  async findFlattenedObservations(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields?: IObservationAdvancedFilters,
+    pagination?: ApiPaginationOptions
+  ): Promise<FlattenedObservationRecordWithSamplingAndSubcountData[]> {
+    const query = makeFindFlattenedObservationsQuery(isUserAdmin, systemUserId, filterFields);
+
+    if (pagination) {
+      query.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
+
+      if (pagination.sort && pagination.order) {
+        if (pagination.sort === 'subcount') {
+          const knex = getKnex();
+          query.orderByRaw(knex.raw(`(subcount->>?)::numeric ${pagination.order}`, [pagination.sort]));
+        } else {
+          query.orderBy(pagination.sort, pagination.order);
+        }
+      }
+    }
+
+    const response = await this.connection.knex(query, FlattenedObservationRecordWithSamplingAndSubcountData);
+
+    return response.rows;
+  }
+
+  /**
+   * Get an existing survey observation record, for a survey.
+   *
+   * @param {number} surveyId
+   * @param {number} surveyObservationId
+   * @return {*}  {Promise<ObservationRecordWithSamplingAndSubcountData>}
+   * @memberof ObservationRepository
+   */
+  async getSurveyObservationByIdWithSupplementaryData(
+    surveyId: number,
+    surveyObservationId: number
+  ): Promise<ObservationRecordWithSamplingAndSubcountData> {
+    const knex = getKnex();
+
+    const getSurveyIdsQuery = knex
+      .select<any, { survey_id: number }>('survey_id')
+      .from('survey')
+      .where('survey_id', surveyId);
+
+    const query = getSurveyObservationsBaseQuery(knex, getSurveyIdsQuery);
+
+    query.where('survey_observation.survey_observation_id', surveyObservationId);
+
+    const response = await this.connection.knex(query, ObservationRecordWithSamplingAndSubcountData);
+
+    if (response.rowCount !== 1) {
+      throw new ApiExecuteSQLError('Failed to get survey observation', [
+        'ObservationRepository->getSurveyObservationByIdWithSupplementaryData',
+        `rowCount was ${response.rowCount}, expected rowCount = 1`
+      ]);
+    }
+
+    return response.rows[0];
+  }
+
   /**
    * Retrieves a paginated set of observation records for the given survey, including data for
    * associated sampling records.
@@ -178,7 +130,7 @@ export class ObservationRepository extends BaseRepository {
    * @return {Promise<ObservationRecordWithSamplingAndSubcountData[]>} A promise resolving to the list of observations.
    * @memberof ObservationRepository
    */
-  async getSurveyObservationsWithSamplingDataWithAttributesData(
+  async getSurveyObservations(
     surveyId: number,
     pagination?: ApiPaginationOptions
   ): Promise<ObservationRecordWithSamplingAndSubcountData[]> {
@@ -197,7 +149,45 @@ export class ObservationRepository extends BaseRepository {
       }
     }
 
-    const response = await this.connection.knex(query);
+    const response = await this.connection.knex(query, ObservationRecordWithSamplingAndSubcountData);
+
+    return response.rows;
+  }
+
+  /**
+   * Retrieves a paginated set of flattened observation records for the given survey, including data for
+   * associated sampling records.
+   *
+   * @param {number} surveyId The ID of the survey.
+   * @param {ApiPaginationOptions} [pagination] The pagination options.
+   * @return {Promise<FlattenedObservationRecordWithSamplingAndSubcountData[]>} A promise resolving to the list of observations.
+   * @memberof ObservationRepository
+   */
+  async getSurveyFlattenedObservations(
+    surveyId: number,
+    pagination?: ApiPaginationOptions
+  ): Promise<FlattenedObservationRecordWithSamplingAndSubcountData[]> {
+    const knex = getKnex();
+
+    const query = getSurveyFlattenedObservationsBaseQuery(
+      knex,
+      knex.select<any, { survey_id: number }>('survey_id').from('survey').where('survey_id', surveyId)
+    );
+
+    if (pagination) {
+      query.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
+
+      if (pagination.sort && pagination.order) {
+        if (pagination.sort === 'subcount') {
+          const knex = getKnex();
+          query.orderByRaw(knex.raw(`(subcount->>?)::numeric ${pagination.order}`, [pagination.sort]));
+        } else {
+          query.orderBy(pagination.sort, pagination.order);
+        }
+      }
+    }
+
+    const response = await this.connection.knex(query, FlattenedObservationRecordWithSamplingAndSubcountData);
 
     return response.rows;
   }
@@ -237,73 +227,45 @@ export class ObservationRepository extends BaseRepository {
   }
 
   /**
-   * Performs an upsert for all observation records belonging to the given survey, then
-   * returns the updated rows
+   * Inserts a survey observation record.
    *
    * @param {number} surveyId
-   * @param {((InsertObservation | UpdateObservation)[])} observations
-   * @return {*}  {Promise<SurveyObservationRecord[]>}
+   * @param {InsertSurveyObservation} observation
+   * @return {*}  {Promise<SurveyObservationRecord>}
    * @memberof ObservationRepository
    */
-  async insertUpdateSurveyObservations(
+  async insertSurveyObservation(
     surveyId: number,
-    observations: (InsertObservation | UpdateObservation)[]
-  ): Promise<SurveyObservationRecord[]> {
+    observation: InsertSurveyObservation
+  ): Promise<SurveyObservationRecord> {
     const sqlStatement = SQL`
       INSERT INTO
         survey_observation
       (
-        survey_observation_id,
         survey_id,
+        itis_tsn,
+        itis_scientific_name,
         survey_sample_period_id,
-        count,
         latitude,
         longitude,
+        count,
         observation_date,
         observation_time,
-        itis_tsn,
-        itis_scientific_name
+        observation_sign_id
       )
-      OVERRIDING SYSTEM VALUE
       VALUES
-    `;
-
-    sqlStatement.append(
-      observations
-        .map((observation) => {
-          return `(${[
-            'survey_observation_id' in observation && observation.survey_observation_id
-              ? observation.survey_observation_id
-              : 'DEFAULT',
-            surveyId,
-            observation.survey_sample_period_id ?? 'NULL',
-            observation.count,
-            observation.latitude ?? 'NULL',
-            observation.longitude ?? 'NULL',
-            observation.observation_date ? `'${observation.observation_date}'` : 'NULL',
-            observation.observation_time ? `'${observation.observation_time}'` : 'NULL',
-            observation.itis_tsn ?? 'NULL',
-            observation.itis_scientific_name ? `'${observation.itis_scientific_name}'` : 'NULL'
-          ].join(', ')})`;
-        })
-        .join(', ')
-    );
-
-    sqlStatement.append(`
-      ON CONFLICT
-        (survey_observation_id)
-      DO UPDATE SET
-        itis_tsn = EXCLUDED.itis_tsn,
-        itis_scientific_name = EXCLUDED.itis_scientific_name,
-        survey_sample_period_id = EXCLUDED.survey_sample_period_id,
-        count = EXCLUDED.count,
-        observation_date = EXCLUDED.observation_date,
-        observation_time = EXCLUDED.observation_time,
-        latitude = EXCLUDED.latitude,
-        longitude = EXCLUDED.longitude
-    `);
-
-    sqlStatement.append(`
+      (
+        ${surveyId},
+        ${observation.standardColumns.itis_tsn},
+        ${observation.standardColumns.itis_scientific_name ?? null},
+        ${observation.standardColumns.survey_sample_period_id ?? null},
+        ${observation.standardColumns.latitude ?? null},
+        ${observation.standardColumns.longitude ?? null},
+        ${observation.standardColumns.count},
+        ${observation.standardColumns.observation_date ?? null},
+        ${observation.standardColumns.observation_time ?? null},
+        ${observation.standardColumns.observation_sign_id ?? null}
+      )
       RETURNING   
         survey_observation_id,
         survey_id,
@@ -314,12 +276,75 @@ export class ObservationRepository extends BaseRepository {
         longitude,
         count,
         observation_time,
-        observation_date;
-    `);
+        observation_date,
+        observation_sign_id;
+    `;
 
     const response = await this.connection.sql(sqlStatement, SurveyObservationRecord);
 
-    return response.rows;
+    if (response.rowCount !== 1) {
+      throw new ApiExecuteSQLError('Failed to insert observation record', [
+        'ObservationRepository->insertSurveyObservation',
+        `rowCount was ${response.rowCount}, expected rowCount = 1`
+      ]);
+    }
+
+    return response.rows[0];
+  }
+
+  /**
+   * Updates a survey observation record.
+   *
+   * @param {number} surveyId
+   * @param {UpdateSurveyObservation} observation
+   * @return {*}  {Promise<SurveyObservationRecord>}
+   * @memberof ObservationRepository
+   */
+  async updateSurveyObservation(
+    surveyId: number,
+    observation: UpdateSurveyObservation
+  ): Promise<SurveyObservationRecord> {
+    const sqlStatement = SQL`
+      UPDATE
+        survey_observation
+      SET
+        itis_tsn = ${observation.standardColumns.itis_tsn},
+        itis_scientific_name = ${observation.standardColumns.itis_scientific_name ?? null},
+        survey_sample_period_id = ${observation.standardColumns.survey_sample_period_id ?? null},
+        latitude = ${observation.standardColumns.latitude ?? null},
+        longitude = ${observation.standardColumns.longitude ?? null},
+        count = ${observation.standardColumns.count},
+        observation_date = ${observation.standardColumns.observation_date ?? null},
+        observation_time = ${observation.standardColumns.observation_time ?? null},
+        observation_sign_id = ${observation.standardColumns.observation_sign_id ?? null}
+      WHERE
+        survey_observation_id = ${observation.standardColumns.survey_observation_id}
+      AND 
+        survey_id = ${surveyId}
+      RETURNING   
+        survey_observation_id,
+        survey_id,
+        itis_tsn,
+        itis_scientific_name,
+        survey_sample_period_id,
+        latitude,
+        longitude,
+        count,
+        observation_time,
+        observation_date,
+        observation_sign_id;
+    `;
+
+    const response = await this.connection.sql(sqlStatement, SurveyObservationRecord);
+
+    if (response.rowCount !== 1) {
+      throw new ApiExecuteSQLError('Failed to update observation record', [
+        'ObservationRepository->insertSurveyObservation',
+        `rowCount was ${response.rowCount}, expected rowCount = 1`
+      ]);
+    }
+
+    return response.rows[0];
   }
 
   /**
@@ -354,30 +379,54 @@ export class ObservationRepository extends BaseRepository {
    *
    * @param {number} surveyId
    * @param {number} surveyObservationId
-   * @return {*}  {Promise<SurveyObservationRecord[]>}
+   * @return {*}  {Promise<ObservationRecordWithSampling[]>}
    * @memberof ObservationRepository
    */
-  async getSurveyObservationById(surveyId: number, surveyObservationId: number): Promise<SurveyObservationRecord> {
+  async getSurveyObservationById(
+    surveyId: number,
+    surveyObservationId: number
+  ): Promise<ObservationRecordWithSampling> {
     const knex = getKnex();
     const query = knex
       .queryBuilder()
       .select([
-        'survey_observation_id',
-        'survey_id',
-        'itis_tsn',
-        'itis_scientific_name',
-        'survey_sample_period_id',
-        'latitude',
-        'longitude',
-        'count',
-        'observation_time',
-        'observation_date'
+        // Observation data
+        'survey_observation.survey_observation_id',
+        'survey_observation.survey_id',
+        'survey_observation.itis_tsn',
+        'survey_observation.itis_scientific_name',
+        'survey_observation.survey_sample_period_id',
+        'survey_observation.latitude',
+        'survey_observation.longitude',
+        'survey_observation.count',
+        'survey_observation.observation_time',
+        'survey_observation.observation_date',
+        'survey_observation.observation_sign_id',
+        // Additional sampling data
+        'survey_sample_period.survey_sample_site_id',
+        'survey_sample_site.name as survey_sample_site_name',
+        'survey_sample_period.method_technique_id',
+        'method_technique.name as method_technique_name',
+        knex.raw(`
+          (survey_sample_period.start_date::date + COALESCE(survey_sample_period.start_time, '00:00:00')::time)::timestamp as survey_sample_period_start_datetime
+        `)
       ])
       .from('survey_observation')
+      .leftJoin(
+        'survey_sample_period',
+        'survey_observation.survey_sample_period_id',
+        'survey_sample_period.survey_sample_period_id'
+      )
+      .leftJoin(
+        'survey_sample_site',
+        'survey_sample_site.survey_sample_site_id',
+        'survey_sample_period.survey_sample_site_id'
+      )
+      .leftJoin('method_technique', 'method_technique.method_technique_id', 'survey_sample_period.method_technique_id')
       .where('survey_observation_id', surveyObservationId)
       .andWhere('survey_id', surveyId);
 
-    const response = await this.connection.knex(query, SurveyObservationRecord);
+    const response = await this.connection.knex(query, ObservationRecordWithSampling);
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to get observation record', [
@@ -410,7 +459,8 @@ export class ObservationRepository extends BaseRepository {
         'longitude',
         'count',
         'observation_time',
-        'observation_date'
+        'observation_date',
+        'observation_sign_id'
       ])
       .from('survey_observation')
       .where('survey_id', surveyId);
@@ -445,13 +495,38 @@ export class ObservationRepository extends BaseRepository {
    * @return {*}  {Promise<number>}
    * @memberof ObservationRepository
    */
-  async getSurveyObservationCount(surveyId: number): Promise<number> {
+  async getSurveyObservationsCount(surveyId: number): Promise<number> {
     const knex = getKnex();
     const sqlStatement = knex
       .queryBuilder()
       .select(knex.raw('COUNT(survey_observation_id)::integer as count'))
       .from('survey_observation')
       .where('survey_id', surveyId);
+
+    const response = await this.connection.knex(sqlStatement, z.object({ count: z.number() }));
+
+    return response.rows[0].count;
+  }
+
+  /**
+   * Retrieves the count of flattened survey observations for the given survey.
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<number>}
+   * @memberof ObservationRepository
+   */
+  async getSurveyFlattenedObservationsCount(surveyId: number): Promise<number> {
+    const knex = getKnex();
+    const sqlStatement = knex
+      .queryBuilder()
+      .select(knex.raw('COUNT(observation_subcount_id)::integer as count'))
+      .from('observation_subcount')
+      .innerJoin(
+        'survey_observation',
+        'observation_subcount.survey_observation_id',
+        'survey_observation.survey_observation_id'
+      )
+      .where('survey_observation.survey_id', surveyId);
 
     const response = await this.connection.knex(sqlStatement, z.object({ count: z.number() }));
 
@@ -482,8 +557,8 @@ export class ObservationRepository extends BaseRepository {
     const response = await this.connection.knex(queryBuilder, z.object({ count: z.number() }));
 
     if (!response.rowCount) {
-      throw new ApiExecuteSQLError('Failed to get survey count', [
-        'findObservationsCount->findObservationsCount',
+      throw new ApiExecuteSQLError('Failed to get observations count', [
+        'ObservationRepository->findObservationsCount',
         'rows was null or undefined, expected rows != null'
       ]);
     }
@@ -492,75 +567,38 @@ export class ObservationRepository extends BaseRepository {
   }
 
   /**
-   * Inserts a survey observation submission record into the database and returns the record
+   * Retrieves the total count of all flattened observations that are available to the user based on the user's
+   * permissions and filter criteria.
    *
-   * @param {number} submission_id
-   * @param {string} key
-   * @param {number} survey_id
-   * @param {string} original_filename
-   * @return {*}  {Promise<ObservationSubmissionRecord>}
-   * @memberof ObservationRepository
-   */
-  async insertSurveyObservationSubmission(
-    submission_id: number,
-    key: string,
-    survey_id: number,
-    original_filename: string
-  ): Promise<ObservationSubmissionRecord> {
-    defaultLog.debug({ label: 'insertSurveyObservationSubmission' });
-    const sqlStatement = SQL`
-      INSERT INTO
-        survey_observation_submission
-        (submission_id, key, survey_id, original_filename)
-      VALUES
-        (${submission_id}, ${key}, ${survey_id}, ${original_filename})
-      RETURNING *;`;
-
-    const response = await this.connection.sql(sqlStatement, ObservationSubmissionRecord);
-
-    return response.rows[0];
-  }
-
-  /**
-   * Retrieves the next submission ID from the survey_observation_submission_seq sequence
-   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId
+   * @param {IObservationAdvancedFilters} filterFields
    * @return {*}  {Promise<number>}
    * @memberof ObservationRepository
    */
-  async getNextSubmissionId(): Promise<number> {
-    const sqlStatement = SQL`
-      SELECT nextval('biohub.survey_observation_submission_id_seq')::integer as submission_id;
-    `;
-    const response = await this.connection.sql<{ submission_id: number }>(sqlStatement);
-    return response.rows[0].submission_id;
-  }
+  async findFlattenedObservationsCount(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: IObservationAdvancedFilters
+  ): Promise<number> {
+    const findFlattenedObservationsQuery = makeFindFlattenedObservationsQuery(isUserAdmin, systemUserId, filterFields);
 
-  /**
-   * Retrieves the observation submission record by the given submission ID.
-   *
-   * @param {number} surveyId
-   * @param {number} submissionId
-   * @return {*}  {Promise<ObservationSubmissionRecord>}
-   * @memberof ObservationRepository
-   */
-  async getObservationSubmissionById(surveyId: number, submissionId: number): Promise<ObservationSubmissionRecord> {
-    const queryBuilder = getKnex()
-      .queryBuilder()
-      .select('*')
-      .from('survey_observation_submission')
-      .where('submission_id', submissionId)
-      .andWhere('survey_id', surveyId);
+    const knex = getKnex();
 
-    const response = await this.connection.knex(queryBuilder, ObservationSubmissionRecord);
+    const queryBuilder = knex
+      .from(findFlattenedObservationsQuery.as('foq'))
+      .select(knex.raw('count(*)::integer as count'));
+
+    const response = await this.connection.knex(queryBuilder, z.object({ count: z.number() }));
 
     if (!response.rowCount) {
-      throw new ApiExecuteSQLError('Failed to get observation submission', [
-        'ObservationRepository->getObservationSubmissionById',
-        'rowCount was null or undefined, expected rowCount = 1'
+      throw new ApiExecuteSQLError('Failed to get observations count', [
+        'ObservationRepository->findFlattenedObservationsCount',
+        'rows was null or undefined, expected rows != null'
       ]);
     }
 
-    return response.rows[0];
+    return response.rows[0].count;
   }
 
   /**
@@ -582,10 +620,10 @@ export class ObservationRepository extends BaseRepository {
 
     const response = await this.connection.knex(queryBuilder, SurveyObservationModel);
 
-    if (!response.rowCount) {
+    if (response.rowCount !== observationIds.length) {
       throw new ApiExecuteSQLError('Failed to delete observation records', [
         'ObservationRepository->deleteObservationsByIds',
-        'rowCount was null or undefined, expected rowCount = 1'
+        `rowCount was ${response.rowCount}, expected rowCount = ${observationIds.length}`
       ]);
     }
 

@@ -17,15 +17,16 @@ export const GenericDateColDef = <T extends GridValidRowModel>(props: {
   field: string;
   headerName: string;
   description?: string;
-  hasError: (params: GridCellParams) => boolean;
+  editable?: boolean;
+  hasError?: (params: GridCellParams) => boolean;
 }): GridColDef<T> => {
-  const { field, headerName, hasError, description } = props;
+  const { field, headerName, hasError, description, editable } = props;
 
   return {
     field,
     headerName,
     description: description,
-    editable: true,
+    editable: editable ?? true,
     hideable: true,
     type: 'date',
     minWidth: 150,
@@ -39,7 +40,7 @@ export const GenericDateColDef = <T extends GridValidRowModel>(props: {
       </Typography>
     ),
     renderEditCell: (params) => {
-      const error = hasError(params);
+      const error = hasError?.(params);
 
       return (
         <TextFieldDataGrid
@@ -68,14 +69,15 @@ export const GenericTimeColDef = <T extends GridValidRowModel>(props: {
   field: string;
   headerName: string;
   description?: string;
-  hasError: (params: GridCellParams) => boolean;
+  editable?: boolean;
+  hasError?: (params: GridCellParams) => boolean;
 }): GridColDef<T> => {
-  const { hasError, field, headerName, description } = props;
+  const { hasError, field, headerName, description, editable } = props;
 
   return {
     field,
     headerName,
-    editable: true,
+    editable: editable ?? true,
     hideable: true,
     description: description,
     type: 'string',
@@ -109,7 +111,7 @@ export const GenericTimeColDef = <T extends GridValidRowModel>(props: {
       );
     },
     renderEditCell: (params) => {
-      const error = hasError(params);
+      const error = hasError?.(params);
 
       return (
         <TimePickerDataGrid
@@ -132,15 +134,16 @@ export const GenericLatitudeColDef = <T extends GridValidRowModel>(props: {
   field: string;
   headerName: string;
   description?: string;
-  hasError: (params: GridCellParams) => boolean;
+  editable?: boolean;
+  hasError?: (params: GridCellParams) => boolean;
 }): GridColDef<T> => {
-  const { hasError, field, headerName, description } = props;
+  const { hasError, field, headerName, description, editable } = props;
 
   return {
     field,
     headerName,
     description: description,
-    editable: true,
+    editable: editable ?? true,
     hideable: true,
     width: 120,
     disableColumnMenu: true,
@@ -162,7 +165,7 @@ export const GenericLatitudeColDef = <T extends GridValidRowModel>(props: {
       </Typography>
     ),
     renderEditCell: (params) => {
-      const error: boolean = hasError(params);
+      const error = hasError?.(params);
 
       return (
         <TextFieldDataGrid
@@ -193,15 +196,16 @@ export const GenericLongitudeColDef = <T extends GridValidRowModel>(props: {
   field: string;
   headerName: string;
   description?: string;
-  hasError: (params: GridCellParams) => boolean;
+  editable?: boolean;
+  hasError?: (params: GridCellParams) => boolean;
 }): GridColDef<T> => {
-  const { hasError, field, headerName, description } = props;
+  const { hasError, field, headerName, description, editable } = props;
 
   return {
     field,
     headerName,
     description: description,
-    editable: true,
+    editable: editable ?? true,
     hideable: true,
     width: 120,
     disableColumnMenu: true,
@@ -223,7 +227,7 @@ export const GenericLongitudeColDef = <T extends GridValidRowModel>(props: {
       </Typography>
     ),
     renderEditCell: (params) => {
-      const error: boolean = hasError(params);
+      const error = hasError?.(params);
 
       return (
         <TextFieldDataGrid
@@ -254,11 +258,12 @@ export const GenericCommentColDef = <T extends GridValidRowModel>(props: {
   field: string;
   headerName: string;
   description?: string;
-  hasError: (params: GridCellParams) => boolean;
+  editable?: boolean;
+  hasError?: (params: GridCellParams) => boolean;
   handleClose: () => void;
   handleOpen: (params: GridRenderEditCellParams) => void;
 }): GridColDef<T> => {
-  const { field, headerName, description } = props;
+  const { field, headerName, description, editable } = props;
 
   return {
     field,
@@ -266,14 +271,14 @@ export const GenericCommentColDef = <T extends GridValidRowModel>(props: {
     description: description,
     width: 75,
     disableColumnMenu: true,
-    editable: true,
+    editable: editable ?? true,
     align: 'center',
     renderEditCell: (params) => {
       return (
         <Tooltip title={params.value} arrow>
           <span>
             <IconButton
-              aria-label="observation-subcount-comment"
+              aria-label="edit-comment"
               onClick={() => {
                 props.handleOpen(params);
               }}>
@@ -297,7 +302,11 @@ export const GenericCommentColDef = <T extends GridValidRowModel>(props: {
       return (
         <Tooltip title={params.value} arrow>
           <span>
-            <IconButton aria-label="observation-subcount-comment" disabled>
+            <IconButton
+              aria-label="view-comment"
+              onClick={() => {
+                props.handleOpen(params);
+              }}>
               {params.value ? (
                 <Icon path={mdiCommentText} size={1} key="comment-view-id" color={appTheme.palette.primary.dark} />
               ) : (

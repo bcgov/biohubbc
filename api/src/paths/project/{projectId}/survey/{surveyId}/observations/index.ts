@@ -4,19 +4,16 @@ import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/rol
 import { getDBConnection } from '../../../../../../database/db';
 import {
   findObservationsSchema,
+  insertObservationSchema,
   observationsSupplementaryDataSchema
 } from '../../../../../../openapi/schemas/observation';
 import {
   paginationRequestQueryParamSchema,
   paginationResponseSchema
 } from '../../../../../../openapi/schemas/pagination';
+import { InsertSurveyObservation } from '../../../../../../repositories/observation-repository/observation-repository.interface';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { CritterbaseService, getCritterbaseUser } from '../../../../../../services/critterbase-service';
-import {
-  InsertUpdateObservations,
-  ObservationService
-} from '../../../../../../services/observation-services/observation-service';
-import { ObservationSubCountEnvironmentService } from '../../../../../../services/observation-subcount-environment-service';
+import { ObservationService } from '../../../../../../services/observation-services/observation-service';
 import { getLogger } from '../../../../../../utils/logger';
 import {
   ensureCompletePaginationOptions,
@@ -49,7 +46,7 @@ export const GET: Operation = [
   getSurveyObservations()
 ];
 
-export const PUT: Operation = [
+export const POST: Operation = [
   authorizeRequestHandler((req) => {
     return {
       or: [
@@ -65,7 +62,7 @@ export const PUT: Operation = [
       ]
     };
   }),
-  putObservations()
+  postObservations()
 ];
 
 GET.apiDoc = {
@@ -133,8 +130,8 @@ GET.apiDoc = {
   }
 };
 
-PUT.apiDoc = {
-  description: 'Insert/update/delete observations for the survey.',
+POST.apiDoc = {
+  description: 'Insert survey observation records.',
   tags: ['observation'],
   security: [
     {
@@ -165,173 +162,8 @@ PUT.apiDoc = {
             surveyObservations: {
               description: 'Survey observation records.',
               type: 'array',
-              items: {
-                description: 'A single survey observation record.',
-                type: 'object',
-                additionalProperties: false,
-                required: ['standardColumns', 'subcounts'],
-                properties: {
-                  standardColumns: {
-                    description: 'Standard column data for an observation record.',
-                    type: 'object',
-                    additionalProperties: false,
-                    required: [
-                      'itis_tsn',
-                      'survey_sample_period_id',
-                      'count',
-                      'latitude',
-                      'longitude',
-                      'observation_date',
-                      'observation_time'
-                    ],
-                    properties: {
-                      survey_observation_id: {
-                        type: 'integer',
-                        minimum: 1,
-                        nullable: true,
-                        description:
-                          'The survey observation ID. If provided, the matching existing observation record will be updated. If not provided, a new observation record will be inserted.'
-                      },
-                      itis_tsn: {
-                        type: 'integer'
-                      },
-                      itis_scientific_name: {
-                        type: 'string',
-                        nullable: true
-                      },
-                      survey_sample_period_id: {
-                        type: 'integer',
-                        minimum: 1,
-                        nullable: true
-                      },
-                      count: {
-                        type: 'integer',
-                        description: "The observation record's count."
-                      },
-                      latitude: {
-                        type: 'number'
-                      },
-                      longitude: {
-                        type: 'number'
-                      },
-                      observation_date: {
-                        type: 'string'
-                      },
-                      observation_time: {
-                        type: 'string'
-                      },
-                      revision_count: {
-                        type: 'integer',
-                        minimum: 0
-                      }
-                    }
-                  },
-                  subcounts: {
-                    description: 'An array of observation subcount records.',
-                    type: 'array',
-                    items: {
-                      type: 'object',
-                      additionalProperties: false,
-                      required: [
-                        'subcount',
-                        'observation_subcount_sign_id',
-                        'comment',
-                        'qualitative_measurements',
-                        'quantitative_measurements',
-                        'qualitative_environments',
-                        'quantitative_environments'
-                      ],
-                      properties: {
-                        observation_subcount_id: {
-                          type: 'integer',
-                          minimum: 1,
-                          nullable: true,
-                          description:
-                            'The observation subcount ID. If provided, the mataching existing subcount record will be updated. If not provided, a new subcount record will be inserted.'
-                        },
-                        observation_subcount_sign_id: {
-                          type: 'integer',
-                          minimum: 1,
-                          description:
-                            'The observation subcount sign ID, indicating whether the subcount was a direct sighting, footprints, scat, etc.'
-                        },
-                        comment: {
-                          type: 'string',
-                          nullable: true,
-                          description: 'A comment or note about the subcount'
-                        },
-                        subcount: {
-                          type: 'number',
-                          description: "The subcount record's count."
-                        },
-                        qualitative_measurements: {
-                          type: 'array',
-                          items: {
-                            type: 'object',
-                            additionalProperties: false,
-                            properties: {
-                              measurement_id: {
-                                type: 'string'
-                              },
-                              measurement_option_id: {
-                                type: 'string'
-                              }
-                            }
-                          }
-                        },
-                        quantitative_measurements: {
-                          type: 'array',
-                          items: {
-                            type: 'object',
-                            additionalProperties: false,
-                            properties: {
-                              measurement_id: {
-                                type: 'string'
-                              },
-                              measurement_value: {
-                                type: 'number'
-                              }
-                            }
-                          }
-                        },
-                        qualitative_environments: {
-                          type: 'array',
-                          items: {
-                            type: 'object',
-                            additionalProperties: false,
-                            properties: {
-                              environment_qualitative_id: {
-                                type: 'string',
-                                format: 'uuid'
-                              },
-                              environment_qualitative_option_id: {
-                                type: 'string',
-                                format: 'uuid'
-                              }
-                            }
-                          }
-                        },
-                        quantitative_environments: {
-                          type: 'array',
-                          items: {
-                            type: 'object',
-                            additionalProperties: false,
-                            properties: {
-                              environment_quantitative_id: {
-                                type: 'string',
-                                format: 'uuid'
-                              },
-                              value: {
-                                type: 'number'
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
+              items: insertObservationSchema,
+              minItems: 1
             }
           }
         }
@@ -340,7 +172,7 @@ PUT.apiDoc = {
   },
   responses: {
     204: {
-      description: 'Update OK'
+      description: 'Create observations OK'
     },
     400: {
       $ref: '#/components/responses/400'
@@ -423,47 +255,31 @@ export function getSurveyObservations(): RequestHandler {
 
 /**
  * Inserts new observation records.
- * Updates existing observation records.
  *
  * @export
  * @return {*}  {RequestHandler}
  */
-export function putObservations(): RequestHandler {
+export function postObservations(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req.keycloak_token);
 
     try {
       const surveyId = Number(req.params.surveyId);
-      const observationRows: InsertUpdateObservations[] = req.body.surveyObservations;
+      const insertSurveyObservationObjects: InsertSurveyObservation[] = req.body.surveyObservations;
 
-      defaultLog.debug({ label: 'insertUpdateSurveyObservations', surveyId });
+      defaultLog.debug({ label: 'postObservation', surveyId });
 
       await connection.open();
 
       const observationService = new ObservationService(connection);
 
-      // Validate measurement data against fetched measurement definition
-      const critterBaseService = new CritterbaseService(getCritterbaseUser(req));
-      const observationSubCountEnvironmentService = new ObservationSubCountEnvironmentService(connection);
-
-      const isValid = await observationService.validateSurveyObservations(
-        observationRows,
-        critterBaseService,
-        observationSubCountEnvironmentService
-      );
-
-      if (!isValid) {
-        throw new Error('Failed to save observation data, failed data validation.');
-      }
-
-      // Insert/update observation records
-      await observationService.insertUpdateManualSurveyObservations(surveyId, observationRows);
+      await observationService.insertObservations(surveyId, insertSurveyObservationObjects);
 
       await connection.commit();
 
       return res.status(204).send();
     } catch (error) {
-      defaultLog.error({ label: 'putObservations', message: 'error', error });
+      defaultLog.error({ label: 'postObservation', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

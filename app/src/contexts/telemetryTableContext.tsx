@@ -760,7 +760,7 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
    */
   useEffect(() => {
     refreshTelemetryRecords();
-    // Should not re-run this effect on `refreshObservationRecords` changes
+    // Should not re-run this effect on `refreshTelemetryRecords` changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paginationModel, sortModel]);
 
