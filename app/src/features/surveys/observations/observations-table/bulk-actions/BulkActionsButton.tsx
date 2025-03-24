@@ -58,7 +58,7 @@ export const BulkActionsButton = (props: IBulkActionsButtonProps) => {
         }}>
         <MenuItem
           onClick={() => {
-            observationsTableContext.deleteObservationRecords(observationsTableContext.getSelectedObservationRecords());
+            observationsTableContext.deleteRows(observationsTableContext.getSelectedRows());
             setContextMenuAnchorEl(null);
           }}
           disabled={disabled}>

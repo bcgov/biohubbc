@@ -1,8 +1,6 @@
 import { LoadingButton } from '@mui/lab';
 import { Dialog, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
 import { ConfigureColumnsPage } from 'features/surveys/observations/observations-table/configure-columns/components/ConfigureColumnsPage';
-import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
-import { EnvironmentType, EnvironmentTypeIds } from 'interfaces/useReferenceApi.interface';
 import { IHideableColumn } from '../ConfigureColumnsButton';
 
 interface IConfigureColumnsDialogProps {
@@ -52,44 +50,6 @@ interface IConfigureColumnsDialogProps {
    * @memberof IConfigureColumnsDialogProps
    */
   onToggleColumnVisibility: (field: string) => void;
-  /**
-   * The measurement columns.
-   *
-   * @type {CBMeasurementType[]}
-   * @memberof IConfigureColumnsDialogProps
-   */
-  measurementColumns: CBMeasurementType[];
-  /**
-   * Callback fired on adding measurement columns.
-   *
-   * @memberof IConfigureColumnsDialogProps
-   */
-  onAddMeasurementColumns: (measurementColumns: CBMeasurementType[]) => void;
-  /**
-   * Callback fired on removing measurement columns.
-   *
-   * @memberof IConfigureColumnsDialogProps
-   */
-  onRemoveMeasurementColumns: (fields: string[]) => void;
-  /**
-   * The environment columns.
-   *
-   * @type {EnvironmentType}
-   * @memberof IConfigureColumnsDialogProps
-   */
-  environmentColumns: EnvironmentType;
-  /**
-   * Callback fired on adding environment columns.
-   *
-   * @memberof IConfigureColumnsDialogProps
-   */
-  onAddEnvironmentColumns: (environmentColumns: EnvironmentType) => void;
-  /**
-   * Callback fired on removing environment columns.
-   *
-   * @memberof IConfigureColumnsDialogProps
-   */
-  onRemoveEnvironmentColumns: (environmentColumnIds: EnvironmentTypeIds) => void;
 }
 
 /**
@@ -99,21 +59,8 @@ interface IConfigureColumnsDialogProps {
  * @return {*}
  */
 export const ConfigureColumnsDialog = (props: IConfigureColumnsDialogProps) => {
-  const {
-    open,
-    onClose,
-    disabled,
-    hiddenFields,
-    hideableColumns,
-    onToggleColumnVisibility,
-    onToggleShowHideAll,
-    measurementColumns,
-    onAddMeasurementColumns,
-    onRemoveMeasurementColumns,
-    environmentColumns,
-    onAddEnvironmentColumns,
-    onRemoveEnvironmentColumns
-  } = props;
+  const { open, onClose, disabled, hiddenFields, hideableColumns, onToggleColumnVisibility, onToggleShowHideAll } =
+    props;
 
   return (
     <Dialog
@@ -127,8 +74,8 @@ export const ConfigureColumnsDialog = (props: IConfigureColumnsDialogProps) => {
       <DialogTitle id="alert-dialog-title">
         Configure Columns
         <Typography color="textSecondary" sx={{ mt: 1 }}>
-          Customize the columns in your table to upload additional data, such as environmental variables and species
-          measurements.
+          Customize the columns displayed in the table. You can expand the items below to view additional information
+          about the column.
         </Typography>
       </DialogTitle>
       <DialogContent id="configure-dialog-content" sx={{ overflowY: 'hidden', py: 0 }}>
@@ -138,12 +85,6 @@ export const ConfigureColumnsDialog = (props: IConfigureColumnsDialogProps) => {
           hideableColumns={hideableColumns}
           onToggleShowHideAll={onToggleShowHideAll}
           onToggleColumnVisibility={onToggleColumnVisibility}
-          measurementColumns={measurementColumns}
-          onAddMeasurementColumns={onAddMeasurementColumns}
-          onRemoveMeasurementColumns={onRemoveMeasurementColumns}
-          environmentColumns={environmentColumns}
-          onAddEnvironmentColumns={onAddEnvironmentColumns}
-          onRemoveEnvironmentColumns={onRemoveEnvironmentColumns}
         />
       </DialogContent>
       <DialogActions>

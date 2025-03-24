@@ -63,7 +63,7 @@ export const codes: IGetAllCodeSetsResponse = {
     { id: 1, name: 'Bait', description: 'Consumable bait or food used as a lure.' },
     { id: 2, name: 'Scent', description: 'A scent used as a lure.' }
   ],
-  observation_subcount_signs: [
+  observation_signs: [
     { id: 1, name: 'Scat', description: 'Scat left by the species.' },
     { id: 2, name: 'Direct sighting', description: 'A direct sighting of the species.' }
   ],
