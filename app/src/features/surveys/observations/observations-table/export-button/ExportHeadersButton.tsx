@@ -6,13 +6,7 @@ import { useObservationsTableContext } from 'hooks/useContext';
 import { makeCsvObjectUrl } from 'utils/Utils';
 
 // Fields which will not be included in the downloaded CSV template
-const excludedFields = [
-  '__check__',
-  'survey_sample_site_id',
-  'method_technique_id',
-  'survey_sample_period_id',
-  'actions'
-];
+const excludedFields = ['__check__', 'actions'];
 
 const ExportHeadersButton = () => {
   const observationsTableContext = useObservationsTableContext();

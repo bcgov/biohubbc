@@ -1,7 +1,6 @@
 import { Knex } from 'knex';
 
 const DB_SCHEMA = process.env.DB_SCHEMA;
-const API_SCHEMA = process.env.DB_SCHEMA_DAPI_V1;
 
 /**
  * Apply biohub release changes.
@@ -12,7 +11,7 @@ const API_SCHEMA = process.env.DB_SCHEMA_DAPI_V1;
  */
 export async function up(knex: Knex): Promise<void> {
   await knex.raw(`
-  set search_path=${API_SCHEMA};
+  set search_path=biohub_dapi_v1;
 
   drop view if exists occurrence;
 
@@ -119,7 +118,7 @@ create trigger journal_submission_spatial_component after insert or update or de
 create trigger journal_spatial_transform after insert or update or delete on spatial_transform for each row execute procedure tr_journal_trigger();
 create trigger journal_spatial_transform_submission after insert or update or delete on spatial_transform_submission for each row execute procedure tr_journal_trigger();
 
-  set search_path=${API_SCHEMA};
+  set search_path=biohub_dapi_v1;
 
   create or replace view spatial_transform as select * from ${DB_SCHEMA}.spatial_transform;
   create or replace view spatial_transform_submission as select * from ${DB_SCHEMA}.spatial_transform_submission;

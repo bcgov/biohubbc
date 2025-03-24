@@ -1,20 +1,12 @@
+import { ObservationSubcountRecord } from '../database-models/observation_subcount';
 import { IDBConnection } from '../database/db';
-import { EnvironmentType } from '../repositories/observation-subcount-environment-repository';
-import {
-  InsertObservationSubCount,
-  InsertSubCountEvent,
-  ObservationSubCountRecord,
-  SubCountEventRecord,
-  SubCountRepository
-} from '../repositories/subcount-repository';
-import {
-  CBQualitativeMeasurementTypeDefinition,
-  CBQuantitativeMeasurementTypeDefinition,
-  CritterbaseService
-} from './critterbase-service';
+import { ObservationSubcountMeasurements } from '../repositories/observation-repository/observation-repository.interface';
+import { InsertObservationSubCount, SubCountRepository } from '../repositories/subcount-repository';
+import { CritterbaseService } from './critterbase-service';
 import { DBService } from './db-service';
-import { ObservationSubCountEnvironmentService } from './observation-subcount-environment-service';
+import { ObservationService } from './observation-services/observation-service';
 import { ObservationSubCountMeasurementService } from './observation-subcount-measurement-service';
+import { SubcountCritterService } from './subcount-critter-service';
 
 export class SubCountService extends DBService {
   subCountRepository: SubCountRepository;
@@ -28,48 +20,97 @@ export class SubCountService extends DBService {
    * Inserts a new observation sub count
    *
    * @param {InsertObservationSubCount} record
-   * @returns {*} {Promise<ObservationSubCountRecord>}
+   * @returns {*} {Promise<ObservationSubcountRecord>}
    * @memberof SubCountService
    */
-  async insertObservationSubCount(record: InsertObservationSubCount): Promise<ObservationSubCountRecord> {
+  async insertObservationSubCount(record: InsertObservationSubCount): Promise<ObservationSubcountRecord> {
     return this.subCountRepository.insertObservationSubCount(record);
   }
 
   /**
-   * Inserts a new sub count event
+   * Delete an observation subcount record.
    *
-   * @param {InsertSubCountEvent} record
-   * @returns {*} {Promise<SubCountEventRecord>}
-   * @memberof SubCountService
+   * Note: If all observation subcount records are deleted for a given survey observation record, then the survey
+   * observation records will also be deleted, as all survey observations must have at least one subcount.
+   *
+   * @param {number} surveyId
+   * @param {number} observationSubcountId
+   * @return {*}  {Promise<void>}
+   * @memberof ObservationRepository
    */
-  async insertSubCountEvent(records: InsertSubCountEvent): Promise<SubCountEventRecord> {
-    return this.subCountRepository.insertSubCountEvent(records);
+  async deleteObservationSubcount(surveyId: number, observationSubcountId: number): Promise<void> {
+    await this.deleteObservationSubcountRecords(surveyId, [observationSubcountId]);
+  }
+
+  /**
+   * Deletes all observation subcount records for the given observation subcount ids, and dependent records.
+   *
+   * Note: If all subcount records are deleted for a given survey observation record, then the survey observation
+   * records will also be deleted, as all survey observations should have at least one subcount.
+   *
+   * @param {number} surveyId
+   * @param {number[]} observationSubcountIds
+   * @return {*}  {Promise<void>}
+   * @memberof ObservationRepository
+   */
+  async deleteObservationSubcountRecords(surveyId: number, observationSubcountIds: number[]): Promise<void> {
+    const subCountCritterService = new SubcountCritterService(this.connection);
+    const observationSubCountMeasurementService = new ObservationSubCountMeasurementService(this.connection);
+
+    // Delete child records
+    await Promise.all([
+      // Delete child subcount_critter records, if any
+      subCountCritterService.deleteSubcountCrittersByObservationSubcountId(surveyId, observationSubcountIds),
+      // Delete child observation measurements, if any
+      observationSubCountMeasurementService.deleteMeasurementsByObservationSubCountId(surveyId, observationSubcountIds)
+    ]);
+
+    // Delete subcount records
+    const surveyObservationIdsAffected = await this.subCountRepository.deleteObservationSubcountRecords(
+      surveyId,
+      observationSubcountIds
+    );
+
+    const observationService = new ObservationService(this.connection);
+
+    // Get all survey observation ids that no longer have any subcount records
+    const surveyObservationIdsToDelete = await observationService.getOrphanedSurveyObservationIds(surveyId, {
+      filterFields: {
+        surveyObservationIds: surveyObservationIdsAffected
+      }
+    });
+
+    // Delete orphaned survey observation records
+    await observationService.deleteObservationsByIds(surveyId, surveyObservationIdsToDelete);
   }
 
   /**
    * Delete observation_subcount records for the given set of survey observation ids.
    *
-   * Note: Also deletes all related child records.
+   * Note: This does NOT delete the parent survey observation records, even if they no longer have any subcount records.
+   * All survey observation records should have at least one subcount record. The calling function needs to handle this
+   * case, as needed.
    *
    * @param {number} surveyId
    * @param {number[]} surveyObservationIds
    * @return {*}  {Promise<void>}
    * @memberof SubCountService
    */
-  async deleteObservationSubCountRecords(surveyId: number, surveyObservationIds: number[]): Promise<void> {
-    // Delete child subcount_critter records, if any
-    await this.subCountRepository.deleteSubCountCritterRecordsForObservationId(surveyId, surveyObservationIds);
-
-    // Delete child observation measurements, if any
+  async deleteObservationSubCountRecordsByObservationId(
+    surveyId: number,
+    surveyObservationIds: number[]
+  ): Promise<void> {
     const observationSubCountMeasurementService = new ObservationSubCountMeasurementService(this.connection);
-    await observationSubCountMeasurementService.deleteObservationMeasurements(surveyId, surveyObservationIds);
 
-    // Delete child environments, if any
-    const observationSubCountEnvironmentService = new ObservationSubCountEnvironmentService(this.connection);
-    await observationSubCountEnvironmentService.deleteObservationEnvironments(surveyId, surveyObservationIds);
+    await Promise.all([
+      // Delete child subcount_critter records, if any
+      this.subCountRepository.deleteSubCountCritterRecordsForObservationId(surveyId, surveyObservationIds),
+      // Delete child observation measurements, if any
+      observationSubCountMeasurementService.deleteObservationMeasurements(surveyId, surveyObservationIds)
+    ]);
 
     // Delete observation_subcount records, if any
-    return this.subCountRepository.deleteObservationSubCountRecords(surveyId, surveyObservationIds);
+    return this.subCountRepository.deleteObservationSubCountRecordsByObservationId(surveyId, surveyObservationIds);
   }
 
   /**
@@ -77,22 +118,34 @@ export class SubCountService extends DBService {
    * survey.
    *
    * @param {number} surveyId
-   * @return {*}  {Promise<{
-   *     qualitative_measurements: CBQualitativeMeasurementTypeDefinition[];
-   *     quantitative_measurements: CBQuantitativeMeasurementTypeDefinition[];
-   *   }>}
+   * @param {{
+   *       filterFields?: {
+   *         surveyObservationIds?: number[];
+   *       };
+   *     }} [options] Optional fields to additionally filter results by
+   * @return {*}  {Promise<ObservationSubcountMeasurements>}
    * @memberof SubCountService
    */
-  async getMeasurementTypeDefinitionsForSurvey(surveyId: number): Promise<{
-    qualitative_measurements: CBQualitativeMeasurementTypeDefinition[];
-    quantitative_measurements: CBQuantitativeMeasurementTypeDefinition[];
-  }> {
+  async getMeasurementTypeDefinitionsForSurvey(
+    surveyId: number,
+    options?: {
+      filterFields?: {
+        surveyObservationIds?: number[];
+      };
+    }
+  ): Promise<ObservationSubcountMeasurements> {
     const observationSubCountMeasurementService = new ObservationSubCountMeasurementService(this.connection);
 
     // Fetch all unique taxon_measurement_ids for qualitative and quantitative measurements
     const [qualitativeTaxonMeasurementIds, quantitativeTaxonMeasurementIds] = await Promise.all([
-      observationSubCountMeasurementService.getObservationSubCountQualitativeTaxonMeasurementIds(surveyId),
-      observationSubCountMeasurementService.getObservationSubCountQuantitativeTaxonMeasurementIds(surveyId)
+      observationSubCountMeasurementService.getObservationSubCountQualitativeTaxonMeasurementIdsForSurvey(
+        surveyId,
+        options
+      ),
+      observationSubCountMeasurementService.getObservationSubCountQuantitativeTaxonMeasurementIdsForSurvey(
+        surveyId,
+        options
+      )
     ]);
 
     const critterbaseService = new CritterbaseService({
@@ -107,27 +160,5 @@ export class SubCountService extends DBService {
     ]);
 
     return { qualitative_measurements: response[0], quantitative_measurements: response[1] };
-  }
-
-  /**
-   * Returns a unique set of all environment type definitions for all environments of all observations in the given
-   * survey.
-   *
-   * @param {number} surveyId
-   * @return {*}  {Promise<EnvironmentType>}
-   * @memberof SubCountService
-   */
-  async getEnvironmentTypeDefinitionsForSurvey(surveyId: number): Promise<EnvironmentType> {
-    const observationSubCountEnvironmentService = new ObservationSubCountEnvironmentService(this.connection);
-
-    const [qualitativeEnvironmentTypeDefinitions, quantitativeEnvironmentTypeDefinitions] = await Promise.all([
-      observationSubCountEnvironmentService.getQualitativeEnvironmentTypeDefinitionsForSurvey(surveyId),
-      observationSubCountEnvironmentService.getQuantitativeEnvironmentTypeDefinitionsForSurvey(surveyId)
-    ]);
-
-    return {
-      qualitative_environments: qualitativeEnvironmentTypeDefinitions,
-      quantitative_environments: quantitativeEnvironmentTypeDefinitions
-    };
   }
 }

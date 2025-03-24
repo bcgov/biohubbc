@@ -1,17 +1,11 @@
+import { grey } from '@mui/material/colors';
 import Typography from '@mui/material/Typography';
-import { GridCellParams, GridColDef } from '@mui/x-data-grid';
-import AutocompleteDataGridEditCell from 'components/data-grid/autocomplete/AutocompleteDataGridEditCell';
+import { GridColDef } from '@mui/x-data-grid';
 import AutocompleteDataGridViewCell from 'components/data-grid/autocomplete/AutocompleteDataGridViewCell';
-import TaxonomyDataGridEditCell from 'components/data-grid/taxonomy/TaxonomyDataGridEditCell';
 import TaxonomyDataGridViewCell from 'components/data-grid/taxonomy/TaxonomyDataGridViewCell';
-import TextFieldDataGrid from 'components/data-grid/TextFieldDataGrid';
 import { IObservationTableRow } from 'contexts/observationsTableContext';
-import { ObservationCountDataGridEditCell } from 'features/surveys/observations/observations-table/grid-column-definitions/count/ObservationCountDataGridEditCell';
-import { SamplePeriodDataGridEditCell } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/periods/SamplePeriodDataGridEditCell';
 import { SamplePeriodDataGridViewCell } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/periods/SamplePeriodDataGridViewCell';
-import { SampleSiteDataGridEditCell } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/sites/SampleSiteDataGridEditCell';
 import { SampleSiteDataGridViewCell } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/sites/SampleSiteDataGridViewCell';
-import { MethodTechniqueDataGridEditCell } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/techniques/MethodTechniqueDataGridEditCell';
 import { MethodTechniqueDataGridViewCell } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/techniques/MethodTechniqueDataGridViewCell';
 import { SamplingInformationCache } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/useSamplingInformationCache';
 import { CBMeasurementType, CBQualitativeOption } from 'interfaces/useCritterApi.interface';
@@ -20,21 +14,36 @@ import {
   EnvironmentQuantitativeTypeDefinition
 } from 'interfaces/useReferenceApi.interface';
 
-type IObservationSubcountSignOption = {
-  observation_subcount_sign_id: number;
+type IObservationSignOption = {
+  observation_sign_id: number;
   name: string;
 };
 
-export const TaxonomyColDef = (props: {
-  hasError: (params: GridCellParams) => boolean;
-}): GridColDef<IObservationTableRow> => {
-  const { hasError } = props;
+export const ObservationIDColDef = (): GridColDef<IObservationTableRow> => {
+  return {
+    field: 'survey_observation_id',
+    headerName: 'ID',
+    width: 85,
+    minWidth: 85,
+    renderHeader: () => (
+      <Typography color={grey[500]} variant="body2" fontWeight={700}>
+        ID
+      </Typography>
+    ),
+    renderCell: (params) => (
+      <Typography color={grey[500]} variant="body2">
+        {params.row.survey_observation_id}
+      </Typography>
+    )
+  };
+};
 
+export const TaxonomyColDef = (): GridColDef<IObservationTableRow> => {
   return {
     field: 'itis_tsn',
     headerName: 'Species',
     description: 'The observed species, or if the species is unknown, a higher taxon',
-    editable: true,
+    editable: false,
     hideable: true,
     flex: 1,
     minWidth: 200,
@@ -45,25 +54,21 @@ export const TaxonomyColDef = (props: {
       return { ...params.row, itis_tsn: Number(params.value) };
     },
     renderCell: (params) => {
-      return <TaxonomyDataGridViewCell dataGridProps={params} error={hasError(params)} />;
-    },
-    renderEditCell: (params) => {
-      return <TaxonomyDataGridEditCell dataGridProps={params} error={hasError(params)} />;
+      return <TaxonomyDataGridViewCell dataGridProps={params} />;
     }
   };
 };
 
 export const SampleSiteColDef = (props: {
   samplingInformationCache: SamplingInformationCache;
-  hasError: (params: GridCellParams) => boolean;
 }): GridColDef<IObservationTableRow> => {
-  const { samplingInformationCache, hasError } = props;
+  const { samplingInformationCache } = props;
 
   return {
     field: 'survey_sample_site_id',
     description: 'The sampling site where the observation was made',
     headerName: 'Site',
-    editable: true,
+    editable: false,
     hideable: true,
     flex: 1,
     minWidth: 180,
@@ -71,37 +76,21 @@ export const SampleSiteColDef = (props: {
     headerAlign: 'left',
     align: 'left',
     renderCell: (params) => {
-      return (
-        <SampleSiteDataGridViewCell
-          dataGridProps={params}
-          samplingInformationCache={samplingInformationCache}
-          error={hasError(params)}
-        />
-      );
-    },
-    renderEditCell: (params) => {
-      return (
-        <SampleSiteDataGridEditCell
-          dataGridProps={params}
-          samplingInformationCache={samplingInformationCache}
-          error={hasError(params)}
-        />
-      );
+      return <SampleSiteDataGridViewCell dataGridProps={params} samplingInformationCache={samplingInformationCache} />;
     }
   };
 };
 
 export const MethodTechniqueColDef = (props: {
   samplingInformationCache: SamplingInformationCache;
-  hasError: (params: GridCellParams) => boolean;
 }): GridColDef<IObservationTableRow> => {
-  const { samplingInformationCache, hasError } = props;
+  const { samplingInformationCache } = props;
 
   return {
     field: 'method_technique_id',
     headerName: 'Technique',
     description: 'The technique with which the observation was made',
-    editable: true,
+    editable: false,
     hideable: true,
     flex: 1,
     minWidth: 180,
@@ -110,20 +99,7 @@ export const MethodTechniqueColDef = (props: {
     align: 'left',
     renderCell: (params) => {
       return (
-        <MethodTechniqueDataGridViewCell
-          dataGridProps={params}
-          samplingInformationCache={samplingInformationCache}
-          error={hasError(params)}
-        />
-      );
-    },
-    renderEditCell: (params) => {
-      return (
-        <MethodTechniqueDataGridEditCell
-          dataGridProps={params}
-          samplingInformationCache={samplingInformationCache}
-          error={hasError(params)}
-        />
+        <MethodTechniqueDataGridViewCell dataGridProps={params} samplingInformationCache={samplingInformationCache} />
       );
     }
   };
@@ -131,15 +107,14 @@ export const MethodTechniqueColDef = (props: {
 
 export const SamplePeriodColDef = (props: {
   samplingInformationCache: SamplingInformationCache;
-  hasError: (params: GridCellParams) => boolean;
 }): GridColDef<IObservationTableRow> => {
-  const { samplingInformationCache, hasError } = props;
+  const { samplingInformationCache } = props;
 
   return {
     field: 'survey_sample_period_id',
     headerName: 'Period',
     description: 'The sampling period in which the observation was made',
-    editable: true,
+    editable: false,
     hideable: true,
     flex: 1,
     minWidth: 180,
@@ -148,36 +123,18 @@ export const SamplePeriodColDef = (props: {
     align: 'left',
     renderCell: (params) => {
       return (
-        <SamplePeriodDataGridViewCell
-          dataGridProps={params}
-          samplingInformationCache={samplingInformationCache}
-          error={hasError(params)}
-        />
-      );
-    },
-    renderEditCell: (params) => {
-      return (
-        <SamplePeriodDataGridEditCell
-          dataGridProps={params}
-          samplingInformationCache={samplingInformationCache}
-          error={hasError(params)}
-        />
+        <SamplePeriodDataGridViewCell dataGridProps={params} samplingInformationCache={samplingInformationCache} />
       );
     }
   };
 };
 
-export const ObservationCountColDef = (props: {
-  samplingInformationCache: SamplingInformationCache;
-  hasError: (params: GridCellParams) => boolean;
-}): GridColDef<IObservationTableRow> => {
-  const { samplingInformationCache, hasError } = props;
-
+export const ObservationSubcountColDef = (): GridColDef<IObservationTableRow> => {
   return {
-    field: 'count',
+    field: 'subcount',
     headerName: 'Count',
     description: 'The number of individuals observed',
-    editable: true,
+    editable: false,
     hideable: true,
     type: 'number',
     minWidth: 110,
@@ -188,59 +145,45 @@ export const ObservationCountColDef = (props: {
       <Typography variant="body2" sx={{ fontSize: 'inherit' }}>
         {params.value}
       </Typography>
-    ),
-    renderEditCell: (params) => {
-      return (
-        <ObservationCountDataGridEditCell
-          dataGridProps={params}
-          samplingInformationCache={samplingInformationCache}
-          error={hasError(params)}
-        />
-      );
-    }
+    )
   };
 };
 
-export const ObservationSubcountSignColDef = (props: {
-  observationSubcountSignOptions: IObservationSubcountSignOption[];
-  hasError: (params: GridCellParams) => boolean;
+export const ObservationSignColDef = (props: {
+  observationSignOptions: IObservationSignOption[];
 }): GridColDef<IObservationTableRow> => {
-  const { observationSubcountSignOptions, hasError } = props;
+  const { observationSignOptions } = props;
 
-  const signOptions = observationSubcountSignOptions.map((item) => ({
+  const signOptions = observationSignOptions.map((item) => ({
     label: item.name,
-    value: item.observation_subcount_sign_id
+    value: item.observation_sign_id
   }));
 
   return {
-    field: 'observation_subcount_sign_id',
+    field: 'observation_sign_id',
     headerName: 'Sign',
     description: 'The sign of the observation',
-    editable: true,
+    editable: false,
     hideable: true,
     minWidth: 140,
     disableColumnMenu: true,
     headerAlign: 'left',
     align: 'left',
     renderCell: (params) => {
-      return <AutocompleteDataGridViewCell dataGridProps={params} options={signOptions} error={hasError(params)} />;
-    },
-    renderEditCell: (params) => {
-      return <AutocompleteDataGridEditCell dataGridProps={params} options={signOptions} error={hasError(params)} />;
+      return <AutocompleteDataGridViewCell dataGridProps={params} options={signOptions} />;
     }
   };
 };
 
 export const ObservationQuantitativeMeasurementColDef = (props: {
   measurement: CBMeasurementType;
-  hasError: (params: GridCellParams) => boolean;
 }): GridColDef<IObservationTableRow> => {
-  const { measurement, hasError } = props;
+  const { measurement } = props;
   return {
     field: measurement.taxon_measurement_id,
     headerName: measurement.measurement_name,
     description: measurement.measurement_desc ?? '',
-    editable: true,
+    editable: false,
     hideable: true,
     sortable: false,
     type: 'number',
@@ -252,41 +195,15 @@ export const ObservationQuantitativeMeasurementColDef = (props: {
       <Typography variant="body2" sx={{ fontSize: 'inherit' }}>
         {params.value}
       </Typography>
-    ),
-    renderEditCell: (params) => {
-      const error = hasError(params);
-
-      return (
-        <TextFieldDataGrid
-          dataGridProps={params}
-          textFieldProps={{
-            name: params.field,
-            onChange: (event) => {
-              if (!/^\d{0,7}$/.test(event.target.value)) {
-                // If the value is not a number, return
-                return;
-              }
-
-              params.api.setEditCellValue({
-                id: params.id,
-                field: params.field,
-                value: event.target.value
-              });
-            },
-            error
-          }}
-        />
-      );
-    }
+    )
   };
 };
 
 export const ObservationQualitativeMeasurementColDef = (props: {
   measurement: CBMeasurementType;
   measurementOptions: CBQualitativeOption[];
-  hasError: (params: GridCellParams) => boolean;
 }): GridColDef<IObservationTableRow> => {
-  const { measurement, measurementOptions, hasError } = props;
+  const { measurement, measurementOptions } = props;
 
   const qualitativeOptions = measurementOptions.map((item) => ({
     label: item.option_label,
@@ -296,7 +213,7 @@ export const ObservationQualitativeMeasurementColDef = (props: {
     field: measurement.taxon_measurement_id,
     headerName: measurement.measurement_name,
     description: measurement.measurement_desc ?? '',
-    editable: true,
+    editable: false,
     hideable: true,
     sortable: false,
     flex: 1,
@@ -305,28 +222,20 @@ export const ObservationQualitativeMeasurementColDef = (props: {
     headerAlign: 'left',
     align: 'left',
     renderCell: (params) => {
-      return (
-        <AutocompleteDataGridViewCell dataGridProps={params} options={qualitativeOptions} error={hasError(params)} />
-      );
-    },
-    renderEditCell: (params) => {
-      return (
-        <AutocompleteDataGridEditCell dataGridProps={params} options={qualitativeOptions} error={hasError(params)} />
-      );
+      return <AutocompleteDataGridViewCell dataGridProps={params} options={qualitativeOptions} />;
     }
   };
 };
 
 export const ObservationQuantitativeEnvironmentColDef = (props: {
   environment: EnvironmentQuantitativeTypeDefinition;
-  hasError: (params: GridCellParams) => boolean;
 }): GridColDef<IObservationTableRow> => {
-  const { environment, hasError } = props;
+  const { environment } = props;
   return {
     field: String(environment.environment_quantitative_id),
     headerName: environment.name,
     description: environment.description ?? '',
-    editable: true,
+    editable: false,
     hideable: true,
     sortable: false,
     type: 'number',
@@ -338,40 +247,14 @@ export const ObservationQuantitativeEnvironmentColDef = (props: {
       <Typography variant="body2" sx={{ fontSize: 'inherit' }}>
         {params.value}
       </Typography>
-    ),
-    renderEditCell: (params) => {
-      const error = hasError(params);
-
-      return (
-        <TextFieldDataGrid
-          dataGridProps={params}
-          textFieldProps={{
-            name: params.field,
-            onChange: (event) => {
-              if (!/^\d{0,7}$/.test(event.target.value)) {
-                // If the value is not a number, return
-                return;
-              }
-
-              params.api.setEditCellValue({
-                id: params.id,
-                field: params.field,
-                value: event.target.value
-              });
-            },
-            error
-          }}
-        />
-      );
-    }
+    )
   };
 };
 
 export const ObservationQualitativeEnvironmentColDef = (props: {
   environment: EnvironmentQualitativeTypeDefinition;
-  hasError: (params: GridCellParams) => boolean;
 }): GridColDef<IObservationTableRow> => {
-  const { environment, hasError } = props;
+  const { environment } = props;
 
   const qualitativeOptions = environment.options.map((item) => ({
     label: item.name,
@@ -381,7 +264,7 @@ export const ObservationQualitativeEnvironmentColDef = (props: {
     field: String(environment.environment_qualitative_id),
     headerName: environment.name,
     description: environment.description ?? '',
-    editable: true,
+    editable: false,
     hideable: true,
     sortable: false,
     flex: 1,
@@ -390,14 +273,7 @@ export const ObservationQualitativeEnvironmentColDef = (props: {
     headerAlign: 'left',
     align: 'left',
     renderCell: (params) => {
-      return (
-        <AutocompleteDataGridViewCell dataGridProps={params} options={qualitativeOptions} error={hasError(params)} />
-      );
-    },
-    renderEditCell: (params) => {
-      return (
-        <AutocompleteDataGridEditCell dataGridProps={params} options={qualitativeOptions} error={hasError(params)} />
-      );
+      return <AutocompleteDataGridViewCell dataGridProps={params} options={qualitativeOptions} />;
     }
   };
 };

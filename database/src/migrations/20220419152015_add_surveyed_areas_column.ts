@@ -1,7 +1,6 @@
 import { Knex } from 'knex';
 
 const DB_SCHEMA = process.env.DB_SCHEMA;
-const DB_SCHEMA_DAPI_V1 = process.env.DB_SCHEMA_DAPI_V1;
 
 /**
  * Add `survey.surveyed_all_areas` column and update `survey` view.
@@ -24,7 +23,7 @@ export async function up(knex: Knex): Promise<void> {
 
     -- Update 'survey' view
 
-    SET SEARCH_PATH = ${DB_SCHEMA_DAPI_V1};
+    SET SEARCH_PATH = biohub_dapi_v1;
 
     CREATE OR REPLACE VIEW survey AS SELECT * FROM ${DB_SCHEMA}.survey;
   `);
@@ -43,7 +42,7 @@ export async function down(knex: Knex): Promise<void> {
 
     -- Drop 'survey' view
 
-    SET SEARCH_PATH = ${DB_SCHEMA_DAPI_V1};
+    SET SEARCH_PATH = biohub_dapi_v1;
 
     DROP VIEW survey;
 
@@ -55,7 +54,7 @@ export async function down(knex: Knex): Promise<void> {
 
     -- Create 'survey' view
 
-    SET SEARCH_PATH = ${DB_SCHEMA_DAPI_V1};
+    SET SEARCH_PATH = biohub_dapi_v1;
 
     CREATE OR REPLACE VIEW survey AS SELECT * FROM ${DB_SCHEMA}.survey;
   `);

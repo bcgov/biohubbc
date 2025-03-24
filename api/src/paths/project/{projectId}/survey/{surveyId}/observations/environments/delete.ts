@@ -3,7 +3,7 @@ import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
-import { ObservationSubCountEnvironmentService } from '../../../../../../../services/observation-subcount-environment-service';
+import { ObservationEnvironmentService } from '../../../../../../../services/observation-environment-service';
 import { getLogger } from '../../../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observations/environments');
@@ -129,7 +129,7 @@ export function deleteObservationEnvironments(): RequestHandler {
       defaultLog.debug({ label: 'deleteObservationEnvironments', surveyId });
       await connection.open();
 
-      const service = new ObservationSubCountEnvironmentService(connection);
+      const service = new ObservationEnvironmentService(connection);
       await service.deleteEnvironmentsForEnvironmentIds(surveyId, environmentIds);
 
       await connection.commit();

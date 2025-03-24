@@ -119,15 +119,6 @@ export async function seed(knex: Knex): Promise<void> {
           }
         }
 
-        const response1 = await knex.raw(insertSurveyObservationData(surveyId, 20));
-        await knex.raw(insertObservationSubCount(response1.rows[0].survey_observation_id));
-
-        const response2 = await knex.raw(insertSurveyObservationData(surveyId, 20));
-        await knex.raw(insertObservationSubCount(response2.rows[0].survey_observation_id));
-
-        const response3 = await knex.raw(insertSurveyObservationData(surveyId, 20));
-        await knex.raw(insertObservationSubCount(response3.rows[0].survey_observation_id));
-
         for (let k = 0; k < NUM_SEED_OBSERVATIONS_PER_SURVEY; k++) {
           const createObservationResponse = await knex.raw(
             // set the number of observations to minimum 20 times the number of subcounts (which are set to a number
@@ -138,6 +129,20 @@ export async function seed(knex: Knex): Promise<void> {
               NUM_SEED_SUBCOUNTS_PER_OBSERVATION * 20 + faker.number.int({ min: 1, max: 20 })
             )
           );
+
+          if (Math.random() < 0.75) {
+            // Insert observation qualitative environments 75% of the time
+            await knex.raw(
+              insertObservationQualitativeEnvironments(createObservationResponse.rows[0].survey_observation_id)
+            );
+          }
+          if (Math.random() < 0.75) {
+            // Insert observation quantitative environments 75% of the time
+            await knex.raw(
+              insertObservationQuantitativeEnvironments(createObservationResponse.rows[0].survey_observation_id)
+            );
+          }
+
           for (let l = 0; l < NUM_SEED_SUBCOUNTS_PER_OBSERVATION; l++) {
             await knex.raw(insertObservationSubCount(createObservationResponse.rows[0].survey_observation_id));
           }
@@ -952,14 +957,86 @@ const insertObservationSubCount = (surveyObservationId: number) => `
   (
     survey_observation_id,
     subcount,
-    observation_subcount_sign_id
+    comment
   )
   VALUES
   (
     ${surveyObservationId},
     $$${faker.number.int({ min: 1, max: 20 })}$$,
-    (SELECT observation_subcount_sign_id FROM observation_subcount_sign ORDER BY random() LIMIT 1)
+    $$${faker.lorem.sentences({ min: 0, max: 4 })}$$
   );
+`;
+
+/**
+ * SQL to insert observation qualitative environments.
+ *
+ * @param {number} surveyObservationId
+ */
+const insertObservationQualitativeEnvironments = (surveyObservationId: number) => `
+
+    WITH 
+    w_environment_qualitative AS (
+      -- Select the first 2 records by ID (so that we have some consistency in the environments selected by the observations)
+      SELECT 
+        environment_qualitative_id
+      FROM 
+        environment_qualitative
+      ORDER BY environment_qualitative_id LIMIT 2
+    ),
+    w_environment_qualitative_option AS (
+      -- Select 2 random options to associate with the selected environment_qualitative records
+      SELECT 
+        distinct on (environment_qualitative_option.environment_qualitative_id)
+        w_environment_qualitative.environment_qualitative_id, 
+        environment_qualitative_option.environment_qualitative_option_id
+      FROM 
+        environment_qualitative_option
+      INNER JOIN w_environment_qualitative
+      ON w_environment_qualitative.environment_qualitative_id = environment_qualitative_option.environment_qualitative_id
+      ORDER BY environment_qualitative_option.environment_qualitative_id, random() LIMIT 2
+    )
+    INSERT INTO observation_environment_qualitative
+    (
+        survey_observation_id,
+        environment_qualitative_id,
+        environment_qualitative_option_id
+    )
+    SELECT
+        ${surveyObservationId},
+        environment_qualitative_id,
+        environment_qualitative_option_id
+    FROM 
+        w_environment_qualitative_option;
+`;
+
+/**
+ * SQL to insert observation quantitative environments.
+ *
+ * @param {number} surveyObservationId
+ */
+const insertObservationQuantitativeEnvironments = (surveyObservationId: number) => `
+    WITH 
+    w_environment_quantitative AS (
+      -- Select the first 2 records by ID (so that we have some consistency in the environments selected by the observations)
+      SELECT 
+        *
+      FROM 
+        environment_quantitative
+      ORDER BY environment_quantitative_id LIMIT 2
+    )
+    INSERT INTO observation_environment_quantitative
+    (
+        survey_observation_id,
+        environment_quantitative_id,
+        value
+    )
+    SELECT
+        ${surveyObservationId},
+        environment_quantitative_id,
+        -- Insert a random value that is between the min and max values, if specified
+        (SELECT floor(random() * (COALESCE(w_environment_quantitative.max, 10000) - COALESCE(w_environment_quantitative.min, 1) + 1))::int + COALESCE(w_environment_quantitative.min, 1))
+    FROM 
+        w_environment_quantitative;
 `;
 
 /**
@@ -981,7 +1058,8 @@ const insertSurveyObservationData = (surveyId: number, count: number) => {
     count,
     observation_date,
     observation_time,
-    survey_sample_period_id
+    survey_sample_period_id,
+    observation_sign_id
   )
   VALUES
   (
@@ -997,7 +1075,8 @@ const insertSurveyObservationData = (surveyId: number, count: number) => {
     timestamp $$${faker.date
       .between({ from: '2000-01-01T00:00:00-08:00', to: '2005-01-01T00:00:00-08:00' })
       .toISOString()}$$::time,
-    (SELECT survey_sample_period_id FROM survey_sample_period WHERE survey_id = ${surveyId} ORDER BY random() LIMIT 1)
+    (SELECT survey_sample_period_id FROM survey_sample_period WHERE survey_id = ${surveyId} ORDER BY random() LIMIT 1),
+    (SELECT observation_sign_id FROM observation_sign ORDER BY random() LIMIT 1)
   )
   RETURNING survey_observation_id;
 `;
