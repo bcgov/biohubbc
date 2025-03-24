@@ -46,7 +46,7 @@ export interface IGetAllCodeSetsResponse {
   sample_methods: CodeSet<{ id: number; name: string; description: string }>;
   method_response_metrics: CodeSet<{ id: number; name: string; description: string }>;
   attractants: CodeSet<{ id: number; name: string; description: string }>;
-  observation_subcount_signs: CodeSet<{ id: number; name: string; description: string }>;
+  observation_signs: CodeSet<{ id: number; name: string; description: string }>;
   telemetry_device_makes: CodeSet<{ id: number; name: string; description: string }>;
   frequency_units: CodeSet<{ id: number; name: string; description: string }>;
   alert_types: CodeSet<{ id: number; name: string; description: string }>;

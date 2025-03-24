@@ -3,17 +3,17 @@ import { CaseInsensitiveMap } from '../../../../utils/case-insensitive-map';
 import { CSVCellValidator } from '../../../../utils/csv-utils/csv-config-validation.interface';
 
 /**
- * Get the observation subcount sign cell validator
+ * Get the observation sign cell validator
  *
  * Rules:
- *  1. The cell must be a valid subcount sign or undefined
- *  2. The cell value will be mutated to the subcount sign ID
+ *  1. The cell must be a valid observation sign or undefined
+ *  2. The cell value will be mutated to the observation sign ID
  *
- * @param {ICode[]} subcountSigns - The subcount signs
+ * @param {ICode[]} observationSigns - The observation signs
  * @returns {*} {CSVCellValidator} The validate cell callback
  */
-export const getObservationSubcountSignCellValidator = (subcountSigns: ICode[]): CSVCellValidator => {
-  const subcountSignMap = new CaseInsensitiveMap(subcountSigns.map((sign) => [sign.name, sign]));
+export const getObservationSignCellValidator = (observationSigns: ICode[]): CSVCellValidator => {
+  const observationSignMap = new CaseInsensitiveMap(observationSigns.map((sign) => [sign.name, sign]));
 
   return (params) => {
     // Undefined values are allowed, return no errors
@@ -21,22 +21,22 @@ export const getObservationSubcountSignCellValidator = (subcountSigns: ICode[]):
       return [];
     }
 
-    // Attempt to get the subcount sign from the map
-    const subcountSign = subcountSignMap.get(String(params.cell));
+    // Attempt to get the observation sign from the map
+    const observationSign = observationSignMap.get(String(params.cell));
 
-    // Value is not a subcount sign, return an error
-    if (!subcountSign) {
+    // Value is not a observation sign, return an error
+    if (!observationSign) {
       return [
         {
-          error: `Invalid subcount sign`,
-          solution: `Use a valid subcount sign`,
-          values: subcountSigns.map((sign) => sign.name)
+          error: `Invalid observation sign`,
+          solution: `Use a valid observation sign`,
+          values: observationSigns.map((sign) => sign.name)
         }
       ];
     }
 
-    // Mutate the cell value to be the subcount sign ID
-    params.mutateCell = subcountSign.id;
+    // Mutate the cell value to be the observation sign ID
+    params.mutateCell = observationSign.id;
 
     return [];
   };

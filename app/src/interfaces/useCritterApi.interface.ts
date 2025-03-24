@@ -434,17 +434,19 @@ export type CBQualitativeMeasurementTypeDefinition = {
 export type CBMeasurementType = CBQuantitativeMeasurementTypeDefinition | CBQualitativeMeasurementTypeDefinition;
 
 /**
- * Response object when searching for measurement type definitions by itis tsn.
+ * A collection of Critterbase measurement type definitions.
  */
-export type CBMeasurementSearchByTsnResponse = {
+export type CBMeasurementTypeDefinitions = {
   qualitative: CBQualitativeMeasurementTypeDefinition[];
   quantitative: CBQuantitativeMeasurementTypeDefinition[];
 };
 
 /**
+ * Response object when searching for measurement type definitions by itis tsn.
+ */
+export type CBMeasurementSearchByTsnResponse = CBMeasurementTypeDefinitions;
+
+/**
  * Response object when searching for measurement type definitions by search term.
  */
-export type CBMeasurementSearchByTermResponse = {
-  qualitative: CBQualitativeMeasurementTypeDefinition[];
-  quantitative: CBQuantitativeMeasurementTypeDefinition[];
-};
+export type CBMeasurementSearchByTermResponse = CBMeasurementTypeDefinitions;

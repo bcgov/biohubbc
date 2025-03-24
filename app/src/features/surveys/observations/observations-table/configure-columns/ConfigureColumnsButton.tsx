@@ -1,11 +1,9 @@
 import { mdiTableEdit } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Button } from '@mui/material';
-import { GridColDef, GridRowModes } from '@mui/x-data-grid';
+import { GridColDef } from '@mui/x-data-grid';
 import { IObservationTableRow } from 'contexts/observationsTableContext';
-import { useConfigureEnvironmentColumns } from 'features/surveys/observations/observations-table/configure-columns/components/environment/useConfigureEnvironmentColumns';
 import { useConfigureGeneralColumns } from 'features/surveys/observations/observations-table/configure-columns/components/general/useConfigureGeneralColumns';
-import { useConfigureMeasurementColumns } from 'features/surveys/observations/observations-table/configure-columns/components/measurements/useConfigureMeasurementColumns';
 import { useCodesContext, useObservationsTableContext } from 'hooks/useContext';
 import { useEffect, useMemo, useState } from 'react';
 import { ConfigureColumnsDialog } from './components/ConfigureColumnsDialog';
@@ -68,7 +66,7 @@ export const ConfigureColumnsButton = (props: IConfigureColumnsButtonProps) => {
 
       if (column.headerName?.toLowerCase() === 'sign') {
         options =
-          codesContext.codesDataLoader.data?.observation_subcount_signs.map((sign) => ({
+          codesContext.codesDataLoader.data?.observation_signs.map((sign) => ({
             name: sign.name,
             description: sign.description
           })) ?? [];
@@ -101,28 +99,13 @@ export const ConfigureColumnsButton = (props: IConfigureColumnsButtonProps) => {
     return Array.from(columnMap.values());
   }, [columns, codesContext.codesDataLoader.data, observationsTableContext]);
 
-  const measurementColumns = observationsTableContext.measurementColumns;
-
-  const environmentColumns = observationsTableContext.environmentColumns;
-
   const { onToggleShowHideAll, onToggleColumnVisibility } = useConfigureGeneralColumns({ hideableColumns });
-
-  const { onAddMeasurementColumns, onRemoveMeasurementColumns } = useConfigureMeasurementColumns();
-
-  const { onAddEnvironmentColumns, onRemoveEnvironmentColumns } = useConfigureEnvironmentColumns();
-
-  // 'true' if any row is in edit mode
-  const isAnyRowInEditMode = useMemo(() => {
-    return Object.values(observationsTableContext.rowModesModel).some(
-      (innerObj) => innerObj.mode === GridRowModes.Edit
-    );
-  }, [observationsTableContext.rowModesModel]);
 
   return (
     <>
       <Button
         color="primary"
-        disabled={disabled || isAnyRowInEditMode}
+        disabled={disabled}
         variant="outlined"
         data-testid="observation-measurements-button"
         onClick={() => setIsOpen(true)}
@@ -133,17 +116,11 @@ export const ConfigureColumnsButton = (props: IConfigureColumnsButtonProps) => {
       <ConfigureColumnsDialog
         onClose={() => setIsOpen(false)}
         open={isOpen}
-        disabled={disabled || isAnyRowInEditMode}
+        disabled={disabled}
         hiddenFields={hiddenFields}
         hideableColumns={hideableColumns}
         onToggleShowHideAll={onToggleShowHideAll}
         onToggleColumnVisibility={onToggleColumnVisibility}
-        measurementColumns={measurementColumns}
-        onAddMeasurementColumns={onAddMeasurementColumns}
-        onRemoveMeasurementColumns={onRemoveMeasurementColumns}
-        environmentColumns={environmentColumns}
-        onAddEnvironmentColumns={onAddEnvironmentColumns}
-        onRemoveEnvironmentColumns={onRemoveEnvironmentColumns}
       />
     </>
   );

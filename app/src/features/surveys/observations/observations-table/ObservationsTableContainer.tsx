@@ -1,6 +1,5 @@
-import { mdiPlus } from '@mdi/js';
+import { mdiPencil, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
-import { LoadingButton } from '@mui/lab';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Collapse from '@mui/material/Collapse';
@@ -11,7 +10,6 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { GridColDef, GridRenderEditCellParams } from '@mui/x-data-grid';
 import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
-import DataGridValidationAlert from 'components/data-grid/DataGridValidationAlert';
 import {
   GenericCommentColDef,
   GenericDateColDef,
@@ -21,11 +19,11 @@ import {
 } from 'components/data-grid/GenericGridColumnDefinitions';
 import { IObservationTableRow } from 'contexts/observationsTableContext';
 import { BulkActionsButton } from 'features/surveys/observations/observations-table/bulk-actions/BulkActionsButton';
-import { DiscardChangesButton } from 'features/surveys/observations/observations-table/discard-changes/DiscardChangesButton';
 import {
   MethodTechniqueColDef,
-  ObservationCountColDef,
-  ObservationSubcountSignColDef,
+  ObservationIDColDef,
+  ObservationSignColDef,
+  ObservationSubcountColDef,
   SamplePeriodColDef,
   SampleSiteColDef,
   TaxonomyColDef
@@ -36,10 +34,12 @@ import {
   useCodesContext,
   useObservationsContext,
   useObservationsPageContext,
-  useObservationsTableContext
+  useObservationsTableContext,
+  useSurveyContext
 } from 'hooks/useContext';
 import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import { useEffect, useMemo } from 'react';
+import { useHistory } from 'react-router';
 import { ImportObservationsButton } from '../components/ImportObservationsButton';
 import { ConfigureColumnsButton } from './configure-columns/ConfigureColumnsButton';
 import ExportHeadersButton from './export-button/ExportHeadersButton';
@@ -56,17 +56,20 @@ const ObservationsTableContainer = () => {
   const observationsTableContext = useObservationsTableContext();
   const observationsContext = useObservationsContext();
 
+  const { projectId, surveyId } = useSurveyContext();
+  const history = useHistory();
+
   useEffect(() => {
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
 
-  const observationSubcountSignOptions = useMemo(
+  const observationSignOptions = useMemo(
     () =>
-      codesContext.codesDataLoader.data?.observation_subcount_signs.map((option) => ({
-        observation_subcount_sign_id: option.id,
+      codesContext.codesDataLoader.data?.observation_signs.map((option) => ({
+        observation_sign_id: option.id,
         name: option.name
       })) ?? [],
-    [codesContext.codesDataLoader.data?.observation_subcount_signs]
+    [codesContext.codesDataLoader.data?.observation_signs]
   );
 
   const samplingInformationCache = useSamplingInformationCache();
@@ -84,67 +87,65 @@ const ObservationsTableContainer = () => {
     samplingInformationCache
   ]);
 
+  // Determine if the edit button should be enabled, and if so, which observation ID it should link to
+  const editButtonObservationId: number | false = useMemo(() => {
+    const selectedObservations = observationsTableContext.getSelectedRows();
+    if (selectedObservations.length === 1 && selectedObservations[0].survey_observation_id) {
+      return selectedObservations[0].survey_observation_id;
+    }
+    return false;
+  }, [observationsTableContext]);
+
   // The column definitions of the columns to render in the observations table
   const columns: GridColDef<IObservationTableRow>[] = useMemo(
     () => {
       return [
         // Add standard observation columns to the table
-        TaxonomyColDef({ hasError: observationsTableContext.hasError }),
+        ObservationIDColDef(),
+        TaxonomyColDef(),
         SampleSiteColDef({
-          samplingInformationCache: samplingInformationCache,
-          hasError: observationsTableContext.hasError
+          samplingInformationCache: samplingInformationCache
         }),
         MethodTechniqueColDef({
-          samplingInformationCache: samplingInformationCache,
-          hasError: observationsTableContext.hasError
+          samplingInformationCache: samplingInformationCache
         }),
         SamplePeriodColDef({
-          samplingInformationCache: samplingInformationCache,
-          hasError: observationsTableContext.hasError
+          samplingInformationCache: samplingInformationCache
         }),
-        ObservationSubcountSignColDef({ observationSubcountSignOptions, hasError: observationsTableContext.hasError }),
-        ObservationCountColDef({
-          samplingInformationCache: samplingInformationCache,
-          hasError: observationsTableContext.hasError
-        }),
+        ObservationSignColDef({ observationSignOptions }),
+        ObservationSubcountColDef(),
         GenericDateColDef({
           field: 'observation_date',
           headerName: 'Date',
-          hasError: observationsTableContext.hasError,
-          description: 'The date when the observation was made'
+          description: 'The date when the observation was made',
+          editable: false
         }),
         GenericTimeColDef({
           field: 'observation_time',
           headerName: 'Time',
-          hasError: observationsTableContext.hasError,
-          description: 'The time of day when the observation was made'
+          description: 'The time of day when the observation was made',
+          editable: false
         }),
         GenericLatitudeColDef({
           field: 'latitude',
           headerName: 'Latitude',
-          hasError: observationsTableContext.hasError,
-          description: 'The latitude where the observation was made'
+          description: 'The latitude where the observation was made',
+          editable: false
         }),
         GenericLongitudeColDef({
           field: 'longitude',
           headerName: 'Longitude',
-          hasError: observationsTableContext.hasError,
-          description: 'The longitude where the observation was made'
+          description: 'The longitude where the observation was made',
+          editable: false
         }),
         // Add measurement columns to the table
-        ...getMeasurementColumnDefinitions(
-          observationsTableContext.measurementColumns,
-          observationsTableContext.hasError
-        ),
+        ...getMeasurementColumnDefinitions(observationsTableContext.measurementColumns),
         // Add environment columns to the table
-        ...getEnvironmentColumnDefinitions(
-          observationsTableContext.environmentColumns,
-          observationsTableContext.hasError
-        ),
+        ...getEnvironmentColumnDefinitions(observationsTableContext.environmentColumns),
         GenericCommentColDef({
           field: 'comment',
           headerName: '',
-          hasError: observationsTableContext.hasError,
+          editable: false,
           handleOpen: (params: GridRenderEditCellParams) => observationsTableContext.setCommentDialogParams(params),
           handleClose: () => observationsTableContext.setCommentDialogParams(null)
         })
@@ -153,9 +154,8 @@ const ObservationsTableContainer = () => {
     // observationsTableContext is listed as a missing dependency
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
-      observationSubcountSignOptions,
+      observationSignOptions,
       observationsTableContext.environmentColumns,
-      observationsTableContext.hasError,
       observationsTableContext.measurementColumns,
       observationsTableContext.setCommentDialogParams
     ]
@@ -184,50 +184,47 @@ const ObservationsTableContainer = () => {
         <Stack flexDirection="row" alignItems="center" gap={1} whiteSpace="nowrap">
           <HelpButtonDialog markdownType={MarkdownTypeNameEnum.OBSERVATIONS} />
           <ImportObservationsButton
-            disabled={observationsTableContext.isSaving || observationsTableContext.isDisabled}
+            disabled={observationsTableContext.isDisabled}
             onStart={() => observationsPageContext.setIsDisabled(true)}
-            onSuccess={() => observationsTableContext.refreshObservationRecords()}
+            onSuccess={() => observationsTableContext.refreshRows()}
             onFinish={() => observationsPageContext.setIsDisabled(false)}
           />
           <Button
             variant="contained"
             color="primary"
             startIcon={<Icon path={mdiPlus} size={1} />}
-            onClick={() => observationsTableContext.addObservationRecord()}
-            disabled={observationsTableContext.isSaving || observationsTableContext.isDisabled}>
+            onClick={() => history.push(`/admin/projects/${projectId}/surveys/${surveyId}/observations/create`)}
+            disabled={observationsTableContext.isDisabled}>
             Add
           </Button>
-          <Collapse in={observationsTableContext.hasUnsavedChanges} orientation="horizontal" sx={{ mr: -1 }}>
-            <Box whiteSpace="nowrap" display="flex" sx={{ gap: 1, pr: 1 }}>
-              <LoadingButton
-                loading={observationsTableContext.isSaving || observationsTableContext.isDisabled}
-                variant="contained"
-                color="primary"
-                onClick={() => observationsTableContext.saveObservationRecords()}
-                disabled={observationsTableContext.isSaving || observationsTableContext.isDisabled}>
-                Save
-              </LoadingButton>
-              <DiscardChangesButton
-                disabled={observationsTableContext.isSaving || observationsTableContext.isDisabled}
-                onDiscard={() => observationsTableContext.discardChanges()}
-              />
-            </Box>
+          <Collapse
+            in={!!editButtonObservationId}
+            orientation="horizontal"
+            sx={{
+              // When the edit button is not visible, we need to compensate for the Stack 'gap' property by applying
+              // a negative margin to this button.
+              marginLeft: editButtonObservationId ? 0 : -1
+            }}>
+            <Button
+              variant="outlined"
+              color="primary"
+              startIcon={<Icon path={mdiPencil} size={1} />}
+              onClick={() => {
+                history.push(
+                  `/admin/projects/${projectId}/surveys/${surveyId}/observations/${editButtonObservationId}/edit`
+                );
+              }}
+              disabled={observationsTableContext.isDisabled}>
+              Edit
+            </Button>
           </Collapse>
-          <ConfigureColumnsButton
-            disabled={observationsTableContext.isSaving || observationsTableContext.isDisabled}
-            columns={columns}
-          />
+          <ConfigureColumnsButton disabled={observationsTableContext.isDisabled} columns={columns} />
           <ExportHeadersButton />
-          <BulkActionsButton disabled={observationsTableContext.isSaving || observationsTableContext.isDisabled} />
+          <BulkActionsButton disabled={observationsTableContext.isDisabled} />
         </Stack>
       </Toolbar>
 
-      <Divider flexItem></Divider>
-
-      <DataGridValidationAlert
-        validationModel={observationsTableContext.validationModel}
-        muiDataGridApiRef={observationsTableContext._muiDataGridApiRef.current}
-      />
+      <Divider flexItem />
 
       <ObservationSubcountCommentDialog
         // The key prop is necessary for the dialog to correctly reset if the user discards changes
@@ -235,27 +232,16 @@ const ObservationsTableContainer = () => {
         open={Boolean(observationsTableContext.commentDialogParams)}
         initialValue={observationsTableContext.commentDialogParams?.value}
         handleClose={() => observationsTableContext.setCommentDialogParams(null)}
-        handleSave={(value) => {
-          if (!observationsTableContext.commentDialogParams) {
-            return;
-          }
-
-          observationsTableContext.commentDialogParams.api.setEditCellValue({
-            value,
-            id: observationsTableContext.commentDialogParams.id,
-            field: observationsTableContext.commentDialogParams.field
-          });
-        }}
       />
 
       <Box display="flex" flexDirection="column" flex="1 1 auto" position="relative">
         <Box position="absolute" width="100%" height="100%">
           <ObservationsTable
             isLoading={
-              observationsTableContext.isLoading ||
-              observationsTableContext.isSaving ||
-              observationsTableContext.isDisabled ||
-              codesContext.codesDataLoader.isLoading
+              !observationsContext.observationsDataLoader.data &&
+              (observationsTableContext.isLoading ||
+                observationsTableContext.isDisabled ||
+                codesContext.codesDataLoader.isLoading)
             }
             columns={[...columns]}
           />

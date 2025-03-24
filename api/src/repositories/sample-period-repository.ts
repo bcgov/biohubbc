@@ -55,19 +55,39 @@ export class SamplePeriodRepository extends BaseRepository {
    * Gets all survey Sample periods.
    *
    * @param {number} surveyId
-   * @param {{ pagination?: ApiPaginationOptions }} [options]
+   * @param {{
+   *       filterFields?: {
+   *         surveyObservationIds?: number[];
+   *       };
+   *       pagination?: ApiPaginationOptions;
+   *     }} [options]
    * @return {*}  {Promise<SurveySamplePeriodDetails[]>}
    * @memberof SamplePeriodRepository
    */
   async getSamplePeriodsForSurvey(
     surveyId: number,
-    options?: { pagination?: ApiPaginationOptions }
+    options?: {
+      filterFields?: {
+        surveyObservationIds?: number[];
+      };
+      pagination?: ApiPaginationOptions;
+    }
   ): Promise<SurveySamplePeriodDetails[]> {
     const knex = getKnex();
 
     const queryBuilder = knex.queryBuilder();
 
     queryBuilder.modify(this._getSamplingPeriodBaseQuery);
+
+    if (options?.filterFields?.surveyObservationIds) {
+      queryBuilder
+        .innerJoin(
+          'survey_observation',
+          'survey_observation.survey_sample_period_id',
+          'survey_sample_period.survey_sample_period_id'
+        )
+        .whereIn('survey_observation.survey_observation_id', options.filterFields.surveyObservationIds);
+    }
 
     queryBuilder.where('survey_sample_period.survey_id', surveyId);
 
@@ -110,6 +130,39 @@ export class SamplePeriodRepository extends BaseRepository {
     const response = await this.connection.knex(queryBuilder, z.object({ count: z.number() }));
 
     return response.rows[0].count;
+  }
+
+  /**
+   * Gets all survey Sample periods for a given observation.
+   *
+   * @param {number} surveyId
+   * @param {number} surveyObservationId
+   * @return {*}  {Promise<SurveySamplePeriodDetails[]>}
+   * @memberof SamplePeriodRepository
+   */
+  async getSamplePeriodsForObservation(
+    surveyId: number,
+    surveyObservationId: number
+  ): Promise<SurveySamplePeriodDetails[]> {
+    const knex = getKnex();
+
+    const queryBuilder = knex.queryBuilder();
+
+    queryBuilder.modify(this._getSamplingPeriodBaseQuery);
+
+    // Only return periods that are associated with the given observation and survey
+    queryBuilder
+      .innerJoin(
+        'survey_observation',
+        'survey_observation.survey_sample_period_id',
+        'survey_sample_period.survey_sample_period_id'
+      )
+      .where('survey_observation.survey_observation_id', surveyObservationId)
+      .andWhere('survey_observation.survey_id', surveyId);
+
+    const response = await this.connection.knex(queryBuilder, SurveySamplePeriodDetails);
+
+    return response.rows;
   }
 
   /**

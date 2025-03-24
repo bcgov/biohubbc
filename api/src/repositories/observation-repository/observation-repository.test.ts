@@ -5,7 +5,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { SQLStatement } from 'sql-template-strings';
 import { getMockDBConnection } from '../../__mocks__/db';
-import { InsertObservation, ObservationRepository, UpdateObservation } from './observation-repository';
+import { ObservationRepository } from './observation-repository';
 
 chai.use(sinonChai);
 
@@ -105,48 +105,7 @@ describe('ObservationRepository', () => {
     });
   });
 
-  describe('insertUpdateSurveyObservations', () => {
-    it('should upsert records and return the affected rows', async () => {
-      const mockRows = [{}, {}];
-      const mockQueryResponse = { rows: mockRows, rowCount: 2 } as unknown as QueryResult<any>;
-
-      const mockDBConnection = getMockDBConnection({
-        sql: sinon.stub().resolves(mockQueryResponse)
-      });
-
-      const repo = new ObservationRepository(mockDBConnection);
-
-      const surveyId = 1;
-      const observations: (InsertObservation | UpdateObservation)[] = [
-        {
-          survey_id: 1,
-          latitude: 3,
-          longitude: 4,
-          count: 5,
-          itis_tsn: 6,
-          itis_scientific_name: 'itis_scientific_name',
-          observation_date: '2023-01-01',
-          observation_time: '12:00:00'
-        } as InsertObservation,
-        {
-          survey_observation_id: 6,
-          latitude: 8,
-          longitude: 9,
-          count: 10,
-          itis_tsn: 11,
-          itis_scientific_name: 'itis_scientific_name',
-          observation_date: '2023-02-02',
-          observation_time: '13:00:00'
-        } as UpdateObservation
-      ];
-
-      const response = await repo.insertUpdateSurveyObservations(surveyId, observations);
-
-      expect(response).to.be.eql(mockRows);
-    });
-  });
-
-  describe('getSurveyObservationsWithSamplingDataWithAttributesData', () => {
+  describe('getSurveyObservations', () => {
     it('get all observations for a survey when some observation records exist', async () => {
       const mockRows = [{}, {}];
       const mockQueryResponse = { rows: mockRows, rowCount: 2 } as unknown as QueryResult<any>;
@@ -159,7 +118,7 @@ describe('ObservationRepository', () => {
 
       const surveyId = 1;
 
-      const response = await repository.getSurveyObservationsWithSamplingDataWithAttributesData(surveyId);
+      const response = await repository.getSurveyObservations(surveyId);
 
       expect(response).to.be.eql(mockRows);
     });
@@ -176,13 +135,13 @@ describe('ObservationRepository', () => {
 
       const surveyId = 1;
 
-      const response = await repository.getSurveyObservationsWithSamplingDataWithAttributesData(surveyId);
+      const response = await repository.getSurveyObservations(surveyId);
 
       expect(response).to.be.eql(mockRows);
     });
   });
 
-  describe('getSurveyObservationCount', () => {
+  describe('getSurveyObservationsCount', () => {
     it('gets the count of survey observations for the given survey', async () => {
       const mockQueryResponse = { rows: [{ count: 1 }] } as unknown as QueryResult<any>;
 
@@ -192,79 +151,9 @@ describe('ObservationRepository', () => {
 
       const repo = new ObservationRepository(mockDBConnection);
 
-      const response = await repo.getSurveyObservationCount(1);
+      const response = await repo.getSurveyObservationsCount(1);
 
       expect(response).to.eql(1);
-    });
-  });
-
-  describe('insertSurveyObservationSubmission', () => {
-    it('inserts a survey observation submission record', async () => {
-      const mockQueryResponse = { rows: [1] } as unknown as QueryResult<any>;
-
-      const mockDBConnection = getMockDBConnection({
-        sql: sinon.stub().resolves(mockQueryResponse)
-      });
-
-      const surveyId = 1;
-      const submissionId = 2;
-      const key = 'key';
-      const original_filename = 'originalFilename';
-
-      const repo = new ObservationRepository(mockDBConnection);
-
-      const response = await repo.insertSurveyObservationSubmission(submissionId, key, surveyId, original_filename);
-
-      expect(response).to.equal(1);
-    });
-  });
-
-  describe('getNextSubmissionId', () => {
-    it('gets the next submission id', async () => {
-      const mockQueryResponse = { rows: [{ submission_id: 1 }], rowCount: 1 } as unknown as QueryResult<any>;
-
-      const mockDBConnection = getMockDBConnection({
-        sql: sinon.stub().resolves(mockQueryResponse)
-      });
-
-      const repo = new ObservationRepository(mockDBConnection);
-
-      const response = await repo.getNextSubmissionId();
-
-      expect(response).to.equal(1);
-    });
-  });
-
-  describe('getObservationSubmissionById', () => {
-    it('gets a submission by ID', async () => {
-      const mockQueryResponse = { rows: [{ submission_id: 5 }], rowCount: 1 } as unknown as QueryResult<any>;
-
-      const mockDBConnection = getMockDBConnection({
-        knex: sinon.stub().resolves(mockQueryResponse)
-      });
-
-      const repo = new ObservationRepository(mockDBConnection);
-
-      const response = await repo.getObservationSubmissionById(1, 5);
-
-      expect(response).to.eql({ submission_id: 5 });
-    });
-
-    it('throws an error when no submission is found', async () => {
-      const mockQueryResponse = { rows: [], rowCount: 0 } as unknown as QueryResult<any>;
-
-      const mockDBConnection = getMockDBConnection({
-        knex: sinon.stub().resolves(mockQueryResponse)
-      });
-
-      const repo = new ObservationRepository(mockDBConnection);
-
-      try {
-        await repo.getObservationSubmissionById(1, 5);
-        expect.fail();
-      } catch (error) {
-        expect((error as Error).message).to.equal('Failed to get observation submission');
-      }
     });
   });
 

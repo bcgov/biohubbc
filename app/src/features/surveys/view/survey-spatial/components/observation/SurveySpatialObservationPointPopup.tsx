@@ -4,7 +4,7 @@ import { SurveyMapPopup } from 'features/surveys/view/SurveyMapPopup';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
-import { ObservationRecord } from 'interfaces/useObservationApi.interface';
+import { SurveyObservationBasic } from 'interfaces/useObservationApi.interface';
 import { Popup } from 'react-leaflet';
 import { getFormattedDate } from 'utils/Utils';
 
@@ -25,10 +25,10 @@ export const SurveySpatialObservationPointPopup = (props: ISurveySpatialObservat
   const biohubApi = useBiohubApi();
 
   const observationDataLoader = useDataLoader((observationId: number) =>
-    biohubApi.observation.getObservationRecord(surveyContext.projectId, surveyContext.surveyId, observationId)
+    biohubApi.observation.getBasicObservationRecord(surveyContext.projectId, surveyContext.surveyId, observationId)
   );
 
-  const getObservationMetadata = (observation: ObservationRecord) => {
+  const getObservationMetadata = (observation: SurveyObservationBasic) => {
     return [
       { label: 'Taxon ID', value: String(observation.itis_tsn) },
       { label: 'Count', value: String(observation.count) },
