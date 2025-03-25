@@ -8,6 +8,17 @@ import { TransformFunction } from './export-strategy';
 
 const defaultLog = getLogger('export-utils.ts');
 
+/**
+ * Measurments interface
+ *
+ * @interface MeasDataItem
+ * @typedef {MeasDataItem}
+ */
+interface MeasDataItem {
+  mh: string;
+  mv: string;
+}
+
 export function getArchiveStream(): archiver.Archiver {
   const archiveStream = archiver('zip', {
     zlib: {
@@ -104,6 +115,19 @@ export function getCsvTransformStream(
     return measurementsMap ? measurementsMap.get(id) : undefined;
   };
 
+  const processMeasData = (measData: MeasDataItem[] | undefined): void => {
+    if (measData) {
+      // Note: using indexed for loop as it is the fastest
+      for (let i = 0; i < measData.length; i++) {
+        const measItem = measData[i];
+        const label = getLabelById(measItem.mv); // replace UUID with label
+        if (label) {
+          measItem.mv = label; // Assign the label to the mv
+        }
+      }
+    }
+  };
+
   let headerStreamed = false;
   const transformStream = new Transform({
     objectMode: true, // Expects objects
@@ -128,16 +152,7 @@ export function getCsvTransformStream(
       }
 
       // check if there are any uuids for the qulitative measurments values 'mv' and get the label from map
-      if (chunk.meas_data) {
-        // Note: using indexed for loop as it is the fastest
-        for (let i = 0; i < chunk.meas_data.length; i++) {
-          const measItem = chunk.meas_data[i];
-          if (!isUUID(measItem.mv)) {
-            continue;
-          }
-          measItem.mv = getLabelById(measItem.mv);
-        }
-      }
+      processMeasData(chunk.meas_data);
 
       // push it to the next stream
       callback(null, transformFunction(chunk) + '\r\n');

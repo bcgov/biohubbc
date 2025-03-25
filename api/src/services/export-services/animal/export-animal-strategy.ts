@@ -393,7 +393,7 @@ export class ExportAnimalStrategy extends DBService implements ExportStrategy {
    * @memberof ExportAnimalStrategy
    */
   static readonly capturesCsvTransformation = (item: Record<string, any>): string => {
-    if (!item.captures || !(item.captures.length > 0)) {
+    if (!(item.captures && item.captures.length)) {
       return ''; // nothing to write out, no captures
     }
     // Create an array to hold the CSV lines
