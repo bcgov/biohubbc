@@ -5,7 +5,7 @@ import sinonChai from 'sinon-chai';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import * as db from '../../database/db';
 import { HTTPError } from '../../errors/http-error';
-import { ObservationRecordWithSamplingAndSubcountData } from '../../repositories/observation-repository/observation-repository';
+import { ObservationRecordWithSamplingAndSubcountData } from '../../repositories/observation-repository/observation-repository.interface';
 import { ObservationService } from '../../services/observation-services/observation-service';
 import { KeycloakUserInformation } from '../../utils/keycloak-utils';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
@@ -36,16 +36,16 @@ describe('findObservations', () => {
         method_technique_name: 'TECHNIQUE_NAME',
         survey_sample_period_id: 1,
         survey_sample_period_start_datetime: '2000-01-01 00:00:00',
+        observation_sign_id: 1,
+        qualitative_environments: [],
+        quantitative_environments: [],
         subcounts: [
           {
             observation_subcount_id: 9,
             subcount: 5,
-            observation_subcount_sign_id: 1,
             comment: 'comment',
             qualitative_measurements: [],
-            quantitative_measurements: [],
-            qualitative_environments: [],
-            quantitative_environments: []
+            quantitative_measurements: []
           }
         ]
       }
@@ -132,16 +132,16 @@ describe('findObservations', () => {
         method_technique_name: 'TECHNIQUE_NAME',
         survey_sample_period_id: 1,
         survey_sample_period_start_datetime: '2000-01-01 00:00:00',
+        observation_sign_id: 1,
+        qualitative_environments: [],
+        quantitative_environments: [],
         subcounts: [
           {
             observation_subcount_id: 9,
             subcount: 5,
-            observation_subcount_sign_id: 1,
             comment: 'comment',
             qualitative_measurements: [],
-            quantitative_measurements: [],
-            qualitative_environments: [],
-            quantitative_environments: []
+            quantitative_measurements: []
           }
         ]
       }

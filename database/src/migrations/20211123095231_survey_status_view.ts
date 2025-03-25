@@ -1,11 +1,10 @@
 import { Knex } from 'knex';
 
 const DB_SCHEMA = process.env.DB_SCHEMA;
-const DB_SCHEMA_DAPI_V1 = process.env.DB_SCHEMA_DAPI_V1;
 
 export async function up(knex: Knex): Promise<void> {
   await knex.raw(`
-  SET search_path = ${DB_SCHEMA_DAPI_V1};
+  SET search_path = biohub_dapi_v1;
 
   DROP VIEW if exists survey_status;
 
@@ -56,7 +55,7 @@ export async function up(knex: Knex): Promise<void> {
        survey s
      WHERE ss3.submission_status_id = p.submission_status_id AND sst.submission_status_type_id = ss3.submission_status_type_id AND s.survey_id = p.survey_id;
 
-  SET search_path = ${DB_SCHEMA_DAPI_V1};
+  SET search_path = biohub_dapi_v1;
 
   create view survey_status as select * from ${DB_SCHEMA}.survey_status;
 

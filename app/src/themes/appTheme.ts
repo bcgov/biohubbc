@@ -116,6 +116,15 @@ const appTheme = createTheme({
         }
       }
     },
+    MuiAccordionSummary: {
+      styleOverrides: {
+        root: {
+          '&.Mui-focused': {
+            backgroundColor: 'inherit'
+          }
+        }
+      }
+    },
     MuiBreadcrumbs: {
       styleOverrides: {
         root: {

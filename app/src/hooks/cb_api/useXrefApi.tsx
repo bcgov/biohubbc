@@ -2,6 +2,8 @@ import { AxiosInstance } from 'axios';
 import {
   CBMeasurementSearchByTermResponse,
   CBMeasurementSearchByTsnResponse,
+  CBQualitativeMeasurementTypeDefinition,
+  CBQuantitativeMeasurementTypeDefinition,
   ICollectionCategory,
   ICollectionUnit
 } from 'interfaces/useCritterApi.interface';
@@ -41,6 +43,38 @@ export const useXrefApi = (axios: AxiosInstance) => {
   };
 
   /**
+   * Get quantitative measurement type definitions by ids.
+   *
+   * @param {string[]} taxon_measurement_ids
+   * @return {*}  {Promise<CBQualitativeMeasurementTypeDefinition[]>}
+   */
+  const getQualitativeMeasurementTypeDefinitions = async (
+    taxon_measurement_ids: string[]
+  ): Promise<CBQualitativeMeasurementTypeDefinition[]> => {
+    const { data } = await axios.post(`/api/critterbase/xref/taxon-qualitative-measurements`, {
+      taxon_measurement_ids: taxon_measurement_ids
+    });
+
+    return data;
+  };
+
+  /**
+   * Get quantitative measurement definitions by ids.
+   *
+   * @param {string[]} taxon_measurement_ids
+   * @return {*}  {Promise<CBQuantitativeMeasurementTypeDefinition[]>}
+   */
+  const getQuantitativeMeasurementTypeDefinition = async (
+    taxon_measurement_ids: string[]
+  ): Promise<CBQuantitativeMeasurementTypeDefinition[]> => {
+    const { data } = await axios.post(`/api/critterbase/xref/taxon-quantitative-measurements`, {
+      taxon_measurement_ids: taxon_measurement_ids
+    });
+
+    return data;
+  };
+
+  /**
    * Get collection (ie. ecological) units that are available for a given taxon (by itis tsn).
    *
    * @param {number} tsn
@@ -71,6 +105,8 @@ export const useXrefApi = (axios: AxiosInstance) => {
   return {
     getTaxonMeasurements,
     getMeasurementTypeDefinitionsBySearchTerm,
+    getQualitativeMeasurementTypeDefinitions,
+    getQuantitativeMeasurementTypeDefinition,
     getTsnCollectionCategories,
     getCollectionUnits
   };
