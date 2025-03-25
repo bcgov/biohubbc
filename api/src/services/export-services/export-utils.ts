@@ -110,13 +110,20 @@ export function getCsvTransformStream(
     transform(chunk, _encoding, callback) {
       if (header && !headerStreamed) {
         // This block is executed only once
+        // process dynamic headers where required
+        const attributeHeaders: string[] = chunk.attrib_data
+          ? chunk.attrib_data.map((attribItem: { ah: string }) => attribItem.ah)
+          : [];
+        const vantageHeaders: string[] = chunk.vantage_data
+          ? chunk.vantage_data.map((vantageItem: { vh: string }) => vantageItem.vh)
+          : [];
         const envHeaders: string[] = chunk.env_data ? chunk.env_data.map((envItem: { eh: string }) => envItem.eh) : [];
         const measHeaders: string[] = chunk.meas_data
           ? chunk.meas_data.map((measItem: { mh: string }) => getLabelById(measItem.mh))
           : [];
 
         // Push the headers into stream
-        this.push([header, ...envHeaders, ...measHeaders].join(',') + '\r\n');
+        this.push([header, ...envHeaders, ...measHeaders, ...attributeHeaders, ...vantageHeaders].join(',') + '\r\n');
         headerStreamed = true;
       }
 

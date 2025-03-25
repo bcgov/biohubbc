@@ -17,13 +17,13 @@ describe('ExportObservationStrategy', () => {
       };
 
       const exportSamplingStrategy = new ExportSamplingStrategy(config, connection);
-      // const getMeasurementsMapStub = sinon.stub(exportObservationStrategy, '_getMeasurementsMap').resolves(new Map());
 
       const result = await exportSamplingStrategy.getExportStrategyConfig();
 
-      // expect(getMeasurementsMapStub).to.have.been.calledOnce;
-      expect(result.queries?.length).to.equal(1);
+      expect(result.queries?.length).to.equal(3);
       expect(result.queries?.[0].fileName).to.equal('periods.csv');
+      expect(result.queries?.[1].fileName).to.equal('sites.csv');
+      expect(result.queries?.[2].fileName).to.equal('techniques.csv');
     });
   });
 });

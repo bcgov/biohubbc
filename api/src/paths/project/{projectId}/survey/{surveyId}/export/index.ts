@@ -148,7 +148,6 @@ POST.apiDoc = {
  */
 export function exportData(): RequestHandler {
   return async (req, res) => {
-    console.time('A *********************** Export');
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
@@ -181,7 +180,6 @@ export function exportData(): RequestHandler {
       throw error;
     } finally {
       connection.release();
-      console.timeEnd('A *********************** Export');
     }
   };
 }

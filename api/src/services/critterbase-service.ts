@@ -895,7 +895,7 @@ export class CritterbaseService {
 
     // populate map
     responses.forEach((response) => {
-      if (!(response.data.length > 0)) {
+      if (response.data.length <= 0) {
         return;
       }
 

@@ -794,15 +794,19 @@ export class ObservationRepository extends BaseRepository {
           LEFT JOIN survey_sample_period ssp ON so.survey_sample_period_id = ssp.survey_sample_period_id
           LEFT JOIN survey_sample_site sss ON ssp.survey_sample_site_id = sss.survey_sample_site_id
           LEFT JOIN method_technique mt ON ssp.method_technique_id = mt.method_technique_id
-          LEFT JOIN observation_subcount_sign os_sign ON osc.observation_subcount_sign_id = os_sign.observation_subcount_sign_id
-          LEFT JOIN observation_subcount_qualitative_environment oscqe ON osc.observation_subcount_id = oscqe.observation_subcount_id
-          LEFT JOIN observation_subcount_quantitative_environment oscq ON osc.observation_subcount_id = oscq.observation_subcount_id
-          LEFT JOIN environment_qualitative eq ON oscqe.environment_qualitative_id = eq.environment_qualitative_id
-          LEFT JOIN environment_qualitative_option eqo ON oscqe.environment_qualitative_option_id = eqo.environment_qualitative_option_id
-          LEFT JOIN environment_quantitative eqt ON oscq.environment_quantitative_id = eqt.environment_quantitative_id
+          LEFT JOIN observation_sign os_sign ON so.observation_sign_id = os_sign.observation_sign_id
+          -- Joins for the environment data
+        LEFT JOIN observation_environment_qualitative oequal ON oequal.survey_observation_id = so.survey_observation_id
+        LEFT JOIN environment_qualitative eq ON eq.environment_qualitative_id = oequal.environment_qualitative_id
+        LEFT JOIN environment_qualitative_option eqo ON eqo.environment_qualitative_option_id = oequal.environment_qualitative_option_id
+        LEFT JOIN observation_environment_quantitative oscq ON oscq.survey_observation_id = so.survey_observation_id
+        LEFT JOIN environment_quantitative eqt ON eqt.environment_quantitative_id = oscq.environment_quantitative_id
+        -- Joins for the measurement data
           LEFT JOIN observation_subcount_qualitative_measurement oscqm ON osc.observation_subcount_id = oscqm.observation_subcount_id
           LEFT JOIN observation_subcount_quantitative_measurement oscqmm ON osc.observation_subcount_id = oscqmm.observation_subcount_id
+          
           WHERE so.survey_id = ${surveyId}
+
           GROUP BY 
               so.survey_observation_id,
               osc.observation_subcount_id,
@@ -827,9 +831,8 @@ export class ObservationRepository extends BaseRepository {
           FROM environment_qualitative eq
           WHERE EXISTS (
               SELECT 1
-              FROM observation_subcount_qualitative_environment oscqe
-              JOIN observation_subcount osc ON oscqe.observation_subcount_id = osc.observation_subcount_id
-              JOIN survey_observation so ON osc.survey_observation_id = so.survey_observation_id
+              FROM observation_environment_qualitative oscqe
+              JOIN survey_observation so ON oscqe.survey_observation_id = so.survey_observation_id
               WHERE so.survey_id = ${surveyId}
               AND eq.environment_qualitative_id = oscqe.environment_qualitative_id
           )
@@ -840,9 +843,8 @@ export class ObservationRepository extends BaseRepository {
           FROM environment_quantitative eqt
           WHERE EXISTS (
               SELECT 1
-              FROM observation_subcount_quantitative_environment oscq
-              JOIN observation_subcount osc ON oscq.observation_subcount_id = osc.observation_subcount_id
-              JOIN survey_observation so ON osc.survey_observation_id = so.survey_observation_id
+              FROM observation_environment_quantitative oscq
+              JOIN survey_observation so ON oscq.survey_observation_id = so.survey_observation_id
               WHERE so.survey_id = ${surveyId}
               AND eqt.environment_quantitative_id = oscq.environment_quantitative_id
           )

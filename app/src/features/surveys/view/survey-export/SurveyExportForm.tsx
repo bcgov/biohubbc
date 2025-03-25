@@ -126,7 +126,7 @@ export const SurveyExportForm = (props: ISurveyExportFormProps) => {
       </Box>
 
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-        <FormControl sx={classes.exportInput} component="fieldset">
+        <FormControl sx={classes.exportInput} component="fieldset" disabled>
           <FormControlLabel
             label="Survey metadata"
             control={

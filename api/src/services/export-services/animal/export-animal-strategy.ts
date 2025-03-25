@@ -393,21 +393,21 @@ export class ExportAnimalStrategy extends DBService implements ExportStrategy {
    * @memberof ExportAnimalStrategy
    */
   static readonly capturesCsvTransformation = (item: Record<string, any>): string => {
-    if (item.captures && item.captures.length) {
-      // Create an array to hold the CSV lines
-      const csvLines = item.captures.map((capture: ICaptureExport) => {
-        return [
-          item.animal_id,
-          capture.capture_date ?? '',
-          capture.capture_time ?? '',
-          capture.capture_location.latitude ?? '',
-          capture.capture_location.longitude ?? ''
-        ].join(',');
-      });
-
-      return csvLines.join('\r\n');
+    if (!item.captures || !(item.captures.length > 0)) {
+      return ''; // nothing to write out, no captures
     }
-    return '';
+    // Create an array to hold the CSV lines
+    const csvLines = item.captures.map((capture: ICaptureExport) => {
+      return [
+        item.animal_id,
+        capture.capture_date ?? '',
+        capture.capture_time ?? '',
+        capture.capture_location.latitude ?? '',
+        capture.capture_location.longitude ?? ''
+      ].join(',');
+    });
+
+    return csvLines.join('\r\n');
   };
 
   /**
@@ -422,7 +422,7 @@ export class ExportAnimalStrategy extends DBService implements ExportStrategy {
     item: Record<string, any>,
     mortalityLocationsMap?: Map<string, IMortalityLocationsData>
   ): string => {
-    if (!(item.mortality.length > 0)) {
+    if (item.mortality.length <= 0) {
       return ''; // nothing to write out, no mortalities
     }
 
@@ -457,7 +457,7 @@ export class ExportAnimalStrategy extends DBService implements ExportStrategy {
     item: Record<string, any>,
     mortalityMarkingsMap?: Map<string, IMortalityMarkingsData[]>
   ): string => {
-    if (!(item.captures.length > 0) && !(item.mortality.length > 0)) {
+    if (item.captures.length <= 0 && item.mortality.length <= 0) {
       return ''; // nothing to write out, no captures and no mortalities
     }
 
