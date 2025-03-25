@@ -3,6 +3,7 @@ import { ApiGeneralError } from '../errors/api-error';
 import { IAnimalAdvancedFilters } from '../models/animal-view';
 import { IAllTelemetryAdvancedFilters } from '../models/telemetry-view';
 import { SurveyCritterRecord, SurveyCritterRepository } from '../repositories/survey-critter-repository';
+import { CaseInsensitiveMap } from '../utils/case-insensitive-map';
 import { getLogger } from '../utils/logger';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import {
@@ -161,8 +162,13 @@ export class SurveyCritterService extends DBService {
   ): Promise<{ critterbaseCritterId: string; surveyCritterId: number }> {
     const surveyCritterAliasMap = await this.getSurveyCritterAliasMap(surveyId);
 
+    // Create a copy of the map with trimmed aliases ' Carl' -> 'carl'
+    const trimmedSurveyCritterAliasMap = new CaseInsensitiveMap<string, ICritterDetailed>(
+      [...surveyCritterAliasMap].map(([key, value]) => [key.trim(), value])
+    );
+
     // Only allow unique critter aliases in the survey
-    if (surveyCritterAliasMap.has(critter.animal_id.toLowerCase())) {
+    if (trimmedSurveyCritterAliasMap.has(critter.animal_id.trim())) {
       throw new ApiGeneralError(`Critter alias: ${critter.animal_id} already exists in survey`, [
         'SurveyCritterService->createCritterAndAddToSurvey'
       ]);

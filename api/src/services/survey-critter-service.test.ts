@@ -60,6 +60,54 @@ describe('SurveyService', () => {
       expect(repoStub).to.not.be.calledOnce;
     });
 
+    it('should throw an error if duplicate non-trimmed alias in survey detected', async () => {
+      const dbConnection = getMockDBConnection();
+      const surveyCritterService = new SurveyCritterService(dbConnection);
+      const critterbaseService = new CritterbaseService(getCritterbaseUserFromConnection(dbConnection));
+
+      const aliasMap = new Map<string, any>([[' alias ', { critter_id: 'critter_id' }]]);
+
+      const repoStub = sinon.stub(surveyCritterService.critterRepository, 'addCrittersToSurvey').resolves([1]);
+      const surveyAliasMapStub = sinon.stub(surveyCritterService, 'getSurveyCritterAliasMap').resolves(aliasMap);
+      const createCritterStub = sinon.stub(critterbaseService, 'createCritter').resolves('critter_id');
+
+      try {
+        await surveyCritterService.createCritterAndAddToSurvey(1, { animal_id: 'alias' } as any);
+
+        expect.fail();
+      } catch (err: any) {
+        expect(err.message).to.equal('Critter alias: alias already exists in survey');
+      }
+
+      expect(surveyAliasMapStub).to.be.calledOnceWithExactly(1);
+      expect(createCritterStub).to.not.be.calledOnce;
+      expect(repoStub).to.not.be.calledOnce;
+    });
+
+    it('should throw an error if duplicate case-insensitive alias in survey detected', async () => {
+      const dbConnection = getMockDBConnection();
+      const surveyCritterService = new SurveyCritterService(dbConnection);
+      const critterbaseService = new CritterbaseService(getCritterbaseUserFromConnection(dbConnection));
+
+      const aliasMap = new Map<string, any>([['ALIAS', { critter_id: 'critter_id' }]]);
+
+      const repoStub = sinon.stub(surveyCritterService.critterRepository, 'addCrittersToSurvey').resolves([1]);
+      const surveyAliasMapStub = sinon.stub(surveyCritterService, 'getSurveyCritterAliasMap').resolves(aliasMap);
+      const createCritterStub = sinon.stub(critterbaseService, 'createCritter').resolves('critter_id');
+
+      try {
+        await surveyCritterService.createCritterAndAddToSurvey(1, { animal_id: 'alias' } as any);
+
+        expect.fail();
+      } catch (err: any) {
+        expect(err.message).to.equal('Critter alias: alias already exists in survey');
+      }
+
+      expect(surveyAliasMapStub).to.be.calledOnceWithExactly(1);
+      expect(createCritterStub).to.not.be.calledOnce;
+      expect(repoStub).to.not.be.calledOnce;
+    });
+
     it('should return the survey critter id and critterbase critter id', async () => {
       const dbConnection = getMockDBConnection();
       const surveyCritterService = new SurveyCritterService(dbConnection);
