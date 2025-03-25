@@ -5,8 +5,8 @@
 rm open_prs.txt open_prs_regex.txt old_imagestreamtags.txt old_imagestreamtags_filtered.txt
 
 # Fetch a list of all open PRs (including drafts) which we will exclude from being deleted
-curl -H "Accept: application/vnd.github.v3+json" --insecure "https://api.github.com/repos/bcgov/biohubbc/pulls?state=open&base=dev&sort=created&direction=asc&per_page=100&page=1" | jq '.[] .number' | sort -r >> open_prs.txt
-curl -H "Accept: application/vnd.github.v3+json" --insecure "https://api.github.com/repos/bcgov/biohubbc/pulls?state=open&base=dev&sort=created&direction=asc&per_page=100&page=2" | jq '.[] .number' | sort -r >> open_prs.txt
+curl -k -H "Accept: application/vnd.github.v3+json" "https://api.github.com/repos/bcgov/biohubbc/pulls?state=open&base=dev&sort=created&direction=asc&per_page=100&page=1" | jq '.[] .number' | sort -r >> open_prs.txt
+curl -k -H "Accept: application/vnd.github.v3+json" "https://api.github.com/repos/bcgov/biohubbc/pulls?state=open&base=dev&sort=created&direction=asc&per_page=100&page=2" | jq '.[] .number' | sort -r >> open_prs.txt
 
 # Set initial openshift environment
 oc project af2668-tools

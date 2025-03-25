@@ -11,7 +11,7 @@ oc project af2668-dev
 oc get deployments --show-labels | grep env-id | awk '{ match($1, /[0-9]{1,4}/); print substr($1, RSTART, RLENGTH) }' | grep -v '^$' | sort | uniq > current_prs.txt
 
 # Fetch a list of the most recent 100 closed PRs and write the PR numbers to a temp file
-curl -H "Accept: application/vnd.github.v3+json" "https://api.github.com/repos/bcgov/biohubbc/pulls?state=closed&base=dev&per_page=100&page=1&sort=updated&direction=desc" | jq '.[] .number' | sort -r >> closed_prs.txt
+curl -k -H "Accept: application/vnd.github.v3+json" "https://api.github.com/repos/bcgov/biohubbc/pulls?state=closed&base=dev&per_page=100&page=1&sort=updated&direction=desc" | jq '.[] .number' | sort -r >> closed_prs.txt
 
 # Sort and filter PR numbers present in both closed_prs.txt and current_prs.txt
 sort current_prs.txt > current_prs_sorted.txt
