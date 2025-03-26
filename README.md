@@ -15,7 +15,7 @@ The objectives for the SIMS project are:
 
 ## Install Node/NPM
 
-- Requires Node version 18+
+- Requires Node version 20+
 - https://nodejs.org/en/download/
 
 ## Install Git
@@ -336,7 +336,7 @@ GUI-centric application for viewing/interacting with Databases.
 
 ### Pre-req
 
-- Intall PostgreSQL 12+
+- Intall PostgreSQL 17
 - https://www.postgresql.org/download/
 
 ### Add a new connection
@@ -348,7 +348,7 @@ GUI-centric application for viewing/interacting with Databases.
   - username: postgres
   - password: postgres
   - user role: (leave empty)
-  - local client: PostgreSQL 12
+  - local client: PostgreSQL 17
 
 _Note: all of the above connection values can be found in the `.env` file_
 

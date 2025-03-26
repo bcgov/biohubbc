@@ -15,7 +15,7 @@ const mockSurveyContext: ISurveyContext = {
   projectId: 1,
   surveyDataLoader: {
     data: { surveyData: { survey_details: { survey_name: 'survey-name-1' } } },
-    load: jest.fn()
+    load: vi.fn()
   } as unknown as DataLoader<any, any, any>
 } as unknown as ISurveyContext;
 
@@ -23,7 +23,7 @@ const mockProjectContext: IProjectContext = {
   projectId: 1,
   projectDataLoader: {
     data: { projectData: { project: { project_name: 'name' } } },
-    load: jest.fn()
+    load: vi.fn()
   } as unknown as DataLoader<any, any, any>
 } as unknown as IProjectContext;
 
@@ -60,7 +60,7 @@ it('should render loading spinner when no survey data', () => {
     projectId: 1,
     surveyDataLoader: {
       data: undefined,
-      load: jest.fn()
+      load: vi.fn()
     } as unknown as DataLoader<any, any, any>
   });
   expect(getByTestId('fullpage-spinner')).toBeInTheDocument();

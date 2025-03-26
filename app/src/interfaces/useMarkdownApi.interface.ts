@@ -6,6 +6,9 @@ export interface IGetMarkdownResponse {
     participated: boolean;
   };
 }
+
+export type MarkdownPayload = IGetMarkdownResponse['markdown'];
+
 export interface IMarkdownFilterObject {
   typeName: string;
 }
@@ -27,5 +30,6 @@ export enum MarkdownTypeNameEnum {
   SAMPLING_SITES = 'Sampling Sites',
   SAMPLING_PERIODS = 'Sampling Periods',
   SURVEY_METADATA = 'Survey Metadata',
-  OBSERVATIONS = 'Observations'
+  OBSERVATIONS = 'Observations',
+  HABITAT_FEATURES = 'Habitat Features'
 }

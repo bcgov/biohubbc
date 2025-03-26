@@ -14,7 +14,7 @@ import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext, useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
-import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
+import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { GetSamplingPeriod, UpdateSamplingPeriod } from 'interfaces/useSamplingPeriodApi.interface';
 import { useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
@@ -71,7 +71,7 @@ export const EditSamplePeriodPage = () => {
 
   const biohubApi = useBiohubApi();
 
-  const { locationChangeInterceptor } = useUnsavedChangesDialog();
+  const { locationChangeInterceptor, skipUnsavedChangesDialog } = useUnsavedChangesDialog();
 
   const urlParams: Record<string, string | number | undefined> = useParams();
   const surveySamplePeriodId = Number(urlParams['survey_sample_period_id']);
@@ -147,10 +147,8 @@ export const EditSamplePeriodPage = () => {
       );
 
       // create complete, navigate back to observations page
-      history.push(
-        `/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling`,
-        SKIP_CONFIRMATION_DIALOG
-      );
+      skipUnsavedChangesDialog();
+      history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling`);
     } catch (error) {
       showCreateErrorDialog({
         dialogTitle: SamplePeriodI18N.createErrorTitle,

@@ -13,12 +13,12 @@ import {
  */
 const useReferenceApi = (axios: AxiosInstance) => {
   /**
-   * Finds subcount environments by search term.
+   * Finds environment reference data by search term.
    *
    * @param {string} searchTerm
    * @return {*}  {Promise<EnvironmentType>}
    */
-  const findSubcountEnvironments = async (searchTerm: string): Promise<EnvironmentType> => {
+  const findEnvironmentReferenceData = async (searchTerm: string): Promise<EnvironmentType> => {
     const { data } = await axios.get(`/api/reference/search/environment?searchTerm=${searchTerm}`);
 
     return data;
@@ -53,7 +53,7 @@ const useReferenceApi = (axios: AxiosInstance) => {
   };
 
   return {
-    findSubcountEnvironments,
+    findEnvironmentReferenceData,
     getTechniqueAttributes,
     getVantageReferenceRecords
   };

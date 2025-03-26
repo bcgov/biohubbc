@@ -16,6 +16,9 @@ export const ActiveUserFiltersInitialValues: IActiveUserFilters = {
 };
 
 export interface IActiveUsersFilterFormProps {
+  /**
+   * Callback fired when the form is submitted.
+   */
   handleSubmit: (filterValues: IActiveUserFilters) => void;
 }
 

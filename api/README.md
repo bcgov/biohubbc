@@ -4,7 +4,7 @@
 
 | Technology | Version | Website                | Description          |
 | ---------- | ------- | ---------------------- | -------------------- |
-| node       | 18.x.x  | https://nodejs.org/en/ | JavaScript Runtime   |
+| node       | 20.x.x  | https://nodejs.org/en/ | JavaScript Runtime   |
 | npm        | 10.x.x  | https://www.npmjs.com/ | Node Package Manager |
 
 <br />

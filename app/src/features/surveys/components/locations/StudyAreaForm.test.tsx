@@ -5,11 +5,12 @@ import StudyAreaForm, {
 } from 'features/surveys/components/locations/StudyAreaForm';
 import { Formik } from 'formik';
 import { cleanup, render, waitFor } from 'test-helpers/test-utils';
+import { Mock } from 'vitest';
 import { SurveyAreaMapControl } from './SurveyAreaMapControl';
 
 // Mock Map Controller component
-jest.mock('./SurveyAreaMapControl');
-const mockMap = SurveyAreaMapControl as jest.Mock;
+vi.mock('./SurveyAreaMapControl');
+const mockMap = SurveyAreaMapControl as Mock;
 
 describe('Study Area Form', () => {
   beforeEach(() => {
@@ -27,7 +28,7 @@ describe('Study Area Form', () => {
         validationSchema={SurveyLocationYupSchema}
         validateOnBlur={true}
         validateOnChange={false}
-        onSubmit={jest.fn()}>
+        onSubmit={vi.fn()}>
         {() => <StudyAreaForm />}
       </Formik>
     );
@@ -67,7 +68,7 @@ describe('Study Area Form', () => {
         validationSchema={SurveyLocationYupSchema}
         validateOnBlur={true}
         validateOnChange={false}
-        onSubmit={jest.fn()}>
+        onSubmit={vi.fn()}>
         {() => <StudyAreaForm />}
       </Formik>
     );

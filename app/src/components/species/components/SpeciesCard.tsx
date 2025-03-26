@@ -18,9 +18,9 @@ const SpeciesCard = (props: ISpeciesCardProps) => {
   const commonNames = taxon.commonNames.filter((item) => item !== null).join(`\u00A0\u00B7\u00A0`);
 
   return (
-    <Stack flexDirection="row" justifyContent="space-between" flex="1 1 auto" position="relative">
+    <Stack flexDirection="row" justifyContent="space-between" alignItems="center" flex="1 1 auto" position="relative">
       <Box>
-        <Stack direction="row" gap={1} mb={0.5}>
+        <Stack direction="row" gap={1}>
           <ScientificNameTypography name={taxon.scientificName} fontWeight={700} />
           {taxon?.rank && (
             <ColouredRectangleChip
@@ -30,9 +30,11 @@ const SpeciesCard = (props: ISpeciesCardProps) => {
             />
           )}
         </Stack>
-        <Typography variant="subtitle2" color="textSecondary">
-          {commonNames}
-        </Typography>
+        {commonNames.length > 0 && (
+          <Typography mt={0.5} variant="subtitle2" color="textSecondary">
+            {commonNames}
+          </Typography>
+        )}
       </Box>
       <Chip right={5} label={taxon.tsn} variant="filled" component={Box} title="Taxonomic serial number" />
     </Stack>

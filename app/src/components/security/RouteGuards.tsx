@@ -141,6 +141,11 @@ export const AuthenticatedRouteGuard = (props: RouteProps) => {
     return <CircularProgress className="pageProgress" data-testid={'authenticated-route-guard-spinner'} />;
   }
 
+  if (authStateContext.simsUserWrapper.recordEndDate) {
+    // User exists in the system user table but is blocked
+    return <Redirect to="/forbidden" />;
+  }
+
   if (!authStateContext.simsUserWrapper.systemUserId) {
     // User is not a registered system user
 

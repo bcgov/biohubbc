@@ -28,7 +28,7 @@ const SurveyGeneralInformation = () => {
   const codes = codesContext.codesDataLoader.data;
 
   const surveyTypes: string | null =
-    codes.type
+    codes.survey_data_type
       .filter((code) => survey_details.survey_types.includes(code.id))
       .map((code) => code.name)
       .join(', ') || null;

@@ -57,38 +57,66 @@ export class ObservationSubCountMeasurementService extends DBService {
    * Get all distinct taxon_measurment_ids for all qualitative measurements for a given survey.
    *
    * @param {number} surveyId
+   * @param {{
+   *       filterFields?: {
+   *         surveyObservationIds?: number[];
+   *       };
+   *     }} [options] Optional fields to additionally filter results by
    * @return {*}  {Promise<string[]>}
    * @memberof ObservationSubCountMeasurementService
    */
-  async getObservationSubCountQualitativeTaxonMeasurementIds(surveyId: number): Promise<string[]> {
-    return this.observationSubCountMeasurementRepository.getObservationSubCountQualitativeTaxonMeasurementIds(surveyId);
+  async getObservationSubCountQualitativeTaxonMeasurementIdsForSurvey(
+    surveyId: number,
+    options?: {
+      filterFields?: {
+        surveyObservationIds?: number[];
+      };
+    }
+  ): Promise<string[]> {
+    return this.observationSubCountMeasurementRepository.getObservationSubCountQualitativeTaxonMeasurementIds(
+      surveyId,
+      options
+    );
   }
 
   /**
    * Get all distinct taxon_measurment_ids for all quantitative measurements for a given survey.
    *
    * @param {number} surveyId
+   * @param {{
+   *       filterFields?: {
+   *         surveyObservationIds?: number[];
+   *       };
+   *     }} [options] Optional fields to additionally filter results by
    * @return {*}  {Promise<string[]>}
    * @memberof ObservationSubCountMeasurementService
    */
-  async getObservationSubCountQuantitativeTaxonMeasurementIds(surveyId: number): Promise<string[]> {
+  async getObservationSubCountQuantitativeTaxonMeasurementIdsForSurvey(
+    surveyId: number,
+    options?: {
+      filterFields?: {
+        surveyObservationIds?: number[];
+      };
+    }
+  ): Promise<string[]> {
     return this.observationSubCountMeasurementRepository.getObservationSubCountQuantitativeTaxonMeasurementIds(
-      surveyId
+      surveyId,
+      options
     );
   }
 
   /**
-   * Delete all measurement records, for all observation records, for a given survey and set of measurement ids.
+   * Delete all measurement records for a given survey and set of observation subcount ids.
    *
    * @param {number} surveyId
-   * @param {string[]} measurementIds Critterbase taxon measurement ids to delete
+   * @param {number[]} observationSubCountIds
    * @return {*}  {Promise<void>}
    * @memberof ObservationSubCountMeasurementService
    */
-  async deleteMeasurementsForTaxonMeasurementIds(surveyId: number, measurementIds: string[]): Promise<void> {
-    return this.observationSubCountMeasurementRepository.deleteMeasurementsForTaxonMeasurementIds(
+  async deleteMeasurementsByObservationSubCountId(surveyId: number, observationSubCountIds: number[]): Promise<void> {
+    return this.observationSubCountMeasurementRepository.deleteMeasurementsByObservationSubCountId(
       surveyId,
-      measurementIds
+      observationSubCountIds
     );
   }
 }

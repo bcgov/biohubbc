@@ -13,7 +13,7 @@ export const useMarkdownApi = (axios: AxiosInstance) => {
    * Get observations for a system user id.
    *
    * @param {IMarkdownFilterObject} filterObject
-   * @return {Promise<IFindProjectsResponse>}
+   * @return {Promise<IGetMarkdownResponse>}
    */
   const getMarkdown = async (filterObject: IMarkdownFilterObject): Promise<IGetMarkdownResponse> => {
     const params = {

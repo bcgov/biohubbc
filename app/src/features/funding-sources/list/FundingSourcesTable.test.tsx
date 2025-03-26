@@ -9,9 +9,9 @@ describe('FundingSourcesTable', () => {
 
   it('renders with an empty array of funding sources', async () => {
     const fundingSources: IGetFundingSourcesResponse[] = [];
-    const onView = jest.fn();
-    const onEdit = jest.fn();
-    const onDelete = jest.fn();
+    const onView = vi.fn();
+    const onEdit = vi.fn();
+    const onDelete = vi.fn();
 
     const { getByText } = render(
       <FundingSourcesTable fundingSources={fundingSources} onView={onView} onEdit={onEdit} onDelete={onDelete} />
@@ -24,9 +24,9 @@ describe('FundingSourcesTable', () => {
 
   it('renders with non empty array of funding sources', async () => {
     const fundingSources: IGetFundingSourcesResponse[] = [];
-    const onView = jest.fn();
-    const onEdit = jest.fn();
-    const onDelete = jest.fn();
+    const onView = vi.fn();
+    const onEdit = vi.fn();
+    const onDelete = vi.fn();
 
     const { getByTestId } = render(
       <FundingSourcesTable fundingSources={fundingSources} onView={onView} onEdit={onEdit} onDelete={onDelete} />

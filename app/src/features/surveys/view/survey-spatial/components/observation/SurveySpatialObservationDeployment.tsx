@@ -31,6 +31,8 @@ interface IObservationTableRow {
 /**
  * Component to display observation data in a table with server-side pagination and sorting.
  *
+ * TODO: Deprecated? This is not used anywhere in the codebase.
+ *
  * @returns {*}
  */
 export const SurveySpatialObservationDeployment = () => {
@@ -119,8 +121,8 @@ export const SurveySpatialObservationDeployment = () => {
         {
           field: 'count',
           headerName: 'Count',
-          headerAlign: 'right',
-          align: 'right',
+          headerAlign: 'left',
+          align: 'left',
           maxWidth: 100
         },
         {
@@ -131,22 +133,22 @@ export const SurveySpatialObservationDeployment = () => {
         {
           field: 'observation_time',
           headerName: 'Time',
-          headerAlign: 'right',
-          align: 'right',
+          headerAlign: 'left',
+          align: 'left',
           maxWidth: 100
         },
         {
           field: 'latitude',
           headerName: 'Lat',
-          headerAlign: 'right',
-          align: 'right',
+          headerAlign: 'left',
+          align: 'left',
           maxWidth: 100
         },
         {
           field: 'longitude',
           headerName: 'Long',
-          headerAlign: 'right',
-          align: 'right',
+          headerAlign: 'left',
+          align: 'left',
           maxWidth: 100
         }
       ]);

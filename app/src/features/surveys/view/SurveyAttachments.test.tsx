@@ -18,19 +18,20 @@ import {
   render,
   waitFor
 } from 'test-helpers/test-utils';
+import { Mock } from 'vitest';
 import SurveyAttachments from './SurveyAttachments';
 
-jest.mock('../../../hooks/useBioHubApi');
-const mockBiohubApi = useBiohubApi as jest.Mock;
+vi.mock('../../../hooks/useBioHubApi');
+const mockBiohubApi = useBiohubApi as Mock;
 
 const mockUseApi = {
   survey: {
-    getSurveyForView: jest.fn(),
-    getSurveyAttachments: jest.fn(),
-    deleteSurveyAttachment: jest.fn()
+    getSurveyForView: vi.fn(),
+    getSurveyAttachments: vi.fn(),
+    deleteSurveyAttachment: vi.fn()
   },
   observation: {
-    getObservationSubmission: jest.fn()
+    getObservationSubmission: vi.fn()
   }
 };
 
@@ -51,13 +52,13 @@ describe('SurveyAttachments', () => {
     const mockSurveyContext: ISurveyContext = {
       artifactDataLoader: {
         data: null,
-        load: jest.fn()
+        load: vi.fn()
       } as unknown as DataLoader<any, any, any>,
       surveyId: 1,
       projectId: 1,
       surveyDataLoader: {
         data: { surveyData: { survey_details: { survey_name: 'name' } } },
-        load: jest.fn()
+        load: vi.fn()
       } as unknown as DataLoader<any, any, any>
     } as unknown as ISurveyContext;
 
@@ -74,12 +75,12 @@ describe('SurveyAttachments', () => {
     const mockProjectContext: IProjectContext = {
       artifactDataLoader: {
         data: null,
-        load: jest.fn()
+        load: vi.fn()
       } as unknown as DataLoader<any, any, any>,
       projectId: 1,
       projectDataLoader: {
         data: { projectData: { project: { project_name: 'name' } } },
-        load: jest.fn()
+        load: vi.fn()
       } as unknown as DataLoader<any, any, any>
     } as unknown as IProjectContext;
 
@@ -120,7 +121,7 @@ describe('SurveyAttachments', () => {
     const mockSurveyContext: ISurveyContext = {
       artifactDataLoader: {
         data: null,
-        load: jest.fn(),
+        load: vi.fn(),
         isLoading: false,
         isReady: true
       } as unknown as DataLoader<any, any, any>,
@@ -128,7 +129,7 @@ describe('SurveyAttachments', () => {
       projectId: 1,
       surveyDataLoader: {
         data: { surveyData: { survey_details: { survey_name: 'name' } } },
-        load: jest.fn()
+        load: vi.fn()
       } as unknown as DataLoader<any, any, any>
     } as unknown as ISurveyContext;
 
@@ -145,12 +146,12 @@ describe('SurveyAttachments', () => {
     const mockProjectContext: IProjectContext = {
       artifactDataLoader: {
         data: null,
-        load: jest.fn()
+        load: vi.fn()
       } as unknown as DataLoader<any, any, any>,
       projectId: 1,
       projectDataLoader: {
         data: { projectData: { project: { project_name: 'name' } } },
-        load: jest.fn()
+        load: vi.fn()
       } as unknown as DataLoader<any, any, any>
     } as unknown as IProjectContext;
 
@@ -187,7 +188,7 @@ describe('SurveyAttachments', () => {
             }
           ]
         },
-        load: jest.fn(),
+        load: vi.fn(),
         isLoading: false,
         isReady: true
       } as unknown as DataLoader<any, any, any>,
@@ -195,7 +196,7 @@ describe('SurveyAttachments', () => {
       projectId: 1,
       surveyDataLoader: {
         data: { surveyData: { survey_details: { survey_name: 'name' } } },
-        load: jest.fn()
+        load: vi.fn()
       } as unknown as DataLoader<any, any, any>
     } as unknown as ISurveyContext;
 
@@ -214,12 +215,12 @@ describe('SurveyAttachments', () => {
     const mockProjectContext: IProjectContext = {
       artifactDataLoader: {
         data: null,
-        load: jest.fn()
+        load: vi.fn()
       } as unknown as DataLoader<any, any, any>,
       projectId: 1,
       projectDataLoader: {
         data: { projectData: { project: { project_name: 'name' } } },
-        load: jest.fn()
+        load: vi.fn()
       } as unknown as DataLoader<any, any, any>
     } as unknown as IProjectContext;
 
@@ -267,7 +268,7 @@ describe('SurveyAttachments', () => {
             }
           ]
         },
-        load: jest.fn(),
+        load: vi.fn(),
         isLoading: false,
         isReady: true
       } as unknown as DataLoader<any, any, any>,
@@ -275,7 +276,7 @@ describe('SurveyAttachments', () => {
       projectId: 1,
       surveyDataLoader: {
         data: { surveyData: { survey_details: { survey_name: 'name' } } },
-        load: jest.fn(),
+        load: vi.fn(),
         isLoading: false,
         isReady: true
       } as unknown as DataLoader<any, any, any>
@@ -294,12 +295,12 @@ describe('SurveyAttachments', () => {
     const mockProjectContext: IProjectContext = {
       artifactDataLoader: {
         data: null,
-        load: jest.fn()
+        load: vi.fn()
       } as unknown as DataLoader<any, any, any>,
       projectId: 1,
       projectDataLoader: {
         data: { projectData: { project: { project_name: 'name' } } },
-        load: jest.fn()
+        load: vi.fn()
       } as unknown as DataLoader<any, any, any>
     } as unknown as IProjectContext;
 
@@ -364,7 +365,7 @@ describe('SurveyAttachments', () => {
             }
           ]
         },
-        load: jest.fn(),
+        load: vi.fn(),
         isLoading: false,
         isReady: true
       } as unknown as DataLoader<any, any, any>,
@@ -372,7 +373,7 @@ describe('SurveyAttachments', () => {
       projectId: 1,
       surveyDataLoader: {
         data: { surveyData: { survey_details: { survey_name: 'name' } } },
-        load: jest.fn(),
+        load: vi.fn(),
         isLoading: false,
         isReady: true
       } as unknown as DataLoader<any, any, any>
@@ -391,12 +392,12 @@ describe('SurveyAttachments', () => {
     const mockProjectContext: IProjectContext = {
       artifactDataLoader: {
         data: null,
-        load: jest.fn()
+        load: vi.fn()
       } as unknown as DataLoader<any, any, any>,
       projectId: 1,
       projectDataLoader: {
         data: { projectData: { project: { project_name: 'name' } } },
-        load: jest.fn()
+        load: vi.fn()
       } as unknown as DataLoader<any, any, any>
     } as unknown as IProjectContext;
 
@@ -460,7 +461,7 @@ describe('SurveyAttachments', () => {
             }
           ]
         },
-        load: jest.fn(),
+        load: vi.fn(),
         isLoading: false,
         isReady: true
       } as unknown as DataLoader<any, any, any>,
@@ -468,7 +469,7 @@ describe('SurveyAttachments', () => {
       projectId: 1,
       surveyDataLoader: {
         data: { surveyData: { survey_details: { survey_name: 'name' } } },
-        load: jest.fn(),
+        load: vi.fn(),
         isLoading: false,
         isReady: true
       } as unknown as DataLoader<any, any, any>
@@ -477,12 +478,12 @@ describe('SurveyAttachments', () => {
     const mockProjectContext: IProjectContext = {
       artifactDataLoader: {
         data: null,
-        load: jest.fn()
+        load: vi.fn()
       } as unknown as DataLoader<any, any, any>,
       projectId: 1,
       projectDataLoader: {
         data: { projectData: { project: { project_name: 'name' } } },
-        load: jest.fn()
+        load: vi.fn()
       } as unknown as DataLoader<any, any, any>
     } as unknown as IProjectContext;
 
@@ -538,7 +539,7 @@ describe('SurveyAttachments', () => {
     const background = getAllByRole('presentation')[0].firstChild;
 
     if (!background) {
-      fail('Failed to click background.');
+      expect.fail('Failed to click background.');
     }
 
     fireEvent.click(background);

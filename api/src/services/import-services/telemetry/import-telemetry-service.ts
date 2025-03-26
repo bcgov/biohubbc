@@ -9,11 +9,14 @@ import {
   getDateCellValidator,
   getLatitudeCellValidator,
   getLongitudeCellValidator,
+  getSurveyCritterAliasCellValidator,
   getTimeCellSetter,
   getTimeCellValidator
 } from '../../../utils/csv-utils/csv-header-configs';
+import { getAllAliases } from '../../../utils/csv-utils/csv-helpers';
 import { getLogger } from '../../../utils/logger';
 import { DBService } from '../../db-service';
+import { SurveyCritterService } from '../../survey-critter-service';
 import { TelemetryDeploymentService } from '../../telemetry-services/telemetry-deployment-service';
 import { TelemetryVendorService } from '../../telemetry-services/telemetry-vendor-service';
 import { formatTimestampString } from '../utils/datetime';
@@ -22,7 +25,7 @@ import { getTelemetrySerialCellValidator, getTelemetryVendorCellValidator } from
 const defaultLog = getLogger('services/import-services/import-telemetry-service');
 
 // Telemetry CSV static headers
-export type TelemetryCSVStaticHeader = 'VENDOR' | 'SERIAL' | 'LATITUDE' | 'LONGITUDE' | 'DATE' | 'TIME';
+export type TelemetryCSVStaticHeader = 'VENDOR' | 'SERIAL' | 'ALIAS' | 'LATITUDE' | 'LONGITUDE' | 'DATE' | 'TIME';
 
 /**
  * ImportTelemetryService - A service for importing Telemetry from a CSV into SIMS.
@@ -37,6 +40,7 @@ export class ImportTelemetryService extends DBService {
   // Services
   deploymentService: TelemetryDeploymentService;
   telemetryVendorService: TelemetryVendorService;
+  surveyCritterService: SurveyCritterService;
   codeRepository: CodeRepository;
   utils: CSVConfigUtils<TelemetryCSVStaticHeader>;
 
@@ -51,12 +55,13 @@ export class ImportTelemetryService extends DBService {
 
     const initialConfig: CSVConfig<TelemetryCSVStaticHeader> = {
       staticHeadersConfig: {
-        SERIAL: { aliases: ['DEVICE_ID', 'DEVICE ID', 'DEVICE', 'COLLAR', 'COLLAR ID'] },
+        SERIAL: { aliases: getAllAliases(['DEVICE_ID', 'DEVICE', 'COLLAR', 'COLLAR_ID']) },
         VENDOR: { aliases: ['MAKE', 'MANUFACTURER'] },
+        ALIAS: { aliases: ['NICKNAME', 'ANIMAL'], optional: true },
         LATITUDE: { aliases: ['LAT'] },
         LONGITUDE: { aliases: ['LON', 'LONG', 'LNG'] },
-        DATE: { aliases: [] },
-        TIME: { aliases: [], optional: true }
+        DATE: { aliases: ['ACQUISITION_DATE', 'ACQUISITION DATE'] },
+        TIME: { aliases: ['ACQUISITION_TIME', 'ACQUISITION TIME'], optional: true }
       },
       ignoreDynamicHeaders: false
     };
@@ -67,6 +72,7 @@ export class ImportTelemetryService extends DBService {
     // Initialize services
     this.deploymentService = new TelemetryDeploymentService(connection);
     this.telemetryVendorService = new TelemetryVendorService(connection);
+    this.surveyCritterService = new SurveyCritterService(connection);
     this.codeRepository = new CodeRepository(connection);
     this.utils = new CSVConfigUtils(this.worksheet, initialConfig);
   }
@@ -112,28 +118,22 @@ export class ImportTelemetryService extends DBService {
    * @returns {Promise<CSVConfig<TelemetryCSVStaticHeader>>} The CSV configuration
    */
   async getCSVConfig(): Promise<CSVConfig<TelemetryCSVStaticHeader>> {
-    const deployments = await this.deploymentService.getDeploymentsForSurvey(this.surveyId);
-    const vendors = await this.codeRepository.getActiveTelemetryDeviceMakes();
+    const [deployments, surveyCritterAliasMap, vendors] = await Promise.all([
+      this.deploymentService.getDeploymentsForSurvey(this.surveyId),
+      this.surveyCritterService.getSurveyCritterAliasMap(this.surveyId),
+      this.codeRepository.getActiveTelemetryDeviceMakes()
+    ]);
+
     const vendorsSet = new Set(vendors.map((vendor) => vendor.name.toLowerCase()));
 
-    this.utils.setStaticHeaderConfig('SERIAL', {
-      validateCell: getTelemetrySerialCellValidator(deployments, this.utils)
-    });
-    this.utils.setStaticHeaderConfig('VENDOR', {
-      validateCell: getTelemetryVendorCellValidator(vendorsSet)
-    });
-    this.utils.setStaticHeaderConfig('LATITUDE', {
-      validateCell: getLatitudeCellValidator()
-    });
-    this.utils.setStaticHeaderConfig('LONGITUDE', {
-      validateCell: getLongitudeCellValidator()
-    });
-    this.utils.setStaticHeaderConfig('DATE', {
-      validateCell: getDateCellValidator()
-    });
-    this.utils.setStaticHeaderConfig('TIME', {
-      validateCell: getTimeCellValidator(),
-      setCellValue: getTimeCellSetter()
+    this.utils.setAllStaticHeaderConfigs({
+      SERIAL: { validateCell: getTelemetrySerialCellValidator(deployments, surveyCritterAliasMap, this.utils) },
+      ALIAS: { validateCell: getSurveyCritterAliasCellValidator(surveyCritterAliasMap, { optional: true }) },
+      VENDOR: { validateCell: getTelemetryVendorCellValidator(vendorsSet) },
+      LATITUDE: { validateCell: getLatitudeCellValidator() },
+      LONGITUDE: { validateCell: getLongitudeCellValidator() },
+      DATE: { validateCell: getDateCellValidator() },
+      TIME: { validateCell: getTimeCellValidator(), setCellValue: getTimeCellSetter() }
     });
 
     // Return the final CSV config

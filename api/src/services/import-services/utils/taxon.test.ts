@@ -21,6 +21,19 @@ describe('taxon', () => {
       expect(taxonMap.get(1)).to.deep.equal({ tsn: 1, scientificName: 'Alces alces' });
       expect(taxonMap.get('TAXON')).to.deep.equal({ tsn: 2, scientificName: 'taxon' });
     });
+
+    it('should return a map of taxon identifiers to taxons, when tsns are received as strings', async () => {
+      const taxonIdentifiers = ['1', 'taxon']; // TSNs are received as strings
+      const platformService: any = {
+        getTaxonomyByTsns: sinon.stub().resolves([{ tsn: 1, scientificName: 'Alces alces' }]),
+        getTaxonByScientificName: sinon.stub().resolves({ tsn: 2, scientificName: 'taxon' })
+      };
+
+      const taxonMap = await getTaxonMap(taxonIdentifiers, platformService);
+
+      expect(taxonMap.get(1)).to.deep.equal({ tsn: 1, scientificName: 'Alces alces' });
+      expect(taxonMap.get('TAXON')).to.deep.equal({ tsn: 2, scientificName: 'taxon' });
+    });
   });
 
   describe('getTsnsFromTaxonMap', () => {
