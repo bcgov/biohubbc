@@ -635,7 +635,14 @@ objects:
                     - name: DATABASE_RESPONSE_VALIDATION_ENABLED
                       value: ${DATABASE_RESPONSE_VALIDATION_ENABLED}
                   command: ['npm', 'run', 'telemetry-cronjob', '-- "--batchSize 1000 --concurrently 100"']
+                  volumeMounts:
+                    - name: ${NAME}${SUFFIX}
+                      mountPath: /opt/app-root/src/data
               restartPolicy: Never
+              volumes:
+                - name: ${NAME}${SUFFIX}
+                  persistentVolumeClaim:
+                    claimName: ${NAME}${SUFFIX}
 
   # Disable the HPA for now, as it is preferrable to run an exact number of pods (e.g. min:2, max:2)
   # - kind: HorizontalPodAutoscaler
