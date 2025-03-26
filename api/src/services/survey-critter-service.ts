@@ -217,7 +217,7 @@ export class SurveyCritterService extends DBService {
     );
 
     // Remove the current critter from the map
-    trimmedSurveyCritterAliasMap.delete(critterbaseCritter.animal_id.trim());
+    trimmedSurveyCritterAliasMap.delete(critterbaseCritter.animal_id.toLowerCase().trim());
 
     // Only allow unique critter aliases in the survey
     if (trimmedSurveyCritterAliasMap.has(critter.animal_id.trim())) {
