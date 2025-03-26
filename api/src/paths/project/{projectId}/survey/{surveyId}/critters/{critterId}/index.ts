@@ -143,7 +143,6 @@ export function updateSurveyCritter(): RequestHandler {
         critter_id: critterbaseCritterId,
         animal_id: req.body.animal_id,
         wlh_id: req.body.wlh_id,
-        itis_tsn: req.body.itis_tsn,
         sex_qualitative_option_id: req.body.sex_qualitative_option_id,
         critter_comment: req.body.critter_comment
       });

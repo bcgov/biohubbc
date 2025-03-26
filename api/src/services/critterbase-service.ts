@@ -73,7 +73,7 @@ export interface IUpdateCritter {
   wlh_id?: string | null;
   animal_id: string; // NOTE: In critterbase this is optional. For SIMS it should be required.
   sex_qualitative_option_id?: string | null;
-  itis_tsn: number;
+  // itis_tsn is not updatable
   critter_comment?: string | null;
 }
 

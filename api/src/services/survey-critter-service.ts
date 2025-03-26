@@ -227,7 +227,18 @@ export class SurveyCritterService extends DBService {
     }
 
     // Update the critter in Critterbase
-    await this.critterbaseService.updateCritter({ critters: [critter] });
+    await this.critterbaseService.updateCritter({
+      critters: [
+        {
+          critter_id: critter.critter_id,
+          animal_id: critter.animal_id,
+          wlh_id: critter.wlh_id,
+          sex_qualitative_option_id: critter.sex_qualitative_option_id,
+          itis_tsn: critterbaseCritter.itis_tsn, // Currently we do not support updating the ITIS TSN
+          critter_comment: critter.critter_comment
+        }
+      ]
+    });
 
     // Update the critter in the survey (refresh the audit columns)
     return this.critterRepository.updateCritter(simsCritterId, critter.critter_id);

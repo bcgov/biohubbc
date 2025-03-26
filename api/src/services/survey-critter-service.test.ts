@@ -1,6 +1,7 @@
 import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { ApiGeneralError } from '../errors/api-error';
 import { SurveyCritterRepository } from '../repositories/survey-critter-repository';
 import { getMockDBConnection } from '../__mocks__/db';
 import { CritterbaseService, getCritterbaseUserFromConnection } from './critterbase-service';
@@ -150,12 +151,69 @@ describe('SurveyService', () => {
       const dbConnection = getMockDBConnection();
       const service = new SurveyCritterService(dbConnection);
 
-      const repoStub = sinon.stub(SurveyCritterRepository.prototype, 'updateCritter').resolves();
+      const surveyCritterAliasMapStub = sinon.stub(service, 'getSurveyCritterAliasMap');
+      const getCritterStub = sinon.stub(service.critterbaseService, 'getCritter');
+      const updateCritterRepoStub = sinon.stub(SurveyCritterRepository.prototype, 'updateCritter');
+      const updateCritterCritterbaseStub = sinon.stub(service.critterbaseService, 'updateCritter');
 
-      const response = await service.updateCritter(1, 'asdf');
+      surveyCritterAliasMapStub.resolves(new Map<string, any>([['alias', { critter_id: 'A' }]]));
+      getCritterStub.resolves({ critter_id: 'A', animal_id: 'alias', itis_tsn: 1 });
+      updateCritterCritterbaseStub.resolves();
+      updateCritterRepoStub.resolves();
 
-      expect(repoStub).to.be.calledOnce;
+      const response = await service.updateCritter(1, 2, { critter_id: 'A', animal_id: 'alias' } as any);
+
+      expect(surveyCritterAliasMapStub).to.be.calledOnceWithExactly(1);
+      expect(getCritterStub).to.be.calledOnceWithExactly('A');
+
+      expect(updateCritterRepoStub).to.be.calledOnceWithExactly(2, 'A');
+      expect(updateCritterCritterbaseStub).to.be.calledOnceWithExactly({
+        critters: [
+          {
+            critter_id: 'A',
+            animal_id: 'alias',
+            wlh_id: undefined,
+            sex_qualitative_option_id: undefined,
+            itis_tsn: 1,
+            critter_comment: undefined
+          }
+        ]
+      });
+
       expect(response).to.be.undefined;
+    });
+
+    it('throws error if alias is duplicate in survey', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new SurveyCritterService(dbConnection);
+
+      const surveyCritterAliasMapStub = sinon.stub(service, 'getSurveyCritterAliasMap');
+      const getCritterStub = sinon.stub(service.critterbaseService, 'getCritter');
+      const updateCritterRepoStub = sinon.stub(SurveyCritterRepository.prototype, 'updateCritter');
+      const updateCritterCritterbaseStub = sinon.stub(service.critterbaseService, 'updateCritter');
+
+      surveyCritterAliasMapStub.resolves(
+        new Map<string, any>([
+          ['old', { critter_id: 'A' }],
+          ['new', { critter_id: 'B' }] // alias already exists in survey
+        ])
+      );
+      getCritterStub.resolves({ critter_id: 'A', animal_id: 'old' });
+      updateCritterCritterbaseStub.resolves();
+      updateCritterRepoStub.resolves();
+
+      try {
+        await service.updateCritter(1, 2, { critter_id: 'A', animal_id: 'new' } as any);
+        expect.fail();
+      } catch (err: any) {
+        expect(err).to.be.instanceOf(ApiGeneralError);
+
+        expect(surveyCritterAliasMapStub).to.be.calledOnceWithExactly(1);
+        expect(getCritterStub).to.be.calledOnceWithExactly('A');
+
+        expect(updateCritterRepoStub).to.not.be.calledOnce;
+        expect(updateCritterCritterbaseStub).to.not.be.calledOnce;
+      }
     });
   });
 });
