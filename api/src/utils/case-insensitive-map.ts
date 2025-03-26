@@ -53,4 +53,17 @@ export class CaseInsensitiveMap<KeyType, ValuesType> extends Map<KeyType, Values
     }
     return super.has(key);
   }
+
+  /**
+   * Delete a key from the map.
+   *
+   * @param {KeyType} key - The key
+   * @returns {boolean} Indicator the key was deleted
+   */
+  delete(key: KeyType): boolean {
+    if (typeof key === 'string') {
+      key = key.toLowerCase() as KeyType;
+    }
+    return super.delete(key);
+  }
 }
