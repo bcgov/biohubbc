@@ -22,15 +22,25 @@ describe('ImportTelemetryService', () => {
 
       const getSurveyDeploymentsStub = sinon.stub(service.deploymentService, 'getDeploymentsForSurvey');
       const getVendorsStub = sinon.stub(service.codeRepository, 'getActiveTelemetryDeviceMakes');
+      const getSurveyCritterAliasMapStub = sinon.stub(service.surveyCritterService, 'getSurveyCritterAliasMap');
 
       getSurveyDeploymentsStub.resolves([{ device_key: 'lotek:1234' } as ExtendedDeploymentRecord]);
       getVendorsStub.resolves([{ name: 'Lotek' } as any]);
+      getSurveyCritterAliasMapStub.resolves(new Map());
 
       const config = await service.getCSVConfig();
 
       expect(getSurveyDeploymentsStub).to.have.been.calledOnceWithExactly(1);
       expect(getVendorsStub).to.have.been.calledOnceWithExactly();
-      expect(config.staticHeadersConfig).to.have.keys('SERIAL', 'VENDOR', 'LATITUDE', 'LONGITUDE', 'DATE', 'TIME');
+      expect(config.staticHeadersConfig).to.have.keys(
+        'SERIAL',
+        'VENDOR',
+        'ALIAS',
+        'LATITUDE',
+        'LONGITUDE',
+        'DATE',
+        'TIME'
+      );
     });
   });
 

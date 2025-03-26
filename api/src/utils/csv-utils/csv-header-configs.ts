@@ -116,8 +116,6 @@ export const getTsnCellValidator = (tsns: Set<number>): CSVCellValidator => {
 /**
  * Get the description header cell validator.
  *
- * TODO: Add optional flag to allow undefined values conditionally
- *
  * Rules:
  *  1. The cell must be a string with a maximum length of 250
  *  2. The cell is optional if the optional flag is set
@@ -248,8 +246,15 @@ export const getDateCellValidator = (options?: CSVCellValidatorOptions): CSVCell
  * @param {Map<string, ICritterDetailed>} surveyAliasMap The survey alias map
  * @returns {*} {CSVCellValidator} The validate cell callback
  */
-export const getSurveyCritterAliasCellValidator = (surveyAliasMap: Map<string, ICritterDetailed>): CSVCellValidator => {
+export const getSurveyCritterAliasCellValidator = (
+  surveyAliasMap: Map<string, ICritterDetailed>,
+  options?: CSVCellValidatorOptions
+): CSVCellValidator => {
   return (params) => {
+    if (options?.optional && params.cell === undefined) {
+      return [];
+    }
+
     const critter = surveyAliasMap.get(String(params.cell).toLowerCase());
 
     if (!critter) {

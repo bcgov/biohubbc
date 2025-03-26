@@ -1,14 +1,18 @@
 import { IDBConnection } from '../database/db';
+import { ApiGeneralError } from '../errors/api-error';
 import { IAnimalAdvancedFilters } from '../models/animal-view';
 import { IAllTelemetryAdvancedFilters } from '../models/telemetry-view';
 import { SurveyCritterRecord, SurveyCritterRepository } from '../repositories/survey-critter-repository';
+import { CaseInsensitiveMap } from '../utils/case-insensitive-map';
 import { getLogger } from '../utils/logger';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import {
   CritterbaseService,
   getCritterbaseUserFromConnection,
+  ICreateCritter,
   ICritter,
-  ICritterDetailed
+  ICritterDetailed,
+  IUpdateCritter
 } from './critterbase-service';
 import { DBService } from './db-service';
 
@@ -144,21 +148,44 @@ export class SurveyCritterService extends DBService {
   }
 
   /**
-   * Add a critter as part of this survey. Does not create anything in the external system.
+   * Create a Critterbse critter and then add it to the survey.
+   *
+   * Note: This DOES check the Critter alias uniqueness in the survey.
    *
    * @param {number} surveyId
-   * @param {string} critterBaseCritterId
-   * @return {*}  {Promise<number>}
+   * @param {ICreateCritter} critter
+   * @return {*} {Promise<{critterbaseCritterId: string; surveyCritterId: number}>}
    * @memberof SurveyCritterService
    */
-  async addCritterToSurvey(surveyId: number, critterBaseCritterId: string): Promise<number> {
-    const response = await this.critterRepository.addCrittersToSurvey(surveyId, [critterBaseCritterId]);
+  async createCritterAndAddToSurvey(
+    surveyId: number,
+    critter: ICreateCritter
+  ): Promise<{ critterbaseCritterId: string; surveyCritterId: number }> {
+    const surveyCritterAliasMap = await this.getSurveyCritterAliasMap(surveyId);
 
-    return response[0];
+    // Create a copy of the map with trimmed aliases ' Carl' -> 'carl'
+    const trimmedSurveyCritterAliasMap = new CaseInsensitiveMap<string, ICritterDetailed>(
+      [...surveyCritterAliasMap].map(([key, value]) => [key.trim(), value])
+    );
+
+    // Only allow unique critter aliases in the survey
+    if (trimmedSurveyCritterAliasMap.has(critter.animal_id.trim())) {
+      throw new ApiGeneralError(`Critter alias: ${critter.animal_id} already exists in survey`, [
+        'SurveyCritterService->createCritterAndAddToSurvey'
+      ]);
+    }
+
+    const critterbaseCritter = await this.critterbaseService.createCritter(critter);
+
+    const response = await this.critterRepository.addCrittersToSurvey(surveyId, [critterbaseCritter.critter_id]);
+
+    return { critterbaseCritterId: critterbaseCritter.critter_id, surveyCritterId: response[0] };
   }
 
   /**
    * Add multiple critters to a survey. Does not create anything in the external system.
+   *
+   * Note: This does NOT check the Critter alias uniqueness in the survey.
    *
    * @param {number} surveyId
    * @param {string} critterBaseCritterIds
@@ -172,13 +199,49 @@ export class SurveyCritterService extends DBService {
   /**
    * Update critter already in survey. Only touches audit columns.
    *
-   * @param {number} critterId
-   * @param {string} critterBaseCritterId
+   * @param {number} surveyId
+   * @param {number} simsCritterId
+   * @param {IUpdateCritter} critter
    * @return {*}  {Promise<void>}
    * @memberof SurveyCritterService
    */
-  async updateCritter(critterId: number, critterBaseCritterId: string): Promise<void> {
-    return this.critterRepository.updateCritter(critterId, critterBaseCritterId);
+  async updateCritter(surveyId: number, simsCritterId: number, critter: IUpdateCritter): Promise<void> {
+    const [surveyCritterAliasMap, critterbaseCritter] = await Promise.all([
+      this.getSurveyCritterAliasMap(surveyId),
+      this.critterbaseService.getCritter(critter.critter_id)
+    ]);
+
+    // Create a copy of the map with trimmed aliases ' Carl' -> 'carl'
+    const trimmedSurveyCritterAliasMap = new CaseInsensitiveMap<string, ICritterDetailed>(
+      [...surveyCritterAliasMap].map(([key, value]) => [key.trim(), value])
+    );
+
+    // Remove the current critter from the map
+    trimmedSurveyCritterAliasMap.delete(critterbaseCritter.animal_id.trim());
+
+    // Only allow unique critter aliases in the survey
+    if (trimmedSurveyCritterAliasMap.has(critter.animal_id.trim())) {
+      throw new ApiGeneralError(`Critter alias: ${critter.animal_id} already exists in survey`, [
+        'SurveyCritterService->createCritterAndAddToSurvey'
+      ]);
+    }
+
+    // Update the critter in Critterbase
+    await this.critterbaseService.updateCritter({
+      critters: [
+        {
+          critter_id: critter.critter_id,
+          animal_id: critter.animal_id,
+          wlh_id: critter.wlh_id,
+          sex_qualitative_option_id: critter.sex_qualitative_option_id,
+          itis_tsn: critterbaseCritter.itis_tsn, // Currently we do not support updating the ITIS TSN
+          critter_comment: critter.critter_comment
+        }
+      ]
+    });
+
+    // Update the critter in the survey (refresh the audit columns)
+    return this.critterRepository.updateCritter(simsCritterId, critter.critter_id);
   }
 
   /**
