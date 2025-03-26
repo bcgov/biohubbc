@@ -11,7 +11,8 @@ import {
   getCritterbaseUserFromConnection,
   ICreateCritter,
   ICritter,
-  ICritterDetailed
+  ICritterDetailed,
+  IUpdateCritter
 } from './critterbase-service';
 import { DBService } from './db-service';
 
@@ -198,13 +199,38 @@ export class SurveyCritterService extends DBService {
   /**
    * Update critter already in survey. Only touches audit columns.
    *
-   * @param {number} critterId
-   * @param {string} critterBaseCritterId
+   * @param {number} surveyId
+   * @param {number} simsCritterId
+   * @param {IUpdateCritter} critter
    * @return {*}  {Promise<void>}
    * @memberof SurveyCritterService
    */
-  async updateCritter(critterId: number, critterBaseCritterId: string): Promise<void> {
-    return this.critterRepository.updateCritter(critterId, critterBaseCritterId);
+  async updateCritter(surveyId: number, simsCritterId: number, critter: IUpdateCritter): Promise<void> {
+    const [surveyCritterAliasMap, critterbaseCritter] = await Promise.all([
+      this.getSurveyCritterAliasMap(surveyId),
+      this.critterbaseService.getCritter(critter.critter_id)
+    ]);
+
+    // Create a copy of the map with trimmed aliases ' Carl' -> 'carl'
+    const trimmedSurveyCritterAliasMap = new CaseInsensitiveMap<string, ICritterDetailed>(
+      [...surveyCritterAliasMap].map(([key, value]) => [key.trim(), value])
+    );
+
+    // Remove the current critter from the map
+    trimmedSurveyCritterAliasMap.delete(critterbaseCritter.animal_id.trim());
+
+    // Only allow unique critter aliases in the survey
+    if (trimmedSurveyCritterAliasMap.has(critter.animal_id.trim())) {
+      throw new ApiGeneralError(`Critter alias: ${critter.animal_id} already exists in survey`, [
+        'SurveyCritterService->createCritterAndAddToSurvey'
+      ]);
+    }
+
+    // Update the critter in Critterbase
+    await this.critterbaseService.updateCritter({ critters: [critter] });
+
+    // Update the critter in the survey (refresh the audit columns)
+    return this.critterRepository.updateCritter(simsCritterId, critter.critter_id);
   }
 
   /**
