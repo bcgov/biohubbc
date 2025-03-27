@@ -3,7 +3,7 @@ import { LatLngBoundsExpression } from 'leaflet';
 import { useEffect } from 'react';
 import { useMap } from 'react-leaflet';
 
-export interface ISetMapBoundsProps {
+interface ISetMapBoundsProps {
   bounds?: LatLngBoundsExpression;
   zoom?: number;
 }
@@ -24,8 +24,8 @@ export const SetMapBounds: React.FC<React.PropsWithChildren<ISetMapBoundsProps>>
   return null;
 };
 
-export type IMapBoundsOnChange = (bounds: Feature<Polygon>, zoom: number) => void;
+type IMapBoundsOnChange = (bounds: Feature<Polygon>, zoom: number) => void;
 
-export interface IGetMapBoundsProps {
+interface IGetMapBoundsProps {
   onChange: IMapBoundsOnChange;
 }

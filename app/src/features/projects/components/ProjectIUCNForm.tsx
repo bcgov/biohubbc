@@ -61,7 +61,7 @@ export const ProjectIUCNFormYupSchema = yup.object().shape({
   })
 });
 
-export interface IProjectIUCNFormProps {
+interface IProjectIUCNFormProps {
   classifications: IMultiAutocompleteFieldOption[];
   subClassifications1: IIUCNSubClassification1Option[];
   subClassifications2: IIUCNSubClassification2Option[];

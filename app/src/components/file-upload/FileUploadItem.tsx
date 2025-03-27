@@ -17,7 +17,7 @@ export enum UploadFileStatus {
   COMPLETE = 'Complete'
 }
 
-export interface IUploadFile {
+interface IUploadFile {
   file: File;
   status: UploadFileStatus;
   progress: number;

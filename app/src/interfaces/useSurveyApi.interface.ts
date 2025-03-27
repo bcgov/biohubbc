@@ -65,7 +65,7 @@ export interface ISurveySiteSelectionForm {
   };
 }
 
-export interface ISurveyBlockForm {
+interface ISurveyBlockForm {
   blocks: {
     survey_block_id: number | null;
     name: string;
@@ -75,7 +75,7 @@ export interface ISurveyBlockForm {
   }[];
 }
 
-export interface IParticipantsJobForm {
+interface IParticipantsJobForm {
   participants: IGetSurveyParticipant[];
 }
 
@@ -256,7 +256,7 @@ export interface SurveySupplementaryData {
  * @export
  * @interface ISurveySupplementaryData
  */
-export interface ISurveySupplementaryData {
+interface ISurveySupplementaryData {
   publishStatus: PublishStatus;
 }
 
@@ -341,7 +341,7 @@ export interface ISurveyPermits {
   }[];
 }
 
-export interface IUpdateAgreementsForm {
+interface IUpdateAgreementsForm {
   agreements: {
     sedis_procedures_accepted: StringBoolean;
     foippa_requirements_accepted: StringBoolean;

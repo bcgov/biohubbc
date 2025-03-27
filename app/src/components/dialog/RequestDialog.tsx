@@ -7,13 +7,13 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { Formik } from 'formik';
 import React from 'react';
 
-export interface IRequestDialogComponent {
+interface IRequestDialogComponent {
   element: any;
   initialValues: any;
   validationSchema: any;
 }
 
-export interface IRequestDialog {
+interface IRequestDialog {
   /**
    * The Formik compatible component to render in the dialog content body.
    *

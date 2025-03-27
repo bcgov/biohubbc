@@ -11,7 +11,7 @@ import ProjectDetailsForm, { ProjectDetailsFormYupSchema } from '../components/P
 import ProjectObjectivesForm, { ProjectObjectivesFormYupSchema } from '../components/ProjectObjectivesForm';
 import ProjectUserForm, { ProjectUserRoleYupSchema } from '../components/ProjectUserForm';
 
-export interface IEditProjectForm<InitialValuesType extends IUpdateProjectRequest | ICreateProjectRequest> {
+interface IEditProjectForm<InitialValuesType extends IUpdateProjectRequest | ICreateProjectRequest> {
   initialProjectData: InitialValuesType;
   handleSubmit: (formikData: InitialValuesType) => void;
   formikRef: React.RefObject<FormikProps<InitialValuesType>>;

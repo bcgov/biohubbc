@@ -10,7 +10,7 @@ import useDataLoaderError from 'hooks/useDataLoaderError';
 import FundingSourceDetails from './FundingSourceDetails';
 import FundingSourceSurveyReferences from './FundingSourceSurveyReferences';
 
-export interface IFundingSourceDetailsProps {
+interface IFundingSourceDetailsProps {
   fundingSourceId?: number;
   open: boolean;
   onClose: () => void;

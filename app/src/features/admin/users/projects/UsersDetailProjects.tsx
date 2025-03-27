@@ -27,7 +27,7 @@ import React, { useCallback, useContext, useEffect, useMemo, useState } from 're
 import { useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 
-export interface IProjectDetailsProps {
+interface IProjectDetailsProps {
   userDetails: ISystemUser;
 }
 
@@ -239,7 +239,7 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
 
 export default UsersDetailProjects;
 
-export interface IChangeProjectRoleMenuProps {
+interface IChangeProjectRoleMenuProps {
   row: IGetUserProjectsListResponse;
   user_identifier: string;
   projectRoleCodes: CodeSet;

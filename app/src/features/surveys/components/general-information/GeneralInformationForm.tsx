@@ -79,7 +79,7 @@ export const GeneralInformationYupSchema = () => {
     .concat(SurveyPermitFormYupSchema);
 };
 
-export interface IGeneralInformationFormProps {
+interface IGeneralInformationFormProps {
   progress: ISelectWithSubtextFieldOption[];
 }
 

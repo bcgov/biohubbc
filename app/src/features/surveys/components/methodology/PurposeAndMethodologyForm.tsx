@@ -28,7 +28,7 @@ export const PurposeAndMethodologyYupSchema = yup.object().shape({
   })
 });
 
-export interface IPurposeAndMethodologyFormProps {
+interface IPurposeAndMethodologyFormProps {
   intended_outcomes: ISelectWithSubtextFieldOption[];
   type: IMultiAutocompleteFieldOption[];
 }

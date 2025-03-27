@@ -6,7 +6,7 @@ import SpeciesSelectedCard from 'components/species/components/SpeciesSelectedCa
 import { IPartialTaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import { TransitionGroup } from 'react-transition-group';
 
-export interface ISelectedAnimalSpeciesProps {
+interface ISelectedAnimalSpeciesProps {
   selectedSpecies: IPartialTaxonomy[];
   handleRemoveSpecies?: (species_id: number) => void;
 }

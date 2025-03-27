@@ -33,7 +33,7 @@ import SurveyUserForm, { SurveyUserJobYupSchema } from '../components/participan
 import { SurveySiteSelectionYupSchema } from '../components/sampling-strategy/SurveySiteSelectionForm';
 import SpeciesForm, { SpeciesYupSchema } from '../components/species/SpeciesForm';
 
-export interface IEditSurveyForm<
+interface IEditSurveyForm<
   T extends
     | (IUpdateSurveyRequest & ISurveyPermitForm & ISurveyFundingSourceForm)
     | (ICreateSurveyRequest & ISurveyPermitForm & ISurveyFundingSourceForm)

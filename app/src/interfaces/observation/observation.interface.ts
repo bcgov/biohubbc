@@ -85,7 +85,7 @@ export interface IGetSurveyObservationsGeometryResponse {
   supplementaryObservationData: SupplementaryObservationCountData;
 }
 
-export type ObservationSamplingData = {
+type ObservationSamplingData = {
   survey_sample_site_id: number | null;
   survey_sample_site_name: string | null;
   method_technique_id: number | null;
@@ -106,23 +106,23 @@ export type StandardObservationColumns = {
   observation_sign_id: number | null;
 };
 
-export type ObservationSubcounts = {
+type ObservationSubcounts = {
   subcounts: SubcountObservationColumns[];
 };
 
 export type ObservationRecord = StandardObservationColumns & ObservationEnvironmentData & ObservationSubcounts;
 
-export type ObservationRecordWithSampling = StandardObservationColumns & ObservationSamplingData;
+type ObservationRecordWithSampling = StandardObservationColumns & ObservationSamplingData;
 
 export type SupplementaryObservationCountData = {
   observationCount: number;
 };
 
-export type ObservationSamplingSupplementaryData = {
+type ObservationSamplingSupplementaryData = {
   sampling_data: GetSamplingPeriod[];
 };
 
-export type SupplementaryObservationMeasurementData = {
+type SupplementaryObservationMeasurementData = {
   qualitative_measurements: CBQualitativeMeasurementTypeDefinition[];
   quantitative_measurements: CBQuantitativeMeasurementTypeDefinition[];
   qualitative_environments: EnvironmentQualitativeTypeDefinition[];

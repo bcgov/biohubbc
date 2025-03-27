@@ -30,7 +30,7 @@ import { firstOrNull } from 'utils/Utils';
 import { SIMS_OBSERVATIONS_HIDDEN_COLUMNS } from '../constants/session-storage';
 import { SurveyContext } from './surveyContext';
 
-export type TsnMeasurementTypeDefinitionMap = Record<
+type TsnMeasurementTypeDefinitionMap = Record<
   string,
   CBMeasurementSearchByTsnResponse | Promise<CBMeasurementSearchByTsnResponse>
 >;

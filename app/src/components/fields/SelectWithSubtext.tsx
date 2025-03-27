@@ -14,7 +14,7 @@ export interface ISelectWithSubtextFieldOption {
   description: string | null;
 }
 
-export interface ISelectWithSubtextField {
+interface ISelectWithSubtextField {
   id: string;
   name: string;
   label: string;

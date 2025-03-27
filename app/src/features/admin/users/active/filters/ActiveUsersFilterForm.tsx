@@ -15,7 +15,7 @@ export const ActiveUserFiltersInitialValues: IActiveUserFilters = {
   system_roles: []
 };
 
-export interface IActiveUsersFilterFormProps {
+interface IActiveUsersFilterFormProps {
   /**
    * Callback fired when the form is submitted.
    */

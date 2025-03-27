@@ -83,7 +83,7 @@ export type IStaticLayer = {
   tooltip?: (feature: IStaticLayerFeature) => ReactElement;
 };
 
-export type IStaticLayersProps = {
+type IStaticLayersProps = {
   layers: IStaticLayer[];
 };
 

@@ -2,7 +2,7 @@ import { ICreateCritterCollectionUnit } from 'features/surveys/view/survey-anima
 import { Feature } from 'geojson';
 import { IPartialTaxonomy } from './useTaxonomyApi.interface';
 
-export type ICritterCreate = {
+type ICritterCreate = {
   critter_id?: string;
   wlh_id?: string | null;
   animal_id?: string | null;
@@ -68,7 +68,7 @@ export type IMortalityPostData = {
   location: Feature | null;
 };
 
-export interface ILocationPostData {
+interface ILocationPostData {
   location_id?: number;
   latitude: number;
   longitude: number;
@@ -116,7 +116,7 @@ export interface IEditMortalityRequest extends IMarkings, IMeasurementsUpdate {
   mortality: IMortalityPostData;
 }
 
-export interface ICollectionUnitMultiTsnResponse {
+interface ICollectionUnitMultiTsnResponse {
   tsn: number;
   categories: ICollectionCategory[];
 }
@@ -249,7 +249,7 @@ export type IQuantitativeMeasurementCreate = {
   measured_timestamp?: string | null;
 };
 
-export type ICritterUpdate = ICritterCreate & {
+type ICritterUpdate = ICritterCreate & {
   critter_id: string;
 };
 
@@ -362,7 +362,7 @@ export interface ICritterSimpleResponse {
 /**
  * A Critterbase quantitative measurement.
  */
-export type CBQuantitativeMeasurement = {
+type CBQuantitativeMeasurement = {
   event_id: string;
   measurement_quantitative_id: string;
   taxon_measurement_id: string;
@@ -374,7 +374,7 @@ export type CBQuantitativeMeasurement = {
 /**
  * A Critterbase qualitative measurement value.
  */
-export type CBQualitativeMeasurement = {
+type CBQualitativeMeasurement = {
   event_id: string;
   measurement_qualitative_id: string;
   taxon_measurement_id: string;
@@ -386,7 +386,7 @@ export type CBQualitativeMeasurement = {
 /**
  * Any Critterbase measurement value.
  */
-export type CBMeasurementValue = CBQuantitativeMeasurement | CBQualitativeMeasurement;
+type CBMeasurementValue = CBQuantitativeMeasurement | CBQualitativeMeasurement;
 
 /**
  * A Critterbase qualitative measurement unit.
@@ -436,7 +436,7 @@ export type CBMeasurementType = CBQuantitativeMeasurementTypeDefinition | CBQual
 /**
  * A collection of Critterbase measurement type definitions.
  */
-export type CBMeasurementTypeDefinitions = {
+type CBMeasurementTypeDefinitions = {
   qualitative: CBQualitativeMeasurementTypeDefinition[];
   quantitative: CBQuantitativeMeasurementTypeDefinition[];
 };

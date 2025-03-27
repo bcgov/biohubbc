@@ -30,7 +30,7 @@ const useStyles = () => {
   };
 };
 
-export interface IViewReportDetailsProps {
+interface IViewReportDetailsProps {
   onEdit?: () => void;
   onSave?: () => void;
 

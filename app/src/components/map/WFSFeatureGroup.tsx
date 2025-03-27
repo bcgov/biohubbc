@@ -23,7 +23,7 @@ export const defaultWFSParams: IWFSParams = {
   outputFormat: 'json',
   bboxSrsName: 'epsg:4326'
 };
-export interface IWFSFeatureGroupProps {
+interface IWFSFeatureGroupProps {
   typeName: string;
   minZoom?: number;
   wfsParams?: IWFSParams;

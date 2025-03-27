@@ -41,7 +41,7 @@ export const AddSystemUsersFormYupSchema = yup.object().shape({
   })
 });
 
-export interface AddSystemUsersFormProps {
+interface AddSystemUsersFormProps {
   systemRoles: IAutocompleteFieldOption<number>[];
 }
 

@@ -2,7 +2,7 @@ import Typography from '@mui/material/Typography';
 import { GridRenderCellParams, GridValidRowModel } from '@mui/x-data-grid';
 import { IAutocompleteDataGridOption } from 'components/data-grid/autocomplete/AutocompleteDataGrid.interface';
 
-export interface IAutocompleteDataGridViewCellProps<
+interface IAutocompleteDataGridViewCellProps<
   DataGridType extends GridValidRowModel,
   ValueType extends string | number
 > {

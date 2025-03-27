@@ -74,7 +74,7 @@ export interface IGetUserProjectsListResponse {
  * @export
  * @interface IGetUserSurveysListResponse
  */
-export interface IGetUserSurveysListResponse {
+interface IGetUserSurveysListResponse {
   project_participation_id: number;
   project_id: number;
   project_name: string;
@@ -89,7 +89,7 @@ export interface IGetUserSurveysListResponse {
  * @export
  * @interface IProjectSupplementaryData
  */
-export interface IProjectSupplementaryData {
+interface IProjectSupplementaryData {
   publishStatus: PublishStatus;
 }
 
@@ -136,7 +136,7 @@ export interface IProjectsListItemData {
   members: { system_user_id: number; display_name: string }[];
 }
 
-export interface IProjectUserRoles {
+interface IProjectUserRoles {
   participants: IGetProjectParticipant[];
 }
 
@@ -161,7 +161,6 @@ export interface ICreateProjectResponse {
 export enum UPDATE_GET_ENTITIES {
   project = 'project',
   objectives = 'objectives',
-  location = 'location',
   iucn = 'iucn',
   participants = 'participants'
 }
@@ -283,7 +282,7 @@ export interface ProjectSupplementaryData {
  * @export
  * @interface IGetProjectMediaListResponse
  */
-export interface IGetProjectMediaListResponse {
+interface IGetProjectMediaListResponse {
   file_name: string;
   encoded_file: string;
 }

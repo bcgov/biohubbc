@@ -17,7 +17,7 @@ export type TechniqueQuantitativeAttribute = {
   value: number;
 };
 
-export type TechniqueVantageMethod = {
+type TechniqueVantageMethod = {
   vantage_category_id: number;
   vantage_method_id: number;
 };

@@ -6,7 +6,7 @@ import Paper from '@mui/material/Paper';
 import Skeleton from '@mui/material/Skeleton';
 import Stack from '@mui/material/Stack';
 
-export interface IMultipleSkeletonProps {
+interface IMultipleSkeletonProps {
   numberOfLines?: number;
 }
 

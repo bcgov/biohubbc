@@ -43,7 +43,7 @@ export interface ICreateManualTelemetry {
   transmission_date: string | null;
 }
 
-export interface IManualTelemetry extends ICreateManualTelemetry {
+interface IManualTelemetry extends ICreateManualTelemetry {
   telemetry_manual_id: string;
 }
 
@@ -70,7 +70,7 @@ export type ICreateAnimalDeployment = yup.InferType<typeof DeploymentFormYupSche
 
 export type IAllTelemetryPointCollection = { points: FeatureCollection; tracks: FeatureCollection };
 
-export interface ITelemetry {
+interface ITelemetry {
   id: string;
   /**
    * Either the telemetry_manual_id or telemetry_id (depending on the type of telemetry: manual vs vendor).

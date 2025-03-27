@@ -2,7 +2,7 @@ import Box from '@mui/material/Box';
 import CustomTextField from 'components/fields/CustomTextField';
 import React from 'react';
 
-export interface IBlockData {
+interface IBlockData {
   survey_block_id: number | null;
   name: string;
   description: string;

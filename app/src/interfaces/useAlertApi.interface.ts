@@ -39,13 +39,9 @@ export interface IAlertFilterParams {
 
 export enum SystemAlertBannerEnum {
   SUMMARY = 'Summary',
-  TELEMETRY = 'Manage Telemetry',
-  OBSERVATIONS = 'Manage Observations',
-  ANIMALS = 'Manage Animals',
   SAMPLING = 'Manage Sampling',
   PROJECTS = 'Project',
   SURVEYS = 'Survey',
   STANDARDS = 'Standards',
-  ADMINISTRATOR = 'Administrator',
   FUNDING = 'Funding'
 }

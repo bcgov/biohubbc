@@ -19,7 +19,7 @@ export enum ACTIVE_VIEW_VALUE {
 }
 
 export const SHOW_SEARCH_KEY = 'lvsk';
-export enum SHOW_SEARCH_VALUE {
+enum SHOW_SEARCH_VALUE {
   true = 'true',
   false = 'false'
 }

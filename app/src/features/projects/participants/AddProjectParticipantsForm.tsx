@@ -51,7 +51,7 @@ export const AddProjectParticipantsFormYupSchema = yup.object().shape({
   )
 });
 
-export interface AddProjectParticipantsFormProps {
+interface AddProjectParticipantsFormProps {
   project_roles: any[];
 }
 

@@ -5,7 +5,7 @@ import Button from '@mui/material/Button';
 import Typography, { TypographyProps } from '@mui/material/Typography';
 import React, { useState } from 'react';
 
-export interface IReadMoreFieldProps {
+interface IReadMoreFieldProps {
   text: string;
   maxCharLength: number;
   TypographyProps?: Partial<TypographyProps>;

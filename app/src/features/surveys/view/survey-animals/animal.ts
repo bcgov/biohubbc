@@ -14,12 +14,12 @@ import yup from 'utils/YupSchema';
  * Critterbase related enums.
  */
 
-export enum ANIMAL_FORM_MODE {
+enum ANIMAL_FORM_MODE {
   ADD = 'add',
   EDIT = 'edit'
 }
 
-export enum AnimalRelationship {
+enum AnimalRelationship {
   CHILD = 'children',
   PARENT = 'parents'
 }
@@ -167,7 +167,7 @@ export type ICreateCritterMeasurement = yup.InferType<typeof CreateCritterMeasur
 export type ICreateCritterCollectionUnit = yup.InferType<typeof CreateCritterCollectionUnitSchema> & { key?: string };
 export type ICreateCritterCapture = yup.InferType<typeof CreateCritterCaptureSchema>;
 export type ICreateBulkCritterCapture = yup.InferType<typeof CreateBulkCritterCaptureSchema>;
-export type ICreateCritterFamily = yup.InferType<typeof CreateCritterFamilySchema>;
+type ICreateCritterFamily = yup.InferType<typeof CreateCritterFamilySchema>;
 export type ICreateCritterMortality = yup.InferType<typeof CreateCritterMortalitySchema>;
 
 /**
