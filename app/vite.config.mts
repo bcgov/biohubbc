@@ -24,6 +24,7 @@ export default defineConfig({
     !process.env.VITEST
       ? checker({
           eslint: {
+            useFlatConfig: true,
             lintCommand: 'eslint src/ --ext .jsx,.js,.ts,.tsx'
           }
         })

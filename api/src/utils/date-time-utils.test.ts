@@ -49,7 +49,7 @@ describe('isDateTimeString', () => {
       expect(isDateTimeString('2021-01-01T11:00')).to.be.true;
     });
 
-    it('scenario 3', () => {
+    it('scenario 4', () => {
       expect(isDateTimeString('2021-01-01 11:00')).to.be.true;
     });
   });

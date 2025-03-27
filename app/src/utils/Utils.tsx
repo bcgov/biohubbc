@@ -376,12 +376,19 @@ export const uuidToColor = (id: string): { fillColor: string; outlineColor: stri
     const m = scaledL - c / 2;
 
     let r, g, b;
-    if (h >= 0 && h < 60) [r, g, b] = [c, x, 0];
-    else if (h >= 60 && h < 120) [r, g, b] = [x, c, 0];
-    else if (h >= 120 && h < 180) [r, g, b] = [0, c, x];
-    else if (h >= 180 && h < 240) [r, g, b] = [0, x, c];
-    else if (h >= 240 && h < 300) [r, g, b] = [x, 0, c];
-    else [r, g, b] = [c, 0, x];
+    if (h >= 0 && h < 60) {
+      [r, g, b] = [c, x, 0];
+    } else if (h >= 60 && h < 120) {
+      [r, g, b] = [x, c, 0];
+    } else if (h >= 120 && h < 180) {
+      [r, g, b] = [0, c, x];
+    } else if (h >= 180 && h < 240) {
+      [r, g, b] = [0, x, c];
+    } else if (h >= 240 && h < 300) {
+      [r, g, b] = [x, 0, c];
+    } else {
+      [r, g, b] = [c, 0, x];
+    }
 
     return [(r + m) * 255, (g + m) * 255, (b + m) * 255].map((val) => Math.round(val));
   }

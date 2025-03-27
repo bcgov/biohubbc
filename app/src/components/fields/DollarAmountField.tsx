@@ -17,29 +17,28 @@ interface NumberFormatCustomProps {
   name: string;
 }
 
-const NumberFormatCustom = React.forwardRef<NumberFormatProps, NumberFormatCustomProps>(function NumericFormatCustom(
-  props,
-  ref
-) {
-  const { onChange, ...other } = props;
+const NumberFormatCustom = React.forwardRef<NumberFormatProps, NumberFormatCustomProps>(
+  function NumericFormatCustom(props, ref) {
+    const { onChange, ...other } = props;
 
-  return (
-    <NumberFormat
-      {...other}
-      getInputRef={ref}
-      onValueChange={(values) => {
-        onChange({
-          target: {
-            name: props.name,
-            value: parseInt(values.value)
-          }
-        });
-      }}
-      thousandSeparator
-      decimalScale={0}
-    />
-  );
-});
+    return (
+      <NumberFormat
+        {...other}
+        getInputRef={ref}
+        onValueChange={(values) => {
+          onChange({
+            target: {
+              name: props.name,
+              value: parseInt(values.value)
+            }
+          });
+        }}
+        thousandSeparator
+        decimalScale={0}
+      />
+    );
+  }
+);
 
 const DollarAmountField: React.FC<IDollarAmountFieldProps> = (props) => {
   const { values, handleChange, touched, errors } = useFormikContext<IDollarAmountFieldProps>();

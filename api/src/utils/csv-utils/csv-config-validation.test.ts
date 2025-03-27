@@ -436,6 +436,7 @@ describe('csv-config-validation', () => {
       ]);
     });
   });
+
   describe('executeValidateCell', () => {
     it('should call the validateCell callback and return errors array', () => {
       const validateCellStub = sinon.stub().returns([{ error: 'error', solution: 'solution' }]);

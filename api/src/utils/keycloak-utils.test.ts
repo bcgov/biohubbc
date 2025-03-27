@@ -241,22 +241,27 @@ describe('keycloakUtils', () => {
       const response = coerceUserIdentitySource('');
       expect(response).to.equal(SYSTEM_IDENTITY_SOURCE.DATABASE);
     });
+
     it('should coerce null string user identity to DATABASE', () => {
       const response = coerceUserIdentitySource(null as unknown as string);
       expect(response).to.equal(SYSTEM_IDENTITY_SOURCE.DATABASE);
     });
+
     it('should coerce bceid basic user identity to BCEIDBASIC', () => {
       const response = coerceUserIdentitySource('bceidbasic');
       expect(response).to.equal(SYSTEM_IDENTITY_SOURCE.BCEID_BASIC);
     });
+
     it('should coerce bceid business user identity to BCEIDBUSINESS', () => {
       const response = coerceUserIdentitySource('bceidbusiness');
       expect(response).to.equal(SYSTEM_IDENTITY_SOURCE.BCEID_BUSINESS);
     });
+
     it('should coerce idir user identity to IDIR', () => {
       const response = coerceUserIdentitySource('idir');
       expect(response).to.equal(SYSTEM_IDENTITY_SOURCE.IDIR);
     });
+
     it('should coerce database user identity to DATABASE', () => {
       const response = coerceUserIdentitySource('database');
       expect(response).to.equal(SYSTEM_IDENTITY_SOURCE.DATABASE);

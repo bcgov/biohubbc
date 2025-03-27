@@ -168,7 +168,7 @@ const AccessRequestPendingList = (props: IAccessRequestPendingListProps) => {
             footer: ''
           }
         );
-      } catch (error) {
+      } catch (_error) {
         showSnackBar({
           snackbarMessage: (
             <Typography variant="body2" component="div">
@@ -221,7 +221,7 @@ const AccessRequestPendingList = (props: IAccessRequestPendingListProps) => {
             footer: ''
           }
         );
-      } catch (error) {
+      } catch (_error) {
         showSnackBar({
           snackbarMessage: (
             <Typography variant="body2" component="div">

@@ -7,7 +7,7 @@ import {
 } from './environment';
 
 describe('environment', () => {
-  describe('isQualitativeEnvironmentTypeDefinition', () => {
+  describe('isQuantitativeEnvironmentTypeDefinition', () => {
     it('should return true if the object is a QualitativeEnvironmentTypeDefinition', () => {
       expect(isQuantitativeEnvironmentTypeDefinition({ unit: 'a', environment_quantitative_id: '1' })).to.be.true;
     });

@@ -116,7 +116,7 @@ describe('HistoryPublishRepository', () => {
   describe('getSurveyMetadataPublishRecord', () => {
     it('should return a history publish record if one exists', async () => {
       const mockConnection = getMockDBConnection({
-        sql: async () => ({ rowCount: 1, rows: [{ survey_report_publish_id: 1 }] } as any as Promise<QueryResult<any>>)
+        sql: async () => ({ rowCount: 1, rows: [{ survey_report_publish_id: 1 }] }) as any as Promise<QueryResult<any>>
       });
 
       const repository = new HistoryPublishRepository(mockConnection);
@@ -147,7 +147,7 @@ describe('HistoryPublishRepository', () => {
     it('should return a history publish record if one exists', async () => {
       const mockConnection = getMockDBConnection({
         sql: async () =>
-          ({ rowCount: 1, rows: [{ survey_attachment_publish_id: 1 }] } as any as Promise<QueryResult<any>>)
+          ({ rowCount: 1, rows: [{ survey_attachment_publish_id: 1 }] }) as any as Promise<QueryResult<any>>
       });
 
       const repository = new HistoryPublishRepository(mockConnection);
@@ -177,7 +177,7 @@ describe('HistoryPublishRepository', () => {
   describe('getSurveyReportPublishRecord', () => {
     it('should return a history publish record if one exists', async () => {
       const mockConnection = getMockDBConnection({
-        sql: async () => ({ rowCount: 1, rows: [{ survey_report_publish_id: 1 }] } as any as Promise<QueryResult<any>>)
+        sql: async () => ({ rowCount: 1, rows: [{ survey_report_publish_id: 1 }] }) as any as Promise<QueryResult<any>>
       });
 
       const repository = new HistoryPublishRepository(mockConnection);

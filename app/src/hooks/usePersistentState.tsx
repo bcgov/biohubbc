@@ -28,7 +28,7 @@ export const usePersistentState = <T,>(localStorageId: string, initialValue: T):
     try {
       // attempt to parse storage value
       return JSON.parse(storageValue);
-    } catch (err) {
+    } catch (_error) {
       // unable to parse just return the value
       return storageValue;
     }

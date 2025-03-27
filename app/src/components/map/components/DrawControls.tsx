@@ -7,7 +7,6 @@ import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef } from 
 import { coloredCustomMarker } from 'utils/mapUtils';
 // Setting window.type to fix leaflet draw bug: https://github.com/Leaflet/Leaflet.draw/issues/1026#issuecomment-986702652
 // @ts-ignore
-// eslint-disable-next-line
 window.type = '';
 
 /**

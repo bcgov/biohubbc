@@ -58,18 +58,24 @@ const MarkerWithResizableRadius = (props: IClickMarkerProps): JSX.Element => {
 
   useMapEvents({
     mousedown: (e) => {
-      if (!listenForMouseEvents) return;
+      if (!listenForMouseEvents) {
+        return;
+      }
       setLastMouseDown(e.latlng);
     },
     mousemove: (e) => {
-      if (!listenForMouseEvents) return;
+      if (!listenForMouseEvents) {
+        return;
+      }
       if (holdingMouse && position) {
         //If we move mouse between mouse down and mouse up, then change radius of circle
         handleResize?.(distanceInMetresBetweenCoordinates(position, e.latlng));
       }
     },
     mouseup: (e) => {
-      if (!listenForMouseEvents) return;
+      if (!listenForMouseEvents) {
+        return;
+      }
       if (e.latlng.equals(lastMouseDown)) {
         handlePlace?.(e.latlng); //If we release the mouse at the same coordinate we initially clicked, count that as a simple left click and place marker
       }
@@ -89,7 +95,9 @@ const MarkerWithResizableRadius = (props: IClickMarkerProps): JSX.Element => {
           bubblingMouseEvents={false}
           eventHandlers={{
             mousedown: (e) => {
-              if (!listenForMouseEvents) return;
+              if (!listenForMouseEvents) {
+                return;
+              }
               map.dragging.disable(); //Need to disable map drag or else resizing circle will result in map moving
               setHoldingMouse(true);
               setLastMouseDown(e.latlng);

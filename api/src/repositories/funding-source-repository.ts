@@ -279,7 +279,7 @@ export class FundingSourceRepository extends BaseRepository {
       }
 
       return response.rows[0];
-    } catch (error) {
+    } catch (_error) {
       throw new ApiExecuteSQLError('Failed to delete funding source', [
         'This funding source has been referenced by one or more surveys. To delete this record, you will first need to remove it from all related surveys.'
       ]);
