@@ -16,8 +16,8 @@ const defaultLog = getLogger('telemetry-cronjob');
  * Information:
  *
  * How to run:
- *  - Default: `npm run telemetry-cronjob` // defaults to: concurrently = 100, batchSize = 1000 and deviceLimit = -1
- *  - CLI args: `npm run telemetry-cronjob -- --concurrently 100 --batchSize 1000 --startDate 2021-01-01 --endDate 2021-01-31`
+ *  - Default: `npm run telemetry-cronjob` // defaults to: concurrently = 100 and batchSize = 1000
+ *  - CLI args: `npm run telemetry-cronjob -- --concurrently 100 --batchSize 1000 --startDate 2021-01-01 --endDate 2021-01-31 --deviceLimit 10`
  *
  * Telemetry device processing flow:
  *  1. Fetch the telemetry count from the vendor API.
