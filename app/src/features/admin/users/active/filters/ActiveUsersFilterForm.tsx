@@ -10,7 +10,7 @@ export type IActiveUserFilters = {
   system_roles?: string[];
 };
 
-export const ActiveUserFiltersInitialValues: IActiveUserFilters = {
+const ActiveUserFiltersInitialValues: IActiveUserFilters = {
   system_user_ids: [],
   system_roles: []
 };

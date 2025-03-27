@@ -11,7 +11,7 @@ import { useEffect, useMemo, useState } from 'react';
 
 export type WithIdAndName<T> = T & { id: string | number; name: string };
 
-export interface IAutocompleteSearchFieldProps<T> {
+interface IAutocompleteSearchFieldProps<T> {
   /**
    * The name of the field.
    */
@@ -86,7 +86,7 @@ export interface IAutocompleteSearchFieldProps<T> {
  * @param {IAutocompleteSearchFieldProps} props
  * @return {*}
  */
-export const AutocompleteSearchField = <T extends { id: string | number; name: string }>({
+const AutocompleteSearchField = <T extends { id: string | number; name: string }>({
   fieldName,
   label,
   onSelect,

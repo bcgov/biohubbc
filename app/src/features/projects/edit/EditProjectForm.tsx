@@ -17,7 +17,7 @@ interface IEditProjectForm<InitialValuesType extends IUpdateProjectRequest | ICr
   formikRef: React.RefObject<FormikProps<InitialValuesType>>;
 }
 
-export const validationProjectYupSchema =
+const validationProjectYupSchema =
   ProjectDetailsFormYupSchema.concat(ProjectObjectivesFormYupSchema).concat(ProjectUserRoleYupSchema);
 
 /**

@@ -63,4 +63,4 @@ const getLatLngAsUtm = (lat: number, lng: number) => {
     .reverse();
 };
 
-export { distanceInMetresBetweenCoordinates, getLatLngAsUtm, getUtmAsLatLng };
+;

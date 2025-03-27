@@ -20,7 +20,7 @@ export interface IEditDialogComponentProps<T> {
   validateOnChange?: boolean;
 }
 
-export interface IEditDialogProps<T> {
+interface IEditDialogProps<T> {
   /**
    * The dialog window title text.
    *
@@ -110,7 +110,7 @@ export interface IEditDialogProps<T> {
  * @param {PropsWithChildren<IEditDialogProps<T>>} props
  * @return {*}
  */
-export const EditDialog = <T extends FormikValues>(props: PropsWithChildren<IEditDialogProps<T>>) => {
+const EditDialog = <T extends FormikValues>(props: PropsWithChildren<IEditDialogProps<T>>) => {
   const theme = useTheme();
 
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));

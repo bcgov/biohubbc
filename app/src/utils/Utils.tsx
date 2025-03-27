@@ -124,7 +124,7 @@ export const getFormattedDate = (dateFormat: DATE_FORMAT, date: string | null): 
  * @param {string} timestamp ISO 8601 date string
  * @return {string} formatted date string, or an empty string if unable to parse the timestamp
  */
-export const getFormattedTime = (timeFormat: TIME_FORMAT, timestamp: string): string => {
+const getFormattedTime = (timeFormat: TIME_FORMAT, timestamp: string): string => {
   const dateJs = dayjs(timestamp);
 
   if (!dateJs.isValid()) {
@@ -249,7 +249,7 @@ export const alphabetizeObjects = <T extends { [key: string]: any }>(data: T[], 
  * @param n a potentially NaN number
  * @returns n if a number, 0 otherwise
  */
-export const coerceZero = (n: any): number => (isNaN(n ?? NaN) ? 0 : Number(n));
+const coerceZero = (n: any): number => (isNaN(n ?? NaN) ? 0 : Number(n));
 
 /**
  * Checks if two dates are the same, but safe to use against nullish values.
@@ -259,7 +259,7 @@ export const coerceZero = (n: any): number => (isNaN(n ?? NaN) ? 0 : Number(n));
  * @returns boolean
  */
 type NullishDate = string | null | undefined;
-export const datesSameNullable = (date1: NullishDate, date2: NullishDate): boolean => {
+const datesSameNullable = (date1: NullishDate, date2: NullishDate): boolean => {
   if (date1 == null && date2 == null) {
     //Note: intentionally loose equality
     return true;
@@ -344,7 +344,7 @@ export const getCodesName = (
  * @param id uuid
  * @returns {*} {fillColor: string, outlineColor: string}
  */
-export const uuidToColor = (id: string): { fillColor: string; outlineColor: string } => {
+const uuidToColor = (id: string): { fillColor: string; outlineColor: string } => {
   const uuidToInt = (uuid: string): number => {
     const noDashes = uuid.replace(/-/g, '');
     const substring = noDashes.substring(0, 9);

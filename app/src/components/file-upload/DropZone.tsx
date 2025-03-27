@@ -57,7 +57,7 @@ export interface IDropZoneConfigProps {
   acceptedFileExtensions?: string | string[];
 }
 
-export const DropZone: React.FC<IDropZoneProps & IDropZoneConfigProps> = (props) => {
+const DropZone: React.FC<IDropZoneProps & IDropZoneConfigProps> = (props) => {
   const config = useConfigContext();
 
   const maxNumFiles = props.maxNumFiles || config.MAX_UPLOAD_NUM_FILES;

@@ -11,7 +11,7 @@ import { useFormikContext } from 'formik';
  *
  * @return {*}
  */
-export const FileUploadWithMeta = () => {
+const FileUploadWithMeta = () => {
   const { handleSubmit, setFieldValue, setFieldError, values, errors } = useFormikContext<IReportMetaForm>();
 
   const onFile = (file: File | null) => {

@@ -19,7 +19,7 @@ export interface IAddSystemUsersForm {
   systemUser: IAddSystemUsersFormArrayItem;
 }
 
-export const AddSystemUsersFormArrayItemInitialValues: IAddSystemUsersFormArrayItem = {
+const AddSystemUsersFormArrayItemInitialValues: IAddSystemUsersFormArrayItem = {
   userIdentifier: '',
   displayName: '',
   email: '',

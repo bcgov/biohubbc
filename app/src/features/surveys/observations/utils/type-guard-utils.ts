@@ -61,7 +61,7 @@ export function isCBQualitativeMeasurementTypeDefinition(
  * @param {(CBQuantitativeMeasurementTypeDefinition | CBQualitativeMeasurementTypeDefinition)} item
  * @return {*}  {item is CBQuantitativeMeasurementTypeDefinition}
  */
-export function isCBQuantitativeMeasurementTypeDefinition(
+function isCBQuantitativeMeasurementTypeDefinition(
   item: CBQualitativeMeasurementTypeDefinition | CBQuantitativeMeasurementTypeDefinition
 ): item is CBQuantitativeMeasurementTypeDefinition {
   return 'unit' in item && 'taxon_measurement_id' in item;
@@ -74,7 +74,7 @@ export function isCBQuantitativeMeasurementTypeDefinition(
  * @param {(CBQuantitativeMeasurementTypeDefinition | CBQualitativeMeasurementTypeDefinition)} item
  * @return {*}  {item is EnvironmentQualitativeTypeDefinition}
  */
-export function isEnvironmentQualitativeTypeDefinition(
+function isEnvironmentQualitativeTypeDefinition(
   item: EnvironmentQualitativeTypeDefinition | EnvironmentQuantitativeTypeDefinition
 ): item is EnvironmentQualitativeTypeDefinition {
   return 'options' in item && 'environment_qualitative_id' in item;
@@ -87,7 +87,7 @@ export function isEnvironmentQualitativeTypeDefinition(
  * @param {(CBQuantitativeMeasurementTypeDefinition | CBQualitativeMeasurementTypeDefinition)} item
  * @return {*}  {item is EnvironmentQuantitativeTypeDefinition}
  */
-export function isEnvironmentQuantitativeTypeDefinition(
+function isEnvironmentQuantitativeTypeDefinition(
   item: EnvironmentQualitativeTypeDefinition | EnvironmentQuantitativeTypeDefinition
 ): item is EnvironmentQuantitativeTypeDefinition {
   return 'unit' in item && 'environment_quantitative_id' in item;

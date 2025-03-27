@@ -59,4 +59,3 @@ export const MethodStandardsResults = (props: ISpeciesStandardsResultsProps) => 
   );
 };
 
-export default MethodStandardsResults;

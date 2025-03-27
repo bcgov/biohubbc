@@ -6,7 +6,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FeatureGroup, GeoJSON, useMap, useMapEvents } from 'react-leaflet';
 import WFSFeaturePopup, { WFSFeatureKeyHandler, WFSFeaturePopupContentHandler } from './WFSFeaturePopup';
 
-export interface IWFSParams {
+interface IWFSParams {
   url?: string;
   version?: string;
   srsName?: string;
@@ -15,7 +15,7 @@ export interface IWFSParams {
   bboxSrsName?: string;
 }
 
-export const defaultWFSParams: IWFSParams = {
+const defaultWFSParams: IWFSParams = {
   url: 'https://openmaps.gov.bc.ca/geo/pub/wfs',
   version: '1.3.0',
   srsName: 'epsg:4326',
@@ -42,7 +42,7 @@ interface IWFSFeatureGroupProps {
  * `defaultWFSParams` for any properties not provided.
  * @return {*}
  */
-export const buildWFSURLByBoundingBox = (typeName: string, bbox: string, wfsParams: IWFSParams = defaultWFSParams) => {
+const buildWFSURLByBoundingBox = (typeName: string, bbox: string, wfsParams: IWFSParams = defaultWFSParams) => {
   const params = { ...defaultWFSParams, ...wfsParams };
 
   return `${params.url}?service=WFS&&version=${params.version}&request=${params.request}&typeName=${typeName}&outputFormat=${params.outputFormat}&srsName=${params.srsName}&bbox=${bbox},${params.bboxSrsName}`;

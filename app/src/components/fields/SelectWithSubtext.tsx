@@ -95,4 +95,3 @@ const SelectWithSubtextField: React.FC<ISelectWithSubtextField> = (props) => {
   );
 };
 
-export default SelectWithSubtextField;

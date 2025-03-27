@@ -36,7 +36,7 @@ const dateSchema = yup
  * Critterbase create schemas.
  */
 
-export const LocationSchema = yup.object().shape({
+const LocationSchema = yup.object().shape({
   /**
    * This is useful for when you need to have different validation for the projection mode.
    * example: easting/northing or lat/lng fields have different min max values.
@@ -70,7 +70,7 @@ export const LocationSchema = yup.object().shape({
   coordinate_uncertainty_unit: yup.string()
 });
 
-export const CreateCritterCaptureSchema = yup.object({
+const CreateCritterCaptureSchema = yup.object({
   capture_id: yup.string().optional(),
   critter_id: yup.string().required('Required'),
   capture_location: LocationSchema.required(),
@@ -83,7 +83,7 @@ export const CreateCritterCaptureSchema = yup.object({
   release_comment: yup.string().optional()
 });
 
-export const CreateBulkCritterCaptureSchema = yup.object({
+const CreateBulkCritterCaptureSchema = yup.object({
   capture_id: yup.string().optional(),
   critter_id: yup.string().required('Required'),
   capture_location_id: yup.string().uuid().optional(),
@@ -96,7 +96,7 @@ export const CreateBulkCritterCaptureSchema = yup.object({
   release_comment: yup.string().optional()
 });
 
-export const CreateCritterSchema = yup.object({
+const CreateCritterSchema = yup.object({
   critter_id: yup.string().optional(),
   itis_tsn: yup.number().required('Required'),
   animal_id: yup.string().required('Required'),
@@ -105,7 +105,7 @@ export const CreateCritterSchema = yup.object({
   critter_comment: yup.string().optional().nullable()
 });
 
-export const CreateCritterMarkingSchema = yup.object({
+const CreateCritterMarkingSchema = yup.object({
   marking_id: yup.string().optional(),
   critter_id: yup.string().required('Required'),
   marking_type_id: yup.string().required('Marking type is required'),
@@ -115,7 +115,7 @@ export const CreateCritterMarkingSchema = yup.object({
   comment: yup.string().optional().nullable()
 });
 
-export const CreateCritterMeasurementSchema = yup.object({
+const CreateCritterMeasurementSchema = yup.object({
   critter_id: yup.string().required().required('Required'),
   measurement_qualitative_id: yup.string().optional().nullable(),
   measurement_quantitative_id: yup.string().optional().nullable(),
@@ -128,14 +128,14 @@ export const CreateCritterMeasurementSchema = yup.object({
   mortality_id: yup.string().optional().nullable()
 });
 
-export const CreateCritterCollectionUnitSchema = yup.object({
+const CreateCritterCollectionUnitSchema = yup.object({
   critter_collection_unit_id: yup.string().optional(),
   critter_id: yup.string().required('Required'),
   collection_unit_id: yup.string().required('Name is required'),
   collection_category_id: yup.string().required('Category is required')
 });
 
-export const CreateCritterMortalitySchema = yup.object({
+const CreateCritterMortalitySchema = yup.object({
   critter_id: yup.string().required('Required'),
   mortality_id: yup.string().optional().nullable(),
   location: LocationSchema.required(),
@@ -149,7 +149,7 @@ export const CreateCritterMortalitySchema = yup.object({
   ultimate_predated_by_itis_tsn: yup.number().optional().nullable()
 });
 
-export const CreateCritterFamilySchema = yup.object({
+const CreateCritterFamilySchema = yup.object({
   critterbase_critter_id: yup.string().uuid().required(),
   family_id: yup.string().optional(),
   family_label: yup.string().optional(),

@@ -26,7 +26,7 @@ export interface IProjectIUCNForm {
   };
 }
 
-export const ProjectIUCNFormArrayItemInitialValues: IProjectIUCNFormArrayItem = {
+const ProjectIUCNFormArrayItemInitialValues: IProjectIUCNFormArrayItem = {
   classification: '' as unknown as number,
   subClassification1: '' as unknown as number,
   subClassification2: '' as unknown as number

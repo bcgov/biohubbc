@@ -15,7 +15,7 @@ export interface IReportMetaFormArrayItem {
   last_name: string;
 }
 
-export const ReportMetaFormArrayItemInitialValues: IReportMetaFormArrayItem = {
+const ReportMetaFormArrayItemInitialValues: IReportMetaFormArrayItem = {
   first_name: '',
   last_name: ''
 };

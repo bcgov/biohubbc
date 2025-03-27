@@ -13,7 +13,7 @@ import { useSearchParams } from 'hooks/useSearchParams';
 import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import { useState } from 'react';
 
-export const ACTIVE_VIEW_KEY = 'tavk';
+const ACTIVE_VIEW_KEY = 'tavk';
 export enum ACTIVE_VIEW_VALUE {
   observations = 'ov',
   telemetry = 'tv',
@@ -21,7 +21,7 @@ export enum ACTIVE_VIEW_VALUE {
   habitatFeatures = 'hv'
 }
 
-export const SHOW_SEARCH_KEY = 'tssk';
+const SHOW_SEARCH_KEY = 'tssk';
 enum SHOW_SEARCH_VALUE {
   true = 'true',
   false = 'false'

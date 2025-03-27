@@ -16,7 +16,7 @@ interface IReadMoreFieldProps {
  *
  * @return {*}
  */
-export const ReadMoreField: React.FC<IReadMoreFieldProps> = (props) => {
+const ReadMoreField: React.FC<IReadMoreFieldProps> = (props) => {
   const { text, maxCharLength, TypographyProps } = props;
   const [showTruncated, setShowTruncated] = useState(false);
 

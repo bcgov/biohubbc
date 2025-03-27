@@ -7,7 +7,7 @@ import React from 'react';
 import yup from 'utils/YupSchema';
 import { SurveyPermitFormYupSchema } from '../permit/SurveyPermitForm';
 
-export const AddPermitFormInitialValues = {
+const AddPermitFormInitialValues = {
   permits: [
     {
       permit_number: '',
@@ -16,7 +16,7 @@ export const AddPermitFormInitialValues = {
   ]
 };
 
-export const AddPermitsFormYupSchema = yup.object().shape({
+const AddPermitsFormYupSchema = yup.object().shape({
   permits: yup.array().of(
     yup.object().shape({
       permit_number: yup.string().required('Permit number is required'),

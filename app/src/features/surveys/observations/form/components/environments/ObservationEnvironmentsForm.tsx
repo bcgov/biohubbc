@@ -23,7 +23,7 @@ export type EnvironmentsFormData = {
   environments: EnvironmentFormData[];
 };
 
-export const initialEnvironmentsFormData = {
+const initialEnvironmentsFormData = {
   environments: []
 };
 

@@ -76,7 +76,7 @@ export const SurveyFundingSourceFormYupSchema = yup.object().shape({
  * @return {*}
  */
 
-export const SurveyFundingSourceForm = () => {
+const SurveyFundingSourceForm = () => {
   const { values, handleSubmit, errors, setFieldValue, submitCount, setFieldError } =
     useFormikContext<IEditSurveyRequest>();
 

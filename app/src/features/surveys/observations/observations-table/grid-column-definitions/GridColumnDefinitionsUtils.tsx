@@ -23,7 +23,7 @@ import {
  * @param {CBMeasurementType} measurement
  * @return {*}  {measurement is CBQuantitativeMeasurementTypeDefinition}
  */
-export const isQuantitativeMeasurementTypeDefinition = (
+const isQuantitativeMeasurementTypeDefinition = (
   measurement: CBMeasurementType
 ): measurement is CBQuantitativeMeasurementTypeDefinition => {
   return (
@@ -38,7 +38,7 @@ export const isQuantitativeMeasurementTypeDefinition = (
  * @param {CBMeasurementType} measurement
  * @return {*}  {measurement is CBQualitativeMeasurementTypeDefinition}
  */
-export const isQualitativeMeasurementTypeDefinition = (
+const isQualitativeMeasurementTypeDefinition = (
   measurement: CBMeasurementType
 ): measurement is CBQualitativeMeasurementTypeDefinition => {
   return (measurement as CBQualitativeMeasurementTypeDefinition).options !== undefined;
@@ -50,7 +50,7 @@ export const isQualitativeMeasurementTypeDefinition = (
  * @param {(EnvironmentQualitativeTypeDefinition | EnvironmentQuantitativeTypeDefinition)} environment
  * @return {*}  {environment is EnvironmentQuantitativeTypeDefinition}
  */
-export const isQuantitativeEnvironmentTypeDefinition = (
+const isQuantitativeEnvironmentTypeDefinition = (
   environment: EnvironmentQualitativeTypeDefinition | EnvironmentQuantitativeTypeDefinition
 ): environment is EnvironmentQuantitativeTypeDefinition => {
   return (environment as EnvironmentQuantitativeTypeDefinition).environment_quantitative_id !== undefined;
@@ -62,7 +62,7 @@ export const isQuantitativeEnvironmentTypeDefinition = (
  * @param {(EnvironmentQualitativeTypeDefinition | EnvironmentQuantitativeTypeDefinition)} environment
  * @return {*}  {environment is EnvironmentQualitativeTypeDefinition}
  */
-export const isQualitativeEnvironmentTypeDefinition = (
+const isQualitativeEnvironmentTypeDefinition = (
   environment: EnvironmentQualitativeTypeDefinition | EnvironmentQuantitativeTypeDefinition
 ): environment is EnvironmentQualitativeTypeDefinition => {
   return (environment as EnvironmentQualitativeTypeDefinition).environment_qualitative_id !== undefined;

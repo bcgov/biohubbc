@@ -12,7 +12,7 @@ import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
 import { v4 } from 'uuid';
 import { SubcountCommentForm } from './comment/SubcountCommentForm';
 
-export const initialSubcountFormData: SubcountFormData = {
+const initialSubcountFormData: SubcountFormData = {
   _id: v4(),
   observation_subcount_id: null,
   subcount: null,

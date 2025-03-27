@@ -16,7 +16,7 @@ export const EditProjectI18N = {
     'An error has occurred while attempting to edit your project, please try again. If the error persists, please contact your system administrator.'
 };
 
-export const ListProjectsI18N = {
+const ListProjectsI18N = {
   listProjectsErrorDialogTitle: 'Failed to load projects list data',
   listProjectsErrorDialogText:
     'An error occurred while retrieving your list of projects. Please try again. If the error persists, please contact your system administrator.'
@@ -84,13 +84,13 @@ export const AccessRequestI18N = {
     'An error has occurred while attempting to make an access request, please try again. If the error persists, please contact your system administrator.'
 };
 
-export const AccessApprovalDispatchI18N = {
+const AccessApprovalDispatchI18N = {
   reviewErrorTitle: 'Error dispatching granted access notification',
   reviewErrorText:
     'The access request was approved successfully, but an error occurred while attempting to notify the user. Please contact your system administrator.'
 };
 
-export const AccessDenialDispatchI18N = {
+const AccessDenialDispatchI18N = {
   reviewErrorTitle: 'Error dispatching denied access notification',
   reviewErrorText:
     'The access request was denied successfully, but an error occurred while attempting to notify the user. Please contact your system administrator.'
@@ -186,7 +186,7 @@ export const SubmitBiohubI18N = {
   noInformationDialogText: 'No information has been uploaded to Biohub for submission.'
 };
 
-export const SubmitProjectBiohubI18N = {
+const SubmitProjectBiohubI18N = {
   submitProjectBiohubDialogTitle: 'Submit Project Information',
   submitProjectBiohubSuccessDialogTitle: 'Project documents submitted',
   submitProjectBiohubSuccessDialogText: 'Thank you for submitting your project data to Biohub.',
@@ -250,7 +250,7 @@ export const EditMortalityI18N = {
     'An error has occurred while attempting to edit your mortality, please try again. If the error persists, please contact your system administrator.'
 };
 
-export const SurveyAnimalsI18N = {
+const SurveyAnimalsI18N = {
   animalIndividualsHelp:
     'Animals are animals that have been captured, marked, measured, or have died, generating data that applies to one specific individual.',
   animalDialogTitle: 'Invidividual Animals',
