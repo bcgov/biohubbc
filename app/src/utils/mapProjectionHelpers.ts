@@ -62,5 +62,3 @@ const getLatLngAsUtm = (lat: number, lng: number) => {
     .map((a) => Number(a.toFixed(0)))
     .reverse();
 };
-
-;

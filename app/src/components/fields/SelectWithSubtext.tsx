@@ -94,4 +94,3 @@ const SelectWithSubtextField: React.FC<ISelectWithSubtextField> = (props) => {
     </FormControl>
   );
 };
-
