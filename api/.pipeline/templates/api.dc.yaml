@@ -638,7 +638,7 @@ objects:
                       value: ${API_RESPONSE_VALIDATION_ENABLED}
                     - name: DATABASE_RESPONSE_VALIDATION_ENABLED
                       value: ${DATABASE_RESPONSE_VALIDATION_ENABLED}
-                  command: ['node', 'src/cronjobs/telemetry/index.js', '${TELEMETRY_CRONJOB_SCRIPT_FLAGS}']
+                  command: ['node', 'src/cronjobs/telemetry/index', '${TELEMETRY_CRONJOB_SCRIPT_FLAGS}']
                   volumeMounts:
                     - name: ${NAME}${SUFFIX}
                       mountPath: /opt/app-root/src/data
