@@ -12,7 +12,7 @@ import FormikDevDebugger from 'components/formik/FormikDevDebugger';
 import { Formik, FormikValues } from 'formik';
 import { PropsWithChildren } from 'react';
 
-export interface IEditDialogComponentProps<T> {
+interface IEditDialogComponentProps<T> {
   element: any;
   initialValues: T;
   validationSchema: any;

@@ -16,7 +16,7 @@ export interface SubcountMeasurementsForm {
   measurements: (SubcountQualitativeMeasurement | SubcountQuantitativeMeasurement)[];
 }
 
-export const initialSubcountMeasurementsFormData: SubcountMeasurementsForm = {
+const initialSubcountMeasurementsFormData: SubcountMeasurementsForm = {
   measurements: []
 };
 
