@@ -22,7 +22,7 @@
     "noFallthroughCasesInSwitch": true,
     "noErrorTruncation": true,
     "strict": true,
-    "typeRoots": ["node_modules/@types", "src/types/*"]
+    "typeRoots": ["node_modules/@types", "src/types"]
   },
   "include": ["src"],
   "ts-node": {
