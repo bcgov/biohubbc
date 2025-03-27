@@ -73,7 +73,7 @@ const phases = {
     changeId: deployChangeId,
     telemetryCronjobSchedule: '0 0 * * *', // Daily at midnight
     telemetryCronjobDisabled: !isStaticDeployment,
-    telemetryCronjobScriptFlags: (isStaticDeployment && '') || '--_test_maxDevices 2', // For PR's, limit the number of devices to 2
+    telemetryCronjobDeviceLimitFlag: (isStaticDeployment && '') || '--deviceLimit=2', // For PR's, limit the number of devices to 2 per vendor
     suffix: `-dev-${deployChangeId}`,
     instance: `${name}-dev-${deployChangeId}`,
     version: `${deployChangeId}-${changeId}`,
@@ -118,7 +118,7 @@ const phases = {
     changeId: deployChangeId,
     telemetryCronjobSchedule: '0 0 * * *', // Daily at midnight
     telemetryCronjobDisabled: !isStaticDeployment,
-    telemetryCronjobScriptFlags: '', // use defaults
+    telemetryCronjobDeviceLimitFlag: '',
     suffix: `-test`,
     instance: `${name}-test`,
     version: `${version}`,
@@ -163,7 +163,7 @@ const phases = {
     changeId: deployChangeId,
     telemetryCronjobSchedule: '0 0 * * *', // Daily at midnight
     telemetryCronjobDisabled: !isStaticDeployment,
-    telemetryCronjobScriptFlags: '', // use defaults
+    telemetryCronjobDeviceLimitFlag: '',
     suffix: `-test-spi`,
     instance: `${name}-spi-test-spi`,
     version: `${version}`,
@@ -208,7 +208,7 @@ const phases = {
     changeId: deployChangeId,
     telemetryCronjobSchedule: '0 0 * * *', // Daily at midnight
     telemetryCronjobDisabled: !isStaticDeployment,
-    telemetryCronjobScriptFlags: '', // use defaults
+    telemetryCronjobDeviceLimit: '',
     suffix: `-prod`,
     instance: `${name}-prod`,
     version: `${version}`,
