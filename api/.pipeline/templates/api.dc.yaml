@@ -208,9 +208,9 @@ parameters:
   - name: TELEMETRY_CRONJOB_DISABLED
     description: Boolean flag to disable the cronjob, only static deployments should run on schedule.
     value: 'true'
-  - name: TELEMETRY_CRONJOB_DEVICE_LIMIT_FLAG
-    description: Flag to limit the number of devices to process in the telemetry cronjob. Used for PR cronjob deployments.
-    value: ''
+  - name: TELEMETRY_CRONJOB_DEVICE_LIMIT
+    description: Limit the number of devices to process in the telemetry cronjob. Used for PR cronjob deployments.
+    value: '-1'
   - name: TELEMETRY_SECRET
     description: The name of the Openshift Biohubbc telemetry secret
     value: biohubbc-telemetry
@@ -644,7 +644,7 @@ objects:
                     '--',
                     '--batchSize=1000',
                     '--concurrently=100',
-                    '${TELEMETRY_CRONJOB_DEVICE_LIMIT_FLAG}'
+                    '--deviceLimit=${TELEMETRY_CRONJOB_DEVICE_LIMIT}',
                   ]
                   volumeMounts:
                     - name: ${NAME}${SUFFIX}

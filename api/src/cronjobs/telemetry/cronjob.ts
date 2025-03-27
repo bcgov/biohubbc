@@ -10,14 +10,17 @@ import { QueueResult } from '../../utils/task-queue';
 
 const defaultLog = getLogger('telemetry-cronjob');
 
+// Process all devices by default
+const PROCESS_ALL_DEVICES = -1;
+
 /**
  * Telemetry Cronjob: Handles fetching Vectronic and Lotek telemetry and inserting it into the database.
  *
  * Information:
  *
  * How to run:
- *  - Default: `npm run telemetry-cronjob` // defaults to: concurrently = 100 and batchSize = 1000
- *  - CLI args: `npm run telemetry-cronjob -- --concurrently 100 --batchSize 1000 --startDate 2021-01-01 --endDate 2021-01-31 --deviceLimit 10`
+ *  - Default: `npm run telemetry-cronjob` // defaults to: concurrently=100, batchSize=1000 and deviceLimit=-1 (all devices)
+ *  - CLI args: `npm run telemetry-cronjob -- --concurrently=100 --batchSize=1000 --startDate=2021-01-01 --endDate=2021-01-31 --deviceLimit=-1`
  *
  * Telemetry device processing flow:
  *  1. Fetch the telemetry count from the vendor API.
@@ -62,7 +65,7 @@ export async function telemetryCronjob() {
     let vectronicDevices = await vectronicService.getDeviceCredentials(); // Fetch the vectronic account devices
 
     // Limit the number of devices to process (useful when limiting PR cronjobs)
-    if (args.deviceLimit !== undefined) {
+    if (args.deviceLimit !== PROCESS_ALL_DEVICES) {
       lotekDevices = lotekDevices.slice(0, args.deviceLimit);
       vectronicDevices = vectronicDevices.slice(0, args.deviceLimit);
     }
@@ -156,12 +159,12 @@ export const parseArguments = () => {
       concurrently: { type: 'string', default: '100' },
       // The number of items to insert in a single batch
       batchSize: { type: 'string', default: '1000' },
+      // The maximum number of devices to process
+      deviceLimit: { type: 'string', default: PROCESS_ALL_DEVICES.toString() },
       // The start date for fetching telemetry data
       startDate: { type: 'string' },
       // The end date for fetching telemetry data
-      endDate: { type: 'string' },
-      // The maximum number of devices to process
-      deviceLimit: { type: 'string' }
+      endDate: { type: 'string' }
     },
     allowPositionals: true
   });
@@ -170,9 +173,9 @@ export const parseArguments = () => {
     .object({
       concurrently: z.coerce.number(),
       batchSize: z.coerce.number(),
+      deviceLimit: z.coerce.number(),
       startDate: z.string().optional(),
-      endDate: z.string().optional(),
-      deviceLimit: z.coerce.number().optional()
+      endDate: z.string().optional()
     })
     .strict()
     .parse(parsedArgs.values);
