@@ -35,7 +35,7 @@ const apiDeploy = async (settings) => {
         // Cronjobs
         TELEMETRY_CRONJOB_SCHEDULE: phases[phase].telemetryCronjobSchedule,
         TELEMETRY_CRONJOB_DISABLED: phases[phase].telemetryCronjobDisabled,
-        TELEMETRY_CRONJOB_DEVICE_LIMIT_FLAG: phases[phase].telemetryCronjobDeviceLimit,
+        TELEMETRY_CRONJOB_DEVICE_LIMIT: phases[phase].telemetryCronjobDeviceLimit,
         // Node
         NODE_ENV: phases[phase].nodeEnv,
         NODE_OPTIONS: phases[phase].nodeOptions,
