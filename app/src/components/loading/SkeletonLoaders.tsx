@@ -37,30 +37,6 @@ const SkeletonList = (props: IMultipleSkeletonProps) => (
   </>
 );
 
-const SkeletonListStack = (props: IMultipleSkeletonProps) => (
-  <>
-    {Array.from(Array(props.numberOfLines ?? 3).keys()).map((key: number) => (
-      <Stack
-        key={key}
-        flexDirection="column"
-        justifyContent="center"
-        px={2}
-        py={1.2}
-        height={70}
-        sx={{
-          background: '#fff',
-          borderBottom: '1px solid ' + grey[300],
-          '& *': {
-            fontSize: '0.875rem'
-          }
-        }}>
-        <Skeleton variant="text" />
-        <Skeleton variant="text" width="50%" />
-      </Stack>
-    ))}
-  </>
-);
-
 const SkeletonHorizontalStack = (props: IMultipleSkeletonProps) => (
   <Stack direction="row" spacing={1} flex="1 1 auto">
     {Array.from(Array(props.numberOfLines ?? 3).keys()).map((key: number) => (

@@ -1,9 +1,3 @@
-type VantageCategory = {
-  vantage_category_id: number;
-  name: string;
-  description: string | null;
-};
-
 export type Vantage = {
   vantage_method_id: number;
   vantage_category_id: number;

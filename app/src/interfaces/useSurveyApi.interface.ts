@@ -1,4 +1,3 @@
-import { PublishStatus } from 'constants/attachments';
 import { IAgreementsForm } from 'features/surveys/components/agreements/AgreementsForm';
 import { IProprietaryDataForm } from 'features/surveys/components/agreements/ProprietaryDataForm';
 import {
@@ -248,16 +247,6 @@ export interface SurveySupplementaryData {
     update_user: number | null;
     revision_count: number;
   } | null;
-}
-
-/**
- * An interface describing Survey Publish Data
- *
- * @export
- * @interface ISurveySupplementaryData
- */
-interface ISurveySupplementaryData {
-  publishStatus: PublishStatus;
 }
 
 /**

@@ -1,4 +1,3 @@
-import { Feature, Polygon } from 'geojson';
 import { LatLngBoundsExpression } from 'leaflet';
 import { useEffect } from 'react';
 import { useMap } from 'react-leaflet';
@@ -23,9 +22,3 @@ export const SetMapBounds: React.FC<React.PropsWithChildren<ISetMapBoundsProps>>
 
   return null;
 };
-
-type IMapBoundsOnChange = (bounds: Feature<Polygon>, zoom: number) => void;
-
-interface IGetMapBoundsProps {
-  onChange: IMapBoundsOnChange;
-}

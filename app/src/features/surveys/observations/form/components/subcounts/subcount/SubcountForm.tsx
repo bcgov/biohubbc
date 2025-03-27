@@ -3,22 +3,9 @@ import grey from '@mui/material/colors/grey';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import { SubcountCountField } from 'features/surveys/observations/form/components/subcounts/subcount/count/SubcountCountField';
-import {
-  initialSubcountMeasurementsFormData,
-  SubcountMeasurementsForm
-} from 'features/surveys/observations/form/components/subcounts/subcount/measurements/SubcountMeasurementsForm';
-import { SubcountFormData } from 'features/surveys/observations/form/components/subcounts/subcount/SubcountForm.interface';
+import { SubcountMeasurementsForm } from 'features/surveys/observations/form/components/subcounts/subcount/measurements/SubcountMeasurementsForm';
 import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
-import { v4 } from 'uuid';
 import { SubcountCommentForm } from './comment/SubcountCommentForm';
-
-const initialSubcountFormData: SubcountFormData = {
-  _id: v4(),
-  observation_subcount_id: null,
-  subcount: null,
-  comment: null,
-  ...initialSubcountMeasurementsFormData
-};
 
 export interface ISubcountFormProps {
   formikFieldName: string;

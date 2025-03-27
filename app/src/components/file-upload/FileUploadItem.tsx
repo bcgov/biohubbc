@@ -17,14 +17,6 @@ export enum UploadFileStatus {
   COMPLETE = 'Complete'
 }
 
-interface IUploadFile {
-  file: File;
-  status: UploadFileStatus;
-  progress: number;
-  cancelTokenSource: CancelTokenSource;
-  error?: string;
-}
-
 export type IUploadHandler<T = any> = (
   file: File,
   cancelToken: CancelTokenSource,

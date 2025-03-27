@@ -10,20 +10,6 @@ import {
 import { PROJECTION_MODE } from 'utils/mapProjectionHelpers';
 import yup from 'utils/YupSchema';
 
-/**
- * Critterbase related enums.
- */
-
-enum ANIMAL_FORM_MODE {
-  ADD = 'add',
-  EDIT = 'edit'
-}
-
-enum AnimalRelationship {
-  CHILD = 'children',
-  PARENT = 'parents'
-}
-
 const glt = (num: number, greater = true) => `Must be ${greater ? 'greater' : 'less'} than or equal to ${num}`;
 
 const dateSchema = yup
@@ -149,13 +135,6 @@ const CreateCritterMortalitySchema = yup.object({
   ultimate_predated_by_itis_tsn: yup.number().optional().nullable()
 });
 
-const CreateCritterFamilySchema = yup.object({
-  critterbase_critter_id: yup.string().uuid().required(),
-  family_id: yup.string().optional(),
-  family_label: yup.string().optional(),
-  relationship: yup.mixed().oneOf(Object.values(AnimalRelationship)).required('Required')
-});
-
 /**
  * Critterbase schema infered types.
  *
@@ -167,7 +146,6 @@ export type ICreateCritterMeasurement = yup.InferType<typeof CreateCritterMeasur
 export type ICreateCritterCollectionUnit = yup.InferType<typeof CreateCritterCollectionUnitSchema> & { key?: string };
 export type ICreateCritterCapture = yup.InferType<typeof CreateCritterCaptureSchema>;
 export type ICreateBulkCritterCapture = yup.InferType<typeof CreateBulkCritterCaptureSchema>;
-type ICreateCritterFamily = yup.InferType<typeof CreateCritterFamilySchema>;
 export type ICreateCritterMortality = yup.InferType<typeof CreateCritterMortalitySchema>;
 
 /**

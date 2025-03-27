@@ -22,18 +22,13 @@ import {
   useObservationsPageContext,
   useTaxonomyContext
 } from 'hooks/useContext';
-import { CBMeasurementSearchByTsnResponse, CBMeasurementType } from 'interfaces/useCritterApi.interface';
+import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
 import { IGetSurveyFlattenedObservationsResponse, ObservationRecord } from 'interfaces/useObservationApi.interface';
 import { EnvironmentType } from 'interfaces/useReferenceApi.interface';
 import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { firstOrNull } from 'utils/Utils';
 import { SIMS_OBSERVATIONS_HIDDEN_COLUMNS } from '../constants/session-storage';
 import { SurveyContext } from './surveyContext';
-
-type TsnMeasurementTypeDefinitionMap = Record<
-  string,
-  CBMeasurementSearchByTsnResponse | Promise<CBMeasurementSearchByTsnResponse>
->;
 
 export interface IObservationTableRow extends Partial<ObservationRecord> {
   id: GridRowId;

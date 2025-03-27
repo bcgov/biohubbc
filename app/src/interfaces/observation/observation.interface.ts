@@ -112,8 +112,6 @@ type ObservationSubcounts = {
 
 export type ObservationRecord = StandardObservationColumns & ObservationEnvironmentData & ObservationSubcounts;
 
-type ObservationRecordWithSampling = StandardObservationColumns & ObservationSamplingData;
-
 export type SupplementaryObservationCountData = {
   observationCount: number;
 };

@@ -23,10 +23,6 @@ export type EnvironmentsFormData = {
   environments: EnvironmentFormData[];
 };
 
-const initialEnvironmentsFormData = {
-  environments: []
-};
-
 /**
  * Returns form controls for adding environments to the observation subcount.
  *

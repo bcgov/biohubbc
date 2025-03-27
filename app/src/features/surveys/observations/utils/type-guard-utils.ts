@@ -6,10 +6,6 @@ import {
   SubcountQualitativeMeasurement,
   SubcountQuantitativeMeasurement
 } from 'interfaces/useObservationApi.interface';
-import {
-  EnvironmentQualitativeTypeDefinition,
-  EnvironmentQuantitativeTypeDefinition
-} from 'interfaces/useReferenceApi.interface';
 
 /**
  * Type guard to check if a given item is a `SubcountQuantitativeMeasurement`.
@@ -52,43 +48,4 @@ export function isCBQualitativeMeasurementTypeDefinition(
   item: CBQualitativeMeasurementTypeDefinition | CBQuantitativeMeasurementTypeDefinition
 ): item is CBQualitativeMeasurementTypeDefinition {
   return 'options' in item && 'taxon_measurement_id' in item;
-}
-
-/**
- * Type guard to check if a given item is a `CBQuantitativeMeasurementTypeDefinition`.
- *
- * @export
- * @param {(CBQuantitativeMeasurementTypeDefinition | CBQualitativeMeasurementTypeDefinition)} item
- * @return {*}  {item is CBQuantitativeMeasurementTypeDefinition}
- */
-function isCBQuantitativeMeasurementTypeDefinition(
-  item: CBQualitativeMeasurementTypeDefinition | CBQuantitativeMeasurementTypeDefinition
-): item is CBQuantitativeMeasurementTypeDefinition {
-  return 'unit' in item && 'taxon_measurement_id' in item;
-}
-
-/**
- * Type guard to check if a given item is a `EnvironmentQualitativeTypeDefinition`.
- *
- * @export
- * @param {(CBQuantitativeMeasurementTypeDefinition | CBQualitativeMeasurementTypeDefinition)} item
- * @return {*}  {item is EnvironmentQualitativeTypeDefinition}
- */
-function isEnvironmentQualitativeTypeDefinition(
-  item: EnvironmentQualitativeTypeDefinition | EnvironmentQuantitativeTypeDefinition
-): item is EnvironmentQualitativeTypeDefinition {
-  return 'options' in item && 'environment_qualitative_id' in item;
-}
-
-/**
- * Type guard to check if a given item is a `EnvironmentQuantitativeTypeDefinition`.
- *
- * @export
- * @param {(CBQuantitativeMeasurementTypeDefinition | CBQualitativeMeasurementTypeDefinition)} item
- * @return {*}  {item is EnvironmentQuantitativeTypeDefinition}
- */
-function isEnvironmentQuantitativeTypeDefinition(
-  item: EnvironmentQualitativeTypeDefinition | EnvironmentQuantitativeTypeDefinition
-): item is EnvironmentQuantitativeTypeDefinition {
-  return 'unit' in item && 'environment_quantitative_id' in item;
 }

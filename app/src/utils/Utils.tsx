@@ -1,7 +1,7 @@
 import Typography from '@mui/material/Typography';
 import { AxiosProgressEvent } from 'axios';
 import { SYSTEM_IDENTITY_SOURCE } from 'constants/auth';
-import { DATE_FORMAT, TIME_FORMAT } from 'constants/dateTimeFormats';
+import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { default as dayjs } from 'dayjs';
 import { Feature, GeoJsonProperties, Geometry } from 'geojson';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
@@ -118,24 +118,6 @@ export const getFormattedDate = (dateFormat: DATE_FORMAT, date: string | null): 
 };
 
 /**
- * Get a formatted time string.
- *
- * @param {DATE_FORMAT} timeFormat
- * @param {string} timestamp ISO 8601 date string
- * @return {string} formatted date string, or an empty string if unable to parse the timestamp
- */
-const getFormattedTime = (timeFormat: TIME_FORMAT, timestamp: string): string => {
-  const dateJs = dayjs(timestamp);
-
-  if (!dateJs.isValid()) {
-    //date was invalid
-    return '';
-  }
-
-  return dateJs.format(timeFormat);
-};
-
-/**
  * Get a formatted amount string.
  *
  * @param {number} [amount]
@@ -245,30 +227,6 @@ export const alphabetizeObjects = <T extends { [key: string]: any }>(data: T[], 
 };
 
 /**
- * Coerce a potentially invalid number towards zero.
- * @param n a potentially NaN number
- * @returns n if a number, 0 otherwise
- */
-const coerceZero = (n: any): number => (isNaN(n ?? NaN) ? 0 : Number(n));
-
-/**
- * Checks if two dates are the same, but safe to use against nullish values.
- *
- * @param {NullishDate}
- * @param {NullishDate}
- * @returns boolean
- */
-type NullishDate = string | null | undefined;
-const datesSameNullable = (date1: NullishDate, date2: NullishDate): boolean => {
-  if (date1 == null && date2 == null) {
-    //Note: intentionally loose equality
-    return true;
-  } else {
-    return dayjs(date1).isSame(dayjs(date2));
-  }
-};
-
-/**
  * Pluralizes a word.
  *
  * @example p(2, 'apple'); // => 'apples'
@@ -336,77 +294,6 @@ export const getCodesName = (
     name = code?.name;
   }
   return name;
-};
-
-/**
- * Convert a UUID into an arbitrary color within a constrained color space.
- *
- * @param id uuid
- * @returns {*} {fillColor: string, outlineColor: string}
- */
-const uuidToColor = (id: string): { fillColor: string; outlineColor: string } => {
-  const uuidToInt = (uuid: string): number => {
-    const noDashes = uuid.replace(/-/g, '');
-    const substring = noDashes.substring(0, 9);
-    return parseInt(substring, 16);
-  };
-
-  type HSL = { h: number; s: number; l: number };
-  // Converts an integer value to an HSL color
-  const intToHSL = (i: number): HSL => {
-    const hue = (i / 1000) % 360;
-    let saturation = (i % 50) + 50; // Ensuring saturation is between 50% and 100%
-    let lightness = (i % 60) + 20; // Ensuring lightness is between 20% and 80%
-
-    // Avoiding earthy tones for hues in the range of 20-170 by adjusting the saturation and lightness values
-    if (hue >= 20 && hue <= 170) {
-      saturation = (i % 40) + 60; // Ensuring saturation is between 60% and 100%
-      lightness = (i % 50) + 40; // Ensuring lightness is between 40% and 90%
-    }
-
-    return { h: hue, s: saturation, l: lightness };
-  };
-
-  function HSLToRGB(hsl: HSL) {
-    const { h, s, l } = hsl;
-    const scaledS = s / 100;
-    const scaledL = l / 100;
-    const c = (1 - Math.abs(2 * scaledL - 1)) * scaledS;
-    const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
-    const m = scaledL - c / 2;
-
-    let r, g, b;
-    if (h >= 0 && h < 60) [r, g, b] = [c, x, 0];
-    else if (h >= 60 && h < 120) [r, g, b] = [x, c, 0];
-    else if (h >= 120 && h < 180) [r, g, b] = [0, c, x];
-    else if (h >= 180 && h < 240) [r, g, b] = [0, x, c];
-    else if (h >= 240 && h < 300) [r, g, b] = [x, 0, c];
-    else [r, g, b] = [c, 0, x];
-
-    return [(r + m) * 255, (g + m) * 255, (b + m) * 255].map((val) => Math.round(val));
-  }
-
-  function RGBToHex(rgb: number[]) {
-    return rgb.map((val) => val.toString(16).padStart(2, '0')).join('');
-  }
-
-  function generateOutlineColor(hsl: HSL) {
-    const { h, s, l } = hsl;
-    const outlineL = l >= 50 ? l - 40 : l + 40;
-    return { h, s, l: outlineL };
-  }
-
-  const intVal = uuidToInt(id);
-  const hslFillColor = intToHSL(intVal);
-  const hslOutlineColor = generateOutlineColor(hslFillColor);
-
-  const rgbFillColor = HSLToRGB(hslFillColor);
-  const rgbOutlineColor = HSLToRGB(hslOutlineColor);
-
-  const hexFillColor = RGBToHex(rgbFillColor);
-  const hexOutlineColor = RGBToHex(rgbOutlineColor);
-
-  return { fillColor: `#${hexFillColor}`, outlineColor: `#${hexOutlineColor}` };
 };
 
 /**
