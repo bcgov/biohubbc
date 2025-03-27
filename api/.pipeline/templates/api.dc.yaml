@@ -641,9 +641,8 @@ objects:
                   command: [
                     'node',
                     'src/cronjobs/telemetry/index',
-                    '--',
-                    '--batchSize=1000',
-                    '--concurrently=100',
+                    '--batchSize=1001',
+                    '--concurrently=101',
                     '--deviceLimit=${TELEMETRY_CRONJOB_DEVICE_LIMIT}',
                   ]
                   volumeMounts:
