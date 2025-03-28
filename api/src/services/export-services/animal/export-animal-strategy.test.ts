@@ -187,7 +187,7 @@ describe('ExportObservationStrategy', () => {
         mortality: [
           {
             mortality_id: 'mortality123',
-            mortality_timestamp: '2025-03-14T04:01:02.000Z'
+            mortality_timestamp: '2025-03-14T23:59:02.000Z'
           }
         ]
       };
@@ -201,7 +201,7 @@ describe('ExportObservationStrategy', () => {
       const result = ExportAnimalStrategy.mortalitiesCsvTransformation(item, mortalityLocationsMap);
 
       // Expected CSV string
-      const expectedCsv = ['nickname123,2025-03-13,21:01:02 PDT,34.0522,-118.2437'].join('\r\n');
+      const expectedCsv = ['nickname123,2025-03-14,16:59:02 PDT,34.0522,-118.2437'].join('\r\n');
 
       // Assert that the result matches the expected CSV
       expect(result).to.equal(expectedCsv);
