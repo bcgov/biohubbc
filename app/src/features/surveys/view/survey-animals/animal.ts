@@ -56,6 +56,7 @@ const LocationSchema = yup.object().shape({
   coordinate_uncertainty_unit: yup.string()
 });
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const CreateCritterCaptureSchema = yup.object({
   capture_id: yup.string().optional(),
   critter_id: yup.string().required('Required'),
@@ -69,6 +70,7 @@ const CreateCritterCaptureSchema = yup.object({
   release_comment: yup.string().optional()
 });
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const CreateBulkCritterCaptureSchema = yup.object({
   capture_id: yup.string().optional(),
   critter_id: yup.string().required('Required'),
@@ -82,6 +84,7 @@ const CreateBulkCritterCaptureSchema = yup.object({
   release_comment: yup.string().optional()
 });
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const CreateCritterSchema = yup.object({
   critter_id: yup.string().optional(),
   itis_tsn: yup.number().required('Required'),
@@ -91,6 +94,7 @@ const CreateCritterSchema = yup.object({
   critter_comment: yup.string().optional().nullable()
 });
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const CreateCritterMarkingSchema = yup.object({
   marking_id: yup.string().optional(),
   critter_id: yup.string().required('Required'),
@@ -101,6 +105,7 @@ const CreateCritterMarkingSchema = yup.object({
   comment: yup.string().optional().nullable()
 });
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const CreateCritterMeasurementSchema = yup.object({
   critter_id: yup.string().required().required('Required'),
   measurement_qualitative_id: yup.string().optional().nullable(),
@@ -114,6 +119,7 @@ const CreateCritterMeasurementSchema = yup.object({
   mortality_id: yup.string().optional().nullable()
 });
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const CreateCritterCollectionUnitSchema = yup.object({
   critter_collection_unit_id: yup.string().optional(),
   critter_id: yup.string().required('Required'),
@@ -121,6 +127,7 @@ const CreateCritterCollectionUnitSchema = yup.object({
   collection_category_id: yup.string().required('Category is required')
 });
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const CreateCritterMortalitySchema = yup.object({
   critter_id: yup.string().required('Required'),
   mortality_id: yup.string().optional().nullable(),
