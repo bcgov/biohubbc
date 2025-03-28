@@ -39,7 +39,7 @@ describe('GeoService', () => {
     });
   });
 
-  describe('_buildURL', async () => {
+  describe('_buildURL', () => {
     it('builds and returns a url', async () => {
       const geoService = new GeoService({ baseUrl: 'www.baseurl.com/ows' });
 
@@ -49,7 +49,7 @@ describe('GeoService', () => {
     });
   });
 
-  describe('_externalGet', async () => {
+  describe('_externalGet', () => {
     it('makes a get request', async () => {
       const mockAxiosResponse = { data: 'mockData' };
 
@@ -64,7 +64,7 @@ describe('GeoService', () => {
     });
   });
 
-  describe('_externalPost', async () => {
+  describe('_externalPost', () => {
     it('makes a post request', async () => {
       const mockAxiosResponse = { data: 'mockData' };
 
@@ -85,7 +85,7 @@ describe('WebFeatureService', () => {
     sinon.restore();
   });
 
-  describe('getCapabilities', async () => {
+  describe('getCapabilities', () => {
     it('makes a WFS getCapabilities get request', async () => {
       const _buildURLSpy = sinon.spy(GeoService.prototype, '_buildURL');
       const _externalGetStub = sinon
@@ -106,7 +106,7 @@ describe('WebFeatureService', () => {
     });
   });
 
-  describe('getFeature', async () => {
+  describe('getFeature', () => {
     describe('with no CQL Filter', () => {
       it('makes a WFS getFeature post request', async () => {
         const _buildURLSpy = sinon.spy(GeoService.prototype, '_buildURL');
@@ -167,7 +167,7 @@ describe('WebFeatureService', () => {
     });
   });
 
-  describe('getPropertyValue', async () => {
+  describe('getPropertyValue', () => {
     describe('with no CQL Filter', () => {
       it('makes a WFS getPropertyValue post request', async () => {
         const _buildURLSpy = sinon.spy(GeoService.prototype, '_buildURL');
@@ -234,7 +234,7 @@ describe('WebMapService', () => {
     sinon.restore();
   });
 
-  describe('getCapabilities', async () => {
+  describe('getCapabilities', () => {
     it('makes a WMS getCapabilities get request', async () => {
       const _buildURLSpy = sinon.spy(GeoService.prototype, '_buildURL');
       const _externalGetStub = sinon
@@ -255,7 +255,7 @@ describe('WebMapService', () => {
     });
   });
 
-  describe('getMap', async () => {
+  describe('getMap', () => {
     it('makes a WMS getMap get request', async () => {
       const _buildURLSpy = sinon.spy(GeoService.prototype, '_buildURL');
       const _externalGetStub = sinon.stub(GeoService.prototype, '_externalGet').resolves('mockGetMapResponseData');

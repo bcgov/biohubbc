@@ -163,7 +163,9 @@ export function postSurveyTelemetryCredentialAttachment(): RequestHandler {
         username: req.keycloak_token?.preferred_username ?? '',
         email: req.keycloak_token?.email ?? ''
       };
-      if (upsertResult.key) await uploadFileToS3(rawMediaFile, upsertResult.key, metadata);
+      if (upsertResult.key) {
+        await uploadFileToS3(rawMediaFile, upsertResult.key, metadata);
+      }
 
       await connection.commit();
 

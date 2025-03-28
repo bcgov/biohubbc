@@ -54,7 +54,7 @@ describe('ProjectParticipationService', () => {
 
       try {
         await projectParticipationService.ensureProjectParticipant(projectId, systemUserId, projectParticipantRoleId);
-      } catch (actualError) {
+      } catch (_actualError) {
         expect.fail();
       }
 
@@ -79,7 +79,7 @@ describe('ProjectParticipationService', () => {
 
       try {
         await projectParticipationService.ensureProjectParticipant(projectId, systemUserId, projectParticipantRoleId);
-      } catch (actualError) {
+      } catch (_actualError) {
         expect.fail();
       }
 
@@ -319,73 +319,15 @@ describe('ProjectParticipationService', () => {
     });
   });
 
-  describe('getProjectParticipants', () => {
-    it('succeeds with valid data', async () => {
-      const dbConnection = getMockDBConnection();
-      const service = new ProjectParticipationService(dbConnection);
-
-      const data = {
-        projectId: 1
-      };
-
-      const repoStub = sinon.stub(ProjectParticipationRepository.prototype, 'getProjectParticipants').resolves([
-        {
-          project_participation_id: 1,
-          project_id: 1,
-          system_user_id: 2,
-          project_role_ids: [1],
-          project_role_names: ['Role1'],
-          project_role_permissions: ['Permission1'],
-          agency: null,
-          display_name: 'test user',
-          email: 'email@email.com',
-          family_name: 'lname',
-          given_name: 'fname',
-          identity_source: SYSTEM_IDENTITY_SOURCE.IDIR,
-          record_end_date: null,
-          role_ids: [1],
-          role_names: ['Role1'],
-          user_guid: '123-456-789',
-          user_identifier: 'testuser'
-        }
-      ]);
-
-      const response = await service.getProjectParticipants(data.projectId);
-
-      expect(repoStub).to.be.calledOnce;
-      expect(response).to.eql([
-        {
-          project_participation_id: 1,
-          project_id: 1,
-          system_user_id: 2,
-          project_role_ids: [1],
-          project_role_names: ['Role1'],
-          project_role_permissions: ['Permission1'],
-          agency: null,
-          display_name: 'test user',
-          email: 'email@email.com',
-          family_name: 'lname',
-          given_name: 'fname',
-          identity_source: SYSTEM_IDENTITY_SOURCE.IDIR,
-          record_end_date: null,
-          role_ids: [1],
-          role_names: ['Role1'],
-          user_guid: '123-456-789',
-          user_identifier: 'testuser'
-        }
-      ]);
-    });
-  });
-
   describe('postProjectParticipant', () => {
-    it('succeeds with valid data', async () => {
+    it('succeeds with valid role id', async () => {
       const dbConnection = getMockDBConnection();
       const service = new ProjectParticipationService(dbConnection);
 
       const data = {
         projectId: 1,
         systemUserId: 1,
-        projectParticipantRoleId: 1
+        projectParticipantRole: 1
       };
 
       const repoStub = sinon.stub(ProjectParticipationRepository.prototype, 'postProjectParticipant').resolves();
@@ -393,23 +335,21 @@ describe('ProjectParticipationService', () => {
       const response = await service.postProjectParticipant(
         data.projectId,
         data.systemUserId,
-        data.projectParticipantRoleId
+        data.projectParticipantRole
       );
 
       expect(repoStub).to.be.calledOnce;
       expect(response).to.eql(undefined);
     });
-  });
 
-  describe('postProjectParticipant', () => {
-    it('succeeds with valid data', async () => {
+    it('succeeds with valid role name', async () => {
       const dbConnection = getMockDBConnection();
       const service = new ProjectParticipationService(dbConnection);
 
       const data = {
         projectId: 1,
         systemUserId: 1,
-        projectParticipantRoleId: 'role'
+        projectParticipantRole: 'role'
       };
 
       const repoStub = sinon.stub(ProjectParticipationRepository.prototype, 'postProjectParticipant').resolves();
@@ -417,7 +357,7 @@ describe('ProjectParticipationService', () => {
       const response = await service.postProjectParticipant(
         data.projectId,
         data.systemUserId,
-        data.projectParticipantRoleId
+        data.projectParticipantRole
       );
 
       expect(repoStub).to.be.calledOnce;

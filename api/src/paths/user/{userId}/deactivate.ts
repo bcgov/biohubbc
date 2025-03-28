@@ -77,9 +77,8 @@ export function deactivateSystemUser(): RequestHandler {
       await connection.open();
       const projectParticipationService = new ProjectParticipationService(connection);
 
-      const isUserTheOnlyCoordinator = await projectParticipationService.isUserTheOnlyProjectCoordinatorOnAnyProject(
-        systemUserId
-      );
+      const isUserTheOnlyCoordinator =
+        await projectParticipationService.isUserTheOnlyProjectCoordinatorOnAnyProject(systemUserId);
 
       if (isUserTheOnlyCoordinator) {
         throw new HTTP400(

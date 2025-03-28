@@ -194,7 +194,7 @@ export class TelemetryVectronicService extends DBService {
             afterAcquisition: options.startDate,
             beforeAcquisition: options.endDate,
             // If no start date provided, use the largest idposition from SIMS
-            gtId: options.startDate ? undefined : deviceActivity.maxIdposition ?? undefined
+            gtId: options.startDate ? undefined : (deviceActivity.maxIdposition ?? undefined)
           });
 
           // Batch insert telemetry data into SIMS

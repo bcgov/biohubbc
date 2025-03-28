@@ -24,7 +24,8 @@ export default defineConfig({
     !process.env.VITEST
       ? checker({
           eslint: {
-            lintCommand: 'eslint src/ --ext .jsx,.js,.ts,.tsx'
+            useFlatConfig: true,
+            lintCommand: 'eslint .'
           }
         })
       : undefined
@@ -32,6 +33,10 @@ export default defineConfig({
   build: {
     outDir: 'build',
     emptyOutDir: true,
+    sourcemap: false,
+    rollupOptions: {
+      external: ['**/*.test.ts', '**/*.test.tsx']
+    },
     commonjsOptions: {
       transformMixedEsModules: true
     }

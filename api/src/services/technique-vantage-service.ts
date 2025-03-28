@@ -53,7 +53,9 @@ export class TechniqueVantageService extends DBService {
   ): Promise<void> {
     const existingVantages = await this.techniqueVantageRepository.getVantagesForTechnique(surveyId, methodTechniqueId);
 
-    if (!existingVantages.length && !vantageMethods.length) return;
+    if (!existingVantages.length && !vantageMethods.length) {
+      return;
+    }
 
     // Map of existing vantages
     const existingVantagesMap = new Map(existingVantages.map((mode) => [mode.vantage_method_id, mode]));

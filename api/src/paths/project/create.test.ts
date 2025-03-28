@@ -38,7 +38,7 @@ describe('create', () => {
         const requestHandler = createProject();
 
         await requestHandler(mockReq, mockRes, mockNext);
-      } catch (actualError) {
+      } catch (_error) {
         expect.fail();
       }
 
@@ -60,11 +60,11 @@ describe('create', () => {
 
         await requestHandler(mockReq, mockRes, mockNext);
         expect.fail();
-      } catch (actualError) {
+      } catch (error) {
         expect(dbConnectionObj.rollback).to.have.been.called;
         expect(dbConnectionObj.release).to.have.been.called;
 
-        expect((actualError as HTTPError).message).to.equal('a test error');
+        expect((error as HTTPError).message).to.equal('a test error');
       }
     });
   });

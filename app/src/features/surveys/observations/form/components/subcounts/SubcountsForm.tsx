@@ -148,46 +148,44 @@ export const SubcountsForm = (props: ISubcountsFormProps) => {
             return (
               <>
                 <Box sx={{ overflow: 'auto' }}>
-                  {
-                    // For each subcount record, render a subcount form row
-                    subcountsFormData?.map((subcount, index) => {
-                      const subcountsArrayFieldName = `subcounts[${index}]`;
+                  {// For each subcount record, render a subcount form row
+                  subcountsFormData?.map((subcount, index) => {
+                    const subcountsArrayFieldName = `subcounts[${index}]`;
 
-                      const enableHeaders = index === 0;
-                      const disableRemoveSubcount = values.subcounts.length <= 1;
+                    const enableHeaders = index === 0;
+                    const disableRemoveSubcount = values.subcounts.length <= 1;
 
-                      return (
-                        <Stack gap={2} direction="row" maxWidth="100%" key={subcount._id} sx={{ mb: 2 }}>
-                          <SubcountForm
-                            formikFieldName={subcountsArrayFieldName}
-                            measurementTypeDefinitions={selectedMeasurementTypeDefinitions}
-                            onDeleteMeasurement={handleRemoveMeasurement}
-                            enableHeaders={enableHeaders}
-                            key={subcount._id}
-                          />
+                    return (
+                      <Stack gap={2} direction="row" maxWidth="100%" key={subcount._id} sx={{ mb: 2 }}>
+                        <SubcountForm
+                          formikFieldName={subcountsArrayFieldName}
+                          measurementTypeDefinitions={selectedMeasurementTypeDefinitions}
+                          onDeleteMeasurement={handleRemoveMeasurement}
+                          enableHeaders={enableHeaders}
+                          key={subcount._id}
+                        />
 
-                          <Box
-                            sx={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              // Add margin-top to align the remove icon with the component in the first row, which isn't centered because of the header labels
-                              ...(enableHeaders === true ? { mt: 6.5 } : { mt: 0 })
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            // Add margin-top to align the remove icon with the component in the first row, which isn't centered because of the header labels
+                            ...(enableHeaders === true ? { mt: 6.5 } : { mt: 0 })
+                          }}>
+                          <IconButton
+                            color="error"
+                            aria-label="remove subcount"
+                            disabled={disableRemoveSubcount}
+                            onClick={() => {
+                              // Remove the subcount from the subcounts array
+                              arrayHelpers.remove(index);
                             }}>
-                            <IconButton
-                              color="error"
-                              aria-label="remove subcount"
-                              disabled={disableRemoveSubcount}
-                              onClick={() => {
-                                // Remove the subcount from the subcounts array
-                                arrayHelpers.remove(index);
-                              }}>
-                              <Icon path={mdiMinusCircle} size={0.8} />
-                            </IconButton>
-                          </Box>
-                        </Stack>
-                      );
-                    })
-                  }
+                            <Icon path={mdiMinusCircle} size={0.8} />
+                          </IconButton>
+                        </Box>
+                      </Stack>
+                    );
+                  })}
                 </Box>
                 <Button
                   color="primary"

@@ -21,7 +21,7 @@ describe('KeycloakService', () => {
     sinon.restore();
   });
 
-  describe('getKeycloakCssApiToken', async () => {
+  describe('getKeycloakCssApiToken', () => {
     it('authenticates with keycloak and returns an access token', async () => {
       const mockAxiosResponse = { data: { access_token: 'token' } };
 
@@ -58,7 +58,7 @@ describe('KeycloakService', () => {
     });
   });
 
-  describe('findIDIRUsers', async () => {
+  describe('findIDIRUsers', () => {
     it('finds matching idir users', async () => {
       sinon.stub(KeycloakService.prototype, 'getKeycloakCssApiToken').resolves('token');
 

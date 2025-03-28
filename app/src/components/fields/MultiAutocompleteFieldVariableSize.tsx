@@ -73,51 +73,50 @@ function useResetCache(data: any) {
 }
 
 // Adapter for react-window
-const ListboxComponent = React.forwardRef<HTMLDivElement, React.PropsWithChildren>(function ListboxComponent(
-  props,
-  ref
-) {
-  const { children, ...other } = props;
-  const itemData = React.Children.toArray(children);
-  const itemCount = itemData.length;
-  const itemSize = 54;
+const ListboxComponent = React.forwardRef<HTMLDivElement, React.PropsWithChildren>(
+  function ListboxComponent(props, ref) {
+    const { children, ...other } = props;
+    const itemData = React.Children.toArray(children);
+    const itemCount = itemData.length;
+    const itemSize = 54;
 
-  const getChildSize = (child: React.ReactNode) => {
-    if (React.isValidElement(child) && child.type === ListSubheader) {
-      return 48;
-    }
+    const getChildSize = (child: React.ReactNode) => {
+      if (React.isValidElement(child) && child.type === ListSubheader) {
+        return 48;
+      }
 
-    return itemSize;
-  };
+      return itemSize;
+    };
 
-  const getHeight = () => {
-    if (itemCount > 8) {
-      return 8 * itemSize;
-    }
-    return itemData.map(getChildSize).reduce((a, b) => a + b, 0);
-  };
+    const getHeight = () => {
+      if (itemCount > 8) {
+        return 8 * itemSize;
+      }
+      return itemData.map(getChildSize).reduce((a, b) => a + b, 0);
+    };
 
-  const gridRef = useResetCache(itemCount);
+    const gridRef = useResetCache(itemCount);
 
-  return (
-    <div ref={ref}>
-      <OuterElementContext.Provider value={other}>
-        <VariableSizeList
-          itemData={itemData}
-          height={getHeight() + 2 * LISTBOX_PADDING}
-          width="100%"
-          ref={gridRef}
-          outerElementType={OuterElementType}
-          innerElementType="ul"
-          itemSize={(index: number) => getChildSize(itemData[index])}
-          overscanCount={5}
-          itemCount={itemCount}>
-          {renderRow}
-        </VariableSizeList>
-      </OuterElementContext.Provider>
-    </div>
-  );
-});
+    return (
+      <div ref={ref}>
+        <OuterElementContext.Provider value={other}>
+          <VariableSizeList
+            itemData={itemData}
+            height={getHeight() + 2 * LISTBOX_PADDING}
+            width="100%"
+            ref={gridRef}
+            outerElementType={OuterElementType}
+            innerElementType="ul"
+            itemSize={(index: number) => getChildSize(itemData[index])}
+            overscanCount={5}
+            itemCount={itemCount}>
+            {renderRow}
+          </VariableSizeList>
+        </OuterElementContext.Provider>
+      </div>
+    );
+  }
+);
 
 const useStyles = () => {
   return {
@@ -182,7 +181,6 @@ const MultiAutocompleteFieldVariableSize: React.FC<IMultiAutocompleteField> = (p
 
   useEffect(() => {
     setOptions(props.options || []);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.options]);
 
   const getExistingValue = (existingValues: (number | string)[]): IMultiAutocompleteFieldOption[] => {

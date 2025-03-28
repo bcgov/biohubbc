@@ -133,7 +133,7 @@ const handleGPXUpload = async (file: File) => {
     });
 
     return [...sanitizedGeoJSON];
-  } catch (error) {
+  } catch (_error) {
     throw Error('Error uploading your GPX file, please check the file and try again.');
   }
 };

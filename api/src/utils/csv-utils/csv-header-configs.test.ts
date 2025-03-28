@@ -261,14 +261,6 @@ describe('CSVHeaderConfigs', () => {
       expect(result).to.be.deep.equal([]);
     });
 
-    it('should return an empty array if the cell is optional and undefined', () => {
-      const nonEmptyStringValidator = getNonEmptyStringCellValidator({ optional: true });
-
-      const result = nonEmptyStringValidator({ cell: undefined } as CSVParams);
-
-      expect(result).to.be.deep.equal([]);
-    });
-
     it('should return an empty array if the cell is valid', () => {
       const nonEmptyStringValidator = getNonEmptyStringCellValidator({ optional: false });
 
@@ -459,29 +451,29 @@ describe('CSVHeaderConfigs', () => {
         itis_tsn: 1,
         itis_scientific_name: 'Alces alces'
       });
+    });
 
-      it('should not update row state and should return an error if the cell is invalid', () => {
-        const taxonMapMock = new CaseInsensitiveMap<string | number, any>([
-          [1, { tsn: 1, scientificName: 'Alces alces' }],
-          ['alces alces', { tsn: 1, scientificName: 'Alces alces' }]
-        ]);
-        const taxonCellValidator = getTaxonCellValidator(taxonMapMock, {
-          optional: false
-        });
-
-        const params: CSVParams = {
-          cell: 2, // not in taxonMapMock
-          row: {},
-          header: 'HEADER',
-          rowIndex: 0,
-          mutateCell: 2
-        };
-
-        const result = taxonCellValidator(params);
-
-        expect(result.length).to.be.equal(1);
-        expect(params.row[CSVRowState]?.taxon).to.be.eql({});
+    it('should not update row state and should return an error if the cell is invalid', () => {
+      const taxonMapMock = new CaseInsensitiveMap<string | number, any>([
+        [1, { tsn: 1, scientificName: 'Alces alces' }],
+        ['alces alces', { tsn: 1, scientificName: 'Alces alces' }]
+      ]);
+      const taxonCellValidator = getTaxonCellValidator(taxonMapMock, {
+        optional: false
       });
+
+      const params: CSVParams = {
+        cell: 2, // not in taxonMapMock
+        row: {},
+        header: 'HEADER',
+        rowIndex: 0,
+        mutateCell: 2
+      };
+
+      const result = taxonCellValidator(params);
+
+      expect(result.length).to.be.equal(1);
+      expect(params.row[CSVRowState]?.taxon).to.be.eql(undefined);
     });
   });
 

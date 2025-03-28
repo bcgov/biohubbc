@@ -74,7 +74,7 @@ export class RegionRepository extends BaseRepository {
 
     try {
       await this.connection.sql(sql);
-    } catch (error) {
+    } catch (_error) {
       throw new ApiExecuteSQLError('Failed to execute insert SQL for survey_region', [
         'RegionRepository->addRegionsToSurvey'
       ]);
@@ -92,7 +92,7 @@ export class RegionRepository extends BaseRepository {
     `;
     try {
       await this.connection.sql(sql);
-    } catch (error) {
+    } catch (_error) {
       throw new ApiExecuteSQLError('Failed to execute delete SQL for survey_regions', [
         'RegionRepository->deleteRegionsForSurvey'
       ]);
@@ -120,7 +120,7 @@ export class RegionRepository extends BaseRepository {
       const response = await this.connection.knex<IRegion>(qb);
 
       return response.rows;
-    } catch (error) {
+    } catch (_error) {
       throw new ApiExecuteSQLError('Failed to execute search region SQL', [
         'RegionRepository->searchRegionsWithDetails'
       ]);
@@ -188,7 +188,7 @@ export class RegionRepository extends BaseRepository {
       }
 
       return response.rows;
-    } catch (error) {
+    } catch (_error) {
       throw new ApiExecuteSQLError('Failed to execute get intersecting regions SQL', [
         'RegionRepository->getIntersectingRegionsFromFeatures'
       ]);
