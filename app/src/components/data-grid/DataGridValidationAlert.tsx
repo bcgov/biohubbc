@@ -18,7 +18,7 @@ interface ITableValidationError<T> extends RowValidationError<T> {
   rowId: GridRowId;
 }
 
-export interface IDataGridErrorViewerProps<RowType> {
+interface IDataGridErrorViewerProps<RowType> {
   validationModel: TableValidationModel<RowType>;
   muiDataGridApiRef: GridApiCommunity;
 }

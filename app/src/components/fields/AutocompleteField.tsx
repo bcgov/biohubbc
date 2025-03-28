@@ -15,7 +15,7 @@ export interface IAutocompleteFieldOption<OptionValueType extends string | numbe
   description?: string | null;
 }
 
-export interface IAutocompleteField<
+interface IAutocompleteField<
   OptionValueType extends string | number,
   OptionType extends IAutocompleteFieldOption<OptionValueType>
 > {

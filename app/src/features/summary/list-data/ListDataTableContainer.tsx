@@ -12,14 +12,14 @@ import { useSearchParams } from 'hooks/useSearchParams';
 import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import { useState } from 'react';
 
-export const ACTIVE_VIEW_KEY = 'lvk';
+const ACTIVE_VIEW_KEY = 'lvk';
 export enum ACTIVE_VIEW_VALUE {
   projects = 'pv',
   surveys = 'sv'
 }
 
-export const SHOW_SEARCH_KEY = 'lvsk';
-export enum SHOW_SEARCH_VALUE {
+const SHOW_SEARCH_KEY = 'lvsk';
+enum SHOW_SEARCH_VALUE {
   true = 'true',
   false = 'false'
 }

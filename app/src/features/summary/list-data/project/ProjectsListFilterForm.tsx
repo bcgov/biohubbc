@@ -17,7 +17,7 @@ export const ProjectAdvancedFiltersInitialValues: IProjectAdvancedFilters = {
   system_user_id: undefined
 };
 
-export interface IProjectsListFilterFormProps {
+interface IProjectsListFilterFormProps {
   handleSubmit: (filterValues: IProjectAdvancedFilters) => void;
   initialValues?: IProjectAdvancedFilters;
 }

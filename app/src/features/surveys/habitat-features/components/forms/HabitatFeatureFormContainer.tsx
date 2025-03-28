@@ -6,7 +6,7 @@ import yup from 'utils/YupSchema';
 import { HabitatFeatureForm } from './HabitatFeatureForm';
 
 // Habitat Feature Yup schema
-export const HabitatFeatureYupSchema = yup
+const HabitatFeatureYupSchema = yup
   .object({
     habitat_feature_type_id: yup.number().required('Habitat feature type is required'),
     count: yup.number().required('Count is required'),

@@ -60,11 +60,11 @@ export const ProprietaryDataYupSchema = yup.object().shape({
   })
 });
 
-export interface IProprietaryDataCategoryOption<T extends string | number> extends IAutocompleteFieldOption<T> {
+interface IProprietaryDataCategoryOption<T extends string | number> extends IAutocompleteFieldOption<T> {
   is_first_nation: boolean;
 }
 
-export interface IProprietaryDataFormProps {
+interface IProprietaryDataFormProps {
   proprietary_data_category: IProprietaryDataCategoryOption<number>[];
   first_nations: IAutocompleteFieldOption<number>[];
 }

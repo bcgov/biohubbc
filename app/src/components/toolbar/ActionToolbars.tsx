@@ -16,13 +16,13 @@ const useStyles = () => {
   };
 };
 
-export interface IMenuToolbarItem {
+interface IMenuToolbarItem {
   menuIcon?: ReactNode;
   menuLabel: string;
   menuOnClick: () => void;
 }
 
-export interface IMenuToolbarProps extends ICustomMenuButtonProps, IActionToolbarProps {}
+interface IMenuToolbarProps extends ICustomMenuButtonProps, IActionToolbarProps {}
 
 export const H2MenuToolbar: React.FC<IMenuToolbarProps> = (props) => {
   return (
@@ -32,7 +32,7 @@ export const H2MenuToolbar: React.FC<IMenuToolbarProps> = (props) => {
   );
 };
 
-export interface ICustomMenuButtonProps {
+interface ICustomMenuButtonProps {
   buttonLabel?: string;
   buttonTitle: string;
   buttonStartIcon?: ReactNode;
@@ -119,7 +119,7 @@ export const CustomMenuButton: React.FC<ICustomMenuButtonProps> = (props) => {
   );
 };
 
-export interface ICustomMenuIconButtonProps {
+interface ICustomMenuIconButtonProps {
   buttonTitle: string;
   buttonIcon: ReactNode;
   buttonProps?: Partial<IconButtonProps>;

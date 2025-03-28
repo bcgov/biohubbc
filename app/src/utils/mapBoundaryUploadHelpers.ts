@@ -13,7 +13,7 @@ import { v4 as uuidv4 } from 'uuid';
  * @param {File} file
  * @returns {*} boolean
  */
-export const isZipFile = (file: File): boolean => {
+const isZipFile = (file: File): boolean => {
   if (!file?.type.match(/zip/) || !file?.name.includes('.zip')) {
     return false;
   }
@@ -29,7 +29,7 @@ export const isZipFile = (file: File): boolean => {
  * @param {File} file
  * @return {*}  {Promise<Feature[]>}
  */
-export const parseShapeFile = async (file: File): Promise<Feature[]> => {
+const parseShapeFile = async (file: File): Promise<Feature[]> => {
   return new Promise((resolve, reject) => {
     if (!isZipFile(file)) {
       reject(new Error('Not a .zip file.'));
@@ -97,7 +97,7 @@ export const parseShapeFile = async (file: File): Promise<Feature[]> => {
  * @param {File} file The file to process
  * @return {*}  {Promise<Feature[]>}
  */
-export const handleShapeFileUpload = (file: File): Promise<Feature[]> => {
+const handleShapeFileUpload = (file: File): Promise<Feature[]> => {
   return parseShapeFile(file).catch(() => {
     throw Error('You must upload a valid shapefile (.zip format). Please try again.');
   });
@@ -109,7 +109,7 @@ export const handleShapeFileUpload = (file: File): Promise<Feature[]> => {
  * @param {File} file The file to process
  * @return {*}  {Promise<Feature[]>}
  */
-export const handleGPXUpload = async (file: File) => {
+const handleGPXUpload = async (file: File) => {
   const fileAsString = await file?.text().then((xmlString: string) => {
     return xmlString;
   });
@@ -144,7 +144,7 @@ export const handleGPXUpload = async (file: File) => {
  * @param {File} file The file to process
  * @return {*}  {Promise<Feature[]>}
  */
-export const handleKMLUpload = async (file: File) => {
+const handleKMLUpload = async (file: File) => {
   const fileAsString = await file?.text().then((xmlString: string) => {
     return xmlString;
   });
@@ -210,7 +210,7 @@ export const boundaryUploadHelper = (params: {
  * @param features The features used to calculate the bounding box
  * @returns The bounding box, or undefined if a bounding box cannot be calculated.
  */
-export const calculateFeatureBoundingBox = (features: Feature[]): BBox | undefined => {
+const calculateFeatureBoundingBox = (features: Feature[]): BBox | undefined => {
   // If no geometries, we do not need to set bounds
   if (!features.length) {
     return;
@@ -245,7 +245,7 @@ export const calculateFeatureBoundingBox = (features: Feature[]): BBox | undefin
  * @param boundingBox
  * @returns
  */
-export const latLngBoundsFromBoundingBox = (boundingBox: BBox): LatLngBoundsExpression => {
+const latLngBoundsFromBoundingBox = (boundingBox: BBox): LatLngBoundsExpression => {
   return [
     [boundingBox[1], boundingBox[0]],
     [boundingBox[3], boundingBox[2]]

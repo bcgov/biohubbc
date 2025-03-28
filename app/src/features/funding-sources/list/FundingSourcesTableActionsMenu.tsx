@@ -7,7 +7,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import { useState } from 'react';
 
-export interface ITableActionsMenuProps {
+interface ITableActionsMenuProps {
   fundingSourceId: number;
   onView: (fundingSourceId: number) => void;
   onEdit: (fundingSourceId: number) => void;

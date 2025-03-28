@@ -12,7 +12,7 @@ export const AnimalsAdvancedFiltersInitialValues: IAnimalsAdvancedFilters = {
   itis_tsn: undefined
 };
 
-export interface IAnimalsListFilterFormProps {
+interface IAnimalsListFilterFormProps {
   handleSubmit: (filterValues: IAnimalsAdvancedFilters) => void;
   initialValues?: IAnimalsAdvancedFilters;
 }

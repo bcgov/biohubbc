@@ -4,7 +4,7 @@ import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
 import { useFormikContext } from 'formik';
 import get from 'lodash-es/get';
 import { ChangeEvent } from 'react';
-export interface ICustomTextField {
+interface ICustomTextField {
   /**
    * Label for the text field
    *

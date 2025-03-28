@@ -2,16 +2,6 @@ import { ICreateCritterCollectionUnit } from 'features/surveys/view/survey-anima
 import { Feature } from 'geojson';
 import { IPartialTaxonomy } from './useTaxonomyApi.interface';
 
-export type ICritterCreate = {
-  critter_id?: string;
-  wlh_id?: string | null;
-  animal_id?: string | null;
-  sex_qualitative_option_id: string | null;
-  itis_tsn: number;
-  responsible_region_nr_id?: string | null;
-  critter_comment?: string | null;
-};
-
 export interface ICreateEditAnimalRequest {
   critter_id?: string;
   nickname: string;
@@ -68,14 +58,6 @@ export type IMortalityPostData = {
   location: Feature | null;
 };
 
-export interface ILocationPostData {
-  location_id?: number;
-  latitude: number;
-  longitude: number;
-  coordinate_uncertainty: number;
-  coordinate_uncertainty_unit: string;
-}
-
 export interface IMarkings {
   markings: IMarkingPostData[];
 }
@@ -114,11 +96,6 @@ export interface ICreateMortalityRequest extends IMarkings, IMeasurementsCreate 
 
 export interface IEditMortalityRequest extends IMarkings, IMeasurementsUpdate {
   mortality: IMortalityPostData;
-}
-
-export interface ICollectionUnitMultiTsnResponse {
-  tsn: number;
-  categories: ICollectionCategory[];
 }
 
 interface ICritterAttachmentBase {
@@ -249,10 +226,6 @@ export type IQuantitativeMeasurementCreate = {
   measured_timestamp?: string | null;
 };
 
-export type ICritterUpdate = ICritterCreate & {
-  critter_id: string;
-};
-
 export type IQualitativeMeasurementUpdate = IQualitativeMeasurementCreate & {
   measurement_qualitative_id: string;
 };
@@ -360,35 +333,6 @@ export interface ICritterSimpleResponse {
 }
 
 /**
- * A Critterbase quantitative measurement.
- */
-export type CBQuantitativeMeasurement = {
-  event_id: string;
-  measurement_quantitative_id: string;
-  taxon_measurement_id: string;
-  value: number;
-  measurement_comment: string;
-  measured_timestamp: string;
-};
-
-/**
- * A Critterbase qualitative measurement value.
- */
-export type CBQualitativeMeasurement = {
-  event_id: string;
-  measurement_qualitative_id: string;
-  taxon_measurement_id: string;
-  qualitative_option_id: string;
-  measurement_comment: string;
-  measured_timestamp: string;
-};
-
-/**
- * Any Critterbase measurement value.
- */
-export type CBMeasurementValue = CBQuantitativeMeasurement | CBQualitativeMeasurement;
-
-/**
  * A Critterbase qualitative measurement unit.
  */
 export type CBMeasurementUnit = 'millimeter' | 'centimeter' | 'meter' | 'milligram' | 'gram' | 'kilogram';
@@ -436,7 +380,7 @@ export type CBMeasurementType = CBQuantitativeMeasurementTypeDefinition | CBQual
 /**
  * A collection of Critterbase measurement type definitions.
  */
-export type CBMeasurementTypeDefinitions = {
+type CBMeasurementTypeDefinitions = {
   qualitative: CBQualitativeMeasurementTypeDefinition[];
   quantitative: CBQuantitativeMeasurementTypeDefinition[];
 };

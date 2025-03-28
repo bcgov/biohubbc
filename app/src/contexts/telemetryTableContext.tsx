@@ -29,7 +29,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 export const MANUAL_TELEMETRY_TYPE = 'manual';
 
-export interface IManualTelemetryRecord {
+interface IManualTelemetryRecord {
   deployment_id: number;
   serial: string;
   latitude: number | null;

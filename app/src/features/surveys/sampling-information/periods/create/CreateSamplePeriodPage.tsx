@@ -21,7 +21,7 @@ import { Prompt, useHistory } from 'react-router';
 import yup from 'utils/YupSchema';
 import SamplingSiteHeader from '../../sites/components/SamplingSiteHeader';
 
-export const CreateSamplingPeriodYupSchema = yup.object({
+const CreateSamplingPeriodYupSchema = yup.object({
   method_technique_id: yup.number().required('Technique is required'),
   survey_sample_site_id: yup.number().required('Site is required'),
   sample_periods: yup

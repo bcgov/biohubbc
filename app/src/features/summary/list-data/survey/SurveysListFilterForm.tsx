@@ -17,7 +17,7 @@ export const SurveyAdvancedFiltersInitialValues: ISurveyAdvancedFilters = {
   system_user_id: undefined
 };
 
-export interface ISurveysListFilterFormProps {
+interface ISurveysListFilterFormProps {
   handleSubmit: (filterValues: ISurveyAdvancedFilters) => void;
   initialValues?: ISurveyAdvancedFilters;
 }

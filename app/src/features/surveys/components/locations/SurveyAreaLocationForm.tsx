@@ -1,11 +1,6 @@
 import Box from '@mui/material/Box';
 import CustomTextField from 'components/fields/CustomTextField';
 
-export interface ISurveyAreaLocationForm {
-  name: string;
-  description: string;
-}
-
 const SurveyAreaLocationForm = () => {
   return (
     <form>

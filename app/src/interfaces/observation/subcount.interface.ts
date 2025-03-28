@@ -56,7 +56,7 @@ export type ObservationSubcountQuantitativeMeasurementObject = Pick<
 > &
   FormikKeyUuid;
 
-export type ObservationSubCountQualitativeMeasurementRecord = {
+type ObservationSubCountQualitativeMeasurementRecord = {
   observation_subcount_id: number;
   critterbase_taxon_measurement_id: string;
   critterbase_measurement_qualitative_option_id: string;
@@ -67,7 +67,7 @@ export type ObservationSubCountQualitativeMeasurementRecord = {
   revision_count: number;
 };
 
-export type ObservationSubCountQuantitativeMeasurementRecord = {
+type ObservationSubCountQuantitativeMeasurementRecord = {
   observation_subcount_id: number;
   critterbase_taxon_measurement_id: string;
   value: number;

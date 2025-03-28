@@ -41,7 +41,7 @@ export const initialObservationFormData: CreateObservationFormData = {
 };
 
 // Define the full validation schema for the observation
-export const ObservationYupSchema = yup.object({
+const ObservationYupSchema = yup.object({
   standardColumns: yup
     .object({
       observation_subcount_id: yup.number().nullable(),

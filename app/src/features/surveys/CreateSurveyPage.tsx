@@ -38,7 +38,7 @@ import { SurveySiteSelectionInitialValues } from './components/sampling-strategy
 import { SpeciesInitialValues } from './components/species/SpeciesForm';
 import EditSurveyForm from './edit/EditSurveyForm';
 
-export const defaultSurveyDataFormValues: ICreateSurveyRequest & ISurveyPermitForm & ISurveyFundingSourceForm = {
+const defaultSurveyDataFormValues: ICreateSurveyRequest & ISurveyPermitForm & ISurveyFundingSourceForm = {
   ...GeneralInformationInitialValues,
   ...SurveyPermitFormInitialValues,
   ...PurposeAndMethodologyInitialValues,

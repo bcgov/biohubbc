@@ -27,7 +27,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 
-export const initialAnimalMortalityFormValues: ICreateMortalityRequest = {
+const initialAnimalMortalityFormValues: ICreateMortalityRequest = {
   mortality: {
     mortality_id: '',
     mortality_timestamp: '',
