@@ -17,13 +17,13 @@ window.type = '';
  * @export
  * @interface IDrawControlsOptions
  */
-export interface IDrawControlsOptions {
+interface IDrawControlsOptions {
   position?: L.ControlPosition;
   draw?: L.Control.DrawOptions;
   edit?: Omit<L.Control.EditOptions, 'featureGroup'>;
 }
 
-export interface IDrawControlsProps {
+interface IDrawControlsProps {
   /**
    * Options to control the draw/edit UI controls.
    *

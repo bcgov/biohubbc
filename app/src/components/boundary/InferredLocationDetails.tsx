@@ -8,7 +8,7 @@ export interface IInferredLayers {
   wmu: string[];
 }
 
-export interface IInferredLocationDetailsProps {
+interface IInferredLocationDetailsProps {
   layers: IInferredLayers;
 }
 

@@ -37,7 +37,7 @@ export interface ISurveyPermitForm {
   };
 }
 
-export const SurveyPermitFormArrayItemInitialValues: ISurveyPermit = {
+const SurveyPermitFormArrayItemInitialValues: ISurveyPermit = {
   permit_id: null as unknown as number,
   permit_number: '',
   permit_type: ''

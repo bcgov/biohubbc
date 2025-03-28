@@ -104,7 +104,7 @@ const SurveyDetails = () => {
   );
 };
 
-export const DetailsWrapper = (props: PropsWithChildren) => (
+const DetailsWrapper = (props: PropsWithChildren) => (
   <Stack
     divider={<Divider />}
     p={3}

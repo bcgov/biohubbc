@@ -16,10 +16,6 @@ export interface SubcountMeasurementsForm {
   measurements: (SubcountQualitativeMeasurement | SubcountQuantitativeMeasurement)[];
 }
 
-export const initialSubcountMeasurementsFormData: SubcountMeasurementsForm = {
-  measurements: []
-};
-
 export interface ISubcountMeasurementsFormProps {
   /**
    * The formik field name for the array field.

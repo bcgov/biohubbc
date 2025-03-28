@@ -21,7 +21,7 @@ export interface IMultiAutocompleteFieldOption {
   description: string | null;
 }
 
-export interface IMultiAutocompleteField {
+interface IMultiAutocompleteField {
   id: string;
   label: string;
   options: IMultiAutocompleteFieldOption[];

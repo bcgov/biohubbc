@@ -19,7 +19,7 @@ export type WFSFeatureKeyHandler = (feature: Feature) => string;
 
 export type WFSFeaturePopupContentHandler = (feature: Feature) => { tooltip: string; content: JSX.Element };
 
-export interface IWFSFeaturePopupProps {
+interface IWFSFeaturePopupProps {
   /**
    * The feature used to render the popup.
    *

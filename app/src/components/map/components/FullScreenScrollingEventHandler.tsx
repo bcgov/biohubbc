@@ -1,7 +1,7 @@
 import { LatLngBoundsExpression } from 'leaflet';
 import { useMap } from 'react-leaflet';
 
-export interface IFullScreenScrollingEventHandlerProps {
+interface IFullScreenScrollingEventHandlerProps {
   /**
    * Whether or not scroll wheel zooming is enabled.
    *

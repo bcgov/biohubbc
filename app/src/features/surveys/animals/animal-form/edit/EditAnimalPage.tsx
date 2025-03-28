@@ -13,6 +13,7 @@ import { EditAnimalI18N } from 'constants/i18n';
 import { AnimalFormContainer } from 'features/surveys/animals/animal-form/components/AnimalFormContainer';
 import { FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 import {
   useAnimalPageContext,
   useDialogContext,
@@ -36,6 +37,7 @@ export const EditAnimalPage = () => {
   const history = useHistory();
 
   const critterbaseApi = useCritterbaseApi();
+  const biohubApi = useBiohubApi();
   const surveyContext = useSurveyContext();
   const projectContext = useProjectContext();
   const dialogContext = useDialogContext();
@@ -105,11 +107,11 @@ export const EditAnimalPage = () => {
         return;
       }
 
-      const response = await critterbaseApi.critters.updateCritter({
+      await biohubApi.survey.updateCritterAndAddToSurvey(projectId, surveyId, critter.critter_id, {
         critter_id: critter.critterbase_critter_id,
-        itis_tsn: values.species.tsn,
-        wlh_id: values.wildlife_health_id,
         animal_id: values.nickname,
+        wlh_id: values.wildlife_health_id,
+        itis_tsn: values.species.tsn,
         sex_qualitative_option_id: values.sex_qualitative_option_id,
         critter_comment: values.critter_comment
       });
@@ -141,7 +143,7 @@ export const EditAnimalPage = () => {
         ]
       });
 
-      if (!response || !bulkResponse) {
+      if (!bulkResponse) {
         showCreateErrorDialog({
           dialogError: 'The response from the server was null, or did not contain a survey ID.'
         });

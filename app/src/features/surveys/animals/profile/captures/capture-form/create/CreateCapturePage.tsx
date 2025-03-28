@@ -27,7 +27,7 @@ import { Prompt, useHistory, useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 import { v4 } from 'uuid';
 
-export const defaultAnimalCaptureFormValues: ICreateCaptureRequest = {
+const defaultAnimalCaptureFormValues: ICreateCaptureRequest = {
   attachments: {
     capture_attachments: {
       create: {}

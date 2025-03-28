@@ -208,6 +208,9 @@ parameters:
   - name: TELEMETRY_CRONJOB_DISABLED
     description: Boolean flag to disable the cronjob, only static deployments should run on schedule.
     value: 'true'
+  - name: TELEMETRY_CRONJOB_DEVICE_LIMIT
+    description: Limit the number of devices to process in the telemetry cronjob. Used for PR cronjob deployments.
+    value: '-1'
   - name: TELEMETRY_SECRET
     description: The name of the Openshift Biohubbc telemetry secret
     value: biohubbc-telemetry
@@ -557,6 +560,7 @@ objects:
         role: telemetry-cronjob
     spec:
       schedule: ${TELEMETRY_CRONJOB_SCHEDULE}
+      # By default the PR cronjobs are disabled
       suspend: ${{TELEMETRY_CRONJOB_DISABLED}}
       concurrencyPolicy: 'Forbid'
       successfulJobsHistoryLimit: 1
@@ -634,8 +638,21 @@ objects:
                       value: ${API_RESPONSE_VALIDATION_ENABLED}
                     - name: DATABASE_RESPONSE_VALIDATION_ENABLED
                       value: ${DATABASE_RESPONSE_VALIDATION_ENABLED}
-                  command: ['npm', 'run', 'telemetry-cronjob', '-- "--batchSize 1000 --concurrently 100"']
+                  command: [
+                    'node',
+                    'src/cronjobs/telemetry/index',
+                    '--batchSize=1001',
+                    '--concurrently=101',
+                    '--deviceLimit=${TELEMETRY_CRONJOB_DEVICE_LIMIT}',
+                  ]
+                  volumeMounts:
+                    - name: ${NAME}${SUFFIX}
+                      mountPath: /opt/app-root/src/data
               restartPolicy: Never
+              volumes:
+                - name: ${NAME}${SUFFIX}
+                  persistentVolumeClaim:
+                    claimName: ${NAME}${SUFFIX}
 
   # Disable the HPA for now, as it is preferrable to run an exact number of pods (e.g. min:2, max:2)
   # - kind: HorizontalPodAutoscaler

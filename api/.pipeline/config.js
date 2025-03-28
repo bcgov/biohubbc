@@ -73,6 +73,7 @@ const phases = {
     changeId: deployChangeId,
     telemetryCronjobSchedule: '0 0 * * *', // Daily at midnight
     telemetryCronjobDisabled: !isStaticDeployment,
+    telemetryCronjobDeviceLimit: (isStaticDeployment && '-1') || '2', // For PR's, limit the number of devices to 2 per vendor
     suffix: `-dev-${deployChangeId}`,
     instance: `${name}-dev-${deployChangeId}`,
     version: `${deployChangeId}-${changeId}`,
@@ -117,6 +118,7 @@ const phases = {
     changeId: deployChangeId,
     telemetryCronjobSchedule: '0 0 * * *', // Daily at midnight
     telemetryCronjobDisabled: !isStaticDeployment,
+    telemetryCronjobDeviceLimit: '-1', // -1 means no limit
     suffix: `-test`,
     instance: `${name}-test`,
     version: `${version}`,
@@ -161,6 +163,7 @@ const phases = {
     changeId: deployChangeId,
     telemetryCronjobSchedule: '0 0 * * *', // Daily at midnight
     telemetryCronjobDisabled: !isStaticDeployment,
+    telemetryCronjobDeviceLimit: '-1', // -1 means no limit
     suffix: `-test-spi`,
     instance: `${name}-spi-test-spi`,
     version: `${version}`,
@@ -205,6 +208,7 @@ const phases = {
     changeId: deployChangeId,
     telemetryCronjobSchedule: '0 0 * * *', // Daily at midnight
     telemetryCronjobDisabled: !isStaticDeployment,
+    telemetryCronjobDeviceLimit: '-1', // -1 means no limit
     suffix: `-prod`,
     instance: `${name}-prod`,
     version: `${version}`,

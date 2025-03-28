@@ -21,7 +21,7 @@ import {
  * @export
  * @interface IReportFileUploadDialogProps
  */
-export interface IReportFileUploadDialogProps {
+interface IReportFileUploadDialogProps {
   /**
    * Set to `true` to open the dialog, `false` to close the dialog.
    *

@@ -9,7 +9,7 @@ import Dropzone, { FileRejection } from 'react-dropzone';
 
 const BYTES_PER_MEGABYTE = 1048576;
 
-export interface IDropZoneProps {
+interface IDropZoneProps {
   /**
    * Function called when files are accepted/rejected (via either drag/drop or browsing).
    *
@@ -57,7 +57,7 @@ export interface IDropZoneConfigProps {
   acceptedFileExtensions?: string | string[];
 }
 
-export const DropZone: React.FC<IDropZoneProps & IDropZoneConfigProps> = (props) => {
+const DropZone: React.FC<IDropZoneProps & IDropZoneConfigProps> = (props) => {
   const config = useConfigContext();
 
   const maxNumFiles = props.maxNumFiles || config.MAX_UPLOAD_NUM_FILES;

@@ -21,7 +21,7 @@ import { useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 
-export const defaultAnimalDataFormValues: ICreateEditAnimalRequest = {
+const defaultAnimalDataFormValues: ICreateEditAnimalRequest = {
   nickname: '',
   species: null,
   sex_qualitative_option_id: null,

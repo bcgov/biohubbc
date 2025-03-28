@@ -3,14 +3,14 @@ import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { IGetFundingSourcesResponse } from 'interfaces/useFundingSourceApi.interface';
 import TableActionsMenu from './FundingSourcesTableActionsMenu';
 
-export interface IFundingSourcesTableTableProps {
+interface IFundingSourcesTableTableProps {
   fundingSources: IGetFundingSourcesResponse[];
   onView: (fundingSourceId: number) => void;
   onEdit: (fundingSourceId: number) => void;
   onDelete: (fundingSourceId: number) => void;
 }
 
-export interface IFundingSourcesTableEntry {
+interface IFundingSourcesTableEntry {
   funding_source_id: number;
   name: string;
   survey_reference_count: number;

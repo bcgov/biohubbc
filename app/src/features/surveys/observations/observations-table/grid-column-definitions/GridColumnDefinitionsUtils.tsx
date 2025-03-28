@@ -11,11 +11,7 @@ import {
   CBQualitativeMeasurementTypeDefinition,
   CBQuantitativeMeasurementTypeDefinition
 } from 'interfaces/useCritterApi.interface';
-import {
-  EnvironmentQualitativeTypeDefinition,
-  EnvironmentQuantitativeTypeDefinition,
-  EnvironmentType
-} from 'interfaces/useReferenceApi.interface';
+import { EnvironmentQuantitativeTypeDefinition, EnvironmentType } from 'interfaces/useReferenceApi.interface';
 
 /**
  * Asserts the measurement is a quantitative measurement type definition.
@@ -23,7 +19,7 @@ import {
  * @param {CBMeasurementType} measurement
  * @return {*}  {measurement is CBQuantitativeMeasurementTypeDefinition}
  */
-export const isQuantitativeMeasurementTypeDefinition = (
+const isQuantitativeMeasurementTypeDefinition = (
   measurement: CBMeasurementType
 ): measurement is CBQuantitativeMeasurementTypeDefinition => {
   return (
@@ -38,34 +34,10 @@ export const isQuantitativeMeasurementTypeDefinition = (
  * @param {CBMeasurementType} measurement
  * @return {*}  {measurement is CBQualitativeMeasurementTypeDefinition}
  */
-export const isQualitativeMeasurementTypeDefinition = (
+const isQualitativeMeasurementTypeDefinition = (
   measurement: CBMeasurementType
 ): measurement is CBQualitativeMeasurementTypeDefinition => {
   return (measurement as CBQualitativeMeasurementTypeDefinition).options !== undefined;
-};
-
-/**
- * Asserts the environment is a quantitative environment type definition.
- *
- * @param {(EnvironmentQualitativeTypeDefinition | EnvironmentQuantitativeTypeDefinition)} environment
- * @return {*}  {environment is EnvironmentQuantitativeTypeDefinition}
- */
-export const isQuantitativeEnvironmentTypeDefinition = (
-  environment: EnvironmentQualitativeTypeDefinition | EnvironmentQuantitativeTypeDefinition
-): environment is EnvironmentQuantitativeTypeDefinition => {
-  return (environment as EnvironmentQuantitativeTypeDefinition).environment_quantitative_id !== undefined;
-};
-
-/**
- * Asserts the environment is a qualitative environment type definition.
- *
- * @param {(EnvironmentQualitativeTypeDefinition | EnvironmentQuantitativeTypeDefinition)} environment
- * @return {*}  {environment is EnvironmentQualitativeTypeDefinition}
- */
-export const isQualitativeEnvironmentTypeDefinition = (
-  environment: EnvironmentQualitativeTypeDefinition | EnvironmentQuantitativeTypeDefinition
-): environment is EnvironmentQualitativeTypeDefinition => {
-  return (environment as EnvironmentQualitativeTypeDefinition).environment_qualitative_id !== undefined;
 };
 
 export const getMeasurementColumnDefinitions = (

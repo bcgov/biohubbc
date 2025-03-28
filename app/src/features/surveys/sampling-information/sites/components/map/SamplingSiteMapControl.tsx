@@ -51,7 +51,7 @@ const useStyles = () => {
   };
 };
 
-export interface ISamplingSiteMapControlProps {
+interface ISamplingSiteMapControlProps {
   name: string;
   title: string;
   mapId: string;

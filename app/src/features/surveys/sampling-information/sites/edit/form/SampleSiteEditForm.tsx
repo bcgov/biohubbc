@@ -14,7 +14,7 @@ import yup from 'utils/YupSchema';
 import SurveySamplingSiteEditForm from '../../components/map/SurveySampleSiteEditForm';
 import SampleSiteGeneralInformationEditForm from './SampleSiteGeneralInformationForm';
 
-export interface IEditSampleSiteFormData {
+interface IEditSampleSiteFormData {
   survey_sample_site_id: number | null;
   survey_id: number;
   name: string;
@@ -33,7 +33,7 @@ export const SampleSiteEditFormYupSchema = yup.object({
     .max(1, 'Only one location is permitted per sampling site')
 });
 
-export interface ISampleSiteEditFormProps {
+interface ISampleSiteEditFormProps {
   isSubmitting: boolean;
 }
 
