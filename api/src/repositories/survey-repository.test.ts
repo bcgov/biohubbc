@@ -22,6 +22,7 @@ describe('SurveyRepository', () => {
   afterEach(() => {
     sinon.restore();
   });
+
   describe('deleteSurvey', () => {
     it('should return result', async () => {
       const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
@@ -731,7 +732,7 @@ describe('SurveyRepository', () => {
   });
 
   describe('updateSurveyDetailsData', () => {
-    it('should return undefined and ue all inputs', async () => {
+    it('should return undefined and use all inputs', async () => {
       const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ knex: () => mockResponse });
 
@@ -757,7 +758,7 @@ describe('SurveyRepository', () => {
       expect(response).to.eql(undefined);
     });
 
-    it('should return undefined and ue all inputs', async () => {
+    it('should return undefined and use all inputs 2', async () => {
       const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ knex: () => mockResponse });
 

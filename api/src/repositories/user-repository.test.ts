@@ -37,6 +37,7 @@ describe('UserRepository', () => {
     afterEach(() => {
       sinon.restore();
     });
+
     it('should throw an error when no user is found', async () => {
       const mockQueryResponse = { rowCount: 0, rows: [] } as any as Promise<QueryResult<any>>;
 
@@ -80,6 +81,7 @@ describe('UserRepository', () => {
     afterEach(() => {
       sinon.restore();
     });
+
     it('should return empty array when no user found', async () => {
       const mockQueryResponse = { rowCount: 1, rows: [] } as any as Promise<QueryResult<any>>;
 
@@ -131,6 +133,7 @@ describe('UserRepository', () => {
     afterEach(() => {
       sinon.restore();
     });
+
     it('should return empty array when no user found', async () => {
       const mockQueryResponse = { rowCount: 1, rows: [] } as any as Promise<QueryResult<any>>;
 
@@ -182,6 +185,7 @@ describe('UserRepository', () => {
     afterEach(() => {
       sinon.restore();
     });
+
     it('should throw an error when insert fails', async () => {
       const mockQueryResponse = { rowCount: 0, rows: [] } as any as Promise<QueryResult<any>>;
 
@@ -232,6 +236,7 @@ describe('UserRepository', () => {
     afterEach(() => {
       sinon.restore();
     });
+
     it('should return empty array when no users found', async () => {
       const mockQueryResponse = { rowCount: 1, rows: [] } as any as Promise<QueryResult<any>>;
 
@@ -281,6 +286,7 @@ describe('UserRepository', () => {
     afterEach(() => {
       sinon.restore();
     });
+
     it('should return the count of system users', async () => {
       const mockCount = 15;
       const mockQueryResponse = { rowCount: 1, rows: [{ count: mockCount }] } as any as Promise<QueryResult<any>>;
@@ -303,6 +309,7 @@ describe('UserRepository', () => {
     afterEach(() => {
       sinon.restore();
     });
+
     it('should throw an error when activate fails', async () => {
       const mockQueryResponse = { rowCount: 0, rows: [] } as any as Promise<QueryResult<any>>;
 
@@ -352,6 +359,7 @@ describe('UserRepository', () => {
     afterEach(() => {
       sinon.restore();
     });
+
     it('should throw an error when deactivate fails', async () => {
       const mockQueryResponse = { rowCount: 0, rows: [] } as any as Promise<QueryResult<any>>;
 
@@ -401,6 +409,7 @@ describe('UserRepository', () => {
     afterEach(() => {
       sinon.restore();
     });
+
     it('should throw an error when delete fails', async () => {
       const mockQueryResponse = { rowCount: 0, rows: [] } as any as Promise<QueryResult<any>>;
 
@@ -512,6 +521,7 @@ describe('UserRepository', () => {
     afterEach(() => {
       sinon.restore();
     });
+
     it('should throw an error when adding role fails', async () => {
       const mockQueryResponse = { rowCount: 0, rows: [] } as any as Promise<QueryResult<any>>;
 

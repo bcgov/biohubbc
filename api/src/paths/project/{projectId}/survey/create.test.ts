@@ -32,7 +32,7 @@ describe('survey/create', () => {
         const requestHandler = createSurvey();
 
         await requestHandler(mockReq, mockRes, mockNext);
-      } catch (actualError) {
+      } catch (_actualError) {
         expect.fail();
       }
 

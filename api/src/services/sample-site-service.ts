@@ -168,9 +168,8 @@ export class SampleSiteService extends DBService {
     await sampleBlockService.deleteSampleBlockRecords(existingSampleBlocks.map((item) => item.survey_sample_block_id));
 
     // Delete all stratums associated with a sample site
-    const existingSampleStratums = await sampleStratumService.getSampleStratumsForSurveySampleSiteId(
-      surveySampleSiteId
-    );
+    const existingSampleStratums =
+      await sampleStratumService.getSampleStratumsForSurveySampleSiteId(surveySampleSiteId);
 
     await sampleStratumService.deleteSampleStratumRecords(
       existingSampleStratums.map((item) => item.survey_sample_stratum_id)

@@ -41,7 +41,7 @@ describe('project/{projectId}/view', () => {
         const requestHandler = viewProject();
 
         await requestHandler(mockReq, mockRes, mockNext);
-      } catch (actualError) {
+      } catch (_error) {
         expect.fail();
       }
 
@@ -65,10 +65,10 @@ describe('project/{projectId}/view', () => {
 
         await requestHandler(mockReq, mockRes, mockNext);
         expect.fail();
-      } catch (actualError) {
+      } catch (error) {
         expect(dbConnectionObj.release).to.have.been.called;
 
-        expect((actualError as HTTPError).message).to.equal('a test error');
+        expect((error as HTTPError).message).to.equal('a test error');
       }
     });
   });

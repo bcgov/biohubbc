@@ -131,7 +131,6 @@ export const getEnvironmentVariable = <EnvKey extends keyof Env>(envVariable: En
 
 // Extend NodeJS ProcessEnv to include the EnvSchema
 declare global {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace NodeJS {
     interface ProcessEnv extends Env {}
   }

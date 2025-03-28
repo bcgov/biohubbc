@@ -3,7 +3,7 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { PropsWithChildren, ReactElement } from 'react';
 
-export interface IHorizontalSplitFormComponentProps {
+interface IHorizontalSplitFormComponentProps {
   /**
    * The title of the section
    *

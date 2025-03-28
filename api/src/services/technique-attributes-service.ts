@@ -167,9 +167,8 @@ export class TechniqueAttributeService extends DBService {
     await this._areAttributesValidForTechnique(methodTechniqueId, attributes);
 
     // Get existing attributes associated with the technique
-    const allTechniqueAttributes = await this.techniqueAttributeRepository.getAttributesByTechniqueId(
-      methodTechniqueId
-    );
+    const allTechniqueAttributes =
+      await this.techniqueAttributeRepository.getAttributesByTechniqueId(methodTechniqueId);
     const existingQuantitativeAttributes = allTechniqueAttributes.quantitative_attributes;
 
     // Find existing attributes to delete
@@ -303,9 +302,8 @@ export class TechniqueAttributeService extends DBService {
     incomingAttributes: (IQualitativeAttributePostData | IQuantitativeAttributePostData)[]
   ): Promise<void> {
     // Validate that the method lookup id can have the incoming attributes
-    const validAttributes = await this.techniqueAttributeRepository.getAttributeDefinitionsByTechniqueId(
-      methodTechniqueId
-    );
+    const validAttributes =
+      await this.techniqueAttributeRepository.getAttributeDefinitionsByTechniqueId(methodTechniqueId);
 
     for (const incomingAttribute of incomingAttributes) {
       if ('method_lookup_attribute_quantitative_id' in incomingAttribute) {

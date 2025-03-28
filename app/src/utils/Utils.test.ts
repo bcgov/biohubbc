@@ -153,7 +153,7 @@ describe('getFormattedDateRangeString', () => {
     expect(formattedDateString).toEqual('March 4, 2021');
   });
 
-  it('returns formatted string if valid startDate is provided', async () => {
+  it('returns formatted string if valid startDate and endDate is provided', async () => {
     const startDate = '2021-03-04T22:44:55.478682';
     const endDate = '2021-05-25T22:44:55.478682';
     const formattedDateString = getFormattedDateRangeString(DATE_FORMAT.MediumDateFormat, startDate, endDate);
@@ -209,7 +209,7 @@ describe('getFormattedIdentitySource', () => {
     expect(result).toEqual('IDIR');
   });
 
-  it('returns IDIR', () => {
+  it('returns SYSTEM', () => {
     const result = getFormattedIdentitySource(SYSTEM_IDENTITY_SOURCE.DATABASE);
 
     expect(result).toEqual('System');

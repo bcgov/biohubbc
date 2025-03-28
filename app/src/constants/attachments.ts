@@ -6,11 +6,9 @@ export enum AttachmentType {
   /**
    * Telelemetry device type for Vectronic devices.
    */
-  KEYX = 'KeyX',
   /**
    * Telelemetry device type for Lotek devices.
    */
-  CFG = 'Cfg',
   /**
    * Other attachment type.
    */
@@ -18,7 +16,6 @@ export enum AttachmentType {
 }
 
 export enum PublishStatus {
-  NO_DATA = 'NO_DATA',
   UNSUBMITTED = 'UNSUBMITTED',
   SUBMITTED = 'SUBMITTED'
 }

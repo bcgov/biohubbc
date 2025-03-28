@@ -360,7 +360,7 @@ describe('getSurveyCritter', () => {
     }
   });
 
-  it('catches and re-throws errors', async () => {
+  it('catches and re-throws errors 2', async () => {
     const mockDBConnection = getMockDBConnection({ rollback: sinon.stub(), release: sinon.stub() });
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 

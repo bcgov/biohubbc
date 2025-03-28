@@ -242,7 +242,7 @@ describe('UsersDetailProjects', () => {
       });
     });
 
-    it('deletes User from project if the user clicks on `Remove` ', async () => {
+    it('deletes User from project if the user clicks on `Remove`', async () => {
       history.push('/admin/manage/users/1');
 
       mockUseApi.codes.getAllCodeSets.mockResolvedValue({
@@ -359,7 +359,7 @@ describe('UsersDetailProjects', () => {
       });
     });
 
-    it('renders dialog pop on role selection, does nothing if user clicks `Cancel` ', async () => {
+    it('renders dialog pop on role selection, does nothing if user clicks `Cancel`', async () => {
       history.push('/admin/manage/users/1');
 
       mockUseApi.codes.getAllCodeSets.mockResolvedValue({
@@ -417,7 +417,7 @@ describe('UsersDetailProjects', () => {
       });
     });
 
-    it('renders dialog pop on role selection, Changes role on click of `Change Role` ', async () => {
+    it('renders dialog pop on role selection, Changes role on click of `Change Role`', async () => {
       history.push('/admin/manage/users/1');
 
       mockUseApi.codes.getAllCodeSets.mockResolvedValue({

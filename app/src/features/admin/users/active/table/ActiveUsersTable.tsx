@@ -20,7 +20,7 @@ import { useHistory } from 'react-router';
 
 const pageSizeOptions = [10, 25, 50];
 
-export interface IActiveUsersTableProps {
+interface IActiveUsersTableProps {
   /**
    * The list of active users to display in the table.
    */

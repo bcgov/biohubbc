@@ -27,7 +27,7 @@ describe('BcgwLayerService', () => {
     expect(service).not.to.be.undefined;
   });
 
-  describe('getEnvRegionNames', async () => {
+  describe('getEnvRegionNames', () => {
     it('fetches and returns env region names', async () => {
       const wfsGetPropertyResponseXml = `
         <?xml version="1.0" encoding="UTF-8"?>
@@ -56,7 +56,7 @@ describe('BcgwLayerService', () => {
     });
   });
 
-  describe('getNrmRegionNames', async () => {
+  describe('getNrmRegionNames', () => {
     it('fetches and returns nrm region names', async () => {
       const wfsGetPropertyResponseXml = `
         <?xml version="1.0" encoding="UTF-8"?>
@@ -85,7 +85,7 @@ describe('BcgwLayerService', () => {
     });
   });
 
-  describe('getParkAndEcoreserveRegionNames', async () => {
+  describe('getParkAndEcoreserveRegionNames', () => {
     it('fetches and returns parks and ecoreserve names', async () => {
       const wfsGetPropertyResponseXml = `
         <?xml version="1.0" encoding="UTF-8"?>
@@ -114,7 +114,7 @@ describe('BcgwLayerService', () => {
     });
   });
 
-  describe('getWildlifeManagementUnitRegionNames', async () => {
+  describe('getWildlifeManagementUnitRegionNames', () => {
     it('fetches and returns wildlife management unit names', async () => {
       const wfsGetPropertyResponseXml = `
         <?xml version="1.0" encoding="UTF-8"?>
@@ -433,8 +433,8 @@ describe('BcgwLayerService', () => {
     });
   });
 
-  describe('getRegionsForFeature', async () => {
-    describe('with a known feature from the ENV layer', async () => {
+  describe('getRegionsForFeature', () => {
+    describe('with a known feature from the ENV layer', () => {
       it('returns region details array', async () => {
         const dbConnectionObj = getMockDBConnection();
 
@@ -479,7 +479,7 @@ describe('BcgwLayerService', () => {
       });
     });
 
-    describe('with an unknown feature not from any known layer', async () => {
+    describe('with an unknown feature not from any known layer', () => {
       it('returns region details array', async () => {
         const dbConnectionObj = getMockDBConnection();
 
@@ -520,7 +520,7 @@ describe('BcgwLayerService', () => {
     });
   });
 
-  describe('getAllRegionDetailsForWktString', async () => {
+  describe('getAllRegionDetailsForWktString', () => {
     it('returns region details array', async () => {
       const geometryWktString = 'POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))';
 
@@ -564,7 +564,7 @@ describe('BcgwLayerService', () => {
     });
   });
 
-  describe('getEnvRegionDetails', async () => {
+  describe('getEnvRegionDetails', () => {
     it('returns region details array', async () => {
       const geometryWktString = 'POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))';
 
@@ -584,7 +584,7 @@ describe('BcgwLayerService', () => {
     });
   });
 
-  describe('getNrmRegionDetails', async () => {
+  describe('getNrmRegionDetails', () => {
     it('returns region details array', async () => {
       const geometryWktString = 'POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))';
 
@@ -604,7 +604,7 @@ describe('BcgwLayerService', () => {
     });
   });
 
-  describe('getParkAndEcoreserveRegionDetails', async () => {
+  describe('getParkAndEcoreserveRegionDetails', () => {
     it('returns region details array', async () => {
       const geometryWktString = 'POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))';
 
@@ -624,7 +624,7 @@ describe('BcgwLayerService', () => {
     });
   });
 
-  describe('getWildlifeManagementUnitRegionDetails', async () => {
+  describe('getWildlifeManagementUnitRegionDetails', () => {
     it('returns region details array', async () => {
       const geometryWktString = 'POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))';
 

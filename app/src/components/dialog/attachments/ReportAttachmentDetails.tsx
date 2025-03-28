@@ -37,7 +37,7 @@ const useStyles = () => {
   };
 };
 
-export interface IReportAttachmentDetailsProps {
+interface IReportAttachmentDetailsProps {
   title: string;
   onFileDownload: () => void;
   onSave: (fileMeta: IEditReportMetaForm) => Promise<void>;

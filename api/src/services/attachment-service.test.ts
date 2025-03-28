@@ -54,7 +54,7 @@ describe('AttachmentService', () => {
         });
       });
 
-      describe('getSurveyAttachmentsWithSupplementaryData', async () => {
+      describe('getSurveyAttachmentsWithSupplementaryData', () => {
         it('should return a survey attachment with supplementary data', async () => {
           const dbConnection = getMockDBConnection();
 
@@ -81,7 +81,7 @@ describe('AttachmentService', () => {
         });
       });
 
-      describe('getSurveyReportAttachmentsWithSupplementaryData', async () => {
+      describe('getSurveyReportAttachmentsWithSupplementaryData', () => {
         it('should return a survey report with supplementary data', async () => {
           const dbConnection = getMockDBConnection();
 

@@ -9,11 +9,6 @@ export type IEcologicalUnit = {
   critterbase_collection_unit_id: string | null;
 };
 
-export const EcologicalUnitInitialValues: IEcologicalUnit = {
-  critterbase_collection_category_id: null,
-  critterbase_collection_unit_id: null
-};
-
 export interface ITaxonomyWithEcologicalUnits extends IPartialTaxonomy {
   ecological_units: IEcologicalUnit[];
 }
