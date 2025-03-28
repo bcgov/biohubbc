@@ -76,7 +76,7 @@ export interface ISnackbarProps {
   snackbarAutoCloseMs?: number; //ms
 }
 
-export const defaultYesNoDialogProps: IYesNoDialogProps = {
+const defaultYesNoDialogProps: IYesNoDialogProps = {
   dialogTitle: '',
   dialogText: '',
   open: false,
@@ -103,12 +103,12 @@ export const defaultErrorDialogProps: IErrorDialogProps = {
   }
 };
 
-export const defaultSnackbarProps: ISnackbarProps = {
+const defaultSnackbarProps: ISnackbarProps = {
   snackbarMessage: '',
   open: false
 };
 
-export const defaultScoreDialogProps: IScoreDialogProps = {
+const defaultScoreDialogProps: IScoreDialogProps = {
   dialogTitle: '',
   dialogText: '',
   dialogContent: <></>,

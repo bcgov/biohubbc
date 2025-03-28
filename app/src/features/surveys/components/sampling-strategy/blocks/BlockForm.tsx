@@ -2,12 +2,6 @@ import Box from '@mui/material/Box';
 import CustomTextField from 'components/fields/CustomTextField';
 import React from 'react';
 
-export interface IBlockData {
-  survey_block_id: number | null;
-  name: string;
-  description: string;
-}
-
 const BlockForm: React.FC = () => {
   return (
     <form>

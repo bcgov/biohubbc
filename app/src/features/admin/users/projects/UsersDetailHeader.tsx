@@ -16,7 +16,7 @@ import React, { useCallback, useContext, useMemo } from 'react';
 import { useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 
-export interface IUsersHeaderProps {
+interface IUsersHeaderProps {
   userDetails: ISystemUser;
 }
 

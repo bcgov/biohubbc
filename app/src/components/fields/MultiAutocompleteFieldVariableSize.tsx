@@ -18,7 +18,7 @@ import { IMultiAutocompleteFieldOption } from './MultiAutocompleteField';
 const LISTBOX_PADDING = 8; // px
 
 // Params required to make MultiAutocompleteField use API to populate search results
-export type ApiSearchTypeParam = {
+type ApiSearchTypeParam = {
   type: 'api-search';
   options?: null;
   getInitList: (initialValues: number[]) => Promise<IMultiAutocompleteFieldOption[]>;
@@ -32,12 +32,12 @@ export type ApiSearchTypeParam = {
 };
 
 // Params required to use normal MultiAutocompleteField with predefined options
-export type defaultTypeParam = {
+type defaultTypeParam = {
   type?: 'default';
   options: IMultiAutocompleteFieldOption[];
 };
 
-export type IMultiAutocompleteField = {
+type IMultiAutocompleteField = {
   id: string;
   label: string;
   required?: boolean;

@@ -6,7 +6,7 @@ import { GridRenderCellParams, GridValidRowModel } from '@mui/x-data-grid';
 import { IAutocompleteDataGridOption } from 'components/data-grid/autocomplete/AutocompleteDataGrid.interface';
 import { useRef } from 'react';
 
-export interface IAutocompleteDataGridEditCellProps<
+interface IAutocompleteDataGridEditCellProps<
   DataGridType extends GridValidRowModel,
   ValueType extends string | number
 > {

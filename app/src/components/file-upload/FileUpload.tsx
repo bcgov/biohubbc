@@ -14,7 +14,7 @@ import FileUploadItem, {
 import FileUploadItemActionButton from './FileUploadItemActionButton';
 import FileUploadItemProgressBar from './FileUploadItemProgressBar';
 
-export interface IUploadFile {
+interface IUploadFile {
   file: File;
   error?: string;
 }
@@ -121,7 +121,7 @@ export interface IFileUploadProps {
   FileUploadItemComponentProps?: Partial<IFileUploadItemProps>;
 }
 
-export const FileUpload = (props: IFileUploadProps) => {
+const FileUpload = (props: IFileUploadProps) => {
   const files = useRef<IUploadFile[]>([]);
 
   const [fileUploadItems, setFileUploadItems] = useState<any[]>([]);

@@ -1,8 +1,8 @@
 import { AxiosInstance } from 'axios';
 import { Feature } from 'geojson';
 
-export type RegionDetails = { regionName: string; sourceLayer: string };
-export type GetRegionsResponse = { regions: RegionDetails[] };
+type RegionDetails = { regionName: string; sourceLayer: string };
+type GetRegionsResponse = { regions: RegionDetails[] };
 
 /**
  * Returns a set of supported api methods for working with spatial information.

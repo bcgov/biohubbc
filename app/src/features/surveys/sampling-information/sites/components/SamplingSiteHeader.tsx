@@ -11,7 +11,7 @@ import { useFormikContext } from 'formik';
 import { useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 
-export interface ISamplingSiteHeaderProps {
+interface ISamplingSiteHeaderProps {
   project_id: number;
   survey_id: number;
   survey_name: string;
@@ -27,7 +27,7 @@ export interface ISamplingSiteHeaderProps {
  * @param {ISamplingSiteHeaderProps} props
  * @return {*}
  */
-export const SamplingSiteHeader = (props: ISamplingSiteHeaderProps) => {
+const SamplingSiteHeader = (props: ISamplingSiteHeaderProps) => {
   const history = useHistory();
   const formikProps = useFormikContext();
 

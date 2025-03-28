@@ -5,7 +5,7 @@ import { IGetFundingSourceResponse } from 'interfaces/useFundingSourceApi.interf
 import { useCallback } from 'react';
 import { getFormattedDateRangeString } from 'utils/Utils';
 
-export interface IFundingSourceDetailsProps {
+interface IFundingSourceDetailsProps {
   fundingSource: IGetFundingSourceResponse['funding_source'];
 }
 

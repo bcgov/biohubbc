@@ -43,7 +43,7 @@ const useStyles = () => {
  *
  * @return {*}
  */
-export const AccessRequestPage: React.FC = () => {
+const AccessRequestPage: React.FC = () => {
   const classes = useStyles();
   const biohubApi = useBiohubApi();
   const history = useHistory();

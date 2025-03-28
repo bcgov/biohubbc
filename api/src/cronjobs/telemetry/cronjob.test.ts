@@ -19,6 +19,7 @@ describe('Telemetry Cronjob', () => {
       sinon.stub(cronjob, 'parseArguments').returns({
         concurrently: 2,
         batchSize: 4,
+        deviceLimit: -1,
         startDate: undefined,
         endDate: undefined
       });
@@ -70,6 +71,7 @@ describe('Telemetry Cronjob', () => {
       sinon.stub(cronjob, 'parseArguments').returns({
         concurrently: 2,
         batchSize: 4,
+        deviceLimit: -1,
         startDate: undefined,
         endDate: undefined
       });

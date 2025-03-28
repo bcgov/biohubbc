@@ -4,7 +4,7 @@ import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { IObservationTableRow } from 'contexts/observationsTableContext';
 import { useObservationsTableContext } from 'hooks/useContext';
 
-export interface ISpeciesObservationTableProps {
+interface ISpeciesObservationTableProps {
   /**
    * Manually control the loading state of the table.
    *

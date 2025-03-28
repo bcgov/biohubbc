@@ -12,7 +12,7 @@ import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
 import { useContext } from 'react';
 import AttachmentsListItemMenuButton from './AttachmentsListItemMenuButton';
 
-export interface IAttachmentsListProps<T extends IGetProjectAttachment | IGetSurveyAttachment> {
+interface IAttachmentsListProps<T extends IGetProjectAttachment | IGetSurveyAttachment> {
   attachments: T[];
   handleDownload: (attachment: T) => void;
   handleDelete: (attachment: T) => void;

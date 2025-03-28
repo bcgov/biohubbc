@@ -22,7 +22,7 @@ import AddProjectParticipantsForm, {
   IAddProjectParticipantsForm
 } from './AddProjectParticipantsForm';
 
-export interface IProjectParticipantsHeaderProps {
+interface IProjectParticipantsHeaderProps {
   refresh: () => void;
 }
 

@@ -35,7 +35,7 @@ export const SurveyLocationInitialValues: ISurveyLocationForm = {
   locations: []
 };
 
-export const SurveyLocationDetailsYupSchema = yup.object({
+const SurveyLocationDetailsYupSchema = yup.object({
   name: yup.string().max(100, 'Name cannot exceed 100 characters').required('Name is Required'),
   description: yup.string().max(250, 'Description cannot exceed 250 characters').default('')
 });

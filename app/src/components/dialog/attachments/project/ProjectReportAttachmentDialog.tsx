@@ -17,7 +17,7 @@ import { AttachmentType } from '../../../../constants/attachments';
 import { IErrorDialogProps } from '../../ErrorDialog';
 import ReportAttachmentDetails from '../ReportAttachmentDetails';
 
-export interface IProjectReportAttachmentDialogProps {
+interface IProjectReportAttachmentDialogProps {
   projectId: number;
   attachment: IGetProjectAttachment | null;
   open: boolean;
