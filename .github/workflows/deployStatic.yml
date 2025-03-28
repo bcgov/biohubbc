@@ -501,6 +501,7 @@ jobs:
       - scaleDownPods
       - buildAPI
       - deployDatabase
+      - deployDatabaseSetup
     steps:
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
