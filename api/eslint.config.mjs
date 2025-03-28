@@ -71,6 +71,3 @@ export default [
     }
   }
 ];
-
-// Root ignores
-export const ignores = ['node_modules', 'dist', 'coverage', 'openshift', 'sonar-runner', 'uploads', '.vscode', '.env'];

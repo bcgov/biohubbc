@@ -25,7 +25,7 @@ export default defineConfig({
       ? checker({
           eslint: {
             useFlatConfig: true,
-            lintCommand: 'eslint src/ --ext .jsx,.js,.ts,.tsx'
+            lintCommand: 'eslint .'
           }
         })
       : undefined
@@ -33,6 +33,10 @@ export default defineConfig({
   build: {
     outDir: 'build',
     emptyOutDir: true,
+    sourcemap: false,
+    rollupOptions: {
+      external: ['**/*.test.ts', '**/*.test.tsx']
+    },
     commonjsOptions: {
       transformMixedEsModules: true
     }
