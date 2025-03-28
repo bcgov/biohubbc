@@ -5,7 +5,7 @@ import { DBService } from '../../db-service';
 import { SubCountService } from '../../subcount-service';
 import { ExportStrategy, ExportStrategyConfig } from '../export-strategy';
 
-const defaultLog = getLogger('services/export-observation-strategy');
+export const defaultLog = getLogger('services/export-observation-strategy');
 
 export type ExportObservationConfig = {
   surveyId: number;

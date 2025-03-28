@@ -141,8 +141,8 @@ export class SurveyCritterService extends DBService {
   ): Promise<ICritterDetailed[]> {
     // The SIMS critter records the user has access to
     const simsCritters = await this.critterRepository.findCritters(isUserAdmin, systemUserId, filterFields);
-    if (!simsCritters.length) {
-      // Exit early if there are no SIMS critters
+    if (!Array.isArray(simsCritters) || simsCritters.length === 0) {
+      // Exit early if simsCritters is not an array or it's empty
       return [];
     }
 

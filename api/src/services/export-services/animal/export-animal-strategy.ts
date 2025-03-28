@@ -7,7 +7,7 @@ import { SurveyCritterService } from '../../survey-critter-service';
 import { ExportDataStreamOptions, ExportStrategy, ExportStrategyConfig } from '../export-strategy';
 import { parseTimestampString } from '../export-utils';
 
-const defaultLog = getLogger('services/export-animal-strategy');
+export const defaultLog = getLogger('services/export-animal-strategy');
 
 export type ExportAnimalConfig = {
   surveyId: number;
@@ -125,6 +125,11 @@ export class ExportAnimalStrategy extends DBService implements ExportStrategy {
       }
     );
 
+    if (!Array.isArray(crittersSurvey) || crittersSurvey.length === 0) {
+      // Handle the case where crittersSurvey is not an array or is empty
+      return new Map(); // return an empty map if no critters are found
+    }
+
     // extract list of critter ids
     const critterbaseCritterIds: string[] = crittersSurvey.map((critter) => critter.critterbase_critter_id);
 
@@ -157,6 +162,11 @@ export class ExportAnimalStrategy extends DBService implements ExportStrategy {
         survey_ids: [this.config.surveyId]
       }
     );
+
+    if (!Array.isArray(crittersSurvey) || crittersSurvey.length === 0) {
+      // return an empty map if no critters are found
+      return new Map();
+    }
     // extract list of critter ids
     const critterIds: string[] = crittersSurvey.map((critter) => critter.critterbase_critter_id);
 
@@ -183,6 +193,12 @@ export class ExportAnimalStrategy extends DBService implements ExportStrategy {
     const response = await surveyCritterService.findCritters(this.config.isUserAdmin, this.connection.systemUserId(), {
       survey_ids: [this.config.surveyId]
     });
+
+    // Ensure response is an array before using map
+    if (!Array.isArray(response) || response.length === 0) {
+      // Handle the case where response is not an array or is empty
+      return []; // Return an empty array if no critters are found
+    }
 
     const uniqueItisTsn = [...new Set(response.map((item) => item.itis_tsn))];
 
@@ -290,26 +306,22 @@ export class ExportAnimalStrategy extends DBService implements ExportStrategy {
       objectMode: true,
       read() {
         // Use mortalityLocationsMap once the promise resolves
-        mortalitiesLocationsMapPromise
-          .then((mortalityLocationsMap) => {
-            // Handle the critter details retrieval after mortalityMarkingsMap promise is resolved
-            surveyCritterService
-              .findCrittersDetails(isUserAdmin, systemUserId, filterFields)
-              .then((critter) => {
-                for (const item of critter) {
-                  this.push(ExportAnimalStrategy.mortalitiesCsvTransformation(item, mortalityLocationsMap));
-                }
+        mortalitiesLocationsMapPromise.then((mortalityLocationsMap) => {
+          // Handle the critter details retrieval after mortalityMarkingsMap promise is resolved
+          surveyCritterService
+            .findCrittersDetails(isUserAdmin, systemUserId, filterFields)
+            .then((critter) => {
+              for (const item of critter) {
+                this.push(ExportAnimalStrategy.mortalitiesCsvTransformation(item, mortalityLocationsMap));
+              }
 
-                // Signal the end of the stream
-                this.push(null);
-              })
-              .catch((error) => {
-                this.emit('error', error);
-              });
-          })
-          .catch((error) => {
-            this.emit('error', error);
-          });
+              // Signal the end of the stream
+              this.push(null);
+            })
+            .catch((error) => {
+              this.emit('error', error);
+            });
+        });
       }
     });
 
@@ -337,26 +349,22 @@ export class ExportAnimalStrategy extends DBService implements ExportStrategy {
       objectMode: true,
       read() {
         // Use mortalityMarkingsMap once the promise resolves
-        mortalityMarkingsMapPromise
-          .then((mortalityMarkingsMap) => {
-            // Handle the critter details retrieval after mortalityMarkingsMap promise is resolved
-            surveyCritterService
-              .findCrittersDetails(isUserAdmin, systemUserId, filterFields)
-              .then((critter) => {
-                for (const item of critter) {
-                  this.push(ExportAnimalStrategy.markingsCsvTransformation(item, mortalityMarkingsMap));
-                }
+        mortalityMarkingsMapPromise.then((mortalityMarkingsMap) => {
+          // Handle the critter details retrieval after mortalityMarkingsMap promise is resolved
+          surveyCritterService
+            .findCrittersDetails(isUserAdmin, systemUserId, filterFields)
+            .then((critter) => {
+              for (const item of critter) {
+                this.push(ExportAnimalStrategy.markingsCsvTransformation(item, mortalityMarkingsMap));
+              }
 
-                // Signal the end of the stream
-                this.push(null);
-              })
-              .catch((error) => {
-                this.emit('error', error);
-              });
-          })
-          .catch((error) => {
-            this.emit('error', error);
-          });
+              // Signal the end of the stream
+              this.push(null);
+            })
+            .catch((error) => {
+              this.emit('error', error);
+            });
+        });
       }
     });
 
@@ -373,7 +381,10 @@ export class ExportAnimalStrategy extends DBService implements ExportStrategy {
    */
   static readonly animalCsvTransformation = (item: Record<string, any>): string => {
     // Use map to get all unit_names from collection_units
-    const unitNames: string[] = item.collection_units.map((unit: { unit_name: string }) => `"${unit.unit_name}"`);
+    // First ensure collection_units is an array before using map
+    const unitNames: string[] = Array.isArray(item.collection_units)
+      ? item.collection_units.map((unit: { unit_name: string }) => `"${unit.unit_name}"`)
+      : []; // Default to an empty array if collection_units is not an array
 
     return [
       item.animal_id, // this is the Nickname
@@ -393,7 +404,8 @@ export class ExportAnimalStrategy extends DBService implements ExportStrategy {
    * @memberof ExportAnimalStrategy
    */
   static readonly capturesCsvTransformation = (item: Record<string, any>): string => {
-    if (!item.captures?.length) {
+    // Ensure item.captures is an array before using map, or return an empty string if no captures
+    if (!Array.isArray(item.captures) || item.captures.length === 0) {
       return ''; // nothing to write out, no captures
     }
     // Create an array to hold the CSV lines
@@ -422,7 +434,8 @@ export class ExportAnimalStrategy extends DBService implements ExportStrategy {
     item: Record<string, any>,
     mortalityLocationsMap?: Map<string, IMortalityLocationsData>
   ): string => {
-    if (item.mortality.length <= 0) {
+    // Ensure item.mortality is an array before using forEach
+    if (!Array.isArray(item.mortality) || item.mortality.length <= 0) {
       return ''; // nothing to write out, no mortalities
     }
 
