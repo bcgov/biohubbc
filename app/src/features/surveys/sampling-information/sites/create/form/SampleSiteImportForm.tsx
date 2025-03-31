@@ -23,17 +23,7 @@ export const SampleSiteImportForm = () => {
         }}>
         Shapefiles must be compressed into a single zip file. They can include one or more sampling site locations.
       </Typography>
-      <SamplingSiteMapControl
-        name="survey_sample_sites"
-        title={
-          `Site Boundary Preview ` +
-          (formikProps.values.survey_sample_sites.length > 0
-            ? `(${formikProps.values.survey_sample_sites.length}) sampling sites founds`
-            : '')
-        }
-        mapId="study_area_form_map"
-        formikProps={formikProps}
-      />
+      <SamplingSiteMapControl name="survey_sample_sites" mapId="study_area_form_map" formikProps={formikProps} />
     </Box>
   );
 };
