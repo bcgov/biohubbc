@@ -95,70 +95,68 @@ const ProjectHeader = () => {
   const [menuAnchorEl, setMenuAnchorEl] = React.useState<null | HTMLElement>(null);
 
   return (
-    <>
-      <PageHeader
-        title={projectData?.projectData.project.project_name}
-        buttonJSX={
-          <ProjectRoleGuard
-            validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
-            validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-            <>
-              <Button
-                id="project_settings-button"
-                variant="outlined"
-                color="primary"
-                startIcon={<Icon path={mdiCogOutline} size={0.75} />}
-                endIcon={<Icon path={mdiChevronDown} size={0.75} />}
-                aria-label="Project Settings"
-                aria-controls="projectSettingsMenu"
-                aria-haspopup="true"
-                onClick={(event: React.MouseEvent<HTMLButtonElement>) => setMenuAnchorEl(event.currentTarget)}>
-                Settings
-              </Button>
-              <Menu
-                id="projectSettingsMenu"
-                aria-labelledby="project_settings_button"
-                style={{ marginTop: '8px' }}
-                anchorEl={menuAnchorEl}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'right'
-                }}
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right'
-                }}
-                keepMounted
-                open={Boolean(menuAnchorEl)}
-                onClose={() => setMenuAnchorEl(null)}>
-                <MenuItem onClick={() => history.push('edit')}>
+    <PageHeader
+      title={projectData?.projectData.project.project_name}
+      buttonJSX={
+        <ProjectRoleGuard
+          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+          validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+          <>
+            <Button
+              id="project_settings-button"
+              variant="outlined"
+              color="primary"
+              startIcon={<Icon path={mdiCogOutline} size={0.75} />}
+              endIcon={<Icon path={mdiChevronDown} size={0.75} />}
+              aria-label="Project Settings"
+              aria-controls="projectSettingsMenu"
+              aria-haspopup="true"
+              onClick={(event: React.MouseEvent<HTMLButtonElement>) => setMenuAnchorEl(event.currentTarget)}>
+              Settings
+            </Button>
+            <Menu
+              id="projectSettingsMenu"
+              aria-labelledby="project_settings_button"
+              style={{ marginTop: '8px' }}
+              anchorEl={menuAnchorEl}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'right'
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right'
+              }}
+              keepMounted
+              open={Boolean(menuAnchorEl)}
+              onClose={() => setMenuAnchorEl(null)}>
+              <MenuItem onClick={() => history.push('edit')}>
+                <ListItemIcon>
+                  <Icon path={mdiPencilOutline} size={1} />
+                </ListItemIcon>
+                <Typography variant="inherit">Edit Project Details</Typography>
+              </MenuItem>
+              <ProjectRoleGuard
+                validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR]}
+                validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                <MenuItem onClick={() => history.push('users')}>
                   <ListItemIcon>
-                    <Icon path={mdiPencilOutline} size={1} />
+                    <Icon path={mdiAccountMultipleOutline} size={1} />
                   </ListItemIcon>
-                  <Typography variant="inherit">Edit Project Details</Typography>
+                  <Typography variant="inherit">Manage Project Team</Typography>
                 </MenuItem>
-                <ProjectRoleGuard
-                  validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR]}
-                  validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                  <MenuItem onClick={() => history.push('users')}>
-                    <ListItemIcon>
-                      <Icon path={mdiAccountMultipleOutline} size={1} />
-                    </ListItemIcon>
-                    <Typography variant="inherit">Manage Project Team</Typography>
-                  </MenuItem>
-                  <MenuItem onClick={showDeleteProjectDialog} data-testid={'delete-project-button'}>
-                    <ListItemIcon>
-                      <Icon path={mdiTrashCanOutline} size={1} />
-                    </ListItemIcon>
-                    <Typography variant="inherit">Delete Project</Typography>
-                  </MenuItem>
-                </ProjectRoleGuard>
-              </Menu>
-            </>
-          </ProjectRoleGuard>
-        }
-      />
-    </>
+                <MenuItem onClick={showDeleteProjectDialog} data-testid={'delete-project-button'}>
+                  <ListItemIcon>
+                    <Icon path={mdiTrashCanOutline} size={1} />
+                  </ListItemIcon>
+                  <Typography variant="inherit">Delete Project</Typography>
+                </MenuItem>
+              </ProjectRoleGuard>
+            </Menu>
+          </>
+        </ProjectRoleGuard>
+      }
+    />
   );
 };
 

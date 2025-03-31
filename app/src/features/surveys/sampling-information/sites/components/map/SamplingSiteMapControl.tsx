@@ -107,93 +107,105 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
   }, [samplingSiteGeoJsonFeatures]);
 
   return (
-    <>
-      <Grid item xs={12}>
-        <Box my={3}>
-          {get(errors, name) && (
-            <Alert
-              sx={{
-                mb: 2
-              }}
-              severity="error">
-              <AlertTitle>Missing sampling site location</AlertTitle>
-              {get(errors, name) as string}
-            </Alert>
+    <Grid item xs={12}>
+      <Box my={3}>
+        {get(errors, name) && (
+          <Alert
+            sx={{
+              mb: 2
+            }}
+            severity="error">
+            <AlertTitle>Missing sampling site location</AlertTitle>
+            {get(errors, name) as string}
+          </Alert>
+        )}
+        <FileUpload
+          uploadHandler={boundaryUploadHelper({
+            onSuccess: (features: Feature[]) => {
+              setFieldValue(
+                name,
+                features.map((feature) => ({
+                  name: shapeFileFeatureName(feature) ?? `Sample Site ${++numSites}`,
+                  description: shapeFileFeatureDesc(feature) ?? '',
+                  geojson: feature
+                }))
+              );
+            },
+            onFailure: (message: string) => {
+              setFieldError(name, message);
+            }
+          })}
+          onRemove={removeFile}
+          dropZoneProps={{
+            maxNumFiles: 1,
+            multiple: false,
+            acceptedFileExtensions: '.zip, .kml'
+          }}
+          hideDropZoneOnMaxFiles={true}
+          FileUploadItemComponent={FileUploadItem}
+          FileUploadItemComponentProps={{
+            SubtextComponent: SampleSiteFileUploadItemSubtext,
+            ActionButtonComponent: SampleSiteFileUploadItemActionButton,
+            ProgressBarComponent: SampleSiteFileUploadItemProgressBar
+          }}
+        />
+      </Box>
+      <Box component="fieldset">
+        <Typography component="legend" data-testid="funding-source-list-found">
+          Site Location Preview &zwnj;
+          {samplingSiteGeoJsonFeatures.length > 0 && (
+            <Typography component="span" color="textSecondary" fontWeight="400">
+              {`(${samplingSiteGeoJsonFeatures.length} ${pluralize(
+                samplingSiteGeoJsonFeatures.length,
+                'location'
+              )} detected)`}
+            </Typography>
           )}
-          <FileUpload
-            uploadHandler={boundaryUploadHelper({
-              onSuccess: (features: Feature[]) => {
-                setFieldValue(
-                  name,
-                  features.map((feature) => ({
-                    name: shapeFileFeatureName(feature) ?? `Sample Site ${++numSites}`,
-                    description: shapeFileFeatureDesc(feature) ?? '',
-                    geojson: feature
-                  }))
-                );
-              },
-              onFailure: (message: string) => {
-                setFieldError(name, message);
-              }
-            })}
-            onRemove={removeFile}
-            dropZoneProps={{
-              maxNumFiles: 1,
-              multiple: false,
-              acceptedFileExtensions: '.zip, .kml'
-            }}
-            hideDropZoneOnMaxFiles={true}
-            FileUploadItemComponent={FileUploadItem}
-            FileUploadItemComponentProps={{
-              SubtextComponent: SampleSiteFileUploadItemSubtext,
-              ActionButtonComponent: SampleSiteFileUploadItemActionButton,
-              ProgressBarComponent: SampleSiteFileUploadItemProgressBar
-            }}
-          />
-        </Box>
-        <Box component="fieldset">
-          <Typography component="legend" data-testid="funding-source-list-found">
-            Site Location Preview &zwnj;
-            {samplingSiteGeoJsonFeatures.length > 0 && (
-              <Typography component="span" color="textSecondary" fontWeight="400">
-                {`(${samplingSiteGeoJsonFeatures.length} ${pluralize(
-                  samplingSiteGeoJsonFeatures.length,
-                  'location'
-                )} detected)`}
-              </Typography>
-            )}
-          </Typography>
-          <Paper variant="outlined">
-            <Box position="relative" height={500}>
-              <LeafletMapContainer
-                data-testid={`leaflet-${mapId}`}
-                style={{ height: 500 }}
-                id={mapId}
-                center={MAP_DEFAULT_CENTER}
-                zoom={MAP_DEFAULT_ZOOM}
-                maxZoom={17}
-                fullscreenControl={true}
-                scrollWheelZoom={false}>
-                <MapBaseCss />
-                {/* Allow scroll wheel zoom when in full screen mode */}
-                <FullScreenScrollingEventHandler bounds={updatedBounds} scrollWheelZoom={false} />
+        </Typography>
+        <Paper variant="outlined">
+          <Box position="relative" height={500}>
+            <LeafletMapContainer
+              data-testid={`leaflet-${mapId}`}
+              style={{ height: 500 }}
+              id={mapId}
+              center={MAP_DEFAULT_CENTER}
+              zoom={MAP_DEFAULT_ZOOM}
+              maxZoom={17}
+              fullscreenControl={true}
+              scrollWheelZoom={false}>
+              <MapBaseCss />
+              {/* Allow scroll wheel zoom when in full screen mode */}
+              <FullScreenScrollingEventHandler bounds={updatedBounds} scrollWheelZoom={false} />
 
-                {/* Programmatically set map bounds */}
-                <SetMapBounds bounds={updatedBounds} />
+              {/* Programmatically set map bounds */}
+              <SetMapBounds bounds={updatedBounds} />
 
-                <FeatureGroup data-id="draw-control-feature-group" key="draw-control-feature-group">
-                  <DrawControls
-                    ref={drawControlsRef}
-                    options={{
-                      // Always disable circle, circlemarker and line
-                      draw: { circle: false, circlemarker: false }
-                    }}
-                    onLayerAdd={(event: DrawEvents.Created, id: number) => {
-                      if (lastDrawn) {
-                        drawControlsRef?.current?.deleteLayer(lastDrawn);
+              <FeatureGroup data-id="draw-control-feature-group" key="draw-control-feature-group">
+                <DrawControls
+                  ref={drawControlsRef}
+                  options={{
+                    // Always disable circle, circlemarker and line
+                    draw: { circle: false, circlemarker: false }
+                  }}
+                  onLayerAdd={(event: DrawEvents.Created, id: number) => {
+                    if (lastDrawn) {
+                      drawControlsRef?.current?.deleteLayer(lastDrawn);
+                    }
+
+                    const feature = event.layer.toGeoJSON();
+                    setFieldValue(name, [
+                      {
+                        name: `Sample Site ${++numSites}`,
+                        description: '',
+                        geojson: feature
                       }
-
-                      const feature = event.layer.toGeoJSON();
+                    ]);
+                    // Set last drawn to remove it if a subsequent shape is added. There can only be one shape.
+                    setLastDrawn(id);
+                  }}
+                  onLayerEdit={(event: DrawEvents.Edited) => {
+                    event.layers.getLayers().forEach((layer: any) => {
+                      const feature = layer.toGeoJSON() as Feature;
                       setFieldValue(name, [
                         {
                           name: `Sample Site ${++numSites}`,
@@ -201,63 +213,49 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
                           geojson: feature
                         }
                       ]);
-                      // Set last drawn to remove it if a subsequent shape is added. There can only be one shape.
-                      setLastDrawn(id);
-                    }}
-                    onLayerEdit={(event: DrawEvents.Edited) => {
-                      event.layers.getLayers().forEach((layer: any) => {
-                        const feature = layer.toGeoJSON() as Feature;
-                        setFieldValue(name, [
-                          {
-                            name: `Sample Site ${++numSites}`,
-                            description: '',
-                            geojson: feature
-                          }
-                        ]);
-                      });
-                    }}
-                    onLayerDelete={() => {
-                      setFieldValue(name, []);
-                    }}
-                  />
-                </FeatureGroup>
+                    });
+                  }}
+                  onLayerDelete={() => {
+                    setFieldValue(name, []);
+                  }}
+                />
+              </FeatureGroup>
 
-                <LayersControl position="bottomright">
-                  <StaticLayers
-                    layers={[
-                      {
-                        layerName: 'Sampling Sites',
-                        features: samplingSiteGeoJsonFeatures
-                          .filter((feature) => feature?.id) // Filter for only drawn features
-                          .map((feature, index) => ({
-                            id: feature.id || index,
-                            key: `sampling-site-${feature.id || index}`,
-                            geoJSON: feature
-                          }))
-                      }
-                    ]}
-                  />
-                  <BaseLayerControls />
-                </LayersControl>
-              </LeafletMapContainer>
-              {samplingSiteGeoJsonFeatures.length > 0 && (
-                <Box position="absolute" top="128px" left="16px" zIndex="999">
-                  <IconButton
-                    aria-label="zoom to initial extent"
-                    title="Zoom to initial extent"
-                    sx={classes.zoomToBoundaryExtentBtn}
-                    onClick={() => {
-                      setUpdatedBounds(calculateUpdatedMapBounds(samplingSiteGeoJsonFeatures));
-                    }}>
-                    <Icon size={1} path={mdiRefresh} />
-                  </IconButton>
-                </Box>
-              )}
-            </Box>
-          </Paper>
-        </Box>
-      </Grid>
-    </>
+              <LayersControl position="bottomright">
+                <StaticLayers
+                  layers={[
+                    {
+                      layerName: 'Sampling Sites',
+                      features: samplingSiteGeoJsonFeatures
+                        .filter((feature) => feature?.id) // Filter for only drawn features
+                        .map((feature, index) => ({
+                          id: feature.id || index,
+                          key: `sampling-site-${feature.id || index}`,
+                          geoJSON: feature
+                        }))
+                    }
+                  ]}
+                />
+                <BaseLayerControls />
+              </LayersControl>
+            </LeafletMapContainer>
+            {samplingSiteGeoJsonFeatures.length > 0 && (
+              <Box position="absolute" top="128px" left="16px" zIndex="999">
+                <IconButton
+                  aria-label="zoom to initial extent"
+                  title="Zoom to initial extent"
+                  sx={classes.zoomToBoundaryExtentBtn}
+                  onClick={() => {
+                    setUpdatedBounds(calculateUpdatedMapBounds(samplingSiteGeoJsonFeatures));
+                  }}>
+                  <Icon size={1} path={mdiRefresh} />
+                </IconButton>
+              </Box>
+            )}
+          </Box>
+        </Paper>
+      </Box>
+    </Grid>
   );
 };
 

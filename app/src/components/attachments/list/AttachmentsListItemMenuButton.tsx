@@ -31,94 +31,92 @@ const AttachmentsListItemMenuButton = (props: IAttachmentsListItemMenuButtonProp
   };
 
   return (
-    <>
-      <Box my={-1}>
-        <Box>
-          <IconButton
-            aria-label="Document actions"
-            onClick={handleClick}
-            data-testid="attachment-action-menu"
-            tabIndex={0}>
-            <Icon path={mdiDotsVertical} size={1} />
-          </IconButton>
-          <Menu
-            anchorOrigin={{
-              vertical: 'top',
-              horizontal: 'right'
+    <Box my={-1}>
+      <Box>
+        <IconButton
+          aria-label="Document actions"
+          onClick={handleClick}
+          data-testid="attachment-action-menu"
+          tabIndex={0}>
+          <Icon path={mdiDotsVertical} size={1} />
+        </IconButton>
+        <Menu
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'right'
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'right'
+          }}
+          id="basic-menu"
+          anchorEl={anchorEl}
+          open={open}
+          onClose={handleClose}
+          MenuListProps={{
+            'aria-labelledby': 'basic-button'
+          }}>
+          <MenuItem
+            onClick={() => {
+              props.onDownloadFile();
+              handleClose();
             }}
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'right'
-            }}
-            id="basic-menu"
-            anchorEl={anchorEl}
-            open={open}
-            onClose={handleClose}
-            MenuListProps={{
-              'aria-labelledby': 'basic-button'
-            }}>
+            data-testid="attachment-action-menu-download">
+            <ListItemIcon>
+              <Icon path={mdiTrayArrowDown} size={1} />
+            </ListItemIcon>
+            Download File
+          </MenuItem>
+          {props.attachmentFileType === AttachmentType.REPORT && (
             <MenuItem
               onClick={() => {
-                props.onDownloadFile();
+                props.onViewDetails();
                 handleClose();
               }}
-              data-testid="attachment-action-menu-download">
+              data-testid="attachment-action-menu-details">
               <ListItemIcon>
-                <Icon path={mdiTrayArrowDown} size={1} />
+                <Icon path={mdiInformationOutline} size={1} />
               </ListItemIcon>
-              Download File
+              View Details
             </MenuItem>
-            {props.attachmentFileType === AttachmentType.REPORT && (
+          )}
+
+          {props.attachmentStatus === PublishStatus.UNSUBMITTED && (
+            <ProjectRoleGuard
+              validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+              validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
               <MenuItem
                 onClick={() => {
-                  props.onViewDetails();
+                  props.onDeleteFile();
                   handleClose();
                 }}
-                data-testid="attachment-action-menu-details">
+                data-testid="attachment-action-menu-delete">
                 <ListItemIcon>
-                  <Icon path={mdiInformationOutline} size={1} />
+                  <Icon path={mdiTrashCanOutline} size={1} />
                 </ListItemIcon>
-                View Details
+                Delete
               </MenuItem>
-            )}
+            </ProjectRoleGuard>
+          )}
 
-            {props.attachmentStatus === PublishStatus.UNSUBMITTED && (
-              <ProjectRoleGuard
-                validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
-                validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                <MenuItem
-                  onClick={() => {
-                    props.onDeleteFile();
-                    handleClose();
-                  }}
-                  data-testid="attachment-action-menu-delete">
-                  <ListItemIcon>
-                    <Icon path={mdiTrashCanOutline} size={1} />
-                  </ListItemIcon>
-                  Delete
-                </MenuItem>
-              </ProjectRoleGuard>
-            )}
-
-            {props.attachmentStatus === PublishStatus.SUBMITTED && (
-              <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                <MenuItem
-                  onClick={() => {
-                    props.onDeleteFile();
-                    handleClose();
-                  }}
-                  data-testid="attachment-action-menu-delete">
-                  <ListItemIcon>
-                    <Icon path={mdiTrashCanOutline} size={1} />
-                  </ListItemIcon>
-                  Delete
-                </MenuItem>
-              </SystemRoleGuard>
-            )}
-          </Menu>
-        </Box>
+          {props.attachmentStatus === PublishStatus.SUBMITTED && (
+            <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+              <MenuItem
+                onClick={() => {
+                  props.onDeleteFile();
+                  handleClose();
+                }}
+                data-testid="attachment-action-menu-delete">
+                <ListItemIcon>
+                  <Icon path={mdiTrashCanOutline} size={1} />
+                </ListItemIcon>
+                Delete
+              </MenuItem>
+            </SystemRoleGuard>
+          )}
+        </Menu>
       </Box>
-    </>
+    </Box>
   );
 };
 

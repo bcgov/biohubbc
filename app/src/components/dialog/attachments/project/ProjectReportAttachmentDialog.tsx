@@ -113,30 +113,28 @@ const ProjectReportAttachmentDialog: React.FC<IProjectReportAttachmentDialogProp
   }
 
   return (
-    <>
-      <Dialog open={props.open} onClose={props.onClose} fullWidth={true} maxWidth="lg" data-testid="view-meta-dialog">
-        <DialogTitle data-testid="view-meta-dialog-title">
-          <Typography variant="body2" color="textSecondary" style={{ fontWeight: 700 }}>
-            VIEW DOCUMENT DETAILS
-          </Typography>
-        </DialogTitle>
-        <DialogContent>
-          <ReportAttachmentDetails
-            title={reportAttachmentDetailsDataLoader.data?.metadata?.title || ''}
-            onFileDownload={openAttachmentFromReportMetaDialog}
-            onSave={handleDialogEditSave}
-            reportAttachmentDetails={reportAttachmentDetailsDataLoader.data || null}
-            attachmentSize={(props.attachment && getFormattedFileSize(props.attachment.size)) || '0 KB'}
-            refresh={() => props.attachment?.id && reportAttachmentDetailsDataLoader.refresh(props.attachment.id)}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={props.onClose} variant="outlined">
-            Close
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </>
+    <Dialog open={props.open} onClose={props.onClose} fullWidth={true} maxWidth="lg" data-testid="view-meta-dialog">
+      <DialogTitle data-testid="view-meta-dialog-title">
+        <Typography variant="body2" color="textSecondary" style={{ fontWeight: 700 }}>
+          VIEW DOCUMENT DETAILS
+        </Typography>
+      </DialogTitle>
+      <DialogContent>
+        <ReportAttachmentDetails
+          title={reportAttachmentDetailsDataLoader.data?.metadata?.title || ''}
+          onFileDownload={openAttachmentFromReportMetaDialog}
+          onSave={handleDialogEditSave}
+          reportAttachmentDetails={reportAttachmentDetailsDataLoader.data || null}
+          attachmentSize={(props.attachment && getFormattedFileSize(props.attachment.size)) || '0 KB'}
+          refresh={() => props.attachment?.id && reportAttachmentDetailsDataLoader.refresh(props.attachment.id)}
+        />
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={props.onClose} variant="outlined">
+          Close
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 };
 

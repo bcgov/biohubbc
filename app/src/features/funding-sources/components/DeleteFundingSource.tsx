@@ -78,43 +78,37 @@ const DeleteFundingSource: React.FC<IDeleteFundingSource> = (props) => {
     return canDelete;
   };
 
-  return (
-    <>
-      {canDeleteFundingSource() ? (
-        <YesNoDialog
-          dialogTitle={FundingSourceI18N.deleteFundingSourceDialogTitle}
-          dialogText={FundingSourceI18N.deleteFundingSourceDialogText}
-          yesButtonProps={{ color: 'error' }}
-          yesButtonLabel={'Delete'}
-          noButtonProps={{ color: 'primary', variant: 'outlined' }}
-          noButtonLabel={'Cancel'}
-          open={open}
-          onYes={() => {
-            deleteFundingSource();
-          }}
-          onClose={() => {}}
-          onNo={() => onClose()}
-        />
-      ) : (
-        <>
-          <YesNoDialog
-            dialogTitle={FundingSourceI18N.cannotDeleteFundingSourceTitle}
-            dialogText={FundingSourceI18N.cannotDeleteFundingSourceText}
-            yesButtonProps={{ color: 'primary' }}
-            yesButtonLabel={'View Details'}
-            noButtonProps={{ color: 'primary', variant: 'contained' }}
-            noButtonLabel={'Close'}
-            open={open}
-            onYes={() => {
-              onClose(false);
-              openViewModal(fundingSourceId);
-            }}
-            onClose={() => {}}
-            onNo={() => onClose()}
-          />
-        </>
-      )}
-    </>
+  return canDeleteFundingSource() ? (
+    <YesNoDialog
+      dialogTitle={FundingSourceI18N.deleteFundingSourceDialogTitle}
+      dialogText={FundingSourceI18N.deleteFundingSourceDialogText}
+      yesButtonProps={{ color: 'error' }}
+      yesButtonLabel={'Delete'}
+      noButtonProps={{ color: 'primary', variant: 'outlined' }}
+      noButtonLabel={'Cancel'}
+      open={open}
+      onYes={() => {
+        deleteFundingSource();
+      }}
+      onClose={() => {}}
+      onNo={() => onClose()}
+    />
+  ) : (
+    <YesNoDialog
+      dialogTitle={FundingSourceI18N.cannotDeleteFundingSourceTitle}
+      dialogText={FundingSourceI18N.cannotDeleteFundingSourceText}
+      yesButtonProps={{ color: 'primary' }}
+      yesButtonLabel={'View Details'}
+      noButtonProps={{ color: 'primary', variant: 'contained' }}
+      noButtonLabel={'Close'}
+      open={open}
+      onYes={() => {
+        onClose(false);
+        openViewModal(fundingSourceId);
+      }}
+      onClose={() => {}}
+      onNo={() => onClose()}
+    />
   );
 };
 
