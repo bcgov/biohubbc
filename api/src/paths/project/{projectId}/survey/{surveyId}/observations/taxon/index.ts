@@ -72,13 +72,21 @@ GET.apiDoc = {
               type: 'object',
               additionalProperties: false,
               properties: {
-                tsn: { type: 'number', description: 'The TSN of the observed species' },
+                tsn: {
+                  type: 'number',
+                  description: 'The TSN of the observed species'
+                },
                 commonNames: {
                   type: 'array',
-                  items: { type: 'string' },
+                  items: {
+                    type: 'string'
+                  },
                   description: 'Common names of the observed species'
                 },
-                scientificName: { type: 'string', description: 'Scientific name of the observed species' }
+                scientificName: {
+                  type: 'string',
+                  description: 'Scientific name of the observed species'
+                }
               }
             }
           }
@@ -126,9 +134,25 @@ export function getSurveyObservedSpecies(): RequestHandler {
 
       await connection.commit();
 
-      const species = await platformService.getTaxonomyByTsns(observedSpecies.flatMap((species) => species.itis_tsn));
+      const taxonomyResponse = await platformService.getTaxonomyByTsns(
+        observedSpecies.flatMap((species) => species.itis_tsn)
+      );
 
-      const formattedResponse = species.map((taxon) => ({ ...taxon, tsn: taxon.tsn }));
+      const formattedResponse: {
+        tsn: number;
+        scientificName: string;
+        commonNames: string[];
+      }[] = [];
+
+      for (const species of observedSpecies) {
+        const taxon = taxonomyResponse.find((taxonomy) => Number(taxonomy.tsn) === species.itis_tsn);
+
+        formattedResponse.push({
+          tsn: species.itis_tsn,
+          scientificName: taxon?.scientificName ?? 'Unavailable',
+          commonNames: taxon?.commonNames ?? []
+        });
+      }
 
       return res.status(200).json(formattedResponse);
     } catch (error) {
