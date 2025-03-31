@@ -59,7 +59,7 @@ const DeleteAlert = (props: IDeleteAlertProps) => {
         ),
         open: true
       });
-    } catch (error) {
+    } catch (_error) {
       // error deleting, show dialog that says you need to remove references
       onClose(false);
       showDeleteErrorDialog();

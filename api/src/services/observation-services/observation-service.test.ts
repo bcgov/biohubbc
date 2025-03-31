@@ -106,9 +106,8 @@ describe('ObservationService', () => {
 
       const observationService = new ObservationService(mockDBConnection);
 
-      const response = await observationService.getSurveyObservationsWithSupplementaryAndSamplingDataAndAttributeData(
-        surveyId
-      );
+      const response =
+        await observationService.getSurveyObservationsWithSupplementaryAndSamplingDataAndAttributeData(surveyId);
 
       expect(getSurveyObservationsStub).to.be.calledOnceWith(surveyId);
       expect(getSurveyObservationCountStub).to.be.calledOnceWith(surveyId);

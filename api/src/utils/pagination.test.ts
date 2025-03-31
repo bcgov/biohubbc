@@ -129,21 +129,19 @@ describe('pagination', () => {
     });
 
     it('should return pagination if page and limit are defined', () => {
-      it('should return undefined if limit is undefined', () => {
-        const mockPagination: Partial<ApiPaginationOptions> = {
-          limit: 15,
-          page: 1,
-          sort: 'name',
-          order: 'desc'
-        };
+      const mockPagination: Partial<ApiPaginationOptions> = {
+        limit: 15,
+        page: 1,
+        sort: 'name',
+        order: 'desc'
+      };
 
-        const result = ensureCompletePaginationOptions(mockPagination);
-        expect(result).to.eql({
-          limit: 15,
-          page: 1,
-          sort: 'name',
-          order: 'desc'
-        });
+      const result = ensureCompletePaginationOptions(mockPagination);
+      expect(result).to.eql({
+        limit: 15,
+        page: 1,
+        sort: 'name',
+        order: 'desc'
       });
     });
   });

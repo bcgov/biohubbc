@@ -68,7 +68,9 @@ export const SurveyObservationAnalytics = () => {
   ];
 
   const handleToggleChange = (_: React.MouseEvent<HTMLElement, MouseEvent>, value: IGroupByOption[]) => {
-    if (!value[0]?.type) return;
+    if (!value[0]?.type) {
+      return;
+    }
 
     // Update group by arrays
     if (value[0].type === 'column') {

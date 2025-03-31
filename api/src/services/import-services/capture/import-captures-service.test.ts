@@ -43,7 +43,7 @@ describe('import-captures-service', () => {
       try {
         const config = await service.getCSVConfig();
         expect(config.ignoreDynamicHeaders).to.be.false;
-      } catch (err) {
+      } catch (_error) {
         expect.fail('should not throw an error');
       }
     });

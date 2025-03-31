@@ -10,7 +10,7 @@ describe('useDebounce', () => {
     vi.useRealTimers();
   });
 
-  it('it should call the callback after the delay', () => {
+  it('should call the callback after the delay', () => {
     const callback = vi.fn();
     const delayMs = 100;
     const { result } = renderHook(() => useDebounce(callback, delayMs));
@@ -24,7 +24,7 @@ describe('useDebounce', () => {
     expect(callback).toHaveBeenCalledTimes(1);
   });
 
-  it('it should call the callback only once after multiple calls', () => {
+  it('should call the callback only once after multiple calls', () => {
     const callback = vi.fn();
     const delayMs = 100;
     const { result } = renderHook(() => useDebounce(callback, delayMs));
@@ -38,7 +38,7 @@ describe('useDebounce', () => {
     expect(callback).toHaveBeenCalledTimes(1);
   });
 
-  it('it should call the callback after the delay with the last arguments', () => {
+  it('should call the callback after the delay with the last arguments', () => {
     const callback = vi.fn();
     const delayMs = 100;
     const { result } = renderHook(() => useDebounce(callback, delayMs));
@@ -52,7 +52,7 @@ describe('useDebounce', () => {
     expect(callback).toHaveBeenCalledWith(3);
   });
 
-  it('it should not call the callback after the delay if the hook is unmounted', () => {
+  it('should not call the callback after the delay if the hook is unmounted', () => {
     const callback = vi.fn();
     const delayMs = 100;
     const { result, unmount } = renderHook(() => useDebounce(callback, delayMs));
@@ -66,7 +66,7 @@ describe('useDebounce', () => {
     expect(callback).not.toHaveBeenCalled();
   });
 
-  it('it should not call the callback until the delay has passed', () => {
+  it('should not call the callback until the delay has passed', () => {
     const callback = vi.fn();
     const delayMs = 100;
     const { result } = renderHook(() => useDebounce(callback, delayMs));

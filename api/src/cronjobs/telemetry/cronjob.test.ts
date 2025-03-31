@@ -90,7 +90,7 @@ describe('Telemetry Cronjob', () => {
       try {
         await cronjob.telemetryCronjob();
         expect.fail();
-      } catch (err) {
+      } catch (_error) {
         expect(mockConnection.open).to.have.been.calledOnce;
         expect(mockConnection.release).to.have.been.calledOnce;
       }

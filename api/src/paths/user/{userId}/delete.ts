@@ -77,9 +77,8 @@ export function removeSystemUser(): RequestHandler {
       await connection.open();
       const projectParticipationService = new ProjectParticipationService(connection);
 
-      const isUserTheOnlyCoordinator = await projectParticipationService.isUserTheOnlyProjectCoordinatorOnAnyProject(
-        systemUserId
-      );
+      const isUserTheOnlyCoordinator =
+        await projectParticipationService.isUserTheOnlyProjectCoordinatorOnAnyProject(systemUserId);
 
       if (isUserTheOnlyCoordinator) {
         throw new HTTP400(`Cannot remove user. User is the only ${PROJECT_ROLE.COORDINATOR} for one or more projects.`);

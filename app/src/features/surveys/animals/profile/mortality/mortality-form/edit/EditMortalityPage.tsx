@@ -184,7 +184,9 @@ export const EditMortalityPage = () => {
       }
 
       // Refresh page
-      if (surveyCritterId) animalPageContext.critterDataLoader.refresh(projectId, surveyId, surveyCritterId);
+      if (surveyCritterId) {
+        animalPageContext.critterDataLoader.refresh(projectId, surveyId, surveyCritterId);
+      }
 
       skipUnsavedChangesDialog();
       history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals/details`);

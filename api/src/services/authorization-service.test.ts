@@ -439,9 +439,8 @@ describe('AuthorizationService', () => {
         discriminator: 'ServiceClient'
       } as unknown as AuthorizeByServiceClient;
 
-      const isAuthorizedBySystemRole = await authorizationService.authorizeByServiceClient(
-        authorizeByServiceClientData
-      );
+      const isAuthorizedBySystemRole =
+        await authorizationService.authorizeByServiceClient(authorizeByServiceClientData);
 
       expect(isAuthorizedBySystemRole).to.equal(false);
     });
@@ -461,9 +460,8 @@ describe('AuthorizationService', () => {
         discriminator: 'ServiceClient'
       } as unknown as AuthorizeByServiceClient;
 
-      const isAuthorizedBySystemRole = await authorizationService.authorizeByServiceClient(
-        authorizeByServiceClientData
-      );
+      const isAuthorizedBySystemRole =
+        await authorizationService.authorizeByServiceClient(authorizeByServiceClientData);
 
       expect(isAuthorizedBySystemRole).to.equal(true);
     });
@@ -481,9 +479,8 @@ describe('AuthorizationService', () => {
 
         const authorizationService = new AuthorizationService(mockDBConnection);
 
-        const isAuthorizedByProjectPermission = await authorizationService.authorizeByProjectPermission(
-          mockAuthorizeProjectPermission
-        );
+        const isAuthorizedByProjectPermission =
+          await authorizationService.authorizeByProjectPermission(mockAuthorizeProjectPermission);
 
         expect(isAuthorizedByProjectPermission).to.equal(false);
       });
@@ -503,9 +500,8 @@ describe('AuthorizationService', () => {
 
         const authorizationService = new AuthorizationService(mockDBConnection);
 
-        const isAuthorizedByProjectPermission = await authorizationService.authorizeByProjectPermission(
-          mockAuthorizeProjectPermission
-        );
+        const isAuthorizedByProjectPermission =
+          await authorizationService.authorizeByProjectPermission(mockAuthorizeProjectPermission);
 
         expect(isAuthorizedByProjectPermission).to.equal(false);
       });
@@ -543,9 +539,8 @@ describe('AuthorizationService', () => {
 
         const authorizationService = new AuthorizationService(mockDBConnection);
 
-        const isAuthorizedByProjectPermission = await authorizationService.authorizeByProjectPermission(
-          mockAuthorizeProjectPermission
-        );
+        const isAuthorizedByProjectPermission =
+          await authorizationService.authorizeByProjectPermission(mockAuthorizeProjectPermission);
 
         expect(isAuthorizedByProjectPermission).to.equal(false);
       });
@@ -580,9 +575,8 @@ describe('AuthorizationService', () => {
           }
         });
 
-        const isAuthorizedByProjectPermission = await authorizationService.authorizeByProjectPermission(
-          mockAuthorizeProjectPermission
-        );
+        const isAuthorizedByProjectPermission =
+          await authorizationService.authorizeByProjectPermission(mockAuthorizeProjectPermission);
 
         expect(isAuthorizedByProjectPermission).to.equal(true);
       });
@@ -617,9 +611,8 @@ describe('AuthorizationService', () => {
           }
         });
 
-        const isAuthorizedByProjectPermission = await authorizationService.authorizeByProjectPermission(
-          mockAuthorizeProjectPermission
-        );
+        const isAuthorizedByProjectPermission =
+          await authorizationService.authorizeByProjectPermission(mockAuthorizeProjectPermission);
 
         expect(isAuthorizedByProjectPermission).to.equal(false);
       });
@@ -654,9 +647,8 @@ describe('AuthorizationService', () => {
           }
         });
 
-        const isAuthorizedByProjectPermission = await authorizationService.authorizeByProjectPermission(
-          mockAuthorizeProjectPermission
-        );
+        const isAuthorizedByProjectPermission =
+          await authorizationService.authorizeByProjectPermission(mockAuthorizeProjectPermission);
 
         expect(isAuthorizedByProjectPermission).to.equal(true);
       });
@@ -673,9 +665,8 @@ describe('AuthorizationService', () => {
 
         const authorizationService = new AuthorizationService(mockDBConnection);
 
-        const isAuthorizedByProjectPermission = await authorizationService.authorizeByProjectPermission(
-          mockAuthorizeProjectPermission
-        );
+        const isAuthorizedByProjectPermission =
+          await authorizationService.authorizeByProjectPermission(mockAuthorizeProjectPermission);
 
         expect(isAuthorizedByProjectPermission).to.equal(false);
       });
@@ -695,9 +686,8 @@ describe('AuthorizationService', () => {
 
         const authorizationService = new AuthorizationService(mockDBConnection);
 
-        const isAuthorizedByProjectPermission = await authorizationService.authorizeByProjectPermission(
-          mockAuthorizeProjectPermission
-        );
+        const isAuthorizedByProjectPermission =
+          await authorizationService.authorizeByProjectPermission(mockAuthorizeProjectPermission);
 
         expect(isAuthorizedByProjectPermission).to.equal(false);
       });
@@ -735,9 +725,8 @@ describe('AuthorizationService', () => {
 
         const authorizationService = new AuthorizationService(mockDBConnection);
 
-        const isAuthorizedByProjectPermission = await authorizationService.authorizeByProjectPermission(
-          mockAuthorizeProjectPermission
-        );
+        const isAuthorizedByProjectPermission =
+          await authorizationService.authorizeByProjectPermission(mockAuthorizeProjectPermission);
 
         expect(isAuthorizedByProjectPermission).to.equal(false);
       });
@@ -772,9 +761,8 @@ describe('AuthorizationService', () => {
           }
         });
 
-        const isAuthorizedByProjectPermission = await authorizationService.authorizeByProjectPermission(
-          mockAuthorizeProjectPermission
-        );
+        const isAuthorizedByProjectPermission =
+          await authorizationService.authorizeByProjectPermission(mockAuthorizeProjectPermission);
 
         expect(isAuthorizedByProjectPermission).to.equal(true);
       });
@@ -809,9 +797,8 @@ describe('AuthorizationService', () => {
           }
         });
 
-        const isAuthorizedByProjectPermission = await authorizationService.authorizeByProjectPermission(
-          mockAuthorizeProjectPermission
-        );
+        const isAuthorizedByProjectPermission =
+          await authorizationService.authorizeByProjectPermission(mockAuthorizeProjectPermission);
 
         expect(isAuthorizedByProjectPermission).to.equal(false);
       });
@@ -846,9 +833,8 @@ describe('AuthorizationService', () => {
           }
         });
 
-        const isAuthorizedByProjectPermission = await authorizationService.authorizeByProjectPermission(
-          mockAuthorizeProjectPermission
-        );
+        const isAuthorizedByProjectPermission =
+          await authorizationService.authorizeByProjectPermission(mockAuthorizeProjectPermission);
 
         expect(isAuthorizedByProjectPermission).to.equal(true);
       });
@@ -890,7 +876,7 @@ describe('AuthorizationService', () => {
           expect(response).to.be.true;
         });
 
-        it('returns false if the user has no matching roles', () => {
+        it('returns false if the user has no roles', () => {
           const response = AuthorizationService.hasAtLeastOneValidValue('admin', []);
 
           expect(response).to.be.false;
@@ -944,7 +930,7 @@ describe('AuthorizationService', () => {
           expect(response).to.be.true;
         });
 
-        it('returns false if the user has no matching roles', () => {
+        it('returns false if the user has no roles', () => {
           const response = AuthorizationService.hasAtLeastOneValidValue(['admin'], []);
 
           expect(response).to.be.false;

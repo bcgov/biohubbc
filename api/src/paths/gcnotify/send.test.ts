@@ -11,6 +11,7 @@ chai.use(sinonChai);
 describe('gcnotify', () => {
   describe('sendNotification', () => {
     const env = Object.assign({}, process.env);
+
     afterEach(() => {
       sinon.restore();
       process.env = env;

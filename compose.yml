@@ -119,8 +119,10 @@ services:
     networks:
       - sims-network
     depends_on:
-      - db
-      - db_setup
+      db:
+        condition: service_healthy
+      db_setup:
+        condition: service_completed_successfully
 
   # Build the clamav docker image
   clamav:
@@ -177,6 +179,11 @@ services:
     build:
       context: ./database
       dockerfile: ./.docker/db/Dockerfile.setup
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $DB_ADMIN -p 5432 -d $DB_DATABASE"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
     environment:
       - NODE_ENV=${NODE_ENV}
       - DB_HOST=${DB_HOST}

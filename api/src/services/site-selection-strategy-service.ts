@@ -85,9 +85,8 @@ export class SiteSelectionStrategyService extends DBService {
     const insertStratums: SurveyStratum[] = [];
     const updateStratums: SurveyStratumRecord[] = [];
 
-    const existingSiteSelectionStrategies = await this.siteSelectionStrategyRepository.getSiteSelectionDataBySurveyId(
-      surveyId
-    );
+    const existingSiteSelectionStrategies =
+      await this.siteSelectionStrategyRepository.getSiteSelectionDataBySurveyId(surveyId);
 
     stratums.forEach((stratum) => {
       if ((stratum as SurveyStratumRecord).survey_stratum_id) {
