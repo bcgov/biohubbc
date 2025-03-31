@@ -126,7 +126,7 @@ export const SamplingSiteListPeriod = (props: ISamplingSiteListPeriodProps) => {
                   {samplePeriod.end_time}
                 </Typography>
               </Box>
-              {samplingSiteListContext && samplePeriod?.survey_sample_period_id && (
+              {samplingSiteListContext && Boolean(samplePeriod?.survey_sample_period_id) && (
                 <Box mt={-0.25}>
                   {/* The button to handle importing sample period related data - provided by the context */}
                   {samplingSiteListContext.getSamplePeriodImportButton(samplePeriod.survey_sample_period_id)}

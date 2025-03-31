@@ -46,7 +46,7 @@ export interface IValidationData {
    *
    * @type {IMultipleData}
    */
-  keyData?: IMultipleData[]; // Array<{}>;
+  keyData?: IMultipleData[];
   /**
    * Error message place holder
    *
@@ -324,7 +324,6 @@ export const checkFileForKeyx = async (
 
     // Parse data out of the XML file
     const parser = new XMLParser(xmlParserOptions);
-    // const jsonKeyxData = parser.parse(xmlString);
     const jsonKeyxData = mapKeyxData(parser.parse(xmlString));
 
     // Validate key using Vectronic API separation count
