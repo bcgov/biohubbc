@@ -6,6 +6,8 @@ import eslintPluginReactHooks from 'eslint-plugin-react-hooks';
 import globals from 'globals';
 import typescriptEslint from 'typescript-eslint';
 
+// Run `npx eslint --inspect-config` to inspect the config
+
 export default [
   {
     ignores: [
