@@ -39,11 +39,6 @@ export const getCritterbaseUserFromConnection = (connection: IDBConnection) => (
   username: connection.systemUserIdentifier()
 });
 
-export interface QueryParam {
-  key: string;
-  value: string;
-}
-
 export interface ICritter {
   critter_id: string;
   wlh_id: string | null;
@@ -114,19 +109,6 @@ export interface ICaptureDetailed {
     latitude: number;
     longitude: number;
   };
-}
-
-export interface ICreateCapture {
-  critter_id: string;
-  capture_method_id?: string;
-  capture_location: ILocation;
-  release_location?: ILocation;
-  capture_date: string;
-  capture_time?: string | null;
-  release_date?: string | null;
-  release_time?: string | null;
-  capture_comment?: string | null;
-  release_comment?: string | null;
 }
 
 export interface IMortality {
@@ -407,7 +389,7 @@ const CBQualitativeOption = z.object({
   option_desc: z.string().nullable()
 });
 
-export type CBQualitativeOption = z.infer<typeof CBQualitativeOption>;
+type CBQualitativeOption = z.infer<typeof CBQualitativeOption>;
 
 /**
  * A Critterbase qualitative measurement type definition.

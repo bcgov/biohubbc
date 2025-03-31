@@ -85,11 +85,6 @@ export function parseUTMString(utm: string): IUTM | null {
   return { easting, northing, zone_letter, zone_number, zone_srid };
 }
 
-export interface ILatLong {
-  lat: number;
-  long: number;
-}
-
 /**
  * Function to generate the SQL for insertion of a geometry collection
  *
