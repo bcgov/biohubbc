@@ -226,7 +226,7 @@ export const parseTimestampString = (timestamp: string): { dateStr: string; time
  * @param {string} uuid
  * @returns {boolean} true if it is a uuid
  */
-export const isUUID = (uuid: string): boolean => {
+export const isUUID = (uuid: string | null | undefined): boolean => {
   // UUID must not be null length must be 36 characters
   if (!uuid || uuid.length !== 36) {
     return false;
