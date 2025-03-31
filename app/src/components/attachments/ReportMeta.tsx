@@ -31,9 +31,6 @@ const useStyles = () => {
 };
 
 interface IViewReportDetailsProps {
-  onEdit?: () => void;
-  onSave?: () => void;
-
   reportDetails: IGetReportDetails | null;
 }
 
