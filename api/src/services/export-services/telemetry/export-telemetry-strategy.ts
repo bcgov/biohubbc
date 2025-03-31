@@ -1,9 +1,10 @@
-import { Readable } from 'stream';
-import { IDBConnection } from '../../../database/db';
+import { getKnex, IDBConnection } from '../../../database/db';
+import { TelemetryVendorRepository } from '../../../repositories/telemetry-repositories/telemetry-vendor-repository';
 import { getLogger } from '../../../utils/logger';
 import { DBService } from '../../db-service';
-import { TelemetryVendorService } from '../../telemetry-services/telemetry-vendor-service';
-import { ExportDataStreamOptions, ExportStrategy, ExportStrategyConfig } from '../export-strategy';
+import { getTelemetryDeviceKey } from '../../telemetry-services/telemetry-utils';
+import { ExportStrategy, ExportStrategyConfig } from '../export-strategy';
+import { parseTimestampString } from '../export-utils';
 
 const defaultLog = getLogger('services/export-telemetry-strategy');
 
@@ -38,10 +39,12 @@ export class ExportTelemetryStrategy extends DBService implements ExportStrategy
   async getExportStrategyConfig(): Promise<ExportStrategyConfig> {
     try {
       return {
-        streams: [
+        queries: [
           {
-            stream: this._getStream,
-            fileName: 'telemetry.json'
+            sql: this._getSql(),
+            fileName: 'telemetry.csv',
+            csvHeader: ['Telemetry ID', 'Device ID', 'Deployment ID', 'Latitude', 'Logitude', 'Date', 'Time'].join(','),
+            transformFunction: ExportTelemetryStrategy.telemetryCsvTransformation
           }
         ]
       };
@@ -57,13 +60,12 @@ export class ExportTelemetryStrategy extends DBService implements ExportStrategy
   }
 
   /**
-   * Build and return the telemetry data stream.
+   * Build and return the survey metadata data sql query.
    *
-   * @param {ExportDataStreamOptions} _options
-   * @memberof ExportTelemetryStrategy
+   * @memberof ExportSurveyMetadataStrategy
    */
-  _getStream = (_options: ExportDataStreamOptions): Readable => {
-    const telemetryVendorService = new TelemetryVendorService(this.connection);
+  _getSql = () => {
+    const telemetryVendorRepository = new TelemetryVendorRepository(this.connection);
 
     const isUserAdmin = this.config.isUserAdmin;
     const systemUserId = this.connection.systemUserId();
@@ -71,25 +73,28 @@ export class ExportTelemetryStrategy extends DBService implements ExportStrategy
       survey_ids: [this.config.surveyId]
     };
 
-    const stream = new Readable({
-      objectMode: true,
-      read() {
-        telemetryVendorService
-          .findTelemetry(isUserAdmin, systemUserId, filterFields)
-          .then((telemetry) => {
-            for (const item of telemetry) {
-              this.push(item);
-            }
+    const knex = getKnex();
+    return telemetryVendorRepository.buildTelemetryQuery(knex, isUserAdmin, systemUserId, filterFields);
+  };
 
-            // Signal the end of the stream
-            this.push(null);
-          })
-          .catch((error) => {
-            this.emit('error', error);
-          });
-      }
-    });
-
-    return stream;
+  /**
+   * Transform query result record into CSV
+   *
+   * @static
+   * @param {Record<string, any>} item
+   * @returns {string}
+   * @memberof ExportTelemetryStrategy
+   */
+  static readonly telemetryCsvTransformation = (item: Record<string, any>): string => {
+    const { dateStr, timeStr } = parseTimestampString(item.acquisition_date);
+    return [
+      item.telemetry_id,
+      getTelemetryDeviceKey({ vendor: item.vendor, serial: item.serial }),
+      item.deployment_id,
+      item.latitude,
+      item.longitude,
+      dateStr,
+      timeStr
+    ].join(',');
   };
 }

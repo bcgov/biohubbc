@@ -10,10 +10,36 @@ export type ExportDataQuery = {
    */
   sql: SQLStatement | Knex.QueryBuilder;
   /**
+   * Optional, applies only for observations export
+   * map to look up observations qualitative measurments labels by Id
+   *
+   * @type {?Map<string, string>}
+   */
+  measurementsMap?: Map<string, string>;
+  /**
    * The file name to use for the exported data when it is saved to S3.
    */
   fileName: string;
+  /**
+   * The data CSV file header.
+   */
+  csvHeader: string;
+
+  /**
+   * Function that transforms the query data stream into CVS
+   *
+   * @type {TransformFunction}
+   */
+  transformFunction: TransformFunction;
 };
+
+/**
+ * Function that transforms the result query data into CSV
+ *
+ * @export
+ * @typedef {TransformFunction}
+ */
+export type TransformFunction = (chunk: Record<string, any>) => string;
 
 export type ExportDataStreamOptions = {
   /**
@@ -33,6 +59,24 @@ export type ExportDataStream = {
    * The file name to use for the exported data when it is saved to S3.
    */
   fileName: string;
+  /**
+   * The data base CSV file header.
+   */
+  csvHeader: string;
+  // /**
+  //  * Optional, applies only for animal export
+  //  * map to look up only the critter ids with mortality that belong to a survey
+  //  *
+  //  * @type {?Map<string, IMortalityMarkingsData>}
+  //  */
+  // mortalityMarkingsMap?: Map<string, IMortalityMarkingsData>;
+  /**
+   * Optional, applies only for animal export
+   * map to look up collection categories labels by tsn
+   *
+   * @type {?string[]}
+   */
+  collectionCategories?: string[];
 };
 
 export type ExportStrategyConfig = {

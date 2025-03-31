@@ -940,6 +940,31 @@ export class TelemetryVendorRepository extends BaseRepository {
   }
 
   /**
+   * Builds the main base and export telemetry query
+   *
+   * @param {Knex} knex
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId
+   * @param {IAllTelemetryAdvancedFilters} filterFields
+   * @returns {Knex.QueryBuilder}
+   * @memberof TelemetryVendorRepository
+   */
+  buildTelemetryQuery(
+    knex: Knex,
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: IAllTelemetryAdvancedFilters
+  ): Knex.QueryBuilder {
+    return knex
+      .queryBuilder()
+      .with('telemetry', (qb) => {
+        this.findTelemetryBaseQuery(qb, isUserAdmin, systemUserId, filterFields);
+      })
+      .select('*')
+      .from('telemetry');
+  }
+
+  /**
    * Retrieves the paginated list of all surveys that are available to the user.
    *
    * @param {boolean} isUserAdmin
@@ -957,13 +982,7 @@ export class TelemetryVendorRepository extends BaseRepository {
   ): Promise<Telemetry[]> {
     const knex = getKnex();
 
-    const queryBuilder = knex
-      .queryBuilder()
-      .with('telemetry', (qb) => {
-        this.findTelemetryBaseQuery(qb, isUserAdmin, systemUserId, filterFields);
-      })
-      .select('*')
-      .from('telemetry');
+    const queryBuilder = this.buildTelemetryQuery(knex, isUserAdmin, systemUserId, filterFields);
 
     // Inject pagination / sorting if provided
     if (pagination) {

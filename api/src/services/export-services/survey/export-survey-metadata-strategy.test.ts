@@ -26,7 +26,7 @@ describe('ExportSurveyMetadataStrategy', () => {
       const result = await exportSurveyMetadataStrategy.getExportStrategyConfig();
 
       expect(result.queries?.length).to.equal(1);
-      expect(result.queries?.[0].fileName).to.equal('survey_metadata.json');
+      expect(result.queries?.[0].fileName).to.equal('survey_metadata.csv');
     });
   });
 });
