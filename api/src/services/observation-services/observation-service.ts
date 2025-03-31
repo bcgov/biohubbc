@@ -31,7 +31,7 @@ import { ObservationSubCountMeasurementService } from '../observation-subcount-m
 import { SamplePeriodService } from '../sample-period-service';
 import { SubCountService } from '../subcount-service';
 
-export const defaultLog = getLogger('services/observation-services/observation-service');
+const defaultLog = getLogger('services/observation-services/observation-service');
 
 export class ObservationService extends DBService {
   observationRepository: ObservationRepository;

@@ -1,5 +1,4 @@
 import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
-import { Request } from 'express';
 import qs from 'qs';
 import { z } from 'zod';
 import { IDBConnection } from '../database/db';
@@ -14,19 +13,6 @@ export interface ICritterbaseUser {
   username: string;
   keycloak_guid: string;
 }
-
-/**
- * Get Critterbase user from a request
- *
- * TODO: Rename to `getCritterbaseUserFromRequest`
- *
- * @param {Request} req
- * @returns {ICritterbaseUser}
- */
-export const getCritterbaseUser = (req: Request): ICritterbaseUser => ({
-  keycloak_guid: req.system_user?.user_guid ?? '',
-  username: req.system_user?.user_identifier ?? ''
-});
 
 /**
  * Get Critterbase user from connection
