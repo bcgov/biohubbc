@@ -171,6 +171,36 @@ export interface IMarking {
   comment: string;
   attached_timestamp: string;
   removed_timestamp: string;
+  body_location: string;
+  marking_type: string;
+  primary_colour: string | null;
+  secondary_colour: string | null;
+}
+
+/**
+ * Used to filter mortality markings for export
+ *
+ * @export
+ * @interface IMortalityMarkingsData
+ * @typedef {IMortalityMarkingsData}
+ */
+export interface IMortalityMarkingsData {
+  body_location: string;
+  primary_colour: string | null;
+  secondary_colour: string | null;
+  marking_type: string;
+}
+
+/**
+ * Used to filter mortality locations for export
+ *
+ * @export
+ * @interface IMortalityLocationsData
+ * @typedef {IMortalityLocationsData}
+ */
+export interface IMortalityLocationsData {
+  latitude: number;
+  longitude: number;
 }
 
 /**
@@ -783,5 +813,113 @@ export class CritterbaseService {
     const response = await this.axiosInstance.get(`/xref/taxon-collection-units`, { params: { tsn } });
 
     return response.data;
+  }
+
+  /**
+   * Get all the categories for a set of tsn numbers
+   *
+   * @async
+   * @param {number[]} uniqueItisTsn
+   * @returns {Promise<string[]>}
+   * @memberof CritterbaseService
+   */
+  async getUniqueCategoryNamesForTsnList(uniqueItisTsn: number[]): Promise<string[]> {
+    // Create an array of promises for each API call
+    const promises = uniqueItisTsn.map((itisTsn) =>
+      this.axiosInstance.get('/xref/taxon-collection-categories', {
+        params: { tsn: itisTsn }
+      })
+    );
+
+    const responses = await Promise.all(promises);
+
+    // collect unique category names
+    const uniqueCategoryNames = new Set<string>();
+
+    // extract unique category names
+    responses.forEach((response) => {
+      response.data.forEach((item: { category_name: string }) => {
+        uniqueCategoryNames.add(item.category_name);
+      });
+    });
+
+    // send back an array of categories
+    return Array.from(uniqueCategoryNames);
+  }
+
+  /**
+   * Get all the mortalities markings for a set of critter ids
+   *
+   * @async
+   * @param {string[]} critterIds
+   * @returns {Promise<Map<string, IMortalityMarkingsData[]>}
+   * @memberof CritterbaseService
+   */
+  async getMortalityMarkingsByMultipleCritterIds(critterIds: string[]): Promise<Map<string, IMortalityMarkingsData[]>> {
+    // Create an array of promises for each API call
+    const promises = critterIds.map((critterId) => this.axiosInstance.get(`/markings/critter/${critterId}`));
+    const responses = await Promise.all(promises);
+
+    const mortalityMarkingsDataMap = new Map<string, IMortalityMarkingsData[]>();
+
+    // populate map
+    responses.forEach((response) => {
+      response.data.forEach((item: IMarking) => {
+        if (critterIds.includes(item.critter_id)) {
+          // If this mortality_id is not already in the results map, initialize an empty array
+          if (!mortalityMarkingsDataMap.has(item.mortality_id)) {
+            mortalityMarkingsDataMap.set(item.mortality_id, []);
+          }
+
+          // Push the mortality data for the current item into the map's array for this mortality_id
+          const mortalityData: IMortalityMarkingsData = {
+            body_location: item.body_location,
+            primary_colour: item.primary_colour,
+            secondary_colour: item.secondary_colour,
+            marking_type: item.marking_type
+          };
+
+          mortalityMarkingsDataMap.get(item.mortality_id)?.push(mortalityData);
+        }
+      });
+    });
+
+    return mortalityMarkingsDataMap;
+  }
+
+  /**
+   * Get all the mortalities location for a set of mortality ids
+   *
+   * @async
+   * @param {string[]} critterIds
+   * @returns {Promise<Map<string, IMortalityLocationsData>>}
+   * @memberof CritterbaseService
+   */
+  async getMortalityLocationsByMultipleCritterIds(critterIds: string[]): Promise<Map<string, IMortalityLocationsData>> {
+    // Create an array of promises for each mortality API call
+    const promises = critterIds.map((critterId) => this.axiosInstance.get(`/mortality/critter/${critterId}`));
+    const responses = await Promise.all(promises);
+
+    const mortalityLocationsDataMap = new Map<string, IMortalityLocationsData>();
+
+    // populate map
+    responses.forEach((response) => {
+      if (response.data.length <= 0) {
+        return;
+      }
+
+      response.data.forEach((item: any) => {
+        if (critterIds.includes(item.critter_id)) {
+          const mortalityLocationData: IMortalityLocationsData = {
+            latitude: item.location.latitude,
+            longitude: item.location.longitude
+          };
+
+          mortalityLocationsDataMap.set(item.mortality_id, mortalityLocationData);
+        }
+      });
+    });
+
+    return mortalityLocationsDataMap;
   }
 }

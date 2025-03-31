@@ -70,7 +70,9 @@ describe('ExportSurveyStrategy', () => {
         queries: [
           {
             sql: SQL`metadata_query`,
-            fileName: 'metadata.json'
+            fileName: 'metadata.csv',
+            csvHeader: 'CSV Header',
+            transformFunction: ExportSurveyMetadataStrategy.metadataCsvTransformation
           }
         ]
       });
@@ -81,7 +83,9 @@ describe('ExportSurveyStrategy', () => {
         queries: [
           {
             sql: SQL`observation_query`,
-            fileName: 'observation.json'
+            fileName: 'observation.csv',
+            csvHeader: 'CSV Header',
+            transformFunction: ExportObservationStrategy.observationCsvTransformation
           }
         ]
       });
@@ -96,7 +100,8 @@ describe('ExportSurveyStrategy', () => {
                 read() {}
               });
             },
-            fileName: 'telemetry.json'
+            fileName: 'telemetry.csv',
+            csvHeader: 'test'
           }
         ]
       });
@@ -108,11 +113,11 @@ describe('ExportSurveyStrategy', () => {
     expect(telemetryGetExportStrategyConfig).to.have.been.calledOnce;
 
     expect(result.queries?.length).to.equal(2);
-    expect(result.queries?.[0].fileName).to.equal('metadata.json');
-    expect(result.queries?.[1].fileName).to.equal('observation.json');
+    expect(result.queries?.[0].fileName).to.equal('metadata.csv');
+    expect(result.queries?.[1].fileName).to.equal('observation.csv');
 
     expect(result.streams?.length).to.equal(1);
-    expect(result.streams?.[0].fileName).to.equal('telemetry.json');
+    expect(result.streams?.[0].fileName).to.equal('telemetry.csv');
   });
 
   it('should catch and re-throw errors', async () => {
