@@ -39,7 +39,9 @@ export class ExportSurveyMetadataStrategy extends DBService implements ExportStr
         queries: [
           {
             sql: this._getSql(),
-            fileName: 'survey_metadata.json'
+            fileName: 'survey_metadata.csv',
+            csvHeader: ['Col1', 'Col2', 'Col3', 'Col4', 'Col5', 'Col6', 'Col7', 'Col8', 'Col9'].join(','),
+            transformFunction: ExportSurveyMetadataStrategy.metadataCsvTransformation
           }
         ]
       };
@@ -65,5 +67,28 @@ export class ExportSurveyMetadataStrategy extends DBService implements ExportStr
     const queryBuilder = knex.queryBuilder().select('*').from('survey').where('survey_id', this.config.surveyId);
 
     return queryBuilder;
+  };
+
+  /**
+   * Transform query result record into CSV
+   *
+   * @static
+   * @param {Record<string, any>} item
+   * @returns {string}
+   * @memberof ExportSurveyMetadataStrategy
+   */
+  static readonly metadataCsvTransformation = (item: Record<string, any>): string => {
+    return [
+      item.project_id,
+      item.survey_id,
+      `"${item.name ?? ''}"`,
+      item.start_date,
+      item.end_date,
+      `"${item.lead_first_name ?? ''}"`,
+      `"${item.lead_last_name ?? ''}"`,
+      item.additional_details,
+      `"${item.additional_details ?? ''}"`,
+      item.progress_id
+    ].join(',');
   };
 }

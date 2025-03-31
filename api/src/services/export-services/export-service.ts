@@ -7,8 +7,9 @@ import { DBService } from '../db-service';
 import { ExportConfig } from './export-strategy';
 import {
   getArchiveStream,
-  getJsonStringifyTransformStream,
+  getCsvTransformStream,
   getQueryStream,
+  getStreamCsvTransformStream,
   registerStreamErrorHandler
 } from './export-utils';
 
@@ -70,14 +71,18 @@ export class ExportService extends DBService {
 
               registerStreamErrorHandler(queryStream);
 
-              const jsonStringifyTransformStream = getJsonStringifyTransformStream();
+              const csvTransformStream = getCsvTransformStream(
+                queryConfig.transformFunction,
+                queryConfig.csvHeader,
+                queryConfig.measurementsMap
+              );
 
-              registerStreamErrorHandler(jsonStringifyTransformStream);
+              registerStreamErrorHandler(csvTransformStream);
 
-              queryStream.pipe(jsonStringifyTransformStream);
+              queryStream.pipe(csvTransformStream);
 
               // Append the file stream to the archive stream
-              archiveStream.append(jsonStringifyTransformStream, {
+              archiveStream.append(csvTransformStream, {
                 name: queryConfig.fileName
               });
 
@@ -94,14 +99,17 @@ export class ExportService extends DBService {
 
               registerStreamErrorHandler(stream);
 
-              const jsonStringifyTransformStream = getJsonStringifyTransformStream();
+              const csvTransformStream = getStreamCsvTransformStream(
+                streamConfig.csvHeader,
+                streamConfig.collectionCategories
+              );
 
-              registerStreamErrorHandler(jsonStringifyTransformStream);
+              registerStreamErrorHandler(csvTransformStream);
 
-              stream.pipe(jsonStringifyTransformStream);
+              stream.pipe(csvTransformStream);
 
               // Append the stream output to the archive stream
-              archiveStream.append(jsonStringifyTransformStream, { name: streamConfig.fileName });
+              archiveStream.append(csvTransformStream, { name: streamConfig.fileName });
             }
           }
         })
