@@ -8,8 +8,18 @@ import typescriptEslint from 'typescript-eslint';
 
 export default [
   {
+    ignores: [
+      'src/**/*.d.ts',
+      'coverage/**/*',
+      'build/**/*',
+      'dist/**/*',
+      '.pipeline/**/*',
+      '.docker/**/*',
+      'node_modules/**/*'
+    ]
+  },
+  {
     files: ['src/**/*.js', 'src/**/*.ts', 'src/**/*.jsx', 'src/**/*.tsx'],
-    ignores: ['src/**/*.d.ts'],
     languageOptions: {
       parser: typescriptEslint.parser,
       parserOptions: {
