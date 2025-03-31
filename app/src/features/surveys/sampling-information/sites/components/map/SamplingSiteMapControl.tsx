@@ -53,7 +53,6 @@ const useStyles = () => {
 
 interface ISamplingSiteMapControlProps {
   name: string;
-  title: string;
   mapId: string;
   formikProps: FormikContextType<ICreateSamplingSiteRequest>;
 }
