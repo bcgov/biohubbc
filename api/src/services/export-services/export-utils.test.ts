@@ -244,12 +244,12 @@ describe('parseTimestampString', () => {
 
   it('should correctly parse a timestamp with no timezone (local time)', () => {
     // Test case: a timestamp string (ISO 8601 format)
-    const timestamp = '2025-03-28T15:30:00'; // Local time
+    const timestamp = '2025-03-28T23:30:00'; // Local time
     const result = parseTimestampString(timestamp);
 
     // Expected results for the provided timestamp (converted to PST)
     const expectedDateStr = '2025-03-28'; // Format: yyyy-MM-dd
-    const expectedTimeStr = '15:30:00 PDT'; // Time in PST (America/Vancouver)
+    const expectedTimeStr = '23:30:00 PDT'; // Time in PST (America/Vancouver)
 
     // Check that the parsed date and time strings are correct
     expect(result.dateStr).to.equal(expectedDateStr);
@@ -258,12 +258,12 @@ describe('parseTimestampString', () => {
 
   it('should return the correct date and time for a timestamp on the edge of a timezone', () => {
     // Test case: a timestamp string at the edge of timezones (UTC+12)
-    const timestamp = '2025-03-28T15:30:00+12:00'; // UTC+12 time
+    const timestamp = '2025-03-27T23:30:00+12:00'; // UTC+12 time
     const result = parseTimestampString(timestamp);
 
     // Expected results for the provided timestamp (converted to PST)
     const expectedDateStr = '2025-03-27'; // Format: yyyy-MM-dd
-    const expectedTimeStr = '20:30:00 PDT'; // Time in PST (America/Vancouver)
+    const expectedTimeStr = '04:30:00 PDT'; // Time in PST (America/Vancouver)
 
     // Check that the parsed date and time strings are correct
     expect(result.dateStr).to.equal(expectedDateStr);
