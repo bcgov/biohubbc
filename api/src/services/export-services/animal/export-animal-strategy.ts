@@ -131,16 +131,14 @@ export class ExportAnimalStrategy extends DBService implements ExportStrategy {
     }
 
     // extract list of critter ids
-    const critterbaseCritterIds: string[] = crittersSurvey.map((critter) => critter.critterbase_critter_id);
+    const critterIds: string[] = crittersSurvey.map((critter) => critter.critterbase_critter_id);
 
     const critterbaseService = new CritterbaseService({
       keycloak_guid: this.connection.systemUserGUID(),
       username: this.connection.systemUserIdentifier()
     });
 
-    const mortalityMarkingsMap = await critterbaseService.getMortalityMarkingsByMultipleCritterIds(
-      critterbaseCritterIds
-    );
+    const mortalityMarkingsMap = await critterbaseService.getMortalityMarkingsByMultipleCritterIds(critterIds);
 
     return mortalityMarkingsMap;
   };
