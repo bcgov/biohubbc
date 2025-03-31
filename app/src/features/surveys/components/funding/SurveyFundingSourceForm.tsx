@@ -146,7 +146,7 @@ const SurveyFundingSourceForm = () => {
               value={getFundingUsedValue()}
               sx={{ mb: 1 }}
               onChange={(event) => {
-                const value = event.target.value === 'true' ? true : false;
+                const value = event.target.value === 'true';
                 setFieldValue('funding_used', value);
                 if (!value) {
                   setFieldValue('funding_sources', []);

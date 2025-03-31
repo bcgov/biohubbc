@@ -92,31 +92,29 @@ const CreateFundingSource: React.FC<ICreateFundingSourceProps> = (props) => {
   };
 
   return (
-    <>
-      <EditDialog
-        dialogTitle={FundingSourceI18N.createFundingSourceDialogTitle}
-        dialogText={FundingSourceI18N.createFundingSourceDialogText}
-        open={props.open}
-        dialogLoading={isSubmitting}
-        component={{
-          element: <FundingSourceForm />,
-          initialValues: {
-            funding_source_id: null,
-            name: '',
-            description: '',
-            start_date: null,
-            end_date: null,
-            revision_count: null
-          },
-          validationSchema: FundingSourceYupSchema
-        }}
-        dialogSaveButtonLabel="Create"
-        onCancel={() => props.onClose()}
-        onSave={(formValues) => {
-          handleSubmitFundingService(formValues);
-        }}
-      />
-    </>
+    <EditDialog
+      dialogTitle={FundingSourceI18N.createFundingSourceDialogTitle}
+      dialogText={FundingSourceI18N.createFundingSourceDialogText}
+      open={props.open}
+      dialogLoading={isSubmitting}
+      component={{
+        element: <FundingSourceForm />,
+        initialValues: {
+          funding_source_id: null,
+          name: '',
+          description: '',
+          start_date: null,
+          end_date: null,
+          revision_count: null
+        },
+        validationSchema: FundingSourceYupSchema
+      }}
+      dialogSaveButtonLabel="Create"
+      onCancel={() => props.onClose()}
+      onSave={(formValues) => {
+        handleSubmitFundingService(formValues);
+      }}
+    />
   );
 };
 

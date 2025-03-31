@@ -38,7 +38,9 @@ import { SurveySiteSelectionInitialValues } from './components/sampling-strategy
 import { SpeciesInitialValues } from './components/species/SpeciesForm';
 import EditSurveyForm from './edit/EditSurveyForm';
 
-const defaultSurveyDataFormValues: ICreateSurveyRequest & ISurveyPermitForm & ISurveyFundingSourceForm = {
+type CreateSurvey = ICreateSurveyRequest & ISurveyPermitForm & ISurveyFundingSourceForm;
+
+const defaultSurveyDataFormValues: CreateSurvey = {
   ...GeneralInformationInitialValues,
   ...SurveyPermitFormInitialValues,
   ...PurposeAndMethodologyInitialValues,
@@ -108,7 +110,7 @@ const CreateSurveyPage = () => {
    *
    * @return {*}
    */
-  const handleSubmit = async (values: ICreateSurveyRequest & ISurveyPermitForm & ISurveyFundingSourceForm) => {
+  const handleSubmit = async (values: CreateSurvey) => {
     setIsSaving(true);
     try {
       // Remove the permit_used and funding_used properties
@@ -204,9 +206,7 @@ const CreateSurveyPage = () => {
         <Paper sx={{ p: 5 }}>
           <EditSurveyForm
             initialSurveyData={defaultSurveyDataFormValues}
-            handleSubmit={(formikData) =>
-              handleSubmit(formikData as unknown as ICreateSurveyRequest & ISurveyPermitForm & ISurveyFundingSourceForm)
-            }
+            handleSubmit={(formikData) => handleSubmit(formikData as unknown as CreateSurvey)}
             formikRef={formikRef}
           />
           <Stack mt={4} flexDirection="row" justifyContent="flex-end" gap={1}>
