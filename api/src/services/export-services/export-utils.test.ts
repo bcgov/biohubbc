@@ -48,14 +48,6 @@ describe('getQueryStream', () => {
   });
 });
 
-describe('getStreamCsvTransformStream', () => {
-  it('returns a transform stream', async () => {
-    const jsonTransform = getStreamCsvTransformStream('', ['test']);
-
-    expect(jsonTransform).to.be.instanceOf(Transform);
-  });
-});
-
 describe('registerStreamErrorHandler', () => {
   it('adds error event handler to the stream', async () => {
     const readStub = sinon.stub();
@@ -280,6 +272,12 @@ describe('parseTimestampString', () => {
 });
 
 describe('getStreamCsvTransformStream', () => {
+  it('returns a transform stream', async () => {
+    const jsonTransform = getStreamCsvTransformStream('', ['test']);
+
+    expect(jsonTransform).to.be.instanceOf(Transform);
+  });
+
   it('should correctly stream with header and collectionCategories', (done) => {
     const header = 'ID,Name,Age';
     const collectionCategories = ['Category1', 'Category2'];
