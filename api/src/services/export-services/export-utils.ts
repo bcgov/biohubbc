@@ -115,7 +115,7 @@ export function getCsvTransformStream(
     return measurementsMap ? measurementsMap.get(id) : undefined;
   };
 
-  const processMeasData = (measData: MeasDataItem[] | undefined): void => {
+  const processMeasData = (measData: MeasDataItem[]): void => {
     if (measData) {
       // Note: using indexed for loop as it is the fastest
       for (let i = 0; i < measData.length; i++) {
@@ -152,7 +152,9 @@ export function getCsvTransformStream(
       }
 
       // check if there are any uuids for the qulitative measurments values 'mv' and get the label from map
-      processMeasData(chunk.meas_data);
+      if (chunk.meas_data) {
+        processMeasData(chunk.meas_data);
+      }
 
       // push it to the next stream
       callback(null, transformFunction(chunk) + '\r\n');
