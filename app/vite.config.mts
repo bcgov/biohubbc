@@ -20,9 +20,9 @@ export default defineConfig({
         process: true
       }
     }),
-    !process.env.VITEST ? checker({ typescript: true }) : undefined,
     !process.env.VITEST
       ? checker({
+          typescript: true,
           eslint: {
             useFlatConfig: true,
             lintCommand: 'eslint .'
