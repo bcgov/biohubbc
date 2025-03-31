@@ -179,8 +179,14 @@ export class SurveyService extends DBService {
     const focalSpecies = [];
 
     for (const species of studySpeciesResponse) {
-      const taxon = taxonomyResponse.find((taxonomy) => Number(taxonomy.tsn) === species.itis_tsn) ?? {};
-      focalSpecies.push({ ...taxon, tsn: species.itis_tsn, ecological_units: species.ecological_units });
+      const taxon = taxonomyResponse.find((taxonomy) => Number(taxonomy.tsn) === species.itis_tsn);
+
+      focalSpecies.push({
+        tsn: species.itis_tsn,
+        scientificName: taxon?.scientificName ?? 'Unavailable',
+        commonNames: taxon?.commonNames ?? [],
+        ecological_units: species.ecological_units
+      });
     }
 
     // Return the combined data

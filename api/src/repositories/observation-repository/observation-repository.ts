@@ -424,7 +424,7 @@ export class ObservationRepository extends BaseRepository {
       )
       .leftJoin('method_technique', 'method_technique.method_technique_id', 'survey_sample_period.method_technique_id')
       .where('survey_observation_id', surveyObservationId)
-      .andWhere('survey_id', surveyId);
+      .andWhere('survey_observation.survey_id', surveyId);
 
     const response = await this.connection.knex(query, ObservationRecordWithSampling);
 
