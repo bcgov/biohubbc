@@ -17,7 +17,6 @@ import { IPostCollectionUnit } from '../services/critterbase-service';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { BaseRepository } from './base-repository';
 
-
 export interface ISurveyProprietorModel {
   first_nations_id: number;
   proprietor_type_id: number;
