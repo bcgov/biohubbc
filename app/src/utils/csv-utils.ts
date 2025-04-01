@@ -16,8 +16,8 @@ export interface CSVValidationError {
   errors: CSVError[];
 }
 
-// Type alias for a CSV template
-export type CSVEncodedTemplate = string;
+// Encoded CSV template string
+export type CSVEncodedTemplate = `data:text/csv;charset=utf-8,${string}\n`;
 
 /**
  * Get CSV template from a list of column headers.
@@ -26,7 +26,8 @@ export type CSVEncodedTemplate = string;
  * @returns {CSVEncodedTemplate} Encoded CSV template
  */
 export const getCSVTemplate = (headers: string[]): CSVEncodedTemplate => {
-  return 'data:text/csv;charset=utf-8,' + headers.join(',') + '\n';
+  const template: CSVEncodedTemplate = `data:text/csv;charset=utf-8,${headers.join(',')}\n`;
+  return template;
 };
 
 /**

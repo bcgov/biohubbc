@@ -38,7 +38,8 @@ export const SamplingSiteListProvider = (props: ISamplingSiteListContextProvider
   return (
     <SamplingSiteListContext.Provider
       value={{
-        getSamplePeriodImportButton: props.getSamplePeriodImportButton
+        getSamplePeriodImportButton: props.getSamplePeriodImportButton,
+        isDisabled: props.isDisabled
       }}>
       {props.children}
     </SamplingSiteListContext.Provider>

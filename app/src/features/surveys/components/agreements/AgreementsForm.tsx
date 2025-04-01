@@ -77,7 +77,7 @@ const AgreementsForm = () => {
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={values.agreements?.sedis_procedures_accepted === 'true' ? true : false}
+                  checked={values.agreements?.sedis_procedures_accepted === 'true'}
                   onChange={() =>
                     setFieldValue(
                       'agreements.sedis_procedures_accepted',
@@ -112,7 +112,7 @@ const AgreementsForm = () => {
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={values.agreements?.foippa_requirements_accepted === 'true' ? true : false}
+                  checked={values.agreements?.foippa_requirements_accepted === 'true'}
                   onChange={() => {
                     setFieldValue(
                       'agreements.foippa_requirements_accepted',
