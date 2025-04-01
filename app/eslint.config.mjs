@@ -6,10 +6,22 @@ import eslintPluginReactHooks from 'eslint-plugin-react-hooks';
 import globals from 'globals';
 import typescriptEslint from 'typescript-eslint';
 
+// Run `npx eslint --inspect-config` to inspect the config
+
 export default [
   {
+    ignores: [
+      'src/**/*.d.ts',
+      'coverage/**/*',
+      'build/**/*',
+      'dist/**/*',
+      '.pipeline/**/*',
+      '.docker/**/*',
+      'node_modules/**/*'
+    ]
+  },
+  {
     files: ['src/**/*.js', 'src/**/*.ts', 'src/**/*.jsx', 'src/**/*.tsx'],
-    ignores: ['src/**/*.d.ts'],
     languageOptions: {
       parser: typescriptEslint.parser,
       parserOptions: {
