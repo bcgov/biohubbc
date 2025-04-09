@@ -3,14 +3,25 @@ import { Knex } from 'knex';
 /**
  * UPDATES TO EXISTING CONCEPTS:
  *
- * - Adds camera trap and pit tag attributes 
+ * - Adds pit reader station as a sampling method 
+ * - Adds camera trap and pit tag reader attributes 
  * @export
  * @param {Knex} knex
  * @return {*}  {Promise<void>}
  */
 export async function up(knex: Knex): Promise<void> {
   await knex.raw(`--sql
+    ---------------------------------------------------------------------------------------------------
+    ---------------------- Add pit tag as a sampling method option ------------------------------------
+    ---------------------------------------------------------------------------------------------------
+    SET SEARCH_PATH=biohub;
 
+    INSERT INTO method_lookup (name, description, record_effective_date)
+    VALUES ('Pit Reader Station','Recording an observation of a species through its interaction with a pit tag reader', now());
+
+    --------------------------------------------------------------------------------------------------
+    --------------------- Insert attributes for camera trap and pit readers --------------------------
+    --------------------------------------------------------------------------------------------------
 
   `);
 }
