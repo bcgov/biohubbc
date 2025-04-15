@@ -7,7 +7,7 @@ import ListItemText from '@mui/material/ListItemText';
 import ListSubheader from '@mui/material/ListSubheader';
 import TextField from '@mui/material/TextField';
 import { FilterOptionsState } from '@mui/material/useAutocomplete';
-import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
+import HelpButtonTooltip from 'components/tooltip/HelpButtonTooltip';
 import { useFormikContext } from 'formik';
 import { DebouncedFunc } from 'lodash-es';
 import get from 'lodash-es/get';

@@ -2,100 +2,53 @@ import { mdiChevronDown, mdiChevronRight } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import Checkbox from '@mui/material/Checkbox';
+import Collapse from '@mui/material/Collapse';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import { CustomTooltip } from 'components/tooltip/CustomTooltip';
 import { useCallback, useEffect, useState } from 'react';
 
 export interface ToggleButtonView<ViewValueType> {
-  /**
-   * The value of the toggle button, which will be passed to the `onViewChange` callback.
-   *
-   * @type {ViewValueType}
-   * @memberof ToggleButtonView
-   */
   value: ViewValueType;
-  /**
-   * The label to display for the toggle button.
-   *
-   * @type {string}
-   * @memberof ToggleButtonView
-   */
   label: string;
-  /**
-   * An optional start icon.
-   *
-   * @type {string}
-   * @memberof ToggleButtonView
-   */
   icon?: string;
-  /**
-   * Optional children to display for a parent .
-   *
-   * @type {string}
-   * @memberof ToggleButtonView
-   */
   children?: ToggleButtonView<ViewValueType>[];
+  checkbox?: boolean;
+  tooltip?: string;
+  isHeading?: boolean;
+  disabled?: boolean;
 }
 
 interface HierarchicalCustomToggleButtonGroupProps<ViewValueType extends string> {
-  /**
-   * An array of views to display in the toggle button group.
-   *
-   * @type {ToggleButtonView<ViewValueType>[]}
-   * @memberof CustomToggleButtonGroupProps
-   */
   views: ToggleButtonView<ViewValueType>[];
-  /**
-   * The currently active view.
-   *
-   * @type {ViewValueType}
-   * @memberof CustomToggleButtonGroupProps
-   */
   activeView: ViewValueType;
-  /**
-   * Callback fired when a toggle button is clicked.
-   *
-   * @memberof CustomToggleButtonGroupProps
-   */
   onViewChange: (view: ViewValueType) => void;
-  /**
-   * The orientation of the toggle button group.
-   *
-   * @type {('horizontal' | 'vertical')}
-   * @memberof CustomToggleButtonGroupProps
-   */
   orientation: 'horizontal' | 'vertical';
+  handleCheckbox?: (view: ToggleButtonView<ViewValueType>) => void;
 }
 
-/**
- * A custom toggle button group that allows users to select from multiple views, and that includes children.
- * Used when toggle buttons should be shown as children of other options.
- *
- * @template ViewValueType
- * @param {CustomToggleButtonGroupProps<ViewValueType>} props
- * @return {*}
- */
 export const HierarchicalCustomToggleButtonGroup = <ViewValueType extends string>({
   views,
   activeView,
   onViewChange,
-  orientation
+  orientation,
+  handleCheckbox
 }: HierarchicalCustomToggleButtonGroupProps<ViewValueType>) => {
   const [expanded, setExpanded] = useState<Set<ViewValueType>>(new Set());
 
-  // Function to find all parent views of the activeView
   const findParentViews = useCallback(
     (
-      views: ToggleButtonView<ViewValueType>[],
+      items: ToggleButtonView<ViewValueType>[],
       target: ViewValueType,
       parents: Set<ViewValueType> = new Set()
     ): Set<ViewValueType> => {
-      for (const view of views) {
-        if (view.value === target) {
+      for (const item of items) {
+        if (item.value === target) {
           return parents;
         }
-        if (view.children) {
-          const found = findParentViews(view.children, target, new Set([...parents, view.value]));
+        if (item.children) {
+          const found = findParentViews(item.children, target, new Set([...parents, item.value]));
           if (found.size) {
             return found;
           }
@@ -106,46 +59,73 @@ export const HierarchicalCustomToggleButtonGroup = <ViewValueType extends string
     []
   );
 
-  // Expand all parents of activeView on mount or when activeView changes
   useEffect(() => {
     const parents = findParentViews(views, activeView);
     setExpanded((prev) => new Set([...prev, ...parents]));
   }, [activeView, views, findParentViews]);
 
-  const toggleExpand = (view: ViewValueType) => {
+  const toggleExpand = (value: ViewValueType) => {
     setExpanded((prev) => {
-      const newSet = new Set(prev);
-      // Only collapse the view if it's clicked while already selected
-      newSet.has(view) && view === activeView ? newSet.delete(view) : newSet.add(view);
-      return newSet;
+      const updated = new Set(prev);
+      updated.has(value) ? updated.delete(value) : updated.add(value);
+      return new Set(updated);
     });
   };
 
-  // Displays the togglebuttons of the toggle button group. Recursively displays all child buttons and indents by an amount based on the depth of the child.
-  const renderViews = (views: ToggleButtonView<ViewValueType>[], level = 0) => {
-    return views.map((view) => {
-      const startIcon = view.icon ? <Icon path={view.icon} size={0.75} /> : undefined;
-      const hasChildren = view.children && view.children.length > 0;
-      const isExpanded = expanded.has(view.value);
+  const hasActiveDescendant = (item: ToggleButtonView<ViewValueType>): boolean => {
+    if (!item.children) {
+      return false;
+    }
+    return item.children.some((child) => child.value === activeView || hasActiveDescendant(child));
+  };
+
+  const renderViews = (items: ToggleButtonView<ViewValueType>[], level = 0) => {
+    return items.map((item) => {
+      const isExpanded = expanded.has(item.value);
+      const hasChildren = !!item.children?.length;
+      const showHighlight = item.value === activeView || hasActiveDescendant(item);
 
       return (
-        <Box key={view.value} sx={{ ml: level * 1.5, mt: level > 0 ? 0.5 : 0 }}>
-          <ToggleButton
-            component={Button}
-            color="primary"
-            startIcon={startIcon}
-            endIcon={hasChildren && <Icon path={isExpanded ? mdiChevronDown : mdiChevronRight} size={1} />}
-            value={view.value}
-            onClick={() => {
-              onViewChange(view.value);
-              if (hasChildren) {
-                toggleExpand(view.value);
+        <Box key={item.value} sx={{ ml: level * 1.5, mt: level > 0 ? 0.25 : 0 }}>
+          <CustomTooltip tooltip={item.tooltip ?? ''}>
+            <ToggleButton
+              component={Button}
+              color="primary"
+              value={item.value}
+              onClick={() => {
+                if (hasChildren) {
+                  toggleExpand(item.value);
+                }
+                if (!item.isHeading && !item.disabled) {
+                  onViewChange(item.value);
+                }
+              }}
+              startIcon={
+                item.checkbox && handleCheckbox ? (
+                  <Checkbox
+                    disabled={item.disabled}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleCheckbox(item);
+                    }}
+                    size="small"
+                  />
+                ) : undefined
               }
-            }}>
-            {view.label}
-          </ToggleButton>
+              endIcon={hasChildren ? <Icon path={isExpanded ? mdiChevronDown : mdiChevronRight} size={1} /> : undefined}
+              disabled={false}
+              sx={{
+                backgroundColor: showHighlight ? (theme) => theme.palette.grey[50] : 'transparent'
+              }}>
+              {item.label}
+            </ToggleButton>
+          </CustomTooltip>
 
-          {hasChildren && isExpanded && renderViews(view.children ?? [], level + 1)}
+          {hasChildren && (
+            <Collapse in={isExpanded} unmountOnExit>
+              {renderViews(item.children!, level + 1)}
+            </Collapse>
+          )}
         </Box>
       );
     });
@@ -155,11 +135,6 @@ export const HierarchicalCustomToggleButtonGroup = <ViewValueType extends string
     <ToggleButtonGroup
       orientation={orientation}
       value={activeView}
-      onChange={(_, view) => {
-        if (view) {
-          onViewChange(view);
-        }
-      }}
       exclusive
       sx={{
         display: 'flex',

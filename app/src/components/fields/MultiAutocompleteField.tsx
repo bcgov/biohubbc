@@ -10,7 +10,7 @@ import Checkbox from '@mui/material/Checkbox';
 import Chip from '@mui/material/Chip';
 import ListItemText from '@mui/material/ListItemText';
 import TextField from '@mui/material/TextField';
-import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
+import HelpButtonTooltip from 'components/tooltip/HelpButtonTooltip';
 import { useFormikContext } from 'formik';
 import get from 'lodash-es/get';
 import { useEffect, useState } from 'react';

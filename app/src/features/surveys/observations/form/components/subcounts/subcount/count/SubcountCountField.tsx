@@ -1,6 +1,6 @@
 import Typography from '@mui/material/Typography';
-import HelpButtonStack from 'components/buttons/HelpButtonStack';
 import CustomTextField from 'components/fields/CustomTextField';
+import HelpButtonStack from 'components/tooltip/HelpButtonStack';
 
 export interface ISubcountCountFieldProps {
   formikFieldName: string;

@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
 import Typography from '@mui/material/Typography';
-import HelpButtonStack from 'components/buttons/HelpButtonStack';
+import HelpButtonStack from 'components/tooltip/HelpButtonStack';
 import { useState } from 'react';
 import SurveyBlockSection from './blocks/SurveyBlockForm';
 import SurveyStratumForm from './stratums/SurveyStratumForm';

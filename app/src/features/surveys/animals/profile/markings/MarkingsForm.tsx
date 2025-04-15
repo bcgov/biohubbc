@@ -6,7 +6,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import HelpButtonStack from 'components/buttons/HelpButtonStack';
+import HelpButtonStack from 'components/tooltip/HelpButtonStack';
 import { MarkingsDialog } from 'features/surveys/animals/profile/markings/MarkingsDialog';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { useAnimalPageContext } from 'hooks/useContext';
