@@ -51,35 +51,36 @@ export async function up(knex: Knex): Promise<void> {
 
 
     ----------------------------------------------------------------------------------------
-    -- Create collection audience table
+    -- Create collection collection_system_user / audience table
     ----------------------------------------------------------------------------------------
 
-    CREATE TABLE collection_audience (
-      collection_audience_id                        integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    CREATE TABLE collection_system_user (
+      collection_system_user_id                     integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
       collection_id                                 integer            NOT NULL,
-      user_id                                       integer            NOT NULL,    
+      user_id                                       integer            NOT NULL,
+      admin                                         boolean            DEFAULT false NOT NULL,      
       record_end_date                               date,
-      create_date                                   timestamptz(6)       DEFAULT now() NOT NULL,
-      create_user                                   integer              NOT NULL,
+      create_date                                   timestamptz(6)     DEFAULT now() NOT NULL,
+      create_user                                   integer            NOT NULL,
       update_date                                   timestamptz(6),
       update_user                                   integer,
       revision_count                                integer              DEFAULT 0 NOT NULL,
-      CONSTRAINT collection_audience_id_pk PRIMARY KEY (collection_audience_id),
-      CONSTRAINT collection_audience_collection_id_fk FOREIGN KEY (collection_id) REFERENCES collection(collection_id)
+      CONSTRAINT collection_system_user_id_pk PRIMARY KEY (collection_system_user_id),
+      CONSTRAINT collection_system_user_collection_id_fk FOREIGN KEY (collection_id) REFERENCES collection(collection_id)
     );
 
-    COMMENT ON TABLE  collection_audience                            IS 'Defines the audience for a collection, linking users to collections.';
-    COMMENT ON COLUMN collection_audience.collection_audience_id     IS 'System generated surrogate primary key identifier.';
-    COMMENT ON COLUMN collection_audience.collection_id              IS 'The ID of the collection this audience entry belongs to.';
-    COMMENT ON COLUMN collection_audience.user_id                    IS 'The ID of the user linked to the collection.';
-    COMMENT ON COLUMN collection_audience.record_end_date            IS 'Record level end date.';
-    COMMENT ON COLUMN collection_audience.create_date                IS 'The datetime the record was created.';
-    COMMENT ON COLUMN collection_audience.create_user                IS 'The ID of the user who created the record as identified in the system user table.';
-    COMMENT ON COLUMN collection_audience.update_date                IS 'The datetime the record was updated.';
-    COMMENT ON COLUMN collection_audience.update_user                IS 'The ID of the user who updated the record as identified in the system user table.';
-    COMMENT ON COLUMN collection_audience.revision_count             IS 'Revision count used for concurrency control.';
+    COMMENT ON TABLE  collection_system_user                            IS 'Defines the system users tied to a collection.';
+    COMMENT ON COLUMN collection_system_user.collection_system_user_id     IS 'System generated surrogate primary key identifier.';
+    COMMENT ON COLUMN collection_system_user.collection_id              IS 'The ID of the collection this system_user entry belongs to.';
+    COMMENT ON COLUMN collection_system_user.user_id                    IS 'The ID of the user linked to the collection.';
+    COMMENT ON COLUMN collection_system_user.record_end_date            IS 'Record level end date.';
+    COMMENT ON COLUMN collection_system_user.create_date                IS 'The datetime the record was created.';
+    COMMENT ON COLUMN collection_system_user.create_user                IS 'The ID of the user who created the record as identified in the system user table.';
+    COMMENT ON COLUMN collection_system_user.update_date                IS 'The datetime the record was updated.';
+    COMMENT ON COLUMN collection_system_user.update_user                IS 'The ID of the user who updated the record as identified in the system user table.';
+    COMMENT ON COLUMN collection_system_user.revision_count             IS 'Revision count used for concurrency control.';
 
-    CREATE UNIQUE INDEX collection_audience_nuk1 ON collection_audience(collection_id, user_id, (record_end_date IS NULL)) WHERE record_end_date IS NULL;
+    CREATE UNIQUE INDEX collection_system_user_nuk1 ON collection_system_user(collection_id, user_id, (record_end_date IS NULL)) WHERE record_end_date IS NULL;
 
 
 
@@ -87,8 +88,8 @@ export async function up(knex: Knex): Promise<void> {
     -- Create collection contents table
     ----------------------------------------------------------------------------------------
 
-    CREATE TABLE collection_contents (
-      collection_contents_id                       integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    CREATE TABLE collection_survey (
+      collection_survey_id                       integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
       collection_id                                integer            NOT NULL,
       survey_id                                    integer            NOT NULL,
       record_end_date                              date,
@@ -97,23 +98,23 @@ export async function up(knex: Knex): Promise<void> {
       update_date                                  timestamptz(6),
       update_user                                  integer,
       revision_count                               integer              DEFAULT 0 NOT NULL,
-      CONSTRAINT collection_contents_id_pk PRIMARY KEY (collection_contents_id),
-      CONSTRAINT collection_contents_collection_id_fk FOREIGN KEY (collection_id) REFERENCES collection(collection_id)
+      CONSTRAINT collection_survey_id_pk PRIMARY KEY (collection_survey_id),
+      CONSTRAINT collection_survey_collection_id_fk FOREIGN KEY (collection_id) REFERENCES collection(collection_id)
     );
 
-    COMMENT ON TABLE  collection_contents                            IS 'Contents of a collection, linking surveys to collections.';
-    COMMENT ON COLUMN collection_contents.collection_contents_id     IS 'System generated surrogate primary key identifier.';
-    COMMENT ON COLUMN collection_contents.collection_id              IS 'The ID of the collection this content belongs to.';
-    COMMENT ON COLUMN collection_contents.survey_id                  IS 'The ID of the survey linked to the collection.';
-    COMMENT ON COLUMN collection_contents.record_end_date            IS 'Record level end date.';
-    COMMENT ON COLUMN collection_contents.create_date                IS 'The datetime the record was created.';
-    COMMENT ON COLUMN collection_contents.create_user                IS 'The ID of the user who created the record as identified in the system user table.';
-    COMMENT ON COLUMN collection_contents.update_date                IS 'The datetime the record was updated.';
-    COMMENT ON COLUMN collection_contents.update_user                IS 'The ID of the user who updated the record as identified in the system user table.';
-    COMMENT ON COLUMN collection_contents.revision_count             IS 'Revision count used for concurrency control.';
+    COMMENT ON TABLE  collection_survey                            IS 'survey of a collection, linking surveys to collections.';
+    COMMENT ON COLUMN collection_survey.collection_survey_id       IS 'System generated surrogate primary key identifier.';
+    COMMENT ON COLUMN collection_survey.collection_id              IS 'The ID of the collection the survey is linked to.';
+    COMMENT ON COLUMN collection_survey.survey_id                  IS 'The ID of the survey linked to the collection.';
+    COMMENT ON COLUMN collection_survey.record_end_date            IS 'Record level end date.';
+    COMMENT ON COLUMN collection_survey.create_date                IS 'The datetime the record was created.';
+    COMMENT ON COLUMN collection_survey.create_user                IS 'The ID of the user who created the record as identified in the system user table.';
+    COMMENT ON COLUMN collection_survey.update_date                IS 'The datetime the record was updated.';
+    COMMENT ON COLUMN collection_survey.update_user                IS 'The ID of the user who updated the record as identified in the system user table.';
+    COMMENT ON COLUMN collection_survey.revision_count             IS 'Revision count used for concurrency control.';
  
   -- Add unique end-date key constraint
-  CREATE UNIQUE INDEX collection_contents_nuk1 ON collection_contents(collection_id, survey_id, (record_end_date IS NULL)) WHERE record_end_date IS NULL;
+  CREATE UNIQUE INDEX collection_survey_nuk1 ON collection_survey(collection_id, survey_id, (record_end_date IS NULL)) WHERE record_end_date IS NULL;
 
    `);
 }
