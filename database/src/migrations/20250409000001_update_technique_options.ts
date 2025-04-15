@@ -22,7 +22,26 @@ export async function up(knex: Knex): Promise<void> {
     --------------------------------------------------------------------------------------------------
     --------------------- Insert attributes for camera trap and pit readers --------------------------
     --------------------------------------------------------------------------------------------------
+    INSERT INTO technique_attribute_qualitative (name, description)
+    VALUES ('Make','The vendor that makes the device.');
 
+    INSERT INTO technique_attribute_qualitative_option (name, description)
+    VALUES('Avid Identification Systems Inc.',''),
+    ('Biomark',''),
+    ('Identification Solutions',''),
+    ('Oregon RFID',''),
+    ('Trovan Ltd.',''),
+    ('Eidap Inc.',''),
+    ('Pacific Veterinary Sales','');
+
+    INSERT INTO technique_attribute_quantitative (name, description)
+    VALUES ('Device Model',''),
+    ('Quiet Period'),
+    ('Video Length per Trigger'),
+    ('Trigger Sensitivity'),
+    ('Trigger Timing');
+
+    ')
   `);
 }
 
