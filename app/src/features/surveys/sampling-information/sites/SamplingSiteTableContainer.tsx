@@ -184,7 +184,6 @@ export const SamplingSiteContainer = () => {
           <Button
             variant="contained"
             color="primary"
-            disabled={Boolean(!techniquesDataLoader.data?.pagination.total)}
             component={RouterLink}
             to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling/create`}
             startIcon={<Icon path={mdiPlus} size={0.8} />}>
@@ -222,7 +221,7 @@ export const SamplingSiteContainer = () => {
       </Box>
 
       {/* Data tables */}
-      <Box height="400px">
+      <Box>
         <LoadingGuard
           isLoading={
             !samplingSitesDataLoader.data && (samplingSitesDataLoader.isLoading || !samplingSitesDataLoader.isReady)
@@ -232,6 +231,7 @@ export const SamplingSiteContainer = () => {
           hasNoData={!sampleSites.length}
           hasNoDataFallback={
             <NoDataOverlay
+              p={10}
               height="100%"
               title="Add Sampling Sites"
               subtitle="Apply your techniques to sampling sites to show where you collected data"
@@ -239,18 +239,20 @@ export const SamplingSiteContainer = () => {
             />
           }
           hasNoDataFallbackDelay={100}>
-          <SamplingSiteTable
-            sites={sampleSites}
-            paginationModel={paginationModel}
-            setPaginationModel={setPaginationModel}
-            sortModel={sortModel}
-            setSortModel={setSortModel}
-            rowCount={samplingSitesDataLoader.data?.pagination.total ?? 0}
-            pageSizeOptions={pageSizeOptions}
-            selectedRows={selectedRows}
-            setSelectedRows={setSelectedRows}
-            onDelete={handleDelete}
-          />
+          <Box height="400px">
+            <SamplingSiteTable
+              sites={sampleSites}
+              paginationModel={paginationModel}
+              setPaginationModel={setPaginationModel}
+              sortModel={sortModel}
+              setSortModel={setSortModel}
+              rowCount={samplingSitesDataLoader.data?.pagination.total ?? 0}
+              pageSizeOptions={pageSizeOptions}
+              selectedRows={selectedRows}
+              setSelectedRows={setSelectedRows}
+              onDelete={handleDelete}
+            />
+          </Box>
         </LoadingGuard>
       </Box>
     </>

@@ -555,3 +555,22 @@ export const surveySupplementaryDataSchema: OpenAPIV3.SchemaObject = {
     }
   }
 };
+
+export const getSurveyChecklistResponse: OpenAPIV3.SchemaObject = {
+  properties: {
+    sampling: {
+      type: 'object',
+      properties: { sites: { type: 'number' }, techniques: { type: 'number' }, periods: { type: 'number' } }
+    },
+    data: {
+      type: 'object',
+      properties: {
+        observations: { type: 'number' },
+        telemetry: { type: 'number' },
+        animals: { type: 'number' },
+        habitat: { type: 'number' }
+      }
+    },
+    attachments: { type: 'number' }
+  }
+};

@@ -118,6 +118,16 @@ export const SurveyBasicFields = z.object({
 
 export type SurveyBasicFields = z.infer<typeof SurveyBasicFields>;
 
+export const SurveyChecklist = z.object({
+  checklist: z.object({
+    sampling: z.object({ sites: z.number(), techniques: z.number(), periods: z.number() }),
+    data: z.object({ observations: z.number(), telemetry: z.number(), animals: z.number(), habitat: z.number() }),
+    attachments: z.number()
+  })
+});
+
+export type SurveyChecklist = z.infer<typeof SurveyChecklist>;
+
 export const SurveyTaxonomyWithEcologicalUnits = z.object({
   itis_tsn: z.number(),
   ecological_units: z.array(
@@ -625,6 +635,50 @@ export class SurveyRepository extends BaseRepository {
     const response = await this.connection.knex(queryBuilder, SurveyBasicFields.omit({ focal_species_names: true }));
 
     return response.rows;
+  }
+
+  /**
+   * Gets the checklist for a survey
+   *
+   * @param {number} surveyId
+   * @return {*}
+   * @memberof SurveyRepository
+   */
+  async getSurveyChecklist(surveyId: number): Promise<SurveyChecklist> {
+    const knex = getKnex();
+
+    const queryBuilder = knex
+      .select(
+        knex.raw(`jsonb_build_object(
+        'sampling', jsonb_build_object(
+          'sites', COUNT(DISTINCT survey_sample_site.survey_sample_site_id),
+          'techniques', COUNT(DISTINCT method_technique.method_technique_id),
+          'periods', COUNT(DISTINCT survey_sample_period.survey_sample_period_id)
+        ),
+        'data', jsonb_build_object(
+          'observations', COUNT(DISTINCT survey_observation.survey_observation_id),
+          'telemetry', COUNT(DISTINCT deployment.deployment_id),
+          'animals', COUNT(DISTINCT critter.critter_id),
+          'habitat', COUNT(DISTINCT survey_habitat_feature.survey_habitat_feature_id)
+        ),
+        'attachments', COUNT(DISTINCT survey_attachment.survey_attachment_id)
+      ) AS checklist`)
+      )
+      .from('survey')
+      .leftJoin('survey_sample_site', 'survey.survey_id', 'survey_sample_site.survey_id')
+      .leftJoin('survey_sample_period', 'survey.survey_id', 'survey_sample_period.survey_id')
+      .leftJoin('method_technique', 'survey.survey_id', 'method_technique.survey_id')
+      .leftJoin('survey_observation', 'survey.survey_id', 'survey_observation.survey_id')
+      .leftJoin('deployment', 'survey.survey_id', 'deployment.survey_id')
+      .leftJoin('critter', 'survey.survey_id', 'critter.survey_id')
+      .leftJoin('survey_habitat_feature', 'survey.survey_id', 'survey_habitat_feature.survey_id')
+      .leftJoin('survey_attachment', 'survey.survey_id', 'survey_attachment.survey_id')
+      .where('survey.survey_id', surveyId)
+      .groupBy('survey.survey_id');
+
+    const response = await this.connection.knex(queryBuilder, SurveyChecklist);
+
+    return response.rows[0];
   }
 
   /**

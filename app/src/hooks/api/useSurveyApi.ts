@@ -12,6 +12,7 @@ import {
   ICreateSurveyResponse,
   IFindSurveysResponse,
   IGetSurveyAttachmentsResponse,
+  IGetSurveyChecklist,
   IGetSurveyForUpdateResponse,
   IGetSurveyForViewResponse,
   IUpdateSurveyRequest
@@ -61,6 +62,19 @@ const useSurveyApi = (axios: AxiosInstance) => {
    */
   const getSurveyForUpdate = async (projectId: number, surveyId: number): Promise<IGetSurveyForUpdateResponse> => {
     const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/update/get`);
+
+    return data;
+  };
+
+  /**
+   * Get survey checklist
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @return {*} {Promise<IGetSurveyChecklist>}
+   */
+  const getSurveyChecklist = async (projectId: number, surveyId: number): Promise<IGetSurveyChecklist> => {
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/checklist`);
 
     return data;
   };
@@ -641,6 +655,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     getSurveyReportDetails,
     getSurveyAttachments,
     deleteSurveyAttachment,
+    getSurveyChecklist,
     getSurveyAttachmentSignedURL,
     deleteSurvey,
     getSurveyCritters,

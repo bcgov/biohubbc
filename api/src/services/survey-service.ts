@@ -19,7 +19,12 @@ import {
 } from '../models/survey-view';
 import { PostSurveyBlock, SurveyBlockRecordWithCount } from '../repositories/survey-block-repository';
 import { SurveyLocationRecord } from '../repositories/survey-location-repository';
-import { ISurveyProprietorModel, SurveyBasicFields, SurveyRepository } from '../repositories/survey-repository';
+import {
+  ISurveyProprietorModel,
+  SurveyBasicFields,
+  SurveyChecklist,
+  SurveyRepository
+} from '../repositories/survey-repository';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { DBService } from './db-service';
 import { FundingSourceService } from './funding-source-service';
@@ -116,6 +121,17 @@ export class SurveyService extends DBService {
       indigenous_partnerships: indigenousPartnerships.map((partnership) => partnership.first_nations_id),
       stakeholder_partnerships: stakeholderPartnerships.map((partnership) => partnership.name)
     };
+  }
+
+  /**
+   * Get survey checklist by survey Id
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<SurveyChecklist>}
+   * @memberof SurveyService
+   */
+  async getSurveyChecklist(surveyId: number): Promise<SurveyChecklist> {
+    return this.surveyRepository.getSurveyChecklist(surveyId);
   }
 
   /**

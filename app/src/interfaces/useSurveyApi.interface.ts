@@ -337,6 +337,14 @@ interface IUpdateAgreementsForm {
   };
 }
 
+export interface IGetSurveyChecklist {
+  checklist: {
+    sampling: { sites: number; techniques: number; periods: number };
+    data: { observations: number; telemetry: number; habitat: number; animals: number };
+    attachments: number;
+  };
+}
+
 export interface IGetSurveyForUpdateResponse {
   surveyData: {
     survey_details: {

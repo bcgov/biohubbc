@@ -15,13 +15,13 @@ export const SamplingSiteManagePage = () => {
   return (
     <Stack flex="1 1 auto">
       <SystemAlertBanner alertTypes={[SystemAlertBannerEnum.SAMPLING]} />
-      <Paper sx={{ mb: 3 }}>
+      <Paper id="sites" sx={{ mb: 3 }}>
         <SamplingSiteContainer />
       </Paper>
-      <Paper sx={{ mb: 3 }}>
+      <Paper id="techniques" sx={{ mb: 3 }}>
         <SamplingTechniqueContainer />
       </Paper>
-      <Paper>
+      <Paper id="periods">
         <SamplingPeriodContainer />
       </Paper>
     </Stack>

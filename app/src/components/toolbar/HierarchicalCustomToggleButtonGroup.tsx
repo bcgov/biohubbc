@@ -4,8 +4,10 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
 import Collapse from '@mui/material/Collapse';
+import IconButton from '@mui/material/IconButton';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import Typography from '@mui/material/Typography';
 import { CustomTooltip } from 'components/tooltip/CustomTooltip';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -17,6 +19,7 @@ export interface ToggleButtonView<ViewValueType> {
   checkbox?: boolean;
   tooltip?: string;
   isHeading?: boolean;
+  isChecked?: boolean;
   disabled?: boolean;
 }
 
@@ -67,8 +70,12 @@ export const HierarchicalCustomToggleButtonGroup = <ViewValueType extends string
   const toggleExpand = (value: ViewValueType) => {
     setExpanded((prev) => {
       const updated = new Set(prev);
-      updated.has(value) ? updated.delete(value) : updated.add(value);
-      return new Set(updated);
+      if (updated.has(value)) {
+        updated.delete(value);
+      } else {
+        updated.add(value);
+      }
+      return updated;
     });
   };
 
@@ -85,6 +92,8 @@ export const HierarchicalCustomToggleButtonGroup = <ViewValueType extends string
       const hasChildren = !!item.children?.length;
       const showHighlight = item.value === activeView || hasActiveDescendant(item);
 
+      console.log(item.isChecked);
+
       return (
         <Box key={item.value} sx={{ ml: level * 1.5, mt: level > 0 ? 0.25 : 0 }}>
           <CustomTooltip tooltip={item.tooltip ?? ''}>
@@ -93,9 +102,6 @@ export const HierarchicalCustomToggleButtonGroup = <ViewValueType extends string
               color="primary"
               value={item.value}
               onClick={() => {
-                if (hasChildren) {
-                  toggleExpand(item.value);
-                }
                 if (!item.isHeading && !item.disabled) {
                   onViewChange(item.value);
                 }
@@ -104,6 +110,7 @@ export const HierarchicalCustomToggleButtonGroup = <ViewValueType extends string
                 item.checkbox && handleCheckbox ? (
                   <Checkbox
                     disabled={item.disabled}
+                    checked={item.isChecked}
                     onClick={(e) => {
                       e.stopPropagation();
                       handleCheckbox(item);
@@ -112,12 +119,37 @@ export const HierarchicalCustomToggleButtonGroup = <ViewValueType extends string
                   />
                 ) : undefined
               }
-              endIcon={hasChildren ? <Icon path={isExpanded ? mdiChevronDown : mdiChevronRight} size={1} /> : undefined}
+              endIcon={
+                hasChildren ? (
+                  <IconButton
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleExpand(item.value);
+                    }}
+                    size="small">
+                    <Icon path={isExpanded ? mdiChevronDown : mdiChevronRight} size={1} />
+                  </IconButton>
+                ) : undefined
+              }
               disabled={false}
               sx={{
-                backgroundColor: showHighlight ? (theme) => theme.palette.grey[50] : 'transparent'
+                backgroundColor: showHighlight ? (theme) => theme.palette.grey[50] : 'transparent',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'flex-start',
+                px: 2,
+                py: 1,
+                width: '100%',
+                flex: '1 1 auto',
+                border: 'none',
+                borderRadius: '4px !important',
+                fontSize: '0.875rem',
+                fontWeight: 700,
+                letterSpacing: '0.02rem'
               }}>
-              {item.label}
+              <Typography flex="1 1 auto" textAlign="left" fontWeight={700} textTransform="none">
+                {item.label}
+              </Typography>
             </ToggleButton>
           </CustomTooltip>
 
@@ -132,26 +164,7 @@ export const HierarchicalCustomToggleButtonGroup = <ViewValueType extends string
   };
 
   return (
-    <ToggleButtonGroup
-      orientation={orientation}
-      value={activeView}
-      exclusive
-      sx={{
-        display: 'flex',
-        flexDirection: orientation === 'vertical' ? 'column' : 'row',
-        gap: 0.5,
-        '& Button': {
-          py: 1,
-          width: '100%',
-          px: 2,
-          border: 'none',
-          borderRadius: '4px !important',
-          fontSize: '0.875rem',
-          fontWeight: 700,
-          letterSpacing: '0.02rem',
-          justifyContent: 'flex-start'
-        }
-      }}>
+    <ToggleButtonGroup orientation={orientation} value={activeView} exclusive sx={{ flex: '1 1 auto', width: '100%' }}>
       {renderViews(views)}
     </ToggleButtonGroup>
   );

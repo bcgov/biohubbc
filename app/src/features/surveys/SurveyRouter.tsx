@@ -3,6 +3,7 @@ import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { AnimalPageContextProvider } from 'contexts/animalPageContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { ObservationsContextProvider } from 'contexts/observationsContext';
+import { TaxonomyContextProvider } from 'contexts/taxonomyContext';
 import { AnimalRouter } from 'features/surveys/animals/AnimalRouter';
 import EditSurveyPage from 'features/surveys/edit/EditSurveyPage';
 import EditObservationPage from 'features/surveys/observations/form/edit/EditObservationPage';
@@ -41,7 +42,9 @@ const SurveyRouter: React.FC = () => {
           ]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <DialogContextProvider>
-            <SurveyPage />
+            <TaxonomyContextProvider>
+              <SurveyPage />
+            </TaxonomyContextProvider>
           </DialogContextProvider>
         </ProjectRoleRouteGuard>
       </RouteWithTitle>
