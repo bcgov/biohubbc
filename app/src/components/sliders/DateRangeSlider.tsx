@@ -1,28 +1,24 @@
 import Slider from '@mui/material/Slider';
 import dayjs, { Dayjs } from 'dayjs';
-import * as React from 'react';
 
 interface IDateRangeSliderProps {
   label: string;
-  onChange?: (value: [Dayjs, Dayjs]) => void;
-  initialValue?: [Dayjs, Dayjs];
+  value: [Dayjs, Dayjs];
+  onChange: (value: [Dayjs, Dayjs]) => void;
   minDate: Dayjs;
   maxDate: Dayjs;
 }
 
 export const DateRangeSlider = (props: IDateRangeSliderProps) => {
-  const { onChange, initialValue, minDate, maxDate } = props;
+  const { value, onChange, minDate, maxDate } = props;
 
   const minTimestamp = minDate.valueOf();
   const maxTimestamp = maxDate.valueOf();
 
-  const [value, setValue] = React.useState<number[]>(
-    initialValue ? [initialValue[0].valueOf(), initialValue[1].valueOf()] : [minTimestamp, maxTimestamp]
-  );
+  const sliderValue = [value[0].valueOf(), value[1].valueOf()];
 
   const handleChange = (_: Event, newValue: number[]) => {
-    setValue(newValue);
-    if (onChange) {
+    if (Array.isArray(newValue)) {
       onChange([dayjs(newValue[0]), dayjs(newValue[1])]);
     }
   };
@@ -31,10 +27,10 @@ export const DateRangeSlider = (props: IDateRangeSliderProps) => {
     <Slider
       min={minTimestamp}
       max={maxTimestamp}
-      value={value}
-      onChange={(event, val) => {
-        if (Array.isArray(val)) {
-          handleChange(event, val);
+      value={sliderValue}
+      onChange={(event, value) => {
+        if (Array.isArray(value)) {
+          handleChange(event, value);
         }
       }}
       valueLabelDisplay="auto"

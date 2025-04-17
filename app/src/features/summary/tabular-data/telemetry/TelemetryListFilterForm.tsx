@@ -49,8 +49,13 @@ export const TelemetryListFilterForm = (props: IAllTelemetryListFilterFormProps)
             }}
             key="telemetry-keyword-filter"
           />,
-          <SingleDateField name={'start_date'} label={'Recorded after'} key="telemetry-start-date-filter" />,
-          <SingleDateField name={'end_date'} label={'Recorded before'} key="telemetry-end-date-filter" />
+          <SingleDateField
+            name={'start_date'}
+            id="start_date"
+            label={'Recorded after'}
+            key="telemetry-start-date-filter"
+          />,
+          <SingleDateField name={'end_date'} id="end_date" label={'Recorded before'} key="telemetry-end-date-filter" />
         ]}
       />
     </Formik>
