@@ -1,6 +1,9 @@
 import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
 import { IStaticLayer, IStaticLayerFeature } from 'components/map/components/StaticLayers';
+import { DateRangeSlider } from 'components/sliders/DateRangeSlider';
 import { SURVEY_MAP_LAYER_COLOURS } from 'constants/colours';
+import dayjs from 'dayjs';
 import { SurveySpatialTelemetryContainer } from 'features/surveys/view/survey-spatial/components/telemetry/SurveySpatialTelemetryContainer';
 import { SurveySpatialTelemetryPopup } from 'features/surveys/view/survey-spatial/components/telemetry/SurveySpatialTelemetryPopup';
 import SurveyMap from 'features/surveys/view/SurveyMap';
@@ -8,6 +11,8 @@ import SurveyMapTooltip from 'features/surveys/view/SurveyMapTooltip';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
+import { TelemetryFilters } from 'interfaces/useTelemetryApi.interface';
+import { debounce } from 'lodash-es';
 import { useEffect, useMemo } from 'react';
 
 interface ISurveySpatialTelemetryProps {
@@ -27,8 +32,8 @@ export const SurveySpatialTelemetry = (props: ISurveySpatialTelemetryProps) => {
 
   const biohubApi = useBiohubApi();
 
-  const telemetrySpatialDataLoader = useDataLoader((projectId: number, surveyId: number) =>
-    biohubApi.telemetry.getTelemetrySpatialForSurvey(projectId, surveyId)
+  const telemetrySpatialDataLoader = useDataLoader((projectId: number, surveyId: number, filters?: TelemetryFilters) =>
+    biohubApi.telemetry.getTelemetrySpatialForSurvey(projectId, surveyId, filters)
   );
 
   useEffect(() => {
@@ -72,6 +77,12 @@ export const SurveySpatialTelemetry = (props: ISurveySpatialTelemetryProps) => {
     tooltip: (feature) => <SurveyMapTooltip title="Telemetry" key={`telemetry-tooltip-${feature.id}`} />
   };
 
+  const debouncedRefreshTelemetry = useMemo(() => {
+    return debounce((filters: TelemetryFilters) => {
+      telemetrySpatialDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId, filters);
+    }, 500);
+  }, [telemetrySpatialDataLoader, surveyContext.projectId, surveyContext.surveyId]);
+
   return (
     <>
       {/* Display map with telemetry points */}
@@ -79,6 +90,26 @@ export const SurveySpatialTelemetry = (props: ISurveySpatialTelemetryProps) => {
         <SurveyMap staticLayers={[...props.staticLayers, layer]} isLoading={telemetrySpatialDataLoader.isLoading} />
       </Box>
 
+      {telemetrySpatialDataLoader.data && (
+        <Box flex="1 1 auto" px={5} py={1}>
+          <DateRangeSlider
+            label="Date Range"
+            minDate={dayjs(telemetrySpatialDataLoader.data.supplementaryData.start_date)}
+            maxDate={dayjs(telemetrySpatialDataLoader.data.supplementaryData.end_date)}
+            initialValue={[
+              dayjs(telemetrySpatialDataLoader.data.supplementaryData.start_date),
+              dayjs(telemetrySpatialDataLoader.data.supplementaryData.end_date)
+            ]}
+            onChange={(value) => {
+              const startDate = dayjs(value[0]).toISOString();
+              const endDate = dayjs(value[1]).toISOString();
+
+              debouncedRefreshTelemetry({ startDate, endDate });
+            }}
+          />
+        </Box>
+      )}
+      <Divider />
       {/* Display data table with telemetry details */}
       <Box height={{ xs: 300, md: 500 }} display="flex" flexDirection="column" pt={2}>
         <SurveySpatialTelemetryContainer />

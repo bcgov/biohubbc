@@ -49,6 +49,14 @@ export const TelemetrySchema = z.object({
 
 export type Telemetry = z.infer<typeof TelemetrySchema>;
 
+export const TelemetrySupplementary = z.object({
+  count: z.number(),
+  start_date: z.string().nullable(),
+  end_date: z.string().nullable()
+});
+
+export type TelemetrySupplementary = z.infer<typeof TelemetrySupplementary>;
+
 export const TelemetrySpatialSchema = z.object({
   telemetry_id: z.string(), // Telemetry ID (Primary Key)
   geometry: GeoJSONPointZodSchema.nullable() // GeoJSON Point

@@ -208,7 +208,7 @@ export function getTelemetryInSurvey(): RequestHandler {
 
       const telemetryVendorService = new TelemetryVendorService(connection);
 
-      const [telemetry, telemetryCount] = await telemetryVendorService.getTelemetryForSurvey(surveyId, {
+      const [telemetry, supplementary] = await telemetryVendorService.getTelemetryForSurvey(surveyId, {
         ...options,
         pagination: ensureCompletePaginationOptions(paginationOptions)
       });
@@ -217,8 +217,8 @@ export function getTelemetryInSurvey(): RequestHandler {
 
       return res.status(200).json({
         telemetry: telemetry,
-        count: telemetryCount,
-        pagination: makePaginationResponse(telemetryCount, paginationOptions)
+        count: supplementary.count,
+        pagination: makePaginationResponse(supplementary.count, paginationOptions)
       });
     } catch (error) {
       defaultLog.error({ label: 'getTelemetryInSurvey', message: 'error', error });

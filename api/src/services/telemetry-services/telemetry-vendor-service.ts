@@ -8,8 +8,10 @@ import { CreateManualTelemetry } from '../../repositories/telemetry-repositories
 import { TelemetryVendorRepository } from '../../repositories/telemetry-repositories/telemetry-vendor-repository';
 import {
   Telemetry,
+  TelemetryFilters,
   TelemetryOptions,
-  TelemetrySpatial
+  TelemetrySpatial,
+  TelemetrySupplementary
 } from '../../repositories/telemetry-repositories/telemetry-vendor-repository.interface';
 import { taskQueue } from '../../utils/task-queue';
 import { ApiPaginationOptions } from '../../zod-schema/pagination';
@@ -89,28 +91,27 @@ export class TelemetryVendorService extends DBService {
 
     return this.vendorRepository.getTelemetryByDeploymentIds(surveyId, deploymentIds, options);
   }
-
   /**
    * Get paginated telemetry data for a survey.
    *
-   * @async
    * @param {number} surveyId
-   * @param {TelemetryOptions} [options] - Telemetry options
-   * @returns {Promise<[Telemetry[], number]>} Tuple of telemetry data and total count
+   * @param {TelemetryOptions} [options] - Telemetry query options
+   * @returns {Promise<[Telemetry[], TelemetrySupplementary]>} Tuple of telemetry data and supplementary info
    */
-  async getTelemetryForSurvey(surveyId: number, options?: TelemetryOptions): Promise<[Telemetry[], number]> {
+  async getTelemetryForSurvey(
+    surveyId: number,
+    options?: TelemetryOptions
+  ): Promise<[Telemetry[], TelemetrySupplementary]> {
     const deployments = await this.deploymentService.getDeploymentsForSurvey(surveyId);
-    const deploymentIds = deployments.map((deployment) => deployment.deployment_id);
-
-    if (!options?.pagination) {
-      const telemetry = await this.vendorRepository.getTelemetryByDeploymentIds(surveyId, deploymentIds, options);
-      return [telemetry, telemetry.length];
+    if (!deployments.length) {
+      return [[], { count: 0, start_date: null, end_date: null }];
     }
 
-    return Promise.all([
-      this.vendorRepository.getTelemetryByDeploymentIds(surveyId, deploymentIds, options),
-      this.vendorRepository.getTelemetryCountByDeploymentIds(surveyId, deploymentIds)
-    ]);
+    const deploymentIds = deployments.map((d) => d.deployment_id);
+    const telemetry = await this.vendorRepository.getTelemetryByDeploymentIds(surveyId, deploymentIds, options);
+    const supplementary = await this.vendorRepository.getTelemetrySupplementaryByDeploymentIds(surveyId, deploymentIds);
+
+    return [telemetry, supplementary];
   }
 
   /**
@@ -118,16 +119,28 @@ export class TelemetryVendorService extends DBService {
    *
    * @async
    * @param {number} surveyId
-   * @return {Promise<[TelemetrySpatial[], number]>} - A tuple containing the telemetry spatial data and the total count
+   * @param {TelemetryFilters} filters
+   * @return {Promise<[TelemetrySpatial[], TelemetrySupplementary]>} - A tuple containing the telemetry spatial data and supplementary information
    */
-  async getTelemetrySpatialForSurvey(surveyId: number): Promise<[TelemetrySpatial[], number]> {
+  async getTelemetrySpatialForSurvey(
+    surveyId: number,
+    filters: TelemetryFilters
+  ): Promise<[TelemetrySpatial[], TelemetrySupplementary]> {
     const deployments = await this.deploymentService.getDeploymentsForSurvey(surveyId);
     const deploymentIds = deployments.map((deployment) => deployment.deployment_id);
 
-    const telemetry = await this.vendorRepository.getTelemetrySpatialByDeploymentIds(surveyId, deploymentIds);
-    return [telemetry, telemetry.length];
+    const telemetry = await this.vendorRepository.getTelemetrySpatialByDeploymentIds(surveyId, deploymentIds, filters);
+    const supplementary = await this.vendorRepository.getTelemetrySupplementaryByDeploymentIds(surveyId, deploymentIds);
+    return [telemetry, supplementary];
   }
 
+  /**
+   * Get a specific telemetry record
+   *
+   * @param {number} surveyId
+   * @param {string} telemetryId
+   * @returns {Promise<Telemetry>}
+   */
   async getTelemetryRecordById(surveyId: number, telemetryId: string): Promise<Telemetry> {
     return this.vendorRepository.getTelemetryRecordById(surveyId, telemetryId);
   }
