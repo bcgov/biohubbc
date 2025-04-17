@@ -181,7 +181,7 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
   const dialogContext = useDialogContext();
 
   const telemetryDataLoader = useDataLoader((pagination?: ApiPaginationRequestOptions) =>
-    biohubApi.telemetry.getTelemetryForSurvey(surveyContext.projectId, surveyContext.surveyId, pagination)
+    biohubApi.telemetry.getTelemetryForSurvey(surveyContext.projectId, surveyContext.surveyId, {}, pagination)
   );
 
   const {

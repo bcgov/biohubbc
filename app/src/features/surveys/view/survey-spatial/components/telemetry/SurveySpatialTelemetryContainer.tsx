@@ -1,7 +1,9 @@
 import { mdiAccessPointPlus, mdiMapMarker } from '@mdi/js';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
+import { DateRangeSlider } from 'components/sliders/DateRangeSlider';
 import CustomToggleButtonGroup from 'components/toolbar/CustomToggleButtonGroup';
+import dayjs from 'dayjs';
 import { SurveySpatialDeploymentTable } from 'features/surveys/view/survey-spatial/components/telemetry/SurveySpatialDeploymentTable';
 import { SurveySpatialTelemetryTable } from 'features/surveys/view/survey-spatial/components/telemetry/SurveySpatialTelemetryTable';
 import { useState } from 'react';
@@ -34,6 +36,19 @@ export const SurveySpatialTelemetryContainer = () => {
           activeView={activeView}
           onViewChange={(view) => setActiveView(view)}
           orientation="horizontal"
+        />
+      </Box>
+      <Box flex="1 1 auto" px={5}>
+        <DateRangeSlider
+          label="Date Range"
+          initialValue={[0, 5]}
+          onChange={(value) => {
+            // value is [number, number0]
+            // TODO
+            const startDate = dayjs(value[0]);
+            const endDate = dayjs(value[1]);
+            dayjs();
+          }}
         />
       </Box>
       <Divider />
