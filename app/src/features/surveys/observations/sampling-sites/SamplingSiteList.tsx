@@ -306,7 +306,7 @@ export const SamplingSiteList = (props: SamplingSiteListProps) => {
           sx={{
             flex: '0 0 auto',
             pr: 3,
-            pl: 2
+            pl: 3
           }}>
           <Typography variant="h3" component="h2" flexGrow={1}>
             Sampling Sites &zwnj;

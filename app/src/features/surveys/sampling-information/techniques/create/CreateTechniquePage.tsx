@@ -95,7 +95,7 @@ export const CreateTechniquePage = () => {
 
       // Success, navigate back to the manage sampling information page
       skipUnsavedChangesDialog();
-      history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling`);
+      history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/details?v=techniques`);
     } catch (error) {
       setIsSubmitting(false);
       dialogContext.setErrorDialog({
@@ -163,7 +163,9 @@ export const CreateTechniquePage = () => {
               color="primary"
               variant="outlined"
               onClick={() =>
-                history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling`)
+                history.push(
+                  `/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/details?v=techniques`
+                )
               }>
               Cancel
             </Button>
@@ -193,7 +195,9 @@ export const CreateTechniquePage = () => {
               variant="outlined"
               color="primary"
               onClick={() => {
-                history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling`);
+                history.push(
+                  `/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/details?v=techniques`
+                );
               }}>
               Cancel
             </Button>

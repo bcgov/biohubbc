@@ -106,7 +106,8 @@ GET.apiDoc = {
                       items: {
                         type: 'string'
                       }
-                    }
+                    },
+                    progress_percentage: { type: 'number', description: 'The percentage completion of the survey' }
                   }
                 }
               }

@@ -68,7 +68,7 @@ export const SurveySpatialObservation = (props: ISurveySpatialObservationProps) 
   return (
     <>
       {/* Display map with observation points */}
-      <Box height={{ xs: 300, md: 500 }} position="relative">
+      <Box height={300} position="relative">
         <SurveyMap
           staticLayers={[...props.staticLayers, observationLayer]}
           isLoading={observationsGeometryDataLoader.isLoading}
@@ -76,7 +76,7 @@ export const SurveySpatialObservation = (props: ISurveySpatialObservationProps) 
       </Box>
 
       {/* Display data table with observation details */}
-      <Box height={{ xs: 300, md: 500 }} display="flex" flexDirection="column" pt={2}>
+      <Box height={300} display="flex" flexDirection="column" pt={2}>
         <SurveySpatialObservationContainer />
       </Box>
     </>

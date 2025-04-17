@@ -26,7 +26,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
-import { SamplingSiteTable } from './table/SamplingSiteTable';
+import { SamplingSiteTable } from '../../../../sampling-information/sites/table/SamplingSiteTable';
 
 const pageSizeOptions = [10, 25, 50];
 
@@ -169,12 +169,12 @@ export const SamplingSiteContainer = () => {
         disableGutters
         sx={{
           flex: '1 1 auto',
-          pl: 2,
-          pr: 5.5,
+          pl: 3,
+          pr: 3,
           width: '100%'
         }}>
         <Typography variant="h3" component="h2" flexGrow={1}>
-          Sampling Sites &zwnj;
+          Sites &zwnj;
           <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
             ({samplingSitesDataLoader.data?.pagination.total ?? 0})
           </Typography>
@@ -204,42 +204,32 @@ export const SamplingSiteContainer = () => {
 
       <Divider flexItem />
 
-      <Box>
-        <LoadingGuard
-          isLoading={false}
-          isLoadingFallback={
-            <Box height="300px">
-              <SkeletonMap />
-              <SkeletonTable numberOfLines={5} />
-            </Box>
-          }
-          isLoadingFallbackDelay={100}>
-          <Box height="400px" flex="1 1 auto">
+      <LoadingGuard
+        isLoading={
+          !samplingSitesDataLoader.data && (samplingSitesDataLoader.isLoading || !samplingSitesDataLoader.isReady)
+        }
+        isLoadingFallback={
+          <Box sx={{ height: 400 }}>
+            <SkeletonMap />
+            <SkeletonTable numberOfLines={5} />
+          </Box>
+        }
+        isLoadingFallbackDelay={100}
+        hasNoData={!sampleSites.length}
+        hasNoDataFallback={
+          <NoDataOverlay
+            height="300px"
+            title="Add Sampling Sites"
+            subtitle="Sampling sites show precisely where you collected data&mdash;at a point, along a transect, or within an area."
+            icon={mdiArrowTopRight}
+          />
+        }
+        hasNoDataFallbackDelay={100}>
+        <Stack direction="column">
+          <Box sx={{ height: 400 }}>
             <SurveyMap staticLayers={[samplingSiteStaticLayer]} isLoading={false} />
           </Box>
-        </LoadingGuard>
-      </Box>
-
-      {/* Data tables */}
-      <Box>
-        <LoadingGuard
-          isLoading={
-            !samplingSitesDataLoader.data && (samplingSitesDataLoader.isLoading || !samplingSitesDataLoader.isReady)
-          }
-          isLoadingFallback={<SkeletonTable />}
-          isLoadingFallbackDelay={100}
-          hasNoData={!sampleSites.length}
-          hasNoDataFallback={
-            <NoDataOverlay
-              p={10}
-              height="100%"
-              title="Add Sampling Sites"
-              subtitle="Apply your techniques to sampling sites to show where you collected data"
-              icon={mdiArrowTopRight}
-            />
-          }
-          hasNoDataFallbackDelay={100}>
-          <Box height="400px">
+          <Box sx={{ height: 400 }}>
             <SamplingSiteTable
               sites={sampleSites}
               paginationModel={paginationModel}
@@ -253,8 +243,8 @@ export const SamplingSiteContainer = () => {
               onDelete={handleDelete}
             />
           </Box>
-        </LoadingGuard>
-      </Box>
+        </Stack>
+      </LoadingGuard>
     </>
   );
 };

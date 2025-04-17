@@ -4,7 +4,6 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
 import Collapse from '@mui/material/Collapse';
-import IconButton from '@mui/material/IconButton';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Typography from '@mui/material/Typography';
@@ -18,14 +17,14 @@ export interface ToggleButtonView<ViewValueType> {
   children?: ToggleButtonView<ViewValueType>[];
   checkbox?: boolean;
   tooltip?: string;
-  isHeading?: boolean;
+  isHeader?: boolean;
   isChecked?: boolean;
   disabled?: boolean;
 }
 
 interface HierarchicalCustomToggleButtonGroupProps<ViewValueType extends string> {
   views: ToggleButtonView<ViewValueType>[];
-  activeView: ViewValueType;
+  activeView: ViewValueType | null;
   onViewChange: (view: ViewValueType) => void;
   orientation: 'horizontal' | 'vertical';
   handleCheckbox?: (view: ToggleButtonView<ViewValueType>) => void;
@@ -63,8 +62,10 @@ export const HierarchicalCustomToggleButtonGroup = <ViewValueType extends string
   );
 
   useEffect(() => {
-    const parents = findParentViews(views, activeView);
-    setExpanded((prev) => new Set([...prev, ...parents]));
+    if (activeView) {
+      const parents = findParentViews(views, activeView);
+      setExpanded((prev) => new Set([...prev, ...parents]));
+    }
   }, [activeView, views, findParentViews]);
 
   const toggleExpand = (value: ViewValueType) => {
@@ -79,61 +80,50 @@ export const HierarchicalCustomToggleButtonGroup = <ViewValueType extends string
     });
   };
 
-  const hasActiveDescendant = (item: ToggleButtonView<ViewValueType>): boolean => {
-    if (!item.children) {
-      return false;
-    }
-    return item.children.some((child) => child.value === activeView || hasActiveDescendant(child));
-  };
-
   const renderViews = (items: ToggleButtonView<ViewValueType>[], level = 0) => {
     return items.map((item) => {
       const isExpanded = expanded.has(item.value);
       const hasChildren = !!item.children?.length;
-      const showHighlight = item.value === activeView || hasActiveDescendant(item);
-
-      console.log(item.isChecked);
 
       return (
-        <Box key={item.value} sx={{ ml: level * 1.5, mt: level > 0 ? 0.25 : 0 }}>
+        <Box key={item.value} sx={{ ml: level * 1.5, my: 0.25, mt: level > 0 ? 0.5 : 0 }}>
           <CustomTooltip tooltip={item.tooltip ?? ''}>
             <ToggleButton
               component={Button}
               color="primary"
               value={item.value}
               onClick={() => {
-                if (!item.isHeading && !item.disabled) {
+                if (hasChildren) {
+                  toggleExpand(item.value);
+                }
+                if (!item.isHeader && !item.disabled) {
                   onViewChange(item.value);
                 }
               }}
               startIcon={
                 item.checkbox && handleCheckbox ? (
-                  <Checkbox
-                    disabled={item.disabled}
-                    checked={item.isChecked}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleCheckbox(item);
-                    }}
-                    size="small"
-                  />
+                  <Box sx={{ position: 'relative', height: 24 }}>
+                    <Checkbox
+                      disabled={item.disabled}
+                      checked={item.isChecked}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleCheckbox(item);
+                      }}
+                      size="small"
+                      sx={{
+                        position: 'absolute',
+                        top: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        ml: 2
+                      }}
+                    />
+                  </Box>
                 ) : undefined
               }
-              endIcon={
-                hasChildren ? (
-                  <IconButton
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleExpand(item.value);
-                    }}
-                    size="small">
-                    <Icon path={isExpanded ? mdiChevronDown : mdiChevronRight} size={1} />
-                  </IconButton>
-                ) : undefined
-              }
+              endIcon={hasChildren ? <Icon path={isExpanded ? mdiChevronDown : mdiChevronRight} size={1} /> : undefined}
               disabled={false}
               sx={{
-                backgroundColor: showHighlight ? (theme) => theme.palette.grey[50] : 'transparent',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'flex-start',
@@ -145,7 +135,10 @@ export const HierarchicalCustomToggleButtonGroup = <ViewValueType extends string
                 borderRadius: '4px !important',
                 fontSize: '0.875rem',
                 fontWeight: 700,
-                letterSpacing: '0.02rem'
+                letterSpacing: '0.02rem',
+                '& .MuiTypography-root': {
+                  ml: item.checkbox ? 4 : 0
+                }
               }}>
               <Typography flex="1 1 auto" textAlign="left" fontWeight={700} textTransform="none">
                 {item.label}

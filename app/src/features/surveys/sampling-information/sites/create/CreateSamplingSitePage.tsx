@@ -78,7 +78,7 @@ export const CreateSamplingSitePage = () => {
 
       // create complete, navigate back to observations page
       skipUnsavedChangesDialog();
-      history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling`);
+      history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/details?v=sites`);
     } catch (error) {
       showCreateErrorDialog({
         dialogTitle: CreateSamplingSiteI18N.createErrorTitle,

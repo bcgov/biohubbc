@@ -1,4 +1,4 @@
-import { mdiArrowTopRight, mdiDotsVertical, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
+import { mdiDotsVertical, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import blueGrey from '@mui/material/colors/blueGrey';
@@ -12,8 +12,6 @@ import { GridRowSelectionModel } from '@mui/x-data-grid';
 import { GridColDef } from '@mui/x-data-grid/models/colDef/gridColDef';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
-import { LoadingGuard } from 'components/loading/LoadingGuard';
-import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { DeleteTechniqueI18N } from 'constants/i18n';
 import { useCodesContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { IGetTechniqueResponse, TechniqueAttractant } from 'interfaces/useTechniqueApi.interface';
@@ -262,35 +260,23 @@ export const SamplingTechniqueTable = <T extends ITechniqueRowData>(props: ISamp
         </MenuItem>
       </Menu>
 
-      <LoadingGuard
-        hasNoData={!rows.length}
-        hasNoDataFallback={
-          <NoDataOverlay
-            height="100%"
-            title="Add Techniques"
-            subtitle="Techniques describe how you collected species observations"
-            icon={mdiArrowTopRight}
-          />
-        }
-        hasNoDataFallbackDelay={100}>
-        <StyledDataGrid
-          rows={rows}
-          columns={columns}
-          getRowHeight={() => 'auto'}
-          autoHeight={false}
-          disableRowSelectionOnClick
-          disableColumnMenu
-          checkboxSelection
-          rowSelectionModel={selectedRows}
-          onRowSelectionModelChange={setSelectedRows}
-          initialState={{
-            pagination: {
-              paginationModel: { page: 0, pageSize: 10 }
-            }
-          }}
-          pageSizeOptions={[10, 25, 50]}
-        />
-      </LoadingGuard>
+      <StyledDataGrid
+        rows={rows}
+        columns={columns}
+        getRowHeight={() => 'auto'}
+        autoHeight={false}
+        disableRowSelectionOnClick
+        disableColumnMenu
+        checkboxSelection
+        rowSelectionModel={selectedRows}
+        onRowSelectionModelChange={setSelectedRows}
+        initialState={{
+          pagination: {
+            paginationModel: { page: 0, pageSize: 10 }
+          }
+        }}
+        pageSizeOptions={[10, 25, 50]}
+      />
     </>
   );
 };

@@ -72,7 +72,8 @@ export const FindSurveysResponse = z.object({
   start_date: z.string().nullable(),
   end_date: z.string().nullable().optional().nullable(),
   focal_species: z.array(z.number().nullable()),
-  types: z.array(z.number().nullable())
+  types: z.array(z.number().nullable()),
+  progress_percentage: z.number()
 });
 
 export type FindSurveysResponse = z.infer<typeof FindSurveysResponse>;

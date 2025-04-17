@@ -156,7 +156,7 @@ export const SurveySpatialObservationTable = () => {
         <NoDataOverlay
           height="100%"
           title="Add Observations"
-          subtitle="After adding sampling information, upload observations and link them to sampling efforts"
+          subtitle="Upload observations and link them to sampling information"
           icon={mdiArrowTopRight}
         />
       }

@@ -24,7 +24,7 @@ import { useContext, useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions } from 'types/misc';
 import { firstOrNull, getFormattedDate } from 'utils/Utils';
-import { SurveyProgressChip } from '../components/SurveyProgressChip';
+import { LinearProgressWithLabel } from '../main/checklist/progress/SurveyChecklistProgressBar';
 
 const pageSizeOptions = [10, 25, 50];
 
@@ -97,13 +97,13 @@ const SurveysListPage = () => {
       )
     },
     {
-      field: 'progress',
+      field: 'progress_percentage',
       headerName: 'Progress',
-      flex: 0.25,
+      flex: 0.5,
       disableColumnMenu: true,
       renderCell: (params) => (
-        <Box>
-          <SurveyProgressChip progress_id={params.row.progress_id} />
+        <Box flex="1 1 auto" mr={2}>
+          <LinearProgressWithLabel value={params.row.progress_percentage} />
         </Box>
       )
     },

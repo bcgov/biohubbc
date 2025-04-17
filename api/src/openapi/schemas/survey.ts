@@ -571,6 +571,10 @@ export const getSurveyChecklistResponse: OpenAPIV3.SchemaObject = {
         habitat: { type: 'number' }
       }
     },
-    attachments: { type: 'number' }
+    attachments: { type: 'number' },
+    progress_percentage: {
+      type: 'number',
+      description: 'The completion percentage of items in the checklist.'
+    }
   }
 };
