@@ -66,7 +66,7 @@ export type TelemetrySpatial = z.infer<typeof TelemetrySpatialSchema>;
 
 export type TelemetryOptions = {
   pagination?: ApiPaginationOptions;
-  filters: TelemetryFilters;
+  filters?: TelemetryFilters;
 };
 
 export type TelemetryFilters = {

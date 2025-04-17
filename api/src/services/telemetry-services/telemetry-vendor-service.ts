@@ -124,7 +124,7 @@ export class TelemetryVendorService extends DBService {
    */
   async getTelemetrySpatialForSurvey(
     surveyId: number,
-    filters: TelemetryFilters
+    filters?: TelemetryFilters
   ): Promise<[TelemetrySpatial[], TelemetrySupplementary]> {
     const deployments = await this.deploymentService.getDeploymentsForSurvey(surveyId);
     const deploymentIds = deployments.map((deployment) => deployment.deployment_id);

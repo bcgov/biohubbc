@@ -145,7 +145,7 @@ describe('TelemetryVendorRepository', () => {
     });
   });
 
-  describe('getTelemetryCountByDeploymentIds', () => {
+  describe('getTelemetrySupplementaryByDeploymentIds', () => {
     it('should return telemetry data count for a survey', async () => {
       const mockQueryResponse = { rows: [{ count: 1, start_date: '2020-01-01', end_date: '2022-05-05' }] };
       const mockDbConnection = getMockDBConnection({ knex: sinon.stub().resolves(mockQueryResponse) });

@@ -45,15 +45,7 @@ describe('getTelemetrySpatialData', () => {
 
     expect(mockRes.json).to.have.been.calledOnceWith({
       telemetry: mockTelemetry,
-      count: mockSupplementary.count,
-      pagination: {
-        total: 1,
-        per_page: 1,
-        current_page: 1,
-        last_page: 1,
-        sort: undefined,
-        order: undefined
-      }
+      supplementaryData: mockSupplementary
     });
     expect(mockRes.status).calledOnceWith(200);
 
