@@ -743,13 +743,13 @@ export class TelemetryVendorRepository extends BaseRepository {
       .from('telemetry');
 
     // Inject date range if provided
-    if (options?.dateRange) {
-      if (options.dateRange.startDate) {
-        queryBuilder.where('telemetry.acquisition_date', '>=', options.dateRange.startDate);
+    if (options?.filters) {
+      if (options.filters.startDate) {
+        queryBuilder.where('telemetry.acquisition_date', '>=', options.filters.startDate);
       }
 
-      if (options.dateRange.endDate) {
-        queryBuilder.where('telemetry.acquisition_date', '<=', options.dateRange.endDate);
+      if (options.filters.endDate) {
+        queryBuilder.where('telemetry.acquisition_date', '<=', options.filters.endDate);
       }
     }
 

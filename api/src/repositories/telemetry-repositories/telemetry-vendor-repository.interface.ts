@@ -58,5 +58,10 @@ export type TelemetrySpatial = z.infer<typeof TelemetrySpatialSchema>;
 
 export type TelemetryOptions = {
   pagination?: ApiPaginationOptions;
-  dateRange?: { startDate?: string; endDate?: string };
+  filters: TelemetryFilters;
+};
+
+export type TelemetryFilters = {
+  startDate?: string;
+  endDate?: string;
 };

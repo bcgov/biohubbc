@@ -1,4 +1,4 @@
-import { RequestHandler } from 'express';
+import { Request, RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
@@ -6,6 +6,10 @@ import {
   paginationRequestQueryParamSchema,
   paginationResponseSchema
 } from '../../../../../../openapi/schemas/pagination';
+import {
+  TelemetryFilters,
+  TelemetryOptions
+} from '../../../../../../repositories/telemetry-repositories/telemetry-vendor-repository.interface';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { TelemetryVendorService } from '../../../../../../services/telemetry-services/telemetry-vendor-service';
 import { getLogger } from '../../../../../../utils/logger';
@@ -66,6 +70,23 @@ GET.apiDoc = {
         minimum: 1
       },
       required: true
+    },
+    {
+      in: 'path',
+      name: 'startDate',
+      schema: {
+        type: 'string',
+        description: 'The start date to filter telemetry records with. Only return records from after the start date.'
+      }
+    },
+    {
+      in: 'path',
+      name: 'endDate',
+      schema: {
+        type: 'string',
+        format: 'date-time',
+        description: 'The end date to filter telemetry records with. Only return records from before the end date.'
+      }
     },
     ...paginationRequestQueryParamSchema
   ],
@@ -183,9 +204,12 @@ export function getTelemetryInSurvey(): RequestHandler {
 
       await connection.open();
 
+      const options = parseQueryParams(req);
+
       const telemetryVendorService = new TelemetryVendorService(connection);
 
       const [telemetry, telemetryCount] = await telemetryVendorService.getTelemetryForSurvey(surveyId, {
+        ...options,
         pagination: ensureCompletePaginationOptions(paginationOptions)
       });
 
@@ -204,5 +228,17 @@ export function getTelemetryInSurvey(): RequestHandler {
     } finally {
       connection.release();
     }
+  };
+}
+
+/**
+ * Parse the query parameters from the request into the expected format.
+ *
+ * @param {Request<unknown, unknown, unknown, TelemetryFilters>} req
+ * @return {*}  {TelemetryOptions}
+ */
+function parseQueryParams(req: Request<unknown, unknown, unknown, TelemetryFilters>): TelemetryOptions {
+  return {
+    filters: { startDate: req.query.startDate, endDate: req.query.endDate }
   };
 }
