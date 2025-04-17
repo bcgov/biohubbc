@@ -21,7 +21,6 @@ export async function up(knex: Knex): Promise<void> {
       collection_id              integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
       name                       varchar(100)       NOT NULL,
       objectives                 varchar(250)       NOT NULL,
-      owner                      integer            NOT NULL,
       record_end_date            date,
       create_date                timestamptz(6)     DEFAULT now() NOT NULL,
       create_user                integer            NOT NULL,
@@ -35,7 +34,6 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN collection.collection_id              IS 'System generated surrogate primary key identifier.';
     COMMENT ON COLUMN collection.name                       IS 'The name of the collection.';
     COMMENT ON COLUMN collection.objectives                 IS 'The objectives of the collection.';
-    COMMENT ON COLUMN collection.owner                      IS 'The user id of the owner of the collection.';
     COMMENT ON COLUMN collection.record_end_date            IS 'Record level end date.';
     COMMENT ON COLUMN collection.create_date                IS 'The datetime the record was created.';
     COMMENT ON COLUMN collection.create_user                IS 'The id of the user who created the record as identified in the system user table.';
@@ -45,12 +43,7 @@ export async function up(knex: Knex): Promise<void> {
 
     -- Add unique end-date key constraint
         CREATE UNIQUE INDEX collection_nuk1 ON collection(name, (record_end_date IS NULL)) WHERE record_end_date IS NULL;
-
-    -- Add index to support the search for a collection by name
-        CREATE INDEX collection_idx1 ON collection(name);
-
-    -- Index on owner in the collection table for frequent lookups
-    CREATE INDEX collection_owner_idx ON collection(owner);
+        CREATE UNIQUE INDEX collection_name_idx ON collection(name);
 
 
 
