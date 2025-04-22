@@ -164,7 +164,7 @@ export const SurveyChecklist = (props: SurveyChecklistProps) => {
         <LinearProgressWithLabel value={completionPercentage} />
       </Box>
 
-      <Box width="300px" flexShrink={0}>
+      <Box flexShrink={0}>
         <HierarchicalCustomToggleButtonGroup
           views={checklistItems}
           activeView={activeView}
