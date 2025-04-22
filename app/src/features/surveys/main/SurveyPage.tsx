@@ -20,6 +20,7 @@ import IconButton from '@mui/material/IconButton';
 import Skeleton from '@mui/material/Skeleton';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
+import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import { SurveyDeploymentList } from '../telemetry/list/SurveyDeploymentList';
 import { DevicesContainer } from '../telemetry/manage/devices/table/DevicesContainer';
 import { SurveySpatialTelemetry } from '../telemetry/SurveySpatialTelemetry';
@@ -63,7 +64,7 @@ type SurveyPageViewParams = {
 };
 
 const CHECKLIST_WIDTH = 350;
-const GUIDE_WIDTH = 300;
+const GUIDE_WIDTH = 500;
 const GAP = 16;
 
 const SurveyPage = () => {
@@ -189,7 +190,7 @@ const SurveyPage = () => {
           {/* Guide Panel */}
           {activeView !== ACTIVE_VIEW_VALUE.overview && (
             <Collapse in={showGuide} orientation="horizontal" appear unmountOnExit>
-              <Paper sx={{ width: GUIDE_WIDTH, flexShrink: 0, p: 2 }}>
+              <Paper sx={{ width: GUIDE_WIDTH, flexShrink: 0, p: 3 }}>
                 <LoadingGuard
                   isLoadingFallbackDelay={600}
                   isLoadingFallback={
@@ -206,7 +207,11 @@ const SurveyPage = () => {
                   }>
                   {checklistDataLoader.data?.checklist ? (
                     <Box sx={{ position: 'sticky', top: 180 }}>
-                      <SurveyChecklistGuide activeView={activeView} onClose={() => setShowGuide(false)} />
+                      <SurveyChecklistGuide
+                        markdownType={MarkdownTypeNameEnum.OBSERVATIONS}
+                        activeView={activeView}
+                        onClose={() => setShowGuide(false)}
+                      />
                     </Box>
                   ) : (
                     <IconButton color="primary" onClick={() => setShowGuide(true)}>

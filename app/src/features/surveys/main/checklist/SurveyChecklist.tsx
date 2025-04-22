@@ -41,6 +41,8 @@ export const SurveyChecklist = (props: SurveyChecklistProps) => {
         value: ACTIVE_VIEW_VALUE.sampling,
         label: 'Sampling',
         isHeader: true,
+        isChecked: true,
+        checkbox: !!checklist.sampling?.sites && !!checklist.sampling?.techniques && !!checklist.sampling?.periods,
         tooltip: 'Add information about where, when, and how you collected data',
         children: [
           {
@@ -70,6 +72,12 @@ export const SurveyChecklist = (props: SurveyChecklistProps) => {
         value: ACTIVE_VIEW_VALUE.data,
         label: 'Data',
         isHeader: true,
+        checkbox: true,
+        isChecked:
+          !!checklist.data?.observations &&
+          !!checklist.data?.telemetry &&
+          !!checklist.data?.habitat &&
+          !!checklist.data?.animals,
         tooltip: 'Add data that you collected',
         children: [
           {
@@ -82,28 +90,32 @@ export const SurveyChecklist = (props: SurveyChecklistProps) => {
           {
             value: ACTIVE_VIEW_VALUE.telemetry,
             label: 'Telemetry',
-            isChecked: !!checklist.data?.telemetry,
+            checkbox: true,
+            isChecked:
+              !!checklist.data?.telemetry.locations &&
+              !!checklist.data?.telemetry.devices &&
+              !!checklist.data?.telemetry.deployments,
             isHeader: true,
             tooltip: 'Add telemetry data',
             children: [
               {
                 value: ACTIVE_VIEW_VALUE.devices,
                 label: 'Devices',
-                isChecked: !!checklist.data?.telemetry,
+                isChecked: !!checklist.data?.telemetry.devices,
                 checkbox: true,
                 tooltip: 'Add telemetry data'
               },
               {
                 value: ACTIVE_VIEW_VALUE.deployments,
                 label: 'Deployments',
-                isChecked: !!checklist.data?.telemetry,
+                isChecked: !!checklist.data?.telemetry.deployments,
                 checkbox: true,
                 tooltip: 'Add telemetry data'
               },
               {
                 value: ACTIVE_VIEW_VALUE.locations,
                 label: 'Locations',
-                isChecked: !!checklist.data?.telemetry,
+                isChecked: !!checklist.data?.telemetry.locations,
                 checkbox: true,
                 tooltip: 'Add telemetry data'
               }
@@ -129,6 +141,7 @@ export const SurveyChecklist = (props: SurveyChecklistProps) => {
         value: ACTIVE_VIEW_VALUE.attachments,
         label: 'Attachments',
         isHeader: true,
+        checkbox: true,
         tooltip: 'Add supplementary files',
         children: [
           {

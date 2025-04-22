@@ -40,12 +40,12 @@ const ProjectPage = () => {
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <SystemAlertBanner alertTypes={[SystemAlertBannerEnum.PROJECTS]} />
         <Grid container spacing={3}>
-          <Grid item xs={12} lg={4}>
+          <Grid item xs={12} lg={3}>
             <Paper>
               <ProjectDetails />
             </Paper>
           </Grid>
-          <Grid item xs={12} lg={8}>
+          <Grid item xs={12} lg={9}>
             <Box mb={3}>
               <Paper>
                 <SurveysListPage />

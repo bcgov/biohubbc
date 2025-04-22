@@ -136,7 +136,7 @@ export const focalSpeciesSchema: OpenAPIV3.SchemaObject = {
   properties: {
     tsn: {
       description: 'Taxonomy tsn',
-      type: 'number'
+      type: 'integer'
     },
     commonNames: {
       description: 'Taxonomy common names',
@@ -458,7 +458,7 @@ export const surveySiteSelectionSchema: OpenAPIV3.SchemaObject = {
           },
           sample_stratum_count: {
             description: 'Sample stratum count',
-            type: 'number'
+            type: 'integer'
           },
           revision_count: {
             description: 'Revision count',
@@ -502,7 +502,7 @@ export const surveyBlockSchema: OpenAPIV3.SchemaObject = {
     },
     sample_block_count: {
       description: 'Sample block count',
-      type: 'number'
+      type: 'integer'
     },
     revision_count: {
       description: 'Revision count',
@@ -560,20 +560,25 @@ export const getSurveyChecklistResponse: OpenAPIV3.SchemaObject = {
   properties: {
     sampling: {
       type: 'object',
-      properties: { sites: { type: 'number' }, techniques: { type: 'number' }, periods: { type: 'number' } }
+      properties: { sites: { type: 'integer' }, techniques: { type: 'integer' }, periods: { type: 'integer' } }
     },
     data: {
       type: 'object',
       properties: {
-        observations: { type: 'number' },
-        telemetry: { type: 'number' },
-        animals: { type: 'number' },
-        habitat: { type: 'number' }
+        observations: { type: 'integer' },
+        telemetry: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['locations', 'devices', 'deployments'],
+          properties: { locations: { type: 'integer' }, devices: { type: 'integer' }, deployments: { type: 'integer' } }
+        },
+        animals: { type: 'integer' },
+        habitat: { type: 'integer' }
       }
     },
-    attachments: { type: 'number' },
+    attachments: { type: 'integer' },
     progress_percentage: {
-      type: 'number',
+      type: 'integer',
       description: 'The completion percentage of items in the checklist.'
     }
   }

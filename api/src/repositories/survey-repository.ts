@@ -122,7 +122,12 @@ export type SurveyBasicFields = z.infer<typeof SurveyBasicFields>;
 export const SurveyChecklist = z.object({
   checklist: z.object({
     sampling: z.object({ sites: z.number(), techniques: z.number(), periods: z.number() }),
-    data: z.object({ observations: z.number(), telemetry: z.number(), animals: z.number(), habitat: z.number() }),
+    data: z.object({
+      observations: z.number(),
+      telemetry: z.object({ locations: z.number(), devices: z.number(), deployments: z.number() }),
+      animals: z.number(),
+      habitat: z.number()
+    }),
     attachments: z.number(),
     progress_percentage: z.number()
   })
@@ -700,24 +705,38 @@ export class SurveyRepository extends BaseRepository {
         ),
         'data', jsonb_build_object(
           'observations', COUNT(DISTINCT so.survey_observation_id),
-          'telemetry', COUNT(DISTINCT d.deployment_id),
+          'telemetry', jsonb_build_object(
+            'devices', COUNT(DISTINCT dv.device_id),
+            'deployments', COUNT(DISTINCT d.deployment_id),
+            'locations', (
+              COUNT(DISTINCT tm.telemetry_manual_id) +
+              COUNT(DISTINCT tl.telemetry_lotek_id) +
+              COUNT(DISTINCT tv.telemetry_vectronic_id) +
+              COUNT(DISTINCT ta.telemetry_ats_id)
+            )
+          ),
           'animals', COUNT(DISTINCT c.critter_id),
           'habitat', COUNT(DISTINCT shf.survey_habitat_feature_id)
         ),
         'attachments', COUNT(DISTINCT sa.survey_attachment_id),
-        'progress_percentage',ROUND((
-            (
-              CASE WHEN COUNT(DISTINCT sss.survey_sample_site_id) > 0 THEN 1 ELSE 0 END +
-              CASE WHEN COUNT(DISTINCT mt.method_technique_id) > 0 THEN 1 ELSE 0 END +
-              CASE WHEN COUNT(DISTINCT ssp.survey_sample_period_id) > 0 THEN 1 ELSE 0 END +
-              CASE WHEN COUNT(DISTINCT so.survey_observation_id) > 0 THEN 1 ELSE 0 END +
-              CASE WHEN COUNT(DISTINCT d.deployment_id) > 0 THEN 1 ELSE 0 END +
-              CASE WHEN COUNT(DISTINCT c.critter_id) > 0 THEN 1 ELSE 0 END +
-              CASE WHEN COUNT(DISTINCT shf.survey_habitat_feature_id) > 0 THEN 1 ELSE 0 END +
-              CASE WHEN COUNT(DISTINCT sa.survey_attachment_id) > 0 THEN 1 ELSE 0 END
-            )::decimal / 8
-          ) * 100, 0)
-        ) AS checklist`)
+        'progress_percentage', ROUND((
+          (
+            CASE WHEN COUNT(DISTINCT sss.survey_sample_site_id) > 0 THEN 1 ELSE 0 END +
+            CASE WHEN COUNT(DISTINCT mt.method_technique_id) > 0 THEN 1 ELSE 0 END +
+            CASE WHEN COUNT(DISTINCT ssp.survey_sample_period_id) > 0 THEN 1 ELSE 0 END +
+            CASE WHEN COUNT(DISTINCT so.survey_observation_id) > 0 THEN 1 ELSE 0 END +
+            CASE WHEN COUNT(DISTINCT d.deployment_id) > 0 THEN 1 ELSE 0 END +
+            CASE WHEN COUNT(DISTINCT dv.device_id) > 0 THEN 1 ELSE 0 END +
+            CASE WHEN COUNT(DISTINCT tm.telemetry_manual_id) > 0 THEN 1 ELSE 0 END +
+            CASE WHEN COUNT(DISTINCT tv.telemetry_vectronic_id) > 0 THEN 1 ELSE 0 END +
+            CASE WHEN COUNT(DISTINCT tl.telemetry_lotek_id) > 0 THEN 1 ELSE 0 END +
+            CASE WHEN COUNT(DISTINCT ta.telemetry_ats_id) > 0 THEN 1 ELSE 0 END +
+            CASE WHEN COUNT(DISTINCT c.critter_id) > 0 THEN 1 ELSE 0 END +
+            CASE WHEN COUNT(DISTINCT shf.survey_habitat_feature_id) > 0 THEN 1 ELSE 0 END +
+            CASE WHEN COUNT(DISTINCT sa.survey_attachment_id) > 0 THEN 1 ELSE 0 END
+          )::decimal / 13 * 100
+        ), 0))
+        AS checklist`)
       )
       .from('survey')
       .leftJoin('survey_sample_site as sss', 'survey.survey_id', 'sss.survey_id')
@@ -725,6 +744,11 @@ export class SurveyRepository extends BaseRepository {
       .leftJoin('method_technique as mt', 'survey.survey_id', 'mt.survey_id')
       .leftJoin('survey_observation as so', 'survey.survey_id', 'so.survey_id')
       .leftJoin('deployment as d', 'survey.survey_id', 'd.survey_id')
+      .leftJoin('device as dv', 'survey.survey_id', 'dv.survey_id')
+      .leftJoin('telemetry_manual as tm', 'd.deployment_id', 'tm.deployment_id')
+      .leftJoin('telemetry_vectronic as tv', 'd.device_key', 'tv.device_key')
+      .leftJoin('telemetry_lotek as tl', 'd.device_key', 'tl.device_key')
+      .leftJoin('telemetry_ats as ta', 'd.device_key', 'ta.device_key')
       .leftJoin('critter as c', 'survey.survey_id', 'c.survey_id')
       .leftJoin('survey_habitat_feature as shf', 'survey.survey_id', 'shf.survey_id')
       .leftJoin('survey_attachment as sa', 'survey.survey_id', 'sa.survey_id')

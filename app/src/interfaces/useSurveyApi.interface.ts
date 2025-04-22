@@ -344,7 +344,12 @@ export interface IGetSurveyChecklistResponse {
 
 export interface IGetSurveyChecklist {
   sampling: { sites: number; techniques: number; periods: number };
-  data: { observations: number; telemetry: number; habitat: number; animals: number };
+  data: {
+    observations: number;
+    telemetry: { devices: number; deployments: number; locations: number };
+    habitat: number;
+    animals: number;
+  };
   attachments: number;
   progress_percentage: number;
 }
