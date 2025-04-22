@@ -72,7 +72,7 @@ const SurveyPage = () => {
   const { searchParams, setSearchParams } = useSearchParams<SurveyPageViewParams>();
   const biohubApi = useBiohubApi();
 
-  const [showGuide, setShowGuide] = useState(false);
+  const [showGuide, setShowGuide] = useState(true);
 
   const checklistDataLoader = useDataLoader(() =>
     biohubApi.survey.getSurveyChecklist(surveyContext.projectId, surveyContext.surveyId)

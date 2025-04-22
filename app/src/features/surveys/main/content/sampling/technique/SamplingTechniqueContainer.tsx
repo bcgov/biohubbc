@@ -1,5 +1,6 @@
 import { mdiArrowTopRight, mdiDotsVertical, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
@@ -13,6 +14,7 @@ import Typography from '@mui/material/Typography';
 import { GridRowSelectionModel } from '@mui/x-data-grid';
 import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
+import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { DeleteTechniquesBulkI18N } from 'constants/i18n';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -170,16 +172,23 @@ export const SamplingTechniqueContainer = () => {
 
       <Divider flexItem />
       <LoadingGuard
+        isLoading={techniquesDataLoader.isLoading}
+        isLoadingFallback={
+          <Box>
+            <SkeletonTable numberOfLines={3} />
+          </Box>
+        }
+        isLoadingFallbackDelay={400}
         hasNoData={!techniquesDataLoader.data?.techniques.length}
         hasNoDataFallback={
           <NoDataOverlay
             height="300px"
             title="Add Techniques"
-            subtitle="Techniques reflect methods used to collect species observations, like aerial transects, camera traps, or hair snags."
+            subtitle="Techniques reflect methods used to collect data, like aerial transects, camera traps, or hair snags."
             icon={mdiArrowTopRight}
           />
         }
-        hasNoDataFallbackDelay={100}>
+        hasNoDataFallbackDelay={400}>
         <SamplingTechniqueTable
           techniques={techniques}
           selectedRows={selectedRows}

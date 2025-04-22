@@ -298,7 +298,7 @@ export const SurveyDeploymentList = () => {
             component={RouterLink}
             to={'manage'}
             startIcon={<Icon path={mdiCog} size={0.75} />}>
-            Manage
+            Add
           </Button>
 
           <IconButton

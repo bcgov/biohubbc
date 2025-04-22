@@ -87,7 +87,11 @@ export const SurveySpatialObservations = (): JSX.Element => {
               variant="contained"
               color="primary"
               aria-label="Manage Survey Data"
-              onClick={() => history.push('/observations/manage')}
+              onClick={() =>
+                history.push(
+                  `/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/observations`
+                )
+              }
               startIcon={<Icon path={mdiCog} size={0.75}></Icon>}>
               Manage
             </Button>

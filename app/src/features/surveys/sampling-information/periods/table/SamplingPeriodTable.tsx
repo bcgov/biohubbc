@@ -124,7 +124,7 @@ export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
     {
       field: 'id',
       headerName: 'ID',
-      width: 70,
+      width: 50,
       renderHeader: () => (
         <Typography color={grey[500]} variant="body2" fontWeight={700}>
           ID

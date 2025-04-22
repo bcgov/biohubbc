@@ -12,6 +12,7 @@ import { GridRowSelectionModel } from '@mui/x-data-grid';
 import { GridColDef } from '@mui/x-data-grid/models/colDef/gridColDef';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
+import { CustomTooltip } from 'components/tooltip/CustomTooltip';
 import { DeleteTechniqueI18N } from 'constants/i18n';
 import { useCodesContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { IGetTechniqueResponse, TechniqueAttractant } from 'interfaces/useTechniqueApi.interface';
@@ -134,37 +135,29 @@ export const SamplingTechniqueTable = <T extends ITechniqueRowData>(props: ISamp
       field: 'method_lookup_id',
       flex: 0.4,
       headerName: 'Method',
-      renderCell: (params) => (
-        <ColouredRectangleChip
-          label={getCodesName(codesContext.codesDataLoader.data, 'sample_methods', params.row.method_lookup_id) ?? ''}
-          colour={blueGrey}
-        />
-      )
+      renderCell: (params) => {
+        const label =
+          getCodesName(codesContext.codesDataLoader.data, 'sample_methods', params.row.method_lookup_id) ?? '';
+        return (
+          <CustomTooltip tooltip={label}>
+            <Box maxWidth="100%">
+              <ColouredRectangleChip label={label} colour={blueGrey} />
+            </Box>
+          </CustomTooltip>
+        );
+      }
     },
     {
       field: 'description',
       headerName: 'Description',
-      flex: 1,
-      renderCell: (params) => {
-        return (
-          <Box alignItems="flex-start">
-            <Typography
-              color="textSecondary"
-              variant="body2"
-              flex="0.4"
-              sx={{
-                whiteSpace: 'normal',
-                wordBreak: 'break-word',
-                display: '-webkit-box',
-                WebkitBoxOrient: 'vertical',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis'
-              }}>
-              {params.row.description}
-            </Typography>
-          </Box>
-        );
-      }
+      flex: 0.75,
+      renderCell: (params) => (
+        <CustomTooltip tooltip={params.row.description ?? ''}>
+          <Typography sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} variant="body2">
+            {params.row.description}
+          </Typography>
+        </CustomTooltip>
+      )
     },
     {
       field: 'attractants',
@@ -184,12 +177,6 @@ export const SamplingTechniqueTable = <T extends ITechniqueRowData>(props: ISamp
           ))}
         </Box>
       )
-    },
-    {
-      field: 'distance_threshold',
-      headerName: 'Distance threshold',
-      flex: 0.3,
-      renderCell: (params) => (params.row.distance_threshold ? <>{params.row.distance_threshold}&nbsp;m</> : <></>)
     },
     {
       field: 'actions',

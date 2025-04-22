@@ -1,7 +1,6 @@
 import { ProjectRoleRouteGuard } from 'components/security/RouteGuards';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { DialogContextProvider } from 'contexts/dialogContext';
-import { SamplingSiteManagePage } from 'features/surveys/sampling-information/manage/SamplingSiteManagePage';
 import { CreateSamplingSitePage } from 'features/surveys/sampling-information/sites/create/CreateSamplingSitePage';
 import { EditSamplingSitePage } from 'features/surveys/sampling-information/sites/edit/EditSamplingSitePage';
 import { CreateTechniquePage } from 'features/surveys/sampling-information/techniques/create/CreateTechniquePage';
@@ -20,19 +19,6 @@ import { EditSamplePeriodPage } from './periods/edit/EditSamplePeriodPage';
 export const SamplingRouter = () => {
   return (
     <Switch>
-      <RouteWithTitle
-        exact
-        path="/admin/projects/:id/surveys/:survey_id/sampling"
-        title={getTitle('Manage Sampling Information')}>
-        <ProjectRoleRouteGuard
-          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
-          validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-          <DialogContextProvider>
-            <SamplingSiteManagePage />
-          </DialogContextProvider>
-        </ProjectRoleRouteGuard>
-      </RouteWithTitle>
-
       <RouteWithTitle
         exact
         path="/admin/projects/:id/surveys/:survey_id/sampling/create"
