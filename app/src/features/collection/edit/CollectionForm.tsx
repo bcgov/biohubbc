@@ -2,8 +2,10 @@ import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import FormikErrorSnackbar from 'components/alert/FormikErrorSnackbar';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
+import { CodesContext } from 'contexts/codesContext';
 import { Formik, FormikProps } from 'formik';
 import { ICreateCollectionRequest, IUpdateCollectionRequest } from 'interfaces/useCollectionApi.interface';
+import { useContext } from 'react';
 import yup from 'utils/YupSchema';
 import GeneralInformationCollectionForm from './general/GeneralInformationCollectionForm';
 import ParticipantsCollectionForm from './participants/ParticipantsCollectionForm';
@@ -30,6 +32,9 @@ const CollectionForm = <InitialValuesType extends IUpdateCollectionRequest | ICr
 ) => {
   const { formikRef } = props;
 
+  const codesContext = useContext(CodesContext);
+  const codes = codesContext.codesDataLoader.data;
+
   const handleSubmit = async (formikData: InitialValuesType) => {
     props.handleSubmit(formikData);
   };
@@ -55,7 +60,7 @@ const CollectionForm = <InitialValuesType extends IUpdateCollectionRequest | ICr
         <HorizontalSplitFormComponent
           title="Members"
           summary="Invite people to the collection, giving read-only access to Surveys in the collection."
-          component={<ParticipantsCollectionForm roles={[]} />}
+          component={<ParticipantsCollectionForm roles={codes?.collection_roles ?? []} />}
         />
 
         <Divider />

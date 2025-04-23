@@ -1,6 +1,6 @@
 import { AxiosInstance } from 'axios';
 import { ICollectionAdvancedFilters } from 'features/summary/list-data/collection/CollectionListFilterForm';
-import { ICreateCollectionRequest, IGetCollectionsResponse } from 'interfaces/useCollectionApi.interface';
+import { ICollection, ICreateCollectionRequest, IGetCollectionsResponse } from 'interfaces/useCollectionApi.interface';
 
 import qs from 'qs';
 import { ApiPaginationRequestOptions } from 'types/misc';
@@ -19,7 +19,7 @@ export const useCollectionApi = (axios: AxiosInstance) => {
    * @return {*}  {Promise<ICreateCollectionResponse>}
    */
   const createCollection = async (collection: ICreateCollectionRequest): Promise<IGetCollectionsResponse> => {
-    const { data } = await axios.post(`/api/collection/create`, collection);
+    const { data } = await axios.post(`/api/collection`, collection);
 
     return data;
   };
@@ -35,31 +35,31 @@ export const useCollectionApi = (axios: AxiosInstance) => {
     collectionId: number,
     collection: ICreateCollectionRequest
   ): Promise<IGetCollectionsResponse> => {
-    const { data } = await axios.post(`/api/collection/${collectionId}`, collection);
+    const { data } = await axios.put(`/api/collection/${collectionId}`, collection);
 
     return data;
   };
 
   /**
-   * Get project collection details based on its ID for viewing purposes.
+   * Delete a collection
    *
    * @param {number} collectionId
-   * @return {*} {Promise<IGetCollectionsResponse>}
+   * @return {*}  {Promise<ICreateCollectionResponse>}
    */
-  const getCollectionForView = async (collectionId: number): Promise<IGetCollectionsResponse> => {
-    const { data } = await axios.get(`/api/collection/${collectionId}/view`);
+  const deleteCollection = async (collectionId: number): Promise<IGetCollectionsResponse> => {
+    const { data } = await axios.delete(`/api/collection/${collectionId}`);
 
     return data;
   };
 
   /**
-   * Get project collection details based on its ID for update purposes.
+   * Get project collection details based on its ID
    *
    * @param {number} collectionId
-   * @return {*} {Promise<IGetCollectionsResponse>}
+   * @return {*} {Promise<ICollection>}
    */
-  const getCollectionForUpdate = async (collectionId: number): Promise<IGetCollectionsResponse> => {
-    const { data } = await axios.get(`/api/collection/${collectionId}/update/get`);
+  const getCollection = async (collectionId: number): Promise<ICollection> => {
+    const { data } = await axios.get(`/api/collection/${collectionId}`);
 
     return data;
   };
@@ -85,5 +85,5 @@ export const useCollectionApi = (axios: AxiosInstance) => {
     return data;
   };
 
-  return { createCollection, updateCollection, findCollections, getCollectionForUpdate, getCollectionForView };
+  return { createCollection, updateCollection, findCollections, getCollection, deleteCollection };
 };

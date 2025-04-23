@@ -86,5 +86,9 @@ export const codes: IGetAllCodeSetsResponse = {
   habitat_feature_types: [
     { id: 1, name: 'Habitat feature 1', description: 'Habitat feature 1.' },
     { id: 2, name: 'Habitat feature 2', description: 'Habitat feature 2.' }
+  ],
+  collection_roles: [
+    { id: 1, name: 'Member', description: 'Member' },
+    { id: 1, name: 'Admin', description: 'Admin' }
   ]
 };

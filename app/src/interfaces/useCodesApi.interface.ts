@@ -52,4 +52,5 @@ export interface IGetAllCodeSetsResponse {
   alert_types: CodeSet<{ id: number; name: string; description: string }>;
   vantages: CodeSet<{ id: number; name: string; description: string }>;
   habitat_feature_types: CodeSet<{ id: number; name: string; description: string }>;
+  collection_roles: CodeSet<{ id: number; name: string; description: string }>;
 }

@@ -54,6 +54,14 @@ export const EditCollectionI18N = {
     'An error has occurred while attempting to edit your collection, please try again. If the error persists, please contact your system administrator.'
 };
 
+export const DeleteCollectionI18N = {
+  deleteTitle: 'Delete Collection?',
+  deleteText: 'Deleting this collection will disassociate the grouped surveys. This action cannot be undone.',
+  deleteErrorTitle: 'Error Deleting Collection',
+  deleteErrorText:
+    'An error has occurred while attempting to delete this collection. Please try again. If the error persists, please contact your system administrator.'
+};
+
 export const CancelDialogI18N = {
   cancelTitle: 'Discard changes and exit?',
   cancelText: 'Any changes you have made will not be saved. Do you want to proceed?'

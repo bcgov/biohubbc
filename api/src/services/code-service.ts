@@ -53,7 +53,8 @@ export class CodeService extends DBService {
       frequency_units: this.codeRepository.getFrequencyUnits(),
       alert_types: this.codeRepository.getAlertTypes(),
       vantages: this.codeRepository.getVantages(),
-      habitat_feature_types: this.codeRepository.getHabitatFeatureTypes()
+      habitat_feature_types: this.codeRepository.getHabitatFeatureTypes(),
+      collection_roles: this.codeRepository.getCollectionRoles()
     };
 
     // Fetch all code sets in parallel

@@ -1,10 +1,12 @@
 import { SystemRoleRouteGuard } from 'components/security/RouteGuards';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { DialogContextProvider } from 'contexts/dialogContext';
+import { TaxonomyContextProvider } from 'contexts/taxonomyContext';
 import { Redirect, Route, Switch } from 'react-router';
 import RouteWithTitle from 'utils/RouteWithTitle';
 import { getTitle } from 'utils/Utils';
 import CreateCollectionPage from './create/CreateCollectionPage';
+import CollectionPage from './details/CollectionPage';
 
 /**
  * Router for all `/admin/collections/*` pages.
@@ -30,6 +32,18 @@ const CollectionsRouter = () => {
       </RouteWithTitle>
 
       <Redirect exact from="/admin/collections/:id" to="/admin/collections/:id/details" />
+
+      {/* Collection Route */}
+      <RouteWithTitle exact path="/admin/collections/:id/details" title={getTitle('Collection')}>
+        <DialogContextProvider>
+          <TaxonomyContextProvider>
+            <SystemRoleRouteGuard
+              validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.PROJECT_CREATOR]}>
+              <CollectionPage />
+            </SystemRoleRouteGuard>
+          </TaxonomyContextProvider>
+        </DialogContextProvider>
+      </RouteWithTitle>
 
       {/*  Catch any unknown routes, and re-direct to the not found page */}
       <Route path="/admin/collections/*">

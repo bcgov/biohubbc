@@ -10,6 +10,7 @@ import { CreateCollectionI18N } from 'constants/i18n';
 import { CodesContext } from 'contexts/codesContext';
 import { DialogContext } from 'contexts/dialogContext';
 import { FormikProps } from 'formik';
+import { APIError } from 'hooks/api/useAxios';
 import { useAuthStateContext } from 'hooks/useAuthStateContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
@@ -103,21 +104,20 @@ const CreateCollectionPage = () => {
   const createCollection = async (collectionPostObject: ICreateCollectionRequest) => {
     setIsSaving(true);
     try {
-      const response = await biohubApi.collection.createCollection(collectionPostObject);
-
-      if (!response?.collections) {
-        showCreateErrorDialog({
-          dialogError: 'The response from the server was null, or did not contain a collection ID.'
-        });
-        return;
-      }
+      await biohubApi.collection.createCollection({
+        ...collectionPostObject,
+        participants: collectionPostObject.participants.map((participant) => ({
+          system_user_id: participant.system_user_id
+        }))
+      });
 
       setEnableCancelCheck(false);
       skipUnsavedChangesDialog();
       history.push(`/admin/summary`);
-    } finally {
-      setIsSaving(false);
+    } catch (error) {
+      showCreateErrorDialog({ dialogError: (error as APIError).message });
     }
+    setIsSaving(false);
   };
 
   if (!codesContext.codesDataLoader.data) {

@@ -45,7 +45,8 @@ export const IAllCodeSets = z.object({
   frequency_units: CodeDescription.array(),
   alert_types: CodeDescription.array(),
   vantages: CodeDescription.array(),
-  habitat_feature_types: CodeDescription.array()
+  habitat_feature_types: CodeDescription.array(),
+  collection_roles: Code.array()
 });
 
 export class CodeRepository extends BaseRepository {
@@ -322,6 +323,29 @@ export class CodeRepository extends BaseRepository {
       WHERE record_end_date is null
       ORDER BY
         CASE WHEN name = 'Coordinator' THEN 0 ELSE 1 END;
+    `;
+
+    const response = await this.connection.sql(sqlStatement, CodeDescription);
+
+    return response.rows;
+  }
+
+  /**
+   * Fetch collection role codes.
+   *
+   * @return {*} {Promise<ICodeDescription[]>}
+   * @memberof CodeRepository
+   */
+  async getCollectionRoles(): Promise<ICodeDescription[]> {
+    const sqlStatement = SQL`
+      SELECT
+        collection_role_id as id,
+        name,
+        description
+      FROM collection_role
+      WHERE record_end_date is null
+      ORDER BY
+        CASE WHEN name = 'Admin' THEN 0 ELSE 1 END;
     `;
 
     const response = await this.connection.sql(sqlStatement, CodeDescription);
