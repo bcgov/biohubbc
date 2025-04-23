@@ -3,6 +3,7 @@ import { SYSTEM_ROLE } from 'constants/roles';
 import { CodesContextProvider } from 'contexts/codesContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import AdminRouter from 'features/admin/AdminRouter';
+import CollectionsRouter from 'features/collection/CollectionRouter';
 import FundingSourcesRouter from 'features/funding-sources/FundingSourcesRouter';
 import ProjectsRouter from 'features/projects/ProjectsRouter';
 import ResourcesPage from 'features/resources/ResourcesPage';
@@ -74,6 +75,16 @@ const AppRouter: React.FC = () => {
           <AuthenticatedRouteGuard>
             <CodesContextProvider>
               <ProjectsRouter />
+            </CodesContextProvider>
+          </AuthenticatedRouteGuard>
+        </BaseLayout>
+      </RouteWithTitle>
+
+      <RouteWithTitle path="/admin/collections" title={getTitle('Collections')}>
+        <BaseLayout>
+          <AuthenticatedRouteGuard>
+            <CodesContextProvider>
+              <CollectionsRouter />
             </CodesContextProvider>
           </AuthenticatedRouteGuard>
         </BaseLayout>
