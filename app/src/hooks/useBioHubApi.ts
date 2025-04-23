@@ -12,6 +12,7 @@ import useAnalyticsApi from './api/useAnalyticsApi';
 import useAnimalApi from './api/useAnimalApi';
 import useAxios from './api/useAxios';
 import useCodesApi from './api/useCodesApi';
+import { useCollectionApi } from './api/useCollectionApi';
 import useExternalApi from './api/useExternalApi';
 import useFundingSourceApi from './api/useFundingSourceApi';
 import { useMarkdownApi } from './api/useMarkdownApi';
@@ -42,6 +43,8 @@ export const useBiohubApi = () => {
   const analytics = useAnalyticsApi(apiAxios);
 
   const project = useProjectApi(apiAxios);
+
+  const collection = useCollectionApi(apiAxios);
 
   const projectParticipants = useProjectParticipationApi(apiAxios);
 
@@ -100,6 +103,7 @@ export const useBiohubApi = () => {
       projectParticipants,
       taxonomy,
       survey,
+      collection,
       observation,
       observationSubcount,
       resources,
