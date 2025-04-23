@@ -1,9 +1,11 @@
-import { mdiFolder, mdiFormatListGroup, mdiListBoxOutline, mdiMagnify } from '@mdi/js';
+import { mdiClipboardOutline, mdiDatabaseSearch, mdiFolder, mdiFormatListGroup, mdiMagnify } from '@mdi/js';
 import Icon from '@mdi/react';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Divider from '@mui/material/Divider';
+import grey from '@mui/material/colors/grey';
 import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
 import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
 import CustomToggleButtonGroup from 'components/toolbar/CustomToggleButtonGroup';
 import ProjectsListContainer from 'features/summary/list-data/project/ProjectsListContainer';
@@ -11,13 +13,18 @@ import SurveysListContainer from 'features/summary/list-data/survey/SurveysListC
 import { useSearchParams } from 'hooks/useSearchParams';
 import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import { useState } from 'react';
+import { TabularDataTableContainer } from '../tabular-data/TabularDataTableContainer';
 import CollectionsListContainer from './collection/CollectionListContainer';
+import { CreateCollectionButton } from './collection/create/CreateCollectionButton';
+import { CreateProjectButton } from './project/create/CreateProjectButton';
+import { CreateSurveyButton } from './survey/create/CreateSurveyButton';
 
 const ACTIVE_VIEW_KEY = 'lvk';
 export enum ACTIVE_VIEW_VALUE {
-  projects = 'pv',
-  surveys = 'sv',
-  collections = 'c'
+  projects = 'projects',
+  surveys = 'surveys',
+  collections = 'collections',
+  data = 'data'
 }
 
 const SHOW_SEARCH_KEY = 'lvsk';
@@ -46,14 +53,27 @@ export const ListDataTableContainer = () => {
   const [showSearch, setShowSearch] = useState<boolean>(searchParams.get(SHOW_SEARCH_KEY) === SHOW_SEARCH_VALUE.true);
 
   const views = [
-    { value: ACTIVE_VIEW_VALUE.projects, label: 'projects', icon: mdiFolder },
-    { value: ACTIVE_VIEW_VALUE.surveys, label: 'surveys', icon: mdiListBoxOutline },
-    { value: ACTIVE_VIEW_VALUE.collections, label: 'collections', icon: mdiFormatListGroup }
+    { value: ACTIVE_VIEW_VALUE.projects, label: 'Projects', icon: mdiFolder, button: <CreateProjectButton /> },
+    {
+      value: ACTIVE_VIEW_VALUE.surveys,
+      label: 'Surveys',
+      icon: mdiClipboardOutline,
+      button: <CreateSurveyButton projectId={1} />
+    },
+    {
+      value: ACTIVE_VIEW_VALUE.collections,
+      label: 'Collections',
+      icon: mdiFormatListGroup,
+      button: <CreateCollectionButton />
+    },
+    { value: ACTIVE_VIEW_VALUE.data, label: 'Data', icon: mdiDatabaseSearch }
   ];
 
+  const activeViewObj = views.find((v) => v.value === activeView);
+
   return (
-    <>
-      <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
+    <Stack gap={1} flexDirection="row" height="100%">
+      <Box p={2} minWidth="300px">
         <CustomToggleButtonGroup
           views={views}
           activeView={activeView}
@@ -61,29 +81,37 @@ export const ListDataTableContainer = () => {
             setSearchParams(searchParams.set(ACTIVE_VIEW_KEY, view));
             setActiveView(view);
           }}
-          orientation="horizontal"
+          orientation="vertical"
         />
-        <Stack gap={1} direction="row">
-          <HelpButtonDialog markdownType={MarkdownTypeNameEnum.PROJECTS_AND_SURVEYS} />
-          <Button
-            color="primary"
-            variant="outlined"
-            onClick={() => {
-              setSearchParams(
-                searchParams.set(SHOW_SEARCH_KEY, showSearch ? SHOW_SEARCH_VALUE.false : SHOW_SEARCH_VALUE.true)
-              );
-              setShowSearch(!showSearch);
-            }}
-            component={Button}
-            startIcon={<Icon path={mdiMagnify} size={1} />}>
-            Search
-          </Button>
-        </Stack>
-      </Toolbar>
-      <Divider />
-      {activeView === ACTIVE_VIEW_VALUE.projects && <ProjectsListContainer showSearch={showSearch} />}
-      {activeView === ACTIVE_VIEW_VALUE.surveys && <SurveysListContainer showSearch={showSearch} />}
-      {activeView === ACTIVE_VIEW_VALUE.collections && <CollectionsListContainer showSearch={showSearch} />}
-    </>
+      </Box>
+
+      <Box borderLeft={`1px solid ${grey[300]}`} boxSizing="border-box" flex="1 1 auto">
+        <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', borderBottom: `1px solid ${grey[300]}` }}>
+          <Typography variant="h2">{activeViewObj?.label}</Typography>
+
+          <Stack gap={1} direction="row">
+            <HelpButtonDialog markdownType={MarkdownTypeNameEnum.PROJECTS_AND_SURVEYS} />
+            <Button
+              color="primary"
+              variant="outlined"
+              onClick={() => {
+                setSearchParams(
+                  searchParams.set(SHOW_SEARCH_KEY, showSearch ? SHOW_SEARCH_VALUE.false : SHOW_SEARCH_VALUE.true)
+                );
+                setShowSearch(!showSearch);
+              }}
+              startIcon={<Icon path={mdiMagnify} size={1} />}>
+              Search
+            </Button>
+            {activeViewObj?.button}
+          </Stack>
+        </Toolbar>
+
+        {activeView === ACTIVE_VIEW_VALUE.projects && <ProjectsListContainer showSearch={showSearch} />}
+        {activeView === ACTIVE_VIEW_VALUE.surveys && <SurveysListContainer showSearch={showSearch} />}
+        {activeView === ACTIVE_VIEW_VALUE.collections && <CollectionsListContainer showSearch={showSearch} />}
+        {activeView === ACTIVE_VIEW_VALUE.data && <TabularDataTableContainer />}
+      </Box>
+    </Stack>
   );
 };
