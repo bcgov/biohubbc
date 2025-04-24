@@ -1,6 +1,5 @@
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
-import Typography from '@mui/material/Typography';
 import { NameDescriptionCard } from 'components/card/NameDescriptionCard';
 import AutocompleteField from 'components/fields/AutocompleteField';
 import { FieldArray, useFormikContext } from 'formik';
@@ -34,14 +33,12 @@ const CollectionSurveyForm = () => {
         name="collections"
         render={(arrayHelpers) => (
           <>
-            <Box component="fieldset" mb={4}>
-              <Typography component="legend">Select Collections</Typography>
-
+            <Box component="fieldset" mb={1}>
               {/* Dropdown to add new collection to the array */}
               <AutocompleteField
-                label="Add a Collection"
-                id="add-collection"
-                name="newCollection"
+                label="Collections"
+                id="collections"
+                name="collections"
                 options={
                   collectionsDataLoader.data?.collections.map((collection) => ({
                     value: collection.collection_id,

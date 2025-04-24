@@ -5,12 +5,14 @@ import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
+import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import { GridColDef, GridPaginationModel, GridSortDirection, GridSortModel } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
+import { TeamMemberAvatar } from 'features/projects/view/components/TeamMemberAvatar';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
@@ -19,7 +21,7 @@ import { ICollection } from 'interfaces/useCollectionApi.interface';
 import { useMemo, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions, StringValues } from 'types/misc';
-import { firstOrNull } from 'utils/Utils';
+import { firstOrNull, getRandomHexColor } from 'utils/Utils';
 import CollectionsListFilterForm, {
   CollectionAdvancedFiltersInitialValues,
   ICollectionAdvancedFilters
@@ -129,7 +131,7 @@ const CollectionsListContainer = (props: ICollectionsListContainerProps) => {
     {
       field: 'name',
       headerName: 'Name',
-      flex: 1,
+      flex: 0.3,
       disableColumnMenu: true,
       renderCell: (params) => {
         return (
@@ -143,6 +145,63 @@ const CollectionsListContainer = (props: ICollectionsListContainerProps) => {
               to={`/admin/collections/${params.row.collection_id}`}
               children={params.row.name}
             />
+          </Stack>
+        );
+      }
+    },
+    {
+      field: 'description',
+      headerName: 'Description',
+      flex: 0.4,
+      disableColumnMenu: true,
+      renderCell: (params) => (
+        <Tooltip title={params.row.description}>
+          <Typography color="textSecondary" variant="body2">
+            {params.row.description}
+          </Typography>
+        </Tooltip>
+      )
+    },
+    {
+      field: 'participants',
+      headerName: 'Members',
+      flex: 0.4,
+      disableColumnMenu: true,
+      renderCell: (params) => {
+        const members = params.row.participants;
+        const visibleMembers = members.slice(0, 5);
+        const remainingCount = members.length - visibleMembers.length;
+
+        return (
+          <Stack gap={0.5} flexDirection="row" alignItems="center">
+            {visibleMembers.map((member) => (
+              <TeamMemberAvatar
+                key={member.system_user_id}
+                tooltip={member.display_name}
+                label={member.display_name
+                  .split(',')
+                  .map((name) => name.trim().slice(0, 1).toUpperCase())
+                  .reverse()
+                  .join('')}
+                color={getRandomHexColor(member.system_user_id)}
+              />
+            ))}
+            {remainingCount > 0 && (
+              <Box
+                sx={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: '50%',
+                  backgroundColor: '#ccc',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: 12,
+                  fontWeight: 'bold'
+                }}>
+                +{remainingCount}
+              </Box>
+            )}
           </Stack>
         );
       }

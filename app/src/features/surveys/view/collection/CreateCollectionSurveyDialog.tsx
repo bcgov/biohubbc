@@ -85,6 +85,7 @@ const CreateCollectionSurveyDialog = (props: ICreateCollectionSurveyDialogProps)
   return (
     <EditDialog
       dialogTitle="Add Survey to Collection"
+      dialogText="Select collections to add the survey to"
       open={props.open}
       dialogLoading={isSubmitting}
       component={{

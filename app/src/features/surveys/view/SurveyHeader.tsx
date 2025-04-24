@@ -257,7 +257,7 @@ const SurveyHeader = () => {
                 <ListItemIcon>
                   <Icon path={mdiFormatListGroup} size={1} />
                 </ListItemIcon>
-                <Typography variant="inherit">Share to Collection</Typography>
+                <Typography variant="inherit">Add to Collection</Typography>
               </MenuItem>
               <MenuItem onClick={() => history.push('edit')}>
                 <ListItemIcon>
