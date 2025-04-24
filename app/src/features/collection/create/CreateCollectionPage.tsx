@@ -110,12 +110,15 @@ const CreateCollectionPage = () => {
     try {
       await biohubApi.collection.createCollection({
         ...collectionPostObject,
-        participants: collectionPostObject.participants
+        participants: collectionPostObject.participants.map((participant) => ({
+          system_user_id: participant.system_user_id,
+          collection_role_name: participant.collection_role_name
+        }))
       });
 
       setEnableCancelCheck(false);
       skipUnsavedChangesDialog();
-      history.push(`/admin/summary`);
+      history.goBack();
     } catch (error) {
       showCreateErrorDialog({ dialogError: (error as APIError).message });
     }

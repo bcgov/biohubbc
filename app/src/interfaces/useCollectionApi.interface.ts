@@ -8,7 +8,7 @@ export interface IGetCollectionsResponse {
 export interface ICreateCollectionRequest {
   name: string;
   description: string;
-  participants: ICollectionParticipant[];
+  participants: IPostCollectionParticipant[];
 }
 
 export interface IUpdateCollectionRequest {
