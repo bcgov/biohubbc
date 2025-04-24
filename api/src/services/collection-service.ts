@@ -9,10 +9,15 @@ import {
 } from '../models/collection';
 import { SystemUserWithRoles } from '../models/system-user-view';
 import { CollectionRepository } from '../repositories/collection-repository';
+import {
+  AllObservationSupplementaryData,
+  ObservationRecordWithSamplingAndSubcountData
+} from '../repositories/observation-repository/observation-repository.interface';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { AttractantService } from './attractants-service';
 import { CollectionParticipationService } from './collection-participation-service';
 import { DBService } from './db-service';
+import { ObservationService } from './observation-services/observation-service';
 
 /**
  * Service layer for collections.
@@ -25,6 +30,7 @@ export class CollectionService extends DBService {
   collectionRepository: CollectionRepository;
   collectionParticipationService: CollectionParticipationService;
   attractantService: AttractantService;
+  observationService: ObservationService;
 
   constructor(connection: IDBConnection) {
     super(connection);
@@ -32,6 +38,7 @@ export class CollectionService extends DBService {
     this.collectionRepository = new CollectionRepository(connection);
     this.collectionParticipationService = new CollectionParticipationService(connection);
     this.attractantService = new AttractantService(connection);
+    this.observationService = new ObservationService(connection);
   }
 
   /**
@@ -54,6 +61,33 @@ export class CollectionService extends DBService {
    */
   async getCollectionParticipants(collectionId: number): Promise<(CollectionParticipant & SystemUserWithRoles)[]> {
     return this.collectionParticipationService.getCollectionParticipants(collectionId);
+  }
+
+  async getSurveysInCollection(collectionId: number): Promise<{ survey_id: number }[]> {
+    return this.collectionRepository.getSurveysInCollection(collectionId);
+  }
+
+  /**
+   *
+   */
+  async getCollectionObservations(
+    collectionId: number,
+    pagination?: ApiPaginationOptions
+  ): Promise<{
+    surveyObservations: ObservationRecordWithSamplingAndSubcountData[];
+    supplementaryObservationData: AllObservationSupplementaryData;
+  }> {
+    // Find surveys in collection
+    const surveys = await this.getSurveysInCollection(collectionId);
+
+    // Find observations in the surveys
+    const observationData =
+      await this.observationService.getSurveyObservationsWithSupplementaryAndSamplingDataAndAttributeData(
+        surveys.map((survey) => survey.survey_id),
+        pagination
+      );
+
+    return observationData;
   }
 
   /**

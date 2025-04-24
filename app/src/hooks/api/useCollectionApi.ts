@@ -1,6 +1,8 @@
 import { AxiosInstance } from 'axios';
 import { ICollectionAdvancedFilters } from 'features/summary/list-data/collection/CollectionListFilterForm';
+import { IObservationsAdvancedFilters } from 'features/summary/tabular-data/observation/ObservationsListFilterForm';
 import { ICollection, ICreateCollectionRequest, IGetCollectionsResponse } from 'interfaces/useCollectionApi.interface';
+import { IGetSurveyObservationsResponse } from 'interfaces/useObservationApi.interface';
 
 import qs from 'qs';
 import { ApiPaginationRequestOptions } from 'types/misc';
@@ -36,6 +38,27 @@ export const useCollectionApi = (axios: AxiosInstance) => {
     collection: ICreateCollectionRequest
   ): Promise<IGetCollectionsResponse> => {
     const { data } = await axios.put(`/api/collection/${collectionId}`, collection);
+
+    return data;
+  };
+
+  /**
+   * Get all observations from surveys in the collection
+   * @param {number} collectionId
+   */
+  const getObservations = async (
+    collectionId: number,
+    pagination?: ApiPaginationRequestOptions,
+    filterFieldData?: IObservationsAdvancedFilters
+  ): Promise<IGetSurveyObservationsResponse> => {
+    const params = {
+      ...pagination,
+      ...filterFieldData
+    };
+    const { data } = await axios.get(`/api/collection/${collectionId}/observation`, {
+      params,
+      paramsSerializer: (params) => qs.stringify(params)
+    });
 
     return data;
   };
@@ -85,5 +108,5 @@ export const useCollectionApi = (axios: AxiosInstance) => {
     return data;
   };
 
-  return { createCollection, updateCollection, findCollections, getCollection, deleteCollection };
+  return { createCollection, updateCollection, findCollections, getObservations, getCollection, deleteCollection };
 };

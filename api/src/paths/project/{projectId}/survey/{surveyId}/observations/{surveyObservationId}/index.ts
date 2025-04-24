@@ -221,7 +221,7 @@ export function getSurveyObservationByIdWithSupplementaryData(): RequestHandler 
       const observationService = new ObservationService(connection);
 
       const observationData = await observationService.getSurveyObservationByIdWithSupplementaryData(
-        surveyId,
+        [surveyId],
         surveyObservationId
       );
 

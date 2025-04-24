@@ -1,25 +1,19 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
-import { getDBConnection } from '../../../../../../../database/db';
-import {
-  findFlattenedObservationsSchema,
-  observationsSupplementaryDataSchema
-} from '../../../../../../../openapi/schemas/observation';
-import {
-  paginationRequestQueryParamSchema,
-  paginationResponseSchema
-} from '../../../../../../../openapi/schemas/pagination';
-import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
-import { ObservationService } from '../../../../../../../services/observation-services/observation-service';
-import { getLogger } from '../../../../../../../utils/logger';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../constants/roles';
+import { getDBConnection } from '../../../../database/db';
+import { findObservationsSchema, observationsSupplementaryDataSchema } from '../../../../openapi/schemas/observation';
+import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../../../../openapi/schemas/pagination';
+import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
+import { CollectionService } from '../../../../services/collection-service';
+import { getLogger } from '../../../../utils/logger';
 import {
   ensureCompletePaginationOptions,
   makePaginationOptionsFromRequest,
   makePaginationResponse
-} from '../../../../../../../utils/pagination';
+} from '../../../../utils/pagination';
 
-const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation');
+const defaultLog = getLogger('/api/collection/{collectionId}/observation/index');
 
 export const GET: Operation = [
   authorizeRequestHandler((req) => {
@@ -41,11 +35,11 @@ export const GET: Operation = [
       ]
     };
   }),
-  getSurveyFlattenedObservations()
+  getCollectionObservations()
 ];
 
 GET.apiDoc = {
-  description: 'Get all flattened observations for the survey.',
+  description: 'Get all observations for the collection.',
   tags: ['observation'],
   security: [
     {
@@ -55,35 +49,27 @@ GET.apiDoc = {
   parameters: [
     {
       in: 'path',
-      name: 'projectId',
+      name: 'collectionId',
       schema: {
         type: 'integer',
         minimum: 1
       },
       required: true
     },
-    {
-      in: 'path',
-      name: 'surveyId',
-      schema: {
-        type: 'integer',
-        minimum: 1
-      },
-      required: true
-    },
+
     ...paginationRequestQueryParamSchema
   ],
   responses: {
     200: {
-      description: 'Survey flattened observations get response.',
+      description: 'Collection Observations get response.',
       content: {
         'application/json': {
           schema: {
             type: 'object',
             additionalProperties: false,
-            required: ['surveyObservations', 'supplementaryObservationData', 'pagination'],
+            required: ['collectionObservations', 'supplementaryObservationData', 'pagination'],
             properties: {
-              surveyObservations: findFlattenedObservationsSchema,
+              collectionObservations: findObservationsSchema,
               supplementaryObservationData: observationsSupplementaryDataSchema,
               pagination: paginationResponseSchema
             }
@@ -117,21 +103,22 @@ GET.apiDoc = {
  * columns.
  */
 const samplingSiteSortingColumnName: Record<string, string> = {
-  survey_sample_site_id: 'survey_sample_site_name',
+  collection_sample_site_id: 'collection_sample_site_name',
   method_technique_id: 'method_technique_name',
-  survey_sample_period_id: 'survey_sample_period_start_datetime'
+  collection_sample_period_id: 'collection_sample_period_start_datetime'
 };
 
 /**
- * Fetch all flattened observations for a survey.
+ * Fetch all observations for a collection.
  *
  * @export
  * @return {*}  {RequestHandler}
  */
-export function getSurveyFlattenedObservations(): RequestHandler {
+export function getCollectionObservations(): RequestHandler {
   return async (req, res) => {
-    const surveyId = Number(req.params.surveyId);
-    defaultLog.debug({ label: 'getSurveyFlattenedObservations', surveyId });
+    const collectionId = Number(req.params.collectionId);
+
+    defaultLog.debug({ label: 'getCollectionObservations', collectionId });
 
     const paginationOptions = makePaginationOptionsFromRequest(req);
     if (paginationOptions.sort && samplingSiteSortingColumnName[paginationOptions.sort]) {
@@ -143,25 +130,24 @@ export function getSurveyFlattenedObservations(): RequestHandler {
     try {
       await connection.open();
 
-      const observationService = new ObservationService(connection);
+      const collectionService = new CollectionService(connection);
 
-      const observationData =
-        await observationService.getSurveyFlattenedObservationsWithSupplementaryAndSamplingDataAndAttributeData(
-          [surveyId],
-          ensureCompletePaginationOptions(paginationOptions)
-        );
+      const observationData = await collectionService.getCollectionObservations(
+        collectionId,
+        ensureCompletePaginationOptions(paginationOptions)
+      );
 
       await connection.commit();
 
       const observationCount = observationData.supplementaryObservationData.observationCount;
 
       return res.status(200).json({
-        surveyObservations: observationData.surveyObservations,
+        collectionObservations: observationData.surveyObservations,
         supplementaryObservationData: observationData.supplementaryObservationData,
         pagination: makePaginationResponse(observationCount, paginationOptions)
       });
     } catch (error) {
-      defaultLog.error({ label: 'getSurveyFlattenedObservations', message: 'error', error });
+      defaultLog.error({ label: 'getCollectionObservations', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

@@ -239,7 +239,7 @@ export function getSurveySamplePeriods(): RequestHandler {
       const samplePeriodService = new SamplePeriodService(connection);
 
       const [periods, samplePeriodsCount] = await Promise.all([
-        samplePeriodService.getSamplePeriodsForSurvey(surveyId, {
+        samplePeriodService.getSamplePeriodsForSurveys([surveyId], {
           pagination: ensureCompletePaginationOptions(paginationOptions)
         }),
         samplePeriodService.getSamplePeriodsCountForSurvey(surveyId)

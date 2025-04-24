@@ -139,7 +139,7 @@ export function getSurveyObservationsGeometry(): RequestHandler {
 
       const observationService = new ObservationService(connection);
 
-      const observationData = await observationService.getSurveyObservationsGeometryWithSupplementaryData(surveyId);
+      const observationData = await observationService.getSurveyObservationsGeometryWithSupplementaryData([surveyId]);
 
       await connection.commit();
 

@@ -54,7 +54,7 @@ export class SamplePeriodRepository extends BaseRepository {
   /**
    * Gets all survey Sample periods.
    *
-   * @param {number} surveyId
+   * @param {number[]} surveyIds
    * @param {{
    *       filterFields?: {
    *         surveyObservationIds?: number[];
@@ -64,8 +64,8 @@ export class SamplePeriodRepository extends BaseRepository {
    * @return {*}  {Promise<SurveySamplePeriodDetails[]>}
    * @memberof SamplePeriodRepository
    */
-  async getSamplePeriodsForSurvey(
-    surveyId: number,
+  async getSamplePeriodsForSurveys(
+    surveyIds: number[],
     options?: {
       filterFields?: {
         surveyObservationIds?: number[];
@@ -89,7 +89,7 @@ export class SamplePeriodRepository extends BaseRepository {
         .whereIn('survey_observation.survey_observation_id', options.filterFields.surveyObservationIds);
     }
 
-    queryBuilder.where('survey_sample_period.survey_id', surveyId);
+    queryBuilder.whereIn('survey_sample_period.survey_id', surveyIds);
 
     if (options?.pagination) {
       queryBuilder.limit(options.pagination.limit).offset((options.pagination.page - 1) * options.pagination.limit);
@@ -135,13 +135,13 @@ export class SamplePeriodRepository extends BaseRepository {
   /**
    * Gets all survey Sample periods for a given observation.
    *
-   * @param {number} surveyId
+   * @param {number[]} surveyIds
    * @param {number} surveyObservationId
    * @return {*}  {Promise<SurveySamplePeriodDetails[]>}
    * @memberof SamplePeriodRepository
    */
   async getSamplePeriodsForObservation(
-    surveyId: number,
+    surveyIds: number[],
     surveyObservationId: number
   ): Promise<SurveySamplePeriodDetails[]> {
     const knex = getKnex();
@@ -158,7 +158,7 @@ export class SamplePeriodRepository extends BaseRepository {
         'survey_sample_period.survey_sample_period_id'
       )
       .where('survey_observation.survey_observation_id', surveyObservationId)
-      .andWhere('survey_observation.survey_id', surveyId);
+      .whereIn('survey_observation.survey_id', surveyIds);
 
     const response = await this.connection.knex(queryBuilder, SurveySamplePeriodDetails);
 

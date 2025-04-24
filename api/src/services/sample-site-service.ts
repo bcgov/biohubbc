@@ -58,7 +58,7 @@ export class SampleSiteService extends DBService {
   /**
    * Gets a paginated set of survey Sample sites for the given survey.
    *
-   * @param {number} surveyId
+   * @param {number[]} surveyIds
    * @param {{
    *       keyword?: string;
    *       sampleSiteIds?: number[];
@@ -67,26 +67,26 @@ export class SampleSiteService extends DBService {
    * @return {*}  {Promise<SampleSiteRecordExtendedNonSpatial[]>}
    * @memberof SampleSiteService
    */
-  async getSampleSitesForSurveyId(
-    surveyId: number,
+  async getSampleSitesForSurveyIds(
+    surveyIds: number[],
     options?: {
       keyword?: string;
       sampleSiteIds?: number[];
       pagination?: ApiPaginationOptions;
     }
   ): Promise<SampleSiteRecordExtendedNonSpatial[]> {
-    return this.sampleSiteRepository.getSampleSitesForSurveyId(surveyId, options);
+    return this.sampleSiteRepository.getSampleSitesForSurveyIds(surveyIds, options);
   }
 
   /**
    * Returns the total count of sample sites belonging to the given survey.
    *
-   * @param {number} surveyId
+   * @param {number[]} surveyIds
    * @return {*}  {Promise<number>}
    * @memberof SampleSiteService
    */
-  async getSampleSitesCountBySurveyId(surveyId: number): Promise<number> {
-    return this.sampleSiteRepository.getSampleSitesCountBySurveyId(surveyId);
+  async getSampleSitesCountBySurveyIds(surveyIds: number[]): Promise<number> {
+    return this.sampleSiteRepository.getSampleSitesCountBySurveyIds(surveyIds);
   }
 
   /**

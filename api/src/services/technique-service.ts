@@ -53,24 +53,24 @@ export class TechniqueService extends DBService {
   /**
    * Get a paginated list of technique records for a survey.
    *
-   * @param {number} surveyId
+   * @param {number[]} surveyIds
    * @param {ApiPaginationOptions} [pagination]
    * @return {*}  {Promise<TechniqueObject[]>}
    * @memberof TechniqueService
    */
-  async getTechniquesForSurveyId(surveyId: number, pagination?: ApiPaginationOptions): Promise<TechniqueObject[]> {
-    return this.techniqueRepository.getTechniquesForSurveyId(surveyId, pagination);
+  async getTechniquesForSurveyIds(surveyIds: number[], pagination?: ApiPaginationOptions): Promise<TechniqueObject[]> {
+    return this.techniqueRepository.getTechniquesForSurveyIds(surveyIds, pagination);
   }
 
   /**
    * Get the count of all technique records for a survey.
    *
-   * @param {number} surveyId
+   * @param {number[]} surveyIds
    * @return {*}  {Promise<number>}
    * @memberof TechniqueService
    */
-  async getTechniquesCountForSurveyId(surveyId: number): Promise<number> {
-    return this.techniqueRepository.getTechniquesCountForSurveyId(surveyId);
+  async getTechniquesCountForSurveyId(surveyIds: number[]): Promise<number> {
+    return this.techniqueRepository.getTechniquesCountForSurveyIds(surveyIds);
   }
 
   /**

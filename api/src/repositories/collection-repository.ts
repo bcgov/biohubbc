@@ -89,6 +89,27 @@ export class CollectionRepository extends BaseRepository {
   }
 
   /**
+   * Get surveys in collection
+   *
+   * @param {number} collectionId - The ID of the collection to retrieve.
+   * @returns {Promise<{survey_id: number}[]>} A promise resolving to the survey ids
+   * @memberof CollectionRepository
+   */
+  async getSurveysInCollection(collectionId: number): Promise<{ survey_id: number }[]> {
+    const knex = getKnex();
+
+    const queryBuilder = knex
+      .select('survey.survey_id')
+      .from('survey')
+      .join('collection_survey as cs', 'cs.survey_id', 'survey.survey_id')
+      .where('cs.collection_id', collectionId);
+
+    const response = await this.connection.knex(queryBuilder, z.object({ survey_id: z.number() }));
+
+    return response.rows;
+  }
+
+  /**
    * Create a base query for finding collections with filters and permissions.
    *
    * @param {boolean} isUserAdmin - Whether the user has admin privileges.

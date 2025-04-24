@@ -51,7 +51,7 @@ const CollectionPage = () => {
             <CollectionAbout collection={collectionDataLoader.data} />
           </Paper>
           <Paper sx={{ flex: '1 1 auto' }}>
-            <CollectionSurveyContainer />
+            <CollectionSurveyContainer collection={collectionDataLoader.data} />
           </Paper>
         </Stack>
       </Container>

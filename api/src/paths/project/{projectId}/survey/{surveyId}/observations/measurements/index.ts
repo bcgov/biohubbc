@@ -120,7 +120,7 @@ export function getSurveyObservationMeasurements(): RequestHandler {
 
       const subcountService = new SubCountService(connection);
 
-      const observationData = await subcountService.getMeasurementTypeDefinitionsForSurvey(surveyId);
+      const observationData = await subcountService.getMeasurementTypeDefinitionsForSurveys([surveyId]);
 
       await connection.commit();
 

@@ -230,7 +230,7 @@ export function getSurveyObservations(): RequestHandler {
 
       const observationData =
         await observationService.getSurveyObservationsWithSupplementaryAndSamplingDataAndAttributeData(
-          surveyId,
+          [surveyId],
           ensureCompletePaginationOptions(paginationOptions)
         );
 

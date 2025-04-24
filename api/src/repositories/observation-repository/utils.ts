@@ -133,7 +133,7 @@ export function makeFindFlattenedObservationsQuery(
  */
 export function getSurveyObservationsBaseQuery(
   knex: Knex,
-  authorizedSurveyIdsQuery: Knex.QueryBuilder<any, { survey_id: number }>
+  authorizedSurveyIdsQuery: Knex.QueryBuilder<any, { survey_id: number }[]>
 ): Knex.QueryBuilder {
   return (
     knex
@@ -552,6 +552,7 @@ function _getAuthorizedSurveyIdsQuery(
       subQueryBuilder
         .select('project_id')
         .from('project_participation')
+        // TODO: Join on collection -> survey to check authorization
         .where('system_user_id', filterFields.system_user_id);
     });
   }

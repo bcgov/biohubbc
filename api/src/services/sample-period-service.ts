@@ -45,13 +45,13 @@ export class SamplePeriodService extends DBService {
   /**
    * Gets all survey Sample periods.
    *
-   * @param {number} surveyId
+   * @param {number}[] surveyIds
    * @param {{ pagination?: ApiPaginationOptions }} [options]
    * @return {*}  {Promise<SurveySamplePeriodDetails[]>}
    * @memberof SamplePeriodService
    */
-  async getSamplePeriodsForSurvey(
-    surveyId: number,
+  async getSamplePeriodsForSurveys(
+    surveyIds: number[],
     options?: {
       filterFields?: {
         surveyObservationIds?: number[];
@@ -59,22 +59,22 @@ export class SamplePeriodService extends DBService {
       pagination?: ApiPaginationOptions;
     }
   ): Promise<SurveySamplePeriodDetails[]> {
-    return this.samplePeriodRepository.getSamplePeriodsForSurvey(surveyId, options);
+    return this.samplePeriodRepository.getSamplePeriodsForSurveys(surveyIds, options);
   }
 
   /**
    * Gets all survey Sample periods for a given observation.
    *
-   * @param {number} surveyId
+   * @param {number[]} surveyIds
    * @param {number} surveyObservationId
    * @return {*}  {Promise<SurveySamplePeriodDetails[]>}
    * @memberof SamplePeriodService
    */
   async getSamplePeriodsForObservation(
-    surveyId: number,
+    surveyIds: number[],
     surveyObservationId: number
   ): Promise<SurveySamplePeriodDetails[]> {
-    return this.samplePeriodRepository.getSamplePeriodsForObservation(surveyId, surveyObservationId);
+    return this.samplePeriodRepository.getSamplePeriodsForObservation(surveyIds, surveyObservationId);
   }
 
   /**

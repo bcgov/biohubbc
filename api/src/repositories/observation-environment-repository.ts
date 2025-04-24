@@ -160,7 +160,7 @@ export class ObservationEnvironmentRepository extends BaseRepository {
    * Get all distinct qualitative environment type definition records for all unique qualitative environment records
    * associated to a given survey.
    *
-   * @param {number} surveyId
+   * @param {number[]} surveyIds
    * @param {{
    *       filterFields?: {
    *         surveyObservationIds?: number[];
@@ -169,8 +169,8 @@ export class ObservationEnvironmentRepository extends BaseRepository {
    * @return {*}  {Promise<QualitativeEnvironmentTypeDefinition[]>}
    * @memberof ObservationEnvironmentRepository
    */
-  async getQualitativeEnvironmentTypeDefinitionsForSurvey(
-    surveyId: number,
+  async getQualitativeEnvironmentTypeDefinitionsForSurveys(
+    surveyIds: number[],
     options?: {
       filterFields?: {
         surveyObservationIds?: number[];
@@ -190,7 +190,7 @@ export class ObservationEnvironmentRepository extends BaseRepository {
             'observation_environment_qualitative.survey_observation_id',
             'survey_observation.survey_observation_id'
           )
-          .where('survey_observation.survey_id', surveyId);
+          .whereIn('survey_observation.survey_id', surveyIds);
 
         if (options?.filterFields?.surveyObservationIds) {
           qb1.whereIn('survey_observation.survey_observation_id', options.filterFields.surveyObservationIds);
@@ -237,7 +237,7 @@ export class ObservationEnvironmentRepository extends BaseRepository {
    * Get all distinct quantitative environment type definition records for all unique quantitative environments for a
    * given survey.
    *
-   * @param {number} surveyId
+   * @param {number[]} surveyIds
    * @param {{
    *       filterFields?: {
    *         surveyObservationIds?: number[];
@@ -247,7 +247,7 @@ export class ObservationEnvironmentRepository extends BaseRepository {
    * @memberof ObservationEnvironmentRepository
    */
   async getQuantitativeEnvironmentTypeDefinitionsForSurvey(
-    surveyId: number,
+    surveyIds: number[],
     options?: {
       filterFields?: {
         surveyObservationIds?: number[];
@@ -277,7 +277,7 @@ export class ObservationEnvironmentRepository extends BaseRepository {
         'observation_environment_quantitative.environment_quantitative_id',
         'environment_quantitative.environment_quantitative_id'
       )
-      .where('survey_observation.survey_id', surveyId);
+      .whereIn('survey_observation.survey_id', surveyIds);
 
     if (options?.filterFields?.surveyObservationIds) {
       query.whereIn('survey_observation.survey_observation_id', options.filterFields.surveyObservationIds);

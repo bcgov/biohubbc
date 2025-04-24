@@ -212,12 +212,12 @@ export function getSurveySampleSitesForSurvey(): RequestHandler {
       await connection.open();
 
       const sampleSiteService = new SampleSiteService(connection);
-      const sampleSites = await sampleSiteService.getSampleSitesForSurveyId(surveyId, {
+      const sampleSites = await sampleSiteService.getSampleSitesForSurveyIds([surveyId], {
         keyword: keyword,
         pagination: ensureCompletePaginationOptions(paginationOptions)
       });
 
-      const sampleSitesTotalCount = await sampleSiteService.getSampleSitesCountBySurveyId(surveyId);
+      const sampleSitesTotalCount = await sampleSiteService.getSampleSitesCountBySurveyIds([surveyId]);
 
       await connection.commit();
 

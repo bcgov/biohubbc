@@ -11,10 +11,15 @@ import {
 } from 'features/surveys/view/survey-spatial/components/SurveySpatialToolbar';
 import { SurveySpatialTelemetry } from 'features/surveys/view/survey-spatial/components/telemetry/SurveySpatialTelemetry';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useSurveyContext, useTaxonomyContext } from 'hooks/useContext';
+import { useTaxonomyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
+import { ICollection } from 'interfaces/useCollectionApi.interface';
 import { useEffect, useMemo, useState } from 'react';
 import { ApiPaginationRequestOptions } from 'types/misc';
+
+interface ICollectionSurveyContainerProps {
+  collection: ICollection;
+}
 
 /**
  * Container component for displaying survey spatial data.
@@ -23,14 +28,15 @@ import { ApiPaginationRequestOptions } from 'types/misc';
  *
  * @returns {JSX.Element} The rendered component.
  */
-export const CollectionSurveyContainer = (): JSX.Element => {
-  const surveyContext = useSurveyContext();
+export const CollectionSurveyContainer = (props: ICollectionSurveyContainerProps): JSX.Element => {
+  const { collection } = props;
+
   const taxonomyContext = useTaxonomyContext();
 
   const biohubApi = useBiohubApi();
 
   const observationsDataLoader = useDataLoader((pagination?: ApiPaginationRequestOptions) =>
-    biohubApi.observation.getFlattenedObservationRecords(surveyContext.projectId, surveyContext.surveyId, pagination)
+    biohubApi.collection.getObservations(collection.collection_id, pagination)
   );
 
   const [activeView, setActiveView] = useState<SurveySpatialDatasetViewEnum>(SurveySpatialDatasetViewEnum.OBSERVATIONS);

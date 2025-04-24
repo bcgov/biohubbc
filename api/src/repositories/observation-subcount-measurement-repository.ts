@@ -85,7 +85,7 @@ export class ObservationSubCountMeasurementRepository extends BaseRepository {
   /**
    * Get all distinct taxon_measurment_ids for all qualitative measurements for a given survey.
    *
-   * @param {number} surveyId
+   * @param {number[]} surveyIds
    * @param {{
    *       filterFields?: {
    *         surveyObservationIds?: number[];
@@ -95,7 +95,7 @@ export class ObservationSubCountMeasurementRepository extends BaseRepository {
    * @memberof ObservationSubCountMeasurementRepository
    */
   async getObservationSubCountQualitativeTaxonMeasurementIds(
-    surveyId: number,
+    surveyIds: number[],
     options?: {
       filterFields?: {
         surveyObservationIds?: number[];
@@ -114,7 +114,7 @@ export class ObservationSubCountMeasurementRepository extends BaseRepository {
           .select('observation_subcount_id')
           .from('observation_subcount')
           .whereIn('survey_observation_id', (qb2) => {
-            qb2.select('survey_observation_id').from('survey_observation').where('survey_id', surveyId);
+            qb2.select('survey_observation_id').from('survey_observation').whereIn('survey_id', surveyIds);
 
             if (options?.filterFields?.surveyObservationIds) {
               qb2.whereIn('survey_observation_id', options.filterFields.surveyObservationIds);
@@ -133,7 +133,7 @@ export class ObservationSubCountMeasurementRepository extends BaseRepository {
   /**
    * Get all distinct taxon_measurment_ids for all quantitative measurements for a given survey.
    *
-   * @param {number} surveyId
+   * @param {number[]} surveyIds
    * @param {{
    *       filterFields?: {
    *         surveyObservationIds?: number[];
@@ -143,7 +143,7 @@ export class ObservationSubCountMeasurementRepository extends BaseRepository {
    * @memberof ObservationSubCountMeasurementRepository
    */
   async getObservationSubCountQuantitativeTaxonMeasurementIds(
-    surveyId: number,
+    surveyIds: number[],
     options?: {
       filterFields?: {
         surveyObservationIds?: number[];
@@ -162,7 +162,7 @@ export class ObservationSubCountMeasurementRepository extends BaseRepository {
           .select('observation_subcount_id')
           .from('observation_subcount')
           .whereIn('survey_observation_id', (qb2) => {
-            qb2.select('survey_observation_id').from('survey_observation').where('survey_id', surveyId);
+            qb2.select('survey_observation_id').from('survey_observation').whereIn('survey_id', surveyIds);
 
             if (options?.filterFields?.surveyObservationIds) {
               qb2.whereIn('survey_observation_id', options.filterFields.surveyObservationIds);

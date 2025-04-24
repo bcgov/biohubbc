@@ -243,8 +243,8 @@ export function getTechniques(): RequestHandler {
       const techniqueService = new TechniqueService(connection);
 
       const [techniques, techniquesCount] = await Promise.all([
-        techniqueService.getTechniquesForSurveyId(surveyId, ensureCompletePaginationOptions(paginationOptions)),
-        techniqueService.getTechniquesCountForSurveyId(surveyId)
+        techniqueService.getTechniquesForSurveyIds([surveyId], ensureCompletePaginationOptions(paginationOptions)),
+        techniqueService.getTechniquesCountForSurveyId([surveyId])
       ]);
 
       await connection.commit();

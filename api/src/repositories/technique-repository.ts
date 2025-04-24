@@ -116,10 +116,10 @@ export class TechniqueRepository extends BaseRepository {
    * Private utility function to generate the common SQL query for fetching method technique records, including
    * associated attractants and attributes.
    *
-   * @param {number} surveyId The survey ID
+   * @param {number[]} surveyIds The survey ID
    * @returns {*}
    */
-  _generateGetTechniqueQuery(surveyId: number) {
+  _generateGetTechniqueQuery(surveyIds: number[]) {
     const knex = getKnex();
 
     const queryBuilder = knex
@@ -212,7 +212,7 @@ export class TechniqueRepository extends BaseRepository {
       .leftJoin('w_quantitative_attributes', 'w_quantitative_attributes.method_technique_id', 'mt.method_technique_id')
       .leftJoin('w_qualitative_attributes', 'w_qualitative_attributes.method_technique_id', 'mt.method_technique_id')
       .leftJoin('w_vantages', 'w_vantages.method_technique_id', 'mt.method_technique_id')
-      .where('mt.survey_id', surveyId);
+      .whereIn('mt.survey_id', surveyIds);
 
     return queryBuilder;
   }
@@ -226,7 +226,7 @@ export class TechniqueRepository extends BaseRepository {
    * @memberof TechniqueRepository
    */
   async getTechniqueById(surveyId: number, methodTechniqueId: number): Promise<TechniqueObject> {
-    const queryBuilder = this._generateGetTechniqueQuery(surveyId).andWhere(
+    const queryBuilder = this._generateGetTechniqueQuery([surveyId]).andWhere(
       'mt.method_technique_id',
       methodTechniqueId
     );
@@ -239,13 +239,13 @@ export class TechniqueRepository extends BaseRepository {
   /**
    * Get a paginated list of techniques for a survey.
    *
-   * @param {number} surveyId
+   * @param {number[]} surveyIds
    * @param {ApiPaginationOptions} [pagination]
    * @return {*}  {Promise<TechniqueObject[]>}
    * @memberof TechniqueRepository
    */
-  async getTechniquesForSurveyId(surveyId: number, pagination?: ApiPaginationOptions): Promise<TechniqueObject[]> {
-    const queryBuilder = this._generateGetTechniqueQuery(surveyId);
+  async getTechniquesForSurveyIds(surveyIds: number[], pagination?: ApiPaginationOptions): Promise<TechniqueObject[]> {
+    const queryBuilder = this._generateGetTechniqueQuery(surveyIds);
 
     if (pagination) {
       queryBuilder.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
@@ -263,17 +263,17 @@ export class TechniqueRepository extends BaseRepository {
   /**
    * Get total count of all techniques for a survey.
    *
-   * @param {number} surveyId
+   * @param {number[]} surveyIds
    * @return {*}  {Promise<number>}
    * @memberof TechniqueRepository
    */
-  async getTechniquesCountForSurveyId(surveyId: number): Promise<number> {
+  async getTechniquesCountForSurveyIds(surveyIds: number[]): Promise<number> {
     const knex = getKnex();
 
     const queryBuilder = knex
       .select(knex.raw('count(*)::integer as count'))
       .from('method_technique as mt')
-      .where('survey_id', surveyId);
+      .whereIn('survey_id', surveyIds);
 
     const response = await this.connection.knex(queryBuilder, z.object({ count: z.number() }));
 
