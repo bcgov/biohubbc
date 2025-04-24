@@ -36,7 +36,17 @@ export interface IPostCollectionRequest {
   description: string;
   participants: IPostCollectionParticipant[];
 }
+
 export interface IPostCollection {
   name: string;
   description: string;
+}
+
+export interface ICreateCollectionSurveyRequest {
+  survey_id: number;
+  collections: { collection_id: number }[];
+}
+export interface IDeleteCollectionSurveyRequest {
+  survey_id: number;
+  collections: { collection_id: number }[];
 }

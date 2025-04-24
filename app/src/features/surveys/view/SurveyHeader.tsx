@@ -2,6 +2,7 @@ import {
   mdiCalendarRange,
   mdiChevronDown,
   mdiCogOutline,
+  mdiFormatListGroup,
   mdiPencilOutline,
   mdiTrashCanOutline,
   mdiTrayArrowDown
@@ -38,6 +39,7 @@ import { useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 import { getFormattedDateRangeString } from 'utils/Utils';
 import { SurveyProgressChip } from '../components/SurveyProgressChip';
+import CreateCollectionSurveyDialog from './collection/CreateCollectionSurveyDialog';
 
 /**
  * Survey header for a single-survey view.
@@ -125,7 +127,9 @@ const SurveyHeader = () => {
   };
 
   const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
+
   const [publishSurveyDialogOpen, setPublishSurveyDialogOpen] = useState<boolean>(false);
+  const [collectionDialogIsOpen, setCollectionDialogIsOpen] = useState<boolean>(false);
 
   if (!surveyWithDetails) {
     return <CircularProgress className="pageProgress" size={40} />;
@@ -245,6 +249,16 @@ const SurveyHeader = () => {
               anchorEl={menuAnchorEl}
               open={Boolean(menuAnchorEl)}
               onClose={() => setMenuAnchorEl(null)}>
+              <MenuItem
+                onClick={() => {
+                  setCollectionDialogIsOpen(true);
+                  setMenuAnchorEl(null);
+                }}>
+                <ListItemIcon>
+                  <Icon path={mdiFormatListGroup} size={1} />
+                </ListItemIcon>
+                <Typography variant="inherit">Share to Collection</Typography>
+              </MenuItem>
               <MenuItem onClick={() => history.push('edit')}>
                 <ListItemIcon>
                   <Icon path={mdiPencilOutline} size={1} />
@@ -277,6 +291,7 @@ const SurveyHeader = () => {
       />
 
       <PublishSurveyIdDialog open={publishSurveyDialogOpen} onClose={() => setPublishSurveyDialogOpen(false)} />
+      <CreateCollectionSurveyDialog open={collectionDialogIsOpen} onClose={() => setCollectionDialogIsOpen(false)} />
     </>
   );
 };

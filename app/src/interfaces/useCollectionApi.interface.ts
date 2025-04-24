@@ -11,6 +11,11 @@ export interface ICreateCollectionRequest {
   participants: IPostCollectionParticipant[];
 }
 
+export interface ICreateCollectionSurveyRequest {
+  survey_id: number;
+  collections: { collection_id: number }[];
+}
+
 export interface IUpdateCollectionRequest {
   name: string;
   description: string;

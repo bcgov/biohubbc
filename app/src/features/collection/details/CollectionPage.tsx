@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
@@ -10,8 +11,8 @@ import { useContext, useEffect } from 'react';
 import { useParams } from 'react-router';
 import CollectionAbout from './about/CollectionAbout';
 import CollectionHeader from './header/CollectionHeader';
-import { CollectionSurveyContainer } from './survey/CollectionSurveyContainer';
-
+import CollectionSurveyContainer from './survey/CollectionSurveyContainer';
+import { CollectionDataContainer } from './survey/data/CollectionDataContainer';
 /**
  * Page to display a single Collection.
  *
@@ -50,9 +51,15 @@ const CollectionPage = () => {
           <Paper sx={{ width: '400px', alignSelf: 'flex-start' }}>
             <CollectionAbout collection={collectionDataLoader.data} />
           </Paper>
-          <Paper sx={{ flex: '1 1 auto' }}>
-            <CollectionSurveyContainer collection={collectionDataLoader.data} />
-          </Paper>
+          <Box flex="1 1 auto">
+            <Paper sx={{ flex: '1 1 auto' }}>
+              <CollectionSurveyContainer collectionId={collectionDataLoader.data.collection_id} showSearch={false} />
+            </Paper>
+
+            <Paper sx={{ flex: '1 1 auto', mt: 3 }}>
+              <CollectionDataContainer collection={collectionDataLoader.data} />
+            </Paper>
+          </Box>
         </Stack>
       </Container>
     </>

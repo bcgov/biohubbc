@@ -16,6 +16,7 @@ import {
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { AttractantService } from './attractants-service';
 import { CollectionParticipationService } from './collection-participation-service';
+import { CollectionSurveyService } from './collection-survey-service';
 import { DBService } from './db-service';
 import { ObservationService } from './observation-services/observation-service';
 
@@ -29,6 +30,7 @@ import { ObservationService } from './observation-services/observation-service';
 export class CollectionService extends DBService {
   collectionRepository: CollectionRepository;
   collectionParticipationService: CollectionParticipationService;
+  collectionSurveyService: CollectionSurveyService;
   attractantService: AttractantService;
   observationService: ObservationService;
 
@@ -38,6 +40,7 @@ export class CollectionService extends DBService {
     this.collectionRepository = new CollectionRepository(connection);
     this.collectionParticipationService = new CollectionParticipationService(connection);
     this.attractantService = new AttractantService(connection);
+    this.collectionSurveyService = new CollectionSurveyService(connection);
     this.observationService = new ObservationService(connection);
   }
 
@@ -63,10 +66,6 @@ export class CollectionService extends DBService {
     return this.collectionParticipationService.getCollectionParticipants(collectionId);
   }
 
-  async getSurveysInCollection(collectionId: number): Promise<{ survey_id: number }[]> {
-    return this.collectionRepository.getSurveysInCollection(collectionId);
-  }
-
   /**
    *
    */
@@ -78,7 +77,7 @@ export class CollectionService extends DBService {
     supplementaryObservationData: AllObservationSupplementaryData;
   }> {
     // Find surveys in collection
-    const surveys = await this.getSurveysInCollection(collectionId);
+    const surveys = await this.collectionSurveyService.getSurveysInCollection(collectionId);
 
     // Find observations in the surveys
     const observationData =

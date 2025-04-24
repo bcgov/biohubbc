@@ -628,6 +628,55 @@ export class SurveyRepository extends BaseRepository {
   }
 
   /**
+   * Fetches a subset of survey fields for all surveys under a collection
+   *
+   * @param {number} collectionId
+   * @param {ApiPaginationOptions} [pagination]
+   * @return {*}  {Promise<Omit<SurveyBasicFields, 'focal_species_names'>[]>}
+   * @memberof SurveyRepository
+   */
+  async getSurveysBasicFieldsByCollectionId(
+    collectionId: number,
+    pagination?: ApiPaginationOptions
+  ): Promise<Omit<SurveyBasicFields, 'focal_species_names'>[]> {
+    const knex = getKnex();
+
+    const queryBuilder = knex
+      .queryBuilder()
+      .select(
+        'survey.survey_id',
+        'survey.name',
+        'survey.start_date',
+        'survey.end_date',
+        'survey.progress_id',
+        knex.raw('array_remove(array_agg(study_species.itis_tsn), NULL) AS focal_species')
+      )
+      .from('survey')
+      .leftJoin('study_species', 'study_species.survey_id', 'survey.survey_id')
+      .leftJoin('survey_progress', 'survey_progress.survey_progress_id', 'survey.progress_id')
+      .join('collection_survey as cs', 'cs.survey_id', 'survey.survey_id')
+      .where('cs.collection_id', collectionId)
+      .where('study_species.is_focal', true)
+      .groupBy('survey.survey_id')
+      .groupBy('survey.name')
+      .groupBy('survey.start_date')
+      .groupBy('survey.end_date')
+      .groupBy('survey.progress_id');
+
+    if (pagination) {
+      queryBuilder.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
+
+      if (pagination.sort && pagination.order) {
+        queryBuilder.orderBy(pagination.sort, pagination.order);
+      }
+    }
+
+    const response = await this.connection.knex(queryBuilder, SurveyBasicFields.omit({ focal_species_names: true }));
+
+    return response.rows;
+  }
+
+  /**
    * Returns the total number of surveys that the user has access to
    *
    * @param {boolean} isUserAdmin

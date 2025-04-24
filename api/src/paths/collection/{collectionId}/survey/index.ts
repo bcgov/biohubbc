@@ -1,11 +1,10 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../constants/roles';
 import { getDBConnection } from '../../../../database/db';
 import { paginationRequestQueryParamSchema } from '../../../../openapi/schemas/pagination';
 import { getSurveysListSchema } from '../../../../openapi/schemas/project';
 import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
-import { SurveyService } from '../../../../services/survey-service';
+import { CollectionSurveyService } from '../../../../services/collection-survey-service';
 import { getLogger } from '../../../../utils/logger';
 import {
   ensureCompletePaginationOptions,
@@ -13,34 +12,24 @@ import {
   makePaginationResponse
 } from '../../../../utils/pagination';
 
-const defaultLog = getLogger('paths/project/{projectId}/survey/index');
+const defaultLog = getLogger('paths/collection/{collectionId}/survey');
 
 export const GET: Operation = [
-  authorizeRequestHandler((req) => {
+  authorizeRequestHandler(() => {
     return {
-      or: [
+      and: [
         {
-          validProjectPermissions: [
-            PROJECT_PERMISSION.COORDINATOR,
-            PROJECT_PERMISSION.COLLABORATOR,
-            PROJECT_PERMISSION.OBSERVER
-          ],
-          projectId: Number(req.params.projectId),
-          discriminator: 'ProjectPermission'
-        },
-        {
-          validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
-          discriminator: 'SystemRole'
+          discriminator: 'SystemUser'
         }
       ]
     };
   }),
-  getSurveys()
+  getSurveysInCollection()
 ];
 
 GET.apiDoc = {
-  description: 'Fetches a subset of survey fields for all surveys under a project.',
-  tags: ['survey'],
+  description: 'Gets the list of surveys in the collection',
+  tags: ['collections'],
   security: [
     {
       Bearer: []
@@ -49,7 +38,7 @@ GET.apiDoc = {
   parameters: [
     {
       in: 'path',
-      name: 'projectId',
+      name: 'collectionId',
       schema: {
         type: 'integer',
         minimum: 1
@@ -60,7 +49,7 @@ GET.apiDoc = {
   ],
   responses: {
     200: {
-      description: 'Get list of surveys in the project',
+      description: 'Collection response object.',
       content: {
         'application/json': {
           schema: getSurveysListSchema
@@ -86,26 +75,30 @@ GET.apiDoc = {
 };
 
 /**
- * Get a subset of survey fields for all surveys under a project.
+ * Get a specific collection
  *
  * @returns {RequestHandler}
  */
-export function getSurveys(): RequestHandler {
+export function getSurveysInCollection(): RequestHandler {
   return async (req, res) => {
+    defaultLog.debug({ label: 'getSurveysInCollection' });
+
     const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
 
-      const projectId = Number(req.params.projectId);
       const paginationOptions = makePaginationOptionsFromRequest(req);
 
-      const surveyService = new SurveyService(connection);
-      const surveys = await surveyService.getSurveysBasicFieldsByProjectId(
-        projectId,
+      const collectionSurveyService = new CollectionSurveyService(connection);
+
+      const collectionId = Number(req.params.collectionId);
+
+      const surveys = await collectionSurveyService.getSurveysBasicFieldsByCollectionId(
+        collectionId,
         ensureCompletePaginationOptions(paginationOptions)
       );
-      const surveysTotalCount = await surveyService.getSurveyCountByProjectId(projectId);
+      const surveysTotalCount = await collectionSurveyService.getSurveyCountByCollectionId(collectionId);
 
       const response = {
         surveys,
@@ -116,7 +109,7 @@ export function getSurveys(): RequestHandler {
 
       return res.status(200).json(response);
     } catch (error) {
-      defaultLog.error({ label: 'getSurveys', message: 'error', error });
+      defaultLog.error({ label: 'getSurveysInCollection', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

@@ -1,4 +1,6 @@
+import { OpenAPIV3 } from 'openapi-types';
 import { PROJECT_ROLE } from '../../constants/roles';
+import { paginationResponseSchema } from './pagination';
 
 /**
  * Request Object for project create POST request
@@ -254,6 +256,57 @@ const projectUpdateProperties = {
         agency: {
           type: 'string',
           nullable: true
+        }
+      }
+    }
+  }
+};
+
+export const getSurveysListSchema: OpenAPIV3.SchemaObject = {
+  type: 'object',
+  additionalProperties: false,
+  required: ['surveys', 'pagination'],
+  properties: {
+    pagination: { ...paginationResponseSchema },
+    surveys: {
+      type: 'array',
+      items: {
+        type: 'object',
+        additionalProperties: false,
+        required: ['survey_id', 'name', 'start_date', 'end_date', 'progress_id', 'focal_species'],
+        properties: {
+          survey_id: {
+            type: 'integer',
+            minimum: 1
+          },
+          name: {
+            type: 'string',
+            maxLength: 300
+          },
+          start_date: {
+            type: 'string',
+            description: 'ISO 8601 date string'
+          },
+          end_date: {
+            type: 'string',
+            description: 'ISO 8601 datetime string',
+            nullable: true
+          },
+          progress_id: {
+            type: 'integer'
+          },
+          focal_species: {
+            type: 'array',
+            items: {
+              type: 'integer'
+            }
+          },
+          focal_species_names: {
+            type: 'array',
+            items: {
+              type: 'string'
+            }
+          }
         }
       }
     }

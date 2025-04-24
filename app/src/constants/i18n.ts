@@ -62,6 +62,14 @@ export const DeleteCollectionI18N = {
     'An error has occurred while attempting to delete this collection. Please try again. If the error persists, please contact your system administrator.'
 };
 
+export const CreateCollectionSurveyI18N = {
+  cancelTitle: 'Discard changes and exit?',
+  cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
+  createErrorTitle: 'Error Sharing Survey to Collection',
+  createErrorText:
+    'An error has occurred while attempting to add your survey to the collection, please try again. If the error persists, please contact your system administrator.'
+};
+
 export const CancelDialogI18N = {
   cancelTitle: 'Discard changes and exit?',
   cancelText: 'Any changes you have made will not be saved. Do you want to proceed?'
