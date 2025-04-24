@@ -7,6 +7,7 @@ import Stack from '@mui/material/Stack';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import PageHeader from 'components/layout/PageHeader';
 import { CreateCollectionI18N } from 'constants/i18n';
+import { COLLECTION_ROLE } from 'constants/roles';
 import { CodesContext } from 'contexts/codesContext';
 import { DialogContext } from 'contexts/dialogContext';
 import { FormikProps } from 'formik';
@@ -57,13 +58,16 @@ const CreateCollectionPage = () => {
     return [
       {
         system_user_id: authStateContext.simsUserWrapper?.systemUserId,
+        collection_role_name:
+          codesContext.codesDataLoader.data?.collection_roles.find((role) => role.name === COLLECTION_ROLE.ADMIN)
+            ?.name ?? '',
         display_name: authStateContext.simsUserWrapper?.displayName,
         email: authStateContext.simsUserWrapper?.email,
         agency: authStateContext.simsUserWrapper?.agency,
         identity_source: authStateContext.simsUserWrapper?.identitySource
       } as ICollectionParticipant
     ];
-  }, [authStateContext.simsUserWrapper]);
+  }, [authStateContext.simsUserWrapper, codesContext.codesDataLoader.data?.collection_roles]);
 
   const initialCollectionData: ICreateCollectionRequest = useMemo(() => {
     return {
@@ -106,9 +110,7 @@ const CreateCollectionPage = () => {
     try {
       await biohubApi.collection.createCollection({
         ...collectionPostObject,
-        participants: collectionPostObject.participants.map((participant) => ({
-          system_user_id: participant.system_user_id
-        }))
+        participants: collectionPostObject.participants
       });
 
       setEnableCancelCheck(false);

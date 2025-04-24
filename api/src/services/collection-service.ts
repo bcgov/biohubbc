@@ -1,8 +1,17 @@
+import { CollectionModel } from '../database-models/collection';
 import { IDBConnection } from '../database/db';
-import { Collection, ICollectionAdvancedFilters, IPostCollection } from '../models/collection';
+import {
+  Collection,
+  CollectionParticipant,
+  ICollectionAdvancedFilters,
+  IPostCollection,
+  IPostCollectionRequest
+} from '../models/collection';
+import { SystemUserWithRoles } from '../models/system-user-view';
 import { CollectionRepository } from '../repositories/collection-repository';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { AttractantService } from './attractants-service';
+import { CollectionParticipationService } from './collection-participation-service';
 import { DBService } from './db-service';
 
 /**
@@ -14,24 +23,37 @@ import { DBService } from './db-service';
  */
 export class CollectionService extends DBService {
   collectionRepository: CollectionRepository;
+  collectionParticipationService: CollectionParticipationService;
   attractantService: AttractantService;
 
   constructor(connection: IDBConnection) {
     super(connection);
 
     this.collectionRepository = new CollectionRepository(connection);
+    this.collectionParticipationService = new CollectionParticipationService(connection);
     this.attractantService = new AttractantService(connection);
   }
 
   /**
    * Get a collection by id.
    *
-   * @param {number} methodCollectionId
+   * @param {number} collectionId
    * @return {*}  {Promise<Collection>}
    * @memberof CollectionService
    */
-  async getCollectionById(methodCollectionId: number): Promise<Collection> {
-    return this.collectionRepository.getCollectionById(methodCollectionId);
+  async getCollectionById(collectionId: number): Promise<Collection> {
+    return this.collectionRepository.getCollectionById(collectionId);
+  }
+
+  /**
+   * Get a collection by id.
+   *
+   * @param {number} collectionId
+   * @return {*}  {Promise<(CollectionParticipant & SystemUserWithRoles)[]>}
+   * @memberof CollectionService
+   */
+  async getCollectionParticipants(collectionId: number): Promise<(CollectionParticipant & SystemUserWithRoles)[]> {
+    return this.collectionParticipationService.getCollectionParticipants(collectionId);
   }
 
   /**
@@ -75,12 +97,21 @@ export class CollectionService extends DBService {
   /**
    * Create a collection record.
    *
-   * @param {IPostCollection} collection
-   * @return {*}  {Promise<void>}
+   * @param {IPostCollectionRequest} collection
+   * @return {*}  {Promise<CollectionModel>}
    * @memberof CollectionService
    */
-  async createCollection(collection: IPostCollection): Promise<void> {
-    return this.collectionRepository.createCollection(collection);
+  async createCollection(collection: IPostCollectionRequest): Promise<CollectionModel> {
+    const collectionResponse = await this.collectionRepository.createCollection(collection);
+
+    // Insert members of the collection
+    for (const participant of collection.participants)
+      await this.collectionParticipationService.insertCollectionParticipant(
+        collectionResponse.collection_id,
+        participant
+      );
+
+    return collectionResponse;
   }
 
   /**
@@ -88,10 +119,10 @@ export class CollectionService extends DBService {
    *
    * @param {number} collectionId
    * @param {IPostCollection} collection
-   * @return {*}  {Promise<void>}
+   * @return {*}  {Promise<CollectionModel>}
    * @memberof CollectionService
    */
-  async updateCollection(collectionId: number, collection: IPostCollection): Promise<void> {
+  async updateCollection(collectionId: number, collection: IPostCollection): Promise<CollectionModel> {
     return this.collectionRepository.updateCollection(collectionId, collection);
   }
 }

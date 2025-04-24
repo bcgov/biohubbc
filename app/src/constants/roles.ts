@@ -45,3 +45,14 @@ export const PROJECT_ROLE_ICONS: Record<string, string> = {
   Collaborator: mdiAccountEdit,
   Observer: mdiEye
 };
+
+/**
+ * Collection level roles.
+ *
+ * @export
+ * @enum {string}
+ */
+export enum COLLECTION_ROLE {
+  ADMIN = 'Admin',
+  MEMBER = 'Member'
+}

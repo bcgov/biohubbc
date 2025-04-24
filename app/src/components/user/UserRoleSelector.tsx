@@ -9,6 +9,7 @@ import Select from '@mui/material/Select';
 import Typography from '@mui/material/Typography';
 import { PROJECT_ROLE_ICONS } from 'constants/roles';
 import { ICodeWithDescription } from 'interfaces/useCodesApi.interface';
+import { ICollectionParticipant } from 'interfaces/useCollectionApi.interface';
 import { IGetProjectParticipant } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyParticipant } from 'interfaces/useSurveyApi.interface';
 import { ISystemUser } from 'interfaces/useUserApi.interface';
@@ -16,7 +17,7 @@ import UserCard from './UserCard';
 
 interface IUserRoleSelectorProps {
   index: number;
-  user: ISystemUser | IGetProjectParticipant | IGetSurveyParticipant;
+  user: ISystemUser | IGetProjectParticipant | IGetSurveyParticipant | ICollectionParticipant;
   selectedRole: string;
   roles: ICodeWithDescription[];
   error: JSX.Element | undefined;

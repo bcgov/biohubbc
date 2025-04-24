@@ -33,3 +33,14 @@ export enum PROJECT_PERMISSION {
   COLLABORATOR = 'Collaborator',
   OBSERVER = 'Observer'
 }
+
+/**
+ * Collection level roles.
+ *
+ * @export
+ * @enum {string}
+ */
+export enum COLLECTION_ROLE {
+  ADMIN = 'Admin',
+  MEMBER = 'Member'
+}

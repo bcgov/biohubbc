@@ -1,6 +1,7 @@
 import { Knex } from 'knex';
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
+import { CollectionModel } from '../database-models/collection';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { Collection, ICollectionAdvancedFilters, IPostCollection } from '../models/collection';
@@ -16,23 +17,58 @@ export class CollectionRepository extends BaseRepository {
    * @memberof CollectionRepository
    */
   _getCollectionsBaseQuery(queryBuilder: Knex.QueryBuilder): Knex.QueryBuilder {
-    return queryBuilder
+    const knex = getKnex();
+    const query = queryBuilder
+      .with('user_roles', (qb) => {
+        qb.select(
+          'sur.system_user_id',
+          knex.raw('array_agg(DISTINCT sr.system_role_id) FILTER (WHERE sr.system_role_id IS NOT NULL) AS role_ids'),
+          knex.raw('array_agg(DISTINCT sr.name) FILTER (WHERE sr.name IS NOT NULL) AS role_names')
+        )
+          .from('system_user_role AS sur')
+          .leftJoin('system_role AS sr', 'sr.system_role_id', 'sur.system_role_id')
+          .groupBy('sur.system_user_id');
+      })
       .select(
         'collection.collection_id',
         'collection.name',
         'collection.description',
-        getKnex().raw(`
-        COALESCE(
-          jsonb_agg(
-            DISTINCT jsonb_build_object('system_user_id', cp.system_user_id)
-          ) FILTER (WHERE cp.system_user_id IS NOT NULL),
-          '[]'::jsonb
-        ) AS participants
-      `)
+        knex.raw(`
+      COALESCE(
+        jsonb_agg(
+          DISTINCT jsonb_build_object(
+            'collection_participation_id', cp.collection_participation_id,
+            'collection_id', cp.collection_id,
+            'system_user_id', su.system_user_id,
+            'user_identifier', su.user_identifier,
+            'user_guid', su.user_guid,
+            'identity_source', uis.name,
+            'email', su.email,
+            'display_name', su.display_name,
+            'given_name', su.given_name,
+            'family_name', su.family_name,
+            'agency', su.agency,
+            'collection_role_id', cp.collection_role_id,
+            'collection_role_name', cr.name,
+            'role_ids', ur.role_ids,
+            'role_names', ur.role_names
+          )
+        ) FILTER (WHERE su.system_user_id IS NOT NULL),
+        '[]'::jsonb
+      ) AS participants
+    `)
       )
       .from('collection')
       .leftJoin('collection_participation AS cp', 'cp.collection_id', 'collection.collection_id')
+      .leftJoin('collection_role AS cr', 'cr.collection_role_id', 'cp.collection_role_id')
+      .leftJoin('system_user AS su', (qb) => {
+        qb.on('su.system_user_id', '=', 'cp.system_user_id').andOnNull('su.record_end_date');
+      })
+      .leftJoin('user_identity_source AS uis', 'uis.user_identity_source_id', 'su.user_identity_source_id')
+      .leftJoin('user_roles AS ur', 'ur.system_user_id', 'su.system_user_id')
       .groupBy('collection.collection_id');
+
+    return query;
   }
 
   /**
@@ -126,16 +162,17 @@ export class CollectionRepository extends BaseRepository {
    * Create a new collection.
    *
    * @param {IPostCollection} data - The data for the new collection.
-   * @returns {Promise<void>}
+   * @returns {Promise<CollectionModel>}
    * @memberof CollectionRepository
    */
-  async createCollection(data: IPostCollection): Promise<void> {
+  async createCollection(data: IPostCollection): Promise<CollectionModel> {
     const sql = SQL`
     INSERT INTO collection (name, description)
-    VALUES (${data.name}, ${data.description});
+    VALUES (${data.name}, ${data.description})
+    RETURNING *
   `;
 
-    const response = await this.connection.sql(sql);
+    const response = await this.connection.sql(sql, CollectionModel);
 
     if (response.rowCount !== 1) {
       throw new ApiExecuteSQLError('Failed to create collection', [
@@ -143,6 +180,8 @@ export class CollectionRepository extends BaseRepository {
         'rowCount was !== 1, expected rowCount === 1'
       ]);
     }
+
+    return response.rows[0];
   }
 
   /**
@@ -150,17 +189,18 @@ export class CollectionRepository extends BaseRepository {
    *
    * @param {number} collectionId - The ID of the collection to update.
    * @param {IPostCollection} data - The updated data for the collection.
-   * @returns {Promise<void>}
+   * @returns {Promise<CollectionModel>}
    * @memberof CollectionRepository
    */
-  async updateCollection(collectionId: number, data: IPostCollection): Promise<void> {
+  async updateCollection(collectionId: number, data: IPostCollection): Promise<CollectionModel> {
     const sql = SQL`
     UPDATE collection
     SET name = ${data.name}, description = ${data.description}
     WHERE collection_id = ${collectionId}
+    RETURNING *;
   `;
 
-    const response = await this.connection.sql(sql);
+    const response = await this.connection.sql(sql, CollectionModel);
 
     if (response.rowCount !== 1) {
       throw new ApiExecuteSQLError('Failed to update collection', [
@@ -168,6 +208,8 @@ export class CollectionRepository extends BaseRepository {
         'rowCount was !== 1, expected rowCount === 1'
       ]);
     }
+
+    return response.rows[0];
   }
 
   /**

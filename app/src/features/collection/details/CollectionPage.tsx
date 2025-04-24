@@ -48,7 +48,7 @@ const CollectionPage = () => {
         <SystemAlertBanner alertTypes={[SystemAlertBannerEnum.SURVEYS]} />
         <Stack flexDirection="row" alignItems="flex-start" gap={2}>
           <Paper sx={{ width: '400px', alignSelf: 'flex-start' }}>
-            <CollectionAbout />
+            <CollectionAbout collection={collectionDataLoader.data} />
           </Paper>
           <Paper sx={{ flex: '1 1 auto' }}>
             <CollectionSurveyContainer />

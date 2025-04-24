@@ -2,7 +2,7 @@ import { Request, RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
-import { ICollectionAdvancedFilters, IPostCollection } from '../../models/collection';
+import { ICollectionAdvancedFilters, IPostCollectionRequest } from '../../models/collection';
 import { CreateCollectionSchema, GetCollectionSchema } from '../../openapi/schemas/collection';
 import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../../openapi/schemas/pagination';
 import { authorizeRequestHandler, userHasValidRole } from '../../request-handlers/security/authorization';
@@ -176,9 +176,6 @@ export function findCollections(): RequestHandler {
         pagination: makePaginationResponse(collectionsTotalCount, paginationOptions)
       };
 
-      // Allow browsers to cache this response for 30 seconds
-      res.setHeader('Cache-Control', 'private, max-age=30');
-
       return res.status(200).json(response);
     } catch (error) {
       defaultLog.error({ label: 'findCollections', message: 'error', error });
@@ -274,7 +271,7 @@ export function createCollection(): RequestHandler {
 
       const collectionService = new CollectionService(connection);
 
-      const data = req.body as IPostCollection;
+      const data = req.body as IPostCollectionRequest;
 
       await collectionService.createCollection(data);
 

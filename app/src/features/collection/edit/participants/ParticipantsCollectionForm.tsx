@@ -7,7 +7,7 @@ import UserRoleSelector from 'components/user/UserRoleSelector';
 import { PROJECT_ROLE } from 'constants/roles';
 import { useFormikContext } from 'formik';
 import { ICodeWithDescription } from 'interfaces/useCodesApi.interface';
-import { ICreateProjectRequest, IGetProjectParticipant } from 'interfaces/useProjectApi.interface';
+import { ICollectionParticipant, ICreateCollectionRequest } from 'interfaces/useCollectionApi.interface';
 import { ISystemUser } from 'interfaces/useUserApi.interface';
 import { TransitionGroup } from 'react-transition-group';
 import yup from 'utils/YupSchema';
@@ -18,13 +18,13 @@ export const ParticipantsCollectionRoleYupSchema = yup.object().shape({
     .of(
       yup.object().shape({
         system_user_id: yup.string().required('Username is required'),
-        project_role_names: yup.array(yup.string()).min(1, 'Select a role for this team member')
+        collection_role_names: yup.array(yup.string()).min(1, 'Select a role for this team member')
       })
     )
     .min(1)
     .hasAtLeastOneValue(
       'There must be at least one person with the Coordinator role.',
-      'project_role_names',
+      'collection_role_names',
       PROJECT_ROLE.COORDINATOR
     )
 });
@@ -39,29 +39,27 @@ export const ParticipantsCollectionRoleFormInitialValues = {
 };
 
 const ParticipantsCollectionForm = (props: IParticipantsCollectionFormProps): JSX.Element => {
-  const { handleSubmit, values, setFieldValue, errors, setErrors } = useFormikContext<ICreateProjectRequest>();
+  const { handleSubmit, values, setFieldValue, errors, setErrors } = useFormikContext<ICreateCollectionRequest>();
 
-  const handleAddUser = (user: ISystemUser | IGetProjectParticipant) => {
+  const handleAddUser = (user: ISystemUser) => {
     setFieldValue(`participants[${values.participants.length}]`, {
       system_user_id: user.system_user_id,
       display_name: user.display_name,
       email: user.email,
       agency: user.agency,
       identity_source: user.identity_source,
-      project_role_names: []
+      collection_role_names: []
     });
     clearErrors();
   };
 
   const handleAddUserRole = (role: string, index: number) => {
-    setFieldValue(`participants[${index}].project_role_names`, [role]);
+    setFieldValue(`participants[${index}].collection_role_name`, role);
     clearErrors();
   };
 
   const handleRemoveUser = (systemUserId: number) => {
-    const filteredUsers = values.participants.filter(
-      (item: ISystemUser | IGetProjectParticipant) => item.system_user_id !== systemUserId
-    );
+    const filteredUsers = values.participants.filter((item) => item.system_user_id !== systemUserId);
 
     setFieldValue(`participants`, filteredUsers);
     clearErrors();
@@ -109,7 +107,7 @@ const ParticipantsCollectionForm = (props: IParticipantsCollectionFormProps): JS
 
   const getSelectedRole = (index: number): string => {
     // users should only ever have a single role on a project so index: 0 is a safe selection
-    return values.participants?.[index]?.project_role_names?.[0] || '';
+    return values.participants?.[index]?.collection_role_name || '';
   };
 
   return (
@@ -163,7 +161,7 @@ const ParticipantsCollectionForm = (props: IParticipantsCollectionFormProps): JS
               }
             }}>
             <TransitionGroup>
-              {values.participants.map((user: ISystemUser | IGetProjectParticipant, index: number) => {
+              {values.participants.map((user, index: number) => {
                 const error = rowItemError(index);
                 return (
                   <Collapse
@@ -174,7 +172,7 @@ const ParticipantsCollectionForm = (props: IParticipantsCollectionFormProps): JS
                     }>
                     <UserRoleSelector
                       index={index}
-                      user={user}
+                      user={user as ICollectionParticipant}
                       roles={props.roles}
                       description={props.description}
                       error={error}
