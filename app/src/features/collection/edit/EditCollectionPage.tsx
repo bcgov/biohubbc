@@ -10,16 +10,18 @@ import { EditCollectionI18N } from 'constants/i18n';
 import { CodesContext } from 'contexts/codesContext';
 import { DialogContext } from 'contexts/dialogContext';
 import { FormikProps } from 'formik';
+import { APIError } from 'hooks/api/useAxios';
 import { useAuthStateContext } from 'hooks/useAuthStateContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useSearchParams } from 'hooks/useSearchParams';
+import useDataLoader from 'hooks/useDataLoader';
 import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { ICollectionParticipant, IUpdateCollectionRequest } from 'interfaces/useCollectionApi.interface';
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { Prompt, useHistory } from 'react-router';
+import { Prompt, useHistory, useParams } from 'react-router';
 import CollectionForm from '../edit/CollectionForm';
 
 export const defaultCollectionDataFormValues: IUpdateCollectionRequest = {
+  collection_id: null as unknown as number,
   name: '',
   description: '',
   participants: []
@@ -35,8 +37,7 @@ const EditCollectionPage = () => {
   const biohubApi = useBiohubApi();
   const formikRef = useRef<FormikProps<IUpdateCollectionRequest>>(null);
 
-  const { searchParams } = useSearchParams<{ collection_id: string }>();
-  const collectionId = searchParams.get('collection_id');
+  const { id: collectionId } = useParams<{ id: string }>();
 
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);
@@ -46,6 +47,16 @@ const EditCollectionPage = () => {
 
   const dialogContext = useContext(DialogContext);
   const codesContext = useContext(CodesContext);
+
+  const collectionDataLoader = useDataLoader((collectionId: number) =>
+    biohubApi.collection.getCollection(collectionId)
+  );
+
+  useEffect(() => {
+    if (collectionId) {
+      collectionDataLoader.load(Number(collectionId));
+    }
+  }, [collectionDataLoader, collectionId]);
 
   useEffect(() => {
     codesContext.codesDataLoader.load();
@@ -95,7 +106,7 @@ const EditCollectionPage = () => {
   };
 
   const handleCancel = () => {
-    history.push('/admin/summary');
+    history.goBack();
   };
 
   /**
@@ -106,22 +117,24 @@ const EditCollectionPage = () => {
    */
   const updateCollection = async (collectionPostObject: IUpdateCollectionRequest) => {
     setIsSaving(true);
-    try {
-      const response = await biohubApi.collection.updateCollection(Number(collectionId), collectionPostObject);
 
-      if (!response?.collections) {
-        showEditErrorDialog({
-          dialogError: 'The response from the server was null, or did not contain a collection ID.'
-        });
-        return;
-      }
+    const { collection_id, ...values } = collectionPostObject;
+    try {
+      await biohubApi.collection.updateCollection(Number(collection_id), {
+        ...values,
+        participants: values.participants.map((participant) => ({
+          system_user_id: participant.system_user_id,
+          collection_role_name: participant.collection_role_name
+        }))
+      });
 
       setEnableCancelCheck(false);
       skipUnsavedChangesDialog();
-      history.push(`/admin/summary`);
-    } finally {
-      setIsSaving(false);
+      history.goBack();
+    } catch (error) {
+      showEditErrorDialog({ dialogError: (error as APIError).message });
     }
+    setIsSaving(false);
   };
 
   if (!codesContext.codesDataLoader.data || !collectionId) {
@@ -154,7 +167,7 @@ const EditCollectionPage = () => {
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <Paper sx={{ p: 5 }}>
           <CollectionForm
-            initialCollectionData={initialCollectionData}
+            initialCollectionData={collectionDataLoader.data ?? initialCollectionData}
             handleSubmit={(formikData) => updateCollection(formikData)}
             formikRef={formikRef}
           />

@@ -4,37 +4,18 @@ import Typography from '@mui/material/Typography';
 import AlertBar from 'components/alert/AlertBar';
 import { SystemUserAutocompleteField } from 'components/fields/SystemUserAutocompleteField';
 import UserRoleSelector from 'components/user/UserRoleSelector';
-import { PROJECT_ROLE } from 'constants/roles';
 import { useFormikContext } from 'formik';
 import { ICodeWithDescription } from 'interfaces/useCodesApi.interface';
 import { ICollectionParticipant, ICreateCollectionRequest } from 'interfaces/useCollectionApi.interface';
 import { ISystemUser } from 'interfaces/useUserApi.interface';
 import { TransitionGroup } from 'react-transition-group';
-import yup from 'utils/YupSchema';
-
-export const ParticipantsCollectionRoleYupSchema = yup.object().shape({
-  participants: yup
-    .array()
-    .of(
-      yup.object().shape({
-        system_user_id: yup.string().required('Username is required'),
-        collection_role_names: yup.array(yup.string()).min(1, 'Select a role for this team member')
-      })
-    )
-    .min(1)
-    .hasAtLeastOneValue(
-      'There must be at least one person with the Coordinator role.',
-      'collection_role_names',
-      PROJECT_ROLE.COORDINATOR
-    )
-});
 
 interface IParticipantsCollectionFormProps {
   roles: ICodeWithDescription[];
   description?: string;
 }
 
-export const ParticipantsCollectionRoleFormInitialValues = {
+export const CollectionParticipantsFormInitialValues = {
   participants: []
 };
 

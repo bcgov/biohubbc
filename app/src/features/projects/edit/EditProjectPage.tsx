@@ -54,9 +54,11 @@ const EditProjectPage = () => {
     ])
   );
 
-  if (projectId) {
-    editProjectDataLoader.load(projectId);
-  }
+  useEffect(() => {
+    if (projectId) {
+      editProjectDataLoader.load(projectId);
+    }
+  }, [editProjectDataLoader, projectId]);
 
   const defaultErrorDialogProps = {
     onClose: () => {

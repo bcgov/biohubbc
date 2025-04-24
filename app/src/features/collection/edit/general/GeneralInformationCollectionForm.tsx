@@ -1,6 +1,5 @@
 import Grid from '@mui/material/Grid';
 import CustomTextField from 'components/fields/CustomTextField';
-import yup from 'utils/YupSchema';
 
 export interface IGeneralInformationCollectionForm {
   name: string;
@@ -10,13 +9,6 @@ export interface IGeneralInformationCollectionForm {
 export const GeneralInformationInitialValues: IGeneralInformationCollectionForm = {
   name: '',
   description: ''
-};
-
-export const GeneralInformationYupSchema = () => {
-  return yup.object().shape({
-    name: yup.string(),
-    description: yup.string()
-  });
 };
 
 /**
@@ -44,8 +36,7 @@ const GeneralInformationCollectionForm = () => {
           maxLength={200}
           other={{
             multiline: true,
-            rows: 4,
-            required: true
+            rows: 4
           }}
         />
       </Grid>

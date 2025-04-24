@@ -4,7 +4,6 @@ import {
   Collection,
   CollectionParticipant,
   ICollectionAdvancedFilters,
-  IPostCollection,
   IPostCollectionRequest
 } from '../models/collection';
 import { SystemUserWithRoles } from '../models/system-user-view';
@@ -151,11 +150,64 @@ export class CollectionService extends DBService {
    * Update a collection record.
    *
    * @param {number} collectionId
-   * @param {IPostCollection} collection
+   * @param {IPostCollectionRequest} collection
    * @return {*}  {Promise<CollectionModel>}
    * @memberof CollectionService
    */
-  async updateCollection(collectionId: number, collection: IPostCollection): Promise<CollectionModel> {
-    return this.collectionRepository.updateCollection(collectionId, collection);
+  async updateCollection(collectionId: number, collection: IPostCollectionRequest): Promise<CollectionModel> {
+    // Update the collection record
+    const collectionResponse = await this.collectionRepository.updateCollection(collectionId, collection);
+
+    // Get current participants from DB
+    const currentParticipants = await this.collectionParticipationService.getCollectionParticipants(collectionId);
+
+    // Find new participants to insert
+    const newParticipants = collection.participants.filter(
+      (member) => !currentParticipants.some((existing) => existing.system_user_id === member.system_user_id)
+    );
+
+    // Find participants to remove
+    const incomingIds = collection.participants.map((m) => m.system_user_id);
+    const oldParticipants = currentParticipants.filter((existing) => !incomingIds.includes(existing.system_user_id));
+
+    // Find participants whose role has changed
+    const modifiedParticipants = currentParticipants
+      .map((existing) => {
+        const incoming = collection.participants.find((p) => p.system_user_id === existing.system_user_id);
+
+        if (incoming && existing.collection_role_name !== incoming.collection_role_name) {
+          return {
+            ...existing,
+            newRole: incoming.collection_role_name
+          };
+        }
+
+        return null;
+      })
+      .filter((p) => p !== null) as Array<(typeof currentParticipants)[0] & { newRole: string }>;
+
+    // Insert new participants
+    for (const participant of newParticipants) {
+      await this.collectionParticipationService.insertCollectionParticipant(collectionId, participant);
+    }
+
+    // Remove old participants
+    for (const participant of oldParticipants) {
+      await this.collectionParticipationService.deleteCollectionParticipationRecord(
+        collectionId,
+        participant.collection_participation_id
+      );
+    }
+
+    // Update roles of modified participants
+    for (const participant of modifiedParticipants) {
+      await this.collectionParticipationService.updateCollectionParticipantRole(
+        collectionId,
+        participant.collection_participation_id,
+        participant.newRole
+      );
+    }
+
+    return collectionResponse;
   }
 }

@@ -40,13 +40,13 @@ export class CollectionParticipationRepository extends BaseRepository {
         su.agency,
         sp.collection_participation_id,
         sp.collection_id,
-        sp.collection_job_id,
-        sj.name collection_job_name
+        sp.collection_role_id,
+        sj.name collection_role_name
       FROM
         collection_participation sp
         LEFT JOIN
-        collection_job sj
-        ON sj.collection_job_id = sp.collection_job_id
+        collection_role sj
+        ON sj.collection_role_id = sp.collection_role_id
       LEFT JOIN "system_user" su
         ON sp.system_user_id = su.system_user_id
       LEFT JOIN
@@ -74,7 +74,7 @@ export class CollectionParticipationRepository extends BaseRepository {
         su.family_name,
         su.agency,
         sp.collection_participation_id,
-        sp.collection_job_id,
+        sp.collection_role_id,
         sp.collection_id,
         sj.name,
         sp.create_date
@@ -111,13 +111,13 @@ export class CollectionParticipationRepository extends BaseRepository {
         su.agency,
         sp.collection_participation_id,
         sp.collection_id,
-        sp.collection_job_id,
-        sj.name collection_job_name
+        sp.collection_role_id,
+        sj.name collection_role_name
       FROM
         collection_participation sp
       LEFT JOIN
-        collection_job sj
-        ON sj.collection_job_id = sp.collection_job_id
+        collection_role sj
+        ON sj.collection_role_id = sp.collection_role_id
       LEFT JOIN "system_user" su
         ON sp.system_user_id = su.system_user_id
       LEFT JOIN
@@ -145,7 +145,7 @@ export class CollectionParticipationRepository extends BaseRepository {
         su.family_name,
         su.agency,
         sp.collection_participation_id,
-        sp.collection_job_id,
+        sp.collection_role_id,
         sp.collection_id,
         sj.name,
         sp.create_date
@@ -194,19 +194,19 @@ export class CollectionParticipationRepository extends BaseRepository {
    *
    * @param {number} collectionId
    * @param {number} collectionParticipationId
-   * @param {string} collectionJobName
+   * @param {string} collectionRoleName
    * @return {*}  {Promise<void>}
    * @memberof CollectionParticipationRepository
    */
-  async updateCollectionParticipantJob(
+  async updateCollectionParticipantRole(
     collectionId: number,
     collectionParticipationId: number,
-    collectionJobName: string
+    collectionRoleName: string
   ): Promise<void> {
     const sqlStatement = SQL`
       UPDATE collection_participation
       SET
-        collection_job_id = (SELECT collection_job_id FROM collection_job WHERE name = ${collectionJobName} LIMIT 1)
+        collection_role_id = (SELECT collection_role_id FROM collection_role WHERE name = ${collectionRoleName} LIMIT 1)
       WHERE
         collection_participation_id = ${collectionParticipationId}
       AND

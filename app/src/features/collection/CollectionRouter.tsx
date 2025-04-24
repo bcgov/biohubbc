@@ -7,6 +7,7 @@ import RouteWithTitle from 'utils/RouteWithTitle';
 import { getTitle } from 'utils/Utils';
 import CreateCollectionPage from './create/CreateCollectionPage';
 import CollectionPage from './details/CollectionPage';
+import EditCollectionPage from './edit/EditCollectionPage';
 
 /**
  * Router for all `/admin/collections/*` pages.
@@ -40,6 +41,18 @@ const CollectionsRouter = () => {
             <SystemRoleRouteGuard
               validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.PROJECT_CREATOR]}>
               <CollectionPage />
+            </SystemRoleRouteGuard>
+          </TaxonomyContextProvider>
+        </DialogContextProvider>
+      </RouteWithTitle>
+
+      {/* Collection Edit Page Route */}
+      <RouteWithTitle exact path="/admin/collections/:id/edit" title={getTitle('Edit Collection')}>
+        <DialogContextProvider>
+          <TaxonomyContextProvider>
+            <SystemRoleRouteGuard
+              validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.PROJECT_CREATOR]}>
+              <EditCollectionPage />
             </SystemRoleRouteGuard>
           </TaxonomyContextProvider>
         </DialogContextProvider>

@@ -46,6 +46,7 @@ export interface ICreateCollectionSurveyRequest {
   survey_id: number;
   collections: { collection_id: number }[];
 }
+
 export interface IDeleteCollectionSurveyRequest {
   survey_id: number;
   collections: { collection_id: number }[];

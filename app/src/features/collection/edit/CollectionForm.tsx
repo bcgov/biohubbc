@@ -18,8 +18,8 @@ interface ICollectionForm<InitialValuesType extends IUpdateCollectionRequest | I
 
 const validationCollectionYupSchema = yup.object().shape({
   name: yup.string().required('Name is required'),
-  description: yup.string().required('Description is required').max(3000, 'Description cannot exceed 3000 characters.'),
-  participants: yup.array(yup.object({ system_user_id: yup.number() }))
+  description: yup.string().max(3000, 'Description cannot exceed 3000 characters.').nullable(),
+  participants: yup.array(yup.object({ system_user_id: yup.number() })).min(1, 'There must be at least one participant')
 });
 
 /**

@@ -62,15 +62,15 @@ export class CollectionParticipationService extends DBService {
    * @returns {Promise<void>}
    * @memberof CollectionParticipationService
    */
-  async updateCollectionParticipantJob(
+  async updateCollectionParticipantRole(
     collectionId: number,
     collectionParticipationId: number,
-    collectionJobName: string
+    collectionRoleName: string
   ): Promise<void> {
-    return this.collectionParticipationRepository.updateCollectionParticipantJob(
+    return this.collectionParticipationRepository.updateCollectionParticipantRole(
       collectionId,
       collectionParticipationId,
-      collectionJobName
+      collectionRoleName
     );
   }
 

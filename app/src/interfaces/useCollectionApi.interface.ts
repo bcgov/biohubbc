@@ -7,7 +7,7 @@ export interface IGetCollectionsResponse {
 
 export interface ICreateCollectionRequest {
   name: string;
-  description: string;
+  description: string | null;
   participants: IPostCollectionParticipant[];
 }
 
@@ -17,8 +17,9 @@ export interface ICreateCollectionSurveyRequest {
 }
 
 export interface IUpdateCollectionRequest {
+  collection_id: number;
   name: string;
-  description: string;
+  description: string | null;
   participants: ICollectionParticipant[];
 }
 

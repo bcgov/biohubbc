@@ -10,6 +10,34 @@ export const CreateCollectionSchema: OpenAPIV3.SchemaObject = {
     participants: {
       type: 'array',
       description: 'List of users to add to the collection',
+      minItems: 1,
+      items: {
+        type: 'object',
+        additionalProperties: false,
+        required: ['system_user_id', 'collection_role_name'],
+        properties: {
+          system_user_id: { type: 'number', description: 'Primary key of a system user to add to the collection' },
+          collection_role_name: {
+            type: 'string',
+            enum: ['Admin', 'Member'],
+            description: 'Name of a collection role for the participant'
+          }
+        }
+      }
+    }
+  }
+};
+
+export const UpdateCollectionSchema: OpenAPIV3.SchemaObject = {
+  type: 'object',
+  additionalProperties: false,
+  required: [],
+  properties: {
+    name: { type: 'string', description: 'The name of the collection to create' },
+    description: { type: 'string', description: 'The description of the collection to create', nullable: true },
+    participants: {
+      type: 'array',
+      description: 'List of users to add to the collection',
       items: {
         type: 'object',
         additionalProperties: false,
