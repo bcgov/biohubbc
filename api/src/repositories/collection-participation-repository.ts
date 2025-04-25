@@ -1,7 +1,15 @@
+import { Knex } from 'knex';
 import SQL from 'sql-template-strings';
+import { z } from 'zod';
+import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
-import { CollectionParticipant, IPostCollectionParticipant } from '../models/collection';
+import {
+  CollectionParticipant,
+  ICollectionParticipantsAdvancedFilters,
+  IPostCollectionParticipant
+} from '../models/collection';
 import { SystemUserWithRoles } from '../models/system-user-view';
+import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { BaseRepository } from './base-repository';
 
 /**
@@ -13,149 +21,196 @@ import { BaseRepository } from './base-repository';
  */
 export class CollectionParticipationRepository extends BaseRepository {
   /**
-   * Get a collection participant record.
+   * Get a single collection participant record with user and role info.
    *
-   * @param {number} collectionId
-   * @param {number} systemUserId
-   * @return {*}  {(Promise<CollectionParticipant | null>)}
-   * @memberof CollectionParticipationRepository
+   * @param {number} collectionId - The ID of the collection.
+   * @param {number} systemUserId - The system user ID.
+   * @returns {Promise<(CollectionParticipant & SystemUserWithRoles) | null>}
    */
   async getCollectionParticipant(
     collectionId: number,
     systemUserId: number
   ): Promise<(CollectionParticipant & SystemUserWithRoles) | null> {
-    const sqlStatement = SQL`
-      SELECT
-        su.system_user_id,
-        su.user_identifier,
-        su.user_guid,
-        su.record_end_date,
-        uis.name AS identity_source,
-        array_remove(array_agg(sr.system_role_id), NULL) AS role_ids,
-        array_remove(array_agg(sr.name), NULL) AS role_names,
-        su.email,
-        su.display_name,
-        su.given_name,
-        su.family_name,
-        su.agency,
-        sp.collection_participation_id,
-        sp.collection_id,
-        sp.collection_role_id,
-        sj.name collection_role_name
-      FROM
-        collection_participation sp
-        LEFT JOIN
-        collection_role sj
-        ON sj.collection_role_id = sp.collection_role_id
-      LEFT JOIN "system_user" su
-        ON sp.system_user_id = su.system_user_id
-      LEFT JOIN
-        system_user_role sur
-        ON su.system_user_id = sur.system_user_id
-      LEFT JOIN
-        system_role sr
-        ON sur.system_role_id = sr.system_role_id
-      LEFT JOIN
-        user_identity_source uis
-        ON uis.user_identity_source_id = su.user_identity_source_id
-      WHERE
-        sp.collection_id = ${collectionId}
-      AND
-        sp.system_user_id = ${systemUserId}
-      GROUP BY
-        su.system_user_id,
-        su.record_end_date,
-        su.user_identifier,
-        su.user_guid,
-        uis.name,
-        su.email,
-        su.display_name,
-        su.given_name,
-        su.family_name,
-        su.agency,
-        sp.collection_participation_id,
-        sp.collection_role_id,
-        sp.collection_id,
-        sj.name,
-        sp.create_date
-      ORDER BY
-        sp.create_date DESC;
-      `;
+    const knex = getKnex();
 
-    const response = await this.connection.sql(sqlStatement, CollectionParticipant.merge(SystemUserWithRoles));
+    const query = knex
+      .select([
+        'su.system_user_id',
+        'su.user_identifier',
+        'su.user_guid',
+        'su.record_end_date',
+        'uis.name as identity_source',
+        knex.raw('array_remove(array_agg(sr.system_role_id), NULL) as role_ids'),
+        knex.raw('array_remove(array_agg(sr.name), NULL) as role_names'),
+        'su.email',
+        'su.display_name',
+        'su.given_name',
+        'su.family_name',
+        'su.agency',
+        'sp.collection_participation_id',
+        'sp.collection_id',
+        'sp.collection_role_id',
+        'sj.name as collection_role_name'
+      ])
+      .from('collection_participation as sp')
+      .leftJoin('collection_role as sj', 'sj.collection_role_id', 'sp.collection_role_id')
+      .leftJoin('system_user as su', 'sp.system_user_id', 'su.system_user_id')
+      .leftJoin('system_user_role as sur', 'su.system_user_id', 'sur.system_user_id')
+      .leftJoin('system_role as sr', 'sur.system_role_id', 'sr.system_role_id')
+      .leftJoin('user_identity_source as uis', 'uis.user_identity_source_id', 'su.user_identity_source_id')
+      .where('sp.collection_id', collectionId)
+      .andWhere('sp.system_user_id', systemUserId)
+      .groupBy([
+        'su.system_user_id',
+        'su.record_end_date',
+        'su.user_identifier',
+        'su.user_guid',
+        'uis.name',
+        'su.email',
+        'su.display_name',
+        'su.given_name',
+        'su.family_name',
+        'su.agency',
+        'sp.collection_participation_id',
+        'sp.collection_role_id',
+        'sp.collection_id',
+        'sj.name',
+        'sp.create_date'
+      ])
+      .orderBy('sp.create_date', 'desc');
 
-    return response.rows?.[0] || null;
+    const result = await query;
+
+    return result?.[0] || null;
+  }
+
+  /**
+   * Create a base query for retrieving collection participants.
+   *
+   * @param {number} collectionId - The ID of the collection.
+   * @param {Knex} knex - Knex instance.
+   * @returns {Knex.QueryBuilder} Knex query builder with joins and aggregations.
+   */
+  _makeCollectionParticipantsBaseQuery(collectionId: number, knex: Knex): Knex.QueryBuilder {
+    return knex('collection_participation as sp')
+      .select([
+        'su.system_user_id',
+        'su.user_identifier',
+        'su.user_guid',
+        'su.record_end_date',
+        'uis.name as identity_source',
+        knex.raw('array_remove(array_agg(sr.system_role_id), NULL) as role_ids'),
+        knex.raw('array_remove(array_agg(sr.name), NULL) as role_names'),
+        'su.email',
+        'su.display_name',
+        'su.given_name',
+        'su.family_name',
+        'su.agency',
+        'sp.collection_participation_id',
+        'sp.collection_id',
+        'sp.collection_role_id',
+        'sj.name as collection_role_name'
+      ])
+      .leftJoin('collection_role as sj', 'sj.collection_role_id', 'sp.collection_role_id')
+      .leftJoin('system_user as su', 'sp.system_user_id', 'su.system_user_id')
+      .leftJoin('system_user_role as sur', 'su.system_user_id', 'sur.system_user_id')
+      .leftJoin('system_role as sr', 'sur.system_role_id', 'sr.system_role_id')
+      .leftJoin('user_identity_source as uis', 'uis.user_identity_source_id', 'su.user_identity_source_id')
+      .where('sp.collection_id', collectionId)
+      .whereNull('su.record_end_date')
+      .groupBy([
+        'su.system_user_id',
+        'su.user_identifier',
+        'su.user_guid',
+        'su.record_end_date',
+        'uis.name',
+        'su.email',
+        'su.display_name',
+        'su.given_name',
+        'su.family_name',
+        'su.agency',
+        'sp.collection_participation_id',
+        'sp.collection_role_id',
+        'sp.collection_id',
+        'sj.name',
+        'sp.create_date'
+      ])
+      .orderBy('sp.create_date', 'desc');
   }
 
   /**
    * Get collection participant records.
    *
    * @param {number} collectionId
+   * @param {ApiPaginationOptions} pagination
    * @return {*}  {Promise<CollectionParticipant[]>}
    * @memberof CollectionParticipationRepository
    */
-  async getCollectionParticipants(collectionId: number): Promise<(CollectionParticipant & SystemUserWithRoles)[]> {
-    const sqlStatement = SQL`
-      SELECT
-        su.system_user_id,
-        su.user_identifier,
-        su.user_guid,
-        su.record_end_date,
-        uis.name AS identity_source,
-        array_remove(array_agg(sr.system_role_id), NULL) AS role_ids,
-        array_remove(array_agg(sr.name), NULL) AS role_names,
-        su.email,
-        su.display_name,
-        su.given_name,
-        su.family_name,
-        su.agency,
-        sp.collection_participation_id,
-        sp.collection_id,
-        sp.collection_role_id,
-        sj.name collection_role_name
-      FROM
-        collection_participation sp
-      LEFT JOIN
-        collection_role sj
-        ON sj.collection_role_id = sp.collection_role_id
-      LEFT JOIN "system_user" su
-        ON sp.system_user_id = su.system_user_id
-      LEFT JOIN
-        system_user_role sur
-        ON su.system_user_id = sur.system_user_id
-      LEFT JOIN
-        system_role sr
-        ON sur.system_role_id = sr.system_role_id
-      LEFT JOIN
-        user_identity_source uis
-        ON uis.user_identity_source_id = su.user_identity_source_id
-      WHERE
-        sp.collection_id = ${collectionId}
-      AND
-        su.record_end_date is NULL
-      GROUP BY
-        su.system_user_id,
-        su.record_end_date,
-        su.user_identifier,
-        su.user_guid,
-        uis.name,
-        su.email,
-        su.display_name,
-        su.given_name,
-        su.family_name,
-        su.agency,
-        sp.collection_participation_id,
-        sp.collection_role_id,
-        sp.collection_id,
-        sj.name,
-        sp.create_date
-      ORDER BY
-        sp.create_date DESC;
-    `;
+  /**
+   * Get collection participant records.
+   *
+   * @param {number} collectionId - The collection ID.
+   * @param {ICollectionParticipantsAdvancedFilters} filterFields
+   * @param {ApiPaginationOptions} [pagination] - Optional pagination.
+   * @returns {Promise<(CollectionParticipant & SystemUserWithRoles)[]>}
+   */
+  async getCollectionParticipants(
+    collectionId: number,
+    filterFields?: ICollectionParticipantsAdvancedFilters,
+    pagination?: ApiPaginationOptions
+  ): Promise<(CollectionParticipant & SystemUserWithRoles)[]> {
+    const knex = getKnex();
+    const query = this._makeCollectionParticipantsBaseQuery(collectionId, knex);
 
-    const response = await this.connection.sql(sqlStatement, CollectionParticipant.merge(SystemUserWithRoles));
+    if (pagination) {
+      query.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
+
+      if (pagination.sort && pagination.order) {
+        query.orderBy(pagination.sort, pagination.order);
+      }
+    }
+
+    if (filterFields?.system_user_id) {
+      query.whereIn('collection.collection_participation', (subquery) =>
+        subquery
+          .select('collection_participation')
+          .from('collceton_participation')
+          .where('system_user_id', filterFields?.system_user_id)
+      );
+    }
+
+    const response = await this.connection.knex(query, CollectionParticipant.merge(SystemUserWithRoles));
 
     return response.rows;
+  }
+
+  /**
+   * Returns the total number of participants in the given collection
+   *
+   * @param {number} collectionId
+   * @return {*}  {Promise<number>}
+   * @memberof SurveyService
+   */
+  async getCollectionParticipantsCount(collectionId: number): Promise<number> {
+    const sqlStatement = SQL`
+        SELECT
+          COUNT(*)::integer AS count
+        FROM
+          collection_participation
+        WHERE
+          collection_id = ${collectionId};
+      `;
+
+    const response = await this.connection.sql(sqlStatement, z.object({ count: z.number() }));
+
+    if (!response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to get collection_participation count', [
+        'collectionParticipationRepository->getCollectionParticipantsCount',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response.rows[0].count;
   }
 
   /**

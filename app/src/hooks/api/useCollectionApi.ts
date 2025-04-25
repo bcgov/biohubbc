@@ -8,6 +8,7 @@ import {
   IGetCollectionsResponse
 } from 'interfaces/useCollectionApi.interface';
 import { IGetSurveyObservationsResponse } from 'interfaces/useObservationApi.interface';
+import { IFindSurveysResponse } from 'interfaces/useSurveyApi.interface';
 
 import qs from 'qs';
 import { ApiPaginationRequestOptions } from 'types/misc';
@@ -73,12 +74,33 @@ export const useCollectionApi = (axios: AxiosInstance) => {
     collectionId: number,
     pagination?: ApiPaginationRequestOptions,
     filterFieldData?: IObservationsAdvancedFilters
-  ): Promise<IGetSurveyObservationsResponse> => {
+  ): Promise<IFindSurveysResponse> => {
     const params = {
       ...pagination,
       ...filterFieldData
     };
     const { data } = await axios.get(`/api/collection/${collectionId}/survey`, {
+      params,
+      paramsSerializer: (params) => qs.stringify(params)
+    });
+
+    return data;
+  };
+
+  /**
+   * Get collection participants
+   * @param {number} collectionId
+   */
+  const getParticipants = async (
+    collectionId: number,
+    pagination?: ApiPaginationRequestOptions,
+    filterFieldData?: IObservationsAdvancedFilters
+  ): Promise<IFindSurveysResponse> => {
+    const params = {
+      ...pagination,
+      ...filterFieldData
+    };
+    const { data } = await axios.get(`/api/collection/${collectionId}/participants`, {
       params,
       paramsSerializer: (params) => qs.stringify(params)
     });
@@ -155,6 +177,7 @@ export const useCollectionApi = (axios: AxiosInstance) => {
   return {
     createCollection,
     addToCollections,
+    getParticipants,
     updateCollection,
     findCollections,
     getSurveysInCollection,

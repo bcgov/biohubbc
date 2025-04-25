@@ -1,10 +1,11 @@
-import { RequestHandler } from 'express';
+import { Request, RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { getDBConnection } from '../../../../database/db';
+import { ICollectionParticipantsAdvancedFilters } from '../../../../models/collection';
+import { GetCollectionParticipantsSchema } from '../../../../openapi/schemas/collection';
 import { paginationRequestQueryParamSchema } from '../../../../openapi/schemas/pagination';
-import { getSurveysListSchema } from '../../../../openapi/schemas/project';
 import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
-import { CollectionSurveyService } from '../../../../services/collection-survey-service';
+import { CollectionParticipationService } from '../../../../services/collection-participation-service';
 import { getLogger } from '../../../../utils/logger';
 import {
   ensureCompletePaginationOptions,
@@ -24,11 +25,11 @@ export const GET: Operation = [
       ]
     };
   }),
-  getSurveysInCollection()
+  getCollectionParticipants()
 ];
 
 GET.apiDoc = {
-  description: 'Gets the list of surveys in the collection',
+  description: 'Get participants of a collection',
   tags: ['collections'],
   security: [
     {
@@ -49,10 +50,10 @@ GET.apiDoc = {
   ],
   responses: {
     200: {
-      description: 'Collection response object.',
+      description: 'Collection participants response object.',
       content: {
         'application/json': {
-          schema: getSurveysListSchema
+          schema: GetCollectionParticipantsSchema
         }
       }
     },
@@ -75,13 +76,13 @@ GET.apiDoc = {
 };
 
 /**
- * Get surveys in a specific collection
+ * Get participants of a collection
  *
  * @returns {RequestHandler}
  */
-export function getSurveysInCollection(): RequestHandler {
+export function getCollectionParticipants(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'getSurveysInCollection' });
+    defaultLog.debug({ label: 'getCollectionParticipants' });
 
     const connection = getDBConnection(req.keycloak_token);
 
@@ -90,30 +91,48 @@ export function getSurveysInCollection(): RequestHandler {
 
       const paginationOptions = makePaginationOptionsFromRequest(req);
 
-      const collectionSurveyService = new CollectionSurveyService(connection);
+      const filterFields = parseQueryParams(req);
+
+      const collectionParticipationService = new CollectionParticipationService(connection);
 
       const collectionId = Number(req.params.collectionId);
 
-      const surveys = await collectionSurveyService.getSurveysBasicFieldsByCollectionId(
+      const participants = await collectionParticipationService.getCollectionParticipants(
         collectionId,
+        filterFields,
         ensureCompletePaginationOptions(paginationOptions)
       );
-      const surveysTotalCount = await collectionSurveyService.getSurveyCountByCollectionId(collectionId);
+      const participantsTotalCount = await collectionParticipationService.getCollectionParticipantsCount(collectionId);
 
       const response = {
-        surveys,
-        pagination: makePaginationResponse(surveysTotalCount, paginationOptions)
+        participants,
+        pagination: makePaginationResponse(participantsTotalCount, paginationOptions)
       };
 
       await connection.commit();
 
       return res.status(200).json(response);
     } catch (error) {
-      defaultLog.error({ label: 'getSurveysInCollection', message: 'error', error });
+      defaultLog.error({ label: 'getCollectionParticipants', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
       connection.release();
     }
+  };
+}
+
+/**
+ * Parse the query parameters from the request into the expected format.
+ *
+ * @param {Request<unknown, unknown, unknown, ICollectionParticipantsAdvancedFilters>} req
+ * @return {*}  {ICollectionAdvancedFilters}
+ */
+function parseQueryParams(
+  req: Request<unknown, unknown, unknown, ICollectionParticipantsAdvancedFilters>
+): ICollectionParticipantsAdvancedFilters {
+  return {
+    keyword: req.query.keyword ?? undefined,
+    system_user_id: (req.query.system_user_id && Number(req.query.system_user_id)) ?? undefined
   };
 }

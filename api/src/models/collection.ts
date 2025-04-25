@@ -7,6 +7,11 @@ export interface ICollectionAdvancedFilters {
   itis_tsns?: number[];
 }
 
+export interface ICollectionParticipantsAdvancedFilters {
+  keyword?: string;
+  system_user_id?: number;
+}
+
 export const CollectionParticipant = z.object({
   collection_participation_id: z.number(),
   collection_id: z.number(),

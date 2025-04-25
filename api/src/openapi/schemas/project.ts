@@ -273,9 +273,13 @@ export const getSurveysListSchema: OpenAPIV3.SchemaObject = {
       items: {
         type: 'object',
         additionalProperties: false,
-        required: ['survey_id', 'name', 'start_date', 'end_date', 'progress_id', 'focal_species'],
+        required: ['survey_id', 'project_id', 'name', 'start_date', 'end_date', 'progress_id', 'focal_species'],
         properties: {
           survey_id: {
+            type: 'integer',
+            minimum: 1
+          },
+          project_id: {
             type: 'integer',
             minimum: 1
           },

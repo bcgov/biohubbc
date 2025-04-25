@@ -1,10 +1,7 @@
 import { mdiClipboardOutline, mdiDatabaseSearch, mdiFolder, mdiFormatListGroup, mdiMagnify } from '@mdi/js';
 import Icon from '@mdi/react';
-import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import grey from '@mui/material/colors/grey';
 import Stack from '@mui/material/Stack';
-import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
 import CustomToggleButtonGroup from 'components/toolbar/CustomToggleButtonGroup';
@@ -12,6 +9,7 @@ import ProjectsListContainer from 'features/summary/list-data/project/ProjectsLi
 import SurveysListContainer from 'features/summary/list-data/survey/SurveysListContainer';
 import { useSearchParams } from 'hooks/useSearchParams';
 import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
+import { SidebarLayout } from 'layouts/SidebarLayout';
 import { useState } from 'react';
 import { TabularDataTableContainer } from '../tabular-data/TabularDataTableContainer';
 import CollectionsListContainer from './collection/CollectionListContainer';
@@ -72,8 +70,8 @@ export const ListDataTableContainer = () => {
   const activeViewObj = views.find((v) => v.value === activeView);
 
   return (
-    <Stack gap={1} flexDirection="row" height="100%">
-      <Box p={2} minWidth="300px">
+    <SidebarLayout
+      sidebar={
         <CustomToggleButtonGroup
           views={views}
           activeView={activeView}
@@ -83,12 +81,10 @@ export const ListDataTableContainer = () => {
           }}
           orientation="vertical"
         />
-      </Box>
-
-      <Box borderLeft={`1px solid ${grey[300]}`} boxSizing="border-box" flex="1 1 auto">
-        <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', borderBottom: `1px solid ${grey[300]}` }}>
+      }
+      header={
+        <>
           <Typography variant="h2">{activeViewObj?.label}</Typography>
-
           <Stack gap={1} direction="row">
             <HelpButtonDialog markdownType={MarkdownTypeNameEnum.PROJECTS_AND_SURVEYS} />
             <Button
@@ -105,13 +101,12 @@ export const ListDataTableContainer = () => {
             </Button>
             {activeViewObj?.button}
           </Stack>
-        </Toolbar>
-
-        {activeView === ACTIVE_VIEW_VALUE.projects && <ProjectsListContainer showSearch={showSearch} />}
-        {activeView === ACTIVE_VIEW_VALUE.surveys && <SurveysListContainer showSearch={showSearch} />}
-        {activeView === ACTIVE_VIEW_VALUE.collections && <CollectionsListContainer showSearch={showSearch} />}
-        {activeView === ACTIVE_VIEW_VALUE.data && <TabularDataTableContainer />}
-      </Box>
-    </Stack>
+        </>
+      }>
+      {activeView === ACTIVE_VIEW_VALUE.projects && <ProjectsListContainer showSearch={showSearch} />}
+      {activeView === ACTIVE_VIEW_VALUE.surveys && <SurveysListContainer showSearch={showSearch} />}
+      {activeView === ACTIVE_VIEW_VALUE.collections && <CollectionsListContainer showSearch={showSearch} />}
+      {activeView === ACTIVE_VIEW_VALUE.data && <TabularDataTableContainer />}
+    </SidebarLayout>
   );
 };

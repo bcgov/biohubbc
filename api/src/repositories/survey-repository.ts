@@ -108,6 +108,7 @@ export type SurveyProgressRecord = z.infer<typeof SurveyProgressRecord>;
 
 export const SurveyBasicFields = z.object({
   survey_id: z.number(),
+  project_id: z.number(),
   name: z.string(),
   start_date: z.string(),
   end_date: z.string().nullable(),
@@ -645,6 +646,7 @@ export class SurveyRepository extends BaseRepository {
       .queryBuilder()
       .select(
         'survey.survey_id',
+        'survey.project_id',
         'survey.name',
         'survey.start_date',
         'survey.end_date',
@@ -658,6 +660,7 @@ export class SurveyRepository extends BaseRepository {
       .where('cs.collection_id', collectionId)
       .where('study_species.is_focal', true)
       .groupBy('survey.survey_id')
+      .groupBy('survey.project_id')
       .groupBy('survey.name')
       .groupBy('survey.start_date')
       .groupBy('survey.end_date')

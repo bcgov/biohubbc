@@ -1,28 +1,34 @@
+import { mdiAccountMultiple, mdiClipboardOutline, mdiDatabaseSearch, mdiTagOutline } from '@mdi/js';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
-import Stack from '@mui/material/Stack';
+import CustomToggleButtonGroup from 'components/toolbar/CustomToggleButtonGroup';
 import { CodesContext } from 'contexts/codesContext';
 import { SystemAlertBanner } from 'features/alert/banner/SystemAlertBanner';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { SystemAlertBannerEnum } from 'interfaces/useAlertApi.interface';
-import { useContext, useEffect } from 'react';
+import { SidebarLayout } from 'layouts/SidebarLayout';
+import { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import CollectionAbout from './about/CollectionAbout';
+import { CollectionDataContainer } from './data/CollectionDataContainer';
 import CollectionHeader from './header/CollectionHeader';
+import CollectionMembersContainer from './members/CollectionMembersContainer';
 import CollectionSurveyContainer from './survey/CollectionSurveyContainer';
-import { CollectionDataContainer } from './survey/data/CollectionDataContainer';
-/**
- * Page to display a single Collection.
- *
- * @return {*}
- */
+
+enum CollectionView {
+  Surveys = 'surveys',
+  Data = 'data',
+  Tags = 'tags',
+  Members = 'members'
+}
+
 const CollectionPage = () => {
   const codesContext = useContext(CodesContext);
   const biohubApi = useBiohubApi();
 
   const { id: collectionId } = useParams<{ id: string }>();
+  const [activeView, setActiveView] = useState<CollectionView>(CollectionView.Surveys);
 
   useEffect(() => {
     codesContext.codesDataLoader.load();
@@ -42,25 +48,50 @@ const CollectionPage = () => {
     return <></>;
   }
 
+  const collection = collectionDataLoader.data;
+
+  const views = [
+    { value: CollectionView.Surveys, label: 'Surveys', icon: mdiClipboardOutline },
+    { value: CollectionView.Tags, label: 'Tags', icon: mdiTagOutline },
+    { value: CollectionView.Data, label: 'Data', icon: mdiDatabaseSearch },
+    { value: CollectionView.Members, label: 'Members', icon: mdiAccountMultiple }
+  ];
+
   return (
     <>
-      <CollectionHeader collection={collectionDataLoader.data} />
+      <CollectionHeader collection={collection} />
+
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <SystemAlertBanner alertTypes={[SystemAlertBannerEnum.SURVEYS]} />
-        <Stack flexDirection="row" alignItems="flex-start" gap={2}>
-          <Paper sx={{ width: '400px', alignSelf: 'flex-start' }}>
-            <CollectionAbout collection={collectionDataLoader.data} />
-          </Paper>
-          <Box flex="1 1 auto">
-            <Paper sx={{ flex: '1 1 auto' }}>
-              <CollectionSurveyContainer collectionId={collectionDataLoader.data.collection_id} showSearch={false} />
-            </Paper>
+        <Paper>
+          <SidebarLayout
+            sidebar={
+              <CustomToggleButtonGroup
+                views={views}
+                activeView={activeView}
+                onViewChange={(view) => setActiveView(view)}
+                orientation="vertical"
+              />
+            }>
+            {activeView === CollectionView.Surveys && (
+              <Box>
+                <CollectionSurveyContainer collectionId={collection.collection_id} showSearch={false} />
+              </Box>
+            )}
 
-            <Paper sx={{ flex: '1 1 auto', mt: 3 }}>
-              <CollectionDataContainer collection={collectionDataLoader.data} />
-            </Paper>
-          </Box>
-        </Stack>
+            {activeView === CollectionView.Data && (
+              <Box>
+                <CollectionDataContainer collection={collection} />
+              </Box>
+            )}
+
+            {activeView === CollectionView.Members && (
+              <Box>
+                <CollectionMembersContainer collectionId={collection.collection_id} showSearch={false} />
+              </Box>
+            )}
+          </SidebarLayout>
+        </Paper>
       </Container>
     </>
   );

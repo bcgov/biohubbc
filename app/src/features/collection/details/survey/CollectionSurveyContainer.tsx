@@ -65,7 +65,7 @@ const initialPaginationParams: Required<ApiPaginationRequestOptions> = {
  * @return {*}
  */
 const CollectionSurveyContainer = (props: ICollectionSurveyContainerProps) => {
-  const { showSearch } = props;
+  const { collectionId, showSearch } = props;
 
   const biohubApi = useBiohubApi();
 
@@ -88,7 +88,9 @@ const CollectionSurveyContainer = (props: ICollectionSurveyContainerProps) => {
     itis_tsn: searchParams.get('s_itis_tsn')
       ? Number(searchParams.get('s_itis_tsn'))
       : SurveyAdvancedFiltersInitialValues.itis_tsn,
-    system_user_id: searchParams.get('s_system_user_id') ?? SurveyAdvancedFiltersInitialValues.system_user_id
+    system_user_id: searchParams.get('s_system_user_id')
+      ? Number(searchParams.get('s_system_user_id'))
+      : SurveyAdvancedFiltersInitialValues.system_user_id
   });
 
   const sort = firstOrNull(sortModel);
@@ -100,7 +102,7 @@ const CollectionSurveyContainer = (props: ICollectionSurveyContainerProps) => {
   };
 
   const surveysDataLoader = useDataLoader((pagination?: ApiPaginationRequestOptions, filter?: ISurveyAdvancedFilters) =>
-    biohubApi.survey.findSurveys(pagination, filter)
+    biohubApi.collection.getSurveysInCollection(collectionId, pagination, filter)
   );
 
   // Fetch surveyss when either the pagination, sort, or advanced filters change
@@ -222,8 +224,8 @@ const CollectionSurveyContainer = (props: ICollectionSurveyContainerProps) => {
         hasNoDataFallback={
           <NoDataOverlay
             height="200px"
-            title="Create a Survey"
-            subtitle="Start managing ecological data by creating a survey"
+            title="Add Surveys to Collection"
+            subtitle="Surveys added to this collection will appear here"
             icon={mdiArrowTopRight}
             data-testid="survey-list-no-data-overlay"
           />

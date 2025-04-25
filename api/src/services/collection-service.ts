@@ -1,12 +1,6 @@
 import { CollectionModel } from '../database-models/collection';
 import { IDBConnection } from '../database/db';
-import {
-  Collection,
-  CollectionParticipant,
-  ICollectionAdvancedFilters,
-  IPostCollectionRequest
-} from '../models/collection';
-import { SystemUserWithRoles } from '../models/system-user-view';
+import { Collection, ICollectionAdvancedFilters, IPostCollectionRequest } from '../models/collection';
 import { CollectionRepository } from '../repositories/collection-repository';
 import {
   AllObservationSupplementaryData,
@@ -52,17 +46,6 @@ export class CollectionService extends DBService {
    */
   async getCollectionById(collectionId: number): Promise<Collection> {
     return this.collectionRepository.getCollectionById(collectionId);
-  }
-
-  /**
-   * Get a collection by id.
-   *
-   * @param {number} collectionId
-   * @return {*}  {Promise<(CollectionParticipant & SystemUserWithRoles)[]>}
-   * @memberof CollectionService
-   */
-  async getCollectionParticipants(collectionId: number): Promise<(CollectionParticipant & SystemUserWithRoles)[]> {
-    return this.collectionParticipationService.getCollectionParticipants(collectionId);
   }
 
   /**

@@ -1,7 +1,12 @@
 import { IDBConnection } from '../database/db';
-import { CollectionParticipant, IPostCollectionParticipant } from '../models/collection';
+import {
+  CollectionParticipant,
+  ICollectionParticipantsAdvancedFilters,
+  IPostCollectionParticipant
+} from '../models/collection';
 import { SystemUserWithRoles } from '../models/system-user-view';
 import { CollectionParticipationRepository } from '../repositories/collection-participation-repository';
+import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { DBService } from './db-service';
 
 /**
@@ -35,11 +40,28 @@ export class CollectionParticipationService extends DBService {
    * Get all participants of a collection
    *
    * @param {number} collectionId
+   * @param {ICollectionParticipantsAdvancedFilters} filterFields
+   * @param {ApiPaginationOptions} pagination
    * @returns {Promise<(CollectionParticipant & SystemUserWithRoles)[]>}
    * @memberof CollectionParticipationService
    */
-  async getCollectionParticipants(collectionId: number): Promise<(CollectionParticipant & SystemUserWithRoles)[]> {
-    return this.collectionParticipationRepository.getCollectionParticipants(collectionId);
+  async getCollectionParticipants(
+    collectionId: number,
+    filterFields?: ICollectionParticipantsAdvancedFilters,
+    pagination?: ApiPaginationOptions
+  ): Promise<(CollectionParticipant & SystemUserWithRoles)[]> {
+    return this.collectionParticipationRepository.getCollectionParticipants(collectionId, filterFields, pagination);
+  }
+
+  /**
+   * Get count of participants in the survey
+   *
+   * @param {number} collectionId
+   * @returns {Promise<number>}
+   * @memberof CollectionParticipationService
+   */
+  async getCollectionParticipantsCount(collectionId: number): Promise<number> {
+    return this.collectionParticipationRepository.getCollectionParticipantsCount(collectionId);
   }
 
   /**

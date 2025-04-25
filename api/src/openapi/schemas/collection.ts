@@ -55,6 +55,32 @@ export const UpdateCollectionSchema: OpenAPIV3.SchemaObject = {
   }
 };
 
+export const GetCollectionParticipantsSchema: OpenAPIV3.SchemaObject = {
+  type: 'object',
+  additionalProperties: false,
+  required: [
+    'collection_participation_id',
+    'collection_id',
+    'system_user_id',
+    'collection_role_id',
+    'collection_role_name'
+  ],
+  properties: {
+    collection_participation_id: {
+      type: 'number'
+    },
+    collection_id: {
+      type: 'number'
+    },
+    system_user_id: {
+      type: 'number'
+    },
+    collection_role_id: {
+      type: 'number'
+    }
+  }
+};
+
 export const collectionAndSystemUserSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
   additionalProperties: false,
