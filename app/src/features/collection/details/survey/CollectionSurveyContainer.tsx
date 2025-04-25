@@ -8,6 +8,7 @@ import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { GridColDef, GridPaginationModel, GridSortDirection, GridSortModel } from '@mui/x-data-grid';
+import { CreateButton } from 'components/buttons/CreateButton';
 import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
@@ -29,6 +30,7 @@ import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions, StringValues } from 'types/misc';
 import { firstOrNull, getFormattedDate } from 'utils/Utils';
+import SurveyCollectionDialog from './dialog/SurveyCollectionDialog';
 
 const pageSizeOptions = [10, 25, 50];
 
@@ -70,6 +72,7 @@ const CollectionSurveyContainer = (props: ICollectionSurveyContainerProps) => {
   const biohubApi = useBiohubApi();
 
   const { searchParams, setSearchParams } = useSearchParams<StringValues<SurveyDataTableURLParams>>();
+  const [collectionDialogIsOpen, setCollectionDialogIsOpen] = useState(false);
 
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     pageSize: Number(searchParams.get('s_limit') ?? initialPaginationParams.limit),
@@ -192,6 +195,12 @@ const CollectionSurveyContainer = (props: ICollectionSurveyContainerProps) => {
           </Typography>
         </Typography>
         <Stack gap={1} direction="row">
+          <CreateButton
+            label="Add Surveys"
+            onClick={() => {
+              setCollectionDialogIsOpen(true);
+            }}
+          />
           <HelpButtonDialog markdownType={MarkdownTypeNameEnum.SURVEYS} />
         </Stack>
       </Toolbar>
@@ -276,6 +285,18 @@ const CollectionSurveyContainer = (props: ICollectionSurveyContainerProps) => {
           autoHeight={false}
         />
       </LoadingGuard>
+
+      <SurveyCollectionDialog
+        collectionId={collectionId}
+        onSubmit={() => {
+          surveysDataLoader.refresh(paginationSort, advancedFiltersModel);
+          setCollectionDialogIsOpen(false);
+        }}
+        onClose={() => {
+          setCollectionDialogIsOpen(false);
+        }}
+        open={collectionDialogIsOpen}
+      />
     </>
   );
 };

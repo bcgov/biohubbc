@@ -13,14 +13,14 @@ import { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { CollectionDataContainer } from './data/CollectionDataContainer';
 import CollectionHeader from './header/CollectionHeader';
-import CollectionMembersContainer from './members/CollectionMembersContainer';
+import CollectionParticipantsContainer from './members/CollectionParticipantsContainer';
 import CollectionSurveyContainer from './survey/CollectionSurveyContainer';
 
 enum CollectionView {
   Surveys = 'surveys',
   Data = 'data',
   Tags = 'tags',
-  Members = 'members'
+  Participants = 'participants'
 }
 
 const CollectionPage = () => {
@@ -54,7 +54,7 @@ const CollectionPage = () => {
     { value: CollectionView.Surveys, label: 'Surveys', icon: mdiClipboardOutline },
     { value: CollectionView.Tags, label: 'Tags', icon: mdiTagOutline },
     { value: CollectionView.Data, label: 'Data', icon: mdiDatabaseSearch },
-    { value: CollectionView.Members, label: 'Members', icon: mdiAccountMultiple }
+    { value: CollectionView.Participants, label: 'Participants', icon: mdiAccountMultiple }
   ];
 
   return (
@@ -85,9 +85,9 @@ const CollectionPage = () => {
               </Box>
             )}
 
-            {activeView === CollectionView.Members && (
+            {activeView === CollectionView.Participants && (
               <Box>
-                <CollectionMembersContainer collectionId={collection.collection_id} showSearch={false} />
+                <CollectionParticipantsContainer collectionId={collection.collection_id} showSearch={true} />
               </Box>
             )}
           </SidebarLayout>

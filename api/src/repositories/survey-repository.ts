@@ -632,12 +632,14 @@ export class SurveyRepository extends BaseRepository {
    * Fetches a subset of survey fields for all surveys under a collection
    *
    * @param {number} collectionId
+   * @param {ISurveyAdvancedFilters} filterFields
    * @param {ApiPaginationOptions} [pagination]
    * @return {*}  {Promise<Omit<SurveyBasicFields, 'focal_species_names'>[]>}
    * @memberof SurveyRepository
    */
   async getSurveysBasicFieldsByCollectionId(
     collectionId: number,
+    filterFields?: ISurveyAdvancedFilters,
     pagination?: ApiPaginationOptions
   ): Promise<Omit<SurveyBasicFields, 'focal_species_names'>[]> {
     const knex = getKnex();
@@ -672,6 +674,55 @@ export class SurveyRepository extends BaseRepository {
       if (pagination.sort && pagination.order) {
         queryBuilder.orderBy(pagination.sort, pagination.order);
       }
+    }
+
+    if (filterFields?.system_user_id) {
+      queryBuilder.whereIn('p.project_id', (subQueryBuilder) => {
+        subQueryBuilder
+          .select('project_id')
+          .from('project_participation')
+          .where('system_user_id', filterFields?.system_user_id);
+      });
+    }
+
+    // Start Date filter
+    if (filterFields?.start_date) {
+      queryBuilder.andWhere('s.start_date', '>=', filterFields?.start_date);
+    }
+
+    // End Date filter
+    if (filterFields?.end_date) {
+      queryBuilder.andWhere('s.end_date', '<=', filterFields?.end_date);
+    }
+
+    // Project Name filter (like match)
+    if (filterFields?.survey_name) {
+      queryBuilder.andWhere('s.name', 'ilike', `%${filterFields?.survey_name}%`);
+    }
+
+    // Focal Species filter
+    if (filterFields?.itis_tsns?.length) {
+      // multiple
+      queryBuilder.whereIn('sp.itis_tsn', filterFields?.itis_tsns);
+    } else if (filterFields?.itis_tsn) {
+      // single
+      queryBuilder.where('sp.itis_tsn', filterFields?.itis_tsn);
+    }
+
+    // Keyword Search filter
+    if (filterFields?.keyword) {
+      const keywordMatch = `%${filterFields?.keyword}%`;
+      queryBuilder.where((subQueryBuilder) => {
+        subQueryBuilder
+          .where('s.name', 'ilike', keywordMatch)
+          .orWhere('s.additional_details', 'ilike', keywordMatch)
+          .orWhere('s.comments', 'ilike', keywordMatch);
+
+        // If the keyword is a number, also match on survey Id
+        if (!isNaN(Number(filterFields?.keyword))) {
+          subQueryBuilder.orWhere('s.survey_id', Number(filterFields?.keyword));
+        }
+      });
     }
 
     const response = await this.connection.knex(queryBuilder, SurveyBasicFields.omit({ focal_species_names: true }));

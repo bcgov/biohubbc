@@ -1,49 +1,50 @@
 import { mdiArrowTopRight } from '@mdi/js';
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
+import blue from '@mui/material/colors/blue';
 import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
-import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { GridColDef, GridPaginationModel, GridSortDirection, GridSortModel } from '@mui/x-data-grid';
+import { CreateButton } from 'components/buttons/CreateButton';
 import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
+import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
-import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import SurveysListFilterForm, {
-  ISurveyAdvancedFilters,
-  SurveyAdvancedFiltersInitialValues
-} from 'features/summary/list-data/survey/SurveysListFilterForm';
-import { SurveyProgressChip } from 'features/surveys/components/SurveyProgressChip';
+import { COLLECTION_ROLE } from 'constants/roles';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useCodesContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
 import { useSearchParams } from 'hooks/useSearchParams';
+import { ICollectionParticipant, ICollectionParticipantsAdvancedFilters } from 'interfaces/useCollectionApi.interface';
 import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
-import { SurveyBasicFieldsObject } from 'interfaces/useSurveyApi.interface';
 import { useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions, StringValues } from 'types/misc';
-import { firstOrNull, getFormattedDate } from 'utils/Utils';
+import { firstOrNull, getCodesName } from 'utils/Utils';
+import CollectionParticipationDialog from './dialog/CollectionParticipationDialog';
+import CollectionParticipantsFilterForm, {
+  CollectionParticipantsAdvancedFiltersInitialValues
+} from './filter/CollectionParticipantsFilterForm';
 
 const pageSizeOptions = [10, 25, 50];
 
 // Supported URL parameters
-// Note: Prefix 's_' is used to avoid conflicts with similar query params from other components
+// Note: Prefix 'c_' is used to avoid conflicts with similar query params from other components
 type SurveyDataTableURLParams = {
   // filter
-  s_keyword?: string;
-  s_itis_tsn?: number;
-  s_system_user_id?: string;
+  c_keyword?: string;
+  c_itic_tsn?: number;
+  c_system_user_id?: string;
   // pagination
-  s_page?: string;
-  s_limit?: string;
-  s_sort?: string;
-  s_order?: 'asc' | 'desc';
+  c_page?: string;
+  c_limit?: string;
+  c_sort?: string;
+  c_order?: 'asc' | 'desc';
 };
 
 interface ICollectionMembersContainerProps {
@@ -55,7 +56,7 @@ interface ICollectionMembersContainerProps {
 const initialPaginationParams: Required<ApiPaginationRequestOptions> = {
   page: 0,
   limit: 10,
-  sort: 'project_id',
+  sort: 'collection_id',
   order: 'desc'
 };
 
@@ -68,29 +69,28 @@ const CollectionMembersContainer = (props: ICollectionMembersContainerProps) => 
   const { collectionId, showSearch } = props;
 
   const biohubApi = useBiohubApi();
+  const codesContext = useCodesContext();
 
   const { searchParams, setSearchParams } = useSearchParams<StringValues<SurveyDataTableURLParams>>();
+  const [participantDialogIsOpen, setParticipantDialogIsOpen] = useState(false);
 
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
-    pageSize: Number(searchParams.get('s_limit') ?? initialPaginationParams.limit),
-    page: Number(searchParams.get('s_page') ?? initialPaginationParams.page)
+    pageSize: Number(searchParams.get('c_limit') ?? initialPaginationParams.limit),
+    page: Number(searchParams.get('c_page') ?? initialPaginationParams.page)
   });
 
   const [sortModel, setSortModel] = useState<GridSortModel>([
     {
-      field: searchParams.get('s_sort') ?? initialPaginationParams.sort,
-      sort: (searchParams.get('s_order') ?? initialPaginationParams.order) as GridSortDirection
+      field: searchParams.get('c_sort') ?? initialPaginationParams.sort,
+      sort: (searchParams.get('c_order') ?? initialPaginationParams.order) as GridSortDirection
     }
   ]);
 
-  const [advancedFiltersModel, setAdvancedFiltersModel] = useState<ISurveyAdvancedFilters>({
-    keyword: searchParams.get('s_keyword') ?? SurveyAdvancedFiltersInitialValues.keyword,
-    itis_tsn: searchParams.get('s_itis_tsn')
-      ? Number(searchParams.get('s_itis_tsn'))
-      : SurveyAdvancedFiltersInitialValues.itis_tsn,
-    system_user_id: searchParams.get('s_system_user_id')
-      ? Number(searchParams.get('s_system_user_id'))
-      : SurveyAdvancedFiltersInitialValues.system_user_id
+  const [advancedFiltersModel, setAdvancedFiltersModel] = useState<ICollectionParticipantsAdvancedFilters>({
+    keyword: searchParams.get('c_keyword') ?? CollectionParticipantsAdvancedFiltersInitialValues.keyword,
+    system_user_id: searchParams.get('c_system_user_id')
+      ? Number(searchParams.get('c_system_user_id'))
+      : CollectionParticipantsAdvancedFiltersInitialValues.system_user_id
   });
 
   const sort = firstOrNull(sortModel);
@@ -101,18 +101,19 @@ const CollectionMembersContainer = (props: ICollectionMembersContainerProps) => 
     page: paginationModel.page + 1 // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
   };
 
-  const surveysDataLoader = useDataLoader((pagination?: ApiPaginationRequestOptions, filter?: ISurveyAdvancedFilters) =>
-    biohubApi.collection.getParticipants(collectionId, pagination, filter)
+  const collectionParticipantsDataLoader = useDataLoader(
+    (pagination?: ApiPaginationRequestOptions, filter?: ICollectionParticipantsAdvancedFilters) =>
+      biohubApi.collection.getParticipants(collectionId, pagination, filter)
   );
 
-  // Fetch surveyss when either the pagination, sort, or advanced filters change
+  // Fetch collectionParticipantss when either the pagination, sort, or advanced filters change
   useDeepCompareEffect(() => {
-    surveysDataLoader.refresh(paginationSort, advancedFiltersModel);
+    collectionParticipantsDataLoader.refresh(paginationSort, advancedFiltersModel);
   }, [advancedFiltersModel, paginationSort]);
 
-  const columns: GridColDef<SurveyBasicFieldsObject>[] = [
+  const columns: GridColDef<ICollectionParticipant>[] = [
     {
-      field: 'survey_id',
+      field: 'collection_participation_id',
       headerName: 'ID',
       width: 85,
       minWidth: 85,
@@ -123,89 +124,62 @@ const CollectionMembersContainer = (props: ICollectionMembersContainerProps) => 
       ),
       renderCell: (params) => (
         <Typography color={grey[500]} variant="body2">
-          {params.row.survey_id}
+          {params.row.collection_participation_id}
         </Typography>
       )
     },
     {
-      field: 'name',
+      field: 'display_name',
       headerName: 'Name',
       flex: 1,
-      disableColumnMenu: true,
-      renderCell: (params) => (
-        <Link
-          style={{ overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: 700 }}
-          data-testid={params.row.name}
-          underline="always"
-          title={params.row.name}
-          component={RouterLink}
-          to={`/admin/projects/${params.row.project_id}/surveys/${params.row.survey_id}/details`}
-          children={params.row.name}
-        />
-      )
+      disableColumnMenu: true
     },
     {
-      field: 'progress',
-      headerName: 'Progress',
-      flex: 0.25,
-      disableColumnMenu: true,
-      renderCell: (params) => (
-        <Box>
-          <SurveyProgressChip progress_id={params.row.progress_id} />
-        </Box>
-      )
-    },
-    {
-      field: 'start_date',
-      headerName: 'Start Date',
-      flex: 0.3,
-      disableColumnMenu: true,
-      renderCell: (params) => (
-        <Typography variant="body2">{getFormattedDate(DATE_FORMAT.MediumDateFormat, params.row.start_date)}</Typography>
-      )
-    },
-    {
-      field: 'end_date',
-      headerName: 'End Date',
-      flex: 0.3,
-      disableColumnMenu: true,
-      renderCell: (params) =>
-        params.row.end_date ? (
-          <Typography variant="body2">{getFormattedDate(DATE_FORMAT.MediumDateFormat, params.row.end_date)}</Typography>
-        ) : (
-          <Typography variant="body2" color="textSecondary">
-            None
-          </Typography>
-        )
+      field: 'collection_role_id',
+      headerName: 'Role',
+      flex: 1,
+      renderCell: (params) => {
+        const role = getCodesName(
+          codesContext.codesDataLoader.data,
+          'collection_roles',
+          params.row.collection_role_id
+        ) as COLLECTION_ROLE;
+        return <ColouredRectangleChip label={role} colour={role === COLLECTION_ROLE.ADMIN ? blue : grey} />;
+      }
     }
   ];
 
-  const surveys = surveysDataLoader.data?.surveys ?? [];
+  const collectionParticipants = collectionParticipantsDataLoader.data?.participants ?? [];
 
   return (
     <>
       <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
         <Typography variant="h4" component="h2">
-          Surveys &zwnj;
+          Members &zwnj;
           <Typography component="span" color="textSecondary" lineHeight="inherit" fontSize="inherit" fontWeight={400}>
-            ({Number(surveysDataLoader.data?.pagination?.total ?? 0).toLocaleString()})
+            ({Number(collectionParticipantsDataLoader.data?.pagination?.total ?? 0).toLocaleString()})
           </Typography>
         </Typography>
         <Stack gap={1} direction="row">
+          <CreateButton
+            label="Invite Members"
+            onClick={() => {
+              setParticipantDialogIsOpen(true);
+            }}
+          />
           <HelpButtonDialog markdownType={MarkdownTypeNameEnum.SURVEYS} />
         </Stack>
       </Toolbar>
 
       <Collapse in={showSearch}>
         <Box py={2} px={2}>
-          <SurveysListFilterForm
+          <CollectionParticipantsFilterForm
             initialValues={advancedFiltersModel}
             handleSubmit={(values) => {
               setSearchParams(
                 searchParams
-                  .setOrDelete('s_keyword', values.keyword)
-                  .setOrDelete('s_itis_tsn', values.itis_tsn)
-                  .setOrDelete('s_system_user_id', values.system_user_id)
+                  .setOrDelete('c_keyword', values.keyword)
+                  .setOrDelete('c_system_user_id', values.system_user_id)
               );
               setAdvancedFiltersModel(values);
             }}
@@ -217,29 +191,32 @@ const CollectionMembersContainer = (props: ICollectionMembersContainerProps) => 
       <Divider />
 
       <LoadingGuard
-        isLoading={surveysDataLoader.isLoading || !surveysDataLoader.isReady}
-        isLoadingFallback={<SkeletonTable data-testid="survey-list-skeleton" />}
+        isLoading={collectionParticipantsDataLoader.isLoading || !collectionParticipantsDataLoader.isReady}
+        isLoadingFallback={<SkeletonTable data-testid="collection-participant-list-skeleton" />}
         isLoadingFallbackDelay={100}
-        hasNoData={!surveys.length}
+        hasNoData={!collectionParticipants.length}
         hasNoDataFallback={
           <NoDataOverlay
             height="200px"
-            title="Add Surveys to Collection"
+            title="Invite Members"
             subtitle="Surveys added to this collection will appear here"
             icon={mdiArrowTopRight}
-            data-testid="survey-list-no-data-overlay"
+            data-testid="collection-participant-list-no-data-overlay"
           />
         }
         hasNoDataFallbackDelay={100}>
         <StyledDataGrid
-          noRowsMessage="No surveys found"
-          loading={!surveys.length && (surveysDataLoader.isLoading || !surveysDataLoader.isReady)}
+          noRowsMessage="No participants found"
+          loading={
+            !collectionParticipants.length &&
+            (collectionParticipantsDataLoader.isLoading || !collectionParticipantsDataLoader.isReady)
+          }
           // Columns
           columns={columns}
           // Rows
-          rows={surveys}
-          rowCount={surveysDataLoader.data?.pagination.total ?? 0}
-          getRowId={(row) => row.survey_id}
+          rows={collectionParticipants}
+          rowCount={collectionParticipantsDataLoader.data?.pagination.total ?? 0}
+          getRowId={(row) => row.collection_participation_id}
           // Pagination
           paginationMode="server"
           paginationModel={paginationModel}
@@ -248,7 +225,7 @@ const CollectionMembersContainer = (props: ICollectionMembersContainerProps) => 
             if (!model) {
               return;
             }
-            setSearchParams(searchParams.set('s_page', String(model.page)).set('s_limit', String(model.pageSize)));
+            setSearchParams(searchParams.set('c_page', String(model.page)).set('c_limit', String(model.pageSize)));
             setPaginationModel(model);
           }}
           // Sorting
@@ -259,7 +236,7 @@ const CollectionMembersContainer = (props: ICollectionMembersContainerProps) => 
             if (!model.length) {
               return;
             }
-            setSearchParams(searchParams.set('s_sort', model[0].field).set('s_order', model[0].sort ?? 'desc'));
+            setSearchParams(searchParams.set('c_sort', model[0].field).set('c_order', model[0].sort ?? 'desc'));
             setSortModel(model);
           }}
           // Row options
@@ -276,6 +253,18 @@ const CollectionMembersContainer = (props: ICollectionMembersContainerProps) => 
           autoHeight={false}
         />
       </LoadingGuard>
+
+      <CollectionParticipationDialog
+        collectionId={collectionId}
+        onSubmit={() => {
+          collectionParticipantsDataLoader.refresh(paginationSort, advancedFiltersModel);
+          setParticipantDialogIsOpen(false);
+        }}
+        onClose={() => {
+          setParticipantDialogIsOpen(false);
+        }}
+        open={participantDialogIsOpen}
+      />
     </>
   );
 };

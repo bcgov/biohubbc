@@ -320,15 +320,21 @@ export class SurveyService extends DBService {
    * a given collection
    *
    * @param {number} collectionId
+   * @param {ISurveyAdvancedFilters} filterFields
    * @param {ApiPaginationOptions} [pagination]
    * @return {*}  {Promise<SurveyBasicFields[]>}
    * @memberof SurveyService
    */
   async getSurveysBasicFieldsByCollectionId(
     collectionId: number,
+    filterFields?: ISurveyAdvancedFilters,
     pagination?: ApiPaginationOptions
   ): Promise<SurveyBasicFields[]> {
-    const surveys = await this.surveyRepository.getSurveysBasicFieldsByCollectionId(collectionId, pagination);
+    const surveys = await this.surveyRepository.getSurveysBasicFieldsByCollectionId(
+      collectionId,
+      filterFields,
+      pagination
+    );
 
     // Build an array of all unique focal species ids from all surveys
     const uniqueFocalSpeciesIds = Array.from(

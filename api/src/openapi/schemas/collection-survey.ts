@@ -20,3 +20,24 @@ export const CreateCollectionSurveySchema: OpenAPIV3.SchemaObject = {
     }
   }
 };
+
+export const AddSurveysToCollectionSchema: OpenAPIV3.SchemaObject = {
+  type: 'object',
+  additionalProperties: false,
+  required: ['collection_id', 'surveys'],
+  properties: {
+    collection_id: { type: 'integer', description: 'The primary key of the collection to add surveys to' },
+    surveys: {
+      type: 'array',
+      minItems: 1,
+      items: {
+        type: 'object',
+        additionalProperties: false,
+        required: ['survey_id'],
+        properties: {
+          survey_id: { type: 'number', description: 'Primary key of a survey to add to the collection' }
+        }
+      }
+    }
+  }
+};

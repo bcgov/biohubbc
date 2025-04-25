@@ -12,7 +12,6 @@ import { TransitionGroup } from 'react-transition-group';
 
 interface IParticipantsCollectionFormProps {
   roles: ICodeWithDescription[];
-  description?: string;
 }
 
 export const CollectionParticipantsFormInitialValues = {
@@ -155,7 +154,6 @@ const ParticipantsCollectionForm = (props: IParticipantsCollectionFormProps): JS
                       index={index}
                       user={user as ICollectionParticipant}
                       roles={props.roles}
-                      description={props.description}
                       error={error}
                       selectedRole={getSelectedRole(index)}
                       handleAdd={handleAddUserRole}

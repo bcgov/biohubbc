@@ -1,9 +1,12 @@
 import { Request, RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { getDBConnection } from '../../../../database/db';
-import { ICollectionParticipantsAdvancedFilters } from '../../../../models/collection';
-import { GetCollectionParticipantsSchema } from '../../../../openapi/schemas/collection';
-import { paginationRequestQueryParamSchema } from '../../../../openapi/schemas/pagination';
+import { ICollectionParticipantsAdvancedFilters, IPostCollectionParticipant } from '../../../../models/collection';
+import {
+  CollectionAndSystemUserSchema,
+  CreateCollectionParticipantSchema
+} from '../../../../openapi/schemas/collection';
+import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../../../../openapi/schemas/pagination';
 import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
 import { CollectionParticipationService } from '../../../../services/collection-participation-service';
 import { getLogger } from '../../../../utils/logger';
@@ -53,7 +56,18 @@ GET.apiDoc = {
       description: 'Collection participants response object.',
       content: {
         'application/json': {
-          schema: GetCollectionParticipantsSchema
+          schema: {
+            type: 'object',
+            additionalProperties: false,
+            required: ['participants', 'pagination'],
+            properties: {
+              participants: {
+                type: 'array',
+                items: CollectionAndSystemUserSchema
+              },
+              pagination: { ...paginationResponseSchema }
+            }
+          }
         }
       }
     },
@@ -134,5 +148,109 @@ function parseQueryParams(
   return {
     keyword: req.query.keyword ?? undefined,
     system_user_id: (req.query.system_user_id && Number(req.query.system_user_id)) ?? undefined
+  };
+}
+
+export const POST: Operation = [
+  authorizeRequestHandler(() => {
+    return {
+      and: [
+        {
+          discriminator: 'SystemUser'
+        }
+      ]
+    };
+  }),
+  addParticipantsToCollection()
+];
+
+POST.apiDoc = {
+  description: 'Adds multiple participants to a collection',
+  tags: ['collections'],
+  security: [
+    {
+      Bearer: []
+    }
+  ],
+  parameters: [
+    {
+      in: 'path',
+      name: 'collectionId',
+      schema: {
+        type: 'integer',
+        minimum: 1
+      },
+      required: true
+    },
+    ...paginationRequestQueryParamSchema
+  ],
+  requestBody: {
+    description: 'Collection participant create request object.',
+    required: true,
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['participants'],
+          properties: { participants: { type: 'array', minItems: 1, items: CreateCollectionParticipantSchema } }
+        }
+      }
+    }
+  },
+  responses: {
+    200: {
+      description: 'Collection response object.'
+    },
+    400: {
+      $ref: '#/components/responses/400'
+    },
+    401: {
+      $ref: '#/components/responses/401'
+    },
+    403: {
+      $ref: '#/components/responses/403'
+    },
+    500: {
+      $ref: '#/components/responses/500'
+    },
+    default: {
+      $ref: '#/components/responses/default'
+    }
+  }
+};
+
+/**
+ * Adds participants to a collection
+ *
+ * @returns {RequestHandler}
+ */
+export function addParticipantsToCollection(): RequestHandler {
+  return async (req, res) => {
+    defaultLog.debug({ label: 'addParticipantsToCollection' });
+
+    const connection = getDBConnection(req.keycloak_token);
+
+    try {
+      await connection.open();
+
+      const collectionId = Number(req.params.collectionId);
+
+      const collectionParticipationService = new CollectionParticipationService(connection);
+
+      const data = req.body.participants as IPostCollectionParticipant[];
+
+      await collectionParticipationService.insertCollectionParticipants(collectionId, data);
+
+      await connection.commit();
+
+      return res.status(200).json();
+    } catch (error) {
+      defaultLog.error({ label: 'addParticipantsToCollection', message: 'error', error });
+      await connection.rollback();
+      throw error;
+    } finally {
+      connection.release();
+    }
   };
 }

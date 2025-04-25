@@ -85,57 +85,56 @@ const CollectionHeader = (props: ICollectionHeaderProps) => {
   const [menuAnchorEl, setMenuAnchorEl] = React.useState<null | HTMLElement>(null);
 
   return (
-    <PageHeader
-      title={collection.name ?? ''}
-      buttonJSX={
-        // <CollectionRoleGuard
-        //   validCollectionPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
-        //   validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-        <>
-          <Button
-            id="collection_settings-button"
-            variant="outlined"
-            color="primary"
-            startIcon={<Icon path={mdiCogOutline} size={0.75} />}
-            endIcon={<Icon path={mdiChevronDown} size={0.75} />}
-            aria-label="Collection Settings"
-            aria-controls="collectionSettingsMenu"
-            aria-haspopup="true"
-            onClick={(event: React.MouseEvent<HTMLButtonElement>) => setMenuAnchorEl(event.currentTarget)}>
-            Settings
-          </Button>
-          <Menu
-            id="collectionSettingsMenu"
-            aria-labelledby="collection_settings_button"
-            style={{ marginTop: '8px' }}
-            anchorEl={menuAnchorEl}
-            anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'right'
-            }}
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'right'
-            }}
-            keepMounted
-            open={Boolean(menuAnchorEl)}
-            onClose={() => setMenuAnchorEl(null)}>
-            <MenuItem onClick={() => history.push('edit')}>
-              <ListItemIcon>
-                <Icon path={mdiPencilOutline} size={1} />
-              </ListItemIcon>
-              <Typography variant="inherit">Edit Collection Details</Typography>
-            </MenuItem>
-            <MenuItem onClick={showDeleteCollectionDialog} data-testid={'delete-collection-button'}>
-              <ListItemIcon>
-                <Icon path={mdiTrashCanOutline} size={1} />
-              </ListItemIcon>
-              <Typography variant="inherit">Delete Collection</Typography>
-            </MenuItem>
-          </Menu>
-        </>
-      }
-    />
+    <>
+      <PageHeader
+        title={collection.name ?? ''}
+        buttonJSX={
+          <>
+            <Button
+              id="collection_settings-button"
+              variant="outlined"
+              color="primary"
+              startIcon={<Icon path={mdiCogOutline} size={0.75} />}
+              endIcon={<Icon path={mdiChevronDown} size={0.75} />}
+              aria-label="Collection Settings"
+              aria-controls="collectionSettingsMenu"
+              aria-haspopup="true"
+              onClick={(event: React.MouseEvent<HTMLButtonElement>) => setMenuAnchorEl(event.currentTarget)}>
+              Settings
+            </Button>
+            <Menu
+              id="collectionSettingsMenu"
+              aria-labelledby="collection_settings_button"
+              style={{ marginTop: '8px' }}
+              anchorEl={menuAnchorEl}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'right'
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right'
+              }}
+              keepMounted
+              open={Boolean(menuAnchorEl)}
+              onClose={() => setMenuAnchorEl(null)}>
+              <MenuItem onClick={() => history.push('edit')}>
+                <ListItemIcon>
+                  <Icon path={mdiPencilOutline} size={1} />
+                </ListItemIcon>
+                <Typography variant="inherit">Edit Collection Details</Typography>
+              </MenuItem>
+              <MenuItem onClick={showDeleteCollectionDialog} data-testid={'delete-collection-button'}>
+                <ListItemIcon>
+                  <Icon path={mdiTrashCanOutline} size={1} />
+                </ListItemIcon>
+                <Typography variant="inherit">Delete Collection</Typography>
+              </MenuItem>
+            </Menu>
+          </>
+        }
+      />
+    </>
   );
 };
 

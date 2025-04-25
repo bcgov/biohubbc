@@ -77,7 +77,7 @@ export function addSurveyToCollections(): RequestHandler {
 
       const data = req.body as ICreateCollectionSurveyRequest;
 
-      await collectionSurveyService.createCollectionSurveys(data);
+      await collectionSurveyService.addSurveyToMultipleCollections(data);
 
       await connection.commit();
 

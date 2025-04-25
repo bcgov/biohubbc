@@ -47,9 +47,19 @@ export interface IPostCollection {
   description: string;
 }
 
+export interface IPostCollectionSurvey {
+  survey_id: number;
+  collection_id: number;
+}
+
 export interface ICreateCollectionSurveyRequest {
   survey_id: number;
   collections: { collection_id: number }[];
+}
+
+export interface IAddMultipleSurveysToCollection {
+  collection_id: number;
+  surveys: { survey_id: number }[];
 }
 
 export interface IDeleteCollectionSurveyRequest {

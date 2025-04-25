@@ -92,7 +92,7 @@ export class CollectionParticipationRepository extends BaseRepository {
    * @returns {Knex.QueryBuilder} Knex query builder with joins and aggregations.
    */
   _makeCollectionParticipantsBaseQuery(collectionId: number, knex: Knex): Knex.QueryBuilder {
-    return knex('collection_participation as sp')
+    return knex('collection_participation as cp')
       .select([
         'su.system_user_id',
         'su.user_identifier',
@@ -106,17 +106,17 @@ export class CollectionParticipationRepository extends BaseRepository {
         'su.given_name',
         'su.family_name',
         'su.agency',
-        'sp.collection_participation_id',
-        'sp.collection_id',
-        'sp.collection_role_id',
-        'sj.name as collection_role_name'
+        'cp.collection_participation_id',
+        'cp.collection_id',
+        'cp.collection_role_id',
+        'cr.name as collection_role_name'
       ])
-      .leftJoin('collection_role as sj', 'sj.collection_role_id', 'sp.collection_role_id')
-      .leftJoin('system_user as su', 'sp.system_user_id', 'su.system_user_id')
+      .leftJoin('collection_role as cr', 'cr.collection_role_id', 'cp.collection_role_id')
+      .leftJoin('system_user as su', 'cp.system_user_id', 'su.system_user_id')
       .leftJoin('system_user_role as sur', 'su.system_user_id', 'sur.system_user_id')
       .leftJoin('system_role as sr', 'sur.system_role_id', 'sr.system_role_id')
       .leftJoin('user_identity_source as uis', 'uis.user_identity_source_id', 'su.user_identity_source_id')
-      .where('sp.collection_id', collectionId)
+      .where('cp.collection_id', collectionId)
       .whereNull('su.record_end_date')
       .groupBy([
         'su.system_user_id',
@@ -129,23 +129,15 @@ export class CollectionParticipationRepository extends BaseRepository {
         'su.given_name',
         'su.family_name',
         'su.agency',
-        'sp.collection_participation_id',
-        'sp.collection_role_id',
-        'sp.collection_id',
-        'sj.name',
-        'sp.create_date'
+        'cp.collection_participation_id',
+        'cp.collection_role_id',
+        'cp.collection_id',
+        'cr.name',
+        'cp.create_date'
       ])
-      .orderBy('sp.create_date', 'desc');
+      .orderBy('cp.create_date', 'desc');
   }
 
-  /**
-   * Get collection participant records.
-   *
-   * @param {number} collectionId
-   * @param {ApiPaginationOptions} pagination
-   * @return {*}  {Promise<CollectionParticipant[]>}
-   * @memberof CollectionParticipationRepository
-   */
   /**
    * Get collection participant records.
    *
@@ -171,11 +163,11 @@ export class CollectionParticipationRepository extends BaseRepository {
     }
 
     if (filterFields?.system_user_id) {
-      query.whereIn('collection.collection_participation', (subquery) =>
+      query.whereIn('cp.collection_participation_id', (subquery) =>
         subquery
-          .select('collection_participation')
-          .from('collceton_participation')
-          .where('system_user_id', filterFields?.system_user_id)
+          .select('collection_participation_id')
+          .from('collection_participation')
+          .where('system_user_id', filterFields.system_user_id)
       );
     }
 

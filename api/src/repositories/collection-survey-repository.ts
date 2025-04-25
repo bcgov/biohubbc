@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { CollectionSurveyModel } from '../database-models/collection-survey';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
-import { IPostCollection } from '../models/collection';
+import { IPostCollection, IPostCollectionSurvey } from '../models/collection';
 import { BaseRepository } from './base-repository';
 
 export class CollectionSurveyRepository extends BaseRepository {
@@ -62,15 +62,14 @@ export class CollectionSurveyRepository extends BaseRepository {
   /**
    * Create a new collection.
    *
-   * @param {number} surveyId
-   * @param {number} collectionId
+   * @param {IPostCollectionSurvey} values
    * @returns {Promise<CollectionSurveyModel>}
    * @memberof CollectionSurveyRepository
    */
-  async createCollectionSurvey(surveyId: number, collectionId: number): Promise<CollectionSurveyModel> {
+  async createCollectionSurvey(values: IPostCollectionSurvey): Promise<CollectionSurveyModel> {
     const sql = SQL`
     INSERT INTO collection_survey (collection_id, survey_id)
-    VALUES (${collectionId}, ${surveyId})
+    VALUES (${values.collection_id}, ${values.survey_id})
     RETURNING *
   `;
 

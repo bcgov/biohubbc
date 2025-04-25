@@ -1,5 +1,19 @@
 import { OpenAPIV3 } from 'openapi-types';
 
+export const CreateCollectionParticipantSchema: OpenAPIV3.SchemaObject = {
+  type: 'object',
+  additionalProperties: false,
+  required: ['system_user_id', 'collection_role_name'],
+  properties: {
+    system_user_id: { type: 'number', description: 'Primary key of a system user to add to the collection' },
+    collection_role_name: {
+      type: 'string',
+      enum: ['Admin', 'Member'],
+      description: 'Name of a collection role for the participant'
+    }
+  }
+};
+
 export const CreateCollectionSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
   additionalProperties: false,
@@ -11,19 +25,7 @@ export const CreateCollectionSchema: OpenAPIV3.SchemaObject = {
       type: 'array',
       description: 'List of users to add to the collection',
       minItems: 1,
-      items: {
-        type: 'object',
-        additionalProperties: false,
-        required: ['system_user_id', 'collection_role_name'],
-        properties: {
-          system_user_id: { type: 'number', description: 'Primary key of a system user to add to the collection' },
-          collection_role_name: {
-            type: 'string',
-            enum: ['Admin', 'Member'],
-            description: 'Name of a collection role for the participant'
-          }
-        }
-      }
+      items: CreateCollectionParticipantSchema
     }
   }
 };
@@ -55,33 +57,7 @@ export const UpdateCollectionSchema: OpenAPIV3.SchemaObject = {
   }
 };
 
-export const GetCollectionParticipantsSchema: OpenAPIV3.SchemaObject = {
-  type: 'object',
-  additionalProperties: false,
-  required: [
-    'collection_participation_id',
-    'collection_id',
-    'system_user_id',
-    'collection_role_id',
-    'collection_role_name'
-  ],
-  properties: {
-    collection_participation_id: {
-      type: 'number'
-    },
-    collection_id: {
-      type: 'number'
-    },
-    system_user_id: {
-      type: 'number'
-    },
-    collection_role_id: {
-      type: 'number'
-    }
-  }
-};
-
-export const collectionAndSystemUserSchema: OpenAPIV3.SchemaObject = {
+export const CollectionAndSystemUserSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
   additionalProperties: false,
   required: [
@@ -172,7 +148,7 @@ export const GetCollectionSchema: OpenAPIV3.SchemaObject = {
     participants: {
       type: 'array',
       description: 'List of users to add to the collection',
-      items: collectionAndSystemUserSchema
+      items: CollectionAndSystemUserSchema
     }
   }
 };

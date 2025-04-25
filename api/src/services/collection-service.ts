@@ -120,11 +120,10 @@ export class CollectionService extends DBService {
     const collectionResponse = await this.collectionRepository.createCollection(collection);
 
     // Insert members of the collection
-    for (const participant of collection.participants)
-      await this.collectionParticipationService.insertCollectionParticipant(
-        collectionResponse.collection_id,
-        participant
-      );
+    await this.collectionParticipationService.insertCollectionParticipants(
+      collectionResponse.collection_id,
+      collection.participants
+    );
 
     return collectionResponse;
   }
@@ -170,9 +169,7 @@ export class CollectionService extends DBService {
       .filter((p) => p !== null) as Array<(typeof currentParticipants)[0] & { newRole: string }>;
 
     // Insert new participants
-    for (const participant of newParticipants) {
-      await this.collectionParticipationService.insertCollectionParticipant(collectionId, participant);
-    }
+    await this.collectionParticipationService.insertCollectionParticipants(collectionId, newParticipants);
 
     // Remove old participants
     for (const participant of oldParticipants) {

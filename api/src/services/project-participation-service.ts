@@ -138,7 +138,7 @@ export class ProjectParticipationService extends DBService {
    * Get the project participant for the given survey id and user guid.
    *
    * @param {number} surveyId
-   * @param {number} userGuid
+   * @param {string} userGuid
    * @return {*}  {(Promise<(ProjectUser & SystemUserWithRoles) | null>)}
    * @memberof ProjectParticipationService
    */

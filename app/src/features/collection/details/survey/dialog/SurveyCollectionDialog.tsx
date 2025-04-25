@@ -5,27 +5,29 @@ import { CreateCollectionSurveyI18N } from 'constants/i18n';
 import { DialogContext, ISnackbarProps } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useSurveyContext } from 'hooks/useContext';
 import { useContext, useState } from 'react';
 import yup from 'utils/YupSchema';
-import CollectionSurveyForm, { ICollectionSurveyData } from './form/CollectionSurveyForm';
+import SurveyCollectionForm, { ISurveyCollectionData } from './form/SurveyCollectionForm';
 
-interface ICreateCollectionSurveyDialogProps {
+interface ISurveyCollectionDialogProps {
+  collectionId: number;
   open: boolean;
-  onClose: (refresh?: boolean) => void;
+  onSubmit: () => void;
+  onClose?: (refresh?: boolean) => void;
 }
 
 /**
  * Dialog for sharing a survey to multiple collections
  *
- * @param {ICreateCollectionSurveyDialogProps} props
+ * NOTE: On naming conventions, SurveyCollectionForm is from the perspective of a survey (adding one survey to multiple collections).
+ * Whereas CollectionSurveyForm is from the perspective of a collection (adding multiple surveys to one collection)
+ *
+ * @param {ISurveyCollectionDialogProps} props
  * @returns
  */
-const CreateCollectionSurveyDialog = (props: ICreateCollectionSurveyDialogProps) => {
+const SurveyCollectionDialog = (props: ISurveyCollectionDialogProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const dialogContext = useContext(DialogContext);
-
-  const surveyContext = useSurveyContext();
 
   const biohubApi = useBiohubApi();
 
@@ -50,17 +52,13 @@ const CreateCollectionSurveyDialog = (props: ICreateCollectionSurveyDialogProps)
     });
   };
 
-  const handleSubmitCollectionService = async (values: ICollectionSurveyData) => {
+  const handleSubmitCollectionService = async (values: ISurveyCollectionData) => {
     try {
       setIsSubmitting(true);
 
-      await biohubApi.collection.addToCollections(surveyContext.projectId, surveyContext.surveyId, {
-        ...values,
-        survey_id: surveyContext.surveyId
-      });
+      await biohubApi.collection.addSurveys({ ...values, collection_id: props.collectionId });
 
-      // creation was a success, tell parent to refresh
-      props.onClose(true);
+      props.onSubmit();
 
       showSnackBar({
         snackbarMessage: (
@@ -77,26 +75,25 @@ const CreateCollectionSurveyDialog = (props: ICreateCollectionSurveyDialogProps)
         dialogError: (error as APIError).message,
         dialogErrorDetails: (error as APIError).errors
       });
-    } finally {
-      setIsSubmitting(false);
     }
+    setIsSubmitting(false);
   };
 
   return (
     <EditDialog
       dialogTitle="Add Survey to Collection"
-      dialogText="Select collections to add the survey to"
+      dialogText="Select surveys to add to the collection"
       open={props.open}
       dialogLoading={isSubmitting}
       component={{
-        element: <CollectionSurveyForm />,
+        element: <SurveyCollectionForm />,
         initialValues: {
-          collections: []
+          surveys: []
         },
         validationSchema: CollectionSurveyYupSchema
       }}
       dialogSaveButtonLabel="Add"
-      onCancel={() => props.onClose()}
+      onCancel={() => props.onClose && props.onClose()}
       onSave={(formValues) => {
         handleSubmitCollectionService(formValues);
       }}
@@ -104,4 +101,4 @@ const CreateCollectionSurveyDialog = (props: ICreateCollectionSurveyDialogProps)
   );
 };
 
-export default CreateCollectionSurveyDialog;
+export default SurveyCollectionDialog;

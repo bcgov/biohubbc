@@ -1,5 +1,9 @@
 import { ApiPaginationResponseParams } from 'types/misc';
 
+export interface ICollectionParticipantsAdvancedFilters {
+  system_user_id?: number;
+  keyword?: string;
+}
 export interface IGetCollectionsResponse {
   collections: ICollection[];
   pagination: ApiPaginationResponseParams;
@@ -16,6 +20,11 @@ export interface ICreateCollectionSurveyRequest {
   collections: { collection_id: number }[];
 }
 
+export interface ICreateSurveyCollectionRequest {
+  collection_id: number;
+  surveys: { survey_id: number }[];
+}
+
 export interface IUpdateCollectionRequest {
   collection_id: number;
   name: string;
@@ -28,6 +37,16 @@ export interface ICollection {
   name: string;
   description: string | null;
   participants: ICollectionParticipant[];
+}
+
+export interface ICreateCollectionParticipantsRequest {
+  collection_id: number;
+  participants: IPostCollectionParticipant[];
+}
+
+export interface ICollectionParticipantResponse {
+  participants: ICollectionParticipant[];
+  pagination: ApiPaginationResponseParams;
 }
 
 export interface ICollectionParticipant {

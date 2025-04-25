@@ -67,13 +67,17 @@ export class CollectionParticipationService extends DBService {
   /**
    * Insert a new collection participant
    *
-   * @param collectionId
-   * @param systemUserId
+   * @param {number} collectionId
+   * @param {IPostCollectionParticipant[]} participants
    * @returns {Promise<void>}
    * @memberof CollectionParticipationService
    */
-  async insertCollectionParticipant(collectionId: number, values: IPostCollectionParticipant): Promise<void> {
-    return this.collectionParticipationRepository.insertCollectionParticipant(collectionId, values);
+  async insertCollectionParticipants(collectionId: number, participants: IPostCollectionParticipant[]): Promise<void> {
+    await Promise.all(
+      participants.map((participant) =>
+        this.collectionParticipationRepository.insertCollectionParticipant(collectionId, participant)
+      )
+    );
   }
 
   /**
