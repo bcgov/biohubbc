@@ -1,148 +1,96 @@
 import { IDBConnection } from '../database/db';
-import { SQL, SQLStatement } from 'sql-template-strings';
+import { DBService } from './db-service';
+import { CollectionRepository } from '../repositories/collection-repository';
 
-export class CollectionService {
+/**
+ * Service for collection operations.
+ * Handles business logic and orchestrates repository calls.
+ *
+ * @export
+ * @class CollectionService
+ * @extends {DBService}
+ */
+export class CollectionService extends DBService {
+  private collectionRepository: CollectionRepository;
+
+  constructor(connection: IDBConnection) {
+    super(connection);
+    this.collectionRepository = new CollectionRepository(connection);
+  }
+
   /**
-   * Fetch all collections.
+   * Get all collections.
    *
-   * @param {IDBConnection} connection
    * @return {*}  {Promise<any[]>}
    * @memberof CollectionService
    */
-  async getAllCollections(connection: IDBConnection): Promise<any[]> {
-    const sql: SQLStatement = SQL`
-      SELECT
-        collection_id,
-        name,
-        objectives
-      FROM
-        collection
-      WHERE
-        record_end_date IS NULL
-      ORDER BY
-        name ASC;
-    `;
-
-    const response = await connection.sql(sql);
-
-    return response.rows;
+  async getAllCollections(): Promise<any[]> {
+    return this.collectionRepository.getAllCollections();
   }
 
   /**
    * Create a new collection.
    *
-   * @param {IDBConnection} connection
    * @param {*} collectionData
    * @return {*}  {Promise<any>}
    * @memberof CollectionService
    */
-  async createCollection(connection: IDBConnection, collectionData: { name: string; objectives: string }): Promise<any> {
-    const sql: SQLStatement = SQL`
-      INSERT INTO collection (
-        name,
-        objectives,
-        create_date,
-        create_user
-      ) VALUES (
-        ${collectionData.name},
-        ${collectionData.objectives},
-        now(),
-        1 -- Replace with actual user ID
-      )
-      RETURNING
-        collection_id,
-        name,
-        objectives;
-    `;
-
-    const response = await connection.sql(sql);
-
-    return response.rows[0];
+  async createCollection(collectionData: { name: string; objectives: string }): Promise<any> {
+    // Here you could add business logic if needed
+    // For example, validation, permission checks, etc.
+    
+    return this.collectionRepository.createCollection(collectionData);
   }
 
   /**
-   * Fetch a collection by ID.
+   * Get a collection by ID.
    *
-   * @param {IDBConnection} connection
    * @param {number} collectionId
    * @return {*}  {Promise<any>}
    * @memberof CollectionService
    */
-  async getCollectionById(connection: IDBConnection, collectionId: number): Promise<any> {
-    const sql: SQLStatement = SQL`
-      SELECT
-        collection_id,
-        name,
-        objectives
-      FROM
-        collection
-      WHERE
-        collection_id = ${collectionId}
-        AND record_end_date IS NULL;
-    `;
-
-    const response = await connection.sql(sql);
-
-    return response.rows[0];
+  async getCollectionById(collectionId: number): Promise<any> {
+    return this.collectionRepository.getCollectionById(collectionId);
   }
 
   /**
    * Update a collection by ID.
    *
-   * @param {IDBConnection} connection
    * @param {number} collectionId
    * @param {*} collectionData
    * @return {*}  {Promise<any>}
    * @memberof CollectionService
    */
   async updateCollection(
-    connection: IDBConnection,
     collectionId: number,
     collectionData: { name?: string; objectives?: string }
   ): Promise<any> {
-    const sql: SQLStatement = SQL`
-      UPDATE collection
-      SET
-        name = COALESCE(${collectionData.name}, name),
-        objectives = COALESCE(${collectionData.objectives}, objectives),
-        update_date = now(),
-        update_user = 1 -- Replace with actual user ID
-      WHERE
-        collection_id = ${collectionId}
-        AND record_end_date IS NULL
-      RETURNING
-        collection_id,
-        name,
-        objectives;
-    `;
-
-    const response = await connection.sql(sql);
-
-    return response.rows[0];
+    // Business logic could be added here
+    // For example, checking if the user has permission to update
+    
+    return this.collectionRepository.updateCollection(collectionId, collectionData);
   }
 
   /**
    * Delete a collection by ID.
    *
-   * @param {IDBConnection} connection
    * @param {number} collectionId
    * @return {*}  {Promise<boolean>}
    * @memberof CollectionService
    */
-  async deleteCollection(connection: IDBConnection, collectionId: number): Promise<boolean> {
-    const sql: SQLStatement = SQL`
-      UPDATE collection
-      SET
-        record_end_date = now(),
-        update_date = now(),
-        update_user = 1 -- Replace with actual user ID
-      WHERE
-        collection_id = ${collectionId}
-        AND record_end_date IS NULL;
-    `;
-
-    const response = await connection.sql(sql);
-
-    return response.rowCount !== null && response.rowCount > 0;
+  async deleteCollection(collectionId: number): Promise<boolean> {
+    // Example of business logic in the service layer:
+    // Check if there are any dependent records that need to be deleted first
+    
+    // This is where you would handle the scenario you mentioned:
+    // "if a database record is being deleted, the service will ensure any dependent database records are deleted first"
+    
+    // For example (pseudocode):
+    // const dependentRecords = await this.someRepository.getDependentRecords(collectionId);
+    // if (dependentRecords.length > 0) {
+    //   await this.someRepository.deleteDependentRecords(dependentRecords);
+    // }
+    
+    return this.collectionRepository.deleteCollection(collectionId);
   }
 }
