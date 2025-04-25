@@ -1,6 +1,7 @@
 import { IDBConnection } from '../database/db';
 import { DBService } from './db-service';
 import { CollectionRepository } from '../repositories/collection-repository';
+import { FindCollectionsResponse, ICollectionAdvancedFilters } from '../models/collection-view';
 
 /**
  * Service for collection operations.
@@ -16,6 +17,44 @@ export class CollectionService extends DBService {
   constructor(connection: IDBConnection) {
     super(connection);
     this.collectionRepository = new CollectionRepository(connection);
+  }
+
+  /**
+   * Retrieves the paginated list of all collections that are available to the user, based on their permissions and
+   * provided filter criteria.
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId The system user id of the user making the request
+   * @param {ICollectionAdvancedFilters} filterFields
+   * @param {ApiPaginationOptions} [pagination]
+   * @return {*}  {(Promise<(FindCollectionsResponse)[]>)}
+   * @memberof CollectionService
+   */
+  async findCollections(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: ICollectionAdvancedFilters,
+  ): Promise<FindCollectionsResponse[]> {
+    const response = await this.collectionRepository.findCollections(isUserAdmin, systemUserId, filterFields);
+    return response;
+  }
+
+  /**
+   * Retrieves the count of all collections that are available to the user, based on their permissions and provided
+   * filter criteria.
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId The system user id of the user making the request
+   * @param {ICollectionAdvancedFilters} filterFields
+   * @return {*}  {Promise<number>}
+   * @memberof CollectionService
+   */
+  async findCollectionsCount(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: ICollectionAdvancedFilters
+  ): Promise<number> {
+    return this.collectionRepository.findCollectionsCount(isUserAdmin, systemUserId, filterFields);
   }
 
   /**
