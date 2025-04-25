@@ -19,16 +19,16 @@ export const TeamMemberAvatar = (props: ITeamMemberAvatarProps) => {
     <Tooltip title={tooltip} arrow>
       <Box
         sx={{
-          height: '35px',
-          width: '35px',
-          minWidth: '35px',
+          height: '30px',
+          width: '30px',
+          minWidth: '30px',
           borderRadius: '50%',
           bgcolor: color,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center'
         }}>
-        <Typography sx={{ fontSize: '0.8rem', color: '#fff', fontWeight: 700, userSelect: 'none' }}>{label}</Typography>
+        <Typography sx={{ fontSize: '0.7rem', color: '#fff', fontWeight: 700, userSelect: 'none' }}>{label}</Typography>
       </Box>
     </Tooltip>
   );

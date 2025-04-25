@@ -27,7 +27,6 @@ export const StyledDataGrid = <R extends GridValidRowModel = any>(props: StyledD
         ...props.slots
       }}
       sx={{
-        border: 'none',
         '& *:focus-within': {
           outline: 'none !important'
         },
@@ -80,6 +79,7 @@ export const StyledDataGrid = <R extends GridValidRowModel = any>(props: StyledD
           py: '22px',
           wordWrap: 'anywhere'
         },
+        border: 'none',
         ...props.sx
       }}
     />

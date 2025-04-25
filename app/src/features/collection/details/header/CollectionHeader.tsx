@@ -1,10 +1,4 @@
-import {
-  mdiAccountMultipleOutline,
-  mdiChevronDown,
-  mdiCogOutline,
-  mdiPencilOutline,
-  mdiTrashCanOutline
-} from '@mdi/js';
+import { mdiChevronDown, mdiCogOutline, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Button from '@mui/material/Button';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -132,22 +126,12 @@ const CollectionHeader = (props: ICollectionHeaderProps) => {
               </ListItemIcon>
               <Typography variant="inherit">Edit Collection Details</Typography>
             </MenuItem>
-            {/* <CollectionRoleGuard
-                validCollectionPermissions={[PROJECT_PERMISSION.COORDINATOR]}
-                validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}> */}
-            <MenuItem onClick={() => history.push('users')}>
-              <ListItemIcon>
-                <Icon path={mdiAccountMultipleOutline} size={1} />
-              </ListItemIcon>
-              <Typography variant="inherit">Manage Collection Team</Typography>
-            </MenuItem>
             <MenuItem onClick={showDeleteCollectionDialog} data-testid={'delete-collection-button'}>
               <ListItemIcon>
                 <Icon path={mdiTrashCanOutline} size={1} />
               </ListItemIcon>
               <Typography variant="inherit">Delete Collection</Typography>
             </MenuItem>
-            {/* </CollectionRoleGuard> */}
           </Menu>
         </>
       }
