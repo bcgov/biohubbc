@@ -135,7 +135,7 @@ export class CollectionParticipationRepository extends BaseRepository {
         'cr.name',
         'cp.create_date'
       ])
-      .orderBy('cp.create_date', 'desc');
+      .orderBy('cp.collection_role_id', 'asc');
   }
 
   /**

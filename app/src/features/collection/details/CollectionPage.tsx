@@ -4,10 +4,8 @@ import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
 import CustomToggleButtonGroup from 'components/toolbar/CustomToggleButtonGroup';
 import { CodesContext } from 'contexts/codesContext';
-import { SystemAlertBanner } from 'features/alert/banner/SystemAlertBanner';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { SystemAlertBannerEnum } from 'interfaces/useAlertApi.interface';
 import { SidebarLayout } from 'layouts/SidebarLayout';
 import { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
@@ -54,7 +52,7 @@ const CollectionPage = () => {
     { value: CollectionView.Surveys, label: 'Surveys', icon: mdiClipboardOutline },
     { value: CollectionView.Tags, label: 'Tags', icon: mdiTagOutline },
     { value: CollectionView.Data, label: 'Data', icon: mdiDatabaseSearch },
-    { value: CollectionView.Participants, label: 'Participants', icon: mdiAccountMultiple }
+    { value: CollectionView.Participants, label: 'Members', icon: mdiAccountMultiple }
   ];
 
   return (
@@ -62,7 +60,6 @@ const CollectionPage = () => {
       <CollectionHeader collection={collection} />
 
       <Container maxWidth="xl" sx={{ py: 3 }}>
-        <SystemAlertBanner alertTypes={[SystemAlertBannerEnum.SURVEYS]} />
         <Paper>
           <SidebarLayout
             sidebar={
