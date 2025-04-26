@@ -7,7 +7,6 @@ import {
   ICreateCollectionSurveyRequest,
   IDeleteCollectionSurveyRequest
 } from '../models/collection';
-import { CollectionRepository } from '../repositories/collection-repository';
 import { CollectionSurveyRepository } from '../repositories/collection-survey-repository';
 import { SurveyBasicFields } from '../repositories/survey-repository';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
@@ -24,7 +23,6 @@ import { SurveyService } from './survey-service';
  * @extends {DBService}
  */
 export class CollectionSurveyService extends DBService {
-  collectionRepository: CollectionRepository;
   collectionSurveyRepository: CollectionSurveyRepository;
   projectParticipationService: ProjectParticipationService;
   surveyService: SurveyService;
@@ -33,7 +31,6 @@ export class CollectionSurveyService extends DBService {
   constructor(connection: IDBConnection) {
     super(connection);
 
-    this.collectionRepository = new CollectionRepository(connection);
     this.collectionSurveyRepository = new CollectionSurveyRepository(connection);
     this.projectParticipationService = new ProjectParticipationService(connection);
     this.surveyService = new SurveyService(connection);

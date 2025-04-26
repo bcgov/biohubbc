@@ -71,6 +71,7 @@ POST.apiDoc = {
             'survey_details',
             'species',
             'permit',
+            'collections',
             'funding_sources',
             'partnerships',
             'proprietor',
@@ -91,6 +92,17 @@ POST.apiDoc = {
             },
             species: surveySpeciesSchema,
             permit: surveyPermitSchema,
+            collections: {
+              type: 'array',
+              items: {
+                type: 'object',
+                additionalProperties: false,
+                required: ['collection_id'],
+                properties: {
+                  collection_id: { type: 'number', description: 'Primary key of a collection to share the survey to' }
+                }
+              }
+            },
             funding_sources: {
               type: 'array',
               items: {
@@ -241,6 +253,7 @@ export function createSurvey(): RequestHandler {
       await connection.open();
 
       const surveyService = new SurveyService(connection);
+
       const surveyId = await surveyService.createSurvey(projectId, sanitizedPostSurveyData);
 
       await connection.commit();

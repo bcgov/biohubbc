@@ -7,6 +7,7 @@ export class PostSurveyObject {
   survey_details: PostSurveyDetailsData;
   species: PostSpeciesData;
   permit: PostPermitData;
+  collections: PostCollectionsData;
   funding_sources: PostFundingSourceData[];
   proprietor: PostProprietorData;
   purpose_and_methodology: PostPurposeAndMethodologyData;
@@ -21,6 +22,7 @@ export class PostSurveyObject {
     this.survey_details = (obj?.survey_details && new PostSurveyDetailsData(obj.survey_details)) || null;
     this.species = (obj?.species && new PostSpeciesData(obj.species)) || null;
     this.permit = (obj?.permit && new PostPermitData(obj.permit)) || null;
+    this.collections = (obj?.collections && new PostCollectionsData(obj)) || [];
     this.funding_sources =
       (obj?.funding_sources?.length && obj.funding_sources.map((fs: any) => new PostFundingSourceData(fs))) || [];
     this.proprietor = (obj?.proprietor && new PostProprietorData(obj.proprietor)) || null;
@@ -101,6 +103,15 @@ export class PostPermitData {
     this.permits = obj?.permits || [];
   }
 }
+
+export class PostCollectionsData {
+  collections: { collection_id: number }[];
+
+  constructor(obj?: any) {
+    this.collections = obj?.collections || [];
+  }
+}
+
 export class PostProprietorData {
   prt_id: number;
   fn_id: number;

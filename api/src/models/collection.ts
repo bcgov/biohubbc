@@ -36,6 +36,13 @@ export const Collection = z.object({
 
 export type Collection = z.infer<typeof Collection>;
 
+export const CollectionBasic = Collection.pick({
+  collection_id: true,
+  name: true
+});
+
+export type CollectionBasic = z.infer<typeof CollectionBasic>;
+
 export interface IPostCollectionRequest {
   name: string;
   description: string;

@@ -81,6 +81,17 @@ PUT.apiDoc = {
             survey_details: surveyDetailsSchema,
             species: surveySpeciesSchema,
             permit: surveyPermitSchema,
+            collections: {
+              type: 'array',
+              items: {
+                type: 'object',
+                additionalProperties: false,
+                required: ['collection_id'],
+                properties: {
+                  collection_id: { type: 'number', description: 'Primary key of a collection to share the survey to' }
+                }
+              }
+            },
             funding_sources: {
               type: 'array',
               items: {

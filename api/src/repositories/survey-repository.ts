@@ -3,6 +3,7 @@ import SQL, { SQLStatement } from 'sql-template-strings';
 import { z } from 'zod';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
+import { CollectionBasic } from '../models/collection';
 import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
 import { PutSurveyObject } from '../models/survey-update';
 import {
@@ -533,6 +534,28 @@ export class SurveyRepository extends BaseRepository {
   }
 
   /**
+   * Get collections that the given survey belongs to
+   *
+   * @param {number} surveyId
+   * @returns {Promise<CollectionBasic[]>} A promise resolving to the survey ids
+   * @memberof CollectionRepository
+   */
+  async getCollectionsBySurveyId(surveyId: number): Promise<CollectionBasic[]> {
+    const knex = getKnex();
+
+    const queryBuilder = knex
+      .select('c.collection_id', 'c.name')
+      .from('collection as c')
+      .join('collection_survey as cs', 'c.collection_id', 'cs.collection_id')
+      .join('survey as s', 's.survey_id', 'cs.survey_id')
+      .where('cs.survey_id', surveyId);
+
+    const response = await this.connection.knex(queryBuilder, CollectionBasic);
+
+    return response.rows;
+  }
+
+  /**
    * Get Survey Report attachments data for a given surveyId
    *
    * @param {number} surveyId
@@ -598,6 +621,7 @@ export class SurveyRepository extends BaseRepository {
       .queryBuilder()
       .select(
         'survey.survey_id',
+        'survey.project_id',
         'survey.name',
         'survey.start_date',
         'survey.end_date',
