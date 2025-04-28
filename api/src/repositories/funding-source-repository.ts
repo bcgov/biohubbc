@@ -186,7 +186,6 @@ export class FundingSourceRepository extends BaseRepository {
         survey_funding_source.survey_id,
         survey_funding_source.funding_source_id,
         survey_funding_source.revision_count,
-        survey.project_id,
         survey.name as survey_name
       FROM
         survey_funding_source

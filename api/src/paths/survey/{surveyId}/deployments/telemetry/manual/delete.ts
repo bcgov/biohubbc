@@ -1,25 +1,21 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SURVEY_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
+import { SURVEY_ROLE, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { TelemetryVendorService } from '../../../../../../services/telemetry-services/telemetry-vendor-service';
 import { getLogger } from '../../../../../../utils/logger';
 
-const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/deployments/telemetry/manual/delete');
+const defaultLog = getLogger('paths/survey/{surveyId}/deployments/telemetry/manual/delete');
 
 export const POST: Operation = [
   authorizeRequestHandler((req) => {
     return {
       or: [
         {
-          validProjectPermissions: [
-            SURVEY_PERMISSION.COORDINATOR,
-            SURVEY_PERMISSION.COLLABORATOR,
-            SURVEY_PERMISSION.OBSERVER
-          ],
+          validSurveyRoles: [SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR, SURVEY_ROLE.VIEWER],
           surveyId: Number(req.params.surveyId),
-          discriminator: 'ProjectPermission'
+          discriminator: 'SurveyRole'
         },
         {
           validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],

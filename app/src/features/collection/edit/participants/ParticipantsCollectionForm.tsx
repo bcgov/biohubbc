@@ -146,8 +146,8 @@ const ParticipantsCollectionForm = (props: IParticipantsCollectionFormProps): JS
                 return (
                   <Collapse
                     key={
-                      'project_participation_id' in user
-                        ? `${user.project_participation_id}-${user.system_user_id}`
+                      'survey_member_id' in user
+                        ? `${user.survey_member_id}-${user.system_user_id}`
                         : user.system_user_id
                     }>
                     <UserRoleSelector

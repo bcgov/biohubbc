@@ -1,11 +1,11 @@
 import { SOURCE_SYSTEM } from '../constants/database';
-import { SURVEY_PERMISSION, SYSTEM_ROLE } from '../constants/roles';
+import { SURVEY_ROLE, SYSTEM_ROLE } from '../constants/roles';
 import { IDBConnection } from '../database/db';
 import { SystemUserWithRoles } from '../models/system-user-view';
-import { ProjectUser } from '../repositories/project-participation-repository';
+import { SurveyMember } from '../repositories/survey-member-repository';
 import { getKeycloakSource, getUserGuid, KeycloakUserInformation } from '../utils/keycloak-utils';
 import { DBService } from './db-service';
-import { ProjectParticipationService } from './project-participation-service';
+import { SurveyMemberService } from './survey-member-service';
 import { UserService } from './user-service';
 
 export enum AuthorizeOperator {
@@ -47,29 +47,19 @@ export interface AuthorizeByServiceClient {
   discriminator: 'ServiceClient';
 }
 
-type AuthorizeByProjectPermissionByProjectId = {
-  validProjectPermissions: SURVEY_PERMISSION[];
-  
-  surveyId?: number;
-  discriminator: 'ProjectPermission';
-};
-
-type AuthorizeByProjectPermissionBySurveyId = {
-  validProjectPermissions: SURVEY_PERMISSION[];
-  projectId?: number;
+type AuthorizeBySurveyRoleBySurveyId = {
+  validSurveyRoles: SURVEY_ROLE[];
   surveyId: number;
-  discriminator: 'ProjectPermission';
+  discriminator: 'SurveyRole';
 };
 
-export type AuthorizeByProjectPermission =
-  | AuthorizeByProjectPermissionByProjectId
-  | AuthorizeByProjectPermissionBySurveyId;
+export type AuthorizeBySurveyRole = AuthorizeBySurveyRoleBySurveyId;
 
 export type AuthorizeRule =
   | AuthorizeBySystemRoles
   | AuthorizeBySystemUser
   | AuthorizeByServiceClient
-  | AuthorizeByProjectPermission;
+  | AuthorizeBySurveyRole;
 
 export type AuthorizeConfigOr = {
   [AuthorizeOperator.AND]?: never;
@@ -85,23 +75,23 @@ export type AuthorizationScheme = AuthorizeConfigAnd | AuthorizeConfigOr;
 
 export class AuthorizationService extends DBService {
   _userService = new UserService(this.connection);
-  _projectParticipationService = new ProjectParticipationService(this.connection);
+  _surveyMemberService = new SurveyMemberService(this.connection);
   _systemUser: SystemUserWithRoles | undefined = undefined;
-  _projectUser: (ProjectUser & SystemUserWithRoles) | undefined = undefined;
+  _surveyUser: (SurveyMember & SystemUserWithRoles) | undefined = undefined;
   _keycloakToken: KeycloakUserInformation | undefined = undefined;
 
   constructor(
     connection: IDBConnection,
     init?: {
       systemUser?: SystemUserWithRoles;
-      projectUser?: ProjectUser & SystemUserWithRoles;
+      surveyUser?: SurveyMember & SystemUserWithRoles;
       keycloakToken?: KeycloakUserInformation;
     }
   ) {
     super(connection);
 
     this._systemUser = init?.systemUser;
-    this._projectUser = init?.projectUser;
+    this._surveyUser = init?.surveyUser;
     this._keycloakToken = init?.keycloakToken;
   }
 
@@ -139,8 +129,8 @@ export class AuthorizationService extends DBService {
         case 'ServiceClient':
           authorizeResults.push(await this.authorizeByServiceClient(authorizeRule));
           break;
-        case 'ProjectPermission':
-          authorizeResults.push(await this.authorizeByProjectPermission(authorizeRule));
+        case 'SurveyRole':
+          authorizeResults.push(await this.authorizeBySurveyRole(authorizeRule));
           break;
       }
     }
@@ -148,42 +138,33 @@ export class AuthorizationService extends DBService {
     return authorizeResults;
   }
 
-  async authorizeByProjectPermission(authorizeProjectPermission: AuthorizeByProjectPermission): Promise<boolean> {
-    if (
-      !authorizeProjectPermission ||
-      (!authorizeProjectPermission.!authorizeProjectPermission.surveyId)
-    ) {
+  async authorizeBySurveyRole(authorizeSurveyRole: AuthorizeBySurveyRole): Promise<boolean> {
+    if (!authorizeSurveyRole || !authorizeSurveyRole.surveyId) {
       // Cannot verify user permissions
       return false;
     }
 
-    let projectUserObject;
+    let surveyUserObject;
 
-    if (this.isAuthorizeByProjectRolesByProjectId(authorizeProjectPermission)) {
-      projectUserObject =
-        this._projectUser || (await this.getProjectUserObjectByProjectId(authorizeProjectPermission.projectId));
-    } else {
-      projectUserObject =
-        this._projectUser || (await this.getProjectUserObjectBySurveyId(authorizeProjectPermission.surveyId));
-    }
+    surveyUserObject = this._surveyUser || (await this.getSurveyMemberObjectBySurveyId(authorizeSurveyRole.surveyId));
 
-    if (!projectUserObject) {
+    if (!surveyUserObject) {
       // Cannot verify user roles
       return false;
     }
 
-    // Cache the _projectUser for future use, if needed
-    this._projectUser = projectUserObject;
+    // Cache the _surveyUser for future use, if needed
+    this._surveyUser = surveyUserObject;
 
-    if (projectUserObject.record_end_date) {
+    if (surveyUserObject.record_end_date) {
       // system user has an expired record
       return false;
     }
 
-    // Check if the user has at least 1 of the valid project permissions
+    // Check if the user has at least 1 of the valid survey permissions
     return AuthorizationService.hasAtLeastOneValidValue(
-      authorizeProjectPermission.validProjectPermissions,
-      projectUserObject.project_role_permissions
+      authorizeSurveyRole.validSurveyRoles,
+      surveyUserObject.survey_role_names
     );
   }
 
@@ -363,84 +344,46 @@ export class AuthorizationService extends DBService {
   }
 
   /**
-   * Fetch the user's project user object.
-   * @return {*}  {(Promise<(ProjectUser & SystemUserWithRoles) | null>)}
+   * Finds a single survey user based on their keycloak token information.
+   * @return {*}  {(Promise<(SurveyMember & SystemUserWithRoles) | null>)}
    */
-  async getProjectUserObjectByProjectId(projectId: number): Promise<(ProjectUser & SystemUserWithRoles) | null> {
-    let projectUserWithRoles;
-
-    try {
-      projectUserWithRoles = await this.getProjectUserWithRolesByProjectId(projectId);
-    } catch {
-      return null;
-    }
-
-    if (!projectUserWithRoles) {
-      return null;
-    }
-
-    return projectUserWithRoles;
-  }
-
-  /**
-   * Finds a single project user based on their keycloak token information.
-   * @return {*}  {(Promise<(ProjectUser & SystemUserWithRoles) | null>)}
-   */
-  async getProjectUserWithRolesByProjectId(projectId: number): Promise<(ProjectUser & SystemUserWithRoles) | null> {
+  async getSurveyMemberWithRolesBySurveyId(surveyId: number): Promise<(SurveyMember & SystemUserWithRoles) | null> {
     if (!this._keycloakToken) {
       return null;
     }
 
     const userGuid = getUserGuid(this._keycloakToken);
 
-    return this._projectParticipationService.getProjectParticipantByProjectIdAndUserGuid( userGuid);
+    return this._surveyMemberService.getSurveyMemberBySurveyIdAndUserGuid(surveyId, userGuid);
   }
 
   /**
-   * Fetch the user's project user object.
-   * @return {*}  {(Promise<(ProjectUser & SystemUserWithRoles) | null>)}
+   * Fetch the user's survey user object.
+   * @return {*}  {(Promise<(SurveyMember & SystemUserWithRoles) | null>)}
    */
-  async getProjectUserObjectBySurveyId(surveyId: number): Promise<(ProjectUser & SystemUserWithRoles) | null> {
-    let projectUserWithRoles;
+  async getSurveyMemberObjectBySurveyId(surveyId: number): Promise<(SurveyMember & SystemUserWithRoles) | null> {
+    let surveyUserWithRoles;
 
     try {
-      projectUserWithRoles = await this.getProjectUserWithRolesBySurveyId(surveyId);
+      surveyUserWithRoles = await this.getSurveyMemberWithRolesBySurveyId(surveyId);
     } catch {
       return null;
     }
 
-    if (!projectUserWithRoles) {
+    if (!surveyUserWithRoles) {
       return null;
     }
 
-    return projectUserWithRoles;
+    return surveyUserWithRoles;
   }
 
   /**
-   * Finds a single project user based on their keycloak token information.
+   * Given a `AuthorizeBySurveyRole`, determine which of its possible subtypes it is.
    *
-   * @param {number} surveyId
-   * @return {*}  {(Promise<(ProjectUser & SystemUserWithRoles) | null>)}
-   */
-  async getProjectUserWithRolesBySurveyId(surveyId: number): Promise<(ProjectUser & SystemUserWithRoles) | null> {
-    if (!this._keycloakToken) {
-      return null;
-    }
-
-    const userGuid = getUserGuid(this._keycloakToken);
-
-    return this._projectParticipationService.getProjectParticipantBySurveyIdAndUserGuid(surveyId, userGuid);
-  }
-
-  /**
-   * Given a `AuthorizeByProjectPermission`, determine which of its possible subtypes it is.
-   *
-   * @param {AuthorizeByProjectPermission} value
+   * @param {AuthorizeBySurveyRole} value
    * @memberof AuthorizationService
    */
-  isAuthorizeByProjectRolesByProjectId = (
-    value: AuthorizeByProjectPermission
-  ): value is AuthorizeByProjectPermissionByProjectId => {
-    return value.projectId !== undefined && value.surveyId === undefined;
+  isAuthorizeBySurveyRolesBySurveyId = (value: AuthorizeBySurveyRole): value is AuthorizeBySurveyRoleBySurveyId => {
+    return value.surveyId !== undefined && value.surveyId === undefined;
   };
 }

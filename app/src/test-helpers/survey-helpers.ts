@@ -79,7 +79,7 @@ export const surveyObject: SurveyViewObject = {
       agency: 'agency',
       survey_job_id: 1,
       survey_job_name: 'survey job name',
-      survey_role_names: [SURVEY_ROLE.COORDINATOR]
+      survey_role_names: [SURVEY_ROLE.ADMIN]
     }
   ],
   locations: [

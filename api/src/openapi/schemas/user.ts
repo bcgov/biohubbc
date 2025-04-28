@@ -108,22 +108,22 @@ export const systemUserSchema: OpenAPIV3.SchemaObject = {
   }
 };
 
-export const projectUserSchema: OpenAPIV3.SchemaObject = {
+export const surveyUserSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
   additionalProperties: false,
   required: [
-    'project_participation_id',
-    'project_id',
+    'survey_member_id',
+    'survey_id',
     'system_user_id',
     'survey_role_ids',
     'survey_role_names',
-    'project_role_permissions'
+    'survey_role_permissions'
   ],
   properties: {
-    project_participation_id: {
+    survey_member_id: {
       type: 'number'
     },
-    project_id: {
+    survey_id: {
       type: 'number'
     },
     system_user_id: {
@@ -141,7 +141,7 @@ export const projectUserSchema: OpenAPIV3.SchemaObject = {
         type: 'string'
       }
     },
-    project_role_permissions: {
+    survey_role_permissions: {
       type: 'array',
       items: {
         type: 'string'
@@ -150,22 +150,22 @@ export const projectUserSchema: OpenAPIV3.SchemaObject = {
   }
 };
 
-export const projectAndSystemUserSchema: OpenAPIV3.SchemaObject = {
+export const surveyAndSystemUserSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
   additionalProperties: false,
   required: [
-    'project_participation_id',
-    'project_id',
+    'survey_member_id',
+    'survey_id',
     'system_user_id',
     'survey_role_ids',
     'survey_role_names',
-    'project_role_permissions'
+    'survey_role_permissions'
   ],
   properties: {
-    project_participation_id: {
+    survey_member_id: {
       type: 'number'
     },
-    project_id: {
+    survey_id: {
       type: 'number'
     },
     system_user_id: {
@@ -183,7 +183,7 @@ export const projectAndSystemUserSchema: OpenAPIV3.SchemaObject = {
         type: 'string'
       }
     },
-    project_role_permissions: {
+    survey_role_permissions: {
       type: 'array',
       items: {
         type: 'string'

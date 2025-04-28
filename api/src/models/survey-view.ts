@@ -107,7 +107,7 @@ export class GetSurveyData {
 
   constructor(obj?: any) {
     this.id = obj?.survey_id || null;
-    this.project_id = obj?.project_id || null;
+
     this.uuid = obj?.uuid || null;
     this.survey_name = obj?.name || '';
     this.start_date = obj?.start_date || null;

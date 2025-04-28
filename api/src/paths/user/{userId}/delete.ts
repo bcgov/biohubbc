@@ -4,7 +4,7 @@ import { SURVEY_ROLE, SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
 import { HTTP400 } from '../../../errors/http-error';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
-import { ProjectParticipationService } from '../../../services/project-participation-service';
+import { SurveyMemberService } from '../../../services/survey-member-service';
 import { UserService } from '../../../services/user-service';
 import { getLogger } from '../../../utils/logger';
 
@@ -75,18 +75,18 @@ export function removeSystemUser(): RequestHandler {
 
     try {
       await connection.open();
-      const projectParticipationService = new ProjectParticipationService(connection);
+      const surveyMemberService = new SurveyMemberService(connection);
 
       const isUserTheOnlyCoordinator =
-        await projectParticipationService.isUserTheOnlyProjectCoordinatorOnAnyProject(systemUserId);
+        await surveyMemberService.isUserTheOnlySurveyCoordinatorOnAnySurvey(systemUserId);
 
       if (isUserTheOnlyCoordinator) {
-        throw new HTTP400(`Cannot remove user. User is the only ${SURVEY_ROLE.COORDINATOR} for one or more projects.`);
+        throw new HTTP400(`Cannot remove user. User is the only ${SURVEY_ROLE.ADMIN} for one or more surveys.`);
       }
 
       const userService = new UserService(connection);
 
-      await userService.deleteAllProjectRoles(systemUserId);
+      await userService.deleteAllSurveyRoles(systemUserId);
 
       await userService.deleteUserSystemRoles(systemUserId);
 

@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SURVEY_PERMISSION, SYSTEM_ROLE } from '../../constants/roles';
+import { SURVEY_ROLE, SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { PlatformService } from '../../services/platform-service';
@@ -17,9 +17,9 @@ export const POST: Operation = [
           discriminator: 'SystemRole'
         },
         {
-          validProjectPermissions: [SURVEY_PERMISSION.COORDINATOR, SURVEY_PERMISSION.COLLABORATOR],
-          projectId: Number(req.body.projectId),
-          discriminator: 'ProjectPermission'
+          validSurveyRoles: [SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR],
+          surveyId: Number(req.body.surveyId),
+          discriminator: 'SurveyRole'
         }
       ]
     };

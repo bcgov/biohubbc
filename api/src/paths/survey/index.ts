@@ -14,7 +14,7 @@ import {
 } from '../../utils/pagination';
 import { getSystemUserFromRequest } from '../../utils/request';
 
-const defaultLog = getLogger('paths/project/{projectId}/survey/index');
+const defaultLog = getLogger('paths/survey/index');
 
 export const GET: Operation = [
   authorizeRequestHandler(() => {
@@ -127,7 +127,6 @@ GET.apiDoc = {
                   type: 'object',
                   additionalProperties: false,
                   required: [
-                    'project_id',
                     'survey_id',
                     'name',
                     'progress_id',
@@ -138,10 +137,6 @@ GET.apiDoc = {
                     'types'
                   ],
                   properties: {
-                    project_id: {
-                      type: 'integer',
-                      minimum: 1
-                    },
                     survey_id: {
                       type: 'integer',
                       minimum: 1

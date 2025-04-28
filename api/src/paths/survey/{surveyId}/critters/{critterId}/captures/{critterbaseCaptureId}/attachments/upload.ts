@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SURVEY_PERMISSION, SYSTEM_ROLE } from '../../../../../../../../constants/roles';
+import { SURVEY_ROLE, SYSTEM_ROLE } from '../../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../../database/db';
 import { fileSchema } from '../../../../../../../../openapi/schemas/file';
 import { authorizeRequestHandler } from '../../../../../../../../request-handlers/security/authorization';
@@ -17,9 +17,9 @@ export const POST: Operation = [
     return {
       or: [
         {
-          validProjectPermissions: [SURVEY_PERMISSION.COORDINATOR, SURVEY_PERMISSION.COLLABORATOR],
+          validSurveyRoles: [SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR],
           surveyId: Number(req.params.surveyId),
-          discriminator: 'ProjectPermission'
+          discriminator: 'SurveyRole'
         },
         {
           validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
@@ -147,7 +147,7 @@ export function uploadCaptureAttachments(): RequestHandler {
   return async (req, res) => {
     const rawMediaFiles = req.files as Express.Multer.File[];
     const deleteIds: number[] = req.body.delete_ids?.map(Number) ?? [];
-    const projectId = Number(req.params.projectId);
+
     const surveyId = Number(req.params.surveyId);
     const critterId = Number(req.params.critterId);
     const critterbaseCaptureId = req.params.critterbaseCaptureId;

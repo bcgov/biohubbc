@@ -11,27 +11,15 @@ export enum SYSTEM_ROLE {
 }
 
 /**
- * Project level roles.
+ * Survey level roles.
  *
  * @export
  * @enum {string}
  */
 export enum SURVEY_ROLE {
-  COORDINATOR = 'Coordinator',
-  COLLABORATOR = 'Collaborator',
-  OBSERVER = 'Observer'
-}
-
-/**
- * Role permissions.
- *
- * @export
- * @enum {string}
- */
-export enum SURVEY_PERMISSION {
-  COORDINATOR = 'Coordinator',
-  COLLABORATOR = 'Collaborator',
-  OBSERVER = 'Observer'
+  ADMIN = 'Admin',
+  EDITOR = 'Editor',
+  VIEWER = 'Viewer'
 }
 
 /**

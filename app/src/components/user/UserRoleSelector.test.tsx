@@ -6,12 +6,12 @@ import UserRoleSelector from './UserRoleSelector';
 const mockRoles: ICodeWithDescription[] = [
   {
     id: 1,
-    name: SURVEY_ROLE.COORDINATOR,
+    name: SURVEY_ROLE.ADMIN,
     description: 'The administrative lead of the project.'
   },
   {
     id: 2,
-    name: SURVEY_ROLE.COLLABORATOR,
+    name: SURVEY_ROLE.EDITOR,
     description: 'A participant team member of the project.'
   }
 ];
@@ -32,11 +32,11 @@ describe('UserRoleSelector', () => {
           email: 'user@email.com',
           display_name: 'Test User',
           agency: 'Business',
-          survey_role_names: [SURVEY_ROLE.COORDINATOR]
+          survey_role_names: [SURVEY_ROLE.ADMIN]
         }}
         roles={mockRoles}
         error={undefined}
-        selectedRole={SURVEY_ROLE.COORDINATOR}
+        selectedRole={SURVEY_ROLE.ADMIN}
         handleAdd={() => {}}
         handleRemove={() => {}}
         key={1}
@@ -65,11 +65,11 @@ describe('UserRoleSelector', () => {
           email: 'user@email.com',
           display_name: 'Test User',
           agency: 'Business',
-          survey_role_names: [SURVEY_ROLE.COORDINATOR]
+          survey_role_names: [SURVEY_ROLE.ADMIN]
         }}
         roles={mockRoles}
         error={undefined}
-        selectedRole={SURVEY_ROLE.COORDINATOR}
+        selectedRole={SURVEY_ROLE.ADMIN}
         handleAdd={() => {}}
         handleRemove={onDelete}
         key={1}

@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SURVEY_PERMISSION, SYSTEM_ROLE } from '../../../../../constants/roles';
+import { SURVEY_ROLE, SYSTEM_ROLE } from '../../../../../constants/roles';
 import { getDBConnection } from '../../../../../database/db';
 import { techniqueUpdateSchema, techniqueViewSchema } from '../../../../../openapi/schemas/technique';
 import { ITechniquePutData } from '../../../../../repositories/technique-repository';
@@ -11,16 +11,16 @@ import { TechniqueService } from '../../../../../services/technique-service';
 import { TechniqueVantageService } from '../../../../../services/technique-vantage-service';
 import { getLogger } from '../../../../../utils/logger';
 
-const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/technique/{techniqueId}/index');
+const defaultLog = getLogger('paths/survey/{surveyId}/technique/{techniqueId}/index');
 
 export const DELETE: Operation = [
   authorizeRequestHandler((req) => {
     return {
       or: [
         {
-          validProjectPermissions: [SURVEY_PERMISSION.COORDINATOR, SURVEY_PERMISSION.COLLABORATOR],
+          validSurveyRoles: [SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR],
           surveyId: Number(req.params.surveyId),
-          discriminator: 'ProjectPermission'
+          discriminator: 'SurveyRole'
         },
         {
           validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
@@ -131,9 +131,9 @@ export const PUT: Operation = [
     return {
       or: [
         {
-          validProjectPermissions: [SURVEY_PERMISSION.COORDINATOR, SURVEY_PERMISSION.COLLABORATOR],
+          validSurveyRoles: [SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR],
           surveyId: Number(req.params.surveyId),
-          discriminator: 'ProjectPermission'
+          discriminator: 'SurveyRole'
         },
         {
           validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
@@ -283,13 +283,9 @@ export const GET: Operation = [
     return {
       or: [
         {
-          validProjectPermissions: [
-            SURVEY_PERMISSION.COORDINATOR,
-            SURVEY_PERMISSION.COLLABORATOR,
-            SURVEY_PERMISSION.OBSERVER
-          ],
+          validSurveyRoles: [SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR, SURVEY_ROLE.VIEWER],
           surveyId: Number(req.params.surveyId),
-          discriminator: 'ProjectPermission'
+          discriminator: 'SurveyRole'
         },
         {
           validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],

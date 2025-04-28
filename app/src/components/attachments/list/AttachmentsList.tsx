@@ -5,7 +5,7 @@ import Stack from '@mui/material/Stack';
 import { GridColDef } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { PublishStatus } from 'constants/attachments';
-import { SURVEY_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
+import { SURVEY_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { SurveyAuthStateContext } from 'contexts/surveyAuthStateContext';
 import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
 import { useContext } from 'react';
@@ -19,7 +19,7 @@ interface IAttachmentsListProps<T extends IGetSurveyAttachment> {
   emptyStateText?: string;
 }
 
-const validSurveyPermissions: SURVEY_PERMISSION[] = [SURVEY_PERMISSION.COORDINATOR, SURVEY_PERMISSION.COLLABORATOR];
+const validSurveyRoles: SURVEY_ROLE[] = [SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR];
 
 const validSystemRoles: SYSTEM_ROLE[] = [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR];
 
@@ -31,7 +31,7 @@ const AttachmentsList = <T extends IGetSurveyAttachment>(props: IAttachmentsList
   const surveyAuthStateContext = useContext(SurveyAuthStateContext);
 
   const hasSystemRole = surveyAuthStateContext.hasSystemRole(validSystemRoles);
-  const hasSurveyPermissions = surveyAuthStateContext.hasSurveyPermission(validSurveyPermissions);
+  const hasSurveyPermissions = surveyAuthStateContext.hasSurveyPermission(validSurveyRoles);
   const showTableActions = hasSystemRole || hasSurveyPermissions;
 
   const attachmentsListColumnDefs: GridColDef<T>[] = [

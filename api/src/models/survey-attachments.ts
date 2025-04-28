@@ -3,10 +3,10 @@ import { ATTACHMENT_TYPE } from '../constants/attachments';
 import { getLogger } from '../utils/logger';
 import { SurveySupplementaryData } from './survey-view';
 
-const defaultLog = getLogger('models/project-survey-attachments');
+const defaultLog = getLogger('models/survey-attachments');
 
 /**
- * Pre-processes GET project/survey attachments data
+ * Pre-processes GET survey/ attachments data
  *
  * @export
  * @class GetAttachmentsData
@@ -23,11 +23,7 @@ export class GetAttachmentsWithSupplementalData {
   constructor(attachment: any, supplementaryData: any) {
     defaultLog.debug({ label: 'GetAttachmentsWithSupplementalData', message: 'params' });
 
-    this.id =
-      attachment.survey_attachment_id ||
-      attachment.survey_report_attachment_id ||
-      attachment.project_attachment_id ||
-      attachment.project_report_attachment_id;
+    this.id = attachment.survey_attachment_id || attachment.survey_report_attachment_id;
     this.fileName = attachment.file_name;
     this.fileType = attachment.file_type || ATTACHMENT_TYPE.REPORT;
     this.lastModified = dayjs(attachment.update_date || attachment.create_date).toISOString();

@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SURVEY_PERMISSION } from '../../../constants/roles';
+import { SURVEY_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 import { GCNotifyService } from '../../../services/gcnotify-service';
@@ -13,9 +13,9 @@ export const POST: Operation = [
     return {
       or: [
         {
-          validProjectPermissions: [SURVEY_PERMISSION.COORDINATOR, SURVEY_PERMISSION.COLLABORATOR],
-          projectId: Number(req.body.projectId),
-          discriminator: 'ProjectPermission'
+          validSurveyRoles: [SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR],
+          surveyId: Number(req.body.surveyId),
+          discriminator: 'SurveyRole'
         }
       ]
     };

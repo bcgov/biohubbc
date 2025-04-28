@@ -5,7 +5,7 @@ import Divider from '@mui/material/Divider';
 import { FileUploadDialog } from 'components/dialog/attachments/FileUploadDialog';
 import { ProjectRoleGuard } from 'components/security/Guards';
 import { H2MenuToolbar } from 'components/toolbar/ActionToolbars';
-import { SURVEY_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
+import { SURVEY_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useContext, useState } from 'react';
@@ -56,7 +56,7 @@ const SurveyAttachments = () => {
         ]}
         renderButton={(buttonProps) => (
           <ProjectRoleGuard
-            validProjectPermissions={[SURVEY_PERMISSION.COORDINATOR, SURVEY_PERMISSION.COLLABORATOR]}
+            validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
             validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
             <Button {...buttonProps} />
           </ProjectRoleGuard>

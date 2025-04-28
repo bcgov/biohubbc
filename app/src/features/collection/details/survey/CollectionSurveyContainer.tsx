@@ -57,7 +57,7 @@ interface ICollectionSurveyContainerProps {
 const initialPaginationParams: Required<ApiPaginationRequestOptions> = {
   page: 0,
   limit: 10,
-  sort: 'project_id',
+  sort: 'survey_id',
   order: 'desc'
 };
 

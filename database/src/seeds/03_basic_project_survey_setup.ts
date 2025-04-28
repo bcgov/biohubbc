@@ -25,7 +25,6 @@ const focalTaxonIdOptions: FocalTaxonIdOption[] = [
 ];
 
 const surveyRegionsA = ['Kootenay-Boundary Natural Resource Region', 'West Coast Natural Resource Region'];
-const surveyRegionsB = ['Cariboo Natural Resource Region', 'South Coast Natural Resource Region'];
 
 const identitySources = ['IDIR', 'BCEIDBUSINESS', 'BCEIDBASIC'];
 
@@ -62,33 +61,18 @@ export async function seed(knex: Knex): Promise<void> {
     await knex.raw(`${insertSystemAlert()}`);
   }
 
-  const checkProjectsResponse = await knex.raw(getProjectCount());
+  const checkSurveysResponse = await knex.raw(getSurveyCount());
   // The number of projects that already exist
-  const numberOfProjects = checkProjectsResponse.rows[0].count;
+  const numberOfSurveys = checkSurveysResponse.rows[0].count;
 
   // If the number of projects that exist is less than the target number of seed projects
-  if (numberOfProjects < NUM_SEED_PROJECTS) {
-    for (let i = numberOfProjects; i < NUM_SEED_PROJECTS; i++) {
-      // Insert project data
-      const createProjectResponse = await knex.raw(insertProjectData(faker.lorem.words(8)));
-      const projectId = createProjectResponse.rows[0].project_id;
+  if (numberOfSurveys < NUM_SEED_PROJECTS) {
+    // If the number of surveys that exists for this project is less than the target number of seed surveys
+    for (let j = numberOfSurveys; j < NUM_SEED_SURVEYS_PER_PROJECT; j++) {
+      const createSurveyResponse = await knex.raw(insertSurveyData(faker.lorem.words(8)));
+      const surveyId = createSurveyResponse.rows[0].survey_id;
 
-      // Insert project IUCN and participants
       await knex.raw(`
-        ${insertProjectIUCNData(projectId)}
-        ${insertProjectParticipationData(projectId)}
-      `);
-
-      const checkSurveysResponse = await knex.raw(getSurveyCount(projectId));
-      // The number of projects that already exist
-      const numberOfSurveys = checkSurveysResponse.rows[0].count;
-
-      // If the number of surveys that exists for this project is less than the target number of seed surveys
-      for (let j = numberOfSurveys; j < NUM_SEED_SURVEYS_PER_PROJECT; j++) {
-        const createSurveyResponse = await knex.raw(insertSurveyData(faker.lorem.words(8)));
-        const surveyId = createSurveyResponse.rows[0].survey_id;
-
-        await knex.raw(`
           ${insertSurveyTypeData(surveyId)}
           ${insertSurveyPermitData(surveyId)}
           ${insertSurveyFocalSpeciesData(surveyId)}
@@ -97,6 +81,7 @@ export async function seed(knex: Knex): Promise<void> {
           ${insertSurveyFirstNationData(surveyId)}
           ${insertSurveyStakeholderData(surveyId)}
           ${insertSurveyParticipationData(surveyId)}
+          ${insertSurveyMemberData(surveyId)}
           ${insertSurveyLocationData(surveyId)}
           ${insertSurveySiteStrategy(surveyId)}
           ${insertSurveyIntendedOutcome(surveyId)}
@@ -106,59 +91,51 @@ export async function seed(knex: Knex): Promise<void> {
           ${insertSurveyBlockData(surveyId)}
         `);
 
-        // Insert regions into surveys
-        if (projectId % 2 === 0) {
-          // Insert survey regions A
-          for (const region of surveyRegionsA) {
-            await knex.raw(`${insertSurveyRegionData(surveyId, region)}`);
-          }
-        } else {
-          // Insert survey regions B
-          for (const region of surveyRegionsB) {
-            await knex.raw(`${insertSurveyRegionData(surveyId, region)}`);
-          }
-        }
+      // Insert regions into surveys
+      // Insert survey regions A
+      for (const region of surveyRegionsA) {
+        await knex.raw(`${insertSurveyRegionData(surveyId, region)}`);
+      }
 
-        for (let k = 0; k < NUM_SEED_OBSERVATIONS_PER_SURVEY; k++) {
-          const createObservationResponse = await knex.raw(
-            // set the number of observations to minimum 20 times the number of subcounts (which are set to a number
-            // between 1 and 20) to ensure the sum of all subcounts is at least <= the observation count (to avoid
-            // constraint violations)
-            insertSurveyObservationData(
-              surveyId,
-              NUM_SEED_SUBCOUNTS_PER_OBSERVATION * 20 + faker.number.int({ min: 1, max: 20 })
-            )
+      for (let k = 0; k < NUM_SEED_OBSERVATIONS_PER_SURVEY; k++) {
+        const createObservationResponse = await knex.raw(
+          // set the number of observations to minimum 20 times the number of subcounts (which are set to a number
+          // between 1 and 20) to ensure the sum of all subcounts is at least <= the observation count (to avoid
+          // constraint violations)
+          insertSurveyObservationData(
+            surveyId,
+            NUM_SEED_SUBCOUNTS_PER_OBSERVATION * 20 + faker.number.int({ min: 1, max: 20 })
+          )
+        );
+
+        if (Math.random() < 0.75) {
+          // Insert observation qualitative environments 75% of the time
+          await knex.raw(
+            insertObservationQualitativeEnvironments(createObservationResponse.rows[0].survey_observation_id)
           );
-
-          if (Math.random() < 0.75) {
-            // Insert observation qualitative environments 75% of the time
-            await knex.raw(
-              insertObservationQualitativeEnvironments(createObservationResponse.rows[0].survey_observation_id)
-            );
-          }
-          if (Math.random() < 0.75) {
-            // Insert observation quantitative environments 75% of the time
-            await knex.raw(
-              insertObservationQuantitativeEnvironments(createObservationResponse.rows[0].survey_observation_id)
-            );
-          }
-
-          for (let l = 0; l < NUM_SEED_SUBCOUNTS_PER_OBSERVATION; l++) {
-            await knex.raw(insertObservationSubCount(createObservationResponse.rows[0].survey_observation_id));
-          }
+        }
+        if (Math.random() < 0.75) {
+          // Insert observation quantitative environments 75% of the time
+          await knex.raw(
+            insertObservationQuantitativeEnvironments(createObservationResponse.rows[0].survey_observation_id)
+          );
         }
 
-        // Insert 3 random survey habitat feature records for each survey
-        const resopnse4 = await knex.raw(insertSurveyHabitatFeaturesData(surveyId));
-        // Insert 0-3 habitat feature taxon records for each survey habitat feature record
-        const surveyHabitatFeatureIds = resopnse4.rows.map((row: any) => row.survey_habitat_feature_id);
-        for (let m = 0; m < surveyHabitatFeatureIds.length; m++) {
-          const query = insertSurveyHabitatFeatureTaxonsData(surveyHabitatFeatureIds[m]);
-          if (!query) {
-            continue;
-          }
-          await knex.raw(query);
+        for (let l = 0; l < NUM_SEED_SUBCOUNTS_PER_OBSERVATION; l++) {
+          await knex.raw(insertObservationSubCount(createObservationResponse.rows[0].survey_observation_id));
         }
+      }
+
+      // Insert 3 random survey habitat feature records for each survey
+      const resopnse4 = await knex.raw(insertSurveyHabitatFeaturesData(surveyId));
+      // Insert 0-3 habitat feature taxon records for each survey habitat feature record
+      const surveyHabitatFeatureIds = resopnse4.rows.map((row: any) => row.survey_habitat_feature_id);
+      for (let m = 0; m < surveyHabitatFeatureIds.length; m++) {
+        const query = insertSurveyHabitatFeatureTaxonsData(surveyHabitatFeatureIds[m]);
+        if (!query) {
+          continue;
+        }
+        await knex.raw(query);
       }
     }
   }
@@ -171,20 +148,11 @@ const checkAnyFundingSourceExists = () => `
     funding_source;
 `;
 
-const getProjectCount = () => `
-  SELECT
-    count(*)::integer as count
-  FROM
-    project;
-`;
-
-const getSurveyCount = (projectId: number) => `
+const getSurveyCount = () => `
   SELECT
     count(*)::integer as count
   FROM
     survey
-  WHERE 
-    project_id = ${projectId};
 `;
 
 const insertSurveySiteStrategy = (surveyId: number) => `
@@ -416,7 +384,6 @@ const insertSurveyLocationData = (surveyId: number) => `
 const insertSurveyData = (surveyName?: string) => `
   INSERT into survey
     (
-      project_id,
       name,
       additional_details,
       start_date,
@@ -426,7 +393,6 @@ const insertSurveyData = (surveyName?: string) => `
       lead_last_name
     )
   VALUES (
-    ${projectId},
     '${surveyName ?? 'Seed Survey'}',
     $$${faker.lorem.sentences(2)}$$,
     $$${faker.date.between({ from: '2010-01-01T00:00:00-08:00', to: '2015-01-01T00:00:00-08:00' }).toISOString()}$$,
@@ -452,19 +418,19 @@ const insertSurveyIntendedOutcome = (surveyId: number) => `
 `;
 
 /**
- * SQL to insert Project participation data
+ * SQL to insert survey member data
  *
  */
-const insertProjectParticipationData = (projectId: number) => `
-  INSERT into project_participation
+const insertSurveyMemberData = (surveyId: number) => `
+  INSERT into survey_member
     (
-      project_id,
+      survey_id,
       system_user_id,
-      project_role_id
+      survey_role_id
     )
   VALUES
     (
-      ${projectId},
+      ${surveyId},
       (
         SELECT COALESCE((
           SELECT
@@ -475,25 +441,7 @@ const insertProjectParticipationData = (projectId: number) => `
             su.user_identifier = '${PROJECT_SEEDER_USER_IDENTIFIER}'
         ), 1)
       ),
-      (SELECT project_role_id FROM project_role WHERE name = 'Coordinator' LIMIT 1)
-    )
-  ;
-`;
-
-/**
- * SQL to insert Project iucn data
- *
- */
-const insertProjectIUCNData = (projectId: number) => `
-  INSERT into project_iucn_action_classification
-    (
-      project_id,
-      iucn_conservation_action_level_3_subclassification_id
-    )
-  VALUES
-    (
-      ${projectId},
-      (select iucn_conservation_action_level_3_subclassification_id from iucn_conservation_action_level_3_subclassification order by random() limit 1)
+      (SELECT survey_role_id FROM survey_role WHERE name = 'Admin' LIMIT 1)
     )
   ;
 `;
@@ -1081,61 +1029,6 @@ const insertSurveyObservationData = (surveyId: number, count: number) => {
   RETURNING survey_observation_id;
 `;
 };
-
-/**
- * SQL to insert Project data
- *
- */
-const insertProjectData = (projectName?: string) => `
-  INSERT into project
-    (
-      name,
-      objectives,
-      location_description,
-      geography,
-      geojson
-    )
-  VALUES (
-    '${projectName ?? 'Seed Project'}',
-    $$${faker.lorem.sentences(2)}$$,
-    $$${faker.lorem.sentences(2)}$$,
-    'POLYGON ((-121.904297 50.930738, -121.904297 51.971346, -120.19043 51.971346, -120.19043 50.930738, -121.904297 50.930738))',
-    '[
-      {
-        "type": "Feature",
-        "geometry": {
-          "type": "Polygon",
-          "coordinates": [
-            [
-              [
-                -121.904297,
-                50.930738
-              ],
-              [
-                -121.904297,
-                51.971346
-              ],
-              [
-                -120.19043,
-                51.971346
-              ],
-              [
-                -120.19043,
-                50.930738
-              ],
-              [
-                -121.904297,
-                50.930738
-              ]
-            ]
-          ]
-        },
-        "properties": {}
-      }
-    ]'
-  )
-  RETURNING project_id;
-`;
 
 /**
  * SQL to insert survey regions

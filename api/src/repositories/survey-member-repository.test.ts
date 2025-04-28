@@ -3,19 +3,19 @@ import { describe } from 'mocha';
 import { QueryResult } from 'pg';
 import sinonChai from 'sinon-chai';
 import { getMockDBConnection } from '../__mocks__/db';
-import { ProjectParticipationRepository } from './project-participation-repository';
+import { SurveyMemberRepository } from './survey-member-repository';
 
 chai.use(sinonChai);
 
-describe('ProjectParticipationRepository', () => {
-  describe('deleteProjectParticipationRecord', () => {
+describe('SurveyMemberRepository', () => {
+  describe('deleteSurveyMemberRecord', () => {
     it('should return result', async () => {
       const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
-      const repository = new ProjectParticipationRepository(dbConnection);
+      const repository = new SurveyMemberRepository(dbConnection);
 
-      const response = await repository.deleteProjectParticipationRecord(1, 1);
+      const response = await repository.deleteSurveyMemberRecord(1, 1);
 
       expect(response).to.eql({ id: 1 });
     });
@@ -24,18 +24,18 @@ describe('ProjectParticipationRepository', () => {
       const mockResponse = undefined as any as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
-      const repository = new ProjectParticipationRepository(dbConnection);
+      const repository = new SurveyMemberRepository(dbConnection);
 
       try {
-        await repository.deleteProjectParticipationRecord(1, 1);
+        await repository.deleteSurveyMemberRecord(1, 1);
         expect.fail();
       } catch (error) {
-        expect((error as Error).message).to.equal('Failed to delete project participation record');
+        expect((error as Error).message).to.equal('Failed to delete survey participation record');
       }
     });
   });
 
-  describe('getProjectParticipant', () => {
+  describe('getSurveyMember', () => {
     it('should return result', async () => {
       const mockResponse = {
         rows: [
@@ -47,9 +47,9 @@ describe('ProjectParticipationRepository', () => {
       } as any as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
-      const repository = new ProjectParticipationRepository(dbConnection);
+      const repository = new SurveyMemberRepository(dbConnection);
 
-      const response = await repository.getProjectParticipant(1, 1);
+      const response = await repository.getSurveyMember(1, 1);
 
       expect(response).to.eql({ system_user_id: 1 });
     });
@@ -58,15 +58,15 @@ describe('ProjectParticipationRepository', () => {
       const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
-      const repository = new ProjectParticipationRepository(dbConnection);
+      const repository = new SurveyMemberRepository(dbConnection);
 
-      const response = await repository.getProjectParticipant(1, 1);
+      const response = await repository.getSurveyMember(1, 1);
 
       expect(response).to.eql(null);
     });
   });
 
-  describe('getProjectParticipantByProjectIdAndUserGuid', () => {
+  describe('getSurveyMemberBySurveyIdAndUserGuid', () => {
     it('should return result', async () => {
       const mockResponse = {
         rows: [
@@ -78,11 +78,12 @@ describe('ProjectParticipationRepository', () => {
       } as any as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ knex: () => mockResponse });
 
-      const repository = new ProjectParticipationRepository(dbConnection);
+      const repository = new SurveyMemberRepository(dbConnection);
 
+      const surveyId = 1;
       const userGuid = '123-456-789';
 
-      const response = await repository.getProjectParticipantByProjectIdAndUserGuid(userGuid);
+      const response = await repository.getSurveyMemberBySurveyIdAndUserGuid(surveyId, userGuid);
 
       expect(response).to.eql({ user_guid: '123-456-789' });
     });
@@ -91,17 +92,18 @@ describe('ProjectParticipationRepository', () => {
       const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ knex: () => mockResponse });
 
-      const repository = new ProjectParticipationRepository(dbConnection);
+      const repository = new SurveyMemberRepository(dbConnection);
 
+      const surveyId = 1;
       const userGuid = '123-456-789';
 
-      const response = await repository.getProjectParticipantByProjectIdAndUserGuid(userGuid);
+      const response = await repository.getSurveyMemberBySurveyIdAndUserGuid(surveyId, userGuid);
 
       expect(response).to.eql(null);
     });
   });
 
-  describe('getProjectParticipantBySurveyIdAndUserGuid', () => {
+  describe('getSurveyMemberBySurveyIdAndUserGuid', () => {
     it('should return result', async () => {
       const mockResponse = {
         rows: [
@@ -113,12 +115,12 @@ describe('ProjectParticipationRepository', () => {
       } as any as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ knex: () => mockResponse });
 
-      const repository = new ProjectParticipationRepository(dbConnection);
+      const repository = new SurveyMemberRepository(dbConnection);
 
       const surveyId = 1;
       const userGuid = '123-456-789';
 
-      const response = await repository.getProjectParticipantBySurveyIdAndUserGuid(surveyId, userGuid);
+      const response = await repository.getSurveyMemberBySurveyIdAndUserGuid(surveyId, userGuid);
 
       expect(response).to.eql({ user_guid: '123-456-789' });
     });
@@ -127,25 +129,25 @@ describe('ProjectParticipationRepository', () => {
       const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ knex: () => mockResponse });
 
-      const repository = new ProjectParticipationRepository(dbConnection);
+      const repository = new SurveyMemberRepository(dbConnection);
 
       const surveyId = 1;
       const userGuid = '123-456-789';
 
-      const response = await repository.getProjectParticipantBySurveyIdAndUserGuid(surveyId, userGuid);
+      const response = await repository.getSurveyMemberBySurveyIdAndUserGuid(surveyId, userGuid);
 
       expect(response).to.eql(null);
     });
   });
 
-  describe('getProjectParticipants', () => {
+  describe('getSurveyMembers', () => {
     it('should return result', async () => {
       const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
-      const repository = new ProjectParticipationRepository(dbConnection);
+      const repository = new SurveyMemberRepository(dbConnection);
 
-      const response = await repository.getProjectParticipants(1);
+      const response = await repository.getSurveyMembers(1);
 
       expect(response).to.eql([{ id: 1 }]);
     });
@@ -154,26 +156,26 @@ describe('ProjectParticipationRepository', () => {
       const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
-      const repository = new ProjectParticipationRepository(dbConnection);
+      const repository = new SurveyMemberRepository(dbConnection);
 
       try {
-        await repository.getProjectParticipants(1);
+        await repository.getSurveyMembers(1);
         expect.fail();
       } catch (error) {
-        expect((error as Error).message).to.equal('Failed to get project team members');
+        expect((error as Error).message).to.equal('Failed to get survey team members');
       }
     });
   });
 
-  describe('postProjectParticipant', () => {
+  describe('postSurveyMember', () => {
     describe('with role id', () => {
       it('should return result', async () => {
         const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
         const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
-        const repository = new ProjectParticipationRepository(dbConnection);
+        const repository = new SurveyMemberRepository(dbConnection);
 
-        const response = await repository.postProjectParticipant(1, 1, 1);
+        const response = await repository.postSurveyMember(1, 1, 1);
 
         expect(response).to.eql(undefined);
       });
@@ -182,13 +184,13 @@ describe('ProjectParticipationRepository', () => {
         const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
         const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
-        const repository = new ProjectParticipationRepository(dbConnection);
+        const repository = new SurveyMemberRepository(dbConnection);
 
         try {
-          await repository.postProjectParticipant(1, 1, 1);
+          await repository.postSurveyMember(1, 1, 1);
           expect.fail();
         } catch (error) {
-          expect((error as Error).message).to.equal('Failed to insert project team member');
+          expect((error as Error).message).to.equal('Failed to insert survey team member');
         }
       });
     });
@@ -198,13 +200,13 @@ describe('ProjectParticipationRepository', () => {
         const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
         const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
-        const repository = new ProjectParticipationRepository(dbConnection);
+        const repository = new SurveyMemberRepository(dbConnection);
 
         try {
-          await repository.postProjectParticipant(1, 1, 'string');
+          await repository.postSurveyMember(1, 1, 'string');
           expect.fail();
         } catch (error) {
-          expect((error as Error).message).to.equal('Failed to insert project team member');
+          expect((error as Error).message).to.equal('Failed to insert survey team member');
         }
       });
 
@@ -212,9 +214,9 @@ describe('ProjectParticipationRepository', () => {
         const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
         const dbConnection = getMockDBConnection({ sql: () => mockResponse, systemUserId: () => 1 });
 
-        const repository = new ProjectParticipationRepository(dbConnection);
+        const repository = new SurveyMemberRepository(dbConnection);
 
-        const response = await repository.postProjectParticipant(1, 1, 'string');
+        const response = await repository.postSurveyMember(1, 1, 'string');
 
         expect(response).to.eql(undefined);
       });
@@ -223,13 +225,13 @@ describe('ProjectParticipationRepository', () => {
         const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
         const dbConnection = getMockDBConnection({ sql: () => mockResponse, systemUserId: () => 1 });
 
-        const repository = new ProjectParticipationRepository(dbConnection);
+        const repository = new SurveyMemberRepository(dbConnection);
 
         try {
-          await repository.postProjectParticipant(1, 1, 'string');
+          await repository.postSurveyMember(1, 1, 'string');
           expect.fail();
         } catch (error) {
-          expect((error as Error).message).to.equal('Failed to insert project team member');
+          expect((error as Error).message).to.equal('Failed to insert survey team member');
         }
       });
     });

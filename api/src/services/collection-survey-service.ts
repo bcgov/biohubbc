@@ -13,7 +13,7 @@ import { SurveyBasicFields } from '../repositories/survey-repository';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { DBService } from './db-service';
 import { PlatformService } from './platform-service';
-import { ProjectParticipationService } from './project-participation-service';
+import { SurveyMemberService } from './survey-member-service';
 import { SurveyService } from './survey-service';
 
 /**
@@ -26,8 +26,8 @@ import { SurveyService } from './survey-service';
 export class CollectionSurveyService extends DBService {
   collectionRepository: CollectionRepository;
   collectionSurveyRepository: CollectionSurveyRepository;
-  projectParticipationService: ProjectParticipationService;
   surveyService: SurveyService;
+  surveyMemberService: SurveyMemberService;
   platformService: PlatformService;
 
   constructor(connection: IDBConnection) {
@@ -35,7 +35,7 @@ export class CollectionSurveyService extends DBService {
 
     this.collectionRepository = new CollectionRepository(connection);
     this.collectionSurveyRepository = new CollectionSurveyRepository(connection);
-    this.projectParticipationService = new ProjectParticipationService(connection);
+    this.surveyMemberService = new SurveyMemberService(connection);
     this.surveyService = new SurveyService(connection);
     this.platformService = new PlatformService(connection);
   }
@@ -135,7 +135,7 @@ export class CollectionSurveyService extends DBService {
 
     // Get the participant project roles for the given surveys
     for (const survey of values.surveys) {
-      const authorization = await this.projectParticipationService.getProjectParticipantBySurveyIdAndUserGuid(
+      const authorization = await this.surveyMemberService.getSurveyMemberBySurveyIdAndUserGuid(
         survey.survey_id,
         systemUserGuid
       );
@@ -147,7 +147,7 @@ export class CollectionSurveyService extends DBService {
 
     // Check if any of the roles in authChecks contains invalid roles (e.g., COLLABORATOR, COORDINATOR)
     const hasInvalidRole = authChecks.some((roles) =>
-      roles.some((role) => [SURVEY_ROLE.COLLABORATOR, SURVEY_ROLE.COORDINATOR].includes(role as SURVEY_ROLE))
+      roles.some((role) => [SURVEY_ROLE.EDITOR, SURVEY_ROLE.ADMIN].includes(role as SURVEY_ROLE))
     );
 
     // If any invalid role is found, throw Error401

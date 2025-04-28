@@ -221,7 +221,7 @@ export class AdministrativeActivityRepository extends BaseRepository {
             ELSE FALSE
           END AS has_one_or_more_project_roles
         FROM
-          project_participation pp
+          survey_member pp
         LEFT JOIN
           "system_user" su 
         ON

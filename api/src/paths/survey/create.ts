@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SURVEY_PERMISSION, SYSTEM_ROLE } from '../../constants/roles';
+import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
 import { PostSurveyObject } from '../../models/survey-create';
 import {
@@ -18,17 +18,12 @@ import { authorizeRequestHandler } from '../../request-handlers/security/authori
 import { SurveyService } from '../../services/survey-service';
 import { getLogger } from '../../utils/logger';
 
-const defaultLog = getLogger('paths/project/{projectId}/survey/create');
+const defaultLog = getLogger('paths/survey/create');
 
 export const POST: Operation = [
-  authorizeRequestHandler((req) => {
+  authorizeRequestHandler(() => {
     return {
       or: [
-        {
-          validProjectPermissions: [SURVEY_PERMISSION.COORDINATOR, SURVEY_PERMISSION.COLLABORATOR],
-          projectId: Number(req.params.projectId),
-          discriminator: 'ProjectPermission'
-        },
         {
           validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
           discriminator: 'SystemRole'
@@ -85,8 +80,7 @@ POST.apiDoc = {
               ...surveyDetailsSchema,
               properties: {
                 ...surveyDetailsSchema.properties,
-                id: { type: 'integer', nullable: true },
-                project_id: { type: 'integer', nullable: true }
+                id: { type: 'integer', nullable: true }
               }
             },
             species: surveySpeciesSchema,
@@ -231,8 +225,6 @@ POST.apiDoc = {
 
 export function createSurvey(): RequestHandler {
   return async (req, res) => {
-    const projectId = Number(req.params.projectId);
-
     const sanitizedPostSurveyData = new PostSurveyObject(req.body);
 
     const connection = getDBConnection(req.keycloak_token);

@@ -238,7 +238,6 @@ describe('PlatformService', () => {
           type: 'dataset',
           properties: {
             survey_id: undefined,
-            project_id: undefined,
             name: undefined,
             start_date: undefined,
             end_date: undefined,

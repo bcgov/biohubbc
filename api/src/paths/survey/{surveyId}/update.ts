@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SURVEY_PERMISSION, SYSTEM_ROLE } from '../../../constants/roles';
+import { SURVEY_ROLE, SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
 import { PutSurveyObject } from '../../../models/survey-update';
 import {
@@ -19,16 +19,16 @@ import { authorizeRequestHandler } from '../../../request-handlers/security/auth
 import { SurveyService } from '../../../services/survey-service';
 import { getLogger } from '../../../utils/logger';
 
-const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/update');
+const defaultLog = getLogger('paths/survey/{surveyId}/update');
 
 export const PUT: Operation = [
   authorizeRequestHandler((req) => {
     return {
       or: [
         {
-          validProjectPermissions: [SURVEY_PERMISSION.COORDINATOR, SURVEY_PERMISSION.COLLABORATOR],
+          validSurveyRoles: [SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR],
           surveyId: Number(req.params.surveyId),
-          discriminator: 'ProjectPermission'
+          discriminator: 'SurveyRole'
         },
         {
           validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],

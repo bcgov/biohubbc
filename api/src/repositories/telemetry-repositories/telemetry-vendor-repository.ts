@@ -142,7 +142,7 @@ export class TelemetryVendorRepository extends BaseRepository {
   }
 
   /**
-   * Filter results by the projects/surveys user have access to
+   * Filter results by the surveys/surveys user have access to
    * The method is static to allow it to be accessed without requiring an instance of TelemetryVendorRepository
    * This is needed because the query is built inside .modify() method
    *
@@ -156,8 +156,8 @@ export class TelemetryVendorRepository extends BaseRepository {
     systemUserId: number | null
   ): Knex.QueryBuilder {
     return queryBuilder
-      .join('project_participation', 'survey.project_id', 'project_participation.project_id')
-      .where('project_participation.system_user_id', systemUserId);
+      .join('survey_member', 'survey.survey_id', 'survey_member.survey_id')
+      .where('survey_member.system_user_id', systemUserId);
   }
 
   /**
@@ -185,7 +185,7 @@ export class TelemetryVendorRepository extends BaseRepository {
     if (!isUserAdmin) {
       // If the user is not an admin, filter results by vendor credentials
       TelemetryVendorRepository.getLotekOrVectronicTelemetryByCredentialsClause(queryBuilder);
-      // If the user is not an admin, filter results by the projects/surveys they have access to
+      // If the user is not an admin, filter results by the surveys/surveys they have access to
       TelemetryVendorRepository.getTelemetryByProjectsSurveysUserAccessClause(queryBuilder, systemUserId);
     }
 
@@ -208,12 +208,9 @@ export class TelemetryVendorRepository extends BaseRepository {
     }
 
     if (filterFields.system_user_id) {
-      // If a system user ID is provided, filter results by the projects/surveys that user has access to
-      queryBuilder.whereIn('survey.project_id', (subQueryBuilder) => {
-        subQueryBuilder
-          .select('project_id')
-          .from('project_participation')
-          .where('system_user_id', filterFields.system_user_id);
+      // If a system user ID is provided, filter results by the surveys/surveys that user has access to
+      queryBuilder.whereIn('survey.survey_id', (subQueryBuilder) => {
+        subQueryBuilder.select('survey_id').from('survey_member').where('system_user_id', filterFields.system_user_id);
       });
     }
 
@@ -349,7 +346,7 @@ export class TelemetryVendorRepository extends BaseRepository {
     if (!isUserAdmin) {
       // If the user is not an admin, filter results by vendor credentials
       TelemetryVendorRepository.getLotekOrVectronicTelemetryByCredentialsClause(queryBuilder);
-      // If the user is not an admin, filter results by the projects/surveys they have access to
+      // If the user is not an admin, filter results by the surveys/surveys they have access to
       TelemetryVendorRepository.getTelemetryByProjectsSurveysUserAccessClause(queryBuilder, systemUserId);
     }
 
@@ -372,12 +369,9 @@ export class TelemetryVendorRepository extends BaseRepository {
     }
 
     if (filterFields.system_user_id) {
-      // If a system user ID is provided, filter results by the projects/surveys that user has access to
-      queryBuilder.whereIn('survey.project_id', (subQueryBuilder) => {
-        subQueryBuilder
-          .select('project_id')
-          .from('project_participation')
-          .where('system_user_id', filterFields.system_user_id);
+      // If a system user ID is provided, filter results by the surveys/surveys that user has access to
+      queryBuilder.whereIn('survey.survey_id', (subQueryBuilder) => {
+        subQueryBuilder.select('survey_id').from('survey_member').where('system_user_id', filterFields.system_user_id);
       });
     }
 
@@ -491,7 +485,7 @@ export class TelemetryVendorRepository extends BaseRepository {
     queryBuilder.join('survey', 'deployment.survey_id', 'survey.survey_id');
 
     if (!isUserAdmin) {
-      // If the user is not an admin, filter results by the projects/surveys they have access to
+      // If the user is not an admin, filter results by the surveys/surveys they have access to
       TelemetryVendorRepository.getTelemetryByProjectsSurveysUserAccessClause(queryBuilder, systemUserId);
     }
 
@@ -514,12 +508,9 @@ export class TelemetryVendorRepository extends BaseRepository {
     }
 
     if (filterFields.system_user_id) {
-      // If a system user ID is provided, filter results by the projects/surveys that user has access to
-      queryBuilder.whereIn('survey.project_id', (subQueryBuilder) => {
-        subQueryBuilder
-          .select('project_id')
-          .from('project_participation')
-          .where('system_user_id', filterFields.system_user_id);
+      // If a system user ID is provided, filter results by the surveys/surveys that user has access to
+      queryBuilder.whereIn('survey.survey_id', (subQueryBuilder) => {
+        subQueryBuilder.select('survey_id').from('survey_member').where('system_user_id', filterFields.system_user_id);
       });
     }
 
@@ -634,7 +625,7 @@ export class TelemetryVendorRepository extends BaseRepository {
     queryBuilder.join('survey', 'deployment.survey_id', 'survey.survey_id');
 
     if (!isUserAdmin) {
-      // If the user is not an admin, filter results by the projects/surveys they have access to
+      // If the user is not an admin, filter results by the surveys/surveys they have access to
       TelemetryVendorRepository.getTelemetryByProjectsSurveysUserAccessClause(queryBuilder, systemUserId);
     }
 
@@ -655,12 +646,9 @@ export class TelemetryVendorRepository extends BaseRepository {
     }
 
     if (filterFields.system_user_id) {
-      // If the user is not an admin, filter results by the projects/surveys they have access to
-      queryBuilder.whereIn('survey.project_id', (subQueryBuilder) => {
-        subQueryBuilder
-          .select('project_id')
-          .from('project_participation')
-          .where('system_user_id', filterFields.system_user_id);
+      // If the user is not an admin, filter results by the surveys/surveys they have access to
+      queryBuilder.whereIn('survey.survey_id', (subQueryBuilder) => {
+        subQueryBuilder.select('survey_id').from('survey_member').where('system_user_id', filterFields.system_user_id);
       });
     }
 

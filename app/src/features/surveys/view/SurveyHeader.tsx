@@ -25,7 +25,7 @@ import PublishSurveyIdDialog from 'components/publish/PublishSurveyDialog';
 import { FeatureFlagGuard, ProjectRoleGuard } from 'components/security/Guards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { DeleteSurveyI18N } from 'constants/i18n';
-import { SURVEY_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
+import { SURVEY_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { DialogContext } from 'contexts/dialogContext';
 
 import { SurveyContext } from 'contexts/surveyContext';
@@ -158,13 +158,13 @@ const SurveyHeader = () => {
         }
         buttonJSX={
           <ProjectRoleGuard
-            validProjectPermissions={[SURVEY_PERMISSION.COORDINATOR, SURVEY_PERMISSION.COLLABORATOR]}
+            validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
             validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
             <Stack flexDirection="row" alignItems="center" gap={2}>
               <HelpButtonDialog markdownType={MarkdownTypeNameEnum.SURVEY_PAGE} />
               <FeatureFlagGuard featureFlags={['APP_FF_SUBMIT_BIOHUB']}>
                 <ProjectRoleGuard
-                  validProjectPermissions={[SURVEY_PERMISSION.COORDINATOR]}
+                  validSurveyRoles={[SURVEY_ROLE.ADMIN]}
                   validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                   <Typography
                     component="span"
@@ -252,7 +252,7 @@ const SurveyHeader = () => {
                 <Typography variant="inherit">Edit Survey Details</Typography>
               </MenuItem>
               <ProjectRoleGuard
-                validProjectPermissions={[SURVEY_PERMISSION.COORDINATOR]}
+                validSurveyRoles={[SURVEY_ROLE.ADMIN]}
                 validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                 <MenuItem data-testid="delete-survey-button" onClick={showDeleteSurveyDialog}>
                   <ListItemIcon>
@@ -262,7 +262,7 @@ const SurveyHeader = () => {
                 </MenuItem>
               </ProjectRoleGuard>
               <ProjectRoleGuard
-                validProjectPermissions={[SURVEY_PERMISSION.COORDINATOR, SURVEY_PERMISSION.COLLABORATOR]}
+                validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
                 validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                 <MenuItem data-testid="export-survey-button" onClick={() => setOpenSurveyExportDialog(true)}>
                   <ListItemIcon>

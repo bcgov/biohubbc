@@ -1,4 +1,4 @@
-import { SURVEY_PERMISSION, SURVEY_ROLE } from 'constants/roles';
+import { SURVEY_ROLE } from 'constants/roles';
 import { IAgreementsForm } from 'features/surveys/components/agreements/AgreementsForm';
 import { IProprietaryDataForm } from 'features/surveys/components/agreements/ProprietaryDataForm';
 import {
@@ -127,7 +127,7 @@ export type IGetUserSurveyParticipantResponse = {
   system_user_id: number;
   survey_role_ids: number[];
   survey_role_names: SURVEY_ROLE[];
-  survey_role_permissions: SURVEY_PERMISSION[];
+  survey_role_permissions: SURVEY_ROLE[];
 } | null;
 
 /**

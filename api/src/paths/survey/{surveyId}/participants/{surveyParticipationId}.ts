@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SURVEY_PERMISSION, SYSTEM_ROLE } from '../../../../constants/roles';
+import { SURVEY_ROLE, SYSTEM_ROLE } from '../../../../constants/roles';
 import { getDBConnection } from '../../../../database/db';
 import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
 import { SurveyParticipationService } from '../../../../services/survey-participation-service';
@@ -12,9 +12,9 @@ export const PUT: Operation = [
     return {
       or: [
         {
-          validProjectPermissions: [SURVEY_PERMISSION.COORDINATOR],
+          validSurveyRoles: [SURVEY_ROLE.ADMIN],
           surveyId: Number(req.params.surveyId),
-          discriminator: 'ProjectPermission'
+          discriminator: 'SurveyRole'
         },
         {
           validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
@@ -135,9 +135,9 @@ export const DELETE: Operation = [
     return {
       or: [
         {
-          validProjectPermissions: [SURVEY_PERMISSION.COORDINATOR],
+          validSurveyRoles: [SURVEY_ROLE.ADMIN],
           surveyId: Number(req.params.surveyId),
-          discriminator: 'ProjectPermission'
+          discriminator: 'SurveyRole'
         },
         {
           validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],

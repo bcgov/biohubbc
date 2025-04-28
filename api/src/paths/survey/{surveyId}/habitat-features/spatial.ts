@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SURVEY_PERMISSION, SYSTEM_ROLE } from '../../../../constants/roles';
+import { SURVEY_ROLE, SYSTEM_ROLE } from '../../../../constants/roles';
 import { getDBConnection } from '../../../../database/db';
 import { GeoJSONPoint } from '../../../../openapi/schemas/geoJson';
 import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
@@ -14,13 +14,9 @@ export const GET: Operation = [
     return {
       or: [
         {
-          validProjectPermissions: [
-            SURVEY_PERMISSION.COORDINATOR,
-            SURVEY_PERMISSION.COLLABORATOR,
-            SURVEY_PERMISSION.OBSERVER
-          ],
+          validSurveyRoles: [SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR, SURVEY_ROLE.VIEWER],
           surveyId: Number(req.params.surveyId),
-          discriminator: 'ProjectPermission'
+          discriminator: 'SurveyRole'
         },
         {
           validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],

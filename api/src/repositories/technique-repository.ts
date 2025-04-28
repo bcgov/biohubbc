@@ -331,21 +331,18 @@ export class TechniqueRepository extends BaseRepository {
 
     // Ensure that users can only see observations that they are participating in, unless they are an administrator.
     if (!isUserAdmin) {
-      getSurveyIdsQuery.whereIn('survey.project_id', (subqueryBuilder) =>
+      getSurveyIdsQuery.whereIn('survey.survey_id', (subqueryBuilder) =>
         subqueryBuilder
-          .select('project.project_id')
-          .from('project')
-          .leftJoin('project_participation', 'project_participation.project_id', 'project.project_id')
-          .where('project_participation.system_user_id', systemUserId)
+          .select('survey.survey_id')
+          .from('survey')
+          .leftJoin('survey_member', 'survey_member.survey_id', 'survey.survey_id')
+          .where('survey_member.system_user_id', systemUserId)
       );
     }
 
     if (filterFields.system_user_id) {
-      getSurveyIdsQuery.whereIn('project.project_id', (subQueryBuilder) => {
-        subQueryBuilder
-          .select('project_id')
-          .from('project_participation')
-          .where('system_user_id', filterFields.system_user_id);
+      getSurveyIdsQuery.whereIn('survey.survey_id', (subQueryBuilder) => {
+        subQueryBuilder.select('survey_id').from('survey_member').where('system_user_id', filterFields.system_user_id);
       });
     }
 

@@ -60,19 +60,14 @@ export class PermitRepository extends BaseRepository {
     FROM
       permit p
       , survey s
-      , project p2
-      , project_participation pp
-      , project_role pr
+      , survey_member pp
+      , survey_role pr
     WHERE
       p.survey_id = s.survey_id
     AND
-      s.project_id = p2.project_id
+      pr."name" in ('${SURVEY_ROLE.ADMIN}', '${SURVEY_ROLE.EDITOR}')
     AND
-      p2.project_id = pp.project_id
-    AND
-      pr."name" in ('${SURVEY_ROLE.COORDINATOR}', '${SURVEY_ROLE.COLLABORATOR}')
-    AND
-      pp.project_role_id = pr.project_role_id
+      pp.survey_role_id = pr.survey_role_id
     AND
       pp.system_user_id = ${systemUserId};
       `;

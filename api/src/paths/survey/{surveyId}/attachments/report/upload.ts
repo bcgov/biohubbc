@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SURVEY_PERMISSION, SYSTEM_ROLE } from '../../../../../constants/roles';
+import { SURVEY_ROLE, SYSTEM_ROLE } from '../../../../../constants/roles';
 import { getDBConnection } from '../../../../../database/db';
 import { fileSchema } from '../../../../../openapi/schemas/file';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
@@ -16,9 +16,9 @@ export const POST: Operation = [
     return {
       or: [
         {
-          validProjectPermissions: [SURVEY_PERMISSION.COORDINATOR, SURVEY_PERMISSION.COLLABORATOR],
+          validSurveyRoles: [SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR],
           surveyId: Number(req.params.surveyId),
-          discriminator: 'ProjectPermission'
+          discriminator: 'SurveyRole'
         },
         {
           validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
@@ -179,7 +179,7 @@ export function uploadMedia(): RequestHandler {
 
       const upsertResult = await attachmentService.upsertSurveyReportAttachment(
         rawMediaFile,
-        Number(req.params.projectId),
+
         Number(req.params.surveyId),
         req.body.attachmentMeta
       );

@@ -54,15 +54,6 @@ export class SurveyService extends DBService {
   }
 
   /**
-   * Get Survey IDs for a project ID
-   * @returns {*} {Promise<{id: number}[]>}
-   * @memberof SurveyService
-   */
-  async getSurveyIdsByProjectId(projectId: number): Promise<{ id: number }[]> {
-    return this.surveyRepository.getSurveyIdsByProjectId(projectId);
-  }
-
-  /**
    * Gets all information of a Survey for a given survey ID
    *
    * @param {number} surveyId
@@ -264,21 +255,7 @@ export class SurveyService extends DBService {
   }
 
   /**
-   * Get all surveys by their associated project ID.
-   *
-    the ID of the project
-   * @return {*}  {Promise<SurveyObject[]>} The associated surveys
-   * @memberof SurveyService
-   */
-  async getSurveysByProjectId(projectId: number): Promise<SurveyObject[]> {
-    const surveyIds = await this.getSurveyIdsByProjectId(projectId);
-
-    return this.getSurveysByIds(surveyIds.map((survey) => survey.id));
-  }
-
-  /**
-   * Fetches a subset of survey fields for a paginated list of surveys under
-   * a given project.
+   * Fetches a subset of survey fields for a paginated list of surveys available to the user
    * @param {ApiPaginationOptions} [pagination]
    * @return {*}  {Promise<SurveyBasicFields[]>}
    * @memberof SurveyService
@@ -349,15 +326,6 @@ export class SurveyService extends DBService {
     }
 
     return decoratedSurveys;
-  }
-
-  /**
-   * Returns the total number of surveys belonging to the given project.
-   * @return {*}  {Promise<number>}
-   * @memberof SurveyService
-   */
-  async getSurveyCountByProjectId(projectId: number): Promise<number> {
-    return this.surveyRepository.getSurveyCountByProjectId(projectId);
   }
 
   /**

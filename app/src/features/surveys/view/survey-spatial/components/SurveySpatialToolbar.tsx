@@ -13,7 +13,7 @@ import Typography from '@mui/material/Typography';
 import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
 import { ProjectRoleGuard } from 'components/security/Guards';
 import CustomToggleButtonGroup, { ToggleButtonView } from 'components/toolbar/CustomToggleButtonGroup';
-import { SURVEY_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
+import { SURVEY_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
@@ -108,7 +108,7 @@ export const SurveySpatialToolbar = (props: ISurveySpatialToolbarProps) => {
           <Stack gap={1} direction="row">
             <HelpButtonDialog markdownType={MarkdownTypeNameEnum.SURVEY_DATA} />
             <ProjectRoleGuard
-              validProjectPermissions={[SURVEY_PERMISSION.COORDINATOR, SURVEY_PERMISSION.COLLABORATOR]}
+              validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
               validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
               <Button
                 variant="contained"

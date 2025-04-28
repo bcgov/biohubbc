@@ -13,11 +13,6 @@ export const surveyDetailsSchema: OpenAPIV3.SchemaObject = {
       type: 'integer',
       minimum: 1
     },
-    project_id: {
-      description: 'Project id',
-      type: 'integer',
-      minimum: 1
-    },
     uuid: {
       description: 'Survey uuid',
       type: 'string',

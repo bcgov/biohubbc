@@ -95,7 +95,6 @@ GET.apiDoc = {
                     'survey_id',
                     'funding_source_id',
                     'revision_count',
-                    'project_id',
                     'survey_name'
                   ],
                   properties: {
@@ -114,10 +113,6 @@ GET.apiDoc = {
                     revision_count: {
                       type: 'integer',
                       minimum: 0
-                    },
-                    project_id: {
-                      type: 'integer',
-                      minimum: 1
                     },
                     survey_name: {
                       type: 'string'

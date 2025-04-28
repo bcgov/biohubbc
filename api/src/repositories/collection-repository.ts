@@ -37,7 +37,7 @@ export class CollectionRepository extends BaseRepository {
       COALESCE(
         jsonb_agg(
           DISTINCT jsonb_build_object(
-            'collection_participation_id', cp.collection_participation_id,
+            'collection_member_id', cp.collection_member_id,
             'collection_id', cp.collection_id,
             'system_user_id', su.system_user_id,
             'user_identifier', su.user_identifier,
@@ -59,7 +59,7 @@ export class CollectionRepository extends BaseRepository {
     `)
       )
       .from('collection')
-      .leftJoin('collection_participation AS cp', 'cp.collection_id', 'collection.collection_id')
+      .leftJoin('collection_member AS cp', 'cp.collection_id', 'collection.collection_id')
       .leftJoin('collection_role AS cr', 'cr.collection_role_id', 'cp.collection_role_id')
       .leftJoin('system_user AS su', (qb) => {
         qb.on('su.system_user_id', '=', 'cp.system_user_id').andOnNull('su.record_end_date');
@@ -106,18 +106,18 @@ export class CollectionRepository extends BaseRepository {
     const getCollectionIdsQuery = knex.select('collection_id').from('collection');
 
     if (!isUserAdmin) {
-      getCollectionIdsQuery.whereIn('collection.project_id', (subquery) =>
+      getCollectionIdsQuery.whereIn('collection.survey_id', (subquery) =>
         subquery
-          .select('project_id')
-          .from('project')
-          .leftJoin('project_participation', 'project_participation.project_id', 'project.project_id')
-          .where('project_participation.system_user_id', systemUserId)
+          .select('survey_id')
+          .from('survey')
+          .leftJoin('survey_member', 'survey_member.survey_id', 'survey.survey_id')
+          .where('survey_member.system_user_id', systemUserId)
       );
     }
 
     if (filterFields.system_user_id) {
-      getCollectionIdsQuery.whereIn('collection.project_id', (subquery) =>
-        subquery.select('project_id').from('project_participation').where('system_user_id', filterFields.system_user_id)
+      getCollectionIdsQuery.whereIn('collection.survey_id', (subquery) =>
+        subquery.select('survey_id').from('survey_member').where('system_user_id', filterFields.system_user_id)
       );
     }
 

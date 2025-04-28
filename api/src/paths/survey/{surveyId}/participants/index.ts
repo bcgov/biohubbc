@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SURVEY_PERMISSION, SYSTEM_ROLE } from '../../../../constants/roles';
+import { SURVEY_ROLE, SYSTEM_ROLE } from '../../../../constants/roles';
 import { getDBConnection } from '../../../../database/db';
 import { HTTP400 } from '../../../../errors/http-error';
 import { ISurveyParticipationPostData } from '../../../../repositories/survey-participation-repository';
@@ -8,16 +8,16 @@ import { authorizeRequestHandler } from '../../../../request-handlers/security/a
 import { SurveyParticipationService } from '../../../../services/survey-participation-service';
 import { getLogger } from '../../../../utils/logger';
 
-const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/participants');
+const defaultLog = getLogger('paths/survey/{surveyId}/participants');
 
 export const GET: Operation = [
   authorizeRequestHandler((req) => {
     return {
       or: [
         {
-          validProjectPermissions: [SURVEY_PERMISSION.COORDINATOR],
+          validSurveyRoles: [SURVEY_ROLE.ADMIN],
           surveyId: Number(req.params.surveyId),
-          discriminator: 'ProjectPermission'
+          discriminator: 'SurveyRole'
         },
         {
           validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
@@ -153,9 +153,9 @@ export const POST: Operation = [
     return {
       or: [
         {
-          validProjectPermissions: [SURVEY_PERMISSION.COORDINATOR],
+          validSurveyRoles: [SURVEY_ROLE.ADMIN],
           surveyId: Number(req.params.surveyId),
-          discriminator: 'ProjectPermission'
+          discriminator: 'SurveyRole'
         },
         {
           validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],

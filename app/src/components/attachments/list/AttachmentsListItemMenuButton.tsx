@@ -7,7 +7,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { ProjectRoleGuard, SystemRoleGuard } from 'components/security/Guards';
 import { AttachmentType, PublishStatus } from 'constants/attachments';
-import { SURVEY_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
+import { SURVEY_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { useState } from 'react';
 
 interface IAttachmentsListItemMenuButtonProps {
@@ -83,7 +83,7 @@ const AttachmentsListItemMenuButton = (props: IAttachmentsListItemMenuButtonProp
 
           {props.attachmentStatus === PublishStatus.UNSUBMITTED && (
             <ProjectRoleGuard
-              validProjectPermissions={[SURVEY_PERMISSION.COORDINATOR, SURVEY_PERMISSION.COLLABORATOR]}
+              validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
               validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
               <MenuItem
                 onClick={() => {

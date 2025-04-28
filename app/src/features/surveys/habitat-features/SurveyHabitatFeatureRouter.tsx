@@ -1,5 +1,5 @@
 import { ProjectRoleRouteGuard } from 'components/security/RouteGuards';
-import { SURVEY_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
+import { SURVEY_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { HabitatFeatureTableContextProvider } from 'contexts/habitatFeatureTableContext';
 import { Redirect, Switch } from 'react-router';
@@ -40,7 +40,7 @@ export const HabitatFeatureRouter = () => {
         path="/admin/projects/:id/surveys/:survey_id/habitat-features/details"
         title={getTitle('Manage Habitat Features')}>
         <ProjectRoleRouteGuard
-          validProjectPermissions={[SURVEY_PERMISSION.COORDINATOR, SURVEY_PERMISSION.COLLABORATOR]}
+          validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <DialogContextProvider>
             <HabitatFeatureTableContextProvider>
@@ -55,7 +55,7 @@ export const HabitatFeatureRouter = () => {
         path="/admin/projects/:id/surveys/:survey_id/habitat-features/create"
         title={getTitle('Create Habitat Feature')}>
         <ProjectRoleRouteGuard
-          validProjectPermissions={[SURVEY_PERMISSION.COORDINATOR, SURVEY_PERMISSION.COLLABORATOR]}
+          validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <DialogContextProvider>
             <HabitatFeatureTableContextProvider>
@@ -70,7 +70,7 @@ export const HabitatFeatureRouter = () => {
         path="/admin/projects/:id/surveys/:survey_id/habitat-features/:habitat_feature_id/edit"
         title={getTitle('Edit Habitat Feature')}>
         <ProjectRoleRouteGuard
-          validProjectPermissions={[SURVEY_PERMISSION.COORDINATOR, SURVEY_PERMISSION.COLLABORATOR]}
+          validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <DialogContextProvider>
             <HabitatFeatureTableContextProvider>

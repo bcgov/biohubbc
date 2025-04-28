@@ -10,7 +10,7 @@ export interface ISurveyAuthStateContext {
   getSurveyParticipant: () => IGetUserSurveyParticipantResponse;
   hasSurveyRole: (validSurveyRoles?: string[]) => boolean;
   hasSystemRole: (validSystemRoles?: string[]) => boolean;
-  hasSurveyPermission: (validSurveyPermissions?: string[]) => boolean;
+  hasSurveyPermission: (validSurveyRoles?: string[]) => boolean;
   getSurveyId: () => number;
   hasLoadedParticipantInfo: boolean;
 }
@@ -64,9 +64,9 @@ export const SurveyAuthStateContextProvider: React.FC<React.PropsWithChildren> =
   );
 
   const hasSurveyPermission = useCallback(
-    (validSurveyPermissions?: string[]): boolean => {
+    (validSurveyRoles?: string[]): boolean => {
       //If no Survey role is provided then return false
-      if (!validSurveyPermissions?.length) {
+      if (!validSurveyRoles?.length) {
         return false;
       }
 
@@ -78,7 +78,7 @@ export const SurveyAuthStateContextProvider: React.FC<React.PropsWithChildren> =
 
       return (
         participant?.survey_id === getSurveyId() &&
-        participant?.survey_role_permissions.some((roleName) => validSurveyPermissions.includes(roleName))
+        participant?.survey_role_permissions.some((roleName) => validSurveyRoles.includes(roleName))
       );
     },
     [getSurveyId, getSurveyParticipant]

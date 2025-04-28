@@ -161,7 +161,7 @@ async function main() {
       const project = data[pIndex];
 
       sql += `WITH p AS (INSERT INTO project (name, objectives, coordinator_first_name, coordinator_last_name, coordinator_email_address) VALUES ($$Caribou - ${project.herd} - BCTW Telemetry$$, $$BCTW telemetry deployments for ${project.herd} Caribou$$, $$${CONFIG.first_name}$$, $$${CONFIG.last_name}$$, $$${CONFIG.email}$$) RETURNING project_id
-      ), ppp AS (INSERT INTO project_participation (system_user_id, project_role_id) SELECT (select system_user_id from "system_user" where user_identifier = $$mauberti$$), (select project_role_id from project_role where name = $$${CONFIG.project_role}$$) FROM p
+      ), ppp AS (INSERT INTO survey_member (system_user_id, project_role_id) SELECT (select system_user_id from "system_user" where user_identifier = $$mauberti$$), (select project_role_id from project_role where name = $$${CONFIG.project_role}$$) FROM p
       )
     `;
       for (let sIndex = 0; sIndex < project.surveys.length; sIndex++) {

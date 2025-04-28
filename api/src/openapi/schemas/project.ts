@@ -71,7 +71,7 @@ export const projectCreatePostRequestObject = {
             type: 'array',
             items: {
               type: 'string',
-              enum: [SURVEY_ROLE.COORDINATOR, SURVEY_ROLE.COLLABORATOR, SURVEY_ROLE.OBSERVER]
+              enum: [SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR, SURVEY_ROLE.VIEWER]
             }
           },
           email: {
@@ -110,10 +110,6 @@ const projectUpdateProperties = {
     required: ['project_name', 'revision_count'],
     nullable: true,
     properties: {
-      project_id: {
-        type: 'integer',
-        minimum: 1
-      },
       uuid: {
         type: 'string'
       },
@@ -179,12 +175,10 @@ const projectUpdateProperties = {
       additionalProperties: false,
       required: ['system_user_id', 'display_name', 'email', 'agency', 'identity_source', 'survey_role_names'],
       properties: {
-        project_participation_id: {
+        survey_member_id: {
           type: 'number'
         },
-        project_id: {
-          type: 'number'
-        },
+
         system_user_id: {
           type: 'number'
         },
@@ -273,13 +267,9 @@ export const getSurveysListSchema: OpenAPIV3.SchemaObject = {
       items: {
         type: 'object',
         additionalProperties: false,
-        required: ['survey_id', 'project_id', 'name', 'start_date', 'end_date', 'progress_id', 'focal_species'],
+        required: ['survey_id', 'name', 'start_date', 'end_date', 'progress_id', 'focal_species'],
         properties: {
           survey_id: {
-            type: 'integer',
-            minimum: 1
-          },
-          project_id: {
             type: 'integer',
             minimum: 1
           },

@@ -1,5 +1,5 @@
 import { ProjectRoleRouteGuard } from 'components/security/RouteGuards';
-import { SURVEY_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
+import { SURVEY_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { SamplingSiteManagePage } from 'features/surveys/sampling-information/manage/SamplingSiteManagePage';
 import { CreateSamplingSitePage } from 'features/surveys/sampling-information/sites/create/CreateSamplingSitePage';
@@ -25,7 +25,7 @@ export const SamplingRouter = () => {
         path="/admin/projects/:id/surveys/:survey_id/sampling"
         title={getTitle('Manage Sampling Information')}>
         <ProjectRoleRouteGuard
-          validProjectPermissions={[SURVEY_PERMISSION.COORDINATOR, SURVEY_PERMISSION.COLLABORATOR]}
+          validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <DialogContextProvider>
             <SamplingSiteManagePage />
@@ -38,7 +38,7 @@ export const SamplingRouter = () => {
         path="/admin/projects/:id/surveys/:survey_id/sampling/create"
         title={getTitle('Create Sampling Sites')}>
         <ProjectRoleRouteGuard
-          validProjectPermissions={[SURVEY_PERMISSION.COORDINATOR, SURVEY_PERMISSION.COLLABORATOR]}
+          validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <DialogContextProvider>
             <CreateSamplingSitePage />
@@ -51,7 +51,7 @@ export const SamplingRouter = () => {
         path="/admin/projects/:id/surveys/:survey_id/sampling/:survey_sample_site_id/edit"
         title={getTitle('Edit Sampling Site')}>
         <ProjectRoleRouteGuard
-          validProjectPermissions={[SURVEY_PERMISSION.COORDINATOR, SURVEY_PERMISSION.COLLABORATOR]}
+          validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <DialogContextProvider>
             <EditSamplingSitePage />
@@ -64,7 +64,7 @@ export const SamplingRouter = () => {
         path="/admin/projects/:id/surveys/:survey_id/sampling/techniques/create"
         title={getTitle('Create Technique')}>
         <ProjectRoleRouteGuard
-          validProjectPermissions={[SURVEY_PERMISSION.COORDINATOR, SURVEY_PERMISSION.COLLABORATOR]}
+          validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <DialogContextProvider>
             <CreateTechniquePage />
@@ -77,7 +77,7 @@ export const SamplingRouter = () => {
         path="/admin/projects/:id/surveys/:survey_id/sampling/techniques/:method_technique_id/edit"
         title={getTitle('Edit Technique')}>
         <ProjectRoleRouteGuard
-          validProjectPermissions={[SURVEY_PERMISSION.COORDINATOR, SURVEY_PERMISSION.COLLABORATOR]}
+          validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <DialogContextProvider>
             <EditTechniquePage />

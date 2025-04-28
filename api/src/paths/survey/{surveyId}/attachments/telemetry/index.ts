@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SURVEY_PERMISSION, SYSTEM_ROLE } from '../../../../../constants/roles';
+import { SURVEY_ROLE, SYSTEM_ROLE } from '../../../../../constants/roles';
 import { getDBConnection } from '../../../../../database/db';
 import { HTTP400 } from '../../../../../errors/http-error';
 import { fileSchema } from '../../../../../openapi/schemas/file';
@@ -19,9 +19,9 @@ export const POST: Operation = [
     return {
       or: [
         {
-          validProjectPermissions: [SURVEY_PERMISSION.COORDINATOR, SURVEY_PERMISSION.COLLABORATOR],
+          validSurveyRoles: [SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR],
           surveyId: Number(req.params.surveyId),
-          discriminator: 'ProjectPermission'
+          discriminator: 'SurveyRole'
         },
         {
           validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
@@ -152,7 +152,7 @@ export function postSurveyTelemetryCredentialAttachment(): RequestHandler {
       const attachmentService = new AttachmentService(connection);
       const upsertResult = await attachmentService.upsertSurveyTelemetryCredentialAttachment(
         rawMediaFile,
-        Number(req.params.projectId),
+
         Number(req.params.surveyId),
         isTelemetryCredentialFile
       );
@@ -194,9 +194,9 @@ export const GET: Operation = [
     return {
       or: [
         {
-          validProjectPermissions: [SURVEY_PERMISSION.COORDINATOR, SURVEY_PERMISSION.COLLABORATOR],
+          validSurveyRoles: [SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR],
           surveyId: Number(req.params.surveyId),
-          discriminator: 'ProjectPermission'
+          discriminator: 'SurveyRole'
         },
         {
           validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],

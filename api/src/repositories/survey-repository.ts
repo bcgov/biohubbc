@@ -163,7 +163,6 @@ export class SurveyRepository extends BaseRepository {
     const query = knex
       .select([
         's.survey_id',
-        's.project_id',
         's.name',
         's.progress_id',
         's.start_date',
@@ -173,27 +172,23 @@ export class SurveyRepository extends BaseRepository {
         knex.raw('array_remove(array_agg(distinct st.type_id), null) as types')
       ])
       .from('survey as s')
-      .leftJoin('project as p', 'p.project_id', 's.project_id')
       .leftJoin('study_species as sp', 'sp.survey_id', 's.survey_id')
       .leftJoin('survey_type as st', 'st.survey_id', 's.survey_id')
       .leftJoin('survey_region as sr', 'sr.survey_id', 's.survey_id')
       .leftJoin('region_lookup as rl', 'rl.region_id', 'sr.region_id')
-      .leftJoin('project_participation as ppa', 'ppa.project_id', 's.project_id')
-      .groupBy('s.survey_id', 's.project_id', 's.name', 's.progress_id', 's.start_date', 's.end_date');
+      .leftJoin('survey_member as ppa', 'ppa.survey_id', 's.survey_id')
+      .groupBy('s.survey_id', 's.name', 's.progress_id', 's.start_date', 's.end_date');
 
     // Ensure that users can only see surveys that they are participating in, unless they are an administrator.
     if (!isUserAdmin) {
-      query.whereIn('p.project_id', (subQueryBuilder) => {
-        subQueryBuilder.select('project_id').from('project_participation').where('system_user_id', systemUserId);
+      query.whereIn('p.survey_id', (subQueryBuilder) => {
+        subQueryBuilder.select('survey_id').from('survey_member').where('system_user_id', systemUserId);
       });
     }
 
     if (filterFields.system_user_id) {
-      query.whereIn('p.project_id', (subQueryBuilder) => {
-        subQueryBuilder
-          .select('project_id')
-          .from('project_participation')
-          .where('system_user_id', filterFields.system_user_id);
+      query.whereIn('p.survey_id', (subQueryBuilder) => {
+        subQueryBuilder.select('survey_id').from('survey_member').where('system_user_id', filterFields.system_user_id);
       });
     }
 
@@ -268,26 +263,6 @@ export class SurveyRepository extends BaseRepository {
     }
 
     const response = await this.connection.knex(query, FindSurveysResponse);
-
-    return response.rows;
-  }
-
-  /**
-   * Get survey(s) for a given project id
-   * @returns {*} {Promise<{id: number}[]>}
-   * @memberof SurveyRepository
-   */
-  async getSurveyIdsByProjectId(projectId: number): Promise<{ id: number }[]> {
-    const sqlStatement = SQL`
-      SELECT
-        survey_id as id
-      FROM
-        survey
-      WHERE
-        project_id = ${projectId};
-    `;
-
-    const response = await this.connection.sql<{ id: number }>(sqlStatement);
 
     return response.rows;
   }
@@ -602,7 +577,6 @@ export class SurveyRepository extends BaseRepository {
       .from('survey')
       .leftJoin('study_species', 'study_species.survey_id', 'survey.survey_id')
       .leftJoin('survey_progress', 'survey_progress.survey_progress_id', 'survey.progress_id')
-      .where('survey.project_id')
       .where('study_species.is_focal', true)
       .groupBy('survey.survey_id')
       .groupBy('survey.name')
@@ -643,7 +617,6 @@ export class SurveyRepository extends BaseRepository {
       .queryBuilder()
       .select(
         'survey.survey_id',
-        'survey.project_id',
         'survey.name',
         'survey.start_date',
         'survey.end_date',
@@ -657,7 +630,6 @@ export class SurveyRepository extends BaseRepository {
       .where('cs.collection_id', collectionId)
       .where('study_species.is_focal', true)
       .groupBy('survey.survey_id')
-      .groupBy('survey.project_id')
       .groupBy('survey.name')
       .groupBy('survey.start_date')
       .groupBy('survey.end_date')
@@ -672,11 +644,8 @@ export class SurveyRepository extends BaseRepository {
     }
 
     if (filterFields?.system_user_id) {
-      queryBuilder.whereIn('p.project_id', (subQueryBuilder) => {
-        subQueryBuilder
-          .select('project_id')
-          .from('project_participation')
-          .where('system_user_id', filterFields?.system_user_id);
+      queryBuilder.whereIn('p.survey_id', (subQueryBuilder) => {
+        subQueryBuilder.select('survey_id').from('survey_member').where('system_user_id', filterFields?.system_user_id);
       });
     }
 
@@ -758,33 +727,6 @@ export class SurveyRepository extends BaseRepository {
   }
 
   /**
-   * Returns the total number of surveys belonging to the given project.
-   * @return {*}  {Promise<number>}
-   * @memberof SurveyService
-   */
-  async getSurveyCountByProjectId(projectId: number): Promise<number> {
-    const sqlStatement = SQL`
-      SELECT
-        COUNT(*)::integer AS count
-      FROM
-        survey
-      WHERE
-        project_id = ${projectId};
-    `;
-
-    const response = await this.connection.sql(sqlStatement, z.object({ count: z.number() }));
-
-    if (!response.rowCount) {
-      throw new ApiExecuteSQLError('Failed to get survey count', [
-        'SurveyRepository->getSurveyCountByProjectId',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
-
-    return response.rows[0].count;
-  }
-
-  /**
    * Inserts a new survey record and returns the new ID
    * @param {PostSurveyObject} surveyData
    * @returns {*} Promise<number>
@@ -793,14 +735,12 @@ export class SurveyRepository extends BaseRepository {
   async insertSurveyData(surveyData: PostSurveyObject): Promise<number> {
     const sqlStatement = SQL`
       INSERT INTO survey (
-        project_id,
         name,
         start_date,
         end_date,
         progress_id,
         additional_details
       ) VALUES (
-        ${projectId},
         ${surveyData.survey_details.survey_name},
         ${surveyData.survey_details.start_date},
         ${surveyData.survey_details.end_date},
@@ -1012,8 +952,6 @@ export class SurveyRepository extends BaseRepository {
         permit
       SET
         survey_id = ${surveyId}
-      WHERE
-        project_id = ${projectId}
       AND
         number = ${permitNumber};
     `;
@@ -1049,13 +987,11 @@ export class SurveyRepository extends BaseRepository {
     const sqlStatement = SQL`
     INSERT INTO permit (
       system_user_id,
-      project_id,
       survey_id,
       number,
       type
     ) VALUES (
       ${systemUserId},
-      ${projectId},
       ${surveyId},
       ${permitNumber},
       ${permitType}
@@ -1063,8 +999,6 @@ export class SurveyRepository extends BaseRepository {
     ON CONFLICT (number) DO
     UPDATE SET
       survey_id = ${surveyId}
-    WHERE
-      permit.project_id = ${projectId}
     AND
       permit.survey_id is NULL;
   `;

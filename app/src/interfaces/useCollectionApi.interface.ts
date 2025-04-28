@@ -62,7 +62,7 @@ export interface ICollectionParticipant {
 }
 
 export interface IGetProjectParticipant {
-  project_participation_id: number;
+  survey_member_id: number;
   system_user_id: number;
   identity_source: string;
   user_identifier: string;

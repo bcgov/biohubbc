@@ -16,7 +16,7 @@ import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { ProjectRoleGuard } from 'components/security/Guards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import { SURVEY_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
+import { SURVEY_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
@@ -149,7 +149,7 @@ const SurveysListPage = () => {
         <Stack gap={1} direction="row">
           <HelpButtonDialog markdownType={MarkdownTypeNameEnum.SURVEYS} />
           <ProjectRoleGuard
-            validProjectPermissions={[SURVEY_PERMISSION.COORDINATOR, SURVEY_PERMISSION.COLLABORATOR]}
+            validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
             validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
             <Button
               variant="contained"

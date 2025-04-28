@@ -1,4 +1,4 @@
-import { SURVEY_PERMISSION, SURVEY_ROLE, SYSTEM_ROLE } from 'constants/roles';
+import { SURVEY_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { SurveyAuthStateContext } from 'contexts/surveyAuthStateContext';
 import { useAuthStateContext } from 'hooks/useAuthStateContext';
 import { useConfigContext } from 'hooks/useContext';
@@ -43,10 +43,10 @@ export interface IProjectRoleGuardProps extends IGuardProps {
 
   /**
    * An array of valid project permissions. The user must have 1 or more matching permissions to pass the guard
-   * @type {SURVEY_PERMISSION[]}
+   * @type {SURVEY_ROLE[]}
    * @memberof IProjectRoleGuardProps
    */
-  validProjectPermissions: SURVEY_PERMISSION[];
+  validSurveyRoles: SURVEY_ROLE[];
 }
 
 export interface IFeatureFlagGuardProps extends IGuardProps {
@@ -89,12 +89,12 @@ export const SystemRoleGuard = (props: PropsWithChildren<ISystemRoleGuardProps>)
  * @return {*}
  */
 export const ProjectRoleGuard = (props: PropsWithChildren<IProjectRoleGuardProps>) => {
-  const { validProjectRoles, validSystemRoles, validProjectPermissions } = props;
+  const { validProjectRoles, validSystemRoles, validSurveyRoles } = props;
   const surveyAuthStateContext = useContext(SurveyAuthStateContext);
 
   const hasSystemRole = surveyAuthStateContext.hasSystemRole(validSystemRoles);
   const hasSurveyRole = surveyAuthStateContext.hasSurveyRole(validProjectRoles);
-  const hasSurveyPermissions = surveyAuthStateContext.hasSurveyPermission(validProjectPermissions);
+  const hasSurveyPermissions = surveyAuthStateContext.hasSurveyPermission(validSurveyRoles);
 
   if (hasSystemRole || hasSurveyRole || hasSurveyPermissions) {
     return <>{props.children}</>;

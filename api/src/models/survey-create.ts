@@ -1,7 +1,12 @@
+import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
+import { SURVEY_ROLE } from '../constants/roles';
 import { SurveyStratum } from '../repositories/site-selection-strategy-repository';
 import { PostSurveyBlock } from '../repositories/survey-block-repository';
 import { ITaxonomyWithEcologicalUnits } from '../services/platform-service';
+import { getLogger } from '../utils/logger';
 import { PostSurveyLocationData } from './survey-update';
+
+const defaultLog = getLogger('models/survey-create');
 
 export class PostSurveyObject {
   survey_details: PostSurveyDetailsData;
@@ -47,7 +52,7 @@ export class PostSiteSelectionData {
 }
 
 /**
- * Processes POST /project partnerships data
+ * Processes POST /survey partnerships data
  *
  * @export
  * @class PostPartnershipsData
@@ -147,4 +152,30 @@ export class PostAgreementsData {
     this.foippa_requirements_accepted = obj?.foippa_requirements_accepted === 'true' || false;
     this.sedis_procedures_accepted = obj?.sedis_procedures_accepted === 'true' || false;
   }
+}
+
+export class PostMembersData {
+  systemUserId: number;
+  userIdentifier: string;
+  identitySource: SYSTEM_IDENTITY_SOURCE;
+  displayName: string;
+  email: string;
+  roleId: number;
+
+  constructor(obj?: any) {
+    defaultLog.debug({ label: 'PostMembersData', message: 'params', obj });
+
+    this.systemUserId = obj?.systemUserId || null;
+    this.userIdentifier = obj?.userIdentifier || null;
+    this.identitySource = obj?.identitySource || null;
+    this.displayName = obj?.displayName || null;
+    this.email = obj?.email || null;
+    this.roleId = obj?.roleId || null;
+  }
+}
+
+export interface PostMemberData {
+  survey_member_id?: number;
+  system_user_id: number;
+  survey_role_names: SURVEY_ROLE[];
 }
