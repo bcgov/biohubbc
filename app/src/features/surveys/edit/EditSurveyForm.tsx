@@ -15,6 +15,7 @@ import SurveyPartnershipsForm, {
 import { Formik, FormikProps } from 'formik';
 import { ICreateSurveyRequest, IUpdateSurveyRequest } from 'interfaces/useSurveyApi.interface';
 import React, { useContext, useEffect } from 'react';
+import yup from 'utils/YupSchema';
 import AgreementsForm, { AgreementsYupSchema } from '../components/agreements/AgreementsForm';
 import { ProprietaryDataYupSchema } from '../components/agreements/ProprietaryDataForm';
 import SurveyFundingSourceForm, {
@@ -31,7 +32,6 @@ import PurposeAndMethodologyForm, {
 import SurveyUserForm, { SurveyUserJobYupSchema } from '../components/participants/SurveyUserForm';
 import { SurveySiteSelectionYupSchema } from '../components/sampling-strategy/SurveySiteSelectionForm';
 import SpeciesForm, { SpeciesYupSchema } from '../components/species/SpeciesForm';
-import { CollectionSurveyYupSchema } from '../view/collection/CreateCollectionSurveyDialog';
 import CollectionSurveyForm from '../view/collection/form/CollectionSurveyForm';
 
 interface IEditSurveyForm<
@@ -74,7 +74,11 @@ const EditSurveyForm = <
     .concat(PurposeAndMethodologyYupSchema)
     .concat(ProprietaryDataYupSchema)
     .concat(SurveyFundingSourceFormYupSchema)
-    .concat(CollectionSurveyYupSchema)
+    .concat(
+      yup.object({
+        collections: yup.array(yup.object({ collection_id: yup.number().required('Collection is required') }))
+      })
+    )
     .concat(AgreementsYupSchema)
     .concat(SurveyUserJobYupSchema)
     .concat(SurveyLocationYupSchema)
