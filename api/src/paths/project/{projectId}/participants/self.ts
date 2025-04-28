@@ -84,7 +84,7 @@ export function getSelf(): RequestHandler {
 
       const projectParticipationService = new ProjectParticipationService(connection);
 
-      const result = await projectParticipationService.getProjectParticipant(projectId, systemUserId);
+      const result = await projectParticipationService.getProjectParticipant(systemUserId);
 
       await connection.commit();
 

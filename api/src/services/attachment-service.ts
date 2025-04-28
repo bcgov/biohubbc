@@ -86,7 +86,7 @@ export class AttachmentService extends DBService {
 
   /**
    * Finds all of the project attachments for the given project ID.
-   * @param {number} projectId the ID of the project
+    the ID of the project
    * @return {Promise<IProjectAttachment[]>} Promise resolving all project attachments.
    * @memberof AttachmentService
    */
@@ -96,24 +96,24 @@ export class AttachmentService extends DBService {
 
   /**
    * Finds a project attachment having the given project ID and attachment ID
-   * @param {number} projectId the ID of the project
+    the ID of the project
    * @param {number} attachmentId the ID of the attachment
    * @return {Promise<IProjectAttachment>} Promise resolving the given project attachment
    * @memberof AttachmentService
    */
-  async getProjectAttachmentById(projectId: number, attachmentId: number): Promise<IProjectAttachment> {
-    return this.attachmentRepository.getProjectAttachmentById(projectId, attachmentId);
+  async getProjectAttachmentById( attachmentId: number): Promise<IProjectAttachment> {
+    return this.attachmentRepository.getProjectAttachmentById( attachmentId);
   }
 
   /**
    * Finds an array of project attachments having the given project ID and attachment IDs
-   * @param {number} projectId the ID of the project
+    the ID of the project
    * @param {number[]} attachmentIds the IDs of the attachments
    * @return {Promise<IProjectAttachment[]>} The given project attachments
    * @memberof AttachmentService
    */
-  async getProjectAttachmentsByIds(projectId: number, attachmentIds: number[]): Promise<IProjectAttachment[]> {
-    return this.attachmentRepository.getProjectAttachmentsByIds(projectId, attachmentIds);
+  async getProjectAttachmentsByIds( attachmentIds: number[]): Promise<IProjectAttachment[]> {
+    return this.attachmentRepository.getProjectAttachmentsByIds( attachmentIds);
   }
 
   /**
@@ -128,7 +128,7 @@ export class AttachmentService extends DBService {
 
   /**
    * Finds all of the project report attachments for the given project ID.
-   * @param {number} projectId the ID of the project
+    the ID of the project
    * @return {Promise<IProjectReportAttachment[]>} Promise resolving all project report attachments.
    * @memberof AttachmentService
    */
@@ -138,7 +138,7 @@ export class AttachmentService extends DBService {
 
   /**
    * Finds a project report attachment having the given project ID and report attachment ID
-   * @param {number} projectId the ID of the project
+    the ID of the project
    * @param {number} reportAttachmentId the ID of the report attachment
    * @return {Promise<IProjectReportAttachment>} Promise resolving the given project report attachment
    * @memberof AttachmentService
@@ -147,12 +147,12 @@ export class AttachmentService extends DBService {
     projectId: number,
     reportAttachmentId: number
   ): Promise<IProjectReportAttachment> {
-    return this.attachmentRepository.getProjectReportAttachmentById(projectId, reportAttachmentId);
+    return this.attachmentRepository.getProjectReportAttachmentById( reportAttachmentId);
   }
 
   /**
    * Finds project report attachments having the given project ID and report attachment IDs
-   * @param {number} projectId the ID of the project
+    the ID of the project
    * @param {number[]} reportAttachmentIds the IDs of the report attachments
    * @return {Promise<IProjectReportAttachment[]>} The given project report attachments
    * @memberof AttachmentService
@@ -161,7 +161,7 @@ export class AttachmentService extends DBService {
     projectId: number,
     reportAttachmentIds: number[]
   ): Promise<IProjectReportAttachment[]> {
-    return this.attachmentRepository.getProjectReportAttachmentsByIds(projectId, reportAttachmentIds);
+    return this.attachmentRepository.getProjectReportAttachmentsByIds( reportAttachmentIds);
   }
 
   /**
@@ -319,7 +319,7 @@ export class AttachmentService extends DBService {
    *Insert Project Attachment
    *
    * @param {Express.Multer.File} file
-   * @param {number} projectId
+   
    * @param {string} attachmentType
    * @param {string} key
    * @return {*}  {Promise<{ id: number; revision_count: number }>}
@@ -331,14 +331,14 @@ export class AttachmentService extends DBService {
     attachmentType: string,
     key: string
   ): Promise<{ project_attachment_id: number; revision_count: number }> {
-    return this.attachmentRepository.insertProjectAttachment(file, projectId, attachmentType, key);
+    return this.attachmentRepository.insertProjectAttachment(file, attachmentType, key);
   }
 
   /**
    * Update Project Attachment
    *
    * @param {string} fileName
-   * @param {number} projectId
+   
    * @param {string} attachmentType
    * @return {*}  {Promise<{ id: number; revision_count: number }>}
    * @memberof AttachmentService
@@ -348,26 +348,26 @@ export class AttachmentService extends DBService {
     projectId: number,
     attachmentType: string
   ): Promise<{ project_attachment_id: number; revision_count: number }> {
-    return this.attachmentRepository.updateProjectAttachment(fileName, projectId, attachmentType);
+    return this.attachmentRepository.updateProjectAttachment(fileName, attachmentType);
   }
 
   /**
    * Get Project Attachment by filename
    *
    * @param {string} fileName
-   * @param {number} projectId
+   
    * @return {*}  {Promise<QueryResult>}
    * @memberof AttachmentService
    */
-  async getProjectAttachmentByFileName(fileName: string, projectId: number): Promise<QueryResult> {
-    return this.attachmentRepository.getProjectAttachmentByFileName(projectId, fileName);
+  async getProjectAttachmentByFileName(fileName: string: number): Promise<QueryResult> {
+    return this.attachmentRepository.getProjectAttachmentByFileName( fileName);
   }
 
   /**
    * Update or Insert Project Attachment
    *
    * @param {Express.Multer.File} file
-   * @param {number} projectId
+   
    * @param {string} attachmentType
    * @return {*}  {Promise<{ id: number; revision_count: number; key: string }>}
    * @memberof AttachmentService
@@ -379,16 +379,16 @@ export class AttachmentService extends DBService {
   ): Promise<{ project_attachment_id: number; revision_count: number; key: string }> {
     const key = generateS3FileKey({ projectId: projectId, fileName: file.originalname });
 
-    const getResponse = await this.getProjectAttachmentByFileName(file.originalname, projectId);
+    const getResponse = await this.getProjectAttachmentByFileName(file.originalname);
 
     let attachmentResult: { project_attachment_id: number; revision_count: number };
 
     if (getResponse && getResponse.rowCount) {
       // Existing attachment with matching name found, update it
-      attachmentResult = await this.updateProjectAttachment(file.originalname, projectId, attachmentType);
+      attachmentResult = await this.updateProjectAttachment(file.originalname, attachmentType);
     } else {
       // No matching attachment found, insert new attachment
-      attachmentResult = await this.insertProjectAttachment(file, projectId, attachmentType, key);
+      attachmentResult = await this.insertProjectAttachment(file, attachmentType, key);
     }
 
     return { ...attachmentResult, key };
@@ -399,7 +399,7 @@ export class AttachmentService extends DBService {
    *
    * @param {string} fileName
    * @param {string} fileSize
-   * @param {number} projectId
+   
    * @param {PostReportAttachmentMetadata} attachmentMeta
    * @param {string} key
    * @return {*}  {Promise<{ id: number; revision_count: number }>}
@@ -412,14 +412,14 @@ export class AttachmentService extends DBService {
     attachmentMeta: PostReportAttachmentMetadata,
     key: string
   ): Promise<{ project_report_attachment_id: number; revision_count: number }> {
-    return this.attachmentRepository.insertProjectReportAttachment(fileName, fileSize, projectId, attachmentMeta, key);
+    return this.attachmentRepository.insertProjectReportAttachment(fileName, fileSize, attachmentMeta, key);
   }
 
   /**
    * Update Project Report Attachment
    *
    * @param {string} fileName
-   * @param {number} projectId
+   
    * @param {PutReportAttachmentMetadata} attachmentMeta
    * @return {*}  {Promise<{ id: number; revision_count: number }>}
    * @memberof AttachmentService
@@ -429,7 +429,7 @@ export class AttachmentService extends DBService {
     projectId: number,
     attachmentMeta: PutReportAttachmentMetadata
   ): Promise<{ project_report_attachment_id: number; revision_count: number }> {
-    return this.attachmentRepository.updateProjectReportAttachment(fileName, projectId, attachmentMeta);
+    return this.attachmentRepository.updateProjectReportAttachment(fileName, attachmentMeta);
   }
 
   /**
@@ -460,14 +460,12 @@ export class AttachmentService extends DBService {
 
   /**
    * Get Project Report Attachment by Filename
-   *
-   * @param {number} projectId
    * @param {string} fileName
    * @return {*}  {Promise<QueryResult>}
    * @memberof AttachmentService
    */
-  async getProjectReportAttachmentByFileName(projectId: number, fileName: string): Promise<QueryResult> {
-    return this.attachmentRepository.getProjectReportAttachmentByFileName(projectId, fileName);
+  async getProjectReportAttachmentByFileName( fileName: string): Promise<QueryResult> {
+    return this.attachmentRepository.getProjectReportAttachmentByFileName( fileName);
   }
 
   async upsertProjectReportAttachment(
@@ -477,7 +475,7 @@ export class AttachmentService extends DBService {
   ): Promise<{ project_report_attachment_id: number; revision_count: number; key: string }> {
     const key = generateS3FileKey({ projectId: projectId, fileName: file.originalname, folder: 'reports' });
 
-    const getResponse = await this.getProjectReportAttachmentByFileName(projectId, file.originalname);
+    const getResponse = await this.getProjectReportAttachmentByFileName( file.originalname);
 
     let metadata: any;
     let attachmentResult: { project_report_attachment_id: number; revision_count: number };
@@ -485,7 +483,7 @@ export class AttachmentService extends DBService {
     if (getResponse && getResponse.rowCount) {
       // Existing attachment with matching name found, update it
       metadata = new PutReportAttachmentMetadata(attachmentMeta);
-      attachmentResult = await this.updateProjectReportAttachment(file.originalname, projectId, metadata);
+      attachmentResult = await this.updateProjectReportAttachment(file.originalname, metadata);
     } else {
       // No matching attachment found, insert new attachment
       metadata = new PostReportAttachmentMetadata(attachmentMeta);
@@ -516,32 +514,26 @@ export class AttachmentService extends DBService {
 
   /**
    * Get Project Attachment S3 Key
-   *
-   * @param {number} projectId
    * @param {number} attachmentId
    * @return {*}  {Promise<string>}
    * @memberof AttachmentService
    */
-  async getProjectAttachmentS3Key(projectId: number, attachmentId: number): Promise<string> {
-    return this.attachmentRepository.getProjectAttachmentS3Key(projectId, attachmentId);
+  async getProjectAttachmentS3Key( attachmentId: number): Promise<string> {
+    return this.attachmentRepository.getProjectAttachmentS3Key( attachmentId);
   }
 
   /**
    * Get Project Report Attachment S3 Key
-   *
-   * @param {number} projectId
    * @param {number} attachmentId
    * @return {*}  {Promise<string>}
    * @memberof AttachmentService
    */
-  async getProjectReportAttachmentS3Key(projectId: number, attachmentId: number): Promise<string> {
-    return this.attachmentRepository.getProjectReportAttachmentS3Key(projectId, attachmentId);
+  async getProjectReportAttachmentS3Key( attachmentId: number): Promise<string> {
+    return this.attachmentRepository.getProjectReportAttachmentS3Key( attachmentId);
   }
 
   /**
    * Update Project Report Attachment Metadata
-   *
-   * @param {number} projectId
    * @param {number} attachmentId
    * @param {PutReportAttachmentMetadata} metadata
    * @return {*}  {Promise<void>}
@@ -552,7 +544,7 @@ export class AttachmentService extends DBService {
     attachmentId: number,
     metadata: PutReportAttachmentMetadata
   ): Promise<void> {
-    return this.attachmentRepository.updateProjectReportAttachmentMetadata(projectId, attachmentId, metadata);
+    return this.attachmentRepository.updateProjectReportAttachmentMetadata( attachmentId, metadata);
   }
 
   /**
@@ -657,7 +649,7 @@ export class AttachmentService extends DBService {
    * Upsert Survey Report Attachment
    *
    * @param {Express.Multer.File} file
-   * @param {number} projectId
+   
    * @param {number} surveyId
    * @param {*} attachmentMeta
    * @return {*}  {Promise<{ survey_report_attachment_id: number; revision_count: number; key: string }>}
@@ -831,7 +823,7 @@ export class AttachmentService extends DBService {
    * Upsert Survey Attachment
    *
    * @param {Express.Multer.File} file
-   * @param {number} projectId
+   
    * @param {number} surveyId
    * @param {string} attachmentType
    * @return {*}  {Promise<{ survey_attachment_id: number; revision_count: number; key: string }>}
@@ -875,26 +867,24 @@ export class AttachmentService extends DBService {
    *
    * If attachment was published and user is admin:
    * - delete from Platform
-   *
-   * @param {number} projectId
    * @param {number} attachmentId
    * @param {string} attachmentType
    * @return {*}  {Promise<void>}
    * @memberof AttachmentService
    */
-  async deleteProjectAttachment(projectId: number, attachmentId: number, attachmentType: string): Promise<void> {
+  async deleteProjectAttachment( attachmentId: number, attachmentType: string): Promise<void> {
     let attachment: IProjectAttachment | IProjectReportAttachment | null;
 
     if (attachmentType === ATTACHMENT_TYPE.REPORT) {
       // Get the attachment
-      attachment = await this.getProjectReportAttachmentById(projectId, attachmentId);
+      attachment = await this.getProjectReportAttachmentById( attachmentId);
 
       // Delete the authors, and attachment
       await this.deleteProjectReportAttachmentAuthors(attachmentId);
       await this._deleteProjectReportAttachmentRecord(attachmentId);
     } else {
       // Get the attachment
-      attachment = await this.getProjectAttachmentById(projectId, attachmentId);
+      attachment = await this.getProjectAttachmentById( attachmentId);
 
       // Delete the attachment
       await this._deleteProjectAttachmentRecord(attachmentId);
@@ -1046,7 +1036,7 @@ export class AttachmentService extends DBService {
    * Upsert survey telemetry credential attachment record.
    *
    * @param {Express.Multer.File} file
-   * @param {number} projectId
+   
    * @param {number} surveyId
    * @param {string} attachmentType
    * @return {*}  {Promise<IResponseTelemetryCredentialAttachment>}

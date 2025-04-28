@@ -246,7 +246,7 @@ export function postProjectParticipants(): RequestHandler {
       const projectParticipationService = new ProjectParticipationService(connection);
 
       const promises: Promise<any>[] = participants.map((participant) => {
-        return projectParticipationService.ensureSystemUserAndProjectParticipantUser(projectId, {
+        return projectParticipationService.ensureSystemUserAndProjectParticipantUser({
           ...participant,
           userGuid: null
         });

@@ -26,8 +26,6 @@ export class ProjectParticipationService extends DBService {
 
   /**
    * Gets the project participant, adding them if they do not already exist.
-   *
-   * @param {number} projectId
    * @param {number} systemUserId
    * @param {number} projectParticipantRoleId
    * @return {*}  {Promise<void>}
@@ -38,7 +36,7 @@ export class ProjectParticipationService extends DBService {
     systemUserId: number,
     projectParticipantRoleId: number
   ): Promise<void> {
-    const projectParticipantRecord = await this.getProjectParticipant(projectId, systemUserId);
+    const projectParticipantRecord = await this.getProjectParticipant(systemUserId);
 
     if (projectParticipantRecord) {
       // project participant already exists, do nothing
@@ -46,13 +44,11 @@ export class ProjectParticipationService extends DBService {
     }
 
     // add new project participant record
-    await this.postProjectParticipant(projectId, systemUserId, projectParticipantRoleId);
+    await this.postProjectParticipant(systemUserId, projectParticipantRoleId);
   }
 
   /**
    * Adds a project participant to the project.
-   *
-   * @param {number} projectId
    * @param {(IParticipant & { userGuid: string | null })} participant
    * @memberof ProjectParticipationService
    */
@@ -70,29 +66,25 @@ export class ProjectParticipationService extends DBService {
     );
 
     // Add project role, unless they already have one
-    await this.ensureProjectParticipant(projectId, systemUserObject.system_user_id, participant.roleId);
+    await this.ensureProjectParticipant(systemUserObject.system_user_id, participant.roleId);
   }
 
   /**
    * Adds multiple project participants to the project.
-   *
-   * @param {number} projectId
    * @param {IInsertProjectParticipant[]} participants
    * @return {*}  {Promise<void[]>}
    * @memberof ProjectParticipationService
    */
-  async postProjectParticipants(projectId: number, participants: PostParticipantData[]): Promise<void[]> {
+  async postProjectParticipants(participants: PostParticipantData[]): Promise<void[]> {
     return Promise.all(
       participants.map((participant) =>
-        this.postProjectParticipant(projectId, participant.system_user_id, participant.project_role_names[0])
+        this.postProjectParticipant(participant.system_user_id, participant.project_role_names[0])
       )
     );
   }
 
   /**
    * Deletes a project participation record.
-   *
-   * @param {number} projectId
    * @param {number} projectParticipationId
    * @return {*}  {Promise<ProjectParticipationRecord>}
    * @memberof ProjectParticipationService
@@ -101,13 +93,11 @@ export class ProjectParticipationService extends DBService {
     projectId: number,
     projectParticipationId: number
   ): Promise<ProjectParticipationRecord> {
-    return this.projectParticipationRepository.deleteProjectParticipationRecord(projectId, projectParticipationId);
+    return this.projectParticipationRepository.deleteProjectParticipationRecord(projectParticipationId);
   }
 
   /**
    * Get the project participant for the given project id and system user.
-   *
-   * @param {number} projectId
    * @param {number} systemUserId
    * @return {*}  {(Promise<(ProjectUser & SystemUserWithRoles) | null>)}
    * @memberof ProjectParticipationService
@@ -116,13 +106,11 @@ export class ProjectParticipationService extends DBService {
     projectId: number,
     systemUserId: number
   ): Promise<(ProjectUser & SystemUserWithRoles) | null> {
-    return this.projectParticipationRepository.getProjectParticipant(projectId, systemUserId);
+    return this.projectParticipationRepository.getProjectParticipant(systemUserId);
   }
 
   /**
    * Get the project participant for the given project and user guid.
-   *
-   * @param {number} projectId
    * @param {number} userGuid
    * @return {*}  {(Promise<(ProjectUser & SystemUserWithRoles) | null>)}
    * @memberof ProjectParticipationService
@@ -131,7 +119,7 @@ export class ProjectParticipationService extends DBService {
     projectId: number,
     userGuid: string
   ): Promise<(ProjectUser & SystemUserWithRoles) | null> {
-    return this.projectParticipationRepository.getProjectParticipantByProjectIdAndUserGuid(projectId, userGuid);
+    return this.projectParticipationRepository.getProjectParticipantByProjectIdAndUserGuid(userGuid);
   }
 
   /**
@@ -151,8 +139,6 @@ export class ProjectParticipationService extends DBService {
 
   /**
    * Gets the project participants for the given project.
-   *
-   * @param {number} projectId
    * @return {*}  {(Promise<(ProjectUser & SystemUserWithRoles)[]>)}
    * @memberof ProjectParticipationService
    */
@@ -162,8 +148,6 @@ export class ProjectParticipationService extends DBService {
 
   /**
    * Adds a project participant to the project.
-   *
-   * @param {number} projectId
    * @param {number} systemUserId
    * @param {(number | string)} projectParticipantRole
    * @return {*}  {Promise<void>}
@@ -174,7 +158,7 @@ export class ProjectParticipationService extends DBService {
     systemUserId: number,
     projectParticipantRole: number | string
   ): Promise<void> {
-    return this.projectParticipationRepository.postProjectParticipant(projectId, systemUserId, projectParticipantRole);
+    return this.projectParticipationRepository.postProjectParticipant(systemUserId, projectParticipantRole);
   }
 
   /**
@@ -363,14 +347,12 @@ export class ProjectParticipationService extends DBService {
 
   /**
    * Updates existing participants, deletes those participants not in the incoming list, and inserts new participants.
-   *
-   * @param {number} projectId
    * @param {PostParticipantData[]} incomingParticipants
    * @return {*}  {Promise<void>}
    * @throws ApiGeneralError If no participant has a coordinator role or if any participant has multiple roles.
    * @memberof ProjectParticipationService
    */
-  async upsertProjectParticipantData(projectId: number, incomingParticipants: PostParticipantData[]): Promise<void> {
+  async upsertProjectParticipantData(incomingParticipants: PostParticipantData[]): Promise<void> {
     // Confirm that at least one participant has a coordinator role
     if (!this._doProjectParticipantsHaveARole(incomingParticipants, PROJECT_ROLE.COORDINATOR)) {
       throw new ApiGeneralError(

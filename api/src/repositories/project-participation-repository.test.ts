@@ -80,10 +80,9 @@ describe('ProjectParticipationRepository', () => {
 
       const repository = new ProjectParticipationRepository(dbConnection);
 
-      const projectId = 1;
       const userGuid = '123-456-789';
 
-      const response = await repository.getProjectParticipantByProjectIdAndUserGuid(projectId, userGuid);
+      const response = await repository.getProjectParticipantByProjectIdAndUserGuid(userGuid);
 
       expect(response).to.eql({ user_guid: '123-456-789' });
     });
@@ -94,10 +93,9 @@ describe('ProjectParticipationRepository', () => {
 
       const repository = new ProjectParticipationRepository(dbConnection);
 
-      const projectId = 1;
       const userGuid = '123-456-789';
 
-      const response = await repository.getProjectParticipantByProjectIdAndUserGuid(projectId, userGuid);
+      const response = await repository.getProjectParticipantByProjectIdAndUserGuid(userGuid);
 
       expect(response).to.eql(null);
     });

@@ -151,7 +151,7 @@ export class AuthorizationService extends DBService {
   async authorizeByProjectPermission(authorizeProjectPermission: AuthorizeByProjectPermission): Promise<boolean> {
     if (
       !authorizeProjectPermission ||
-      (!authorizeProjectPermission.projectId && !authorizeProjectPermission.surveyId)
+      (!authorizeProjectPermission.!authorizeProjectPermission.surveyId)
     ) {
       // Cannot verify user permissions
       return false;
@@ -364,8 +364,6 @@ export class AuthorizationService extends DBService {
 
   /**
    * Fetch the user's project user object.
-   *
-   * @param {number} projectId
    * @return {*}  {(Promise<(ProjectUser & SystemUserWithRoles) | null>)}
    */
   async getProjectUserObjectByProjectId(projectId: number): Promise<(ProjectUser & SystemUserWithRoles) | null> {
@@ -386,8 +384,6 @@ export class AuthorizationService extends DBService {
 
   /**
    * Finds a single project user based on their keycloak token information.
-   *
-   * @param {number} projectId
    * @return {*}  {(Promise<(ProjectUser & SystemUserWithRoles) | null>)}
    */
   async getProjectUserWithRolesByProjectId(projectId: number): Promise<(ProjectUser & SystemUserWithRoles) | null> {
@@ -397,13 +393,11 @@ export class AuthorizationService extends DBService {
 
     const userGuid = getUserGuid(this._keycloakToken);
 
-    return this._projectParticipationService.getProjectParticipantByProjectIdAndUserGuid(projectId, userGuid);
+    return this._projectParticipationService.getProjectParticipantByProjectIdAndUserGuid( userGuid);
   }
 
   /**
    * Fetch the user's project user object.
-   *
-   * @param {number} projectId
    * @return {*}  {(Promise<(ProjectUser & SystemUserWithRoles) | null>)}
    */
   async getProjectUserObjectBySurveyId(surveyId: number): Promise<(ProjectUser & SystemUserWithRoles) | null> {

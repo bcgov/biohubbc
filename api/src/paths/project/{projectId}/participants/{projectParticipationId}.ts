@@ -115,10 +115,7 @@ export function putProjectParticipantRole(): RequestHandler {
       let projectHasLead = projectParticipationService.doAllProjectsHaveAProjectLead(projectParticipants);
 
       // Delete the user's old participation record, returning the old record
-      const result = await projectParticipationService.deleteProjectParticipationRecord(
-        projectId,
-        projectParticipationId
-      );
+      const result = await projectParticipationService.deleteProjectParticipationRecord(projectParticipationId);
 
       if (!result || !result.system_user_id) {
         // The delete result is missing necessary data, fail the request
@@ -126,7 +123,6 @@ export function putProjectParticipantRole(): RequestHandler {
       }
 
       await projectParticipationService.postProjectParticipant(
-        projectId,
         Number(result.system_user_id), // get the user's system id from the old participation record
         roleId
       );
@@ -247,10 +243,7 @@ export function deleteProjectParticipant(): RequestHandler {
 
       let projectHasLead = projectParticipationService.doAllProjectsHaveAProjectLead(projectParticipants);
 
-      const result = await projectParticipationService.deleteProjectParticipationRecord(
-        projectId,
-        projectParticipationId
-      );
+      const result = await projectParticipationService.deleteProjectParticipationRecord(projectParticipationId);
 
       if (!result || !result.system_user_id) {
         // The delete result is missing necessary data, fail the request

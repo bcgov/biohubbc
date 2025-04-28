@@ -142,7 +142,7 @@ describe('postProjectParticipants', () => {
     try {
       const result = create_project_participants.postProjectParticipants();
       await result(
-        { ...sampleReq, params: { ...sampleReq.params, projectId: null } },
+        { ...sampleReq, params: { ...sampleReq.params: null } },
         null as unknown as any,
         null as unknown as any
       );

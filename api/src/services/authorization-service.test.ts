@@ -1084,8 +1084,6 @@ describe('AuthorizationService', () => {
 
       const authorizationService = new AuthorizationService(mockDBConnection);
 
-      const projectId = 1;
-
       const projectUser = await authorizationService.getProjectUserObjectByProjectId(projectId);
 
       expect(projectUser).to.equal(null);
@@ -1098,8 +1096,6 @@ describe('AuthorizationService', () => {
       sinon.stub(AuthorizationService.prototype, 'getProjectUserWithRolesByProjectId').resolves(projectUserMock);
 
       const authorizationService = new AuthorizationService(mockDBConnection);
-
-      const projectId = 1;
 
       const projectUser = await authorizationService.getProjectUserObjectByProjectId(projectId);
 
@@ -1146,8 +1142,6 @@ describe('AuthorizationService', () => {
         }
       });
 
-      const projectId = 1;
-
       const projectUser = await authorizationService.getProjectUserObjectByProjectId(projectId);
 
       expect(projectUser).to.equal(projectUserMock);
@@ -1166,8 +1160,6 @@ describe('AuthorizationService', () => {
       const authorizationService = new AuthorizationService(mockDBConnection, {
         keycloakToken: undefined
       });
-
-      const projectId = 1;
 
       const result = await authorizationService.getProjectUserWithRolesByProjectId(projectId);
 
@@ -1216,8 +1208,6 @@ describe('AuthorizationService', () => {
         }
       });
 
-      const projectId = 1;
-
       const result = await authorizationService.getProjectUserWithRolesByProjectId(projectId);
 
       expect(result).to.equal(projectUserMock);
@@ -1238,8 +1228,6 @@ describe('AuthorizationService', () => {
 
       const authorizationService = new AuthorizationService(mockDBConnection);
 
-      const projectId = 1;
-
       const projectUser = await authorizationService.getProjectUserObjectBySurveyId(projectId);
 
       expect(projectUser).to.equal(null);
@@ -1252,8 +1240,6 @@ describe('AuthorizationService', () => {
       sinon.stub(AuthorizationService.prototype, 'getProjectUserWithRolesByProjectId').resolves(projectUserMock);
 
       const authorizationService = new AuthorizationService(mockDBConnection);
-
-      const projectId = 1;
 
       const projectUser = await authorizationService.getProjectUserObjectBySurveyId(projectId);
 
@@ -1300,8 +1286,6 @@ describe('AuthorizationService', () => {
         }
       });
 
-      const projectId = 1;
-
       const projectUser = await authorizationService.getProjectUserObjectBySurveyId(projectId);
 
       expect(projectUser).to.equal(projectUserMock);
@@ -1320,8 +1304,6 @@ describe('AuthorizationService', () => {
       const authorizationService = new AuthorizationService(mockDBConnection, {
         keycloakToken: undefined
       });
-
-      const projectId = 1;
 
       const result = await authorizationService.getProjectUserWithRolesBySurveyId(projectId);
 
@@ -1369,8 +1351,6 @@ describe('AuthorizationService', () => {
           family_name: 'lname'
         }
       });
-
-      const projectId = 1;
 
       const result = await authorizationService.getProjectUserWithRolesBySurveyId(projectId);
 

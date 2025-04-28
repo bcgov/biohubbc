@@ -274,8 +274,6 @@ export class SurveyRepository extends BaseRepository {
 
   /**
    * Get survey(s) for a given project id
-   *
-   * @param {number} projectId
    * @returns {*} {Promise<{id: number}[]>}
    * @memberof SurveyRepository
    */
@@ -582,8 +580,6 @@ export class SurveyRepository extends BaseRepository {
 
   /**
    * Fetches a subset of survey fields for all surveys under a project.
-   *
-   * @param {number} projectId
    * @param {ApiPaginationOptions} [pagination]
    * @return {*}  {Promise<Omit<SurveyBasicFields, 'focal_species_names'>[]>}
    * @memberof SurveyRepository
@@ -607,7 +603,7 @@ export class SurveyRepository extends BaseRepository {
       .from('survey')
       .leftJoin('study_species', 'study_species.survey_id', 'survey.survey_id')
       .leftJoin('survey_progress', 'survey_progress.survey_progress_id', 'survey.progress_id')
-      .where('survey.project_id', projectId)
+      .where('survey.project_id')
       .where('study_species.is_focal', true)
       .groupBy('survey.survey_id')
       .groupBy('survey.name')
@@ -764,8 +760,6 @@ export class SurveyRepository extends BaseRepository {
 
   /**
    * Returns the total number of surveys belonging to the given project.
-   *
-   * @param {number} projectId
    * @return {*}  {Promise<number>}
    * @memberof SurveyService
    */
@@ -793,13 +787,11 @@ export class SurveyRepository extends BaseRepository {
 
   /**
    * Inserts a new survey record and returns the new ID
-   *
-   * @param {number} projectId
    * @param {PostSurveyObject} surveyData
    * @returns {*} Promise<number>
    * @memberof SurveyRepository
    */
-  async insertSurveyData(projectId: number, surveyData: PostSurveyObject): Promise<number> {
+  async insertSurveyData(surveyData: PostSurveyObject): Promise<number> {
     const sqlStatement = SQL`
       INSERT INTO survey (
         project_id,
@@ -1010,14 +1002,12 @@ export class SurveyRepository extends BaseRepository {
 
   /**
    * Associated Survey to a particular permit
-   *
-   * @param {number} projectId
    * @param {number} surveyId
    * @param {number} permitNumber
    * @returns {*} Promise<void>
    * @memberof SurveyRepository
    */
-  async associateSurveyToPermit(projectId: number, surveyId: number, permitNumber: string): Promise<void> {
+  async associateSurveyToPermit(surveyId: number, permitNumber: string): Promise<void> {
     const sqlStatement = SQL`
       UPDATE
         permit
@@ -1043,7 +1033,7 @@ export class SurveyRepository extends BaseRepository {
    * Inserts or updates survey permit
    *
    * @param {number} systemUserId
-   * @param {number} projectId
+   
    * @param {number} surveyId
    * @param {string} permitNumber
    * @param {string} permitType

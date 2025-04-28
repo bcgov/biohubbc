@@ -85,8 +85,6 @@ export class ProjectService extends DBService {
 
   /**
    * Retrieves a single project by its ID.
-   *
-   * @param {number} projectId
    * @return {*}  {Promise<IGetProject>}
    * @memberof ProjectService
    */
@@ -106,7 +104,7 @@ export class ProjectService extends DBService {
     };
   }
 
-  async getProjectEntitiesById(projectId: number, entities: string[]): Promise<Partial<IGetProject>> {
+  async getProjectEntitiesById(entities: string[]): Promise<Partial<IGetProject>> {
     const results: Partial<IGetProject> = {
       project: undefined,
       objectives: undefined,
@@ -192,13 +190,13 @@ export class ProjectService extends DBService {
     promises.push(
       Promise.all(
         postProjectData.iucn.classificationDetails.map((classificationDetail: IPostIUCN) =>
-          this.insertClassificationDetail(classificationDetail.subClassification2, projectId)
+          this.insertClassificationDetail(classificationDetail.subClassification2)
         )
       )
     );
 
     //Handle project participants
-    promises.push(this.projectParticipationService.postProjectParticipants(projectId, postProjectData.participants));
+    promises.push(this.projectParticipationService.postProjectParticipants(postProjectData.participants));
 
     await Promise.all(promises);
 
@@ -230,57 +228,53 @@ export class ProjectService extends DBService {
 
   /**
    * Insert participation data.
-   *
-   * @param {number} projectId
    * @param {number} systemUserId
    * @param {string} projectParticipantRole
    * @return {*}  {Promise<void>}
    * @memberof ProjectService
    */
-  async postProjectParticipant(projectId: number, systemUserId: number, projectParticipantRole: string): Promise<void> {
-    return this.projectParticipationService.postProjectParticipant(projectId, systemUserId, projectParticipantRole);
+  async postProjectParticipant(systemUserId: number, projectParticipantRole: string): Promise<void> {
+    return this.projectParticipationService.postProjectParticipant(systemUserId, projectParticipantRole);
   }
 
   /**
    * Updates the project
-   *
-   * @param {number} projectId
    * @param {IUpdateProject} entities
    * @return {*}  {Promise<void>}
    * @memberof ProjectService
    */
-  async updateProject(projectId: number, entities: IUpdateProject): Promise<void> {
+  async updateProject(entities: IUpdateProject): Promise<void> {
     const promises: Promise<any>[] = [];
 
     if (entities?.project || entities?.objectives) {
-      promises.push(this.updateProjectData(projectId, entities));
+      promises.push(this.updateProjectData(entities));
     }
 
     if (entities?.iucn) {
-      promises.push(this.updateIUCNData(projectId, entities));
+      promises.push(this.updateIUCNData(entities));
     }
 
     if (entities?.participants) {
-      promises.push(this.projectParticipationService.upsertProjectParticipantData(projectId, entities.participants));
+      promises.push(this.projectParticipationService.upsertProjectParticipantData(entities.participants));
     }
 
     await Promise.all(promises);
   }
 
-  async updateIUCNData(projectId: number, entities: IUpdateProject): Promise<void> {
+  async updateIUCNData(entities: IUpdateProject): Promise<void> {
     const putIUCNData = (entities?.iucn && new PutIUCNData(entities.iucn)) || null;
 
     await this.projectRepository.deleteIUCNData(projectId);
 
     const insertIUCNPromises =
       putIUCNData?.classificationDetails?.map((iucnClassification: IPutIUCN) =>
-        this.insertClassificationDetail(iucnClassification.subClassification2, projectId)
+        this.insertClassificationDetail(iucnClassification.subClassification2)
       ) ?? [];
 
     await Promise.all(insertIUCNPromises);
   }
 
-  async updateProjectData(projectId: number, entities: IUpdateProject): Promise<void> {
+  async updateProjectData(entities: IUpdateProject): Promise<void> {
     const putProjectData = (entities?.project && new PutProjectData(entities.project)) || null;
     const putObjectivesData = (entities?.objectives && new PutObjectivesData(entities.objectives)) || null;
 
@@ -291,7 +285,7 @@ export class ProjectService extends DBService {
       throw new HTTP400('Failed to parse request body');
     }
 
-    await this.projectRepository.updateProjectData(projectId, putProjectData, putObjectivesData, revision_count);
+    await this.projectRepository.updateProjectData(putProjectData, putObjectivesData, revision_count);
   }
 
   async deleteProject(projectId: number): Promise<boolean | null> {

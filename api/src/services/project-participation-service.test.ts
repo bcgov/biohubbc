@@ -46,14 +46,13 @@ describe('ProjectParticipationService', () => {
 
       const addProjectParticipantStub = sinon.stub(ProjectParticipationService.prototype, 'postProjectParticipant');
 
-      const projectId = 1;
       const systemUserId = 1;
       const projectParticipantRoleId = 1;
 
       const projectParticipationService = new ProjectParticipationService(mockDBConnection);
 
       try {
-        await projectParticipationService.ensureProjectParticipant(projectId, systemUserId, projectParticipantRoleId);
+        await projectParticipationService.ensureProjectParticipant(systemUserId, projectParticipantRoleId);
       } catch (_actualError) {
         expect.fail();
       }
@@ -71,14 +70,13 @@ describe('ProjectParticipationService', () => {
 
       const addProjectParticipantStub = sinon.stub(ProjectParticipationService.prototype, 'postProjectParticipant');
 
-      const projectId = 1;
       const systemUserId = 1;
       const projectParticipantRoleId = 1;
 
       const projectParticipationService = new ProjectParticipationService(mockDBConnection);
 
       try {
-        await projectParticipationService.ensureProjectParticipant(projectId, systemUserId, projectParticipantRoleId);
+        await projectParticipationService.ensureProjectParticipant(systemUserId, projectParticipantRoleId);
       } catch (_actualError) {
         expect.fail();
       }
@@ -111,7 +109,6 @@ describe('ProjectParticipationService', () => {
         .stub(ProjectParticipationService.prototype, 'ensureProjectParticipant')
         .resolves();
 
-      const projectId = 1;
       const participant = {
         systemUserId: 11,
         userIdentifier: 'testuser',
@@ -124,7 +121,7 @@ describe('ProjectParticipationService', () => {
         userGuid: '123-456-789'
       };
 
-      await projectParticipationService.ensureSystemUserAndProjectParticipantUser(projectId, participant);
+      await projectParticipationService.ensureSystemUserAndProjectParticipantUser(participant);
 
       expect(ensureSystemUserStub).to.have.been.calledOnceWith(
         participant.userGuid,
@@ -133,7 +130,7 @@ describe('ProjectParticipationService', () => {
         participant.displayName,
         participant.email
       );
-      expect(ensureProjectParticipantStub).to.have.been.calledOnceWith(projectId, 11, 1);
+      expect(ensureProjectParticipantStub).to.have.been.calledOnceWith(11, 1);
     });
   });
 
@@ -142,7 +139,6 @@ describe('ProjectParticipationService', () => {
       const dbConnection = getMockDBConnection();
       const service = new ProjectParticipationService(dbConnection);
 
-      const projectId = 1;
       const participants: PostParticipantData[] = [
         {
           system_user_id: 11,
@@ -165,20 +161,17 @@ describe('ProjectParticipationService', () => {
         .stub(ProjectParticipationRepository.prototype, 'postProjectParticipant')
         .resolves();
 
-      await service.postProjectParticipants(projectId, participants);
+      await service.postProjectParticipants(participants);
 
       expect(postProjectParticipantStub).to.be.calledWith(
-        projectId,
         participants[0].system_user_id,
         participants[0].project_role_names[0]
       );
       expect(postProjectParticipantStub).to.be.calledWith(
-        projectId,
         participants[1].system_user_id,
         participants[1].project_role_names[0]
       );
       expect(postProjectParticipantStub).to.be.calledWith(
-        projectId,
         participants[2].system_user_id,
         participants[2].project_role_names[0]
       );
@@ -1047,7 +1040,6 @@ describe('ProjectParticipationService', () => {
       const dbConnection = getMockDBConnection();
       const service = new ProjectParticipationService(dbConnection);
 
-      const projectId = 1;
       const participants: PostParticipantData[] = [
         {
           system_user_id: 11,
@@ -1067,7 +1059,7 @@ describe('ProjectParticipationService', () => {
       ];
 
       try {
-        await service.upsertProjectParticipantData(projectId, participants);
+        await service.upsertProjectParticipantData(participants);
 
         expect.fail();
       } catch (actualError) {
@@ -1081,7 +1073,6 @@ describe('ProjectParticipationService', () => {
       const dbConnection = getMockDBConnection();
       const service = new ProjectParticipationService(dbConnection);
 
-      const projectId = 1;
       const participants: PostParticipantData[] = [
         {
           system_user_id: 11,
@@ -1169,14 +1160,14 @@ describe('ProjectParticipationService', () => {
         .stub(ProjectParticipationRepository.prototype, 'postProjectParticipant')
         .resolves();
 
-      await service.upsertProjectParticipantData(projectId, participants);
+      await service.upsertProjectParticipantData(participants);
 
       expect(getProjectParticipantsStub).to.have.been.calledOnceWith(projectId);
       expect(deleteProjectParticipationRecordStub).to.have.been.calledWith(1, 23);
       expect(updateProjectParticipationRoleStub).to.have.been.calledOnceWith(12, PROJECT_ROLE.COORDINATOR);
       expect(updateProjectParticipationRoleStub).to.not.have.been.calledWith(6, PROJECT_ROLE.COLLABORATOR);
-      expect(postProjectParticipantStub).to.not.have.been.calledWith(projectId, 6, PROJECT_ROLE.COLLABORATOR);
-      expect(postProjectParticipantStub).to.have.been.calledOnceWith(projectId, 44, PROJECT_ROLE.OBSERVER);
+      expect(postProjectParticipantStub).to.not.have.been.calledWith(6, PROJECT_ROLE.COLLABORATOR);
+      expect(postProjectParticipantStub).to.have.been.calledOnceWith(44, PROJECT_ROLE.OBSERVER);
     });
   });
 });

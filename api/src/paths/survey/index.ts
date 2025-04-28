@@ -14,7 +14,7 @@ import {
 } from '../../utils/pagination';
 import { getSystemUserFromRequest } from '../../utils/request';
 
-const defaultLog = getLogger('paths/survey/index');
+const defaultLog = getLogger('paths/project/{projectId}/survey/index');
 
 export const GET: Operation = [
   authorizeRequestHandler(() => {

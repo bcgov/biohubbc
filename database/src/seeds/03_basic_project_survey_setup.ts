@@ -85,7 +85,7 @@ export async function seed(knex: Knex): Promise<void> {
 
       // If the number of surveys that exists for this project is less than the target number of seed surveys
       for (let j = numberOfSurveys; j < NUM_SEED_SURVEYS_PER_PROJECT; j++) {
-        const createSurveyResponse = await knex.raw(insertSurveyData(projectId, faker.lorem.words(8)));
+        const createSurveyResponse = await knex.raw(insertSurveyData(faker.lorem.words(8)));
         const surveyId = createSurveyResponse.rows[0].survey_id;
 
         await knex.raw(`
@@ -413,7 +413,7 @@ const insertSurveyLocationData = (surveyId: number) => `
  * SQL to insert Survey data
  *
  */
-const insertSurveyData = (projectId: number, surveyName?: string) => `
+const insertSurveyData = (surveyName?: string) => `
   INSERT into survey
     (
       project_id,

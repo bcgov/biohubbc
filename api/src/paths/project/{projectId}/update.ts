@@ -188,19 +188,13 @@ export function getProjectForUpdate(): RequestHandler {
     const connection = getDBConnection(req.keycloak_token);
 
     try {
-      const projectId = Number(req.params?.projectId);
-
       const entities: string[] = (req.query?.entity as string[]) || getAllEntities();
-
-      if (!projectId) {
-        throw new HTTP400('Missing required path parameter: projectId');
-      }
 
       await connection.open();
 
       const projectService = new ProjectService(connection);
 
-      const results = await projectService.getProjectEntitiesById(projectId, entities);
+      const results = await projectService.getProjectEntitiesById(entities);
       await connection.commit();
 
       return res.status(200).send(results);
@@ -306,13 +300,7 @@ export function updateProject(): RequestHandler {
     const connection = getDBConnection(req.keycloak_token);
 
     try {
-      const projectId = Number(req.params?.projectId);
-
       const entities: IUpdateProject = req.body;
-
-      if (!projectId) {
-        throw new HTTP400('Missing required path parameter: projectId');
-      }
 
       if (!entities) {
         throw new HTTP400('Missing required request body');
@@ -321,7 +309,7 @@ export function updateProject(): RequestHandler {
       await connection.open();
 
       const projectService = new ProjectService(connection);
-      await projectService.updateProject(projectId, entities);
+      await projectService.updateProject(entities);
 
       await connection.commit();
 

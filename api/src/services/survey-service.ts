@@ -55,8 +55,6 @@ export class SurveyService extends DBService {
 
   /**
    * Get Survey IDs for a project ID
-   *
-   * @param {number} projectId
    * @returns {*} {Promise<{id: number}[]>}
    * @memberof SurveyService
    */
@@ -268,7 +266,7 @@ export class SurveyService extends DBService {
   /**
    * Get all surveys by their associated project ID.
    *
-   * @param {number} projectId the ID of the project
+    the ID of the project
    * @return {*}  {Promise<SurveyObject[]>} The associated surveys
    * @memberof SurveyService
    */
@@ -281,8 +279,6 @@ export class SurveyService extends DBService {
   /**
    * Fetches a subset of survey fields for a paginated list of surveys under
    * a given project.
-   *
-   * @param {number} projectId
    * @param {ApiPaginationOptions} [pagination]
    * @return {*}  {Promise<SurveyBasicFields[]>}
    * @memberof SurveyService
@@ -291,7 +287,7 @@ export class SurveyService extends DBService {
     projectId: number,
     pagination?: ApiPaginationOptions
   ): Promise<SurveyBasicFields[]> {
-    const surveys = await this.surveyRepository.getSurveysBasicFieldsByProjectId(projectId, pagination);
+    const surveys = await this.surveyRepository.getSurveysBasicFieldsByProjectId(pagination);
 
     // Build an array of all unique focal species ids from all surveys
     const uniqueFocalSpeciesIds = Array.from(
@@ -360,8 +356,6 @@ export class SurveyService extends DBService {
 
   /**
    * Returns the total number of surveys belonging to the given project.
-   *
-   * @param {number} projectId
    * @return {*}  {Promise<number>}
    * @memberof SurveyService
    */
@@ -409,14 +403,12 @@ export class SurveyService extends DBService {
 
   /**
    * Creates the survey
-   *
-   * @param {number} projectId
    * @param {PostSurveyObject} postSurveyData
    * @return {*}  {Promise<number>}
    * @memberof SurveyService
    */
-  async createSurvey(projectId: number, postSurveyData: PostSurveyObject): Promise<number> {
-    const surveyId = await this.insertSurveyData(projectId, postSurveyData);
+  async createSurvey(postSurveyData: PostSurveyObject): Promise<number> {
+    const surveyId = await this.insertSurveyData(postSurveyData);
 
     const promises: Promise<any>[] = [];
 
@@ -573,14 +565,12 @@ export class SurveyService extends DBService {
 
   /**
    * Inserts Survey data and returns new survey Id
-   *
-   * @param {number} projectId
    * @param {PostSurveyObject} surveyData
    * @returns {*} {Promise<number>}
    * @memberof SurveyService
    */
-  async insertSurveyData(projectId: number, surveyData: PostSurveyObject): Promise<number> {
-    return this.surveyRepository.insertSurveyData(projectId, surveyData);
+  async insertSurveyData(surveyData: PostSurveyObject): Promise<number> {
+    return this.surveyRepository.insertSurveyData(surveyData);
   }
 
   /**
@@ -653,7 +643,7 @@ export class SurveyService extends DBService {
    * Insert or update association of permit to a given survey
    *
    * @param {number} systemUserId
-   * @param {number} projectId
+   
    * @param {number} surveyId
    * @param {number} permitNumber
    * @param {number} permitType
@@ -668,9 +658,9 @@ export class SurveyService extends DBService {
     permitType: string
   ) {
     if (!permitType) {
-      return this.surveyRepository.associateSurveyToPermit(projectId, surveyId, permitNumber);
+      return this.surveyRepository.associateSurveyToPermit(surveyId, permitNumber);
     } else {
-      return this.surveyRepository.insertSurveyPermit(systemUserId, projectId, surveyId, permitNumber, permitType);
+      return this.surveyRepository.insertSurveyPermit(systemUserId, surveyId, permitNumber, permitType);
     }
   }
 

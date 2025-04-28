@@ -67,8 +67,6 @@ export type UserProjectParticipation = z.infer<typeof UserProjectParticipation>;
 export class ProjectParticipationRepository extends BaseRepository {
   /**
    *  Deletes a project participation record.
-   *
-   * @param {number} projectId
    * @param {number} projectParticipationId
    * @return {*}  {Promise<ProjectParticipationRecord>}
    * @memberof ProjectParticipationRepository
@@ -117,8 +115,6 @@ export class ProjectParticipationRepository extends BaseRepository {
   /**
    * Get a project user by project and system user id. Returns null if the system user is not a participant of the
    * project.
-   *
-   * @param {number} projectId
    * @param {number} systemUserId
    * @return {*}  {(Promise<(ProjectUser & SystemUserWithRoles) | null>)}
    * @memberof ProjectParticipationRepository
@@ -197,8 +193,6 @@ export class ProjectParticipationRepository extends BaseRepository {
   /**
    * Get a project user by project id and system user guid. Returns null if the system user is not a participant of the
    * project.
-   *
-   * @param {number} projectId
    * @param {string} userGuid
    * @return {*}  {(Promise<(ProjectUser & SystemUserWithRoles) | null>)}
    * @memberof ProjectParticipationRepository
@@ -241,7 +235,7 @@ export class ProjectParticipationRepository extends BaseRepository {
       .leftJoin('system_role as sr', 'sur.system_role_id', 'sr.system_role_id')
       .leftJoin('user_identity_source as uis', 'uis.user_identity_source_id', 'su.user_identity_source_id')
       .where('su.record_end_date', null)
-      .where('pp.project_id', projectId)
+      .where('pp.project_id')
       .where(knex.raw(`LOWER(su.user_guid) = LOWER('${userGuid}')`))
       .groupBy('su.system_user_id')
       .groupBy('su.record_end_date')
@@ -335,8 +329,6 @@ export class ProjectParticipationRepository extends BaseRepository {
 
   /**
    * Gets a list of project participants for a given project.
-   *
-   * @param {number} projectId
    * @return {*}  {(Promise<(ProjectUser & SystemUserWithRoles)[]>)}
    * @memberof ProjectParticipationRepository
    */
@@ -416,7 +408,7 @@ export class ProjectParticipationRepository extends BaseRepository {
   /**
    * Adds a project participant to the database.
    *
-   * @param {number} projectId The ID of the project.
+    The ID of the project.
    * @param {number} systemUserId The system ID of the user.
    * @param {(number | string)} projectParticipantRole The ID or Name of the role to assign.
    * @return {*}  {Promise<void>}
