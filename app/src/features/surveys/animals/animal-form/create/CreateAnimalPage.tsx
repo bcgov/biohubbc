@@ -13,7 +13,7 @@ import { AnimalFormContainer } from 'features/surveys/animals/animal-form/compon
 import { FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useAnimalPageContext, useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
+import { useAnimalPageContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { ICreateEditAnimalRequest } from 'interfaces/useCritterApi.interface';
@@ -42,7 +42,7 @@ export const CreateAnimalPage = () => {
   const critterbaseApi = useCritterbaseApi();
 
   const surveyContext = useSurveyContext();
-  const projectContext = useProjectContext();
+
   const dialogContext = useDialogContext();
   const animalPageContext = useAnimalPageContext();
 
@@ -52,10 +52,10 @@ export const CreateAnimalPage = () => {
 
   const formikRef = useRef<FormikProps<ICreateEditAnimalRequest>>(null);
 
-  const { projectId, surveyId } = surveyContext;
+  const { surveyId } = surveyContext;
 
   const handleCancel = () => {
-    history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals`);
+    history.push(`/admin/surveys/${surveyId}/animals`);
   };
 
   const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
@@ -86,7 +86,7 @@ export const CreateAnimalPage = () => {
         return;
       }
 
-      const response = await biohubApi.survey.createCritterAndAddToSurvey(projectId, surveyId, {
+      const response = await biohubApi.survey.createCritterAndAddToSurvey(surveyId, {
         critter_id: undefined,
         itis_tsn: values.species.tsn,
         wlh_id: undefined,
@@ -122,10 +122,10 @@ export const CreateAnimalPage = () => {
       });
 
       // Refresh the context, so the next page loads with the latest data
-      surveyContext.critterDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+      surveyContext.critterDataLoader.refresh(surveyContext.surveyId);
 
       skipUnsavedChangesDialog();
-      history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals`);
+      history.push(`/admin/surveys/${surveyId}/animals`);
     } catch (error) {
       const apiError = error as APIError;
       showCreateErrorDialog({
@@ -148,13 +148,10 @@ export const CreateAnimalPage = () => {
             <Link component={RouterLink} underline="hover" to={`/admin/projects/${projectId}/`}>
               {projectContext.projectDataLoader.data?.projectData.project.project_name}
             </Link>
-            <Link component={RouterLink} underline="hover" to={`/admin/projects/${projectId}/surveys/${surveyId}`}>
+            <Link component={RouterLink} underline="hover" to={`/admin/surveys/${surveyId}`}>
               {surveyContext.surveyDataLoader.data?.surveyData.survey_details.survey_name}
             </Link>
-            <Link
-              component={RouterLink}
-              underline="hover"
-              to={`/admin/projects/${projectId}/surveys/${surveyId}/animals`}>
+            <Link component={RouterLink} underline="hover" to={`/admin/surveys/${surveyId}/animals`}>
               Manage Animals
             </Link>
             <Typography variant="body2" component="span" color="textSecondary" aria-current="page">

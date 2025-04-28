@@ -24,12 +24,10 @@ interface ISurveySpatialObservationProps {
  */
 export const SurveySpatialObservation = (props: ISurveySpatialObservationProps) => {
   const surveyContext = useSurveyContext();
-  const { surveyId, projectId } = surveyContext;
+  const { surveyId } = surveyContext;
   const biohubApi = useBiohubApi();
 
-  const observationsGeometryDataLoader = useDataLoader(() =>
-    biohubApi.observation.getObservationsGeometry(projectId, surveyId)
-  );
+  const observationsGeometryDataLoader = useDataLoader(() => biohubApi.observation.getObservationsGeometry(surveyId));
 
   useEffect(() => {
     observationsGeometryDataLoader.load();

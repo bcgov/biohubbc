@@ -30,7 +30,7 @@ export const SurveySpatialContainer = (): JSX.Element => {
   const biohubApi = useBiohubApi();
 
   const observationsDataLoader = useDataLoader((pagination?: ApiPaginationRequestOptions) =>
-    biohubApi.observation.getFlattenedObservationRecords(surveyContext.projectId, surveyContext.surveyId, pagination)
+    biohubApi.observation.getFlattenedObservationRecords(surveyContext.surveyId, pagination)
   );
 
   const [activeView, setActiveView] = useState<SurveySpatialDatasetViewEnum>(SurveySpatialDatasetViewEnum.OBSERVATIONS);

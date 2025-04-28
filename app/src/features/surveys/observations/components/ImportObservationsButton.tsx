@@ -65,7 +65,7 @@ export const ImportObservationsButton = (props: IImportObservationsButtonProps) 
   const biohubApi = useBiohubApi();
 
   const surveyContext = useContext(SurveyContext);
-  const { projectId, surveyId } = surveyContext;
+  const { surveyId } = surveyContext;
 
   const [open, setOpen] = useState<boolean>(false);
 
@@ -82,7 +82,6 @@ export const ImportObservationsButton = (props: IImportObservationsButtonProps) 
       onStart?.();
 
       await biohubApi.observation.importObservationCSV({
-        projectId,
         surveyId,
         surveySamplePeriodId,
         file,

@@ -16,7 +16,7 @@ import {
 import { FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
+import { useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { ICreateTechniqueRequest } from 'interfaces/useTechniqueApi.interface';
 import { useRef, useState } from 'react';
@@ -44,7 +44,7 @@ export const CreateTechniquePage = () => {
   const biohubApi = useBiohubApi();
 
   const surveyContext = useSurveyContext();
-  const projectContext = useProjectContext();
+
   const dialogContext = useDialogContext();
 
   const { locationChangeInterceptor, skipUnsavedChangesDialog } = useUnsavedChangesDialog();
@@ -89,9 +89,7 @@ export const CreateTechniquePage = () => {
       };
 
       // Create the technique
-      await biohubApi.technique.createTechniques(surveyContext.projectId, surveyContext.surveyId, [
-        createTechniqueRequestData
-      ]);
+      await biohubApi.technique.createTechniques(surveyContext.surveyId, [createTechniqueRequestData]);
 
       // Success, navigate back to the manage sampling information page
       skipUnsavedChangesDialog();

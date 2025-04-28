@@ -18,14 +18,11 @@ import { ApiPaginationRequestOptions } from 'types/misc';
 const useTechniqueApi = (axios: AxiosInstance) => {
   /**
    * Get all techniques for a survey.
-   *
-   * @param {number} projectId
    * @param {number} surveyId
    * @param {ApiPaginationRequestOptions} [pagination]
    * @return {*}  {Promise<IGetTechniquesResponse>}
    */
   const getTechniquesForSurvey = async (
-    projectId: number,
     surveyId: number,
     pagination?: ApiPaginationRequestOptions
   ): Promise<IGetTechniquesResponse> => {
@@ -33,7 +30,7 @@ const useTechniqueApi = (axios: AxiosInstance) => {
       ...pagination
     };
 
-    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/technique`, {
+    const { data } = await axios.get(`/api/survey/${surveyId}/technique`, {
       params,
       paramsSerializer: (params) => qs.stringify(params)
     });
@@ -43,18 +40,12 @@ const useTechniqueApi = (axios: AxiosInstance) => {
 
   /**
    * Get a technique.
-   *
-   * @param {number} projectId
    * @param {number} surveyId
    * @param {number} methodTechniqueId
    * @return {*}  {Promise<void>}
    */
-  const getTechniqueById = async (
-    projectId: number,
-    surveyId: number,
-    methodTechniqueId: number
-  ): Promise<IGetTechniqueResponse> => {
-    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/technique/${methodTechniqueId}`);
+  const getTechniqueById = async (surveyId: number, methodTechniqueId: number): Promise<IGetTechniqueResponse> => {
+    const { data } = await axios.get(`/api/survey/${surveyId}/technique/${methodTechniqueId}`);
 
     return data;
   };
@@ -96,18 +87,15 @@ const useTechniqueApi = (axios: AxiosInstance) => {
 
   /**
    * Create a new technique.
-   *
-   * @param {number} projectId
    * @param {number} surveyId
    * @param {ICreateTechniqueRequest[]} techniques
    * @return {*}  {Promise<IGetTechniqueResponse[]>}
    */
   const createTechniques = async (
-    projectId: number,
     surveyId: number,
     techniques: ICreateTechniqueRequest[]
   ): Promise<IGetTechniqueResponse[]> => {
-    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/technique`, {
+    const { data } = await axios.post(`/api/survey/${surveyId}/technique`, {
       techniques
     });
 
@@ -116,19 +104,16 @@ const useTechniqueApi = (axios: AxiosInstance) => {
 
   /**
    * Update an existing technique.
-   *
-   * @param {number} projectId
    * @param {number} surveyId
    * @param {IUpdateTechniqueRequest} technique
    * @return {*}  {Promise<IGetTechniqueResponse>}
    */
   const updateTechnique = async (
-    projectId: number,
     surveyId: number,
     methodTechniqueId: number,
     technique: IUpdateTechniqueRequest
   ): Promise<IGetTechniqueResponse> => {
-    const { data } = await axios.put(`/api/project/${projectId}/survey/${surveyId}/technique/${methodTechniqueId}`, {
+    const { data } = await axios.put(`/api/survey/${surveyId}/technique/${methodTechniqueId}`, {
       technique
     });
 
@@ -137,28 +122,24 @@ const useTechniqueApi = (axios: AxiosInstance) => {
 
   /**
    * Delete a technique.
-   *
-   * @param {number} projectId
    * @param {number} surveyId
    * @param {number} methodTechniqueId
    * @return {*}
    */
-  const deleteTechnique = async (projectId: number, surveyId: number, methodTechniqueId: number): Promise<void> => {
-    const { data } = await axios.delete(`/api/project/${projectId}/survey/${surveyId}/technique/${methodTechniqueId}`);
+  const deleteTechnique = async (surveyId: number, methodTechniqueId: number): Promise<void> => {
+    const { data } = await axios.delete(`/api/survey/${surveyId}/technique/${methodTechniqueId}`);
 
     return data;
   };
 
   /**
    * Delete techniques.
-   *
-   * @param {number} projectId
    * @param {number} surveyId
    * @param {number[]} methodTechniqueIds[]
    * @return {*}  {Promise<void>}
    */
-  const deleteTechniques = async (projectId: number, surveyId: number, methodTechniqueIds: number[]): Promise<void> => {
-    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/technique/delete`, {
+  const deleteTechniques = async (surveyId: number, methodTechniqueIds: number[]): Promise<void> => {
+    const { data } = await axios.post(`/api/survey/${surveyId}/technique/delete`, {
       methodTechniqueIds
     });
 

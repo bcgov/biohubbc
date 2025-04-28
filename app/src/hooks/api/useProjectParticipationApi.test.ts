@@ -55,7 +55,7 @@ describe('useProjectParticipationApi', () => {
 
     mock.onDelete(`/api/project/${projectId}/participants/${projectParticipationId}`).reply(200);
 
-    const result = await useProjectParticipationApi(axios).removeProjectParticipant(projectId, projectParticipationId);
+    const result = await useProjectParticipationApi(axios).removeProjectParticipant(projectParticipationId);
 
     expect(result).toEqual(true);
   });

@@ -75,7 +75,7 @@ export const SamplingPeriodContainer = () => {
    */
   const handleBulkDeletePeriods = async () => {
     await biohubApi.samplingPeriod
-      .deleteSamplePeriods(surveyContext.projectId, surveyContext.surveyId, selectedRows.map(Number))
+      .deleteSamplePeriods(surveyContext.surveyId, selectedRows.map(Number))
       .then(() => {
         dialogContext.setYesNoDialog({ open: false });
         setSelectedRows([]);
@@ -108,7 +108,7 @@ export const SamplingPeriodContainer = () => {
    * @param {number} periodId
    */
   const handleDelete = async (periodId: number) => {
-    await biohubApi.samplingPeriod.deleteSamplePeriods(surveyContext.projectId, surveyContext.surveyId, [periodId]);
+    await biohubApi.samplingPeriod.deleteSamplePeriods(surveyContext.surveyId, [periodId]);
     periodsDataLoader.refresh(periodsPagination);
   };
 

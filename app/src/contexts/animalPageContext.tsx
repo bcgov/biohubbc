@@ -21,11 +21,7 @@ export interface ISurveyCritter {
 export type IAnimalPageContext = {
   selectedAnimal: ISurveyCritter | undefined;
   setSelectedAnimal: (selectedAnimal?: ISurveyCritter) => void;
-  critterDataLoader: DataLoader<
-    [projectId: number, surveyId: number, critterId: number],
-    ICritterDetailedResponse,
-    unknown
-  >;
+  critterDataLoader: DataLoader<[surveyId: number, critterId: number], ICritterDetailedResponse, unknown>;
   setSelectedAnimalFromSurveyCritterId: (selectedAnimalFromSurveyCritterId: number) => void;
 };
 
@@ -43,17 +39,17 @@ export const AnimalPageContext = createContext<IAnimalPageContext | undefined>(u
 export const AnimalPageContextProvider = (props: PropsWithChildren<Record<never, any>>) => {
   const biohubApi = useBiohubApi();
 
-  const { surveyId, projectId } = useSurveyContext();
+  const { surveyId } = useSurveyContext();
 
-  const surveyCrittersDataLoader = useDataLoader(() => biohubApi.survey.getSurveyCritters(projectId, surveyId));
+  const surveyCrittersDataLoader = useDataLoader(() => biohubApi.survey.getSurveyCritters(surveyId));
 
   if (!surveyCrittersDataLoader.data) {
     // Load basic data for all critters in the survey
     surveyCrittersDataLoader.load();
   }
 
-  const critterDataLoader = useDataLoader((projectId: number, surveyId: number, critterId: number) =>
-    biohubApi.survey.getCritterById(projectId, surveyId, critterId, ['attachments'])
+  const critterDataLoader = useDataLoader((surveyId: number, critterId: number) =>
+    biohubApi.survey.getCritterById(surveyId, critterId, ['attachments'])
   );
 
   // The currently selected animal
@@ -71,11 +67,11 @@ export const AnimalPageContextProvider = (props: PropsWithChildren<Record<never,
 
       if (animal) {
         // Load the critter data for the new animal
-        critterDataLoader.refresh(projectId, surveyId, animal.critter_id);
+        critterDataLoader.refresh(surveyId, animal.critter_id);
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [selectedAnimal, projectId, surveyId]
+    [selectedAnimal, surveyId]
   );
 
   const setSelectedAnimalFromSurveyCritterId = useCallback(

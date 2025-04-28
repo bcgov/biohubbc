@@ -38,7 +38,7 @@ export const AnimalCaptureContainer = () => {
 
   const history = useHistory();
 
-  const { projectId, surveyId } = useSurveyContext();
+  const { surveyId } = useSurveyContext();
 
   const animalPageContext = useAnimalPageContext();
 
@@ -108,14 +108,13 @@ export const AnimalCaptureContainer = () => {
 
       // Delete all capture attachments
       await biohubApi.animal.deleteCaptureAttachments({
-        projectId,
         surveyId,
         critterId: selectedAnimal.critter_id,
         critterbaseCaptureId: selectedCapture
       });
 
       // Refresh capture container
-      animalPageContext.critterDataLoader.refresh(projectId, surveyId, critter_id);
+      animalPageContext.critterDataLoader.refresh(surveyId, critter_id);
 
       // Show success snackbar
       dialogContext.setSnackbar({
@@ -153,9 +152,7 @@ export const AnimalCaptureContainer = () => {
       <AnimalCapturesToolbar
         capturesCount={captures.length}
         onAddAnimalCapture={() => {
-          history.push(
-            `/admin/projects/${projectId}/surveys/${surveyId}/animals/${selectedAnimal.critter_id}/capture/create`
-          );
+          history.push(`/admin/surveys/${surveyId}/animals/${selectedAnimal.critter_id}/capture/create`);
         }}
       />
       {capturesWithLocation.length < captures.length && (

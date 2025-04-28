@@ -39,9 +39,7 @@ export const SamplingTechniqueContainer = () => {
   const [selectedRows, setSelectedRows] = useState<GridRowSelectionModel>([]);
   const [bulkActionMenuAnchorEl, setBulkActionMenuAnchorEl] = useState<MenuProps['anchorEl']>(null);
 
-  const techniquesDataLoader = useDataLoader(() =>
-    biohubApi.technique.getTechniquesForSurvey(surveyContext.projectId, surveyContext.surveyId)
-  );
+  const techniquesDataLoader = useDataLoader(() => biohubApi.technique.getTechniquesForSurvey(surveyContext.surveyId));
 
   useEffect(() => {
     techniquesDataLoader.refresh();
@@ -53,7 +51,7 @@ export const SamplingTechniqueContainer = () => {
 
   const handleBulkDeleteTechniques = async () => {
     await biohubApi.technique
-      .deleteTechniques(surveyContext.projectId, surveyContext.surveyId, selectedRows.map(Number))
+      .deleteTechniques(surveyContext.surveyId, selectedRows.map(Number))
       .then(() => {
         dialogContext.setYesNoDialog({ open: false });
         setSelectedRows([]);
@@ -81,7 +79,7 @@ export const SamplingTechniqueContainer = () => {
   };
 
   const handleDelete = async (techniqueId: number) => {
-    await biohubApi.technique.deleteTechnique(surveyContext.projectId, surveyContext.surveyId, techniqueId);
+    await biohubApi.technique.deleteTechnique(surveyContext.surveyId, techniqueId);
     techniquesDataLoader.refresh();
   };
 

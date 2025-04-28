@@ -1,4 +1,4 @@
-import { IProjectAuthStateContext, ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
+import { ISurveyAuthStateContext, SurveyAuthStateContext } from 'contexts/surveyAuthStateContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
@@ -126,7 +126,7 @@ describe.skip('SurveyStudyArea', () => {
     } as DataLoader<any, any, any>;
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockCritterDataLoader = { data: [] } as DataLoader<any, any, any>;
-    const mockProjectAuthStateContext: IProjectAuthStateContext = {
+    const mockSurveyAuthStateContext: ISurveyAuthStateContext = {
       getProjectParticipant: () => null,
       hasProjectRole: () => true,
       hasProjectPermission: () => true,
@@ -136,7 +136,7 @@ describe.skip('SurveyStudyArea', () => {
     };
 
     const { getByText, queryByText } = render(
-      <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
+      <SurveyAuthStateContext.Provider value={mockSurveyAuthStateContext}>
         <SurveyContext.Provider
           value={{
             projectId: 1,
@@ -147,7 +147,7 @@ describe.skip('SurveyStudyArea', () => {
           }}>
           <SurveyStudyArea />
         </SurveyContext.Provider>
-      </ProjectAuthStateContext.Provider>
+      </SurveyAuthStateContext.Provider>
     );
 
     await waitFor(() => {
@@ -232,7 +232,7 @@ describe.skip('SurveyStudyArea', () => {
     });
     mockUseApi.survey.updateSurvey = vi.fn(() => Promise.reject(new Error('API Error is Here')));
 
-    const mockProjectAuthStateContext: IProjectAuthStateContext = {
+    const mockSurveyAuthStateContext: ISurveyAuthStateContext = {
       getProjectParticipant: () => null,
       hasProjectRole: () => true,
       hasProjectPermission: () => true,
@@ -242,7 +242,7 @@ describe.skip('SurveyStudyArea', () => {
     };
 
     const { getByText, queryByText } = render(
-      <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
+      <SurveyAuthStateContext.Provider value={mockSurveyAuthStateContext}>
         <SurveyContext.Provider
           value={{
             projectId: 1,
@@ -253,7 +253,7 @@ describe.skip('SurveyStudyArea', () => {
           }}>
           <SurveyStudyArea />
         </SurveyContext.Provider>
-      </ProjectAuthStateContext.Provider>
+      </SurveyAuthStateContext.Provider>
     );
 
     await waitFor(() => {

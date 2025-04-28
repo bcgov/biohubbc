@@ -4,7 +4,7 @@ import Stack from '@mui/material/Stack';
 import { SystemAlertBanner } from 'features/alert/banner/SystemAlertBanner';
 import { SamplingSiteManageHeader } from 'features/surveys/sampling-information/manage/SamplingSiteManageHeader';
 import { SamplingTechniqueContainer } from 'features/surveys/sampling-information/techniques/SamplingTechniqueContainer';
-import { useProjectContext, useSurveyContext } from 'hooks/useContext';
+import { useSurveyContext } from 'hooks/useContext';
 import { SystemAlertBannerEnum } from 'interfaces/useAlertApi.interface';
 import { SamplingPeriodContainer } from '../periods/SamplingPeriodContainer';
 import { SamplingSiteContainer } from '../sites/SamplingSiteTableContainer';
@@ -15,7 +15,6 @@ import { SamplingSiteContainer } from '../sites/SamplingSiteTableContainer';
  * @return {*}
  */
 export const SamplingSiteManagePage = () => {
-  const projectContext = useProjectContext();
   const surveyContext = useSurveyContext();
 
   return (

@@ -27,12 +27,12 @@ export const SurveySpatialTelemetry = (props: ISurveySpatialTelemetryProps) => {
 
   const biohubApi = useBiohubApi();
 
-  const telemetrySpatialDataLoader = useDataLoader((projectId: number, surveyId: number) =>
-    biohubApi.telemetry.getTelemetrySpatialForSurvey(projectId, surveyId)
+  const telemetrySpatialDataLoader = useDataLoader((surveyId: number) =>
+    biohubApi.telemetry.getTelemetrySpatialForSurvey(surveyId)
   );
 
   useEffect(() => {
-    telemetrySpatialDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
+    telemetrySpatialDataLoader.load(surveyContext.surveyId);
   }, [surveyContext.projectId, surveyContext.surveyId, telemetrySpatialDataLoader]);
 
   const points: IStaticLayerFeature[] = useMemo(() => {

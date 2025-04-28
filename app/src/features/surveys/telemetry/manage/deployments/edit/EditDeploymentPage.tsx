@@ -10,7 +10,7 @@ import { DeploymentFormHeader } from 'features/surveys/telemetry/manage/deployme
 import { Formik, FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
+import { useDialogContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { ICreateAnimalDeployment } from 'interfaces/useTelemetryApi.interface';
@@ -28,7 +28,7 @@ export const EditDeploymentPage = () => {
   const biohubApi = useBiohubApi();
 
   const dialogContext = useDialogContext();
-  const projectContext = useProjectContext();
+
   const surveyContext = useSurveyContext();
 
   const { locationChangeInterceptor, skipUnsavedChangesDialog } = useUnsavedChangesDialog();
@@ -41,7 +41,7 @@ export const EditDeploymentPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const deploymentDataLoader = useDataLoader(() =>
-    biohubApi.telemetryDeployment.getDeploymentById(surveyContext.projectId, surveyContext.surveyId, deploymentId)
+    biohubApi.telemetryDeployment.getDeploymentById(surveyContext.surveyId, deploymentId)
   );
 
   useEffect(() => {

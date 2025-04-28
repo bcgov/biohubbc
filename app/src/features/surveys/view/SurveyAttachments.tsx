@@ -27,13 +27,13 @@ const SurveyAttachments = () => {
   const dialogContext = useDialogContext();
   const surveyContext = useContext(SurveyContext);
 
-  const { projectId, surveyId } = surveyContext;
+  const { surveyId } = surveyContext;
 
   const [openUploadDialog, setOpenUploadDialog] = useState<'Attachment' | 'Report' | false>(false);
 
   const onSubmitReport = async (fileMeta: IReportMetaForm) => {
     try {
-      await biohubApi.survey.uploadSurveyReports(projectId, surveyId, fileMeta.attachmentFile, fileMeta);
+      await biohubApi.survey.uploadSurveyReports(surveyId, fileMeta.attachmentFile, fileMeta);
     } catch (error) {
       const apiError = error as APIError;
 
@@ -54,7 +54,7 @@ const SurveyAttachments = () => {
   };
 
   const handleUploadAttachments = async (file: File) => {
-    return biohubApi.survey.uploadSurveyAttachments(projectId, surveyId, file);
+    return biohubApi.survey.uploadSurveyAttachments(surveyId, file);
   };
 
   return (
@@ -63,7 +63,7 @@ const SurveyAttachments = () => {
         open={openUploadDialog === 'Report'}
         onSubmit={onSubmitReport}
         onClose={() => {
-          surveyContext.artifactDataLoader.refresh(projectId, surveyId);
+          surveyContext.artifactDataLoader.refresh(surveyId);
           setOpenUploadDialog(false);
         }}
       />
@@ -73,7 +73,7 @@ const SurveyAttachments = () => {
         dialogTitle="Upload Attachments"
         uploadHandler={handleUploadAttachments}
         onClose={() => {
-          surveyContext.artifactDataLoader.refresh(projectId, surveyId);
+          surveyContext.artifactDataLoader.refresh(surveyId);
           setOpenUploadDialog(false);
         }}
       />

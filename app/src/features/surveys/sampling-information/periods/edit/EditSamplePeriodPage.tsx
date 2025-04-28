@@ -12,7 +12,7 @@ import {
 import { Formik, FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useCodesContext, useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
+import { useCodesContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { GetSamplingPeriod, UpdateSamplingPeriod } from 'interfaces/useSamplingPeriodApi.interface';
@@ -67,7 +67,6 @@ export const EditSamplePeriodPage = () => {
   const dialogContext = useDialogContext();
   const codesContext = useCodesContext();
   const surveyContext = useSurveyContext();
-  const projectContext = useProjectContext();
 
   const biohubApi = useBiohubApi();
 
@@ -84,7 +83,7 @@ export const EditSamplePeriodPage = () => {
   }, [codesContext.codesDataLoader]);
 
   const samplingPeriodDataLoader = useDataLoader(() =>
-    biohubApi.samplingPeriod.getSamplePeriodById(surveyContext.projectId, surveyContext.surveyId, surveySamplePeriodId)
+    biohubApi.samplingPeriod.getSamplePeriodById(surveyContext.surveyId, surveySamplePeriodId)
   );
 
   useEffect(() => {

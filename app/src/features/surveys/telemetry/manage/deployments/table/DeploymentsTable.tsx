@@ -83,7 +83,7 @@ export const DeploymentsTable = (props: IDeploymentsTableProps) => {
     }
 
     await biohubApi.telemetryDeployment
-      .deleteDeployment(surveyContext.projectId, surveyContext.surveyId, actionMenuDeploymentId)
+      .deleteDeployment(surveyContext.surveyId, actionMenuDeploymentId)
       .then(() => {
         dialogContext.setYesNoDialog({ open: false });
         setActionMenuAnchorEl(null);

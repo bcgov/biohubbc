@@ -85,7 +85,7 @@ export const TelemetryDeviceKeysDialog = (props: ITelemetryDeviceKeysDialogProps
   );
 
   const telemetryDeviceKeyFileDataLoader = useDataLoader(() =>
-    biohubApi.telemetry.getTelemetryDeviceKeyFiles(surveyContext.projectId, surveyContext.surveyId)
+    biohubApi.telemetry.getTelemetryDeviceKeyFiles(surveyContext.surveyId)
   );
 
   useEffect(() => {

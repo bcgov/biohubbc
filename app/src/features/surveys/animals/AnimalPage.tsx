@@ -10,7 +10,7 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/system/Box';
 import { SurveySpatialAnimal } from 'features/surveys/view/survey-spatial/components/animal/SurveySpatialAnimal';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useAnimalPageContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
+import { useAnimalPageContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
@@ -24,13 +24,11 @@ import { AnimalProfileContainer } from './profile/AnimalProfileContainer';
  */
 export const SurveyAnimalPage = () => {
   const biohubApi = useBiohubApi();
-  const projectContext = useProjectContext();
+
   const surveyContext = useSurveyContext();
   const animalPageContext = useAnimalPageContext();
 
-  const crittersDataLoader = useDataLoader(() =>
-    biohubApi.survey.getSurveyCritters(surveyContext.projectId, surveyContext.surveyId)
-  );
+  const crittersDataLoader = useDataLoader(() => biohubApi.survey.getSurveyCritters(surveyContext.surveyId));
 
   useEffect(() => {
     crittersDataLoader.load();

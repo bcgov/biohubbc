@@ -25,7 +25,7 @@ export const SurveySpatialObservationPointPopup = (props: ISurveySpatialObservat
   const biohubApi = useBiohubApi();
 
   const observationDataLoader = useDataLoader((observationId: number) =>
-    biohubApi.observation.getBasicObservationRecord(surveyContext.projectId, surveyContext.surveyId, observationId)
+    biohubApi.observation.getBasicObservationRecord(surveyContext.surveyId, observationId)
   );
 
   const getObservationMetadata = (observation: SurveyObservationBasic) => {

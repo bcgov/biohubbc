@@ -12,7 +12,7 @@ import { DeviceFormHeader } from 'features/surveys/telemetry/manage/devices/form
 import { Formik, FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
+import { useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { CreateTelemetryDevice } from 'interfaces/useTelemetryDeviceApi.interface';
 import { useRef, useState } from 'react';
@@ -29,7 +29,7 @@ export const CreateDevicePage = () => {
   const biohubApi = useBiohubApi();
 
   const dialogContext = useDialogContext();
-  const projectContext = useProjectContext();
+
   const surveyContext = useSurveyContext();
 
   const formikRef = useRef<FormikProps<CreateTelemetryDevice>>(null);
@@ -45,7 +45,7 @@ export const CreateDevicePage = () => {
     setIsSubmitting(true);
 
     try {
-      await biohubApi.telemetryDevice.createDevice(surveyContext.projectId, surveyContext.surveyId, {
+      await biohubApi.telemetryDevice.createDevice(surveyContext.surveyId, {
         serial: values.serial,
         device_make_id: values.device_make_id,
         model: values.model,

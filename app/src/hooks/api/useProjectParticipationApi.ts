@@ -1,72 +1,69 @@
 import { AxiosInstance } from 'axios';
 import {
-  IAddProjectParticipant,
-  IGetProjectParticipant,
-  IGetUserProjectParticipantResponse
-} from 'interfaces/useProjectApi.interface';
+  IAddSurveyParticipant,
+  IGetSurveyParticipant,
+  IGetUserSurveyParticipantResponse
+} from 'interfaces/useSurveyApi.interface';
 
 /**
- * Returns a set of supported api methods for working with project participants (members).
+ * Returns a set of supported api methods for working with survey participants (members).
  *
  * @param {AxiosInstance} axios
  * @return {*} object whose properties are supported api methods.
  */
-const useProjectParticipationApi = (axios: AxiosInstance) => {
+const useSurveyParticipationApi = (axios: AxiosInstance) => {
   /**
-   * Get all project participants.
+   * Get all survey participants.
    *
-   * @param {number} projectId
-   * @return {*}  {Promise<IGetProjectParticipants[]>}
+   * @param {number} surveyId
+   * @return {*}  {Promise<IGetSurveyParticipants[]>}
    */
-  const getProjectParticipants = async (projectId: number): Promise<IGetProjectParticipant[]> => {
-    const { data } = await axios.get(`/api/project/${projectId}/participants`);
+  const getSurveyParticipants = async (surveyId: number): Promise<IGetSurveyParticipant[]> => {
+    const { data } = await axios.get(`/api/survey/${surveyId}/participants`);
 
     return data;
   };
 
   /**
-   * Add new project participants.
+   * Add new survey participants.
    *
-   * @param {number} projectId
-   * @param {IAddProjectParticipant[]} participants
+   * @param {number} surveyId
+   * @param {IAddSurveyParticipant[]} participants
    * @return {*}  {Promise<boolean>} `true` if the request was successful, false otherwise.
    */
-  const addProjectParticipants = async (
-    projectId: number,
-    participants: IAddProjectParticipant[]
-  ): Promise<boolean> => {
-    const { status } = await axios.post(`/api/project/${projectId}/participants`, { participants });
+  const addSurveyParticipants = async (surveyId: number, participants: IAddSurveyParticipant[]): Promise<boolean> => {
+    const { status } = await axios.post(`/api/survey/${surveyId}/participants`, { participants });
 
     return status === 200;
   };
 
   /**
-   * Remove existing project participant.
+   * Remove existing survey participant.
    *
-   * @param {number} projectId
-   * @param {number} projectParticipationId
+   * @param {number} surveyId
+   * @param {number} surveyParticipationId
    * @return {*}  {Promise<boolean>} `true` if the request was successful, false otherwise.
    */
-  const removeProjectParticipant = async (projectId: number, projectParticipationId: number): Promise<boolean> => {
-    const { status } = await axios.delete(`/api/project/${projectId}/participants/${projectParticipationId}`);
+  const removeSurveyParticipant = async (surveyId: number, surveyParticipationId: number): Promise<boolean> => {
+    const { status } = await axios.delete(`/api/survey/${surveyId}/participants/${surveyParticipationId}`);
 
     return status === 200;
   };
 
   /**
-   * Update project participant role.
+   * Update survey participant role.
    *
-   * @param {number} projectId
-   * @param {number} projectParticipationId
+   * @param {number} surveyId
+   * @param {number} surveyParticipationId
    * @param {string} role
    * @return {*}  {Promise<boolean>}
    */
-  const updateProjectParticipantRole = async (
-    projectId: number,
-    projectParticipationId: number,
+  const updateSurveyParticipantRole = async (
+    surveyId: number,
+    surveyParticipationId: number,
     roleId: number
   ): Promise<boolean> => {
-    const { status } = await axios.put(`/api/project/${projectId}/participants/${projectParticipationId}`, {
+    const { status } = await axios.put(`/api/survey/${surveyId}/participants/${surveyParticipationId}`, {
       roleId
     });
 
@@ -74,40 +71,40 @@ const useProjectParticipationApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Get the current user's project participation.
+   * Get the current user's survey participation.
    *
-   * @param {number} projectId
-   * @return {*}  {Promise<IGetUserProjectParticipantResponse>}
+   * @param {number} surveyId
+   * @return {*}  {Promise<IGetUserSurveyParticipantResponse>}
    */
-  const getUserProjectParticipant = async (projectId: number): Promise<IGetUserProjectParticipantResponse> => {
-    const { data } = await axios.get<IGetUserProjectParticipantResponse>(`/api/project/${projectId}/participants/self`);
+  const getUserSurveyParticipant = async (surveyId: number): Promise<IGetUserSurveyParticipantResponse> => {
+    const { data } = await axios.get<IGetUserSurveyParticipantResponse>(`/api/survey/${surveyId}/participants/self`);
 
     return data;
   };
 
   /**
-   * Add or update user roles for a project.
+   * Add or update user roles for a survey.
    *
-   * @param {number} projectId
+   * @param {number} surveyId
    * @param {{ user_id: number; role_id: number }[]} userRoles
    * @return {*}  {Promise<any>}
    */
-  const postUserProjectRoles = async (
-    projectId: number,
+  const postUserSurveyRoles = async (
+    surveyId: number,
     userRoles: { user_id: number; role_id: number }[]
   ): Promise<any> => {
-    const { data } = await axios.post(`/api/project/${projectId}/users`, { userRoles });
+    const { data } = await axios.post(`/api/survey/${surveyId}/users`, { userRoles });
     return data;
   };
 
   return {
-    getProjectParticipants,
-    addProjectParticipants,
-    removeProjectParticipant,
-    updateProjectParticipantRole,
-    getUserProjectParticipant,
-    postUserProjectRoles
+    getSurveyParticipants,
+    addSurveyParticipants,
+    removeSurveyParticipant,
+    updateSurveyParticipantRole,
+    getUserSurveyParticipant,
+    postUserSurveyRoles
   };
 };
 
-export default useProjectParticipationApi;
+export default useSurveyParticipationApi;

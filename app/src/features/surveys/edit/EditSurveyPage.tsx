@@ -12,7 +12,6 @@ import PageHeader from 'components/layout/PageHeader';
 import { EditSurveyI18N } from 'constants/i18n';
 import { CodesContext } from 'contexts/codesContext';
 import { DialogContext } from 'contexts/dialogContext';
-import { ProjectContext } from 'contexts/projectContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
@@ -51,20 +50,14 @@ const EditSurveyPage = () => {
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
 
-  const projectContext = useContext(ProjectContext);
-
-  useEffect(() => {
-    projectContext.projectDataLoader.load(projectContext.projectId);
-  }, [projectContext.projectDataLoader, projectContext.projectId]);
-
   const surveyContext = useContext(SurveyContext);
 
-  const getSurveyForUpdateDataLoader = useDataLoader((projectId: number, surveyId: number) =>
-    biohubApi.survey.getSurveyForUpdate(projectId, surveyId)
+  const getSurveyForUpdateDataLoader = useDataLoader((surveyId: number) =>
+    biohubApi.survey.getSurveyForUpdate(surveyId)
   );
 
   if (surveyId) {
-    getSurveyForUpdateDataLoader.load(projectContext.projectId, surveyId);
+    getSurveyForUpdateDataLoader.load(surveyId);
   }
 
   const surveyData = getSurveyForUpdateDataLoader.data?.surveyData;
@@ -140,7 +133,7 @@ const EditSurveyPage = () => {
       surveyContext.surveyDataLoader.refresh(projectContext.projectId, surveyContext.surveyId);
 
       skipUnsavedChangesDialog();
-      history.push(`/admin/projects/${projectContext.projectId}/surveys/${response.id}/details`);
+      history.push(`/admin/surveys/${response.id}/details`);
     } catch (error) {
       const apiError = error as APIError;
       showEditErrorDialog({
@@ -153,7 +146,7 @@ const EditSurveyPage = () => {
     }
   };
 
-  if (!codesContext.codesDataLoader.data || !projectContext.projectDataLoader.data || !surveyData) {
+  if (!codesContext.codesDataLoader.data || !surveyData) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
@@ -167,10 +160,7 @@ const EditSurveyPage = () => {
             <Link component={RouterLink} underline="hover" to={`/admin/projects/${projectContext.projectId}/`}>
               {projectContext.projectDataLoader.data.projectData.project.project_name}
             </Link>
-            <Link
-              component={RouterLink}
-              underline="hover"
-              to={`/admin/projects/${projectContext.projectId}/surveys/${surveyId}/details`}>
+            <Link component={RouterLink} underline="hover" to={`/admin/surveys/${surveyId}/details`}>
               {surveyData && surveyData.survey_details && surveyData.survey_details.survey_name}
             </Link>
             <Typography component="a" color="textSecondary" aria-current="page">

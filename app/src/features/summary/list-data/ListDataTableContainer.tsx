@@ -1,11 +1,10 @@
-import { mdiClipboardOutline, mdiDatabaseSearch, mdiFolder, mdiFormatListGroup, mdiMagnify } from '@mdi/js';
+import { mdiClipboardOutline, mdiDatabaseSearch, mdiFormatListGroup, mdiMagnify } from '@mdi/js';
 import Icon from '@mdi/react';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
 import CustomToggleButtonGroup from 'components/toolbar/CustomToggleButtonGroup';
-import ProjectsListContainer from 'features/summary/list-data/project/ProjectsListContainer';
 import SurveysListContainer from 'features/summary/list-data/survey/SurveysListContainer';
 import { useSearchParams } from 'hooks/useSearchParams';
 import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
@@ -14,12 +13,10 @@ import { useState } from 'react';
 import { TabularDataTableContainer } from '../tabular-data/TabularDataTableContainer';
 import CollectionsListContainer from './collection/CollectionListContainer';
 import { CreateCollectionButton } from './collection/create/CreateCollectionButton';
-import { CreateProjectButton } from './project/create/CreateProjectButton';
 import { CreateSurveyButton } from './survey/create/CreateSurveyButton';
 
 const ACTIVE_VIEW_KEY = 'lvk';
 export enum ACTIVE_VIEW_VALUE {
-  projects = 'projects',
   surveys = 'surveys',
   collections = 'collections',
   data = 'data'
@@ -38,7 +35,7 @@ type ListDataTableURLParams = {
 };
 
 /**
- * Data table component for list data (ie: projects, surveys).
+ * Data table component for list data (ie: surveys).
  *
  * @return {*}
  */
@@ -46,17 +43,16 @@ export const ListDataTableContainer = () => {
   const { searchParams, setSearchParams } = useSearchParams<ListDataTableURLParams>();
 
   const [activeView, setActiveView] = useState(
-    (searchParams.get(ACTIVE_VIEW_KEY) as ACTIVE_VIEW_VALUE | null) ?? ACTIVE_VIEW_VALUE.projects
+    (searchParams.get(ACTIVE_VIEW_KEY) as ACTIVE_VIEW_VALUE | null) ?? ACTIVE_VIEW_VALUE.surveys
   );
   const [showSearch, setShowSearch] = useState<boolean>(searchParams.get(SHOW_SEARCH_KEY) === SHOW_SEARCH_VALUE.true);
 
   const views = [
-    { value: ACTIVE_VIEW_VALUE.projects, label: 'Projects', icon: mdiFolder, button: <CreateProjectButton /> },
     {
       value: ACTIVE_VIEW_VALUE.surveys,
       label: 'Surveys',
       icon: mdiClipboardOutline,
-      button: <CreateSurveyButton projectId={1} />
+      button: <CreateSurveyButton />
     },
     {
       value: ACTIVE_VIEW_VALUE.collections,
@@ -103,7 +99,6 @@ export const ListDataTableContainer = () => {
           </Stack>
         </>
       }>
-      {activeView === ACTIVE_VIEW_VALUE.projects && <ProjectsListContainer showSearch={showSearch} />}
       {activeView === ACTIVE_VIEW_VALUE.surveys && <SurveysListContainer showSearch={showSearch} />}
       {activeView === ACTIVE_VIEW_VALUE.collections && <CollectionsListContainer showSearch={showSearch} />}
       {activeView === ACTIVE_VIEW_VALUE.data && <TabularDataTableContainer />}

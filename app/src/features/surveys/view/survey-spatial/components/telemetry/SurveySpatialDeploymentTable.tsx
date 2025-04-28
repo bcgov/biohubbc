@@ -44,7 +44,7 @@ export const SurveySpatialDeploymentTable = () => {
   const [sortModel, setSortModel] = useState<GridSortModel>([]);
 
   const deploymentsDataLoader = useDataLoader((page: number, limit: number, sort?: string, order?: 'asc' | 'desc') =>
-    biohubApi.telemetryDeployment.getDeploymentsInSurvey(surveyContext.projectId, surveyContext.surveyId, {
+    biohubApi.telemetryDeployment.getDeploymentsInSurvey(surveyContext.surveyId, {
       page: page + 1, // This fixes an off-by-one error between the front end and the back end
       limit,
       sort,
@@ -67,7 +67,7 @@ export const SurveySpatialDeploymentTable = () => {
   const critterDataLoader = useDataLoader(biohubApi.survey.getSurveyCritters);
 
   useEffect(() => {
-    critterDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
+    critterDataLoader.load(surveyContext.surveyId);
   }, [deploymentsDataLoader, critterDataLoader, surveyContext.projectId, surveyContext.surveyId]);
 
   /**

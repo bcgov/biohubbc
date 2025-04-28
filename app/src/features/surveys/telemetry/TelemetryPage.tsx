@@ -4,11 +4,10 @@ import Stack from '@mui/material/Stack';
 import { TelemetryTableContext, TelemetryTableContextProvider } from 'contexts/telemetryTableContext';
 import { SurveyDeploymentList } from 'features/surveys/telemetry/list/SurveyDeploymentList';
 import { TelemetryTableContainer } from 'features/surveys/telemetry/table/TelemetryTableContainer';
-import { useProjectContext, useSurveyContext } from 'hooks/useContext';
+import { useSurveyContext } from 'hooks/useContext';
 import { SurveyManagePageEnum, SurveyManagePageHeader } from '../components/SurveyManagePageHeader';
 
 export const TelemetryPage = () => {
-  const projectContext = useProjectContext();
   const surveyContext = useSurveyContext();
 
   if (!surveyContext.surveyDataLoader.data || !projectContext.projectDataLoader.data) {

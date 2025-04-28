@@ -78,9 +78,25 @@ interface IParticipantsJobForm {
   participants: IGetSurveyParticipant[];
 }
 
+/**
+ * Get surveys list response object.
+ *
+ * @export
+ * @interface IGetUserProjectsListResponse
+ */
+export interface IGetUserProjectsListResponse {
+  survey_participation_id: number;
+  survey_id: number;
+  survey_name: string;
+  system_user_id: number;
+  survey_role_ids: number[];
+  survey_role_names: string[];
+  survey_role_permissions: string[];
+}
+
 export interface IGetSurveyForViewResponseDetails {
   id: number;
-  project_id: number;
+  survey_id: number;
   survey_name: string;
   start_date: string;
   end_date: string;
@@ -167,7 +183,7 @@ export interface SurveyViewObject {
 
 export interface SurveyBasicFieldsObject {
   survey_id: number;
-  project_id: number;
+  survey_id: number;
   name: string;
   start_date: string;
   end_date: string | null;
@@ -341,7 +357,7 @@ export interface IGetSurveyForUpdateResponse {
   surveyData: {
     survey_details: {
       id: number;
-      project_id: number;
+      survey_id: number;
       uuid: string;
       survey_name: string;
       start_date: string;

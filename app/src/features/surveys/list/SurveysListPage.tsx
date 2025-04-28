@@ -91,7 +91,7 @@ const SurveysListPage = () => {
           underline="always"
           title={params.row.name}
           component={RouterLink}
-          to={`/admin/projects/${projectContext.projectId}/surveys/${params.row.survey_id}`}
+          to={`/admin/surveys/${params.row.survey_id}`}
           children={params.row.name}
         />
       )

@@ -61,7 +61,7 @@ export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
   } | null>(null);
 
   const dialogContext = useDialogContext();
-  const { surveyId, projectId } = useSurveyContext();
+  const { surveyId } = useSurveyContext();
 
   /**
    * Handle the delete technique API call.
@@ -250,8 +250,7 @@ export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
               }
             }
           }}>
-          <RouterLink
-            to={`/admin/projects/${projectId}/surveys/${surveyId}/sampling/period/${actionMenuAnchorEl?.periodId}/edit`}>
+          <RouterLink to={`/admin/surveys/${surveyId}/sampling/period/${actionMenuAnchorEl?.periodId}/edit`}>
             <ListItemIcon>
               <Icon path={mdiPencilOutline} size={1} />
             </ListItemIcon>

@@ -17,8 +17,6 @@ const useAnimalApi = (axios: AxiosInstance) => {
   /**
    * Fetches all geojson capture and mortalities points for all animals in survey
    * the given survey.
-   *
-   * @param {number} projectId
    * @param {number} surveyId
    * @return {*}  {Promise<IGetCaptureMortalityGeometryResponse>}
    */
@@ -26,9 +24,7 @@ const useAnimalApi = (axios: AxiosInstance) => {
     projectId: number,
     surveyId: number
   ): Promise<IGetCaptureMortalityGeometryResponse> => {
-    const { data } = await axios.get<IGetCaptureMortalityGeometryResponse>(
-      `/api/project/${projectId}/survey/${surveyId}/critters/spatial`
-    );
+    const { data } = await axios.get<IGetCaptureMortalityGeometryResponse>(`/api/survey/${surveyId}/critters/spatial`);
 
     return data;
   };
@@ -62,7 +58,6 @@ const useAnimalApi = (axios: AxiosInstance) => {
    * @returns {*} Promise<void>
    */
   const uploadCritterCaptureAttachments = async (params: {
-    projectId: number;
     surveyId: number;
     critterId: number;
     critterbaseCaptureId: string;
@@ -91,7 +86,7 @@ const useAnimalApi = (axios: AxiosInstance) => {
     }
 
     await axios.post(
-      `/api/project/${params.projectId}/survey/${params.surveyId}/critters/${params.critterId}/captures/${params.critterbaseCaptureId}/attachments/upload`,
+      `/api/survey/${params.surveyId}/critters/${params.critterId}/captures/${params.critterbaseCaptureId}/attachments/upload`,
       fileData,
       {
         cancelToken: params.cancelTokenSource?.token,
@@ -108,13 +103,12 @@ const useAnimalApi = (axios: AxiosInstance) => {
    * @returns {*} Promise<void>
    */
   const deleteCaptureAttachments = async (params: {
-    projectId: number;
     surveyId: number;
     critterId: number;
     critterbaseCaptureId: string;
   }) => {
     await axios.delete(
-      `/api/project/${params.projectId}/survey/${params.surveyId}/critters/${params.critterId}/captures/${params.critterbaseCaptureId}/attachments`
+      `/api/survey/${params.surveyId}/critters/${params.critterId}/captures/${params.critterbaseCaptureId}/attachments`
     );
   };
 

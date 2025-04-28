@@ -17,9 +17,7 @@ export const useSamplingSiteStaticLayer = (): IStaticLayer => {
   const surveyContext = useSurveyContext();
   const biohubApi = useBiohubApi();
 
-  const geometryDataLoader = useDataLoader(() =>
-    biohubApi.samplingSite.getSampleSitesGeometry(surveyContext.projectId, surveyContext.surveyId)
-  );
+  const geometryDataLoader = useDataLoader(() => biohubApi.samplingSite.getSampleSitesGeometry(surveyContext.surveyId));
 
   useEffect(() => {
     geometryDataLoader.load();

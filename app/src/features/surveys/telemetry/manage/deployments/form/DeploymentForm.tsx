@@ -62,14 +62,10 @@ export const DeploymentForm = (props: IDeploymentFormProps) => {
   const history = useHistory();
 
   // Fetch all devices for the survey
-  const devicesDataLoader = useDataLoader(() =>
-    biohubApi.telemetryDevice.getDevicesInSurvey(surveyContext.projectId, surveyContext.surveyId)
-  );
+  const devicesDataLoader = useDataLoader(() => biohubApi.telemetryDevice.getDevicesInSurvey(surveyContext.surveyId));
 
   // Fetch all critters for the survey
-  const crittersDataLoader = useDataLoader(() =>
-    biohubApi.survey.getSurveyCritters(surveyContext.projectId, surveyContext.surveyId)
-  );
+  const crittersDataLoader = useDataLoader(() => biohubApi.survey.getSurveyCritters(surveyContext.surveyId));
 
   useEffect(() => {
     codesContext.codesDataLoader.load();
@@ -85,7 +81,7 @@ export const DeploymentForm = (props: IDeploymentFormProps) => {
 
   // Fetch a single critter's data
   const critterDataLoader = useDataLoader((critterId: number) =>
-    biohubApi.survey.getCritterById(surveyContext.projectId, surveyContext.surveyId, critterId)
+    biohubApi.survey.getCritterById(surveyContext.surveyId, critterId)
   );
 
   // Fetch individual critter data when critter_id changes (ie. when the user selects a critter)

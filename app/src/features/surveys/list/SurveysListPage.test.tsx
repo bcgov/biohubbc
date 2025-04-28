@@ -1,7 +1,7 @@
 import { AuthStateContext } from 'contexts/authStateContext';
 import { CodesContext, ICodesContext } from 'contexts/codesContext';
-import { IProjectAuthStateContext, ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
 import { IProjectContext, ProjectContext } from 'contexts/projectContext';
+import { ISurveyAuthStateContext, SurveyAuthStateContext } from 'contexts/surveyAuthStateContext';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
@@ -55,7 +55,7 @@ describe('SurveysListPage', () => {
       projectId: 1
     };
 
-    const mockProjectAuthStateContext: IProjectAuthStateContext = {
+    const mockSurveyAuthStateContext: ISurveyAuthStateContext = {
       getProjectParticipant: () => null,
       hasProjectRole: () => true,
       hasProjectPermission: () => true,
@@ -71,13 +71,13 @@ describe('SurveysListPage', () => {
     const { getByTestId } = render(
       <AuthStateContext.Provider value={authState}>
         <Router history={history}>
-          <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
+          <SurveyAuthStateContext.Provider value={mockSurveyAuthStateContext}>
             <CodesContext.Provider value={mockCodesContext}>
               <ProjectContext.Provider value={mockProjectContext}>
                 <SurveysListPage />
               </ProjectContext.Provider>
             </CodesContext.Provider>
-          </ProjectAuthStateContext.Provider>
+          </SurveyAuthStateContext.Provider>
         </Router>
       </AuthStateContext.Provider>
     );
@@ -95,7 +95,7 @@ describe('SurveysListPage', () => {
       } as DataLoader<any, any, any>
     };
 
-    const mockProjectAuthStateContext: IProjectAuthStateContext = {
+    const mockSurveyAuthStateContext: ISurveyAuthStateContext = {
       getProjectParticipant: () => null,
       hasProjectRole: () => true,
       hasProjectPermission: () => true,
@@ -123,13 +123,13 @@ describe('SurveysListPage', () => {
     const { getByText } = render(
       <AuthStateContext.Provider value={authState}>
         <Router history={history}>
-          <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
+          <SurveyAuthStateContext.Provider value={mockSurveyAuthStateContext}>
             <CodesContext.Provider value={mockCodesContext}>
               <ProjectContext.Provider value={mockProjectContext}>
                 <SurveysListPage />
               </ProjectContext.Provider>
             </CodesContext.Provider>
-          </ProjectAuthStateContext.Provider>
+          </SurveyAuthStateContext.Provider>
         </Router>
       </AuthStateContext.Provider>
     );

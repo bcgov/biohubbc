@@ -32,12 +32,10 @@ const usePublishApi = (axios: AxiosInstance) => {
 
   /**
    * Publish Project Data
-   *
-   * @param {number} projectId
    * @param {IProjectSubmitForm} dataSubmission
    * @return {*}  {Promise<{ uuid: string }>}
    */
-  const publishProject = async (projectId: number, dataSubmission: IProjectSubmitForm): Promise<{ uuid: string }> => {
+  const publishProject = async (dataSubmission: IProjectSubmitForm): Promise<{ uuid: string }> => {
     const sendData = {
       projectId: projectId,
       data: dataSubmission

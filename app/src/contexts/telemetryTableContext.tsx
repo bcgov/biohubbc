@@ -181,7 +181,7 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
   const dialogContext = useDialogContext();
 
   const telemetryDataLoader = useDataLoader((pagination?: ApiPaginationRequestOptions) =>
-    biohubApi.telemetry.getTelemetryForSurvey(surveyContext.projectId, surveyContext.surveyId, pagination)
+    biohubApi.telemetry.getTelemetryForSurvey(surveyContext.surveyId, pagination)
   );
 
   const {
@@ -679,7 +679,7 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
         }));
 
         if (createData.length) {
-          await biohubApi.telemetry.createManualTelemetry(surveyContext.projectId, surveyContext.surveyId, createData);
+          await biohubApi.telemetry.createManualTelemetry(surveyContext.surveyId, createData);
         }
 
         if (updateData.length) {

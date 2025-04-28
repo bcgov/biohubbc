@@ -23,7 +23,7 @@ const SurveyAttachmentsList: React.FC = () => {
 
   // Load survey attachments
   useEffect(() => {
-    surveyContext.artifactDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
+    surveyContext.artifactDataLoader.load(surveyContext.surveyId);
   }, [surveyContext.artifactDataLoader, surveyContext.projectId, surveyContext.surveyId]);
 
   const handleDownload = async (attachment: IGetSurveyAttachment) => {
@@ -78,7 +78,7 @@ const SurveyAttachmentsList: React.FC = () => {
           );
 
           // Refresh attachments list
-          surveyContext.artifactDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+          surveyContext.artifactDataLoader.refresh(surveyContext.surveyId);
         } catch (error) {
           const apiError = error as APIError;
           // Show error dialog

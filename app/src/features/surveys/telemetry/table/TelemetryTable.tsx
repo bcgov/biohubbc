@@ -33,8 +33,8 @@ export const TelemetryTable = (props: IManualTelemetryTableProps) => {
   const critterDataLoader = useDataLoader(biohubApi.survey.getSurveyCritters);
 
   useEffect(() => {
-    deploymentDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
-    critterDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
+    deploymentDataLoader.load(surveyContext.surveyId);
+    critterDataLoader.load(surveyContext.surveyId);
   }, [critterDataLoader, deploymentDataLoader, surveyContext.projectId, surveyContext.surveyId]);
 
   /**

@@ -43,7 +43,7 @@ export const AnimalListToolbar = (props: IAnimaListToolbarProps) => {
       onProgress
     );
 
-    surveyContext.critterDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+    surveyContext.critterDataLoader.refresh(surveyContext.surveyId);
 
     setOpenImportDialog(false);
   };

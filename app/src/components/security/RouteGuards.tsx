@@ -1,6 +1,6 @@
 import CircularProgress from '@mui/material/CircularProgress';
 import { PROJECT_PERMISSION, PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
-import { ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
+import { SurveyAuthStateContext } from 'contexts/surveyAuthStateContext';
 import { useAuthStateContext } from 'hooks/useAuthStateContext';
 import { useContext, useEffect } from 'react';
 import { hasAuthParams } from 'react-oidc-context';
@@ -86,21 +86,21 @@ export const ProjectRoleRouteGuard = (props: IProjectRoleRouteGuardProps) => {
 
   const authStateContext = useAuthStateContext();
 
-  const projectAuthStateContext = useContext(ProjectAuthStateContext);
+  const surveyAuthStateContext = useContext(SurveyAuthStateContext);
 
   if (
     authStateContext.auth.isLoading ||
     authStateContext.simsUserWrapper.isLoading ||
-    !projectAuthStateContext.hasLoadedParticipantInfo
+    !surveyAuthStateContext.hasLoadedParticipantInfo
   ) {
     // Participant data has not been loaded, can not yet determine if user has sufficient roles
     return <CircularProgress className="pageProgress" data-testid="project-role-guard-spinner" />;
   }
 
   if (
-    !projectAuthStateContext.hasProjectRole(validProjectRoles) &&
-    !projectAuthStateContext.hasSystemRole(validSystemRoles) &&
-    !projectAuthStateContext.hasProjectPermission(validProjectPermissions)
+    !surveyAuthStateContext.hasProjectRole(validProjectRoles) &&
+    !surveyAuthStateContext.hasSystemRole(validSystemRoles) &&
+    !surveyAuthStateContext.hasProjectPermission(validProjectPermissions)
   ) {
     return <Redirect to="/forbidden" />;
   }

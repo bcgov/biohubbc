@@ -17,8 +17,7 @@ import useExternalApi from './api/useExternalApi';
 import useFundingSourceApi from './api/useFundingSourceApi';
 import { useMarkdownApi } from './api/useMarkdownApi';
 import useObservationApi from './api/useObservationApi';
-import useProjectApi from './api/useProjectApi';
-import useProjectParticipationApi from './api/useProjectParticipationApi';
+import useSurveyParticipationApi from './api/useProjectParticipationApi';
 import usePublishApi from './api/usePublishApi';
 import useResourcesApi from './api/useResourcesApi';
 import { useSamplingPeriodApi } from './api/useSamplingPeriodApi';
@@ -38,15 +37,14 @@ import useUserApi from './api/useUserApi';
  */
 export const useBiohubApi = () => {
   const config = useConfigContext();
+
   const apiAxios = useAxios(config.API_HOST);
 
   const analytics = useAnalyticsApi(apiAxios);
 
-  const project = useProjectApi(apiAxios);
-
   const collection = useCollectionApi(apiAxios);
 
-  const projectParticipants = useProjectParticipationApi(apiAxios);
+  const surveyParticipants = useSurveyParticipationApi(apiAxios);
 
   const taxonomy = useTaxonomyApi();
 
@@ -99,8 +97,7 @@ export const useBiohubApi = () => {
   return useMemo(
     () => ({
       analytics,
-      project,
-      projectParticipants,
+      surveyParticipants,
       taxonomy,
       survey,
       collection,

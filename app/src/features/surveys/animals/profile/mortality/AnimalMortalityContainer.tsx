@@ -28,7 +28,7 @@ const AnimalMortalityContainer = () => {
 
   const history = useHistory();
 
-  const { surveyId, projectId } = useSurveyContext();
+  const { surveyId } = useSurveyContext();
 
   const animalPageContext = useAnimalPageContext();
 
@@ -97,7 +97,7 @@ const AnimalMortalityContainer = () => {
 
     // Refresh mortality container
     if (critterId) {
-      animalPageContext.critterDataLoader.refresh(projectId, surveyId, critterId);
+      animalPageContext.critterDataLoader.refresh(surveyId, critterId);
     }
   };
 
@@ -106,9 +106,7 @@ const AnimalMortalityContainer = () => {
       <AnimalMortalityToolbar
         mortalityCount={mortality.length}
         onAddAnimalMortality={() => {
-          history.push(
-            `/admin/projects/${projectId}/surveys/${surveyId}/animals/${selectedAnimal.critter_id}/mortality/create`
-          );
+          history.push(`/admin/surveys/${surveyId}/animals/${selectedAnimal.critter_id}/mortality/create`);
         }}
       />
       {mortality.length > 0 && <AnimalMortalityMap mortality={mortality} isLoading={false} />}

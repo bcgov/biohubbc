@@ -32,12 +32,12 @@ export const DeploymentsContainer = () => {
   const [headerAnchorEl, setHeaderAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedRows, setSelectedRows] = useState<GridRowSelectionModel>([]);
 
-  const deploymentsDataLoader = useDataLoader((projectId: number, surveyId: number) =>
-    biohubApi.telemetryDeployment.getDeploymentsInSurvey(projectId, surveyId)
+  const deploymentsDataLoader = useDataLoader((surveyId: number) =>
+    biohubApi.telemetryDeployment.getDeploymentsInSurvey(surveyId)
   );
 
   useEffect(() => {
-    deploymentsDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
+    deploymentsDataLoader.load(surveyContext.surveyId);
   }, [deploymentsDataLoader, surveyContext.projectId, surveyContext.surveyId]);
 
   const deployments = deploymentsDataLoader.data?.deployments ?? [];
@@ -106,7 +106,7 @@ export const DeploymentsContainer = () => {
   };
 
   const onDelete = () => {
-    deploymentsDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+    deploymentsDataLoader.refresh(surveyContext.surveyId);
   };
 
   return (

@@ -54,7 +54,7 @@ const CreateCollectionSurveyDialog = (props: ICreateCollectionSurveyDialogProps)
     try {
       setIsSubmitting(true);
 
-      await biohubApi.collection.addToCollections(surveyContext.projectId, surveyContext.surveyId, {
+      await biohubApi.collection.addToCollections(surveyContext.surveyId, {
         ...values,
         survey_id: surveyContext.surveyId
       });

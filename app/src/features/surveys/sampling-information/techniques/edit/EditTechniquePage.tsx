@@ -16,7 +16,7 @@ import {
 import { FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
+import { useDialogContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { IUpdateTechniqueRequest } from 'interfaces/useTechniqueApi.interface';
@@ -38,7 +38,7 @@ export const EditTechniquePage = () => {
   const methodTechniqueId = Number(urlParams['method_technique_id']);
 
   const surveyContext = useSurveyContext();
-  const projectContext = useProjectContext();
+
   const dialogContext = useDialogContext();
 
   const { locationChangeInterceptor, skipUnsavedChangesDialog } = useUnsavedChangesDialog();
@@ -48,7 +48,7 @@ export const EditTechniquePage = () => {
   const formikRef = useRef<FormikProps<UpdateTechniqueFormValues>>(null);
 
   const techniqueDataLoader = useDataLoader(() =>
-    biohubApi.technique.getTechniqueById(surveyContext.projectId, surveyContext.surveyId, methodTechniqueId)
+    biohubApi.technique.getTechniqueById(surveyContext.surveyId, methodTechniqueId)
   );
 
   useEffect(() => {

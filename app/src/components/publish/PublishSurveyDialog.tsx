@@ -102,7 +102,7 @@ const PublishSurveyDialog = (props: IPublishSurveyIdDialogProps) => {
         });
       })
       .finally(() => {
-        surveyContext.surveyDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+        surveyContext.surveyDataLoader.refresh(surveyContext.surveyId);
         setIsSubmitting(false);
         props.onClose();
       });

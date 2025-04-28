@@ -24,7 +24,7 @@ import {
 import { FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useProjectContext, useSurveyContext } from 'hooks/useContext';
+import { useSurveyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
@@ -68,17 +68,16 @@ const EditObservationPage = () => {
   const dialogContext = useContext(DialogContext);
   const codesContext = useContext(CodesContext);
 
-  const projectContext = useProjectContext();
   const surveyContext = useSurveyContext();
 
   // Project and survey details for breadcrumbs
   const projectName = projectContext.projectDataLoader.data?.projectData.project.project_name;
   const surveyName = surveyContext.surveyDataLoader.data?.surveyData.survey_details.survey_name;
 
-  const { projectId, surveyId } = surveyContext;
+  const { surveyId } = surveyContext;
 
   const observationDataLoader = useDataLoader(() =>
-    biohubApi.observation.getObservationRecord(surveyContext.projectId, surveyContext.surveyId, observationId)
+    biohubApi.observation.getObservationRecord(surveyContext.surveyId, observationId)
   );
 
   useEffect(() => {
@@ -123,7 +122,7 @@ const EditObservationPage = () => {
   }, [measurementTypeDefinitionsDataLoader, observationDataLoader.data?.surveyObservation.subcounts]);
 
   const handleCancel = () => {
-    history.push(`/admin/projects/${projectId}/surveys/${surveyId}/observations`);
+    history.push(`/admin/surveys/${surveyId}/observations`);
   };
 
   /**
@@ -230,12 +229,12 @@ const EditObservationPage = () => {
         subcounts
       };
 
-      await biohubApi.observation.updateObservation(projectId, surveyId, observationId, editObservationPayload);
+      await biohubApi.observation.updateObservation(surveyId, observationId, editObservationPayload);
 
       setEnableCancelCheck(false);
 
       skipUnsavedChangesDialog();
-      history.push(`/admin/projects/${projectId}/surveys/${surveyId}/observations`);
+      history.push(`/admin/surveys/${surveyId}/observations`);
     } catch (error) {
       const apiError = error as APIError;
       dialogContext.setErrorDialog({
@@ -330,13 +329,10 @@ const EditObservationPage = () => {
             <Link component={RouterLink} underline="hover" to={`/admin/projects/${projectId}/`}>
               {projectName}
             </Link>
-            <Link component={RouterLink} underline="hover" to={`/admin/projects/${projectId}/surveys/${surveyId}`}>
+            <Link component={RouterLink} underline="hover" to={`/admin/surveys/${surveyId}`}>
               {surveyName}
             </Link>
-            <Link
-              component={RouterLink}
-              underline="hover"
-              to={`/admin/projects/${projectId}/surveys/${surveyId}/observations`}>
+            <Link component={RouterLink} underline="hover" to={`/admin/surveys/${surveyId}/observations`}>
               Observations
             </Link>
             <Typography variant="body2" component="span" color="textSecondary" aria-current="page">

@@ -39,18 +39,15 @@ export const useCollectionApi = (axios: AxiosInstance) => {
 
   /**
    * Adds a survey to existing collections
-   *
-   * @param {number} projectId
    * @param {number} surveyId
    * @param {ICreateCollectionSurveyRequest} values
    * @return {*}  {Promise<void>}
    */
   const addToCollections = async (
-    projectId: number,
     surveyId: number,
     values: ICreateCollectionSurveyRequest
   ): Promise<IGetCollectionsResponse> => {
-    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/collection`, values);
+    const { data } = await axios.post(`/api/survey/${surveyId}/collection`, values);
 
     return data;
   };

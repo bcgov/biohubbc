@@ -1,5 +1,5 @@
 import { PROJECT_PERMISSION, PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
-import { ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
+import { SurveyAuthStateContext } from 'contexts/surveyAuthStateContext';
 import { useAuthStateContext } from 'hooks/useAuthStateContext';
 import { useConfigContext } from 'hooks/useContext';
 import { PropsWithChildren, ReactElement, useContext } from 'react';
@@ -90,11 +90,11 @@ export const SystemRoleGuard = (props: PropsWithChildren<ISystemRoleGuardProps>)
  */
 export const ProjectRoleGuard = (props: PropsWithChildren<IProjectRoleGuardProps>) => {
   const { validProjectRoles, validSystemRoles, validProjectPermissions } = props;
-  const projectAuthStateContext = useContext(ProjectAuthStateContext);
+  const surveyAuthStateContext = useContext(SurveyAuthStateContext);
 
-  const hasSystemRole = projectAuthStateContext.hasSystemRole(validSystemRoles);
-  const hasProjectRole = projectAuthStateContext.hasProjectRole(validProjectRoles);
-  const hasProjectPermissions = projectAuthStateContext.hasProjectPermission(validProjectPermissions);
+  const hasSystemRole = surveyAuthStateContext.hasSystemRole(validSystemRoles);
+  const hasProjectRole = surveyAuthStateContext.hasProjectRole(validProjectRoles);
+  const hasProjectPermissions = surveyAuthStateContext.hasProjectPermission(validProjectPermissions);
 
   if (hasSystemRole || hasProjectRole || hasProjectPermissions) {
     return <>{props.children}</>;

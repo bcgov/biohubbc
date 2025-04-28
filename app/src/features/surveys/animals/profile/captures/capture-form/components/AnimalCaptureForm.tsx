@@ -41,7 +41,7 @@ export const AnimalCaptureForm = <FormikValuesType extends ICreateCaptureRequest
   props: IAnimalCaptureFormProps<FormikValuesType>
 ) => {
   const biohubApi = useBiohubApi();
-  const { projectId, surveyId } = useSurveyContext();
+  const { surveyId } = useSurveyContext();
 
   const { downloadS3File } = useS3FileDownload();
 

@@ -19,7 +19,7 @@ import { AnimalMortalityForm } from 'features/surveys/animals/profile/mortality/
 import { formatLocation } from 'features/surveys/animals/profile/mortality/mortality-form/edit/utils';
 import { FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
-import { useAnimalPageContext, useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
+import { useAnimalPageContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { ICreateMortalityRequest } from 'interfaces/useCritterApi.interface';
@@ -57,7 +57,7 @@ export const CreateMortalityPage = () => {
   const critterbaseApi = useCritterbaseApi();
 
   const surveyContext = useSurveyContext();
-  const projectContext = useProjectContext();
+
   const dialogContext = useDialogContext();
   const animalPageContext = useAnimalPageContext();
 
@@ -70,7 +70,7 @@ export const CreateMortalityPage = () => {
 
   const formikRef = useRef<FormikProps<ICreateMortalityRequest>>(null);
 
-  const { projectId, surveyId } = surveyContext;
+  const { surveyId } = surveyContext;
 
   // If the user has refreshed the page and cleared the context, or come to this page externally from a link,
   // use the url params to set the select animal in the context. The context then requests critter data from critterbase.
@@ -83,7 +83,7 @@ export const CreateMortalityPage = () => {
   }, [animalPageContext, surveyCritterId]);
 
   const handleCancel = () => {
-    history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals/details`);
+    history.push(`/admin/surveys/${surveyId}/animals/details`);
   };
 
   const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
@@ -182,10 +182,10 @@ export const CreateMortalityPage = () => {
       }
 
       // Refresh page
-      animalPageContext.critterDataLoader.refresh(projectId, surveyId, surveyCritterId);
+      animalPageContext.critterDataLoader.refresh(surveyId, surveyCritterId);
 
       skipUnsavedChangesDialog();
-      history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals/details`);
+      history.push(`/admin/surveys/${surveyId}/animals/details`);
     } catch (error) {
       const apiError = error as APIError;
       showCreateErrorDialog({
@@ -208,22 +208,13 @@ export const CreateMortalityPage = () => {
         breadCrumbJSX={
           animalId ? (
             <Breadcrumbs aria-label="breadcrumb" separator={'>'}>
-              <Link component={RouterLink} underline="hover" to={`/admin/projects/${projectId}/`}>
-                {projectContext.projectDataLoader.data?.projectData.project.project_name}
-              </Link>
-              <Link component={RouterLink} underline="hover" to={`/admin/projects/${projectId}/surveys/${surveyId}`}>
+              <Link component={RouterLink} underline="hover" to={`/admin/surveys/${surveyId}`}>
                 {surveyContext.surveyDataLoader.data?.surveyData.survey_details.survey_name}
               </Link>
-              <Link
-                component={RouterLink}
-                underline="hover"
-                to={`/admin/projects/${projectId}/surveys/${surveyId}/animals`}>
+              <Link component={RouterLink} underline="hover" to={`/admin/surveys/${surveyId}/animals`}>
                 Manage Animals
               </Link>
-              <Link
-                component={RouterLink}
-                underline="hover"
-                to={`/admin/projects/${projectId}/surveys/${surveyId}/animals/details`}>
+              <Link component={RouterLink} underline="hover" to={`/admin/surveys/${surveyId}/animals/details`}>
                 {animalId}
               </Link>
               <Typography variant="body2" component="span" color="textSecondary" aria-current="page">

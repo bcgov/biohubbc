@@ -81,9 +81,9 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
     }
   }, [urlParams, biohubApi.codes, isLoadingCodes, codes]);
 
-  const handleRemoveProjectParticipant = async (projectId: number, projectParticipationId: number) => {
+  const handleRemoveProjectParticipant = async (projectParticipationId: number) => {
     try {
-      const response = await biohubApi.projectParticipants.removeProjectParticipant(projectId, projectParticipationId);
+      const response = await biohubApi.projectParticipants.removeProjectParticipant(projectParticipationId);
 
       if (!response) {
         openErrorDialog({

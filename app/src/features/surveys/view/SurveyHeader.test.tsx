@@ -2,8 +2,8 @@ import { AuthStateContext, IAuthState } from 'contexts/authStateContext';
 import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { ConfigContext, IConfig } from 'contexts/configContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
-import { IProjectAuthStateContext, ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
 import { IProjectContext, ProjectContext } from 'contexts/projectContext';
+import { ISurveyAuthStateContext, SurveyAuthStateContext } from 'contexts/surveyAuthStateContext';
 import { ISurveyContext, SurveyContext } from 'contexts/surveyContext';
 import SurveyHeader from 'features/surveys/view/SurveyHeader';
 import { createMemoryHistory } from 'history';
@@ -66,7 +66,7 @@ const mockProjectContext: IProjectContext = {
   projectId: 1
 };
 
-const mockProjectAuthStateContext: IProjectAuthStateContext = {
+const mockSurveyAuthStateContext: ISurveyAuthStateContext = {
   getProjectParticipant: () => null,
   hasProjectRole: () => true,
   hasProjectPermission: () => true,
@@ -75,7 +75,7 @@ const mockProjectAuthStateContext: IProjectAuthStateContext = {
   hasLoadedParticipantInfo: true
 };
 
-const mockProjectUnAuthStateContext: IProjectAuthStateContext = {
+const mockProjectUnAuthStateContext: ISurveyAuthStateContext = {
   getProjectParticipant: () => null,
   hasProjectRole: () => false,
   hasProjectPermission: () => false,
@@ -97,7 +97,7 @@ describe('SurveyHeader', () => {
     cleanup();
   });
 
-  const renderComponent = (authState: IAuthState, projectAuthState: IProjectAuthStateContext) => {
+  const renderComponent = (authState: IAuthState, projectAuthState: ISurveyAuthStateContext) => {
     return render(
       <Router history={history}>
         <ConfigContext.Provider value={{ FEATURE_FLAGS: [] as string[] } as IConfig}>
@@ -105,11 +105,11 @@ describe('SurveyHeader', () => {
             <SurveyContext.Provider value={mockSurveyContext}>
               <AuthStateContext.Provider value={authState}>
                 <CodesContext.Provider value={mockCodesContext}>
-                  <ProjectAuthStateContext.Provider value={projectAuthState}>
+                  <SurveyAuthStateContext.Provider value={projectAuthState}>
                     <DialogContextProvider>
                       <SurveyHeader />
                     </DialogContextProvider>
-                  </ProjectAuthStateContext.Provider>
+                  </SurveyAuthStateContext.Provider>
                 </CodesContext.Provider>
               </AuthStateContext.Provider>
             </SurveyContext.Provider>
@@ -124,7 +124,7 @@ describe('SurveyHeader', () => {
 
     const authState = getMockAuthState({ base: SystemAdminAuthState });
 
-    const { getByTestId, findByText, getByText } = renderComponent(authState, mockProjectAuthStateContext);
+    const { getByTestId, findByText, getByText } = renderComponent(authState, mockSurveyAuthStateContext);
 
     const surveyHeaderText = await findByText('survey name', { selector: 'span' });
     expect(surveyHeaderText).toBeVisible();

@@ -2,8 +2,8 @@ import { AttachmentType } from 'constants/attachments';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { ConfigContext, IConfig } from 'contexts/configContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
-import { IProjectAuthStateContext, ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
 import { IProjectContext, ProjectContext } from 'contexts/projectContext';
+import { ISurveyAuthStateContext, SurveyAuthStateContext } from 'contexts/surveyAuthStateContext';
 import { ISurveyContext, SurveyContext } from 'contexts/surveyContext';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -63,7 +63,7 @@ describe('SurveyAttachments', () => {
     } as unknown as ISurveyContext;
 
     const authState = getMockAuthState({ base: SystemAdminAuthState });
-    const mockProjectAuthStateContext: IProjectAuthStateContext = {
+    const mockSurveyAuthStateContext: ISurveyAuthStateContext = {
       getProjectParticipant: () => null,
       hasProjectRole: () => true,
       hasProjectPermission: () => true,
@@ -88,13 +88,13 @@ describe('SurveyAttachments', () => {
       <ConfigContext.Provider value={{} as IConfig}>
         <AuthStateContext.Provider value={authState}>
           <Router history={history}>
-            <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
+            <SurveyAuthStateContext.Provider value={mockSurveyAuthStateContext}>
               <ProjectContext.Provider value={mockProjectContext}>
                 <SurveyContext.Provider value={mockSurveyContext}>
                   <SurveyAttachments />
                 </SurveyContext.Provider>
               </ProjectContext.Provider>
-            </ProjectAuthStateContext.Provider>
+            </SurveyAuthStateContext.Provider>
           </Router>
         </AuthStateContext.Provider>
       </ConfigContext.Provider>
@@ -134,7 +134,7 @@ describe('SurveyAttachments', () => {
     } as unknown as ISurveyContext;
 
     const authState = getMockAuthState({ base: SystemAdminAuthState });
-    const mockProjectAuthStateContext: IProjectAuthStateContext = {
+    const mockSurveyAuthStateContext: ISurveyAuthStateContext = {
       getProjectParticipant: () => null,
       hasProjectRole: () => true,
       hasProjectPermission: () => true,
@@ -159,13 +159,13 @@ describe('SurveyAttachments', () => {
       <ConfigContext.Provider value={{} as IConfig}>
         <AuthStateContext.Provider value={authState}>
           <Router history={history}>
-            <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
+            <SurveyAuthStateContext.Provider value={mockSurveyAuthStateContext}>
               <ProjectContext.Provider value={mockProjectContext}>
                 <SurveyContext.Provider value={mockSurveyContext}>
                   <SurveyAttachments />
                 </SurveyContext.Provider>
               </ProjectContext.Provider>
-            </ProjectAuthStateContext.Provider>
+            </SurveyAuthStateContext.Provider>
           </Router>
         </AuthStateContext.Provider>
       </ConfigContext.Provider>
@@ -201,7 +201,7 @@ describe('SurveyAttachments', () => {
     } as unknown as ISurveyContext;
 
     const authState = getMockAuthState({ base: SystemAdminAuthState });
-    const mockProjectAuthStateContext: IProjectAuthStateContext = {
+    const mockSurveyAuthStateContext: ISurveyAuthStateContext = {
       getProjectParticipant: () => null,
       hasProjectRole: () => true,
       hasProjectPermission: () => true,
@@ -228,13 +228,13 @@ describe('SurveyAttachments', () => {
       <ConfigContext.Provider value={{} as IConfig}>
         <AuthStateContext.Provider value={authState}>
           <Router history={history}>
-            <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
+            <SurveyAuthStateContext.Provider value={mockSurveyAuthStateContext}>
               <ProjectContext.Provider value={mockProjectContext}>
                 <SurveyContext.Provider value={mockSurveyContext}>
                   <SurveyAttachments />
                 </SurveyContext.Provider>
               </ProjectContext.Provider>
-            </ProjectAuthStateContext.Provider>
+            </SurveyAuthStateContext.Provider>
           </Router>
         </AuthStateContext.Provider>
       </ConfigContext.Provider>
@@ -283,7 +283,7 @@ describe('SurveyAttachments', () => {
     } as unknown as ISurveyContext;
 
     const authState = getMockAuthState({ base: SystemAdminAuthState });
-    const mockProjectAuthStateContext: IProjectAuthStateContext = {
+    const mockSurveyAuthStateContext: ISurveyAuthStateContext = {
       getProjectParticipant: () => null,
       hasProjectRole: () => true,
       hasProjectPermission: () => true,
@@ -308,7 +308,7 @@ describe('SurveyAttachments', () => {
       <ConfigContext.Provider value={{} as IConfig}>
         <AuthStateContext.Provider value={authState}>
           <Router history={history}>
-            <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
+            <SurveyAuthStateContext.Provider value={mockSurveyAuthStateContext}>
               <DialogContextProvider>
                 <ProjectContext.Provider value={mockProjectContext}>
                   <SurveyContext.Provider value={mockSurveyContext}>
@@ -316,7 +316,7 @@ describe('SurveyAttachments', () => {
                   </SurveyContext.Provider>
                 </ProjectContext.Provider>
               </DialogContextProvider>
-            </ProjectAuthStateContext.Provider>
+            </SurveyAuthStateContext.Provider>
           </Router>
         </AuthStateContext.Provider>
       </ConfigContext.Provider>
@@ -380,7 +380,7 @@ describe('SurveyAttachments', () => {
     } as unknown as ISurveyContext;
 
     const authState = getMockAuthState({ base: SystemAdminAuthState });
-    const mockProjectAuthStateContext: IProjectAuthStateContext = {
+    const mockSurveyAuthStateContext: ISurveyAuthStateContext = {
       getProjectParticipant: () => null,
       hasProjectRole: () => true,
       hasProjectPermission: () => true,
@@ -405,7 +405,7 @@ describe('SurveyAttachments', () => {
       <ConfigContext.Provider value={{} as IConfig}>
         <AuthStateContext.Provider value={authState}>
           <Router history={history}>
-            <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
+            <SurveyAuthStateContext.Provider value={mockSurveyAuthStateContext}>
               <DialogContextProvider>
                 <ProjectContext.Provider value={mockProjectContext}>
                   <SurveyContext.Provider value={mockSurveyContext}>
@@ -413,7 +413,7 @@ describe('SurveyAttachments', () => {
                   </SurveyContext.Provider>
                 </ProjectContext.Provider>
               </DialogContextProvider>
-            </ProjectAuthStateContext.Provider>
+            </SurveyAuthStateContext.Provider>
           </Router>
         </AuthStateContext.Provider>
       </ConfigContext.Provider>
@@ -488,7 +488,7 @@ describe('SurveyAttachments', () => {
     } as unknown as IProjectContext;
 
     const authState = getMockAuthState({ base: SystemAdminAuthState });
-    const mockProjectAuthStateContext: IProjectAuthStateContext = {
+    const mockSurveyAuthStateContext: ISurveyAuthStateContext = {
       getProjectParticipant: () => null,
       hasProjectRole: () => true,
       hasProjectPermission: () => true,
@@ -501,7 +501,7 @@ describe('SurveyAttachments', () => {
       <ConfigContext.Provider value={{} as IConfig}>
         <AuthStateContext.Provider value={authState}>
           <Router history={history}>
-            <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
+            <SurveyAuthStateContext.Provider value={mockSurveyAuthStateContext}>
               <DialogContextProvider>
                 <ProjectContext.Provider value={mockProjectContext}>
                   <SurveyContext.Provider value={mockSurveyContext}>
@@ -509,7 +509,7 @@ describe('SurveyAttachments', () => {
                   </SurveyContext.Provider>
                 </ProjectContext.Provider>
               </DialogContextProvider>
-            </ProjectAuthStateContext.Provider>
+            </SurveyAuthStateContext.Provider>
           </Router>
         </AuthStateContext.Provider>
       </ConfigContext.Provider>

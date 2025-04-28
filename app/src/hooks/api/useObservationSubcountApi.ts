@@ -12,21 +12,18 @@ const useObservationSubcountApi = (axios: AxiosInstance) => {
    *
    * Note: An observation must have at least one subcount. If all subcount records are deleted, the observation record
    * will also be deleted.
-   *
-   * @param {number} projectId
    * @param {number} surveyId
    * @param {number} surveyObservationId
    * @param {number} observationSubcountId
    * @return {*}  {Promise<void>}
    */
   const deleteObservationSubcount = async (
-    projectId: number,
     surveyId: number,
     surveyObservationId: number,
     observationSubcountId: number
   ): Promise<void> => {
     await axios.delete(
-      `/api/project/${projectId}/survey/${surveyId}/observations/${surveyObservationId}/subcounts/${observationSubcountId}`
+      `/api/survey/${surveyId}/observations/${surveyObservationId}/subcounts/${observationSubcountId}`
     );
   };
 

@@ -13,7 +13,7 @@ import {
 import { Formik, FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useCodesContext, useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
+import { useCodesContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { CreateSamplingPeriod } from 'interfaces/useSamplingPeriodApi.interface';
 import { useEffect, useRef, useState } from 'react';
@@ -63,7 +63,7 @@ export const CreateSamplePeriodPage = () => {
   const history = useHistory();
 
   const surveyContext = useSurveyContext();
-  const projectContext = useProjectContext();
+
   const dialogContext = useDialogContext();
 
   const biohubApi = useBiohubApi();

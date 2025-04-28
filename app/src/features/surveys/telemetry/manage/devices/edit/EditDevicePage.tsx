@@ -7,7 +7,7 @@ import { DeviceFormHeader } from 'features/surveys/telemetry/manage/devices/form
 import { Formik, FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
+import { useDialogContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { UpdateTelemetryDevice } from 'interfaces/useTelemetryDeviceApi.interface';
@@ -25,7 +25,7 @@ export const EditDevicePage = () => {
   const biohubApi = useBiohubApi();
 
   const dialogContext = useDialogContext();
-  const projectContext = useProjectContext();
+
   const surveyContext = useSurveyContext();
 
   const formikRef = useRef<FormikProps<UpdateTelemetryDevice>>(null);
@@ -39,7 +39,7 @@ export const EditDevicePage = () => {
   const deviceDataLoader = useDataLoader(biohubApi.telemetryDevice.getDeviceById);
 
   useEffect(() => {
-    deviceDataLoader.load(surveyContext.projectId, surveyContext.surveyId, deviceId);
+    deviceDataLoader.load(surveyContext.surveyId, deviceId);
   }, [deviceDataLoader, deviceId, surveyContext.projectId, surveyContext.surveyId]);
 
   if (!surveyContext.surveyDataLoader.data || !projectContext.projectDataLoader.data || !deviceDataLoader.data) {
@@ -60,7 +60,7 @@ export const EditDevicePage = () => {
     setIsSubmitting(true);
 
     try {
-      await biohubApi.telemetryDevice.updateDevice(surveyContext.projectId, surveyContext.surveyId, deviceId, {
+      await biohubApi.telemetryDevice.updateDevice(surveyContext.surveyId, deviceId, {
         serial: values.serial,
         device_make_id: values.device_make_id,
         model: values.model,

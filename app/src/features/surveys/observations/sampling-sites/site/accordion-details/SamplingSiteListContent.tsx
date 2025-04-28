@@ -24,10 +24,10 @@ export const SamplingSiteListContent = (props: ISamplingSiteListContentProps) =>
   const { surveySampleSiteId } = props;
 
   const biohubApi = useBiohubApi();
-  const { surveyId, projectId } = useSurveyContext();
+  const { surveyId } = useSurveyContext();
 
   const sampleSiteDataLoader = useDataLoader(() =>
-    biohubApi.samplingSite.getSampleSiteById(projectId, surveyId, surveySampleSiteId)
+    biohubApi.samplingSite.getSampleSiteById(surveyId, surveySampleSiteId)
   );
 
   const samplePeriodDataLoader = useDataLoader(() =>

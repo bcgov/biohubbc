@@ -39,7 +39,7 @@ export const SurveySpatialTelemetryTable = () => {
   const [sortModel, setSortModel] = useState<GridSortModel>([]);
 
   const telemetryDataLoader = useDataLoader((page: number, limit: number, sort?: string, order?: 'asc' | 'desc') =>
-    biohubApi.telemetry.getTelemetryForSurvey(surveyContext.projectId, surveyContext.surveyId, {
+    biohubApi.telemetry.getTelemetryForSurvey(surveyContext.surveyId, {
       page: page + 1, // This fixes an off-by-one error between the front end and the back end
       limit,
       sort,

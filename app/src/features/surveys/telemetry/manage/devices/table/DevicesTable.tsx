@@ -69,7 +69,7 @@ export const DevicesTable = (props: IDevicesTableProps) => {
     }
 
     await biohubApi.telemetryDevice
-      .deleteDevice(surveyContext.projectId, surveyContext.surveyId, actionMenuDeviceId)
+      .deleteDevice(surveyContext.surveyId, actionMenuDeviceId)
       .then(() => {
         dialogContext.setYesNoDialog({ open: false });
         setActionMenuAnchorEl(null);

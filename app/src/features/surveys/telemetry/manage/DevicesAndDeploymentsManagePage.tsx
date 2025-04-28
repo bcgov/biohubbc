@@ -5,7 +5,7 @@ import Stack from '@mui/material/Stack';
 import { DeploymentsContainer } from 'features/surveys/telemetry/manage/deployments/table/DeploymentsContainer';
 import { DevicesContainer } from 'features/surveys/telemetry/manage/devices/table/DevicesContainer';
 import { DevicesAndDeploymentsManageHeader } from 'features/surveys/telemetry/manage/DevicesAndDeploymentsManageHeader';
-import { useProjectContext, useSurveyContext } from 'hooks/useContext';
+import { useSurveyContext } from 'hooks/useContext';
 
 /**
  * Page for managing telemetry device and deployment information.
@@ -13,7 +13,6 @@ import { useProjectContext, useSurveyContext } from 'hooks/useContext';
  * @return {*}
  */
 export const DevicesAndDeploymentsManagePage = () => {
-  const projectContext = useProjectContext();
   const surveyContext = useSurveyContext();
 
   return (

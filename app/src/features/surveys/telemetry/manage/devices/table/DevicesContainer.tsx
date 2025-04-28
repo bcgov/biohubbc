@@ -34,12 +34,10 @@ export const DevicesContainer = () => {
   const [headerAnchorEl, setHeaderAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedRows, setSelectedRows] = useState<GridRowSelectionModel>([]);
 
-  const devicesDataLoader = useDataLoader((projectId: number, surveyId: number) =>
-    biohubApi.telemetryDevice.getDevicesInSurvey(projectId, surveyId)
-  );
+  const devicesDataLoader = useDataLoader((surveyId: number) => biohubApi.telemetryDevice.getDevicesInSurvey(surveyId));
 
   useEffect(() => {
-    devicesDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
+    devicesDataLoader.load(surveyContext.surveyId);
   }, [devicesDataLoader, surveyContext.projectId, surveyContext.surveyId]);
 
   const devices = devicesDataLoader.data?.devices ?? [];
@@ -108,7 +106,7 @@ export const DevicesContainer = () => {
   };
 
   const onDelete = () => {
-    devicesDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+    devicesDataLoader.refresh(surveyContext.surveyId);
   };
 
   return (

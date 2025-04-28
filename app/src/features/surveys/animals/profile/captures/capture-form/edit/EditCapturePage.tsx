@@ -14,7 +14,7 @@ import { AnimalCaptureForm } from 'features/surveys/animals/profile/captures/cap
 import { FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useAnimalPageContext, useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
+import { useAnimalPageContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
@@ -36,7 +36,7 @@ export const EditCapturePage = () => {
   const biohubApi = useBiohubApi();
 
   const surveyContext = useSurveyContext();
-  const projectContext = useProjectContext();
+
   const dialogContext = useDialogContext();
   const animalPageContext = useAnimalPageContext();
 
@@ -51,15 +51,15 @@ export const EditCapturePage = () => {
 
   const formikRef = useRef<FormikProps<IEditCaptureRequest>>(null);
 
-  const { projectId, surveyId } = surveyContext;
+  const { surveyId } = surveyContext;
 
   useEffect(() => {
     if (!surveyCritterId) {
       return;
     }
 
-    animalPageContext.critterDataLoader.load(projectId, surveyId, surveyCritterId);
-  }, [animalPageContext.critterDataLoader, projectId, surveyId, surveyCritterId]);
+    animalPageContext.critterDataLoader.load(surveyId, surveyCritterId);
+  }, [animalPageContext.critterDataLoader, surveyId, surveyCritterId]);
 
   const critter = animalPageContext.critterDataLoader.data;
 
@@ -90,7 +90,7 @@ export const EditCapturePage = () => {
   }
 
   const handleCancel = () => {
-    history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals/details`);
+    history.push(`/admin/surveys/${surveyId}/animals/details`);
   };
 
   /**
@@ -209,11 +209,11 @@ export const EditCapturePage = () => {
 
       // Refresh page
       if (surveyCritterId) {
-        animalPageContext.critterDataLoader.refresh(projectId, surveyId, surveyCritterId);
+        animalPageContext.critterDataLoader.refresh(surveyId, surveyCritterId);
       }
 
       skipUnsavedChangesDialog();
-      history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals/details`);
+      history.push(`/admin/surveys/${surveyId}/animals/details`);
     } catch (error) {
       const apiError = error as APIError;
 
@@ -316,22 +316,13 @@ export const EditCapturePage = () => {
         breadCrumbJSX={
           critter?.animal_id ? (
             <Breadcrumbs aria-label="breadcrumb" separator={'>'}>
-              <Link component={RouterLink} underline="hover" to={`/admin/projects/${projectId}/`}>
-                {projectContext.projectDataLoader.data?.projectData.project.project_name}
-              </Link>
-              <Link component={RouterLink} underline="hover" to={`/admin/projects/${projectId}/surveys/${surveyId}`}>
+              <Link component={RouterLink} underline="hover" to={`/admin/surveys/${surveyId}`}>
                 {surveyContext.surveyDataLoader.data?.surveyData.survey_details.survey_name}
               </Link>
-              <Link
-                component={RouterLink}
-                underline="hover"
-                to={`/admin/projects/${projectId}/surveys/${surveyId}/animals`}>
+              <Link component={RouterLink} underline="hover" to={`/admin/surveys/${surveyId}/animals`}>
                 Manage Animals
               </Link>
-              <Link
-                component={RouterLink}
-                underline="hover"
-                to={`/admin/projects/${projectId}/surveys/${surveyId}/animals/details`}>
+              <Link component={RouterLink} underline="hover" to={`/admin/surveys/${surveyId}/animals/details`}>
                 {critter.animal_id}
               </Link>
               <Typography variant="body2" component="span" color="textSecondary" aria-current="page">

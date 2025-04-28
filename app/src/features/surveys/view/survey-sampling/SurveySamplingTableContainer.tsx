@@ -64,7 +64,7 @@ export const SurveySamplingTableContainer = () => {
   }, [techniquesSortModel, techniquesPaginationModel]);
 
   const techniquesDataLoader = useDataLoader((pagination: ApiPaginationRequestOptions) =>
-    biohubApi.technique.getTechniquesForSurvey(surveyContext.projectId, surveyContext.surveyId, pagination)
+    biohubApi.technique.getTechniquesForSurvey(surveyContext.surveyId, pagination)
   );
 
   // Sites

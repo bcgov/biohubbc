@@ -11,7 +11,7 @@ import PageHeader from 'components/layout/PageHeader';
 import { FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useDialogContext, useHabitatFeatureTableContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
+import { useDialogContext, useHabitatFeatureTableContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { useEffect, useRef, useState } from 'react';
@@ -30,7 +30,7 @@ import {
 export const EditHabitatFeaturePage = (): JSX.Element => {
   const biohubApi = useBiohubApi();
   const history = useHistory();
-  const projectContext = useProjectContext();
+
   const surveyContext = useSurveyContext();
   const habitatFeatureContext = useHabitatFeatureTableContext();
   const dialogContext = useDialogContext();

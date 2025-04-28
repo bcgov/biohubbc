@@ -42,7 +42,7 @@ export const SurveyExportDialog = (props: ISurveyExportDialogProps) => {
     try {
       setIsExporting(true);
 
-      const response = await biohubApi.survey.exportData(surveyContext.projectId, surveyContext.surveyId, exportConfig);
+      const response = await biohubApi.survey.exportData(surveyContext.surveyId, exportConfig);
 
       setIsExporting(false);
 

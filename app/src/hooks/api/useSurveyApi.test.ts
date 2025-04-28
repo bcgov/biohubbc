@@ -28,16 +28,15 @@ describe('useSurveyApi', () => {
 
   describe('createSurvey', () => {
     it('creates a survey', async () => {
-      const projectId = 1;
       const survey = {} as unknown as ICreateSurveyRequest;
 
       const res: ICreateSurveyResponse = {
         id: 1
       };
 
-      mock.onPost(`/api/project/${projectId}/survey/create`).reply(200, res);
+      mock.onPost(`/api/survey/create`).reply(200, res);
 
-      const result = await useSurveyApi(axios).createSurvey(projectId, survey);
+      const result = await useSurveyApi(axios).createSurvey(survey);
 
       expect(result.id).toEqual(1);
     });
@@ -45,8 +44,6 @@ describe('useSurveyApi', () => {
 
   describe('getSurveysBasicFieldsByProjectId', () => {
     it('fetches an array of surveys', async () => {
-      const projectId = 1;
-
       const res: IFindSurveysResponse = {
         surveys: [{ survey_id: 1 }, { survey_id: 2 }] as SurveyBasicFieldsObject[],
         pagination: null as unknown as ApiPaginationResponseParams
@@ -73,9 +70,9 @@ describe('useSurveyApi', () => {
         critter_comment: 'comment'
       };
 
-      mock.onPost(`/api/project/${projectId}/survey/${surveyId}/critters`).reply(201, { create: { critters: 1 } });
+      mock.onPost(`/api/survey/${surveyId}/critters`).reply(201, { create: { critters: 1 } });
 
-      const result = await useSurveyApi(axios).createCritterAndAddToSurvey(projectId, surveyId, critter);
+      const result = await useSurveyApi(axios).createCritterAndAddToSurvey(surveyId, critter);
 
       expect(result).toBeDefined();
     });
@@ -83,9 +80,9 @@ describe('useSurveyApi', () => {
 
   describe('removeCrittersFromSurvey', () => {
     it('should remove a critter from survey', async () => {
-      mock.onPost(`/api/project/${projectId}/survey/${surveyId}/critters/delete`).reply(200, 1);
+      mock.onPost(`/api/survey/${surveyId}/critters/delete`).reply(200, 1);
 
-      const result = await useSurveyApi(axios).removeCrittersFromSurvey(projectId, surveyId, [critterId]);
+      const result = await useSurveyApi(axios).removeCrittersFromSurvey(surveyId, [critterId]);
 
       expect(result).toBe(1);
     });
@@ -99,9 +96,9 @@ describe('useSurveyApi', () => {
         } as IDetailedCritterWithInternalId
       ];
 
-      mock.onGet(`/api/project/${projectId}/survey/${surveyId}/critters`).reply(200, response);
+      mock.onGet(`/api/survey/${surveyId}/critters`).reply(200, response);
 
-      const result = await useSurveyApi(axios).getSurveyCritters(projectId, surveyId);
+      const result = await useSurveyApi(axios).getSurveyCritters(surveyId);
 
       expect(Array.isArray(result)).toBe(true);
       expect(result.length).toBe(1);
@@ -113,9 +110,9 @@ describe('useSurveyApi', () => {
     it('should get critters', async () => {
       const mockResponse = { presignedS3Urls: ['signed-url-for:path/to/file/key'] };
 
-      mock.onPost(`/api/project/${projectId}/survey/${surveyId}/export`).reply(200, mockResponse);
+      mock.onPost(`/api/survey/${surveyId}/export`).reply(200, mockResponse);
 
-      const result = await useSurveyApi(axios).exportData(projectId, surveyId, {
+      const result = await useSurveyApi(axios).exportData(surveyId, {
         metadata: true,
         sampling_data: false,
         observation_data: true,

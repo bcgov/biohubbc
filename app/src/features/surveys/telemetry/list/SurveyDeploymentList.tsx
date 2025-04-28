@@ -44,7 +44,7 @@ export const SurveyDeploymentList = () => {
   const [selectedDeploymentId, setSelectedDeploymentId] = useState<number | null>();
 
   const deploymentDataLoader = useDataLoader((pagination?: ApiPaginationRequestOptions) =>
-    biohubApi.telemetryDeployment.getDeploymentsInSurvey(surveyContext.projectId, surveyContext.surveyId, pagination)
+    biohubApi.telemetryDeployment.getDeploymentsInSurvey(surveyContext.surveyId, pagination)
   );
 
   const deployments = deploymentDataLoader.data?.deployments ?? [];
@@ -92,7 +92,7 @@ export const SurveyDeploymentList = () => {
    */
   const handleBulkDeleteDeployment = async () => {
     await biohubApi.telemetryDeployment
-      .deleteDeployments(surveyContext.projectId, surveyContext.surveyId, checkboxSelectedIds)
+      .deleteDeployments(surveyContext.surveyId, checkboxSelectedIds)
       .then(() => {
         dialogContext.setYesNoDialog({ open: false });
         setBulkDeploymentAnchorEl(null);
@@ -122,7 +122,7 @@ export const SurveyDeploymentList = () => {
    */
   const handleDeleteDeployment = async (deploymentId: number) => {
     await biohubApi.telemetryDeployment
-      .deleteDeployment(surveyContext.projectId, surveyContext.surveyId, deploymentId)
+      .deleteDeployment(surveyContext.surveyId, deploymentId)
       .then(() => {
         dialogContext.setYesNoDialog({ open: false });
         setDeploymentAnchorEl(null);

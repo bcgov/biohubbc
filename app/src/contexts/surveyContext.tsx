@@ -37,14 +37,6 @@ export interface ISurveyContext {
   critterDataLoader: DataLoader<[project_id: number, survey_id: number], ICritterSimpleResponse[], unknown>;
 
   /**
-   * The project ID belonging to the current project
-   *
-   * @type {number}
-   * @memberof ISurveyContext
-   */
-  projectId: number;
-
-  /**
    * The ID belonging to the current survey
    *
    * @type {number}
@@ -57,7 +49,6 @@ export const SurveyContext = createContext<ISurveyContext>({
   surveyDataLoader: {} as DataLoader<[project_id: number, survey_id: number], IGetSurveyForViewResponse, unknown>,
   artifactDataLoader: {} as DataLoader<[project_id: number, survey_id: number], IGetSurveyAttachmentsResponse, unknown>,
   critterDataLoader: {} as DataLoader<[project_id: number, survey_id: number], ICritterSimpleResponse[], unknown>,
-  projectId: -1,
   surveyId: -1
 });
 
@@ -81,40 +72,33 @@ export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any
     );
   }
 
-  const projectId = Number(urlParams['id']);
   const surveyId = Number(urlParams['survey_id']);
 
-  surveyDataLoader.load(projectId, surveyId);
-  artifactDataLoader.load(projectId, surveyId);
-  critterDataLoader.load(projectId, surveyId);
+  surveyDataLoader.load(surveyId);
+  artifactDataLoader.load(surveyId);
+  critterDataLoader.load(surveyId);
 
   /**
    * Refreshes the current survey object whenever the current survey ID changes from the currently loaded survey.
    */
   useEffect(() => {
-    if (
-      projectId &&
-      surveyId &&
-      (projectId !== surveyDataLoader.data?.surveyData.survey_details.project_id ||
-        surveyId !== surveyDataLoader.data?.surveyData.survey_details.id)
-    ) {
-      surveyDataLoader.refresh(projectId, surveyId);
-      artifactDataLoader.refresh(projectId, surveyId);
-      critterDataLoader.refresh(projectId, surveyId);
+    if (surveyId && surveyId !== surveyDataLoader.data?.surveyData.survey_details.id) {
+      surveyDataLoader.refresh(surveyId);
+      artifactDataLoader.refresh(surveyId);
+      critterDataLoader.refresh(surveyId);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [projectId, surveyId]);
+  }, [surveyId]);
 
   const surveyContext: ISurveyContext = useMemo(() => {
     return {
       surveyDataLoader,
       artifactDataLoader,
       critterDataLoader,
-      projectId,
       surveyId
     };
-  }, [surveyDataLoader, artifactDataLoader, critterDataLoader, projectId, surveyId]);
+  }, [surveyDataLoader, artifactDataLoader, critterDataLoader, surveyId]);
 
   return <SurveyContext.Provider value={surveyContext}>{props.children}</SurveyContext.Provider>;
 };

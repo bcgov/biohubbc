@@ -56,7 +56,7 @@ export const SamplingSiteList = (props: SamplingSiteListProps) => {
   const [sortModel] = useState<GridSortModel>([]);
 
   const sampleSiteDataLoader = useDataLoader((pagination: ApiPaginationRequestOptions) =>
-    biohubApi.samplingSite.getSampleSites(surveyContext.projectId, surveyContext.surveyId, { pagination })
+    biohubApi.samplingSite.getSampleSites(surveyContext.surveyId, { pagination })
   );
 
   const pagination: ApiPaginationRequestOptions = useMemo(() => {
@@ -100,7 +100,7 @@ export const SamplingSiteList = (props: SamplingSiteListProps) => {
    */
   const handleDeleteSampleSite = async () => {
     await biohubApi.samplingSite
-      .deleteSampleSite(surveyContext.projectId, surveyContext.surveyId, Number(selectedSampleSiteId))
+      .deleteSampleSite(surveyContext.surveyId, Number(selectedSampleSiteId))
       .then(() => {
         dialogContext.setYesNoDialog({ open: false });
         setSampleSiteAnchorEl(null);
@@ -165,7 +165,7 @@ export const SamplingSiteList = (props: SamplingSiteListProps) => {
 
   const handleBulkDeleteSampleSites = async () => {
     await biohubApi.samplingSite
-      .deleteSampleSites(surveyContext.projectId, surveyContext.surveyId, checkboxSelectedIds)
+      .deleteSampleSites(surveyContext.surveyId, checkboxSelectedIds)
       .then(() => {
         dialogContext.setYesNoDialog({ open: false });
         setCheckboxSelectedIds([]);

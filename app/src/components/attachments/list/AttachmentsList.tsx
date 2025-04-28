@@ -6,13 +6,12 @@ import { GridColDef } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { PublishStatus } from 'constants/attachments';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
-import { ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
-import { IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
+import { SurveyAuthStateContext } from 'contexts/surveyAuthStateContext';
 import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
 import { useContext } from 'react';
 import AttachmentsListItemMenuButton from './AttachmentsListItemMenuButton';
 
-interface IAttachmentsListProps<T extends IGetProjectAttachment | IGetSurveyAttachment> {
+interface IAttachmentsListProps<T extends IGetSurveyAttachment> {
   attachments: T[];
   handleDownload: (attachment: T) => void;
   handleDelete: (attachment: T) => void;
@@ -20,20 +19,20 @@ interface IAttachmentsListProps<T extends IGetProjectAttachment | IGetSurveyAtta
   emptyStateText?: string;
 }
 
-const validProjectPermissions: PROJECT_PERMISSION[] = [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR];
+const validSurveyPermissions: PROJECT_PERMISSION[] = [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR];
 
 const validSystemRoles: SYSTEM_ROLE[] = [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR];
 
 const pageSizeOptions = [5, 10, 25];
 
-const AttachmentsList = <T extends IGetProjectAttachment | IGetSurveyAttachment>(props: IAttachmentsListProps<T>) => {
+const AttachmentsList = <T extends IGetSurveyAttachment>(props: IAttachmentsListProps<T>) => {
   const { attachments, handleDownload, handleDelete, handleViewDetails } = props;
 
-  const projectAuthStateContext = useContext(ProjectAuthStateContext);
+  const surveyAuthStateContext = useContext(SurveyAuthStateContext);
 
-  const hasSystemRole = projectAuthStateContext.hasSystemRole(validSystemRoles);
-  const hasProjectPermissions = projectAuthStateContext.hasProjectPermission(validProjectPermissions);
-  const showTableActions = hasSystemRole || hasProjectPermissions;
+  const hasSystemRole = surveyAuthStateContext.hasSystemRole(validSystemRoles);
+  const hasSurveyPermissions = surveyAuthStateContext.hasSurveyPermission(validSurveyPermissions);
+  const showTableActions = hasSystemRole || hasSurveyPermissions;
 
   const attachmentsListColumnDefs: GridColDef<T>[] = [
     {

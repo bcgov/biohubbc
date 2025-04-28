@@ -46,9 +46,7 @@ export const SamplingSiteContainer = () => {
   const [selectedRows, setSelectedRows] = useState<GridRowSelectionModel>([]);
   const [headerAnchorEl, setHeaderAnchorEl] = useState<null | HTMLElement>(null);
 
-  const techniquesDataLoader = useDataLoader(() =>
-    biohubApi.technique.getTechniquesForSurvey(surveyContext.projectId, surveyContext.surveyId)
-  );
+  const techniquesDataLoader = useDataLoader(() => biohubApi.technique.getTechniquesForSurvey(surveyContext.surveyId));
 
   useEffect(() => {
     techniquesDataLoader.load();
@@ -131,7 +129,7 @@ export const SamplingSiteContainer = () => {
   }, [sortModel, paginationModel]);
 
   const samplingSitesDataLoader = useDataLoader((pagination: ApiPaginationRequestOptions) =>
-    biohubApi.samplingSite.getSampleSites(surveyContext.projectId, surveyContext.surveyId, { pagination })
+    biohubApi.samplingSite.getSampleSites(surveyContext.surveyId, { pagination })
   );
 
   useEffect(() => {
@@ -144,7 +142,7 @@ export const SamplingSiteContainer = () => {
   const sampleSites = useMemo(() => samplingSitesDataLoader.data?.sampleSites ?? [], [samplingSitesDataLoader.data]);
 
   const handleDelete = async (sampleSiteId: number) => {
-    await biohubApi.samplingSite.deleteSampleSite(surveyContext.projectId, surveyContext.surveyId, sampleSiteId);
+    await biohubApi.samplingSite.deleteSampleSite(surveyContext.surveyId, sampleSiteId);
     samplingSitesDataLoader.refresh(pagination); // Refresh data
   };
 
