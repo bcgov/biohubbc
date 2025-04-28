@@ -16,10 +16,10 @@ import { BaseRepository } from './base-repository';
  * A repository class for accessing collection participants data.
  *
  * @export
- * @class CollectionParticipationRepository
+ * @class CollectionMemberRepository
  * @extends {BaseRepository}
  */
-export class CollectionParticipationRepository extends BaseRepository {
+export class CollectionMemberRepository extends BaseRepository {
   /**
    * Get a single collection participant record with user and role info.
    *
@@ -47,12 +47,12 @@ export class CollectionParticipationRepository extends BaseRepository {
         'su.given_name',
         'su.family_name',
         'su.agency',
-        'sp.collection_participation_id',
+        'sp.collection_member_id',
         'sp.collection_id',
         'sp.collection_role_id',
         'sj.name as collection_role_name'
       ])
-      .from('collection_participation as sp')
+      .from('collection_member as sp')
       .leftJoin('collection_role as sj', 'sj.collection_role_id', 'sp.collection_role_id')
       .leftJoin('system_user as su', 'sp.system_user_id', 'su.system_user_id')
       .leftJoin('system_user_role as sur', 'su.system_user_id', 'sur.system_user_id')
@@ -71,7 +71,7 @@ export class CollectionParticipationRepository extends BaseRepository {
         'su.given_name',
         'su.family_name',
         'su.agency',
-        'sp.collection_participation_id',
+        'sp.collection_member_id',
         'sp.collection_role_id',
         'sp.collection_id',
         'sj.name',
@@ -92,7 +92,7 @@ export class CollectionParticipationRepository extends BaseRepository {
    * @returns {Knex.QueryBuilder} Knex query builder with joins and aggregations.
    */
   _makeCollectionParticipantsBaseQuery(collectionId: number, knex: Knex): Knex.QueryBuilder {
-    return knex('collection_participation as cp')
+    return knex('collection_member as cp')
       .select([
         'su.system_user_id',
         'su.user_identifier',
@@ -106,7 +106,7 @@ export class CollectionParticipationRepository extends BaseRepository {
         'su.given_name',
         'su.family_name',
         'su.agency',
-        'cp.collection_participation_id',
+        'cp.collection_member_id',
         'cp.collection_id',
         'cp.collection_role_id',
         'cr.name as collection_role_name'
@@ -129,7 +129,7 @@ export class CollectionParticipationRepository extends BaseRepository {
         'su.given_name',
         'su.family_name',
         'su.agency',
-        'cp.collection_participation_id',
+        'cp.collection_member_id',
         'cp.collection_role_id',
         'cp.collection_id',
         'cr.name',
@@ -163,10 +163,10 @@ export class CollectionParticipationRepository extends BaseRepository {
     }
 
     if (filterFields?.system_user_id) {
-      query.whereIn('cp.collection_participation_id', (subquery) =>
+      query.whereIn('cp.collection_member_id', (subquery) =>
         subquery
-          .select('collection_participation_id')
-          .from('collection_participation')
+          .select('collection_member_id')
+          .from('collection_member')
           .where('system_user_id', filterFields.system_user_id)
       );
     }
@@ -188,7 +188,7 @@ export class CollectionParticipationRepository extends BaseRepository {
         SELECT
           COUNT(*)::integer AS count
         FROM
-          collection_participation
+          collection_member
         WHERE
           collection_id = ${collectionId};
       `;
@@ -196,7 +196,7 @@ export class CollectionParticipationRepository extends BaseRepository {
     const response = await this.connection.sql(sqlStatement, z.object({ count: z.number() }));
 
     if (!response.rowCount) {
-      throw new ApiExecuteSQLError('Failed to get collection_participation count', [
+      throw new ApiExecuteSQLError('Failed to get collection_member count', [
         'collectionParticipationRepository->getCollectionParticipantsCount',
         'rows was null or undefined, expected rows != null'
       ]);
@@ -211,11 +211,11 @@ export class CollectionParticipationRepository extends BaseRepository {
    * @param {number} collectionId
    * @param {IPostCollectionParticipant} values
    * @return {*}  {Promise<void>}
-   * @memberof CollectionParticipationRepository
+   * @memberof CollectionMemberRepository
    */
   async insertCollectionParticipant(collectionId: number, values: IPostCollectionParticipant): Promise<void> {
     const sqlStatement = SQL`
-      INSERT INTO collection_participation (
+      INSERT INTO collection_member (
         collection_id,
         system_user_id,
         collection_role_id
@@ -230,7 +230,7 @@ export class CollectionParticipationRepository extends BaseRepository {
 
     if (!response?.rowCount) {
       throw new ApiExecuteSQLError('Failed to insert collection participant', [
-        'CollectionParticipationRepository->insertCollectionParticipant',
+        'CollectionMemberRepository->insertCollectionParticipant',
         'rows was null or undefined, expected rows != null'
       ]);
     }
@@ -243,7 +243,7 @@ export class CollectionParticipationRepository extends BaseRepository {
    * @param {number} collectionParticipationId
    * @param {string} collectionRoleName
    * @return {*}  {Promise<void>}
-   * @memberof CollectionParticipationRepository
+   * @memberof CollectionMemberRepository
    */
   async updateCollectionParticipantRole(
     collectionId: number,
@@ -251,11 +251,11 @@ export class CollectionParticipationRepository extends BaseRepository {
     collectionRoleName: string
   ): Promise<void> {
     const sqlStatement = SQL`
-      UPDATE collection_participation
+      UPDATE collection_member
       SET
         collection_role_id = (SELECT collection_role_id FROM collection_role WHERE name = ${collectionRoleName} LIMIT 1)
       WHERE
-        collection_participation_id = ${collectionParticipationId}
+        collection_member_id = ${collectionParticipationId}
       AND
         collection_id = ${collectionId}
       ;
@@ -265,7 +265,7 @@ export class CollectionParticipationRepository extends BaseRepository {
 
     if (!response?.rowCount) {
       throw new ApiExecuteSQLError('Failed to update collection participant', [
-        'CollectionParticipationRepository->updateCollectionParticipant',
+        'CollectionMemberRepository->updateCollectionParticipant',
         'rows was null or undefined, expected rows != null'
       ]);
     }
@@ -276,14 +276,14 @@ export class CollectionParticipationRepository extends BaseRepository {
    * @param {number} collectionId
    * @param {number} collectionParticipationId
    * @return {*}  {Promise<any>}
-   * @memberof CollectionParticipationRepository
+   * @memberof CollectionMemberRepository
    */
-  async deleteCollectionParticipationRecord(collectionId: number, collectionParticipationId: number): Promise<any> {
+  async deleteCollectionMemberRecord(collectionId: number, collectionParticipationId: number): Promise<any> {
     const sqlStatement = SQL`
       DELETE FROM
-        collection_participation
+        collection_member
       WHERE
-        collection_participation_id = ${collectionParticipationId}
+        collection_member_id = ${collectionParticipationId}
       AND
         collection_id = ${collectionId}
       RETURNING
@@ -294,7 +294,7 @@ export class CollectionParticipationRepository extends BaseRepository {
 
     if (!response?.rowCount) {
       throw new ApiExecuteSQLError('Failed to delete collection participation record', [
-        'CollectionParticipationRepository->deleteCollectionParticipationRecord',
+        'CollectionMemberRepository->deleteCollectionMemberRecord',
         'rows was null or undefined, expected rows != null'
       ]);
     }

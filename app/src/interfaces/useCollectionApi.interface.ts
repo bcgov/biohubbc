@@ -50,7 +50,7 @@ export interface ICollectionParticipantResponse {
 }
 
 export interface ICollectionParticipant {
-  collection_participation_id: number;
+  collection_member_id: number;
   system_user_id: number;
   collection_role_id: number;
   collection_role_name: string;

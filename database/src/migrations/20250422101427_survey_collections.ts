@@ -52,29 +52,29 @@ export async function up(knex: Knex): Promise<void> {
     
     ----------------------------------------------------------------------------------------
 
-    CREATE TABLE collection_participation(
-      collection_participation_id            integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-      collection_id                          integer           NOT NULL,
+    CREATE TABLE collection_member(
+      collection_member_id                 integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+      collection_id                        integer           NOT NULL,
       system_user_id                       integer           NOT NULL,
-      collection_role_id                    integer           NOT NULL,
+      collection_role_id                   integer           NOT NULL,
       create_date                          timestamptz(6)    DEFAULT now() NOT NULL,
       create_user                          integer           NOT NULL,
       update_date                          timestamptz(6),
       update_user                          integer,
       revision_count                       integer           DEFAULT 0 NOT NULL,
-      CONSTRAINT collection_participation_pk PRIMARY KEY (collection_participation_id)
+      CONSTRAINT collection_member_pk PRIMARY KEY (collection_member_id)
     );
 
-    COMMENT ON COLUMN collection_participation.collection_participation_id            IS 'System generated surrogate primary key identifier.';
-    COMMENT ON COLUMN collection_participation.collection_id                          IS 'System generated surrogate primary key identifier.';
-    COMMENT ON COLUMN collection_participation.system_user_id                       IS 'System generated surrogate primary key identifier.';
-    COMMENT ON COLUMN collection_participation.collection_role_id                   IS 'System generated surrogate primary key identifier.';
-    COMMENT ON COLUMN collection_participation.create_date                          IS 'The datetime the record was created.';
-    COMMENT ON COLUMN collection_participation.create_user                          IS 'The id of the user who created the record as identified in the system user table.';
-    COMMENT ON COLUMN collection_participation.update_date                          IS 'The datetime the record was updated.';
-    COMMENT ON COLUMN collection_participation.update_user                          IS 'The id of the user who updated the record as identified in the system user table.';
-    COMMENT ON COLUMN collection_participation.revision_count                       IS 'Revision count used for concurrency control.';
-    COMMENT ON TABLE  collection_participation                                      IS 'A associative entity that joins collection, system users, and collection roles.';
+    COMMENT ON COLUMN collection_member.collection_member_id            IS 'System generated surrogate primary key identifier.';
+    COMMENT ON COLUMN collection_member.collection_id                          IS 'System generated surrogate primary key identifier.';
+    COMMENT ON COLUMN collection_member.system_user_id                       IS 'System generated surrogate primary key identifier.';
+    COMMENT ON COLUMN collection_member.collection_role_id                   IS 'System generated surrogate primary key identifier.';
+    COMMENT ON COLUMN collection_member.create_date                          IS 'The datetime the record was created.';
+    COMMENT ON COLUMN collection_member.create_user                          IS 'The id of the user who created the record as identified in the system user table.';
+    COMMENT ON COLUMN collection_member.update_date                          IS 'The datetime the record was updated.';
+    COMMENT ON COLUMN collection_member.update_user                          IS 'The id of the user who updated the record as identified in the system user table.';
+    COMMENT ON COLUMN collection_member.revision_count                       IS 'Revision count used for concurrency control.';
+    COMMENT ON TABLE  collection_member                                      IS 'A associative entity that joins collection, system users, and collection roles.';
 
     ----------------------------------------------------------------------------------------
 
@@ -132,31 +132,31 @@ export async function up(knex: Knex): Promise<void> {
 
 
     ----------------------------------------------------------------------------------------
-    -- Create Indexes and Constraints for table: collection_participation
+    -- Create Indexes and Constraints for table: collection_member
     ----------------------------------------------------------------------------------------
 
     -- Add unique key constraint
-    CREATE UNIQUE INDEX collection_participation_uk1 ON collection_participation(collection_id, system_user_id);
+    CREATE UNIQUE INDEX collection_member_uk1 ON collection_member(collection_id, system_user_id);
 
     -- Add foreign key constraint
-    ALTER TABLE collection_participation ADD CONSTRAINT collection_participation_fk1
+    ALTER TABLE collection_member ADD CONSTRAINT collection_member_fk1
       FOREIGN KEY (collection_id)
       REFERENCES collection(collection_id);
 
-    ALTER TABLE collection_participation ADD CONSTRAINT collection_participation_fk2
+    ALTER TABLE collection_member ADD CONSTRAINT collection_member_fk2
       FOREIGN KEY (system_user_id)
       REFERENCES "system_user"(system_user_id);
 
-    ALTER TABLE collection_participation ADD CONSTRAINT collection_participation_fk3
+    ALTER TABLE collection_member ADD CONSTRAINT collection_member_fk3
       FOREIGN KEY (collection_role_id)
       REFERENCES collection_role(collection_role_id);
 
     -- Add indexes on key columns
-    CREATE INDEX collection_participation_idx1 ON collection_participation(collection_id);
+    CREATE INDEX collection_member_idx1 ON collection_member(collection_id);
   
-    CREATE INDEX collection_participation_idx2 ON collection_participation(system_user_id);
+    CREATE INDEX collection_member_idx2 ON collection_member(system_user_id);
   
-    CREATE INDEX collection_participation_idx3 ON collection_participation(collection_role_id);
+    CREATE INDEX collection_member_idx3 ON collection_member(collection_role_id);
 
     ----------------------------------------------------------------------------------------
     -- Create Indexes and Constraints for table: collection_role
@@ -193,8 +193,8 @@ export async function up(knex: Knex): Promise<void> {
     create trigger audit_collection before insert or update or delete on collection for each row execute procedure tr_audit_trigger();
     create trigger journal_collection after insert or update or delete on collection for each row execute procedure tr_journal_trigger();
 
-    create trigger audit_collection_participation before insert or update or delete on collection_participation for each row execute procedure tr_audit_trigger();
-    create trigger journal_collection_participation after insert or update or delete on collection_participation for each row execute procedure tr_journal_trigger();
+    create trigger audit_collection_member before insert or update or delete on collection_member for each row execute procedure tr_audit_trigger();
+    create trigger journal_collection_member after insert or update or delete on collection_member for each row execute procedure tr_journal_trigger();
 
     create trigger audit_collection_role before insert or update or delete on collection_role for each row execute procedure tr_audit_trigger();
     create trigger journal_collection_role after insert or update or delete on collection_role for each row execute procedure tr_journal_trigger();

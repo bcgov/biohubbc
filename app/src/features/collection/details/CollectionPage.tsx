@@ -11,7 +11,7 @@ import { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { CollectionDataContainer } from './data/CollectionDataContainer';
 import CollectionHeader from './header/CollectionHeader';
-import CollectionParticipantsContainer from './members/CollectionParticipantsContainer';
+import CollectionParticipantsContainer from './members/CollectionMembersContainer';
 import CollectionSurveyContainer from './survey/CollectionSurveyContainer';
 
 enum CollectionView {

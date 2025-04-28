@@ -5,20 +5,20 @@ import {
   IPostCollectionParticipant
 } from '../models/collection';
 import { SystemUserWithRoles } from '../models/system-user-view';
-import { CollectionParticipationRepository } from '../repositories/collection-participation-repository';
+import { CollectionMemberRepository } from '../repositories/collection-participation-repository';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { DBService } from './db-service';
 
 /**
  * Service for managing collections
  */
-export class CollectionParticipationService extends DBService {
-  collectionParticipationRepository: CollectionParticipationRepository;
+export class CollectionMemberService extends DBService {
+  collectionParticipationRepository: CollectionMemberRepository;
 
   constructor(connection: IDBConnection) {
     super(connection);
 
-    this.collectionParticipationRepository = new CollectionParticipationRepository(connection);
+    this.collectionParticipationRepository = new CollectionMemberRepository(connection);
   }
 
   /**
@@ -27,7 +27,7 @@ export class CollectionParticipationService extends DBService {
    * @param {number} collectionId
    * @param {number} systemUserId
    * @returns {Promise<(CollectionParticipant & SystemUserWithRoles) | null>}
-   * @memberof CollectionParticipationService
+   * @memberof CollectionMemberService
    */
   async getCollectionParticipant(
     collectionId: number,
@@ -43,7 +43,7 @@ export class CollectionParticipationService extends DBService {
    * @param {ICollectionParticipantsAdvancedFilters} filterFields
    * @param {ApiPaginationOptions} pagination
    * @returns {Promise<(CollectionParticipant & SystemUserWithRoles)[]>}
-   * @memberof CollectionParticipationService
+   * @memberof CollectionMemberService
    */
   async getCollectionParticipants(
     collectionId: number,
@@ -58,7 +58,7 @@ export class CollectionParticipationService extends DBService {
    *
    * @param {number} collectionId
    * @returns {Promise<number>}
-   * @memberof CollectionParticipationService
+   * @memberof CollectionMemberService
    */
   async getCollectionParticipantsCount(collectionId: number): Promise<number> {
     return this.collectionParticipationRepository.getCollectionParticipantsCount(collectionId);
@@ -70,7 +70,7 @@ export class CollectionParticipationService extends DBService {
    * @param {number} collectionId
    * @param {IPostCollectionParticipant[]} participants
    * @returns {Promise<void>}
-   * @memberof CollectionParticipationService
+   * @memberof CollectionMemberService
    */
   async insertCollectionParticipants(collectionId: number, participants: IPostCollectionParticipant[]): Promise<void> {
     await Promise.all(
@@ -86,7 +86,7 @@ export class CollectionParticipationService extends DBService {
    * @param collectionId
    * @param systemUserId
    * @returns {Promise<void>}
-   * @memberof CollectionParticipationService
+   * @memberof CollectionMemberService
    */
   async updateCollectionParticipantRole(
     collectionId: number,
@@ -106,12 +106,9 @@ export class CollectionParticipationService extends DBService {
    * @param {number} collectionId
    * @param {number} collectionParticipationId
    * @returns {Promise<void>}
-   * @memberof CollectionParticipationService
+   * @memberof CollectionMemberService
    */
-  async deleteCollectionParticipationRecord(collectionId: number, collectionParticipationId: number): Promise<any> {
-    return this.collectionParticipationRepository.deleteCollectionParticipationRecord(
-      collectionId,
-      collectionParticipationId
-    );
+  async deleteCollectionMemberRecord(collectionId: number, collectionParticipationId: number): Promise<any> {
+    return this.collectionParticipationRepository.deleteCollectionMemberRecord(collectionId, collectionParticipationId);
   }
 }

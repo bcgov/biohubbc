@@ -8,7 +8,7 @@ import {
 } from '../../../../openapi/schemas/collection';
 import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../../../../openapi/schemas/pagination';
 import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
-import { CollectionParticipationService } from '../../../../services/collection-participation-service';
+import { CollectionMemberService } from '../../../../services/collection-participation-service';
 import { getLogger } from '../../../../utils/logger';
 import {
   ensureCompletePaginationOptions,
@@ -107,7 +107,7 @@ export function getCollectionParticipants(): RequestHandler {
 
       const filterFields = parseQueryParams(req);
 
-      const collectionParticipationService = new CollectionParticipationService(connection);
+      const collectionParticipationService = new CollectionMemberService(connection);
 
       const collectionId = Number(req.params.collectionId);
 
@@ -236,7 +236,7 @@ export function addParticipantsToCollection(): RequestHandler {
 
       const collectionId = Number(req.params.collectionId);
 
-      const collectionParticipationService = new CollectionParticipationService(connection);
+      const collectionParticipationService = new CollectionMemberService(connection);
 
       const data = req.body.participants as IPostCollectionParticipant[];
 

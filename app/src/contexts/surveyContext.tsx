@@ -58,13 +58,11 @@ export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any
   const artifactDataLoader = useDataLoader(biohubApi.survey.getSurveyAttachments);
   const critterDataLoader = useDataLoader(biohubApi.survey.getSurveyCritters);
 
-  const urlParams: Record<string, string | number | undefined> = useParams();
+  const urlParams: Record<string, string | number | undefined> = useParams<{ survey_id: string }>();
 
-  if (!urlParams['id']) {
-    throw new Error(
-      "The project ID found in SurveyContextProvider was invalid. Does your current React route provide an 'id' parameter?"
-    );
-  }
+  console.log('CONTEXT!');
+
+  console.log(urlParams);
 
   if (!urlParams['survey_id']) {
     throw new Error(
@@ -74,9 +72,11 @@ export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any
 
   const surveyId = Number(urlParams['survey_id']);
 
-  surveyDataLoader.load(surveyId);
-  artifactDataLoader.load(surveyId);
-  critterDataLoader.load(surveyId);
+  useEffect(() => {
+    surveyDataLoader.load(surveyId);
+    artifactDataLoader.load(surveyId);
+    critterDataLoader.load(surveyId);
+  }, [surveyId, critterDataLoader, artifactDataLoader, surveyDataLoader]);
 
   /**
    * Refreshes the current survey object whenever the current survey ID changes from the currently loaded survey.

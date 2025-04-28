@@ -1,4 +1,4 @@
-import { ProjectRoleRouteGuard } from 'components/security/RouteGuards';
+import { SurveyRoleRouteGuard } from 'components/security/RouteGuards';
 import { SURVEY_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { AnimalPageContextProvider } from 'contexts/animalPageContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
@@ -13,6 +13,7 @@ import React from 'react';
 import { Redirect, Switch } from 'react-router';
 import RouteWithTitle from 'utils/RouteWithTitle';
 import { getTitle } from 'utils/Utils';
+import CreateSurveyPage from './CreateSurveyPage';
 import { HabitatFeatureRouter } from './habitat-features/SurveyHabitatFeatureRouter';
 import CreateObservationPage from './observations/form/create/CreateObservationPage';
 import { TelemetryRouter } from './telemetry/TelemetryRouter';
@@ -29,28 +30,27 @@ const SurveyRouter: React.FC = () => {
 
       {/* Survey Page Routes */}
       <RouteWithTitle exact path="/admin/surveys/:survey_id/details" title={getTitle('Survey')}>
-        <ProjectRoleRouteGuard
-          validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR, SURVEY_ROLE.VIEWER]}
-          validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-          <DialogContextProvider>
-            <SurveyPage />
-          </DialogContextProvider>
-        </ProjectRoleRouteGuard>
+        <SurveyPage />
+      </RouteWithTitle>
+
+      {/* Survey Routes */}
+      <RouteWithTitle exact path="/admin/surveys/create" title={getTitle('Survey')}>
+        <CreateSurveyPage />
       </RouteWithTitle>
 
       <RouteWithTitle exact path="/admin/surveys/:survey_id/edit" title={getTitle('Edit Survey')}>
-        <ProjectRoleRouteGuard
+        <SurveyRoleRouteGuard
           validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <DialogContextProvider>
             <EditSurveyPage />
           </DialogContextProvider>
-        </ProjectRoleRouteGuard>
+        </SurveyRoleRouteGuard>
       </RouteWithTitle>
 
       {/* Animals Routes */}
       <RouteWithTitle path="/admin/surveys/:survey_id/animals" title={getTitle('Manage Animals')}>
-        <ProjectRoleRouteGuard
+        <SurveyRoleRouteGuard
           validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR, SURVEY_ROLE.VIEWER]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <DialogContextProvider>
@@ -58,64 +58,64 @@ const SurveyRouter: React.FC = () => {
               <AnimalRouter />
             </AnimalPageContextProvider>
           </DialogContextProvider>
-        </ProjectRoleRouteGuard>
+        </SurveyRoleRouteGuard>
       </RouteWithTitle>
 
       {/* Telemetry Routes */}
       <RouteWithTitle path="/admin/surveys/:survey_id/telemetry" title={getTitle('Manage Telemetry')}>
-        <ProjectRoleRouteGuard
+        <SurveyRoleRouteGuard
           validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR, SURVEY_ROLE.VIEWER]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <TelemetryRouter />
-        </ProjectRoleRouteGuard>
+        </SurveyRoleRouteGuard>
       </RouteWithTitle>
 
       {/* Habitat Features Routes */}
       <RouteWithTitle path="/admin/surveys/:survey_id/habitat-features" title={getTitle('Manage Habitat Features')}>
-        <ProjectRoleRouteGuard
+        <SurveyRoleRouteGuard
           validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR, SURVEY_ROLE.VIEWER]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <HabitatFeatureRouter />
-        </ProjectRoleRouteGuard>
+        </SurveyRoleRouteGuard>
       </RouteWithTitle>
 
       {/* Observations Routes */}
       <RouteWithTitle exact path="/admin/surveys/:survey_id/observations" title={getTitle('Manage Observations')}>
-        <ProjectRoleRouteGuard
+        <SurveyRoleRouteGuard
           validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR, SURVEY_ROLE.VIEWER]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <ObservationsContextProvider>
             <SurveyObservationPage />
           </ObservationsContextProvider>
-        </ProjectRoleRouteGuard>
+        </SurveyRoleRouteGuard>
       </RouteWithTitle>
 
       <RouteWithTitle exact path="/admin/surveys/:survey_id/observations/create" title={getTitle('Create Observation')}>
-        <ProjectRoleRouteGuard
+        <SurveyRoleRouteGuard
           validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <CreateObservationPage />
-        </ProjectRoleRouteGuard>
+        </SurveyRoleRouteGuard>
       </RouteWithTitle>
 
       <RouteWithTitle
         exact
         path="/admin/surveys/:survey_id/observations/:observation_id/edit"
         title={getTitle('Edit Observation')}>
-        <ProjectRoleRouteGuard
+        <SurveyRoleRouteGuard
           validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <EditObservationPage />
-        </ProjectRoleRouteGuard>
+        </SurveyRoleRouteGuard>
       </RouteWithTitle>
 
       {/* Sampling routes */}
       <RouteWithTitle path="/admin/surveys/:survey_id/sampling" title={getTitle('Surveys')}>
-        <ProjectRoleRouteGuard
+        <SurveyRoleRouteGuard
           validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR, SURVEY_ROLE.VIEWER]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <SamplingRouter />
-        </ProjectRoleRouteGuard>
+        </SurveyRoleRouteGuard>
       </RouteWithTitle>
     </Switch>
   );

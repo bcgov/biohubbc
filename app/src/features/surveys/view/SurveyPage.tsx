@@ -29,7 +29,7 @@ const SurveyPage: React.FC = () => {
   }, [codesContext.codesDataLoader]);
 
   if (!codesContext.codesDataLoader.data || !surveyContext.surveyDataLoader.data) {
-    return <CircularProgress className="pageProgress" size={40} />;
+    return <CircularProgress className="pageProgress" size={4} />;
   }
 
   return (

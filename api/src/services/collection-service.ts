@@ -8,7 +8,7 @@ import {
 } from '../repositories/observation-repository/observation-repository.interface';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { AttractantService } from './attractants-service';
-import { CollectionParticipationService } from './collection-participation-service';
+import { CollectionMemberService } from './collection-participation-service';
 import { CollectionSurveyService } from './collection-survey-service';
 import { DBService } from './db-service';
 import { ObservationService } from './observation-services/observation-service';
@@ -22,7 +22,7 @@ import { ObservationService } from './observation-services/observation-service';
  */
 export class CollectionService extends DBService {
   collectionRepository: CollectionRepository;
-  collectionParticipationService: CollectionParticipationService;
+  collectionMemberService: CollectionMemberService;
   collectionSurveyService: CollectionSurveyService;
   attractantService: AttractantService;
   observationService: ObservationService;
@@ -31,7 +31,7 @@ export class CollectionService extends DBService {
     super(connection);
 
     this.collectionRepository = new CollectionRepository(connection);
-    this.collectionParticipationService = new CollectionParticipationService(connection);
+    this.collectionMemberService = new CollectionMemberService(connection);
     this.attractantService = new AttractantService(connection);
     this.collectionSurveyService = new CollectionSurveyService(connection);
     this.observationService = new ObservationService(connection);
@@ -120,7 +120,7 @@ export class CollectionService extends DBService {
     const collectionResponse = await this.collectionRepository.createCollection(collection);
 
     // Insert members of the collection
-    await this.collectionParticipationService.insertCollectionParticipants(
+    await this.collectionMemberService.insertCollectionParticipants(
       collectionResponse.collection_id,
       collection.participants
     );
@@ -141,7 +141,7 @@ export class CollectionService extends DBService {
     const collectionResponse = await this.collectionRepository.updateCollection(collectionId, collection);
 
     // Get current participants from DB
-    const currentParticipants = await this.collectionParticipationService.getCollectionParticipants(collectionId);
+    const currentParticipants = await this.collectionMemberService.getCollectionParticipants(collectionId);
 
     // Find new participants to insert
     const newParticipants = collection.participants.filter(
@@ -169,21 +169,18 @@ export class CollectionService extends DBService {
       .filter((p) => p !== null) as Array<(typeof currentParticipants)[0] & { newRole: string }>;
 
     // Insert new participants
-    await this.collectionParticipationService.insertCollectionParticipants(collectionId, newParticipants);
+    await this.collectionMemberService.insertCollectionParticipants(collectionId, newParticipants);
 
     // Remove old participants
     for (const participant of oldParticipants) {
-      await this.collectionParticipationService.deleteCollectionParticipationRecord(
-        collectionId,
-        participant.collection_participation_id
-      );
+      await this.collectionMemberService.deleteCollectionMemberRecord(collectionId, participant.collection_member_id);
     }
 
     // Update roles of modified participants
     for (const participant of modifiedParticipants) {
-      await this.collectionParticipationService.updateCollectionParticipantRole(
+      await this.collectionMemberService.updateCollectionParticipantRole(
         collectionId,
-        participant.collection_participation_id,
+        participant.collection_member_id,
         participant.newRole
       );
     }

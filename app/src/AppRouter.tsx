@@ -1,7 +1,8 @@
-import { AuthenticatedRouteGuard, SystemRoleRouteGuard } from 'components/security/RouteGuards';
+import { AuthenticatedRouteGuard, SurveyRoleRouteGuard, SystemRoleRouteGuard } from 'components/security/RouteGuards';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { CodesContextProvider } from 'contexts/codesContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
+import { SurveyContextProvider } from 'contexts/surveyContext';
 import AdminRouter from 'features/admin/AdminRouter';
 import CollectionsRouter from 'features/collection/CollectionRouter';
 import FundingSourcesRouter from 'features/funding-sources/FundingSourcesRouter';
@@ -9,6 +10,7 @@ import ResourcesPage from 'features/resources/ResourcesPage';
 import StandardsPage from 'features/standards/StandardsPage';
 import SummaryRouter from 'features/summary/SummaryRouter';
 import { SupportPage } from 'features/support/SupportPage';
+import SurveyRouter from 'features/surveys/SurveyRouter';
 import BaseLayout from 'layouts/BaseLayout';
 import AccessDenied from 'pages/403/AccessDenied';
 import NotFoundPage from 'pages/404/NotFoundPage';
@@ -67,6 +69,19 @@ const AppRouter: React.FC = () => {
             </CodesContextProvider>
           </AuthenticatedRouteGuard>
         </BaseLayout>
+      </RouteWithTitle>
+
+      <RouteWithTitle path="/admin/surveys/:survey_id" title={getTitle('Survey')}>
+        <AuthenticatedRouteGuard>
+          <SurveyRoleRouteGuard
+            validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.PROJECT_CREATOR]}>
+            <SurveyContextProvider>
+              <CodesContextProvider>
+                <SurveyRouter />
+              </CodesContextProvider>
+            </SurveyContextProvider>
+          </SurveyRoleRouteGuard>
+        </AuthenticatedRouteGuard>
       </RouteWithTitle>
 
       <RouteWithTitle path="/admin/collections" title={getTitle('Collections')}>

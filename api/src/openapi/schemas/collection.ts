@@ -60,15 +60,9 @@ export const UpdateCollectionSchema: OpenAPIV3.SchemaObject = {
 export const CollectionAndSystemUserSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
   additionalProperties: false,
-  required: [
-    'collection_participation_id',
-    'collection_id',
-    'system_user_id',
-    'collection_role_id',
-    'collection_role_name'
-  ],
+  required: ['collection_member_id', 'collection_id', 'system_user_id', 'collection_role_id', 'collection_role_name'],
   properties: {
-    collection_participation_id: {
+    collection_member_id: {
       type: 'number'
     },
     collection_id: {

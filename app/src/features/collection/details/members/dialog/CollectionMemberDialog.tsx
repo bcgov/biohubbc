@@ -9,9 +9,9 @@ import { useCodesContext, useDialogContext } from 'hooks/useContext';
 import { useState } from 'react';
 import { pluralize } from 'utils/Utils';
 import yup from 'utils/YupSchema';
-import CollectionParticipationForm, { ICollectionParticipationData } from './form/CollectionParticipationForm';
+import CollectionMemberForm, { ICollectionMemberData } from './form/CollectionMemberForm';
 
-interface ICollectionParticipationDialogProps {
+interface ICollectionMemberDialogProps {
   collectionId: number;
   open: boolean;
   onSubmit: () => void;
@@ -21,13 +21,13 @@ interface ICollectionParticipationDialogProps {
 /**
  * Dialog for inviting collection participants
  *
- * NOTE: On naming conventions, CollectionParticipationForm is from the perspective of a survey (adding one survey to multiple collections).
+ * NOTE: On naming conventions, CollectionMemberForm is from the perspective of a survey (adding one survey to multiple collections).
  * Whereas CollectionSurveyForm is from the perspective of a collection (adding multiple surveys to one collection)
  *
- * @param {ICollectionParticipationDialogProps} props
+ * @param {ICollectionMemberDialogProps} props
  * @returns
  */
-const CollectionParticipationDialog = (props: ICollectionParticipationDialogProps) => {
+const CollectionMemberDialog = (props: ICollectionMemberDialogProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const dialogContext = useDialogContext();
   const codesContext = useCodesContext();
@@ -60,7 +60,7 @@ const CollectionParticipationDialog = (props: ICollectionParticipationDialogProp
     });
   };
 
-  const handleSubmitCollectionService = async (values: ICollectionParticipationData) => {
+  const handleSubmitCollectionService = async (values: ICollectionMemberData) => {
     try {
       setIsSubmitting(true);
 
@@ -100,7 +100,7 @@ const CollectionParticipationDialog = (props: ICollectionParticipationDialogProp
       open={props.open}
       dialogLoading={isSubmitting}
       component={{
-        element: <CollectionParticipationForm roles={codesContext.codesDataLoader.data?.collection_roles ?? []} />,
+        element: <CollectionMemberForm roles={codesContext.codesDataLoader.data?.collection_roles ?? []} />,
         initialValues: {
           participants: []
         },
@@ -115,4 +115,4 @@ const CollectionParticipationDialog = (props: ICollectionParticipationDialogProp
   );
 };
 
-export default CollectionParticipationDialog;
+export default CollectionMemberDialog;

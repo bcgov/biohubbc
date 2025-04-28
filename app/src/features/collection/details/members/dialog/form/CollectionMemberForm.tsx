@@ -10,11 +10,11 @@ import { ICollectionParticipant } from 'interfaces/useCollectionApi.interface';
 import { ISystemUser } from 'interfaces/useUserApi.interface';
 import { TransitionGroup } from 'react-transition-group';
 
-export interface ICollectionParticipationData {
+export interface ICollectionMemberData {
   participants: (ISystemUser & ICollectionParticipant)[];
 }
 
-interface ICollectionParticipationForm {
+interface ICollectionMemberForm {
   roles: ICodeWithDescription[];
 }
 
@@ -23,8 +23,8 @@ interface ICollectionParticipationForm {
  *
  * @returns {*}
  */
-const CollectionParticipationForm = (props: ICollectionParticipationForm) => {
-  const { values, setFieldValue, errors, setErrors } = useFormikContext<ICollectionParticipationData>();
+const CollectionMemberForm = (props: ICollectionMemberForm) => {
+  const { values, setFieldValue, errors, setErrors } = useFormikContext<ICollectionMemberData>();
 
   const clearErrors = () => {
     const newErrors = { ...errors };
@@ -129,4 +129,4 @@ const CollectionParticipationForm = (props: ICollectionParticipationForm) => {
   );
 };
 
-export default CollectionParticipationForm;
+export default CollectionMemberForm;

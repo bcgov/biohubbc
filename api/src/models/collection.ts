@@ -13,7 +13,7 @@ export interface ICollectionParticipantsAdvancedFilters {
 }
 
 export const CollectionParticipant = z.object({
-  collection_participation_id: z.number(),
+  collection_member_id: z.number(),
   collection_id: z.number(),
   system_user_id: z.number(),
   collection_role_id: z.number(),

@@ -19,18 +19,9 @@ export interface ISystemRoleRouteGuardProps extends RouteProps {
   validRoles?: SYSTEM_ROLE[];
 }
 
-export interface IProjectRoleRouteGuardProps extends RouteProps {
+export interface ISurveyRoleRouteGuardProps extends RouteProps {
   /**
-   * Indicates the sufficient project roles needed to access this route, if any.
-   *
-   * Note: The user only needs 1 of the valid roles, when multiple are specified.
-   *
-   * @type {SURVEY_ROLE[]}
-   */
-  validProjectRoles?: SURVEY_ROLE[];
-
-  /**
-   * Indicates the sufficient project permissions needed to access this route, if any.
+   * Indicates the sufficient survey permissions needed to access this route, if any.
    *
    * Note: The user only needs 1 of the valid roles, when multiple are specified.
    *
@@ -74,15 +65,15 @@ export const SystemRoleRouteGuard = (props: ISystemRoleRouteGuardProps) => {
 };
 
 /**
- * Route guard that requires the user to have at least 1 of the specified project roles.
+ * Route guard that requires the user to have at least 1 of the specified survey roles.
  *
  * Note: Does not check if they are already authenticated.
  *
- * @param {IProjectRoleRouteGuardProps} props
+ * @param {ISurveyRoleRouteGuardProps} props
  * @return {*}
  */
-export const ProjectRoleRouteGuard = (props: IProjectRoleRouteGuardProps) => {
-  const { validSystemRoles, validProjectRoles, validSurveyRoles, children, ...rest } = props;
+export const SurveyRoleRouteGuard = (props: ISurveyRoleRouteGuardProps) => {
+  const { validSystemRoles, validSurveyRoles, children, ...rest } = props;
 
   const authStateContext = useAuthStateContext();
 
@@ -94,11 +85,10 @@ export const ProjectRoleRouteGuard = (props: IProjectRoleRouteGuardProps) => {
     !surveyAuthStateContext.hasLoadedParticipantInfo
   ) {
     // Participant data has not been loaded, can not yet determine if user has sufficient roles
-    return <CircularProgress className="pageProgress" data-testid="project-role-guard-spinner" />;
+    return <CircularProgress className="pageProgress" data-testid="survey-role-guard-spinner" />;
   }
 
   if (
-    !surveyAuthStateContext.hasSurveyRole(validProjectRoles) &&
     !surveyAuthStateContext.hasSystemRole(validSystemRoles) &&
     !surveyAuthStateContext.hasSurveyPermission(validSurveyRoles)
   ) {

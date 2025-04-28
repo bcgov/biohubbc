@@ -26,10 +26,10 @@ import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import { useState } from 'react';
 import { ApiPaginationRequestOptions, StringValues } from 'types/misc';
 import { firstOrNull, getCodesName } from 'utils/Utils';
-import CollectionParticipationDialog from './dialog/CollectionParticipationDialog';
+import CollectionMemberDialog from './dialog/CollectionMemberDialog';
 import CollectionParticipantsFilterForm, {
   CollectionParticipantsAdvancedFiltersInitialValues
-} from './filter/CollectionParticipantsFilterForm';
+} from './filter/CollectionMembersFilterForm';
 
 const pageSizeOptions = [10, 25, 50];
 
@@ -113,7 +113,7 @@ const CollectionMembersContainer = (props: ICollectionMembersContainerProps) => 
 
   const columns: GridColDef<ICollectionParticipant>[] = [
     {
-      field: 'collection_participation_id',
+      field: 'collection_member_id',
       headerName: 'ID',
       width: 85,
       minWidth: 85,
@@ -124,7 +124,7 @@ const CollectionMembersContainer = (props: ICollectionMembersContainerProps) => 
       ),
       renderCell: (params) => (
         <Typography color={grey[500]} variant="body2">
-          {params.row.collection_participation_id}
+          {params.row.collection_member_id}
         </Typography>
       )
     },
@@ -216,7 +216,7 @@ const CollectionMembersContainer = (props: ICollectionMembersContainerProps) => 
           // Rows
           rows={collectionParticipants}
           rowCount={collectionParticipantsDataLoader.data?.pagination.total ?? 0}
-          getRowId={(row) => row.collection_participation_id}
+          getRowId={(row) => row.collection_member_id}
           // Pagination
           paginationMode="server"
           paginationModel={paginationModel}
@@ -254,7 +254,7 @@ const CollectionMembersContainer = (props: ICollectionMembersContainerProps) => 
         />
       </LoadingGuard>
 
-      <CollectionParticipationDialog
+      <CollectionMemberDialog
         collectionId={collectionId}
         onSubmit={() => {
           collectionParticipantsDataLoader.refresh(paginationSort, advancedFiltersModel);

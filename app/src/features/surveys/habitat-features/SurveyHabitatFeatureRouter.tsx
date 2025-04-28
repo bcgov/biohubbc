@@ -1,4 +1,4 @@
-import { ProjectRoleRouteGuard } from 'components/security/RouteGuards';
+import { SurveyRoleRouteGuard } from 'components/security/RouteGuards';
 import { SURVEY_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { HabitatFeatureTableContextProvider } from 'contexts/habitatFeatureTableContext';
@@ -39,7 +39,7 @@ export const HabitatFeatureRouter = () => {
         exact
         path="/admin/projects/:id/surveys/:survey_id/habitat-features/details"
         title={getTitle('Manage Habitat Features')}>
-        <ProjectRoleRouteGuard
+        <SurveyRoleRouteGuard
           validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <DialogContextProvider>
@@ -47,14 +47,14 @@ export const HabitatFeatureRouter = () => {
               <SurveyHabitatFeaturePage />
             </HabitatFeatureTableContextProvider>
           </DialogContextProvider>
-        </ProjectRoleRouteGuard>
+        </SurveyRoleRouteGuard>
       </RouteWithTitle>
 
       <RouteWithTitle
         exact
         path="/admin/projects/:id/surveys/:survey_id/habitat-features/create"
         title={getTitle('Create Habitat Feature')}>
-        <ProjectRoleRouteGuard
+        <SurveyRoleRouteGuard
           validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <DialogContextProvider>
@@ -62,14 +62,14 @@ export const HabitatFeatureRouter = () => {
               <CreateHabitatFeaturePage />
             </HabitatFeatureTableContextProvider>
           </DialogContextProvider>
-        </ProjectRoleRouteGuard>
+        </SurveyRoleRouteGuard>
       </RouteWithTitle>
 
       <RouteWithTitle
         exact
         path="/admin/projects/:id/surveys/:survey_id/habitat-features/:habitat_feature_id/edit"
         title={getTitle('Edit Habitat Feature')}>
-        <ProjectRoleRouteGuard
+        <SurveyRoleRouteGuard
           validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <DialogContextProvider>
@@ -77,7 +77,7 @@ export const HabitatFeatureRouter = () => {
               <EditHabitatFeaturePage />
             </HabitatFeatureTableContextProvider>
           </DialogContextProvider>
-        </ProjectRoleRouteGuard>
+        </SurveyRoleRouteGuard>
       </RouteWithTitle>
     </Switch>
   );

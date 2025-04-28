@@ -1,4 +1,4 @@
-import { ProjectRoleRouteGuard } from 'components/security/RouteGuards';
+import { SurveyRoleRouteGuard } from 'components/security/RouteGuards';
 import { SURVEY_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { CreateDeploymentPage } from 'features/surveys/telemetry/manage/deployments/create/CreateDeploymentPage';
@@ -29,78 +29,78 @@ export const TelemetryRouter = () => {
         exact
         path="/admin/projects/:id/surveys/:survey_id/telemetry/details"
         title={getTitle('Telemetry')}>
-        <ProjectRoleRouteGuard
+        <SurveyRoleRouteGuard
           validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <DialogContextProvider>
             <TelemetryPage />
           </DialogContextProvider>
-        </ProjectRoleRouteGuard>
+        </SurveyRoleRouteGuard>
       </RouteWithTitle>
 
       <RouteWithTitle
         exact
         path="/admin/projects/:id/surveys/:survey_id/telemetry/manage"
         title={getTitle('Devices and Deployments')}>
-        <ProjectRoleRouteGuard
+        <SurveyRoleRouteGuard
           validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <DialogContextProvider>
             <DevicesAndDeploymentsManagePage />
           </DialogContextProvider>
-        </ProjectRoleRouteGuard>
+        </SurveyRoleRouteGuard>
       </RouteWithTitle>
 
       <RouteWithTitle
         exact
         path="/admin/projects/:id/surveys/:survey_id/telemetry/manage/device/create"
         title={getTitle('Add Device')}>
-        <ProjectRoleRouteGuard
+        <SurveyRoleRouteGuard
           validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <DialogContextProvider>
             <CreateDevicePage />
           </DialogContextProvider>
-        </ProjectRoleRouteGuard>
+        </SurveyRoleRouteGuard>
       </RouteWithTitle>
 
       <RouteWithTitle
         exact
         path="/admin/projects/:id/surveys/:survey_id/telemetry/manage/device/:device_id/edit"
         title={getTitle('Edit Device')}>
-        <ProjectRoleRouteGuard
+        <SurveyRoleRouteGuard
           validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <DialogContextProvider>
             <EditDevicePage />
           </DialogContextProvider>
-        </ProjectRoleRouteGuard>
+        </SurveyRoleRouteGuard>
       </RouteWithTitle>
 
       <RouteWithTitle
         exact
         path="/admin/projects/:id/surveys/:survey_id/telemetry/manage/deployment/create"
         title={getTitle('Add Deployment')}>
-        <ProjectRoleRouteGuard
+        <SurveyRoleRouteGuard
           validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <DialogContextProvider>
             <CreateDeploymentPage />
           </DialogContextProvider>
-        </ProjectRoleRouteGuard>
+        </SurveyRoleRouteGuard>
       </RouteWithTitle>
 
       <RouteWithTitle
         exact
         path="/admin/projects/:id/surveys/:survey_id/telemetry/manage/deployment/:deployment_id/edit"
         title={getTitle('Edit Deployment')}>
-        <ProjectRoleRouteGuard
+        <SurveyRoleRouteGuard
           validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <DialogContextProvider>
             <EditDeploymentPage />
           </DialogContextProvider>
-        </ProjectRoleRouteGuard>
+        </SurveyRoleRouteGuard>
       </RouteWithTitle>
     </Switch>
   );

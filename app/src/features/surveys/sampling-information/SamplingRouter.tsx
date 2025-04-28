@@ -1,4 +1,4 @@
-import { ProjectRoleRouteGuard } from 'components/security/RouteGuards';
+import { SurveyRoleRouteGuard } from 'components/security/RouteGuards';
 import { SURVEY_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { SamplingSiteManagePage } from 'features/surveys/sampling-information/manage/SamplingSiteManagePage';
@@ -24,65 +24,65 @@ export const SamplingRouter = () => {
         exact
         path="/admin/projects/:id/surveys/:survey_id/sampling"
         title={getTitle('Manage Sampling Information')}>
-        <ProjectRoleRouteGuard
+        <SurveyRoleRouteGuard
           validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <DialogContextProvider>
             <SamplingSiteManagePage />
           </DialogContextProvider>
-        </ProjectRoleRouteGuard>
+        </SurveyRoleRouteGuard>
       </RouteWithTitle>
 
       <RouteWithTitle
         exact
         path="/admin/projects/:id/surveys/:survey_id/sampling/create"
         title={getTitle('Create Sampling Sites')}>
-        <ProjectRoleRouteGuard
+        <SurveyRoleRouteGuard
           validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <DialogContextProvider>
             <CreateSamplingSitePage />
           </DialogContextProvider>
-        </ProjectRoleRouteGuard>
+        </SurveyRoleRouteGuard>
       </RouteWithTitle>
 
       <RouteWithTitle
         exact
         path="/admin/projects/:id/surveys/:survey_id/sampling/:survey_sample_site_id/edit"
         title={getTitle('Edit Sampling Site')}>
-        <ProjectRoleRouteGuard
+        <SurveyRoleRouteGuard
           validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <DialogContextProvider>
             <EditSamplingSitePage />
           </DialogContextProvider>
-        </ProjectRoleRouteGuard>
+        </SurveyRoleRouteGuard>
       </RouteWithTitle>
 
       <RouteWithTitle
         exact
         path="/admin/projects/:id/surveys/:survey_id/sampling/techniques/create"
         title={getTitle('Create Technique')}>
-        <ProjectRoleRouteGuard
+        <SurveyRoleRouteGuard
           validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <DialogContextProvider>
             <CreateTechniquePage />
           </DialogContextProvider>
-        </ProjectRoleRouteGuard>
+        </SurveyRoleRouteGuard>
       </RouteWithTitle>
 
       <RouteWithTitle
         exact
         path="/admin/projects/:id/surveys/:survey_id/sampling/techniques/:method_technique_id/edit"
         title={getTitle('Edit Technique')}>
-        <ProjectRoleRouteGuard
+        <SurveyRoleRouteGuard
           validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <DialogContextProvider>
             <EditTechniquePage />
           </DialogContextProvider>
-        </ProjectRoleRouteGuard>
+        </SurveyRoleRouteGuard>
       </RouteWithTitle>
 
       <RouteWithTitle
