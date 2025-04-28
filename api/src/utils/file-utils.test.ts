@@ -48,7 +48,7 @@ describe('generateS3FileKey', () => {
   it('returns project file path', async () => {
     process.env.S3_KEY_PREFIX = 'some/s3/prefix';
 
-    const result = generateS3FileKey({ projectId: 1, fileName: 'testFileName' });
+    const result = generateS3FileKey({ fileName: 'testFileName' });
 
     expect(result).to.equal('some/s3/prefix/projects/1/testFileName');
   });
@@ -56,7 +56,7 @@ describe('generateS3FileKey', () => {
   it('returns survey file path', async () => {
     process.env.S3_KEY_PREFIX = 'some/s3/prefix';
 
-    const result = generateS3FileKey({ projectId: 1, surveyId: 2, fileName: 'testFileName' });
+    const result = generateS3FileKey({ surveyId: 2, fileName: 'testFileName' });
 
     expect(result).to.equal('some/s3/prefix/projects/1/surveys/2/testFileName');
   });
@@ -64,7 +64,7 @@ describe('generateS3FileKey', () => {
   it('returns project folder file path', async () => {
     process.env.S3_KEY_PREFIX = 'some/s3/prefix';
 
-    const result = generateS3FileKey({ projectId: 1, folder: 'reports', fileName: 'testFileName' });
+    const result = generateS3FileKey({ folder: 'reports', fileName: 'testFileName' });
 
     expect(result).to.equal('some/s3/prefix/projects/1/reports/testFileName');
   });
@@ -73,7 +73,6 @@ describe('generateS3FileKey', () => {
     process.env.S3_KEY_PREFIX = 'some/s3/prefix';
 
     const result = generateS3FileKey({
-      projectId: 1,
       surveyId: 2,
       folder: 'telemetry-credentials',
       fileName: 'testFileName'
@@ -86,7 +85,6 @@ describe('generateS3FileKey', () => {
     process.env.S3_KEY_PREFIX = 'some/s3/prefix';
 
     const result = generateS3FileKey({
-      projectId: 1,
       surveyId: 2,
       submissionId: 3,
       fileName: 'testFileName'
@@ -99,7 +97,6 @@ describe('generateS3FileKey', () => {
     process.env.S3_KEY_PREFIX = 'some/s3/prefix';
 
     const result = generateS3FileKey({
-      projectId: 1,
       surveyId: 2,
       critterId: 3,
       folder: 'captures',
@@ -114,7 +111,6 @@ describe('generateS3FileKey', () => {
     process.env.S3_KEY_PREFIX = 'some/s3/prefix';
 
     const result = generateS3FileKey({
-      projectId: 1,
       surveyId: 2,
       critterId: 3,
       folder: 'mortalities',

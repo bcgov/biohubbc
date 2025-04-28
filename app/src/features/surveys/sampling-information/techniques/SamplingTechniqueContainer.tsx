@@ -44,7 +44,7 @@ export const SamplingTechniqueContainer = () => {
   useEffect(() => {
     techniquesDataLoader.refresh();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [surveyContext.projectId, surveyContext.surveyId]);
+  }, [surveyContext.surveyId]);
 
   const techniqueCount = techniquesDataLoader.data?.pagination.total ?? 0;
   const techniques = techniquesDataLoader.data?.techniques ?? [];

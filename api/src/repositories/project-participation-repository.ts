@@ -1,6 +1,6 @@
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
-import { PROJECT_ROLE } from '../constants/roles';
+import { SURVEY_ROLE } from '../constants/roles';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { SystemUserWithRoles } from '../models/system-user-view';
@@ -8,10 +8,10 @@ import { BaseRepository } from './base-repository';
 
 export const ProjectUser = z.object({
   project_participation_id: z.number(),
-  project_id: z.number(),
+
   system_user_id: z.number(),
-  project_role_ids: z.array(z.number()),
-  project_role_names: z.array(z.string()),
+  survey_role_ids: z.array(z.number()),
+  survey_role_names: z.array(z.string()),
   project_role_permissions: z.array(z.string())
 });
 
@@ -28,7 +28,7 @@ export interface IParticipant {
 
 export const ProjectParticipationRecord = z.object({
   project_participation_id: z.number(),
-  project_id: z.number(),
+
   system_user_id: z.number(),
   project_role_id: z.number(),
   create_date: z.string(),
@@ -42,16 +42,15 @@ export type ProjectParticipationRecord = z.infer<typeof ProjectParticipationReco
 
 export interface IInsertProjectParticipant {
   system_user_id: number;
-  role: PROJECT_ROLE;
+  role: SURVEY_ROLE;
 }
 
 export const UserProjectParticipation = z.object({
-  project_id: z.number(),
   project_name: z.string(),
   project_participation_id: z.number(),
   system_user_id: z.number(),
-  project_role_ids: z.array(z.number()),
-  project_role_names: z.array(z.string()),
+  survey_role_ids: z.array(z.number()),
+  survey_role_names: z.array(z.string()),
   project_role_permissions: z.array(z.string())
 });
 
@@ -67,19 +66,16 @@ export type UserProjectParticipation = z.infer<typeof UserProjectParticipation>;
 export class ProjectParticipationRepository extends BaseRepository {
   /**
    *  Deletes a project participation record.
-   * @param {number} projectParticipationId
+   * @param {number} surveyParticipationId
    * @return {*}  {Promise<ProjectParticipationRecord>}
    * @memberof ProjectParticipationRepository
    */
-  async deleteProjectParticipationRecord(
-    projectId: number,
-    projectParticipationId: number
-  ): Promise<ProjectParticipationRecord> {
+  async deleteProjectParticipationRecord(surveyParticipationId: number): Promise<ProjectParticipationRecord> {
     const sqlStatement = SQL`
       DELETE FROM
         project_participation
       WHERE
-        project_participation_id = ${projectParticipationId}
+        project_participation_id = ${surveyParticipationId}
       AND
         project_id = ${projectId}
       RETURNING
@@ -98,7 +94,7 @@ export class ProjectParticipationRepository extends BaseRepository {
     return response.rows[0];
   }
 
-  async updateProjectParticipationRole(projectParticipationId: number, role: string): Promise<void> {
+  async updateProjectParticipationRole(surveyParticipationId: number, role: string): Promise<void> {
     const sql = SQL`
       UPDATE project_participation 
       SET project_role_id = (
@@ -107,7 +103,7 @@ export class ProjectParticipationRepository extends BaseRepository {
         WHERE name = ${role} 
         AND record_end_date IS NULL
       ) 
-      WHERE project_participation_id = ${projectParticipationId};
+      WHERE project_participation_id = ${surveyParticipationId};
     `;
     await this.connection.sql(sql);
   }
@@ -119,10 +115,7 @@ export class ProjectParticipationRepository extends BaseRepository {
    * @return {*}  {(Promise<(ProjectUser & SystemUserWithRoles) | null>)}
    * @memberof ProjectParticipationRepository
    */
-  async getProjectParticipant(
-    projectId: number,
-    systemUserId: number
-  ): Promise<(ProjectUser & SystemUserWithRoles) | null> {
+  async getProjectParticipant(systemUserId: number): Promise<(ProjectUser & SystemUserWithRoles) | null> {
     const sqlStatement = SQL`
       SELECT
         su.system_user_id,
@@ -139,8 +132,8 @@ export class ProjectParticipationRepository extends BaseRepository {
         su.agency,
         pp.project_participation_id,
         pp.project_id,
-        array_remove(array_agg(pr.project_role_id), NULL) AS project_role_ids,
-        array_remove(array_agg(pr.name), NULL) AS project_role_names,
+        array_remove(array_agg(pr.project_role_id), NULL) AS survey_role_ids,
+        array_remove(array_agg(pr.name), NULL) AS survey_role_names,
         array_remove(array_agg(pp2.name), NULL) as project_role_permissions
       FROM
         project_participation pp
@@ -198,7 +191,6 @@ export class ProjectParticipationRepository extends BaseRepository {
    * @memberof ProjectParticipationRepository
    */
   async getProjectParticipantByProjectIdAndUserGuid(
-    projectId: number,
     userGuid: string
   ): Promise<(ProjectUser & SystemUserWithRoles) | null> {
     const knex = getKnex();
@@ -221,8 +213,8 @@ export class ProjectParticipationRepository extends BaseRepository {
           su.agency,
           pp.project_participation_id,
           pp.project_id,
-          array_remove(array_agg(pr.project_role_id), NULL) AS project_role_ids,
-          array_remove(array_agg(pr.name), NULL) AS project_role_names,
+          array_remove(array_agg(pr.project_role_id), NULL) AS survey_role_ids,
+          array_remove(array_agg(pr.name), NULL) AS survey_role_names,
           array_remove(array_agg(pp2.name), NULL) as project_role_permissions
         `)
       )
@@ -290,8 +282,8 @@ export class ProjectParticipationRepository extends BaseRepository {
           su.agency,
           pp.project_participation_id,
           pp.project_id,
-          array_remove(array_agg(pr.project_role_id), NULL) AS project_role_ids,
-          array_remove(array_agg(pr.name), NULL) AS project_role_names,
+          array_remove(array_agg(pr.project_role_id), NULL) AS survey_role_ids,
+          array_remove(array_agg(pr.name), NULL) AS survey_role_names,
           array_remove(array_agg(pp2.name), NULL) as project_role_permissions
         `)
       )
@@ -349,8 +341,8 @@ export class ProjectParticipationRepository extends BaseRepository {
         su.agency,
         pp.project_participation_id,
         pp.project_id,
-        array_remove(array_agg(pr.project_role_id), NULL) AS project_role_ids,
-        array_remove(array_agg(pr.name), NULL) AS project_role_names,
+        array_remove(array_agg(pr.project_role_id), NULL) AS survey_role_ids,
+        array_remove(array_agg(pr.name), NULL) AS survey_role_names,
         array_remove(array_agg(pp2.name), NULL) as project_role_permissions
       FROM
         project_participation pp
@@ -414,11 +406,7 @@ export class ProjectParticipationRepository extends BaseRepository {
    * @return {*}  {Promise<void>}
    * @memberof ProjectParticipationRepository
    */
-  async postProjectParticipant(
-    projectId: number,
-    systemUserId: number,
-    projectParticipantRole: number | string
-  ): Promise<void> {
+  async postProjectParticipant(systemUserId: number, projectParticipantRole: number | string): Promise<void> {
     let sqlStatement;
 
     if (isNaN(Number(projectParticipantRole))) {
@@ -489,8 +477,8 @@ export class ProjectParticipationRepository extends BaseRepository {
         su.agency,
         pp.project_participation_id,
         pp.project_id,
-        array_remove(array_agg(pr.project_role_id), NULL) AS project_role_ids,
-        array_remove(array_agg(pr.name), NULL) AS project_role_names,
+        array_remove(array_agg(pr.project_role_id), NULL) AS survey_role_ids,
+        array_remove(array_agg(pr.name), NULL) AS survey_role_names,
         array_remove(array_agg(pp2.name), NULL) as project_role_permissions
       FROM
         project_participation pp
@@ -552,8 +540,8 @@ export class ProjectParticipationRepository extends BaseRepository {
         p.name as project_name,
         pp.project_participation_id,
         pp.system_user_id,
-        array_remove(array_agg(pr.project_role_id), NULL) AS project_role_ids,
-        array_remove(array_agg(pr.name), NULL) AS project_role_names,
+        array_remove(array_agg(pr.project_role_id), NULL) AS survey_role_ids,
+        array_remove(array_agg(pr.name), NULL) AS survey_role_names,
         array_remove(array_agg(pp2.name), NULL) as project_role_permissions
       FROM
         project_participation pp

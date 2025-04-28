@@ -38,7 +38,7 @@ export const DeploymentsContainer = () => {
 
   useEffect(() => {
     deploymentsDataLoader.load(surveyContext.surveyId);
-  }, [deploymentsDataLoader, surveyContext.projectId, surveyContext.surveyId]);
+  }, [deploymentsDataLoader, surveyContext.surveyId]);
 
   const deployments = deploymentsDataLoader.data?.deployments ?? [];
   const deploymentsCount = deploymentsDataLoader.data?.count ?? 0;
@@ -47,7 +47,6 @@ export const DeploymentsContainer = () => {
   const handleBulkDelete = async () => {
     try {
       await biohubApi.telemetryDeployment.deleteDeployments(
-        surveyContext.projectId,
         surveyContext.surveyId,
         selectedRows.map((id) => Number(id))
       );
@@ -137,7 +136,7 @@ export const DeploymentsContainer = () => {
           variant="contained"
           color="primary"
           component={RouterLink}
-          to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry/manage/deployment/create`}
+          to={`/admin/surveys/${surveyContext.surveyId}/telemetry/manage/deployment/create`}
           startIcon={<Icon path={mdiPlus} size={0.8} />}>
           Add
         </Button>

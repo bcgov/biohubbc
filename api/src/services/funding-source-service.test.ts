@@ -80,7 +80,7 @@ describe('FundingSourceService', () => {
           survey_id: 2,
           funding_source_id: 3,
           revision_count: 0,
-          project_id: 1,
+
           survey_name: 'survey name'
         }
       ];

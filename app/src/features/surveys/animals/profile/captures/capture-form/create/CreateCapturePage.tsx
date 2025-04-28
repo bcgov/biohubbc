@@ -203,7 +203,6 @@ export const CreateCapturePage = () => {
       if (captureAttachments.length) {
         await biohubApi.animal
           .uploadCritterCaptureAttachments({
-            projectId,
             surveyId,
             critterId: surveyCritterId,
             critterbaseCaptureId: critterbaseCaptureId,

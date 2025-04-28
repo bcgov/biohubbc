@@ -47,7 +47,6 @@ export interface ISendGCNotifySMSMessage {
 }
 
 export interface IgcNotifyRequestRemovalFormValues {
-  projectId: number;
   fileName: string;
   parentName: string;
   path: string;

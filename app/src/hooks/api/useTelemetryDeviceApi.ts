@@ -1,5 +1,5 @@
 import { AxiosInstance, AxiosProgressEvent, CancelTokenSource } from 'axios';
-import { IUploadAttachmentResponse } from 'interfaces/useProjectApi.interface';
+import { IUploadAttachmentResponse } from 'interfaces/useSurveyApi.interface';
 import { TelemetryDeviceKeyFile } from 'interfaces/useTelemetryApi.interface';
 import {
   CreateTelemetryDevice,

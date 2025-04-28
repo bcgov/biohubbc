@@ -49,7 +49,7 @@ export interface ISurveyProprietorModel {
 
 const SurveyRecord = z.object({
   survey_id: z.number(),
-  project_id: z.number(),
+
   uuid: z.string().uuid().nullable(),
   name: z.string().nullable(),
   additional_details: z.string().nullable(),
@@ -108,7 +108,7 @@ export type SurveyProgressRecord = z.infer<typeof SurveyProgressRecord>;
 
 export const SurveyBasicFields = z.object({
   survey_id: z.number(),
-  project_id: z.number(),
+
   name: z.string(),
   start_date: z.string(),
   end_date: z.string().nullable(),
@@ -584,8 +584,7 @@ export class SurveyRepository extends BaseRepository {
    * @return {*}  {Promise<Omit<SurveyBasicFields, 'focal_species_names'>[]>}
    * @memberof SurveyRepository
    */
-  async getSurveysBasicFieldsByProjectId(
-    projectId: number,
+  async getSurveysBasicFields(
     pagination?: ApiPaginationOptions
   ): Promise<Omit<SurveyBasicFields, 'focal_species_names'>[]> {
     const knex = getKnex();
@@ -1042,7 +1041,7 @@ export class SurveyRepository extends BaseRepository {
    */
   async insertSurveyPermit(
     systemUserId: number,
-    projectId: number,
+
     surveyId: number,
     permitNumber: string,
     permitType: string

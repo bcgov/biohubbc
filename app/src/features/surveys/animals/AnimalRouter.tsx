@@ -1,5 +1,5 @@
 import { ProjectRoleRouteGuard } from 'components/security/RouteGuards';
-import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
+import { SURVEY_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { TaxonomyContextProvider } from 'contexts/taxonomyContext';
 import { CreateCapturePage } from 'features/surveys/animals/profile/captures/capture-form/create/CreateCapturePage';
 import { EditCapturePage } from 'features/surveys/animals/profile/captures/capture-form/edit/EditCapturePage';
@@ -33,7 +33,7 @@ export const AnimalRouter: React.FC = () => {
         path="/admin/projects/:id/surveys/:survey_id/animals/details"
         title={getTitle('Manage Animals')}>
         <ProjectRoleRouteGuard
-          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+          validProjectPermissions={[SURVEY_PERMISSION.COORDINATOR, SURVEY_PERMISSION.COLLABORATOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <SurveyAnimalPage />
         </ProjectRoleRouteGuard>
@@ -44,7 +44,7 @@ export const AnimalRouter: React.FC = () => {
         path={'/admin/projects/:id/surveys/:survey_id/animals/create'}
         title={getTitle('Create Animal')}>
         <ProjectRoleRouteGuard
-          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+          validProjectPermissions={[SURVEY_PERMISSION.COORDINATOR, SURVEY_PERMISSION.COLLABORATOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <CreateAnimalPage />
         </ProjectRoleRouteGuard>
@@ -55,7 +55,7 @@ export const AnimalRouter: React.FC = () => {
         path={'/admin/projects/:id/surveys/:survey_id/animals/captures'}
         title={getTitle('Create Captures')}>
         <ProjectRoleRouteGuard
-          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+          validProjectPermissions={[SURVEY_PERMISSION.COORDINATOR, SURVEY_PERMISSION.COLLABORATOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <CreateCSVCapturesPage />
         </ProjectRoleRouteGuard>
@@ -66,7 +66,7 @@ export const AnimalRouter: React.FC = () => {
         path={'/admin/projects/:id/surveys/:survey_id/animals/:critter_id/edit'}
         title={getTitle('Edit Animal')}>
         <ProjectRoleRouteGuard
-          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+          validProjectPermissions={[SURVEY_PERMISSION.COORDINATOR, SURVEY_PERMISSION.COLLABORATOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <TaxonomyContextProvider>
             <EditAnimalPage />
@@ -79,7 +79,7 @@ export const AnimalRouter: React.FC = () => {
         path={'/admin/projects/:id/surveys/:survey_id/animals/:critter_id/capture/create'}
         title={getTitle('Create Capture')}>
         <ProjectRoleRouteGuard
-          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+          validProjectPermissions={[SURVEY_PERMISSION.COORDINATOR, SURVEY_PERMISSION.COLLABORATOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <CreateCapturePage />
         </ProjectRoleRouteGuard>
@@ -90,7 +90,7 @@ export const AnimalRouter: React.FC = () => {
         path={'/admin/projects/:id/surveys/:survey_id/animals/:critter_id/capture/:capture_id/edit'}
         title={getTitle('Edit Capture')}>
         <ProjectRoleRouteGuard
-          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+          validProjectPermissions={[SURVEY_PERMISSION.COORDINATOR, SURVEY_PERMISSION.COLLABORATOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <EditCapturePage />
         </ProjectRoleRouteGuard>
@@ -101,7 +101,7 @@ export const AnimalRouter: React.FC = () => {
         path={'/admin/projects/:id/surveys/:survey_id/animals/:critter_id/mortality/create'}
         title={getTitle('Report Mortality')}>
         <ProjectRoleRouteGuard
-          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+          validProjectPermissions={[SURVEY_PERMISSION.COORDINATOR, SURVEY_PERMISSION.COLLABORATOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <CreateMortalityPage />
         </ProjectRoleRouteGuard>
@@ -112,7 +112,7 @@ export const AnimalRouter: React.FC = () => {
         path={'/admin/projects/:id/surveys/:survey_id/animals/:critter_id/mortality/:mortality_id/edit'}
         title={getTitle('Edit Mortality')}>
         <ProjectRoleRouteGuard
-          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+          validProjectPermissions={[SURVEY_PERMISSION.COORDINATOR, SURVEY_PERMISSION.COLLABORATOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <EditMortalityPage />
         </ProjectRoleRouteGuard>

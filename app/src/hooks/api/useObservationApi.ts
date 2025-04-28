@@ -161,7 +161,6 @@ const useObservationApi = (axios: AxiosInstance) => {
    * @return {*}  {Promise<IObservationTableRow[]>}
    */
   const getObservationMeasurementDefinitions = async (
-    projectId: number,
     surveyId: number
   ): Promise<{
     qualitative_measurements: CBQualitativeMeasurementTypeDefinition[];
@@ -215,10 +214,7 @@ const useObservationApi = (axios: AxiosInstance) => {
    * @param {number} surveyId
    * @return {*}  {Promise<IGetSurveyObservationsGeometryResponse>}
    */
-  const getObservationsGeometry = async (
-    projectId: number,
-    surveyId: number
-  ): Promise<IGetSurveyObservationsGeometryResponse> => {
+  const getObservationsGeometry = async (surveyId: number): Promise<IGetSurveyObservationsGeometryResponse> => {
     const { data } = await axios.get<IGetSurveyObservationsGeometryResponse>(
       `/api/survey/${surveyId}/observations/spatial`
     );
@@ -230,7 +226,7 @@ const useObservationApi = (axios: AxiosInstance) => {
    * Imports observation records from a CSV file.
    *
    * @param {{
-   *    projectId: number;
+   *
    *    surveyId: number;
    *    file: File; // The CSV file to import.
    *    surveySamplePeriodId?: number; // Optional sample period id to associate all imported records with.

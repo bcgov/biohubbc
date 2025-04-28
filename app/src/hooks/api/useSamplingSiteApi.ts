@@ -56,10 +56,7 @@ const useSamplingSiteApi = (axios: AxiosInstance) => {
    * @param {number} surveyId
    * @return {*}  {Promise<IGetSampleSiteGeometryResponse>}
    */
-  const getSampleSitesGeometry = async (
-    projectId: number,
-    surveyId: number
-  ): Promise<IGetSampleSiteGeometryResponse> => {
+  const getSampleSitesGeometry = async (surveyId: number): Promise<IGetSampleSiteGeometryResponse> => {
     const { data } = await axios.get(`/api/survey/${surveyId}/sample-site/spatial`);
 
     return data;

@@ -101,8 +101,8 @@ export class AttachmentService extends DBService {
    * @return {Promise<IProjectAttachment>} Promise resolving the given project attachment
    * @memberof AttachmentService
    */
-  async getProjectAttachmentById( attachmentId: number): Promise<IProjectAttachment> {
-    return this.attachmentRepository.getProjectAttachmentById( attachmentId);
+  async getProjectAttachmentById(attachmentId: number): Promise<IProjectAttachment> {
+    return this.attachmentRepository.getProjectAttachmentById(attachmentId);
   }
 
   /**
@@ -112,8 +112,8 @@ export class AttachmentService extends DBService {
    * @return {Promise<IProjectAttachment[]>} The given project attachments
    * @memberof AttachmentService
    */
-  async getProjectAttachmentsByIds( attachmentIds: number[]): Promise<IProjectAttachment[]> {
-    return this.attachmentRepository.getProjectAttachmentsByIds( attachmentIds);
+  async getProjectAttachmentsByIds(attachmentIds: number[]): Promise<IProjectAttachment[]> {
+    return this.attachmentRepository.getProjectAttachmentsByIds(attachmentIds);
   }
 
   /**
@@ -143,11 +143,8 @@ export class AttachmentService extends DBService {
    * @return {Promise<IProjectReportAttachment>} Promise resolving the given project report attachment
    * @memberof AttachmentService
    */
-  async getProjectReportAttachmentById(
-    projectId: number,
-    reportAttachmentId: number
-  ): Promise<IProjectReportAttachment> {
-    return this.attachmentRepository.getProjectReportAttachmentById( reportAttachmentId);
+  async getProjectReportAttachmentById(reportAttachmentId: number): Promise<IProjectReportAttachment> {
+    return this.attachmentRepository.getProjectReportAttachmentById(reportAttachmentId);
   }
 
   /**
@@ -157,11 +154,8 @@ export class AttachmentService extends DBService {
    * @return {Promise<IProjectReportAttachment[]>} The given project report attachments
    * @memberof AttachmentService
    */
-  async getProjectReportAttachmentsByIds(
-    projectId: number,
-    reportAttachmentIds: number[]
-  ): Promise<IProjectReportAttachment[]> {
-    return this.attachmentRepository.getProjectReportAttachmentsByIds( reportAttachmentIds);
+  async getProjectReportAttachmentsByIds(reportAttachmentIds: number[]): Promise<IProjectReportAttachment[]> {
+    return this.attachmentRepository.getProjectReportAttachmentsByIds(reportAttachmentIds);
   }
 
   /**
@@ -327,7 +321,7 @@ export class AttachmentService extends DBService {
    */
   async insertProjectAttachment(
     file: Express.Multer.File,
-    projectId: number,
+
     attachmentType: string,
     key: string
   ): Promise<{ project_attachment_id: number; revision_count: number }> {
@@ -345,7 +339,7 @@ export class AttachmentService extends DBService {
    */
   async updateProjectAttachment(
     fileName: string,
-    projectId: number,
+
     attachmentType: string
   ): Promise<{ project_attachment_id: number; revision_count: number }> {
     return this.attachmentRepository.updateProjectAttachment(fileName, attachmentType);
@@ -359,8 +353,8 @@ export class AttachmentService extends DBService {
    * @return {*}  {Promise<QueryResult>}
    * @memberof AttachmentService
    */
-  async getProjectAttachmentByFileName(fileName: string: number): Promise<QueryResult> {
-    return this.attachmentRepository.getProjectAttachmentByFileName( fileName);
+  async getProjectAttachmentByFileName(fileName: string): Promise<QueryResult> {
+    return this.attachmentRepository.getProjectAttachmentByFileName(fileName);
   }
 
   /**
@@ -374,10 +368,10 @@ export class AttachmentService extends DBService {
    */
   async upsertProjectAttachment(
     file: Express.Multer.File,
-    projectId: number,
+
     attachmentType: string
   ): Promise<{ project_attachment_id: number; revision_count: number; key: string }> {
-    const key = generateS3FileKey({ projectId: projectId, fileName: file.originalname });
+    const key = generateS3FileKey({ fileName: file.originalname });
 
     const getResponse = await this.getProjectAttachmentByFileName(file.originalname);
 
@@ -408,7 +402,7 @@ export class AttachmentService extends DBService {
   async insertProjectReportAttachment(
     fileName: string,
     fileSize: number,
-    projectId: number,
+
     attachmentMeta: PostReportAttachmentMetadata,
     key: string
   ): Promise<{ project_report_attachment_id: number; revision_count: number }> {
@@ -426,7 +420,7 @@ export class AttachmentService extends DBService {
    */
   async updateProjectReportAttachment(
     fileName: string,
-    projectId: number,
+
     attachmentMeta: PutReportAttachmentMetadata
   ): Promise<{ project_report_attachment_id: number; revision_count: number }> {
     return this.attachmentRepository.updateProjectReportAttachment(fileName, attachmentMeta);
@@ -464,18 +458,18 @@ export class AttachmentService extends DBService {
    * @return {*}  {Promise<QueryResult>}
    * @memberof AttachmentService
    */
-  async getProjectReportAttachmentByFileName( fileName: string): Promise<QueryResult> {
-    return this.attachmentRepository.getProjectReportAttachmentByFileName( fileName);
+  async getProjectReportAttachmentByFileName(fileName: string): Promise<QueryResult> {
+    return this.attachmentRepository.getProjectReportAttachmentByFileName(fileName);
   }
 
   async upsertProjectReportAttachment(
     file: Express.Multer.File,
-    projectId: number,
+
     attachmentMeta: any
   ): Promise<{ project_report_attachment_id: number; revision_count: number; key: string }> {
-    const key = generateS3FileKey({ projectId: projectId, fileName: file.originalname, folder: 'reports' });
+    const key = generateS3FileKey({ fileName: file.originalname, folder: 'reports' });
 
-    const getResponse = await this.getProjectReportAttachmentByFileName( file.originalname);
+    const getResponse = await this.getProjectReportAttachmentByFileName(file.originalname);
 
     let metadata: any;
     let attachmentResult: { project_report_attachment_id: number; revision_count: number };
@@ -487,13 +481,7 @@ export class AttachmentService extends DBService {
     } else {
       // No matching attachment found, insert new attachment
       metadata = new PostReportAttachmentMetadata(attachmentMeta);
-      attachmentResult = await this.insertProjectReportAttachment(
-        file.originalname,
-        file.size,
-        projectId,
-        metadata,
-        key
-      );
+      attachmentResult = await this.insertProjectReportAttachment(file.originalname, file.size, metadata, key);
     }
 
     // Delete any existing attachment author records
@@ -518,8 +506,8 @@ export class AttachmentService extends DBService {
    * @return {*}  {Promise<string>}
    * @memberof AttachmentService
    */
-  async getProjectAttachmentS3Key( attachmentId: number): Promise<string> {
-    return this.attachmentRepository.getProjectAttachmentS3Key( attachmentId);
+  async getProjectAttachmentS3Key(attachmentId: number): Promise<string> {
+    return this.attachmentRepository.getProjectAttachmentS3Key(attachmentId);
   }
 
   /**
@@ -528,8 +516,8 @@ export class AttachmentService extends DBService {
    * @return {*}  {Promise<string>}
    * @memberof AttachmentService
    */
-  async getProjectReportAttachmentS3Key( attachmentId: number): Promise<string> {
-    return this.attachmentRepository.getProjectReportAttachmentS3Key( attachmentId);
+  async getProjectReportAttachmentS3Key(attachmentId: number): Promise<string> {
+    return this.attachmentRepository.getProjectReportAttachmentS3Key(attachmentId);
   }
 
   /**
@@ -540,11 +528,10 @@ export class AttachmentService extends DBService {
    * @memberof AttachmentService
    */
   async updateProjectReportAttachmentMetadata(
-    projectId: number,
     attachmentId: number,
     metadata: PutReportAttachmentMetadata
   ): Promise<void> {
-    return this.attachmentRepository.updateProjectReportAttachmentMetadata( attachmentId, metadata);
+    return this.attachmentRepository.updateProjectReportAttachmentMetadata(attachmentId, metadata);
   }
 
   /**
@@ -657,12 +644,11 @@ export class AttachmentService extends DBService {
    */
   async upsertSurveyReportAttachment(
     file: Express.Multer.File,
-    projectId: number,
+
     surveyId: number,
     attachmentMeta: any
   ): Promise<{ survey_report_attachment_id: number; revision_count: number; key: string }> {
     const key = generateS3FileKey({
-      projectId: projectId,
       surveyId: surveyId,
       fileName: file.originalname,
       folder: 'reports'
@@ -831,12 +817,11 @@ export class AttachmentService extends DBService {
    */
   async upsertSurveyAttachment(
     file: Express.Multer.File,
-    projectId: number,
+
     surveyId: number,
     attachmentType: string
   ): Promise<{ survey_attachment_id: number; revision_count: number; key: string }> {
     const key = generateS3FileKey({
-      projectId: projectId,
       surveyId: surveyId,
       fileName: file.originalname
     });
@@ -872,19 +857,19 @@ export class AttachmentService extends DBService {
    * @return {*}  {Promise<void>}
    * @memberof AttachmentService
    */
-  async deleteProjectAttachment( attachmentId: number, attachmentType: string): Promise<void> {
+  async deleteProjectAttachment(attachmentId: number, attachmentType: string): Promise<void> {
     let attachment: IProjectAttachment | IProjectReportAttachment | null;
 
     if (attachmentType === ATTACHMENT_TYPE.REPORT) {
       // Get the attachment
-      attachment = await this.getProjectReportAttachmentById( attachmentId);
+      attachment = await this.getProjectReportAttachmentById(attachmentId);
 
       // Delete the authors, and attachment
       await this.deleteProjectReportAttachmentAuthors(attachmentId);
       await this._deleteProjectReportAttachmentRecord(attachmentId);
     } else {
       // Get the attachment
-      attachment = await this.getProjectAttachmentById( attachmentId);
+      attachment = await this.getProjectAttachmentById(attachmentId);
 
       // Delete the attachment
       await this._deleteProjectAttachmentRecord(attachmentId);
@@ -1044,12 +1029,11 @@ export class AttachmentService extends DBService {
    */
   async upsertSurveyTelemetryCredentialAttachment(
     file: Express.Multer.File,
-    projectId: number,
+
     surveyId: number,
     attachmentData: IValidationData
   ): Promise<IResponseTelemetryCredentialAttachment> {
     const key = generateS3FileKey({
-      projectId: projectId,
       surveyId: surveyId,
       fileName: file.originalname,
       folder: 'telemetry-credentials'

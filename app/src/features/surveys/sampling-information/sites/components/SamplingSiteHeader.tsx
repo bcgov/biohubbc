@@ -12,10 +12,8 @@ import { useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 
 interface ISamplingSiteHeaderProps {
-  project_id: number;
   survey_id: number;
   survey_name: string;
-  project_name: string;
   is_submitting: boolean;
   title: string;
   breadcrumb: string;
@@ -31,7 +29,7 @@ const SamplingSiteHeader = (props: ISamplingSiteHeaderProps) => {
   const history = useHistory();
   const formikProps = useFormikContext();
 
-  const { project_id, survey_id, survey_name, project_name, is_submitting, title, breadcrumb } = props;
+  const { survey_id, survey_name, is_submitting, title, breadcrumb } = props;
 
   return (
     <Paper
@@ -50,19 +48,10 @@ const SamplingSiteHeader = (props: ISamplingSiteHeaderProps) => {
           sx={{
             typography: 'body2'
           }}>
-          <Link component={RouterLink} to={`/admin/projects/${project_id}/details`} underline="none">
-            {project_name}
-          </Link>
-          <Link
-            component={RouterLink}
-            to={`/admin/projects/${project_id}/surveys/${survey_id}/details`}
-            underline="none">
+          <Link component={RouterLink} to={`/admin/surveys/${survey_id}/details`} underline="none">
             {survey_name}
           </Link>
-          <Link
-            component={RouterLink}
-            to={`/admin/projects/${project_id}/surveys/${survey_id}/sampling`}
-            underline="none">
+          <Link component={RouterLink} to={`/admin/surveys/${survey_id}/sampling`} underline="none">
             Manage Sampling Information
           </Link>
           <Typography component="span" variant="body2" color="textSecondary">

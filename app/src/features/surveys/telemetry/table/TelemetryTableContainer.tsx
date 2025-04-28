@@ -56,13 +56,7 @@ export const TelemetryTableContainer = () => {
 
   const handleImportTelemetryCSV = async (file: File, onProgress: (progressEvent: AxiosProgressEvent) => void) => {
     try {
-      await biohubApi.telemetry.importManualTelemetryCSV(
-        surveyContext.projectId,
-        surveyContext.surveyId,
-        file,
-        cancelToken,
-        onProgress
-      );
+      await biohubApi.telemetry.importManualTelemetryCSV(surveyContext.surveyId, file, cancelToken, onProgress);
 
       setProcessingRecords(true);
 

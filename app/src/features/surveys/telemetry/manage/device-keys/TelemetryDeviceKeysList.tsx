@@ -33,7 +33,6 @@ export const TelemetryDeviceKeysList = (props: ITelemetryDeviceKeysListProps) =>
   const handleDownload = async (attachment: TelemetryDeviceKeyFile) => {
     try {
       const response = await biohubApi.survey.getSurveyAttachmentSignedURL(
-        surveyContext.projectId,
         surveyContext.surveyId,
         attachment.survey_telemetry_credential_attachment_id,
         attachment.file_type

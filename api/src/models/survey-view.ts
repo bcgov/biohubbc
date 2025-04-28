@@ -64,7 +64,6 @@ export interface ISurveyAdvancedFilters {
 }
 
 export const FindSurveysResponse = z.object({
-  project_id: z.number(),
   survey_id: z.number(),
   name: z.string(),
   progress_id: z.number(),
@@ -98,7 +97,6 @@ export interface ISurveyPartnerships {
 
 export class GetSurveyData {
   id: number;
-  project_id: number;
   uuid: string;
   survey_name: string;
   start_date: string;

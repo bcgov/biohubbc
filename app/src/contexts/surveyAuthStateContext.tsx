@@ -1,6 +1,7 @@
 import { useAuthStateContext } from 'hooks/useAuthStateContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
+import { IGetUserSurveyParticipantResponse } from 'interfaces/useSurveyApi.interface';
 import React, { useCallback, useMemo } from 'react';
 import { useParams } from 'react-router';
 import { hasAtLeastOneValidValue } from 'utils/authUtils';

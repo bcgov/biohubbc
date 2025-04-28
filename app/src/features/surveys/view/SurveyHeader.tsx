@@ -13,7 +13,6 @@ import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import grey from '@mui/material/colors/grey';
-import Link from '@mui/material/Link';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -26,9 +25,9 @@ import PublishSurveyIdDialog from 'components/publish/PublishSurveyDialog';
 import { FeatureFlagGuard, ProjectRoleGuard } from 'components/security/Guards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { DeleteSurveyI18N } from 'constants/i18n';
-import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
+import { SURVEY_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { DialogContext } from 'contexts/dialogContext';
-import { ProjectContext } from 'contexts/projectContext';
+
 import { SurveyContext } from 'contexts/surveyContext';
 import { SurveyExportDialog } from 'features/surveys/view/survey-export/SurveyExportDialog';
 import { APIError } from 'hooks/api/useAxios';
@@ -36,7 +35,6 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import React, { useContext, useState } from 'react';
 import { useHistory } from 'react-router';
-import { Link as RouterLink } from 'react-router-dom';
 import { getFormattedDateRangeString } from 'utils/Utils';
 import { SurveyProgressChip } from '../components/SurveyProgressChip';
 import CreateCollectionSurveyDialog from './collection/CreateCollectionSurveyDialog';
@@ -48,10 +46,8 @@ import CreateCollectionSurveyDialog from './collection/CreateCollectionSurveyDia
  */
 const SurveyHeader = () => {
   const surveyContext = useContext(SurveyContext);
-  const projectContext = useContext(ProjectContext);
 
   const surveyWithDetails = surveyContext.surveyDataLoader.data;
-  const projectWithDetails = projectContext.projectDataLoader.data;
 
   const history = useHistory();
 
@@ -104,17 +100,14 @@ const SurveyHeader = () => {
     }
 
     try {
-      const response = await biohubApi.survey.deleteSurvey(
-        surveyContext.projectId,
-        surveyWithDetails.surveyData.survey_details.id
-      );
+      const response = await biohubApi.survey.deleteSurvey(surveyWithDetails.surveyData.survey_details.id);
 
       if (!response) {
         showDeleteErrorDialog({ open: true });
         return;
       }
 
-      history.push(`/admin/projects/${surveyContext.projectId}`);
+      history.goBack();
     } catch (error) {
       const apiError = error as APIError;
       showDeleteErrorDialog({ dialogErrorDetails: [apiError.message], open: true });
@@ -143,13 +136,6 @@ const SurveyHeader = () => {
         title={surveyWithDetails.surveyData.survey_details.survey_name}
         breadCrumbJSX={
           <Breadcrumbs aria-label="breadcrumb" separator={'>'}>
-            <Link
-              component={RouterLink}
-              underline="hover"
-              to={`/admin/projects/${projectWithDetails?.projectData.project.project_id}`}
-              aria-current="page">
-              {projectWithDetails?.projectData.project.project_name}
-            </Link>
             <Typography component="span" variant="inherit" color="textSecondary">
               {surveyWithDetails.surveyData.survey_details.survey_name}
             </Typography>
@@ -172,13 +158,13 @@ const SurveyHeader = () => {
         }
         buttonJSX={
           <ProjectRoleGuard
-            validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+            validProjectPermissions={[SURVEY_PERMISSION.COORDINATOR, SURVEY_PERMISSION.COLLABORATOR]}
             validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
             <Stack flexDirection="row" alignItems="center" gap={2}>
               <HelpButtonDialog markdownType={MarkdownTypeNameEnum.SURVEY_PAGE} />
               <FeatureFlagGuard featureFlags={['APP_FF_SUBMIT_BIOHUB']}>
                 <ProjectRoleGuard
-                  validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR]}
+                  validProjectPermissions={[SURVEY_PERMISSION.COORDINATOR]}
                   validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                   <Typography
                     component="span"
@@ -266,7 +252,7 @@ const SurveyHeader = () => {
                 <Typography variant="inherit">Edit Survey Details</Typography>
               </MenuItem>
               <ProjectRoleGuard
-                validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR]}
+                validProjectPermissions={[SURVEY_PERMISSION.COORDINATOR]}
                 validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                 <MenuItem data-testid="delete-survey-button" onClick={showDeleteSurveyDialog}>
                   <ListItemIcon>
@@ -276,7 +262,7 @@ const SurveyHeader = () => {
                 </MenuItem>
               </ProjectRoleGuard>
               <ProjectRoleGuard
-                validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+                validProjectPermissions={[SURVEY_PERMISSION.COORDINATOR, SURVEY_PERMISSION.COLLABORATOR]}
                 validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                 <MenuItem data-testid="export-survey-button" onClick={() => setOpenSurveyExportDialog(true)}>
                   <ListItemIcon>

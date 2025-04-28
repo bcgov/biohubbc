@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../constants/roles';
+import { SURVEY_PERMISSION, SYSTEM_ROLE } from '../../../../../constants/roles';
 import { getDBConnection } from '../../../../../database/db';
 import { HTTP400 } from '../../../../../errors/http-error';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
@@ -16,7 +16,7 @@ export const PATCH: Operation = [
     return {
       or: [
         {
-          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR],
+          validProjectPermissions: [SURVEY_PERMISSION.COORDINATOR, SURVEY_PERMISSION.COLLABORATOR],
           surveyId: Number(req.params.surveyId),
           discriminator: 'ProjectPermission'
         },
@@ -166,9 +166,9 @@ export const GET: Operation = [
       or: [
         {
           validProjectPermissions: [
-            PROJECT_PERMISSION.COORDINATOR,
-            PROJECT_PERMISSION.COLLABORATOR,
-            PROJECT_PERMISSION.OBSERVER
+            SURVEY_PERMISSION.COORDINATOR,
+            SURVEY_PERMISSION.COLLABORATOR,
+            SURVEY_PERMISSION.OBSERVER
           ],
           surveyId: Number(req.params.surveyId),
           discriminator: 'ProjectPermission'

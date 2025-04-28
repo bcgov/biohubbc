@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_ROLE, SYSTEM_ROLE } from '../../../constants/roles';
+import { SURVEY_ROLE, SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
 import { HTTP400 } from '../../../errors/http-error';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
@@ -82,7 +82,7 @@ export function deactivateSystemUser(): RequestHandler {
 
       if (isUserTheOnlyCoordinator) {
         throw new HTTP400(
-          `Cannot deactivate user. User is the only ${PROJECT_ROLE.COORDINATOR} for one or more projects.`
+          `Cannot deactivate user. User is the only ${SURVEY_ROLE.COORDINATOR} for one or more projects.`
         );
       }
 

@@ -1,5 +1,5 @@
 import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
-import { PROJECT_ROLE } from '../constants/roles';
+import { SURVEY_ROLE } from '../constants/roles';
 import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('models/project-create');
@@ -114,5 +114,5 @@ export class PostParticipantsData {
 export interface PostParticipantData {
   project_participation_id?: number;
   system_user_id: number;
-  project_role_names: PROJECT_ROLE[];
+  survey_role_names: SURVEY_ROLE[];
 }

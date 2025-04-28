@@ -90,10 +90,10 @@ describe('getSelf', () => {
       .stub(ProjectParticipationService.prototype, 'getProjectParticipant')
       .resolves({
         project_participation_id: 1,
-        project_id: 1,
+
         system_user_id: 20,
-        project_role_ids: [1],
-        project_role_names: ['Test-Role-A'],
+        survey_role_ids: [1],
+        survey_role_names: ['Test-Role-A'],
         project_role_permissions: ['Test Permission'],
         agency: null,
         display_name: 'test user',
@@ -120,10 +120,10 @@ describe('getSelf', () => {
     expect(projectParticipationServiceStub).to.be.calledWith(1, 20);
     expect(mockRes.jsonValue).to.eql({
       project_participation_id: 1,
-      project_id: 1,
+
       system_user_id: 20,
-      project_role_ids: [1],
-      project_role_names: ['Test-Role-A'],
+      survey_role_ids: [1],
+      survey_role_names: ['Test-Role-A'],
       project_role_permissions: ['Test Permission'],
       agency: null,
       display_name: 'test user',
@@ -150,10 +150,10 @@ describe('getSelf', () => {
       .stub(ProjectParticipationService.prototype, 'getProjectParticipant')
       .resolves({
         project_participation_id: 1,
-        project_id: 1,
+
         system_user_id: 20,
-        project_role_ids: [1, 2],
-        project_role_names: ['Test-Role-A', 'Test-Role-B'],
+        survey_role_ids: [1, 2],
+        survey_role_names: ['Test-Role-A', 'Test-Role-B'],
         project_role_permissions: ['Test Permission'],
         agency: null,
         display_name: 'test user',
@@ -180,10 +180,10 @@ describe('getSelf', () => {
     expect(projectParticipationServiceStub).to.be.calledWith(1, 20);
     expect(mockRes.jsonValue).to.eql({
       project_participation_id: 1,
-      project_id: 1,
+
       system_user_id: 20,
-      project_role_ids: [1, 2],
-      project_role_names: ['Test-Role-A', 'Test-Role-B'],
+      survey_role_ids: [1, 2],
+      survey_role_names: ['Test-Role-A', 'Test-Role-B'],
       project_role_permissions: ['Test Permission'],
       agency: null,
       display_name: 'test user',

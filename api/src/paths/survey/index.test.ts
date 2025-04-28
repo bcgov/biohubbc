@@ -23,7 +23,7 @@ describe('survey list', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     const expectedError = new Error('an error');
-    sinon.stub(SurveyService.prototype, 'getSurveysBasicFieldsByProjectId').rejects(expectedError);
+    sinon.stub(SurveyService.prototype, 'getSurveysBasicFields').rejects(expectedError);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -66,8 +66,8 @@ describe('survey list', () => {
       focal_species_names: ['Species 1', 'Species 2']
     };
 
-    const getSurveysBasicFieldsByProjectIdStub = sinon
-      .stub(SurveyService.prototype, 'getSurveysBasicFieldsByProjectId')
+    const getSurveysBasicFieldsStub = sinon
+      .stub(SurveyService.prototype, 'getSurveysBasicFields')
       .resolves([mockSurveyA, mockSurveyB]);
 
     sinon.stub(SurveyService.prototype, 'getSurveyCountByProjectId').resolves(2);
@@ -96,7 +96,7 @@ describe('survey list', () => {
 
     await result(mockReq, mockRes, mockNext);
 
-    expect(getSurveysBasicFieldsByProjectIdStub).to.be.calledOnceWith(projectId);
+    expect(getSurveysBasicFieldsStub).to.be.calledOnceWith(projectId);
     expect(mockRes.jsonValue).to.eql(expectedResponse);
   });
 });
@@ -111,7 +111,6 @@ describe('findSurveys', () => {
   it('finds and returns surveys', async () => {
     const mockFindSurveysResponse: FindSurveysResponse[] = [
       {
-        project_id: 1,
         survey_id: 2,
         name: 'survey name',
         progress_id: 3,
@@ -185,7 +184,6 @@ describe('findSurveys', () => {
   it('catches and re-throws error', async () => {
     const mockFindSurveysResponse: FindSurveysResponse[] = [
       {
-        project_id: 1,
         survey_id: 2,
         name: 'survey name',
         progress_id: 3,

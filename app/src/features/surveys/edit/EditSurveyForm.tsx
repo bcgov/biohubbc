@@ -7,7 +7,7 @@ import FormikErrorSnackbar from 'components/alert/FormikErrorSnackbar';
 import HelpButtonStack from 'components/buttons/HelpButtonStack';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { CodesContext } from 'contexts/codesContext';
-import { ProjectContext } from 'contexts/projectContext';
+
 import SurveyPermitForm, { ISurveyPermitForm } from 'features/surveys/components/permit/SurveyPermitForm';
 import SamplingStrategyForm from 'features/surveys/components/sampling-strategy/SamplingStrategyForm';
 import SurveyPartnershipsForm, {
@@ -55,9 +55,6 @@ const EditSurveyForm = <
 >(
   props: IEditSurveyForm<T>
 ) => {
-  const projectContext = useContext(ProjectContext);
-  const projectData = projectContext.projectDataLoader.data?.projectData;
-
   const codesContext = useContext(CodesContext);
   const codes = codesContext.codesDataLoader.data;
 
@@ -65,7 +62,7 @@ const EditSurveyForm = <
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
 
-  if (!projectData || !codes) {
+  if (!codes) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 

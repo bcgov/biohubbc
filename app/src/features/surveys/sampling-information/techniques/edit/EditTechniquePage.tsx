@@ -56,7 +56,7 @@ export const EditTechniquePage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (!surveyContext.surveyDataLoader.data || !projectContext.projectDataLoader.data) {
+  if (!surveyContext.surveyDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
@@ -127,16 +127,11 @@ export const EditTechniquePage = () => {
       };
 
       // Update the technique
-      await biohubApi.technique.updateTechnique(
-        surveyContext.projectId,
-        surveyContext.surveyId,
-        methodTechniqueId,
-        formattedTechniqueObject
-      );
+      await biohubApi.technique.updateTechnique(surveyContext.surveyId, methodTechniqueId, formattedTechniqueObject);
 
       // Success, navigate back to the manage sampling information page
       skipUnsavedChangesDialog();
-      history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling`);
+      history.push(`/admin/surveys/${surveyContext.surveyId}/sampling`);
     } catch (error) {
       setIsSubmitting(false);
       dialogContext.setErrorDialog({
@@ -167,22 +162,10 @@ export const EditTechniquePage = () => {
             sx={{
               typography: 'body2'
             }}>
-            <Link
-              component={RouterLink}
-              to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/details`}
-              underline="none">
-              {projectContext.projectDataLoader.data?.projectData.project.project_name}
-            </Link>
-            <Link
-              component={RouterLink}
-              to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/details`}
-              underline="none">
+            <Link component={RouterLink} to={`/admin/surveys/${surveyContext.surveyId}/details`} underline="none">
               {surveyContext.surveyDataLoader.data?.surveyData.survey_details.survey_name}
             </Link>
-            <Link
-              component={RouterLink}
-              to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling`}
-              underline="none">
+            <Link component={RouterLink} to={`/admin/surveys/${surveyContext.surveyId}/sampling`} underline="none">
               Manage Sampling Information
             </Link>
             <Typography component="span" variant="body2" color="textSecondary">
@@ -203,9 +186,7 @@ export const EditTechniquePage = () => {
               disabled={isSubmitting}
               color="primary"
               variant="outlined"
-              onClick={() =>
-                history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling`)
-              }>
+              onClick={() => history.push(`/admin/surveys/${surveyContext.surveyId}/sampling`)}>
               Cancel
             </Button>
           </Stack>
@@ -234,7 +215,7 @@ export const EditTechniquePage = () => {
               variant="outlined"
               color="primary"
               onClick={() => {
-                history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling`);
+                history.push(`/admin/surveys/${surveyContext.surveyId}/sampling`);
               }}>
               Cancel
             </Button>

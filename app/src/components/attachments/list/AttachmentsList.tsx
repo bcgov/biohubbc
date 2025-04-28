@@ -5,7 +5,7 @@ import Stack from '@mui/material/Stack';
 import { GridColDef } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { PublishStatus } from 'constants/attachments';
-import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
+import { SURVEY_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { SurveyAuthStateContext } from 'contexts/surveyAuthStateContext';
 import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
 import { useContext } from 'react';
@@ -19,7 +19,7 @@ interface IAttachmentsListProps<T extends IGetSurveyAttachment> {
   emptyStateText?: string;
 }
 
-const validSurveyPermissions: PROJECT_PERMISSION[] = [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR];
+const validSurveyPermissions: SURVEY_PERMISSION[] = [SURVEY_PERMISSION.COORDINATOR, SURVEY_PERMISSION.COLLABORATOR];
 
 const validSystemRoles: SYSTEM_ROLE[] = [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR];
 

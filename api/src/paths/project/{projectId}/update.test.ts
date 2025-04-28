@@ -136,7 +136,6 @@ describe('update', () => {
 
       mockReq.body = {
         project: {
-          project_id: 1,
           project_name: 'Project 1',
           start_date: '2022-02-02',
           end_date: '2022-02-30',

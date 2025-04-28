@@ -33,8 +33,8 @@ describe('projects', () => {
             project_id: 123,
             project_name: 'projectname',
             system_user_id: 12,
-            project_role_ids: [42],
-            project_role_names: ['Role1'],
+            survey_role_ids: [42],
+            survey_role_names: ['Role1'],
             project_role_permissions: ['Permission1'],
             project_participation_id: 88
           }
@@ -51,8 +51,8 @@ describe('projects', () => {
           project_id: 123,
           project_name: 'projectname',
           system_user_id: 12,
-          project_role_ids: [42],
-          project_role_names: ['Role1'],
+          survey_role_ids: [42],
+          survey_role_names: ['Role1'],
           project_role_permissions: ['Permission1'],
           project_participation_id: 88
         }

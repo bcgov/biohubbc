@@ -68,7 +68,7 @@ export const SurveySpatialDeploymentTable = () => {
 
   useEffect(() => {
     critterDataLoader.load(surveyContext.surveyId);
-  }, [deploymentsDataLoader, critterDataLoader, surveyContext.projectId, surveyContext.surveyId]);
+  }, [deploymentsDataLoader, critterDataLoader, surveyContext.surveyId]);
 
   /**
    * Merges critters with associated deployments

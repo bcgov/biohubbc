@@ -253,7 +253,7 @@ export const SurveyDeploymentList = () => {
         }}>
         <MenuItem
           component={RouterLink}
-          to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry/manage/deployment/${selectedDeploymentId}/edit`}
+          to={`/admin/surveys/${surveyContext.surveyId}/telemetry/manage/deployment/${selectedDeploymentId}/edit`}
           onClick={() => setDeploymentAnchorEl(null)}>
           <ListItemIcon>
             <Icon path={mdiPencilOutline} size={1} />

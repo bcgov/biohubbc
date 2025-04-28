@@ -1,24 +1,19 @@
-import * as faker from "faker";
-
-import { navigate, login, logout } from "../page-functions/common/login-page";
+import { navigate } from "../page-functions/common/login-page";
 
 import {
-  navigate_project,
-  add_permits,
-  submit_project,
-  next_page_project,
-  previous_page_project,
-  cancel_project,
-  add_locations,
-  add_gpx,
-  add_zip,
-  add_project_info,
-  add_objectives,
   add_classification,
   add_funding,
+  add_gpx,
+  add_locations,
+  add_objectives,
   add_partnerships,
-  attach_file,
+  add_permits,
+  add_project_info,
   add_survey,
+  attach_file,
+  navigate_project,
+  next_page_project,
+  submit_project,
 } from "../page-functions/project/project-create-page";
 
 beforeEach(() => {
@@ -44,7 +39,7 @@ while (n < 1) {
     add_permits(null, null, null, "true"); //navloc, permit_nr, permit_type, sampling
     next_page_project();
 
-    add_project_info(null, null, null, null); //project_name, project_type, start_date, end_date
+    add_project_info(null, null, null, null); //project_type, start_date, end_date
     next_page_project();
 
     add_objectives(null, null); //objectives, caveats
@@ -58,7 +53,7 @@ while (n < 1) {
     add_classification(null, null, null); //classification, sub_classification1, sub_classification2
     next_page_project();
 
-    add_funding(null,null);
+    add_funding(null, null);
     next_page_project();
 
     add_partnerships();
@@ -68,7 +63,6 @@ while (n < 1) {
     attach_file();
 
     add_survey();
-
   });
   n++;
 }

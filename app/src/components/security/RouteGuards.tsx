@@ -1,5 +1,5 @@
 import CircularProgress from '@mui/material/CircularProgress';
-import { PROJECT_PERMISSION, PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
+import { SURVEY_PERMISSION, SURVEY_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { SurveyAuthStateContext } from 'contexts/surveyAuthStateContext';
 import { useAuthStateContext } from 'hooks/useAuthStateContext';
 import { useContext, useEffect } from 'react';
@@ -25,18 +25,18 @@ export interface IProjectRoleRouteGuardProps extends RouteProps {
    *
    * Note: The user only needs 1 of the valid roles, when multiple are specified.
    *
-   * @type {PROJECT_ROLE[]}
+   * @type {SURVEY_ROLE[]}
    */
-  validProjectRoles?: PROJECT_ROLE[];
+  validProjectRoles?: SURVEY_ROLE[];
 
   /**
    * Indicates the sufficient project permissions needed to access this route, if any.
    *
    * Note: The user only needs 1 of the valid roles, when multiple are specified.
    *
-   * @type {PROJECT_PERMISSION[]}
+   * @type {SURVEY_PERMISSION[]}
    */
-  validProjectPermissions?: PROJECT_PERMISSION[];
+  validProjectPermissions?: SURVEY_PERMISSION[];
 
   /**
    * Indicates the sufficient system roles that will grant access to this route, if any.
@@ -98,9 +98,9 @@ export const ProjectRoleRouteGuard = (props: IProjectRoleRouteGuardProps) => {
   }
 
   if (
-    !surveyAuthStateContext.hasProjectRole(validProjectRoles) &&
+    !surveyAuthStateContext.hasSurveyRole(validProjectRoles) &&
     !surveyAuthStateContext.hasSystemRole(validSystemRoles) &&
-    !surveyAuthStateContext.hasProjectPermission(validProjectPermissions)
+    !surveyAuthStateContext.hasSurveyPermission(validProjectPermissions)
   ) {
     return <Redirect to="/forbidden" />;
   }

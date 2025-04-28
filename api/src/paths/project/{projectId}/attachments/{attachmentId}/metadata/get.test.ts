@@ -26,7 +26,6 @@ describe('getProjectReportDetails', () => {
     const mockReq = {
       keycloak_token: {},
       params: {
-        projectId: 1,
         attachmentId: 2
       },
       body: {}
@@ -52,7 +51,6 @@ describe('getProjectReportDetails', () => {
     const mockReq = {
       keycloak_token: {},
       params: {
-        projectId: 1,
         attachmentId: 2
       },
       body: {}

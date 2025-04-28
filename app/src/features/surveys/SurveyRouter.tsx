@@ -1,5 +1,5 @@
 import { ProjectRoleRouteGuard } from 'components/security/RouteGuards';
-import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
+import { SURVEY_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { AnimalPageContextProvider } from 'contexts/animalPageContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { ObservationsContextProvider } from 'contexts/observationsContext';
@@ -35,9 +35,9 @@ const SurveyRouter: React.FC = () => {
       <RouteWithTitle exact path="/admin/projects/:id/surveys/:survey_id/details" title={getTitle('Survey')}>
         <ProjectRoleRouteGuard
           validProjectPermissions={[
-            PROJECT_PERMISSION.COORDINATOR,
-            PROJECT_PERMISSION.COLLABORATOR,
-            PROJECT_PERMISSION.OBSERVER
+            SURVEY_PERMISSION.COORDINATOR,
+            SURVEY_PERMISSION.COLLABORATOR,
+            SURVEY_PERMISSION.OBSERVER
           ]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <DialogContextProvider>
@@ -48,7 +48,7 @@ const SurveyRouter: React.FC = () => {
 
       <RouteWithTitle exact path="/admin/projects/:id/surveys/:survey_id/edit" title={getTitle('Edit Survey')}>
         <ProjectRoleRouteGuard
-          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+          validProjectPermissions={[SURVEY_PERMISSION.COORDINATOR, SURVEY_PERMISSION.COLLABORATOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <DialogContextProvider>
             <EditSurveyPage />
@@ -60,9 +60,9 @@ const SurveyRouter: React.FC = () => {
       <RouteWithTitle path="/admin/projects/:id/surveys/:survey_id/animals" title={getTitle('Manage Animals')}>
         <ProjectRoleRouteGuard
           validProjectPermissions={[
-            PROJECT_PERMISSION.COORDINATOR,
-            PROJECT_PERMISSION.COLLABORATOR,
-            PROJECT_PERMISSION.OBSERVER
+            SURVEY_PERMISSION.COORDINATOR,
+            SURVEY_PERMISSION.COLLABORATOR,
+            SURVEY_PERMISSION.OBSERVER
           ]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <DialogContextProvider>
@@ -77,9 +77,9 @@ const SurveyRouter: React.FC = () => {
       <RouteWithTitle path="/admin/projects/:id/surveys/:survey_id/telemetry" title={getTitle('Manage Telemetry')}>
         <ProjectRoleRouteGuard
           validProjectPermissions={[
-            PROJECT_PERMISSION.COORDINATOR,
-            PROJECT_PERMISSION.COLLABORATOR,
-            PROJECT_PERMISSION.OBSERVER
+            SURVEY_PERMISSION.COORDINATOR,
+            SURVEY_PERMISSION.COLLABORATOR,
+            SURVEY_PERMISSION.OBSERVER
           ]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <TelemetryRouter />
@@ -92,9 +92,9 @@ const SurveyRouter: React.FC = () => {
         title={getTitle('Manage Habitat Features')}>
         <ProjectRoleRouteGuard
           validProjectPermissions={[
-            PROJECT_PERMISSION.COORDINATOR,
-            PROJECT_PERMISSION.COLLABORATOR,
-            PROJECT_PERMISSION.OBSERVER
+            SURVEY_PERMISSION.COORDINATOR,
+            SURVEY_PERMISSION.COLLABORATOR,
+            SURVEY_PERMISSION.OBSERVER
           ]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <HabitatFeatureRouter />
@@ -108,9 +108,9 @@ const SurveyRouter: React.FC = () => {
         title={getTitle('Manage Observations')}>
         <ProjectRoleRouteGuard
           validProjectPermissions={[
-            PROJECT_PERMISSION.COORDINATOR,
-            PROJECT_PERMISSION.COLLABORATOR,
-            PROJECT_PERMISSION.OBSERVER
+            SURVEY_PERMISSION.COORDINATOR,
+            SURVEY_PERMISSION.COLLABORATOR,
+            SURVEY_PERMISSION.OBSERVER
           ]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <ObservationsContextProvider>
@@ -124,7 +124,7 @@ const SurveyRouter: React.FC = () => {
         path="/admin/projects/:id/surveys/:survey_id/observations/create"
         title={getTitle('Create Observation')}>
         <ProjectRoleRouteGuard
-          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+          validProjectPermissions={[SURVEY_PERMISSION.COORDINATOR, SURVEY_PERMISSION.COLLABORATOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <CreateObservationPage />
         </ProjectRoleRouteGuard>
@@ -135,7 +135,7 @@ const SurveyRouter: React.FC = () => {
         path="/admin/projects/:id/surveys/:survey_id/observations/:observation_id/edit"
         title={getTitle('Edit Observation')}>
         <ProjectRoleRouteGuard
-          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+          validProjectPermissions={[SURVEY_PERMISSION.COORDINATOR, SURVEY_PERMISSION.COLLABORATOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <EditObservationPage />
         </ProjectRoleRouteGuard>
@@ -145,9 +145,9 @@ const SurveyRouter: React.FC = () => {
       <RouteWithTitle path="/admin/projects/:id/surveys/:survey_id/sampling" title={getTitle('Surveys')}>
         <ProjectRoleRouteGuard
           validProjectPermissions={[
-            PROJECT_PERMISSION.COORDINATOR,
-            PROJECT_PERMISSION.COLLABORATOR,
-            PROJECT_PERMISSION.OBSERVER
+            SURVEY_PERMISSION.COORDINATOR,
+            SURVEY_PERMISSION.COLLABORATOR,
+            SURVEY_PERMISSION.OBSERVER
           ]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <SamplingRouter />

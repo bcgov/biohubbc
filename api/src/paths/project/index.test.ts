@@ -21,7 +21,6 @@ describe('findProjects', () => {
   it('finds and returns projects', async () => {
     const mockFindProjectsResponse: FindProjectsResponse[] = [
       {
-        project_id: 1,
         name: 'project name',
         start_date: '2021-01-01',
         end_date: '2021-12-31',
@@ -92,7 +91,6 @@ describe('findProjects', () => {
   it('catches and re-throws error', async () => {
     const mockFindProjectsResponse: FindProjectsResponse[] = [
       {
-        project_id: 1,
         name: 'project name',
         start_date: '2021-01-01',
         end_date: '2021-12-31',

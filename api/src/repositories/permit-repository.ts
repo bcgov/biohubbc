@@ -1,5 +1,5 @@
 import SQL from 'sql-template-strings';
-import { PROJECT_ROLE } from '../constants/roles';
+import { SURVEY_ROLE } from '../constants/roles';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { BaseRepository } from './base-repository';
 
@@ -70,7 +70,7 @@ export class PermitRepository extends BaseRepository {
     AND
       p2.project_id = pp.project_id
     AND
-      pr."name" in ('${PROJECT_ROLE.COORDINATOR}', '${PROJECT_ROLE.COLLABORATOR}')
+      pr."name" in ('${SURVEY_ROLE.COORDINATOR}', '${SURVEY_ROLE.COLLABORATOR}')
     AND
       pp.project_role_id = pr.project_role_id
     AND

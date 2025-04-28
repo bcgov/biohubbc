@@ -35,7 +35,6 @@ describe('resubmit', () => {
       const sampleReq = {
         keycloak_token: {},
         body: {
-          projectId: 1,
           fileName: 'test',
           parentName: 'test',
           formValues: {
@@ -75,7 +74,6 @@ describe('resubmit', () => {
       const sampleReq = {
         keycloak_token: {},
         body: {
-          projectId: 1,
           fileName: 'test',
           parentName: 'test',
           formValues: {

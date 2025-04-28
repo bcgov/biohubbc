@@ -20,10 +20,7 @@ const useAnimalApi = (axios: AxiosInstance) => {
    * @param {number} surveyId
    * @return {*}  {Promise<IGetCaptureMortalityGeometryResponse>}
    */
-  const getCaptureMortalityGeometry = async (
-    projectId: number,
-    surveyId: number
-  ): Promise<IGetCaptureMortalityGeometryResponse> => {
+  const getCaptureMortalityGeometry = async (surveyId: number): Promise<IGetCaptureMortalityGeometryResponse> => {
     const { data } = await axios.get<IGetCaptureMortalityGeometryResponse>(`/api/survey/${surveyId}/critters/spatial`);
 
     return data;

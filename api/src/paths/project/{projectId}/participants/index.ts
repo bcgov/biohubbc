@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_IDENTITY_SOURCE } from '../../../../constants/database';
-import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../constants/roles';
+import { SURVEY_PERMISSION, SYSTEM_ROLE } from '../../../../constants/roles';
 import { getDBConnection } from '../../../../database/db';
 import { HTTP400 } from '../../../../errors/http-error';
 import { projectAndSystemUserSchema } from '../../../../openapi/schemas/user';
@@ -17,7 +17,7 @@ export const GET: Operation = [
     return {
       or: [
         {
-          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR],
+          validProjectPermissions: [SURVEY_PERMISSION.COORDINATOR],
           projectId: Number(req.params.projectId),
           discriminator: 'ProjectPermission'
         },
@@ -122,7 +122,7 @@ export const POST: Operation = [
     return {
       or: [
         {
-          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR],
+          validProjectPermissions: [SURVEY_PERMISSION.COORDINATOR],
           projectId: Number(req.params.projectId),
           discriminator: 'ProjectPermission'
         },

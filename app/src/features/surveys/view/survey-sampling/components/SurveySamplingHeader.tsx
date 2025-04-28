@@ -6,7 +6,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
 import { ProjectRoleGuard } from 'components/security/Guards';
-import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
+import { SURVEY_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import { Link as RouterLink } from 'react-router-dom';
 
@@ -19,7 +19,7 @@ export const SurveySamplingHeader = () => {
       <Stack gap={1} direction="row">
         <HelpButtonDialog markdownType={MarkdownTypeNameEnum.SAMPLING_INFORMATION} />
         <ProjectRoleGuard
-          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+          validProjectPermissions={[SURVEY_PERMISSION.COORDINATOR, SURVEY_PERMISSION.COLLABORATOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <Button
             component={RouterLink}

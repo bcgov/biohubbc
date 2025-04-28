@@ -146,7 +146,7 @@ export const EditSamplingSitePage = () => {
     }
   };
 
-  if (!surveyContext.surveyDataLoader.data || !projectContext.projectDataLoader.data || !initialFormValues) {
+  if (!surveyContext.surveyDataLoader.data || !initialFormValues) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
@@ -164,10 +164,8 @@ export const EditSamplingSitePage = () => {
         <Box display="flex" flexDirection="column" height="100%">
           <FormikErrorSnackbar />
           <SamplingSiteHeader
-            project_id={surveyContext.projectId}
             survey_id={surveyContext.surveyId}
             survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
-            project_name={projectContext.projectDataLoader.data.projectData.project.project_name}
             is_submitting={isSubmitting}
             title="Edit Sampling Site"
             breadcrumb="Edit Sampling Site"

@@ -146,7 +146,7 @@ export const SamplingPeriodContainer = () => {
   const handleBulkImportSamplePeriods = async (file: File, onProgress: (progressEvent: AxiosProgressEvent) => void) => {
     await biohubApi.samplingPeriod.importSamplePeriodsFromCsv(
       file,
-      surveyContext.projectId,
+
       surveyContext.surveyId,
       axios.CancelToken.source(),
       onProgress

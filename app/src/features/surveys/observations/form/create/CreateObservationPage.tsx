@@ -59,7 +59,6 @@ const CreateObservationPage = () => {
 
   const surveyContext = useSurveyContext();
 
-  const projectName = projectContext.projectDataLoader.data?.projectData.project.project_name;
   const surveyName = surveyContext.surveyDataLoader.data?.surveyData.survey_details.survey_name;
   const { surveyId } = surveyContext;
 
@@ -210,9 +209,6 @@ const CreateObservationPage = () => {
         title="Create Observation"
         breadCrumbJSX={
           <Breadcrumbs aria-label="breadcrumb" separator={'>'}>
-            <Link component={RouterLink} underline="hover" to={`/admin/projects/${projectId}/`}>
-              {projectName}
-            </Link>
             <Link component={RouterLink} underline="hover" to={`/admin/surveys/${surveyId}`}>
               {surveyName}
             </Link>

@@ -5,7 +5,7 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { PROJECT_ROLE_ICONS } from 'constants/roles';
+import { SURVEY_ROLE_ICONS } from 'constants/roles';
 
 /**
  * Information about Projects
@@ -33,7 +33,7 @@ export const SupportProjects = (): JSX.Element => (
       <List sx={{ '& .MuiListItem-root': { ml: 1, alignItems: 'center' } }}>
         <ListItem sx={{ alignItems: 'center' }}>
           <Stack direction="row" alignItems="center" spacing={1}>
-            <Icon path={PROJECT_ROLE_ICONS['Coordinator']} size={0.75} style={{ color: grey[600] }} />
+            <Icon path={SURVEY_ROLE_ICONS['Coordinator']} size={0.75} style={{ color: grey[600] }} />
             <Typography>
               <strong>Coordinators</strong> can add and edit information, manage the Project team and roles, and publish
               data
@@ -42,7 +42,7 @@ export const SupportProjects = (): JSX.Element => (
         </ListItem>
         <ListItem sx={{ alignItems: 'center' }}>
           <Stack direction="row" alignItems="center" spacing={1}>
-            <Icon path={PROJECT_ROLE_ICONS['Collaborator']} size={0.75} style={{ color: grey[600] }} />
+            <Icon path={SURVEY_ROLE_ICONS['Collaborator']} size={0.75} style={{ color: grey[600] }} />
             <Typography>
               <strong>Collaborators</strong> can add and edit information, but not manage the team or publish
             </Typography>
@@ -50,7 +50,7 @@ export const SupportProjects = (): JSX.Element => (
         </ListItem>
         <ListItem sx={{ alignItems: 'center' }}>
           <Stack direction="row" alignItems="center" spacing={1}>
-            <Icon path={PROJECT_ROLE_ICONS['Observer']} size={0.75} style={{ color: grey[600] }} />
+            <Icon path={SURVEY_ROLE_ICONS['Observer']} size={0.75} style={{ color: grey[600] }} />
             <Typography>
               <strong>Observers</strong> can only view information
             </Typography>

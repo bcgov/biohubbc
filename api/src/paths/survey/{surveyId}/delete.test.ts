@@ -30,7 +30,6 @@ describe('deleteSurvey', () => {
       keycloak_token: {},
       body: {},
       params: {
-        projectId: 1,
         surveyId: 2
       }
     } as any;
@@ -53,7 +52,6 @@ describe('deleteSurvey', () => {
       keycloak_token: {},
       body: {},
       params: {
-        projectId: 1,
         surveyId: 2
       }
     } as any;
@@ -96,7 +94,6 @@ describe('deleteSurvey', () => {
       keycloak_token: {},
       body: {},
       params: {
-        projectId: 1,
         surveyId: 2
       }
     } as any;

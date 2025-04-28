@@ -97,7 +97,7 @@ export const useSamplingPeriodApi = (axios: AxiosInstance) => {
    * Update a Sampling Period.
    * @param {number} surveyId
    * @param {number} surveySamplePeriodId
-   *    * @param {UpdateSamplingPeriod} data
+   * @param {UpdateSamplingPeriod} data
    * @return {*}  {Promise<void>}
    */
   const updateSamplingPeriod = async (
@@ -140,7 +140,7 @@ export const useSamplingPeriodApi = (axios: AxiosInstance) => {
    */
   const importSamplePeriodsFromCsv = async (
     file: File,
-    projectId: number,
+
     surveyId: number,
     cancelTokenSource?: CancelTokenSource,
     onProgress?: (progressEvent: AxiosProgressEvent) => void

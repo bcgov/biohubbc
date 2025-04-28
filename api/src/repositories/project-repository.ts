@@ -380,7 +380,6 @@ export class ProjectRepository extends BaseRepository {
   }
 
   async updateProjectData(
-    projectId: number,
     project: PutProjectData | null,
     objectives: PutObjectivesData | null,
     revision_count: number

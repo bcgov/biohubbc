@@ -14,7 +14,6 @@ describe('ProjectData', () => {
 
     before(() => {
       data = {
-        project_id: 1,
         uuid: 'uuid',
         project_name: '',
         comments: '',
@@ -33,7 +32,6 @@ describe('ProjectData', () => {
 
   describe('all values provided', () => {
     const projectData = {
-      project_id: 1,
       name: 'project name',
       pt_id: 4,
       start_date: new Date('2020-04-20T07:00:00.000Z'),
@@ -45,7 +43,6 @@ describe('ProjectData', () => {
 
     before(() => {
       data = {
-        project_id: 1,
         uuid: 'uuid',
         project_name: 'project name',
         comments: '',

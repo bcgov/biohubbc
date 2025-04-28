@@ -62,7 +62,6 @@ describe('uploadCaptureAttachments', () => {
     expect(mockBulkDeleteFilesFromS3).to.have.been.calledOnceWithExactly(['DELETE_S3_KEY']);
 
     expect(mockS3GenerateS3FileKey).to.have.been.calledOnceWithExactly({
-      projectId: 1,
       surveyId: 2,
       critterId: 3,
       folder: 'captures',

@@ -1,6 +1,6 @@
 import { AuthStateContext } from 'contexts/authStateContext';
 import { CodesContext, ICodesContext } from 'contexts/codesContext';
-import { IProjectContext, ProjectContext } from 'contexts/projectContext';
+
 import { ISurveyAuthStateContext, SurveyAuthStateContext } from 'contexts/surveyAuthStateContext';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -8,8 +8,6 @@ import { DataLoader } from 'hooks/useDataLoader';
 import { Router } from 'react-router';
 import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import { codes } from 'test-helpers/code-helpers';
-import { getProjectForViewResponse } from 'test-helpers/project-helpers';
-import { getSurveyForListResponse } from 'test-helpers/survey-helpers';
 import { cleanup, render, waitFor } from 'test-helpers/test-utils';
 import { Mock } from 'vitest';
 import SurveysListPage from './SurveysListPage';
@@ -21,14 +19,14 @@ const mockBiohubApi = useBiohubApi as Mock;
 
 const mockUseApi = {
   survey: {
-    getSurveysBasicFieldsByProjectId: vi.fn()
+    getSurveysBasicFields: vi.fn()
   }
 };
 
 describe('SurveysListPage', () => {
   beforeEach(() => {
     mockBiohubApi.mockImplementation(() => mockUseApi);
-    mockUseApi.survey.getSurveysBasicFieldsByProjectId.mockClear();
+    mockUseApi.survey.getSurveysBasicFields.mockClear();
   });
 
   afterEach(() => {
@@ -42,29 +40,17 @@ describe('SurveysListPage', () => {
         load: () => {}
       } as DataLoader<any, any, any>
     };
-    const mockProjectContext: IProjectContext = {
-      projectDataLoader: {
-        data: getProjectForViewResponse
-      } as DataLoader<any, any, any>,
-      surveysListDataLoader: { data: [], isLoading: false, isReady: true, refresh: vi.fn() } as unknown as DataLoader<
-        any,
-        any,
-        any
-      >,
-      artifactDataLoader: { data: null } as DataLoader<any, any, any>,
-      projectId: 1
-    };
 
     const mockSurveyAuthStateContext: ISurveyAuthStateContext = {
-      getProjectParticipant: () => null,
-      hasProjectRole: () => true,
-      hasProjectPermission: () => true,
+      getSurveyParticipant: () => null,
+      hasSurveyRole: () => true,
+      hasSurveyPermission: () => true,
       hasSystemRole: () => true,
-      getProjectId: () => 1,
+      getSurveyId: () => 1,
       hasLoadedParticipantInfo: true
     };
 
-    mockUseApi.survey.getSurveysBasicFieldsByProjectId.mockResolvedValue([]);
+    mockUseApi.survey.getSurveysBasicFields.mockResolvedValue([]);
 
     const authState = getMockAuthState({ base: SystemAdminAuthState });
 
@@ -73,9 +59,7 @@ describe('SurveysListPage', () => {
         <Router history={history}>
           <SurveyAuthStateContext.Provider value={mockSurveyAuthStateContext}>
             <CodesContext.Provider value={mockCodesContext}>
-              <ProjectContext.Provider value={mockProjectContext}>
-                <SurveysListPage />
-              </ProjectContext.Provider>
+              <SurveysListPage />
             </CodesContext.Provider>
           </SurveyAuthStateContext.Provider>
         </Router>
@@ -96,26 +80,12 @@ describe('SurveysListPage', () => {
     };
 
     const mockSurveyAuthStateContext: ISurveyAuthStateContext = {
-      getProjectParticipant: () => null,
-      hasProjectRole: () => true,
-      hasProjectPermission: () => true,
+      getSurveyParticipant: () => null,
+      hasSurveyRole: () => true,
+      hasSurveyPermission: () => true,
       hasSystemRole: () => true,
-      getProjectId: () => 1,
+      getSurveyId: () => 1,
       hasLoadedParticipantInfo: true
-    };
-
-    const mockProjectContext: IProjectContext = {
-      projectDataLoader: {
-        data: getProjectForViewResponse
-      } as DataLoader<any, any, any>,
-      surveysListDataLoader: {
-        data: getSurveyForListResponse,
-        isLoading: false,
-        isReady: true,
-        refresh: vi.fn()
-      } as unknown as DataLoader<any, any, any>,
-      artifactDataLoader: { data: null } as DataLoader<any, any, any>,
-      projectId: 1
     };
 
     const authState = getMockAuthState({ base: SystemAdminAuthState });
@@ -125,9 +95,7 @@ describe('SurveysListPage', () => {
         <Router history={history}>
           <SurveyAuthStateContext.Provider value={mockSurveyAuthStateContext}>
             <CodesContext.Provider value={mockCodesContext}>
-              <ProjectContext.Provider value={mockProjectContext}>
-                <SurveysListPage />
-              </ProjectContext.Provider>
+              <SurveysListPage />
             </CodesContext.Provider>
           </SurveyAuthStateContext.Provider>
         </Router>

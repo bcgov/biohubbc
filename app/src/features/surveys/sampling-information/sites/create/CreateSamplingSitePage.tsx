@@ -45,7 +45,7 @@ export const CreateSamplingSitePage = () => {
 
   const { locationChangeInterceptor, skipUnsavedChangesDialog } = useUnsavedChangesDialog();
 
-  if (!surveyContext.surveyDataLoader.data || !projectContext.projectDataLoader.data) {
+  if (!surveyContext.surveyDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
@@ -78,7 +78,7 @@ export const CreateSamplingSitePage = () => {
 
       // create complete, navigate back to observations page
       skipUnsavedChangesDialog();
-      history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling`);
+      history.push(`/admin/surveys/${surveyContext.surveyId}/sampling`);
     } catch (error) {
       showCreateErrorDialog({
         dialogTitle: CreateSamplingSiteI18N.createErrorTitle,
@@ -109,10 +109,8 @@ export const CreateSamplingSitePage = () => {
         onSubmit={handleSubmit}>
         <Box display="flex" flexDirection="column">
           <SamplingSiteHeader
-            project_id={surveyContext.projectId}
             survey_id={surveyContext.surveyId}
             survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
-            project_name={projectContext.projectDataLoader.data.projectData.project.project_name}
             is_submitting={isSubmitting}
             title="Add Sampling Site"
             breadcrumb="Add Sampling Sites"

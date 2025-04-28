@@ -29,10 +29,10 @@ describe('putProjectParticipantRole', () => {
     sinon.stub(ProjectParticipationService.prototype, 'getProjectParticipants').resolves([
       {
         system_user_id: 1,
-        project_id: 1,
+
         project_participation_id: 1,
-        project_role_ids: [1],
-        project_role_names: ['Role1'],
+        survey_role_ids: [1],
+        survey_role_names: ['Role1'],
         project_role_permissions: ['Permission1'],
         agency: null,
         display_name: 'test user',
@@ -76,7 +76,7 @@ describe('putProjectParticipantRole', () => {
 
     sinon.stub(ProjectParticipationService.prototype, 'deleteProjectParticipationRecord').resolves({
       project_participation_id: 1,
-      project_id: 1,
+
       system_user_id: 1,
       project_role_id: 1,
       create_date: '2023-01-01',
@@ -92,10 +92,10 @@ describe('putProjectParticipantRole', () => {
     getProjectParticipant.onCall(0).resolves([
       {
         project_participation_id: 1,
-        project_id: 1,
+
         system_user_id: 1,
-        project_role_ids: [1],
-        project_role_names: ['Role1'],
+        survey_role_ids: [1],
+        survey_role_names: ['Role1'],
         project_role_permissions: ['Permission1'],
         agency: null,
         display_name: 'test user',
@@ -114,10 +114,10 @@ describe('putProjectParticipantRole', () => {
     getProjectParticipant.onCall(1).resolves([
       {
         project_participation_id: 1,
-        project_id: 1,
+
         system_user_id: 2,
-        project_role_ids: [1],
-        project_role_names: ['Role1'],
+        survey_role_ids: [1],
+        survey_role_names: ['Role1'],
         project_role_permissions: ['Permission1'],
         agency: null,
         display_name: 'test user',
@@ -163,7 +163,7 @@ describe('putProjectParticipantRole', () => {
 
     sinon.stub(ProjectParticipationService.prototype, 'deleteProjectParticipationRecord').resolves({
       project_participation_id: 1,
-      project_id: 1,
+
       system_user_id: 1,
       project_role_id: 1,
       create_date: '2023-01-01',
@@ -179,10 +179,10 @@ describe('putProjectParticipantRole', () => {
     getProjectParticipant.onCall(0).resolves([
       {
         project_participation_id: 1,
-        project_id: 1,
+
         system_user_id: 1,
-        project_role_ids: [1],
-        project_role_names: ['Role1'],
+        survey_role_ids: [1],
+        survey_role_names: ['Role1'],
         project_role_permissions: ['Permission1'],
         agency: null,
         display_name: 'test user',
@@ -201,10 +201,10 @@ describe('putProjectParticipantRole', () => {
     getProjectParticipant.onCall(1).resolves([
       {
         project_participation_id: 1,
-        project_id: 1,
+
         system_user_id: 2,
-        project_role_ids: [1],
-        project_role_names: ['Role1'],
+        survey_role_ids: [1],
+        survey_role_names: ['Role1'],
         project_role_permissions: ['Permission1'],
         agency: null,
         display_name: 'test user',
@@ -250,10 +250,10 @@ describe('deleteProjectParticipant', () => {
     sinon.stub(ProjectParticipationRepository.prototype, 'getProjectParticipants').resolves([
       {
         project_participation_id: 1,
-        project_id: 1,
+
         system_user_id: 1,
-        project_role_ids: [1],
-        project_role_names: ['Role1'],
+        survey_role_ids: [1],
+        survey_role_names: ['Role1'],
         project_role_permissions: ['Permission1'],
         agency: null,
         display_name: 'test user',
@@ -296,7 +296,7 @@ describe('deleteProjectParticipant', () => {
 
     sinon.stub(ProjectParticipationRepository.prototype, 'deleteProjectParticipationRecord').resolves({
       project_participation_id: 1,
-      project_id: 1,
+
       system_user_id: 1,
       project_role_id: 1,
       create_date: '2023-01-01',
@@ -311,10 +311,10 @@ describe('deleteProjectParticipant', () => {
     getProjectParticipant.onCall(0).resolves([
       {
         project_participation_id: 1,
-        project_id: 1,
+
         system_user_id: 1,
-        project_role_ids: [1],
-        project_role_names: ['Role1'],
+        survey_role_ids: [1],
+        survey_role_names: ['Role1'],
         project_role_permissions: ['Permission1'],
         agency: null,
         display_name: 'test user',
@@ -333,10 +333,10 @@ describe('deleteProjectParticipant', () => {
     getProjectParticipant.onCall(1).resolves([
       {
         project_participation_id: 1,
-        project_id: 1,
+
         system_user_id: 2,
-        project_role_ids: [1],
-        project_role_names: ['Role1'],
+        survey_role_ids: [1],
+        survey_role_names: ['Role1'],
         project_role_permissions: ['Permission1'],
         agency: null,
         display_name: 'test user',
@@ -381,7 +381,7 @@ describe('deleteProjectParticipant', () => {
 
     sinon.stub(ProjectParticipationRepository.prototype, 'deleteProjectParticipationRecord').resolves({
       project_participation_id: 1,
-      project_id: 1,
+
       system_user_id: 1,
       project_role_id: 1,
       create_date: '2023-01-01',
@@ -396,10 +396,10 @@ describe('deleteProjectParticipant', () => {
     getProjectParticipant.onCall(0).resolves([
       {
         project_participation_id: 1,
-        project_id: 1,
+
         system_user_id: 1,
-        project_role_ids: [1],
-        project_role_names: ['Role1'],
+        survey_role_ids: [1],
+        survey_role_names: ['Role1'],
         project_role_permissions: ['Permission1'],
         agency: null,
         display_name: 'test user',
@@ -418,10 +418,10 @@ describe('deleteProjectParticipant', () => {
     getProjectParticipant.onCall(1).resolves([
       {
         project_participation_id: 1,
-        project_id: 1,
+
         system_user_id: 2,
-        project_role_ids: [1],
-        project_role_names: ['Role1'],
+        survey_role_ids: [1],
+        survey_role_names: ['Role1'],
         project_role_permissions: ['Permission1'],
         agency: null,
         display_name: 'test user',

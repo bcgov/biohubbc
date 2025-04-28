@@ -1,3 +1,4 @@
+import { SURVEY_ROLE } from 'constants/roles';
 import {
   IFindSurveysResponse,
   IGetSurveyForViewResponse,
@@ -9,7 +10,7 @@ import { geoJsonFeature } from './spatial-helpers';
 export const surveyObject: SurveyViewObject = {
   survey_details: {
     id: 1,
-    project_id: 1,
+    survey_id: 1,
     survey_name: 'survey name',
     start_date: '1998-10-10',
     end_date: '2021-02-26',
@@ -77,7 +78,8 @@ export const surveyObject: SurveyViewObject = {
       display_name: 'display name',
       agency: 'agency',
       survey_job_id: 1,
-      survey_job_name: 'survey job name'
+      survey_job_name: 'survey job name',
+      survey_role_names: [SURVEY_ROLE.COORDINATOR]
     }
   ],
   locations: [
@@ -121,7 +123,7 @@ export const getSurveyForListResponse: IFindSurveysResponse = {
       progress_id: 1,
       focal_species: [1],
       focal_species_names: ['species 1'],
-      project_id: 1,
+
       regions: ['Skeena'],
       types: [1]
     },
@@ -133,7 +135,7 @@ export const getSurveyForListResponse: IFindSurveysResponse = {
       progress_id: 1,
       focal_species: [3],
       focal_species_names: ['species 3'],
-      project_id: 1,
+
       regions: ['Skeena'],
       types: [1]
     }

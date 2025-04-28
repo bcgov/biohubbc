@@ -33,7 +33,6 @@ describe('deleteAttachment', () => {
       keycloak_token: {},
       body: { attachmentType: 'Report' },
       params: {
-        projectId: 1,
         attachmentId: 2
       },
       system_user: {
@@ -69,7 +68,6 @@ describe('deleteAttachment', () => {
       keycloak_token: {},
       body: { attachmentType: 'Report' },
       params: {
-        projectId: 1,
         attachmentId: 2
       },
       system_user: {

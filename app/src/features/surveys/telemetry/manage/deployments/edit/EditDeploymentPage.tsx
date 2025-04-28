@@ -50,9 +50,9 @@ export const EditDeploymentPage = () => {
     }
 
     deploymentDataLoader.load();
-  }, [deploymentDataLoader, deploymentId, surveyContext.projectId, surveyContext.surveyId]);
+  }, [deploymentDataLoader, deploymentId, surveyContext.surveyId]);
 
-  if (!projectContext.projectDataLoader.data || !surveyContext.surveyDataLoader.data || !deploymentDataLoader.data) {
+  if (!surveyContext.surveyDataLoader.data || !deploymentDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
@@ -76,28 +76,23 @@ export const EditDeploymentPage = () => {
     setIsSubmitting(true);
 
     try {
-      await biohubApi.telemetryDeployment.updateDeployment(
-        surveyContext.projectId,
-        surveyContext.surveyId,
-        deploymentId,
-        {
-          critter_id: values.critter_id,
-          device_id: values.device_id,
-          frequency: values.frequency,
-          frequency_unit_id: values.frequency_unit_id,
-          attachment_start_date: values.attachment_start_date,
-          attachment_start_time: values.attachment_start_time,
-          attachment_end_date: values.attachment_end_date,
-          attachment_end_time: values.attachment_end_time,
-          critterbase_start_capture_id: values.critterbase_start_capture_id,
-          critterbase_end_capture_id: values.critterbase_end_capture_id,
-          critterbase_end_mortality_id: values.critterbase_end_mortality_id
-        }
-      );
+      await biohubApi.telemetryDeployment.updateDeployment(surveyContext.surveyId, deploymentId, {
+        critter_id: values.critter_id,
+        device_id: values.device_id,
+        frequency: values.frequency,
+        frequency_unit_id: values.frequency_unit_id,
+        attachment_start_date: values.attachment_start_date,
+        attachment_start_time: values.attachment_start_time,
+        attachment_end_date: values.attachment_end_date,
+        attachment_end_time: values.attachment_end_time,
+        critterbase_start_capture_id: values.critterbase_start_capture_id,
+        critterbase_end_capture_id: values.critterbase_end_capture_id,
+        critterbase_end_mortality_id: values.critterbase_end_mortality_id
+      });
 
       // edit complete, navigate back to telemetry page
       skipUnsavedChangesDialog();
-      history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry/manage`);
+      history.push(`/admin/surveys/${surveyContext.surveyId}/telemetry/manage`);
     } catch (error) {
       dialogContext.setErrorDialog({
         dialogTitle: EditAnimalDeploymentI18N.createErrorTitle,
@@ -130,8 +125,6 @@ export const EditDeploymentPage = () => {
         <Box display="flex" flexDirection="column">
           <FormikErrorSnackbar />
           <DeploymentFormHeader
-            project_id={surveyContext.projectId}
-            project_name={projectContext.projectDataLoader.data?.projectData.project.project_name}
             survey_id={surveyContext.surveyId}
             survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
             is_submitting={isSubmitting}

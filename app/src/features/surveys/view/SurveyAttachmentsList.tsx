@@ -24,12 +24,11 @@ const SurveyAttachmentsList: React.FC = () => {
   // Load survey attachments
   useEffect(() => {
     surveyContext.artifactDataLoader.load(surveyContext.surveyId);
-  }, [surveyContext.artifactDataLoader, surveyContext.projectId, surveyContext.surveyId]);
+  }, [surveyContext.artifactDataLoader, surveyContext.surveyId]);
 
   const handleDownload = async (attachment: IGetSurveyAttachment) => {
     try {
       const response = await biohubApi.survey.getSurveyAttachmentSignedURL(
-        surveyContext.projectId,
         surveyContext.surveyId,
         attachment.id,
         attachment.fileType
@@ -70,12 +69,7 @@ const SurveyAttachmentsList: React.FC = () => {
       onYes: async () => {
         try {
           // Delete attachment
-          await biohubApi.survey.deleteSurveyAttachment(
-            surveyContext.projectId,
-            surveyContext.surveyId,
-            attachment.id,
-            attachment.fileType
-          );
+          await biohubApi.survey.deleteSurveyAttachment(surveyContext.surveyId, attachment.id, attachment.fileType);
 
           // Refresh attachments list
           surveyContext.artifactDataLoader.refresh(surveyContext.surveyId);
@@ -108,7 +102,6 @@ const SurveyAttachmentsList: React.FC = () => {
   return (
     <>
       <SurveyReportAttachmentDialog
-        projectId={surveyContext.projectId}
         surveyId={surveyContext.surveyId}
         attachment={currentAttachment}
         open={viewReportDetailsDialogOpen}

@@ -107,7 +107,7 @@ export const CreateHabitatFeaturePage = (): JSX.Element => {
     }
   };
 
-  if (!surveyContext.surveyDataLoader.data || !projectContext.projectDataLoader.data) {
+  if (!surveyContext.surveyDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
@@ -123,21 +123,12 @@ export const CreateHabitatFeaturePage = (): JSX.Element => {
             sx={{
               typography: 'body2'
             }}>
-            <Link
-              component={RouterLink}
-              to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/details`}
-              underline="none">
-              {projectContext.projectDataLoader.data?.projectData.project.project_name}
-            </Link>
-            <Link
-              component={RouterLink}
-              to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/details`}
-              underline="none">
+            <Link component={RouterLink} to={`/admin/surveys/${surveyContext.surveyId}/details`} underline="none">
               {surveyContext.surveyDataLoader.data?.surveyData.survey_details.survey_name}
             </Link>
             <Link
               component={RouterLink}
-              to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/habitat-features/details`}
+              to={`/admin/surveys/${surveyContext.surveyId}/habitat-features/details`}
               underline="none">
               Manage Habitat Features
             </Link>

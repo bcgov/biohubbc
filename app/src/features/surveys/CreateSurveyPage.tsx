@@ -3,7 +3,6 @@ import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import Container from '@mui/material/Container';
-import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
@@ -12,7 +11,7 @@ import PageHeader from 'components/layout/PageHeader';
 import { CreateSurveyI18N } from 'constants/i18n';
 import { CodesContext } from 'contexts/codesContext';
 import { DialogContext } from 'contexts/dialogContext';
-import { ProjectContext } from 'contexts/projectContext';
+
 import { ISurveyPermitForm, SurveyPermitFormInitialValues } from 'features/surveys/components/permit/SurveyPermitForm';
 import { SurveyPartnershipsFormInitialValues } from 'features/surveys/view/components/SurveyPartnershipsForm';
 import { FormikProps } from 'formik';
@@ -22,7 +21,6 @@ import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { ICreateSurveyRequest, IEditSurveyRequest } from 'interfaces/useSurveyApi.interface';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
-import { Link as RouterLink } from 'react-router-dom';
 import { AgreementsInitialValues } from './components/agreements/AgreementsForm';
 import { ProprietaryDataInitialValues } from './components/agreements/ProprietaryDataForm';
 import {
@@ -70,12 +68,6 @@ const CreateSurveyPage = () => {
   }, [codesContext.codesDataLoader]);
   const codes = codesContext.codesDataLoader.data;
 
-  const projectContext = useContext(ProjectContext);
-  useEffect(() => {
-    projectContext.projectDataLoader.load(projectContext.projectId);
-  }, [projectContext.projectDataLoader, projectContext.projectId]);
-  const projectData = projectContext.projectDataLoader.data?.projectData;
-
   const formikRef = useRef<FormikProps<IEditSurveyRequest>>(null);
 
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
@@ -87,7 +79,7 @@ const CreateSurveyPage = () => {
   const dialogContext = useContext(DialogContext);
 
   const handleCancel = () => {
-    history.push(`/admin/projects/${projectData?.project.project_id}`);
+    history.push(`/admin/`);
   };
 
   const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
@@ -114,7 +106,7 @@ const CreateSurveyPage = () => {
     setIsSaving(true);
     try {
       // Remove the permit_used and funding_used properties
-      const response = await biohubApi.survey.createSurvey(Number(projectData?.project.project_id), {
+      const response = await biohubApi.survey.createSurvey({
         blocks: values.blocks,
         funding_sources: values.funding_sources,
         locations: values.locations.map((location) => ({
@@ -154,7 +146,7 @@ const CreateSurveyPage = () => {
       setEnableCancelCheck(false);
 
       skipUnsavedChangesDialog();
-      history.push(`/admin/projects/${projectData?.project.project_id}/surveys/${response.id}/details`);
+      history.push(`/admin//surveys/${response.id}/details`);
     } catch (error) {
       const apiError = error as APIError;
       showCreateErrorDialog({
@@ -167,7 +159,7 @@ const CreateSurveyPage = () => {
     }
   };
 
-  if (!codes || !projectData) {
+  if (!codes) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
@@ -178,9 +170,6 @@ const CreateSurveyPage = () => {
         title="Create New Survey"
         breadCrumbJSX={
           <Breadcrumbs aria-label="breadcrumb" separator={'>'}>
-            <Link component={RouterLink} underline="hover" to={`/admin/projects/${projectData.project.project_id}/`}>
-              {projectData.project.project_name}
-            </Link>
             <Typography variant="body2" component="span" color="textSecondary" aria-current="page">
               Create New Survey
             </Typography>

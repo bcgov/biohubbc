@@ -93,7 +93,7 @@ export const DeploymentEndForm = (props: IDeploymentEndFormProps) => {
                 textDecoration: 'none'
               }}
               component={RouterLink}
-              to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/animals/${values.critter_id}/mortality/create`}>
+              to={`/admin/surveys/${surveyContext.surveyId}/animals/${values.critter_id}/mortality/create`}>
               report the mortality
             </Typography>
           ) : (

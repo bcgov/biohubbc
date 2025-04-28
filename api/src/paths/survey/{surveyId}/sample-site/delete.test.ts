@@ -20,7 +20,6 @@ describe('deleteSurveySampleSiteRecords', () => {
       surveySampleSiteIds: [[1, 2, 3]]
     },
     params: {
-      projectId: 1,
       surveyId: 1
     }
   } as any;

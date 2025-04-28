@@ -18,7 +18,7 @@ export enum SYSTEM_ROLE {
  * @export
  * @enum {string}
  */
-export enum PROJECT_ROLE {
+export enum SURVEY_ROLE {
   COORDINATOR = 'Coordinator',
   COLLABORATOR = 'Collaborator'
 }
@@ -29,7 +29,7 @@ export enum PROJECT_ROLE {
  * @export
  * @enum {string}
  */
-export enum PROJECT_PERMISSION {
+export enum SURVEY_PERMISSION {
   COORDINATOR = 'Coordinator',
   COLLABORATOR = 'Collaborator',
   OBSERVER = 'Observer'
@@ -40,7 +40,7 @@ export enum PROJECT_PERMISSION {
  *
  * @export
  */
-export const PROJECT_ROLE_ICONS: Record<string, string> = {
+export const SURVEY_ROLE_ICONS: Record<string, string> = {
   Coordinator: mdiStar,
   Collaborator: mdiAccountEdit,
   Observer: mdiEye

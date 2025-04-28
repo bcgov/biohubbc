@@ -6,15 +6,13 @@ import Typography from '@mui/material/Typography';
 import { Link as RouterLink } from 'react-router-dom';
 
 interface SurveySectionHeaderProps {
-  project_id: number;
-  project_name: string;
   survey_id: number;
   survey_name: string;
   title: string;
 }
 
 const SurveySectionHeader = (props: SurveySectionHeaderProps) => {
-  const { project_id, project_name, survey_id, survey_name, title } = props;
+  const { survey_id, survey_name, title } = props;
   return (
     <Paper
       square
@@ -24,13 +22,7 @@ const SurveySectionHeader = (props: SurveySectionHeaderProps) => {
         borderBottom: '1px solid' + grey[300]
       }}>
       <Breadcrumbs aria-label="breadcrumb" separator={'>'}>
-        <Link component={RouterLink} underline="hover" to={`/admin/projects/${project_id}`}>
-          {project_name}
-        </Link>
-        <Link
-          component={RouterLink}
-          underline="hover"
-          to={`/admin/projects/${project_id}/surveys/${survey_id}/details`}>
+        <Link component={RouterLink} underline="hover" to={`/admin/surveys/${survey_id}/details`}>
           {survey_name}
         </Link>
         <Typography component="span" variant="inherit" color="textSecondary">

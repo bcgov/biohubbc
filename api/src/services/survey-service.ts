@@ -283,11 +283,8 @@ export class SurveyService extends DBService {
    * @return {*}  {Promise<SurveyBasicFields[]>}
    * @memberof SurveyService
    */
-  async getSurveysBasicFieldsByProjectId(
-    projectId: number,
-    pagination?: ApiPaginationOptions
-  ): Promise<SurveyBasicFields[]> {
-    const surveys = await this.surveyRepository.getSurveysBasicFieldsByProjectId(pagination);
+  async getSurveysBasicFields(pagination?: ApiPaginationOptions): Promise<SurveyBasicFields[]> {
+    const surveys = await this.surveyRepository.getSurveysBasicFields(pagination);
 
     // Build an array of all unique focal species ids from all surveys
     const uniqueFocalSpeciesIds = Array.from(
@@ -652,7 +649,7 @@ export class SurveyService extends DBService {
    */
   async insertOrAssociatePermitToSurvey(
     systemUserId: number,
-    projectId: number,
+
     surveyId: number,
     permitNumber: string,
     permitType: string

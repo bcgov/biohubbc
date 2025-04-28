@@ -91,7 +91,7 @@ const EditSurveyPage = () => {
 
     try {
       // Remove the permit_used and funding_used properties
-      const response = await biohubApi.survey.updateSurvey(projectContext.projectId, surveyId, {
+      const response = await biohubApi.survey.updateSurvey(surveyContext.surveyId, {
         blocks: values.blocks,
         funding_sources: values.funding_sources,
         locations: values.locations.map((location) => ({
@@ -130,7 +130,7 @@ const EditSurveyPage = () => {
 
       setEnableCancelCheck(false);
 
-      surveyContext.surveyDataLoader.refresh(projectContext.projectId, surveyContext.surveyId);
+      surveyContext.surveyDataLoader.refresh(surveyContext.surveyId);
 
       skipUnsavedChangesDialog();
       history.push(`/admin/surveys/${response.id}/details`);
@@ -157,9 +157,6 @@ const EditSurveyPage = () => {
         title="Edit Survey Details"
         breadCrumbJSX={
           <Breadcrumbs aria-label="breadcrumb" separator={'>'}>
-            <Link component={RouterLink} underline="hover" to={`/admin/projects/${projectContext.projectId}/`}>
-              {projectContext.projectDataLoader.data.projectData.project.project_name}
-            </Link>
             <Link component={RouterLink} underline="hover" to={`/admin/surveys/${surveyId}/details`}>
               {surveyData && surveyData.survey_details && surveyData.survey_details.survey_name}
             </Link>

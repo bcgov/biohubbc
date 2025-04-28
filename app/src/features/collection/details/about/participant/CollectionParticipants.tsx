@@ -4,8 +4,8 @@ import grey from '@mui/material/colors/grey';
 import Stack from '@mui/material/Stack';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
-import { COLLECTION_ROLE, PROJECT_ROLE_ICONS } from 'constants/roles';
-import { TeamMemberAvatar } from 'features/projects/view/components/TeamMemberAvatar';
+import { TeamMemberAvatar } from 'components/avatar/TeamMemberAvatar';
+import { COLLECTION_ROLE, SURVEY_ROLE_ICONS } from 'constants/roles';
 import { ICollectionParticipant } from 'interfaces/useCollectionApi.interface';
 import { useMemo } from 'react';
 import { getRandomHexColor } from 'utils/Utils';
@@ -61,7 +61,7 @@ export function CollectionParticipants(props: ICollectionParticipantsProps) {
           {member.roles.map((role) => (
             <Tooltip title={role} arrow key={role}>
               <Box ml={0.75} mt={0.5}>
-                <Icon path={PROJECT_ROLE_ICONS[role] ?? ''} size={0.75} color={grey[600]} />
+                <Icon path={SURVEY_ROLE_ICONS[role] ?? ''} size={0.75} color={grey[600]} />
               </Box>
             </Tooltip>
           ))}

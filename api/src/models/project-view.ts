@@ -56,7 +56,6 @@ export interface IGetProject {
 }
 
 export const ProjectData = z.object({
-  project_id: z.number(),
   uuid: z.string().uuid(),
   project_name: z.string(),
   comments: z.string().nullable(),
@@ -66,7 +65,6 @@ export const ProjectData = z.object({
 export type ProjectData = z.infer<typeof ProjectData>;
 
 export const FindProjectsResponse = z.object({
-  project_id: z.number(),
   name: z.string(),
   start_date: z.string().nullable(),
   end_date: z.string().nullable(),

@@ -1,6 +1,6 @@
 import { Operation } from 'express-openapi';
 import { RequestHandler } from 'http-proxy-middleware';
-import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../constants/roles';
+import { SURVEY_PERMISSION, SYSTEM_ROLE } from '../../../../../constants/roles';
 import { getDBConnection } from '../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
 import { SubCountService } from '../../../../../services/subcount-service';
@@ -14,9 +14,9 @@ export const GET: Operation = [
       or: [
         {
           validProjectPermissions: [
-            PROJECT_PERMISSION.COORDINATOR,
-            PROJECT_PERMISSION.COLLABORATOR,
-            PROJECT_PERMISSION.OBSERVER
+            SURVEY_PERMISSION.COORDINATOR,
+            SURVEY_PERMISSION.COLLABORATOR,
+            SURVEY_PERMISSION.OBSERVER
           ],
           surveyId: Number(req.params.surveyId),
           discriminator: 'ProjectPermission'

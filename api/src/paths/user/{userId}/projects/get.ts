@@ -56,8 +56,8 @@ GET.apiDoc = {
                 'project_id',
                 'project_name',
                 'system_user_id',
-                'project_role_ids',
-                'project_role_names',
+                'survey_role_ids',
+                'survey_role_names',
                 'project_role_permissions'
               ],
               properties: {
@@ -75,14 +75,14 @@ GET.apiDoc = {
                   type: 'integer',
                   minimum: 1
                 },
-                project_role_ids: {
+                survey_role_ids: {
                   type: 'array',
                   items: {
                     type: 'integer',
                     minimum: 1
                   }
                 },
-                project_role_names: {
+                survey_role_names: {
                   type: 'array',
                   items: {
                     type: 'string'

@@ -1,6 +1,5 @@
 import { AxiosInstance } from 'axios';
 import { ISubmitSurvey } from 'components/publish/PublishSurveyDialog';
-import { IProjectSubmitForm } from 'interfaces/usePublishApi.interface';
 
 /**
  * Returns a list of all resources
@@ -30,25 +29,8 @@ const usePublishApi = (axios: AxiosInstance) => {
     return data;
   };
 
-  /**
-   * Publish Project Data
-   * @param {IProjectSubmitForm} dataSubmission
-   * @return {*}  {Promise<{ uuid: string }>}
-   */
-  const publishProject = async (dataSubmission: IProjectSubmitForm): Promise<{ uuid: string }> => {
-    const sendData = {
-      projectId: projectId,
-      data: dataSubmission
-    };
-
-    const { data } = await axios.post('/api/publish/project', sendData);
-
-    return data;
-  };
-
   return {
-    publishSurveyData,
-    publishProject
+    publishSurveyData
   };
 };
 

@@ -243,7 +243,7 @@ export const SamplingTechniqueTable = <T extends ITechniqueRowData>(props: ISamp
             }
           }}>
           <RouterLink
-            to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling/techniques/${actionMenuAnchorEl?.techniqueId}/edit`}>
+            to={`/admin/surveys/${surveyContext.surveyId}/sampling/techniques/${actionMenuAnchorEl?.techniqueId}/edit`}>
             <ListItemIcon>
               <Icon path={mdiPencilOutline} size={1} />
             </ListItemIcon>

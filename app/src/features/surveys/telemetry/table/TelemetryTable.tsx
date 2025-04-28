@@ -35,7 +35,7 @@ export const TelemetryTable = (props: IManualTelemetryTableProps) => {
   useEffect(() => {
     deploymentDataLoader.load(surveyContext.surveyId);
     critterDataLoader.load(surveyContext.surveyId);
-  }, [critterDataLoader, deploymentDataLoader, surveyContext.projectId, surveyContext.surveyId]);
+  }, [critterDataLoader, deploymentDataLoader, surveyContext.surveyId]);
 
   /**
    * Merges critters with associated deployments

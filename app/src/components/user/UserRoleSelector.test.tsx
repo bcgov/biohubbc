@@ -1,4 +1,4 @@
-import { PROJECT_ROLE } from 'constants/roles';
+import { SURVEY_ROLE } from 'constants/roles';
 import { ICodeWithDescription } from 'interfaces/useCodesApi.interface';
 import { fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import UserRoleSelector from './UserRoleSelector';
@@ -6,12 +6,12 @@ import UserRoleSelector from './UserRoleSelector';
 const mockRoles: ICodeWithDescription[] = [
   {
     id: 1,
-    name: PROJECT_ROLE.COORDINATOR,
+    name: SURVEY_ROLE.COORDINATOR,
     description: 'The administrative lead of the project.'
   },
   {
     id: 2,
-    name: PROJECT_ROLE.COLLABORATOR,
+    name: SURVEY_ROLE.COLLABORATOR,
     description: 'A participant team member of the project.'
   }
 ];
@@ -32,11 +32,11 @@ describe('UserRoleSelector', () => {
           email: 'user@email.com',
           display_name: 'Test User',
           agency: 'Business',
-          project_role_names: [PROJECT_ROLE.COORDINATOR]
+          survey_role_names: [SURVEY_ROLE.COORDINATOR]
         }}
         roles={mockRoles}
         error={undefined}
-        selectedRole={PROJECT_ROLE.COORDINATOR}
+        selectedRole={SURVEY_ROLE.COORDINATOR}
         handleAdd={() => {}}
         handleRemove={() => {}}
         key={1}
@@ -65,11 +65,11 @@ describe('UserRoleSelector', () => {
           email: 'user@email.com',
           display_name: 'Test User',
           agency: 'Business',
-          project_role_names: [PROJECT_ROLE.COORDINATOR]
+          survey_role_names: [SURVEY_ROLE.COORDINATOR]
         }}
         roles={mockRoles}
         error={undefined}
-        selectedRole={PROJECT_ROLE.COORDINATOR}
+        selectedRole={SURVEY_ROLE.COORDINATOR}
         handleAdd={() => {}}
         handleRemove={onDelete}
         key={1}
@@ -103,7 +103,7 @@ describe('UserRoleSelector', () => {
           email: 'user@email.com',
           display_name: 'Test User',
           agency: 'Business',
-          project_role_names: []
+          survey_role_names: []
         }}
         roles={mockRoles}
         error={undefined}

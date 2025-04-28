@@ -4,7 +4,7 @@ import Stack from '@mui/material/Stack';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { ObservationsPageContext, ObservationsPageContextProvider } from 'contexts/observationsPageContext';
 import { ObservationsTableContext, ObservationsTableContextProvider } from 'contexts/observationsTableContext';
-import { ProjectContext } from 'contexts/projectContext';
+
 import { SurveyContext } from 'contexts/surveyContext';
 import { TaxonomyContextProvider } from 'contexts/taxonomyContext';
 import { useObservationsContext } from 'hooks/useContext';
@@ -16,10 +16,10 @@ import { SamplingSiteListContainer } from './sampling-sites/SamplingSiteListCont
 
 export const SurveyObservationPage = () => {
   const surveyContext = useContext(SurveyContext);
-  const projectContext = useContext(ProjectContext);
+
   const observationsContext = useObservationsContext();
 
-  if (!surveyContext.surveyDataLoader.data || !projectContext.projectDataLoader.data) {
+  if (!surveyContext.surveyDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
@@ -35,8 +35,6 @@ export const SurveyObservationPage = () => {
       }}>
       <SurveyManagePageHeader
         page={SurveyManagePageEnum.OBSERVATIONS}
-        project_id={surveyContext.projectId}
-        project_name={projectContext.projectDataLoader.data.projectData.project.project_name}
         survey_id={surveyContext.surveyId}
         survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
       />

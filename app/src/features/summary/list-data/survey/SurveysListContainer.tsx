@@ -143,7 +143,7 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
               underline="always"
               title={params.row.name}
               component={RouterLink}
-              to={`/admin/projects/${params.row.project_id}/surveys/${params.row.survey_id}`}
+              to={`/admin/surveys/${params.row.survey_id}`}
               children={params.row.name}
             />
           </Stack>

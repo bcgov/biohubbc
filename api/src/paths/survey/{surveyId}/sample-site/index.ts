@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../constants/roles';
+import { SURVEY_PERMISSION, SYSTEM_ROLE } from '../../../../constants/roles';
 import { getDBConnection } from '../../../../database/db';
 import { GeoJSONFeature } from '../../../../openapi/schemas/geoJson';
 import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../../../../openapi/schemas/pagination';
@@ -21,9 +21,9 @@ export const GET: Operation = [
       or: [
         {
           validProjectPermissions: [
-            PROJECT_PERMISSION.COORDINATOR,
-            PROJECT_PERMISSION.COLLABORATOR,
-            PROJECT_PERMISSION.OBSERVER
+            SURVEY_PERMISSION.COORDINATOR,
+            SURVEY_PERMISSION.COLLABORATOR,
+            SURVEY_PERMISSION.OBSERVER
           ],
           surveyId: Number(req.params.surveyId),
           discriminator: 'ProjectPermission'
@@ -237,7 +237,7 @@ export const POST: Operation = [
     return {
       or: [
         {
-          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR],
+          validProjectPermissions: [SURVEY_PERMISSION.COORDINATOR, SURVEY_PERMISSION.COLLABORATOR],
           surveyId: Number(req.params.surveyId),
           discriminator: 'ProjectPermission'
         },

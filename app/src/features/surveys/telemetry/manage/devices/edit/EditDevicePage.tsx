@@ -40,9 +40,9 @@ export const EditDevicePage = () => {
 
   useEffect(() => {
     deviceDataLoader.load(surveyContext.surveyId, deviceId);
-  }, [deviceDataLoader, deviceId, surveyContext.projectId, surveyContext.surveyId]);
+  }, [deviceDataLoader, deviceId, surveyContext.surveyId]);
 
-  if (!surveyContext.surveyDataLoader.data || !projectContext.projectDataLoader.data || !deviceDataLoader.data) {
+  if (!surveyContext.surveyDataLoader.data || !deviceDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
@@ -68,7 +68,7 @@ export const EditDevicePage = () => {
       });
 
       skipUnsavedChangesDialog();
-      history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry/manage`);
+      history.push(`/admin/surveys/${surveyContext.surveyId}/telemetry/manage`);
     } catch (error) {
       dialogContext.setErrorDialog({
         dialogTitle: TelemetryDeviceI18N.createErrorTitle,
@@ -101,8 +101,6 @@ export const EditDevicePage = () => {
         <Box display="flex" flexDirection="column">
           <FormikErrorSnackbar />
           <DeviceFormHeader
-            project_id={surveyContext.projectId}
-            project_name={projectContext.projectDataLoader.data?.projectData.project.project_name}
             survey_id={surveyContext.surveyId}
             survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
             is_submitting={isSubmitting}

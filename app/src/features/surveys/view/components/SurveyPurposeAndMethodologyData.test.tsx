@@ -27,7 +27,6 @@ describe('SurveyPurposeAndMethodologyData', () => {
       <CodesContext.Provider value={mockCodesContext}>
         <SurveyContext.Provider
           value={{
-            projectId: 1,
             surveyId: 1,
             surveyDataLoader: mockSurveyDataLoader,
             artifactDataLoader: mockArtifactDataLoader,
@@ -68,7 +67,6 @@ describe('SurveyPurposeAndMethodologyData', () => {
       <CodesContext.Provider value={mockCodesContext}>
         <SurveyContext.Provider
           value={{
-            projectId: 1,
             surveyId: 1,
             surveyDataLoader: mockSurveyDataLoader,
             artifactDataLoader: mockArtifactDataLoader,

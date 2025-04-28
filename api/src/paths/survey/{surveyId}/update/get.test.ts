@@ -32,7 +32,6 @@ describe('getSurveyForUpdate', () => {
       keycloak_token: {},
       body: {},
       params: {
-        projectId: 1,
         surveyId: 2
       }
     } as any;
@@ -60,7 +59,6 @@ describe('getSurveyForUpdate', () => {
       keycloak_token: {},
       body: {},
       params: {
-        projectId: 1,
         surveyId: 2
       }
     } as any;
@@ -121,7 +119,6 @@ describe('getSurveyForUpdate', () => {
       keycloak_token: {},
       body: {},
       params: {
-        projectId: 1,
         surveyId: 2
       }
     } as any;

@@ -33,7 +33,7 @@ export const SurveySpatialTelemetry = (props: ISurveySpatialTelemetryProps) => {
 
   useEffect(() => {
     telemetrySpatialDataLoader.load(surveyContext.surveyId);
-  }, [surveyContext.projectId, surveyContext.surveyId, telemetrySpatialDataLoader]);
+  }, [surveyContext.surveyId, telemetrySpatialDataLoader]);
 
   const points: IStaticLayerFeature[] = useMemo(() => {
     const points: IStaticLayerFeature[] = [];

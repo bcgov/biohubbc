@@ -24,7 +24,7 @@ describe('ProjectRepository', () => {
 
       const input = {
         project_name: 'string',
-        agency_project_id: 1,
+        agency_
         agency_id: 1,
         species: [1],
         keyword: 'string'
@@ -43,7 +43,7 @@ describe('ProjectRepository', () => {
 
       const input = {
         project_name: 'string',
-        agency_project_id: 1,
+        agency_
         agency_id: 1,
         species: [1],
         keyword: 'string'

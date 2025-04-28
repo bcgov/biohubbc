@@ -1,5 +1,5 @@
 import { SOURCE_SYSTEM } from '../constants/database';
-import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../constants/roles';
+import { SURVEY_PERMISSION, SYSTEM_ROLE } from '../constants/roles';
 import { IDBConnection } from '../database/db';
 import { SystemUserWithRoles } from '../models/system-user-view';
 import { ProjectUser } from '../repositories/project-participation-repository';
@@ -48,14 +48,14 @@ export interface AuthorizeByServiceClient {
 }
 
 type AuthorizeByProjectPermissionByProjectId = {
-  validProjectPermissions: PROJECT_PERMISSION[];
-  projectId: number;
+  validProjectPermissions: SURVEY_PERMISSION[];
+  
   surveyId?: number;
   discriminator: 'ProjectPermission';
 };
 
 type AuthorizeByProjectPermissionBySurveyId = {
-  validProjectPermissions: PROJECT_PERMISSION[];
+  validProjectPermissions: SURVEY_PERMISSION[];
   projectId?: number;
   surveyId: number;
   discriminator: 'ProjectPermission';

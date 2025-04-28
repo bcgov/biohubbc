@@ -32,8 +32,8 @@ describe('removeSystemUser', () => {
         project_participation_id: 47,
         project_id: 3,
         system_user_id: 33,
-        project_role_ids: [1],
-        project_role_names: ['Coordinator'],
+        survey_role_ids: [1],
+        survey_role_names: ['Coordinator'],
         project_role_permissions: ['Permission1'],
         agency: null,
         display_name: 'test user',
@@ -49,10 +49,10 @@ describe('removeSystemUser', () => {
       },
       {
         project_participation_id: 57,
-        project_id: 1,
+
         system_user_id: 33,
-        project_role_ids: [3],
-        project_role_names: ['Observer'],
+        survey_role_ids: [3],
+        survey_role_names: ['Observer'],
         project_role_permissions: ['Permission1'],
         agency: null,
         display_name: 'test user',
@@ -68,10 +68,10 @@ describe('removeSystemUser', () => {
       },
       {
         project_participation_id: 40,
-        project_id: 1,
+
         system_user_id: 27,
-        project_role_ids: [1],
-        project_role_names: ['Coordinator'],
+        survey_role_ids: [1],
+        survey_role_names: ['Coordinator'],
         project_role_permissions: ['Permission1'],
         agency: null,
         display_name: 'test user',

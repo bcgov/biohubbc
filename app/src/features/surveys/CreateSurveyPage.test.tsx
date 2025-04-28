@@ -1,13 +1,11 @@
 import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
-import { IProjectContext, ProjectContext } from 'contexts/projectContext';
+
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
 import { MemoryRouter, Router } from 'react-router';
 import { codes } from 'test-helpers/code-helpers';
-import { getProjectForViewResponse } from 'test-helpers/project-helpers';
-import { getSurveyForListResponse } from 'test-helpers/survey-helpers';
 import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import { Mock } from 'vitest';
 import CreateSurveyPage from './CreateSurveyPage';
@@ -44,22 +42,12 @@ const renderContainer = () => {
       data: codes
     } as DataLoader<any, any, any>
   };
-  const mockProjectContext: IProjectContext = {
-    projectDataLoader: {
-      data: getProjectForViewResponse
-    } as DataLoader<any, any, any>,
-    artifactDataLoader: { data: null } as DataLoader<any, any, any>,
-    surveysListDataLoader: { data: getSurveyForListResponse } as DataLoader<any, any, any>,
-    projectId: 1
-  };
 
   return render(
     <DialogContextProvider>
       <Router history={history}>
         <CodesContext.Provider value={mockCodesContext}>
-          <ProjectContext.Provider value={mockProjectContext}>
-            <CreateSurveyPage />
-          </ProjectContext.Provider>
+          <CreateSurveyPage />
         </CodesContext.Provider>
       </Router>
     </DialogContextProvider>
@@ -89,7 +77,6 @@ describe.skip('CreateSurveyPage', () => {
   });
 
   it.skip('renders the initial default page correctly', async () => {
-    mockUseApi.project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
     mockUseApi.codes.getAllCodeSets.mockResolvedValue(codes);
     mockUseApi.survey.getSurveyPermits.mockResolvedValue({
       permits: [{ permit_id: 1, permit_number: 'abcd1', permit_type: 'Wildlife permit' }]
@@ -114,7 +101,6 @@ describe.skip('CreateSurveyPage', () => {
 
   describe('Are you sure? Dialog', () => {
     it('calls history.push() if the user clicks `Yes`', async () => {
-      mockUseApi.project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
       mockUseApi.codes.getAllCodeSets.mockResolvedValue(codes);
       mockUseApi.survey.getSurveyPermits.mockResolvedValue({
         permits: [
@@ -161,7 +147,6 @@ describe.skip('CreateSurveyPage', () => {
     });
 
     it('does nothing if the user clicks `No` or away from the dialog', async () => {
-      mockUseApi.project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
       mockUseApi.codes.getAllCodeSets.mockResolvedValue(codes);
       mockUseApi.survey.getSurveyPermits.mockResolvedValue({
         permits: [

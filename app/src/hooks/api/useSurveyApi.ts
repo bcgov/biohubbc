@@ -1,3 +1,4 @@
+import { AxiosInstance, AxiosProgressEvent, CancelTokenSource } from 'axios';
 import { ISurveyCritter } from 'contexts/animalPageContext';
 import { ISurveyAdvancedFilters } from 'features/summary/list-data/survey/SurveysListFilterForm';
 import { ICreateCritter } from 'features/surveys/view/survey-animals/animal';
@@ -7,10 +8,12 @@ import {
   ICreateSurveyRequest,
   ICreateSurveyResponse,
   IFindSurveysResponse,
+  IGetReportDetails,
   IGetSurveyAttachmentsResponse,
   IGetSurveyForUpdateResponse,
   IGetSurveyForViewResponse,
-  IUpdateSurveyRequest
+  IUpdateSurveyRequest,
+  IUploadAttachmentResponse
 } from 'interfaces/useSurveyApi.interface';
 import { IAllTelemetryPointCollection } from 'interfaces/useTelemetryApi.interface';
 import qs from 'qs';
@@ -83,10 +86,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
    * @param {ApiPaginationRequestOptions} [pagination]
    * @return {*}  {Promise<IFindSurveysResponse>}
    */
-  const getSurveysBasicFieldsByProjectId = async (
-    projectId: number,
-    pagination?: ApiPaginationRequestOptions
-  ): Promise<IFindSurveysResponse> => {
+  const getSurveysBasicFields = async (pagination?: ApiPaginationRequestOptions): Promise<IFindSurveysResponse> => {
     let urlParamsString = '';
 
     if (pagination) {
@@ -102,7 +102,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
       urlParamsString = `?${params.toString()}`;
     }
 
-    const { data } = await axios.get(`/api/project/${projectId}/survey${urlParamsString}`);
+    const { data } = await axios.get(`/api/survey${urlParamsString}`);
 
     return data;
   };
@@ -142,79 +142,6 @@ const useSurveyApi = (axios: AxiosInstance) => {
       cancelToken: cancelTokenSource?.token,
       onUploadProgress: onProgress
     });
-
-    return data;
-  };
-
-  /**
-   * Upload survey reports.
-   * @param {number} surveyId
-   * @param {File} file
-   * @param {string} attachmentType
-   * @param {CancelTokenSource} [cancelTokenSource]
-   * @param {(progressEvent: AxiosProgressEvent) => void} [onProgress]
-   * @return {*}  {Promise<string[]>}
-   */
-  const uploadSurveyReports = async (
-    surveyId: number,
-    file: File,
-
-    attachmentMeta?: IReportMetaForm,
-    cancelTokenSource?: CancelTokenSource,
-    onProgress?: (progressEvent: AxiosProgressEvent) => void
-  ): Promise<IUploadAttachmentResponse> => {
-    const req_message = new FormData();
-
-    req_message.append('media', file);
-
-    if (attachmentMeta) {
-      req_message.append('attachmentMeta[title]', attachmentMeta.title);
-      req_message.append('attachmentMeta[year_published]', String(attachmentMeta.year_published));
-      req_message.append('attachmentMeta[description]', attachmentMeta.description);
-      attachmentMeta.authors.forEach((authorObj, index) => {
-        req_message.append(`attachmentMeta[authors][${index}][first_name]`, authorObj.first_name);
-        req_message.append(`attachmentMeta[authors][${index}][last_name]`, authorObj.last_name);
-      });
-    }
-
-    const { data } = await axios.post(`/api/survey/${surveyId}/attachments/report/upload`, req_message, {
-      cancelToken: cancelTokenSource?.token,
-      onUploadProgress: onProgress
-    });
-
-    return data;
-  };
-
-  /**
-   * Update survey attachment metadata.
-   * @param {number} surveyId
-   * @param {string} attachmentType
-   * @param {CancelTokenSource} [cancelTokenSource]
-   * @param {(progressEvent: AxiosProgressEvent) => void} [onProgress]
-   * @return {*}  {Promise<string[]>}
-   */
-  const updateSurveyReportMetadata = async (
-    surveyId: number,
-    attachmentId: number,
-    attachmentType: string,
-    attachmentMeta: IEditReportMetaForm,
-    revisionCount: number
-  ): Promise<number> => {
-    const requestBody = {
-      attachment_type: attachmentType,
-      attachment_meta: {
-        title: attachmentMeta.title,
-        year_published: attachmentMeta.year_published,
-        authors: attachmentMeta.authors,
-        description: attachmentMeta.description
-      },
-      revision_count: revisionCount
-    };
-
-    const { data } = await axios.put(
-      `/api/survey/${surveyId}/attachments/${attachmentId}/metadata/update`,
-      requestBody
-    );
 
     return data;
   };
@@ -337,10 +264,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
    * @param {number} surveyId
    * @return {*}  {Promise<ICritterDetailedResponse[]>}
    */
-  const getSurveyCrittersDetailed = async (
-    projectId: number,
-    surveyId: number
-  ): Promise<ICritterDetailedResponse[]> => {
+  const getSurveyCrittersDetailed = async (surveyId: number): Promise<ICritterDetailedResponse[]> => {
     const { data } = await axios.get(`/api/survey/${surveyId}/critters?format=detailed`);
     return data;
   };
@@ -419,7 +343,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
    */
   const importCrittersFromCsv = async (
     file: File,
-    projectId: number,
+
     surveyId: number,
     cancelTokenSource?: CancelTokenSource,
     onProgress?: (progressEvent: AxiosProgressEvent) => void
@@ -447,7 +371,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
    */
   const importCapturesFromCsv = async (
     file: File,
-    projectId: number,
+
     surveyId: number,
     cancelTokenSource?: CancelTokenSource,
     onProgress?: (progressEvent: AxiosProgressEvent) => void
@@ -475,7 +399,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
    */
   const importMarkingsFromCsv = async (
     file: File,
-    projectId: number,
+
     surveyId: number,
     cancelTokenSource?: CancelTokenSource,
     onProgress?: (progressEvent: AxiosProgressEvent) => void
@@ -503,7 +427,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
    */
   const importMeasurementsFromCsv = async (
     file: File,
-    projectId: number,
+
     surveyId: number,
     cancelTokenSource?: CancelTokenSource,
     onProgress?: (progressEvent: AxiosProgressEvent) => void
@@ -538,13 +462,11 @@ const useSurveyApi = (axios: AxiosInstance) => {
   return {
     createSurvey,
     getSurveyForView,
-    getSurveysBasicFieldsByProjectId,
+    getSurveysBasicFields,
     getSurveyForUpdate,
     findSurveys,
     updateSurvey,
     uploadSurveyAttachments,
-    uploadSurveyReports,
-    updateSurveyReportMetadata,
     getSurveyReportDetails,
     getSurveyAttachments,
     deleteSurveyAttachment,

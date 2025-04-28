@@ -30,7 +30,6 @@ describe('updateSurveyParticipantRole', () => {
       keycloak_token: {},
       body: {},
       params: {
-        projectId: 1,
         surveyId: 2
       }
     } as any;
@@ -60,7 +59,6 @@ describe('updateSurveyParticipantRole', () => {
       keycloak_token: {},
       body: { surveyJobName: 'test' },
       params: {
-        projectId: 1,
         surveyId: 2,
         surveyParticipationId: 3
       }
@@ -94,7 +92,6 @@ describe('deleteSurveyParticipationRecord', () => {
       keycloak_token: {},
       body: {},
       params: {
-        projectId: 1,
         surveyId: 2
       }
     } as any;
@@ -125,7 +122,6 @@ describe('deleteSurveyParticipationRecord', () => {
       keycloak_token: {},
       body: {},
       params: {
-        projectId: 1,
         surveyId: 2
       }
     } as any;

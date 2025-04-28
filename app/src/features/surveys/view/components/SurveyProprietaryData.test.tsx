@@ -18,7 +18,6 @@ describe('SurveyProprietaryData', () => {
     const { getByTestId } = render(
       <SurveyContext.Provider
         value={{
-          projectId: 1,
           surveyId: 1,
           surveyDataLoader: mockSurveyDataLoader,
           artifactDataLoader: mockArtifactDataLoader,
@@ -43,7 +42,6 @@ describe('SurveyProprietaryData', () => {
     const { getByTestId } = render(
       <SurveyContext.Provider
         value={{
-          projectId: 1,
           surveyId: 1,
           surveyDataLoader: mockSurveyDataLoader,
           artifactDataLoader: mockArtifactDataLoader,
@@ -66,7 +64,6 @@ describe('SurveyProprietaryData', () => {
     const { container } = render(
       <SurveyContext.Provider
         value={{
-          projectId: 1,
           surveyId: 1,
           surveyDataLoader: mockSurveyDataLoader,
           artifactDataLoader: mockArtifactDataLoader,

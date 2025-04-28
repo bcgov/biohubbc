@@ -18,8 +18,6 @@ export const DevicesAndDeploymentsManagePage = () => {
   return (
     <Stack>
       <DevicesAndDeploymentsManageHeader
-        project_id={surveyContext.projectId}
-        project_name={projectContext.projectDataLoader.data?.projectData.project.project_name ?? ''}
         survey_id={surveyContext.surveyId}
         survey_name={surveyContext.surveyDataLoader.data?.surveyData.survey_details.survey_name ?? ''}
       />

@@ -81,7 +81,6 @@ export const SamplingSiteContainer = () => {
   const handleBulkDelete = async () => {
     try {
       await biohubApi.samplingSite.deleteSampleSites(
-        surveyContext.projectId,
         surveyContext.surveyId,
         selectedRows.map((site) => Number(site)) // Convert GridRowId to number[]
       );
@@ -184,7 +183,7 @@ export const SamplingSiteContainer = () => {
             color="primary"
             disabled={Boolean(!techniquesDataLoader.data?.pagination.total)}
             component={RouterLink}
-            to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling/create`}
+            to={`/admin/surveys/${surveyContext.surveyId}/sampling/create`}
             startIcon={<Icon path={mdiPlus} size={0.8} />}>
             Add
           </Button>

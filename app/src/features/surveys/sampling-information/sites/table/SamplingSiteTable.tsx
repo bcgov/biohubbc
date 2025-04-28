@@ -238,8 +238,7 @@ export const SamplingSiteTable = (props: ISamplingSiteTableProps) => {
               }
             }
           }}>
-          <RouterLink
-            to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling/${actionMenuAnchorEl?.sampleSiteId}/edit`}>
+          <RouterLink to={`/admin/surveys/${surveyContext.surveyId}/sampling/${actionMenuAnchorEl?.sampleSiteId}/edit`}>
             <ListItemIcon>
               <Icon path={mdiPencilOutline} size={1} />
             </ListItemIcon>

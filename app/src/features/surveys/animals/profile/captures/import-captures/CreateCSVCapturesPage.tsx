@@ -229,9 +229,6 @@ export const CreateCSVCapturesPage = () => {
         title="Create Captures"
         breadCrumbJSX={
           <Breadcrumbs aria-label="breadcrumb" separator={'>'}>
-            <Link component={RouterLink} underline="hover" to={`/admin/projects/${projectId}/`}>
-              {projectContext.projectDataLoader.data?.projectData.project.project_name}
-            </Link>
             <Link component={RouterLink} underline="hover" to={`/admin/surveys/${surveyId}`}>
               {surveyContext.surveyDataLoader.data?.surveyData.survey_details.survey_name}
             </Link>

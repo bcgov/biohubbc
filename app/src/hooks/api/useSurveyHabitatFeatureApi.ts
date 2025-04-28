@@ -92,10 +92,7 @@ const useSurveyHabitatFeatureApi = (axios: AxiosInstance) => {
    * @param {number} surveyId
    * @return {*}  {Promise<SurveyHabitatFeaturesGeometry>}
    */
-  const getSurveyHabitatFeaturesGeometry = async (
-    projectId: number,
-    surveyId: number
-  ): Promise<SurveyHabitatFeaturesGeometry> => {
+  const getSurveyHabitatFeaturesGeometry = async (surveyId: number): Promise<SurveyHabitatFeaturesGeometry> => {
     const { data } = await axios.get(`/api/survey/${surveyId}/habitat-features/spatial`);
 
     return data;
@@ -158,7 +155,7 @@ const useSurveyHabitatFeatureApi = (axios: AxiosInstance) => {
    */
   const importHabitatFeaturesFromCsv = async (
     file: File,
-    projectId: number,
+
     surveyId: number,
     surveySamplePeriodId?: number,
     cancelTokenSource?: CancelTokenSource,

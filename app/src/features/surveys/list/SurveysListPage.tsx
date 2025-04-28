@@ -16,11 +16,12 @@ import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { ProjectRoleGuard } from 'components/security/Guards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
-import { ProjectContext } from 'contexts/projectContext';
+import { SURVEY_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import useDataLoader from 'hooks/useDataLoader';
 import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import { SurveyBasicFieldsObject } from 'interfaces/useSurveyApi.interface';
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions } from 'types/misc';
 import { firstOrNull, getFormattedDate } from 'utils/Utils';
@@ -34,13 +35,17 @@ const pageSizeOptions = [10, 25, 50];
  * @return {*}
  */
 const SurveysListPage = () => {
-  const projectContext = useContext(ProjectContext);
+  const biohubApi = useBiohubApi();
 
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
     pageSize: pageSizeOptions[0]
   });
   const [sortModel, setSortModel] = useState<GridSortModel>([]);
+
+  const surveysListDataLoader = useDataLoader((pagination: ApiPaginationRequestOptions) =>
+    biohubApi.survey.findSurveys(pagination)
+  );
 
   // Refresh survey list when pagination or sort changes
   useEffect(() => {
@@ -54,13 +59,13 @@ const SurveysListPage = () => {
       page: paginationModel.page + 1
     };
 
-    projectContext.surveysListDataLoader.refresh(pagination);
+    surveysListDataLoader.refresh(pagination);
 
     // Adding a DataLoader as a dependency causes an infinite rerender loop if a useEffect calls `.refresh`
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sortModel, paginationModel]);
 
-  const surveys = projectContext.surveysListDataLoader.data?.surveys ?? [];
+  const surveys = surveysListDataLoader.data?.surveys ?? [];
 
   const columns: GridColDef<SurveyBasicFieldsObject>[] = [
     {
@@ -138,13 +143,13 @@ const SurveysListPage = () => {
         <Typography variant="h4" component="h2">
           Surveys &zwnj;
           <Typography component="span" color="textSecondary" lineHeight="inherit" fontSize="inherit" fontWeight={400}>
-            ({Number(projectContext.surveysListDataLoader.data?.pagination?.total ?? 0).toLocaleString()})
+            ({Number(surveysListDataLoader.data?.pagination?.total ?? 0).toLocaleString()})
           </Typography>
         </Typography>
         <Stack gap={1} direction="row">
           <HelpButtonDialog markdownType={MarkdownTypeNameEnum.SURVEYS} />
           <ProjectRoleGuard
-            validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+            validProjectPermissions={[SURVEY_PERMISSION.COORDINATOR, SURVEY_PERMISSION.COLLABORATOR]}
             validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
             <Button
               variant="contained"
@@ -153,7 +158,7 @@ const SurveysListPage = () => {
               // TODO fix filters
               // onClick={() => setIsFiltersOpen(!isFiltersOpen)}
               component={RouterLink}
-              to={`/admin/projects/${projectContext.projectId}/survey/create`}>
+              to={`/admin/survey/create`}>
               Create Survey
             </Button>
           </ProjectRoleGuard>
@@ -163,7 +168,7 @@ const SurveysListPage = () => {
       <Divider />
 
       <LoadingGuard
-        isLoading={projectContext.surveysListDataLoader.isLoading || !projectContext.surveysListDataLoader.isReady}
+        isLoading={surveysListDataLoader.isLoading || !surveysListDataLoader.isReady}
         isLoadingFallback={<SkeletonTable data-testid="survey-list-skeleton" />}
         isLoadingFallbackDelay={100}
         hasNoData={!surveys.length}
@@ -181,7 +186,7 @@ const SurveysListPage = () => {
           noRowsMessage="No surveys found"
           columns={columns}
           rows={surveys}
-          rowCount={projectContext.surveysListDataLoader.data?.pagination?.total ?? 0}
+          rowCount={surveysListDataLoader.data?.pagination?.total ?? 0}
           getRowId={(row) => row.survey_id}
           pageSizeOptions={[...pageSizeOptions]}
           paginationMode="server"

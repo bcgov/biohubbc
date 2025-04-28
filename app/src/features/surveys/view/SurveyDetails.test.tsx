@@ -58,7 +58,6 @@ describe('SurveyDetails', () => {
       <Router history={history}>
         <SurveyContext.Provider
           value={{
-            projectId: 1,
             surveyId: 1,
             surveyDataLoader: mockSurveyDataLoader,
             artifactDataLoader: mockArtifactDataLoader,

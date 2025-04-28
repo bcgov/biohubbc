@@ -142,7 +142,7 @@ const CollectionSurveyContainer = (props: ICollectionSurveyContainerProps) => {
           underline="always"
           title={params.row.name}
           component={RouterLink}
-          to={`/admin/projects/${params.row.project_id}/surveys/${params.row.survey_id}/details`}
+          to={`/admin/surveys/${params.row.survey_id}/details`}
           children={params.row.name}
         />
       )

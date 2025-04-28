@@ -22,7 +22,6 @@ describe('useSurveyApi', () => {
     mock.restore();
   });
 
-  const projectId = 1;
   const surveyId = 1;
   const critterId = 1;
 
@@ -42,16 +41,16 @@ describe('useSurveyApi', () => {
     });
   });
 
-  describe('getSurveysBasicFieldsByProjectId', () => {
+  describe('getSurveysBasicFields', () => {
     it('fetches an array of surveys', async () => {
       const res: IFindSurveysResponse = {
         surveys: [{ survey_id: 1 }, { survey_id: 2 }] as SurveyBasicFieldsObject[],
         pagination: null as unknown as ApiPaginationResponseParams
       };
 
-      mock.onGet(`/api/project/${projectId}/survey`).reply(200, res);
+      mock.onGet(`/api/survey`).reply(200, res);
 
-      const result = await useSurveyApi(axios).getSurveysBasicFieldsByProjectId(projectId);
+      const result = await useSurveyApi(axios).getSurveysBasicFields();
 
       expect(result.surveys.length).toEqual(2);
       expect(result.surveys[0].survey_id).toEqual(1);

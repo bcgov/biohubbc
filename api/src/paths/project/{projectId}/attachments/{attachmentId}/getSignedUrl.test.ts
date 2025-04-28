@@ -28,7 +28,6 @@ describe('getProjectAttachmentSignedURL', () => {
         keycloak_token: {},
         body: { attachments: [], security_ids: [] },
         params: {
-          projectId: 1,
           attachmentId: 1
         },
         query: {
@@ -58,7 +57,6 @@ describe('getProjectAttachmentSignedURL', () => {
         keycloak_token: {},
         body: { attachments: [], security_ids: [] },
         params: {
-          projectId: 1,
           attachmentId: 1
         },
         query: {
@@ -103,7 +101,6 @@ describe('getProjectAttachmentSignedURL', () => {
         keycloak_token: {},
         body: { attachments: [], security_ids: [] },
         params: {
-          projectId: 1,
           attachmentId: 1
         },
         query: {

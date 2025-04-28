@@ -185,7 +185,6 @@ export const EditCapturePage = () => {
       if (captureAttachments.length || captureAttachmentsToDelete.length) {
         await biohubApi.animal
           .uploadCritterCaptureAttachments({
-            projectId,
             surveyId,
             critterId: surveyCritterId,
             critterbaseCaptureId: critterbaseCaptureId,

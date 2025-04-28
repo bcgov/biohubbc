@@ -1,6 +1,6 @@
 import { AxiosInstance, AxiosProgressEvent, CancelTokenSource } from 'axios';
 import { IAllTelemetryAdvancedFilters } from 'features/summary/tabular-data/telemetry/TelemetryListFilterForm';
-import { IUploadAttachmentResponse } from 'interfaces/useProjectApi.interface';
+import { IUploadAttachmentResponse } from 'interfaces/useSurveyApi.interface';
 import {
   GetSurveyTelemetryResponse,
   IAllTelemetry,
@@ -79,7 +79,6 @@ const useTelemetryApi = (axios: AxiosInstance) => {
    * @return {*}  {Promise<{ telemetry: TelemetrySpatial[]; supplementaryData: { count: number } }>}
    */
   const getTelemetrySpatialForSurvey = async (
-    projectId: number,
     surveyId: number
   ): Promise<{ telemetry: TelemetrySpatial[]; supplementaryData: { count: number } }> => {
     const { data } = await axios.get(`/api/survey/${surveyId}/telemetry/spatial`);

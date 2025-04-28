@@ -3,7 +3,7 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { SOURCE_SYSTEM, SYSTEM_IDENTITY_SOURCE } from '../constants/database';
-import { PROJECT_PERMISSION, PROJECT_ROLE, SYSTEM_ROLE } from '../constants/roles';
+import { SURVEY_PERMISSION, SURVEY_ROLE, SYSTEM_ROLE } from '../constants/roles';
 import * as db from '../database/db';
 import { SystemUserWithRoles } from '../models/system-user-view';
 import { ProjectUser } from '../repositories/project-participation-repository';
@@ -100,8 +100,8 @@ describe('AuthorizationService', () => {
           discriminator: 'ServiceClient'
         },
         {
-          validProjectPermissions: [PROJECT_PERMISSION.COLLABORATOR],
-          projectId: 1,
+          validProjectPermissions: [SURVEY_PERMISSION.COLLABORATOR],
+
           discriminator: 'ProjectPermission'
         }
       ];
@@ -487,8 +487,8 @@ describe('AuthorizationService', () => {
 
       it('returns false if `projectUserObject` is null', async function () {
         const mockAuthorizeProjectPermission: AuthorizeByProjectPermission = {
-          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR],
-          projectId: 1,
+          validProjectPermissions: [SURVEY_PERMISSION.COORDINATOR],
+
           discriminator: 'ProjectPermission'
         };
         const mockDBConnection = getMockDBConnection();
@@ -508,8 +508,8 @@ describe('AuthorizationService', () => {
 
       it('returns false if `record_end_date` is not null', async function () {
         const mockAuthorizeProjectPermission: AuthorizeByProjectPermission = {
-          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR],
-          projectId: 1,
+          validProjectPermissions: [SURVEY_PERMISSION.COORDINATOR],
+
           discriminator: 'ProjectPermission'
         };
         const mockDBConnection = getMockDBConnection();
@@ -527,11 +527,11 @@ describe('AuthorizationService', () => {
           record_end_date: '2021-01-01',
           role_ids: [3],
           role_names: [SYSTEM_ROLE.PROJECT_CREATOR],
-          project_id: 1,
+
           project_participation_id: 2,
-          project_role_ids: [1],
-          project_role_names: [PROJECT_ROLE.COORDINATOR],
-          project_role_permissions: [PROJECT_PERMISSION.COORDINATOR]
+          survey_role_ids: [1],
+          survey_role_names: [SURVEY_ROLE.COORDINATOR],
+          project_role_permissions: [SURVEY_PERMISSION.COORDINATOR]
         };
         sinon
           .stub(AuthorizationService.prototype, 'getProjectUserObjectByProjectId')
@@ -548,7 +548,7 @@ describe('AuthorizationService', () => {
       it('returns true if `authorizeProjectPermission` specifies no valid permissions', async function () {
         const mockAuthorizeProjectPermission: AuthorizeByProjectPermission = {
           validProjectPermissions: [],
-          projectId: 1,
+
           discriminator: 'ProjectPermission'
         };
         const mockDBConnection = getMockDBConnection();
@@ -568,10 +568,10 @@ describe('AuthorizationService', () => {
             display_name: 'test user',
             agency: null,
             project_participation_id: 3,
-            project_id: 1,
-            project_role_ids: [1],
-            project_role_names: [PROJECT_ROLE.COLLABORATOR],
-            project_role_permissions: [PROJECT_ROLE.COLLABORATOR]
+
+            survey_role_ids: [1],
+            survey_role_names: [SURVEY_ROLE.COLLABORATOR],
+            project_role_permissions: [SURVEY_ROLE.COLLABORATOR]
           }
         });
 
@@ -583,15 +583,14 @@ describe('AuthorizationService', () => {
 
       it('returns false if the user does not have any valid permissions', async function () {
         const mockAuthorizeProjectPermission: AuthorizeByProjectPermission = {
-          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR],
-          projectId: 1,
+          validProjectPermissions: [SURVEY_PERMISSION.COORDINATOR],
+
           discriminator: 'ProjectPermission'
         };
         const mockDBConnection = getMockDBConnection();
 
         const authorizationService = new AuthorizationService(mockDBConnection, {
           projectUser: {
-            project_id: 1,
             system_user_id: 2,
             user_identifier: 'username',
             identity_source: SYSTEM_IDENTITY_SOURCE.IDIR,
@@ -605,8 +604,8 @@ describe('AuthorizationService', () => {
             display_name: 'test user',
             agency: null,
             project_participation_id: 3,
-            project_role_ids: [],
-            project_role_names: [],
+            survey_role_ids: [],
+            survey_role_names: [],
             project_role_permissions: []
           }
         });
@@ -619,8 +618,8 @@ describe('AuthorizationService', () => {
 
       it('returns true if the user has at least one of the valid permissions', async function () {
         const mockAuthorizeProjectPermission: AuthorizeByProjectPermission = {
-          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR],
-          projectId: 1,
+          validProjectPermissions: [SURVEY_PERMISSION.COORDINATOR],
+
           discriminator: 'ProjectPermission'
         };
         const mockDBConnection = getMockDBConnection();
@@ -640,10 +639,10 @@ describe('AuthorizationService', () => {
             display_name: 'test user',
             agency: null,
             project_participation_id: 3,
-            project_id: 1,
-            project_role_ids: [1],
-            project_role_names: [PROJECT_ROLE.COORDINATOR],
-            project_role_permissions: [PROJECT_ROLE.COORDINATOR]
+
+            survey_role_ids: [1],
+            survey_role_names: [SURVEY_ROLE.COORDINATOR],
+            project_role_permissions: [SURVEY_ROLE.COORDINATOR]
           }
         });
 
@@ -673,7 +672,7 @@ describe('AuthorizationService', () => {
 
       it('returns false if `projectUserObject` is null', async function () {
         const mockAuthorizeProjectPermission: AuthorizeByProjectPermission = {
-          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR],
+          validProjectPermissions: [SURVEY_PERMISSION.COORDINATOR],
           surveyId: 1,
           discriminator: 'ProjectPermission'
         };
@@ -694,7 +693,7 @@ describe('AuthorizationService', () => {
 
       it('returns false if `record_end_date` is not null', async function () {
         const mockAuthorizeProjectPermission: AuthorizeByProjectPermission = {
-          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR],
+          validProjectPermissions: [SURVEY_PERMISSION.COORDINATOR],
           surveyId: 1,
           discriminator: 'ProjectPermission'
         };
@@ -714,10 +713,10 @@ describe('AuthorizationService', () => {
           display_name: 'test user',
           agency: null,
           project_participation_id: 3,
-          project_id: 1,
-          project_role_ids: [1],
-          project_role_names: [PROJECT_ROLE.COLLABORATOR],
-          project_role_permissions: [PROJECT_ROLE.COLLABORATOR]
+
+          survey_role_ids: [1],
+          survey_role_names: [SURVEY_ROLE.COLLABORATOR],
+          project_role_permissions: [SURVEY_ROLE.COLLABORATOR]
         };
         sinon
           .stub(AuthorizationService.prototype, 'getProjectUserObjectByProjectId')
@@ -754,9 +753,9 @@ describe('AuthorizationService', () => {
             display_name: 'test user',
             agency: null,
             project_participation_id: 3,
-            project_id: 1,
-            project_role_ids: [],
-            project_role_names: [],
+
+            survey_role_ids: [],
+            survey_role_names: [],
             project_role_permissions: []
           }
         });
@@ -769,7 +768,7 @@ describe('AuthorizationService', () => {
 
       it('returns false if the user does not have any valid permissions', async function () {
         const mockAuthorizeProjectPermission: AuthorizeByProjectPermission = {
-          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR],
+          validProjectPermissions: [SURVEY_PERMISSION.COORDINATOR],
           surveyId: 1,
           discriminator: 'ProjectPermission'
         };
@@ -790,9 +789,9 @@ describe('AuthorizationService', () => {
             display_name: 'test user',
             agency: null,
             project_participation_id: 3,
-            project_id: 1,
-            project_role_ids: [],
-            project_role_names: [],
+
+            survey_role_ids: [],
+            survey_role_names: [],
             project_role_permissions: []
           }
         });
@@ -805,7 +804,7 @@ describe('AuthorizationService', () => {
 
       it('returns true if the user has at least one of the valid permissions', async function () {
         const mockAuthorizeProjectPermission: AuthorizeByProjectPermission = {
-          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR],
+          validProjectPermissions: [SURVEY_PERMISSION.COORDINATOR],
           surveyId: 1,
           discriminator: 'ProjectPermission'
         };
@@ -826,10 +825,10 @@ describe('AuthorizationService', () => {
             display_name: 'test user',
             agency: null,
             project_participation_id: 3,
-            project_id: 1,
-            project_role_ids: [1],
-            project_role_names: [PROJECT_ROLE.COORDINATOR],
-            project_role_permissions: [PROJECT_ROLE.COORDINATOR]
+
+            survey_role_ids: [1],
+            survey_role_names: [SURVEY_ROLE.COORDINATOR],
+            project_role_permissions: [SURVEY_ROLE.COORDINATOR]
           }
         });
 
@@ -1119,10 +1118,10 @@ describe('AuthorizationService', () => {
         display_name: 'test user',
         agency: null,
         project_participation_id: 3,
-        project_id: 1,
-        project_role_ids: [1],
-        project_role_names: [PROJECT_ROLE.COLLABORATOR],
-        project_role_permissions: [PROJECT_ROLE.COLLABORATOR]
+
+        survey_role_ids: [1],
+        survey_role_names: [SURVEY_ROLE.COLLABORATOR],
+        project_role_permissions: [SURVEY_ROLE.COLLABORATOR]
       };
 
       sinon.stub(AuthorizationService.prototype, 'getProjectUserWithRolesByProjectId').resolves(projectUserMock);
@@ -1184,10 +1183,10 @@ describe('AuthorizationService', () => {
         display_name: 'test user',
         agency: null,
         project_participation_id: 3,
-        project_id: 1,
-        project_role_ids: [1],
-        project_role_names: [PROJECT_ROLE.COLLABORATOR],
-        project_role_permissions: [PROJECT_ROLE.COLLABORATOR]
+
+        survey_role_ids: [1],
+        survey_role_names: [SURVEY_ROLE.COLLABORATOR],
+        project_role_permissions: [SURVEY_ROLE.COLLABORATOR]
       };
       sinon
         .stub(ProjectParticipationService.prototype, 'getProjectParticipantByProjectIdAndUserGuid')
@@ -1263,10 +1262,10 @@ describe('AuthorizationService', () => {
         display_name: 'test user',
         agency: null,
         project_participation_id: 3,
-        project_id: 1,
-        project_role_ids: [1],
-        project_role_names: [PROJECT_ROLE.COLLABORATOR],
-        project_role_permissions: [PROJECT_ROLE.COLLABORATOR]
+
+        survey_role_ids: [1],
+        survey_role_names: [SURVEY_ROLE.COLLABORATOR],
+        project_role_permissions: [SURVEY_ROLE.COLLABORATOR]
       };
 
       sinon.stub(AuthorizationService.prototype, 'getProjectUserWithRolesBySurveyId').resolves(projectUserMock);
@@ -1328,10 +1327,10 @@ describe('AuthorizationService', () => {
         display_name: 'test user',
         agency: null,
         project_participation_id: 3,
-        project_id: 1,
-        project_role_ids: [1],
-        project_role_names: [PROJECT_ROLE.COLLABORATOR],
-        project_role_permissions: [PROJECT_ROLE.COLLABORATOR]
+
+        survey_role_ids: [1],
+        survey_role_names: [SURVEY_ROLE.COLLABORATOR],
+        project_role_permissions: [SURVEY_ROLE.COLLABORATOR]
       };
       sinon
         .stub(ProjectParticipationService.prototype, 'getProjectParticipantBySurveyIdAndUserGuid')

@@ -37,7 +37,7 @@ export const CreateDevicePage = () => {
 
   const { locationChangeInterceptor, skipUnsavedChangesDialog } = useUnsavedChangesDialog();
 
-  if (!surveyContext.surveyDataLoader.data || !projectContext.projectDataLoader.data) {
+  if (!surveyContext.surveyDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
@@ -53,7 +53,7 @@ export const CreateDevicePage = () => {
       });
 
       skipUnsavedChangesDialog();
-      history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry/manage`);
+      history.push(`/admin/surveys/${surveyContext.surveyId}/telemetry/manage`);
     } catch (error) {
       dialogContext.setErrorDialog({
         dialogTitle: TelemetryDeviceI18N.createErrorTitle,
@@ -88,8 +88,6 @@ export const CreateDevicePage = () => {
         <Box display="flex" flexDirection="column">
           <FormikErrorSnackbar />
           <DeviceFormHeader
-            project_id={surveyContext.projectId}
-            project_name={projectContext.projectDataLoader.data?.projectData.project.project_name}
             survey_id={surveyContext.surveyId}
             survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
             is_submitting={isSubmitting}

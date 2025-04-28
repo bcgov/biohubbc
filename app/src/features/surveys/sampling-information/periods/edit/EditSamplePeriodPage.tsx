@@ -94,11 +94,7 @@ export const EditSamplePeriodPage = () => {
     samplingPeriodDataLoader.load();
   }, [codesContext.codesDataLoader, samplingPeriodDataLoader]);
 
-  if (
-    !surveyContext.surveyDataLoader.data ||
-    !projectContext.projectDataLoader.data ||
-    !samplingPeriodDataLoader.data
-  ) {
+  if (!surveyContext.surveyDataLoader.data || !samplingPeriodDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
@@ -139,7 +135,6 @@ export const EditSamplePeriodPage = () => {
       };
 
       await biohubApi.samplingPeriod.updateSamplingPeriod(
-        surveyContext.projectId,
         surveyContext.surveyId,
         surveySamplePeriodId,
         samplePeriodData
@@ -147,7 +142,7 @@ export const EditSamplePeriodPage = () => {
 
       // create complete, navigate back to observations page
       skipUnsavedChangesDialog();
-      history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling`);
+      history.push(`/admin/surveys/${surveyContext.surveyId}/sampling`);
     } catch (error) {
       showCreateErrorDialog({
         dialogTitle: SamplePeriodI18N.createErrorTitle,
@@ -186,10 +181,8 @@ export const EditSamplePeriodPage = () => {
         <Box display="flex" flexDirection="column">
           <FormikErrorSnackbar />
           <SamplingSiteHeader
-            project_id={surveyContext.projectId}
             survey_id={surveyContext.surveyId}
             survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
-            project_name={projectContext.projectDataLoader.data.projectData.project.project_name}
             is_submitting={isSubmitting}
             title="Edit Sampling Period"
             breadcrumb="Edit Sampling Period"

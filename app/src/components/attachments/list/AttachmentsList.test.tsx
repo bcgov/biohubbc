@@ -1,5 +1,5 @@
 import { AuthStateContext } from 'contexts/authStateContext';
-import { IProjectContext, ProjectContext } from 'contexts/projectContext';
+
 import { ISurveyContext, SurveyContext } from 'contexts/surveyContext';
 import { createMemoryHistory } from 'history';
 import { DataLoader } from 'hooks/useDataLoader';
@@ -50,36 +50,25 @@ describe('AttachmentsList', () => {
 
   it('renders correctly with no Documents', () => {
     const mockSurveyContext: ISurveyContext = {
-      projectId: 1,
       surveyDataLoader: {
         data: { surveyData: { survey_details: { survey_name: 'name' } } },
         load: vi.fn()
       } as unknown as DataLoader<any, any, any>
     } as unknown as ISurveyContext;
 
-    const mockProjectContext: IProjectContext = {
-      projectId: 1,
-      projectDataLoader: {
-        data: { projectData: { project: { project_name: 'name' } } },
-        load: vi.fn()
-      } as unknown as DataLoader<any, any, any>
-    } as unknown as IProjectContext;
-
     const authState = getMockAuthState({ base: SystemAdminAuthState });
 
     const { getByText } = render(
       <AuthStateContext.Provider value={authState}>
         <Router history={history}>
-          <ProjectContext.Provider value={mockProjectContext}>
-            <SurveyContext.Provider value={mockSurveyContext}>
-              <AttachmentsList
-                attachments={[]}
-                handleDownload={vi.fn()}
-                handleDelete={vi.fn()}
-                handleViewDetails={vi.fn()}
-              />
-            </SurveyContext.Provider>
-          </ProjectContext.Provider>
+          <SurveyContext.Provider value={mockSurveyContext}>
+            <AttachmentsList
+              attachments={[]}
+              handleDownload={vi.fn()}
+              handleDelete={vi.fn()}
+              handleViewDetails={vi.fn()}
+            />
+          </SurveyContext.Provider>
         </Router>
       </AuthStateContext.Provider>
     );
@@ -89,37 +78,26 @@ describe('AttachmentsList', () => {
 
   it('renders correctly with no shared files', () => {
     const mockSurveyContext: ISurveyContext = {
-      projectId: 1,
       surveyDataLoader: {
         data: { surveyData: { survey_details: { survey_name: 'name' } } },
         load: vi.fn()
       } as unknown as DataLoader<any, any, any>
     } as unknown as ISurveyContext;
 
-    const mockProjectContext: IProjectContext = {
-      projectId: 1,
-      projectDataLoader: {
-        data: { projectData: { project: { project_name: 'name' } } },
-        load: vi.fn()
-      } as unknown as DataLoader<any, any, any>
-    } as unknown as IProjectContext;
-
     const authState = getMockAuthState({ base: SystemAdminAuthState });
 
     const { getByText } = render(
       <AuthStateContext.Provider value={authState}>
         <Router history={history}>
-          <ProjectContext.Provider value={mockProjectContext}>
-            <SurveyContext.Provider value={mockSurveyContext}>
-              <AttachmentsList
-                attachments={[]}
-                handleDownload={vi.fn()}
-                handleDelete={vi.fn()}
-                handleViewDetails={vi.fn()}
-                emptyStateText="No shared files found"
-              />
-            </SurveyContext.Provider>
-          </ProjectContext.Provider>
+          <SurveyContext.Provider value={mockSurveyContext}>
+            <AttachmentsList
+              attachments={[]}
+              handleDownload={vi.fn()}
+              handleDelete={vi.fn()}
+              handleViewDetails={vi.fn()}
+              emptyStateText="No shared files found"
+            />
+          </SurveyContext.Provider>
         </Router>
       </AuthStateContext.Provider>
     );
@@ -129,36 +107,25 @@ describe('AttachmentsList', () => {
 
   it('renders correctly with attachments (of various sizes)', async () => {
     const mockSurveyContext: ISurveyContext = {
-      projectId: 1,
       surveyDataLoader: {
         data: { surveyData: { survey_details: { survey_name: 'name' } } },
         load: vi.fn()
       } as unknown as DataLoader<any, any, any>
     } as unknown as ISurveyContext;
 
-    const mockProjectContext: IProjectContext = {
-      projectId: 1,
-      projectDataLoader: {
-        data: { projectData: { project: { project_name: 'name' } } },
-        load: vi.fn()
-      } as unknown as DataLoader<any, any, any>
-    } as unknown as IProjectContext;
-
     const authState = getMockAuthState({ base: SystemAdminAuthState });
 
     const { getByText } = render(
       <AuthStateContext.Provider value={authState}>
         <Router history={history}>
-          <ProjectContext.Provider value={mockProjectContext}>
-            <SurveyContext.Provider value={mockSurveyContext}>
-              <AttachmentsList
-                attachments={attachmentsList}
-                handleDownload={vi.fn()}
-                handleDelete={vi.fn()}
-                handleViewDetails={vi.fn()}
-              />
-            </SurveyContext.Provider>
-          </ProjectContext.Provider>
+          <SurveyContext.Provider value={mockSurveyContext}>
+            <AttachmentsList
+              attachments={attachmentsList}
+              handleDownload={vi.fn()}
+              handleDelete={vi.fn()}
+              handleViewDetails={vi.fn()}
+            />
+          </SurveyContext.Provider>
         </Router>
       </AuthStateContext.Provider>
     );
@@ -172,20 +139,11 @@ describe('AttachmentsList', () => {
     window.open = vi.fn();
 
     const mockSurveyContext: ISurveyContext = {
-      projectId: 1,
       surveyDataLoader: {
         data: { surveyData: { survey_details: { survey_name: 'name' } } },
         load: vi.fn()
       } as unknown as DataLoader<any, any, any>
     } as unknown as ISurveyContext;
-
-    const mockProjectContext: IProjectContext = {
-      projectId: 1,
-      projectDataLoader: {
-        data: { projectData: { project: { project_name: 'name' } } },
-        load: vi.fn()
-      } as unknown as DataLoader<any, any, any>
-    } as unknown as IProjectContext;
 
     const handleDownload = vi.fn();
 
@@ -194,16 +152,14 @@ describe('AttachmentsList', () => {
     const { getByText } = render(
       <AuthStateContext.Provider value={authState}>
         <Router history={history}>
-          <ProjectContext.Provider value={mockProjectContext}>
-            <SurveyContext.Provider value={mockSurveyContext}>
-              <AttachmentsList
-                attachments={attachmentsList}
-                handleDownload={handleDownload}
-                handleDelete={vi.fn()}
-                handleViewDetails={vi.fn()}
-              />
-            </SurveyContext.Provider>
-          </ProjectContext.Provider>
+          <SurveyContext.Provider value={mockSurveyContext}>
+            <AttachmentsList
+              attachments={attachmentsList}
+              handleDownload={handleDownload}
+              handleDelete={vi.fn()}
+              handleViewDetails={vi.fn()}
+            />
+          </SurveyContext.Provider>
         </Router>
       </AuthStateContext.Provider>
     );
@@ -219,20 +175,11 @@ describe('AttachmentsList', () => {
 
   it('viewing file contents in new tab works as expected for survey attachments', async () => {
     const mockSurveyContext: ISurveyContext = {
-      projectId: 1,
       surveyDataLoader: {
         data: { surveyData: { survey_details: { survey_name: 'name' } } },
         load: vi.fn()
       } as unknown as DataLoader<any, any, any>
     } as unknown as ISurveyContext;
-
-    const mockProjectContext: IProjectContext = {
-      projectId: 1,
-      projectDataLoader: {
-        data: { projectData: { project: { project_name: 'name' } } },
-        load: vi.fn()
-      } as unknown as DataLoader<any, any, any>
-    } as unknown as IProjectContext;
 
     window.open = vi.fn();
 
@@ -243,16 +190,14 @@ describe('AttachmentsList', () => {
     const { getByText } = render(
       <AuthStateContext.Provider value={authState}>
         <Router history={history}>
-          <ProjectContext.Provider value={mockProjectContext}>
-            <SurveyContext.Provider value={mockSurveyContext}>
-              <AttachmentsList
-                attachments={attachmentsList}
-                handleDownload={handleDownload}
-                handleDelete={vi.fn()}
-                handleViewDetails={vi.fn()}
-              />
-            </SurveyContext.Provider>
-          </ProjectContext.Provider>
+          <SurveyContext.Provider value={mockSurveyContext}>
+            <AttachmentsList
+              attachments={attachmentsList}
+              handleDownload={handleDownload}
+              handleDelete={vi.fn()}
+              handleViewDetails={vi.fn()}
+            />
+          </SurveyContext.Provider>
         </Router>
       </AuthStateContext.Provider>
     );

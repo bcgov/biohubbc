@@ -115,8 +115,8 @@ export const projectUserSchema: OpenAPIV3.SchemaObject = {
     'project_participation_id',
     'project_id',
     'system_user_id',
-    'project_role_ids',
-    'project_role_names',
+    'survey_role_ids',
+    'survey_role_names',
     'project_role_permissions'
   ],
   properties: {
@@ -129,13 +129,13 @@ export const projectUserSchema: OpenAPIV3.SchemaObject = {
     system_user_id: {
       type: 'number'
     },
-    project_role_ids: {
+    survey_role_ids: {
       type: 'array',
       items: {
         type: 'number'
       }
     },
-    project_role_names: {
+    survey_role_names: {
       type: 'array',
       items: {
         type: 'string'
@@ -157,8 +157,8 @@ export const projectAndSystemUserSchema: OpenAPIV3.SchemaObject = {
     'project_participation_id',
     'project_id',
     'system_user_id',
-    'project_role_ids',
-    'project_role_names',
+    'survey_role_ids',
+    'survey_role_names',
     'project_role_permissions'
   ],
   properties: {
@@ -171,13 +171,13 @@ export const projectAndSystemUserSchema: OpenAPIV3.SchemaObject = {
     system_user_id: {
       type: 'number'
     },
-    project_role_ids: {
+    survey_role_ids: {
       type: 'array',
       items: {
         type: 'number'
       }
     },
-    project_role_names: {
+    survey_role_names: {
       type: 'array',
       items: {
         type: 'string'

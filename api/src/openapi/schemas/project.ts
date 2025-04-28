@@ -1,5 +1,5 @@
 import { OpenAPIV3 } from 'openapi-types';
-import { PROJECT_ROLE } from '../../constants/roles';
+import { SURVEY_ROLE } from '../../constants/roles';
 import { paginationResponseSchema } from './pagination';
 
 /**
@@ -62,16 +62,16 @@ export const projectCreatePostRequestObject = {
       items: {
         type: 'object',
         additionalProperties: false,
-        required: ['system_user_id', 'project_role_names'],
+        required: ['system_user_id', 'survey_role_names'],
         properties: {
           system_user_id: {
             type: 'number'
           },
-          project_role_names: {
+          survey_role_names: {
             type: 'array',
             items: {
               type: 'string',
-              enum: [PROJECT_ROLE.COORDINATOR, PROJECT_ROLE.COLLABORATOR, PROJECT_ROLE.OBSERVER]
+              enum: [SURVEY_ROLE.COORDINATOR, SURVEY_ROLE.COLLABORATOR, SURVEY_ROLE.OBSERVER]
             }
           },
           email: {
@@ -177,7 +177,7 @@ const projectUpdateProperties = {
     items: {
       type: 'object',
       additionalProperties: false,
-      required: ['system_user_id', 'display_name', 'email', 'agency', 'identity_source', 'project_role_names'],
+      required: ['system_user_id', 'display_name', 'email', 'agency', 'identity_source', 'survey_role_names'],
       properties: {
         project_participation_id: {
           type: 'number'
@@ -188,13 +188,13 @@ const projectUpdateProperties = {
         system_user_id: {
           type: 'number'
         },
-        project_role_ids: {
+        survey_role_ids: {
           type: 'array',
           items: {
             type: 'number'
           }
         },
-        project_role_names: {
+        survey_role_names: {
           type: 'array',
           items: {
             type: 'string'

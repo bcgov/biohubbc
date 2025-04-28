@@ -1,5 +1,5 @@
 import { ProjectRoleRouteGuard } from 'components/security/RouteGuards';
-import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
+import { SURVEY_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { CreateDeploymentPage } from 'features/surveys/telemetry/manage/deployments/create/CreateDeploymentPage';
 import { EditDeploymentPage } from 'features/surveys/telemetry/manage/deployments/edit/EditDeploymentPage';
@@ -30,7 +30,7 @@ export const TelemetryRouter = () => {
         path="/admin/projects/:id/surveys/:survey_id/telemetry/details"
         title={getTitle('Telemetry')}>
         <ProjectRoleRouteGuard
-          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+          validProjectPermissions={[SURVEY_PERMISSION.COORDINATOR, SURVEY_PERMISSION.COLLABORATOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <DialogContextProvider>
             <TelemetryPage />
@@ -43,7 +43,7 @@ export const TelemetryRouter = () => {
         path="/admin/projects/:id/surveys/:survey_id/telemetry/manage"
         title={getTitle('Devices and Deployments')}>
         <ProjectRoleRouteGuard
-          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+          validProjectPermissions={[SURVEY_PERMISSION.COORDINATOR, SURVEY_PERMISSION.COLLABORATOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <DialogContextProvider>
             <DevicesAndDeploymentsManagePage />
@@ -56,7 +56,7 @@ export const TelemetryRouter = () => {
         path="/admin/projects/:id/surveys/:survey_id/telemetry/manage/device/create"
         title={getTitle('Add Device')}>
         <ProjectRoleRouteGuard
-          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+          validProjectPermissions={[SURVEY_PERMISSION.COORDINATOR, SURVEY_PERMISSION.COLLABORATOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <DialogContextProvider>
             <CreateDevicePage />
@@ -69,7 +69,7 @@ export const TelemetryRouter = () => {
         path="/admin/projects/:id/surveys/:survey_id/telemetry/manage/device/:device_id/edit"
         title={getTitle('Edit Device')}>
         <ProjectRoleRouteGuard
-          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+          validProjectPermissions={[SURVEY_PERMISSION.COORDINATOR, SURVEY_PERMISSION.COLLABORATOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <DialogContextProvider>
             <EditDevicePage />
@@ -82,7 +82,7 @@ export const TelemetryRouter = () => {
         path="/admin/projects/:id/surveys/:survey_id/telemetry/manage/deployment/create"
         title={getTitle('Add Deployment')}>
         <ProjectRoleRouteGuard
-          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+          validProjectPermissions={[SURVEY_PERMISSION.COORDINATOR, SURVEY_PERMISSION.COLLABORATOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <DialogContextProvider>
             <CreateDeploymentPage />
@@ -95,7 +95,7 @@ export const TelemetryRouter = () => {
         path="/admin/projects/:id/surveys/:survey_id/telemetry/manage/deployment/:deployment_id/edit"
         title={getTitle('Edit Deployment')}>
         <ProjectRoleRouteGuard
-          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+          validProjectPermissions={[SURVEY_PERMISSION.COORDINATOR, SURVEY_PERMISSION.COLLABORATOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <DialogContextProvider>
             <EditDeploymentPage />

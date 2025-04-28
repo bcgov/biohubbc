@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_PERMISSION, PROJECT_ROLE, SYSTEM_ROLE } from '../../../../constants/roles';
+import { SURVEY_PERMISSION, SURVEY_ROLE, SYSTEM_ROLE } from '../../../../constants/roles';
 import { getDBConnection } from '../../../../database/db';
 import { HTTP400, HTTP500 } from '../../../../errors/http-error';
 import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
@@ -14,7 +14,7 @@ export const PUT: Operation = [
     return {
       or: [
         {
-          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR],
+          validProjectPermissions: [SURVEY_PERMISSION.COORDINATOR],
           projectId: Number(req.params.projectId),
           discriminator: 'ProjectPermission'
         },
@@ -99,7 +99,7 @@ PUT.apiDoc = {
 export function putProjectParticipantRole(): RequestHandler {
   return async (req, res) => {
     const projectId = Number(req.params.projectId);
-    const projectParticipationId = Number(req.params.projectParticipationId);
+    const projectParticipationId = Number(req.params.surveyParticipationId);
     const roleId = Number(req.body.roleId);
 
     const connection = getDBConnection(req.keycloak_token);
@@ -138,9 +138,7 @@ export function putProjectParticipantRole(): RequestHandler {
         // If any project that the user is on now no longer has a coordinator, then these updates must have been
         // responsible, and so should not be allowed. A project must always have at least 1 coordinator role.
         if (!projectHasLead) {
-          throw new HTTP400(
-            `Cannot update project user. User is the only ${PROJECT_ROLE.COORDINATOR} for the project.`
-          );
+          throw new HTTP400(`Cannot update project user. User is the only ${SURVEY_ROLE.COORDINATOR} for the project.`);
         }
       }
 
@@ -162,7 +160,7 @@ export const DELETE: Operation = [
     return {
       or: [
         {
-          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR],
+          validProjectPermissions: [SURVEY_PERMISSION.COORDINATOR],
           projectId: Number(req.params.projectId),
           discriminator: 'ProjectPermission'
         },
@@ -229,7 +227,7 @@ DELETE.apiDoc = {
 export function deleteProjectParticipant(): RequestHandler {
   return async (req, res) => {
     const projectId = Number(req.params.projectId);
-    const projectParticipationId = Number(req.params.projectParticipationId);
+    const projectParticipationId = Number(req.params.surveyParticipationId);
 
     const connection = getDBConnection(req.keycloak_token);
 
@@ -259,9 +257,7 @@ export function deleteProjectParticipant(): RequestHandler {
         projectHasLead = projectParticipationService.doAllProjectsHaveAProjectLead(projectParticipants);
 
         if (!projectHasLead) {
-          throw new HTTP400(
-            `Cannot delete project user. User is the only ${PROJECT_ROLE.COORDINATOR} for the project.`
-          );
+          throw new HTTP400(`Cannot delete project user. User is the only ${SURVEY_ROLE.COORDINATOR} for the project.`);
         }
       }
 

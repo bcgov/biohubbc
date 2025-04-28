@@ -7,17 +7,16 @@ import MenuItem from '@mui/material/MenuItem';
 import Paper from '@mui/material/Paper';
 import Select from '@mui/material/Select';
 import Typography from '@mui/material/Typography';
-import { PROJECT_ROLE_ICONS } from 'constants/roles';
+import { SURVEY_ROLE_ICONS } from 'constants/roles';
 import { ICodeWithDescription } from 'interfaces/useCodesApi.interface';
 import { ICollectionParticipant } from 'interfaces/useCollectionApi.interface';
-import { IGetProjectParticipant } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyParticipant } from 'interfaces/useSurveyApi.interface';
 import { ISystemUser } from 'interfaces/useUserApi.interface';
 import UserCard from './UserCard';
 
 interface IUserRoleSelectorProps {
   index: number;
-  user: ISystemUser | IGetProjectParticipant | IGetSurveyParticipant | ICollectionParticipant;
+  user: ISystemUser | IGetSurveyParticipant | ICollectionParticipant;
   selectedRole: string;
   roles: ICodeWithDescription[];
   error: JSX.Element | undefined;
@@ -71,10 +70,10 @@ const UserRoleSelector: React.FC<IUserRoleSelectorProps> = (props) => {
                 return (
                   <Typography alignItems="center" display="flex">
                     {selected}
-                    {PROJECT_ROLE_ICONS[selected] && (
+                    {SURVEY_ROLE_ICONS[selected] && (
                       <>
                         &nbsp;
-                        <Icon path={PROJECT_ROLE_ICONS[selected] ?? ''} size={0.75} color={grey[600]} />
+                        <Icon path={SURVEY_ROLE_ICONS[selected] ?? ''} size={0.75} color={grey[600]} />
                       </>
                     )}
                   </Typography>
@@ -91,10 +90,10 @@ const UserRoleSelector: React.FC<IUserRoleSelectorProps> = (props) => {
                   }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
                     {item.name}
-                    {PROJECT_ROLE_ICONS[item.name] && (
+                    {SURVEY_ROLE_ICONS[item.name] && (
                       <>
                         &nbsp;
-                        <Icon path={PROJECT_ROLE_ICONS[item.name] ?? ''} size={0.75} color={grey[600]} />
+                        <Icon path={SURVEY_ROLE_ICONS[item.name] ?? ''} size={0.75} color={grey[600]} />
                       </>
                     )}
                   </Box>

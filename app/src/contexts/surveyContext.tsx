@@ -15,26 +15,26 @@ export interface ISurveyContext {
   /**
    * The Data Loader used to load survey data
    *
-   * @type {DataLoader<[project_id: number, survey_id: number], IGetSurveyForViewResponse, unknown>}
+   * @type {DataLoader<[survey_id: number], IGetSurveyForViewResponse, unknown>}
    * @memberof ISurveyContext
    */
-  surveyDataLoader: DataLoader<[project_id: number, survey_id: number], IGetSurveyForViewResponse, unknown>;
+  surveyDataLoader: DataLoader<[survey_id: number], IGetSurveyForViewResponse, unknown>;
 
   /**
    * The Data Loader used to load survey data
    *
-   * @type {DataLoader<[project_id: number, survey_id: number], IGetSurveyAttachmentsResponse, unknown>}
+   * @type {DataLoader<[survey_id: number], IGetSurveyAttachmentsResponse, unknown>}
    * @memberof ISurveyContext
    */
-  artifactDataLoader: DataLoader<[project_id: number, survey_id: number], IGetSurveyAttachmentsResponse, unknown>;
+  artifactDataLoader: DataLoader<[survey_id: number], IGetSurveyAttachmentsResponse, unknown>;
 
   /**
    * The Data Loader used to load critters for a given survey
    *
-   * @type {DataLoader<[project_id: number, survey_id: number], IDetailedCritterWithInternalId[], unknown>}
+   * @type {DataLoader<[survey_id: number], IDetailedCritterWithInternalId[], unknown>}
    * @memberof ISurveyContext
    */
-  critterDataLoader: DataLoader<[project_id: number, survey_id: number], ICritterSimpleResponse[], unknown>;
+  critterDataLoader: DataLoader<[survey_id: number], ICritterSimpleResponse[], unknown>;
 
   /**
    * The ID belonging to the current survey
@@ -46,9 +46,9 @@ export interface ISurveyContext {
 }
 
 export const SurveyContext = createContext<ISurveyContext>({
-  surveyDataLoader: {} as DataLoader<[project_id: number, survey_id: number], IGetSurveyForViewResponse, unknown>,
-  artifactDataLoader: {} as DataLoader<[project_id: number, survey_id: number], IGetSurveyAttachmentsResponse, unknown>,
-  critterDataLoader: {} as DataLoader<[project_id: number, survey_id: number], ICritterSimpleResponse[], unknown>,
+  surveyDataLoader: {} as DataLoader<[survey_id: number], IGetSurveyForViewResponse, unknown>,
+  artifactDataLoader: {} as DataLoader<[survey_id: number], IGetSurveyAttachmentsResponse, unknown>,
+  critterDataLoader: {} as DataLoader<[survey_id: number], ICritterSimpleResponse[], unknown>,
   surveyId: -1
 });
 

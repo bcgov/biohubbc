@@ -1,4 +1,4 @@
-import { PROJECT_ROLE } from '../constants/roles';
+import { SURVEY_ROLE } from '../constants/roles';
 import { IDBConnection } from '../database/db';
 import { HTTP401 } from '../errors/http-error';
 import {
@@ -141,13 +141,13 @@ export class CollectionSurveyService extends DBService {
       );
       // Push the project role names for each survey
       if (authorization) {
-        authChecks.push(authorization.project_role_names);
+        authChecks.push(authorization.survey_role_names);
       }
     }
 
     // Check if any of the roles in authChecks contains invalid roles (e.g., COLLABORATOR, COORDINATOR)
     const hasInvalidRole = authChecks.some((roles) =>
-      roles.some((role) => [PROJECT_ROLE.COLLABORATOR, PROJECT_ROLE.COORDINATOR].includes(role as PROJECT_ROLE))
+      roles.some((role) => [SURVEY_ROLE.COLLABORATOR, SURVEY_ROLE.COORDINATOR].includes(role as SURVEY_ROLE))
     );
 
     // If any invalid role is found, throw Error401

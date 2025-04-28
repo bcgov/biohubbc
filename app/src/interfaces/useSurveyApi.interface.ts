@@ -1,3 +1,4 @@
+import { SURVEY_PERMISSION, SURVEY_ROLE } from 'constants/roles';
 import { IAgreementsForm } from 'features/surveys/components/agreements/AgreementsForm';
 import { IProprietaryDataForm } from 'features/surveys/components/agreements/ProprietaryDataForm';
 import {
@@ -78,13 +79,64 @@ interface IParticipantsJobForm {
   participants: IGetSurveyParticipant[];
 }
 
+export interface IAddSurveyParticipant {
+  userIdentifier: string;
+  displayName: string;
+  email: string;
+  identitySource: string;
+  roleId: number;
+}
+
+export interface IGetReportDetails {
+  metadata: IGetReportMetadata | null;
+  authors: IGetReportAuthors[];
+}
+
+export interface IGetAttachmentDetails {
+  metadata: { last_modified: string };
+  authors: IGetReportAuthors[];
+}
+export interface IGetReportMetadata {
+  project_report_attachment_id?: number;
+  survey_report_attachment_id?: number;
+  title: string;
+  year_published: number;
+  description: string;
+  last_modified: string;
+  revision_count: number;
+}
+
+/**
+ * A  file upload response.
+ *
+ * @export
+ * @interface IUploadAttachmentResponse
+ */
+export interface IUploadAttachmentResponse {
+  attachmentId: number;
+  revision_count: number;
+}
+
+export interface IGetReportAuthors {
+  first_name: string;
+  last_name: string;
+}
+
+export type IGetUserSurveyParticipantResponse = {
+  survey_id: number;
+  system_user_id: number;
+  survey_role_ids: number[];
+  survey_role_names: SURVEY_ROLE[];
+  survey_role_permissions: SURVEY_PERMISSION[];
+} | null;
+
 /**
  * Get surveys list response object.
  *
  * @export
- * @interface IGetUserProjectsListResponse
+ * @interface IGetUserSurveysListResponse
  */
-export interface IGetUserProjectsListResponse {
+export interface IGetUserSurveysListResponse {
   survey_participation_id: number;
   survey_id: number;
   survey_name: string;
@@ -128,6 +180,7 @@ export interface IGetSurveyParticipant {
   agency: string | null;
   survey_job_id: number;
   survey_job_name: string;
+  survey_role_names: SURVEY_ROLE[];
 }
 
 export interface IGetSurveyForViewResponsePartnerships {
@@ -182,7 +235,6 @@ export interface SurveyViewObject {
 }
 
 export interface SurveyBasicFieldsObject {
-  survey_id: number;
   survey_id: number;
   name: string;
   start_date: string;
@@ -427,6 +479,7 @@ export interface IGetSurveyForUpdateResponse {
       family_name: string | null;
       agency: string | null;
       survey_participation_id: number;
+      survey_role_names: SURVEY_ROLE[];
       survey_id: number;
       survey_job_id: number;
       survey_job_name: string;

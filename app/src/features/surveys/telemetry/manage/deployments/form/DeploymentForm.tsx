@@ -71,13 +71,7 @@ export const DeploymentForm = (props: IDeploymentFormProps) => {
     codesContext.codesDataLoader.load();
     devicesDataLoader.load();
     crittersDataLoader.load();
-  }, [
-    codesContext.codesDataLoader,
-    crittersDataLoader,
-    devicesDataLoader,
-    surveyContext.projectId,
-    surveyContext.surveyId
-  ]);
+  }, [codesContext.codesDataLoader, crittersDataLoader, devicesDataLoader, surveyContext.surveyId]);
 
   // Fetch a single critter's data
   const critterDataLoader = useDataLoader((critterId: number) =>
@@ -108,7 +102,7 @@ export const DeploymentForm = (props: IDeploymentFormProps) => {
                       textDecoration: 'none'
                     }}
                     component={RouterLink}
-                    to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry/manage/device/create`}>
+                    to={`/admin/surveys/${surveyContext.surveyId}/telemetry/manage/device/create`}>
                     add the device
                   </Typography>
                   &nbsp;and&nbsp;
@@ -117,7 +111,7 @@ export const DeploymentForm = (props: IDeploymentFormProps) => {
                       textDecoration: 'none'
                     }}
                     component={RouterLink}
-                    to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/animals/create`}>
+                    to={`/admin/surveys/${surveyContext.surveyId}/animals/create`}>
                     animal
                   </Typography>
                   &nbsp;to your Survey before associating the two in a deployment.
@@ -172,9 +166,7 @@ export const DeploymentForm = (props: IDeploymentFormProps) => {
               variant="outlined"
               color="primary"
               onClick={() => {
-                history.push(
-                  `/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry/manage`
-                );
+                history.push(`/admin/surveys/${surveyContext.surveyId}/telemetry/manage`);
               }}>
               Cancel
             </Button>

@@ -45,7 +45,6 @@ describe.skip('SurveyStudyArea', () => {
     const { container } = render(
       <SurveyContext.Provider
         value={{
-          projectId: 1,
           surveyId: 1,
           surveyDataLoader: mockSurveyDataLoader,
           artifactDataLoader: mockArtifactDataLoader,
@@ -78,7 +77,6 @@ describe.skip('SurveyStudyArea', () => {
       const { container, queryByTestId } = render(
         <SurveyContext.Provider
           value={{
-            projectId: 1,
             surveyId: 1,
             surveyDataLoader: mockSurveyDataLoader,
             artifactDataLoader: mockArtifactDataLoader,
@@ -102,7 +100,6 @@ describe.skip('SurveyStudyArea', () => {
       const { container, getByTestId } = render(
         <SurveyContext.Provider
           value={{
-            projectId: 1,
             surveyId: 1,
             surveyDataLoader: mockSurveyDataLoader,
             artifactDataLoader: mockArtifactDataLoader,
@@ -127,11 +124,12 @@ describe.skip('SurveyStudyArea', () => {
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockCritterDataLoader = { data: [] } as DataLoader<any, any, any>;
     const mockSurveyAuthStateContext: ISurveyAuthStateContext = {
-      getProjectParticipant: () => null,
-      hasProjectRole: () => true,
-      hasProjectPermission: () => true,
+      getSurveyParticipant: () => null,
+      hasSurveyRole: () => true,
+      hasSurveyPermission: () => true,
       hasSystemRole: () => true,
-      getProjectId: () => 1,
+      getSurveyId: () => 1,
+
       hasLoadedParticipantInfo: true
     };
 
@@ -139,7 +137,6 @@ describe.skip('SurveyStudyArea', () => {
       <SurveyAuthStateContext.Provider value={mockSurveyAuthStateContext}>
         <SurveyContext.Provider
           value={{
-            projectId: 1,
             surveyId: 1,
             surveyDataLoader: mockSurveyDataLoader,
             artifactDataLoader: mockArtifactDataLoader,
@@ -219,7 +216,7 @@ describe.skip('SurveyStudyArea', () => {
         ...surveyObject,
         survey_details: {
           id: 1,
-          project_id: 1,
+
           survey_name: 'survey name is this',
           start_date: '1999-09-09',
           end_date: '2021-01-25',
@@ -233,11 +230,12 @@ describe.skip('SurveyStudyArea', () => {
     mockUseApi.survey.updateSurvey = vi.fn(() => Promise.reject(new Error('API Error is Here')));
 
     const mockSurveyAuthStateContext: ISurveyAuthStateContext = {
-      getProjectParticipant: () => null,
-      hasProjectRole: () => true,
-      hasProjectPermission: () => true,
+      getSurveyParticipant: () => null,
+      hasSurveyRole: () => true,
+      hasSurveyPermission: () => true,
       hasSystemRole: () => true,
-      getProjectId: () => 1,
+      getSurveyId: () => 1,
+
       hasLoadedParticipantInfo: true
     };
 
@@ -245,7 +243,6 @@ describe.skip('SurveyStudyArea', () => {
       <SurveyAuthStateContext.Provider value={mockSurveyAuthStateContext}>
         <SurveyContext.Provider
           value={{
-            projectId: 1,
             surveyId: 1,
             surveyDataLoader: mockSurveyDataLoader,
             artifactDataLoader: mockArtifactDataLoader,

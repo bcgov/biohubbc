@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_ROLE, SYSTEM_ROLE } from '../../../constants/roles';
+import { SURVEY_ROLE, SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
 import { HTTP400 } from '../../../errors/http-error';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
@@ -81,7 +81,7 @@ export function removeSystemUser(): RequestHandler {
         await projectParticipationService.isUserTheOnlyProjectCoordinatorOnAnyProject(systemUserId);
 
       if (isUserTheOnlyCoordinator) {
-        throw new HTTP400(`Cannot remove user. User is the only ${PROJECT_ROLE.COORDINATOR} for one or more projects.`);
+        throw new HTTP400(`Cannot remove user. User is the only ${SURVEY_ROLE.COORDINATOR} for one or more projects.`);
       }
 
       const userService = new UserService(connection);

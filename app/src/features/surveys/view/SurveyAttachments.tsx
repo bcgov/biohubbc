@@ -2,17 +2,12 @@ import { mdiAttachment, mdiTrayArrowUp } from '@mdi/js';
 import Icon from '@mdi/react';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
-import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
 import { FileUploadDialog } from 'components/dialog/attachments/FileUploadDialog';
-import { ReportFileUploadDialog } from 'components/dialog/attachments/ReportFileUploadDialog';
 import { ProjectRoleGuard } from 'components/security/Guards';
 import { H2MenuToolbar } from 'components/toolbar/ActionToolbars';
-import { ReportI18N } from 'constants/i18n';
-import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
+import { SURVEY_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { SurveyContext } from 'contexts/surveyContext';
-import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useDialogContext } from 'hooks/useContext';
 import { useContext, useState } from 'react';
 import SurveyAttachmentsList from './SurveyAttachmentsList';
 
@@ -24,34 +19,11 @@ import SurveyAttachmentsList from './SurveyAttachmentsList';
 const SurveyAttachments = () => {
   const biohubApi = useBiohubApi();
 
-  const dialogContext = useDialogContext();
   const surveyContext = useContext(SurveyContext);
 
   const { surveyId } = surveyContext;
 
   const [openUploadDialog, setOpenUploadDialog] = useState<'Attachment' | 'Report' | false>(false);
-
-  const onSubmitReport = async (fileMeta: IReportMetaForm) => {
-    try {
-      await biohubApi.survey.uploadSurveyReports(surveyId, fileMeta.attachmentFile, fileMeta);
-    } catch (error) {
-      const apiError = error as APIError;
-
-      dialogContext.setErrorDialog({
-        open: true,
-        dialogTitle: ReportI18N.uploadErrorTitle,
-        dialogText: ReportI18N.uploadErrorText,
-        dialogError: apiError.message,
-        dialogErrorDetails: apiError.errors,
-        onClose: () => {
-          dialogContext.setErrorDialog({ open: false });
-        },
-        onOk: () => {
-          dialogContext.setErrorDialog({ open: false });
-        }
-      });
-    }
-  };
 
   const handleUploadAttachments = async (file: File) => {
     return biohubApi.survey.uploadSurveyAttachments(surveyId, file);
@@ -59,15 +31,6 @@ const SurveyAttachments = () => {
 
   return (
     <>
-      <ReportFileUploadDialog
-        open={openUploadDialog === 'Report'}
-        onSubmit={onSubmitReport}
-        onClose={() => {
-          surveyContext.artifactDataLoader.refresh(surveyId);
-          setOpenUploadDialog(false);
-        }}
-      />
-
       <FileUploadDialog
         open={openUploadDialog === 'Attachment'}
         dialogTitle="Upload Attachments"
@@ -93,7 +56,7 @@ const SurveyAttachments = () => {
         ]}
         renderButton={(buttonProps) => (
           <ProjectRoleGuard
-            validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+            validProjectPermissions={[SURVEY_PERMISSION.COORDINATOR, SURVEY_PERMISSION.COLLABORATOR]}
             validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
             <Button {...buttonProps} />
           </ProjectRoleGuard>

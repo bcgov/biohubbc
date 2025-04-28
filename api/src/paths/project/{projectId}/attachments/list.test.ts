@@ -56,7 +56,6 @@ describe('getAttachments', () => {
     const mockReq = {
       keycloak_token: {},
       params: {
-        projectId: 1,
         attachmentId: 2
       },
       body: {}

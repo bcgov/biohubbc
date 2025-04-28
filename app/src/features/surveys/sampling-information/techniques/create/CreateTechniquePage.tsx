@@ -53,7 +53,7 @@ export const CreateTechniquePage = () => {
 
   const formikRef = useRef<FormikProps<CreateTechniqueFormValues>>(null);
 
-  if (!surveyContext.surveyDataLoader.data || !projectContext.projectDataLoader.data) {
+  if (!surveyContext.surveyDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
@@ -93,7 +93,7 @@ export const CreateTechniquePage = () => {
 
       // Success, navigate back to the manage sampling information page
       skipUnsavedChangesDialog();
-      history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling`);
+      history.push(`/admin/surveys/${surveyContext.surveyId}/sampling`);
     } catch (error) {
       setIsSubmitting(false);
       dialogContext.setErrorDialog({
@@ -124,22 +124,10 @@ export const CreateTechniquePage = () => {
             sx={{
               typography: 'body2'
             }}>
-            <Link
-              component={RouterLink}
-              to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/details`}
-              underline="none">
-              {projectContext.projectDataLoader.data?.projectData.project.project_name}
-            </Link>
-            <Link
-              component={RouterLink}
-              to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/details`}
-              underline="none">
+            <Link component={RouterLink} to={`/admin/surveys/${surveyContext.surveyId}/details`} underline="none">
               {surveyContext.surveyDataLoader.data?.surveyData.survey_details.survey_name}
             </Link>
-            <Link
-              component={RouterLink}
-              to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling`}
-              underline="none">
+            <Link component={RouterLink} to={`/admin/surveys/${surveyContext.surveyId}/sampling`} underline="none">
               Manage Sampling Information
             </Link>
             <Typography component="span" variant="body2" color="textSecondary">
@@ -160,9 +148,7 @@ export const CreateTechniquePage = () => {
               disabled={isSubmitting}
               color="primary"
               variant="outlined"
-              onClick={() =>
-                history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling`)
-              }>
+              onClick={() => history.push(`/admin/surveys/${surveyContext.surveyId}/sampling`)}>
               Cancel
             </Button>
           </Stack>
@@ -191,7 +177,7 @@ export const CreateTechniquePage = () => {
               variant="outlined"
               color="primary"
               onClick={() => {
-                history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling`);
+                history.push(`/admin/surveys/${surveyContext.surveyId}/sampling`);
               }}>
               Cancel
             </Button>

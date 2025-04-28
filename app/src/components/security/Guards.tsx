@@ -1,4 +1,4 @@
-import { PROJECT_PERMISSION, PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
+import { SURVEY_PERMISSION, SURVEY_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { SurveyAuthStateContext } from 'contexts/surveyAuthStateContext';
 import { useAuthStateContext } from 'hooks/useAuthStateContext';
 import { useConfigContext } from 'hooks/useContext';
@@ -29,10 +29,10 @@ export interface IProjectRoleGuardProps extends IGuardProps {
   /**
    * An array of valid project roles. The user may have 1 or more matching project roles to pass the guard.
    *
-   * @type {PROJECT_ROLE[]}
+   * @type {SURVEY_ROLE[]}
    * @memberof IProjectRoleGuardProps
    */
-  validProjectRoles?: PROJECT_ROLE[];
+  validProjectRoles?: SURVEY_ROLE[];
   /**
    * An array of valid system roles. The user may have 1 or more matching system roles to override the guard.
    *
@@ -43,10 +43,10 @@ export interface IProjectRoleGuardProps extends IGuardProps {
 
   /**
    * An array of valid project permissions. The user must have 1 or more matching permissions to pass the guard
-   * @type {PROJECT_PERMISSION[]}
+   * @type {SURVEY_PERMISSION[]}
    * @memberof IProjectRoleGuardProps
    */
-  validProjectPermissions: PROJECT_PERMISSION[];
+  validProjectPermissions: SURVEY_PERMISSION[];
 }
 
 export interface IFeatureFlagGuardProps extends IGuardProps {
@@ -93,10 +93,10 @@ export const ProjectRoleGuard = (props: PropsWithChildren<IProjectRoleGuardProps
   const surveyAuthStateContext = useContext(SurveyAuthStateContext);
 
   const hasSystemRole = surveyAuthStateContext.hasSystemRole(validSystemRoles);
-  const hasProjectRole = surveyAuthStateContext.hasProjectRole(validProjectRoles);
-  const hasProjectPermissions = surveyAuthStateContext.hasProjectPermission(validProjectPermissions);
+  const hasSurveyRole = surveyAuthStateContext.hasSurveyRole(validProjectRoles);
+  const hasSurveyPermissions = surveyAuthStateContext.hasSurveyPermission(validProjectPermissions);
 
-  if (hasSystemRole || hasProjectRole || hasProjectPermissions) {
+  if (hasSystemRole || hasSurveyRole || hasSurveyPermissions) {
     return <>{props.children}</>;
   }
 

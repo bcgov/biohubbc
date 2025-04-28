@@ -248,10 +248,7 @@ export class AttachmentRepository extends BaseRepository {
    * @return {Promise<IProjectReportAttachment>} Promise resolving the report attachment
    * @memberof AttachmentRepository
    */
-  async getProjectReportAttachmentById(
-    projectId: number,
-    reportAttachmentId: number
-  ): Promise<IProjectReportAttachment> {
+  async getProjectReportAttachmentById(reportAttachmentId: number): Promise<IProjectReportAttachment> {
     defaultLog.debug({ label: 'getProjectReportAttachmentById' });
 
     const sqlStatement = SQL`
@@ -297,10 +294,7 @@ export class AttachmentRepository extends BaseRepository {
    * @return {Promise<IProjectReportAttachment[]>} Promise resolving the report attachment
    * @memberof AttachmentRepository
    */
-  async getProjectReportAttachmentsByIds(
-    projectId: number,
-    reportAttachmentIds: number[]
-  ): Promise<IProjectReportAttachment[]> {
+  async getProjectReportAttachmentsByIds(reportAttachmentIds: number[]): Promise<IProjectReportAttachment[]> {
     defaultLog.debug({ label: 'getProjectReportAttachmentsByIds' });
 
     const knex = getKnex();
@@ -702,7 +696,7 @@ export class AttachmentRepository extends BaseRepository {
    */
   async insertProjectAttachment(
     file: Express.Multer.File,
-    projectId: number,
+
     attachmentType: string,
     key: string
   ): Promise<{ project_attachment_id: number; revision_count: number }> {
@@ -748,7 +742,7 @@ export class AttachmentRepository extends BaseRepository {
    */
   async updateProjectAttachment(
     fileName: string,
-    projectId: number,
+
     attachmentType: string
   ): Promise<{ project_attachment_id: number; revision_count: number }> {
     const sqlStatement = SQL`
@@ -822,7 +816,7 @@ export class AttachmentRepository extends BaseRepository {
   async insertProjectReportAttachment(
     fileName: string,
     fileSize: number,
-    projectId: number,
+
     attachmentMeta: PostReportAttachmentMetadata,
     key: string
   ): Promise<{ project_report_attachment_id: number; revision_count: number }> {
@@ -872,7 +866,7 @@ export class AttachmentRepository extends BaseRepository {
    */
   async updateProjectReportAttachment(
     fileName: string,
-    projectId: number,
+
     attachmentMeta: PutReportAttachmentMetadata
   ): Promise<{ project_report_attachment_id: number; revision_count: number }> {
     const sqlStatement = SQL`
@@ -1026,7 +1020,6 @@ export class AttachmentRepository extends BaseRepository {
    * @memberof AttachmentRepository
    */
   async updateProjectReportAttachmentMetadata(
-    projectId: number,
     attachmentId: number,
     metadata: PutReportAttachmentMetadata
   ): Promise<void> {

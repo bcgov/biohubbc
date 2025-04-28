@@ -2,7 +2,7 @@ import { AttachmentType } from 'constants/attachments';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { ConfigContext, IConfig } from 'contexts/configContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
-import { IProjectContext, ProjectContext } from 'contexts/projectContext';
+
 import { ISurveyAuthStateContext, SurveyAuthStateContext } from 'contexts/surveyAuthStateContext';
 import { ISurveyContext, SurveyContext } from 'contexts/surveyContext';
 import { createMemoryHistory } from 'history';
@@ -55,7 +55,7 @@ describe('SurveyAttachments', () => {
         load: vi.fn()
       } as unknown as DataLoader<any, any, any>,
       surveyId: 1,
-      projectId: 1,
+
       surveyDataLoader: {
         data: { surveyData: { survey_details: { survey_name: 'name' } } },
         load: vi.fn()
@@ -64,36 +64,22 @@ describe('SurveyAttachments', () => {
 
     const authState = getMockAuthState({ base: SystemAdminAuthState });
     const mockSurveyAuthStateContext: ISurveyAuthStateContext = {
-      getProjectParticipant: () => null,
-      hasProjectRole: () => true,
-      hasProjectPermission: () => true,
+      getSurveyParticipant: () => null,
+      hasSurveyRole: () => true,
+      hasSurveyPermission: () => true,
       hasSystemRole: () => true,
-      getProjectId: () => 1,
+      getSurveyId: () => 1,
       hasLoadedParticipantInfo: true
     };
-
-    const mockProjectContext: IProjectContext = {
-      artifactDataLoader: {
-        data: null,
-        load: vi.fn()
-      } as unknown as DataLoader<any, any, any>,
-      projectId: 1,
-      projectDataLoader: {
-        data: { projectData: { project: { project_name: 'name' } } },
-        load: vi.fn()
-      } as unknown as DataLoader<any, any, any>
-    } as unknown as IProjectContext;
 
     const { getByText, queryByText } = render(
       <ConfigContext.Provider value={{} as IConfig}>
         <AuthStateContext.Provider value={authState}>
           <Router history={history}>
             <SurveyAuthStateContext.Provider value={mockSurveyAuthStateContext}>
-              <ProjectContext.Provider value={mockProjectContext}>
-                <SurveyContext.Provider value={mockSurveyContext}>
-                  <SurveyAttachments />
-                </SurveyContext.Provider>
-              </ProjectContext.Provider>
+              <SurveyContext.Provider value={mockSurveyContext}>
+                <SurveyAttachments />
+              </SurveyContext.Provider>
             </SurveyAuthStateContext.Provider>
           </Router>
         </AuthStateContext.Provider>
@@ -126,7 +112,7 @@ describe('SurveyAttachments', () => {
         isReady: true
       } as unknown as DataLoader<any, any, any>,
       surveyId: 1,
-      projectId: 1,
+
       surveyDataLoader: {
         data: { surveyData: { survey_details: { survey_name: 'name' } } },
         load: vi.fn()
@@ -135,36 +121,22 @@ describe('SurveyAttachments', () => {
 
     const authState = getMockAuthState({ base: SystemAdminAuthState });
     const mockSurveyAuthStateContext: ISurveyAuthStateContext = {
-      getProjectParticipant: () => null,
-      hasProjectRole: () => true,
-      hasProjectPermission: () => true,
+      getSurveyParticipant: () => null,
+      hasSurveyRole: () => true,
+      hasSurveyPermission: () => true,
       hasSystemRole: () => true,
-      getProjectId: () => 1,
+      getSurveyId: () => 1,
       hasLoadedParticipantInfo: true
     };
-
-    const mockProjectContext: IProjectContext = {
-      artifactDataLoader: {
-        data: null,
-        load: vi.fn()
-      } as unknown as DataLoader<any, any, any>,
-      projectId: 1,
-      projectDataLoader: {
-        data: { projectData: { project: { project_name: 'name' } } },
-        load: vi.fn()
-      } as unknown as DataLoader<any, any, any>
-    } as unknown as IProjectContext;
 
     const { getByTestId } = render(
       <ConfigContext.Provider value={{} as IConfig}>
         <AuthStateContext.Provider value={authState}>
           <Router history={history}>
             <SurveyAuthStateContext.Provider value={mockSurveyAuthStateContext}>
-              <ProjectContext.Provider value={mockProjectContext}>
-                <SurveyContext.Provider value={mockSurveyContext}>
-                  <SurveyAttachments />
-                </SurveyContext.Provider>
-              </ProjectContext.Provider>
+              <SurveyContext.Provider value={mockSurveyContext}>
+                <SurveyAttachments />
+              </SurveyContext.Provider>
             </SurveyAuthStateContext.Provider>
           </Router>
         </AuthStateContext.Provider>
@@ -193,7 +165,7 @@ describe('SurveyAttachments', () => {
         isReady: true
       } as unknown as DataLoader<any, any, any>,
       surveyId: 1,
-      projectId: 1,
+
       surveyDataLoader: {
         data: { surveyData: { survey_details: { survey_name: 'name' } } },
         load: vi.fn()
@@ -202,38 +174,24 @@ describe('SurveyAttachments', () => {
 
     const authState = getMockAuthState({ base: SystemAdminAuthState });
     const mockSurveyAuthStateContext: ISurveyAuthStateContext = {
-      getProjectParticipant: () => null,
-      hasProjectRole: () => true,
-      hasProjectPermission: () => true,
+      getSurveyParticipant: () => null,
+      hasSurveyRole: () => true,
+      hasSurveyPermission: () => true,
       hasSystemRole: () => true,
-      getProjectId: () => 1,
+      getSurveyId: () => 1,
       hasLoadedParticipantInfo: true
     };
 
     mockUseApi.survey.getSurveyAttachments.mockResolvedValue({});
-
-    const mockProjectContext: IProjectContext = {
-      artifactDataLoader: {
-        data: null,
-        load: vi.fn()
-      } as unknown as DataLoader<any, any, any>,
-      projectId: 1,
-      projectDataLoader: {
-        data: { projectData: { project: { project_name: 'name' } } },
-        load: vi.fn()
-      } as unknown as DataLoader<any, any, any>
-    } as unknown as IProjectContext;
 
     const { getByText } = render(
       <ConfigContext.Provider value={{} as IConfig}>
         <AuthStateContext.Provider value={authState}>
           <Router history={history}>
             <SurveyAuthStateContext.Provider value={mockSurveyAuthStateContext}>
-              <ProjectContext.Provider value={mockProjectContext}>
-                <SurveyContext.Provider value={mockSurveyContext}>
-                  <SurveyAttachments />
-                </SurveyContext.Provider>
-              </ProjectContext.Provider>
+              <SurveyContext.Provider value={mockSurveyContext}>
+                <SurveyAttachments />
+              </SurveyContext.Provider>
             </SurveyAuthStateContext.Provider>
           </Router>
         </AuthStateContext.Provider>
@@ -273,7 +231,7 @@ describe('SurveyAttachments', () => {
         isReady: true
       } as unknown as DataLoader<any, any, any>,
       surveyId: 1,
-      projectId: 1,
+
       surveyDataLoader: {
         data: { surveyData: { survey_details: { survey_name: 'name' } } },
         load: vi.fn(),
@@ -284,25 +242,13 @@ describe('SurveyAttachments', () => {
 
     const authState = getMockAuthState({ base: SystemAdminAuthState });
     const mockSurveyAuthStateContext: ISurveyAuthStateContext = {
-      getProjectParticipant: () => null,
-      hasProjectRole: () => true,
-      hasProjectPermission: () => true,
+      getSurveyParticipant: () => null,
+      hasSurveyRole: () => true,
+      hasSurveyPermission: () => true,
       hasSystemRole: () => true,
-      getProjectId: () => 1,
+      getSurveyId: () => 1,
       hasLoadedParticipantInfo: true
     };
-
-    const mockProjectContext: IProjectContext = {
-      artifactDataLoader: {
-        data: null,
-        load: vi.fn()
-      } as unknown as DataLoader<any, any, any>,
-      projectId: 1,
-      projectDataLoader: {
-        data: { projectData: { project: { project_name: 'name' } } },
-        load: vi.fn()
-      } as unknown as DataLoader<any, any, any>
-    } as unknown as IProjectContext;
 
     const { baseElement, queryByText, getByTestId, getAllByTestId, queryByTestId } = render(
       <ConfigContext.Provider value={{} as IConfig}>
@@ -310,11 +256,9 @@ describe('SurveyAttachments', () => {
           <Router history={history}>
             <SurveyAuthStateContext.Provider value={mockSurveyAuthStateContext}>
               <DialogContextProvider>
-                <ProjectContext.Provider value={mockProjectContext}>
-                  <SurveyContext.Provider value={mockSurveyContext}>
-                    <SurveyAttachments />
-                  </SurveyContext.Provider>
-                </ProjectContext.Provider>
+                <SurveyContext.Provider value={mockSurveyContext}>
+                  <SurveyAttachments />
+                </SurveyContext.Provider>
               </DialogContextProvider>
             </SurveyAuthStateContext.Provider>
           </Router>
@@ -370,7 +314,7 @@ describe('SurveyAttachments', () => {
         isReady: true
       } as unknown as DataLoader<any, any, any>,
       surveyId: 1,
-      projectId: 1,
+
       surveyDataLoader: {
         data: { surveyData: { survey_details: { survey_name: 'name' } } },
         load: vi.fn(),
@@ -381,25 +325,13 @@ describe('SurveyAttachments', () => {
 
     const authState = getMockAuthState({ base: SystemAdminAuthState });
     const mockSurveyAuthStateContext: ISurveyAuthStateContext = {
-      getProjectParticipant: () => null,
-      hasProjectRole: () => true,
-      hasProjectPermission: () => true,
+      getSurveyParticipant: () => null,
+      hasSurveyRole: () => true,
+      hasSurveyPermission: () => true,
       hasSystemRole: () => true,
-      getProjectId: () => 1,
+      getSurveyId: () => 1,
       hasLoadedParticipantInfo: true
     };
-
-    const mockProjectContext: IProjectContext = {
-      artifactDataLoader: {
-        data: null,
-        load: vi.fn()
-      } as unknown as DataLoader<any, any, any>,
-      projectId: 1,
-      projectDataLoader: {
-        data: { projectData: { project: { project_name: 'name' } } },
-        load: vi.fn()
-      } as unknown as DataLoader<any, any, any>
-    } as unknown as IProjectContext;
 
     const { baseElement, queryByText, getByTestId, getAllByTestId, queryByTestId } = render(
       <ConfigContext.Provider value={{} as IConfig}>
@@ -407,11 +339,9 @@ describe('SurveyAttachments', () => {
           <Router history={history}>
             <SurveyAuthStateContext.Provider value={mockSurveyAuthStateContext}>
               <DialogContextProvider>
-                <ProjectContext.Provider value={mockProjectContext}>
-                  <SurveyContext.Provider value={mockSurveyContext}>
-                    <SurveyAttachments />
-                  </SurveyContext.Provider>
-                </ProjectContext.Provider>
+                <SurveyContext.Provider value={mockSurveyContext}>
+                  <SurveyAttachments />
+                </SurveyContext.Provider>
               </DialogContextProvider>
             </SurveyAuthStateContext.Provider>
           </Router>
@@ -466,7 +396,7 @@ describe('SurveyAttachments', () => {
         isReady: true
       } as unknown as DataLoader<any, any, any>,
       surveyId: 1,
-      projectId: 1,
+
       surveyDataLoader: {
         data: { surveyData: { survey_details: { survey_name: 'name' } } },
         load: vi.fn(),
@@ -475,25 +405,13 @@ describe('SurveyAttachments', () => {
       } as unknown as DataLoader<any, any, any>
     } as unknown as ISurveyContext;
 
-    const mockProjectContext: IProjectContext = {
-      artifactDataLoader: {
-        data: null,
-        load: vi.fn()
-      } as unknown as DataLoader<any, any, any>,
-      projectId: 1,
-      projectDataLoader: {
-        data: { projectData: { project: { project_name: 'name' } } },
-        load: vi.fn()
-      } as unknown as DataLoader<any, any, any>
-    } as unknown as IProjectContext;
-
     const authState = getMockAuthState({ base: SystemAdminAuthState });
     const mockSurveyAuthStateContext: ISurveyAuthStateContext = {
-      getProjectParticipant: () => null,
-      hasProjectRole: () => true,
-      hasProjectPermission: () => true,
+      getSurveyParticipant: () => null,
+      hasSurveyRole: () => true,
+      hasSurveyPermission: () => true,
       hasSystemRole: () => true,
-      getProjectId: () => 1,
+      getSurveyId: () => 1,
       hasLoadedParticipantInfo: true
     };
 
@@ -503,11 +421,9 @@ describe('SurveyAttachments', () => {
           <Router history={history}>
             <SurveyAuthStateContext.Provider value={mockSurveyAuthStateContext}>
               <DialogContextProvider>
-                <ProjectContext.Provider value={mockProjectContext}>
-                  <SurveyContext.Provider value={mockSurveyContext}>
-                    <SurveyAttachments />
-                  </SurveyContext.Provider>
-                </ProjectContext.Provider>
+                <SurveyContext.Provider value={mockSurveyContext}>
+                  <SurveyAttachments />
+                </SurveyContext.Provider>
               </DialogContextProvider>
             </SurveyAuthStateContext.Provider>
           </Router>

@@ -72,10 +72,10 @@ describe('getParticipants', () => {
     sinon.stub(ProjectParticipationService.prototype, 'getProjectParticipants').resolves([
       {
         project_participation_id: 1,
-        project_id: 1,
+        
         system_user_id: 1,
-        project_role_ids: [1],
-        project_role_names: ['Role1'],
+        survey_role_ids: [1],
+        survey_role_names: ['Role1'],
         project_role_permissions: ['Permission1'],
         agency: null,
         display_name: 'test user',
@@ -98,10 +98,10 @@ describe('getParticipants', () => {
     expect(mockRes.jsonValue).to.eql([
       {
         project_participation_id: 1,
-        project_id: 1,
+        
         system_user_id: 1,
-        project_role_ids: [1],
-        project_role_names: ['Role1'],
+        survey_role_ids: [1],
+        survey_role_names: ['Role1'],
         project_role_permissions: ['Permission1'],
         agency: null,
         display_name: 'test user',
