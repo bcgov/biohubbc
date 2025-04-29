@@ -9,7 +9,6 @@ import {
 } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
-import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import grey from '@mui/material/colors/grey';
@@ -134,13 +133,6 @@ const SurveyHeader = () => {
     <>
       <PageHeader
         title={surveyWithDetails.surveyData.survey_details.survey_name}
-        breadCrumbJSX={
-          <Breadcrumbs aria-label="breadcrumb" separator={'>'}>
-            <Typography component="span" variant="inherit" color="textSecondary">
-              {surveyWithDetails.surveyData.survey_details.survey_name}
-            </Typography>
-          </Breadcrumbs>
-        }
         subTitleJSX={
           <Stack flexDirection="row" alignItems="center" gap={0.75} color="text.secondary">
             <Icon path={mdiCalendarRange} size={0.8} color={grey[600]} style={{ marginTop: 1.5 }} />

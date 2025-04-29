@@ -20,7 +20,7 @@ const SummaryPage = () => {
   return (
     <>
       <PageHeader
-        title="Summary"
+        title="Overview"
         buttonJSX={
           <SystemRoleGuard
             validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_CREATOR, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
@@ -29,8 +29,8 @@ const SummaryPage = () => {
               color="primary"
               startIcon={<Icon path={mdiPlus} size={1} />}
               component={RouterLink}
-              to={'/admin/projects/create'}>
-              Create Project
+              to={'/admin/surveys/create'}>
+              Create Survey
             </Button>
           </SystemRoleGuard>
         }
