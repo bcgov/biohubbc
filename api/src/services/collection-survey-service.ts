@@ -152,7 +152,7 @@ export class CollectionSurveyService extends DBService {
 
     // If any invalid role is found, throw Error401
     if (hasInvalidRole) {
-      throw new HTTP401('You do not have access to some of the surveys');
+      throw new HTTP401('You do not have access to all of the surveys');
     }
 
     // Proceed to add surveys to the collection

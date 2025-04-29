@@ -120,7 +120,6 @@ export class SurveyMemberRepository extends BaseRepository {
    * @memberof SurveyMemberRepository
    */
   async getSurveyMember(surveyId: number, systemUserId: number): Promise<(SurveyMember & SystemUserWithRoles) | null> {
-    console.log(surveyId, systemUserId, 'ids');
     const sqlStatement = SQL`
       SELECT
         su.system_user_id,
@@ -184,7 +183,7 @@ export class SurveyMemberRepository extends BaseRepository {
   }
 
   /**
-   * Get a survey user by survey id and system user guid. Returns null if the system user is not a participant of the
+   * Get a survey user by survey id and system user guid. Returns null if the system user is not a member of the
    * survey.
    *
    * @param {number} surveyId
@@ -227,7 +226,7 @@ export class SurveyMemberRepository extends BaseRepository {
       .leftJoin('system_role as sr', 'sur.system_role_id', 'sr.system_role_id')
       .leftJoin('user_identity_source as uis', 'uis.user_identity_source_id', 'su.user_identity_source_id')
       .where('su.record_end_date', null)
-      .where('pp.survey_id')
+      .where('pp.survey_id', surveyId)
       .where(knex.raw(`LOWER(su.user_guid) = LOWER('${userGuid}')`))
       .groupBy('su.system_user_id')
       .groupBy('su.record_end_date')
