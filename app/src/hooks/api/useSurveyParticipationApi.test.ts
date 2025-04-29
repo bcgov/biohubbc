@@ -24,23 +24,6 @@ describe('useSurveyParticipationApi', () => {
     expect(result).toEqual(mockResponse);
   });
 
-  it('getUserSurveyParticipant works as expected', async () => {
-    const mockResponse = {
-      participant: {
-        survey_id: 1,
-        system_user_id: 1,
-        survey_role_ids: [1],
-        survey_role_names: ['RoleA'],
-        survey_role_permissions: ['PermissionA']
-      }
-    };
-    mock.onGet(`/api/survey/${surveyId}/participants/self`).reply(200, mockResponse);
-
-    const result = await useSurveyParticipationApi(axios).getUserSurveyParticipant(surveyId);
-
-    expect(result).toEqual(mockResponse);
-  });
-
   it('addSurveyParticipants works as expected', async () => {
     const mockResponse = { participants: [] };
     mock.onGet(`/api/survey/${surveyId}/participants`).reply(200, mockResponse);

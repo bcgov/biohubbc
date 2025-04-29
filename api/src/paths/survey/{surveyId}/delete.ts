@@ -8,7 +8,7 @@ import { SurveyService } from '../../../services/survey-service';
 import { deleteFileFromS3 } from '../../../utils/file-utils';
 import { getLogger } from '../../../utils/logger';
 
-const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/delete');
+const defaultLog = getLogger('/api/survey/{surveyId}/delete');
 
 export const DELETE: Operation = [
   authorizeRequestHandler((req) => {
@@ -38,15 +38,6 @@ DELETE.apiDoc = {
     }
   ],
   parameters: [
-    {
-      in: 'path',
-      name: 'projectId',
-      schema: {
-        type: 'integer',
-        minimum: 1
-      },
-      required: true
-    },
     {
       in: 'path',
       name: 'surveyId',

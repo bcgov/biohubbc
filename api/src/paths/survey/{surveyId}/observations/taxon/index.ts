@@ -7,7 +7,7 @@ import { ObservationService } from '../../../../../services/observation-services
 import { PlatformService } from '../../../../../services/platform-service';
 import { getLogger } from '../../../../../utils/logger';
 
-const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/taxon');
+const defaultLog = getLogger('/api/survey/{surveyId}/observation/taxon');
 
 export const GET: Operation = [
   authorizeRequestHandler((req) => {
@@ -37,15 +37,6 @@ GET.apiDoc = {
     }
   ],
   parameters: [
-    {
-      in: 'path',
-      name: 'projectId',
-      schema: {
-        type: 'integer',
-        minimum: 1
-      },
-      required: true
-    },
     {
       in: 'path',
       name: 'surveyId',

@@ -23,7 +23,6 @@ describe('createTechniques', () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     mockReq.params = {
-      projectId: '1',
       surveyId: '1'
     };
 
@@ -86,7 +85,6 @@ describe('createTechniques', () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     mockReq.params = {
-      projectId: '1',
       surveyId: '1'
     };
 
@@ -150,7 +148,6 @@ describe('getTechniques', () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     mockReq.params = {
-      projectId: '1',
       surveyId: '1'
     };
 
@@ -224,7 +221,6 @@ describe('getTechniques', () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     mockReq.params = {
-      projectId: '1',
       surveyId: '1'
     };
 

@@ -60,8 +60,6 @@ export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any
 
   const urlParams: Record<string, string | number | undefined> = useParams<{ survey_id: string }>();
 
-  console.log('CONTEXT!');
-
   console.log(urlParams);
 
   if (!urlParams['survey_id']) {

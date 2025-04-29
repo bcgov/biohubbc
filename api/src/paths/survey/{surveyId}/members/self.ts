@@ -2,18 +2,19 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SURVEY_ROLE, SYSTEM_ROLE } from '../../../../constants/roles';
 import { getDBConnection } from '../../../../database/db';
+import { surveyAndSystemUserSchema } from '../../../../openapi/schemas/user';
 import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
-import { SamplePeriodService } from '../../../../services/sample-period-service';
+import { SurveyMemberService } from '../../../../services/survey-member-service';
 import { getLogger } from '../../../../utils/logger';
 
-const defaultLog = getLogger('paths/survey/{surveyId}/sample-period/delete');
+const defaultLog = getLogger('paths/survey/{surveyId}/members/self');
 
-export const POST: Operation = [
+export const GET: Operation = [
   authorizeRequestHandler((req) => {
     return {
       or: [
         {
-          validSurveyRoles: [SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR],
+          validSurveyRoles: [SURVEY_ROLE.ADMIN],
           surveyId: Number(req.params.surveyId),
           discriminator: 'SurveyRole'
         },
@@ -24,12 +25,12 @@ export const POST: Operation = [
       ]
     };
   }),
-  deleteSamplePeriods()
+  getUserSurveyMember()
 ];
 
-POST.apiDoc = {
-  description: 'Delete survey sample periods',
-  tags: ['periods'],
+GET.apiDoc = {
+  description: 'Get the survey member record for the authenticated user.',
+  tags: ['survey'],
   security: [
     {
       Bearer: []
@@ -46,30 +47,14 @@ POST.apiDoc = {
       required: true
     }
   ],
-  requestBody: {
-    description: 'Survey sample period delete request object.',
-    required: true,
-    content: {
-      'application/json': {
-        schema: {
-          type: 'object',
-          additionalProperties: false,
-          required: ['surveySamplePeriodIds'],
-          properties: {
-            surveySamplePeriodIds: {
-              items: {
-                type: 'integer',
-                minimum: 1
-              }
-            }
-          }
+  responses: {
+    200: {
+      description: 'List of survey members.',
+      content: {
+        'application/json': {
+          schema: { ...surveyAndSystemUserSchema, nullable: true }
         }
       }
-    }
-  },
-  responses: {
-    201: {
-      description: 'Sample period deleted OK.'
     },
     400: {
       $ref: '#/components/responses/400'
@@ -89,7 +74,12 @@ POST.apiDoc = {
   }
 };
 
-export function deleteSamplePeriods(): RequestHandler {
+/**
+ * Get the survey member record of the currently authenticated user
+ *
+ * @returns {RequestHandler}
+ */
+export function getUserSurveyMember(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req.keycloak_token);
 
@@ -97,17 +87,17 @@ export function deleteSamplePeriods(): RequestHandler {
       await connection.open();
 
       const surveyId = Number(req.params.surveyId);
-      const surveySamplePeriodIds = req.body.surveySamplePeriodIds.map(Number) as number[];
+      const systemUserId = connection.systemUserId();
 
-      const samplePeriodService = new SamplePeriodService(connection);
+      const surveyMemberService = new SurveyMemberService(connection);
 
-      await samplePeriodService.deleteSamplePeriods(surveyId, surveySamplePeriodIds);
+      const result = await surveyMemberService.getSurveyMember(surveyId, systemUserId);
 
       await connection.commit();
 
-      return res.status(201).send();
+      return res.status(200).json(result);
     } catch (error) {
-      defaultLog.error({ label: 'deleteSamplePeriods', message: 'error', error });
+      defaultLog.error({ label: 'getUserSurveyMember', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

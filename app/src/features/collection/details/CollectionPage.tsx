@@ -17,7 +17,7 @@ import CollectionSurveyContainer from './survey/CollectionSurveyContainer';
 enum CollectionView {
   Surveys = 'surveys',
   Data = 'data',
-  Tags = 'tags',
+  Tags = 'Tags',
   Participants = 'participants'
 }
 

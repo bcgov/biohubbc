@@ -37,7 +37,6 @@ describe('updates metadata for a survey report', () => {
         }
       },
       params: {
-        projectId: '1',
         attachmentId: '1'
       }
     } as any;
@@ -77,7 +76,6 @@ describe('updates metadata for a survey report', () => {
         }
       },
       params: {
-        projectId: '1',
         attachmentId: '1'
       }
     } as any;

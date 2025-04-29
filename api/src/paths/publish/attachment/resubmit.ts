@@ -39,12 +39,8 @@ POST.apiDoc = {
         schema: {
           type: 'object',
           additionalProperties: false,
-          required: ['projectId', 'fileName', 'parentName', 'formValues', 'path'],
+          required: ['fileName', 'parentName', 'formValues', 'path'],
           properties: {
-            projectId: {
-              type: 'number',
-              minimum: 1
-            },
             fileName: {
               type: 'string'
             },

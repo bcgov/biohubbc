@@ -25,7 +25,6 @@ describe('survey/create', () => {
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
-      mockReq.params = { projectId: '1' };
       mockReq.body = {};
 
       try {
@@ -49,7 +48,6 @@ describe('survey/create', () => {
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
-      mockReq.params = { projectId: '1' };
       mockReq.body = {};
 
       try {

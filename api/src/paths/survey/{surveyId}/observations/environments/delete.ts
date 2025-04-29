@@ -6,7 +6,7 @@ import { authorizeRequestHandler } from '../../../../../request-handlers/securit
 import { ObservationEnvironmentService } from '../../../../../services/observation-environment-service';
 import { getLogger } from '../../../../../utils/logger';
 
-const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observations/environments');
+const defaultLog = getLogger('/api/survey/{surveyId}/observations/environments');
 
 export const POST: Operation = [
   authorizeRequestHandler((req) => {
@@ -36,15 +36,6 @@ POST.apiDoc = {
     }
   ],
   parameters: [
-    {
-      in: 'path',
-      name: 'projectId',
-      schema: {
-        type: 'integer',
-        minimum: 1
-      },
-      required: true
-    },
     {
       in: 'path',
       name: 'surveyId',

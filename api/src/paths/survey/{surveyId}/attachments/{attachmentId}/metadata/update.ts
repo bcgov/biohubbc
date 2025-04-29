@@ -9,7 +9,7 @@ import { authorizeRequestHandler } from '../../../../../../request-handlers/secu
 import { AttachmentService } from '../../../../../../services/attachment-service';
 import { getLogger } from '../../../../../../utils/logger';
 
-const defaultLog = getLogger('`/api/project/{projectId}/survey/{surveyId}/attachments/${attachmentId}/metadata/update');
+const defaultLog = getLogger('`/api/survey/{surveyId}/attachments/${attachmentId}/metadata/update');
 
 export const PUT: Operation = [
   authorizeRequestHandler((req) => {
@@ -39,15 +39,6 @@ PUT.apiDoc = {
     }
   ],
   parameters: [
-    {
-      in: 'path',
-      name: 'projectId',
-      schema: {
-        type: 'integer',
-        minimum: 1
-      },
-      required: true
-    },
     {
       in: 'path',
       name: 'surveyId',

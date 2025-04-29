@@ -28,7 +28,6 @@ describe('getSurveyHabitatFeaturesGeometry', () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     mockReq.params = {
-      projectId: '1',
       surveyId: '2'
     };
 
@@ -65,7 +64,6 @@ describe('getSurveyHabitatFeaturesGeometry', () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     mockReq.params = {
-      projectId: '1',
       surveyId: '2'
     };
 

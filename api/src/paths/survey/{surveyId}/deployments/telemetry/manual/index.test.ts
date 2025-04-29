@@ -36,7 +36,6 @@ describe('index', () => {
       ];
 
       mockReq.params = {
-        projectId: '1',
         surveyId: '2'
       };
 
@@ -89,7 +88,6 @@ describe('index', () => {
         ];
 
         mockReq.params = {
-          projectId: '1',
           surveyId: '2'
         };
 

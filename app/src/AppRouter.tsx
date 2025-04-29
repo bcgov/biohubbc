@@ -1,7 +1,8 @@
-import { AuthenticatedRouteGuard, SurveyRoleRouteGuard, SystemRoleRouteGuard } from 'components/security/RouteGuards';
+import { AuthenticatedRouteGuard, SystemRoleRouteGuard } from 'components/security/RouteGuards';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { CodesContextProvider } from 'contexts/codesContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
+import { SurveyAuthStateContextProvider } from 'contexts/surveyAuthStateContext';
 import { SurveyContextProvider } from 'contexts/surveyContext';
 import AdminRouter from 'features/admin/AdminRouter';
 import CollectionsRouter from 'features/collection/CollectionRouter';
@@ -72,16 +73,17 @@ const AppRouter: React.FC = () => {
       </RouteWithTitle>
 
       <RouteWithTitle path="/admin/surveys/:survey_id" title={getTitle('Survey')}>
-        <AuthenticatedRouteGuard>
-          <SurveyRoleRouteGuard
-            validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.PROJECT_CREATOR]}>
+        <BaseLayout>
+          <AuthenticatedRouteGuard>
             <SurveyContextProvider>
-              <CodesContextProvider>
-                <SurveyRouter />
-              </CodesContextProvider>
+              <SurveyAuthStateContextProvider>
+                <CodesContextProvider>
+                  <SurveyRouter />
+                </CodesContextProvider>
+              </SurveyAuthStateContextProvider>
             </SurveyContextProvider>
-          </SurveyRoleRouteGuard>
-        </AuthenticatedRouteGuard>
+          </AuthenticatedRouteGuard>
+        </BaseLayout>
       </RouteWithTitle>
 
       <RouteWithTitle path="/admin/collections" title={getTitle('Collections')}>

@@ -12,7 +12,7 @@ import { authorizeRequestHandler } from '../../../../../request-handlers/securit
 import { SurveyHabitatFeatureService } from '../../../../../services/habitat-feature-services/survey-habitat-feature-service';
 import { getLogger } from '../../../../../utils/logger';
 
-const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/habitat-features/{surveyHabitatFeatureId}');
+const defaultLog = getLogger('/api/survey/{surveyId}/habitat-features/{surveyHabitatFeatureId}');
 
 export const PUT: Operation = [
   authorizeRequestHandler((req) => {
@@ -82,15 +82,6 @@ PUT.apiDoc = {
   parameters: [
     {
       in: 'path',
-      name: 'projectId',
-      schema: {
-        type: 'integer',
-        minimum: 1
-      },
-      required: true
-    },
-    {
-      in: 'path',
       name: 'surveyId',
       schema: {
         type: 'integer',
@@ -156,15 +147,6 @@ GET.apiDoc = {
   parameters: [
     {
       in: 'path',
-      name: 'projectId',
-      schema: {
-        type: 'integer',
-        minimum: 1
-      },
-      required: true
-    },
-    {
-      in: 'path',
       name: 'surveyId',
       schema: {
         type: 'integer',
@@ -226,15 +208,6 @@ DELETE.apiDoc = {
     }
   ],
   parameters: [
-    {
-      in: 'path',
-      name: 'projectId',
-      schema: {
-        type: 'integer',
-        minimum: 1
-      },
-      required: true
-    },
     {
       in: 'path',
       name: 'surveyId',

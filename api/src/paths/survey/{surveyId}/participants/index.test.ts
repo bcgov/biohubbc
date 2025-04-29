@@ -42,7 +42,6 @@ describe('getSurveyParticipants', () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     mockReq.params = {
-      projectId: '1',
       surveyId: '1'
     };
 

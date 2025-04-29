@@ -43,7 +43,6 @@ describe('getTelemetryInSurvey', () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     mockReq.params = {
-      projectId: '1',
       surveyId: '2'
     };
 
@@ -82,7 +81,6 @@ describe('getTelemetryInSurvey', () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     mockReq.params = {
-      projectId: '1',
       surveyId: '2'
     };
 

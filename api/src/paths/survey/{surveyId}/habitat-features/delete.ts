@@ -6,7 +6,7 @@ import { authorizeRequestHandler } from '../../../../request-handlers/security/a
 import { SurveyHabitatFeatureService } from '../../../../services/habitat-feature-services/survey-habitat-feature-service';
 import { getLogger } from '../../../../utils/logger';
 
-const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/habitat-features/delete');
+const defaultLog = getLogger('/api/survey/{surveyId}/habitat-features/delete');
 
 export const POST: Operation = [
   authorizeRequestHandler((req) => {
@@ -36,15 +36,6 @@ POST.apiDoc = {
     }
   ],
   parameters: [
-    {
-      in: 'path',
-      name: 'projectId',
-      schema: {
-        type: 'integer',
-        minimum: 1
-      },
-      required: true
-    },
     {
       in: 'path',
       name: 'surveyId',

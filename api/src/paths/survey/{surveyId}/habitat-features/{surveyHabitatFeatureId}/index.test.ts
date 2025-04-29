@@ -30,7 +30,6 @@ describe('putSurveyHabitatFeature', () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     mockReq.params = {
-      projectId: '1',
       surveyId: '2',
       surveyHabitatFeatureId: '3'
     };
@@ -77,7 +76,6 @@ describe('putSurveyHabitatFeature', () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     mockReq.params = {
-      projectId: '1',
       surveyId: '2',
       surveyHabitatFeatureId: '3'
     };
@@ -126,7 +124,6 @@ describe('getSurveyHabitatFeature', () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     mockReq.params = {
-      projectId: '1',
       surveyId: '2',
       surveyHabitatFeatureId: '3'
     };
@@ -194,7 +191,6 @@ describe('getSurveyHabitatFeature', () => {
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
     mockReq.params = {
-      projectId: '1',
       surveyId: '2',
       surveyHabitatFeatureId: '3'
     };
@@ -232,7 +228,6 @@ describe('deleteSurveyHabitatFeature', () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     mockReq.params = {
-      projectId: '1',
       surveyId: '2',
       surveyHabitatFeatureId: '3'
     };
@@ -270,7 +265,6 @@ describe('deleteSurveyHabitatFeature', () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     mockReq.params = {
-      projectId: '1',
       surveyId: '2',
       surveyHabitatFeatureId: '3'
     };

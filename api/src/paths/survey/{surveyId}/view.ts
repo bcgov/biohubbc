@@ -52,15 +52,6 @@ GET.apiDoc = {
   parameters: [
     {
       in: 'path',
-      name: 'projectId',
-      schema: {
-        type: 'integer',
-        minimum: 1
-      },
-      required: true
-    },
-    {
-      in: 'path',
       name: 'surveyId',
       schema: {
         type: 'integer',
@@ -71,7 +62,7 @@ GET.apiDoc = {
   ],
   responses: {
     200: {
-      description: 'Survey with matching surveyId and projectId.',
+      description: 'Survey with matching surveyId',
       content: {
         'application/json': {
           schema: {

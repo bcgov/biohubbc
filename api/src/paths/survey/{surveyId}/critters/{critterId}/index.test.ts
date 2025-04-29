@@ -138,7 +138,6 @@ describe('getSurveyCritter', () => {
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
     mockReq.params = {
-      projectId: '1',
       surveyId: '2',
       critterId: '3 '
     };
@@ -206,7 +205,6 @@ describe('getSurveyCritter', () => {
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
     mockReq.params = {
-      projectId: '1',
       surveyId: '2',
       critterId: '3 '
     };
@@ -238,7 +236,6 @@ describe('getSurveyCritter', () => {
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
     mockReq.params = {
-      projectId: '1',
       surveyId: '2',
       critterId: '3 '
     };
@@ -300,7 +297,6 @@ describe('getSurveyCritter', () => {
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
     mockReq.params = {
-      projectId: '1',
       surveyId: '2',
       critterId: '3 '
     };
@@ -337,7 +333,6 @@ describe('getSurveyCritter', () => {
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
     mockReq.params = {
-      projectId: '1',
       surveyId: '2',
       critterId: '3 '
     };
@@ -400,7 +395,6 @@ describe('getSurveyCritter', () => {
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
     mockReq.params = {
-      projectId: '1',
       surveyId: '2',
       critterId: '3 '
     };

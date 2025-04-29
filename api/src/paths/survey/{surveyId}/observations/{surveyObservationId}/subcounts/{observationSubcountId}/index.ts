@@ -7,7 +7,7 @@ import { SubCountService } from '../../../../../../../services/subcount-service'
 import { getLogger } from '../../../../../../../utils/logger';
 
 const defaultLog = getLogger(
-  '/api/project/{projectId}/survey/{surveyId}/observation/{surveyObservationId}/subcounts/{observationSubcountId}'
+  '/api/survey/{surveyId}/observation/{surveyObservationId}/subcounts/{observationSubcountId}'
 );
 
 export const DELETE: Operation = [
@@ -39,15 +39,6 @@ DELETE.apiDoc = {
     }
   ],
   parameters: [
-    {
-      in: 'path',
-      name: 'projectId',
-      schema: {
-        type: 'integer',
-        minimum: 1
-      },
-      required: true
-    },
     {
       in: 'path',
       name: 'surveyId',

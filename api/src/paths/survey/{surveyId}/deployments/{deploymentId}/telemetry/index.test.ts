@@ -30,7 +30,6 @@ describe('getTelemetryForDeployment', () => {
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
       mockReq.params = {
-        projectId: '1',
         surveyId: '2',
         deploymentId: '3'
       };

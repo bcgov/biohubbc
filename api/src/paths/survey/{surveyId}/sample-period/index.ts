@@ -45,15 +45,6 @@ POST.apiDoc = {
   parameters: [
     {
       in: 'path',
-      name: 'projectId',
-      schema: {
-        type: 'integer',
-        minimum: 1
-      },
-      required: true
-    },
-    {
-      in: 'path',
       name: 'surveyId',
       schema: {
         type: 'integer',
@@ -156,15 +147,6 @@ GET.apiDoc = {
     }
   ],
   parameters: [
-    {
-      in: 'path',
-      name: 'projectId',
-      schema: {
-        type: 'integer',
-        minimum: 1
-      },
-      required: true
-    },
     {
       in: 'path',
       name: 'surveyId',

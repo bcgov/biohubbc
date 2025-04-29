@@ -79,18 +79,18 @@ export const SurveyRoleRouteGuard = (props: ISurveyRoleRouteGuardProps) => {
 
   const surveyAuthStateContext = useContext(SurveyAuthStateContext);
 
-  if (
-    authStateContext.auth.isLoading ||
-    authStateContext.simsUserWrapper.isLoading ||
-    !surveyAuthStateContext.hasLoadedParticipantInfo
-  ) {
+  surveyAuthStateContext.hasSurveyRole(validSurveyRoles);
+
+  if (authStateContext.auth.isLoading || authStateContext.simsUserWrapper.isLoading) {
     // Participant data has not been loaded, can not yet determine if user has sufficient roles
     return <CircularProgress className="pageProgress" data-testid="survey-role-guard-spinner" />;
   }
 
+  console.log('role!', surveyAuthStateContext.hasSurveyRole(validSurveyRoles));
+
   if (
     !surveyAuthStateContext.hasSystemRole(validSystemRoles) &&
-    !surveyAuthStateContext.hasSurveyPermission(validSurveyRoles)
+    !surveyAuthStateContext.hasSurveyRole(validSurveyRoles)
   ) {
     return <Redirect to="/forbidden" />;
   }

@@ -64,12 +64,12 @@ describe('SurveyAttachments', () => {
 
     const authState = getMockAuthState({ base: SystemAdminAuthState });
     const mockSurveyAuthStateContext: ISurveyAuthStateContext = {
-      getSurveyParticipant: () => null,
+      getSurveyMember: () => null,
       hasSurveyRole: () => true,
-      hasSurveyPermission: () => true,
+
       hasSystemRole: () => true,
       getSurveyId: () => 1,
-      hasLoadedParticipantInfo: true
+      hasLoadedMemberInfo: true
     };
 
     const { getByText, queryByText } = render(
@@ -121,12 +121,12 @@ describe('SurveyAttachments', () => {
 
     const authState = getMockAuthState({ base: SystemAdminAuthState });
     const mockSurveyAuthStateContext: ISurveyAuthStateContext = {
-      getSurveyParticipant: () => null,
+      getSurveyMember: () => null,
       hasSurveyRole: () => true,
-      hasSurveyPermission: () => true,
+
       hasSystemRole: () => true,
       getSurveyId: () => 1,
-      hasLoadedParticipantInfo: true
+      hasLoadedMemberInfo: true
     };
 
     const { getByTestId } = render(
@@ -174,12 +174,12 @@ describe('SurveyAttachments', () => {
 
     const authState = getMockAuthState({ base: SystemAdminAuthState });
     const mockSurveyAuthStateContext: ISurveyAuthStateContext = {
-      getSurveyParticipant: () => null,
+      getSurveyMember: () => null,
       hasSurveyRole: () => true,
-      hasSurveyPermission: () => true,
+
       hasSystemRole: () => true,
       getSurveyId: () => 1,
-      hasLoadedParticipantInfo: true
+      hasLoadedMemberInfo: true
     };
 
     mockUseApi.survey.getSurveyAttachments.mockResolvedValue({});
@@ -242,12 +242,12 @@ describe('SurveyAttachments', () => {
 
     const authState = getMockAuthState({ base: SystemAdminAuthState });
     const mockSurveyAuthStateContext: ISurveyAuthStateContext = {
-      getSurveyParticipant: () => null,
+      getSurveyMember: () => null,
       hasSurveyRole: () => true,
-      hasSurveyPermission: () => true,
+
       hasSystemRole: () => true,
       getSurveyId: () => 1,
-      hasLoadedParticipantInfo: true
+      hasLoadedMemberInfo: true
     };
 
     const { baseElement, queryByText, getByTestId, getAllByTestId, queryByTestId } = render(
@@ -325,12 +325,12 @@ describe('SurveyAttachments', () => {
 
     const authState = getMockAuthState({ base: SystemAdminAuthState });
     const mockSurveyAuthStateContext: ISurveyAuthStateContext = {
-      getSurveyParticipant: () => null,
+      getSurveyMember: () => null,
       hasSurveyRole: () => true,
-      hasSurveyPermission: () => true,
+
       hasSystemRole: () => true,
       getSurveyId: () => 1,
-      hasLoadedParticipantInfo: true
+      hasLoadedMemberInfo: true
     };
 
     const { baseElement, queryByText, getByTestId, getAllByTestId, queryByTestId } = render(
@@ -407,12 +407,12 @@ describe('SurveyAttachments', () => {
 
     const authState = getMockAuthState({ base: SystemAdminAuthState });
     const mockSurveyAuthStateContext: ISurveyAuthStateContext = {
-      getSurveyParticipant: () => null,
+      getSurveyMember: () => null,
       hasSurveyRole: () => true,
-      hasSurveyPermission: () => true,
+
       hasSystemRole: () => true,
       getSurveyId: () => 1,
-      hasLoadedParticipantInfo: true
+      hasLoadedMemberInfo: true
     };
 
     const { baseElement, queryByText, getAllByTestId, queryByTestId, getAllByRole } = render(

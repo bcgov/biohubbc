@@ -49,7 +49,7 @@ export interface ISurveyProprietorModel {
 
 const SurveyRecord = z.object({
   survey_id: z.number(),
-
+  project_id: z.number().nullable().optional(),
   uuid: z.string().uuid().nullable(),
   name: z.string().nullable(),
   additional_details: z.string().nullable(),
@@ -108,7 +108,7 @@ export type SurveyProgressRecord = z.infer<typeof SurveyProgressRecord>;
 
 export const SurveyBasicFields = z.object({
   survey_id: z.number(),
-
+  project_id: z.number().nullable().optional(),
   name: z.string(),
   start_date: z.string(),
   end_date: z.string().nullable(),
@@ -287,7 +287,7 @@ export class SurveyRepository extends BaseRepository {
     const response = await this.connection.sql(sqlStatement, SurveyRecord);
 
     if (!response.rows[0]) {
-      throw new ApiExecuteSQLError('Failed to get project survey details data', [
+      throw new ApiExecuteSQLError('Failed to get survey details data', [
         'SurveyRepository->getSurveyData',
         'response was null or undefined, expected response != null'
       ]);
@@ -554,7 +554,7 @@ export class SurveyRepository extends BaseRepository {
   }
 
   /**
-   * Fetches a subset of survey fields for all surveys under a project.
+   * Fetches a subset of survey fields for all surveys under a.
    * @param {ApiPaginationOptions} [pagination]
    * @return {*}  {Promise<Omit<SurveyBasicFields, 'focal_species_names'>[]>}
    * @memberof SurveyRepository

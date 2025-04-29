@@ -42,17 +42,7 @@ POST.apiDoc = {
       Bearer: []
     }
   ],
-  parameters: [
-    {
-      in: 'path',
-      name: 'projectId',
-      schema: {
-        type: 'number',
-        minimum: 1
-      },
-      required: true
-    }
-  ],
+  parameters: [],
   requestBody: {
     description: 'Survey post request object.',
     required: true,

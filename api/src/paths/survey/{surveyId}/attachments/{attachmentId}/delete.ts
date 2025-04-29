@@ -7,7 +7,7 @@ import { AttachmentService } from '../../../../../services/attachment-service';
 import { getLogger } from '../../../../../utils/logger';
 import { attachmentApiDocObject } from '../../../../../utils/shared-api-docs';
 
-const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/{attachmentId}/delete');
+const defaultLog = getLogger('/api/survey/{surveyId}/attachments/{attachmentId}/delete');
 
 export const POST: Operation = [
   authorizeRequestHandler((req) => {
@@ -31,15 +31,6 @@ export const POST: Operation = [
 POST.apiDoc = {
   ...attachmentApiDocObject('Delete an attachment of a survey.', 'Row count of successfully deleted attachment record'),
   parameters: [
-    {
-      in: 'path',
-      name: 'projectId',
-      schema: {
-        type: 'integer',
-        minimum: 1
-      },
-      required: true
-    },
     {
       in: 'path',
       name: 'surveyId',

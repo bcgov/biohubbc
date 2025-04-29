@@ -13,7 +13,7 @@ import { parseMulterFile } from '../../../../utils/media/media-utils';
 import { getFileFromRequest } from '../../../../utils/request';
 import { constructXLSXWorkbook, getDefaultWorksheet } from '../../../../utils/xlsx-utils/worksheet-utils';
 
-const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/critters/import');
+const defaultLog = getLogger('/api/survey/{surveyId}/critters/import');
 
 export const POST: Operation = [
   authorizeRequestHandler((req) => {
@@ -43,15 +43,6 @@ POST.apiDoc = {
     }
   ],
   parameters: [
-    {
-      in: 'path',
-      name: 'projectId',
-      required: true,
-      schema: {
-        type: 'integer',
-        minimum: 1
-      }
-    },
     {
       in: 'path',
       name: 'surveyId',

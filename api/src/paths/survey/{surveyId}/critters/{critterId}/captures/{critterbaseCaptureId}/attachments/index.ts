@@ -7,9 +7,7 @@ import { CritterAttachmentService } from '../../../../../../../../services/critt
 import { bulkDeleteFilesFromS3 } from '../../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../../utils/logger';
 
-const defaultLog = getLogger(
-  '/api/project/{projectId}/survey/{surveyId}/critters/{critterId}/captures/{critterbaseCaptureId}/attachments'
-);
+const defaultLog = getLogger('/api/survey/{surveyId}/critters/{critterId}/captures/{critterbaseCaptureId}/attachments');
 
 export const DELETE: Operation = [
   authorizeRequestHandler((req) => {
@@ -39,15 +37,6 @@ DELETE.apiDoc = {
     }
   ],
   parameters: [
-    {
-      in: 'path',
-      name: 'projectId',
-      schema: {
-        type: 'integer',
-        minimum: 1
-      },
-      required: true
-    },
     {
       in: 'path',
       name: 'surveyId',

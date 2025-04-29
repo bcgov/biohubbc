@@ -1,9 +1,5 @@
 import { AxiosInstance } from 'axios';
-import {
-  IAddSurveyParticipant,
-  IGetSurveyParticipant,
-  IGetUserSurveyParticipantResponse
-} from 'interfaces/useSurveyApi.interface';
+import { IAddSurveyParticipant, IGetSurveyParticipant } from 'interfaces/useSurveyApi.interface';
 
 /**
  * Returns a set of supported api methods for working with survey participants (members).
@@ -71,18 +67,6 @@ const useSurveyParticipationApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Get the current user's survey participation.
-   *
-   * @param {number} surveyId
-   * @return {*}  {Promise<IGetUserSurveyParticipantResponse>}
-   */
-  const getUserSurveyParticipant = async (surveyId: number): Promise<IGetUserSurveyParticipantResponse> => {
-    const { data } = await axios.get<IGetUserSurveyParticipantResponse>(`/api/survey/${surveyId}/participants/self`);
-
-    return data;
-  };
-
-  /**
    * Add or update user roles for a survey.
    *
    * @param {number} surveyId
@@ -102,7 +86,6 @@ const useSurveyParticipationApi = (axios: AxiosInstance) => {
     addSurveyParticipants,
     removeSurveyParticipant,
     updateSurveyParticipantRole,
-    getUserSurveyParticipant,
     postUserSurveyRoles
   };
 };

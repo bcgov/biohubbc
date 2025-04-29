@@ -42,7 +42,6 @@ describe('getDeploymentById', () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     mockReq.params = {
-      projectId: '1',
       surveyId: '2',
       deploymentId: '3'
     };
@@ -68,7 +67,6 @@ describe('getDeploymentById', () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     mockReq.params = {
-      projectId: '1',
       surveyId: '2',
       deploymentId: '3'
     };
@@ -99,7 +97,6 @@ describe('updateDeployment', () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     mockReq.params = {
-      projectId: '1',
       surveyId: '2',
       deploymentId: '3'
     };
@@ -137,7 +134,6 @@ describe('updateDeployment', () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     mockReq.params = {
-      projectId: '1',
       surveyId: '2',
       deploymentId: '3'
     };
@@ -167,7 +163,6 @@ describe('deleteDeployment', () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     mockReq.params = {
-      projectId: '1',
       surveyId: '2',
       deploymentId: '3'
     };
@@ -192,7 +187,6 @@ describe('deleteDeployment', () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     mockReq.params = {
-      projectId: '1',
       surveyId: '2',
       deploymentId: '3'
     };

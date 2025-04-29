@@ -42,12 +42,11 @@ describe('SurveysListPage', () => {
     };
 
     const mockSurveyAuthStateContext: ISurveyAuthStateContext = {
-      getSurveyParticipant: () => null,
+      getSurveyMember: () => null,
       hasSurveyRole: () => true,
-      hasSurveyPermission: () => true,
       hasSystemRole: () => true,
       getSurveyId: () => 1,
-      hasLoadedParticipantInfo: true
+      hasLoadedMemberInfo: true
     };
 
     mockUseApi.survey.getSurveysBasicFields.mockResolvedValue([]);
@@ -80,12 +79,11 @@ describe('SurveysListPage', () => {
     };
 
     const mockSurveyAuthStateContext: ISurveyAuthStateContext = {
-      getSurveyParticipant: () => null,
+      getSurveyMember: () => null,
       hasSurveyRole: () => true,
-      hasSurveyPermission: () => true,
       hasSystemRole: () => true,
       getSurveyId: () => 1,
-      hasLoadedParticipantInfo: true
+      hasLoadedMemberInfo: true
     };
 
     const authState = getMockAuthState({ base: SystemAdminAuthState });

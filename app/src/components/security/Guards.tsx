@@ -94,9 +94,9 @@ export const ProjectRoleGuard = (props: PropsWithChildren<IProjectRoleGuardProps
 
   const hasSystemRole = surveyAuthStateContext.hasSystemRole(validSystemRoles);
   const hasSurveyRole = surveyAuthStateContext.hasSurveyRole(validProjectRoles);
-  const hasSurveyPermissions = surveyAuthStateContext.hasSurveyPermission(validSurveyRoles);
+  const hasSurveyRoles = surveyAuthStateContext.hasSurveyRole(validSurveyRoles);
 
-  if (hasSystemRole || hasSurveyRole || hasSurveyPermissions) {
+  if (hasSystemRole || hasSurveyRole || hasSurveyRoles) {
     return <>{props.children}</>;
   }
 

@@ -2,19 +2,18 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SURVEY_ROLE, SYSTEM_ROLE } from '../../../../constants/roles';
 import { getDBConnection } from '../../../../database/db';
-import { GeoJSONPoint } from '../../../../openapi/schemas/geoJson';
 import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
-import { TelemetryVendorService } from '../../../../services/telemetry-services/telemetry-vendor-service';
+import { SurveyMemberService } from '../../../../services/survey-member-service';
 import { getLogger } from '../../../../utils/logger';
 
-const defaultLog = getLogger('/api/survey/{surveyId}/observation');
+const defaultLog = getLogger('paths/survey/{surveyId}/members');
 
 export const GET: Operation = [
   authorizeRequestHandler((req) => {
     return {
       or: [
         {
-          validSurveyRoles: [SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR, SURVEY_ROLE.VIEWER],
+          validSurveyRoles: [SURVEY_ROLE.ADMIN],
           surveyId: Number(req.params.surveyId),
           discriminator: 'SurveyRole'
         },
@@ -25,12 +24,12 @@ export const GET: Operation = [
       ]
     };
   }),
-  getTelemetrySpatialData()
+  getSurveyMembers()
 ];
 
 GET.apiDoc = {
-  description: 'Get all telemetry spatial data for a survey.',
-  tags: ['telemetry'],
+  description: 'Get all survey members.',
+  tags: ['survey'],
   security: [
     {
       Bearer: []
@@ -41,7 +40,7 @@ GET.apiDoc = {
       in: 'path',
       name: 'surveyId',
       schema: {
-        type: 'number',
+        type: 'integer',
         minimum: 1
       },
       required: true
@@ -49,40 +48,34 @@ GET.apiDoc = {
   ],
   responses: {
     200: {
-      description: 'Survey telemetry spatial data.',
+      description: 'List of survey members.',
       content: {
         'application/json': {
           schema: {
             type: 'object',
-            required: ['telemetry', 'supplementaryData'],
             additionalProperties: false,
             properties: {
-              telemetry: {
+              members: {
                 type: 'array',
                 items: {
                   type: 'object',
-                  required: ['telemetry_id', 'geometry'],
                   additionalProperties: false,
                   properties: {
-                    telemetry_id: {
-                      type: 'string',
-                      format: 'uuid'
+                    survey_member_id: {
+                      type: 'number'
                     },
-                    geometry: {
-                      ...GeoJSONPoint,
-                      nullable: true
+                    survey_id: {
+                      type: 'number'
+                    },
+                    system_user_id: {
+                      type: 'number'
+                    },
+                    survey_job_id: {
+                      type: 'number'
+                    },
+                    survey_job_name: {
+                      type: 'string'
                     }
-                  }
-                }
-              },
-              supplementaryData: {
-                type: 'object',
-                required: ['count'],
-                additionalProperties: false,
-                properties: {
-                  count: {
-                    type: 'integer',
-                    minimum: 0
                   }
                 }
               }
@@ -110,36 +103,28 @@ GET.apiDoc = {
 };
 
 /**
- * Fetch all telemetry spatial data for a survey.
+ * Get all survey members.
  *
- * @export
- * @return {*}  {RequestHandler}
+ * @returns {RequestHandler}
  */
-export function getTelemetrySpatialData(): RequestHandler {
+export function getSurveyMembers(): RequestHandler {
   return async (req, res) => {
-    const surveyId = Number(req.params.surveyId);
-
-    defaultLog.debug({ label: 'getTelemetrySpatialData', surveyId });
-
     const connection = getDBConnection(req.keycloak_token);
 
     try {
+      const surveyId = Number(req.params.surveyId);
+
       await connection.open();
 
-      const telemetryVendorService = new TelemetryVendorService(connection);
+      const surveyMemberService = new SurveyMemberService(connection);
 
-      const [telemetry, telemetryCount] = await telemetryVendorService.getTelemetrySpatialForSurvey(surveyId);
+      const result = await surveyMemberService.getSurveyMembers(surveyId);
 
       await connection.commit();
 
-      return res.status(200).json({
-        telemetry: telemetry,
-        supplementaryData: {
-          count: telemetryCount
-        }
-      });
+      return res.status(200).json({ members: result });
     } catch (error) {
-      defaultLog.error({ label: 'getTelemetrySpatialData', message: 'error', error });
+      defaultLog.error({ label: 'getSurveyMembers', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

@@ -18,7 +18,7 @@ import {
   makePaginationResponse
 } from '../../../../utils/pagination';
 
-const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation');
+const defaultLog = getLogger('/api/survey/{surveyId}/observation');
 
 export const GET: Operation = [
   authorizeRequestHandler((req) => {
@@ -67,15 +67,6 @@ GET.apiDoc = {
     }
   ],
   parameters: [
-    {
-      in: 'path',
-      name: 'projectId',
-      schema: {
-        type: 'integer',
-        minimum: 1
-      },
-      required: true
-    },
     {
       in: 'path',
       name: 'surveyId',
@@ -132,11 +123,6 @@ POST.apiDoc = {
     }
   ],
   parameters: [
-    {
-      in: 'path',
-      name: 'projectId',
-      required: true
-    },
     {
       in: 'path',
       name: 'surveyId',

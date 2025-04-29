@@ -6,7 +6,7 @@ import { authorizeRequestHandler } from '../../../../../request-handlers/securit
 import { ObservationService } from '../../../../../services/observation-services/observation-service';
 import { getLogger } from '../../../../../utils/logger';
 
-const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/{surveyObservationId}');
+const defaultLog = getLogger('/api/survey/{surveyId}/observation/{surveyObservationId}');
 
 export const GET: Operation = [
   authorizeRequestHandler((req) => {
@@ -36,15 +36,6 @@ GET.apiDoc = {
     }
   ],
   parameters: [
-    {
-      in: 'path',
-      name: 'projectId',
-      schema: {
-        type: 'integer',
-        minimum: 1
-      },
-      required: true
-    },
     {
       in: 'path',
       name: 'surveyId',

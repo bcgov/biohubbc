@@ -19,7 +19,7 @@ import {
   makePaginationResponse
 } from '../../../../utils/pagination';
 
-const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/habitat-features');
+const defaultLog = getLogger('/api/survey/{surveyId}/habitat-features');
 
 export const POST: Operation = [
   authorizeRequestHandler((req) => {
@@ -68,15 +68,6 @@ POST.apiDoc = {
     }
   ],
   parameters: [
-    {
-      in: 'path',
-      name: 'projectId',
-      schema: {
-        type: 'integer',
-        minimum: 1
-      },
-      required: true
-    },
     {
       in: 'path',
       name: 'surveyId',
@@ -138,15 +129,6 @@ GET.apiDoc = {
     }
   ],
   parameters: [
-    {
-      in: 'path',
-      name: 'projectId',
-      schema: {
-        type: 'integer',
-        minimum: 1
-      },
-      required: true
-    },
     {
       in: 'path',
       name: 'surveyId',

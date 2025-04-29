@@ -26,7 +26,6 @@ describe('deleteSamplePeriods', () => {
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
     mockReq.params = {
-      projectId: '1',
       surveyId: '1'
     };
 
@@ -60,7 +59,6 @@ describe('deleteSamplePeriods', () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     mockReq.params = {
-      projectId: '1',
       surveyId: '1'
     };
 

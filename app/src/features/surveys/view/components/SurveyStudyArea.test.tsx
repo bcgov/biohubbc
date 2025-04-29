@@ -124,13 +124,12 @@ describe.skip('SurveyStudyArea', () => {
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockCritterDataLoader = { data: [] } as DataLoader<any, any, any>;
     const mockSurveyAuthStateContext: ISurveyAuthStateContext = {
-      getSurveyParticipant: () => null,
+      getSurveyMember: () => null,
       hasSurveyRole: () => true,
-      hasSurveyPermission: () => true,
       hasSystemRole: () => true,
       getSurveyId: () => 1,
 
-      hasLoadedParticipantInfo: true
+      hasLoadedMemberInfo: true
     };
 
     const { getByText, queryByText } = render(
@@ -230,13 +229,12 @@ describe.skip('SurveyStudyArea', () => {
     mockUseApi.survey.updateSurvey = vi.fn(() => Promise.reject(new Error('API Error is Here')));
 
     const mockSurveyAuthStateContext: ISurveyAuthStateContext = {
-      getSurveyParticipant: () => null,
+      getSurveyMember: () => null,
       hasSurveyRole: () => true,
-      hasSurveyPermission: () => true,
       hasSystemRole: () => true,
       getSurveyId: () => 1,
 
-      hasLoadedParticipantInfo: true
+      hasLoadedMemberInfo: true
     };
 
     const { getByText, queryByText } = render(

@@ -22,7 +22,6 @@ describe('getSurveyObservedSpecies', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     const mockSurveyId = 2;
-    const mockProjectId = 1;
     const mockTsns = [1, 2, 3];
     const mockSpecies = mockTsns.map((tsn) => ({ itis_tsn: tsn }));
     const mockItisResponse = [
@@ -41,7 +40,6 @@ describe('getSurveyObservedSpecies', () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     mockReq.params = {
-      projectId: String(mockProjectId),
       surveyId: String(mockSurveyId)
     };
 
@@ -61,14 +59,12 @@ describe('getSurveyObservedSpecies', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     const mockSurveyId = 2;
-    const mockProjectId = 1;
 
     sinon.stub(ObservationService.prototype, 'getObservedSpeciesForSurvey').rejects(new Error('a test error'));
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     mockReq.params = {
-      projectId: String(mockProjectId),
       surveyId: String(mockSurveyId)
     };
 

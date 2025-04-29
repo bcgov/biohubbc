@@ -10,7 +10,7 @@ import { authorizeRequestHandler } from '../../../../../../request-handlers/secu
 import { AttachmentService } from '../../../../../../services/attachment-service';
 import { getLogger } from '../../../../../../utils/logger';
 
-const defaultLog = getLogger('/api/project/{projectId}/attachments/{attachmentId}/getSignedUrl');
+const defaultLog = getLogger('/api/attachments/{attachmentId}/getSignedUrl');
 
 export const GET: Operation = [
   authorizeRequestHandler((req) => {
@@ -40,15 +40,6 @@ GET.apiDoc = {
     }
   ],
   parameters: [
-    {
-      in: 'path',
-      name: 'projectId',
-      schema: {
-        type: 'integer',
-        minimum: 1
-      },
-      required: true
-    },
     {
       in: 'path',
       name: 'surveyId',

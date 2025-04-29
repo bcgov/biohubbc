@@ -39,15 +39,6 @@ GET.apiDoc = {
   parameters: [
     {
       in: 'path',
-      name: 'projectId',
-      schema: {
-        type: 'number',
-        minimum: 1
-      },
-      required: true
-    },
-    {
-      in: 'path',
       name: 'surveyId',
       schema: {
         type: 'number',

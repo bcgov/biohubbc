@@ -29,7 +29,6 @@ describe('getDevice', () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     mockReq.params = {
-      projectId: '1',
       surveyId: '2',
       deviceId: '3'
     };
@@ -55,7 +54,6 @@ describe('getDevice', () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     mockReq.params = {
-      projectId: '1',
       surveyId: '2',
       deviceId: '3'
     };
@@ -86,7 +84,6 @@ describe('updateDevice', () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     mockReq.params = {
-      projectId: '1',
       surveyId: '2',
       deviceId: '3'
     };
@@ -117,7 +114,6 @@ describe('updateDevice', () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     mockReq.params = {
-      projectId: '1',
       surveyId: '2',
       deviceId: '3'
     };
@@ -147,7 +143,6 @@ describe('deleteDevice', () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     mockReq.params = {
-      projectId: '1',
       surveyId: '2',
       deviceId: '3'
     };
@@ -172,7 +167,6 @@ describe('deleteDevice', () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     mockReq.params = {
-      projectId: '1',
       surveyId: '2',
       deviceId: '3'
     };

@@ -28,7 +28,6 @@ describe('postSurveyTelemetryCredentialAttachment', () => {
 
     mockReq.keycloak_token = {} as KeycloakUserInformation;
     mockReq.params = {
-      projectId: '1',
       surveyId: '2'
     };
     mockReq.files = [
@@ -75,7 +74,6 @@ describe('postSurveyTelemetryCredentialAttachment', () => {
 
     mockReq.keycloak_token = {} as KeycloakUserInformation;
     mockReq.params = {
-      projectId: '1',
       surveyId: '2'
     };
 
@@ -127,7 +125,6 @@ describe('postSurveyTelemetryCredentialAttachment', () => {
 
     mockReq.keycloak_token = {} as KeycloakUserInformation;
     mockReq.params = {
-      projectId: '1',
       surveyId: '2'
     };
 
@@ -168,7 +165,6 @@ describe('postSurveyTelemetryCredentialAttachment', () => {
 
     mockReq.keycloak_token = {} as KeycloakUserInformation;
     mockReq.params = {
-      projectId: '1',
       surveyId: '2'
     };
 
@@ -216,7 +212,6 @@ describe('postSurveyTelemetryCredentialAttachment', () => {
 
     mockReq.keycloak_token = {} as KeycloakUserInformation;
     mockReq.params = {
-      projectId: '1',
       surveyId: '2'
     };
 
@@ -297,7 +292,6 @@ describe('getSurveyTelemetryCredentialAttachments', () => {
 
     mockReq.keycloak_token = {} as KeycloakUserInformation;
     mockReq.params = {
-      projectId: '1',
       surveyId: '2'
     };
 
@@ -331,7 +325,6 @@ describe('getSurveyTelemetryCredentialAttachments', () => {
 
     mockReq.keycloak_token = {} as KeycloakUserInformation;
     mockReq.params = {
-      projectId: '1',
       surveyId: '2'
     };
 

@@ -41,7 +41,6 @@ describe('exportData', () => {
     };
 
     mockReq.params = {
-      projectId: '1',
       surveyId: '2'
     };
 
@@ -89,7 +88,6 @@ describe('exportData', () => {
     };
 
     mockReq.params = {
-      projectId: '1',
       surveyId: '2'
     };
 

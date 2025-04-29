@@ -24,6 +24,7 @@ import useSamplingSiteApi from './api/useSamplingSiteApi';
 import useSpatialApi from './api/useSpatialApi';
 import useStandardsApi from './api/useStandardsApi';
 import useSurveyApi from './api/useSurveyApi';
+import useSurveyMemberApi from './api/useSurveyMemberApi';
 import useSurveyParticipationApi from './api/useSurveyParticipationApi';
 import useTaxonomyApi from './api/useTaxonomyApi';
 import useTechniqueApi from './api/useTechniqueApi';
@@ -45,6 +46,8 @@ export const useBiohubApi = () => {
   const collection = useCollectionApi(apiAxios);
 
   const surveyParticipants = useSurveyParticipationApi(apiAxios);
+
+  const surveyMembers = useSurveyMemberApi(apiAxios);
 
   const taxonomy = useTaxonomyApi();
 
@@ -98,6 +101,7 @@ export const useBiohubApi = () => {
     () => ({
       analytics,
       surveyParticipants,
+      surveyMembers,
       taxonomy,
       survey,
       collection,

@@ -10,7 +10,7 @@ import { uploadFileToS3 } from '../../../../utils/file-utils';
 import { getLogger } from '../../../../utils/logger';
 import { getFileFromRequest } from '../../../../utils/request';
 
-const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/upload');
+const defaultLog = getLogger('/api/survey/{surveyId}/attachments/upload');
 
 export const POST: Operation = [
   authorizeRequestHandler((req) => {
@@ -39,11 +39,6 @@ POST.apiDoc = {
     }
   ],
   parameters: [
-    {
-      in: 'path',
-      name: 'projectId',
-      required: true
-    },
     {
       in: 'path',
       name: 'surveyId',

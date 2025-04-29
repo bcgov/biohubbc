@@ -31,8 +31,8 @@ const AttachmentsList = <T extends IGetSurveyAttachment>(props: IAttachmentsList
   const surveyAuthStateContext = useContext(SurveyAuthStateContext);
 
   const hasSystemRole = surveyAuthStateContext.hasSystemRole(validSystemRoles);
-  const hasSurveyPermissions = surveyAuthStateContext.hasSurveyPermission(validSurveyRoles);
-  const showTableActions = hasSystemRole || hasSurveyPermissions;
+  const hasSurveyRoles = surveyAuthStateContext.hasSurveyRole(validSurveyRoles);
+  const showTableActions = hasSystemRole || hasSurveyRoles;
 
   const attachmentsListColumnDefs: GridColDef<T>[] = [
     {

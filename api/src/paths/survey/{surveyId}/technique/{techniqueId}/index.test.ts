@@ -27,7 +27,6 @@ describe('deleteTechnique', () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     mockReq.params = {
-      projectId: '1',
       surveyId: '2',
       techniqueId: '3'
     };
@@ -55,7 +54,6 @@ describe('deleteTechnique', () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     mockReq.params = {
-      projectId: '1',
       surveyId: '2',
       techniqueId: '3'
     };
@@ -85,7 +83,6 @@ describe('deleteTechnique', () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     mockReq.params = {
-      projectId: '1',
       surveyId: '2',
       techniqueId: '3'
     };
@@ -114,7 +111,6 @@ describe('updateTechnique', () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     mockReq.params = {
-      projectId: '1',
       surveyId: '2',
       techniqueId: '3'
     };
@@ -185,7 +181,6 @@ describe('updateTechnique', () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     mockReq.params = {
-      projectId: '1',
       surveyId: '2',
       techniqueId: '3'
     };
@@ -290,7 +285,6 @@ describe('getTechniqueById', () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     mockReq.params = {
-      projectId: '1',
       surveyId: '2',
       techniqueId: '3'
     };
@@ -328,7 +322,6 @@ describe('getTechniqueById', () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     mockReq.params = {
-      projectId: '1',
       surveyId: '2',
       techniqueId: '3'
     };

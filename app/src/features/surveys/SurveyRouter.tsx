@@ -30,7 +30,11 @@ const SurveyRouter: React.FC = () => {
 
       {/* Survey Page Routes */}
       <RouteWithTitle exact path="/admin/surveys/:survey_id/details" title={getTitle('Survey')}>
-        <SurveyPage />
+        <SurveyRoleRouteGuard
+          validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.PROJECT_CREATOR]}
+          validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR, SURVEY_ROLE.VIEWER]}>
+          <SurveyPage />
+        </SurveyRoleRouteGuard>
       </RouteWithTitle>
 
       {/* Survey Routes */}

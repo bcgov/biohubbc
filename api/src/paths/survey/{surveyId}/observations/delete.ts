@@ -6,7 +6,7 @@ import { authorizeRequestHandler } from '../../../../request-handlers/security/a
 import { ObservationService } from '../../../../services/observation-services/observation-service';
 import { getLogger } from '../../../../utils/logger';
 
-const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/delete');
+const defaultLog = getLogger('/api/survey/{surveyId}/observation/delete');
 
 export const POST: Operation = [
   authorizeRequestHandler((req) => {
@@ -36,11 +36,6 @@ POST.apiDoc = {
     }
   ],
   parameters: [
-    {
-      in: 'path',
-      name: 'projectId',
-      required: true
-    },
     {
       in: 'path',
       name: 'surveyId',

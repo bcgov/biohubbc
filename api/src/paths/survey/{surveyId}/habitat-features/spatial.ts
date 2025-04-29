@@ -7,7 +7,7 @@ import { authorizeRequestHandler } from '../../../../request-handlers/security/a
 import { SurveyHabitatFeatureService } from '../../../../services/habitat-feature-services/survey-habitat-feature-service';
 import { getLogger } from '../../../../utils/logger';
 
-const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/habitat-features/spatial');
+const defaultLog = getLogger('/api/survey/{surveyId}/habitat-features/spatial');
 
 export const GET: Operation = [
   authorizeRequestHandler((req) => {
@@ -37,15 +37,6 @@ GET.apiDoc = {
     }
   ],
   parameters: [
-    {
-      in: 'path',
-      name: 'projectId',
-      schema: {
-        type: 'integer',
-        minimum: 1
-      },
-      required: true
-    },
     {
       in: 'path',
       name: 'surveyId',

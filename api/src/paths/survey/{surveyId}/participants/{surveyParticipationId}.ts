@@ -5,7 +5,7 @@ import { getDBConnection } from '../../../../database/db';
 import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
 import { SurveyParticipationService } from '../../../../services/survey-participation-service';
 import { getLogger } from '../../../../utils/logger';
-const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/participants/{surveyParticipationId}');
+const defaultLog = getLogger('/api/survey/{surveyId}/participants/{surveyParticipationId}');
 
 export const PUT: Operation = [
   authorizeRequestHandler((req) => {
@@ -35,15 +35,6 @@ PUT.apiDoc = {
     }
   ],
   parameters: [
-    {
-      in: 'path',
-      name: 'projectId',
-      schema: {
-        type: 'integer',
-        minimum: 1
-      },
-      required: true
-    },
     {
       in: 'path',
       name: 'surveyId',
@@ -158,15 +149,6 @@ DELETE.apiDoc = {
     }
   ],
   parameters: [
-    {
-      in: 'path',
-      name: 'projectId',
-      schema: {
-        type: 'integer',
-        minimum: 1
-      },
-      required: true
-    },
     {
       in: 'path',
       name: 'surveyId',

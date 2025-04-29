@@ -9,7 +9,7 @@ import { bulkDeleteFilesFromS3, generateS3FileKey, uploadFileToS3 } from '../../
 import { getLogger } from '../../../../../../../../utils/logger';
 
 const defaultLog = getLogger(
-  '/api/project/{projectId}/survey/{surveyId}/critters/{critterId}/captures/{critterbaseCaptureId}/attachments/upload'
+  '/api/survey/{surveyId}/critters/{critterId}/captures/{critterbaseCaptureId}/attachments/upload'
 );
 
 export const POST: Operation = [
@@ -40,15 +40,6 @@ POST.apiDoc = {
     }
   ],
   parameters: [
-    {
-      in: 'path',
-      name: 'projectId',
-      schema: {
-        type: 'integer',
-        minimum: 1
-      },
-      required: true
-    },
     {
       in: 'path',
       name: 'surveyId',

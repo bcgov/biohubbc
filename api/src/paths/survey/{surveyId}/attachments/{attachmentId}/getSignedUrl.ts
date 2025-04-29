@@ -13,7 +13,7 @@ import { CritterAttachmentService } from '../../../../../services/critter-attach
 import { getS3SignedURL } from '../../../../../utils/file-utils';
 import { getLogger } from '../../../../../utils/logger';
 
-const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/{attachmentId}/getSignedUrl');
+const defaultLog = getLogger('/api/survey/{surveyId}/attachments/{attachmentId}/getSignedUrl');
 
 export const GET: Operation = [
   authorizeRequestHandler((req) => {
@@ -43,15 +43,6 @@ GET.apiDoc = {
     }
   ],
   parameters: [
-    {
-      in: 'path',
-      name: 'projectId',
-      schema: {
-        type: 'integer',
-        minimum: 1
-      },
-      required: true
-    },
     {
       in: 'path',
       name: 'surveyId',

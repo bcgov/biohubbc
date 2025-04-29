@@ -6,7 +6,7 @@ import { authorizeRequestHandler } from '../../../../../request-handlers/securit
 import { SubCountService } from '../../../../../services/subcount-service';
 import { getLogger } from '../../../../../utils/logger';
 
-const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observations/subcounts/delete');
+const defaultLog = getLogger('/api/survey/{surveyId}/observations/subcounts/delete');
 
 export const POST: Operation = [
   authorizeRequestHandler((req) => {
@@ -37,11 +37,6 @@ POST.apiDoc = {
     }
   ],
   parameters: [
-    {
-      in: 'path',
-      name: 'projectId',
-      required: true
-    },
     {
       in: 'path',
       name: 'surveyId',

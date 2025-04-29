@@ -12,14 +12,6 @@ export const attachmentApiDocObject = (basicDescription: string, successDescript
     parameters: [
       {
         in: 'path',
-        name: 'projectId',
-        schema: {
-          type: 'number'
-        },
-        required: true
-      },
-      {
-        in: 'path',
         name: 'attachmentId',
         schema: {
           type: 'number'
