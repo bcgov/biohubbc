@@ -15,23 +15,16 @@ import { SurveyAnimalPage } from './AnimalPage';
 import { CreateCSVCapturesPage } from './profile/captures/import-captures/CreateCSVCapturesPage';
 
 /**
- * Router for all `/admin/projects/:id/surveys/:survey_id/animals/*` pages.
+ * Router for all `/admin/surveys/:survey_id/animals/*` pages.
  *
  * @return {*}
  */
 export const AnimalRouter: React.FC = () => {
   return (
     <Switch>
-      <Redirect
-        exact
-        from="/admin/projects/:id/surveys/:survey_id/animals"
-        to="/admin/projects/:id/surveys/:survey_id/animals/details"
-      />
+      <Redirect exact from="/admin/surveys/:survey_id/animals" to="/admin/surveys/:survey_id/animals/details" />
 
-      <RouteWithTitle
-        exact
-        path="/admin/projects/:id/surveys/:survey_id/animals/details"
-        title={getTitle('Manage Animals')}>
+      <RouteWithTitle exact path="/admin/surveys/:survey_id/animals/details" title={getTitle('Manage Animals')}>
         <SurveyRoleRouteGuard
           validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
@@ -39,10 +32,7 @@ export const AnimalRouter: React.FC = () => {
         </SurveyRoleRouteGuard>
       </RouteWithTitle>
 
-      <RouteWithTitle
-        exact
-        path={'/admin/projects/:id/surveys/:survey_id/animals/create'}
-        title={getTitle('Create Animal')}>
+      <RouteWithTitle exact path={'/admin/surveys/:survey_id/animals/create'} title={getTitle('Create Animal')}>
         <SurveyRoleRouteGuard
           validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
@@ -50,10 +40,7 @@ export const AnimalRouter: React.FC = () => {
         </SurveyRoleRouteGuard>
       </RouteWithTitle>
 
-      <RouteWithTitle
-        exact
-        path={'/admin/projects/:id/surveys/:survey_id/animals/captures'}
-        title={getTitle('Create Captures')}>
+      <RouteWithTitle exact path={'/admin/surveys/:survey_id/animals/captures'} title={getTitle('Create Captures')}>
         <SurveyRoleRouteGuard
           validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
@@ -61,10 +48,7 @@ export const AnimalRouter: React.FC = () => {
         </SurveyRoleRouteGuard>
       </RouteWithTitle>
 
-      <RouteWithTitle
-        exact
-        path={'/admin/projects/:id/surveys/:survey_id/animals/:critter_id/edit'}
-        title={getTitle('Edit Animal')}>
+      <RouteWithTitle exact path={'/admin/surveys/:survey_id/animals/:critter_id/edit'} title={getTitle('Edit Animal')}>
         <SurveyRoleRouteGuard
           validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
@@ -76,7 +60,7 @@ export const AnimalRouter: React.FC = () => {
 
       <RouteWithTitle
         exact
-        path={'/admin/projects/:id/surveys/:survey_id/animals/:critter_id/capture/create'}
+        path={'/admin/surveys/:survey_id/animals/:critter_id/capture/create'}
         title={getTitle('Create Capture')}>
         <SurveyRoleRouteGuard
           validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
@@ -87,7 +71,7 @@ export const AnimalRouter: React.FC = () => {
 
       <RouteWithTitle
         exact
-        path={'/admin/projects/:id/surveys/:survey_id/animals/:critter_id/capture/:capture_id/edit'}
+        path={'/admin/surveys/:survey_id/animals/:critter_id/capture/:capture_id/edit'}
         title={getTitle('Edit Capture')}>
         <SurveyRoleRouteGuard
           validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
@@ -98,7 +82,7 @@ export const AnimalRouter: React.FC = () => {
 
       <RouteWithTitle
         exact
-        path={'/admin/projects/:id/surveys/:survey_id/animals/:critter_id/mortality/create'}
+        path={'/admin/surveys/:survey_id/animals/:critter_id/mortality/create'}
         title={getTitle('Report Mortality')}>
         <SurveyRoleRouteGuard
           validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
@@ -109,7 +93,7 @@ export const AnimalRouter: React.FC = () => {
 
       <RouteWithTitle
         exact
-        path={'/admin/projects/:id/surveys/:survey_id/animals/:critter_id/mortality/:mortality_id/edit'}
+        path={'/admin/surveys/:survey_id/animals/:critter_id/mortality/:mortality_id/edit'}
         title={getTitle('Edit Mortality')}>
         <SurveyRoleRouteGuard
           validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}

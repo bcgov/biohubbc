@@ -9,7 +9,7 @@ import { SystemAlertBanner } from 'features/alert/banner/SystemAlertBanner';
 import { SurveySamplingTableContainer } from 'features/surveys/view/survey-sampling/SurveySamplingTableContainer';
 import SurveyDetails from 'features/surveys/view/SurveyDetails';
 import { SystemAlertBannerEnum } from 'interfaces/useAlertApi.interface';
-import React, { useContext, useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 import SurveyStudyArea from './components/SurveyStudyArea';
 import { SurveySpatialContainer } from './survey-spatial/SurveySpatialContainer';
 import SurveyAttachments from './SurveyAttachments';
@@ -20,7 +20,7 @@ import SurveyHeader from './SurveyHeader';
  *
  * @return {*}
  */
-const SurveyPage: React.FC = () => {
+const SurveyPage = () => {
   const codesContext = useContext(CodesContext);
   const surveyContext = useContext(SurveyContext);
 
@@ -31,7 +31,7 @@ const SurveyPage: React.FC = () => {
   }, [codesContext.codesDataLoader]);
 
   if (!codesContext.codesDataLoader.data || !surveyContext.surveyDataLoader.data) {
-    return <CircularProgress className="pageProgress" size={4} />;
+    return <CircularProgress className="pageProgress" size={40} />;
   }
 
   return (

@@ -120,6 +120,7 @@ export class SurveyMemberRepository extends BaseRepository {
    * @memberof SurveyMemberRepository
    */
   async getSurveyMember(surveyId: number, systemUserId: number): Promise<(SurveyMember & SystemUserWithRoles) | null> {
+    console.log(surveyId, systemUserId, 'ids');
     const sqlStatement = SQL`
       SELECT
         su.system_user_id,

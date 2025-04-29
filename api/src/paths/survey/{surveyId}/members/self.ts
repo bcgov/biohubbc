@@ -93,6 +93,8 @@ export function getUserSurveyMember(): RequestHandler {
 
       const result = await surveyMemberService.getSurveyMember(surveyId, systemUserId);
 
+      console.log('RESULT', result);
+
       await connection.commit();
 
       return res.status(200).json(result);

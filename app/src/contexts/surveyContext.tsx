@@ -60,8 +60,6 @@ export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any
 
   const urlParams: Record<string, string | number | undefined> = useParams<{ survey_id: string }>();
 
-  console.log(urlParams);
-
   if (!urlParams['survey_id']) {
     throw new Error(
       "The survey ID found in SurveyContextProvider was invalid. Does your current React route provide a 'survey_id' parameter?"

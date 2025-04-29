@@ -86,8 +86,6 @@ export const SurveyRoleRouteGuard = (props: ISurveyRoleRouteGuardProps) => {
     return <CircularProgress className="pageProgress" data-testid="survey-role-guard-spinner" />;
   }
 
-  console.log('role!', surveyAuthStateContext.hasSurveyRole(validSurveyRoles));
-
   if (
     !surveyAuthStateContext.hasSystemRole(validSystemRoles) &&
     !surveyAuthStateContext.hasSurveyRole(validSurveyRoles)

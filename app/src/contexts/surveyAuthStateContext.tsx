@@ -40,13 +40,14 @@ export const SurveyAuthStateContextProvider: React.FC<React.PropsWithChildren> =
 
   const hasSurveyRole = useCallback(
     (validSurveyRoles?: string[]): boolean => {
-      console.log('HAS SURVEY ROLE??');
       //If no Survey role is provided then return false
       if (!validSurveyRoles?.length) {
         return false;
       }
 
       const member = getSurveyMember();
+
+      console.log('member', member);
 
       if (!member) {
         return false;

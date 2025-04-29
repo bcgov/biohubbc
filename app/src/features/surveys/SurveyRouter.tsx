@@ -13,7 +13,6 @@ import React from 'react';
 import { Redirect, Switch } from 'react-router';
 import RouteWithTitle from 'utils/RouteWithTitle';
 import { getTitle } from 'utils/Utils';
-import CreateSurveyPage from './CreateSurveyPage';
 import { HabitatFeatureRouter } from './habitat-features/SurveyHabitatFeatureRouter';
 import CreateObservationPage from './observations/form/create/CreateObservationPage';
 import { TelemetryRouter } from './telemetry/TelemetryRouter';
@@ -35,11 +34,6 @@ const SurveyRouter: React.FC = () => {
           validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR, SURVEY_ROLE.VIEWER]}>
           <SurveyPage />
         </SurveyRoleRouteGuard>
-      </RouteWithTitle>
-
-      {/* Survey Routes */}
-      <RouteWithTitle exact path="/admin/surveys/create" title={getTitle('Survey')}>
-        <CreateSurveyPage />
       </RouteWithTitle>
 
       <RouteWithTitle exact path="/admin/surveys/:survey_id/edit" title={getTitle('Edit Survey')}>

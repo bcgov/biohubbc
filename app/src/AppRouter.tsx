@@ -11,6 +11,7 @@ import ResourcesPage from 'features/resources/ResourcesPage';
 import StandardsPage from 'features/standards/StandardsPage';
 import SummaryRouter from 'features/summary/SummaryRouter';
 import { SupportPage } from 'features/support/SupportPage';
+import CreateSurveyPage from 'features/surveys/CreateSurveyPage';
 import SurveyRouter from 'features/surveys/SurveyRouter';
 import BaseLayout from 'layouts/BaseLayout';
 import AccessDenied from 'pages/403/AccessDenied';
@@ -72,16 +73,27 @@ const AppRouter: React.FC = () => {
         </BaseLayout>
       </RouteWithTitle>
 
+      {/* Survey Routes */}
+      <RouteWithTitle exact path="/admin/surveys/create" title={getTitle('Create Survey')}>
+        <BaseLayout>
+          <AuthenticatedRouteGuard>
+            <CodesContextProvider>
+              <CreateSurveyPage />
+            </CodesContextProvider>
+          </AuthenticatedRouteGuard>
+        </BaseLayout>
+      </RouteWithTitle>
+
       <RouteWithTitle path="/admin/surveys/:survey_id" title={getTitle('Survey')}>
         <BaseLayout>
           <AuthenticatedRouteGuard>
-            <SurveyContextProvider>
-              <SurveyAuthStateContextProvider>
-                <CodesContextProvider>
+            <SurveyAuthStateContextProvider>
+              <CodesContextProvider>
+                <SurveyContextProvider>
                   <SurveyRouter />
-                </CodesContextProvider>
-              </SurveyAuthStateContextProvider>
-            </SurveyContextProvider>
+                </SurveyContextProvider>
+              </CodesContextProvider>
+            </SurveyAuthStateContextProvider>
           </AuthenticatedRouteGuard>
         </BaseLayout>
       </RouteWithTitle>

@@ -12,23 +12,16 @@ import RouteWithTitle from 'utils/RouteWithTitle';
 import { getTitle } from 'utils/Utils';
 
 /**
- * Router for all `/admin/projects/:id/surveys/:survey_id/telemetry/*` pages.
+ * Router for all `/admin/surveys/:survey_id/telemetry/*` pages.
  *
  * @return {*}
  */
 export const TelemetryRouter = () => {
   return (
     <Switch>
-      <Redirect
-        exact
-        from="/admin/projects/:id/surveys/:survey_id/telemetry"
-        to="/admin/projects/:id/surveys/:survey_id/telemetry/details"
-      />
+      <Redirect exact from="/admin/surveys/:survey_id/telemetry" to="/admin/surveys/:survey_id/telemetry/details" />
 
-      <RouteWithTitle
-        exact
-        path="/admin/projects/:id/surveys/:survey_id/telemetry/details"
-        title={getTitle('Telemetry')}>
+      <RouteWithTitle exact path="/admin/surveys/:survey_id/telemetry/details" title={getTitle('Telemetry')}>
         <SurveyRoleRouteGuard
           validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
@@ -40,7 +33,7 @@ export const TelemetryRouter = () => {
 
       <RouteWithTitle
         exact
-        path="/admin/projects/:id/surveys/:survey_id/telemetry/manage"
+        path="/admin/surveys/:survey_id/telemetry/manage"
         title={getTitle('Devices and Deployments')}>
         <SurveyRoleRouteGuard
           validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
@@ -53,7 +46,7 @@ export const TelemetryRouter = () => {
 
       <RouteWithTitle
         exact
-        path="/admin/projects/:id/surveys/:survey_id/telemetry/manage/device/create"
+        path="/admin/surveys/:survey_id/telemetry/manage/device/create"
         title={getTitle('Add Device')}>
         <SurveyRoleRouteGuard
           validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
@@ -66,7 +59,7 @@ export const TelemetryRouter = () => {
 
       <RouteWithTitle
         exact
-        path="/admin/projects/:id/surveys/:survey_id/telemetry/manage/device/:device_id/edit"
+        path="/admin/surveys/:survey_id/telemetry/manage/device/:device_id/edit"
         title={getTitle('Edit Device')}>
         <SurveyRoleRouteGuard
           validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
@@ -79,7 +72,7 @@ export const TelemetryRouter = () => {
 
       <RouteWithTitle
         exact
-        path="/admin/projects/:id/surveys/:survey_id/telemetry/manage/deployment/create"
+        path="/admin/surveys/:survey_id/telemetry/manage/deployment/create"
         title={getTitle('Add Deployment')}>
         <SurveyRoleRouteGuard
           validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
@@ -92,7 +85,7 @@ export const TelemetryRouter = () => {
 
       <RouteWithTitle
         exact
-        path="/admin/projects/:id/surveys/:survey_id/telemetry/manage/deployment/:deployment_id/edit"
+        path="/admin/surveys/:survey_id/telemetry/manage/deployment/:deployment_id/edit"
         title={getTitle('Edit Deployment')}>
         <SurveyRoleRouteGuard
           validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}

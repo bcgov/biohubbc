@@ -10,7 +10,7 @@ import { EditHabitatFeaturePage } from './edit/EditHabitatFeaturePage';
 import { SurveyHabitatFeaturePage } from './SurveyHabitatFeaturePage';
 
 /**
- * Router for all `/admin/projects/:id/surveys/:survey_id/habitat-features/*` pages.
+ * Router for all `/admin/surveys/:survey_id/habitat-features/*` pages.
  *
  * @return {*}
  */
@@ -19,25 +19,25 @@ export const HabitatFeatureRouter = () => {
     <Switch>
       <Redirect
         exact
-        from="/admin/projects/:id/surveys/:survey_id/habitat-features"
-        to="/admin/projects/:id/surveys/:survey_id/habitat-features/details"
+        from="/admin/surveys/:survey_id/habitat-features"
+        to="/admin/surveys/:survey_id/habitat-features/details"
       />
 
       <Redirect
         exact
-        from="/admin/projects/:id/surveys/:survey_id/habitat-features/sampling/:survey_sample_site_id/edit"
-        to="/admin/projects/:id/surveys/:survey_id/sampling/:survey_sample_site_id/edit"
+        from="/admin/surveys/:survey_id/habitat-features/sampling/:survey_sample_site_id/edit"
+        to="/admin/surveys/:survey_id/sampling/:survey_sample_site_id/edit"
       />
 
       <Redirect
         exact
-        from="/admin/projects/:id/surveys/:survey_id/habitat-features/sampling"
-        to="/admin/projects/:id/surveys/:survey_id/sampling"
+        from="/admin/surveys/:survey_id/habitat-features/sampling"
+        to="/admin/surveys/:survey_id/sampling"
       />
 
       <RouteWithTitle
         exact
-        path="/admin/projects/:id/surveys/:survey_id/habitat-features/details"
+        path="/admin/surveys/:survey_id/habitat-features/details"
         title={getTitle('Manage Habitat Features')}>
         <SurveyRoleRouteGuard
           validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
@@ -52,7 +52,7 @@ export const HabitatFeatureRouter = () => {
 
       <RouteWithTitle
         exact
-        path="/admin/projects/:id/surveys/:survey_id/habitat-features/create"
+        path="/admin/surveys/:survey_id/habitat-features/create"
         title={getTitle('Create Habitat Feature')}>
         <SurveyRoleRouteGuard
           validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
@@ -67,7 +67,7 @@ export const HabitatFeatureRouter = () => {
 
       <RouteWithTitle
         exact
-        path="/admin/projects/:id/surveys/:survey_id/habitat-features/:habitat_feature_id/edit"
+        path="/admin/surveys/:survey_id/habitat-features/:habitat_feature_id/edit"
         title={getTitle('Edit Habitat Feature')}>
         <SurveyRoleRouteGuard
           validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}

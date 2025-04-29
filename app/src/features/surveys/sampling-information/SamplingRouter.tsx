@@ -13,17 +13,14 @@ import { CreateSamplePeriodPage } from './periods/create/CreateSamplePeriodPage'
 import { EditSamplePeriodPage } from './periods/edit/EditSamplePeriodPage';
 
 /**
- * Router for all `/admin/projects/:id/surveys/:survey_id/sampling/*` pages.
+ * Router for all `/admin/surveys/:survey_id/sampling/*` pages.
  *
  * @return {*}
  */
 export const SamplingRouter = () => {
   return (
     <Switch>
-      <RouteWithTitle
-        exact
-        path="/admin/projects/:id/surveys/:survey_id/sampling"
-        title={getTitle('Manage Sampling Information')}>
+      <RouteWithTitle exact path="/admin/surveys/:survey_id/sampling" title={getTitle('Manage Sampling Information')}>
         <SurveyRoleRouteGuard
           validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
@@ -33,10 +30,7 @@ export const SamplingRouter = () => {
         </SurveyRoleRouteGuard>
       </RouteWithTitle>
 
-      <RouteWithTitle
-        exact
-        path="/admin/projects/:id/surveys/:survey_id/sampling/create"
-        title={getTitle('Create Sampling Sites')}>
+      <RouteWithTitle exact path="/admin/surveys/:survey_id/sampling/create" title={getTitle('Create Sampling Sites')}>
         <SurveyRoleRouteGuard
           validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
@@ -48,7 +42,7 @@ export const SamplingRouter = () => {
 
       <RouteWithTitle
         exact
-        path="/admin/projects/:id/surveys/:survey_id/sampling/:survey_sample_site_id/edit"
+        path="/admin/surveys/:survey_id/sampling/:survey_sample_site_id/edit"
         title={getTitle('Edit Sampling Site')}>
         <SurveyRoleRouteGuard
           validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
@@ -61,7 +55,7 @@ export const SamplingRouter = () => {
 
       <RouteWithTitle
         exact
-        path="/admin/projects/:id/surveys/:survey_id/sampling/techniques/create"
+        path="/admin/surveys/:survey_id/sampling/techniques/create"
         title={getTitle('Create Technique')}>
         <SurveyRoleRouteGuard
           validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
@@ -74,7 +68,7 @@ export const SamplingRouter = () => {
 
       <RouteWithTitle
         exact
-        path="/admin/projects/:id/surveys/:survey_id/sampling/techniques/:method_technique_id/edit"
+        path="/admin/surveys/:survey_id/sampling/techniques/:method_technique_id/edit"
         title={getTitle('Edit Technique')}>
         <SurveyRoleRouteGuard
           validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
@@ -85,10 +79,7 @@ export const SamplingRouter = () => {
         </SurveyRoleRouteGuard>
       </RouteWithTitle>
 
-      <RouteWithTitle
-        exact
-        path="/admin/projects/:id/surveys/:survey_id/sampling/period/create"
-        title={getTitle('Create Periods')}>
+      <RouteWithTitle exact path="/admin/surveys/:survey_id/sampling/period/create" title={getTitle('Create Periods')}>
         <DialogContextProvider>
           <CreateSamplePeriodPage />
         </DialogContextProvider>
@@ -96,7 +87,7 @@ export const SamplingRouter = () => {
 
       <RouteWithTitle
         exact
-        path="/admin/projects/:id/surveys/:survey_id/sampling/period/:survey_sample_period_id/edit"
+        path="/admin/surveys/:survey_id/sampling/period/:survey_sample_period_id/edit"
         title={getTitle('Edit Period')}>
         <DialogContextProvider>
           <EditSamplePeriodPage />
