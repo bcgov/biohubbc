@@ -13,11 +13,14 @@ export class CollectionRepository extends BaseRepository {
    * Get the base query for retrieving collections with participants.
    *
    * @param {Knex.QueryBuilder} queryBuilder - A Knex query builder to modify.
+   * @param {number[]} parentCollectionIds
    * @returns {Knex.QueryBuilder} The modified query builder including participants.
    * @memberof CollectionRepository
    */
-  _getCollectionsBaseQuery(queryBuilder: Knex.QueryBuilder): Knex.QueryBuilder {
+  _getCollectionsBaseQuery(queryBuilder: Knex.QueryBuilder, parentCollectionIds?: number[]): Knex.QueryBuilder {
     const knex = getKnex();
+
+    console.log('parents ids', parentCollectionIds);
 
     return (
       queryBuilder
@@ -33,37 +36,45 @@ export class CollectionRepository extends BaseRepository {
             .groupBy('sur.system_user_id');
         })
 
-        // First, create a recursive CTE that just walks the collection tree structure
+        // Recursive CTE for collection hierarchy
         .withRecursive('collection_hierarchy', (qb) => {
-          // Non-recursive part: start with root collections
-          qb.select('c.collection_id', 'c.name', 'c.description', 'c.parent_collection_id')
-            .from('collection AS c')
-            .whereNull('c.parent_collection_id')
-            .unionAll(function () {
-              // Recursive part: join with parent collections
-              this.select('c.collection_id', 'c.name', 'c.description', 'c.parent_collection_id')
-                .from('collection AS c')
-                .join('collection_hierarchy AS ch', 'c.parent_collection_id', 'ch.collection_id');
-            });
+          const base = qb
+            .select('c.collection_id', 'c.name', 'c.description', 'c.parent_collection_id')
+            .from('collection AS c');
+
+          // Start recursion at root collections (where parent is null), or start at the specified parents
+          if (parentCollectionIds?.length) {
+            base.whereIn('c.parent_collection_id', parentCollectionIds);
+          } else {
+            base.whereNull('c.parent_collection_id');
+          }
+
+          base.unionAll(function () {
+            this.select('c.collection_id', 'c.name', 'c.description', 'c.parent_collection_id')
+              .from('collection AS c')
+              .join('collection_hierarchy AS ch', 'c.parent_collection_id', 'ch.collection_id');
+          });
+
+          return base;
         })
 
-        // CTE for collection members (participants)
+        // CTE for collection members
         .with('collection_members', (qb) => {
           qb.select(
             'cm.collection_id',
             knex.raw(`COALESCE(
-        jsonb_agg(DISTINCT jsonb_build_object(
-          'collection_member_id', cm.collection_member_id,
-          'collection_id', cm.collection_id,
-          'system_user_id', su.system_user_id,
-          'user_identifier', su.user_identifier,
-          'user_guid', su.user_guid,
-          'identity_source', uis.name,
-          'email', su.email,
-          'display_name', su.display_name,
-          'collection_role_id', cr.collection_role_id,
-          'collection_role_name', cr.name
-        )) FILTER (WHERE su.system_user_id IS NOT NULL), '[]'::jsonb) AS participants`)
+            jsonb_agg(DISTINCT jsonb_build_object(
+              'collection_member_id', cm.collection_member_id,
+              'collection_id', cm.collection_id,
+              'system_user_id', su.system_user_id,
+              'user_identifier', su.user_identifier,
+              'user_guid', su.user_guid,
+              'identity_source', uis.name,
+              'email', su.email,
+              'display_name', su.display_name,
+              'collection_role_id', cr.collection_role_id,
+              'collection_role_name', cr.name
+            )) FILTER (WHERE su.system_user_id IS NOT NULL), '[]'::jsonb) AS participants`)
           )
             .from('collection_member AS cm')
             .join('collection_role as cr', 'cm.collection_role_id', 'cr.collection_role_id')
@@ -72,42 +83,28 @@ export class CollectionRepository extends BaseRepository {
             .groupBy('cm.collection_id');
         })
 
-        // Now, create a recursive CTE that just handles the collection hierarchy
-        .withRecursive('collection_with_children', (qb) => {
-          // Non-recursive part: Start with root collections
-          qb.select('ch.collection_id', 'ch.name', 'ch.description', 'ch.parent_collection_id')
-            .from('collection_hierarchy AS ch')
-            .whereNull('ch.parent_collection_id') // Only root collections
-            .unionAll(function () {
-              // Recursive part: Join collections to build the hierarchy, without aggregation
-              this.select('c.collection_id', 'c.name', 'c.description', 'c.parent_collection_id')
-                .from('collection_hierarchy AS ch')
-                .join('collection AS c', 'c.parent_collection_id', 'ch.collection_id');
-            });
-        })
-
-        // Now use the 'collection_with_children' and join with 'collection_members'
+        // CTE with subcollections and members
         .with('collection_with_subcollections', (qb) => {
           qb.select(
-            'cwc.collection_id',
-            'cwc.name',
-            'cwc.description',
-            'cwc.parent_collection_id',
+            'ch.collection_id',
+            'ch.name',
+            'ch.description',
+            'ch.parent_collection_id',
             knex.raw(`COALESCE(cm.participants, '[]'::jsonb) AS participants`),
-            knex.raw("'[]'::jsonb AS subcollections") // Empty array for subcollections in this step
+            knex.raw("'[]'::jsonb AS subcollections")
           )
-            .from('collection_with_children AS cwc')
-            .leftJoin('collection_members AS cm', 'cm.collection_id', 'cwc.collection_id');
+            .from('collection_hierarchy AS ch')
+            .leftJoin('collection_members AS cm', 'cm.collection_id', 'ch.collection_id');
         })
 
-        // Final step: Aggregation of subcollections by recursively joining 'collection_with_subcollections'
+        // Build nested structure
         .with('final_collection_structure', (qb) => {
           qb.select(
-            'cwc.collection_id',
-            'cwc.name',
-            'cwc.description',
-            'cwc.parent_collection_id',
-            'cwc.participants',
+            'c.collection_id',
+            'c.name',
+            'c.description',
+            'c.parent_collection_id',
+            'c.participants',
             knex.raw(`
         COALESCE(
           jsonb_agg(
@@ -119,23 +116,17 @@ export class CollectionRepository extends BaseRepository {
               'participants', child.participants,
               'subcollections', child.subcollections
             )
-          ),
+          ) FILTER (WHERE child.collection_id IS NOT NULL),
           '[]'::jsonb
         ) AS subcollections
       `)
           )
-            .from('collection_with_subcollections AS cwc')
-            .leftJoin('collection_with_subcollections AS child', 'child.parent_collection_id', 'cwc.collection_id')
-            .groupBy(
-              'cwc.collection_id',
-              'cwc.name',
-              'cwc.description',
-              'cwc.parent_collection_id',
-              'cwc.participants'
-            );
+            .from('collection_with_subcollections AS c')
+            .leftJoin('collection_with_subcollections AS child', 'child.parent_collection_id', 'c.collection_id')
+            .groupBy('c.collection_id', 'c.name', 'c.description', 'c.parent_collection_id', 'c.participants');
         })
 
-        // Final query to get root collections with full hierarchy
+        // Final output
         .select(
           'collection.collection_id',
           'collection.name',
@@ -145,7 +136,6 @@ export class CollectionRepository extends BaseRepository {
           'collection.subcollections'
         )
         .from('final_collection_structure AS collection')
-        .whereNull('collection.parent_collection_id') // Only root collections
         .orderBy('collection.collection_id')
     );
   }
@@ -200,21 +190,8 @@ export class CollectionRepository extends BaseRepository {
       );
     }
 
-    // If the request had parent_collection_id defined but equal to null, we want to filter using null. We only ignore the filter parameter if it is undefined.
-    if (filterFields.parent_collection_id !== undefined) {
-      getCollectionIdsQuery.whereIn('collection.collection_id', (subquery) => {
-        const sub = subquery.select('collection_id').from('collection_member');
-
-        if (filterFields.parent_collection_id === null) {
-          return sub.whereNull('parent_collection_id');
-        } else {
-          return sub.where('parent_collection_id', filterFields.parent_collection_id);
-        }
-      });
-    }
-
     const query = getKnex().queryBuilder();
-    this._getCollectionsBaseQuery(query);
+    this._getCollectionsBaseQuery(query, filterFields.parent_collection_id ? [filterFields.parent_collection_id] : []);
 
     query.whereIn('collection.collection_id', getCollectionIdsQuery);
 
@@ -247,9 +224,8 @@ export class CollectionRepository extends BaseRepository {
       }
     }
 
-    const response = await this.connection.knex(query);
+    const response = await this.connection.knex(query, Collection);
 
-    console.log(response.rows, response.rows[0].subcollections, 'rows!');
     return response.rows;
   }
 

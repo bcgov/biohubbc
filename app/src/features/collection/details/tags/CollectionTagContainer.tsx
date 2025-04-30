@@ -319,6 +319,7 @@ export const CollectionTagContainer = (props: ICollectionsTagContainerProps) => 
           collectionId={collectionId}
           onSubmit={() => {
             collectionsDataLoader.refresh(paginationSort, advancedFiltersModel);
+            setCollectionDialogIsOpen(false);
           }}
           onClose={() => {
             setCollectionDialogIsOpen(false);

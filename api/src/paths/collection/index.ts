@@ -294,16 +294,14 @@ export function createCollection(): RequestHandler {
     try {
       await connection.open();
 
-      // TODO: FIX THE SYSTEM_USER QUERY
       const systemUserId = connection.systemUserId();
-
-      console.log(systemUserId);
 
       const collectionService = new CollectionService(connection);
 
       const data = req.body as IPostCollectionRequest;
 
       await collectionService.createCollection(data, systemUserId);
+
       await connection.commit();
 
       return res.status(201).json();
