@@ -79,9 +79,9 @@ export class CollectionMemberRepository extends BaseRepository {
       ])
       .orderBy('sp.create_date', 'desc');
 
-    const result = await query;
+    const response = await this.connection.knex(query, CollectionParticipant.merge(SystemUserWithRoles));
 
-    return result?.[0] || null;
+    return response.rows[0];
   }
 
   /**

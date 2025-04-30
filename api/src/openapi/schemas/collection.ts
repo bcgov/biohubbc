@@ -17,10 +17,15 @@ export const CreateCollectionParticipantSchema: OpenAPIV3.SchemaObject = {
 export const CreateCollectionSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
   additionalProperties: false,
-  required: ['name', 'description', 'participants'],
+  required: ['name', 'description', 'participants', 'parent_collection_id'],
   properties: {
     name: { type: 'string', description: 'The name of the collection to create' },
     description: { type: 'string', description: 'The description of the collection to create', nullable: true },
+    parent_collection_id: {
+      type: 'integer',
+      description: 'Primary key of the parent collection that this new record belongs to',
+      nullable: true
+    },
     participants: {
       type: 'array',
       description: 'List of users to add to the collection',
@@ -134,15 +139,35 @@ export const CollectionAndSystemUserSchema: OpenAPIV3.SchemaObject = {
 export const GetCollectionSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
   additionalProperties: false,
-  required: ['collection_id', 'name', 'description', 'participants'],
+  required: ['collection_id', 'parent_collection_id', 'name', 'description', 'participants', 'subcollections'],
   properties: {
-    collection_id: { type: 'integer', description: 'Primary key of the collection' },
-    name: { type: 'string', description: 'The name of the collection to create' },
-    description: { type: 'string', description: 'The description of the collection to create', nullable: true },
+    collection_id: {
+      type: 'integer',
+      description: 'Primary key of the collection'
+    },
+    parent_collection_id: {
+      type: 'integer',
+      description: 'Primary key of the parent collection that the record belongs to',
+      nullable: true
+    },
+    name: {
+      type: 'string',
+      description: 'The name of the collection to create'
+    },
+    description: {
+      type: 'string',
+      description: 'The description of the collection to create',
+      nullable: true
+    },
     participants: {
       type: 'array',
       description: 'List of users to add to the collection',
       items: CollectionAndSystemUserSchema
+    },
+    subcollections: {
+      // type: 'array',
+      // description: 'List of child collections',
+      // items: {} as OpenAPIV3.SchemaObject // TODO: Add children recursively
     }
   }
 };

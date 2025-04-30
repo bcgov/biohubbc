@@ -93,31 +93,12 @@ const ParticipantsCollectionForm = (props: IParticipantsCollectionFormProps): JS
   return (
     <form onSubmit={handleSubmit}>
       <Box component="fieldset">
-        <Typography component="legend">Invite</Typography>
-        <Typography
-          variant="body1"
-          color="textSecondary"
-          sx={{
-            maxWidth: '72ch'
-          }}>
-          There must be at least one person with the Coordinator role.
-        </Typography>
-        {errors?.['participants'] && !values.participants.length && (
-          <Box mt={3}>
-            <AlertBar
-              severity="error"
-              variant="standard"
-              title={'No team members added'}
-              text={'At least one team member needs to be added to this project.'}
-            />
-          </Box>
-        )}
         {errors?.['participants'] && values.participants.length > 0 && (
           <Box mt={3}>
             <AlertBar severity="error" variant="standard" title={alertBarText().title} text={alertBarText().text} />
           </Box>
         )}
-        <Box mt={3}>
+        <Box>
           <SystemUserAutocompleteField
             formikFieldName="system_user_id"
             label="Team Member"

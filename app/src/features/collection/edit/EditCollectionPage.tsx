@@ -22,6 +22,7 @@ import CollectionForm from '../edit/CollectionForm';
 
 export const defaultCollectionDataFormValues: IUpdateCollectionRequest = {
   collection_id: null as unknown as number,
+  parent_collection_id: null,
   name: '',
   description: '',
   participants: []

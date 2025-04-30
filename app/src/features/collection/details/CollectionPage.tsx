@@ -1,4 +1,10 @@
-import { mdiAccountMultiple, mdiClipboardOutline, mdiDatabaseSearch, mdiTagOutline } from '@mdi/js';
+import {
+  mdiAccountMultipleOutline,
+  mdiChartBoxOutline,
+  mdiClipboardOutline,
+  mdiDatabaseSearchOutline,
+  mdiLabelOutline
+} from '@mdi/js';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
@@ -13,11 +19,13 @@ import { CollectionDataContainer } from './data/CollectionDataContainer';
 import CollectionHeader from './header/CollectionHeader';
 import CollectionParticipantsContainer from './members/CollectionMembersContainer';
 import CollectionSurveyContainer from './survey/CollectionSurveyContainer';
+import { CollectionTagContainer } from './tags/CollectionTagContainer';
 
 enum CollectionView {
   Surveys = 'surveys',
   Data = 'data',
   Tags = 'Tags',
+  Queries = 'Queries',
   Participants = 'participants'
 }
 
@@ -50,9 +58,10 @@ const CollectionPage = () => {
 
   const views = [
     { value: CollectionView.Surveys, label: 'Surveys', icon: mdiClipboardOutline },
-    { value: CollectionView.Tags, label: 'Tags', icon: mdiTagOutline },
-    { value: CollectionView.Data, label: 'Data', icon: mdiDatabaseSearch },
-    { value: CollectionView.Participants, label: 'Members', icon: mdiAccountMultiple }
+    { value: CollectionView.Tags, label: 'Tags', icon: mdiLabelOutline },
+    { value: CollectionView.Data, label: 'Data', icon: mdiDatabaseSearchOutline },
+    { value: CollectionView.Queries, label: 'Queries', icon: mdiChartBoxOutline },
+    { value: CollectionView.Participants, label: 'Members', icon: mdiAccountMultipleOutline }
   ];
 
   return (
@@ -73,6 +82,12 @@ const CollectionPage = () => {
             {activeView === CollectionView.Surveys && (
               <Box>
                 <CollectionSurveyContainer collectionId={collection.collection_id} showSearch={false} />
+              </Box>
+            )}
+
+            {activeView === CollectionView.Tags && (
+              <Box>
+                <CollectionTagContainer collectionId={collection.collection_id} showSearch={false} />
               </Box>
             )}
 

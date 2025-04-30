@@ -9,6 +9,7 @@ export const CollectionModel = z.object({
   collection_id: z.number(),
   name: z.string(),
   description: z.string(),
+  parent_collection_id: z.number().nullable(),
   create_date: z.string(),
   create_user: z.number(),
   update_date: z.string().nullable(),

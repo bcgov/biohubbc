@@ -5,14 +5,20 @@ import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
+import Toolbar from '@mui/material/Toolbar';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import { GridColDef, GridPaginationModel, GridSortDirection, GridSortModel } from '@mui/x-data-grid';
 import { TeamMemberAvatar } from 'components/avatar/TeamMemberAvatar';
+import { CreateButton } from 'components/buttons/CreateButton';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
+import CollectionsListFilterForm, {
+  CollectionAdvancedFiltersInitialValues,
+  ICollectionAdvancedFilters
+} from 'features/summary/list-data/collection/CollectionListFilterForm';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
@@ -22,10 +28,7 @@ import { useMemo, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions, StringValues } from 'types/misc';
 import { firstOrNull, getRandomHexColor } from 'utils/Utils';
-import CollectionsListFilterForm, {
-  CollectionAdvancedFiltersInitialValues,
-  ICollectionAdvancedFilters
-} from './CollectionListFilterForm';
+import CollectionTagDialog from './dialog/CollectionTagDialog';
 
 // Supported URL parameters
 // Note: Prefix 'p_' is used to avoid conflicts with similar query params from other components
@@ -34,7 +37,6 @@ type CollectionDataTableURLParams = {
   p_keyword?: string;
   p_itis_tsn?: number;
   p_system_user_id?: string;
-  p_parent_collection_id?: number | null;
   // pagination
   p_page?: string;
   p_limit?: string;
@@ -44,7 +46,8 @@ type CollectionDataTableURLParams = {
 
 const pageSizeOptions = [10, 25, 50];
 
-interface ICollectionsListContainerProps {
+interface ICollectionsTagContainerProps {
+  collectionId: number;
   showSearch: boolean;
 }
 
@@ -61,12 +64,13 @@ const initialPaginationParams: Required<ApiPaginationRequestOptions> = {
  *
  * @return {*}
  */
-const CollectionsListContainer = (props: ICollectionsListContainerProps) => {
-  const { showSearch } = props;
+export const CollectionTagContainer = (props: ICollectionsTagContainerProps) => {
+  const { collectionId, showSearch } = props;
 
   const biohubApi = useBiohubApi();
 
   const { searchParams, setSearchParams } = useSearchParams<StringValues<CollectionDataTableURLParams>>();
+  const [collectionDialogIsOpen, setCollectionDialogIsOpen] = useState(false);
 
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     pageSize: Number(searchParams.get('p_limit') ?? initialPaginationParams.limit),
@@ -80,28 +84,14 @@ const CollectionsListContainer = (props: ICollectionsListContainerProps) => {
     }
   ]);
 
-  const getParentCollectionId = (parentCollectionId: string | null | undefined) => {
-    // If the value is "null" (string), return null
-    if (parentCollectionId === null) {
-      return null;
-    }
-
-    // If it's a valid string or number, convert it to a number
-    return parentCollectionId
-      ? Number(parentCollectionId)
-      : CollectionAdvancedFiltersInitialValues.parent_collection_id;
-  };
-
   const [advancedFiltersModel, setAdvancedFiltersModel] = useState<ICollectionAdvancedFilters>({
     keyword: searchParams.get('p_keyword') ?? CollectionAdvancedFiltersInitialValues.keyword,
     itis_tsn: searchParams.get('p_itis_tsn')
       ? Number(searchParams.get('p_itis_tsn'))
       : CollectionAdvancedFiltersInitialValues.itis_tsn,
     system_user_id: searchParams.get('p_system_user_id') ?? CollectionAdvancedFiltersInitialValues.system_user_id,
-    parent_collection_id: getParentCollectionId(searchParams.get('p_parent_collection_id'))
+    parent_collection_id: collectionId
   });
-
-  console.log(advancedFiltersModel);
 
   const sort = firstOrNull(sortModel);
   const paginationSort: ApiPaginationRequestOptions = useMemo(
@@ -226,6 +216,24 @@ const CollectionsListContainer = (props: ICollectionsListContainerProps) => {
 
   return (
     <>
+      <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <Typography variant="h4" component="h2">
+          Tags &zwnj;
+          <Typography component="span" color="textSecondary" lineHeight="inherit" fontSize="inherit" fontWeight={400}>
+            ({Number(collectionsDataLoader.data?.pagination?.total ?? 0).toLocaleString()})
+          </Typography>
+        </Typography>
+        <Stack gap={1} direction="row">
+          <CreateButton
+            label="Add Tags"
+            onClick={() => {
+              setCollectionDialogIsOpen(true);
+            }}
+          />
+        </Stack>
+      </Toolbar>
+      <Divider />
+
       <Collapse in={showSearch}>
         <Box py={2} px={2}>
           <CollectionsListFilterForm
@@ -305,8 +313,19 @@ const CollectionsListContainer = (props: ICollectionsListContainerProps) => {
           />
         </LoadingGuard>
       </Box>
+
+      {collectionDialogIsOpen && (
+        <CollectionTagDialog
+          collectionId={collectionId}
+          onSubmit={() => {
+            collectionsDataLoader.refresh(paginationSort, advancedFiltersModel);
+          }}
+          onClose={() => {
+            setCollectionDialogIsOpen(false);
+          }}
+          open={collectionDialogIsOpen}
+        />
+      )}
     </>
   );
 };
-
-export default CollectionsListContainer;

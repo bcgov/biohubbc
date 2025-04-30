@@ -12,6 +12,7 @@ export interface IGetCollectionsResponse {
 export interface ICreateCollectionRequest {
   name: string;
   description: string | null;
+  parent_collection_id: number | null;
   participants: IPostCollectionParticipant[];
 }
 
@@ -27,6 +28,7 @@ export interface ICreateSurveyCollectionRequest {
 
 export interface IUpdateCollectionRequest {
   collection_id: number;
+  parent_collection_id: number | null;
   name: string;
   description: string | null;
   participants: ICollectionParticipant[];
@@ -34,6 +36,7 @@ export interface IUpdateCollectionRequest {
 
 export interface ICollection {
   collection_id: number;
+  parent_collection_id: number;
   name: string;
   description: string | null;
   participants: ICollectionParticipant[];

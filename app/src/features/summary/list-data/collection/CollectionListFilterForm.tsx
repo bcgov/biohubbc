@@ -9,12 +9,14 @@ export type ICollectionAdvancedFilters = {
   keyword?: string;
   itis_tsn?: number;
   system_user_id?: string;
+  parent_collection_id?: number | null;
 };
 
 export const CollectionAdvancedFiltersInitialValues: ICollectionAdvancedFilters = {
   keyword: undefined,
   itis_tsn: undefined,
-  system_user_id: undefined
+  system_user_id: undefined,
+  parent_collection_id: null
 };
 
 interface ICollectionsListFilterFormProps {

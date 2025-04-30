@@ -90,6 +90,15 @@ GET.apiDoc = {
         nullable: true
       }
     },
+    {
+      in: 'query',
+      name: 'parent_collection_id',
+      required: false,
+      schema: {
+        type: 'number',
+        nullable: true
+      }
+    },
     ...paginationRequestQueryParamSchema
   ],
   responses: {
@@ -188,6 +197,19 @@ export function findCollections(): RequestHandler {
 }
 
 /**
+ * Returns null instead of undefined if the value is null
+ *
+ * @param {number | null | undefined} param
+ * @returns
+ */
+const parseNullableQueryParam = (param: number | null | undefined) => {
+  if (param === null) {
+    return null;
+  }
+  return param ? Number(param) : undefined;
+};
+
+/**
  * Parse the query parameters from the request into the expected format.
  *
  * @param {Request<unknown, unknown, unknown, ICollectionAdvancedFilters>} req
@@ -199,7 +221,8 @@ function parseQueryParams(
   return {
     keyword: req.query.keyword ?? undefined,
     itis_tsns: req.query.itis_tsns ?? undefined,
-    system_user_id: (req.query.system_user_id && Number(req.query.system_user_id)) ?? undefined
+    system_user_id: req.query.system_user_id !== undefined ? Number(req.query.system_user_id) : undefined,
+    parent_collection_id: parseNullableQueryParam(req.query.parent_collection_id)
   };
 }
 
@@ -264,17 +287,23 @@ export function createCollection(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'createCollection' });
 
+    console.log('HERE');
+
     const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
 
+      // TODO: FIX THE SYSTEM_USER QUERY
+      const systemUserId = connection.systemUserId();
+
+      console.log(systemUserId);
+
       const collectionService = new CollectionService(connection);
 
       const data = req.body as IPostCollectionRequest;
 
-      await collectionService.createCollection(data);
-
+      await collectionService.createCollection(data, systemUserId);
       await connection.commit();
 
       return res.status(201).json();

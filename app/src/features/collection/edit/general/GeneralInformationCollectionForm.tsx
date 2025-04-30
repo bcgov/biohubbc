@@ -36,7 +36,7 @@ const GeneralInformationCollectionForm = () => {
           maxLength={200}
           other={{
             multiline: true,
-            rows: 4
+            rows: 3
           }}
         />
       </Grid>

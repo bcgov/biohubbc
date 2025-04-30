@@ -171,7 +171,7 @@ export const useCollectionApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Get project collection details based on its ID
+   * Get a specific collection by its id
    *
    * @param {number} collectionId
    * @return {*} {Promise<ICollection>}

@@ -23,6 +23,7 @@ import CollectionForm from '../edit/CollectionForm';
 export const defaultCollectionDataFormValues: ICreateCollectionRequest = {
   name: '',
   description: '',
+  parent_collection_id: null,
   participants: []
 };
 

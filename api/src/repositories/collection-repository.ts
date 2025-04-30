@@ -18,57 +18,115 @@ export class CollectionRepository extends BaseRepository {
    */
   _getCollectionsBaseQuery(queryBuilder: Knex.QueryBuilder): Knex.QueryBuilder {
     const knex = getKnex();
-    const query = queryBuilder
-      .with('user_roles', (qb) => {
-        qb.select(
-          'sur.system_user_id',
-          knex.raw('array_agg(DISTINCT sr.system_role_id) FILTER (WHERE sr.system_role_id IS NOT NULL) AS role_ids'),
-          knex.raw('array_agg(DISTINCT sr.name) FILTER (WHERE sr.name IS NOT NULL) AS role_names')
-        )
-          .from('system_user_role AS sur')
-          .leftJoin('system_role AS sr', 'sr.system_role_id', 'sur.system_role_id')
-          .groupBy('sur.system_user_id');
-      })
-      .select(
-        'collection.collection_id',
-        'collection.name',
-        'collection.description',
-        knex.raw(`
-      COALESCE(
-        jsonb_agg(
-          DISTINCT jsonb_build_object(
-            'collection_member_id', cp.collection_member_id,
-            'collection_id', cp.collection_id,
-            'system_user_id', su.system_user_id,
-            'user_identifier', su.user_identifier,
-            'user_guid', su.user_guid,
-            'identity_source', uis.name,
-            'email', su.email,
-            'display_name', su.display_name,
-            'given_name', su.given_name,
-            'family_name', su.family_name,
-            'agency', su.agency,
-            'collection_role_id', cp.collection_role_id,
-            'collection_role_name', cr.name,
-            'role_ids', ur.role_ids,
-            'role_names', ur.role_names
-          )
-        ) FILTER (WHERE su.system_user_id IS NOT NULL),
-        '[]'::jsonb
-      ) AS participants
-    `)
-      )
-      .from('collection')
-      .leftJoin('collection_member AS cp', 'cp.collection_id', 'collection.collection_id')
-      .leftJoin('collection_role AS cr', 'cr.collection_role_id', 'cp.collection_role_id')
-      .leftJoin('system_user AS su', (qb) => {
-        qb.on('su.system_user_id', '=', 'cp.system_user_id').andOnNull('su.record_end_date');
-      })
-      .leftJoin('user_identity_source AS uis', 'uis.user_identity_source_id', 'su.user_identity_source_id')
-      .leftJoin('user_roles AS ur', 'ur.system_user_id', 'su.system_user_id')
-      .groupBy('collection.collection_id');
 
-    return query;
+    return (
+      queryBuilder
+
+        // CTE for user roles
+        .with('user_roles', (qb) => {
+          qb.select(
+            'sur.system_user_id',
+            knex.raw(`array_agg(DISTINCT sr.system_role_id) FILTER (WHERE sr.system_role_id IS NOT NULL) AS role_ids`),
+            knex.raw(`array_agg(DISTINCT sr.name) FILTER (WHERE sr.name IS NOT NULL) AS role_names`)
+          )
+            .from('system_user_role AS sur')
+            .leftJoin('system_role AS sr', 'sr.system_role_id', 'sur.system_role_id')
+            .groupBy('sur.system_user_id');
+        })
+
+        .withRecursive('collection_tree', (qb) => {
+          // Non-recursive part: Select the root collections (those with no parent)
+          qb.select(
+            'c.collection_id',
+            'c.name',
+            'c.description',
+            'c.parent_collection_id',
+            knex.raw(`'[]'::jsonb AS subcollections`)
+          )
+            .from('collection AS c')
+            .whereNull('c.parent_collection_id') // Only root collections (no parent)
+            .unionAll(function () {
+              // Recursive part: Select subcollections and join to previously selected collections
+              this.select(
+                'c.collection_id',
+                'c.name',
+                'c.description',
+                'c.parent_collection_id',
+                knex.raw(`'[]'::jsonb AS subcollections`)
+              )
+                .from('collection AS c')
+                .join('collection_tree AS ct', 'c.parent_collection_id', 'ct.collection_id'); // Recursively join to the previous result
+            });
+        })
+
+        // CTE for collection members (participants)
+        .with('collection_members', (qb) => {
+          qb.select(
+            'cm.collection_id',
+            knex.raw(`COALESCE(
+              jsonb_agg(DISTINCT jsonb_build_object(
+                'collection_member_id', cm.collection_member_id,
+                'collection_id', cm.collection_id,
+                'system_user_id', su.system_user_id,
+                'user_identifier', su.user_identifier,
+                'user_guid', su.user_guid,
+                'identity_source', uis.name,
+                'email', su.email,
+                'display_name', su.display_name,
+                'collection_role_id', cr.collection_role_id,
+                'collection_role_name', cr.name
+              )) FILTER (WHERE su.system_user_id IS NOT NULL), '[]'::jsonb) AS participants`)
+          )
+            .from('collection_member AS cm')
+            .join('collection_role as cr', 'cm.collection_role_id', 'cr.collection_role_id')
+            .leftJoin('system_user AS su', 'su.system_user_id', 'cm.system_user_id')
+            .leftJoin('user_identity_source AS uis', 'uis.user_identity_source_id', 'su.user_identity_source_id')
+            .groupBy('cm.collection_id');
+        })
+        // Get child-parent relationships for constructing subcollections
+        .with('collection_relations', (qb) => {
+          qb.select('ct.*').from('collection_tree AS ct');
+        })
+        // Use a non-recursive CTE to build the final JSON structure
+        .with('collection_json', (qb) => {
+          qb.select(
+            'cr.collection_id',
+            'cr.name',
+            'cr.description',
+            'cr.parent_collection_id',
+            knex.raw(`
+              (
+                SELECT jsonb_agg(
+                  jsonb_build_object(
+                    'collection_id', child.collection_id,
+                    'name', child.name,
+                    'description', child.description,
+                    'parent_collection_id', child.parent_collection_id,
+                    'participants', COALESCE(child_members.participants, '[]'::jsonb)
+                  )
+                )
+                FROM collection_relations child
+                LEFT JOIN collection_members child_members ON child_members.collection_id = child.collection_id
+                WHERE child.parent_collection_id = cr.collection_id
+              ) AS subcollections
+            `),
+            knex.raw(`COALESCE(cm.participants, '[]'::jsonb) AS participants`)
+          )
+            .from('collection_relations AS cr')
+            .leftJoin('collection_members AS cm', 'cm.collection_id', 'cr.collection_id');
+        })
+        // Main query to fetch final result - only root collections
+        .select(
+          'collection.collection_id',
+          'collection.name',
+          'collection.description',
+          'collection.parent_collection_id',
+          'collection.subcollections',
+          'collection.participants'
+        )
+        .from('collection_json AS collection')
+        .whereNull('collection.parent_collection_id')
+    );
   }
 
   /**
@@ -89,7 +147,7 @@ export class CollectionRepository extends BaseRepository {
   }
 
   /**
-   * Create a base query for finding collections with filters and permissions.
+   * Base query for finding collections with filters and permissions.
    *
    * @param {boolean} isUserAdmin - Whether the user has admin privileges.
    * @param {number | null} systemUserId - The ID of the system user.
@@ -106,23 +164,37 @@ export class CollectionRepository extends BaseRepository {
     const getCollectionIdsQuery = knex.select('collection_id').from('collection');
 
     if (!isUserAdmin) {
-      getCollectionIdsQuery.whereIn('collection.survey_id', (subquery) =>
+      getCollectionIdsQuery.whereIn('collection.collection_id', (subquery) =>
         subquery
-          .select('survey_id')
-          .from('survey')
-          .leftJoin('survey_member', 'survey_member.survey_id', 'survey.survey_id')
-          .where('survey_member.system_user_id', systemUserId)
+          .select('collection_id')
+          .from('collection')
+          .leftJoin('collection_member', 'collection_member.collection_id', 'collection.collection_id')
+          .where('collection_member.system_user_id', systemUserId)
       );
     }
 
     if (filterFields.system_user_id) {
-      getCollectionIdsQuery.whereIn('collection.survey_id', (subquery) =>
-        subquery.select('survey_id').from('survey_member').where('system_user_id', filterFields.system_user_id)
+      getCollectionIdsQuery.whereIn('collection.collection_id', (subquery) =>
+        subquery.select('collection_id').from('collection_member').where('system_user_id', filterFields.system_user_id)
       );
+    }
+
+    // If the request had parent_collection_id defined but equal to null, we want to filter using null. We only ignore the filter parameter if it is undefined.
+    if (filterFields.parent_collection_id !== undefined) {
+      getCollectionIdsQuery.whereIn('collection.collection_id', (subquery) => {
+        const sub = subquery.select('collection_id').from('collection_member');
+
+        if (filterFields.parent_collection_id === null) {
+          return sub.whereNull('parent_collection_id');
+        } else {
+          return sub.where('parent_collection_id', filterFields.parent_collection_id);
+        }
+      });
     }
 
     const query = getKnex().queryBuilder();
     this._getCollectionsBaseQuery(query);
+
     query.whereIn('collection.collection_id', getCollectionIdsQuery);
 
     return query;
@@ -154,7 +226,9 @@ export class CollectionRepository extends BaseRepository {
       }
     }
 
-    const response = await this.connection.knex(query, Collection);
+    const response = await this.connection.knex(query);
+
+    console.log(response.rows, response.rows[0].subcollections, 'rows!');
     return response.rows;
   }
 
@@ -167,8 +241,8 @@ export class CollectionRepository extends BaseRepository {
    */
   async createCollection(data: IPostCollection): Promise<CollectionModel> {
     const sql = SQL`
-    INSERT INTO collection (name, description)
-    VALUES (${data.name}, ${data.description})
+    INSERT INTO collection (name, description, parent_collection_id)
+    VALUES (${data.name}, ${data.description}, ${data.parent_collection_id})
     RETURNING *
   `;
 

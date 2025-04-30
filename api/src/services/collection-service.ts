@@ -1,5 +1,7 @@
+import { COLLECTION_ROLE } from '../constants/roles';
 import { CollectionModel } from '../database-models/collection';
 import { IDBConnection } from '../database/db';
+import { HTTP401 } from '../errors/http-error';
 import { Collection, ICollectionAdvancedFilters, IPostCollectionRequest } from '../models/collection';
 import { CollectionRepository } from '../repositories/collection-repository';
 import {
@@ -113,10 +115,23 @@ export class CollectionService extends DBService {
    * Create a collection record.
    *
    * @param {IPostCollectionRequest} collection
+   * @param {number} systemUserId
    * @return {*}  {Promise<CollectionModel>}
    * @memberof CollectionService
    */
-  async createCollection(collection: IPostCollectionRequest): Promise<CollectionModel> {
+  async createCollection(collection: IPostCollectionRequest, systemUserId?: number): Promise<CollectionModel> {
+    // Confirm that the user has access to the parent collection id
+    if (collection.parent_collection_id && systemUserId) {
+      const participant = await this.collectionMemberService.getCollectionParticipant(
+        collection.parent_collection_id,
+        systemUserId
+      );
+      console.log(participant);
+      if (participant?.collection_role_name !== COLLECTION_ROLE.ADMIN) {
+        throw new HTTP401('Access denied: No access to the parent collection');
+      }
+    }
+
     const collectionResponse = await this.collectionRepository.createCollection(collection);
 
     // Insert members of the collection
