@@ -276,8 +276,9 @@ export function createCollection(): RequestHandler {
     try {
       await connection.open();
 
+      const systemUserId = connection.systemUserId();
       const collectionService = new CollectionService(connection);
-      const newCollection = await collectionService.createCollection(req.body);
+      const newCollection = await collectionService.createCollection(req.body, systemUserId);
 
       await connection.commit();
 

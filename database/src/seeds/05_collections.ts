@@ -33,7 +33,6 @@ export async function seed(knex: Knex): Promise<void> {
       {
         name: 'Wildlife Conservation Collection',
         objectives: 'Combining surveys related to wildlife conservation efforts',
-        owner: adminUserId,
         create_user: adminUserId
       }
     ])
@@ -44,7 +43,6 @@ export async function seed(knex: Knex): Promise<void> {
       {
         name: 'Forest Ecosystem Monitoring',
         objectives: 'Tracking forest health and biodiversity in coastal regions',
-        owner: regularUserId1,
         create_user: regularUserId1
       }
     ])
@@ -55,7 +53,6 @@ export async function seed(knex: Knex): Promise<void> {
       {
         name: 'Marine Research Collection',
         objectives: 'Studies focused on marine ecosystems and conservation',
-        owner: regularUserId1,
         create_user: regularUserId1
       }
     ])
@@ -66,7 +63,6 @@ export async function seed(knex: Knex): Promise<void> {
       {
         name: 'Endangered Species Tracking',
         objectives: 'Monitoring populations of endangered and threatened species',
-        owner: regularUserId2,
         create_user: regularUserId2
       }
     ])
@@ -77,7 +73,6 @@ export async function seed(knex: Knex): Promise<void> {
       {
         name: 'Climate Impact Assessment',
         objectives: 'Assessing climate change impacts on local ecosystems',
-        owner: adminUserId,
         create_user: adminUserId
       }
     ])

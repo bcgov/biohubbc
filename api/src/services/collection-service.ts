@@ -71,14 +71,14 @@ export class CollectionService extends DBService {
    * Create a new collection.
    *
    * @param {*} collectionData
+   * @param {number} systemUserId The system user id to use for owner and create_user
    * @return {*}  {Promise<any>}
    * @memberof CollectionService
    */
-  async createCollection(collectionData: { name: string; objectives: string }): Promise<any> {
+  async createCollection(collectionData: { name: string; objectives: string }, systemUserId: number): Promise<any> {
     // Here you could add business logic if needed
     // For example, validation, permission checks, etc.
-    
-    return this.collectionRepository.createCollection(collectionData);
+    return this.collectionRepository.createCollection(collectionData, systemUserId);
   }
 
   /**

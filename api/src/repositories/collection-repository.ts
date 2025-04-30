@@ -139,18 +139,25 @@ export class CollectionRepository extends BaseRepository {
   /**
    * Create a new collection.
    *
-   * @param {*} collectionData
+   * @param {object} collectionData
+   * @param {number} systemUserId The system user id to use for create_user
    * @return {*}  {Promise<any>}
    * @memberof CollectionRepository
    */
-  async createCollection(collectionData: { name: string; objectives: string }): Promise<any> {
+  async createCollection(
+    collectionData: { name: string; objectives: string },
+    systemUserId: number
+  ): Promise<any> {
     const sql: SQLStatement = SQL`
       INSERT INTO collection (
         name,
-        objectives
+        objectives,
+        create_user
       ) VALUES (
         ${collectionData.name},
-        ${collectionData.objectives},)
+        ${collectionData.objectives},
+        ${systemUserId}
+      )
       RETURNING
         collection_id,
         name,
@@ -158,7 +165,6 @@ export class CollectionRepository extends BaseRepository {
     `;
 
     const response = await this.connection.sql(sql);
-
     return response.rows[0];
   }
 
