@@ -12,7 +12,7 @@ import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { GridRowSelectionModel } from '@mui/x-data-grid';
-import { AxiosProgressEvent } from 'axios';
+import axios, { AxiosProgressEvent } from 'axios';
 import { CSVSingleImportDialog } from 'components/csv/CSVSingleImportDialog';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
@@ -29,7 +29,8 @@ import { TelemetryDeviceKeysButton } from '../../device-keys/TelemetryDeviceKeys
 export const DevicesContainer = () => {
   const dialogContext = useDialogContext();
   const surveyContext = useSurveyContext();
-
+  const cancelToken = axios.CancelToken.source();
+  const [processingRecords, setProcessingRecords] = useState(false);
   const biohubApi = useBiohubApi();
 
   // State for bulk actions
@@ -114,8 +115,22 @@ export const DevicesContainer = () => {
   };
 
   const [showImportDialog, setShowImportDialog] = useState(false);
-  const doNothing = async (_file: File, _onProgress: (progressEvent: AxiosProgressEvent) => void) => {
-    return Promise.resolve();
+
+  // Handle import for devices in bulk
+  const handleImportDeviceCSV = async (file: File, onProgress: (progressEvent: AxiosProgressEvent) => void) => {
+    try {
+      await biohubApi.telemetryDevice.importTelemetryDeviceCSV(
+        surveyContext.projectId,
+        surveyContext.surveyId,
+        file,
+        cancelToken,
+        onProgress
+      );
+
+      setProcessingRecords(true);
+    } finally {
+      setProcessingRecords(false);
+    }
   };
 
   return (
@@ -126,7 +141,7 @@ export const DevicesContainer = () => {
         dialogTitle="Import Telemetry"
         dialogSummary="Import devices by uploading a CSV file matching the template. Duplicate records are filtered out, allowing you to import multiple files with duplicate data to ensure all data is entered."
         onClose={() => setShowImportDialog(false)}
-        onImport={doNothing}
+        onImport={handleImportDeviceCSV}
         onDownloadTemplate={() => {}}
       />
       <Menu
@@ -206,6 +221,7 @@ export const DevicesContainer = () => {
                 selectedRows={selectedRows}
                 setSelectedRows={setSelectedRows}
                 onDelete={onDelete}
+                isLoading={processingRecords}
               />
             </LoadingGuard>
           </Box>

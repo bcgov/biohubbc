@@ -29,6 +29,7 @@ export interface IDeviceRowData {
 
 interface IDevicesTableProps {
   devices: TelemetryDevice[];
+  isLoading: boolean;
   selectedRows: GridRowSelectionModel;
   setSelectedRows: (selection: GridRowSelectionModel) => void;
   /**
