@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export const useCollectionApi = () => {
-  const apiBaseUrl = '/api/collection';
+  const apiBaseUrl = '/api/collections';
 
   /**
    * Fetch all collections.

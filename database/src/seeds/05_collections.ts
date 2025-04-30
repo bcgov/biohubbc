@@ -1,7 +1,7 @@
 import { Knex } from 'knex';
 
 const TABLE_NAME = 'collection';
-const SYSTEM_USER_TABLE_NAME = 'collection_participation';
+const SYSTEM_USER_TABLE_NAME = 'collection_system_user';
 const SURVEY_TABLE_NAME = 'collection_survey';
 
 /**
@@ -83,16 +83,16 @@ export async function seed(knex: Knex): Promise<void> {
     ])
     .returning('*');
 
-  // Add users to collections (collection_participation)
+  // Add users to collections (collection_system_user)
   await knex(SYSTEM_USER_TABLE_NAME).insert([
-    { collection_id: collection1.collection_id, system_user_id: adminUserId, create_user: adminUserId },
-    { collection_id: collection1.collection_id, system_user_id: regularUserId1, create_user: adminUserId },
-    { collection_id: collection2.collection_id, system_user_id: regularUserId1, create_user: regularUserId1 },
-    { collection_id: collection2.collection_id, system_user_id: adminUserId, create_user: regularUserId1 },
-    { collection_id: collection3.collection_id, system_user_id: regularUserId1, create_user: regularUserId1 },
-    { collection_id: collection3.collection_id, system_user_id: regularUserId2, create_user: regularUserId1 },
-    { collection_id: collection4.collection_id, system_user_id: regularUserId2, create_user: regularUserId2 },
-    { collection_id: collection5.collection_id, system_user_id: adminUserId, create_user: adminUserId }
+    { collection_id: collection1.collection_id, user_id: adminUserId, create_user: adminUserId },
+    { collection_id: collection1.collection_id, user_id: regularUserId1, create_user: adminUserId },
+    { collection_id: collection2.collection_id, user_id: regularUserId1, create_user: regularUserId1 },
+    { collection_id: collection2.collection_id, user_id: adminUserId, create_user: regularUserId1 },
+    { collection_id: collection3.collection_id, user_id: regularUserId1, create_user: regularUserId1 },
+    { collection_id: collection3.collection_id, user_id: regularUserId2, create_user: regularUserId1 },
+    { collection_id: collection4.collection_id, user_id: regularUserId2, create_user: regularUserId2 },
+    { collection_id: collection5.collection_id, user_id: adminUserId, create_user: adminUserId }
   ]);
 
   // Add surveys to collections if we have survey IDs

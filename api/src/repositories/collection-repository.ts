@@ -1,12 +1,8 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
 import { IDBConnection } from '../database/db';
 import { BaseRepository } from './base-repository';
-import { ApiPaginationOptions } from '../types/common';
 import { FindCollectionsResponse, ICollectionAdvancedFilters } from '../models/collection-view';
-import { getKnex } from '../database/db';
-import { z } from 'zod';
 import { ApiExecuteSQLError } from '../errors/api-error';
-import Knex from 'knex';
 
 /**
  * Repository for collection database operations.
@@ -20,75 +16,6 @@ export class CollectionRepository extends BaseRepository {
     super(connection);
   }
 
-  /**
-   * Constructs a non-paginated query used to get a list of collections based on the user's permissions and filter criteria.
-   *
-   * @param {boolean} isUserAdmin
-   * @param {(number | null)} systemUserId The system user id of the user making the request
-   * @param {ICollectionAdvancedFilters} filterFields
-   * @return {*}  {Knex.QueryBuilder}
-   * @memberof CollectionRepository
-   */
-  _makeFindCollectionsQuery(
-    isUserAdmin: boolean,
-    systemUserId: number | null,
-    filterFields: ICollectionAdvancedFilters
-  ): Knex.QueryBuilder {
-    const knex = getKnex();
-
-    const query = knex
-      .select([
-        'c.collection_id',
-        'c.name',
-        'c.objectives',
-        knex.raw(`
-          array_agg(
-            DISTINCT jsonb_build_object(
-              'system_user_id', su.system_user_id,
-              'display_name', su.display_name
-            )
-          ) as members
-        `)
-      ])
-      .from('collection as c')
-      .leftJoin('collection_participation as cp', 'c.collection_id', 'cp.collection_id')
-      .leftJoin('system_user as su', 'cp.system_user_id', 'su.system_user_id')
-      .where('c.record_end_date', null)
-      .groupBy(['c.collection_id', 'c.name', 'c.objectives']);
-
-    // Ensure that users can only see collections that they are participating in, unless they are an administrator.
-    if (!isUserAdmin && systemUserId) {
-      query.whereIn('c.collection_id', (subQueryBuilder) => {
-        subQueryBuilder.select('collection_id').from('collection_participation').where('system_user_id', systemUserId);
-      });
-    }
-
-    if (filterFields.system_user_id) {
-      query.whereIn('c.collection_id', (subQueryBuilder) => {
-        subQueryBuilder
-          .select('collection_id')
-          .from('collection_participation')
-          .where('system_user_id', filterFields.system_user_id);
-      });
-    }
-
-    // Keyword Search filter
-    if (filterFields.keyword) {
-      const keywordMatch = `%${filterFields.keyword}%`;
-      query.where((subQueryBuilder) => {
-        subQueryBuilder
-          .where('c.name', 'ilike', keywordMatch)
-          .orWhere('c.objectives', 'ilike', keywordMatch);
-
-        // If the keyword is a number, also match on collection Id
-        if (!isNaN(Number(filterFields.keyword))) {
-          subQueryBuilder.orWhere('c.collection_id', Number(filterFields.keyword));
-        }
-      });
-    }
-
-    return query;
-  }
 
   /**
    * Returns the total count of collections that are visible to the given user.
@@ -104,16 +31,27 @@ export class CollectionRepository extends BaseRepository {
     systemUserId: number | null,
     filterFields: ICollectionAdvancedFilters
   ): Promise<number> {
-    const collectionsListQuery = this._makeFindCollectionsQuery(isUserAdmin, systemUserId, filterFields);
+    const sql = SQL`
+      SELECT count(*)::integer as count
+      FROM collection as c
+      WHERE c.record_end_date IS NULL
+    `;
 
-    const knex = getKnex();
+    // Add filters manually
+    if (!isUserAdmin && systemUserId) {
+      sql.append(SQL` AND c.collection_id IN (
+        SELECT collection_id FROM collection_system_user WHERE user_id = ${systemUserId}
+      )`);
+    }
 
-    // See https://knexjs.org/guide/query-builder.html#usage-with-typescript-3 for details on count() usage
-    const query = knex.from(collectionsListQuery.as('clq')).select(knex.raw('count(*)::integer as count'));
+    if (filterFields.keyword) {
+      const keywordMatch = `%${filterFields.keyword}%`;
+      sql.append(SQL` AND (c.name ILIKE ${keywordMatch} OR c.objectives ILIKE ${keywordMatch})`);
+    }
 
-    const response = await this.connection.knex(query, z.object({ count: z.number() }));
+    const response = await this.connection.sql(sql);
 
-    if (!response.rowCount) {
+    if (!response.rows || !response.rows.length) {
       throw new ApiExecuteSQLError('Failed to get collection count', [
         'CollectionRepository->findCollectionsCount',
         'rows was null or undefined, expected rows != null'
@@ -124,34 +62,53 @@ export class CollectionRepository extends BaseRepository {
   }
 
   /**
-   * Retrieves the paginated list of all collections that are available to the user.
+   * Retrieves the list of all collections that are available to the user.
    * 
    * @param {boolean} isUserAdmin
    * @param {(number | null)} systemUserId
    * @param {ICollectionAdvancedFilters} filterFields
-   * @param {ApiPaginationOptions} [pagination]
    * @return {*}  {Promise<FindCollectionsResponse[]>}
    * @memberof CollectionRepository
    */
   async findCollections(
     isUserAdmin: boolean,
     systemUserId: number | null,
-    filterFields: ICollectionAdvancedFilters,
-    pagination?: ApiPaginationOptions
+    filterFields: ICollectionAdvancedFilters
   ): Promise<FindCollectionsResponse[]> {
-    const query = this._makeFindCollectionsQuery(isUserAdmin, systemUserId, filterFields);
+    const sql = SQL`
+      SELECT
+        c.collection_id,
+        c.name,
+        c.objectives
+      FROM collection as c
+      WHERE c.record_end_date IS NULL
+    `;
 
-    if (pagination) {
-      query.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
-
-      if (pagination.sort && pagination.order) {
-        query.orderBy(pagination.sort, pagination.order);
-      }
+    // Add filters manually
+    if (filterFields.keyword) {
+      const keywordMatch = `%${filterFields.keyword}%`;
+      sql.append(SQL` AND (c.name ILIKE ${keywordMatch} OR c.objectives ILIKE ${keywordMatch})`);
     }
 
-    const response = await this.connection.knex(query, FindCollectionsResponse);
+    if (!isUserAdmin && systemUserId) {
+      sql.append(SQL` AND c.collection_id IN (
+        SELECT collection_id FROM collection_system_user WHERE user_id = ${systemUserId}
+      )`);
+    }
 
-    return response.rows;
+    sql.append(SQL` ORDER BY c.name ASC`);
+
+    const response = await this.connection.sql(sql);
+
+    // Process rows and convert to FindCollectionsResponse objects
+    const results: FindCollectionsResponse[] = response.rows.map((row) => ({
+      collection_id: row.collection_id,
+      name: row.name,
+      objectives: row.objectives,
+      members: [] // Members are not included in this simplified query
+    }));
+
+    return results;
   }
 
   /**
@@ -190,14 +147,10 @@ export class CollectionRepository extends BaseRepository {
     const sql: SQLStatement = SQL`
       INSERT INTO collection (
         name,
-        objectives,
-        create_date,
-        create_user
+        objectives
       ) VALUES (
         ${collectionData.name},
-        ${collectionData.objectives},
-        now()
-      )
+        ${collectionData.objectives},)
       RETURNING
         collection_id,
         name,
