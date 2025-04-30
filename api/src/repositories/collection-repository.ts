@@ -21,7 +21,6 @@ export class CollectionRepository extends BaseRepository {
 
     return (
       queryBuilder
-
         // CTE for user roles
         .with('user_roles', (qb) => {
           qb.select(
@@ -34,28 +33,17 @@ export class CollectionRepository extends BaseRepository {
             .groupBy('sur.system_user_id');
         })
 
-        .withRecursive('collection_tree', (qb) => {
-          // Non-recursive part: Select the root collections (those with no parent)
-          qb.select(
-            'c.collection_id',
-            'c.name',
-            'c.description',
-            'c.parent_collection_id',
-            knex.raw(`'[]'::jsonb AS subcollections`)
-          )
+        // First, create a recursive CTE that just walks the collection tree structure
+        .withRecursive('collection_hierarchy', (qb) => {
+          // Non-recursive part: start with root collections
+          qb.select('c.collection_id', 'c.name', 'c.description', 'c.parent_collection_id')
             .from('collection AS c')
-            .whereNull('c.parent_collection_id') // Only root collections (no parent)
+            .whereNull('c.parent_collection_id')
             .unionAll(function () {
-              // Recursive part: Select subcollections and join to previously selected collections
-              this.select(
-                'c.collection_id',
-                'c.name',
-                'c.description',
-                'c.parent_collection_id',
-                knex.raw(`'[]'::jsonb AS subcollections`)
-              )
+              // Recursive part: join with parent collections
+              this.select('c.collection_id', 'c.name', 'c.description', 'c.parent_collection_id')
                 .from('collection AS c')
-                .join('collection_tree AS ct', 'c.parent_collection_id', 'ct.collection_id'); // Recursively join to the previous result
+                .join('collection_hierarchy AS ch', 'c.parent_collection_id', 'ch.collection_id');
             });
         })
 
@@ -64,18 +52,18 @@ export class CollectionRepository extends BaseRepository {
           qb.select(
             'cm.collection_id',
             knex.raw(`COALESCE(
-              jsonb_agg(DISTINCT jsonb_build_object(
-                'collection_member_id', cm.collection_member_id,
-                'collection_id', cm.collection_id,
-                'system_user_id', su.system_user_id,
-                'user_identifier', su.user_identifier,
-                'user_guid', su.user_guid,
-                'identity_source', uis.name,
-                'email', su.email,
-                'display_name', su.display_name,
-                'collection_role_id', cr.collection_role_id,
-                'collection_role_name', cr.name
-              )) FILTER (WHERE su.system_user_id IS NOT NULL), '[]'::jsonb) AS participants`)
+        jsonb_agg(DISTINCT jsonb_build_object(
+          'collection_member_id', cm.collection_member_id,
+          'collection_id', cm.collection_id,
+          'system_user_id', su.system_user_id,
+          'user_identifier', su.user_identifier,
+          'user_guid', su.user_guid,
+          'identity_source', uis.name,
+          'email', su.email,
+          'display_name', su.display_name,
+          'collection_role_id', cr.collection_role_id,
+          'collection_role_name', cr.name
+        )) FILTER (WHERE su.system_user_id IS NOT NULL), '[]'::jsonb) AS participants`)
           )
             .from('collection_member AS cm')
             .join('collection_role as cr', 'cm.collection_role_id', 'cr.collection_role_id')
@@ -83,49 +71,82 @@ export class CollectionRepository extends BaseRepository {
             .leftJoin('user_identity_source AS uis', 'uis.user_identity_source_id', 'su.user_identity_source_id')
             .groupBy('cm.collection_id');
         })
-        // Get child-parent relationships for constructing subcollections
-        .with('collection_relations', (qb) => {
-          qb.select('ct.*').from('collection_tree AS ct');
+
+        // Now, create a recursive CTE that just handles the collection hierarchy
+        .withRecursive('collection_with_children', (qb) => {
+          // Non-recursive part: Start with root collections
+          qb.select('ch.collection_id', 'ch.name', 'ch.description', 'ch.parent_collection_id')
+            .from('collection_hierarchy AS ch')
+            .whereNull('ch.parent_collection_id') // Only root collections
+            .unionAll(function () {
+              // Recursive part: Join collections to build the hierarchy, without aggregation
+              this.select('c.collection_id', 'c.name', 'c.description', 'c.parent_collection_id')
+                .from('collection_hierarchy AS ch')
+                .join('collection AS c', 'c.parent_collection_id', 'ch.collection_id');
+            });
         })
-        // Use a non-recursive CTE to build the final JSON structure
-        .with('collection_json', (qb) => {
+
+        // Now use the 'collection_with_children' and join with 'collection_members'
+        .with('collection_with_subcollections', (qb) => {
           qb.select(
-            'cr.collection_id',
-            'cr.name',
-            'cr.description',
-            'cr.parent_collection_id',
-            knex.raw(`
-              (
-                SELECT jsonb_agg(
-                  jsonb_build_object(
-                    'collection_id', child.collection_id,
-                    'name', child.name,
-                    'description', child.description,
-                    'parent_collection_id', child.parent_collection_id,
-                    'participants', COALESCE(child_members.participants, '[]'::jsonb)
-                  )
-                )
-                FROM collection_relations child
-                LEFT JOIN collection_members child_members ON child_members.collection_id = child.collection_id
-                WHERE child.parent_collection_id = cr.collection_id
-              ) AS subcollections
-            `),
-            knex.raw(`COALESCE(cm.participants, '[]'::jsonb) AS participants`)
+            'cwc.collection_id',
+            'cwc.name',
+            'cwc.description',
+            'cwc.parent_collection_id',
+            knex.raw(`COALESCE(cm.participants, '[]'::jsonb) AS participants`),
+            knex.raw("'[]'::jsonb AS subcollections") // Empty array for subcollections in this step
           )
-            .from('collection_relations AS cr')
-            .leftJoin('collection_members AS cm', 'cm.collection_id', 'cr.collection_id');
+            .from('collection_with_children AS cwc')
+            .leftJoin('collection_members AS cm', 'cm.collection_id', 'cwc.collection_id');
         })
-        // Main query to fetch final result - only root collections
+
+        // Final step: Aggregation of subcollections by recursively joining 'collection_with_subcollections'
+        .with('final_collection_structure', (qb) => {
+          qb.select(
+            'cwc.collection_id',
+            'cwc.name',
+            'cwc.description',
+            'cwc.parent_collection_id',
+            'cwc.participants',
+            knex.raw(`
+        COALESCE(
+          jsonb_agg(
+            jsonb_build_object(
+              'collection_id', child.collection_id,
+              'name', child.name,
+              'description', child.description,
+              'parent_collection_id', child.parent_collection_id,
+              'participants', child.participants,
+              'subcollections', child.subcollections
+            )
+          ),
+          '[]'::jsonb
+        ) AS subcollections
+      `)
+          )
+            .from('collection_with_subcollections AS cwc')
+            .leftJoin('collection_with_subcollections AS child', 'child.parent_collection_id', 'cwc.collection_id')
+            .groupBy(
+              'cwc.collection_id',
+              'cwc.name',
+              'cwc.description',
+              'cwc.parent_collection_id',
+              'cwc.participants'
+            );
+        })
+
+        // Final query to get root collections with full hierarchy
         .select(
           'collection.collection_id',
           'collection.name',
           'collection.description',
           'collection.parent_collection_id',
-          'collection.subcollections',
-          'collection.participants'
+          'collection.participants',
+          'collection.subcollections'
         )
-        .from('collection_json AS collection')
-        .whereNull('collection.parent_collection_id')
+        .from('final_collection_structure AS collection')
+        .whereNull('collection.parent_collection_id') // Only root collections
+        .orderBy('collection.collection_id')
     );
   }
 
