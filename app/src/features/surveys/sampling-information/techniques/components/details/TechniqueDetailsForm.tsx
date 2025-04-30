@@ -4,6 +4,7 @@ import CustomTextField from 'components/fields/CustomTextField';
 
 /**
  * Technique details form.
+ * No longer used in the UI, but kept for reference. Can be used for future development or be deleted
  *
  * @return {*}
  */
