@@ -1,4 +1,4 @@
-import { mdiArrowTopRight, mdiDotsVertical, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
+import { mdiArrowTopRight, mdiDotsVertical, mdiImport, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -12,6 +12,8 @@ import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { GridRowSelectionModel } from '@mui/x-data-grid';
+import { AxiosProgressEvent } from 'axios';
+import { CSVSingleImportDialog } from 'components/csv/CSVSingleImportDialog';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
@@ -111,9 +113,22 @@ export const DevicesContainer = () => {
     devicesDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
   };
 
+  const [showImportDialog, setShowImportDialog] = useState(false);
+  const doNothing = async (_file: File, _onProgress: (progressEvent: AxiosProgressEvent) => void) => {
+    return Promise.resolve();
+  };
+
   return (
     <>
       {/* Bulk action menu */}
+      <CSVSingleImportDialog
+        open={showImportDialog}
+        dialogTitle="Import Telemetry"
+        dialogSummary="Import devices by uploading a CSV file matching the template. Duplicate records are filtered out, allowing you to import multiple files with duplicate data to ensure all data is entered."
+        onClose={() => setShowImportDialog(false)}
+        onImport={doNothing}
+        onDownloadTemplate={() => {}}
+      />
       <Menu
         open={Boolean(headerAnchorEl)}
         onClose={() => setHeaderAnchorEl(null)}
@@ -144,6 +159,13 @@ export const DevicesContainer = () => {
             to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry/manage/device/create`}
             startIcon={<Icon path={mdiPlus} size={0.8} />}>
             Add
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<Icon path={mdiImport} size={1} />}
+            onClick={() => setShowImportDialog(true)}>
+            Import
           </Button>
           <IconButton
             edge="end"
