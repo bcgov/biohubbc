@@ -5,7 +5,8 @@ export interface ICollectionAdvancedFilters {
   keyword?: string;
   system_user_id?: number;
   itis_tsns?: number[];
-  parent_collection_id?: number | null;
+  parent_collection_id?: number;
+  include_children?: boolean;
 }
 
 export interface ICollectionParticipantsAdvancedFilters {

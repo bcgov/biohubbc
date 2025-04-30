@@ -80,28 +80,16 @@ const CollectionsListContainer = (props: ICollectionsListContainerProps) => {
     }
   ]);
 
-  const getParentCollectionId = (parentCollectionId: string | null | undefined) => {
-    // If the value is "null" (string), return null
-    if (parentCollectionId === null) {
-      return null;
-    }
-
-    // If it's a valid string or number, convert it to a number
-    return parentCollectionId
-      ? Number(parentCollectionId)
-      : CollectionAdvancedFiltersInitialValues.parent_collection_id;
-  };
-
   const [advancedFiltersModel, setAdvancedFiltersModel] = useState<ICollectionAdvancedFilters>({
     keyword: searchParams.get('p_keyword') ?? CollectionAdvancedFiltersInitialValues.keyword,
     itis_tsn: searchParams.get('p_itis_tsn')
       ? Number(searchParams.get('p_itis_tsn'))
       : CollectionAdvancedFiltersInitialValues.itis_tsn,
     system_user_id: searchParams.get('p_system_user_id') ?? CollectionAdvancedFiltersInitialValues.system_user_id,
-    parent_collection_id: getParentCollectionId(searchParams.get('p_parent_collection_id'))
+    parent_collection_id: searchParams.get('p_parent_collection_id')
+      ? Number(searchParams.get('p_parent_collection_id'))
+      : CollectionAdvancedFiltersInitialValues.parent_collection_id
   });
-
-  console.log(advancedFiltersModel);
 
   const sort = firstOrNull(sortModel);
   const paginationSort: ApiPaginationRequestOptions = useMemo(

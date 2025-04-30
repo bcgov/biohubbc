@@ -87,6 +87,8 @@ export function getCollectionById(): RequestHandler {
 
       const response = await collectionService.getCollectionById(collectionId);
 
+      console.log(response);
+
       await connection.commit();
 
       return res.status(200).json(response);

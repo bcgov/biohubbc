@@ -99,6 +99,15 @@ GET.apiDoc = {
         nullable: true
       }
     },
+    {
+      in: 'query',
+      name: 'include_children',
+      required: false,
+      schema: {
+        type: 'boolean',
+        nullable: true
+      }
+    },
     ...paginationRequestQueryParamSchema
   ],
   responses: {
@@ -195,20 +204,6 @@ export function findCollections(): RequestHandler {
     }
   };
 }
-
-/**
- * Returns null instead of undefined if the value is null
- *
- * @param {number | null | undefined} param
- * @returns
- */
-const parseNullableQueryParam = (param: number | null | undefined) => {
-  if (param === null) {
-    return null;
-  }
-  return param ? Number(param) : undefined;
-};
-
 /**
  * Parse the query parameters from the request into the expected format.
  *
@@ -222,7 +217,9 @@ function parseQueryParams(
     keyword: req.query.keyword ?? undefined,
     itis_tsns: req.query.itis_tsns ?? undefined,
     system_user_id: req.query.system_user_id !== undefined ? Number(req.query.system_user_id) : undefined,
-    parent_collection_id: parseNullableQueryParam(req.query.parent_collection_id)
+    parent_collection_id:
+      req.query.parent_collection_id !== undefined ? Number(req.query.parent_collection_id) : undefined,
+    include_children: req.query.include_children !== undefined ? req.query.include_children : undefined
   };
 }
 

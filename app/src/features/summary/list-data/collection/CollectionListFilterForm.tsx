@@ -16,7 +16,7 @@ export const CollectionAdvancedFiltersInitialValues: ICollectionAdvancedFilters 
   keyword: undefined,
   itis_tsn: undefined,
   system_user_id: undefined,
-  parent_collection_id: null
+  parent_collection_id: undefined
 };
 
 interface ICollectionsListFilterFormProps {

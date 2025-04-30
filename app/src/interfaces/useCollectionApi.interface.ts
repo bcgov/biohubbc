@@ -3,6 +3,8 @@ import { ApiPaginationResponseParams } from 'types/misc';
 export interface ICollectionParticipantsAdvancedFilters {
   system_user_id?: number;
   keyword?: string;
+  parent_collection_id?: number;
+  include_children?: boolean;
 }
 export interface IGetCollectionsResponse {
   collections: ICollection[];
