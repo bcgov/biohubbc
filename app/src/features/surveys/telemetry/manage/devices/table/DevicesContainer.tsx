@@ -144,7 +144,7 @@ export const DevicesContainer = () => {
       <CSVSingleImportDialog
         open={showImportDialog}
         dialogTitle="Import Devices"
-        dialogSummary="Import devices by uploading a CSV file matching the template. Duplicate records are filtered out, allowing you to import multiple files with duplicate data to ensure all data is entered."
+        dialogSummary="Import devices by uploading a CSV file matching the template. Duplicate records are flagged."
         onClose={() => setShowImportDialog(false)}
         onImport={handleImportDeviceCSV}
         onDownloadTemplate={() =>
