@@ -1,6 +1,7 @@
 import { WorkSheet } from 'xlsx';
 import { IDBConnection } from '../../../database/db';
 import { CodeRepository } from '../../../repositories/code-repository';
+import { CreateTelemetryDevice } from '../../../repositories/telemetry-repositories/telemetry-device-repository.interface';
 import { CSVConfigUtils } from '../../../utils/csv-utils/csv-config-utils';
 import { validateCSVWorksheet } from '../../../utils/csv-utils/csv-config-validation';
 import { CSVConfig, CSVError } from '../../../utils/csv-utils/csv-config-validation.interface';
@@ -12,13 +13,12 @@ import { getAllAliases } from '../../../utils/csv-utils/csv-helpers';
 import { getLogger } from '../../../utils/logger';
 import { DBService } from '../../db-service';
 import { TelemetryDeviceService } from '../../telemetry-services/telemetry-device-service';
-import { CreateTelemetryDevice } from '../../../repositories/telemetry-repositories/telemetry-device-repository.interface';
 import { getTelemetryVendorCellValidator } from '../telemetry/telemetry-header-configs';
 
 const defaultLog = getLogger('services/import-services/import-device-service');
 
 // Telemetry CSV static headers
-export type DeviceCSVStaticHeader = 'VENDOR' | 'SERIAL' | 'MODEL' | 'COMMENT' ;
+export type DeviceCSVStaticHeader = 'VENDOR' | 'SERIAL' | 'MODEL' | 'COMMENT';
 
 /**
  * ImportDeviceService - A service for importing Telemetry devices from a CSV into SIMS.
@@ -114,14 +114,10 @@ export class ImportDeviceService extends DBService {
    * @returns {Promise<CSVConfig<DeviceCSVStaticHeader>>} The CSV configuration
    */
   async getCSVConfig(): Promise<CSVConfig<DeviceCSVStaticHeader>> {
-    const [vendors] = await Promise.all([
-      this.codeRepository.getActiveTelemetryDeviceMakes()
-    ]);
+    const [vendors] = await Promise.all([this.codeRepository.getActiveTelemetryDeviceMakes()]);
 
     // Create a map from vendor name (lowercased) to id
-    this.vendorNameToId = new Map(
-      vendors.map((vendor) => [vendor.name.toLowerCase(), vendor.id])
-    );
+    this.vendorNameToId = new Map(vendors.map((vendor) => [vendor.name.toLowerCase(), vendor.id]));
 
     const vendorsSet = new Set(vendors.map((vendor) => vendor.name.toLowerCase()));
 
@@ -129,7 +125,7 @@ export class ImportDeviceService extends DBService {
       SERIAL: { validateCell: getPositiveNumberCellValidator() },
       VENDOR: { validateCell: getTelemetryVendorCellValidator(vendorsSet) },
       MODEL: { validateCell: getDescriptionCellValidator() },
-      COMMENT: { validateCell: getDescriptionCellValidator()}
+      COMMENT: { validateCell: getDescriptionCellValidator() }
     });
 
     // Return the final CSV config

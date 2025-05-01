@@ -24,6 +24,8 @@ import { useDialogContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import { getDeviceCSVTemplate } from 'utils/csv-templates';
+import { downloadFile } from 'utils/file-utils';
 import { TelemetryDeviceKeysButton } from '../../device-keys/TelemetryDeviceKeysButton';
 
 export const DevicesContainer = () => {
@@ -145,7 +147,9 @@ export const DevicesContainer = () => {
         dialogSummary="Import devices by uploading a CSV file matching the template. Duplicate records are filtered out, allowing you to import multiple files with duplicate data to ensure all data is entered."
         onClose={() => setShowImportDialog(false)}
         onImport={handleImportDeviceCSV}
-        onDownloadTemplate={() => {}}
+        onDownloadTemplate={() =>
+          downloadFile(getDeviceCSVTemplate(), `SIMS-devices-template-${new Date().getFullYear()}.csv`)
+        }
       />
       <Menu
         open={Boolean(headerAnchorEl)}

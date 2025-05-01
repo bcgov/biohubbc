@@ -6,12 +6,12 @@ import { HTTP422CSVValidationError } from '../../../../../../errors/http-error';
 import { CSVValidationErrorResponse } from '../../../../../../openapi/schemas/csv';
 import { csvFileSchema } from '../../../../../../openapi/schemas/file';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
+import { ImportDeviceService } from '../../../../../../services/import-services/devices/import-device-service';
 import { CSV_ERROR_MESSAGE } from '../../../../../../utils/csv-utils/csv-config-validation.interface';
 import { getLogger } from '../../../../../../utils/logger';
 import { parseMulterFile } from '../../../../../../utils/media/media-utils';
 import { getFileFromRequest } from '../../../../../../utils/request';
 import { constructXLSXWorkbook, getDefaultWorksheet } from '../../../../../../utils/xlsx-utils/worksheet-utils';
-import { ImportDeviceService } from '../../../../../../services/import-services/devices/import-device-service';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/devices/upload');
 
