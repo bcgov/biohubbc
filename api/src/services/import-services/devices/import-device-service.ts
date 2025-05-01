@@ -5,14 +5,15 @@ import { CSVConfigUtils } from '../../../utils/csv-utils/csv-config-utils';
 import { validateCSVWorksheet } from '../../../utils/csv-utils/csv-config-validation';
 import { CSVConfig, CSVError } from '../../../utils/csv-utils/csv-config-validation.interface';
 import {
-  getArrayCellValidator
+  getDescriptionCellValidator,
+  getPositiveNumberCellValidator
 } from '../../../utils/csv-utils/csv-header-configs';
 import { getAllAliases } from '../../../utils/csv-utils/csv-helpers';
 import { getLogger } from '../../../utils/logger';
 import { DBService } from '../../db-service';
 import { TelemetryDeviceService } from '../../telemetry-services/telemetry-device-service';
-import { getTelemetrySerialCellValidator, getDeviceVendorCellValidator } from './device-header-configs';
 import { CreateTelemetryDevice } from '../../../repositories/telemetry-repositories/telemetry-device-repository.interface';
+import { getTelemetryVendorCellValidator } from '../telemetry/telemetry-header-configs';
 
 const defaultLog = getLogger('services/import-services/import-device-service');
 
@@ -92,7 +93,9 @@ export class ImportDeviceService extends DBService {
       telemetryCount: telemetryDevice.length
     });
 
-    await this.telemetryDeviceService.createDevice(telemetryDevice);
+    for (const device of telemetryDevice) {
+      await this.telemetryDeviceService.createDevice(device);
+    }
 
     return [];
   }
@@ -110,10 +113,10 @@ export class ImportDeviceService extends DBService {
     const vendorsSet = new Set(vendors.map((vendor) => vendor.name.toLowerCase()));
 
     this.utils.setAllStaticHeaderConfigs({
-      SERIAL: { validateCell: getTelemetrySerialCellValidator(this.utils) },
-      VENDOR: { validateCell: getDeviceVendorCellValidator(vendorsSet) },
-      MODEL: { validateCell: getArrayCellValidator() },
-      COMMENT: { validateCell: getArrayCellValidator()}
+      SERIAL: { validateCell: getPositiveNumberCellValidator() },
+      VENDOR: { validateCell: getTelemetryVendorCellValidator(vendorsSet) },
+      MODEL: { validateCell: getDescriptionCellValidator() },
+      COMMENT: { validateCell: getDescriptionCellValidator()}
     });
 
     // Return the final CSV config
