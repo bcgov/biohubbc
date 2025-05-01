@@ -16,7 +16,6 @@ export class CollectionRepository extends BaseRepository {
     super(connection);
   }
 
-
   /**
    * Returns the total count of collections that are visible to the given user.
    *
@@ -79,7 +78,8 @@ export class CollectionRepository extends BaseRepository {
       SELECT
         c.collection_id,
         c.name,
-        c.objectives
+        c.objectives,
+        c.revision_count
       FROM collection as c
       WHERE c.record_end_date IS NULL
     `;
@@ -105,6 +105,7 @@ export class CollectionRepository extends BaseRepository {
       collection_id: row.collection_id,
       name: row.name,
       objectives: row.objectives,
+      revision_count: row.revision_count,
       members: [] // Members are not included in this simplified query
     }));
 
@@ -122,7 +123,8 @@ export class CollectionRepository extends BaseRepository {
       SELECT
         collection_id,
         name,
-        objectives
+        objectives,
+        revision_count
       FROM
         collection
       WHERE
@@ -140,7 +142,7 @@ export class CollectionRepository extends BaseRepository {
    * Create a new collection.
    *
    * @param {object} collectionData
-   * @param {number} systemUserId The system user id to use for create_user
+   * @param {number} systemUserId 
    * @return {*}  {Promise<any>}
    * @memberof CollectionRepository
    */
@@ -180,7 +182,8 @@ export class CollectionRepository extends BaseRepository {
       SELECT
         collection_id,
         name,
-        objectives
+        objectives,
+        revision_count
       FROM
         collection
       WHERE
@@ -201,49 +204,56 @@ export class CollectionRepository extends BaseRepository {
    * Update a collection by ID.
    *
    * @param {number} collectionId
-   * @param {*} collectionData
-   * @return {*}  {Promise<any>}
+   * @param {object} collection
+   * @param {number} revision_count
+   * @return {*}  {Promise<void>}
    * @memberof CollectionRepository
    */
   async updateCollection(
     collectionId: number,
-    collectionData: { name?: string; objectives?: string }
-  ): Promise<any> {
-    // Start building the SQL query
-    let sql = SQL`
-      UPDATE collection
-      SET
-        update_date = now(),
-        update_user = 1 -- Replace with actual user ID
-    `;
-
-    // Add optional fields to update
-    if (collectionData.name !== undefined) {
-      sql = sql.append(SQL`, name = ${collectionData.name}`);
+    collection: { name?: string; objectives?: string } | null,
+    revision_count: number
+  ): Promise<void> {
+    if (!collection || (collection.name === undefined && collection.objectives === undefined)) {
+      throw new ApiExecuteSQLError('Nothing to update for Collection Data', [
+        'CollectionRepository->updateCollection',
+        'rows was null or undefined, expected rows != null'
+      ]);
     }
 
-    if (collectionData.objectives !== undefined) {
-      sql = sql.append(SQL`, objectives = ${collectionData.objectives}`);
-    }
+    const sqlStatement: SQLStatement = SQL`UPDATE collection SET `;
+    const sqlSetStatements: SQLStatement[] = [];
 
-    // Complete the query
-    sql = sql.append(SQL`
+    if (collection.name !== undefined) {
+      sqlSetStatements.push(SQL`name = ${collection.name}`);
+    }
+    if (collection.objectives !== undefined) {
+      sqlSetStatements.push(SQL`objectives = ${collection.objectives}`);
+    }
+    sqlSetStatements.push(SQL`update_date = now()`);
+
+    sqlSetStatements.forEach((item, index) => {
+      sqlStatement.append(item);
+      if (index < sqlSetStatements.length - 1) {
+        sqlStatement.append(',');
+      }
+    });
+
+    sqlStatement.append(SQL`
       WHERE
         collection_id = ${collectionId}
-        AND record_end_date IS NULL
-      RETURNING
-        collection_id,
-        name,
-        objectives;
+      AND
+        revision_count = ${revision_count};
     `);
 
-    const response = await this.connection.sql(sql);
+    const result = await this.connection.sql(sqlStatement);
 
-    if (!response.rows.length) {
-      return null;
+    if (!result?.rowCount) {
+      throw new ApiExecuteSQLError('Failed to update collection: revision count is stale', [
+        'CollectionRepository->updateCollection',
+        `No rows updated. The revision_count may be stale for collection_id ${collectionId}`
+      ]);
     }
-
-    return response.rows[0];
   }
 
   /**

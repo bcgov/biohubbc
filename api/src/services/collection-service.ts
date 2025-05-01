@@ -97,17 +97,18 @@ export class CollectionService extends DBService {
    *
    * @param {number} collectionId
    * @param {*} collectionData
+   * @param {number} systemUserId 
    * @return {*}  {Promise<any>}
    * @memberof CollectionService
    */
   async updateCollection(
     collectionId: number,
-    collectionData: { name?: string; objectives?: string }
+    collectionData: { name?: string; objectives?: string },
+    systemUserId: number,
+    revisionCount: number 
   ): Promise<any> {
-    // Business logic could be added here
-    // For example, checking if the user has permission to update
-    
-    return this.collectionRepository.updateCollection(collectionId, collectionData);
+
+    return this.collectionRepository.updateCollection(collectionId, collectionData, systemUserId);
   }
 
   /**
@@ -118,17 +119,7 @@ export class CollectionService extends DBService {
    * @memberof CollectionService
    */
   async deleteCollection(collectionId: number): Promise<boolean> {
-    // Example of business logic in the service layer:
-    // Check if there are any dependent records that need to be deleted first
-    
-    // This is where you would handle the scenario you mentioned:
-    // "if a database record is being deleted, the service will ensure any dependent database records are deleted first"
-    
-    // For example (pseudocode):
-    // const dependentRecords = await this.someRepository.getDependentRecords(collectionId);
-    // if (dependentRecords.length > 0) {
-    //   await this.someRepository.deleteDependentRecords(dependentRecords);
-    // }
+
     
     return this.collectionRepository.deleteCollection(collectionId);
   }

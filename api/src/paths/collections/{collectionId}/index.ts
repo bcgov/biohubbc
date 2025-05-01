@@ -4,6 +4,7 @@ import { authorizeRequestHandler } from '../../../request-handlers/security/auth
 import { getDBConnection } from '../../../database/db';
 import { CollectionService } from '../../../services/collection-service';
 import { getLogger } from '../../../utils/logger';
+import { collectionUpdatePutRequestObject } from '../../../openapi/schemas/collection';
 
 const defaultLog = getLogger('paths/collections/{collectionId}');
 
@@ -131,6 +132,14 @@ PUT.apiDoc = {
   description: 'Update a collection by ID.',
   tags: ['collection'],
   security: [{ Bearer: [] }],
+  requestBody: {
+    required: true,
+    content: {
+      'application/json': {
+        schema: collectionUpdatePutRequestObject as any
+      }
+    }
+  },
   responses: {
     200: {
       description: 'Collection updated successfully.',
@@ -177,10 +186,14 @@ export function updateCollection(): RequestHandler {
     try {
       await connection.open();
 
+      const systemUserId = connection.systemUserId();
+      const revisionCount = req.body.revision_count;
       const collectionService = new CollectionService(connection);
       const updatedCollection = await collectionService.updateCollection(
-        Number(req.params.collection_id),
-        req.body
+        Number(req.params.collectionId),
+        req.body,
+        systemUserId,
+        revisionCount
       );
 
       await connection.commit();
@@ -238,10 +251,6 @@ DELETE.apiDoc = {
     }
   }
 };
-
-
-
-
 
 /**
  * Delete a collection by ID.
