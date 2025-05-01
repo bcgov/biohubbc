@@ -284,8 +284,6 @@ export function createCollection(): RequestHandler {
 
       res.status(201).json(newCollection);
     } catch (error) {
-      defaultLog.error({ label: 'createCollection', message: 'error', error });
-      await connection.rollback();
       throw error;
     } finally {
       connection.release();
