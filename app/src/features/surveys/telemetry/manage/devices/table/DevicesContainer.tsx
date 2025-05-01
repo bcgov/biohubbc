@@ -138,7 +138,7 @@ export const DevicesContainer = () => {
       {/* Bulk action menu */}
       <CSVSingleImportDialog
         open={showImportDialog}
-        dialogTitle="Import Telemetry"
+        dialogTitle="Import Devices"
         dialogSummary="Import devices by uploading a CSV file matching the template. Duplicate records are filtered out, allowing you to import multiple files with duplicate data to ensure all data is entered."
         onClose={() => setShowImportDialog(false)}
         onImport={handleImportDeviceCSV}
