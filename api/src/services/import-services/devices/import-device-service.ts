@@ -34,6 +34,7 @@ export class ImportDeviceService extends DBService {
   telemetryDeviceService: TelemetryDeviceService;
   codeRepository: CodeRepository;
   utils: CSVConfigUtils<DeviceCSVStaticHeader>;
+  vendorNameToId: Map<string, number> | undefined;
 
   /**
    * Construct an instance of ImportDeviceService.
@@ -79,13 +80,20 @@ export class ImportDeviceService extends DBService {
       return errors;
     }
 
-    const telemetryDevice: CreateTelemetryDevice[] = rows.map((row) => ({
-      survey_id: this.surveyId,
-      serial: row.SERIAL,
-      device_make_id: row.VENDOR,
-      model: row.MODEL,
-      comment:row.COMMENT
-    }));
+    // Map vendor name to id for device_make_id
+    if (!this.vendorNameToId) {
+      throw new Error('Vendor name to ID map not initialized');
+    }
+
+    const telemetryDevice: CreateTelemetryDevice[] = rows
+      .map((row) => ({
+        survey_id: this.surveyId,
+        serial: row.SERIAL,
+        device_make_id: this.vendorNameToId?.get(String(row.VENDOR).toLowerCase()),
+        model: row.MODEL,
+        comment: row.COMMENT
+      }))
+      .filter((device) => device.device_make_id !== undefined) as CreateTelemetryDevice[];
 
     defaultLog.info({
       label: 'importCSVWorksheet',
@@ -109,6 +117,11 @@ export class ImportDeviceService extends DBService {
     const [vendors] = await Promise.all([
       this.codeRepository.getActiveTelemetryDeviceMakes()
     ]);
+
+    // Create a map from vendor name (lowercased) to id
+    this.vendorNameToId = new Map(
+      vendors.map((vendor) => [vendor.name.toLowerCase(), vendor.id])
+    );
 
     const vendorsSet = new Set(vendors.map((vendor) => vendor.name.toLowerCase()));
 
