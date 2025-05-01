@@ -153,7 +153,7 @@ export const useTelemetryDeviceApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Imports a telemetry CSV.
+   * Imports a device CSV.
    *
    * @param {number} projectId
    * @param {number} surveyId
@@ -173,7 +173,7 @@ export const useTelemetryDeviceApi = (axios: AxiosInstance) => {
 
     formData.append('media', file);
 
-    await axios.post(`/api/project/${projectId}/survey/${surveyId}/telemetry/import`, formData, {
+    await axios.post(`/api/project/${projectId}/survey/${surveyId}/devices/import`, formData, {
       cancelToken: cancelTokenSource?.token,
       onUploadProgress: onProgress
     });
