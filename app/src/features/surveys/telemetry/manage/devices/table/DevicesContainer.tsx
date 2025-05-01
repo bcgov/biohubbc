@@ -128,6 +128,9 @@ export const DevicesContainer = () => {
       );
 
       setProcessingRecords(true);
+
+      // Refresh the device data after a successful import
+      devicesDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
     } finally {
       setProcessingRecords(false);
     }
