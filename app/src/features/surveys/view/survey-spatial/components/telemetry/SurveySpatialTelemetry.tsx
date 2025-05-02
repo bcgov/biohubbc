@@ -48,7 +48,9 @@ export const SurveySpatialTelemetry = (props: ISurveySpatialTelemetryProps) => {
     return debounce((filters: TelemetryFilters) => {
       telemetrySpatialDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId, filters);
     }, 500);
-  }, [telemetrySpatialDataLoader, surveyContext.projectId, surveyContext.surveyId]);
+    // Can't include data loader in the dependencies or the debounce triggers prematurely
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [surveyContext.projectId, surveyContext.surveyId]);
 
   const points: IStaticLayerFeature[] = useMemo(() => {
     const points: IStaticLayerFeature[] = [];
@@ -110,7 +112,7 @@ export const SurveySpatialTelemetry = (props: ISurveySpatialTelemetryProps) => {
   return (
     <>
       <Box height={{ xs: 300, md: 500 }} position="relative">
-        <SurveyMap staticLayers={[...props.staticLayers, layer]} isLoading={telemetrySpatialDataLoader.isLoading} />
+        <SurveyMap staticLayers={[...props.staticLayers, layer]} />
       </Box>
 
       {dateRange && (

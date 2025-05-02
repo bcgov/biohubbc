@@ -9,6 +9,12 @@ interface IDateRangeSliderProps {
   maxDate: Dayjs;
 }
 
+/**
+ * Returns slider with values formatted for dates
+ *
+ * @param {IDateRangeSliderProps} props
+ * @returns {*}
+ */
 export const DateRangeSlider = (props: IDateRangeSliderProps) => {
   const { value, onChange, minDate, maxDate } = props;
 
@@ -17,7 +23,7 @@ export const DateRangeSlider = (props: IDateRangeSliderProps) => {
 
   const sliderValue = [value[0].valueOf(), value[1].valueOf()];
 
-  const handleChange = (_: Event, newValue: number[]) => {
+  const handleChange = (newValue: number[]) => {
     if (Array.isArray(newValue)) {
       onChange([dayjs(newValue[0]), dayjs(newValue[1])]);
     }
@@ -28,9 +34,9 @@ export const DateRangeSlider = (props: IDateRangeSliderProps) => {
       min={minTimestamp}
       max={maxTimestamp}
       value={sliderValue}
-      onChange={(event, value) => {
+      onChange={(_, value) => {
         if (Array.isArray(value)) {
-          handleChange(event, value);
+          handleChange(value);
         }
       }}
       valueLabelDisplay="auto"

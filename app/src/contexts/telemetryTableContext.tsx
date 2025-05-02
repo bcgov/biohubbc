@@ -641,8 +641,8 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
 
     return refreshTelemetryData({
       limit: paginationModel.pageSize,
-      sort: sortField || undefined,
-      order: sort?.sort || undefined,
+      sort: sortField ?? undefined,
+      order: sort?.sort ?? undefined,
 
       // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
       page: paginationModel.page + 1

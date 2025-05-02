@@ -14,6 +14,12 @@ interface IDateFieldProps extends Omit<DatePickerProps<Dayjs>, 'onChange' | 'val
   onChange: (value: Dayjs | null) => void;
 }
 
+/**
+ * Returns a single date field
+ *
+ * @param {IDateFieldProps} props
+ * @returns {*}
+ */
 export const DateField = (props: IDateFieldProps) => {
   const { label, required, value, error, helperText, onChange, ...rest } = props;
 
@@ -44,9 +50,6 @@ export const DateField = (props: IDateFieldProps) => {
             fullWidth: true,
             error,
             helperText,
-            inputProps: {
-              'data-testid': name
-            },
             InputLabelProps: {
               shrink: true
             }

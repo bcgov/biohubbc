@@ -13,20 +13,20 @@ import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 
 interface ISurveyMapProps {
   staticLayers: IStaticLayer[];
-  isLoading: boolean;
+  isLoading?: boolean;
 }
 
 const SurveyMap = (props: ISurveyMapProps) => {
   const bounds: LatLngBoundsExpression | undefined = useMemo(() => {
+    if (props.staticLayers.length === 0) {
+      return calculateUpdatedMapBounds([ALL_OF_BC_BOUNDARY]);
+    }
+
     const allMapFeatures: Feature[] = props.staticLayers.flatMap((staticLayer) =>
       staticLayer.features.map((feature) => feature.geoJSON)
     );
 
-    if (allMapFeatures.length > 0) {
-      return calculateUpdatedMapBounds(allMapFeatures);
-    } else {
-      return calculateUpdatedMapBounds([ALL_OF_BC_BOUNDARY]);
-    }
+    return calculateUpdatedMapBounds(allMapFeatures);
   }, [props.staticLayers]);
 
   return (
