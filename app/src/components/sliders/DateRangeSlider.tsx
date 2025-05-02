@@ -2,7 +2,6 @@ import Slider from '@mui/material/Slider';
 import dayjs, { Dayjs } from 'dayjs';
 
 interface IDateRangeSliderProps {
-  label: string;
   value: [Dayjs, Dayjs];
   onChange: (value: [Dayjs, Dayjs]) => void;
   minDate: Dayjs;

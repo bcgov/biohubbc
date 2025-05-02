@@ -122,7 +122,6 @@ export const SurveySpatialTelemetry = (props: ISurveySpatialTelemetryProps) => {
           </Box>
           <Box flex="1 1 auto" px={5}>
             <DateRangeSlider
-              label="Date Range"
               value={dateRange}
               minDate={dayjs(telemetrySpatialDataLoader.data?.supplementaryData.start_date)}
               maxDate={dayjs(telemetrySpatialDataLoader.data?.supplementaryData.end_date)}
