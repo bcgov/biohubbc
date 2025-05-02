@@ -15,8 +15,8 @@ import CollectionsListContainer from './collection/CollectionListContainer';
 import { CreateCollectionButton } from './collection/create/CreateCollectionButton';
 import { CreateSurveyButton } from './survey/create/CreateSurveyButton';
 
-const ACTIVE_VIEW_KEY = 'lvk';
-export enum ACTIVE_VIEW_VALUE {
+export const SUMMARY_ACTIVE_VIEW_KEY = 'lvk';
+export enum SUMMARY_ACTIVE_VIEW_VALUE {
   surveys = 'surveys',
   collections = 'collections',
   data = 'data'
@@ -30,7 +30,7 @@ enum SHOW_SEARCH_VALUE {
 
 // Supported URL parameters
 type ListDataTableURLParams = {
-  [ACTIVE_VIEW_KEY]: ACTIVE_VIEW_VALUE;
+  [SUMMARY_ACTIVE_VIEW_KEY]: SUMMARY_ACTIVE_VIEW_VALUE;
   [SHOW_SEARCH_KEY]: SHOW_SEARCH_VALUE;
 };
 
@@ -43,24 +43,24 @@ export const ListDataTableContainer = () => {
   const { searchParams, setSearchParams } = useSearchParams<ListDataTableURLParams>();
 
   const [activeView, setActiveView] = useState(
-    (searchParams.get(ACTIVE_VIEW_KEY) as ACTIVE_VIEW_VALUE | null) ?? ACTIVE_VIEW_VALUE.surveys
+    (searchParams.get(SUMMARY_ACTIVE_VIEW_KEY) as SUMMARY_ACTIVE_VIEW_VALUE | null) ?? SUMMARY_ACTIVE_VIEW_VALUE.surveys
   );
   const [showSearch, setShowSearch] = useState<boolean>(searchParams.get(SHOW_SEARCH_KEY) === SHOW_SEARCH_VALUE.true);
 
   const views = [
     {
-      value: ACTIVE_VIEW_VALUE.surveys,
+      value: SUMMARY_ACTIVE_VIEW_VALUE.surveys,
       label: 'Surveys',
       icon: mdiClipboardOutline,
       button: <CreateSurveyButton />
     },
     {
-      value: ACTIVE_VIEW_VALUE.collections,
+      value: SUMMARY_ACTIVE_VIEW_VALUE.collections,
       label: 'Collections',
       icon: mdiFormatListGroup,
       button: <CreateCollectionButton />
     },
-    { value: ACTIVE_VIEW_VALUE.data, label: 'Data', icon: mdiDatabaseSearch }
+    { value: SUMMARY_ACTIVE_VIEW_VALUE.data, label: 'Data', icon: mdiDatabaseSearch }
   ];
 
   const activeViewObj = views.find((v) => v.value === activeView);
@@ -72,7 +72,7 @@ export const ListDataTableContainer = () => {
           views={views}
           activeView={activeView}
           onViewChange={(view) => {
-            setSearchParams(searchParams.set(ACTIVE_VIEW_KEY, view));
+            setSearchParams(searchParams.set(SUMMARY_ACTIVE_VIEW_KEY, view));
             setActiveView(view);
           }}
           orientation="vertical"
@@ -99,9 +99,9 @@ export const ListDataTableContainer = () => {
           </Stack>
         </>
       }>
-      {activeView === ACTIVE_VIEW_VALUE.surveys && <SurveysListContainer showSearch={showSearch} />}
-      {activeView === ACTIVE_VIEW_VALUE.collections && <CollectionsListContainer showSearch={showSearch} />}
-      {activeView === ACTIVE_VIEW_VALUE.data && <TabularDataTableContainer />}
+      {activeView === SUMMARY_ACTIVE_VIEW_VALUE.surveys && <SurveysListContainer showSearch={showSearch} />}
+      {activeView === SUMMARY_ACTIVE_VIEW_VALUE.collections && <CollectionsListContainer showSearch={showSearch} />}
+      {activeView === SUMMARY_ACTIVE_VIEW_VALUE.data && <TabularDataTableContainer />}
     </SidebarLayout>
   );
 };

@@ -11,6 +11,10 @@ export interface IGetCollectionsResponse {
   pagination: ApiPaginationResponseParams;
 }
 
+export interface IGetCollectionHierarchyResponse {
+  hierarchy: ICollection;
+}
+
 export interface ICreateCollectionRequest {
   name: string;
   description: string | null;

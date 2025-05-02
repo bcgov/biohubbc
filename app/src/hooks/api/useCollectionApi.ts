@@ -9,6 +9,7 @@ import {
   ICreateCollectionRequest,
   ICreateCollectionSurveyRequest,
   ICreateSurveyCollectionRequest,
+  IGetCollectionHierarchyResponse,
   IGetCollectionsResponse,
   IPostCollectionParticipant
 } from 'interfaces/useCollectionApi.interface';
@@ -33,6 +34,18 @@ export const useCollectionApi = (axios: AxiosInstance) => {
    */
   const createCollection = async (collection: ICreateCollectionRequest): Promise<IGetCollectionsResponse> => {
     const { data } = await axios.post(`/api/collection`, collection);
+
+    return data;
+  };
+
+  /**
+   * Get the parents of the given collection
+   *
+   * @param {number} collectionId
+   * @return {*}  {Promise<IGetCollectionResponse>}
+   */
+  const getCollectionParents = async (collectionId: number): Promise<IGetCollectionHierarchyResponse> => {
+    const { data } = await axios.get(`/api/collection/${collectionId}/hierarchy`);
 
     return data;
   };
@@ -139,6 +152,7 @@ export const useCollectionApi = (axios: AxiosInstance) => {
 
   /**
    * Get all observations from surveys in the collection
+   *
    * @param {number} collectionId
    */
   const getObservations = async (
@@ -205,6 +219,7 @@ export const useCollectionApi = (axios: AxiosInstance) => {
 
   return {
     createCollection,
+    getCollectionParents,
     addToCollections,
     getParticipants,
     updateCollection,

@@ -1,41 +1,55 @@
 import { mdiChevronDown, mdiCogOutline, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Button from '@mui/material/Button';
+import Link from '@mui/material/Link';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import PageHeader from 'components/layout/PageHeader';
-import { DeleteCollectionI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
+import { SUMMARY_ACTIVE_VIEW_KEY, SUMMARY_ACTIVE_VIEW_VALUE } from 'features/summary/list-data/ListDataTableContainer';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { ICollection } from 'interfaces/useCollectionApi.interface';
-import React, { useContext } from 'react';
+import useDataLoader from 'hooks/useDataLoader';
+import React, { useContext, useEffect } from 'react';
 import { useHistory } from 'react-router';
+import { Link as RouterLink } from 'react-router-dom';
+
+interface ICollection {
+  collection_id: number;
+  name: string;
+  parent_collection_id?: number;
+  subcollections?: ICollection[];
+}
 
 interface ICollectionHeaderProps {
   collection: ICollection;
 }
 
-/**
- * Collection header for a single-collection view.
- *
- * @return {*}
- */
 const CollectionHeader = (props: ICollectionHeaderProps) => {
   const { collection } = props;
-
   const history = useHistory();
   const biohubApi = useBiohubApi();
-
   const dialogContext = useContext(DialogContext);
+
+  const parentsDataLoader = useDataLoader((collectionId: number) =>
+    biohubApi.collection.getCollectionParents(collectionId)
+  );
+
+  // Get the parents of the given collection to display as breadcrumbs
+  useEffect(() => {
+    if (collection.parent_collection_id) {
+      parentsDataLoader.load(collection.parent_collection_id);
+    }
+  }, [parentsDataLoader, collection.parent_collection_id]);
 
   const showDeleteCollectionDialog = () => {
     dialogContext.setYesNoDialog({
-      dialogTitle: DeleteCollectionI18N.deleteTitle,
-      dialogText: DeleteCollectionI18N.deleteText,
+      dialogTitle: 'Delete Collection',
+      dialogText: 'Are you sure you want to delete this collection?',
       yesButtonProps: { color: 'error' },
       yesButtonLabel: 'Delete',
       noButtonProps: { color: 'primary', variant: 'outlined' },
@@ -53,12 +67,10 @@ const CollectionHeader = (props: ICollectionHeaderProps) => {
   const deleteCollection = async () => {
     try {
       const response = await biohubApi.collection.deleteCollection(collection.collection_id);
-
       if (!response) {
         showDeleteErrorDialog({ open: true });
         return;
       }
-
       history.push(`/admin/summary`);
     } catch (error) {
       const apiError = error as APIError;
@@ -69,8 +81,8 @@ const CollectionHeader = (props: ICollectionHeaderProps) => {
 
   const showDeleteErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
     dialogContext.setErrorDialog({
-      dialogTitle: DeleteCollectionI18N.deleteErrorTitle,
-      dialogText: DeleteCollectionI18N.deleteErrorText,
+      dialogTitle: 'Error Deleting Collection',
+      dialogText: 'An error occurred while trying to delete the collection.',
       open: true,
       onClose: () => {
         dialogContext.setErrorDialog({ open: false });
@@ -84,10 +96,62 @@ const CollectionHeader = (props: ICollectionHeaderProps) => {
 
   const [menuAnchorEl, setMenuAnchorEl] = React.useState<null | HTMLElement>(null);
 
+  const gatherCollectionIdsAndNames = (
+    collections: ICollection[],
+    collectionId: number
+  ): { collection_id: number; name: string }[] => {
+    let collectionData: { collection_id: number; name: string }[] = [];
+
+    collections.forEach((collection) => {
+      // Add the current collection's ID and name
+      collectionData.push({
+        collection_id: collection.collection_id,
+        name: collection.name
+      });
+
+      // Recursively gather collection IDs and names from subcollections
+      if (collection.subcollections && collection.subcollections.length > 0) {
+        collectionData = collectionData.concat(gatherCollectionIdsAndNames(collection.subcollections, collectionId));
+      }
+    });
+
+    return collectionData;
+  };
+
   return (
     <>
       <PageHeader
         title={collection.name ?? ''}
+        breadCrumbJSX={
+          <Breadcrumbs aria-label="breadcrumb" separator=">">
+            <Link
+              component={RouterLink}
+              to={`/admin/summary?${SUMMARY_ACTIVE_VIEW_KEY}=${SUMMARY_ACTIVE_VIEW_VALUE.collections}`}
+              underline="hover"
+              aria-current="page">
+              Collections
+            </Link>
+
+            {collection.parent_collection_id &&
+              parentsDataLoader.data &&
+              gatherCollectionIdsAndNames([parentsDataLoader.data.hierarchy], collection.collection_id).map(
+                (breadcrumb) => (
+                  <Link
+                    key={breadcrumb.collection_id}
+                    component={RouterLink}
+                    underline="hover"
+                    to={`/admin/collections/${breadcrumb.collection_id}`}>
+                    {breadcrumb.name}
+                  </Link>
+                )
+              )}
+
+            {/* Render the current collection as plain text */}
+            <Typography variant="body2" component="span" color="textSecondary" aria-current="page">
+              {collection.name}
+            </Typography>
+          </Breadcrumbs>
+        }
         buttonJSX={
           <>
             <Button

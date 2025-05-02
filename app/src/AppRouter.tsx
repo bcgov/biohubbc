@@ -78,7 +78,9 @@ const AppRouter: React.FC = () => {
         <BaseLayout>
           <AuthenticatedRouteGuard>
             <CodesContextProvider>
-              <CreateSurveyPage />
+              <DialogContextProvider>
+                <CreateSurveyPage />
+              </DialogContextProvider>
             </CodesContextProvider>
           </AuthenticatedRouteGuard>
         </BaseLayout>

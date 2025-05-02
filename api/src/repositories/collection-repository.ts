@@ -195,6 +195,129 @@ export class CollectionRepository extends BaseRepository {
   }
 
   /**
+   *
+   * @param {Knex.QueryBuilder} queryBuilder
+   * @param {number} collectionId
+   * @returns {Knex.QueryBuilder}
+   */
+  _getCollectionsParentsBaseQuery(queryBuilder: Knex.QueryBuilder, collectionId: number): Knex.QueryBuilder {
+    const knex = getKnex();
+
+    return (
+      queryBuilder
+        // Step 1: Recursively find all parents of the given collection (bottom-up)
+        .withRecursive('parent_chain', (qb) => {
+          const base = qb
+            .select('c.collection_id', 'c.parent_collection_id', knex.raw('0 as depth'))
+            .from('collection AS c')
+            .where('c.collection_id', collectionId);
+
+          return base.unionAll(function () {
+            this.select('p.collection_id', 'p.parent_collection_id', knex.raw('pc.depth + 1 as depth'))
+              .from('collection AS p')
+              .join('parent_chain AS pc', 'pc.parent_collection_id', 'p.collection_id');
+          });
+        })
+
+        // Step 2: Get collection details for all collections in the chain
+        .with('collection_details', (qb) => {
+          qb.select('c.collection_id', 'c.name', 'c.description', 'c.parent_collection_id', 'pc.depth')
+            .from('collection AS c')
+            .join('parent_chain AS pc', 'pc.collection_id', 'c.collection_id')
+            .orderBy('pc.depth', 'desc'); // Order from root (highest depth) to leaf (depth 0)
+        })
+
+        // Step 3: Add participants to each collection
+        .with('collection_with_participants', (qb) => {
+          qb.select(
+            'cd.collection_id',
+            'cd.name',
+            'cd.description',
+            'cd.parent_collection_id',
+            'cd.depth',
+            knex.raw(`
+        COALESCE(
+          jsonb_agg(DISTINCT jsonb_build_object(
+            'collection_member_id', cm.collection_member_id,
+            'collection_id', cm.collection_id,
+            'system_user_id', su.system_user_id,
+            'user_identifier', su.user_identifier,
+            'user_guid', su.user_guid,
+            'identity_source', uis.name,
+            'email', su.email,
+            'display_name', su.display_name,
+            'collection_role_id', cr.collection_role_id,
+            'collection_role_name', cr.name
+          )) FILTER (WHERE su.system_user_id IS NOT NULL),
+          '[]'::jsonb
+        ) AS participants
+      `)
+          )
+            .from('collection_details AS cd')
+            .leftJoin('collection_member AS cm', 'cm.collection_id', 'cd.collection_id')
+            .leftJoin('system_user AS su', 'su.system_user_id', 'cm.system_user_id')
+            .leftJoin('collection_role AS cr', 'cr.collection_role_id', 'cm.collection_role_id')
+            .leftJoin('user_identity_source AS uis', 'uis.user_identity_source_id', 'su.user_identity_source_id')
+            .groupBy('cd.collection_id', 'cd.name', 'cd.description', 'cd.parent_collection_id', 'cd.depth');
+        })
+
+        // Step 4: Build the hierarchical tree from the bottom up
+        .with('nested_hierarchy', (qb) => {
+          qb.select(
+            'cwp.collection_id',
+            'cwp.name',
+            'cwp.description',
+            'cwp.parent_collection_id',
+            'cwp.participants',
+            'cwp.depth',
+            knex.raw(`'[]'::jsonb AS subcollections`)
+          )
+            .from('collection_with_participants AS cwp')
+            .where('cwp.depth', 0)
+            .unionAll(function () {
+              // Then recursively build parent nodes with their children
+              this.select(
+                'cwp.collection_id',
+                'cwp.name',
+                'cwp.description',
+                'cwp.parent_collection_id',
+                'cwp.participants',
+                'cwp.depth',
+                knex.raw(`
+            jsonb_build_array(
+              jsonb_build_object(
+                'collection_id', nh.collection_id,
+                'name', nh.name,
+                'description', nh.description,
+                'parent_collection_id', nh.parent_collection_id,
+                'participants', nh.participants,
+                'subcollections', nh.subcollections
+              )
+            ) AS subcollections
+          `)
+              )
+                .from('collection_with_participants AS cwp')
+                .join('nested_hierarchy AS nh', 'nh.parent_collection_id', 'cwp.collection_id')
+                .where('cwp.depth', '>', 0);
+            });
+        })
+
+        // Step 5: Return just the root node that contains the entire hierarchy
+        .select(
+          'nh.collection_id',
+          'nh.name',
+          'nh.description',
+          'nh.parent_collection_id',
+          'nh.participants',
+          'nh.subcollections'
+        )
+        .from('nested_hierarchy AS nh')
+        .orderBy('nh.depth', 'desc')
+        .limit(1)
+    );
+  }
+
+  /**
    * Base query for finding collections with filters and permissions (no children).
    *
    * @param {boolean} isUserAdmin
@@ -319,6 +442,29 @@ export class CollectionRepository extends BaseRepository {
 
     const response = await this.connection.knex(query, Collection);
     return response.rows;
+  }
+
+  /**
+   * Get the parents of the given collection
+   *
+   * @param {number} collectionId - The collectionId for the new collection.
+   * @returns {Promise<Collection>}
+   * @memberof CollectionRepository
+   */
+  async getCollectionParentsById(collectionId: number): Promise<Collection> {
+    const query = getKnex().queryBuilder();
+    this._getCollectionsParentsBaseQuery(query, collectionId);
+
+    const response = await this.connection.knex(query, Collection);
+
+    if (!response.rowCount || response.rowCount < 1) {
+      throw new ApiExecuteSQLError('Failed to get collection parents', [
+        'collectionRepository->getCollectionParents',
+        'rowCount was < 1, expected rowCount >= 1'
+      ]);
+    }
+
+    return response.rows[0];
   }
 
   /**

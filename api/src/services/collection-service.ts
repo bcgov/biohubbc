@@ -1,4 +1,3 @@
-import { COLLECTION_ROLE } from '../constants/roles';
 import { CollectionModel } from '../database-models/collection';
 import { IDBConnection } from '../database/db';
 import { HTTP401 } from '../errors/http-error';
@@ -48,6 +47,17 @@ export class CollectionService extends DBService {
    */
   async getCollectionById(collectionId: number): Promise<Collection> {
     return this.collectionRepository.getCollectionById(collectionId);
+  }
+
+  /**
+   * Get the parents of the given collectionId
+   *
+   * @param {number} collectionId
+   * @return {*}  {Promise<Collection>}
+   * @memberof CollectionService
+   */
+  async getCollectionParentsById(collectionId: number): Promise<Collection> {
+    return this.collectionRepository.getCollectionParentsById(collectionId);
   }
 
   /**
@@ -126,8 +136,8 @@ export class CollectionService extends DBService {
         collection.parent_collection_id,
         systemUserId
       );
-      console.log(participant);
-      if (participant?.collection_role_name !== COLLECTION_ROLE.ADMIN) {
+
+      if (!participant) {
         throw new HTTP401('Access denied: No access to the parent collection');
       }
     }

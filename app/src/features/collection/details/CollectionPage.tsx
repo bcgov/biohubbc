@@ -12,6 +12,7 @@ import CustomToggleButtonGroup from 'components/toolbar/CustomToggleButtonGroup'
 import { CodesContext } from 'contexts/codesContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
+import { useSearchParams } from 'hooks/useSearchParams';
 import { SidebarLayout } from 'layouts/SidebarLayout';
 import { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
@@ -21,20 +22,36 @@ import CollectionParticipantsContainer from './members/CollectionMembersContaine
 import CollectionSurveyContainer from './survey/CollectionSurveyContainer';
 import { CollectionTagContainer } from './tags/CollectionTagContainer';
 
-enum CollectionView {
+const COLLECTION_ACTIVE_VIEW_KEY = 'cvk';
+
+export enum CollectionView {
   Surveys = 'surveys',
   Data = 'data',
-  Tags = 'Tags',
+  Subcollections = 'subcollections',
   Queries = 'Queries',
   Participants = 'participants'
 }
+
+type CollectionPageURLParams = {
+  [COLLECTION_ACTIVE_VIEW_KEY]: CollectionView;
+};
 
 const CollectionPage = () => {
   const codesContext = useContext(CodesContext);
   const biohubApi = useBiohubApi();
 
   const { id: collectionId } = useParams<{ id: string }>();
-  const [activeView, setActiveView] = useState<CollectionView>(CollectionView.Surveys);
+  const { searchParams, setSearchParams } = useSearchParams<CollectionPageURLParams>();
+
+  // Get initial view from URL or fallback
+  const initialView = (searchParams.get(COLLECTION_ACTIVE_VIEW_KEY) as CollectionView) ?? CollectionView.Surveys;
+  const [activeView, setActiveView] = useState<CollectionView>(initialView);
+
+  // Sync URL and state when view changes
+  const handleViewChange = (view: CollectionView) => {
+    setSearchParams(searchParams.set(COLLECTION_ACTIVE_VIEW_KEY, view));
+    setActiveView(view);
+  };
 
   useEffect(() => {
     codesContext.codesDataLoader.load();
@@ -58,7 +75,7 @@ const CollectionPage = () => {
 
   const views = [
     { value: CollectionView.Surveys, label: 'Surveys', icon: mdiClipboardOutline },
-    { value: CollectionView.Tags, label: 'Tags', icon: mdiLabelOutline },
+    { value: CollectionView.Subcollections, label: 'Subcollections', icon: mdiLabelOutline },
     { value: CollectionView.Data, label: 'Data', icon: mdiDatabaseSearchOutline },
     { value: CollectionView.Queries, label: 'Queries', icon: mdiChartBoxOutline },
     { value: CollectionView.Participants, label: 'Members', icon: mdiAccountMultipleOutline }
@@ -75,7 +92,7 @@ const CollectionPage = () => {
               <CustomToggleButtonGroup
                 views={views}
                 activeView={activeView}
-                onViewChange={(view) => setActiveView(view)}
+                onViewChange={handleViewChange}
                 orientation="vertical"
               />
             }>
@@ -85,7 +102,7 @@ const CollectionPage = () => {
               </Box>
             )}
 
-            {activeView === CollectionView.Tags && (
+            {activeView === CollectionView.Subcollections && (
               <Box>
                 <CollectionTagContainer collectionId={collection.collection_id} showSearch={false} />
               </Box>
