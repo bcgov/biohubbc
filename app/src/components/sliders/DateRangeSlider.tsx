@@ -10,7 +10,7 @@ interface IDateRangeSliderProps {
 }
 
 /**
- * Returns slider with values formatted for dates
+ * Returns slider with values formatted as dates
  *
  * @param {IDateRangeSliderProps} props
  * @returns {*}
@@ -21,6 +21,7 @@ export const DateRangeSlider = (props: IDateRangeSliderProps) => {
   const minTimestamp = minDate.valueOf();
   const maxTimestamp = maxDate.valueOf();
 
+  // Get the date in milliseconds to make it numeric for the slider
   const sliderValue = [value[0].valueOf(), value[1].valueOf()];
 
   const handleChange = (newValue: number[]) => {

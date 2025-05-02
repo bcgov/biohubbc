@@ -1,3 +1,4 @@
+import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonMap } from 'components/loading/SkeletonLoaders';
 import BaseLayerControls from 'components/map/components/BaseLayerControls';
 import { SetMapBounds } from 'components/map/components/Bounds';
@@ -18,39 +19,35 @@ interface ISurveyMapProps {
 
 const SurveyMap = (props: ISurveyMapProps) => {
   const bounds: LatLngBoundsExpression | undefined = useMemo(() => {
-    if (props.staticLayers.length === 0) {
-      return calculateUpdatedMapBounds([ALL_OF_BC_BOUNDARY]);
-    }
-
     const allMapFeatures: Feature[] = props.staticLayers.flatMap((staticLayer) =>
       staticLayer.features.map((feature) => feature.geoJSON)
     );
 
-    return calculateUpdatedMapBounds(allMapFeatures);
+    if (allMapFeatures.length > 0) {
+      return calculateUpdatedMapBounds(allMapFeatures);
+    } else {
+      return calculateUpdatedMapBounds([ALL_OF_BC_BOUNDARY]);
+    }
   }, [props.staticLayers]);
 
   return (
-    <>
-      {props.isLoading ? (
-        <SkeletonMap />
-      ) : (
-        <LeafletMapContainer
-          data-testid="leaflet-survey-map"
-          id="survey-map"
-          center={MAP_DEFAULT_CENTER}
-          scrollWheelZoom={false}
-          fullscreenControl={true}
-          style={{ height: '100%' }}>
-          <MapBaseCss />
-          <FullScreenScrollingEventHandler bounds={bounds} scrollWheelZoom={false} />
-          <SetMapBounds bounds={bounds} />
-          <LayersControl position="topright">
-            <BaseLayerControls />
-            <StaticLayers layers={props.staticLayers} />
-          </LayersControl>
-        </LeafletMapContainer>
-      )}
-    </>
+    <LoadingGuard isLoading={props.isLoading} isLoadingFallback={<SkeletonMap />}>
+      <LeafletMapContainer
+        data-testid="leaflet-survey-map"
+        id="survey-map"
+        center={MAP_DEFAULT_CENTER}
+        scrollWheelZoom={false}
+        fullscreenControl={true}
+        style={{ height: '100%' }}>
+        <MapBaseCss />
+        <FullScreenScrollingEventHandler bounds={bounds} scrollWheelZoom={false} />
+        <SetMapBounds bounds={bounds} />
+        <LayersControl position="topright">
+          <BaseLayerControls />
+          <StaticLayers layers={props.staticLayers} />
+        </LayersControl>
+      </LeafletMapContainer>
+    </LoadingGuard>
   );
 };
 

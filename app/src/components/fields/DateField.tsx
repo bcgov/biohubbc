@@ -45,7 +45,7 @@ export const DateField = (props: IDateFieldProps) => {
         }}
         slotProps={{
           textField: {
-            required,
+            required: required,
             variant: 'outlined',
             fullWidth: true,
             error,

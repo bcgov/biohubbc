@@ -112,7 +112,7 @@ export const SurveySpatialTelemetry = (props: ISurveySpatialTelemetryProps) => {
   return (
     <>
       <Box height={{ xs: 300, md: 500 }} position="relative">
-        <SurveyMap staticLayers={[...props.staticLayers, layer]} />
+        <SurveyMap staticLayers={[...props.staticLayers, layer]} isLoading={telemetrySpatialDataLoader.isLoading} />
       </Box>
 
       {dateRange && (

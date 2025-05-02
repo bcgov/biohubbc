@@ -84,7 +84,6 @@ GET.apiDoc = {
       name: 'endDate',
       schema: {
         type: 'string',
-        format: 'date-time',
         description: 'The end date to filter telemetry records with. Only return records from before the end date.'
       }
     },
