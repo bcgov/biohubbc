@@ -45,6 +45,7 @@ interface IDeploymentsTableProps {
   deployments: TelemetryDeployment[];
   selectedRows: GridRowSelectionModel;
   setSelectedRows: (selection: GridRowSelectionModel) => void;
+  isLoading: boolean;
   /**
    * Callback fired when a deployment is deleted.
    */
@@ -58,7 +59,7 @@ interface IDeploymentsTableProps {
  * @return {*}
  */
 export const DeploymentsTable = (props: IDeploymentsTableProps) => {
-  const { deployments, selectedRows, setSelectedRows, onDelete } = props;
+  const { deployments, selectedRows, setSelectedRows, onDelete, isLoading } = props;
 
   const biohubApi = useBiohubApi();
 
@@ -354,6 +355,7 @@ export const DeploymentsTable = (props: IDeploymentsTableProps) => {
           }
         }}
         pageSizeOptions={[10, 25, 50]}
+        loading={isLoading}
       />
     </>
   );

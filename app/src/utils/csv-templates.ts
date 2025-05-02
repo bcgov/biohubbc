@@ -105,3 +105,12 @@ export const getHabitatFeaturesCSVTemplate = (): CSVEncodedTemplate => {
     'COMMENT'
   ]);
 };
+
+/**
+ * Get CSV template for deployments.
+ *
+ * @returns {CSVEncodedTemplate} Encoded CSV template
+ */
+export const getDeploymentCSVTemplate = (): CSVEncodedTemplate => {
+  return getCSVTemplate(['VENDOR', 'SERIAL', 'ALIAS', 'LATITUDE', 'LONGITUDE', 'DATE', 'TIME']);
+};

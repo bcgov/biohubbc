@@ -1,4 +1,4 @@
-import { mdiArrowTopRight, mdiDotsVertical, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
+import { mdiArrowTopRight, mdiDotsVertical, mdiImport, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -8,9 +8,12 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { GridRowSelectionModel } from '@mui/x-data-grid';
+import axios, { AxiosProgressEvent } from 'axios';
+import { CSVSingleImportDialog } from 'components/csv/CSVSingleImportDialog';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
@@ -21,12 +24,36 @@ import { useDialogContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import { getDeploymentCSVTemplate } from 'utils/csv-templates';
+import { downloadFile } from 'utils/file-utils';
 
 export const DeploymentsContainer = () => {
   const dialogContext = useDialogContext();
   const surveyContext = useSurveyContext();
 
   const biohubApi = useBiohubApi();
+
+  // import dialog for deployments
+  const [showImportDialog, setShowImportDialog] = useState(false);
+  const cancelToken = axios.CancelToken.source();
+  const [processingRecords, setProcessingRecords] = useState(false);
+  const handleImportDeploymentCSV = async (file: File, onProgress: (progressEvent: AxiosProgressEvent) => void) => {
+    try {
+      await biohubApi.telemetry.importManualTelemetryCSV(
+        surveyContext.projectId,
+        surveyContext.surveyId,
+        file,
+        cancelToken,
+        onProgress
+      );
+
+      setProcessingRecords(true);
+
+      deploymentsDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+    } finally {
+      setProcessingRecords(false);
+    }
+  };
 
   // State for bulk actions
   const [headerAnchorEl, setHeaderAnchorEl] = useState<null | HTMLElement>(null);
@@ -111,6 +138,16 @@ export const DeploymentsContainer = () => {
 
   return (
     <>
+      <CSVSingleImportDialog
+        open={showImportDialog}
+        dialogTitle="Import Telemetry"
+        dialogSummary="Import telemetry data for deployments by uploading a CSV file matching the template. Duplicate records are filtered out, allowing you to import multiple files with duplicate data to ensure all data is entered."
+        onClose={() => setShowImportDialog(false)}
+        onImport={handleImportDeploymentCSV}
+        onDownloadTemplate={() =>
+          downloadFile(getDeploymentCSVTemplate(), `SIMS-telemetry-template-${new Date().getFullYear()}.csv`)
+        }
+      />
       {/* Bulk action menu */}
       <Menu
         open={Boolean(headerAnchorEl)}
@@ -133,6 +170,7 @@ export const DeploymentsContainer = () => {
             ({deploymentsCount})
           </Typography>
         </Typography>
+        <Stack flexDirection="row" alignItems="center" gap={1} overflow="hidden" whiteSpace="nowrap">
         <Button
           variant="contained"
           color="primary"
@@ -141,6 +179,14 @@ export const DeploymentsContainer = () => {
           startIcon={<Icon path={mdiPlus} size={0.8} />}>
           Add
         </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<Icon path={mdiImport} size={1} />}
+          onClick={() => [setShowImportDialog(true)]}>
+          Import
+        </Button>
+        </Stack>
         <IconButton
           edge="end"
           sx={{ ml: 1 }}
@@ -179,6 +225,7 @@ export const DeploymentsContainer = () => {
                 selectedRows={selectedRows}
                 setSelectedRows={setSelectedRows}
                 onDelete={onDelete}
+                isLoading={processingRecords}
               />
             </LoadingGuard>
           </Box>
