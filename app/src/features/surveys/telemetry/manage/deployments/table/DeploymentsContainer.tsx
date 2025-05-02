@@ -140,12 +140,12 @@ export const DeploymentsContainer = () => {
     <>
       <CSVSingleImportDialog
         open={showImportDialog}
-        dialogTitle="Import Telemetry"
-        dialogSummary="Import telemetry data for deployments by uploading a CSV file matching the template. Duplicate records are filtered out, allowing you to import multiple files with duplicate data to ensure all data is entered."
+        dialogTitle="Import Deployments"
+        dialogSummary="Import data for deployments by uploading a CSV file matching the template."
         onClose={() => setShowImportDialog(false)}
         onImport={handleImportDeploymentCSV}
         onDownloadTemplate={() =>
-          downloadFile(getDeploymentCSVTemplate(), `SIMS-telemetry-template-${new Date().getFullYear()}.csv`)
+          downloadFile(getDeploymentCSVTemplate(), `SIMS-deployment-template-${new Date().getFullYear()}.csv`)
         }
       />
       {/* Bulk action menu */}
@@ -171,21 +171,21 @@ export const DeploymentsContainer = () => {
           </Typography>
         </Typography>
         <Stack flexDirection="row" alignItems="center" gap={1} overflow="hidden" whiteSpace="nowrap">
-        <Button
-          variant="contained"
-          color="primary"
-          component={RouterLink}
-          to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry/manage/deployment/create`}
-          startIcon={<Icon path={mdiPlus} size={0.8} />}>
-          Add
-        </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<Icon path={mdiImport} size={1} />}
-          onClick={() => [setShowImportDialog(true)]}>
-          Import
-        </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            component={RouterLink}
+            to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry/manage/deployment/create`}
+            startIcon={<Icon path={mdiPlus} size={0.8} />}>
+            Add
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<Icon path={mdiImport} size={1} />}
+            onClick={() => [setShowImportDialog(true)]}>
+            Import
+          </Button>
         </Stack>
         <IconButton
           edge="end"

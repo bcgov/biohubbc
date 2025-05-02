@@ -112,5 +112,5 @@ export const getHabitatFeaturesCSVTemplate = (): CSVEncodedTemplate => {
  * @returns {CSVEncodedTemplate} Encoded CSV template
  */
 export const getDeploymentCSVTemplate = (): CSVEncodedTemplate => {
-  return getCSVTemplate(['VENDOR', 'SERIAL', 'ALIAS', 'LATITUDE', 'LONGITUDE', 'DATE', 'TIME']);
+  return getCSVTemplate(['SERIAL', 'ALIAS', 'CAPTURE_DATE', 'CAPTURE_TIME', 'END_DATE', 'END_REASON']);
 };
