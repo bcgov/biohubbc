@@ -14,7 +14,7 @@ import { SUMMARY_ACTIVE_VIEW_KEY, SUMMARY_ACTIVE_VIEW_VALUE } from 'features/sum
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
-import React, { useContext, useEffect } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo } from 'react';
 import { useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 
@@ -96,55 +96,61 @@ const CollectionHeader = (props: ICollectionHeaderProps) => {
 
   const [menuAnchorEl, setMenuAnchorEl] = React.useState<null | HTMLElement>(null);
 
-  const gatherCollectionIdsAndNames = (
-    collections: ICollection[],
-    collectionId: number
-  ): { collection_id: number; name: string }[] => {
-    let collectionData: { collection_id: number; name: string }[] = [];
+  const gatherCollectionIdsAndNames = useCallback(
+    (collections: ICollection[]): { collection_id: number; name: string }[] => {
+      let collectionData: { collection_id: number; name: string }[] = [];
 
-    collections.forEach((collection) => {
-      // Add the current collection's ID and name
-      collectionData.push({
-        collection_id: collection.collection_id,
-        name: collection.name
+      collections.forEach((collection) => {
+        collectionData.push({
+          collection_id: collection.collection_id,
+          name: collection.name
+        });
+
+        if (collection.subcollections?.length) {
+          collectionData = collectionData.concat(gatherCollectionIdsAndNames(collection.subcollections));
+        }
       });
 
-      // Recursively gather collection IDs and names from subcollections
-      if (collection.subcollections && collection.subcollections.length > 0) {
-        collectionData = collectionData.concat(gatherCollectionIdsAndNames(collection.subcollections, collectionId));
-      }
-    });
+      return collectionData;
+    },
+    []
+  );
 
-    return collectionData;
-  };
+  const breadcrumb = useMemo(() => {
+    const hierarchy = parentsDataLoader?.data?.hierarchy;
+
+    if (!hierarchy) {
+      return [];
+    }
+
+    const collected = gatherCollectionIdsAndNames([hierarchy]);
+
+    return collected.map((item) => (
+      <Link
+        key={item.collection_id}
+        component={RouterLink}
+        underline="hover"
+        to={`/admin/collections/${item.collection_id}`}>
+        {item.name}
+      </Link>
+    ));
+  }, [parentsDataLoader?.data?.hierarchy, gatherCollectionIdsAndNames]);
 
   return (
     <>
       <PageHeader
         title={collection.name ?? ''}
+        isLoading={parentsDataLoader.isLoading || (!!collection.parent_collection_id && !breadcrumb.length)}
         breadCrumbJSX={
           <Breadcrumbs aria-label="breadcrumb" separator=">">
             <Link
               component={RouterLink}
               to={`/admin/summary?${SUMMARY_ACTIVE_VIEW_KEY}=${SUMMARY_ACTIVE_VIEW_VALUE.collections}`}
-              underline="hover"
-              aria-current="page">
+              underline="hover">
               Collections
             </Link>
 
-            {collection.parent_collection_id &&
-              parentsDataLoader.data &&
-              gatherCollectionIdsAndNames([parentsDataLoader.data.hierarchy], collection.collection_id).map(
-                (breadcrumb) => (
-                  <Link
-                    key={breadcrumb.collection_id}
-                    component={RouterLink}
-                    underline="hover"
-                    to={`/admin/collections/${breadcrumb.collection_id}`}>
-                    {breadcrumb.name}
-                  </Link>
-                )
-              )}
+            {collection.parent_collection_id && <>{breadcrumb}</>}
 
             {/* Render the current collection as plain text */}
             <Typography variant="body2" component="span" color="textSecondary" aria-current="page">
@@ -168,17 +174,11 @@ const CollectionHeader = (props: ICollectionHeaderProps) => {
             </Button>
             <Menu
               id="collectionSettingsMenu"
-              aria-labelledby="collection_settings_button"
+              aria-labelledby="collection_settings-button"
               style={{ marginTop: '8px' }}
               anchorEl={menuAnchorEl}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'right'
-              }}
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right'
-              }}
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+              transformOrigin={{ vertical: 'top', horizontal: 'right' }}
               keepMounted
               open={Boolean(menuAnchorEl)}
               onClose={() => setMenuAnchorEl(null)}>
@@ -188,7 +188,7 @@ const CollectionHeader = (props: ICollectionHeaderProps) => {
                 </ListItemIcon>
                 <Typography variant="inherit">Edit Collection Details</Typography>
               </MenuItem>
-              <MenuItem onClick={showDeleteCollectionDialog} data-testid={'delete-collection-button'}>
+              <MenuItem onClick={showDeleteCollectionDialog} data-testid="delete-collection-button">
                 <ListItemIcon>
                   <Icon path={mdiTrashCanOutline} size={1} />
                 </ListItemIcon>

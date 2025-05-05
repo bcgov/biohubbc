@@ -9,12 +9,12 @@ export interface ICollectionAdvancedFilters {
   include_children?: boolean;
 }
 
-export interface ICollectionParticipantsAdvancedFilters {
+export interface ICollectionMembersAdvancedFilters {
   keyword?: string;
   system_user_id?: number;
 }
 
-export const CollectionParticipant = z.object({
+export const CollectionMember = z.object({
   collection_member_id: z.number(),
   collection_id: z.number(),
   system_user_id: z.number(),
@@ -22,9 +22,9 @@ export const CollectionParticipant = z.object({
   collection_role_name: z.string()
 });
 
-export type CollectionParticipant = z.infer<typeof CollectionParticipant>;
+export type CollectionMember = z.infer<typeof CollectionMember>;
 
-export interface IPostCollectionParticipant {
+export interface IPostCollectionMember {
   system_user_id: number;
   collection_role_name: COLLECTION_ROLE;
 }
@@ -35,7 +35,7 @@ export const Collection: z.ZodType<any> = z.lazy(() =>
     name: z.string(),
     description: z.string(),
     parent_collection_id: z.number().nullable(),
-    participants: z.array(CollectionParticipant.omit({ collection_id: true })),
+    participants: z.array(CollectionMember.omit({ collection_id: true })),
     subcollections: z.array(Collection)
   })
 );
@@ -49,7 +49,7 @@ export interface IPostCollection {
 }
 
 export interface IPostCollectionRequest extends IPostCollection {
-  participants: IPostCollectionParticipant[];
+  participants: IPostCollectionMember[];
 }
 
 export interface IPostCollectionSurvey {

@@ -1,11 +1,9 @@
 import { LoadingButton } from '@mui/lab';
-import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import PageHeader from 'components/layout/PageHeader';
 import { CreateSurveyI18N } from 'constants/i18n';
@@ -168,13 +166,6 @@ const CreateSurveyPage = () => {
       <Prompt when={enableCancelCheck} message={locationChangeInterceptor} />
       <PageHeader
         title="Create New Survey"
-        breadCrumbJSX={
-          <Breadcrumbs aria-label="breadcrumb" separator={'>'}>
-            <Typography variant="body2" component="span" color="textSecondary" aria-current="page">
-              Create New Survey
-            </Typography>
-          </Breadcrumbs>
-        }
         buttonJSX={
           <Stack flexDirection="row" gap={1}>
             <LoadingButton

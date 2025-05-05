@@ -6,7 +6,7 @@ import { SystemUserAutocompleteField } from 'components/fields/SystemUserAutocom
 import UserRoleSelector from 'components/user/UserRoleSelector';
 import { useFormikContext } from 'formik';
 import { ICodeWithDescription } from 'interfaces/useCodesApi.interface';
-import { ICollectionParticipant, ICreateCollectionRequest } from 'interfaces/useCollectionApi.interface';
+import { ICollectionMember, ICreateCollectionRequest } from 'interfaces/useCollectionApi.interface';
 import { ISystemUser } from 'interfaces/useUserApi.interface';
 import { TransitionGroup } from 'react-transition-group';
 
@@ -133,7 +133,7 @@ const ParticipantsCollectionForm = (props: IParticipantsCollectionFormProps): JS
                     }>
                     <UserRoleSelector
                       index={index}
-                      user={user as ICollectionParticipant}
+                      user={user as ICollectionMember}
                       roles={props.roles}
                       error={error}
                       selectedRole={getSelectedRole(index)}

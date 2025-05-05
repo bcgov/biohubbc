@@ -21,7 +21,7 @@ import { useCodesContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
 import { useSearchParams } from 'hooks/useSearchParams';
-import { ICollectionParticipant, ICollectionParticipantsAdvancedFilters } from 'interfaces/useCollectionApi.interface';
+import { ICollectionMember, ICollectionMembersAdvancedFilters } from 'interfaces/useCollectionApi.interface';
 import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import { useState } from 'react';
 import { ApiPaginationRequestOptions, StringValues } from 'types/misc';
@@ -86,7 +86,7 @@ const CollectionMembersContainer = (props: ICollectionMembersContainerProps) => 
     }
   ]);
 
-  const [advancedFiltersModel, setAdvancedFiltersModel] = useState<ICollectionParticipantsAdvancedFilters>({
+  const [advancedFiltersModel, setAdvancedFiltersModel] = useState<ICollectionMembersAdvancedFilters>({
     keyword: searchParams.get('c_keyword') ?? CollectionParticipantsAdvancedFiltersInitialValues.keyword,
     system_user_id: searchParams.get('c_system_user_id')
       ? Number(searchParams.get('c_system_user_id'))
@@ -102,7 +102,7 @@ const CollectionMembersContainer = (props: ICollectionMembersContainerProps) => 
   };
 
   const collectionParticipantsDataLoader = useDataLoader(
-    (pagination?: ApiPaginationRequestOptions, filter?: ICollectionParticipantsAdvancedFilters) =>
+    (pagination?: ApiPaginationRequestOptions, filter?: ICollectionMembersAdvancedFilters) =>
       biohubApi.collection.getParticipants(collectionId, pagination, filter)
   );
 
@@ -111,7 +111,7 @@ const CollectionMembersContainer = (props: ICollectionMembersContainerProps) => 
     collectionParticipantsDataLoader.refresh(paginationSort, advancedFiltersModel);
   }, [advancedFiltersModel, paginationSort]);
 
-  const columns: GridColDef<ICollectionParticipant>[] = [
+  const columns: GridColDef<ICollectionMember>[] = [
     {
       field: 'collection_member_id',
       headerName: 'ID',

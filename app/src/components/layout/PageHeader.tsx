@@ -3,12 +3,15 @@ import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import { LoadingGuard } from 'components/loading/LoadingGuard';
+import { SkeletonHorizontalStack } from 'components/loading/SkeletonLoaders';
 
 interface IPageHeader {
   title: string;
   subTitleJSX?: JSX.Element;
   breadCrumbJSX?: JSX.Element;
   buttonJSX?: JSX.Element;
+  isLoading?: boolean;
 }
 /**
  * Generic header for all views
@@ -16,7 +19,7 @@ interface IPageHeader {
  * @return {*}
  */
 const PageHeader = (props: IPageHeader) => {
-  const { title, subTitleJSX, breadCrumbJSX, buttonJSX } = props;
+  const { title, subTitleJSX, breadCrumbJSX, buttonJSX, isLoading } = props;
 
   return (
     <Paper
@@ -28,7 +31,16 @@ const PageHeader = (props: IPageHeader) => {
         zIndex: 1002
       }}>
       <Container maxWidth={'xl'} sx={{ py: { xs: 2, sm: 3 } }}>
-        {breadCrumbJSX}
+        {breadCrumbJSX && (
+          <Box minHeight="35px">
+            <LoadingGuard
+              isLoadingFallbackDelay={600}
+              isLoading={isLoading}
+              isLoadingFallback={<SkeletonHorizontalStack />}>
+              {breadCrumbJSX}
+            </LoadingGuard>
+          </Box>
+        )}
         <Stack
           flexDirection={{ xs: 'column', md: 'row' }}
           alignItems="flex-start"

@@ -57,7 +57,12 @@ export class CollectionService extends DBService {
    * @memberof CollectionService
    */
   async getCollectionParentsById(collectionId: number): Promise<Collection> {
-    return this.collectionRepository.getCollectionParentsById(collectionId);
+    const collections = this.collectionRepository.getCollectionParentsById(collectionId);
+
+    // TODO: Filter collections that the user does not have access to
+    const filteredCollections = collections;
+
+    return filteredCollections;
   }
 
   /**
@@ -132,7 +137,7 @@ export class CollectionService extends DBService {
   async createCollection(collection: IPostCollectionRequest, systemUserId?: number): Promise<CollectionModel> {
     // Confirm that the user has access to the parent collection id
     if (collection.parent_collection_id && systemUserId) {
-      const participant = await this.collectionMemberService.getCollectionParticipant(
+      const participant = await this.collectionMemberService.getCollectionMemberByCollectionIdAndSystemUserId(
         collection.parent_collection_id,
         systemUserId
       );
@@ -145,7 +150,7 @@ export class CollectionService extends DBService {
     const collectionResponse = await this.collectionRepository.createCollection(collection);
 
     // Insert members of the collection
-    await this.collectionMemberService.insertCollectionParticipants(
+    await this.collectionMemberService.insertCollectionMembers(
       collectionResponse.collection_id,
       collection.participants
     );
@@ -166,7 +171,7 @@ export class CollectionService extends DBService {
     const collectionResponse = await this.collectionRepository.updateCollection(collectionId, collection);
 
     // Get current participants from DB
-    const currentParticipants = await this.collectionMemberService.getCollectionParticipants(collectionId);
+    const currentParticipants = await this.collectionMemberService.getCollectionMembers(collectionId);
 
     // Find new participants to insert
     const newParticipants = collection.participants.filter(
@@ -194,7 +199,7 @@ export class CollectionService extends DBService {
       .filter((p) => p !== null) as Array<(typeof currentParticipants)[0] & { newRole: string }>;
 
     // Insert new participants
-    await this.collectionMemberService.insertCollectionParticipants(collectionId, newParticipants);
+    await this.collectionMemberService.insertCollectionMembers(collectionId, newParticipants);
 
     // Remove old participants
     for (const participant of oldParticipants) {
@@ -203,7 +208,7 @@ export class CollectionService extends DBService {
 
     // Update roles of modified participants
     for (const participant of modifiedParticipants) {
-      await this.collectionMemberService.updateCollectionParticipantRole(
+      await this.collectionMemberService.updateCollectionMemberRole(
         collectionId,
         participant.collection_member_id,
         participant.newRole

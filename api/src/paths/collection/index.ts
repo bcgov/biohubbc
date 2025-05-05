@@ -63,25 +63,6 @@ GET.apiDoc = {
     },
     {
       in: 'query',
-      name: 'itis_tsn',
-      description: 'ITIS TSN number',
-      required: false,
-      schema: {
-        type: 'integer',
-        nullable: true
-      }
-    },
-    {
-      in: 'query',
-      name: 'collection_name',
-      required: false,
-      schema: {
-        type: 'string',
-        nullable: true
-      }
-    },
-    {
-      in: 'query',
       name: 'system_user_id',
       required: false,
       schema: {

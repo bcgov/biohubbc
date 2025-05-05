@@ -6,12 +6,12 @@ import UserRoleSelector from 'components/user/UserRoleSelector';
 import { COLLECTION_ROLE } from 'constants/roles';
 import { useFormikContext } from 'formik';
 import { ICodeWithDescription } from 'interfaces/useCodesApi.interface';
-import { ICollectionParticipant } from 'interfaces/useCollectionApi.interface';
+import { ICollectionMember } from 'interfaces/useCollectionApi.interface';
 import { ISystemUser } from 'interfaces/useUserApi.interface';
 import { TransitionGroup } from 'react-transition-group';
 
 export interface ICollectionMemberData {
-  participants: (ISystemUser & ICollectionParticipant)[];
+  participants: (ISystemUser & ICollectionMember)[];
 }
 
 interface ICollectionMemberForm {
@@ -110,7 +110,7 @@ const CollectionMemberForm = (props: ICollectionMemberForm) => {
                   }>
                   <UserRoleSelector
                     index={index}
-                    user={user as ICollectionParticipant}
+                    user={user as ICollectionMember}
                     roles={props.roles}
                     error={error}
                     selectedRole={getSelectedRole(index)}

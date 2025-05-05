@@ -4,14 +4,14 @@ import { ISurveyAdvancedFilters } from 'features/summary/list-data/survey/Survey
 import { IObservationsAdvancedFilters } from 'features/summary/tabular-data/observation/ObservationsListFilterForm';
 import {
   ICollection,
-  ICollectionParticipantResponse,
-  ICollectionParticipantsAdvancedFilters,
+  ICollectionMemberResponse,
+  ICollectionMembersAdvancedFilters,
   ICreateCollectionRequest,
   ICreateCollectionSurveyRequest,
   ICreateSurveyCollectionRequest,
   IGetCollectionHierarchyResponse,
   IGetCollectionsResponse,
-  IPostCollectionParticipant
+  IPostCollectionMember
 } from 'interfaces/useCollectionApi.interface';
 import { IGetSurveyObservationsResponse } from 'interfaces/useObservationApi.interface';
 import { IFindSurveysResponse } from 'interfaces/useSurveyApi.interface';
@@ -85,10 +85,10 @@ export const useCollectionApi = (axios: AxiosInstance) => {
    * Adds participants to the collection
    *
    * @param {number} collectionId
-   * @param {IPostCollectionParticipant[]} participants
+   * @param {IPostCollectionMember[]} participants
    * @return {*}  {Promise<void>}
    */
-  const addParticipants = async (collectionId: number, participants: IPostCollectionParticipant[]): Promise<void> => {
+  const addParticipants = async (collectionId: number, participants: IPostCollectionMember[]): Promise<void> => {
     const { data } = await axios.post(`/api/collection/${collectionId}/participant`, {
       participants
     });
@@ -152,8 +152,8 @@ export const useCollectionApi = (axios: AxiosInstance) => {
   const getParticipants = async (
     collectionId: number,
     pagination?: ApiPaginationRequestOptions,
-    filterFieldData?: ICollectionParticipantsAdvancedFilters
-  ): Promise<ICollectionParticipantResponse> => {
+    filterFieldData?: ICollectionMembersAdvancedFilters
+  ): Promise<ICollectionMemberResponse> => {
     const params = {
       ...pagination,
       ...filterFieldData
@@ -233,6 +233,32 @@ export const useCollectionApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Get subcollections for the given collection id
+   *
+   * @param {number} collectionId
+   * @param {ApiPaginationRequestOptions} [pagination]
+   * @param {ICollectionAdvancedFilters} filterFieldData
+   * @return {*} {Promise<IFindProjectsResponse[]>}
+   */
+  const findSubcollections = async (
+    collectionId: number,
+    pagination?: ApiPaginationRequestOptions,
+    filterFieldData?: ICollectionAdvancedFilters
+  ): Promise<IGetCollectionsResponse> => {
+    const params = {
+      ...pagination,
+      ...filterFieldData
+    };
+
+    const { data } = await axios.get(`/api/collection/${collectionId}/subcollection`, {
+      params,
+      paramsSerializer: (params) => qs.stringify(params)
+    });
+
+    return data;
+  };
+
   return {
     createCollection,
     createSubcollection,
@@ -242,6 +268,7 @@ export const useCollectionApi = (axios: AxiosInstance) => {
     updateCollection,
     addSurveys,
     findCollections,
+    findSubcollections,
     getSurveysInCollection,
     getObservations,
     addParticipants,

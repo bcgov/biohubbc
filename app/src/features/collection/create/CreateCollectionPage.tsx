@@ -15,7 +15,7 @@ import { APIError } from 'hooks/api/useAxios';
 import { useAuthStateContext } from 'hooks/useAuthStateContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
-import { ICollectionParticipant, ICreateCollectionRequest } from 'interfaces/useCollectionApi.interface';
+import { ICollectionMember, ICreateCollectionRequest } from 'interfaces/useCollectionApi.interface';
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import CollectionForm from '../edit/CollectionForm';
@@ -51,7 +51,7 @@ const CreateCollectionPage = () => {
 
   const authStateContext = useAuthStateContext();
 
-  const initialParticipants: ICollectionParticipant[] = useMemo(() => {
+  const initialParticipants: ICollectionMember[] = useMemo(() => {
     if (!authStateContext.simsUserWrapper.systemUserId) {
       return [];
     }
@@ -65,7 +65,7 @@ const CreateCollectionPage = () => {
         email: authStateContext.simsUserWrapper?.email,
         agency: authStateContext.simsUserWrapper?.agency,
         identity_source: authStateContext.simsUserWrapper?.identitySource
-      } as ICollectionParticipant
+      } as ICollectionMember
     ];
   }, [authStateContext.simsUserWrapper, codesContext.codesDataLoader.data?.collection_roles]);
 

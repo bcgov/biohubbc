@@ -1,6 +1,6 @@
 import { ApiPaginationResponseParams } from 'types/misc';
 
-export interface ICollectionParticipantsAdvancedFilters {
+export interface ICollectionMembersAdvancedFilters {
   system_user_id?: number;
   keyword?: string;
   parent_collection_id?: number;
@@ -18,7 +18,7 @@ export interface IGetCollectionHierarchyResponse {
 export interface ICreateCollectionRequest {
   name: string;
   description: string | null;
-  participants: IPostCollectionParticipant[];
+  participants: IPostCollectionMember[];
 }
 
 export interface ICreateCollectionSurveyRequest {
@@ -36,7 +36,7 @@ export interface IUpdateCollectionRequest {
   parent_collection_id: number | null;
   name: string;
   description: string | null;
-  participants: ICollectionParticipant[];
+  participants: ICollectionMember[];
 }
 
 export interface ICollection {
@@ -44,20 +44,20 @@ export interface ICollection {
   parent_collection_id: number;
   name: string;
   description: string | null;
-  participants: ICollectionParticipant[];
+  participants: ICollectionMember[];
 }
 
-export interface ICreateCollectionParticipantsRequest {
+export interface ICreateCollectionMembersRequest {
   collection_id: number;
-  participants: IPostCollectionParticipant[];
+  participants: IPostCollectionMember[];
 }
 
-export interface ICollectionParticipantResponse {
-  participants: ICollectionParticipant[];
+export interface ICollectionMemberResponse {
+  participants: ICollectionMember[];
   pagination: ApiPaginationResponseParams;
 }
 
-export interface ICollectionParticipant {
+export interface ICollectionMember {
   collection_member_id: number;
   system_user_id: number;
   collection_role_id: number;
@@ -82,7 +82,7 @@ export interface IGetProjectParticipant {
   project_role_permissions: string[];
 }
 
-export interface IPostCollectionParticipant {
+export interface IPostCollectionMember {
   system_user_id: number;
   collection_role_name: string;
 }

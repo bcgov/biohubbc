@@ -6,7 +6,7 @@ import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import { TeamMemberAvatar } from 'components/avatar/TeamMemberAvatar';
 import { COLLECTION_ROLE, SURVEY_ROLE_ICONS } from 'constants/roles';
-import { ICollectionParticipant } from 'interfaces/useCollectionApi.interface';
+import { ICollectionMember } from 'interfaces/useCollectionApi.interface';
 import { useMemo } from 'react';
 import { getRandomHexColor } from 'utils/Utils';
 
@@ -15,11 +15,11 @@ const roleOrder: { [key: string]: number } = {
   [COLLECTION_ROLE.MEMBER]: 2
 };
 
-export interface ICollectionParticipantsProps {
-  participants: ICollectionParticipant[];
+export interface ICollectionMembersProps {
+  participants: ICollectionMember[];
 }
 
-export function CollectionParticipants(props: ICollectionParticipantsProps) {
+export function CollectionParticipants(props: ICollectionMembersProps) {
   const { participants } = props;
 
   const teamMembers = useMemo(() => {

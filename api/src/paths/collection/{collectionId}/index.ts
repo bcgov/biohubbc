@@ -1,5 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
+import { COLLECTION_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
 import { IPostCollectionRequest } from '../../../models/collection';
 import {
@@ -14,11 +15,13 @@ import { getLogger } from '../../../utils/logger';
 const defaultLog = getLogger('paths/collection/{collectionId}/index');
 
 export const GET: Operation = [
-  authorizeRequestHandler(() => {
+  authorizeRequestHandler((req) => {
     return {
       and: [
         {
-          discriminator: 'SystemUser'
+          discriminator: 'CollectionRole',
+          collectionId: Number(req.params.collectionId),
+          validCollectionRoles: [COLLECTION_ROLE.ADMIN, COLLECTION_ROLE.MEMBER]
         }
       ]
     };
@@ -91,8 +94,6 @@ export function getCollectionById(): RequestHandler {
 
       const response = await collectionService.getCollectionById(collectionId);
 
-      console.log(response);
-
       await connection.commit();
 
       return res.status(200).json(response);
@@ -107,11 +108,13 @@ export function getCollectionById(): RequestHandler {
 }
 
 export const PUT: Operation = [
-  authorizeRequestHandler(() => {
+  authorizeRequestHandler((req) => {
     return {
       and: [
         {
-          discriminator: 'SystemUser'
+          discriminator: 'CollectionRole',
+          collectionId: Number(req.params.collectionId),
+          validCollectionRoles: [COLLECTION_ROLE.ADMIN]
         }
       ]
     };
@@ -204,11 +207,13 @@ export function UpdateCollection(): RequestHandler {
 }
 
 export const POST: Operation = [
-  authorizeRequestHandler(() => {
+  authorizeRequestHandler((req) => {
     return {
       and: [
         {
-          discriminator: 'SystemUser'
+          discriminator: 'CollectionRole',
+          collectionId: Number(req.params.collectionId),
+          validCollectionRoles: [COLLECTION_ROLE.ADMIN, COLLECTION_ROLE.MEMBER]
         }
       ]
     };

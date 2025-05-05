@@ -1,5 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
+import { COLLECTION_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
 import { GetCollectionSchema } from '../../../openapi/schemas/collection';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
@@ -9,11 +10,13 @@ import { getLogger } from '../../../utils/logger';
 const defaultLog = getLogger('paths/collection/{collectionId}/index');
 
 export const GET: Operation = [
-  authorizeRequestHandler(() => {
+  authorizeRequestHandler((req) => {
     return {
       and: [
         {
-          discriminator: 'SystemUser'
+          discriminator: 'CollectionRole',
+          collectionId: Number(req.params.collectionId),
+          validCollectionRoles: [COLLECTION_ROLE.ADMIN, COLLECTION_ROLE.MEMBER]
         }
       ]
     };
@@ -22,7 +25,7 @@ export const GET: Operation = [
 ];
 
 GET.apiDoc = {
-  description: 'Gets a specific collection',
+  description: 'Gets the parent hierarchy of the given collection Id',
   tags: ['collections'],
   security: [
     {
@@ -92,8 +95,6 @@ export function getCollectionParentsById(): RequestHandler {
       const collectionId = Number(req.params.collectionId);
 
       const collections = await collectionService.getCollectionParentsById(collectionId);
-
-      console.log(collections);
 
       await connection.commit();
 

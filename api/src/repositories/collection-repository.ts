@@ -420,6 +420,14 @@ export class CollectionRepository extends BaseRepository {
     return query;
   }
 
+  /**
+   * Find collections available to the given user
+   * @param isUserAdmin
+   * @param systemUserId
+   * @param filterFields
+   * @param pagination
+   * @returns
+   */
   async findCollections(
     isUserAdmin: boolean,
     systemUserId: number | null,
@@ -431,6 +439,47 @@ export class CollectionRepository extends BaseRepository {
     const query = filterFields.include_children
       ? this._getCollectionsHierarchyBaseQuery(knex.queryBuilder(), filterFields)
       : this._makeFindCollectionsBaseQuery(isUserAdmin, systemUserId, filterFields);
+
+    if (pagination) {
+      query.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
+
+      if (pagination.sort && pagination.order) {
+        query.orderBy(pagination.sort, pagination.order);
+      }
+    }
+
+    const response = await this.connection.knex(query, Collection);
+    return response.rows;
+  }
+
+  /**
+   * Find subcollections for the given collection Id
+   *
+   * @param collectionId
+   * @param isUserAdmin
+   * @param systemUserId
+   * @param filterFields
+   * @param pagination
+   * @returns
+   */
+  async findSubcollections(
+    collectionId: number,
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: ICollectionAdvancedFilters,
+    pagination?: ApiPaginationOptions
+  ): Promise<Collection[]> {
+    const knex = getKnex();
+
+    const query = filterFields.include_children
+      ? this._getCollectionsHierarchyBaseQuery(knex.queryBuilder(), {
+          ...filterFields,
+          parent_collection_id: collectionId
+        })
+      : this._makeFindCollectionsBaseQuery(isUserAdmin, systemUserId, {
+          ...filterFields,
+          parent_collection_id: collectionId
+        });
 
     if (pagination) {
       query.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);

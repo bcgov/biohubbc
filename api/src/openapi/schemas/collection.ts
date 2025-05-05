@@ -1,6 +1,6 @@
 import { OpenAPIV3 } from 'openapi-types';
 
-export const CreateCollectionParticipantSchema: OpenAPIV3.SchemaObject = {
+export const CreateCollectionMemberSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
   additionalProperties: false,
   required: ['system_user_id', 'collection_role_name'],
@@ -26,7 +26,7 @@ export const CreateCollectionSchema: OpenAPIV3.SchemaObject = {
       type: 'array',
       description: 'List of users to add to the collection',
       minItems: 1,
-      items: CreateCollectionParticipantSchema
+      items: CreateCollectionMemberSchema
     }
   }
 };
@@ -42,7 +42,7 @@ export const CreateSubcollectionSchema: OpenAPIV3.SchemaObject = {
     participants: {
       type: 'array',
       description: 'List of users to add to the collection',
-      items: CreateCollectionParticipantSchema
+      items: CreateCollectionMemberSchema
     }
   }
 };

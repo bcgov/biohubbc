@@ -1,5 +1,6 @@
 import { Request, RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
+import { COLLECTION_ROLE } from '../../../../constants/roles';
 import { getDBConnection } from '../../../../database/db';
 import { IAddMultipleSurveysToCollection, ICollectionAdvancedFilters } from '../../../../models/collection';
 import { AddSurveysToCollectionSchema } from '../../../../openapi/schemas/collection-survey';
@@ -17,11 +18,13 @@ import {
 const defaultLog = getLogger('paths/collection/{collectionId}/survey');
 
 export const GET: Operation = [
-  authorizeRequestHandler(() => {
+  authorizeRequestHandler((req) => {
     return {
       and: [
         {
-          discriminator: 'SystemUser'
+          discriminator: 'CollectionRole',
+          collectionId: Number(req.params.collectionId),
+          validCollectionRoles: [COLLECTION_ROLE.ADMIN, COLLECTION_ROLE.MEMBER]
         }
       ]
     };
@@ -139,11 +142,13 @@ function parseQueryParams(
 }
 
 export const POST: Operation = [
-  authorizeRequestHandler(() => {
+  authorizeRequestHandler((req) => {
     return {
       and: [
         {
-          discriminator: 'SystemUser'
+          discriminator: 'CollectionRole',
+          collectionId: Number(req.params.collectionId),
+          validCollectionRoles: [COLLECTION_ROLE.ADMIN, COLLECTION_ROLE.MEMBER]
         }
       ]
     };

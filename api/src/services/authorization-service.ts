@@ -1,9 +1,11 @@
 import { SOURCE_SYSTEM } from '../constants/database';
-import { SURVEY_ROLE, SYSTEM_ROLE } from '../constants/roles';
+import { COLLECTION_ROLE, SURVEY_ROLE, SYSTEM_ROLE } from '../constants/roles';
 import { IDBConnection } from '../database/db';
+import { CollectionMember } from '../models/collection';
 import { SystemUserWithRoles } from '../models/system-user-view';
 import { SurveyMember } from '../repositories/survey-member-repository';
 import { getKeycloakSource, getUserGuid, KeycloakUserInformation } from '../utils/keycloak-utils';
+import { CollectionMemberService } from './collection-participation-service';
 import { DBService } from './db-service';
 import { SurveyMemberService } from './survey-member-service';
 import { UserService } from './user-service';
@@ -53,13 +55,22 @@ type AuthorizeBySurveyRoleBySurveyId = {
   discriminator: 'SurveyRole';
 };
 
+type AuthorizeByCollectionRoleByCollectionId = {
+  validCollectionRoles: COLLECTION_ROLE[];
+  collectionId: number;
+  discriminator: 'CollectionRole';
+};
+
 export type AuthorizeBySurveyRole = AuthorizeBySurveyRoleBySurveyId;
+
+export type AuthorizeByCollectionRole = AuthorizeByCollectionRoleByCollectionId;
 
 export type AuthorizeRule =
   | AuthorizeBySystemRoles
   | AuthorizeBySystemUser
   | AuthorizeByServiceClient
-  | AuthorizeBySurveyRole;
+  | AuthorizeBySurveyRole
+  | AuthorizeByCollectionRole;
 
 export type AuthorizeConfigOr = {
   [AuthorizeOperator.AND]?: never;
@@ -76,8 +87,10 @@ export type AuthorizationScheme = AuthorizeConfigAnd | AuthorizeConfigOr;
 export class AuthorizationService extends DBService {
   _userService = new UserService(this.connection);
   _surveyMemberService = new SurveyMemberService(this.connection);
+  _collectionMemberService = new CollectionMemberService(this.connection);
   _systemUser: SystemUserWithRoles | undefined = undefined;
   _surveyUser: (SurveyMember & SystemUserWithRoles) | undefined = undefined;
+  _collectionUser: (CollectionMember & SystemUserWithRoles) | undefined = undefined;
   _keycloakToken: KeycloakUserInformation | undefined = undefined;
 
   constructor(
@@ -132,6 +145,9 @@ export class AuthorizationService extends DBService {
         case 'SurveyRole':
           authorizeResults.push(await this.authorizeBySurveyRole(authorizeRule));
           break;
+        case 'CollectionRole':
+          authorizeResults.push(await this.authorizeByCollectionRole(authorizeRule));
+          break;
       }
     }
 
@@ -166,6 +182,25 @@ export class AuthorizationService extends DBService {
       authorizeSurveyRole.validSurveyRoles,
       surveyUserObject.survey_role_names
     );
+  }
+  async authorizeByCollectionRole(authorizeCollectionRole: AuthorizeByCollectionRole): Promise<boolean> {
+    if (!authorizeCollectionRole?.collectionId) {
+      // Cannot verify user permissions
+      return false;
+    }
+
+    const collectionUserObjects = await this.getParentCollectionMemberObjectsByCollectionId(
+      authorizeCollectionRole.collectionId
+    );
+
+    if (!collectionUserObjects.length) {
+      // No roles found for this user in the collection hierarchy
+      return false;
+    }
+
+    // Check if user has at least one valid collection role
+    const userRoles = collectionUserObjects.map((record) => record.collection_role_name);
+    return AuthorizationService.hasAtLeastOneValidValue(authorizeCollectionRole.validCollectionRoles, userRoles);
   }
 
   /**
@@ -344,7 +379,7 @@ export class AuthorizationService extends DBService {
   }
 
   /**
-   * Finds a single survey user based on their keycloak token information.
+   * Finds a single survey member based on their keycloak token information.
    * @return {*}  {(Promise<(SurveyMember & SystemUserWithRoles) | null>)}
    */
   async getSurveyMemberWithRolesBySurveyId(surveyId: number): Promise<(SurveyMember & SystemUserWithRoles) | null> {
@@ -355,6 +390,23 @@ export class AuthorizationService extends DBService {
     const userGuid = getUserGuid(this._keycloakToken);
 
     return this._surveyMemberService.getSurveyMemberBySurveyIdAndUserGuid(surveyId, userGuid);
+  }
+
+  /**
+   * Get the collection member record for any parent of the given collection id (recursively walk up the tree)
+   *
+   * @return {*}  {(Promise<(SurveyMember & SystemUserWithRoles)[]>)}
+   */
+  async getParentCollectionMembersWithRolesByCollectionId(
+    collectionId: number
+  ): Promise<(CollectionMember & SystemUserWithRoles)[]> {
+    if (!this._keycloakToken) {
+      return [];
+    }
+
+    const userGuid = getUserGuid(this._keycloakToken);
+
+    return this._collectionMemberService.getParentCollectionMemberByCollectionIdAndUserGuid(collectionId, userGuid);
   }
 
   /**
@@ -375,6 +427,29 @@ export class AuthorizationService extends DBService {
     }
 
     return surveyUserWithRoles;
+  }
+
+  /**
+   * Get the collection member record for any parent of the given collection id (recursively walk up the tree)
+   *
+   * @return {*}  {(Promise<(collectionMember & SystemUserWithRoles)[]>)}
+   */
+  async getParentCollectionMemberObjectsByCollectionId(
+    collectionId: number
+  ): Promise<(CollectionMember & SystemUserWithRoles)[]> {
+    let collectionUserWithRoles;
+
+    try {
+      collectionUserWithRoles = await this.getParentCollectionMembersWithRolesByCollectionId(collectionId);
+    } catch {
+      return [];
+    }
+
+    if (!collectionUserWithRoles) {
+      return [];
+    }
+
+    return collectionUserWithRoles;
   }
 
   /**

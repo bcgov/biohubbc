@@ -1,6 +1,6 @@
-import { ICollectionParticipantsAdvancedFilters } from 'interfaces/useCollectionApi.interface';
+import { ICollectionMembersAdvancedFilters } from 'interfaces/useCollectionApi.interface';
 
-export const CollectionParticipantsAdvancedFiltersInitialValues: ICollectionParticipantsAdvancedFilters = {
+export const CollectionParticipantsAdvancedFiltersInitialValues: ICollectionMembersAdvancedFilters = {
   keyword: undefined,
   system_user_id: undefined
 };
@@ -10,18 +10,18 @@ import { SystemUserAutocompleteField } from 'components/fields/SystemUserAutocom
 import { FilterFieldsContainer } from 'features/summary/components/FilterFieldsContainer';
 import { Formik } from 'formik';
 
-interface ICollectionParticipantsFilterFormProps {
-  handleSubmit: (filterValues: ICollectionParticipantsAdvancedFilters) => void;
-  initialValues?: ICollectionParticipantsAdvancedFilters;
+interface ICollectionMembersFilterFormProps {
+  handleSubmit: (filterValues: ICollectionMembersAdvancedFilters) => void;
+  initialValues?: ICollectionMembersAdvancedFilters;
 }
 
 /**
  * Survey advanced filters
  *
- * @param {ICollectionParticipantsFilterFormProps} props
+ * @param {ICollectionMembersFilterFormProps} props
  * @return {*}
  */
-const CollectionParticipantsFilterForm = (props: ICollectionParticipantsFilterFormProps) => {
+const CollectionParticipantsFilterForm = (props: ICollectionMembersFilterFormProps) => {
   const { handleSubmit, initialValues } = props;
 
   return (

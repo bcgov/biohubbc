@@ -1,11 +1,9 @@
 import { Request, RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
+import { COLLECTION_ROLE } from '../../../../constants/roles';
 import { getDBConnection } from '../../../../database/db';
-import { ICollectionParticipantsAdvancedFilters, IPostCollectionParticipant } from '../../../../models/collection';
-import {
-  CollectionAndSystemUserSchema,
-  CreateCollectionParticipantSchema
-} from '../../../../openapi/schemas/collection';
+import { ICollectionMembersAdvancedFilters, IPostCollectionMember } from '../../../../models/collection';
+import { CollectionAndSystemUserSchema, CreateCollectionMemberSchema } from '../../../../openapi/schemas/collection';
 import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../../../../openapi/schemas/pagination';
 import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
 import { CollectionMemberService } from '../../../../services/collection-participation-service';
@@ -16,23 +14,25 @@ import {
   makePaginationResponse
 } from '../../../../utils/pagination';
 
-const defaultLog = getLogger('paths/collection/{collectionId}/survey');
+const defaultLog = getLogger('paths/collection/{collectionId}/member');
 
 export const GET: Operation = [
-  authorizeRequestHandler(() => {
+  authorizeRequestHandler((req) => {
     return {
       and: [
         {
-          discriminator: 'SystemUser'
+          discriminator: 'CollectionRole',
+          collectionId: Number(req.params.collectionId),
+          validCollectionRoles: [COLLECTION_ROLE.ADMIN, COLLECTION_ROLE.MEMBER]
         }
       ]
     };
   }),
-  getCollectionParticipants()
+  getCollectionMembers()
 ];
 
 GET.apiDoc = {
-  description: 'Get participants of a collection',
+  description: 'Get members of a collection',
   tags: ['collections'],
   security: [
     {
@@ -53,15 +53,15 @@ GET.apiDoc = {
   ],
   responses: {
     200: {
-      description: 'Collection participants response object.',
+      description: 'Collection members response object.',
       content: {
         'application/json': {
           schema: {
             type: 'object',
             additionalProperties: false,
-            required: ['participants', 'pagination'],
+            required: ['members', 'pagination'],
             properties: {
-              participants: {
+              members: {
                 type: 'array',
                 items: CollectionAndSystemUserSchema
               },
@@ -90,13 +90,13 @@ GET.apiDoc = {
 };
 
 /**
- * Get participants of a collection
+ * Get members of a collection
  *
  * @returns {RequestHandler}
  */
-export function getCollectionParticipants(): RequestHandler {
+export function getCollectionMembers(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'getCollectionParticipants' });
+    defaultLog.debug({ label: 'getCollectionMembers' });
 
     const connection = getDBConnection(req.keycloak_token);
 
@@ -107,27 +107,27 @@ export function getCollectionParticipants(): RequestHandler {
 
       const filterFields = parseQueryParams(req);
 
-      const collectionParticipationService = new CollectionMemberService(connection);
+      const collectionMemberService = new CollectionMemberService(connection);
 
       const collectionId = Number(req.params.collectionId);
 
-      const participants = await collectionParticipationService.getCollectionParticipants(
+      const members = await collectionMemberService.getCollectionMembers(
         collectionId,
         filterFields,
         ensureCompletePaginationOptions(paginationOptions)
       );
-      const participantsTotalCount = await collectionParticipationService.getCollectionParticipantsCount(collectionId);
+      const membersTotalCount = await collectionMemberService.getCollectionMembersCount(collectionId);
 
       const response = {
-        participants,
-        pagination: makePaginationResponse(participantsTotalCount, paginationOptions)
+        members,
+        pagination: makePaginationResponse(membersTotalCount, paginationOptions)
       };
 
       await connection.commit();
 
       return res.status(200).json(response);
     } catch (error) {
-      defaultLog.error({ label: 'getCollectionParticipants', message: 'error', error });
+      defaultLog.error({ label: 'getCollectionMembers', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
@@ -139,12 +139,12 @@ export function getCollectionParticipants(): RequestHandler {
 /**
  * Parse the query parameters from the request into the expected format.
  *
- * @param {Request<unknown, unknown, unknown, ICollectionParticipantsAdvancedFilters>} req
+ * @param {Request<unknown, unknown, unknown, ICollectionMembersAdvancedFilters>} req
  * @return {*}  {ICollectionAdvancedFilters}
  */
 function parseQueryParams(
-  req: Request<unknown, unknown, unknown, ICollectionParticipantsAdvancedFilters>
-): ICollectionParticipantsAdvancedFilters {
+  req: Request<unknown, unknown, unknown, ICollectionMembersAdvancedFilters>
+): ICollectionMembersAdvancedFilters {
   return {
     keyword: req.query.keyword ?? undefined,
     system_user_id: (req.query.system_user_id && Number(req.query.system_user_id)) ?? undefined
@@ -161,11 +161,11 @@ export const POST: Operation = [
       ]
     };
   }),
-  addParticipantsToCollection()
+  addMembersToCollection()
 ];
 
 POST.apiDoc = {
-  description: 'Adds multiple participants to a collection',
+  description: 'Adds multiple members to a collection',
   tags: ['collections'],
   security: [
     {
@@ -185,15 +185,15 @@ POST.apiDoc = {
     ...paginationRequestQueryParamSchema
   ],
   requestBody: {
-    description: 'Collection participant create request object.',
+    description: 'Collection member create request object.',
     required: true,
     content: {
       'application/json': {
         schema: {
           type: 'object',
           additionalProperties: false,
-          required: ['participants'],
-          properties: { participants: { type: 'array', minItems: 1, items: CreateCollectionParticipantSchema } }
+          required: ['members'],
+          properties: { members: { type: 'array', minItems: 1, items: CreateCollectionMemberSchema } }
         }
       }
     }
@@ -221,13 +221,13 @@ POST.apiDoc = {
 };
 
 /**
- * Adds participants to a collection
+ * Adds members to a collection
  *
  * @returns {RequestHandler}
  */
-export function addParticipantsToCollection(): RequestHandler {
+export function addMembersToCollection(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'addParticipantsToCollection' });
+    defaultLog.debug({ label: 'addMembersToCollection' });
 
     const connection = getDBConnection(req.keycloak_token);
 
@@ -236,17 +236,17 @@ export function addParticipantsToCollection(): RequestHandler {
 
       const collectionId = Number(req.params.collectionId);
 
-      const collectionParticipationService = new CollectionMemberService(connection);
+      const collectionMemberService = new CollectionMemberService(connection);
 
-      const data = req.body.participants as IPostCollectionParticipant[];
+      const data = req.body.members as IPostCollectionMember[];
 
-      await collectionParticipationService.insertCollectionParticipants(collectionId, data);
+      await collectionMemberService.insertCollectionMembers(collectionId, data);
 
       await connection.commit();
 
       return res.status(200).json();
     } catch (error) {
-      defaultLog.error({ label: 'addParticipantsToCollection', message: 'error', error });
+      defaultLog.error({ label: 'addMembersToCollection', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

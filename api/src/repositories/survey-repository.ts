@@ -181,13 +181,13 @@ export class SurveyRepository extends BaseRepository {
 
     // Ensure that users can only see surveys that they are participating in, unless they are an administrator.
     if (!isUserAdmin) {
-      query.whereIn('p.survey_id', (subQueryBuilder) => {
+      query.whereIn('s.survey_id', (subQueryBuilder) => {
         subQueryBuilder.select('survey_id').from('survey_member').where('system_user_id', systemUserId);
       });
     }
 
     if (filterFields.system_user_id) {
-      query.whereIn('p.survey_id', (subQueryBuilder) => {
+      query.whereIn('s.survey_id', (subQueryBuilder) => {
         subQueryBuilder.select('survey_id').from('survey_member').where('system_user_id', filterFields.system_user_id);
       });
     }

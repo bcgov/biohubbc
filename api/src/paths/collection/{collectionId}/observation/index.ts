@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SURVEY_ROLE, SYSTEM_ROLE } from '../../../../constants/roles';
+import { COLLECTION_ROLE } from '../../../../constants/roles';
 import { getDBConnection } from '../../../../database/db';
 import { findObservationsSchema, observationsSupplementaryDataSchema } from '../../../../openapi/schemas/observation';
 import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../../../../openapi/schemas/pagination';
@@ -18,15 +18,11 @@ const defaultLog = getLogger('/api/collection/{collectionId}/observation/index')
 export const GET: Operation = [
   authorizeRequestHandler((req) => {
     return {
-      or: [
+      and: [
         {
-          validSurveyRoles: [SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR, SURVEY_ROLE.VIEWER],
-          surveyId: Number(req.params.surveyId),
-          discriminator: 'SurveyRole'
-        },
-        {
-          validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
-          discriminator: 'SystemRole'
+          discriminator: 'CollectionRole',
+          collectionId: Number(req.params.collectionId),
+          validCollectionRoles: [COLLECTION_ROLE.ADMIN, COLLECTION_ROLE.MEMBER]
         }
       ]
     };

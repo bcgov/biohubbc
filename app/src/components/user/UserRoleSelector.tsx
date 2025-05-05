@@ -9,14 +9,14 @@ import Select from '@mui/material/Select';
 import Typography from '@mui/material/Typography';
 import { SURVEY_ROLE_ICONS } from 'constants/roles';
 import { ICodeWithDescription } from 'interfaces/useCodesApi.interface';
-import { ICollectionParticipant } from 'interfaces/useCollectionApi.interface';
+import { ICollectionMember } from 'interfaces/useCollectionApi.interface';
 import { IGetSurveyParticipant } from 'interfaces/useSurveyApi.interface';
 import { ISystemUser } from 'interfaces/useUserApi.interface';
 import UserCard from './UserCard';
 
 interface IUserRoleSelectorProps {
   index: number;
-  user: ISystemUser | IGetSurveyParticipant | ICollectionParticipant;
+  user: ISystemUser | IGetSurveyParticipant | ICollectionMember;
   selectedRole: string;
   roles: ICodeWithDescription[];
   error: JSX.Element | undefined;

@@ -15,7 +15,7 @@ import { useAuthStateContext } from 'hooks/useAuthStateContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
-import { ICollectionParticipant, IUpdateCollectionRequest } from 'interfaces/useCollectionApi.interface';
+import { ICollectionMember, IUpdateCollectionRequest } from 'interfaces/useCollectionApi.interface';
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import CollectionForm from '../edit/CollectionForm';
@@ -65,7 +65,7 @@ const EditCollectionPage = () => {
 
   const authStateContext = useAuthStateContext();
 
-  const initialParticipants: ICollectionParticipant[] = useMemo(() => {
+  const initialParticipants: ICollectionMember[] = useMemo(() => {
     if (!authStateContext.simsUserWrapper.systemUserId) {
       return [];
     }
@@ -76,7 +76,7 @@ const EditCollectionPage = () => {
         email: authStateContext.simsUserWrapper?.email,
         agency: authStateContext.simsUserWrapper?.agency,
         identity_source: authStateContext.simsUserWrapper?.identitySource
-      } as ICollectionParticipant
+      } as ICollectionMember
     ];
   }, [authStateContext.simsUserWrapper]);
 

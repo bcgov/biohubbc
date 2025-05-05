@@ -106,7 +106,7 @@ export const SubcollectionContainer = (props: ICollectionsTagContainerProps) => 
 
   const collectionsDataLoader = useDataLoader(
     (pagination: ApiPaginationRequestOptions, filter?: ICollectionAdvancedFilters) =>
-      biohubApi.collection.findCollections(pagination, filter)
+      biohubApi.collection.findSubcollections(collection.collection_id, pagination, filter)
   );
 
   // Fetch collections when either the pagination, sort, or advanced filters change
