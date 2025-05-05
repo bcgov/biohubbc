@@ -33,8 +33,7 @@ export type CollectionData = z.infer<typeof CollectionData>;
 export const FindCollectionsResponse = z.object({
   collection_id: z.number(),
   name: z.string(),
-  objectives: z.string().nullable(),
-  members: z.array(z.object({ system_user_id: z.number(), display_name: z.string() }))
+  objectives: z.string().nullable()
 });
 
 export type FindCollectionsResponse = z.infer<typeof FindCollectionsResponse>;

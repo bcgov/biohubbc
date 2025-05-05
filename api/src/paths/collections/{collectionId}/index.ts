@@ -1,5 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
+import { SYSTEM_ROLE } from '../../../constants/roles';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 import { getDBConnection } from '../../../database/db';
 import { CollectionService } from '../../../services/collection-service';
@@ -120,7 +121,8 @@ export const PUT: Operation = [
     return {
       and: [
         {
-          discriminator: 'SystemUser'
+          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR],
+          discriminator: 'SystemRole'
         }
       ]
     };
@@ -181,27 +183,26 @@ PUT.apiDoc = {
  */
 export function updateCollection(): RequestHandler {
   return async (req, res) => {
+    defaultLog.debug({ label: 'updateAlert' });
+
     const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
 
-      const systemUserId = connection.systemUserId();
-      const revisionCount = req.body.revision_count;
+      const collectionId = Number(req.params.collectionId);
+      const collection = req.body;
+
       const collectionService = new CollectionService(connection);
-      const updatedCollection = await collectionService.updateCollection(
-        Number(req.params.collectionId),
-        req.body,
-        systemUserId,
-        revisionCount
-      );
+
+      const id = await collectionService.updateCollection({ ...collection, collection_id: collectionId });
 
       await connection.commit();
 
-      res.status(200).json(updatedCollection);
+      return res.status(200).json({ collection_id: id });
     } catch (error) {
       defaultLog.error({ label: 'updateCollection', message: 'error', error });
-      connection.rollback();
+      await connection.rollback();
       throw error;
     } finally {
       connection.release();

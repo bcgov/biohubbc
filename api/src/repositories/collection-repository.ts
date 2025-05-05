@@ -201,59 +201,35 @@ export class CollectionRepository extends BaseRepository {
   }
 
   /**
-   * Update a collection by ID.
+   * Update system alert.
    *
-   * @param {number} collectionId
-   * @param {object} collection
-   * @param {number} revision_count
-   * @return {*}  {Promise<void>}
-   * @memberof CollectionRepository
+   * @param {} 
+   * @return {*} Promise<number>
+   * @memberof AlertRepository
    */
-  async updateCollection(
-    collectionId: number,
-    collection: { name?: string; objectives?: string } | null,
-    revision_count: number
-  ): Promise<void> {
-    if (!collection || (collection.name === undefined && collection.objectives === undefined)) {
-      throw new ApiExecuteSQLError('Nothing to update for Collection Data', [
-        'CollectionRepository->updateCollection',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
-
-    const sqlStatement: SQLStatement = SQL`UPDATE collection SET `;
-    const sqlSetStatements: SQLStatement[] = [];
-
-    if (collection.name !== undefined) {
-      sqlSetStatements.push(SQL`name = ${collection.name}`);
-    }
-    if (collection.objectives !== undefined) {
-      sqlSetStatements.push(SQL`objectives = ${collection.objectives}`);
-    }
-    sqlSetStatements.push(SQL`update_date = now()`);
-
-    sqlSetStatements.forEach((item, index) => {
-      sqlStatement.append(item);
-      if (index < sqlSetStatements.length - 1) {
-        sqlStatement.append(',');
-      }
-    });
-
-    sqlStatement.append(SQL`
+  async updateCollection(collection: any): Promise<number> {
+    const sqlStatement = SQL`
+      UPDATE collection
+      SET
+        name = ${collection.name},
+        objectives = ${collection.objectives},
+        record_end_date = ${collection.record_end_date}
       WHERE
-        collection_id = ${collectionId}
-      AND
-        revision_count = ${revision_count};
-    `);
+        collection_id = ${collection.collection_id}
+        AND record_end_date IS NULL
+      RETURNING collection_id;
+    `;
 
-    const result = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql(sqlStatement);
 
-    if (!result?.rowCount) {
-      throw new ApiExecuteSQLError('Failed to update collection: revision count is stale', [
+    if (response.rowCount !== 1) {
+      throw new ApiExecuteSQLError('Failed to update collection', [
         'CollectionRepository->updateCollection',
-        `No rows updated. The revision_count may be stale for collection_id ${collectionId}`
+        'rowCount was !== 1, expected rowCount === 1'
       ]);
     }
+
+    return response.rows[0].collection_id;
   }
 
   /**
