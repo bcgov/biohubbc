@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SURVEY_ROLE, SYSTEM_ROLE } from '../../../../constants/roles';
+import { COLLECTION_ROLE, SURVEY_ROLE, SYSTEM_ROLE } from '../../../../constants/roles';
 import { getDBConnection } from '../../../../database/db';
 import { surveyAndSystemUserSchema } from '../../../../openapi/schemas/user';
 import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
@@ -14,9 +14,14 @@ export const GET: Operation = [
     return {
       or: [
         {
-          validSurveyRoles: [SURVEY_ROLE.ADMIN],
+          validSurveyRoles: [SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR, SURVEY_ROLE.VIEWER],
           surveyId: Number(req.params.surveyId),
           discriminator: 'SurveyRole'
+        },
+        {
+          validCollectionRoles: [COLLECTION_ROLE.ADMIN, COLLECTION_ROLE.MEMBER],
+          collectionId: Number(req.params.surveyId),
+          discriminator: 'CollectionRole'
         },
         {
           validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],

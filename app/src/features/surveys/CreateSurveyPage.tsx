@@ -27,6 +27,7 @@ import {
 } from './components/funding/SurveyFundingSourceForm';
 import { GeneralInformationInitialValues } from './components/general-information/GeneralInformationForm';
 import { SurveyLocationInitialValues } from './components/locations/StudyAreaForm';
+import { SurveyMembersFormInitialValues } from './components/member/SurveyMembersForm';
 import { PurposeAndMethodologyInitialValues } from './components/methodology/PurposeAndMethodologyForm';
 import { SurveyParticipantsJobFormInitialValues } from './components/participants/SurveyUserForm';
 import { SurveyBlockInitialValues } from './components/sampling-strategy/blocks/SurveyBlockForm';
@@ -49,6 +50,7 @@ const defaultSurveyDataFormValues: CreateSurvey = {
   ...SurveyLocationInitialValues,
   ...SurveySiteSelectionInitialValues,
   ...SurveyParticipantsJobFormInitialValues,
+  ...SurveyMembersFormInitialValues,
   ...SurveyBlockInitialValues,
   ...SpeciesInitialValues
 };
@@ -117,6 +119,7 @@ const CreateSurveyPage = () => {
           revision_count: location.revision_count
         })),
         participants: values.participants,
+        members: values.members,
         collections: values.collections,
         partnerships: values.partnerships,
         permit: {

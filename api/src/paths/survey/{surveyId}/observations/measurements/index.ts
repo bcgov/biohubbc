@@ -1,6 +1,6 @@
 import { Operation } from 'express-openapi';
 import { RequestHandler } from 'http-proxy-middleware';
-import { SURVEY_ROLE, SYSTEM_ROLE } from '../../../../../constants/roles';
+import { COLLECTION_ROLE, SURVEY_ROLE, SYSTEM_ROLE } from '../../../../../constants/roles';
 import { getDBConnection } from '../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
 import { SubCountService } from '../../../../../services/subcount-service';
@@ -16,6 +16,17 @@ export const GET: Operation = [
           validSurveyRoles: [SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR, SURVEY_ROLE.VIEWER],
           surveyId: Number(req.params.surveyId),
           discriminator: 'SurveyRole'
+        },
+        {
+          validCollectionRoles: [COLLECTION_ROLE.ADMIN, COLLECTION_ROLE.MEMBER],
+          collectionId: Number(req.params.surveyId),
+          discriminator: 'CollectionRole'
+        },
+
+        {
+          validCollectionRoles: [COLLECTION_ROLE.ADMIN, COLLECTION_ROLE.MEMBER],
+          collectionId: Number(req.params.surveyId),
+          discriminator: 'CollectionRole'
         },
         {
           validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],

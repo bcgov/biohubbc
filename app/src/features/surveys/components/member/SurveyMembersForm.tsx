@@ -6,13 +6,13 @@ import { SystemUserAutocompleteField } from 'components/fields/SystemUserAutocom
 import UserRoleSelector from 'components/user/UserRoleSelector';
 import { useFormikContext } from 'formik';
 import { ICodeWithDescription } from 'interfaces/useCodesApi.interface';
-import { ICreateSurveyRequest, IGetSurveyParticipant } from 'interfaces/useSurveyApi.interface';
+import { ICreateSurveyRequest, ISurveyMember } from 'interfaces/useSurveyApi.interface';
 import { ISystemUser } from 'interfaces/useUserApi.interface';
 import { TransitionGroup } from 'react-transition-group';
 import yup from 'utils/YupSchema';
 
-export const SurveyMembersJobYupSchema = yup.object().shape({
-  participants: yup.array().of(
+export const SurveyMembersYupSchema = yup.object().shape({
+  members: yup.array().of(
     yup.object().shape({
       system_user_id: yup.string().required('Username is required'),
       survey_job_name: yup.string().required('Select a survey job for this team member')
@@ -24,8 +24,8 @@ interface ISurveyMembersFormProps {
   roles: ICodeWithDescription[];
 }
 
-export const SurveyMembersJobFormInitialValues = {
-  participants: []
+export const SurveyMembersFormInitialValues = {
+  members: []
 };
 
 /**
@@ -36,8 +36,8 @@ export const SurveyMembersJobFormInitialValues = {
 export const SurveyMembersForm = (props: ISurveyMembersFormProps) => {
   const { handleSubmit, values, setFieldValue, errors, setErrors } = useFormikContext<ICreateSurveyRequest>();
 
-  const handleAddUser = (user: ISystemUser | IGetSurveyParticipant) => {
-    setFieldValue(`participants[${values.participants.length}]`, {
+  const handleAddUser = (user: ISystemUser | ISurveyMember) => {
+    setFieldValue(`members[${values.members.length}]`, {
       system_user_id: user.system_user_id,
       display_name: user.display_name,
       email: user.email,
@@ -49,28 +49,28 @@ export const SurveyMembersForm = (props: ISurveyMembersFormProps) => {
   };
 
   const handleAddUserRole = (survey_job_name: string, index: number) => {
-    setFieldValue(`participants[${index}].survey_job_name`, survey_job_name);
+    setFieldValue(`members[${index}].survey_job_name`, survey_job_name);
     clearErrors();
   };
 
   const handleRemoveUser = (systemUserId: number) => {
-    const filteredUsers = values.participants.filter(
-      (item: ISystemUser | IGetSurveyParticipant) => item.system_user_id !== systemUserId
+    const filteredUsers = values.members.filter(
+      (item: ISystemUser | ISurveyMember) => item.system_user_id !== systemUserId
     );
 
-    setFieldValue(`participants`, filteredUsers);
+    setFieldValue(`members`, filteredUsers);
     clearErrors();
   };
 
   const clearErrors = () => {
-    setErrors({ ...errors, participants: undefined });
+    setErrors({ ...errors, members: undefined });
   };
 
   const alertBarText = (): { title: string; text: string } => {
     let title = '';
     let text = '';
-    if (errors?.participants && Array.isArray(errors.participants)) {
-      title = 'Missing Jobs';
+    if (errors?.members && Array.isArray(errors.members)) {
+      title = 'Missing s';
       text = 'All team members must be assigned a survey job.';
     }
 
@@ -78,8 +78,8 @@ export const SurveyMembersForm = (props: ISurveyMembersFormProps) => {
   };
 
   const rowItemError = (index: number): JSX.Element | undefined => {
-    if (errors?.participants && Array.isArray(errors.participants)) {
-      const errorAtIndex = errors.participants[index];
+    if (errors?.members && Array.isArray(errors.members)) {
+      const errorAtIndex = errors.members[index];
       if (errorAtIndex) {
         return (
           <Typography style={{ fontSize: '12px', color: '#f44336' }}>
@@ -92,21 +92,21 @@ export const SurveyMembersForm = (props: ISurveyMembersFormProps) => {
 
   const getSelectedRole = (index: number): string => {
     // users should only ever have a single role on a project so index: 0 is a safe selection
-    return values.participants?.[index]?.survey_job_name || '';
+    return values.members?.[index]?.survey_role_name || '';
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      {errors?.['participants'] && values.participants.length > 0 && (
+      {errors?.['members'] && values.members.length > 0 && (
         <Box mt={3}>
           <AlertBar severity="error" variant="outlined" title={alertBarText().title} text={alertBarText().text} />
         </Box>
       )}
       <SystemUserAutocompleteField
-        formikFieldName="participants"
+        formikFieldName="members"
         label="Participants"
         helpText="Only active users who have requested access to the Species Inventory Management System before can be invited"
-        selectedUsers={values.participants.map((participant) => participant.system_user_id)}
+        selectedUsers={values.members.map((member) => member.system_user_id)}
         clearOnSelect
         onSelect={(value) => {
           if (value) {
@@ -122,7 +122,7 @@ export const SurveyMembersForm = (props: ISurveyMembersFormProps) => {
             }
           }}>
           <TransitionGroup>
-            {values.participants.map((user: ISystemUser | IGetSurveyParticipant, index: number) => {
+            {values.members.map((user: ISystemUser | ISurveyMember, index: number) => {
               const error = rowItemError(index);
               return (
                 <Collapse key={user.system_user_id}>
@@ -134,7 +134,7 @@ export const SurveyMembersForm = (props: ISurveyMembersFormProps) => {
                     selectedRole={getSelectedRole(index)}
                     handleAdd={handleAddUserRole}
                     handleRemove={handleRemoveUser}
-                    label="Select a Job"
+                    label="Select a Role"
                   />
                 </Collapse>
               );

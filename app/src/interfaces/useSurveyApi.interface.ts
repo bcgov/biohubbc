@@ -31,6 +31,7 @@ export interface ICreateSurveyRequest
     IProprietaryDataForm,
     IAgreementsForm,
     IParticipantsJobForm,
+    ISurveyMemberForm,
     ISurveyLocationForm,
     ISurveyBlockForm,
     ISurveyPartnershipsForm,
@@ -79,6 +80,22 @@ interface ISurveyBlockForm {
 
 interface IParticipantsJobForm {
   participants: IGetSurveyParticipant[];
+}
+
+interface ISurveyMemberForm {
+  members: ISurveyMember[];
+}
+
+export interface ISurveyMember {
+  survey_member_id: number;
+  system_user_id: number;
+  survey_role_id: number;
+  survey_role_name: string;
+  identity_source: string;
+  user_identifier: string;
+  email: string | null;
+  display_name: string;
+  agency: string | null;
 }
 
 export interface IAddSurveyParticipant {

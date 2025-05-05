@@ -109,6 +109,13 @@ const EditSurveyForm = <
 
         <Divider />
 
+        <HorizontalSplitFormComponent
+          title="Members"
+          summary="Invite collaborators and assign them a role"
+          component={<SurveyMembersForm roles={codesContext.codesDataLoader.data?.survey_roles ?? []} />}
+        />
+
+        <Divider />
         <HorizontalSplitFormComponent title="Collections" summary="Select collections to add the survey to.">
           <CollectionSurveyForm formikFieldName="collections" />
         </HorizontalSplitFormComponent>
@@ -196,14 +203,6 @@ const EditSurveyForm = <
           title="Partnerships"
           summary="Enter any partners involved in the survey"
           component={<SurveyPartnershipsForm />}
-        />
-
-        <Divider />
-
-        <HorizontalSplitFormComponent
-          title="Members"
-          summary="Invite collaborators and assign them a role"
-          component={<SurveyMembersForm roles={codesContext.codesDataLoader.data?.survey_roles ?? []} />}
         />
 
         <Divider />

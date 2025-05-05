@@ -5,7 +5,7 @@ import {
   CRITTER_CAPTURE_ATTACHMENT_TYPE,
   TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE
 } from '../../../../../constants/attachments';
-import { SURVEY_ROLE, SYSTEM_ROLE } from '../../../../../constants/roles';
+import { COLLECTION_ROLE, SURVEY_ROLE, SYSTEM_ROLE } from '../../../../../constants/roles';
 import { getDBConnection } from '../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
 import { AttachmentService } from '../../../../../services/attachment-service';
@@ -23,6 +23,11 @@ export const GET: Operation = [
           validSurveyRoles: [SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR, SURVEY_ROLE.VIEWER],
           surveyId: Number(req.params.surveyId),
           discriminator: 'SurveyRole'
+        },
+        {
+          validCollectionRoles: [COLLECTION_ROLE.ADMIN, COLLECTION_ROLE.MEMBER],
+          collectionId: Number(req.params.surveyId),
+          discriminator: 'CollectionRole'
         },
         {
           validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
