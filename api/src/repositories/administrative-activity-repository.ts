@@ -213,7 +213,7 @@ export class AdministrativeActivityRepository extends BaseRepository {
         AND
           aast.name = 'Pending'
       ),
-        system_user_project_roles
+        system_user_survey_roles
       AS (
         SELECT
           CASE
@@ -232,7 +232,7 @@ export class AdministrativeActivityRepository extends BaseRepository {
         *
       FROM
         administrative_activity_with_status,
-        system_user_project_roles;
+        system_user_survey_roles;
     `;
 
     const response = await this.connection.sql(sqlStatement, IAdministrativeActivityStanding);

@@ -11,7 +11,7 @@ import { ISystemUser } from 'interfaces/useUserApi.interface';
 import { TransitionGroup } from 'react-transition-group';
 import yup from 'utils/YupSchema';
 
-export const SurveyParticipantsJobYupSchema = yup.object().shape({
+export const SurveyMembersJobYupSchema = yup.object().shape({
   participants: yup.array().of(
     yup.object().shape({
       system_user_id: yup.string().required('Username is required'),
@@ -20,20 +20,20 @@ export const SurveyParticipantsJobYupSchema = yup.object().shape({
   )
 });
 
-interface ISurveyParticipantsFormProps {
-  jobs: ICodeWithDescription[];
+interface ISurveyMembersFormProps {
+  roles: ICodeWithDescription[];
 }
 
-export const SurveyParticipantsJobFormInitialValues = {
+export const SurveyMembersJobFormInitialValues = {
   participants: []
 };
 
 /**
- * Form for adding users to a survey.
+ * Form for adding members to a survey, granting them permissions to view the survey
  *
- * @param {ISurveyParticipantsFormProps} props
+ * @param {ISurveyMembersFormProps} props
  */
-const SurveyParticipantsForm = (props: ISurveyParticipantsFormProps) => {
+export const SurveyMembersForm = (props: ISurveyMembersFormProps) => {
   const { handleSubmit, values, setFieldValue, errors, setErrors } = useFormikContext<ICreateSurveyRequest>();
 
   const handleAddUser = (user: ISystemUser | IGetSurveyParticipant) => {
@@ -129,7 +129,7 @@ const SurveyParticipantsForm = (props: ISurveyParticipantsFormProps) => {
                   <UserRoleSelector
                     index={index}
                     user={user}
-                    roles={props.jobs}
+                    roles={props.roles}
                     error={error}
                     selectedRole={getSelectedRole(index)}
                     handleAdd={handleAddUserRole}
@@ -145,5 +145,3 @@ const SurveyParticipantsForm = (props: ISurveyParticipantsFormProps) => {
     </form>
   );
 };
-
-export default SurveyParticipantsForm;

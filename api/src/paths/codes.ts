@@ -31,7 +31,7 @@ GET.apiDoc = {
               'iucn_conservation_action_level_3_subclassification',
               'proprietor_type',
               'system_roles',
-              'project_roles',
+              'survey_roles',
               'administrative_activity_status_type',
               'intended_outcomes',
               'survey_jobs',
@@ -215,7 +215,7 @@ GET.apiDoc = {
                   }
                 }
               },
-              project_roles: {
+              survey_roles: {
                 type: 'array',
                 items: {
                   type: 'object',

@@ -173,6 +173,8 @@ export class SurveyRepository extends BaseRepository {
         knex.raw('array_remove(array_agg(distinct st.type_id), null) as types')
       ])
       .from('survey as s')
+      .leftJoin('collection_survey as cs', 'cs.survey_id', 's.survey_id')
+      .join('collection_member as cm', 'cs.collection_id', 'cm.collection_id')
       .leftJoin('study_species as sp', 'sp.survey_id', 's.survey_id')
       .leftJoin('survey_type as st', 'st.survey_id', 's.survey_id')
       .leftJoin('survey_region as sr', 'sr.survey_id', 's.survey_id')
@@ -180,10 +182,20 @@ export class SurveyRepository extends BaseRepository {
       .leftJoin('survey_member as ppa', 'ppa.survey_id', 's.survey_id')
       .groupBy('s.survey_id', 's.name', 's.progress_id', 's.start_date', 's.end_date');
 
-    // Ensure that users can only see surveys that they are participating in, unless they are an administrator.
+    // Ensure that users can only see surveys that they belong to or can access via collections, unless they are an administrator.
     if (!isUserAdmin) {
       query.whereIn('s.survey_id', (subQueryBuilder) => {
-        subQueryBuilder.select('survey_id').from('survey_member').where('system_user_id', systemUserId);
+        subQueryBuilder
+          .select('survey_id')
+          .from('survey_member')
+          .where('system_user_id', systemUserId)
+          .union([
+            knex
+              .select('cs.survey_id')
+              .from('collection_survey as cs')
+              .join('collection_member as cm', 'cs.collection_id', 'cm.collection_id')
+              .where('cm.system_user_id', systemUserId)
+          ]);
       });
     }
 

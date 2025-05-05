@@ -28,7 +28,7 @@ import {
 import { GeneralInformationInitialValues } from './components/general-information/GeneralInformationForm';
 import { SurveyLocationInitialValues } from './components/locations/StudyAreaForm';
 import { PurposeAndMethodologyInitialValues } from './components/methodology/PurposeAndMethodologyForm';
-import { SurveyUserJobFormInitialValues } from './components/participants/SurveyUserForm';
+import { SurveyParticipantsJobFormInitialValues } from './components/participants/SurveyUserForm';
 import { SurveyBlockInitialValues } from './components/sampling-strategy/blocks/SurveyBlockForm';
 import { SurveySiteSelectionInitialValues } from './components/sampling-strategy/SurveySiteSelectionForm';
 import { SpeciesInitialValues } from './components/species/SpeciesForm';
@@ -48,7 +48,7 @@ const defaultSurveyDataFormValues: CreateSurvey = {
   ...AgreementsInitialValues,
   ...SurveyLocationInitialValues,
   ...SurveySiteSelectionInitialValues,
-  ...SurveyUserJobFormInitialValues,
+  ...SurveyParticipantsJobFormInitialValues,
   ...SurveyBlockInitialValues,
   ...SpeciesInitialValues
 };

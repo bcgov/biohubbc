@@ -37,7 +37,7 @@ describe('CodeService', () => {
         'iucn_conservation_action_level_2_subclassification',
         'iucn_conservation_action_level_3_subclassification',
         'system_roles',
-        'project_roles',
+        'survey_roles',
         'administrative_activity_status_type',
         'intended_outcomes',
         'site_selection_strategies',

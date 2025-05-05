@@ -26,10 +26,11 @@ import GeneralInformationForm, {
   GeneralInformationYupSchema
 } from '../components/general-information/GeneralInformationForm';
 import StudyAreaForm, { SurveyLocationYupSchema } from '../components/locations/StudyAreaForm';
+import { SurveyMembersForm } from '../components/member/SurveyMembersForm';
 import PurposeAndMethodologyForm, {
   PurposeAndMethodologyYupSchema
 } from '../components/methodology/PurposeAndMethodologyForm';
-import SurveyUserForm, { SurveyUserJobYupSchema } from '../components/participants/SurveyUserForm';
+import SurveyUserForm, { SurveyParticipantsJobYupSchema } from '../components/participants/SurveyUserForm';
 import { SurveySiteSelectionYupSchema } from '../components/sampling-strategy/SurveySiteSelectionForm';
 import SpeciesForm, { SpeciesYupSchema } from '../components/species/SpeciesForm';
 import CollectionSurveyForm from '../view/collection/form/CollectionSurveyForm';
@@ -77,7 +78,7 @@ const EditSurveyForm = <
       })
     )
     .concat(AgreementsYupSchema)
-    .concat(SurveyUserJobYupSchema)
+    .concat(SurveyParticipantsJobYupSchema)
     .concat(SurveyLocationYupSchema)
     .concat(SurveySiteSelectionYupSchema)
     .concat(SurveyPartnershipsFormYupSchema)
@@ -94,8 +95,8 @@ const EditSurveyForm = <
       <Stack gap={5}>
         <FormikErrorSnackbar />
         <HorizontalSplitFormComponent
-          title="About"
-          summary="Enter a name and the timeline for your survey. Dates should approximate the start and end of fieldwork."
+          title="General Information"
+          summary="Enter a name and the approximate dates of your survey. Dates can span multiple fieldwork trips."
           component={
             <GeneralInformationForm
               progress={
@@ -195,6 +196,14 @@ const EditSurveyForm = <
           title="Partnerships"
           summary="Enter any partners involved in the survey"
           component={<SurveyPartnershipsForm />}
+        />
+
+        <Divider />
+
+        <HorizontalSplitFormComponent
+          title="Members"
+          summary="Invite collaborators and assign them a role"
+          component={<SurveyMembersForm roles={codesContext.codesDataLoader.data?.survey_roles ?? []} />}
         />
 
         <Divider />

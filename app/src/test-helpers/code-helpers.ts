@@ -26,7 +26,7 @@ export const codes: IGetAllCodeSetsResponse = {
     { id: 1, name: 'Role 1' },
     { id: 2, name: 'Role 2' }
   ],
-  project_roles: [
+  survey_roles: [
     { id: 1, name: 'Project Role 1', description: 'Description 1' },
     { id: 2, name: 'Project Role 2', description: 'Description 2' }
   ],

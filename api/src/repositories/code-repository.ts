@@ -31,7 +31,7 @@ export const IAllCodeSets = z.object({
   iucn_conservation_action_level_2_subclassification: IucnConservationActionLevel2SubclassificationCode.array(),
   iucn_conservation_action_level_3_subclassification: IucnConservationActionLevel3SubclassificationCode.array(),
   system_roles: Code.array(),
-  project_roles: CodeDescription.array(),
+  survey_roles: CodeDescription.array(),
   administrative_activity_status_type: Code.array(),
   intended_outcomes: CodeDescription.array(),
   survey_jobs: CodeDescription.array(),
@@ -308,7 +308,7 @@ export class CodeRepository extends BaseRepository {
   }
 
   /**
-   * Fetch project role codes.
+   * Fetch survey role codes.
    *
    * @return {*} {Promise<ICodeDescription[]>}
    * @memberof CodeRepository
@@ -316,10 +316,10 @@ export class CodeRepository extends BaseRepository {
   async getProjectRoles(): Promise<ICodeDescription[]> {
     const sqlStatement = SQL`
       SELECT
-        project_role_id as id,
+        survey_role_id as id,
         name,
         description
-      FROM project_role
+      FROM survey_role
       WHERE record_end_date is null
       ORDER BY
         CASE WHEN name = 'Coordinator' THEN 0 ELSE 1 END;
