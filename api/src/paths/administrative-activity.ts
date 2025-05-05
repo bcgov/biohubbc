@@ -101,12 +101,12 @@ GET.apiDoc = {
           schema: {
             type: 'object',
             additionalProperties: false,
-            required: ['has_pending_access_request', 'has_one_or_more_project_roles'],
+            required: ['has_pending_access_request', 'has_one_or_more_survey_roles'],
             properties: {
               has_pending_access_request: {
                 type: 'boolean'
               },
-              has_one_or_more_project_roles: {
+              has_one_or_more_survey_roles: {
                 type: 'boolean'
               }
             }

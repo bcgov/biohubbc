@@ -18,6 +18,7 @@ export class PostSurveyObject {
   locations: PostSurveyLocationData[];
   agreements: PostAgreementsData;
   participants: PostParticipationData[];
+  members: PostMemberData[];
   partnerships: PostPartnershipsData;
   site_selection: PostSiteSelectionData;
   blocks: PostSurveyBlock[];
@@ -34,6 +35,7 @@ export class PostSurveyObject {
     this.agreements = (obj?.agreements && new PostAgreementsData(obj.agreements)) || null;
     this.participants =
       (obj?.participants?.length && obj.participants.map((p: any) => new PostParticipationData(p))) || [];
+    this.members = (obj?.members?.length && obj.members.map((p: any) => new PostMemberData(p))) || [];
     this.partnerships = (obj?.partnerships && new PostPartnershipsData(obj.partnerships)) || null;
     this.locations = (obj?.locations && obj.locations.map((p: any) => new PostSurveyLocationData(p))) || [];
     this.site_selection = (obj?.site_selection && new PostSiteSelectionData(obj)) || null;
@@ -141,6 +143,16 @@ export class PostParticipationData {
   constructor(obj?: any) {
     this.system_user_id = obj?.system_user_id || null;
     this.survey_job_name = obj?.survey_job_name || null;
+  }
+}
+
+export class PostMemberData {
+  system_user_id: number;
+  survey_role_name: string;
+
+  constructor(obj?: any) {
+    this.system_user_id = obj?.system_user_id || null;
+    this.survey_role_name = obj?.survey_role_name || null;
   }
 }
 

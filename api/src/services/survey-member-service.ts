@@ -71,15 +71,13 @@ export class SurveyMemberService extends DBService {
    * Adds multiple survey participants to the survey.
    *
    * @param {number} surveyId
-   * @param {IInsertSurveyMember[]} participants
+   * @param {IInsertSurveyMember[]} members
    * @return {*}  {Promise<void[]>}
    * @memberof SurveyMemberService
    */
-  async postSurveyMembers(surveyId: number, participants: PostMemberData[]): Promise<void[]> {
+  async postSurveyMembers(surveyId: number, members: PostMemberData[]): Promise<void[]> {
     return Promise.all(
-      participants.map((participant) =>
-        this.postSurveyMember(surveyId, participant.system_user_id, participant.survey_role_names[0])
-      )
+      members.map((member) => this.postSurveyMember(surveyId, member.system_user_id, member.survey_role_name))
     );
   }
 

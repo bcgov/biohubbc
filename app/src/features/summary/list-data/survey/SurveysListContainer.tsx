@@ -228,8 +228,8 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
           hasNoDataFallback={
             <NoDataOverlay
               height="400px"
-              title="Create Surveys in Projects"
-              subtitle="You currently have no surveys. Once you create or get invited to projects with surveys, they will be displayed here"
+              title="Create Surveys"
+              subtitle="You have no surveys. Once you create or get invited to one, it will show up here."
               icon={mdiArrowTopRight}
             />
           }

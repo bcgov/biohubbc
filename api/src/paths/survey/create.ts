@@ -25,7 +25,7 @@ export const POST: Operation = [
     return {
       or: [
         {
-          validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
+          validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.PROJECT_CREATOR],
           discriminator: 'SystemRole'
         }
       ]
@@ -63,7 +63,8 @@ POST.apiDoc = {
             'locations',
             'site_selection',
             'agreements',
-            'participants'
+            'participants',
+            'members'
           ],
           properties: {
             survey_details: {
@@ -150,8 +151,19 @@ POST.apiDoc = {
             },
             participants: {
               type: 'array',
+              description: 'List of users who participated in the survey, independent of system users who have access',
               items: {
                 ...surveyParticipationAndSystemUserSchema
+              }
+            },
+            members: {
+              type: 'array',
+              description: 'List of system users who have access to the survey, with a specific role',
+              items: {
+                type: 'object',
+                additionalProperties: false,
+                required: ['system_user_id', 'survey_role_name'],
+                properties: { system_user_id: { type: 'integer' }, survey_role_name: { type: 'string' } }
               }
             },
             blocks: {

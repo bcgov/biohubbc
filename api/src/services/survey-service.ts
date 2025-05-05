@@ -30,6 +30,7 @@ import { RegionService } from './region-service';
 import { SiteSelectionStrategyService } from './site-selection-strategy-service';
 import { SurveyBlockService } from './survey-block-service';
 import { SurveyLocationService } from './survey-location-service';
+import { SurveyMemberService } from './survey-member-service';
 import { SurveyParticipationService } from './survey-participation-service';
 
 export class SurveyService extends DBService {
@@ -39,6 +40,7 @@ export class SurveyService extends DBService {
   fundingSourceService: FundingSourceService;
   siteSelectionStrategyService: SiteSelectionStrategyService;
   surveyParticipationService: SurveyParticipationService;
+  surveyMemberService: SurveyMemberService;
   regionService: RegionService;
 
   constructor(connection: IDBConnection) {
@@ -50,6 +52,7 @@ export class SurveyService extends DBService {
     this.fundingSourceService = new FundingSourceService(connection);
     this.siteSelectionStrategyService = new SiteSelectionStrategyService(connection);
     this.surveyParticipationService = new SurveyParticipationService(connection);
+    this.surveyMemberService = new SurveyMemberService(connection);
     this.regionService = new RegionService(connection);
   }
 
@@ -440,6 +443,9 @@ export class SurveyService extends DBService {
         )
       )
     );
+
+    // Handle survey members (users with access)
+    await this.surveyMemberService.postSurveyMembers(surveyId, postSurveyData.members);
 
     // Handle survey proprietor data
     postSurveyData.proprietor && promises.push(this.insertSurveyProprietor(postSurveyData.proprietor, surveyId));

@@ -10,7 +10,7 @@ import { BaseRepository } from './base-repository';
 
 export const IAdministrativeActivityStanding = z.object({
   has_pending_access_request: z.boolean(),
-  has_one_or_more_project_roles: z.boolean()
+  has_one_or_more_survey_roles: z.boolean()
 });
 
 export type IAdministrativeActivityStanding = z.infer<typeof IAdministrativeActivityStanding>;
@@ -219,7 +219,7 @@ export class AdministrativeActivityRepository extends BaseRepository {
           CASE
             WHEN COUNT(*) > 0 THEN TRUE
             ELSE FALSE
-          END AS has_one_or_more_project_roles
+          END AS has_one_or_more_survey_roles
         FROM
           survey_member pp
         LEFT JOIN

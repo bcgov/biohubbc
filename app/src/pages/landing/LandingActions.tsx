@@ -61,15 +61,15 @@ const LandingActions = () => {
     authStateContext.simsUserWrapper.roleNames
   );
   const isInvalidUser = !!authStateContext.simsUserWrapper.recordEndDate;
-  const mayBelongToOneOrMoreProjects = isSystemUser ?? authStateContext.simsUserWrapper.hasOneOrMoreProjectRoles;
-  const hasProjectCreationRole =
+  const mayBelongToOneOrMoreSurveys = isSystemUser ?? authStateContext.simsUserWrapper.hasOneOrMoreSurveyRoles;
+  const hasSurveyCreationRole =
     hasAdministrativeRole ||
     hasAtLeastOneValidValue([SYSTEM_ROLE.PROJECT_CREATOR], authStateContext.simsUserWrapper.roleNames);
-  const isReturningUser = isSystemUser || hasPendingAccessRequest || mayBelongToOneOrMoreProjects;
-  const mayViewProjects = (isSystemUser || mayBelongToOneOrMoreProjects) && !isInvalidUser;
-  const mayMakeAccessRequest = !mayViewProjects && !hasPendingAccessRequest && !isInvalidUser;
+  const isReturningUser = isSystemUser || hasPendingAccessRequest || mayBelongToOneOrMoreSurveys;
+  const mayViewSurveys = (isSystemUser || mayBelongToOneOrMoreSurveys) && !isInvalidUser;
+  const mayMakeAccessRequest = !mayViewSurveys && !hasPendingAccessRequest && !isInvalidUser;
   const isAwaitingAccessApproval =
-    hasPendingAccessRequest && !isSystemUser && !mayBelongToOneOrMoreProjects && !isInvalidUser;
+    hasPendingAccessRequest && !isSystemUser && !mayBelongToOneOrMoreSurveys && !isInvalidUser;
 
   return (
     <Box sx={classes.actionsContainer}>
@@ -137,15 +137,15 @@ const LandingActions = () => {
           </Alert>
         )}
         <Box sx={classes.heroActions}>
-          {mayViewProjects && (
+          {mayViewSurveys && (
             <Button
               component={Link}
               to="/admin/summary"
               variant="contained"
               sx={classes.heroButton}
               size="large"
-              children={<>View&nbsp;Projects</>}
-              data-testid="landing_page_projects_button"
+              children={<>View&nbsp;Surveys</>}
+              data-testid="landing_page_surveys_button"
             />
           )}
           {mayMakeAccessRequest && (
@@ -159,15 +159,15 @@ const LandingActions = () => {
               data-testid="landing_page_request_access_button"
             />
           )}
-          {!hasAdministrativeRole && hasProjectCreationRole && (
+          {!hasAdministrativeRole && hasSurveyCreationRole && (
             <Button
               component={Link}
-              to="/admin/projects/create"
+              to="/admin/surveys/create"
               variant="contained"
               sx={classes.heroButton}
               size="large"
-              children={<>Create&nbsp;a&nbsp;Project</>}
-              data-testid="landing_page_create_project_button"
+              children={<>Create&nbsp;a&nbsp;Survey</>}
+              data-testid="landing_page_create_survey_button"
             />
           )}
         </Box>

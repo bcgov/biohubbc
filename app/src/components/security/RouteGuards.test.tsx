@@ -30,7 +30,7 @@ const nullAuthState = getMockAuthState({
       roleNames: [],
       identitySource: null,
       hasAccessRequest: false,
-      hasOneOrMoreProjectRoles: false,
+      hasOneOrMoreSurveyRoles: false,
       recordEndDate: null,
       refresh: () => {
         // do nothing
