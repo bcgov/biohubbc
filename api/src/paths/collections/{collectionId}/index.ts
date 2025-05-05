@@ -190,9 +190,14 @@ export function updateCollection(): RequestHandler {
     try {
       await connection.open();
 
+      const systemUserId = connection.systemUserId();
+      if (!systemUserId || isNaN(systemUserId)) {
+        res.status(401).json({ error: 'Unauthorized: system user ID missing or invalid' });
+        return;
+      }
+
       const collectionId = Number(req.params.collectionId);
       const collection = req.body;
-      const systemUserId = connection.systemUserId();
 
       const collectionService = new CollectionService(connection);
 
@@ -220,7 +225,8 @@ export const DELETE: Operation = [
     return {
       and: [
         {
-          discriminator: 'SystemUser'
+          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR],
+          discriminator: 'SystemRole'
         }
       ]
     };
@@ -265,9 +271,9 @@ export function deleteCollection(): RequestHandler {
 
     try {
       await connection.open();
-
+      const systemUserId = connection.systemUserId();
       const collectionService = new CollectionService(connection);
-      const deleted = await collectionService.deleteCollection(Number(req.params.collection_id));
+      const deleted = await collectionService.deleteCollection(Number(req.params.collectionId), systemUserId);
 
       await connection.commit();
 

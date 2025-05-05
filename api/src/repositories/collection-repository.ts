@@ -242,13 +242,13 @@ export class CollectionRepository extends BaseRepository {
    * @return {*}  {Promise<boolean>}
    * @memberof CollectionRepository
    */
-  async deleteCollection(collectionId: number): Promise<boolean> {
+  async deleteCollection(collectionId: number, systemUserId: number): Promise<boolean> {
     const sql: SQLStatement = SQL`
       UPDATE collection
       SET
         record_end_date = now(),
         update_date = now(),
-        update_user = 1 -- Replace with actual user ID
+        update_user = ${systemUserId}
       WHERE
         collection_id = ${collectionId}
         AND record_end_date IS NULL;

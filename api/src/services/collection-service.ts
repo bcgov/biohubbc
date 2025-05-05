@@ -108,12 +108,11 @@ export class CollectionService extends DBService {
    * Delete a collection by ID.
    *
    * @param {number} collectionId
+   * @param {number} systemUserId 
    * @return {*}  {Promise<boolean>}
    * @memberof CollectionService
    */
-  async deleteCollection(collectionId: number): Promise<boolean> {
-
-    
-    return this.collectionRepository.deleteCollection(collectionId);
+  async deleteCollection(collectionId: number, systemUserId: number): Promise<boolean> {
+    return this.collectionRepository.deleteCollection(collectionId, systemUserId);
   }
 }
