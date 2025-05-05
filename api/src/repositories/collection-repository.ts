@@ -207,13 +207,16 @@ export class CollectionRepository extends BaseRepository {
    * @return {*} Promise<number>
    * @memberof AlertRepository
    */
-  async updateCollection(collection: any): Promise<number> {
+  async updateCollection(collection: any, systemUserId: number): Promise<number> {
     const sqlStatement = SQL`
       UPDATE collection
       SET
         name = ${collection.name},
         objectives = ${collection.objectives},
-        record_end_date = ${collection.record_end_date}
+        record_end_date = ${collection.record_end_date},
+        update_user = ${systemUserId},
+        update_date = now(),
+        revision_count = revision_count + 1
       WHERE
         collection_id = ${collection.collection_id}
         AND record_end_date IS NULL

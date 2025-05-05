@@ -192,10 +192,11 @@ export function updateCollection(): RequestHandler {
 
       const collectionId = Number(req.params.collectionId);
       const collection = req.body;
+      const systemUserId = connection.systemUserId();
 
       const collectionService = new CollectionService(connection);
 
-      const id = await collectionService.updateCollection({ ...collection, collection_id: collectionId });
+      const id = await collectionService.updateCollection({ ...collection, collection_id: collectionId }, systemUserId);
 
       await connection.commit();
 

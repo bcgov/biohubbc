@@ -1,7 +1,7 @@
 import { IDBConnection } from '../database/db';
 import { DBService } from './db-service';
 import { CollectionRepository } from '../repositories/collection-repository';
-import { CollectionData, FindCollectionsResponse, ICollectionAdvancedFilters } from '../models/collection-view';
+import { FindCollectionsResponse, ICollectionAdvancedFilters } from '../models/collection-view';
 
 /**
  * Service for collection operations.
@@ -96,13 +96,13 @@ export class CollectionService extends DBService {
    * Update a system alert.
    *
    * @param {*} collectionData
+   * @param {number} systemUserId The system user id of the user making the request
    * @return {*}  Promise<any>
    * @memberof CollectionService
    */
-  async updateCollection(collection: CollectionData): Promise<number> {
-    return this.collectionRepository.updateCollection(collection);
+  async updateCollection(collection: any, systemUserId: number): Promise<number> {
+    return this.collectionRepository.updateCollection(collection, systemUserId);
   }
-
 
   /**
    * Delete a collection by ID.
