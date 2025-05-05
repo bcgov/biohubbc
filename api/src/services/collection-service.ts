@@ -24,7 +24,7 @@ export class CollectionService extends DBService {
    * provided filter criteria.
    *
    * @param {boolean} isUserAdmin
-   * @param {(number | null)} systemUserId The system user id of the user making the request
+   * @param {(number | null)} systemUserId 
    * @param {ICollectionAdvancedFilters} filterFields
    * @param {ApiPaginationOptions} [pagination]
    * @return {*}  {(Promise<(FindCollectionsResponse)[]>)}
@@ -44,7 +44,7 @@ export class CollectionService extends DBService {
    * filter criteria.
    *
    * @param {boolean} isUserAdmin
-   * @param {(number | null)} systemUserId The system user id of the user making the request
+   * @param {(number | null)} systemUserId 
    * @param {ICollectionAdvancedFilters} filterFields
    * @return {*}  {Promise<number>}
    * @memberof CollectionService
@@ -71,13 +71,11 @@ export class CollectionService extends DBService {
    * Create a new collection.
    *
    * @param {*} collectionData
-   * @param {number} systemUserId The system user id to use for owner and create_user
+   * @param {number} systemUserId 
    * @return {*}  {Promise<any>}
    * @memberof CollectionService
    */
   async createCollection(collectionData: { name: string; objectives: string }, systemUserId: number): Promise<any> {
-    // Here you could add business logic if needed
-    // For example, validation, permission checks, etc.
     return this.collectionRepository.createCollection(collectionData, systemUserId);
   }
 
@@ -96,7 +94,7 @@ export class CollectionService extends DBService {
    * Update a system alert.
    *
    * @param {*} collectionData
-   * @param {number} systemUserId The system user id of the user making the request
+   * @param {number} systemUserId
    * @return {*}  Promise<any>
    * @memberof CollectionService
    */

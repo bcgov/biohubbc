@@ -84,7 +84,6 @@ export class CollectionRepository extends BaseRepository {
       WHERE c.record_end_date IS NULL
     `;
 
-    // Add filters manually
     if (filterFields.keyword) {
       const keywordMatch = `%${filterFields.keyword}%`;
       sql.append(SQL` AND (c.name ILIKE ${keywordMatch} OR c.objectives ILIKE ${keywordMatch})`);
@@ -100,13 +99,12 @@ export class CollectionRepository extends BaseRepository {
 
     const response = await this.connection.sql(sql);
 
-    // Process rows and convert to FindCollectionsResponse objects
+
     const results: FindCollectionsResponse[] = response.rows.map((row) => ({
       collection_id: row.collection_id,
       name: row.name,
       objectives: row.objectives,
-      revision_count: row.revision_count,
-      members: [] // Members are not included in this simplified query
+      revision_count: row.revision_count
     }));
 
     return results;

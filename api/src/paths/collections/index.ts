@@ -206,7 +206,7 @@ function parseQueryParams(req: Request<unknown, unknown, unknown, ICollectionAdv
 }
 
 /**
- * Gets collections for the current user, based on their permissions and filter criteria.
+ * Gets collections for the current user
  *
  * @returns {RequestHandler}
  */
@@ -250,7 +250,6 @@ export function findCollections(): RequestHandler {
         pagination: makePaginationResponse(collectionsTotalCount, paginationOptions)
       };
 
-      // Allow browsers to cache this response for 30 seconds
       res.setHeader('Cache-Control', 'private, max-age=30');
 
       return res.status(200).json(response);
