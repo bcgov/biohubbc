@@ -20,7 +20,7 @@ import { CollectionDataContainer } from './data/CollectionDataContainer';
 import CollectionHeader from './header/CollectionHeader';
 import CollectionParticipantsContainer from './members/CollectionMembersContainer';
 import CollectionSurveyContainer from './survey/CollectionSurveyContainer';
-import { CollectionTagContainer } from './tags/CollectionTagContainer';
+import { SubcollectionContainer } from './tags/SubcollectionContainer';
 
 const COLLECTION_ACTIVE_VIEW_KEY = 'cvk';
 
@@ -98,13 +98,13 @@ const CollectionPage = () => {
             }>
             {activeView === CollectionView.Surveys && (
               <Box>
-                <CollectionSurveyContainer collectionId={collection.collection_id} showSearch={false} />
+                <CollectionSurveyContainer collection={collection} showSearch={false} />
               </Box>
             )}
 
             {activeView === CollectionView.Subcollections && (
               <Box>
-                <CollectionTagContainer collectionId={collection.collection_id} showSearch={false} />
+                <SubcollectionContainer collection={collection} showSearch={false} />
               </Box>
             )}
 

@@ -24,6 +24,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
 import { useSearchParams } from 'hooks/useSearchParams';
+import { ICollection } from 'interfaces/useCollectionApi.interface';
 import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import { SurveyBasicFieldsObject } from 'interfaces/useSurveyApi.interface';
 import { useState } from 'react';
@@ -49,7 +50,7 @@ type SurveyDataTableURLParams = {
 };
 
 interface ICollectionSurveyContainerProps {
-  collectionId: number;
+  collection: ICollection;
   showSearch: boolean;
 }
 
@@ -67,7 +68,7 @@ const initialPaginationParams: Required<ApiPaginationRequestOptions> = {
  * @return {*}
  */
 const CollectionSurveyContainer = (props: ICollectionSurveyContainerProps) => {
-  const { collectionId, showSearch } = props;
+  const { collection, showSearch } = props;
 
   const biohubApi = useBiohubApi();
 
@@ -105,7 +106,7 @@ const CollectionSurveyContainer = (props: ICollectionSurveyContainerProps) => {
   };
 
   const surveysDataLoader = useDataLoader((pagination?: ApiPaginationRequestOptions, filter?: ISurveyAdvancedFilters) =>
-    biohubApi.collection.getSurveysInCollection(collectionId, pagination, filter)
+    biohubApi.collection.getSurveysInCollection(collection.collection_id, pagination, filter)
   );
 
   // Fetch surveyss when either the pagination, sort, or advanced filters change
@@ -287,7 +288,7 @@ const CollectionSurveyContainer = (props: ICollectionSurveyContainerProps) => {
       </LoadingGuard>
 
       <SurveyCollectionDialog
-        collectionId={collectionId}
+        collection={collection}
         onSubmit={() => {
           surveysDataLoader.refresh(paginationSort, advancedFiltersModel);
           setCollectionDialogIsOpen(false);

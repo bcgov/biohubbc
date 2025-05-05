@@ -14,22 +14,34 @@ export const CreateCollectionParticipantSchema: OpenAPIV3.SchemaObject = {
   }
 };
 
+// NOTE: parent_collection_id is specified in the URL param under: POST api/collections/{collectionId}
 export const CreateCollectionSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
   additionalProperties: false,
-  required: ['name', 'description', 'participants', 'parent_collection_id'],
+  required: ['name', 'description', 'participants'],
   properties: {
     name: { type: 'string', description: 'The name of the collection to create' },
     description: { type: 'string', description: 'The description of the collection to create', nullable: true },
-    parent_collection_id: {
-      type: 'integer',
-      description: 'Primary key of the parent collection that this new record belongs to',
-      nullable: true
-    },
     participants: {
       type: 'array',
       description: 'List of users to add to the collection',
       minItems: 1,
+      items: CreateCollectionParticipantSchema
+    }
+  }
+};
+
+// NOTE: parent_collection_id is specified in the URL param under: POST api/collections/{collectionId}
+export const CreateSubcollectionSchema: OpenAPIV3.SchemaObject = {
+  type: 'object',
+  additionalProperties: false,
+  required: ['name', 'description', 'participants'],
+  properties: {
+    name: { type: 'string', description: 'The name of the collection to create' },
+    description: { type: 'string', description: 'The description of the collection to create', nullable: true },
+    participants: {
+      type: 'array',
+      description: 'List of users to add to the collection',
       items: CreateCollectionParticipantSchema
     }
   }

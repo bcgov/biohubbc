@@ -284,8 +284,6 @@ export function createCollection(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'createCollection' });
 
-    console.log('HERE');
-
     const connection = getDBConnection(req.keycloak_token);
 
     try {

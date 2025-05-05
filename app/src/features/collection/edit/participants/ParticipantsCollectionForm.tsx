@@ -101,7 +101,7 @@ const ParticipantsCollectionForm = (props: IParticipantsCollectionFormProps): JS
         <Box>
           <SystemUserAutocompleteField
             formikFieldName="system_user_id"
-            label="Team Member"
+            label="Member"
             placeholder="Search by user"
             helpText={`Only active users who have requested access to the Species Inventory Management System before can be invited`}
             selectedUsers={values.participants.map((participant) => participant.system_user_id)}

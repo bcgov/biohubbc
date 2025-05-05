@@ -28,7 +28,7 @@ import { useMemo, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions, StringValues } from 'types/misc';
 import { firstOrNull, getRandomHexColor } from 'utils/Utils';
-import CollectionTagDialog from './dialog/CollectionTagDialog';
+import SubcollectionDialog from './dialog/SubcollectionDialog';
 
 // Supported URL parameters
 // Note: Prefix 'p_' is used to avoid conflicts with similar query params from other components
@@ -47,7 +47,7 @@ type CollectionDataTableURLParams = {
 const pageSizeOptions = [10, 25, 50];
 
 interface ICollectionsTagContainerProps {
-  collectionId: number;
+  collection: ICollection;
   showSearch: boolean;
 }
 
@@ -64,8 +64,8 @@ const initialPaginationParams: Required<ApiPaginationRequestOptions> = {
  *
  * @return {*}
  */
-export const CollectionTagContainer = (props: ICollectionsTagContainerProps) => {
-  const { collectionId, showSearch } = props;
+export const SubcollectionContainer = (props: ICollectionsTagContainerProps) => {
+  const { collection, showSearch } = props;
 
   const biohubApi = useBiohubApi();
 
@@ -90,7 +90,7 @@ export const CollectionTagContainer = (props: ICollectionsTagContainerProps) => 
       ? Number(searchParams.get('p_itis_tsn'))
       : CollectionAdvancedFiltersInitialValues.itis_tsn,
     system_user_id: searchParams.get('p_system_user_id') ?? CollectionAdvancedFiltersInitialValues.system_user_id,
-    parent_collection_id: collectionId
+    parent_collection_id: collection.parent_collection_id
   });
 
   const sort = firstOrNull(sortModel);
@@ -218,14 +218,14 @@ export const CollectionTagContainer = (props: ICollectionsTagContainerProps) => 
     <>
       <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
         <Typography variant="h4" component="h2">
-          Tags &zwnj;
+          Subcollections &zwnj;
           <Typography component="span" color="textSecondary" lineHeight="inherit" fontSize="inherit" fontWeight={400}>
             ({Number(collectionsDataLoader.data?.pagination?.total ?? 0).toLocaleString()})
           </Typography>
         </Typography>
         <Stack gap={1} direction="row">
           <CreateButton
-            label="Add Tags"
+            label="Add Subcollection"
             onClick={() => {
               setCollectionDialogIsOpen(true);
             }}
@@ -315,8 +315,8 @@ export const CollectionTagContainer = (props: ICollectionsTagContainerProps) => 
       </Box>
 
       {collectionDialogIsOpen && (
-        <CollectionTagDialog
-          collectionId={collectionId}
+        <SubcollectionDialog
+          collection={collection}
           onSubmit={() => {
             collectionsDataLoader.refresh(paginationSort, advancedFiltersModel);
             setCollectionDialogIsOpen(false);

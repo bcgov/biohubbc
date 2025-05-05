@@ -5,12 +5,14 @@ import { CreateCollectionSurveyI18N } from 'constants/i18n';
 import { DialogContext, ISnackbarProps } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useContext, useState } from 'react';
+import useDataLoader from 'hooks/useDataLoader';
+import { ICollection } from 'interfaces/useCollectionApi.interface';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import yup from 'utils/YupSchema';
 import SurveyCollectionForm, { ISurveyCollectionData } from './form/SurveyCollectionForm';
 
 interface ISurveyCollectionDialogProps {
-  collectionId: number;
+  collection: ICollection;
   open: boolean;
   onSubmit: () => void;
   onClose?: (refresh?: boolean) => void;
@@ -26,10 +28,23 @@ interface ISurveyCollectionDialogProps {
  * @returns
  */
 const SurveyCollectionDialog = (props: ISurveyCollectionDialogProps) => {
+  const { collection } = props;
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const dialogContext = useContext(DialogContext);
 
   const biohubApi = useBiohubApi();
+
+  // Get surveys in the current collection to filter out of the autocomplete
+  const surveysDataLoader = useDataLoader(() => biohubApi.collection.getSurveysInCollection(collection.collection_id));
+  useEffect(() => {
+    surveysDataLoader.load();
+  }, [surveysDataLoader]);
+
+  const surveyIds = useMemo(
+    () => surveysDataLoader.data?.surveys.map((survey) => survey.survey_id) ?? [],
+    [surveysDataLoader.data]
+  );
 
   const CollectionSurveyYupSchema = yup.object().shape({
     collections: yup
@@ -56,7 +71,7 @@ const SurveyCollectionDialog = (props: ISurveyCollectionDialogProps) => {
     try {
       setIsSubmitting(true);
 
-      await biohubApi.collection.addSurveys({ ...values, collection_id: props.collectionId });
+      await biohubApi.collection.addSurveys({ ...values, collection_id: props.collection.collection_id });
 
       props.onSubmit();
 
@@ -86,7 +101,7 @@ const SurveyCollectionDialog = (props: ISurveyCollectionDialogProps) => {
       open={props.open}
       dialogLoading={isSubmitting}
       component={{
-        element: <SurveyCollectionForm />,
+        element: <SurveyCollectionForm surveysInCollection={surveyIds} />,
         initialValues: {
           surveys: []
         },

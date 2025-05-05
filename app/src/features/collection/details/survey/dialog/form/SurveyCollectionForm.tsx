@@ -12,6 +12,10 @@ export interface ISurveyCollectionData {
   surveys: { survey_id: number }[];
 }
 
+export interface ISurveyCollectionFormProps {
+  surveysInCollection: number[];
+}
+
 /**
  * Form for adding a survey to multiple collections
  *
@@ -20,7 +24,8 @@ export interface ISurveyCollectionData {
  *
  * @returns {*}
  */
-const SurveyCollectionForm = () => {
+const SurveyCollectionForm = (props: ISurveyCollectionFormProps) => {
+  const { surveysInCollection } = props;
   const { values } = useFormikContext<ISurveyCollectionData>();
 
   const biohubApi = useBiohubApi();
@@ -42,6 +47,7 @@ const SurveyCollectionForm = () => {
                 label="Surveys"
                 id="surveys"
                 name="surveys"
+                selectedOptions={surveysInCollection}
                 options={
                   surveysDataLoader.data?.surveys.map((survey) => ({
                     value: survey.survey_id,

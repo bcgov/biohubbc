@@ -42,17 +42,14 @@ export const Collection: z.ZodType<any> = z.lazy(() =>
 
 export type Collection = z.infer<typeof Collection>;
 
-export interface IPostCollectionRequest {
-  name: string;
-  description: string;
-  parent_collection_id: number | null;
-  participants: IPostCollectionParticipant[];
-}
-
 export interface IPostCollection {
   name: string;
   description: string;
-  parent_collection_id: number | null;
+  parent_collection_id?: number | null;
+}
+
+export interface IPostCollectionRequest extends IPostCollection {
+  participants: IPostCollectionParticipant[];
 }
 
 export interface IPostCollectionSurvey {

@@ -504,7 +504,9 @@ export class CollectionRepository extends BaseRepository {
   async updateCollection(collectionId: number, data: IPostCollection): Promise<CollectionModel> {
     const sql = SQL`
     UPDATE collection
-    SET name = ${data.name}, description = ${data.description}
+    SET 
+      name = ${data.name}, 
+      description = ${data.description}
     WHERE collection_id = ${collectionId}
     RETURNING *;
   `;

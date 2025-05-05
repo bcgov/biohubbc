@@ -39,6 +39,22 @@ export const useCollectionApi = (axios: AxiosInstance) => {
   };
 
   /**
+   * Create a new subcollection that is a child of an existing collection
+   *
+   * @param {number} collectionId
+   * @param {ICreateCollectionRequest} collection
+   * @return {*}  {Promise<IGetCollectionResponse>}
+   */
+  const createSubcollection = async (
+    collectionId: number,
+    collection: ICreateCollectionRequest
+  ): Promise<IGetCollectionsResponse> => {
+    const { data } = await axios.post(`/api/collection/${collectionId}`, collection);
+
+    return data;
+  };
+
+  /**
    * Get the parents of the given collection
    *
    * @param {number} collectionId
@@ -219,6 +235,7 @@ export const useCollectionApi = (axios: AxiosInstance) => {
 
   return {
     createCollection,
+    createSubcollection,
     getCollectionParents,
     addToCollections,
     getParticipants,

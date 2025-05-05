@@ -18,7 +18,6 @@ export interface IGetCollectionHierarchyResponse {
 export interface ICreateCollectionRequest {
   name: string;
   description: string | null;
-  parent_collection_id: number | null;
   participants: IPostCollectionParticipant[];
 }
 
