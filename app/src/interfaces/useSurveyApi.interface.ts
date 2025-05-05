@@ -10,6 +10,7 @@ import { ISurveyLocationForm } from 'features/surveys/components/locations/Study
 import { IPurposeAndMethodologyForm } from 'features/surveys/components/methodology/PurposeAndMethodologyForm';
 import { ISurveyPermitForm } from 'features/surveys/components/permit/SurveyPermitForm';
 import { ISpeciesForm, ITaxonomyWithEcologicalUnits } from 'features/surveys/components/species/SpeciesForm';
+import { ICollectionSurveyForm } from 'features/surveys/view/collection/form/CollectionSurveyForm';
 import { ISurveyPartnershipsForm } from 'features/surveys/view/components/SurveyPartnershipsForm';
 import { Feature } from 'geojson';
 import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
@@ -26,6 +27,7 @@ import { ICritterDetailedResponse, ICritterSimpleResponse } from './useCritterAp
 export interface ICreateSurveyRequest
   extends IGeneralInformationForm,
     IPurposeAndMethodologyForm,
+    ICollectionSurveyForm,
     IProprietaryDataForm,
     IAgreementsForm,
     IParticipantsJobForm,
@@ -230,6 +232,9 @@ export type IUpdateSurveyRequest = ISurveyLocationForm & {
     survey_types: number[];
     revision_count: number;
   };
+  collections: {
+    collection_id: number;
+  }[];
   species: {
     focal_species: ITaxonomyWithEcologicalUnits[];
   };
@@ -396,6 +401,10 @@ export interface IGetSurveyForUpdateResponse {
     species: {
       focal_species: ITaxonomyWithEcologicalUnits[];
     };
+    collections: {
+      collection_id: number;
+      name: string;
+    }[];
     permit: {
       permits: {
         permit_id: number;
@@ -497,6 +506,7 @@ export interface IAnimalDeploymentWithCritter {
 
 export type IEditSurveyRequest = IGeneralInformationForm &
   ISpeciesForm &
+  ICollectionSurveyForm &
   IPurposeAndMethodologyForm &
   ISurveyLocationForm &
   IProprietaryDataForm &

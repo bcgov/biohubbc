@@ -1,5 +1,6 @@
 import { flatten } from 'lodash';
 import { IDBConnection } from '../database/db';
+import { CollectionBasic } from '../models/collection';
 import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
 import { PostSurveyLocationData, PutPartnershipsData, PutSurveyObject } from '../models/survey-update';
 import {
@@ -21,6 +22,7 @@ import { PostSurveyBlock, SurveyBlockRecordWithCount } from '../repositories/sur
 import { SurveyLocationRecord } from '../repositories/survey-location-repository';
 import { ISurveyProprietorModel, SurveyBasicFields, SurveyRepository } from '../repositories/survey-repository';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
+import { CollectionSurveyService } from './collection-survey-service';
 import { DBService } from './db-service';
 import { FundingSourceService } from './funding-source-service';
 import { HistoryPublishService } from './history-publish-service';
@@ -75,7 +77,8 @@ export class SurveyService extends DBService {
       this.getSurveyLocationsData(surveyId),
       this.surveyParticipationService.getSurveyParticipants(surveyId),
       this.siteSelectionStrategyService.getSiteSelectionDataBySurveyId(surveyId),
-      this.getSurveyBlocksForSurveyId(surveyId)
+      this.getSurveyBlocksForSurveyId(surveyId),
+      this.getCollectionsBySurveyId(surveyId)
     ]);
 
     return {
@@ -89,7 +92,8 @@ export class SurveyService extends DBService {
       locations: surveyData[7],
       participants: surveyData[8],
       site_selection: surveyData[9],
-      blocks: surveyData[10]
+      blocks: surveyData[10],
+      collections: surveyData[11]
     };
   }
 
@@ -150,6 +154,17 @@ export class SurveyService extends DBService {
     const surveyTypeIds = surveyTypesData.map((item) => item.type_id);
 
     return new GetSurveyData({ ...surveyData, survey_types: surveyTypeIds });
+  }
+
+  /**
+   * Get collections that the given survey id belongs to
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<CollectionBasic[]>}
+   * @memberof CollectionService
+   */
+  async getCollectionsBySurveyId(surveyId: number): Promise<CollectionBasic[]> {
+    return this.surveyRepository.getCollectionsBySurveyId(surveyId);
   }
 
   /**
@@ -422,6 +437,14 @@ export class SurveyService extends DBService {
       )
     );
 
+    // Handle survey collections
+    console.log('COLLECTIONS@@@@@@', postSurveyData.collections);
+    const collectionSurveyService = new CollectionSurveyService(this.connection);
+    await collectionSurveyService.addSurveyToMultipleCollections({
+      survey_id: surveyId,
+      collections: postSurveyData.collections.collections
+    });
+
     // Handle survey funding sources
     promises.push(
       Promise.all(
@@ -667,6 +690,10 @@ export class SurveyService extends DBService {
 
     if (putSurveyData?.permit) {
       promises.push(this.updateSurveyPermitData(surveyId, putSurveyData));
+    }
+
+    if (putSurveyData?.collections) {
+      promises.push(this.updateCollectionData(surveyId, putSurveyData));
     }
 
     if (putSurveyData?.funding_sources) {
@@ -927,6 +954,49 @@ export class SurveyService extends DBService {
 
     await this.surveyRepository.insertManySurveyIntendedOutcomes(surveyId, rowsToInsert);
     await this.surveyRepository.deleteManySurveyIntendedOutcomes(surveyId, rowsToDelete);
+  }
+
+  /**
+   * Compares incoming collections data against the existing collections, if any, and determines which need to be
+   * deleted, added, or updated.
+   *
+   * @param {number} surveyId
+   * @param {PutSurveyObject} surveyData
+   * @memberof SurveyService
+   */
+  async updateCollectionData(surveyId: number, surveyData: PutSurveyObject): Promise<void> {
+    const collectionSurveyService = new CollectionSurveyService(this.connection);
+
+    // Get existing collections for the survey from DB
+    const existingCollections = await this.getCollectionsBySurveyId(surveyId);
+
+    const incomingCollections = surveyData.collections?.collections || [];
+
+    // Determine which collections need to be removed
+    const collectionsToDelete = existingCollections.filter(
+      (existing) => !incomingCollections.find((incoming) => incoming.collection_id === existing.collection_id)
+    );
+
+    // Delete collections no longer associated with the survey
+    if (collectionsToDelete.length) {
+      await collectionSurveyService.deleteCollectionSurveys({ collections: collectionsToDelete, survey_id: surveyId });
+    }
+
+    // Determine which collections need to be added (i.e., not in DB yet)
+    const existingCollectionIds = existingCollections.map((c) => c.collection_id);
+    const collectionsToAdd = incomingCollections.filter(
+      (incoming) => !existingCollectionIds.includes(incoming.collection_id)
+    );
+
+    // Insert new collections into the survey
+    if (collectionsToAdd.length) {
+      await collectionSurveyService.addSurveyToMultipleCollections({
+        survey_id: surveyId,
+        collections: collectionsToAdd
+      });
+    }
+
+    // No updates needed unless you're updating some metadata on the collection link itself
   }
 
   /**

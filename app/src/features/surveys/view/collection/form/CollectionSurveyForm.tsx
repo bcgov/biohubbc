@@ -8,8 +8,16 @@ import useDataLoader from 'hooks/useDataLoader';
 import { useEffect } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 
-export interface ICollectionSurveyData {
+export interface ICollectionSurveyForm {
   collections: { collection_id: number }[];
+}
+
+export const CollectionSurveyFormInitialValues: ICollectionSurveyForm = {
+  collections: []
+};
+
+interface ICollectionSurveyFormProps {
+  formikFieldName: string;
 }
 
 /**
@@ -17,8 +25,9 @@ export interface ICollectionSurveyData {
  *
  * @returns {*}
  */
-const CollectionSurveyForm = () => {
-  const { values } = useFormikContext<ICollectionSurveyData>();
+const CollectionSurveyForm = (props: ICollectionSurveyFormProps) => {
+  const { formikFieldName } = props;
+  const { values } = useFormikContext<ICollectionSurveyForm>();
 
   const biohubApi = useBiohubApi();
   const collectionsDataLoader = useDataLoader(() => biohubApi.collection.findCollections());
@@ -30,15 +39,15 @@ const CollectionSurveyForm = () => {
   return (
     <form>
       <FieldArray
-        name="collections"
+        name={formikFieldName}
         render={(arrayHelpers) => (
           <>
             <Box component="fieldset" mb={1}>
               {/* Dropdown to add new collection to the array */}
               <AutocompleteField
                 label="Collections"
-                id="collections"
-                name="collections"
+                id={formikFieldName}
+                name={formikFieldName}
                 options={
                   collectionsDataLoader.data?.collections.map((collection) => ({
                     value: collection.collection_id,

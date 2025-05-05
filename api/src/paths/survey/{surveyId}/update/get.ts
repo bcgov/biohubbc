@@ -2,6 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SURVEY_ROLE, SYSTEM_ROLE } from '../../../../constants/roles';
 import { getDBConnection } from '../../../../database/db';
+import { GetCollectionBasicSchema } from '../../../../openapi/schemas/collection';
 import {
   surveyBlockSchema,
   surveyDetailsSchema,
@@ -78,6 +79,7 @@ GET.apiDoc = {
                   'species',
                   'permit',
                   'funding_sources',
+                  'collections',
                   'partnerships',
                   'proprietor',
                   'purpose_and_methodology',
@@ -94,6 +96,11 @@ GET.apiDoc = {
                   },
                   partnerships: surveyPartnershipsSchema,
                   purpose_and_methodology: surveyPurposeAndMethodologySchema,
+                  collections: {
+                    type: 'array',
+                    items: GetCollectionBasicSchema,
+                    description: 'The collections that the survey belongs to'
+                  },
                   proprietor: {
                     ...surveyProprietorSchema,
                     properties: {

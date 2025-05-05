@@ -2,6 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SURVEY_ROLE, SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
+import { GetCollectionBasicSchema } from '../../../openapi/schemas/collection';
 import {
   surveyBlockSchema,
   surveyDetailsSchema,
@@ -111,6 +112,10 @@ GET.apiDoc = {
                   blocks: {
                     type: 'array',
                     items: surveyBlockSchema
+                  },
+                  collections: {
+                    type: 'array',
+                    items: GetCollectionBasicSchema
                   }
                 }
               },

@@ -9,15 +9,15 @@ import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormC
 import { CodesContext } from 'contexts/codesContext';
 
 import SurveyPermitForm, { ISurveyPermitForm } from 'features/surveys/components/permit/SurveyPermitForm';
-import SamplingStrategyForm from 'features/surveys/components/sampling-strategy/SamplingStrategyForm';
 import SurveyPartnershipsForm, {
   SurveyPartnershipsFormYupSchema
 } from 'features/surveys/view/components/SurveyPartnershipsForm';
 import { Formik, FormikProps } from 'formik';
 import { ICreateSurveyRequest, IUpdateSurveyRequest } from 'interfaces/useSurveyApi.interface';
 import React, { useContext, useEffect } from 'react';
+import yup from 'utils/YupSchema';
 import AgreementsForm, { AgreementsYupSchema } from '../components/agreements/AgreementsForm';
-import ProprietaryDataForm, { ProprietaryDataYupSchema } from '../components/agreements/ProprietaryDataForm';
+import { ProprietaryDataYupSchema } from '../components/agreements/ProprietaryDataForm';
 import SurveyFundingSourceForm, {
   ISurveyFundingSourceForm,
   SurveyFundingSourceFormYupSchema
@@ -32,6 +32,7 @@ import PurposeAndMethodologyForm, {
 import SurveyUserForm, { SurveyUserJobYupSchema } from '../components/participants/SurveyUserForm';
 import { SurveySiteSelectionYupSchema } from '../components/sampling-strategy/SurveySiteSelectionForm';
 import SpeciesForm, { SpeciesYupSchema } from '../components/species/SpeciesForm';
+import CollectionSurveyForm from '../view/collection/form/CollectionSurveyForm';
 
 interface IEditSurveyForm<
   T extends
@@ -70,6 +71,11 @@ const EditSurveyForm = <
     .concat(PurposeAndMethodologyYupSchema)
     .concat(ProprietaryDataYupSchema)
     .concat(SurveyFundingSourceFormYupSchema)
+    .concat(
+      yup.object({
+        collections: yup.array(yup.object({ collection_id: yup.number().required('Collection is required') }))
+      })
+    )
     .concat(AgreementsYupSchema)
     .concat(SurveyUserJobYupSchema)
     .concat(SurveyLocationYupSchema)
@@ -88,8 +94,8 @@ const EditSurveyForm = <
       <Stack gap={5}>
         <FormikErrorSnackbar />
         <HorizontalSplitFormComponent
-          title="General Information"
-          summary="Enter information about the survey"
+          title="About"
+          summary="Enter a name and the timeline for your survey. Dates should approximate the start and end of fieldwork."
           component={
             <GeneralInformationForm
               progress={
@@ -102,17 +108,54 @@ const EditSurveyForm = <
 
         <Divider />
 
-        <HorizontalSplitFormComponent
-          title="Focal species"
-          summary="Enter focal species that were targetted in the survey">
+        <HorizontalSplitFormComponent title="Collections" summary="Select collections to add the survey to.">
+          <CollectionSurveyForm formikFieldName="collections" />
+        </HorizontalSplitFormComponent>
+
+        <Divider />
+
+        <HorizontalSplitFormComponent title="Focal species" summary="Enter species that you targetted in the survey">
           <SpeciesForm />
         </HorizontalSplitFormComponent>
 
         <Divider />
 
         <HorizontalSplitFormComponent
+          title="Objectives"
+          summary="Describe your objectives and select the type of data collected."
+          component={
+            <PurposeAndMethodologyForm
+              intended_outcomes={
+                codes.intended_outcomes?.map((item) => ({
+                  value: item.id,
+                  label: item.name,
+                  description: item.description
+                })) ?? []
+              }
+              type={
+                codes.survey_data_type?.map((item) => ({
+                  value: item.id,
+                  label: item.name,
+                  description: item.description
+                })) ?? []
+              }
+            />
+          }
+        />
+
+        <Divider />
+
+        <HorizontalSplitFormComponent
+          title="General Location"
+          summary="Import, draw or select a feature from an existing layer to define your general areas of interest. This should broadly reflect your study area."
+          component={<StudyAreaForm />}
+        />
+
+        <Divider />
+
+        <HorizontalSplitFormComponent
           title="Permits"
-          summary="Enter any permits used in this survey"
+          summary="Enter any permits used in the survey"
           component={
             <Box component="fieldset">
               <HelpButtonStack helpText="Any permits with data submission requirements must be listed.">
@@ -141,30 +184,6 @@ const EditSurveyForm = <
         <Divider />
 
         <HorizontalSplitFormComponent
-          title="Purpose and Methodology"
-          summary="Select the types of data collected and describe the survey objectives"
-          component={
-            <PurposeAndMethodologyForm
-              intended_outcomes={
-                codes.intended_outcomes?.map((item) => ({
-                  value: item.id,
-                  label: item.name,
-                  description: item.description
-                })) ?? []
-              }
-              type={
-                codes.survey_data_type?.map((item) => ({
-                  value: item.id,
-                  label: item.name,
-                  description: item.description
-                })) ?? []
-              }
-            />
-          }></HorizontalSplitFormComponent>
-
-        <Divider />
-
-        <HorizontalSplitFormComponent
           title="Survey Participants"
           summary="Specify people who participated in this survey"
           component={<SurveyUserForm jobs={codes.survey_jobs} />}
@@ -177,47 +196,6 @@ const EditSurveyForm = <
           summary="Enter any partners involved in the survey"
           component={<SurveyPartnershipsForm />}
         />
-
-        <Divider />
-
-        <HorizontalSplitFormComponent
-          title="Sampling Strategy"
-          summary="Specify site selection methods, stratums and optional sampling blocks for this survey"
-          component={<SamplingStrategyForm />}
-        />
-
-        <Divider />
-
-        <HorizontalSplitFormComponent
-          title="Study Area"
-          summary="Import, draw or select a feature from an existing layer to define general areas of interest where survey findings apply."
-          component={<StudyAreaForm />}
-        />
-
-        <Divider />
-
-        <HorizontalSplitFormComponent
-          title="Proprietary Data"
-          summary="Indicate whether any data is proprietary"
-          component={
-            <Box component="fieldset">
-              <HelpButtonStack helpText="Proprietary data is information collected while on private or First Nations land and that the land owner or First Nation has requested be secured, or for which the data provider has ownership rights.">
-                <Typography fontWeight={700}>Is any data in this survey proprietary?</Typography>
-              </HelpButtonStack>
-              <ProprietaryDataForm
-                proprietary_data_category={
-                  codes.proprietor_type?.map((item) => {
-                    return { value: item.id, label: item.name, is_first_nation: item.is_first_nation };
-                  }) || []
-                }
-                first_nations={
-                  codes.first_nations?.map((item) => {
-                    return { value: item.id, label: item.name };
-                  }) || []
-                }
-              />
-            </Box>
-          }></HorizontalSplitFormComponent>
 
         <Divider />
 

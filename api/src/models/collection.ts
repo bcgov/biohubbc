@@ -42,6 +42,19 @@ export const Collection: z.ZodType<any> = z.lazy(() =>
 
 export type Collection = z.infer<typeof Collection>;
 
+export const CollectionBasic = z.object({
+  collection_id: z.number(),
+  name: z.string()
+});
+
+export type CollectionBasic = z.infer<typeof CollectionBasic>;
+
+export interface IPostCollectionRequest {
+  name: string;
+  description: string;
+  participants: IPostCollectionMember[];
+}
+
 export interface IPostCollection {
   name: string;
   description: string;

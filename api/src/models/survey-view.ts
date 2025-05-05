@@ -7,6 +7,7 @@ import { SurveyBlockRecord } from '../repositories/survey-block-repository';
 import { SurveyLocationRecord } from '../repositories/survey-location-repository';
 import { SurveyUser } from '../repositories/survey-participation-repository';
 import { ITaxonomyWithEcologicalUnits } from '../services/platform-service';
+import { CollectionBasic } from './collection';
 import { SystemUserWithRoles } from './system-user-view';
 
 export interface ISurveyAdvancedFilters {
@@ -88,6 +89,7 @@ export type SurveyObject = {
   partnerships: ISurveyPartnerships;
   site_selection: SiteSelectionData;
   blocks: SurveyBlockRecord[];
+  collections: CollectionBasic[];
 };
 
 export interface ISurveyPartnerships {

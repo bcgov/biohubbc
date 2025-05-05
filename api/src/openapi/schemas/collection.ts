@@ -183,3 +183,13 @@ export const GetCollectionSchema: OpenAPIV3.SchemaObject = {
     }
   }
 };
+
+export const GetCollectionBasicSchema: OpenAPIV3.SchemaObject = {
+  type: 'object',
+  additionalProperties: false,
+  required: ['collection_id', 'name'],
+  properties: {
+    collection_id: { type: 'integer', description: 'Primary key of the collection' },
+    name: { type: 'string', description: 'The name of the collection to create' }
+  }
+};

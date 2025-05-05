@@ -33,11 +33,13 @@ import { SurveyBlockInitialValues } from './components/sampling-strategy/blocks/
 import { SurveySiteSelectionInitialValues } from './components/sampling-strategy/SurveySiteSelectionForm';
 import { SpeciesInitialValues } from './components/species/SpeciesForm';
 import EditSurveyForm from './edit/EditSurveyForm';
+import { CollectionSurveyFormInitialValues } from './view/collection/form/CollectionSurveyForm';
 
 type CreateSurvey = ICreateSurveyRequest & ISurveyPermitForm & ISurveyFundingSourceForm;
 
 const defaultSurveyDataFormValues: CreateSurvey = {
   ...GeneralInformationInitialValues,
+  ...CollectionSurveyFormInitialValues,
   ...SurveyPermitFormInitialValues,
   ...PurposeAndMethodologyInitialValues,
   ...SurveyFundingSourceFormInitialValues,
@@ -115,6 +117,7 @@ const CreateSurveyPage = () => {
           revision_count: location.revision_count
         })),
         participants: values.participants,
+        collections: values.collections,
         partnerships: values.partnerships,
         permit: {
           permits: values.permit.permits

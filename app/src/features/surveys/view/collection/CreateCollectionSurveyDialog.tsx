@@ -8,12 +8,21 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
 import { useContext, useState } from 'react';
 import yup from 'utils/YupSchema';
-import CollectionSurveyForm, { ICollectionSurveyData } from './form/CollectionSurveyForm';
+import CollectionSurveyForm, {
+  CollectionSurveyFormInitialValues,
+  ICollectionSurveyForm
+} from './form/CollectionSurveyForm';
 
 interface ICreateCollectionSurveyDialogProps {
   open: boolean;
   onClose: (refresh?: boolean) => void;
 }
+
+export const CollectionSurveyYupSchema = yup.object().shape({
+  collections: yup
+    .array(yup.object({ collection_id: yup.number().required('Collection is required') }))
+    .min(1, 'You must select at least one collection')
+});
 
 /**
  * Dialog for sharing a survey to multiple collections
@@ -28,12 +37,6 @@ const CreateCollectionSurveyDialog = (props: ICreateCollectionSurveyDialogProps)
   const surveyContext = useSurveyContext();
 
   const biohubApi = useBiohubApi();
-
-  const CollectionSurveyYupSchema = yup.object().shape({
-    collections: yup
-      .array(yup.object({ collection_id: yup.number().required('Collection is required') }))
-      .min(1, 'You must select at least one collection')
-  });
 
   const showSnackBar = (textDialogProps?: Partial<ISnackbarProps>) => {
     dialogContext.setSnackbar({ ...textDialogProps, open: true });
@@ -50,7 +53,7 @@ const CreateCollectionSurveyDialog = (props: ICreateCollectionSurveyDialogProps)
     });
   };
 
-  const handleSubmitCollectionService = async (values: ICollectionSurveyData) => {
+  const handleSubmitCollectionService = async (values: ICollectionSurveyForm) => {
     try {
       setIsSubmitting(true);
 
@@ -89,10 +92,8 @@ const CreateCollectionSurveyDialog = (props: ICreateCollectionSurveyDialogProps)
       open={props.open}
       dialogLoading={isSubmitting}
       component={{
-        element: <CollectionSurveyForm />,
-        initialValues: {
-          collections: []
-        },
+        element: <CollectionSurveyForm formikFieldName="collections" />,
+        initialValues: CollectionSurveyFormInitialValues,
         validationSchema: CollectionSurveyYupSchema
       }}
       dialogSaveButtonLabel="Add"
