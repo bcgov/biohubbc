@@ -1,7 +1,6 @@
 import { SurveyRoleRouteGuard } from 'components/security/RouteGuards';
 import { SURVEY_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { DialogContextProvider } from 'contexts/dialogContext';
-import { SamplingSiteManagePage } from 'features/surveys/sampling-information/manage/SamplingSiteManagePage';
 import { CreateSamplingSitePage } from 'features/surveys/sampling-information/sites/create/CreateSamplingSitePage';
 import { EditSamplingSitePage } from 'features/surveys/sampling-information/sites/edit/EditSamplingSitePage';
 import { CreateTechniquePage } from 'features/surveys/sampling-information/techniques/create/CreateTechniquePage';
@@ -9,6 +8,7 @@ import { EditTechniquePage } from 'features/surveys/sampling-information/techniq
 import { Switch } from 'react-router';
 import RouteWithTitle from 'utils/RouteWithTitle';
 import { getTitle } from 'utils/Utils';
+import { SamplingSiteManagePage } from './manage/SamplingSiteManagePage';
 import { CreateSamplePeriodPage } from './periods/create/CreateSamplePeriodPage';
 import { EditSamplePeriodPage } from './periods/edit/EditSamplePeriodPage';
 

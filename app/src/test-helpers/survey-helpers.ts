@@ -125,7 +125,8 @@ export const getSurveyForListResponse: IFindSurveysResponse = {
       focal_species_names: ['species 1'],
 
       regions: ['Skeena'],
-      types: [1]
+      types: [1],
+      progress_percentage: 50
     },
     {
       survey_id: 2,
@@ -137,7 +138,8 @@ export const getSurveyForListResponse: IFindSurveysResponse = {
       focal_species_names: ['species 3'],
 
       regions: ['Skeena'],
-      types: [1]
+      types: [1],
+      progress_percentage: 50
     }
   ],
   pagination: {

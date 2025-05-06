@@ -4,8 +4,8 @@ import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import FormikErrorSnackbar from 'components/alert/FormikErrorSnackbar';
-import HelpButtonStack from 'components/buttons/HelpButtonStack';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
+import HelpButtonStack from 'components/tooltip/HelpButtonStack';
 import { CodesContext } from 'contexts/codesContext';
 
 import SurveyPermitForm, { ISurveyPermitForm } from 'features/surveys/components/permit/SurveyPermitForm';

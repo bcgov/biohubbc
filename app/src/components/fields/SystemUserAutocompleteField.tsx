@@ -5,7 +5,7 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import grey from '@mui/material/colors/grey';
 import TextField from '@mui/material/TextField';
-import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
+import HelpButtonTooltip from 'components/tooltip/HelpButtonTooltip';
 import UserCard from 'components/user/UserCard';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useIsMounted from 'hooks/useIsMounted';

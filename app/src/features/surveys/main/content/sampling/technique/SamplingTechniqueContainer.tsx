@@ -1,4 +1,4 @@
-import { mdiDotsVertical, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
+import { mdiArrowTopRight, mdiDotsVertical, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -15,6 +15,7 @@ import { GridRowSelectionModel } from '@mui/x-data-grid';
 import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
+import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { DeleteTechniquesBulkI18N } from 'constants/i18n';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useSurveyContext } from 'hooks/useContext';
@@ -22,7 +23,7 @@ import useDataLoader from 'hooks/useDataLoader';
 import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { SamplingTechniqueTable } from './table/SamplingTechniqueTable';
+import { SamplingTechniqueTable } from '../../../../sampling-information/techniques/table/SamplingTechniqueTable';
 
 /**
  * Renders a list of techniques.
@@ -138,7 +139,7 @@ export const SamplingTechniqueContainer = () => {
           pl: 3
         }}>
         <Typography variant="h3" component="h2" flexGrow={1}>
-          Sampling Techniques &zwnj;
+          Techniques &zwnj;
           <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
             ({techniqueCount})
           </Typography>
@@ -167,20 +168,31 @@ export const SamplingTechniqueContainer = () => {
         </Stack>
       </Toolbar>
 
-      <Divider flexItem></Divider>
-
+      <Divider flexItem />
       <LoadingGuard
-        isLoading={!techniquesDataLoader.data && (techniquesDataLoader.isLoading || !techniquesDataLoader.isReady)}
-        isLoadingFallback={<SkeletonTable />}
-        isLoadingFallbackDelay={100}>
-        <Box height="400px">
-          <SamplingTechniqueTable
-            techniques={techniques}
-            selectedRows={selectedRows}
-            setSelectedRows={setSelectedRows}
-            onDelete={handleDelete}
+        isLoading={techniquesDataLoader.isLoading}
+        isLoadingFallback={
+          <Box>
+            <SkeletonTable numberOfLines={3} />
+          </Box>
+        }
+        isLoadingFallbackDelay={400}
+        hasNoData={!techniquesDataLoader.data?.techniques.length}
+        hasNoDataFallback={
+          <NoDataOverlay
+            height="300px"
+            title="Add Techniques"
+            subtitle="Techniques reflect methods used to collect data, like aerial transects, camera traps, or hair snags."
+            icon={mdiArrowTopRight}
           />
-        </Box>
+        }
+        hasNoDataFallbackDelay={400}>
+        <SamplingTechniqueTable
+          techniques={techniques}
+          selectedRows={selectedRows}
+          setSelectedRows={setSelectedRows}
+          onDelete={handleDelete}
+        />
       </LoadingGuard>
     </Stack>
   );

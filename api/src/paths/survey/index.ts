@@ -134,7 +134,8 @@ GET.apiDoc = {
                     'end_date',
                     'regions',
                     'focal_species',
-                    'types'
+                    'types',
+                    'progress_percentage'
                   ],
                   properties: {
                     survey_id: {
@@ -178,6 +179,10 @@ GET.apiDoc = {
                         type: 'integer',
                         nullable: true
                       }
+                    },
+                    progress_percentage: {
+                      type: 'number',
+                      description: 'The completion percentage of the survey based on its checklist'
                     }
                   }
                 }

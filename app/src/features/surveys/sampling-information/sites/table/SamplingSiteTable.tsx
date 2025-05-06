@@ -11,6 +11,7 @@ import Typography from '@mui/material/Typography';
 import { GridColDef, GridPaginationModel, GridRowSelectionModel, GridSortModel } from '@mui/x-data-grid';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
+import { CustomTooltip } from 'components/tooltip/CustomTooltip';
 import { useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { IGetSampleSiteRecordExtendedNonSpatial } from 'interfaces/useSamplingSiteApi.interface';
 import { useState } from 'react';
@@ -145,25 +146,30 @@ export const SamplingSiteTable = (props: ISamplingSiteTableProps) => {
     {
       field: 'name',
       headerName: 'Name',
-      flex: 1
-    },
-    {
-      field: 'geometry_type',
-      headerName: 'Geometry',
-      flex: 0.75,
+      flex: 1,
       renderCell: (params) => (
-        <Box>
-          <ColouredRectangleChip
-            label={getSamplingSiteSpatialType(params.row.geometry_type) ?? 'Unknown'}
-            colour={blueGrey}
-          />
-        </Box>
+        <>
+          {params.row.name}
+          <Box ml={3}>
+            <ColouredRectangleChip
+              label={getSamplingSiteSpatialType(params.row.geometry_type) ?? 'Unknown'}
+              colour={blueGrey}
+            />
+          </Box>
+        </>
       )
     },
     {
       field: 'description',
       headerName: 'Description',
-      flex: 1
+      flex: 1,
+      renderCell: (params) => (
+        <CustomTooltip tooltip={params.row.description}>
+          <Typography sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} variant="body2">
+            {params.row.description}
+          </Typography>
+        </CustomTooltip>
+      )
     },
     {
       field: 'blocks',

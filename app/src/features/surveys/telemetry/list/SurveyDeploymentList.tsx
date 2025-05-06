@@ -11,7 +11,6 @@ import IconButton from '@mui/material/IconButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
@@ -272,8 +271,7 @@ export const SurveyDeploymentList = () => {
         </MenuItem>
       </Menu>
 
-      <Paper
-        component={Stack}
+      <Stack
         flexDirection="column"
         height="100%"
         sx={{
@@ -300,7 +298,7 @@ export const SurveyDeploymentList = () => {
             component={RouterLink}
             to={'manage'}
             startIcon={<Icon path={mdiCog} size={0.75} />}>
-            Manage
+            Add
           </Button>
 
           <IconButton
@@ -418,7 +416,7 @@ export const SurveyDeploymentList = () => {
             </LoadingGuard>
           </Box>
         </Box>
-      </Paper>
+      </Stack>
     </>
   );
 };

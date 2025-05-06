@@ -1,5 +1,5 @@
 import Stack, { StackProps } from '@mui/material/Stack';
-import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
+import HelpButtonTooltip from 'components/tooltip/HelpButtonTooltip';
 import { PropsWithChildren } from 'react';
 
 interface IHelpButtonStackProps extends StackProps {

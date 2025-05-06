@@ -115,10 +115,27 @@ export const SurveyBasicFields = z.object({
   end_date: z.string().nullable(),
   progress_id: z.number(),
   focal_species: z.array(z.number()),
-  focal_species_names: z.array(z.string())
+  focal_species_names: z.array(z.string()),
+  progress_percentage: z.number().min(0).max(100)
 });
 
 export type SurveyBasicFields = z.infer<typeof SurveyBasicFields>;
+
+export const SurveyChecklist = z.object({
+  checklist: z.object({
+    sampling: z.object({ sites: z.number(), techniques: z.number(), periods: z.number() }),
+    data: z.object({
+      observations: z.number(),
+      telemetry: z.object({ locations: z.number(), devices: z.number(), deployments: z.number() }),
+      animals: z.number(),
+      habitat: z.number()
+    }),
+    attachments: z.number(),
+    progress_percentage: z.number()
+  })
+});
+
+export type SurveyChecklist = z.infer<typeof SurveyChecklist>;
 
 export const SurveyTaxonomyWithEcologicalUnits = z.object({
   itis_tsn: z.number(),
@@ -169,8 +186,22 @@ export class SurveyRepository extends BaseRepository {
         's.start_date',
         's.end_date',
         knex.raw(`COALESCE(array_remove(array_agg(DISTINCT rl.region_name), null), '{}') as regions`),
-        knex.raw('array_remove(array_agg(distinct sp.itis_tsn), null) as focal_species'),
-        knex.raw('array_remove(array_agg(distinct st.type_id), null) as types')
+        knex.raw(`array_remove(array_agg(DISTINCT sp.itis_tsn), null) as focal_species`),
+        knex.raw(`array_remove(array_agg(DISTINCT st.type_id), null) as types`),
+        knex.raw(`
+          ROUND((
+            (
+              CASE WHEN COUNT(DISTINCT sss.survey_sample_site_id) > 0 THEN 1 ELSE 0 END +
+              CASE WHEN COUNT(DISTINCT mt.method_technique_id) > 0 THEN 1 ELSE 0 END +
+              CASE WHEN COUNT(DISTINCT ssp.survey_sample_period_id) > 0 THEN 1 ELSE 0 END +
+              CASE WHEN COUNT(DISTINCT so.survey_observation_id) > 0 THEN 1 ELSE 0 END +
+              CASE WHEN COUNT(DISTINCT d.deployment_id) > 0 THEN 1 ELSE 0 END +
+              CASE WHEN COUNT(DISTINCT c.critter_id) > 0 THEN 1 ELSE 0 END +
+              CASE WHEN COUNT(DISTINCT shf.survey_habitat_feature_id) > 0 THEN 1 ELSE 0 END +
+              CASE WHEN COUNT(DISTINCT sa.survey_attachment_id) > 0 THEN 1 ELSE 0 END
+            )::decimal / 8
+          ) * 100, 0) AS progress_percentage
+        `)
       ])
       .from('survey as s')
       .leftJoin('collection_survey as cs', 'cs.survey_id', 's.survey_id')
@@ -180,6 +211,14 @@ export class SurveyRepository extends BaseRepository {
       .leftJoin('survey_region as sr', 'sr.survey_id', 's.survey_id')
       .leftJoin('region_lookup as rl', 'rl.region_id', 'sr.region_id')
       .leftJoin('survey_member as ppa', 'ppa.survey_id', 's.survey_id')
+      .leftJoin('survey_sample_site as sss', 'sss.survey_id', 's.survey_id')
+      .leftJoin('survey_sample_period as ssp', 'ssp.survey_id', 's.survey_id')
+      .leftJoin('method_technique as mt', 'mt.survey_id', 's.survey_id')
+      .leftJoin('survey_observation as so', 'so.survey_id', 's.survey_id')
+      .leftJoin('deployment as d', 'd.survey_id', 's.survey_id')
+      .leftJoin('critter as c', 'c.survey_id', 's.survey_id')
+      .leftJoin('survey_habitat_feature as shf', 'shf.survey_id', 's.survey_id')
+      .leftJoin('survey_attachment as sa', 'sa.survey_id', 's.survey_id')
       .groupBy('s.survey_id', 's.name', 's.progress_id', 's.start_date', 's.end_date');
 
     // Ensure that users can only see surveys that they belong to or can access via collections, unless they are an administrator.
@@ -657,19 +696,37 @@ export class SurveyRepository extends BaseRepository {
         'survey.start_date',
         'survey.end_date',
         'survey.progress_id',
-        knex.raw('array_remove(array_agg(study_species.itis_tsn), NULL) AS focal_species')
+        knex.raw('array_remove(array_agg(study_species.itis_tsn), NULL) AS focal_species'),
+        knex.raw(`ROUND((
+          (
+            CASE WHEN COUNT(DISTINCT sss.survey_sample_site_id) > 0 THEN 1 ELSE 0 END +
+            CASE WHEN COUNT(DISTINCT mt.method_technique_id) > 0 THEN 1 ELSE 0 END +
+            CASE WHEN COUNT(DISTINCT ssp.survey_sample_period_id) > 0 THEN 1 ELSE 0 END +
+            CASE WHEN COUNT(DISTINCT so.survey_observation_id) > 0 THEN 1 ELSE 0 END +
+            CASE WHEN COUNT(DISTINCT d.deployment_id) > 0 THEN 1 ELSE 0 END +
+            CASE WHEN COUNT(DISTINCT c.critter_id) > 0 THEN 1 ELSE 0 END +
+            CASE WHEN COUNT(DISTINCT shf.survey_habitat_feature_id) > 0 THEN 1 ELSE 0 END +
+            CASE WHEN COUNT(DISTINCT sa.survey_attachment_id) > 0 THEN 1 ELSE 0 END
+          )::decimal / 8
+        ) * 100, 0) AS progress_percentage`)
       )
       .from('survey')
       .leftJoin('study_species', 'study_species.survey_id', 'survey.survey_id')
       .leftJoin('survey_progress', 'survey_progress.survey_progress_id', 'survey.progress_id')
       .join('collection_survey as cs', 'cs.survey_id', 'survey.survey_id')
       .where('cs.collection_id', collectionId)
+
+      .leftJoin('survey_sample_site as sss', 'sss.survey_id', 'survey.survey_id')
+      .leftJoin('method_technique as mt', 'mt.survey_id', 'survey.survey_id')
+      .leftJoin('survey_sample_period as ssp', 'ssp.survey_id', 'survey.survey_id')
+      .leftJoin('survey_observation as so', 'so.survey_id', 'survey.survey_id')
+      .leftJoin('deployment as d', 'd.survey_id', 'survey.survey_id')
+      .leftJoin('critter as c', 'c.survey_id', 'survey.survey_id')
+      .leftJoin('survey_habitat_feature as shf', 'shf.survey_id', 'survey.survey_id')
+      .leftJoin('survey_attachment as sa', 'sa.survey_id', 'survey.survey_id')
+
       .where('study_species.is_focal', true)
-      .groupBy('survey.survey_id')
-      .groupBy('survey.name')
-      .groupBy('survey.start_date')
-      .groupBy('survey.end_date')
-      .groupBy('survey.progress_id');
+      .groupBy('survey.survey_id', 'survey.name', 'survey.start_date', 'survey.end_date', 'survey.progress_id');
 
     if (pagination) {
       queryBuilder.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
@@ -728,6 +785,81 @@ export class SurveyRepository extends BaseRepository {
     const response = await this.connection.knex(queryBuilder, SurveyBasicFields.omit({ focal_species_names: true }));
 
     return response.rows;
+  }
+
+  /**
+   * Gets the checklist for a survey
+   *
+   * @param {number} surveyId
+   * @return {*}
+   * @memberof SurveyRepository
+   */
+  async getSurveyChecklist(surveyId: number): Promise<SurveyChecklist> {
+    const knex = getKnex();
+
+    const queryBuilder = knex
+      .select(
+        knex.raw(`jsonb_build_object(
+        'sampling', jsonb_build_object(
+          'sites', COUNT(DISTINCT sss.survey_sample_site_id),
+          'techniques', COUNT(DISTINCT mt.method_technique_id),
+          'periods', COUNT(DISTINCT ssp.survey_sample_period_id)
+        ),
+        'data', jsonb_build_object(
+          'observations', COUNT(DISTINCT so.survey_observation_id),
+          'telemetry', jsonb_build_object(
+            'devices', COUNT(DISTINCT dv.device_id),
+            'deployments', COUNT(DISTINCT d.deployment_id),
+            'locations', (
+              COUNT(DISTINCT tm.telemetry_manual_id) +
+              COUNT(DISTINCT tl.telemetry_lotek_id) +
+              COUNT(DISTINCT tv.telemetry_vectronic_id) +
+              COUNT(DISTINCT ta.telemetry_ats_id)
+            )
+          ),
+          'animals', COUNT(DISTINCT c.critter_id),
+          'habitat', COUNT(DISTINCT shf.survey_habitat_feature_id)
+        ),
+        'attachments', COUNT(DISTINCT sa.survey_attachment_id),
+        'progress_percentage', ROUND((
+          (
+            CASE WHEN COUNT(DISTINCT sss.survey_sample_site_id) > 0 THEN 1 ELSE 0 END +
+            CASE WHEN COUNT(DISTINCT mt.method_technique_id) > 0 THEN 1 ELSE 0 END +
+            CASE WHEN COUNT(DISTINCT ssp.survey_sample_period_id) > 0 THEN 1 ELSE 0 END +
+            CASE WHEN COUNT(DISTINCT so.survey_observation_id) > 0 THEN 1 ELSE 0 END +
+            CASE WHEN COUNT(DISTINCT d.deployment_id) > 0 THEN 1 ELSE 0 END +
+            CASE WHEN COUNT(DISTINCT dv.device_id) > 0 THEN 1 ELSE 0 END +
+            CASE WHEN COUNT(DISTINCT tm.telemetry_manual_id) > 0 THEN 1 ELSE 0 END +
+            CASE WHEN COUNT(DISTINCT tv.telemetry_vectronic_id) > 0 THEN 1 ELSE 0 END +
+            CASE WHEN COUNT(DISTINCT tl.telemetry_lotek_id) > 0 THEN 1 ELSE 0 END +
+            CASE WHEN COUNT(DISTINCT ta.telemetry_ats_id) > 0 THEN 1 ELSE 0 END +
+            CASE WHEN COUNT(DISTINCT c.critter_id) > 0 THEN 1 ELSE 0 END +
+            CASE WHEN COUNT(DISTINCT shf.survey_habitat_feature_id) > 0 THEN 1 ELSE 0 END +
+            CASE WHEN COUNT(DISTINCT sa.survey_attachment_id) > 0 THEN 1 ELSE 0 END
+          )::decimal / 13 * 100
+        ), 0))
+        AS checklist`)
+      )
+      .from('survey')
+      .leftJoin('survey_sample_site as sss', 'survey.survey_id', 'sss.survey_id')
+      .leftJoin('survey_sample_period as ssp', 'survey.survey_id', 'ssp.survey_id')
+      .leftJoin('method_technique as mt', 'survey.survey_id', 'mt.survey_id')
+      .leftJoin('survey_observation as so', 'survey.survey_id', 'so.survey_id')
+      .leftJoin('deployment as d', 'survey.survey_id', 'd.survey_id')
+      .leftJoin('device as dv', 'survey.survey_id', 'dv.survey_id')
+      .leftJoin('telemetry_manual as tm', 'd.deployment_id', 'tm.deployment_id')
+      .leftJoin('telemetry_vectronic as tv', 'd.device_key', 'tv.device_key')
+      .leftJoin('telemetry_lotek as tl', 'd.device_key', 'tl.device_key')
+      .leftJoin('telemetry_ats as ta', 'd.device_key', 'ta.device_key')
+      .leftJoin('critter as c', 'survey.survey_id', 'c.survey_id')
+      .leftJoin('survey_habitat_feature as shf', 'survey.survey_id', 'shf.survey_id')
+      .leftJoin('survey_attachment as sa', 'survey.survey_id', 'sa.survey_id')
+      .where('survey.survey_id', surveyId)
+      .groupBy('survey.survey_id');
+
+    const response = await this.connection.knex(queryBuilder, SurveyChecklist);
+
+    return response.rows[0];
   }
 
   /**

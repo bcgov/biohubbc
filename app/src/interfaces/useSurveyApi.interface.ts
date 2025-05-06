@@ -238,6 +238,7 @@ export interface SurveyBasicFieldsObject {
   focal_species_names: string[];
   regions: string[];
   types: number[];
+  progress_percentage: number;
 }
 
 export type IUpdateSurveyRequest = ISurveyLocationForm & {
@@ -401,6 +402,22 @@ interface IUpdateAgreementsForm {
     sedis_procedures_accepted: StringBoolean;
     foippa_requirements_accepted: StringBoolean;
   };
+}
+
+export interface IGetSurveyChecklistResponse {
+  checklist: IGetSurveyChecklist;
+}
+
+export interface IGetSurveyChecklist {
+  sampling: { sites: number; techniques: number; periods: number };
+  data: {
+    observations: number;
+    telemetry: { devices: number; deployments: number; locations: number };
+    habitat: number;
+    animals: number;
+  };
+  attachments: number;
+  progress_percentage: number;
 }
 
 export interface IGetSurveyForUpdateResponse {

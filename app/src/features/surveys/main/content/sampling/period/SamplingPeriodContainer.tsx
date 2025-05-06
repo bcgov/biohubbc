@@ -1,6 +1,5 @@
 import { mdiArrowTopRight, mdiDotsVertical, mdiImport, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
@@ -29,7 +28,7 @@ import { ApiPaginationRequestOptions } from 'types/misc';
 import { getSamplePeriodCSVTemplate } from 'utils/csv-templates';
 import { downloadFile } from 'utils/file-utils';
 import { firstOrNull } from 'utils/Utils';
-import { SamplingPeriodTable } from './table/SamplingPeriodTable';
+import { SamplingPeriodTable } from '../../../../sampling-information/periods/table/SamplingPeriodTable';
 
 const pageSizeOptions = [10, 25, 50];
 
@@ -212,7 +211,7 @@ export const SamplingPeriodContainer = () => {
             pl: 3
           }}>
           <Typography variant="h3" component="h2" flexGrow={1}>
-            Sampling Periods &zwnj;
+            Periods &zwnj;
             <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
               ({periodsCount})
             </Typography>
@@ -248,35 +247,32 @@ export const SamplingPeriodContainer = () => {
 
         <Divider flexItem />
 
-        <Box height="400px">
-          <LoadingGuard
-            isLoading={!periodsDataLoader.data && (periodsDataLoader.isLoading || !periodsDataLoader.isReady)}
-            isLoadingFallback={<SkeletonTable />}
-            isLoadingFallbackDelay={100}
-            hasNoData={!periodsCount}
-            hasNoDataFallback={
-              <NoDataOverlay
-                height="100%"
-                width="100%"
-                title="Add Periods"
-                subtitle="Add periods to indicate when you did a technique at a site"
-                icon={mdiArrowTopRight}
-              />
-            }>
-            <SamplingPeriodTable
-              periods={periods}
-              paginationModel={periodsPaginationModel}
-              setPaginationModel={setPeriodsPaginationModel}
-              sortModel={periodsSortModel}
-              setSortModel={setPeriodsSortModel}
-              rowCount={periodsDataLoader.data?.pagination.total ?? 0}
-              pageSizeOptions={pageSizeOptions}
-              selectedRows={selectedRows}
-              setSelectedRows={setSelectedRows}
-              onDelete={handleDelete}
+        <LoadingGuard
+          isLoading={!periodsDataLoader.data && (periodsDataLoader.isLoading || !periodsDataLoader.isReady)}
+          isLoadingFallback={<SkeletonTable />}
+          isLoadingFallbackDelay={100}
+          hasNoData={!periodsCount}
+          hasNoDataFallback={
+            <NoDataOverlay
+              height="300px"
+              title="Add Periods"
+              subtitle="Periods indicate when you started and stopped collecting data, ideally down to the minute."
+              icon={mdiArrowTopRight}
             />
-          </LoadingGuard>
-        </Box>
+          }>
+          <SamplingPeriodTable
+            periods={periods}
+            paginationModel={periodsPaginationModel}
+            setPaginationModel={setPeriodsPaginationModel}
+            sortModel={periodsSortModel}
+            setSortModel={setPeriodsSortModel}
+            rowCount={periodsDataLoader.data?.pagination.total ?? 0}
+            pageSizeOptions={pageSizeOptions}
+            selectedRows={selectedRows}
+            setSelectedRows={setSelectedRows}
+            onDelete={handleDelete}
+          />
+        </LoadingGuard>
       </Stack>
     </>
   );

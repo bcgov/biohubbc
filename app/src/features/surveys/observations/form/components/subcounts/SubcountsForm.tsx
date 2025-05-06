@@ -5,7 +5,7 @@ import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import HelpButtonStack from 'components/buttons/HelpButtonStack';
+import HelpButtonStack from 'components/tooltip/HelpButtonStack';
 import {
   CreateObservationFormData,
   UpdateObservationFormData

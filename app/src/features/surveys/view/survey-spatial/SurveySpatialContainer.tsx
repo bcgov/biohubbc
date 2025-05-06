@@ -1,4 +1,5 @@
 import { mdiEye, mdiPaw, mdiPineTree, mdiWifiMarker } from '@mdi/js';
+import Paper from '@mui/material/Paper';
 import { ComponentSwitch } from 'components/misc/ComponentSwitch';
 import { SurveySpatialAnimal } from 'features/surveys/view/survey-spatial/components/animal/SurveySpatialAnimal';
 import { SurveySpatialObservation } from 'features/surveys/view/survey-spatial/components/observation/SurveySpatialObservation';
@@ -71,7 +72,7 @@ export const SurveySpatialContainer = (): JSX.Element => {
   }, [observationsDataLoader.data]);
 
   return (
-    <>
+    <Paper sx={{ flex: '1 1 auto' }}>
       {/* Toolbar for switching between different dataset views */}
       <SurveySpatialToolbar
         activeView={activeView}
@@ -98,6 +99,6 @@ export const SurveySpatialContainer = (): JSX.Element => {
           [SurveySpatialDatasetViewEnum.HABITAT_FEATURES]: <SurveySpatialHabitatFeature staticLayers={staticLayers} />
         }}
       />
-    </>
+    </Paper>
   );
 };
