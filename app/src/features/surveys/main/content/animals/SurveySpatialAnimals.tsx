@@ -10,9 +10,9 @@ import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { IStaticLayer } from 'components/map/components/StaticLayers';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
-import { ProjectRoleGuard } from 'components/security/Guards';
+import { SurveyRoleRouteGuard } from 'components/security/RouteGuards';
 import { SURVEY_MAP_LAYER_COLOURS } from 'constants/colours';
-import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
+import { SURVEY_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { SurveySpatialAnimalCapturePopup } from 'features/surveys/view/survey-spatial/components/animal/SurveySpatialAnimalCapturePopup';
 import { SurveySpatialAnimalMortalityPopup } from 'features/surveys/view/survey-spatial/components/animal/SurveySpatialAnimalMortalityPopup';
 import { SurveySpatialAnimalTable } from 'features/surveys/view/survey-spatial/components/animal/SurveySpatialAnimalTable';
@@ -131,8 +131,8 @@ export const SurveySpatialAnimals = (props: ISurveySpatialAnimalsProps) => {
         </Typography>
         <Stack gap={1} direction="row">
           <HelpButtonDialog markdownType={MarkdownTypeNameEnum.SURVEY_DATA} />
-          <ProjectRoleGuard
-            validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+          <SurveyRoleRouteGuard
+            validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
             validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
             <Button
               variant="contained"
@@ -142,7 +142,7 @@ export const SurveySpatialAnimals = (props: ISurveySpatialAnimalsProps) => {
               startIcon={<Icon path={mdiCog} size={0.75}></Icon>}>
               Manage
             </Button>
-          </ProjectRoleGuard>
+          </SurveyRoleRouteGuard>
         </Stack>
       </Toolbar>
 

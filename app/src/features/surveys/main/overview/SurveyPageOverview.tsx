@@ -19,9 +19,6 @@ export const SurveyPageOverview = () => {
         Add data using the checklist tabs on the left.
       </Typography>
       <Typography color="textSecondary">Publish when you're done!</Typography>
-      <Typography color="textSecondary" mt={3}>
-        If you have more data to add after publishing, you can republish.
-      </Typography>
     </Box>
   );
 };

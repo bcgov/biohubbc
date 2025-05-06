@@ -104,7 +104,7 @@ export const SurveyMembersForm = (props: ISurveyMembersFormProps) => {
       )}
       <SystemUserAutocompleteField
         formikFieldName="members"
-        label="Participants"
+        label="Members"
         helpText="Only active users who have requested access to the Species Inventory Management System before can be invited"
         selectedUsers={values.members.map((member) => member.system_user_id)}
         clearOnSelect

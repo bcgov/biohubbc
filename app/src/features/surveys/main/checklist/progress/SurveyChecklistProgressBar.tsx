@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
 import LinearProgress, { LinearProgressProps } from '@mui/material/LinearProgress';
 import Typography from '@mui/material/Typography';
-import * as React from 'react';
+import { useEffect, useState } from 'react';
 
 export const LinearProgressWithLabel = (props: LinearProgressProps & { value: number }) => {
   return (
@@ -17,9 +17,9 @@ export const LinearProgressWithLabel = (props: LinearProgressProps & { value: nu
 };
 
 export const LinearWithValueLabel = () => {
-  const [progress, setProgress] = React.useState(10);
+  const [progress, setProgress] = useState(10);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const timer = setInterval(() => {
       setProgress((prevProgress) => (prevProgress >= 100 ? 10 : prevProgress + 10));
     }, 800);

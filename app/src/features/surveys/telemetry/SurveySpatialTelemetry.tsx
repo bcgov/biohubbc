@@ -7,9 +7,9 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
 import { IStaticLayer, IStaticLayerFeature } from 'components/map/components/StaticLayers';
-import { ProjectRoleGuard } from 'components/security/Guards';
+import { SurveyRoleRouteGuard } from 'components/security/Guards';
 import { SURVEY_MAP_LAYER_COLOURS } from 'constants/colours';
-import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
+import { SURVEY_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { SurveySpatialTelemetryContainer } from 'features/surveys/view/survey-spatial/components/telemetry/SurveySpatialTelemetryContainer';
 import { SurveySpatialTelemetryPopup } from 'features/surveys/view/survey-spatial/components/telemetry/SurveySpatialTelemetryPopup';
 import SurveyMap from 'features/surveys/view/SurveyMap';
@@ -32,13 +32,13 @@ export const SurveySpatialTelemetry = () => {
 
   const biohubApi = useBiohubApi();
 
-  const telemetrySpatialDataLoader = useDataLoader((projectId: number, surveyId: number) =>
-    biohubApi.telemetry.getTelemetrySpatialForSurvey(projectId, surveyId)
+  const telemetrySpatialDataLoader = useDataLoader((surveyId: number) =>
+    biohubApi.telemetry.getTelemetrySpatialForSurvey(surveyId)
   );
 
   useEffect(() => {
-    telemetrySpatialDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
-  }, [surveyContext.projectId, surveyContext.surveyId, telemetrySpatialDataLoader]);
+    telemetrySpatialDataLoader.load(surveyContext.surveyId);
+  }, [surveyContext.surveyId, telemetrySpatialDataLoader]);
 
   const points: IStaticLayerFeature[] = useMemo(() => {
     const points: IStaticLayerFeature[] = [];
@@ -85,8 +85,8 @@ export const SurveySpatialTelemetry = () => {
         </Typography>
         <Stack gap={1} direction="row">
           <HelpButtonDialog markdownType={MarkdownTypeNameEnum.SURVEY_DATA} />
-          <ProjectRoleGuard
-            validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+          <SurveyRoleRouteGuard
+            validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
             validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
             <Button
               variant="contained"
@@ -96,7 +96,7 @@ export const SurveySpatialTelemetry = () => {
               startIcon={<Icon path={mdiCog} size={0.75}></Icon>}>
               Manage
             </Button>
-          </ProjectRoleGuard>
+          </SurveyRoleRouteGuard>
         </Stack>
       </Toolbar>
       {/* Display map with telemetry points */}

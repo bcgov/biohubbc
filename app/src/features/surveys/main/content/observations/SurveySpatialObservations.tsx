@@ -5,8 +5,8 @@ import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
-import { ProjectRoleGuard } from 'components/security/Guards';
-import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
+import { SurveyRoleRouteGuard } from 'components/security/Guards';
+import { SURVEY_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { SurveySpatialObservation } from 'features/surveys/view/survey-spatial/components/observation/SurveySpatialObservation';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext, useTaxonomyContext } from 'hooks/useContext';
@@ -34,7 +34,7 @@ export const SurveySpatialObservations = (): JSX.Element => {
   const biohubApi = useBiohubApi();
 
   const observationsDataLoader = useDataLoader((pagination?: ApiPaginationRequestOptions) =>
-    biohubApi.observation.getFlattenedObservationRecords(surveyContext.projectId, surveyContext.surveyId, pagination)
+    biohubApi.observation.getFlattenedObservationRecords(surveyContext.surveyId, pagination)
   );
 
   const studyAreaStaticLayer = useStudyAreaStaticLayer();
@@ -80,22 +80,18 @@ export const SurveySpatialObservations = (): JSX.Element => {
         </Typography>
         <Stack gap={1} direction="row">
           <HelpButtonDialog markdownType={MarkdownTypeNameEnum.SURVEY_DATA} />
-          <ProjectRoleGuard
-            validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+          <SurveyRoleRouteGuard
+            validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
             validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
             <Button
               variant="contained"
               color="primary"
               aria-label="Manage Survey Data"
-              onClick={() =>
-                history.push(
-                  `/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/observations`
-                )
-              }
+              onClick={() => history.push(`/admin/surveys/${surveyContext.surveyId}/observations`)}
               startIcon={<Icon path={mdiCog} size={0.75}></Icon>}>
               Manage
             </Button>
-          </ProjectRoleGuard>
+          </SurveyRoleRouteGuard>
         </Stack>
       </Toolbar>
 

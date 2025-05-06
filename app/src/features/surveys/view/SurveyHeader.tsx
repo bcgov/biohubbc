@@ -21,14 +21,18 @@ import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import PageHeader from 'components/layout/PageHeader';
 import PublishSurveyIdDialog from 'components/publish/PublishSurveyDialog';
-import { ProjectRoleGuard } from 'components/security/Guards';
+import { SurveyRoleRouteGuard } from 'components/security/Guards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { DeleteSurveyI18N } from 'constants/i18n';
 import { SURVEY_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { DialogContext } from 'contexts/dialogContext';
 
+import Breadcrumbs from '@mui/material/Breadcrumbs';
+import blue from '@mui/material/colors/blue';
+import Link from '@mui/material/Link';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { SurveyContext } from 'contexts/surveyContext';
+import { SUMMARY_ACTIVE_VIEW_KEY, SUMMARY_ACTIVE_VIEW_VALUE } from 'features/summary/list-data/ListDataTableContainer';
 import { SurveyExportDialog } from 'features/surveys/view/survey-export/SurveyExportDialog';
 import { APIError } from 'hooks/api/useAxios';
 import { useAuthStateContext } from 'hooks/useAuthStateContext';
@@ -37,7 +41,8 @@ import useDataLoader from 'hooks/useDataLoader';
 import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
-import { getFormattedDateRangeString, getRandomHexColor } from 'utils/Utils';
+import { Link as RouterLink } from 'react-router-dom';
+import { getFormattedDateRangeString } from 'utils/Utils';
 import { SurveyProgressChip } from '../components/SurveyProgressChip';
 import CreateCollectionSurveyDialog from './collection/CreateCollectionSurveyDialog';
 
@@ -148,23 +153,36 @@ const SurveyHeader = () => {
       <PageHeader
         title={surveyWithDetails.surveyData.survey_details.survey_name}
         breadCrumbJSX={
-          <Stack gap={1} flexDirection="row">
-            {collectionsDataLoader.data?.collections.map((collection) => (
-              <ColouredRectangleChip
-                onClick={() => {
-                  if (
-                    collection.participants.some(
-                      (participant) => participant.system_user_id === authContext.simsUserWrapper.systemUserId
-                    )
-                  ) {
-                    history.push(`/admin/collections/${collection.collection_id}`);
-                  }
-                }}
-                key={collection.collection_id}
-                colour={getRandomHexColor(collection.collection_id)}
-                label={collection.name}
-              />
-            ))}
+          <Stack gap={2} flexDirection="row">
+            <Breadcrumbs aria-label="breadcrumb" separator=">">
+              <Link
+                component={RouterLink}
+                to={`/admin/summary?${SUMMARY_ACTIVE_VIEW_KEY}=${SUMMARY_ACTIVE_VIEW_VALUE.surveys}`}
+                underline="hover">
+                Surveys
+              </Link>
+              <Typography variant="body2" component="span" color="textSecondary" aria-current="page">
+                {surveyContext.surveyDataLoader.data?.surveyData.survey_details.survey_name}
+              </Typography>
+            </Breadcrumbs>
+            <Stack gap={1} flexDirection="row">
+              {collectionsDataLoader.data?.collections.map((collection) => (
+                <ColouredRectangleChip
+                  onClick={() => {
+                    if (
+                      collection.participants.some(
+                        (participant) => participant.system_user_id === authContext.simsUserWrapper.systemUserId
+                      )
+                    ) {
+                      history.push(`/admin/collections/${collection.collection_id}`);
+                    }
+                  }}
+                  key={collection.collection_id}
+                  colour={blue}
+                  label={collection.name}
+                />
+              ))}
+            </Stack>
           </Stack>
         }
         subTitleJSX={
@@ -183,7 +201,7 @@ const SurveyHeader = () => {
           </Stack>
         }
         buttonJSX={
-          <ProjectRoleGuard
+          <SurveyRoleRouteGuard
             validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
             validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
             <Stack flexDirection="row" alignItems="center" gap={2}>
@@ -244,7 +262,7 @@ const SurveyHeader = () => {
                 </ListItemIcon>
                 <Typography variant="inherit">Edit Survey Details</Typography>
               </MenuItem>
-              <ProjectRoleGuard
+              <SurveyRoleRouteGuard
                 validSurveyRoles={[SURVEY_ROLE.ADMIN]}
                 validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                 <MenuItem data-testid="delete-survey-button" onClick={showDeleteSurveyDialog}>
@@ -253,8 +271,8 @@ const SurveyHeader = () => {
                   </ListItemIcon>
                   <Typography variant="inherit">Delete Survey</Typography>
                 </MenuItem>
-              </ProjectRoleGuard>
-              <ProjectRoleGuard
+              </SurveyRoleRouteGuard>
+              <SurveyRoleRouteGuard
                 validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
                 validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                 <MenuItem data-testid="export-survey-button" onClick={() => setOpenSurveyExportDialog(true)}>
@@ -263,9 +281,9 @@ const SurveyHeader = () => {
                   </ListItemIcon>
                   <Typography variant="inherit">Export Survey</Typography>
                 </MenuItem>
-              </ProjectRoleGuard>
+              </SurveyRoleRouteGuard>
             </Menu>
-          </ProjectRoleGuard>
+          </SurveyRoleRouteGuard>
         }
       />
 

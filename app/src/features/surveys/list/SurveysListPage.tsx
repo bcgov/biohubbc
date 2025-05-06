@@ -14,7 +14,7 @@ import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
-import { ProjectRoleGuard } from 'components/security/Guards';
+import { SurveyRoleRouteGuard } from 'components/security/Guards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { SURVEY_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -148,7 +148,7 @@ const SurveysListPage = () => {
         </Typography>
         <Stack gap={1} direction="row">
           <HelpButtonDialog markdownType={MarkdownTypeNameEnum.SURVEYS} />
-          <ProjectRoleGuard
+          <SurveyRoleRouteGuard
             validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
             validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
             <Button
@@ -161,7 +161,7 @@ const SurveysListPage = () => {
               to={`/admin/survey/create`}>
               Create Survey
             </Button>
-          </ProjectRoleGuard>
+          </SurveyRoleRouteGuard>
         </Stack>
       </Toolbar>
 

@@ -77,12 +77,11 @@ const useSurveyApi = (axios: AxiosInstance) => {
   /**
    * Get survey checklist
    *
-   * @param {number} projectId
    * @param {number} surveyId
    * @return {*} {Promise<IGetSurveyChecklistResponse>}
    */
-  const getSurveyChecklist = async (projectId: number, surveyId: number): Promise<IGetSurveyChecklistResponse> => {
-    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/checklist`);
+  const getSurveyChecklist = async (surveyId: number): Promise<IGetSurveyChecklistResponse> => {
+    const { data } = await axios.get(`/api/survey/${surveyId}/checklist`);
 
     return data;
   };

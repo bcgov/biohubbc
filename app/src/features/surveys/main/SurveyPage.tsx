@@ -75,9 +75,7 @@ const SurveyPage = () => {
 
   const [showGuide, setShowGuide] = useState(true);
 
-  const checklistDataLoader = useDataLoader(() =>
-    biohubApi.survey.getSurveyChecklist(surveyContext.projectId, surveyContext.surveyId)
-  );
+  const checklistDataLoader = useDataLoader(() => biohubApi.survey.getSurveyChecklist(surveyContext.surveyId));
 
   useEffect(() => {
     checklistDataLoader.load();

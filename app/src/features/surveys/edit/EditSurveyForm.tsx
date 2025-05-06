@@ -111,7 +111,7 @@ const EditSurveyForm = <
 
         <HorizontalSplitFormComponent
           title="Members"
-          summary="Invite collaborators and assign them a role"
+          summary="Give others access to this survey"
           component={<SurveyMembersForm roles={codesContext.codesDataLoader.data?.survey_roles ?? []} />}
         />
 

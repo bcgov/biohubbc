@@ -10,14 +10,11 @@ interface IColouredRectangleChipProps extends ChipProps {
 /**
  * Returns a stylized MUI chip of a specified colour
  *
- * @param props {IColouredRectangleChipProps}
+ * @param {IColouredRectangleChipProps} props
  * @returns
  */
 const ColouredRectangleChip = (props: IColouredRectangleChipProps) => {
   const { colour, label, ...restProps } = props;
-
-  // Determine if the `colour` is a hex code or a Color object
-  const isHex = typeof colour === 'string';
 
   return (
     <Chip
@@ -25,11 +22,12 @@ const ColouredRectangleChip = (props: IColouredRectangleChipProps) => {
       label={label}
       {...restProps}
       sx={{
-        bgcolor: isHex ? colour : colour[50],
+        bgcolor: colour[50],
+        '&:hover': { bgcolor: restProps.onClick ? colour[100] : colour[50] },
         borderRadius: '5px',
         minWidth: 0,
         '& .MuiChip-label': {
-          color: isHex ? '#fff' : colour[700],
+          color: colour[700],
           fontWeight: 700,
           fontSize: '0.75rem',
           p: 1,

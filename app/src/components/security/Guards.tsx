@@ -25,26 +25,26 @@ export interface ISystemRoleGuardProps extends IGuardProps {
   validSystemRoles: SYSTEM_ROLE[];
 }
 
-export interface IProjectRoleGuardProps extends IGuardProps {
+export interface ISurveyRoleRouteGuardProps extends IGuardProps {
   /**
    * An array of valid project roles. The user may have 1 or more matching project roles to pass the guard.
    *
    * @type {SURVEY_ROLE[]}
-   * @memberof IProjectRoleGuardProps
+   * @memberof ISurveyRoleRouteGuardProps
    */
   validProjectRoles?: SURVEY_ROLE[];
   /**
    * An array of valid system roles. The user may have 1 or more matching system roles to override the guard.
    *
    * @type {SYSTEM_ROLE[]}
-   * @memberof IProjectRoleGuardProps
+   * @memberof ISurveyRoleRouteGuardProps
    */
   validSystemRoles?: SYSTEM_ROLE[];
 
   /**
    * An array of valid project permissions. The user must have 1 or more matching permissions to pass the guard
    * @type {SURVEY_ROLE[]}
-   * @memberof IProjectRoleGuardProps
+   * @memberof ISurveyRoleRouteGuardProps
    */
   validSurveyRoles: SURVEY_ROLE[];
 }
@@ -88,7 +88,7 @@ export const SystemRoleGuard = (props: PropsWithChildren<ISystemRoleGuardProps>)
  * @param {*} props
  * @return {*}
  */
-export const ProjectRoleGuard = (props: PropsWithChildren<IProjectRoleGuardProps>) => {
+export const SurveyRoleRouteGuard = (props: PropsWithChildren<ISurveyRoleRouteGuardProps>) => {
   const { validProjectRoles, validSystemRoles, validSurveyRoles } = props;
   const surveyAuthStateContext = useContext(SurveyAuthStateContext);
 

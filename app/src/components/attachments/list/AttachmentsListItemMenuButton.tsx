@@ -5,7 +5,7 @@ import IconButton from '@mui/material/IconButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import { ProjectRoleGuard, SystemRoleGuard } from 'components/security/Guards';
+import { SurveyRoleRouteGuard, SystemRoleGuard } from 'components/security/Guards';
 import { AttachmentType, PublishStatus } from 'constants/attachments';
 import { SURVEY_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { useState } from 'react';
@@ -82,7 +82,7 @@ const AttachmentsListItemMenuButton = (props: IAttachmentsListItemMenuButtonProp
           )}
 
           {props.attachmentStatus === PublishStatus.UNSUBMITTED && (
-            <ProjectRoleGuard
+            <SurveyRoleRouteGuard
               validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
               validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
               <MenuItem
@@ -96,7 +96,7 @@ const AttachmentsListItemMenuButton = (props: IAttachmentsListItemMenuButtonProp
                 </ListItemIcon>
                 Delete
               </MenuItem>
-            </ProjectRoleGuard>
+            </SurveyRoleRouteGuard>
           )}
 
           {props.attachmentStatus === PublishStatus.SUBMITTED && (

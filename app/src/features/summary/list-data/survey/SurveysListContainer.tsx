@@ -1,22 +1,22 @@
-import { mdiArrowTopRight } from '@mdi/js';
+import { mdiArrowTopRight, mdiPlus } from '@mdi/js';
+import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
 import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { GridColDef, GridPaginationModel, GridSortDirection, GridSortModel } from '@mui/x-data-grid';
-import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
-import { getNrmRegionColour, NrmRegionKeys } from 'constants/colours';
+import CustomToggleButtonGroup from 'components/toolbar/CustomToggleButtonGroup';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import { NRM_REGION_APPENDED_TEXT } from 'constants/regions';
 import dayjs from 'dayjs';
-import { SurveyProgressChip } from 'features/surveys/components/SurveyProgressChip';
+import { LinearProgressWithLabel } from 'features/surveys/main/checklist/progress/SurveyChecklistProgressBar';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
@@ -30,6 +30,11 @@ import SurveysListFilterForm, {
   ISurveyAdvancedFilters,
   SurveyAdvancedFiltersInitialValues
 } from './SurveysListFilterForm';
+
+enum ACTIVE_VIEW_VALUE {
+  ALL = 'All',
+  COMPLETED = 'Completed'
+}
 
 // Supported URL parameters
 // Note: Prefix 's_' is used to avoid conflicts with similar query params from other components
@@ -70,6 +75,7 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
   const biohubApi = useBiohubApi();
 
   const { searchParams, setSearchParams } = useSearchParams<StringValues<SurveyDataTableURLParams>>();
+  const [activeView, setActiveView] = useState<ACTIVE_VIEW_VALUE>(ACTIVE_VIEW_VALUE.ALL);
 
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     pageSize: Number(searchParams.get('s_limit') ?? initialPaginationParams.limit),
@@ -151,16 +157,20 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
       }
     },
     {
-      field: 'progress_id',
+      field: 'progress_percentage',
       headerName: 'Progress',
-      flex: 0.2,
+      flex: 0.6,
       disableColumnMenu: true,
-      renderCell: (params) => <SurveyProgressChip progress_id={params.row.progress_id} />
+      renderCell: (params) => (
+        <Box flex="1 1 auto" mr={5}>
+          <LinearProgressWithLabel value={params.row.progress_percentage} />
+        </Box>
+      )
     },
     {
       field: 'start_date',
       headerName: 'Start Date',
-      flex: 0.2,
+      flex: 0.3,
       disableColumnMenu: true,
       renderCell: (params) => (
         <Typography variant="body2">{dayjs(params.row.start_date).format(DATE_FORMAT.MediumDateFormat)}</Typography>
@@ -169,33 +179,39 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
     {
       field: 'end_date',
       headerName: 'End Date',
-      flex: 0.2,
+      flex: 0.3,
       disableColumnMenu: true,
       renderCell: (params) =>
-        params.row.end_date ? (
+        params.row.end_date && (
           <Typography variant="body2">{dayjs(params.row.end_date).format(DATE_FORMAT.MediumDateFormat)}</Typography>
-        ) : (
-          <Typography variant="body2" color="textSecondary">
-            None
-          </Typography>
         )
     },
     {
-      field: 'regions',
-      headerName: 'Region',
-      minWidth: 50,
-      flex: 0.3,
-      disableColumnMenu: true,
-      renderCell: (params) => (
-        <Stack direction="row" gap={1} flexWrap="wrap">
-          {params.row.regions.map((region) => {
-            const label = region.replace(NRM_REGION_APPENDED_TEXT, '');
-            return (
-              <ColouredRectangleChip key={region} colour={getNrmRegionColour(region as NrmRegionKeys)} label={label} />
-            );
-          })}
-        </Stack>
+      field: 'actions',
+      type: 'actions',
+      sortable: false,
+      width: 5,
+      align: 'right',
+      renderCell: () => (
+        // <TableActionsMenu
+        //   fundingSourceId={params.row.funding_source_id}
+        //   onView={props.onView}
+        //   onEdit={props.onEdit}
+        //   onDelete={props.onDelete}
+        // />
+        <></>
       )
+    }
+  ];
+
+  const views = [
+    {
+      value: ACTIVE_VIEW_VALUE.ALL,
+      label: 'All'
+    },
+    {
+      value: ACTIVE_VIEW_VALUE.COMPLETED,
+      label: 'PUBLISHED'
     }
   ];
 
@@ -218,6 +234,23 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
         </Box>
         <Divider />
       </Collapse>
+
+      <Stack flexDirection="row" p={2} sx={{ borderBottom: `1px solid ${grey[300]}` }}>
+        <Box>
+          <CustomToggleButtonGroup
+            orientation="horizontal"
+            views={views}
+            activeView={activeView}
+            onViewChange={(view) => {
+              // setSearchParams(searchParams.set(ACTIVE_VIEW_VALUE, view));
+              setActiveView(view);
+            }}
+          />
+        </Box>
+        <IconButton sx={{ borderRadius: '6px' }}>
+          <Icon path={mdiPlus} size={1} />
+        </IconButton>
+      </Stack>
 
       <Box height="90vh" maxHeight="700px">
         <LoadingGuard

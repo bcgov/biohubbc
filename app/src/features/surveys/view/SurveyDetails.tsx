@@ -9,7 +9,7 @@ import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
-import { ProjectRoleGuard } from 'components/security/Guards';
+import { SurveyRoleRouteGuard } from 'components/security/Guards';
 import { SURVEY_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import Permits from 'features/surveys/view/components/Permits';
 import SurveyParticipants from 'features/surveys/view/components/SurveyParticipants';
@@ -39,7 +39,7 @@ const SurveyDetails = () => {
         </Typography>
         <Stack gap={1} direction="row">
           <HelpButtonDialog markdownType={MarkdownTypeNameEnum.SURVEY_METADATA} />
-          <ProjectRoleGuard
+          <SurveyRoleRouteGuard
             validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
             validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
             <Button
@@ -51,7 +51,7 @@ const SurveyDetails = () => {
               startIcon={<Icon path={mdiPencil} size={0.75} />}>
               Edit
             </Button>
-          </ProjectRoleGuard>
+          </SurveyRoleRouteGuard>
         </Stack>
       </Toolbar>
 

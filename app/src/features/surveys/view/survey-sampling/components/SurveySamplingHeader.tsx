@@ -5,7 +5,7 @@ import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
-import { ProjectRoleGuard } from 'components/security/Guards';
+import { SurveyRoleRouteGuard } from 'components/security/Guards';
 import { SURVEY_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import { Link as RouterLink } from 'react-router-dom';
@@ -18,7 +18,7 @@ export const SurveySamplingHeader = () => {
       </Typography>
       <Stack gap={1} direction="row">
         <HelpButtonDialog markdownType={MarkdownTypeNameEnum.SAMPLING_INFORMATION} />
-        <ProjectRoleGuard
+        <SurveyRoleRouteGuard
           validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <Button
@@ -30,7 +30,7 @@ export const SurveySamplingHeader = () => {
             startIcon={<Icon path={mdiCog} size={0.75}></Icon>}>
             Manage
           </Button>
-        </ProjectRoleGuard>
+        </SurveyRoleRouteGuard>
       </Stack>
     </Toolbar>
   );
