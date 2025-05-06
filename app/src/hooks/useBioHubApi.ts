@@ -14,6 +14,7 @@ import useAxios from './api/useAxios';
 import useCodesApi from './api/useCodesApi';
 import { useCollectionApi } from './api/useCollectionApi';
 import useExternalApi from './api/useExternalApi';
+import { useFilterApi } from './api/useFilterApi';
 import useFundingSourceApi from './api/useFundingSourceApi';
 import { useMarkdownApi } from './api/useMarkdownApi';
 import useObservationApi from './api/useObservationApi';
@@ -50,6 +51,8 @@ export const useBiohubApi = () => {
   const surveyMembers = useSurveyMemberApi(apiAxios);
 
   const taxonomy = useTaxonomyApi();
+
+  const filter = useFilterApi(apiAxios);
 
   const survey = useSurveyApi(apiAxios);
 
@@ -103,6 +106,7 @@ export const useBiohubApi = () => {
       surveyParticipants,
       surveyMembers,
       taxonomy,
+      filter,
       survey,
       collection,
       observation,

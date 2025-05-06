@@ -63,7 +63,7 @@ const EditSurveyPage = () => {
   const surveyData = getSurveyForUpdateDataLoader.data?.surveyData;
 
   const handleCancel = () => {
-    history.push('details');
+    history.goBack();
   };
 
   const showEditErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {

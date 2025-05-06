@@ -257,8 +257,8 @@ export function findSurveys(): RequestHandler {
         pagination: makePaginationResponse(surveysTotalCount, paginationOptions)
       };
 
-      // Allow browsers to cache this response for 30 seconds
-      res.setHeader('Cache-Control', 'private, max-age=30');
+      // Allow browsers to cache this response for 10 seconds
+      res.setHeader('Cache-Control', 'private, max-age=10');
 
       return res.status(200).json(response);
     } catch (error) {

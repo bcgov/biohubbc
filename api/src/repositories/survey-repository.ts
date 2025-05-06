@@ -205,7 +205,7 @@ export class SurveyRepository extends BaseRepository {
       ])
       .from('survey as s')
       .leftJoin('collection_survey as cs', 'cs.survey_id', 's.survey_id')
-      .join('collection_member as cm', 'cs.collection_id', 'cm.collection_id')
+      .leftJoin('collection_member as cm', 'cs.collection_id', 'cm.collection_id')
       .leftJoin('study_species as sp', 'sp.survey_id', 's.survey_id')
       .leftJoin('survey_type as st', 'st.survey_id', 's.survey_id')
       .leftJoin('survey_region as sr', 'sr.survey_id', 's.survey_id')

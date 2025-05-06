@@ -86,6 +86,14 @@ export const CreateCollectionTagI18N = {
     'An error has occurred while attempting to create the tag in your collection, please try again. If the error persists, please contact your system administrator.'
 };
 
+export const CreateSurveyFilterSurveyI18N = {
+  cancelTitle: 'Discard changes and exit?',
+  cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
+  createErrorTitle: 'Error Creating Survey Filter',
+  createErrorText:
+    'An error has occurred while attempting to add your filter, please try again. If the error persists, please contact your system administrator.'
+};
+
 export const CancelDialogI18N = {
   cancelTitle: 'Discard changes and exit?',
   cancelText: 'Any changes you have made will not be saved. Do you want to proceed?'

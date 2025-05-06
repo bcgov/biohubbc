@@ -81,7 +81,7 @@ const CreateSurveyPage = () => {
   const dialogContext = useContext(DialogContext);
 
   const handleCancel = () => {
-    history.push(`/admin/`);
+    history.goBack();
   };
 
   const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
@@ -150,7 +150,7 @@ const CreateSurveyPage = () => {
       setEnableCancelCheck(false);
 
       skipUnsavedChangesDialog();
-      history.push(`/admin//surveys/${response.id}/details`);
+      history.push(`/admin/surveys/${response.id}/details`);
     } catch (error) {
       const apiError = error as APIError;
       showCreateErrorDialog({
