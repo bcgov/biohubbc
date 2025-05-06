@@ -7,6 +7,7 @@ import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useEffect } from 'react';
 import { getFormattedDate } from 'utils/Utils';
+import { shouldShowTime } from 'utils/datetime';
 
 interface IMortalityDetailsProps {
   mortality: IMortalityWithSupplementaryData;

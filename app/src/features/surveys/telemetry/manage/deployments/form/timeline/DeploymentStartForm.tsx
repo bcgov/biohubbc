@@ -10,6 +10,7 @@ import { ICaptureResponse } from 'interfaces/useCritterApi.interface';
 import { ICreateAnimalDeployment } from 'interfaces/useTelemetryApi.interface';
 import { SyntheticEvent } from 'react';
 import yup from 'utils/YupSchema';
+import { shouldShowTime, formatCaptureLabel } from 'utils/datetime';
 
 export const DeploymentStartFormInitialValues: yup.InferType<typeof DeploymentStartFormYupSchema> = {
   attachment_start_date: null as unknown as string,
@@ -49,29 +50,13 @@ export const DeploymentStartForm = (props: IDeploymentStartFormProps) => {
           id="critterbase_start_capture_id"
           label={'Initial capture event'}
           options={captures.map((capture) => {
-            // Parse the time and check if it's midnight
-            const hasTime = !!capture.capture_time;
-            let showTime = false;
-            let formattedLabel = '';
-            if (hasTime) {
-              const time = dayjs(capture.capture_time, ['HH:mm', 'HH:mm:ss', 'h:mm A']);
-              // Check for 00:00 or 12:00 AM
-              if (time.format('HH:mm') !== '00:00' && time.format('h:mm A') !== '12:00 AM') {
-                showTime = true;
-              }
-            }
+            const showTime = shouldShowTime(capture.capture_time ?? undefined);
+            const formattedLabel = formatCaptureLabel(capture.capture_date, capture.capture_time ?? undefined);
             // TODO: TECH DEBT: We currently assume that a time value of 00:00 (midnight) means the time is null/missing, and do not display it in dropdowns. However, a user could intentionally set 00:00 as a valid time. This logic should be revisited in the future to properly distinguish between a true null and a valid midnight time.
-            if (showTime) {
-              formattedLabel = dayjs(`${capture.capture_date} ${capture.capture_time}`).format(
-                DATE_FORMAT.LongDateTimeFormat
-              );
-            } else {
-              formattedLabel = dayjs(`${capture.capture_date}`).format(DATE_FORMAT.MediumDateFormat);
-            }
             return {
               value: capture.capture_id,
               label: formattedLabel,
-              _rawTime: showTime && hasTime ? capture.capture_time : null
+              _rawTime: showTime && capture.capture_time ? capture.capture_time : null
             };
           })}
           onChange={(_: SyntheticEvent<Element, Event>, value: IAutocompleteFieldOption<string> | null) => {

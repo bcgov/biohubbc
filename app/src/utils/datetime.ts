@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import duration, { DurationUnitType } from 'dayjs/plugin/duration';
 import { pluralize } from './Utils';
+import { DATE_FORMAT } from 'constants/dateTimeFormats';
 
 const TIMESTAMP_FORMAT = 'YYYY-MM-DDTHH:mm:ss';
 
@@ -89,3 +90,29 @@ export const getDateTimeLabel = (
 
   return `${startDate}${startTimeString} - ${endDate}${endTimeString}`;
 };
+
+/**
+ * Determines if the time should be shown based on the capture time.
+ *
+ * @param {string} [capture_time]
+ * @returns {boolean}
+ */
+export function shouldShowTime(capture_time?: string): boolean {
+  if (!capture_time) return false;
+  const time = dayjs(capture_time, ['HH:mm', 'HH:mm:ss', 'h:mm A']);
+  return time.format('HH:mm') !== '00:00' && time.format('h:mm A') !== '12:00 AM';
+}
+
+/**
+ * Formats a capture label based on the date and optional time.
+ *
+ * @param {string} date
+ * @param {string} [time]
+ * @returns {string}
+ */
+export function formatCaptureLabel(date: string, time?: string): string {
+  if (shouldShowTime(time)) {
+    return dayjs(`${date} ${time}`).format(DATE_FORMAT.LongDateTimeFormat);
+  }
+  return dayjs(date).format(DATE_FORMAT.MediumDateFormat);
+}
