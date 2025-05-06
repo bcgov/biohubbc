@@ -2,11 +2,10 @@ import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import { ICaptureWithSupplementaryData } from 'features/surveys/animals/profile/captures/AnimalCaptureContainer';
-import { combineDateTime } from 'utils/datetime';
-import { getFormattedDate } from 'utils/Utils';
-import { shouldShowTime } from 'utils/datetime';
 import dayjs from 'dayjs';
+import { ICaptureWithSupplementaryData } from 'features/surveys/animals/profile/captures/AnimalCaptureContainer';
+import { combineDateTime, shouldShowTime } from 'utils/datetime';
+import { getFormattedDate } from 'utils/Utils';
 
 interface ICaptureDetailsProps {
   capture: ICaptureWithSupplementaryData;
@@ -38,16 +37,14 @@ export const CaptureDetails = (props: ICaptureDetailsProps) => {
             Capture date
           </Typography>
           <Typography color="textSecondary" variant="body2">
-            {
-              (() => {
-                const dateTime = combineDateTime(captureDate, captureTime);
-                const dateStr = getFormattedDate(DATE_FORMAT.MediumDateFormat, dateTime);
-                const timeStr = dayjs(dateTime).format('HH:mm:ss');
-                return shouldShowTime(timeStr)
-                  ? `${dateStr} ${getFormattedDate(DATE_FORMAT.TimeFormat, dateTime)}`
-                  : dateStr;
-              })()
-            }
+            {(() => {
+              const dateTime = combineDateTime(captureDate, captureTime);
+              const dateStr = getFormattedDate(DATE_FORMAT.MediumDateFormat, dateTime);
+              const timeStr = dayjs(dateTime).format('HH:mm:ss');
+              return shouldShowTime(timeStr)
+                ? `${dateStr} ${getFormattedDate(DATE_FORMAT.TimeFormat, dateTime)}`
+                : dateStr;
+            })()}
           </Typography>
         </Box>
 

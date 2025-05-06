@@ -2,13 +2,13 @@ import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
+import dayjs from 'dayjs';
 import { IMortalityWithSupplementaryData } from 'features/surveys/animals/profile/mortality/AnimalMortalityContainer';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useEffect } from 'react';
 import { getFormattedDate } from 'utils/Utils';
 import { shouldShowTime } from 'utils/datetime';
-import dayjs from 'dayjs';
 
 interface IMortalityDetailsProps {
   mortality: IMortalityWithSupplementaryData;
@@ -51,15 +51,13 @@ export const MortalityDetails = (props: IMortalityDetailsProps) => {
               Mortality date
             </Typography>
             <Typography color="textSecondary" variant="body2">
-              {
-                (() => {
-                  const dateStr = getFormattedDate(DATE_FORMAT.MediumDateFormat, mortalityTimestamp);
-                  const timeStr = dayjs(mortalityTimestamp).format('HH:mm:ss');
-                  return shouldShowTime(timeStr)
-                    ? `${dateStr} ${getFormattedDate(DATE_FORMAT.TimeFormat, mortalityTimestamp)}`
-                    : dateStr;
-                })()
-              }
+              {(() => {
+                const dateStr = getFormattedDate(DATE_FORMAT.MediumDateFormat, mortalityTimestamp);
+                const timeStr = dayjs(mortalityTimestamp).format('HH:mm:ss');
+                return shouldShowTime(timeStr)
+                  ? `${dateStr} ${getFormattedDate(DATE_FORMAT.TimeFormat, mortalityTimestamp)}`
+                  : dateStr;
+              })()}
             </Typography>
           </Box>
         )}

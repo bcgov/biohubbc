@@ -10,7 +10,7 @@ import { ICaptureResponse } from 'interfaces/useCritterApi.interface';
 import { ICreateAnimalDeployment } from 'interfaces/useTelemetryApi.interface';
 import { SyntheticEvent } from 'react';
 import yup from 'utils/YupSchema';
-import { shouldShowTime, formatCaptureLabel } from 'utils/datetime';
+import { formatCaptureLabel, shouldShowTime } from 'utils/datetime';
 
 export const DeploymentStartFormInitialValues: yup.InferType<typeof DeploymentStartFormYupSchema> = {
   attachment_start_date: null as unknown as string,

@@ -1,7 +1,7 @@
+import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import dayjs from 'dayjs';
 import duration, { DurationUnitType } from 'dayjs/plugin/duration';
 import { pluralize } from './Utils';
-import { DATE_FORMAT } from 'constants/dateTimeFormats';
 
 const TIMESTAMP_FORMAT = 'YYYY-MM-DDTHH:mm:ss';
 
@@ -98,7 +98,9 @@ export const getDateTimeLabel = (
  * @returns {boolean}
  */
 export function shouldShowTime(capture_time?: string): boolean {
-  if (!capture_time) return false;
+  if (!capture_time) {
+    return false;
+  }
   const time = dayjs(capture_time, ['HH:mm', 'HH:mm:ss', 'h:mm A']);
   return time.format('HH:mm') !== '00:00' && time.format('h:mm A') !== '12:00 AM';
 }
