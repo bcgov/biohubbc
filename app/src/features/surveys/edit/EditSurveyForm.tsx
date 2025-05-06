@@ -96,7 +96,7 @@ const EditSurveyForm = <
         <FormikErrorSnackbar />
         <HorizontalSplitFormComponent
           title="General Information"
-          summary="Enter a name and the approximate dates of your survey. Dates can span multiple fieldwork trips."
+          summary="Enter a name and the dates of your survey. Dates may span multiple fieldwork trips."
           component={
             <GeneralInformationForm
               progress={

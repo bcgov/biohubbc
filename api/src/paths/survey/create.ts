@@ -13,7 +13,7 @@ import {
   surveyPurposeAndMethodologySchema,
   surveySpeciesSchema
 } from '../../openapi/schemas/survey';
-import { surveyParticipationAndSystemUserSchema } from '../../openapi/schemas/user';
+import { surveyMemberAndSystemUserSchema, surveyParticipationAndSystemUserSchema } from '../../openapi/schemas/user';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { SurveyService } from '../../services/survey-service';
 import { getLogger } from '../../utils/logger';
@@ -171,12 +171,7 @@ POST.apiDoc = {
             members: {
               type: 'array',
               description: 'List of system users who have access to the survey, with a specific role',
-              items: {
-                type: 'object',
-                additionalProperties: false,
-                required: ['system_user_id', 'survey_role_name'],
-                properties: { system_user_id: { type: 'integer' }, survey_role_name: { type: 'string' } }
-              }
+              items: { ...surveyMemberAndSystemUserSchema }
             },
             blocks: {
               type: 'array',

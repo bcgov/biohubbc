@@ -3,6 +3,7 @@ import { ISurveyCritter } from 'contexts/animalPageContext';
 import { ISurveyAdvancedFilters } from 'features/summary/list-data/survey/SurveysListFilterForm';
 import { ICreateCritter } from 'features/surveys/view/survey-animals/animal';
 import { SurveyExportConfig } from 'features/surveys/view/survey-export/SurveyExportForm';
+import { IGetCollectionsResponse } from 'interfaces/useCollectionApi.interface';
 import { ICritterDetailedResponse, ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 import {
   ICreateSurveyRequest,
@@ -56,6 +57,18 @@ const useSurveyApi = (axios: AxiosInstance) => {
    */
   const getSurveyForUpdate = async (surveyId: number): Promise<IGetSurveyForUpdateResponse> => {
     const { data } = await axios.get(`/api/survey/${surveyId}/update/get`);
+
+    return data;
+  };
+
+  /**
+   * Get all collections that the survey belongs to
+   *
+   * @param {number} surveyId
+   * @return {*} {Promise<IGetCollectionsResponse>}
+   */
+  const getCollectionsBySurveyId = async (surveyId: number): Promise<IGetCollectionsResponse> => {
+    const { data } = await axios.get(`/api/survey/${surveyId}/collection`);
 
     return data;
   };
@@ -468,6 +481,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     updateSurvey,
     uploadSurveyAttachments,
     getSurveyReportDetails,
+    getCollectionsBySurveyId,
     getSurveyAttachments,
     deleteSurveyAttachment,
     getSurveyAttachmentSignedURL,

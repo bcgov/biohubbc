@@ -159,6 +159,16 @@ export class CollectionService extends DBService {
   }
 
   /**
+   * Get collections that the given survey belongs to
+   *
+   * @param {number} surveyId
+   * @returns {Promise<Collection[]>}
+   */
+  async getCollectionsBySurveyId(surveyId: number): Promise<Collection[]> {
+    return this.collectionRepository.getCollectionsBySurveyId(surveyId);
+  }
+
+  /**
    * Update a collection record.
    *
    * @param {number} collectionId

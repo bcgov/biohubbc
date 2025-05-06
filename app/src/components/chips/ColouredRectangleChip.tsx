@@ -3,7 +3,7 @@ import Chip, { ChipProps } from '@mui/material/Chip';
 import { ReactElement } from 'react';
 
 interface IColouredRectangleChipProps extends ChipProps {
-  colour: Color;
+  colour: string | Color; // Accepts both hex code and MUI Color
   label: string | ReactElement;
 }
 
@@ -14,16 +14,22 @@ interface IColouredRectangleChipProps extends ChipProps {
  * @returns
  */
 const ColouredRectangleChip = (props: IColouredRectangleChipProps) => {
+  const { colour, label, ...restProps } = props;
+
+  // Determine if the `colour` is a hex code or a Color object
+  const isHex = typeof colour === 'string';
+
   return (
     <Chip
       size="small"
-      {...props}
+      label={label}
+      {...restProps}
       sx={{
-        bgcolor: props.colour[50],
+        bgcolor: isHex ? colour : colour[50],
         borderRadius: '5px',
         minWidth: 0,
         '& .MuiChip-label': {
-          color: props.colour[700],
+          color: isHex ? '#fff' : colour[700],
           fontWeight: 700,
           fontSize: '0.75rem',
           p: 1,

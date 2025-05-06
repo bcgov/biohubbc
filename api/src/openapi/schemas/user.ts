@@ -316,3 +316,77 @@ export const surveyParticipationAndSystemUserSchema: OpenAPIV3.SchemaObject = {
     }
   }
 };
+
+export const surveyMemberAndSystemUserSchema: OpenAPIV3.SchemaObject = {
+  type: 'object',
+  additionalProperties: false,
+  required: ['system_user_id', 'survey_role_name'],
+  properties: {
+    survey_participation_id: {
+      type: 'number'
+    },
+    survey_id: {
+      type: 'number'
+    },
+    system_user_id: {
+      type: 'number'
+    },
+    survey_role_id: {
+      type: 'number'
+    },
+    survey_role_name: {
+      type: 'string'
+    },
+    user_identifier: {
+      description: 'The unique user identifier',
+      type: 'string'
+    },
+    user_guid: {
+      type: 'string',
+      description: 'The GUID for the user.',
+      nullable: true
+    },
+    identity_source: {
+      description: 'The source of the user identity',
+      type: 'string'
+    },
+    record_end_date: {
+      type: 'string',
+      description: 'Determines if the user record has expired',
+      nullable: true
+    },
+    role_ids: {
+      description: 'list of role ids for the user',
+      type: 'array',
+      items: {
+        type: 'integer',
+        minimum: 1
+      }
+    },
+    role_names: {
+      description: 'list of role names for the user',
+      type: 'array',
+      items: {
+        type: 'string'
+      }
+    },
+    email: {
+      type: 'string'
+    },
+    display_name: {
+      type: 'string'
+    },
+    given_name: {
+      type: 'string',
+      nullable: true
+    },
+    family_name: {
+      type: 'string',
+      nullable: true
+    },
+    agency: {
+      type: 'string',
+      nullable: true
+    }
+  }
+};

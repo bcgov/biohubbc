@@ -47,6 +47,7 @@ export class CollectionRepository extends BaseRepository {
         'collection.name',
         'collection.description',
         'collection.parent_collection_id',
+        // TODO: Add a separate type for collections with subcollections omitted, to avoid thinking there are no subcollections
         knex.raw(`'[]'::jsonb AS subcollections`),
         knex.raw("COALESCE(cm.participants, '[]'::jsonb) AS participants")
       )
@@ -374,6 +375,29 @@ export class CollectionRepository extends BaseRepository {
     const query = baseQuery.where('collection.collection_id', collectionId);
     const response = await this.connection.knex(query, Collection);
     return response.rows[0];
+  }
+
+  /**
+   * Get collections that the given survey belongs to
+   *
+   * @param {number} surveyId
+   * @returns {Promise<Collection[]>}
+   * @memberof CollectionRepository
+   */
+  async getCollectionsBySurveyId(surveyId: number): Promise<Collection[]> {
+    const knex = getKnex();
+    const baseQuery = knex.queryBuilder();
+
+    // Use the hierarchy query to get the full nested structure
+    this._getCollectionsFlatQuery(baseQuery);
+
+    const queryBuilder = baseQuery
+      .join('collection_survey as cs', 'cs.collection_id', 'collection.collection_id')
+      .where('cs.survey_id', surveyId);
+
+    const response = await this.connection.knex(queryBuilder, Collection);
+
+    return response.rows;
   }
 
   /**

@@ -185,6 +185,7 @@ export function findCollections(): RequestHandler {
     }
   };
 }
+
 /**
  * Parse the query parameters from the request into the expected format.
  *

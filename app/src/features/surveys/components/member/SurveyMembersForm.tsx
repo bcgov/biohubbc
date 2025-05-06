@@ -15,7 +15,7 @@ export const SurveyMembersYupSchema = yup.object().shape({
   members: yup.array().of(
     yup.object().shape({
       system_user_id: yup.string().required('Username is required'),
-      survey_job_name: yup.string().required('Select a survey job for this team member')
+      survey_role_name: yup.string().required('Select a survey role for this team member')
     })
   )
 });
@@ -43,13 +43,13 @@ export const SurveyMembersForm = (props: ISurveyMembersFormProps) => {
       email: user.email,
       agency: user.agency,
       identity_source: user.identity_source,
-      survey_job_name: ''
+      survey_role_name: ''
     });
     clearErrors();
   };
 
-  const handleAddUserRole = (survey_job_name: string, index: number) => {
-    setFieldValue(`members[${index}].survey_job_name`, survey_job_name);
+  const handleAddUserRole = (survey_role_name: string, index: number) => {
+    setFieldValue(`members[${index}].survey_role_name`, survey_role_name);
     clearErrors();
   };
 
@@ -71,7 +71,7 @@ export const SurveyMembersForm = (props: ISurveyMembersFormProps) => {
     let text = '';
     if (errors?.members && Array.isArray(errors.members)) {
       title = 'Missing s';
-      text = 'All team members must be assigned a survey job.';
+      text = 'All team members must be assigned a survey role.';
     }
 
     return { title, text };
@@ -83,7 +83,7 @@ export const SurveyMembersForm = (props: ISurveyMembersFormProps) => {
       if (errorAtIndex) {
         return (
           <Typography style={{ fontSize: '12px', color: '#f44336' }}>
-            {errorAtIndex ? 'Select a survey job for this team member.' : ''}
+            {errorAtIndex ? 'Select a survey role for this team member.' : ''}
           </Typography>
         );
       }

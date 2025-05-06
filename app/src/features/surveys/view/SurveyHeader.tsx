@@ -27,14 +27,17 @@ import { DeleteSurveyI18N } from 'constants/i18n';
 import { SURVEY_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { DialogContext } from 'contexts/dialogContext';
 
+import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { SurveyContext } from 'contexts/surveyContext';
 import { SurveyExportDialog } from 'features/surveys/view/survey-export/SurveyExportDialog';
 import { APIError } from 'hooks/api/useAxios';
+import { useAuthStateContext } from 'hooks/useAuthStateContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import useDataLoader from 'hooks/useDataLoader';
 import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
-import { getFormattedDateRangeString } from 'utils/Utils';
+import { getFormattedDateRangeString, getRandomHexColor } from 'utils/Utils';
 import { SurveyProgressChip } from '../components/SurveyProgressChip';
 import CreateCollectionSurveyDialog from './collection/CreateCollectionSurveyDialog';
 
@@ -53,6 +56,19 @@ const SurveyHeader = () => {
   const biohubApi = useBiohubApi();
 
   const dialogContext = useContext(DialogContext);
+
+  // Get collections that the survey belongs to for the header
+  const collectionsDataLoader = useDataLoader((surveyId: number) =>
+    biohubApi.survey.getCollectionsBySurveyId(surveyId)
+  );
+
+  const authContext = useAuthStateContext();
+
+  useEffect(() => {
+    if (surveyContext.surveyId) {
+      collectionsDataLoader.load(surveyContext.surveyId);
+    }
+  }, [collectionsDataLoader, surveyContext.surveyId]);
 
   const [openSurveyExportDialog, setOpenSurveyExportDialog] = useState(false);
 
@@ -133,6 +149,26 @@ const SurveyHeader = () => {
     <>
       <PageHeader
         title={surveyWithDetails.surveyData.survey_details.survey_name}
+        breadCrumbJSX={
+          <Stack gap={1} flexDirection="row">
+            {collectionsDataLoader.data?.collections.map((collection) => (
+              <ColouredRectangleChip
+                onClick={() => {
+                  if (
+                    collection.participants.some(
+                      (participant) => participant.system_user_id === authContext.simsUserWrapper.systemUserId
+                    )
+                  ) {
+                    history.push(`/admin/collections/${collection.collection_id}`);
+                  }
+                }}
+                key={collection.collection_id}
+                colour={getRandomHexColor(collection.collection_id)}
+                label={collection.name}
+              />
+            ))}
+          </Stack>
+        }
         subTitleJSX={
           <Stack flexDirection="row" alignItems="center" gap={0.75} color="text.secondary">
             <Icon path={mdiCalendarRange} size={0.8} color={grey[600]} style={{ marginTop: 1.5 }} />

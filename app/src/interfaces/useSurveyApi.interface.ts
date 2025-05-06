@@ -280,6 +280,7 @@ export type IUpdateSurveyRequest = ISurveyLocationForm & {
     disa_required: StringBoolean;
   };
   participants: IGetSurveyParticipant[];
+  members: ISurveyMember[];
   blocks: {
     survey_block_id?: number | null;
     name: string;
@@ -485,6 +486,7 @@ export interface IGetSurveyForUpdateResponse {
       survey_job_id: number;
       survey_job_name: string;
     }[];
+    members: ISurveyMember[];
     site_selection: {
       strategies: string[];
       stratums: {
@@ -529,6 +531,7 @@ export type IEditSurveyRequest = IGeneralInformationForm &
   IProprietaryDataForm &
   IUpdateAgreementsForm & { partnerships: IGetSurveyForViewResponsePartnerships } & ISurveySiteSelectionForm &
   IParticipantsJobForm &
+  ISurveyMemberForm &
   ISurveyBlockForm &
   ISurveyPermitForm &
   ISurveyFundingSourceForm;

@@ -102,6 +102,7 @@ const EditSurveyPage = () => {
           revision_count: location.revision_count
         })),
         participants: values.participants,
+        members: values.members,
         collections: values.collections,
         partnerships: values.partnerships,
         permit: {
@@ -193,6 +194,7 @@ const EditSurveyPage = () => {
               site_selection: surveyData.site_selection,
               locations: surveyData.locations,
               participants: surveyData.participants,
+              members: surveyData.members,
               collections: surveyData.collections,
               partnerships: surveyData.partnerships,
               blocks: surveyData.blocks,
