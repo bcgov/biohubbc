@@ -19,7 +19,8 @@ import { ISurveyCritter } from 'contexts/animalPageContext';
 import { useSurveyContext } from 'hooks/useContext';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { combineDateTime } from 'utils/datetime';
+import { combineDateTime, shouldShowTime } from 'utils/datetime';
+import dayjs from 'dayjs';
 import { getFormattedDate } from 'utils/Utils';
 import { ICaptureWithSupplementaryData } from '../AnimalCaptureContainer';
 import { AnimalCaptureCardDetailsContainer } from './capture-card-details/AnimalCaptureCardDetailsContainer';
@@ -160,10 +161,16 @@ export const AnimalCaptureCardContainer = (props: IAnimalCaptureCardContainer) =
                   }}>
                   <Stack gap={0.5} display="flex">
                     <Typography fontWeight={700}>
-                      {getFormattedDate(
-                        DATE_FORMAT.MediumDateTimeFormat,
-                        combineDateTime(capture.capture_date, capture.capture_time)
-                      )}
+                      {
+                        (() => {
+                          const dateTime = combineDateTime(capture.capture_date, capture.capture_time);
+                          const dateStr = getFormattedDate(DATE_FORMAT.MediumDateFormat, dateTime);
+                          const timeStr = dayjs(dateTime).format('HH:mm:ss');
+                          return shouldShowTime(timeStr)
+                            ? `${dateStr} ${getFormattedDate(DATE_FORMAT.TimeFormat, dateTime)}`
+                            : dateStr;
+                        })()
+                      }
                       &nbsp;
                     </Typography>
                     {capture.capture_location?.latitude && capture.capture_location?.longitude && (

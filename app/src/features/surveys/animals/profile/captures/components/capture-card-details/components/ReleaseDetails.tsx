@@ -3,7 +3,8 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { ICaptureWithSupplementaryData } from 'features/surveys/animals/profile/captures/AnimalCaptureContainer';
-import { combineDateTime } from 'utils/datetime';
+import { combineDateTime, shouldShowTime } from 'utils/datetime';
+import dayjs from 'dayjs';
 import { getFormattedDate } from 'utils/Utils';
 
 interface IReleaseDetailsProps {
@@ -37,7 +38,16 @@ export const ReleaseDetails = (props: IReleaseDetailsProps) => {
               Release date
             </Typography>
             <Typography color="textSecondary" variant="body2">
-              {getFormattedDate(DATE_FORMAT.MediumDateTimeFormat, combineDateTime(releaseDate, releaseTime))}
+              {
+                (() => {
+                  const dateTime = combineDateTime(releaseDate, releaseTime);
+                  const dateStr = getFormattedDate(DATE_FORMAT.MediumDateFormat, dateTime);
+                  const timeStr = dayjs(dateTime).format('HH:mm:ss');
+                  return shouldShowTime(timeStr)
+                    ? `${dateStr} ${getFormattedDate(DATE_FORMAT.TimeFormat, dateTime)}`
+                    : dateStr;
+                })()
+              }
             </Typography>
           </Box>
         )}

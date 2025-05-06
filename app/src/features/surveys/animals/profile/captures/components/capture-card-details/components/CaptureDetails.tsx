@@ -5,6 +5,8 @@ import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { ICaptureWithSupplementaryData } from 'features/surveys/animals/profile/captures/AnimalCaptureContainer';
 import { combineDateTime } from 'utils/datetime';
 import { getFormattedDate } from 'utils/Utils';
+import { shouldShowTime } from 'utils/datetime';
+import dayjs from 'dayjs';
 
 interface ICaptureDetailsProps {
   capture: ICaptureWithSupplementaryData;
@@ -36,7 +38,16 @@ export const CaptureDetails = (props: ICaptureDetailsProps) => {
             Capture date
           </Typography>
           <Typography color="textSecondary" variant="body2">
-            {getFormattedDate(DATE_FORMAT.MediumDateTimeFormat, combineDateTime(captureDate, captureTime))}
+            {
+              (() => {
+                const dateTime = combineDateTime(captureDate, captureTime);
+                const dateStr = getFormattedDate(DATE_FORMAT.MediumDateFormat, dateTime);
+                const timeStr = dayjs(dateTime).format('HH:mm:ss');
+                return shouldShowTime(timeStr)
+                  ? `${dateStr} ${getFormattedDate(DATE_FORMAT.TimeFormat, dateTime)}`
+                  : dateStr;
+              })()
+            }
           </Typography>
         </Box>
 

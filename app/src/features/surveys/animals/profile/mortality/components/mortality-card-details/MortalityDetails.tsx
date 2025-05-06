@@ -8,6 +8,7 @@ import useDataLoader from 'hooks/useDataLoader';
 import { useEffect } from 'react';
 import { getFormattedDate } from 'utils/Utils';
 import { shouldShowTime } from 'utils/datetime';
+import dayjs from 'dayjs';
 
 interface IMortalityDetailsProps {
   mortality: IMortalityWithSupplementaryData;
@@ -47,10 +48,18 @@ export const MortalityDetails = (props: IMortalityDetailsProps) => {
               fontWeight={700}
               fontSize="0.75rem"
               sx={{ textTransform: 'uppercase', mb: 0.5 }}>
-              Mortality time
+              Mortality date
             </Typography>
             <Typography color="textSecondary" variant="body2">
-              {getFormattedDate(DATE_FORMAT.MediumDateTimeFormat, mortalityTimestamp)}
+              {
+                (() => {
+                  const dateStr = getFormattedDate(DATE_FORMAT.MediumDateFormat, mortalityTimestamp);
+                  const timeStr = dayjs(mortalityTimestamp).format('HH:mm:ss');
+                  return shouldShowTime(timeStr)
+                    ? `${dateStr} ${getFormattedDate(DATE_FORMAT.TimeFormat, mortalityTimestamp)}`
+                    : dateStr;
+                })()
+              }
             </Typography>
           </Box>
         )}

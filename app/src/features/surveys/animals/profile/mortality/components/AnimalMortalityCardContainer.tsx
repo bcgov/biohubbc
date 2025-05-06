@@ -22,6 +22,8 @@ import { useSurveyContext } from 'hooks/useContext';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { getFormattedDate } from 'utils/Utils';
+import { shouldShowTime } from 'utils/datetime';
+import dayjs from 'dayjs';
 
 interface IAnimalMortalityCardContainer {
   mortality: IMortalityWithSupplementaryData[];
@@ -157,7 +159,15 @@ export const AnimalMortalityCardContainer = (props: IAnimalMortalityCardContaine
                   }}>
                   <Stack gap={0.5} display="flex">
                     <Typography fontWeight={700}>
-                      {getFormattedDate(DATE_FORMAT.MediumDateTimeFormat, mortality.mortality_timestamp)}&nbsp;
+                      {
+                        (() => {
+                          const dateStr = getFormattedDate(DATE_FORMAT.MediumDateFormat, mortality.mortality_timestamp);
+                          const timeStr = dayjs(mortality.mortality_timestamp).format('HH:mm:ss');
+                          return shouldShowTime(timeStr)
+                            ? `${dateStr} ${getFormattedDate(DATE_FORMAT.TimeFormat, mortality.mortality_timestamp)}`
+                            : dateStr;
+                        })()
+                      }
                     </Typography>
                     {mortality.location?.latitude && mortality.location?.longitude && (
                       <Box>
