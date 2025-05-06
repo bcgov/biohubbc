@@ -35,7 +35,7 @@ export const SurveySpatialAnimalCapturePopup = (props: ISurveySpatialAnimalCaptu
 
     return [
       { label: 'Nickname', value: animal_id },
-      { label: 'Date', value: dayjs(capture_date).format(DATE_FORMAT.LongDateTimeFormat) },
+      { label: 'Date', value: dayjs(capture_date).format(DATE_FORMAT.LongMediumDateFormat) },
       { label: 'Time', value: String(capture_time ?? '') },
       {
         label: 'Coordinates',

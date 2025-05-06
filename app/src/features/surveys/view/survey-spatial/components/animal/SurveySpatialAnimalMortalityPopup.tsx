@@ -38,7 +38,10 @@ export const SurveySpatialAnimalMortalityPopup = (props: ISurveySpatialAnimalMor
       {
         label: 'Date',
         // Critterbase does not provide time as its own string so mortalities without time data will erroneously show 12:00 AM in the popup
-        value: dayjs(mortality_timestamp).format(DATE_FORMAT.LongDateTimeFormat)
+        value: dayjs(mortality_timestamp).format(DATE_FORMAT.MediumDateFormat)
+      },
+      { label: 'Time', 
+        value: dayjs(mortality_timestamp).format(DATE_FORMAT.TimeFormat)
       },
       {
         label: 'Coordinates',

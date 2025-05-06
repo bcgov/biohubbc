@@ -48,24 +48,45 @@ export const DeploymentStartForm = (props: IDeploymentStartFormProps) => {
           name="critterbase_start_capture_id"
           id="critterbase_start_capture_id"
           label={'Initial capture event'}
-          options={captures.map((capture) => ({
-            value: capture.capture_id,
-            label: capture.capture_time
-              ? dayjs(`${capture.capture_date} ${capture.capture_time}`).format(DATE_FORMAT.LongDateTimeFormat)
-              : dayjs(`${capture.capture_date}`).format(DATE_FORMAT.MediumDateFormat)
-          }))}
+          options={captures.map((capture) => {
+            // Parse the time and check if it's midnight
+            const hasTime = !!capture.capture_time;
+            let showTime = false;
+            let formattedLabel = '';
+            if (hasTime) {
+              const time = dayjs(capture.capture_time, ['HH:mm', 'HH:mm:ss', 'h:mm A']);
+              // Check for 00:00 or 12:00 AM
+              if (time.format('HH:mm') !== '00:00' && time.format('h:mm A') !== '12:00 AM') {
+                showTime = true;
+              }
+            }
+            // TODO: TECH DEBT: We currently assume that a time value of 00:00 (midnight) means the time is null/missing, and do not display it in dropdowns. However, a user could intentionally set 00:00 as a valid time. This logic should be revisited in the future to properly distinguish between a true null and a valid midnight time.
+            if (showTime) {
+              formattedLabel = dayjs(`${capture.capture_date} ${capture.capture_time}`).format(
+                DATE_FORMAT.LongDateTimeFormat
+              );
+            } else {
+              formattedLabel = dayjs(`${capture.capture_date}`).format(DATE_FORMAT.MediumDateFormat);
+            }
+            return {
+              value: capture.capture_id,
+              label: formattedLabel,
+              _rawTime: showTime && hasTime ? capture.capture_time : null
+            };
+          })}
           onChange={(_: SyntheticEvent<Element, Event>, value: IAutocompleteFieldOption<string> | null) => {
             // Get date of the capture to set attachment_start_date
             if (value) {
               const timestamp = dayjs(value.label);
               const date = timestamp.format(DATE_FORMAT.ShortDateFormat);
-              const time = timestamp.format('HH:mm:ss');
-
               setFieldValue('attachment_start_date', date);
               setFieldValue('critterbase_start_capture_id', value.value);
-              // Set capture time if it exists on the selected capture
-              if (time) {
+              // Only set time if _rawTime is present (not midnight)
+              if ((value as any)._rawTime) {
+                const time = dayjs((value as any)._rawTime, ['HH:mm', 'HH:mm:ss', 'h:mm A']).format('HH:mm:ss');
                 setFieldValue('attachment_start_time', time);
+              } else {
+                setFieldValue('attachment_start_time', null);
               }
             }
           }}

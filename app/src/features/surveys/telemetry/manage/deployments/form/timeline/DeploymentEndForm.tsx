@@ -183,10 +183,28 @@ export const DeploymentEndForm = (props: IDeploymentEndFormProps) => {
                       setFieldValue('critterbase_end_capture_id', option.value);
                     }
                   }}
-                  options={captures.map((capture) => ({
-                    value: capture.capture_id,
-                    label: dayjs(capture.capture_date).format(DATE_FORMAT.LongDateTimeFormat)
-                  }))}
+                  options={captures.map((capture) => {
+                    const hasTime = !!capture.capture_time;
+                    let showTime = false;
+                    let formattedLabel = '';
+                    if (hasTime) {
+                      const time = dayjs(capture.capture_time, ['HH:mm', 'HH:mm:ss', 'h:mm A']);
+                      if (time.format('HH:mm') !== '00:00' && time.format('h:mm A') !== '12:00 AM') {
+                        showTime = true;
+                      }
+                    }
+                    if (showTime) {
+                      formattedLabel = dayjs(`${capture.capture_date} ${capture.capture_time}`).format(
+                        DATE_FORMAT.LongDateTimeFormat
+                      );
+                    } else {
+                      formattedLabel = dayjs(`${capture.capture_date}`).format(DATE_FORMAT.MediumDateFormat);
+                    }
+                    return {
+                      value: capture.capture_id,
+                      label: formattedLabel
+                    };
+                  })}
                   sx={{ width: '100%' }}
                 />
               )}
@@ -218,10 +236,18 @@ export const DeploymentEndForm = (props: IDeploymentEndFormProps) => {
                     name="critterbase_end_mortality_id"
                     id="critterbase_end_mortality_id"
                     label={'End mortality event'}
-                    options={mortalities.map((mortality) => ({
-                      value: mortality.mortality_id,
-                      label: dayjs(mortality.mortality_timestamp).format(DATE_FORMAT.LongDateTimeFormat)
-                    }))}
+                    options={mortalities.map((mortality) => {
+                      // TODO: TECH DEBT: We currently assume that a time value of 00:00 (midnight) means the time is null/missing, and do not display it in dropdowns. However, a user could intentionally set 00:00 as a valid time. This logic should be revisited in the future to properly distinguish between a true null and a valid midnight time.
+                      const dt = dayjs(mortality.mortality_timestamp);
+                      const isMidnight = dt.format('HH:mm') === '00:00' || dt.format('h:mm A') === '12:00 AM';
+                      const formattedLabel = isMidnight
+                        ? dt.format(DATE_FORMAT.MediumDateFormat)
+                        : dt.format(DATE_FORMAT.LongDateTimeFormat);
+                      return {
+                        value: mortality.mortality_id,
+                        label: formattedLabel
+                      };
+                    })}
                     sx={{ width: '100%' }}
                   />
                 </Box>
