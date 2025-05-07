@@ -1,7 +1,6 @@
 import { CaseInsensitiveMap } from '../../../utils/case-insensitive-map';
 import { CSVConfigUtils } from '../../../utils/csv-utils/csv-config-utils';
 import { CSVCellValidator } from '../../../utils/csv-utils/csv-config-validation.interface';
-import { ICritterDetailed } from '../../critterbase-service';
 import { getTelemetryDeviceKey } from '../../telemetry-services/telemetry-utils';
 import { DeviceRecord } from '../../../database-models/device';
 import { DeploymentCSVStaticHeader } from './import-deployment-service';
@@ -14,15 +13,12 @@ import { DeploymentCSVStaticHeader } from './import-deployment-service';
  * Rules:
  *  1. The serial and vendor must generate a valid device key
  *  2. The device key must exist in the deployment dictionary
- *  3. The critter alias must exist in the critter alias map 
  *
- * @param {Map<string, ICritterDetailed>} surveyCritterAliasMap The critter alias map
  * @param {CSVConfigUtils<DeploymentCSVStaticHeader>} utils The CSV config utils
  * @returns {*} {CSVCellValidator} The validate cell callback
  */
-export const getDeploymentSerialCellValidator = (
+export const getDeviceSerialCellValidator = (
   devices: DeviceRecord[],
-  surveyCritterAliasMap: Map<string, ICritterDetailed>,
   utils: CSVConfigUtils<DeploymentCSVStaticHeader>
 ): CSVCellValidator => {
   const deviceMap = new CaseInsensitiveMap<string, DeviceRecord[]>();
@@ -44,10 +40,9 @@ export const getDeploymentSerialCellValidator = (
   return (params) => {
     const serial = Number(params.cell);
     const vendor = String(utils.getCellValue('VENDOR', params.row)).toLowerCase();
-    const alias = utils.getCellValue('ALIAS', params.row) as string | undefined;
     const deviceKey = getTelemetryDeviceKey({ vendor, serial });
 
-    // Rule 1: Validate device key exists in the device map
+    // Rule: Validate device key exists in the device map
     if (!deviceMap.has(deviceKey)) {
       return [{
         isValid: false,
@@ -56,15 +51,7 @@ export const getDeploymentSerialCellValidator = (
         solution: 'Ensure the device key exists in the deployment dictionary.'
       }];
     }
-    // Rule 2: Validate critter alias exists in the critter alias map
-    if (alias && !surveyCritterAliasMap.has(alias)) {
-      return [{
-        isValid: false,
-        message: `Critter alias '${alias}' does not exist in the critter alias map.`,
-        error: 'InvalidCritterAlias',
-        solution: 'Ensure the critter alias exists in the critter alias map.'
-      }];
-    }
+
     return [];
   };
 };

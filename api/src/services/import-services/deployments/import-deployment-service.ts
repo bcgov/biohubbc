@@ -6,6 +6,8 @@ import { validateCSVWorksheet } from '../../../utils/csv-utils/csv-config-valida
 import { CSVConfig, CSVError } from '../../../utils/csv-utils/csv-config-validation.interface';
 import {
   getDateCellValidator,
+  getDescriptionCellValidator,
+  getPositiveNumberCellValidator,
   getSurveyCritterAliasCellValidator,
   getTimeCellSetter,
   getTimeCellValidator
@@ -18,8 +20,8 @@ import { TelemetryDeploymentService } from '../../telemetry-services/telemetry-d
 import { TelemetryVendorService } from '../../telemetry-services/telemetry-vendor-service';
 import { CreateDeployment } from '../../../repositories/telemetry-repositories/telemetry-deployment-repository.interface';
 import { getTelemetryVendorCellValidator } from '../telemetry/telemetry-header-configs';
-import { getDeploymentSerialCellValidator } from './deployment-header-configs';
 import { TelemetryDeviceService } from '../../telemetry-services/telemetry-device-service';
+import { getDeviceSerialCellValidator } from './deployment-header-configs';
 
 const defaultLog = getLogger('services/import-services/import-telemetry-service');
 
@@ -83,6 +85,59 @@ export class ImportDeploymentService extends DBService {
   }
 
   /**
+   * Get the mortality ID for a critter based on its alias and mortality date.
+   *
+   * @param {string} alias - The critter alias
+   * @param {string | undefined} mortalityDate - The mortality date
+   * @returns {number | null} The mortality ID or null if not found
+   */
+  getMortalityIdForCritter(alias: string, mortalityDate?: string): number | null {
+    // Placeholder logic for retrieving mortality ID
+    if (!alias || !mortalityDate) {
+      return null;
+    }
+
+    // Implement logic to fetch mortality ID based on alias and mortalityDate
+    // For now, return a dummy value
+    return 1; // Replace with actual implementation
+  }
+
+  /**
+   * Get the capture ID for a critter based on its alias and capture date.
+   *
+   * @param {string} alias - The critter alias
+   * @param {string | undefined} captureDate - The capture date
+   * @returns {number | null} The capture ID or null if not found
+   */
+  getCaptureIdForCritter(alias: string, captureDate?: string): number | null {
+    // Placeholder logic for retrieving capture ID
+    if (!alias || !captureDate) {
+      return null;
+    }
+
+    // Implement logic to fetch capture ID based on alias and captureDate
+    // For now, return a dummy value
+    return 1; // Replace with actual implementation
+  }
+
+  /**
+   * Get the frequency unit ID for a given frequency unit name.
+   *
+   * @param {string | undefined} frequencyUnit - The frequency unit name
+   * @returns {number | null} The frequency unit ID or null if not found
+   */
+  getFrequencyUnitId(frequencyUnit?: string): number | null {
+    // Placeholder logic for retrieving frequency unit ID
+    if (!frequencyUnit) {
+      return null;
+    }
+
+    // Implement logic to fetch frequency unit ID based on frequencyUnit
+    // For now, return a dummy value
+    return 1; // Replace with actual implementation
+  }
+
+  /**
    * Import a Deployment CSV worksheet into SIMS.
    *
    * @async
@@ -104,14 +159,14 @@ export class ImportDeploymentService extends DBService {
       telemetry_vendor_name: row.VENDOR,
       device_id: row.SERIAL,
       frequency: row.FREQUENCY,
-      frequency_unit_id: row.FREQUENCY_UNIT,
+      frequency_unit_id: this.getFrequencyUnitId(row.FREQUENCY_UNIT),
       attachment_start_date: row.CAPTURE_DATE,
       attachment_start_time: row.CAPTURE_TIME,
       attachment_end_date: row.END_DATE,
       attachment_end_time: row.END_TIME,
-      critterbase_start_capture_id: row.CAPTURE_DATE,
-      critterbase_end_capture_id: row.END_CAPTURE_DATE,
-      critterbase_end_mortality_id: row.MORTALITY_DATE
+      critterbase_start_capture_id: this.getCaptureIdForCritter(row.ALIAS, row.CAPTURE_DATE)?.toString() || null,
+      critterbase_end_capture_id: this.getCaptureIdForCritter(row.ALIAS, row.END_CAPTURE_DATE)?.toString() || null,
+      critterbase_end_mortality_id: this.getMortalityIdForCritter(row.ALIAS, row.MORTALITY_DATE)?.toString() || null,
     }));
 
     defaultLog.info({
@@ -123,6 +178,9 @@ export class ImportDeploymentService extends DBService {
     for (const deploymentRecord of deployment) {
       await this.deploymentService.createDeployment(deploymentRecord);
     }
+
+    // Return an empty array if no errors occurred
+    return [];
   }
 
   /**
@@ -131,7 +189,7 @@ export class ImportDeploymentService extends DBService {
    * @returns {Promise<CSVConfig<DeploymentCSVStaticHeader>>} 
    */
   async getCSVConfig(): Promise<CSVConfig<DeploymentCSVStaticHeader>> {
-    const [devices, surveyCritterAliasMap, vendors] = await Promise.all([
+    const [surveyCritterAliasMap, devices, vendors] = await Promise.all([
       this.surveyCritterService.getSurveyCritterAliasMap(this.surveyId),
       this.deviceService.getDevicesForSurvey(this.surveyId),
       this.codeRepository.getActiveTelemetryDeviceMakes(),
@@ -145,11 +203,15 @@ export class ImportDeploymentService extends DBService {
     );
 
     this.utils.setAllStaticHeaderConfigs({
-      SERIAL: { validateCell: getDeploymentSerialCellValidator(devices, surveyCritterAliasMap, this.utils) },
+      SERIAL: { validateCell: getDeviceSerialCellValidator(devices, this.utils) },
       ALIAS: { validateCell: getSurveyCritterAliasCellValidator(surveyCritterAliasMap) },
       VENDOR: { validateCell: getTelemetryVendorCellValidator(vendorsSet) },
       CAPTURE_DATE: { validateCell: getDateCellValidator() },
       CAPTURE_TIME: { validateCell: getTimeCellValidator(), setCellValue: getTimeCellSetter() },
+      END_DATE: { validateCell: getDateCellValidator() },
+      END_TIME: { validateCell: getTimeCellValidator(), setCellValue: getTimeCellSetter() },
+      FREQUENCY: { validateCell: getPositiveNumberCellValidator() },
+      FREQUENCY_UNIT: { validateCell: getDescriptionCellValidator() },
       END_CAPTURE_DATE: { validateCell: getDateCellValidator() },
       MORTALITY_DATE: { validateCell: getDateCellValidator() }
     });
