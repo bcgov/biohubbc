@@ -13,7 +13,7 @@ import { parseMulterFile } from '../../../../../../utils/media/media-utils';
 import { getFileFromRequest } from '../../../../../../utils/request';
 import { constructXLSXWorkbook, getDefaultWorksheet } from '../../../../../../utils/xlsx-utils/worksheet-utils';
 
-const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/telemetry/upload');
+const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/deployments/import');
 
 export const POST: Operation = [
   authorizeRequestHandler((req) => {
@@ -31,7 +31,7 @@ export const POST: Operation = [
       ]
     };
   }),
-  importTelemetryCSV()
+  importDeploymentCSV()
 ];
 
 POST.apiDoc = {
@@ -100,11 +100,11 @@ POST.apiDoc = {
 };
 
 /**
- * Imports manual telemetry from a CSV file.
+ * Imports deployments from a CSV file.
  *
  * @return {*}  {RequestHandler}
  */
-export function importTelemetryCSV(): RequestHandler {
+export function importDeploymentCSV(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
     const rawFile = getFileFromRequest(req);
@@ -117,9 +117,9 @@ export function importTelemetryCSV(): RequestHandler {
     try {
       await connection.open();
 
-      const telemetryService = new ImportTelemetryService(connection, worksheet, surveyId);
+      const deploymentService = new ImportDeploymentService(connection, worksheet, surveyId);
 
-      const errors = await telemetryService.importCSVWorksheet();
+      const errors = await deploymentService.importCSVWorksheet();
 
       if (errors.length) {
         throw new HTTP422CSVValidationError(CSV_ERROR_MESSAGE, errors);
@@ -130,7 +130,7 @@ export function importTelemetryCSV(): RequestHandler {
       return res.status(200).send();
     } catch (error) {
       if (error instanceof HTTP422CSVValidationError === false) {
-        defaultLog.error({ label: 'importTelemetry', message: 'error', error });
+        defaultLog.error({ label: 'importDeployment', message: 'error', error });
       }
 
       await connection.rollback();
