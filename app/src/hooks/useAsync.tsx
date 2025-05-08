@@ -2,6 +2,11 @@ import { useCallback, useRef } from 'react';
 
 export type AsyncFunction<AFArgs extends any[], AFResponse> = (...args: AFArgs) => Promise<AFResponse>;
 
+export type AbortableAsyncFunction<AFArgs extends any[], AFResponse> = (
+  signal: AbortSignal,
+  ...args: AFArgs
+) => Promise<AFResponse>;
+
 /**
  * Wraps an async function to prevent duplicate calls if the previous call is still pending.
  *
@@ -27,37 +32,20 @@ export type AsyncFunction<AFArgs extends any[], AFResponse> = (...args: AFArgs) 
  * @return {*}  {AsyncFunction<AFArgs, AFResponse>}
  */
 export const useAsync = <AFArgs extends any[], AFResponse>(
-  asyncFunction: AsyncFunction<AFArgs, AFResponse>
-): AsyncFunction<AFArgs, AFResponse> => {
-  const ref = useRef<Promise<AFResponse>>();
+  asyncFunction: (signal: AbortSignal, ...args: AFArgs) => Promise<AFResponse>
+): ((...args: AFArgs) => Promise<AFResponse>) => {
+  const abortControllerRef = useRef<AbortController | null>(null);
 
-  const isPending = useRef(false);
+  return useCallback(
+    async (...args: AFArgs) => {
+      // Cancel previous
+      abortControllerRef.current?.abort();
 
-  const wrappedAsyncFunction: AsyncFunction<AFArgs, AFResponse> = useCallback(
-    async (...args) => {
-      if (ref.current && isPending.current) {
-        return ref.current;
-      }
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
 
-      isPending.current = true;
-
-      ref.current = asyncFunction(...args).then(
-        (response: AFResponse) => {
-          isPending.current = false;
-
-          return response;
-        },
-        (error) => {
-          isPending.current = false;
-
-          throw error;
-        }
-      );
-
-      return ref.current;
+      return asyncFunction(controller.signal, ...args);
     },
     [asyncFunction]
   );
-
-  return wrappedAsyncFunction;
 };

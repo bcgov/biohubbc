@@ -107,6 +107,7 @@ const SurveysListContainer = ({ showSearch }: { showSearch: boolean }) => {
   }, [filtersDataLoader]);
 
   useDeepCompareEffect(() => {
+    surveysDataLoader.clearData();
     surveysDataLoader.refresh(paginationSort, advancedFiltersModel);
   }, [paginationSort, advancedFiltersModel]);
 
@@ -223,7 +224,7 @@ const SurveysListContainer = ({ showSearch }: { showSearch: boolean }) => {
   const mergedViews: FilterView[] = useMemo(() => [...fixedViews, ...customViews], [fixedViews, customViews]);
 
   const handleViewChange = (viewValue: string) => {
-    surveysDataLoader.clearData();
+    // surveysDataLoader.clearData();
 
     setActiveView(viewValue);
     const selected = mergedViews.find((v) => v.value === viewValue);

@@ -1,5 +1,3 @@
-import { mdiChevronDown, mdiChevronRight } from '@mdi/js';
-import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
@@ -99,11 +97,11 @@ export const HierarchicalCustomToggleButtonGroup = <ViewValueType extends string
               }
             }}>
             <Typography
-              variant="body2"
               color={grey[500]}
               sx={{
                 textTransform: 'uppercase',
                 fontWeight: 700,
+                fontSize: '0.75rem',
                 m: 1
               }}>
               {item.label}
@@ -127,7 +125,7 @@ export const HierarchicalCustomToggleButtonGroup = <ViewValueType extends string
                   onViewChange(item.value);
                 }
               }}
-              startIcon={
+              endIcon={
                 item.checkbox && (
                   <Box sx={{ position: 'relative', height: 24 }}>
                     <Checkbox
@@ -142,13 +140,12 @@ export const HierarchicalCustomToggleButtonGroup = <ViewValueType extends string
                         position: 'absolute',
                         top: '50%',
                         transform: 'translate(-50%, -50%)',
-                        ml: 2
+                        right: '-20px'
                       }}
                     />
                   </Box>
                 )
               }
-              endIcon={hasChildren ? <Icon path={isExpanded ? mdiChevronDown : mdiChevronRight} size={1} /> : undefined}
               disabled={item.disabled}
               sx={{
                 display: 'flex',
@@ -164,7 +161,7 @@ export const HierarchicalCustomToggleButtonGroup = <ViewValueType extends string
                 fontWeight: 700,
                 letterSpacing: '0.02rem',
                 '& .MuiTypography-root': {
-                  ml: item.checkbox ? 4 : 0
+                  mr: item.checkbox ? 4 : 0
                 }
               }}>
               <Typography flex="1 1 auto" textAlign="left" fontWeight={700} textTransform="none">

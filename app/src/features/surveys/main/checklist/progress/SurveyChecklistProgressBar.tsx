@@ -1,6 +1,5 @@
 import Box from '@mui/material/Box';
 import LinearProgress, { LinearProgressProps } from '@mui/material/LinearProgress';
-import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 
 export const LinearProgressWithLabel = (
@@ -8,11 +7,9 @@ export const LinearProgressWithLabel = (
 ) => {
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', flex: '1 1 auto' }}>
-      <Tooltip title={`You're ${Math.round(props.value)}% done`} followCursor>
-        <Box sx={{ width: '100%', mr: 1 }}>
-          <LinearProgress variant="determinate" {...props} />
-        </Box>
-      </Tooltip>
+      <Box sx={{ width: '100%', mr: 1 }}>
+        <LinearProgress variant="determinate" sx={{ height: '7px' }} {...props} />
+      </Box>
       {!props.hideLabel && (
         <Box sx={{ minWidth: 60, flexShrink: 0 }}>
           <Typography variant="body2" color="text.secondary" noWrap>

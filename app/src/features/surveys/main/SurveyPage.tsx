@@ -84,14 +84,11 @@ export const SurveyPage = () => {
 
   return (
     <>
-      <SurveyHeader
-        isChecklistLoading={checklistDataLoader.isLoading}
-        checklist={checklistDataLoader.data?.checklist}
-      />
+      <SurveyHeader />
       <Container component={Paper} maxWidth={'xl'} sx={{ my: 3, p: 0 }} disableGutters>
         <SidebarLayout
           sidebar={
-            <Box sx={{ width: 250, flexShrink: 0, mx: 1 }}>
+            <Box sx={{ width: 300, flexShrink: 0, mx: 1 }}>
               <LoadingGuard
                 isLoading={
                   checklistDataLoader.isLoading ||

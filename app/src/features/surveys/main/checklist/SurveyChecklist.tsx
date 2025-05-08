@@ -1,5 +1,8 @@
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import Skeleton from '@mui/material/Skeleton';
+import Typography from '@mui/material/Typography';
+import { LoadingGuard } from 'components/loading/LoadingGuard';
 import {
   HierarchicalCustomToggleButtonGroup,
   ToggleButtonView
@@ -7,6 +10,7 @@ import {
 import { IGetSurveyChecklist } from 'interfaces/useSurveyApi.interface';
 import { useMemo } from 'react';
 import { ACTIVE_VIEW_VALUE } from '../SurveyPage';
+import { LinearProgressWithLabel } from './progress/SurveyChecklistProgressBar';
 
 interface SurveyChecklistProps {
   checklist: IGetSurveyChecklist;
@@ -31,6 +35,7 @@ export const SurveyChecklist = (props: SurveyChecklistProps) => {
             label: 'Sites',
             isChecked: !!checklist.sampling?.sites,
             checkbox: true,
+            handleCheckbox: () => {},
             tooltip: 'Add sampling sites showing where you collected data'
           },
           {
@@ -38,6 +43,7 @@ export const SurveyChecklist = (props: SurveyChecklistProps) => {
             label: 'Techniques',
             isChecked: !!checklist.sampling?.techniques,
             checkbox: true,
+            handleCheckbox: () => {},
             tooltip: 'Add methods describing how you collected data'
           },
           {
@@ -45,6 +51,7 @@ export const SurveyChecklist = (props: SurveyChecklistProps) => {
             label: 'Periods',
             isChecked: !!checklist.sampling?.periods,
             checkbox: true,
+            handleCheckbox: () => {},
             tooltip: 'Add time periods describing when you did a sampling method at a site'
           }
         ]
@@ -57,6 +64,7 @@ export const SurveyChecklist = (props: SurveyChecklistProps) => {
             label: 'Observations',
             isChecked: !!checklist.data?.observations,
             checkbox: true,
+            handleCheckbox: () => {},
             tooltip: 'Add observations of species'
           },
           {
@@ -64,6 +72,7 @@ export const SurveyChecklist = (props: SurveyChecklistProps) => {
             label: 'Animals',
             isChecked: !!checklist.data?.animals,
             checkbox: true,
+            handleCheckbox: () => {},
             tooltip: 'Add individual animals that you captured or marked'
           },
           {
@@ -74,6 +83,7 @@ export const SurveyChecklist = (props: SurveyChecklistProps) => {
               !!checklist.data?.telemetry?.deployments &&
               !!checklist.data?.telemetry?.locations,
             checkbox: true,
+            handleCheckbox: () => {},
             isHeader: true,
             children: [
               {
@@ -81,6 +91,7 @@ export const SurveyChecklist = (props: SurveyChecklistProps) => {
                 label: 'Devices',
                 isChecked: !!checklist.data?.telemetry?.devices,
                 checkbox: true,
+                handleCheckbox: () => {},
                 tooltip: 'Add telemetry data'
               },
               {
@@ -88,6 +99,7 @@ export const SurveyChecklist = (props: SurveyChecklistProps) => {
                 label: 'Deployments',
                 isChecked: !!checklist.data?.telemetry?.deployments,
                 checkbox: true,
+                handleCheckbox: () => {},
                 tooltip: 'Add telemetry data'
               },
               {
@@ -95,6 +107,7 @@ export const SurveyChecklist = (props: SurveyChecklistProps) => {
                 label: 'Locations',
                 isChecked: !!checklist.data?.telemetry?.locations,
                 checkbox: true,
+                handleCheckbox: () => {},
                 tooltip: 'Add telemetry data'
               }
             ]
@@ -104,6 +117,7 @@ export const SurveyChecklist = (props: SurveyChecklistProps) => {
             label: 'Habitat Features',
             isChecked: !!checklist.data?.habitat,
             checkbox: true,
+            handleCheckbox: () => {},
             tooltip: 'Add observations of habitat features like nests or dens'
           }
         ]
@@ -116,6 +130,7 @@ export const SurveyChecklist = (props: SurveyChecklistProps) => {
             label: 'Attachments',
             isChecked: !!checklist.attachments,
             checkbox: true,
+            handleCheckbox: () => {},
             tooltip: 'Add supplementary files'
           }
         ]
@@ -137,6 +152,14 @@ export const SurveyChecklist = (props: SurveyChecklistProps) => {
 
   return (
     <Box flexShrink={0} height="100%">
+      <Typography fontWeight={700} mt={1}>
+        Progress
+      </Typography>
+      <Box my={2}>
+        <LoadingGuard isLoadingFallback={<Skeleton variant="rectangular" height="8px" sx={{ width: '100%' }} />}>
+          <LinearProgressWithLabel value={checklist?.progress_percentage ?? 0} suffix="complete" />
+        </LoadingGuard>
+      </Box>
       <HierarchicalCustomToggleButtonGroup
         views={checklistItems}
         activeView={activeView}

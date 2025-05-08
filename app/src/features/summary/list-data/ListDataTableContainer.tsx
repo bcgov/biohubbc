@@ -70,7 +70,8 @@ export const ListDataTableContainer = () => {
           views={views}
           activeView={activeView}
           onViewChange={(view) => {
-            setSearchParams(searchParams.set(SUMMARY_ACTIVE_VIEW_KEY, view));
+            // { Replace: true } to remove any url params specific to a child (eg. s_keyword for survey keyword search)
+            setSearchParams(searchParams.set(SUMMARY_ACTIVE_VIEW_KEY, view, { replace: true }));
             setActiveView(view);
           }}
           orientation="vertical"
@@ -81,7 +82,7 @@ export const ListDataTableContainer = () => {
           <Stack gap={1} direction="row" alignItems="center">
             <Typography variant="h2">{activeViewObj?.label}</Typography>
           </Stack>
-          <Stack gap={3} direction="row">
+          <Stack gap={2} direction="row">
             <Button
               color="primary"
               sx={{ fontWeight: 700 }}

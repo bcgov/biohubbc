@@ -29,9 +29,7 @@ import { DialogContext } from 'contexts/dialogContext';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import blue from '@mui/material/colors/blue';
 import Link from '@mui/material/Link';
-import Skeleton from '@mui/material/Skeleton';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
-import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SurveyContext } from 'contexts/surveyContext';
 import { SUMMARY_ACTIVE_VIEW_KEY, SUMMARY_ACTIVE_VIEW_VALUE } from 'features/summary/list-data/ListDataTableContainer';
 import { SurveyExportDialog } from 'features/surveys/view/survey-export/SurveyExportDialog';
@@ -39,26 +37,18 @@ import { APIError } from 'hooks/api/useAxios';
 import { useAuthStateContext } from 'hooks/useAuthStateContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { IGetSurveyChecklist } from 'interfaces/useSurveyApi.interface';
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 import { getFormattedDateRangeString } from 'utils/Utils';
-import { LinearProgressWithLabel } from '../main/checklist/progress/SurveyChecklistProgressBar';
 import CreateCollectionSurveyDialog from './collection/CreateCollectionSurveyDialog';
 
-interface ISurveyHeaderProps {
-  isChecklistLoading?: boolean;
-  checklist?: IGetSurveyChecklist;
-}
 /**
  * Survey header for a single-survey view.
  *
  * @return {*}
  */
-const SurveyHeader = (props: ISurveyHeaderProps) => {
-  const { checklist, isChecklistLoading } = props;
-
+const SurveyHeader = () => {
   const surveyContext = useContext(SurveyContext);
 
   const surveyWithDetails = surveyContext.surveyDataLoader.data;
@@ -287,22 +277,6 @@ const SurveyHeader = (props: ISurveyHeaderProps) => {
             </SurveyRoleRouteGuard>
           }
         />
-
-        {/* Progress Bar as Header Bottom Border */}
-        <LoadingGuard
-          isLoading={isChecklistLoading}
-          isLoadingFallback={<Skeleton variant="rectangular" height="8px" sx={{ width: '100%' }} />}>
-          <Box
-            sx={{
-              position: 'absolute',
-              zIndex: 1200,
-              bottom: 0,
-              left: 0,
-              right: 0
-            }}>
-            <LinearProgressWithLabel value={checklist?.progress_percentage ?? 0} hideLabel />
-          </Box>
-        </LoadingGuard>
       </Box>
 
       <PublishSurveyIdDialog open={publishSurveyDialogOpen} onClose={() => setPublishSurveyDialogOpen(false)} />

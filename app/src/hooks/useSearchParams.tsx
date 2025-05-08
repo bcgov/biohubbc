@@ -5,15 +5,15 @@ import { useHistory } from 'react-router';
  * A hook that provides methods for reading and writing URL search params.
  *
  * @example
- * const { searchParams} = useSearchParams();
+ * const { searchParams, setSearchParams } = useSearchParams();
  * searchParams.set('key', 'value');
- * //setSearchParams(searchParams);
+ * setSearchParams(searchParams);
  *
  * @example
  * type MyType = { key1: 'value1' | 'value2' }
- * const { searchParams} = useSearchParams<MyType>();
+ * const { searchParams, setSearchParams } = useSearchParams<MyType>();
  * const key1Value = searchParams.get('key1');
- * //setSearchParams(searchParams.set('key1', 'value2'));
+ * setSearchParams(searchParams.set('key1', 'value2'));
  *
  * @export
  * @return {*}
@@ -25,7 +25,7 @@ export function useSearchParams<ParamType extends Record<string, string> = Recor
 
   const setSearchParams = (urlSearchParams: TypedURLSearchParams<ParamType>) => {
     history.push({
-      ...location,
+      ...history.location,
       search: urlSearchParams.toString()
     });
   };
@@ -47,7 +47,25 @@ export function useSearchParams<ParamType extends Record<string, string> = Recor
 export class TypedURLSearchParams<
   ParamType extends Record<string, string> = Record<string, string>
 > extends URLSearchParams {
-  set<K extends keyof ParamType & string>(key: K, value: ParamType[K]) {
+  /**
+   * Sets a search parameter with the given key and value.
+   * If replace option is true, all existing parameters are cleared first.
+   *
+   * @param key The parameter key
+   * @param value The parameter value
+   * @param options Configuration options
+   * @returns The instance for method chaining
+   */
+  set<K extends keyof ParamType & string>(key: K, value: ParamType[K], options?: { replace?: boolean }) {
+    const { replace } = options || {}; // Destructure replace option with default false
+
+    if (replace) {
+      // Clear all existing parameters first
+      Array.from(super.keys()).forEach((k) => {
+        super.delete(k);
+      });
+    }
+
     super.set(key, value);
     return this;
   }
@@ -87,12 +105,12 @@ export class TypedURLSearchParams<
     }
 
     if (Array.isArray(value)) {
-      // Note: the value will need to be fetched via this classes `getArray(key)` method
+      // Note: the value will need to be fetched via this classes getArray(key) method
       super.set(key, qs.stringify(value, { allowEmptyArrays: false, arrayFormat: 'repeat' }));
       return this;
     }
 
-    // Note: the value will need to be parsed `qs.parse(value)` after being fetched via this classes `get(key)`
+    // Note: the value will need to be parsed qs.parse(value) after being fetched via this classes get(key)
     super.set(key, qs.stringify(value));
     return this;
   }
