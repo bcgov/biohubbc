@@ -2,20 +2,20 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 import * as db from '../../../../../../database/db';
 import { HTTP422CSVValidationError } from '../../../../../../errors/http-error';
-import { ImportTelemetryService } from '../../../../../../services/import-services/telemetry/import-telemetry-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
-import { importTelemetryCSV } from './import';
+import { importTelemetryDeviceCSV } from './import';
+import { ImportDeviceService } from '../../../../../../services/import-services/devices/import-device-service';
 
-describe('importTelemetryCSV', () => {
+describe('importTelemetryDeviceCSV', () => {
   afterEach(() => {
     sinon.restore();
   });
 
-  it('imports telemetry CSV returns status 200', async () => {
+  it('imports device CSV returns status 200', async () => {
     const mockDBConnection = getMockDBConnection({ open: sinon.stub(), commit: sinon.stub(), release: sinon.stub() });
     const getDBConnectionStub = sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
-    const importCSVWorksheetStub = sinon.stub(ImportTelemetryService.prototype, 'importCSVWorksheet');
+    const importCSVWorksheetStub = sinon.stub(ImportDeviceService.prototype, 'importCSVWorksheet');
 
     importCSVWorksheetStub.resolves([]);
 
@@ -26,7 +26,7 @@ describe('importTelemetryCSV', () => {
     mockReq.files = [mockFile];
     mockReq.params.surveyId = '1';
 
-    const requestHandler = importTelemetryCSV();
+    const requestHandler = importTelemetryDeviceCSV();
 
     await requestHandler(mockReq, mockRes, mockNext);
 
@@ -47,7 +47,7 @@ describe('importTelemetryCSV', () => {
     const mockDBConnection = getMockDBConnection({ open: sinon.stub(), commit: sinon.stub(), release: sinon.stub() });
     const getDBConnectionStub = sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
-    const importCSVWorksheetStub = sinon.stub(ImportTelemetryService.prototype, 'importCSVWorksheet');
+    const importCSVWorksheetStub = sinon.stub(ImportDeviceService.prototype, 'importCSVWorksheet');
 
     importCSVWorksheetStub.resolves([
       {
@@ -65,7 +65,7 @@ describe('importTelemetryCSV', () => {
     mockReq.files = [mockFile];
     mockReq.params.surveyId = '1';
 
-    const requestHandler = importTelemetryCSV();
+    const requestHandler = importTelemetryDeviceCSV();
 
     try {
       await requestHandler(mockReq, mockRes, mockNext);
