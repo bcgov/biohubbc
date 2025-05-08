@@ -1,11 +1,13 @@
 import { IStaticLayerFeature } from 'components/map/components/StaticLayers';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
+import dayjs from 'dayjs';
 import { SurveyMapPopup } from 'features/surveys/view/SurveyMapPopup';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { SurveyHabitatFeature } from 'interfaces/useSurveyHabitatFeatureApi.interface';
 import { Popup } from 'react-leaflet';
+import { shouldShowTime } from 'utils/datetime';
 import { getFormattedDate } from 'utils/Utils';
 
 interface ISurveySpatialHabitatFeaturePointPopupProps {
@@ -34,10 +36,10 @@ export const SurveySpatialHabitatFeaturePointPopup = (props: ISurveySpatialHabit
 
   const getHabitatFeatureMetadata = (habitatFeature: SurveyHabitatFeature) => {
     return [
-      { label: 'Type', value: String(habitatFeature.habitat_feature_type_id) },
+      { label: 'Type', value: String(habitatFeature.habitat_feature_type_name) },
       { label: 'Count', value: String(habitatFeature.count) },
       {
-        label: 'Coords',
+        label: 'Location',
         value: [habitatFeature.latitude, habitatFeature.longitude]
           .filter((coord): coord is number => coord !== null)
           .map((coord) => coord.toFixed(6))
@@ -46,9 +48,17 @@ export const SurveySpatialHabitatFeaturePointPopup = (props: ISurveySpatialHabit
       {
         label: 'Date',
         value: getFormattedDate(
-          habitatFeature.observed_time ? DATE_FORMAT.LongDateTimeFormat : DATE_FORMAT.MediumDateFormat,
-          `${habitatFeature.observed_date} ${habitatFeature.observed_time}`
+          habitatFeature.observed_time ? DATE_FORMAT.LongMediumDateFormat : DATE_FORMAT.MediumDateFormat,
+          habitatFeature.observed_time
+            ? `${habitatFeature.observed_date} ${habitatFeature.observed_time}`
+            : habitatFeature.observed_date
         )
+      },
+      {
+        label: 'Time',
+        value: shouldShowTime(habitatFeature.observed_time ?? undefined)
+          ? dayjs(habitatFeature.observed_time, ['HH:mm', 'HH:mm:ss', 'h:mm A']).format(DATE_FORMAT.TimeFormat)
+          : ''
       }
     ];
   };

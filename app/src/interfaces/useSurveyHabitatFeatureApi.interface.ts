@@ -45,6 +45,7 @@ export type SurveyHabitatFeature = {
   survey_habitat_feature_id: number;
   survey_id: number;
   habitat_feature_type_id: number;
+  habitat_feature_type_name: string;
   count: number;
   latitude: number | null;
   longitude: number | null;

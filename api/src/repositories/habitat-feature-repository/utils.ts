@@ -188,6 +188,7 @@ export function getSurveyHabitatFeaturesBaseQuery(
         'survey_habitat_feature.survey_habitat_feature_id',
         'survey_habitat_feature.survey_id',
         'survey_habitat_feature.habitat_feature_type_id',
+        'habitat_feature_type.name as habitat_feature_type_name',
         'survey_habitat_feature.count',
         'survey_habitat_feature.latitude',
         'survey_habitat_feature.longitude',
@@ -231,6 +232,12 @@ export function getSurveyHabitatFeaturesBaseQuery(
         'survey_habitat_feature.survey_sample_period_id',
         'w_sampling_data.survey_sample_period_id'
       )
+      // Add join to habitat_feature_type to get the name
+      .leftJoin(
+        'habitat_feature_type',
+        'habitat_feature_type.habitat_feature_type_id',
+        'survey_habitat_feature.habitat_feature_type_id'
+      )
       .whereIn('survey_habitat_feature.survey_id', getSurveyIdsQuery)
       .groupBy([
         'survey_habitat_feature.survey_habitat_feature_id',
@@ -249,7 +256,9 @@ export function getSurveyHabitatFeaturesBaseQuery(
         'w_sampling_data.survey_sample_site_name',
         // Technique data
         'w_sampling_data.method_technique_id',
-        'w_sampling_data.method_technique_name'
+        'w_sampling_data.method_technique_name',
+        // Add group by for habitat_feature_type.name
+        'habitat_feature_type.name'
       ])
   );
 }

@@ -6,6 +6,7 @@ import { useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { IAllTelemetry } from 'interfaces/useTelemetryApi.interface';
 import { Popup } from 'react-leaflet';
+import { shouldShowTime } from 'utils/datetime';
 import { getFormattedDate } from 'utils/Utils';
 
 export interface ISurveySpatialTelemetryPopupProps {
@@ -44,7 +45,12 @@ export const SurveySpatialTelemetryPopup = (props: ISurveySpatialTelemetryPopupP
       },
       {
         label: 'Date',
-        value: getFormattedDate(DATE_FORMAT.LongDateTimeFormat, telemetry.acquisition_date)
+        value: getFormattedDate(DATE_FORMAT.LongMediumDateFormat, telemetry.acquisition_date)
+      },
+      {
+        label: 'Time',
+        value: shouldShowTime(telemetry.acquisition_date) 
+        ? getFormattedDate(DATE_FORMAT.TimeFormat, telemetry.acquisition_date) :''
       }
     ];
   };

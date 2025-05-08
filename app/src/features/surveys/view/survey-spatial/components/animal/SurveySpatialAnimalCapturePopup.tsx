@@ -35,15 +35,16 @@ export const SurveySpatialAnimalCapturePopup = (props: ISurveySpatialAnimalCaptu
 
     return [
       { label: 'Nickname', value: animal_id },
-      { label: 'Date', value: dayjs(capture_date).format(DATE_FORMAT.LongMediumDateFormat) },
-      { label: 'Time', value: String(capture_time ?? '') },
       {
-        label: 'Coordinates',
+        label: 'Location',
         value: [capture_location?.latitude, capture_location?.longitude]
           .filter((coord): coord is number => isDefined(coord))
           .map((coord) => coord.toFixed(6))
           .join(', ')
-      }
+      },
+      { label: 'Date', value: dayjs(capture_date).format(DATE_FORMAT.LongMediumDateFormat) },
+      { label: 'Time', value: String(capture_time ?? '') }
+
     ];
   }, [captureDataLoader.data, animalDataLoader.data]);
 

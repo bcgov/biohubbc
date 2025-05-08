@@ -33,7 +33,7 @@ export const SurveySpatialObservationPointPopup = (props: ISurveySpatialObservat
       { label: 'Taxon ID', value: String(observation.itis_tsn) },
       { label: 'Count', value: String(observation.count) },
       {
-        label: 'Coords',
+        label: 'Location',
         value: [observation.latitude, observation.longitude]
           .filter((coord): coord is number => coord !== null)
           .map((coord) => coord.toFixed(6))
@@ -42,9 +42,15 @@ export const SurveySpatialObservationPointPopup = (props: ISurveySpatialObservat
       {
         label: 'Date',
         value: getFormattedDate(
-          observation.observation_time ? DATE_FORMAT.LongDateTimeFormat : DATE_FORMAT.MediumDateFormat,
+          observation.observation_time ? DATE_FORMAT.LongMediumDateFormat : DATE_FORMAT.MediumDateFormat,
           `${observation.observation_date} ${observation.observation_time}`
         )
+      },
+      {
+        label: 'Time',
+        value: observation.observation_date
+          ? getFormattedDate(DATE_FORMAT.TimeFormat, observation.observation_date)
+          : ''
       }
     ];
   };
