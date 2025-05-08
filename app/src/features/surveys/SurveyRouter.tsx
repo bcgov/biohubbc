@@ -5,7 +5,6 @@ import { DialogContextProvider } from 'contexts/dialogContext';
 import { ObservationsContextProvider } from 'contexts/observationsContext';
 import { AnimalRouter } from 'features/surveys/animals/AnimalRouter';
 import EditSurveyPage from 'features/surveys/edit/EditSurveyPage';
-import SurveyPage from 'features/surveys/main/SurveyPage';
 import EditObservationPage from 'features/surveys/observations/form/edit/EditObservationPage';
 import { SurveyObservationPage } from 'features/surveys/observations/SurveyObservationPage';
 import { SamplingRouter } from 'features/surveys/sampling-information/SamplingRouter';
@@ -14,6 +13,7 @@ import { Redirect, Switch } from 'react-router';
 import RouteWithTitle from 'utils/RouteWithTitle';
 import { getTitle } from 'utils/Utils';
 import { HabitatFeatureRouter } from './habitat-features/SurveyHabitatFeatureRouter';
+import { SurveyPage } from './main/SurveyPage';
 import CreateObservationPage from './observations/form/create/CreateObservationPage';
 import { TelemetryRouter } from './telemetry/TelemetryRouter';
 

@@ -528,8 +528,7 @@ describe('AuthorizationService', () => {
           role_names: [SYSTEM_ROLE.PROJECT_CREATOR],
           survey_member_id: 2,
           survey_role_ids: [1],
-          survey_role_names: [SURVEY_ROLE.ADMIN],
-          survey_role_permissions: [SURVEY_ROLE.ADMIN]
+          survey_role_names: [SURVEY_ROLE.ADMIN]
         };
         sinon
           .stub(AuthorizationService.prototype, 'getSurveyMemberObjectBySurveyId')
@@ -559,7 +558,7 @@ describe('AuthorizationService', () => {
             user_guid: '123-456-789',
             record_end_date: null,
             role_ids: [1],
-            role_names: ['Collaborator'],
+            role_names: ['Editor'],
             email: 'email@email.com',
             family_name: 'lname',
             given_name: 'fname',
@@ -568,8 +567,7 @@ describe('AuthorizationService', () => {
             survey_member_id: 3,
 
             survey_role_ids: [1],
-            survey_role_names: [SURVEY_ROLE.ADMIN],
-            survey_role_permissions: [SURVEY_ROLE.ADMIN]
+            survey_role_names: [SURVEY_ROLE.ADMIN]
           }
         });
 
@@ -595,7 +593,7 @@ describe('AuthorizationService', () => {
             user_guid: '123-456-789',
             record_end_date: null,
             role_ids: [1],
-            role_names: ['Collaborator'],
+            role_names: ['Editor'],
             email: 'email@email.com',
             family_name: 'lname',
             given_name: 'fname',
@@ -603,8 +601,7 @@ describe('AuthorizationService', () => {
             agency: null,
             survey_member_id: 3,
             survey_role_ids: [],
-            survey_role_names: [],
-            survey_role_permissions: []
+            survey_role_names: []
           }
         });
 
@@ -630,7 +627,7 @@ describe('AuthorizationService', () => {
             user_guid: '123-456-789',
             record_end_date: null,
             role_ids: [1],
-            role_names: ['Coordinator'],
+            role_names: ['Admin'],
             email: 'email@email.com',
             family_name: 'lname',
             given_name: 'fname',
@@ -639,8 +636,7 @@ describe('AuthorizationService', () => {
             survey_member_id: 3,
 
             survey_role_ids: [1],
-            survey_role_names: [SURVEY_ROLE.ADMIN],
-            survey_role_permissions: [SURVEY_ROLE.ADMIN]
+            survey_role_names: [SURVEY_ROLE.ADMIN]
           }
         });
 
@@ -702,7 +698,7 @@ describe('AuthorizationService', () => {
           user_guid: '123-456-789',
           record_end_date: '2021-01-01',
           role_ids: [1],
-          role_names: ['Collaborator'],
+          role_names: ['Editor'],
           email: 'email@email.com',
           family_name: 'lname',
           given_name: 'fname',
@@ -711,8 +707,7 @@ describe('AuthorizationService', () => {
           survey_member_id: 3,
 
           survey_role_ids: [1],
-          survey_role_names: [SURVEY_ROLE.ADMIN],
-          survey_role_permissions: [SURVEY_ROLE.ADMIN]
+          survey_role_names: [SURVEY_ROLE.ADMIN]
         };
         sinon
           .stub(AuthorizationService.prototype, 'getSurveyMemberObjectBySurveyId')
@@ -742,7 +737,7 @@ describe('AuthorizationService', () => {
             user_guid: '123-456-789',
             record_end_date: null,
             role_ids: [1],
-            role_names: ['Collaborator'],
+            role_names: ['Editor'],
             email: 'email@email.com',
             family_name: 'lname',
             given_name: 'fname',
@@ -751,8 +746,7 @@ describe('AuthorizationService', () => {
             survey_member_id: 3,
 
             survey_role_ids: [],
-            survey_role_names: [],
-            survey_role_permissions: []
+            survey_role_names: []
           }
         });
 
@@ -778,7 +772,7 @@ describe('AuthorizationService', () => {
             user_guid: '123-456-789',
             record_end_date: null,
             role_ids: [1],
-            role_names: ['Collaborator'],
+            role_names: ['Editor'],
             email: 'email@email.com',
             family_name: 'lname',
             given_name: 'fname',
@@ -787,8 +781,7 @@ describe('AuthorizationService', () => {
             survey_member_id: 3,
 
             survey_role_ids: [],
-            survey_role_names: [],
-            survey_role_permissions: []
+            survey_role_names: []
           }
         });
 
@@ -814,7 +807,7 @@ describe('AuthorizationService', () => {
             user_guid: '123-456-789',
             record_end_date: null,
             role_ids: [1],
-            role_names: ['Coordinator'],
+            role_names: ['Admin'],
             email: 'email@email.com',
             family_name: 'lname',
             given_name: 'fname',
@@ -823,8 +816,7 @@ describe('AuthorizationService', () => {
             survey_member_id: 3,
 
             survey_role_ids: [1],
-            survey_role_names: [SURVEY_ROLE.ADMIN],
-            survey_role_permissions: [SURVEY_ROLE.ADMIN]
+            survey_role_names: [SURVEY_ROLE.ADMIN]
           }
         });
 
@@ -1033,7 +1025,7 @@ describe('AuthorizationService', () => {
         user_guid: '123-456-789',
         record_end_date: null,
         role_ids: [1],
-        role_names: ['Collaborator'],
+        role_names: ['Editor'],
         email: 'email@email.com',
         family_name: 'lname',
         given_name: 'fname',
@@ -1111,7 +1103,7 @@ describe('AuthorizationService', () => {
         user_guid: '123-456-789',
         record_end_date: null,
         role_ids: [1],
-        role_names: ['Collaborator'],
+        role_names: ['Editor'],
         email: 'email@email.com',
         family_name: 'lname',
         given_name: 'fname',
@@ -1120,8 +1112,7 @@ describe('AuthorizationService', () => {
         survey_member_id: 3,
         survey_id: 1,
         survey_role_ids: [1],
-        survey_role_names: [SURVEY_ROLE.ADMIN],
-        survey_role_permissions: [SURVEY_ROLE.ADMIN]
+        survey_role_names: [SURVEY_ROLE.ADMIN]
       };
 
       sinon.stub(AuthorizationService.prototype, 'getSurveyMemberWithRolesBySurveyId').resolves(surveyUserMock);
@@ -1178,7 +1169,7 @@ describe('AuthorizationService', () => {
         user_guid: '123-456-789',
         record_end_date: null,
         role_ids: [1],
-        role_names: ['Collaborator'],
+        role_names: ['Editor'],
         email: 'email@email.com',
         family_name: 'lname',
         given_name: 'fname',
@@ -1187,8 +1178,7 @@ describe('AuthorizationService', () => {
         survey_member_id: 3,
         survey_id: 1,
         survey_role_ids: [1],
-        survey_role_names: [SURVEY_ROLE.ADMIN],
-        survey_role_permissions: [SURVEY_ROLE.ADMIN]
+        survey_role_names: [SURVEY_ROLE.ADMIN]
       };
       sinon
         .stub(SurveyMemberService.prototype, 'getSurveyMemberBySurveyIdAndUserGuid')
@@ -1261,7 +1251,7 @@ describe('AuthorizationService', () => {
         user_guid: '123-456-789',
         record_end_date: null,
         role_ids: [1],
-        role_names: ['Collaborator'],
+        role_names: ['Editor'],
         email: 'email@email.com',
         family_name: 'lname',
         given_name: 'fname',
@@ -1270,8 +1260,7 @@ describe('AuthorizationService', () => {
         survey_member_id: 3,
 
         survey_role_ids: [1],
-        survey_role_names: [SURVEY_ROLE.ADMIN],
-        survey_role_permissions: [SURVEY_ROLE.ADMIN]
+        survey_role_names: [SURVEY_ROLE.ADMIN]
       };
 
       sinon.stub(AuthorizationService.prototype, 'getSurveyMemberWithRolesBySurveyId').resolves(surveyUserMock);
@@ -1329,7 +1318,7 @@ describe('AuthorizationService', () => {
         user_guid: '123-456-789',
         record_end_date: null,
         role_ids: [1],
-        role_names: ['Collaborator'],
+        role_names: ['Editor'],
         email: 'email@email.com',
         family_name: 'lname',
         given_name: 'fname',
@@ -1338,8 +1327,7 @@ describe('AuthorizationService', () => {
         survey_member_id: 3,
 
         survey_role_ids: [1],
-        survey_role_names: [SURVEY_ROLE.ADMIN],
-        survey_role_permissions: [SURVEY_ROLE.ADMIN]
+        survey_role_names: [SURVEY_ROLE.ADMIN]
       };
       sinon
         .stub(SurveyMemberService.prototype, 'getSurveyMemberBySurveyIdAndUserGuid')

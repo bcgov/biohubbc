@@ -628,52 +628,114 @@ export class SurveyRepository extends BaseRepository {
   }
 
   /**
-   * Fetches a subset of survey fields for all surveys under a.
+   * Base query for getting the basic fields of surveys
+   *
+   * @param filterFields
+   * @returns {Knex.QueryBuilder}
+   */
+  private _getSurveyBasicFieldsQuery(filterFields?: ISurveyAdvancedFilters): Knex.QueryBuilder {
+    const knex = getKnex();
+
+    const query = knex
+      .select([
+        's.survey_id',
+        's.name',
+        's.progress_id',
+        's.start_date',
+        's.end_date',
+        knex.raw(`COALESCE(array_remove(array_agg(DISTINCT rl.region_name), null), '{}') as regions`),
+        knex.raw(`array_remove(array_agg(DISTINCT sp.itis_tsn), null) as focal_species`),
+        knex.raw(`array_remove(array_agg(DISTINCT st.type_id), null) as types`),
+        knex.raw(`
+          ROUND((
+            (
+              CASE WHEN COUNT(DISTINCT sss.survey_sample_site_id) > 0 THEN 1 ELSE 0 END +
+              CASE WHEN COUNT(DISTINCT mt.method_technique_id) > 0 THEN 1 ELSE 0 END +
+              CASE WHEN COUNT(DISTINCT ssp.survey_sample_period_id) > 0 THEN 1 ELSE 0 END +
+              CASE WHEN COUNT(DISTINCT so.survey_observation_id) > 0 THEN 1 ELSE 0 END +
+              CASE WHEN COUNT(DISTINCT d.deployment_id) > 0 THEN 1 ELSE 0 END +
+              CASE WHEN COUNT(DISTINCT c.critter_id) > 0 THEN 1 ELSE 0 END +
+              CASE WHEN COUNT(DISTINCT shf.survey_habitat_feature_id) > 0 THEN 1 ELSE 0 END +
+              CASE WHEN COUNT(DISTINCT sa.survey_attachment_id) > 0 THEN 1 ELSE 0 END
+            )::decimal / 8
+          ) * 100, 0) AS progress_percentage
+        `)
+      ])
+      .from('survey as s')
+      .leftJoin('study_species as sp', 'sp.survey_id', 's.survey_id')
+      .leftJoin('survey_region as sr', 'sr.survey_id', 's.survey_id')
+      .leftJoin('region_lookup as rl', 'rl.region_id', 'sr.region_id')
+      .leftJoin('survey_type as st', 'st.survey_id', 's.survey_id')
+      .leftJoin('survey_sample_site as sss', 'sss.survey_id', 's.survey_id')
+      .leftJoin('method_technique as mt', 'mt.survey_id', 's.survey_id')
+      .leftJoin('survey_sample_period as ssp', 'ssp.survey_id', 's.survey_id')
+      .leftJoin('survey_observation as so', 'so.survey_id', 's.survey_id')
+      .leftJoin('deployment as d', 'd.survey_id', 's.survey_id')
+      .leftJoin('critter as c', 'c.survey_id', 's.survey_id')
+      .leftJoin('survey_habitat_feature as shf', 'shf.survey_id', 's.survey_id')
+      .leftJoin('survey_attachment as sa', 'sa.survey_id', 's.survey_id')
+      .where('sp.is_focal', true)
+      .groupBy('s.survey_id', 's.name', 's.progress_id', 's.start_date', 's.end_date');
+
+    if (filterFields?.start_date) {
+      query.andWhere('s.start_date', '>=', filterFields.start_date);
+    }
+
+    if (filterFields?.end_date) {
+      query.andWhere('s.end_date', '<=', filterFields.end_date);
+    }
+
+    if (filterFields?.survey_name) {
+      query.andWhere('s.name', 'ilike', `%${filterFields.survey_name}%`);
+    }
+
+    if (filterFields?.itis_tsns?.length) {
+      query.whereIn('sp.itis_tsn', filterFields.itis_tsns);
+    } else if (filterFields?.itis_tsn) {
+      query.where('sp.itis_tsn', filterFields.itis_tsn);
+    }
+
+    if (filterFields?.keyword) {
+      const keyword = `%${filterFields.keyword}%`;
+      query.andWhere((qb) => {
+        qb.where('s.name', 'ilike', keyword)
+          .orWhere('s.additional_details', 'ilike', keyword)
+          .orWhere('s.comments', 'ilike', keyword);
+
+        if (!isNaN(Number(filterFields.keyword))) {
+          qb.orWhere('s.survey_id', Number(filterFields.keyword));
+        }
+      });
+    }
+
+    return query;
+  }
+
+  /**
+   * Fetches a subset of survey fields for all surveys
+   *
    * @param {ApiPaginationOptions} [pagination]
    * @return {*}  {Promise<Omit<SurveyBasicFields, 'focal_species_names'>[]>}
    * @memberof SurveyRepository
    */
-  async getSurveysBasicFields(
-    pagination?: ApiPaginationOptions
-  ): Promise<Omit<SurveyBasicFields, 'focal_species_names'>[]> {
-    const knex = getKnex();
-
-    const queryBuilder = knex
-      .queryBuilder()
-      .select(
-        'survey.survey_id',
-        'survey.project_id',
-        'survey.name',
-        'survey.start_date',
-        'survey.end_date',
-        'survey.progress_id',
-        knex.raw('array_remove(array_agg(study_species.itis_tsn), NULL) AS focal_species')
-      )
-      .from('survey')
-      .leftJoin('study_species', 'study_species.survey_id', 'survey.survey_id')
-      .leftJoin('survey_progress', 'survey_progress.survey_progress_id', 'survey.progress_id')
-      .where('study_species.is_focal', true)
-      .groupBy('survey.survey_id')
-      .groupBy('survey.name')
-      .groupBy('survey.start_date')
-      .groupBy('survey.end_date')
-      .groupBy('survey.progress_id');
+  async getSurveysBasicFields(pagination?: ApiPaginationOptions): Promise<any[]> {
+    const query = this._getSurveyBasicFieldsQuery();
 
     if (pagination) {
-      queryBuilder.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
+      query.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
 
       if (pagination.sort && pagination.order) {
-        queryBuilder.orderBy(pagination.sort, pagination.order);
+        query.orderBy(pagination.sort, pagination.order);
       }
     }
 
-    const response = await this.connection.knex(queryBuilder, SurveyBasicFields.omit({ focal_species_names: true }));
+    const response = await this.connection.knex(query);
 
     return response.rows;
   }
 
   /**
-   * Fetches a subset of survey fields for all surveys under a collection
+   * Fetches a subset of survey fields for all surveys in a collection
    *
    * @param {number} collectionId
    * @param {ISurveyAdvancedFilters} filterFields
@@ -685,106 +747,77 @@ export class SurveyRepository extends BaseRepository {
     collectionId: number,
     filterFields?: ISurveyAdvancedFilters,
     pagination?: ApiPaginationOptions
-  ): Promise<Omit<SurveyBasicFields, 'focal_species_names'>[]> {
+  ): Promise<any[]> {
     const knex = getKnex();
 
-    const queryBuilder = knex
-      .queryBuilder()
-      .select(
-        'survey.survey_id',
-        'survey.name',
-        'survey.start_date',
-        'survey.end_date',
-        'survey.progress_id',
-        knex.raw('array_remove(array_agg(study_species.itis_tsn), NULL) AS focal_species'),
-        knex.raw(`ROUND((
-          (
-            CASE WHEN COUNT(DISTINCT sss.survey_sample_site_id) > 0 THEN 1 ELSE 0 END +
-            CASE WHEN COUNT(DISTINCT mt.method_technique_id) > 0 THEN 1 ELSE 0 END +
-            CASE WHEN COUNT(DISTINCT ssp.survey_sample_period_id) > 0 THEN 1 ELSE 0 END +
-            CASE WHEN COUNT(DISTINCT so.survey_observation_id) > 0 THEN 1 ELSE 0 END +
-            CASE WHEN COUNT(DISTINCT d.deployment_id) > 0 THEN 1 ELSE 0 END +
-            CASE WHEN COUNT(DISTINCT c.critter_id) > 0 THEN 1 ELSE 0 END +
-            CASE WHEN COUNT(DISTINCT shf.survey_habitat_feature_id) > 0 THEN 1 ELSE 0 END +
-            CASE WHEN COUNT(DISTINCT sa.survey_attachment_id) > 0 THEN 1 ELSE 0 END
-          )::decimal / 8
-        ) * 100, 0) AS progress_percentage`)
-      )
-      .from('survey')
-      .leftJoin('study_species', 'study_species.survey_id', 'survey.survey_id')
-      .leftJoin('survey_progress', 'survey_progress.survey_progress_id', 'survey.progress_id')
-      .join('collection_survey as cs', 'cs.survey_id', 'survey.survey_id')
-      .where('cs.collection_id', collectionId)
+    // Recursive CTE to get all child collections
+    const query = knex.withRecursive('collection_hierarchy', (qb) => {
+      qb.select('collection_id')
+        .from('collection')
+        .where('collection_id', collectionId)
+        .unionAll(function () {
+          this.select('c.collection_id')
+            .from('collection as c')
+            .join('collection_hierarchy as ch', 'c.parent_collection_id', 'ch.collection_id');
+        });
+    });
 
-      .leftJoin('survey_sample_site as sss', 'sss.survey_id', 'survey.survey_id')
-      .leftJoin('method_technique as mt', 'mt.survey_id', 'survey.survey_id')
-      .leftJoin('survey_sample_period as ssp', 'ssp.survey_id', 'survey.survey_id')
-      .leftJoin('survey_observation as so', 'so.survey_id', 'survey.survey_id')
-      .leftJoin('deployment as d', 'd.survey_id', 'survey.survey_id')
-      .leftJoin('critter as c', 'c.survey_id', 'survey.survey_id')
-      .leftJoin('survey_habitat_feature as shf', 'shf.survey_id', 'survey.survey_id')
-      .leftJoin('survey_attachment as sa', 'sa.survey_id', 'survey.survey_id')
+    const baseQuery = this._getSurveyBasicFieldsQuery(filterFields);
 
-      .where('study_species.is_focal', true)
-      .groupBy('survey.survey_id', 'survey.name', 'survey.start_date', 'survey.end_date', 'survey.progress_id');
+    // Join surveys against the recursive hierarchy
+    baseQuery
+      .join('collection_survey as cs', 'cs.survey_id', 's.survey_id')
+      .join('collection_hierarchy as ch', 'cs.collection_id', 'ch.collection_id');
 
     if (pagination) {
-      queryBuilder.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
+      baseQuery.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
 
       if (pagination.sort && pagination.order) {
-        queryBuilder.orderBy(pagination.sort, pagination.order);
+        baseQuery.orderBy(pagination.sort, pagination.order);
       }
     }
 
-    if (filterFields?.system_user_id) {
-      queryBuilder.whereIn('p.survey_id', (subQueryBuilder) => {
-        subQueryBuilder.select('survey_id').from('survey_member').where('system_user_id', filterFields?.system_user_id);
-      });
-    }
+    const fullQuery = query.from(baseQuery.as('s'));
 
-    // Start Date filter
-    if (filterFields?.start_date) {
-      queryBuilder.andWhere('s.start_date', '>=', filterFields?.start_date);
-    }
-
-    // End Date filter
-    if (filterFields?.end_date) {
-      queryBuilder.andWhere('s.end_date', '<=', filterFields?.end_date);
-    }
-
-    // Project Name filter (like match)
-    if (filterFields?.survey_name) {
-      queryBuilder.andWhere('s.name', 'ilike', `%${filterFields?.survey_name}%`);
-    }
-
-    // Focal Species filter
-    if (filterFields?.itis_tsns?.length) {
-      // multiple
-      queryBuilder.whereIn('sp.itis_tsn', filterFields?.itis_tsns);
-    } else if (filterFields?.itis_tsn) {
-      // single
-      queryBuilder.where('sp.itis_tsn', filterFields?.itis_tsn);
-    }
-
-    // Keyword Search filter
-    if (filterFields?.keyword) {
-      const keywordMatch = `%${filterFields?.keyword}%`;
-      queryBuilder.where((subQueryBuilder) => {
-        subQueryBuilder
-          .where('s.name', 'ilike', keywordMatch)
-          .orWhere('s.additional_details', 'ilike', keywordMatch)
-          .orWhere('s.comments', 'ilike', keywordMatch);
-
-        // If the keyword is a number, also match on survey Id
-        if (!isNaN(Number(filterFields?.keyword))) {
-          subQueryBuilder.orWhere('s.survey_id', Number(filterFields?.keyword));
-        }
-      });
-    }
-
-    const response = await this.connection.knex(queryBuilder, SurveyBasicFields.omit({ focal_species_names: true }));
+    const response = await this.connection.knex(fullQuery);
 
     return response.rows;
+  }
+
+  async getSurveysBasicFieldsByCollectionIdCount(
+    collectionId: number,
+    filterFields?: ISurveyAdvancedFilters
+  ): Promise<number> {
+    const knex = getKnex();
+
+    // Recursive CTE to get all child collections
+    const queryWithHierarchy = knex.withRecursive('collection_hierarchy', (qb) => {
+      qb.select('collection_id')
+        .from('collection')
+        .where('collection_id', collectionId)
+        .unionAll(function () {
+          this.select('c.collection_id')
+            .from('collection as c')
+            .join('collection_hierarchy as ch', 'c.parent_collection_id', 'ch.collection_id');
+        });
+    });
+
+    // Build the base survey fields query
+    const basicFieldsQuery = this._getSurveyBasicFieldsQuery(filterFields);
+
+    // Apply recursive collection filtering
+    basicFieldsQuery
+      .join('collection_survey as cs', 'cs.survey_id', 's.survey_id')
+      .join('collection_hierarchy as ch', 'cs.collection_id', 'ch.collection_id');
+
+    // Wrap in count query
+    const countQuery = queryWithHierarchy
+      .from(basicFieldsQuery.as('bfq'))
+      .select(knex.raw('count(*)::integer as count'));
+
+    const response = await this.connection.knex(countQuery, z.object({ count: z.number() }));
+
+    return response.rows[0].count;
   }
 
   /**
@@ -798,64 +831,103 @@ export class SurveyRepository extends BaseRepository {
     const knex = getKnex();
 
     const queryBuilder = knex
-      .select(
-        knex.raw(`jsonb_build_object(
-        'sampling', jsonb_build_object(
-          'sites', COUNT(DISTINCT sss.survey_sample_site_id),
-          'techniques', COUNT(DISTINCT mt.method_technique_id),
-          'periods', COUNT(DISTINCT ssp.survey_sample_period_id)
-        ),
-        'data', jsonb_build_object(
-          'observations', COUNT(DISTINCT so.survey_observation_id),
-          'telemetry', jsonb_build_object(
-            'devices', COUNT(DISTINCT dv.device_id),
-            'deployments', COUNT(DISTINCT d.deployment_id),
-            'locations', (
-              COUNT(DISTINCT tm.telemetry_manual_id) +
-              COUNT(DISTINCT tl.telemetry_lotek_id) +
-              COUNT(DISTINCT tv.telemetry_vectronic_id) +
-              COUNT(DISTINCT ta.telemetry_ats_id)
-            )
-          ),
-          'animals', COUNT(DISTINCT c.critter_id),
-          'habitat', COUNT(DISTINCT shf.survey_habitat_feature_id)
-        ),
-        'attachments', COUNT(DISTINCT sa.survey_attachment_id),
-        'progress_percentage', ROUND((
-          (
-            CASE WHEN COUNT(DISTINCT sss.survey_sample_site_id) > 0 THEN 1 ELSE 0 END +
-            CASE WHEN COUNT(DISTINCT mt.method_technique_id) > 0 THEN 1 ELSE 0 END +
-            CASE WHEN COUNT(DISTINCT ssp.survey_sample_period_id) > 0 THEN 1 ELSE 0 END +
-            CASE WHEN COUNT(DISTINCT so.survey_observation_id) > 0 THEN 1 ELSE 0 END +
-            CASE WHEN COUNT(DISTINCT d.deployment_id) > 0 THEN 1 ELSE 0 END +
-            CASE WHEN COUNT(DISTINCT dv.device_id) > 0 THEN 1 ELSE 0 END +
-            CASE WHEN COUNT(DISTINCT tm.telemetry_manual_id) > 0 THEN 1 ELSE 0 END +
-            CASE WHEN COUNT(DISTINCT tv.telemetry_vectronic_id) > 0 THEN 1 ELSE 0 END +
-            CASE WHEN COUNT(DISTINCT tl.telemetry_lotek_id) > 0 THEN 1 ELSE 0 END +
-            CASE WHEN COUNT(DISTINCT ta.telemetry_ats_id) > 0 THEN 1 ELSE 0 END +
-            CASE WHEN COUNT(DISTINCT c.critter_id) > 0 THEN 1 ELSE 0 END +
-            CASE WHEN COUNT(DISTINCT shf.survey_habitat_feature_id) > 0 THEN 1 ELSE 0 END +
-            CASE WHEN COUNT(DISTINCT sa.survey_attachment_id) > 0 THEN 1 ELSE 0 END
-          )::decimal / 13 * 100
-        ), 0))
-        AS checklist`)
+      .with(
+        'sampling_counts',
+        knex('survey_sample_site as sss')
+          .countDistinct({ sites: 'sss.survey_sample_site_id' })
+          .select('sss.survey_id')
+          .leftJoin('method_technique as mt', 'sss.survey_id', 'mt.survey_id')
+          .leftJoin('survey_sample_period as ssp', 'sss.survey_id', 'ssp.survey_id')
+          .where('sss.survey_id', surveyId)
+          .countDistinct({ techniques: 'mt.method_technique_id' })
+          .countDistinct({ periods: 'ssp.survey_sample_period_id' })
+          .groupBy('sss.survey_id')
       )
-      .from('survey')
-      .leftJoin('survey_sample_site as sss', 'survey.survey_id', 'sss.survey_id')
-      .leftJoin('survey_sample_period as ssp', 'survey.survey_id', 'ssp.survey_id')
-      .leftJoin('method_technique as mt', 'survey.survey_id', 'mt.survey_id')
-      .leftJoin('survey_observation as so', 'survey.survey_id', 'so.survey_id')
-      .leftJoin('deployment as d', 'survey.survey_id', 'd.survey_id')
-      .leftJoin('device as dv', 'survey.survey_id', 'dv.survey_id')
-      .leftJoin('telemetry_manual as tm', 'd.deployment_id', 'tm.deployment_id')
-      .leftJoin('telemetry_vectronic as tv', 'd.device_key', 'tv.device_key')
-      .leftJoin('telemetry_lotek as tl', 'd.device_key', 'tl.device_key')
-      .leftJoin('telemetry_ats as ta', 'd.device_key', 'ta.device_key')
-      .leftJoin('critter as c', 'survey.survey_id', 'c.survey_id')
-      .leftJoin('survey_habitat_feature as shf', 'survey.survey_id', 'shf.survey_id')
-      .leftJoin('survey_attachment as sa', 'survey.survey_id', 'sa.survey_id')
-      .where('survey.survey_id', surveyId)
-      .groupBy('survey.survey_id');
+      .with(
+        'data_counts',
+        knex('survey as s')
+          .countDistinct({ observations: 'so.survey_observation_id' })
+          .countDistinct({ devices: 'dv.device_id' })
+          .countDistinct({ deployments: 'd.deployment_id' })
+          .countDistinct({ animals: 'c.critter_id' })
+          .countDistinct({ habitat: 'shf.survey_habitat_feature_id' })
+          .select('s.survey_id')
+          .leftJoin('survey_observation as so', 's.survey_id', 'so.survey_id')
+          .leftJoin('deployment as d', 's.survey_id', 'd.survey_id')
+          .leftJoin('device as dv', 's.survey_id', 'dv.survey_id')
+          .leftJoin('critter as c', 's.survey_id', 'c.survey_id')
+          .leftJoin('survey_habitat_feature as shf', 's.survey_id', 'shf.survey_id')
+          .where('s.survey_id', surveyId)
+          .groupBy('s.survey_id')
+      )
+      .with(
+        'telemetry_counts',
+        knex('deployment as d')
+          .select('d.survey_id')
+          .countDistinct({ manual: 'tm.telemetry_manual_id' })
+          .countDistinct({ lotek: 'tl.telemetry_lotek_id' })
+          .countDistinct({ vectronic: 'tv.telemetry_vectronic_id' })
+          .countDistinct({ ats: 'ta.telemetry_ats_id' })
+          .leftJoin('telemetry_manual as tm', 'd.deployment_id', 'tm.deployment_id')
+          .leftJoin('telemetry_lotek as tl', 'd.device_key', 'tl.device_key')
+          .leftJoin('telemetry_vectronic as tv', 'd.device_key', 'tv.device_key')
+          .leftJoin('telemetry_ats as ta', 'd.device_key', 'ta.device_key')
+          .where('d.survey_id', surveyId)
+          .groupBy('d.survey_id')
+      )
+      .with(
+        'attachment_counts',
+        knex('survey_attachment as sa')
+          .select('sa.survey_id')
+          .where('sa.survey_id', surveyId)
+          .countDistinct({ attachments: 'sa.survey_attachment_id' })
+          .groupBy('sa.survey_id')
+      )
+      .select(
+        knex.raw(`
+        jsonb_build_object(
+          'sampling', jsonb_build_object(
+            'sites', COALESCE(sc.sites, 0),
+            'techniques', COALESCE(sc.techniques, 0),
+            'periods', COALESCE(sc.periods, 0)
+          ),
+          'data', jsonb_build_object(
+            'observations', COALESCE(dc.observations, 0),
+            'telemetry', jsonb_build_object(
+              'devices', COALESCE(dc.devices, 0),
+              'deployments', COALESCE(dc.deployments, 0),
+              'locations', COALESCE(tc.manual, 0) + COALESCE(tc.lotek, 0) + COALESCE(tc.vectronic, 0) + COALESCE(tc.ats, 0)
+            ),
+            'animals', COALESCE(dc.animals, 0),
+            'habitat', COALESCE(dc.habitat, 0)
+          ),
+          'attachments', COALESCE(ac.attachments, 0),
+          'progress_percentage', ROUND((
+            (
+              CASE WHEN COALESCE(sc.sites, 0) > 0 THEN 1 ELSE 0 END +
+              CASE WHEN COALESCE(sc.techniques, 0) > 0 THEN 1 ELSE 0 END +
+              CASE WHEN COALESCE(sc.periods, 0) > 0 THEN 1 ELSE 0 END +
+              CASE WHEN COALESCE(dc.observations, 0) > 0 THEN 1 ELSE 0 END +
+              CASE WHEN COALESCE(dc.devices, 0) > 0 THEN 1 ELSE 0 END +
+              CASE WHEN COALESCE(dc.deployments, 0) > 0 THEN 1 ELSE 0 END +
+              CASE WHEN COALESCE(tc.manual, 0) > 0 THEN 1 ELSE 0 END +
+              CASE WHEN COALESCE(tc.lotek, 0) > 0 THEN 1 ELSE 0 END +
+              CASE WHEN COALESCE(tc.vectronic, 0) > 0 THEN 1 ELSE 0 END +
+              CASE WHEN COALESCE(tc.ats, 0) > 0 THEN 1 ELSE 0 END +
+              CASE WHEN COALESCE(dc.animals, 0) > 0 THEN 1 ELSE 0 END +
+              CASE WHEN COALESCE(dc.habitat, 0) > 0 THEN 1 ELSE 0 END +
+              CASE WHEN COALESCE(ac.attachments, 0) > 0 THEN 1 ELSE 0 END
+            )::decimal / 13 * 100
+          ), 0)
+        ) as checklist
+      `)
+      )
+      .from('survey as s')
+      .where('s.survey_id', surveyId)
+      .leftJoin('sampling_counts as sc', 's.survey_id', 'sc.survey_id')
+      .leftJoin('data_counts as dc', 's.survey_id', 'dc.survey_id')
+      .leftJoin('telemetry_counts as tc', 's.survey_id', 'tc.survey_id')
+      .leftJoin('attachment_counts as ac', 's.survey_id', 'ac.survey_id');
 
     const response = await this.connection.knex(queryBuilder, SurveyChecklist);
 

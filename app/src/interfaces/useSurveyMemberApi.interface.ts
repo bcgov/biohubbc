@@ -20,5 +20,4 @@ export interface IGetUserSurveysListResponse {
   system_user_id: number;
   survey_role_ids: number[];
   survey_role_names: string[];
-  survey_role_permissions: string[];
 }

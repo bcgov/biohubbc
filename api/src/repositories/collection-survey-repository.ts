@@ -8,7 +8,7 @@ import { BaseRepository } from './base-repository';
 
 export class CollectionSurveyRepository extends BaseRepository {
   /**
-   * Get surveys in collection
+   * Get surveys in collection, recursively getting all the surveys that belong to subcollections, too
    *
    * @param {number} collectionId - The ID of the collection to retrieve.
    * @returns {Promise<{survey_id: number}[]>} A promise resolving to the survey ids
@@ -18,10 +18,20 @@ export class CollectionSurveyRepository extends BaseRepository {
     const knex = getKnex();
 
     const queryBuilder = knex
-      .select('survey.survey_id')
-      .from('survey')
-      .join('collection_survey as cs', 'cs.survey_id', 'survey.survey_id')
-      .where('cs.collection_id', collectionId);
+      .withRecursive('collection_hierarchy', (qb) => {
+        qb.select('collection_id')
+          .from('collection')
+          .where('collection_id', collectionId)
+          .unionAll(function () {
+            this.select('c.collection_id')
+              .from('collection as c')
+              .join('collection_hierarchy as ch', 'c.parent_collection_id', 'ch.collection_id');
+          });
+      })
+      .distinct('s.survey_id')
+      .from('collection_hierarchy as ch')
+      .join('collection_survey as cs', 'cs.collection_id', 'ch.collection_id')
+      .join('survey as s', 's.survey_id', 'cs.survey_id');
 
     const response = await this.connection.knex(queryBuilder, z.object({ survey_id: z.number() }));
 

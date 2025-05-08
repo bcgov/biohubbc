@@ -9,7 +9,7 @@ import {
 } from '../repositories/observation-repository/observation-repository.interface';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { AttractantService } from './attractants-service';
-import { CollectionMemberService } from './collection-participation-service';
+import { CollectionMemberService } from './collection-member-service';
 import { CollectionSurveyService } from './collection-survey-service';
 import { DBService } from './db-service';
 import { ObservationService } from './observation-services/observation-service';

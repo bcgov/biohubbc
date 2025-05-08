@@ -6,7 +6,7 @@ import { ICollectionMembersAdvancedFilters, IPostCollectionMember } from '../../
 import { CollectionAndSystemUserSchema, CreateCollectionMemberSchema } from '../../../../openapi/schemas/collection';
 import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../../../../openapi/schemas/pagination';
 import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
-import { CollectionMemberService } from '../../../../services/collection-participation-service';
+import { CollectionMemberService } from '../../../../services/collection-member-service';
 import { getLogger } from '../../../../utils/logger';
 import {
   ensureCompletePaginationOptions,

@@ -120,7 +120,7 @@ export const CreateSamplePeriodPage = () => {
 
       // create complete, navigate back to observations page
       skipUnsavedChangesDialog();
-      history.push(`/admin/surveys/${surveyContext.surveyId}/sampling`);
+      history.goBack();
     } catch (error) {
       showCreateErrorDialog({
         dialogTitle: SamplePeriodI18N.createErrorTitle,

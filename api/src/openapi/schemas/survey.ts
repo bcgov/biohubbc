@@ -578,3 +578,67 @@ export const getSurveyChecklistResponse: OpenAPIV3.SchemaObject = {
     }
   }
 };
+
+export const getSurveyBasicFieldsSchema: OpenAPIV3.SchemaObject = {
+  type: 'object',
+  additionalProperties: false,
+  required: [
+    'survey_id',
+    'name',
+    'progress_id',
+    'start_date',
+    'end_date',
+    'regions',
+    'focal_species',
+    'types',
+    'progress_percentage'
+  ],
+  properties: {
+    survey_id: {
+      type: 'integer',
+      minimum: 1
+    },
+    name: {
+      type: 'string'
+    },
+    progress_id: {
+      type: 'integer',
+      minimum: 1
+    },
+    start_date: {
+      type: 'string',
+      description: 'ISO 8601 datetime string',
+      nullable: true
+    },
+    end_date: {
+      type: 'string',
+      description: 'ISO 8601 datetime string',
+      nullable: true
+    },
+    regions: {
+      type: 'array',
+      items: {
+        type: 'string'
+      },
+      nullable: true
+    },
+    focal_species: {
+      type: 'array',
+      items: {
+        type: 'integer'
+      },
+      nullable: true
+    },
+    types: {
+      type: 'array',
+      items: {
+        type: 'integer',
+        nullable: true
+      }
+    },
+    progress_percentage: {
+      type: 'number',
+      description: 'The completion percentage of the survey based on its checklist'
+    }
+  }
+};

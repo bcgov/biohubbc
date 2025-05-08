@@ -234,11 +234,9 @@ export function findSurveyFiltersBySystemUserId(): RequestHandler {
 
       await connection.commit();
 
-      console;
-
       return res.status(200).json({ filters });
     } catch (error) {
-      defaultLog.error({ label: 'createSurveyFilter', message: 'error', error });
+      defaultLog.error({ label: 'findSurveyFiltersBySystemUserId', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

@@ -6,6 +6,7 @@ export const SurveyPageOverview = () => {
     <Box
       sx={{
         display: 'flex',
+        height: '100%',
         alignItems: 'center',
         justifyContent: 'center',
         flexDirection: 'column',
@@ -13,7 +14,7 @@ export const SurveyPageOverview = () => {
         p: 5
       }}>
       <Typography variant="h3" gutterBottom mb={2}>
-        Welcome to your Survey!
+        Your Survey is empty!
       </Typography>
       <Typography color="textSecondary" gutterBottom>
         Add data using the checklist tabs on the left.

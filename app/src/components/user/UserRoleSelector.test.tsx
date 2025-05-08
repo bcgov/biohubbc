@@ -125,9 +125,9 @@ describe('UserRoleSelector', () => {
     });
 
     await waitFor(async () => {
-      expect(getByText('Collaborator', { exact: false })).toBeVisible();
+      expect(getByText('Editor', { exact: false })).toBeVisible();
 
-      fireEvent.click(getByText('Collaborator', { exact: false }));
+      fireEvent.click(getByText('Editor', { exact: false }));
 
       expect(onAdd).toHaveBeenCalled();
     });

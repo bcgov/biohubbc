@@ -82,7 +82,7 @@ const CustomToggleButtonGroup = <ViewValueType extends string>(props: CustomTogg
                 alignItems: 'center',
                 px: 1.5,
                 py: 1,
-                '& .MuiIconButton-root': { px: 0.25 }
+                '& .MuiIconButton-root': { px: 0.25, py: 0.75 }
               }}>
               <Box display="flex" alignItems="center" gap={1} flexGrow={1} minWidth={0}>
                 {startIcon}

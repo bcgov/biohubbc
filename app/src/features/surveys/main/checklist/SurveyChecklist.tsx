@@ -1,16 +1,12 @@
-import { mdiCog } from '@mdi/js';
-import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
 import {
   HierarchicalCustomToggleButtonGroup,
   ToggleButtonView
 } from 'components/toolbar/HierarchicalCustomToggleButtonGroup';
 import { IGetSurveyChecklist } from 'interfaces/useSurveyApi.interface';
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 import { ACTIVE_VIEW_VALUE } from '../SurveyPage';
-import { LinearProgressWithLabel } from './progress/SurveyChecklistProgressBar';
 
 interface SurveyChecklistProps {
   checklist: IGetSurveyChecklist;
@@ -20,31 +16,16 @@ interface SurveyChecklistProps {
 
 export const SurveyChecklist = (props: SurveyChecklistProps) => {
   const { checklist, activeView, handleViewChange } = props;
-
-  const flattenLeafViews = useCallback(
-    (items: ToggleButtonView<ACTIVE_VIEW_VALUE>[]): ToggleButtonView<ACTIVE_VIEW_VALUE>[] =>
-      items.flatMap((item) => (item.children ? flattenLeafViews(item.children) : [item])),
-    []
-  );
-
   const checklistItems = useMemo((): ToggleButtonView<ACTIVE_VIEW_VALUE>[] => {
     if (!checklist) {
       return [];
     }
 
-    return [
+    // Define the sections and the items within each
+    const sections = [
       {
-        value: ACTIVE_VIEW_VALUE.overview,
-        label: 'Overview'
-      },
-      {
-        value: ACTIVE_VIEW_VALUE.sampling,
         label: 'Sampling',
-        isHeader: true,
-        isChecked: true,
-        checkbox: !!checklist.sampling?.sites && !!checklist.sampling?.techniques && !!checklist.sampling?.periods,
-        tooltip: 'Add information about where, when, and how you collected data',
-        children: [
+        items: [
           {
             value: ACTIVE_VIEW_VALUE.sites,
             label: 'Sites',
@@ -69,17 +50,8 @@ export const SurveyChecklist = (props: SurveyChecklistProps) => {
         ]
       },
       {
-        value: ACTIVE_VIEW_VALUE.data,
         label: 'Data',
-        isHeader: true,
-        checkbox: true,
-        isChecked:
-          !!checklist.data?.observations &&
-          !!checklist.data?.telemetry &&
-          !!checklist.data?.habitat &&
-          !!checklist.data?.animals,
-        tooltip: 'Add data that you collected',
-        children: [
+        items: [
           {
             value: ACTIVE_VIEW_VALUE.observations,
             label: 'Observations',
@@ -88,45 +60,44 @@ export const SurveyChecklist = (props: SurveyChecklistProps) => {
             tooltip: 'Add observations of species'
           },
           {
+            value: ACTIVE_VIEW_VALUE.animals,
+            label: 'Animals',
+            isChecked: !!checklist.data?.animals,
+            checkbox: true,
+            tooltip: 'Add individual animals that you captured or marked'
+          },
+          {
             value: ACTIVE_VIEW_VALUE.telemetry,
             label: 'Telemetry',
-            checkbox: true,
             isChecked:
-              !!checklist.data?.telemetry.locations &&
-              !!checklist.data?.telemetry.devices &&
-              !!checklist.data?.telemetry.deployments,
+              !!checklist.data?.telemetry?.devices &&
+              !!checklist.data?.telemetry?.deployments &&
+              !!checklist.data?.telemetry?.locations,
+            checkbox: true,
             isHeader: true,
-            tooltip: 'Add telemetry data',
             children: [
               {
                 value: ACTIVE_VIEW_VALUE.devices,
                 label: 'Devices',
-                isChecked: !!checklist.data?.telemetry.devices,
+                isChecked: !!checklist.data?.telemetry?.devices,
                 checkbox: true,
                 tooltip: 'Add telemetry data'
               },
               {
                 value: ACTIVE_VIEW_VALUE.deployments,
                 label: 'Deployments',
-                isChecked: !!checklist.data?.telemetry.deployments,
+                isChecked: !!checklist.data?.telemetry?.deployments,
                 checkbox: true,
                 tooltip: 'Add telemetry data'
               },
               {
                 value: ACTIVE_VIEW_VALUE.locations,
                 label: 'Locations',
-                isChecked: !!checklist.data?.telemetry.locations,
+                isChecked: !!checklist.data?.telemetry?.locations,
                 checkbox: true,
                 tooltip: 'Add telemetry data'
               }
             ]
-          },
-          {
-            value: ACTIVE_VIEW_VALUE.animals,
-            label: 'Animals',
-            isChecked: !!checklist.data?.animals,
-            checkbox: true,
-            tooltip: 'Add individual animals that you captured or marked'
           },
           {
             value: ACTIVE_VIEW_VALUE.habitat,
@@ -138,12 +109,8 @@ export const SurveyChecklist = (props: SurveyChecklistProps) => {
         ]
       },
       {
-        value: ACTIVE_VIEW_VALUE.attachments,
-        label: 'Attachments',
-        isHeader: true,
-        checkbox: true,
-        tooltip: 'Add supplementary files',
-        children: [
+        label: 'Supplementary',
+        items: [
           {
             value: ACTIVE_VIEW_VALUE.attachments,
             label: 'Attachments',
@@ -154,40 +121,31 @@ export const SurveyChecklist = (props: SurveyChecklistProps) => {
         ]
       }
     ];
+
+    // Flatten the sections and ensure children are included immediately after their parent
+    return sections.flatMap((section) => [
+      // Header (non-interactive) for each section
+      {
+        value: `${section.label.toLowerCase().replace(/\s+/g, '_')}` as ACTIVE_VIEW_VALUE,
+        label: section.label,
+        isHeader: true
+      },
+      // Flatten items and children under their respective parents
+      ...section.items
+    ]);
   }, [checklist]);
 
-  const leafItems = useMemo(() => flattenLeafViews(checklistItems), [checklistItems, flattenLeafViews]);
-
-  const completionPercentage = useMemo(() => {
-    const total = leafItems.length;
-    const completed = leafItems.filter((item) => item.isChecked).length;
-    return total > 0 ? Math.round((completed / total) * 100) : 0;
-  }, [leafItems]);
-
   return (
-    <>
-      <Box display="flex" alignItems="center" justifyContent="space-between">
-        <Typography variant="h4">Checklist</Typography>
-        <Button startIcon={<Icon path={mdiCog} size={1} />} variant="contained">
-          Configure
-        </Button>
-      </Box>
-
-      <Box py={2} mt={2}>
-        <LinearProgressWithLabel value={completionPercentage} />
-      </Box>
-
-      <Box flexShrink={0}>
-        <HierarchicalCustomToggleButtonGroup
-          views={checklistItems}
-          activeView={activeView}
-          onViewChange={handleViewChange}
-          orientation="vertical"
-          handleCheckbox={(value) => {
-            console.log('Checkbox clicked:', value);
-          }}
-        />
-      </Box>
-    </>
+    <Box flexShrink={0} height="100%">
+      <HierarchicalCustomToggleButtonGroup
+        views={checklistItems}
+        activeView={activeView}
+        onViewChange={handleViewChange}
+        orientation="vertical"
+      />
+      <Button fullWidth variant="contained" sx={{ mt: 3 }}>
+        Publish
+      </Button>
+    </Box>
   );
 };

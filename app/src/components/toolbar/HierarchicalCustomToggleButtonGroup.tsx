@@ -4,6 +4,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
 import Collapse from '@mui/material/Collapse';
+import grey from '@mui/material/colors/grey';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Typography from '@mui/material/Typography';
@@ -85,8 +86,34 @@ export const HierarchicalCustomToggleButtonGroup = <ViewValueType extends string
       const isExpanded = expanded.has(item.value);
       const hasChildren = !!item.children?.length;
 
+      // Render Header as non-interactive label
+      if (item.isHeader && !item.children?.length) {
+        return (
+          <Box
+            key={item.value}
+            sx={{
+              ml: `${level * 20}px`,
+              my: 0.25,
+              '&:not(:first-of-type)': {
+                mt: 1 // add extra top padding to non-first headers
+              }
+            }}>
+            <Typography
+              variant="body2"
+              color={grey[500]}
+              sx={{
+                textTransform: 'uppercase',
+                fontWeight: 700,
+                m: 1
+              }}>
+              {item.label}
+            </Typography>
+          </Box>
+        );
+      }
+
       return (
-        <Box key={item.value} sx={{ ml: level * 1.5, my: 0.25, mt: level > 0 ? 0.5 : 0 }}>
+        <Box key={item.value} sx={{ ml: `${level * 20}px`, my: 0.5, mt: level > 0 ? 0.5 : 0 }}>
           <CustomTooltip tooltip={item.tooltip ?? ''}>
             <ToggleButton
               component={Button}
@@ -96,19 +123,19 @@ export const HierarchicalCustomToggleButtonGroup = <ViewValueType extends string
                 if (hasChildren) {
                   toggleExpand(item.value);
                 }
-                if (!item.isHeader && !item.disabled) {
+                if (!item.disabled && !item.isHeader) {
                   onViewChange(item.value);
                 }
               }}
               startIcon={
-                item.checkbox && handleCheckbox ? (
+                item.checkbox && (
                   <Box sx={{ position: 'relative', height: 24 }}>
                     <Checkbox
                       disabled={item.disabled}
                       checked={item.isChecked}
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleCheckbox(item);
+                        handleCheckbox && handleCheckbox(item);
                       }}
                       size="small"
                       sx={{
@@ -119,10 +146,10 @@ export const HierarchicalCustomToggleButtonGroup = <ViewValueType extends string
                       }}
                     />
                   </Box>
-                ) : undefined
+                )
               }
               endIcon={hasChildren ? <Icon path={isExpanded ? mdiChevronDown : mdiChevronRight} size={1} /> : undefined}
-              disabled={false}
+              disabled={item.disabled}
               sx={{
                 display: 'flex',
                 alignItems: 'center',
@@ -146,6 +173,7 @@ export const HierarchicalCustomToggleButtonGroup = <ViewValueType extends string
             </ToggleButton>
           </CustomTooltip>
 
+          {/* Render children inside a Collapse (only for items with children) */}
           {hasChildren && (
             <Collapse in={isExpanded} unmountOnExit>
               {renderViews(item.children!, level + 1)}
@@ -156,9 +184,14 @@ export const HierarchicalCustomToggleButtonGroup = <ViewValueType extends string
     });
   };
 
-  return (
-    <ToggleButtonGroup orientation={orientation} value={activeView} exclusive sx={{ flex: '1 1 auto', width: '100%' }}>
-      {renderViews(views)}
-    </ToggleButtonGroup>
-  );
+  // Render all views without altering their order
+  const renderToggleButtonGroups = () => {
+    return (
+      <ToggleButtonGroup key="all-items" orientation={orientation} value={activeView} exclusive sx={{ width: '100%' }}>
+        {renderViews(views)} {/* Render all views directly */}
+      </ToggleButtonGroup>
+    );
+  };
+
+  return <>{renderToggleButtonGroups()}</>;
 };

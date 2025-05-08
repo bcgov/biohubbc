@@ -4,6 +4,7 @@ import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
 import { ISurveyAdvancedFilters } from '../../models/survey-view';
 import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../../openapi/schemas/pagination';
+import { getSurveyBasicFieldsSchema } from '../../openapi/schemas/survey';
 import { authorizeRequestHandler, userHasValidRole } from '../../request-handlers/security/authorization';
 import { SurveyService } from '../../services/survey-service';
 import { getLogger } from '../../utils/logger';
@@ -123,69 +124,7 @@ GET.apiDoc = {
             properties: {
               surveys: {
                 type: 'array',
-                items: {
-                  type: 'object',
-                  additionalProperties: false,
-                  required: [
-                    'survey_id',
-                    'name',
-                    'progress_id',
-                    'start_date',
-                    'end_date',
-                    'regions',
-                    'focal_species',
-                    'types',
-                    'progress_percentage'
-                  ],
-                  properties: {
-                    survey_id: {
-                      type: 'integer',
-                      minimum: 1
-                    },
-                    name: {
-                      type: 'string'
-                    },
-                    progress_id: {
-                      type: 'integer',
-                      minimum: 1
-                    },
-                    start_date: {
-                      type: 'string',
-                      description: 'ISO 8601 datetime string',
-                      nullable: true
-                    },
-                    end_date: {
-                      type: 'string',
-                      description: 'ISO 8601 datetime string',
-                      nullable: true
-                    },
-                    regions: {
-                      type: 'array',
-                      items: {
-                        type: 'string'
-                      },
-                      nullable: true
-                    },
-                    focal_species: {
-                      type: 'array',
-                      items: {
-                        type: 'integer'
-                      },
-                      nullable: true
-                    },
-                    types: {
-                      type: 'array',
-                      items: {
-                        type: 'integer',
-                        nullable: true
-                      }
-                    },
-                    progress_percentage: {
-                      type: 'number',
-                      description: 'The completion percentage of the survey based on its checklist'
-                    }
-                  }
-                }
+                items: getSurveyBasicFieldsSchema
               },
               pagination: { ...paginationResponseSchema }
             }

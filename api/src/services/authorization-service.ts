@@ -5,7 +5,7 @@ import { CollectionMember } from '../models/collection';
 import { SystemUserWithRoles } from '../models/system-user-view';
 import { SurveyMember } from '../repositories/survey-member-repository';
 import { getKeycloakSource, getUserGuid, KeycloakUserInformation } from '../utils/keycloak-utils';
-import { CollectionMemberService } from './collection-participation-service';
+import { CollectionMemberService } from './collection-member-service';
 import { DBService } from './db-service';
 import { SurveyMemberService } from './survey-member-service';
 import { UserService } from './user-service';
@@ -189,7 +189,7 @@ export class AuthorizationService extends DBService {
       return false;
     }
 
-    const collectionUserObjects = await this.getParentCollectionMemberObjectsByCollectionId(
+    const collectionUserObjects = await this.getParentCollectionMembersWithRolesByCollectionId(
       authorizeCollectionRole.collectionId
     );
 
@@ -427,29 +427,6 @@ export class AuthorizationService extends DBService {
     }
 
     return surveyUserWithRoles;
-  }
-
-  /**
-   * Get the collection member record for any parent of the given collection id (recursively walk up the tree)
-   *
-   * @return {*}  {(Promise<(collectionMember & SystemUserWithRoles)[]>)}
-   */
-  async getParentCollectionMemberObjectsByCollectionId(
-    collectionId: number
-  ): Promise<(CollectionMember & SystemUserWithRoles)[]> {
-    let collectionUserWithRoles;
-
-    try {
-      collectionUserWithRoles = await this.getParentCollectionMembersWithRolesByCollectionId(collectionId);
-    } catch {
-      return [];
-    }
-
-    if (!collectionUserWithRoles) {
-      return [];
-    }
-
-    return collectionUserWithRoles;
   }
 
   /**

@@ -9,7 +9,7 @@ import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { BaseRepository } from './base-repository';
 
 /**
- * A repository class for accessing collection participants data.
+ * A repository class for accessing collection members data.
  *
  * @export
  * @class CollectionMemberRepository
@@ -17,7 +17,7 @@ import { BaseRepository } from './base-repository';
  */
 export class CollectionMemberRepository extends BaseRepository {
   /**
-   * Create a base query for retrieving collection participants.
+   * Create a base query for retrieving collection members.
    *
    * @param {number} collectionId - The ID of the collection.
    * @param {Knex} knex - Knex instance.
@@ -78,6 +78,7 @@ export class CollectionMemberRepository extends BaseRepository {
    * @returns {Knex.QueryBuilder} Knex query builder with joins and aggregations.
    */
   _makeParentCollectionMembersBaseQuery(collectionId: number, knex: Knex): Knex.QueryBuilder {
+    // TODO: Optimize this query
     const recursiveCTE = knex.withRecursive('ancestor_collections', (qb) => {
       qb.select('collection_id')
         .from('collection')
@@ -97,8 +98,8 @@ export class CollectionMemberRepository extends BaseRepository {
         'su.user_guid',
         'su.record_end_date',
         'uis.name as identity_source',
-        knex.raw('array_remove(array_agg(sr.system_role_id), NULL) as role_ids'),
-        knex.raw('array_remove(array_agg(sr.name), NULL) as role_names'),
+        knex.raw('array_agg(DISTINCT sr.system_role_id) filter (where sr.system_role_id is not null) as role_ids'),
+        knex.raw('array_agg(DISTINCT sr.name) filter (where sr.name is not null) as role_names'),
         'su.email',
         'su.display_name',
         'su.given_name',
@@ -138,7 +139,7 @@ export class CollectionMemberRepository extends BaseRepository {
   }
 
   /**
-   * Get collection participant records.
+   * Get collection member records.
    *
    * @param {number} collectionId - The collection ID.
    * @param {ICollectionMembersAdvancedFilters} filterFields
@@ -176,7 +177,7 @@ export class CollectionMemberRepository extends BaseRepository {
   }
 
   /**
-   * Returns the total number of participants in the given collection
+   * Returns the total number of members in the given collection
    *
    * @param {number} collectionId
    * @return {*}  {Promise<number>}
@@ -205,7 +206,7 @@ export class CollectionMemberRepository extends BaseRepository {
   }
 
   /**
-   * Insert a collection participant record.
+   * Insert a collection member record.
    *
    * @param {number} collectionId
    * @param {IPostCollectionMember} values
@@ -228,7 +229,7 @@ export class CollectionMemberRepository extends BaseRepository {
     const response = await this.connection.sql(sqlStatement);
 
     if (!response?.rowCount) {
-      throw new ApiExecuteSQLError('Failed to insert collection participant', [
+      throw new ApiExecuteSQLError('Failed to insert collection member', [
         'CollectionMemberRepository->insertCollectionMember',
         'rows was null or undefined, expected rows != null'
       ]);
@@ -236,7 +237,7 @@ export class CollectionMemberRepository extends BaseRepository {
   }
 
   /**
-   * Update a collection participant record.
+   * Update a collection member record.
    *
    * @param {number} collectionId
    * @param {number} CollectionMemberId
@@ -263,7 +264,7 @@ export class CollectionMemberRepository extends BaseRepository {
     const response = await this.connection.sql(sqlStatement);
 
     if (!response?.rowCount) {
-      throw new ApiExecuteSQLError('Failed to update collection participant', [
+      throw new ApiExecuteSQLError('Failed to update collection member', [
         'CollectionMemberRepository->updateCollectionMember',
         'rows was null or undefined, expected rows != null'
       ]);
@@ -302,7 +303,7 @@ export class CollectionMemberRepository extends BaseRepository {
   }
 
   /**
-   * Get a single collection participant record with user and role info.
+   * Get a single collection member record with user and role info.
    *
    * @param {number} collectionId - The ID of the collection.
    * @param {number} systemUserId - The system user ID.
@@ -322,7 +323,7 @@ export class CollectionMemberRepository extends BaseRepository {
   }
 
   /**
-   * Get a single collection participant record with user and role info.
+   * Get a single collection member record with user and role info.
    *
    * @param {number} collectionId - The ID of the collection.
    * @param {string} userGuid - The system user GUID.

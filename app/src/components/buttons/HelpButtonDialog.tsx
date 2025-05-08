@@ -1,11 +1,10 @@
-import { mdiHelpCircleOutline } from '@mdi/js';
+import { mdiInformationSlabBoxOutline } from '@mdi/js';
 import { Icon } from '@mdi/react';
-import { Button } from '@mui/material';
+import IconButton from '@mui/material/IconButton';
 import { CustomMarkdown } from 'components/markdown/CustomMarkdown';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext } from 'hooks/useContext';
 import { MarkdownPayload, MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
-import { PropsWithChildren } from 'react';
 
 interface IHelpButtonDialogProps {
   markdownType: MarkdownTypeNameEnum;
@@ -14,11 +13,11 @@ interface IHelpButtonDialogProps {
 /**
  * Returns a button that opens a dialog containing markdown, allowing the user to score the markdown text if they haven't scored it yet.
  *
- * @param {PropsWithChildren<IHelpButtonDialogProps>} props
+ * @param {IHelpButtonDialogProps} props
  * @returns {*}
  */
-const HelpButtonDialog = (props: PropsWithChildren<IHelpButtonDialogProps>) => {
-  const { markdownType, children } = props;
+const HelpButtonDialog = (props: IHelpButtonDialogProps) => {
+  const { markdownType } = props;
 
   const dialogContext = useDialogContext();
   const biohubApi = useBiohubApi();
@@ -46,9 +45,9 @@ const HelpButtonDialog = (props: PropsWithChildren<IHelpButtonDialogProps>) => {
   };
 
   return (
-    <Button variant="outlined" startIcon={<Icon path={mdiHelpCircleOutline} size={1} />} onClick={handleOpenDialog}>
-      {children ?? 'Help'}
-    </Button>
+    <IconButton onClick={handleOpenDialog}>
+      <Icon path={mdiInformationSlabBoxOutline} size={1} />
+    </IconButton>
   );
 };
 

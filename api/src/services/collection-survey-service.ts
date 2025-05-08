@@ -1,19 +1,17 @@
-import { SURVEY_ROLE } from '../constants/roles';
+import { SURVEY_ROLE, SYSTEM_ROLE } from '../constants/roles';
 import { IDBConnection } from '../database/db';
 import { HTTP401 } from '../errors/http-error';
 import {
   IAddMultipleSurveysToCollection,
-  ICollectionAdvancedFilters,
   ICreateCollectionSurveyRequest,
   IDeleteCollectionSurveyRequest
 } from '../models/collection';
 import { CollectionSurveyRepository } from '../repositories/collection-survey-repository';
-import { SurveyBasicFields } from '../repositories/survey-repository';
-import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { DBService } from './db-service';
 import { PlatformService } from './platform-service';
 import { SurveyMemberService } from './survey-member-service';
 import { SurveyService } from './survey-service';
+import { UserService } from './user-service';
 
 /**
  * Service layer for managing surveys in collections.
@@ -24,6 +22,7 @@ import { SurveyService } from './survey-service';
  */
 export class CollectionSurveyService extends DBService {
   collectionSurveyRepository: CollectionSurveyRepository;
+  userService: UserService;
   surveyService: SurveyService;
   surveyMemberService: SurveyMemberService;
   platformService: PlatformService;
@@ -32,6 +31,7 @@ export class CollectionSurveyService extends DBService {
     super(connection);
 
     this.collectionSurveyRepository = new CollectionSurveyRepository(connection);
+    this.userService = new UserService(connection);
     this.surveyMemberService = new SurveyMemberService(connection);
     this.surveyService = new SurveyService(connection);
     this.platformService = new PlatformService(connection);
@@ -56,49 +56,6 @@ export class CollectionSurveyService extends DBService {
    */
   async getSurveyCountByCollectionId(collectionId: number): Promise<number> {
     return this.collectionSurveyRepository.getSurveyCountByCollectionId(collectionId);
-  }
-
-  /**
-   * Fetches a subset of survey fields for a paginated list of surveys under
-   * a given project.
-   *
-   * @param {number} collectionId
-   * @param {ICollectionAdvancedFilters} filterFields
-   * @param {ApiPaginationOptions} [pagination]
-   * @return {*}  {Promise<SurveyBasicFields[]>}
-   * @memberof SurveyService
-   */
-  async getSurveysBasicFieldsByCollectionId(
-    collectionId: number,
-    filterFields?: ICollectionAdvancedFilters,
-    pagination?: ApiPaginationOptions
-  ): Promise<SurveyBasicFields[]> {
-    const surveys = await this.surveyService.getSurveysBasicFieldsByCollectionId(
-      collectionId,
-      filterFields,
-      pagination
-    );
-
-    // Build an array of all unique focal species ids from all surveys
-    const uniqueFocalSpeciesIds = Array.from(
-      new Set(surveys.reduce((ids: number[], survey) => ids.concat(survey.focal_species), []))
-    );
-
-    // Fetch focal species data for all species ids
-    const platformService = new PlatformService(this.connection);
-    const focalSpecies = await platformService.getTaxonomyByTsns(uniqueFocalSpeciesIds);
-
-    // Decorate the surveys response with their matching focal species labels
-    const decoratedSurveys: SurveyBasicFields[] = [];
-    for (const survey of surveys) {
-      const matchingFocalSpeciesNames = focalSpecies
-        .filter((item) => survey.focal_species.includes(item.tsn))
-        .map((item) => [item.commonNames, `(${item.scientificName})`].filter(Boolean).join(' '));
-
-      decoratedSurveys.push({ ...survey, focal_species_names: matchingFocalSpeciesNames });
-    }
-
-    return decoratedSurveys;
   }
 
   /**
@@ -128,28 +85,33 @@ export class CollectionSurveyService extends DBService {
    * @memberof CollectionSurveyService
    */
   async addMultipleSurveysToCollection(systemUserGuid: string, values: IAddMultipleSurveysToCollection): Promise<void> {
-    const authChecks: string[][] = []; // Store role names for each survey
+    // Get the system user
+    const systemUser = await this.userService.getUserByGuid(systemUserGuid);
 
-    // Get the participant project roles for the given surveys
-    for (const survey of values.surveys) {
-      const authorization = await this.surveyMemberService.getSurveyMemberBySurveyIdAndUserGuid(
-        survey.survey_id,
-        systemUserGuid
-      );
-      // Push the project role names for each survey
-      if (authorization) {
-        authChecks.push(authorization.survey_role_names);
-      }
-    }
-
-    // Check if any of the roles in authChecks contains invalid roles (e.g., COLLABORATOR, COORDINATOR)
-    const hasInvalidRole = authChecks.some((roles) =>
-      roles.some((role) => [SURVEY_ROLE.EDITOR, SURVEY_ROLE.ADMIN].includes(role as SURVEY_ROLE))
+    // If the user is not an admin, perform role checks for each survey
+    const isAdmin = systemUser?.role_names.some((role) =>
+      [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR].includes(role as SYSTEM_ROLE)
     );
 
-    // If any invalid role is found, throw Error401
-    if (hasInvalidRole) {
-      throw new HTTP401('You do not have access to all of the surveys');
+    if (!isAdmin) {
+      // Fetch authorizations for all surveys
+      const authorizations = await Promise.all(
+        values.surveys.map((survey) =>
+          this.surveyMemberService.getSurveyMemberBySurveyIdAndUserGuid(survey.survey_id, systemUserGuid)
+        )
+      );
+
+      // Check that each survey has a valid role (ADMIN)
+      const hasMissingRequiredRole = authorizations.some(
+        (authorization) =>
+          !authorization?.survey_role_names.some((role) =>
+            [SURVEY_ROLE.EDITOR, SURVEY_ROLE.ADMIN].includes(role as SURVEY_ROLE)
+          )
+      );
+
+      if (hasMissingRequiredRole) {
+        throw new HTTP401('You do not have access to all of the surveys');
+      }
     }
 
     // Proceed to add surveys to the collection

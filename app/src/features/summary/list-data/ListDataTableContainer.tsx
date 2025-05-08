@@ -3,11 +3,9 @@ import Icon from '@mdi/react';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
 import CustomToggleButtonGroup from 'components/toolbar/CustomToggleButtonGroup';
 import SurveysListContainer from 'features/summary/list-data/survey/SurveysListContainer';
 import { useSearchParams } from 'hooks/useSearchParams';
-import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import { SidebarLayout } from 'layouts/SidebarLayout';
 import { useState } from 'react';
 import { TabularDataTableContainer } from '../tabular-data/TabularDataTableContainer';
@@ -80,12 +78,13 @@ export const ListDataTableContainer = () => {
       }
       header={
         <>
-          <Typography variant="h2">{activeViewObj?.label}</Typography>
-          <Stack gap={1} direction="row">
-            <HelpButtonDialog markdownType={MarkdownTypeNameEnum.PROJECTS_AND_SURVEYS} />
+          <Stack gap={1} direction="row" alignItems="center">
+            <Typography variant="h2">{activeViewObj?.label}</Typography>
+          </Stack>
+          <Stack gap={3} direction="row">
             <Button
               color="primary"
-              variant="outlined"
+              sx={{ fontWeight: 700 }}
               onClick={() => {
                 setSearchParams(
                   searchParams.set(SHOW_SEARCH_KEY, showSearch ? SHOW_SEARCH_VALUE.false : SHOW_SEARCH_VALUE.true)

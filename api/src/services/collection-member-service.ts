@@ -1,12 +1,12 @@
 import { IDBConnection } from '../database/db';
 import { CollectionMember, ICollectionMembersAdvancedFilters, IPostCollectionMember } from '../models/collection';
 import { SystemUserWithRoles } from '../models/system-user-view';
-import { CollectionMemberRepository } from '../repositories/collection-participation-repository';
+import { CollectionMemberRepository } from '../repositories/collection-member-repository';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { DBService } from './db-service';
 
 /**
- * Service for managing collections
+ * Service for managing collection members
  */
 export class CollectionMemberService extends DBService {
   collectionMemberRepository: CollectionMemberRepository;
@@ -18,7 +18,7 @@ export class CollectionMemberService extends DBService {
   }
 
   /**
-   * Get all participants of a collection
+   * Get all members of a collection
    *
    * @param {number} collectionId
    * @param {ICollectionMembersAdvancedFilters} filterFields
@@ -35,7 +35,7 @@ export class CollectionMemberService extends DBService {
   }
 
   /**
-   * Get count of participants in the survey
+   * Get count of members in the survey
    *
    * @param {number} collectionId
    * @returns {Promise<number>}
@@ -46,23 +46,21 @@ export class CollectionMemberService extends DBService {
   }
 
   /**
-   * Insert a new collection participant
+   * Insert a new collection member
    *
    * @param {number} collectionId
-   * @param {IPostCollectionMember[]} participants
+   * @param {IPostCollectionMember[]} members
    * @returns {Promise<void>}
    * @memberof CollectionMemberService
    */
-  async insertCollectionMembers(collectionId: number, participants: IPostCollectionMember[]): Promise<void> {
+  async insertCollectionMembers(collectionId: number, members: IPostCollectionMember[]): Promise<void> {
     await Promise.all(
-      participants.map((participant) =>
-        this.collectionMemberRepository.insertCollectionMember(collectionId, participant)
-      )
+      members.map((member) => this.collectionMemberRepository.insertCollectionMember(collectionId, member))
     );
   }
 
   /**
-   * Insert a new collection participant
+   * Insert a new collection member
    *
    * @param collectionId
    * @param systemUserId
@@ -82,7 +80,7 @@ export class CollectionMemberService extends DBService {
   }
 
   /**
-   * Remove a participant from a collection
+   * Remove a member from a collection
    *
    * @param {number} collectionId
    * @param {number} CollectionMemberId

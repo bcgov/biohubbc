@@ -198,6 +198,7 @@ const appTheme = createTheme({
       }
     },
     MuiContainer: {
+      defaultProps: { disableGutters: false },
       styleOverrides: {
         root: {
           maxWidth: 'xl',

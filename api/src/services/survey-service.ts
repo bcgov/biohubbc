@@ -289,34 +289,15 @@ export class SurveyService extends DBService {
   }
 
   /**
-   * Fetches a subset of survey fields for a paginated list of surveys available to the user
-   * @param {ApiPaginationOptions} [pagination]
-   * @return {*}  {Promise<SurveyBasicFields[]>}
+   * Retrieves the count of all surveys in the given collections
+   *
+   * @param {number} collectionId
+   * @param {ISurveyAdvancedFilters} filterFields
+   * @return {*}  {Promise<number>}
    * @memberof SurveyService
    */
-  async getSurveysBasicFields(pagination?: ApiPaginationOptions): Promise<SurveyBasicFields[]> {
-    const surveys = await this.surveyRepository.getSurveysBasicFields(pagination);
-
-    // Build an array of all unique focal species ids from all surveys
-    const uniqueFocalSpeciesIds = Array.from(
-      new Set(surveys.reduce((ids: number[], survey) => ids.concat(survey.focal_species), []))
-    );
-
-    // Fetch focal species data for all species ids
-    const platformService = new PlatformService(this.connection);
-    const focalSpecies = await platformService.getTaxonomyByTsns(uniqueFocalSpeciesIds);
-
-    // Decorate the surveys response with their matching focal species labels
-    const decoratedSurveys: SurveyBasicFields[] = [];
-    for (const survey of surveys) {
-      const matchingFocalSpeciesNames = focalSpecies
-        .filter((item) => survey.focal_species.includes(item.tsn))
-        .map((item) => [item.commonNames, `(${item.scientificName})`].filter(Boolean).join(' '));
-
-      decoratedSurveys.push({ ...survey, focal_species_names: matchingFocalSpeciesNames });
-    }
-
-    return decoratedSurveys;
+  async getSurveysByCollectionIdCount(collectionId: number, filterFields?: ISurveyAdvancedFilters): Promise<number> {
+    return this.surveyRepository.getSurveysBasicFieldsByCollectionIdCount(collectionId, filterFields);
   }
 
   /**
@@ -329,37 +310,12 @@ export class SurveyService extends DBService {
    * @return {*}  {Promise<SurveyBasicFields[]>}
    * @memberof SurveyService
    */
-  async getSurveysBasicFieldsByCollectionId(
+  async getSurveysByCollectionId(
     collectionId: number,
     filterFields?: ISurveyAdvancedFilters,
     pagination?: ApiPaginationOptions
   ): Promise<SurveyBasicFields[]> {
-    const surveys = await this.surveyRepository.getSurveysBasicFieldsByCollectionId(
-      collectionId,
-      filterFields,
-      pagination
-    );
-
-    // Build an array of all unique focal species ids from all surveys
-    const uniqueFocalSpeciesIds = Array.from(
-      new Set(surveys.reduce((ids: number[], survey) => ids.concat(survey.focal_species), []))
-    );
-
-    // Fetch focal species data for all species ids
-    const platformService = new PlatformService(this.connection);
-    const focalSpecies = await platformService.getTaxonomyByTsns(uniqueFocalSpeciesIds);
-
-    // Decorate the surveys response with their matching focal species labels
-    const decoratedSurveys: SurveyBasicFields[] = [];
-    for (const survey of surveys) {
-      const matchingFocalSpeciesNames = focalSpecies
-        .filter((item) => survey.focal_species.includes(item.tsn))
-        .map((item) => [item.commonNames, `(${item.scientificName})`].filter(Boolean).join(' '));
-
-      decoratedSurveys.push({ ...survey, focal_species_names: matchingFocalSpeciesNames });
-    }
-
-    return decoratedSurveys;
+    return this.surveyRepository.getSurveysBasicFieldsByCollectionId(collectionId, filterFields, pagination);
   }
 
   /**

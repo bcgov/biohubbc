@@ -93,7 +93,7 @@ export const CreateTechniquePage = () => {
 
       // Success, navigate back to the manage sampling information page
       skipUnsavedChangesDialog();
-      history.push(`/admin/surveys/${surveyContext.surveyId}/sampling`);
+      history.goBack();
     } catch (error) {
       setIsSubmitting(false);
       dialogContext.setErrorDialog({
@@ -144,11 +144,7 @@ export const CreateTechniquePage = () => {
               onClick={() => formikRef.current?.submitForm()}>
               Save and Exit
             </LoadingButton>
-            <Button
-              disabled={isSubmitting}
-              color="primary"
-              variant="outlined"
-              onClick={() => history.push(`/admin/surveys/${surveyContext.surveyId}/sampling`)}>
+            <Button disabled={isSubmitting} color="primary" variant="outlined" onClick={() => history.goBack()}>
               Cancel
             </Button>
           </Stack>
@@ -177,7 +173,7 @@ export const CreateTechniquePage = () => {
               variant="outlined"
               color="primary"
               onClick={() => {
-                history.push(`/admin/surveys/${surveyContext.surveyId}/sampling`);
+                history.goBack();
               }}>
               Cancel
             </Button>

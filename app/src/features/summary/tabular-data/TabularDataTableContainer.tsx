@@ -2,15 +2,12 @@ import { mdiEye, mdiPaw, mdiPineTree, mdiWifiMarker } from '@mdi/js';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
-import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
 import CustomToggleButtonGroup from 'components/toolbar/CustomToggleButtonGroup';
 import AnimalsListContainer from 'features/summary/tabular-data/animal/AnimalsListContainer';
 import HabitatFeaturesListContainer from 'features/summary/tabular-data/habitat-feature/HabitatFeaturesListContainer';
 import ObservationsListContainer from 'features/summary/tabular-data/observation/ObservationsListContainer';
 import TelemetryListContainer from 'features/summary/tabular-data/telemetry/TelemetryListContainer';
 import { useSearchParams } from 'hooks/useSearchParams';
-import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import { useState } from 'react';
 
 const ACTIVE_VIEW_KEY = 'tavk';
@@ -55,11 +52,7 @@ export const TabularDataTableContainer = () => {
 
   return (
     <Stack direction="row">
-      <Stack mx={2} my={1} width="225px" gap={1}>
-        <Box display="flex" justifyContent="space-between" alignItems="center" minHeight="75px">
-          <Typography variant="h4">Data</Typography>
-          <HelpButtonDialog markdownType={MarkdownTypeNameEnum.SUMMARY_DATA} />
-        </Box>
+      <Stack m={2} width="225px" gap={1}>
         <CustomToggleButtonGroup
           views={views}
           activeView={activeView}

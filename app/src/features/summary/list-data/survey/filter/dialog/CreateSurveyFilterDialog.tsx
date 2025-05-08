@@ -32,9 +32,22 @@ const CreateSurveyFilterDialog = (props: ICreateSurveyFilterDialogProps) => {
   const biohubApi = useBiohubApi();
 
   const SurveyFilterSurveyYupSchema = yup.object().shape({
-    name: yup.string().required('Name is required').max(25, 'Name must be less than 25 characters'),
-    description: yup.string().nullable().max(25, 'Description must be less than 250 characters'),
-    conditions: yup.object()
+    name: yup.string().required('Name is required').max(20, 'Name must be less than 20 characters'),
+    description: yup.string().nullable().max(250, 'Description must be less than 250 characters'),
+    conditions: yup
+      .object()
+      .shape({
+        system_user_id: yup.number().nullable().optional(),
+        itis_tsn: yup.number().nullable().optional(),
+        keyword: yup.string().nullable().optional()
+      })
+      .test('at-least-one-condition', 'At least one condition must be provided', (value) => {
+        // Ensure that at least one of the conditions is filled
+        if (!value) {
+          return false;
+        }
+        return value.system_user_id !== undefined || value.itis_tsn !== undefined || value.keyword !== undefined;
+      })
   });
 
   const showSnackBar = (textDialogProps?: Partial<ISnackbarProps>) => {
@@ -90,9 +103,10 @@ const CreateSurveyFilterDialog = (props: ICreateSurveyFilterDialogProps) => {
         initialValues: {
           name: '',
           description: null,
-          conditions: {}
+          conditions: { system_user_id: undefined, itis_tsn: undefined, keyword: undefined }
         },
-        validationSchema: SurveyFilterSurveyYupSchema
+        validationSchema: SurveyFilterSurveyYupSchema,
+        validateOnBlur: false
       }}
       dialogSaveButtonLabel="Add"
       onCancel={() => props.onClose && props.onClose()}

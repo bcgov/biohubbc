@@ -4,6 +4,7 @@ import { CodesContextProvider } from 'contexts/codesContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { SurveyAuthStateContextProvider } from 'contexts/surveyAuthStateContext';
 import { SurveyContextProvider } from 'contexts/surveyContext';
+import { TaxonomyContextProvider } from 'contexts/taxonomyContext';
 import AdminRouter from 'features/admin/AdminRouter';
 import CollectionsRouter from 'features/collection/CollectionRouter';
 import FundingSourcesRouter from 'features/funding-sources/FundingSourcesRouter';
@@ -92,7 +93,11 @@ const AppRouter: React.FC = () => {
             <SurveyAuthStateContextProvider>
               <CodesContextProvider>
                 <SurveyContextProvider>
-                  <SurveyRouter />
+                  <TaxonomyContextProvider>
+                    <DialogContextProvider>
+                      <SurveyRouter />
+                    </DialogContextProvider>
+                  </TaxonomyContextProvider>
                 </SurveyContextProvider>
               </CodesContextProvider>
             </SurveyAuthStateContextProvider>

@@ -131,7 +131,7 @@ export const EditTechniquePage = () => {
 
       // Success, navigate back to the manage sampling information page
       skipUnsavedChangesDialog();
-      history.push(`/admin/surveys/${surveyContext.surveyId}/sampling`);
+      history.goBack();
     } catch (error) {
       setIsSubmitting(false);
       dialogContext.setErrorDialog({
@@ -215,7 +215,7 @@ export const EditTechniquePage = () => {
               variant="outlined"
               color="primary"
               onClick={() => {
-                history.push(`/admin/surveys/${surveyContext.surveyId}/sampling`);
+                history.goBack();
               }}>
               Cancel
             </Button>

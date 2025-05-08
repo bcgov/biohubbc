@@ -4,10 +4,11 @@ import { COLLECTION_ROLE } from '../../../../constants/roles';
 import { getDBConnection } from '../../../../database/db';
 import { IAddMultipleSurveysToCollection, ICollectionAdvancedFilters } from '../../../../models/collection';
 import { AddSurveysToCollectionSchema } from '../../../../openapi/schemas/collection-survey';
-import { paginationRequestQueryParamSchema } from '../../../../openapi/schemas/pagination';
-import { getSurveysListSchema } from '../../../../openapi/schemas/project';
+import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../../../../openapi/schemas/pagination';
+import { getSurveyBasicFieldsSchema } from '../../../../openapi/schemas/survey';
 import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
 import { CollectionSurveyService } from '../../../../services/collection-survey-service';
+import { SurveyService } from '../../../../services/survey-service';
 import { getLogger } from '../../../../utils/logger';
 import {
   ensureCompletePaginationOptions,
@@ -54,10 +55,21 @@ GET.apiDoc = {
   ],
   responses: {
     200: {
-      description: 'Collection response object.',
+      description: 'Collection surveys response object.',
       content: {
         'application/json': {
-          schema: getSurveysListSchema
+          schema: {
+            type: 'object',
+            additionalProperties: false,
+            required: ['surveys', 'pagination'],
+            properties: {
+              surveys: {
+                type: 'array',
+                items: getSurveyBasicFieldsSchema
+              },
+              pagination: { ...paginationResponseSchema }
+            }
+          }
         }
       }
     },
@@ -97,16 +109,16 @@ export function getSurveysInCollection(): RequestHandler {
 
       const filterFields = parseQueryParams(req);
 
-      const collectionSurveyService = new CollectionSurveyService(connection);
+      const surveyService = new SurveyService(connection);
 
       const collectionId = Number(req.params.collectionId);
 
-      const surveys = await collectionSurveyService.getSurveysBasicFieldsByCollectionId(
+      const surveys = await surveyService.getSurveysByCollectionId(
         collectionId,
         filterFields,
         ensureCompletePaginationOptions(paginationOptions)
       );
-      const surveysTotalCount = await collectionSurveyService.getSurveyCountByCollectionId(collectionId);
+      const surveysTotalCount = await surveyService.getSurveysByCollectionIdCount(collectionId, filterFields);
 
       const response = {
         surveys,
@@ -114,6 +126,9 @@ export function getSurveysInCollection(): RequestHandler {
       };
 
       await connection.commit();
+
+      // Allow browsers to cache this response for 10 seconds
+      res.setHeader('Cache-Control', 'private, max-age=10');
 
       return res.status(200).json(response);
     } catch (error) {

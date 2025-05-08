@@ -1,3 +1,5 @@
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import CustomTextField from 'components/fields/CustomTextField';
@@ -16,7 +18,7 @@ import { ISystemUser } from 'interfaces/useUserApi.interface';
  * @returns {*}
  */
 const SurveyFilterForm = () => {
-  const { setFieldValue, values } = useFormikContext<IPostSurveyFilter>();
+  const { setFieldValue, values, errors } = useFormikContext<IPostSurveyFilter>();
 
   const handleAddUser = (user: ISystemUser) => {
     setFieldValue(`conditions.system_user`, {
@@ -34,6 +36,12 @@ const SurveyFilterForm = () => {
         </Stack>
         <Stack gap={2}>
           <Typography fontWeight={700}>Conditions</Typography>
+          {errors.conditions && typeof errors.conditions === 'string' && (
+            <Alert severity="error" variant="outlined" sx={{ mb: 2 }}>
+              <AlertTitle>Missing Conditions</AlertTitle>
+              {errors.conditions}
+            </Alert>
+          )}
           <CustomTextField name="conditions.keyword" label="Keyword" />
           <SpeciesAutocompleteField
             formikFieldName="conditions.itis_tsn"

@@ -1,36 +1,25 @@
 import Box from '@mui/material/Box';
 import LinearProgress, { LinearProgressProps } from '@mui/material/LinearProgress';
+import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
-import { useEffect, useState } from 'react';
 
-export const LinearProgressWithLabel = (props: LinearProgressProps & { value: number }) => {
+export const LinearProgressWithLabel = (
+  props: LinearProgressProps & { value: number; suffix?: string; hideLabel?: boolean }
+) => {
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-      <Box sx={{ width: '100%', mr: 1 }}>
-        <LinearProgress variant="determinate" {...props} />
-      </Box>
-      <Box sx={{ minWidth: 35 }}>
-        <Typography variant="body2" sx={{ color: 'text.secondary' }}>{`${Math.round(props.value)}%`}</Typography>
-      </Box>
-    </Box>
-  );
-};
-
-export const LinearWithValueLabel = () => {
-  const [progress, setProgress] = useState(10);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setProgress((prevProgress) => (prevProgress >= 100 ? 10 : prevProgress + 10));
-    }, 800);
-    return () => {
-      clearInterval(timer);
-    };
-  }, []);
-
-  return (
-    <Box sx={{ width: '100%' }}>
-      <LinearProgressWithLabel value={progress} />
+    <Box sx={{ display: 'flex', alignItems: 'center', flex: '1 1 auto' }}>
+      <Tooltip title={`You're ${Math.round(props.value)}% done`} followCursor>
+        <Box sx={{ width: '100%', mr: 1 }}>
+          <LinearProgress variant="determinate" {...props} />
+        </Box>
+      </Tooltip>
+      {!props.hideLabel && (
+        <Box sx={{ minWidth: 60, flexShrink: 0 }}>
+          <Typography variant="body2" color="text.secondary" noWrap>
+            {props.suffix ? `${Math.round(props.value)}% ${props.suffix}` : `${Math.round(props.value)}%`}
+          </Typography>
+        </Box>
+      )}
     </Box>
   );
 };

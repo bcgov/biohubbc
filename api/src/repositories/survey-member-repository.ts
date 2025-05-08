@@ -11,8 +11,7 @@ export const SurveyMember = z.object({
   survey_id: z.number(),
   system_user_id: z.number(),
   survey_role_ids: z.array(z.number()),
-  survey_role_names: z.array(z.string()),
-  survey_role_permissions: z.array(z.string())
+  survey_role_names: z.array(z.string())
 });
 
 export type SurveyMember = z.infer<typeof SurveyMember>;
@@ -50,8 +49,7 @@ export const UserSurveyMember = z.object({
   survey_member_id: z.number(),
   system_user_id: z.number(),
   survey_role_ids: z.array(z.number()),
-  survey_role_names: z.array(z.string()),
-  survey_role_permissions: z.array(z.string())
+  survey_role_names: z.array(z.string())
 });
 
 export type UserSurveyMember = z.infer<typeof UserSurveyMember>;

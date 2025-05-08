@@ -117,8 +117,16 @@ const SurveysListContainer = ({ showSearch }: { showSearch: boolean }) => {
       field: 'survey_id',
       headerName: 'ID',
       width: 85,
-      renderHeader: () => <Typography color={grey[500]}>ID</Typography>,
-      renderCell: (params) => <Typography color={grey[500]}>{params.row.survey_id}</Typography>
+      renderHeader: () => (
+        <Typography color={grey[500]} variant="body2">
+          ID
+        </Typography>
+      ),
+      renderCell: (params) => (
+        <Typography color={grey[500]} variant="body2">
+          {params.row.survey_id}
+        </Typography>
+      )
     },
     {
       field: 'name',
@@ -215,6 +223,8 @@ const SurveysListContainer = ({ showSearch }: { showSearch: boolean }) => {
   const mergedViews: FilterView[] = useMemo(() => [...fixedViews, ...customViews], [fixedViews, customViews]);
 
   const handleViewChange = (viewValue: string) => {
+    surveysDataLoader.clearData();
+
     setActiveView(viewValue);
     const selected = mergedViews.find((v) => v.value === viewValue);
     const filters = selected?.conditions ?? SurveyAdvancedFiltersInitialValues;
@@ -256,15 +266,8 @@ const SurveysListContainer = ({ showSearch }: { showSearch: boolean }) => {
         sx={{
           borderBottom: `1px solid ${grey[300]}`,
           overflowX: 'auto',
-          whiteSpace: 'nowrap',
-          scrollbarWidth: 'thin',
-          '&::-webkit-scrollbar': {
-            height: '6px'
-          },
-          '&::-webkit-scrollbar-thumb': {
-            backgroundColor: grey[400],
-            borderRadius: '3px'
-          }
+          maxWidth: '100%',
+          whiteSpace: 'nowrap'
         }}>
         <Box sx={{ flexShrink: 0 }}>
           <CustomToggleButtonGroup

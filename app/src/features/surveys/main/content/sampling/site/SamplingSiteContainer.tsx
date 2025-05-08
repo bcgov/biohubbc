@@ -146,7 +146,12 @@ export const SamplingSiteContainer = () => {
   };
 
   return (
-    <>
+    <Stack
+      flexDirection="column"
+      height="100%"
+      sx={{
+        overflow: 'hidden'
+      }}>
       {/* Bulk action menu */}
       <Menu
         open={Boolean(headerAnchorEl)}
@@ -215,7 +220,6 @@ export const SamplingSiteContainer = () => {
         hasNoData={!sampleSites.length}
         hasNoDataFallback={
           <NoDataOverlay
-            height="300px"
             title="Add Sampling Sites"
             subtitle="Sampling sites show precisely where you collected data&mdash;at a point, along a transect, or within an area."
             icon={mdiArrowTopRight}
@@ -242,6 +246,6 @@ export const SamplingSiteContainer = () => {
           </Box>
         </Stack>
       </LoadingGuard>
-    </>
+    </Stack>
   );
 };

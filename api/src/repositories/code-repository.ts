@@ -322,7 +322,7 @@ export class CodeRepository extends BaseRepository {
       FROM survey_role
       WHERE record_end_date is null
       ORDER BY
-        CASE WHEN name = 'Coordinator' THEN 0 ELSE 1 END;
+        CASE WHEN name = 'Admin' THEN 0 ELSE 1 END;
     `;
 
     const response = await this.connection.sql(sqlStatement, CodeDescription);
