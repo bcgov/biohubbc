@@ -4,8 +4,50 @@ import { CSVCellValidator } from '../../../utils/csv-utils/csv-config-validation
 import { getTelemetryDeviceKey } from '../../telemetry-services/telemetry-utils';
 import { DeviceRecord } from '../../../database-models/device';
 import { DeploymentCSVStaticHeader } from './import-deployment-service';
+import { setToLowercase } from '../../../utils/string-utils';
+import { ICaptureDetailed } from '../../critterbase-service';
 
+/**
+ * Get a cell validator for the frequency column in a Deployment CSV.
+ *
+ * @returns {*} {CSVCellValidator} The validate cell callback
+ */
+export const getFrequencyUnitCellValidator = (frequency_units: Set<string>): CSVCellValidator => {
+  const frequency_unitsLowerCased = setToLowercase(frequency_units);
 
+  return (params) => {
+    if (frequency_unitsLowerCased.has(String(params.cell).toLowerCase())) {
+      return [];
+    }
+
+    return [
+      {
+        error: `Frequency unit not supported`,
+        solution: `Use a valid frequency unit`,
+        values: Array.from(frequency_units)
+      }
+    ];
+  };
+};
+
+export const getCritterCaptureCellValidator = (captures: ICaptureDetailed[]): CSVCellValidator => {
+  return (params) => {
+    const capture = captures.find((capture) => params.cell === capture.capture_date)
+  
+
+    if (!capture) {
+      return [
+        {
+          error: 'Capture date not found',
+          message: `There is no capture on ${params.cell}.`,
+          solution: 'Create a capture for this date or correct the date in your csv.'
+        }
+      ];
+    }
+
+    return [];
+  };
+}
 
 /**
  * Get a cell validator for the serial number column in a Deployment CSV.

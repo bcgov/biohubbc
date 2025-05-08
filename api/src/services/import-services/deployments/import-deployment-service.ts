@@ -21,7 +21,7 @@ import { TelemetryVendorService } from '../../telemetry-services/telemetry-vendo
 import { CreateDeployment } from '../../../repositories/telemetry-repositories/telemetry-deployment-repository.interface';
 import { getTelemetryVendorCellValidator } from '../telemetry/telemetry-header-configs';
 import { TelemetryDeviceService } from '../../telemetry-services/telemetry-device-service';
-import { getDeviceSerialCellValidator } from './deployment-header-configs';
+import { getCritterCaptureCellValidator, getDeviceSerialCellValidator, getFrequencyUnitCellValidator } from './deployment-header-configs';
 
 const defaultLog = getLogger('services/import-services/import-telemetry-service');
 
@@ -83,60 +83,7 @@ export class ImportDeploymentService extends DBService {
     this.utils = new CSVConfigUtils(this.worksheet, initialConfig);
     this.deviceService = new TelemetryDeviceService(connection);
   }
-
-  /**
-   * Get the mortality ID for a critter based on its alias and mortality date.
-   *
-   * @param {string} alias - The critter alias
-   * @param {string | undefined} mortalityDate - The mortality date
-   * @returns {number | null} The mortality ID or null if not found
-   */
-  getMortalityIdForCritter(alias: string, mortalityDate?: string): number | null {
-    // Placeholder logic for retrieving mortality ID
-    if (!alias || !mortalityDate) {
-      return null;
-    }
-
-    // Implement logic to fetch mortality ID based on alias and mortalityDate
-    // For now, return a dummy value
-    return 1; // Replace with actual implementation
-  }
-
-  /**
-   * Get the capture ID for a critter based on its alias and capture date.
-   *
-   * @param {string} alias - The critter alias
-   * @param {string | undefined} captureDate - The capture date
-   * @returns {number | null} The capture ID or null if not found
-   */
-  getCaptureIdForCritter(alias: string, captureDate?: string): number | null {
-    // Placeholder logic for retrieving capture ID
-    if (!alias || !captureDate) {
-      return null;
-    }
-
-    // Implement logic to fetch capture ID based on alias and captureDate
-    // For now, return a dummy value
-    return 1; // Replace with actual implementation
-  }
-
-  /**
-   * Get the frequency unit ID for a given frequency unit name.
-   *
-   * @param {string | undefined} frequencyUnit - The frequency unit name
-   * @returns {number | null} The frequency unit ID or null if not found
-   */
-  getFrequencyUnitId(frequencyUnit?: string): number | null {
-    // Placeholder logic for retrieving frequency unit ID
-    if (!frequencyUnit) {
-      return null;
-    }
-
-    // Implement logic to fetch frequency unit ID based on frequencyUnit
-    // For now, return a dummy value
-    return 1; // Replace with actual implementation
-  }
-
+  
   /**
    * Import a Deployment CSV worksheet into SIMS.
    *
@@ -189,12 +136,11 @@ export class ImportDeploymentService extends DBService {
    * @returns {Promise<CSVConfig<DeploymentCSVStaticHeader>>} 
    */
   async getCSVConfig(): Promise<CSVConfig<DeploymentCSVStaticHeader>> {
-    const [surveyCritterAliasMap, devices, vendors] = await Promise.all([
+    const [surveyCritterAliasMap, devices, vendors,frequency_units] = await Promise.all([
       this.surveyCritterService.getSurveyCritterAliasMap(this.surveyId),
       this.deviceService.getDevicesForSurvey(this.surveyId),
       this.codeRepository.getActiveTelemetryDeviceMakes(),
-      this.surveyCritterService.getSurveyCritterAliasMap(this.surveyId)
-  
+      this.codeRepository.getFrequencyUnits()
     ]);
 
     // Ensure vendors have a proper type
@@ -202,17 +148,22 @@ export class ImportDeploymentService extends DBService {
       vendors.map((vendor: { name: string }) => vendor.name.toLowerCase())
     );
 
+    // Ensure frequency units are properly calling ids 
+    const frequencySet = new Set(
+      frequency_units.map((frequency_unit) => frequency_unit.name.toLowerCase()));
+
+
     this.utils.setAllStaticHeaderConfigs({
       SERIAL: { validateCell: getDeviceSerialCellValidator(devices, this.utils) },
       ALIAS: { validateCell: getSurveyCritterAliasCellValidator(surveyCritterAliasMap) },
       VENDOR: { validateCell: getTelemetryVendorCellValidator(vendorsSet) },
-      CAPTURE_DATE: { validateCell: getDateCellValidator() },
+      CAPTURE_DATE: { validateCell: getCritterCaptureCellValidator(surveyCritterAliasMap) },
       CAPTURE_TIME: { validateCell: getTimeCellValidator(), setCellValue: getTimeCellSetter() },
       END_DATE: { validateCell: getDateCellValidator() },
       END_TIME: { validateCell: getTimeCellValidator(), setCellValue: getTimeCellSetter() },
       FREQUENCY: { validateCell: getPositiveNumberCellValidator() },
-      FREQUENCY_UNIT: { validateCell: getDescriptionCellValidator() },
-      END_CAPTURE_DATE: { validateCell: getDateCellValidator() },
+      FREQUENCY_UNIT: { validateCell: getFrequencyUnitCellValidator(frequencySet) },
+      END_CAPTURE_DATE: { validateCell: getCritterCaptureCellValidator(surveyCritterAliasMap) },
       MORTALITY_DATE: { validateCell: getDateCellValidator() }
     });
 
