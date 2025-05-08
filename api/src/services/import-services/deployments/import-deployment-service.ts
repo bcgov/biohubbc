@@ -157,13 +157,13 @@ export class ImportDeploymentService extends DBService {
       SERIAL: { validateCell: getDeviceSerialCellValidator(devices, this.utils) },
       ALIAS: { validateCell: getSurveyCritterAliasCellValidator(surveyCritterAliasMap) },
       VENDOR: { validateCell: getTelemetryVendorCellValidator(vendorsSet) },
-      CAPTURE_DATE: { validateCell: getCritterCaptureCellValidator(surveyCritterAliasMap) },
+      CAPTURE_DATE: { validateCell: getCritterCaptureCellValidator(this.utils.getCellValue('ALIAS', this.utils.) ? surveyCritterAliasMap.get(this.utils.getCellValue('ALIAS'))?.captures ?? [] : [])},
       CAPTURE_TIME: { validateCell: getTimeCellValidator(), setCellValue: getTimeCellSetter() },
       END_DATE: { validateCell: getDateCellValidator() },
       END_TIME: { validateCell: getTimeCellValidator(), setCellValue: getTimeCellSetter() },
       FREQUENCY: { validateCell: getPositiveNumberCellValidator() },
       FREQUENCY_UNIT: { validateCell: getFrequencyUnitCellValidator(frequencySet) },
-      END_CAPTURE_DATE: { validateCell: getCritterCaptureCellValidator(surveyCritterAliasMap) },
+      END_CAPTURE_DATE: { validateCell: getCritterCaptureCellValidator(surveyCritterAliasMap.get('BOB')?.captures ?? []) },
       MORTALITY_DATE: { validateCell: getDateCellValidator() }
     });
 
