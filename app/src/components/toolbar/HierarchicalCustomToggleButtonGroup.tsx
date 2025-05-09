@@ -1,14 +1,16 @@
-import { mdiChevronDown, mdiChevronRight } from '@mdi/js'; // Add mdiChevronRight for collapsed state
+import { mdiChevronDown, mdiChevronRight } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
-import Collapse from '@mui/material/Collapse'; // Use Collapse for expanding/collapsing
+import Collapse from '@mui/material/Collapse';
+import grey from '@mui/material/colors/grey';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Typography from '@mui/material/Typography';
 import { CustomTooltip } from 'components/tooltip/CustomTooltip';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
+import appTheme from 'themes/appTheme';
 
 export interface ToggleButtonView<ViewValueType> {
   value: ViewValueType;
@@ -28,6 +30,8 @@ interface HierarchicalCustomToggleButtonGroupProps<ViewValueType extends string>
   onViewChange: (view: ViewValueType) => void;
   orientation: 'horizontal' | 'vertical';
   handleCheckbox?: (view: ToggleButtonView<ViewValueType>) => void;
+  expanded: Set<ViewValueType>;
+  handleExpand: (newValue: Set<ViewValueType>) => void;
 }
 
 export const HierarchicalCustomToggleButtonGroup = <ViewValueType extends string>({
@@ -35,20 +39,18 @@ export const HierarchicalCustomToggleButtonGroup = <ViewValueType extends string
   activeView,
   onViewChange,
   orientation,
-  handleCheckbox
+  handleCheckbox,
+  expanded,
+  handleExpand
 }: HierarchicalCustomToggleButtonGroupProps<ViewValueType>) => {
-  const [expanded, setExpanded] = useState<Set<ViewValueType>>(new Set());
-
   const toggleExpand = (value: ViewValueType) => {
-    setExpanded((prev) => {
-      const updated = new Set(prev);
-      if (updated.has(value)) {
-        updated.delete(value);
-      } else {
-        updated.add(value);
-      }
-      return updated;
-    });
+    const updated = new Set(expanded);
+    if (updated.has(value)) {
+      updated.delete(value);
+    } else {
+      updated.add(value);
+    }
+    handleExpand(updated);
   };
 
   const findParentViews = useCallback(
@@ -72,12 +74,16 @@ export const HierarchicalCustomToggleButtonGroup = <ViewValueType extends string
     },
     []
   );
-
   useEffect(() => {
     if (activeView) {
       const parents = findParentViews(views, activeView);
-      setExpanded((prev) => new Set([...prev, ...parents]));
+
+      // Combine current expanded values with the parents
+      const updated = new Set([...expanded, ...parents]);
+      handleExpand(updated);
     }
+    // Have to ignore expanded and handleExpand
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeView, views, findParentViews]);
 
   const renderViews = (items: ToggleButtonView<ViewValueType>[], level = 0): JSX.Element[] => {
@@ -95,7 +101,7 @@ export const HierarchicalCustomToggleButtonGroup = <ViewValueType extends string
                 if (item.isHeader || item.children?.length) {
                   toggleExpand(item.value);
                 }
-                if (!item.isHeader && !item.disabled) {
+                if (!item.isHeader) {
                   onViewChange(item.value);
                 }
               }}
@@ -115,25 +121,25 @@ export const HierarchicalCustomToggleButtonGroup = <ViewValueType extends string
                     </Box>
                   )}
 
-                  {/* Checkbox */}
                   {item.checkbox && (
                     <Checkbox
-                      disabled={item.disabled}
                       checked={item.isChecked}
                       onClick={(e) => {
-                        e.stopPropagation();
                         handleCheckbox && handleCheckbox(item);
+                        e.stopPropagation();
                       }}
                       size="small"
                       sx={{
                         position: 'absolute',
-                        right: 0
+                        right: 0,
+                        '& .MuiSvgIcon-root': {
+                          fill: item.disabled ? grey[500] : appTheme.palette.primary.main
+                        }
                       }}
                     />
                   )}
                 </Box>
               }
-              disabled={item.disabled}
               sx={{
                 display: 'flex',
                 alignItems: 'center',
@@ -142,10 +148,12 @@ export const HierarchicalCustomToggleButtonGroup = <ViewValueType extends string
                 py: 1,
                 width: '100%',
                 flex: '1 1 auto',
-                border: 'none',
+                border: 'none !important',
                 borderRadius: '4px !important',
                 fontSize: '0.875rem',
-                mr: item.checkbox ? 4 : 0
+                mr: item.checkbox ? 4 : 0,
+                opacity: item.disabled ? 0.5 : 1,
+                cursor: item.disabled && !item.checkbox ? 'default' : 'pointer'
               }}>
               <Typography flex="1 1 auto" textAlign="left" fontWeight={700} textTransform="capitalize">
                 {item.label}
@@ -156,7 +164,7 @@ export const HierarchicalCustomToggleButtonGroup = <ViewValueType extends string
       );
 
       const children = hasChildren && (
-        <Collapse in={expanded.has(item.value)} unmountOnExit>
+        <Collapse key={`${item.value}-children`} in={expanded.has(item.value)} unmountOnExit>
           {renderViews(item.children!, level + 1)}
         </Collapse>
       );
@@ -168,7 +176,7 @@ export const HierarchicalCustomToggleButtonGroup = <ViewValueType extends string
   // Render all views without altering their order
   const renderToggleButtonGroups = () => {
     return (
-      <ToggleButtonGroup orientation={orientation} value={activeView} exclusive sx={{ width: '100%' }}>
+      <ToggleButtonGroup key="all-items" orientation={orientation} value={activeView} exclusive sx={{ width: '100%' }}>
         {renderViews(views)}
       </ToggleButtonGroup>
     );

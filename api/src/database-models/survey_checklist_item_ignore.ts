@@ -9,7 +9,6 @@ export const SurveyChecklistItemIgnoreModel = z.object({
   survey_checklist_item_ignore_id: z.number(),
   survey_id: z.number(),
   checklist_item_id: z.number(),
-  description: z.string().nullable(),
   create_date: z.string(),
   create_user: z.number(),
   update_date: z.string().nullable(),

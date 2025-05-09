@@ -86,6 +86,7 @@ export async function up(knex: Knex): Promise<void> {
 
     CREATE INDEX survey_checklist_item_ignore_idx1 ON survey_checklist_item_ignore (checklist_item_id);
     CREATE INDEX survey_checklist_item_ignore_idx2 ON survey_checklist_item_ignore (survey_id);
+    CREATE UNIQUE INDEX survey_checklist_item_ignore_nuk1 ON survey_checklist_item_ignore (survey_id, checklist_item_id);
 
     COMMENT ON COLUMN survey_checklist_item_ignore.survey_checklist_item_ignore_id IS 'System-generated primary key identifier for the survey checklist item.';
     COMMENT ON COLUMN survey_checklist_item_ignore.checklist_item_id IS 'Foreign key to the checklist_item table.';

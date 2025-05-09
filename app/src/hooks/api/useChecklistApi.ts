@@ -24,14 +24,27 @@ export const useChecklistApi = (axios: AxiosInstance) => {
    * Mark a survey checklist item as ignored/non-applicable to the survey
    *
    * @param {number} surveyId
-   * @param {number} checkboxItemId
+   * @param {number} checklistItemName
    * @return {*} {Promise<void>}
    */
-  const ignoreSurveyChecklistItem = async (surveyId: number, checkboxItemId: number): Promise<void> => {
-    const { data } = await axios.post(`/api/survey/${surveyId}/checklist`, { checkboxItemId });
+  const ignoreSurveyChecklistItem = async (surveyId: number, checklistItemName: string): Promise<void> => {
+    const { data } = await axios.post(`/api/survey/${surveyId}/checklist`, { checklistItemName });
 
     return data;
   };
 
-  return { getSurveyChecklist, ignoreSurveyChecklistItem };
+  /**
+   * Mark a survey checklist item as applicable
+   *
+   * @param {number} surveyId
+   * @param {number} checklistItemName
+   * @return {*} {Promise<void>}
+   */
+  const unignoreSurveyChecklistItem = async (surveyId: number, checklistItemName: string): Promise<void> => {
+    const { data } = await axios.delete(`/api/survey/${surveyId}/checklist/${checklistItemName}`);
+
+    return data;
+  };
+
+  return { getSurveyChecklist, ignoreSurveyChecklistItem, unignoreSurveyChecklistItem };
 };

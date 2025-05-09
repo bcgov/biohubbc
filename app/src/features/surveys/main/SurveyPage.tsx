@@ -6,7 +6,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useSearchParams } from 'hooks/useSearchParams';
 import { SidebarLayout } from 'layouts/SidebarLayout';
-import { useContext, useEffect } from 'react';
+import { useCallback, useContext, useEffect } from 'react';
 import { SurveyChecklist } from './checklist/SurveyChecklist';
 
 import Box from '@mui/material/Box';
@@ -28,6 +28,7 @@ import grey from '@mui/material/colors/grey';
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
 import { usePersistentState } from 'hooks/usePersistentState';
+import { IGetSurveyChecklistItem } from 'interfaces/useChecklistApi.interface';
 import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import SurveyHeader from '../view/SurveyHeader';
 import { SurveyChecklistGuide } from './guide/SurveyChecklistGuide';
@@ -93,6 +94,19 @@ export const SurveyPage = () => {
     setSearchParams(searchParams.set(ACTIVE_VIEW_KEY, updatedView));
   };
 
+  const handleCheckboxClick = useCallback(
+    async (item: IGetSurveyChecklistItem) => {
+      if (item.applicable) {
+        await biohubApi.checklist.ignoreSurveyChecklistItem(surveyContext.surveyId, item.checklist_item_name);
+      } else {
+        await biohubApi.checklist.unignoreSurveyChecklistItem(surveyContext.surveyId, item.checklist_item_name);
+      }
+
+      await checklistDataLoader.refresh();
+    },
+    [biohubApi.checklist, surveyContext.surveyId, checklistDataLoader]
+  );
+
   if (!codesContext.codesDataLoader.data || !surveyContext.surveyDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
@@ -103,13 +117,11 @@ export const SurveyPage = () => {
       <Container component={Paper} maxWidth={'xl'} sx={{ my: 3, p: 0 }} disableGutters>
         <SidebarLayout
           sidebar={
-            <Box sx={{ width: 300, flexShrink: 0, mx: 1 }}>
+            <Box sx={{ width: 400, flexShrink: 0, mx: 1 }}>
               <LoadingGuard
-                isLoading={
-                  checklistDataLoader.isLoading ||
-                  codesContext.codesDataLoader.isLoading ||
-                  surveyContext.surveyDataLoader.isLoading
-                }
+                // If isLoading={checklistDataLoader.isLoading}, the skeleton loader is triggered when a checklist item
+                // is disabled. This is undesired, so isLoading depends on whether data exists.
+                isLoading={!checklistDataLoader.data || codesContext.codesDataLoader.isLoading}
                 isLoadingFallbackDelay={600}
                 isLoadingFallback={
                   <Stack pt={1} spacing={2}>
@@ -124,6 +136,7 @@ export const SurveyPage = () => {
                       checklist={checklistDataLoader.data.checklist}
                       activeView={activeView}
                       handleViewChange={handleViewChange}
+                      handleCheckboxClick={handleCheckboxClick}
                     />
                   </Box>
                 )}
@@ -133,11 +146,7 @@ export const SurveyPage = () => {
           <Box sx={{ display: 'flex', gap: 2, height: '100%' }}>
             <Box sx={{ flex: 1, minWidth: 0, height: '100%' }}>
               <LoadingGuard
-                isLoading={
-                  checklistDataLoader.isLoading ||
-                  codesContext.codesDataLoader.isLoading ||
-                  surveyContext.surveyDataLoader.isLoading
-                }
+                isLoading={codesContext.codesDataLoader.isLoading || surveyContext.surveyDataLoader.isLoading}
                 isLoadingFallbackDelay={600}
                 isLoadingFallback={
                   <Box sx={{ p: 3 }}>

@@ -1,10 +1,9 @@
-import { Box, Button, Skeleton, Typography } from '@mui/material';
-import { LoadingGuard } from 'components/loading/LoadingGuard';
+import { Box, Button, Typography } from '@mui/material';
 import { HierarchicalCustomToggleButtonGroup } from 'components/toolbar/HierarchicalCustomToggleButtonGroup';
-import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
+import { usePersistentState } from 'hooks/usePersistentState';
 import { IGetSurveyChecklist, IGetSurveyChecklistItem } from 'interfaces/useChecklistApi.interface';
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 import { ACTIVE_VIEW_VALUE, VIEW_MAP } from '../SurveyPage';
 import { LinearProgressWithLabel } from './progress/SurveyChecklistProgressBar';
 
@@ -12,9 +11,10 @@ interface SurveyChecklistProps {
   checklist: IGetSurveyChecklist;
   activeView: ACTIVE_VIEW_VALUE | null;
   handleViewChange: (view: ACTIVE_VIEW_VALUE) => void;
+  handleCheckboxClick: (item: IGetSurveyChecklistItem) => Promise<void>;
 }
 
-type ChecklistItem = {
+type ChecklistItem = IGetSurveyChecklistItem & {
   value: ACTIVE_VIEW_VALUE;
   label: string;
   isChecked?: boolean;
@@ -22,20 +22,22 @@ type ChecklistItem = {
   disabled?: boolean;
   order: number;
   checkbox?: boolean;
-  handleCheckbox: (id: number) => Promise<void>;
   children?: ChecklistItem[];
 };
 
-export const SurveyChecklist = ({ checklist, activeView, handleViewChange }: SurveyChecklistProps) => {
+export const SurveyChecklist = ({
+  checklist,
+  activeView,
+  handleViewChange,
+  handleCheckboxClick
+}: SurveyChecklistProps) => {
   const { surveyId } = useSurveyContext();
-  const biohubApi = useBiohubApi();
 
-  const handleCheckboxClick = useCallback(
-    (checkbox_item_id: number) => {
-      return biohubApi.checklist.ignoreSurveyChecklistItem(surveyId, checkbox_item_id);
-    },
-    [biohubApi.checklist, surveyId]
+  const [expanded, setExpanded] = usePersistentState<Set<ACTIVE_VIEW_VALUE>>(
+    `${surveyId}_survey_checklist_expanded`,
+    new Set()
   );
+
   const checklistItems = useMemo(() => {
     if (!checklist) {
       return [];
@@ -51,13 +53,13 @@ export const SurveyChecklist = ({ checklist, activeView, handleViewChange }: Sur
           }
 
           return {
+            ...item,
             value: mappedValue.value,
             label: key,
             isChecked: !!item.count,
             disabled: !item.applicable,
             checkbox: true,
-            handleCheckbox: handleCheckboxClick,
-            order: mappedValue.order // Add order for sorting
+            order: mappedValue.order
           };
         })
         .filter((item): item is ChecklistItem => item !== null);
@@ -67,6 +69,9 @@ export const SurveyChecklist = ({ checklist, activeView, handleViewChange }: Sur
     const telemetryGroup: ChecklistItem = {
       value: ACTIVE_VIEW_VALUE.telemetry,
       label: 'Telemetry',
+      checklist_item_name: 'telemetry', // dummy value to satisfy the type, not actually used here
+      count: 0,
+      applicable: true,
       checkbox: true,
       isHeader: true,
       order: 5,
@@ -78,7 +83,6 @@ export const SurveyChecklist = ({ checklist, activeView, handleViewChange }: Sur
         !checklist.data.telemetry.devices.applicable &&
         !checklist.data.telemetry.deployments.applicable &&
         !checklist.data.telemetry.locations.applicable,
-      handleCheckbox: handleCheckboxClick,
       children: createItems(checklist.data.telemetry)
     };
 
@@ -93,9 +97,11 @@ export const SurveyChecklist = ({ checklist, activeView, handleViewChange }: Sur
     const dataGroup: ChecklistItem = {
       value: 'data' as ACTIVE_VIEW_VALUE,
       label: 'Data',
+      checklist_item_name: 'data', // dummy value
+      count: 0,
+      applicable: true,
       isHeader: true,
       order: 0,
-      handleCheckbox: handleCheckboxClick,
       children: [...otherDataItems, telemetryGroup]
     };
 
@@ -103,10 +109,12 @@ export const SurveyChecklist = ({ checklist, activeView, handleViewChange }: Sur
     const samplingGroup: ChecklistItem = {
       value: 'sampling' as ACTIVE_VIEW_VALUE,
       label: 'Sampling',
+      checklist_item_name: 'sampling', // dummy value
+      count: 0,
+      applicable: true,
       isHeader: true,
       order: 0,
       checkbox: false,
-      handleCheckbox: handleCheckboxClick,
       children: createItems(checklist.sampling)
     };
 
@@ -114,10 +122,12 @@ export const SurveyChecklist = ({ checklist, activeView, handleViewChange }: Sur
     const supplementaryGroup: ChecklistItem = {
       value: 'supplementary' as ACTIVE_VIEW_VALUE,
       label: 'Supplementary',
+      checklist_item_name: 'supplementary', // dummy value
+      count: 0,
+      applicable: true,
       isHeader: true,
       order: 0,
       checkbox: false,
-      handleCheckbox: handleCheckboxClick,
       children: createItems({ attachments: checklist.attachments })
     };
 
@@ -152,7 +162,24 @@ export const SurveyChecklist = ({ checklist, activeView, handleViewChange }: Sur
     });
 
     return sortedGroups;
-  }, [checklist, handleCheckboxClick]);
+  }, [checklist]);
+
+  const flattenedChecklistItems = useMemo(() => {
+    const flattenItems = (items: ChecklistItem[]): ChecklistItem[] => {
+      return items.flatMap((item: ChecklistItem) => {
+        const flattenedItem = {
+          ...item
+        };
+
+        // Recursively flatten children if they exist
+        const subitems = item.children ? flattenItems(item.children) : [];
+
+        return [flattenedItem, ...subitems];
+      });
+    };
+
+    return flattenItems(checklistItems);
+  }, [checklistItems]);
 
   const progressValue = checklist?.progress_percentage ?? 0;
 
@@ -163,9 +190,7 @@ export const SurveyChecklist = ({ checklist, activeView, handleViewChange }: Sur
         Progress
       </Typography>
       <Box my={2}>
-        <LoadingGuard isLoadingFallback={<Skeleton variant="rectangular" height="8px" width="100%" />}>
-          <LinearProgressWithLabel value={progressValue} suffix="complete" />
-        </LoadingGuard>
+        <LinearProgressWithLabel value={progressValue} suffix="complete" />
       </Box>
 
       {/* Checklist Toggle Buttons */}
@@ -174,6 +199,39 @@ export const SurveyChecklist = ({ checklist, activeView, handleViewChange }: Sur
         activeView={activeView}
         onViewChange={handleViewChange}
         orientation="vertical"
+        handleCheckbox={(item) => {
+          console.log(flattenedChecklistItems);
+          const checklistObject = flattenedChecklistItems.find((checklistItem) => checklistItem.value === item.value);
+          console.log(checklistObject);
+
+          if (checklistObject) {
+            handleCheckboxClick(checklistObject);
+
+            if (item.value === activeView) {
+              const findNextValidView = (items: ChecklistItem[]): ACTIVE_VIEW_VALUE | null => {
+                for (const item of items) {
+                  if (!item.isHeader && !item.disabled && item.value !== activeView) {
+                    return item.value;
+                  }
+                  if (item.children) {
+                    const childResult = findNextValidView(item.children);
+                    if (childResult) {
+                      return childResult;
+                    }
+                  }
+                }
+                return null;
+              };
+
+              const nextView = findNextValidView(checklistItems);
+              if (nextView) {
+                handleViewChange(nextView);
+              }
+            }
+          }
+        }}
+        expanded={expanded}
+        handleExpand={setExpanded}
       />
 
       {/* Publish Button */}

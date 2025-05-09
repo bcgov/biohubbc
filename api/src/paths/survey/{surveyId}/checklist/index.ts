@@ -1,11 +1,11 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { COLLECTION_ROLE, SURVEY_ROLE } from '../../../constants/roles';
-import { getDBConnection } from '../../../database/db';
-import { getSurveyChecklistResponse } from '../../../openapi/schemas/survey';
-import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
-import { SurveyChecklistService } from '../../../services/survey-checklist-service';
-import { getLogger } from '../../../utils/logger';
+import { COLLECTION_ROLE, SURVEY_ROLE } from '../../../../constants/roles';
+import { getDBConnection } from '../../../../database/db';
+import { getSurveyChecklistResponse } from '../../../../openapi/schemas/survey';
+import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
+import { SurveyChecklistService } from '../../../../services/survey-checklist-service';
+import { getLogger } from '../../../../utils/logger';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/checklist');
 
@@ -152,9 +152,9 @@ POST.apiDoc = {
           title: 'Checklist item ignore post request object.',
           type: 'object',
           additionalProperties: false,
-          required: ['checklistItemId'],
+          required: ['checklistItemName'],
           properties: {
-            checklistItemId: { type: 'integer', description: 'The primary key of the checklist item to ignore' }
+            checklistItemName: { type: 'string', description: 'The name of the checklist item to ignore' }
           }
         }
       }
@@ -193,9 +193,9 @@ export function insertSurveyChecklistItemIgnore(): RequestHandler {
 
       const surveyChecklistService = new SurveyChecklistService(connection);
 
-      const checklistItemId = Number(req.body.checklistItemId);
+      const checklistItemName = req.body.checklistItemName as string;
 
-      await surveyChecklistService.insertSurveyChecklistItemIgnore(surveyId, checklistItemId);
+      await surveyChecklistService.insertSurveyChecklistItemIgnore(surveyId, checklistItemName);
 
       await connection.commit();
 

@@ -88,7 +88,7 @@ export class SurveyChecklistRepository extends BaseRepository {
               FROM survey_sample_site AS sss 
               WHERE sss.survey_id = s.survey_id
             ), 0),
-            'applicable', NOT EXISTS (SELECT 1 FROM ignored_items WHERE name = 'sites')
+            'applicable', NOT EXISTS (SELECT 1 FROM ignored_items WHERE name = 'sites' AND survey_id = ${surveyId})
           ),
           'techniques', jsonb_build_object(
             'checklist_item_name', (SELECT name FROM checklist_items WHERE name = 'techniques'),
@@ -97,7 +97,7 @@ export class SurveyChecklistRepository extends BaseRepository {
               FROM method_technique AS mt 
               WHERE mt.survey_id = s.survey_id
             ), 0),
-            'applicable', NOT EXISTS (SELECT 1 FROM ignored_items WHERE name = 'techniques')
+            'applicable', NOT EXISTS (SELECT 1 FROM ignored_items WHERE name = 'techniques' AND survey_id = ${surveyId})
           ),
           'periods', jsonb_build_object(
             'checklist_item_name', (SELECT name FROM checklist_items WHERE name = 'periods'),
@@ -106,7 +106,7 @@ export class SurveyChecklistRepository extends BaseRepository {
               FROM survey_sample_period AS ssp 
               WHERE ssp.survey_id = s.survey_id
             ), 0),
-            'applicable', NOT EXISTS (SELECT 1 FROM ignored_items WHERE name = 'periods')
+            'applicable', NOT EXISTS (SELECT 1 FROM ignored_items WHERE name = 'periods' AND survey_id = ${surveyId})
           )
         ),
         'data', jsonb_build_object(
@@ -117,7 +117,7 @@ export class SurveyChecklistRepository extends BaseRepository {
               FROM survey_observation AS so 
               WHERE so.survey_id = s.survey_id
             ), 0),
-            'applicable', NOT EXISTS (SELECT 1 FROM ignored_items WHERE name = 'observations')
+            'applicable', NOT EXISTS (SELECT 1 FROM ignored_items WHERE name = 'observations' AND survey_id = ${surveyId})
           ),
           'telemetry', jsonb_build_object(
             'devices', jsonb_build_object(
@@ -127,7 +127,7 @@ export class SurveyChecklistRepository extends BaseRepository {
                 FROM device AS dv 
                 WHERE dv.survey_id = s.survey_id
               ), 0),
-              'applicable', NOT EXISTS (SELECT 1 FROM ignored_items WHERE name = 'devices')
+              'applicable', NOT EXISTS (SELECT 1 FROM ignored_items WHERE name = 'devices' AND survey_id = ${surveyId})
             ),
             'deployments', jsonb_build_object(
               'checklist_item_name', (SELECT name FROM checklist_items WHERE name = 'deployments'),
@@ -136,7 +136,7 @@ export class SurveyChecklistRepository extends BaseRepository {
                 FROM deployment AS d 
                 WHERE d.survey_id = s.survey_id
               ), 0),
-              'applicable', NOT EXISTS (SELECT 1 FROM ignored_items WHERE name = 'deployments')
+              'applicable', NOT EXISTS (SELECT 1 FROM ignored_items WHERE name = 'deployments' AND survey_id = ${surveyId})
             ),
             'locations', jsonb_build_object(
               'checklist_item_name', (SELECT name FROM checklist_items WHERE name = 'locations'),
@@ -164,7 +164,7 @@ export class SurveyChecklistRepository extends BaseRepository {
                 LEFT JOIN telemetry_ats AS ta ON d.device_key = ta.device_key 
                 WHERE d.survey_id = s.survey_id
               ), 0),
-              'applicable', NOT EXISTS (SELECT 1 FROM ignored_items WHERE name = 'locations')
+              'applicable', NOT EXISTS (SELECT 1 FROM ignored_items WHERE name = 'locations' AND survey_id = ${surveyId})
             )
           ),
           'animals', jsonb_build_object(
@@ -174,7 +174,7 @@ export class SurveyChecklistRepository extends BaseRepository {
               FROM critter AS c 
               WHERE c.survey_id = s.survey_id
             ), 0),
-            'applicable', NOT EXISTS (SELECT 1 FROM ignored_items WHERE name = 'animals')
+            'applicable', NOT EXISTS (SELECT 1 FROM ignored_items WHERE name = 'animals' AND survey_id = ${surveyId})
           ),
           'habitat', jsonb_build_object(
             'checklist_item_name', (SELECT name FROM checklist_items WHERE name = 'habitat'),
@@ -183,7 +183,7 @@ export class SurveyChecklistRepository extends BaseRepository {
               FROM survey_habitat_feature AS shf 
               WHERE shf.survey_id = s.survey_id
             ), 0),
-            'applicable', NOT EXISTS (SELECT 1 FROM ignored_items WHERE name = 'habitat')
+            'applicable', NOT EXISTS (SELECT 1 FROM ignored_items WHERE name = 'habitat' AND survey_id = ${surveyId})
           )
         ),
         'attachments', jsonb_build_object(
@@ -193,7 +193,7 @@ export class SurveyChecklistRepository extends BaseRepository {
             FROM survey_attachment AS sa 
             WHERE sa.survey_id = s.survey_id
           ), 0),
-          'applicable', NOT EXISTS (SELECT 1 FROM ignored_items WHERE name = 'attachments')
+          'applicable', NOT EXISTS (SELECT 1 FROM ignored_items WHERE name = 'attachments' AND survey_id = ${surveyId})
         ),
         'progress_percentage', (
           SELECT ROUND(
@@ -248,21 +248,45 @@ export class SurveyChecklistRepository extends BaseRepository {
    * Insert a checklist item to ignore using its name in the survey_checklist_item_ignore table.
    *
    * @param {number} surveyId
-   * @param {number} checklistItemId
+   * @param {string} checklistItemName
    * @return {*}  {Promise<void>}
    * @memberof SurveyChecklistRepository
    */
-  async insertSurveyChecklistItemIgnore(surveyId: number, checklistItemId: number): Promise<void> {
+  async insertSurveyChecklistItemIgnore(surveyId: number, checklistItemName: string): Promise<void> {
     const sqlStatement = SQL`
       INSERT INTO survey_checklist_item_ignore (survey_id, checklist_item_id)
-      VALUES (${surveyId}, ${checklistItemId})
-      RETURNING *
+      VALUES (
+        ${surveyId},
+        (SELECT checklist_item_id FROM checklist_item WHERE name = ${checklistItemName})
+      )
+      RETURNING *;
     `;
 
     const response = await this.connection.sql(sqlStatement, SurveyChecklistItemIgnoreModel);
 
+    console.log('inserted!', response.rows);
+
     if (response.rowCount !== 1) {
       throw new Error('Failed to insert into survey_checklist_item_ignore');
     }
+  }
+
+  /**
+   * Delete an ignored checklist item for the survey
+   *
+   * @param {number} surveyId
+   * @param {string} checklistItemName
+   * @return {*}  {Promise<void>}
+   * @memberof SurveyChecklistRepository
+   */
+  async deleteSurveyChecklistItemIgnore(surveyId: number, checklistItemName: string): Promise<void> {
+    const sqlStatement = SQL`
+        DELETE FROM 
+          survey_checklist_item_ignore
+        WHERE 
+          survey_id = ${surveyId} AND checklist_item_id = (SELECT checklist_item_id FROM checklist_item WHERE name = ${checklistItemName})
+        `;
+
+    await this.connection.sql(sqlStatement, SurveyChecklistItemIgnoreModel);
   }
 }
