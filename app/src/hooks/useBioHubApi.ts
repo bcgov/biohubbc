@@ -11,6 +11,7 @@ import { useAlertApi } from './api/useAlertApi';
 import useAnalyticsApi from './api/useAnalyticsApi';
 import useAnimalApi from './api/useAnimalApi';
 import useAxios from './api/useAxios';
+import { useChecklistApi } from './api/useChecklistApi';
 import useCodesApi from './api/useCodesApi';
 import { useCollectionApi } from './api/useCollectionApi';
 import useExternalApi from './api/useExternalApi';
@@ -53,6 +54,8 @@ export const useBiohubApi = () => {
   const taxonomy = useTaxonomyApi();
 
   const filter = useFilterApi(apiAxios);
+
+  const checklist = useChecklistApi(apiAxios);
 
   const survey = useSurveyApi(apiAxios);
 
@@ -117,6 +120,7 @@ export const useBiohubApi = () => {
       user,
       admin,
       external,
+      checklist,
       publish,
       spatial,
       technique,

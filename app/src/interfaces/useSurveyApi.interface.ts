@@ -404,22 +404,6 @@ interface IUpdateAgreementsForm {
   };
 }
 
-export interface IGetSurveyChecklistResponse {
-  checklist: IGetSurveyChecklist;
-}
-
-export interface IGetSurveyChecklist {
-  sampling: { sites: number; techniques: number; periods: number };
-  data: {
-    observations: number;
-    telemetry: { devices: number; deployments: number; locations: number };
-    habitat: number;
-    animals: number;
-  };
-  attachments: number;
-  progress_percentage: number;
-}
-
 export interface IGetSurveyForUpdateResponse {
   surveyData: {
     survey_details: {

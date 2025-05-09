@@ -284,7 +284,7 @@ const SurveysListContainer = ({ showSearch }: { showSearch: boolean }) => {
         </Box>
       </Stack>
 
-      <Box height="90vh" maxHeight="700px">
+      <Box height="100%">
         <LoadingGuard
           isLoading={!rows.length && (surveysDataLoader.isLoading || !surveysDataLoader.isReady)}
           isLoadingFallback={<SkeletonTable />}
@@ -327,7 +327,6 @@ const SurveysListContainer = ({ showSearch }: { showSearch: boolean }) => {
             disableColumnFilter
             disableColumnMenu
             rowHeight={70}
-            getRowHeight={() => 'auto'}
             autoHeight={false}
           />
         </LoadingGuard>

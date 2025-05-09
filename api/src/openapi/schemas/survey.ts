@@ -559,28 +559,31 @@ export const getSurveyChecklistResponse: OpenAPIV3.SchemaObject = {
         sites: {
           type: 'object',
           additionalProperties: false,
-          required: ['count', 'applicable'],
+          required: ['count', 'applicable', 'checklist_item_name'],
           properties: {
             count: { type: 'integer', description: 'The number of items in the survey' },
-            applicable: { type: 'boolean', description: 'Whether the chicklist item is applicable to the survey' }
+            applicable: { type: 'boolean', description: 'Whether the checklist item is applicable to the survey' },
+            checklist_item_name: { type: 'string', description: 'The name of the checklist item' }
           }
         },
         techniques: {
           type: 'object',
           additionalProperties: false,
-          required: ['count', 'applicable'],
+          required: ['count', 'applicable', 'checklist_item_name'],
           properties: {
             count: { type: 'integer', description: 'The number of items in the survey' },
-            applicable: { type: 'boolean', description: 'Whether the chicklist item is applicable to the survey' }
+            applicable: { type: 'boolean', description: 'Whether the checklist item is applicable to the survey' },
+            checklist_item_name: { type: 'string', description: 'The name of the checklist item' }
           }
         },
         periods: {
           type: 'object',
           additionalProperties: false,
-          required: ['count', 'applicable'],
+          required: ['count', 'applicable', 'checklist_item_name'],
           properties: {
             count: { type: 'integer', description: 'The number of items in the survey' },
-            applicable: { type: 'boolean', description: 'Whether the chicklist item is applicable to the survey' }
+            applicable: { type: 'boolean', description: 'Whether the checklist item is applicable to the survey' },
+            checklist_item_name: { type: 'string', description: 'The name of the checklist item' }
           }
         }
       }
@@ -591,10 +594,11 @@ export const getSurveyChecklistResponse: OpenAPIV3.SchemaObject = {
         observations: {
           type: 'object',
           additionalProperties: false,
-          required: ['count', 'applicable'],
+          required: ['count', 'applicable', 'checklist_item_name'],
           properties: {
             count: { type: 'integer', description: 'The number of items in the survey' },
-            applicable: { type: 'boolean', description: 'Whether the chicklist item is applicable to the survey' }
+            applicable: { type: 'boolean', description: 'Whether the checklist item is applicable to the survey' },
+            checklist_item_name: { type: 'string', description: 'The name of the checklist item' }
           }
         },
         telemetry: {
@@ -605,28 +609,31 @@ export const getSurveyChecklistResponse: OpenAPIV3.SchemaObject = {
             locations: {
               type: 'object',
               additionalProperties: false,
-              required: ['count', 'applicable'],
+              required: ['count', 'applicable', 'checklist_item_name'],
               properties: {
                 count: { type: 'integer', description: 'The number of items in the survey' },
-                applicable: { type: 'boolean', description: 'Whether the chicklist item is applicable to the survey' }
+                applicable: { type: 'boolean', description: 'Whether the chicklist item is applicable to the survey' },
+                checklist_item_name: { type: 'string', description: 'The name of the checklist item' }
               }
             },
             devices: {
               type: 'object',
               additionalProperties: false,
-              required: ['count', 'applicable'],
+              required: ['count', 'applicable', 'checklist_item_name'],
               properties: {
                 count: { type: 'integer', description: 'The number of items in the survey' },
-                applicable: { type: 'boolean', description: 'Whether the chicklist item is applicable to the survey' }
+                applicable: { type: 'boolean', description: 'Whether the chicklist item is applicable to the survey' },
+                checklist_item_name: { type: 'string', description: 'The name of the checklist item' }
               }
             },
             deployments: {
               type: 'object',
               additionalProperties: false,
-              required: ['count', 'applicable'],
+              required: ['count', 'applicable', 'checklist_item_name'],
               properties: {
                 count: { type: 'integer', description: 'The number of items in the survey' },
-                applicable: { type: 'boolean', description: 'Whether the chicklist item is applicable to the survey' }
+                applicable: { type: 'boolean', description: 'Whether the chicklist item is applicable to the survey' },
+                checklist_item_name: { type: 'string', description: 'The name of the checklist item' }
               }
             }
           }
@@ -634,19 +641,21 @@ export const getSurveyChecklistResponse: OpenAPIV3.SchemaObject = {
         animals: {
           type: 'object',
           additionalProperties: false,
-          required: ['count', 'applicable'],
+          required: ['count', 'applicable', 'checklist_item_name'],
           properties: {
             count: { type: 'integer', description: 'The number of items in the survey' },
-            applicable: { type: 'boolean', description: 'Whether the chicklist item is applicable to the survey' }
+            applicable: { type: 'boolean', description: 'Whether the checklist item is applicable to the survey' },
+            checklist_item_name: { type: 'string', description: 'The name of the checklist item' }
           }
         },
         habitat: {
           type: 'object',
           additionalProperties: false,
-          required: ['count', 'applicable'],
+          required: ['count', 'applicable', 'checklist_item_name'],
           properties: {
             count: { type: 'integer', description: 'The number of items in the survey' },
-            applicable: { type: 'boolean', description: 'Whether the chicklist item is applicable to the survey' }
+            applicable: { type: 'boolean', description: 'Whether the checklist item is applicable to the survey' },
+            checklist_item_name: { type: 'string', description: 'The name of the checklist item' }
           }
         }
       }
@@ -654,10 +663,11 @@ export const getSurveyChecklistResponse: OpenAPIV3.SchemaObject = {
     attachments: {
       type: 'object',
       additionalProperties: false,
-      required: ['count', 'applicable'],
+      required: ['count', 'applicable', 'checklist_item_name'],
       properties: {
         count: { type: 'integer', description: 'The number of items in the survey' },
-        applicable: { type: 'boolean', description: 'Whether the chicklist item is applicable to the survey' }
+        applicable: { type: 'boolean', description: 'Whether the chicklist item is applicable to the survey' },
+        checklist_item_name: { type: 'string', description: 'The name of the checklist item' }
       }
     },
     progress_percentage: {

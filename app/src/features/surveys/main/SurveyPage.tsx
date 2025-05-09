@@ -49,6 +49,21 @@ export enum ACTIVE_VIEW_VALUE {
   habitat = 'habitat'
 }
 
+// Static mapping, no need to use `useMemo`
+export const VIEW_MAP: Record<string, { value: ACTIVE_VIEW_VALUE; order: number }> = {
+  sites: { value: ACTIVE_VIEW_VALUE.sites, order: 0 },
+  techniques: { value: ACTIVE_VIEW_VALUE.techniques, order: 1 },
+  periods: { value: ACTIVE_VIEW_VALUE.periods, order: 2 },
+  observations: { value: ACTIVE_VIEW_VALUE.observations, order: 3 },
+  telemetry: { value: ACTIVE_VIEW_VALUE.telemetry, order: 4 },
+  devices: { value: ACTIVE_VIEW_VALUE.devices, order: 5 },
+  deployments: { value: ACTIVE_VIEW_VALUE.deployments, order: 6 },
+  locations: { value: ACTIVE_VIEW_VALUE.locations, order: 7 },
+  habitat: { value: ACTIVE_VIEW_VALUE.habitat, order: 8 },
+  animals: { value: ACTIVE_VIEW_VALUE.animals, order: 9 },
+  attachments: { value: ACTIVE_VIEW_VALUE.attachments, order: 10 }
+};
+
 const DEFAULT_VIEW = ACTIVE_VIEW_VALUE.sites;
 const GUIDE_WIDTH = 350;
 
@@ -60,7 +75,7 @@ export const SurveyPage = () => {
   const { searchParams, setSearchParams } = useSearchParams<{ [ACTIVE_VIEW_KEY]: ACTIVE_VIEW_VALUE }>();
   const [showGuide, setShowGuide] = usePersistentState('SHOW_SURVEY_GUIDE', true);
 
-  const checklistDataLoader = useDataLoader(() => biohubApi.survey.getSurveyChecklist(surveyContext.surveyId));
+  const checklistDataLoader = useDataLoader(() => biohubApi.checklist.getSurveyChecklist(surveyContext.surveyId));
 
   useEffect(() => {
     checklistDataLoader.load();
