@@ -1,4 +1,4 @@
-import { mdiInformationSlabBoxOutline } from '@mdi/js';
+import { mdiHelpCircleOutline } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import IconButton from '@mui/material/IconButton';
 import { CustomMarkdown } from 'components/markdown/CustomMarkdown';
@@ -46,7 +46,7 @@ const HelpButtonDialog = (props: IHelpButtonDialogProps) => {
 
   return (
     <IconButton onClick={handleOpenDialog}>
-      <Icon path={mdiInformationSlabBoxOutline} size={1} />
+      <Icon path={mdiHelpCircleOutline} size={1} />
     </IconButton>
   );
 };

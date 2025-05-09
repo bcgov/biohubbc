@@ -264,6 +264,7 @@ const SurveysListContainer = ({ showSearch }: { showSearch: boolean }) => {
         flexDirection="row"
         alignItems="center"
         p={2}
+        gap={0.5}
         sx={{
           borderBottom: `1px solid ${grey[300]}`,
           overflowX: 'auto',

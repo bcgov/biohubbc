@@ -174,12 +174,8 @@ const CollectionSurveyContainer = (props: ICollectionSurveyContainerProps) => {
       flex: 0.3,
       disableColumnMenu: true,
       renderCell: (params) =>
-        params.row.end_date ? (
+        params.row.end_date && (
           <Typography variant="body2">{getFormattedDate(DATE_FORMAT.MediumDateFormat, params.row.end_date)}</Typography>
-        ) : (
-          <Typography variant="body2" color="textSecondary">
-            None
-          </Typography>
         )
     }
   ];

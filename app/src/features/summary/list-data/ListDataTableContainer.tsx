@@ -70,7 +70,6 @@ export const ListDataTableContainer = () => {
           views={views}
           activeView={activeView}
           onViewChange={(view) => {
-            // { Replace: true } to remove any url params specific to a child (eg. s_keyword for survey keyword search)
             setSearchParams(searchParams.set(SUMMARY_ACTIVE_VIEW_KEY, view, { replace: true }));
             setActiveView(view);
           }}

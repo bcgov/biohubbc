@@ -138,7 +138,7 @@ export const SurveySpatialAnimals = (props: ISurveySpatialAnimalsProps) => {
               variant="contained"
               color="primary"
               aria-label="Manage Survey Data"
-              onClick={() => history.push('/observations/manage')}
+              onClick={() => history.push(`/admin/surveys/${surveyContext.surveyId}/animals`)}
               startIcon={<Icon path={mdiCog} size={0.75}></Icon>}>
               Manage
             </Button>
