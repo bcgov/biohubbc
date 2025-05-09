@@ -121,16 +121,26 @@ export const SurveyBasicFields = z.object({
 
 export type SurveyBasicFields = z.infer<typeof SurveyBasicFields>;
 
+const SurveyChecklistItem = z.object({ applicable: z.boolean(), count: z.number() });
+
 export const SurveyChecklist = z.object({
   checklist: z.object({
-    sampling: z.object({ sites: z.number(), techniques: z.number(), periods: z.number() }),
-    data: z.object({
-      observations: z.number(),
-      telemetry: z.object({ locations: z.number(), devices: z.number(), deployments: z.number() }),
-      animals: z.number(),
-      habitat: z.number()
+    sampling: z.object({
+      sites: SurveyChecklistItem,
+      techniques: SurveyChecklistItem,
+      periods: SurveyChecklistItem
     }),
-    attachments: z.number(),
+    data: z.object({
+      observations: SurveyChecklistItem,
+      telemetry: z.object({
+        locations: SurveyChecklistItem,
+        devices: SurveyChecklistItem,
+        deployments: SurveyChecklistItem
+      }),
+      animals: SurveyChecklistItem,
+      habitat: SurveyChecklistItem
+    }),
+    attachments: SurveyChecklistItem,
     progress_percentage: z.number()
   })
 });
@@ -887,21 +897,101 @@ export class SurveyRepository extends BaseRepository {
         knex.raw(`
         jsonb_build_object(
           'sampling', jsonb_build_object(
-            'sites', COALESCE(sc.sites, 0),
-            'techniques', COALESCE(sc.techniques, 0),
-            'periods', COALESCE(sc.periods, 0)
+            'sites', jsonb_build_object(
+              'count', COALESCE(sc.sites, 0),
+              'applicable', NOT EXISTS (
+                SELECT 1
+                FROM survey_checklist_item_ignore AS scii
+                JOIN checklist_item AS ci ON ci.checklist_item_id = scii.checklist_item_id
+                WHERE scii.survey_id = s.survey_id AND ci.name = 'sites'
+              )
+            ),
+            'techniques', jsonb_build_object(
+              'count', COALESCE(sc.techniques, 0),
+              'applicable', NOT EXISTS (
+                SELECT 1
+                FROM survey_checklist_item_ignore AS scii
+                JOIN checklist_item AS ci ON ci.checklist_item_id = scii.checklist_item_id
+                WHERE scii.survey_id = s.survey_id AND ci.name = 'techniques'
+              )
+            ),
+            'periods', jsonb_build_object(
+              'count', COALESCE(sc.periods, 0),
+              'applicable', NOT EXISTS (
+                SELECT 1
+                FROM survey_checklist_item_ignore AS scii
+                JOIN checklist_item AS ci ON ci.checklist_item_id = scii.checklist_item_id
+                WHERE scii.survey_id = s.survey_id AND ci.name = 'periods'
+              )
+            )
           ),
           'data', jsonb_build_object(
-            'observations', COALESCE(dc.observations, 0),
-            'telemetry', jsonb_build_object(
-              'devices', COALESCE(dc.devices, 0),
-              'deployments', COALESCE(dc.deployments, 0),
-              'locations', COALESCE(tc.manual, 0) + COALESCE(tc.lotek, 0) + COALESCE(tc.vectronic, 0) + COALESCE(tc.ats, 0)
+            'observations', jsonb_build_object(
+              'count', COALESCE(dc.observations, 0),
+              'applicable', NOT EXISTS (
+                SELECT 1
+                FROM survey_checklist_item_ignore AS scii
+                JOIN checklist_item AS ci ON ci.checklist_item_id = scii.checklist_item_id
+                WHERE scii.survey_id = s.survey_id AND ci.name = 'observations'
+              )
             ),
-            'animals', COALESCE(dc.animals, 0),
-            'habitat', COALESCE(dc.habitat, 0)
+            'telemetry', jsonb_build_object(
+              'devices', jsonb_build_object(
+                'count', COALESCE(dc.devices, 0),
+                'applicable', NOT EXISTS (
+                  SELECT 1
+                  FROM survey_checklist_item_ignore AS scii
+                  JOIN checklist_item AS ci ON ci.checklist_item_id = scii.checklist_item_id
+                  WHERE scii.survey_id = s.survey_id AND ci.name = 'devices'
+                )
+              ),
+              'deployments', jsonb_build_object(
+                'count', COALESCE(dc.deployments, 0),
+                'applicable', NOT EXISTS (
+                  SELECT 1
+                  FROM survey_checklist_item_ignore AS scii
+                  JOIN checklist_item AS ci ON ci.checklist_item_id = scii.checklist_item_id
+                  WHERE scii.survey_id = s.survey_id AND ci.name = 'deployments'
+                )
+              ),
+              'locations', jsonb_build_object(
+                'count', COALESCE(tc.manual, 0) + COALESCE(tc.lotek, 0) + COALESCE(tc.vectronic, 0) + COALESCE(tc.ats, 0),
+                'applicable', NOT EXISTS (
+                  SELECT 1
+                  FROM survey_checklist_item_ignore AS scii
+                  JOIN checklist_item AS ci ON ci.checklist_item_id = scii.checklist_item_id
+                  WHERE scii.survey_id = s.survey_id AND ci.name = 'locations'
+                )
+              )
+            ),
+            'animals', jsonb_build_object(
+              'count', COALESCE(dc.animals, 0),
+              'applicable', NOT EXISTS (
+                SELECT 1
+                FROM survey_checklist_item_ignore AS scii
+                JOIN checklist_item AS ci ON ci.checklist_item_id = scii.checklist_item_id
+                WHERE scii.survey_id = s.survey_id AND ci.name = 'animals'
+              )
+            ),
+            'habitat', jsonb_build_object(
+              'count', COALESCE(dc.habitat, 0),
+              'applicable', NOT EXISTS (
+                SELECT 1
+                FROM survey_checklist_item_ignore AS scii
+                JOIN checklist_item AS ci ON ci.checklist_item_id = scii.checklist_item_id
+                WHERE scii.survey_id = s.survey_id AND ci.name = 'habitat'
+              )
+            )
           ),
-          'attachments', COALESCE(ac.attachments, 0),
+          'attachments', jsonb_build_object(
+            'count', COALESCE(ac.attachments, 0),
+            'applicable', NOT EXISTS (
+              SELECT 1
+              FROM survey_checklist_item_ignore AS scii
+              JOIN checklist_item AS ci ON ci.checklist_item_id = scii.checklist_item_id
+              WHERE scii.survey_id = s.survey_id AND ci.name = 'attachments'
+            )
+          ),
           'progress_percentage', ROUND((
             (
               CASE WHEN COALESCE(sc.sites, 0) > 0 THEN 1 ELSE 0 END +
@@ -919,7 +1009,7 @@ export class SurveyRepository extends BaseRepository {
               CASE WHEN COALESCE(ac.attachments, 0) > 0 THEN 1 ELSE 0 END
             )::decimal / 13 * 100
           ), 0)
-        ) as checklist
+        ) AS checklist
       `)
       )
       .from('survey as s')

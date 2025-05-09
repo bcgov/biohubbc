@@ -555,23 +555,111 @@ export const getSurveyChecklistResponse: OpenAPIV3.SchemaObject = {
   properties: {
     sampling: {
       type: 'object',
-      properties: { sites: { type: 'integer' }, techniques: { type: 'integer' }, periods: { type: 'integer' } }
+      properties: {
+        sites: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['count', 'applicable'],
+          properties: {
+            count: { type: 'integer', description: 'The number of items in the survey' },
+            applicable: { type: 'boolean', description: 'Whether the chicklist item is applicable to the survey' }
+          }
+        },
+        techniques: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['count', 'applicable'],
+          properties: {
+            count: { type: 'integer', description: 'The number of items in the survey' },
+            applicable: { type: 'boolean', description: 'Whether the chicklist item is applicable to the survey' }
+          }
+        },
+        periods: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['count', 'applicable'],
+          properties: {
+            count: { type: 'integer', description: 'The number of items in the survey' },
+            applicable: { type: 'boolean', description: 'Whether the chicklist item is applicable to the survey' }
+          }
+        }
+      }
     },
     data: {
       type: 'object',
       properties: {
-        observations: { type: 'integer' },
+        observations: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['count', 'applicable'],
+          properties: {
+            count: { type: 'integer', description: 'The number of items in the survey' },
+            applicable: { type: 'boolean', description: 'Whether the chicklist item is applicable to the survey' }
+          }
+        },
         telemetry: {
           type: 'object',
           additionalProperties: false,
           required: ['locations', 'devices', 'deployments'],
-          properties: { locations: { type: 'integer' }, devices: { type: 'integer' }, deployments: { type: 'integer' } }
+          properties: {
+            locations: {
+              type: 'object',
+              additionalProperties: false,
+              required: ['count', 'applicable'],
+              properties: {
+                count: { type: 'integer', description: 'The number of items in the survey' },
+                applicable: { type: 'boolean', description: 'Whether the chicklist item is applicable to the survey' }
+              }
+            },
+            devices: {
+              type: 'object',
+              additionalProperties: false,
+              required: ['count', 'applicable'],
+              properties: {
+                count: { type: 'integer', description: 'The number of items in the survey' },
+                applicable: { type: 'boolean', description: 'Whether the chicklist item is applicable to the survey' }
+              }
+            },
+            deployments: {
+              type: 'object',
+              additionalProperties: false,
+              required: ['count', 'applicable'],
+              properties: {
+                count: { type: 'integer', description: 'The number of items in the survey' },
+                applicable: { type: 'boolean', description: 'Whether the chicklist item is applicable to the survey' }
+              }
+            }
+          }
         },
-        animals: { type: 'integer' },
-        habitat: { type: 'integer' }
+        animals: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['count', 'applicable'],
+          properties: {
+            count: { type: 'integer', description: 'The number of items in the survey' },
+            applicable: { type: 'boolean', description: 'Whether the chicklist item is applicable to the survey' }
+          }
+        },
+        habitat: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['count', 'applicable'],
+          properties: {
+            count: { type: 'integer', description: 'The number of items in the survey' },
+            applicable: { type: 'boolean', description: 'Whether the chicklist item is applicable to the survey' }
+          }
+        }
       }
     },
-    attachments: { type: 'integer' },
+    attachments: {
+      type: 'object',
+      additionalProperties: false,
+      required: ['count', 'applicable'],
+      properties: {
+        count: { type: 'integer', description: 'The number of items in the survey' },
+        applicable: { type: 'boolean', description: 'Whether the chicklist item is applicable to the survey' }
+      }
+    },
     progress_percentage: {
       type: 'integer',
       description: 'The completion percentage of items in the checklist.'

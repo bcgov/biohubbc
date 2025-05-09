@@ -51,6 +51,22 @@ export async function up(knex: Knex): Promise<void> {
     CREATE TRIGGER journal_checklist_item
     AFTER INSERT OR UPDATE OR DELETE ON checklist_item
     FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
+    
+    ----------------------------------------------------------------------------------------
+
+    INSERT INTO checklist_item (name, description, record_effective_date)
+    VALUES 
+      ('sites', 'Precise locations where species observed were collected', now()),
+      ('techniques', 'The methods used to collect species observations', now()),
+      ('periods', 'The time periods during which samples were collected', now()),
+      ('observations', 'Observational data collected during the survey', now()),
+      ('devices', 'Telemetry devices used in the survey', now()),
+      ('deployments', 'Deployment events of telemetry devices', now()),
+      ('locations', 'Location data collected via telemetry', now()),
+      ('animals', 'Animals involved in the survey (e.g. tagged individuals)', now()),
+      ('habitat', 'Habitat features recorded during the survey', now()),
+      ('attachments', 'Files and documents attached to the survey', now());
+
 
     ----------------------------------------------------------------------------------------
     -- SURVEY CHECKLIST ITEM TABLE
@@ -60,7 +76,6 @@ export async function up(knex: Knex): Promise<void> {
         survey_checklist_item_ignore_id    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
         checklist_item_id           INTEGER           NOT NULL,
         survey_id                   INTEGER           NOT NULL,
-        applicable                  BOOLEAN           NOT NULL,
         create_date                 timestamptz(6)    DEFAULT now() NOT NULL,
         create_user                 integer           NOT NULL,
         update_date                 timestamptz(6),
@@ -77,7 +92,6 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN survey_checklist_item_ignore.survey_checklist_item_ignore_id IS 'System-generated primary key identifier for the survey checklist item.';
     COMMENT ON COLUMN survey_checklist_item_ignore.checklist_item_id IS 'Foreign key to the checklist_item table.';
     COMMENT ON COLUMN survey_checklist_item_ignore.survey_id IS 'Foreign key to the survey table.';
-    COMMENT ON COLUMN survey_checklist_item_ignore.applicable IS 'Indicates whether the checklist item is applicable to this survey.';
     COMMENT ON COLUMN survey_checklist_item_ignore.create_date IS 'Timestamp when the survey checklist item was created.';
     COMMENT ON COLUMN survey_checklist_item_ignore.create_user IS 'ID of the user who created the survey checklist item.';
     COMMENT ON COLUMN survey_checklist_item_ignore.update_date IS 'Timestamp when the survey checklist item was last updated.';
