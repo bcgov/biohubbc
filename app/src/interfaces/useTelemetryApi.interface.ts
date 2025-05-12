@@ -95,3 +95,8 @@ export type GetSurveyTelemetryResponse = {
   count: number;
   pagination: ApiPaginationResponseParams;
 };
+
+export type TelemetryFilters = {
+  startDate?: string;
+  endDate?: string;
+};

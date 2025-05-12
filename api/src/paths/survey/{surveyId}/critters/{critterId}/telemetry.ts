@@ -120,7 +120,7 @@ export function getCritterTelemetry(): RequestHandler {
       const telemetryVendorService = new TelemetryVendorService(connection);
 
       const telemetry = await telemetryVendorService.getTelemetryForCritter(surveyId, critterId, {
-        dateRange: {
+        filters: {
           startDate,
           endDate
         }

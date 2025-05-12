@@ -1,8 +1,9 @@
-import { RequestHandler } from 'express';
+import { Request, RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { COLLECTION_ROLE, SURVEY_ROLE, SYSTEM_ROLE } from '../../../../constants/roles';
 import { getDBConnection } from '../../../../database/db';
 import { GeoJSONPoint } from '../../../../openapi/schemas/geoJson';
+import { TelemetryFilters } from '../../../../repositories/telemetry-repositories/telemetry-vendor-repository.interface';
 import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
 import { TelemetryVendorService } from '../../../../services/telemetry-services/telemetry-vendor-service';
 import { getLogger } from '../../../../utils/logger';
@@ -88,7 +89,12 @@ GET.apiDoc = {
                   count: {
                     type: 'integer',
                     minimum: 0
-                  }
+                  },
+                  start_date: {
+                    type: 'string',
+                    description: 'The earliest date in the telemetry records'
+                  },
+                  end_date: { type: 'string', description: 'The last date in the telemetry records' }
                 }
               }
             }
@@ -133,15 +139,15 @@ export function getTelemetrySpatialData(): RequestHandler {
 
       const telemetryVendorService = new TelemetryVendorService(connection);
 
-      const [telemetry, telemetryCount] = await telemetryVendorService.getTelemetrySpatialForSurvey(surveyId);
+      const filters = parseQueryParams(req);
+
+      const [telemetry, supplementary] = await telemetryVendorService.getTelemetrySpatialForSurvey(surveyId, filters);
 
       await connection.commit();
 
       return res.status(200).json({
         telemetry: telemetry,
-        supplementaryData: {
-          count: telemetryCount
-        }
+        supplementaryData: supplementary
       });
     } catch (error) {
       defaultLog.error({ label: 'getTelemetrySpatialData', message: 'error', error });
@@ -150,5 +156,18 @@ export function getTelemetrySpatialData(): RequestHandler {
     } finally {
       connection.release();
     }
+  };
+}
+
+/**
+ * Parse the query parameters from the request into the expected format.
+ *
+ * @param {Request<unknown, unknown, unknown, TelemetryFilters>} req
+ * @return {*}  {TelemetryOptions}
+ */
+function parseQueryParams(req: Request<unknown, unknown, unknown, TelemetryFilters>): TelemetryFilters {
+  return {
+    startDate: req.query.startDate,
+    endDate: req.query.endDate
   };
 }
