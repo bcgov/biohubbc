@@ -25,12 +25,15 @@ type ChecklistItem = IGetSurveyChecklistItem & {
   children?: ChecklistItem[];
 };
 
-export const SurveyChecklist = ({
-  checklist,
-  activeView,
-  handleViewChange,
-  handleCheckboxClick
-}: SurveyChecklistProps) => {
+/**
+ * Displays a checklist of survey items that have been added, and a progress bar indicating how complete the survey is
+ *
+ * @param {SurveyChecklistProps} props
+ * @returns
+ */
+export const SurveyChecklist = (props: SurveyChecklistProps) => {
+  const { checklist, activeView, handleViewChange, handleCheckboxClick } = props;
+
   const { surveyId } = useSurveyContext();
 
   const [expanded, setExpanded] = usePersistentState<Set<ACTIVE_VIEW_VALUE>>(
@@ -200,9 +203,7 @@ export const SurveyChecklist = ({
         onViewChange={handleViewChange}
         orientation="vertical"
         handleCheckbox={(item) => {
-          console.log(flattenedChecklistItems);
           const checklistObject = flattenedChecklistItems.find((checklistItem) => checklistItem.value === item.value);
-          console.log(checklistObject);
 
           if (checklistObject) {
             handleCheckboxClick(checklistObject);

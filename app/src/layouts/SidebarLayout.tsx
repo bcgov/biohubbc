@@ -1,4 +1,4 @@
-import { Box, Stack, Toolbar } from '@mui/material';
+import { Box, Paper, Stack, Toolbar } from '@mui/material';
 import grey from '@mui/material/colors/grey';
 import { ReactNode } from 'react';
 
@@ -10,21 +10,28 @@ interface SidebarLayoutProps {
 
 export const SidebarLayout = ({ sidebar, header, children }: SidebarLayoutProps) => {
   return (
-    <Stack direction="row">
-      <Box p={2} minWidth="300px" sx={{ overflowY: 'auto' }}>
-        {sidebar}
-      </Box>
-      {/* Main Content */}
-      <Box
-        borderLeft={`1px solid ${grey[300]}`}
-        boxSizing="border-box"
-        flex="1 1 auto"
-        display="flex"
-        flexDirection="column"
+    <Stack direction="row" gap={2} alignItems="flex-start">
+      {/* Sidebar */}
+      <Paper
         sx={{
-          overflow: 'hidden'
+          minWidth: '400px',
+          maxHeight: '100vh',
+          overflowY: 'auto',
+          p: 2,
+          flexShrink: 0
         }}>
-        {/* Optional Header Toolbar */}
+        {sidebar}
+      </Paper>
+
+      {/* Main Content */}
+      <Paper
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          flex: '1 1 auto',
+          height: '100%'
+        }}>
+        {/* Optional Header */}
         {header && (
           <Toolbar
             disableGutters
@@ -39,11 +46,9 @@ export const SidebarLayout = ({ sidebar, header, children }: SidebarLayoutProps)
           </Toolbar>
         )}
 
-        {/* Main Content Area */}
-        <Box flex="1 1 auto" overflow="auto">
-          {children}
-        </Box>
-      </Box>
+        {/* Main Scrollable Content */}
+        <Box sx={{ flex: 1, overflow: 'auto' }}>{children}</Box>
+      </Paper>
     </Stack>
   );
 };

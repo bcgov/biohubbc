@@ -220,6 +220,7 @@ export const SamplingSiteContainer = () => {
         hasNoData={!sampleSites.length}
         hasNoDataFallback={
           <NoDataOverlay
+            minHeight="400px"
             title="Add Sampling Sites"
             subtitle="Sampling sites show precisely where you collected data&mdash;at a point, along a transect, or within an area."
             icon={mdiArrowTopRight}

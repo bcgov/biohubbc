@@ -326,7 +326,7 @@ const SurveysListContainer = ({ showSearch }: { showSearch: boolean }) => {
             disableColumnSelector
             disableColumnFilter
             disableColumnMenu
-            rowHeight={70}
+            rowHeight={50}
             autoHeight={false}
           />
         </LoadingGuard>

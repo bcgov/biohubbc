@@ -26,7 +26,6 @@ import { SamplingTechniqueContainer } from './content/sampling/technique/Samplin
 import Collapse from '@mui/material/Collapse';
 import grey from '@mui/material/colors/grey';
 import Container from '@mui/material/Container';
-import Paper from '@mui/material/Paper';
 import { usePersistentState } from 'hooks/usePersistentState';
 import { IGetSurveyChecklistItem } from 'interfaces/useChecklistApi.interface';
 import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
@@ -114,10 +113,10 @@ export const SurveyPage = () => {
   return (
     <>
       <SurveyHeader />
-      <Container component={Paper} maxWidth={'xl'} sx={{ my: 3, p: 0 }} disableGutters>
+      <Container maxWidth={'xl'} sx={{ my: 3, p: 0 }} disableGutters>
         <SidebarLayout
           sidebar={
-            <Box sx={{ width: 400, flexShrink: 0, mx: 1 }}>
+            <Box sx={{ flexShrink: 0, mx: 1 }}>
               <LoadingGuard
                 // If isLoading={checklistDataLoader.isLoading}, the skeleton loader is triggered when a checklist item
                 // is disabled. This is undesired, so isLoading depends on whether data exists.

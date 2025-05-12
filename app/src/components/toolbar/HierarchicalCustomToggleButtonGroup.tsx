@@ -91,7 +91,7 @@ export const HierarchicalCustomToggleButtonGroup = <ViewValueType extends string
       const hasChildren = !!item.children?.length;
 
       const content = (
-        <Box key={item.value} sx={{ ml: `${level * 20}px`, my: 0.5, mt: level > 0 ? 0.5 : 0 }}>
+        <Box key={item.value} sx={{ ml: `${level * 25}px`, my: 0.5, mt: level > 0 ? 0.5 : 0 }}>
           <CustomTooltip tooltip={item.tooltip ?? ''}>
             <ToggleButton
               component={Button}

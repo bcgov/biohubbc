@@ -1,8 +1,8 @@
 import { mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
-import Paper from '@mui/material/Paper';
 import PageHeader from 'components/layout/PageHeader';
 import { SystemRoleGuard } from 'components/security/Guards';
 import { SYSTEM_ROLE } from 'constants/roles';
@@ -38,9 +38,9 @@ const SummaryPage = () => {
 
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <SystemAlertBanner alertTypes={[SystemAlertBannerEnum.SUMMARY]} />
-        <Paper>
+        <Box>
           <ListDataTableContainer />
-        </Paper>
+        </Box>
       </Container>
     </>
   );
