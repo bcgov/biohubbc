@@ -9,6 +9,8 @@ export const SurveyChecklistItemModel = z.object({
   survey_checklist_item_id: z.number(),
   name: z.string().nullable(),
   description: z.string().nullable(),
+  record_effective_date: z.string(),
+  record_end_date: z.string().nullable(),
   create_date: z.string(),
   create_user: z.number(),
   update_date: z.string().nullable(),

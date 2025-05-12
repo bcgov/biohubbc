@@ -19,7 +19,6 @@ export async function up(knex: Knex): Promise<void> {
         checklist_item_id         integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
         name                      varchar(50)       NOT NULL,
         description               varchar(500),
-        parent_checklist_item_id  integer,
         record_effective_date     timestamptz(6)              NOT NULL,
         record_end_date           timestamptz(6),
         create_date               timestamptz(6)    DEFAULT now() NOT NULL,
@@ -27,7 +26,7 @@ export async function up(knex: Knex): Promise<void> {
         update_date               timestamptz(6),
         update_user               integer,
         revision_count            integer           DEFAULT 0 NOT NULL,
-        CONSTRAINT checklist_item_pk PRIMARY KEY (checklist_item_id),
+        CONSTRAINT checklist_item_pk PRIMARY KEY (checklist_item_id)
     );
 
     COMMENT ON COLUMN checklist_item.checklist_item_id IS 'System-generated primary key identifier for the checklist item.';
