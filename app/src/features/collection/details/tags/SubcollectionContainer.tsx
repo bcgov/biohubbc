@@ -252,7 +252,7 @@ export const SubcollectionContainer = (props: ICollectionsTagContainerProps) => 
         <Divider />
       </Collapse>
 
-      <Box height="90vh" maxHeight="700px">
+      <Box maxHeight="700px">
         <LoadingGuard
           isLoading={!rows.length && (collectionsDataLoader.isLoading || !collectionsDataLoader.isReady)}
           isLoadingFallback={<SkeletonTable />}
@@ -260,9 +260,9 @@ export const SubcollectionContainer = (props: ICollectionsTagContainerProps) => 
           hasNoData={!rows.length}
           hasNoDataFallback={
             <NoDataOverlay
-              height="400px"
-              title="Create or Join Collections"
-              subtitle="You currently have no collections. Once you create or get invited to collections, they will be displayed here"
+              minHeight="400px"
+              title="Create Subcollections"
+              subtitle={`There are no subcollections. When you create one, it will appear here.`}
               icon={mdiArrowTopRight}
             />
           }

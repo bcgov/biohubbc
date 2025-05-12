@@ -61,6 +61,7 @@ export const SpeciesStandards = () => {
           hasNoDataFallback={
             <Box minHeight="200px" display="flex" alignItems="center" justifyContent="center">
               <NoDataOverlay
+                minHeight="400px"
                 title="Search for a Species"
                 subtitle="Explore supported data types and formatting guidelines for species"
                 icon={mdiArrowTopRight}

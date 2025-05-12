@@ -194,7 +194,7 @@ export const SurveySpatialDeploymentTable = () => {
       hasNoData={!rows.length}
       hasNoDataFallback={
         <NoDataOverlay
-          height="100%"
+          minHeight="400px"
           title="Add Telemetry"
           subtitle="Add deployments by assigning telemetry devices to animals"
           icon={mdiArrowTopRight}

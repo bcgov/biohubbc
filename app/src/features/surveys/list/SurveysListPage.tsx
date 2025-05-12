@@ -169,6 +169,7 @@ const SurveysListPage = () => {
         hasNoData={!surveys.length}
         hasNoDataFallback={
           <NoDataOverlay
+            minHeight="400px"
             height="200px"
             title="Create a Survey"
             subtitle="Start managing ecological data by creating a survey"

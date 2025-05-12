@@ -24,8 +24,6 @@ const VIEW_KEY = 'view';
 export const SupportPage = () => {
   const { searchParams, setSearchParams } = useSearchParams<SupportPageParams>();
 
-  const [expanded, setExpanded] = useState<Set<SupportPageView>>(new Set());
-
   // Initialize activeView based on the URL params
   const [activeView, setActiveView] = useState(
     (searchParams.get(VIEW_KEY) as SupportPageView) ?? SupportPageView.overview
@@ -72,8 +70,6 @@ export const SupportPage = () => {
               activeView={activeView}
               onViewChange={handleViewChange}
               orientation={'vertical'}
-              expanded={expanded}
-              handleExpand={setExpanded}
             />
           </Box>
 

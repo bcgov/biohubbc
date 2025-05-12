@@ -14,7 +14,7 @@ export const SidebarLayout = ({ sidebar, header, children }: SidebarLayoutProps)
       {/* Sidebar */}
       <Paper
         sx={{
-          minWidth: '400px',
+          minWidth: '350px',
           maxHeight: '100vh',
           overflowY: 'auto',
           p: 2,

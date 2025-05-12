@@ -166,6 +166,7 @@ const AnimalsListContainer = (props: IAnimalsListContainerProps) => {
           hasNoData={!rows.length && !pagination?.total}
           hasNoDataFallback={
             <NoDataOverlay
+              minHeight="400px"
               height="500px"
               title="Create or Join Surveys to See Animals"
               subtitle="You currently have no animal data. Once you create or join surveys with animal data, it will be displayed here"

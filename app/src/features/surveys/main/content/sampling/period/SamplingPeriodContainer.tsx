@@ -254,6 +254,7 @@ export const SamplingPeriodContainer = () => {
           hasNoData={!periodsCount}
           hasNoDataFallback={
             <NoDataOverlay
+              minHeight="400px"
               height="300px"
               title="Add Periods"
               subtitle="Periods indicate when you started and stopped collecting data, ideally down to the minute."

@@ -128,7 +128,12 @@ export const TelemetryDeviceKeysList = (props: ITelemetryDeviceKeysListProps) =>
       isLoadingFallbackDelay={100}
       hasNoData={false}
       hasNoDataFallback={
-        <NoDataOverlay title="Device Keys" subtitle="No telemetry device key files found" icon={mdiArrowTopRight} />
+        <NoDataOverlay
+          minHeight="400px"
+          title="Device Keys"
+          subtitle="No telemetry device key files found"
+          icon={mdiArrowTopRight}
+        />
       }
       hasNoDataFallbackDelay={100}>
       <Box>

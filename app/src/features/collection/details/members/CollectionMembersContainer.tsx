@@ -197,6 +197,7 @@ const CollectionMembersContainer = (props: ICollectionMembersContainerProps) => 
         hasNoData={!collectionParticipants.length}
         hasNoDataFallback={
           <NoDataOverlay
+            minHeight="400px"
             height="200px"
             title="Invite Members"
             subtitle="Surveys added to this collection will appear here"

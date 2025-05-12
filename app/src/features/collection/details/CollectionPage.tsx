@@ -1,13 +1,6 @@
-import {
-  mdiAccountMultipleOutline,
-  mdiChartBoxOutline,
-  mdiClipboardOutline,
-  mdiDatabaseSearchOutline,
-  mdiLabelOutline
-} from '@mdi/js';
+import { mdiAccountMultipleOutline, mdiClipboardOutline, mdiDatabaseSearchOutline, mdiLabelOutline } from '@mdi/js';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
-import Paper from '@mui/material/Paper';
 import CustomToggleButtonGroup from 'components/toolbar/CustomToggleButtonGroup';
 import { CodesContext } from 'contexts/codesContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -28,7 +21,6 @@ export enum CollectionView {
   Surveys = 'surveys',
   Data = 'data',
   Subcollections = 'subcollections',
-  Queries = 'Queries',
   Participants = 'participants'
 }
 
@@ -77,7 +69,6 @@ const CollectionPage = () => {
     { value: CollectionView.Surveys, label: 'Surveys', icon: mdiClipboardOutline },
     { value: CollectionView.Subcollections, label: 'Subcollections', icon: mdiLabelOutline },
     { value: CollectionView.Data, label: 'Data', icon: mdiDatabaseSearchOutline },
-    { value: CollectionView.Queries, label: 'Queries', icon: mdiChartBoxOutline },
     { value: CollectionView.Participants, label: 'Members', icon: mdiAccountMultipleOutline }
   ];
 
@@ -86,7 +77,7 @@ const CollectionPage = () => {
       <CollectionHeader collection={collection} />
 
       <Container maxWidth="xl" sx={{ py: 3 }}>
-        <Paper>
+        <Box>
           <SidebarLayout
             sidebar={
               <CustomToggleButtonGroup
@@ -120,7 +111,7 @@ const CollectionPage = () => {
               </Box>
             )}
           </SidebarLayout>
-        </Paper>
+        </Box>
       </Container>
     </>
   );

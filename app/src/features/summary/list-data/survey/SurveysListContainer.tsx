@@ -102,6 +102,18 @@ const SurveysListContainer = ({ showSearch }: { showSearch: boolean }) => {
     page: paginationModel.page + 1
   };
 
+  const hasActiveFiltersOrSort = useMemo(
+    () =>
+      !!(
+        advancedFiltersModel.keyword ||
+        advancedFiltersModel.itis_tsn ||
+        advancedFiltersModel.system_user_id ||
+        (sortModel.length > 0 &&
+          (sortModel[0].field !== initialPaginationParams.sort || sortModel[0].sort !== initialPaginationParams.order))
+      ),
+    [advancedFiltersModel, sortModel]
+  );
+
   useEffect(() => {
     filtersDataLoader.load();
   }, [filtersDataLoader]);
@@ -284,53 +296,61 @@ const SurveysListContainer = ({ showSearch }: { showSearch: boolean }) => {
         </Box>
       </Stack>
 
-      <Box height="100%">
-        <LoadingGuard
-          isLoading={!rows.length && (surveysDataLoader.isLoading || !surveysDataLoader.isReady)}
-          isLoadingFallback={<SkeletonTable />}
-          hasNoData={!rows.length}
-          hasNoDataFallback={
+      <LoadingGuard
+        isLoading={!rows.length && (surveysDataLoader.isLoading || !surveysDataLoader.isReady)}
+        isLoadingFallback={<SkeletonTable />}
+        hasNoData={!rows.length}
+        hasNoDataFallback={
+          hasActiveFiltersOrSort ? (
             <NoDataOverlay
+              minHeight="400px"
               height="400px"
               title="Create Surveys"
               subtitle="You have no surveys. Once you create or get invited to one, it will show up here."
               icon={mdiArrowTopRight}
             />
-          }>
-          <StyledDataGrid
-            noRowsMessage="No surveys found"
-            loading={!rows.length && surveysDataLoader.isLoading}
-            columns={columns}
-            rows={rows}
-            rowCount={surveysDataLoader.data?.pagination.total ?? 0}
-            getRowId={(row) => row.survey_id}
-            paginationMode="server"
-            paginationModel={paginationModel}
-            pageSizeOptions={pageSizeOptions}
-            onPaginationModelChange={(model) => {
-              setSearchParams(searchParams.set('s_page', String(model.page)).set('s_limit', String(model.pageSize)));
-              setPaginationModel(model);
-            }}
-            sortingMode="server"
-            sortModel={sortModel}
-            sortingOrder={['asc', 'desc']}
-            onSortModelChange={(model) => {
-              if (model.length) {
-                setSearchParams(searchParams.set('s_sort', model[0].field).set('s_order', model[0].sort ?? 'desc'));
-                setSortModel(model);
-              }
-            }}
-            rowSelection={false}
-            checkboxSelection={false}
-            disableRowSelectionOnClick
-            disableColumnSelector
-            disableColumnFilter
-            disableColumnMenu
-            rowHeight={50}
-            autoHeight={false}
-          />
-        </LoadingGuard>
-      </Box>
+          ) : (
+            <NoDataOverlay
+              minHeight="400px"
+              height="400px"
+              title="No Surveys Found"
+              subtitle="There are no surveys that match your search criteria."
+            />
+          )
+        }>
+        <StyledDataGrid
+          noRowsMessage="No surveys found"
+          loading={!rows.length && surveysDataLoader.isLoading}
+          columns={columns}
+          rows={rows}
+          rowCount={surveysDataLoader.data?.pagination.total ?? 0}
+          getRowId={(row) => row.survey_id}
+          paginationMode="server"
+          paginationModel={paginationModel}
+          pageSizeOptions={pageSizeOptions}
+          onPaginationModelChange={(model) => {
+            setSearchParams(searchParams.set('s_page', String(model.page)).set('s_limit', String(model.pageSize)));
+            setPaginationModel(model);
+          }}
+          sortingMode="server"
+          sortModel={sortModel}
+          sortingOrder={['asc', 'desc']}
+          onSortModelChange={(model) => {
+            if (model.length) {
+              setSearchParams(searchParams.set('s_sort', model[0].field).set('s_order', model[0].sort ?? 'desc'));
+              setSortModel(model);
+            }
+          }}
+          rowSelection={false}
+          checkboxSelection={false}
+          disableRowSelectionOnClick
+          disableColumnSelector
+          disableColumnFilter
+          disableColumnMenu
+          rowHeight={50}
+          autoHeight={false}
+        />
+      </LoadingGuard>
     </>
   );
 };

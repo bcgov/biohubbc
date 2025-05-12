@@ -7,7 +7,7 @@ import useDataLoader from 'hooks/useDataLoader';
 import { useSearchParams } from 'hooks/useSearchParams';
 import { SidebarLayout } from 'layouts/SidebarLayout';
 import { useCallback, useContext, useEffect } from 'react';
-import { SurveyChecklist } from './checklist/SurveyChecklist';
+import { SurveyChecklistContainer } from './checklist/SurveyChecklistContainer';
 
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -29,6 +29,7 @@ import Container from '@mui/material/Container';
 import { usePersistentState } from 'hooks/usePersistentState';
 import { IGetSurveyChecklistItem } from 'interfaces/useChecklistApi.interface';
 import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
+import SurveyAttachments from '../view/SurveyAttachments';
 import SurveyHeader from '../view/SurveyHeader';
 import { SurveyChecklistGuide } from './guide/SurveyChecklistGuide';
 
@@ -123,15 +124,19 @@ export const SurveyPage = () => {
                 isLoading={!checklistDataLoader.data || codesContext.codesDataLoader.isLoading}
                 isLoadingFallbackDelay={600}
                 isLoadingFallback={
-                  <Stack pt={1} spacing={2}>
-                    {Array.from({ length: 3 }).map((_, index) => (
-                      <Skeleton key={index} variant="rectangular" width="100%" height="35px" />
-                    ))}
+                  <Stack py={1} spacing={2}>
+                    <Skeleton height="20px" width="100px" variant="rectangular" />
+                    <Skeleton height="8px" width="75%" variant="rectangular" />
+                    <Stack pt={1} spacing={2}>
+                      {Array.from({ length: 3 }).map((_, index) => (
+                        <Skeleton key={index} variant="rectangular" width="100%" height="25px" />
+                      ))}
+                    </Stack>
                   </Stack>
                 }>
                 {checklistDataLoader.data?.checklist && (
                   <Box sx={{ position: 'sticky', top: 180 }}>
-                    <SurveyChecklist
+                    <SurveyChecklistContainer
                       checklist={checklistDataLoader.data.checklist}
                       activeView={activeView}
                       handleViewChange={handleViewChange}
@@ -170,7 +175,8 @@ export const SurveyPage = () => {
                         [ACTIVE_VIEW_VALUE.devices]: <DevicesContainer />,
                         [ACTIVE_VIEW_VALUE.deployments]: <SurveyDeploymentList />,
                         [ACTIVE_VIEW_VALUE.locations]: <SurveySpatialTelemetry />,
-                        [ACTIVE_VIEW_VALUE.animals]: <SurveySpatialAnimals />
+                        [ACTIVE_VIEW_VALUE.animals]: <SurveySpatialAnimals />,
+                        [ACTIVE_VIEW_VALUE.attachments]: <SurveyAttachments />
                       }}
                     />
                   </Box>

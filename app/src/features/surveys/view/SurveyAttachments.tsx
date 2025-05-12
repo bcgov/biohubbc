@@ -42,9 +42,9 @@ const SurveyAttachments = () => {
       />
 
       <H2MenuToolbar
-        label="Documents"
+        label="Attachments"
         buttonLabel="Upload"
-        buttonTitle="Upload Documents"
+        buttonTitle="Upload Attachments"
         buttonProps={{ variant: 'contained' }}
         buttonStartIcon={<Icon path={mdiTrayArrowUp} size={0.75} />}
         menuItems={[

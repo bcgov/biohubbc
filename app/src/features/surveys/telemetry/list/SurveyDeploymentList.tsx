@@ -1,4 +1,4 @@
-import { mdiCog, mdiDotsVertical, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
+import { mdiArrowTopRight, mdiCog, mdiDotsVertical, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -16,6 +16,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonList } from 'components/loading/SkeletonLoaders';
+import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { SurveyDeploymentListItem } from 'features/surveys/telemetry/list/SurveyDeploymentListItem';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
@@ -311,111 +312,94 @@ export const SurveyDeploymentList = () => {
           </IconButton>
         </Toolbar>
         <Divider flexItem />
-        <Box position="relative" display="flex" flex="1 1 auto" overflow="hidden">
-          <Box position="absolute" top="0" right="0" bottom="0" left="0">
-            <LoadingGuard
-              isLoading={
-                !deploymentDataLoader.data?.deployments &&
-                (deploymentDataLoader.isLoading || !deploymentDataLoader.isReady)
-              }
-              isLoadingFallback={<SkeletonList />}
-              isLoadingFallbackDelay={100}
-              hasNoData={!deploymentsCount}
-              hasNoDataFallback={
-                <Stack
-                  sx={{
-                    background: grey[100]
-                  }}
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
-                  flex="1 1 auto"
-                  position="absolute"
-                  top={0}
-                  right={0}
-                  left={0}
-                  bottom={0}
-                  height="100%">
-                  <Typography variant="body2">No Deployments</Typography>
-                </Stack>
-              }
-              hasNoDataFallbackDelay={100}>
-              <Stack height="100%" position="relative" sx={{ overflowY: 'auto' }}>
-                <Box flex="0 0 auto" display="flex" alignItems="center" px={2} height={55}>
-                  <FormGroup>
-                    <FormControlLabel
-                      label={
-                        <Typography
-                          variant="body2"
-                          component="span"
-                          color="textSecondary"
-                          fontWeight={700}
-                          sx={{ textTransform: 'uppercase' }}>
-                          Select All
-                        </Typography>
-                      }
-                      control={
-                        <Checkbox
-                          sx={{
-                            mr: 0.75
-                          }}
-                          checked={checkboxSelectedIds.length > 0 && checkboxSelectedIds.length === deploymentsCount}
-                          indeterminate={
-                            checkboxSelectedIds.length >= 1 && checkboxSelectedIds.length < deploymentsCount
-                          }
-                          onClick={() => {
-                            if (checkboxSelectedIds.length === deploymentsCount) {
-                              // Unselect all
-                              setCheckboxSelectedIds([]);
-                              return;
-                            }
+        <LoadingGuard
+          isLoading={
+            !deploymentDataLoader.data?.deployments && (deploymentDataLoader.isLoading || !deploymentDataLoader.isReady)
+          }
+          isLoadingFallback={<SkeletonList />}
+          isLoadingFallbackDelay={100}
+          hasNoData={!deploymentsCount}
+          hasNoDataFallback={
+            <NoDataOverlay
+              minHeight="400px"
+              title="Add Deployments"
+              subtitle="Observations show where and when you observed species. You can link observations to sampling periods."
+              icon={mdiArrowTopRight}
+            />
+          }
+          hasNoDataFallbackDelay={100}>
+          <Stack height="100%" position="relative" sx={{ overflowY: 'auto' }}>
+            <Box flex="0 0 auto" display="flex" alignItems="center" px={2} height={55}>
+              <FormGroup>
+                <FormControlLabel
+                  label={
+                    <Typography
+                      variant="body2"
+                      component="span"
+                      color="textSecondary"
+                      fontWeight={700}
+                      sx={{ textTransform: 'uppercase' }}>
+                      Select All
+                    </Typography>
+                  }
+                  control={
+                    <Checkbox
+                      sx={{
+                        mr: 0.75
+                      }}
+                      checked={checkboxSelectedIds.length > 0 && checkboxSelectedIds.length === deploymentsCount}
+                      indeterminate={checkboxSelectedIds.length >= 1 && checkboxSelectedIds.length < deploymentsCount}
+                      onClick={() => {
+                        if (checkboxSelectedIds.length === deploymentsCount) {
+                          // Unselect all
+                          setCheckboxSelectedIds([]);
+                          return;
+                        }
 
-                            // Select all
-                            const deploymentIds = deployments.map((deployment) => deployment.deployment_id);
-                            setCheckboxSelectedIds([...deploymentIds]);
-                          }}
-                          inputProps={{ 'aria-label': 'controlled' }}
-                        />
-                      }
+                        // Select all
+                        const deploymentIds = deployments.map((deployment) => deployment.deployment_id);
+                        setCheckboxSelectedIds([...deploymentIds]);
+                      }}
+                      inputProps={{ 'aria-label': 'controlled' }}
                     />
-                  </FormGroup>
-                </Box>
-                <Divider flexItem />
-                <Stack
-                  flex="1 1 auto"
-                  sx={{
-                    background: grey[100]
-                  }}>
-                  {deployments.map((deployment) => {
-                    const animal = surveyContext.critterDataLoader.data?.find(
-                      (animal) => animal.critterbase_critter_id === deployment.critterbase_critter_id
-                    );
+                  }
+                />
+              </FormGroup>
+            </Box>
+            <Divider flexItem />
+            <Stack
+              flex="1 1 auto"
+              sx={{
+                background: grey[100]
+              }}>
+              {deployments.map((deployment) => {
+                const animal = surveyContext.critterDataLoader.data?.find(
+                  (animal) => animal.critterbase_critter_id === deployment.critterbase_critter_id
+                );
 
-                    // Replace the deployment frequency_unit IDs with their human readable codes
-                    const hydratedDeployment = {
-                      ...deployment,
-                      frequency_unit:
-                        codesContext.codesDataLoader.data?.frequency_units.find(
-                          (frequencyUnit) => frequencyUnit.id === deployment.frequency_unit_id
-                        )?.name ?? null
-                    };
+                // Replace the deployment frequency_unit IDs with their human readable codes
+                const hydratedDeployment = {
+                  ...deployment,
+                  frequency_unit:
+                    codesContext.codesDataLoader.data?.frequency_units.find(
+                      (frequencyUnit) => frequencyUnit.id === deployment.frequency_unit_id
+                    )?.name ?? null
+                };
 
-                    return (
-                      <SurveyDeploymentListItem
-                        key={deployment.deployment_id}
-                        animal={animal}
-                        deployment={hydratedDeployment}
-                        isChecked={checkboxSelectedIds.includes(deployment.deployment_id)}
-                        handleDeploymentMenuClick={handledDeploymentMenuClick}
-                        handleCheckboxChange={handleCheckboxChange}
-                      />
-                    );
-                  })}
-                </Stack>
-              </Stack>
-            </LoadingGuard>
-          </Box>
-        </Box>
+                return (
+                  <SurveyDeploymentListItem
+                    key={deployment.deployment_id}
+                    animal={animal}
+                    deployment={hydratedDeployment}
+                    isChecked={checkboxSelectedIds.includes(deployment.deployment_id)}
+                    handleDeploymentMenuClick={handledDeploymentMenuClick}
+                    handleCheckboxChange={handleCheckboxChange}
+                  />
+                );
+              })}
+            </Stack>
+          </Stack>
+        </LoadingGuard>
       </Stack>
     </>
   );

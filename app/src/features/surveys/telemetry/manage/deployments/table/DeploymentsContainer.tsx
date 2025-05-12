@@ -166,6 +166,7 @@ export const DeploymentsContainer = () => {
               hasNoData={!deploymentsCount}
               hasNoDataFallback={
                 <NoDataOverlay
+                  minHeight="400px"
                   height="200px"
                   title="Add Telemetry Deployments"
                   subtitle="Add telemetry deployments, which associate an animal to a telemetry device."

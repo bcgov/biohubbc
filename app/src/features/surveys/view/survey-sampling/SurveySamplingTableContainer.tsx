@@ -195,6 +195,7 @@ export const SurveySamplingTableContainer = () => {
               hasNoData={!techniquesCount}
               hasNoDataFallback={
                 <NoDataOverlay
+                  minHeight="400px"
                   height="100%"
                   width="100%"
                   title="Add Techniques"
@@ -230,6 +231,7 @@ export const SurveySamplingTableContainer = () => {
               hasNoData={!sampleSitesCount}
               hasNoDataFallback={
                 <NoDataOverlay
+                  minHeight="400px"
                   height="100%"
                   width="100%"
                   title="Add Sampling Sites"
@@ -267,6 +269,7 @@ export const SurveySamplingTableContainer = () => {
               hasNoData={!samplePeriodsCount}
               hasNoDataFallback={
                 <NoDataOverlay
+                  minHeight="400px"
                   height="100%"
                   width="100%"
                   title="Add Periods"

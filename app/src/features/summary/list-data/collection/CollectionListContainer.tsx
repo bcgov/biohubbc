@@ -232,7 +232,7 @@ const CollectionsListContainer = (props: ICollectionsListContainerProps) => {
         <Divider />
       </Collapse>
 
-      <Box height="90vh" maxHeight="700px">
+      <Box maxHeight="700px">
         <LoadingGuard
           isLoading={!rows.length && (collectionsDataLoader.isLoading || !collectionsDataLoader.isReady)}
           isLoadingFallback={<SkeletonTable />}
@@ -240,6 +240,7 @@ const CollectionsListContainer = (props: ICollectionsListContainerProps) => {
           hasNoData={!rows.length}
           hasNoDataFallback={
             <NoDataOverlay
+              minHeight="400px"
               height="400px"
               title="Create or Join Collections"
               subtitle="You currently have no collections. Once you create or get invited to collections, they will be displayed here"

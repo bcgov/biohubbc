@@ -169,6 +169,7 @@ export const DevicesContainer = () => {
               hasNoData={!devicesCount}
               hasNoDataFallback={
                 <NoDataOverlay
+                  minHeight="400px"
                   height="200px"
                   title="Add Telemetry Devices"
                   subtitle="Add your telemetry devices, so they can be used in a deployment."

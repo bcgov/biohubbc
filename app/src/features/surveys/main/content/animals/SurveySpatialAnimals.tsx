@@ -147,7 +147,7 @@ export const SurveySpatialAnimals = (props: ISurveySpatialAnimalsProps) => {
       </Toolbar>
 
       {/* Display map with animal capture points */}
-      <Box height={300} position="relative">
+      <Box height={400} position="relative">
         <SurveyMap
           staticLayers={[...(props.staticLayers ?? []), captureLayer, mortalityLayer]}
           isLoading={geometryDataLoader.isLoading}
@@ -155,7 +155,7 @@ export const SurveySpatialAnimals = (props: ISurveySpatialAnimalsProps) => {
       </Box>
 
       {/* Display data table with animal capture details */}
-      <Box height={300} display="flex" flexDirection="column">
+      <Box display="flex" flexDirection="column">
         <LoadingGuard
           isLoading={animalsDataLoader.isLoading || critterDataLoader.isLoading}
           isLoadingFallback={
@@ -167,7 +167,7 @@ export const SurveySpatialAnimals = (props: ISurveySpatialAnimalsProps) => {
           hasNoDataFallback={
             <Box flex="1 1 auto">
               <NoDataOverlay
-                height="100%"
+                minHeight="400px"
                 title="Add Animals"
                 subtitle="Add animals that you have captured, individually identified, or found deceased"
                 icon={mdiArrowTopRight}

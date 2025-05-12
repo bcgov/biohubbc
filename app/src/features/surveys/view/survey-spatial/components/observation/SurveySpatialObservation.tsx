@@ -74,7 +74,7 @@ export const SurveySpatialObservation = (props: ISurveySpatialObservationProps) 
       </Box>
 
       {/* Display data table with observation details */}
-      <Box height={300} display="flex" flexDirection="column" pt={2}>
+      <Box display="flex" flexDirection="column" pt={2}>
         <SurveySpatialObservationContainer />
       </Box>
     </>

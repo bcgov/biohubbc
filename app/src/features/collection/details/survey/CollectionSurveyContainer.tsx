@@ -229,6 +229,7 @@ const CollectionSurveyContainer = (props: ICollectionSurveyContainerProps) => {
         hasNoData={!surveys.length}
         hasNoDataFallback={
           <NoDataOverlay
+            minHeight="400px"
             height="200px"
             title="Add Surveys to Collection"
             subtitle="Surveys added to this collection will appear here"

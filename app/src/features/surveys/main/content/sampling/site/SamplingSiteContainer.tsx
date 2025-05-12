@@ -231,7 +231,7 @@ export const SamplingSiteContainer = () => {
           <Box sx={{ height: 400 }}>
             <SurveyMap staticLayers={[samplingSiteStaticLayer]} isLoading={false} />
           </Box>
-          <Box sx={{ height: 400 }}>
+          <Box>
             <SamplingSiteTable
               sites={sampleSites}
               paginationModel={paginationModel}
