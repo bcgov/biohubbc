@@ -32,10 +32,8 @@ export const SurveySpatialObservationContainer = () => {
         />
       </Box>
       <Divider />
-      <Box flex="1 1 auto" overflow="hidden">
-        {activeView === SurveySpatialObservationContainerViewEnum.COUNTS && <SurveySpatialObservationTable />}
-        {activeView === SurveySpatialObservationContainerViewEnum.ANALYTICS && <SurveyObservationAnalytics />}
-      </Box>
+      {activeView === SurveySpatialObservationContainerViewEnum.COUNTS && <SurveySpatialObservationTable />}
+      {activeView === SurveySpatialObservationContainerViewEnum.ANALYTICS && <SurveyObservationAnalytics />}
     </>
   );
 };

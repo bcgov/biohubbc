@@ -252,7 +252,7 @@ export const SubcollectionContainer = (props: ICollectionsTagContainerProps) => 
         <Divider />
       </Collapse>
 
-      <Box maxHeight="700px">
+      <Box height="100%">
         <LoadingGuard
           isLoading={!rows.length && (collectionsDataLoader.isLoading || !collectionsDataLoader.isReady)}
           isLoadingFallback={<SkeletonTable />}
