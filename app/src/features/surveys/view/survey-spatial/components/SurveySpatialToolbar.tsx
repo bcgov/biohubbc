@@ -11,9 +11,9 @@ import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
-import { ProjectRoleGuard } from 'components/security/Guards';
+import { SurveyRoleRouteGuard } from 'components/security/Guards';
 import CustomToggleButtonGroup, { ToggleButtonView } from 'components/toolbar/CustomToggleButtonGroup';
-import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
+import { SURVEY_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
@@ -107,8 +107,8 @@ export const SurveySpatialToolbar = (props: ISurveySpatialToolbarProps) => {
           </Typography>
           <Stack gap={1} direction="row">
             <HelpButtonDialog markdownType={MarkdownTypeNameEnum.SURVEY_DATA} />
-            <ProjectRoleGuard
-              validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+            <SurveyRoleRouteGuard
+              validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
               validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
               <Button
                 variant="contained"
@@ -119,7 +119,7 @@ export const SurveySpatialToolbar = (props: ISurveySpatialToolbarProps) => {
                 endIcon={<Icon path={mdiChevronDown} size={0.75}></Icon>}>
                 Manage
               </Button>
-            </ProjectRoleGuard>
+            </SurveyRoleRouteGuard>
           </Stack>
         </Toolbar>
         <Divider flexItem></Divider>

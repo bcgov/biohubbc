@@ -63,14 +63,12 @@ describe('useObservationApi', () => {
 
   describe('importObservationCSV', () => {
     it('works as expected', async () => {
-      const projectId = 1;
       const surveyId = 2;
       const file = new File([''], 'file.txt', { type: 'application/plain' });
 
-      mock.onPost(`/api/project/${projectId}/survey/${surveyId}/observations/import`).reply(200, undefined);
+      mock.onPost(`/api/survey/${surveyId}/observations/import`).reply(200, undefined);
 
       const result = await useObservationApi(axios).importObservationCSV({
-        projectId,
         surveyId,
         file
       });
@@ -81,13 +79,12 @@ describe('useObservationApi', () => {
 
   describe('deleteObservationRecords', () => {
     it('works as expected', async () => {
-      const projectId = 1;
       const surveyId = 2;
       const observationIds = [3, 4];
 
-      mock.onPost(`/api/project/${projectId}/survey/${surveyId}/observations/delete`).reply(200, undefined);
+      mock.onPost(`/api/survey/${surveyId}/observations/delete`).reply(200, undefined);
 
-      const result = await useObservationApi(axios).deleteObservationRecords(projectId, surveyId, observationIds);
+      const result = await useObservationApi(axios).deleteObservationRecords(surveyId, observationIds);
 
       expect(result).toEqual(undefined);
     });
@@ -95,17 +92,12 @@ describe('useObservationApi', () => {
 
   describe('deleteObservationSubcounts', () => {
     it('works as expected', async () => {
-      const projectId = 1;
       const surveyId = 2;
       const observationSubcountIds = [3, 4];
 
-      mock.onPost(`/api/project/${projectId}/survey/${surveyId}/observations/subcounts/delete`).reply(200, undefined);
+      mock.onPost(`/api/survey/${surveyId}/observations/subcounts/delete`).reply(200, undefined);
 
-      const result = await useObservationApi(axios).deleteObservationSubcounts(
-        projectId,
-        surveyId,
-        observationSubcountIds
-      );
+      const result = await useObservationApi(axios).deleteObservationSubcounts(surveyId, observationSubcountIds);
 
       expect(result).toEqual(undefined);
     });

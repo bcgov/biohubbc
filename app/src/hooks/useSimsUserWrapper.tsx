@@ -48,7 +48,7 @@ export interface ISimsUserWrapper {
   /**
    * Set to `true` if the user has at least 1 project participant roles, `false` otherwise.
    */
-  hasOneOrMoreProjectRoles: boolean;
+  hasOneOrMoreSurveyRoles: boolean;
   /**
    * Set to `null` if the user record is active, otherwise the date when the user record was invalidated. If not null, users cannot request access or access the application.
    */
@@ -103,7 +103,7 @@ function useSimsUserWrapper(): ISimsUserWrapper {
 
   const hasAccessRequest = !!administrativeActivityStandingDataLoader.data?.has_pending_access_request;
 
-  const hasOneOrMoreProjectRoles = !!administrativeActivityStandingDataLoader.data?.has_one_or_more_project_roles;
+  const hasOneOrMoreSurveyRoles = !!administrativeActivityStandingDataLoader.data?.has_one_or_more_survey_roles;
 
   const recordEndDate = simsUserDataLoader.data?.record_end_date;
 
@@ -123,7 +123,7 @@ function useSimsUserWrapper(): ISimsUserWrapper {
     roleNames,
     identitySource,
     hasAccessRequest,
-    hasOneOrMoreProjectRoles,
+    hasOneOrMoreSurveyRoles,
     recordEndDate,
     refresh
   };

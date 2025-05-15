@@ -5,7 +5,7 @@ import sinonChai from 'sinon-chai';
 import { SYSTEM_IDENTITY_SOURCE } from '../../../constants/database';
 import * as db from '../../../database/db';
 import { HTTPError } from '../../../errors/http-error';
-import { ProjectParticipationService } from '../../../services/project-participation-service';
+import { SurveyMemberService } from '../../../services/survey-member-service';
 import { UserService } from '../../../services/user-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../__mocks__/db';
 import * as delete_endpoint from './delete';
@@ -17,7 +17,7 @@ describe('removeSystemUser', () => {
     sinon.restore();
   });
 
-  it('should throw a 400 error if the user is the only Coordinator role on one or more projects', async () => {
+  it('should throw a 400 error if the user is the only Coordinator role on one or more surveys', async () => {
     const dbConnectionObj = getMockDBConnection();
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
@@ -29,12 +29,11 @@ describe('removeSystemUser', () => {
 
     const mockResponse = [
       {
-        project_participation_id: 47,
-        project_id: 3,
+        survey_participation_id: 47,
+        survey_id: 3,
         system_user_id: 33,
-        project_role_ids: [1],
-        project_role_names: ['Coordinator'],
-        project_role_permissions: ['Permission1'],
+        survey_role_ids: [1],
+        survey_role_names: ['Admin'],
         agency: null,
         display_name: 'test user',
         email: 'email@email.com',
@@ -48,12 +47,11 @@ describe('removeSystemUser', () => {
         user_identifier: 'testuser'
       },
       {
-        project_participation_id: 57,
-        project_id: 1,
+        survey_participation_id: 57,
+        survey_id: 1,
         system_user_id: 33,
-        project_role_ids: [3],
-        project_role_names: ['Observer'],
-        project_role_permissions: ['Permission1'],
+        survey_role_ids: [3],
+        survey_role_names: ['Viewer'],
         agency: null,
         display_name: 'test user',
         email: 'email@email.com',
@@ -67,12 +65,11 @@ describe('removeSystemUser', () => {
         user_identifier: 'testuser'
       },
       {
-        project_participation_id: 40,
-        project_id: 1,
+        survey_participation_id: 40,
+        survey_id: 1,
         system_user_id: 27,
-        project_role_ids: [1],
-        project_role_names: ['Coordinator'],
-        project_role_permissions: ['Permission1'],
+        survey_role_ids: [1],
+        survey_role_names: ['Admin'],
         agency: null,
         display_name: 'test user',
         email: 'email@email.com',
@@ -87,9 +84,7 @@ describe('removeSystemUser', () => {
       }
     ];
 
-    sinon
-      .stub(ProjectParticipationService.prototype, 'getParticipantsFromAllProjectsBySystemUserId')
-      .resolves(mockResponse);
+    sinon.stub(SurveyMemberService.prototype, 'getMembersFromAllSurveysBySystemUserId').resolves(mockResponse);
 
     try {
       const requestHandler = delete_endpoint.removeSystemUser();
@@ -99,12 +94,12 @@ describe('removeSystemUser', () => {
     } catch (actualError) {
       expect((actualError as HTTPError).status).to.equal(400);
       expect((actualError as HTTPError).message).to.equal(
-        'Cannot remove user. User is the only Coordinator for one or more projects.'
+        'Cannot remove user. User is the only Coordinator for one or more surveys.'
       );
     }
   });
 
-  it('should catch and re-throw an error if the database fails to delete all project roles', async () => {
+  it('should catch and re-throw an error if the database fails to delete all survey roles', async () => {
     const dbConnectionObj = getMockDBConnection();
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
@@ -114,7 +109,7 @@ describe('removeSystemUser', () => {
 
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-    sinon.stub(ProjectParticipationService.prototype, 'isUserTheOnlyProjectCoordinatorOnAnyProject').resolves();
+    sinon.stub(SurveyMemberService.prototype, 'isUserTheOnlySurveyCoordinatorOnAnySurvey').resolves();
 
     sinon.stub(UserService.prototype, 'getUserById').resolves({
       system_user_id: 1,
@@ -123,7 +118,7 @@ describe('removeSystemUser', () => {
       identity_source: 'idir',
       record_end_date: null,
       role_ids: [1, 2],
-      role_names: ['System Admin', 'Coordinator'],
+      role_names: ['System Admin', 'Admin'],
       email: 'email@email.com',
       family_name: 'lname',
       given_name: 'fname',
@@ -132,7 +127,7 @@ describe('removeSystemUser', () => {
     });
 
     const expectedError = new Error('A database error');
-    sinon.stub(UserService.prototype, 'deleteAllProjectRoles').rejects(expectedError);
+    sinon.stub(UserService.prototype, 'deleteAllSurveyRoles').rejects(expectedError);
 
     try {
       const requestHandler = delete_endpoint.removeSystemUser();
@@ -154,7 +149,7 @@ describe('removeSystemUser', () => {
 
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-    sinon.stub(ProjectParticipationService.prototype, 'isUserTheOnlyProjectCoordinatorOnAnyProject').resolves();
+    sinon.stub(SurveyMemberService.prototype, 'isUserTheOnlySurveyCoordinatorOnAnySurvey').resolves();
 
     sinon.stub(UserService.prototype, 'getUserById').resolves({
       system_user_id: 1,
@@ -163,7 +158,7 @@ describe('removeSystemUser', () => {
       identity_source: 'idir',
       record_end_date: null,
       role_ids: [1, 2],
-      role_names: ['System Admin', 'Coordinator'],
+      role_names: ['System Admin', 'Admin'],
       email: 'email@email.com',
       family_name: 'lname',
       given_name: 'fname',
@@ -171,7 +166,7 @@ describe('removeSystemUser', () => {
       agency: null
     });
 
-    sinon.stub(UserService.prototype, 'deleteAllProjectRoles').resolves();
+    sinon.stub(UserService.prototype, 'deleteAllSurveyRoles').resolves();
 
     const expectedError = new Error('A database error');
     sinon.stub(UserService.prototype, 'deleteUserSystemRoles').rejects(expectedError);
@@ -196,7 +191,7 @@ describe('removeSystemUser', () => {
 
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-    sinon.stub(ProjectParticipationService.prototype, 'isUserTheOnlyProjectCoordinatorOnAnyProject').resolves();
+    sinon.stub(SurveyMemberService.prototype, 'isUserTheOnlySurveyCoordinatorOnAnySurvey').resolves();
 
     sinon.stub(UserService.prototype, 'getUserById').resolves({
       system_user_id: 1,
@@ -205,7 +200,7 @@ describe('removeSystemUser', () => {
       identity_source: 'idir',
       record_end_date: null,
       role_ids: [1, 2],
-      role_names: ['System Admin', 'Coordinator'],
+      role_names: ['System Admin', 'Admin'],
       email: 'email@email.com',
       family_name: 'lname',
       given_name: 'fname',
@@ -213,7 +208,7 @@ describe('removeSystemUser', () => {
       agency: null
     });
 
-    sinon.stub(UserService.prototype, 'deleteAllProjectRoles').resolves();
+    sinon.stub(UserService.prototype, 'deleteAllSurveyRoles').resolves();
     sinon.stub(UserService.prototype, 'deleteUserSystemRoles').resolves();
 
     const expectedError = new Error('A database error');
@@ -239,7 +234,7 @@ describe('removeSystemUser', () => {
 
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-    sinon.stub(ProjectParticipationService.prototype, 'isUserTheOnlyProjectCoordinatorOnAnyProject').resolves();
+    sinon.stub(SurveyMemberService.prototype, 'isUserTheOnlySurveyCoordinatorOnAnySurvey').resolves();
 
     sinon.stub(UserService.prototype, 'getUserById').resolves({
       system_user_id: 1,
@@ -248,7 +243,7 @@ describe('removeSystemUser', () => {
       identity_source: 'idir',
       record_end_date: null,
       role_ids: [1, 2],
-      role_names: ['System Admin', 'Coordinator'],
+      role_names: ['System Admin', 'Admin'],
       email: 'email@email.com',
       family_name: 'lname',
       given_name: 'fname',
@@ -256,7 +251,7 @@ describe('removeSystemUser', () => {
       agency: null
     });
 
-    sinon.stub(UserService.prototype, 'deleteAllProjectRoles').resolves();
+    sinon.stub(UserService.prototype, 'deleteAllSurveyRoles').resolves();
     sinon.stub(UserService.prototype, 'deleteUserSystemRoles').resolves();
     sinon.stub(UserService.prototype, 'deleteSystemUser').resolves();
 

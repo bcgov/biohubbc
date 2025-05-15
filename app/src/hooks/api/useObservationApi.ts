@@ -26,38 +26,29 @@ import { ApiPaginationRequestOptions } from 'types/misc';
 const useObservationApi = (axios: AxiosInstance) => {
   /**
    * Creates a new observation for the survey
-   *
-   * @param {number} projectId
    * @param {number} surveyId
    * @param {ICreateObservation} surveyObservation
    * @return {*}  {Promise<void>}
    */
-  const createObservation = async (
-    projectId: number,
-    surveyId: number,
-    surveyObservation: ICreateObservation
-  ): Promise<void> => {
-    await axios.post(`/api/project/${projectId}/survey/${surveyId}/observations`, {
+  const createObservation = async (surveyId: number, surveyObservation: ICreateObservation): Promise<void> => {
+    await axios.post(`/api/survey/${surveyId}/observations`, {
       surveyObservations: [surveyObservation]
     });
   };
 
   /**
    * Updates an existing observation for the survey
-   *
-   * @param {number} projectId
    * @param {number} surveyId
    * @param {number} surveyObservationId
    * @param {IEditObservation} surveyObservation
    * @return {*}  {Promise<void>}
    */
   const updateObservation = async (
-    projectId: number,
     surveyId: number,
     surveyObservationId: number,
     surveyObservation: IEditObservation
   ): Promise<void> => {
-    await axios.put(`/api/project/${projectId}/survey/${surveyId}/observations/${surveyObservationId}`, {
+    await axios.put(`/api/survey/${surveyId}/observations/${surveyObservationId}`, {
       surveyObservation: surveyObservation
     });
   };
@@ -110,14 +101,11 @@ const useObservationApi = (axios: AxiosInstance) => {
 
   /**
    * Retrieves all survey observation records for the given survey
-   *
-   * @param {number} projectId
    * @param {number} surveyId
    * @param {ApiPaginationRequestOptions} [pagination]
    * @return {*}  {Promise<IGetSurveyObservationsResponse>}
    */
   const getObservationRecords = async (
-    projectId: number,
     surveyId: number,
     pagination?: ApiPaginationRequestOptions
   ): Promise<IGetSurveyObservationsResponse> => {
@@ -125,26 +113,20 @@ const useObservationApi = (axios: AxiosInstance) => {
       ...pagination
     };
 
-    const { data } = await axios.get<IGetSurveyObservationsResponse>(
-      `/api/project/${projectId}/survey/${surveyId}/observations`,
-      {
-        params
-      }
-    );
+    const { data } = await axios.get<IGetSurveyObservationsResponse>(`/api/survey/${surveyId}/observations`, {
+      params
+    });
 
     return data;
   };
 
   /**
    * Retrieves all survey flattened observation records for the given survey
-   *
-   * @param {number} projectId
    * @param {number} surveyId
    * @param {ApiPaginationRequestOptions} [pagination]
    * @return {*}  {Promise<IGetSurveyFlattenedObservationsResponse>}
    */
   const getFlattenedObservationRecords = async (
-    projectId: number,
     surveyId: number,
     pagination?: ApiPaginationRequestOptions
   ): Promise<IGetSurveyFlattenedObservationsResponse> => {
@@ -153,7 +135,7 @@ const useObservationApi = (axios: AxiosInstance) => {
     };
 
     const { data } = await axios.get<IGetSurveyFlattenedObservationsResponse>(
-      `/api/project/${projectId}/survey/${surveyId}/observations/flattened`,
+      `/api/survey/${surveyId}/observations/flattened`,
       {
         params
       }
@@ -164,28 +146,21 @@ const useObservationApi = (axios: AxiosInstance) => {
 
   /**
    * Retrieves species observed in a given survey
-   *
-   * @param {number} projectId
    * @param {number} surveyId
    * @return {*}  {Promise<IPartialTaxonomy>}
    */
-  const getObservedSpecies = async (projectId: number, surveyId: number): Promise<IPartialTaxonomy[]> => {
-    const { data } = await axios.get<IPartialTaxonomy[]>(
-      `/api/project/${projectId}/survey/${surveyId}/observations/taxon`
-    );
+  const getObservedSpecies = async (surveyId: number): Promise<IPartialTaxonomy[]> => {
+    const { data } = await axios.get<IPartialTaxonomy[]>(`/api/survey/${surveyId}/observations/taxon`);
 
     return data;
   };
 
   /**
    * Retrieves all measurements associated with all observation records
-   *
-   * @param {number} projectId
    * @param {number} surveyId
    * @return {*}  {Promise<IObservationTableRow[]>}
    */
   const getObservationMeasurementDefinitions = async (
-    projectId: number,
     surveyId: number
   ): Promise<{
     qualitative_measurements: CBQualitativeMeasurementTypeDefinition[];
@@ -194,26 +169,23 @@ const useObservationApi = (axios: AxiosInstance) => {
     const { data } = await axios.get<{
       qualitative_measurements: CBQualitativeMeasurementTypeDefinition[];
       quantitative_measurements: CBQuantitativeMeasurementTypeDefinition[];
-    }>(`/api/project/${projectId}/survey/${surveyId}/observations/measurements`);
+    }>(`/api/survey/${surveyId}/observations/measurements`);
 
     return data;
   };
 
   /**
    * Get a survey observation record, with additional data.
-   *
-   * @param {number} projectId
    * @param {number} surveyId
    * @param {number} surveyObservationId
    * @return {*}  {Promise<SurveyObservationWithSupplementaryData>}
    */
   const getObservationRecord = async (
-    projectId: number,
     surveyId: number,
     surveyObservationId: number
   ): Promise<SurveyObservationWithSupplementaryData> => {
     const { data } = await axios.get<SurveyObservationWithSupplementaryData>(
-      `/api/project/${projectId}/survey/${surveyId}/observations/${surveyObservationId}`
+      `/api/survey/${surveyId}/observations/${surveyObservationId}`
     );
 
     return data;
@@ -221,19 +193,16 @@ const useObservationApi = (axios: AxiosInstance) => {
 
   /**
    * Get a survey observation record.
-   *
-   * @param {number} projectId
    * @param {number} surveyId
    * @param {number} surveyObservationId
    * @return {*}  {Promise<SurveyObservationBasic>}
    */
   const getBasicObservationRecord = async (
-    projectId: number,
     surveyId: number,
     surveyObservationId: number
   ): Promise<SurveyObservationBasic> => {
     const { data } = await axios.get<SurveyObservationBasic>(
-      `/api/project/${projectId}/survey/${surveyId}/observations/${surveyObservationId}/basic`
+      `/api/survey/${surveyId}/observations/${surveyObservationId}/basic`
     );
 
     return data;
@@ -242,17 +211,12 @@ const useObservationApi = (axios: AxiosInstance) => {
   /**
    * Fetches all geojson geometry points for all observation records belonging to
    * the given survey.
-   *
-   * @param {number} projectId
    * @param {number} surveyId
    * @return {*}  {Promise<IGetSurveyObservationsGeometryResponse>}
    */
-  const getObservationsGeometry = async (
-    projectId: number,
-    surveyId: number
-  ): Promise<IGetSurveyObservationsGeometryResponse> => {
+  const getObservationsGeometry = async (surveyId: number): Promise<IGetSurveyObservationsGeometryResponse> => {
     const { data } = await axios.get<IGetSurveyObservationsGeometryResponse>(
-      `/api/project/${projectId}/survey/${surveyId}/observations/spatial`
+      `/api/survey/${surveyId}/observations/spatial`
     );
 
     return data;
@@ -262,7 +226,7 @@ const useObservationApi = (axios: AxiosInstance) => {
    * Imports observation records from a CSV file.
    *
    * @param {{
-   *    projectId: number;
+   *
    *    surveyId: number;
    *    file: File; // The CSV file to import.
    *    surveySamplePeriodId?: number; // Optional sample period id to associate all imported records with.
@@ -272,7 +236,6 @@ const useObservationApi = (axios: AxiosInstance) => {
    * @return {*}  {Promise<{ submissionId: number }>}
    */
   const importObservationCSV = async (params: {
-    projectId: number;
     surveyId: number;
     file: File;
     surveySamplePeriodId?: number;
@@ -287,7 +250,7 @@ const useObservationApi = (axios: AxiosInstance) => {
       formData.append('surveySamplePeriodId', params.surveySamplePeriodId.toString());
     }
 
-    await axios.post(`/api/project/${params.projectId}/survey/${params.surveyId}/observations/import`, formData, {
+    await axios.post(`/api/survey/${params.surveyId}/observations/import`, formData, {
       cancelToken: params.cancelTokenSource?.token,
       onUploadProgress: params.onProgress
     });
@@ -295,18 +258,15 @@ const useObservationApi = (axios: AxiosInstance) => {
 
   /**
    * Deletes all of the observation records having the given observation id.
-   *
-   * @param {number} projectId
    * @param {number} surveyId
    * @param {((string | number)[])} surveyObservationIds
    * @return {*}  {Promise<void>}
    */
   const deleteObservationRecords = async (
-    projectId: number,
     surveyId: number,
     surveyObservationIds: (string | number)[]
   ): Promise<void> => {
-    await axios.post(`/api/project/${projectId}/survey/${surveyId}/observations/delete`, { surveyObservationIds });
+    await axios.post(`/api/survey/${surveyId}/observations/delete`, { surveyObservationIds });
   };
 
   /**
@@ -314,42 +274,30 @@ const useObservationApi = (axios: AxiosInstance) => {
    *
    * Note: An observation must have at least one subcount. If all subcount records are deleted, the observation record
    * will also be deleted.
-   *
-   * @param {number} projectId
    * @param {number} surveyId
    * @param {((string | number)[])} observationSubcountIds
    * @return {*}  {Promise<void>}
    */
   const deleteObservationSubcounts = async (
-    projectId: number,
     surveyId: number,
     observationSubcountIds: (string | number)[]
   ): Promise<void> => {
-    await axios.post(`/api/project/${projectId}/survey/${surveyId}/observations/subcounts/delete`, {
+    await axios.post(`/api/survey/${surveyId}/observations/subcounts/delete`, {
       observationSubcountIds
     });
   };
 
   /**
    * Deletes all of the observation environments, from all observation records, having the given environment_id.
-   *
-   * @param {number} projectId
    * @param {number} surveyId
    * @param {string[]} environmentIds The environment ids to delete.
    * @return {*}  {Promise<void>}
    */
-  const deleteObservationEnvironments = async (
-    projectId: number,
-    surveyId: number,
-    environmentIds: EnvironmentTypeIds
-  ): Promise<void> => {
-    const { data } = await axios.post<void>(
-      `/api/project/${projectId}/survey/${surveyId}/observations/environments/delete`,
-      {
-        environment_qualitative_id: environmentIds.qualitative_environments,
-        environment_quantitative_id: environmentIds.quantitative_environments
-      }
-    );
+  const deleteObservationEnvironments = async (surveyId: number, environmentIds: EnvironmentTypeIds): Promise<void> => {
+    const { data } = await axios.post<void>(`/api/survey/${surveyId}/observations/environments/delete`, {
+      environment_qualitative_id: environmentIds.qualitative_environments,
+      environment_quantitative_id: environmentIds.quantitative_environments
+    });
 
     return data;
   };

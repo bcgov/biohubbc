@@ -161,7 +161,7 @@ async function main() {
       const project = data[pIndex];
 
       sql += `WITH p AS (INSERT INTO project (name, objectives, coordinator_first_name, coordinator_last_name, coordinator_email_address) VALUES ($$Caribou - ${project.herd} - BCTW Telemetry$$, $$BCTW telemetry deployments for ${project.herd} Caribou$$, $$${CONFIG.first_name}$$, $$${CONFIG.last_name}$$, $$${CONFIG.email}$$) RETURNING project_id
-      ), ppp AS (INSERT INTO project_participation (project_id, system_user_id, project_role_id) SELECT project_id, (select system_user_id from "system_user" where user_identifier = $$mauberti$$), (select project_role_id from project_role where name = $$${CONFIG.project_role}$$) FROM p
+      ), ppp AS (INSERT INTO survey_member (system_user_id, project_role_id) SELECT (select system_user_id from "system_user" where user_identifier = $$mauberti$$), (select project_role_id from project_role where name = $$${CONFIG.project_role}$$) FROM p
       )
     `;
       for (let sIndex = 0; sIndex < project.surveys.length; sIndex++) {
@@ -169,7 +169,7 @@ async function main() {
 
         const { feature, geometry } = await getCaribouHerdGeoJson(project.herd);
 
-        sql += `), s${sIndex} AS (INSERT INTO survey (project_id, name, lead_first_name, lead_last_name, start_date, end_date, progress_id) SELECT project_id, $$Caribou - ${survey.year} - ${project.herd} - BCTW Telemetry$$, $$${CONFIG.first_name}$$, $$${CONFIG.last_name}$$, $$${project.start_date}$$, $$${project.end_date}$$, (select survey_progress_id from survey_progress where name = $$${CONFIG.survey_status}$$) FROM p RETURNING survey_id
+        sql += `), s${sIndex} AS (INSERT INTO survey (name, lead_first_name, lead_last_name, start_date, end_date, progress_id) SELECT $$Caribou - ${survey.year} - ${project.herd} - BCTW Telemetry$$, $$${CONFIG.first_name}$$, $$${CONFIG.last_name}$$, $$${project.start_date}$$, $$${project.end_date}$$, (select survey_progress_id from survey_progress where name = $$${CONFIG.survey_status}$$) FROM p RETURNING survey_id
           ), st${sIndex} AS (INSERT INTO survey_type (survey_id, type_id) SELECT survey_id, (select type_id from type where name = $$${CONFIG.survey_type}$$) FROM s${sIndex}
           ), ss${sIndex} AS (INSERT INTO study_species (survey_id, is_focal, itis_tsn) SELECT survey_id, true, ${CONFIG.caribou_tsn} FROM s${sIndex}
           ), sio1${sIndex} AS (INSERT INTO survey_intended_outcome (survey_id, intended_outcome_id) SELECT survey_id, (select intended_outcome_id from intended_outcome where name = $$${CONFIG.survey_intended_outcome_1}$$) FROM s${sIndex}

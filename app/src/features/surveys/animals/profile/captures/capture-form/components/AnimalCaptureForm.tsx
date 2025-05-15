@@ -41,7 +41,7 @@ export const AnimalCaptureForm = <FormikValuesType extends ICreateCaptureRequest
   props: IAnimalCaptureFormProps<FormikValuesType>
 ) => {
   const biohubApi = useBiohubApi();
-  const { projectId, surveyId } = useSurveyContext();
+  const { surveyId } = useSurveyContext();
 
   const { downloadS3File } = useS3FileDownload();
 
@@ -247,12 +247,7 @@ export const AnimalCaptureForm = <FormikValuesType extends ICreateCaptureRequest
               onRemoveUploadedAttachment={flagUploadedFileForDelete}
               onDownloadAttachment={(id) =>
                 downloadS3File(
-                  biohubApi.survey.getSurveyAttachmentSignedURL(
-                    projectId,
-                    surveyId,
-                    id,
-                    CRITTER_CAPTURE_ATTACHMENT_TYPE
-                  )
+                  biohubApi.survey.getSurveyAttachmentSignedURL(surveyId, id, CRITTER_CAPTURE_ATTACHMENT_TYPE)
                 )
               }
             />

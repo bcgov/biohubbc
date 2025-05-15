@@ -73,9 +73,7 @@ export const DeviceForm = (props: IDeviceFormProps) => {
               variant="outlined"
               color="primary"
               onClick={() => {
-                history.push(
-                  `/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry/manage`
-                );
+                history.push(`/admin/surveys/${surveyContext.surveyId}/telemetry/manage`);
               }}>
               Cancel
             </Button>

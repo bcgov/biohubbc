@@ -291,8 +291,8 @@ export class UserService extends DBService {
    * @return {*}
    * @memberof UserService
    */
-  async deleteAllProjectRoles(systemUserId: number) {
-    return this.userRepository.deleteAllProjectRoles(systemUserId);
+  async deleteAllSurveyRoles(systemUserId: number) {
+    return this.userRepository.deleteAllSurveyRoles(systemUserId);
   }
 
   /**

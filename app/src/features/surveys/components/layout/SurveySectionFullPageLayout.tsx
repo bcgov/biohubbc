@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Stack from '@mui/material/Stack';
-import { ProjectContext } from 'contexts/projectContext';
+
 import { SurveyContext } from 'contexts/surveyContext';
 import { useContext } from 'react';
 import SurveySectionHeader from './SurveySectionHeader';
@@ -15,9 +15,8 @@ interface SurveySectionFullPageLayoutProps {
 export const SurveySectionFullPageLayout = (props: SurveySectionFullPageLayoutProps) => {
   const { sideBarComponent, mainComponent, pageTitle } = props;
   const surveyContext = useContext(SurveyContext);
-  const projectContext = useContext(ProjectContext);
 
-  if (!surveyContext.surveyDataLoader.data || !projectContext.projectDataLoader.data) {
+  if (!surveyContext.surveyDataLoader.data) {
     return <CircularProgress className="pageProgress" data-testid="fullpage-spinner" size={40} />;
   }
 
@@ -33,8 +32,6 @@ export const SurveySectionFullPageLayout = (props: SurveySectionFullPageLayoutPr
       }}>
       <SurveySectionHeader
         data-testid="fullpage-section-header"
-        project_id={surveyContext.projectId}
-        project_name={projectContext.projectDataLoader.data.projectData.project.project_name}
         survey_id={surveyContext.surveyId}
         survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
         title={pageTitle}

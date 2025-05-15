@@ -259,6 +259,7 @@ const ObservationsListContainer = (props: IObservationsListContainerProps) => {
           hasNoData={!rows.length}
           hasNoDataFallback={
             <NoDataOverlay
+              minHeight="400px"
               height="500px"
               title="Create or Join Surveys to See Observations"
               subtitle="You currently have no observations data. Once you create or join surveys with observations data, it will be displayed here"

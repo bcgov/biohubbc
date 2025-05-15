@@ -10,13 +10,11 @@ interface ISurveySampleSiteMapPopupProps {
 
 export const SurveySampleSiteMapPopup = (props: ISurveySampleSiteMapPopupProps) => {
   const { surveySampleSiteId } = props;
-  const { surveyId, projectId } = useSurveyContext();
+  const { surveyId } = useSurveyContext();
 
   const biohubApi = useBiohubApi();
 
-  const surveyDataLoader = useDataLoader(() =>
-    biohubApi.samplingSite.getSampleSiteById(projectId, surveyId, surveySampleSiteId)
-  );
+  const surveyDataLoader = useDataLoader(() => biohubApi.samplingSite.getSampleSiteById(surveyId, surveySampleSiteId));
 
   useEffect(() => {
     surveyDataLoader.load();

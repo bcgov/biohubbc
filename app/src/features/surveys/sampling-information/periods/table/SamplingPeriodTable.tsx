@@ -61,7 +61,7 @@ export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
   } | null>(null);
 
   const dialogContext = useDialogContext();
-  const { surveyId, projectId } = useSurveyContext();
+  const { surveyId } = useSurveyContext();
 
   /**
    * Handle the delete technique API call.
@@ -124,7 +124,7 @@ export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
     {
       field: 'id',
       headerName: 'ID',
-      width: 70,
+      width: 50,
       renderHeader: () => (
         <Typography color={grey[500]} variant="body2" fontWeight={700}>
           ID
@@ -250,8 +250,7 @@ export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
               }
             }
           }}>
-          <RouterLink
-            to={`/admin/projects/${projectId}/surveys/${surveyId}/sampling/period/${actionMenuAnchorEl?.periodId}/edit`}>
+          <RouterLink to={`/admin/surveys/${surveyId}/sampling/period/${actionMenuAnchorEl?.periodId}/edit`}>
             <ListItemIcon>
               <Icon path={mdiPencilOutline} size={1} />
             </ListItemIcon>
@@ -274,6 +273,7 @@ export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
         hasNoData={!periods.length}
         hasNoDataFallback={
           <NoDataOverlay
+            minHeight="400px"
             height="200px"
             title="Add Periods"
             subtitle="Techniques describe how you collected species observations"

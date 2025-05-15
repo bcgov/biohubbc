@@ -4,7 +4,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import grey from '@mui/material/colors/grey';
 import TextField, { TextFieldProps } from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
+import HelpButtonTooltip from 'components/tooltip/HelpButtonTooltip';
 import { useFormikContext } from 'formik';
 import get from 'lodash-es/get';
 import { SyntheticEvent, useMemo } from 'react';

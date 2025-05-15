@@ -56,7 +56,7 @@ const ObservationsTableContainer = () => {
   const observationsTableContext = useObservationsTableContext();
   const observationsContext = useObservationsContext();
 
-  const { projectId, surveyId } = useSurveyContext();
+  const { surveyId } = useSurveyContext();
   const history = useHistory();
 
   useEffect(() => {
@@ -193,7 +193,7 @@ const ObservationsTableContainer = () => {
             variant="contained"
             color="primary"
             startIcon={<Icon path={mdiPlus} size={1} />}
-            onClick={() => history.push(`/admin/projects/${projectId}/surveys/${surveyId}/observations/create`)}
+            onClick={() => history.push(`/admin/surveys/${surveyId}/observations/create`)}
             disabled={observationsTableContext.isDisabled}>
             Add
           </Button>
@@ -210,9 +210,7 @@ const ObservationsTableContainer = () => {
               color="primary"
               startIcon={<Icon path={mdiPencil} size={1} />}
               onClick={() => {
-                history.push(
-                  `/admin/projects/${projectId}/surveys/${surveyId}/observations/${editButtonObservationId}/edit`
-                );
+                history.push(`/admin/surveys/${surveyId}/observations/${editButtonObservationId}/edit`);
               }}
               disabled={observationsTableContext.isDisabled}>
               Edit

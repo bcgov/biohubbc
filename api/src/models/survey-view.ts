@@ -7,6 +7,7 @@ import { SurveyBlockRecord } from '../repositories/survey-block-repository';
 import { SurveyLocationRecord } from '../repositories/survey-location-repository';
 import { SurveyUser } from '../repositories/survey-participation-repository';
 import { ITaxonomyWithEcologicalUnits } from '../services/platform-service';
+import { CollectionBasic } from './collection';
 import { SystemUserWithRoles } from './system-user-view';
 
 export interface ISurveyAdvancedFilters {
@@ -64,7 +65,6 @@ export interface ISurveyAdvancedFilters {
 }
 
 export const FindSurveysResponse = z.object({
-  project_id: z.number(),
   survey_id: z.number(),
   name: z.string(),
   progress_id: z.number(),
@@ -72,7 +72,8 @@ export const FindSurveysResponse = z.object({
   start_date: z.string().nullable(),
   end_date: z.string().nullable().optional().nullable(),
   focal_species: z.array(z.number().nullable()),
-  types: z.array(z.number().nullable())
+  types: z.array(z.number().nullable()),
+  progress_percentage: z.number()
 });
 
 export type FindSurveysResponse = z.infer<typeof FindSurveysResponse>;
@@ -89,6 +90,7 @@ export type SurveyObject = {
   partnerships: ISurveyPartnerships;
   site_selection: SiteSelectionData;
   blocks: SurveyBlockRecord[];
+  collections: CollectionBasic[];
 };
 
 export interface ISurveyPartnerships {
@@ -98,7 +100,6 @@ export interface ISurveyPartnerships {
 
 export class GetSurveyData {
   id: number;
-  project_id: number;
   uuid: string;
   survey_name: string;
   start_date: string;
@@ -109,7 +110,7 @@ export class GetSurveyData {
 
   constructor(obj?: any) {
     this.id = obj?.survey_id || null;
-    this.project_id = obj?.project_id || null;
+
     this.uuid = obj?.uuid || null;
     this.survey_name = obj?.name || '';
     this.start_date = obj?.start_date || null;

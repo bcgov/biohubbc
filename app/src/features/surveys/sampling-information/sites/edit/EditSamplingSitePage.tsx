@@ -8,7 +8,7 @@ import { Formik, FormikProps } from 'formik';
 import { Feature } from 'geojson';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
+import { useDialogContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import {
@@ -51,7 +51,7 @@ export const EditSamplingSitePage = () => {
   const [initialFormValues, setInitialFormValues] = useState<IEditSampleSiteFormData>();
 
   const surveyContext = useSurveyContext();
-  const projectContext = useProjectContext();
+
   const dialogContext = useDialogContext();
 
   const { locationChangeInterceptor, skipUnsavedChangesDialog } = useUnsavedChangesDialog();
@@ -60,11 +60,10 @@ export const EditSamplingSitePage = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const projectId = surveyContext.projectId;
   const surveyId = surveyContext.surveyId;
 
   const samplingSiteDataLoader = useDataLoader(() =>
-    biohubApi.samplingSite.getSampleSiteById(projectId, surveyId, surveySampleSiteId)
+    biohubApi.samplingSite.getSampleSiteById(surveyId, surveySampleSiteId)
   );
 
   if (!samplingSiteDataLoader.data) {
@@ -111,7 +110,7 @@ export const EditSamplingSitePage = () => {
 
       // send edit request
       await biohubApi.samplingSite
-        .editSampleSite(surveyContext.projectId, surveyContext.surveyId, surveySampleSiteId, editSampleSite)
+        .editSampleSite(surveyContext.surveyId, surveySampleSiteId, editSampleSite)
         .then(() => {
           setIsSubmitting(false);
 
@@ -147,7 +146,7 @@ export const EditSamplingSitePage = () => {
     }
   };
 
-  if (!surveyContext.surveyDataLoader.data || !projectContext.projectDataLoader.data || !initialFormValues) {
+  if (!surveyContext.surveyDataLoader.data || !initialFormValues) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
@@ -165,10 +164,8 @@ export const EditSamplingSitePage = () => {
         <Box display="flex" flexDirection="column" height="100%">
           <FormikErrorSnackbar />
           <SamplingSiteHeader
-            project_id={surveyContext.projectId}
             survey_id={surveyContext.surveyId}
             survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
-            project_name={projectContext.projectDataLoader.data.projectData.project.project_name}
             is_submitting={isSubmitting}
             title="Edit Sampling Site"
             breadcrumb="Edit Sampling Site"

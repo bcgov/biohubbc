@@ -32,13 +32,13 @@ export const DeploymentsContainer = () => {
   const [headerAnchorEl, setHeaderAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedRows, setSelectedRows] = useState<GridRowSelectionModel>([]);
 
-  const deploymentsDataLoader = useDataLoader((projectId: number, surveyId: number) =>
-    biohubApi.telemetryDeployment.getDeploymentsInSurvey(projectId, surveyId)
+  const deploymentsDataLoader = useDataLoader((surveyId: number) =>
+    biohubApi.telemetryDeployment.getDeploymentsInSurvey(surveyId)
   );
 
   useEffect(() => {
-    deploymentsDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
-  }, [deploymentsDataLoader, surveyContext.projectId, surveyContext.surveyId]);
+    deploymentsDataLoader.load(surveyContext.surveyId);
+  }, [deploymentsDataLoader, surveyContext.surveyId]);
 
   const deployments = deploymentsDataLoader.data?.deployments ?? [];
   const deploymentsCount = deploymentsDataLoader.data?.count ?? 0;
@@ -47,7 +47,6 @@ export const DeploymentsContainer = () => {
   const handleBulkDelete = async () => {
     try {
       await biohubApi.telemetryDeployment.deleteDeployments(
-        surveyContext.projectId,
         surveyContext.surveyId,
         selectedRows.map((id) => Number(id))
       );
@@ -106,7 +105,7 @@ export const DeploymentsContainer = () => {
   };
 
   const onDelete = () => {
-    deploymentsDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+    deploymentsDataLoader.refresh(surveyContext.surveyId);
   };
 
   return (
@@ -137,7 +136,7 @@ export const DeploymentsContainer = () => {
           variant="contained"
           color="primary"
           component={RouterLink}
-          to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry/manage/deployment/create`}
+          to={`/admin/surveys/${surveyContext.surveyId}/telemetry/manage/deployment/create`}
           startIcon={<Icon path={mdiPlus} size={0.8} />}>
           Add
         </Button>
@@ -167,6 +166,7 @@ export const DeploymentsContainer = () => {
               hasNoData={!deploymentsCount}
               hasNoDataFallback={
                 <NoDataOverlay
+                  minHeight="400px"
                   height="200px"
                   title="Add Telemetry Deployments"
                   subtitle="Add telemetry deployments, which associate an animal to a telemetry device."

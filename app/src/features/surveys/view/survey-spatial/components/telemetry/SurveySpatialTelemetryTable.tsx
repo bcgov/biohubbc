@@ -39,12 +39,16 @@ export const SurveySpatialTelemetryTable = () => {
   const [sortModel, setSortModel] = useState<GridSortModel>([]);
 
   const telemetryDataLoader = useDataLoader((page: number, limit: number, sort?: string, order?: 'asc' | 'desc') =>
-    biohubApi.telemetry.getTelemetryForSurvey(surveyContext.projectId, surveyContext.surveyId, {
-      page: page + 1, // This fixes an off-by-one error between the front end and the back end
-      limit,
-      sort,
-      order
-    })
+    biohubApi.telemetry.getTelemetryForSurvey(
+      surveyContext.surveyId,
+      {},
+      {
+        page: page + 1, // This fixes an off-by-one error between the front end and the back end
+        limit,
+        sort,
+        order
+      }
+    )
   );
 
   // Page information has changed, fetch more data
@@ -133,6 +137,7 @@ export const SurveySpatialTelemetryTable = () => {
       hasNoData={!rows.length}
       hasNoDataFallback={
         <NoDataOverlay
+          minHeight="400px"
           height="100%"
           title="Add Telemetry"
           subtitle="Add telemetry devices to animals and upload device data"

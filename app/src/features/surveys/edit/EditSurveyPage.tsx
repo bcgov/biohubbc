@@ -12,7 +12,6 @@ import PageHeader from 'components/layout/PageHeader';
 import { EditSurveyI18N } from 'constants/i18n';
 import { CodesContext } from 'contexts/codesContext';
 import { DialogContext } from 'contexts/dialogContext';
-import { ProjectContext } from 'contexts/projectContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
@@ -51,26 +50,20 @@ const EditSurveyPage = () => {
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
 
-  const projectContext = useContext(ProjectContext);
-
-  useEffect(() => {
-    projectContext.projectDataLoader.load(projectContext.projectId);
-  }, [projectContext.projectDataLoader, projectContext.projectId]);
-
   const surveyContext = useContext(SurveyContext);
 
-  const getSurveyForUpdateDataLoader = useDataLoader((projectId: number, surveyId: number) =>
-    biohubApi.survey.getSurveyForUpdate(projectId, surveyId)
+  const getSurveyForUpdateDataLoader = useDataLoader((surveyId: number) =>
+    biohubApi.survey.getSurveyForUpdate(surveyId)
   );
 
   if (surveyId) {
-    getSurveyForUpdateDataLoader.load(projectContext.projectId, surveyId);
+    getSurveyForUpdateDataLoader.load(surveyId);
   }
 
   const surveyData = getSurveyForUpdateDataLoader.data?.surveyData;
 
   const handleCancel = () => {
-    history.push('details');
+    history.goBack();
   };
 
   const showEditErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
@@ -98,7 +91,7 @@ const EditSurveyPage = () => {
 
     try {
       // Remove the permit_used and funding_used properties
-      const response = await biohubApi.survey.updateSurvey(projectContext.projectId, surveyId, {
+      const response = await biohubApi.survey.updateSurvey(surveyContext.surveyId, {
         blocks: values.blocks,
         funding_sources: values.funding_sources,
         locations: values.locations.map((location) => ({
@@ -109,6 +102,8 @@ const EditSurveyPage = () => {
           revision_count: location.revision_count
         })),
         participants: values.participants,
+        members: values.members,
+        collections: values.collections,
         partnerships: values.partnerships,
         permit: {
           permits: values.permit.permits
@@ -137,10 +132,10 @@ const EditSurveyPage = () => {
 
       setEnableCancelCheck(false);
 
-      surveyContext.surveyDataLoader.refresh(projectContext.projectId, surveyContext.surveyId);
+      surveyContext.surveyDataLoader.refresh(surveyContext.surveyId);
 
       skipUnsavedChangesDialog();
-      history.push(`/admin/projects/${projectContext.projectId}/surveys/${response.id}/details`);
+      history.push(`/admin/surveys/${response.id}/details`);
     } catch (error) {
       const apiError = error as APIError;
       showEditErrorDialog({
@@ -153,7 +148,7 @@ const EditSurveyPage = () => {
     }
   };
 
-  if (!codesContext.codesDataLoader.data || !projectContext.projectDataLoader.data || !surveyData) {
+  if (!codesContext.codesDataLoader.data || !surveyData) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
@@ -164,13 +159,7 @@ const EditSurveyPage = () => {
         title="Edit Survey Details"
         breadCrumbJSX={
           <Breadcrumbs aria-label="breadcrumb" separator={'>'}>
-            <Link component={RouterLink} underline="hover" to={`/admin/projects/${projectContext.projectId}/`}>
-              {projectContext.projectDataLoader.data.projectData.project.project_name}
-            </Link>
-            <Link
-              component={RouterLink}
-              underline="hover"
-              to={`/admin/projects/${projectContext.projectId}/surveys/${surveyId}/details`}>
+            <Link component={RouterLink} underline="hover" to={`/admin/surveys/${surveyId}/details`}>
               {surveyData && surveyData.survey_details && surveyData.survey_details.survey_name}
             </Link>
             <Typography component="a" color="textSecondary" aria-current="page">
@@ -205,6 +194,8 @@ const EditSurveyPage = () => {
               site_selection: surveyData.site_selection,
               locations: surveyData.locations,
               participants: surveyData.participants,
+              members: surveyData.members,
+              collections: surveyData.collections,
               partnerships: surveyData.partnerships,
               blocks: surveyData.blocks,
               proprietor: surveyData.proprietor,

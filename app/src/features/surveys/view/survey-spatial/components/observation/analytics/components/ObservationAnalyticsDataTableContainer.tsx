@@ -156,6 +156,7 @@ export const ObservationAnalyticsDataTableContainer = (props: IObservationAnalyt
           hasNoData={!analyticsDataLoader.data?.length}
           hasNoDataFallback={
             <NoDataOverlay
+              minHeight="400px"
               height="100%"
               title="Add Observations to View Analytics"
               subtitle="Analyze demographics, species diversity, and more across your observations"

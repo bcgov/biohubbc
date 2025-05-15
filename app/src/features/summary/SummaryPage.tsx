@@ -1,14 +1,13 @@
 import { mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
-import Paper from '@mui/material/Paper';
 import PageHeader from 'components/layout/PageHeader';
 import { SystemRoleGuard } from 'components/security/Guards';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { SystemAlertBanner } from 'features/alert/banner/SystemAlertBanner';
 import { ListDataTableContainer } from 'features/summary/list-data/ListDataTableContainer';
-import { TabularDataTableContainer } from 'features/summary/tabular-data/TabularDataTableContainer';
 import { SystemAlertBannerEnum } from 'interfaces/useAlertApi.interface';
 import { Link as RouterLink } from 'react-router-dom';
 
@@ -21,7 +20,7 @@ const SummaryPage = () => {
   return (
     <>
       <PageHeader
-        title="Summary"
+        title="Overview"
         buttonJSX={
           <SystemRoleGuard
             validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_CREATOR, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
@@ -30,8 +29,8 @@ const SummaryPage = () => {
               color="primary"
               startIcon={<Icon path={mdiPlus} size={1} />}
               component={RouterLink}
-              to={'/admin/projects/create'}>
-              Create Project
+              to={'/admin/surveys/create'}>
+              Create Survey
             </Button>
           </SystemRoleGuard>
         }
@@ -39,13 +38,9 @@ const SummaryPage = () => {
 
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <SystemAlertBanner alertTypes={[SystemAlertBannerEnum.SUMMARY]} />
-
-        <Paper>
+        <Box>
           <ListDataTableContainer />
-        </Paper>
-        <Paper sx={{ mt: 3 }}>
-          <TabularDataTableContainer />
-        </Paper>
+        </Box>
       </Container>
     </>
   );

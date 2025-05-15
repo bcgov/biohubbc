@@ -3,6 +3,7 @@ import SQL, { SQLStatement } from 'sql-template-strings';
 import { z } from 'zod';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
+import { CollectionBasic } from '../models/collection';
 import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
 import { PutSurveyObject } from '../models/survey-update';
 import {
@@ -49,7 +50,7 @@ export interface ISurveyProprietorModel {
 
 const SurveyRecord = z.object({
   survey_id: z.number(),
-  project_id: z.number(),
+  project_id: z.number().nullable().optional(),
   uuid: z.string().uuid().nullable(),
   name: z.string().nullable(),
   additional_details: z.string().nullable(),
@@ -108,12 +109,14 @@ export type SurveyProgressRecord = z.infer<typeof SurveyProgressRecord>;
 
 export const SurveyBasicFields = z.object({
   survey_id: z.number(),
+  project_id: z.number().nullable().optional(),
   name: z.string(),
   start_date: z.string(),
   end_date: z.string().nullable(),
   progress_id: z.number(),
   focal_species: z.array(z.number()),
-  focal_species_names: z.array(z.string())
+  focal_species_names: z.array(z.string()),
+  progress_percentage: z.number().min(0).max(100)
 });
 
 export type SurveyBasicFields = z.infer<typeof SurveyBasicFields>;
@@ -162,37 +165,66 @@ export class SurveyRepository extends BaseRepository {
     const query = knex
       .select([
         's.survey_id',
-        's.project_id',
         's.name',
         's.progress_id',
         's.start_date',
         's.end_date',
         knex.raw(`COALESCE(array_remove(array_agg(DISTINCT rl.region_name), null), '{}') as regions`),
-        knex.raw('array_remove(array_agg(distinct sp.itis_tsn), null) as focal_species'),
-        knex.raw('array_remove(array_agg(distinct st.type_id), null) as types')
+        knex.raw(`array_remove(array_agg(DISTINCT sp.itis_tsn), null) as focal_species`),
+        knex.raw(`array_remove(array_agg(DISTINCT st.type_id), null) as types`),
+        knex.raw(`
+          ROUND((
+            (
+              CASE WHEN COUNT(DISTINCT sss.survey_sample_site_id) > 0 THEN 1 ELSE 0 END +
+              CASE WHEN COUNT(DISTINCT mt.method_technique_id) > 0 THEN 1 ELSE 0 END +
+              CASE WHEN COUNT(DISTINCT ssp.survey_sample_period_id) > 0 THEN 1 ELSE 0 END +
+              CASE WHEN COUNT(DISTINCT so.survey_observation_id) > 0 THEN 1 ELSE 0 END +
+              CASE WHEN COUNT(DISTINCT d.deployment_id) > 0 THEN 1 ELSE 0 END +
+              CASE WHEN COUNT(DISTINCT c.critter_id) > 0 THEN 1 ELSE 0 END +
+              CASE WHEN COUNT(DISTINCT shf.survey_habitat_feature_id) > 0 THEN 1 ELSE 0 END +
+              CASE WHEN COUNT(DISTINCT sa.survey_attachment_id) > 0 THEN 1 ELSE 0 END
+            )::decimal / 8
+          ) * 100, 0) AS progress_percentage
+        `)
       ])
       .from('survey as s')
-      .leftJoin('project as p', 'p.project_id', 's.project_id')
+      .leftJoin('collection_survey as cs', 'cs.survey_id', 's.survey_id')
+      .leftJoin('collection_member as cm', 'cs.collection_id', 'cm.collection_id')
       .leftJoin('study_species as sp', 'sp.survey_id', 's.survey_id')
       .leftJoin('survey_type as st', 'st.survey_id', 's.survey_id')
       .leftJoin('survey_region as sr', 'sr.survey_id', 's.survey_id')
       .leftJoin('region_lookup as rl', 'rl.region_id', 'sr.region_id')
-      .leftJoin('project_participation as ppa', 'ppa.project_id', 's.project_id')
-      .groupBy('s.survey_id', 's.project_id', 's.name', 's.progress_id', 's.start_date', 's.end_date');
+      .leftJoin('survey_member as ppa', 'ppa.survey_id', 's.survey_id')
+      .leftJoin('survey_sample_site as sss', 'sss.survey_id', 's.survey_id')
+      .leftJoin('survey_sample_period as ssp', 'ssp.survey_id', 's.survey_id')
+      .leftJoin('method_technique as mt', 'mt.survey_id', 's.survey_id')
+      .leftJoin('survey_observation as so', 'so.survey_id', 's.survey_id')
+      .leftJoin('deployment as d', 'd.survey_id', 's.survey_id')
+      .leftJoin('critter as c', 'c.survey_id', 's.survey_id')
+      .leftJoin('survey_habitat_feature as shf', 'shf.survey_id', 's.survey_id')
+      .leftJoin('survey_attachment as sa', 'sa.survey_id', 's.survey_id')
+      .groupBy('s.survey_id', 's.name', 's.progress_id', 's.start_date', 's.end_date');
 
-    // Ensure that users can only see surveys that they are participating in, unless they are an administrator.
+    // Ensure that users can only see surveys that they belong to or can access via collections, unless they are an administrator.
     if (!isUserAdmin) {
-      query.whereIn('p.project_id', (subQueryBuilder) => {
-        subQueryBuilder.select('project_id').from('project_participation').where('system_user_id', systemUserId);
+      query.whereIn('s.survey_id', (subQueryBuilder) => {
+        subQueryBuilder
+          .select('survey_id')
+          .from('survey_member')
+          .where('system_user_id', systemUserId)
+          .union([
+            knex
+              .select('cs.survey_id')
+              .from('collection_survey as cs')
+              .join('collection_member as cm', 'cs.collection_id', 'cm.collection_id')
+              .where('cm.system_user_id', systemUserId)
+          ]);
       });
     }
 
     if (filterFields.system_user_id) {
-      query.whereIn('p.project_id', (subQueryBuilder) => {
-        subQueryBuilder
-          .select('project_id')
-          .from('project_participation')
-          .where('system_user_id', filterFields.system_user_id);
+      query.whereIn('s.survey_id', (subQueryBuilder) => {
+        subQueryBuilder.select('survey_id').from('survey_member').where('system_user_id', filterFields.system_user_id);
       });
     }
 
@@ -272,28 +304,6 @@ export class SurveyRepository extends BaseRepository {
   }
 
   /**
-   * Get survey(s) for a given project id
-   *
-   * @param {number} projectId
-   * @returns {*} {Promise<{id: number}[]>}
-   * @memberof SurveyRepository
-   */
-  async getSurveyIdsByProjectId(projectId: number): Promise<{ id: number }[]> {
-    const sqlStatement = SQL`
-      SELECT
-        survey_id as id
-      FROM
-        survey
-      WHERE
-        project_id = ${projectId};
-    `;
-
-    const response = await this.connection.sql<{ id: number }>(sqlStatement);
-
-    return response.rows;
-  }
-
-  /**
    * Gets a survey record for a given survey ID
    *
    * @param {number} surveyId
@@ -313,7 +323,7 @@ export class SurveyRepository extends BaseRepository {
     const response = await this.connection.sql(sqlStatement, SurveyRecord);
 
     if (!response.rows[0]) {
-      throw new ApiExecuteSQLError('Failed to get project survey details data', [
+      throw new ApiExecuteSQLError('Failed to get survey details data', [
         'SurveyRepository->getSurveyData',
         'response was null or undefined, expected response != null'
       ]);
@@ -532,6 +542,28 @@ export class SurveyRepository extends BaseRepository {
   }
 
   /**
+   * Get collections that the given survey belongs to
+   *
+   * @param {number} surveyId
+   * @returns {Promise<CollectionBasic[]>} A promise resolving to the survey ids
+   * @memberof CollectionRepository
+   */
+  async getCollectionsBySurveyId(surveyId: number): Promise<CollectionBasic[]> {
+    const knex = getKnex();
+
+    const queryBuilder = knex
+      .select('c.collection_id', 'c.name')
+      .from('collection as c')
+      .join('collection_survey as cs', 'c.collection_id', 'cs.collection_id')
+      .join('survey as s', 's.survey_id', 'cs.survey_id')
+      .where('cs.survey_id', surveyId);
+
+    const response = await this.connection.knex(queryBuilder, CollectionBasic);
+
+    return response.rows;
+  }
+
+  /**
    * Get Survey Report attachments data for a given surveyId
    *
    * @param {number} surveyId
@@ -580,51 +612,196 @@ export class SurveyRepository extends BaseRepository {
   }
 
   /**
-   * Fetches a subset of survey fields for all surveys under a project.
+   * Base query for getting the basic fields of surveys
    *
-   * @param {number} projectId
+   * @param filterFields
+   * @returns {Knex.QueryBuilder}
+   */
+  private _getSurveyBasicFieldsQuery(filterFields?: ISurveyAdvancedFilters): Knex.QueryBuilder {
+    const knex = getKnex();
+
+    const query = knex
+      .select([
+        's.survey_id',
+        's.name',
+        's.progress_id',
+        's.start_date',
+        's.end_date',
+        knex.raw(`COALESCE(array_remove(array_agg(DISTINCT rl.region_name), null), '{}') as regions`),
+        knex.raw(`array_remove(array_agg(DISTINCT sp.itis_tsn), null) as focal_species`),
+        knex.raw(`array_remove(array_agg(DISTINCT st.type_id), null) as types`),
+        knex.raw(`
+          ROUND((
+            (
+              CASE WHEN COUNT(DISTINCT sss.survey_sample_site_id) > 0 THEN 1 ELSE 0 END +
+              CASE WHEN COUNT(DISTINCT mt.method_technique_id) > 0 THEN 1 ELSE 0 END +
+              CASE WHEN COUNT(DISTINCT ssp.survey_sample_period_id) > 0 THEN 1 ELSE 0 END +
+              CASE WHEN COUNT(DISTINCT so.survey_observation_id) > 0 THEN 1 ELSE 0 END +
+              CASE WHEN COUNT(DISTINCT d.deployment_id) > 0 THEN 1 ELSE 0 END +
+              CASE WHEN COUNT(DISTINCT c.critter_id) > 0 THEN 1 ELSE 0 END +
+              CASE WHEN COUNT(DISTINCT shf.survey_habitat_feature_id) > 0 THEN 1 ELSE 0 END +
+              CASE WHEN COUNT(DISTINCT sa.survey_attachment_id) > 0 THEN 1 ELSE 0 END
+            )::decimal / 8
+          ) * 100, 0) AS progress_percentage
+        `)
+      ])
+      .from('survey as s')
+      .leftJoin('study_species as sp', 'sp.survey_id', 's.survey_id')
+      .leftJoin('survey_region as sr', 'sr.survey_id', 's.survey_id')
+      .leftJoin('region_lookup as rl', 'rl.region_id', 'sr.region_id')
+      .leftJoin('survey_type as st', 'st.survey_id', 's.survey_id')
+      .leftJoin('survey_sample_site as sss', 'sss.survey_id', 's.survey_id')
+      .leftJoin('method_technique as mt', 'mt.survey_id', 's.survey_id')
+      .leftJoin('survey_sample_period as ssp', 'ssp.survey_id', 's.survey_id')
+      .leftJoin('survey_observation as so', 'so.survey_id', 's.survey_id')
+      .leftJoin('deployment as d', 'd.survey_id', 's.survey_id')
+      .leftJoin('critter as c', 'c.survey_id', 's.survey_id')
+      .leftJoin('survey_habitat_feature as shf', 'shf.survey_id', 's.survey_id')
+      .leftJoin('survey_attachment as sa', 'sa.survey_id', 's.survey_id')
+      .where('sp.is_focal', true)
+      .groupBy('s.survey_id', 's.name', 's.progress_id', 's.start_date', 's.end_date');
+
+    if (filterFields?.start_date) {
+      query.andWhere('s.start_date', '>=', filterFields.start_date);
+    }
+
+    if (filterFields?.end_date) {
+      query.andWhere('s.end_date', '<=', filterFields.end_date);
+    }
+
+    if (filterFields?.survey_name) {
+      query.andWhere('s.name', 'ilike', `%${filterFields.survey_name}%`);
+    }
+
+    if (filterFields?.itis_tsns?.length) {
+      query.whereIn('sp.itis_tsn', filterFields.itis_tsns);
+    } else if (filterFields?.itis_tsn) {
+      query.where('sp.itis_tsn', filterFields.itis_tsn);
+    }
+
+    if (filterFields?.keyword) {
+      const keyword = `%${filterFields.keyword}%`;
+      query.andWhere((qb) => {
+        qb.where('s.name', 'ilike', keyword)
+          .orWhere('s.additional_details', 'ilike', keyword)
+          .orWhere('s.comments', 'ilike', keyword);
+
+        if (!isNaN(Number(filterFields.keyword))) {
+          qb.orWhere('s.survey_id', Number(filterFields.keyword));
+        }
+      });
+    }
+
+    return query;
+  }
+
+  /**
+   * Fetches a subset of survey fields for all surveys
+   *
    * @param {ApiPaginationOptions} [pagination]
    * @return {*}  {Promise<Omit<SurveyBasicFields, 'focal_species_names'>[]>}
    * @memberof SurveyRepository
    */
-  async getSurveysBasicFieldsByProjectId(
-    projectId: number,
-    pagination?: ApiPaginationOptions
-  ): Promise<Omit<SurveyBasicFields, 'focal_species_names'>[]> {
-    const knex = getKnex();
-
-    const queryBuilder = knex
-      .queryBuilder()
-      .select(
-        'survey.survey_id',
-        'survey.name',
-        'survey.start_date',
-        'survey.end_date',
-        'survey.progress_id',
-        knex.raw('array_remove(array_agg(study_species.itis_tsn), NULL) AS focal_species')
-      )
-      .from('survey')
-      .leftJoin('study_species', 'study_species.survey_id', 'survey.survey_id')
-      .leftJoin('survey_progress', 'survey_progress.survey_progress_id', 'survey.progress_id')
-      .where('survey.project_id', projectId)
-      .where('study_species.is_focal', true)
-      .groupBy('survey.survey_id')
-      .groupBy('survey.name')
-      .groupBy('survey.start_date')
-      .groupBy('survey.end_date')
-      .groupBy('survey.progress_id');
+  async getSurveysBasicFields(pagination?: ApiPaginationOptions): Promise<any[]> {
+    const query = this._getSurveyBasicFieldsQuery();
 
     if (pagination) {
-      queryBuilder.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
+      query.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
 
       if (pagination.sort && pagination.order) {
-        queryBuilder.orderBy(pagination.sort, pagination.order);
+        query.orderBy(pagination.sort, pagination.order);
       }
     }
 
-    const response = await this.connection.knex(queryBuilder, SurveyBasicFields.omit({ focal_species_names: true }));
+    const response = await this.connection.knex(query);
 
     return response.rows;
+  }
+
+  /**
+   * Fetches a subset of survey fields for all surveys in a collection
+   *
+   * @param {number} collectionId
+   * @param {ISurveyAdvancedFilters} filterFields
+   * @param {ApiPaginationOptions} [pagination]
+   * @return {*}  {Promise<Omit<SurveyBasicFields, 'focal_species_names'>[]>}
+   * @memberof SurveyRepository
+   */
+  async getSurveysBasicFieldsByCollectionId(
+    collectionId: number,
+    filterFields?: ISurveyAdvancedFilters,
+    pagination?: ApiPaginationOptions
+  ): Promise<any[]> {
+    const knex = getKnex();
+
+    // Recursive CTE to get all child collections
+    const query = knex.withRecursive('collection_hierarchy', (qb) => {
+      qb.select('collection_id')
+        .from('collection')
+        .where('collection_id', collectionId)
+        .unionAll(function () {
+          this.select('c.collection_id')
+            .from('collection as c')
+            .join('collection_hierarchy as ch', 'c.parent_collection_id', 'ch.collection_id');
+        });
+    });
+
+    const baseQuery = this._getSurveyBasicFieldsQuery(filterFields);
+
+    // Join surveys against the recursive hierarchy
+    baseQuery
+      .join('collection_survey as cs', 'cs.survey_id', 's.survey_id')
+      .join('collection_hierarchy as ch', 'cs.collection_id', 'ch.collection_id');
+
+    if (pagination) {
+      baseQuery.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
+
+      if (pagination.sort && pagination.order) {
+        baseQuery.orderBy(pagination.sort, pagination.order);
+      }
+    }
+
+    const fullQuery = query.from(baseQuery.as('s'));
+
+    const response = await this.connection.knex(fullQuery);
+
+    return response.rows;
+  }
+
+  async getSurveysBasicFieldsByCollectionIdCount(
+    collectionId: number,
+    filterFields?: ISurveyAdvancedFilters
+  ): Promise<number> {
+    const knex = getKnex();
+
+    // Recursive CTE to get all child collections
+    const queryWithHierarchy = knex.withRecursive('collection_hierarchy', (qb) => {
+      qb.select('collection_id')
+        .from('collection')
+        .where('collection_id', collectionId)
+        .unionAll(function () {
+          this.select('c.collection_id')
+            .from('collection as c')
+            .join('collection_hierarchy as ch', 'c.parent_collection_id', 'ch.collection_id');
+        });
+    });
+
+    // Build the base survey fields query
+    const basicFieldsQuery = this._getSurveyBasicFieldsQuery(filterFields);
+
+    // Apply recursive collection filtering
+    basicFieldsQuery
+      .join('collection_survey as cs', 'cs.survey_id', 's.survey_id')
+      .join('collection_hierarchy as ch', 'cs.collection_id', 'ch.collection_id');
+
+    // Wrap in count query
+    const countQuery = queryWithHierarchy
+      .from(basicFieldsQuery.as('bfq'))
+      .select(knex.raw('count(*)::integer as count'));
+
+    const response = await this.connection.knex(countQuery, z.object({ count: z.number() }));
+
+    return response.rows[0].count;
   }
 
   /**
@@ -660,53 +837,20 @@ export class SurveyRepository extends BaseRepository {
   }
 
   /**
-   * Returns the total number of surveys belonging to the given project.
-   *
-   * @param {number} projectId
-   * @return {*}  {Promise<number>}
-   * @memberof SurveyService
-   */
-  async getSurveyCountByProjectId(projectId: number): Promise<number> {
-    const sqlStatement = SQL`
-      SELECT
-        COUNT(*)::integer AS count
-      FROM
-        survey
-      WHERE
-        project_id = ${projectId};
-    `;
-
-    const response = await this.connection.sql(sqlStatement, z.object({ count: z.number() }));
-
-    if (!response.rowCount) {
-      throw new ApiExecuteSQLError('Failed to get survey count', [
-        'SurveyRepository->getSurveyCountByProjectId',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
-
-    return response.rows[0].count;
-  }
-
-  /**
    * Inserts a new survey record and returns the new ID
-   *
-   * @param {number} projectId
    * @param {PostSurveyObject} surveyData
    * @returns {*} Promise<number>
    * @memberof SurveyRepository
    */
-  async insertSurveyData(projectId: number, surveyData: PostSurveyObject): Promise<number> {
+  async insertSurveyData(surveyData: PostSurveyObject): Promise<number> {
     const sqlStatement = SQL`
       INSERT INTO survey (
-        project_id,
         name,
         start_date,
         end_date,
         progress_id,
         additional_details
       ) VALUES (
-        ${projectId},
         ${surveyData.survey_details.survey_name},
         ${surveyData.survey_details.start_date},
         ${surveyData.survey_details.end_date},
@@ -907,21 +1051,17 @@ export class SurveyRepository extends BaseRepository {
 
   /**
    * Associated Survey to a particular permit
-   *
-   * @param {number} projectId
    * @param {number} surveyId
    * @param {number} permitNumber
    * @returns {*} Promise<void>
    * @memberof SurveyRepository
    */
-  async associateSurveyToPermit(projectId: number, surveyId: number, permitNumber: string): Promise<void> {
+  async associateSurveyToPermit(surveyId: number, permitNumber: string): Promise<void> {
     const sqlStatement = SQL`
       UPDATE
         permit
       SET
         survey_id = ${surveyId}
-      WHERE
-        project_id = ${projectId}
       AND
         number = ${permitNumber};
     `;
@@ -940,7 +1080,7 @@ export class SurveyRepository extends BaseRepository {
    * Inserts or updates survey permit
    *
    * @param {number} systemUserId
-   * @param {number} projectId
+   
    * @param {number} surveyId
    * @param {string} permitNumber
    * @param {string} permitType
@@ -949,7 +1089,7 @@ export class SurveyRepository extends BaseRepository {
    */
   async insertSurveyPermit(
     systemUserId: number,
-    projectId: number,
+
     surveyId: number,
     permitNumber: string,
     permitType: string
@@ -957,13 +1097,11 @@ export class SurveyRepository extends BaseRepository {
     const sqlStatement = SQL`
     INSERT INTO permit (
       system_user_id,
-      project_id,
       survey_id,
       number,
       type
     ) VALUES (
       ${systemUserId},
-      ${projectId},
       ${surveyId},
       ${permitNumber},
       ${permitType}
@@ -971,8 +1109,6 @@ export class SurveyRepository extends BaseRepository {
     ON CONFLICT (number) DO
     UPDATE SET
       survey_id = ${surveyId}
-    WHERE
-      permit.project_id = ${projectId}
     AND
       permit.survey_id is NULL;
   `;

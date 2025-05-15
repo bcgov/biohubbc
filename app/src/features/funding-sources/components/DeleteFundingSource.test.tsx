@@ -79,7 +79,7 @@ describe('DeleteFundingSource', () => {
           survey_id: 1,
           funding_source_id: 1,
           revision_count: 1,
-          project_id: 1,
+
           survey_name: 'Survey'
         }
       ]

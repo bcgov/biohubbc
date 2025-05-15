@@ -54,7 +54,7 @@ export class SamplePeriodRepository extends BaseRepository {
   /**
    * Gets all survey Sample periods.
    *
-   * @param {number} surveyId
+   * @param {number[]} surveyIds
    * @param {{
    *       filterFields?: {
    *         surveyObservationIds?: number[];
@@ -64,8 +64,8 @@ export class SamplePeriodRepository extends BaseRepository {
    * @return {*}  {Promise<SurveySamplePeriodDetails[]>}
    * @memberof SamplePeriodRepository
    */
-  async getSamplePeriodsForSurvey(
-    surveyId: number,
+  async getSamplePeriodsForSurveys(
+    surveyIds: number[],
     options?: {
       filterFields?: {
         surveyObservationIds?: number[];
@@ -89,7 +89,7 @@ export class SamplePeriodRepository extends BaseRepository {
         .whereIn('survey_observation.survey_observation_id', options.filterFields.surveyObservationIds);
     }
 
-    queryBuilder.where('survey_sample_period.survey_id', surveyId);
+    queryBuilder.whereIn('survey_sample_period.survey_id', surveyIds);
 
     if (options?.pagination) {
       queryBuilder.limit(options.pagination.limit).offset((options.pagination.page - 1) * options.pagination.limit);
@@ -135,13 +135,13 @@ export class SamplePeriodRepository extends BaseRepository {
   /**
    * Gets all survey Sample periods for a given observation.
    *
-   * @param {number} surveyId
+   * @param {number[]} surveyIds
    * @param {number} surveyObservationId
    * @return {*}  {Promise<SurveySamplePeriodDetails[]>}
    * @memberof SamplePeriodRepository
    */
   async getSamplePeriodsForObservation(
-    surveyId: number,
+    surveyIds: number[],
     surveyObservationId: number
   ): Promise<SurveySamplePeriodDetails[]> {
     const knex = getKnex();
@@ -158,7 +158,7 @@ export class SamplePeriodRepository extends BaseRepository {
         'survey_sample_period.survey_sample_period_id'
       )
       .where('survey_observation.survey_observation_id', surveyObservationId)
-      .andWhere('survey_observation.survey_id', surveyId);
+      .whereIn('survey_observation.survey_id', surveyIds);
 
     const response = await this.connection.knex(queryBuilder, SurveySamplePeriodDetails);
 
@@ -429,21 +429,18 @@ export class SamplePeriodRepository extends BaseRepository {
 
     // Ensure that users can only see observations that they are participating in, unless they are an administrator.
     if (!isUserAdmin) {
-      getSurveyIdsQuery.whereIn('survey.project_id', (subqueryBuilder) =>
+      getSurveyIdsQuery.whereIn('survey.survey_id', (subqueryBuilder) =>
         subqueryBuilder
-          .select('project.project_id')
-          .from('project')
-          .leftJoin('project_participation', 'project_participation.project_id', 'project.project_id')
-          .where('project_participation.system_user_id', systemUserId)
+          .select('survey.survey_id')
+          .from('survey')
+          .leftJoin('survey_member', 'survey_member.survey_id', 'survey.survey_id')
+          .where('survey_member.system_user_id', systemUserId)
       );
     }
 
     if (filterFields.system_user_id) {
-      getSurveyIdsQuery.whereIn('project.project_id', (subQueryBuilder) => {
-        subQueryBuilder
-          .select('project_id')
-          .from('project_participation')
-          .where('system_user_id', filterFields.system_user_id);
+      getSurveyIdsQuery.whereIn('survey.survey_id', (subQueryBuilder) => {
+        subQueryBuilder.select('survey_id').from('survey_member').where('system_user_id', filterFields.system_user_id);
       });
     }
 

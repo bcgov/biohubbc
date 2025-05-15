@@ -110,7 +110,7 @@ describe('getAdministrativeActivityStanding', () => {
 
     const mockResponse: IAdministrativeActivityStanding = {
       has_pending_access_request: true,
-      has_one_or_more_project_roles: true
+      has_one_or_more_survey_roles: true
     };
 
     sinon.stub(AdministrativeActivityService.prototype, 'getAdministrativeActivityStanding').resolves(mockResponse);

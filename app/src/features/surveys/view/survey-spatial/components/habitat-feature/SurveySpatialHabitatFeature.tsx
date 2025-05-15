@@ -32,7 +32,7 @@ export const SurveySpatialHabitatFeature = (props: ISurveySpatialHabitatFeatureP
   const biohubApi = useBiohubApi();
 
   const habitatFeaturesGeometryDataLoader = useDataLoader(() =>
-    biohubApi.habitatFeature.getSurveyHabitatFeaturesGeometry(surveyContext.projectId, surveyContext.surveyId)
+    biohubApi.habitatFeature.getSurveyHabitatFeaturesGeometry(surveyContext.surveyId)
   );
 
   useEffect(() => {

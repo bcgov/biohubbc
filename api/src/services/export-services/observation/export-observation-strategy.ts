@@ -93,7 +93,7 @@ export class ExportObservationStrategy extends DBService implements ExportStrate
   _getMeasurementsMap = async () => {
     const subcountService = new SubCountService(this.connection);
     // Fetch all measurement type definitions from Critterbase for the unique taxon_measurement_ids
-    const response = await subcountService.getMeasurementTypeDefinitionsForSurvey(this.config.surveyId);
+    const response = await subcountService.getMeasurementTypeDefinitionsForSurveys([this.config.surveyId]);
 
     const flatDataMap = new Map<string, string>();
     // Populate the map with the options and measurements

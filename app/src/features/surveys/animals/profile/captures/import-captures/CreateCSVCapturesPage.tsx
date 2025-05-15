@@ -12,7 +12,7 @@ import { UploadFileStatus } from 'components/file-upload/FileUploadItem';
 import { FileUploadSingleItem } from 'components/file-upload/FileUploadSingleItem';
 import PageHeader from 'components/layout/PageHeader';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useAnimalPageContext, useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
+import { useAnimalPageContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { useCallback, useMemo, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
@@ -63,11 +63,10 @@ export const CreateCSVCapturesPage = () => {
   const { locationChangeInterceptor, skipUnsavedChangesDialog } = useUnsavedChangesDialog();
   const dialogContext = useDialogContext();
 
-  const projectContext = useProjectContext();
   const surveyContext = useSurveyContext();
   const animalPageContext = useAnimalPageContext();
 
-  const { projectId, surveyId } = surveyContext;
+  const { surveyId } = surveyContext;
 
   // Initialize the file upload states
   const [files, setFiles] = useState<CSVFilesStatus>({
@@ -154,7 +153,7 @@ export const CreateCSVCapturesPage = () => {
   const handleAllFileUploads = async () => {
     // Attempt to upload the captures first
     const captureStatus = await handleFileUpload('captures', (file, onProgress) =>
-      biohubApi.survey.importCapturesFromCsv(file, projectId, surveyId, cancelToken, onProgress)
+      biohubApi.survey.importCapturesFromCsv(file, surveyId, cancelToken, onProgress)
     );
 
     // If the Captures CSV upload failed, don't attempt to upload Measurements or Markings
@@ -165,10 +164,10 @@ export const CreateCSVCapturesPage = () => {
     // Measurements / Markings can be uploaded in parallel
     const [measurementStatus, markingStatus] = await Promise.all([
       handleFileUpload('measurements', (file, onProgress) =>
-        biohubApi.survey.importMeasurementsFromCsv(file, projectId, surveyId, cancelToken, onProgress)
+        biohubApi.survey.importMeasurementsFromCsv(file, surveyId, cancelToken, onProgress)
       ),
       handleFileUpload('markings', (file, onProgress) =>
-        biohubApi.survey.importMarkingsFromCsv(file, projectId, surveyId, cancelToken, onProgress)
+        biohubApi.survey.importMarkingsFromCsv(file, surveyId, cancelToken, onProgress)
       )
     ]);
 
@@ -186,11 +185,11 @@ export const CreateCSVCapturesPage = () => {
     });
 
     if (animalPageContext.selectedAnimal) {
-      animalPageContext.critterDataLoader.refresh(projectId, surveyId, animalPageContext.selectedAnimal.critter_id);
+      animalPageContext.critterDataLoader.refresh(surveyId, animalPageContext.selectedAnimal.critter_id);
     }
 
     skipUnsavedChangesDialog();
-    history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals`);
+    history.push(`/admin/surveys/${surveyId}/animals`);
   };
 
   /**
@@ -200,7 +199,7 @@ export const CreateCSVCapturesPage = () => {
    */
   const handleCancel = (): void => {
     cancelToken.cancel();
-    history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals`);
+    history.push(`/admin/surveys/${surveyId}/animals`);
   };
 
   /**
@@ -230,16 +229,10 @@ export const CreateCSVCapturesPage = () => {
         title="Create Captures"
         breadCrumbJSX={
           <Breadcrumbs aria-label="breadcrumb" separator={'>'}>
-            <Link component={RouterLink} underline="hover" to={`/admin/projects/${projectId}/`}>
-              {projectContext.projectDataLoader.data?.projectData.project.project_name}
-            </Link>
-            <Link component={RouterLink} underline="hover" to={`/admin/projects/${projectId}/surveys/${surveyId}`}>
+            <Link component={RouterLink} underline="hover" to={`/admin/surveys/${surveyId}`}>
               {surveyContext.surveyDataLoader.data?.surveyData.survey_details.survey_name}
             </Link>
-            <Link
-              component={RouterLink}
-              underline="hover"
-              to={`/admin/projects/${projectId}/surveys/${surveyId}/animals`}>
+            <Link component={RouterLink} underline="hover" to={`/admin/surveys/${surveyId}/animals`}>
               Manage Animals
             </Link>
             <Typography variant="body2" component="span" color="textSecondary" aria-current="page">

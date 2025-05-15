@@ -115,8 +115,8 @@ export class ImportSamplePeriodsService extends DBService {
     const methodTechniqueService = new TechniqueService(this.connection);
 
     // Get the injectable reference data
-    const sampleSites = await sampleSiteService.getSampleSitesForSurveyId(this.surveyId);
-    const methodTechniques = await methodTechniqueService.getTechniquesForSurveyId(this.surveyId);
+    const sampleSites = await sampleSiteService.getSampleSitesForSurveyIds([this.surveyId]);
+    const methodTechniques = await methodTechniqueService.getTechniquesForSurveyIds([this.surveyId]);
 
     // Set all the static header configs
     this.utils.setAllStaticHeaderConfigs({

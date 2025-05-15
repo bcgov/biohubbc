@@ -16,7 +16,7 @@ import {
 import { FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
+import { useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { ICreateTechniqueRequest } from 'interfaces/useTechniqueApi.interface';
 import { useRef, useState } from 'react';
@@ -44,7 +44,7 @@ export const CreateTechniquePage = () => {
   const biohubApi = useBiohubApi();
 
   const surveyContext = useSurveyContext();
-  const projectContext = useProjectContext();
+
   const dialogContext = useDialogContext();
 
   const { locationChangeInterceptor, skipUnsavedChangesDialog } = useUnsavedChangesDialog();
@@ -53,7 +53,7 @@ export const CreateTechniquePage = () => {
 
   const formikRef = useRef<FormikProps<CreateTechniqueFormValues>>(null);
 
-  if (!surveyContext.surveyDataLoader.data || !projectContext.projectDataLoader.data) {
+  if (!surveyContext.surveyDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
@@ -89,13 +89,11 @@ export const CreateTechniquePage = () => {
       };
 
       // Create the technique
-      await biohubApi.technique.createTechniques(surveyContext.projectId, surveyContext.surveyId, [
-        createTechniqueRequestData
-      ]);
+      await biohubApi.technique.createTechniques(surveyContext.surveyId, [createTechniqueRequestData]);
 
       // Success, navigate back to the manage sampling information page
       skipUnsavedChangesDialog();
-      history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling`);
+      history.goBack();
     } catch (error) {
       setIsSubmitting(false);
       dialogContext.setErrorDialog({
@@ -126,22 +124,10 @@ export const CreateTechniquePage = () => {
             sx={{
               typography: 'body2'
             }}>
-            <Link
-              component={RouterLink}
-              to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/details`}
-              underline="none">
-              {projectContext.projectDataLoader.data?.projectData.project.project_name}
-            </Link>
-            <Link
-              component={RouterLink}
-              to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/details`}
-              underline="none">
+            <Link component={RouterLink} to={`/admin/surveys/${surveyContext.surveyId}/details`} underline="none">
               {surveyContext.surveyDataLoader.data?.surveyData.survey_details.survey_name}
             </Link>
-            <Link
-              component={RouterLink}
-              to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling`}
-              underline="none">
+            <Link component={RouterLink} to={`/admin/surveys/${surveyContext.surveyId}/sampling`} underline="none">
               Manage Sampling Information
             </Link>
             <Typography component="span" variant="body2" color="textSecondary">
@@ -158,13 +144,7 @@ export const CreateTechniquePage = () => {
               onClick={() => formikRef.current?.submitForm()}>
               Save and Exit
             </LoadingButton>
-            <Button
-              disabled={isSubmitting}
-              color="primary"
-              variant="outlined"
-              onClick={() =>
-                history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling`)
-              }>
+            <Button disabled={isSubmitting} color="primary" variant="outlined" onClick={() => history.goBack()}>
               Cancel
             </Button>
           </Stack>
@@ -193,7 +173,7 @@ export const CreateTechniquePage = () => {
               variant="outlined"
               color="primary"
               onClick={() => {
-                history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling`);
+                history.goBack();
               }}>
               Cancel
             </Button>

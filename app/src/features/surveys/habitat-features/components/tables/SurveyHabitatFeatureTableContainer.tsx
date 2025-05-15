@@ -57,11 +57,7 @@ export const SurveyHabitatFeatureTableContainer = (): JSX.Element => {
         dialogContext.setYesNoDialog({ open: false });
 
         try {
-          await biohubApi.habitatFeature.deleteSurveyHabitatFeatures(
-            surveyContext.projectId,
-            surveyContext.surveyId,
-            habitatFeatureIds
-          );
+          await biohubApi.habitatFeature.deleteSurveyHabitatFeatures(surveyContext.surveyId, habitatFeatureIds);
 
           habitatFeatureTableContext.refreshHabitatFeatureRecords();
         } catch (error) {
@@ -117,7 +113,7 @@ export const SurveyHabitatFeatureTableContainer = (): JSX.Element => {
             color="primary"
             startIcon={<Icon path={mdiPlus} size={1} />}
             component={RouterLink}
-            to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/habitat-features/create`}>
+            to={`/admin/surveys/${surveyContext.surveyId}/habitat-features/create`}>
             Add
           </Button>
 

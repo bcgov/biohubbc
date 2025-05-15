@@ -4,7 +4,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormHelperText from '@mui/material/FormHelperText';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
-import HelpButtonStack from 'components/buttons/HelpButtonStack';
+import HelpButtonStack from 'components/tooltip/HelpButtonStack';
 import { useFormikContext } from 'formik';
 import { StringBoolean } from 'types/misc';
 import yup from 'utils/YupSchema';

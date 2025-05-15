@@ -252,6 +252,7 @@ const HabitatFeaturesListContainer = (props: IHabitatFeaturesListContainerProps)
           hasNoData={!rows.length}
           hasNoDataFallback={
             <NoDataOverlay
+              minHeight="400px"
               height="500px"
               title="Create or Join Surveys to See HabitatFeatures"
               subtitle="You currently have no habitat features data. Once you create or join surveys with habitat features data, it will be displayed here"

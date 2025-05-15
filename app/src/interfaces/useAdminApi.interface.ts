@@ -36,7 +36,7 @@ export interface IGetAccessRequestsListResponse {
 
 export interface IGetAdministrativeActivityStanding {
   has_pending_access_request: boolean;
-  has_one_or_more_project_roles: boolean;
+  has_one_or_more_survey_roles: boolean;
 }
 
 export interface IgcNotifyGenericMessage {

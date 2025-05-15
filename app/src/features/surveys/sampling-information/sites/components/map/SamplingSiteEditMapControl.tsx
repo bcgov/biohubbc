@@ -69,11 +69,10 @@ const SamplingSiteEditMapControl = (props: ISamplingSiteEditMapControlProps) => 
 
   const biohubApi = useBiohubApi();
 
-  const projectId = surveyContext.projectId;
   const surveyId = surveyContext.surveyId;
 
   const samplingSiteDataLoader = useDataLoader(() => {
-    return biohubApi.samplingSite.getSampleSiteById(projectId, surveyId, surveySampleSiteId);
+    return biohubApi.samplingSite.getSampleSiteById(surveyId, surveySampleSiteId);
   });
 
   if (!samplingSiteDataLoader.data) {

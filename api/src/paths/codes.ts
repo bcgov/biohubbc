@@ -31,7 +31,7 @@ GET.apiDoc = {
               'iucn_conservation_action_level_3_subclassification',
               'proprietor_type',
               'system_roles',
-              'project_roles',
+              'survey_roles',
               'administrative_activity_status_type',
               'intended_outcomes',
               'survey_jobs',
@@ -45,7 +45,8 @@ GET.apiDoc = {
               'frequency_units',
               'alert_types',
               'vantages',
-              'habitat_feature_types'
+              'habitat_feature_types',
+              'collection_roles'
             ],
             properties: {
               management_action_type: {
@@ -214,7 +215,7 @@ GET.apiDoc = {
                   }
                 }
               },
-              project_roles: {
+              survey_roles: {
                 type: 'array',
                 items: {
                   type: 'object',
@@ -490,6 +491,27 @@ GET.apiDoc = {
               habitat_feature_types: {
                 type: 'array',
                 description: 'Habitat feature type codes.',
+                items: {
+                  type: 'object',
+                  additionalProperties: false,
+                  required: ['id', 'name', 'description'],
+                  properties: {
+                    id: {
+                      type: 'integer',
+                      minimum: 1
+                    },
+                    name: {
+                      type: 'string'
+                    },
+                    description: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
+              collection_roles: {
+                type: 'array',
+                description: 'Collection role codes.',
                 items: {
                   type: 'object',
                   additionalProperties: false,

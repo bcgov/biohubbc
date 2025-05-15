@@ -26,8 +26,15 @@ export const usePersistentState = <T,>(localStorageId: string, initialValue: T):
     }
 
     try {
+      const parsed = JSON.parse(storageValue);
+
+      // Special handling if initial value is a Set
+      if (initialValue instanceof Set) {
+        return new Set(parsed) as T;
+      }
+
       // attempt to parse storage value
-      return JSON.parse(storageValue);
+      return parsed;
     } catch (_error) {
       // unable to parse just return the value
       return storageValue;
@@ -40,10 +47,17 @@ export const usePersistentState = <T,>(localStorageId: string, initialValue: T):
    * @param {T} newValue - Updated value.
    */
   const setPersistentValue = (newValue: T) => {
-    const parsedValue = typeof newValue === 'string' ? newValue : JSON.stringify(newValue);
-    // set local storage value
+    let parsedValue: string;
+
+    if (newValue instanceof Set) {
+      parsedValue = JSON.stringify(Array.from(newValue));
+    } else if (typeof newValue === 'string') {
+      parsedValue = newValue;
+    } else {
+      parsedValue = JSON.stringify(newValue);
+    }
+
     localStorage.setItem(prefixedKey, parsedValue);
-    // set state value
     setValue(newValue);
   };
 

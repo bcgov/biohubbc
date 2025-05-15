@@ -19,18 +19,15 @@ import { ApiPaginationRequestOptions } from 'types/misc';
 const useSurveyHabitatFeatureApi = (axios: AxiosInstance) => {
   /**
    * Create new survey habitat feature records.
-   *
-   * @param {number} projectId
    * @param {number} surveyId
    * @param {CreateSurveyHabitatFeature[]} habitatFeatures
    * @return {*}  {Promise<void>}
    */
   const createSurveyHabitatFeatures = async (
-    projectId: number,
     surveyId: number,
     habitatFeatures: CreateSurveyHabitatFeature[]
   ): Promise<void> => {
-    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/habitat-features`, {
+    const { data } = await axios.post(`/api/survey/${surveyId}/habitat-features`, {
       surveyHabitatFeatures: habitatFeatures
     });
 
@@ -39,59 +36,45 @@ const useSurveyHabitatFeatureApi = (axios: AxiosInstance) => {
 
   /**
    * Update an existing survey habitat feature record.
-   *
-   * @param {number} projectId
    * @param {number} surveyId
    * @param {number} surveyHabitatFeatureId
    * @param {UpdateSurveyHabitatFeature} habitatFeature
    * @return {*}  {Promise<getSurveyHabitatFeaturesWithSupplementaryData>}
    */
   const updateSurveyHabitatFeature = async (
-    projectId: number,
     surveyId: number,
     surveyHabitatFeatureId: number,
     habitatFeature: UpdateSurveyHabitatFeature
   ): Promise<void> => {
-    const { data } = await axios.put(
-      `/api/project/${projectId}/survey/${surveyId}/habitat-features/${surveyHabitatFeatureId}`,
-      {
-        surveyHabitatFeature: habitatFeature
-      }
-    );
+    const { data } = await axios.put(`/api/survey/${surveyId}/habitat-features/${surveyHabitatFeatureId}`, {
+      surveyHabitatFeature: habitatFeature
+    });
 
     return data;
   };
 
   /**
    * Get a survey habitat feature record.
-   *
-   * @param {number} projectId
    * @param {number} surveyId
    * @param {number} surveyHabitatFeatureId
    * @return {*}  {Promise<getSurveyHabitatFeatureWithSupplementaryData>}
    */
   const getSurveyHabitatFeatureWithSupplementaryData = async (
-    projectId: number,
     surveyId: number,
     surveyHabitatFeatureId: number
   ): Promise<getSurveyHabitatFeatureWithSupplementaryData> => {
-    const { data } = await axios.get(
-      `/api/project/${projectId}/survey/${surveyId}/habitat-features/${surveyHabitatFeatureId}`
-    );
+    const { data } = await axios.get(`/api/survey/${surveyId}/habitat-features/${surveyHabitatFeatureId}`);
 
     return data;
   };
 
   /**
    * Get survey habitat feature records, with supplementary data.
-   *
-   * @param {number} projectId
    * @param {number} surveyId
    * @param {ApiPaginationRequestOptions} [pagination]
    * @return {*}  {Promise<getSurveyHabitatFeaturesWithSupplementaryData>}
    */
   const getSurveyHabitatFeaturesWithSupplementaryData = async (
-    projectId: number,
     surveyId: number,
     pagination?: ApiPaginationRequestOptions
   ): Promise<getSurveyHabitatFeaturesWithSupplementaryData> => {
@@ -99,23 +82,18 @@ const useSurveyHabitatFeatureApi = (axios: AxiosInstance) => {
       ...pagination
     };
 
-    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/habitat-features`, { params });
+    const { data } = await axios.get(`/api/survey/${surveyId}/habitat-features`, { params });
 
     return data;
   };
 
   /**
    * Get habitat feature spatial data, for a survey.
-   *
-   * @param {number} projectId
    * @param {number} surveyId
    * @return {*}  {Promise<SurveyHabitatFeaturesGeometry>}
    */
-  const getSurveyHabitatFeaturesGeometry = async (
-    projectId: number,
-    surveyId: number
-  ): Promise<SurveyHabitatFeaturesGeometry> => {
-    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/habitat-features/spatial`);
+  const getSurveyHabitatFeaturesGeometry = async (surveyId: number): Promise<SurveyHabitatFeaturesGeometry> => {
+    const { data } = await axios.get(`/api/survey/${surveyId}/habitat-features/spatial`);
 
     return data;
   };
@@ -143,38 +121,24 @@ const useSurveyHabitatFeatureApi = (axios: AxiosInstance) => {
 
   /**
    * Delete an existing survey habitat feature record.
-   *
-   * @param {number} projectId
    * @param {number} surveyId
    * @param {number} surveyHabitatFeatureId
    * @return {*}  {Promise<void>}
    */
-  const deleteSurveyHabitatFeature = async (
-    projectId: number,
-    surveyId: number,
-    surveyHabitatFeatureId: number
-  ): Promise<void> => {
-    const { data } = await axios.delete(
-      `/api/project/${projectId}/survey/${surveyId}/habitat-features/${surveyHabitatFeatureId}`
-    );
+  const deleteSurveyHabitatFeature = async (surveyId: number, surveyHabitatFeatureId: number): Promise<void> => {
+    const { data } = await axios.delete(`/api/survey/${surveyId}/habitat-features/${surveyHabitatFeatureId}`);
 
     return data;
   };
 
   /**
    * Delete existing survey habitat feature records.
-   *
-   * @param {number} projectId
    * @param {number} surveyId
    * @param {number[]} surveyHabitatFeatureIds
    * @return {*}  {Promise<void>}
    */
-  const deleteSurveyHabitatFeatures = async (
-    projectId: number,
-    surveyId: number,
-    surveyHabitatFeatureIds: number[]
-  ): Promise<void> => {
-    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/habitat-features/delete`, {
+  const deleteSurveyHabitatFeatures = async (surveyId: number, surveyHabitatFeatureIds: number[]): Promise<void> => {
+    const { data } = await axios.post(`/api/survey/${surveyId}/habitat-features/delete`, {
       surveyHabitatFeatureIds
     });
 
@@ -185,13 +149,13 @@ const useSurveyHabitatFeatureApi = (axios: AxiosInstance) => {
    * Bulk upload habitat features from a CSV file.
    *
    * @param {File} file
-   * @param {number} projectId
+   
    * @param {number} surveyId
    * @return {*} {Promise<void>}
    */
   const importHabitatFeaturesFromCsv = async (
     file: File,
-    projectId: number,
+
     surveyId: number,
     surveySamplePeriodId?: number,
     cancelTokenSource?: CancelTokenSource,
@@ -205,7 +169,7 @@ const useSurveyHabitatFeatureApi = (axios: AxiosInstance) => {
       formData.append('surveySamplePeriodId', surveySamplePeriodId.toString());
     }
 
-    await axios.post(`/api/project/${projectId}/survey/${surveyId}/habitat-features/import`, formData, {
+    await axios.post(`/api/survey/${surveyId}/habitat-features/import`, formData, {
       cancelToken: cancelTokenSource?.token,
       onUploadProgress: onProgress
     });

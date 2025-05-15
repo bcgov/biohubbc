@@ -1,0 +1,200 @@
+import { LoadingGuard } from 'components/loading/LoadingGuard';
+import { ComponentSwitch } from 'components/misc/ComponentSwitch';
+import { CodesContext } from 'contexts/codesContext';
+import { SurveyContext } from 'contexts/surveyContext';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import useDataLoader from 'hooks/useDataLoader';
+import { useSearchParams } from 'hooks/useSearchParams';
+import { SidebarLayout } from 'layouts/SidebarLayout';
+import { useCallback, useContext, useEffect } from 'react';
+import { SurveyChecklistContainer } from './checklist/SurveyChecklistContainer';
+
+import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
+import Skeleton from '@mui/material/Skeleton';
+import Stack from '@mui/material/Stack';
+
+import { SurveyDeploymentList } from '../telemetry/list/SurveyDeploymentList';
+import { DevicesContainer } from '../telemetry/manage/devices/table/DevicesContainer';
+import { SurveySpatialTelemetry } from '../telemetry/SurveySpatialTelemetry';
+import { SurveySpatialAnimals } from './content/animals/SurveySpatialAnimals';
+import { SurveySpatialObservations } from './content/observations/SurveySpatialObservations';
+import { SamplingPeriodContainer } from './content/sampling/period/SamplingPeriodContainer';
+import { SamplingSiteContainer } from './content/sampling/site/SamplingSiteContainer';
+import { SamplingTechniqueContainer } from './content/sampling/technique/SamplingTechniqueContainer';
+
+import Collapse from '@mui/material/Collapse';
+import grey from '@mui/material/colors/grey';
+import Container from '@mui/material/Container';
+import { usePersistentState } from 'hooks/usePersistentState';
+import { IGetSurveyChecklistItem } from 'interfaces/useChecklistApi.interface';
+import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
+import SurveyAttachments from '../view/SurveyAttachments';
+import SurveyHeader from '../view/SurveyHeader';
+import { SurveyChecklistGuide } from './guide/SurveyChecklistGuide';
+
+const ACTIVE_VIEW_KEY = 'v';
+
+export enum ACTIVE_VIEW_VALUE {
+  attachments = 'attachments',
+  metadata = 'metadata',
+  sites = 'sites',
+  techniques = 'techniques',
+  periods = 'periods',
+  observations = 'observations',
+  telemetry = 'telemetry',
+  devices = 'devices',
+  locations = 'locations',
+  deployments = 'deployments',
+  animals = 'animals',
+  habitat = 'habitat'
+}
+
+// Static mapping, no need to use `useMemo`
+export const VIEW_MAP: Record<string, { value: ACTIVE_VIEW_VALUE; order: number }> = {
+  sites: { value: ACTIVE_VIEW_VALUE.sites, order: 0 },
+  techniques: { value: ACTIVE_VIEW_VALUE.techniques, order: 1 },
+  periods: { value: ACTIVE_VIEW_VALUE.periods, order: 2 },
+  observations: { value: ACTIVE_VIEW_VALUE.observations, order: 3 },
+  telemetry: { value: ACTIVE_VIEW_VALUE.telemetry, order: 4 },
+  devices: { value: ACTIVE_VIEW_VALUE.devices, order: 5 },
+  deployments: { value: ACTIVE_VIEW_VALUE.deployments, order: 6 },
+  locations: { value: ACTIVE_VIEW_VALUE.locations, order: 7 },
+  habitat: { value: ACTIVE_VIEW_VALUE.habitat, order: 8 },
+  animals: { value: ACTIVE_VIEW_VALUE.animals, order: 9 },
+  attachments: { value: ACTIVE_VIEW_VALUE.attachments, order: 10 }
+};
+
+const DEFAULT_VIEW = ACTIVE_VIEW_VALUE.sites;
+const GUIDE_WIDTH = 350;
+
+export const SurveyPage = () => {
+  const surveyContext = useContext(SurveyContext);
+  const codesContext = useContext(CodesContext);
+  const biohubApi = useBiohubApi();
+
+  const { searchParams, setSearchParams } = useSearchParams<{ [ACTIVE_VIEW_KEY]: ACTIVE_VIEW_VALUE }>();
+  const [showGuide, setShowGuide] = usePersistentState('SHOW_SURVEY_GUIDE', true);
+
+  const checklistDataLoader = useDataLoader(() => biohubApi.checklist.getSurveyChecklist(surveyContext.surveyId));
+
+  useEffect(() => {
+    checklistDataLoader.load();
+    codesContext.codesDataLoader.load();
+
+    if (!searchParams.get(ACTIVE_VIEW_KEY)) {
+      setSearchParams(searchParams.set(ACTIVE_VIEW_KEY, DEFAULT_VIEW));
+    }
+  }, [checklistDataLoader, codesContext.codesDataLoader, searchParams, setSearchParams]);
+
+  const activeView = searchParams.get(ACTIVE_VIEW_KEY) as ACTIVE_VIEW_VALUE;
+
+  const handleViewChange = (view: ACTIVE_VIEW_VALUE) => {
+    const updatedView = view ?? DEFAULT_VIEW;
+    setSearchParams(searchParams.set(ACTIVE_VIEW_KEY, updatedView));
+  };
+
+  const handleCheckboxClick = useCallback(
+    async (item: IGetSurveyChecklistItem) => {
+      if (item.applicable) {
+        await biohubApi.checklist.ignoreSurveyChecklistItem(surveyContext.surveyId, item.checklist_item_name);
+      } else {
+        await biohubApi.checklist.unignoreSurveyChecklistItem(surveyContext.surveyId, item.checklist_item_name);
+      }
+
+      await checklistDataLoader.refresh();
+    },
+    [biohubApi.checklist, surveyContext.surveyId, checklistDataLoader]
+  );
+
+  if (!codesContext.codesDataLoader.data || !surveyContext.surveyDataLoader.data) {
+    return <CircularProgress className="pageProgress" size={40} />;
+  }
+
+  return (
+    <>
+      <SurveyHeader />
+      <Container maxWidth={'xl'} sx={{ my: 3, p: 0 }} disableGutters>
+        <SidebarLayout
+          sidebar={
+            <Box sx={{ flexShrink: 0, mx: 1 }}>
+              <LoadingGuard
+                // If isLoading={checklistDataLoader.isLoading}, the skeleton loader is triggered when a checklist item
+                // is disabled. This is undesired, so isLoading depends on whether data exists.
+                isLoading={!checklistDataLoader.data || codesContext.codesDataLoader.isLoading}
+                isLoadingFallbackDelay={600}
+                isLoadingFallback={
+                  <Stack py={1} spacing={2}>
+                    <Skeleton height="20px" width="100px" variant="rectangular" />
+                    <Skeleton height="8px" width="75%" variant="rectangular" />
+                    <Stack pt={1} spacing={2}>
+                      {Array.from({ length: 3 }).map((_, index) => (
+                        <Skeleton key={index} variant="rectangular" width="100%" height="25px" />
+                      ))}
+                    </Stack>
+                  </Stack>
+                }>
+                {checklistDataLoader.data?.checklist && (
+                  <Box sx={{ position: 'sticky', top: 180 }}>
+                    <SurveyChecklistContainer
+                      checklist={checklistDataLoader.data.checklist}
+                      activeView={activeView}
+                      handleViewChange={handleViewChange}
+                      handleCheckboxClick={handleCheckboxClick}
+                    />
+                  </Box>
+                )}
+              </LoadingGuard>
+            </Box>
+          }>
+          <Box sx={{ display: 'flex', gap: 2, height: '100%' }}>
+            <Box sx={{ flex: 1, minWidth: 0, height: '100%' }}>
+              <LoadingGuard
+                isLoading={codesContext.codesDataLoader.isLoading || surveyContext.surveyDataLoader.isLoading}
+                isLoadingFallbackDelay={600}
+                isLoadingFallback={
+                  <Box sx={{ p: 3 }}>
+                    <Stack spacing={2}>
+                      <Skeleton variant="rectangular" width="100px" height="30px" />
+                      <Skeleton variant="rectangular" width="100%" height="150px" />
+                      {Array.from({ length: 2 }).map((_, i) => (
+                        <Skeleton key={i} variant="rectangular" width="100%" height="75px" />
+                      ))}
+                    </Stack>
+                  </Box>
+                }>
+                {activeView && (
+                  <Box sx={{ width: '100%', height: '100%' }}>
+                    <ComponentSwitch
+                      switch={activeView}
+                      components={{
+                        [ACTIVE_VIEW_VALUE.sites]: <SamplingSiteContainer />,
+                        [ACTIVE_VIEW_VALUE.techniques]: <SamplingTechniqueContainer />,
+                        [ACTIVE_VIEW_VALUE.periods]: <SamplingPeriodContainer />,
+                        [ACTIVE_VIEW_VALUE.observations]: <SurveySpatialObservations />,
+                        [ACTIVE_VIEW_VALUE.devices]: <DevicesContainer />,
+                        [ACTIVE_VIEW_VALUE.deployments]: <SurveyDeploymentList />,
+                        [ACTIVE_VIEW_VALUE.locations]: <SurveySpatialTelemetry />,
+                        [ACTIVE_VIEW_VALUE.animals]: <SurveySpatialAnimals />,
+                        [ACTIVE_VIEW_VALUE.attachments]: <SurveyAttachments />
+                      }}
+                    />
+                  </Box>
+                )}
+              </LoadingGuard>
+            </Box>
+            <Collapse in={showGuide} orientation="horizontal" appear unmountOnExit>
+              <Box sx={{ width: GUIDE_WIDTH, flexShrink: 0, p: 3 }} borderLeft={`1px solid ${grey[300]}`}>
+                <SurveyChecklistGuide
+                  markdownType={MarkdownTypeNameEnum.OBSERVATIONS}
+                  activeView={activeView}
+                  onClose={() => setShowGuide(false)}
+                />
+              </Box>
+            </Collapse>
+          </Box>
+        </SidebarLayout>
+      </Container>
+    </>
+  );
+};

@@ -27,7 +27,7 @@ export const SurveySpatialTelemetryPopup = (props: ISurveySpatialTelemetryPopupP
   const surveyContext = useSurveyContext();
 
   const telemetryDataLoader = useDataLoader((telemetryId: string) =>
-    biohubAPi.telemetry.getTelemetryById(surveyContext.projectId, surveyContext.surveyId, telemetryId)
+    biohubAPi.telemetry.getTelemetryById(surveyContext.surveyId, telemetryId)
   );
 
   const getTelemetryMetadata = (telemetry: IAllTelemetry) => {

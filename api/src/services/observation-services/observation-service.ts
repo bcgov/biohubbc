@@ -269,6 +269,17 @@ export class ObservationService extends DBService {
   }
 
   /**
+   * Retrieves all observation records for all surveys in the given collection
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<SurveyObservationRecord[]>}
+   * @memberof ObservationRepository
+   */
+  async getAllSurveyObservationsByCollectionId(surveyId: number): Promise<SurveyObservationRecord[]> {
+    return this.observationRepository.getAllSurveyObservationsByCollectionId(surveyId);
+  }
+
+  /**
    * Retrieves all species observed in a given survey
    *
    * @param {number} surveyId
@@ -297,13 +308,13 @@ export class ObservationService extends DBService {
   /**
    * Get a survey observation record, for as survey.
    *
-   * @param {number} surveyId
+   * @param {number[]} surveyIds
    * @param {number} surveyObservationId
    * @return {*}  {Promise<SurveyObservationWithSupplementaryData>}
    * @memberof ObservationRepository
    */
   async getSurveyObservationByIdWithSupplementaryData(
-    surveyId: number,
+    surveyIds: number[],
     surveyObservationId: number
   ): Promise<SurveyObservationWithSupplementaryData> {
     const subCountService = new SubCountService(this.connection);
@@ -313,15 +324,15 @@ export class ObservationService extends DBService {
     const [surveyObservation, measurementTypeDefinitions, environmentTypeDefinitions, samplePeriods] =
       await Promise.all([
         // Fetch observation
-        this.observationRepository.getSurveyObservationByIdWithSupplementaryData(surveyId, surveyObservationId),
+        this.observationRepository.getSurveyObservationByIdWithSupplementaryData(surveyIds, surveyObservationId),
         // Fetch supplementary data
-        subCountService.getMeasurementTypeDefinitionsForSurvey(surveyId, {
+        subCountService.getMeasurementTypeDefinitionsForSurveys(surveyIds, {
           filterFields: { surveyObservationIds: [surveyObservationId] }
         }),
-        observationEnvironmentService.getEnvironmentTypeDefinitionsForSurvey(surveyId, {
+        observationEnvironmentService.getEnvironmentTypeDefinitionsForSurveys(surveyIds, {
           filterFields: { surveyObservationIds: [surveyObservationId] }
         }),
-        samplePeriodService.getSamplePeriodsForObservation(surveyId, surveyObservationId)
+        samplePeriodService.getSamplePeriodsForObservation(surveyIds, surveyObservationId)
       ]);
 
     return {
@@ -340,7 +351,7 @@ export class ObservationService extends DBService {
   /**
    * Retrieves all observation records for the given survey along with supplementary data
    *
-   * @param {number} surveyId
+   * @param {number[]} surveyIds
    * @param {ApiPaginationOptions} [pagination]
    * @return {*}  {Promise<{
    *     surveyObservations: ObservationRecordWithSamplingAndSubcountData[];
@@ -349,7 +360,7 @@ export class ObservationService extends DBService {
    * @memberof ObservationService
    */
   async getSurveyObservationsWithSupplementaryAndSamplingDataAndAttributeData(
-    surveyId: number,
+    surveyIds: number[],
     pagination?: ApiPaginationOptions
   ): Promise<{
     surveyObservations: ObservationRecordWithSamplingAndSubcountData[];
@@ -367,13 +378,13 @@ export class ObservationService extends DBService {
       samplePeriods
     ] = await Promise.all([
       // Fetch observations
-      this.observationRepository.getSurveyObservations(surveyId, pagination),
+      this.observationRepository.getSurveyObservations(surveyIds, pagination),
       // Fetch pagination count data
-      this.observationRepository.getSurveyObservationsCount(surveyId),
+      this.observationRepository.getSurveyObservationsCount(surveyIds),
       // Fetch supplementary data
-      subCountService.getMeasurementTypeDefinitionsForSurvey(surveyId),
-      observationEnvironmentService.getEnvironmentTypeDefinitionsForSurvey(surveyId),
-      samplePeriodService.getSamplePeriodsForSurvey(surveyId)
+      subCountService.getMeasurementTypeDefinitionsForSurveys(surveyIds),
+      observationEnvironmentService.getEnvironmentTypeDefinitionsForSurveys(surveyIds),
+      samplePeriodService.getSamplePeriodsForSurveys(surveyIds)
     ]);
 
     return {
@@ -392,7 +403,7 @@ export class ObservationService extends DBService {
   /**
    * Retrieves all flattened observation records for the given survey along with supplementary data
    *
-   * @param {number} surveyId
+   * @param {number[]} surveyIds
    * @param {ApiPaginationOptions} [pagination]
    * @return {*}  {Promise<{
    *     surveyObservations: FlattenedObservationRecordWithSamplingAndSubcountData[];
@@ -401,7 +412,7 @@ export class ObservationService extends DBService {
    * @memberof ObservationService
    */
   async getSurveyFlattenedObservationsWithSupplementaryAndSamplingDataAndAttributeData(
-    surveyId: number,
+    surveyIds: number[],
     pagination?: ApiPaginationOptions
   ): Promise<{
     surveyObservations: FlattenedObservationRecordWithSamplingAndSubcountData[];
@@ -412,20 +423,20 @@ export class ObservationService extends DBService {
     const samplePeriodService = new SamplePeriodService(this.connection);
 
     // Fetch observations
-    const surveyObservations = await this.observationRepository.getSurveyFlattenedObservations(surveyId, pagination);
+    const surveyObservations = await this.observationRepository.getSurveyFlattenedObservations(surveyIds, pagination);
 
     const surveyObservationIds = surveyObservations.map((item) => item.survey_observation_id);
 
     const [observationCount, measurementTypeDefinitions, environmentTypeDefinitions, samplePeriods] = await Promise.all(
       [
         // Fetch pagination count data
-        this.observationRepository.getSurveyFlattenedObservationsCount(surveyId),
+        this.observationRepository.getSurveyFlattenedObservationsCount(surveyIds),
         // Fetch supplementary data
-        subCountService.getMeasurementTypeDefinitionsForSurvey(surveyId, { filterFields: { surveyObservationIds } }),
-        observationEnvironmentService.getEnvironmentTypeDefinitionsForSurvey(surveyId, {
+        subCountService.getMeasurementTypeDefinitionsForSurveys(surveyIds, { filterFields: { surveyObservationIds } }),
+        observationEnvironmentService.getEnvironmentTypeDefinitionsForSurveys(surveyIds, {
           filterFields: { surveyObservationIds }
         }),
-        samplePeriodService.getSamplePeriodsForSurvey(surveyId, { filterFields: { surveyObservationIds } })
+        samplePeriodService.getSamplePeriodsForSurveys(surveyIds, { filterFields: { surveyObservationIds } })
       ]
     );
 
@@ -446,21 +457,21 @@ export class ObservationService extends DBService {
    * Gets a set of GeoJson geometries representing the set of all lat/long points for the
    * given survey's observations.
    *
-   * @param {number} surveyId
+   * @param {number[]} surveyIds
    * @return {*}  {Promise<{
    *     surveyObservationsGeometry: ObservationGeometryRecord[];
    *     supplementaryObservationData: ObservationCountSupplementaryData;
    *   }>}
    * @memberof ObservationService
    */
-  async getSurveyObservationsGeometryWithSupplementaryData(surveyId: number): Promise<{
+  async getSurveyObservationsGeometryWithSupplementaryData(surveyIds: number[]): Promise<{
     surveyObservationsGeometry: ObservationGeometryRecord[];
     supplementaryObservationData: ObservationCountSupplementaryData;
   }> {
-    const surveyObservationsGeometry = await this.observationRepository.getSurveyObservationsGeometry(surveyId);
+    const surveyObservationsGeometry = await this.observationRepository.getSurveyObservationsGeometry(surveyIds);
 
     // Get supplementary observation data
-    const observationCount = await this.observationRepository.getSurveyObservationsCount(surveyId);
+    const observationCount = await this.observationRepository.getSurveyObservationsCount(surveyIds);
 
     return { surveyObservationsGeometry, supplementaryObservationData: { observationCount } };
   }
@@ -468,23 +479,23 @@ export class ObservationService extends DBService {
   /**
    * Retrieves the count of survey observations for the given survey
    *
-   * @param {number} surveyId
+   * @param {number} surveyIds
    * @return {*}  {Promise<number>}
    * @memberof ObservationRepository
    */
-  async getSurveyObservationsCount(surveyId: number): Promise<number> {
-    return this.observationRepository.getSurveyObservationsCount(surveyId);
+  async getSurveyObservationsCount(surveyIds: number[]): Promise<number> {
+    return this.observationRepository.getSurveyObservationsCount(surveyIds);
   }
 
   /**
    * Retrieves the count of flattened survey observations for the given survey
    *
-   * @param {number} surveyId
+   * @param {number[]} surveyIds
    * @return {*}  {Promise<number>}
    * @memberof ObservationRepository
    */
-  async getSurveyFlattenedObservationsCount(surveyId: number): Promise<number> {
-    return this.observationRepository.getSurveyFlattenedObservationsCount(surveyId);
+  async getSurveyFlattenedObservationsCount(surveyIds: number[]): Promise<number> {
+    return this.observationRepository.getSurveyFlattenedObservationsCount(surveyIds);
   }
 
   /**

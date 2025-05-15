@@ -24,12 +24,10 @@ interface ISurveySpatialObservationProps {
  */
 export const SurveySpatialObservation = (props: ISurveySpatialObservationProps) => {
   const surveyContext = useSurveyContext();
-  const { surveyId, projectId } = surveyContext;
+  const { surveyId } = surveyContext;
   const biohubApi = useBiohubApi();
 
-  const observationsGeometryDataLoader = useDataLoader(() =>
-    biohubApi.observation.getObservationsGeometry(projectId, surveyId)
-  );
+  const observationsGeometryDataLoader = useDataLoader(() => biohubApi.observation.getObservationsGeometry(surveyId));
 
   useEffect(() => {
     observationsGeometryDataLoader.load();
@@ -68,7 +66,7 @@ export const SurveySpatialObservation = (props: ISurveySpatialObservationProps) 
   return (
     <>
       {/* Display map with observation points */}
-      <Box height={{ xs: 300, md: 500 }} position="relative">
+      <Box height={300} position="relative">
         <SurveyMap
           staticLayers={[...props.staticLayers, observationLayer]}
           isLoading={observationsGeometryDataLoader.isLoading}
@@ -76,7 +74,7 @@ export const SurveySpatialObservation = (props: ISurveySpatialObservationProps) 
       </Box>
 
       {/* Display data table with observation details */}
-      <Box height={{ xs: 300, md: 500 }} display="flex" flexDirection="column" pt={2}>
+      <Box display="flex" flexDirection="column" pt={2}>
         <SurveySpatialObservationContainer />
       </Box>
     </>

@@ -14,13 +14,7 @@ import { AnimalFormContainer } from 'features/surveys/animals/animal-form/compon
 import { FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import {
-  useAnimalPageContext,
-  useDialogContext,
-  useProjectContext,
-  useSurveyContext,
-  useTaxonomyContext
-} from 'hooks/useContext';
+import { useAnimalPageContext, useDialogContext, useSurveyContext, useTaxonomyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { ICreateEditAnimalRequest } from 'interfaces/useCritterApi.interface';
@@ -39,7 +33,7 @@ export const EditAnimalPage = () => {
   const critterbaseApi = useCritterbaseApi();
   const biohubApi = useBiohubApi();
   const surveyContext = useSurveyContext();
-  const projectContext = useProjectContext();
+
   const dialogContext = useDialogContext();
   const animalPageContext = useAnimalPageContext();
   const taxonomyContext = useTaxonomyContext();
@@ -53,7 +47,7 @@ export const EditAnimalPage = () => {
 
   const formikRef = useRef<FormikProps<ICreateEditAnimalRequest>>(null);
 
-  const { projectId, surveyId } = surveyContext;
+  const { surveyId } = surveyContext;
 
   // Update the selected animal based on url Params
   if (surveyCritterId) {
@@ -76,7 +70,7 @@ export const EditAnimalPage = () => {
   }
 
   const handleCancel = () => {
-    history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals`);
+    history.push(`/admin/surveys/${surveyId}/animals`);
   };
 
   const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
@@ -107,7 +101,7 @@ export const EditAnimalPage = () => {
         return;
       }
 
-      await biohubApi.survey.updateCritterAndAddToSurvey(projectId, surveyId, critter.critter_id, {
+      await biohubApi.survey.updateCritterAndAddToSurvey(surveyId, critter.critter_id, {
         critter_id: critter.critterbase_critter_id,
         animal_id: values.nickname,
         wlh_id: values.wildlife_health_id,
@@ -151,11 +145,11 @@ export const EditAnimalPage = () => {
       }
 
       // Refresh the context, so the next page loads with the latest data
-      surveyContext.critterDataLoader.refresh(projectId, surveyId);
-      animalPageContext.critterDataLoader.refresh(projectId, surveyId, critter.critter_id);
+      surveyContext.critterDataLoader.refresh(surveyId);
+      animalPageContext.critterDataLoader.refresh(surveyId, critter.critter_id);
 
       skipUnsavedChangesDialog();
-      history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals`);
+      history.push(`/admin/surveys/${surveyId}/animals`);
     } catch (error) {
       const apiError = error as APIError;
       showCreateErrorDialog({
@@ -175,22 +169,13 @@ export const EditAnimalPage = () => {
         title="Edit Animal"
         breadCrumbJSX={
           <Breadcrumbs aria-label="breadcrumb" separator={'>'}>
-            <Link component={RouterLink} underline="hover" to={`/admin/projects/${projectId}/`}>
-              {projectContext.projectDataLoader.data?.projectData.project.project_name}
-            </Link>
-            <Link component={RouterLink} underline="hover" to={`/admin/projects/${projectId}/surveys/${surveyId}`}>
+            <Link component={RouterLink} underline="hover" to={`/admin/surveys/${surveyId}`}>
               {surveyContext.surveyDataLoader.data?.surveyData.survey_details.survey_name}
             </Link>
-            <Link
-              component={RouterLink}
-              underline="hover"
-              to={`/admin/projects/${projectId}/surveys/${surveyId}/animals`}>
+            <Link component={RouterLink} underline="hover" to={`/admin/surveys/${surveyId}/animals`}>
               Manage Animals
             </Link>
-            <Link
-              component={RouterLink}
-              underline="hover"
-              to={`/admin/projects/${projectId}/surveys/${surveyId}/animals/details`}>
+            <Link component={RouterLink} underline="hover" to={`/admin/surveys/${surveyId}/animals/details`}>
               {critter.animal_id}
             </Link>
             <Typography variant="body2" component="span" color="textSecondary" aria-current="page">

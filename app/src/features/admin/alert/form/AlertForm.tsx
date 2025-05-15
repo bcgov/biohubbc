@@ -4,7 +4,7 @@ import Typography from '@mui/material/Typography';
 import AlertBar from 'components/alert/AlertBar';
 import AutocompleteField, { IAutocompleteFieldOption } from 'components/fields/AutocompleteField';
 import CustomTextField from 'components/fields/CustomTextField';
-import { DateField } from 'components/fields/DateField';
+import SingleDateField from 'components/fields/SingleDateField';
 import { useFormikContext } from 'formik';
 import { IAlertCreateObject } from 'interfaces/useAlertApi.interface';
 
@@ -66,7 +66,7 @@ const AlertForm = (props: IAlertFormProps) => {
         <Box component={'fieldset'}>
           <Typography component="legend">Expiry date (optional)</Typography>
           <Box mt={0.5}>
-            <DateField label="End date" name="record_end_date" id="record_end_date" required={false} />
+            <SingleDateField label="End date" name="record_end_date" id="record_end_date" required={false} />
           </Box>
         </Box>
       </form>

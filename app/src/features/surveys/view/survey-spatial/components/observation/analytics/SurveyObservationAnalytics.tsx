@@ -39,14 +39,14 @@ const allGroupByColumnOptions: IGroupByOption[] = [
 export const SurveyObservationAnalytics = () => {
   const biohubApi = useBiohubApi();
 
-  const { surveyId, projectId } = useSurveyContext();
+  const { surveyId } = useSurveyContext();
 
   const [groupByColumns, setGroupByColumns] = useState<IGroupByOption[]>(initialGroupByColumnOptions);
   const [groupByQualitativeMeasurements, setGroupByQualitativeMeasurements] = useState<IGroupByOption[]>([]);
   const [groupByQuantitativeMeasurements, setGroupByQuantitativeMeasurements] = useState<IGroupByOption[]>([]);
 
   const measurementDefinitionsDataLoader = useDataLoader(() =>
-    biohubApi.observation.getObservationMeasurementDefinitions(projectId, surveyId)
+    biohubApi.observation.getObservationMeasurementDefinitions(surveyId)
   );
 
   useEffect(() => {

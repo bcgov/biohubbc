@@ -30,7 +30,7 @@ export const SamplePeriodTechniqueForm = (props: ISamplePeriodTechniqueFormProps
 
   const { errors, setFieldValue } = useFormikContext<CreateSamplingPeriod>();
 
-  const { projectId, surveyId } = useSurveyContext();
+  const { surveyId } = useSurveyContext();
 
   const biohubApi = useBiohubApi();
 
@@ -46,7 +46,7 @@ export const SamplePeriodTechniqueForm = (props: ISamplePeriodTechniqueFormProps
    * @return {*}  {Promise<WithIdAndName<ISelectedTechniqueData>[]>}
    */
   const searchTechniques = useCallback(async (): Promise<WithIdAndName<ISelectedTechniqueData>[]> => {
-    const response = await biohubApi.technique.getTechniquesForSurvey(projectId, surveyId);
+    const response = await biohubApi.technique.getTechniquesForSurvey(surveyId);
 
     return response.techniques.map((technique) => {
       return {
@@ -56,7 +56,7 @@ export const SamplePeriodTechniqueForm = (props: ISamplePeriodTechniqueFormProps
         name: technique.name
       };
     });
-  }, [biohubApi.technique, projectId, surveyId]);
+  }, [biohubApi.technique, surveyId]);
 
   /**
    * Handle when a technique is removed (unselected).

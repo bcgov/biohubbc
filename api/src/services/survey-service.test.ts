@@ -6,12 +6,12 @@ import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { ApiGeneralError } from '../errors/api-error';
-import { GetReportAttachmentsData } from '../models/project-view';
 import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
 import { PostSurveyLocationData, PutSurveyObject, PutSurveyPermitData } from '../models/survey-update';
 import {
   GetAttachmentsData,
   GetFocalSpeciesData,
+  GetReportAttachmentsData,
   GetSurveyData,
   GetSurveyProprietorData,
   GetSurveyPurposeAndMethodologyData,
@@ -117,19 +117,6 @@ describe('SurveyService', () => {
         site_selection: { stratums: [], strategies: [] },
         blocks: []
       });
-    });
-  });
-
-  describe('getSurveyCountByProjectId', () => {
-    it('should return the survey count successfully', async () => {
-      const dbConnectionObj = getMockDBConnection();
-
-      const repoStub = sinon.stub(SurveyRepository.prototype, 'getSurveyCountByProjectId').resolves(20);
-      const surveyService = new SurveyService(dbConnectionObj);
-      const response = await surveyService.getSurveyCountByProjectId(1001);
-
-      expect(repoStub).to.be.calledOnceWith(1001);
-      expect(response).to.equal(20);
     });
   });
 
@@ -253,22 +240,6 @@ describe('SurveyService', () => {
         .resolves(data);
 
       const response = await service.getSurveyProprietorDataForSecurityRequest(1);
-
-      expect(repoStub).to.be.calledOnce;
-      expect(response).to.eql(data);
-    });
-  });
-
-  describe('getSurveyIdsByProjectId', () => {
-    it('returns the first row on success', async () => {
-      const dbConnection = getMockDBConnection();
-      const service = new SurveyService(dbConnection);
-
-      const data = [{ id: 1 }];
-
-      const repoStub = sinon.stub(SurveyRepository.prototype, 'getSurveyIdsByProjectId').resolves(data);
-
-      const response = await service.getSurveyIdsByProjectId(1);
 
       expect(repoStub).to.be.calledOnce;
       expect(response).to.eql(data);
@@ -497,25 +468,6 @@ describe('SurveyService', () => {
     });
   });
 
-  describe('getSurveysByProjectId', () => {
-    it('returns the first row on success', async () => {
-      const dbConnection = getMockDBConnection();
-      const service = new SurveyService(dbConnection);
-
-      const data = { id: 1 };
-
-      const repoStub = sinon.stub(SurveyService.prototype, 'getSurveyIdsByProjectId').resolves([data]);
-      const surveyStub = sinon
-        .stub(SurveyService.prototype, 'getSurveysByIds')
-        .resolves([data as unknown as SurveyObject]);
-      const response = await service.getSurveysByProjectId(1);
-
-      expect(repoStub).to.be.calledOnce;
-      expect(surveyStub).to.be.calledOnce;
-      expect(response).to.eql([data]);
-    });
-  });
-
   describe('getAttachmentsData', () => {
     it('returns the first row on success', async () => {
       const dbConnection = getMockDBConnection();
@@ -557,7 +509,7 @@ describe('SurveyService', () => {
 
       const repoStub = sinon.stub(SurveyRepository.prototype, 'insertSurveyData').resolves(data);
 
-      const response = await service.insertSurveyData(1, { id: 1 } as unknown as PostSurveyObject);
+      const response = await service.insertSurveyData({ id: 1 } as unknown as PostSurveyObject);
 
       expect(repoStub).to.be.calledOnce;
       expect(response).to.eql(data);
@@ -654,7 +606,7 @@ describe('SurveyService', () => {
       const repoStub1 = sinon.stub(SurveyRepository.prototype, 'associateSurveyToPermit').resolves();
       const repoStub2 = sinon.stub(SurveyRepository.prototype, 'insertSurveyPermit').resolves();
 
-      const response = await service.insertOrAssociatePermitToSurvey(1, 1, 1, 'string', '');
+      const response = await service.insertOrAssociatePermitToSurvey(1, 1, 'string', '');
 
       expect(repoStub1).to.be.calledOnce;
       expect(repoStub2).not.to.be.called;
@@ -668,7 +620,7 @@ describe('SurveyService', () => {
       const repoStub1 = sinon.stub(SurveyRepository.prototype, 'associateSurveyToPermit').resolves();
       const repoStub2 = sinon.stub(SurveyRepository.prototype, 'insertSurveyPermit').resolves();
 
-      const response = await service.insertOrAssociatePermitToSurvey(1, 1, 1, 'string', 'string');
+      const response = await service.insertOrAssociatePermitToSurvey(1, 1, 'string', 'string');
 
       expect(repoStub1).not.to.be.called;
       expect(repoStub2).to.be.calledOnce;

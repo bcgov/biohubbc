@@ -69,7 +69,7 @@ export const DevicesTable = (props: IDevicesTableProps) => {
     }
 
     await biohubApi.telemetryDevice
-      .deleteDevice(surveyContext.projectId, surveyContext.surveyId, actionMenuDeviceId)
+      .deleteDevice(surveyContext.surveyId, actionMenuDeviceId)
       .then(() => {
         dialogContext.setYesNoDialog({ open: false });
         setActionMenuAnchorEl(null);
@@ -229,7 +229,7 @@ export const DevicesTable = (props: IDevicesTableProps) => {
             }
           }}>
           <RouterLink
-            to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry/manage/device/${actionMenuDeviceId}/edit`}>
+            to={`/admin/surveys/${surveyContext.surveyId}/telemetry/manage/device/${actionMenuDeviceId}/edit`}>
             <ListItemIcon>
               <Icon path={mdiPencilOutline} size={1} />
             </ListItemIcon>

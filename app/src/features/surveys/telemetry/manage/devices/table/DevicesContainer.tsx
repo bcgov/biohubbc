@@ -34,13 +34,11 @@ export const DevicesContainer = () => {
   const [headerAnchorEl, setHeaderAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedRows, setSelectedRows] = useState<GridRowSelectionModel>([]);
 
-  const devicesDataLoader = useDataLoader((projectId: number, surveyId: number) =>
-    biohubApi.telemetryDevice.getDevicesInSurvey(projectId, surveyId)
-  );
+  const devicesDataLoader = useDataLoader((surveyId: number) => biohubApi.telemetryDevice.getDevicesInSurvey(surveyId));
 
   useEffect(() => {
-    devicesDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
-  }, [devicesDataLoader, surveyContext.projectId, surveyContext.surveyId]);
+    devicesDataLoader.load(surveyContext.surveyId);
+  }, [devicesDataLoader, surveyContext.surveyId]);
 
   const devices = devicesDataLoader.data?.devices ?? [];
   const devicesCount = devicesDataLoader.data?.count ?? 0;
@@ -49,7 +47,6 @@ export const DevicesContainer = () => {
   const handleBulkDelete = async () => {
     try {
       await biohubApi.telemetryDevice.deleteDevices(
-        surveyContext.projectId,
         surveyContext.surveyId,
         selectedRows.map((id) => Number(id))
       );
@@ -108,7 +105,7 @@ export const DevicesContainer = () => {
   };
 
   const onDelete = () => {
-    devicesDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+    devicesDataLoader.refresh(surveyContext.surveyId);
   };
 
   return (
@@ -141,7 +138,7 @@ export const DevicesContainer = () => {
             variant="contained"
             color="primary"
             component={RouterLink}
-            to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry/manage/device/create`}
+            to={`/admin/surveys/${surveyContext.surveyId}/telemetry/manage/device/create`}
             startIcon={<Icon path={mdiPlus} size={0.8} />}>
             Add
           </Button>
@@ -172,6 +169,7 @@ export const DevicesContainer = () => {
               hasNoData={!devicesCount}
               hasNoDataFallback={
                 <NoDataOverlay
+                  minHeight="400px"
                   height="200px"
                   title="Add Telemetry Devices"
                   subtitle="Add your telemetry devices, so they can be used in a deployment."

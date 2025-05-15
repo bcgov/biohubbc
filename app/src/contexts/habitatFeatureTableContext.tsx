@@ -117,7 +117,7 @@ export const HabitatFeatureTableContextProvider = (props: IHabitatFeatureTableCo
 
   const biohubApi = useBiohubApi();
   const codesContext = useCodesContext();
-  const { projectId, surveyId } = useSurveyContext();
+  const { surveyId } = useSurveyContext();
 
   const [rowSelectionModel, setRowSelectionModel] = useState<GridRowSelectionModel>([]);
 
@@ -135,7 +135,7 @@ export const HabitatFeatureTableContextProvider = (props: IHabitatFeatureTableCo
   const [sortModel, setSortModel] = useState<GridSortModel>([{ field: 'observed_date', sort: 'desc' }]);
 
   const habitatFeatureDataLoader = useDataLoader((pagination: ApiPaginationRequestOptions) =>
-    biohubApi.habitatFeature.getSurveyHabitatFeaturesWithSupplementaryData(projectId, surveyId, pagination)
+    biohubApi.habitatFeature.getSurveyHabitatFeaturesWithSupplementaryData(surveyId, pagination)
   );
 
   /**

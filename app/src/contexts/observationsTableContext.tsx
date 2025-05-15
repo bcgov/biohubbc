@@ -144,7 +144,7 @@ export type IObservationsTableContextProviderProps = PropsWithChildren;
 export const ObservationsTableContext = createContext<IObservationsTableContext | undefined>(undefined);
 
 export const ObservationsTableContextProvider = (props: IObservationsTableContextProviderProps) => {
-  const { projectId, surveyId } = useContext(SurveyContext);
+  const { surveyId } = useContext(SurveyContext);
 
   const _muiDataGridApiRef = useGridApiRef();
 
@@ -299,7 +299,7 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
 
         if (observationSubcountIdsToDelete.length) {
           // Delete previously saved records from the server, if any
-          await biohubApi.observation.deleteObservationSubcounts(projectId, surveyId, observationSubcountIdsToDelete);
+          await biohubApi.observation.deleteObservationSubcounts(surveyId, observationSubcountIdsToDelete);
 
           // Refresh the table after deleting one or more records
           refreshRows();
@@ -333,7 +333,7 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
         });
       }
     },
-    [setYesNoDialog, setSnackbar, biohubApi.observation, projectId, surveyId, refreshRows, setErrorDialog]
+    [setYesNoDialog, setSnackbar, biohubApi.observation, surveyId, refreshRows, setErrorDialog]
   );
 
   /**

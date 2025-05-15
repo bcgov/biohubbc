@@ -83,7 +83,7 @@ export const DeploymentsTable = (props: IDeploymentsTableProps) => {
     }
 
     await biohubApi.telemetryDeployment
-      .deleteDeployment(surveyContext.projectId, surveyContext.surveyId, actionMenuDeploymentId)
+      .deleteDeployment(surveyContext.surveyId, actionMenuDeploymentId)
       .then(() => {
         dialogContext.setYesNoDialog({ open: false });
         setActionMenuAnchorEl(null);
@@ -318,7 +318,7 @@ export const DeploymentsTable = (props: IDeploymentsTableProps) => {
             }
           }}>
           <RouterLink
-            to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry/manage/deployment/${actionMenuDeploymentId}/edit`}>
+            to={`/admin/surveys/${surveyContext.surveyId}/telemetry/manage/deployment/${actionMenuDeploymentId}/edit`}>
             <ListItemIcon>
               <Icon path={mdiPencilOutline} size={1} />
             </ListItemIcon>

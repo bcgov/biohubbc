@@ -1,7 +1,6 @@
-import { ProjectRoleRouteGuard } from 'components/security/RouteGuards';
-import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
+import { SurveyRoleRouteGuard } from 'components/security/RouteGuards';
+import { SURVEY_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { DialogContextProvider } from 'contexts/dialogContext';
-import { SamplingSiteManagePage } from 'features/surveys/sampling-information/manage/SamplingSiteManagePage';
 import { CreateSamplingSitePage } from 'features/surveys/sampling-information/sites/create/CreateSamplingSitePage';
 import { EditSamplingSitePage } from 'features/surveys/sampling-information/sites/edit/EditSamplingSitePage';
 import { CreateTechniquePage } from 'features/surveys/sampling-information/techniques/create/CreateTechniquePage';
@@ -9,86 +8,78 @@ import { EditTechniquePage } from 'features/surveys/sampling-information/techniq
 import { Switch } from 'react-router';
 import RouteWithTitle from 'utils/RouteWithTitle';
 import { getTitle } from 'utils/Utils';
+import { SamplingSiteManagePage } from './manage/SamplingSiteManagePage';
 import { CreateSamplePeriodPage } from './periods/create/CreateSamplePeriodPage';
 import { EditSamplePeriodPage } from './periods/edit/EditSamplePeriodPage';
 
 /**
- * Router for all `/admin/projects/:id/surveys/:survey_id/sampling/*` pages.
+ * Router for all `/admin/surveys/:survey_id/sampling/*` pages.
  *
  * @return {*}
  */
 export const SamplingRouter = () => {
   return (
     <Switch>
-      <RouteWithTitle
-        exact
-        path="/admin/projects/:id/surveys/:survey_id/sampling"
-        title={getTitle('Manage Sampling Information')}>
-        <ProjectRoleRouteGuard
-          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+      <RouteWithTitle exact path="/admin/surveys/:survey_id/sampling" title={getTitle('Manage Sampling Information')}>
+        <SurveyRoleRouteGuard
+          validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <DialogContextProvider>
             <SamplingSiteManagePage />
           </DialogContextProvider>
-        </ProjectRoleRouteGuard>
+        </SurveyRoleRouteGuard>
       </RouteWithTitle>
 
-      <RouteWithTitle
-        exact
-        path="/admin/projects/:id/surveys/:survey_id/sampling/create"
-        title={getTitle('Create Sampling Sites')}>
-        <ProjectRoleRouteGuard
-          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+      <RouteWithTitle exact path="/admin/surveys/:survey_id/sampling/create" title={getTitle('Create Sampling Sites')}>
+        <SurveyRoleRouteGuard
+          validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <DialogContextProvider>
             <CreateSamplingSitePage />
           </DialogContextProvider>
-        </ProjectRoleRouteGuard>
+        </SurveyRoleRouteGuard>
       </RouteWithTitle>
 
       <RouteWithTitle
         exact
-        path="/admin/projects/:id/surveys/:survey_id/sampling/:survey_sample_site_id/edit"
+        path="/admin/surveys/:survey_id/sampling/:survey_sample_site_id/edit"
         title={getTitle('Edit Sampling Site')}>
-        <ProjectRoleRouteGuard
-          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+        <SurveyRoleRouteGuard
+          validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <DialogContextProvider>
             <EditSamplingSitePage />
           </DialogContextProvider>
-        </ProjectRoleRouteGuard>
+        </SurveyRoleRouteGuard>
       </RouteWithTitle>
 
       <RouteWithTitle
         exact
-        path="/admin/projects/:id/surveys/:survey_id/sampling/techniques/create"
+        path="/admin/surveys/:survey_id/sampling/techniques/create"
         title={getTitle('Create Technique')}>
-        <ProjectRoleRouteGuard
-          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+        <SurveyRoleRouteGuard
+          validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <DialogContextProvider>
             <CreateTechniquePage />
           </DialogContextProvider>
-        </ProjectRoleRouteGuard>
+        </SurveyRoleRouteGuard>
       </RouteWithTitle>
 
       <RouteWithTitle
         exact
-        path="/admin/projects/:id/surveys/:survey_id/sampling/techniques/:method_technique_id/edit"
+        path="/admin/surveys/:survey_id/sampling/techniques/:method_technique_id/edit"
         title={getTitle('Edit Technique')}>
-        <ProjectRoleRouteGuard
-          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+        <SurveyRoleRouteGuard
+          validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <DialogContextProvider>
             <EditTechniquePage />
           </DialogContextProvider>
-        </ProjectRoleRouteGuard>
+        </SurveyRoleRouteGuard>
       </RouteWithTitle>
 
-      <RouteWithTitle
-        exact
-        path="/admin/projects/:id/surveys/:survey_id/sampling/period/create"
-        title={getTitle('Create Periods')}>
+      <RouteWithTitle exact path="/admin/surveys/:survey_id/sampling/period/create" title={getTitle('Create Periods')}>
         <DialogContextProvider>
           <CreateSamplePeriodPage />
         </DialogContextProvider>
@@ -96,7 +87,7 @@ export const SamplingRouter = () => {
 
       <RouteWithTitle
         exact
-        path="/admin/projects/:id/surveys/:survey_id/sampling/period/:survey_sample_period_id/edit"
+        path="/admin/surveys/:survey_id/sampling/period/:survey_sample_period_id/edit"
         title={getTitle('Edit Period')}>
         <DialogContextProvider>
           <EditSamplePeriodPage />

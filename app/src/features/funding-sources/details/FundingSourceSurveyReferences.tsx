@@ -45,7 +45,6 @@ interface IFundingSourceSurveyReferencesProps {
 }
 
 interface IFundingSourceSurveyReferencesTableEntry {
-  project_id: number;
   survey_id: number;
   survey_name: string;
 }
@@ -78,7 +77,7 @@ const FundingSourceSurveyReferences = (props: IFundingSourceSurveyReferencesProp
           underline="always"
           title={params.row.survey_name}
           component={RouterLink}
-          to={`/admin/projects/${params.row.project_id}/surveys/${params.row.survey_id}`}
+          to={`/admin/surveys/${params.row.survey_id}`}
           children={params.row.survey_name}
         />
       )

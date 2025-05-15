@@ -18,7 +18,7 @@ interface ISystemAlertBannerProps {
 }
 
 // The number of alerts to show on initial page load
-const NumberOfAlertsShownInitially = 2;
+const NumberOfAlertsShownInitially = 1;
 
 /**
  * Stack of system alerts created by system administrators

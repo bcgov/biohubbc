@@ -133,7 +133,7 @@ export function makeFindFlattenedObservationsQuery(
  */
 export function getSurveyObservationsBaseQuery(
   knex: Knex,
-  authorizedSurveyIdsQuery: Knex.QueryBuilder<any, { survey_id: number }>
+  authorizedSurveyIdsQuery: Knex.QueryBuilder<any, { survey_id: number }[]>
 ): Knex.QueryBuilder {
   return (
     knex
@@ -538,20 +538,21 @@ function _getAuthorizedSurveyIdsQuery(
 
   // Ensure that users can only see observations that they are participating in, unless they are an administrator.
   if (!isUserAdmin) {
-    authorizedSurveyIdsQuery.whereIn('survey.project_id', (subqueryBuilder) =>
+    authorizedSurveyIdsQuery.whereIn('survey.survey_id', (subqueryBuilder) =>
       subqueryBuilder
-        .select('project.project_id')
+        .select('project.survey_id')
         .from('project')
-        .leftJoin('project_participation', 'project_participation.project_id', 'project.project_id')
-        .where('project_participation.system_user_id', systemUserId)
+        .leftJoin('survey_member', 'survey_member.survey_id', 'project.survey_id')
+        .where('survey_member.system_user_id', systemUserId)
     );
   }
 
   if (filterFields?.system_user_id) {
-    authorizedSurveyIdsQuery.whereIn('p.project_id', (subQueryBuilder) => {
+    authorizedSurveyIdsQuery.whereIn('p.survey_id', (subQueryBuilder) => {
       subQueryBuilder
-        .select('project_id')
-        .from('project_participation')
+        .select('survey_id')
+        .from('survey_member')
+        // TODO: Join on collection -> survey to check authorization
         .where('system_user_id', filterFields.system_user_id);
     });
   }

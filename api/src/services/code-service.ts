@@ -39,7 +39,7 @@ export class CodeService extends DBService {
         this.codeRepository.getIUCNConservationActionLevel3Subclassification(),
       proprietor_type: this.codeRepository.getProprietorType(),
       system_roles: this.codeRepository.getSystemRoles(),
-      project_roles: this.codeRepository.getProjectRoles(),
+      survey_roles: this.codeRepository.getProjectRoles(),
       administrative_activity_status_type: this.codeRepository.getAdministrativeActivityStatusType(),
       intended_outcomes: this.codeRepository.getIntendedOutcomes(),
       survey_jobs: this.codeRepository.getSurveyJobs(),
@@ -53,7 +53,8 @@ export class CodeService extends DBService {
       frequency_units: this.codeRepository.getFrequencyUnits(),
       alert_types: this.codeRepository.getAlertTypes(),
       vantages: this.codeRepository.getVantages(),
-      habitat_feature_types: this.codeRepository.getHabitatFeatureTypes()
+      habitat_feature_types: this.codeRepository.getHabitatFeatureTypes(),
+      collection_roles: this.codeRepository.getCollectionRoles()
     };
 
     // Fetch all code sets in parallel

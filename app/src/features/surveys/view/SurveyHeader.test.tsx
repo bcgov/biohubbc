@@ -2,19 +2,17 @@ import { AuthStateContext, IAuthState } from 'contexts/authStateContext';
 import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { ConfigContext, IConfig } from 'contexts/configContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
-import { IProjectAuthStateContext, ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
-import { IProjectContext, ProjectContext } from 'contexts/projectContext';
+
+import { ISurveyAuthStateContext, SurveyAuthStateContext } from 'contexts/surveyAuthStateContext';
 import { ISurveyContext, SurveyContext } from 'contexts/surveyContext';
 import SurveyHeader from 'features/surveys/view/SurveyHeader';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import { Router } from 'react-router';
-import { getMockAuthState, SystemAdminAuthState, SystemUserAuthState } from 'test-helpers/auth-helpers';
+import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import { codes } from 'test-helpers/code-helpers';
-import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import { getSurveyForViewResponse } from 'test-helpers/survey-helpers';
 import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import { Mock } from 'vitest';
@@ -41,50 +39,24 @@ const mockCodesContext: ICodesContext = {
 const mockSurveyContext: ISurveyContext = {
   surveyDataLoader: {
     data: getSurveyForViewResponse
-  } as DataLoader<[project_id: number, survey_id: number], IGetSurveyForViewResponse, unknown>,
+  } as DataLoader<[survey_id: number], IGetSurveyForViewResponse, unknown>,
   artifactDataLoader: {
     data: null
   } as DataLoader<any, any, any>,
   critterDataLoader: {
     data: null
   } as DataLoader<any, any, any>,
-  surveyId: 1,
-  projectId: 1
+  surveyId: 1
 };
 
-const mockProjectContext: IProjectContext = {
-  projectDataLoader: {
-    data: getProjectForViewResponse
-  } as DataLoader<[project_id: number], IGetProjectForViewResponse, unknown>,
-  artifactDataLoader: {
-    data: null
-  } as DataLoader<any, any, any>,
-  surveysListDataLoader: {
-    data: null,
-    refresh: () => {}
-  } as DataLoader<any, any, any>,
-  projectId: 1
-};
+const mockSurveyAuthStateContext: ISurveyAuthStateContext = {
+  getSurveyMember: () => null,
 
-const mockProjectAuthStateContext: IProjectAuthStateContext = {
-  getProjectParticipant: () => null,
-  hasProjectRole: () => true,
-  hasProjectPermission: () => true,
+  hasSurveyRole: () => true,
   hasSystemRole: () => true,
-  getProjectId: () => 1,
-  hasLoadedParticipantInfo: true
+  getSurveyId: () => 1,
+  hasLoadedMemberInfo: true
 };
-
-const mockProjectUnAuthStateContext: IProjectAuthStateContext = {
-  getProjectParticipant: () => null,
-  hasProjectRole: () => false,
-  hasProjectPermission: () => false,
-  hasSystemRole: () => false,
-  getProjectId: () => 1,
-  hasLoadedParticipantInfo: false
-};
-
-const surveyForView = getSurveyForViewResponse;
 
 describe('SurveyHeader', () => {
   beforeEach(() => {
@@ -97,23 +69,21 @@ describe('SurveyHeader', () => {
     cleanup();
   });
 
-  const renderComponent = (authState: IAuthState, projectAuthState: IProjectAuthStateContext) => {
+  const renderComponent = (authState: IAuthState, projectAuthState: ISurveyAuthStateContext) => {
     return render(
       <Router history={history}>
         <ConfigContext.Provider value={{ FEATURE_FLAGS: [] as string[] } as IConfig}>
-          <ProjectContext.Provider value={mockProjectContext}>
-            <SurveyContext.Provider value={mockSurveyContext}>
-              <AuthStateContext.Provider value={authState}>
-                <CodesContext.Provider value={mockCodesContext}>
-                  <ProjectAuthStateContext.Provider value={projectAuthState}>
-                    <DialogContextProvider>
-                      <SurveyHeader />
-                    </DialogContextProvider>
-                  </ProjectAuthStateContext.Provider>
-                </CodesContext.Provider>
-              </AuthStateContext.Provider>
-            </SurveyContext.Provider>
-          </ProjectContext.Provider>
+          <SurveyContext.Provider value={mockSurveyContext}>
+            <AuthStateContext.Provider value={authState}>
+              <CodesContext.Provider value={mockCodesContext}>
+                <SurveyAuthStateContext.Provider value={projectAuthState}>
+                  <DialogContextProvider>
+                    <SurveyHeader />
+                  </DialogContextProvider>
+                </SurveyAuthStateContext.Provider>
+              </CodesContext.Provider>
+            </AuthStateContext.Provider>
+          </SurveyContext.Provider>
         </ConfigContext.Provider>
       </Router>
     );
@@ -124,7 +94,7 @@ describe('SurveyHeader', () => {
 
     const authState = getMockAuthState({ base: SystemAdminAuthState });
 
-    const { getByTestId, findByText, getByText } = renderComponent(authState, mockProjectAuthStateContext);
+    const { getByTestId, findByText, getByText } = renderComponent(authState, mockSurveyAuthStateContext);
 
     const surveyHeaderText = await findByText('survey name', { selector: 'span' });
     expect(surveyHeaderText).toBeVisible();
@@ -148,20 +118,7 @@ describe('SurveyHeader', () => {
     fireEvent.click(getByTestId('yes-button'));
 
     await waitFor(() => {
-      expect(history.location.pathname).toEqual(
-        `/admin/projects/${surveyForView.surveyData.survey_details.project_id}`
-      );
+      expect(history.location.pathname).toEqual(`/admin/`);
     });
-  });
-
-  it('does not see the delete button when accessing survey as non admin user', async () => {
-    const authState = getMockAuthState({ base: SystemUserAuthState });
-
-    const { queryByTestId, findByText } = renderComponent(authState, mockProjectUnAuthStateContext);
-
-    const surveyHeaderText = await findByText('survey name', { selector: 'span' });
-    expect(surveyHeaderText).toBeVisible();
-
-    expect(queryByTestId('delete-survey-button')).toBeNull();
   });
 });

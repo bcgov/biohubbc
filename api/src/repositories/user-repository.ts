@@ -582,10 +582,10 @@ export class UserRepository extends BaseRepository {
     }
   }
 
-  async deleteAllProjectRoles(systemUserId: number) {
+  async deleteAllSurveyRoles(systemUserId: number) {
     const sqlStatement = SQL`
       DELETE FROM
-        project_participation
+        survey_participation
       WHERE
         system_user_id = ${systemUserId}
       RETURNING

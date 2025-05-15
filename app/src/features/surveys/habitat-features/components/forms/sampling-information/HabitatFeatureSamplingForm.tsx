@@ -51,11 +51,7 @@ export const HabitatFeatureSamplingForm = <
       return null;
     }
 
-    return biohubApi.samplingPeriod.getSamplePeriodById(
-      surveyContext.projectId,
-      surveyContext.surveyId,
-      surveySamplePeriodId
-    );
+    return biohubApi.samplingPeriod.getSamplePeriodById(surveyContext.surveyId, surveySamplePeriodId);
   });
 
   useEffect(() => {

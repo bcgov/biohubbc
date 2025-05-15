@@ -11,7 +11,7 @@ import { ISystemUser } from 'interfaces/useUserApi.interface';
 import { TransitionGroup } from 'react-transition-group';
 import yup from 'utils/YupSchema';
 
-export const SurveyUserJobYupSchema = yup.object().shape({
+export const SurveyParticipantsJobYupSchema = yup.object().shape({
   participants: yup.array().of(
     yup.object().shape({
       system_user_id: yup.string().required('Username is required'),
@@ -20,20 +20,20 @@ export const SurveyUserJobYupSchema = yup.object().shape({
   )
 });
 
-interface ISurveyUserFormProps {
+interface ISurveyParticipantsFormProps {
   jobs: ICodeWithDescription[];
 }
 
-export const SurveyUserJobFormInitialValues = {
+export const SurveyParticipantsJobFormInitialValues = {
   participants: []
 };
 
 /**
  * Form for adding users to a survey.
  *
- * @param {ISurveyUserFormProps} props
+ * @param {ISurveyParticipantsFormProps} props
  */
-const SurveyUserForm = (props: ISurveyUserFormProps) => {
+const SurveyParticipantsForm = (props: ISurveyParticipantsFormProps) => {
   const { handleSubmit, values, setFieldValue, errors, setErrors } = useFormikContext<ICreateSurveyRequest>();
 
   const handleAddUser = (user: ISystemUser | IGetSurveyParticipant) => {
@@ -146,4 +146,4 @@ const SurveyUserForm = (props: ISurveyUserFormProps) => {
   );
 };
 
-export default SurveyUserForm;
+export default SurveyParticipantsForm;

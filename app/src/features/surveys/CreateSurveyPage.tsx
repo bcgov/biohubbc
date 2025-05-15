@@ -1,18 +1,15 @@
 import { LoadingButton } from '@mui/lab';
-import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import Container from '@mui/material/Container';
-import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import PageHeader from 'components/layout/PageHeader';
 import { CreateSurveyI18N } from 'constants/i18n';
 import { CodesContext } from 'contexts/codesContext';
 import { DialogContext } from 'contexts/dialogContext';
-import { ProjectContext } from 'contexts/projectContext';
+
 import { ISurveyPermitForm, SurveyPermitFormInitialValues } from 'features/surveys/components/permit/SurveyPermitForm';
 import { SurveyPartnershipsFormInitialValues } from 'features/surveys/view/components/SurveyPartnershipsForm';
 import { FormikProps } from 'formik';
@@ -22,7 +19,6 @@ import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { ICreateSurveyRequest, IEditSurveyRequest } from 'interfaces/useSurveyApi.interface';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
-import { Link as RouterLink } from 'react-router-dom';
 import { AgreementsInitialValues } from './components/agreements/AgreementsForm';
 import { ProprietaryDataInitialValues } from './components/agreements/ProprietaryDataForm';
 import {
@@ -31,17 +27,20 @@ import {
 } from './components/funding/SurveyFundingSourceForm';
 import { GeneralInformationInitialValues } from './components/general-information/GeneralInformationForm';
 import { SurveyLocationInitialValues } from './components/locations/StudyAreaForm';
+import { SurveyMembersFormInitialValues } from './components/member/SurveyMembersForm';
 import { PurposeAndMethodologyInitialValues } from './components/methodology/PurposeAndMethodologyForm';
-import { SurveyUserJobFormInitialValues } from './components/participants/SurveyUserForm';
+import { SurveyParticipantsJobFormInitialValues } from './components/participants/SurveyUserForm';
 import { SurveyBlockInitialValues } from './components/sampling-strategy/blocks/SurveyBlockForm';
 import { SurveySiteSelectionInitialValues } from './components/sampling-strategy/SurveySiteSelectionForm';
 import { SpeciesInitialValues } from './components/species/SpeciesForm';
 import EditSurveyForm from './edit/EditSurveyForm';
+import { CollectionSurveyFormInitialValues } from './view/collection/form/CollectionSurveyForm';
 
 type CreateSurvey = ICreateSurveyRequest & ISurveyPermitForm & ISurveyFundingSourceForm;
 
 const defaultSurveyDataFormValues: CreateSurvey = {
   ...GeneralInformationInitialValues,
+  ...CollectionSurveyFormInitialValues,
   ...SurveyPermitFormInitialValues,
   ...PurposeAndMethodologyInitialValues,
   ...SurveyFundingSourceFormInitialValues,
@@ -50,7 +49,8 @@ const defaultSurveyDataFormValues: CreateSurvey = {
   ...AgreementsInitialValues,
   ...SurveyLocationInitialValues,
   ...SurveySiteSelectionInitialValues,
-  ...SurveyUserJobFormInitialValues,
+  ...SurveyParticipantsJobFormInitialValues,
+  ...SurveyMembersFormInitialValues,
   ...SurveyBlockInitialValues,
   ...SpeciesInitialValues
 };
@@ -70,12 +70,6 @@ const CreateSurveyPage = () => {
   }, [codesContext.codesDataLoader]);
   const codes = codesContext.codesDataLoader.data;
 
-  const projectContext = useContext(ProjectContext);
-  useEffect(() => {
-    projectContext.projectDataLoader.load(projectContext.projectId);
-  }, [projectContext.projectDataLoader, projectContext.projectId]);
-  const projectData = projectContext.projectDataLoader.data?.projectData;
-
   const formikRef = useRef<FormikProps<IEditSurveyRequest>>(null);
 
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
@@ -87,7 +81,7 @@ const CreateSurveyPage = () => {
   const dialogContext = useContext(DialogContext);
 
   const handleCancel = () => {
-    history.push(`/admin/projects/${projectData?.project.project_id}`);
+    history.goBack();
   };
 
   const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
@@ -114,7 +108,7 @@ const CreateSurveyPage = () => {
     setIsSaving(true);
     try {
       // Remove the permit_used and funding_used properties
-      const response = await biohubApi.survey.createSurvey(Number(projectData?.project.project_id), {
+      const response = await biohubApi.survey.createSurvey({
         blocks: values.blocks,
         funding_sources: values.funding_sources,
         locations: values.locations.map((location) => ({
@@ -125,6 +119,8 @@ const CreateSurveyPage = () => {
           revision_count: location.revision_count
         })),
         participants: values.participants,
+        members: values.members,
+        collections: values.collections,
         partnerships: values.partnerships,
         permit: {
           permits: values.permit.permits
@@ -154,7 +150,7 @@ const CreateSurveyPage = () => {
       setEnableCancelCheck(false);
 
       skipUnsavedChangesDialog();
-      history.push(`/admin/projects/${projectData?.project.project_id}/surveys/${response.id}/details`);
+      history.push(`/admin/surveys/${response.id}/details`);
     } catch (error) {
       const apiError = error as APIError;
       showCreateErrorDialog({
@@ -167,7 +163,7 @@ const CreateSurveyPage = () => {
     }
   };
 
-  if (!codes || !projectData) {
+  if (!codes) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
@@ -176,16 +172,6 @@ const CreateSurveyPage = () => {
       <Prompt when={enableCancelCheck} message={locationChangeInterceptor} />
       <PageHeader
         title="Create New Survey"
-        breadCrumbJSX={
-          <Breadcrumbs aria-label="breadcrumb" separator={'>'}>
-            <Link component={RouterLink} underline="hover" to={`/admin/projects/${projectData.project.project_id}/`}>
-              {projectData.project.project_name}
-            </Link>
-            <Typography variant="body2" component="span" color="textSecondary" aria-current="page">
-              Create New Survey
-            </Typography>
-          </Breadcrumbs>
-        }
         buttonJSX={
           <Stack flexDirection="row" gap={1}>
             <LoadingButton

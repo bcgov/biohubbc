@@ -5,7 +5,7 @@ import { CreateSamplingSiteI18N } from 'constants/i18n';
 import { Formik, FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
+import { useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { ICreateSamplingSiteRequest, ISurveySampleSite } from 'interfaces/useSamplingSiteApi.interface';
 import { IGetSurveyBlock, IGetSurveyStratum } from 'interfaces/useSurveyApi.interface';
@@ -37,7 +37,7 @@ export const CreateSamplingSitePage = () => {
   const biohubApi = useBiohubApi();
 
   const surveyContext = useSurveyContext();
-  const projectContext = useProjectContext();
+
   const dialogContext = useDialogContext();
 
   const formikRef = useRef<FormikProps<ICreateSampleSiteFormData>>(null);
@@ -45,7 +45,7 @@ export const CreateSamplingSitePage = () => {
 
   const { locationChangeInterceptor, skipUnsavedChangesDialog } = useUnsavedChangesDialog();
 
-  if (!surveyContext.surveyDataLoader.data || !projectContext.projectDataLoader.data) {
+  if (!surveyContext.surveyDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
@@ -74,11 +74,11 @@ export const CreateSamplingSitePage = () => {
         stratums: values.stratums.map((stratum) => ({ survey_stratum_id: stratum.survey_stratum_id }))
       };
 
-      await biohubApi.samplingSite.createSamplingSites(surveyContext.projectId, surveyContext.surveyId, requestData);
+      await biohubApi.samplingSite.createSamplingSites(surveyContext.surveyId, requestData);
 
       // create complete, navigate back to observations page
       skipUnsavedChangesDialog();
-      history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling`);
+      history.goBack();
     } catch (error) {
       showCreateErrorDialog({
         dialogTitle: CreateSamplingSiteI18N.createErrorTitle,
@@ -109,10 +109,8 @@ export const CreateSamplingSitePage = () => {
         onSubmit={handleSubmit}>
         <Box display="flex" flexDirection="column">
           <SamplingSiteHeader
-            project_id={surveyContext.projectId}
             survey_id={surveyContext.surveyId}
             survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
-            project_name={projectContext.projectDataLoader.data.projectData.project.project_name}
             is_submitting={isSubmitting}
             title="Add Sampling Site"
             breadcrumb="Add Sampling Sites"

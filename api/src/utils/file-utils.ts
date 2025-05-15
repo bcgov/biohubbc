@@ -328,7 +328,7 @@ type Projects3Key = {
   /**
    * The project ID the file is associated with.
    */
-  projectId: number;
+
   /**
    * The sub-folder where the file is stored.
    *
@@ -345,7 +345,7 @@ type SurveyS3Key = {
   /**
    * The project ID the file is associated with.
    */
-  projectId: number;
+
   /**
    * The survey ID the file is associated with.
    */
@@ -372,7 +372,7 @@ type CritterCaptureS3Key = {
   /**
    * The project ID the file is associated with.
    */
-  projectId: number;
+
   /**
    * The survey ID the file is associated with.
    */
@@ -399,7 +399,7 @@ type CritterMortalityS3Key = {
   /**
    * The project ID the file is associated with.
    */
-  projectId: number;
+
   /**
    * The survey ID the file is associated with.
    */
@@ -433,11 +433,6 @@ export type IS3FileKey = Projects3Key | SurveyS3Key | CritterCaptureS3Key | Crit
  */
 export function generateS3FileKey(options: IS3FileKey): string {
   const keyParts: (string | number)[] = [getS3KeyPrefix()];
-
-  if (options.projectId) {
-    keyParts.push('projects');
-    keyParts.push(options.projectId);
-  }
 
   if ('surveyId' in options && options.surveyId) {
     keyParts.push('surveys');

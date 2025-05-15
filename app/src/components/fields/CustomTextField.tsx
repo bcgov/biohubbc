@@ -1,6 +1,6 @@
 import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
-import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
+import HelpButtonTooltip from 'components/tooltip/HelpButtonTooltip';
 import { useFormikContext } from 'formik';
 import get from 'lodash-es/get';
 import { ChangeEvent } from 'react';

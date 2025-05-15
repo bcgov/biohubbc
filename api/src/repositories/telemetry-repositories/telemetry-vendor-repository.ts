@@ -8,10 +8,12 @@ import { ApiPaginationOptions } from '../../zod-schema/pagination';
 import { BaseRepository } from '../base-repository';
 import {
   Telemetry,
+  TelemetryFilters,
   TelemetryOptions,
   TelemetrySchema,
   TelemetrySpatial,
   TelemetrySpatialSchema,
+  TelemetrySupplementary,
   TelemetryVendorEnum
 } from './telemetry-vendor-repository.interface';
 
@@ -142,7 +144,7 @@ export class TelemetryVendorRepository extends BaseRepository {
   }
 
   /**
-   * Filter results by the projects/surveys user have access to
+   * Filter results by the surveys/surveys user have access to
    * The method is static to allow it to be accessed without requiring an instance of TelemetryVendorRepository
    * This is needed because the query is built inside .modify() method
    *
@@ -156,8 +158,8 @@ export class TelemetryVendorRepository extends BaseRepository {
     systemUserId: number | null
   ): Knex.QueryBuilder {
     return queryBuilder
-      .join('project_participation', 'survey.project_id', 'project_participation.project_id')
-      .where('project_participation.system_user_id', systemUserId);
+      .join('survey_member', 'survey.survey_id', 'survey_member.survey_id')
+      .where('survey_member.system_user_id', systemUserId);
   }
 
   /**
@@ -185,7 +187,7 @@ export class TelemetryVendorRepository extends BaseRepository {
     if (!isUserAdmin) {
       // If the user is not an admin, filter results by vendor credentials
       TelemetryVendorRepository.getLotekOrVectronicTelemetryByCredentialsClause(queryBuilder);
-      // If the user is not an admin, filter results by the projects/surveys they have access to
+      // If the user is not an admin, filter results by the surveys/surveys they have access to
       TelemetryVendorRepository.getTelemetryByProjectsSurveysUserAccessClause(queryBuilder, systemUserId);
     }
 
@@ -208,12 +210,9 @@ export class TelemetryVendorRepository extends BaseRepository {
     }
 
     if (filterFields.system_user_id) {
-      // If a system user ID is provided, filter results by the projects/surveys that user has access to
-      queryBuilder.whereIn('survey.project_id', (subQueryBuilder) => {
-        subQueryBuilder
-          .select('project_id')
-          .from('project_participation')
-          .where('system_user_id', filterFields.system_user_id);
+      // If a system user ID is provided, filter results by the surveys/surveys that user has access to
+      queryBuilder.whereIn('survey.survey_id', (subQueryBuilder) => {
+        subQueryBuilder.select('survey_id').from('survey_member').where('system_user_id', filterFields.system_user_id);
       });
     }
 
@@ -349,7 +348,7 @@ export class TelemetryVendorRepository extends BaseRepository {
     if (!isUserAdmin) {
       // If the user is not an admin, filter results by vendor credentials
       TelemetryVendorRepository.getLotekOrVectronicTelemetryByCredentialsClause(queryBuilder);
-      // If the user is not an admin, filter results by the projects/surveys they have access to
+      // If the user is not an admin, filter results by the surveys/surveys they have access to
       TelemetryVendorRepository.getTelemetryByProjectsSurveysUserAccessClause(queryBuilder, systemUserId);
     }
 
@@ -372,12 +371,9 @@ export class TelemetryVendorRepository extends BaseRepository {
     }
 
     if (filterFields.system_user_id) {
-      // If a system user ID is provided, filter results by the projects/surveys that user has access to
-      queryBuilder.whereIn('survey.project_id', (subQueryBuilder) => {
-        subQueryBuilder
-          .select('project_id')
-          .from('project_participation')
-          .where('system_user_id', filterFields.system_user_id);
+      // If a system user ID is provided, filter results by the surveys/surveys that user has access to
+      queryBuilder.whereIn('survey.survey_id', (subQueryBuilder) => {
+        subQueryBuilder.select('survey_id').from('survey_member').where('system_user_id', filterFields.system_user_id);
       });
     }
 
@@ -491,7 +487,7 @@ export class TelemetryVendorRepository extends BaseRepository {
     queryBuilder.join('survey', 'deployment.survey_id', 'survey.survey_id');
 
     if (!isUserAdmin) {
-      // If the user is not an admin, filter results by the projects/surveys they have access to
+      // If the user is not an admin, filter results by the surveys/surveys they have access to
       TelemetryVendorRepository.getTelemetryByProjectsSurveysUserAccessClause(queryBuilder, systemUserId);
     }
 
@@ -514,12 +510,9 @@ export class TelemetryVendorRepository extends BaseRepository {
     }
 
     if (filterFields.system_user_id) {
-      // If a system user ID is provided, filter results by the projects/surveys that user has access to
-      queryBuilder.whereIn('survey.project_id', (subQueryBuilder) => {
-        subQueryBuilder
-          .select('project_id')
-          .from('project_participation')
-          .where('system_user_id', filterFields.system_user_id);
+      // If a system user ID is provided, filter results by the surveys/surveys that user has access to
+      queryBuilder.whereIn('survey.survey_id', (subQueryBuilder) => {
+        subQueryBuilder.select('survey_id').from('survey_member').where('system_user_id', filterFields.system_user_id);
       });
     }
 
@@ -634,7 +627,7 @@ export class TelemetryVendorRepository extends BaseRepository {
     queryBuilder.join('survey', 'deployment.survey_id', 'survey.survey_id');
 
     if (!isUserAdmin) {
-      // If the user is not an admin, filter results by the projects/surveys they have access to
+      // If the user is not an admin, filter results by the surveys/surveys they have access to
       TelemetryVendorRepository.getTelemetryByProjectsSurveysUserAccessClause(queryBuilder, systemUserId);
     }
 
@@ -655,12 +648,9 @@ export class TelemetryVendorRepository extends BaseRepository {
     }
 
     if (filterFields.system_user_id) {
-      // If the user is not an admin, filter results by the projects/surveys they have access to
-      queryBuilder.whereIn('survey.project_id', (subQueryBuilder) => {
-        subQueryBuilder
-          .select('project_id')
-          .from('project_participation')
-          .where('system_user_id', filterFields.system_user_id);
+      // If the user is not an admin, filter results by the surveys/surveys they have access to
+      queryBuilder.whereIn('survey.survey_id', (subQueryBuilder) => {
+        subQueryBuilder.select('survey_id').from('survey_member').where('system_user_id', filterFields.system_user_id);
       });
     }
 
@@ -743,13 +733,13 @@ export class TelemetryVendorRepository extends BaseRepository {
       .from('telemetry');
 
     // Inject date range if provided
-    if (options?.dateRange) {
-      if (options.dateRange.startDate) {
-        queryBuilder.where('telemetry.acquisition_date', '>=', options.dateRange.startDate);
+    if (options?.filters) {
+      if (options.filters.startDate) {
+        queryBuilder.where('telemetry.acquisition_date', '>=', options.filters.startDate);
       }
 
-      if (options.dateRange.endDate) {
-        queryBuilder.where('telemetry.acquisition_date', '<=', options.dateRange.endDate);
+      if (options.filters.endDate) {
+        queryBuilder.where('telemetry.acquisition_date', '<=', options.filters.endDate);
       }
     }
 
@@ -779,9 +769,14 @@ export class TelemetryVendorRepository extends BaseRepository {
    *
    * @param {number} surveyId
    * @param {number[]} deploymentIds
+   * @param {TelemetryFilters} filters
    * @returns {Promise<TelemetrySpatial[]>}
    */
-  async getTelemetrySpatialByDeploymentIds(surveyId: number, deploymentIds: number[]): Promise<TelemetrySpatial[]> {
+  async getTelemetrySpatialByDeploymentIds(
+    surveyId: number,
+    deploymentIds: number[],
+    filters?: TelemetryFilters
+  ): Promise<TelemetrySpatial[]> {
     const knex = getKnex();
 
     const queryBuilder = knex.queryBuilder();
@@ -800,22 +795,36 @@ export class TelemetryVendorRepository extends BaseRepository {
       )
       .from('telemetry');
 
+    // Inject date range if provided
+    if (filters) {
+      if (filters.startDate) {
+        queryBuilder.where('telemetry.acquisition_date', '>=', filters.startDate);
+      }
+
+      if (filters.endDate) {
+        queryBuilder.where('telemetry.acquisition_date', '<=', filters.endDate);
+      }
+    }
+
     const response = await this.connection.knex(queryBuilder, TelemetrySpatialSchema);
 
     return response.rows;
   }
 
   /**
-   * Get the total count of all telemetry records for list of deployment IDs.
+   * Get the total count, start date, and end date of telemetry records for a list of deployment IDs.
    *
-   * Note: Currently supports, `Lotek`, `Vectronic`, `ATS`, and `Manual` telemetry.
+   * Note: Currently supports `Lotek`, `Vectronic`, `ATS`, and `Manual` telemetry.
    *
    * @param {number} surveyId
    * @param {number[]} deploymentIds
-   * @return {*}  {Promise<number>}
+   * @return {*}  {Promise<TelemetrySupplementary>}
    * @memberof TelemetryVendorRepository
    */
-  async getTelemetryCountByDeploymentIds(surveyId: number, deploymentIds: number[]): Promise<number> {
+  async getTelemetrySupplementaryByDeploymentIds(
+    surveyId: number,
+    deploymentIds: number[]
+  ): Promise<TelemetrySupplementary> {
     const knex = getKnex();
 
     const queryBuilder = knex
@@ -823,12 +832,16 @@ export class TelemetryVendorRepository extends BaseRepository {
       .with('telemetry', (qb) => {
         this.getTelemetryByDeploymentIdsBaseQuery(qb, surveyId, deploymentIds);
       })
-      .select(knex.raw('count(*)::integer as count'))
+      .select(
+        knex.raw('count(*)::integer as count'),
+        knex.raw('MIN(acquisition_date) AS start_date'),
+        knex.raw('MAX(acquisition_date) AS end_date')
+      )
       .from('telemetry');
 
-    const response = await this.connection.knex(queryBuilder, z.object({ count: z.number() }));
+    const response = await this.connection.knex(queryBuilder, TelemetrySupplementary);
 
-    return response.rows[0].count;
+    return response.rows[0];
   }
 
   /**

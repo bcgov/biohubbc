@@ -13,11 +13,6 @@ export const surveyDetailsSchema: OpenAPIV3.SchemaObject = {
       type: 'integer',
       minimum: 1
     },
-    project_id: {
-      description: 'Project id',
-      type: 'integer',
-      minimum: 1
-    },
     uuid: {
       description: 'Survey uuid',
       type: 'string',
@@ -136,7 +131,7 @@ export const focalSpeciesSchema: OpenAPIV3.SchemaObject = {
   properties: {
     tsn: {
       description: 'Taxonomy tsn',
-      type: 'number'
+      type: 'integer'
     },
     commonNames: {
       description: 'Taxonomy common names',
@@ -458,7 +453,7 @@ export const surveySiteSelectionSchema: OpenAPIV3.SchemaObject = {
           },
           sample_stratum_count: {
             description: 'Sample stratum count',
-            type: 'number'
+            type: 'integer'
           },
           revision_count: {
             description: 'Revision count',
@@ -502,7 +497,7 @@ export const surveyBlockSchema: OpenAPIV3.SchemaObject = {
     },
     sample_block_count: {
       description: 'Sample block count',
-      type: 'number'
+      type: 'integer'
     },
     revision_count: {
       description: 'Revision count',
@@ -552,6 +547,196 @@ export const surveySupplementaryDataSchema: OpenAPIV3.SchemaObject = {
         },
         ...updateCreateUserPropertiesSchema.properties
       }
+    }
+  }
+};
+
+export const getSurveyChecklistResponse: OpenAPIV3.SchemaObject = {
+  properties: {
+    sampling: {
+      type: 'object',
+      properties: {
+        sites: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['count', 'applicable', 'checklist_item_name'],
+          properties: {
+            count: { type: 'integer', description: 'The number of items in the survey' },
+            applicable: { type: 'boolean', description: 'Whether the checklist item is applicable to the survey' },
+            checklist_item_name: { type: 'string', description: 'The name of the checklist item' }
+          }
+        },
+        techniques: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['count', 'applicable', 'checklist_item_name'],
+          properties: {
+            count: { type: 'integer', description: 'The number of items in the survey' },
+            applicable: { type: 'boolean', description: 'Whether the checklist item is applicable to the survey' },
+            checklist_item_name: { type: 'string', description: 'The name of the checklist item' }
+          }
+        },
+        periods: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['count', 'applicable', 'checklist_item_name'],
+          properties: {
+            count: { type: 'integer', description: 'The number of items in the survey' },
+            applicable: { type: 'boolean', description: 'Whether the checklist item is applicable to the survey' },
+            checklist_item_name: { type: 'string', description: 'The name of the checklist item' }
+          }
+        }
+      }
+    },
+    data: {
+      type: 'object',
+      properties: {
+        observations: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['count', 'applicable', 'checklist_item_name'],
+          properties: {
+            count: { type: 'integer', description: 'The number of items in the survey' },
+            applicable: { type: 'boolean', description: 'Whether the checklist item is applicable to the survey' },
+            checklist_item_name: { type: 'string', description: 'The name of the checklist item' }
+          }
+        },
+        telemetry: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['locations', 'devices', 'deployments'],
+          properties: {
+            locations: {
+              type: 'object',
+              additionalProperties: false,
+              required: ['count', 'applicable', 'checklist_item_name'],
+              properties: {
+                count: { type: 'integer', description: 'The number of items in the survey' },
+                applicable: { type: 'boolean', description: 'Whether the chicklist item is applicable to the survey' },
+                checklist_item_name: { type: 'string', description: 'The name of the checklist item' }
+              }
+            },
+            devices: {
+              type: 'object',
+              additionalProperties: false,
+              required: ['count', 'applicable', 'checklist_item_name'],
+              properties: {
+                count: { type: 'integer', description: 'The number of items in the survey' },
+                applicable: { type: 'boolean', description: 'Whether the chicklist item is applicable to the survey' },
+                checklist_item_name: { type: 'string', description: 'The name of the checklist item' }
+              }
+            },
+            deployments: {
+              type: 'object',
+              additionalProperties: false,
+              required: ['count', 'applicable', 'checklist_item_name'],
+              properties: {
+                count: { type: 'integer', description: 'The number of items in the survey' },
+                applicable: { type: 'boolean', description: 'Whether the chicklist item is applicable to the survey' },
+                checklist_item_name: { type: 'string', description: 'The name of the checklist item' }
+              }
+            }
+          }
+        },
+        animals: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['count', 'applicable', 'checklist_item_name'],
+          properties: {
+            count: { type: 'integer', description: 'The number of items in the survey' },
+            applicable: { type: 'boolean', description: 'Whether the checklist item is applicable to the survey' },
+            checklist_item_name: { type: 'string', description: 'The name of the checklist item' }
+          }
+        },
+        habitat: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['count', 'applicable', 'checklist_item_name'],
+          properties: {
+            count: { type: 'integer', description: 'The number of items in the survey' },
+            applicable: { type: 'boolean', description: 'Whether the checklist item is applicable to the survey' },
+            checklist_item_name: { type: 'string', description: 'The name of the checklist item' }
+          }
+        }
+      }
+    },
+    attachments: {
+      type: 'object',
+      additionalProperties: false,
+      required: ['count', 'applicable', 'checklist_item_name'],
+      properties: {
+        count: { type: 'integer', description: 'The number of items in the survey' },
+        applicable: { type: 'boolean', description: 'Whether the chicklist item is applicable to the survey' },
+        checklist_item_name: { type: 'string', description: 'The name of the checklist item' }
+      }
+    },
+    progress_percentage: {
+      type: 'integer',
+      description: 'The completion percentage of items in the checklist.'
+    }
+  }
+};
+
+export const getSurveyBasicFieldsSchema: OpenAPIV3.SchemaObject = {
+  type: 'object',
+  additionalProperties: false,
+  required: [
+    'survey_id',
+    'name',
+    'progress_id',
+    'start_date',
+    'end_date',
+    'regions',
+    'focal_species',
+    'types',
+    'progress_percentage'
+  ],
+  properties: {
+    survey_id: {
+      type: 'integer',
+      minimum: 1
+    },
+    name: {
+      type: 'string'
+    },
+    progress_id: {
+      type: 'integer',
+      minimum: 1
+    },
+    start_date: {
+      type: 'string',
+      description: 'ISO 8601 datetime string',
+      nullable: true
+    },
+    end_date: {
+      type: 'string',
+      description: 'ISO 8601 datetime string',
+      nullable: true
+    },
+    regions: {
+      type: 'array',
+      items: {
+        type: 'string'
+      },
+      nullable: true
+    },
+    focal_species: {
+      type: 'array',
+      items: {
+        type: 'integer'
+      },
+      nullable: true
+    },
+    types: {
+      type: 'array',
+      items: {
+        type: 'integer',
+        nullable: true
+      }
+    },
+    progress_percentage: {
+      type: 'number',
+      description: 'The completion percentage of the survey based on its checklist'
     }
   }
 };

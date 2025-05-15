@@ -186,6 +186,7 @@ const TelemetryListContainer = (props: IAllTelemetryListContainerProps) => {
           hasNoData={!rows.length}
           hasNoDataFallback={
             <NoDataOverlay
+              minHeight="400px"
               height="500px"
               title="Create or Join Surveys to See Telemetry Data"
               subtitle="You currently have no telemetry data. Once you create or join surveys with telemetry data, it will be displayed here"

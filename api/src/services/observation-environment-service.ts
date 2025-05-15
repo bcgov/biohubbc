@@ -85,7 +85,7 @@ export class ObservationEnvironmentService extends DBService {
   /**
    * Get all distinct environment qualitative type definitions for all qualitative environments for a given survey.
    *
-   * @param {number} surveyId
+   * @param {number[]} surveyIds
    * @param {{
    *       filterFields?: {
    *         surveyObservationIds?: number[];
@@ -94,21 +94,21 @@ export class ObservationEnvironmentService extends DBService {
    * @return {*}  {Promise<QualitativeEnvironmentTypeDefinition[]>}
    * @memberof ObservationEnvironmentService
    */
-  async getQualitativeEnvironmentTypeDefinitionsForSurvey(
-    surveyId: number,
+  async getQualitativeEnvironmentTypeDefinitionsForSurveys(
+    surveyIds: number[],
     options?: {
       filterFields?: {
         surveyObservationIds?: number[];
       };
     }
   ): Promise<QualitativeEnvironmentTypeDefinition[]> {
-    return this.observationEnvironmentRepository.getQualitativeEnvironmentTypeDefinitionsForSurvey(surveyId, options);
+    return this.observationEnvironmentRepository.getQualitativeEnvironmentTypeDefinitionsForSurveys(surveyIds, options);
   }
 
   /**
    * Get all distinct environment quantitative type definitions for all quantitative environments for a given survey.
    *
-   * @param {number} surveyId
+   * @param {number[]} surveyIds
    * @param {{
    *       filterFields?: {
    *         surveyObservationIds?: number[];
@@ -117,15 +117,15 @@ export class ObservationEnvironmentService extends DBService {
    * @return {*}  {Promise<QuantitativeEnvironmentTypeDefinition[]>}
    * @memberof ObservationEnvironmentService
    */
-  async getQuantitativeEnvironmentTypeDefinitionsForSurvey(
-    surveyId: number,
+  async getQuantitativeEnvironmentTypeDefinitionsForSurveys(
+    surveyIds: number[],
     options?: {
       filterFields?: {
         surveyObservationIds?: number[];
       };
     }
   ): Promise<QuantitativeEnvironmentTypeDefinition[]> {
-    return this.observationEnvironmentRepository.getQuantitativeEnvironmentTypeDefinitionsForSurvey(surveyId, options);
+    return this.observationEnvironmentRepository.getQuantitativeEnvironmentTypeDefinitionsForSurvey(surveyIds, options);
   }
 
   /**
@@ -179,7 +179,7 @@ export class ObservationEnvironmentService extends DBService {
    * Returns a unique set of all environment type definitions for all environments of all observations in the given
    * survey.
    *
-   * @param {number} surveyId
+   * @param {number[]} surveyIds
    * @param {{
    *       filterFields?: {
    *         surveyObservationIds?: number[];
@@ -188,8 +188,8 @@ export class ObservationEnvironmentService extends DBService {
    * @return {*}  {Promise<ObservationEnvironments>}
    * @memberof ObservationEnvironmentService
    */
-  async getEnvironmentTypeDefinitionsForSurvey(
-    surveyId: number,
+  async getEnvironmentTypeDefinitionsForSurveys(
+    surveyIds: number[],
     options?: {
       filterFields?: {
         surveyObservationIds?: number[];
@@ -199,8 +199,8 @@ export class ObservationEnvironmentService extends DBService {
     const observationEnvironmentService = new ObservationEnvironmentService(this.connection);
 
     const [qualitativeEnvironmentTypeDefinitions, quantitativeEnvironmentTypeDefinitions] = await Promise.all([
-      observationEnvironmentService.getQualitativeEnvironmentTypeDefinitionsForSurvey(surveyId, options),
-      observationEnvironmentService.getQuantitativeEnvironmentTypeDefinitionsForSurvey(surveyId, options)
+      observationEnvironmentService.getQualitativeEnvironmentTypeDefinitionsForSurveys(surveyIds, options),
+      observationEnvironmentService.getQuantitativeEnvironmentTypeDefinitionsForSurveys(surveyIds, options)
     ]);
 
     return {

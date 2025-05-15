@@ -44,7 +44,7 @@ export const SurveySpatialObservationTable = () => {
   const [sortModel, setSortModel] = useState<GridSortModel>([]);
 
   const paginatedDataLoader = useDataLoader((page: number, limit: number, sort?: string, order?: 'asc' | 'desc') =>
-    biohubApi.observation.getFlattenedObservationRecords(surveyContext.projectId, surveyContext.surveyId, {
+    biohubApi.observation.getFlattenedObservationRecords(surveyContext.surveyId, {
       page: page + 1, // This fixes an off-by-one error between the front end and the back end
       limit,
       sort,
@@ -154,9 +154,9 @@ export const SurveySpatialObservationTable = () => {
       hasNoData={!rows.length}
       hasNoDataFallback={
         <NoDataOverlay
-          height="100%"
-          title="Add Observations"
-          subtitle="After adding sampling information, upload observations and link them to sampling efforts"
+          minHeight="400px"
+          title="Add Species Observations"
+          subtitle="Observations show where and when you observed species. You can link observations to sampling periods."
           icon={mdiArrowTopRight}
         />
       }

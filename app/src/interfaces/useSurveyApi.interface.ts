@@ -1,3 +1,4 @@
+import { SURVEY_ROLE } from 'constants/roles';
 import { IAgreementsForm } from 'features/surveys/components/agreements/AgreementsForm';
 import { IProprietaryDataForm } from 'features/surveys/components/agreements/ProprietaryDataForm';
 import {
@@ -9,6 +10,7 @@ import { ISurveyLocationForm } from 'features/surveys/components/locations/Study
 import { IPurposeAndMethodologyForm } from 'features/surveys/components/methodology/PurposeAndMethodologyForm';
 import { ISurveyPermitForm } from 'features/surveys/components/permit/SurveyPermitForm';
 import { ISpeciesForm, ITaxonomyWithEcologicalUnits } from 'features/surveys/components/species/SpeciesForm';
+import { ICollectionSurveyForm } from 'features/surveys/view/collection/form/CollectionSurveyForm';
 import { ISurveyPartnershipsForm } from 'features/surveys/view/components/SurveyPartnershipsForm';
 import { Feature } from 'geojson';
 import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
@@ -25,9 +27,11 @@ import { ICritterDetailedResponse, ICritterSimpleResponse } from './useCritterAp
 export interface ICreateSurveyRequest
   extends IGeneralInformationForm,
     IPurposeAndMethodologyForm,
+    ICollectionSurveyForm,
     IProprietaryDataForm,
     IAgreementsForm,
     IParticipantsJobForm,
+    ISurveyMemberForm,
     ISurveyLocationForm,
     ISurveyBlockForm,
     ISurveyPartnershipsForm,
@@ -78,9 +82,67 @@ interface IParticipantsJobForm {
   participants: IGetSurveyParticipant[];
 }
 
+interface ISurveyMemberForm {
+  members: ISurveyMember[];
+}
+
+export interface ISurveyMember {
+  survey_member_id: number;
+  system_user_id: number;
+  survey_role_id: number;
+  survey_role_name: string;
+  identity_source: string;
+  user_identifier: string;
+  email: string | null;
+  display_name: string;
+  agency: string | null;
+}
+
+export interface IAddSurveyParticipant {
+  userIdentifier: string;
+  displayName: string;
+  email: string;
+  identitySource: string;
+  roleId: number;
+}
+
+export interface IGetReportDetails {
+  metadata: IGetReportMetadata | null;
+  authors: IGetReportAuthors[];
+}
+
+export interface IGetAttachmentDetails {
+  metadata: { last_modified: string };
+  authors: IGetReportAuthors[];
+}
+export interface IGetReportMetadata {
+  project_report_attachment_id?: number;
+  survey_report_attachment_id?: number;
+  title: string;
+  year_published: number;
+  description: string;
+  last_modified: string;
+  revision_count: number;
+}
+
+/**
+ * A  file upload response.
+ *
+ * @export
+ * @interface IUploadAttachmentResponse
+ */
+export interface IUploadAttachmentResponse {
+  attachmentId: number;
+  revision_count: number;
+}
+
+export interface IGetReportAuthors {
+  first_name: string;
+  last_name: string;
+}
 export interface IGetSurveyForViewResponseDetails {
   id: number;
-  project_id: number;
+  survey_id: number;
   survey_name: string;
   start_date: string;
   end_date: string;
@@ -112,6 +174,7 @@ export interface IGetSurveyParticipant {
   agency: string | null;
   survey_job_id: number;
   survey_job_name: string;
+  survey_role_names: SURVEY_ROLE[];
 }
 
 export interface IGetSurveyForViewResponsePartnerships {
@@ -167,7 +230,6 @@ export interface SurveyViewObject {
 
 export interface SurveyBasicFieldsObject {
   survey_id: number;
-  project_id: number;
   name: string;
   start_date: string;
   end_date: string | null;
@@ -176,6 +238,7 @@ export interface SurveyBasicFieldsObject {
   focal_species_names: string[];
   regions: string[];
   types: number[];
+  progress_percentage: number;
 }
 
 export type IUpdateSurveyRequest = ISurveyLocationForm & {
@@ -187,6 +250,9 @@ export type IUpdateSurveyRequest = ISurveyLocationForm & {
     survey_types: number[];
     revision_count: number;
   };
+  collections: {
+    collection_id: number;
+  }[];
   species: {
     focal_species: ITaxonomyWithEcologicalUnits[];
   };
@@ -215,6 +281,7 @@ export type IUpdateSurveyRequest = ISurveyLocationForm & {
     disa_required: StringBoolean;
   };
   participants: IGetSurveyParticipant[];
+  members: ISurveyMember[];
   blocks: {
     survey_block_id?: number | null;
     name: string;
@@ -341,7 +408,7 @@ export interface IGetSurveyForUpdateResponse {
   surveyData: {
     survey_details: {
       id: number;
-      project_id: number;
+      survey_id: number;
       uuid: string;
       survey_name: string;
       start_date: string;
@@ -353,6 +420,10 @@ export interface IGetSurveyForUpdateResponse {
     species: {
       focal_species: ITaxonomyWithEcologicalUnits[];
     };
+    collections: {
+      collection_id: number;
+      name: string;
+    }[];
     permit: {
       permits: {
         permit_id: number;
@@ -411,10 +482,12 @@ export interface IGetSurveyForUpdateResponse {
       family_name: string | null;
       agency: string | null;
       survey_participation_id: number;
+      survey_role_names: SURVEY_ROLE[];
       survey_id: number;
       survey_job_id: number;
       survey_job_name: string;
     }[];
+    members: ISurveyMember[];
     site_selection: {
       strategies: string[];
       stratums: {
@@ -453,11 +526,13 @@ export interface IAnimalDeploymentWithCritter {
 
 export type IEditSurveyRequest = IGeneralInformationForm &
   ISpeciesForm &
+  ICollectionSurveyForm &
   IPurposeAndMethodologyForm &
   ISurveyLocationForm &
   IProprietaryDataForm &
   IUpdateAgreementsForm & { partnerships: IGetSurveyForViewResponsePartnerships } & ISurveySiteSelectionForm &
   IParticipantsJobForm &
+  ISurveyMemberForm &
   ISurveyBlockForm &
   ISurveyPermitForm &
   ISurveyFundingSourceForm;

@@ -26,7 +26,7 @@ export const codes: IGetAllCodeSetsResponse = {
     { id: 1, name: 'Role 1' },
     { id: 2, name: 'Role 2' }
   ],
-  project_roles: [
+  survey_roles: [
     { id: 1, name: 'Project Role 1', description: 'Description 1' },
     { id: 2, name: 'Project Role 2', description: 'Description 2' }
   ],
@@ -86,5 +86,9 @@ export const codes: IGetAllCodeSetsResponse = {
   habitat_feature_types: [
     { id: 1, name: 'Habitat feature 1', description: 'Habitat feature 1.' },
     { id: 2, name: 'Habitat feature 2', description: 'Habitat feature 2.' }
+  ],
+  collection_roles: [
+    { id: 1, name: 'Member', description: 'Member' },
+    { id: 1, name: 'Admin', description: 'Admin' }
   ]
 };

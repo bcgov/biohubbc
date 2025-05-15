@@ -245,9 +245,9 @@ export class ImportObservationsService extends DBService {
     methodTechniqueService: TechniqueService
   ) {
     // Generate the sample periods, sites, and method techniques
-    const samplePeriods = await samplePeriodService.getSamplePeriodsForSurvey(this.surveyId);
-    const sampleSites = await sampleSiteService.getSampleSitesForSurveyId(this.surveyId);
-    const methodTechniques = await methodTechniqueService.getTechniquesForSurveyId(this.surveyId);
+    const samplePeriods = await samplePeriodService.getSamplePeriodsForSurveys([this.surveyId]);
+    const sampleSites = await sampleSiteService.getSampleSitesForSurveyIds([this.surveyId]);
+    const methodTechniques = await methodTechniqueService.getTechniquesForSurveyIds([this.surveyId]);
 
     // Inject the row validators - handles taxon, sampling information and location validation
     this.utils.config.rowValidators = [

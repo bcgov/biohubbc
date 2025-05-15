@@ -4,14 +4,13 @@ import Stack from '@mui/material/Stack';
 import { TelemetryTableContext, TelemetryTableContextProvider } from 'contexts/telemetryTableContext';
 import { SurveyDeploymentList } from 'features/surveys/telemetry/list/SurveyDeploymentList';
 import { TelemetryTableContainer } from 'features/surveys/telemetry/table/TelemetryTableContainer';
-import { useProjectContext, useSurveyContext } from 'hooks/useContext';
+import { useSurveyContext } from 'hooks/useContext';
 import { SurveyManagePageEnum, SurveyManagePageHeader } from '../components/SurveyManagePageHeader';
 
 export const TelemetryPage = () => {
-  const projectContext = useProjectContext();
   const surveyContext = useSurveyContext();
 
-  if (!surveyContext.surveyDataLoader.data || !projectContext.projectDataLoader.data) {
+  if (!surveyContext.surveyDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
@@ -27,8 +26,6 @@ export const TelemetryPage = () => {
       }}>
       <SurveyManagePageHeader
         page={SurveyManagePageEnum.TELEMETRY}
-        project_id={surveyContext.projectId}
-        project_name={projectContext.projectDataLoader.data.projectData.project.project_name}
         survey_id={surveyContext.surveyId}
         survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
       />

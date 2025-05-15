@@ -2,13 +2,18 @@ import { AuthenticatedRouteGuard, SystemRoleRouteGuard } from 'components/securi
 import { SYSTEM_ROLE } from 'constants/roles';
 import { CodesContextProvider } from 'contexts/codesContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
+import { SurveyAuthStateContextProvider } from 'contexts/surveyAuthStateContext';
+import { SurveyContextProvider } from 'contexts/surveyContext';
+import { TaxonomyContextProvider } from 'contexts/taxonomyContext';
 import AdminRouter from 'features/admin/AdminRouter';
+import CollectionsRouter from 'features/collection/CollectionRouter';
 import FundingSourcesRouter from 'features/funding-sources/FundingSourcesRouter';
-import ProjectsRouter from 'features/projects/ProjectsRouter';
 import ResourcesPage from 'features/resources/ResourcesPage';
 import StandardsPage from 'features/standards/StandardsPage';
 import SummaryRouter from 'features/summary/SummaryRouter';
 import { SupportPage } from 'features/support/SupportPage';
+import CreateSurveyPage from 'features/surveys/CreateSurveyPage';
+import SurveyRouter from 'features/surveys/SurveyRouter';
 import BaseLayout from 'layouts/BaseLayout';
 import AccessDenied from 'pages/403/AccessDenied';
 import NotFoundPage from 'pages/404/NotFoundPage';
@@ -69,11 +74,42 @@ const AppRouter: React.FC = () => {
         </BaseLayout>
       </RouteWithTitle>
 
-      <RouteWithTitle path="/admin/projects" title={getTitle('Projects')}>
+      {/* Survey Routes */}
+      <RouteWithTitle exact path="/admin/surveys/create" title={getTitle('Create Survey')}>
         <BaseLayout>
           <AuthenticatedRouteGuard>
             <CodesContextProvider>
-              <ProjectsRouter />
+              <DialogContextProvider>
+                <CreateSurveyPage />
+              </DialogContextProvider>
+            </CodesContextProvider>
+          </AuthenticatedRouteGuard>
+        </BaseLayout>
+      </RouteWithTitle>
+
+      <RouteWithTitle path="/admin/surveys/:survey_id" title={getTitle('Survey')}>
+        <BaseLayout>
+          <AuthenticatedRouteGuard>
+            <SurveyAuthStateContextProvider>
+              <CodesContextProvider>
+                <SurveyContextProvider>
+                  <TaxonomyContextProvider>
+                    <DialogContextProvider>
+                      <SurveyRouter />
+                    </DialogContextProvider>
+                  </TaxonomyContextProvider>
+                </SurveyContextProvider>
+              </CodesContextProvider>
+            </SurveyAuthStateContextProvider>
+          </AuthenticatedRouteGuard>
+        </BaseLayout>
+      </RouteWithTitle>
+
+      <RouteWithTitle path="/admin/collections" title={getTitle('Collections')}>
+        <BaseLayout>
+          <AuthenticatedRouteGuard>
+            <CodesContextProvider>
+              <CollectionsRouter />
             </CodesContextProvider>
           </AuthenticatedRouteGuard>
         </BaseLayout>
