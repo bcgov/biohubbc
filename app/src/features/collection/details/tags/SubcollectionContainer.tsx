@@ -259,12 +259,17 @@ export const SubcollectionContainer = (props: ICollectionsTagContainerProps) => 
           isLoadingFallbackDelay={100}
           hasNoData={!rows.length}
           hasNoDataFallback={
-            <NoDataOverlay
-              minHeight="400px"
-              title="Create Subcollections"
-              subtitle={`There are no subcollections. When you create one, it will appear here.`}
-              icon={mdiArrowTopRight}
-            />
+            <Box sx={{ display: 'flex', flexDirection: 'column', height: '60vh', width: '100%' }}>
+              <Box sx={{ flex: 1, display: 'flex' }}>
+                <NoDataOverlay
+                  minHeight="400px"
+                  title="Create Subcollections"
+                  subtitle={`There are no subcollections. When you create one, it will appear here.`}
+                  icon={mdiArrowTopRight}
+                  sx={{ width: '100%', height: '100%', m: 0 }}
+                />
+              </Box>
+            </Box>
           }
           hasNoDataFallbackDelay={100}>
           <StyledDataGrid
