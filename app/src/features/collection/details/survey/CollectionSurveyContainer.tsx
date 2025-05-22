@@ -236,6 +236,7 @@ const CollectionSurveyContainer = (props: ICollectionSurveyContainerProps) => {
           />
         }
         hasNoDataFallbackDelay={100}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', height: '60vh' }}>
         <StyledDataGrid
           noRowsMessage="No surveys found"
           loading={!surveys.length && (surveysDataLoader.isLoading || !surveysDataLoader.isReady)}
@@ -279,7 +280,9 @@ const CollectionSurveyContainer = (props: ICollectionSurveyContainerProps) => {
           rowHeight={70}
           getRowHeight={() => 'auto'}
           autoHeight={false}
+          sx={{ flex:1}}
         />
+        </Box>
       </LoadingGuard>
 
       <SurveyCollectionDialog
