@@ -196,12 +196,15 @@ const CollectionMembersContainer = (props: ICollectionMembersContainerProps) => 
         isLoadingFallbackDelay={100}
         hasNoData={!collectionParticipants.length}
         hasNoDataFallback={
-          <NoDataOverlay
-            title="Invite Members"
-            subtitle="Surveys added to this collection will appear here"
-            icon={mdiArrowTopRight}
-            data-testid="collection-participant-list-no-data-overlay"
-          />
+          <Box sx={{ width: '100%', height: '60vh', display: 'flex', flex: 1 }}>
+            <NoDataOverlay
+              title="Invite Members"
+              subtitle="Members added to this collection will appear here"
+              icon={mdiArrowTopRight}
+              data-testid="collection-participant-list-no-data-overlay"
+              sx={{ width: '100%', height: '100%', m: 0 }}
+            />
+          </Box>
         }
         hasNoDataFallbackDelay={100}>
         <StyledDataGrid
