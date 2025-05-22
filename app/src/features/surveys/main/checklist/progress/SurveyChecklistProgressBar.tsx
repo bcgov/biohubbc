@@ -8,7 +8,7 @@ export const LinearProgressWithLabel = (
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', flex: '1 1 auto' }}>
       <Box sx={{ width: '100%', mr: 1 }}>
-        <LinearProgress variant="determinate" sx={{ height: '7px' }} {...props} />
+        <LinearProgress variant="determinate" sx={{ height: '10px' }} {...props} />
       </Box>
       {!props.hideLabel && (
         <Box sx={{ minWidth: 60, flexShrink: 0 }}>

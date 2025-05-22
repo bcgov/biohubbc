@@ -1,5 +1,6 @@
 import { mdiClipboardOutline, mdiDatabaseSearch, mdiFormatListGroup, mdiMagnify } from '@mdi/js';
 import Icon from '@mdi/react';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
@@ -66,15 +67,17 @@ export const ListDataTableContainer = () => {
   return (
     <SidebarLayout
       sidebar={
-        <CustomToggleButtonGroup
-          views={views}
-          activeView={activeView}
-          onViewChange={(view) => {
-            setSearchParams(searchParams.set(SUMMARY_ACTIVE_VIEW_KEY, view, { replace: true }));
-            setActiveView(view);
-          }}
-          orientation="vertical"
-        />
+        <Box p={2}>
+          <CustomToggleButtonGroup
+            views={views}
+            activeView={activeView}
+            onViewChange={(view) => {
+              setSearchParams(searchParams.set(SUMMARY_ACTIVE_VIEW_KEY, view, { replace: true }));
+              setActiveView(view);
+            }}
+            orientation="vertical"
+          />
+        </Box>
       }
       header={
         <>

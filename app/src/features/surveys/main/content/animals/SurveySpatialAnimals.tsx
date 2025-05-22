@@ -125,7 +125,13 @@ export const SurveySpatialAnimals = (props: ISurveySpatialAnimalsProps) => {
 
   return (
     <>
-      <Toolbar sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', p: 2 }}>
+      <Toolbar
+        disableGutters
+        sx={{
+          flex: '0 0 auto',
+          pr: 3,
+          pl: 3
+        }}>
         <Typography variant="h2" flex="1 1 auto">
           Animals
         </Typography>

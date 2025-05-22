@@ -232,68 +232,64 @@ const CollectionsListContainer = (props: ICollectionsListContainerProps) => {
         <Divider />
       </Collapse>
 
-      <Box maxHeight="700px">
-        <LoadingGuard
-          isLoading={!rows.length && (collectionsDataLoader.isLoading || !collectionsDataLoader.isReady)}
-          isLoadingFallback={<SkeletonTable />}
-          isLoadingFallbackDelay={100}
-          hasNoData={!rows.length}
-          hasNoDataFallback={
-            <NoDataOverlay
-              minHeight="400px"
-              height="400px"
-              title="Create or Join Collections"
-              subtitle="You currently have no collections. Once you create or get invited to collections, they will be displayed here"
-              icon={mdiArrowTopRight}
-            />
-          }
-          hasNoDataFallbackDelay={100}>
-          <StyledDataGrid
-            noRowsMessage="No collections found"
-            loading={!rows.length && (collectionsDataLoader.isLoading || !collectionsDataLoader.isReady)}
-            // Columns
-            columns={columns}
-            // Rows
-            rows={rows}
-            rowCount={collectionsDataLoader.data?.pagination.total ?? 0}
-            getRowId={(row) => row.collection_id}
-            // Pagination
-            paginationMode="server"
-            paginationModel={paginationModel}
-            pageSizeOptions={pageSizeOptions}
-            onPaginationModelChange={(model) => {
-              if (!model) {
-                return;
-              }
-              setSearchParams(searchParams.set('p_page', String(model.page)).set('p_limit', String(model.pageSize)));
-              setPaginationModel(model);
-            }}
-            // Sorting
-            sortingMode="server"
-            sortModel={sortModel}
-            sortingOrder={['asc', 'desc']}
-            onSortModelChange={(model) => {
-              if (!model.length) {
-                return;
-              }
-              setSearchParams(searchParams.set('p_sort', model[0].field).set('p_order', model[0].sort ?? 'desc'));
-              setSortModel(model);
-            }}
-            // Row options
-            rowSelection={false}
-            checkboxSelection={false}
-            disableRowSelectionOnClick
-            // Column options
-            disableColumnSelector
-            disableColumnFilter
-            disableColumnMenu
-            // Styling
-            rowHeight={70}
-            getRowHeight={() => 'auto'}
-            autoHeight={false}
+      <LoadingGuard
+        isLoading={!rows.length && (collectionsDataLoader.isLoading || !collectionsDataLoader.isReady)}
+        isLoadingFallback={<SkeletonTable />}
+        isLoadingFallbackDelay={100}
+        hasNoData={!rows.length}
+        hasNoDataFallback={
+          <NoDataOverlay
+            title="Create or Join Collections"
+            subtitle="You currently have no collections. Once you create or get invited to collections, they will be displayed here"
+            icon={mdiArrowTopRight}
           />
-        </LoadingGuard>
-      </Box>
+        }
+        hasNoDataFallbackDelay={100}>
+        <StyledDataGrid
+          noRowsMessage="No collections found"
+          loading={!rows.length && (collectionsDataLoader.isLoading || !collectionsDataLoader.isReady)}
+          // Columns
+          columns={columns}
+          // Rows
+          rows={rows}
+          rowCount={collectionsDataLoader.data?.pagination.total ?? 0}
+          getRowId={(row) => row.collection_id}
+          // Pagination
+          paginationMode="server"
+          paginationModel={paginationModel}
+          pageSizeOptions={pageSizeOptions}
+          onPaginationModelChange={(model) => {
+            if (!model) {
+              return;
+            }
+            setSearchParams(searchParams.set('p_page', String(model.page)).set('p_limit', String(model.pageSize)));
+            setPaginationModel(model);
+          }}
+          // Sorting
+          sortingMode="server"
+          sortModel={sortModel}
+          sortingOrder={['asc', 'desc']}
+          onSortModelChange={(model) => {
+            if (!model.length) {
+              return;
+            }
+            setSearchParams(searchParams.set('p_sort', model[0].field).set('p_order', model[0].sort ?? 'desc'));
+            setSortModel(model);
+          }}
+          // Row options
+          rowSelection={false}
+          checkboxSelection={false}
+          disableRowSelectionOnClick
+          // Column options
+          disableColumnSelector
+          disableColumnFilter
+          disableColumnMenu
+          // Styling
+          rowHeight={70}
+          getRowHeight={() => 'auto'}
+          autoHeight={false}
+        />
+      </LoadingGuard>
     </>
   );
 };

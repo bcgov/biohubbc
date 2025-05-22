@@ -114,17 +114,17 @@ export const SurveyPage = () => {
   return (
     <>
       <SurveyHeader />
-      <Container maxWidth={'xl'} sx={{ my: 3, p: 0 }} disableGutters>
+      <Container maxWidth={'xl'} sx={{ my: 3, p: 0, px: 2 }} disableGutters>
         <SidebarLayout
           sidebar={
-            <Box sx={{ flexShrink: 0, mx: 1 }}>
+            <Box sx={{ flexShrink: 0 }}>
               <LoadingGuard
                 // If isLoading={checklistDataLoader.isLoading}, the skeleton loader is triggered when a checklist item
                 // is disabled. This is undesired, so isLoading depends on whether data exists.
                 isLoading={!checklistDataLoader.data || codesContext.codesDataLoader.isLoading}
                 isLoadingFallbackDelay={600}
                 isLoadingFallback={
-                  <Stack py={1} spacing={2}>
+                  <Stack p={3} spacing={2}>
                     <Skeleton height="20px" width="100px" variant="rectangular" />
                     <Skeleton height="8px" width="75%" variant="rectangular" />
                     <Stack pt={1} spacing={2}>
@@ -135,14 +135,12 @@ export const SurveyPage = () => {
                   </Stack>
                 }>
                 {checklistDataLoader.data?.checklist && (
-                  <Box sx={{ position: 'sticky', top: 180 }}>
-                    <SurveyChecklistContainer
-                      checklist={checklistDataLoader.data.checklist}
-                      activeView={activeView}
-                      handleViewChange={handleViewChange}
-                      handleCheckboxClick={handleCheckboxClick}
-                    />
-                  </Box>
+                  <SurveyChecklistContainer
+                    checklist={checklistDataLoader.data.checklist}
+                    activeView={activeView}
+                    handleViewChange={handleViewChange}
+                    handleCheckboxClick={handleCheckboxClick}
+                  />
                 )}
               </LoadingGuard>
             </Box>

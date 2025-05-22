@@ -180,7 +180,6 @@ export const SamplingTechniqueContainer = () => {
         hasNoData={!techniquesDataLoader.data?.techniques.length}
         hasNoDataFallback={
           <NoDataOverlay
-            minHeight="400px"
             title="Add Techniques"
             subtitle="Techniques reflect methods used to collect data, like aerial transects, camera traps, or hair snags."
             icon={mdiArrowTopRight}

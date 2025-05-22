@@ -114,7 +114,6 @@ const SurveyAttachmentsList: React.FC = () => {
         hasNoData={!attachments.length}
         hasNoDataFallback={
           <NoDataOverlay
-            minHeight="400px"
             height="250px"
             title="Upload Files"
             subtitle="Add extra information about your survey by uploading files"

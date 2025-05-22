@@ -1,4 +1,4 @@
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { SurveyChecklist } from 'features/surveys/main/checklist/SurveyChecklist';
 import { useSurveyContext } from 'hooks/useContext';
 import { usePersistentState } from 'hooks/usePersistentState';
@@ -189,57 +189,56 @@ export const SurveyChecklistContainer = (props: SurveyChecklistContainerProps) =
 
   return (
     <Box flexShrink={0} height="100%">
-      {/* Progress Bar */}
-      <Typography fontWeight={700} mt={1}>
-        Progress
-      </Typography>
-      <Box my={2}>
-        <LinearProgressWithLabel value={progressValue} suffix="complete" />
+      <Box pt={2} px={3} flex="1 1 auto">
+        {/* Progress Bar */}
+        <Typography fontWeight={700} mt={1}>
+          Checklist
+        </Typography>
+        <Box my={2}>
+          <LinearProgressWithLabel value={progressValue} suffix="complete" />
+        </Box>
       </Box>
 
-      {/* Checklist Toggle Buttons */}
-      <SurveyChecklist
-        views={checklistItems}
-        activeView={activeView}
-        onViewChange={handleViewChange}
-        orientation="vertical"
-        handleCheckbox={(item) => {
-          const checklistObject = flattenedChecklistItems.find((checklistItem) => checklistItem.value === item.value);
+      {/* Scrollable checklist */}
+      <Box sx={{ overflowY: 'auto', px: 2, mb: 2 }}>
+        <SurveyChecklist
+          views={checklistItems}
+          activeView={activeView}
+          onViewChange={handleViewChange}
+          orientation="vertical"
+          handleCheckbox={(item) => {
+            const checklistObject = flattenedChecklistItems.find((checklistItem) => checklistItem.value === item.value);
 
-          if (checklistObject) {
-            handleCheckboxClick(checklistObject);
+            if (checklistObject) {
+              handleCheckboxClick(checklistObject);
 
-            if (item.value === activeView) {
-              const findNextValidView = (items: ChecklistItem[]): ACTIVE_VIEW_VALUE | null => {
-                for (const item of items) {
-                  if (!item.isHeader && !item.disabled && item.value !== activeView) {
-                    return item.value;
-                  }
-                  if (item.children) {
-                    const childResult = findNextValidView(item.children);
-                    if (childResult) {
-                      return childResult;
+              if (item.value === activeView) {
+                const findNextValidView = (items: ChecklistItem[]): ACTIVE_VIEW_VALUE | null => {
+                  for (const item of items) {
+                    if (!item.isHeader && !item.disabled && item.value !== activeView) {
+                      return item.value;
+                    }
+                    if (item.children) {
+                      const childResult = findNextValidView(item.children);
+                      if (childResult) {
+                        return childResult;
+                      }
                     }
                   }
-                }
-                return null;
-              };
+                  return null;
+                };
 
-              const nextView = findNextValidView(checklistItems);
-              if (nextView) {
-                handleViewChange(nextView);
+                const nextView = findNextValidView(checklistItems);
+                if (nextView) {
+                  handleViewChange(nextView);
+                }
               }
             }
-          }
-        }}
-        expanded={expanded}
-        handleExpand={setExpanded}
-      />
-
-      {/* Publish Button */}
-      <Button fullWidth variant="contained" sx={{ mt: 3 }}>
-        Publish
-      </Button>
+          }}
+          expanded={expanded}
+          handleExpand={setExpanded}
+        />
+      </Box>
     </Box>
   );
 };

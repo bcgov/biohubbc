@@ -273,8 +273,6 @@ export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
         hasNoData={!periods.length}
         hasNoDataFallback={
           <NoDataOverlay
-            minHeight="400px"
-            height="200px"
             title="Add Periods"
             subtitle="Techniques describe how you collected species observations"
             icon={mdiArrowTopRight}
