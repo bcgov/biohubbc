@@ -1,4 +1,4 @@
-import { mdiArrowTopRight } from '@mdi/js';
+import { Box } from '@mui/material';
 import { GridColDef, GridSortModel, GridValidRowModel } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
@@ -153,11 +153,15 @@ export const SurveySpatialObservationTable = () => {
       isLoadingFallbackDelay={100}
       hasNoData={!rows.length}
       hasNoDataFallback={
-        <NoDataOverlay
-          title="Add Species Observations"
-          subtitle="Observations show where and when you observed species. You can link observations to sampling periods."
-          icon={mdiArrowTopRight}
-        />
+        <Box sx={{ display: 'flex', flexDirection: 'column', height: '60vh', width: '100%' }}>
+          <Box sx={{ flex: 1, display: 'flex' }}>
+            <NoDataOverlay
+              title="Species Observations"
+              subtitle="Observations show where and when you observed species. Observations that belong to the surveys in this collection will show here."
+              sx={{ width: '100%', height: '100%', m: 0 }}
+            />
+          </Box>
+        </Box>
       }
       hasNoDataFallbackDelay={100}>
       <StyledDataGrid<IFlattenedObservationTableRow>
