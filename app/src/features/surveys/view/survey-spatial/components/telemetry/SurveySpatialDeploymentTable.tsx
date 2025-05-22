@@ -195,9 +195,8 @@ export const SurveySpatialDeploymentTable = () => {
       hasNoDataFallback={
         <NoDataOverlay
           minHeight="400px"
-          title="Add Telemetry"
-          subtitle="Add deployments by assigning telemetry devices to animals"
-          icon={mdiArrowTopRight}
+          title="Deployments"
+          subtitle="Add deployments by assigning telemetry devices to animals. Deployments that exist in a survey belonging to this collection will be shown here."
         />
       }
       hasNoDataFallbackDelay={100}>
