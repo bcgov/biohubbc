@@ -6,9 +6,9 @@ import { authorizeRequestHandler } from '../../../../../request-handlers/securit
 import { SurveyChecklistService } from '../../../../../services/survey-checklist-service';
 import { getLogger } from '../../../../../utils/logger';
 
-const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/checklist/{checkistItemName');
+const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/checklist/unignore');
 
-export const DELETE: Operation = [
+export const POST: Operation = [
   authorizeRequestHandler((req) => {
     return {
       or: [
@@ -20,11 +20,11 @@ export const DELETE: Operation = [
       ]
     };
   }),
-  deletSurveyChecklistItemIgnore()
+  deleteSurveyChecklistItemIgnore()
 ];
 
-DELETE.apiDoc = {
-  description: 'Delete a survey checklist item ignore record, implying that the item applies to the survey',
+POST.apiDoc = {
+  description: 'Deletes survey checklist item ignore records, implying that the item does apply to the survey',
   tags: ['survey'],
   security: [
     {
@@ -40,18 +40,33 @@ DELETE.apiDoc = {
         minimum: 1
       },
       required: true
-    },
-    {
-      in: 'path',
-      name: 'checklistItemName',
-      schema: {
-        type: 'string'
-      },
-      required: true
     }
   ],
+  requestBody: {
+    description: 'Checklist item unignore post request object.',
+    required: true,
+    content: {
+      'application/json': {
+        schema: {
+          title: 'Checklist item unignore post request object.',
+          type: 'object',
+          additionalProperties: false,
+          required: ['checklistItemNames'],
+          properties: {
+            checklistItemNames: {
+              type: 'array',
+              items: {
+                type: 'string'
+              },
+              description: 'An array of checklist item names to unignore'
+            }
+          }
+        }
+      }
+    }
+  },
   responses: {
-    201: {
+    200: {
       description: 'Survey checklist response'
     },
     400: {
@@ -72,7 +87,7 @@ DELETE.apiDoc = {
   }
 };
 
-export function deletSurveyChecklistItemIgnore(): RequestHandler {
+export function deleteSurveyChecklistItemIgnore(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
 
@@ -83,15 +98,15 @@ export function deletSurveyChecklistItemIgnore(): RequestHandler {
 
       const surveyChecklistService = new SurveyChecklistService(connection);
 
-      const checklistItemName = req.params.checklistItemName as string;
+      const checklistItemNames = req.body.checklistItemNames as string[];
 
-      await surveyChecklistService.deleteSurveyChecklistItemIgnore(surveyId, checklistItemName);
+      await surveyChecklistService.deleteSurveyChecklistItemIgnore(surveyId, checklistItemNames);
 
       await connection.commit();
 
-      return res.status(201).send();
+      return res.status(200).send();
     } catch (error) {
-      defaultLog.error({ label: 'deletSurveyChecklistItemIgnore', message: 'error', error });
+      defaultLog.error({ label: 'deleteSurveyChecklistItemIgnore', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

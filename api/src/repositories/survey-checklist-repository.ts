@@ -262,37 +262,38 @@ export class SurveyChecklistRepository extends BaseRepository {
   async insertSurveyChecklistItemIgnore(surveyId: number, checklistItemName: string): Promise<void> {
     const sqlStatement = SQL`
       INSERT INTO survey_checklist_item_ignore (survey_id, checklist_item_id)
-      VALUES (
+      SELECT
         ${surveyId},
-        (SELECT checklist_item_id FROM checklist_item WHERE name = ${checklistItemName})
-      )
+        checklist_item_id
+      FROM checklist_item
+      WHERE LOWER(name) = ${checklistItemName.toLowerCase()}
+      ON CONFLICT DO NOTHING
       RETURNING *;
     `;
 
-    const response = await this.connection.sql(sqlStatement, SurveyChecklistItemIgnoreModel);
-
-    console.log('inserted!', response.rows);
-
-    if (response.rowCount !== 1) {
-      throw new Error('Failed to insert into survey_checklist_item_ignore');
-    }
+    await this.connection.sql(sqlStatement, SurveyChecklistItemIgnoreModel);
   }
 
   /**
-   * Delete an ignored checklist item for the survey
+   * Delete ignored checklist items for the survey
    *
    * @param {number} surveyId
-   * @param {string} checklistItemName
+   * @param {string[]} checklistItemNames
    * @return {*}  {Promise<void>}
    * @memberof SurveyChecklistRepository
    */
-  async deleteSurveyChecklistItemIgnore(surveyId: number, checklistItemName: string): Promise<void> {
+  async deleteSurveyChecklistItemIgnore(surveyId: number, checklistItemNames: string[]): Promise<void> {
     const sqlStatement = SQL`
-        DELETE FROM 
-          survey_checklist_item_ignore
-        WHERE 
-          survey_id = ${surveyId} AND checklist_item_id = (SELECT checklist_item_id FROM checklist_item WHERE name = ${checklistItemName})
-        `;
+    DELETE FROM 
+      survey_checklist_item_ignore
+    WHERE 
+      survey_id = ${surveyId} 
+      AND checklist_item_id = ANY (
+        SELECT checklist_item_id 
+        FROM checklist_item 
+        WHERE name = ANY (${checklistItemNames})
+      )
+  `;
 
     await this.connection.sql(sqlStatement, SurveyChecklistItemIgnoreModel);
   }

@@ -1,10 +1,11 @@
-import { mdiChevronDown, mdiChevronRight } from '@mdi/js';
+import { mdiChevronDown, mdiChevronRight, mdiMinus, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
 import Collapse from '@mui/material/Collapse';
 import grey from '@mui/material/colors/grey';
+import IconButton from '@mui/material/IconButton';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { CustomTooltip } from 'components/tooltip/CustomTooltip';
@@ -16,7 +17,7 @@ export interface ToggleButtonView<ViewValueType> {
   label: string;
   icon?: string;
   checkbox?: boolean;
-  isChecked?: boolean;
+  checked?: boolean;
   disabled?: boolean;
   children?: ToggleButtonView<ViewValueType>[];
   tooltip?: string;
@@ -100,31 +101,113 @@ export const HierarchicalCustomToggleButtonGroup = <ViewValueType extends string
               startIcon={startIcon}
               endIcon={
                 <>
-                  {item.checkbox && (
-                    <Box position="absolute" right={10} top={0} bottom={0} display="flex" alignItems="center">
-                      <Checkbox
-                        checked={item.isChecked}
-                        onClick={(e) => {
-                          handleCheckboxClick?.(item);
-                          e.stopPropagation();
-                        }}
-                        size="small"
-                        sx={{
-                          p: 1,
-                          '& .MuiSvgIcon-root': {
-                            fill: item.disabled ? grey[300] : appTheme.palette.primary.main
-                          }
-                        }}
-                      />
+                  {/* IconButton with Plus icon for disabled view */}
+                  {item.checkbox && item.disabled && (
+                    <Box
+                      sx={{
+                        position: 'absolute',
+                        right: 16,
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        width: 24,
+                        height: 24
+                      }}>
+                      <CustomTooltip tooltip="Change sites to applicable">
+                        <Box
+                          sx={{
+                            position: 'relative',
+                            width: '100%',
+                            height: '100%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                          }}>
+                          <IconButton
+                            onClick={(e) => {
+                              handleCheckboxClick?.(item);
+                              e.stopPropagation();
+                            }}
+                            size="small"
+                            sx={{
+                              color: grey[400],
+                              position: 'absolute',
+                              display: 'flex',
+                              p: 0
+                            }}>
+                            <Icon path={mdiPlus} size={1} />
+                          </IconButton>
+                        </Box>
+                      </CustomTooltip>
                     </Box>
                   )}
-                  {hasChildren ? (
+
+                  {/* Checkbox that switches to minus IconButton on hover */}
+                  {item.checkbox && !item.disabled && (
+                    <Box
+                      sx={{
+                        position: 'absolute',
+                        right: 16,
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        width: 24,
+                        height: 24
+                      }}>
+                      <CustomTooltip tooltip="Change sites to non-applicable">
+                        <Box
+                          sx={{
+                            position: 'relative',
+                            width: '100%',
+                            height: '100%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            '&:hover .checkbox': { display: 'none' },
+                            '&:hover .icon-button': { display: 'flex' }
+                          }}>
+                          <Checkbox
+                            className="checkbox"
+                            checked={item.checked}
+                            onClick={(e) => {
+                              handleCheckboxClick?.(item);
+                              e.stopPropagation();
+                            }}
+                            size="small"
+                            sx={{
+                              position: 'absolute',
+                              p: 0,
+                              '& .MuiSvgIcon-root': {
+                                fill: appTheme.palette.primary.main
+                              }
+                            }}
+                          />
+
+                          <IconButton
+                            className="icon-button"
+                            onClick={(e) => {
+                              handleCheckboxClick?.(item);
+                              e.stopPropagation();
+                            }}
+                            size="small"
+                            sx={{
+                              color: grey[400],
+                              position: 'absolute',
+                              display: 'none',
+                              p: 0
+                            }}>
+                            <Icon path={mdiMinus} size={1} />
+                          </IconButton>
+                        </Box>
+                      </CustomTooltip>
+                    </Box>
+                  )}
+
+                  {hasChildren && (
                     <Icon
                       path={expanded.has(item.value) ? mdiChevronDown : mdiChevronRight}
                       size={1}
-                      style={{ marginLeft: 'auto' }}
+                      style={{ marginLeft: 'auto', color: grey[500] }}
                     />
-                  ) : undefined}
+                  )}
                 </>
               }
               sx={{

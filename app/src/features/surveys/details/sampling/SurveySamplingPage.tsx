@@ -1,4 +1,4 @@
-import { mdiClockOutline, mdiMapMarkerOutline, mdiToolboxOutline } from '@mdi/js';
+import { mdiBinoculars, mdiClockOutline, mdiMapMarker } from '@mdi/js';
 import { CircularProgress, Skeleton } from '@mui/material';
 import { Box, Stack } from '@mui/system';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
@@ -56,23 +56,23 @@ export const SurveySamplingPage = (props: ISurveySamplingPageProps) => {
     setSearchParams(searchParams.set(ACTIVE_VIEW_KEY, updatedView));
   };
 
-  // Handle checkbox toggle for ignoring/unignoring checklist items
   const handleCheckboxClick = useCallback(
     async (view: ToggleButtonView<SAMPLING_ACTIVE_VIEW_VALUE>) => {
-      // Handle individual item toggle
       const item = checklistItems.find((item) => item.value === view.value);
 
       if (!item) {
         return;
       }
 
-      item.applicable
-        ? await biohubApi.checklist.ignoreSurveyChecklistItems(surveyContext.surveyId, [item.checklist_item_name])
-        : await biohubApi.checklist.unignoreSurveyChecklistItems(surveyContext.surveyId, [item.checklist_item_name]);
+      if (item.applicable) {
+        await biohubApi.checklist.ignoreSurveyChecklistItems(surveyContext.surveyId, [item.checklist_item_name]);
+      } else {
+        await biohubApi.checklist.unignoreSurveyChecklistItems(surveyContext.surveyId, [item.checklist_item_name]);
+      }
 
       await surveyContext.surveyChecklistDataLoader.refresh(surveyContext.surveyId);
     },
-    [checklistItems, surveyContext.surveyId, surveyContext.surveyChecklistDataLoader, biohubApi.checklist]
+    [biohubApi, checklistItems, surveyContext]
   );
 
   if (!codesContext.codesDataLoader.data || !surveyContext.surveyDataLoader.data || !checklist) {
@@ -83,18 +83,18 @@ export const SurveySamplingPage = (props: ISurveySamplingPageProps) => {
     {
       value: SAMPLING_ACTIVE_VIEW_VALUE.sites,
       label: 'Sites',
-      icon: mdiMapMarkerOutline,
+      icon: mdiMapMarker,
       checkbox: true,
       disabled: !checklist.sampling.sites.applicable,
-      isChecked: !!checklist.sampling.sites.count
+      checked: !!checklist.sampling.sites.count
     },
     {
       value: SAMPLING_ACTIVE_VIEW_VALUE.techniques,
       label: 'Techniques',
-      icon: mdiToolboxOutline,
+      icon: mdiBinoculars,
       checkbox: true,
       disabled: !checklist.sampling.techniques.applicable,
-      isChecked: !!checklist.sampling.techniques.count
+      checked: !!checklist.sampling.techniques.count
     },
     {
       value: SAMPLING_ACTIVE_VIEW_VALUE.periods,
@@ -102,7 +102,7 @@ export const SurveySamplingPage = (props: ISurveySamplingPageProps) => {
       icon: mdiClockOutline,
       checkbox: true,
       disabled: !checklist.sampling.periods.applicable,
-      isChecked: !!checklist.sampling.periods.count
+      checked: !!checklist.sampling.periods.count
     }
   ];
 

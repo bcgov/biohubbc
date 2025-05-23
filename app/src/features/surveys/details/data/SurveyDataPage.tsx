@@ -11,22 +11,27 @@ import { CircularProgress, Skeleton } from '@mui/material';
 import { Box, Stack } from '@mui/system';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { ComponentSwitch } from 'components/misc/ComponentSwitch';
-import { HierarchicalCustomToggleButtonGroup } from 'components/toolbar/HierarchicalCustomToggleButtonGroup';
+import {
+  HierarchicalCustomToggleButtonGroup,
+  ToggleButtonView
+} from 'components/toolbar/HierarchicalCustomToggleButtonGroup';
 import { CodesContext } from 'contexts/codesContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { SurveyDeploymentList } from 'features/surveys/telemetry/list/SurveyDeploymentList';
 import { DevicesContainer } from 'features/surveys/telemetry/manage/devices/table/DevicesContainer';
 import { SurveySpatialTelemetry } from 'features/surveys/telemetry/SurveySpatialTelemetry';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSearchParams } from 'hooks/useSearchParams';
 import { SidebarLayout } from 'layouts/SidebarLayout';
-import { useContext, useEffect } from 'react';
+import { useCallback, useContext, useEffect } from 'react';
+import { ChecklistItem } from '../SurveyPage';
 import { SurveySpatialAnimals } from './animals/SurveySpatialAnimals';
 import { SurveySpatialHabitatFeatureTableContainer } from './habitat/table/SurveySpatialHabitatFeatureTableContainer';
 import { SurveySpatialObservations } from './observations/SurveySpatialObservations';
 
 const ACTIVE_VIEW_KEY = 'cv';
 
-enum ACTIVE_VIEW_VALUE {
+export enum DATA_ACTIVE_VIEW_VALUE {
   observations = 'observations',
   telemetry = 'telemetry',
   devices = 'devices',
@@ -36,13 +41,20 @@ enum ACTIVE_VIEW_VALUE {
   habitat = 'habitat'
 }
 
-const DEFAULT_VIEW = ACTIVE_VIEW_VALUE.observations;
+const DEFAULT_VIEW = DATA_ACTIVE_VIEW_VALUE.observations;
 
-export const SurveyDataPage = () => {
+interface ISurveyDataPageProps {
+  checklistItems: ChecklistItem[];
+}
+
+export const SurveyDataPage = (props: ISurveyDataPageProps) => {
+  const { checklistItems } = props;
+
   const surveyContext = useContext(SurveyContext);
   const codesContext = useContext(CodesContext);
+  const biohubApi = useBiohubApi();
 
-  const { searchParams, setSearchParams } = useSearchParams<{ [ACTIVE_VIEW_KEY]: ACTIVE_VIEW_VALUE }>();
+  const { searchParams, setSearchParams } = useSearchParams<{ [ACTIVE_VIEW_KEY]: DATA_ACTIVE_VIEW_VALUE }>();
 
   const checklist = surveyContext.surveyChecklistDataLoader.data?.checklist;
 
@@ -54,71 +66,91 @@ export const SurveyDataPage = () => {
     }
   }, [codesContext.codesDataLoader, searchParams, setSearchParams]);
 
-  const activeView = searchParams.get(ACTIVE_VIEW_KEY) as ACTIVE_VIEW_VALUE;
+  const activeView = searchParams.get(ACTIVE_VIEW_KEY) as DATA_ACTIVE_VIEW_VALUE;
 
-  const handleViewChange = (view: ACTIVE_VIEW_VALUE) => {
+  const handleViewChange = (view: DATA_ACTIVE_VIEW_VALUE) => {
     const updatedView = view ?? DEFAULT_VIEW;
     setSearchParams(searchParams.set(ACTIVE_VIEW_KEY, updatedView));
   };
+
+  const handleCheckboxClick = useCallback(
+    async (view: ToggleButtonView<DATA_ACTIVE_VIEW_VALUE>) => {
+      const item = checklistItems.find((item) => item.value === view.value);
+
+      if (!item) {
+        return;
+      }
+
+      if (item.applicable) {
+        await biohubApi.checklist.ignoreSurveyChecklistItems(surveyContext.surveyId, [item.checklist_item_name]);
+      } else {
+        await biohubApi.checklist.unignoreSurveyChecklistItems(surveyContext.surveyId, [item.checklist_item_name]);
+      }
+
+      await surveyContext.surveyChecklistDataLoader.refresh(surveyContext.surveyId);
+    },
+    [biohubApi, checklistItems, surveyContext]
+  );
 
   if (!codesContext.codesDataLoader.data || !surveyContext.surveyDataLoader.data || !checklist) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
   const views = [
     {
-      value: ACTIVE_VIEW_VALUE.observations,
+      value: DATA_ACTIVE_VIEW_VALUE.observations,
       label: 'Observations',
       icon: mdiEye,
       checkbox: true,
-      disabled: checklist.data.observations.applicable,
-      isChecked: !!checklist.data.observations.count
+      disabled: !checklist.data.observations.applicable,
+      checked: !!checklist.data.observations.count
     },
     {
-      value: ACTIVE_VIEW_VALUE.animals,
+      value: DATA_ACTIVE_VIEW_VALUE.animals,
       label: 'Animals',
       icon: mdiPaw,
       checkbox: true,
-      disabled: checklist.data.animals.applicable,
-      isChecked: !!checklist.data.animals.count
+      disabled: !checklist.data.animals.applicable,
+      checked: !!checklist.data.animals.count
     },
     {
-      value: ACTIVE_VIEW_VALUE.telemetry,
+      value: DATA_ACTIVE_VIEW_VALUE.telemetry,
       label: 'Telemetry',
       icon: mdiWifiMarker,
+      isHeader: true,
       children: [
         {
-          value: ACTIVE_VIEW_VALUE.devices,
+          value: DATA_ACTIVE_VIEW_VALUE.devices,
           label: 'Devices',
           icon: mdiAntenna,
           checkbox: true,
-          disabled: checklist.data.telemetry.devices.applicable,
-          isChecked: !!checklist.data.telemetry.devices.count
+          disabled: !checklist.data.telemetry.devices.applicable,
+          checked: !!checklist.data.telemetry.devices.count
         },
         {
-          value: ACTIVE_VIEW_VALUE.deployments,
+          value: DATA_ACTIVE_VIEW_VALUE.deployments,
           label: 'Deployments',
           icon: mdiCalendarRangeOutline,
           checkbox: true,
-          disabled: checklist.data.telemetry.deployments.applicable,
-          isChecked: !!checklist.data.telemetry.deployments.count
+          disabled: !checklist.data.telemetry.deployments.applicable,
+          checked: !!checklist.data.telemetry.deployments.count
         },
         {
-          value: ACTIVE_VIEW_VALUE.locations,
+          value: DATA_ACTIVE_VIEW_VALUE.locations,
           label: 'Locations',
           icon: mdiMapMarkerRadiusOutline,
           checkbox: true,
-          disabled: checklist.data.telemetry.locations.applicable,
-          isChecked: !!checklist.data.telemetry.locations.count
+          disabled: !checklist.data.telemetry.locations.applicable,
+          checked: !!checklist.data.telemetry.locations.count
         }
       ]
     },
     {
-      value: ACTIVE_VIEW_VALUE.habitat,
+      value: DATA_ACTIVE_VIEW_VALUE.habitat,
       label: 'Habitat Features',
       icon: mdiPineTree,
       checkbox: true,
-      disabled: checklist.data.habitat.applicable,
-      isChecked: !!checklist.data.habitat.count
+      disabled: !checklist.data.habitat.applicable,
+      checked: !!checklist.data.habitat.count
     }
   ];
 
@@ -130,6 +162,7 @@ export const SurveyDataPage = () => {
             views={views}
             activeView={activeView}
             onViewChange={handleViewChange}
+            handleCheckboxClick={handleCheckboxClick}
             orientation="vertical"
           />
         </Box>
@@ -155,12 +188,12 @@ export const SurveyDataPage = () => {
                 <ComponentSwitch
                   switch={activeView}
                   components={{
-                    [ACTIVE_VIEW_VALUE.observations]: <SurveySpatialObservations />,
-                    [ACTIVE_VIEW_VALUE.devices]: <DevicesContainer />,
-                    [ACTIVE_VIEW_VALUE.deployments]: <SurveyDeploymentList />,
-                    [ACTIVE_VIEW_VALUE.locations]: <SurveySpatialTelemetry />,
-                    [ACTIVE_VIEW_VALUE.animals]: <SurveySpatialAnimals />,
-                    [ACTIVE_VIEW_VALUE.habitat]: <SurveySpatialHabitatFeatureTableContainer />
+                    [DATA_ACTIVE_VIEW_VALUE.observations]: <SurveySpatialObservations />,
+                    [DATA_ACTIVE_VIEW_VALUE.devices]: <DevicesContainer />,
+                    [DATA_ACTIVE_VIEW_VALUE.deployments]: <SurveyDeploymentList />,
+                    [DATA_ACTIVE_VIEW_VALUE.locations]: <SurveySpatialTelemetry />,
+                    [DATA_ACTIVE_VIEW_VALUE.animals]: <SurveySpatialAnimals />,
+                    [DATA_ACTIVE_VIEW_VALUE.habitat]: <SurveySpatialHabitatFeatureTableContainer />
                   }}
                 />
               </Box>

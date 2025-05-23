@@ -1,8 +1,8 @@
-import { mdiDotsVertical } from '@mdi/js';
+import { mdiDotsVertical, mdiMinus, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Checkbox } from '@mui/material';
 import Box from '@mui/material/Box';
-import { grey } from '@mui/material/colors';
+import grey from '@mui/material/colors/grey';
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -99,30 +99,109 @@ const CustomToggleButtonGroup = <ViewValueType extends string>(props: CustomTogg
                 {view.label}
               </Box>
 
-              {view.checkbox && (
-                <CustomTooltip
-                  tooltip={view.disabled ? 'Change sites to applicable' : 'Change sites to non-applicable'}>
-                  <Checkbox
-                    checked={view.checked}
-                    indeterminate={view.indeterminate}
-                    onClick={(e) => {
-                      handleCheckboxClick?.(view);
-                      e.stopPropagation();
-                    }}
-                    size="small"
-                    sx={{
-                      position: 'absolute',
-                      right: 10,
-                      p: 1,
-                      '& .MuiSvgIcon-root': {
-                        fill: view.disabled ? grey[300] : appTheme.palette.primary.main
-                      }
-                    }}
-                  />
-                </CustomTooltip>
+              {/* IconButton with Plus icon for disabled view */}
+              {view.checkbox && view.disabled && (
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    right: 15,
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    width: 24,
+                    height: 24
+                  }}>
+                  <CustomTooltip tooltip="Change sites to applicable">
+                    <Box
+                      sx={{
+                        position: 'relative',
+                        width: '100%',
+                        height: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                      }}>
+                      <IconButton
+                        onClick={(e) => {
+                          handleCheckboxClick?.(view);
+                          e.stopPropagation();
+                        }}
+                        size="small"
+                        sx={{
+                          color: grey[400],
+                          position: 'absolute',
+                          display: 'flex',
+                          p: 0
+                        }}>
+                        <Icon path={mdiPlus} size={1} />
+                      </IconButton>
+                    </Box>
+                  </CustomTooltip>
+                </Box>
               )}
 
-              {view.menu?.length && view.menu.length > 0 && (
+              {/* Checkbox that switches to minus IconButton on hover */}
+              {view.checkbox && !view.disabled && (
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    right: 15,
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    width: 24,
+                    height: 24
+                  }}>
+                  <CustomTooltip tooltip="Change sites to non-applicable">
+                    <Box
+                      sx={{
+                        position: 'relative',
+                        width: '100%',
+                        height: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        '&:hover .checkbox': { display: 'none' },
+                        '&:hover .icon-button': { display: 'flex' }
+                      }}>
+                      <Checkbox
+                        className="checkbox"
+                        checked={view.checked}
+                        indeterminate={view.indeterminate}
+                        onClick={(e) => {
+                          handleCheckboxClick?.(view);
+                          e.stopPropagation();
+                        }}
+                        size="small"
+                        sx={{
+                          position: 'absolute',
+                          p: 0,
+                          '& .MuiSvgIcon-root': {
+                            fill: appTheme.palette.primary.main
+                          }
+                        }}
+                      />
+
+                      <IconButton
+                        className="icon-button"
+                        onClick={(e) => {
+                          handleCheckboxClick?.(view);
+                          e.stopPropagation();
+                        }}
+                        size="small"
+                        sx={{
+                          color: grey[400],
+                          position: 'absolute',
+                          display: 'none',
+                          p: 0
+                        }}>
+                        <Icon path={mdiMinus} size={1} />
+                      </IconButton>
+                    </Box>
+                  </CustomTooltip>
+                </Box>
+              )}
+
+              {/* Optional menu button */}
+              {view.menu && view.menu.length > 0 && (
                 <IconButton
                   size="small"
                   onClick={(e) => handleOpenMenu(e, view.menu!)}
