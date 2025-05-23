@@ -5,7 +5,6 @@ import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
 import Collapse from '@mui/material/Collapse';
 import grey from '@mui/material/colors/grey';
-import IconButton from '@mui/material/IconButton';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { CustomTooltip } from 'components/tooltip/CustomTooltip';
@@ -122,20 +121,25 @@ export const HierarchicalCustomToggleButtonGroup = <ViewValueType extends string
                             alignItems: 'center',
                             justifyContent: 'center'
                           }}>
-                          <IconButton
+                          <Box
                             onClick={(e) => {
-                              handleCheckboxClick?.(item);
                               e.stopPropagation();
+                              handleCheckboxClick?.(item);
                             }}
-                            size="small"
                             sx={{
-                              color: grey[400],
-                              position: 'absolute',
+                              cursor: 'pointer',
                               display: 'flex',
-                              p: 0
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              width: 24,
+                              height: 24,
+                              color: grey[400],
+                              '&:hover': {
+                                bgcolor: grey[100]
+                              }
                             }}>
                             <Icon path={mdiPlus} size={1} />
-                          </IconButton>
+                          </Box>
                         </Box>
                       </CustomTooltip>
                     </Box>
@@ -181,21 +185,25 @@ export const HierarchicalCustomToggleButtonGroup = <ViewValueType extends string
                             }}
                           />
 
-                          <IconButton
-                            className="icon-button"
+                          <Box
                             onClick={(e) => {
-                              handleCheckboxClick?.(item);
                               e.stopPropagation();
+                              handleCheckboxClick?.(item);
                             }}
-                            size="small"
                             sx={{
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              width: 24,
+                              height: 24,
                               color: grey[400],
-                              position: 'absolute',
-                              display: 'none',
-                              p: 0
+                              '&:hover': {
+                                bgcolor: grey[100]
+                              }
                             }}>
                             <Icon path={mdiMinus} size={1} />
-                          </IconButton>
+                          </Box>
                         </Box>
                       </CustomTooltip>
                     </Box>

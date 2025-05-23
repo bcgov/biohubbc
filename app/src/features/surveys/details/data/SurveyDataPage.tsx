@@ -95,6 +95,7 @@ export const SurveyDataPage = (props: ISurveyDataPageProps) => {
   if (!codesContext.codesDataLoader.data || !surveyContext.surveyDataLoader.data || !checklist) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
+
   const views = [
     {
       value: DATA_ACTIVE_VIEW_VALUE.observations,
@@ -153,6 +154,8 @@ export const SurveyDataPage = (props: ISurveyDataPageProps) => {
       checked: !!checklist.data.habitat.count
     }
   ];
+
+  console.log(views);
 
   return (
     <SidebarLayout

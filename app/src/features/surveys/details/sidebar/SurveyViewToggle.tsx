@@ -140,7 +140,9 @@ export const SurveyViewToggle = ({ checklist, activeView, setActiveView }: Surve
         indeterminate:
           samplingCounts.some((count) => (count ?? 0) > 0) && !samplingCounts.every((count) => (count ?? 0) > 0),
         checked:
-          checklist?.sampling.sites.count && checklist?.sampling.techniques.count && checklist?.sampling.periods.count,
+          !!checklist?.sampling.sites.count &&
+          !!checklist?.sampling.techniques.count &&
+          !!checklist?.sampling.periods.count,
         disabled:
           !checklist?.sampling.sites?.applicable &&
           !checklist?.sampling.techniques?.applicable &&
@@ -153,12 +155,12 @@ export const SurveyViewToggle = ({ checklist, activeView, setActiveView }: Surve
         checkbox: true,
         indeterminate: dataCounts.some((count) => (count ?? 0) > 0) && !dataCounts.every((count) => (count ?? 0) > 0),
         checked:
-          checklist?.data.observations.count &&
-          checklist?.data.telemetry.devices.count &&
-          checklist?.data.telemetry.deployments.count &&
-          checklist?.data.telemetry.locations.count &&
-          checklist?.data.habitat.count &&
-          checklist?.data.animals.count,
+          !!checklist?.data.observations.count &&
+          !!checklist?.data.telemetry.devices.count &&
+          !!checklist?.data.telemetry.deployments.count &&
+          !!checklist?.data.telemetry.locations.count &&
+          !!checklist?.data.habitat.count &&
+          !!checklist?.data.animals.count,
         disabled:
           !checklist?.data.observations?.applicable &&
           !checklist?.data.telemetry.devices?.applicable &&

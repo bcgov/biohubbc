@@ -78,7 +78,7 @@ export const SurveyPage = () => {
                   sidebar={
                     <Box p={2}>
                       <Paper
-                        sx={{ bgcolor: checklist.progress_percentage === 100 ? green[50] : grey[100], p: 2, mb: 1 }}
+                        sx={{ bgcolor: checklist.progress_percentage === 100 ? green[50] : grey[50], p: 2, mb: 1 }}
                         elevation={0}>
                         <Typography gutterBottom component="legend">
                           Progress
