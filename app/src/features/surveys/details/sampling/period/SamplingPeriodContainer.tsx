@@ -18,6 +18,7 @@ import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { SamplePeriodI18N } from 'constants/i18n';
+import { SamplingPeriodTable } from 'features/surveys/sampling-information/periods/table/SamplingPeriodTable';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
@@ -28,7 +29,6 @@ import { ApiPaginationRequestOptions } from 'types/misc';
 import { getSamplePeriodCSVTemplate } from 'utils/csv-templates';
 import { downloadFile } from 'utils/file-utils';
 import { firstOrNull } from 'utils/Utils';
-import { SamplingPeriodTable } from '../../../../sampling-information/periods/table/SamplingPeriodTable';
 
 const pageSizeOptions = [10, 25, 50];
 
@@ -254,8 +254,6 @@ export const SamplingPeriodContainer = () => {
           hasNoData={!periodsCount}
           hasNoDataFallback={
             <NoDataOverlay
-              minHeight="400px"
-              height="300px"
               title="Add Periods"
               subtitle="Periods indicate when you started and stopped collecting data, ideally down to the minute."
               icon={mdiArrowTopRight}

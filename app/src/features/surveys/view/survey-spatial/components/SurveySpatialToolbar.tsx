@@ -11,7 +11,7 @@ import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
-import { SurveyRoleRouteGuard } from 'components/security/Guards';
+import { SurveyRoleRouteGuard } from 'components/security/RouteGuards';
 import CustomToggleButtonGroup, { ToggleButtonView } from 'components/toolbar/CustomToggleButtonGroup';
 import { SURVEY_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';

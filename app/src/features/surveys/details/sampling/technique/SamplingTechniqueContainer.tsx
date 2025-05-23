@@ -17,13 +17,13 @@ import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { DeleteTechniquesBulkI18N } from 'constants/i18n';
+import { SamplingTechniqueTable } from 'features/surveys/sampling-information/techniques/table/SamplingTechniqueTable';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { SamplingTechniqueTable } from '../../../../sampling-information/techniques/table/SamplingTechniqueTable';
 
 /**
  * Renders a list of techniques.
@@ -170,13 +170,13 @@ export const SamplingTechniqueContainer = () => {
 
       <Divider flexItem />
       <LoadingGuard
-        isLoading={techniquesDataLoader.isLoading}
+        isLoading={!techniquesDataLoader.data && (techniquesDataLoader.isLoading || !techniquesDataLoader.isReady)}
         isLoadingFallback={
           <Box>
             <SkeletonTable numberOfLines={3} />
           </Box>
         }
-        isLoadingFallbackDelay={400}
+        isLoadingFallbackDelay={100}
         hasNoData={!techniquesDataLoader.data?.techniques.length}
         hasNoDataFallback={
           <NoDataOverlay
@@ -184,8 +184,7 @@ export const SamplingTechniqueContainer = () => {
             subtitle="Techniques reflect methods used to collect data, like aerial transects, camera traps, or hair snags."
             icon={mdiArrowTopRight}
           />
-        }
-        hasNoDataFallbackDelay={400}>
+        }>
         <SamplingTechniqueTable
           techniques={techniques}
           selectedRows={selectedRows}

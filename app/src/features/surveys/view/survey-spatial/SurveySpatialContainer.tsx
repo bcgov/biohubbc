@@ -1,12 +1,11 @@
 import { mdiEye, mdiPaw, mdiPineTree, mdiWifiMarker } from '@mdi/js';
+import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import { ComponentSwitch } from 'components/misc/ComponentSwitch';
+import CustomToggleButtonGroup from 'components/toolbar/CustomToggleButtonGroup';
 import { SurveySpatialAnimal } from 'features/surveys/view/survey-spatial/components/animal/SurveySpatialAnimal';
 import { SurveySpatialObservation } from 'features/surveys/view/survey-spatial/components/observation/SurveySpatialObservation';
-import {
-  SurveySpatialDatasetViewEnum,
-  SurveySpatialToolbar
-} from 'features/surveys/view/survey-spatial/components/SurveySpatialToolbar';
+import { SurveySpatialDatasetViewEnum } from 'features/surveys/view/survey-spatial/components/SurveySpatialToolbar';
 import { SurveySpatialTelemetry } from 'features/surveys/view/survey-spatial/components/telemetry/SurveySpatialTelemetry';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext, useTaxonomyContext } from 'hooks/useContext';
@@ -44,6 +43,10 @@ export const SurveySpatialContainer = (): JSX.Element => {
     [samplingSiteStaticLayer, studyAreaStaticLayer]
   );
 
+  const handleViewChange = (view: SurveySpatialDatasetViewEnum) => {
+    setActiveView(view);
+  };
+
   useEffect(() => {
     // Load the observations data
     observationsDataLoader.load();
@@ -73,22 +76,23 @@ export const SurveySpatialContainer = (): JSX.Element => {
 
   return (
     <Paper sx={{ flex: '1 1 auto' }}>
-      {/* Toolbar for switching between different dataset views */}
-      <SurveySpatialToolbar
-        activeView={activeView}
-        setActiveView={setActiveView}
-        views={[
-          { value: SurveySpatialDatasetViewEnum.OBSERVATIONS, label: 'Observations', icon: mdiEye, to: 'observations' },
-          { value: SurveySpatialDatasetViewEnum.ANIMALS, label: 'Animals', icon: mdiPaw, to: 'animals' },
-          { value: SurveySpatialDatasetViewEnum.TELEMETRY, label: 'Telemetry', icon: mdiWifiMarker, to: 'telemetry' },
-          {
-            value: SurveySpatialDatasetViewEnum.HABITAT_FEATURES,
-            label: 'Habitat Features',
-            icon: mdiPineTree,
-            to: 'habitat-features'
-          }
-        ]}
-      />
+      <Box p={2}>
+        <CustomToggleButtonGroup
+          activeView={activeView}
+          onViewChange={handleViewChange}
+          orientation="horizontal"
+          views={[
+            { value: SurveySpatialDatasetViewEnum.OBSERVATIONS, label: 'Observations', icon: mdiEye },
+            { value: SurveySpatialDatasetViewEnum.ANIMALS, label: 'Animals', icon: mdiPaw },
+            { value: SurveySpatialDatasetViewEnum.TELEMETRY, label: 'Telemetry', icon: mdiWifiMarker },
+            {
+              value: SurveySpatialDatasetViewEnum.HABITAT_FEATURES,
+              label: 'Habitat Features',
+              icon: mdiPineTree
+            }
+          ]}
+        />
+      </Box>
 
       <ComponentSwitch
         switch={activeView}

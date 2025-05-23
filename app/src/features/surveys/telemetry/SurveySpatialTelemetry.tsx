@@ -7,7 +7,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
 import { IStaticLayer, IStaticLayerFeature } from 'components/map/components/StaticLayers';
-import { SurveyRoleRouteGuard } from 'components/security/Guards';
+import { SurveyRoleRouteGuard } from 'components/security/RouteGuards';
 import { SURVEY_MAP_LAYER_COLOURS } from 'constants/colours';
 import { SURVEY_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { SurveySpatialTelemetryContainer } from 'features/surveys/view/survey-spatial/components/telemetry/SurveySpatialTelemetryContainer';

@@ -5,7 +5,7 @@ import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
-import { SurveyRoleRouteGuard } from 'components/security/Guards';
+import { SurveyRoleRouteGuard } from 'components/security/RouteGuards';
 import { SURVEY_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { SurveySpatialObservation } from 'features/surveys/view/survey-spatial/components/observation/SurveySpatialObservation';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -74,7 +74,13 @@ export const SurveySpatialObservations = (): JSX.Element => {
 
   return (
     <>
-      <Toolbar sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', p: 2 }}>
+      <Toolbar
+        disableGutters
+        sx={{
+          flex: '0 0 auto',
+          pr: 3,
+          pl: 3
+        }}>
         <Typography variant="h2" flex="1 1 auto">
           Observations
         </Typography>

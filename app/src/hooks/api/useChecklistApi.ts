@@ -24,11 +24,11 @@ export const useChecklistApi = (axios: AxiosInstance) => {
    * Mark a survey checklist item as ignored/non-applicable to the survey
    *
    * @param {number} surveyId
-   * @param {number} checklistItemName
+   * @param {string[]} checklistItemNames
    * @return {*} {Promise<void>}
    */
-  const ignoreSurveyChecklistItem = async (surveyId: number, checklistItemName: string): Promise<void> => {
-    const { data } = await axios.post(`/api/survey/${surveyId}/checklist`, { checklistItemName });
+  const ignoreSurveyChecklistItems = async (surveyId: number, checklistItemNames: string[]): Promise<void> => {
+    const { data } = await axios.post(`/api/survey/${surveyId}/checklist`, { checklistItemNames });
 
     return data;
   };
@@ -37,14 +37,14 @@ export const useChecklistApi = (axios: AxiosInstance) => {
    * Mark a survey checklist item as applicable
    *
    * @param {number} surveyId
-   * @param {number} checklistItemName
+   * @param {string[]} checklistItemNames
    * @return {*} {Promise<void>}
    */
-  const unignoreSurveyChecklistItem = async (surveyId: number, checklistItemName: string): Promise<void> => {
-    const { data } = await axios.delete(`/api/survey/${surveyId}/checklist/${checklistItemName}`);
+  const unignoreSurveyChecklistItems = async (surveyId: number, checklistItemNames: string[]): Promise<void> => {
+    const { data } = await axios.post(`/api/survey/${surveyId}/checklist/unignore`, { checklistItemNames });
 
     return data;
   };
 
-  return { getSurveyChecklist, ignoreSurveyChecklistItem, unignoreSurveyChecklistItem };
+  return { getSurveyChecklist, ignoreSurveyChecklistItems, unignoreSurveyChecklistItems };
 };

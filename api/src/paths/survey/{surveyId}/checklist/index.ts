@@ -152,9 +152,15 @@ POST.apiDoc = {
           title: 'Checklist item ignore post request object.',
           type: 'object',
           additionalProperties: false,
-          required: ['checklistItemName'],
+          required: ['checklistItemNames'],
           properties: {
-            checklistItemName: { type: 'string', description: 'The name of the checklist item to ignore' }
+            checklistItemNames: {
+              type: 'array',
+              items: {
+                type: 'string'
+              },
+              description: 'An array of checklist item names to ignore'
+            }
           }
         }
       }
@@ -193,9 +199,9 @@ export function insertSurveyChecklistItemIgnore(): RequestHandler {
 
       const surveyChecklistService = new SurveyChecklistService(connection);
 
-      const checklistItemName = req.body.checklistItemName as string;
+      const checklistItemNames = req.body.checklistItemNames as string[];
 
-      await surveyChecklistService.insertSurveyChecklistItemIgnore(surveyId, checklistItemName);
+      await surveyChecklistService.insertSurveyChecklistItemIgnore(surveyId, checklistItemNames);
 
       await connection.commit();
 

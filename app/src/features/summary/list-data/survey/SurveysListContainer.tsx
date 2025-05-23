@@ -14,7 +14,7 @@ import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import CustomToggleButtonGroup from 'components/toolbar/CustomToggleButtonGroup';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import dayjs from 'dayjs';
-import { LinearProgressWithLabel } from 'features/surveys/main/checklist/progress/SurveyChecklistProgressBar';
+import { LinearProgressWithLabel } from 'features/surveys/details/checklist/progress/SurveyChecklistProgressBar';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext } from 'hooks/useContext';

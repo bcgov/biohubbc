@@ -1,10 +1,10 @@
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import { SystemAlertBanner } from 'features/alert/banner/SystemAlertBanner';
-import { SamplingTechniqueContainer } from 'features/surveys/main/content/sampling/technique/SamplingTechniqueContainer';
+import { SamplingPeriodContainer } from 'features/surveys/details/sampling/period/SamplingPeriodContainer';
+import { SamplingSiteContainer } from 'features/surveys/details/sampling/site/SamplingSiteContainer';
+import { SamplingTechniqueContainer } from 'features/surveys/details/sampling/technique/SamplingTechniqueContainer';
 import { SystemAlertBannerEnum } from 'interfaces/useAlertApi.interface';
-import { SamplingPeriodContainer } from '../../main/content/sampling/period/SamplingPeriodContainer';
-import { SamplingSiteContainer } from '../../main/content/sampling/site/SamplingSiteContainer';
 
 /**
  * Page for managing sampling information (sampling techniques and sites).

@@ -1,8 +1,7 @@
 import { SURVEY_ROLE, SYSTEM_ROLE } from 'constants/roles';
-import { SurveyAuthStateContext } from 'contexts/surveyAuthStateContext';
 import { useAuthStateContext } from 'hooks/useAuthStateContext';
 import { useConfigContext } from 'hooks/useContext';
-import { PropsWithChildren, ReactElement, useContext } from 'react';
+import { PropsWithChildren, ReactElement } from 'react';
 import { hasAtLeastOneValidValue } from 'utils/authUtils';
 
 interface IGuardProps {
@@ -80,31 +79,6 @@ export const SystemRoleGuard = (props: PropsWithChildren<ISystemRoleGuardProps>)
   }
 
   return <>{props.children}</>;
-};
-
-/**
- * Renders `props.children` only if the user has the necessary roles as a project participant.
- *
- * @param {*} props
- * @return {*}
- */
-export const SurveyRoleRouteGuard = (props: PropsWithChildren<ISurveyRoleRouteGuardProps>) => {
-  const { validProjectRoles, validSystemRoles, validSurveyRoles } = props;
-  const surveyAuthStateContext = useContext(SurveyAuthStateContext);
-
-  const hasSystemRole = surveyAuthStateContext.hasSystemRole(validSystemRoles);
-  const hasSurveyRole = surveyAuthStateContext.hasSurveyRole(validProjectRoles);
-  const hasSurveyRoles = surveyAuthStateContext.hasSurveyRole(validSurveyRoles);
-
-  if (hasSystemRole || hasSurveyRole || hasSurveyRoles) {
-    return <>{props.children}</>;
-  }
-
-  if (props.fallback) {
-    return <>{props.fallback}</>;
-  }
-
-  return <></>;
 };
 
 /**

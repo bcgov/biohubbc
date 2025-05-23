@@ -1,17 +1,25 @@
 import { mdiDotsVertical } from '@mdi/js';
 import Icon from '@mdi/react';
+import { Checkbox } from '@mui/material';
 import Box from '@mui/material/Box';
+import { grey } from '@mui/material/colors';
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import { CustomTooltip } from 'components/tooltip/CustomTooltip';
 import { useState } from 'react';
+import appTheme from 'themes/appTheme';
 
 export interface ToggleButtonView<ViewValueType> {
   value: ViewValueType;
   label: string;
   icon?: string;
+  checkbox?: boolean;
+  indeterminate?: boolean;
+  checked?: boolean;
+  disabled?: boolean;
   menu?: {
     label: string;
     onClick: () => void;
@@ -22,11 +30,12 @@ interface CustomToggleButtonGroupProps<ViewValueType extends string> {
   views: ToggleButtonView<ViewValueType>[];
   activeView: ViewValueType;
   onViewChange: (view: ViewValueType) => void;
+  handleCheckboxClick?: (view: ToggleButtonView<ViewValueType>) => void;
   orientation: 'horizontal' | 'vertical';
 }
 
 const CustomToggleButtonGroup = <ViewValueType extends string>(props: CustomToggleButtonGroupProps<ViewValueType>) => {
-  const { views, activeView, onViewChange, orientation } = props;
+  const { views, activeView, onViewChange, orientation, handleCheckboxClick } = props;
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [menuItems, setMenuItems] = useState<{ label: string; onClick: () => void }[]>([]);
@@ -58,8 +67,9 @@ const CustomToggleButtonGroup = <ViewValueType extends string>(props: CustomTogg
           flex: '1 1 auto',
           gap: 0.5,
           '& Button': {
-            py: 1,
+            py: 1.5,
             px: 2,
+            mb: 0.25,
             border: 'none',
             borderRadius: '4px !important',
             fontSize: '0.8rem',
@@ -77,17 +87,40 @@ const CustomToggleButtonGroup = <ViewValueType extends string>(props: CustomTogg
               value={view.value}
               color="primary"
               sx={{
+                position: 'relative',
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
                 px: 1.5,
-                py: 1,
                 '& .MuiIconButton-root': { p: 0.25 }
               }}>
               <Box display="flex" alignItems="center" gap={1} flexGrow={1} minWidth={0}>
                 {startIcon}
                 {view.label}
               </Box>
+
+              {view.checkbox && (
+                <CustomTooltip
+                  tooltip={view.disabled ? 'Change sites to applicable' : 'Change sites to non-applicable'}>
+                  <Checkbox
+                    checked={view.checked}
+                    indeterminate={view.indeterminate}
+                    onClick={(e) => {
+                      handleCheckboxClick?.(view);
+                      e.stopPropagation();
+                    }}
+                    size="small"
+                    sx={{
+                      position: 'absolute',
+                      right: 10,
+                      p: 1,
+                      '& .MuiSvgIcon-root': {
+                        fill: view.disabled ? grey[300] : appTheme.palette.primary.main
+                      }
+                    }}
+                  />
+                </CustomTooltip>
+              )}
 
               {view.menu?.length && view.menu.length > 0 && (
                 <IconButton

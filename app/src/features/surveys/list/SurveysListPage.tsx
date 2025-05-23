@@ -14,7 +14,7 @@ import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
-import { SurveyRoleRouteGuard } from 'components/security/Guards';
+import { SurveyRoleRouteGuard } from 'components/security/RouteGuards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { SURVEY_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -25,7 +25,7 @@ import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions } from 'types/misc';
 import { firstOrNull, getFormattedDate } from 'utils/Utils';
-import { LinearProgressWithLabel } from '../main/checklist/progress/SurveyChecklistProgressBar';
+import { LinearProgressWithLabel } from '../details/checklist/progress/SurveyChecklistProgressBar';
 
 const pageSizeOptions = [10, 25, 50];
 

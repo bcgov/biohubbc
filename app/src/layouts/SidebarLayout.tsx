@@ -25,7 +25,6 @@ export const SidebarLayout = ({ sidebar, header, children }: SidebarLayoutProps)
       <Box
         sx={{
           minWidth: '300px',
-          width: '20vw',
           overflowY: 'auto',
           height: '100%'
         }}>

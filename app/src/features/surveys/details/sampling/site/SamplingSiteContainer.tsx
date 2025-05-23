@@ -16,6 +16,7 @@ import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonMap, SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
+import { SamplingSiteTable } from 'features/surveys/sampling-information/sites/table/SamplingSiteTable';
 import { useSamplingSiteStaticLayer } from 'features/surveys/view/survey-spatial/components/map/useSamplingSiteStaticLayer';
 import SurveyMap from 'features/surveys/view/SurveyMap';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -26,7 +27,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
-import { SamplingSiteTable } from '../../../../sampling-information/sites/table/SamplingSiteTable';
 
 const pageSizeOptions = [10, 25, 50];
 

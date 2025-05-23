@@ -69,7 +69,10 @@ export const SurveySpatialObservation = (props: ISurveySpatialObservationProps) 
       <Box height={400} position="relative">
         <SurveyMap
           staticLayers={[...props.staticLayers, observationLayer]}
-          isLoading={observationsGeometryDataLoader.isLoading}
+          isLoading={
+            !observationsGeometryDataLoader.data &&
+            (observationsGeometryDataLoader.isLoading || observationsGeometryDataLoader.isReady)
+          }
         />
       </Box>
 
