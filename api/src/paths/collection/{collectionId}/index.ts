@@ -313,14 +313,20 @@ export function createSubcollection(): RequestHandler {
  * Delete a collection by ID.
  */
 export const DELETE: Operation = [
-  authorizeRequestHandler(() => {
+  authorizeRequestHandler((req) => {
     return {
-      and: [
+      or: [
         {
           validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR],
           discriminator: 'SystemRole'
-        }
-      ]
+        } ,
+              {
+                discriminator: 'CollectionRole',
+                collectionId: Number(req.params.collectionId),
+                validCollectionRoles: [COLLECTION_ROLE.ADMIN, COLLECTION_ROLE.MEMBER]
+              }
+            
+            ]
     };
   }),
   deleteCollection()
@@ -363,9 +369,12 @@ export function deleteCollection(): RequestHandler {
 
     try {
       await connection.open();
+
+      const collectionId = Number(req.params.collectionId);
+
       const systemUserId = connection.systemUserId();
       const collectionService = new CollectionService(connection);
-      const deleted = await collectionService.deleteCollection(Number(req.params.collectionId), systemUserId);
+      const deleted = await collectionService.deleteCollection(collectionId, systemUserId);
 
       await connection.commit();
 

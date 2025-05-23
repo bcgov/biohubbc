@@ -596,6 +596,28 @@ export class CollectionRepository extends BaseRepository {
     return response.rows[0];
   }
 
+  
+  /**
+   * Remove the parent collection from a collection.
+   *
+   * @param {number[]} collectionIds - The ID of the collection to update.
+   * @returns {Promise<void>}
+   * @memberof CollectionRepository
+   */
+  async deleteCollectionParents(collectionIds: number[]): Promise<void> {
+    const sql = SQL`
+    UPDATE collection
+    SET 
+      parent_collection_id = NULL
+    WHERE collection_id IN (${collectionIds})
+    RETURNING *;
+  `;
+
+    await this.connection.sql(sql, CollectionModel);
+
+  }
+
+
   /**
    * Count of the number of collections accessible to a user.
    *
@@ -624,16 +646,10 @@ export class CollectionRepository extends BaseRepository {
    * @return {*}  {Promise<boolean>}
    * @memberof CollectionRepository
    */
-  async deleteCollection(collectionId: number, systemUserId: number): Promise<boolean> {
-    const sql: SQLStatement = SQL`
-      UPDATE collection
-      SET
-        record_end_date = now(),
-        update_date = now(),
-        update_user = ${systemUserId}
-      WHERE
-        collection_id = ${collectionId}
-        AND record_end_date IS NULL;
+  async deleteCollection(collectionId: number): Promise<boolean> {
+    const sql = SQL`
+      DELETE FROM collection
+      WHERE collection_id = ${collectionId};
     `;
 
     const response = await this.connection.sql(sql);
@@ -641,4 +657,4 @@ export class CollectionRepository extends BaseRepository {
     return response.rowCount !== null && response.rowCount > 0;
   }
 }
-}
+

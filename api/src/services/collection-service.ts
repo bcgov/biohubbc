@@ -168,6 +168,20 @@ export class CollectionService extends DBService {
     return this.collectionRepository.getCollectionsBySurveyId(surveyId);
   }
 
+  
+  /**
+   * Update a collection record.
+   *
+   * @param {number[]} collectionIds
+   * @return {*}  {Promise<void>}
+   * @memberof CollectionService
+   */
+  async deleteCollectionParents(collectionIds: number[]): Promise<void> {
+    // Update the collection record
+    await this.collectionRepository.deleteCollectionParents(collectionIds);
+  }
+
+
   /**
    * Update a collection record.
    *
@@ -227,19 +241,43 @@ export class CollectionService extends DBService {
 
     return collectionResponse;
   }
-}
-
 
   /**
    * Delete a collection by ID.
    *
    * @param {number} collectionId
    * @param {number} systemUserId 
-   * @return {*}  {Promise<boolean>}
+   * @return {*}  {Promise<void>}
    * @memberof CollectionService
    */
-  async deleteCollection(collectionId: number, systemUserId: number): Promise<boolean> {
-    return this.collectionRepository.deleteCollection(collectionId, systemUserId);
+  async deleteCollection(collectionId: number, systemUserId: number): Promise<void> {
+
+    //Find the subcollections to delete
+    const subcollections = await this.findCollections( false, null, {parent_collection_id: collectionId, include_children: true} );
+
+    // Update the parent collection id to null in preparation for deletion
+    const collectionIdsToDelete = subcollections.map((collection) => collection.collection_id);
+    await this.deleteCollectionParents(collectionIdsToDelete);
+
+    // Find surveys in the collections
+    const surveys = await this.collectionSurveyService.getSurveysInCollections(collectionIds);
+    for (const survey of surveys) {
+        await this.collectionSurveyService.collectionSurveyRepository.deleteCollectionSurvey(survey.survey_id, collectionId);
+      }
+      // better to have a repo function like this that finds surveys to delete and deletes them, like: delete from survey_collection where collection_id in (collectionIdsToDelete)
+      this.collectionSurveyService.deleteCollectionSurveysByCollectionIds(collectionIdsToDelete);
+    // Delete the surveys from the collections
+
+    // Find members in the collections
+    const members = await this.collectionMemberService.getCollectionMembers(collectionIds);
+    // Delete the members from the collections
+
+
+    // // Remove a
+
+    // // Now delete the collection itself
+    await Promise.all([
+    collectionIdsToDelete.map((collectionId) => this.collectionRepository.deleteCollection(collectionId))])
   }
 }
 
