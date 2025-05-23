@@ -2,12 +2,13 @@ import { mdiArrowTopRight, mdiCog } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
-import { SkeletonTable } from 'components/loading/SkeletonLoaders';
+import { SkeletonMap, SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { IStaticLayer } from 'components/map/components/StaticLayers';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { SurveyRoleRouteGuard } from 'components/security/RouteGuards';
@@ -124,7 +125,12 @@ export const SurveySpatialAnimals = (props: ISurveySpatialAnimalsProps) => {
   };
 
   return (
-    <>
+    <Stack
+      flexDirection="column"
+      height="100%"
+      sx={{
+        overflow: 'hidden'
+      }}>
       <Toolbar
         disableGutters
         sx={{
@@ -152,37 +158,36 @@ export const SurveySpatialAnimals = (props: ISurveySpatialAnimalsProps) => {
         </Stack>
       </Toolbar>
 
-      {/* Display map with animal capture points */}
-      <Box height={400} position="relative">
-        <SurveyMap
-          staticLayers={[...(props.staticLayers ?? []), captureLayer, mortalityLayer]}
-          isLoading={geometryDataLoader.isLoading}
-        />
-      </Box>
+      <Divider />
 
-      {/* Display data table with animal capture details */}
-      <Box display="flex" flexDirection="column">
-        <LoadingGuard
-          isLoading={animalsDataLoader.isLoading || critterDataLoader.isLoading}
-          isLoadingFallback={
-            <Box flex="1 1 auto">
-              <SkeletonTable />
-            </Box>
-          }
-          hasNoData={!animalsDataLoader.data?.length}
-          hasNoDataFallback={
-            <Box flex="1 1 auto">
-              <NoDataOverlay
-                minHeight="400px"
-                title="Add Animals"
-                subtitle="Add animals that you have captured, individually identified, or found deceased"
-                icon={mdiArrowTopRight}
-              />
-            </Box>
-          }>
+      <LoadingGuard
+        isLoading={animalsDataLoader.isLoading}
+        isLoadingFallback={
+          <Box sx={{ height: 400 }}>
+            <SkeletonMap />
+            <SkeletonTable numberOfLines={5} />
+          </Box>
+        }
+        isLoadingFallbackDelay={100}
+        hasNoData={!animalsDataLoader.data?.length}
+        hasNoDataFallback={
+          <NoDataOverlay
+            title="Add Animals"
+            subtitle="Add animals that you captured, individually identified, or found deceased"
+            icon={mdiArrowTopRight}
+          />
+        }
+        hasNoDataFallbackDelay={100}>
+        <Stack direction="column" height="100%">
+          <Box sx={{ height: 350 }}>
+            <SurveyMap
+              staticLayers={[...(props.staticLayers ?? []), captureLayer, mortalityLayer]}
+              isLoading={geometryDataLoader.isLoading}
+            />
+          </Box>
           <SurveySpatialAnimalTable animals={animalsDataLoader.data ?? []} />
-        </LoadingGuard>
-      </Box>
-    </>
+        </Stack>
+      </LoadingGuard>
+    </Stack>
   );
 };

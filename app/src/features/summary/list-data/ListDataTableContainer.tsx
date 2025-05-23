@@ -4,7 +4,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import CustomToggleButtonGroup from 'components/toolbar/CustomToggleButtonGroup';
+import CustomToggleButtonGroup from 'components/toggle/CustomToggleButtonGroup';
 import SurveysListContainer from 'features/summary/list-data/survey/SurveysListContainer';
 import { useSearchParams } from 'hooks/useSearchParams';
 import { SidebarLayout } from 'layouts/SidebarLayout';
@@ -72,6 +72,7 @@ export const ListDataTableContainer = () => {
             views={views}
             activeView={activeView}
             onViewChange={(view) => {
+              console.log(view);
               setSearchParams(searchParams.set(SUMMARY_ACTIVE_VIEW_KEY, view, { replace: true }));
               setActiveView(view);
             }}

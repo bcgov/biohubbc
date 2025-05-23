@@ -90,26 +90,22 @@ export const SurveySpatialObservationTable = () => {
       field: 'itis_scientific_name',
       headerName: 'Species',
       flex: 1,
-      minWidth: 200,
       renderCell: (params) => <em>{params.row.itis_scientific_name}</em>
     },
     {
       field: 'survey_sample_site_name',
       headerName: 'Sample Site',
-      flex: 1,
-      minWidth: 200
+      flex: 1
     },
     {
       field: 'method_technique_name',
       headerName: 'Technique',
-      flex: 1,
-      minWidth: 200
+      flex: 1
     },
     {
       field: 'survey_sample_period_start_datetime',
       headerName: 'Sample Period',
-      flex: 1,
-      minWidth: 200
+      flex: 1
     },
     {
       field: 'subcount',

@@ -149,7 +149,7 @@ export const SamplingSiteTable = (props: ISamplingSiteTableProps) => {
       flex: 1,
       renderCell: (params) => (
         <>
-          {params.row.name}
+          <CustomTooltip tooltip={params.row.description}>{params.row.name}</CustomTooltip>
           <Box ml={3}>
             <ColouredRectangleChip
               label={getSamplingSiteSpatialType(params.row.geometry_type) ?? 'Unknown'}
@@ -159,48 +159,36 @@ export const SamplingSiteTable = (props: ISamplingSiteTableProps) => {
         </>
       )
     },
-    {
-      field: 'description',
-      headerName: 'Description',
-      flex: 1,
-      renderCell: (params) => (
-        <CustomTooltip tooltip={params.row.description}>
-          <Typography sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} variant="body2">
-            {params.row.description}
-          </Typography>
-        </CustomTooltip>
-      )
-    },
-    {
-      field: 'blocks',
-      headerName: 'Blocks',
-      flex: 0.75,
-      sortable: false, // TODO not yet supported by the API
-      renderCell: (params) => (
-        <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
-          {params.row.blocks.map((block) => (
-            <Box key={block} mr={1} mb={1}>
-              <ColouredRectangleChip label={block} colour={blueGrey} />
-            </Box>
-          ))}
-        </Box>
-      )
-    },
-    {
-      field: 'stratums',
-      headerName: 'Strata',
-      flex: 0.75,
-      sortable: false, // TODO not yet supported by the API
-      renderCell: (params) => (
-        <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
-          {params.row.stratums.map((stratum) => (
-            <Box key={stratum} mr={1} mb={1} sx={{ maxWidth: '14ch' }}>
-              <ColouredRectangleChip label={stratum} colour={blueGrey} />
-            </Box>
-          ))}
-        </Box>
-      )
-    },
+    // {
+    //   field: 'blocks',
+    //   headerName: 'Blocks',
+    //   flex: 0.75,
+    //   sortable: false, // TODO not yet supported by the API
+    //   renderCell: (params) => (
+    //     <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
+    //       {params.row.blocks.map((block) => (
+    //         <Box key={block} mr={1} mb={1}>
+    //           <ColouredRectangleChip label={block} colour={blueGrey} />
+    //         </Box>
+    //       ))}
+    //     </Box>
+    //   )
+    // },
+    // {
+    //   field: 'stratums',
+    //   headerName: 'Strata',
+    //   flex: 0.75,
+    //   sortable: false, // TODO not yet supported by the API
+    //   renderCell: (params) => (
+    //     <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
+    //       {params.row.stratums.map((stratum) => (
+    //         <Box key={stratum} mr={1} mb={1} sx={{ maxWidth: '14ch' }}>
+    //           <ColouredRectangleChip label={stratum} colour={blueGrey} />
+    //         </Box>
+    //       ))}
+    //     </Box>
+    //   )
+    // },
     {
       field: 'actions',
       type: 'actions',
@@ -265,8 +253,7 @@ export const SamplingSiteTable = (props: ISamplingSiteTableProps) => {
 
       {/* DATA TABLE */}
       <StyledDataGrid
-        autoHeight={false}
-        getRowHeight={() => 'auto'}
+        rowHeight={52}
         disableColumnMenu
         rows={rows}
         getRowId={(row: ISamplingSiteRowData) => row.id}

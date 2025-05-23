@@ -32,6 +32,7 @@ interface CustomToggleButtonGroupProps<ViewValueType extends string> {
   onViewChange: (view: ViewValueType) => void;
   handleCheckboxClick?: (view: ToggleButtonView<ViewValueType>) => void;
   orientation: 'horizontal' | 'vertical';
+  exclusive?: boolean;
 }
 
 const CustomToggleButtonGroup = <ViewValueType extends string>(props: CustomToggleButtonGroupProps<ViewValueType>) => {

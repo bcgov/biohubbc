@@ -53,7 +53,7 @@ export interface ICreateCollectionMembersRequest {
 }
 
 export interface ICollectionMemberResponse {
-  participants: ICollectionMember[];
+  members: ICollectionMember[];
   pagination: ApiPaginationResponseParams;
 }
 

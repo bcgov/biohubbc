@@ -24,7 +24,6 @@ export const SurveyHabitatFeatureTable = (): JSX.Element => {
       // Row heights
       columnHeaderHeight={HABITAT_FEATURE_TABLE_ROW_HEIGHT}
       rowHeight={HABITAT_FEATURE_TABLE_ROW_HEIGHT}
-      autoHeight={false}
       // Column visibility
       columnVisibilityModel={habitatFeatureTableContext.columnVisibilityModel}
       onColumnVisibilityModelChange={habitatFeatureTableContext.onColumnVisibilityModelChange}
@@ -32,7 +31,6 @@ export const SurveyHabitatFeatureTable = (): JSX.Element => {
       rowSelectionModel={habitatFeatureTableContext.rowSelectionModel}
       onRowSelectionModelChange={habitatFeatureTableContext.onRowSelectionModelChange}
       checkboxSelection={false} // Disabled as we do not yet support multi-row bulk actions
-      rowSelection={true}
       // Pagination
       paginationMode="server"
       rowCount={habitatFeatureTableContext.rowCount}

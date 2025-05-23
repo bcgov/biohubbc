@@ -250,8 +250,7 @@ export const DevicesTable = (props: IDevicesTableProps) => {
 
       {/* DATA TABLE */}
       <StyledDataGrid
-        autoHeight
-        getRowHeight={() => 'auto'}
+        rowHeight={52}
         disableColumnMenu
         rows={rows}
         getRowId={(row: IDeviceRowData) => row.id}

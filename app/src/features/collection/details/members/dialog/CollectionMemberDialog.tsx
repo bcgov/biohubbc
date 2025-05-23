@@ -19,7 +19,7 @@ interface ICollectionMemberDialogProps {
 }
 
 /**
- * Dialog for inviting collection participants
+ * Dialog for inviting collection members
  *
  * NOTE: On naming conventions, CollectionMemberForm is from the perspective of a survey (adding one survey to multiple collections).
  * Whereas CollectionSurveyForm is from the perspective of a collection (adding multiple surveys to one collection)
@@ -35,7 +35,7 @@ const CollectionMemberDialog = (props: ICollectionMemberDialogProps) => {
   const biohubApi = useBiohubApi();
 
   const CollectionSurveyYupSchema = yup.object().shape({
-    participants: yup
+    members: yup
       .array(
         yup.object({
           system_user_id: yup.number().required('You must select a person'),
@@ -66,9 +66,9 @@ const CollectionMemberDialog = (props: ICollectionMemberDialogProps) => {
 
       await biohubApi.collection.addParticipants(
         props.collectionId,
-        values.participants.map((participant) => ({
-          system_user_id: participant.system_user_id,
-          collection_role_name: participant.collection_role_name
+        values.members.map((member) => ({
+          system_user_id: member.system_user_id,
+          collection_role_name: member.collection_role_name
         }))
       );
 
@@ -78,7 +78,7 @@ const CollectionMemberDialog = (props: ICollectionMemberDialogProps) => {
         snackbarMessage: (
           <>
             <Typography variant="body2" component="span">
-              Added {values.participants.length} {pluralize(values.participants.length, 'user')} to collection
+              Added {values.members.length} {pluralize(values.members.length, 'user')} to collection
             </Typography>
           </>
         ),
@@ -102,7 +102,7 @@ const CollectionMemberDialog = (props: ICollectionMemberDialogProps) => {
       component={{
         element: <CollectionMemberForm roles={codesContext.codesDataLoader.data?.collection_roles ?? []} />,
         initialValues: {
-          participants: []
+          members: []
         },
         validationSchema: CollectionSurveyYupSchema
       }}

@@ -11,7 +11,7 @@ import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
-import CustomToggleButtonGroup from 'components/toolbar/CustomToggleButtonGroup';
+import CustomToggleButtonGroup from 'components/toggle/CustomToggleButtonGroup';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import dayjs from 'dayjs';
 import { LinearProgressWithLabel } from 'features/surveys/details/checklist/progress/SurveyChecklistProgressBar';

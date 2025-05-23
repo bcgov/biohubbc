@@ -26,7 +26,6 @@ export const SurveySpatialHabitatFeatureTableContainer = () => {
       hasNoDataFallback={
         <Box flex="1 1 auto">
           <NoDataOverlay
-            height="100%"
             title="Add Habitat Features"
             subtitle="Add habitat features that you have observed in the survey area"
             icon={mdiArrowTopRight}

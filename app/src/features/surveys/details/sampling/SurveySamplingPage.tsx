@@ -3,7 +3,7 @@ import { CircularProgress, Skeleton } from '@mui/material';
 import { Box, Stack } from '@mui/system';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { ComponentSwitch } from 'components/misc/ComponentSwitch';
-import CustomToggleButtonGroup, { ToggleButtonView } from 'components/toolbar/CustomToggleButtonGroup';
+import CustomToggleButtonGroup, { ToggleButtonView } from 'components/toggle/CustomToggleButtonGroup';
 import { CodesContext } from 'contexts/codesContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -108,6 +108,7 @@ export const SurveySamplingPage = (props: ISurveySamplingPageProps) => {
 
   return (
     <SidebarLayout
+      sx={{ borderTopRightRadius: '4px', borderBottomRightRadius: '4px' }}
       sidebar={
         <Box p={2}>
           <CustomToggleButtonGroup

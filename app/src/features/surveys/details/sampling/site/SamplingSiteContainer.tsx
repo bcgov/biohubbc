@@ -225,24 +225,22 @@ export const SamplingSiteContainer = () => {
           />
         }
         hasNoDataFallbackDelay={100}>
-        <Stack direction="column">
-          <Box sx={{ height: 400 }}>
+        <Stack direction="column" height="100%">
+          <Box sx={{ height: 350 }}>
             <SurveyMap staticLayers={[samplingSiteStaticLayer]} isLoading={false} />
           </Box>
-          <Box>
-            <SamplingSiteTable
-              sites={sampleSites}
-              paginationModel={paginationModel}
-              setPaginationModel={setPaginationModel}
-              sortModel={sortModel}
-              setSortModel={setSortModel}
-              rowCount={samplingSitesDataLoader.data?.pagination.total ?? 0}
-              pageSizeOptions={pageSizeOptions}
-              selectedRows={selectedRows}
-              setSelectedRows={setSelectedRows}
-              onDelete={handleDelete}
-            />
-          </Box>
+          <SamplingSiteTable
+            sites={sampleSites}
+            paginationModel={paginationModel}
+            setPaginationModel={setPaginationModel}
+            sortModel={sortModel}
+            setSortModel={setSortModel}
+            rowCount={samplingSitesDataLoader.data?.pagination.total ?? 0}
+            pageSizeOptions={pageSizeOptions}
+            selectedRows={selectedRows}
+            setSelectedRows={setSelectedRows}
+            onDelete={handleDelete}
+          />
         </Stack>
       </LoadingGuard>
     </Stack>

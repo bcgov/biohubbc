@@ -4,7 +4,7 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Container from '@mui/material/Container';
 
-import { ToggleButtonView } from 'components/toolbar/HierarchicalCustomToggleButtonGroup';
+import { ToggleButtonView } from 'components/toggle/HierarchicalCustomToggleButtonGroup';
 
 import { CodesContext } from 'contexts/codesContext';
 import { SurveyContext } from 'contexts/surveyContext';
@@ -13,6 +13,9 @@ import { useSearchParams } from 'hooks/useSearchParams';
 
 import SurveyHeader from '../view/SurveyHeader';
 
+import green from '@mui/material/colors/green';
+import grey from '@mui/material/colors/grey';
+import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import { ComponentSwitch } from 'components/misc/ComponentSwitch';
 import { IGetSurveyChecklistItem } from 'interfaces/useChecklistApi.interface';
@@ -71,14 +74,19 @@ export const SurveyPage = () => {
             <SurveyChecklistManager checklist={checklist}>
               {(flattenedChecklistItems) => (
                 <SidebarLayout
+                  sx={{ borderRadius: '4px' }}
                   sidebar={
                     <Box p={2}>
-                      <Typography gutterBottom component="legend" mt={1}>
-                        Progress
-                      </Typography>
-                      <Box mt={2} mb={3} mr={1}>
-                        <LinearProgressWithLabel value={checklist.progress_percentage} />
-                      </Box>
+                      <Paper
+                        sx={{ bgcolor: checklist.progress_percentage === 100 ? green[50] : grey[100], p: 2, mb: 1 }}
+                        elevation={0}>
+                        <Typography gutterBottom component="legend">
+                          Progress
+                        </Typography>
+                        <Box mr={1} mb={1}>
+                          <LinearProgressWithLabel value={checklist.progress_percentage} />
+                        </Box>
+                      </Paper>
                       <SurveyViewToggle
                         checklist={checklist}
                         activeView={activeView}

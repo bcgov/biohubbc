@@ -64,7 +64,7 @@ export const SurveySpatialObservation = (props: ISurveySpatialObservationProps) 
   };
 
   return (
-    <Box display="flex" flexDirection="column" minHeight="800px">
+    <>
       {/* Map section (fixed height) */}
       <Box height={400} position="relative">
         <SurveyMap
@@ -77,9 +77,9 @@ export const SurveySpatialObservation = (props: ISurveySpatialObservationProps) 
       </Box>
 
       {/* Table section (takes remaining height) */}
-      <Box display="flex" flexDirection="column" flex="1 1 auto" overflow="hidden" mt={2}>
+      <Box display="flex" flexDirection="column" overflow="hidden" mt={2}>
         <SurveySpatialObservationContainer />
       </Box>
-    </Box>
+    </>
   );
 };

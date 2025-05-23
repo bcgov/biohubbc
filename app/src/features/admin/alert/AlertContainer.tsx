@@ -7,7 +7,7 @@ import Paper from '@mui/material/Paper';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
-import CustomToggleButtonGroup from 'components/toolbar/CustomToggleButtonGroup';
+import CustomToggleButtonGroup from 'components/toggle/CustomToggleButtonGroup';
 import dayjs from 'dayjs';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';

@@ -6,7 +6,7 @@ import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import PageHeader from 'components/layout/PageHeader';
-import CustomToggleButtonGroup from 'components/toolbar/CustomToggleButtonGroup';
+import CustomToggleButtonGroup from 'components/toggle/CustomToggleButtonGroup';
 import { SystemAlertBanner } from 'features/alert/banner/SystemAlertBanner';
 import { SystemAlertBannerEnum } from 'interfaces/useAlertApi.interface';
 import { useState } from 'react';

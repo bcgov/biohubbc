@@ -24,25 +24,23 @@ export const SurveyOverviewPage = () => {
   }
 
   return (
-    <Box sx={{ display: 'flex', gap: 2, height: '100%' }}>
-      <Box sx={{ flex: 1, minWidth: 0, height: '100%' }}>
-        <LoadingGuard
-          isLoading={codesContext.codesDataLoader.isLoading || surveyContext.surveyDataLoader.isLoading}
-          isLoadingFallbackDelay={600}
-          isLoadingFallback={
-            <Box sx={{ p: 3 }}>
-              <Stack spacing={2}>
-                <Skeleton variant="rectangular" width="100px" height="30px" />
-                <Skeleton variant="rectangular" width="100%" height="150px" />
-                {Array.from({ length: 2 }).map((_, i) => (
-                  <Skeleton key={i} variant="rectangular" width="100%" height="75px" />
-                ))}
-              </Stack>
-            </Box>
-          }>
-          <SurveySpatialContainer />
-        </LoadingGuard>
-      </Box>
-    </Box>
+    <>
+      <LoadingGuard
+        isLoading={codesContext.codesDataLoader.isLoading || surveyContext.surveyDataLoader.isLoading}
+        isLoadingFallbackDelay={600}
+        isLoadingFallback={
+          <Box sx={{ p: 3 }}>
+            <Stack spacing={2}>
+              <Skeleton variant="rectangular" width="100px" height="30px" />
+              <Skeleton variant="rectangular" width="100%" height="150px" />
+              {Array.from({ length: 2 }).map((_, i) => (
+                <Skeleton key={i} variant="rectangular" width="100%" height="75px" />
+              ))}
+            </Stack>
+          </Box>
+        }>
+        <SurveySpatialContainer />
+      </LoadingGuard>
+    </>
   );
 };

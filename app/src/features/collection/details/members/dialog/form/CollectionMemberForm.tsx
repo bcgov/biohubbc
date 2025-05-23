@@ -11,7 +11,7 @@ import { ISystemUser } from 'interfaces/useUserApi.interface';
 import { TransitionGroup } from 'react-transition-group';
 
 export interface ICollectionMemberData {
-  participants: (ISystemUser & ICollectionMember)[];
+  members: (ISystemUser & ICollectionMember)[];
 }
 
 interface ICollectionMemberForm {
@@ -19,7 +19,7 @@ interface ICollectionMemberForm {
 }
 
 /**
- * Form for adding participants to the collection
+ * Form for adding members to the collection
  *
  * @returns {*}
  */
@@ -28,13 +28,13 @@ const CollectionMemberForm = (props: ICollectionMemberForm) => {
 
   const clearErrors = () => {
     const newErrors = { ...errors };
-    delete errors.participants;
+    delete errors.members;
 
     setErrors(newErrors);
   };
 
   const handleAddUser = (user: ISystemUser) => {
-    setFieldValue(`participants[${values.participants.length}]`, {
+    setFieldValue(`members[${values.members.length}]`, {
       system_user_id: user.system_user_id,
       display_name: user.display_name,
       email: user.email,
@@ -46,20 +46,20 @@ const CollectionMemberForm = (props: ICollectionMemberForm) => {
   };
 
   const handleAddUserRole = (role: string, index: number) => {
-    setFieldValue(`participants[${index}].collection_role_name`, role);
+    setFieldValue(`members[${index}].collection_role_name`, role);
     clearErrors();
   };
 
   const handleRemoveUser = (systemUserId: number) => {
-    const filteredUsers = values.participants.filter((item) => item.system_user_id !== systemUserId);
+    const filteredUsers = values.members.filter((item) => item.system_user_id !== systemUserId);
 
-    setFieldValue(`participants`, filteredUsers);
+    setFieldValue(`members`, filteredUsers);
     clearErrors();
   };
 
   const rowItemError = (index: number): JSX.Element | undefined => {
-    if (errors?.participants && Array.isArray(errors.participants)) {
-      const errorAtIndex = errors.participants[index];
+    if (errors?.members && Array.isArray(errors.members)) {
+      const errorAtIndex = errors.members[index];
       if (errorAtIndex) {
         return (
           <Typography style={{ fontSize: '12px', color: '#f44336' }}>
@@ -72,7 +72,7 @@ const CollectionMemberForm = (props: ICollectionMemberForm) => {
 
   const getSelectedRole = (index: number): string => {
     // users should only ever have a single role on a project so index: 0 is a safe selection
-    return values.participants?.[index]?.collection_role_name || '';
+    return values.members?.[index]?.collection_role_name || '';
   };
 
   return (
@@ -83,7 +83,7 @@ const CollectionMemberForm = (props: ICollectionMemberForm) => {
           label="Team Member"
           placeholder="Search by user"
           helpText={`Only active users who have requested access to the Species Inventory Management System before can be invited`}
-          selectedUsers={values.participants.map((participant) => participant.system_user_id)}
+          selectedUsers={values.members.map((member) => member.system_user_id)}
           clearOnSelect
           onSelect={(value) => {
             if (value) {
@@ -101,7 +101,7 @@ const CollectionMemberForm = (props: ICollectionMemberForm) => {
             }
           }}>
           <TransitionGroup>
-            {values.participants.map((user, index: number) => {
+            {values.members.map((user, index: number) => {
               const error = rowItemError(index);
               return (
                 <Collapse

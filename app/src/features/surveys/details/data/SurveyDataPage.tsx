@@ -14,7 +14,7 @@ import { ComponentSwitch } from 'components/misc/ComponentSwitch';
 import {
   HierarchicalCustomToggleButtonGroup,
   ToggleButtonView
-} from 'components/toolbar/HierarchicalCustomToggleButtonGroup';
+} from 'components/toggle/HierarchicalCustomToggleButtonGroup';
 import { CodesContext } from 'contexts/codesContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { SurveyDeploymentList } from 'features/surveys/telemetry/list/SurveyDeploymentList';
@@ -26,7 +26,7 @@ import { SidebarLayout } from 'layouts/SidebarLayout';
 import { useCallback, useContext, useEffect } from 'react';
 import { ChecklistItem } from '../SurveyPage';
 import { SurveySpatialAnimals } from './animals/SurveySpatialAnimals';
-import { SurveySpatialHabitatFeatureTableContainer } from './habitat/table/SurveySpatialHabitatFeatureTableContainer';
+import { SurveySpatialHabitatFeatures } from './habitat/SurveySpatialHabitatFeatures';
 import { SurveySpatialObservations } from './observations/SurveySpatialObservations';
 
 const ACTIVE_VIEW_KEY = 'cv';
@@ -156,6 +156,7 @@ export const SurveyDataPage = (props: ISurveyDataPageProps) => {
 
   return (
     <SidebarLayout
+      sx={{ borderTopRightRadius: '4px', borderBottomRightRadius: '4px', overflow: 'hidden' }}
       sidebar={
         <Box p={2}>
           <HierarchicalCustomToggleButtonGroup
@@ -193,7 +194,7 @@ export const SurveyDataPage = (props: ISurveyDataPageProps) => {
                     [DATA_ACTIVE_VIEW_VALUE.deployments]: <SurveyDeploymentList />,
                     [DATA_ACTIVE_VIEW_VALUE.locations]: <SurveySpatialTelemetry />,
                     [DATA_ACTIVE_VIEW_VALUE.animals]: <SurveySpatialAnimals />,
-                    [DATA_ACTIVE_VIEW_VALUE.habitat]: <SurveySpatialHabitatFeatureTableContainer />
+                    [DATA_ACTIVE_VIEW_VALUE.habitat]: <SurveySpatialHabitatFeatures />
                   }}
                 />
               </Box>

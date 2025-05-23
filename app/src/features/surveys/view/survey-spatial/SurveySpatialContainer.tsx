@@ -1,18 +1,13 @@
 import { mdiEye, mdiPaw, mdiPineTree, mdiWifiMarker } from '@mdi/js';
 import Box from '@mui/material/Box';
-import Paper from '@mui/material/Paper';
-import { ComponentSwitch } from 'components/misc/ComponentSwitch';
-import CustomToggleButtonGroup from 'components/toolbar/CustomToggleButtonGroup';
-import { SurveySpatialAnimal } from 'features/surveys/view/survey-spatial/components/animal/SurveySpatialAnimal';
-import { SurveySpatialObservation } from 'features/surveys/view/survey-spatial/components/observation/SurveySpatialObservation';
+import { MultiSelectToggleButtonGroup } from 'components/toggle/MultiSelectToggleButtonGroup';
 import { SurveySpatialDatasetViewEnum } from 'features/surveys/view/survey-spatial/components/SurveySpatialToolbar';
-import { SurveySpatialTelemetry } from 'features/surveys/view/survey-spatial/components/telemetry/SurveySpatialTelemetry';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext, useTaxonomyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { useEffect, useMemo, useState } from 'react';
 import { ApiPaginationRequestOptions } from 'types/misc';
-import { SurveySpatialHabitatFeature } from './components/habitat-feature/SurveySpatialHabitatFeature';
+import SurveyMap from '../SurveyMap';
 import { useSamplingSiteStaticLayer } from './components/map/useSamplingSiteStaticLayer';
 import { useStudyAreaStaticLayer } from './components/map/useStudyAreaStaticLayer';
 
@@ -26,14 +21,15 @@ import { useStudyAreaStaticLayer } from './components/map/useStudyAreaStaticLaye
 export const SurveySpatialContainer = (): JSX.Element => {
   const surveyContext = useSurveyContext();
   const taxonomyContext = useTaxonomyContext();
-
   const biohubApi = useBiohubApi();
 
   const observationsDataLoader = useDataLoader((pagination?: ApiPaginationRequestOptions) =>
     biohubApi.observation.getFlattenedObservationRecords(surveyContext.surveyId, pagination)
   );
 
-  const [activeView, setActiveView] = useState<SurveySpatialDatasetViewEnum>(SurveySpatialDatasetViewEnum.OBSERVATIONS);
+  const [activeViews, setActiveViews] = useState<Set<SurveySpatialDatasetViewEnum>>(
+    new Set([SurveySpatialDatasetViewEnum.OBSERVATIONS])
+  );
 
   const studyAreaStaticLayer = useStudyAreaStaticLayer();
   const samplingSiteStaticLayer = useSamplingSiteStaticLayer();
@@ -43,20 +39,13 @@ export const SurveySpatialContainer = (): JSX.Element => {
     [samplingSiteStaticLayer, studyAreaStaticLayer]
   );
 
-  const handleViewChange = (view: SurveySpatialDatasetViewEnum) => {
-    setActiveView(view);
-  };
-
   useEffect(() => {
-    // Load the observations data
     observationsDataLoader.load();
   }, [observationsDataLoader]);
 
-  // Fetch and cache all taxonomic data required for the observations.
   useEffect(() => {
     const cacheTaxonomicData = async () => {
       if (observationsDataLoader.data) {
-        // Fetch all unique ITIS TSNs from observations to retrieve taxonomic names
         const taxonomicIds = [
           ...new Set(observationsDataLoader.data.surveyObservations.map((item) => item.itis_tsn))
         ].filter((tsn): tsn is number => tsn !== null);
@@ -70,39 +59,27 @@ export const SurveySpatialContainer = (): JSX.Element => {
     };
 
     cacheTaxonomicData();
-    // Should not re-run this effect on `taxonomyContext` changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [observationsDataLoader.data]);
 
   return (
-    <Paper sx={{ flex: '1 1 auto' }}>
+    <>
       <Box p={2}>
-        <CustomToggleButtonGroup
-          activeView={activeView}
-          onViewChange={handleViewChange}
+        <MultiSelectToggleButtonGroup
+          activeViews={activeViews}
+          onViewChange={setActiveViews}
           orientation="horizontal"
           views={[
             { value: SurveySpatialDatasetViewEnum.OBSERVATIONS, label: 'Observations', icon: mdiEye },
             { value: SurveySpatialDatasetViewEnum.ANIMALS, label: 'Animals', icon: mdiPaw },
             { value: SurveySpatialDatasetViewEnum.TELEMETRY, label: 'Telemetry', icon: mdiWifiMarker },
-            {
-              value: SurveySpatialDatasetViewEnum.HABITAT_FEATURES,
-              label: 'Habitat Features',
-              icon: mdiPineTree
-            }
+            { value: SurveySpatialDatasetViewEnum.HABITAT_FEATURES, label: 'Habitat Features', icon: mdiPineTree }
           ]}
         />
       </Box>
-
-      <ComponentSwitch
-        switch={activeView}
-        components={{
-          [SurveySpatialDatasetViewEnum.OBSERVATIONS]: <SurveySpatialObservation staticLayers={staticLayers} />,
-          [SurveySpatialDatasetViewEnum.TELEMETRY]: <SurveySpatialTelemetry staticLayers={staticLayers} />,
-          [SurveySpatialDatasetViewEnum.ANIMALS]: <SurveySpatialAnimal staticLayers={staticLayers} />,
-          [SurveySpatialDatasetViewEnum.HABITAT_FEATURES]: <SurveySpatialHabitatFeature staticLayers={staticLayers} />
-        }}
-      />
-    </Paper>
+      <Box height="100%">
+        <SurveyMap staticLayers={staticLayers} />
+      </Box>
+    </>
   );
 };

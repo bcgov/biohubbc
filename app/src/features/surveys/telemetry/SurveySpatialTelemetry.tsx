@@ -105,7 +105,7 @@ export const SurveySpatialTelemetry = () => {
       </Box>
 
       {/* Display data table with telemetry details */}
-      <Box display="flex" flexDirection="column" pt={2}>
+      <Box display="flex" flexDirection="column">
         <SurveySpatialTelemetryContainer />
       </Box>
     </>

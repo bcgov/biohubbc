@@ -1,7 +1,7 @@
 import { mdiAccountMultipleOutline, mdiClipboardOutline, mdiDatabaseSearchOutline, mdiLabelOutline } from '@mdi/js';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
-import CustomToggleButtonGroup from 'components/toolbar/CustomToggleButtonGroup';
+import CustomToggleButtonGroup from 'components/toggle/CustomToggleButtonGroup';
 import { CodesContext } from 'contexts/codesContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
@@ -109,7 +109,7 @@ const CollectionPage = () => {
 
             {activeView === CollectionView.Participants && (
               <Box>
-                <CollectionParticipantsContainer collectionId={collection.collection_id} showSearch={true} />
+                <CollectionParticipantsContainer collectionId={collection.collection_id} />
               </Box>
             )}
           </SidebarLayout>

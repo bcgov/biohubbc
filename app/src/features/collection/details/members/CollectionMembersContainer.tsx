@@ -1,6 +1,5 @@
 import { mdiArrowTopRight } from '@mdi/js';
 import Box from '@mui/material/Box';
-import Collapse from '@mui/material/Collapse';
 import blue from '@mui/material/colors/blue';
 import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
@@ -27,8 +26,8 @@ import { useState } from 'react';
 import { ApiPaginationRequestOptions, StringValues } from 'types/misc';
 import { firstOrNull, getCodesName } from 'utils/Utils';
 import CollectionMemberDialog from './dialog/CollectionMemberDialog';
-import CollectionParticipantsFilterForm, {
-  CollectionParticipantsAdvancedFiltersInitialValues
+import CollectionMembersFilterForm, {
+  CollectionMembersAdvancedFiltersInitialValues
 } from './filter/CollectionMembersFilterForm';
 
 const pageSizeOptions = [10, 25, 50];
@@ -49,7 +48,6 @@ type SurveyDataTableURLParams = {
 
 interface ICollectionMembersContainerProps {
   collectionId: number;
-  showSearch: boolean;
 }
 
 // Default pagination parameters
@@ -66,7 +64,7 @@ const initialPaginationParams: Required<ApiPaginationRequestOptions> = {
  * @return {*}
  */
 const CollectionMembersContainer = (props: ICollectionMembersContainerProps) => {
-  const { collectionId, showSearch } = props;
+  const { collectionId } = props;
 
   const biohubApi = useBiohubApi();
   const codesContext = useCodesContext();
@@ -87,10 +85,10 @@ const CollectionMembersContainer = (props: ICollectionMembersContainerProps) => 
   ]);
 
   const [advancedFiltersModel, setAdvancedFiltersModel] = useState<ICollectionMembersAdvancedFilters>({
-    keyword: searchParams.get('c_keyword') ?? CollectionParticipantsAdvancedFiltersInitialValues.keyword,
+    keyword: searchParams.get('c_keyword') ?? CollectionMembersAdvancedFiltersInitialValues.keyword,
     system_user_id: searchParams.get('c_system_user_id')
       ? Number(searchParams.get('c_system_user_id'))
-      : CollectionParticipantsAdvancedFiltersInitialValues.system_user_id
+      : CollectionMembersAdvancedFiltersInitialValues.system_user_id
   });
 
   const sort = firstOrNull(sortModel);
@@ -101,14 +99,14 @@ const CollectionMembersContainer = (props: ICollectionMembersContainerProps) => 
     page: paginationModel.page + 1 // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
   };
 
-  const collectionParticipantsDataLoader = useDataLoader(
+  const collectionMembersDataLoader = useDataLoader(
     (pagination?: ApiPaginationRequestOptions, filter?: ICollectionMembersAdvancedFilters) =>
       biohubApi.collection.getParticipants(collectionId, pagination, filter)
   );
 
-  // Fetch collectionParticipantss when either the pagination, sort, or advanced filters change
+  // Fetch collectionMemberss when either the pagination, sort, or advanced filters change
   useDeepCompareEffect(() => {
-    collectionParticipantsDataLoader.refresh(paginationSort, advancedFiltersModel);
+    collectionMembersDataLoader.refresh(paginationSort, advancedFiltersModel);
   }, [advancedFiltersModel, paginationSort]);
 
   const columns: GridColDef<ICollectionMember>[] = [
@@ -149,7 +147,7 @@ const CollectionMembersContainer = (props: ICollectionMembersContainerProps) => 
     }
   ];
 
-  const collectionParticipants = collectionParticipantsDataLoader.data?.participants ?? [];
+  const collectionMembers = collectionMembersDataLoader.data?.members ?? [];
 
   return (
     <>
@@ -157,7 +155,7 @@ const CollectionMembersContainer = (props: ICollectionMembersContainerProps) => 
         <Typography variant="h4" component="h2">
           Members &zwnj;
           <Typography component="span" color="textSecondary" lineHeight="inherit" fontSize="inherit" fontWeight={400}>
-            ({Number(collectionParticipantsDataLoader.data?.pagination?.total ?? 0).toLocaleString()})
+            ({Number(collectionMembersDataLoader.data?.pagination?.total ?? 0).toLocaleString()})
           </Typography>
         </Typography>
         <Stack gap={1} direction="row">
@@ -171,30 +169,29 @@ const CollectionMembersContainer = (props: ICollectionMembersContainerProps) => 
         </Stack>
       </Toolbar>
 
-      <Collapse in={showSearch}>
-        <Box py={2} px={2}>
-          <CollectionParticipantsFilterForm
-            initialValues={advancedFiltersModel}
-            handleSubmit={(values) => {
-              setSearchParams(
-                searchParams
-                  .setOrDelete('c_keyword', values.keyword)
-                  .setOrDelete('c_system_user_id', values.system_user_id)
-              );
-              setAdvancedFiltersModel(values);
-            }}
-          />
-        </Box>
-        <Divider />
-      </Collapse>
+      <Divider />
+
+      <Box py={2} px={2}>
+        <CollectionMembersFilterForm
+          initialValues={advancedFiltersModel}
+          handleSubmit={(values) => {
+            setSearchParams(
+              searchParams
+                .setOrDelete('c_keyword', values.keyword)
+                .setOrDelete('c_system_user_id', values.system_user_id)
+            );
+            setAdvancedFiltersModel(values);
+          }}
+        />
+      </Box>
 
       <Divider />
 
       <LoadingGuard
-        isLoading={collectionParticipantsDataLoader.isLoading || !collectionParticipantsDataLoader.isReady}
+        isLoading={collectionMembersDataLoader.isLoading || !collectionMembersDataLoader.isReady}
         isLoadingFallback={<SkeletonTable data-testid="collection-participant-list-skeleton" />}
         isLoadingFallbackDelay={100}
-        hasNoData={!collectionParticipants.length}
+        hasNoData={!collectionMembers.length}
         hasNoDataFallback={
           <NoDataOverlay
             title="Invite Members"
@@ -207,14 +204,13 @@ const CollectionMembersContainer = (props: ICollectionMembersContainerProps) => 
         <StyledDataGrid
           noRowsMessage="No participants found"
           loading={
-            !collectionParticipants.length &&
-            (collectionParticipantsDataLoader.isLoading || !collectionParticipantsDataLoader.isReady)
+            !collectionMembers.length && (collectionMembersDataLoader.isLoading || !collectionMembersDataLoader.isReady)
           }
           // Columns
           columns={columns}
           // Rows
-          rows={collectionParticipants}
-          rowCount={collectionParticipantsDataLoader.data?.pagination.total ?? 0}
+          rows={collectionMembers}
+          rowCount={collectionMembersDataLoader.data?.pagination.total ?? 0}
           getRowId={(row) => row.collection_member_id}
           // Pagination
           paginationMode="server"
@@ -247,7 +243,7 @@ const CollectionMembersContainer = (props: ICollectionMembersContainerProps) => 
           disableColumnFilter
           disableColumnMenu
           // Styling
-          rowHeight={70}
+          rowHeight={52}
           getRowHeight={() => 'auto'}
           autoHeight={false}
         />
@@ -256,7 +252,7 @@ const CollectionMembersContainer = (props: ICollectionMembersContainerProps) => 
       <CollectionMemberDialog
         collectionId={collectionId}
         onSubmit={() => {
-          collectionParticipantsDataLoader.refresh(paginationSort, advancedFiltersModel);
+          collectionMembersDataLoader.refresh(paginationSort, advancedFiltersModel);
           setParticipantDialogIsOpen(false);
         }}
         onClose={() => {

@@ -2,8 +2,8 @@ import { useCallback, useMemo } from 'react';
 
 import { mdiCalendarClock, mdiDatabaseSearch, mdiFileOutline, mdiHome } from '@mdi/js';
 
-import CustomToggleButtonGroup from 'components/toolbar/CustomToggleButtonGroup';
-import { ToggleButtonView } from 'components/toolbar/HierarchicalCustomToggleButtonGroup';
+import CustomToggleButtonGroup from 'components/toggle/CustomToggleButtonGroup';
+import { ToggleButtonView } from 'components/toggle/HierarchicalCustomToggleButtonGroup';
 
 import { useBiohubApi } from 'hooks/useBioHubApi';
 
