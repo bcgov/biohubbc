@@ -80,12 +80,14 @@ const CollectionPage = () => {
         <Box>
           <SidebarLayout
             sidebar={
-              <CustomToggleButtonGroup
-                views={views}
-                activeView={activeView}
-                onViewChange={handleViewChange}
-                orientation="vertical"
-              />
+              <Box p={2} flex="1 1 auto">
+                <CustomToggleButtonGroup
+                  views={views}
+                  activeView={activeView}
+                  onViewChange={handleViewChange}
+                  orientation="vertical"
+                />
+              </Box>
             }>
             {activeView === CollectionView.Surveys && (
               <Box>

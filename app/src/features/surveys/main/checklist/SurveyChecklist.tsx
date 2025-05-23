@@ -123,7 +123,7 @@ export const SurveyChecklist = <ViewValueType extends string>({
 
                   {item.checkbox && (
                     <CustomTooltip
-                      tooltip={item.disabled ? 'Changes sites to applicable' : 'Changes sites to non-applicable'}>
+                      tooltip={item.disabled ? 'Change sites to applicable' : 'Change sites to non-applicable'}>
                       <Checkbox
                         checked={item.isChecked}
                         onClick={(e) => {
@@ -153,7 +153,8 @@ export const SurveyChecklist = <ViewValueType extends string>({
                 flex: '1 1 auto',
                 border: 'none !important',
                 borderRadius: '4px !important',
-                fontSize: '0.875rem',
+                textTransform: 'uppercase',
+                letterSpacing: item.isHeader ? '0.5px' : 'normal',
                 mr: item.checkbox ? 4 : 0,
                 opacity: item.disabled ? 0.5 : 1,
                 cursor: item.disabled && !item.checkbox ? 'default' : 'pointer'
@@ -179,7 +180,12 @@ export const SurveyChecklist = <ViewValueType extends string>({
   // Render all views without altering their order
   const renderToggleButtonGroups = () => {
     return (
-      <ToggleButtonGroup key="all-items" orientation={orientation} value={activeView} exclusive sx={{ width: '100%' }}>
+      <ToggleButtonGroup
+        key="all-items"
+        orientation={orientation}
+        value={activeView}
+        exclusive
+        sx={{ width: '100%', py: 0.25 }}>
         {renderViews(views)}
       </ToggleButtonGroup>
     );

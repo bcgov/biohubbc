@@ -1,5 +1,9 @@
-import { Box, Paper, Stack, Toolbar } from '@mui/material';
+import Box from '@mui/material/Box';
 import grey from '@mui/material/colors/grey';
+import Divider from '@mui/material/Divider';
+import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
+import Toolbar from '@mui/material/Toolbar';
 import { ReactNode } from 'react';
 
 interface SidebarLayoutProps {
@@ -10,32 +14,39 @@ interface SidebarLayoutProps {
 
 export const SidebarLayout = ({ sidebar, header, children }: SidebarLayoutProps) => {
   return (
-    <Stack direction="row" gap={2} alignItems="flex-start">
+    <Stack
+      component={Paper}
+      direction="row"
+      alignItems="stretch"
+      sx={{
+        minHeight: '70vh'
+      }}>
       {/* Sidebar */}
-      <Paper
+      <Box
         sx={{
-          minWidth: '350px',
-          maxHeight: '100vh',
+          minWidth: '300px',
+          width: '20vw',
           overflowY: 'auto',
-          p: 2,
-          flexShrink: 0
+          height: '100%'
         }}>
         {sidebar}
-      </Paper>
+      </Box>
 
-      {/* Main Content */}
-      <Paper
+      <Divider flexItem orientation="vertical" />
+
+      {/* Main Content Area */}
+      <Box
         sx={{
+          flex: 1,
           display: 'flex',
-          flexDirection: 'column',
-          flex: '1 1 auto',
-          height: '100%'
+          flexDirection: 'column'
         }}>
         {/* Optional Header */}
         {header && (
           <Toolbar
             disableGutters
             sx={{
+              py: 0,
               px: 2,
               display: 'flex',
               justifyContent: 'space-between',
@@ -46,9 +57,17 @@ export const SidebarLayout = ({ sidebar, header, children }: SidebarLayoutProps)
           </Toolbar>
         )}
 
-        {/* Main Scrollable Content */}
-        <Box sx={{ flex: 1, overflow: 'auto' }}>{children}</Box>
-      </Paper>
+        {/* Scrollable Content */}
+        <Box
+          sx={{
+            flex: 1,
+            overflowY: 'auto',
+            display: 'flex',
+            flexDirection: 'column'
+          }}>
+          {children}
+        </Box>
+      </Box>
     </Stack>
   );
 };

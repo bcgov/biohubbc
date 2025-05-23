@@ -64,19 +64,19 @@ export const SurveySpatialObservation = (props: ISurveySpatialObservationProps) 
   };
 
   return (
-    <>
-      {/* Display map with observation points */}
-      <Box height={300} position="relative">
+    <Box display="flex" flexDirection="column" minHeight="800px">
+      {/* Map section (fixed height) */}
+      <Box height={400} position="relative">
         <SurveyMap
           staticLayers={[...props.staticLayers, observationLayer]}
           isLoading={observationsGeometryDataLoader.isLoading}
         />
       </Box>
 
-      {/* Display data table with observation details */}
-      <Box display="flex" flexDirection="column" pt={2}>
+      {/* Table section (takes remaining height) */}
+      <Box display="flex" flexDirection="column" flex="1 1 auto" overflow="hidden" mt={2}>
         <SurveySpatialObservationContainer />
       </Box>
-    </>
+    </Box>
   );
 };

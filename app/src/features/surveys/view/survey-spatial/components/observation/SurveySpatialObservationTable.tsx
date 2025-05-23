@@ -154,7 +154,6 @@ export const SurveySpatialObservationTable = () => {
       hasNoData={!rows.length}
       hasNoDataFallback={
         <NoDataOverlay
-          minHeight="400px"
           title="Add Species Observations"
           subtitle="Observations show where and when you observed species. You can link observations to sampling periods."
           icon={mdiArrowTopRight}
@@ -172,7 +171,7 @@ export const SurveySpatialObservationTable = () => {
         rowHeight={rowHeight}
         rowSelection={false}
         getRowId={(row: IFlattenedObservationTableRow) => row.observation_subcount_id}
-        autoHeight={false}
+        // autoHeight={false}
         // pagination
         paginationMode="server"
         paginationModel={{ pageSize, page }}

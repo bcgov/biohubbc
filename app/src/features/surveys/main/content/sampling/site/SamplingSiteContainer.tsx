@@ -170,10 +170,9 @@ export const SamplingSiteContainer = () => {
       <Toolbar
         disableGutters
         sx={{
-          flex: '1 1 auto',
-          pl: 3,
+          flex: '0 0 auto',
           pr: 3,
-          width: '100%'
+          pl: 3
         }}>
         <Typography variant="h3" component="h2" flexGrow={1}>
           Sites &zwnj;
@@ -220,7 +219,6 @@ export const SamplingSiteContainer = () => {
         hasNoData={!sampleSites.length}
         hasNoDataFallback={
           <NoDataOverlay
-            minHeight="400px"
             title="Add Sampling Sites"
             subtitle="Sampling sites show precisely where you collected data&mdash;at a point, along a transect, or within an area."
             icon={mdiArrowTopRight}

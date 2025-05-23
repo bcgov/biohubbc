@@ -30,7 +30,7 @@ const PageHeader = (props: IPageHeader) => {
         top: 0,
         zIndex: 1002
       }}>
-      <Container maxWidth={'xl'} sx={{ py: { xs: 2, sm: 3 } }}>
+      <Container maxWidth="xl" sx={{ py: 2, px: 3 }}>
         {breadCrumbJSX && (
           <Box minHeight="25px">
             <LoadingGuard
@@ -46,7 +46,7 @@ const PageHeader = (props: IPageHeader) => {
           alignItems="flex-start"
           justifyContent="space-between"
           flex="1 1 auto"
-          gap={{ xs: 1, lg: 2 }}>
+          gap={0}>
           <Box flex="1 1 auto">
             <Typography variant="h1">{title}</Typography>
             {subTitleJSX && (
