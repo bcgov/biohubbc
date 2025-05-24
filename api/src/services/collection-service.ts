@@ -251,33 +251,40 @@ export class CollectionService extends DBService {
    * @memberof CollectionService
    */
   async deleteCollection(collectionId: number, systemUserId: number): Promise<void> {
+    // 1. Find all direct subcollections
+    const subcollections = await this.findCollections(
+      false,
+      null,
+      { parent_collection_id: collectionId, include_children: false }
+    );
 
-    //Find the subcollections to delete
-    const subcollections = await this.findCollections( false, null, {parent_collection_id: collectionId, include_children: true} );
+    // 2. For each subcollection, set its parent_collection_id to null and recursively delete it
+    for (const sub of subcollections) {
+      // Optionally set parent_collection_id to null if required
+      await this.collectionRepository.updateCollection(sub.collection_id, { 
+        parent_collection_id: null, 
+        name: sub.name || 'Unnamed Collection', 
+        description: sub.description || 'No description available' 
+      });
 
-    // Update the parent collection id to null in preparation for deletion
-    const collectionIdsToDelete = subcollections.map((collection) => collection.collection_id);
-    await this.deleteCollectionParents(collectionIdsToDelete);
+      // Recursively delete the subcollection
+      await this.deleteCollection(sub.collection_id, systemUserId);
+    }
 
-    // Find surveys in the collections
-    const surveys = await this.collectionSurveyService.getSurveysInCollections(collectionIds);
+    // 3. Remove all survey associations for this collection
+    const surveys = await this.collectionSurveyService.getSurveysInCollection(collectionId);
     for (const survey of surveys) {
-        await this.collectionSurveyService.collectionSurveyRepository.deleteCollectionSurvey(survey.survey_id, collectionId);
-      }
-      // better to have a repo function like this that finds surveys to delete and deletes them, like: delete from survey_collection where collection_id in (collectionIdsToDelete)
-      this.collectionSurveyService.deleteCollectionSurveysByCollectionIds(collectionIdsToDelete);
-    // Delete the surveys from the collections
+      await this.collectionSurveyService.collectionSurveyRepository.deleteCollectionSurvey(survey.survey_id, collectionId);
+    }
 
-    // Find members in the collections
-    const members = await this.collectionMemberService.getCollectionMembers(collectionIds);
-    // Delete the members from the collections
+    // 4. Remove all member associations for this collection
+    const members = await this.collectionMemberService.getCollectionMembers(collectionId);
+    for (const member of members) {
+      await this.collectionMemberService.deleteCollectionMemberRecord(collectionId, member.collection_member_id);
+    }
 
-
-    // // Remove a
-
-    // // Now delete the collection itself
-    await Promise.all([
-    collectionIdsToDelete.map((collectionId) => this.collectionRepository.deleteCollection(collectionId))])
+    // 5. Delete the collection itself
+    await this.collectionRepository.deleteCollection(collectionId);
   }
 }
 

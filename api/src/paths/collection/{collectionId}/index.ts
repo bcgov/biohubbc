@@ -374,14 +374,10 @@ export function deleteCollection(): RequestHandler {
 
       const systemUserId = connection.systemUserId();
       const collectionService = new CollectionService(connection);
-      const deleted = await collectionService.deleteCollection(collectionId, systemUserId);
+      await collectionService.deleteCollection(collectionId, systemUserId);
 
       await connection.commit();
 
-      if (!deleted) {
-        res.status(404).json({ error: 'Collection not found' });
-        return;
-      }
 
       res.status(204).send();
     } catch (error) {
