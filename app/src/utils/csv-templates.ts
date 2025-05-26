@@ -105,3 +105,12 @@ export const getHabitatFeaturesCSVTemplate = (): CSVEncodedTemplate => {
     'COMMENT'
   ]);
 };
+
+/**
+ * Get CSV template for Animal Mortalities.
+ *
+ * @returns {CSVEncodedTemplate} Encoded CSV template
+ */
+export const getMortalityCSVTemplate = (): CSVEncodedTemplate => {
+  return getCSVTemplate(['ALIAS', 'MORTALITY_DATE', 'MORTALITY_TIME', 'MORTALITY_LATITUDE', 'MORTALITY_LONGITUDE', 'SUSPECTED_COD','MORTALITY_COMMENT']);
+};

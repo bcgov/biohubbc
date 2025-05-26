@@ -77,6 +77,7 @@ export const SurveyAnimalPage = () => {
                 <Typography variant="h5" component="h2">
                   Animal Overview
                 </Typography>
+                <Stack direction="row" spacing={1}>
                 <Button
                   component={RouterLink}
                   to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/animals/captures`}
@@ -86,6 +87,16 @@ export const SurveyAnimalPage = () => {
                   startIcon={<Icon path={mdiPlus} size={0.75} />}>
                   Add Captures
                 </Button>
+                  <Button
+                  component={RouterLink}
+                  to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/animals/captures`}
+                  variant="contained"
+                  color="primary"
+                  aria-label="Manage Mortalities"
+                  startIcon={<Icon path={mdiPlus} size={0.75} />}>
+                  Add Mortalities
+                </Button>
+                </Stack>
               </Toolbar>
               <Divider flexItem />
               <Box flex="1 1 auto">
