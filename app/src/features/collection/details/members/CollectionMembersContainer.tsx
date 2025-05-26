@@ -26,9 +26,7 @@ import { useState } from 'react';
 import { ApiPaginationRequestOptions, StringValues } from 'types/misc';
 import { firstOrNull, getCodesName } from 'utils/Utils';
 import CollectionMemberDialog from './dialog/CollectionMemberDialog';
-import CollectionMembersFilterForm, {
-  CollectionMembersAdvancedFiltersInitialValues
-} from './filter/CollectionMembersFilterForm';
+import MembersFilterForm from './filter/CollectionMembersFilterForm';
 
 const pageSizeOptions = [10, 25, 50];
 
@@ -37,7 +35,7 @@ const pageSizeOptions = [10, 25, 50];
 type SurveyDataTableURLParams = {
   // filter
   c_keyword?: string;
-  c_itic_tsn?: number;
+  c_itis_tsn?: number;
   c_system_user_id?: string;
   // pagination
   c_page?: string;
@@ -85,10 +83,8 @@ const CollectionMembersContainer = (props: ICollectionMembersContainerProps) => 
   ]);
 
   const [advancedFiltersModel, setAdvancedFiltersModel] = useState<ICollectionMembersAdvancedFilters>({
-    keyword: searchParams.get('c_keyword') ?? CollectionMembersAdvancedFiltersInitialValues.keyword,
-    system_user_id: searchParams.get('c_system_user_id')
-      ? Number(searchParams.get('c_system_user_id'))
-      : CollectionMembersAdvancedFiltersInitialValues.system_user_id
+    keyword: searchParams.get('c_keyword') ?? undefined,
+    system_user_id: searchParams.get('c_system_user_id') ? Number(searchParams.get('c_system_user_id')) : undefined
   });
 
   const sort = firstOrNull(sortModel);
@@ -172,7 +168,7 @@ const CollectionMembersContainer = (props: ICollectionMembersContainerProps) => 
       <Divider />
 
       <Box py={2} px={2}>
-        <CollectionMembersFilterForm
+        <MembersFilterForm
           initialValues={advancedFiltersModel}
           handleSubmit={(values) => {
             setSearchParams(

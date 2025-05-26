@@ -6,6 +6,7 @@ export interface ICollectionMembersAdvancedFilters {
   parent_collection_id?: number;
   include_children?: boolean;
 }
+
 export interface IGetCollectionsResponse {
   collections: ICollection[];
   pagination: ApiPaginationResponseParams;

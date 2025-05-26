@@ -13,6 +13,9 @@ import {
   IGetSurveyAttachmentsResponse,
   IGetSurveyForUpdateResponse,
   IGetSurveyForViewResponse,
+  IPostSurveyMember,
+  ISurveyMemberResponse,
+  ISurveyMembersAdvancedFilters,
   IUpdateSurveyRequest,
   IUploadAttachmentResponse
 } from 'interfaces/useSurveyApi.interface';
@@ -116,6 +119,41 @@ const useSurveyApi = (axios: AxiosInstance) => {
     }
 
     const { data } = await axios.get(`/api/survey${urlParamsString}`);
+
+    return data;
+  };
+
+  /**
+   * Gets members that have access to the Survey
+   *
+   * @param {number} surveyId
+   * @param {ISurveyMembersAdvancedFilters} filters
+   * @return {*}  {Promise<ISurveyMemberResponse>}
+   */
+  const getSurveyMembers = async (
+    surveyId: number,
+    filters?: ISurveyMembersAdvancedFilters
+  ): Promise<ISurveyMemberResponse> => {
+    const params = {
+      ...filters
+    };
+    const { data } = await axios.get(`/api/survey/${surveyId}/members`, {
+      params,
+      paramsSerializer: (params) => qs.stringify(params)
+    });
+
+    return data;
+  };
+
+  /**
+   * Add users to a survey
+   *
+   * @param {number} surveyId
+   * @param {IPostSurveyMember[]} members
+   * @return {*}  {Promise<ISurveyMemberResponse>}
+   */
+  const addSurveyMembers = async (surveyId: number, members?: IPostSurveyMember[]): Promise<ISurveyMemberResponse> => {
+    const { data } = await axios.post(`/api/survey/${surveyId}/members`, { members });
 
     return data;
   };
@@ -477,6 +515,8 @@ const useSurveyApi = (axios: AxiosInstance) => {
     getSurveyForView,
     getSurveysBasicFields,
     getSurveyForUpdate,
+    getSurveyMembers,
+    addSurveyMembers,
     findSurveys,
     updateSurvey,
     uploadSurveyAttachments,

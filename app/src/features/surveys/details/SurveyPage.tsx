@@ -1,5 +1,4 @@
 import CircularProgress from '@mui/material/CircularProgress';
-import Typography from '@mui/material/Typography';
 import { Container } from '@mui/system';
 import { CodesContext } from 'contexts/codesContext';
 import { SurveyContext } from 'contexts/surveyContext';
@@ -7,6 +6,7 @@ import { useSearchParams } from 'hooks/useSearchParams';
 import { useContext, useEffect } from 'react';
 import SurveyHeader from '../view/SurveyHeader';
 import SurveyDetailsTab from './tabs/details/SurveyDetailsTab';
+import { SurveyPermissionsTab } from './tabs/permissions/SurveyPermissionsTab';
 
 const ACTIVE_TAB_KEY = 't';
 
@@ -53,11 +53,7 @@ export const SurveyPage = () => {
       <Container maxWidth="xl" sx={{ my: 3, p: 0, px: 2 }} disableGutters>
         {activeTab === 'details' && <SurveyDetailsTab checklist={checklist} />}
 
-        {activeTab === 'permissions' && (
-          <Typography variant="body1" sx={{ mt: 3 }}>
-            Permissions tab content goes here...
-          </Typography>
-        )}
+        {activeTab === 'permissions' && <SurveyPermissionsTab />}
       </Container>
     </>
   );

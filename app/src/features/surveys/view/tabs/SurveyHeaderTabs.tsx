@@ -41,7 +41,7 @@ const SurveyHeaderTabs = (props: ISurveyHeaderTabsProps) => {
               fontSize: '0.9rem',
               color: isActive ? 'primary' : grey[500],
               fontWeight: isActive ? 700 : 500,
-              borderBottom: `4px solid ${isActive ? appTheme.palette.primary.main : 'transparent'}`,
+              borderBottom: `5px solid ${isActive ? appTheme.palette.primary.main : 'transparent'}`,
               borderBottomLeftRadius: 0,
               borderBottomRightRadius: 0
             }}>

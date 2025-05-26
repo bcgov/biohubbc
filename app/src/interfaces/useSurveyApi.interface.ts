@@ -81,11 +81,21 @@ interface ISurveyBlockForm {
 interface IParticipantsJobForm {
   participants: IGetSurveyParticipant[];
 }
-
-interface ISurveyMemberForm {
+export interface ISurveyMemberResponse {
   members: ISurveyMember[];
 }
 
+export interface ISurveyMemberForm {
+  members: ISurveyMember[];
+}
+export interface ISurveyMembersAdvancedFilters {
+  system_user_id?: number;
+  keyword?: string;
+}
+export interface IPostSurveyMember {
+  system_user_id: number;
+  survey_role_name: string;
+}
 export interface ISurveyMember {
   survey_member_id: number;
   system_user_id: number;

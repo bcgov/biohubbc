@@ -424,7 +424,7 @@ export class SurveyService extends DBService {
     );
 
     // Handle survey members (users with access)
-    await this.surveyMemberService.postSurveyMembers(surveyId, postSurveyData.members);
+    await this.surveyMemberService.insertSurveyMembers(surveyId, postSurveyData.members);
 
     // Handle survey proprietor data
     postSurveyData.proprietor && promises.push(this.insertSurveyProprietor(postSurveyData.proprietor, surveyId));

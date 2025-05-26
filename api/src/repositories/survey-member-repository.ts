@@ -328,11 +328,10 @@ export class SurveyMemberRepository extends BaseRepository {
    * @return {*}  {Promise<void>}
    * @memberof SurveyMemberRepository
    */
-  async postSurveyMember(surveyId: number, systemUserId: number, surveyMemberRole: number | string): Promise<void> {
+  async insertSurveyMember(surveyId: number, systemUserId: number, surveyMemberRole: number | string): Promise<void> {
     let sqlStatement;
 
-    if (isNaN(Number(surveyMemberRole))) {
-      sqlStatement = SQL`
+    sqlStatement = SQL`
         INSERT INTO survey_member (
           survey_id,
           system_user_id,
@@ -349,19 +348,6 @@ export class SurveyMemberRepository extends BaseRepository {
             name = ${surveyMemberRole}
         );
       `;
-    } else {
-      sqlStatement = SQL`
-        INSERT INTO survey_member (
-          survey_id,
-          system_user_id,
-          survey_role_id
-        ) VALUES (
-          ${surveyId},
-          ${systemUserId},
-          ${surveyMemberRole}
-        );
-      `;
-    }
 
     const response = await this.connection.sql(sqlStatement);
 

@@ -85,6 +85,13 @@ const GeneralInformationForm = () => {
           endRequired={false}
         />
       </Grid>
+      <Grid item xs={12}>
+        <CustomTextField
+          name="purpose_and_methodology.additional_details"
+          label="Objectives"
+          other={{ multiline: true, rows: 5, required: true }}
+        />
+      </Grid>
     </Grid>
   );
 };

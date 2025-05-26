@@ -1,6 +1,4 @@
-import { ICollectionMembersAdvancedFilters } from 'interfaces/useCollectionApi.interface';
-
-export const CollectionMembersAdvancedFiltersInitialValues: ICollectionMembersAdvancedFilters = {
+export const MembersAdvancedFiltersInitialValues = {
   keyword: undefined,
   system_user_id: undefined
 };
@@ -9,24 +7,25 @@ import CustomTextField from 'components/fields/CustomTextField';
 import { SystemUserAutocompleteField } from 'components/fields/SystemUserAutocompleteField';
 import { FilterFieldsContainer } from 'features/summary/components/FilterFieldsContainer';
 import { Formik } from 'formik';
+import { ICollectionMembersAdvancedFilters } from 'interfaces/useCollectionApi.interface';
 
-interface ICollectionMembersFilterFormProps {
+interface IMembersFilterFormProps {
   handleSubmit: (filterValues: ICollectionMembersAdvancedFilters) => void;
-  initialValues?: ICollectionMembersAdvancedFilters;
+  initialValues?: { keyword?: string; system_user_id?: number };
 }
 
 /**
  * Survey advanced filters
  *
- * @param {ICollectionMembersFilterFormProps} props
+ * @param {IMembersFilterFormProps} props
  * @return {*}
  */
-const CollectionMembersFilterForm = (props: ICollectionMembersFilterFormProps) => {
+const MembersFilterForm = (props: IMembersFilterFormProps) => {
   const { handleSubmit, initialValues } = props;
 
   return (
     <Formik
-      initialValues={initialValues ?? CollectionMembersAdvancedFiltersInitialValues}
+      initialValues={initialValues ?? MembersAdvancedFiltersInitialValues}
       onSubmit={handleSubmit}
       validateOnChange={false}
       validateOnBlur={false}
@@ -60,4 +59,4 @@ const CollectionMembersFilterForm = (props: ICollectionMembersFilterFormProps) =
   );
 };
 
-export default CollectionMembersFilterForm;
+export default MembersFilterForm;

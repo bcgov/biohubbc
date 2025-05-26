@@ -19,7 +19,7 @@ export class PostSurveyObject {
   locations: PostSurveyLocationData[];
   agreements: PostAgreementsData;
   participants: PostParticipationData[];
-  members: PostMemberData[];
+  members: IPostSurveyMember[];
   partnerships: PostPartnershipsData;
   site_selection: PostSiteSelectionData;
   blocks: PostSurveyBlock[];
@@ -37,7 +37,7 @@ export class PostSurveyObject {
     this.agreements = (obj?.agreements && new PostAgreementsData(obj.agreements)) || null;
     this.participants =
       (obj?.participants?.length && obj.participants.map((p: any) => new PostParticipationData(p))) || [];
-    this.members = (obj?.members?.length && obj.members.map((p: any) => new PostMemberData(p))) || [];
+    this.members = (obj?.members?.length && obj.members.map((p: any) => new IPostSurveyMember(p))) || [];
     this.partnerships = (obj?.partnerships && new PostPartnershipsData(obj.partnerships)) || null;
     this.locations = (obj?.locations && obj.locations.map((p: any) => new PostSurveyLocationData(p))) || [];
     this.site_selection = (obj?.site_selection && new PostSiteSelectionData(obj)) || null;
@@ -157,7 +157,7 @@ export class PostParticipationData {
   }
 }
 
-export class PostMemberData {
+export class IPostSurveyMember {
   system_user_id: number;
   survey_role_name: string;
 
@@ -197,7 +197,7 @@ export class PostMembersData {
   }
 }
 
-export interface PostMemberData {
+export interface IPostSurveyMember {
   survey_member_id?: number;
   system_user_id: number;
   survey_role_names: SURVEY_ROLE[];
