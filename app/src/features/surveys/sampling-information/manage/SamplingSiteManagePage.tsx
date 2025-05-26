@@ -1,9 +1,9 @@
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import { SystemAlertBanner } from 'features/alert/banner/SystemAlertBanner';
-import { SamplingPeriodContainer } from 'features/surveys/details/sampling/period/SamplingPeriodContainer';
-import { SamplingSiteContainer } from 'features/surveys/details/sampling/site/SamplingSiteContainer';
-import { SamplingTechniqueContainer } from 'features/surveys/details/sampling/technique/SamplingTechniqueContainer';
+import { SamplingPeriodContainer } from 'features/surveys/details/tabs/details/sampling/period/SamplingPeriodContainer';
+import { SamplingSiteContainer } from 'features/surveys/details/tabs/details/sampling/site/SamplingSiteContainer';
+import { SamplingTechniqueContainer } from 'features/surveys/details/tabs/details/sampling/technique/SamplingTechniqueContainer';
 import { SystemAlertBannerEnum } from 'interfaces/useAlertApi.interface';
 
 /**

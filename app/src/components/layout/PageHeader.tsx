@@ -11,6 +11,7 @@ interface IPageHeader {
   subTitleJSX?: JSX.Element;
   breadCrumbJSX?: JSX.Element;
   buttonJSX?: JSX.Element;
+  tabsJSX?: JSX.Element;
   isLoading?: boolean;
 }
 /**
@@ -19,7 +20,7 @@ interface IPageHeader {
  * @return {*}
  */
 const PageHeader = (props: IPageHeader) => {
-  const { title, subTitleJSX, breadCrumbJSX, buttonJSX, isLoading } = props;
+  const { title, subTitleJSX, breadCrumbJSX, buttonJSX, isLoading, tabsJSX } = props;
 
   return (
     <Paper
@@ -30,7 +31,7 @@ const PageHeader = (props: IPageHeader) => {
         top: 0,
         zIndex: 1002
       }}>
-      <Container maxWidth="xl" sx={{ py: 3, px: 3 }}>
+      <Container maxWidth="xl" sx={{ pt: 3, px: 3, pb: tabsJSX ? 0 : 3 }}>
         {breadCrumbJSX && (
           <Box minHeight="25px">
             <LoadingGuard
@@ -50,7 +51,7 @@ const PageHeader = (props: IPageHeader) => {
           <Box flex="1 1 auto">
             <Typography variant="h1">{title}</Typography>
             {subTitleJSX && (
-              <Stack flexDirection="row" alignItems="center" gap={1}>
+              <Stack flexDirection="row" alignItems="center" gap={1} display="none">
                 {subTitleJSX}
               </Stack>
             )}
@@ -61,6 +62,7 @@ const PageHeader = (props: IPageHeader) => {
             </Stack>
           )}
         </Stack>
+        {tabsJSX && tabsJSX}
       </Container>
     </Paper>
   );

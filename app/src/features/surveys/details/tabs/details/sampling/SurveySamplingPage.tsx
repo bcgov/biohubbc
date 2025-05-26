@@ -10,7 +10,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSearchParams } from 'hooks/useSearchParams';
 import { SidebarLayout } from 'layouts/SidebarLayout';
 import { useCallback, useContext, useEffect } from 'react';
-import { ChecklistItem } from '../SurveyPage';
+import { ChecklistItem } from '../checklist/SurveyChecklistManager';
 import { SamplingPeriodContainer } from './period/SamplingPeriodContainer';
 import { SamplingSiteContainer } from './site/SamplingSiteContainer';
 import { SamplingTechniqueContainer } from './technique/SamplingTechniqueContainer';

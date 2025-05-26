@@ -24,7 +24,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSearchParams } from 'hooks/useSearchParams';
 import { SidebarLayout } from 'layouts/SidebarLayout';
 import { useCallback, useContext, useEffect } from 'react';
-import { ChecklistItem } from '../SurveyPage';
+import { ChecklistItem } from '../checklist/SurveyChecklistManager';
 import { SurveySpatialAnimals } from './animals/SurveySpatialAnimals';
 import { SurveySpatialHabitatFeatures } from './habitat/SurveySpatialHabitatFeatures';
 import { SurveySpatialObservations } from './observations/SurveySpatialObservations';

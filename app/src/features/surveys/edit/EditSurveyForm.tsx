@@ -1,24 +1,19 @@
-import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
 import FormikErrorSnackbar from 'components/alert/FormikErrorSnackbar';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
-import HelpButtonStack from 'components/tooltip/HelpButtonStack';
 import { CodesContext } from 'contexts/codesContext';
 
-import SurveyPermitForm, { ISurveyPermitForm } from 'features/surveys/components/permit/SurveyPermitForm';
-import SurveyPartnershipsForm, {
-  SurveyPartnershipsFormYupSchema
-} from 'features/surveys/view/components/SurveyPartnershipsForm';
+import { ISurveyPermitForm } from 'features/surveys/components/permit/SurveyPermitForm';
+import { SurveyPartnershipsFormYupSchema } from 'features/surveys/view/components/SurveyPartnershipsForm';
 import { Formik, FormikProps } from 'formik';
 import { ICreateSurveyRequest, IUpdateSurveyRequest } from 'interfaces/useSurveyApi.interface';
 import React, { useContext, useEffect } from 'react';
 import yup from 'utils/YupSchema';
 import AgreementsForm, { AgreementsYupSchema } from '../components/agreements/AgreementsForm';
 import { ProprietaryDataYupSchema } from '../components/agreements/ProprietaryDataForm';
-import SurveyFundingSourceForm, {
+import {
   ISurveyFundingSourceForm,
   SurveyFundingSourceFormYupSchema
 } from '../components/funding/SurveyFundingSourceForm';
@@ -26,14 +21,12 @@ import GeneralInformationForm, {
   GeneralInformationYupSchema
 } from '../components/general-information/GeneralInformationForm';
 import StudyAreaForm, { SurveyLocationYupSchema } from '../components/locations/StudyAreaForm';
-import { SurveyMembersForm } from '../components/member/SurveyMembersForm';
 import PurposeAndMethodologyForm, {
   PurposeAndMethodologyYupSchema
 } from '../components/methodology/PurposeAndMethodologyForm';
-import SurveyUserForm, { SurveyParticipantsJobYupSchema } from '../components/participants/SurveyUserForm';
+import { SurveyParticipantsJobYupSchema } from '../components/participants/SurveyUserForm';
 import { SurveySiteSelectionYupSchema } from '../components/sampling-strategy/SurveySiteSelectionForm';
 import SpeciesForm, { SpeciesYupSchema } from '../components/species/SpeciesForm';
-import CollectionSurveyForm from '../view/collection/form/CollectionSurveyForm';
 
 interface IEditSurveyForm<
   T extends
@@ -95,30 +88,9 @@ const EditSurveyForm = <
       <Stack gap={5}>
         <FormikErrorSnackbar />
         <HorizontalSplitFormComponent
-          title="General Information"
-          summary="Enter a name and the dates of your survey. Dates may span multiple fieldwork trips."
-          component={
-            <GeneralInformationForm
-              progress={
-                codes?.survey_progress?.map((item) => {
-                  return { value: item.id, label: item.name, description: item.description };
-                }) || []
-              }
-            />
-          }></HorizontalSplitFormComponent>
-
-        <Divider />
-
-        <HorizontalSplitFormComponent
-          title="Members"
-          summary="Give others access to this survey"
-          component={<SurveyMembersForm roles={codesContext.codesDataLoader.data?.survey_roles ?? []} />}
-        />
-
-        <Divider />
-        <HorizontalSplitFormComponent title="Collections" summary="Select collections to add the survey to.">
-          <CollectionSurveyForm formikFieldName="collections" />
-        </HorizontalSplitFormComponent>
+          title="Generald"
+          summary="Enter a name and the dates of your survey"
+          component={<GeneralInformationForm />}></HorizontalSplitFormComponent>
 
         <Divider />
 
@@ -160,7 +132,7 @@ const EditSurveyForm = <
         />
 
         <Divider />
-
+        {/* 
         <HorizontalSplitFormComponent
           title="Permits"
           summary="Enter any permits used in the survey"
@@ -189,30 +161,28 @@ const EditSurveyForm = <
           }
         />
 
-        <Divider />
-
+        <Divider /> */}
+        {/* 
         <HorizontalSplitFormComponent
           title="Survey Participants"
           summary="Specify people who participated in this survey"
           component={<SurveyUserForm jobs={codes.survey_jobs} />}
-        />
+        /> */}
 
-        <Divider />
-
+        {/* <Divider /> */}
+        {/* 
         <HorizontalSplitFormComponent
           title="Partnerships"
           summary="Enter any partners involved in the survey"
           component={<SurveyPartnershipsForm />}
         />
 
-        <Divider />
+        <Divider /> */}
 
         <HorizontalSplitFormComponent
           title="Agreements"
           summary="Confirm that you understand the SEDIS procedures and how they relate to data in the survey"
           component={<AgreementsForm />}></HorizontalSplitFormComponent>
-
-        <Divider />
       </Stack>
     </Formik>
   );

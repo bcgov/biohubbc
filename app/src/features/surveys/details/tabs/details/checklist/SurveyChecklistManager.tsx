@@ -1,5 +1,14 @@
+import { IGetSurveyChecklistItem } from 'interfaces/useChecklistApi.interface';
 import { useCallback, useMemo } from 'react';
-import { ChecklistItem } from '../SurveyPage';
+import { DATA_ACTIVE_VIEW_VALUE } from '../data/SurveyDataPage';
+import { SAMPLING_ACTIVE_VIEW_VALUE } from '../sampling/SurveySamplingPage';
+import { SURVEY_ACTIVE_VIEW_VALUE } from '../SurveyDetailsTab';
+import { ToggleButtonView } from './SurveyChecklist';
+
+export type ChecklistItem = IGetSurveyChecklistItem &
+  ToggleButtonView<SURVEY_ACTIVE_VIEW_VALUE | SAMPLING_ACTIVE_VIEW_VALUE | DATA_ACTIVE_VIEW_VALUE> & {
+    children?: ChecklistItem[];
+  };
 
 type SurveyChecklistManagerProps = {
   checklist: any;
