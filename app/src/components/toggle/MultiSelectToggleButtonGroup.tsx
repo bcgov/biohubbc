@@ -1,4 +1,7 @@
+import { mdiClose, mdiPlus } from '@mdi/js';
+import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
+import blueGrey from '@mui/material/colors/blueGrey';
 import grey from '@mui/material/colors/grey';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
@@ -68,6 +71,16 @@ export const MultiSelectToggleButtonGroup = <ViewValueType extends string>({
             }}>
             <Box display="flex" alignItems="center" gap={1} flexGrow={1} minWidth={0}>
               {view.label}
+              {isActive ? (
+                <Icon
+                  path={mdiClose}
+                  size={0.7}
+                  color={grey[700]}
+                  style={{ backgroundColor: blueGrey[100], borderRadius: '500px', padding: 3 }}
+                />
+              ) : (
+                <Icon path={mdiPlus} size={0.7} color={grey[500]} style={{ padding: 2 }} />
+              )}
             </Box>
           </ToggleButton>
         );
