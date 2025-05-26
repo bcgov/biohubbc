@@ -255,12 +255,10 @@ export const SubcollectionContainer = (props: ICollectionsTagContainerProps) => 
       return;
     }
     try {
-      // Call your delete endpoint
       await biohubApi.collection.deleteCollection(actionMenuAnchorEl.collectionId);
-      // Refresh the table data
+
       collectionsDataLoader.refresh(paginationSort, advancedFiltersModel);
     } catch (error) {
-      // Optionally handle error (e.g., show a notification)
       console.error('Failed to delete collection:', error);
     }
     handleCloseActionMenu();
