@@ -13,6 +13,7 @@ import { TabularDataTableContainer } from '../tabular-data/TabularDataTableConta
 import CollectionsListContainer from './collection/CollectionListContainer';
 import { CreateCollectionButton } from './collection/create/CreateCollectionButton';
 import { CreateSurveyButton } from './survey/create/CreateSurveyButton';
+import { ManageUsersButton } from './survey/manage/ManageUsersButton';
 
 export const SUMMARY_ACTIVE_VIEW_KEY = 'lvk';
 export enum SUMMARY_ACTIVE_VIEW_VALUE {
@@ -51,7 +52,12 @@ export const ListDataTableContainer = () => {
       value: SUMMARY_ACTIVE_VIEW_VALUE.surveys,
       label: 'Surveys',
       icon: mdiClipboardOutline,
-      button: <CreateSurveyButton />
+      button: (
+        <Stack direction="row" spacing={1}>
+          <CreateSurveyButton />
+          <ManageUsersButton />
+        </Stack>
+      )
     },
     {
       value: SUMMARY_ACTIVE_VIEW_VALUE.collections,

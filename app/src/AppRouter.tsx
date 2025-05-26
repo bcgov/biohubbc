@@ -168,6 +168,16 @@ const AppRouter: React.FC = () => {
       <RouteWithTitle title={getTitle()} path="*">
         <Redirect to="/page-not-found" />
       </RouteWithTitle>
+
+      <RouteWithTitle path="/features/summary/list-data/survey/manage" title={getTitle('Manage Users')}>
+        <BaseLayout>
+          <AuthenticatedRouteGuard>
+            <CodesContextProvider>
+              <CollectionsRouter />
+            </CodesContextProvider>
+          </AuthenticatedRouteGuard>
+        </BaseLayout>
+      </RouteWithTitle>
     </Switch>
   );
 };
