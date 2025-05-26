@@ -22,7 +22,7 @@ export const SurveySpatialObservationContainer = () => {
   ];
 
   return (
-    <Box width="100%">
+    <Box display="flex" flexDirection="column" flex="1 1 auto">
       <Box flex="0 0 auto" pb={2} px={2}>
         <CustomToggleButtonGroup
           views={views}

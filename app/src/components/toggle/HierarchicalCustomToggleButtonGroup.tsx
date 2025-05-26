@@ -105,13 +105,13 @@ export const HierarchicalCustomToggleButtonGroup = <ViewValueType extends string
                     <Box
                       sx={{
                         position: 'absolute',
-                        right: 16,
+                        right: 15,
                         top: '50%',
                         transform: 'translateY(-50%)',
                         width: 24,
                         height: 24
                       }}>
-                      <CustomTooltip tooltip="Change sites to applicable">
+                      <CustomTooltip tooltip={`Include ${item.label} in the progress calculation`}>
                         <Box
                           sx={{
                             position: 'relative',
@@ -135,7 +135,8 @@ export const HierarchicalCustomToggleButtonGroup = <ViewValueType extends string
                               height: 24,
                               color: grey[400],
                               '&:hover': {
-                                bgcolor: grey[100]
+                                bgcolor: grey[300],
+                                borderRadius: '500px'
                               }
                             }}>
                             <Icon path={mdiPlus} size={1} />
@@ -145,18 +146,17 @@ export const HierarchicalCustomToggleButtonGroup = <ViewValueType extends string
                     </Box>
                   )}
 
-                  {/* Checkbox that switches to minus IconButton on hover */}
                   {item.checkbox && !item.disabled && (
                     <Box
                       sx={{
                         position: 'absolute',
-                        right: 16,
+                        right: 15,
                         top: '50%',
                         transform: 'translateY(-50%)',
                         width: 24,
                         height: 24
                       }}>
-                      <CustomTooltip tooltip="Change sites to non-applicable">
+                      <CustomTooltip tooltip={`Remove ${item.label} from the progress calculation`}>
                         <Box
                           sx={{
                             position: 'relative',
@@ -165,20 +165,26 @@ export const HierarchicalCustomToggleButtonGroup = <ViewValueType extends string
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            '&:hover .checkbox': { display: 'none' },
-                            '&:hover .icon-button': { display: 'flex' }
+                            '&:hover .checkbox': {
+                              opacity: 0
+                            },
+                            '&:hover .minus-icon': {
+                              opacity: 1
+                            }
                           }}>
                           <Checkbox
                             className="checkbox"
                             checked={item.checked}
                             onClick={(e) => {
-                              handleCheckboxClick?.(item);
                               e.stopPropagation();
+                              handleCheckboxClick?.(item);
                             }}
                             size="small"
                             sx={{
                               position: 'absolute',
                               p: 0,
+
+                              opacity: 1,
                               '& .MuiSvgIcon-root': {
                                 fill: appTheme.palette.primary.main
                               }
@@ -186,11 +192,15 @@ export const HierarchicalCustomToggleButtonGroup = <ViewValueType extends string
                           />
 
                           <Box
+                            className="minus-icon"
                             onClick={(e) => {
                               e.stopPropagation();
                               handleCheckboxClick?.(item);
                             }}
                             sx={{
+                              position: 'absolute',
+                              opacity: 0,
+
                               cursor: 'pointer',
                               display: 'flex',
                               alignItems: 'center',
@@ -199,7 +209,8 @@ export const HierarchicalCustomToggleButtonGroup = <ViewValueType extends string
                               height: 24,
                               color: grey[400],
                               '&:hover': {
-                                bgcolor: grey[100]
+                                bgcolor: grey[300],
+                                borderRadius: '500px'
                               }
                             }}>
                             <Icon path={mdiMinus} size={1} />

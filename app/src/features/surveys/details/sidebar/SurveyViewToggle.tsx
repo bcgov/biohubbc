@@ -108,10 +108,20 @@ export const SurveyViewToggle = ({ checklist, activeView, setActiveView }: Surve
     [biohubApi, flattenedChecklistItems, BULK_IGNORE_MAP, surveyContext]
   );
 
-  const samplingCounts = useMemo(
-    () => [checklist?.sampling.sites.count, checklist?.sampling.techniques.count, checklist?.sampling.periods.count],
-    [checklist?.sampling]
-  );
+  const samplingCounts = useMemo(() => {
+    const counts = [];
+
+    if (checklist?.sampling.sites.applicable) {
+      counts.push(checklist?.sampling.sites.count);
+    }
+    if (checklist?.sampling.techniques.applicable) {
+      counts.push(checklist?.sampling.techniques.count);
+    }
+    if (checklist?.sampling.periods.applicable) {
+      counts.push(checklist?.sampling.periods.count);
+    }
+    return counts;
+  }, [checklist?.sampling]);
 
   const dataCounts = useMemo(
     () => [
@@ -137,12 +147,12 @@ export const SurveyViewToggle = ({ checklist, activeView, setActiveView }: Surve
         label: 'Sampling',
         icon: mdiCalendarClock,
         checkbox: true,
+
         indeterminate:
-          samplingCounts.some((count) => (count ?? 0) > 0) && !samplingCounts.every((count) => (count ?? 0) > 0),
-        checked:
-          !!checklist?.sampling.sites.count &&
-          !!checklist?.sampling.techniques.count &&
-          !!checklist?.sampling.periods.count,
+          samplingCounts.some((count) => (count ?? 0) > 0) && samplingCounts.some((count) => (count ?? 0) === 0),
+
+        checked: samplingCounts.every((count) => (count ?? 0) > 0),
+
         disabled:
           !checklist?.sampling.sites?.applicable &&
           !checklist?.sampling.techniques?.applicable &&
@@ -153,14 +163,11 @@ export const SurveyViewToggle = ({ checklist, activeView, setActiveView }: Surve
         label: 'Data',
         icon: mdiDatabaseSearch,
         checkbox: true,
-        indeterminate: dataCounts.some((count) => (count ?? 0) > 0) && !dataCounts.every((count) => (count ?? 0) > 0),
-        checked:
-          !!checklist?.data.observations.count &&
-          !!checklist?.data.telemetry.devices.count &&
-          !!checklist?.data.telemetry.deployments.count &&
-          !!checklist?.data.telemetry.locations.count &&
-          !!checklist?.data.habitat.count &&
-          !!checklist?.data.animals.count,
+
+        indeterminate: dataCounts.some((count) => (count ?? 0) > 0) && dataCounts.some((count) => (count ?? 0) === 0),
+
+        checked: dataCounts.every((count) => (count ?? 0) > 0),
+
         disabled:
           !checklist?.data.observations?.applicable &&
           !checklist?.data.telemetry.devices?.applicable &&

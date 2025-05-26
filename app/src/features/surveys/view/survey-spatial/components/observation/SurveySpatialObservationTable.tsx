@@ -150,6 +150,7 @@ export const SurveySpatialObservationTable = () => {
       hasNoData={!rows.length}
       hasNoDataFallback={
         <NoDataOverlay
+          sx={{ minHeight: '300px' }}
           title="Add Species Observations"
           subtitle="Observations show where and when you observed species. You can link observations to sampling periods."
           icon={mdiArrowTopRight}
