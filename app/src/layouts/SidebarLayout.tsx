@@ -1,31 +1,34 @@
 import Box from '@mui/material/Box';
 import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
-import Paper from '@mui/material/Paper';
+import Paper, { PaperProps } from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import { ReactNode } from 'react';
 
-interface SidebarLayoutProps {
+interface SidebarLayoutProps extends PaperProps {
   sidebar: ReactNode;
   header?: ReactNode;
   children: ReactNode;
 }
 
-export const SidebarLayout = ({ sidebar, header, children }: SidebarLayoutProps) => {
+export const SidebarLayout = ({ sidebar, header, children, ...paperProps }: SidebarLayoutProps) => {
   return (
     <Stack
       component={Paper}
       direction="row"
       alignItems="stretch"
+      {...paperProps}
       sx={{
-        minHeight: '70vh'
+        minHeight: '70vh',
+        overflow: 'hidden',
+        borderRadius: 0,
+        ...paperProps.sx
       }}>
       {/* Sidebar */}
       <Box
         sx={{
           minWidth: '300px',
-          width: '20vw',
           overflowY: 'auto',
           height: '100%'
         }}>

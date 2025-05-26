@@ -30,7 +30,7 @@ const PageHeader = (props: IPageHeader) => {
         top: 0,
         zIndex: 1002
       }}>
-      <Container maxWidth="xl" sx={{ py: 2, px: 3 }}>
+      <Container maxWidth="xl" sx={{ py: 3, px: 3 }}>
         {breadCrumbJSX && (
           <Box minHeight="25px">
             <LoadingGuard

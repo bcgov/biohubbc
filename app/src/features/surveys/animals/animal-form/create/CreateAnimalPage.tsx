@@ -55,7 +55,7 @@ export const CreateAnimalPage = () => {
   const { surveyId } = surveyContext;
 
   const handleCancel = () => {
-    history.push(`/admin/surveys/${surveyId}/animals`);
+    history.goBack();
   };
 
   const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
@@ -125,7 +125,7 @@ export const CreateAnimalPage = () => {
       surveyContext.critterDataLoader.refresh(surveyContext.surveyId);
 
       skipUnsavedChangesDialog();
-      history.push(`/admin/surveys/${surveyId}/animals`);
+      history.goBack();
     } catch (error) {
       const apiError = error as APIError;
       showCreateErrorDialog({

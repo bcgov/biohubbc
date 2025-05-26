@@ -6,7 +6,7 @@ import { GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
-import CustomToggleButtonGroup from 'components/toolbar/CustomToggleButtonGroup';
+import CustomToggleButtonGroup from 'components/toggle/CustomToggleButtonGroup';
 import { SurveyPeriodsTable } from 'features/surveys/view/survey-sampling/components/period/SurveyPeriodsTable';
 import { SurveyTechniquesCardContainer } from 'features/surveys/view/survey-sampling/components/technique/SurveyTechniqueCardContainer';
 import { useBiohubApi } from 'hooks/useBioHubApi';

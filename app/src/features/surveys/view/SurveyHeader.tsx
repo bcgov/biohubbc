@@ -20,7 +20,7 @@ import Typography from '@mui/material/Typography';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import PageHeader from 'components/layout/PageHeader';
 import PublishSurveyIdDialog from 'components/publish/PublishSurveyDialog';
-import { SurveyRoleRouteGuard } from 'components/security/Guards';
+import { SurveyRoleRouteGuard } from 'components/security/RouteGuards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { DeleteSurveyI18N } from 'constants/i18n';
 import { SURVEY_ROLE, SYSTEM_ROLE } from 'constants/roles';
@@ -164,9 +164,9 @@ const SurveyHeader = () => {
           }
           subTitleJSX={
             <Box flex="1 1 auto" mt={1}>
-              <Stack flexDirection="row" alignItems="center" gap={0.75} color="text.secondary" mb={2}>
+              <Stack flexDirection="row" alignItems="center" gap={0.75} color="text.secondary">
                 <Icon path={mdiCalendarRange} size={0.8} color={grey[600]} style={{ marginTop: 1.5 }} />
-                <Typography component="span">
+                <Typography component="span" variant="body2">
                   {getFormattedDateRangeString(
                     DATE_FORMAT.MediumDateFormat,
                     surveyWithDetails.surveyData.survey_details.start_date,

@@ -1,6 +1,6 @@
 import { ICollectionMembersAdvancedFilters } from 'interfaces/useCollectionApi.interface';
 
-export const CollectionParticipantsAdvancedFiltersInitialValues: ICollectionMembersAdvancedFilters = {
+export const CollectionMembersAdvancedFiltersInitialValues: ICollectionMembersAdvancedFilters = {
   keyword: undefined,
   system_user_id: undefined
 };
@@ -21,12 +21,12 @@ interface ICollectionMembersFilterFormProps {
  * @param {ICollectionMembersFilterFormProps} props
  * @return {*}
  */
-const CollectionParticipantsFilterForm = (props: ICollectionMembersFilterFormProps) => {
+const CollectionMembersFilterForm = (props: ICollectionMembersFilterFormProps) => {
   const { handleSubmit, initialValues } = props;
 
   return (
     <Formik
-      initialValues={initialValues ?? CollectionParticipantsAdvancedFiltersInitialValues}
+      initialValues={initialValues ?? CollectionMembersAdvancedFiltersInitialValues}
       onSubmit={handleSubmit}
       validateOnChange={false}
       validateOnBlur={false}
@@ -60,4 +60,4 @@ const CollectionParticipantsFilterForm = (props: ICollectionMembersFilterFormPro
   );
 };
 
-export default CollectionParticipantsFilterForm;
+export default CollectionMembersFilterForm;

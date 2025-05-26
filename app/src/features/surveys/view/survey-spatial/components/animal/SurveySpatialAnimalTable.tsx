@@ -1,4 +1,3 @@
-import Box from '@mui/material/Box';
 import green from '@mui/material/colors/green';
 import red from '@mui/material/colors/red';
 import { GridColDef } from '@mui/x-data-grid';
@@ -6,8 +5,6 @@ import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { ScientificNameTypography } from 'features/surveys/animals/components/ScientificNameTypography';
 import { ICritterDetailedResponse } from 'interfaces/useCritterApi.interface';
-
-const rowHeight = 52;
 
 interface IAnimalRow {
   id: number;
@@ -59,31 +56,27 @@ export const SurveySpatialAnimalTable = (props: ISurveyDataAnimalTableProps) => 
   ];
 
   return (
-    <Box flex="1 1 auto" overflow="hidden">
-      <StyledDataGrid
-        noRowsMessage="No animals found"
-        columnHeaderHeight={rowHeight}
-        rowHeight={rowHeight}
-        rows={rows}
-        getRowId={(row) => row.id}
-        columns={columns}
-        initialState={{
-          pagination: {
-            paginationModel: { page: 0, pageSize: 10 }
-          }
-        }}
-        pageSizeOptions={[10, 25, 50]}
-        rowSelection={false}
-        autoHeight={false}
-        checkboxSelection={false}
-        disableRowSelectionOnClick
-        disableColumnSelector
-        disableColumnFilter
-        disableColumnMenu
-        disableVirtualization
-        sortingOrder={['asc', 'desc']}
-        data-testid="survey-animals-data-table"
-      />
-    </Box>
+    <StyledDataGrid
+      noRowsMessage="No animals found"
+      rowHeight={52}
+      rows={rows}
+      getRowId={(row) => row.id}
+      columns={columns}
+      initialState={{
+        pagination: {
+          paginationModel: { page: 0, pageSize: 10 }
+        }
+      }}
+      pageSizeOptions={[10, 25, 50]}
+      rowSelection={false}
+      checkboxSelection={false}
+      disableRowSelectionOnClick
+      disableColumnSelector
+      disableColumnFilter
+      disableColumnMenu
+      disableVirtualization
+      sortingOrder={['asc', 'desc']}
+      data-testid="survey-animals-data-table"
+    />
   );
 };

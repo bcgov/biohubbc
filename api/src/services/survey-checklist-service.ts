@@ -23,26 +23,30 @@ export class SurveyChecklistService extends DBService {
   }
 
   /**
-   * Ignore a checklist item for the given survey
+   * Ignore one or more checklist items for the given survey
    *
    * @param {number} surveyId
-   * @param {string} checklistItemName
+   * @param {string[]} checklistItemNames
    * @return {*}  Promise<void>
    * @memberof SurveyChecklistService
    */
-  async insertSurveyChecklistItemIgnore(surveyId: number, checklistItemName: string): Promise<void> {
-    return this.surveyChecklistRepository.insertSurveyChecklistItemIgnore(surveyId, checklistItemName);
+  async insertSurveyChecklistItemIgnore(surveyId: number, checklistItemNames: string[]): Promise<void> {
+    await Promise.all(
+      checklistItemNames.map((checklistItemName) =>
+        this.surveyChecklistRepository.insertSurveyChecklistItemIgnore(surveyId, checklistItemName)
+      )
+    );
   }
 
   /**
    * Remove an ignored checklist item for the given survey
    *
    * @param {number} surveyId
-   * @param {string} checklistItemName
+   * @param {string[]} checklistItemNames
    * @return {*}  Promise<void>
    * @memberof SurveyChecklistService
    */
-  async deleteSurveyChecklistItemIgnore(surveyId: number, checklistItemName: string): Promise<void> {
-    return this.surveyChecklistRepository.deleteSurveyChecklistItemIgnore(surveyId, checklistItemName);
+  async deleteSurveyChecklistItemIgnore(surveyId: number, checklistItemNames: string[]): Promise<void> {
+    return this.surveyChecklistRepository.deleteSurveyChecklistItemIgnore(surveyId, checklistItemNames);
   }
 }
