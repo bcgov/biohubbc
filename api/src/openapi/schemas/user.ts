@@ -111,7 +111,7 @@ export const systemUserSchema: OpenAPIV3.SchemaObject = {
 export const surveyUserSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
   additionalProperties: false,
-  required: ['survey_member_id', 'survey_id', 'system_user_id', 'survey_role_ids', 'survey_role_names'],
+  required: ['survey_member_id', 'survey_id', 'system_user_id', 'survey_role_ids', 'survey_role_name'],
   properties: {
     survey_member_id: {
       type: 'number'
@@ -122,13 +122,13 @@ export const surveyUserSchema: OpenAPIV3.SchemaObject = {
     system_user_id: {
       type: 'number'
     },
-    survey_role_ids: {
+    survey_role_id: {
       type: 'array',
       items: {
         type: 'number'
       }
     },
-    survey_role_names: {
+    survey_role_name: {
       type: 'array',
       items: {
         type: 'string'
@@ -140,7 +140,7 @@ export const surveyUserSchema: OpenAPIV3.SchemaObject = {
 export const surveyAndSystemUserSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
   additionalProperties: false,
-  required: ['survey_member_id', 'survey_id', 'system_user_id', 'survey_role_ids', 'survey_role_names'],
+  required: ['survey_member_id', 'survey_id', 'system_user_id', 'survey_role_id', 'survey_role_name'],
   properties: {
     survey_member_id: {
       type: 'number'
@@ -151,17 +151,11 @@ export const surveyAndSystemUserSchema: OpenAPIV3.SchemaObject = {
     system_user_id: {
       type: 'number'
     },
-    survey_role_ids: {
-      type: 'array',
-      items: {
-        type: 'number'
-      }
+    survey_role_id: {
+      type: 'number'
     },
-    survey_role_names: {
-      type: 'array',
-      items: {
-        type: 'string'
-      }
+    survey_role_name: {
+      type: 'string'
     },
     user_identifier: {
       description: 'The unique user identifier',

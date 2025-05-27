@@ -220,7 +220,7 @@ export class SurveyMemberService extends DBService {
         surveyLeadsPerSurvey[key] = 0;
       }
 
-      if (row.survey_role_names.includes(SURVEY_ROLE.ADMIN)) {
+      if (row.survey_role_name.includes(SURVEY_ROLE.ADMIN)) {
         surveyLeadsPerSurvey[key] += 1;
       }
     });
@@ -263,7 +263,7 @@ export class SurveyMemberService extends DBService {
         surveyLeadsPerSurvey[key] = 0;
       }
 
-      if (row.system_user_id !== systemUserId && row.survey_role_names.includes(SURVEY_ROLE.ADMIN)) {
+      if (row.system_user_id !== systemUserId && row.survey_role_name.includes(SURVEY_ROLE.ADMIN)) {
         surveyLeadsPerSurvey[key] += 1;
       }
     });
@@ -291,7 +291,7 @@ export class SurveyMemberService extends DBService {
    * @memberof SurveyMemberService
    */
   _doSurveyMembersHaveARole(participants: IPostSurveyMember[], roleToCheck: SURVEY_ROLE): boolean {
-    return participants.some((item) => item.survey_role_names.some((role) => role === roleToCheck));
+    return participants.some((item) => item.survey_role_name === roleToCheck);
   }
 
   /**
@@ -307,12 +307,12 @@ export class SurveyMemberService extends DBService {
 
     for (const participant of participants) {
       const system_user_id = participant.system_user_id;
-      const survey_role_names = participant.survey_role_names;
+      const survey_role_name = participant.survey_role_name;
 
       // Get the set of unique role names, or initialize a new set if the user is not in the map
       const uniqueRoleNamesForMember = participantUniqueRoles.get(system_user_id) ?? new Set<string>();
 
-      for (const role of survey_role_names) {
+      for (const role of survey_role_name) {
         // Add the role names to the set, converting to lowercase to ensure case-insensitive comparison
         uniqueRoleNamesForMember.add(role.toLowerCase());
       }
@@ -374,15 +374,11 @@ export class SurveyMemberService extends DBService {
 
       if (existingMember) {
         // Update existing participant's role
-        if (
-          !existingMember.survey_role_names.some((existingRole) =>
-            incomingMember.survey_role_names.includes(existingRole as SURVEY_ROLE)
-          )
-        ) {
+        if (incomingMember.survey_role_name !== existingMember.survey_role_name) {
           promises.push(
             this.surveyMemberRepository.updateSurveyMemberRole(
               incomingMember.survey_member_id ?? existingMember.survey_member_id,
-              incomingMember.survey_role_names[0]
+              incomingMember.survey_role_name[0]
             )
           );
         }
@@ -392,7 +388,7 @@ export class SurveyMemberService extends DBService {
           this.surveyMemberRepository.insertSurveyMember(
             surveyId,
             incomingMember.system_user_id,
-            incomingMember.survey_role_names[0]
+            incomingMember.survey_role_name[0]
           )
         );
       }

@@ -159,7 +159,7 @@ export const SurveyDataPage = (props: ISurveyDataPageProps) => {
 
   return (
     <SidebarLayout
-      sx={{ borderTopRightRadius: '4px', borderBottomRightRadius: '4px', overflow: 'hidden' }}
+      sx={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0, overflow: 'hidden' }}
       sidebar={
         <Box p={2}>
           <HierarchicalCustomToggleButtonGroup

@@ -108,12 +108,13 @@ const CustomToggleButtonGroup = <ViewValueType extends string>(props: CustomTogg
                           handleCheckboxClick?.(view);
                         }}
                         sx={{
+                          position: 'absolute',
                           cursor: 'pointer',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          width: 24,
-                          height: 24,
+                          width: 30,
+                          height: 30,
                           color: grey[400],
                           '&:hover': {
                             bgcolor: grey[300],
@@ -182,13 +183,12 @@ const CustomToggleButtonGroup = <ViewValueType extends string>(props: CustomTogg
                         sx={{
                           position: 'absolute',
                           opacity: 0,
-
                           cursor: 'pointer',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          width: 24,
-                          height: 24,
+                          width: 30,
+                          height: 30,
                           color: grey[400],
                           '&:hover': {
                             bgcolor: grey[300],

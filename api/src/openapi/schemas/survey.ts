@@ -63,7 +63,7 @@ export const CreateSurveyMemberSchema: OpenAPIV3.SchemaObject = {
     system_user_id: { type: 'number', description: 'Primary key of a system user to add to the survey' },
     survey_role_name: {
       type: 'string',
-      enum: ['Admin', 'Member'],
+      enum: ['Admin', 'Editor', 'Viewer'],
       description: 'Name of a survey role for the participant'
     }
   }

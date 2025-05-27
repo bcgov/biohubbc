@@ -1,6 +1,5 @@
 import { mdiArrowTopRight } from '@mdi/js';
 import Box from '@mui/material/Box';
-import blue from '@mui/material/colors/blue';
 import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
@@ -14,7 +13,8 @@ import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
-import { COLLECTION_ROLE } from 'constants/roles';
+import { getSurveyRoleColour } from 'constants/colours';
+import { SURVEY_ROLE } from 'constants/roles';
 import MembersFilterForm from 'features/collection/details/members/filter/CollectionMembersFilterForm';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext, useSurveyContext } from 'hooks/useContext';
@@ -92,8 +92,8 @@ const SurveyMembersContainer = () => {
           codesContext.codesDataLoader.data,
           'survey_roles',
           params.row.survey_role_id
-        ) as COLLECTION_ROLE;
-        return <ColouredRectangleChip label={role} colour={role === COLLECTION_ROLE.ADMIN ? blue : grey} />;
+        ) as SURVEY_ROLE;
+        return <ColouredRectangleChip label={role} colour={getSurveyRoleColour(role)} />;
       }
     }
   ];
@@ -147,7 +147,7 @@ const SurveyMembersContainer = () => {
           <NoDataOverlay
             minHeight="400px"
             title="Invite Members"
-            subtitle="Surveys added to this survey will appear here"
+            subtitle="Users added to the Survey will appear here"
             icon={mdiArrowTopRight}
             data-testid="survey-participant-list-no-data-overlay"
           />

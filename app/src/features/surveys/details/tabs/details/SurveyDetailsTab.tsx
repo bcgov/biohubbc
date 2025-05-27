@@ -1,4 +1,4 @@
-import { green, grey } from '@mui/material/colors';
+import { grey } from '@mui/material/colors';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import { Box } from '@mui/system';
@@ -63,7 +63,11 @@ export const SurveyDetailsTab = ({ checklist }: SurveyDetailsTabProps) => {
               sidebar={
                 <Box p={2}>
                   <Paper
-                    sx={{ bgcolor: checklist.progress_percentage === 100 ? green[50] : grey[50], p: 2, mb: 1 }}
+                    sx={{
+                      bgcolor: checklist.progress_percentage === 100 ? '#f6faf5' : grey[50],
+                      p: 2,
+                      mb: 1
+                    }}
                     elevation={0}>
                     <Typography gutterBottom component="legend">
                       Progress

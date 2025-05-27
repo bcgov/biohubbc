@@ -527,8 +527,8 @@ describe('AuthorizationService', () => {
           role_ids: [3],
           role_names: [SYSTEM_ROLE.PROJECT_CREATOR],
           survey_member_id: 2,
-          survey_role_ids: [1],
-          survey_role_names: [SURVEY_ROLE.ADMIN]
+          survey_role_id: 1,
+          survey_role_name: [SURVEY_ROLE.ADMIN]
         };
         sinon
           .stub(AuthorizationService.prototype, 'getSurveyMemberObjectBySurveyId')
@@ -566,8 +566,8 @@ describe('AuthorizationService', () => {
             agency: null,
             survey_member_id: 3,
 
-            survey_role_ids: [1],
-            survey_role_names: [SURVEY_ROLE.ADMIN]
+            survey_role_id: 1,
+            survey_role_name: [SURVEY_ROLE.ADMIN]
           }
         });
 
@@ -600,8 +600,8 @@ describe('AuthorizationService', () => {
             display_name: 'test user',
             agency: null,
             survey_member_id: 3,
-            survey_role_ids: [],
-            survey_role_names: []
+            survey_role_id: [],
+            survey_role_name: []
           }
         });
 
@@ -635,8 +635,8 @@ describe('AuthorizationService', () => {
             agency: null,
             survey_member_id: 3,
 
-            survey_role_ids: [1],
-            survey_role_names: [SURVEY_ROLE.ADMIN]
+            survey_role_id: 1,
+            survey_role_name: [SURVEY_ROLE.ADMIN]
           }
         });
 
@@ -706,8 +706,8 @@ describe('AuthorizationService', () => {
           agency: null,
           survey_member_id: 3,
 
-          survey_role_ids: [1],
-          survey_role_names: [SURVEY_ROLE.ADMIN]
+          survey_role_id: 1,
+          survey_role_name: [SURVEY_ROLE.ADMIN]
         };
         sinon
           .stub(AuthorizationService.prototype, 'getSurveyMemberObjectBySurveyId')
@@ -745,8 +745,8 @@ describe('AuthorizationService', () => {
             agency: null,
             survey_member_id: 3,
 
-            survey_role_ids: [],
-            survey_role_names: []
+            survey_role_id: [],
+            survey_role_name: []
           }
         });
 
@@ -780,8 +780,8 @@ describe('AuthorizationService', () => {
             agency: null,
             survey_member_id: 3,
 
-            survey_role_ids: [],
-            survey_role_names: []
+            survey_role_id: [],
+            survey_role_name: []
           }
         });
 
@@ -815,8 +815,8 @@ describe('AuthorizationService', () => {
             agency: null,
             survey_member_id: 3,
 
-            survey_role_ids: [1],
-            survey_role_names: [SURVEY_ROLE.ADMIN]
+            survey_role_id: 1,
+            survey_role_name: [SURVEY_ROLE.ADMIN]
           }
         });
 
@@ -1111,8 +1111,8 @@ describe('AuthorizationService', () => {
         agency: null,
         survey_member_id: 3,
         survey_id: 1,
-        survey_role_ids: [1],
-        survey_role_names: [SURVEY_ROLE.ADMIN]
+        survey_role_id: 1,
+        survey_role_name: [SURVEY_ROLE.ADMIN]
       };
 
       sinon.stub(AuthorizationService.prototype, 'getSurveyMemberWithRolesBySurveyId').resolves(surveyUserMock);
@@ -1177,8 +1177,8 @@ describe('AuthorizationService', () => {
         agency: null,
         survey_member_id: 3,
         survey_id: 1,
-        survey_role_ids: [1],
-        survey_role_names: [SURVEY_ROLE.ADMIN]
+        survey_role_id: 1,
+        survey_role_name: [SURVEY_ROLE.ADMIN]
       };
       sinon
         .stub(SurveyMemberService.prototype, 'getSurveyMemberBySurveyIdAndUserGuid')
@@ -1259,8 +1259,8 @@ describe('AuthorizationService', () => {
         agency: null,
         survey_member_id: 3,
 
-        survey_role_ids: [1],
-        survey_role_names: [SURVEY_ROLE.ADMIN]
+        survey_role_id: 1,
+        survey_role_name: [SURVEY_ROLE.ADMIN]
       };
 
       sinon.stub(AuthorizationService.prototype, 'getSurveyMemberWithRolesBySurveyId').resolves(surveyUserMock);
@@ -1326,8 +1326,8 @@ describe('AuthorizationService', () => {
         agency: null,
         survey_member_id: 3,
 
-        survey_role_ids: [1],
-        survey_role_names: [SURVEY_ROLE.ADMIN]
+        survey_role_id: 1,
+        survey_role_name: [SURVEY_ROLE.ADMIN]
       };
       sinon
         .stub(SurveyMemberService.prototype, 'getSurveyMemberBySurveyIdAndUserGuid')

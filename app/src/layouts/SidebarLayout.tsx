@@ -22,7 +22,6 @@ export const SidebarLayout = ({ sidebar, header, children, ...paperProps }: Side
       sx={{
         minHeight: '70vh',
         overflow: 'hidden',
-        borderRadius: 0,
         ...paperProps.sx
       }}>
       {/* Sidebar */}

@@ -28,10 +28,10 @@ export interface ISurveyRoleRouteGuardProps extends IGuardProps {
   /**
    * An array of valid project roles. The user may have 1 or more matching project roles to pass the guard.
    *
-   * @type {SURVEY_ROLE[]}
+   * @type {SURVEY_ROLE}
    * @memberof ISurveyRoleRouteGuardProps
    */
-  validProjectRoles?: SURVEY_ROLE[];
+  validProjectRoles?: SURVEY_ROLE;
   /**
    * An array of valid system roles. The user may have 1 or more matching system roles to override the guard.
    *
@@ -42,7 +42,7 @@ export interface ISurveyRoleRouteGuardProps extends IGuardProps {
 
   /**
    * An array of valid project permissions. The user must have 1 or more matching permissions to pass the guard
-   * @type {SURVEY_ROLE[]}
+   * @type {SURVEY_ROLE}
    * @memberof ISurveyRoleRouteGuardProps
    */
   validSurveyRoles: SURVEY_ROLE[];

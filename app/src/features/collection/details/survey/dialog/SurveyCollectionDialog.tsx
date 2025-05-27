@@ -48,8 +48,8 @@ const SurveyCollectionDialog = (props: ISurveyCollectionDialogProps) => {
 
   const CollectionSurveyYupSchema = yup.object().shape({
     collections: yup
-      .array(yup.object({ collection_id: yup.number().required('Collection is required') }))
-      .min(1, 'You must select at least one collection')
+      .array(yup.object({ collection_id: yup.number().required('Project is required') }))
+      .min(1, 'You must select at least one project')
   });
 
   const showSnackBar = (textDialogProps?: Partial<ISnackbarProps>) => {
@@ -79,7 +79,7 @@ const SurveyCollectionDialog = (props: ISurveyCollectionDialogProps) => {
         snackbarMessage: (
           <>
             <Typography variant="body2" component="span">
-              Survey added to collection
+              Survey added to project
             </Typography>
           </>
         ),
@@ -96,8 +96,8 @@ const SurveyCollectionDialog = (props: ISurveyCollectionDialogProps) => {
 
   return (
     <EditDialog
-      dialogTitle="Add Survey to Collection"
-      dialogText="Select surveys to add to the collection"
+      dialogTitle="Add Survey to Project"
+      dialogText="Select surveys to add to the project"
       open={props.open}
       dialogLoading={isSubmitting}
       component={{

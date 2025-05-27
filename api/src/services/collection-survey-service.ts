@@ -6,7 +6,9 @@ import {
   ICreateCollectionSurveyRequest,
   IDeleteCollectionSurveyRequest
 } from '../models/collection';
+import { SystemUserWithRoles } from '../models/system-user-view';
 import { CollectionSurveyRepository } from '../repositories/collection-survey-repository';
+import { SurveyMember } from '../repositories/survey-member-repository';
 import { DBService } from './db-service';
 import { PlatformService } from './platform-service';
 import { SurveyMemberService } from './survey-member-service';
@@ -102,12 +104,11 @@ export class CollectionSurveyService extends DBService {
       );
 
       // Check that each survey has a valid role (ADMIN)
-      const hasMissingRequiredRole = authorizations.some(
-        (authorization) =>
-          !authorization?.survey_role_names.some((role) =>
-            [SURVEY_ROLE.EDITOR, SURVEY_ROLE.ADMIN].includes(role as SURVEY_ROLE)
-          )
-      );
+      const hasMissingRequiredRole = authorizations
+        .filter((authorization): authorization is SurveyMember & SystemUserWithRoles => authorization !== null)
+        .some((authorization) => {
+          return ![SURVEY_ROLE.EDITOR, SURVEY_ROLE.ADMIN].includes(authorization.survey_role_name as SURVEY_ROLE);
+        });
 
       if (hasMissingRequiredRole) {
         throw new HTTP401('You do not have access to all of the surveys');

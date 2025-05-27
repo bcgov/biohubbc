@@ -152,18 +152,20 @@ export class PostParticipationData {
   survey_job_name: string;
 
   constructor(obj?: any) {
-    this.system_user_id = obj?.system_user_id || null;
-    this.survey_job_name = obj?.survey_job_name || null;
+    this.system_user_id = obj?.system_user_id;
+    this.survey_job_name = obj?.survey_job_name;
   }
 }
 
 export class IPostSurveyMember {
   system_user_id: number;
-  survey_role_name: string;
+  survey_role_name: SURVEY_ROLE;
+  survey_member_id: number;
 
   constructor(obj?: any) {
-    this.system_user_id = obj?.system_user_id || null;
-    this.survey_role_name = obj?.survey_role_name || null;
+    this.system_user_id = obj?.system_user_id;
+    this.survey_role_name = obj?.survey_role_name;
+    this.survey_member_id = obj?.survey_member_id;
   }
 }
 
@@ -195,10 +197,4 @@ export class PostMembersData {
     this.email = obj?.email || null;
     this.roleId = obj?.roleId || null;
   }
-}
-
-export interface IPostSurveyMember {
-  survey_member_id?: number;
-  system_user_id: number;
-  survey_role_names: SURVEY_ROLE[];
 }

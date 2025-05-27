@@ -1,6 +1,5 @@
 import { mdiArrowTopRight } from '@mdi/js';
 import Box from '@mui/material/Box';
-import blue from '@mui/material/colors/blue';
 import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
@@ -14,6 +13,7 @@ import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
+import { getCollectionRoleColour } from 'constants/colours';
 import { COLLECTION_ROLE } from 'constants/roles';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext } from 'hooks/useContext';
@@ -138,7 +138,7 @@ const CollectionMembersContainer = (props: ICollectionMembersContainerProps) => 
           'collection_roles',
           params.row.collection_role_id
         ) as COLLECTION_ROLE;
-        return <ColouredRectangleChip label={role} colour={role === COLLECTION_ROLE.ADMIN ? blue : grey} />;
+        return <ColouredRectangleChip label={role} colour={getCollectionRoleColour(role)} />;
       }
     }
   ];

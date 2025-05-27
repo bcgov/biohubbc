@@ -42,7 +42,7 @@ import { useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 import { getFormattedDateRangeString } from 'utils/Utils';
 import { SURVEY_ACTIVE_TAB_VALUE } from '../details/SurveyPage';
-import CreateCollectionSurveyDialog from './collection/CreateCollectionSurveyDialog';
+import CreateCollectionSurveyDialog from './collection/CollectionSurveyDialog';
 import SurveyHeaderTabs from './tabs/SurveyHeaderTabs';
 
 interface ISurveyHeaderProps {
@@ -171,7 +171,7 @@ const SurveyHeader = (props: ISurveyHeaderProps) => {
             </Stack>
           }
           subTitleJSX={
-            <Box flex="1 1 auto" mt={1}>
+            <Box flex="1 1 auto">
               <Stack flexDirection="row" alignItems="center" gap={0.75} color="text.secondary">
                 <Icon path={mdiCalendarRange} size={0.8} color={grey[600]} style={{ marginTop: 1.5 }} />
                 <Typography component="span" variant="body2">
@@ -253,7 +253,7 @@ const SurveyHeader = (props: ISurveyHeaderProps) => {
                   <ListItemIcon>
                     <Icon path={mdiFormatListGroup} size={1} />
                   </ListItemIcon>
-                  <Typography variant="inherit">Add to Collection</Typography>
+                  <Typography variant="inherit">Add to Project</Typography>
                 </MenuItem>
                 <MenuItem onClick={() => history.push('edit')}>
                   <ListItemIcon>
