@@ -7,7 +7,7 @@ import { Link as RouterLink } from 'react-router-dom';
 
 export enum SurveyManagePageEnum {
   OBSERVATIONS = 'Observations',
-  ANIMALS = 'Animal',
+  ANIMALS = 'Animals',
   TELEMETRY = 'Telemetry',
   HABITAT_FEATURES = 'Habitat Features'
 }

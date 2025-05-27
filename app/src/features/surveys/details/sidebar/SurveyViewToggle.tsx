@@ -1,18 +1,14 @@
-import { useCallback, useMemo } from 'react';
-
 import { mdiCalendarClock, mdiDatabaseSearch, mdiFileOutline, mdiHome } from '@mdi/js';
-
 import CustomToggleButtonGroup from 'components/toggle/CustomToggleButtonGroup';
 import { ToggleButtonView } from 'components/toggle/HierarchicalCustomToggleButtonGroup';
-
-import { useBiohubApi } from 'hooks/useBioHubApi';
-
 import { SurveyContext } from 'contexts/surveyContext';
-import { useContext } from 'react';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import { IGetSurveyChecklist } from 'interfaces/useChecklistApi.interface';
+import { useCallback, useContext, useMemo } from 'react';
 import { SURVEY_ACTIVE_VIEW_VALUE } from '../SurveyPage';
 
 type SurveyViewToggleProps = {
-  checklist: any;
+  checklist: IGetSurveyChecklist;
   activeView: SURVEY_ACTIVE_VIEW_VALUE;
   setActiveView: (v: SURVEY_ACTIVE_VIEW_VALUE) => void;
 };

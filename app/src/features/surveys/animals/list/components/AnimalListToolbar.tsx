@@ -1,10 +1,11 @@
-import { mdiDotsVertical } from '@mdi/js';
+import { mdiDotsVertical, mdiPlus } from '@mdi/js';
 import { Icon } from '@mdi/react';
+import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
+import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import axios, { AxiosProgressEvent } from 'axios';
-import { DualImportButton } from 'components/buttons/DualImportButton';
 import { CSVSingleImportDialog } from 'components/csv/CSVSingleImportDialog';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
@@ -63,8 +64,7 @@ export const AnimalListToolbar = (props: IAnimaListToolbarProps) => {
         disableGutters
         sx={{
           flex: '0 0 auto',
-          pr: 3,
-          pl: 2
+          minHeight: '0 !important'
         }}>
         <Typography variant="h3" component="h2" flexGrow={1}>
           Animals &zwnj;
@@ -72,24 +72,28 @@ export const AnimalListToolbar = (props: IAnimaListToolbarProps) => {
             ({props.animalCount})
           </Typography>
         </Typography>
-        <DualImportButton
-          singleImportButtonProps={{
-            component: RouterLink,
-            to: `/admin/surveys/${surveyContext.surveyId}/animals/create`
-          }}
-          bulkImportButtonProps={{
-            onClick: () => setOpenImportDialog(true)
-          }}
-        />
-        <IconButton
-          edge="end"
-          sx={{ ml: 1 }}
-          aria-label="header-settings"
-          disabled={!props.checkboxSelectedIdsLength}
-          onClick={props.handleHeaderMenuClick}
-          title="Bulk Actions">
-          <Icon path={mdiDotsVertical} size={1} />
-        </IconButton>
+        <Stack gap={1} flexDirection="row">
+          <Button variant="outlined" onClick={() => setOpenImportDialog(true)}>
+            Import
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<Icon path={mdiPlus} size={1} />}
+            component={RouterLink}
+            to={`/admin/surveys/${surveyContext.surveyId}/animals/create`}>
+            Add
+          </Button>
+          <IconButton
+            edge="end"
+            sx={{ ml: 1 }}
+            aria-label="header-settings"
+            disabled={!props.checkboxSelectedIdsLength}
+            onClick={props.handleHeaderMenuClick}
+            title="Bulk Actions">
+            <Icon path={mdiDotsVertical} size={1} />
+          </IconButton>
+        </Stack>
       </Toolbar>
     </>
   );

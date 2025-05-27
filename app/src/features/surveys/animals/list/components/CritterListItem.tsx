@@ -10,6 +10,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { ISurveyCritter } from 'contexts/animalPageContext';
 import { ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
+import appTheme from 'themes/appTheme';
 import { ScientificNameTypography } from '../../components/ScientificNameTypography';
 
 interface ICritterListItemProps {
@@ -32,10 +33,11 @@ export const CritterListItem = (props: ICritterListItemProps) => {
 
   return (
     <ListItem
+      color="primary"
       sx={{
-        backgroundColor: isSelectedAnimal ? grey[100] : undefined,
+        backgroundColor: isSelectedAnimal ? appTheme.palette.action.selected : undefined,
         '&:hover': {
-          backgroundColor: grey[100]
+          backgroundColor: isSelectedAnimal ? appTheme.palette.action.selected : grey[50]
         }
       }}
       secondaryAction={

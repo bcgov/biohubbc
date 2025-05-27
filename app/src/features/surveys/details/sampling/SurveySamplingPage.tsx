@@ -15,7 +15,7 @@ import { SamplingPeriodContainer } from './period/SamplingPeriodContainer';
 import { SamplingSiteContainer } from './site/SamplingSiteContainer';
 import { SamplingTechniqueContainer } from './technique/SamplingTechniqueContainer';
 
-const ACTIVE_VIEW_KEY = 'cv';
+export const SAMPLING_ACTIVE_VIEW_KEY = 'sav';
 
 export enum SAMPLING_ACTIVE_VIEW_VALUE {
   sites = 'sites',
@@ -38,22 +38,24 @@ export const SurveySamplingPage = (props: ISurveySamplingPageProps) => {
 
   const checklist = surveyContext.surveyChecklistDataLoader.data?.checklist;
 
-  const { searchParams, setSearchParams } = useSearchParams<{ [ACTIVE_VIEW_KEY]: SAMPLING_ACTIVE_VIEW_VALUE }>();
+  const { searchParams, setSearchParams } = useSearchParams<{
+    [SAMPLING_ACTIVE_VIEW_KEY]: SAMPLING_ACTIVE_VIEW_VALUE;
+  }>();
 
   useEffect(() => {
     codesContext.codesDataLoader.load();
 
-    if (!searchParams.get(ACTIVE_VIEW_KEY)) {
-      setSearchParams(searchParams.set(ACTIVE_VIEW_KEY, DEFAULT_VIEW));
+    if (!searchParams.get(SAMPLING_ACTIVE_VIEW_KEY)) {
+      setSearchParams(searchParams.set(SAMPLING_ACTIVE_VIEW_KEY, DEFAULT_VIEW));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [codesContext.codesDataLoader]);
 
-  const activeView = searchParams.get(ACTIVE_VIEW_KEY) as SAMPLING_ACTIVE_VIEW_VALUE;
+  const activeView = searchParams.get(SAMPLING_ACTIVE_VIEW_KEY) as SAMPLING_ACTIVE_VIEW_VALUE;
 
   const handleViewChange = (view: SAMPLING_ACTIVE_VIEW_VALUE) => {
     const updatedView = view ?? DEFAULT_VIEW;
-    setSearchParams(searchParams.set(ACTIVE_VIEW_KEY, updatedView));
+    setSearchParams(searchParams.set(SAMPLING_ACTIVE_VIEW_KEY, updatedView));
   };
 
   const handleCheckboxClick = useCallback(
@@ -108,6 +110,7 @@ export const SurveySamplingPage = (props: ISurveySamplingPageProps) => {
 
   return (
     <SidebarLayout
+      elevation={0}
       sx={{ borderTopRightRadius: '4px', borderBottomRightRadius: '4px' }}
       sidebar={
         <Box p={2}>

@@ -1,26 +1,25 @@
-import { mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
+import { mdiArrowTopRight, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
-import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import FormGroup from '@mui/material/FormGroup';
 import List from '@mui/material/List';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonList } from 'components/loading/SkeletonLoaders';
+import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { ISurveyCritter } from 'contexts/animalPageContext';
 import { CritterListItem } from 'features/surveys/animals/list/components/CritterListItem';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useAnimalPageContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
-import { useState } from 'react';
+import useDataLoader from 'hooks/useDataLoader';
+import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { AnimalListToolbar } from './components/AnimalListToolbar';
 
@@ -34,222 +33,136 @@ export const AnimalListContainer = () => {
   const [critterAnchorEl, setCritterAnchorEl] = useState<MenuProps['anchorEl']>(null);
   const [headerAnchorEl, setHeaderAnchorEl] = useState<MenuProps['anchorEl']>(null);
   const [selectedCritterMenu, setSelectedCritterMenu] = useState<ISurveyCritter>();
+  const biohubApi = useBiohubApi();
 
   const surveyContext = useSurveyContext();
   const dialogContext = useDialogContext();
-
-  const biohubApi = useBiohubApi();
-
   const { surveyId } = useSurveyContext();
-
   const { setSelectedAnimal, selectedAnimal } = useAnimalPageContext();
 
-  const critters = surveyContext.critterDataLoader.data;
+  const surveyCrittersDataLoader = useDataLoader(() => biohubApi.survey.getSurveyCritters(surveyContext.surveyId));
 
-  const crittersCount = critters?.length ?? 0;
+  useEffect(() => {
+    if (!selectedAnimal && surveyCrittersDataLoader.data) {
+      const animal = surveyCrittersDataLoader.data[0];
+      setSelectedAnimal(animal);
+    }
+  }, [setSelectedAnimal, selectedAnimal, surveyCrittersDataLoader.data]);
 
-  const handleCheckboxChange = (critterId: number) => {
-    setCheckboxSelectedIds((prev) => {
-      if (prev.includes(critterId)) {
-        return prev.filter((item) => item !== critterId);
-      } else {
-        return [...prev, critterId];
-      }
-    });
+  useEffect(() => {
+    surveyCrittersDataLoader.load();
+  }, [surveyCrittersDataLoader]);
+
+  const critters = surveyCrittersDataLoader.data ?? [];
+
+  const handleCheckboxChange = (id: number) => {
+    setCheckboxSelectedIds((prev) => (prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]));
   };
 
   const handleToggleCritterSelect = (critter: ISurveyCritter) => {
-    if (selectedAnimal?.critter_id === critter.critter_id) {
-      setSelectedAnimal();
-      return;
-    }
-
-    setSelectedAnimal(critter);
+    setSelectedAnimal(selectedAnimal?.critter_id === critter.critter_id ? undefined : critter);
   };
 
-  const handleCritterMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, critter: ISurveyCritter) => {
+  const handleCritterMenuClick = (event: React.MouseEvent<HTMLButtonElement>, critter: ISurveyCritter) => {
     setCritterAnchorEl(event.currentTarget);
     setSelectedCritterMenu(critter);
   };
 
-  /**
-   * Handle the deletion of a critter
-   *
-   */
-  const handleDeleteCritter = async (surveyCritterId: number) => {
-    await biohubApi.survey
-      .removeCrittersFromSurvey(surveyContext.surveyId, [surveyCritterId])
-      .then(() => {
-        dialogContext.setYesNoDialog({ open: false });
-        setCritterAnchorEl(null);
-        surveyContext.critterDataLoader.refresh(surveyContext.surveyId);
-      })
-      .catch((error: any) => {
-        dialogContext.setYesNoDialog({ open: false });
-        setCritterAnchorEl(null);
-        dialogContext.setSnackbar({
-          snackbarMessage: (
-            <>
-              <Typography variant="body2" component="div">
-                <strong>Error Deleting Animal</strong>
-              </Typography>
-              <Typography variant="body2" component="div">
-                {String(error)}
-              </Typography>
-            </>
-          ),
-          open: true
-        });
+  const handleDeleteCritter = async (id: number) => {
+    try {
+      await biohubApi.survey.removeCrittersFromSurvey(surveyContext.surveyId, [id]);
+      if (selectedAnimal?.critter_id === id) {
+        setSelectedAnimal();
+      }
+      surveyContext.critterDataLoader.refresh(surveyContext.surveyId);
+    } catch (error) {
+      dialogContext.setSnackbar({
+        snackbarMessage: (
+          <>
+            <Typography variant="body2" fontWeight="bold">
+              Error Deleting Animal
+            </Typography>
+            <Typography variant="body2">{String(error)}</Typography>
+          </>
+        ),
+        open: true
       });
+    } finally {
+      dialogContext.setYesNoDialog({ open: false });
+      setCritterAnchorEl(null);
+    }
   };
 
-  /**
-   * Handle the deletion of multiple critters
-   *
-   */
   const handleBulkDeleteCritters = async () => {
-    await biohubApi.survey
-      .removeCrittersFromSurvey(surveyContext.surveyId, checkboxSelectedIds)
-      .then(() => {
-        dialogContext.setYesNoDialog({ open: false });
-
-        // If the selected animal is the deleted animal, unset the selected animal
-        if (checkboxSelectedIds.some((id) => id == selectedAnimal?.critter_id)) {
-          setSelectedAnimal();
-        }
-
-        setCheckboxSelectedIds([]);
-        setHeaderAnchorEl(null);
-        surveyContext.critterDataLoader.refresh(surveyContext.surveyId);
-      })
-      .catch((error: any) => {
-        dialogContext.setYesNoDialog({ open: false });
-        setCheckboxSelectedIds([]);
-        setHeaderAnchorEl(null);
-        dialogContext.setSnackbar({
-          snackbarMessage: (
-            <>
-              <Typography variant="body2" component="div">
-                <strong>Error Deleting Animals</strong>
-              </Typography>
-              <Typography variant="body2" component="div">
-                {String(error)}
-              </Typography>
-            </>
-          ),
-          open: true
-        });
+    try {
+      await biohubApi.survey.removeCrittersFromSurvey(surveyContext.surveyId, checkboxSelectedIds);
+      if (checkboxSelectedIds.includes(selectedAnimal?.critter_id!)) {
+        setSelectedAnimal();
+      }
+      surveyContext.critterDataLoader.refresh(surveyContext.surveyId);
+    } catch (error) {
+      dialogContext.setSnackbar({
+        snackbarMessage: (
+          <>
+            <Typography variant="body2" fontWeight="bold">
+              Error Deleting Animals
+            </Typography>
+            <Typography variant="body2">{String(error)}</Typography>
+          </>
+        ),
+        open: true
       });
+    } finally {
+      dialogContext.setYesNoDialog({ open: false });
+      setCheckboxSelectedIds([]);
+      setHeaderAnchorEl(null);
+    }
   };
 
-  /**
-   * Display the delete Animal dialog.
-   *
-   */
-  const deleteCritterDialog = () => {
+  const confirmDeleteDialog = (isBulk = false) => {
     dialogContext.setYesNoDialog({
-      dialogTitle: 'Delete Animal?',
+      dialogTitle: isBulk ? 'Delete Animals?' : 'Delete Animal?',
       dialogContent: (
-        <Typography variant="body1" component="div" color="textSecondary">
-          Are you sure you want to delete this Animal?
+        <Typography variant="body1" color="textSecondary">
+          Are you sure you want to delete {isBulk ? 'the selected Animals' : 'this Animal'}?
         </Typography>
       ),
-      yesButtonLabel: 'Delete Animal',
+      yesButtonLabel: isBulk ? 'Delete Animals' : 'Delete Animal',
       noButtonLabel: 'Cancel',
       yesButtonProps: { color: 'error' },
-      onClose: () => {
-        dialogContext.setYesNoDialog({ open: false });
-      },
-      onNo: () => {
-        dialogContext.setYesNoDialog({ open: false });
-      },
-      open: true,
       onYes: () => {
-        if (selectedCritterMenu?.critter_id) {
-          handleDeleteCritter(selectedCritterMenu?.critter_id);
-        }
-        // If the selected animal is the deleted animal, unset the selected animal
-        if (selectedCritterMenu?.critter_id == selectedAnimal?.critter_id) {
-          setSelectedAnimal();
-        }
-      }
+        isBulk
+          ? handleBulkDeleteCritters()
+          : selectedCritterMenu?.critter_id && handleDeleteCritter(selectedCritterMenu.critter_id);
+      },
+      onNo: () => dialogContext.setYesNoDialog({ open: false }),
+      onClose: () => dialogContext.setYesNoDialog({ open: false }),
+      open: true
     });
   };
 
-  const handlePromptConfirmBulkDelete = () => {
-    dialogContext.setYesNoDialog({
-      dialogTitle: 'Delete Animals?',
-      dialogContent: (
-        <Typography variant="body1" component="div" color="textSecondary">
-          Are you sure you want to delete the selected Animals?
-        </Typography>
-      ),
-      yesButtonLabel: 'Delete Animals',
-      noButtonLabel: 'Cancel',
-      yesButtonProps: { color: 'error' },
-      onClose: () => {
-        dialogContext.setYesNoDialog({ open: false });
-      },
-      onNo: () => {
-        dialogContext.setYesNoDialog({ open: false });
-      },
-      open: true,
-      onYes: () => {
-        handleBulkDeleteCritters();
-      }
-    });
-  };
-
-  const handleHeaderMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    setHeaderAnchorEl(event.currentTarget);
-  };
+  const allSelected = checkboxSelectedIds.length === critters.length;
+  const isIndeterminate = checkboxSelectedIds.length > 0 && !allSelected;
 
   return (
     <>
       {selectedCritterMenu && (
         <Menu
-          open={Boolean(critterAnchorEl)}
+          open={!!critterAnchorEl}
           onClose={() => setCritterAnchorEl(null)}
           anchorEl={critterAnchorEl}
-          anchorOrigin={{
-            vertical: 'top',
-            horizontal: 'right'
-          }}
-          transformOrigin={{
-            vertical: 'top',
-            horizontal: 'right'
-          }}>
+          anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+          transformOrigin={{ vertical: 'top', horizontal: 'right' }}>
           <MenuItem
-            sx={{
-              p: 0,
-              '& a': {
-                display: 'flex',
-                px: 2,
-                py: '6px',
-                textDecoration: 'none',
-                color: 'text.primary',
-                borderRadius: 0,
-                '&:focus': {
-                  outline: 'none'
-                }
-              }
-            }}>
-            <RouterLink
-              to={`/admin/surveys/${surveyId}/animals/${selectedCritterMenu.critter_id}/edit`}
-              onClick={() => {
-                setSelectedAnimal(selectedCritterMenu);
-              }}>
-              <ListItemIcon>
-                <Icon path={mdiPencilOutline} size={1} />
-              </ListItemIcon>
-              <ListItemText>Edit Details</ListItemText>
-            </RouterLink>
+            component={RouterLink}
+            to={`/admin/surveys/${surveyId}/animals/${selectedCritterMenu.critter_id}/edit`}
+            onClick={() => setSelectedAnimal(selectedCritterMenu)}>
+            <ListItemIcon>
+              <Icon path={mdiPencilOutline} size={1} />
+            </ListItemIcon>
+            <ListItemText>Edit Details</ListItemText>
           </MenuItem>
-          <MenuItem
-            onClick={() => {
-              deleteCritterDialog();
-              setCritterAnchorEl(null);
-            }}>
+          <MenuItem onClick={() => confirmDeleteDialog()}>
             <ListItemIcon>
               <Icon path={mdiTrashCanOutline} size={1} />
             </ListItemIcon>
@@ -259,18 +172,12 @@ export const AnimalListContainer = () => {
       )}
 
       <Menu
-        open={Boolean(headerAnchorEl)}
+        open={!!headerAnchorEl}
         onClose={() => setHeaderAnchorEl(null)}
         anchorEl={headerAnchorEl}
-        anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'right'
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'right'
-        }}>
-        <MenuItem onClick={handlePromptConfirmBulkDelete}>
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}>
+        <MenuItem onClick={() => confirmDeleteDialog(true)}>
           <ListItemIcon>
             <Icon path={mdiTrashCanOutline} size={1} />
           </ListItemIcon>
@@ -278,105 +185,58 @@ export const AnimalListContainer = () => {
         </MenuItem>
       </Menu>
 
-      <Paper
-        component={Stack}
-        flexDirection="column"
-        height="100%"
-        flex="1 1 auto"
-        sx={{
-          overflow: 'hidden'
-        }}>
+      <Box mb={2} px={2}>
         <AnimalListToolbar
-          handleHeaderMenuClick={handleHeaderMenuClick}
-          animalCount={crittersCount}
+          handleHeaderMenuClick={(e) => setHeaderAnchorEl(e.currentTarget)}
+          animalCount={critters.length}
           checkboxSelectedIdsLength={checkboxSelectedIds.length}
         />
-        <Divider flexItem />
-        <Box position="relative" display="flex" flex="1 1 auto" overflow="hidden">
-          <Box position="absolute" top="0" right="0" bottom="0" left="0" flex="1 1 auto">
-            <LoadingGuard
-              isLoading={surveyContext.critterDataLoader.isLoading}
-              isLoadingFallback={<SkeletonList />}
-              isLoadingFallbackDelay={100}
-              hasNoData={!critters?.length}
-              hasNoDataFallback={
-                <Stack
-                  sx={{
-                    background: grey[100]
-                  }}
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
-                  flex="1 1 auto"
-                  overflow="hidden"
-                  position="absolute"
-                  top={0}
-                  right={0}
-                  left={0}
-                  bottom={0}
-                  height="100%">
-                  <Typography variant="body2">No Animals</Typography>
-                </Stack>
-              }
-              hasNoDataFallbackDelay={100}>
-              <Stack height="100%" position="relative" sx={{ overflowY: 'auto', flex: '1 1 auto' }}>
-                <Box display="flex" alignItems="center" px={2} height={55} width="100%">
-                  <FormGroup>
-                    <FormControlLabel
-                      label={
-                        <Typography
-                          variant="body2"
-                          component="span"
-                          color="textSecondary"
-                          fontWeight={700}
-                          sx={{ textTransform: 'uppercase' }}>
-                          Select All
-                        </Typography>
-                      }
-                      control={
-                        <Checkbox
-                          sx={{
-                            mr: 0.5
-                          }}
-                          checked={checkboxSelectedIds.length > 0 && checkboxSelectedIds.length === crittersCount}
-                          indeterminate={checkboxSelectedIds.length >= 1 && checkboxSelectedIds.length < crittersCount}
-                          onClick={() => {
-                            if (checkboxSelectedIds.length === crittersCount) {
-                              setCheckboxSelectedIds([]);
-                              return;
-                            }
+      </Box>
+      <Divider />
 
-                            const critterIds = critters?.map((critter) => critter.critter_id) ?? [];
+      <LoadingGuard
+        isLoading={surveyCrittersDataLoader.isLoading}
+        isLoadingFallback={<SkeletonList />}
+        hasNoData={!critters.length}
+        hasNoDataFallback={
+          <NoDataOverlay
+            title="Add Animals"
+            subtitle="Animals added to your Survey will appear here"
+            icon={mdiArrowTopRight}
+          />
+        }>
+        <Stack sx={{ overflowY: 'auto', flex: 1 }}>
+          <FormControlLabel
+            sx={{ pt: 1, px: 2 }}
+            control={
+              <Checkbox
+                checked={allSelected}
+                indeterminate={isIndeterminate}
+                onClick={() => setCheckboxSelectedIds(allSelected ? [] : critters.map((c) => c.critter_id))}
+              />
+            }
+            label={
+              <Typography variant="body2" fontWeight={700}>
+                Select All
+              </Typography>
+            }
+          />
 
-                            setCheckboxSelectedIds(critterIds);
-                          }}
-                          inputProps={{ 'aria-label': 'controlled' }}
-                        />
-                      }
-                    />
-                  </FormGroup>
-                </Box>
-                <Divider flexItem></Divider>
-                <Box flex="1 1 auto">
-                  <List>
-                    {critters?.map((critter) => (
-                      <CritterListItem
-                        key={critter.critter_id}
-                        critter={critter}
-                        isSelectedAnimal={selectedAnimal?.critter_id === critter.critter_id}
-                        onAnimalClick={handleToggleCritterSelect}
-                        isCheckboxSelected={checkboxSelectedIds.includes(critter.critter_id)}
-                        onCheckboxClick={handleCheckboxChange}
-                        onMenuClick={handleCritterMenuClick}
-                      />
-                    ))}
-                  </List>
-                </Box>
-              </Stack>
-            </LoadingGuard>
-          </Box>
-        </Box>
-      </Paper>
+          <List sx={{ '& .MuiListItem-root': { borderRadius: '4px' } }} color="primary">
+            {critters.map((critter) => (
+              <CritterListItem
+                key={critter.critter_id}
+                critter={critter}
+                isSelectedAnimal={selectedAnimal?.critter_id === critter.critter_id}
+                onAnimalClick={handleToggleCritterSelect}
+                isCheckboxSelected={checkboxSelectedIds.includes(critter.critter_id)}
+                onCheckboxClick={handleCheckboxChange}
+                onMenuClick={handleCritterMenuClick}
+              />
+            ))}
+          </List>
+        </Stack>
+      </LoadingGuard>
     </>
   );
 };

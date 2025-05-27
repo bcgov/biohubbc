@@ -23,12 +23,16 @@ import { SidebarLayout } from 'layouts/SidebarLayout';
 import SurveyAttachments from '../view/SurveyAttachments';
 import { LinearProgressWithLabel } from './checklist/progress/SurveyChecklistProgressBar';
 import { SurveyChecklistManager } from './checklist/SurveyChecklistManager';
-import { DATA_ACTIVE_VIEW_VALUE, SurveyDataPage } from './data/SurveyDataPage';
+import { DATA_ACTIVE_VIEW_KEY, DATA_ACTIVE_VIEW_VALUE, SurveyDataPage } from './data/SurveyDataPage';
 import { SurveyOverviewPage } from './overview/SurveyOverviewPage';
-import { SAMPLING_ACTIVE_VIEW_VALUE, SurveySamplingPage } from './sampling/SurveySamplingPage';
+import {
+  SAMPLING_ACTIVE_VIEW_KEY,
+  SAMPLING_ACTIVE_VIEW_VALUE,
+  SurveySamplingPage
+} from './sampling/SurveySamplingPage';
 import { SurveyViewToggle } from './sidebar/SurveyViewToggle';
 
-const ACTIVE_VIEW_KEY = 'v';
+export const SURVEY_ACTIVE_VIEW_KEY = 'v';
 
 export enum SURVEY_ACTIVE_VIEW_VALUE {
   overview = 'overview',
@@ -48,15 +52,15 @@ export const SurveyPage = () => {
   const surveyContext = useContext(SurveyContext);
   const codesContext = useContext(CodesContext);
 
-  const { searchParams, setSearchParams } = useSearchParams<{ [ACTIVE_VIEW_KEY]: SURVEY_ACTIVE_VIEW_VALUE }>();
-  const activeView = searchParams.get(ACTIVE_VIEW_KEY) as SURVEY_ACTIVE_VIEW_VALUE;
+  const { searchParams, setSearchParams } = useSearchParams<{ [SURVEY_ACTIVE_VIEW_KEY]: SURVEY_ACTIVE_VIEW_VALUE }>();
+  const activeView = searchParams.get(SURVEY_ACTIVE_VIEW_KEY) as SURVEY_ACTIVE_VIEW_VALUE;
 
   const checklist = surveyContext.surveyChecklistDataLoader.data?.checklist;
 
   useEffect(() => {
     codesContext.codesDataLoader.load();
-    if (!searchParams.get(ACTIVE_VIEW_KEY)) {
-      setSearchParams(searchParams.set(ACTIVE_VIEW_KEY, DEFAULT_VIEW));
+    if (!searchParams.get(SURVEY_ACTIVE_VIEW_KEY)) {
+      setSearchParams(searchParams.set(SURVEY_ACTIVE_VIEW_KEY, DEFAULT_VIEW));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [codesContext.codesDataLoader]);
@@ -90,7 +94,22 @@ export const SurveyPage = () => {
                       <SurveyViewToggle
                         checklist={checklist}
                         activeView={activeView}
-                        setActiveView={(v) => setSearchParams(searchParams.set(ACTIVE_VIEW_KEY, v, { replace: true }))}
+                        setActiveView={(view) => {
+                          const newParams = searchParams.setMany(
+                            {
+                              [SURVEY_ACTIVE_VIEW_KEY]: view,
+                              ...(view === SURVEY_ACTIVE_VIEW_VALUE.sampling && {
+                                [SAMPLING_ACTIVE_VIEW_KEY]: SAMPLING_ACTIVE_VIEW_VALUE.sites
+                              }),
+                              ...(view === SURVEY_ACTIVE_VIEW_VALUE.data && {
+                                [DATA_ACTIVE_VIEW_KEY]: DATA_ACTIVE_VIEW_VALUE.observations
+                              })
+                            },
+                            { replace: true }
+                          );
+
+                          setSearchParams(newParams);
+                        }}
                       />
                     </Box>
                   }>
