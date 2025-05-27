@@ -1,3 +1,4 @@
+import { Typography } from '@mui/material';
 import { AuthenticatedRouteGuard, SystemRoleRouteGuard } from 'components/security/RouteGuards';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { CodesContextProvider } from 'contexts/codesContext';
@@ -169,11 +170,11 @@ const AppRouter: React.FC = () => {
         <Redirect to="/page-not-found" />
       </RouteWithTitle>
 
-      <RouteWithTitle path="/features/summary/list-data/survey/manage" title={getTitle('Manage Users')}>
+      <RouteWithTitle path="/admin/invite" title={getTitle('Invite Members')}>
         <BaseLayout>
           <AuthenticatedRouteGuard>
             <CodesContextProvider>
-              <CollectionsRouter />
+              <Typography>Hello</Typography>
             </CodesContextProvider>
           </AuthenticatedRouteGuard>
         </BaseLayout>

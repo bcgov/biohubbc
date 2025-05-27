@@ -24,7 +24,7 @@ const validationCollectionYupSchema = yup.object().shape({
 });
 
 /**
- * Form for creating a new collection.
+ * Form for inviting multiple users to multiple surveys.
  *
  * @return {*}
  */
