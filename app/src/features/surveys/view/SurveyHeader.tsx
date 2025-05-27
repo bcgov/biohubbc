@@ -172,7 +172,7 @@ const SurveyHeader = (props: ISurveyHeaderProps) => {
           subTitleJSX={
             <Box flex="1 1 auto">
               <Stack flexDirection="row" alignItems="center" gap={0.75} color="text.secondary">
-                <Icon path={mdiCalendarRange} size={0.8} color={grey[600]} style={{ marginTop: 1.5 }} />
+                <Icon path={mdiCalendarRange} size={0.7} color={grey[600]} style={{ marginTop: 1.5 }} />
                 <Typography component="span" variant="body2">
                   {getFormattedDateRangeString(
                     DATE_FORMAT.MediumDateFormat,

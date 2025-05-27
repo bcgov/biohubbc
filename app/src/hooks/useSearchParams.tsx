@@ -56,14 +56,13 @@ export class TypedURLSearchParams<
    * @param options Configuration options
    * @returns The instance for method chaining
    */
-  set<K extends keyof ParamType & string>(key: K, value: ParamType[K], options?: { replace?: boolean }) {
-    const { replace } = options || {}; // Destructure replace option with default false
+  set<K extends keyof ParamType & string>(key: K, value: ParamType[K], options?: { replace?: boolean | string[] }) {
+    const { replace } = options || {};
 
-    if (replace) {
-      // Clear all existing parameters first
-      Array.from(super.keys()).forEach((k) => {
-        super.delete(k);
-      });
+    if (replace === true) {
+      Array.from(super.keys()).forEach((k) => super.delete(k));
+    } else if (Array.isArray(replace)) {
+      replace.forEach((k) => super.delete(k));
     }
 
     super.set(key, value);

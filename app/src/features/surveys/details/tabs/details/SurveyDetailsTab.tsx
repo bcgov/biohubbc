@@ -11,9 +11,9 @@ import { SidebarLayout } from 'layouts/SidebarLayout';
 import { useContext, useEffect } from 'react';
 import { LinearProgressWithLabel } from './checklist/progress/SurveyChecklistProgressBar';
 import { SurveyChecklistManager } from './checklist/SurveyChecklistManager';
-import { SurveyDataPage } from './data/SurveyDataPage';
+import { DATA_ACTIVE_VIEW_KEY, SurveyDataPage } from './data/SurveyDataPage';
 import { SurveyOverviewPage } from './overview/SurveyOverviewPage';
-import { SurveySamplingPage } from './sampling/SurveySamplingPage';
+import { SAMPLING_ACTIVE_VIEW_KEY, SurveySamplingPage } from './sampling/SurveySamplingPage';
 import { SurveyViewToggle } from './sidebar/SurveyViewToggle';
 
 const SURVEY_ACTIVE_VIEW_KEY = 'v';
@@ -51,7 +51,9 @@ export const SurveyDetailsTab = ({ checklist }: SurveyDetailsTabProps) => {
   }, [codesContext.codesDataLoader]);
 
   const setActiveView = (view: SURVEY_ACTIVE_VIEW_VALUE) =>
-    setSearchParams(searchParams.set(SURVEY_ACTIVE_VIEW_KEY, view));
+    setSearchParams(
+      searchParams.set(SURVEY_ACTIVE_VIEW_KEY, view, { replace: [SAMPLING_ACTIVE_VIEW_KEY, DATA_ACTIVE_VIEW_KEY] })
+    );
 
   return (
     <Box sx={{ display: 'flex', gap: 2, height: '100%' }}>

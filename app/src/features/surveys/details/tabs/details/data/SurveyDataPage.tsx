@@ -29,7 +29,7 @@ import { SurveySpatialAnimals } from './animals/SurveySpatialAnimals';
 import { SurveySpatialHabitatFeatures } from './habitat/SurveySpatialHabitatFeatures';
 import { SurveySpatialObservations } from './observations/SurveySpatialObservations';
 
-const ACTIVE_VIEW_KEY = 'cv';
+export const DATA_ACTIVE_VIEW_KEY = 'cv';
 
 export enum DATA_ACTIVE_VIEW_VALUE {
   observations = 'observations',
@@ -54,23 +54,23 @@ export const SurveyDataPage = (props: ISurveyDataPageProps) => {
   const codesContext = useContext(CodesContext);
   const biohubApi = useBiohubApi();
 
-  const { searchParams, setSearchParams } = useSearchParams<{ [ACTIVE_VIEW_KEY]: DATA_ACTIVE_VIEW_VALUE }>();
+  const { searchParams, setSearchParams } = useSearchParams<{ [DATA_ACTIVE_VIEW_KEY]: DATA_ACTIVE_VIEW_VALUE }>();
 
   const checklist = surveyContext.surveyChecklistDataLoader.data?.checklist;
 
   useEffect(() => {
     codesContext.codesDataLoader.load();
 
-    if (!searchParams.get(ACTIVE_VIEW_KEY)) {
-      setSearchParams(searchParams.set(ACTIVE_VIEW_KEY, DEFAULT_VIEW));
+    if (!searchParams.get(DATA_ACTIVE_VIEW_KEY)) {
+      setSearchParams(searchParams.set(DATA_ACTIVE_VIEW_KEY, DEFAULT_VIEW));
     }
   }, [codesContext.codesDataLoader, searchParams, setSearchParams]);
 
-  const activeView = searchParams.get(ACTIVE_VIEW_KEY) as DATA_ACTIVE_VIEW_VALUE;
+  const activeView = searchParams.get(DATA_ACTIVE_VIEW_KEY) as DATA_ACTIVE_VIEW_VALUE;
 
   const handleViewChange = (view: DATA_ACTIVE_VIEW_VALUE) => {
     const updatedView = view ?? DEFAULT_VIEW;
-    setSearchParams(searchParams.set(ACTIVE_VIEW_KEY, updatedView));
+    setSearchParams(searchParams.set(DATA_ACTIVE_VIEW_KEY, updatedView));
   };
 
   const handleCheckboxClick = useCallback(
