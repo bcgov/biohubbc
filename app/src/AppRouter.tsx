@@ -1,4 +1,3 @@
-import { Typography } from '@mui/material';
 import { AuthenticatedRouteGuard, SystemRoleRouteGuard } from 'components/security/RouteGuards';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { CodesContextProvider } from 'contexts/codesContext';
@@ -11,6 +10,7 @@ import CollectionsRouter from 'features/collection/CollectionRouter';
 import FundingSourcesRouter from 'features/funding-sources/FundingSourcesRouter';
 import ResourcesPage from 'features/resources/ResourcesPage';
 import StandardsPage from 'features/standards/StandardsPage';
+import ManageUsersForm from 'features/summary/list-data/survey/manage/ManageUsersForm';
 import SummaryRouter from 'features/summary/SummaryRouter';
 import { SupportPage } from 'features/support/SupportPage';
 import CreateSurveyPage from 'features/surveys/CreateSurveyPage';
@@ -25,6 +25,7 @@ import React from 'react';
 import { Redirect, Switch, useLocation } from 'react-router-dom';
 import RouteWithTitle from 'utils/RouteWithTitle';
 import { getTitle } from 'utils/Utils';
+import InviteRouter from 'features/invite/InviteRouter';
 
 const AppRouter: React.FC = () => {
   const location = useLocation();
@@ -174,7 +175,7 @@ const AppRouter: React.FC = () => {
         <BaseLayout>
           <AuthenticatedRouteGuard>
             <CodesContextProvider>
-              <Typography>Hello</Typography>
+              <InviteRouter />
             </CodesContextProvider>
           </AuthenticatedRouteGuard>
         </BaseLayout>

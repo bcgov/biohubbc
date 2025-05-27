@@ -6,23 +6,14 @@ import { CodesContext } from 'contexts/codesContext';
 import { Formik, FormikProps } from 'formik';
 import { ISurveyMember} from 'interfaces/useSurveyApi.interface';
 import { useContext } from 'react';
-import yup from 'utils/YupSchema';
 import ParticipantsCollectionForm from 'features/collection/edit/participants/ParticipantsCollectionForm';
+import { useAllSurveys } from 'hooks/useAllSurveys';
 
 interface ISurveyUsersForm<InitialValuesType extends ISurveyMember> {
-  initialCollectionData: InitialValuesType;
+  inviteMembers: InitialValuesType;
   handleSubmit: (formikData: InitialValuesType) => void;
   formikRef: React.RefObject<FormikProps<InitialValuesType>>;
 }
-
-const validationCollectionYupSchema = yup.object().shape({
-  name: yup.string().required('Name is required'),
-  description: yup.string().max(3000, 'Description cannot exceed 3000 characters.').nullable(),
-  participants: yup
-    .array(yup.object({ system_user_id: yup.number(), collection_role_name: yup.string() }))
-    .min(1, 'There must be at least one participant')
-});
-
 /**
  * Form for inviting multiple users to multiple surveys.
  *
@@ -36,6 +27,8 @@ const ManageUsersForm = <InitialValuesType extends ISurveyMember>(
   const codesContext = useContext(CodesContext);
   const codes = codesContext.codesDataLoader.data;
 
+  useAllSurveys();
+
   const handleSubmit = async (formikData: InitialValuesType) => {
     props.handleSubmit(formikData);
   };
@@ -43,8 +36,7 @@ const ManageUsersForm = <InitialValuesType extends ISurveyMember>(
   return (
     <Formik
       innerRef={formikRef}
-      initialValues={props.initialCollectionData}
-      validationSchema={validationCollectionYupSchema}
+      initialValues={props.inviteMembers}
       validateOnBlur={false}
       validateOnChange={false}
       enableReinitialize={true}
@@ -53,8 +45,8 @@ const ManageUsersForm = <InitialValuesType extends ISurveyMember>(
         <FormikErrorSnackbar />
         <HorizontalSplitFormComponent
           title="Members"
-          summary="Invite people to the collection, giving read-only access to Surveys in the collection."
-          component={<ParticipantsCollectionForm roles={codes?.collection_roles ?? []} />}
+          summary="Invite members to access your surveys. Any individual role you assign here will apply to each member in every survey you have selected."
+          component={<ParticipantsCollectionForm roles={codes?.survey_roles ?? []} />}
         />
 
         <Divider />
