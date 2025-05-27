@@ -102,7 +102,7 @@ const EditSurveyForm = <
         <Stack gap={5} p={3}>
           <HorizontalSplitFormComponent
             title="General"
-            summary="Enter a name and the dates of your survey"
+            summary="Enter the name, objectives, and dates of your survey"
             component={<GeneralInformationForm />}
           />
 
@@ -116,7 +116,7 @@ const EditSurveyForm = <
 
           <HorizontalSplitFormComponent
             title="Objectives"
-            summary="Describe your objectives and select the type of data collected."
+            summary="Select the type of data collected"
             component={
               <PurposeAndMethodologyForm
                 intended_outcomes={

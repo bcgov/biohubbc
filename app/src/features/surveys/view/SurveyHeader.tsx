@@ -41,9 +41,8 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 import { getFormattedDateRangeString } from 'utils/Utils';
-import { SURVEY_ACTIVE_TAB_VALUE } from '../details/SurveyPage';
 import CreateCollectionSurveyDialog from './collection/CollectionSurveyDialog';
-import SurveyHeaderTabs from './tabs/SurveyHeaderTabs';
+import SurveyHeaderTabs, { SURVEY_ACTIVE_TAB_VALUE } from './tabs/SurveyHeaderTabs';
 
 interface ISurveyHeaderProps {
   activeTab: SURVEY_ACTIVE_TAB_VALUE;
