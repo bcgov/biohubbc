@@ -38,6 +38,8 @@ export const AnimalProfileHeader = (props: IAnimalProfileHeaderProps) => {
       <Typography
         variant="h2"
         sx={{
+          px: 2,
+          pt: 2,
           pb: 1,
           display: 'block',
           whiteSpace: 'nowrap',
@@ -47,7 +49,7 @@ export const AnimalProfileHeader = (props: IAnimalProfileHeaderProps) => {
         }}>
         {critter.animal_id}
       </Typography>
-      <Box display="flex" justifyContent="space-between">
+      <Box display="flex" justifyContent="space-between" px={2}>
         <Stack direction="row" spacing={2} sx={{ mr: 2, alignItems: 'center' }}>
           <AnimalAttributeItem
             text={

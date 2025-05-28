@@ -20,22 +20,16 @@ export const AnimalMortalityToolbar = (props: IAnimalMortalityToolbarProps) => {
   const { mortalityCount, onAddAnimalMortality } = props;
 
   return (
-    <Toolbar
-      disableGutters
-      sx={{
-        px: 2
-      }}>
+    <Toolbar disableGutters>
       <Typography
         data-testid="map-control-title"
         component="div"
         fontWeight="700"
         sx={{
+          pl: 1,
           flex: '1 1 auto'
         }}>
         Mortality
-        <Typography component="span" color="textSecondary" sx={{ ml: 0.5, flex: '1 1 auto' }}>
-          ({mortalityCount})
-        </Typography>
       </Typography>
       {mortalityCount === 0 && (
         <Box display="flex">
@@ -44,7 +38,7 @@ export const AnimalMortalityToolbar = (props: IAnimalMortalityToolbarProps) => {
             color="primary"
             onClick={onAddAnimalMortality}
             startIcon={<Icon path={mdiPlus} size={1} />}>
-            Report Mortality
+            Add Mortality
           </Button>
         </Box>
       )}

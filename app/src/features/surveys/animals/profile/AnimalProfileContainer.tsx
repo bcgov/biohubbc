@@ -1,4 +1,4 @@
-import Paper from '@mui/material/Paper';
+import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import { AnimalDetailsContainer } from 'features/surveys/animals/profile/details/AnimalDetailsContainer';
 import { AnimalCaptureContainer } from './captures/AnimalCaptureContainer';
@@ -11,16 +11,16 @@ import AnimalMortalityContainer from './mortality/AnimalMortalityContainer';
  */
 export const AnimalProfileContainer = () => {
   return (
-    <Stack spacing={1.5} flexDirection="column" height="100%" maxWidth="100%" flex="1 1 auto">
-      <Paper sx={{ p: 2 }}>
+    <Stack spacing={0} flexDirection="column" height="100%" maxWidth="100%" flex="1 1 auto">
+      <Box>
         <AnimalDetailsContainer />
-      </Paper>
-      <Paper>
+      </Box>
+      <Box px={2}>
         <AnimalCaptureContainer />
-      </Paper>
-      <Paper>
+      </Box>
+      <Box px={2}>
         <AnimalMortalityContainer />
-      </Paper>
+      </Box>
     </Stack>
   );
 };

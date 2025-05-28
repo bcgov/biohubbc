@@ -1,15 +1,18 @@
-import { mdiArrowTopRight, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
+import { mdiArrowTopRight, mdiDotsVertical, mdiMagnify, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
+import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Stack from '@mui/material/Stack';
+import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonList } from 'components/loading/SkeletonLoaders';
@@ -185,58 +188,83 @@ export const AnimalListContainer = () => {
         </MenuItem>
       </Menu>
 
-      <Box mb={2} px={2}>
-        <AnimalListToolbar
-          handleHeaderMenuClick={(e) => setHeaderAnchorEl(e.currentTarget)}
-          animalCount={critters.length}
-          checkboxSelectedIdsLength={checkboxSelectedIds.length}
-        />
-      </Box>
-      <Divider />
-
-      <LoadingGuard
-        isLoading={surveyCrittersDataLoader.isLoading}
-        isLoadingFallback={<SkeletonList />}
-        hasNoData={!critters.length}
-        hasNoDataFallback={
-          <NoDataOverlay
-            title="Add Animals"
-            subtitle="Animals added to your Survey will appear here"
-            icon={mdiArrowTopRight}
-          />
-        }>
-        <Stack sx={{ overflowY: 'auto', flex: 1 }}>
-          <FormControlLabel
-            sx={{ pt: 1, px: 2 }}
-            control={
-              <Checkbox
-                checked={allSelected}
-                indeterminate={isIndeterminate}
-                onClick={() => setCheckboxSelectedIds(allSelected ? [] : critters.map((c) => c.critter_id))}
+      <Stack sx={{ flex: 1 }} height="100%">
+        <Box display="flex" alignItems="center" justifyContent="space-between" mb={2} px={2}>
+          <AnimalListToolbar animalCount={surveyCrittersDataLoader.data?.length ?? 0} />
+        </Box>
+        <LoadingGuard
+          isLoading={surveyCrittersDataLoader.isLoading}
+          isLoadingFallback={<SkeletonList />}
+          hasNoData={!critters.length}
+          hasNoDataFallback={
+            <>
+              <Divider />
+              <NoDataOverlay
+                title="Add Animals"
+                subtitle="Animals added to your Survey will appear here"
+                icon={mdiArrowTopRight}
               />
-            }
-            label={
-              <Typography variant="body2" fontWeight={700}>
-                Select All
-              </Typography>
-            }
-          />
-
-          <List sx={{ '& .MuiListItem-root': { borderRadius: '4px' } }} color="primary">
-            {critters.map((critter) => (
-              <CritterListItem
-                key={critter.critter_id}
-                critter={critter}
-                isSelectedAnimal={selectedAnimal?.critter_id === critter.critter_id}
-                onAnimalClick={handleToggleCritterSelect}
-                isCheckboxSelected={checkboxSelectedIds.includes(critter.critter_id)}
-                onCheckboxClick={handleCheckboxChange}
-                onMenuClick={handleCritterMenuClick}
+            </>
+          }>
+          <Box px={2} flex="1 1 auto">
+            <TextField
+              placeholder="Search"
+              fullWidth
+              InputProps={{
+                startAdornment: (
+                  <Box mx={1} mt="6px" color={grey[500]}>
+                    <Icon path={mdiMagnify} size={1} />
+                  </Box>
+                )
+              }}
+            />
+            <Box
+              flexDirection="row"
+              mr={3.5}
+              flex="1 1 auto"
+              display="flex"
+              alignItems="center"
+              justifyContent="space-between">
+              <FormControlLabel
+                sx={{ pt: 2, pb: 1, px: 2, flex: '1 1 auto' }}
+                control={
+                  <Checkbox
+                    checked={allSelected}
+                    indeterminate={isIndeterminate}
+                    onClick={() => setCheckboxSelectedIds(allSelected ? [] : critters.map((c) => c.critter_id))}
+                  />
+                }
+                label={
+                  <Typography variant="body2" color="textSecondary" fontWeight={700} pl={0.5}>
+                    Select All
+                  </Typography>
+                }
               />
-            ))}
-          </List>
-        </Stack>
-      </LoadingGuard>
+              <IconButton
+                edge="end"
+                aria-label="header-settings"
+                disabled={!checkboxSelectedIds.length}
+                onClick={(e) => setHeaderAnchorEl(e.currentTarget)}
+                title="Bulk Actions">
+                <Icon path={mdiDotsVertical} size={1} style={{ marginTop: '6px' }} />
+              </IconButton>
+            </Box>
+            <List sx={{ '& .MuiListItem-root': { borderRadius: '4px', mb: 0.5 } }} color="primary">
+              {critters.map((critter) => (
+                <CritterListItem
+                  key={critter.critter_id}
+                  critter={critter}
+                  isSelectedAnimal={selectedAnimal?.critter_id === critter.critter_id}
+                  onAnimalClick={handleToggleCritterSelect}
+                  isCheckboxSelected={checkboxSelectedIds.includes(critter.critter_id)}
+                  onCheckboxClick={handleCheckboxChange}
+                  onMenuClick={handleCritterMenuClick}
+                />
+              ))}
+            </List>
+          </Box>
+        </LoadingGuard>
+      </Stack>
     </>
   );
 };

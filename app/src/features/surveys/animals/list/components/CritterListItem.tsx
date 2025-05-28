@@ -35,6 +35,8 @@ export const CritterListItem = (props: ICritterListItemProps) => {
     <ListItem
       color="primary"
       sx={{
+        py: 0.5,
+        color: isSelectedAnimal ? appTheme.palette.primary.main : 'inherit',
         backgroundColor: isSelectedAnimal ? appTheme.palette.action.selected : undefined,
         '&:hover': {
           backgroundColor: isSelectedAnimal ? appTheme.palette.action.selected : grey[50]

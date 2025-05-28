@@ -81,20 +81,20 @@ export const SurveyAnimalsTab = () => {
   }
 
   return (
-    <Stack height="100%" boxSizing="border-box">
+    <Stack height="100%">
       {selectedAnimal ? (
         <SidebarLayout
           elevation={0}
           sx={{ borderBottomLeftRadius: 0, borderTopLeftRadius: 0 }}
           sidebar={
-            <Box p={2} minWidth="500px" flex="1 1 auto">
+            <Box py={2} minWidth="400px" flex="1 1 auto">
               <AnimalListContainer />
             </Box>
           }>
           <AnimalProfileContainer />
         </SidebarLayout>
       ) : (
-        <Box py={2} minWidth="400px" flex="1 1 auto" height="100%">
+        <Box py={2} minWidth="50%" flex="1 1 auto" height="100%" minHeight="400px">
           <AnimalListContainer />
         </Box>
       )}

@@ -198,7 +198,7 @@ export const AnimalCaptureCardContainer = (props: IAnimalCaptureCardContainer) =
         <Box
           flex="1 1 auto"
           borderRadius="5px"
-          minHeight="70px"
+          minHeight="100px"
           display="flex"
           alignItems="center"
           justifyContent="center"
