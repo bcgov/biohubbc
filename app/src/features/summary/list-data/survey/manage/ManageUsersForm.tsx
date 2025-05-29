@@ -1,27 +1,38 @@
+import Autocomplete from '@mui/material/Autocomplete';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
-import FormikErrorSnackbar from 'components/alert/FormikErrorSnackbar';
-import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
-import { CodesContext } from 'contexts/codesContext';
-import { Formik, FormikProps } from 'formik';
-import { ISurveyMember} from 'interfaces/useSurveyApi.interface';
-import { useContext, useMemo } from 'react';
-import ParticipantsCollectionForm from 'features/collection/edit/participants/ParticipantsCollectionForm';
-import { useAllSurveys } from 'hooks/useAllSurveys';
+import FormikErrorSnackbar from 'components/alert/FormikErrorSnackbar';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
+import { SURVEY_ROLE } from 'constants/roles';
+import { CodesContext } from 'contexts/codesContext';
+import ParticipantsCollectionForm from 'features/collection/edit/participants/ParticipantsCollectionForm';
+import { Formik, FormikProps } from 'formik';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import useDataLoader from 'hooks/useDataLoader';
+import { useContext, useMemo } from 'react';
 
 /**
  * Form for inviting multiple users to multiple surveys.
  *
  * @return {*}
  */
-const ManageUsersForm = ({ handleSubmit, formikRef }: { handleSubmit: (formikData: any) => void; formikRef: React.RefObject<FormikProps<any>>; }) => {
+const ManageUsersForm = ({
+  handleSubmit,
+  formikRef
+}: {
+  handleSubmit: (formikData: any) => void;
+  formikRef: React.RefObject<FormikProps<any>>;
+}) => {
   const codesContext = useContext(CodesContext);
   const codes = codesContext.codesDataLoader.data;
+  const biohubApi = useBiohubApi();
 
   // Load all surveys
-  const { surveysDataLoader } = useAllSurveys();
+  const surveysDataLoader = useDataLoader(() =>
+    biohubApi.survey.findSurveys(undefined, { survey_roles: [SURVEY_ROLE.ADMIN] })
+  );
+
   const surveys = surveysDataLoader.data?.surveys || [];
 
   // Prepare survey options for Autocomplete
@@ -47,8 +58,7 @@ const ManageUsersForm = ({ handleSubmit, formikRef }: { handleSubmit: (formikDat
       validateOnBlur={false}
       validateOnChange={false}
       enableReinitialize={true}
-      onSubmit={handleSubmit}
-    >
+      onSubmit={handleSubmit}>
       {({ values, setFieldValue }) => (
         <Stack gap={5}>
           <FormikErrorSnackbar />
@@ -64,7 +74,10 @@ const ManageUsersForm = ({ handleSubmit, formikRef }: { handleSubmit: (formikDat
                 getOptionLabel={(option) => option.label}
                 value={surveyOptions.filter((option) => (values.selectedSurveys as number[]).includes(option.value))}
                 onChange={(_, newValue) =>
-                  setFieldValue('selectedSurveys', newValue.map((option) => option.value))
+                  setFieldValue(
+                    'selectedSurveys',
+                    newValue.map((option) => option.value)
+                  )
                 }
                 renderInput={(params) => (
                   <TextField {...params} label="Select Surveys" placeholder="Search and select surveys" required />

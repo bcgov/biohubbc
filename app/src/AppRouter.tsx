@@ -10,6 +10,7 @@ import CollectionsRouter from 'features/collection/CollectionRouter';
 import FundingSourcesRouter from 'features/funding-sources/FundingSourcesRouter';
 import ResourcesPage from 'features/resources/ResourcesPage';
 import StandardsPage from 'features/standards/StandardsPage';
+import ManageUsersForm from 'features/summary/list-data/survey/manage/ManageUsersForm';
 import SummaryRouter from 'features/summary/SummaryRouter';
 import { SupportPage } from 'features/support/SupportPage';
 import CreateSurveyPage from 'features/surveys/CreateSurveyPage';
@@ -24,7 +25,6 @@ import React from 'react';
 import { Redirect, Switch, useLocation } from 'react-router-dom';
 import RouteWithTitle from 'utils/RouteWithTitle';
 import { getTitle } from 'utils/Utils';
-import ManageUsersForm from 'features/summary/list-data/survey/manage/ManageUsersForm';
 
 const AppRouter: React.FC = () => {
   const location = useLocation();
@@ -70,6 +70,16 @@ const AppRouter: React.FC = () => {
           <AuthenticatedRouteGuard>
             <CodesContextProvider>
               <SummaryRouter />
+            </CodesContextProvider>
+          </AuthenticatedRouteGuard>
+        </BaseLayout>
+      </RouteWithTitle>
+
+      <RouteWithTitle path="/admin/invite" title={getTitle('Invite Members')}>
+        <BaseLayout>
+          <AuthenticatedRouteGuard>
+            <CodesContextProvider>
+              <ManageUsersForm handleSubmit={() => {}} formikRef={React.createRef()} />
             </CodesContextProvider>
           </AuthenticatedRouteGuard>
         </BaseLayout>
@@ -168,19 +178,6 @@ const AppRouter: React.FC = () => {
 
       <RouteWithTitle title={getTitle()} path="*">
         <Redirect to="/page-not-found" />
-      </RouteWithTitle>
-
-      <RouteWithTitle path="/admin/invite" title={getTitle('Invite Members')}>
-        <BaseLayout>
-          <AuthenticatedRouteGuard>
-            <CodesContextProvider>
-              <ManageUsersForm
-                handleSubmit={() => {}}
-                formikRef={React.createRef()}
-              />
-            </CodesContextProvider>
-          </AuthenticatedRouteGuard>
-        </BaseLayout>
       </RouteWithTitle>
     </Switch>
   );

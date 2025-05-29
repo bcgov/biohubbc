@@ -252,6 +252,18 @@ export class SurveyRepository extends BaseRepository {
       query.where('sp.itis_tsn', filterFields.itis_tsn);
     }
 
+    // Survey Role Filter
+    if (filterFields.survey_roles?.length) {
+      query.whereIn('s.survey_id', (subQueryBuilder) => {
+        subQueryBuilder
+          .select('survey_id')
+          .from('survey_member')
+          .join('survey_role', 'survey_member.survey_role_id', 'survey_role.survey_role_id')
+          .where('system_user_id', systemUserId)
+          .whereIn('survey_role', filterFields.survey_roles ?? []);
+      });
+    }
+
     // Keyword Search filter
     if (filterFields.keyword) {
       const keywordMatch = `%${filterFields.keyword}%`;

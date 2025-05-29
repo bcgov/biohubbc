@@ -1,4 +1,10 @@
-import { mdiAccountMultiplePlus, mdiClipboardOutline, mdiDatabaseSearch, mdiFormatListGroup, mdiMagnify } from '@mdi/js';
+import {
+  mdiAccountMultiplePlus,
+  mdiClipboardOutline,
+  mdiDatabaseSearch,
+  mdiFormatListGroup,
+  mdiMagnify
+} from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -9,11 +15,11 @@ import SurveysListContainer from 'features/summary/list-data/survey/SurveysListC
 import { useSearchParams } from 'hooks/useSearchParams';
 import { SidebarLayout } from 'layouts/SidebarLayout';
 import { useState } from 'react';
+import { Link as NavLink } from 'react-router-dom';
 import { TabularDataTableContainer } from '../tabular-data/TabularDataTableContainer';
 import CollectionsListContainer from './collection/CollectionListContainer';
 import { CreateCollectionButton } from './collection/create/CreateCollectionButton';
 import { CreateSurveyButton } from './survey/create/CreateSurveyButton';
-import {Link as NavLink} from 'react-router-dom';
 
 export const SUMMARY_ACTIVE_VIEW_KEY = 'lvk';
 export enum SUMMARY_ACTIVE_VIEW_VALUE {
@@ -60,8 +66,7 @@ export const ListDataTableContainer = () => {
             color="primary"
             startIcon={<Icon path={mdiAccountMultiplePlus} size={1} />}
             component={NavLink}
-            to="/admin/invite"
-          >
+            to="/admin/invite">
             Invite
           </Button>
         </Stack>
