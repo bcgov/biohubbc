@@ -205,7 +205,9 @@ const SurveyHeader = (props: ISurveyHeaderProps) => {
             <SurveyRoleRouteGuard
               validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
               validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-              <Button variant="contained">Publish</Button>
+              <Button variant="contained" onClick={() => setPublishSurveyDialogOpen(true)}>
+                Publish
+              </Button>
               <Button
                 id="survey_settings_button"
                 aria-label="Survey Settings"
