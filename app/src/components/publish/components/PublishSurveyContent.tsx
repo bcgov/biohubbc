@@ -32,7 +32,7 @@ const PublishSurveyContent = () => {
           }
         }}>
         <Typography variant="body1" color="textSecondary">
-          Published data submitted as part of this survey may be secured according to the{' '}
+          Published data may be secured according to the &zwnj;
           <a
             href="https://www2.gov.bc.ca/gov/content/environment/natural-resource-stewardship/laws-policies-standards-guidance/data-information-security"
             target="_blank">
