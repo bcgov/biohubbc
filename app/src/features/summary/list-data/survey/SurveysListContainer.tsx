@@ -33,6 +33,7 @@ import SurveysListFilterForm, {
 } from './SurveysListFilterForm';
 
 type ViewType = 'FIXED' | 'CUSTOM';
+const SURVEY_TAB_KEY = 's_tab';
 
 interface FilterView {
   value: string;
@@ -51,6 +52,7 @@ type SurveyDataTableURLParams = {
   s_limit?: string;
   s_sort?: string;
   s_order?: 'asc' | 'desc';
+  [SURVEY_TAB_KEY]?: string;
 };
 
 const pageSizeOptions = [10, 25, 50];
@@ -235,20 +237,40 @@ const SurveysListContainer = ({ showSearch }: { showSearch: boolean }) => {
 
   const mergedViews: FilterView[] = useMemo(() => [...fixedViews, ...customViews], [fixedViews, customViews]);
 
-  const handleViewChange = (viewValue: string) => {
-    // surveysDataLoader.clearData();
+  useEffect(() => {
+    const tabKeyParam = searchParams.get(SURVEY_TAB_KEY);
 
+    if (!tabKeyParam) {
+      return;
+    }
+
+    const selectedView = mergedViews.find((view) => view.label === tabKeyParam || view.value === tabKeyParam);
+
+    if (selectedView && selectedView.value !== activeView) {
+      setActiveView(selectedView.value);
+      setAdvancedFiltersModel(selectedView.conditions ?? SurveyAdvancedFiltersInitialValues);
+    }
+  }, [mergedViews, searchParams, activeView]);
+
+  const handleViewChange = (viewValue: string) => {
     setActiveView(viewValue);
+
     const selected = mergedViews.find((v) => v.value === viewValue);
     const filters = selected?.conditions ?? SurveyAdvancedFiltersInitialValues;
 
-    setSearchParams(
-      searchParams
-        .setOrDelete('s_keyword', filters.keyword)
-        .setOrDelete('s_itis_tsn', filters.itis_tsn)
-        .setOrDelete('s_system_user_id', filters.system_user_id)
-    );
+    const updatedParams = searchParams
+      .setOrDelete('s_keyword', filters.keyword)
+      .setOrDelete('s_itis_tsn', filters.itis_tsn)
+      .setOrDelete('s_system_user_id', filters.system_user_id);
 
+    // For the SURVEY_TAB_KEY, store the view label (or any identifying value)
+    if (selected?.type === 'CUSTOM') {
+      updatedParams.set(SURVEY_TAB_KEY, selected.label); // or `selected.value` if that makes more sense
+    } else {
+      updatedParams.setOrDelete(SURVEY_TAB_KEY, undefined);
+    }
+
+    setSearchParams(updatedParams);
     setAdvancedFiltersModel(filters);
   };
 
