@@ -15,7 +15,7 @@ import ParticipantsCollectionForm from 'features/collection/edit/participants/Pa
 import { Formik, FormikProps } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { useContext, useMemo } from 'react';
+import { useContext, useEffect, useMemo } from 'react';
 
 /**
  * Form for inviting multiple users to multiple surveys.
@@ -41,6 +41,10 @@ const ManageUsersForm = ({
   const surveysDataLoader = useDataLoader(() =>
     biohubApi.survey.findSurveys(undefined, { survey_roles: [SURVEY_ROLE.ADMIN] })
   );
+
+  useEffect(() => {
+    surveysDataLoader.load();
+  }, []);
 
   const surveys = surveysDataLoader.data?.surveys || [];
 
@@ -128,7 +132,7 @@ const ManageUsersForm = ({
                 {/* Bottom half: User/role selection */}
                 <HorizontalSplitFormComponent
                   title="Invite Members"
-                  summary="Invite members to access your surveys. Any individual role you assign here will apply to each member in every survey you have selected."
+                  summary="Invite members to access your surveys. Any role you assign here will be applied to that member within every survey you have selected above."
                   component={<ParticipantsCollectionForm roles={codes?.survey_roles ?? []} />}
                 />
                 <Divider />

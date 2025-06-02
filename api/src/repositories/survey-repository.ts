@@ -253,14 +253,14 @@ export class SurveyRepository extends BaseRepository {
     }
 
     // Survey Role Filter
-    if (filterFields.survey_roles?.length) {
+    if (!isUserAdmin && filterFields.survey_roles?.length) {
       query.whereIn('s.survey_id', (subQueryBuilder) => {
         subQueryBuilder
           .select('survey_id')
           .from('survey_member')
           .join('survey_role', 'survey_member.survey_role_id', 'survey_role.survey_role_id')
           .where('system_user_id', systemUserId)
-          .whereIn('survey_role', filterFields.survey_roles ?? []);
+          .whereIn('survey_role.name', filterFields.survey_roles ?? []);
       });
     }
 
