@@ -49,7 +49,9 @@ const PageHeader = (props: IPageHeader) => {
           flex="1 1 auto"
           gap={0}>
           <Box flex="1 1 auto">
-            <Typography variant="h1">{title}</Typography>
+            <Typography variant="h1" mb={0.5}>
+              {title}
+            </Typography>
             {subTitleJSX && (
               <Stack flexDirection="row" alignItems="center" gap={1}>
                 {subTitleJSX}
