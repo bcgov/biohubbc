@@ -37,6 +37,13 @@ const ManageUsersForm = ({
   const codes = codesContext.codesDataLoader.data;
   const biohubApi = useBiohubApi();
 
+  // Ensure codes are loaded before rendering
+  useEffect(() => {
+    if (!codes) {
+      codesContext.codesDataLoader.load();
+    }
+  }, [codes, codesContext.codesDataLoader]);
+
   // Load all surveys
   const surveysDataLoader = useDataLoader(() =>
     biohubApi.survey.findSurveys(undefined, { survey_roles: [SURVEY_ROLE.ADMIN] })
@@ -63,6 +70,10 @@ const ManageUsersForm = ({
     selectedSurveys: [] as number[], // survey_id[]
     participants: [] // as handled by ParticipantsCollectionForm
   };
+
+  if (!codes?.survey_roles) {
+    return null; // or a loading spinner if preferred
+  }
 
   return (
     <>
@@ -133,7 +144,7 @@ const ManageUsersForm = ({
                 <HorizontalSplitFormComponent
                   title="Invite Members"
                   summary="Invite members to access your surveys. Any role you assign here will be applied to that member within every survey you have selected above."
-                  component={<ParticipantsCollectionForm roles={codes?.survey_roles ?? []} />}
+                  component={<ParticipantsCollectionForm roles={codes.survey_roles} />}
                 />
                 <Divider />
                 <Stack mt={4} flexDirection="row" justifyContent="flex-end" gap={1}>
