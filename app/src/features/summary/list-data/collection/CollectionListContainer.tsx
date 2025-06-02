@@ -246,7 +246,7 @@ const CollectionsListContainer = (props: ICollectionsListContainerProps) => {
     try {
       await biohubApi.collection.deleteCollection(actionMenuAnchorEl.collectionId);
       collectionsDataLoader.refresh(paginationSort, advancedFiltersModel);
-    } catch (error) {
+    } catch (_error) {
       // error handling optional
     }
     handleCloseActionMenu();
