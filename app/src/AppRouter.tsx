@@ -79,7 +79,7 @@ const AppRouter: React.FC = () => {
         <BaseLayout>
           <AuthenticatedRouteGuard>
             <CodesContextProvider>
-              <ManageUsersForm handleSubmit={() => {}} formikRef={React.createRef()} />
+              <ManageUsersForm formikRef={React.createRef()} />
             </CodesContextProvider>
           </AuthenticatedRouteGuard>
         </BaseLayout>
