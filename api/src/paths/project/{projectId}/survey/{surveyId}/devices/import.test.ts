@@ -11,7 +11,7 @@ describe('importTelemetryDeviceCSV', () => {
     sinon.restore();
   });
 
-  it('imports telemetry CSV returns status 200', async () => {
+  it('imports device CSV returns status 200', async () => {
     const mockDBConnection = getMockDBConnection({ open: sinon.stub(), commit: sinon.stub(), release: sinon.stub() });
     const getDBConnectionStub = sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 

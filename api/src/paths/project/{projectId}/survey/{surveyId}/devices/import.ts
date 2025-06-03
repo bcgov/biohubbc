@@ -13,7 +13,7 @@ import { parseMulterFile } from '../../../../../../utils/media/media-utils';
 import { getFileFromRequest } from '../../../../../../utils/request';
 import { constructXLSXWorkbook, getDefaultWorksheet } from '../../../../../../utils/xlsx-utils/worksheet-utils';
 
-const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/devices/upload');
+const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/devices/import');
 
 export const POST: Operation = [
   authorizeRequestHandler((req) => {
