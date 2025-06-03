@@ -1,4 +1,4 @@
-import { mdiArrowTopRight, mdiDotsVertical, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
+import { mdiArrowTopRight, mdiDotsVertical, mdiImport, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -12,6 +12,8 @@ import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { GridRowSelectionModel } from '@mui/x-data-grid';
+import axios, { AxiosProgressEvent } from 'axios';
+import { CSVSingleImportDialog } from 'components/csv/CSVSingleImportDialog';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
@@ -22,12 +24,15 @@ import { useDialogContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import { getDeviceCSVTemplate } from 'utils/csv-templates';
+import { downloadFile } from 'utils/file-utils';
 import { TelemetryDeviceKeysButton } from '../../device-keys/TelemetryDeviceKeysButton';
 
 export const DevicesContainer = () => {
   const dialogContext = useDialogContext();
   const surveyContext = useSurveyContext();
-
+  const cancelToken = axios.CancelToken.source();
+  const [processingRecords, setProcessingRecords] = useState(false);
   const biohubApi = useBiohubApi();
 
   // State for bulk actions
@@ -111,9 +116,41 @@ export const DevicesContainer = () => {
     devicesDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
   };
 
+  const [showImportDialog, setShowImportDialog] = useState(false);
+
+  // Handle import for devices in bulk
+  const handleImportDeviceCSV = async (file: File, onProgress: (progressEvent: AxiosProgressEvent) => void) => {
+    try {
+      await biohubApi.telemetryDevice.importTelemetryDeviceCSV(
+        surveyContext.projectId,
+        surveyContext.surveyId,
+        file,
+        cancelToken,
+        onProgress
+      );
+
+      setProcessingRecords(true);
+
+      // Refresh the device data after a successful import
+      devicesDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+    } finally {
+      setProcessingRecords(false);
+    }
+  };
+
   return (
     <>
       {/* Bulk action menu */}
+      <CSVSingleImportDialog
+        open={showImportDialog}
+        dialogTitle="Import Devices"
+        dialogSummary="Import devices by uploading a CSV file matching the template. Duplicate records are flagged."
+        onClose={() => setShowImportDialog(false)}
+        onImport={handleImportDeviceCSV}
+        onDownloadTemplate={() =>
+          downloadFile(getDeviceCSVTemplate(), `SIMS-devices-template-${new Date().getFullYear()}.csv`)
+        }
+      />
       <Menu
         open={Boolean(headerAnchorEl)}
         onClose={() => setHeaderAnchorEl(null)}
@@ -145,6 +182,13 @@ export const DevicesContainer = () => {
             startIcon={<Icon path={mdiPlus} size={0.8} />}>
             Add
           </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<Icon path={mdiImport} size={1} />}
+            onClick={() => setShowImportDialog(true)}>
+            Import
+          </Button>
           <IconButton
             edge="end"
             sx={{ ml: 1 }}
@@ -166,7 +210,7 @@ export const DevicesContainer = () => {
           isLoadingFallbackDelay={100}>
           <Box>
             <LoadingGuard
-              isLoading={devicesDataLoader.isLoading || !devicesDataLoader.isReady}
+              isLoading={devicesDataLoader.isLoading || !devicesDataLoader.isReady || processingRecords}
               isLoadingFallback={<SkeletonTable />}
               isLoadingFallbackDelay={100}
               hasNoData={!devicesCount}

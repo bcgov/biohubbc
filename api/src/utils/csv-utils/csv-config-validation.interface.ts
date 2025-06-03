@@ -306,7 +306,10 @@ export type CSVRowStateOptions = {
  */
 export type CSVCellValidatorOptions = {
   /**
-   * Set to true to make the cell value optional (ie: allow the cell to be empty)
+   * Set to true to make the cell value optional (ie: allow the cell to be empty).
+   *
+   * NOTE: This is independent of the `optional` prop in CSVStaticHeaderConfig, which controls whether the column
+   * must exist in the CSV. Here, optional controls whether the cell must have a value.
    *
    * @default false
    * @type {boolean}
