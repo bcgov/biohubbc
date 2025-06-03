@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 import * as db from '../../../../../../database/db';
 import { HTTP422CSVValidationError } from '../../../../../../errors/http-error';
-import { ImportTelemetryService } from '../../../../../../services/import-services/telemetry/import-telemetry-service';
+import { ImportDeviceService } from '../../../../../../services/import-services/devices/import-device-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
 import { importTelemetryDeviceCSV } from './import';
 
@@ -15,7 +15,7 @@ describe('importTelemetryDeviceCSV', () => {
     const mockDBConnection = getMockDBConnection({ open: sinon.stub(), commit: sinon.stub(), release: sinon.stub() });
     const getDBConnectionStub = sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
-    const importCSVWorksheetStub = sinon.stub(ImportTelemetryService.prototype, 'importCSVWorksheet');
+    const importCSVWorksheetStub = sinon.stub(ImportDeviceService.prototype, 'importCSVWorksheet');
 
     importCSVWorksheetStub.resolves([]);
 
@@ -47,7 +47,7 @@ describe('importTelemetryDeviceCSV', () => {
     const mockDBConnection = getMockDBConnection({ open: sinon.stub(), commit: sinon.stub(), release: sinon.stub() });
     const getDBConnectionStub = sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
-    const importCSVWorksheetStub = sinon.stub(ImportTelemetryService.prototype, 'importCSVWorksheet');
+    const importCSVWorksheetStub = sinon.stub(ImportDeviceService.prototype, 'importCSVWorksheet');
 
     importCSVWorksheetStub.resolves([
       {
