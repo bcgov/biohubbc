@@ -2,45 +2,31 @@ import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { WorkSheet } from 'xlsx';
-import { ExtendedDeploymentRecord } from '../../../repositories/telemetry-repositories/telemetry-deployment-repository.interface';
 import * as csv from '../../../utils/csv-utils/csv-config-validation';
 import { CSVConfig, CSVRowState } from '../../../utils/csv-utils/csv-config-validation.interface';
 import { getMockDBConnection } from '../../../__mocks__/db';
-import { ImportTelemetryService } from './import-device-service';
+import { ImportDeviceService } from './import-device-service';
 
 chai.use(sinonChai);
 
-describe('ImportTelemetryService', () => {
+describe('ImportDeviceService', () => {
   beforeEach(() => {
     sinon.restore();
   });
 
   describe('getCSVConfig', () => {
-    it('should return the CSVConfig for Telemetry', async () => {
+    it('should return the CSVConfig for Device', async () => {
       const connection = getMockDBConnection();
-      const service = new ImportTelemetryService(connection, {}, 1);
+      const worksheet = {} as WorkSheet;
+      const service = new ImportDeviceService(connection, worksheet, 1);
 
-      const getSurveyDeploymentsStub = sinon.stub(service.deploymentService, 'getDeploymentsForSurvey');
       const getVendorsStub = sinon.stub(service.codeRepository, 'getActiveTelemetryDeviceMakes');
-      const getSurveyCritterAliasMapStub = sinon.stub(service.surveyCritterService, 'getSurveyCritterAliasMap');
-
-      getSurveyDeploymentsStub.resolves([{ device_key: 'lotek:1234' } as ExtendedDeploymentRecord]);
-      getVendorsStub.resolves([{ name: 'Lotek' } as any]);
-      getSurveyCritterAliasMapStub.resolves(new Map());
+      getVendorsStub.resolves([{ name: 'Lotek', description: 'Lotek', id: 10 }]);
 
       const config = await service.getCSVConfig();
 
-      expect(getSurveyDeploymentsStub).to.have.been.calledOnceWithExactly(1);
       expect(getVendorsStub).to.have.been.calledOnceWithExactly();
-      expect(config.staticHeadersConfig).to.have.keys(
-        'SERIAL',
-        'VENDOR',
-        'ALIAS',
-        'LATITUDE',
-        'LONGITUDE',
-        'DATE',
-        'TIME'
-      );
+      expect(config.staticHeadersConfig).to.have.keys('SERIAL', 'VENDOR', 'MODEL', 'COMMENT');
     });
   });
 
@@ -50,40 +36,39 @@ describe('ImportTelemetryService', () => {
       const worksheet = {} as WorkSheet;
       const surveyId = 1;
 
-      const service = new ImportTelemetryService(mockConnection, worksheet, surveyId);
+      const service = new ImportDeviceService(mockConnection, worksheet, surveyId);
 
       const mockCSVConfig = {} as CSVConfig;
       const mockGetConfig = sinon.stub(service, 'getCSVConfig').resolves(mockCSVConfig);
-      const bulkCreateStub = sinon.stub(service.telemetryVendorService, 'bulkCreateTelemetryInBatches').resolves();
 
-      const mockValidate = sinon.stub(csv, 'validateCSVWorksheet').returns({
+      const validateStub = sinon.stub(csv, 'validateCSVWorksheet').returns({
         errors: [],
         rows: [
           {
-            SERIAL: 'uuid',
+            SERIAL: '1234',
             VENDOR: 'lotek',
-            LATITUDE: 1.234,
-            LONGITUDE: 2.345,
-            DATE: '2021-01-01',
-            TIME: '12:00:00',
+            MODEL: 'ModelX',
+            COMMENT: 'Test device',
             [CSVRowState]: {}
           }
         ]
       });
 
-      await service.importCSVWorksheet();
+      service.vendorNameToId = new Map([['lotek', 10]]);
+      const createDeviceStub = sinon.stub(service.telemetryDeviceService, 'createDevice').resolves();
+
+      const result = await service.importCSVWorksheet();
 
       expect(mockGetConfig).to.have.been.called;
-      expect(mockValidate).to.have.been.calledOnceWithExactly(worksheet, mockCSVConfig);
-      expect(bulkCreateStub).to.have.been.calledOnceWithExactly(1, [
-        {
-          deployment_id: 'uuid',
-          latitude: 1.234,
-          longitude: 2.345,
-          acquisition_date: '2021-01-01 12:00:00',
-          transmission_date: null
-        }
-      ]);
+      expect(validateStub).to.have.been.calledOnceWithExactly(worksheet, mockCSVConfig);
+      expect(createDeviceStub).to.have.been.calledOnceWithExactly({
+        survey_id: 1,
+        serial: '1234',
+        device_make_id: 10,
+        model: 'ModelX',
+        comment: 'Test device'
+      });
+      expect(result).to.deep.equal([]);
     });
 
     it('should return CSV Validation error if rows fail validation', async () => {
@@ -91,7 +76,7 @@ describe('ImportTelemetryService', () => {
       const worksheet = {} as WorkSheet;
       const surveyId = 1;
 
-      const service = new ImportTelemetryService(mockConnection, worksheet, surveyId);
+      const service = new ImportDeviceService(mockConnection, worksheet, surveyId);
 
       const mockCSVConfig = {} as CSVConfig;
       const mockGetConfig = sinon.stub(service, 'getCSVConfig').resolves(mockCSVConfig);

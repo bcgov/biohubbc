@@ -210,7 +210,7 @@ export const DevicesContainer = () => {
           isLoadingFallbackDelay={100}>
           <Box>
             <LoadingGuard
-              isLoading={devicesDataLoader.isLoading || !devicesDataLoader.isReady}
+              isLoading={devicesDataLoader.isLoading || !devicesDataLoader.isReady || processingRecords}
               isLoadingFallback={<SkeletonTable />}
               isLoadingFallbackDelay={100}
               hasNoData={!devicesCount}
@@ -228,7 +228,6 @@ export const DevicesContainer = () => {
                 selectedRows={selectedRows}
                 setSelectedRows={setSelectedRows}
                 onDelete={onDelete}
-                isLoading={processingRecords}
               />
             </LoadingGuard>
           </Box>

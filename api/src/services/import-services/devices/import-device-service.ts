@@ -124,8 +124,8 @@ export class ImportDeviceService extends DBService {
     this.utils.setAllStaticHeaderConfigs({
       SERIAL: { validateCell: getPositiveNumberCellValidator() },
       VENDOR: { validateCell: getTelemetryVendorCellValidator(vendorsSet) },
-      MODEL: { validateCell: getDescriptionCellValidator() },
-      COMMENT: { validateCell: getDescriptionCellValidator() }
+      MODEL: { validateCell: getDescriptionCellValidator({ optional: true }) },
+      COMMENT: { validateCell: getDescriptionCellValidator({ optional: true }) }
     });
 
     // Return the final CSV config

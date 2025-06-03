@@ -106,16 +106,16 @@ POST.apiDoc = {
  */
 export function importTelemetryDeviceCSV(): RequestHandler {
   return async (req, res) => {
-    const surveyId = Number(req.params.surveyId);
-    const rawFile = getFileFromRequest(req);
-
     const connection = getDBConnection(req.keycloak_token);
-
-    const mediaFile = parseMulterFile(rawFile);
-    const worksheet = getDefaultWorksheet(constructXLSXWorkbook(mediaFile));
 
     try {
       await connection.open();
+
+      const surveyId = Number(req.params.surveyId);
+      const rawFile = getFileFromRequest(req);
+
+      const mediaFile = parseMulterFile(rawFile);
+      const worksheet = getDefaultWorksheet(constructXLSXWorkbook(mediaFile));
 
       const deviceService = new ImportDeviceService(connection, worksheet, surveyId);
 

@@ -4,9 +4,9 @@ import * as db from '../../../../../../database/db';
 import { HTTP422CSVValidationError } from '../../../../../../errors/http-error';
 import { ImportTelemetryService } from '../../../../../../services/import-services/telemetry/import-telemetry-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
-import { importTelemetryCSV } from './import';
+import { importTelemetryDeviceCSV } from './import';
 
-describe('importTelemetryCSV', () => {
+describe('importTelemetryDeviceCSV', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -26,7 +26,7 @@ describe('importTelemetryCSV', () => {
     mockReq.files = [mockFile];
     mockReq.params.surveyId = '1';
 
-    const requestHandler = importTelemetryCSV();
+    const requestHandler = importTelemetryDeviceCSV();
 
     await requestHandler(mockReq, mockRes, mockNext);
 
@@ -65,7 +65,7 @@ describe('importTelemetryCSV', () => {
     mockReq.files = [mockFile];
     mockReq.params.surveyId = '1';
 
-    const requestHandler = importTelemetryCSV();
+    const requestHandler = importTelemetryDeviceCSV();
 
     try {
       await requestHandler(mockReq, mockRes, mockNext);
