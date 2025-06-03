@@ -1,17 +1,16 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
-import { getTelemetryInSurvey } from '.';
 import * as db from '../../../../../../database/db';
 import {
-  Telemetry,
-  TelemetrySupplementary,
-  TelemetryVendorEnum
+  TelemetrySpatial,
+  TelemetrySupplementary
 } from '../../../../../../repositories/telemetry-repositories/telemetry-vendor-repository.interface';
 
 import { TelemetryVendorService } from '../../../../../../services/telemetry-services/telemetry-vendor-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
+import { getTelemetrySpatialData } from './spatial';
 
-describe('getTelemetryInSurvey', () => {
+describe('getTelemetrySpatialData', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -20,26 +19,18 @@ describe('getTelemetryInSurvey', () => {
     const mockDBConnection = getMockDBConnection({ commit: sinon.stub(), release: sinon.stub() });
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
-    const mockTelemetry: Telemetry[] = [
+    const mockTelemetry: TelemetrySpatial[] = [
       {
         telemetry_id: '123-456-789',
-        deployment_id: 2,
-        critter_id: 3,
-        vendor: TelemetryVendorEnum.VECTRONIC,
-        serial: '123456',
-        acquisition_date: '2021-01-01T00:00:00.000Z',
-        latitude: -49,
-        longitude: 125,
-        elevation: null,
-        temperature: null
+        geometry: { type: 'Point', coordinates: [-49, 125] }
       }
     ];
 
     const mockSupplementary = { count: 1, start_date: '2021-01-01', end_date: '2021-01-01' };
 
-    const mockResponse: [Telemetry[], TelemetrySupplementary] = [mockTelemetry, mockSupplementary];
+    const mockResponse: [TelemetrySpatial[], TelemetrySupplementary] = [mockTelemetry, mockSupplementary];
 
-    sinon.stub(TelemetryVendorService.prototype, 'getTelemetryForSurvey').resolves(mockResponse);
+    sinon.stub(TelemetryVendorService.prototype, 'getTelemetrySpatialForSurvey').resolves(mockResponse);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -48,21 +39,13 @@ describe('getTelemetryInSurvey', () => {
       surveyId: '2'
     };
 
-    const requestHandler = getTelemetryInSurvey();
+    const requestHandler = getTelemetrySpatialData();
 
     await requestHandler(mockReq, mockRes, mockNext);
 
     expect(mockRes.json).to.have.been.calledOnceWith({
       telemetry: mockTelemetry,
-      count: mockSupplementary.count,
-      pagination: {
-        total: 1,
-        per_page: 1,
-        current_page: 1,
-        last_page: 1,
-        sort: undefined,
-        order: undefined
-      }
+      supplementaryData: mockSupplementary
     });
     expect(mockRes.status).calledOnceWith(200);
 
@@ -76,8 +59,8 @@ describe('getTelemetryInSurvey', () => {
 
     const mockError = new Error('Test error');
 
-    const getTelemetryForSurveyStub = sinon
-      .stub(TelemetryVendorService.prototype, 'getTelemetryForSurvey')
+    const ggetTelemetrySpatialForSurveyStub = sinon
+      .stub(TelemetryVendorService.prototype, 'getTelemetrySpatialForSurvey')
       .rejects(mockError);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
@@ -87,13 +70,13 @@ describe('getTelemetryInSurvey', () => {
       surveyId: '2'
     };
 
-    const requestHandler = getTelemetryInSurvey();
+    const requestHandler = getTelemetrySpatialData();
 
     try {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect(getTelemetryForSurveyStub).calledOnce;
+      expect(ggetTelemetrySpatialForSurveyStub).calledOnce;
       expect(actualError).to.equal(mockError);
 
       expect(mockDBConnection.rollback).to.have.been.calledOnce;
