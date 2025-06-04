@@ -91,20 +91,16 @@ const ManageUsersForm = ({
     }
 
     try {
-      // Bulk assign: add participants to all selected surveys using fetch with backend shape
+      // Bulk assign: add members to all selected surveys using fetch with backend shape
       await Promise.all(
         (values.selectedSurveys || []).map((survey_id: number) =>
-          fetch(`/api/survey/${survey_id}/participants`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ participants: validParticipants })
-          })
+          biohubApi.survey.addSurveyMembers(survey_id, validParticipants)
         )
       );
       history.push('/admin/summary');
     } catch (error) {
       // Optionally show an error to the user here
-      console.error('Failed to add participants:', error);
+      console.error('Failed to add members:', error);
     }
   };
 
