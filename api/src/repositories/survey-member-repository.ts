@@ -331,6 +331,7 @@ export class SurveyMemberRepository extends BaseRepository {
   async postSurveyMember(surveyId: number, systemUserId: number, surveyMemberRole: number | string): Promise<void> {
     let sqlStatement;
 
+    // If surveyMemberRole is a string (role name), look up the ID in the insert (case-insensitive)
     if (isNaN(Number(surveyMemberRole))) {
       sqlStatement = SQL`
         INSERT INTO survey_member (
@@ -338,16 +339,16 @@ export class SurveyMemberRepository extends BaseRepository {
           system_user_id,
           survey_role_id
         )
-        (
-          SELECT
-            ${surveyId},
-            ${systemUserId},
-            survey_role_id
-          FROM
-            survey_role
-          WHERE
-            name = ${surveyMemberRole}
-        );
+        SELECT
+          ${surveyId},
+          ${systemUserId},
+          survey_role_id
+        FROM
+          survey_role
+        WHERE
+          LOWER(name) = LOWER(${surveyMemberRole})
+          AND record_end_date IS NULL
+        RETURNING *;
       `;
     } else {
       sqlStatement = SQL`
@@ -359,13 +360,14 @@ export class SurveyMemberRepository extends BaseRepository {
           ${surveyId},
           ${systemUserId},
           ${surveyMemberRole}
-        );
+        )
+        RETURNING *;
       `;
     }
 
     const response = await this.connection.sql(sqlStatement);
 
-    if (!response.rowCount) {
+    if (!response || !response.rowCount) {
       throw new ApiExecuteSQLError('Failed to insert survey team member', [
         'SurveyRepository->postSurveyMember',
         'rows was null or undefined, expected rows != null'
