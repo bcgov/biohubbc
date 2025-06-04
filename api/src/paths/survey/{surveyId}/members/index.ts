@@ -178,6 +178,7 @@ POST.apiDoc = {
         schema: {
           type: 'object',
           additionalProperties: false,
+          required: ['members'],
           properties: {
             members: {
               type: 'array',
