@@ -6,6 +6,7 @@ import Collapse from '@mui/material/Collapse';
 import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
+import Snackbar from '@mui/material/Snackbar';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
@@ -21,7 +22,7 @@ import { useParticipantsForm } from 'features/summary/list-data/survey/manage/pa
 import { Formik, FormikProps } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { useContext, useEffect, useMemo } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { TransitionGroup } from 'react-transition-group';
 
@@ -43,6 +44,11 @@ const ManageUsersForm = ({
   const codesContext = useContext(CodesContext);
   const codes = codesContext.codesDataLoader.data;
   const biohubApi = useBiohubApi();
+  const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({
+    open: false,
+    message: '',
+    severity: 'success'
+  });
 
   // Ensure codes are loaded before rendering
   useEffect(() => {
@@ -76,7 +82,6 @@ const ManageUsersForm = ({
 
   // Internal handleSubmit for bulk-assigning participants to selected surveys
   const handleSubmit = async (values: any) => {
-    // Use the same logic as SurveyMembersForm for mapping participants, but only send what backend expects
     const validParticipants = (participants || [])
       .filter((p) => p.system_user_id && p.survey_role_name)
       .map((p) => ({
@@ -85,21 +90,24 @@ const ManageUsersForm = ({
       }));
 
     if (!validParticipants.length) {
-      // Show an error if no participants with roles are present
-      alert('Please invite a team member and assign them a role prior to submitting this form.');
+      setSnackbar({
+        open: true,
+        message: 'Please invite a team member and assign them a role prior to submitting this form.',
+        severity: 'error'
+      });
       return;
     }
 
     try {
-      // Bulk assign: add members to all selected surveys using fetch with backend shape
       await Promise.all(
         (values.selectedSurveys || []).map((survey_id: number) =>
           biohubApi.survey.addSurveyMembers(survey_id, validParticipants)
         )
       );
-      history.push('/admin/summary');
+      setSnackbar({ open: true, message: 'Members added successfully.', severity: 'success' });
+      setTimeout(() => history.push('/admin/summary'), 1500);
     } catch (error) {
-      // Optionally show an error to the user here
+      setSnackbar({ open: true, message: 'Failed to add members.', severity: 'error' });
       console.error('Failed to add members:', error);
     }
   };
@@ -263,6 +271,17 @@ const ManageUsersForm = ({
           </Formik>
         </Paper>
       </Container>
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        message={
+          <Typography variant="body2" component="span" color={snackbar.severity === 'error' ? 'error' : 'inherit'}>
+            {snackbar.message}
+          </Typography>
+        }
+      />
     </>
   );
 };
