@@ -118,3 +118,21 @@ export function formatCaptureLabel(date: string, time?: string): string {
   }
   return dayjs(date).format(DATE_FORMAT.MediumDateFormat);
 }
+
+/**
+ * If both date and time are present, returns 'MMMM D, YYYY h:mm a'.
+ * If only date is present, returns 'MMMM D, YYYY'.
+ * If only time is present, returns 'h:mm a'.
+ */
+export function displayDateTime(date?: string | null, time?: string | null): string {
+  if (date && time) {
+    return dayjs(`${date} ${time}`).format(DATE_FORMAT.MediumDateTimeFormat);
+  }
+  if (date) {
+    return dayjs(date).format(DATE_FORMAT.MediumDateFormat);
+  }
+  if (time) {
+    return dayjs(time, ['HH:mm', 'HH:mm:ss', 'h:mm A']).format(DATE_FORMAT.TimeFormat);
+  }
+  return '';
+}
