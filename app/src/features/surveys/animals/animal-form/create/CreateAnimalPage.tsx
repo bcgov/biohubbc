@@ -26,7 +26,7 @@ const defaultAnimalDataFormValues: ICreateEditAnimalRequest = {
   species: null,
   sex_qualitative_option_id: null,
   ecological_units: [],
-  wildlife_health_id: '',
+  wildlife_health_id: null,
   critter_comment: ''
 };
 
@@ -89,7 +89,7 @@ export const CreateAnimalPage = () => {
       const response = await biohubApi.survey.createCritterAndAddToSurvey(surveyId, {
         critter_id: undefined,
         itis_tsn: values.species.tsn,
-        wlh_id: undefined,
+        wlh_id: values.wildlife_health_id,
         animal_id: values.nickname,
         sex_qualitative_option_id: values.sex_qualitative_option_id,
         critter_comment: values.critter_comment

@@ -7,6 +7,7 @@ import { ICreateEditAnimalRequest, ICritterCollectionUnitResponse } from 'interf
 import yup from 'utils/YupSchema';
 import { EcologicalUnitsForm } from './ecological-units/EcologicalUnitsForm';
 import { AnimalGeneralInformationForm } from './general-information/AnimalGeneralInformationForm';
+import { WildlifeHealthForm } from './wildlife-health/WildlifeHealthForm';
 
 export interface IAnimalFormProps {
   /**
@@ -111,6 +112,12 @@ export const AnimalFormContainer = (props: IAnimalFormProps) => {
           title="General Information"
           summary="Enter information to identify the animal"
           component={<AnimalGeneralInformationForm isEdit={isEdit} />}
+        />
+        <Divider />
+        <HorizontalSplitFormComponent
+          title="Wildlife Health ID"
+          summary="If applicable, specify the primary Wildlife Health ID as assigned by the Widlife Health Lab."
+          component={<WildlifeHealthForm />}
         />
         <Divider />
         <HorizontalSplitFormComponent
