@@ -1,6 +1,8 @@
 import { mdiDotsVertical, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
+import blue from '@mui/material/colors/blue';
+import green from '@mui/material/colors/green';
 import grey from '@mui/material/colors/grey';
 import IconButton from '@mui/material/IconButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -10,13 +12,17 @@ import MenuItem from '@mui/material/MenuItem';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import { GridColDef, GridRowSelectionModel } from '@mui/x-data-grid';
+import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { FOREIGN_KEY_CONSTRAINT_ERROR } from 'constants/errors';
+import dayjs from 'dayjs';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
+import { TelemetryDeployment } from 'interfaces/useTelemetryDeploymentApi.interface';
 import { TelemetryDevice } from 'interfaces/useTelemetryDeviceApi.interface';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import { combineDateTime } from 'utils/datetime';
 
 export interface IDeviceRowData {
   id: number;
@@ -25,10 +31,12 @@ export interface IDeviceRowData {
   device_make_id: number;
   model: string | null;
   comment: string | null;
+  status?: string;
 }
 
 interface IDevicesTableProps {
   devices: TelemetryDevice[];
+  deployments: TelemetryDeployment[];
   selectedRows: GridRowSelectionModel;
   setSelectedRows: (selection: GridRowSelectionModel) => void;
   /**
@@ -44,7 +52,7 @@ interface IDevicesTableProps {
  * @return {*}
  */
 export const DevicesTable = (props: IDevicesTableProps) => {
-  const { devices, selectedRows, setSelectedRows, onDelete } = props;
+  const { devices, deployments, selectedRows, setSelectedRows, onDelete } = props;
 
   const biohubApi = useBiohubApi();
 
@@ -123,14 +131,36 @@ export const DevicesTable = (props: IDevicesTableProps) => {
     });
   };
 
-  const rows: IDeviceRowData[] = devices.map((device) => ({
-    id: device.device_id,
-    device_id: device.device_id,
-    serial: device.serial,
-    device_make_id: device.device_make_id,
-    model: device.model,
-    comment: device.comment
-  }));
+  // Helper to determine if device is deployed at current time
+  const isDeviceDeployed = (deviceDeployments: Array<any>) => {
+    const now = new Date();
+    return deviceDeployments.some((d) => {
+      const start = new Date(
+        d.attachment_start_time ? `${d.attachment_start_date}T${d.attachment_start_time}` : d.attachment_start_date
+      );
+      const end = d.attachment_end_date
+        ? new Date(d.attachment_end_time ? `${d.attachment_end_date}T${d.attachment_end_time}` : d.attachment_end_date)
+        : null;
+      return start <= now && (!end || now <= end);
+    });
+  };
+
+  const rows: IDeviceRowData[] = devices.map((device) => {
+    // Find deployments for this device by device_key
+    const deviceDeployments = deployments.filter(
+      (dep) => dep.device_key && device.serial && dep.device_key.split(':')[1] === device.serial
+    );
+    const deployed = deviceDeployments.length > 0 && isDeviceDeployed(deviceDeployments);
+    return {
+      id: device.device_id,
+      device_id: device.device_id,
+      serial: device.serial,
+      device_make_id: device.device_make_id,
+      model: device.model,
+      comment: device.comment,
+      status: deployed ? 'deployed' : 'available'
+    };
+  });
 
   const columns: GridColDef<IDeviceRowData>[] = [
     {
@@ -181,6 +211,27 @@ export const DevicesTable = (props: IDevicesTableProps) => {
       field: 'comment',
       headerName: 'Comment',
       flex: 1
+    },
+    {
+      field: 'status',
+      headerName: 'Status',
+      description: 'Is the device currently deployed',
+      flex: 1,
+      renderCell: (params) => {
+        // Find deployments for this device
+        const deviceDeployments = deployments.filter(
+          (dep) => dep.device_key && params.row.serial && dep.device_key.split(':')[1] === params.row.serial
+        );
+        // Is any deployment active?
+        const isActive = deviceDeployments.some((d) => {
+          if (!d.attachment_end_date) return true;
+          return dayjs().isBefore(combineDateTime(d.attachment_end_date, d.attachment_end_time));
+        });
+        if (isActive && deviceDeployments.length > 0) {
+          return <ColouredRectangleChip colour={blue} label="Deployed" />;
+        }
+        return <ColouredRectangleChip colour={green} label="Available" />;
+      }
     },
     {
       field: 'actions',
