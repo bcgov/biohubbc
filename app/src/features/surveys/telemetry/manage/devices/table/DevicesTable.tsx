@@ -224,7 +224,9 @@ export const DevicesTable = (props: IDevicesTableProps) => {
         );
         // Is any deployment active?
         const isActive = deviceDeployments.some((d) => {
-          if (!d.attachment_end_date) return true;
+          if (!d.attachment_end_date) {
+            return true;
+          }
           return dayjs().isBefore(combineDateTime(d.attachment_end_date, d.attachment_end_time));
         });
         if (isActive && deviceDeployments.length > 0) {
