@@ -261,14 +261,22 @@ export const DeploymentsTable = (props: IDeploymentsTableProps) => {
       description: 'The status of the deployment, based on whether the end date has passed',
       flex: 1,
       renderCell: (params) => {
-        if (
-          params.row.attachment_end_date &&
-          dayjs().isBefore(combineDateTime(params.row.attachment_end_date, params.row.attachment_end_time))
-        ) {
-          return <ColouredRectangleChip colour={blue} label="Done" />;
-        }
+        const now = dayjs();
+        const start = combineDateTime(params.row.attachment_start_date, params.row.attachment_start_time);
+        const end = params.row.attachment_end_date
+          ? combineDateTime(params.row.attachment_end_date, params.row.attachment_end_time)
+          : null;
 
-        return <ColouredRectangleChip colour={green} label="active" />;
+        if (start && now.isBefore(start)) {
+          return <ColouredRectangleChip colour={grey} label="Pending" />;
+        }
+        if (end && now.isAfter(end)) {
+          return <ColouredRectangleChip colour={blue} label="Ended" />;
+        }
+        if (start && (!end || now.isSame(start) || (now.isAfter(start) && (!end || now.isBefore(end))))) {
+          return <ColouredRectangleChip colour={green} label="Active" />;
+        }
+        return null;
       }
     },
     {
