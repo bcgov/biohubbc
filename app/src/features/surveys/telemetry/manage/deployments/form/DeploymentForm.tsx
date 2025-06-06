@@ -5,6 +5,7 @@ import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import HelpButtonStack from 'components/buttons/HelpButtonStack';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import {
   DeploymentDetailsForm,
@@ -153,10 +154,12 @@ export const DeploymentForm = (props: IDeploymentFormProps) => {
           <HorizontalSplitFormComponent
             title="End Date (optional)"
             summary="Enter information about when the deployment ended">
-            <DeploymentEndForm
-              captures={critterDataLoader.data?.captures ?? []}
-              mortalities={critterDataLoader.data?.mortality ?? []}
-            />
+            <HelpButtonStack helpText="A deployment must be ended prior to re-deploying the device.">
+              <DeploymentEndForm
+                captures={critterDataLoader.data?.captures ?? []}
+                mortalities={critterDataLoader.data?.mortality ?? []}
+              />
+            </HelpButtonStack>
           </HorizontalSplitFormComponent>
 
           <Divider />
