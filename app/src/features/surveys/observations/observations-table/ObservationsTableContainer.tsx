@@ -42,7 +42,6 @@ import { useEffect, useMemo } from 'react';
 import { useHistory } from 'react-router';
 import { ImportObservationsButton } from '../components/ImportObservationsButton';
 import { ConfigureColumnsButton } from './configure-columns/ConfigureColumnsButton';
-import ExportHeadersButton from './export-button/ExportHeadersButton';
 import { ObservationSubcountCommentDialog } from './grid-column-definitions/comment/ObservationSubcountCommentDialog';
 import {
   getEnvironmentColumnDefinitions,
@@ -219,7 +218,6 @@ const ObservationsTableContainer = () => {
             </Button>
           </Collapse>
           <ConfigureColumnsButton disabled={observationsTableContext.isDisabled} columns={columns} />
-          <ExportHeadersButton />
           <BulkActionsButton disabled={observationsTableContext.isDisabled} />
         </Stack>
       </Toolbar>
