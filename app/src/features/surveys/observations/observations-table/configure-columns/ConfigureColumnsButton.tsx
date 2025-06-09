@@ -3,7 +3,9 @@ import Icon from '@mdi/react';
 import { Button } from '@mui/material';
 import { GridColDef } from '@mui/x-data-grid';
 import { IObservationTableRow } from 'contexts/observationsTableContext';
+import { useConfigureEnvironmentColumns } from 'features/surveys/observations/observations-table/configure-columns/components/environment/useConfigureEnvironmentColumns';
 import { useConfigureGeneralColumns } from 'features/surveys/observations/observations-table/configure-columns/components/general/useConfigureGeneralColumns';
+import { useConfigureMeasurementColumns } from 'features/surveys/observations/observations-table/configure-columns/components/measurements/useConfigureMeasurementColumns';
 import { useCodesContext, useObservationsTableContext } from 'hooks/useContext';
 import { useEffect, useMemo, useState } from 'react';
 import { ConfigureColumnsDialog } from './components/ConfigureColumnsDialog';
@@ -99,7 +101,14 @@ export const ConfigureColumnsButton = (props: IConfigureColumnsButtonProps) => {
     return Array.from(columnMap.values());
   }, [columns, codesContext.codesDataLoader.data, observationsTableContext]);
 
+  // Add measurement/environment hooks and values
+  const measurementColumns = observationsTableContext.measurementColumns;
+  const environmentColumns = observationsTableContext.environmentColumns;
   const { onToggleShowHideAll, onToggleColumnVisibility } = useConfigureGeneralColumns({ hideableColumns });
+  const { onAddMeasurementColumns, onRemoveMeasurementColumns } = useConfigureMeasurementColumns();
+  const { onAddEnvironmentColumns, onRemoveEnvironmentColumns } = useConfigureEnvironmentColumns();
+
+  // DO NOT disable button/dialog if row is in edit mode
 
   return (
     <>
@@ -121,6 +130,12 @@ export const ConfigureColumnsButton = (props: IConfigureColumnsButtonProps) => {
         hideableColumns={hideableColumns}
         onToggleShowHideAll={onToggleShowHideAll}
         onToggleColumnVisibility={onToggleColumnVisibility}
+        measurementColumns={measurementColumns}
+        onAddMeasurementColumns={onAddMeasurementColumns}
+        onRemoveMeasurementColumns={onRemoveMeasurementColumns}
+        environmentColumns={environmentColumns}
+        onAddEnvironmentColumns={onAddEnvironmentColumns}
+        onRemoveEnvironmentColumns={onRemoveEnvironmentColumns}
       />
     </>
   );
