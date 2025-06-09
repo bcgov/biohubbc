@@ -7,7 +7,6 @@ import { useState } from 'react';
 
 import CustomTextField from 'components/fields/CustomTextField';
 import HelpButtonStack from 'components/tooltip/HelpButtonStack';
-import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import { ICreateEditAnimalRequest } from 'interfaces/useCritterApi.interface';
 
 /**
@@ -18,8 +17,6 @@ import { ICreateEditAnimalRequest } from 'interfaces/useCritterApi.interface';
 export const WildlifeHealthForm = () => {
   const { values } = useFormikContext<ICreateEditAnimalRequest>();
   const [showInput, setShowInput] = useState(!!values.wildlife_health_id);
-
-  const critterbaseApi = useCritterbaseApi();
 
   return (
     <Grid container spacing={2}>
