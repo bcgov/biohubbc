@@ -144,6 +144,15 @@ export const CSVSingleImportDialog = (props: CSVSingleImportDialogProps) => {
       <DialogActions>
         <LoadingButton
           onClick={() => {
+            props.onDownloadTemplate();
+          }}
+          color="primary"
+          variant="contained"
+          disabled={disableImportButton}>
+          Transform Data
+        </LoadingButton>
+        <LoadingButton
+          onClick={() => {
             handleCSVFileImport(file);
           }}
           color="primary"
