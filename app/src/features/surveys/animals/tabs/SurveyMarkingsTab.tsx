@@ -38,7 +38,7 @@ import { useColumnFilter } from './filtering/useColumnFilter';
  *
  * @return {*}
  */
-export const SurveyMeasurementsTab = () => {
+export const SurveyMarkingsTab = () => {
   const surveyContext = useSurveyContext();
   const biohubApi = useBiohubApi();
   const critterApi = useCritterApi(axios);
@@ -91,30 +91,40 @@ export const SurveyMeasurementsTab = () => {
   };
 
   // Add filter state for each column
-  const [sexFilter, setSexFilter] = useColumnFilter('');
   const [speciesFilter, setSpeciesFilter] = useColumnFilter('');
   const [nicknameFilter, setNicknameFilter] = useColumnFilter('');
   const [dateFilter, setDateFilter] = useColumnFilter('');
-  const [measurementFilter, setMeasurementFilter] = useColumnFilter('');
-  const [valueFilter, setValueFilter] = useColumnFilter('');
+  const [typeFilter, setTypeFilter] = useColumnFilter('');
+  const [locationFilter, setLocationFilter] = useColumnFilter('');
+  const [primaryColourFilter, setPrimaryColourFilter] = useColumnFilter('');
+  const [secondaryColourFilter, setSecondaryColourFilter] = useColumnFilter('');
+  const [identifierFilter, setIdentifierFilter] = useColumnFilter('');
 
   // Get unique values for dropdowns
-  const uniqueSexes = Array.from(new Set(detailedMeasurements.map((row) => row.sex).filter(Boolean)));
   const uniqueSpecies = Array.from(new Set(detailedMeasurements.map((row) => row.scientificName).filter(Boolean)));
   const uniqueNicknames = Array.from(new Set(detailedMeasurements.map((row) => row.animal_id).filter(Boolean)));
-  const uniqueDates = Array.from(new Set(detailedMeasurements.map((row) => row.measurement_date).filter(Boolean)));
-  const uniqueMeasurements = Array.from(new Set(detailedMeasurements.map((row) => row.measurement).filter(Boolean)));
-  const uniqueValues = Array.from(new Set(detailedMeasurements.map((row) => row.value).filter(Boolean)));
+  const uniqueDates = Array.from(new Set(detailedMeasurements.map((row) => row.marking_date).filter(Boolean)));
+  const uniqueTypes = Array.from(new Set(detailedMeasurements.map((row) => row.marking_type).filter(Boolean)));
+  const uniqueLocations = Array.from(new Set(detailedMeasurements.map((row) => row.marking_location).filter(Boolean)));
+  const uniquePrimaryColours = Array.from(
+    new Set(detailedMeasurements.map((row) => row.primary_colour).filter(Boolean))
+  );
+  const uniqueSecondaryColours = Array.from(
+    new Set(detailedMeasurements.map((row) => row.secondary_colour).filter(Boolean))
+  );
+  const uniqueIdentifiers = Array.from(new Set(detailedMeasurements.map((row) => row.identifier).filter(Boolean)));
 
-  // Filter measurements by all filters
-  const filteredMeasurements = detailedMeasurements.filter(
+  // Filter markings by all filters
+  const filteredMarkings = detailedMeasurements.filter(
     (row) =>
-      (sexFilter ? row.sex === sexFilter : true) &&
       (speciesFilter ? row.scientificName === speciesFilter : true) &&
       (nicknameFilter ? row.animal_id === nicknameFilter : true) &&
-      (dateFilter ? row.measurement_date === dateFilter : true) &&
-      (measurementFilter ? row.measurement === measurementFilter : true) &&
-      (valueFilter ? row.value === valueFilter : true)
+      (dateFilter ? row.marking_date === dateFilter : true) &&
+      (typeFilter ? row.marking_type === typeFilter : true) &&
+      (locationFilter ? row.marking_location === locationFilter : true) &&
+      (primaryColourFilter ? row.primary_colour === primaryColourFilter : true) &&
+      (secondaryColourFilter ? row.secondary_colour === secondaryColourFilter : true) &&
+      (identifierFilter ? row.identifier === identifierFilter : true)
   );
 
   if (!surveyContext.surveyDataLoader.data || crittersDataLoader.isLoading || loadingMeasurements) {
@@ -122,8 +132,8 @@ export const SurveyMeasurementsTab = () => {
   }
 
   // filteredMeasurements
-  const measurementRows = filteredMeasurements;
-  console.log('measurementRows', measurementRows);
+  const markingRows = filteredMarkings;
+  console.log('markingRows', markingRows);
 
   const columns = [
     {
@@ -153,54 +163,85 @@ export const SurveyMeasurementsTab = () => {
       )
     },
     {
-      field: 'sex',
-      headerName: 'Sex',
-      flex: 1,
-      renderHeader: () => (
-        <FilterHeader label="SEX" filterValue={sexFilter} setFilterValue={setSexFilter} options={uniqueSexes} />
-      )
-    },
-    {
-      field: 'measurement_date',
+      field: 'marking_date',
       headerName: 'Date',
       flex: 1,
       renderHeader: () => (
         <FilterHeader label="DATE" filterValue={dateFilter} setFilterValue={setDateFilter} options={uniqueDates} />
       )
     },
-    { field: 'measurement_time', headerName: 'Time', flex: 1, filterable: false },
     {
-      field: 'measurement',
-      headerName: 'Measurement',
-      flex: 1.5,
+      field: 'marking_type',
+      headerName: 'Type',
+      flex: 1,
+      renderHeader: () => (
+        <FilterHeader label="TYPE" filterValue={typeFilter} setFilterValue={setTypeFilter} options={uniqueTypes} />
+      )
+    },
+    {
+      field: 'marking_location',
+      headerName: 'Location',
+      flex: 1,
       renderHeader: () => (
         <FilterHeader
-          label="MEASUREMENT"
-          filterValue={measurementFilter}
-          setFilterValue={setMeasurementFilter}
-          options={uniqueMeasurements}
+          label="LOCATION"
+          filterValue={locationFilter}
+          setFilterValue={setLocationFilter}
+          options={uniqueLocations}
         />
       )
     },
     {
-      field: 'value',
-      headerName: 'Value',
+      field: 'primary_colour',
+      headerName: 'Primary Colour',
       flex: 1,
       renderHeader: () => (
-        <FilterHeader label="VALUE" filterValue={valueFilter} setFilterValue={setValueFilter} options={uniqueValues} />
+        <FilterHeader
+          label="COLOUR 1"
+          filterValue={primaryColourFilter}
+          setFilterValue={setPrimaryColourFilter}
+          options={uniquePrimaryColours}
+        />
+      )
+    },
+    {
+      field: 'secondary_colour',
+      headerName: 'Secondary Colour',
+      flex: 1,
+      renderHeader: () => (
+        <FilterHeader
+          label="COLOUR 2"
+          filterValue={secondaryColourFilter}
+          setFilterValue={setSecondaryColourFilter}
+          options={uniqueSecondaryColours}
+        />
+      )
+    },
+    {
+      field: 'identifier',
+      headerName: 'Identifier',
+      flex: 1,
+      renderHeader: () => (
+        <FilterHeader
+          label="IDENTIFIER"
+          filterValue={identifierFilter}
+          setFilterValue={setIdentifierFilter}
+          options={uniqueIdentifiers}
+        />
       )
     }
   ];
 
-  const rows = measurementRows.map((row: any, idx: number) => ({
+  const rows = markingRows.map((row: any, idx: number) => ({
     id: idx,
     scientificName: row.scientificName,
     animal_id: row.animal_id,
-    sex: row.sex,
-    measurement_date: row.measurement_date,
-    measurement_time: row.measurement_time,
-    measurement: row.measurement,
-    value: row.value
+    marking_date: row.marking_date,
+    marking_type: row.marking_type,
+    marking_location: row.marking_location,
+    primary_colour: row.primary_colour,
+    secondary_colour: row.secondary_colour,
+    identifier: row.identifier
   }));
 
   return (
@@ -208,7 +249,7 @@ export const SurveyMeasurementsTab = () => {
       <Box p={2}>
         <Box display="flex" alignItems="center" mb={2}>
           <Typography variant="h1" sx={{ flexGrow: 1 }}>
-            Measurements
+            Markings
           </Typography>
         </Box>
         {/* Removed separate Sex filter dropdown, now in column header */}

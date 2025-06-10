@@ -17,6 +17,7 @@ import SurveyHeader from '../view/SurveyHeader';
 import { AnimalViewToggle } from './sidebar/AnimalViewToggle';
 import { SurveyAnimalsTab } from './tabs/SurveyAnimalsTab';
 import { SurveyCapturesTab } from './tabs/SurveyCapturesTab';
+import { SurveyMarkingsTab } from './tabs/SurveyMarkingsTab';
 import { SurveyMeasurementsTab } from './tabs/SurveyMeasurementsTab';
 import { SurveyMortalitiesTab } from './tabs/SurveyMortalitiesTab';
 
@@ -102,7 +103,8 @@ export const SurveyAnimalPage = () => {
                   [ANIMAL_ACTIVE_VIEW_VALUE.animals]: <SurveyAnimalsTab />,
                   [ANIMAL_ACTIVE_VIEW_VALUE.captures]: <SurveyCapturesTab />,
                   [ANIMAL_ACTIVE_VIEW_VALUE.mortalities]: <SurveyMortalitiesTab />,
-                  [ANIMAL_ACTIVE_VIEW_VALUE.measurements]: <SurveyMeasurementsTab />
+                  [ANIMAL_ACTIVE_VIEW_VALUE.measurements]: <SurveyMeasurementsTab />,
+                  [ANIMAL_ACTIVE_VIEW_VALUE.markings]: <SurveyMarkingsTab />
                 }}
               />
             </SidebarLayout>
