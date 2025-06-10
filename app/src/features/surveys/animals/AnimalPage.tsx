@@ -16,6 +16,8 @@ import { useHistory } from 'react-router';
 import SurveyHeader from '../view/SurveyHeader';
 import { AnimalViewToggle } from './sidebar/AnimalViewToggle';
 import { SurveyAnimalsTab } from './tabs/SurveyAnimalsTab';
+import { SurveyCapturesTab } from './tabs/SurveyCapturesTab';
+import { SurveyMortalitiesTab } from './tabs/SurveyMortalitiesTab';
 
 export const ANIMAL_ACTIVE_VIEW_KEY = 'a';
 
@@ -73,7 +75,7 @@ export const SurveyAnimalPage = () => {
                   <Button
                     fullWidth
                     startIcon={<Icon path={mdiArrowLeft} size={1} />}
-                    onClick={() => history.goBack()}
+                    onClick={() => history.push(`/admin/surveys/${surveyContext.surveyId}/details?v=data&dav=animals`)}
                     sx={{
                       py: 1.5,
                       mb: 0.5,
@@ -96,7 +98,9 @@ export const SurveyAnimalPage = () => {
               <ComponentSwitch
                 switch={activeView}
                 components={{
-                  [ANIMAL_ACTIVE_VIEW_VALUE.animals]: <SurveyAnimalsTab />
+                  [ANIMAL_ACTIVE_VIEW_VALUE.animals]: <SurveyAnimalsTab />,
+                  [ANIMAL_ACTIVE_VIEW_VALUE.captures]: <SurveyCapturesTab />,
+                  [ANIMAL_ACTIVE_VIEW_VALUE.mortalities]: <SurveyMortalitiesTab />
                 }}
               />
             </SidebarLayout>

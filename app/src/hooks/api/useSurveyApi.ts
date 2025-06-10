@@ -402,6 +402,34 @@ const useSurveyApi = (axios: AxiosInstance) => {
   };
 
   /**
+   * Bulk upload Mortalities from CSV.
+   *
+   * @async
+   * @param {File} file - Captures CSV.
+   
+   * @param {number} surveyId
+   * @returns {Promise<number[]>}
+   */
+  const importMortalitiesFromCsv = async (
+    file: File,
+
+    surveyId: number,
+    cancelTokenSource?: CancelTokenSource,
+    onProgress?: (progressEvent: AxiosProgressEvent) => void
+  ): Promise<{ survey_critter_ids: number[] }> => {
+    const formData = new FormData();
+
+    formData.append('media', file);
+
+    const { data } = await axios.post(`/api/survey/${surveyId}/critters/mortalities/import`, formData, {
+      cancelToken: cancelTokenSource?.token,
+      onUploadProgress: onProgress
+    });
+
+    return data;
+  };
+
+  /**
    * Bulk upload Markings from CSV.
    *
    * @async
@@ -495,6 +523,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     getCritterTelemetry,
     importCrittersFromCsv,
     importCapturesFromCsv,
+    importMortalitiesFromCsv,
     importMarkingsFromCsv,
     importMeasurementsFromCsv,
     exportData

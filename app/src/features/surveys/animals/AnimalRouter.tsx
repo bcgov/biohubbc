@@ -13,6 +13,7 @@ import { CreateAnimalPage } from './animal-form/create/CreateAnimalPage';
 import { EditAnimalPage } from './animal-form/edit/EditAnimalPage';
 import { SurveyAnimalPage } from './AnimalPage';
 import { CreateCSVCapturesPage } from './profile/captures/import-captures/CreateCSVCapturesPage';
+import { CreateCSVMortalitiesPage } from './profile/mortality/import-mortalities/CreateCSVMortalitiesPage';
 
 /**
  * Router for all `/admin/surveys/:survey_id/animals/*` pages.
@@ -45,6 +46,17 @@ export const AnimalRouter: React.FC = () => {
           validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <CreateCSVCapturesPage />
+        </SurveyRoleRouteGuard>
+      </RouteWithTitle>
+
+      <RouteWithTitle
+        exact
+        path={'/admin/surveys/:survey_id/animals/mortalities'}
+        title={getTitle('Import Mortalities')}>
+        <SurveyRoleRouteGuard
+          validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
+          validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+          <CreateCSVMortalitiesPage />
         </SurveyRoleRouteGuard>
       </RouteWithTitle>
 
