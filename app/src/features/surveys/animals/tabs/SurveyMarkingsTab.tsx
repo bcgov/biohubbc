@@ -9,6 +9,7 @@ import { useCritterApi } from 'hooks/cb_api/useCritterApi';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
+import { IMarkingResponse } from 'interfaces/useCritterApi.interface';
 import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import { FilterHeader } from './filtering/FilterHeader';
@@ -42,8 +43,8 @@ export const SurveyMarkingsTab = () => {
   const surveyContext = useSurveyContext();
   const biohubApi = useBiohubApi();
   const critterApi = useCritterApi(axios);
-  const [detailedMeasurements, setDetailedMeasurements] = useState<any[]>([]);
-  const [loadingMeasurements, setLoadingMeasurements] = useState(false);
+  const [detailedMarkings, setDetailedMarkings] = useState<IMarkingResponse[]>([]);
+  const [loadingMarkings, setLoadingMarkings] = useState(false);
   const crittersDataLoader = useDataLoader(() => biohubApi.survey.getSurveyCritters(surveyContext.surveyId));
   const history = useHistory();
 
@@ -53,12 +54,13 @@ export const SurveyMarkingsTab = () => {
   }, [crittersDataLoader]);
 
   useEffect(() => {
-    const fetchMeasurements = async () => {
+    const fetchMarkings = async () => {
       if (!crittersDataLoader.data || !Array.isArray(crittersDataLoader.data)) {
         return;
       }
-      setLoadingMeasurements(true);
+      setLoadingMarkings(true);
       const critters = crittersDataLoader.data;
+      // Fetch all critter details
       const details = await Promise.all(
         critters.map((critter: any) =>
           critter.critterbase_critter_id
@@ -66,24 +68,20 @@ export const SurveyMarkingsTab = () => {
             : null
         )
       );
-      // Flatten all measurements for all critters
-      const allMeasurements = details.filter(Boolean).flatMap((detail: any) =>
-        Array.isArray(detail.measurements)
-          ? detail.measurements.map((measurement: any) => ({
-              animal_id: detail.animal_id,
+      // Flatten all markings for all critters, join with critter info for species/nickname
+      const allMarkings: any[] = details.filter(Boolean).flatMap((detail: any) =>
+        Array.isArray(detail.markings)
+          ? detail.markings.map((marking: IMarkingResponse) => ({
+              ...marking,
               scientificName: detail.itis_scientific_name,
-              sex: detail.sex?.label ?? '',
-              measurement_date: measurement.measurement_date,
-              measurement_time: measurement.measurement_time,
-              measurement: measurement.measurement_name || measurement.measurement_type || '',
-              value: measurement.value ?? ''
+              animal_id: detail.animal_id
             }))
           : []
       );
-      setDetailedMeasurements(allMeasurements);
-      setLoadingMeasurements(false);
+      setDetailedMarkings(allMarkings);
+      setLoadingMarkings(false);
     };
-    fetchMeasurements();
+    fetchMarkings();
   }, [crittersDataLoader.data]);
 
   const handleImportMeasurements = () => {
@@ -100,41 +98,39 @@ export const SurveyMarkingsTab = () => {
   const [secondaryColourFilter, setSecondaryColourFilter] = useColumnFilter('');
   const [identifierFilter, setIdentifierFilter] = useColumnFilter('');
 
-  // Get unique values for dropdowns
-  const uniqueSpecies = Array.from(new Set(detailedMeasurements.map((row) => row.scientificName).filter(Boolean)));
-  const uniqueNicknames = Array.from(new Set(detailedMeasurements.map((row) => row.animal_id).filter(Boolean)));
-  const uniqueDates = Array.from(new Set(detailedMeasurements.map((row) => row.marking_date).filter(Boolean)));
-  const uniqueTypes = Array.from(new Set(detailedMeasurements.map((row) => row.marking_type).filter(Boolean)));
-  const uniqueLocations = Array.from(new Set(detailedMeasurements.map((row) => row.marking_location).filter(Boolean)));
+  // Fix: filter out nulls for colour options
   const uniquePrimaryColours = Array.from(
-    new Set(detailedMeasurements.map((row) => row.primary_colour).filter(Boolean))
+    new Set(detailedMarkings.map((row) => row.primary_colour).filter((c): c is string => !!c))
   );
   const uniqueSecondaryColours = Array.from(
-    new Set(detailedMeasurements.map((row) => row.secondary_colour).filter(Boolean))
+    new Set(detailedMarkings.map((row) => row.secondary_colour).filter((c): c is string => !!c))
   );
-  const uniqueIdentifiers = Array.from(new Set(detailedMeasurements.map((row) => row.identifier).filter(Boolean)));
 
-  // Filter markings by all filters
-  const filteredMarkings = detailedMeasurements.filter(
-    (row) =>
+  // Fix: Use correct property names for species/nickname in filters (these are added in the flatten step)
+  const uniqueSpecies = Array.from(new Set(detailedMarkings.map((row: any) => row.scientificName).filter(Boolean)));
+  const uniqueNicknames = Array.from(new Set(detailedMarkings.map((row: any) => row.animal_id).filter(Boolean)));
+  const uniqueDates = Array.from(new Set(detailedMarkings.map((row) => row.attached_timestamp).filter(Boolean)));
+  const uniqueTypes = Array.from(new Set(detailedMarkings.map((row) => row.marking_type).filter(Boolean)));
+  const uniqueLocations = Array.from(new Set(detailedMarkings.map((row) => row.body_location).filter(Boolean)));
+  const uniqueIdentifiers = Array.from(new Set(detailedMarkings.map((row) => row.identifier).filter(Boolean)));
+
+  const filteredMarkings = detailedMarkings.filter(
+    (row: any) =>
       (speciesFilter ? row.scientificName === speciesFilter : true) &&
       (nicknameFilter ? row.animal_id === nicknameFilter : true) &&
-      (dateFilter ? row.marking_date === dateFilter : true) &&
+      (dateFilter ? row.attached_timestamp === dateFilter : true) &&
       (typeFilter ? row.marking_type === typeFilter : true) &&
-      (locationFilter ? row.marking_location === locationFilter : true) &&
+      (locationFilter ? row.body_location === locationFilter : true) &&
       (primaryColourFilter ? row.primary_colour === primaryColourFilter : true) &&
       (secondaryColourFilter ? row.secondary_colour === secondaryColourFilter : true) &&
       (identifierFilter ? row.identifier === identifierFilter : true)
   );
 
-  if (!surveyContext.surveyDataLoader.data || crittersDataLoader.isLoading || loadingMeasurements) {
+  if (!surveyContext.surveyDataLoader.data || crittersDataLoader.isLoading || loadingMarkings) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
-  // filteredMeasurements
   const markingRows = filteredMarkings;
-  console.log('markingRows', markingRows);
-
   const columns = [
     {
       field: 'scientificName',
@@ -151,11 +147,11 @@ export const SurveyMarkingsTab = () => {
     },
     {
       field: 'animal_id',
-      headerName: 'Nickname',
+      headerName: 'Alias',
       flex: 1,
       renderHeader: () => (
         <FilterHeader
-          label="NICKNAME"
+          label="ALIAS"
           filterValue={nicknameFilter}
           setFilterValue={setNicknameFilter}
           options={uniqueNicknames}
@@ -163,7 +159,7 @@ export const SurveyMarkingsTab = () => {
       )
     },
     {
-      field: 'marking_date',
+      field: 'attached_timestamp',
       headerName: 'Date',
       flex: 1,
       renderHeader: () => (
@@ -179,7 +175,7 @@ export const SurveyMarkingsTab = () => {
       )
     },
     {
-      field: 'marking_location',
+      field: 'body_location',
       headerName: 'Location',
       flex: 1,
       renderHeader: () => (
@@ -223,7 +219,7 @@ export const SurveyMarkingsTab = () => {
       flex: 1,
       renderHeader: () => (
         <FilterHeader
-          label="IDENTIFIER"
+          label="ID"
           filterValue={identifierFilter}
           setFilterValue={setIdentifierFilter}
           options={uniqueIdentifiers}
@@ -236,9 +232,9 @@ export const SurveyMarkingsTab = () => {
     id: idx,
     scientificName: row.scientificName,
     animal_id: row.animal_id,
-    marking_date: row.marking_date,
+    attached_timestamp: row.attached_timestamp,
     marking_type: row.marking_type,
-    marking_location: row.marking_location,
+    body_location: row.body_location,
     primary_colour: row.primary_colour,
     secondary_colour: row.secondary_colour,
     identifier: row.identifier
@@ -251,9 +247,11 @@ export const SurveyMarkingsTab = () => {
           <Typography variant="h1" sx={{ flexGrow: 1 }}>
             Markings
           </Typography>
+          <button onClick={() => crittersDataLoader.load()} style={{ marginLeft: 16 }}>
+            Refresh Markings
+          </button>
         </Box>
-        {/* Removed separate Sex filter dropdown, now in column header */}
-        <Paper>
+        <Paper sx={{ overflowX: 'auto' }}>
           <StyledDataGrid
             rows={rows}
             columns={columns}
