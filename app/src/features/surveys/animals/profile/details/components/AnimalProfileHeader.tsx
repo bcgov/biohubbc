@@ -1,18 +1,17 @@
-import { mdiCheckboxMultipleBlankOutline, mdiInformationOutline } from '@mdi/js';
+import { mdiInformationOutline, mdiPencil } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import green from '@mui/material/colors/green';
-import grey from '@mui/material/colors/grey';
 import red from '@mui/material/colors/red';
 import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
-import { useDialogContext } from 'hooks/useContext';
+import { useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { useCopyToClipboard } from 'hooks/useCopyToClipboard';
 import { ICritterDetailedResponse } from 'interfaces/useCritterApi.interface';
-import { setMessageSnackbar } from 'utils/Utils';
+import { useHistory } from 'react-router';
 import { ScientificNameTypography } from '../../../components/ScientificNameTypography';
 import { AnimalAttributeItem } from './AnimalAttributeItem';
 
@@ -30,8 +29,13 @@ export const AnimalProfileHeader = (props: IAnimalProfileHeaderProps) => {
   const { critter } = props;
 
   const dialogContext = useDialogContext();
-
+  const history = useHistory();
   const { copyToClipboard } = useCopyToClipboard();
+  const { surveyId } = useSurveyContext();
+
+  const handleAnimalEdit = () => {
+    history.push(`/admin/surveys/${surveyId}/animals/${critter.critter_id}/edit`);
+  };
 
   return (
     <>
@@ -69,27 +73,14 @@ export const AnimalProfileHeader = (props: IAnimalProfileHeaderProps) => {
             />
           </Box>
         </Stack>
-        <Typography variant="body2" color="textSecondary">
-          <Typography sx={{ fontSize: '0.8rem', fontWeight: 700 }} component="span">
-            Unique ID:&nbsp;
-          </Typography>
-          {critter.critterbase_critter_id}
-          <IconButton
-            sx={{ borderRadius: '5px', p: 0.5, ml: 0.5 }}
-            onClick={() => {
-              if (!critter.critterbase_critter_id) {
-                return;
-              }
-
-              copyToClipboard(critter.critterbase_critter_id, () =>
-                setMessageSnackbar('Unique ID copied to clipboard', dialogContext)
-              ).catch((error) => {
-                console.error('Could not copy text: ', error);
-              });
-            }}>
-            <Icon color={grey[600]} path={mdiCheckboxMultipleBlankOutline} size={0.75} />
-          </IconButton>
-        </Typography>
+        <Button
+          variant="outlined"
+          color="primary"
+          startIcon={<Icon path={mdiPencil} size={1} />}
+          sx={{ height: 36, alignSelf: 'center' }}
+          onClick={handleAnimalEdit}>
+          Edit
+        </Button>
       </Box>
       <Divider sx={{ my: 2 }} />
       <Stack direction="row" gap={3} flex="1 1 auto">
