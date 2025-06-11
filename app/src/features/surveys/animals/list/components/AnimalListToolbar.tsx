@@ -1,7 +1,9 @@
-import { mdiPlus } from '@mdi/js';
+import { mdiPlaylistPlus, mdiPlus } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
 import Toolbar from '@mui/material/Toolbar';
+import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import axios, { AxiosProgressEvent } from 'axios';
 import { CSVSingleImportDialog } from 'components/csv/CSVSingleImportDialog';
@@ -63,6 +65,11 @@ export const AnimalListToolbar = (props: IAnimaListToolbarProps) => {
             ({props.animalCount})
           </Typography>
         </Typography>
+        <Tooltip title="Bulk import animals">
+          <IconButton color="primary" sx={{ mr: 1 }} onClick={() => setOpenImportDialog(true)} aria-label="Import CSV">
+            <Icon path={mdiPlaylistPlus} size={1} />
+          </IconButton>
+        </Tooltip>
         <Button
           variant="contained"
           component={RouterLink}
