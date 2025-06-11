@@ -36,6 +36,7 @@ export const AnimalListContainer = () => {
   const [critterAnchorEl, setCritterAnchorEl] = useState<MenuProps['anchorEl']>(null);
   const [headerAnchorEl, setHeaderAnchorEl] = useState<MenuProps['anchorEl']>(null);
   const [selectedCritterMenu, setSelectedCritterMenu] = useState<ISurveyCritter>();
+  const [searchTerm, setSearchTerm] = useState('');
   const biohubApi = useBiohubApi();
 
   const surveyContext = useSurveyContext();
@@ -57,6 +58,11 @@ export const AnimalListContainer = () => {
   }, [surveyCrittersDataLoader]);
 
   const critters = surveyCrittersDataLoader.data ?? [];
+
+  // Filter critters by animal_id using searchTerm (case-insensitive, partial match)
+  const filteredCritters = critters.filter((critter) =>
+    critter.animal_id?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const handleCheckboxChange = (id: number) => {
     setCheckboxSelectedIds((prev) => (prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]));
@@ -195,7 +201,7 @@ export const AnimalListContainer = () => {
         <LoadingGuard
           isLoading={surveyCrittersDataLoader.isLoading}
           isLoadingFallback={<SkeletonList />}
-          hasNoData={!critters.length}
+          hasNoData={!filteredCritters.length}
           hasNoDataFallback={
             <>
               <Divider />
@@ -208,8 +214,10 @@ export const AnimalListContainer = () => {
           }>
           <Box px={2} flex="1 1 auto">
             <TextField
-              placeholder="Search"
+              placeholder="Search by Animal ID"
               fullWidth
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               InputProps={{
                 startAdornment: (
                   <Box mx={1} mt="6px" color={grey[500]}>
@@ -250,7 +258,7 @@ export const AnimalListContainer = () => {
               </IconButton>
             </Box>
             <List sx={{ '& .MuiListItem-root': { borderRadius: '4px', mb: 0.5 } }} color="primary">
-              {critters.map((critter) => (
+              {filteredCritters.map((critter) => (
                 <CritterListItem
                   key={critter.critter_id}
                   critter={critter}
