@@ -62,18 +62,25 @@ export const AnimalCaptureContainer = () => {
   }
 
   const captures: ICaptureWithSupplementaryData[] =
-    data?.captures.map((capture) => ({
-      ...capture,
-      markings: data?.markings.filter((marking) => marking.capture_id === capture.capture_id),
-      measurements: {
-        qualitative: data.measurements.qualitative.filter(
-          (measurement) => measurement.capture_id === capture.capture_id
-        ),
-        quantitative: data.measurements.quantitative.filter(
-          (measurement) => measurement.capture_id === capture.capture_id
-        )
-      }
-    })) || [];
+    data?.captures
+      .map((capture) => ({
+        ...capture,
+        markings: data?.markings.filter((marking) => marking.capture_id === capture.capture_id),
+        measurements: {
+          qualitative: data.measurements.qualitative.filter(
+            (measurement) => measurement.capture_id === capture.capture_id
+          ),
+          quantitative: data.measurements.quantitative.filter(
+            (measurement) => measurement.capture_id === capture.capture_id
+          )
+        }
+      }))
+      // Sort by descending capture date
+      .sort((a, b) => {
+        const dateA = new Date(a.capture_date as string).getTime();
+        const dateB = new Date(b.capture_date as string).getTime();
+        return dateB - dateA;
+      }) || [];
 
   const handleDelete = async (selectedCapture: string, critter_id: number) => {
     try {
