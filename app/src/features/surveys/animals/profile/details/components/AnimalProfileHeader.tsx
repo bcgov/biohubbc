@@ -83,7 +83,7 @@ export const AnimalProfileHeader = (props: IAnimalProfileHeaderProps) => {
         </Button>
       </Box>
       <Divider sx={{ my: 2 }} />
-      <Stack direction="row" gap={3} flex="1 1 auto">
+      <Stack direction="row" gap={3} flex="1 1 auto" px={2}>
         {critter.sex && (
           <Box>
             <Typography component="dt" variant="body2" fontWeight={500} color="textSecondary">
