@@ -150,7 +150,7 @@ export const SurveyCapturesTab = () => {
             pageSizeOptions={[10, 25, 50]}
             disableRowSelectionOnClick
             getRowId={(row) => row.id}
-            sx={{ minHeight: 500 }}
+            sx={{ minHeight: 600 }}
           />
         </Paper>
       </Box>

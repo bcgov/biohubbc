@@ -55,8 +55,8 @@ export const getMortalitiesCSVTemplate = (): CSVEncodedTemplate => {
 export const getMarkingsCSVTemplate = (): CSVEncodedTemplate => {
   return getCSVTemplate([
     'ALIAS',
-    'CAPTURE_DATE',
-    'CAPTURE_TIME',
+    'DATE',
+    'TIME',
     'BODY_LOCATION',
     'MARKING_TYPE',
     'IDENTIFIER',

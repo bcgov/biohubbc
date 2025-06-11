@@ -85,7 +85,7 @@ export const AnimalProfileHeader = (props: IAnimalProfileHeaderProps) => {
               Sex
             </Typography>
             <Typography component="dd" variant="body2">
-              {critter.sex.label}
+              {critter.sex.label.charAt(0).toUpperCase() + critter.sex.label.slice(1).toLowerCase()}
             </Typography>
           </Box>
         )}
