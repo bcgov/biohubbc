@@ -35,7 +35,7 @@ import { useColumnFilter } from './filtering/useColumnFilter';
 // };
 
 /**
- * Returns the page for viewing animal measurements within a survey.
+ * Returns the page for viewing animal markings within a survey.
  *
  * @return {*}
  */
@@ -60,14 +60,11 @@ export const SurveyMarkingsTab = () => {
       }
       setLoadingMarkings(true);
       const critters = crittersDataLoader.data;
-      // Fetch all critter details
-      const details = await Promise.all(
-        critters.map((critter: any) =>
-          critter.critterbase_critter_id
-            ? critterApi.getDetailedCritter(critter.critterbase_critter_id).catch(() => null)
-            : null
-        )
-      );
+      const critterbaseIds = critters.map((critter: any) => critter.critterbase_critter_id).filter(Boolean);
+      let details: any[] = [];
+      if (critterbaseIds.length > 0) {
+        details = await critterApi.getMultipleCrittersByIds(critterbaseIds).catch(() => []);
+      }
       // Flatten all markings for all critters, join with critter info for species/nickname
       const allMarkings: any[] = details.filter(Boolean).flatMap((detail: any) =>
         Array.isArray(detail.markings)
@@ -84,10 +81,6 @@ export const SurveyMarkingsTab = () => {
     fetchMarkings();
   }, [crittersDataLoader.data]);
 
-  const handleImportMeasurements = () => {
-    history.push(`/admin/surveys/${surveyContext.surveyId}/animals/measurements`);
-  };
-
   // Add filter state for each column
   const [speciesFilter, setSpeciesFilter] = useColumnFilter('');
   const [nicknameFilter, setNicknameFilter] = useColumnFilter('');
@@ -98,7 +91,7 @@ export const SurveyMarkingsTab = () => {
   const [secondaryColourFilter, setSecondaryColourFilter] = useColumnFilter('');
   const [identifierFilter, setIdentifierFilter] = useColumnFilter('');
 
-  // Fix: filter out nulls for colour options
+  // filter out nulls for colour options
   const uniquePrimaryColours = Array.from(
     new Set(detailedMarkings.map((row) => row.primary_colour).filter((c): c is string => !!c))
   );
@@ -106,7 +99,7 @@ export const SurveyMarkingsTab = () => {
     new Set(detailedMarkings.map((row) => row.secondary_colour).filter((c): c is string => !!c))
   );
 
-  // Fix: Use correct property names for species/nickname in filters (these are added in the flatten step)
+  // Use correct property names for species/nickname in filters (these are added in the flatten step)
   const uniqueSpecies = Array.from(new Set(detailedMarkings.map((row: any) => row.scientificName).filter(Boolean)));
   const uniqueNicknames = Array.from(new Set(detailedMarkings.map((row: any) => row.animal_id).filter(Boolean)));
   const uniqueDates = Array.from(new Set(detailedMarkings.map((row) => row.attached_timestamp).filter(Boolean)));
@@ -228,8 +221,8 @@ export const SurveyMarkingsTab = () => {
     }
   ];
 
-  const rows = markingRows.map((row: any, idx: number) => ({
-    id: idx,
+  const rows = markingRows.map((row: any) => ({
+    id: row.marking_id,
     scientificName: row.scientificName,
     animal_id: row.animal_id,
     attached_timestamp: row.attached_timestamp,
@@ -247,9 +240,6 @@ export const SurveyMarkingsTab = () => {
           <Typography variant="h1" sx={{ flexGrow: 1 }}>
             Markings
           </Typography>
-          <button onClick={() => crittersDataLoader.load()} style={{ marginLeft: 16 }}>
-            Refresh Markings
-          </button>
         </Box>
         <Paper sx={{ overflowX: 'auto' }}>
           <StyledDataGrid

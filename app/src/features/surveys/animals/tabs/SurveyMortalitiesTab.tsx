@@ -60,13 +60,11 @@ export const SurveyMortalitiesTab = () => {
       }
       setLoadingMortalities(true);
       const critters = crittersDataLoader.data;
-      const details = await Promise.all(
-        critters.map((critter: any) =>
-          critter.critterbase_critter_id
-            ? critterApi.getDetailedCritter(critter.critterbase_critter_id).catch(() => null)
-            : null
-        )
-      );
+      const critterbaseIds = critters.map((critter: any) => critter.critterbase_critter_id).filter(Boolean);
+      let details: any[] = [];
+      if (critterbaseIds.length > 0) {
+        details = await critterApi.getMultipleCrittersByIds(critterbaseIds).catch(() => []);
+      }
       // Flatten all mortalities for all critters
       const allMortalities = details.filter(Boolean).flatMap((detail: any) =>
         Array.isArray(detail.mortalities)
