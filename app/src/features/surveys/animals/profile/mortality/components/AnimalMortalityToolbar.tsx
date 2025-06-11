@@ -24,10 +24,11 @@ export const AnimalMortalityToolbar = (props: IAnimalMortalityToolbarProps) => {
       <Typography
         data-testid="map-control-title"
         component="div"
-        fontWeight="700"
         sx={{
           pl: 1,
-          flex: '1 1 auto'
+          flex: '1 1 auto',
+          fontWeight: '700',
+          fontSize: '1.25rem'
         }}>
         Mortality
       </Typography>

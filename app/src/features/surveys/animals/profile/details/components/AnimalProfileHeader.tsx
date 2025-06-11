@@ -111,6 +111,16 @@ export const AnimalProfileHeader = (props: IAnimalProfileHeaderProps) => {
         ))}
       </Stack>
       <Divider sx={{ my: 2 }} />
+      {critter.critter_comment && (
+        <Box px={2} pb={2}>
+          <Typography component="dt" variant="body2" fontWeight={500} color="textSecondary">
+            Animal Description:
+          </Typography>
+          <Typography component="dd" variant="body2">
+            {critter.critter_comment}
+          </Typography>
+        </Box>
+      )}
     </>
   );
 };

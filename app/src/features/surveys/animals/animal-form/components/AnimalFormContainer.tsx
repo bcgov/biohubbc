@@ -98,9 +98,8 @@ export const AnimalFormContainer = (props: IAnimalFormProps) => {
   const { initialAnimalData, handleSubmit, formikRef, isEdit } = props;
 
   const handleAnimalFormSubmit = (formikData: ICreateEditAnimalRequest) => {
-    // Remove wildlife_health_id if null or empty string
     const payload = { ...formikData };
-    if (payload.wildlife_health_id == null || payload.wildlife_health_id === '') {
+    if (!isEdit && (payload.wildlife_health_id == null || payload.wildlife_health_id === '')) {
       delete (payload as any).wildlife_health_id;
     }
     handleSubmit(payload);

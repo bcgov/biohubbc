@@ -24,13 +24,14 @@ export const AnimalCapturesToolbar = (props: ICapturesToolbarProps) => {
       <Typography
         data-testid="map-control-title"
         component="div"
-        fontWeight="700"
         sx={{
           pl: 1,
-          flex: '1 1 auto'
+          flex: '1 1 auto',
+          fontWeight: 700,
+          fontSize: '1.25rem'
         }}>
         Captures
-        <Typography component="span" color="textSecondary" sx={{ ml: 0.5, flex: '1 1 auto' }}>
+        <Typography component="span" color="textSecondary" sx={{ ml: 0.5, flex: '1 1 auto', fontSize: '1.25rem' }}>
           ({capturesCount})
         </Typography>
       </Typography>

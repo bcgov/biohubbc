@@ -31,10 +31,9 @@ export const AnimalProfileContainer = () => {
         <AnimalCaptureContainer />
       </Box>
       <Divider sx={{ my: 2 }} />
-      <Box px={2}>
+      <Box px={2} sx={{ mb: 4 }}>
         <AnimalMortalityContainer />
       </Box>
-      <Divider sx={{ my: 2 }} />
     </Stack>
   );
 };
