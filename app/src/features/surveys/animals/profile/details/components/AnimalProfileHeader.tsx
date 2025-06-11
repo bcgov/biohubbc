@@ -8,8 +8,7 @@ import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
-import { useDialogContext, useSurveyContext } from 'hooks/useContext';
-import { useCopyToClipboard } from 'hooks/useCopyToClipboard';
+import { useSurveyContext } from 'hooks/useContext';
 import { ICritterDetailedResponse } from 'interfaces/useCritterApi.interface';
 import { useHistory } from 'react-router';
 import { ScientificNameTypography } from '../../../components/ScientificNameTypography';
@@ -28,11 +27,8 @@ interface IAnimalProfileHeaderProps {
 export const AnimalProfileHeader = (props: IAnimalProfileHeaderProps) => {
   const { critter } = props;
 
-  const dialogContext = useDialogContext();
   const history = useHistory();
-  const { copyToClipboard } = useCopyToClipboard();
   const { surveyId } = useSurveyContext();
-
   const handleAnimalEdit = () => {
     history.push(`/admin/surveys/${surveyId}/animals/${critter.critter_id}/edit`);
   };
@@ -82,7 +78,6 @@ export const AnimalProfileHeader = (props: IAnimalProfileHeaderProps) => {
           Edit
         </Button>
       </Box>
-      <Divider sx={{ my: 2 }} />
       <Stack direction="row" gap={3} flex="1 1 auto" px={2}>
         {critter.sex && (
           <Box>
@@ -115,6 +110,7 @@ export const AnimalProfileHeader = (props: IAnimalProfileHeaderProps) => {
           </Box>
         ))}
       </Stack>
+      <Divider sx={{ my: 2 }} />
     </>
   );
 };

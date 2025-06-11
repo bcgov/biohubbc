@@ -19,7 +19,6 @@ import {
   IQuantitativeMeasurementResponse
 } from 'interfaces/useCritterApi.interface';
 import { useHistory } from 'react-router';
-import { AnimalCapturesMap } from './components/AnimalCapturesMap';
 
 export interface ICaptureWithSupplementaryData extends ICaptureResponse {
   markings: IMarkingResponse[];
@@ -164,7 +163,6 @@ export const AnimalCaptureContainer = () => {
           </Typography>
         </Stack>
       )}
-      {captures.length > 0 && <AnimalCapturesMap captures={capturesWithLocation} isLoading={false} />}
       <AnimalCaptureCardContainer captures={captures} selectedAnimal={selectedAnimal} handleDelete={handleDelete} />
     </>
   );
