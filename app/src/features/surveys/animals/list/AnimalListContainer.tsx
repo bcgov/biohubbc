@@ -201,7 +201,7 @@ export const AnimalListContainer = () => {
         <LoadingGuard
           isLoading={surveyCrittersDataLoader.isLoading}
           isLoadingFallback={<SkeletonList />}
-          hasNoData={!filteredCritters.length}
+          hasNoData={critters.length === 0}
           hasNoDataFallback={
             <>
               <Divider />
@@ -258,17 +258,20 @@ export const AnimalListContainer = () => {
               </IconButton>
             </Box>
             <List sx={{ '& .MuiListItem-root': { borderRadius: '4px', mb: 0.5 } }} color="primary">
-              {filteredCritters.map((critter) => (
-                <CritterListItem
-                  key={critter.critter_id}
-                  critter={critter}
-                  isSelectedAnimal={selectedAnimal?.critter_id === critter.critter_id}
-                  onAnimalClick={handleToggleCritterSelect}
-                  isCheckboxSelected={checkboxSelectedIds.includes(critter.critter_id)}
-                  onCheckboxClick={handleCheckboxChange}
-                  onMenuClick={handleCritterMenuClick}
-                />
-              ))}
+              {filteredCritters.length > 0
+                ? filteredCritters.map((critter) => (
+                    <CritterListItem
+                      key={critter.critter_id}
+                      critter={critter}
+                      isSelectedAnimal={selectedAnimal?.critter_id === critter.critter_id}
+                      onAnimalClick={handleToggleCritterSelect}
+                      isCheckboxSelected={checkboxSelectedIds.includes(critter.critter_id)}
+                      onCheckboxClick={handleCheckboxChange}
+                      onMenuClick={handleCritterMenuClick}
+                    />
+                  ))
+                : // Show nothing (just white space) if there are animals but no search matches
+                  critters.length > 0 && <Box height={120} />}
             </List>
           </Box>
         </LoadingGuard>
