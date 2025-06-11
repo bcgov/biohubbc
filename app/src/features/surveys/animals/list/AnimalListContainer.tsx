@@ -214,7 +214,7 @@ export const AnimalListContainer = () => {
           }>
           <Box px={2} flex="1 1 auto">
             <TextField
-              placeholder="Search by Animal ID"
+              placeholder="Search"
               fullWidth
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
