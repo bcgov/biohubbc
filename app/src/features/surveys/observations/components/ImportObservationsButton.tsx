@@ -114,7 +114,7 @@ export const ImportObservationsButton = (props: IImportObservationsButtonProps) 
       <CSVSingleImportDialog
         open={open}
         dialogTitle="Import Observation CSV"
-        dialogSummary="Upload a CSV file to import observations"
+        dialogSummary="Upload a CSV file to import observations and/or transform your data"
         onClose={() => setOpen(false)}
         onImport={handleImportObservations}
         onDownloadTemplate={() => downloadFile(getObservationCSVTemplate(), 'SIMS-observations-template.csv')}
