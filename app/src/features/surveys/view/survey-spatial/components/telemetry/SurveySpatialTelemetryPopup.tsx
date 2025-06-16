@@ -49,8 +49,9 @@ export const SurveySpatialTelemetryPopup = (props: ISurveySpatialTelemetryPopupP
       },
       {
         label: 'Time',
-        value: shouldShowTime(telemetry.acquisition_date) 
-        ? getFormattedDate(DATE_FORMAT.TimeFormat, telemetry.acquisition_date) :''
+        value: shouldShowTime(telemetry.acquisition_date)
+          ? getFormattedDate(DATE_FORMAT.TimeFormat, telemetry.acquisition_date)
+          : ''
       }
     ];
   };
