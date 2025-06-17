@@ -33,6 +33,10 @@ describe('StandardsService', () => {
         .stub(standardsService.critterbaseService, 'getTaxonBodyLocations')
         .resolves([{ id: '', key: '', value: 'left ear' }]);
 
+      const findTaxonCollectionCategoriesStub = sinon
+        .stub(standardsService.critterbaseService, 'findTaxonCollectionCategories')
+        .resolves([{ category_name: 'telkwa', description: '', collection_category_id: '', itis_tsn: 123456 }]);
+
       const getTaxonMeasurementsStub = sinon
         .stub(standardsService.critterbaseService, 'getTaxonMeasurements')
         .resolves({
@@ -63,9 +67,11 @@ describe('StandardsService', () => {
       expect(getTaxonomyByTsnsStub).to.be.calledOnceWith([mockTsn]);
       expect(getTaxonBodyLocationsStub).to.be.calledOnceWith(mockTsn);
       expect(getTaxonMeasurementsStub).to.be.calledOnceWith(mockTsn);
+      expect(findTaxonCollectionCategoriesStub).to.be.calledOnceWith(mockTsn);
 
       expect(response.measurements.quantitative[0].measurement_name).to.eql('body mass');
       expect(response.measurements.qualitative[0].measurement_desc).to.eql('description');
+      expect(response.ecologicalUnits[0].category_name).to.eql('telkwa');
     });
   });
 

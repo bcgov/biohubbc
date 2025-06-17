@@ -112,6 +112,7 @@ GET.apiDoc = {
                       properties: {
                         itis_tsn: {
                           type: 'integer',
+                          minimum: 1,
                           nullable: true
                         },
                         taxon_measurement_id: {
@@ -160,7 +161,8 @@ GET.apiDoc = {
                       nullable: true
                     },
                     itis_tsn: {
-                      type: 'integer'
+                      type: 'integer',
+                      minimum: 1
                     }
                   }
                 }

@@ -2,11 +2,14 @@ import { mdiBook, mdiRuler, mdiTag } from '@mdi/js';
 import { Box, Divider, Stack, Typography } from '@mui/material';
 import { blueGrey, grey } from '@mui/material/colors';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
+import { LoadingGuard } from 'components/loading/LoadingGuard';
+import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import CustomToggleButtonGroup from 'components/toolbar/CustomToggleButtonGroup';
 import { AccordionStandardCard } from 'features/standards/view/components/AccordionStandardCard';
 import { ScientificNameTypography } from 'features/surveys/animals/components/ScientificNameTypography';
 import { ISpeciesStandards } from 'interfaces/useStandardsApi.interface';
 import { useState } from 'react';
+import { SpeciesStandardsEcologicalUnitCard } from './ecological-unit/SpeciesStandardsEcologicalUnitCard';
 
 enum SpeciesStandardsViewEnum {
   MEASUREMENTS = 'measurements',
@@ -95,29 +98,25 @@ const SpeciesStandardsResults = (props: ISpeciesStandardsResultsProps) => {
           </>
         )}
         {activeView === SpeciesStandardsViewEnum.ECOLOGICAL_UNIT && (
-          <>
+          <LoadingGuard
+            hasNoData={!props.data.ecologicalUnits.length}
+            hasNoDataFallback={
+              <NoDataOverlay
+                sx={{ minHeight: '300px' }}
+                title="No Ecological Units"
+                subtitle="This taxon does not have any ecological units. Contact a system administrator to make suggestions."
+              />
+            }>
             {props.data.ecologicalUnits.map((category) => (
               <AccordionStandardCard
                 key={category.collection_category_id}
                 label={category.category_name}
                 subtitle={category.description}
                 colour={grey[100]}>
-                {/* <Stack gap={2} my={2}>
-                  {props.data?.ecologicalUnits
-                    .filter((unit) => unit.collection_category_id === category.collection_category_id)
-                    .map((unit) => (
-                      <AccordionStandardCard
-                        key={unit.collection_unit_id}
-                        label={unit.unit_name}
-                        subtitle={unit.description}
-                        colour={grey[200]}
-                        disableCollapse
-                      />
-                    ))}
-                </Stack> */}
+                <SpeciesStandardsEcologicalUnitCard collectionCategoryId={category.collection_category_id} />
               </AccordionStandardCard>
             ))}
-          </>
+          </LoadingGuard>
         )}
       </Stack>
     </>
