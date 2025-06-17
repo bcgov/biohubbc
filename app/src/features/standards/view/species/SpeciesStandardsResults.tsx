@@ -1,16 +1,20 @@
-import { mdiRuler, mdiTag } from '@mdi/js';
+import { mdiBook, mdiRuler, mdiTag } from '@mdi/js';
 import { Box, Divider, Stack, Typography } from '@mui/material';
 import { blueGrey, grey } from '@mui/material/colors';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
+import { LoadingGuard } from 'components/loading/LoadingGuard';
+import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import CustomToggleButtonGroup from 'components/toolbar/CustomToggleButtonGroup';
 import { AccordionStandardCard } from 'features/standards/view/components/AccordionStandardCard';
 import { ScientificNameTypography } from 'features/surveys/animals/components/ScientificNameTypography';
 import { ISpeciesStandards } from 'interfaces/useStandardsApi.interface';
 import { useState } from 'react';
+import { SpeciesStandardsEcologicalUnitCard } from './ecological-unit/SpeciesStandardsEcologicalUnitCard';
 
 enum SpeciesStandardsViewEnum {
   MEASUREMENTS = 'measurements',
-  MARKING_BODY_LOCATIONS = 'marking_body_locations'
+  MARKING_BODY_LOCATIONS = 'marking_body_locations',
+  ECOLOGICAL_UNIT = 'ecological_unit'
 }
 
 interface ISpeciesStandardsResultsProps {
@@ -43,7 +47,8 @@ const SpeciesStandardsResults = (props: ISpeciesStandardsResultsProps) => {
         <CustomToggleButtonGroup
           views={[
             { value: SpeciesStandardsViewEnum.MEASUREMENTS, label: 'Measurements', icon: mdiRuler },
-            { value: SpeciesStandardsViewEnum.MARKING_BODY_LOCATIONS, label: 'Marking body locations', icon: mdiTag }
+            { value: SpeciesStandardsViewEnum.MARKING_BODY_LOCATIONS, label: 'Marking body locations', icon: mdiTag },
+            { value: SpeciesStandardsViewEnum.ECOLOGICAL_UNIT, label: 'Ecological Unit', icon: mdiBook }
           ]}
           activeView={activeView}
           onViewChange={setActiveView}
@@ -91,6 +96,27 @@ const SpeciesStandardsResults = (props: ISpeciesStandardsResultsProps) => {
               <AccordionStandardCard label={location.value} colour={grey[100]} disableCollapse key={location.id} />
             ))}
           </>
+        )}
+        {activeView === SpeciesStandardsViewEnum.ECOLOGICAL_UNIT && (
+          <LoadingGuard
+            hasNoData={!props.data.ecologicalUnits.length}
+            hasNoDataFallback={
+              <NoDataOverlay
+                sx={{ minHeight: '300px' }}
+                title="No Ecological Units"
+                subtitle="This taxon does not have any ecological units. Contact a system administrator to make suggestions."
+              />
+            }>
+            {props.data.ecologicalUnits.map((category) => (
+              <AccordionStandardCard
+                key={category.collection_category_id}
+                label={category.category_name}
+                subtitle={category.description}
+                colour={grey[100]}>
+                <SpeciesStandardsEcologicalUnitCard collectionCategoryId={category.collection_category_id} />
+              </AccordionStandardCard>
+            ))}
+          </LoadingGuard>
         )}
       </Stack>
     </>

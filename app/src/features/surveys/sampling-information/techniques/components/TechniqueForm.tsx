@@ -13,7 +13,6 @@ import useDataLoader from 'hooks/useDataLoader';
 import { useEffect, useMemo } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { TechniqueAttractantsForm } from './attractants/TechniqueAttractantsForm';
-import { TechniqueDetailsForm } from './details/TechniqueDetailsForm';
 import { TechniqueGeneralInformationForm } from './general-information/TechniqueGeneralInformationForm';
 import { TechniqueVantageForm } from './vantages/TechniqueVantagesForm';
 
@@ -101,12 +100,6 @@ export const TechniqueForm = <FormValues extends CreateTechniqueFormValues | Upd
         title="Attractants"
         summary="Enter any attractants used to lure species during the technique">
         <TechniqueAttractantsForm />
-      </HorizontalSplitFormComponent>
-
-      <Divider sx={{ my: 5 }} />
-
-      <HorizontalSplitFormComponent title="Methodology" summary="Enter details about the technique">
-        <TechniqueDetailsForm />
       </HorizontalSplitFormComponent>
     </Stack>
   );
