@@ -29,7 +29,7 @@ GET.apiDoc = {
           schema: {
             type: 'object',
             additionalProperties: false,
-            required: ['tsn', 'scientificName', 'measurements', 'markingBodyLocations'],
+            required: ['tsn', 'scientificName', 'measurements', 'markingBodyLocations', 'ecologicalUnits'],
             properties: {
               tsn: {
                 type: 'integer'
@@ -112,6 +112,7 @@ GET.apiDoc = {
                       properties: {
                         itis_tsn: {
                           type: 'integer',
+                          minimum: 1,
                           nullable: true
                         },
                         taxon_measurement_id: {
@@ -137,6 +138,31 @@ GET.apiDoc = {
                           nullable: true
                         }
                       }
+                    }
+                  }
+                }
+              },
+              ecologicalUnits: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  additionalProperties: false,
+                  required: ['collection_category_id', 'category_name', 'description', 'itis_tsn'],
+                  properties: {
+                    collection_category_id: {
+                      type: 'string',
+                      format: 'uuid'
+                    },
+                    category_name: {
+                      type: 'string'
+                    },
+                    description: {
+                      type: 'string',
+                      nullable: true
+                    },
+                    itis_tsn: {
+                      type: 'integer',
+                      minimum: 1
                     }
                   }
                 }
