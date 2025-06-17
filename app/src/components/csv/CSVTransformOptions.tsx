@@ -85,7 +85,7 @@ export const CSVTransformOptions = (props: CSVTransformOptionsProps): JSX.Elemen
           Select columns to transform into rows:
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-          These columns will be "melted" into rows. The remaining columns will be used as identifiers.
+          These columns will be converted into a "long" format where each value becomes a separate row.
         </Typography>
         <FormGroup>
           {columns.map((column) => (
