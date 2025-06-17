@@ -276,10 +276,57 @@ export type CSVRow = Record<Uppercase<string>, any> & {
 /**
  * The validated CSV row keyed by the static headers
  *
+ * Once validated, CSVRowState will be defined and possibly contain additional row metadata. ie: {} or {...metadata}
+ *
  */
 export type CSVRowValidated<StaticHeaderType extends Uppercase<string>> = Record<StaticHeaderType, any> & {
   // The CSV row state symbol to store additional row metadata
-  [CSVRowState]?: Record<string, any>;
+  [CSVRowState]: Record<string, any>;
 };
 
 export type CSVCell = string | number | undefined;
+
+/**
+ * The CSV row state options.
+ *
+ * Used with the `updateCSVRowState` function to modify its behaviour.
+ */
+export type CSVRowStateOptions = {
+  /**
+   * Set to true if you want to append the new value to the existing value (when keys are the same).
+   * Set to false, or leave undefined, to overwrite the existing value with the new value (when keys are the same).
+   *
+   * @type {boolean}
+   */
+  append?: boolean;
+};
+
+/**
+ * The CSV cell validator options
+ */
+export type CSVCellValidatorOptions = {
+  /**
+   * Set to true to make the cell value optional (ie: allow the cell to be empty).
+   *
+   * NOTE: This is independent of the `optional` prop in CSVStaticHeaderConfig, which controls whether the column
+   * must exist in the CSV. Here, optional controls whether the cell must have a value.
+   *
+   * @default false
+   * @type {boolean}
+   */
+  optional: boolean;
+};
+
+/**
+ * The CSV array-cell validator options
+ *
+ */
+export type CSVArrayCellValidatorOptions = {
+  /**
+   * The delimiter used to split the array-cell value.
+   *
+   * @example ';'
+   * @type {string}
+   */
+  delimiter: string;
+};

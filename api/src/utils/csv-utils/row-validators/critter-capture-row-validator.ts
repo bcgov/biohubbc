@@ -1,8 +1,8 @@
 import { ICritterDetailed } from '../../../services/critterbase-service';
 import { findCapturesFromDateTime } from '../../../services/import-services/utils/datetime';
+import { updateCSVRowState } from '../../../services/import-services/utils/row-state';
 import { CSVConfigUtils } from '../csv-config-utils';
 import { CSVRowValidator } from '../csv-config-validation.interface';
-import { updateCSVRowState } from '../csv-header-configs';
 
 type StaticHeaderNames = {
   alias: Uppercase<string>;

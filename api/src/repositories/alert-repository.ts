@@ -198,8 +198,8 @@ export class AlertRepository extends BaseRepository {
         alert (name, message, alert_type_id, data, severity, record_end_date)
       VALUES
         (${alert.name}, ${alert.message}, ${alert.alert_type_id}, ${JSON.stringify(alert.data)}, ${alert.severity}, ${
-      alert.record_end_date
-    })
+          alert.record_end_date
+        })
       RETURNING alert_id
       ;
       `;

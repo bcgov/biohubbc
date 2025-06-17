@@ -1,12 +1,8 @@
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import CustomTextField from 'components/fields/CustomTextField';
-import MultiAutocompleteField from 'components/fields/MultiAutocompleteField';
-import MultiAutocompleteFieldVariableSize, {
-  IMultiAutocompleteFieldOption
-} from 'components/fields/MultiAutocompleteFieldVariableSize';
+import MultiAutocompleteField, { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteField';
 import { ISelectWithSubtextFieldOption } from 'components/fields/SelectWithSubtext';
-import React from 'react';
 import yup from 'utils/YupSchema';
 
 export interface IPurposeAndMethodologyForm {
@@ -32,7 +28,7 @@ export const PurposeAndMethodologyYupSchema = yup.object().shape({
   })
 });
 
-export interface IPurposeAndMethodologyFormProps {
+interface IPurposeAndMethodologyFormProps {
   intended_outcomes: ISelectWithSubtextFieldOption[];
   type: IMultiAutocompleteFieldOption[];
 }
@@ -42,13 +38,13 @@ export interface IPurposeAndMethodologyFormProps {
  *
  * @return {*}
  */
-const PurposeAndMethodologyForm: React.FC<IPurposeAndMethodologyFormProps> = (props) => {
+const PurposeAndMethodologyForm = (props: IPurposeAndMethodologyFormProps) => {
   return (
     <form>
       <Box component="fieldset">
         <Grid container spacing={3}>
           <Grid item xs={12}>
-            <MultiAutocompleteFieldVariableSize
+            <MultiAutocompleteField
               id={'survey_details.survey_types'}
               label={'Collected data'}
               options={props.type}
@@ -59,7 +55,11 @@ const PurposeAndMethodologyForm: React.FC<IPurposeAndMethodologyFormProps> = (pr
             <MultiAutocompleteField
               id="purpose_and_methodology.intended_outcome_ids"
               label="Ecological concepts of interest"
-              options={props.intended_outcomes}
+              options={props.intended_outcomes.map((outcome) => ({
+                value: outcome.value,
+                label: outcome.label,
+                description: outcome.description
+              }))}
               required={true}
             />
           </Grid>

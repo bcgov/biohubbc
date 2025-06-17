@@ -96,7 +96,7 @@ describe('CritterbaseProxy', () => {
       ).to.be.false;
     });
 
-    it('should allow DELETE requests to collection units endpoint', () => {
+    it('should allow DELETE requests to mortality endpoint', () => {
       expect(
         proxyFilter('/api/critterbase/mortality/id', {
           method: 'DELETE',

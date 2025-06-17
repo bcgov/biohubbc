@@ -3,6 +3,7 @@ import {
   CBQuantitativeMeasurementTypeDefinition,
   ICollectionCategory
 } from './useCritterApi.interface';
+import { IMarkingColourOption, IMarkingTypeResponse } from './useMarkingApi.interface';
 
 interface IStandardNameDescription {
   name: string;
@@ -58,4 +59,15 @@ export interface IMethodStandard extends IStandardNameDescription {
 export interface IEnvironmentStandards {
   qualitative: IQualitativeAttributeStandard[];
   quantitative: IQuantitativeAttributeStandard[];
+}
+
+/**
+ * Data standards for markings
+ *
+ * @export
+ * @interface IMarkingsStandards
+ */
+export interface IMarkingsStandards {
+  types: IMarkingTypeResponse[];
+  colours: IMarkingColourOption[];
 }

@@ -16,12 +16,6 @@ export const EditProjectI18N = {
     'An error has occurred while attempting to edit your project, please try again. If the error persists, please contact your system administrator.'
 };
 
-export const ListProjectsI18N = {
-  listProjectsErrorDialogTitle: 'Failed to load projects list data',
-  listProjectsErrorDialogText:
-    'An error occurred while retrieving your list of projects. Please try again. If the error persists, please contact your system administrator.'
-};
-
 export const ViewProjectI18N = {
   viewProjectErrorDialogTitle: 'Failed to load project data',
   viewProjectErrorDialogText:
@@ -84,18 +78,6 @@ export const AccessRequestI18N = {
     'An error has occurred while attempting to make an access request, please try again. If the error persists, please contact your system administrator.'
 };
 
-export const AccessApprovalDispatchI18N = {
-  reviewErrorTitle: 'Error dispatching granted access notification',
-  reviewErrorText:
-    'The access request was approved successfully, but an error occurred while attempting to notify the user. Please contact your system administrator.'
-};
-
-export const AccessDenialDispatchI18N = {
-  reviewErrorTitle: 'Error dispatching denied access notification',
-  reviewErrorText:
-    'The access request was denied successfully, but an error occurred while attempting to notify the user. Please contact your system administrator.'
-};
-
 export const ReviewAccessRequestI18N = {
   reviewErrorTitle: 'Error reviewing access request',
   reviewErrorText:
@@ -137,6 +119,18 @@ export const DeleteSystemUserI18N = {
     'An error has occurred while attempting to delete the system user. If the error persists, please contact your system administrator.'
 };
 
+export const DeactivateSystemUserI18N = {
+  deactivateUserErrorTitle: 'Error Blocking System User',
+  deactivateUserErrorText:
+    'An error has occurred while attempting to block the system user. If the error persists, please contact your system administrator.'
+};
+
+export const ActivateSystemUserI18N = {
+  activateUserErrorTitle: 'Error Activating System User',
+  activateUserErrorText:
+    'An error has occurred while attempting to reactivate the system user. If the error persists, please contact your system administrator.'
+};
+
 export const ProjectParticipantsI18N = {
   getParticipantsErrorTitle: 'Error Fetching Project Team Members',
   getParticipantsErrorText:
@@ -172,14 +166,6 @@ export const SubmitBiohubI18N = {
   submitBiohubErrorText: 'An error has occurred while attempting to submit your information. Please try again later.',
   noInformationDialogTitle: 'No Information to Submit',
   noInformationDialogText: 'No information has been uploaded to Biohub for submission.'
-};
-
-export const SubmitProjectBiohubI18N = {
-  submitProjectBiohubDialogTitle: 'Submit Project Information',
-  submitProjectBiohubSuccessDialogTitle: 'Project documents submitted',
-  submitProjectBiohubSuccessDialogText: 'Thank you for submitting your project data to Biohub.',
-  submitProjectBiohubNoSubmissionDataDialogTitle: 'No documents to submit',
-  submitProjectBiohubNoSubmissionDataDialogText: 'No new documents have been added to this project to submit.'
 };
 
 export const SubmitSurveyBiohubI18N = {
@@ -237,59 +223,6 @@ export const EditMortalityI18N = {
   editErrorText:
     'An error has occurred while attempting to edit your mortality, please try again. If the error persists, please contact your system administrator.'
 };
-
-export const SurveyAnimalsI18N = {
-  animalIndividualsHelp:
-    'Animals are animals that have been captured, marked, measured, or have died, generating data that applies to one specific individual.',
-  animalDialogTitle: 'Invidividual Animals',
-  animalDialogAddNew: 'Add New Individual',
-  animalSectionComment: (section: string) => `Add comment about this ${section}`,
-  animalGeneralTitle: 'General',
-  animalGeneralHelp: 'General information about this animal.',
-  animalCaptureTitle: 'Capture Events',
-  animalCaptureTitle2: 'Capture Event',
-  animalCaptureHelp:
-    'Capture Events are when animals have been deliberately handled or immobilized. All capture events should be reported by adding a Capture Event to a new or existing individual.',
-  animalCaptureAddBtn: 'Add Capture Event',
-  animalCaptureReleaseRadio: 'This individual was released at a different location',
-  animalMarkingTitle: 'Markings',
-  animalMarkingTitle2: 'Animal Marking',
-  animalMarkingHelp:
-    'Physical or chemical characteristics of an animal, or electronic tags that uniquely identify an individual.',
-  animalMarkingAddBtn: 'Add Marking',
-  animalMeasurementTitle: 'Measurements',
-  animalMeasurementTitle2: 'Animal Measurement',
-  animalMeasurementHelp:
-    'Quantitative or categorical attributes, such as body mass or body condition, that describe an individual.',
-  animalMeasurementAddBtn: 'Add Measurement',
-  animalFamilyTitle: 'Family',
-  animalFamilyTitle2: 'Animal Relationship',
-  animalFamilyHelp:
-    'Family Relationships describe how multiple individuals are related to one another. You must add an individual before it can be referenced as a parent or child of another individual.',
-  animalFamilyAddBtn: 'Add Relationship',
-  animalMortalityTitle: 'Mortality Events',
-  animalMortalityTitle2: 'Mortality Event',
-  animalMortalityHelp:
-    "Mortality Events describe an individual's death, including the suspected location, date, and cause of death. An individual can only have one Mortality Event.",
-  animalMortalityAddBtn: 'Add Mortality',
-  animalCollectionUnitTitle: 'Ecological Units',
-  animalCollectionUnitTitle2: 'Ecological Unit',
-  animalCollectionUnitHelp:
-    'Ecological units are groups such as population units, herds, and packs. Different species may have different units and unit names.',
-  animalCollectionUnitAddBtn: 'Add Unit',
-  // Input help strings
-  taxonHelp:
-    'The species or taxon of the animal. If the species is unknown, select the lowest-ranking known taxon, such as the genus or family.',
-  taxonLabelHelp: 'A unique name for you to recognize this individual.',
-  wlhIdHelp: 'An ID used to identify animals in the BC Wildlife Health Program',
-  sexHelp: 'The sex of this critter. Leave as Unknown if unsure.',
-  telemetryDeviceHelp:
-    'Devices transmit telemetry data while they are attached to an animal during a deployment. Animals may have multiple devices and deployments, however a single device may not have overlapping deployments.',
-  // Animal CSV import strings
-  importRecordsSuccessSnackbarMessage: 'Animals imported successfully.',
-  importRecordsErrorDialogTitle: 'Error Importing Animal Records',
-  importRecordsErrorDialogText: 'An error occurred while importing animal records.'
-} as const;
 
 export const FundingSourceI18N = {
   cancelTitle: 'Discard changes and exit?',
@@ -378,26 +311,6 @@ export const ObservationsTableI18N = {
   removeMultipleRecordsDialogText: 'Are you sure you want to delete these records? This action cannot be undone.',
   removeMultipleRecordsButtonText: 'Delete Records',
 
-  // Delete measurement columns
-  removeSingleMeasurementColumnDialogTitle: 'Delete measurement column?',
-  removeSingleMeasurementColumnDialogText:
-    'Are you sure you want to delete this measurement column? This action cannot be undone.',
-  removeSingleMeasurementColumnButtonText: 'Delete Columns',
-  removeMultipleMeasurementColumnsDialogTitle: (count: number) => `Delete ${count} ${p(count, 'column')}?`,
-  removeMultipleMeasurementColumnsDialogText:
-    'Are you sure you want to delete these columns? This action cannot be undone.',
-  removeMultipleMeasurementColumnsButtonText: 'Delete Columns',
-
-  // Delete environment columns
-  removeSingleEnvironmentColumnDialogTitle: 'Delete environment column?',
-  removeSingleEnvironmentColumnDialogText:
-    'Are you sure you want to delete this environment column? This action cannot be undone.',
-  removeSingleEnvironmentColumnButtonText: 'Delete Columns',
-  removeMultipleEnvironmentColumnsDialogTitle: (count: number) => `Delete ${count} ${p(count, 'column')}?`,
-  removeMultipleEnvironmentColumnsDialogText:
-    'Are you sure you want to delete these columns? This action cannot be undone.',
-  removeMultipleEnvironmentColumnsButtonText: 'Delete Columns',
-
   // Save observation records success
   saveRecordsSuccessSnackbarMessage: 'Observations updated successfully.',
   // Save observation records error
@@ -413,24 +326,6 @@ export const ObservationsTableI18N = {
     'An error has occurred while attempting to delete observation records for this survey. Please try again. If the error persists, please contact your system administrator.',
   deleteMultipleRecordSuccessSnackbarMessage: (count: number) =>
     `Deleted ${count} observation ${p(count, 'record')} successfully.`,
-
-  // Delete measurement columns success
-  deleteSingleMeasurementColumnSuccessSnackbarMessage: 'Deleted measurement column successfully.',
-  // Delete measurement columns error
-  removeMeasurementColumnsErrorDialogTitle: 'Error Deleting Measurement Columns',
-  removeMeasurementColumnsErrorDialogText:
-    'An error has occurred while attempting to delete measurement columns for this survey. Please try again. If the error persists, please contact your system administrator.',
-  deleteMultipleMeasurementColumnSuccessSnackbarMessage: (count: number) =>
-    `Deleted ${count} measurement ${p(count, 'column')} successfully.`,
-
-  // Delete environment columns success
-  deleteSingleEnvironmentColumnSuccessSnackbarMessage: 'Deleted environment column successfully.',
-  // Delete environment columns error
-  removeEnvironmentColumnsErrorDialogTitle: 'Error Deleting Environment Columns',
-  removeEnvironmentColumnsErrorDialogText:
-    'An error has occurred while attempting to delete environment columns for this survey. Please try again. If the error persists, please contact your system administrator.',
-  deleteMultipleEnvironmentColumnSuccessSnackbarMessage: (count: number) =>
-    `Deleted ${count} environment ${p(count, 'column')} successfully.`,
 
   // Import observation records
   importRecordsSuccessSnackbarMessage: 'Observations imported successfully.',
@@ -532,6 +427,18 @@ export const AlertI18N = {
     'An error has occurred while attempting to delete the Alerts, please try again. If the error persists, please contact your system administrator.',
   deleteAlertDialogTitle: 'Delete Alert?',
   deleteAlertDialogText: 'Are you sure you want to permanently delete this alert? This action cannot be undone.'
+};
+
+export const CreateObservationI18N = {
+  createErrorTitle: 'Error Creating Observation',
+  createErrorText:
+    'An error has occurred while attempting to create observation data. Please try again. If the error persists, please contact your system administrator.'
+};
+
+export const EditObservationI18N = {
+  editErrorTitle: 'Error Editing Observation',
+  editErrorText:
+    'An error has occurred while attempting to edit observation data. Please try again. If the error persists, please contact your system administrator.'
 };
 
 export const SamplePeriodI18N = {

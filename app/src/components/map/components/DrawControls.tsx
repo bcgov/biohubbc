@@ -5,6 +5,9 @@ import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef } from 'react';
 import { coloredCustomMarker } from 'utils/mapUtils';
+// Setting window.type to fix leaflet draw bug: https://github.com/Leaflet/Leaflet.draw/issues/1026#issuecomment-986702652
+// @ts-ignore
+window.type = '';
 
 /**
  * Custom subset of `L.Control.DrawConstructorOptions` that omits `edit.featureGroup` as this will be added automatically
@@ -13,13 +16,13 @@ import { coloredCustomMarker } from 'utils/mapUtils';
  * @export
  * @interface IDrawControlsOptions
  */
-export interface IDrawControlsOptions {
+interface IDrawControlsOptions {
   position?: L.ControlPosition;
   draw?: L.Control.DrawOptions;
   edit?: Omit<L.Control.EditOptions, 'featureGroup'>;
 }
 
-export interface IDrawControlsProps {
+interface IDrawControlsProps {
   /**
    * Options to control the draw/edit UI controls.
    *
@@ -188,7 +191,7 @@ const DrawControls = forwardRef<IDrawControlsRef | undefined, IDrawControlsProps
   useImperativeHandle(
     ref,
     () => ({
-      addLayer: (feature: Feature) => {
+      addLayer: (feature: Feature, layerId: (id: number) => void) => {
         const featureGroup = getFeatureGroup();
 
         L.geoJSON(feature, {
@@ -201,6 +204,8 @@ const DrawControls = forwardRef<IDrawControlsRef | undefined, IDrawControlsProps
           },
           onEachFeature: function (_feature, layer) {
             featureGroup.addLayer(layer);
+            // Fire the layerId callback with the unique ID assigned to the layer
+            layerId(featureGroup.getLayerId(layer));
           }
         });
       },

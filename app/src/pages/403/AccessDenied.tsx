@@ -13,7 +13,7 @@ const AccessDenied = () => {
 
   const authStateContext = useAuthStateContext();
 
-  if (authStateContext.simsUserWrapper.hasAccessRequest) {
+  if (authStateContext.simsUserWrapper.hasAccessRequest && !authStateContext.simsUserWrapper.recordEndDate) {
     // User already has a pending access request
     return <Redirect to={{ pathname: '/request-submitted' }} />;
   }

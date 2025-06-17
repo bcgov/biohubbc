@@ -37,6 +37,7 @@ describe('UserRepository', () => {
     afterEach(() => {
       sinon.restore();
     });
+
     it('should throw an error when no user is found', async () => {
       const mockQueryResponse = { rowCount: 0, rows: [] } as any as Promise<QueryResult<any>>;
 
@@ -80,6 +81,7 @@ describe('UserRepository', () => {
     afterEach(() => {
       sinon.restore();
     });
+
     it('should return empty array when no user found', async () => {
       const mockQueryResponse = { rowCount: 1, rows: [] } as any as Promise<QueryResult<any>>;
 
@@ -131,6 +133,7 @@ describe('UserRepository', () => {
     afterEach(() => {
       sinon.restore();
     });
+
     it('should return empty array when no user found', async () => {
       const mockQueryResponse = { rowCount: 1, rows: [] } as any as Promise<QueryResult<any>>;
 
@@ -182,6 +185,7 @@ describe('UserRepository', () => {
     afterEach(() => {
       sinon.restore();
     });
+
     it('should throw an error when insert fails', async () => {
       const mockQueryResponse = { rowCount: 0, rows: [] } as any as Promise<QueryResult<any>>;
 
@@ -232,6 +236,7 @@ describe('UserRepository', () => {
     afterEach(() => {
       sinon.restore();
     });
+
     it('should return empty array when no users found', async () => {
       const mockQueryResponse = { rowCount: 1, rows: [] } as any as Promise<QueryResult<any>>;
 
@@ -281,6 +286,7 @@ describe('UserRepository', () => {
     afterEach(() => {
       sinon.restore();
     });
+
     it('should return the count of system users', async () => {
       const mockCount = 15;
       const mockQueryResponse = { rowCount: 1, rows: [{ count: mockCount }] } as any as Promise<QueryResult<any>>;
@@ -303,6 +309,7 @@ describe('UserRepository', () => {
     afterEach(() => {
       sinon.restore();
     });
+
     it('should throw an error when activate fails', async () => {
       const mockQueryResponse = { rowCount: 0, rows: [] } as any as Promise<QueryResult<any>>;
 
@@ -352,6 +359,7 @@ describe('UserRepository', () => {
     afterEach(() => {
       sinon.restore();
     });
+
     it('should throw an error when deactivate fails', async () => {
       const mockQueryResponse = { rowCount: 0, rows: [] } as any as Promise<QueryResult<any>>;
 
@@ -397,6 +405,56 @@ describe('UserRepository', () => {
     });
   });
 
+  describe('deleteSystemUser', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should throw an error when delete fails', async () => {
+      const mockQueryResponse = { rowCount: 0, rows: [] } as any as Promise<QueryResult<any>>;
+
+      const mockDBConnection = getMockDBConnection({
+        sql: async () => {
+          return mockQueryResponse;
+        }
+      });
+
+      const userRepository = new UserRepository(mockDBConnection);
+
+      try {
+        await userRepository.deleteSystemUser(1);
+        expect.fail();
+      } catch (actualError) {
+        expect((actualError as ApiExecuteSQLError).message).to.equal('Failed to delete system user');
+      }
+    });
+
+    it('should delete user', async () => {
+      const mockResponse = [
+        {
+          system_user_id: 1,
+          user_identity_source_id: 1,
+          user_identifier: 1,
+          record_end_date: 'data',
+          record_effective_date: 'date'
+        }
+      ];
+      const mockQueryResponse = { rowCount: 1, rows: mockResponse } as any as Promise<QueryResult<any>>;
+
+      const mockDBConnection = getMockDBConnection({
+        sql: async () => {
+          return mockQueryResponse;
+        }
+      });
+
+      const userRepository = new UserRepository(mockDBConnection);
+
+      const response = await userRepository.deleteSystemUser(1);
+
+      expect(response).to.equal(undefined);
+    });
+  });
+
   describe('deleteUserSystemRoles', () => {
     afterEach(() => {
       sinon.restore();
@@ -428,10 +486,42 @@ describe('UserRepository', () => {
     });
   });
 
-  describe('addUserSystemRoles', () => {
+  describe('deleteAdministrativeActivities', () => {
     afterEach(() => {
       sinon.restore();
     });
+
+    it('should delete user roles', async () => {
+      const mockResponse = [
+        {
+          system_user_id: 1,
+          user_identity_source_id: 1,
+          user_identifier: 1,
+          record_end_date: 'data',
+          record_effective_date: 'date'
+        }
+      ];
+      const mockQueryResponse = { rowCount: 1, rows: mockResponse } as any as Promise<QueryResult<any>>;
+
+      const mockDBConnection = getMockDBConnection({
+        sql: async () => {
+          return mockQueryResponse;
+        }
+      });
+
+      const userRepository = new UserRepository(mockDBConnection);
+
+      const response = await userRepository.deleteAdministrativeActivities(1);
+
+      expect(response).to.equal(undefined);
+    });
+  });
+
+  describe('addAdministrativeActivities', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
     it('should throw an error when adding role fails', async () => {
       const mockQueryResponse = { rowCount: 0, rows: [] } as any as Promise<QueryResult<any>>;
 

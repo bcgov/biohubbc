@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box';
 import Button, { ButtonProps } from '@mui/material/Button';
-import IconButton, { IconButtonProps } from '@mui/material/IconButton';
+import IconButton from '@mui/material/IconButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -16,13 +16,13 @@ const useStyles = () => {
   };
 };
 
-export interface IMenuToolbarItem {
+interface IMenuToolbarItem {
   menuIcon?: ReactNode;
   menuLabel: string;
   menuOnClick: () => void;
 }
 
-export interface IMenuToolbarProps extends ICustomMenuButtonProps, IActionToolbarProps {}
+interface IMenuToolbarProps extends ICustomMenuButtonProps, IActionToolbarProps {}
 
 export const H2MenuToolbar: React.FC<IMenuToolbarProps> = (props) => {
   return (
@@ -32,7 +32,7 @@ export const H2MenuToolbar: React.FC<IMenuToolbarProps> = (props) => {
   );
 };
 
-export interface ICustomMenuButtonProps {
+interface ICustomMenuButtonProps {
   buttonLabel?: string;
   buttonTitle: string;
   buttonStartIcon?: ReactNode;
@@ -119,10 +119,9 @@ export const CustomMenuButton: React.FC<ICustomMenuButtonProps> = (props) => {
   );
 };
 
-export interface ICustomMenuIconButtonProps {
+interface ICustomMenuIconButtonProps {
   buttonTitle: string;
   buttonIcon: ReactNode;
-  buttonProps?: Partial<IconButtonProps>;
   menuItems: IMenuToolbarItem[];
 }
 

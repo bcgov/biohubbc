@@ -21,7 +21,7 @@ import { pluralize as p } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import StratumCreateOrEditDialog from './StratumCreateOrEditDialog';
 
-export const StratumFormInitialValues: IGetSurveyStratumForm = {
+const StratumFormInitialValues: IGetSurveyStratumForm = {
   index: null,
   stratum: {
     survey_stratum_id: null,

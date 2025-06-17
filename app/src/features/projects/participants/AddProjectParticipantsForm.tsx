@@ -27,7 +27,7 @@ export interface IAddProjectParticipantsForm {
   participants: IAddProjectParticipantsFormArrayItem[];
 }
 
-export const AddProjectParticipantsFormArrayItemInitialValues: IAddProjectParticipantsFormArrayItem = {
+const AddProjectParticipantsFormArrayItemInitialValues: IAddProjectParticipantsFormArrayItem = {
   userIdentifier: '',
   displayName: '',
   email: '',
@@ -51,7 +51,7 @@ export const AddProjectParticipantsFormYupSchema = yup.object().shape({
   )
 });
 
-export interface AddProjectParticipantsFormProps {
+interface AddProjectParticipantsFormProps {
   project_roles: any[];
 }
 

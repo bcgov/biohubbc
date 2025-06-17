@@ -1,17 +1,18 @@
 import { mdiCalendar } from '@mdi/js';
 import Icon from '@mdi/react';
 import { TextFieldProps } from '@mui/material/TextField';
-import { DatePicker } from '@mui/x-date-pickers';
+import { DatePicker, DatePickerProps } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DATE_FORMAT, DATE_LIMIT } from 'constants/dateTimeFormats';
-import { default as dayjs } from 'dayjs';
+import { Dayjs, default as dayjs } from 'dayjs';
 import { useFormikContext } from 'formik';
 import get from 'lodash-es/get';
 import React from 'react';
 
-interface IDateProps {
+interface IDateProps extends DatePickerProps<Dayjs> {
   name: string;
+  id: string;
   label: string;
   required?: boolean;
   helperText?: string;
@@ -33,7 +34,7 @@ const CalendarIcon = () => {
  **/
 const SingleDateField: React.FC<IDateProps> = (props) => {
   const { setFieldValue, values, handleBlur, touched, errors } = useFormikContext();
-  const { name, other, helperText, required, label } = props;
+  const { name, other, helperText, required, label, id } = props;
 
   const rawDateValue = get(values, name);
 
@@ -56,7 +57,7 @@ const SingleDateField: React.FC<IDateProps> = (props) => {
             onBlur: handleBlur
           },
           textField: {
-            id: 'date_field',
+            id: id,
             name,
             required: Boolean(required),
             variant: 'outlined',
@@ -64,7 +65,7 @@ const SingleDateField: React.FC<IDateProps> = (props) => {
             helperText: (get(touched, name) && get(errors, name)) || helperText,
             onBlur: handleBlur,
             inputProps: {
-              'data-testid': 'date_field'
+              'data-testid': id
             },
             InputLabelProps: {
               shrink: true

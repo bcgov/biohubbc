@@ -1,7 +1,6 @@
 import { Knex } from 'knex';
 
 const DB_SCHEMA = process.env.DB_SCHEMA;
-const DB_SCHEMA_DAPI_V1 = process.env.DB_SCHEMA_DAPI_V1;
 
 /**
  * Add spatial transform
@@ -13,7 +12,7 @@ const DB_SCHEMA_DAPI_V1 = process.env.DB_SCHEMA_DAPI_V1;
 export async function up(knex: Knex): Promise<void> {
   await knex.raw(`
     SET SCHEMA '${DB_SCHEMA}';
-    SET SEARCH_PATH = ${DB_SCHEMA}, ${DB_SCHEMA_DAPI_V1};
+    SET SEARCH_PATH = ${DB_SCHEMA}, biohub_dapi_v1;
 
     -- inserting new submission status types
 

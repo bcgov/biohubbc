@@ -33,7 +33,7 @@ import SurveyUserForm, { SurveyUserJobYupSchema } from '../components/participan
 import { SurveySiteSelectionYupSchema } from '../components/sampling-strategy/SurveySiteSelectionForm';
 import SpeciesForm, { SpeciesYupSchema } from '../components/species/SpeciesForm';
 
-export interface IEditSurveyForm<
+interface IEditSurveyForm<
   T extends
     | (IUpdateSurveyRequest & ISurveyPermitForm & ISurveyFundingSourceForm)
     | (ICreateSurveyRequest & ISurveyPermitForm & ISurveyFundingSourceForm)
@@ -97,7 +97,7 @@ const EditSurveyForm = <
             <GeneralInformationForm
               progress={
                 codes?.survey_progress?.map((item) => {
-                  return { value: item.id, label: item.name, subText: item.description };
+                  return { value: item.id, label: item.name, description: item.description };
                 }) || []
               }
             />
@@ -149,14 +149,18 @@ const EditSurveyForm = <
           component={
             <PurposeAndMethodologyForm
               intended_outcomes={
-                codes.intended_outcomes.map((item) => {
-                  return { value: item.id, label: item.name, subText: item.description };
-                }) || []
+                codes.intended_outcomes?.map((item) => ({
+                  value: item.id,
+                  label: item.name,
+                  description: item.description
+                })) ?? []
               }
               type={
-                codes?.type?.map((item) => {
-                  return { value: item.id, label: item.name };
-                }) || []
+                codes.survey_data_type?.map((item) => ({
+                  value: item.id,
+                  label: item.name,
+                  description: item.description
+                })) ?? []
               }
             />
           }></HorizontalSplitFormComponent>

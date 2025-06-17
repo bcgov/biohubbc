@@ -22,7 +22,7 @@ import EditReportMetaForm, {
  * @export
  * @interface IEditFileWithMetaDialogProps
  */
-export interface IEditFileWithMetaDialogProps {
+interface IEditFileWithMetaDialogProps {
   /**
    * The dialog window title text.
    *

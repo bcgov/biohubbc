@@ -435,8 +435,7 @@ jobs:
     name: Deploy Database Setup Image
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    # TODO 1/2: Temporarily disable migrations in prod until the postgres 17 upgrade has been completed
-    if: ${{ github.base_ref != 'prod' && github.event.pull_request.merged == true }}
+    if: ${{ github.event.pull_request.merged == true }}
     env:
       PR_NUMBER: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}
@@ -502,6 +501,7 @@ jobs:
       - scaleDownPods
       - buildAPI
       - deployDatabase
+      - deployDatabaseSetup
     steps:
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
@@ -555,8 +555,7 @@ jobs:
     if: ${{ github.event.pull_request.merged == true }}
     needs:
       - deployDatabase
-      # TODO 2/2: Temporarily disable migrations in prod until the postgres 17 upgrade has been completed
-      # - deployDatabaseSetup
+      - deployDatabaseSetup
       - deployAPI
       - deployAPP
     env:

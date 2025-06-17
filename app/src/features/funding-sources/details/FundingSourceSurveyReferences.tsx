@@ -40,7 +40,7 @@ const useStyles = () => {
   };
 };
 
-export interface IFundingSourceSurveyReferencesProps {
+interface IFundingSourceSurveyReferencesProps {
   fundingSourceSurveyReferences: IGetFundingSourceResponse['funding_source_survey_references'];
 }
 

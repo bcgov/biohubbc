@@ -1,4 +1,4 @@
-import { GridCellParams, GridColDef } from '@mui/x-data-grid';
+import { GridColDef } from '@mui/x-data-grid';
 import { IObservationTableRow } from 'contexts/observationsTableContext';
 import {
   ObservationQualitativeEnvironmentColDef,
@@ -11,11 +11,7 @@ import {
   CBQualitativeMeasurementTypeDefinition,
   CBQuantitativeMeasurementTypeDefinition
 } from 'interfaces/useCritterApi.interface';
-import {
-  EnvironmentQualitativeTypeDefinition,
-  EnvironmentQuantitativeTypeDefinition,
-  EnvironmentType
-} from 'interfaces/useReferenceApi.interface';
+import { EnvironmentQuantitativeTypeDefinition, EnvironmentType } from 'interfaces/useReferenceApi.interface';
 
 /**
  * Asserts the measurement is a quantitative measurement type definition.
@@ -23,7 +19,7 @@ import {
  * @param {CBMeasurementType} measurement
  * @return {*}  {measurement is CBQuantitativeMeasurementTypeDefinition}
  */
-export const isQuantitativeMeasurementTypeDefinition = (
+const isQuantitativeMeasurementTypeDefinition = (
   measurement: CBMeasurementType
 ): measurement is CBQuantitativeMeasurementTypeDefinition => {
   return (
@@ -38,47 +34,21 @@ export const isQuantitativeMeasurementTypeDefinition = (
  * @param {CBMeasurementType} measurement
  * @return {*}  {measurement is CBQualitativeMeasurementTypeDefinition}
  */
-export const isQualitativeMeasurementTypeDefinition = (
+const isQualitativeMeasurementTypeDefinition = (
   measurement: CBMeasurementType
 ): measurement is CBQualitativeMeasurementTypeDefinition => {
   return (measurement as CBQualitativeMeasurementTypeDefinition).options !== undefined;
 };
 
-/**
- * Asserts the environment is a quantitative environment type definition.
- *
- * @param {(EnvironmentQualitativeTypeDefinition | EnvironmentQuantitativeTypeDefinition)} environment
- * @return {*}  {environment is EnvironmentQuantitativeTypeDefinition}
- */
-export const isQuantitativeEnvironmentTypeDefinition = (
-  environment: EnvironmentQualitativeTypeDefinition | EnvironmentQuantitativeTypeDefinition
-): environment is EnvironmentQuantitativeTypeDefinition => {
-  return (environment as EnvironmentQuantitativeTypeDefinition).environment_quantitative_id !== undefined;
-};
-
-/**
- * Asserts the environment is a qualitative environment type definition.
- *
- * @param {(EnvironmentQualitativeTypeDefinition | EnvironmentQuantitativeTypeDefinition)} environment
- * @return {*}  {environment is EnvironmentQualitativeTypeDefinition}
- */
-export const isQualitativeEnvironmentTypeDefinition = (
-  environment: EnvironmentQualitativeTypeDefinition | EnvironmentQuantitativeTypeDefinition
-): environment is EnvironmentQualitativeTypeDefinition => {
-  return (environment as EnvironmentQualitativeTypeDefinition).environment_qualitative_id !== undefined;
-};
-
 export const getMeasurementColumnDefinitions = (
-  measurements: CBMeasurementType[],
-  hasError: (params: GridCellParams) => boolean
+  measurements: CBMeasurementType[]
 ): GridColDef<IObservationTableRow>[] => {
   const colDefs: GridColDef<IObservationTableRow>[] = [];
   for (const measurement of measurements) {
     if (isQuantitativeMeasurementTypeDefinition(measurement)) {
       colDefs.push(
         ObservationQuantitativeMeasurementColDef({
-          measurement: measurement,
-          hasError: hasError
+          measurement: measurement
         })
       );
     }
@@ -87,8 +57,7 @@ export const getMeasurementColumnDefinitions = (
       colDefs.push(
         ObservationQualitativeMeasurementColDef({
           measurement: measurement,
-          measurementOptions: measurement.options,
-          hasError: hasError
+          measurementOptions: measurement.options
         })
       );
     }
@@ -96,16 +65,32 @@ export const getMeasurementColumnDefinitions = (
   return colDefs;
 };
 
-export const getEnvironmentColumnDefinitions = (
-  environments: EnvironmentType,
-  hasError: (params: GridCellParams) => boolean
-): GridColDef<IObservationTableRow>[] => {
+const getQuantitativeEnvironmentHeaderName = (name: string, unit?: string): string => {
+  if (!unit) {
+    return name;
+  }
+
+  const unitSuffix = unit.endsWith('er') ? 's' : '';
+  return `${name} (${unit}${unitSuffix})`;
+};
+
+const formatQuantitativeEnvironment = (environment: EnvironmentQuantitativeTypeDefinition) => {
+  return {
+    ...environment,
+    name: getQuantitativeEnvironmentHeaderName(environment.name, environment.unit ?? undefined),
+    description: environment.description
+  };
+};
+
+export const getEnvironmentColumnDefinitions = (environments: EnvironmentType): GridColDef<IObservationTableRow>[] => {
   const colDefs: GridColDef<IObservationTableRow>[] = [];
+
   for (const environment of environments.quantitative_environments) {
+    const formattedEnvironment = formatQuantitativeEnvironment(environment);
+
     colDefs.push(
       ObservationQuantitativeEnvironmentColDef({
-        environment: environment,
-        hasError: hasError
+        environment: formattedEnvironment
       })
     );
   }
@@ -113,8 +98,7 @@ export const getEnvironmentColumnDefinitions = (
   for (const environment of environments.qualitative_environments) {
     colDefs.push(
       ObservationQualitativeEnvironmentColDef({
-        environment: environment,
-        hasError: hasError
+        environment: environment
       })
     );
   }

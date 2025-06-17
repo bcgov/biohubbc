@@ -198,24 +198,6 @@ export async function seed(knex: Knex): Promise<void> {
 
         -------- delete observation data --------
 
-        DELETE FROM observation_subcount_qualitative_environment
-        WHERE observation_subcount_id IN (
-          SELECT observation_subcount_id FROM observation_subcount
-          WHERE survey_observation_id IN (
-            SELECT survey_observation_id FROM survey_observation
-            WHERE survey_id = p_survey_id
-          )
-        );
-
-        DELETE FROM observation_subcount_quantitative_environment
-        WHERE observation_subcount_id IN (
-          SELECT observation_subcount_id FROM observation_subcount
-          WHERE survey_observation_id IN (
-            SELECT survey_observation_id FROM survey_observation
-            WHERE survey_id = p_survey_id
-          )
-        );
-
         DELETE FROM observation_subcount_qualitative_measurement
         WHERE observation_subcount_id IN (
           SELECT observation_subcount_id FROM observation_subcount
@@ -240,7 +222,36 @@ export async function seed(knex: Knex): Promise<void> {
           WHERE survey_id = p_survey_id
         );
 
+        DELETE FROM observation_environment_qualitative
+        WHERE survey_observation_id IN (
+          SELECT survey_observation_id FROM survey_observation
+          WHERE survey_id = p_survey_id
+        );
+
+        DELETE FROM observation_environment_quantitative
+        WHERE survey_observation_id IN (
+          SELECT survey_observation_id FROM survey_observation
+          WHERE survey_id = p_survey_id
+        );
+
         DELETE FROM survey_observation
+        WHERE survey_id = p_survey_id;
+
+        -------- delete habitat feature data --------
+
+        DELETE FROM survey_habitat_feature_qualitative
+        WHERE survey_habitat_feature_id IN (
+          SELECT survey_habitat_feature_id FROM survey_habitat_feature
+          WHERE survey_id = p_survey_id
+        );
+
+        DELETE FROM survey_habitat_feature_quantitative
+        WHERE survey_habitat_feature_id IN (
+          SELECT survey_habitat_feature_id FROM survey_habitat_feature
+          WHERE survey_id = p_survey_id
+        );
+
+        DELETE FROM survey_habitat_feature
         WHERE survey_id = p_survey_id;
 
         -------- delete sample blocks and stratums --------

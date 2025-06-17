@@ -1,4 +1,4 @@
-import { AxiosInstance } from 'axios';
+import { AxiosInstance, AxiosProgressEvent, CancelTokenSource } from 'axios';
 import {
   CreateSamplingPeriod,
   FindSamplingPeriods,
@@ -160,6 +160,31 @@ export const useSamplingPeriodApi = (axios: AxiosInstance) => {
     });
   };
 
+  /**
+   * Bulk upload sample periods from a CSV file.
+   *
+   * @param {File} file
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @return {*} {Promise<void>}
+   */
+  const importSamplePeriodsFromCsv = async (
+    file: File,
+    projectId: number,
+    surveyId: number,
+    cancelTokenSource?: CancelTokenSource,
+    onProgress?: (progressEvent: AxiosProgressEvent) => void
+  ): Promise<void> => {
+    const formData = new FormData();
+
+    formData.append('media', file);
+
+    await axios.post(`/api/project/${projectId}/survey/${surveyId}/sample-period/import`, formData, {
+      cancelToken: cancelTokenSource?.token,
+      onUploadProgress: onProgress
+    });
+  };
+
   return {
     createSamplingPeriods,
     getSamplePeriodsForSurvey,
@@ -167,6 +192,7 @@ export const useSamplingPeriodApi = (axios: AxiosInstance) => {
     findSamplePeriods,
     updateSamplingPeriod,
     deleteSamplePeriod,
-    deleteSamplePeriods
+    deleteSamplePeriods,
+    importSamplePeriodsFromCsv
   };
 };

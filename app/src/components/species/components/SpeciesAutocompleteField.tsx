@@ -13,7 +13,7 @@ import { IPartialTaxonomy, ITaxonomy } from 'interfaces/useTaxonomyApi.interface
 import { debounce } from 'lodash-es';
 import { useEffect, useMemo, useState } from 'react';
 
-export interface ISpeciesAutocompleteFieldProps {
+interface ISpeciesAutocompleteFieldProps {
   /**
    * Formik field name.
    *

@@ -19,6 +19,7 @@ describe('TechniqueAttributeRepository', () => {
   afterEach(() => {
     sinon.restore();
   });
+
   describe('getAttributeDefinitionsByMethodLookupIds', () => {
     it('should run successfully', async () => {
       const mockRecord: TechniqueAttributesLookupObject = {

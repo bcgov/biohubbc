@@ -16,6 +16,7 @@ export const SurveyObservationModel = z.object({
   count: z.number(),
   observation_time: z.string().nullable(),
   observation_date: z.string().nullable(),
+  observation_sign_id: z.number().nullable(),
   create_date: z.string(),
   create_user: z.number(),
   update_date: z.string().nullable(),

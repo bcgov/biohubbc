@@ -21,13 +21,14 @@ import {
  * @return {*}  The formatted location object.
  */
 export const formatLocation = (location: Feature) => {
-  if (location.geometry.type === 'Point')
+  if (location.geometry.type === 'Point') {
     return {
       longitude: location.geometry.coordinates[0],
       latitude: location.geometry.coordinates[1],
       coordinate_uncertainty: 0,
       coordinate_uncertainty_units: 'm'
     };
+  }
 };
 
 /**

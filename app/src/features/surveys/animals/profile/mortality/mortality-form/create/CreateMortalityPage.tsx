@@ -21,13 +21,13 @@ import { FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useAnimalPageContext, useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
-import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
+import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { ICreateMortalityRequest } from 'interfaces/useCritterApi.interface';
 import { useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 
-export const initialAnimalMortalityFormValues: ICreateMortalityRequest = {
+const initialAnimalMortalityFormValues: ICreateMortalityRequest = {
   mortality: {
     mortality_id: '',
     mortality_timestamp: '',
@@ -64,7 +64,7 @@ export const CreateMortalityPage = () => {
   const urlParams: Record<string, string | number | undefined> = useParams();
   const surveyCritterId: number | undefined = Number(urlParams['critter_id']);
 
-  const { locationChangeInterceptor } = useUnsavedChangesDialog();
+  const { locationChangeInterceptor, skipUnsavedChangesDialog } = useUnsavedChangesDialog();
 
   const [isSaving, setIsSaving] = useState(false);
 
@@ -184,7 +184,8 @@ export const CreateMortalityPage = () => {
       // Refresh page
       animalPageContext.critterDataLoader.refresh(projectId, surveyId, surveyCritterId);
 
-      history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals/details`, SKIP_CONFIRMATION_DIALOG);
+      skipUnsavedChangesDialog();
+      history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals/details`);
     } catch (error) {
       const apiError = error as APIError;
       showCreateErrorDialog({

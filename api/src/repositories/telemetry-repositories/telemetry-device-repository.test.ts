@@ -89,6 +89,7 @@ describe('TelemetryDeviceRepository', () => {
       const response = await telemetryDeviceRepository.updateDevice(1, 2, { comment: 1 } as any);
       expect(response).to.eql({ device_id: 1 });
     });
+
     it('should throw an error if unable to update an existing device', async () => {
       const mockDBConnection = getMockDBConnection({ knex: sinon.stub().resolves({ rows: [], rowCount: 0 }) });
 

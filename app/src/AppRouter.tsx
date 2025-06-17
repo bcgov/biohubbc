@@ -8,6 +8,7 @@ import ProjectsRouter from 'features/projects/ProjectsRouter';
 import ResourcesPage from 'features/resources/ResourcesPage';
 import StandardsPage from 'features/standards/StandardsPage';
 import SummaryRouter from 'features/summary/SummaryRouter';
+import { SupportPage } from 'features/support/SupportPage';
 import BaseLayout from 'layouts/BaseLayout';
 import AccessDenied from 'pages/403/AccessDenied';
 import NotFoundPage from 'pages/404/NotFoundPage';
@@ -115,6 +116,12 @@ const AppRouter: React.FC = () => {
       <RouteWithTitle path="/standards" title={getTitle('Standards')}>
         <BaseLayout>
           <StandardsPage />
+        </BaseLayout>
+      </RouteWithTitle>
+
+      <RouteWithTitle path="/support" title={getTitle('Support')}>
+        <BaseLayout>
+          <SupportPage />
         </BaseLayout>
       </RouteWithTitle>
 

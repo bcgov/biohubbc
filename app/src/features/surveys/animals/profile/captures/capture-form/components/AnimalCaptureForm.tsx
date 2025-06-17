@@ -169,7 +169,9 @@ export const AnimalCaptureForm = <FormikValuesType extends ICreateCaptureRequest
    * @return {void}
    */
   const addStagedFile = (file: File | null) => {
-    if (!file) return;
+    if (!file) {
+      return;
+    }
 
     props.formikRef.current?.setFieldValue(`attachments.capture_attachments.create['${file.name}']`, file);
   };

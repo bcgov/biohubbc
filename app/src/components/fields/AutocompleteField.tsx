@@ -7,60 +7,143 @@ import Typography from '@mui/material/Typography';
 import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
 import { useFormikContext } from 'formik';
 import get from 'lodash-es/get';
-import { SyntheticEvent } from 'react';
+import { SyntheticEvent, useMemo } from 'react';
 
-export interface IAutocompleteFieldOption<T extends string | number> {
-  value: T;
+export interface IAutocompleteFieldOption<OptionValueType extends string | number> {
+  value: OptionValueType;
   label: string;
   description?: string | null;
 }
 
-export interface IAutocompleteField<T extends string | number> {
-  id: string;
-  label: string;
-  name: string;
-  options: IAutocompleteFieldOption<T>[];
+interface IAutocompleteField<
+  OptionValueType extends string | number,
+  OptionType extends IAutocompleteFieldOption<OptionValueType>
+> {
   /**
-   * Selected options are filtered from the options list, so they cannot be selected again
+   * The id of the field.
    */
-  selectedOptions?: T[];
+  id: string;
+  /**
+   * The label of the field. This is displayed in the UI.
+   */
+  label: string;
+  /**
+   * The name of the field. This is used to link the field to the formik state.
+   */
+  name: string;
+  /**
+   * An array of autocomplete options.
+   */
+  options: OptionType[];
+  /**
+   * An array of autocomplete option values.
+   *
+   * Options with these values will not be displayed in the autocomplete.
+   */
+  selectedOptions?: OptionValueType[];
+  /**
+   * If `true`, the field will be disabled.
+   */
   disabled?: boolean;
+  /**
+   * If `true`, the field will be in a loading state.
+   */
   loading?: boolean;
+  /**
+   * Additional styles to apply to the field.
+   */
   sx?: TextFieldProps['sx']; //https://github.com/TypeStrong/fork-ts-checker-webpack-plugin/issues/271#issuecomment-1561891271
+  /**
+   * If `true`, the field will be marked required.
+   */
   required?: boolean;
+  /**
+   * The maximum number of options to display in the autocomplete.
+   */
   filterLimit?: number;
+  /**
+   * If `true`, the value will be displayed in the field.
+   */
   showValue?: boolean;
+  /**
+   * If `true`, the clear button will be disabled.
+   */
   disableClearable?: boolean;
-  optionFilter?: 'value' | 'label'; // used to filter existing/ set data for the AutocompleteField, defaults to value in getExistingValue function
+  /**
+   * The help text to display.
+   */
   helpText?: string;
-  getOptionDisabled?: (option: IAutocompleteFieldOption<T>) => boolean;
-  onChange?: (event: SyntheticEvent<Element, Event>, option: IAutocompleteFieldOption<T> | null) => void;
-  renderOption?: (params: React.HTMLAttributes<HTMLLIElement>, option: IAutocompleteFieldOption<T>) => React.ReactNode;
+  /**
+   * Function that receives an option, and returns a boolean indicating if that option should be disabled or not.
+   */
+  getOptionDisabled?: (option: OptionType) => boolean;
+  /**
+   * Callback fired when the autocomplete onChange event is triggered.
+   */
+  onChange?: (event: SyntheticEvent<Element, Event>, option: OptionType | null) => void;
+  /**
+   * Function that returns a custom render component for the option.
+   */
+  renderOption?: (params: React.HTMLAttributes<HTMLLIElement>, option: OptionType) => React.ReactNode;
+  /**
+   * Callback fired when the autcomplete input value changes.
+   */
   onInputChange?: (event: React.SyntheticEvent<Element, Event>, value: string, reason: string) => void;
 }
 
 // To be used when you want an autocomplete field with no freesolo allowed but only one option can be selected
 
-const AutocompleteField = <T extends string | number>(props: IAutocompleteField<T>) => {
-  const { touched, errors, setFieldValue, values } = useFormikContext<IAutocompleteFieldOption<T>>();
+const AutocompleteField = <
+  OptionValueType extends string | number,
+  OptionType extends IAutocompleteFieldOption<OptionValueType> = IAutocompleteFieldOption<OptionValueType>
+>(
+  props: IAutocompleteField<OptionValueType, OptionType>
+) => {
+  const {
+    id,
+    label,
+    name,
+    options,
+    selectedOptions,
+    disabled,
+    loading,
+    sx,
+    required,
+    filterLimit,
+    showValue,
+    disableClearable,
+    helpText,
+    getOptionDisabled,
+    onChange,
+    renderOption
+  } = props;
 
-  const getExistingValue = (existingValue: T): IAutocompleteFieldOption<T> => {
-    const result = props.options.find((option) => existingValue === option[props.optionFilter ?? 'value']);
+  const { touched, errors, setFieldValue, values } = useFormikContext<OptionType>();
+
+  const getExistingValue = (existingValue: OptionValueType): OptionType => {
+    const result = options.find((option) => existingValue === option.value);
     if (!result) {
-      return null as unknown as IAutocompleteFieldOption<T>;
+      return null as unknown as OptionType;
     }
 
     return result;
   };
 
-  // Filter out selected options from the available options
-  const filteredOptions = props.options.filter((option) =>
-    props.selectedOptions && props.selectedOptions.includes(option.value) ? false : true
+  // If selected options is provided, filter out selected options from the available options
+  const filteredOptions = useMemo(
+    () =>
+      selectedOptions
+        ? options.filter((option) =>
+            // If the option is in the selected options, return false to filter it out
+            selectedOptions.some((selectedOption) => selectedOption === option.value) ? false : true
+          )
+        : options,
+    [options, selectedOptions]
   );
 
   const handleGetOptionSelected = (
-    option: IAutocompleteFieldOption<T>,
-    value: IAutocompleteFieldOption<T>
+    option: IAutocompleteFieldOption<OptionValueType>,
+    value: IAutocompleteFieldOption<OptionValueType>
   ): boolean => {
     if (!option?.value || !value?.value) {
       return false;
@@ -74,42 +157,42 @@ const AutocompleteField = <T extends string | number>(props: IAutocompleteField<
       clearOnBlur
       blurOnSelect
       handleHomeEndKeys
-      id={props.id}
+      id={id}
       fullWidth
-      data-testid={props.id}
-      value={getExistingValue(get(values, props.name))}
+      data-testid={id}
+      value={getExistingValue(get(values, name))}
       options={filteredOptions}
       getOptionLabel={(option) => option.label}
-      disableClearable={props.disableClearable}
+      disableClearable={disableClearable}
       isOptionEqualToValue={handleGetOptionSelected}
-      getOptionDisabled={props.getOptionDisabled}
-      filterOptions={createFilterOptions({ limit: props.filterLimit })}
-      disabled={props?.disabled || false}
-      sx={{ flex: '1 1 auto', ...props.sx }}
-      loading={props.loading}
+      getOptionDisabled={getOptionDisabled}
+      filterOptions={createFilterOptions({ limit: filterLimit })}
+      disabled={disabled || false}
+      sx={{ flex: '1 1 auto', ...sx }}
+      loading={loading}
       onInputChange={(_event, _value, reason) => {
         if (reason === 'reset') {
           return;
         }
 
         if (reason === 'clear') {
-          setFieldValue(props.name, null);
+          setFieldValue(name, null);
           return;
         }
       }}
       onChange={(event, option) => {
-        if (props.onChange) {
-          props.onChange(event, option);
+        if (onChange) {
+          onChange(event, option);
           return;
         }
 
         if (option?.value) {
-          setFieldValue(props.name, option?.value);
+          setFieldValue(name, option?.value);
         }
       }}
       renderOption={(params, option) => {
-        if (props.renderOption) {
-          return props.renderOption(params, option);
+        if (renderOption) {
+          return renderOption(params, option);
         }
 
         return (
@@ -137,19 +220,19 @@ const AutocompleteField = <T extends string | number>(props: IAutocompleteField<
         return (
           <TextField
             {...params}
-            required={props.required}
-            label={props.label}
-            value={props.showValue ? getExistingValue(get(values, props.name)) : null}
+            required={required}
+            label={label}
+            value={showValue ? getExistingValue(get(values, name)) : null}
             variant="outlined"
             fullWidth
-            error={get(touched, props.name) && Boolean(get(errors, props.name))}
-            helperText={get(touched, props.name) && get(errors, props.name)}
+            error={get(touched, name) && Boolean(get(errors, name))}
+            helperText={get(touched, name) && get(errors, name)}
             InputProps={{
               ...params.InputProps,
               endAdornment: (
                 <>
-                  {props.loading ? <CircularProgress color="inherit" size={20} /> : null}
-                  {props.helpText && <HelpButtonTooltip content={props.helpText} />}
+                  {loading ? <CircularProgress color="inherit" size={20} /> : null}
+                  {helpText && <HelpButtonTooltip content={helpText} />}
                   {params.InputProps.endAdornment}
                 </>
               )

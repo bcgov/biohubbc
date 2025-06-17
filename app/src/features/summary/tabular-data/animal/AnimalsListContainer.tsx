@@ -96,6 +96,7 @@ const AnimalsListContainer = (props: IAnimalsListContainerProps) => {
   }, [advancedFiltersModel, paginationSort]);
 
   const rows = animalsDataLoader.data?.animals ?? [];
+  const pagination = animalsDataLoader.data?.pagination;
 
   const columns: GridColDef<IFindAnimalObj>[] = [
     {
@@ -162,7 +163,7 @@ const AnimalsListContainer = (props: IAnimalsListContainerProps) => {
           isLoading={!rows.length && (animalsDataLoader.isLoading || !animalsDataLoader.isReady)}
           isLoadingFallback={<SkeletonTable />}
           isLoadingFallbackDelay={100}
-          hasNoData={!rows.length}
+          hasNoData={!rows.length && !pagination?.total}
           hasNoDataFallback={
             <NoDataOverlay
               height="500px"
@@ -179,7 +180,7 @@ const AnimalsListContainer = (props: IAnimalsListContainerProps) => {
             columns={columns}
             // Rows
             rows={rows}
-            rowCount={animalsDataLoader.data?.animals?.length ?? 0}
+            rowCount={pagination?.total ?? 0}
             getRowId={(row) => row.critter_id}
             // Pagination
             paginationMode="server"

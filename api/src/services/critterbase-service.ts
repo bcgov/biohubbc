@@ -68,6 +68,15 @@ export interface ICreateCritter {
   critter_comment?: string | null;
 }
 
+export interface IUpdateCritter {
+  critter_id: string;
+  wlh_id?: string | null;
+  animal_id: string; // NOTE: In critterbase this is optional. For SIMS it should be required.
+  sex_qualitative_option_id?: string | null;
+  // itis_tsn is not updatable
+  critter_comment?: string | null;
+}
+
 export interface ICapture {
   capture_id?: string;
   critter_id: string;
@@ -162,6 +171,36 @@ export interface IMarking {
   comment: string;
   attached_timestamp: string;
   removed_timestamp: string;
+  body_location: string;
+  marking_type: string;
+  primary_colour: string | null;
+  secondary_colour: string | null;
+}
+
+/**
+ * Used to filter mortality markings for export
+ *
+ * @export
+ * @interface IMortalityMarkingsData
+ * @typedef {IMortalityMarkingsData}
+ */
+export interface IMortalityMarkingsData {
+  body_location: string;
+  primary_colour: string | null;
+  secondary_colour: string | null;
+  marking_type: string;
+}
+
+/**
+ * Used to filter mortality locations for export
+ *
+ * @export
+ * @interface IMortalityLocationsData
+ * @typedef {IMortalityLocationsData}
+ */
+export interface IMortalityLocationsData {
+  latitude: number;
+  longitude: number;
 }
 
 /**
@@ -284,6 +323,21 @@ export interface IAsSelectLookup {
   id: string;
   key: string;
   value: string;
+}
+
+// Critterbase colour lookup
+export interface IColour {
+  colour_id: string;
+  colour: string;
+  hex_code: string | null;
+  description: string | null;
+}
+
+// Critterbase marking type lookup
+export interface IMarkingType {
+  marking_type_id: string;
+  name: string;
+  description: string | null;
 }
 
 /**
@@ -462,13 +516,45 @@ export class CritterbaseService {
   }
 
   /**
-   * Fetches Critterbase colour lookup values.
+   * Fetches Critterbase colour lookup values formatted.
    *
    * @async
    * @returns {Promise<IAsSelectLookup[]>} AsSelect format
    */
-  async getColours(): Promise<IAsSelectLookup[]> {
+  async getFormattedColours(): Promise<IAsSelectLookup[]> {
     const response = await this.axiosInstance.get('/lookups/colours', {
+      params: { format: CritterbaseFormatEnum.AS_SELECT }
+    });
+
+    return response.data;
+  }
+
+  /**
+   * Get Critterbase colour lookup values.
+   *
+   * @async
+   * @returns {Promise<IColour>} Colour lookup values
+   */
+  async getColours(): Promise<IColour[]> {
+    const response = await this.axiosInstance.get<IColour[]>('/lookups/colours');
+
+    // Mapping to exclude critterbase audit columns
+    return response.data.map((colour) => ({
+      colour_id: colour.colour_id,
+      colour: colour.colour,
+      hex_code: colour.hex_code,
+      description: colour.description
+    }));
+  }
+
+  /**
+   * Fetches Critterbase marking type lookup values formatted.
+   *
+   * @async
+   * @returns {Promise<IAsSelectLookup[]>} AsSelect format
+   */
+  async getFormattedMarkingTypes(): Promise<IAsSelectLookup[]> {
+    const response = await this.axiosInstance.get('/lookups/marking-types', {
       params: { format: CritterbaseFormatEnum.AS_SELECT }
     });
 
@@ -479,23 +565,26 @@ export class CritterbaseService {
    * Fetches Critterbase marking type lookup values.
    *
    * @async
-   * @returns {Promise<IAsSelectLookup[]>} AsSelect format
+   * @returns {Promise<IMarkingType[]>} Critterbase marking type lookup values
    */
-  async getMarkingTypes(): Promise<IAsSelectLookup[]> {
-    const response = await this.axiosInstance.get('/lookups/marking-types', {
-      params: { format: CritterbaseFormatEnum.AS_SELECT }
-    });
+  async getMarkingTypes(): Promise<IMarkingType[]> {
+    const response = await this.axiosInstance.get<IMarkingType[]>('/lookups/marking-types');
 
-    return response.data;
+    // Mapping to exclude critterbase audit columns
+    return response.data.map((markingType) => ({
+      marking_type_id: markingType.marking_type_id,
+      name: markingType.name,
+      description: markingType.description
+    }));
   }
 
   /**
    * Fetches qualitative and quantitative measurements for the specified taxon.
    *
-   * @param {string} tsn - The taxon serial number (TSN).
+   * @param {number} tsn - The taxon serial number (TSN).
    * @returns {Promise<{ qualitative: CBQualitativeMeasurementTypeDefinition[], quantitative: CBQuantitativeMeasurementTypeDefinition[] }>} - The response data containing qualitative and quantitative measurements.
    */
-  async getTaxonMeasurements(tsn: string): Promise<{
+  async getTaxonMeasurements(tsn: number): Promise<{
     qualitative: CBQualitativeMeasurementTypeDefinition[];
     quantitative: CBQuantitativeMeasurementTypeDefinition[];
   }> {
@@ -507,10 +596,10 @@ export class CritterbaseService {
   /**
    * Fetches body location information for the specified taxon.
    *
-   * @param {string} tsn - The taxon serial number (TSN).
+   * @param {number} tsn - The taxon serial number (TSN).
    * @returns {Promise<IAsSelectLookup[]>} - The response data containing body location information.
    */
-  async getTaxonBodyLocations(tsn: string): Promise<IAsSelectLookup[]> {
+  async getTaxonBodyLocations(tsn: number): Promise<IAsSelectLookup[]> {
     const response = await this.axiosInstance.get('/xref/taxon-marking-body-locations', {
       params: { tsn, format: CritterbaseFormatEnum.AS_SELECT }
     });
@@ -704,10 +793,10 @@ export class CritterbaseService {
    * Find collection categories by tsn. Includes hierarchies.
    *
    * @async
-   * @param {string} tsn - ITIS TSN
+   * @param {number} tsn - ITIS TSN
    * @returns {Promise<ICollectionCategory[]>} Collection categories
    */
-  async findTaxonCollectionCategories(tsn: string): Promise<ICollectionCategory[]> {
+  async findTaxonCollectionCategories(tsn: number): Promise<ICollectionCategory[]> {
     const response = await this.axiosInstance.get(`/xref/taxon-collection-categories`, { params: { tsn } });
 
     return response.data;
@@ -717,12 +806,120 @@ export class CritterbaseService {
    * Find collection units by tsn. Includes hierarchies.
    *
    * @async
-   * @param {string} tsn - ITIS TSN
+   * @param {number} tsn - ITIS TSN
    * @returns {Promise<ICollectionUnitWithCategory[]>} Collection units
    */
-  async findTaxonCollectionUnits(tsn: string): Promise<ICollectionUnitWithCategory[]> {
+  async findTaxonCollectionUnits(tsn: number): Promise<ICollectionUnitWithCategory[]> {
     const response = await this.axiosInstance.get(`/xref/taxon-collection-units`, { params: { tsn } });
 
     return response.data;
+  }
+
+  /**
+   * Get all the categories for a set of tsn numbers
+   *
+   * @async
+   * @param {number[]} uniqueItisTsn
+   * @returns {Promise<string[]>}
+   * @memberof CritterbaseService
+   */
+  async getUniqueCategoryNamesForTsnList(uniqueItisTsn: number[]): Promise<string[]> {
+    // Create an array of promises for each API call
+    const promises = uniqueItisTsn.map((itisTsn) =>
+      this.axiosInstance.get('/xref/taxon-collection-categories', {
+        params: { tsn: itisTsn }
+      })
+    );
+
+    const responses = await Promise.all(promises);
+
+    // collect unique category names
+    const uniqueCategoryNames = new Set<string>();
+
+    // extract unique category names
+    responses.forEach((response) => {
+      response.data.forEach((item: { category_name: string }) => {
+        uniqueCategoryNames.add(item.category_name);
+      });
+    });
+
+    // send back an array of categories
+    return Array.from(uniqueCategoryNames);
+  }
+
+  /**
+   * Get all the mortalities markings for a set of critter ids
+   *
+   * @async
+   * @param {string[]} critterIds
+   * @returns {Promise<Map<string, IMortalityMarkingsData[]>}
+   * @memberof CritterbaseService
+   */
+  async getMortalityMarkingsByMultipleCritterIds(critterIds: string[]): Promise<Map<string, IMortalityMarkingsData[]>> {
+    // Create an array of promises for each API call
+    const promises = critterIds.map((critterId) => this.axiosInstance.get(`/markings/critter/${critterId}`));
+    const responses = await Promise.all(promises);
+
+    const mortalityMarkingsDataMap = new Map<string, IMortalityMarkingsData[]>();
+
+    // populate map
+    responses.forEach((response) => {
+      response.data.forEach((item: IMarking) => {
+        if (critterIds.includes(item.critter_id)) {
+          // If this mortality_id is not already in the results map, initialize an empty array
+          if (!mortalityMarkingsDataMap.has(item.mortality_id)) {
+            mortalityMarkingsDataMap.set(item.mortality_id, []);
+          }
+
+          // Push the mortality data for the current item into the map's array for this mortality_id
+          const mortalityData: IMortalityMarkingsData = {
+            body_location: item.body_location,
+            primary_colour: item.primary_colour,
+            secondary_colour: item.secondary_colour,
+            marking_type: item.marking_type
+          };
+
+          mortalityMarkingsDataMap.get(item.mortality_id)?.push(mortalityData);
+        }
+      });
+    });
+
+    return mortalityMarkingsDataMap;
+  }
+
+  /**
+   * Get all the mortalities location for a set of mortality ids
+   *
+   * @async
+   * @param {string[]} critterIds
+   * @returns {Promise<Map<string, IMortalityLocationsData>>}
+   * @memberof CritterbaseService
+   */
+  async getMortalityLocationsByMultipleCritterIds(critterIds: string[]): Promise<Map<string, IMortalityLocationsData>> {
+    // Create an array of promises for each mortality API call
+    const promises = critterIds.map((critterId) => this.axiosInstance.get(`/mortality/critter/${critterId}`));
+    const responses = await Promise.all(promises);
+
+    const mortalityLocationsDataMap = new Map<string, IMortalityLocationsData>();
+
+    // populate map
+    responses.forEach((response) => {
+      if (response.data.length <= 0) {
+        return;
+      }
+
+      response.data.forEach((item: any) => {
+        if (critterIds.includes(item.critter_id)) {
+          const mortalityLocationData: IMortalityLocationsData = {
+            latitude: item.location.latitude,
+            longitude: item.location.longitude
+          };
+
+          mortalityLocationsDataMap.set(item.mortality_id, mortalityLocationData);
+        }
+      });
+    });
+
+    return mortalityLocationsDataMap;
   }
 }

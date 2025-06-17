@@ -20,8 +20,7 @@ export enum SYSTEM_ROLE {
  */
 export enum PROJECT_ROLE {
   COORDINATOR = 'Coordinator',
-  COLLABORATOR = 'Collaborator',
-  OBSERVER = 'Observer'
+  COLLABORATOR = 'Collaborator'
 }
 
 /**

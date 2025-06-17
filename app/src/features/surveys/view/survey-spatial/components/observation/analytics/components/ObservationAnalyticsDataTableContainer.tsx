@@ -68,18 +68,20 @@ export const ObservationAnalyticsDataTableContainer = (props: IObservationAnalyt
       )
   );
 
-  useEffect(
-    () => {
-      analyticsDataLoader.refresh(
-        surveyContext.surveyId,
-        groupByColumns,
-        groupByQuantitativeMeasurements,
-        groupByQualitativeMeasurements
-      );
-    },
-    // eslint-disable-next-line
-    [groupByColumns, groupByQualitativeMeasurements, groupByQuantitativeMeasurements, surveyContext.surveyId]
-  );
+  useEffect(() => {
+    analyticsDataLoader.refresh(
+      surveyContext.surveyId,
+      groupByColumns,
+      groupByQuantitativeMeasurements,
+      groupByQualitativeMeasurements
+    );
+  }, [
+    analyticsDataLoader,
+    groupByColumns,
+    groupByQualitativeMeasurements,
+    groupByQuantitativeMeasurements,
+    surveyContext.surveyId
+  ]);
 
   const rows = useMemo(
     () =>
@@ -118,8 +120,7 @@ export const ObservationAnalyticsDataTableContainer = (props: IObservationAnalyt
       getDateColDef(),
       ...getBasicGroupByColDefs([...groupByQualitativeMeasurements, ...groupByQuantitativeMeasurements])
     ],
-    // eslint-disable-next-line
-    [rows, allGroupByColumns]
+    [taxonomyContext.getCachedSpeciesTaxonomyById, groupByQualitativeMeasurements, groupByQuantitativeMeasurements]
   );
 
   const columnVisibilityModel = useMemo(() => {

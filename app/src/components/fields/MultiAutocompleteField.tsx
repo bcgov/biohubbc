@@ -18,10 +18,10 @@ import { useEffect, useState } from 'react';
 export interface IMultiAutocompleteFieldOption {
   value: string | number;
   label: string;
-  subText?: string;
+  description: string | null;
 }
 
-export interface IMultiAutocompleteField {
+interface IMultiAutocompleteField {
   id: string;
   label: string;
   options: IMultiAutocompleteFieldOption[];
@@ -58,7 +58,7 @@ export const sortAutocompleteOptions = (
   return [...selectedOptions, ...remainingOptions.filter((item) => !selectedValues.includes(item.value))];
 };
 
-const MultiAutocompleteField: React.FC<IMultiAutocompleteField> = (props) => {
+const MultiAutocompleteField = (props: IMultiAutocompleteField) => {
   const { values, touched, errors, setFieldValue } = useFormikContext<IMultiAutocompleteFieldOption>();
 
   const [inputValue, setInputValue] = useState('');
@@ -142,7 +142,7 @@ const MultiAutocompleteField: React.FC<IMultiAutocompleteField> = (props) => {
               value={renderOption.value}
               color="default"
             />
-            <ListItemText primary={renderOption.label} secondary={renderOption.subText} />
+            <ListItemText primary={renderOption.label} secondary={renderOption.description} />
           </Box>
         );
       }}

@@ -34,7 +34,7 @@ export const TechniqueGeneralInformationForm = <
       .map((option) => ({
         value: option.id,
         label: option.name,
-        subText: option.description
+        description: option.description
       }))
       // TODO https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-615 - Replace filter with more generic solution
       // Undetermined is a possible option, but filter from the list to discourage its use
@@ -44,7 +44,7 @@ export const TechniqueGeneralInformationForm = <
     codesContext.codesDataLoader.data?.method_response_metrics.map((option) => ({
       value: option.id,
       label: option.name,
-      subText: option.description
+      description: option.description
     })) ?? [];
 
   if (!codesContext.codesDataLoader.data) {
@@ -68,13 +68,14 @@ export const TechniqueGeneralInformationForm = <
           id="method_lookup_id"
           label="Sampling method"
           name="method_lookup_id"
+          helpText="The category of the method used to collect data."
           showValue
           required
           loading={codesContext.codesDataLoader.isLoading}
           options={methodOptions.map((option) => ({
             value: option.value as number,
             label: option.label,
-            description: option.subText
+            description: option.description
           }))}
           onChange={(_, value) => {
             if (value?.value) {
@@ -91,13 +92,14 @@ export const TechniqueGeneralInformationForm = <
           id="method_response_metric_id"
           label="Response Metric"
           name="method_response_metric_id"
+          helpText="The value that you measured using the technique."
           showValue
           required
           loading={codesContext.codesDataLoader.isLoading}
           options={responseMetricOptions.map((option) => ({
             value: option.value as number,
             label: option.label,
-            description: option.subText
+            description: option.description
           }))}
           onChange={(_, value) => {
             if (value?.value) {

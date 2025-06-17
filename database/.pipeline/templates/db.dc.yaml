@@ -103,8 +103,6 @@ objects:
         name: '${DATABASE_SERVICE_NAME}'
       sessionAffinity: None
       type: ClusterIP
-    status:
-      loadBalancer: {}
 
   - kind: PersistentVolumeClaim
     apiVersion: v1
@@ -116,6 +114,7 @@ objects:
       resources:
         requests:
           storage: '${VOLUME_CAPACITY}'
+
   - kind: ImageStream
     apiVersion: image.openshift.io/v1
     metadata:
@@ -174,14 +173,21 @@ objects:
                   value: '${TZ}'
               image: ${BASE_IMAGE_REGISTRY_URL}/${NAMESPACE}/${IMAGE_STREAM_NAME}:${IMAGE_STREAM_VERSION}
               imagePullPolicy: IfNotPresent
-              livenessProbe:
-                initialDelaySeconds: 30
-                tcpSocket:
-                  port: 5432
-                timeoutSeconds: 1
               ports:
                 - containerPort: 5432
                   protocol: TCP
+              startupProbe:
+                exec:
+                  command:
+                    - '/bin/sh'
+                    - '-i'
+                    - '-c'
+                    - psql -h 127.0.0.1 -U $POSTGRES_USER -q -d $POSTGRES_DB -c 'SELECT 1'
+                initialDelaySeconds: 30
+                periodSeconds: 10
+                timeoutSeconds: 10
+                successThreshold: 1
+                failureThreshold: 30
               readinessProbe:
                 exec:
                   command:
@@ -189,8 +195,19 @@ objects:
                     - '-i'
                     - '-c'
                     - psql -h 127.0.0.1 -U $POSTGRES_USER -q -d $POSTGRES_DB -c 'SELECT 1'
-                initialDelaySeconds: 5
-                timeoutSeconds: 1
+                initialDelaySeconds: 0
+                periodSeconds: 30
+                timeoutSeconds: 10
+                successThreshold: 1
+                failureThreshold: 3
+              livenessProbe:
+                tcpSocket:
+                  port: 5432
+                initialDelaySeconds: 0
+                periodSeconds: 30
+                timeoutSeconds: 10
+                successThreshold: 1
+                failureThreshold: 3
               resources:
                 requests:
                   cpu: ${CPU_REQUEST}

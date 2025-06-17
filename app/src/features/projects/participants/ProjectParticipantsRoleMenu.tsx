@@ -11,7 +11,7 @@ import { CodeSet } from 'interfaces/useCodesApi.interface';
 import { IGetProjectParticipant } from 'interfaces/useProjectApi.interface';
 import React, { useContext } from 'react';
 
-export interface IChangeProjectRoleMenuProps {
+interface IChangeProjectRoleMenuProps {
   participant: IGetProjectParticipant;
   projectRoleCodes: CodeSet;
   refresh: () => void;

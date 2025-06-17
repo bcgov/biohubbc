@@ -1,5 +1,5 @@
-apiVersion: template.openshift.io/v1
 kind: Template
+apiVersion: template.openshift.io/v1
 metadata:
   name: biohubbc-api-dc
   labels:
@@ -208,6 +208,9 @@ parameters:
   - name: TELEMETRY_CRONJOB_DISABLED
     description: Boolean flag to disable the cronjob, only static deployments should run on schedule.
     value: 'true'
+  - name: TELEMETRY_CRONJOB_DEVICE_LIMIT
+    description: Limit the number of devices to process in the telemetry cronjob. Used for PR cronjob deployments.
+    value: '-1'
   - name: TELEMETRY_SECRET
     description: The name of the Openshift Biohubbc telemetry secret
     value: biohubbc-telemetry
@@ -230,8 +233,6 @@ objects:
     spec:
       lookupPolicy:
         local: false
-    status:
-      dockerImageRepository: null
 
   - kind: PersistentVolumeClaim
     apiVersion: v1
@@ -457,26 +458,36 @@ objects:
                 limits:
                   cpu: ${CPU_LIMIT}
                   memory: ${MEMORY_LIMIT}
+              startupProbe:
+                httpGet:
+                  path: /api/version
+                  port: ${{API_PORT_DEFAULT}}
+                  scheme: HTTP
+                initialDelaySeconds: 30
+                periodSeconds: 10
+                timeoutSeconds: 10
+                successThreshold: 1
+                failureThreshold: 30
               readinessProbe:
                 httpGet:
                   path: /api/version
                   port: ${{API_PORT_DEFAULT}}
                   scheme: HTTP
-                initialDelaySeconds: 60
+                initialDelaySeconds: 0
                 periodSeconds: 30
-                timeoutSeconds: 15
+                timeoutSeconds: 10
                 successThreshold: 1
-                failureThreshold: 20
+                failureThreshold: 3
               livenessProbe:
                 httpGet:
                   path: /api/version
                   port: ${{API_PORT_DEFAULT}}
                   scheme: HTTP
-                initialDelaySeconds: 60
+                initialDelaySeconds: 0
                 periodSeconds: 30
-                timeoutSeconds: 15
+                timeoutSeconds: 10
                 successThreshold: 1
-                failureThreshold: 20
+                failureThreshold: 3
               terminationMessagePath: /dev/termination-log
               terminationMessagePolicy: File
               volumeMounts:
@@ -492,13 +503,6 @@ objects:
               persistentVolumeClaim:
                 claimName: ${NAME}${SUFFIX}
       test: false
-    status:
-      availableReplicas: 0
-      latestVersion: 0
-      observedGeneration: 0
-      replicas: 0
-      unavailableReplicas: 0
-      updatedReplicas: 0
 
   - kind: Secret
     apiVersion: v1
@@ -528,17 +532,11 @@ objects:
         deployment: ${NAME}${SUFFIX}
       sessionAffinity: None
       type: ClusterIP
-    status:
-      loadBalancer: {}
 
   - kind: Route
     apiVersion: route.openshift.io/v1
     metadata:
-      annotations:
-        # These 2 annotations (haproxy.router.openshift.io/balance and haproxy.router.openshift.io/disable_cookies) are set in order to prevent 'sticky sessions'
-        # 'sticky sessions': If an API pod is busy fullfilling a request, subsequent requests will go to other API pods rather than wait for the same pod (when pod replicas is > 1)
-        haproxy.router.openshift.io/balance: 'leastconn'
-        haproxy.router.openshift.io/disable_cookies: 'true'
+      annotations: {}
       labels: {}
       name: ${NAME}${SUFFIX}
     spec:
@@ -553,8 +551,6 @@ objects:
         name: ${NAME}${SUFFIX}
         weight: 100
       wildcardPolicy: None
-    status:
-      ingress: null
 
   - kind: CronJob
     apiVersion: batch/v1
@@ -564,6 +560,7 @@ objects:
         role: telemetry-cronjob
     spec:
       schedule: ${TELEMETRY_CRONJOB_SCHEDULE}
+      # By default the PR cronjobs are disabled
       suspend: ${{TELEMETRY_CRONJOB_DISABLED}}
       concurrencyPolicy: 'Forbid'
       successfulJobsHistoryLimit: 1
@@ -623,11 +620,11 @@ objects:
                       value: ${VECTRONIC_API_HOST}
                     # Logging
                     - name: LOG_LEVEL
-                      value: ${LOG_LEVEL}
+                      value: debug
                     - name: LOG_LEVEL_FILE
-                      value: data/cronjob-logs
+                      value: debug
                     - name: LOG_FILE_DIR
-                      value: ${LOG_FILE_DIR}
+                      value: data/cronjob-logs
                     - name: LOG_FILE_NAME
                       value: sims-telemetry-cronjob-%DATE%.log
                     - name: LOG_FILE_DATE_PATTERN
@@ -641,8 +638,21 @@ objects:
                       value: ${API_RESPONSE_VALIDATION_ENABLED}
                     - name: DATABASE_RESPONSE_VALIDATION_ENABLED
                       value: ${DATABASE_RESPONSE_VALIDATION_ENABLED}
-                  command: ['npm', 'run', 'telemetry-cronjob', '--', '--batchSize 1000', '--concurrently 100']
+                  command: [
+                    'node',
+                    'src/cronjobs/telemetry/index',
+                    '--batchSize=1001',
+                    '--concurrently=101',
+                    '--deviceLimit=${TELEMETRY_CRONJOB_DEVICE_LIMIT}',
+                  ]
+                  volumeMounts:
+                    - name: ${NAME}${SUFFIX}
+                      mountPath: /opt/app-root/src/data
               restartPolicy: Never
+              volumes:
+                - name: ${NAME}${SUFFIX}
+                  persistentVolumeClaim:
+                    claimName: ${NAME}${SUFFIX}
 
   # Disable the HPA for now, as it is preferrable to run an exact number of pods (e.g. min:2, max:2)
   # - kind: HorizontalPodAutoscaler

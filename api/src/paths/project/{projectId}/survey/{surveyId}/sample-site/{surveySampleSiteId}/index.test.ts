@@ -160,7 +160,7 @@ describe('deleteSurveySampleSiteRecord', () => {
     expect(getObservationsCountBySampleSiteIdStub).to.have.been.calledOnce;
   });
 
-  it('should successfully delete a survey sample site record', async () => {
+  it('should successfully delete a survey sample site record 2', async () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     const getObservationsCountBySampleSiteIdStub = sinon

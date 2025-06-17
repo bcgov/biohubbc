@@ -2,19 +2,22 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Stack from '@mui/material/Stack';
 import { DialogContextProvider } from 'contexts/dialogContext';
-import { ObservationsPageContextProvider } from 'contexts/observationsPageContext';
+import { ObservationsPageContext, ObservationsPageContextProvider } from 'contexts/observationsPageContext';
 import { ObservationsTableContext, ObservationsTableContextProvider } from 'contexts/observationsTableContext';
 import { ProjectContext } from 'contexts/projectContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { TaxonomyContextProvider } from 'contexts/taxonomyContext';
+import { useObservationsContext } from 'hooks/useContext';
 import { useContext } from 'react';
-import SurveyObservationHeader from './components/SurveyObservationHeader';
+import { SurveyManagePageEnum, SurveyManagePageHeader } from '../components/SurveyManagePageHeader';
+import { ImportObservationsButton } from './components/ImportObservationsButton';
 import ObservationsTableContainer from './observations-table/ObservationsTableContainer';
 import { SamplingSiteListContainer } from './sampling-sites/SamplingSiteListContainer';
 
 export const SurveyObservationPage = () => {
   const surveyContext = useContext(SurveyContext);
   const projectContext = useContext(ProjectContext);
+  const observationsContext = useObservationsContext();
 
   if (!surveyContext.surveyDataLoader.data || !projectContext.projectDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
@@ -30,47 +33,84 @@ export const SurveyObservationPage = () => {
           maxWidth: 'none'
         }
       }}>
-      <SurveyObservationHeader
+      <SurveyManagePageHeader
+        page={SurveyManagePageEnum.OBSERVATIONS}
         project_id={surveyContext.projectId}
         project_name={projectContext.projectDataLoader.data.projectData.project.project_name}
         survey_id={surveyContext.surveyId}
         survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
       />
       <ObservationsPageContextProvider>
-        <Stack
-          direction="row"
-          gap={1}
-          sx={{
-            flex: '1 1 auto',
-            p: 1
-          }}>
-          {/* Sampling Site List */}
-          <Box flex="0 0 auto" width="400px">
-            <DialogContextProvider>
-              <SamplingSiteListContainer />
-            </DialogContextProvider>
-          </Box>
+        <ObservationsPageContext.Consumer>
+          {(observationsPageContext) => {
+            if (!observationsPageContext) {
+              return null;
+            }
 
-          {/* Observations Table */}
-          <Box flex="1 1 auto">
-            <DialogContextProvider>
-              <TaxonomyContextProvider>
-                <ObservationsTableContextProvider>
-                  <ObservationsTableContext.Consumer>
-                    {(context) => {
-                      if (!context?._muiDataGridApiRef.current) {
-                        // Delay rendering the ObservationsTable until the DataGrid API is available
-                        return <CircularProgress className="pageProgress" size={40} />;
-                      }
+            return (
+              <Stack
+                direction="row"
+                gap={1}
+                sx={{
+                  flex: '1 1 auto',
+                  p: 1
+                }}>
+                {/* Sampling Site List */}
+                <Box flex="0 0 auto" width="400px">
+                  <DialogContextProvider>
+                    <SamplingSiteListContainer
+                      isDisabled={observationsPageContext.isDisabled}
+                      getSamplePeriodImportButton={(samplePeriodId) => (
+                        <ImportObservationsButton
+                          disabled={observationsPageContext.isDisabled}
+                          onStart={() => {
+                            observationsPageContext.setIsDisabled(true);
+                            observationsPageContext.setIsLoading(true);
+                          }}
+                          onSuccess={() => {
+                            observationsContext.observationsDataLoader.refresh();
+                          }}
+                          onFinish={() => {
+                            observationsPageContext.setIsDisabled(false);
+                            observationsPageContext.setIsLoading(false);
+                          }}
+                          surveySamplePeriodId={samplePeriodId}
+                          buttonProps={{
+                            size: 'small',
+                            sx: {
+                              borderRadius: '3px',
+                              fontSize: '0.6rem'
+                            }
+                          }}
+                        />
+                      )}
+                    />
+                  </DialogContextProvider>
+                </Box>
 
-                      return <ObservationsTableContainer />;
-                    }}
-                  </ObservationsTableContext.Consumer>
-                </ObservationsTableContextProvider>
-              </TaxonomyContextProvider>
-            </DialogContextProvider>
-          </Box>
-        </Stack>
+                {/* Observations Table */}
+                <Box flex="1 1 auto">
+                  <DialogContextProvider>
+                    <TaxonomyContextProvider>
+                      <ObservationsTableContextProvider>
+                        <ObservationsTableContext.Consumer>
+                          {(context) => {
+                            if (!context?._muiDataGridApiRef.current) {
+                              // Delay rendering the ObservationsTable until the DataGrid API is available
+                              return <CircularProgress className="pageProgress" size={40} />;
+                            }
+
+                            return <ObservationsTableContainer />;
+                          }}
+                        </ObservationsTableContext.Consumer>
+                      </ObservationsTableContextProvider>
+                    </TaxonomyContextProvider>
+                  </DialogContextProvider>
+                </Box>
+              </Stack>
+            );
+          }}
+        </ObservationsPageContext.Consumer>
       </ObservationsPageContextProvider>
     </Stack>
   );

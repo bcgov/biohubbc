@@ -1,12 +1,10 @@
 import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import {
-  ObservationRecordWithSamplingAndSubcountData,
-  ObservationRepository
-} from '../../repositories/observation-repository/observation-repository';
-import * as file_utils from '../../utils/file-utils';
+import { ObservationRepository } from '../../repositories/observation-repository/observation-repository';
+import { ObservationRecordWithSamplingAndSubcountData } from '../../repositories/observation-repository/observation-repository.interface';
 import { getMockDBConnection } from '../../__mocks__/db';
+import { ObservationEnvironmentService } from '../observation-environment-service';
 import { SamplePeriodService } from '../sample-period-service';
 import { SubCountService } from '../subcount-service';
 import { ObservationService } from './observation-service';
@@ -41,6 +39,9 @@ describe('ObservationService', () => {
           itis_scientific_name: 'itis_scientific_name',
           observation_date: '2023-01-01',
           observation_time: '12:00:00',
+          observation_sign_id: 1,
+          qualitative_environments: [],
+          quantitative_environments: [],
           survey_sample_site_id: 7,
           survey_sample_site_name: 'SITE_NAME',
           method_technique_id: 8,
@@ -59,6 +60,9 @@ describe('ObservationService', () => {
           itis_scientific_name: 'itis_scientific_name',
           observation_date: '2023-02-02',
           observation_time: '13:00:00',
+          observation_sign_id: 1,
+          qualitative_environments: [],
+          quantitative_environments: [],
           survey_sample_site_id: 7,
           survey_sample_site_name: 'SITE_NAME',
           method_technique_id: 8,
@@ -79,11 +83,11 @@ describe('ObservationService', () => {
       };
 
       const getSurveyObservationsStub = sinon
-        .stub(ObservationRepository.prototype, 'getSurveyObservationsWithSamplingDataWithAttributesData')
+        .stub(ObservationRepository.prototype, 'getSurveyObservations')
         .resolves(mockObservations);
 
       const getSurveyObservationCountStub = sinon
-        .stub(ObservationRepository.prototype, 'getSurveyObservationCount')
+        .stub(ObservationRepository.prototype, 'getSurveyObservationsCount')
         .resolves(2);
 
       const getMeasurementTypeDefinitionsForSurveyStub = sinon
@@ -91,7 +95,7 @@ describe('ObservationService', () => {
         .resolves({ qualitative_measurements: [], quantitative_measurements: [] });
 
       const getEnvironmentTypeDefinitionsForSurveyStub = sinon
-        .stub(SubCountService.prototype, 'getEnvironmentTypeDefinitionsForSurvey')
+        .stub(ObservationEnvironmentService.prototype, 'getEnvironmentTypeDefinitionsForSurvey')
         .resolves({ qualitative_environments: [], quantitative_environments: [] });
 
       const getSamplePeriodsForSurveyStub = sinon
@@ -102,9 +106,8 @@ describe('ObservationService', () => {
 
       const observationService = new ObservationService(mockDBConnection);
 
-      const response = await observationService.getSurveyObservationsWithSupplementaryAndSamplingDataAndAttributeData(
-        surveyId
-      );
+      const response =
+        await observationService.getSurveyObservationsWithSupplementaryAndSamplingDataAndAttributeData(surveyId);
 
       expect(getSurveyObservationsStub).to.be.calledOnceWith(surveyId);
       expect(getSurveyObservationCountStub).to.be.calledOnceWith(surveyId);
@@ -121,53 +124,6 @@ describe('ObservationService', () => {
           }
         ],
         supplementaryObservationData: mockSupplementaryData
-      });
-    });
-  });
-
-  describe('insertSurveyObservationSubmission', () => {
-    it('Inserts a survey observation submission record into the database', async () => {
-      const mockDBConnection = getMockDBConnection();
-      const submission_id = 1;
-      const key = 'key';
-      const survey_id = 1;
-      const original_filename = 'originalFilename';
-      const mockFile = { originalname: original_filename } as Express.Multer.File;
-      const projectId = 1;
-
-      const mockInsertResponse = {
-        submission_id,
-        key,
-        survey_id,
-        original_filename,
-        create_date: '2023-04-04',
-        create_user: 1,
-        update_date: null,
-        update_user: null
-      };
-      const getNextSubmissionIdStub = sinon
-        .stub(ObservationRepository.prototype, 'getNextSubmissionId')
-        .resolves(submission_id);
-      const generateS3FileKeyStub = sinon.stub(file_utils, 'generateS3FileKey').returns(key);
-      const insertSurveyObservationSubmissionStub = sinon
-        .stub(ObservationRepository.prototype, 'insertSurveyObservationSubmission')
-        .resolves(mockInsertResponse);
-
-      const observationService = new ObservationService(mockDBConnection);
-
-      const response = await observationService.insertSurveyObservationSubmission(mockFile, projectId, survey_id);
-
-      expect(getNextSubmissionIdStub).to.be.calledOnce;
-      expect(generateS3FileKeyStub).to.be.calledOnce;
-      expect(insertSurveyObservationSubmissionStub).to.be.calledOnceWith(
-        submission_id,
-        key,
-        survey_id,
-        original_filename
-      );
-      expect(response).to.eql({
-        submission_id,
-        key
       });
     });
   });

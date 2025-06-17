@@ -1,17 +1,17 @@
-import { mdiDotsVertical, mdiFileDocumentPlusOutline, mdiPlus } from '@mdi/js';
+import { mdiDotsVertical } from '@mdi/js';
 import { Icon } from '@mdi/react';
-import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { FileUploadSingleItemDialog } from 'components/dialog/attachments/FileUploadSingleItemDialog';
-import { SurveyAnimalsI18N } from 'constants/i18n';
-import { DialogContext } from 'contexts/dialogContext';
-import { APIError } from 'hooks/api/useAxios';
+import axios, { AxiosProgressEvent } from 'axios';
+import { DualImportButton } from 'components/buttons/DualImportButton';
+import { CSVSingleImportDialog } from 'components/csv/CSVSingleImportDialog';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import { downloadFile } from 'utils/file-utils';
+import { getAnimalCSVTemplate } from '../../../../../utils/csv-templates';
 
 interface IAnimaListToolbarProps {
   animalCount: number;
@@ -30,45 +30,35 @@ export const AnimalListToolbar = (props: IAnimaListToolbarProps) => {
 
   const biohubApi = useBiohubApi();
 
-  const dialogContext = useContext(DialogContext);
-
   const [openImportDialog, setOpenImportDialog] = useState(false);
 
-  const handleImportAnimals = async (file: File) => {
-    try {
-      await biohubApi.survey.importCrittersFromCsv(file, surveyContext.projectId, surveyContext.surveyId);
-      surveyContext.critterDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
-    } catch (error) {
-      const apiError = error as APIError;
+  const cancelToken = axios.CancelToken.source();
 
-      dialogContext.setErrorDialog({
-        dialogTitle: SurveyAnimalsI18N.importRecordsErrorDialogTitle,
-        dialogText: SurveyAnimalsI18N.importRecordsErrorDialogText,
-        dialogError: apiError.message,
-        dialogErrorDetails: apiError.errors,
-        open: true,
-        onClose: () => {
-          dialogContext.setErrorDialog({ open: false });
-        },
-        onOk: () => {
-          dialogContext.setErrorDialog({ open: false });
-        }
-      });
-    } finally {
-      setOpenImportDialog(false);
-    }
+  const handleImportAnimals = async (file: File, onProgress: (progressEvent: AxiosProgressEvent) => void) => {
+    await biohubApi.survey.importCrittersFromCsv(
+      file,
+      surveyContext.projectId,
+      surveyContext.surveyId,
+      cancelToken,
+      onProgress
+    );
+
+    surveyContext.critterDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+
+    setOpenImportDialog(false);
   };
 
   return (
     <>
-      <FileUploadSingleItemDialog
+      <CSVSingleImportDialog
         open={openImportDialog}
-        dialogTitle="Import Animal CSV"
         onClose={() => setOpenImportDialog(false)}
-        onUpload={handleImportAnimals}
-        uploadButtonLabel="Import"
-        dropZoneProps={{ acceptedFileExtensions: '.csv' }}
+        dialogTitle="Import Animal CSV"
+        dialogSummary="Import a CSV file containing animal records"
+        onImport={handleImportAnimals}
+        onDownloadTemplate={() => downloadFile(getAnimalCSVTemplate(), 'SIMS-critter-template.csv')}
       />
+
       <Toolbar
         disableGutters
         sx={{
@@ -82,21 +72,14 @@ export const AnimalListToolbar = (props: IAnimaListToolbarProps) => {
             ({props.animalCount})
           </Typography>
         </Typography>
-        <Button
-          variant="contained"
-          color="primary"
-          component={RouterLink}
-          to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/animals/create`}
-          startIcon={<Icon path={mdiPlus} size={1} />}
-          sx={{ mr: 0.2, borderTopRightRadius: 0, borderBottomRightRadius: 0 }}>
-          Add
-        </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => setOpenImportDialog(true)}
-          startIcon={<Icon path={mdiFileDocumentPlusOutline} size={1} />}
-          sx={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0, '& .MuiButton-startIcon': { mx: 0 } }}
+        <DualImportButton
+          singleImportButtonProps={{
+            component: RouterLink,
+            to: `/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/animals/create`
+          }}
+          bulkImportButtonProps={{
+            onClick: () => setOpenImportDialog(true)
+          }}
         />
         <IconButton
           edge="end"

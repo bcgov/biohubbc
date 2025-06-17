@@ -1,4 +1,5 @@
 import { Knex } from 'knex';
+import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { getKnex } from '../../database/db';
 import { ApiExecuteSQLError } from '../../errors/api-error';
@@ -7,10 +8,12 @@ import { ApiPaginationOptions } from '../../zod-schema/pagination';
 import { BaseRepository } from '../base-repository';
 import {
   Telemetry,
+  TelemetryFilters,
   TelemetryOptions,
   TelemetrySchema,
   TelemetrySpatial,
   TelemetrySpatialSchema,
+  TelemetrySupplementary,
   TelemetryVendorEnum
 } from './telemetry-vendor-repository.interface';
 
@@ -73,8 +76,6 @@ export class TelemetryVendorRepository extends BaseRepository {
   /**
    * Add where clause to filter `Lotek` telemetry data by a survey ID.
    *
-   * TODO: Add check for credentials (same method or different method?)
-   *
    * @param {Knex.QueryBuilder} queryBuilder
    * @param {number} surveyId
    * @return {*}  {Knex.QueryBuilder}
@@ -82,6 +83,23 @@ export class TelemetryVendorRepository extends BaseRepository {
    */
   getLotekTelemetryBySurveyIdClause(queryBuilder: Knex.QueryBuilder, surveyId: number): Knex.QueryBuilder {
     return queryBuilder.andWhere('deployment.survey_id', surveyId);
+  }
+
+  /**
+   * Add join to filter Lotek telemetry data that has a valid credential key
+   *
+   * @param {Knex.QueryBuilder} queryBuilder
+   * @param {number} surveyId
+   * @returns {Knex.QueryBuilder}
+   */
+  getLotekTelemetryByCredentialClause(queryBuilder: Knex.QueryBuilder, surveyId: number): Knex.QueryBuilder {
+    return queryBuilder
+      .join(
+        'survey_telemetry_vendor_credential',
+        'telemetry_lotek.device_key',
+        'survey_telemetry_vendor_credential.device_key'
+      )
+      .andWhere('survey_telemetry_vendor_credential.survey_id', surveyId);
   }
 
   /**
@@ -109,9 +127,45 @@ export class TelemetryVendorRepository extends BaseRepository {
   }
 
   /**
+   * Filter results by vendor credentials
+   * The method is static to allow it to be accessed without requiring an instance of TelemetryVendorRepository
+   * This is needed because the query is built inside .modify() method
+   *
+   * @static
+   * @param {Knex.QueryBuilder} queryBuilder
+   * @returns {Knex.QueryBuilder}
+   */
+  static getLotekOrVectronicTelemetryByCredentialsClause(queryBuilder: Knex.QueryBuilder): Knex.QueryBuilder {
+    return queryBuilder.join(
+      'survey_telemetry_vendor_credential',
+      'survey.survey_id',
+      'survey_telemetry_vendor_credential.survey_id'
+    );
+  }
+
+  /**
+   * Filter results by the projects/surveys user have access to
+   * The method is static to allow it to be accessed without requiring an instance of TelemetryVendorRepository
+   * This is needed because the query is built inside .modify() method
+   *
+   * @static
+   * @param {Knex.QueryBuilder} queryBuilder
+   * @param {(number | null)} systemUserId
+   * @returns {Knex.QueryBuilder}
+   */
+  static getTelemetryByProjectsSurveysUserAccessClause(
+    queryBuilder: Knex.QueryBuilder,
+    systemUserId: number | null
+  ): Knex.QueryBuilder {
+    return queryBuilder
+      .join('project_participation', 'survey.project_id', 'project_participation.project_id')
+      .where('project_participation.system_user_id', systemUserId);
+  }
+
+  /**
    * Find `Lotek` telemetry data records the user has access to, based on filters and pagination options.
    *
-   * TODO: Add check for credentials (same method or different method?)
+   * Checks for vendor credentials.
    *
    * @param {Knex.QueryBuilder} queryBuilder
    * @param {boolean} isUserAdmin
@@ -131,10 +185,10 @@ export class TelemetryVendorRepository extends BaseRepository {
     queryBuilder.join('survey', 'deployment.survey_id', 'survey.survey_id');
 
     if (!isUserAdmin) {
+      // If the user is not an admin, filter results by vendor credentials
+      TelemetryVendorRepository.getLotekOrVectronicTelemetryByCredentialsClause(queryBuilder);
       // If the user is not an admin, filter results by the projects/surveys they have access to
-      queryBuilder
-        .join('project_participation', 'survey.project_id', 'project_participation.project_id')
-        .where('project_participation.system_user_id', systemUserId);
+      TelemetryVendorRepository.getTelemetryByProjectsSurveysUserAccessClause(queryBuilder, systemUserId);
     }
 
     if (filterFields.keyword) {
@@ -229,6 +283,23 @@ export class TelemetryVendorRepository extends BaseRepository {
   }
 
   /**
+   * Add join to filter Vectronic telemetry data that has a valid credential key
+   *
+   * @param {Knex.QueryBuilder} queryBuilder
+   * @param {number} surveyId
+   * @returns {Knex.QueryBuilder}
+   */
+  getVectronicTelemetryByCredentialClause(queryBuilder: Knex.QueryBuilder, surveyId: number): Knex.QueryBuilder {
+    return queryBuilder
+      .join(
+        'survey_telemetry_vendor_credential',
+        'telemetry_vectronic.device_key',
+        'survey_telemetry_vendor_credential.device_key'
+      )
+      .andWhere('survey_telemetry_vendor_credential.survey_id', surveyId);
+  }
+
+  /**
    * Add where clause to filter `Vectronic` telemetry data by a list of deployment IDs.
    *
    * @see TelemetrySchema ./telemetry-vendor-repository.interface.ts
@@ -258,7 +329,7 @@ export class TelemetryVendorRepository extends BaseRepository {
   /**
    * Find `Vectronic` telemetry data records the user has access to, based on filters and pagination options.
    *
-   * TODO: Add check for credentials (same method or different method?)
+   * Checks for vendor credentials.
    *
    * @param {Knex.QueryBuilder} queryBuilder
    * @param {boolean} isUserAdmin
@@ -278,10 +349,10 @@ export class TelemetryVendorRepository extends BaseRepository {
     queryBuilder.join('survey', 'deployment.survey_id', 'survey.survey_id');
 
     if (!isUserAdmin) {
+      // If the user is not an admin, filter results by vendor credentials
+      TelemetryVendorRepository.getLotekOrVectronicTelemetryByCredentialsClause(queryBuilder);
       // If the user is not an admin, filter results by the projects/surveys they have access to
-      queryBuilder
-        .join('project_participation', 'survey.project_id', 'project_participation.project_id')
-        .where('project_participation.system_user_id', systemUserId);
+      TelemetryVendorRepository.getTelemetryByProjectsSurveysUserAccessClause(queryBuilder, systemUserId);
     }
 
     if (filterFields.keyword) {
@@ -423,9 +494,7 @@ export class TelemetryVendorRepository extends BaseRepository {
 
     if (!isUserAdmin) {
       // If the user is not an admin, filter results by the projects/surveys they have access to
-      queryBuilder
-        .join('project_participation', 'survey.project_id', 'project_participation.project_id')
-        .where('project_participation.system_user_id', systemUserId);
+      TelemetryVendorRepository.getTelemetryByProjectsSurveysUserAccessClause(queryBuilder, systemUserId);
     }
 
     if (filterFields.keyword) {
@@ -568,9 +637,7 @@ export class TelemetryVendorRepository extends BaseRepository {
 
     if (!isUserAdmin) {
       // If the user is not an admin, filter results by the projects/surveys they have access to
-      queryBuilder
-        .join('project_participation', 'survey.project_id', 'project_participation.project_id')
-        .where('project_participation.system_user_id', systemUserId);
+      TelemetryVendorRepository.getTelemetryByProjectsSurveysUserAccessClause(queryBuilder, systemUserId);
     }
 
     if (filterFields.keyword) {
@@ -624,6 +691,7 @@ export class TelemetryVendorRepository extends BaseRepository {
        */
       this.getLotekTelemetryBaseQuery(knex.queryBuilder())
         .modify(this.getLotekTelemetryByAttachmentDateRangeClause)
+        .modify(this.getLotekTelemetryByCredentialClause, surveyId)
         .modify(this.getLotekTelemetryBySurveyIdClause, surveyId)
         .modify(this.getLotekTelemetryByDeploymentIdsClause, deploymentIds),
       /**
@@ -631,6 +699,7 @@ export class TelemetryVendorRepository extends BaseRepository {
        */
       this.getVectronicTelemetryBaseQuery(knex.queryBuilder())
         .modify(this.getVectronicTelemetryByAttachmentDateRangeClause)
+        .modify(this.getVectronicTelemetryByCredentialClause, surveyId)
         .modify(this.getVectronicTelemetryBySurveyIdClause, surveyId)
         .modify(this.getVectronicTelemetryByDeploymentIdsClause, deploymentIds),
       /**
@@ -676,13 +745,13 @@ export class TelemetryVendorRepository extends BaseRepository {
       .from('telemetry');
 
     // Inject date range if provided
-    if (options?.dateRange) {
-      if (options.dateRange.startDate) {
-        queryBuilder.where('telemetry.acquisition_date', '>=', options.dateRange.startDate);
+    if (options?.filters) {
+      if (options.filters.startDate) {
+        queryBuilder.where('telemetry.acquisition_date', '>=', options.filters.startDate);
       }
 
-      if (options.dateRange.endDate) {
-        queryBuilder.where('telemetry.acquisition_date', '<=', options.dateRange.endDate);
+      if (options.filters.endDate) {
+        queryBuilder.where('telemetry.acquisition_date', '<=', options.filters.endDate);
       }
     }
 
@@ -712,9 +781,14 @@ export class TelemetryVendorRepository extends BaseRepository {
    *
    * @param {number} surveyId
    * @param {number[]} deploymentIds
+   * @param {TelemetryFilters} filters
    * @returns {Promise<TelemetrySpatial[]>}
    */
-  async getTelemetrySpatialByDeploymentIds(surveyId: number, deploymentIds: number[]): Promise<TelemetrySpatial[]> {
+  async getTelemetrySpatialByDeploymentIds(
+    surveyId: number,
+    deploymentIds: number[],
+    filters?: TelemetryFilters
+  ): Promise<TelemetrySpatial[]> {
     const knex = getKnex();
 
     const queryBuilder = knex.queryBuilder();
@@ -733,22 +807,36 @@ export class TelemetryVendorRepository extends BaseRepository {
       )
       .from('telemetry');
 
+    // Inject date range if provided
+    if (filters) {
+      if (filters.startDate) {
+        queryBuilder.where('telemetry.acquisition_date', '>=', filters.startDate);
+      }
+
+      if (filters.endDate) {
+        queryBuilder.where('telemetry.acquisition_date', '<=', filters.endDate);
+      }
+    }
+
     const response = await this.connection.knex(queryBuilder, TelemetrySpatialSchema);
 
     return response.rows;
   }
 
   /**
-   * Get the total count of all telemetry records for list of deployment IDs.
+   * Get the total count, start date, and end date of telemetry records for a list of deployment IDs.
    *
-   * Note: Currently supports, `Lotek`, `Vectronic`, `ATS`, and `Manual` telemetry.
+   * Note: Currently supports `Lotek`, `Vectronic`, `ATS`, and `Manual` telemetry.
    *
    * @param {number} surveyId
    * @param {number[]} deploymentIds
-   * @return {*}  {Promise<number>}
+   * @return {*}  {Promise<TelemetrySupplementary>}
    * @memberof TelemetryVendorRepository
    */
-  async getTelemetryCountByDeploymentIds(surveyId: number, deploymentIds: number[]): Promise<number> {
+  async getTelemetrySupplementaryByDeploymentIds(
+    surveyId: number,
+    deploymentIds: number[]
+  ): Promise<TelemetrySupplementary> {
     const knex = getKnex();
 
     const queryBuilder = knex
@@ -756,12 +844,16 @@ export class TelemetryVendorRepository extends BaseRepository {
       .with('telemetry', (qb) => {
         this.getTelemetryByDeploymentIdsBaseQuery(qb, surveyId, deploymentIds);
       })
-      .select(knex.raw('count(*)::integer as count'))
+      .select(
+        knex.raw('count(*)::integer as count'),
+        knex.raw('MIN(acquisition_date) AS start_date'),
+        knex.raw('MAX(acquisition_date) AS end_date')
+      )
       .from('telemetry');
 
-    const response = await this.connection.knex(queryBuilder, z.object({ count: z.number() }));
+    const response = await this.connection.knex(queryBuilder, TelemetrySupplementary);
 
-    return response.rows[0].count;
+    return response.rows[0];
   }
 
   /**
@@ -784,6 +876,7 @@ export class TelemetryVendorRepository extends BaseRepository {
            */
           this.getLotekTelemetryBaseQuery(knex.queryBuilder())
             .modify(this.getLotekTelemetryByAttachmentDateRangeClause)
+            .modify(this.getLotekTelemetryByCredentialClause, surveyId)
             .modify(this.getLotekTelemetryBySurveyIdClause, surveyId)
             .modify(this.getLotekTelemetryByTelemetryIdClause, telemetryId),
           /**
@@ -791,6 +884,7 @@ export class TelemetryVendorRepository extends BaseRepository {
            */
           this.getVectronicTelemetryBaseQuery(knex.queryBuilder())
             .modify(this.getVectronicTelemetryByAttachmentDateRangeClause)
+            .modify(this.getVectronicTelemetryByCredentialClause, surveyId)
             .modify(this.getVectronicTelemetryBySurveyIdClause, surveyId)
             .modify(this.getVectronicTelemetryByTelemetryIdClause, telemetryId),
           /**
@@ -871,6 +965,31 @@ export class TelemetryVendorRepository extends BaseRepository {
   }
 
   /**
+   * Builds the main base and export telemetry query
+   *
+   * @param {Knex} knex
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId
+   * @param {IAllTelemetryAdvancedFilters} filterFields
+   * @returns {Knex.QueryBuilder}
+   * @memberof TelemetryVendorRepository
+   */
+  buildTelemetryQuery(
+    knex: Knex,
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: IAllTelemetryAdvancedFilters
+  ): Knex.QueryBuilder {
+    return knex
+      .queryBuilder()
+      .with('telemetry', (qb) => {
+        this.findTelemetryBaseQuery(qb, isUserAdmin, systemUserId, filterFields);
+      })
+      .select('*')
+      .from('telemetry');
+  }
+
+  /**
    * Retrieves the paginated list of all surveys that are available to the user.
    *
    * @param {boolean} isUserAdmin
@@ -888,13 +1007,7 @@ export class TelemetryVendorRepository extends BaseRepository {
   ): Promise<Telemetry[]> {
     const knex = getKnex();
 
-    const queryBuilder = knex
-      .queryBuilder()
-      .with('telemetry', (qb) => {
-        this.findTelemetryBaseQuery(qb, isUserAdmin, systemUserId, filterFields);
-      })
-      .select('*')
-      .from('telemetry');
+    const queryBuilder = this.buildTelemetryQuery(knex, isUserAdmin, systemUserId, filterFields);
 
     // Inject pagination / sorting if provided
     if (pagination) {
@@ -995,5 +1108,48 @@ export class TelemetryVendorRepository extends BaseRepository {
     }
 
     return response.rows[0].count;
+  }
+
+  /**
+   * Insert vendor device key data
+   *
+   * @async
+   * @param {number} survey_id
+   * @param {string} deviceKey
+   * @param {number} survey_telemetry_credential_attachment_id
+   * @returns {Promise<number>}
+   */
+  async insertTelemetryCredentialAttachmentVendor(
+    survey_id: number,
+    deviceKey: string,
+    survey_telemetry_credential_attachment_id: number
+  ): Promise<number> {
+    const sqlStatement = SQL`
+      INSERT INTO survey_telemetry_vendor_credential (
+        survey_id,
+        survey_telemetry_credential_attachment_id,
+        device_key
+      ) VALUES (
+        ${survey_id},
+        ${survey_telemetry_credential_attachment_id},
+        ${deviceKey}
+      )
+      RETURNING
+        survey_telemetry_vendor_credential_id;
+      `;
+
+    const responseVendor = await this.connection.sql(
+      sqlStatement,
+      z.object({ survey_telemetry_vendor_credential_id: z.number() })
+    );
+
+    if (!responseVendor?.rows?.[0]) {
+      throw new ApiExecuteSQLError('Failed to insert vendor device key attachment data', [
+        'AttachmentRepository->insertTelemetryCredentialAttachmentVendor',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return responseVendor?.rows?.[0].survey_telemetry_vendor_credential_id;
   }
 }

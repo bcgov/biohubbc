@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { Route, RouteProps } from 'react-router-dom';
 
-export type IRouteWithTitleProps = RouteProps & {
+type IRouteWithTitleProps = RouteProps & {
   /**
    * The title for the browser window/tab.
    *

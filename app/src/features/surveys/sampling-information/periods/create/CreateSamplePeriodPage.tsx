@@ -14,14 +14,14 @@ import { Formik, FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext, useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
-import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
+import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { CreateSamplingPeriod } from 'interfaces/useSamplingPeriodApi.interface';
 import { useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import yup from 'utils/YupSchema';
 import SamplingSiteHeader from '../../sites/components/SamplingSiteHeader';
 
-export const CreateSamplingPeriodYupSchema = yup.object({
+const CreateSamplingPeriodYupSchema = yup.object({
   method_technique_id: yup.number().required('Technique is required'),
   survey_sample_site_id: yup.number().required('Site is required'),
   sample_periods: yup
@@ -76,7 +76,7 @@ export const CreateSamplePeriodPage = () => {
   const formikRef = useRef<FormikProps<ISurveySamplePeriodFormData>>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { locationChangeInterceptor } = useUnsavedChangesDialog();
+  const { locationChangeInterceptor, skipUnsavedChangesDialog } = useUnsavedChangesDialog();
 
   if (!surveyContext.surveyDataLoader.data || !projectContext.projectDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
@@ -123,10 +123,8 @@ export const CreateSamplePeriodPage = () => {
       );
 
       // create complete, navigate back to observations page
-      history.push(
-        `/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling`,
-        SKIP_CONFIRMATION_DIALOG
-      );
+      skipUnsavedChangesDialog();
+      history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling`);
     } catch (error) {
       showCreateErrorDialog({
         dialogTitle: SamplePeriodI18N.createErrorTitle,

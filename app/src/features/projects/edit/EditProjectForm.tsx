@@ -11,13 +11,13 @@ import ProjectDetailsForm, { ProjectDetailsFormYupSchema } from '../components/P
 import ProjectObjectivesForm, { ProjectObjectivesFormYupSchema } from '../components/ProjectObjectivesForm';
 import ProjectUserForm, { ProjectUserRoleYupSchema } from '../components/ProjectUserForm';
 
-export interface IEditProjectForm<InitialValuesType extends IUpdateProjectRequest | ICreateProjectRequest> {
+interface IEditProjectForm<InitialValuesType extends IUpdateProjectRequest | ICreateProjectRequest> {
   initialProjectData: InitialValuesType;
   handleSubmit: (formikData: InitialValuesType) => void;
   formikRef: React.RefObject<FormikProps<InitialValuesType>>;
 }
 
-export const validationProjectYupSchema =
+const validationProjectYupSchema =
   ProjectDetailsFormYupSchema.concat(ProjectObjectivesFormYupSchema).concat(ProjectUserRoleYupSchema);
 
 /**
@@ -65,7 +65,9 @@ const EditProjectForm = <InitialValuesType extends IUpdateProjectRequest | ICrea
         <HorizontalSplitFormComponent
           title="Team Members"
           summary="Specify team members and their associated role for this project."
-          component={<ProjectUserForm roles={codes?.project_roles ?? []} />}
+          component={
+            <ProjectUserForm roles={codes?.project_roles ?? []} description={codes?.project_roles?.[0]?.description} />
+          }
         />
 
         <Divider />

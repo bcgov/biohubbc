@@ -376,10 +376,11 @@ describe('SurveyService', () => {
         { tsn: 456, scientificName: 'Species 2' }
       ];
       const mockResponse = new GetFocalSpeciesData([
-        { tsn: 123, scientificName: 'Species 1', ecological_units: [] },
+        { tsn: 123, scientificName: 'Species 1', commonNames: [], ecological_units: [] },
         {
           tsn: 456,
           scientificName: 'Species 2',
+          commonNames: [],
           ecological_units: mockEcologicalUnits
         }
       ]);

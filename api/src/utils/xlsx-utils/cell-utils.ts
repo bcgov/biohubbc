@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 import { CellObject } from 'xlsx';
 import { DefaultDateFormat, DefaultTimeFormat } from '../../constants/dates';
-import { formatDateString } from '../date-time-utils';
+import { formatDateString, formatTimeString } from '../date-time-utils';
 import { safeTrim } from '../string-utils';
 import { CUSTOM_XLSX_DATE_FORMAT } from './worksheet-utils';
 
@@ -39,7 +39,7 @@ export function trimCellWhitespace(cell: CellObject) {
  * @return {*} {CellObject} - Updated cell object
  */
 export function replaceCellDates(cell: CellObject): CellObject {
-  if (!cell.v) {
+  if (cell.v === undefined) {
     // Cell has no value
     return cell;
   }
@@ -60,6 +60,7 @@ export function replaceCellDates(cell: CellObject): CellObject {
     // Ex: 0.25 is 6:00:00 AM, 0.5 is 12:00:00 PM, 0.75 is 6:00:00 PM
     const roundedTimeFraction = Math.round(Number(cell.v) * 86400000) / 86400000;
     const time = dayjs.duration(roundedTimeFraction, 'days');
+
     return { ...cell, z: DefaultTimeFormat, v: time.format(DefaultTimeFormat) };
   }
   // If a string cell - check if the string is a date and convert it to a date string
@@ -69,6 +70,14 @@ export function replaceCellDates(cell: CellObject): CellObject {
     // If the string is a date, update the cell value to the formatted date string
     if (date) {
       return { ...cell, z: DefaultDateFormat, v: date };
+    }
+
+    // If the string is a time, update the cell value to the formatted time string
+    // ie: '10:00' -> '10:00:00' or '10:00:00 AM' -> '10:00:00'
+    const time = formatTimeString(String(cell.v));
+
+    if (time) {
+      return { ...cell, z: DefaultTimeFormat, v: time };
     }
   }
 

@@ -15,7 +15,7 @@ import { getLogger } from '../../utils/logger';
 import { QueueResult, taskQueue } from '../../utils/task-queue';
 import { DBService } from '../db-service';
 import { LotekAPIDevice } from './telemetry-lotek-service.interface';
-import { keysToLowerCase } from './telemetry-utils';
+import { getTelemetryDeviceKey, keysToLowerCase } from './telemetry-utils';
 import { TelemetryProcessingOptions, TelemetryProcessingResult } from './telemetry.interface';
 
 const defaultLog = getLogger('telemetry-lotek-service');
@@ -241,7 +241,12 @@ export class TelemetryLotekService extends DBService {
           telemetry.created = await this.batchCreateTelemetry(lotekAPITelemetry, options.batchSize);
         }
 
-        defaultLog.info({ label: 'processTelemetry', ...telemetry });
+        defaultLog.info({
+          label: 'processTelemetry',
+          device_key: getTelemetryDeviceKey({ vendor: 'lotek', serial: task.serial }),
+          telemetry: telemetry
+        });
+
         return { new: telemetry.new, created: telemetry.created };
       },
       options.concurrently

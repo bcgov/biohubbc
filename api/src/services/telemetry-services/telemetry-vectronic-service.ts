@@ -15,7 +15,7 @@ import { getEnvironmentVariable } from '../../utils/env-config';
 import { getLogger } from '../../utils/logger';
 import { QueueResult, taskQueue } from '../../utils/task-queue';
 import { DBService } from '../db-service';
-import { keysToLowerCase } from './telemetry-utils';
+import { getTelemetryDeviceKey, keysToLowerCase } from './telemetry-utils';
 import { TelemetryProcessingOptions, TelemetryProcessingResult } from './telemetry.interface';
 const defaultLog = getLogger('telemetry-vectronic-service');
 
@@ -94,6 +94,23 @@ export class TelemetryVectronicService extends DBService {
     } catch (error) {
       throw new ApiGeneralError('Failed to fetch device count from Vectronic.', [formatAxiosError(error)]);
     }
+  }
+
+  /**
+   * As A check test, fetch vectronic device telemetry separation count from the Vectronic API.
+   *
+   * @async
+   * @param {string} collarId
+   * @param {string} collarKey
+   * @returns {Promise<number>}
+   */
+  async fetchTelemetrySepCountFromVectronic(collarId: string, collarKey: string): Promise<number> {
+    const response = await this.vectronicClient.get(`/collar/${collarId}/sep/count`, {
+      params: {
+        collarkey: collarKey
+      }
+    });
+    return response.data;
   }
 
   /**
@@ -177,14 +194,19 @@ export class TelemetryVectronicService extends DBService {
             afterAcquisition: options.startDate,
             beforeAcquisition: options.endDate,
             // If no start date provided, use the largest idposition from SIMS
-            gtId: options.startDate ? undefined : deviceActivity.maxIdposition ?? undefined
+            gtId: options.startDate ? undefined : (deviceActivity.maxIdposition ?? undefined)
           });
 
           // Batch insert telemetry data into SIMS
           telemetry.created = await this.batchCreateTelemetry(vectronicTelemetry, options.batchSize);
         }
 
-        defaultLog.info({ label: 'processTelemetry', ...telemetry });
+        defaultLog.info({
+          label: 'processTelemetry',
+          device_key: getTelemetryDeviceKey({ vendor: 'vectronic', serial: task.serial }),
+          telemetry: telemetry
+        });
+
         return { new: telemetry.new, created: telemetry.created };
       },
       options.concurrently

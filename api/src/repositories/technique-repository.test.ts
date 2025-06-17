@@ -17,6 +17,7 @@ describe('TechniqueRepository', () => {
   afterEach(() => {
     sinon.restore();
   });
+
   describe('getTechniqueById', () => {
     it('should run successfully', async () => {
       const mockRecord: TechniqueObject = {

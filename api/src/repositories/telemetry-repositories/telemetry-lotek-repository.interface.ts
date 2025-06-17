@@ -27,3 +27,16 @@ export const LotekPayload = TelemetryLotekRecord.omit({
 });
 
 export type LotekPayload = z.infer<typeof LotekPayload>;
+
+/**
+ * Lotek device key data structure
+ *
+ * @export
+ * @interface ICfgData
+ * @typedef {ICfgData}
+ */
+export interface ICfgData {
+  id: number;
+  key: string;
+  'Iridium IMEI': number;
+}

@@ -9,7 +9,7 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import Typography from '@mui/material/Typography';
-import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
+import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteField';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import React from 'react';
 import yup from 'utils/YupSchema';
@@ -26,7 +26,7 @@ export interface IProjectIUCNForm {
   };
 }
 
-export const ProjectIUCNFormArrayItemInitialValues: IProjectIUCNFormArrayItem = {
+const ProjectIUCNFormArrayItemInitialValues: IProjectIUCNFormArrayItem = {
   classification: '' as unknown as number,
   subClassification1: '' as unknown as number,
   subClassification2: '' as unknown as number
@@ -61,7 +61,7 @@ export const ProjectIUCNFormYupSchema = yup.object().shape({
   })
 });
 
-export interface IProjectIUCNFormProps {
+interface IProjectIUCNFormProps {
   classifications: IMultiAutocompleteFieldOption[];
   subClassifications1: IIUCNSubClassification1Option[];
   subClassifications2: IIUCNSubClassification2Option[];

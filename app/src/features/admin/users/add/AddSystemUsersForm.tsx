@@ -19,7 +19,7 @@ export interface IAddSystemUsersForm {
   systemUser: IAddSystemUsersFormArrayItem;
 }
 
-export const AddSystemUsersFormArrayItemInitialValues: IAddSystemUsersFormArrayItem = {
+const AddSystemUsersFormArrayItemInitialValues: IAddSystemUsersFormArrayItem = {
   userIdentifier: '',
   displayName: '',
   email: '',
@@ -41,7 +41,7 @@ export const AddSystemUsersFormYupSchema = yup.object().shape({
   })
 });
 
-export interface AddSystemUsersFormProps {
+interface AddSystemUsersFormProps {
   systemRoles: IAutocompleteFieldOption<number>[];
 }
 

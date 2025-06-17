@@ -29,7 +29,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 export const MANUAL_TELEMETRY_TYPE = 'manual';
 
-export interface IManualTelemetryRecord {
+interface IManualTelemetryRecord {
   deployment_id: number;
   serial: string;
   latitude: number | null;
@@ -181,7 +181,7 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
   const dialogContext = useDialogContext();
 
   const telemetryDataLoader = useDataLoader((pagination?: ApiPaginationRequestOptions) =>
-    biohubApi.telemetry.getTelemetryForSurvey(surveyContext.projectId, surveyContext.surveyId, pagination)
+    biohubApi.telemetry.getTelemetryForSurvey(surveyContext.projectId, surveyContext.surveyId, {}, pagination)
   );
 
   const {
@@ -325,7 +325,8 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
       // If specific columns are passed to hide, toggle their visibility
       if (config?.columns) {
         config.columns.forEach((column) => {
-          updatedVisibilityModel[column] = !updatedVisibilityModel[column];
+          updatedVisibilityModel[column] =
+            updatedVisibilityModel[column] === undefined ? false : !updatedVisibilityModel[column];
         });
       } else {
         // If no specific columns are passed, toggle visibility of all columns
@@ -640,8 +641,8 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
 
     return refreshTelemetryData({
       limit: paginationModel.pageSize,
-      sort: sortField || undefined,
-      order: sort?.sort || undefined,
+      sort: sortField ?? undefined,
+      order: sort?.sort ?? undefined,
 
       // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
       page: paginationModel.page + 1
@@ -759,7 +760,7 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
    */
   useEffect(() => {
     refreshTelemetryRecords();
-    // Should not re-run this effect on `refreshObservationRecords` changes
+    // Should not re-run this effect on `refreshTelemetryRecords` changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paginationModel, sortModel]);
 

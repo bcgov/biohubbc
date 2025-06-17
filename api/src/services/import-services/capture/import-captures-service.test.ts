@@ -3,7 +3,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { WorkSheet } from 'xlsx';
 import * as csv from '../../../utils/csv-utils/csv-config-validation';
-import { CSVConfig } from '../../../utils/csv-utils/csv-config-validation.interface';
+import { CSVConfig, CSVRowState } from '../../../utils/csv-utils/csv-config-validation.interface';
 import { getMockDBConnection } from '../../../__mocks__/db';
 import { SurveyCritterService } from '../../survey-critter-service';
 import { ImportCapturesService } from './import-captures-service';
@@ -43,7 +43,7 @@ describe('import-captures-service', () => {
       try {
         const config = await service.getCSVConfig();
         expect(config.ignoreDynamicHeaders).to.be.false;
-      } catch (err) {
+      } catch (_error) {
         expect.fail('should not throw an error');
       }
     });
@@ -94,7 +94,8 @@ describe('import-captures-service', () => {
         RELEASE_LATITUDE: '1.234',
         RELEASE_LONGITUDE: '1.234',
         CAPTURE_COMMENT: 'test',
-        RELEASE_COMMENT: 'test'
+        RELEASE_COMMENT: 'test',
+        [CSVRowState]: {}
       };
 
       const payload = service._convertRowIntoPayloads(row);
@@ -137,7 +138,8 @@ describe('import-captures-service', () => {
         RELEASE_LATITUDE: undefined,
         RELEASE_LONGITUDE: undefined,
         CAPTURE_COMMENT: 'test',
-        RELEASE_COMMENT: 'test'
+        RELEASE_COMMENT: 'test',
+        [CSVRowState]: {}
       };
 
       const payload = service._convertRowIntoPayloads(row);
@@ -173,7 +175,8 @@ describe('import-captures-service', () => {
             RELEASE_LATITUDE: undefined,
             RELEASE_LONGITUDE: undefined,
             CAPTURE_COMMENT: 'test',
-            RELEASE_COMMENT: 'test'
+            RELEASE_COMMENT: 'test',
+            [CSVRowState]: {}
           }
         ],
         errors: []

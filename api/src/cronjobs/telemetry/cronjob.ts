@@ -10,14 +10,17 @@ import { QueueResult } from '../../utils/task-queue';
 
 const defaultLog = getLogger('telemetry-cronjob');
 
+// Process all devices by default
+const PROCESS_ALL_DEVICES = -1;
+
 /**
  * Telemetry Cronjob: Handles fetching Vectronic and Lotek telemetry and inserting it into the database.
  *
  * Information:
  *
  * How to run:
- *  - Default: `npm run telemetry-cronjob` // defaults to: concurrently = 100 and batchSize = 1000
- *  - CLI args: `npm run telemetry-cronjob -- --concurrently 100 --batchSize 1000 --startDate 2021-01-01 --endDate 2021-01-31`
+ *  - Default: `npm run telemetry-cronjob` // defaults to: concurrently=100, batchSize=1000 and deviceLimit=-1 (all devices)
+ *  - CLI args: `npm run telemetry-cronjob -- --concurrently=100 --batchSize=1000 --startDate=2021-01-01 --endDate=2021-01-31 --deviceLimit=-1`
  *
  * Telemetry device processing flow:
  *  1. Fetch the telemetry count from the vendor API.
@@ -61,10 +64,10 @@ export async function telemetryCronjob() {
     let lotekDevices = await lotekService.fetchDevicesFromLotek(); // Fetch the lotek account devices
     let vectronicDevices = await vectronicService.getDeviceCredentials(); // Fetch the vectronic account devices
 
-    // Optional device limit for testing
-    if (args._test_maxDevices) {
-      lotekDevices = lotekDevices.slice(0, args._test_maxDevices);
-      vectronicDevices = vectronicDevices.slice(0, args._test_maxDevices);
+    // Limit the number of devices to process (useful when limiting PR cronjobs)
+    if (args.deviceLimit !== PROCESS_ALL_DEVICES) {
+      lotekDevices = lotekDevices.slice(0, args.deviceLimit);
+      vectronicDevices = vectronicDevices.slice(0, args.deviceLimit);
     }
 
     // 3. GENERATE QUEUEABLE TASKS - Create tasks for each device
@@ -74,16 +77,27 @@ export async function telemetryCronjob() {
 
     // 4. PROCESS TELEMETRY - Fetch telemetry from the vendor API and insert it into the SIMS database
     defaultLog.info({ message: 'Processing telemetry.' });
-    const lotekResults = await lotekService.processTelemetry(lotekTasks, args);
-    const vectronicResults = await vectronicService.processTelemetry(vectronicTasks, args);
+    const lotekResults = await lotekService.processTelemetry(lotekTasks, {
+      concurrently: args.concurrently,
+      batchSize: args.batchSize,
+      startDate: args.startDate,
+      endDate: args.endDate
+    });
+
+    const vectronicResults = await vectronicService.processTelemetry(vectronicTasks, {
+      concurrently: args.concurrently,
+      batchSize: args.batchSize,
+      startDate: args.startDate,
+      endDate: args.endDate
+    });
 
     // 5. PARSE RESULTS - Parse the telemetry processing results for logging
     const parsedLotek = parseResults('Lotek', lotekResults);
     const parsedVectronic = parseResults('Vectronic', vectronicResults);
 
     return {
-      new: parsedLotek.new + parsedVectronic.new,
-      created: parsedLotek.created + parsedVectronic.created,
+      new_telemetry: parsedLotek.new + parsedVectronic.new,
+      created_telemetry: parsedLotek.created + parsedVectronic.created,
       errors: parsedLotek.errors.concat(parsedVectronic.errors)
     };
   } finally {
@@ -145,12 +159,12 @@ export const parseArguments = () => {
       concurrently: { type: 'string', default: '100' },
       // The number of items to insert in a single batch
       batchSize: { type: 'string', default: '1000' },
+      // The maximum number of devices to process
+      deviceLimit: { type: 'string', default: PROCESS_ALL_DEVICES.toString() },
       // The start date for fetching telemetry data
       startDate: { type: 'string' },
       // The end date for fetching telemetry data
-      endDate: { type: 'string' },
-      // The maximum number of devices to process (for testing)
-      _test_maxDevices: { type: 'string' }
+      endDate: { type: 'string' }
     },
     allowPositionals: true
   });
@@ -159,9 +173,9 @@ export const parseArguments = () => {
     .object({
       concurrently: z.coerce.number(),
       batchSize: z.coerce.number(),
+      deviceLimit: z.coerce.number(),
       startDate: z.string().optional(),
-      endDate: z.string().optional(),
-      _test_maxDevices: z.coerce.number().optional()
+      endDate: z.string().optional()
     })
     .strict()
     .parse(parsedArgs.values);

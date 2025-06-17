@@ -2,7 +2,7 @@ import { Color } from '@mui/material';
 import Chip, { ChipProps } from '@mui/material/Chip';
 import { ReactElement } from 'react';
 
-export interface IColouredRectangleChipProps extends ChipProps {
+interface IColouredRectangleChipProps extends ChipProps {
   colour: Color;
   label: string | ReactElement;
 }

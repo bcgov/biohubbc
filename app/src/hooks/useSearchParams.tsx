@@ -86,6 +86,12 @@ export class TypedURLSearchParams<
       return this;
     }
 
+    if (Array.isArray(value)) {
+      // Note: the value will need to be fetched via this classes `getArray(key)` method
+      super.set(key, qs.stringify(value, { allowEmptyArrays: false, arrayFormat: 'repeat' }));
+      return this;
+    }
+
     // Note: the value will need to be parsed `qs.parse(value)` after being fetched via this classes `get(key)`
     super.set(key, qs.stringify(value));
     return this;
@@ -93,6 +99,24 @@ export class TypedURLSearchParams<
 
   get<K extends keyof ParamType & string>(key: K) {
     return super.get(key);
+  }
+
+  /**
+   * Returns the first value associated to the given search parameter, and parses it into an array of strings.
+   *
+   * @template K
+   * @param {K} key
+   * @return {*}  {string[]}
+   * @memberof TypedURLSearchParams
+   */
+  getArray<K extends keyof ParamType & string>(key: K): string[] {
+    const value = super.get(key);
+
+    if (!value) {
+      return [];
+    }
+
+    return Object.values(qs.parse(value, { parseArrays: true, strictNullHandling: true }) as Record<string, string>);
   }
 
   delete<K extends keyof ParamType & string>(key: K) {
@@ -110,7 +134,7 @@ export class TypedURLSearchParams<
   }
 
   entries<K extends keyof ParamType & string>() {
-    return super.entries() as IterableIterator<[K, ParamType[K]]>;
+    return super.entries() as URLSearchParamsIterator<[string, ParamType[K]]>;
   }
 
   forEach<K extends keyof ParamType & string>(
@@ -129,7 +153,7 @@ export class TypedURLSearchParams<
   }
 
   keys<K extends keyof ParamType & string>() {
-    return super.keys() as IterableIterator<K>;
+    return super.keys() as URLSearchParamsIterator<K>;
   }
 
   sort() {
@@ -137,7 +161,7 @@ export class TypedURLSearchParams<
     return this;
   }
 
-  values<K extends keyof ParamType & string>(): IterableIterator<ParamType[K]> {
-    return super.values() as IterableIterator<ParamType[K]>;
+  values<K extends keyof ParamType & string>(): URLSearchParamsIterator<ParamType[K]> {
+    return super.values() as URLSearchParamsIterator<ParamType[K]>;
   }
 }

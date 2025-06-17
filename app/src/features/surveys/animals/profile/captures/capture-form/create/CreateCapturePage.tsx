@@ -20,14 +20,14 @@ import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useAnimalPageContext, useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
-import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
+import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { ICreateCaptureRequest, ILocationCreate } from 'interfaces/useCritterApi.interface';
 import { useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 import { v4 } from 'uuid';
 
-export const defaultAnimalCaptureFormValues: ICreateCaptureRequest = {
+const defaultAnimalCaptureFormValues: ICreateCaptureRequest = {
   attachments: {
     capture_attachments: {
       create: {}
@@ -68,7 +68,7 @@ export const CreateCapturePage = () => {
   const urlParams: Record<string, string | number | undefined> = useParams();
   const surveyCritterId: number | undefined = Number(urlParams['critter_id']);
 
-  const { locationChangeInterceptor } = useUnsavedChangesDialog();
+  const { locationChangeInterceptor, skipUnsavedChangesDialog } = useUnsavedChangesDialog();
 
   const [isSaving, setIsSaving] = useState(false);
 
@@ -222,7 +222,8 @@ export const CreateCapturePage = () => {
         animalPageContext.critterDataLoader.refresh(projectId, surveyId, surveyCritterId);
       }
 
-      history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals/details`, SKIP_CONFIRMATION_DIALOG);
+      skipUnsavedChangesDialog();
+      history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals/details`);
     } catch (error) {
       const apiError = error as APIError;
       showCreateErrorDialog({

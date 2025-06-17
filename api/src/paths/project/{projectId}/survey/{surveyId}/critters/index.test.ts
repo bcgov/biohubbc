@@ -194,7 +194,7 @@ describe('addCritterToSurvey', () => {
     sinon.restore();
   });
 
-  it('does not create a new critter', async () => {
+  it('calls addCrittersToSurvey when critter_id included and returns critters from survey', async () => {
     const mockDBConnection = getMockDBConnection({ release: sinon.stub() });
     const getDBConnectionStub = sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
@@ -202,39 +202,8 @@ describe('addCritterToSurvey', () => {
     const mockCBCritter = { critter_id: 'critterbase1' };
 
     const mockAddCritterToSurvey = sinon
-      .stub(SurveyCritterService.prototype, 'addCritterToSurvey')
-      .resolves(mockSurveyCritter.critter_id);
-    const mockCreateCritter = sinon.stub(CritterbaseService.prototype, 'createCritter').resolves();
-
-    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
-
-    mockReq.params = {
-      projectId: '1',
-      surveyId: '2'
-    };
-    mockReq.body = mockCBCritter;
-
-    const requestHandler = addCritterToSurvey();
-
-    await requestHandler(mockReq, mockRes, mockNext);
-
-    expect(getDBConnectionStub).to.have.been.calledOnce;
-    expect(mockAddCritterToSurvey).to.have.been.calledOnce;
-    expect(mockCreateCritter).not.to.have.been.called;
-    expect(mockRes.status).to.have.been.calledWith(201);
-    expect(mockRes.json).to.have.been.calledWith(mockSurveyCritter);
-  });
-
-  it('returns critters from survey', async () => {
-    const mockDBConnection = getMockDBConnection({ release: sinon.stub() });
-    const getDBConnectionStub = sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
-
-    const mockSurveyCritter = { critter_id: 123, critterbase_critter_id: 'critterbase1' };
-    const mockCBCritter = { critter_id: 'critterbase1' };
-
-    const mockAddCritterToSurvey = sinon
-      .stub(SurveyCritterService.prototype, 'addCritterToSurvey')
-      .resolves(mockSurveyCritter.critter_id);
+      .stub(SurveyCritterService.prototype, 'addCrittersToSurvey')
+      .resolves([mockSurveyCritter.critter_id]);
     const mockCreateCritter = sinon.stub(CritterbaseService.prototype, 'createCritter').resolves(mockCBCritter);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
@@ -244,13 +213,51 @@ describe('addCritterToSurvey', () => {
       surveyId: '2'
     };
 
+    mockReq.body = {
+      critter_id: 'critterbase1'
+    };
+
     const requestHandler = addCritterToSurvey();
 
     await requestHandler(mockReq, mockRes, mockNext);
 
     expect(getDBConnectionStub).to.have.been.calledOnce;
     expect(mockAddCritterToSurvey).to.have.been.calledOnce;
-    expect(mockCreateCritter).to.have.been.calledOnce;
+    expect(mockCreateCritter).to.not.have.been.calledOnce;
+    expect(mockRes.status).to.have.been.calledWith(201);
+    expect(mockRes.json).to.have.been.calledWith(mockSurveyCritter);
+  });
+
+  it('calls createCritterAndAddToSurvey when critter_id not included and returns critters from survey', async () => {
+    const mockDBConnection = getMockDBConnection({ release: sinon.stub() });
+    const getDBConnectionStub = sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
+
+    const mockSurveyCritter = { critter_id: 123, critterbase_critter_id: 'critterbase1' };
+    const mockCBCritter = { critter_id: undefined };
+
+    const mockAddCritterToSurvey = sinon
+      .stub(SurveyCritterService.prototype, 'createCritterAndAddToSurvey')
+      .resolves({ critterbaseCritterId: 'critterbase1', surveyCritterId: 123 });
+    const mockCreateCritter = sinon.stub(CritterbaseService.prototype, 'createCritter').resolves(mockCBCritter);
+
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    mockReq.params = {
+      projectId: '1',
+      surveyId: '2'
+    };
+
+    mockReq.body = {
+      critter_id: undefined
+    };
+
+    const requestHandler = addCritterToSurvey();
+
+    await requestHandler(mockReq, mockRes, mockNext);
+
+    expect(getDBConnectionStub).to.have.been.calledOnce;
+    expect(mockAddCritterToSurvey).to.have.been.calledOnce;
+    expect(mockCreateCritter).to.not.have.been.calledOnce;
     expect(mockRes.status).to.have.been.calledWith(201);
     expect(mockRes.json).to.have.been.calledWith(mockSurveyCritter);
   });
@@ -259,17 +266,18 @@ describe('addCritterToSurvey', () => {
     const mockDBConnection = getMockDBConnection({ release: sinon.stub() });
     const getDBConnectionStub = sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
-    const mockCBCritter = { critter_id: 'critterbase1' };
-
     const mockError = new Error('a test error');
-    const mockAddCritterToSurvey = sinon.stub(SurveyCritterService.prototype, 'addCritterToSurvey').rejects(mockError);
-    const mockCreateCritter = sinon.stub(CritterbaseService.prototype, 'createCritter').resolves(mockCBCritter);
+    const mockAddCritterToSurvey = sinon.stub(SurveyCritterService.prototype, 'addCrittersToSurvey').rejects(mockError);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     mockReq.params = {
       projectId: '1',
       surveyId: '2'
+    };
+
+    mockReq.body = {
+      critter_id: 'critterbase1'
     };
 
     const requestHandler = addCritterToSurvey();
@@ -280,7 +288,6 @@ describe('addCritterToSurvey', () => {
     } catch (actualError) {
       expect(actualError).to.equal(mockError);
       expect(mockAddCritterToSurvey).to.have.been.calledOnce;
-      expect(mockCreateCritter).to.have.been.calledOnce;
       expect(getDBConnectionStub).to.have.been.calledOnce;
       expect(mockDBConnection.release).to.have.been.called;
     }

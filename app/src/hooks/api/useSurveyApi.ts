@@ -420,6 +420,28 @@ const useSurveyApi = (axios: AxiosInstance) => {
   };
 
   /**
+   * Update a critter and add it to the list of critters associated with this survey. This will update the critter in Critterbase.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {number} simsCritterId
+   * @param {ICreateCritter} critter
+   * @return {*} {Promise<void>}
+   */
+  const updateCritterAndAddToSurvey = async (
+    projectId: number,
+    surveyId: number,
+    simsCritterId: number,
+    critter: ICreateCritter
+  ): Promise<void> => {
+    const { data } = await axios.patch(
+      `/api/project/${projectId}/survey/${surveyId}/critters/${simsCritterId}`,
+      critter
+    );
+    return data;
+  };
+
+  /**
    * Remove critters from the survey. Will not delete critters in critterbase.
    *
    * @param {number} projectId
@@ -469,18 +491,25 @@ const useSurveyApi = (axios: AxiosInstance) => {
    * @param {File} file
    * @param {number} projectId
    * @param {number} surveyId
+   * @param {CancelTokenSource} [cancelTokenSource]
+   * @param {(progressEvent: AxiosProgressEvent) => void} [onProgress]
    * @return {*}  {Promise<{ survey_critter_ids: number[] }>}
    */
   const importCrittersFromCsv = async (
     file: File,
     projectId: number,
-    surveyId: number
+    surveyId: number,
+    cancelTokenSource?: CancelTokenSource,
+    onProgress?: (progressEvent: AxiosProgressEvent) => void
   ): Promise<{ survey_critter_ids: number[] }> => {
     const formData = new FormData();
 
     formData.append('media', file);
 
-    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/critters/import`, formData);
+    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/critters/import`, formData, {
+      cancelToken: cancelTokenSource?.token,
+      onUploadProgress: onProgress
+    });
 
     return data;
   };
@@ -616,6 +645,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     deleteSurvey,
     getSurveyCritters,
     createCritterAndAddToSurvey,
+    updateCritterAndAddToSurvey,
     removeCrittersFromSurvey,
     getSurveyCrittersDetailed,
     getCritterById,

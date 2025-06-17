@@ -4,8 +4,20 @@ import QueryStream from 'pg-query-stream';
 import { SQLStatement } from 'sql-template-strings';
 import { Readable, Transform } from 'stream';
 import { getLogger } from '../../utils/logger';
+import { TransformFunction } from './export-strategy';
 
 const defaultLog = getLogger('export-utils.ts');
+
+/**
+ * Measurments interface
+ *
+ * @interface MeasDataItem
+ * @typedef {MeasDataItem}
+ */
+interface MeasDataItem {
+  mh: string;
+  mv: string;
+}
 
 export function getArchiveStream(): archiver.Archiver {
   const archiveStream = archiver('zip', {
@@ -62,12 +74,90 @@ export function getQueryParams(query: SQLStatement | Knex.QueryBuilder): { text:
  * @export
  * @return {*}
  */
-export function getJsonStringifyTransformStream(): Transform {
+export function getStreamCsvTransformStream(header: string, collectionCategories?: string[]): Transform {
+  let headerStreamed = false;
   const transformStream = new Transform({
     objectMode: true, // Expects objects
     transform(chunk, _encoding, callback) {
-      // Stringify the chunk and push it to the next stream
-      callback(null, JSON.stringify(chunk));
+      if (header && !headerStreamed) {
+        // This block is executed only once
+        // Push the headers into stream
+        this.push([header, ...(collectionCategories ?? [])].join(',') + '\r\n');
+        headerStreamed = true;
+      }
+      // process chunk and push it to the next stream
+      let addLine = '\r\n';
+      if (!chunk) {
+        addLine = '';
+      }
+      callback(null, chunk + addLine);
+    }
+  });
+
+  return transformStream;
+}
+
+/**
+ * Get a query data record transform stream, that expects objects and outputs csv.
+ *
+ * Note: The incoming data stream must yield objects, or this will throw an error.
+ *
+ * @export
+ * @returns {Transform}
+ */
+export function getCsvTransformStream(
+  transformFunction: TransformFunction,
+  header: string,
+  measurementsMap?: Map<string, string>
+): Transform {
+  // Function to get either option_label or measurement_name by id
+  const getLabelById = (id: string): string | undefined => {
+    return measurementsMap ? measurementsMap.get(id) : undefined;
+  };
+
+  const processMeasData = (measData: MeasDataItem[]): void => {
+    if (measData) {
+      // Note: using indexed for loop as it is the fastest
+      for (let i = 0; i < measData.length; i++) {
+        const measItem = measData[i];
+        const label = getLabelById(measItem.mv); // replace UUID with label
+        if (label) {
+          measItem.mv = label; // Assign the label to the mv
+        }
+      }
+    }
+  };
+
+  let headerStreamed = false;
+  const transformStream = new Transform({
+    objectMode: true, // Expects objects
+    transform(chunk, _encoding, callback) {
+      if (header && !headerStreamed) {
+        // This block is executed only once
+        // process dynamic headers where required
+        const attributeHeaders: string[] = chunk.attrib_data
+          ? chunk.attrib_data.map((attribItem: { ah: string }) => attribItem.ah)
+          : [];
+        const vantageHeaders: string[] = chunk.vantage_data
+          ? chunk.vantage_data.map((vantageItem: { vh: string }) => vantageItem.vh)
+          : [];
+        const envHeaders: string[] = chunk.env_data ? chunk.env_data.map((envItem: { eh: string }) => envItem.eh) : [];
+        const measHeaders: string[] = chunk.meas_data
+          ? chunk.meas_data.map((measItem: { mh: string }) => getLabelById(measItem.mh))
+          : [];
+
+        // Push the headers into stream
+        this.push([header, ...envHeaders, ...measHeaders, ...attributeHeaders, ...vantageHeaders].join(',') + '\r\n');
+        headerStreamed = true;
+      }
+
+      // check if there are any uuids for the qulitative measurments values 'mv' and get the label from map
+      if (chunk.meas_data) {
+        processMeasData(chunk.meas_data);
+      }
+
+      // push it to the next stream
+      callback(null, transformFunction(chunk) + '\r\n');
     }
   });
 
@@ -99,3 +189,65 @@ export function registerStreamErrorHandler(stream: Readable): Readable {
 
   return stream;
 }
+
+/**
+ * Format date and time into timestamp string.
+ *
+ * @param {string} date - Date string
+ * @param {string} [time] - Time string
+ * @returns {string} Formatted date and time string
+ */
+
+/**
+ * Parse date and time strings from timestamp
+ *
+ * @param {string} timestamp
+ * @returns {{ dateStr: string; timeStr: string }}
+ */
+export const parseTimestampString = (timestamp: string): { dateStr: string; timeStr: string } => {
+  const date = new Date(timestamp);
+  const dateStr = new Intl.DateTimeFormat('en-CA').format(date);
+
+  // Format the time part (HH:mm:ss) with Canada PST timezone
+  const timeStr = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Vancouver', // Use Canada PST timezone
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+    timeZoneName: 'short' // Include timezone abbreviation
+  }).format(date);
+
+  return { dateStr, timeStr };
+};
+
+/**
+ * Check if a value is a uuid or not.
+ * Optimized for performance
+ *
+ * @param {string} uuid
+ * @returns {boolean} true if it is a uuid
+ */
+export const isUUID = (uuid: string | null | undefined): boolean => {
+  // UUID must not be null length must be 36 characters
+  if (!uuid || uuid.length !== 36) {
+    return false;
+  }
+
+  // Check fixed positions for hyphens and uuid version 4
+  if (uuid[8] !== '-' || uuid[13] !== '-' || uuid[14] !== '4' || uuid[18] !== '-' || uuid[23] !== '-') {
+    return false;
+  }
+
+  // Check if the remaining characters are valid hexadecimal digits
+  // Note: using indexed for loop as it is the fastest
+  uuid = uuid.split('-').join('').toLowerCase();
+  const hexChars = new Set('0123456789abcdef');
+  for (let i = 0; i < uuid.length; i++) {
+    if (!hexChars.has(uuid[i])) {
+      return false;
+    }
+  }
+
+  return true;
+};

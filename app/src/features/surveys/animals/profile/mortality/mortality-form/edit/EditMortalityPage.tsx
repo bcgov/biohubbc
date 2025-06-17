@@ -17,7 +17,7 @@ import { APIError } from 'hooks/api/useAxios';
 import { useAnimalPageContext, useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
+import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { IEditMortalityRequest } from 'interfaces/useCritterApi.interface';
 import { useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
@@ -44,7 +44,7 @@ export const EditMortalityPage = () => {
   const surveyCritterId: number | undefined = Number(urlParams['critter_id']);
   const mortalityId: string | undefined = String(urlParams['mortality_id']);
 
-  const { locationChangeInterceptor } = useUnsavedChangesDialog();
+  const { locationChangeInterceptor, skipUnsavedChangesDialog } = useUnsavedChangesDialog();
 
   const [isSaving, setIsSaving] = useState(false);
 
@@ -184,9 +184,12 @@ export const EditMortalityPage = () => {
       }
 
       // Refresh page
-      if (surveyCritterId) animalPageContext.critterDataLoader.refresh(projectId, surveyId, surveyCritterId);
+      if (surveyCritterId) {
+        animalPageContext.critterDataLoader.refresh(projectId, surveyId, surveyCritterId);
+      }
 
-      history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals/details`, SKIP_CONFIRMATION_DIALOG);
+      skipUnsavedChangesDialog();
+      history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals/details`);
     } catch (error) {
       const apiError = error as APIError;
 
