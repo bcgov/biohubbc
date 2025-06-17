@@ -110,6 +110,19 @@ const SurveyMembersContainer = () => {
           </Typography>
         </Typography>
         <Stack gap={1} direction="row">
+          <Box>
+            <MembersFilterForm
+              initialValues={advancedFiltersModel}
+              handleSubmit={(values) => {
+                setSearchParams(
+                  searchParams
+                    .setOrDelete('sm_keyword', values.keyword)
+                    .setOrDelete('sm_system_user_id', values.system_user_id)
+                );
+                setAdvancedFiltersModel(values);
+              }}
+            />
+          </Box>
           <CreateButton
             label="Invite Members"
             onClick={() => {
@@ -119,22 +132,6 @@ const SurveyMembersContainer = () => {
           <HelpButtonDialog markdownType={MarkdownTypeNameEnum.SURVEYS} />
         </Stack>
       </Toolbar>
-
-      <Divider />
-
-      <Box py={2} px={2}>
-        <MembersFilterForm
-          initialValues={advancedFiltersModel}
-          handleSubmit={(values) => {
-            setSearchParams(
-              searchParams
-                .setOrDelete('sm_keyword', values.keyword)
-                .setOrDelete('sm_system_user_id', values.system_user_id)
-            );
-            setAdvancedFiltersModel(values);
-          }}
-        />
-      </Box>
 
       <Divider />
 
