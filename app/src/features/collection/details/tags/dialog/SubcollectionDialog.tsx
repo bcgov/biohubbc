@@ -57,7 +57,13 @@ const SubcollectionDialog = (props: ISubcollectionDialogProps) => {
     setIsSubmitting(true);
 
     try {
-      await biohubApi.collection.createSubcollection(collection.collection_id, values);
+      await biohubApi.collection.createSubcollection(collection.collection_id, {
+        ...values,
+        participants: values.participants.map((participant) => ({
+          system_user_id: participant.system_user_id,
+          collection_role_name: participant.collection_role_name
+        }))
+      });
 
       props.onSubmit();
 
@@ -65,7 +71,7 @@ const SubcollectionDialog = (props: ISubcollectionDialogProps) => {
         snackbarMessage: (
           <>
             <Typography variant="body2" component="span">
-              Created Subcollection
+              Created Subproject
             </Typography>
           </>
         ),
@@ -82,8 +88,8 @@ const SubcollectionDialog = (props: ISubcollectionDialogProps) => {
 
   return (
     <EditDialog
-      dialogTitle="Create Subcollection"
-      dialogText="Enter a name for the subcollection and optionally add members"
+      dialogTitle="Create Subproject"
+      dialogText="Enter a name for the subproject and optionally add members"
       open={props.open}
       dialogLoading={isSubmitting}
       component={{

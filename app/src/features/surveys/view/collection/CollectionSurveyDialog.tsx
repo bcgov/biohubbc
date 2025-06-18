@@ -20,8 +20,8 @@ interface ICreateCollectionSurveyDialogProps {
 
 export const CollectionSurveyYupSchema = yup.object().shape({
   collections: yup
-    .array(yup.object({ collection_id: yup.number().required('Collection is required') }))
-    .min(1, 'You must select at least one collection')
+    .array(yup.object({ collection_id: yup.number().required('Project is required') }))
+    .min(1, 'You must select at least one project')
 });
 
 /**
@@ -87,8 +87,8 @@ const CreateCollectionSurveyDialog = (props: ICreateCollectionSurveyDialogProps)
 
   return (
     <EditDialog
-      dialogTitle="Add Survey to Collection"
-      dialogText="Select collections to add the survey to"
+      dialogTitle="Add Survey to Project"
+      dialogText="Select projects to add the survey to"
       open={props.open}
       dialogLoading={isSubmitting}
       component={{

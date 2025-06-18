@@ -218,14 +218,14 @@ export const SubcollectionContainer = (props: ICollectionsTagContainerProps) => 
     <>
       <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
         <Typography variant="h4" component="h2">
-          Subcollections &zwnj;
+          Subprojects &zwnj;
           <Typography component="span" color="textSecondary" lineHeight="inherit" fontSize="inherit" fontWeight={400}>
             ({Number(collectionsDataLoader.data?.pagination?.total ?? 0).toLocaleString()})
           </Typography>
         </Typography>
         <Stack gap={1} direction="row">
           <CreateButton
-            label="Add Subcollection"
+            label="Add Subproject"
             onClick={() => {
               setCollectionDialogIsOpen(true);
             }}

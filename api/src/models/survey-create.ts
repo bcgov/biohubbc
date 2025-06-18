@@ -19,7 +19,7 @@ export class PostSurveyObject {
   locations: PostSurveyLocationData[];
   agreements: PostAgreementsData;
   participants: PostParticipationData[];
-  members: PostMemberData[];
+  members: IPostSurveyMember[];
   partnerships: PostPartnershipsData;
   site_selection: PostSiteSelectionData;
   blocks: PostSurveyBlock[];
@@ -37,7 +37,7 @@ export class PostSurveyObject {
     this.agreements = (obj?.agreements && new PostAgreementsData(obj.agreements)) || null;
     this.participants =
       (obj?.participants?.length && obj.participants.map((p: any) => new PostParticipationData(p))) || [];
-    this.members = (obj?.members?.length && obj.members.map((p: any) => new PostMemberData(p))) || [];
+    this.members = (obj?.members?.length && obj.members.map((p: any) => new IPostSurveyMember(p))) || [];
     this.partnerships = (obj?.partnerships && new PostPartnershipsData(obj.partnerships)) || null;
     this.locations = (obj?.locations && obj.locations.map((p: any) => new PostSurveyLocationData(p))) || [];
     this.site_selection = (obj?.site_selection && new PostSiteSelectionData(obj)) || null;
@@ -152,18 +152,20 @@ export class PostParticipationData {
   survey_job_name: string;
 
   constructor(obj?: any) {
-    this.system_user_id = obj?.system_user_id || null;
-    this.survey_job_name = obj?.survey_job_name || null;
+    this.system_user_id = obj?.system_user_id;
+    this.survey_job_name = obj?.survey_job_name;
   }
 }
 
-export class PostMemberData {
+export class IPostSurveyMember {
   system_user_id: number;
-  survey_role_name: string;
+  survey_role_name: SURVEY_ROLE;
+  survey_member_id: number;
 
   constructor(obj?: any) {
-    this.system_user_id = obj?.system_user_id || null;
-    this.survey_role_name = obj?.survey_role_name || null;
+    this.system_user_id = obj?.system_user_id;
+    this.survey_role_name = obj?.survey_role_name;
+    this.survey_member_id = obj?.survey_member_id;
   }
 }
 
@@ -195,10 +197,4 @@ export class PostMembersData {
     this.email = obj?.email || null;
     this.roleId = obj?.roleId || null;
   }
-}
-
-export interface PostMemberData {
-  survey_member_id?: number;
-  system_user_id: number;
-  survey_role_names: SURVEY_ROLE[];
 }

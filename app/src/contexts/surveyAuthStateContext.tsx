@@ -51,10 +51,7 @@ export const SurveyAuthStateContextProvider: React.FC<React.PropsWithChildren> =
         return false;
       }
 
-      return (
-        member?.survey_id === getSurveyId() &&
-        member?.survey_role_names.some((roleName) => validSurveyRoles.includes(roleName))
-      );
+      return member?.survey_id === getSurveyId() && validSurveyRoles.includes(member?.survey_role_name);
     },
     [getSurveyId, getSurveyMember]
   );

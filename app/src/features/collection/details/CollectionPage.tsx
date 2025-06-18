@@ -20,7 +20,7 @@ const COLLECTION_ACTIVE_VIEW_KEY = 'cvk';
 export enum CollectionView {
   Surveys = 'surveys',
   Data = 'data',
-  Subcollections = 'subcollections',
+  Subcollections = 'subprojects',
   Participants = 'participants'
 }
 
@@ -67,7 +67,7 @@ const CollectionPage = () => {
 
   const views = [
     { value: CollectionView.Surveys, label: 'Surveys', icon: mdiClipboardOutline },
-    { value: CollectionView.Subcollections, label: 'Subcollections', icon: mdiLabelOutline },
+    { value: CollectionView.Subcollections, label: 'Subprojects', icon: mdiLabelOutline },
     { value: CollectionView.Data, label: 'Data', icon: mdiDatabaseSearchOutline },
     { value: CollectionView.Participants, label: 'Members', icon: mdiAccountMultipleOutline }
   ];

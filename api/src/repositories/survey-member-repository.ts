@@ -10,8 +10,8 @@ export const SurveyMember = z.object({
   survey_member_id: z.number(),
   survey_id: z.number(),
   system_user_id: z.number(),
-  survey_role_ids: z.array(z.number()),
-  survey_role_names: z.array(z.string())
+  survey_role_id: z.number(),
+  survey_role_name: z.string()
 });
 
 export type SurveyMember = z.infer<typeof SurveyMember>;
@@ -48,8 +48,8 @@ export const UserSurveyMember = z.object({
   survey_name: z.string(),
   survey_member_id: z.number(),
   system_user_id: z.number(),
-  survey_role_ids: z.array(z.number()),
-  survey_role_names: z.array(z.string())
+  survey_role_id: z.array(z.number()),
+  survey_role_name: z.array(z.string())
 });
 
 export type UserSurveyMember = z.infer<typeof UserSurveyMember>;
@@ -134,8 +134,8 @@ export class SurveyMemberRepository extends BaseRepository {
         su.agency,
         pp.survey_member_id,
         pp.survey_id,
-        array_remove(array_agg(pr.survey_role_id), NULL) AS survey_role_ids,
-        array_remove(array_agg(pr.name), NULL) AS survey_role_names
+        pr.survey_role_id,
+        pr.name as survey_role_name
       FROM
         survey_member pp
       LEFT JOIN survey_role pr
@@ -170,6 +170,8 @@ export class SurveyMemberRepository extends BaseRepository {
         su.agency,
         pp.survey_member_id,
         pp.survey_id,
+        pr.survey_role_id,
+        pr.name,
         pp.create_date
       ORDER BY
         pp.create_date DESC;
@@ -213,8 +215,8 @@ export class SurveyMemberRepository extends BaseRepository {
           su.agency,
           pp.survey_member_id,
           pp.survey_id,
-          array_remove(array_agg(pr.survey_role_id), NULL) AS survey_role_ids,
-          array_remove(array_agg(pr.name), NULL) AS survey_role_names
+          pr.survey_role_id,
+          pr.name as survey_role_name
         `)
       )
       .from('survey_member as pp')
@@ -238,6 +240,8 @@ export class SurveyMemberRepository extends BaseRepository {
       .groupBy('su.agency')
       .groupBy('pp.survey_member_id')
       .groupBy('pp.survey_id')
+      .groupBy('pp.survey_role_id')
+      .groupBy('pp.name')
       .groupBy('pp.create_date')
       .orderBy('pp.create_date', 'desc');
 
@@ -268,8 +272,8 @@ export class SurveyMemberRepository extends BaseRepository {
         su.agency,
         pp.survey_member_id,
         pp.survey_id,
-        array_remove(array_agg(pr.survey_role_id), NULL) AS survey_role_ids,
-        array_remove(array_agg(pr.name), NULL) AS survey_role_names
+        pr.survey_role_id,
+        pr.name as survey_role_name
       FROM
         survey_member pp
       LEFT JOIN survey_role pr
@@ -302,6 +306,8 @@ export class SurveyMemberRepository extends BaseRepository {
         su.agency,
         pp.survey_member_id,
         pp.survey_id,
+        pr.survey_role_id,
+        pr.name,
         pp.create_date
       ORDER BY
         pp.create_date DESC;
@@ -328,11 +334,10 @@ export class SurveyMemberRepository extends BaseRepository {
    * @return {*}  {Promise<void>}
    * @memberof SurveyMemberRepository
    */
-  async postSurveyMember(surveyId: number, systemUserId: number, surveyMemberRole: number | string): Promise<void> {
+  async insertSurveyMember(surveyId: number, systemUserId: number, surveyMemberRole: number | string): Promise<void> {
     let sqlStatement;
 
-    if (isNaN(Number(surveyMemberRole))) {
-      sqlStatement = SQL`
+    sqlStatement = SQL`
         INSERT INTO survey_member (
           survey_id,
           system_user_id,
@@ -349,19 +354,6 @@ export class SurveyMemberRepository extends BaseRepository {
             name = ${surveyMemberRole}
         );
       `;
-    } else {
-      sqlStatement = SQL`
-        INSERT INTO survey_member (
-          survey_id,
-          system_user_id,
-          survey_role_id
-        ) VALUES (
-          ${surveyId},
-          ${systemUserId},
-          ${surveyMemberRole}
-        );
-      `;
-    }
 
     const response = await this.connection.sql(sqlStatement);
 
@@ -397,8 +389,8 @@ export class SurveyMemberRepository extends BaseRepository {
         su.agency,
         pp.survey_member_id,
         pp.survey_id,
-        array_remove(array_agg(pr.survey_role_id), NULL) AS survey_role_ids,
-        array_remove(array_agg(pr.name), NULL) AS survey_role_names
+        pr.survey_role_id,
+        pr.name as survey_role_name
       FROM
         survey_member pp
       LEFT JOIN survey_role pr
@@ -430,6 +422,8 @@ export class SurveyMemberRepository extends BaseRepository {
         su.family_name,
         su.agency,
         pp.survey_member_id,
+        pr.survey_role_id,
+        pr.name,
         pp.survey_id,
         pp.create_date
       ORDER BY
@@ -455,8 +449,8 @@ export class SurveyMemberRepository extends BaseRepository {
         p.name as survey_name,
         pp.survey_member_id,
         pp.system_user_id,
-        array_remove(array_agg(pr.survey_role_id), NULL) AS survey_role_ids,
-        array_remove(array_agg(pr.name), NULL) AS survey_role_names
+        pr.survey_role_id,
+        pr.name as survey_role_name
       FROM
         survey_member pp
       LEFT JOIN 
@@ -468,11 +462,6 @@ export class SurveyMemberRepository extends BaseRepository {
         ON pp.survey_id = p.survey_id
       WHERE
         pp.system_user_id = ${systemUserId}
-      GROUP BY
-        p.survey_id,
-        p.name,
-        pp.survey_member_id,
-        pp.system_user_id;
     `;
 
     const response = await this.connection.sql(sqlStatement, UserSurveyMember);

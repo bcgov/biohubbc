@@ -1,4 +1,3 @@
-import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import PageHeader from 'components/layout/PageHeader';
 import { SystemAlertBanner } from 'features/alert/banner/SystemAlertBanner';
@@ -16,9 +15,7 @@ const SummaryPage = () => {
       <PageHeader title="Overview" />
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <SystemAlertBanner alertTypes={[SystemAlertBannerEnum.SUMMARY]} />
-        <Box>
-          <ListDataTableContainer />
-        </Box>
+        <ListDataTableContainer />
       </Container>
     </>
   );

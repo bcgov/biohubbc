@@ -96,7 +96,7 @@ const CollectionMemberDialog = (props: ICollectionMemberDialogProps) => {
   return (
     <EditDialog
       dialogTitle="Invite members"
-      dialogText="Select users to invite to the collection"
+      dialogText="Select users to invite them to the subproject"
       open={props.open}
       dialogLoading={isSubmitting}
       component={{

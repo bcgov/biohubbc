@@ -17,7 +17,7 @@ import { CreateSurveyButton } from './survey/create/CreateSurveyButton';
 export const SUMMARY_ACTIVE_VIEW_KEY = 'lvk';
 export enum SUMMARY_ACTIVE_VIEW_VALUE {
   surveys = 'surveys',
-  collections = 'collections',
+  collections = 'projects',
   data = 'data'
 }
 
@@ -55,7 +55,7 @@ export const ListDataTableContainer = () => {
     },
     {
       value: SUMMARY_ACTIVE_VIEW_VALUE.collections,
-      label: 'Collections',
+      label: 'Projects',
       icon: mdiFormatListGroup,
       button: <CreateCollectionButton />
     },

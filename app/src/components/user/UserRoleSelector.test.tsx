@@ -32,7 +32,7 @@ describe('UserRoleSelector', () => {
           email: 'user@email.com',
           display_name: 'Test User',
           agency: 'Business',
-          survey_role_names: [SURVEY_ROLE.ADMIN]
+          survey_role_name: SURVEY_ROLE.ADMIN
         }}
         roles={mockRoles}
         error={undefined}
@@ -65,7 +65,7 @@ describe('UserRoleSelector', () => {
           email: 'user@email.com',
           display_name: 'Test User',
           agency: 'Business',
-          survey_role_names: [SURVEY_ROLE.ADMIN]
+          survey_role_name: SURVEY_ROLE.ADMIN
         }}
         roles={mockRoles}
         error={undefined}
@@ -103,7 +103,7 @@ describe('UserRoleSelector', () => {
           email: 'user@email.com',
           display_name: 'Test User',
           agency: 'Business',
-          survey_role_names: []
+          survey_role_name: SURVEY_ROLE.VIEWER
         }}
         roles={mockRoles}
         error={undefined}

@@ -74,12 +74,12 @@ export const MultiSelectToggleButtonGroup = <ViewValueType extends string>({
               {isActive ? (
                 <Icon
                   path={mdiClose}
-                  size={0.7}
+                  size={0.8}
                   color={grey[700]}
                   style={{ backgroundColor: blueGrey[100], borderRadius: '500px', padding: 3 }}
                 />
               ) : (
-                <Icon path={mdiPlus} size={0.7} color={grey[500]} style={{ padding: 2 }} />
+                <Icon path={mdiPlus} size={0.8} color={grey[500]} style={{ padding: 2 }} />
               )}
             </Box>
           </ToggleButton>

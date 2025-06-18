@@ -25,7 +25,7 @@ import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions } from 'types/misc';
 import { firstOrNull, getFormattedDate } from 'utils/Utils';
-import { LinearProgressWithLabel } from '../details/checklist/progress/SurveyChecklistProgressBar';
+import { LinearProgressWithLabel } from '../details/tabs/details/checklist/progress/SurveyChecklistProgressBar';
 
 const pageSizeOptions = [10, 25, 50];
 

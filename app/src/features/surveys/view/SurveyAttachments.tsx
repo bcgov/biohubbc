@@ -42,7 +42,7 @@ const SurveyAttachments = () => {
       />
 
       <H2MenuToolbar
-        label="Attachments"
+        label="Supplementary"
         buttonLabel="Upload"
         buttonTitle="Upload Attachments"
         buttonProps={{ variant: 'contained' }}

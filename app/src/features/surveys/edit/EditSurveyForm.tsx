@@ -1,24 +1,22 @@
-import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
 import FormikErrorSnackbar from 'components/alert/FormikErrorSnackbar';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
-import HelpButtonStack from 'components/tooltip/HelpButtonStack';
 import { CodesContext } from 'contexts/codesContext';
 
-import SurveyPermitForm, { ISurveyPermitForm } from 'features/surveys/components/permit/SurveyPermitForm';
-import SurveyPartnershipsForm, {
-  SurveyPartnershipsFormYupSchema
-} from 'features/surveys/view/components/SurveyPartnershipsForm';
+import Box from '@mui/material/Box';
+import grey from '@mui/material/colors/grey';
+import Paper from '@mui/material/Paper';
+import { ISurveyPermitForm } from 'features/surveys/components/permit/SurveyPermitForm';
+import { SurveyPartnershipsFormYupSchema } from 'features/surveys/view/components/SurveyPartnershipsForm';
 import { Formik, FormikProps } from 'formik';
 import { ICreateSurveyRequest, IUpdateSurveyRequest } from 'interfaces/useSurveyApi.interface';
 import React, { useContext, useEffect } from 'react';
 import yup from 'utils/YupSchema';
 import AgreementsForm, { AgreementsYupSchema } from '../components/agreements/AgreementsForm';
 import { ProprietaryDataYupSchema } from '../components/agreements/ProprietaryDataForm';
-import SurveyFundingSourceForm, {
+import {
   ISurveyFundingSourceForm,
   SurveyFundingSourceFormYupSchema
 } from '../components/funding/SurveyFundingSourceForm';
@@ -26,11 +24,10 @@ import GeneralInformationForm, {
   GeneralInformationYupSchema
 } from '../components/general-information/GeneralInformationForm';
 import StudyAreaForm, { SurveyLocationYupSchema } from '../components/locations/StudyAreaForm';
-import { SurveyMembersForm } from '../components/member/SurveyMembersForm';
 import PurposeAndMethodologyForm, {
   PurposeAndMethodologyYupSchema
 } from '../components/methodology/PurposeAndMethodologyForm';
-import SurveyUserForm, { SurveyParticipantsJobYupSchema } from '../components/participants/SurveyUserForm';
+import { SurveyParticipantsJobYupSchema } from '../components/participants/SurveyUserForm';
 import { SurveySiteSelectionYupSchema } from '../components/sampling-strategy/SurveySiteSelectionForm';
 import SpeciesForm, { SpeciesYupSchema } from '../components/species/SpeciesForm';
 import CollectionSurveyForm from '../view/collection/form/CollectionSurveyForm';
@@ -92,128 +89,73 @@ const EditSurveyForm = <
       validateOnBlur={false}
       validateOnChange={false}
       onSubmit={props.handleSubmit}>
-      <Stack gap={5}>
+      <Box>
         <FormikErrorSnackbar />
-        <HorizontalSplitFormComponent
-          title="General Information"
-          summary="Enter a name and the dates of your survey. Dates may span multiple fieldwork trips."
-          component={
-            <GeneralInformationForm
-              progress={
-                codes?.survey_progress?.map((item) => {
-                  return { value: item.id, label: item.name, description: item.description };
-                }) || []
-              }
-            />
-          }></HorizontalSplitFormComponent>
+        <Paper variant="outlined" sx={{ bgcolor: grey[50], p: 3, py: 5, mb: 2 }}>
+          <HorizontalSplitFormComponent
+            title="Collections"
+            summary="Organize related surveys by adding to collections"
+            component={<CollectionSurveyForm formikFieldName="collections" />}
+          />
+        </Paper>
 
-        <Divider />
+        <Stack gap={5} p={3}>
+          <HorizontalSplitFormComponent
+            title="General"
+            summary="Enter the name, objectives, and dates of your survey"
+            component={<GeneralInformationForm />}
+          />
 
-        <HorizontalSplitFormComponent
-          title="Members"
-          summary="Give others access to this survey"
-          component={<SurveyMembersForm roles={codesContext.codesDataLoader.data?.survey_roles ?? []} />}
-        />
+          <Divider />
 
-        <Divider />
-        <HorizontalSplitFormComponent title="Collections" summary="Select collections to add the survey to.">
-          <CollectionSurveyForm formikFieldName="collections" />
-        </HorizontalSplitFormComponent>
+          <HorizontalSplitFormComponent title="Focal species" summary="Enter species that you targetted in the survey">
+            <SpeciesForm />
+          </HorizontalSplitFormComponent>
 
-        <Divider />
+          <Divider />
 
-        <HorizontalSplitFormComponent title="Focal species" summary="Enter species that you targetted in the survey">
-          <SpeciesForm />
-        </HorizontalSplitFormComponent>
+          <HorizontalSplitFormComponent
+            title="Objectives"
+            summary="Select the type of data collected"
+            component={
+              <PurposeAndMethodologyForm
+                intended_outcomes={
+                  codes.intended_outcomes?.map((item) => ({
+                    value: item.id,
+                    label: item.name,
+                    description: item.description
+                  })) ?? []
+                }
+                type={
+                  codes.survey_data_type?.map((item) => ({
+                    value: item.id,
+                    label: item.name,
+                    description: item.description
+                  })) ?? []
+                }
+              />
+            }
+          />
 
-        <Divider />
+          <Divider />
 
-        <HorizontalSplitFormComponent
-          title="Objectives"
-          summary="Describe your objectives and select the type of data collected."
-          component={
-            <PurposeAndMethodologyForm
-              intended_outcomes={
-                codes.intended_outcomes?.map((item) => ({
-                  value: item.id,
-                  label: item.name,
-                  description: item.description
-                })) ?? []
-              }
-              type={
-                codes.survey_data_type?.map((item) => ({
-                  value: item.id,
-                  label: item.name,
-                  description: item.description
-                })) ?? []
-              }
-            />
-          }
-        />
+          <HorizontalSplitFormComponent
+            title="Area"
+            summary="Import, draw or select a feature from an existing layer to define your general areas of interest."
+            component={<StudyAreaForm />}
+          />
 
-        <Divider />
+          <Divider />
 
-        <HorizontalSplitFormComponent
-          title="General Location"
-          summary="Import, draw or select a feature from an existing layer to define your general areas of interest. This should broadly reflect your study area."
-          component={<StudyAreaForm />}
-        />
+          <HorizontalSplitFormComponent
+            title="Agreements"
+            summary="Acknowledge your responsibilities under the SEDIS policy and Freedom of Information requirements."
+            component={<AgreementsForm />}
+          />
 
-        <Divider />
-
-        <HorizontalSplitFormComponent
-          title="Permits"
-          summary="Enter any permits used in the survey"
-          component={
-            <Box component="fieldset">
-              <HelpButtonStack helpText="Any permits with data submission requirements must be listed.">
-                <Typography fontWeight={700}>Were any permits used in this survey?</Typography>
-              </HelpButtonStack>
-              <SurveyPermitForm />
-            </Box>
-          }
-        />
-
-        <Divider />
-
-        <HorizontalSplitFormComponent
-          title="Funding Sources"
-          summary="Specify funding sources for this survey"
-          component={
-            <Box component="fieldset">
-              <HelpButtonStack helpText="Any funding sources with data submission requirements must be listed.">
-                <Typography fontWeight={700}>Do any funding agencies require this survey to be submitted?</Typography>
-              </HelpButtonStack>
-              <SurveyFundingSourceForm />
-            </Box>
-          }
-        />
-
-        <Divider />
-
-        <HorizontalSplitFormComponent
-          title="Survey Participants"
-          summary="Specify people who participated in this survey"
-          component={<SurveyUserForm jobs={codes.survey_jobs} />}
-        />
-
-        <Divider />
-
-        <HorizontalSplitFormComponent
-          title="Partnerships"
-          summary="Enter any partners involved in the survey"
-          component={<SurveyPartnershipsForm />}
-        />
-
-        <Divider />
-
-        <HorizontalSplitFormComponent
-          title="Agreements"
-          summary="Confirm that you understand the SEDIS procedures and how they relate to data in the survey"
-          component={<AgreementsForm />}></HorizontalSplitFormComponent>
-
-        <Divider />
-      </Stack>
+          <Divider />
+        </Stack>
+      </Box>
     </Formik>
   );
 };

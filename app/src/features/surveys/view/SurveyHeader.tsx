@@ -41,14 +41,21 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 import { getFormattedDateRangeString } from 'utils/Utils';
-import CreateCollectionSurveyDialog from './collection/CreateCollectionSurveyDialog';
+import CreateCollectionSurveyDialog from './collection/CollectionSurveyDialog';
+import SurveyHeaderTabs, { SURVEY_ACTIVE_TAB_VALUE } from './tabs/SurveyHeaderTabs';
 
+interface ISurveyHeaderProps {
+  activeTab: SURVEY_ACTIVE_TAB_VALUE;
+  handleTabChange: (tab: SURVEY_ACTIVE_TAB_VALUE) => void;
+}
 /**
  * Survey header for a single-survey view.
  *
  * @return {*}
  */
-const SurveyHeader = () => {
+const SurveyHeader = (props: ISurveyHeaderProps) => {
+  const { activeTab, handleTabChange } = props;
+
   const surveyContext = useContext(SurveyContext);
 
   const surveyWithDetails = surveyContext.surveyDataLoader.data;
@@ -163,9 +170,9 @@ const SurveyHeader = () => {
             </Stack>
           }
           subTitleJSX={
-            <Box flex="1 1 auto" mt={1}>
+            <Box flex="1 1 auto">
               <Stack flexDirection="row" alignItems="center" gap={0.75} color="text.secondary">
-                <Icon path={mdiCalendarRange} size={0.8} color={grey[600]} style={{ marginTop: 1.5 }} />
+                <Icon path={mdiCalendarRange} size={0.7} color={grey[600]} style={{ marginTop: 1.5 }} />
                 <Typography component="span" variant="body2">
                   {getFormattedDateRangeString(
                     DATE_FORMAT.MediumDateFormat,
@@ -198,7 +205,9 @@ const SurveyHeader = () => {
             <SurveyRoleRouteGuard
               validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
               validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-              <Button variant="contained">Publish</Button>
+              <Button variant="contained" onClick={() => setPublishSurveyDialogOpen(true)}>
+                Publish
+              </Button>
               <Button
                 id="survey_settings_button"
                 aria-label="Survey Settings"
@@ -245,7 +254,7 @@ const SurveyHeader = () => {
                   <ListItemIcon>
                     <Icon path={mdiFormatListGroup} size={1} />
                   </ListItemIcon>
-                  <Typography variant="inherit">Add to Collection</Typography>
+                  <Typography variant="inherit">Add to Project</Typography>
                 </MenuItem>
                 <MenuItem onClick={() => history.push('edit')}>
                   <ListItemIcon>
@@ -276,6 +285,7 @@ const SurveyHeader = () => {
               </Menu>
             </SurveyRoleRouteGuard>
           }
+          tabsJSX={<SurveyHeaderTabs activeTab={activeTab} handleTabChange={handleTabChange} />}
         />
       </Box>
 

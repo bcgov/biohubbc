@@ -527,8 +527,8 @@ describe('AuthorizationService', () => {
           role_ids: [3],
           role_names: [SYSTEM_ROLE.PROJECT_CREATOR],
           survey_member_id: 2,
-          survey_role_ids: [1],
-          survey_role_names: [SURVEY_ROLE.ADMIN]
+          survey_role_id: 1,
+          survey_role_name: SURVEY_ROLE.ADMIN
         };
         sinon
           .stub(AuthorizationService.prototype, 'getSurveyMemberObjectBySurveyId')
@@ -566,8 +566,8 @@ describe('AuthorizationService', () => {
             agency: null,
             survey_member_id: 3,
 
-            survey_role_ids: [1],
-            survey_role_names: [SURVEY_ROLE.ADMIN]
+            survey_role_id: 1,
+            survey_role_name: SURVEY_ROLE.ADMIN
           }
         });
 
@@ -600,8 +600,8 @@ describe('AuthorizationService', () => {
             display_name: 'test user',
             agency: null,
             survey_member_id: 3,
-            survey_role_ids: [],
-            survey_role_names: []
+            survey_role_id: 1,
+            survey_role_name: ''
           }
         });
 
@@ -635,8 +635,8 @@ describe('AuthorizationService', () => {
             agency: null,
             survey_member_id: 3,
 
-            survey_role_ids: [1],
-            survey_role_names: [SURVEY_ROLE.ADMIN]
+            survey_role_id: 1,
+            survey_role_name: SURVEY_ROLE.ADMIN
           }
         });
 
@@ -931,8 +931,8 @@ describe('AuthorizationService', () => {
         agency: null,
         survey_member_id: 3,
         survey_id: 1,
-        survey_role_ids: [1],
-        survey_role_names: [SURVEY_ROLE.ADMIN]
+        survey_role_id: 1,
+        survey_role_name: SURVEY_ROLE.ADMIN
       };
 
       sinon.stub(AuthorizationService.prototype, 'getSurveyMemberWithRolesBySurveyId').resolves(surveyUserMock);
@@ -997,8 +997,155 @@ describe('AuthorizationService', () => {
         agency: null,
         survey_member_id: 3,
         survey_id: 1,
-        survey_role_ids: [1],
-        survey_role_names: [SURVEY_ROLE.ADMIN]
+        survey_role_id: 1,
+        survey_role_name: SURVEY_ROLE.ADMIN
+      };
+      sinon
+        .stub(SurveyMemberService.prototype, 'getSurveyMemberBySurveyIdAndUserGuid')
+        .resolves(surveyUserMock as unknown as any);
+
+      const authorizationService = new AuthorizationService(mockDBConnection, {
+        keycloakToken: {
+          idir_user_guid: '123-456-789',
+          identity_provider: 'idir',
+          idir_username: 'username',
+          name: 'test user',
+          preferred_username: '123-456-789@idir',
+          display_name: 'test user',
+          email: 'email@email.com',
+          email_verified: false,
+          given_name: 'fname',
+          family_name: 'lname'
+        }
+      });
+
+      const result = await authorizationService.getSurveyMemberWithRolesBySurveyId(surveyId);
+
+      expect(result).to.equal(surveyUserMock);
+    });
+  });
+
+  describe('getSurveyMemberObjectBySurveyId', function () {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('returns null if fetching the survey user throws an error', async function () {
+      const mockDBConnection = getMockDBConnection();
+
+      sinon.stub(AuthorizationService.prototype, 'getSystemUserWithRoles').callsFake(() => {
+        throw new Error('Test Error');
+      });
+      const surveyId = 1;
+
+      const authorizationService = new AuthorizationService(mockDBConnection);
+
+      const surveyUser = await authorizationService.getSurveyMemberObjectBySurveyId(surveyId);
+
+      expect(surveyUser).to.equal(null);
+    });
+
+    it('returns null if the survey user is null or undefined', async function () {
+      const mockDBConnection = getMockDBConnection();
+
+      const surveyId = 1;
+      const surveyUserMock = null;
+      sinon.stub(AuthorizationService.prototype, 'getSurveyMemberWithRolesBySurveyId').resolves(surveyUserMock);
+
+      const authorizationService = new AuthorizationService(mockDBConnection);
+
+      const surveyUser = await authorizationService.getSurveyMemberObjectBySurveyId(surveyId);
+
+      expect(surveyUser).to.equal(null);
+    });
+
+    it('returns a survey user when keycloak token is valid', async function () {
+      const mockDBConnection = getMockDBConnection();
+
+      const surveyId = 1;
+      const surveyUserMock: SurveyMember & SystemUserWithRoles = {
+        survey_id: 1,
+        system_user_id: 2,
+        user_identifier: 'username',
+        identity_source: SYSTEM_IDENTITY_SOURCE.IDIR,
+        user_guid: '123-456-789',
+        record_end_date: null,
+        role_ids: [1],
+        role_names: ['Editor'],
+        email: 'email@email.com',
+        family_name: 'lname',
+        given_name: 'fname',
+        display_name: 'test user',
+        agency: null,
+        survey_member_id: 3,
+        survey_role_id: 1,
+        survey_role_name: SURVEY_ROLE.ADMIN
+      };
+
+      sinon.stub(AuthorizationService.prototype, 'getSurveyMemberWithRolesBySurveyId').resolves(surveyUserMock);
+
+      const authorizationService = new AuthorizationService(mockDBConnection, {
+        keycloakToken: {
+          idir_user_guid: '123-456-789',
+          identity_provider: 'idir',
+          idir_username: 'username',
+          email_verified: false,
+          name: 'test user',
+          preferred_username: '123-456-789@idir',
+          display_name: 'test user',
+          given_name: 'test',
+          family_name: 'user',
+          email: 'email@email.com'
+        }
+      });
+
+      const surveyUser = await authorizationService.getSurveyMemberObjectBySurveyId(surveyId);
+
+      expect(surveyUser).to.equal(surveyUserMock);
+    });
+  });
+
+  describe('getSurveyMemberWithRolesBySurveyId', function () {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('returns null if the keycloak token is null', async function () {
+      const mockDBConnection = getMockDBConnection();
+      sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
+      const surveyId = 1;
+
+      const authorizationService = new AuthorizationService(mockDBConnection, {
+        keycloakToken: undefined
+      });
+
+      const result = await authorizationService.getSurveyMemberWithRolesBySurveyId(surveyId);
+
+      expect(result).to.be.null;
+    });
+
+    it('returns a survey user when keycloak token is valid', async function () {
+      const mockDBConnection = getMockDBConnection();
+      sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
+      const surveyId = 1;
+
+      const surveyUserMock: SurveyMember & SystemUserWithRoles = {
+        survey_id: 1,
+        system_user_id: 2,
+        user_identifier: 'username',
+        identity_source: SYSTEM_IDENTITY_SOURCE.IDIR,
+        user_guid: '123-456-789',
+        record_end_date: null,
+        role_ids: [1],
+        role_names: ['Editor'],
+        email: 'email@email.com',
+        family_name: 'lname',
+        given_name: 'fname',
+        display_name: 'test user',
+        agency: null,
+        survey_member_id: 3,
+        survey_role_id: 1,
+        survey_role_name: SURVEY_ROLE.ADMIN
       };
       sinon
         .stub(SurveyMemberService.prototype, 'getSurveyMemberBySurveyIdAndUserGuid')

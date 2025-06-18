@@ -17,6 +17,7 @@ import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import { TelemetryDeployment } from 'interfaces/useTelemetryDeploymentApi.interface';
 import { ApiPaginationResponseParams, StringBoolean } from 'types/misc';
 import { ICritterDetailedResponse, ICritterSimpleResponse } from './useCritterApi.interface';
+import { ISystemUser } from './useUserApi.interface';
 
 /**
  * Create survey post object.
@@ -81,21 +82,25 @@ interface ISurveyBlockForm {
 interface IParticipantsJobForm {
   participants: IGetSurveyParticipant[];
 }
-
-interface ISurveyMemberForm {
+export interface ISurveyMemberResponse {
   members: ISurveyMember[];
 }
 
-export interface ISurveyMember {
-  survey_member_id: number;
+export interface ISurveyMemberForm {
+  members: ISurveyMember[];
+}
+export interface ISurveyMembersAdvancedFilters {
+  system_user_id?: number;
+  keyword?: string;
+}
+export interface IPostSurveyMember {
   system_user_id: number;
+  survey_role_name: SURVEY_ROLE;
+}
+export interface ISurveyMember extends ISystemUser {
+  survey_member_id: number;
   survey_role_id: number;
-  survey_role_name: string;
-  identity_source: string;
-  user_identifier: string;
-  email: string | null;
-  display_name: string;
-  agency: string | null;
+  survey_role_name: SURVEY_ROLE;
 }
 
 export interface IAddSurveyParticipant {
@@ -174,7 +179,7 @@ export interface IGetSurveyParticipant {
   agency: string | null;
   survey_job_id: number;
   survey_job_name: string;
-  survey_role_names: SURVEY_ROLE[];
+  survey_role_name: SURVEY_ROLE;
 }
 
 export interface IGetSurveyForViewResponsePartnerships {
@@ -482,7 +487,7 @@ export interface IGetSurveyForUpdateResponse {
       family_name: string | null;
       agency: string | null;
       survey_participation_id: number;
-      survey_role_names: SURVEY_ROLE[];
+      survey_role_name: SURVEY_ROLE;
       survey_id: number;
       survey_job_id: number;
       survey_job_name: string;
