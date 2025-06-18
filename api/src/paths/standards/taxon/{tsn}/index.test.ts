@@ -52,7 +52,8 @@ describe('standards/taxon/{tsn}', () => {
               options: []
             }
           ]
-        }
+        },
+        ecologicalUnits: [{ category_name: 'telkwa', description: '', collection_category_id: '', itis_tsn: 123456 }]
       };
 
       sinon.stub(StandardsService.prototype, 'getSpeciesStandards').resolves(getSpeciesStandardsResult);
