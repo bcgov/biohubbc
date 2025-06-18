@@ -14,14 +14,11 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import YesNoDialog from 'components/dialog/YesNoDialog';
-import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { ISurveyCritter } from 'contexts/animalPageContext';
-import dayjs from 'dayjs';
 import { useSurveyContext } from 'hooks/useContext';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { combineDateTime, shouldShowTime } from 'utils/datetime';
-import { getFormattedDate } from 'utils/Utils';
+import { displayDateTime } from 'utils/datetime';
 import { ICaptureWithSupplementaryData } from '../AnimalCaptureContainer';
 import { AnimalCaptureCardDetailsContainer } from './capture-card-details/AnimalCaptureCardDetailsContainer';
 
@@ -44,6 +41,11 @@ export const AnimalCaptureCardContainer = (props: IAnimalCaptureCardContainer) =
   const [captureForDelete, setCaptureForDelete] = useState<boolean>();
 
   const { projectId, surveyId } = useSurveyContext();
+
+  // Use displayDateTime utility for formatted capture date/time string
+  const getCaptureDateTimeString = (capture: ICaptureWithSupplementaryData) => {
+    return displayDateTime(capture.capture_date, capture.capture_time);
+  };
 
   return (
     <>
@@ -160,17 +162,7 @@ export const AnimalCaptureCardContainer = (props: IAnimalCaptureCardContainer) =
                     }
                   }}>
                   <Stack gap={0.5} display="flex">
-                    <Typography fontWeight={700}>
-                      {(() => {
-                        const dateTime = combineDateTime(capture.capture_date, capture.capture_time);
-                        const dateStr = getFormattedDate(DATE_FORMAT.MediumDateFormat, dateTime);
-                        const timeStr = dayjs(dateTime).format('HH:mm:ss');
-                        return shouldShowTime(timeStr)
-                          ? `${dateStr} ${getFormattedDate(DATE_FORMAT.TimeFormat, dateTime)}`
-                          : dateStr;
-                      })()}
-                      &nbsp;
-                    </Typography>
+                    <Typography fontWeight={700}>{getCaptureDateTimeString(capture)}&nbsp;</Typography>
                     {capture.capture_location?.latitude && capture.capture_location?.longitude && (
                       <Box>
                         <Typography color="textSecondary" variant="body2">
