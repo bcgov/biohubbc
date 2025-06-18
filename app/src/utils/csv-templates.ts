@@ -105,3 +105,12 @@ export const getHabitatFeaturesCSVTemplate = (): CSVEncodedTemplate => {
     'COMMENT'
   ]);
 };
+
+/**
+ * Get CSV template for devices.
+ *
+ * @returns {CSVEncodedTemplate} Encoded CSV template
+ */
+export const getDeviceCSVTemplate = (): CSVEncodedTemplate => {
+  return getCSVTemplate(['VENDOR', 'SERIAL', 'MODEL', 'COMMENT']);
+};

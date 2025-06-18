@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import AutocompleteField, { IAutocompleteFieldOption } from 'components/fields/AutocompleteField';
-import { DateField } from 'components/fields/DateField';
+import SingleDateField from 'components/fields/SingleDateField';
 import { TimeField } from 'components/fields/TimeField';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import dayjs from 'dayjs';
@@ -74,7 +74,7 @@ export const DeploymentStartForm = (props: IDeploymentStartFormProps) => {
       </Grid>
       <Grid item xs={12}>
         <Box sx={{ width: '100%' }} display="flex">
-          <DateField
+          <SingleDateField
             sx={{
               '& .MuiOutlinedInput-root': {
                 borderTopRightRadius: 0,

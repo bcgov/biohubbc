@@ -8,6 +8,7 @@ import {
   IFindTelemetryResponse,
   IUpdateManualTelemetry,
   TelemetryDeviceKeyFile,
+  TelemetryFilters,
   TelemetrySpatial
 } from 'interfaces/useTelemetryApi.interface';
 import qs from 'qs';
@@ -64,16 +65,19 @@ const useTelemetryApi = (axios: AxiosInstance) => {
    *
    * @param {number} projectId
    * @param {number} surveyId
+   * @param {TelemetryFilters} filters
    * @param {ApiPaginationRequestOptions} [pagination]
    * @return {*}  {Promise<GetSurveyTelemetryResponse>}
    */
   const getTelemetryForSurvey = async (
     projectId: number,
     surveyId: number,
+    filters?: TelemetryFilters,
     pagination?: ApiPaginationRequestOptions
   ): Promise<GetSurveyTelemetryResponse> => {
     const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/telemetry`, {
       params: {
+        ...filters,
         ...pagination
       },
       paramsSerializer: (params) => qs.stringify(params)
@@ -87,13 +91,20 @@ const useTelemetryApi = (axios: AxiosInstance) => {
    *
    * @param {number} projectId
    * @param {number} surveyId
+   * @param {TelemetryFilters} filters
    * @return {*}  {Promise<{ telemetry: TelemetrySpatial[]; supplementaryData: { count: number } }>}
    */
   const getTelemetrySpatialForSurvey = async (
     projectId: number,
-    surveyId: number
-  ): Promise<{ telemetry: TelemetrySpatial[]; supplementaryData: { count: number } }> => {
-    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/telemetry/spatial`);
+    surveyId: number,
+    filters?: TelemetryFilters
+  ): Promise<{
+    telemetry: TelemetrySpatial[];
+    supplementaryData: { count: number; start_date: string; end_date: string };
+  }> => {
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/telemetry/spatial`, {
+      params: filters
+    });
 
     return data;
   };

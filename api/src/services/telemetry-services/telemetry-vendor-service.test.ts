@@ -100,10 +100,10 @@ describe('TelemetryVendorService', () => {
           .stub(TelemetryVendorRepository.prototype, 'getTelemetryByDeploymentIds')
           .resolves(mockTelemetry);
 
-        const mockCount = 1;
-        const getTelemetryCountByDeploymentIdsStub = sinon
-          .stub(TelemetryVendorRepository.prototype, 'getTelemetryCountByDeploymentIds')
-          .resolves(mockCount);
+        const mockSupplementary = { count: 1, start_date: '2021-01-01', end_date: '2021-01-01' };
+        const getTelemetrySupplementaryByDeploymentIdsStub = sinon
+          .stub(TelemetryVendorRepository.prototype, 'getTelemetrySupplementaryByDeploymentIds')
+          .resolves(mockSupplementary);
 
         const service = new TelemetryVendorService(mockDBConnection);
 
@@ -118,9 +118,9 @@ describe('TelemetryVendorService', () => {
 
         expect(deploymentServiceStub).to.have.been.calledWith(surveyId);
         expect(getTelemetryByDeploymentIdsStub).to.have.been.calledWith(surveyId, [8], { pagination });
-        expect(getTelemetryCountByDeploymentIdsStub).to.have.been.calledWith(surveyId, [8]);
+        expect(getTelemetrySupplementaryByDeploymentIdsStub).to.have.been.calledWith(surveyId, [8]);
 
-        expect(data).to.deep.equal([mockTelemetry, mockCount]);
+        expect(data).to.deep.equal([mockTelemetry, mockSupplementary]);
       });
     });
 
@@ -146,6 +146,16 @@ describe('TelemetryVendorService', () => {
           .stub(TelemetryVendorRepository.prototype, 'getTelemetryByDeploymentIds')
           .resolves(mockTelemetry);
 
+        const mockSupplementary = {
+          count: 1,
+          start_date: '2021-01-01',
+          end_date: '2021-01-01'
+        };
+
+        const getTelemetrySupplementaryByDeploymentIdsStub = sinon
+          .stub(TelemetryVendorRepository.prototype, 'getTelemetrySupplementaryByDeploymentIds')
+          .resolves(mockSupplementary);
+
         const service = new TelemetryVendorService(mockDBConnection);
 
         const deploymentServiceStub = sinon
@@ -158,8 +168,9 @@ describe('TelemetryVendorService', () => {
         const data = await service.getTelemetryForSurvey(surveyId, pagination);
 
         expect(deploymentServiceStub).to.have.been.calledWith(surveyId);
+        expect(getTelemetrySupplementaryByDeploymentIdsStub).to.have.been.calledWith(surveyId, [8]);
         expect(getTelemetryByDeploymentIdsStub).to.have.been.calledWith(surveyId, [8], undefined);
-        expect(data).to.deep.equal([mockTelemetry, 1]);
+        expect(data).to.deep.equal([mockTelemetry, mockSupplementary]);
       });
     });
   });
@@ -168,10 +179,13 @@ describe('TelemetryVendorService', () => {
     it('should return telemetry data for a survey', async () => {
       const mockDBConnection = getMockDBConnection();
 
+      const surveyId = 1;
+      const deploymentId = 1;
+
       const mockDeployment: ExtendedDeploymentRecord[] = [
         {
-          deployment_id: 1,
-          survey_id: 2,
+          deployment_id: deploymentId,
+          survey_id: surveyId,
           critter_id: 3,
           device_id: 4,
           device_key: 'lotek:123456',
@@ -203,6 +217,12 @@ describe('TelemetryVendorService', () => {
         }
       ];
 
+      const mockSupplementary = {
+        count: 1,
+        start_date: '2021-01-01',
+        end_date: '2021-01-01'
+      };
+
       const getDeploymentsForSurveyIdStub = sinon
         .stub(TelemetryDeploymentService.prototype, 'getDeploymentsForSurvey')
         .resolves(mockDeployment);
@@ -211,15 +231,18 @@ describe('TelemetryVendorService', () => {
         .stub(TelemetryVendorRepository.prototype, 'getTelemetrySpatialByDeploymentIds')
         .resolves(mockTelemetry);
 
-      const surveyId = 1;
+      const getTelemetrySupplementaryByDeploymentIdsStub = sinon
+        .stub(TelemetryVendorRepository.prototype, 'getTelemetrySupplementaryByDeploymentIds')
+        .resolves(mockSupplementary);
 
       const service = new TelemetryVendorService(mockDBConnection);
       const data = await service.getTelemetrySpatialForSurvey(surveyId);
 
       expect(getDeploymentsForSurveyIdStub).to.have.been.calledWith(surveyId);
-      expect(getTelemetrySpatialByDeploymentIdsStub).to.have.been.calledWith(surveyId, [1]);
+      expect(getTelemetrySpatialByDeploymentIdsStub).to.have.been.calledWith(surveyId, [deploymentId]);
+      expect(getTelemetrySupplementaryByDeploymentIdsStub).to.have.been.calledWith(surveyId, [deploymentId]);
 
-      expect(data).to.eql([mockTelemetry, 1]);
+      expect(data).to.eql([mockTelemetry, mockSupplementary]);
     });
   });
 
