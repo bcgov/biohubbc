@@ -3,12 +3,12 @@ import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import dayjs from 'dayjs';
 import { SurveyMapPopup } from 'features/surveys/view/SurveyMapPopup';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useSurveyContext } from 'hooks/useContext';
+import { useCodesContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { SurveyHabitatFeature } from 'interfaces/useSurveyHabitatFeatureApi.interface';
+import { useEffect } from 'react';
 import { Popup } from 'react-leaflet';
-import { shouldShowTime } from 'utils/datetime';
-import { getFormattedDate } from 'utils/Utils';
+import { getCodesName } from 'utils/Utils';
 
 interface ISurveySpatialHabitatFeaturePointPopupProps {
   feature: IStaticLayerFeature;
@@ -23,8 +23,13 @@ interface ISurveySpatialHabitatFeaturePointPopupProps {
 export const SurveySpatialHabitatFeaturePointPopup = (props: ISurveySpatialHabitatFeaturePointPopupProps) => {
   const { feature } = props;
 
+  const codesContext = useCodesContext();
   const surveyContext = useSurveyContext();
   const biohubApi = useBiohubApi();
+
+  useEffect(() => {
+    codesContext.codesDataLoader.load();
+  }, [codesContext.codesDataLoader]);
 
   const habitatFeatureDataLoader = useDataLoader((surveyHabitatFeatureId: number) =>
     biohubApi.habitatFeature.getSurveyHabitatFeatureWithSupplementaryData(
@@ -36,7 +41,15 @@ export const SurveySpatialHabitatFeaturePointPopup = (props: ISurveySpatialHabit
 
   const getHabitatFeatureMetadata = (habitatFeature: SurveyHabitatFeature) => {
     return [
-      { label: 'Type', value: String(habitatFeature.habitat_feature_type_name) },
+      {
+        label: 'Type',
+        value:
+          getCodesName(
+            codesContext.codesDataLoader.data,
+            'habitat_feature_types',
+            habitatFeature.habitat_feature_type_id
+          ) ?? ''
+      },
       { label: 'Count', value: String(habitatFeature.count) },
       {
         label: 'Location',
@@ -47,18 +60,11 @@ export const SurveySpatialHabitatFeaturePointPopup = (props: ISurveySpatialHabit
       },
       {
         label: 'Date',
-        value: getFormattedDate(
-          habitatFeature.observed_time ? DATE_FORMAT.LongMediumDateFormat : DATE_FORMAT.MediumDateFormat,
-          habitatFeature.observed_time
-            ? `${habitatFeature.observed_date} ${habitatFeature.observed_time}`
-            : habitatFeature.observed_date
-        )
+        value: dayjs(habitatFeature.observed_date).format(DATE_FORMAT.MediumDateFormat)
       },
       {
         label: 'Time',
-        value: shouldShowTime(habitatFeature.observed_time ?? undefined)
-          ? dayjs(habitatFeature.observed_time, ['HH:mm', 'HH:mm:ss', 'h:mm A']).format(DATE_FORMAT.TimeFormat)
-          : ''
+        value: habitatFeature.observed_time
       }
     ];
   };

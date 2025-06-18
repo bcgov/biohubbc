@@ -6,7 +6,6 @@ import useDataLoader from 'hooks/useDataLoader';
 import { useMemo } from 'react';
 import { Popup } from 'react-leaflet';
 import { isDefined } from 'utils/Utils';
-import { shouldShowTime } from 'utils/datetime';
 
 interface ISurveySpatialAnimalMortalityPopupProps {
   mortalityId: string;
@@ -37,21 +36,15 @@ export const SurveySpatialAnimalMortalityPopup = (props: ISurveySpatialAnimalMor
     return [
       { label: 'Nickname', value: animal_id },
       {
-        label: 'Date',
-        value: dayjs(mortality_timestamp).format(DATE_FORMAT.LongMediumDateFormat)
-      },
-      {
-        label: 'Time',
-        value: shouldShowTime(dayjs(mortality_timestamp).format('HH:mm:ss'))
-          ? dayjs(mortality_timestamp).format(DATE_FORMAT.TimeFormat)
-          : ''
-      },
-      {
-        label: 'Coordinates',
+        label: 'Location',
         value: [location?.latitude, location?.longitude]
           .filter((coord): coord is number => isDefined(coord))
           .map((coord) => coord.toFixed(6))
           .join(', ')
+      },
+      {
+        label: 'Date',
+        value: dayjs(mortality_timestamp).format(DATE_FORMAT.MediumDateTimeFormat)
       }
     ];
   }, [mortalityDataLoader.data, animalDataLoader.data]);
