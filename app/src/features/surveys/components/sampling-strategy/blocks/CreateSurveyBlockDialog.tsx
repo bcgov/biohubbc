@@ -10,39 +10,37 @@ interface ICreateBlockProps {
 const CreateSurveyBlockDialog: React.FC<ICreateBlockProps> = (props) => {
   const { open, onSave, onClose } = props;
   return (
-    <>
-      <EditDialog
-        dialogTitle={'Add Block'}
-        open={open}
-        dialogLoading={false}
-        component={{
-          element: <BlockForm />,
-          initialValues: {
-            survey_block_id: null,
-            name: '',
-            description: '',
-            geojson: {
-              type: 'Feature',
-              geometry: {
-                type: 'Point',
-                coordinates: [0, 0]
-              },
-              properties: {
-                name: 'Sample',
-                description: 'This is a placeholder.'
-              }
+    <EditDialog
+      dialogTitle={'Add Block'}
+      open={open}
+      dialogLoading={false}
+      component={{
+        element: <BlockForm />,
+        initialValues: {
+          survey_block_id: null,
+          name: '',
+          description: '',
+          geojson: {
+            type: 'Feature',
+            geometry: {
+              type: 'Point',
+              coordinates: [0, 0]
             },
-            sample_block_count: 0
+            properties: {
+              name: 'Sample',
+              description: 'This is a placeholder.'
+            }
           },
-          validationSchema: BlockCreateYupSchema
-        }}
-        dialogSaveButtonLabel="Add Block"
-        onCancel={() => onClose()}
-        onSave={(formValues) => {
-          onSave(formValues);
-        }}
-      />
-    </>
+          sample_block_count: 0
+        },
+        validationSchema: BlockCreateYupSchema
+      }}
+      dialogSaveButtonLabel="Add Block"
+      onCancel={() => onClose()}
+      onSave={(formValues) => {
+        onSave(formValues);
+      }}
+    />
   );
 };
 

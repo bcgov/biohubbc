@@ -35,7 +35,7 @@ export const ReviewAccessRequestFormYupSchema = yup.object().shape({
   })
 });
 
-export interface IReviewAccessRequestFormProps {
+interface IReviewAccessRequestFormProps {
   request: IGetAccessRequestsListResponse;
   system_roles: IAutocompleteFieldOption<number>[];
 }

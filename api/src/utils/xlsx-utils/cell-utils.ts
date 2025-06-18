@@ -39,7 +39,7 @@ export function trimCellWhitespace(cell: CellObject) {
  * @return {*} {CellObject} - Updated cell object
  */
 export function replaceCellDates(cell: CellObject): CellObject {
-  if (!cell.v) {
+  if (cell.v === undefined) {
     // Cell has no value
     return cell;
   }

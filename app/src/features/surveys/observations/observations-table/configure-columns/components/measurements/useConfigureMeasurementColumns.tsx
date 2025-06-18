@@ -70,28 +70,6 @@ export const useConfigureMeasurementColumns = () => {
           return remainingColumns;
         });
       });
-
-      // Update saved rows, removing any cell values for the deleted columns
-      observationsTableContext.setSavedRows((currentSavedRows) => {
-        return currentSavedRows.map((savedRow) => {
-          for (const columnIdToRemove of measurementColumnsToRemove) {
-            delete savedRow[columnIdToRemove];
-          }
-
-          return savedRow;
-        });
-      });
-
-      // Update staged rows, removing any cell values for the deleted columns
-      observationsTableContext.setStagedRows((currentStagedRows) => {
-        return currentStagedRows.map((stagedRow) => {
-          for (const columnIdToRemove of measurementColumnsToRemove) {
-            delete stagedRow[columnIdToRemove];
-          }
-
-          return stagedRow;
-        });
-      });
     },
     [observationsTableContext, surveyContext.surveyId]
   );

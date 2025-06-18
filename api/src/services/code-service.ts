@@ -1,9 +1,9 @@
 import { IDBConnection } from '../database/db';
 import { CodeRepository, IAllCodeSets } from '../repositories/code-repository';
-import { EnvironmentType } from '../repositories/observation-subcount-environment-repository';
+import { ObservationEnvironments } from '../repositories/observation-repository/observation-repository.interface';
 import { getLogger } from '../utils/logger';
 import { DBService } from './db-service';
-import { ObservationSubCountEnvironmentService } from './observation-subcount-environment-service';
+import { ObservationEnvironmentService } from './observation-environment-service';
 
 const defaultLog = getLogger('services/code-queries');
 
@@ -48,11 +48,12 @@ export class CodeService extends DBService {
       survey_progress: this.codeRepository.getSurveyProgress(),
       method_response_metrics: this.codeRepository.getMethodResponseMetrics(),
       attractants: this.codeRepository.getAttractants(),
-      observation_subcount_signs: this.codeRepository.getObservationSubcountSigns(),
+      observation_signs: this.codeRepository.getObservationSigns(),
       telemetry_device_makes: this.codeRepository.getActiveTelemetryDeviceMakes(),
       frequency_units: this.codeRepository.getFrequencyUnits(),
       alert_types: this.codeRepository.getAlertTypes(),
-      vantages: this.codeRepository.getVantages()
+      vantages: this.codeRepository.getVantages(),
+      habitat_feature_types: this.codeRepository.getHabitatFeatureTypes()
     };
 
     // Fetch all code sets in parallel
@@ -73,17 +74,17 @@ export class CodeService extends DBService {
    * Find qualitative and quantitative environments that match the given search terms.
    *
    * @param {string[]} searchTerms
-   * @return {*}  {Promise<EnvironmentType>}
+   * @return {*}  {Promise<ObservationEnvironments>}
    * @memberof CodeService
    */
-  async findSubcountEnvironments(searchTerms: string[]): Promise<EnvironmentType> {
+  async findEnvironmentReferenceData(searchTerms: string[]): Promise<ObservationEnvironments> {
     defaultLog.debug({ message: 'getEnvironments' });
 
-    const observationSubCountEnvironmentService = new ObservationSubCountEnvironmentService(this.connection);
+    const observationEnvironmentService = new ObservationEnvironmentService(this.connection);
 
     const [qualitative_environments, quantitative_environments] = await Promise.all([
-      await observationSubCountEnvironmentService.findQualitativeEnvironmentTypeDefinitions(searchTerms),
-      await observationSubCountEnvironmentService.findQuantitativeEnvironmentTypeDefinitions(searchTerms)
+      await observationEnvironmentService.findQualitativeEnvironmentTypeDefinitions(searchTerms),
+      await observationEnvironmentService.findQuantitativeEnvironmentTypeDefinitions(searchTerms)
     ]);
 
     return {

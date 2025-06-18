@@ -1,29 +1,28 @@
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { IGetUserProjectsListResponse } from 'interfaces/useProjectApi.interface';
 import { ISystemUser } from 'interfaces/useUserApi.interface';
 import { Router } from 'react-router';
 import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
+import { Mock } from 'vitest';
 import UsersDetailProjects from './UsersDetailProjects';
 
 const history = createMemoryHistory();
 
-jest.mock('../../../../hooks/useBioHubApi');
+vi.mock('../../../../hooks/useBioHubApi');
 
-const mockBiohubApi = useBiohubApi as jest.Mock;
+const mockBiohubApi = useBiohubApi as Mock;
 
 const mockUseApi = {
   user: {
-    getProjectList: jest.fn<Promise<IGetUserProjectsListResponse[]>, []>()
+    getProjectList: vi.fn()
   },
   projectParticipants: {
-    removeProjectParticipant: jest.fn<Promise<boolean>, []>(),
-    updateProjectParticipantRole: jest.fn<Promise<boolean>, []>()
+    removeProjectParticipant: vi.fn(),
+    updateProjectParticipantRole: vi.fn()
   },
   codes: {
-    getAllCodeSets: jest.fn<Promise<IGetAllCodeSetsResponse>, []>()
+    getAllCodeSets: vi.fn()
   }
 };
 
@@ -243,7 +242,7 @@ describe('UsersDetailProjects', () => {
       });
     });
 
-    it('deletes User from project if the user clicks on `Remove` ', async () => {
+    it('deletes User from project if the user clicks on `Remove`', async () => {
       history.push('/admin/manage/users/1');
 
       mockUseApi.codes.getAllCodeSets.mockResolvedValue({
@@ -360,7 +359,7 @@ describe('UsersDetailProjects', () => {
       });
     });
 
-    it('renders dialog pop on role selection, does nothing if user clicks `Cancel` ', async () => {
+    it('renders dialog pop on role selection, does nothing if user clicks `Cancel`', async () => {
       history.push('/admin/manage/users/1');
 
       mockUseApi.codes.getAllCodeSets.mockResolvedValue({
@@ -418,7 +417,7 @@ describe('UsersDetailProjects', () => {
       });
     });
 
-    it('renders dialog pop on role selection, Changes role on click of `Change Role` ', async () => {
+    it('renders dialog pop on role selection, Changes role on click of `Change Role`', async () => {
       history.push('/admin/manage/users/1');
 
       mockUseApi.codes.getAllCodeSets.mockResolvedValue({

@@ -47,7 +47,6 @@ const useTaxonomyApi = () => {
         return qs.stringify(params);
       }
     });
-
     return data;
   };
 
@@ -71,7 +70,7 @@ const useTaxonomyApi = () => {
       }
 
       return parseSearchResponse(data.searchResponse);
-    } catch (error) {
+    } catch (_error) {
       throw new Error('Failed to fetch Taxon records.');
     }
   };

@@ -57,5 +57,3 @@ objects:
         limits:
           cpu: "1"
           memory: 4Gi
-    status:
-      lastVersion: 0

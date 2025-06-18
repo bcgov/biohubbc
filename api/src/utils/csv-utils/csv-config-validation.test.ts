@@ -2,6 +2,7 @@ import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import xlsx, { WorkSheet } from 'xlsx';
+import { updateCSVRowState } from '../../services/import-services/utils/row-state';
 import { WorksheetRowIndexSymbol } from '../xlsx-utils/worksheet-utils';
 import {
   executeRowValidator,
@@ -13,7 +14,6 @@ import {
   validateCSVWorksheet
 } from './csv-config-validation';
 import { CSVConfig, CSVRowState } from './csv-config-validation.interface';
-import { updateCSVRowState } from './csv-header-configs';
 chai.use(sinonChai);
 
 describe('csv-config-validation', () => {
@@ -63,7 +63,7 @@ describe('csv-config-validation', () => {
         ALIAS: 'newValue',
         DYNAMIC_HEADER: 'newDynamicValue',
         OTHER_DYNAMIC_HEADER: 'newDynamicValue',
-        [CSVRowState]: undefined
+        [CSVRowState]: {}
       });
     });
 
@@ -436,6 +436,7 @@ describe('csv-config-validation', () => {
       ]);
     });
   });
+
   describe('executeValidateCell', () => {
     it('should call the validateCell callback and return errors array', () => {
       const validateCellStub = sinon.stub().returns([{ error: 'error', solution: 'solution' }]);

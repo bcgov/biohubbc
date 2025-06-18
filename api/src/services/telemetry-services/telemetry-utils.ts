@@ -46,7 +46,7 @@ export interface IValidationData {
    *
    * @type {IMultipleData}
    */
-  keyData?: IMultipleData[]; // Array<{}>;
+  keyData?: IMultipleData[];
   /**
    * Error message place holder
    *
@@ -324,7 +324,6 @@ export const checkFileForKeyx = async (
 
     // Parse data out of the XML file
     const parser = new XMLParser(xmlParserOptions);
-    // const jsonKeyxData = parser.parse(xmlString);
     const jsonKeyxData = mapKeyxData(parser.parse(xmlString));
 
     // Validate key using Vectronic API separation count
@@ -340,7 +339,7 @@ export const checkFileForKeyx = async (
           }
         ]
       };
-    } catch (error) {
+    } catch (_error) {
       keyStatus = {
         type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.KEYX,
         error: `${TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING.INVALID_XML_FILE}: ${TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING.KEYX_NOT_FOUND}`
@@ -470,7 +469,7 @@ const processKeyxFilesArray = async (
     try {
       await telemetryVectronicService.fetchTelemetrySepCountFromVectronic(jsonKeyxData.id, jsonKeyxData.key);
       keyStatus = true;
-    } catch (error) {
+    } catch (_error) {
       keyStatus = false;
     }
 

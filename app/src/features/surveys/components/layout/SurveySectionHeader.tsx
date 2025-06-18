@@ -5,7 +5,7 @@ import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import { Link as RouterLink } from 'react-router-dom';
 
-export interface SurveySectionHeaderProps {
+interface SurveySectionHeaderProps {
   project_id: number;
   project_name: string;
   survey_id: number;

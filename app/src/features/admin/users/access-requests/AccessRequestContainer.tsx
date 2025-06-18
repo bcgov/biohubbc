@@ -11,7 +11,7 @@ import AccessRequestActionedList from './list/actioned/AccessRequestActionedList
 import AccessRequestPendingList from './list/pending/AccessRequestPendingList';
 import AccessRequestRejectedList from './list/rejected/AccessRequestRejectedList';
 
-export interface IAccessRequestContainerProps {
+interface IAccessRequestContainerProps {
   accessRequests: IGetAccessRequestsListResponse[];
   refresh: () => void;
 }

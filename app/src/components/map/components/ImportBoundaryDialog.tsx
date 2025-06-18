@@ -5,7 +5,7 @@ import FileUpload from 'components/file-upload/FileUpload';
 import { Feature } from 'geojson';
 import { boundaryUploadHelper } from 'utils/mapBoundaryUploadHelpers';
 
-export interface IImportBoundaryDialogProps {
+interface IImportBoundaryDialogProps {
   dialogTitle: string;
   isOpen: boolean;
   onClose: () => void;

@@ -13,6 +13,7 @@ import { EditAnimalI18N } from 'constants/i18n';
 import { AnimalFormContainer } from 'features/surveys/animals/animal-form/components/AnimalFormContainer';
 import { FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 import {
   useAnimalPageContext,
   useDialogContext,
@@ -21,7 +22,7 @@ import {
   useTaxonomyContext
 } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
-import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
+import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { ICreateEditAnimalRequest } from 'interfaces/useCritterApi.interface';
 import { useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
@@ -36,6 +37,7 @@ export const EditAnimalPage = () => {
   const history = useHistory();
 
   const critterbaseApi = useCritterbaseApi();
+  const biohubApi = useBiohubApi();
   const surveyContext = useSurveyContext();
   const projectContext = useProjectContext();
   const dialogContext = useDialogContext();
@@ -45,7 +47,7 @@ export const EditAnimalPage = () => {
   const urlParams: Record<string, string | number | undefined> = useParams();
   const surveyCritterId: number | undefined = Number(urlParams['critter_id']);
 
-  const { locationChangeInterceptor } = useUnsavedChangesDialog();
+  const { locationChangeInterceptor, skipUnsavedChangesDialog } = useUnsavedChangesDialog();
 
   const [isSaving, setIsSaving] = useState(false);
 
@@ -105,11 +107,11 @@ export const EditAnimalPage = () => {
         return;
       }
 
-      const response = await critterbaseApi.critters.updateCritter({
+      await biohubApi.survey.updateCritterAndAddToSurvey(projectId, surveyId, critter.critter_id, {
         critter_id: critter.critterbase_critter_id,
-        itis_tsn: values.species.tsn,
-        wlh_id: values.wildlife_health_id,
         animal_id: values.nickname,
+        wlh_id: values.wildlife_health_id,
+        itis_tsn: values.species.tsn,
         sex_qualitative_option_id: values.sex_qualitative_option_id,
         critter_comment: values.critter_comment
       });
@@ -141,7 +143,7 @@ export const EditAnimalPage = () => {
         ]
       });
 
-      if (!response || !bulkResponse) {
+      if (!bulkResponse) {
         showCreateErrorDialog({
           dialogError: 'The response from the server was null, or did not contain a survey ID.'
         });
@@ -152,7 +154,8 @@ export const EditAnimalPage = () => {
       surveyContext.critterDataLoader.refresh(projectId, surveyId);
       animalPageContext.critterDataLoader.refresh(projectId, surveyId, critter.critter_id);
 
-      history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals`, SKIP_CONFIRMATION_DIALOG);
+      skipUnsavedChangesDialog();
+      history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals`);
     } catch (error) {
       const apiError = error as APIError;
       showCreateErrorDialog({

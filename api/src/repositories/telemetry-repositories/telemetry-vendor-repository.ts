@@ -8,10 +8,12 @@ import { ApiPaginationOptions } from '../../zod-schema/pagination';
 import { BaseRepository } from '../base-repository';
 import {
   Telemetry,
+  TelemetryFilters,
   TelemetryOptions,
   TelemetrySchema,
   TelemetrySpatial,
   TelemetrySpatialSchema,
+  TelemetrySupplementary,
   TelemetryVendorEnum
 } from './telemetry-vendor-repository.interface';
 
@@ -743,13 +745,13 @@ export class TelemetryVendorRepository extends BaseRepository {
       .from('telemetry');
 
     // Inject date range if provided
-    if (options?.dateRange) {
-      if (options.dateRange.startDate) {
-        queryBuilder.where('telemetry.acquisition_date', '>=', options.dateRange.startDate);
+    if (options?.filters) {
+      if (options.filters.startDate) {
+        queryBuilder.where('telemetry.acquisition_date', '>=', options.filters.startDate);
       }
 
-      if (options.dateRange.endDate) {
-        queryBuilder.where('telemetry.acquisition_date', '<=', options.dateRange.endDate);
+      if (options.filters.endDate) {
+        queryBuilder.where('telemetry.acquisition_date', '<=', options.filters.endDate);
       }
     }
 
@@ -779,9 +781,14 @@ export class TelemetryVendorRepository extends BaseRepository {
    *
    * @param {number} surveyId
    * @param {number[]} deploymentIds
+   * @param {TelemetryFilters} filters
    * @returns {Promise<TelemetrySpatial[]>}
    */
-  async getTelemetrySpatialByDeploymentIds(surveyId: number, deploymentIds: number[]): Promise<TelemetrySpatial[]> {
+  async getTelemetrySpatialByDeploymentIds(
+    surveyId: number,
+    deploymentIds: number[],
+    filters?: TelemetryFilters
+  ): Promise<TelemetrySpatial[]> {
     const knex = getKnex();
 
     const queryBuilder = knex.queryBuilder();
@@ -800,22 +807,36 @@ export class TelemetryVendorRepository extends BaseRepository {
       )
       .from('telemetry');
 
+    // Inject date range if provided
+    if (filters) {
+      if (filters.startDate) {
+        queryBuilder.where('telemetry.acquisition_date', '>=', filters.startDate);
+      }
+
+      if (filters.endDate) {
+        queryBuilder.where('telemetry.acquisition_date', '<=', filters.endDate);
+      }
+    }
+
     const response = await this.connection.knex(queryBuilder, TelemetrySpatialSchema);
 
     return response.rows;
   }
 
   /**
-   * Get the total count of all telemetry records for list of deployment IDs.
+   * Get the total count, start date, and end date of telemetry records for a list of deployment IDs.
    *
-   * Note: Currently supports, `Lotek`, `Vectronic`, `ATS`, and `Manual` telemetry.
+   * Note: Currently supports `Lotek`, `Vectronic`, `ATS`, and `Manual` telemetry.
    *
    * @param {number} surveyId
    * @param {number[]} deploymentIds
-   * @return {*}  {Promise<number>}
+   * @return {*}  {Promise<TelemetrySupplementary>}
    * @memberof TelemetryVendorRepository
    */
-  async getTelemetryCountByDeploymentIds(surveyId: number, deploymentIds: number[]): Promise<number> {
+  async getTelemetrySupplementaryByDeploymentIds(
+    surveyId: number,
+    deploymentIds: number[]
+  ): Promise<TelemetrySupplementary> {
     const knex = getKnex();
 
     const queryBuilder = knex
@@ -823,12 +844,16 @@ export class TelemetryVendorRepository extends BaseRepository {
       .with('telemetry', (qb) => {
         this.getTelemetryByDeploymentIdsBaseQuery(qb, surveyId, deploymentIds);
       })
-      .select(knex.raw('count(*)::integer as count'))
+      .select(
+        knex.raw('count(*)::integer as count'),
+        knex.raw('MIN(acquisition_date) AS start_date'),
+        knex.raw('MAX(acquisition_date) AS end_date')
+      )
       .from('telemetry');
 
-    const response = await this.connection.knex(queryBuilder, z.object({ count: z.number() }));
+    const response = await this.connection.knex(queryBuilder, TelemetrySupplementary);
 
-    return response.rows[0].count;
+    return response.rows[0];
   }
 
   /**
@@ -940,6 +965,31 @@ export class TelemetryVendorRepository extends BaseRepository {
   }
 
   /**
+   * Builds the main base and export telemetry query
+   *
+   * @param {Knex} knex
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId
+   * @param {IAllTelemetryAdvancedFilters} filterFields
+   * @returns {Knex.QueryBuilder}
+   * @memberof TelemetryVendorRepository
+   */
+  buildTelemetryQuery(
+    knex: Knex,
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: IAllTelemetryAdvancedFilters
+  ): Knex.QueryBuilder {
+    return knex
+      .queryBuilder()
+      .with('telemetry', (qb) => {
+        this.findTelemetryBaseQuery(qb, isUserAdmin, systemUserId, filterFields);
+      })
+      .select('*')
+      .from('telemetry');
+  }
+
+  /**
    * Retrieves the paginated list of all surveys that are available to the user.
    *
    * @param {boolean} isUserAdmin
@@ -957,13 +1007,7 @@ export class TelemetryVendorRepository extends BaseRepository {
   ): Promise<Telemetry[]> {
     const knex = getKnex();
 
-    const queryBuilder = knex
-      .queryBuilder()
-      .with('telemetry', (qb) => {
-        this.findTelemetryBaseQuery(qb, isUserAdmin, systemUserId, filterFields);
-      })
-      .select('*')
-      .from('telemetry');
+    const queryBuilder = this.buildTelemetryQuery(knex, isUserAdmin, systemUserId, filterFields);
 
     // Inject pagination / sorting if provided
     if (pagination) {

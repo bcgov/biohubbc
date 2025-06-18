@@ -160,7 +160,7 @@ export const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocom
                   color="textSecondary"
                   name={
                     renderOption.itis_tsn
-                      ? taxonomyContext.getCachedSpeciesTaxonomyById(renderOption.itis_tsn)?.scientificName ?? ''
+                      ? (taxonomyContext.getCachedSpeciesTaxonomyById(renderOption.itis_tsn)?.scientificName ?? '')
                       : ''
                   }
                 />

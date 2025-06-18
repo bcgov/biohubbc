@@ -104,16 +104,12 @@ export const _getLoggerParameters = (logLabel: string, params: CustomLoggerParam
  * @return {*}  {string[]}
  */
 const _getLoggerTransportTypes = (): string[] => {
-  const transportTypes = [];
+  const transportTypes = ['console'];
 
   // Do not output logs to file when running unit tests
   // Note: Both lifecycle events are needed to prevent log files ie: `npm run test` or `npm run test-watch`
   if (process.env.npm_lifecycle_event !== 'test' && process.env.npm_lifecycle_event !== 'test-watch') {
     transportTypes.push('file');
-  }
-
-  if (process.env.NODE_ENV !== 'production') {
-    transportTypes.push('console');
   }
 
   return transportTypes;

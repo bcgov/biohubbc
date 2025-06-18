@@ -115,7 +115,7 @@ export class PlatformService extends DBService {
       });
 
       return data.searchResponse;
-    } catch (error) {
+    } catch (_error) {
       return [];
     }
   }

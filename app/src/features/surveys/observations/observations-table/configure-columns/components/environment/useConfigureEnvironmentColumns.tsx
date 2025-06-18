@@ -106,35 +106,35 @@ export const useConfigureEnvironmentColumns = () => {
           return remainingColumns;
         });
 
-        // Update saved rows, removing any cell values for the deleted columns
-        observationsTableContext.setSavedRows((currentSavedRows) => {
-          return currentSavedRows.map((savedRow) => {
-            for (const columnIdToRemove of environmentColumnsToRemove.qualitative_environments) {
-              delete savedRow[columnIdToRemove];
-            }
+        // // Update saved rows, removing any cell values for the deleted columns
+        // observationsTableContext.setSavedRows((currentSavedRows) => {
+        //   return currentSavedRows.map((savedRow) => {
+        //     for (const columnIdToRemove of environmentColumnsToRemove.qualitative_environments) {
+        //       delete savedRow[columnIdToRemove];
+        //     }
 
-            for (const columnIdToRemove of environmentColumnsToRemove.quantitative_environments) {
-              delete savedRow[columnIdToRemove];
-            }
+        //     for (const columnIdToRemove of environmentColumnsToRemove.quantitative_environments) {
+        //       delete savedRow[columnIdToRemove];
+        //     }
 
-            return savedRow;
-          });
-        });
+        //     return savedRow;
+        //   });
+        // });
 
-        // Update staged rows, removing any cell values for the deleted columns
-        observationsTableContext.setStagedRows((currentStagedRows) => {
-          return currentStagedRows.map((stagedRow) => {
-            for (const columnIdToRemove of environmentColumnsToRemove.qualitative_environments) {
-              delete stagedRow[columnIdToRemove];
-            }
+        // // Update staged rows, removing any cell values for the deleted columns
+        // observationsTableContext.setStagedRows((currentStagedRows) => {
+        //   return currentStagedRows.map((stagedRow) => {
+        //     for (const columnIdToRemove of environmentColumnsToRemove.qualitative_environments) {
+        //       delete stagedRow[columnIdToRemove];
+        //     }
 
-            for (const columnIdToRemove of environmentColumnsToRemove.quantitative_environments) {
-              delete stagedRow[columnIdToRemove];
-            }
+        //     for (const columnIdToRemove of environmentColumnsToRemove.quantitative_environments) {
+        //       delete stagedRow[columnIdToRemove];
+        //     }
 
-            return stagedRow;
-          });
-        });
+        //     return stagedRow;
+        //   });
+        // });
       });
     },
     [observationsTableContext, surveyContext.surveyId]

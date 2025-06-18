@@ -1,4 +1,3 @@
-import { PublishStatus } from 'constants/attachments';
 import { IAgreementsForm } from 'features/surveys/components/agreements/AgreementsForm';
 import { IProprietaryDataForm } from 'features/surveys/components/agreements/ProprietaryDataForm';
 import {
@@ -65,7 +64,7 @@ export interface ISurveySiteSelectionForm {
   };
 }
 
-export interface ISurveyBlockForm {
+interface ISurveyBlockForm {
   blocks: {
     survey_block_id: number | null;
     name: string;
@@ -75,7 +74,7 @@ export interface ISurveyBlockForm {
   }[];
 }
 
-export interface IParticipantsJobForm {
+interface IParticipantsJobForm {
   participants: IGetSurveyParticipant[];
 }
 
@@ -251,16 +250,6 @@ export interface SurveySupplementaryData {
 }
 
 /**
- * An interface describing Survey Publish Data
- *
- * @export
- * @interface ISurveySupplementaryData
- */
-export interface ISurveySupplementaryData {
-  publishStatus: PublishStatus;
-}
-
-/**
  * Find surveys basic fields response object.
  *
  * @export
@@ -341,7 +330,7 @@ export interface ISurveyPermits {
   }[];
 }
 
-export interface IUpdateAgreementsForm {
+interface IUpdateAgreementsForm {
   agreements: {
     sedis_procedures_accepted: StringBoolean;
     foippa_requirements_accepted: StringBoolean;

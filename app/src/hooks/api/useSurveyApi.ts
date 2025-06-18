@@ -420,6 +420,28 @@ const useSurveyApi = (axios: AxiosInstance) => {
   };
 
   /**
+   * Update a critter and add it to the list of critters associated with this survey. This will update the critter in Critterbase.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {number} simsCritterId
+   * @param {ICreateCritter} critter
+   * @return {*} {Promise<void>}
+   */
+  const updateCritterAndAddToSurvey = async (
+    projectId: number,
+    surveyId: number,
+    simsCritterId: number,
+    critter: ICreateCritter
+  ): Promise<void> => {
+    const { data } = await axios.patch(
+      `/api/project/${projectId}/survey/${surveyId}/critters/${simsCritterId}`,
+      critter
+    );
+    return data;
+  };
+
+  /**
    * Remove critters from the survey. Will not delete critters in critterbase.
    *
    * @param {number} projectId
@@ -623,6 +645,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     deleteSurvey,
     getSurveyCritters,
     createCritterAndAddToSurvey,
+    updateCritterAndAddToSurvey,
     removeCrittersFromSurvey,
     getSurveyCrittersDetailed,
     getCritterById,

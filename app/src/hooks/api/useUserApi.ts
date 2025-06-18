@@ -56,7 +56,7 @@ const useUserApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Get user details for all users.
+   * Delete a system user record (this is a hard delete, removing them from the database)
    *
    * @return {*}  {Promise<ISystemUser[]>}
    */
@@ -67,7 +67,29 @@ const useUserApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Get user details for all users.
+   * Deactivate a system user record (this is a soft delete, filling in the record_end_date field)
+   *
+   * @return {*}  {Promise<ISystemUser[]>}
+   */
+  const deactivateSystemUser = async (systemUserId: number): Promise<number> => {
+    const { data } = await axios.post(`/api/user/${systemUserId}/deactivate`);
+
+    return data;
+  };
+
+  /**
+   * Reactivate an existing system user (set record_end_date to null)
+   *
+   * @return {*}  {Promise<ISystemUser[]>}
+   */
+  const activateSystemUser = async (systemUserId: number): Promise<number> => {
+    const { data } = await axios.post(`/api/user/${systemUserId}/activate`);
+
+    return data;
+  };
+
+  /**
+   * Update the roles of a system user
    *
    * @return {*}  {Promise<ISystemUser[]>}
    */
@@ -104,6 +126,8 @@ const useUserApi = (axios: AxiosInstance) => {
     getUserById,
     getUsersList,
     deleteSystemUser,
+    deactivateSystemUser,
+    activateSystemUser,
     updateSystemUserRoles,
     searchSystemUser
   };

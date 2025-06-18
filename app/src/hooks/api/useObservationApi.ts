@@ -5,42 +5,17 @@ import {
   CBQuantitativeMeasurementTypeDefinition
 } from 'interfaces/useCritterApi.interface';
 import {
+  ICreateObservation,
+  IEditObservation,
+  IGetSurveyFlattenedObservationsResponse,
   IGetSurveyObservationsGeometryResponse,
   IGetSurveyObservationsResponse,
-  ObservationRecord,
-  StandardObservationColumns
+  SurveyObservationBasic,
+  SurveyObservationWithSupplementaryData
 } from 'interfaces/useObservationApi.interface';
 import { EnvironmentTypeIds } from 'interfaces/useReferenceApi.interface';
 import { IPartialTaxonomy } from 'interfaces/useTaxonomyApi.interface';
-import qs from 'qs';
 import { ApiPaginationRequestOptions } from 'types/misc';
-
-export interface SubcountToSave {
-  observation_subcount_id: number | null;
-  subcount: number | null;
-  comment: string | null;
-  qualitative_measurements: {
-    measurement_id: string;
-    measurement_option_id: string;
-  }[];
-  quantitative_measurements: {
-    measurement_id: string;
-    measurement_value: number;
-  }[];
-  qualitative_environments: {
-    environment_qualitative_id: string;
-    environment_qualitative_option_id: string;
-  }[];
-  quantitative_environments: {
-    environment_quantitative_id: string;
-    value: number;
-  }[];
-}
-
-export interface IObservationTableRowToSave {
-  standardColumns: StandardObservationColumns;
-  subcounts: SubcountToSave[];
-}
 
 /**
  * Returns a set of supported api methods for working with observations.
@@ -50,29 +25,49 @@ export interface IObservationTableRowToSave {
  */
 const useObservationApi = (axios: AxiosInstance) => {
   /**
-   * Insert/updates all survey observation records for the given survey
+   * Creates a new observation for the survey
    *
    * @param {number} projectId
    * @param {number} surveyId
-   * @param {IObservationTableRowToSave[]} surveyObservations
+   * @param {ICreateObservation} surveyObservation
    * @return {*}  {Promise<void>}
    */
-  const insertUpdateObservationRecords = async (
+  const createObservation = async (
     projectId: number,
     surveyId: number,
-    surveyObservations: IObservationTableRowToSave[]
+    surveyObservation: ICreateObservation
   ): Promise<void> => {
-    await axios.put(`/api/project/${projectId}/survey/${surveyId}/observations`, {
-      surveyObservations
+    await axios.post(`/api/project/${projectId}/survey/${surveyId}/observations`, {
+      surveyObservations: [surveyObservation]
     });
   };
 
   /**
-   * Get observations for a system user id.
+   * Updates an existing observation for the survey
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {number} surveyObservationId
+   * @param {IEditObservation} surveyObservation
+   * @return {*}  {Promise<void>}
+   */
+  const updateObservation = async (
+    projectId: number,
+    surveyId: number,
+    surveyObservationId: number,
+    surveyObservation: IEditObservation
+  ): Promise<void> => {
+    await axios.put(`/api/project/${projectId}/survey/${surveyId}/observations/${surveyObservationId}`, {
+      surveyObservation: surveyObservation
+    });
+  };
+
+  /**
+   * Find observations.
    *
    * @param {ApiPaginationRequestOptions} [pagination]
    * @param {IObservationsAdvancedFilters} filterFieldData
-   * @return {*} {Promise<IFindProjectsResponse[]>}
+   * @return {*} {Promise<IGetSurveyObservationsResponse[]>}
    */
   const findObservations = async (
     pagination?: ApiPaginationRequestOptions,
@@ -84,8 +79,30 @@ const useObservationApi = (axios: AxiosInstance) => {
     };
 
     const { data } = await axios.get('/api/observation', {
-      params,
-      paramsSerializer: (params) => qs.stringify(params)
+      params
+    });
+
+    return data;
+  };
+
+  /**
+   * Find flattened observations.
+   *
+   * @param {ApiPaginationRequestOptions} [pagination]
+   * @param {IObservationsAdvancedFilters} filterFieldData
+   * @return {*} {Promise<IFindSurveyFlattenedObservationsResponse[]>}
+   */
+  const findFlattenedObservations = async (
+    pagination?: ApiPaginationRequestOptions,
+    filterFieldData?: IObservationsAdvancedFilters
+  ): Promise<IGetSurveyFlattenedObservationsResponse> => {
+    const params = {
+      ...pagination,
+      ...filterFieldData
+    };
+
+    const { data } = await axios.get('/api/observation/flattened', {
+      params
     });
 
     return data;
@@ -110,6 +127,33 @@ const useObservationApi = (axios: AxiosInstance) => {
 
     const { data } = await axios.get<IGetSurveyObservationsResponse>(
       `/api/project/${projectId}/survey/${surveyId}/observations`,
+      {
+        params
+      }
+    );
+
+    return data;
+  };
+
+  /**
+   * Retrieves all survey flattened observation records for the given survey
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {ApiPaginationRequestOptions} [pagination]
+   * @return {*}  {Promise<IGetSurveyFlattenedObservationsResponse>}
+   */
+  const getFlattenedObservationRecords = async (
+    projectId: number,
+    surveyId: number,
+    pagination?: ApiPaginationRequestOptions
+  ): Promise<IGetSurveyFlattenedObservationsResponse> => {
+    const params = {
+      ...pagination
+    };
+
+    const { data } = await axios.get<IGetSurveyFlattenedObservationsResponse>(
+      `/api/project/${projectId}/survey/${surveyId}/observations/flattened`,
       {
         params
       }
@@ -156,20 +200,40 @@ const useObservationApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Retrieves all survey observation records for the given survey
+   * Get a survey observation record, with additional data.
    *
    * @param {number} projectId
    * @param {number} surveyId
-   * @param {ApiPaginationRequestOptions} [pagination]
-   * @return {*}  {Promise<ObservationRecord>}
+   * @param {number} surveyObservationId
+   * @return {*}  {Promise<SurveyObservationWithSupplementaryData>}
    */
   const getObservationRecord = async (
     projectId: number,
     surveyId: number,
     surveyObservationId: number
-  ): Promise<ObservationRecord> => {
-    const { data } = await axios.get<ObservationRecord>(
+  ): Promise<SurveyObservationWithSupplementaryData> => {
+    const { data } = await axios.get<SurveyObservationWithSupplementaryData>(
       `/api/project/${projectId}/survey/${surveyId}/observations/${surveyObservationId}`
+    );
+
+    return data;
+  };
+
+  /**
+   * Get a survey observation record.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {number} surveyObservationId
+   * @return {*}  {Promise<SurveyObservationBasic>}
+   */
+  const getBasicObservationRecord = async (
+    projectId: number,
+    surveyId: number,
+    surveyObservationId: number
+  ): Promise<SurveyObservationBasic> => {
+    const { data } = await axios.get<SurveyObservationBasic>(
+      `/api/project/${projectId}/survey/${surveyId}/observations/${surveyObservationId}/basic`
     );
 
     return data;
@@ -246,26 +310,24 @@ const useObservationApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Deletes all of the observation measurements, from all observation records, having the given taxon measurement id.
+   * Delete observation subcount records having the given observation subcount id.
+   *
+   * Note: An observation must have at least one subcount. If all subcount records are deleted, the observation record
+   * will also be deleted.
    *
    * @param {number} projectId
    * @param {number} surveyId
-   * @param {string[]} measurementIds The critterbase taxon measurement ids to delete.
+   * @param {((string | number)[])} observationSubcountIds
    * @return {*}  {Promise<void>}
    */
-  const deleteObservationMeasurements = async (
+  const deleteObservationSubcounts = async (
     projectId: number,
     surveyId: number,
-    measurementIds: string[]
+    observationSubcountIds: (string | number)[]
   ): Promise<void> => {
-    const { data } = await axios.post<void>(
-      `/api/project/${projectId}/survey/${surveyId}/observations/measurements/delete`,
-      {
-        measurement_ids: measurementIds
-      }
-    );
-
-    return data;
+    await axios.post(`/api/project/${projectId}/survey/${surveyId}/observations/subcounts/delete`, {
+      observationSubcountIds
+    });
   };
 
   /**
@@ -284,8 +346,31 @@ const useObservationApi = (axios: AxiosInstance) => {
     const { data } = await axios.post<void>(
       `/api/project/${projectId}/survey/${surveyId}/observations/environments/delete`,
       {
-        environment_qualitative_id: environmentIds.qualitative_environments,
-        environment_quantitative_id: environmentIds.quantitative_environments
+        environment_qualitative_ids: environmentIds.qualitative_environments,
+        environment_quantitative_ids: environmentIds.quantitative_environments
+      }
+    );
+
+    return data;
+  };
+
+  /**
+   * Deletes all of the observation measurements, from all observation records, having the given measurement_id.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {string[]} measurementIds The measurement ids to delete.
+   * @return {*}  {Promise<void>}
+   */
+  const deleteObservationMeasurements = async (
+    projectId: number,
+    surveyId: number,
+    measurementIds: string[]
+  ): Promise<void> => {
+    const { data } = await axios.post<void>(
+      `/api/project/${projectId}/survey/${surveyId}/observations/measurements/delete`,
+      {
+        measurement_ids: measurementIds
       }
     );
 
@@ -293,17 +378,22 @@ const useObservationApi = (axios: AxiosInstance) => {
   };
 
   return {
-    insertUpdateObservationRecords,
     getObservationRecords,
+    getFlattenedObservationRecords,
     getObservationRecord,
+    getBasicObservationRecord,
     getObservedSpecies,
     findObservations,
+    findFlattenedObservations,
     getObservationsGeometry,
     getObservationMeasurementDefinitions,
     deleteObservationRecords,
-    deleteObservationMeasurements,
+    deleteObservationSubcounts,
     deleteObservationEnvironments,
-    importObservationCSV
+    deleteObservationMeasurements,
+    importObservationCSV,
+    createObservation,
+    updateObservation
   };
 };
 

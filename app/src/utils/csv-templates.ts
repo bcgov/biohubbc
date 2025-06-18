@@ -55,7 +55,7 @@ export const getMarkingsCSVTemplate = (): CSVEncodedTemplate => {
  * @returns {CSVEncodedTemplate} Encoded CSV template
  */
 export const getTelemetryCSVTemplate = (): CSVEncodedTemplate => {
-  return getCSVTemplate(['VENDOR', 'SERIAL', 'LATITUDE', 'LONGITUDE', 'DATE', 'TIME']);
+  return getCSVTemplate(['VENDOR', 'SERIAL', 'ALIAS', 'LATITUDE', 'LONGITUDE', 'DATE', 'TIME']);
 };
 
 /**
@@ -83,4 +83,34 @@ export const getSamplePeriodCSVTemplate = (): CSVEncodedTemplate => {
  */
 export const getAnimalCSVTemplate = (): CSVEncodedTemplate => {
   return getCSVTemplate(['SPECIES', 'ALIAS', 'SEX', 'WLH_ID', 'DESCRIPTION']);
+};
+
+/**
+ * Get CSV template for Habitat Features.
+ *
+ * @returns {CSVEncodedTemplate} Encoded CSV template
+ */
+export const getHabitatFeaturesCSVTemplate = (): CSVEncodedTemplate => {
+  return getCSVTemplate([
+    'HABITAT_FEATURE',
+    'SPECIES',
+    'SITE',
+    'TECHNIQUE',
+    'PERIOD',
+    'COUNT',
+    'LATITUDE',
+    'LONGITUDE',
+    'DATE',
+    'TIME',
+    'COMMENT'
+  ]);
+};
+
+/**
+ * Get CSV template for devices.
+ *
+ * @returns {CSVEncodedTemplate} Encoded CSV template
+ */
+export const getDeviceCSVTemplate = (): CSVEncodedTemplate => {
+  return getCSVTemplate(['VENDOR', 'SERIAL', 'MODEL', 'COMMENT']);
 };

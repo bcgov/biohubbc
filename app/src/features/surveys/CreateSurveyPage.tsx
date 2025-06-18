@@ -18,7 +18,7 @@ import { SurveyPartnershipsFormInitialValues } from 'features/surveys/view/compo
 import { FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
+import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { ICreateSurveyRequest, IEditSurveyRequest } from 'interfaces/useSurveyApi.interface';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
@@ -38,7 +38,9 @@ import { SurveySiteSelectionInitialValues } from './components/sampling-strategy
 import { SpeciesInitialValues } from './components/species/SpeciesForm';
 import EditSurveyForm from './edit/EditSurveyForm';
 
-export const defaultSurveyDataFormValues: ICreateSurveyRequest & ISurveyPermitForm & ISurveyFundingSourceForm = {
+type CreateSurvey = ICreateSurveyRequest & ISurveyPermitForm & ISurveyFundingSourceForm;
+
+const defaultSurveyDataFormValues: CreateSurvey = {
   ...GeneralInformationInitialValues,
   ...SurveyPermitFormInitialValues,
   ...PurposeAndMethodologyInitialValues,
@@ -78,7 +80,7 @@ const CreateSurveyPage = () => {
 
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
   const [enableCancelCheck, setEnableCancelCheck] = useState<boolean>(true);
-  const { locationChangeInterceptor } = useUnsavedChangesDialog();
+  const { locationChangeInterceptor, skipUnsavedChangesDialog } = useUnsavedChangesDialog();
 
   const [isSaving, setIsSaving] = useState(false);
 
@@ -108,7 +110,7 @@ const CreateSurveyPage = () => {
    *
    * @return {*}
    */
-  const handleSubmit = async (values: ICreateSurveyRequest & ISurveyPermitForm & ISurveyFundingSourceForm) => {
+  const handleSubmit = async (values: CreateSurvey) => {
     setIsSaving(true);
     try {
       // Remove the permit_used and funding_used properties
@@ -151,10 +153,8 @@ const CreateSurveyPage = () => {
 
       setEnableCancelCheck(false);
 
-      history.push(
-        `/admin/projects/${projectData?.project.project_id}/surveys/${response.id}/details`,
-        SKIP_CONFIRMATION_DIALOG
-      );
+      skipUnsavedChangesDialog();
+      history.push(`/admin/projects/${projectData?.project.project_id}/surveys/${response.id}/details`);
     } catch (error) {
       const apiError = error as APIError;
       showCreateErrorDialog({
@@ -206,9 +206,7 @@ const CreateSurveyPage = () => {
         <Paper sx={{ p: 5 }}>
           <EditSurveyForm
             initialSurveyData={defaultSurveyDataFormValues}
-            handleSubmit={(formikData) =>
-              handleSubmit(formikData as unknown as ICreateSurveyRequest & ISurveyPermitForm & ISurveyFundingSourceForm)
-            }
+            handleSubmit={(formikData) => handleSubmit(formikData as unknown as CreateSurvey)}
             formikRef={formikRef}
           />
           <Stack mt={4} flexDirection="row" justifyContent="flex-end" gap={1}>

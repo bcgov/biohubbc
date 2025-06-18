@@ -45,11 +45,12 @@ describe('CodeService', () => {
         'sample_methods',
         'survey_progress',
         'method_response_metrics',
-        'observation_subcount_signs',
+        'observation_signs',
         'telemetry_device_makes',
         'frequency_units',
         'alert_types',
-        'vantages'
+        'vantages',
+        'habitat_feature_types'
       );
     });
   });

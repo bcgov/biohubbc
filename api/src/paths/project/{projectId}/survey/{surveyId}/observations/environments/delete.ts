@@ -3,7 +3,7 @@ import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
-import { ObservationSubCountEnvironmentService } from '../../../../../../../services/observation-subcount-environment-service';
+import { ObservationEnvironmentService } from '../../../../../../../services/observation-environment-service';
 import { getLogger } from '../../../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observations/environments');
@@ -64,7 +64,7 @@ POST.apiDoc = {
           type: 'object',
           additionalProperties: false,
           properties: {
-            environment_qualitative_id: {
+            environment_qualitative_ids: {
               description: 'An array of qualitative environment ids to delete',
               type: 'array',
               items: {
@@ -72,7 +72,7 @@ POST.apiDoc = {
                 format: 'uuid'
               }
             },
-            environment_quantitative_id: {
+            environment_quantitative_ids: {
               description: 'An array of quantitative environment ids to delete',
               type: 'array',
               items: {
@@ -122,14 +122,14 @@ export function deleteObservationEnvironments(): RequestHandler {
       const surveyId = Number(req.params.surveyId);
 
       const environmentIds = {
-        environment_qualitative_id: req.body.environment_qualitative_id,
-        environment_quantitative_id: req.body.environment_quantitative_id
+        environment_qualitative_ids: req.body.environment_qualitative_ids,
+        environment_quantitative_ids: req.body.environment_quantitative_ids
       };
 
       defaultLog.debug({ label: 'deleteObservationEnvironments', surveyId });
       await connection.open();
 
-      const service = new ObservationSubCountEnvironmentService(connection);
+      const service = new ObservationEnvironmentService(connection);
       await service.deleteEnvironmentsForEnvironmentIds(surveyId, environmentIds);
 
       await connection.commit();

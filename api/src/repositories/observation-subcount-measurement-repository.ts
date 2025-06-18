@@ -1,4 +1,3 @@
-import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { getKnex } from '../database/db';
 import { BaseRepository } from './base-repository';
@@ -87,34 +86,46 @@ export class ObservationSubCountMeasurementRepository extends BaseRepository {
    * Get all distinct taxon_measurment_ids for all qualitative measurements for a given survey.
    *
    * @param {number} surveyId
+   * @param {{
+   *       filterFields?: {
+   *         surveyObservationIds?: number[];
+   *       };
+   *     }} [options] Optional fields to additionally filter results by
    * @return {*}  {Promise<string[]>}
    * @memberof ObservationSubCountMeasurementRepository
    */
-  async getObservationSubCountQualitativeTaxonMeasurementIds(surveyId: number): Promise<string[]> {
-    const sqlStatement = SQL`
-      SELECT
-        DISTINCT critterbase_taxon_measurement_id
-      FROM
-        observation_subcount_qualitative_measurement
-      WHERE
-        observation_subcount_id in (
-          select
-            observation_subcount_id
-          FROM
-            observation_subcount
-          WHERE
-            survey_observation_id in (
-              SELECT
-                survey_observation_id
-              FROM
-                survey_observation
-              WHERE
-                survey_id = ${surveyId}
-            )
-        )
-    `;
+  async getObservationSubCountQualitativeTaxonMeasurementIds(
+    surveyId: number,
+    options?: {
+      filterFields?: {
+        surveyObservationIds?: number[];
+      };
+    }
+  ): Promise<string[]> {
+    const knex = getKnex();
 
-    const response = await this.connection.sql(sqlStatement);
+    const query = knex.queryBuilder();
+
+    query
+      .distinct('critterbase_taxon_measurement_id')
+      .from('observation_subcount_qualitative_measurement')
+      .whereIn('observation_subcount_id', (qb1) => {
+        qb1
+          .select('observation_subcount_id')
+          .from('observation_subcount')
+          .whereIn('survey_observation_id', (qb2) => {
+            qb2.select('survey_observation_id').from('survey_observation').where('survey_id', surveyId);
+
+            if (options?.filterFields?.surveyObservationIds) {
+              qb2.whereIn('survey_observation_id', options.filterFields.surveyObservationIds);
+            }
+          });
+      });
+
+    const response = await this.connection.knex(
+      query,
+      z.object({ critterbase_taxon_measurement_id: z.string().uuid() })
+    );
 
     return response.rows.map((item) => item.critterbase_taxon_measurement_id);
   }
@@ -123,34 +134,46 @@ export class ObservationSubCountMeasurementRepository extends BaseRepository {
    * Get all distinct taxon_measurment_ids for all quantitative measurements for a given survey.
    *
    * @param {number} surveyId
+   * @param {{
+   *       filterFields?: {
+   *         surveyObservationIds?: number[];
+   *       };
+   *     }} [options] Optional fields to additionally filter results by
    * @return {*}  {Promise<string[]>}
    * @memberof ObservationSubCountMeasurementRepository
    */
-  async getObservationSubCountQuantitativeTaxonMeasurementIds(surveyId: number): Promise<string[]> {
-    const sqlStatement = SQL`
-      SELECT
-        DISTINCT critterbase_taxon_measurement_id
-      FROM
-        observation_subcount_quantitative_measurement
-      WHERE
-        observation_subcount_id in (
-          select
-            observation_subcount_id
-          FROM
-            observation_subcount
-          WHERE
-            survey_observation_id in (
-              SELECT
-                survey_observation_id
-              FROM
-                survey_observation
-              WHERE
-                survey_id = ${surveyId}
-            )
-        )
-    `;
+  async getObservationSubCountQuantitativeTaxonMeasurementIds(
+    surveyId: number,
+    options?: {
+      filterFields?: {
+        surveyObservationIds?: number[];
+      };
+    }
+  ): Promise<string[]> {
+    const knex = getKnex();
 
-    const response = await this.connection.sql(sqlStatement);
+    const query = knex.queryBuilder();
+
+    query
+      .distinct('critterbase_taxon_measurement_id')
+      .from('observation_subcount_quantitative_measurement')
+      .whereIn('observation_subcount_id', (qb1) => {
+        qb1
+          .select('observation_subcount_id')
+          .from('observation_subcount')
+          .whereIn('survey_observation_id', (qb2) => {
+            qb2.select('survey_observation_id').from('survey_observation').where('survey_id', surveyId);
+
+            if (options?.filterFields?.surveyObservationIds) {
+              qb2.whereIn('survey_observation_id', options.filterFields.surveyObservationIds);
+            }
+          });
+      });
+
+    const response = await this.connection.knex(
+      query,
+      z.object({ critterbase_taxon_measurement_id: z.string().uuid() })
+    );
 
     return response.rows.map((item) => item.critterbase_taxon_measurement_id);
   }
@@ -170,27 +193,6 @@ export class ObservationSubCountMeasurementRepository extends BaseRepository {
       .whereRaw('observation_subcount.survey_observation_id = survey_observation.survey_observation_id')
       .andWhere(`survey_observation.survey_id`, surveyId)
       .whereIn('survey_observation.survey_observation_id', surveyObservationId);
-    const response = await this.connection.knex(qb);
-
-    return response.rowCount ?? 0;
-  }
-
-  async deleteObservationQuantitativeMeasurementRecordsForSurveyObservationIds(
-    surveyObservationId: number[],
-    surveyId: number
-  ): Promise<number> {
-    const qb = getKnex()
-      .queryBuilder()
-      .delete()
-      .from('observation_subcount_quantitative_measurement')
-      .using(['observation_subcount', 'survey_observation'])
-      .whereRaw(
-        'observation_subcount_quantitative_measurement.observation_subcount_id = observation_subcount.observation_subcount_id'
-      )
-      .whereRaw('observation_subcount.survey_observation_id = survey_observation.survey_observation_id')
-      .andWhere(`survey_observation.survey_id`, surveyId)
-      .whereIn('survey_observation.survey_observation_id', surveyObservationId);
-
     const response = await this.connection.knex(qb);
 
     return response.rowCount ?? 0;
@@ -263,6 +265,102 @@ export class ObservationSubCountMeasurementRepository extends BaseRepository {
       .whereRaw('observation_subcount.survey_observation_id = survey_observation.survey_observation_id')
       .andWhere(`survey_observation.survey_id`, surveyId)
       .whereIn('observation_subcount_quantitative_measurement.critterbase_taxon_measurement_id', measurementIds);
+
+    const response = await this.connection.knex(qb);
+
+    return response.rowCount ?? 0;
+  }
+
+  async deleteObservationQuantitativeMeasurementRecordsForSurveyObservationIds(
+    surveyObservationId: number[],
+    surveyId: number
+  ): Promise<number> {
+    const qb = getKnex()
+      .queryBuilder()
+      .delete()
+      .from('observation_subcount_quantitative_measurement')
+      .using(['observation_subcount', 'survey_observation'])
+      .whereRaw(
+        'observation_subcount_quantitative_measurement.observation_subcount_id = observation_subcount.observation_subcount_id'
+      )
+      .whereRaw('observation_subcount.survey_observation_id = survey_observation.survey_observation_id')
+      .andWhere(`survey_observation.survey_id`, surveyId)
+      .whereIn('survey_observation.survey_observation_id', surveyObservationId);
+
+    const response = await this.connection.knex(qb);
+
+    return response.rowCount ?? 0;
+  }
+
+  /**
+   * Delete all qualitative and quantitative measurement records for a given survey and set of observation subcount ids.
+   *
+   * @param {number} surveyId
+   * @param {number[]} observationSubcountIds
+   * @return {*}  {Promise<void>}
+   * @memberof ObservationSubCountMeasurementRepository
+   */
+  async deleteMeasurementsByObservationSubCountId(surveyId: number, observationSubcountIds: number[]): Promise<void> {
+    await Promise.all([
+      this.deleteQualitativeMeasurementsByObservationSubcountIds(surveyId, observationSubcountIds),
+      this.deleteQuantitativeMeasurementsByObservationSubcountIds(surveyId, observationSubcountIds)
+    ]);
+  }
+
+  /**
+   * Delete all qualitative measurement records, for all observation records, for a given survey and set of measurement
+   * ids.
+   *
+   * @param {number} surveyId
+   * @param {number[]} observationSubcountIds
+   * @return {*}  {Promise<number>}
+   * @memberof ObservationSubCountMeasurementRepository
+   */
+  async deleteQualitativeMeasurementsByObservationSubcountIds(
+    surveyId: number,
+    observationSubcountIds: number[]
+  ): Promise<number> {
+    const qb = getKnex()
+      .queryBuilder()
+      .delete()
+      .from('observation_subcount_qualitative_measurement')
+      .using(['observation_subcount', 'survey_observation'])
+      .whereRaw(
+        'observation_subcount_qualitative_measurement.observation_subcount_id = observation_subcount.observation_subcount_id'
+      )
+      .whereRaw('observation_subcount.survey_observation_id = survey_observation.survey_observation_id')
+      .where('survey_observation.survey_id', surveyId)
+      .whereIn('observation_subcount.observation_subcount_id', observationSubcountIds);
+
+    const response = await this.connection.knex(qb);
+
+    return response.rowCount ?? 0;
+  }
+
+  /**
+   * Delete all quantitative measurement records, for all observation records, for a given survey and set of measurement
+   * ids.
+   *
+   * @param {number} surveyId
+   * @param {number[]} observationSubcountIds
+   * @return {*}  {Promise<number>}
+   * @memberof ObservationSubCountMeasurementRepository
+   */
+  async deleteQuantitativeMeasurementsByObservationSubcountIds(
+    surveyId: number,
+    observationSubcountIds: number[]
+  ): Promise<number> {
+    const qb = getKnex()
+      .queryBuilder()
+      .delete()
+      .from('observation_subcount_quantitative_measurement')
+      .using(['observation_subcount', 'survey_observation'])
+      .whereRaw(
+        'observation_subcount_quantitative_measurement.observation_subcount_id = observation_subcount.observation_subcount_id'
+      )
+      .whereRaw('observation_subcount.survey_observation_id = survey_observation.survey_observation_id')
+      .where('survey_observation.survey_id', surveyId)
+      .whereIn('observation_subcount.observation_subcount_id', observationSubcountIds);
 
     const response = await this.connection.knex(qb);
 

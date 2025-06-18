@@ -31,4 +31,16 @@ describe('CaseInsensitiveMap', () => {
       expect(map.size).to.be.equal(1);
     });
   });
+
+  describe('delete', () => {
+    it('should return true if the key was deleted', () => {
+      const map = new CaseInsensitiveMap<string, number>();
+
+      map.set('KEY', 1);
+
+      expect(map.size).to.be.equal(1);
+      expect(map.delete('kEy')).to.be.true;
+      expect(map.size).to.be.equal(0);
+    });
+  });
 });

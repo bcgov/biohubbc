@@ -4,7 +4,7 @@ import { useTaxonomyContext } from 'hooks/useContext';
 import { IPartialTaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import { useEffect, useState } from 'react';
 
-export interface IPartialTaxonomyDataGridViewCellProps<DataGridType extends GridValidRowModel> {
+interface IPartialTaxonomyDataGridViewCellProps<DataGridType extends GridValidRowModel> {
   dataGridProps: GridRenderCellParams<DataGridType>;
   error?: boolean;
 }

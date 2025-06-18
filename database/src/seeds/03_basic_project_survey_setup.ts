@@ -2,7 +2,6 @@ import { faker } from '@faker-js/faker';
 import { Knex } from 'knex';
 
 const DB_SCHEMA = process.env.DB_SCHEMA;
-const DB_SCHEMA_DAPI_V1 = process.env.DB_SCHEMA_DAPI_V1;
 const PROJECT_SEEDER_USER_IDENTIFIER = process.env.PROJECT_SEEDER_USER_IDENTIFIER;
 
 const NUM_SEED_PROJECTS = Number(process.env.NUM_SEED_PROJECTS ?? 2);
@@ -11,8 +10,15 @@ const NUM_SEED_SURVEYS_PER_PROJECT = Number(process.env.NUM_SEED_SURVEYS_PER_PRO
 const NUM_SEED_OBSERVATIONS_PER_SURVEY = Number(process.env.NUM_SEED_OBSERVATIONS_PER_SURVEY ?? 3);
 const NUM_SEED_SUBCOUNTS_PER_OBSERVATION = Number(process.env.NUM_SEED_SUBCOUNTS_PER_OBSERVATION ?? 1);
 
-const focalTaxonIdOptions = [
+type FocalTaxonIdOption = {
+  itis_tsn: number;
+  itis_scientific_name: string;
+};
+
+const focalTaxonIdOptions: FocalTaxonIdOption[] = [
   { itis_tsn: 180703, itis_scientific_name: 'Alces alces' }, // Moose
+  { itis_tsn: 180700, itis_scientific_name: 'Rangifer' }, // Reindeer (genus)
+  { itis_tsn: 180701, itis_scientific_name: 'Rangifer tarandus' }, // Reindeer (species)
   { itis_tsn: 180596, itis_scientific_name: 'Canis lupus' }, // Wolf
   { itis_tsn: 180713, itis_scientific_name: 'Oreamnos americanus' }, // Rocky Mountain goat
   { itis_tsn: 180543, itis_scientific_name: 'Ursus arctos' } // Grizzly bear
@@ -33,7 +39,7 @@ const identitySources = ['IDIR', 'BCEIDBUSINESS', 'BCEIDBASIC'];
 export async function seed(knex: Knex): Promise<void> {
   await knex.raw(`
     SET SCHEMA '${DB_SCHEMA}';
-    SET SEARCH_PATH=${DB_SCHEMA},${DB_SCHEMA_DAPI_V1};
+    SET SEARCH_PATH=${DB_SCHEMA};
   `);
 
   // Check if at least 1 funding sources already exists
@@ -113,15 +119,6 @@ export async function seed(knex: Knex): Promise<void> {
           }
         }
 
-        const response1 = await knex.raw(insertSurveyObservationData(surveyId, 20));
-        await knex.raw(insertObservationSubCount(response1.rows[0].survey_observation_id));
-
-        const response2 = await knex.raw(insertSurveyObservationData(surveyId, 20));
-        await knex.raw(insertObservationSubCount(response2.rows[0].survey_observation_id));
-
-        const response3 = await knex.raw(insertSurveyObservationData(surveyId, 20));
-        await knex.raw(insertObservationSubCount(response3.rows[0].survey_observation_id));
-
         for (let k = 0; k < NUM_SEED_OBSERVATIONS_PER_SURVEY; k++) {
           const createObservationResponse = await knex.raw(
             // set the number of observations to minimum 20 times the number of subcounts (which are set to a number
@@ -132,9 +129,35 @@ export async function seed(knex: Knex): Promise<void> {
               NUM_SEED_SUBCOUNTS_PER_OBSERVATION * 20 + faker.number.int({ min: 1, max: 20 })
             )
           );
+
+          if (Math.random() < 0.75) {
+            // Insert observation qualitative environments 75% of the time
+            await knex.raw(
+              insertObservationQualitativeEnvironments(createObservationResponse.rows[0].survey_observation_id)
+            );
+          }
+          if (Math.random() < 0.75) {
+            // Insert observation quantitative environments 75% of the time
+            await knex.raw(
+              insertObservationQuantitativeEnvironments(createObservationResponse.rows[0].survey_observation_id)
+            );
+          }
+
           for (let l = 0; l < NUM_SEED_SUBCOUNTS_PER_OBSERVATION; l++) {
             await knex.raw(insertObservationSubCount(createObservationResponse.rows[0].survey_observation_id));
           }
+        }
+
+        // Insert 3 random survey habitat feature records for each survey
+        const resopnse4 = await knex.raw(insertSurveyHabitatFeaturesData(surveyId));
+        // Insert 0-3 habitat feature taxon records for each survey habitat feature record
+        const surveyHabitatFeatureIds = resopnse4.rows.map((row: any) => row.survey_habitat_feature_id);
+        for (let m = 0; m < surveyHabitatFeatureIds.length; m++) {
+          const query = insertSurveyHabitatFeatureTaxonsData(surveyHabitatFeatureIds[m]);
+          if (!query) {
+            continue;
+          }
+          await knex.raw(query);
         }
       }
     }
@@ -934,14 +957,86 @@ const insertObservationSubCount = (surveyObservationId: number) => `
   (
     survey_observation_id,
     subcount,
-    observation_subcount_sign_id
+    comment
   )
   VALUES
   (
     ${surveyObservationId},
     $$${faker.number.int({ min: 1, max: 20 })}$$,
-    (SELECT observation_subcount_sign_id FROM observation_subcount_sign ORDER BY random() LIMIT 1)
+    $$${faker.lorem.sentences({ min: 0, max: 4 })}$$
   );
+`;
+
+/**
+ * SQL to insert observation qualitative environments.
+ *
+ * @param {number} surveyObservationId
+ */
+const insertObservationQualitativeEnvironments = (surveyObservationId: number) => `
+
+    WITH 
+    w_environment_qualitative AS (
+      -- Select the first 2 records by ID (so that we have some consistency in the environments selected by the observations)
+      SELECT 
+        environment_qualitative_id
+      FROM 
+        environment_qualitative
+      ORDER BY environment_qualitative_id LIMIT 2
+    ),
+    w_environment_qualitative_option AS (
+      -- Select 2 random options to associate with the selected environment_qualitative records
+      SELECT 
+        distinct on (environment_qualitative_option.environment_qualitative_id)
+        w_environment_qualitative.environment_qualitative_id, 
+        environment_qualitative_option.environment_qualitative_option_id
+      FROM 
+        environment_qualitative_option
+      INNER JOIN w_environment_qualitative
+      ON w_environment_qualitative.environment_qualitative_id = environment_qualitative_option.environment_qualitative_id
+      ORDER BY environment_qualitative_option.environment_qualitative_id, random() LIMIT 2
+    )
+    INSERT INTO observation_environment_qualitative
+    (
+        survey_observation_id,
+        environment_qualitative_id,
+        environment_qualitative_option_id
+    )
+    SELECT
+        ${surveyObservationId},
+        environment_qualitative_id,
+        environment_qualitative_option_id
+    FROM 
+        w_environment_qualitative_option;
+`;
+
+/**
+ * SQL to insert observation quantitative environments.
+ *
+ * @param {number} surveyObservationId
+ */
+const insertObservationQuantitativeEnvironments = (surveyObservationId: number) => `
+    WITH 
+    w_environment_quantitative AS (
+      -- Select the first 2 records by ID (so that we have some consistency in the environments selected by the observations)
+      SELECT 
+        *
+      FROM 
+        environment_quantitative
+      ORDER BY environment_quantitative_id LIMIT 2
+    )
+    INSERT INTO observation_environment_quantitative
+    (
+        survey_observation_id,
+        environment_quantitative_id,
+        value
+    )
+    SELECT
+        ${surveyObservationId},
+        environment_quantitative_id,
+        -- Insert a random value that is between the min and max values, if specified
+        (SELECT floor(random() * (COALESCE(w_environment_quantitative.max, 10000) - COALESCE(w_environment_quantitative.min, 1) + 1))::int + COALESCE(w_environment_quantitative.min, 1))
+    FROM 
+        w_environment_quantitative;
 `;
 
 /**
@@ -963,7 +1058,8 @@ const insertSurveyObservationData = (surveyId: number, count: number) => {
     count,
     observation_date,
     observation_time,
-    survey_sample_period_id
+    survey_sample_period_id,
+    observation_sign_id
   )
   VALUES
   (
@@ -979,7 +1075,8 @@ const insertSurveyObservationData = (surveyId: number, count: number) => {
     timestamp $$${faker.date
       .between({ from: '2000-01-01T00:00:00-08:00', to: '2005-01-01T00:00:00-08:00' })
       .toISOString()}$$::time,
-    (SELECT survey_sample_period_id FROM survey_sample_period WHERE survey_id = ${surveyId} ORDER BY random() LIMIT 1)
+    (SELECT survey_sample_period_id FROM survey_sample_period WHERE survey_id = ${surveyId} ORDER BY random() LIMIT 1),
+    (SELECT observation_sign_id FROM observation_sign ORDER BY random() LIMIT 1)
   )
   RETURNING survey_observation_id;
 `;
@@ -1120,3 +1217,117 @@ const insertSystemAlert = () => `
     (SELECT system_user_id FROM "system_user" ORDER BY random() LIMIT 1)
   );
 `;
+
+/**
+ * Insert 3 survey_habitat_feature records, with 3 different random habitat_feature_types.
+ *
+ * @param {number} surveyId
+ * @return {*}
+ */
+const insertSurveyHabitatFeaturesData = (surveyId: number) => {
+  return `
+    WITH w_habitat_features AS (
+        SELECT * FROM habitat_feature_type ORDER BY random() LIMIT 3
+    )
+    INSERT INTO survey_habitat_feature
+    (
+        survey_id,
+        habitat_feature_type_id,
+        count,
+        latitude,
+        longitude,
+        observed_date,
+        observed_time
+    )
+    VALUES (
+        ${surveyId},
+        (SELECT habitat_feature_type_id FROM w_habitat_features LIMIT 1 OFFSET 0),
+        ${faker.number.int({ min: 1, max: 20 })},
+        ${faker.location.latitude()},
+        ${faker.location.longitude()},
+        $$${faker.date
+          .between({ from: '2000-01-01T00:00:00-08:00', to: '2001-01-01T00:00:00-08:00' })
+          .toISOString()}$$::date,
+        timestamp $$${faker.date
+          .between({ from: '2002-01-01T00:00:00-08:00', to: '2005-01-01T00:00:00-08:00' })
+          .toISOString()}$$::time
+    ),
+    (
+        ${surveyId},
+        (SELECT habitat_feature_type_id FROM w_habitat_features LIMIT 1 OFFSET 1),
+        ${faker.number.int({ min: 1, max: 20 })},
+        ${faker.location.latitude()},
+        ${faker.location.longitude()},
+        $$${faker.date
+          .between({ from: '2000-01-01T00:00:00-08:00', to: '2001-01-01T00:00:00-08:00' })
+          .toISOString()}$$::date,
+        timestamp $$${faker.date
+          .between({ from: '2002-01-01T00:00:00-08:00', to: '2005-01-01T00:00:00-08:00' })
+          .toISOString()}$$::time
+    ),
+    (
+        ${surveyId},
+        (SELECT habitat_feature_type_id FROM w_habitat_features LIMIT 1 OFFSET 2),
+        ${faker.number.int({ min: 1, max: 20 })},
+        ${faker.location.latitude()},
+        ${faker.location.longitude()},
+        $$${faker.date
+          .between({ from: '2000-01-01T00:00:00-08:00', to: '2001-01-01T00:00:00-08:00' })
+          .toISOString()}$$::date,
+        timestamp $$${faker.date
+          .between({ from: '2002-01-01T00:00:00-08:00', to: '2005-01-01T00:00:00-08:00' })
+          .toISOString()}$$::time
+    )
+    RETURNING survey_habitat_feature_id;
+  `;
+};
+
+const insertSurveyHabitatFeatureTaxonsData = (surveyHabitatFeatureId: number): string | null => {
+  // Randomly select species items
+  const randomSpecies: FocalTaxonIdOption[] = getRandomElementsFromArray(focalTaxonIdOptions, 0, 3);
+
+  const getValueSection = (surveyHabitatFeatureId: number, species: FocalTaxonIdOption) => {
+    return `
+        (
+            ${surveyHabitatFeatureId},
+            ${species.itis_tsn},
+            $$${species.itis_scientific_name}$$,
+            $$${faker.lorem.sentences(1)}$$
+        )
+    `;
+  };
+
+  const valueSections = [];
+  for (let i = 0; i < randomSpecies.length; i++) {
+    valueSections.push(getValueSection(surveyHabitatFeatureId, randomSpecies[i]));
+  }
+
+  if (valueSections.length === 0) {
+    // Nothing to insert
+    return null;
+  }
+
+  return (
+    `
+        INSERT INTO survey_habitat_feature_taxon
+        (
+            survey_habitat_feature_id,
+            itis_tsn,
+            itis_scientific_name,
+            comment
+        ) VALUES 
+    ` + valueSections.join(',')
+  );
+};
+
+const getRandomNumber = (min: number, max: number) => {
+  return Math.random() * (max - min) + min;
+};
+
+const getRandomElementsFromArray = (array: any[], min: number, max: number): any[] => {
+  const numberOfElements = getRandomNumber(min, max);
+
+  const randomlySorted = array.sort(() => 0.5 - Math.random());
+
+  return randomlySorted.slice(0, numberOfElements);
+};

@@ -63,220 +63,224 @@ describe('worksheet-utils', () => {
   });
 
   describe('getWorksheetRowObjects', () => {
-    it('should return the worksheet row objects', () => {
-      const buffer = getMockXLSXWorkbookBuffer([{ TEST: 'value' }]);
-      const mediaFile = new MediaFile('text.xlsx', 'text/csv', buffer);
+    describe('xlsx file', () => {
+      it('should return the worksheet row objects', () => {
+        const buffer = getMockXLSXWorkbookBuffer([{ TEST: 'value' }]);
+        const mediaFile = new MediaFile('text.xlsx', 'text/csv', buffer);
 
-      const newWorkbook = constructXLSXWorkbook(mediaFile);
-      const worksheet = getDefaultWorksheet(newWorkbook);
+        const newWorkbook = constructXLSXWorkbook(mediaFile);
+        const worksheet = getDefaultWorksheet(newWorkbook);
 
-      const rowObjects = worksheet_utils.getWorksheetRowObjects(worksheet);
+        const rowObjects = worksheet_utils.getWorksheetRowObjects(worksheet);
 
-      expect(rowObjects.length).to.equal(1);
-      expect(rowObjects[0].TEST).to.equal('value');
+        expect(rowObjects.length).to.equal(1);
+        expect(rowObjects[0].TEST).to.equal('value');
+      });
+
+      it('should return the worksheet row objects with multiple rows', () => {
+        const buffer = getMockXLSXWorkbookBuffer([{ TEST: 'value' }, { TEST: 'value2' }]);
+        const mediaFile = new MediaFile('text.xlsx', 'text/csv', buffer);
+
+        const newWorkbook = constructXLSXWorkbook(mediaFile);
+        const worksheet = getDefaultWorksheet(newWorkbook);
+
+        const rowObjects = worksheet_utils.getWorksheetRowObjects(worksheet);
+
+        expect(rowObjects.length).to.equal(2);
+        expect(rowObjects[0].TEST).to.equal('value');
+        expect(rowObjects[1].TEST).to.equal('value2');
+      });
+
+      it('should trim whitespace from cell values', () => {
+        const buffer = getMockXLSXWorkbookBuffer([{ TEST: ' value ' }]);
+        const mediaFile = new MediaFile('text.xlsx', 'text/csv', buffer);
+
+        const newWorkbook = constructXLSXWorkbook(mediaFile);
+        const worksheet = getDefaultWorksheet(newWorkbook);
+
+        const rowObjects = worksheet_utils.getWorksheetRowObjects(worksheet);
+
+        expect(rowObjects.length).to.equal(1);
+        expect(rowObjects[0].TEST).to.equal('value');
+      });
+
+      it('should handle empty rows', () => {
+        const buffer = getMockXLSXWorkbookBuffer([{ TEST: 'value' }, {}, { TEST: 'value2' }]);
+        const mediaFile = new MediaFile('text.xlsx', 'text/csv', buffer);
+
+        const newWorkbook = constructXLSXWorkbook(mediaFile);
+        const worksheet = getDefaultWorksheet(newWorkbook);
+
+        const rowObjects = worksheet_utils.getWorksheetRowObjects(worksheet);
+
+        expect(rowObjects.length).to.equal(2);
+      });
+
+      it('should inject the row index symbol into the rows', () => {
+        const buffer = getMockXLSXWorkbookBuffer([{ TEST: 'value' }, {}, { TEST: 'value2' }]);
+        const mediaFile = new MediaFile('text.xlsx', 'text/csv', buffer);
+
+        const newWorkbook = constructXLSXWorkbook(mediaFile);
+        const worksheet = getDefaultWorksheet(newWorkbook);
+
+        const rowObjects = worksheet_utils.getWorksheetRowObjects(worksheet);
+
+        expect(rowObjects.length).to.equal(2);
+        expect(rowObjects[0][worksheet_utils.WorksheetRowIndexSymbol]).to.equal(1);
+        expect(rowObjects[1][worksheet_utils.WorksheetRowIndexSymbol]).to.equal(3);
+      });
+
+      it('should handle numeric epoch date format', () => {
+        const buffer = getMockXLSXWorkbookBuffer([{ DATE: '2024-01-31' }]);
+        const mediaFile = new MediaFile('text.xlsx', 'text/csv', buffer);
+
+        const newWorkbook = constructXLSXWorkbook(mediaFile);
+        const worksheet = getDefaultWorksheet(newWorkbook);
+
+        worksheet['A2'].z = worksheet_utils.CUSTOM_XLSX_DATE_FORMAT;
+        worksheet['A2'].v = 999999;
+
+        const rowObjects = worksheet_utils.getWorksheetRowObjects(worksheet);
+
+        expect(rowObjects[0].DATE).to.equal('2024-01-31');
+      });
+
+      it('should handle numeric epoch time format', () => {
+        const buffer = getMockXLSXWorkbookBuffer([{ TIME: '12:00:00' }]);
+        const mediaFile = new MediaFile('text.xlsx', 'text/csv', buffer);
+
+        const newWorkbook = constructXLSXWorkbook(mediaFile);
+        const worksheet = getDefaultWorksheet(newWorkbook);
+
+        worksheet['A2'].z = worksheet_utils.CUSTOM_XLSX_DATE_FORMAT;
+        worksheet['A2'].v = 0.5;
+
+        const rowObjects = worksheet_utils.getWorksheetRowObjects(worksheet);
+
+        expect(rowObjects[0].TIME).to.equal('12:00:00');
+      });
+
+      it('should handle date format 2024-01-31', () => {
+        const buffer = getMockXLSXWorkbookBuffer([{ DATE: '2024-01-31' }]);
+        const mediaFile = new MediaFile('text.xlsx', 'text/csv', buffer);
+
+        const newWorkbook = constructXLSXWorkbook(mediaFile);
+        const worksheet = getDefaultWorksheet(newWorkbook);
+
+        worksheet['A2'].z = worksheet_utils.CUSTOM_XLSX_DATE_FORMAT;
+        worksheet['A2'].v = 999999;
+
+        const rowObjects = worksheet_utils.getWorksheetRowObjects(worksheet);
+
+        expect(rowObjects[0].DATE).to.equal('2024-01-31');
+      });
+
+      it('should handle date format 2024/01/31', () => {
+        const buffer = getMockXLSXWorkbookBuffer([{ DATE: '2024/01/31' }]);
+        const mediaFile = new MediaFile('text.xlsx', 'text/csv', buffer);
+
+        const newWorkbook = constructXLSXWorkbook(mediaFile);
+        const worksheet = getDefaultWorksheet(newWorkbook);
+
+        worksheet['A2'].z = worksheet_utils.CUSTOM_XLSX_DATE_FORMAT;
+        worksheet['A2'].v = 999999;
+
+        const rowObjects = worksheet_utils.getWorksheetRowObjects(worksheet);
+
+        expect(rowObjects[0].DATE).to.equal('2024-01-31');
+      });
+
+      it('should handle date format 31-01-2024', () => {
+        const buffer = getMockXLSXWorkbookBuffer([{ DATE: '31-01-2024' }]);
+        const mediaFile = new MediaFile('text.xlsx', 'text/csv', buffer);
+
+        const newWorkbook = constructXLSXWorkbook(mediaFile);
+        const worksheet = getDefaultWorksheet(newWorkbook);
+
+        worksheet['A2'].z = worksheet_utils.CUSTOM_XLSX_DATE_FORMAT;
+        worksheet['A2'].v = 999999;
+
+        const rowObjects = worksheet_utils.getWorksheetRowObjects(worksheet);
+
+        expect(rowObjects[0].DATE).to.equal('2024-01-31');
+      });
+
+      it('should handle date format 31/01/2024', () => {
+        const buffer = getMockXLSXWorkbookBuffer([{ DATE: '31/01/2024' }]);
+        const mediaFile = new MediaFile('text.xlsx', 'text/csv', buffer);
+
+        const newWorkbook = constructXLSXWorkbook(mediaFile);
+        const worksheet = getDefaultWorksheet(newWorkbook);
+
+        worksheet['A2'].z = worksheet_utils.CUSTOM_XLSX_DATE_FORMAT;
+        worksheet['A2'].v = 999999;
+
+        const rowObjects = worksheet_utils.getWorksheetRowObjects(worksheet);
+
+        expect(rowObjects[0].DATE).to.equal('2024-01-31');
+      });
     });
 
-    it('should return the worksheet row objects with multiple rows', () => {
-      const buffer = getMockXLSXWorkbookBuffer([{ TEST: 'value' }, { TEST: 'value2' }]);
-      const mediaFile = new MediaFile('text.xlsx', 'text/csv', buffer);
+    describe('csv file', () => {
+      it('should handle date format 01-31-2024', () => {
+        const buffer = getMockXLSXWorkbookBuffer([{ DATE: '01-31-2024' }]);
+        const mediaFile = new MediaFile('test.csv', 'text/csv', buffer);
 
-      const newWorkbook = constructXLSXWorkbook(mediaFile);
-      const worksheet = getDefaultWorksheet(newWorkbook);
+        const newWorkbook = constructXLSXWorkbook(mediaFile);
+        const worksheet = getDefaultWorksheet(newWorkbook);
 
-      const rowObjects = worksheet_utils.getWorksheetRowObjects(worksheet);
+        worksheet['A2'].z = worksheet_utils.CUSTOM_XLSX_DATE_FORMAT;
+        worksheet['A2'].v = 999999;
 
-      expect(rowObjects.length).to.equal(2);
-      expect(rowObjects[0].TEST).to.equal('value');
-      expect(rowObjects[1].TEST).to.equal('value2');
-    });
+        const rowObjects = worksheet_utils.getWorksheetRowObjects(worksheet);
 
-    it('should trim whitespace from cell values', () => {
-      const buffer = getMockXLSXWorkbookBuffer([{ TEST: ' value ' }]);
-      const mediaFile = new MediaFile('text.xlsx', 'text/csv', buffer);
+        expect(rowObjects[0].DATE).to.equal('2024-01-31');
+      });
 
-      const newWorkbook = constructXLSXWorkbook(mediaFile);
-      const worksheet = getDefaultWorksheet(newWorkbook);
+      it('should handle date format 01/31/2024', () => {
+        const buffer = getMockXLSXWorkbookBuffer([{ DATE: '01/31/2024' }]);
+        const mediaFile = new MediaFile('test.csv', 'text/csv', buffer);
 
-      const rowObjects = worksheet_utils.getWorksheetRowObjects(worksheet);
+        const newWorkbook = constructXLSXWorkbook(mediaFile);
+        const worksheet = getDefaultWorksheet(newWorkbook);
 
-      expect(rowObjects.length).to.equal(1);
-      expect(rowObjects[0].TEST).to.equal('value');
-    });
+        worksheet['A2'].z = worksheet_utils.CUSTOM_XLSX_DATE_FORMAT;
+        worksheet['A2'].v = 999999;
 
-    it('should handle empty rows', () => {
-      const buffer = getMockXLSXWorkbookBuffer([{ TEST: 'value' }, {}, { TEST: 'value2' }]);
-      const mediaFile = new MediaFile('text.xlsx', 'text/csv', buffer);
+        const rowObjects = worksheet_utils.getWorksheetRowObjects(worksheet);
 
-      const newWorkbook = constructXLSXWorkbook(mediaFile);
-      const worksheet = getDefaultWorksheet(newWorkbook);
+        expect(rowObjects[0].DATE).to.equal('2024-01-31');
+      });
 
-      const rowObjects = worksheet_utils.getWorksheetRowObjects(worksheet);
+      it('should handle date format 2024-01-31', () => {
+        const buffer = getMockXLSXWorkbookBuffer([{ DATE: '2024-01-31' }]);
+        const mediaFile = new MediaFile('test.csv', 'text/csv', buffer);
 
-      expect(rowObjects.length).to.equal(2);
-    });
+        const newWorkbook = constructXLSXWorkbook(mediaFile);
+        const worksheet = getDefaultWorksheet(newWorkbook);
 
-    it('should inject the row index symbol into the rows', () => {
-      const buffer = getMockXLSXWorkbookBuffer([{ TEST: 'value' }, {}, { TEST: 'value2' }]);
-      const mediaFile = new MediaFile('text.xlsx', 'text/csv', buffer);
+        worksheet['A2'].z = worksheet_utils.CUSTOM_XLSX_DATE_FORMAT;
+        worksheet['A2'].v = 999999;
 
-      const newWorkbook = constructXLSXWorkbook(mediaFile);
-      const worksheet = getDefaultWorksheet(newWorkbook);
+        const rowObjects = worksheet_utils.getWorksheetRowObjects(worksheet);
 
-      const rowObjects = worksheet_utils.getWorksheetRowObjects(worksheet);
+        expect(rowObjects[0].DATE).to.equal('2024-01-31');
+      });
 
-      expect(rowObjects.length).to.equal(2);
-      expect(rowObjects[0][worksheet_utils.WorksheetRowIndexSymbol]).to.equal(1);
-      expect(rowObjects[1][worksheet_utils.WorksheetRowIndexSymbol]).to.equal(3);
-    });
+      it('should handle date format 2024/01/31', () => {
+        const buffer = getMockXLSXWorkbookBuffer([{ DATE: '2024/01/31' }]);
+        const mediaFile = new MediaFile('test.csv', 'text/csv', buffer);
 
-    it('should handle numeric epoch date format', () => {
-      const buffer = getMockXLSXWorkbookBuffer([{ DATE: '2024-01-31' }]);
-      const mediaFile = new MediaFile('text.xlsx', 'text/csv', buffer);
+        const newWorkbook = constructXLSXWorkbook(mediaFile);
+        const worksheet = getDefaultWorksheet(newWorkbook);
 
-      const newWorkbook = constructXLSXWorkbook(mediaFile);
-      const worksheet = getDefaultWorksheet(newWorkbook);
+        worksheet['A2'].z = worksheet_utils.CUSTOM_XLSX_DATE_FORMAT;
+        worksheet['A2'].v = 999999;
 
-      worksheet['A2'].z = worksheet_utils.CUSTOM_XLSX_DATE_FORMAT;
-      worksheet['A2'].v = 999999;
+        const rowObjects = worksheet_utils.getWorksheetRowObjects(worksheet);
 
-      const rowObjects = worksheet_utils.getWorksheetRowObjects(worksheet);
-
-      expect(rowObjects[0].DATE).to.equal('2024-01-31');
-    });
-
-    it('should handle numeric epoch time format', () => {
-      const buffer = getMockXLSXWorkbookBuffer([{ TIME: '12:00:00' }]);
-      const mediaFile = new MediaFile('text.xlsx', 'text/csv', buffer);
-
-      const newWorkbook = constructXLSXWorkbook(mediaFile);
-      const worksheet = getDefaultWorksheet(newWorkbook);
-
-      worksheet['A2'].z = worksheet_utils.CUSTOM_XLSX_DATE_FORMAT;
-      worksheet['A2'].v = 0.5;
-
-      const rowObjects = worksheet_utils.getWorksheetRowObjects(worksheet);
-
-      expect(rowObjects[0].TIME).to.equal('12:00:00');
-    });
-
-    it('should handle date format 2024-01-31', () => {
-      const buffer = getMockXLSXWorkbookBuffer([{ DATE: '2024-01-31' }]);
-      const mediaFile = new MediaFile('text.xlsx', 'text/csv', buffer);
-
-      const newWorkbook = constructXLSXWorkbook(mediaFile);
-      const worksheet = getDefaultWorksheet(newWorkbook);
-
-      worksheet['A2'].z = worksheet_utils.CUSTOM_XLSX_DATE_FORMAT;
-      worksheet['A2'].v = 999999;
-
-      const rowObjects = worksheet_utils.getWorksheetRowObjects(worksheet);
-
-      expect(rowObjects[0].DATE).to.equal('2024-01-31');
-    });
-
-    it('should handle date format 2024/01/31', () => {
-      const buffer = getMockXLSXWorkbookBuffer([{ DATE: '2024/01/31' }]);
-      const mediaFile = new MediaFile('text.xlsx', 'text/csv', buffer);
-
-      const newWorkbook = constructXLSXWorkbook(mediaFile);
-      const worksheet = getDefaultWorksheet(newWorkbook);
-
-      worksheet['A2'].z = worksheet_utils.CUSTOM_XLSX_DATE_FORMAT;
-      worksheet['A2'].v = 999999;
-
-      const rowObjects = worksheet_utils.getWorksheetRowObjects(worksheet);
-
-      expect(rowObjects[0].DATE).to.equal('2024-01-31');
-    });
-
-    it('should handle date format 31-01-2024', () => {
-      const buffer = getMockXLSXWorkbookBuffer([{ DATE: '31-01-2024' }]);
-      const mediaFile = new MediaFile('text.xlsx', 'text/csv', buffer);
-
-      const newWorkbook = constructXLSXWorkbook(mediaFile);
-      const worksheet = getDefaultWorksheet(newWorkbook);
-
-      worksheet['A2'].z = worksheet_utils.CUSTOM_XLSX_DATE_FORMAT;
-      worksheet['A2'].v = 999999;
-
-      const rowObjects = worksheet_utils.getWorksheetRowObjects(worksheet);
-
-      expect(rowObjects[0].DATE).to.equal('2024-01-31');
-    });
-
-    it('should handle date format 31/01/2024', () => {
-      const buffer = getMockXLSXWorkbookBuffer([{ DATE: '31/01/2024' }]);
-      const mediaFile = new MediaFile('text.xlsx', 'text/csv', buffer);
-
-      const newWorkbook = constructXLSXWorkbook(mediaFile);
-      const worksheet = getDefaultWorksheet(newWorkbook);
-
-      worksheet['A2'].z = worksheet_utils.CUSTOM_XLSX_DATE_FORMAT;
-      worksheet['A2'].v = 999999;
-
-      const rowObjects = worksheet_utils.getWorksheetRowObjects(worksheet);
-
-      expect(rowObjects[0].DATE).to.equal('2024-01-31');
-    });
-
-    it('should handle date format 01-31-2024', () => {
-      const buffer = getMockXLSXWorkbookBuffer([{ DATE: '01-31-2024' }]);
-      const mediaFile = new MediaFile('test.csv', 'text/csv', buffer);
-
-      const newWorkbook = constructXLSXWorkbook(mediaFile);
-      const worksheet = getDefaultWorksheet(newWorkbook);
-
-      worksheet['A2'].z = worksheet_utils.CUSTOM_XLSX_DATE_FORMAT;
-      worksheet['A2'].v = 999999;
-
-      const rowObjects = worksheet_utils.getWorksheetRowObjects(worksheet);
-
-      expect(rowObjects[0].DATE).to.equal('2024-01-31');
-    });
-
-    it('should handle date format 01/31/2024', () => {
-      const buffer = getMockXLSXWorkbookBuffer([{ DATE: '01/31/2024' }]);
-      const mediaFile = new MediaFile('test.csv', 'text/csv', buffer);
-
-      const newWorkbook = constructXLSXWorkbook(mediaFile);
-      const worksheet = getDefaultWorksheet(newWorkbook);
-
-      worksheet['A2'].z = worksheet_utils.CUSTOM_XLSX_DATE_FORMAT;
-      worksheet['A2'].v = 999999;
-
-      const rowObjects = worksheet_utils.getWorksheetRowObjects(worksheet);
-
-      expect(rowObjects[0].DATE).to.equal('2024-01-31');
-    });
-
-    it('should handle date format 2024-01-31', () => {
-      const buffer = getMockXLSXWorkbookBuffer([{ DATE: '2024-01-31' }]);
-      const mediaFile = new MediaFile('test.csv', 'text/csv', buffer);
-
-      const newWorkbook = constructXLSXWorkbook(mediaFile);
-      const worksheet = getDefaultWorksheet(newWorkbook);
-
-      worksheet['A2'].z = worksheet_utils.CUSTOM_XLSX_DATE_FORMAT;
-      worksheet['A2'].v = 999999;
-
-      const rowObjects = worksheet_utils.getWorksheetRowObjects(worksheet);
-
-      expect(rowObjects[0].DATE).to.equal('2024-01-31');
-    });
-
-    it('should handle date format 2024/01/31', () => {
-      const buffer = getMockXLSXWorkbookBuffer([{ DATE: '2024/01/31' }]);
-      const mediaFile = new MediaFile('test.csv', 'text/csv', buffer);
-
-      const newWorkbook = constructXLSXWorkbook(mediaFile);
-      const worksheet = getDefaultWorksheet(newWorkbook);
-
-      worksheet['A2'].z = worksheet_utils.CUSTOM_XLSX_DATE_FORMAT;
-      worksheet['A2'].v = 999999;
-
-      const rowObjects = worksheet_utils.getWorksheetRowObjects(worksheet);
-
-      expect(rowObjects[0].DATE).to.equal('2024-01-31');
+        expect(rowObjects[0].DATE).to.equal('2024-01-31');
+      });
     });
   });
 });

@@ -50,7 +50,7 @@ describe('UserRoleSelector', () => {
   });
 
   it('remove user function runs', async () => {
-    const onDelete = jest.fn();
+    const onDelete = vi.fn();
     const { getByTestId } = render(
       <UserRoleSelector
         index={0}
@@ -86,8 +86,8 @@ describe('UserRoleSelector', () => {
   });
 
   it('Add role to user', async () => {
-    const onDelete = jest.fn();
-    const onAdd = jest.fn();
+    const onDelete = vi.fn();
+    const onAdd = vi.fn();
 
     const { getByTestId, getByText } = render(
       <UserRoleSelector

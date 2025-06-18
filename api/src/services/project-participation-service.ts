@@ -215,9 +215,8 @@ export class ProjectParticipationService extends DBService {
   async isUserTheOnlyProjectCoordinatorOnAnyProject(systemUserId: number): Promise<boolean> {
     const projectParticipationService = new ProjectParticipationService(this.connection);
 
-    const getAllParticipantsResponse = await projectParticipationService.getParticipantsFromAllProjectsBySystemUserId(
-      systemUserId
-    );
+    const getAllParticipantsResponse =
+      await projectParticipationService.getParticipantsFromAllProjectsBySystemUserId(systemUserId);
 
     if (!getAllParticipantsResponse.length) {
       // User has no projects, and therefore is not the only coordinator on a project

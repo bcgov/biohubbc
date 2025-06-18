@@ -1,11 +1,10 @@
-import { cyan, grey } from '@mui/material/colors';
+import { grey } from '@mui/material/colors';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { IObservationTableRow } from 'contexts/observationsTableContext';
 import { useObservationsTableContext } from 'hooks/useContext';
-import { has } from 'lodash-es';
 
-export interface ISpeciesObservationTableProps {
+interface ISpeciesObservationTableProps {
   /**
    * Manually control the loading state of the table.
    *
@@ -28,18 +27,13 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
   return (
     <DataGrid
       apiRef={observationsTableContext._muiDataGridApiRef}
-      editMode="row"
       // Columns
       columns={props.columns}
       // Column visibility
       columnVisibilityModel={observationsTableContext.columnVisibilityModel}
       onColumnVisibilityModelChange={observationsTableContext.onColumnVisibilityModelChange}
       // Rows
-      rows={[...observationsTableContext.stagedRows, ...observationsTableContext.savedRows]}
-      processRowUpdate={observationsTableContext.processRowUpdate}
-      // Row modes
-      rowModesModel={observationsTableContext.rowModesModel}
-      onRowModesModelChange={observationsTableContext.onRowModesModelChange}
+      rows={observationsTableContext.rows}
       // Pagination
       paginationMode="server"
       rowCount={observationsTableContext.observationCount}
@@ -50,11 +44,6 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       sortingMode="server"
       sortModel={observationsTableContext.sortModel}
       onSortModelChange={observationsTableContext.setSortModel}
-      // Row editing
-      onRowEditStart={(params) => observationsTableContext.onRowEditStart(params.id)}
-      onRowEditStop={(_params, event) => {
-        event.defaultMuiPrevented = true;
-      }}
       // Row selection
       checkboxSelection
       disableRowSelectionOnClick
@@ -66,9 +55,8 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       }}
       rowHeight={56}
       getRowHeight={() => 'auto'}
-      getRowClassName={(params) => (has(observationsTableContext.validationModel, params.row.id) ? 'error' : '')}
       // Loading
-      loading={observationsTableContext.isLoading}
+      loading={props.isLoading}
       slots={{
         loadingOverlay: SkeletonTable
       }}
@@ -105,48 +93,13 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         },
         '& .MuiDataGrid-cell': {
           py: 0.75,
-          background: '#fff',
-          '&.MuiDataGrid-cell--editing:focus-within': {
-            outline: 'none'
-          },
-          '&.MuiDataGrid-cell--editing': {
-            p: 0.5,
-            backgroundColor: cyan[100]
-          }
-        },
-        '& .MuiDataGrid-row--editing': {
-          boxShadow: 'none',
-          backgroundColor: cyan[50],
-          '& .MuiDataGrid-cell': {
-            backgroundColor: cyan[50]
-          },
-          '&.error': {
-            '& .MuiDataGrid-cell, .MuiDataGrid-cell--editing': {
-              backgroundColor: 'rgb(251, 237, 238)'
-            }
-          }
-        },
-        '& .MuiDataGrid-editInputCell': {
-          border: '1px solid #ccc',
-          '&:hover': {
-            borderColor: 'primary.main'
-          },
-          '&.Mui-focused': {
-            borderColor: 'primary.main',
-            outlineWidth: '2px',
-            outlineStyle: 'solid',
-            outlineColor: 'primary.main',
-            outlineOffset: '-2px'
-          }
+          background: '#fff'
         },
         '& .MuiInputBase-root': {
           height: '40px',
           borderRadius: '4px',
           background: '#fff',
-          fontSize: '0.875rem',
-          '&.MuiDataGrid-editInputCell': {
-            padding: 0
-          }
+          fontSize: '0.875rem'
         },
         '& .MuiOutlinedInput-root': {
           borderRadius: '4px',

@@ -6,7 +6,7 @@ import SpeciesSelectedCard from 'components/species/components/SpeciesSelectedCa
 import { IPartialTaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import { TransitionGroup } from 'react-transition-group';
 
-export interface ISelectedAnimalSpeciesProps {
+interface ISelectedAnimalSpeciesProps {
   selectedSpecies: IPartialTaxonomy[];
   handleRemoveSpecies?: (species_id: number) => void;
 }
@@ -26,7 +26,15 @@ const SelectedAnimalSpecies = (props: ISelectedAnimalSpeciesProps) => {
         return (
           <Collapse key={species.tsn}>
             <Paper component={Stack} gap={3} variant="outlined" sx={{ px: 3, py: 2, background: grey[50], my: 1 }}>
-              <SpeciesSelectedCard index={speciesIndex} species={species} handleRemove={handleRemoveSpecies} />
+              <SpeciesSelectedCard
+                index={speciesIndex}
+                species={species}
+                handleRemove={() => {
+                  if (handleRemoveSpecies) {
+                    handleRemoveSpecies(species.tsn);
+                  }
+                }}
+              />
             </Paper>
           </Collapse>
         );

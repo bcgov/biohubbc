@@ -24,7 +24,8 @@ describe('PostSurveyObservationToBiohubObject', () => {
       itis_tsn: 1,
       itis_scientific_name: 'itis_scientific_name',
       observation_time: 'observation_time',
-      observation_date: 'observation_date'
+      observation_date: 'observation_date',
+      observation_sign_id: 1
     };
 
     before(() => {
@@ -81,7 +82,8 @@ describe('PostSurveyToBiohubObject', () => {
       itis_tsn: 1,
       itis_scientific_name: 'itis_scientific_name',
       observation_time: 'observation_time',
-      observation_date: 'observation_date'
+      observation_date: 'observation_date',
+      observation_sign_id: 1
     };
 
     const survey_obj: GetSurveyData = {
@@ -153,7 +155,8 @@ describe('PostSurveySubmissionToBioHubObject', () => {
         itis_tsn: 2,
         itis_scientific_name: 'itis_scientific_name',
         observation_time: 'observation_time',
-        observation_date: 'observation_date'
+        observation_date: 'observation_date',
+        observation_sign_id: 1
       }
     ];
 

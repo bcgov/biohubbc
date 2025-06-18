@@ -1,4 +1,3 @@
-import { PublishStatus } from 'constants/attachments';
 import { PROJECT_PERMISSION, PROJECT_ROLE } from 'constants/roles';
 import { IProjectDetailsForm } from 'features/projects/components/ProjectDetailsForm';
 import { IProjectIUCNForm } from 'features/projects/components/ProjectIUCNForm';
@@ -69,31 +68,6 @@ export interface IGetUserProjectsListResponse {
 }
 
 /**
- * Get surveys list response object.
- *
- * @export
- * @interface IGetUserSurveysListResponse
- */
-export interface IGetUserSurveysListResponse {
-  project_participation_id: number;
-  project_id: number;
-  project_name: string;
-  system_user_id: number;
-  project_role_ids: number[];
-  project_role_names: string[];
-  project_role_permissions: string[];
-}
-
-/**
- * An interface that describes project supplementary data
- * @export
- * @interface IProjectSupplementaryData
- */
-export interface IProjectSupplementaryData {
-  publishStatus: PublishStatus;
-}
-
-/**
  * Find projects response object.
  *
  * @export
@@ -136,7 +110,7 @@ export interface IProjectsListItemData {
   members: { system_user_id: number; display_name: string }[];
 }
 
-export interface IProjectUserRoles {
+interface IProjectUserRoles {
   participants: IGetProjectParticipant[];
 }
 
@@ -161,7 +135,6 @@ export interface ICreateProjectResponse {
 export enum UPDATE_GET_ENTITIES {
   project = 'project',
   objectives = 'objectives',
-  location = 'location',
   iucn = 'iucn',
   participants = 'participants'
 }
@@ -275,17 +248,6 @@ export interface ProjectSupplementaryData {
     update_user: number | null;
     revision_count: number;
   } | null;
-}
-
-/**
- * A single media item.
- *
- * @export
- * @interface IGetProjectMediaListResponse
- */
-export interface IGetProjectMediaListResponse {
-  file_name: string;
-  encoded_file: string;
 }
 
 /**

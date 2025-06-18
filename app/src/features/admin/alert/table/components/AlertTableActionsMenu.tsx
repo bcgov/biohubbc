@@ -7,7 +7,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import { useState } from 'react';
 
-export interface IAlertTableActionsMenuProps {
+interface IAlertTableActionsMenuProps {
   alertId: number;
   onEdit: (alertId: number) => void;
   onDelete: (alertId: number) => void;

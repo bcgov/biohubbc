@@ -262,6 +262,11 @@ export class AuthorizationService extends DBService {
     // Cache the _systemUser for future use, if needed
     this._systemUser = systemUserObject;
 
+    if (systemUserObject.record_end_date) {
+      // system user has an expired record
+      return false;
+    }
+
     // User is a valid system user
     return true;
   }

@@ -3,7 +3,7 @@ import { Icon } from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Collapse from '@mui/material/Collapse';
-import { DualAutocompleteField } from 'components/fields/DualAutocompleteField';
+import { DualAutocompleteField } from 'components/fields/dual-autocomplete-field/DualAutocompleteField';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { GetVantageReferenceRecord } from 'interfaces/useReferenceApi.interface';
 import { TransitionGroup } from 'react-transition-group';
@@ -51,6 +51,12 @@ export const TechniqueVantageForm = <FormValues extends CreateTechniqueFormValue
     }));
   };
 
+  const vantageCategoryOptions = vantageReferenceRecords.map((record) => ({
+    ...record,
+    value: record.vantage_category_id,
+    label: record.name
+  }));
+
   return (
     <FieldArray
       name="vantage_methods"
@@ -61,14 +67,15 @@ export const TechniqueVantageForm = <FormValues extends CreateTechniqueFormValue
               <Collapse key={vantage._id}>
                 <Box mb={2}>
                   <DualAutocompleteField
-                    label="Vantage"
-                    categoryOptions={vantageReferenceRecords.map((record) => ({
-                      value: record.vantage_category_id,
-                      label: record.name
-                    }))}
-                    getUnitOptions={(categoryId: number) => getUnitOptions(vantage.vantage_method_id, categoryId)}
-                    formikCategoryFieldName={`vantage_methods.[${index}].vantage_category_id`}
-                    formikUnitFieldName={`vantage_methods.[${index}].vantage_method_id`}
+                    categoryFormikFieldName={`vantage_methods.[${index}].vantage_category_id`}
+                    categoryFieldLabel="Vantage"
+                    categoryOptions={vantageCategoryOptions}
+                    getCategoryDataType={() => 'qualitative'}
+                    getUnitFormikFieldName={() => `vantage_methods.[${index}].vantage_method_id`}
+                    getUnitFieldLabel={() => 'Value'}
+                    getUnitOptions={(categoryValue) =>
+                      getUnitOptions(vantage.vantage_method_id, categoryValue as number)
+                    }
                     onDelete={() => arrayHelpers.remove(index)}
                   />
                 </Box>

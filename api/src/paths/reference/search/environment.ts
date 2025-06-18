@@ -6,10 +6,10 @@ import { getLogger } from '../../../utils/logger';
 
 const defaultLog = getLogger('paths/reference/search/environment');
 
-export const GET: Operation = [findSubcountEnvironments()];
+export const GET: Operation = [findEnvironmentReferenceData()];
 
 GET.apiDoc = {
-  description: 'Find subcount environment data.',
+  description: 'Find environment reference data.',
   tags: ['reference'],
   parameters: [
     {
@@ -23,7 +23,7 @@ GET.apiDoc = {
   ],
   responses: {
     200: {
-      description: 'Subcount environment data response object.',
+      description: 'Environment reference data response object.',
       content: {
         'application/json': {
           schema: {
@@ -133,11 +133,11 @@ GET.apiDoc = {
 };
 
 /**
- * Find all subcount environments based on the given search term.
+ * Find all environment reference data based on the given search term.
  *
  * @returns {RequestHandler}
  */
-export function findSubcountEnvironments(): RequestHandler {
+export function findEnvironmentReferenceData(): RequestHandler {
   return async (req, res) => {
     const connection = getAPIUserDBConnection();
 
@@ -148,7 +148,7 @@ export function findSubcountEnvironments(): RequestHandler {
 
       const codeService = new CodeService(connection);
 
-      const response = await codeService.findSubcountEnvironments([searchTerm]);
+      const response = await codeService.findEnvironmentReferenceData([searchTerm]);
 
       await connection.commit();
 
@@ -157,7 +157,7 @@ export function findSubcountEnvironments(): RequestHandler {
 
       return res.status(200).json(response);
     } catch (error) {
-      defaultLog.error({ label: 'findSubcountEnvironments', message: 'error', error });
+      defaultLog.error({ label: 'findEnvironmentReferenceData', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

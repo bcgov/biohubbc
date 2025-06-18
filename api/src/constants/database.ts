@@ -14,7 +14,6 @@ export enum SYSTEM_IDENTITY_SOURCE {
 }
 
 export enum SCHEMAS {
-  API = 'BIOHUB_DAPI_V1',
   DATA = 'BIOHUB'
 }
 

@@ -4,6 +4,7 @@ import { getTelemetryInSurvey } from '.';
 import * as db from '../../../../../../database/db';
 import {
   Telemetry,
+  TelemetrySupplementary,
   TelemetryVendorEnum
 } from '../../../../../../repositories/telemetry-repositories/telemetry-vendor-repository.interface';
 
@@ -34,9 +35,9 @@ describe('getTelemetryInSurvey', () => {
       }
     ];
 
-    const mockCount = 1;
+    const mockSupplementary = { count: 1, start_date: '2021-01-01', end_date: '2021-01-01' };
 
-    const mockResponse: [Telemetry[], number] = [mockTelemetry, mockCount];
+    const mockResponse: [Telemetry[], TelemetrySupplementary] = [mockTelemetry, mockSupplementary];
 
     sinon.stub(TelemetryVendorService.prototype, 'getTelemetryForSurvey').resolves(mockResponse);
 
@@ -53,7 +54,7 @@ describe('getTelemetryInSurvey', () => {
 
     expect(mockRes.json).to.have.been.calledOnceWith({
       telemetry: mockTelemetry,
-      count: mockCount,
+      count: mockSupplementary.count,
       pagination: {
         total: 1,
         per_page: 1,

@@ -15,7 +15,7 @@ import { MarkingStandards } from './view/markings/MarkingStandards';
 import { MethodStandards } from './view/methods/MethodStandards';
 import { SpeciesStandards } from './view/species/SpeciesStandards';
 
-export enum StandardsPageView {
+enum StandardsPageView {
   SPECIES = 'SPECIES',
   METHODS = 'METHODS',
   ENVIRONMENT = 'ENVIRONMENT',

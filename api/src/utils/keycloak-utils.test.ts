@@ -81,7 +81,7 @@ describe('keycloakUtils', () => {
       const keycloakUserInformation: DatabaseUserInformation = {
         database_user_guid: '123456789',
         identity_provider: 'database',
-        username: 'biohub_dapi_v1'
+        username: 'biohub_api'
       };
 
       const response = getUserGuid(keycloakUserInformation);
@@ -154,12 +154,12 @@ describe('keycloakUtils', () => {
       const keycloakUserInformation: DatabaseUserInformation = {
         database_user_guid: '123456789',
         identity_provider: 'database',
-        username: 'biohub_dapi_v1'
+        username: 'biohub_api'
       };
 
       const response = getUserIdentifier(keycloakUserInformation);
 
-      expect(response).to.equal('biohub_dapi_v1');
+      expect(response).to.equal('biohub_api');
     });
   });
 
@@ -227,7 +227,7 @@ describe('keycloakUtils', () => {
       const keycloakUserInformation: DatabaseUserInformation = {
         database_user_guid: '123456789',
         identity_provider: 'database',
-        username: 'biohub_dapi_v1'
+        username: 'biohub_api'
       };
 
       const response = getUserIdentitySource(keycloakUserInformation);
@@ -241,22 +241,27 @@ describe('keycloakUtils', () => {
       const response = coerceUserIdentitySource('');
       expect(response).to.equal(SYSTEM_IDENTITY_SOURCE.DATABASE);
     });
+
     it('should coerce null string user identity to DATABASE', () => {
       const response = coerceUserIdentitySource(null as unknown as string);
       expect(response).to.equal(SYSTEM_IDENTITY_SOURCE.DATABASE);
     });
+
     it('should coerce bceid basic user identity to BCEIDBASIC', () => {
       const response = coerceUserIdentitySource('bceidbasic');
       expect(response).to.equal(SYSTEM_IDENTITY_SOURCE.BCEID_BASIC);
     });
+
     it('should coerce bceid business user identity to BCEIDBUSINESS', () => {
       const response = coerceUserIdentitySource('bceidbusiness');
       expect(response).to.equal(SYSTEM_IDENTITY_SOURCE.BCEID_BUSINESS);
     });
+
     it('should coerce idir user identity to IDIR', () => {
       const response = coerceUserIdentitySource('idir');
       expect(response).to.equal(SYSTEM_IDENTITY_SOURCE.IDIR);
     });
+
     it('should coerce database user identity to DATABASE', () => {
       const response = coerceUserIdentitySource('database');
       expect(response).to.equal(SYSTEM_IDENTITY_SOURCE.DATABASE);
@@ -327,7 +332,7 @@ describe('keycloakUtils', () => {
       const keycloakUserInformation: DatabaseUserInformation = {
         database_user_guid: '123456789',
         identity_provider: 'database',
-        username: 'biohub_dapi_v1'
+        username: 'biohub_api'
       };
 
       const response = isIdirUserInformation(keycloakUserInformation);
@@ -400,7 +405,7 @@ describe('keycloakUtils', () => {
       const keycloakUserInformation: DatabaseUserInformation = {
         database_user_guid: '123456789',
         identity_provider: 'database',
-        username: 'biohub_dapi_v1'
+        username: 'biohub_api'
       };
 
       const response = isBceidBasicUserInformation(keycloakUserInformation);
@@ -473,7 +478,7 @@ describe('keycloakUtils', () => {
       const keycloakUserInformation: DatabaseUserInformation = {
         database_user_guid: '123456789',
         identity_provider: 'database',
-        username: 'biohub_dapi_v1'
+        username: 'biohub_api'
       };
 
       const response = isBceidBusinessUserInformation(keycloakUserInformation);
@@ -546,7 +551,7 @@ describe('keycloakUtils', () => {
       const keycloakUserInformation: DatabaseUserInformation = {
         database_user_guid: '123456789',
         identity_provider: 'database',
-        username: 'biohub_dapi_v1'
+        username: 'biohub_api'
       };
 
       const response = isDatabaseUserInformation(keycloakUserInformation);

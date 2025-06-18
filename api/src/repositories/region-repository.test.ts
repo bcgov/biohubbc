@@ -90,7 +90,7 @@ describe('RegionRepository', () => {
                 geography: '{}'
               }
             ]
-          } as any as Promise<QueryResult<any>>)
+          }) as any as Promise<QueryResult<any>>
       });
       const repo = new RegionRepository(mockDBConnection);
 

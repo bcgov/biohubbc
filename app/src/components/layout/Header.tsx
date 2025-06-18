@@ -104,24 +104,22 @@ const Header: React.FC = () => {
     const authStateContext = useAuthStateContext();
 
     return (
-      <>
-        <Button
-          component="a"
-          color="inherit"
-          variant="text"
-          onClick={() => authStateContext.auth.signinRedirect()}
-          disableElevation
-          startIcon={<Icon path={mdiLoginVariant} size={1} />}
-          data-testid="menu_log_in"
-          sx={{
-            p: 1,
-            fontSize: '16px',
-            fontWeight: 700,
-            textTransform: 'none'
-          }}>
-          Log In
-        </Button>
-      </>
+      <Button
+        component="a"
+        color="inherit"
+        variant="text"
+        onClick={() => authStateContext.auth.signinRedirect()}
+        disableElevation
+        startIcon={<Icon path={mdiLoginVariant} size={1} />}
+        data-testid="menu_log_in"
+        sx={{
+          p: 1,
+          fontSize: '16px',
+          fontWeight: 700,
+          textTransform: 'none'
+        }}>
+        Log In
+      </Button>
     );
   };
 
@@ -239,7 +237,12 @@ const Header: React.FC = () => {
               <MenuItem tabIndex={1} component={RouterLink} to="/" id="menu_home_sm">
                 Home
               </MenuItem>
-              <AuthGuard>
+              <SystemRoleGuard
+                validSystemRoles={[
+                  SYSTEM_ROLE.PROJECT_CREATOR,
+                  SYSTEM_ROLE.SYSTEM_ADMIN,
+                  SYSTEM_ROLE.DATA_ADMINISTRATOR
+                ]}>
                 <MenuItem
                   tabIndex={1}
                   component={RouterLink}
@@ -248,8 +251,8 @@ const Header: React.FC = () => {
                   onClick={hideMobileMenu}>
                   Projects
                 </MenuItem>
-              </AuthGuard>
-              <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+              </SystemRoleGuard>
+              <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN]}>
                 <MenuItem id="menu_admin_manage" component={RouterLink} to="/admin/manage" onClick={hideMobileMenu}>
                   Admin
                 </MenuItem>
@@ -321,17 +324,20 @@ const Header: React.FC = () => {
                   Home
                 </RouterLink>
               </UnAuthGuard>
-              <AuthGuard>
+              <SystemRoleGuard
+                validSystemRoles={[
+                  SYSTEM_ROLE.PROJECT_CREATOR,
+                  SYSTEM_ROLE.SYSTEM_ADMIN,
+                  SYSTEM_ROLE.DATA_ADMINISTRATOR
+                ]}>
                 <RouterLink to="/admin/summary" id="menu_projects">
                   Projects
                 </RouterLink>
-              </AuthGuard>
-              <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+              </SystemRoleGuard>
+              <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN]}>
                 <RouterLink to="/admin/manage" id="menu_admin_users">
                   Admin
                 </RouterLink>
-              </SystemRoleGuard>
-              <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                 <RouterLink to="/admin/funding-sources" id="menu_admin_funding_sources">
                   Funding Sources
                 </RouterLink>

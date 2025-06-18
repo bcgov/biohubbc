@@ -40,11 +40,12 @@ GET.apiDoc = {
               'survey_progress',
               'method_response_metrics',
               'attractants',
-              'observation_subcount_signs',
+              'observation_signs',
               'telemetry_device_makes',
               'frequency_units',
               'alert_types',
-              'vantages'
+              'vantages',
+              'habitat_feature_types'
             ],
             properties: {
               management_action_type: {
@@ -380,10 +381,10 @@ GET.apiDoc = {
                   }
                 }
               },
-              observation_subcount_signs: {
+              observation_signs: {
                 type: 'array',
                 description:
-                  'Possible observation subcount sign ids, indicating whether the subcount was a direct sighting, footprints, scat, etc.',
+                  'Possible observation sign ids, indicating whether the observation was a direct sighting, footprints, scat, etc.',
                 items: {
                   type: 'object',
                   additionalProperties: false,
@@ -468,6 +469,27 @@ GET.apiDoc = {
               vantages: {
                 type: 'array',
                 description: 'Vantages that vantages belong to.',
+                items: {
+                  type: 'object',
+                  additionalProperties: false,
+                  required: ['id', 'name', 'description'],
+                  properties: {
+                    id: {
+                      type: 'integer',
+                      minimum: 1
+                    },
+                    name: {
+                      type: 'string'
+                    },
+                    description: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
+              habitat_feature_types: {
+                type: 'array',
+                description: 'Habitat feature type codes.',
                 items: {
                   type: 'object',
                   additionalProperties: false,

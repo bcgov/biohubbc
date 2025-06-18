@@ -15,7 +15,7 @@ export const DELETE: Operation = [
     return {
       and: [
         {
-          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR],
+          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN],
           discriminator: 'SystemRole'
         }
       ]
@@ -77,9 +77,8 @@ export function removeSystemUser(): RequestHandler {
       await connection.open();
       const projectParticipationService = new ProjectParticipationService(connection);
 
-      const isUserTheOnlyCoordinator = await projectParticipationService.isUserTheOnlyProjectCoordinatorOnAnyProject(
-        systemUserId
-      );
+      const isUserTheOnlyCoordinator =
+        await projectParticipationService.isUserTheOnlyProjectCoordinatorOnAnyProject(systemUserId);
 
       if (isUserTheOnlyCoordinator) {
         throw new HTTP400(`Cannot remove user. User is the only ${PROJECT_ROLE.COORDINATOR} for one or more projects.`);
@@ -87,17 +86,13 @@ export function removeSystemUser(): RequestHandler {
 
       const userService = new UserService(connection);
 
-      const usrObject = await userService.getUserById(systemUserId);
-
-      if (usrObject.record_end_date) {
-        throw new HTTP400('The system user is not active');
-      }
-
       await userService.deleteAllProjectRoles(systemUserId);
 
       await userService.deleteUserSystemRoles(systemUserId);
 
-      await userService.deactivateSystemUser(systemUserId);
+      await userService.deleteAdministrativeActivities(systemUserId);
+
+      await userService.deleteSystemUser(systemUserId);
 
       await connection.commit();
 

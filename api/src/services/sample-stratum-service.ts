@@ -7,12 +7,6 @@ import {
 } from '../repositories/sample-stratums-repository';
 import { DBService } from './db-service';
 
-// export interface PostSampleStratum {
-//   survey_id: number;
-//   survey_sample_site_id: number;
-//   survey_stratum_id: number;
-// }
-
 /**
  * Sample Stratum Repository
  *

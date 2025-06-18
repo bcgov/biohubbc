@@ -32,7 +32,7 @@ describe('ProjectObjectives', () => {
             }
           }
         },
-        load: jest.fn()
+        load: vi.fn()
       } as unknown as DataLoader<any, any, any>,
       projectId: 1
     } as unknown as IProjectContext;
@@ -48,7 +48,7 @@ describe('ProjectObjectives', () => {
     expect(getByText('Lorem ipsum dolor sit amet')).toBeInTheDocument();
   });
 
-  it('renders correctly when objectives length is > 850 characters ', () => {
+  it('renders correctly when objectives length is > 850 characters', () => {
     const mockProjectContext: IProjectContext = {
       projectDataLoader: {
         data: {
@@ -58,7 +58,7 @@ describe('ProjectObjectives', () => {
             }
           }
         },
-        load: jest.fn()
+        load: vi.fn()
       } as unknown as DataLoader<any, any, any>,
       projectId: 1
     } as unknown as IProjectContext;
@@ -84,7 +84,7 @@ describe('ProjectObjectives', () => {
             }
           }
         },
-        load: jest.fn()
+        load: vi.fn()
       } as unknown as DataLoader<any, any, any>,
       projectId: 1
     } as unknown as IProjectContext;
@@ -119,7 +119,7 @@ describe('ProjectObjectives', () => {
             }
           }
         },
-        load: jest.fn()
+        load: vi.fn()
       } as unknown as DataLoader<any, any, any>,
       projectId: 1
     } as unknown as IProjectContext;
@@ -154,7 +154,7 @@ describe('ProjectObjectives', () => {
             }
           }
         },
-        load: jest.fn()
+        load: vi.fn()
       } as unknown as DataLoader<any, any, any>,
       projectId: 1
     } as unknown as IProjectContext;
@@ -184,7 +184,7 @@ describe('ProjectObjectives', () => {
             }
           }
         },
-        load: jest.fn()
+        load: vi.fn()
       } as unknown as DataLoader<any, any, any>,
       projectId: 1
     } as unknown as IProjectContext;

@@ -3,14 +3,9 @@ import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
 import { HTTP400 } from '../../../../../../../errors/http-error';
-import { bulkUpdateResponse, critterBulkRequestObject } from '../../../../../../../openapi/schemas/critter';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { CritterAttachmentService } from '../../../../../../../services/critter-attachment-service';
-import {
-  CritterbaseService,
-  getCritterbaseUser,
-  ICritterbaseUser
-} from '../../../../../../../services/critterbase-service';
+import { CritterbaseService, ICritterbaseUser } from '../../../../../../../services/critterbase-service';
 import { SurveyCritterService } from '../../../../../../../services/survey-critter-service';
 import { getLogger } from '../../../../../../../utils/logger';
 
@@ -36,7 +31,7 @@ export const PATCH: Operation = [
 ];
 
 PATCH.apiDoc = {
-  description: 'Patches a critter in critterbase, also capable of deleting relevant rows if marked with _delete.',
+  description: 'Patches a SIMS survey critter in critterbase.',
   tags: ['critterbase'],
   security: [
     {
@@ -46,7 +41,23 @@ PATCH.apiDoc = {
   parameters: [
     {
       in: 'path',
+      name: 'projectId',
+      schema: {
+        type: 'number'
+      },
+      required: true
+    },
+    {
+      in: 'path',
       name: 'surveyId',
+      schema: {
+        type: 'number'
+      },
+      required: true
+    },
+    {
+      in: 'path',
+      name: 'critterId',
       schema: {
         type: 'number'
       },
@@ -58,18 +69,44 @@ PATCH.apiDoc = {
     required: true,
     content: {
       'application/json': {
-        schema: critterBulkRequestObject
+        schema: {
+          title: 'Create critter request object',
+          type: 'object',
+          required: ['critter_id', 'animal_id', 'wlh_id', 'sex_qualitative_option_id', 'critter_comment'],
+          additionalProperties: false,
+          properties: {
+            critter_id: {
+              type: 'string',
+              format: 'uuid'
+            },
+            animal_id: {
+              type: 'string'
+            },
+            wlh_id: {
+              type: 'string',
+              nullable: true
+            },
+            itis_tsn: {
+              type: 'integer',
+              minimum: 0
+            },
+            sex_qualitative_option_id: {
+              type: 'string',
+              format: 'uuid',
+              nullable: true
+            },
+            critter_comment: {
+              type: 'string',
+              nullable: true
+            }
+          }
+        }
       }
     }
   },
   responses: {
-    200: {
-      description: 'Responds with counts of objects created in critterbase.',
-      content: {
-        'application/json': {
-          schema: bulkUpdateResponse
-        }
-      }
+    204: {
+      description: 'Critter updated successfully.'
     },
     400: {
       $ref: '#/components/responses/400'
@@ -91,37 +128,28 @@ PATCH.apiDoc = {
 
 export function updateSurveyCritter(): RequestHandler {
   return async (req, res) => {
-    const critterbaseCritterId = req.body.update.critter_id;
-
-    const critterId = Number(req.params.critterId);
+    const surveyId = Number(req.params.surveyId);
+    const simsCritterId = Number(req.params.critterId);
+    const critterbaseCritterId: string = req.body.critter_id;
 
     const connection = getDBConnection(req.keycloak_token);
+
     try {
       await connection.open();
-      const user = getCritterbaseUser(req);
-
-      if (!critterbaseCritterId) {
-        throw new HTTP400('No external critter ID was found.');
-      }
 
       const surveyService = new SurveyCritterService(connection);
-      await surveyService.updateCritter(critterId, critterbaseCritterId);
 
-      const critterbaseService = new CritterbaseService(user);
-
-      let createResult, updateResult;
-
-      if (req.body.update) {
-        updateResult = await critterbaseService.updateCritter(req.body.update);
-      }
-
-      if (req.body.create) {
-        createResult = await critterbaseService.createCritter(req.body.create);
-      }
+      await surveyService.updateCritter(surveyId, simsCritterId, {
+        critter_id: critterbaseCritterId,
+        animal_id: req.body.animal_id,
+        wlh_id: req.body.wlh_id,
+        sex_qualitative_option_id: req.body.sex_qualitative_option_id,
+        critter_comment: req.body.critter_comment
+      });
 
       await connection.commit();
 
-      return res.status(200).json({ ...createResult, ...updateResult });
+      return res.status(204).send();
     } catch (error) {
       defaultLog.error({ label: 'updateSurveyCritter', message: 'error', error });
       await connection.rollback();

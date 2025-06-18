@@ -2,7 +2,6 @@ import { faker } from '@faker-js/faker';
 import { Knex } from 'knex';
 
 const DB_SCHEMA = process.env.DB_SCHEMA;
-const DB_SCHEMA_DAPI_V1 = process.env.DB_SCHEMA_DAPI_V1;
 
 const TELEMETRY_START_DATE = '2024-01-01';
 const TELEMETRY_END_DATE = '2025-01-01';
@@ -50,7 +49,7 @@ const DEVICES = [LOTEK_DEVICE, VECTRONIC_DEVICE, ATS_DEVICE];
 export async function seed(knex: Knex): Promise<void> {
   await knex.raw(`
     SET SCHEMA '${DB_SCHEMA}';
-    SET SEARCH_PATH=${DB_SCHEMA},${DB_SCHEMA_DAPI_V1};
+    SET SEARCH_PATH=${DB_SCHEMA};
   `);
 
   const device = await knex.select('*').from('device').limit(1);

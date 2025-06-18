@@ -1,9 +1,9 @@
 import {
   QualitativeEnvironmentTypeDefinition,
   QuantitativeEnvironmentTypeDefinition
-} from '../../../repositories/observation-subcount-environment-repository';
+} from '../../../repositories/observation-environment-repository';
 import { CaseInsensitiveMap } from '../../../utils/case-insensitive-map';
-import { ObservationSubCountEnvironmentService } from '../../observation-subcount-environment-service';
+import { ObservationEnvironmentService } from '../../observation-environment-service';
 
 export type EnvironmentNameTypeDefinitionMap = CaseInsensitiveMap<
   string, // Environment name
@@ -92,12 +92,12 @@ export const isQuantitativeEnvironmentStub = (environment: unknown): boolean => 
  * Get the environment name type definition map for a survey - case insensitive
  *
  * @param {string[]} environmentNames The environment names
- * @param {ObservationSubCountEnvironmentService} environmentService The environment service
+ * @param {ObservationEnvironmentService} environmentService The environment service
  * @return {*}  {Promise<EnvironmentNameTypeDefinitionMap>} A mapping of environment names to their respective environment type definitions
  */
 export const getEnvironmentNameTypeDefinitionMap = async (
   environmentNames: string[],
-  environmentService: ObservationSubCountEnvironmentService
+  environmentService: ObservationEnvironmentService
 ): Promise<EnvironmentNameTypeDefinitionMap> => {
   const environmentMap: EnvironmentNameTypeDefinitionMap = new CaseInsensitiveMap();
 

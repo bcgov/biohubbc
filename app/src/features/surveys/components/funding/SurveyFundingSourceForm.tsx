@@ -76,18 +76,30 @@ export const SurveyFundingSourceFormYupSchema = yup.object().shape({
  * @return {*}
  */
 
-export const SurveyFundingSourceForm = () => {
+const SurveyFundingSourceForm = () => {
   const { values, handleSubmit, errors, setFieldValue, submitCount, setFieldError } =
     useFormikContext<IEditSurveyRequest>();
 
   const biohubApi = useBiohubApi();
+
   const fundingSourcesDataLoader = useDataLoader(() => biohubApi.funding.getAllFundingSources());
-  fundingSourcesDataLoader.load();
+
+  useEffect(() => {
+    fundingSourcesDataLoader.load();
+  }, [fundingSourcesDataLoader]);
 
   const fundingSourceOptions = useMemo(
     () =>
       fundingSourcesDataLoader.data?.map((option) => ({ value: option.funding_source_id, label: option.name })) ?? [],
-    [fundingSourcesDataLoader]
+    [fundingSourcesDataLoader.data]
+  );
+
+  const existingFunctionSources = useMemo(
+    () =>
+      fundingSourceOptions.filter((option) =>
+        values.funding_sources.map((source) => source.funding_source_id).includes(option.value)
+      ),
+    [fundingSourceOptions, values.funding_sources]
   );
 
   // Update `funding_used` based on the existence of `funding_sources`
@@ -108,10 +120,6 @@ export const SurveyFundingSourceForm = () => {
     }
     return null;
   };
-
-  const sources = fundingSourceOptions.filter((option) =>
-    values.funding_sources.map((source) => source.funding_source_id).includes(option.value)
-  );
 
   return (
     <form onSubmit={handleSubmit}>
@@ -138,7 +146,7 @@ export const SurveyFundingSourceForm = () => {
               value={getFundingUsedValue()}
               sx={{ mb: 1 }}
               onChange={(event) => {
-                const value = event.target.value === 'true' ? true : false;
+                const value = event.target.value === 'true';
                 setFieldValue('funding_used', value);
                 if (!value) {
                   setFieldValue('funding_sources', []);
@@ -168,7 +176,7 @@ export const SurveyFundingSourceForm = () => {
 
             {/* Transition Group for displaying funding sources */}
             <TransitionGroup>
-              {sources.map((fundingSource, index) => (
+              {existingFunctionSources.map((fundingSource, index) => (
                 <Collapse key={fundingSource.value}>
                   <NameDescriptionCard
                     sx={{ my: 0.5 }}

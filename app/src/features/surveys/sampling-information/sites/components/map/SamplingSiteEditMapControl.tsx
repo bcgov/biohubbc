@@ -49,7 +49,7 @@ const useStyles = () => {
   };
 };
 
-export interface ISamplingSiteEditMapControlProps {
+interface ISamplingSiteEditMapControlProps {
   name: string;
   mapId: string;
   formikProps: FormikContextType<IGetSampleSiteDetails>;

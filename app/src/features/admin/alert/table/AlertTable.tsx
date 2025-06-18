@@ -12,7 +12,7 @@ import AlertTableActionsMenu from './components/AlertTableActionsMenu';
 
 const pageSizeOptions = [5, 10, 25];
 
-export interface IAlertTableRow {
+interface IAlertTableRow {
   id: number;
   alert_type_id: number;
   severity: AlertSeverity;
