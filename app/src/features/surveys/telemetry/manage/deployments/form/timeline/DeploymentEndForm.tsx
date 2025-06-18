@@ -7,7 +7,7 @@ import RadioGroup from '@mui/material/RadioGroup';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import AutocompleteField from 'components/fields/AutocompleteField';
-import { DateField } from 'components/fields/DateField';
+import SingleDateField from 'components/fields/SingleDateField';
 import { TimeField } from 'components/fields/TimeField';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import dayjs from 'dayjs';
@@ -213,7 +213,7 @@ export const DeploymentEndForm = (props: IDeploymentEndFormProps) => {
               )}
               {deploymentEndType === 'fell_off' && (
                 <Box sx={{ width: '100%' }} display="flex">
-                  <DateField
+                  <SingleDateField
                     sx={{
                       '& .MuiOutlinedInput-root': {
                         borderTopRightRadius: 0,

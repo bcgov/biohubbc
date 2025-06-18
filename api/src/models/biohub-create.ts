@@ -7,7 +7,7 @@ import { GetSurveyData, GetSurveyPurposeAndMethodologyData } from './survey-view
 
 const defaultLog = getLogger('models/biohub-create');
 
-export interface BioHubSubmission {
+interface BioHubSubmission {
   id: string;
   name: string;
   description: string;
@@ -211,7 +211,7 @@ export class PostSurveySubmissionToBioHubObject implements BioHubSubmission {
   }
 }
 
-export enum BiohubFeatureType {
+enum BiohubFeatureType {
   DATASET = 'dataset',
   OBSERVATION = 'observation',
   ARTIFACT = 'artifact'

@@ -1,3 +1,4 @@
+import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonMap } from 'components/loading/SkeletonLoaders';
 import BaseLayerControls from 'components/map/components/BaseLayerControls';
 import { SetMapBounds } from 'components/map/components/Bounds';
@@ -13,7 +14,7 @@ import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 
 interface ISurveyMapProps {
   staticLayers: IStaticLayer[];
-  isLoading: boolean;
+  isLoading?: boolean;
 }
 
 const SurveyMap = (props: ISurveyMapProps) => {
@@ -30,27 +31,23 @@ const SurveyMap = (props: ISurveyMapProps) => {
   }, [props.staticLayers]);
 
   return (
-    <>
-      {props.isLoading ? (
-        <SkeletonMap />
-      ) : (
-        <LeafletMapContainer
-          data-testid="leaflet-survey-map"
-          id="survey-map"
-          center={MAP_DEFAULT_CENTER}
-          scrollWheelZoom={false}
-          fullscreenControl={true}
-          style={{ height: '100%' }}>
-          <MapBaseCss />
-          <FullScreenScrollingEventHandler bounds={bounds} scrollWheelZoom={false} />
-          <SetMapBounds bounds={bounds} />
-          <LayersControl position="topright">
-            <BaseLayerControls />
-            <StaticLayers layers={props.staticLayers} />
-          </LayersControl>
-        </LeafletMapContainer>
-      )}
-    </>
+    <LoadingGuard isLoading={props.isLoading} isLoadingFallback={<SkeletonMap />}>
+      <LeafletMapContainer
+        data-testid="leaflet-survey-map"
+        id="survey-map"
+        center={MAP_DEFAULT_CENTER}
+        scrollWheelZoom={false}
+        fullscreenControl={true}
+        style={{ height: '100%' }}>
+        <MapBaseCss />
+        <FullScreenScrollingEventHandler bounds={bounds} scrollWheelZoom={false} />
+        <SetMapBounds bounds={bounds} />
+        <LayersControl position="topright">
+          <BaseLayerControls />
+          <StaticLayers layers={props.staticLayers} />
+        </LayersControl>
+      </LeafletMapContainer>
+    </LoadingGuard>
   );
 };
 
