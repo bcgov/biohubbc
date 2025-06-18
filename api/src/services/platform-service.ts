@@ -52,7 +52,7 @@ export interface IItisSearchResult {
   scientificName: string;
 }
 
-export interface ITaxonomy {
+interface ITaxonomy {
   tsn: number;
   commonNames?: string[];
   scientificName: string;

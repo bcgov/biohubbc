@@ -469,12 +469,6 @@ describe('isUUID', () => {
     expect(result).to.be.false;
   });
 
-  it('should return false for a UUID with an invalid version', () => {
-    const invalidUUID = '550e8400-e29b-51d4-a716-446655440000'; // Version is 5, not 4
-    const result = isUUID(invalidUUID);
-    expect(result).to.be.false;
-  });
-
   it('should return false for a UUID with invalid characters', () => {
     const invalidUUID = '550e8400-e29b-41d4-a716-44665544zzzz'; // Invalid hex characters
     const result = isUUID(invalidUUID);

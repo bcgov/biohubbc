@@ -123,7 +123,7 @@ export interface ParsedKeyxXMLData {
  *
  * @type {{ ignoreAttributes: boolean; attributeNamePrefix: string; }}
  */
-export const xmlParserOptions = {
+const xmlParserOptions = {
   ignoreAttributes: false,
   attributeNamePrefix: '@_'
 };
@@ -135,7 +135,7 @@ export const xmlParserOptions = {
  * @param {ReadonlyArray<string>} substrings
  * @returns {*}
  */
-export const findVectronicExpectedTags = (str: string, substrings: ReadonlyArray<string>) => {
+const findVectronicExpectedTags = (str: string, substrings: ReadonlyArray<string>) => {
   return substrings.filter((substring) => str.includes(substring));
 };
 
@@ -145,7 +145,7 @@ export const findVectronicExpectedTags = (str: string, substrings: ReadonlyArray
  * @param {ParsedKeyxXMLData} input
  * @returns {IKeyxData}
  */
-export const mapKeyxData = (input: ParsedKeyxXMLData): IKeyxData => {
+const mapKeyxData = (input: ParsedKeyxXMLData): IKeyxData => {
   return {
     id: input.collarKey.collar['@_ID'],
     key: input.collarKey.collar.key,
@@ -227,7 +227,7 @@ export const validateCfgFormat = (content: string): string | null => {
  * @param {string} input
  * @returns {ICfgData[]}
  */
-export const convertLotekCredentialFileToJson = (input: string): ICfgData[] => {
+const convertLotekCredentialFileToJson = (input: string): ICfgData[] => {
   const regex = /\[(\d+)\]\s*((?:Key=[^\n]+(?:\s+Iridium IMEI=\d+)?\s*)+)/g;
   return [...input.matchAll(regex)].map(([, id, block]) => {
     // Extracting Key and Iridium IMEI directives in any order

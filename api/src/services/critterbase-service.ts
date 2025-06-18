@@ -1,5 +1,4 @@
 import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
-import { Request } from 'express';
 import qs from 'qs';
 import { z } from 'zod';
 import { IDBConnection } from '../database/db';
@@ -16,19 +15,6 @@ export interface ICritterbaseUser {
 }
 
 /**
- * Get Critterbase user from a request
- *
- * TODO: Rename to `getCritterbaseUserFromRequest`
- *
- * @param {Request} req
- * @returns {ICritterbaseUser}
- */
-export const getCritterbaseUser = (req: Request): ICritterbaseUser => ({
-  keycloak_guid: req.system_user?.user_guid ?? '',
-  username: req.system_user?.user_identifier ?? ''
-});
-
-/**
  * Get Critterbase user from connection
  *
  * @param {IDBConnection} connection
@@ -38,11 +24,6 @@ export const getCritterbaseUserFromConnection = (connection: IDBConnection) => (
   keycloak_guid: connection.systemUserGUID(),
   username: connection.systemUserIdentifier()
 });
-
-export interface QueryParam {
-  key: string;
-  value: string;
-}
 
 export interface ICritter {
   critter_id: string;
@@ -114,19 +95,6 @@ export interface ICaptureDetailed {
     latitude: number;
     longitude: number;
   };
-}
-
-export interface ICreateCapture {
-  critter_id: string;
-  capture_method_id?: string;
-  capture_location: ILocation;
-  release_location?: ILocation;
-  capture_date: string;
-  capture_time?: string | null;
-  release_date?: string | null;
-  release_time?: string | null;
-  capture_comment?: string | null;
-  release_comment?: string | null;
 }
 
 export interface IMortality {
@@ -407,7 +375,7 @@ const CBQualitativeOption = z.object({
   option_desc: z.string().nullable()
 });
 
-export type CBQualitativeOption = z.infer<typeof CBQualitativeOption>;
+type CBQualitativeOption = z.infer<typeof CBQualitativeOption>;
 
 /**
  * A Critterbase qualitative measurement type definition.

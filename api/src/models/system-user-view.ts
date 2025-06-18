@@ -18,14 +18,6 @@ export const SystemUserWithRoles = SystemUserRecord.omit({
 
 export type SystemUserWithRoles = z.infer<typeof SystemUserWithRoles>;
 
-export interface IInsertUser {
-  system_user_id: number;
-  user_identity_source_id: number;
-  user_identifier: number;
-  record_effective_date: string;
-  record_end_date: string;
-}
-
 export interface IGetRoles {
   system_role_id: number;
   name: string;
