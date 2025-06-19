@@ -14,7 +14,6 @@ import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import CustomToggleButtonGroup from 'components/toggle/CustomToggleButtonGroup';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import dayjs from 'dayjs';
-import { SURVEY_ACTIVE_VIEW_KEY, SURVEY_ACTIVE_VIEW_VALUE } from 'features/surveys/details/SurveyPage';
 import { LinearProgressWithLabel } from 'features/surveys/details/tabs/details/checklist/progress/SurveyChecklistProgressBar';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -155,7 +154,7 @@ const SurveysListContainer = ({ showSearch }: { showSearch: boolean }) => {
             underline="always"
             title={params.row.name}
             component={RouterLink}
-            to={`/admin/surveys/${params.row.survey_id}/details?${SURVEY_ACTIVE_VIEW_KEY}=${SURVEY_ACTIVE_VIEW_VALUE.overview}`}
+            to={`/admin/surveys/${params.row.survey_id}/details`}
             sx={{ overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: 700 }}>
             {params.row.name}
           </Link>
