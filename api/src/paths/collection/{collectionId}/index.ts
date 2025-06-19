@@ -308,25 +308,20 @@ export function createSubcollection(): RequestHandler {
   };
 }
 
-/**
- * DELETE /api/collection/{collection_id}
- * Delete a collection by ID.
- */
 export const DELETE: Operation = [
   authorizeRequestHandler((req) => {
     return {
       or: [
         {
-          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR],
-          discriminator: 'SystemRole'
-        } ,
-              {
-                discriminator: 'CollectionRole',
-                collectionId: Number(req.params.collectionId),
-                validCollectionRoles: [COLLECTION_ROLE.ADMIN, COLLECTION_ROLE.MEMBER]
-              }
-            
-            ]
+          discriminator: 'SystemRole',
+          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]
+        },
+        {
+          discriminator: 'CollectionRole',
+          collectionId: Number(req.params.collectionId),
+          validCollectionRoles: [COLLECTION_ROLE.ADMIN]
+        }
+      ]
     };
   }),
   deleteCollection()
@@ -372,12 +367,10 @@ export function deleteCollection(): RequestHandler {
 
       const collectionId = Number(req.params.collectionId);
 
-      const systemUserId = connection.systemUserId();
       const collectionService = new CollectionService(connection);
-      await collectionService.deleteCollection(collectionId, systemUserId);
+      await collectionService.deleteCollection(collectionId);
 
       await connection.commit();
-
 
       res.status(204).send();
     } catch (error) {

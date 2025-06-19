@@ -168,7 +168,6 @@ export class CollectionService extends DBService {
     return this.collectionRepository.getCollectionsBySurveyId(surveyId);
   }
 
-  
   /**
    * Update a collection record.
    *
@@ -180,7 +179,6 @@ export class CollectionService extends DBService {
     // Update the collection record
     await this.collectionRepository.deleteCollectionParents(collectionIds);
   }
-
 
   /**
    * Update a collection record.
@@ -242,49 +240,58 @@ export class CollectionService extends DBService {
     return collectionResponse;
   }
 
+  _getAllSubcollectionIds = (collections: Collection[]): number[] => {
+    const ids: number[] = [];
+
+    for (const collection of collections) {
+      // Add current collection's ID
+      ids.push(collection.collection_id);
+
+      // Recursively get IDs from subcollections
+      if (collection.subcollections && collection.subcollections.length > 0) {
+        ids.push(...this._getAllSubcollectionIds(collection.subcollections));
+      }
+    }
+
+    return ids;
+  };
+
   /**
    * Delete a collection by ID.
    *
    * @param {number} collectionId
-   * @param {number} systemUserId 
    * @return {*}  {Promise<void>}
    * @memberof CollectionService
    */
-  async deleteCollection(collectionId: number, systemUserId: number): Promise<void> {
-    // 1. Find all direct subcollections
-    const subcollections = await this.findCollections(
-      false,
-      null,
-      { parent_collection_id: collectionId, include_children: false }
+  async deleteCollection(collectionId: number): Promise<void> {
+    // Find then recursively delete all direct subcollections in parallel
+    const subcollections: Collection[] = await this.findCollections(false, null, {
+      parent_collection_id: collectionId,
+      include_children: true
+    });
+
+    // Flatten the children
+    const subcollectionIds = this._getAllSubcollectionIds(subcollections);
+
+    await Promise.all(subcollections.map((sub) => this.deleteCollection(sub.collection_id)));
+
+    // Remove survey associations in parallel
+    const surveys = await this.collectionSurveyService.getSurveysInCollection(collectionId);
+    await Promise.all(
+      surveys.map((survey) =>
+        this.collectionSurveyService.collectionSurveyRepository.deleteCollectionSurvey(survey.survey_id, collectionId)
+      )
     );
 
-    // 2. For each subcollection, set its parent_collection_id to null and recursively delete it
-    for (const sub of subcollections) {
-      // Optionally set parent_collection_id to null if required
-      await this.collectionRepository.updateCollection(sub.collection_id, { 
-        parent_collection_id: null, 
-        name: sub.name || 'Unnamed Collection', 
-        description: sub.description || 'No description available' 
-      });
-
-      // Recursively delete the subcollection
-      await this.deleteCollection(sub.collection_id, systemUserId);
-    }
-
-    // 3. Remove all survey associations for this collection
-    const surveys = await this.collectionSurveyService.getSurveysInCollection(collectionId);
-    for (const survey of surveys) {
-      await this.collectionSurveyService.collectionSurveyRepository.deleteCollectionSurvey(survey.survey_id, collectionId);
-    }
-
-    // 4. Remove all member associations for this collection
+    // Remove member associations in parallel
     const members = await this.collectionMemberService.getCollectionMembers(collectionId);
-    for (const member of members) {
-      await this.collectionMemberService.deleteCollectionMemberRecord(collectionId, member.collection_member_id);
-    }
+    await Promise.all(
+      members.map((member) =>
+        this.collectionMemberService.deleteCollectionMemberRecord(collectionId, member.collection_member_id)
+      )
+    );
 
-    // 5. Delete the collection itself
+    // Delete the collection itself
     await this.collectionRepository.deleteCollection(collectionId);
   }
 }
-
