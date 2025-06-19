@@ -259,58 +259,66 @@ export const SubcollectionContainer = (props: ICollectionsTagContainerProps) => 
           isLoadingFallbackDelay={100}
           hasNoData={!rows.length}
           hasNoDataFallback={
-            <NoDataOverlay
-              minHeight="400px"
-              title="Create Subcollections"
-              subtitle={`There are no subcollections. When you create one, it will appear here.`}
-              icon={mdiArrowTopRight}
-            />
+            <Box sx={{ display: 'flex', flexDirection: 'column', height: '60vh', width: '100%' }}>
+              <Box sx={{ flex: 1, display: 'flex' }}>
+                <NoDataOverlay
+                  minHeight="400px"
+                  title="Create Subcollections"
+                  subtitle={`There are no subcollections. When you create one, it will appear here.`}
+                  icon={mdiArrowTopRight}
+                  sx={{ width: '100%', height: '100%', m: 0 }}
+                />
+              </Box>
+            </Box>
           }
           hasNoDataFallbackDelay={100}>
-          <StyledDataGrid
-            noRowsMessage="No collections found"
-            loading={!rows.length && (collectionsDataLoader.isLoading || !collectionsDataLoader.isReady)}
-            // Columns
-            columns={columns}
-            // Rows
-            rows={rows}
-            rowCount={collectionsDataLoader.data?.pagination.total ?? 0}
-            getRowId={(row) => row.collection_id}
-            // Pagination
-            paginationMode="server"
-            paginationModel={paginationModel}
-            pageSizeOptions={pageSizeOptions}
-            onPaginationModelChange={(model) => {
-              if (!model) {
-                return;
-              }
-              setSearchParams(searchParams.set('p_page', String(model.page)).set('p_limit', String(model.pageSize)));
-              setPaginationModel(model);
-            }}
-            // Sorting
-            sortingMode="server"
-            sortModel={sortModel}
-            sortingOrder={['asc', 'desc']}
-            onSortModelChange={(model) => {
-              if (!model.length) {
-                return;
-              }
-              setSearchParams(searchParams.set('p_sort', model[0].field).set('p_order', model[0].sort ?? 'desc'));
-              setSortModel(model);
-            }}
-            // Row options
-            rowSelection={false}
-            checkboxSelection={false}
-            disableRowSelectionOnClick
-            // Column options
-            disableColumnSelector
-            disableColumnFilter
-            disableColumnMenu
-            // Styling
-            rowHeight={70}
-            getRowHeight={() => 'auto'}
-            autoHeight={false}
-          />
+          <Box sx={{ display: 'flex', flexDirection: 'column', height: '60vh', width: '100%' }}>
+            <StyledDataGrid
+              noRowsMessage="No collections found"
+              loading={!rows.length && (collectionsDataLoader.isLoading || !collectionsDataLoader.isReady)}
+              // Columns
+              columns={columns}
+              // Rows
+              rows={rows}
+              rowCount={collectionsDataLoader.data?.pagination.total ?? 0}
+              getRowId={(row) => row.collection_id}
+              // Pagination
+              paginationMode="server"
+              paginationModel={paginationModel}
+              pageSizeOptions={pageSizeOptions}
+              onPaginationModelChange={(model) => {
+                if (!model) {
+                  return;
+                }
+                setSearchParams(searchParams.set('p_page', String(model.page)).set('p_limit', String(model.pageSize)));
+                setPaginationModel(model);
+              }}
+              // Sorting
+              sortingMode="server"
+              sortModel={sortModel}
+              sortingOrder={['asc', 'desc']}
+              onSortModelChange={(model) => {
+                if (!model.length) {
+                  return;
+                }
+                setSearchParams(searchParams.set('p_sort', model[0].field).set('p_order', model[0].sort ?? 'desc'));
+                setSortModel(model);
+              }}
+              // Row options
+              rowSelection={false}
+              checkboxSelection={false}
+              disableRowSelectionOnClick
+              // Column options
+              disableColumnSelector
+              disableColumnFilter
+              disableColumnMenu
+              // Styling
+              rowHeight={70}
+              getRowHeight={() => 'auto'}
+              autoHeight={false}
+              sx={{ flex: 1 }}
+            />
+          </Box>
         </LoadingGuard>
       </Box>
 

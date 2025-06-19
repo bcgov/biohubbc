@@ -228,58 +228,66 @@ const CollectionSurveyContainer = (props: ICollectionSurveyContainerProps) => {
         isLoadingFallbackDelay={100}
         hasNoData={!surveys.length}
         hasNoDataFallback={
-          <NoDataOverlay
-            title="Add Surveys to Collection"
-            subtitle="Surveys added to this collection will appear here"
-            icon={mdiArrowTopRight}
-            data-testid="survey-list-no-data-overlay"
-          />
+          <Box sx={{ display: 'flex', flexDirection: 'column', height: '60vh', width: '100%' }}>
+            <Box sx={{ flex: 1, display: 'flex' }}>
+              <NoDataOverlay
+                title="Add Surveys to Collection"
+                subtitle="Surveys added to this collection will appear here"
+                icon={mdiArrowTopRight}
+                data-testid="survey-list-no-data-overlay"
+                sx={{ width: '100%', height: '100%', m: 0 }}
+              />
+            </Box>
+          </Box>
         }
         hasNoDataFallbackDelay={100}>
-        <StyledDataGrid
-          noRowsMessage="No surveys found"
-          loading={!surveys.length && (surveysDataLoader.isLoading || !surveysDataLoader.isReady)}
-          // Columns
-          columns={columns}
-          // Rows
-          rows={surveys}
-          rowCount={surveysDataLoader.data?.pagination.total ?? 0}
-          getRowId={(row) => row.survey_id}
-          // Pagination
-          paginationMode="server"
-          paginationModel={paginationModel}
-          pageSizeOptions={pageSizeOptions}
-          onPaginationModelChange={(model) => {
-            if (!model) {
-              return;
-            }
-            setSearchParams(searchParams.set('s_page', String(model.page)).set('s_limit', String(model.pageSize)));
-            setPaginationModel(model);
-          }}
-          // Sorting
-          sortingMode="server"
-          sortModel={sortModel}
-          sortingOrder={['asc', 'desc']}
-          onSortModelChange={(model) => {
-            if (!model.length) {
-              return;
-            }
-            setSearchParams(searchParams.set('s_sort', model[0].field).set('s_order', model[0].sort ?? 'desc'));
-            setSortModel(model);
-          }}
-          // Row options
-          rowSelection={false}
-          checkboxSelection={false}
-          disableRowSelectionOnClick
-          // Column options
-          disableColumnSelector
-          disableColumnFilter
-          disableColumnMenu
-          // Styling
-          rowHeight={70}
-          getRowHeight={() => 'auto'}
-          autoHeight={false}
-        />
+        <Box sx={{ display: 'flex', flexDirection: 'column', height: '60vh' }}>
+          <StyledDataGrid
+            noRowsMessage="No surveys found"
+            loading={!surveys.length && (surveysDataLoader.isLoading || !surveysDataLoader.isReady)}
+            // Columns
+            columns={columns}
+            // Rows
+            rows={surveys}
+            rowCount={surveysDataLoader.data?.pagination.total ?? 0}
+            getRowId={(row) => row.survey_id}
+            // Pagination
+            paginationMode="server"
+            paginationModel={paginationModel}
+            pageSizeOptions={pageSizeOptions}
+            onPaginationModelChange={(model) => {
+              if (!model) {
+                return;
+              }
+              setSearchParams(searchParams.set('s_page', String(model.page)).set('s_limit', String(model.pageSize)));
+              setPaginationModel(model);
+            }}
+            // Sorting
+            sortingMode="server"
+            sortModel={sortModel}
+            sortingOrder={['asc', 'desc']}
+            onSortModelChange={(model) => {
+              if (!model.length) {
+                return;
+              }
+              setSearchParams(searchParams.set('s_sort', model[0].field).set('s_order', model[0].sort ?? 'desc'));
+              setSortModel(model);
+            }}
+            // Row options
+            rowSelection={false}
+            checkboxSelection={false}
+            disableRowSelectionOnClick
+            // Column options
+            disableColumnSelector
+            disableColumnFilter
+            disableColumnMenu
+            // Styling
+            rowHeight={70}
+            getRowHeight={() => 'auto'}
+            autoHeight={false}
+            sx={{ flex: 1 }}
+          />
+        </Box>
       </LoadingGuard>
 
       <SurveyCollectionDialog

@@ -2,7 +2,6 @@ import Box from '@mui/material/Box';
 import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
 import Paper, { PaperProps } from '@mui/material/Paper';
-import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import { ReactNode } from 'react';
 
@@ -14,36 +13,28 @@ interface SidebarLayoutProps extends PaperProps {
 
 export const SidebarLayout = ({ sidebar, header, children, ...paperProps }: SidebarLayoutProps) => {
   return (
-    <Stack
-      component={Paper}
-      direction="row"
-      alignItems="stretch"
-      {...paperProps}
-      sx={{
-        minHeight: '70vh',
-        overflow: 'hidden',
-        ...paperProps.sx
-      }}>
+    <Box component={Paper} display="flex" minHeight="70vh" {...paperProps} sx={{ ...paperProps.sx }}>
       {/* Sidebar */}
       <Box
         sx={{
           minWidth: '300px',
           overflowY: 'auto',
-          height: '100%'
+          height: '100%',
+          flexShrink: 0
         }}>
         {sidebar}
       </Box>
 
       <Divider flexItem orientation="vertical" />
 
-      {/* Main Content Area */}
+      {/* Main content area */}
       <Box
         sx={{
           flex: 1,
           display: 'flex',
-          flexDirection: 'column'
+          flexDirection: 'column',
+          minWidth: 0 // ✅ this is crucial
         }}>
-        {/* Optional Header */}
         {header && (
           <Toolbar
             disableGutters
@@ -59,17 +50,17 @@ export const SidebarLayout = ({ sidebar, header, children, ...paperProps }: Side
           </Toolbar>
         )}
 
-        {/* Scrollable Content */}
         <Box
           sx={{
             flex: 1,
-            overflowY: 'auto',
+            overflow: 'auto',
             display: 'flex',
-            flexDirection: 'column'
+            flexDirection: 'column',
+            minWidth: 0 // ✅ ensures children like DataGrid can shrink
           }}>
           {children}
         </Box>
       </Box>
-    </Stack>
+    </Box>
   );
 };
