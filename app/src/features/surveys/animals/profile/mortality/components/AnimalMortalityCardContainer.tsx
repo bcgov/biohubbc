@@ -22,8 +22,6 @@ import { AnimalMortalityCardDetailsContainer } from 'features/surveys/animals/pr
 import { useSurveyContext } from 'hooks/useContext';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { shouldShowTime } from 'utils/datetime';
-import { getFormattedDate } from 'utils/Utils';
 
 interface IAnimalMortalityCardContainer {
   mortality: IMortalityWithSupplementaryData[];
@@ -119,6 +117,8 @@ export const AnimalMortalityCardContainer = (props: IAnimalMortalityCardContaine
 
       {mortality.length ? (
         mortality.map((mortality) => {
+          const dt = dayjs(mortality.mortality_timestamp);
+          const hasRealTime = dt.format('HH:mm:ss') !== '00:00:00';
           /* MORTALITY DETAILS */
           return (
             <Accordion
@@ -159,13 +159,9 @@ export const AnimalMortalityCardContainer = (props: IAnimalMortalityCardContaine
                   }}>
                   <Stack gap={0.5} display="flex">
                     <Typography fontWeight={700}>
-                      {(() => {
-                        const dateStr = getFormattedDate(DATE_FORMAT.MediumDateFormat, mortality.mortality_timestamp);
-                        const timeStr = dayjs(mortality.mortality_timestamp).format('HH:mm:ss');
-                        return shouldShowTime(timeStr)
-                          ? `${dateStr} ${getFormattedDate(DATE_FORMAT.TimeFormat, mortality.mortality_timestamp)}`
-                          : dateStr;
-                      })()}
+                      {hasRealTime
+                        ? dayjs(mortality.mortality_timestamp).format(DATE_FORMAT.MediumDateTimeFormat)
+                        : dayjs(mortality.mortality_timestamp).format(DATE_FORMAT.MediumDateFormat)}
                     </Typography>
                     {mortality.location?.latitude && mortality.location?.longitude && (
                       <Box>

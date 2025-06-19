@@ -9,8 +9,8 @@ import { useFormikContext } from 'formik';
 import { ICaptureResponse } from 'interfaces/useCritterApi.interface';
 import { ICreateAnimalDeployment } from 'interfaces/useTelemetryApi.interface';
 import { SyntheticEvent } from 'react';
+import { formatDateTime } from 'utils/datetime';
 import yup from 'utils/YupSchema';
-import { formatCaptureLabel, shouldShowTime } from 'utils/datetime';
 
 export const DeploymentStartFormInitialValues: yup.InferType<typeof DeploymentStartFormYupSchema> = {
   attachment_start_date: null as unknown as string,
@@ -50,30 +50,29 @@ export const DeploymentStartForm = (props: IDeploymentStartFormProps) => {
           id="critterbase_start_capture_id"
           label={'Initial capture event'}
           options={captures.map((capture) => {
-            const showTime = shouldShowTime(capture.capture_time ?? undefined);
-            const formattedLabel = formatCaptureLabel(capture.capture_date, capture.capture_time ?? undefined);
-            // TODO: TECH DEBT: We currently assume that a time value of 00:00 (midnight) means the time is null/missing, and do not display it in dropdowns. However, a user could intentionally set 00:00 as a valid time. This logic should be revisited in the future to properly distinguish between a true null and a valid midnight time.
+            const formattedLabel = formatDateTime(capture.capture_date, capture.capture_time);
             return {
               value: capture.capture_id,
-              label: formattedLabel,
-              _rawTime: showTime && capture.capture_time ? capture.capture_time : null
+              label: formattedLabel
             };
           })}
           onChange={(_: SyntheticEvent<Element, Event>, value: IAutocompleteFieldOption<string> | null) => {
-            // Get date of the capture to set attachment_start_date
             if (value) {
+              // Parse the capture label into a dayjs object
               const timestamp = dayjs(value.label);
-              const date = timestamp.format(DATE_FORMAT.ShortDateFormat);
-              setFieldValue('attachment_start_date', date);
+
               setFieldValue('critterbase_start_capture_id', value.value);
-              // Only set time if _rawTime is present (not midnight)
-              if ((value as any)._rawTime) {
-                const time = dayjs((value as any)._rawTime, ['HH:mm', 'HH:mm:ss', 'h:mm A']).format('HH:mm:ss');
-                setFieldValue('attachment_start_time', time);
-              } else {
-                setFieldValue('attachment_start_time', null);
-              }
+              setFieldValue('attachment_start_date', timestamp.format(DATE_FORMAT.ShortDateFormat));
+
+              const hasTime = timestamp.format('HH:mm:ss') !== '00:00:00';
+              setFieldValue('attachment_start_time', hasTime ? timestamp.format('HH:mm:ss') : null);
+              return;
             }
+
+            // Reset both fields if no value is selected
+            setFieldValue('critterbase_start_capture_id', null);
+            setFieldValue('attachment_start_date', null);
+            setFieldValue('attachment_start_time', null);
           }}
           required
         />

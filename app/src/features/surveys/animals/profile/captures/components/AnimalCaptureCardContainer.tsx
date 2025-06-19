@@ -18,7 +18,7 @@ import { ISurveyCritter } from 'contexts/animalPageContext';
 import { useSurveyContext } from 'hooks/useContext';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { displayDateTime } from 'utils/datetime';
+import { formatDateTime } from 'utils/datetime';
 import { ICaptureWithSupplementaryData } from '../AnimalCaptureContainer';
 import { AnimalCaptureCardDetailsContainer } from './capture-card-details/AnimalCaptureCardDetailsContainer';
 
@@ -42,10 +42,10 @@ export const AnimalCaptureCardContainer = (props: IAnimalCaptureCardContainer) =
 
   const { projectId, surveyId } = useSurveyContext();
 
-  // Use displayDateTime utility for formatted capture date/time string
-  const getCaptureDateTimeString = (capture: ICaptureWithSupplementaryData) => {
-    return displayDateTime(capture.capture_date, capture.capture_time);
-  };
+  // // Use displayDateTime utility for formatted capture date/time string
+  // const getCaptureDateTimeString = (capture: ICaptureWithSupplementaryData) => {
+  //   return displayDateTime(capture.capture_date, capture.capture_time);
+  // };
 
   return (
     <>
@@ -162,7 +162,9 @@ export const AnimalCaptureCardContainer = (props: IAnimalCaptureCardContainer) =
                     }
                   }}>
                   <Stack gap={0.5} display="flex">
-                    <Typography fontWeight={700}>{getCaptureDateTimeString(capture)}&nbsp;</Typography>
+                    <Typography fontWeight={700}>
+                      {formatDateTime(capture.capture_date, capture.capture_time)}&nbsp;
+                    </Typography>
                     {capture.capture_location?.latitude && capture.capture_location?.longitude && (
                       <Box>
                         <Typography color="textSecondary" variant="body2">

@@ -7,8 +7,6 @@ import { IMortalityWithSupplementaryData } from 'features/surveys/animals/profil
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useEffect } from 'react';
-import { getFormattedDate } from 'utils/Utils';
-import { shouldShowTime } from 'utils/datetime';
 
 interface IMortalityDetailsProps {
   mortality: IMortalityWithSupplementaryData;
@@ -33,6 +31,8 @@ export const MortalityDetails = (props: IMortalityDetailsProps) => {
 
   const mortalityTimestamp = mortality.mortality_timestamp;
   const mortalityComment = mortality.mortality_comment;
+  const dt = dayjs(mortality.mortality_timestamp);
+  const hasRealTime = dt.format('HH:mm:ss') !== '00:00:00';
 
   if (!mortalityTimestamp && !mortalityComment) {
     return null;
@@ -51,13 +51,9 @@ export const MortalityDetails = (props: IMortalityDetailsProps) => {
               Mortality date
             </Typography>
             <Typography color="textSecondary" variant="body2">
-              {(() => {
-                const dateStr = getFormattedDate(DATE_FORMAT.MediumDateFormat, mortalityTimestamp);
-                const timeStr = dayjs(mortalityTimestamp).format('HH:mm:ss');
-                return shouldShowTime(timeStr)
-                  ? `${dateStr} ${getFormattedDate(DATE_FORMAT.TimeFormat, mortalityTimestamp)}`
-                  : dateStr;
-              })()}
+              {hasRealTime
+                ? dayjs(mortality.mortality_timestamp).format(DATE_FORMAT.MediumDateTimeFormat)
+                : dayjs(mortality.mortality_timestamp).format(DATE_FORMAT.MediumDateFormat)}
             </Typography>
           </Box>
         )}

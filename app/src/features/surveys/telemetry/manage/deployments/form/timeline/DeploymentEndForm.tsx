@@ -18,6 +18,7 @@ import { ICreateAnimalDeployment } from 'interfaces/useTelemetryApi.interface';
 import { useMemo, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { TransitionGroup } from 'react-transition-group';
+import { formatDateTime } from 'utils/datetime';
 import yup from 'utils/YupSchema';
 
 // Types to know how the deployment ended, determining which form components to display
@@ -81,24 +82,6 @@ export const DeploymentEndForm = (props: IDeploymentEndFormProps) => {
   const [deploymentEndType, setDeploymentEndType] = useState<DeploymentEndType | null>(initialDeploymentEndType);
 
   const surveyContext = useSurveyContext();
-
-  const formatCaptureLabel = (date: string, time: string | null) => {
-    const hasTime = !!time;
-    let showTime = false;
-    let formattedLabel = '';
-    if (hasTime) {
-      const timeObj = dayjs(time, ['HH:mm', 'HH:mm:ss', 'h:mm A']);
-      if (timeObj.format('HH:mm') !== '00:00' && timeObj.format('h:mm A') !== '12:00 AM') {
-        showTime = true;
-      }
-    }
-    if (showTime) {
-      formattedLabel = dayjs(`${date} ${time}`).format(DATE_FORMAT.LongDateTimeFormat);
-    } else {
-      formattedLabel = dayjs(`${date}`).format(DATE_FORMAT.MediumDateFormat);
-    }
-    return formattedLabel;
-  };
 
   return (
     <Grid container spacing={3}>
@@ -202,7 +185,7 @@ export const DeploymentEndForm = (props: IDeploymentEndFormProps) => {
                     }
                   }}
                   options={captures.map((capture) => {
-                    const formattedLabel = formatCaptureLabel(capture.capture_date, capture.capture_time);
+                    const formattedLabel = formatDateTime(capture.capture_date, capture.capture_time);
                     return {
                       value: capture.capture_id,
                       label: formattedLabel
@@ -240,14 +223,12 @@ export const DeploymentEndForm = (props: IDeploymentEndFormProps) => {
                     id="critterbase_end_mortality_id"
                     label={'End mortality event'}
                     options={mortalities.map((mortality) => {
-                      // TODO: TECH DEBT: We currently assume that a time value of 00:00 (midnight) means the time is null/missing, and do not display it in dropdowns. However, a user could intentionally set 00:00 as a valid time. This logic should be revisited in the future to properly distinguish between a true null and a valid midnight time.
                       const dt = dayjs(mortality.mortality_timestamp);
-                      const date = dt.format('YYYY-MM-DD');
-                      const time = dt.format('HH:mm:ss');
-                      const formattedLabel = formatCaptureLabel(date, time);
+                      const hasTime = dt.format('HH:mm:ss') !== '00:00:00';
+
                       return {
                         value: mortality.mortality_id,
-                        label: formattedLabel
+                        label: dt.format(hasTime ? DATE_FORMAT.MediumDateTimeFormat : DATE_FORMAT.ShortDateFormat)
                       };
                     })}
                     sx={{ width: '100%' }}

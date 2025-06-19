@@ -92,47 +92,23 @@ export const getDateTimeLabel = (
 };
 
 /**
- * Determines if the time should be shown based on the capture time.
+ * Format date and optional time with separate formats.
  *
- * @param {string} [capture_time]
- * @returns {boolean}
+ * @param {string} date - Date string, e.g., '2024-01-01'
+ * @param {string | null} [time] - Optional time string, e.g., '14:30'
+ * @param {string} [dateFormat] - Format to use if only date is provided
+ * @param {string} [dateTimeFormat] - Format to use if date and time are provided
+ * @returns {string} - Formatted date/time string
  */
-export function shouldShowTime(capture_time?: string): boolean {
-  if (!capture_time) {
-    return false;
-  }
-  const time = dayjs(capture_time, ['HH:mm', 'HH:mm:ss', 'h:mm A']);
-  return time.format('HH:mm') !== '00:00' && time.format('h:mm A') !== '12:00 AM';
-}
+export const formatDateTime = (
+  date: string,
+  time?: string | null,
+  dateFormat: string = DATE_FORMAT.MediumDateFormat,
+  dateTimeFormat: string = DATE_FORMAT.MediumDateTimeFormat
+): string => {
+  const hasTime = Boolean(time);
+  const dateTimeStr = hasTime ? `${date} ${time}` : date;
+  const format = hasTime ? dateTimeFormat : dateFormat;
 
-/**
- * Formats a capture label based on the date and optional time.
- *
- * @param {string} date
- * @param {string} [time]
- * @returns {string}
- */
-export function formatCaptureLabel(date: string, time?: string): string {
-  if (shouldShowTime(time)) {
-    return dayjs(`${date} ${time}`).format(DATE_FORMAT.LongDateTimeFormat);
-  }
-  return dayjs(date).format(DATE_FORMAT.MediumDateFormat);
-}
-
-/**
- * If both date and time are present, returns 'MMMM D, YYYY h:mm a'.
- * If only date is present, returns 'MMMM D, YYYY'.
- * If only time is present, returns 'h:mm a'.
- */
-export function displayDateTime(date?: string | null, time?: string | null): string {
-  if (date && time) {
-    return dayjs(`${date} ${time}`).format(DATE_FORMAT.MediumDateTimeFormat);
-  }
-  if (date) {
-    return dayjs(date).format(DATE_FORMAT.MediumDateFormat);
-  }
-  if (time) {
-    return dayjs(time, ['HH:mm', 'HH:mm:ss', 'h:mm A']).format(DATE_FORMAT.TimeFormat);
-  }
-  return '';
-}
+  return dayjs(dateTimeStr).format(format);
+};
