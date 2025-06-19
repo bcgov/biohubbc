@@ -42,11 +42,6 @@ export const AnimalCaptureCardContainer = (props: IAnimalCaptureCardContainer) =
 
   const { projectId, surveyId } = useSurveyContext();
 
-  // // Use displayDateTime utility for formatted capture date/time string
-  // const getCaptureDateTimeString = (capture: ICaptureWithSupplementaryData) => {
-  //   return displayDateTime(capture.capture_date, capture.capture_time);
-  // };
-
   return (
     <>
       {/* 3 DOT ACTION MENU */}

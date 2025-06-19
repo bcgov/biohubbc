@@ -22,6 +22,7 @@ import { AnimalMortalityCardDetailsContainer } from 'features/surveys/animals/pr
 import { useSurveyContext } from 'hooks/useContext';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import { hasRealTime } from 'utils/datetime';
 
 interface IAnimalMortalityCardContainer {
   mortality: IMortalityWithSupplementaryData[];
@@ -117,8 +118,7 @@ export const AnimalMortalityCardContainer = (props: IAnimalMortalityCardContaine
 
       {mortality.length ? (
         mortality.map((mortality) => {
-          const dt = dayjs(mortality.mortality_timestamp);
-          const hasRealTime = dt.format('HH:mm:ss') !== '00:00:00';
+          const isRealTime = hasRealTime(mortality.mortality_timestamp);
           /* MORTALITY DETAILS */
           return (
             <Accordion
@@ -159,7 +159,7 @@ export const AnimalMortalityCardContainer = (props: IAnimalMortalityCardContaine
                   }}>
                   <Stack gap={0.5} display="flex">
                     <Typography fontWeight={700}>
-                      {hasRealTime
+                      {isRealTime
                         ? dayjs(mortality.mortality_timestamp).format(DATE_FORMAT.MediumDateTimeFormat)
                         : dayjs(mortality.mortality_timestamp).format(DATE_FORMAT.MediumDateFormat)}
                     </Typography>

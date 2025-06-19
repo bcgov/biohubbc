@@ -5,6 +5,7 @@ import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useMemo } from 'react';
 import { Popup } from 'react-leaflet';
+import { hasRealTime } from 'utils/datetime';
 import { isDefined } from 'utils/Utils';
 
 interface ISurveySpatialAnimalMortalityPopupProps {
@@ -33,6 +34,8 @@ export const SurveySpatialAnimalMortalityPopup = (props: ISurveySpatialAnimalMor
     const { mortality_timestamp, location } = mortalityDataLoader.data;
     const { animal_id } = animalDataLoader.data;
 
+    const isRealTime = hasRealTime(mortality_timestamp);
+
     return [
       { label: 'Nickname', value: animal_id },
       {
@@ -44,7 +47,9 @@ export const SurveySpatialAnimalMortalityPopup = (props: ISurveySpatialAnimalMor
       },
       {
         label: 'Date',
-        value: dayjs(mortality_timestamp).format(DATE_FORMAT.MediumDateTimeFormat)
+        value: isRealTime
+          ? dayjs(mortality_timestamp).format(DATE_FORMAT.MediumDateTimeFormat)
+          : dayjs(mortality_timestamp).format(DATE_FORMAT.MediumDateFormat)
       }
     ];
   }, [mortalityDataLoader.data, animalDataLoader.data]);

@@ -18,7 +18,7 @@ import { ICreateAnimalDeployment } from 'interfaces/useTelemetryApi.interface';
 import { useMemo, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { TransitionGroup } from 'react-transition-group';
-import { formatDateTime } from 'utils/datetime';
+import { formatDateTime, hasRealTime } from 'utils/datetime';
 import yup from 'utils/YupSchema';
 
 // Types to know how the deployment ended, determining which form components to display
@@ -184,13 +184,10 @@ export const DeploymentEndForm = (props: IDeploymentEndFormProps) => {
                       setFieldValue('critterbase_end_capture_id', option.value);
                     }
                   }}
-                  options={captures.map((capture) => {
-                    const formattedLabel = formatDateTime(capture.capture_date, capture.capture_time);
-                    return {
-                      value: capture.capture_id,
-                      label: formattedLabel
-                    };
-                  })}
+                  options={captures.map((capture) => ({
+                    value: capture.capture_id,
+                    label: formatDateTime(capture.capture_date, capture.capture_time)
+                  }))}
                   sx={{ width: '100%' }}
                 />
               )}
@@ -223,12 +220,13 @@ export const DeploymentEndForm = (props: IDeploymentEndFormProps) => {
                     id="critterbase_end_mortality_id"
                     label={'End mortality event'}
                     options={mortalities.map((mortality) => {
-                      const dt = dayjs(mortality.mortality_timestamp);
-                      const hasTime = dt.format('HH:mm:ss') !== '00:00:00';
+                      const isRealTime = hasRealTime(mortality.mortality_timestamp);
 
                       return {
                         value: mortality.mortality_id,
-                        label: dt.format(hasTime ? DATE_FORMAT.MediumDateTimeFormat : DATE_FORMAT.ShortDateFormat)
+                        label: isRealTime
+                          ? dayjs(mortality.mortality_timestamp).format(DATE_FORMAT.MediumDateTimeFormat)
+                          : dayjs(mortality.mortality_timestamp).format(DATE_FORMAT.MediumDateFormat)
                       };
                     })}
                     sx={{ width: '100%' }}

@@ -1,12 +1,11 @@
 import { IStaticLayerFeature } from 'components/map/components/StaticLayers';
-import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import dayjs from 'dayjs';
 import { SurveyMapPopup } from 'features/surveys/view/SurveyMapPopup';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { SurveyObservationBasic } from 'interfaces/useObservationApi.interface';
 import { Popup } from 'react-leaflet';
+import { formatDateTime } from 'utils/datetime';
 
 interface ISurveySpatialObservationPointPopupProps {
   feature: IStaticLayerFeature;
@@ -41,7 +40,7 @@ export const SurveySpatialObservationPointPopup = (props: ISurveySpatialObservat
       },
       {
         label: 'Date',
-        value: dayjs(observation.observation_date).format(DATE_FORMAT.MediumDateFormat)
+        value: observation.observation_date ? formatDateTime(observation.observation_date) : null
       },
       {
         label: 'Time',

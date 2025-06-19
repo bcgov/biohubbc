@@ -23,6 +23,18 @@ export const combineDateTime = (date: string, time?: string | null) => {
 };
 
 /**
+ * Returns true if the timestamp has a time not equal to midnight (00:00:00), otherwise returns false.
+ *
+ * @param {string} date
+ * @returns {boolean}
+ */
+export const hasRealTime = (date: string): boolean => {
+  const dt = dayjs(date);
+  const hasRealTime = dt.format('HH:mm:ss') !== '00:00:00';
+
+  return hasRealTime;
+};
+/**
  * Formats the time difference between two timestamps into a human-readable string.
  *
  * @param {string} startDate

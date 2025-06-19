@@ -7,6 +7,7 @@ import { IMortalityWithSupplementaryData } from 'features/surveys/animals/profil
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useEffect } from 'react';
+import { hasRealTime } from 'utils/datetime';
 
 interface IMortalityDetailsProps {
   mortality: IMortalityWithSupplementaryData;
@@ -31,8 +32,7 @@ export const MortalityDetails = (props: IMortalityDetailsProps) => {
 
   const mortalityTimestamp = mortality.mortality_timestamp;
   const mortalityComment = mortality.mortality_comment;
-  const dt = dayjs(mortality.mortality_timestamp);
-  const hasRealTime = dt.format('HH:mm:ss') !== '00:00:00';
+  const isRealTime = hasRealTime(mortality.mortality_timestamp);
 
   if (!mortalityTimestamp && !mortalityComment) {
     return null;
@@ -51,7 +51,7 @@ export const MortalityDetails = (props: IMortalityDetailsProps) => {
               Mortality date
             </Typography>
             <Typography color="textSecondary" variant="body2">
-              {hasRealTime
+              {isRealTime
                 ? dayjs(mortality.mortality_timestamp).format(DATE_FORMAT.MediumDateTimeFormat)
                 : dayjs(mortality.mortality_timestamp).format(DATE_FORMAT.MediumDateFormat)}
             </Typography>

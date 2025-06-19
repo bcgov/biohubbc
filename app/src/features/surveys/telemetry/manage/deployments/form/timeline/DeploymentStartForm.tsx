@@ -9,7 +9,7 @@ import { useFormikContext } from 'formik';
 import { ICaptureResponse } from 'interfaces/useCritterApi.interface';
 import { ICreateAnimalDeployment } from 'interfaces/useTelemetryApi.interface';
 import { SyntheticEvent } from 'react';
-import { formatDateTime } from 'utils/datetime';
+import { formatDateTime, hasRealTime } from 'utils/datetime';
 import yup from 'utils/YupSchema';
 
 export const DeploymentStartFormInitialValues: yup.InferType<typeof DeploymentStartFormYupSchema> = {
@@ -58,14 +58,13 @@ export const DeploymentStartForm = (props: IDeploymentStartFormProps) => {
           })}
           onChange={(_: SyntheticEvent<Element, Event>, value: IAutocompleteFieldOption<string> | null) => {
             if (value) {
-              // Parse the capture label into a dayjs object
-              const timestamp = dayjs(value.label);
+              const timestamp = value.value;
 
               setFieldValue('critterbase_start_capture_id', value.value);
-              setFieldValue('attachment_start_date', timestamp.format(DATE_FORMAT.ShortDateFormat));
+              setFieldValue('attachment_start_date', dayjs(timestamp).format(DATE_FORMAT.ShortDateFormat));
 
-              const hasTime = timestamp.format('HH:mm:ss') !== '00:00:00';
-              setFieldValue('attachment_start_time', hasTime ? timestamp.format('HH:mm:ss') : null);
+              const isRealTime = hasRealTime(value.value);
+              setFieldValue('attachment_start_time', isRealTime ? dayjs(timestamp).format('HH:mm:ss') : null);
               return;
             }
 
