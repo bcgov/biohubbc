@@ -1,6 +1,16 @@
 import { mdiDotsVertical, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Box, IconButton, ListItemIcon, ListItemText, Menu, MenuItem, Tooltip, Typography } from '@mui/material';
+import {
+  Box,
+  IconButton,
+  ListItemIcon,
+  ListItemText,
+  Menu,
+  MenuItem,
+  MenuProps,
+  Tooltip,
+  Typography
+} from '@mui/material';
 import grey from '@mui/material/colors/grey';
 import { GridColDef, GridRowSelectionModel } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
@@ -45,7 +55,7 @@ export const DevicesTable = (props: IDevicesTableProps) => {
   const surveyContext = useSurveyContext();
 
   const [actionMenuDeviceId, setActionMenuDeviceId] = useState<number>();
-  const [actionMenuAnchorEl, setActionMenuAnchorEl] = useState<null | HTMLElement>(null);
+  const [actionMenuAnchorEl, setActionMenuAnchorEl] = useState<MenuProps['anchorEl']>(null);
 
   useEffect(() => {
     codesContext.codesDataLoader.load();
@@ -96,8 +106,13 @@ export const DevicesTable = (props: IDevicesTableProps) => {
     });
   };
 
+  const handleCloseMenu = () => {
+    setActionMenuAnchorEl(null);
+    confirmDeleteDeviceDialog();
+  };
+
   const rows: IDeviceRowData[] = devices.map((device) => {
-    const deviceDeployments = getDeviceDeployments(deployments, device.serial);
+    const deviceDeployments = getDeviceDeploymentsForSerial(deployments, device.serial);
     const deployed = deviceDeployments.some(isDeploymentActive);
 
     return {
@@ -139,10 +154,10 @@ export const DevicesTable = (props: IDevicesTableProps) => {
       headerName: 'Make',
       flex: 1,
       renderCell: (params) => {
-        const make = codesContext.codesDataLoader.data?.telemetry_device_makes.find(
-          (dm) => dm.id === params.row.device_make_id
+        const device_make = codesContext.codesDataLoader.data?.telemetry_device_makes.find(
+          (device_make) => device_make.id === params.row.device_make_id
         )?.name;
-        return <Box>{make ?? null}</Box>;
+        return device_make ?? null;
       }
     },
     {
@@ -162,7 +177,7 @@ export const DevicesTable = (props: IDevicesTableProps) => {
       flex: 1,
       renderCell: (params) => {
         const serial = params.row.serial;
-        const deviceDeployments = getDeviceDeployments(deployments, serial);
+        const deviceDeployments = getDeviceDeploymentsForSerial(deployments, serial);
         if (!deviceDeployments.length) {
           return null;
         }
@@ -197,24 +212,34 @@ export const DevicesTable = (props: IDevicesTableProps) => {
     <>
       <Menu
         open={Boolean(actionMenuAnchorEl)}
-        onClose={() => setActionMenuAnchorEl(null)}
+        onClose={handleCloseMenu}
         anchorEl={actionMenuAnchorEl}
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}>
         <MenuItem
-          sx={{ p: 0 }}
-          component={RouterLink}
-          to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry/manage/device/${actionMenuDeviceId}/edit`}>
-          <ListItemIcon>
-            <Icon path={mdiPencilOutline} size={1} />
-          </ListItemIcon>
-          <ListItemText>Edit Details</ListItemText>
-        </MenuItem>
-        <MenuItem
-          onClick={() => {
-            setActionMenuAnchorEl(null);
-            confirmDeleteDeviceDialog();
+          sx={{
+            p: 0,
+            '& a': {
+              display: 'flex',
+              px: 2,
+              py: '6px',
+              textDecoration: 'none',
+              color: 'text.primary',
+              borderRadius: 0,
+              '&:focus': {
+                outline: 'none'
+              }
+            }
           }}>
+          <RouterLink
+            to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry/manage/device/${actionMenuDeviceId}/edit`}>
+            <ListItemIcon>
+              <Icon path={mdiPencilOutline} size={1} />
+            </ListItemIcon>
+            <ListItemText>Edit Details</ListItemText>
+          </RouterLink>
+        </MenuItem>
+        <MenuItem onClick={handleCloseMenu}>
           <ListItemIcon>
             <Icon path={mdiTrashCanOutline} size={1} />
           </ListItemIcon>
@@ -241,7 +266,7 @@ export const DevicesTable = (props: IDevicesTableProps) => {
   );
 };
 
-const getDeviceDeployments = (deployments: TelemetryDeployment[], serial: string) =>
+const getDeviceDeploymentsForSerial = (deployments: TelemetryDeployment[], serial: string) =>
   deployments.filter((dep) => dep.device_key?.split(':')[1] === serial);
 
 const isDeploymentActive = (deployment: TelemetryDeployment) => {
