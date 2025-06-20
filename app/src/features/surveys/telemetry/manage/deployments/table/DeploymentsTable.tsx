@@ -17,12 +17,15 @@ import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { FOREIGN_KEY_CONSTRAINT_ERROR } from 'constants/errors';
 import dayjs from 'dayjs';
+import isBetween from 'dayjs/plugin/isBetween';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { TelemetryDeployment } from 'interfaces/useTelemetryDeploymentApi.interface';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { combineDateTime } from 'utils/datetime';
+
+dayjs.extend(isBetween);
 
 export interface IDeploymentRowData {
   id: number;
@@ -268,14 +271,17 @@ export const DeploymentsTable = (props: IDeploymentsTableProps) => {
           : null;
 
         if (start && now.isBefore(start)) {
-          return <ColouredRectangleChip colour={grey} label="Pending" />;
+          return <ColouredRectangleChip colour={grey} label="Future" />;
         }
+
         if (end && now.isAfter(end)) {
           return <ColouredRectangleChip colour={blue} label="Ended" />;
         }
-        if (start && (!end || now.isSame(start) || (now.isAfter(start) && (!end || now.isBefore(end))))) {
+
+        if (start && (!end || now.isBetween(start, end, null, '[)'))) {
           return <ColouredRectangleChip colour={green} label="Active" />;
         }
+
         return null;
       }
     },

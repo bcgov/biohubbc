@@ -1,18 +1,8 @@
 import { mdiDotsVertical, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import Box from '@mui/material/Box';
-import blue from '@mui/material/colors/blue';
-import green from '@mui/material/colors/green';
+import { Box, IconButton, ListItemIcon, ListItemText, Menu, MenuItem, Tooltip, Typography } from '@mui/material';
 import grey from '@mui/material/colors/grey';
-import IconButton from '@mui/material/IconButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import Menu, { MenuProps } from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import Tooltip from '@mui/material/Tooltip';
-import Typography from '@mui/material/Typography';
 import { GridColDef, GridRowSelectionModel } from '@mui/x-data-grid';
-import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { FOREIGN_KEY_CONSTRAINT_ERROR } from 'constants/errors';
 import dayjs from 'dayjs';
@@ -31,7 +21,7 @@ export interface IDeviceRowData {
   device_make_id: number;
   model: string | null;
   comment: string | null;
-  status?: string;
+  status: string;
 }
 
 interface IDevicesTableProps {
@@ -39,118 +29,77 @@ interface IDevicesTableProps {
   deployments: TelemetryDeployment[];
   selectedRows: GridRowSelectionModel;
   setSelectedRows: (selection: GridRowSelectionModel) => void;
-  /**
-   * Callback fired when a deployment is deleted.
-   */
   onDelete?: () => void;
 }
 
 /**
- * Returns a table of telemetry devices.
- *
+ * Displays table of telemetry devices in the survey
  * @param {IDevicesTableProps} props
- * @return {*}
+ * @returns {*}
  */
 export const DevicesTable = (props: IDevicesTableProps) => {
   const { devices, deployments, selectedRows, setSelectedRows, onDelete } = props;
-
   const biohubApi = useBiohubApi();
-
   const codesContext = useCodesContext();
   const dialogContext = useDialogContext();
   const surveyContext = useSurveyContext();
 
-  const [actionMenuDeviceId, setActionMenuDeviceId] = useState<number | undefined>();
-  const [actionMenuAnchorEl, setActionMenuAnchorEl] = useState<MenuProps['anchorEl']>(null);
+  const [actionMenuDeviceId, setActionMenuDeviceId] = useState<number>();
+  const [actionMenuAnchorEl, setActionMenuAnchorEl] = useState<null | HTMLElement>(null);
 
   useEffect(() => {
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
-
-  const handleCloseActionMenu = () => {
-    setActionMenuAnchorEl(null);
-  };
 
   const handleDeleteDevice = async () => {
     if (!actionMenuDeviceId) {
       return;
     }
 
-    await biohubApi.telemetryDevice
-      .deleteDevice(surveyContext.projectId, surveyContext.surveyId, actionMenuDeviceId)
-      .then(() => {
-        dialogContext.setYesNoDialog({ open: false });
-        setActionMenuAnchorEl(null);
-        onDelete?.();
-      })
-      .catch((error: any) => {
-        dialogContext.setYesNoDialog({ open: false });
-        setActionMenuAnchorEl(null);
-        dialogContext.setSnackbar({
-          snackbarMessage: (
-            <>
-              <Typography variant="body2" component="div">
-                <strong>Error Deleting Device</strong>
-              </Typography>
-              {String(error).includes(FOREIGN_KEY_CONSTRAINT_ERROR) ? (
-                <Typography variant="body2" component="div">
-                  You must delete the deployments involving this device before deleting the device.
-                </Typography>
-              ) : (
-                <Typography variant="body2" component="div">
-                  {String(error)}
-                </Typography>
-              )}
-            </>
-          ),
-          open: true
-        });
+    try {
+      await biohubApi.telemetryDevice.deleteDevice(surveyContext.projectId, surveyContext.surveyId, actionMenuDeviceId);
+      dialogContext.setYesNoDialog({ open: false });
+      setActionMenuAnchorEl(null);
+      onDelete?.();
+    } catch (error: any) {
+      dialogContext.setYesNoDialog({ open: false });
+      setActionMenuAnchorEl(null);
+      dialogContext.setSnackbar({
+        open: true,
+        snackbarMessage: (
+          <>
+            <Typography variant="body2" component="div">
+              <strong>Error Deleting Device</strong>
+            </Typography>
+            <Typography variant="body2" component="div">
+              {String(error).includes(FOREIGN_KEY_CONSTRAINT_ERROR)
+                ? 'You must delete the deployments involving this device before deleting the device.'
+                : String(error)}
+            </Typography>
+          </>
+        )
       });
+    }
   };
 
-  /**
-   * Display the delete device dialog.
-   */
-  const deleteDeviceDialog = () => {
+  const confirmDeleteDeviceDialog = () => {
     dialogContext.setYesNoDialog({
       dialogTitle: 'Delete device?',
       dialogText: 'Are you sure you want to permanently delete this device?',
       yesButtonLabel: 'Delete Device',
       noButtonLabel: 'Cancel',
       yesButtonProps: { color: 'error' },
-      onClose: () => {
-        dialogContext.setYesNoDialog({ open: false });
-      },
-      onNo: () => {
-        dialogContext.setYesNoDialog({ open: false });
-      },
-      open: true,
-      onYes: () => {
-        handleDeleteDevice();
-      }
-    });
-  };
-
-  // Helper to determine if device is deployed at current time
-  const isDeviceDeployed = (deviceDeployments: Array<any>) => {
-    const now = new Date();
-    return deviceDeployments.some((d) => {
-      const start = new Date(
-        d.attachment_start_time ? `${d.attachment_start_date}T${d.attachment_start_time}` : d.attachment_start_date
-      );
-      const end = d.attachment_end_date
-        ? new Date(d.attachment_end_time ? `${d.attachment_end_date}T${d.attachment_end_time}` : d.attachment_end_date)
-        : null;
-      return start <= now && (!end || now <= end);
+      onYes: handleDeleteDevice,
+      onNo: () => dialogContext.setYesNoDialog({ open: false }),
+      onClose: () => dialogContext.setYesNoDialog({ open: false }),
+      open: true
     });
   };
 
   const rows: IDeviceRowData[] = devices.map((device) => {
-    // Find deployments for this device by device_key
-    const deviceDeployments = deployments.filter(
-      (dep) => dep.device_key && device.serial && dep.device_key.split(':')[1] === device.serial
-    );
-    const deployed = deviceDeployments.length > 0 && isDeviceDeployed(deviceDeployments);
+    const deviceDeployments = getDeviceDeployments(deployments, device.serial);
+    const deployed = deviceDeployments.some(isDeploymentActive);
+
     return {
       id: device.device_id,
       device_id: device.device_id,
@@ -166,9 +115,7 @@ export const DevicesTable = (props: IDevicesTableProps) => {
     {
       field: 'device_id',
       headerName: 'Device ID',
-      description: 'The unique key for the device',
       width: 85,
-      minWidth: 85,
       renderHeader: (params) => (
         <Tooltip title={params.colDef.description}>
           <Typography color={grey[500]} variant="body2" fontWeight={700}>
@@ -185,26 +132,22 @@ export const DevicesTable = (props: IDevicesTableProps) => {
     {
       field: 'serial',
       headerName: 'Serial Number',
-      description: 'The serial number of the device',
       flex: 1
     },
     {
       field: 'device_make_id',
       headerName: 'Make',
-      description: 'The manufacturer of the device',
       flex: 1,
-      renderCell: (params) => (
-        <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
-          {codesContext.codesDataLoader.data?.telemetry_device_makes.find(
-            (deviceMake) => deviceMake.id === params.row.device_make_id
-          )?.name ?? null}
-        </Box>
-      )
+      renderCell: (params) => {
+        const make = codesContext.codesDataLoader.data?.telemetry_device_makes.find(
+          (dm) => dm.id === params.row.device_make_id
+        )?.name;
+        return <Box>{make ?? null}</Box>;
+      }
     },
     {
       field: 'model',
       headerName: 'Model',
-      description: 'The model of the device',
       flex: 1
     },
     {
@@ -213,26 +156,21 @@ export const DevicesTable = (props: IDevicesTableProps) => {
       flex: 1
     },
     {
-      field: 'status',
-      headerName: 'Status',
-      description: 'Is the device currently deployed',
+      field: 'animal',
+      headerName: 'Deployed On',
+      description: 'The animal that the device was most recently on',
       flex: 1,
       renderCell: (params) => {
-        // Find deployments for this device
-        const deviceDeployments = deployments.filter(
-          (dep) => dep.device_key && params.row.serial && dep.device_key.split(':')[1] === params.row.serial
-        );
-        // Is any deployment active?
-        const isActive = deviceDeployments.some((d) => {
-          if (!d.attachment_end_date) {
-            return true;
-          }
-          return dayjs().isBefore(combineDateTime(d.attachment_end_date, d.attachment_end_time));
-        });
-        if (isActive && deviceDeployments.length > 0) {
-          return <ColouredRectangleChip colour={blue} label="Deployed" />;
+        const serial = params.row.serial;
+        const deviceDeployments = getDeviceDeployments(deployments, serial);
+        if (!deviceDeployments.length) {
+          return null;
         }
-        return <ColouredRectangleChip colour={green} label="Available" />;
+
+        const latestDeployment = getMostRecentDeployment(deviceDeployments);
+        const animal = surveyContext.critterDataLoader.data?.find((a) => a.critter_id === latestDeployment.critter_id);
+
+        return animal?.animal_id ?? null;
       }
     },
     {
@@ -241,58 +179,41 @@ export const DevicesTable = (props: IDevicesTableProps) => {
       sortable: false,
       width: 10,
       align: 'right',
-      renderCell: (params) => {
-        return (
-          <Box position="fixed">
-            <IconButton
-              onClick={(event) => {
-                setActionMenuDeviceId(params.row.device_id);
-                setActionMenuAnchorEl(event.currentTarget);
-              }}>
-              <Icon path={mdiDotsVertical} size={1} />
-            </IconButton>
-          </Box>
-        );
-      }
+      renderCell: (params) => (
+        <Box position="fixed">
+          <IconButton
+            onClick={(e) => {
+              setActionMenuDeviceId(params.row.device_id);
+              setActionMenuAnchorEl(e.currentTarget);
+            }}>
+            <Icon path={mdiDotsVertical} size={1} />
+          </IconButton>
+        </Box>
+      )
     }
   ];
 
   return (
     <>
-      {/* ROW ACTION MENU */}
       <Menu
         open={Boolean(actionMenuAnchorEl)}
-        onClose={handleCloseActionMenu}
+        onClose={() => setActionMenuAnchorEl(null)}
         anchorEl={actionMenuAnchorEl}
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}>
         <MenuItem
-          sx={{
-            p: 0,
-            '& a': {
-              display: 'flex',
-              px: 2,
-              py: '6px',
-              textDecoration: 'none',
-              color: 'text.primary',
-              borderRadius: 0,
-              '&:focus': {
-                outline: 'none'
-              }
-            }
-          }}>
-          <RouterLink
-            to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry/manage/device/${actionMenuDeviceId}/edit`}>
-            <ListItemIcon>
-              <Icon path={mdiPencilOutline} size={1} />
-            </ListItemIcon>
-            <ListItemText>Edit Details</ListItemText>
-          </RouterLink>
+          sx={{ p: 0 }}
+          component={RouterLink}
+          to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry/manage/device/${actionMenuDeviceId}/edit`}>
+          <ListItemIcon>
+            <Icon path={mdiPencilOutline} size={1} />
+          </ListItemIcon>
+          <ListItemText>Edit Details</ListItemText>
         </MenuItem>
         <MenuItem
           onClick={() => {
-            handleCloseActionMenu();
-            deleteDeviceDialog();
+            setActionMenuAnchorEl(null);
+            confirmDeleteDeviceDialog();
           }}>
           <ListItemIcon>
             <Icon path={mdiTrashCanOutline} size={1} />
@@ -301,24 +222,40 @@ export const DevicesTable = (props: IDevicesTableProps) => {
         </MenuItem>
       </Menu>
 
-      {/* DATA TABLE */}
       <StyledDataGrid
         autoHeight
         getRowHeight={() => 'auto'}
         disableColumnMenu
         rows={rows}
-        getRowId={(row: IDeviceRowData) => row.id}
+        getRowId={(row) => row.id}
         columns={columns}
         rowSelectionModel={selectedRows}
         onRowSelectionModelChange={setSelectedRows}
         checkboxSelection
         initialState={{
-          pagination: {
-            paginationModel: { page: 0, pageSize: 10 }
-          }
+          pagination: { paginationModel: { page: 0, pageSize: 10 } }
         }}
         pageSizeOptions={[10, 25, 50]}
       />
     </>
   );
 };
+
+const getDeviceDeployments = (deployments: TelemetryDeployment[], serial: string) =>
+  deployments.filter((dep) => dep.device_key?.split(':')[1] === serial);
+
+const isDeploymentActive = (deployment: TelemetryDeployment) => {
+  const now = dayjs();
+  const start = combineDateTime(deployment.attachment_start_date, deployment.attachment_start_time);
+  const end = deployment.attachment_end_date
+    ? combineDateTime(deployment.attachment_end_date, deployment.attachment_end_time)
+    : null;
+  return now.isAfter(start) && (!end || now.isBefore(end));
+};
+
+const getMostRecentDeployment = (deployments: TelemetryDeployment[]) =>
+  deployments.reduce((latest, current) => {
+    const latestStart = combineDateTime(latest.attachment_start_date, latest.attachment_start_time);
+    const currentStart = combineDateTime(current.attachment_start_date, current.attachment_start_time);
+    return dayjs(currentStart).isAfter(latestStart) ? current : latest;
+  });
