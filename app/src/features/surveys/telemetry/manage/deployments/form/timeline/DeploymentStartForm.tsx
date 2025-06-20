@@ -45,7 +45,7 @@ export const DeploymentStartForm = (props: IDeploymentStartFormProps) => {
   return (
     <Grid container spacing={3}>
       <Grid item xs={12}>
-        <HelpButtonStack helpText="Capture events must be created on your animal profile prior to populating in this list.">
+        <HelpButtonStack helpText="The capture event when a device was deployed must be created before adding the deployment.">
           <AutocompleteField
             name="critterbase_start_capture_id"
             id="critterbase_start_capture_id"
