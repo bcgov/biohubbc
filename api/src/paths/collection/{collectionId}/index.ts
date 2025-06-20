@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { COLLECTION_ROLE } from '../../../constants/roles';
+import { COLLECTION_ROLE, SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
 import { IPostCollectionRequest } from '../../../models/collection';
 import {
@@ -17,7 +17,11 @@ const defaultLog = getLogger('paths/collection/{collectionId}/index');
 export const GET: Operation = [
   authorizeRequestHandler((req) => {
     return {
-      and: [
+      or: [
+        {
+          discriminator: 'SystemRole',
+          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]
+        },
         {
           discriminator: 'CollectionRole',
           collectionId: Number(req.params.collectionId),
@@ -110,7 +114,11 @@ export function getCollectionById(): RequestHandler {
 export const PUT: Operation = [
   authorizeRequestHandler((req) => {
     return {
-      and: [
+      or: [
+        {
+          discriminator: 'SystemRole',
+          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]
+        },
         {
           discriminator: 'CollectionRole',
           collectionId: Number(req.params.collectionId),
@@ -119,7 +127,7 @@ export const PUT: Operation = [
       ]
     };
   }),
-  UpdateCollection()
+  updateCollection()
 ];
 
 PUT.apiDoc = {
@@ -176,7 +184,7 @@ PUT.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-export function UpdateCollection(): RequestHandler {
+export function updateCollection(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'UpdateCollection' });
 
@@ -197,7 +205,7 @@ export function UpdateCollection(): RequestHandler {
 
       return res.status(204).json();
     } catch (error) {
-      defaultLog.error({ label: 'UpdateCollection', message: 'error', error });
+      defaultLog.error({ label: 'updateCollection', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
@@ -301,6 +309,81 @@ export function createSubcollection(): RequestHandler {
     } catch (error) {
       defaultLog.error({ label: 'createCollection', message: 'error', error });
       await connection.rollback();
+      throw error;
+    } finally {
+      connection.release();
+    }
+  };
+}
+
+export const DELETE: Operation = [
+  authorizeRequestHandler((req) => {
+    return {
+      or: [
+        {
+          discriminator: 'SystemRole',
+          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]
+        },
+        {
+          discriminator: 'CollectionRole',
+          collectionId: Number(req.params.collectionId),
+          validCollectionRoles: [COLLECTION_ROLE.ADMIN]
+        }
+      ]
+    };
+  }),
+  deleteCollection()
+];
+
+DELETE.apiDoc = {
+  description: 'Delete a collection by ID.',
+  tags: ['collection'],
+  security: [{ Bearer: [] }],
+  responses: {
+    200: {
+      description: 'Collection deleted successfully.'
+    },
+    400: {
+      $ref: '#/components/responses/400'
+    },
+    401: {
+      $ref: '#/components/responses/401'
+    },
+    403: {
+      $ref: '#/components/responses/403'
+    },
+    500: {
+      $ref: '#/components/responses/500'
+    },
+    default: {
+      $ref: '#/components/responses/default'
+    }
+  }
+};
+
+/**
+ * Delete a collection by ID.
+ *
+ * @returns {RequestHandler}
+ */
+export function deleteCollection(): RequestHandler {
+  return async (req, res) => {
+    const connection = getDBConnection(req.keycloak_token);
+
+    try {
+      await connection.open();
+
+      const collectionId = Number(req.params.collectionId);
+
+      const collectionService = new CollectionService(connection);
+      await collectionService.deleteCollection(collectionId);
+
+      await connection.commit();
+
+      return res.status(200).send();
+    } catch (error) {
+      defaultLog.error({ label: 'deleteCollection', message: 'error', error });
+      connection.rollback();
       throw error;
     } finally {
       connection.release();

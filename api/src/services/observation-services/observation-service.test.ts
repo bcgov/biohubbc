@@ -91,23 +91,24 @@ describe('ObservationService', () => {
         .resolves(2);
 
       const getMeasurementTypeDefinitionsForSurveyStub = sinon
-        .stub(SubCountService.prototype, 'getMeasurementTypeDefinitionsForSurvey')
+        .stub(SubCountService.prototype, 'getMeasurementTypeDefinitionsForSurveys')
         .resolves({ qualitative_measurements: [], quantitative_measurements: [] });
 
       const getEnvironmentTypeDefinitionsForSurveyStub = sinon
-        .stub(ObservationEnvironmentService.prototype, 'getEnvironmentTypeDefinitionsForSurvey')
+        .stub(ObservationEnvironmentService.prototype, 'getEnvironmentTypeDefinitionsForSurveys')
         .resolves({ qualitative_environments: [], quantitative_environments: [] });
 
       const getSamplePeriodsForSurveyStub = sinon
-        .stub(SamplePeriodService.prototype, 'getSamplePeriodsForSurvey')
+        .stub(SamplePeriodService.prototype, 'getSamplePeriodsForSurveys')
         .resolves([]);
 
       const surveyId = 1;
 
       const observationService = new ObservationService(mockDBConnection);
 
-      const response =
-        await observationService.getSurveyObservationsWithSupplementaryAndSamplingDataAndAttributeData(surveyId);
+      const response = await observationService.getSurveyObservationsWithSupplementaryAndSamplingDataAndAttributeData([
+        surveyId
+      ]);
 
       expect(getSurveyObservationsStub).to.be.calledOnceWith(surveyId);
       expect(getSurveyObservationCountStub).to.be.calledOnceWith(surveyId);

@@ -171,6 +171,18 @@ export class CollectionService extends DBService {
   /**
    * Update a collection record.
    *
+   * @param {number[]} collectionIds
+   * @return {*}  {Promise<void>}
+   * @memberof CollectionService
+   */
+  async deleteCollectionParents(collectionIds: number[]): Promise<void> {
+    // Update the collection record
+    await this.collectionRepository.deleteCollectionParents(collectionIds);
+  }
+
+  /**
+   * Update a collection record.
+   *
    * @param {number} collectionId
    * @param {IPostCollectionRequest} collection
    * @return {*}  {Promise<CollectionModel>}
@@ -226,5 +238,42 @@ export class CollectionService extends DBService {
     }
 
     return collectionResponse;
+  }
+
+  _getAllSubcollectionIds = (collections: Collection[]): number[] => {
+    const ids: number[] = [];
+
+    for (const collection of collections) {
+      // Add current collection's ID
+      ids.push(collection.collection_id);
+
+      // Recursively get IDs from subcollections
+      if (collection.subcollections && collection.subcollections.length > 0) {
+        ids.push(...this._getAllSubcollectionIds(collection.subcollections));
+      }
+    }
+
+    return ids;
+  };
+
+  /**
+   * Delete a collection by ID.
+   *
+   * @param {number} collectionId
+   * @return {*}  {Promise<void>}
+   * @memberof CollectionService
+   */
+  async deleteCollection(collectionId: number): Promise<void> {
+    // Find the direct subcollections for deletion
+    const subcollections: Collection[] = await this.findCollections(false, null, {
+      parent_collection_id: collectionId,
+      include_children: true
+    });
+
+    // Flatten the children to get the subcollection Ids to delete
+    const subcollectionIds = this._getAllSubcollectionIds(subcollections);
+
+    // Delete the subcollections (internally removes foreign key-linked records, i.e members, surveys)
+    await this.collectionRepository.deleteCollections([...subcollectionIds, collectionId]);
   }
 }

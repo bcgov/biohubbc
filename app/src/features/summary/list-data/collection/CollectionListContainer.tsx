@@ -1,9 +1,13 @@
-import { mdiArrowTopRight } from '@mdi/js';
+import { mdiArrowTopRight, mdiDotsVertical, mdiTrashCanOutline } from '@mdi/js';
+import Icon from '@mdi/react';
+import { IconButton, ListItemIcon, ListItemText } from '@mui/material';
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
 import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
 import Link from '@mui/material/Link';
+import Menu, { MenuProps } from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import Stack from '@mui/material/Stack';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
@@ -90,6 +94,11 @@ const CollectionsListContainer = (props: ICollectionsListContainerProps) => {
       ? Number(searchParams.get('p_parent_collection_id'))
       : CollectionAdvancedFiltersInitialValues.parent_collection_id
   });
+
+  const [actionMenuAnchorEl, setActionMenuAnchorEl] = useState<{
+    anchorEl: MenuProps['anchorEl'];
+    collectionId: number;
+  } | null>(null);
 
   const sort = firstOrNull(sortModel);
   const paginationSort: ApiPaginationRequestOptions = useMemo(
@@ -209,8 +218,39 @@ const CollectionsListContainer = (props: ICollectionsListContainerProps) => {
           </Stack>
         );
       }
+    },
+    {
+      field: 'actions',
+      type: 'actions',
+      sortable: false,
+      width: 10,
+      align: 'right',
+      renderCell: (params) => (
+        <IconButton
+          onClick={(event) => {
+            setActionMenuAnchorEl({ anchorEl: event.currentTarget, collectionId: params.row.collection_id });
+          }}>
+          <Icon path={mdiDotsVertical} size={1} />
+        </IconButton>
+      )
     }
   ];
+
+  const handleCloseActionMenu = () => setActionMenuAnchorEl(null);
+
+  const handleDelete = async () => {
+    if (!actionMenuAnchorEl?.collectionId) {
+      handleCloseActionMenu();
+      return;
+    }
+    try {
+      await biohubApi.collection.deleteCollection(actionMenuAnchorEl.collectionId);
+      collectionsDataLoader.refresh(paginationSort, advancedFiltersModel);
+    } catch (_error) {
+      // error handling optional
+    }
+    handleCloseActionMenu();
+  };
 
   return (
     <>
@@ -290,6 +330,19 @@ const CollectionsListContainer = (props: ICollectionsListContainerProps) => {
           autoHeight={false}
         />
       </LoadingGuard>
+      <Menu
+        open={Boolean(actionMenuAnchorEl)}
+        onClose={handleCloseActionMenu}
+        anchorEl={actionMenuAnchorEl?.anchorEl}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}>
+        <MenuItem onClick={handleDelete}>
+          <ListItemIcon>
+            <Icon path={mdiTrashCanOutline} size={1} />
+          </ListItemIcon>
+          <ListItemText>Delete</ListItemText>
+        </MenuItem>
+      </Menu>
     </>
   );
 };

@@ -167,7 +167,7 @@ export const POST: Operation = [
 ];
 
 POST.apiDoc = {
-  description: 'Adds multiple members to a collection',
+  description: 'Adds multiple participants to a collection',
   tags: ['collections'],
   security: [
     {
@@ -187,15 +187,15 @@ POST.apiDoc = {
     ...paginationRequestQueryParamSchema
   ],
   requestBody: {
-    description: 'Collection member create request object.',
+    description: 'Collection participant create request object.',
     required: true,
     content: {
       'application/json': {
         schema: {
           type: 'object',
           additionalProperties: false,
-          required: ['members'],
-          properties: { members: { type: 'array', minItems: 1, items: CreateCollectionMemberSchema } }
+          required: ['participants'],
+          properties: { participants: { type: 'array', minItems: 1, items: CreateCollectionMemberSchema } }
         }
       }
     }
@@ -223,7 +223,7 @@ POST.apiDoc = {
 };
 
 /**
- * Adds members to a collection
+ * Adds participants to a collection
  *
  * @returns {RequestHandler}
  */
@@ -240,7 +240,7 @@ export function addMembersToCollection(): RequestHandler {
 
       const collectionMemberService = new CollectionMemberService(connection);
 
-      const data = req.body.members as IPostCollectionMember[];
+      const data = req.body.participants as IPostCollectionMember[];
 
       await collectionMemberService.insertCollectionMembers(collectionId, data);
 

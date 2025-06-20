@@ -1,9 +1,15 @@
-import { mdiArrowTopRight } from '@mdi/js';
+import { mdiArrowTopRight, mdiDotsVertical, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
+import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
 import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
 import Link from '@mui/material/Link';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Menu, { MenuProps } from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Tooltip from '@mui/material/Tooltip';
@@ -211,8 +217,52 @@ export const SubcollectionContainer = (props: ICollectionsTagContainerProps) => 
           </Stack>
         );
       }
+    },
+    {
+      field: 'actions',
+      type: 'actions',
+      sortable: false,
+      width: 10,
+      align: 'right',
+      renderCell: (params) => (
+        <IconButton
+          onClick={(event) => {
+            setActionMenuAnchorEl({ anchorEl: event.currentTarget, collectionId: params.row.collection_id });
+          }}>
+          <Icon path={mdiDotsVertical} size={1} />
+        </IconButton>
+      )
     }
   ];
+
+  // Add state for action menu
+  const [actionMenuAnchorEl, setActionMenuAnchorEl] = useState<{
+    anchorEl: MenuProps['anchorEl'];
+    collectionId: number;
+  } | null>(null);
+
+  const handleCloseActionMenu = () => setActionMenuAnchorEl(null);
+
+  // Add your edit and delete handlers here
+  const handleEdit = () => {
+    // Implement navigation or dialog open for editing
+    handleCloseActionMenu();
+  };
+
+  const handleDelete = async () => {
+    if (!actionMenuAnchorEl?.collectionId) {
+      handleCloseActionMenu();
+      return;
+    }
+    try {
+      await biohubApi.collection.deleteCollection(actionMenuAnchorEl.collectionId);
+
+      collectionsDataLoader.refresh(paginationSort, advancedFiltersModel);
+    } catch (error) {
+      console.error('Failed to delete collection:', error);
+    }
+    handleCloseActionMenu();
+  };
 
   return (
     <>
@@ -335,6 +385,27 @@ export const SubcollectionContainer = (props: ICollectionsTagContainerProps) => 
           open={collectionDialogIsOpen}
         />
       )}
+
+      {/* ROW ACTION MENU */}
+      <Menu
+        open={Boolean(actionMenuAnchorEl)}
+        onClose={handleCloseActionMenu}
+        anchorEl={actionMenuAnchorEl?.anchorEl}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}>
+        <MenuItem onClick={handleEdit}>
+          <ListItemIcon>
+            <Icon path={mdiPencilOutline} size={1} />
+          </ListItemIcon>
+          <ListItemText>Edit Details</ListItemText>
+        </MenuItem>
+        <MenuItem onClick={handleDelete}>
+          <ListItemIcon>
+            <Icon path={mdiTrashCanOutline} size={1} />
+          </ListItemIcon>
+          <ListItemText>Delete</ListItemText>
+        </MenuItem>
+      </Menu>
     </>
   );
 };
