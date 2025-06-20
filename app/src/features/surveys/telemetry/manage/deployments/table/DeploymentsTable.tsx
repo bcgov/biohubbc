@@ -14,7 +14,6 @@ import Typography from '@mui/material/Typography';
 import { GridColDef, GridRowSelectionModel } from '@mui/x-data-grid';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
-import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { FOREIGN_KEY_CONSTRAINT_ERROR } from 'constants/errors';
 import dayjs from 'dayjs';
 import isBetween from 'dayjs/plugin/isBetween';
@@ -23,7 +22,7 @@ import { useCodesContext, useDialogContext, useSurveyContext } from 'hooks/useCo
 import { TelemetryDeployment } from 'interfaces/useTelemetryDeploymentApi.interface';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { combineDateTime } from 'utils/datetime';
+import { combineDateTime, formatDateTime } from 'utils/datetime';
 
 dayjs.extend(isBetween);
 
@@ -229,34 +228,14 @@ export const DeploymentsTable = (props: IDeploymentsTableProps) => {
       headerName: 'Start',
       description: 'The start date of the deployment',
       flex: 1,
-      renderCell: (params) => (
-        <>
-          {params.row.attachment_start_time
-            ? dayjs(`${params.row.attachment_start_date} ${params.row.attachment_start_time}`).format(
-                DATE_FORMAT.MediumDateTimeFormat
-              )
-            : dayjs(params.row.attachment_start_date).format(DATE_FORMAT.MediumDateFormat)}
-        </>
-      )
+      renderCell: (params) => formatDateTime(params.row.attachment_start_date)
     },
     {
       field: 'attachment_end_date',
       headerName: 'End',
       description: 'The end date of the deployment',
       flex: 1,
-      renderCell: (params) => {
-        if (!params.row.attachment_end_date) {
-          return null;
-        }
-
-        if (params.row.attachment_end_time) {
-          return dayjs(`${params.row.attachment_end_date} ${params.row.attachment_end_time}`).format(
-            DATE_FORMAT.MediumDateTimeFormat
-          );
-        }
-
-        return dayjs(params.row.attachment_end_date).format(DATE_FORMAT.MediumDateFormat);
-      }
+      renderCell: (params) => (params.row.attachment_end_date ? formatDateTime(params.row.attachment_end_date) : null)
     },
     {
       field: 'status',
@@ -266,11 +245,11 @@ export const DeploymentsTable = (props: IDeploymentsTableProps) => {
       renderCell: (params) => {
         const now = dayjs();
         const start = combineDateTime(params.row.attachment_start_date, params.row.attachment_start_time);
-        const end = params.row.attachment_end_date
-          ? combineDateTime(params.row.attachment_end_date, params.row.attachment_end_time)
-          : null;
+        const end =
+          params.row.attachment_end_date &&
+          combineDateTime(params.row.attachment_end_date, params.row.attachment_end_time);
 
-        if (start && now.isBefore(start)) {
+        if (now.isBefore(start)) {
           return <ColouredRectangleChip colour={grey} label="Future" />;
         }
 
@@ -278,7 +257,7 @@ export const DeploymentsTable = (props: IDeploymentsTableProps) => {
           return <ColouredRectangleChip colour={blue} label="Ended" />;
         }
 
-        if (start && (!end || now.isBetween(start, end, null, '[)'))) {
+        if (!end || now.isBetween(start, end, null, '[)')) {
           return <ColouredRectangleChip colour={green} label="Active" />;
         }
 
