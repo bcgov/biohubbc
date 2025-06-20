@@ -9,7 +9,6 @@ import dayjs from 'dayjs';
 import { useFormikContext } from 'formik';
 import { ICaptureResponse } from 'interfaces/useCritterApi.interface';
 import { ICreateAnimalDeployment } from 'interfaces/useTelemetryApi.interface';
-import { SyntheticEvent } from 'react';
 import { formatDateTime, hasRealTime } from 'utils/datetime';
 import yup from 'utils/YupSchema';
 
@@ -58,7 +57,7 @@ export const DeploymentStartForm = (props: IDeploymentStartFormProps) => {
                 label: formattedLabel
               };
             })}
-            onChange={(_: SyntheticEvent<Element, Event>, value: IAutocompleteFieldOption<string> | null) => {
+            onChange={(_, value: IAutocompleteFieldOption<string> | null) => {
               if (value) {
                 // Timestamp is the label
                 const timestamp = value.label;
