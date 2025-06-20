@@ -172,7 +172,7 @@ export const getDefaultWorksheet = (workbook: xlsx.WorkBook, defaultSheetNameOve
  * @param {xlsx.WorkSheet} worksheet
  * @return {*}  {(xlsx.Range | undefined)}
  */
-export const getWorksheetRange = (worksheet: xlsx.WorkSheet): xlsx.Range | undefined => {
+const getWorksheetRange = (worksheet: xlsx.WorkSheet): xlsx.Range | undefined => {
   const ref = worksheet['!ref'];
 
   if (!ref) {

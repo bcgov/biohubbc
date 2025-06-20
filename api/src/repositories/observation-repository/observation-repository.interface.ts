@@ -61,7 +61,7 @@ export type ObservationSubcountMeasurements = {
   quantitative_measurements: CBQuantitativeMeasurementTypeDefinition[];
 };
 
-export type ObservationSamplingSupplementaryData = {
+type ObservationSamplingSupplementaryData = {
   sampling_data: SurveySamplePeriodDetails[];
 };
 
@@ -69,11 +69,6 @@ export type AllObservationSupplementaryData = ObservationCountSupplementaryData 
   ObservationEnvironments &
   ObservationSubcountMeasurements &
   ObservationSamplingSupplementaryData;
-
-export interface IEnvironmentDataToValidate {
-  key: string;
-  value: string | number;
-}
 
 export const ObservationSpecies = z.object({
   itis_tsn: z.number()

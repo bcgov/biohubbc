@@ -86,7 +86,7 @@ export const getLogger = (logLabel: string): CustomLogger => {
  * @param {CustomLoggerParams} params The logger parameters.
  * @return {*}  {[string, CustomLoggerParams]} The normalized logger parameters.
  */
-export const _getLoggerParameters = (logLabel: string, params: CustomLoggerParams): [string, CustomLoggerParams] => {
+const _getLoggerParameters = (logLabel: string, params: CustomLoggerParams): [string, CustomLoggerParams] => {
   if (params.message) {
     // Remove 'message' from params and return it as the first element
     const { message, ...restParams } = params;
@@ -120,7 +120,7 @@ const _getLoggerTransportTypes = (): string[] => {
  *
  * @return {*}  {winston.Logform.Format}
  */
-export const _getLogFormat = (): winston.Logform.Format => {
+const _getLogFormat = (): winston.Logform.Format => {
   return winston.format.combine(
     // Fill the metadata with all the properties except the ones listed
     winston.format.metadata({ fillExcept: ['message', 'level', 'logger', 'label'] }),
@@ -149,7 +149,7 @@ export const _getLogFormat = (): winston.Logform.Format => {
  * @param {string} loggerName The name of the logger instance.
  * @return {*}  {winston.Logger}
  */
-export const _getOrCreateLoggerSingleton = function (loggerName: string): winston.Logger {
+const _getOrCreateLoggerSingleton = function (loggerName: string): winston.Logger {
   const hasLogger = winston.loggers.has(loggerName);
 
   if (hasLogger) {
