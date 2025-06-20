@@ -58,7 +58,8 @@ export const DeploymentStartForm = (props: IDeploymentStartFormProps) => {
           })}
           onChange={(_: SyntheticEvent<Element, Event>, value: IAutocompleteFieldOption<string> | null) => {
             if (value) {
-              const timestamp = value.value;
+              // Timestamp is the label
+              const timestamp = value.label;
 
               setFieldValue('critterbase_start_capture_id', value.value);
               setFieldValue('attachment_start_date', dayjs(timestamp).format(DATE_FORMAT.ShortDateFormat));
