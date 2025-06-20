@@ -76,7 +76,7 @@ export const DeploymentStartForm = (props: IDeploymentStartFormProps) => {
         </HelpButtonStack>
       </Grid>
       <Grid item xs={12}>
-        <HelpButtonStack helpText="Optional: ammend the date and time to truncate the data range.">
+        <HelpButtonStack helpText="The start date can be used to truncate the data to a custom date range (e.g., filter out the first day).">
           <Box sx={{ width: '100%' }} display="flex">
             <SingleDateField
               sx={{
