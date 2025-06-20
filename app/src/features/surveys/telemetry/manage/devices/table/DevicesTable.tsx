@@ -183,7 +183,7 @@ export const DevicesTable = (props: IDevicesTableProps) => {
         }
 
         const latestDeployment = getMostRecentDeployment(deviceDeployments);
-        const animal = surveyContext.critterDataLoader.data?.find((a) => a.critter_id === latestDeployment.critter_id);
+        const animal = surveyContext.critterDataLoader.data?.find((a) => a.critter_id === latestDeployment?.critter_id);
 
         return animal?.animal_id ?? null;
       }
@@ -278,9 +278,14 @@ const isDeploymentActive = (deployment: TelemetryDeployment) => {
   return now.isAfter(start) && (!end || now.isBefore(end));
 };
 
-const getMostRecentDeployment = (deployments: TelemetryDeployment[]) =>
-  deployments.reduce((latest, current) => {
+const getMostRecentDeployment = (deployments: TelemetryDeployment[]) => {
+  if (!deployments.length) {
+    return null;
+  }
+
+  return deployments.reduce((latest, current) => {
     const latestStart = combineDateTime(latest.attachment_start_date, latest.attachment_start_time);
     const currentStart = combineDateTime(current.attachment_start_date, current.attachment_start_time);
     return dayjs(currentStart).isAfter(latestStart) ? current : latest;
-  });
+  }, deployments[0]);
+};
