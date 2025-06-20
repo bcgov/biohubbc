@@ -264,34 +264,16 @@ export class CollectionService extends DBService {
    * @memberof CollectionService
    */
   async deleteCollection(collectionId: number): Promise<void> {
-    // Find then recursively delete all direct subcollections in parallel
+    // Find the direct subcollections for deletion
     const subcollections: Collection[] = await this.findCollections(false, null, {
       parent_collection_id: collectionId,
       include_children: true
     });
 
-    // Flatten the children
+    // Flatten the children to get the subcollection Ids to delete
     const subcollectionIds = this._getAllSubcollectionIds(subcollections);
 
-    await Promise.all(subcollections.map((sub) => this.deleteCollection(sub.collection_id)));
-
-    // Remove survey associations in parallel
-    const surveys = await this.collectionSurveyService.getSurveysInCollection(collectionId);
-    await Promise.all(
-      surveys.map((survey) =>
-        this.collectionSurveyService.collectionSurveyRepository.deleteCollectionSurvey(survey.survey_id, collectionId)
-      )
-    );
-
-    // Remove member associations in parallel
-    const members = await this.collectionMemberService.getCollectionMembers(collectionId);
-    await Promise.all(
-      members.map((member) =>
-        this.collectionMemberService.deleteCollectionMemberRecord(collectionId, member.collection_member_id)
-      )
-    );
-
-    // Delete the collection itself
-    await this.collectionRepository.deleteCollection(collectionId);
+    // Delete the subcollections (internally removes foreign key-linked records, i.e members, surveys)
+    await this.collectionRepository.deleteCollections([...subcollectionIds, collectionId]);
   }
 }

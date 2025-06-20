@@ -66,12 +66,8 @@ const CollectionHeader = (props: ICollectionHeaderProps) => {
 
   const deleteCollection = async () => {
     try {
-      const response = await biohubApi.collection.deleteCollection(collection.collection_id);
-      if (!response) {
-        showDeleteErrorDialog({ open: true });
-        return;
-      }
-      history.push(`/admin/summary`);
+      await biohubApi.collection.deleteCollection(collection.collection_id);
+      history.push(`/admin/summary?${SUMMARY_ACTIVE_VIEW_KEY}=${SUMMARY_ACTIVE_VIEW_VALUE.collections}`);
     } catch (error) {
       const apiError = error as APIError;
       showDeleteErrorDialog({ dialogErrorDetails: [apiError.message], open: true });

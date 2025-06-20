@@ -194,7 +194,7 @@ describe('getTechniques', () => {
     };
 
     const getTechniquesForSurveyIdStub = sinon
-      .stub(TechniqueService.prototype, 'getTechniquesForSurveyId')
+      .stub(TechniqueService.prototype, 'getTechniquesForSurveyIds')
       .resolves([techniqueRecord]);
 
     const getTechniquesCountForSurveyIdStub = sinon
@@ -267,7 +267,7 @@ describe('getTechniques', () => {
     };
 
     const getTechniquesForSurveyIdStub = sinon
-      .stub(TechniqueService.prototype, 'getTechniquesForSurveyId')
+      .stub(TechniqueService.prototype, 'getTechniquesForSurveyIds')
       .resolves([techniqueRecord]);
 
     const getTechniquesCountForSurveyIdStub = sinon

@@ -28,7 +28,7 @@ import { SurveyOverviewPage } from './overview/SurveyOverviewPage';
 import { SAMPLING_ACTIVE_VIEW_VALUE, SurveySamplingPage } from './sampling/SurveySamplingPage';
 import { SurveyViewToggle } from './sidebar/SurveyViewToggle';
 
-const ACTIVE_VIEW_KEY = 'v';
+export const ACTIVE_VIEW_KEY = 'v';
 
 export enum SURVEY_ACTIVE_VIEW_VALUE {
   overview = 'overview',

@@ -17,7 +17,11 @@ const defaultLog = getLogger('paths/collection/{collectionId}/index');
 export const GET: Operation = [
   authorizeRequestHandler((req) => {
     return {
-      and: [
+      or: [
+        {
+          discriminator: 'SystemRole',
+          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]
+        },
         {
           discriminator: 'CollectionRole',
           collectionId: Number(req.params.collectionId),
@@ -110,7 +114,11 @@ export function getCollectionById(): RequestHandler {
 export const PUT: Operation = [
   authorizeRequestHandler((req) => {
     return {
-      and: [
+      or: [
+        {
+          discriminator: 'SystemRole',
+          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]
+        },
         {
           discriminator: 'CollectionRole',
           collectionId: Number(req.params.collectionId),
@@ -119,7 +127,7 @@ export const PUT: Operation = [
       ]
     };
   }),
-  UpdateCollection()
+  updateCollection()
 ];
 
 PUT.apiDoc = {
@@ -176,7 +184,7 @@ PUT.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-export function UpdateCollection(): RequestHandler {
+export function updateCollection(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'UpdateCollection' });
 
@@ -197,7 +205,7 @@ export function UpdateCollection(): RequestHandler {
 
       return res.status(204).json();
     } catch (error) {
-      defaultLog.error({ label: 'UpdateCollection', message: 'error', error });
+      defaultLog.error({ label: 'updateCollection', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
@@ -332,7 +340,7 @@ DELETE.apiDoc = {
   tags: ['collection'],
   security: [{ Bearer: [] }],
   responses: {
-    204: {
+    200: {
       description: 'Collection deleted successfully.'
     },
     400: {
@@ -372,7 +380,7 @@ export function deleteCollection(): RequestHandler {
 
       await connection.commit();
 
-      res.status(204).send();
+      return res.status(200).send();
     } catch (error) {
       defaultLog.error({ label: 'deleteCollection', message: 'error', error });
       connection.rollback();

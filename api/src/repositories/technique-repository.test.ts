@@ -49,7 +49,7 @@ describe('TechniqueRepository', () => {
     });
   });
 
-  describe('getTechniquesForSurveyId', () => {
+  describe('getTechniquesForSurveyIds', () => {
     it('should run successfully', async () => {
       const mockRecord: TechniqueObject = {
         method_technique_id: 1,
@@ -74,13 +74,13 @@ describe('TechniqueRepository', () => {
       const surveyId = 1;
       const pagination = undefined;
 
-      const response = await repository.getTechniquesForSurveyId(surveyId, pagination);
+      const response = await repository.getTechniquesForSurveyIds([surveyId], pagination);
 
       expect(response).to.eql([mockRecord]);
     });
   });
 
-  describe('getTechniquesCountForSurveyId', () => {
+  describe('getTechniquesCountForSurveyIds', () => {
     it('should run successfully', async () => {
       const mockRecord = { count: 10 };
 
@@ -91,7 +91,7 @@ describe('TechniqueRepository', () => {
 
       const surveyId = 1;
 
-      const response = await repository.getTechniquesCountForSurveyId(surveyId);
+      const response = await repository.getTechniquesCountForSurveyIds([surveyId]);
 
       expect(response).to.equal(10);
     });

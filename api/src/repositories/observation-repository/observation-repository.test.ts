@@ -118,7 +118,7 @@ describe('ObservationRepository', () => {
 
       const surveyId = 1;
 
-      const response = await repository.getSurveyObservations(surveyId);
+      const response = await repository.getSurveyObservations([surveyId]);
 
       expect(response).to.be.eql(mockRows);
     });
@@ -135,7 +135,7 @@ describe('ObservationRepository', () => {
 
       const surveyId = 1;
 
-      const response = await repository.getSurveyObservations(surveyId);
+      const response = await repository.getSurveyObservations([surveyId]);
 
       expect(response).to.be.eql(mockRows);
     });
@@ -151,7 +151,7 @@ describe('ObservationRepository', () => {
 
       const repo = new ObservationRepository(mockDBConnection);
 
-      const response = await repo.getSurveyObservationsCount(1);
+      const response = await repo.getSurveyObservationsCount([1]);
 
       expect(response).to.eql(1);
     });

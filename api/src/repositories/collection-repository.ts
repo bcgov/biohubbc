@@ -473,6 +473,7 @@ export class CollectionRepository extends BaseRepository {
     }
 
     const response = await this.connection.knex(query, Collection);
+
     return response.rows;
   }
 
@@ -596,7 +597,6 @@ export class CollectionRepository extends BaseRepository {
     return response.rows[0];
   }
 
-  
   /**
    * Remove the parent collection from a collection.
    *
@@ -614,9 +614,7 @@ export class CollectionRepository extends BaseRepository {
   `;
 
     await this.connection.sql(sql, CollectionModel);
-
   }
-
 
   /**
    * Count of the number of collections accessible to a user.
@@ -639,6 +637,7 @@ export class CollectionRepository extends BaseRepository {
     const response = await this.connection.knex(countQuery, z.object({ count: z.number() }));
     return response.rows[0].count;
   }
+
   /**
    * Delete a collection by ID.
    *
@@ -656,5 +655,33 @@ export class CollectionRepository extends BaseRepository {
 
     return response.rowCount !== null && response.rowCount > 0;
   }
-}
 
+  /**
+   * Delete collections
+   *
+   * @param {number[]} collectionIds
+   * @returns {Promise<void>}
+   * @memberof CollectionSurveyRepository
+   */
+  async deleteCollections(collectionIds: number[]): Promise<void> {
+    const sql = SQL`
+      WITH w_remove_parent AS (  
+        UPDATE collection
+        SET parent_collection_id = NULL
+        WHERE collection_id = ANY (${collectionIds})
+      ),
+      w_remove_surveys AS (
+        DELETE FROM collection_survey
+        WHERE collection_id = ANY (${collectionIds})
+      ),
+      w_remove_members AS (
+        DELETE FROM collection_member
+        WHERE collection_id = ANY (${collectionIds})
+      )
+      DELETE FROM collection
+      WHERE collection_id = ANY (${collectionIds});
+    `;
+
+    await this.connection.sql(sql);
+  }
+}

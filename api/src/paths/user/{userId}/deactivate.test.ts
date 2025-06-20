@@ -29,7 +29,7 @@ describe('deactivateSystemUser', () => {
 
     const mockResponse = [
       {
-        survey_participation_id: 47,
+        survey_member_id: 47,
         survey_id: 3,
         system_user_id: 33,
         survey_role_ids: [1],
@@ -47,7 +47,7 @@ describe('deactivateSystemUser', () => {
         user_identifier: 'testuser'
       },
       {
-        survey_participation_id: 57,
+        survey_member_id: 57,
         survey_id: 1,
         system_user_id: 33,
         survey_role_ids: [3],
@@ -65,7 +65,7 @@ describe('deactivateSystemUser', () => {
         user_identifier: 'testuser'
       },
       {
-        survey_participation_id: 40,
+        survey_member_id: 40,
         survey_id: 1,
         system_user_id: 27,
         survey_role_ids: [1],
