@@ -5,6 +5,7 @@ import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useMemo } from 'react';
 import { Popup } from 'react-leaflet';
+import { hasRealTime } from 'utils/datetime';
 import { isDefined } from 'utils/Utils';
 
 interface ISurveySpatialAnimalMortalityPopupProps {
@@ -33,19 +34,22 @@ export const SurveySpatialAnimalMortalityPopup = (props: ISurveySpatialAnimalMor
     const { mortality_timestamp, location } = mortalityDataLoader.data;
     const { animal_id } = animalDataLoader.data;
 
+    const isRealTime = hasRealTime(mortality_timestamp);
+
     return [
       { label: 'Nickname', value: animal_id },
       {
-        label: 'Date',
-        // Critterbase does not provide time as its own string so mortalities without time data will erroneously show 12:00 AM in the popup
-        value: dayjs(mortality_timestamp).format(DATE_FORMAT.LongDateTimeFormat)
-      },
-      {
-        label: 'Coordinates',
+        label: 'Location',
         value: [location?.latitude, location?.longitude]
           .filter((coord): coord is number => isDefined(coord))
           .map((coord) => coord.toFixed(6))
           .join(', ')
+      },
+      {
+        label: 'Date',
+        value: isRealTime
+          ? dayjs(mortality_timestamp).format(DATE_FORMAT.MediumDateTimeFormat)
+          : dayjs(mortality_timestamp).format(DATE_FORMAT.MediumDateFormat)
       }
     ];
   }, [mortalityDataLoader.data, animalDataLoader.data]);

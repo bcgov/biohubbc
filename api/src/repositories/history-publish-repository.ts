@@ -117,12 +117,6 @@ export const SurveyReportWithPublishData = z.object({
 
 export type SurveyReportWithPublishData = z.infer<typeof SurveyReportWithPublishData>;
 
-export enum PublishStatus {
-  NO_DATA = 'NO_DATA',
-  UNSUBMITTED = 'UNSUBMITTED',
-  SUBMITTED = 'SUBMITTED'
-}
-
 export class HistoryPublishRepository extends BaseRepository {
   /**
    * Inserts a record into `survey_metadata_publish` for a given queue and survey id
