@@ -89,6 +89,13 @@ export const DeploymentDetailsForm = (props: IDeploymentDetailsFormProps) => {
           onSelect={(animal: ICritterSimpleResponse) => {
             if (animal) {
               setFieldValue('critter_id', animal.critter_id);
+              setFieldValue('critterbase_start_capture_id', null);
+              setFieldValue('attachment_start_date', null);
+              setFieldValue('attachment_start_time', null);
+              setFieldValue('attachment_end_date', null);
+              setFieldValue('attachment_end_time', null);
+              setFieldValue('critterbase_end_capture_id', null);
+              setFieldValue('critterbase_end_mortality_id', null);
             }
           }}
         />

@@ -6,6 +6,7 @@ import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import HelpButtonStack from 'components/buttons/HelpButtonStack';
 import AutocompleteField from 'components/fields/AutocompleteField';
 import SingleDateField from 'components/fields/SingleDateField';
 import { TimeField } from 'components/fields/TimeField';
@@ -86,22 +87,24 @@ export const DeploymentEndForm = (props: IDeploymentEndFormProps) => {
   return (
     <Grid container spacing={3}>
       <Grid item xs={12} flex="1 1 auto">
-        <Typography color="textSecondary" mb={2}>
-          If applicable, select how the deployment ended. If due to a mortality, you must&nbsp;
-          {values.critter_id ? (
-            <Typography
-              sx={{
-                textDecoration: 'none'
-              }}
-              component={RouterLink}
-              to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/animals/${values.critter_id}/mortality/create`}>
-              report the mortality
-            </Typography>
-          ) : (
-            'report the mortality'
-          )}
-          &nbsp;before removing the device.
-        </Typography>
+        <HelpButtonStack helpText="A device's deployment must end before re-deploying the device." mb={2}>
+          <Typography color="textSecondary">
+            If applicable, select how the deployment ended. If due to a mortality, you must&nbsp;
+            {values.critter_id ? (
+              <Typography
+                sx={{
+                  textDecoration: 'none'
+                }}
+                component={RouterLink}
+                to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/animals/${values.critter_id}/mortality/create`}>
+                report the mortality
+              </Typography>
+            ) : (
+              'report the mortality'
+            )}
+            &nbsp;before removing the device.
+          </Typography>
+        </HelpButtonStack>
 
         <RadioGroup
           aria-label="deployment-end"
