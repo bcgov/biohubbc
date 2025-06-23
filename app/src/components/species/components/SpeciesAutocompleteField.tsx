@@ -179,13 +179,23 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
 
   const handleSearch = useMemo(
     () =>
-      debounce(async (inputValue: string, callback: (searchedValues: ITaxonomy[]) => void) => {
-        const searchTerms = inputValue.split(' ').filter(Boolean);
-        const response = await biohubApi.taxonomy.searchSpeciesByTerms(searchTerms).catch(() => {
-          return [];
-        });
-
-        callback(response);
+      debounce(async (inputValue: string, callback: (searchedValues: (ITaxonomy | IPartialTaxonomy)[]) => void) => {
+        // Check if input is a valid TSN number (all digits)
+        if (/^\d+$/.test(inputValue)) {
+          // If it's a numeric string (potential TSN), search by TSN ID
+          const tsn = parseInt(inputValue, 10);
+          const response = await biohubApi.taxonomy.getSpeciesFromIds([tsn]).catch(() => {
+            return [];
+          });
+          callback(response as (ITaxonomy | IPartialTaxonomy)[]);
+        } else {
+          // Otherwise search by terms (regular search)
+          const searchTerms = inputValue.split(' ').filter(Boolean);
+          const response = await biohubApi.taxonomy.searchSpeciesByTerms(searchTerms).catch(() => {
+            return [];
+          });
+          callback(response as (ITaxonomy | IPartialTaxonomy)[]);
+        }
       }, 500),
     [biohubApi.taxonomy]
   );
