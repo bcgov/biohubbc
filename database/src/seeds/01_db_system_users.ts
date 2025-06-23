@@ -30,16 +30,6 @@ interface SystemUserSeed {
 
 const systemUsers: SystemUserSeed[] = [
   {
-    identifier: 'nphura',
-    type: SYSTEM_IDENTITY_SOURCE.IDIR,
-    role_name: SYSTEM_USER_ROLE_NAME.SYSTEM_ADMINISTRATOR,
-    user_guid: '813B096BC1BC4AAAB2E39DDE58F432E2',
-    display_name: 'Phura, Nick WLRS:EX',
-    given_name: 'Nick',
-    family_name: 'Phura',
-    email: 'nick.phura@gov.bc.ca'
-  },
-  {
     identifier: 'achirico',
     type: SYSTEM_IDENTITY_SOURCE.IDIR,
     role_name: SYSTEM_USER_ROLE_NAME.SYSTEM_ADMINISTRATOR,
@@ -48,16 +38,6 @@ const systemUsers: SystemUserSeed[] = [
     given_name: 'Albert',
     family_name: 'Chirico',
     email: 'albert.chirico@gov.bc.ca'
-  },
-  {
-    identifier: 'mdeluca',
-    type: SYSTEM_IDENTITY_SOURCE.IDIR,
-    role_name: SYSTEM_USER_ROLE_NAME.SYSTEM_ADMINISTRATOR,
-    user_guid: '0054CF4823A744309BE399C34B6B0F43',
-    display_name: 'Deluca, Mac WLRS:EX',
-    given_name: 'Mac',
-    family_name: 'Deluca',
-    email: 'mac.deluca@gov.bc.ca'
   },
   {
     identifier: 'mauberti',
@@ -88,26 +68,6 @@ const systemUsers: SystemUserSeed[] = [
     given_name: 'Annika',
     family_name: 'Meijer',
     email: 'annika.meijer@gov.bc.ca'
-  },
-  {
-    identifier: 'oinostro',
-    type: SYSTEM_IDENTITY_SOURCE.IDIR,
-    role_name: SYSTEM_USER_ROLE_NAME.SYSTEM_ADMINISTRATOR,
-    user_guid: '5134A2E785814352A291886CD5F53CD1',
-    display_name: 'Oscar, Inostroza WLRS:EX',
-    given_name: 'Oscar',
-    family_name: 'Inostroza',
-    email: 'oinostro@gov.bc.ca'
-  },
-  {
-    identifier: 'oscar-bc-adm',
-    type: SYSTEM_IDENTITY_SOURCE.BCEID_BASIC,
-    role_name: SYSTEM_USER_ROLE_NAME.SYSTEM_ADMINISTRATOR,
-    user_guid: 'DCDDBF25F13345EAA9F56BFD1A4F4EA7',
-    display_name: 'Oscar, Inostroza WLRS:EX',
-    given_name: 'Oscar',
-    family_name: 'Inostroza',
-    email: 'oinostro@gov.bc.ca'
   }
 ];
 

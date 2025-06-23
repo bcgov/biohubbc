@@ -3,6 +3,7 @@ import { Knex } from 'knex';
 import QueryStream from 'pg-query-stream';
 import { SQLStatement } from 'sql-template-strings';
 import { Readable, Transform } from 'stream';
+import { z } from 'zod';
 import { getLogger } from '../../utils/logger';
 import { TransformFunction } from './export-strategy';
 
@@ -223,31 +224,10 @@ export const parseTimestampString = (timestamp: string): { dateStr: string; time
 
 /**
  * Check if a value is a uuid or not.
- * Optimized for performance
  *
  * @param {string} uuid
  * @returns {boolean} true if it is a uuid
  */
 export const isUUID = (uuid: string | null | undefined): boolean => {
-  // UUID must not be null length must be 36 characters
-  if (!uuid || uuid.length !== 36) {
-    return false;
-  }
-
-  // Check fixed positions for hyphens and uuid version 4
-  if (uuid[8] !== '-' || uuid[13] !== '-' || uuid[14] !== '4' || uuid[18] !== '-' || uuid[23] !== '-') {
-    return false;
-  }
-
-  // Check if the remaining characters are valid hexadecimal digits
-  // Note: using indexed for loop as it is the fastest
-  uuid = uuid.split('-').join('').toLowerCase();
-  const hexChars = new Set('0123456789abcdef');
-  for (let i = 0; i < uuid.length; i++) {
-    if (!hexChars.has(uuid[i])) {
-      return false;
-    }
-  }
-
-  return true;
+  return z.string().uuid().safeParse(uuid).success;
 };

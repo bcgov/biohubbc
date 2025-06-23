@@ -50,6 +50,17 @@ export const DevicesContainer = () => {
   const devices = devicesDataLoader.data?.devices ?? [];
   const devicesCount = devicesDataLoader.data?.count ?? 0;
 
+  // Deployments data loader
+  const deploymentsDataLoader = useDataLoader((projectId: number, surveyId: number) =>
+    biohubApi.telemetryDeployment.getDeploymentsInSurvey(projectId, surveyId)
+  );
+
+  useEffect(() => {
+    deploymentsDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
+  }, [deploymentsDataLoader, surveyContext.projectId, surveyContext.surveyId]);
+
+  const deployments = deploymentsDataLoader.data?.deployments ?? [];
+
   // Handler for bulk delete operation
   const handleBulkDelete = async () => {
     try {
@@ -225,6 +236,7 @@ export const DevicesContainer = () => {
               hasNoDataFallbackDelay={100}>
               <DevicesTable
                 devices={devices}
+                deployments={deployments}
                 selectedRows={selectedRows}
                 setSelectedRows={setSelectedRows}
                 onDelete={onDelete}

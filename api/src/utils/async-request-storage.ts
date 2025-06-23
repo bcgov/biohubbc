@@ -60,7 +60,7 @@ export function initRequestStorage(req: Request, _res: Response, next: NextFunct
  * @param {string} defaultValue - The default value to return if the key is not found
  * @return {*} {string}
  */
-export function _getRequestStoreValue(key: RequestStoreKey, defaultValue: string): string {
+function _getRequestStoreValue(key: RequestStoreKey, defaultValue: string): string {
   const requestStore = AsyncRequestStorage.getStore();
 
   // Return undefined if the request store is not initialized

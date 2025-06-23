@@ -1,10 +1,8 @@
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { ICaptureWithSupplementaryData } from 'features/surveys/animals/profile/captures/AnimalCaptureContainer';
-import { combineDateTime } from 'utils/datetime';
-import { getFormattedDate } from 'utils/Utils';
+import { formatDateTime } from 'utils/datetime';
 
 interface ICaptureDetailsProps {
   capture: ICaptureWithSupplementaryData;
@@ -36,7 +34,7 @@ export const CaptureDetails = (props: ICaptureDetailsProps) => {
             Capture date
           </Typography>
           <Typography color="textSecondary" variant="body2">
-            {getFormattedDate(DATE_FORMAT.MediumDateTimeFormat, combineDateTime(captureDate, captureTime))}
+            {formatDateTime(captureDate, captureTime)}
           </Typography>
         </Box>
 
