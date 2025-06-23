@@ -6,7 +6,7 @@ import { authorizeRequestHandler } from '../../../../../../../request-handlers/s
 import { ObservationSubCountMeasurementService } from '../../../../../../../services/observation-subcount-measurement-service';
 import { getLogger } from '../../../../../../../utils/logger';
 
-const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observations/measurements');
+const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observations/measurements/delete');
 
 export const POST: Operation = [
   authorizeRequestHandler((req) => {

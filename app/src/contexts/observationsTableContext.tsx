@@ -620,7 +620,7 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
   ]);
 
   /**
-   * Deletes the given records from the server and removes them from the table.
+   * Deletes the given records from observations in the database and removes them from the table.
    *
    * @param {string[]} measurementIds The critterbase taxon measurement ids to delete.
    * @return {*}  {Promise<void>}
@@ -635,10 +635,7 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
         // Delete measurement columns from the database
         await biohubApi.observation.deleteObservationMeasurements(projectId, surveyId, measurementIds);
 
-        // Close yes-no dialog
         setYesNoDialog({ open: false });
-
-        // Show snackbar for successful deletion
         setSnackbar({
           snackbarMessage: (
             <Typography variant="body2" component="div">
@@ -650,10 +647,7 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
           open: true
         });
       } catch {
-        // Close yes-no dialog
         setYesNoDialog({ open: false });
-
-        // Show error dialog
         setErrorDialog({
           onOk: () => setErrorDialog({ open: false }),
           onClose: () => setErrorDialog({ open: false }),

@@ -1,6 +1,7 @@
 import { mdiCog, mdiLeaf, mdiRuler } from '@mdi/js';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
+import { ComponentSwitch } from 'components/misc/ComponentSwitch';
 import CustomToggleButtonGroup from 'components/toolbar/CustomToggleButtonGroup';
 import { ConfigureEnvironmentColumns } from 'features/surveys/observations/observations-table/configure-columns/components/environment/ConfigureEnvironmentColumns';
 import { ConfigureGeneralColumns } from 'features/surveys/observations/observations-table/configure-columns/components/general/ConfigureGeneralColumns';
@@ -132,32 +133,37 @@ export const ConfigureColumnsPage = (props: IConfigureColumnsPageProps) => {
         />
       </Box>
       <Box height="100%" flex={0.8}>
-        {activeView === ConfigureColumnsViewEnum.GENERAL && (
-          <ConfigureGeneralColumns
-            key={ConfigureColumnsViewEnum.GENERAL}
-            disabled={disabled}
-            hiddenFields={hiddenFields}
-            hideableColumns={hideableColumns}
-            onToggleShowHideAll={onToggleShowHideAll}
-            onToggleColumnVisibility={onToggleColumnVisibility}
-          />
-        )}
-        {activeView === ConfigureColumnsViewEnum.MEASUREMENTS && (
-          <ConfigureMeasurementColumns
-            key={ConfigureColumnsViewEnum.MEASUREMENTS}
-            measurementColumns={measurementColumns}
-            onAddMeasurementColumns={onAddMeasurementColumns}
-            onRemoveMeasurementColumns={onRemoveMeasurementColumns}
-          />
-        )}
-        {activeView === ConfigureColumnsViewEnum.ENVIRONMENT && (
-          <ConfigureEnvironmentColumns
-            key={ConfigureColumnsViewEnum.MEASUREMENTS}
-            environmentColumns={environmentColumns}
-            onAddEnvironmentColumns={onAddEnvironmentColumns}
-            onRemoveEnvironmentColumns={onRemoveEnvironmentColumns}
-          />
-        )}
+        <ComponentSwitch
+          switch={activeView}
+          components={{
+            [ConfigureColumnsViewEnum.GENERAL]: (
+              <ConfigureGeneralColumns
+                key={ConfigureColumnsViewEnum.GENERAL}
+                disabled={disabled}
+                hiddenFields={hiddenFields}
+                hideableColumns={hideableColumns}
+                onToggleShowHideAll={onToggleShowHideAll}
+                onToggleColumnVisibility={onToggleColumnVisibility}
+              />
+            ),
+            [ConfigureColumnsViewEnum.MEASUREMENTS]: (
+              <ConfigureMeasurementColumns
+                key={ConfigureColumnsViewEnum.MEASUREMENTS}
+                measurementColumns={measurementColumns}
+                onAddMeasurementColumns={onAddMeasurementColumns}
+                onRemoveMeasurementColumns={onRemoveMeasurementColumns}
+              />
+            ),
+            [ConfigureColumnsViewEnum.ENVIRONMENT]: (
+              <ConfigureEnvironmentColumns
+                key={ConfigureColumnsViewEnum.MEASUREMENTS}
+                environmentColumns={environmentColumns}
+                onAddEnvironmentColumns={onAddEnvironmentColumns}
+                onRemoveEnvironmentColumns={onRemoveEnvironmentColumns}
+              />
+            )
+          }}
+        />
       </Box>
     </Stack>
   );

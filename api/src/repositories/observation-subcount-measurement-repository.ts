@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { getKnex } from '../database/db';
+import { ApiExecuteSQLError } from '../errors/api-error';
 import { BaseRepository } from './base-repository';
 
 export const ObservationSubCountQualitativeMeasurementRecord = z.object({
@@ -238,7 +239,14 @@ export class ObservationSubCountMeasurementRepository extends BaseRepository {
 
     const response = await this.connection.knex(qb);
 
-    return response.rowCount ?? 0;
+    if (!response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to delete qualitative measurements for taxon measurement Ids', [
+        'ObservationSubcountMeasurementRepository->deleteQualitativeMeasurementForTaxonMeasurementIds',
+        'rowCount was null or undefined, expected rowCount != null'
+      ]);
+    }
+
+    return response.rowCount;
   }
 
   /**
@@ -268,7 +276,14 @@ export class ObservationSubCountMeasurementRepository extends BaseRepository {
 
     const response = await this.connection.knex(qb);
 
-    return response.rowCount ?? 0;
+    if (!response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to delete quantitative measurements for taxon measurement Ids', [
+        'ObservationSubcountMeasurementRepository->deleteQuantitativeMeasurementForTaxonMeasurementIds',
+        'rowCount was null or undefined, expected rowCount != null'
+      ]);
+    }
+
+    return response.rowCount;
   }
 
   async deleteObservationQuantitativeMeasurementRecordsForSurveyObservationIds(
@@ -289,7 +304,14 @@ export class ObservationSubCountMeasurementRepository extends BaseRepository {
 
     const response = await this.connection.knex(qb);
 
-    return response.rowCount ?? 0;
+    if (!response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to delete quantitative measurements for survey observation Ids', [
+        'ObservationSubcountMeasurementRepository->deleteObservationQuantitativeMeasurementRecordsForSurveyObservationIds',
+        'rowCount was null or undefined, expected rowCount != null'
+      ]);
+    }
+
+    return response.rowCount;
   }
 
   /**
@@ -334,7 +356,14 @@ export class ObservationSubCountMeasurementRepository extends BaseRepository {
 
     const response = await this.connection.knex(qb);
 
-    return response.rowCount ?? 0;
+    if (!response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to delete qualitative measurements for survey subcountIds', [
+        'ObservationSubcountMeasurementRepository->deleteQualitativeMeasurementsByObservationSubcountIds',
+        'rowCount was null or undefined, expected rowCount != null'
+      ]);
+    }
+
+    return response.rowCount;
   }
 
   /**
@@ -364,6 +393,13 @@ export class ObservationSubCountMeasurementRepository extends BaseRepository {
 
     const response = await this.connection.knex(qb);
 
-    return response.rowCount ?? 0;
+    if (!response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to delete quantitative measurements for survey subcountIds', [
+        'ObservationSubcountMeasurementRepository->deleteQuantitativeMeasurementsByObservationSubcountIds',
+        'rowCount was null or undefined, expected rowCount != null'
+      ]);
+    }
+
+    return response.rowCount;
   }
 }
