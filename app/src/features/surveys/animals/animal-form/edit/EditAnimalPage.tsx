@@ -70,7 +70,7 @@ export const EditAnimalPage = () => {
   }
 
   const handleCancel = () => {
-    history.push(`/admin/surveys/${surveyId}/animals`);
+    history.goBack();
   };
 
   const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
@@ -149,7 +149,7 @@ export const EditAnimalPage = () => {
       animalPageContext.critterDataLoader.refresh(surveyId, critter.critter_id);
 
       skipUnsavedChangesDialog();
-      history.push(`/admin/surveys/${surveyId}/animals`);
+      history.goBack();
     } catch (error) {
       const apiError = error as APIError;
       showCreateErrorDialog({

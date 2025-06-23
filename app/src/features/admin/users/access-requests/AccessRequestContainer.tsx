@@ -4,7 +4,7 @@ import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import CustomToggleButtonGroup from 'components/toolbar/CustomToggleButtonGroup';
+import CustomToggleButtonGroup from 'components/toggle/CustomToggleButtonGroup';
 import { IGetAccessRequestsListResponse } from 'interfaces/useAdminApi.interface';
 import { useState } from 'react';
 import AccessRequestActionedList from './list/actioned/AccessRequestActionedList';

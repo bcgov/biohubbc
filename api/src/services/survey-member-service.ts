@@ -1,7 +1,7 @@
 import { SURVEY_ROLE } from '../constants/roles';
 import { IDBConnection } from '../database/db';
 import { ApiGeneralError } from '../errors/api-error';
-import { PostMemberData } from '../models/survey-create';
+import { IPostSurveyMember } from '../models/survey-create';
 import { SystemUserWithRoles } from '../models/system-user-view';
 import {
   IMember,
@@ -43,7 +43,7 @@ export class SurveyMemberService extends DBService {
     }
 
     // add new survey participant record
-    await this.postSurveyMember(surveyId, systemUserId, surveyMemberRoleId);
+    await this.insertSurveyMember(surveyId, systemUserId, surveyMemberRoleId);
   }
 
   /**
@@ -75,10 +75,23 @@ export class SurveyMemberService extends DBService {
    * @return {*}  {Promise<void[]>}
    * @memberof SurveyMemberService
    */
-  async postSurveyMembers(surveyId: number, members: PostMemberData[]): Promise<void[]> {
+  async insertSurveyMembers(surveyId: number, members: IPostSurveyMember[]): Promise<void[]> {
     return Promise.all(
-      members.map((member) => this.postSurveyMember(surveyId, member.system_user_id, member.survey_role_name))
+      members.map((member) => this.insertSurveyMember(surveyId, member.system_user_id, member.survey_role_name))
     );
+  }
+
+  /**
+   * Adds a survey participant to the survey.
+   *
+   * @param {number} surveyId
+   * @param {number} systemUserId
+   * @param {(number | string)} surveyMemberRole
+   * @return {*}  {Promise<void>}
+   * @memberof SurveyMemberService
+   */
+  async insertSurveyMember(surveyId: number, systemUserId: number, surveyMemberRole: number | string): Promise<void> {
+    return this.surveyMemberRepository.insertSurveyMember(surveyId, systemUserId, surveyMemberRole);
   }
 
   /**
@@ -129,19 +142,6 @@ export class SurveyMemberService extends DBService {
    */
   async getSurveyMembers(surveyId: number): Promise<(SurveyMember & SystemUserWithRoles)[]> {
     return this.surveyMemberRepository.getSurveyMembers(surveyId);
-  }
-
-  /**
-   * Adds a survey participant to the survey.
-   *
-   * @param {number} surveyId
-   * @param {number} systemUserId
-   * @param {(number | string)} surveyMemberRole
-   * @return {*}  {Promise<void>}
-   * @memberof SurveyMemberService
-   */
-  async postSurveyMember(surveyId: number, systemUserId: number, surveyMemberRole: number | string): Promise<void> {
-    return this.surveyMemberRepository.postSurveyMember(surveyId, systemUserId, surveyMemberRole);
   }
 
   /**
@@ -220,7 +220,7 @@ export class SurveyMemberService extends DBService {
         surveyLeadsPerSurvey[key] = 0;
       }
 
-      if (row.survey_role_names.includes(SURVEY_ROLE.ADMIN)) {
+      if (row.survey_role_name.includes(SURVEY_ROLE.ADMIN)) {
         surveyLeadsPerSurvey[key] += 1;
       }
     });
@@ -263,7 +263,7 @@ export class SurveyMemberService extends DBService {
         surveyLeadsPerSurvey[key] = 0;
       }
 
-      if (row.system_user_id !== systemUserId && row.survey_role_names.includes(SURVEY_ROLE.ADMIN)) {
+      if (row.system_user_id !== systemUserId && row.survey_role_name.includes(SURVEY_ROLE.ADMIN)) {
         surveyLeadsPerSurvey[key] += 1;
       }
     });
@@ -285,34 +285,34 @@ export class SurveyMemberService extends DBService {
   /**
    * Internal function for validating that all Survey members have a role
    *
-   * @param {PostMemberData[]} participants
+   * @param {IPostSurveyMember[]} participants
    * @param {SURVEY_ROLE} roleToCheck
    * @return {*}  {boolean}
    * @memberof SurveyMemberService
    */
-  _doSurveyMembersHaveARole(participants: PostMemberData[], roleToCheck: SURVEY_ROLE): boolean {
-    return participants.some((item) => item.survey_role_names.some((role) => role === roleToCheck));
+  _doSurveyMembersHaveARole(participants: IPostSurveyMember[], roleToCheck: SURVEY_ROLE): boolean {
+    return participants.some((item) => item.survey_role_name === roleToCheck);
   }
 
   /**
    * Internal function for validating that all survey participants have one unique role.
    *
-   * @param {PostMemberData[]} participants
+   * @param {IPostSurveyMember[]} participants
    * @return {*}  {boolean}
    * @memberof SurveyMemberService
    */
-  _doSurveyMembersHaveOneRole(participants: PostMemberData[]): boolean {
+  _doSurveyMembersHaveOneRole(participants: IPostSurveyMember[]): boolean {
     // Map of system_user_id to set of unique role names
     const participantUniqueRoles = new Map<number, Set<string>>();
 
     for (const participant of participants) {
       const system_user_id = participant.system_user_id;
-      const survey_role_names = participant.survey_role_names;
+      const survey_role_name = participant.survey_role_name;
 
       // Get the set of unique role names, or initialize a new set if the user is not in the map
       const uniqueRoleNamesForMember = participantUniqueRoles.get(system_user_id) ?? new Set<string>();
 
-      for (const role of survey_role_names) {
+      for (const role of survey_role_name) {
         // Add the role names to the set, converting to lowercase to ensure case-insensitive comparison
         uniqueRoleNamesForMember.add(role.toLowerCase());
       }
@@ -329,12 +329,12 @@ export class SurveyMemberService extends DBService {
    * Updates existing participants, deletes those participants not in the incoming list, and inserts new participants.
    *
    * @param {number} surveyId
-   * @param {PostMemberData[]} incomingMembers
+   * @param {IPostSurveyMember[]} incomingMembers
    * @return {*}  {Promise<void>}
    * @throws ApiGeneralError If no participant has a coordinator role or if any participant has multiple roles.
    * @memberof SurveyMemberService
    */
-  async upsertSurveyMemberData(surveyId: number, incomingMembers: PostMemberData[]): Promise<void> {
+  async upsertSurveyMemberData(surveyId: number, incomingMembers: IPostSurveyMember[]): Promise<void> {
     // Confirm that at least one participant has a coordinator role
     if (!this._doSurveyMembersHaveARole(incomingMembers, SURVEY_ROLE.ADMIN)) {
       throw new ApiGeneralError(`Surveys require that at least one participant has a ${SURVEY_ROLE.ADMIN} role.`);
@@ -374,25 +374,21 @@ export class SurveyMemberService extends DBService {
 
       if (existingMember) {
         // Update existing participant's role
-        if (
-          !existingMember.survey_role_names.some((existingRole) =>
-            incomingMember.survey_role_names.includes(existingRole as SURVEY_ROLE)
-          )
-        ) {
+        if (incomingMember.survey_role_name !== existingMember.survey_role_name) {
           promises.push(
             this.surveyMemberRepository.updateSurveyMemberRole(
               incomingMember.survey_member_id ?? existingMember.survey_member_id,
-              incomingMember.survey_role_names[0]
+              incomingMember.survey_role_name[0]
             )
           );
         }
       } else if (!existingMember) {
         // Insert new participant if the user does not already exist in the survey, otherwise triggers database constraint error
         promises.push(
-          this.surveyMemberRepository.postSurveyMember(
+          this.surveyMemberRepository.insertSurveyMember(
             surveyId,
             incomingMember.system_user_id,
-            incomingMember.survey_role_names[0]
+            incomingMember.survey_role_name[0]
           )
         );
       }

@@ -1,7 +1,7 @@
 import { mdiChartBar, mdiTallyMark5 } from '@mdi/js';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
-import CustomToggleButtonGroup from 'components/toolbar/CustomToggleButtonGroup';
+import CustomToggleButtonGroup from 'components/toggle/CustomToggleButtonGroup';
 import { SurveyObservationAnalytics } from 'features/surveys/view/survey-spatial/components/observation/analytics/SurveyObservationAnalytics';
 import { SurveySpatialObservationTable } from 'features/surveys/view/survey-spatial/components/observation/SurveySpatialObservationTable';
 import { useState } from 'react';
@@ -22,7 +22,7 @@ export const SurveySpatialObservationContainer = () => {
   ];
 
   return (
-    <>
+    <Box display="flex" flexDirection="column" flex="1 1 auto">
       <Box flex="0 0 auto" pb={2} px={2}>
         <CustomToggleButtonGroup
           views={views}
@@ -34,6 +34,6 @@ export const SurveySpatialObservationContainer = () => {
       <Divider />
       {activeView === SurveySpatialObservationContainerViewEnum.COUNTS && <SurveySpatialObservationTable />}
       {activeView === SurveySpatialObservationContainerViewEnum.ANALYTICS && <SurveyObservationAnalytics />}
-    </>
+    </Box>
   );
 };

@@ -82,15 +82,15 @@ export const useCollectionApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Adds participants to the collection
+   * Adds members to the collection
    *
    * @param {number} collectionId
-   * @param {IPostCollectionMember[]} participants
+   * @param {IPostCollectionMember[]} members
    * @return {*}  {Promise<void>}
    */
-  const addParticipants = async (collectionId: number, participants: IPostCollectionMember[]): Promise<void> => {
-    const { data } = await axios.post(`/api/collection/${collectionId}/participant`, {
-      participants
+  const addParticipants = async (collectionId: number, members: IPostCollectionMember[]): Promise<void> => {
+    const { data } = await axios.post(`/api/collection/${collectionId}/member`, {
+      members
     });
 
     return data;
@@ -146,7 +146,7 @@ export const useCollectionApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Get collection participants
+   * Get collection members
    * @param {number} collectionId
    */
   const getParticipants = async (
@@ -158,7 +158,7 @@ export const useCollectionApi = (axios: AxiosInstance) => {
       ...pagination,
       ...filterFieldData
     };
-    const { data } = await axios.get(`/api/collection/${collectionId}/participant`, {
+    const { data } = await axios.get(`/api/collection/${collectionId}/member`, {
       params,
       paramsSerializer: (params) => qs.stringify(params)
     });

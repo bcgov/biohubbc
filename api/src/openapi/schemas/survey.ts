@@ -52,6 +52,24 @@ export const surveyDetailsSchema: OpenAPIV3.SchemaObject = {
 };
 
 /**
+ * Schema for adding users to a survey
+ *
+ */
+export const CreateSurveyMemberSchema: OpenAPIV3.SchemaObject = {
+  type: 'object',
+  additionalProperties: false,
+  required: ['system_user_id', 'survey_role_name'],
+  properties: {
+    system_user_id: { type: 'number', description: 'Primary key of a system user to add to the survey' },
+    survey_role_name: {
+      type: 'string',
+      enum: ['Admin', 'Editor', 'Viewer'],
+      description: 'Name of a survey role for the participant'
+    }
+  }
+};
+
+/**
  * Schema for creating, updating and retrieving ecological units for focal species in a SIMS survey.
  * Prefixed with critterbase_* to match database field names in SIMS.
  *

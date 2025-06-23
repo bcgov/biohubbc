@@ -48,8 +48,8 @@ const CollectionHeader = (props: ICollectionHeaderProps) => {
 
   const showDeleteCollectionDialog = () => {
     dialogContext.setYesNoDialog({
-      dialogTitle: 'Delete Collection',
-      dialogText: 'Are you sure you want to delete this collection?',
+      dialogTitle: 'Delete Project',
+      dialogText: 'Are you sure you want to delete this project?',
       yesButtonProps: { color: 'error' },
       yesButtonLabel: 'Delete',
       noButtonProps: { color: 'primary', variant: 'outlined' },
@@ -81,8 +81,8 @@ const CollectionHeader = (props: ICollectionHeaderProps) => {
 
   const showDeleteErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
     dialogContext.setErrorDialog({
-      dialogTitle: 'Error Deleting Collection',
-      dialogText: 'An error occurred while trying to delete the collection.',
+      dialogTitle: 'Error Deleting Project',
+      dialogText: 'An error occurred while trying to delete the project.',
       open: true,
       onClose: () => {
         dialogContext.setErrorDialog({ open: false });
@@ -147,7 +147,7 @@ const CollectionHeader = (props: ICollectionHeaderProps) => {
               component={RouterLink}
               to={`/admin/summary?${SUMMARY_ACTIVE_VIEW_KEY}=${SUMMARY_ACTIVE_VIEW_VALUE.collections}`}
               underline="hover">
-              Collections
+              Projects
             </Link>
 
             {collection.parent_collection_id && <>{breadcrumb}</>}
@@ -186,13 +186,13 @@ const CollectionHeader = (props: ICollectionHeaderProps) => {
                 <ListItemIcon>
                   <Icon path={mdiPencilOutline} size={1} />
                 </ListItemIcon>
-                <Typography variant="inherit">Edit Collection Details</Typography>
+                <Typography variant="inherit">Edit Project Details</Typography>
               </MenuItem>
               <MenuItem onClick={showDeleteCollectionDialog} data-testid="delete-collection-button">
                 <ListItemIcon>
                   <Icon path={mdiTrashCanOutline} size={1} />
                 </ListItemIcon>
-                <Typography variant="inherit">Delete Collection</Typography>
+                <Typography variant="inherit">Delete Project</Typography>
               </MenuItem>
             </Menu>
           </>

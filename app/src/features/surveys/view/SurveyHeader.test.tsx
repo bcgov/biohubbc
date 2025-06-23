@@ -9,13 +9,15 @@ import SurveyHeader from 'features/surveys/view/SurveyHeader';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
+import { IGetSurveyChecklistResponse } from 'interfaces/useChecklistApi.interface';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import { Router } from 'react-router';
 import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import { codes } from 'test-helpers/code-helpers';
-import { getSurveyForViewResponse } from 'test-helpers/survey-helpers';
+import { getSurveyChecklistResponse, getSurveyForViewResponse } from 'test-helpers/survey-helpers';
 import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import { Mock } from 'vitest';
+import { SURVEY_ACTIVE_TAB_VALUE } from './tabs/SurveyHeaderTabs';
 
 const history = createMemoryHistory({ initialEntries: ['/admin/projects/1/surveys/2'] });
 
@@ -40,6 +42,9 @@ const mockSurveyContext: ISurveyContext = {
   surveyDataLoader: {
     data: getSurveyForViewResponse
   } as DataLoader<[survey_id: number], IGetSurveyForViewResponse, unknown>,
+  surveyChecklistDataLoader: {
+    data: getSurveyChecklistResponse
+  } as DataLoader<[survey_id: number], IGetSurveyChecklistResponse, unknown>,
   artifactDataLoader: {
     data: null
   } as DataLoader<any, any, any>,
@@ -78,7 +83,7 @@ describe('SurveyHeader', () => {
               <CodesContext.Provider value={mockCodesContext}>
                 <SurveyAuthStateContext.Provider value={projectAuthState}>
                   <DialogContextProvider>
-                    <SurveyHeader />
+                    <SurveyHeader activeTab={SURVEY_ACTIVE_TAB_VALUE.details} handleTabChange={() => {}} />
                   </DialogContextProvider>
                 </SurveyAuthStateContext.Provider>
               </CodesContext.Provider>

@@ -2,7 +2,7 @@ import { mdiEye, mdiPaw, mdiPineTree, mdiWifiMarker } from '@mdi/js';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
-import CustomToggleButtonGroup from 'components/toolbar/CustomToggleButtonGroup';
+import CustomToggleButtonGroup from 'components/toggle/CustomToggleButtonGroup';
 import AnimalsListContainer from 'features/summary/tabular-data/animal/AnimalsListContainer';
 import HabitatFeaturesListContainer from 'features/summary/tabular-data/habitat-feature/HabitatFeaturesListContainer';
 import ObservationsListContainer from 'features/summary/tabular-data/observation/ObservationsListContainer';

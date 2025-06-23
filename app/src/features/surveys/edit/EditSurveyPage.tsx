@@ -184,7 +184,7 @@ const EditSurveyPage = () => {
       />
 
       <Container maxWidth="xl" sx={{ py: 3 }}>
-        <Paper sx={{ p: 5 }}>
+        <Paper sx={{ p: 0 }}>
           <EditSurveyForm
             // Add the permit_used and funding_used properties
             initialSurveyData={{

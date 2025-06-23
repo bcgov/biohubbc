@@ -1,7 +1,7 @@
 import { mdiAccessPointPlus, mdiMapMarker } from '@mdi/js';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
-import CustomToggleButtonGroup from 'components/toolbar/CustomToggleButtonGroup';
+import CustomToggleButtonGroup from 'components/toggle/CustomToggleButtonGroup';
 import { SurveySpatialDeploymentTable } from 'features/surveys/view/survey-spatial/components/telemetry/SurveySpatialDeploymentTable';
 import { SurveySpatialTelemetryTable } from 'features/surveys/view/survey-spatial/components/telemetry/SurveySpatialTelemetryTable';
 import { useState } from 'react';
@@ -28,7 +28,7 @@ export const SurveySpatialTelemetryContainer = () => {
 
   return (
     <>
-      <Box flex="0 0 auto" pb={2} px={2}>
+      <Box flex="0 0 auto" py={2} px={2}>
         <CustomToggleButtonGroup
           views={views}
           activeView={activeView}

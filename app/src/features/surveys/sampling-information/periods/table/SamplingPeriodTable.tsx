@@ -1,6 +1,5 @@
 import { mdiArrowTopRight, mdiDotsVertical, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import grey from '@mui/material/colors/grey';
 import IconButton from '@mui/material/IconButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
@@ -11,6 +10,7 @@ import { GridColDef, GridPaginationModel, GridRowSelectionModel, GridSortModel }
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
+import { CustomTooltip } from 'components/tooltip/CustomTooltip';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { SamplePeriodI18N } from 'constants/i18n';
 import { useDialogContext, useSurveyContext } from 'hooks/useContext';
@@ -122,21 +122,6 @@ export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
 
   const columns: GridColDef<GetSamplingPeriod>[] = [
     {
-      field: 'id',
-      headerName: 'ID',
-      width: 50,
-      renderHeader: () => (
-        <Typography color={grey[500]} variant="body2" fontWeight={700}>
-          ID
-        </Typography>
-      ),
-      renderCell: (params) => (
-        <Typography color={grey[500]} variant="body2">
-          {params.row.survey_sample_period_id}
-        </Typography>
-      )
-    },
-    {
       field: 'survey_sample_site_name',
       headerName: 'Site',
       flex: 1,
@@ -171,28 +156,28 @@ export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
       field: 'end_date',
       headerName: 'End date',
       flex: 1,
-      renderCell: (params) => (
-        <Typography variant="body2">{getFormattedDate(DATE_FORMAT.MediumDateFormat, params.row.end_date)}</Typography>
-      )
-    },
-    {
-      field: 'end_time',
-      headerName: 'End time',
-      flex: 1
-    },
-    {
-      field: 'duration',
-      headerName: 'Duration',
-      flex: 1,
-      valueGetter: (params) => {
+      renderCell: (params) => {
         const { start_date, start_time, end_date, end_time } = params.row;
 
         if (!start_date || !end_date) {
           return null;
         }
 
-        return formatTimeDifference(start_date, start_time, end_date, end_time);
+        const timeDifference = formatTimeDifference(start_date, start_time, end_date, end_time);
+
+        return (
+          <CustomTooltip tooltip={`Duration: ${timeDifference}`}>
+            <Typography variant="body2">
+              {getFormattedDate(DATE_FORMAT.MediumDateFormat, params.row.end_date)}
+            </Typography>
+          </CustomTooltip>
+        );
       }
+    },
+    {
+      field: 'end_time',
+      headerName: 'End time',
+      flex: 1
     }
   ];
 
@@ -281,8 +266,7 @@ export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
         hasNoDataFallbackDelay={100}>
         <StyledDataGrid
           disableColumnMenu
-          autoHeight={false}
-          getRowHeight={() => 'auto'}
+          rowHeight={52}
           rows={periods}
           getRowId={(row: GetSamplingPeriod) => row.survey_sample_period_id}
           columns={columns}

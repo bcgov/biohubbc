@@ -3,7 +3,7 @@ import Icon from '@mdi/react';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import { FileUploadDialog } from 'components/dialog/attachments/FileUploadDialog';
-import { SurveyRoleRouteGuard } from 'components/security/Guards';
+import { SurveyRoleRouteGuard } from 'components/security/RouteGuards';
 import { H2MenuToolbar } from 'components/toolbar/ActionToolbars';
 import { SURVEY_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { SurveyContext } from 'contexts/surveyContext';
@@ -42,7 +42,7 @@ const SurveyAttachments = () => {
       />
 
       <H2MenuToolbar
-        label="Attachments"
+        label="Supplementary"
         buttonLabel="Upload"
         buttonTitle="Upload Attachments"
         buttonProps={{ variant: 'contained' }}

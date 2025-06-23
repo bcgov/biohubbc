@@ -189,7 +189,7 @@ const CreateSurveyPage = () => {
       />
 
       <Container maxWidth="xl" sx={{ py: 3 }}>
-        <Paper sx={{ p: 5 }}>
+        <Paper sx={{ p: 2 }}>
           <EditSurveyForm
             initialSurveyData={defaultSurveyDataFormValues}
             handleSubmit={(formikData) => handleSubmit(formikData as unknown as CreateSurvey)}

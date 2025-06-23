@@ -180,7 +180,7 @@ export class AuthorizationService extends DBService {
     // Check if the user has at least 1 of the valid survey permissions
     return AuthorizationService.hasAtLeastOneValidValue(
       authorizeSurveyRole.validSurveyRoles,
-      surveyUserObject.survey_role_names
+      surveyUserObject.survey_role_name
     );
   }
   async authorizeByCollectionRole(authorizeCollectionRole: AuthorizeByCollectionRole): Promise<boolean> {

@@ -1,9 +1,6 @@
 import Grid from '@mui/material/Grid';
-import AutocompleteField from 'components/fields/AutocompleteField';
 import CustomTextField from 'components/fields/CustomTextField';
-import { ISelectWithSubtextFieldOption } from 'components/fields/SelectWithSubtext';
 import StartEndDateFields from 'components/fields/StartEndDateFields';
-import React from 'react';
 import yup from 'utils/YupSchema';
 import { SurveyPermitFormYupSchema } from '../permit/SurveyPermitForm';
 
@@ -61,16 +58,12 @@ export const GeneralInformationYupSchema = () => {
     .concat(SurveyPermitFormYupSchema);
 };
 
-interface IGeneralInformationFormProps {
-  progress: ISelectWithSubtextFieldOption[];
-}
-
 /**
  * Create survey - general information fields
  *
  * @return {*}
  */
-const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) => {
+const GeneralInformationForm = () => {
   return (
     <Grid container spacing={3}>
       <Grid item xs={12}>
@@ -85,21 +78,18 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
         />
       </Grid>
       <Grid item xs={12}>
-        <AutocompleteField
-          id={'survey_details.progress_id'}
-          name={'survey_details.progress_id'}
-          helpText={`Indicate whether this work is being planned, has started, or is completed to allow for Surveys to be filtered by status.`}
-          label={'Progress'}
-          required
-          options={props.progress}
-        />
-      </Grid>
-      <Grid item xs={12}>
         <StartEndDateFields
           startName="survey_details.start_date"
           endName="survey_details.end_date"
           startRequired={true}
           endRequired={false}
+        />
+      </Grid>
+      <Grid item xs={12}>
+        <CustomTextField
+          name="purpose_and_methodology.additional_details"
+          label="Objectives"
+          other={{ multiline: true, rows: 5, required: true }}
         />
       </Grid>
     </Grid>

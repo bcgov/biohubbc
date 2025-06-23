@@ -1,6 +1,5 @@
 import { mdiArrowTopRight, mdiDotsVertical, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
@@ -109,7 +108,12 @@ export const DevicesContainer = () => {
   };
 
   return (
-    <>
+    <Stack
+      flexDirection="column"
+      height="100%"
+      sx={{
+        overflow: 'hidden'
+      }}>
       {/* Bulk action menu */}
       <Menu
         open={Boolean(headerAnchorEl)}
@@ -156,37 +160,26 @@ export const DevicesContainer = () => {
 
       <Divider flexItem />
 
-      <Box>
-        <LoadingGuard
-          isLoading={devicesDataLoader.isLoading}
-          isLoadingFallback={<SkeletonTable numberOfLines={5} />}
-          isLoadingFallbackDelay={100}>
-          <Box>
-            <LoadingGuard
-              isLoading={devicesDataLoader.isLoading || !devicesDataLoader.isReady}
-              isLoadingFallback={<SkeletonTable />}
-              isLoadingFallbackDelay={100}
-              hasNoData={!devicesCount}
-              hasNoDataFallback={
-                <NoDataOverlay
-                  minHeight="400px"
-                  height="200px"
-                  title="Add Telemetry Devices"
-                  subtitle="Add your telemetry devices, so they can be used in a deployment."
-                  icon={mdiArrowTopRight}
-                />
-              }
-              hasNoDataFallbackDelay={100}>
-              <DevicesTable
-                devices={devices}
-                selectedRows={selectedRows}
-                setSelectedRows={setSelectedRows}
-                onDelete={onDelete}
-              />
-            </LoadingGuard>
-          </Box>
-        </LoadingGuard>
-      </Box>
-    </>
+      <LoadingGuard
+        isLoading={devicesDataLoader.isLoading || !devicesDataLoader.isReady}
+        isLoadingFallback={<SkeletonTable />}
+        isLoadingFallbackDelay={100}
+        hasNoData={!devicesCount}
+        hasNoDataFallback={
+          <NoDataOverlay
+            title="Add Telemetry Devices"
+            subtitle="Add your telemetry devices, so they can be used in a deployment."
+            icon={mdiArrowTopRight}
+          />
+        }
+        hasNoDataFallbackDelay={100}>
+        <DevicesTable
+          devices={devices}
+          selectedRows={selectedRows}
+          setSelectedRows={setSelectedRows}
+          onDelete={onDelete}
+        />
+      </LoadingGuard>
+    </Stack>
   );
 };

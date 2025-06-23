@@ -139,25 +139,13 @@ export const SamplingTechniqueTable = <T extends ITechniqueRowData>(props: ISamp
         const label =
           getCodesName(codesContext.codesDataLoader.data, 'sample_methods', params.row.method_lookup_id) ?? '';
         return (
-          <CustomTooltip tooltip={label}>
+          <CustomTooltip tooltip={params.row.description ?? ''}>
             <Box maxWidth="100%">
               <ColouredRectangleChip label={label} colour={blueGrey} />
             </Box>
           </CustomTooltip>
         );
       }
-    },
-    {
-      field: 'description',
-      headerName: 'Description',
-      flex: 0.75,
-      renderCell: (params) => (
-        <CustomTooltip tooltip={params.row.description ?? ''}>
-          <Typography sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} variant="body2">
-            {params.row.description}
-          </Typography>
-        </CustomTooltip>
-      )
     },
     {
       field: 'attractants',
@@ -250,8 +238,7 @@ export const SamplingTechniqueTable = <T extends ITechniqueRowData>(props: ISamp
       <StyledDataGrid
         rows={rows}
         columns={columns}
-        getRowHeight={() => 'auto'}
-        autoHeight={false}
+        rowHeight={52}
         disableRowSelectionOnClick
         disableColumnMenu
         checkboxSelection
