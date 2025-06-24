@@ -16,15 +16,15 @@ const roleOrder: { [key: string]: number } = {
 };
 
 export interface ICollectionMembersProps {
-  participants: ICollectionMember[];
+  members: ICollectionMember[];
 }
 
-export function CollectionParticipants(props: ICollectionMembersProps) {
-  const { participants } = props;
+export function CollectionMembers(props: ICollectionMembersProps) {
+  const { members } = props;
 
   const teamMembers = useMemo(() => {
     return (
-      participants
+      members
         .map((member) => {
           const display_name = member.display_name;
           const roles: COLLECTION_ROLE[] = []; // <-- Fix: get roles from member
@@ -46,7 +46,7 @@ export function CollectionParticipants(props: ICollectionMembersProps) {
           return (roleOrder[roleA] ?? 99) - (roleOrder[roleB] ?? 99);
         }) ?? []
     );
-  }, [participants]);
+  }, [members]);
 
   return (
     <Stack spacing={1}>

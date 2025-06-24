@@ -185,8 +185,8 @@ const SurveyHeader = (props: ISurveyHeaderProps) => {
                     <ColouredRectangleChip
                       onClick={() => {
                         if (
-                          collection.participants.some(
-                            (participant) => participant.system_user_id === authContext.simsUserWrapper.systemUserId
+                          collection.members.some(
+                            (member) => member.system_user_id === authContext.simsUserWrapper.systemUserId
                           )
                         ) {
                           history.push(`/admin/collections/${collection.collection_id}`);

@@ -176,12 +176,12 @@ const CollectionsListContainer = (props: ICollectionsListContainerProps) => {
       )
     },
     {
-      field: 'participants',
+      field: 'members',
       headerName: 'Members',
       flex: 0.4,
       disableColumnMenu: true,
       renderCell: (params) => {
-        const members = params.row.participants;
+        const members = params.row.members;
         const visibleMembers = members.slice(0, 5);
         const remainingCount = members.length - visibleMembers.length;
 

@@ -22,7 +22,7 @@ describe('collection/{collectionId}/index', () => {
         name: 'Test Collection',
         description: '',
         parent_collection_id: null,
-        participants: [],
+        members: [],
         subcollections: []
       };
 

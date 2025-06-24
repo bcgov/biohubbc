@@ -10,19 +10,25 @@ import { ICollectionMember, ICreateCollectionRequest } from 'interfaces/useColle
 import { ISystemUser } from 'interfaces/useUserApi.interface';
 import { TransitionGroup } from 'react-transition-group';
 
-interface IParticipantsCollectionFormProps {
+interface IMembersCollectionFormProps {
   roles: ICodeWithDescription[];
 }
 
-export const CollectionParticipantsFormInitialValues = {
-  participants: []
+export const CollectionMembersFormInitialValues = {
+  members: []
 };
 
-const ParticipantsCollectionForm = (props: IParticipantsCollectionFormProps): JSX.Element => {
+/**
+ * Form for adding members to a collection
+ *
+ * @param {IMembersCollectionFormProps} props
+ * @returns
+ */
+export const CollectionMembersForm = (props: IMembersCollectionFormProps): JSX.Element => {
   const { handleSubmit, values, setFieldValue, errors, setErrors } = useFormikContext<ICreateCollectionRequest>();
 
   const handleAddUser = (user: ISystemUser) => {
-    setFieldValue(`participants[${values.participants.length}]`, {
+    setFieldValue(`members[${values.members.length}]`, {
       system_user_id: user.system_user_id,
       display_name: user.display_name,
       email: user.email,
@@ -34,20 +40,20 @@ const ParticipantsCollectionForm = (props: IParticipantsCollectionFormProps): JS
   };
 
   const handleAddUserRole = (role: string, index: number) => {
-    setFieldValue(`participants[${index}].collection_role_name`, role);
+    setFieldValue(`members[${index}].collection_role_name`, role);
     clearErrors();
   };
 
   const handleRemoveUser = (systemUserId: number) => {
-    const filteredUsers = values.participants.filter((item) => item.system_user_id !== systemUserId);
+    const filteredUsers = values.members.filter((item) => item.system_user_id !== systemUserId);
 
-    setFieldValue(`participants`, filteredUsers);
+    setFieldValue(`members`, filteredUsers);
     clearErrors();
   };
 
   const clearErrors = () => {
     const newErrors = { ...errors };
-    delete errors.participants;
+    delete errors.members;
 
     setErrors(newErrors);
   };
@@ -55,17 +61,17 @@ const ParticipantsCollectionForm = (props: IParticipantsCollectionFormProps): JS
   const alertBarText = (): { title: string; text: string } => {
     let title = '';
     let text = '';
-    if (errors?.participants) {
-      if (Array.isArray(errors.participants)) {
+    if (errors?.members) {
+      if (Array.isArray(errors.members)) {
         title = 'Missing Roles';
         text = 'All team members must be assigned a role.';
       } else {
-        if (values.participants.length > 0) {
+        if (values.members.length > 0) {
           title = 'A coordinator role is required';
         } else {
           title = 'Missing Team Member';
         }
-        text = errors.participants;
+        text = errors.members;
       }
     }
 
@@ -73,8 +79,8 @@ const ParticipantsCollectionForm = (props: IParticipantsCollectionFormProps): JS
   };
 
   const rowItemError = (index: number): JSX.Element | undefined => {
-    if (errors?.participants && Array.isArray(errors.participants)) {
-      const errorAtIndex = errors.participants[index];
+    if (errors?.members && Array.isArray(errors.members)) {
+      const errorAtIndex = errors.members[index];
       if (errorAtIndex) {
         return (
           <Typography style={{ fontSize: '12px', color: '#f44336' }}>
@@ -87,13 +93,13 @@ const ParticipantsCollectionForm = (props: IParticipantsCollectionFormProps): JS
 
   const getSelectedRole = (index: number): string => {
     // users should only ever have a single role on a project so index: 0 is a safe selection
-    return values.participants?.[index]?.collection_role_name || '';
+    return values.members?.[index]?.collection_role_name || '';
   };
 
   return (
     <form onSubmit={handleSubmit}>
       <Box component="fieldset">
-        {errors?.['participants'] && values.participants.length > 0 && (
+        {errors?.['members'] && values.members.length > 0 && (
           <Box mt={3}>
             <AlertBar severity="error" variant="standard" title={alertBarText().title} text={alertBarText().text} />
           </Box>
@@ -104,7 +110,7 @@ const ParticipantsCollectionForm = (props: IParticipantsCollectionFormProps): JS
             label="Member"
             placeholder="Search by user"
             helpText={`Only active users who have requested access to the Species Inventory Management System before can be invited`}
-            selectedUsers={values.participants.map((participant) => participant.system_user_id)}
+            selectedUsers={values.members.map((member) => member.system_user_id)}
             clearOnSelect
             onSelect={(value) => {
               if (value) {
@@ -122,7 +128,7 @@ const ParticipantsCollectionForm = (props: IParticipantsCollectionFormProps): JS
               }
             }}>
             <TransitionGroup>
-              {values.participants.map((user, index: number) => {
+              {values.members.map((user, index: number) => {
                 const error = rowItemError(index);
                 return (
                   <Collapse
@@ -152,5 +158,3 @@ const ParticipantsCollectionForm = (props: IParticipantsCollectionFormProps): JS
     </form>
   );
 };
-
-export default ParticipantsCollectionForm;

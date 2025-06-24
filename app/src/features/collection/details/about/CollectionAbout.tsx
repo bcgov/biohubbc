@@ -7,7 +7,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { ICollection } from 'interfaces/useCollectionApi.interface';
 import { useState } from 'react';
-import { CollectionParticipants } from './participant/CollectionParticipants';
+import { CollectionMembers } from './participant/CollectionParticipants';
 
 interface ICollectionAboutProps {
   collection: ICollection;
@@ -20,7 +20,7 @@ interface ICollectionAboutProps {
 const CollectionAbout = (props: ICollectionAboutProps) => {
   const { collection } = props;
 
-  const [participants, setParticipants] = useState(collection.participants);
+  const [members, setmembers] = useState(collection.members);
 
   return (
     <Box>
@@ -58,16 +58,14 @@ const CollectionAbout = (props: ICollectionAboutProps) => {
             placeholder="Type a name"
             onChange={(e) => {
               if (!e.currentTarget.value) {
-                setParticipants(collection.participants);
+                setmembers(collection.members);
               }
-              setParticipants(
-                collection.participants.filter((participant) =>
-                  participant.display_name.toLowerCase().includes(e.currentTarget.value)
-                )
+              setmembers(
+                collection.members.filter((member) => member.display_name.toLowerCase().includes(e.currentTarget.value))
               );
             }}
           />
-          <CollectionParticipants participants={participants} />
+          <CollectionMembers members={members} />
         </Box>
       </Box>
     </Box>

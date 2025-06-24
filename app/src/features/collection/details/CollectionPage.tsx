@@ -1,6 +1,7 @@
 import { mdiAccountMultipleOutline, mdiClipboardOutline, mdiDatabaseSearchOutline, mdiLabelOutline } from '@mdi/js';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
+import { ComponentSwitch } from 'components/misc/ComponentSwitch';
 import CustomToggleButtonGroup from 'components/toggle/CustomToggleButtonGroup';
 import { CodesContext } from 'contexts/codesContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -11,7 +12,7 @@ import { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { CollectionDataContainer } from './data/CollectionDataContainer';
 import CollectionHeader from './header/CollectionHeader';
-import CollectionParticipantsContainer from './members/CollectionMembersContainer';
+import { CollectionMembersTableContainer } from './members/CollectionMembersTableContainer';
 import CollectionSurveyContainer from './survey/CollectionSurveyContainer';
 import { SubcollectionContainer } from './tags/SubcollectionContainer';
 
@@ -21,7 +22,7 @@ export enum CollectionView {
   Surveys = 'surveys',
   Data = 'data',
   Subcollections = 'subprojects',
-  Participants = 'participants'
+  Members = 'members'
 }
 
 type CollectionPageURLParams = {
@@ -69,7 +70,7 @@ const CollectionPage = () => {
     { value: CollectionView.Surveys, label: 'Surveys', icon: mdiClipboardOutline },
     { value: CollectionView.Subcollections, label: 'Subprojects', icon: mdiLabelOutline },
     { value: CollectionView.Data, label: 'Data', icon: mdiDatabaseSearchOutline },
-    { value: CollectionView.Participants, label: 'Members', icon: mdiAccountMultipleOutline }
+    { value: CollectionView.Members, label: 'Members', icon: mdiAccountMultipleOutline }
   ];
 
   return (
@@ -77,43 +78,27 @@ const CollectionPage = () => {
       <CollectionHeader collection={collection} />
 
       <Container maxWidth="xl" sx={{ py: 3 }}>
-        <Box>
-          <SidebarLayout
-            sidebar={
-              <Box p={2} flex="1 1 auto">
-                <CustomToggleButtonGroup
-                  views={views}
-                  activeView={activeView}
-                  onViewChange={handleViewChange}
-                  orientation="vertical"
-                />
-              </Box>
-            }>
-            {activeView === CollectionView.Surveys && (
-              <Box>
-                <CollectionSurveyContainer collection={collection} showSearch={false} />
-              </Box>
-            )}
-
-            {activeView === CollectionView.Subcollections && (
-              <Box>
-                <SubcollectionContainer collection={collection} showSearch={false} />
-              </Box>
-            )}
-
-            {activeView === CollectionView.Data && (
-              <Box>
-                <CollectionDataContainer collection={collection} />
-              </Box>
-            )}
-
-            {activeView === CollectionView.Participants && (
-              <Box>
-                <CollectionParticipantsContainer collectionId={collection.collection_id} />
-              </Box>
-            )}
-          </SidebarLayout>
-        </Box>
+        <SidebarLayout
+          sidebar={
+            <Box p={2} flex="1 1 auto">
+              <CustomToggleButtonGroup
+                views={views}
+                activeView={activeView}
+                onViewChange={handleViewChange}
+                orientation="vertical"
+              />
+            </Box>
+          }>
+          <ComponentSwitch
+            switch={activeView}
+            components={{
+              [CollectionView.Surveys]: <CollectionSurveyContainer collection={collection} showSearch={false} />,
+              [CollectionView.Subcollections]: <SubcollectionContainer collection={collection} showSearch={false} />,
+              [CollectionView.Data]: <CollectionDataContainer collection={collection} />,
+              [CollectionView.Members]: <CollectionMembersTableContainer collectionId={collection.collection_id} />
+            }}
+          />
+        </SidebarLayout>
       </Container>
     </>
   );

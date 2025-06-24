@@ -10,7 +10,7 @@ import { BaseRepository } from './base-repository';
 
 export class CollectionRepository extends BaseRepository {
   /**
-   * Flat collection structure with participants only.
+   * Flat collection structure with members only.
    *
    * @param {Knex.QueryBuilder} queryBuilder
    * @returns {Knex.QueryBuilder}
@@ -34,7 +34,7 @@ export class CollectionRepository extends BaseRepository {
             'display_name', su.display_name,
             'collection_role_id', cr.collection_role_id,
             'collection_role_name', cr.name
-          )) FILTER (WHERE su.system_user_id IS NOT NULL), '[]'::jsonb) AS participants`)
+          )) FILTER (WHERE su.system_user_id IS NOT NULL), '[]'::jsonb) AS members`)
         )
           .from('collection_member AS cm')
           .join('collection_role as cr', 'cm.collection_role_id', 'cr.collection_role_id')
@@ -49,14 +49,14 @@ export class CollectionRepository extends BaseRepository {
         'collection.parent_collection_id',
         // TODO: Add a separate type for collections with subcollections omitted, to avoid thinking there are no subcollections
         knex.raw(`'[]'::jsonb AS subcollections`),
-        knex.raw("COALESCE(cm.participants, '[]'::jsonb) AS participants")
+        knex.raw("COALESCE(cm.members, '[]'::jsonb) AS members")
       )
       .from('collection')
       .leftJoin('collection_members AS cm', 'cm.collection_id', 'collection.collection_id');
   }
 
   /**
-   * Get the base query for retrieving collections with nested subcollections and participants.
+   * Get the base query for retrieving collections with nested subcollections and members.
    *
    * @param {Knex.QueryBuilder} queryBuilder - A Knex query builder to modify.
    * @param {ICollectionAdvancedFilters} filterFields
@@ -129,7 +129,7 @@ export class CollectionRepository extends BaseRepository {
             'display_name', su.display_name,
             'collection_role_id', cr.collection_role_id,
             'collection_role_name', cr.name
-          )) FILTER (WHERE su.system_user_id IS NOT NULL), '[]'::jsonb) AS participants`)
+          )) FILTER (WHERE su.system_user_id IS NOT NULL), '[]'::jsonb) AS members`)
           )
             .from('collection_member AS cm')
             .join('collection_role as cr', 'cm.collection_role_id', 'cr.collection_role_id')
@@ -138,14 +138,14 @@ export class CollectionRepository extends BaseRepository {
             .groupBy('cm.collection_id');
         })
 
-        // Merge subcollections and participants
+        // Merge subcollections and members
         .with('collection_with_subcollections', (qb) => {
           qb.select(
             'ch.collection_id',
             'ch.name',
             'ch.description',
             'ch.parent_collection_id',
-            knex.raw(`COALESCE(cm.participants, '[]'::jsonb) AS participants`),
+            knex.raw(`COALESCE(cm.members, '[]'::jsonb) AS members`),
             knex.raw("'[]'::jsonb AS subcollections")
           )
             .from('collection_hierarchy AS ch')
@@ -159,7 +159,7 @@ export class CollectionRepository extends BaseRepository {
             'c.name',
             'c.description',
             'c.parent_collection_id',
-            'c.participants',
+            'c.members',
             knex.raw(`
           COALESCE(
             jsonb_agg(
@@ -168,7 +168,7 @@ export class CollectionRepository extends BaseRepository {
                 'name', child.name,
                 'description', child.description,
                 'parent_collection_id', child.parent_collection_id,
-                'participants', child.participants,
+                'members', child.members,
                 'subcollections', child.subcollections
               )
             ) FILTER (WHERE child.collection_id IS NOT NULL),
@@ -178,7 +178,7 @@ export class CollectionRepository extends BaseRepository {
           )
             .from('collection_with_subcollections AS c')
             .leftJoin('collection_with_subcollections AS child', 'child.parent_collection_id', 'c.collection_id')
-            .groupBy('c.collection_id', 'c.name', 'c.description', 'c.parent_collection_id', 'c.participants');
+            .groupBy('c.collection_id', 'c.name', 'c.description', 'c.parent_collection_id', 'c.members');
         })
 
         // Final output
@@ -187,7 +187,7 @@ export class CollectionRepository extends BaseRepository {
           'collection.name',
           'collection.description',
           'collection.parent_collection_id',
-          'collection.participants',
+          'collection.members',
           'collection.subcollections'
         )
         .from('final_collection_structure AS collection')
@@ -228,8 +228,8 @@ export class CollectionRepository extends BaseRepository {
             .orderBy('pc.depth', 'desc'); // Order from root (highest depth) to leaf (depth 0)
         })
 
-        // Step 3: Add participants to each collection
-        .with('collection_with_participants', (qb) => {
+        // Step 3: Add members to each collection
+        .with('collection_with_members', (qb) => {
           qb.select(
             'cd.collection_id',
             'cd.name',
@@ -251,7 +251,7 @@ export class CollectionRepository extends BaseRepository {
             'collection_role_name', cr.name
           )) FILTER (WHERE su.system_user_id IS NOT NULL),
           '[]'::jsonb
-        ) AS participants
+        ) AS members
       `)
           )
             .from('collection_details AS cd')
@@ -269,11 +269,11 @@ export class CollectionRepository extends BaseRepository {
             'cwp.name',
             'cwp.description',
             'cwp.parent_collection_id',
-            'cwp.participants',
+            'cwp.members',
             'cwp.depth',
             knex.raw(`'[]'::jsonb AS subcollections`)
           )
-            .from('collection_with_participants AS cwp')
+            .from('collection_with_members AS cwp')
             .where('cwp.depth', 0)
             .unionAll(function () {
               // Then recursively build parent nodes with their children
@@ -282,7 +282,7 @@ export class CollectionRepository extends BaseRepository {
                 'cwp.name',
                 'cwp.description',
                 'cwp.parent_collection_id',
-                'cwp.participants',
+                'cwp.members',
                 'cwp.depth',
                 knex.raw(`
             jsonb_build_array(
@@ -291,13 +291,13 @@ export class CollectionRepository extends BaseRepository {
                 'name', nh.name,
                 'description', nh.description,
                 'parent_collection_id', nh.parent_collection_id,
-                'participants', nh.participants,
+                'members', nh.members,
                 'subcollections', nh.subcollections
               )
             ) AS subcollections
           `)
               )
-                .from('collection_with_participants AS cwp')
+                .from('collection_with_members AS cwp')
                 .join('nested_hierarchy AS nh', 'nh.parent_collection_id', 'cwp.collection_id')
                 .where('cwp.depth', '>', 0);
             });
@@ -309,7 +309,7 @@ export class CollectionRepository extends BaseRepository {
           'nh.name',
           'nh.description',
           'nh.parent_collection_id',
-          'nh.participants',
+          'nh.members',
           'nh.subcollections'
         )
         .from('nested_hierarchy AS nh')
@@ -359,7 +359,7 @@ export class CollectionRepository extends BaseRepository {
   }
 
   /**
-   * Get a collection by ID, including nested subcollections and participants.
+   * Get a collection by ID, including nested subcollections and members.
    *
    * @param {number} collectionId - The ID of the collection to retrieve.
    * @returns {Promise<Collection>} A promise resolving to the collection.

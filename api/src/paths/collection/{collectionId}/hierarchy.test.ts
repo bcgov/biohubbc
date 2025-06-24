@@ -24,14 +24,14 @@ describe('getCollectionParentsById', () => {
       name: 'Test Collection',
       description: '',
       parent_collection_id: null,
-      participants: [],
+      members: [],
       subcollections: [
         {
           collection_id: 2,
           name: 'Test Collection',
           description: '',
           parent_collection_id: null,
-          participants: [],
+          members: [],
           subcollections: []
         }
       ]

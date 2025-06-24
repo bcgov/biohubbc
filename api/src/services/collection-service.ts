@@ -137,12 +137,12 @@ export class CollectionService extends DBService {
   async createCollection(collection: IPostCollectionRequest, systemUserId?: number): Promise<CollectionModel> {
     // Confirm that the user has access to the parent collection id
     if (collection.parent_collection_id && systemUserId) {
-      const participant = await this.collectionMemberService.getCollectionMemberByCollectionIdAndSystemUserId(
+      const member = await this.collectionMemberService.getCollectionMemberByCollectionIdAndSystemUserId(
         collection.parent_collection_id,
         systemUserId
       );
 
-      if (!participant) {
+      if (!member) {
         throw new HTTP401('Access denied: No access to the parent collection');
       }
     }
@@ -150,10 +150,7 @@ export class CollectionService extends DBService {
     const collectionResponse = await this.collectionRepository.createCollection(collection);
 
     // Insert members of the collection
-    await this.collectionMemberService.insertCollectionMembers(
-      collectionResponse.collection_id,
-      collection.participants
-    );
+    await this.collectionMemberService.insertCollectionMembers(collectionResponse.collection_id, collection.members);
 
     return collectionResponse;
   }
@@ -192,22 +189,22 @@ export class CollectionService extends DBService {
     // Update the collection record
     const collectionResponse = await this.collectionRepository.updateCollection(collectionId, collection);
 
-    // Get current participants from DB
-    const currentParticipants = await this.collectionMemberService.getCollectionMembers(collectionId);
+    // Get current members from DB
+    const currentMembers = await this.collectionMemberService.getCollectionMembers(collectionId);
 
-    // Find new participants to insert
-    const newParticipants = collection.participants.filter(
-      (member) => !currentParticipants.some((existing) => existing.system_user_id === member.system_user_id)
+    // Find new members to insert
+    const newMembers = collection.members.filter(
+      (member) => !currentMembers.some((existing) => existing.system_user_id === member.system_user_id)
     );
 
-    // Find participants to remove
-    const incomingIds = collection.participants.map((m) => m.system_user_id);
-    const oldParticipants = currentParticipants.filter((existing) => !incomingIds.includes(existing.system_user_id));
+    // Find members to remove
+    const incomingIds = collection.members.map((m) => m.system_user_id);
+    const oldMembers = currentMembers.filter((existing) => !incomingIds.includes(existing.system_user_id));
 
-    // Find participants whose role has changed
-    const modifiedParticipants = currentParticipants
+    // Find members whose role has changed
+    const modifiedMembers = currentMembers
       .map((existing) => {
-        const incoming = collection.participants.find((p) => p.system_user_id === existing.system_user_id);
+        const incoming = collection.members.find((p) => p.system_user_id === existing.system_user_id);
 
         if (incoming && existing.collection_role_name !== incoming.collection_role_name) {
           return {
@@ -218,22 +215,22 @@ export class CollectionService extends DBService {
 
         return null;
       })
-      .filter((p) => p !== null) as Array<(typeof currentParticipants)[0] & { newRole: string }>;
+      .filter((p) => p !== null) as Array<(typeof currentMembers)[0] & { newRole: string }>;
 
-    // Insert new participants
-    await this.collectionMemberService.insertCollectionMembers(collectionId, newParticipants);
+    // Insert new members
+    await this.collectionMemberService.insertCollectionMembers(collectionId, newMembers);
 
-    // Remove old participants
-    for (const participant of oldParticipants) {
-      await this.collectionMemberService.deleteCollectionMemberRecord(collectionId, participant.collection_member_id);
+    // Remove old members
+    for (const member of oldMembers) {
+      await this.collectionMemberService.deleteCollectionMemberRecord(collectionId, member.collection_member_id);
     }
 
-    // Update roles of modified participants
-    for (const participant of modifiedParticipants) {
+    // Update roles of modified members
+    for (const member of modifiedMembers) {
       await this.collectionMemberService.updateCollectionMemberRole(
         collectionId,
-        participant.collection_member_id,
-        participant.newRole
+        member.collection_member_id,
+        member.newRole
       );
     }
 

@@ -44,7 +44,7 @@ type SurveyDataTableURLParams = {
   c_order?: 'asc' | 'desc';
 };
 
-interface ICollectionMembersContainerProps {
+interface ICollectionMembersTableContainerProps {
   collectionId: number;
 }
 
@@ -61,14 +61,14 @@ const initialPaginationParams: Required<ApiPaginationRequestOptions> = {
  *
  * @return {*}
  */
-const CollectionMembersContainer = (props: ICollectionMembersContainerProps) => {
+export const CollectionMembersTableContainer = (props: ICollectionMembersTableContainerProps) => {
   const { collectionId } = props;
 
   const biohubApi = useBiohubApi();
   const codesContext = useCodesContext();
 
   const { searchParams, setSearchParams } = useSearchParams<StringValues<SurveyDataTableURLParams>>();
-  const [participantDialogIsOpen, setParticipantDialogIsOpen] = useState(false);
+  const [memberDialogIsOpen, setmemberDialogIsOpen] = useState(false);
 
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     pageSize: Number(searchParams.get('c_limit') ?? initialPaginationParams.limit),
@@ -97,7 +97,7 @@ const CollectionMembersContainer = (props: ICollectionMembersContainerProps) => 
 
   const collectionMembersDataLoader = useDataLoader(
     (pagination?: ApiPaginationRequestOptions, filter?: ICollectionMembersAdvancedFilters) =>
-      biohubApi.collection.getParticipants(collectionId, pagination, filter)
+      biohubApi.collection.getMembers(collectionId, pagination, filter)
   );
 
   // Fetch collectionMemberss when either the pagination, sort, or advanced filters change
@@ -154,11 +154,25 @@ const CollectionMembersContainer = (props: ICollectionMembersContainerProps) => 
             ({Number(collectionMembersDataLoader.data?.pagination?.total ?? 0).toLocaleString()})
           </Typography>
         </Typography>
-        <Stack gap={1} direction="row">
+
+        <Stack flexDirection="row" gap={1}>
+          <Box>
+            <MembersFilterForm
+              initialValues={advancedFiltersModel}
+              handleSubmit={(values) => {
+                setSearchParams(
+                  searchParams
+                    .setOrDelete('c_keyword', values.keyword)
+                    .setOrDelete('c_system_user_id', values.system_user_id)
+                );
+                setAdvancedFiltersModel(values);
+              }}
+            />
+          </Box>
           <CreateButton
             label="Invite Members"
             onClick={() => {
-              setParticipantDialogIsOpen(true);
+              setmemberDialogIsOpen(true);
             }}
           />
           <HelpButtonDialog markdownType={MarkdownTypeNameEnum.SURVEYS} />
@@ -167,25 +181,11 @@ const CollectionMembersContainer = (props: ICollectionMembersContainerProps) => 
 
       <Divider />
 
-      <Box py={2} px={2}>
-        <MembersFilterForm
-          initialValues={advancedFiltersModel}
-          handleSubmit={(values) => {
-            setSearchParams(
-              searchParams
-                .setOrDelete('c_keyword', values.keyword)
-                .setOrDelete('c_system_user_id', values.system_user_id)
-            );
-            setAdvancedFiltersModel(values);
-          }}
-        />
-      </Box>
-
       <Divider />
 
       <LoadingGuard
         isLoading={collectionMembersDataLoader.isLoading || !collectionMembersDataLoader.isReady}
-        isLoadingFallback={<SkeletonTable data-testid="collection-participant-list-skeleton" />}
+        isLoadingFallback={<SkeletonTable data-testid="collection-member-list-skeleton" />}
         isLoadingFallbackDelay={100}
         hasNoData={!collectionMembers.length}
         hasNoDataFallback={
@@ -194,14 +194,14 @@ const CollectionMembersContainer = (props: ICollectionMembersContainerProps) => 
               title="Invite Members"
               subtitle="Members added to this collection will appear here"
               icon={mdiArrowTopRight}
-              data-testid="collection-participant-list-no-data-overlay"
+              data-testid="collection-member-list-no-data-overlay"
               sx={{ width: '100%', height: '100%', m: 0 }}
             />
           </Box>
         }
         hasNoDataFallbackDelay={100}>
         <StyledDataGrid
-          noRowsMessage="No participants found"
+          noRowsMessage="No members found"
           loading={
             !collectionMembers.length && (collectionMembersDataLoader.isLoading || !collectionMembersDataLoader.isReady)
           }
@@ -252,15 +252,13 @@ const CollectionMembersContainer = (props: ICollectionMembersContainerProps) => 
         collectionId={collectionId}
         onSubmit={() => {
           collectionMembersDataLoader.refresh(paginationSort, advancedFiltersModel);
-          setParticipantDialogIsOpen(false);
+          setmemberDialogIsOpen(false);
         }}
         onClose={() => {
-          setParticipantDialogIsOpen(false);
+          setmemberDialogIsOpen(false);
         }}
-        open={participantDialogIsOpen}
+        open={memberDialogIsOpen}
       />
     </>
   );
 };
-
-export default CollectionMembersContainer;

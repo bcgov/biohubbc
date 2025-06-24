@@ -19,7 +19,7 @@ interface ISubcollectionDialogProps {
 }
 
 /**
- * Dialog for inviting collection participants
+ * Dialog for inviting collection members
  *
  * @param {ISubcollectionDialogProps} props
  * @returns
@@ -35,7 +35,7 @@ const SubcollectionDialog = (props: ISubcollectionDialogProps) => {
   const SubcollectionYupSchema = yup.object().shape({
     name: yup.string().required('Name is required'),
     description: yup.string().max(3000, 'Description cannot exceed 3000 characters.').nullable(),
-    participants: yup.array(yup.object({ system_user_id: yup.number(), collection_role_name: yup.string() }))
+    members: yup.array(yup.object({ system_user_id: yup.number(), collection_role_name: yup.string() }))
   });
 
   const showSnackBar = (textDialogProps?: Partial<ISnackbarProps>) => {
@@ -59,9 +59,9 @@ const SubcollectionDialog = (props: ISubcollectionDialogProps) => {
     try {
       await biohubApi.collection.createSubcollection(collection.collection_id, {
         ...values,
-        participants: values.participants.map((participant) => ({
-          system_user_id: participant.system_user_id,
-          collection_role_name: participant.collection_role_name
+        members: values.members.map((member) => ({
+          system_user_id: member.system_user_id,
+          collection_role_name: member.collection_role_name
         }))
       });
 
@@ -97,7 +97,7 @@ const SubcollectionDialog = (props: ISubcollectionDialogProps) => {
         initialValues: {
           name: '',
           description: '',
-          participants: []
+          members: []
         },
         validationSchema: SubcollectionYupSchema
       }}

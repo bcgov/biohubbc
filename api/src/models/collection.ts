@@ -34,7 +34,7 @@ export type Collection = {
   name: string;
   description: string;
   parent_collection_id: number | null;
-  participants: Array<Omit<CollectionMember, 'collection_id'>>;
+  members: Array<Omit<CollectionMember, 'collection_id'>>;
   subcollections: Collection[];
 };
 
@@ -45,7 +45,7 @@ export const Collection: z.ZodType<Collection> = z.lazy(() =>
     name: z.string(),
     description: z.string(),
     parent_collection_id: z.number().nullable(),
-    participants: z.array(CollectionMember.omit({ collection_id: true })),
+    members: z.array(CollectionMember.omit({ collection_id: true })),
     subcollections: z.array(Collection)
   })
 );
@@ -60,7 +60,7 @@ export type CollectionBasic = z.infer<typeof CollectionBasic>;
 export interface IPostCollectionRequest {
   name: string;
   description: string;
-  participants: IPostCollectionMember[];
+  members: IPostCollectionMember[];
 }
 
 export interface IPostCollection {
@@ -70,7 +70,7 @@ export interface IPostCollection {
 }
 
 export interface IPostCollectionRequest extends IPostCollection {
-  participants: IPostCollectionMember[];
+  members: IPostCollectionMember[];
 }
 
 export interface IPostCollectionSurvey {
