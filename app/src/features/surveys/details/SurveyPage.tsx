@@ -6,7 +6,7 @@ import { useSearchParams } from 'hooks/useSearchParams';
 import { useContext } from 'react';
 import SurveyHeader from '../view/SurveyHeader';
 import { SURVEY_ACTIVE_TAB_KEY, SURVEY_ACTIVE_TAB_VALUE } from '../view/tabs/SurveyHeaderTabs';
-import SurveyDetailsTab from './tabs/details/SurveyDetailsTab';
+import { SurveyDetailsTab } from './tabs/details/SurveyDetailsTab';
 import { SurveyPermissionsTab } from './tabs/permissions/SurveyPermissionsTab';
 
 /**

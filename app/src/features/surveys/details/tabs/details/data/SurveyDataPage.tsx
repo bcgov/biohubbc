@@ -161,7 +161,7 @@ export const SurveyDataPage = (props: ISurveyDataPageProps) => {
     <SidebarLayout
       sx={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0, overflow: 'hidden' }}
       sidebar={
-        <Box p={2}>
+        <Box p={2} sx={{ minWidth: '300px', overflowY: 'auto', height: '100%', flexShrink: 0 }}>
           <HierarchicalCustomToggleButtonGroup
             views={views}
             activeView={activeView}

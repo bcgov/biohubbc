@@ -80,7 +80,7 @@ const CollectionPage = () => {
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <SidebarLayout
           sidebar={
-            <Box p={2} flex="1 1 auto">
+            <Box p={2} sx={{ minWidth: '300px', overflowY: 'auto', height: '100%', flexShrink: 0 }}>
               <CustomToggleButtonGroup
                 views={views}
                 activeView={activeView}

@@ -112,7 +112,7 @@ export const SurveySamplingPage = (props: ISurveySamplingPageProps) => {
     <SidebarLayout
       sx={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
       sidebar={
-        <Box p={2}>
+        <Box p={2} sx={{ minWidth: '300px', overflowY: 'auto', height: '100%', flexShrink: 0 }}>
           <CustomToggleButtonGroup
             views={views}
             activeView={activeView}

@@ -1,4 +1,4 @@
-import { IGetSurveyChecklistItem } from 'interfaces/useChecklistApi.interface';
+import { IGetSurveyChecklist, IGetSurveyChecklistItem } from 'interfaces/useChecklistApi.interface';
 import { useCallback, useMemo } from 'react';
 import { DATA_ACTIVE_VIEW_VALUE } from '../data/SurveyDataPage';
 import { SAMPLING_ACTIVE_VIEW_VALUE } from '../sampling/SurveySamplingPage';
@@ -11,11 +11,17 @@ export type ChecklistItem = IGetSurveyChecklistItem &
   };
 
 type SurveyChecklistManagerProps = {
-  checklist: any;
+  checklist: IGetSurveyChecklist;
   children: (flattenedChecklistItems: ChecklistItem[]) => React.ReactNode;
 };
 
-export const SurveyChecklistManager = ({ checklist, children }: SurveyChecklistManagerProps) => {
+/**
+ *
+ * @param param0
+ * @returns
+ */
+export const SurveyChecklistManager = (props: SurveyChecklistManagerProps) => {
+  const { checklist, children } = props;
   // Recursive flattening of checklist items, preserving children
   const flattenChecklistItems = useCallback(
     (items: Record<string, any>): ChecklistItem[] =>
