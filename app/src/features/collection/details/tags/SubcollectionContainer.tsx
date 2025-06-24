@@ -39,6 +39,9 @@ import useDataLoader from 'hooks/useDataLoader';
 import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
 import { useSearchParams } from 'hooks/useSearchParams';
 
+import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import { SUMMARY_ACTIVE_VIEW_KEY, SUMMARY_ACTIVE_VIEW_VALUE } from 'features/summary/list-data/ListDataTableContainer';
+import { APIError } from 'hooks/api/useAxios';
 import { ICollection } from 'interfaces/useCollectionApi.interface';
 import { ApiPaginationRequestOptions, StringValues } from 'types/misc';
 import { firstOrNull, getRandomHexColor } from 'utils/Utils';
@@ -123,7 +126,11 @@ export const SubcollectionContainer = ({ collection, showSearch }: ICollectionsT
 
   const rows = collectionsDataLoader.data?.collections ?? [];
 
-  const showDeleteDialog = (collectionId: number) => {
+  const showDeleteDialog = () => {
+    if (!actionMenuAnchorEl?.collectionId) {
+      return;
+    }
+
     dialogContext.setYesNoDialog({
       dialogTitle: 'Delete Project',
       dialogText: 'Are you sure you want to delete this project?',
@@ -135,10 +142,11 @@ export const SubcollectionContainer = ({ collection, showSearch }: ICollectionsT
       onYes: async () => {
         dialogContext.setYesNoDialog({ open: false });
         try {
-          await biohubApi.collection.deleteCollection(collectionId);
+          await biohubApi.collection.deleteCollection(actionMenuAnchorEl.collectionId);
           collectionsDataLoader.refresh(paginationSort, advancedFiltersModel);
+          history.push(`/admin/summary?${SUMMARY_ACTIVE_VIEW_KEY}=${SUMMARY_ACTIVE_VIEW_VALUE.collections}`);
         } catch (error) {
-          console.error('Failed to delete collection:', error);
+          showDeleteErrorDialog({ dialogErrorDetails: [(error as APIError).message], open: true });
         } finally {
           setActionMenuAnchorEl(null);
         }
@@ -153,12 +161,19 @@ export const SubcollectionContainer = ({ collection, showSearch }: ICollectionsT
     setActionMenuAnchorEl(null);
   };
 
-  const handleDelete = () => {
-    const collectionId = actionMenuAnchorEl?.collectionId;
-    if (collectionId) {
-      showDeleteDialog(collectionId);
-    }
-    setActionMenuAnchorEl(null);
+  const showDeleteErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
+    dialogContext.setErrorDialog({
+      dialogTitle: 'Error Deleting Project',
+      dialogText: 'An error occurred while trying to delete the project.',
+      open: true,
+      onClose: () => {
+        dialogContext.setErrorDialog({ open: false });
+      },
+      onOk: () => {
+        dialogContext.setErrorDialog({ open: false });
+      },
+      ...textDialogProps
+    });
   };
 
   const columns: GridColDef<ICollection>[] = [
@@ -380,7 +395,7 @@ export const SubcollectionContainer = ({ collection, showSearch }: ICollectionsT
           </ListItemIcon>
           <ListItemText>Edit Details</ListItemText>
         </MenuItem>
-        <MenuItem onClick={handleDelete}>
+        <MenuItem onClick={showDeleteDialog}>
           <ListItemIcon>
             <Icon path={mdiTrashCanOutline} size={1} />
           </ListItemIcon>

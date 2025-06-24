@@ -181,8 +181,6 @@ export const CollectionMembersTableContainer = (props: ICollectionMembersTableCo
 
       <Divider />
 
-      <Divider />
-
       <LoadingGuard
         isLoading={collectionMembersDataLoader.isLoading || !collectionMembersDataLoader.isReady}
         isLoadingFallback={<SkeletonTable data-testid="collection-member-list-skeleton" />}

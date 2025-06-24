@@ -10,7 +10,7 @@ import { useSearchParams } from 'hooks/useSearchParams';
 import { SidebarLayout } from 'layouts/SidebarLayout';
 import { useState } from 'react';
 import { TabularDataTableContainer } from '../tabular-data/TabularDataTableContainer';
-import CollectionsListContainer from './collection/CollectionListContainer';
+import { CollectionsListContainer } from './collection/CollectionListContainer';
 import { CreateCollectionButton } from './collection/create/CreateCollectionButton';
 import { CreateSurveyButton } from './survey/create/CreateSurveyButton';
 

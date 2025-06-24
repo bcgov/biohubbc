@@ -4,6 +4,7 @@ import Typography from '@mui/material/Typography';
 import AlertBar from 'components/alert/AlertBar';
 import { SystemUserAutocompleteField } from 'components/fields/SystemUserAutocompleteField';
 import UserRoleSelector from 'components/user/UserRoleSelector';
+import { COLLECTION_ROLE } from 'constants/roles';
 import { useFormikContext } from 'formik';
 import { ICodeWithDescription } from 'interfaces/useCodesApi.interface';
 import { ICollectionMember, ICreateCollectionRequest } from 'interfaces/useCollectionApi.interface';
@@ -34,7 +35,7 @@ export const CollectionMembersForm = (props: IMembersCollectionFormProps): JSX.E
       email: user.email,
       agency: user.agency,
       identity_source: user.identity_source,
-      collection_role_names: []
+      collection_role_name: COLLECTION_ROLE.MEMBER
     });
     clearErrors();
   };

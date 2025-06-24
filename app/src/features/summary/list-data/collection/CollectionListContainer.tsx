@@ -1,23 +1,31 @@
 import { mdiArrowTopRight, mdiDotsVertical, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import { IconButton, ListItemIcon, ListItemText } from '@mui/material';
-import Box from '@mui/material/Box';
-import Collapse from '@mui/material/Collapse';
+import {
+  Box,
+  Collapse,
+  Divider,
+  IconButton,
+  Link,
+  ListItemIcon,
+  ListItemText,
+  Menu,
+  MenuItem,
+  MenuProps,
+  Stack,
+  Tooltip,
+  Typography
+} from '@mui/material';
 import grey from '@mui/material/colors/grey';
-import Divider from '@mui/material/Divider';
-import Link from '@mui/material/Link';
-import Menu, { MenuProps } from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import Stack from '@mui/material/Stack';
-import Tooltip from '@mui/material/Tooltip';
-import Typography from '@mui/material/Typography';
 import { GridColDef, GridPaginationModel, GridSortDirection, GridSortModel } from '@mui/x-data-grid';
 import { TeamMemberAvatar } from 'components/avatar/TeamMemberAvatar';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
+import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
+import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useDialogContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
 import { useSearchParams } from 'hooks/useSearchParams';
@@ -31,15 +39,11 @@ import CollectionsListFilterForm, {
   ICollectionAdvancedFilters
 } from './CollectionListFilterForm';
 
-// Supported URL parameters
-// Note: Prefix 'p_' is used to avoid conflicts with similar query params from other components
 type CollectionDataTableURLParams = {
-  // filter
   p_keyword?: string;
   p_itis_tsn?: number;
   p_system_user_id?: string;
   p_parent_collection_id?: number | null;
-  // pagination
   p_page?: string;
   p_limit?: string;
   p_sort?: string;
@@ -52,7 +56,6 @@ interface ICollectionsListContainerProps {
   showSearch: boolean;
 }
 
-// Default pagination parameters
 const initialPaginationParams: Required<ApiPaginationRequestOptions> = {
   page: 0,
   limit: 10,
@@ -61,14 +64,16 @@ const initialPaginationParams: Required<ApiPaginationRequestOptions> = {
 };
 
 /**
- * Displays a list of collections.
+ * Displays collections that the user has access to
  *
- * @return {*}
+ * @param {ICollectionsListContainerProps} props
+ * @returns
  */
-const CollectionsListContainer = (props: ICollectionsListContainerProps) => {
+export const CollectionsListContainer = (props: ICollectionsListContainerProps) => {
   const { showSearch } = props;
 
   const biohubApi = useBiohubApi();
+  const dialogContext = useDialogContext();
 
   const { searchParams, setSearchParams } = useSearchParams<StringValues<CollectionDataTableURLParams>>();
 
@@ -95,10 +100,18 @@ const CollectionsListContainer = (props: ICollectionsListContainerProps) => {
       : CollectionAdvancedFiltersInitialValues.parent_collection_id
   });
 
-  const [actionMenuAnchorEl, setActionMenuAnchorEl] = useState<{
-    anchorEl: MenuProps['anchorEl'];
-    collectionId: number;
-  } | null>(null);
+  const [actionMenuEl, setActionMenuEl] = useState<MenuProps['anchorEl']>(null);
+  const [selectedCollectionId, setSelectedCollectionId] = useState<number | null>(null);
+
+  const handleOpenActionMenu = (event: React.MouseEvent, collectionId: number) => {
+    setActionMenuEl(event.currentTarget);
+    setSelectedCollectionId(collectionId);
+  };
+
+  const handleCloseActionMenu = () => {
+    setActionMenuEl(null);
+    setSelectedCollectionId(null);
+  };
 
   const sort = firstOrNull(sortModel);
   const paginationSort: ApiPaginationRequestOptions = useMemo(
@@ -106,7 +119,7 @@ const CollectionsListContainer = (props: ICollectionsListContainerProps) => {
       limit: paginationModel.pageSize,
       sort: sort?.field || undefined,
       order: sort?.sort || undefined,
-      page: paginationModel.page + 1 // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
+      page: paginationModel.page + 1
     }),
     [paginationModel.page, paginationModel.pageSize, sort?.field, sort?.sort]
   );
@@ -116,14 +129,12 @@ const CollectionsListContainer = (props: ICollectionsListContainerProps) => {
       biohubApi.collection.findCollections(pagination, filter)
   );
 
-  // Fetch collections when either the pagination, sort, or advanced filters change
   useDeepCompareEffect(() => {
     collectionsDataLoader.refresh(paginationSort, advancedFiltersModel);
   }, [advancedFiltersModel, paginationSort]);
 
   const rows = collectionsDataLoader.data?.collections ?? [];
 
-  // Define the columns for the DataGrid
   const columns: GridColDef<ICollection>[] = [
     {
       field: 'collection_id',
@@ -146,21 +157,19 @@ const CollectionsListContainer = (props: ICollectionsListContainerProps) => {
       headerName: 'Name',
       flex: 0.3,
       disableColumnMenu: true,
-      renderCell: (params) => {
-        return (
-          <Stack mb={0.25}>
-            <Link
-              style={{ overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: 700 }}
-              data-testid={params.row.name}
-              underline="always"
-              title={params.row.name}
-              component={RouterLink}
-              to={`/admin/collections/${params.row.collection_id}`}
-              children={params.row.name}
-            />
-          </Stack>
-        );
-      }
+      renderCell: (params) => (
+        <Stack mb={0.25}>
+          <Link
+            style={{ overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: 700 }}
+            data-testid={params.row.name}
+            underline="always"
+            title={params.row.name}
+            component={RouterLink}
+            to={`/admin/collections/${params.row.collection_id}`}>
+            {params.row.name}
+          </Link>
+        </Stack>
+      )
     },
     {
       field: 'description',
@@ -226,30 +235,53 @@ const CollectionsListContainer = (props: ICollectionsListContainerProps) => {
       width: 10,
       align: 'right',
       renderCell: (params) => (
-        <IconButton
-          onClick={(event) => {
-            setActionMenuAnchorEl({ anchorEl: event.currentTarget, collectionId: params.row.collection_id });
-          }}>
+        <IconButton onClick={(event) => handleOpenActionMenu(event, params.row.collection_id)}>
           <Icon path={mdiDotsVertical} size={1} />
         </IconButton>
       )
     }
   ];
 
-  const handleCloseActionMenu = () => setActionMenuAnchorEl(null);
+  const showDeleteErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
+    dialogContext.setErrorDialog({
+      dialogTitle: 'Error Deleting Project',
+      dialogText: 'An error occurred while trying to delete the project.',
+      open: true,
+      onClose: () => dialogContext.setErrorDialog({ open: false }),
+      onOk: () => dialogContext.setErrorDialog({ open: false }),
+      ...textDialogProps
+    });
+  };
 
-  const handleDelete = async () => {
-    if (!actionMenuAnchorEl?.collectionId) {
-      handleCloseActionMenu();
+  const showDeleteDialog = () => {
+    setActionMenuEl(null);
+
+    if (!selectedCollectionId) {
       return;
     }
-    try {
-      await biohubApi.collection.deleteCollection(actionMenuAnchorEl.collectionId);
-      collectionsDataLoader.refresh(paginationSort, advancedFiltersModel);
-    } catch (_error) {
-      // error handling optional
-    }
-    handleCloseActionMenu();
+
+    dialogContext.setYesNoDialog({
+      dialogTitle: 'Delete Project',
+      dialogText: 'Are you sure you want to delete this project?',
+      yesButtonLabel: 'Delete',
+      yesButtonProps: { color: 'error' },
+      noButtonLabel: 'Cancel',
+      noButtonProps: { color: 'primary', variant: 'outlined' },
+      open: true,
+      onYes: async () => {
+        dialogContext.setYesNoDialog({ open: false });
+        try {
+          await biohubApi.collection.deleteCollection(selectedCollectionId);
+          collectionsDataLoader.refresh(paginationSort, advancedFiltersModel);
+        } catch (error) {
+          showDeleteErrorDialog({ dialogErrorDetails: [(error as APIError).message], open: true });
+        } finally {
+          handleCloseActionMenu();
+        }
+      },
+      onNo: () => dialogContext.setYesNoDialog({ open: false }),
+      onClose: () => dialogContext.setYesNoDialog({ open: false })
+    });
   };
 
   return (
@@ -288,24 +320,17 @@ const CollectionsListContainer = (props: ICollectionsListContainerProps) => {
         <StyledDataGrid
           noRowsMessage="No projects found"
           loading={!rows.length && (collectionsDataLoader.isLoading || !collectionsDataLoader.isReady)}
-          // Columns
           columns={columns}
-          // Rows
           rows={rows}
           rowCount={collectionsDataLoader.data?.pagination.total ?? 0}
           getRowId={(row) => row.collection_id}
-          // Pagination
           paginationMode="server"
           paginationModel={paginationModel}
           pageSizeOptions={pageSizeOptions}
           onPaginationModelChange={(model) => {
-            if (!model) {
-              return;
-            }
             setSearchParams(searchParams.set('p_page', String(model.page)).set('p_limit', String(model.pageSize)));
             setPaginationModel(model);
           }}
-          // Sorting
           sortingMode="server"
           sortModel={sortModel}
           sortingOrder={['asc', 'desc']}
@@ -316,27 +341,25 @@ const CollectionsListContainer = (props: ICollectionsListContainerProps) => {
             setSearchParams(searchParams.set('p_sort', model[0].field).set('p_order', model[0].sort ?? 'desc'));
             setSortModel(model);
           }}
-          // Row options
           rowSelection={false}
           checkboxSelection={false}
           disableRowSelectionOnClick
-          // Column options
           disableColumnSelector
           disableColumnFilter
           disableColumnMenu
-          // Styling
           rowHeight={70}
           getRowHeight={() => 'auto'}
           autoHeight={false}
         />
       </LoadingGuard>
+
       <Menu
-        open={Boolean(actionMenuAnchorEl)}
+        open={Boolean(actionMenuEl)}
         onClose={handleCloseActionMenu}
-        anchorEl={actionMenuAnchorEl?.anchorEl}
+        anchorEl={actionMenuEl}
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}>
-        <MenuItem onClick={handleDelete}>
+        <MenuItem onClick={showDeleteDialog}>
           <ListItemIcon>
             <Icon path={mdiTrashCanOutline} size={1} />
           </ListItemIcon>
@@ -346,5 +369,3 @@ const CollectionsListContainer = (props: ICollectionsListContainerProps) => {
     </>
   );
 };
-
-export default CollectionsListContainer;
