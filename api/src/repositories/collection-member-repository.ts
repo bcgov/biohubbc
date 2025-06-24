@@ -17,14 +17,26 @@ import { BaseRepository } from './base-repository';
  */
 export class CollectionMemberRepository extends BaseRepository {
   /**
-   * Create a base query for retrieving collection members.
+   * Create a query to retrieve members of a collection and all its parent collections recursively.
    *
-   * @param {number} collectionId - The ID of the collection.
+   * @param {number} collectionId - The starting collection ID.
    * @param {Knex} knex - Knex instance.
-   * @returns {Knex.QueryBuilder} Knex query builder with joins and aggregations.
+   * @returns {Knex.QueryBuilder} The knex query builder.
    */
   _makeCollectionMembersBaseQuery(collectionId: number, knex: Knex): Knex.QueryBuilder {
-    return knex('collection_member as cp')
+    const recursiveCTE = knex.withRecursive('collection_hierarchy', (qb) => {
+      qb.select('collection_id', 'parent_collection_id')
+        .from('collection')
+        .where('collection_id', collectionId)
+        .unionAll((qb2) => {
+          qb2
+            .select('c.collection_id', 'c.parent_collection_id')
+            .from('collection as c')
+            .join('collection_hierarchy as ch', 'c.collection_id', 'ch.parent_collection_id');
+        });
+    });
+
+    return recursiveCTE
       .select([
         'su.system_user_id',
         'su.user_identifier',
@@ -43,12 +55,13 @@ export class CollectionMemberRepository extends BaseRepository {
         'cp.collection_role_id',
         'cr.name as collection_role_name'
       ])
+      .from('collection_member as cp')
       .leftJoin('collection_role as cr', 'cr.collection_role_id', 'cp.collection_role_id')
       .leftJoin('system_user as su', 'cp.system_user_id', 'su.system_user_id')
       .leftJoin('system_user_role as sur', 'su.system_user_id', 'sur.system_user_id')
       .leftJoin('system_role as sr', 'sur.system_role_id', 'sr.system_role_id')
       .leftJoin('user_identity_source as uis', 'uis.user_identity_source_id', 'su.user_identity_source_id')
-      .where('cp.collection_id', collectionId)
+      .join('collection_hierarchy as ch', 'cp.collection_id', 'ch.collection_id')
       .whereNull('su.record_end_date')
       .groupBy([
         'su.system_user_id',
@@ -64,8 +77,7 @@ export class CollectionMemberRepository extends BaseRepository {
         'cp.collection_member_id',
         'cp.collection_role_id',
         'cp.collection_id',
-        'cr.name',
-        'cp.create_date'
+        'cr.name'
       ])
       .orderBy('cp.collection_role_id', 'asc');
   }

@@ -1,20 +1,26 @@
 import { mdiArrowTopRight, mdiDotsVertical, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import Box from '@mui/material/Box';
-import Collapse from '@mui/material/Collapse';
+import {
+  Box,
+  Collapse,
+  Divider,
+  IconButton,
+  Link,
+  ListItemIcon,
+  ListItemText,
+  Menu,
+  MenuItem,
+  MenuProps,
+  Stack,
+  Toolbar,
+  Tooltip,
+  Typography
+} from '@mui/material';
 import grey from '@mui/material/colors/grey';
-import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
-import Link from '@mui/material/Link';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import Menu, { MenuProps } from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import Stack from '@mui/material/Stack';
-import Toolbar from '@mui/material/Toolbar';
-import Tooltip from '@mui/material/Tooltip';
-import Typography from '@mui/material/Typography';
 import { GridColDef, GridPaginationModel, GridSortDirection, GridSortModel } from '@mui/x-data-grid';
+import { useMemo, useState } from 'react';
+import { Link as RouterLink, useHistory } from 'react-router-dom';
+
 import { TeamMemberAvatar } from 'components/avatar/TeamMemberAvatar';
 import { CreateButton } from 'components/buttons/CreateButton';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
@@ -25,39 +31,35 @@ import CollectionsListFilterForm, {
   CollectionAdvancedFiltersInitialValues,
   ICollectionAdvancedFilters
 } from 'features/summary/list-data/collection/CollectionListFilterForm';
+import SubcollectionDialog from './dialog/SubcollectionDialog';
+
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useDialogContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
 import { useSearchParams } from 'hooks/useSearchParams';
+
 import { ICollection } from 'interfaces/useCollectionApi.interface';
-import { useMemo, useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions, StringValues } from 'types/misc';
 import { firstOrNull, getRandomHexColor } from 'utils/Utils';
-import SubcollectionDialog from './dialog/SubcollectionDialog';
 
-// Supported URL parameters
-// Note: Prefix 'p_' is used to avoid conflicts with similar query params from other components
+const pageSizeOptions = [10, 25, 50];
+
 type CollectionDataTableURLParams = {
-  // filter
   p_keyword?: string;
   p_itis_tsn?: number;
   p_system_user_id?: string;
-  // pagination
   p_page?: string;
   p_limit?: string;
   p_sort?: string;
   p_order?: 'asc' | 'desc';
 };
 
-const pageSizeOptions = [10, 25, 50];
-
 interface ICollectionsTagContainerProps {
   collection: ICollection;
   showSearch: boolean;
 }
 
-// Default pagination parameters
 const initialPaginationParams: Required<ApiPaginationRequestOptions> = {
   page: 0,
   limit: 10,
@@ -65,18 +67,18 @@ const initialPaginationParams: Required<ApiPaginationRequestOptions> = {
   order: 'desc'
 };
 
-/**
- * Displays a list of collections.
- *
- * @return {*}
- */
-export const SubcollectionContainer = (props: ICollectionsTagContainerProps) => {
-  const { collection, showSearch } = props;
-
+export const SubcollectionContainer = ({ collection, showSearch }: ICollectionsTagContainerProps) => {
   const biohubApi = useBiohubApi();
+  const dialogContext = useDialogContext();
+  const history = useHistory();
 
   const { searchParams, setSearchParams } = useSearchParams<StringValues<CollectionDataTableURLParams>>();
+
   const [collectionDialogIsOpen, setCollectionDialogIsOpen] = useState(false);
+  const [actionMenuAnchorEl, setActionMenuAnchorEl] = useState<{
+    anchorEl: MenuProps['anchorEl'];
+    collectionId: number;
+  } | null>(null);
 
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     pageSize: Number(searchParams.get('p_limit') ?? initialPaginationParams.limit),
@@ -100,35 +102,70 @@ export const SubcollectionContainer = (props: ICollectionsTagContainerProps) => 
   });
 
   const sort = firstOrNull(sortModel);
+
   const paginationSort: ApiPaginationRequestOptions = useMemo(
     () => ({
       limit: paginationModel.pageSize,
       sort: sort?.field || undefined,
       order: sort?.sort || undefined,
-      page: paginationModel.page + 1 // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
+      page: paginationModel.page + 1
     }),
-    [paginationModel.page, paginationModel.pageSize, sort?.field, sort?.sort]
+    [paginationModel, sort]
   );
 
-  const collectionsDataLoader = useDataLoader(
-    (pagination: ApiPaginationRequestOptions, filter?: ICollectionAdvancedFilters) =>
-      biohubApi.collection.findSubcollections(collection.collection_id, pagination, filter)
+  const collectionsDataLoader = useDataLoader((pagination, filters) =>
+    biohubApi.collection.findSubcollections(collection.collection_id, pagination, filters)
   );
 
-  // Fetch collections when either the pagination, sort, or advanced filters change
   useDeepCompareEffect(() => {
     collectionsDataLoader.refresh(paginationSort, advancedFiltersModel);
-  }, [advancedFiltersModel, paginationSort]);
+  }, [paginationSort, advancedFiltersModel]);
 
   const rows = collectionsDataLoader.data?.collections ?? [];
 
-  // Define the columns for the DataGrid
+  const showDeleteDialog = (collectionId: number) => {
+    dialogContext.setYesNoDialog({
+      dialogTitle: 'Delete Project',
+      dialogText: 'Are you sure you want to delete this project?',
+      yesButtonLabel: 'Delete',
+      yesButtonProps: { color: 'error' },
+      noButtonLabel: 'Cancel',
+      noButtonProps: { color: 'primary', variant: 'outlined' },
+      open: true,
+      onYes: async () => {
+        dialogContext.setYesNoDialog({ open: false });
+        try {
+          await biohubApi.collection.deleteCollection(collectionId);
+          collectionsDataLoader.refresh(paginationSort, advancedFiltersModel);
+        } catch (error) {
+          console.error('Failed to delete collection:', error);
+        } finally {
+          setActionMenuAnchorEl(null);
+        }
+      },
+      onNo: () => dialogContext.setYesNoDialog({ open: false }),
+      onClose: () => dialogContext.setYesNoDialog({ open: false })
+    });
+  };
+
+  const handleEdit = () => {
+    history.push(`/admin/collections/${actionMenuAnchorEl?.collectionId}/edit`);
+    setActionMenuAnchorEl(null);
+  };
+
+  const handleDelete = () => {
+    const collectionId = actionMenuAnchorEl?.collectionId;
+    if (collectionId) {
+      showDeleteDialog(collectionId);
+    }
+    setActionMenuAnchorEl(null);
+  };
+
   const columns: GridColDef<ICollection>[] = [
     {
       field: 'collection_id',
       headerName: 'ID',
       width: 85,
-      minWidth: 85,
       renderHeader: () => (
         <Typography color={grey[500]} variant="body2" fontWeight={700}>
           ID
@@ -145,21 +182,18 @@ export const SubcollectionContainer = (props: ICollectionsTagContainerProps) => 
       headerName: 'Name',
       flex: 0.3,
       disableColumnMenu: true,
-      renderCell: (params) => {
-        return (
-          <Stack mb={0.25}>
-            <Link
-              style={{ overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: 700 }}
-              data-testid={params.row.name}
-              underline="always"
-              title={params.row.name}
-              component={RouterLink}
-              to={`/admin/collections/${params.row.collection_id}`}
-              children={params.row.name}
-            />
-          </Stack>
-        );
-      }
+      renderCell: (params) => (
+        <Stack mb={0.25}>
+          <Link
+            component={RouterLink}
+            to={`/admin/collections/${params.row.collection_id}`}
+            underline="always"
+            title={params.row.name}
+            style={{ overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: 700 }}>
+            {params.row.name}
+          </Link>
+        </Stack>
+      )
     },
     {
       field: 'description',
@@ -185,14 +219,14 @@ export const SubcollectionContainer = (props: ICollectionsTagContainerProps) => 
         const remainingCount = members.length - visibleMembers.length;
 
         return (
-          <Stack gap={0.5} flexDirection="row" alignItems="center">
+          <Stack direction="row" alignItems="center" gap={0.5}>
             {visibleMembers.map((member) => (
               <TeamMemberAvatar
                 key={member.system_user_id}
                 tooltip={member.display_name}
                 label={member.display_name
                   .split(',')
-                  .map((name) => name.trim().slice(0, 1).toUpperCase())
+                  .map((name) => name.trim()[0].toUpperCase())
                   .reverse()
                   .join('')}
                 color={getRandomHexColor(member.system_user_id)}
@@ -226,62 +260,25 @@ export const SubcollectionContainer = (props: ICollectionsTagContainerProps) => 
       align: 'right',
       renderCell: (params) => (
         <IconButton
-          onClick={(event) => {
-            setActionMenuAnchorEl({ anchorEl: event.currentTarget, collectionId: params.row.collection_id });
-          }}>
+          onClick={(e) => setActionMenuAnchorEl({ anchorEl: e.currentTarget, collectionId: params.row.collection_id })}>
           <Icon path={mdiDotsVertical} size={1} />
         </IconButton>
       )
     }
   ];
 
-  // Add state for action menu
-  const [actionMenuAnchorEl, setActionMenuAnchorEl] = useState<{
-    anchorEl: MenuProps['anchorEl'];
-    collectionId: number;
-  } | null>(null);
-
-  const handleCloseActionMenu = () => setActionMenuAnchorEl(null);
-
-  // Add your edit and delete handlers here
-  const handleEdit = () => {
-    // Implement navigation or dialog open for editing
-    handleCloseActionMenu();
-  };
-
-  const handleDelete = async () => {
-    if (!actionMenuAnchorEl?.collectionId) {
-      handleCloseActionMenu();
-      return;
-    }
-    try {
-      await biohubApi.collection.deleteCollection(actionMenuAnchorEl.collectionId);
-
-      collectionsDataLoader.refresh(paginationSort, advancedFiltersModel);
-    } catch (error) {
-      console.error('Failed to delete collection:', error);
-    }
-    handleCloseActionMenu();
-  };
-
   return (
     <>
-      <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
+      <Toolbar sx={{ justifyContent: 'space-between' }}>
         <Typography variant="h4" component="h2">
-          Subprojects &zwnj;
-          <Typography component="span" color="textSecondary" lineHeight="inherit" fontSize="inherit" fontWeight={400}>
+          Subprojects&nbsp;
+          <Typography component="span" color="textSecondary" fontSize="inherit" fontWeight={400}>
             ({Number(collectionsDataLoader.data?.pagination?.total ?? 0).toLocaleString()})
           </Typography>
         </Typography>
-        <Stack gap={1} direction="row">
-          <CreateButton
-            label="Add Subproject"
-            onClick={() => {
-              setCollectionDialogIsOpen(true);
-            }}
-          />
-        </Stack>
+        <CreateButton label="Add Subproject" onClick={() => setCollectionDialogIsOpen(true)} />
       </Toolbar>
+
       <Divider />
 
       <Collapse in={showSearch}>
@@ -306,67 +303,54 @@ export const SubcollectionContainer = (props: ICollectionsTagContainerProps) => 
         <LoadingGuard
           isLoading={!rows.length && (collectionsDataLoader.isLoading || !collectionsDataLoader.isReady)}
           isLoadingFallback={<SkeletonTable />}
-          isLoadingFallbackDelay={100}
           hasNoData={!rows.length}
           hasNoDataFallback={
             <Box sx={{ display: 'flex', flexDirection: 'column', height: '60vh', width: '100%' }}>
-              <Box sx={{ flex: 1, display: 'flex' }}>
-                <NoDataOverlay
-                  minHeight="400px"
-                  title="Create Subcollections"
-                  subtitle={`There are no subcollections. When you create one, it will appear here.`}
-                  icon={mdiArrowTopRight}
-                  sx={{ width: '100%', height: '100%', m: 0 }}
-                />
-              </Box>
+              <NoDataOverlay
+                minHeight="400px"
+                title="Create Subcollections"
+                subtitle="There are no subcollections. When you create one, it will appear here."
+                icon={mdiArrowTopRight}
+                sx={{ flex: 1 }}
+              />
             </Box>
-          }
-          hasNoDataFallbackDelay={100}>
+          }>
           <Box sx={{ display: 'flex', flexDirection: 'column', height: '60vh', width: '100%' }}>
             <StyledDataGrid
-              noRowsMessage="No collections found"
-              loading={!rows.length && (collectionsDataLoader.isLoading || !collectionsDataLoader.isReady)}
-              // Columns
-              columns={columns}
-              // Rows
               rows={rows}
-              rowCount={collectionsDataLoader.data?.pagination.total ?? 0}
+              columns={columns}
               getRowId={(row) => row.collection_id}
+              rowCount={collectionsDataLoader.data?.pagination.total ?? 0}
+              rowHeight={70}
+              getRowHeight={() => 'auto'}
+              autoHeight={false}
+              sx={{ flex: 1 }}
               // Pagination
               paginationMode="server"
               paginationModel={paginationModel}
               pageSizeOptions={pageSizeOptions}
               onPaginationModelChange={(model) => {
-                if (!model) {
-                  return;
-                }
                 setSearchParams(searchParams.set('p_page', String(model.page)).set('p_limit', String(model.pageSize)));
                 setPaginationModel(model);
               }}
               // Sorting
               sortingMode="server"
               sortModel={sortModel}
-              sortingOrder={['asc', 'desc']}
               onSortModelChange={(model) => {
-                if (!model.length) {
-                  return;
+                if (model.length) {
+                  setSearchParams(searchParams.set('p_sort', model[0].field).set('p_order', model[0].sort ?? 'desc'));
+                  setSortModel(model);
                 }
-                setSearchParams(searchParams.set('p_sort', model[0].field).set('p_order', model[0].sort ?? 'desc'));
-                setSortModel(model);
               }}
-              // Row options
+              // Other
               rowSelection={false}
               checkboxSelection={false}
               disableRowSelectionOnClick
-              // Column options
               disableColumnSelector
               disableColumnFilter
               disableColumnMenu
-              // Styling
-              rowHeight={70}
-              getRowHeight={() => 'auto'}
-              autoHeight={false}
-              sx={{ flex: 1 }}
+              noRowsMessage="No collections found"
+              loading={!rows.length && (collectionsDataLoader.isLoading || !collectionsDataLoader.isReady)}
             />
           </Box>
         </LoadingGuard>
@@ -375,22 +359,19 @@ export const SubcollectionContainer = (props: ICollectionsTagContainerProps) => 
       {collectionDialogIsOpen && (
         <SubcollectionDialog
           collection={collection}
+          open={collectionDialogIsOpen}
+          onClose={() => setCollectionDialogIsOpen(false)}
           onSubmit={() => {
             collectionsDataLoader.refresh(paginationSort, advancedFiltersModel);
             setCollectionDialogIsOpen(false);
           }}
-          onClose={() => {
-            setCollectionDialogIsOpen(false);
-          }}
-          open={collectionDialogIsOpen}
         />
       )}
 
-      {/* ROW ACTION MENU */}
       <Menu
         open={Boolean(actionMenuAnchorEl)}
-        onClose={handleCloseActionMenu}
         anchorEl={actionMenuAnchorEl?.anchorEl}
+        onClose={() => setActionMenuAnchorEl(null)}
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}>
         <MenuItem onClick={handleEdit}>

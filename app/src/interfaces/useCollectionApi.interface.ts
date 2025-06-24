@@ -46,6 +46,7 @@ export interface ICollection {
   parent_collection_id: number;
   name: string;
   description: string | null;
+  subcollections: ICollection[];
   participants: ICollectionMember[];
 }
 

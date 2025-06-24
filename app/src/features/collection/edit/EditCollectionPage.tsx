@@ -18,6 +18,7 @@ import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { ICollectionMember, IUpdateCollectionRequest } from 'interfaces/useCollectionApi.interface';
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
+import { CollectionBreadcrumb } from '../details/header/breadcrumb/CollectionBreadcrumb';
 import CollectionForm from '../edit/CollectionForm';
 
 export const defaultCollectionDataFormValues: IUpdateCollectionRequest = {
@@ -138,15 +139,15 @@ const EditCollectionPage = () => {
     setIsSaving(false);
   };
 
-  if (!codesContext.codesDataLoader.data || !collectionId) {
+  if (!codesContext.codesDataLoader.data || !collectionDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
-
   return (
     <>
       <Prompt when={enableCancelCheck} message={locationChangeInterceptor} />
       <PageHeader
-        title="Edit New Collection"
+        title="Edit Collection"
+        breadCrumbJSX={<CollectionBreadcrumb collection={collectionDataLoader.data} />}
         buttonJSX={
           <>
             <LoadingButton
