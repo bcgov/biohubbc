@@ -1,5 +1,4 @@
 import { Box, LinearProgress, Typography } from '@mui/material';
-import { green } from '@mui/material/colors';
 
 interface LinearProgressWithLabelProps {
   value: number;
@@ -17,9 +16,8 @@ export const LinearProgressWithLabel = ({ value, suffix }: LinearProgressWithLab
             position: 'relative',
             height: 10,
             borderRadius: 5,
-            backgroundColor: '#f0f0f0',
             '& .MuiLinearProgress-bar': {
-              backgroundColor: value === 100 ? green[700] : 'primary.main',
+              backgroundColor: 'primary.main',
               position: 'absolute',
               left: 0,
               top: 0,

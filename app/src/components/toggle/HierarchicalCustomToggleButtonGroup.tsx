@@ -8,7 +8,7 @@ import grey from '@mui/material/colors/grey';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { CustomTooltip } from 'components/tooltip/CustomTooltip';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import appTheme from 'themes/appTheme';
 
 export interface ToggleButtonView<ViewValueType> {
@@ -29,6 +29,7 @@ interface HierarchicalCustomToggleButtonGroupProps<ViewValueType extends string>
   onViewChange: (view: ViewValueType) => void;
   handleCheckboxClick?: (view: ToggleButtonView<ViewValueType>) => void;
   orientation: 'horizontal' | 'vertical';
+  fixedExpanded?: boolean;
 }
 
 export const HierarchicalCustomToggleButtonGroup = <ViewValueType extends string>({
@@ -36,9 +37,33 @@ export const HierarchicalCustomToggleButtonGroup = <ViewValueType extends string
   activeView,
   onViewChange,
   orientation,
-  handleCheckboxClick
+  handleCheckboxClick,
+  fixedExpanded
 }: HierarchicalCustomToggleButtonGroupProps<ViewValueType>) => {
   const [expanded, setExpanded] = useState<Set<ViewValueType>>(new Set());
+
+  const fullyExpandedViews = useMemo(() => {
+    if (!fixedExpanded) {
+      return new Set<ViewValueType>();
+    }
+
+    const collectAll = (items: ToggleButtonView<ViewValueType>[], acc: ViewValueType[] = []) => {
+      for (const item of items) {
+        acc.push(item.value);
+        if (item.children?.length) {
+          collectAll(item.children, acc);
+        }
+      }
+      return acc;
+    };
+
+    // If some items are initially expanded, still update the setExpanded after initial mount to trigger the animation
+    return new Set(collectAll(views));
+  }, [fixedExpanded, views]);
+
+  useEffect(() => {
+    setExpanded(fullyExpandedViews);
+  }, [fullyExpandedViews]);
 
   const toggleExpand = (value: ViewValueType) => {
     setExpanded((prev) => {
@@ -267,7 +292,7 @@ export const HierarchicalCustomToggleButtonGroup = <ViewValueType extends string
         '& Button': {
           py: 1.5,
           px: 2.5,
-          border: 'none',
+          border: 'none !important',
           borderRadius: '4px !important',
           fontSize: '0.8rem',
           fontWeight: 700,

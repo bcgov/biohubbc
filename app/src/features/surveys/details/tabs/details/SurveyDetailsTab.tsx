@@ -5,7 +5,16 @@ import { grey } from '@mui/material/colors';
 import { useContext, useEffect, useState } from 'react';
 
 import { ComponentSwitch } from 'components/misc/ComponentSwitch';
+import {
+  DATA_ACTIVE_VIEW_VALUE,
+  SAMPLING_ACTIVE_VIEW_VALUE,
+  SURVEY_ACTIVE_VIEW_VALUE,
+  SURVEY_VIEW_VALUE
+} from 'constants/survey-view';
 import { CodesContext } from 'contexts/codesContext';
+import { SurveySpatialTelemetry } from 'features/surveys/telemetry/SurveySpatialTelemetry';
+import { SurveyDeploymentList } from 'features/surveys/telemetry/list/SurveyDeploymentList';
+import { DevicesContainer } from 'features/surveys/telemetry/manage/devices/table/DevicesContainer';
 import SurveyAttachments from 'features/surveys/view/SurveyAttachments';
 import { useSearchParams } from 'hooks/useSearchParams';
 import { IGetSurveyChecklist } from 'interfaces/useChecklistApi.interface';
@@ -13,19 +22,18 @@ import { SidebarLayout } from 'layouts/SidebarLayout';
 import { SurveyChecklistManager } from './checklist/SurveyChecklistManager';
 import { LinearProgressWithLabel } from './checklist/progress/SurveyChecklistProgressBar';
 import { DATA_ACTIVE_VIEW_KEY, SurveyDataPage } from './data/SurveyDataPage';
+import { SurveySpatialAnimals } from './data/animals/SurveySpatialAnimals';
+import { SurveySpatialHabitatFeatures } from './data/habitat/SurveySpatialHabitatFeatures';
+import { SurveySpatialObservations } from './data/observations/SurveySpatialObservations';
 import { SurveyOverviewPage } from './overview/SurveyOverviewPage';
 import { SAMPLING_ACTIVE_VIEW_KEY, SurveySamplingPage } from './sampling/SurveySamplingPage';
+import { SamplingPeriodContainer } from './sampling/period/SamplingPeriodContainer';
+import { SamplingSiteContainer } from './sampling/site/SamplingSiteContainer';
+import { SamplingTechniqueContainer } from './sampling/technique/SamplingTechniqueContainer';
+import { HiearchicalSurveyViewToggle } from './sidebar/HierarchicalSurveyViewToggle';
 import { SurveyViewToggle } from './sidebar/SurveyViewToggle';
 
-const SURVEY_ACTIVE_VIEW_KEY = 'v';
-
-export enum SURVEY_ACTIVE_VIEW_VALUE {
-  overview = 'overview',
-  sampling = 'sampling',
-  data = 'data',
-  attachments = 'attachments'
-}
-
+const SURVEY_ACTIVE_VIEW_KEY = 'sv';
 const DEFAULT_VIEW = SURVEY_ACTIVE_VIEW_VALUE.overview;
 
 interface SurveyDetailsTabProps {
@@ -35,10 +43,9 @@ interface SurveyDetailsTabProps {
 export const SurveyDetailsTab = ({ checklist }: SurveyDetailsTabProps) => {
   const codesContext = useContext(CodesContext);
   const [showProgress, setShowProgress] = useState(false);
-  const [delayedShowContent, setDelayedShowContent] = useState(true);
 
-  const { searchParams, setSearchParams } = useSearchParams<{ [SURVEY_ACTIVE_VIEW_KEY]: SURVEY_ACTIVE_VIEW_VALUE }>();
-  const activeView = (searchParams.get(SURVEY_ACTIVE_VIEW_KEY) ?? DEFAULT_VIEW) as SURVEY_ACTIVE_VIEW_VALUE;
+  const { searchParams, setSearchParams } = useSearchParams<{ [SURVEY_ACTIVE_VIEW_KEY]: SURVEY_VIEW_VALUE }>();
+  const activeView = (searchParams.get(SURVEY_ACTIVE_VIEW_KEY) ?? DEFAULT_VIEW) as SURVEY_VIEW_VALUE;
 
   useEffect(() => {
     codesContext.codesDataLoader.load();
@@ -48,19 +55,7 @@ export const SurveyDetailsTab = ({ checklist }: SurveyDetailsTabProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Delay showing content until after transition completes
-  useEffect(() => {
-    if (!showProgress) {
-      const timeout = setTimeout(() => {
-        setDelayedShowContent(true);
-      }, 300); // match transition duration
-      return () => clearTimeout(timeout);
-    } else {
-      setDelayedShowContent(false);
-    }
-  }, [showProgress]);
-
-  const handleSetActiveView = (view: SURVEY_ACTIVE_VIEW_VALUE) => {
+  const handleSetActiveView = (view: SURVEY_VIEW_VALUE) => {
     setSearchParams(
       searchParams.set(SURVEY_ACTIVE_VIEW_KEY, view, {
         replace: [SAMPLING_ACTIVE_VIEW_KEY, DATA_ACTIVE_VIEW_KEY]
@@ -79,7 +74,7 @@ export const SurveyDetailsTab = ({ checklist }: SurveyDetailsTabProps) => {
                 <Box
                   p={2}
                   sx={{
-                    width: showProgress ? '50%' : 300,
+                    width: showProgress ? '35%' : 300,
                     transition: 'width 0.3s ease',
                     overflow: 'hidden'
                   }}>
@@ -89,34 +84,60 @@ export const SurveyDetailsTab = ({ checklist }: SurveyDetailsTabProps) => {
                     elevation={0}
                     onClick={() => setShowProgress((prev) => !prev)}
                     sx={{
-                      bgcolor: checklist.progress_percentage === 100 ? '#f6faf5' : grey[50],
+                      bgcolor: grey[50],
                       p: 2,
                       mb: 2,
                       cursor: 'pointer',
                       transition: 'box-shadow 0.1s linear, background-color 0.2s ease',
                       '&:hover': {
-                        backgroundColor: checklist.progress_percentage === 100 ? '#eaf3e8' : grey[100]
+                        backgroundColor: grey[100]
                       },
                       '&:focus-visible': {
-                        outline: `2px solid ${checklist.progress_percentage === 100 ? '#4caf50' : grey[400]}`,
+                        outline: `2px solid ${grey[400]}`,
                         outlineOffset: 2
                       }
                     }}>
-                    <Box display="flex" justifyContent="space-between" alignItems="center">
-                      <Typography gutterBottom component="legend" sx={{ mb: 0 }}>
-                        Progress
-                      </Typography>
-                      <Icon path={mdiArrowExpand} size={0.8} color={grey[500]} />
+                    <Box display="flex" justifyContent="space-between">
+                      <Typography component="legend">Progress</Typography>
+                      <Icon path={mdiArrowExpand} size={0.8} color={grey[500]} style={{ marginTop: '2px' }} />
                     </Box>
                     <Box mt={1}>
                       <LinearProgressWithLabel value={checklist.progress_percentage} />
                     </Box>
                   </Paper>
 
-                  <SurveyViewToggle checklist={checklist} activeView={activeView} setActiveView={handleSetActiveView} />
+                  {showProgress ? (
+                    <HiearchicalSurveyViewToggle
+                      checklist={checklist}
+                      activeView={activeView}
+                      setActiveView={handleSetActiveView}
+                    />
+                  ) : (
+                    <SurveyViewToggle
+                      checklist={checklist}
+                      activeView={activeView}
+                      setActiveView={handleSetActiveView}
+                    />
+                  )}
                 </Box>
               }>
-              {delayedShowContent && (
+              {showProgress ? (
+                <ComponentSwitch
+                  switch={activeView}
+                  components={{
+                    [SURVEY_ACTIVE_VIEW_VALUE.overview]: <SurveyOverviewPage />,
+                    [SAMPLING_ACTIVE_VIEW_VALUE.sites]: <SamplingSiteContainer />,
+                    [SAMPLING_ACTIVE_VIEW_VALUE.techniques]: <SamplingTechniqueContainer />,
+                    [SAMPLING_ACTIVE_VIEW_VALUE.periods]: <SamplingPeriodContainer />,
+                    [DATA_ACTIVE_VIEW_VALUE.observations]: <SurveySpatialObservations />,
+                    [DATA_ACTIVE_VIEW_VALUE.devices]: <DevicesContainer />,
+                    [DATA_ACTIVE_VIEW_VALUE.deployments]: <SurveyDeploymentList />,
+                    [DATA_ACTIVE_VIEW_VALUE.locations]: <SurveySpatialTelemetry />,
+                    [DATA_ACTIVE_VIEW_VALUE.animals]: <SurveySpatialAnimals />,
+                    [DATA_ACTIVE_VIEW_VALUE.habitat]: <SurveySpatialHabitatFeatures />
+                  }}
+                />
+              ) : (
                 <ComponentSwitch
                   switch={activeView}
                   components={{

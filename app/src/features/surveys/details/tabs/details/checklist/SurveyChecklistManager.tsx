@@ -1,8 +1,8 @@
+import { SURVEY_ACTIVE_VIEW_VALUE } from 'constants/survey-view';
 import { IGetSurveyChecklist, IGetSurveyChecklistItem } from 'interfaces/useChecklistApi.interface';
 import { useCallback, useMemo } from 'react';
 import { DATA_ACTIVE_VIEW_VALUE } from '../data/SurveyDataPage';
 import { SAMPLING_ACTIVE_VIEW_VALUE } from '../sampling/SurveySamplingPage';
-import { SURVEY_ACTIVE_VIEW_VALUE } from '../SurveyDetailsTab';
 import { ToggleButtonView } from './SurveyChecklist';
 
 export type ChecklistItem = IGetSurveyChecklistItem &
@@ -17,7 +17,7 @@ type SurveyChecklistManagerProps = {
 
 /**
  *
- * @param param0
+ * @param {SurveyChecklistManagerProps} props
  * @returns
  */
 export const SurveyChecklistManager = (props: SurveyChecklistManagerProps) => {
