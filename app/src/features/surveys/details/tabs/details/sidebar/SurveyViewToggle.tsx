@@ -1,4 +1,4 @@
-import { mdiCalendarClock, mdiDatabaseSearch, mdiFileOutline, mdiHome } from '@mdi/js';
+import { mdiAccountMultiple, mdiCalendarClock, mdiDatabaseSearch, mdiFileOutline, mdiHome } from '@mdi/js';
 import CustomToggleButtonGroup, { ToggleButtonView } from 'components/toggle/CustomToggleButtonGroup';
 import { DATA_ACTIVE_VIEW_VALUE, SURVEY_ACTIVE_VIEW_VALUE, SURVEY_VIEW_VALUE } from 'constants/survey-view';
 import { SurveyContext } from 'contexts/surveyContext';
@@ -52,6 +52,7 @@ export const SurveyViewToggle = ({ checklist, activeView, setActiveView }: Surve
       [SURVEY_ACTIVE_VIEW_VALUE.sampling]: ['sites', 'techniques', 'periods'],
       [SURVEY_ACTIVE_VIEW_VALUE.data]: ['observations', 'devices', 'deployments', 'locations', 'habitat', 'animals'],
       [SURVEY_ACTIVE_VIEW_VALUE.attachments]: [],
+      [SURVEY_ACTIVE_VIEW_VALUE.permissions]: [],
 
       // Sampling sub-views
       [SAMPLING_ACTIVE_VIEW_VALUE.sites]: [],
@@ -194,6 +195,11 @@ export const SurveyViewToggle = ({ checklist, activeView, setActiveView }: Surve
         checkbox: true,
         disabled: !checklist?.attachments?.applicable,
         checked: !!checklist?.attachments.count
+      },
+      {
+        value: SURVEY_ACTIVE_VIEW_VALUE.permissions,
+        label: 'Members',
+        icon: mdiAccountMultiple
       }
     ],
     [checklist, samplingCounts, dataCounts]

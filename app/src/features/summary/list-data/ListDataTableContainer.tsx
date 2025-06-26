@@ -67,7 +67,7 @@ export const ListDataTableContainer = () => {
   return (
     <SidebarLayout
       sidebar={
-        <Box p={2} sx={{ minWidth: '300px', overflowY: 'auto', height: '100%', flexShrink: 0 }}>
+        <Box p={2} sx={{ minWidth: '250px', overflowY: 'auto', height: '100%', flexShrink: 0 }}>
           <CustomToggleButtonGroup
             views={views}
             activeView={activeView}

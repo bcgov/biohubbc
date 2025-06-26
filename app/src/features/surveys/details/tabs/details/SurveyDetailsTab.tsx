@@ -12,23 +12,24 @@ import {
   SURVEY_VIEW_VALUE
 } from 'constants/survey-view';
 import { CodesContext } from 'contexts/codesContext';
-import { SurveySpatialTelemetry } from 'features/surveys/telemetry/SurveySpatialTelemetry';
 import { SurveyDeploymentList } from 'features/surveys/telemetry/list/SurveyDeploymentList';
 import { DevicesContainer } from 'features/surveys/telemetry/manage/devices/table/DevicesContainer';
+import { SurveySpatialTelemetry } from 'features/surveys/telemetry/SurveySpatialTelemetry';
 import SurveyAttachments from 'features/surveys/view/SurveyAttachments';
 import { useSearchParams } from 'hooks/useSearchParams';
 import { IGetSurveyChecklist } from 'interfaces/useChecklistApi.interface';
 import { SidebarLayout } from 'layouts/SidebarLayout';
-import { SurveyChecklistManager } from './checklist/SurveyChecklistManager';
+import SurveyMembersContainer from '../permissions/members/SurveyMembersContainer';
 import { LinearProgressWithLabel } from './checklist/progress/SurveyChecklistProgressBar';
-import { DATA_ACTIVE_VIEW_KEY, SurveyDataPage } from './data/SurveyDataPage';
+import { SurveyChecklistManager } from './checklist/SurveyChecklistManager';
 import { SurveySpatialAnimals } from './data/animals/SurveySpatialAnimals';
 import { SurveySpatialHabitatFeatures } from './data/habitat/SurveySpatialHabitatFeatures';
 import { SurveySpatialObservations } from './data/observations/SurveySpatialObservations';
+import { DATA_ACTIVE_VIEW_KEY, SurveyDataPage } from './data/SurveyDataPage';
 import { SurveyOverviewPage } from './overview/SurveyOverviewPage';
-import { SAMPLING_ACTIVE_VIEW_KEY, SurveySamplingPage } from './sampling/SurveySamplingPage';
 import { SamplingPeriodContainer } from './sampling/period/SamplingPeriodContainer';
 import { SamplingSiteContainer } from './sampling/site/SamplingSiteContainer';
+import { SAMPLING_ACTIVE_VIEW_KEY, SurveySamplingPage } from './sampling/SurveySamplingPage';
 import { SamplingTechniqueContainer } from './sampling/technique/SamplingTechniqueContainer';
 import { HiearchicalSurveyViewToggle } from './sidebar/HierarchicalSurveyViewToggle';
 import { SurveyViewToggle } from './sidebar/SurveyViewToggle';
@@ -134,7 +135,8 @@ export const SurveyDetailsTab = ({ checklist }: SurveyDetailsTabProps) => {
                     [DATA_ACTIVE_VIEW_VALUE.deployments]: <SurveyDeploymentList />,
                     [DATA_ACTIVE_VIEW_VALUE.locations]: <SurveySpatialTelemetry />,
                     [DATA_ACTIVE_VIEW_VALUE.animals]: <SurveySpatialAnimals />,
-                    [DATA_ACTIVE_VIEW_VALUE.habitat]: <SurveySpatialHabitatFeatures />
+                    [DATA_ACTIVE_VIEW_VALUE.habitat]: <SurveySpatialHabitatFeatures />,
+                    [SURVEY_ACTIVE_VIEW_VALUE.permissions]: <SurveyMembersContainer />
                   }}
                 />
               ) : (
@@ -146,7 +148,8 @@ export const SurveyDetailsTab = ({ checklist }: SurveyDetailsTabProps) => {
                       <SurveySamplingPage checklistItems={flattenedChecklistItems} />
                     ),
                     [SURVEY_ACTIVE_VIEW_VALUE.data]: <SurveyDataPage checklistItems={flattenedChecklistItems} />,
-                    [SURVEY_ACTIVE_VIEW_VALUE.attachments]: <SurveyAttachments />
+                    [SURVEY_ACTIVE_VIEW_VALUE.attachments]: <SurveyAttachments />,
+                    [SURVEY_ACTIVE_VIEW_VALUE.permissions]: <SurveyMembersContainer />
                   }}
                 />
               )}
