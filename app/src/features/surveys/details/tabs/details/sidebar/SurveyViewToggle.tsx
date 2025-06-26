@@ -1,5 +1,6 @@
 import { mdiAccountMultiple, mdiCalendarClock, mdiDatabaseSearch, mdiFileOutline, mdiHome } from '@mdi/js';
-import CustomToggleButtonGroup, { ToggleButtonView } from 'components/toggle/CustomToggleButtonGroup';
+import { ToggleButtonView } from 'components/toggle/CustomToggleButtonGroup';
+import { HierarchicalCustomToggleButtonGroup } from 'components/toggle/HierarchicalCustomToggleButtonGroup';
 import { DATA_ACTIVE_VIEW_VALUE, SURVEY_ACTIVE_VIEW_VALUE, SURVEY_VIEW_VALUE } from 'constants/survey-view';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -27,7 +28,7 @@ export const SurveyViewToggle = ({ checklist, activeView, setActiveView }: Surve
             value: item.checklist_item_name ?? key,
             checked: !!item.count,
             disabled: !item.applicable,
-            checkbox: true,
+
             children: children.length ? children : undefined
           }
         ];
@@ -158,7 +159,6 @@ export const SurveyViewToggle = ({ checklist, activeView, setActiveView }: Surve
         value: SURVEY_ACTIVE_VIEW_VALUE.sampling,
         label: 'Sampling',
         icon: mdiCalendarClock,
-        checkbox: true,
 
         indeterminate:
           samplingCounts.some((count) => (count ?? 0) > 0) && samplingCounts.some((count) => (count ?? 0) === 0),
@@ -174,7 +174,6 @@ export const SurveyViewToggle = ({ checklist, activeView, setActiveView }: Surve
         value: SURVEY_ACTIVE_VIEW_VALUE.data,
         label: 'Data',
         icon: mdiDatabaseSearch,
-        checkbox: true,
 
         indeterminate: dataCounts.some((count) => (count ?? 0) > 0) && dataCounts.some((count) => (count ?? 0) === 0),
 
@@ -192,7 +191,7 @@ export const SurveyViewToggle = ({ checklist, activeView, setActiveView }: Surve
         value: SURVEY_ACTIVE_VIEW_VALUE.attachments,
         label: 'Supplementary',
         icon: mdiFileOutline,
-        checkbox: true,
+
         disabled: !checklist?.attachments?.applicable,
         checked: !!checklist?.attachments.count
       },
@@ -206,7 +205,7 @@ export const SurveyViewToggle = ({ checklist, activeView, setActiveView }: Surve
   );
 
   return (
-    <CustomToggleButtonGroup
+    <HierarchicalCustomToggleButtonGroup
       views={views}
       activeView={activeView}
       onViewChange={setActiveView}

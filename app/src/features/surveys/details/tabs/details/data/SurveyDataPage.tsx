@@ -101,7 +101,7 @@ export const SurveyDataPage = (props: ISurveyDataPageProps) => {
       value: DATA_ACTIVE_VIEW_VALUE.observations,
       label: 'Observations',
       icon: mdiEye,
-      checkbox: true,
+
       disabled: !checklist.data.observations.applicable,
       checked: !!checklist.data.observations.count
     },
@@ -109,7 +109,7 @@ export const SurveyDataPage = (props: ISurveyDataPageProps) => {
       value: DATA_ACTIVE_VIEW_VALUE.animals,
       label: 'Animals',
       icon: mdiPaw,
-      checkbox: true,
+
       disabled: !checklist.data.animals.applicable,
       checked: !!checklist.data.animals.count
     },
@@ -123,7 +123,7 @@ export const SurveyDataPage = (props: ISurveyDataPageProps) => {
           value: DATA_ACTIVE_VIEW_VALUE.devices,
           label: 'Devices',
           icon: mdiAntenna,
-          checkbox: true,
+
           disabled: !checklist.data.telemetry.devices.applicable,
           checked: !!checklist.data.telemetry.devices.count
         },
@@ -131,7 +131,7 @@ export const SurveyDataPage = (props: ISurveyDataPageProps) => {
           value: DATA_ACTIVE_VIEW_VALUE.deployments,
           label: 'Deployments',
           icon: mdiCalendarRangeOutline,
-          checkbox: true,
+
           disabled: !checklist.data.telemetry.deployments.applicable,
           checked: !!checklist.data.telemetry.deployments.count
         },
@@ -139,7 +139,7 @@ export const SurveyDataPage = (props: ISurveyDataPageProps) => {
           value: DATA_ACTIVE_VIEW_VALUE.locations,
           label: 'Locations',
           icon: mdiMapMarkerRadiusOutline,
-          checkbox: true,
+
           disabled: !checklist.data.telemetry.locations.applicable,
           checked: !!checklist.data.telemetry.locations.count
         }
@@ -149,7 +149,7 @@ export const SurveyDataPage = (props: ISurveyDataPageProps) => {
       value: DATA_ACTIVE_VIEW_VALUE.habitat,
       label: 'Habitat Features',
       icon: mdiPineTree,
-      checkbox: true,
+
       disabled: !checklist.data.habitat.applicable,
       checked: !!checklist.data.habitat.count
     }

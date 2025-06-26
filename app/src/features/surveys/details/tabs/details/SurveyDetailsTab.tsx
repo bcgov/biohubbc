@@ -15,7 +15,6 @@ import { CodesContext } from 'contexts/codesContext';
 import { SurveyDeploymentList } from 'features/surveys/telemetry/list/SurveyDeploymentList';
 import { DevicesContainer } from 'features/surveys/telemetry/manage/devices/table/DevicesContainer';
 import { SurveySpatialTelemetry } from 'features/surveys/telemetry/SurveySpatialTelemetry';
-import SurveyAttachments from 'features/surveys/view/SurveyAttachments';
 import { useSearchParams } from 'hooks/useSearchParams';
 import { IGetSurveyChecklist } from 'interfaces/useChecklistApi.interface';
 import { SidebarLayout } from 'layouts/SidebarLayout';
@@ -25,14 +24,13 @@ import { SurveyChecklistManager } from './checklist/SurveyChecklistManager';
 import { SurveySpatialAnimals } from './data/animals/SurveySpatialAnimals';
 import { SurveySpatialHabitatFeatures } from './data/habitat/SurveySpatialHabitatFeatures';
 import { SurveySpatialObservations } from './data/observations/SurveySpatialObservations';
-import { DATA_ACTIVE_VIEW_KEY, SurveyDataPage } from './data/SurveyDataPage';
+import { DATA_ACTIVE_VIEW_KEY } from './data/SurveyDataPage';
 import { SurveyOverviewPage } from './overview/SurveyOverviewPage';
 import { SamplingPeriodContainer } from './sampling/period/SamplingPeriodContainer';
 import { SamplingSiteContainer } from './sampling/site/SamplingSiteContainer';
-import { SAMPLING_ACTIVE_VIEW_KEY, SurveySamplingPage } from './sampling/SurveySamplingPage';
+import { SAMPLING_ACTIVE_VIEW_KEY } from './sampling/SurveySamplingPage';
 import { SamplingTechniqueContainer } from './sampling/technique/SamplingTechniqueContainer';
 import { HiearchicalSurveyViewToggle } from './sidebar/HierarchicalSurveyViewToggle';
-import { SurveyViewToggle } from './sidebar/SurveyViewToggle';
 
 const SURVEY_ACTIVE_VIEW_KEY = 'sv';
 const DEFAULT_VIEW = SURVEY_ACTIVE_VIEW_VALUE.overview;
@@ -68,16 +66,17 @@ export const SurveyDetailsTab = ({ checklist }: SurveyDetailsTabProps) => {
     <Box sx={{ display: 'flex', gap: 2, height: '100%' }}>
       <Box sx={{ flex: 1, minWidth: 0, height: '100%' }}>
         <SurveyChecklistManager checklist={checklist}>
-          {(flattenedChecklistItems) => (
+          {() => (
             <SidebarLayout
               sx={{ borderRadius: '4px' }}
               sidebar={
                 <Box
                   p={2}
                   sx={{
-                    width: showProgress ? '35%' : 300,
+                    minWidth: 250,
+                    width: showProgress ? '30%' : 400,
                     transition: 'width 0.3s ease',
-                    overflow: 'hidden'
+                    overflowX: 'hidden'
                   }}>
                   <Paper
                     role="button"
@@ -99,7 +98,7 @@ export const SurveyDetailsTab = ({ checklist }: SurveyDetailsTabProps) => {
                       }
                     }}>
                     <Box display="flex" justifyContent="space-between">
-                      <Typography component="legend">Progress</Typography>
+                      <Typography component="legend">Checklist</Typography>
                       <Icon path={mdiArrowExpand} size={0.8} color={grey[500]} style={{ marginTop: '2px' }} />
                     </Box>
                     <Box mt={1}>
@@ -107,52 +106,29 @@ export const SurveyDetailsTab = ({ checklist }: SurveyDetailsTabProps) => {
                     </Box>
                   </Paper>
 
-                  {showProgress ? (
-                    <HiearchicalSurveyViewToggle
-                      checklist={checklist}
-                      activeView={activeView}
-                      setActiveView={handleSetActiveView}
-                    />
-                  ) : (
-                    <SurveyViewToggle
-                      checklist={checklist}
-                      activeView={activeView}
-                      setActiveView={handleSetActiveView}
-                    />
-                  )}
+                  <HiearchicalSurveyViewToggle
+                    checklist={checklist}
+                    activeView={activeView}
+                    setActiveView={handleSetActiveView}
+                  />
                 </Box>
               }>
-              {showProgress ? (
-                <ComponentSwitch
-                  switch={activeView}
-                  components={{
-                    [SURVEY_ACTIVE_VIEW_VALUE.overview]: <SurveyOverviewPage />,
-                    [SAMPLING_ACTIVE_VIEW_VALUE.sites]: <SamplingSiteContainer />,
-                    [SAMPLING_ACTIVE_VIEW_VALUE.techniques]: <SamplingTechniqueContainer />,
-                    [SAMPLING_ACTIVE_VIEW_VALUE.periods]: <SamplingPeriodContainer />,
-                    [DATA_ACTIVE_VIEW_VALUE.observations]: <SurveySpatialObservations />,
-                    [DATA_ACTIVE_VIEW_VALUE.devices]: <DevicesContainer />,
-                    [DATA_ACTIVE_VIEW_VALUE.deployments]: <SurveyDeploymentList />,
-                    [DATA_ACTIVE_VIEW_VALUE.locations]: <SurveySpatialTelemetry />,
-                    [DATA_ACTIVE_VIEW_VALUE.animals]: <SurveySpatialAnimals />,
-                    [DATA_ACTIVE_VIEW_VALUE.habitat]: <SurveySpatialHabitatFeatures />,
-                    [SURVEY_ACTIVE_VIEW_VALUE.permissions]: <SurveyMembersContainer />
-                  }}
-                />
-              ) : (
-                <ComponentSwitch
-                  switch={activeView}
-                  components={{
-                    [SURVEY_ACTIVE_VIEW_VALUE.overview]: <SurveyOverviewPage />,
-                    [SURVEY_ACTIVE_VIEW_VALUE.sampling]: (
-                      <SurveySamplingPage checklistItems={flattenedChecklistItems} />
-                    ),
-                    [SURVEY_ACTIVE_VIEW_VALUE.data]: <SurveyDataPage checklistItems={flattenedChecklistItems} />,
-                    [SURVEY_ACTIVE_VIEW_VALUE.attachments]: <SurveyAttachments />,
-                    [SURVEY_ACTIVE_VIEW_VALUE.permissions]: <SurveyMembersContainer />
-                  }}
-                />
-              )}
+              <ComponentSwitch
+                switch={activeView}
+                components={{
+                  [SURVEY_ACTIVE_VIEW_VALUE.overview]: <SurveyOverviewPage />,
+                  [SAMPLING_ACTIVE_VIEW_VALUE.sites]: <SamplingSiteContainer />,
+                  [SAMPLING_ACTIVE_VIEW_VALUE.techniques]: <SamplingTechniqueContainer />,
+                  [SAMPLING_ACTIVE_VIEW_VALUE.periods]: <SamplingPeriodContainer />,
+                  [DATA_ACTIVE_VIEW_VALUE.observations]: <SurveySpatialObservations />,
+                  [DATA_ACTIVE_VIEW_VALUE.devices]: <DevicesContainer />,
+                  [DATA_ACTIVE_VIEW_VALUE.deployments]: <SurveyDeploymentList />,
+                  [DATA_ACTIVE_VIEW_VALUE.locations]: <SurveySpatialTelemetry />,
+                  [DATA_ACTIVE_VIEW_VALUE.animals]: <SurveySpatialAnimals />,
+                  [DATA_ACTIVE_VIEW_VALUE.habitat]: <SurveySpatialHabitatFeatures />,
+                  [SURVEY_ACTIVE_VIEW_VALUE.permissions]: <SurveyMembersContainer />
+                }}
+              />
             </SidebarLayout>
           )}
         </SurveyChecklistManager>
