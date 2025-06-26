@@ -1,4 +1,4 @@
-import { mdiArrowTopRight, mdiDotsVertical, mdiTrashCanOutline } from '@mdi/js';
+import { mdiArrowTopRight, mdiChevronDown, mdiDotsVertical, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import {
   Box,
@@ -12,7 +12,6 @@ import {
   MenuItem,
   MenuProps,
   Stack,
-  Tooltip,
   Typography
 } from '@mui/material';
 import grey from '@mui/material/colors/grey';
@@ -38,6 +37,7 @@ import CollectionsListFilterForm, {
   CollectionAdvancedFiltersInitialValues,
   ICollectionAdvancedFilters
 } from './CollectionListFilterForm';
+import { SubcollectionMenuButton } from './menu/SubcollectionMenuButton';
 
 type CollectionDataTableURLParams = {
   p_keyword?: string;
@@ -74,6 +74,8 @@ export const CollectionsListContainer = (props: ICollectionsListContainerProps) 
 
   const biohubApi = useBiohubApi();
   const dialogContext = useDialogContext();
+
+  const [hoveredCollection, setHoveredCollection] = useState<number | null>(null);
 
   const { searchParams, setSearchParams } = useSearchParams<StringValues<CollectionDataTableURLParams>>();
 
@@ -126,7 +128,7 @@ export const CollectionsListContainer = (props: ICollectionsListContainerProps) 
 
   const collectionsDataLoader = useDataLoader(
     (pagination: ApiPaginationRequestOptions, filter?: ICollectionAdvancedFilters) =>
-      biohubApi.collection.findCollections(pagination, filter)
+      biohubApi.collection.findCollections(pagination, { ...filter, include_children: true })
   );
 
   useDeepCompareEffect(() => {
@@ -158,7 +160,7 @@ export const CollectionsListContainer = (props: ICollectionsListContainerProps) 
       flex: 0.3,
       disableColumnMenu: true,
       renderCell: (params) => (
-        <Stack mb={0.25}>
+        <Stack mb={0.25} flexDirection="row" gap={1} alignItems="center">
           <Link
             style={{ overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: 700 }}
             data-testid={params.row.name}
@@ -168,20 +170,21 @@ export const CollectionsListContainer = (props: ICollectionsListContainerProps) 
             to={`/admin/collections/${params.row.collection_id}`}>
             {params.row.name}
           </Link>
+
+          {params.row.subcollections.length > 0 && (
+            <IconButton
+              size="small"
+              onMouseEnter={() => setHoveredCollection(params.row.collection_id)}
+              onMouseLeave={() => setHoveredCollection(null)}
+              color="primary">
+              <Icon path={mdiChevronDown} size={0.85} />
+            </IconButton>
+          )}
+
+          {params.row.collection_id === hoveredCollection && (
+            <SubcollectionMenuButton collectionId={params.row.collection_id} />
+          )}
         </Stack>
-      )
-    },
-    {
-      field: 'description',
-      headerName: 'Description',
-      flex: 0.4,
-      disableColumnMenu: true,
-      renderCell: (params) => (
-        <Tooltip title={params.row.description}>
-          <Typography color="textSecondary" variant="body2">
-            {params.row.description}
-          </Typography>
-        </Tooltip>
       )
     },
     {

@@ -10,6 +10,7 @@ export type ICollectionAdvancedFilters = {
   itis_tsn?: number;
   system_user_id?: string;
   parent_collection_id?: number | null;
+  include_children?: boolean;
 };
 
 export const CollectionAdvancedFiltersInitialValues: ICollectionAdvancedFilters = {
