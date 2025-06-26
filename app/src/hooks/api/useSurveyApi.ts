@@ -510,20 +510,6 @@ const useSurveyApi = (axios: AxiosInstance) => {
     return data;
   };
 
-  /**
-   * Add members to a survey.
-   * @param {number} surveyId
-   * @param {Array<{ system_user_id: number, survey_role_name: string }>} members
-   * @returns {Promise<any>}
-   */
-  const addSurveyMembers = async (
-    surveyId: number,
-    members: Array<{ system_user_id: number; survey_role_name: string }>
-  ): Promise<any> => {
-    const { data } = await axios.post(`/api/survey/${surveyId}/members`, { members });
-    return data;
-  };
-
   return {
     createSurvey,
     getSurveyForView,
@@ -551,8 +537,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     importCapturesFromCsv,
     importMarkingsFromCsv,
     importMeasurementsFromCsv,
-    exportData,
-    addSurveyMembers
+    exportData
   };
 };
 
