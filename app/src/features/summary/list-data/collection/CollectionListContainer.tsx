@@ -172,50 +172,6 @@ export const CollectionsListContainer = (props: ICollectionsListContainerProps) 
         </Stack>
       )
     },
-    // {
-    //   field: 'members',
-    //   headerName: 'Members',
-    //   flex: 0.4,
-    //   disableColumnMenu: true,
-    //   renderCell: (params) => {
-    //     const members = params.row.members;
-    //     const visibleMembers = members.slice(0, 5);
-    //     const remainingCount = members.length - visibleMembers.length;
-
-    //     return (
-    //       <Stack gap={0.5} flexDirection="row" alignItems="center">
-    //         {visibleMembers.map((member) => (
-    //           <TeamMemberAvatar
-    //             key={member.system_user_id}
-    //             tooltip={member.display_name}
-    //             label={member.display_name
-    //               .split(',')
-    //               .map((name) => name.trim().slice(0, 1).toUpperCase())
-    //               .reverse()
-    //               .join('')}
-    //             color={getRandomHexColor(member.system_user_id)}
-    //           />
-    //         ))}
-    //         {remainingCount > 0 && (
-    //           <Box
-    //             sx={{
-    //               width: 32,
-    //               height: 32,
-    //               borderRadius: '50%',
-    //               backgroundColor: '#ccc',
-    //               display: 'flex',
-    //               alignItems: 'center',
-    //               justifyContent: 'center',
-    //               fontSize: 12,
-    //               fontWeight: 'bold'
-    //             }}>
-    //             +{remainingCount}
-    //           </Box>
-    //         )}
-    //       </Stack>
-    //     );
-    //   }
-    // },
     {
       field: 'actions',
       type: 'actions',

@@ -51,12 +51,6 @@ export const SubcollectionNavigator = ({ collectionId }: SubcollectionNavigatorP
       return;
     }
 
-    // Item is already open so remove it
-    // if (expandedCollections.includes(collection.collection_id)) {
-    //   setExpandedCollections((prev) => prev.filter((p) => p !== collection.collection_id));
-    //   return;
-    // }
-
     setExpandedCollections((prev) => [...prev, collection.collection_id]);
   };
 
@@ -115,7 +109,7 @@ export const SubcollectionNavigator = ({ collectionId }: SubcollectionNavigatorP
       <Button
         onClick={handleOpenMenu}
         endIcon={<Icon path={mdiChevronDown} size={0.8} style={{ marginLeft: '-5px' }} />}
-        sx={{ minWidth: 'auto', mx: 2 }}>
+        sx={{ minWidth: 'auto', mx: 1 }}>
         <Icon path={mdiFolderOutline} size={0.9} />
       </Button>
 
@@ -128,20 +122,18 @@ export const SubcollectionNavigator = ({ collectionId }: SubcollectionNavigatorP
         transformOrigin={{ vertical: 'top', horizontal: 'left' }}
         slotProps={{
           paper: {
-            elevation: 8,
+            elevation: 4,
             sx: {
               minWidth: 320,
               maxWidth: 480,
               maxHeight: 500,
               overflow: 'auto',
               mt: 1,
-              border: '1px solid',
-              borderColor: 'divider',
               borderRadius: 2
             }
           }
         }}>
-        <Box sx={{ p: 2, pt: 1, borderBottom: '1px solid', borderColor: 'divider' }}>
+        <Box sx={{ p: 2, pt: 1, borderBottom: '1px solid', borderColor: 'divider', fontWeight: 700 }}>
           <Typography variant="subtitle2" color="text.secondary">
             Subprojects
           </Typography>
