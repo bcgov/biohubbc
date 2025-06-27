@@ -87,10 +87,8 @@ export const VideoHelpSection = (props: VideoHelpSectionProps) => {
             <Box sx={{ overflow: 'hidden', position: 'relative' }}>
               <video
                 src={videoUrl}
-                autoPlay
-                loop
-                muted
                 playsInline
+                controls
                 style={{
                   display: 'block',
                   width: '100%',
