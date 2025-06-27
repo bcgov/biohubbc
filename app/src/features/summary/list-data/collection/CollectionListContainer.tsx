@@ -1,4 +1,4 @@
-import { mdiArrowTopRight, mdiChevronDown, mdiDotsVertical, mdiTrashCanOutline } from '@mdi/js';
+import { mdiArrowTopRight, mdiDotsVertical, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import {
   Box,
@@ -16,7 +16,6 @@ import {
 } from '@mui/material';
 import grey from '@mui/material/colors/grey';
 import { GridColDef, GridPaginationModel, GridSortDirection, GridSortModel } from '@mui/x-data-grid';
-import { TeamMemberAvatar } from 'components/avatar/TeamMemberAvatar';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
@@ -32,12 +31,12 @@ import { ICollection } from 'interfaces/useCollectionApi.interface';
 import { useMemo, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions, StringValues } from 'types/misc';
-import { firstOrNull, getRandomHexColor } from 'utils/Utils';
+import { firstOrNull } from 'utils/Utils';
 import CollectionsListFilterForm, {
   CollectionAdvancedFiltersInitialValues,
   ICollectionAdvancedFilters
 } from './CollectionListFilterForm';
-import { SubcollectionMenuButton } from './menu/SubcollectionMenuButton';
+import { SubcollectionNavigator } from './menu/SubcollectionNavigator';
 
 type CollectionDataTableURLParams = {
   p_keyword?: string;
@@ -74,8 +73,6 @@ export const CollectionsListContainer = (props: ICollectionsListContainerProps) 
 
   const biohubApi = useBiohubApi();
   const dialogContext = useDialogContext();
-
-  const [hoveredCollection, setHoveredCollection] = useState<number | null>(null);
 
   const { searchParams, setSearchParams } = useSearchParams<StringValues<CollectionDataTableURLParams>>();
 
@@ -171,66 +168,54 @@ export const CollectionsListContainer = (props: ICollectionsListContainerProps) 
             {params.row.name}
           </Link>
 
-          {params.row.subcollections.length > 0 && (
-            <IconButton
-              size="small"
-              onMouseEnter={() => setHoveredCollection(params.row.collection_id)}
-              onMouseLeave={() => setHoveredCollection(null)}
-              color="primary">
-              <Icon path={mdiChevronDown} size={0.85} />
-            </IconButton>
-          )}
-
-          {params.row.collection_id === hoveredCollection && (
-            <SubcollectionMenuButton collectionId={params.row.collection_id} />
-          )}
+          {params.row.subcollections.length > 0 && <SubcollectionNavigator collectionId={params.row.collection_id} />}
         </Stack>
       )
     },
-    {
-      field: 'members',
-      headerName: 'Members',
-      flex: 0.4,
-      disableColumnMenu: true,
-      renderCell: (params) => {
-        const members = params.row.members;
-        const visibleMembers = members.slice(0, 5);
-        const remainingCount = members.length - visibleMembers.length;
+    // {
+    //   field: 'members',
+    //   headerName: 'Members',
+    //   flex: 0.4,
+    //   disableColumnMenu: true,
+    //   renderCell: (params) => {
+    //     const members = params.row.members;
+    //     const visibleMembers = members.slice(0, 5);
+    //     const remainingCount = members.length - visibleMembers.length;
 
-        return (
-          <Stack gap={0.5} flexDirection="row" alignItems="center">
-            {visibleMembers.map((member) => (
-              <TeamMemberAvatar
-                key={member.system_user_id}
-                tooltip={member.display_name}
-                label={member.display_name
-                  .split(',')
-                  .map((name) => name.trim().slice(0, 1).toUpperCase())
-                  .reverse()
-                  .join('')}
-                color={getRandomHexColor(member.system_user_id)}
-              />
-            ))}
-            {remainingCount > 0 && (
-              <Box
-                sx={{
-                  width: 32,
-                  height: 32,
-                  borderRadius: '50%',
-                  backgroundColor: '#ccc',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: 12,
-                  fontWeight: 'bold'
-                }}>
-                +{remainingCount}
-              </Box>
-            )}
-          </Stack>
-        );
-      }
-    },
+    //     return (
+    //       <Stack gap={0.5} flexDirection="row" alignItems="center">
+    //         {visibleMembers.map((member) => (
+    //           <TeamMemberAvatar
+    //             key={member.system_user_id}
+    //             tooltip={member.display_name}
+    //             label={member.display_name
+    //               .split(',')
+    //               .map((name) => name.trim().slice(0, 1).toUpperCase())
+    //               .reverse()
+    //               .join('')}
+    //             color={getRandomHexColor(member.system_user_id)}
+    //           />
+    //         ))}
+    //         {remainingCount > 0 && (
+    //           <Box
+    //             sx={{
+    //               width: 32,
+    //               height: 32,
+    //               borderRadius: '50%',
+    //               backgroundColor: '#ccc',
+    //               display: 'flex',
+    //               alignItems: 'center',
+    //               justifyContent: 'center',
+    //               fontSize: 12,
+    //               fontWeight: 'bold'
+    //             }}>
+    //             +{remainingCount}
+    //           </Box>
+    //         )}
+    //       </Stack>
+    //     );
+    //   }
+    // },
     {
       field: 'actions',
       type: 'actions',
@@ -350,9 +335,7 @@ export const CollectionsListContainer = (props: ICollectionsListContainerProps) 
           disableColumnSelector
           disableColumnFilter
           disableColumnMenu
-          rowHeight={70}
-          getRowHeight={() => 'auto'}
-          autoHeight={false}
+          rowHeight={60}
         />
       </LoadingGuard>
 
