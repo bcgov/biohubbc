@@ -95,6 +95,30 @@ export class SurveyMemberService extends DBService {
   }
 
   /**
+   * Adds multiple survey participants to any number of surveys (bulk permissions).
+   *
+   * @param {number} surveyId
+   * @param {IInsertSurveyMember[]} members
+   * @return {*}  {Promise<void[]>}
+   * @memberof SurveyMemberService
+   */
+  async insertMemberstoSurveys(surveyIds: number[], members: IPostSurveyMember[]): Promise<void> {
+    const promises: Promise<void>[] = [];
+
+    for (const surveyId of surveyIds) {
+      const memberPayload = members.map((member) => ({
+        survey_id: surveyId,
+        system_user_id: member.system_user_id,
+        survey_role_name: member.survey_role_name
+      }));
+
+      promises.push(this.surveyMemberRepository.insertMembersBatch(memberPayload));
+    }
+
+    await Promise.all(promises);
+  }
+
+  /**
    * Deletes a survey member record.
    *
    * @param {number} surveyId

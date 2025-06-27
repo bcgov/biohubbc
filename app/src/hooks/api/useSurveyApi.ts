@@ -1,5 +1,6 @@
 import { AxiosInstance, AxiosProgressEvent, CancelTokenSource } from 'axios';
 import { ISurveyCritter } from 'contexts/animalPageContext';
+import { IManageUsersFormValues } from 'features/summary/list-data/survey/manage/ManageUsersForm';
 import { ISurveyAdvancedFilters } from 'features/summary/list-data/survey/SurveysListFilterForm';
 import { ICreateCritter } from 'features/surveys/view/survey-animals/animal';
 import { SurveyExportConfig } from 'features/surveys/view/survey-export/SurveyExportForm';
@@ -154,6 +155,18 @@ const useSurveyApi = (axios: AxiosInstance) => {
    */
   const addSurveyMembers = async (surveyId: number, members?: IPostSurveyMember[]): Promise<ISurveyMemberResponse> => {
     const { data } = await axios.post(`/api/survey/${surveyId}/members`, { members });
+
+    return data;
+  };
+
+  /**
+   * Add users to multiple surveys
+   *
+   * @param {IManageUsersFormValues} values
+   * @return {*}  {Promise<void>}
+   */
+  const addBulkSurveysMembers = async (values: IManageUsersFormValues): Promise<void> => {
+    const { data } = await axios.post(`/api/survey/members`, { values });
 
     return data;
   };
@@ -517,6 +530,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     getSurveyForUpdate,
     getSurveyMembers,
     addSurveyMembers,
+    addBulkSurveysMembers,
     findSurveys,
     updateSurvey,
     uploadSurveyAttachments,

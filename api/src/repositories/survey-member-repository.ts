@@ -484,4 +484,65 @@ export class SurveyMemberRepository extends BaseRepository {
 
     return response.rows;
   }
+
+  /**
+   * Inserts multiple members into the survey member table for different surveys (batch insert).
+   *
+   * @param {{
+   *   survey_id: number;
+   *   system_user_id: number;
+   *   survey_role_name: string;
+   * }[]} members
+   * @return {*} Promise<void>
+   * @memberof SurveyMemberRepository
+   */
+  async insertMembersBatch(
+    members: {
+      survey_id: number;
+      system_user_id: number;
+      survey_role_name: string;
+    }[]
+  ): Promise<void> {
+    if (!members.length) return;
+
+    const rowsSql = members.map(
+      (m) =>
+        SQL`SELECT ${m.survey_id} AS survey_id, ${m.system_user_id} AS system_user_id, ${m.survey_role_name} AS survey_role_name`
+    );
+
+    let sqlStatement = SQL`
+    INSERT INTO survey_member (
+      survey_id,
+      system_user_id,
+      survey_role_id
+    )
+    SELECT
+      val.survey_id,
+      val.system_user_id,
+      sr.survey_role_id
+    FROM (
+  `;
+
+    sqlStatement.append(rowsSql[0]);
+    for (let i = 1; i < rowsSql.length; i++) {
+      sqlStatement.append(SQL` UNION ALL `);
+      sqlStatement.append(rowsSql[i]);
+    }
+
+    sqlStatement.append(SQL`) AS val
+    JOIN survey_role sr
+      ON LOWER(sr.name) = LOWER(val.survey_role_name)
+    WHERE sr.record_end_date IS NULL
+    RETURNING *;
+  `);
+
+    const response = await this.connection.sql(sqlStatement);
+
+    if (!response || !response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to insert one or more survey team members', [
+        'SurveyRepository->insertMembersBatch',
+        'rows was null or undefined, expected rows must not be null'
+      ]);
+    }
+  }
 }

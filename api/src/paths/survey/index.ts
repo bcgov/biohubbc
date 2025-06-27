@@ -2,10 +2,12 @@ import { Request, RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
+import { IPostSurveyMember } from '../../models/survey-create';
 import { ISurveyAdvancedFilters } from '../../models/survey-view';
 import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../../openapi/schemas/pagination';
 import { getSurveyBasicFieldsSchema } from '../../openapi/schemas/survey';
 import { authorizeRequestHandler, userHasValidRole } from '../../request-handlers/security/authorization';
+import { SurveyMemberService } from '../../services/survey-member-service';
 import { SurveyService } from '../../services/survey-service';
 import { getLogger } from '../../utils/logger';
 import {
@@ -240,5 +242,40 @@ function parseQueryParams(req: Request<unknown, unknown, unknown, ISurveyAdvance
     survey_name: req.query.survey_name ?? undefined,
     system_user_id: (req.query.system_user_id && Number(req.query.system_user_id)) ?? undefined,
     survey_roles: req.query.survey_roles ?? undefined
+  };
+}
+
+/**
+ * Add members to any number of surveys.
+ *
+ * @returns {RequestHandler}
+ */
+export function addMembersToSurveys(): RequestHandler {
+  return async (req, res) => {
+    defaultLog.debug({ label: 'addMembersToSurveys' });
+
+    const connection = getDBConnection(req.keycloak_token);
+
+    try {
+      await connection.open();
+
+      const surveyIds = req.body.surveyIds;
+
+      const surveyMemberService = new SurveyMemberService(connection);
+
+      const data = req.body.members as IPostSurveyMember[];
+
+      await surveyMemberService.insertMemberstoSurveys(surveyIds, data);
+
+      await connection.commit();
+
+      return res.status(200).json();
+    } catch (error) {
+      defaultLog.error({ label: 'addMembersToSurveys', message: 'error', error });
+      await connection.rollback();
+      throw error;
+    } finally {
+      connection.release();
+    }
   };
 }

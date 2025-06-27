@@ -6,7 +6,6 @@ import Collapse from '@mui/material/Collapse';
 import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
-import Snackbar from '@mui/material/Snackbar';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
@@ -21,10 +20,30 @@ import { CodesContext } from 'contexts/codesContext';
 import { useParticipantsForm } from 'features/summary/list-data/survey/manage/participantsForm';
 import { Formik, FormikProps } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useDialogContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import { IPostCollectionMember } from 'interfaces/useCollectionApi.interface';
+import React, { useContext, useEffect, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 import { TransitionGroup } from 'react-transition-group';
+import yup from 'utils/YupSchema';
+
+export interface IManageUsersFormValues {
+  selectedSurveys: number[];
+  selectedMembers: IPostCollectionMember[];
+}
+
+const initialValues: IManageUsersFormValues = {
+  selectedSurveys: [],
+  selectedMembers: []
+};
+
+const manageUsersYupSchema = yup.object().shape({
+  selectedSurveys: yup.array(yup.number()).min(1, 'You must select at least one survey.'),
+  selectedMembers: yup
+    .array(yup.object().shape({ system_user_id: yup.number(), collection_role_name: yup.string() }))
+    .min(1, 'Invite a team member and assign them a role.')
+});
 
 /**
  * Form for inviting multiple users to multiple surveys.
@@ -44,11 +63,7 @@ const ManageUsersForm = ({
   const codesContext = useContext(CodesContext);
   const codes = codesContext.codesDataLoader.data;
   const biohubApi = useBiohubApi();
-  const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({
-    open: false,
-    message: '',
-    severity: 'success'
-  });
+  const dialogContext = useDialogContext();
 
   // Ensure codes are loaded before rendering
   useEffect(() => {
@@ -70,45 +85,19 @@ const ManageUsersForm = ({
   const surveyOptions = useMemo(() => {
     const surveys = surveysDataLoader.data?.surveys || [];
     return surveys.map((survey) => ({
-      value: survey.survey_id as number,
-      label: survey.name as string
+      value: survey.survey_id,
+      label: survey.name
     }));
   }, [surveysDataLoader.data?.surveys]);
 
-  // Initial values: selectedSurveys and participants
-  const initialValues = {
-    selectedSurveys: [] as number[]
-  };
-
   // Internal handleSubmit for bulk-assigning participants to selected surveys
-  const handleSubmit = async (values: any) => {
-    const validParticipants = (participants || [])
-      .filter((p) => p.system_user_id && p.survey_role_name)
-      .map((p) => ({
-        system_user_id: p.system_user_id,
-        survey_role_name: p.survey_role_name
-      }));
-
-    if (!validParticipants.length) {
-      setSnackbar({
-        open: true,
-        message: 'Please invite a team member and assign them a role prior to submitting this form.',
-        severity: 'error'
-      });
-      return;
-    }
-
+  const handleSubmit = async (values: IManageUsersFormValues) => {
     try {
-      await Promise.all(
-        (values.selectedSurveys || []).map((survey_id: number) =>
-          biohubApi.survey.addSurveyMembers(survey_id, validParticipants)
-        )
-      );
-      setSnackbar({ open: true, message: 'Members added successfully.', severity: 'success' });
-      setTimeout(() => history.push('/admin/summary'), 1500);
-    } catch (error) {
-      setSnackbar({ open: true, message: 'Failed to add members.', severity: 'error' });
-      console.error('Failed to add members:', error);
+      await biohubApi.survey.addBulkSurveysMembers(values);
+      dialogContext.setSnackbar({ open: true, snackbarMessage: 'Members added successfully.' });
+      history.push('/admin/summary');
+    } catch {
+      dialogContext.setSnackbar({ open: true, snackbarMessage: 'Failed to add members.' });
     }
   };
 
@@ -137,6 +126,7 @@ const ManageUsersForm = ({
             initialValues={initialValues}
             validateOnBlur={false}
             validateOnChange={false}
+            validationSchema={manageUsersYupSchema}
             enableReinitialize={true}
             onSubmit={handleSubmit}>
             {({ values, setFieldValue }) => (
@@ -271,17 +261,6 @@ const ManageUsersForm = ({
           </Formik>
         </Paper>
       </Container>
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={3000}
-        onClose={() => setSnackbar({ ...snackbar, open: false })}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-        message={
-          <Typography variant="body2" component="span" color={snackbar.severity === 'error' ? 'error' : 'inherit'}>
-            {snackbar.message}
-          </Typography>
-        }
-      />
     </>
   );
 };
