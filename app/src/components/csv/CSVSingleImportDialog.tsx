@@ -121,6 +121,25 @@ export const CSVSingleImportDialog = (props: CSVSingleImportDialogProps) => {
   return (
     <Dialog open={props.open} maxWidth={'xl'} fullScreen={fullScreen}>
       <DialogContent sx={{ mt: 2 }}>
+        <Box sx={{ width: '100%', my: 3, overflow: 'hidden', position: 'relative' }}>
+          <video
+            src="https://nrs.objectstore.gov.bc.ca/locsch/resources/Import_PQMP4_1.mp4"
+            autoPlay
+            loop
+            muted
+            playsInline
+            style={{
+              display: 'block',
+              width: '100%',
+              maxWidth: '800px',
+              height: 'auto',
+              margin: '0 auto',
+              border: '1px solid #eee',
+              objectFit: 'cover'
+            }}
+          />
+        </Box>
+
         <Box>
           <CSVDropzoneSection
             title={props.dialogTitle}
