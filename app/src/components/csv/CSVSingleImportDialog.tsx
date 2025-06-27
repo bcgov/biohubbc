@@ -1,18 +1,5 @@
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import LoadingButton from '@mui/lab/LoadingButton/LoadingButton';
-import {
-  Box,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  Divider,
-  Stack,
-  Typography,
-  useMediaQuery,
-  useTheme
-} from '@mui/material';
+import { Box, Dialog, DialogActions, DialogContent, Divider, useMediaQuery, useTheme } from '@mui/material';
 import { AxiosProgressEvent } from 'axios';
 import { UploadFileStatus } from 'components/file-upload/FileUploadItem';
 import { FileUploadSingleItem } from 'components/file-upload/FileUploadSingleItem';
@@ -22,53 +9,6 @@ import { isCSVValidationError } from 'utils/csv-utils';
 import { getAxiosProgress, waitForRenderCycle } from 'utils/Utils';
 import { CSVDropzoneSection } from './CSVDropzoneSection';
 
-// New component for the instructions and video
-const TransformInstructions = () => (
-  <Box sx={{ width: '100%', my: 3 }}>
-    <Stack spacing={2}>
-      <Typography variant="h6" component="h3">
-        How to Transform Your Data from Wide to Narrow Format in Excel
-      </Typography>
-
-      <Box sx={{ pl: 2 }}>
-        <Typography variant="body1" component="div" sx={{ mb: 1 }}>
-          <strong>Step 1:</strong> Select your data, navigate to the "Data" tab and choose "From Data/Range", then
-          confirm with "OK".
-        </Typography>
-
-        <Typography variant="body1" component="div" sx={{ mb: 1 }}>
-          <strong>Step 2:</strong> Select all columns you want to transform, open the "Transform" tab and select
-          "Unpivot Columns".
-        </Typography>
-
-        <Typography variant="body1" component="div" sx={{ mb: 1 }}>
-          <strong>Step 3:</strong> Rename your new columns appropriately, return to the home tab, then select "Close and
-          Load".
-        </Typography>
-      </Box>
-
-      <Box sx={{ overflow: 'hidden', position: 'relative' }}>
-        <video
-          src="https://nrs.objectstore.gov.bc.ca/locsch/resources/Import_PQMP4_2_slow.mp4"
-          autoPlay
-          loop
-          muted
-          playsInline
-          style={{
-            display: 'block',
-            width: '100%',
-            maxWidth: '800px',
-            height: 'auto',
-            margin: '0 auto',
-            border: '1px solid #eee',
-            objectFit: 'cover'
-          }}
-        />
-      </Box>
-    </Stack>
-  </Box>
-);
-
 interface CSVSingleImportDialogProps {
   open: boolean;
   dialogTitle: string;
@@ -76,6 +16,11 @@ interface CSVSingleImportDialogProps {
   onClose: () => void;
   onImport: (file: File, onProgress: (progressEvent: AxiosProgressEvent) => void) => Promise<void>;
   onDownloadTemplate: () => void;
+  /**
+   * Optional component to display help instructions for the import process
+   * If provided, a help section will be displayed below the CSV upload section
+   */
+  VideoHelp?: React.ComponentType;
 }
 
 /**
@@ -95,8 +40,6 @@ export const CSVSingleImportDialog = (props: CSVSingleImportDialogProps) => {
   const [uploadStatus, setUploadStatus] = useState<UploadFileStatus>(UploadFileStatus.STAGED);
   const [progress, setProgress] = useState<number>(0);
   const [error, setError] = useState<Error | null>(null);
-  // New state to control video visibility
-  const [showInstructions, setShowInstructions] = useState<boolean>(false);
 
   const isUploading = uploadStatus === UploadFileStatus.UPLOADING || uploadStatus === UploadFileStatus.FINISHING_UPLOAD;
   const disableImportButton =
@@ -180,6 +123,8 @@ export const CSVSingleImportDialog = (props: CSVSingleImportDialogProps) => {
     return null;
   }
 
+  const { VideoHelp } = props;
+
   return (
     <Dialog open={props.open} maxWidth={'xl'} fullScreen={fullScreen}>
       <DialogContent sx={{ mt: 2 }}>
@@ -201,33 +146,8 @@ export const CSVSingleImportDialog = (props: CSVSingleImportDialogProps) => {
           </CSVDropzoneSection>
         </Box>
 
-        {/* Moved transformation help link below the CSV upload section */}
-        <Box
-          onClick={() => setShowInstructions(!showInstructions)}
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            my: 2,
-            cursor: 'pointer',
-            color: 'primary.main',
-            '&:hover': {
-              textDecoration: 'underline'
-            }
-          }}>
-          <InfoOutlinedIcon fontSize="small" sx={{ mr: 0.5 }} />
-          <Typography variant="body2" component="span">
-            {showInstructions
-              ? 'Hide data transformation instructions'
-              : 'Need help transforming data from wide to narrow?'}
-          </Typography>
-          {showInstructions ? (
-            <KeyboardArrowUpIcon fontSize="small" sx={{ ml: 0.5 }} />
-          ) : (
-            <KeyboardArrowDownIcon fontSize="small" sx={{ ml: 0.5 }} />
-          )}
-        </Box>
-
-        {showInstructions && <TransformInstructions />}
+        {/* Display video help component if provided */}
+        {VideoHelp && <VideoHelp />}
       </DialogContent>
       <Divider />
 
