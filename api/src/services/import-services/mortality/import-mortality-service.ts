@@ -104,8 +104,12 @@ export class ImportMortalitiesService extends DBService {
     // Map both value and label (lowercased) to id
     const map = new Map<string, string>();
     for (const opt of codOptions.data) {
-      if (opt.value) map.set(String(opt.value).toLowerCase(), opt.id);
-      if (opt.label) map.set(String(opt.label).toLowerCase(), opt.id);
+      if (opt.value) {
+        map.set(String(opt.value).toLowerCase(), opt.id);
+      }
+      if (opt.label) {
+        map.set(String(opt.label).toLowerCase(), opt.id);
+      }
     }
     this._causeOfDeathMap = map;
     return map;

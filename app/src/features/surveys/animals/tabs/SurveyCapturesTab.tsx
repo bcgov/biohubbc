@@ -100,8 +100,12 @@ export const SurveyCapturesTab = () => {
   const sortedRows = [...detailedCaptures].sort((a, b) => {
     const aValue = a[orderBy] ?? '';
     const bValue = b[orderBy] ?? '';
-    if (aValue < bValue) return order === 'asc' ? -1 : 1;
-    if (aValue > bValue) return order === 'asc' ? 1 : -1;
+    if (aValue < bValue) {
+      return order === 'asc' ? -1 : 1;
+    }
+    if (aValue > bValue) {
+      return order === 'asc' ? 1 : -1;
+    }
     return 0;
   });
 
