@@ -45,8 +45,6 @@ export const SurveyCapturesTab = () => {
   const critterApi = useCritterApi(axios);
   const [detailedCaptures, setDetailedCaptures] = useState<any[]>([]);
   const [loadingCaptures, setLoadingCaptures] = useState(false);
-  const [orderBy, setOrderBy] = useState<string>('capture_date');
-  const [order, setOrder] = useState<'asc' | 'desc'>('asc');
   const crittersDataLoader = useDataLoader(() => biohubApi.survey.getSurveyCritters(surveyContext.surveyId));
   const history = useHistory();
 
@@ -90,24 +88,6 @@ export const SurveyCapturesTab = () => {
   const handleImportCaptures = () => {
     history.push(`/admin/surveys/${surveyContext.surveyId}/animals/captures`);
   };
-
-  const handleSort = (property: string) => {
-    const isAsc = orderBy === property && order === 'asc';
-    setOrder(isAsc ? 'desc' : 'asc');
-    setOrderBy(property);
-  };
-
-  const sortedRows = [...detailedCaptures].sort((a, b) => {
-    const aValue = a[orderBy] ?? '';
-    const bValue = b[orderBy] ?? '';
-    if (aValue < bValue) {
-      return order === 'asc' ? -1 : 1;
-    }
-    if (aValue > bValue) {
-      return order === 'asc' ? 1 : -1;
-    }
-    return 0;
-  });
 
   if (!surveyContext.surveyDataLoader.data || crittersDataLoader.isLoading || loadingCaptures) {
     return <CircularProgress className="pageProgress" size={40} />;

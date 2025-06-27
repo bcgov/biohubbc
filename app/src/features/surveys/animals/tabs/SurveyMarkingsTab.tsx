@@ -11,7 +11,6 @@ import { useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { IMarkingResponse } from 'interfaces/useCritterApi.interface';
 import { useEffect, useState } from 'react';
-import { useHistory } from 'react-router';
 import { FilterHeader } from './filtering/FilterHeader';
 import { useColumnFilter } from './filtering/useColumnFilter';
 
@@ -46,7 +45,6 @@ export const SurveyMarkingsTab = () => {
   const [detailedMarkings, setDetailedMarkings] = useState<IMarkingResponse[]>([]);
   const [loadingMarkings, setLoadingMarkings] = useState(false);
   const crittersDataLoader = useDataLoader(() => biohubApi.survey.getSurveyCritters(surveyContext.surveyId));
-  const history = useHistory();
 
   // Load critters on mount
   useEffect(() => {

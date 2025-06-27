@@ -10,7 +10,6 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { useEffect, useState } from 'react';
-import { useHistory } from 'react-router';
 import { FilterHeader } from './filtering/FilterHeader';
 import { useColumnFilter } from './filtering/useColumnFilter';
 
@@ -45,7 +44,6 @@ export const SurveyMeasurementsTab = () => {
   const [detailedMeasurements, setDetailedMeasurements] = useState<any[]>([]);
   const [loadingMeasurements, setLoadingMeasurements] = useState(false);
   const crittersDataLoader = useDataLoader(() => biohubApi.survey.getSurveyCritters(surveyContext.surveyId));
-  const history = useHistory();
 
   // Load critters on mount
   useEffect(() => {
@@ -83,10 +81,6 @@ export const SurveyMeasurementsTab = () => {
     };
     fetchMeasurements();
   }, [crittersDataLoader.data]);
-
-  const handleImportMeasurements = () => {
-    history.push(`/admin/surveys/${surveyContext.surveyId}/animals/measurements`);
-  };
 
   // Add filter state for each column
   const [sexFilter, setSexFilter] = useColumnFilter('');

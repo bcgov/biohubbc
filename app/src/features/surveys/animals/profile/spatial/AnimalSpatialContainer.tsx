@@ -68,7 +68,7 @@ export const AnimalSpatialContainer = ({ captures, mortalities, isLoading }: Ani
       fillColor: SURVEY_MAP_LAYER_COLOURS.CAPTURE_COLOUR ?? SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR,
       color: SURVEY_MAP_LAYER_COLOURS.CAPTURE_COLOUR ?? SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR
     },
-    features: captureFeatures.map((feature, index) => ({
+    features: captureFeatures.map((feature) => ({
       id: feature.id,
       key: `capture-${feature.id}`,
       geoJSON: feature as Feature
@@ -84,7 +84,7 @@ export const AnimalSpatialContainer = ({ captures, mortalities, isLoading }: Ani
       color: SURVEY_MAP_LAYER_COLOURS.MORTALITY_COLOUR ?? SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR,
       marker: coloredCustomMortalityMarker
     },
-    features: mortalityFeatures.map((feature, index) => ({
+    features: mortalityFeatures.map((feature) => ({
       id: feature.id,
       key: `mortality-${feature.id}`,
       geoJSON: feature as Feature
