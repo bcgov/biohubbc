@@ -1,4 +1,5 @@
 import { ApiPaginationResponseParams } from 'types/misc';
+import { ISystemUser } from './useUserApi.interface';
 
 export interface ICollectionMembersAdvancedFilters {
   system_user_id?: number;
@@ -6,6 +7,7 @@ export interface ICollectionMembersAdvancedFilters {
   parent_collection_id?: number;
   include_children?: boolean;
 }
+
 export interface IGetCollectionsResponse {
   collections: ICollection[];
   pagination: ApiPaginationResponseParams;
@@ -53,20 +55,14 @@ export interface ICreateCollectionMembersRequest {
 }
 
 export interface ICollectionMemberResponse {
-  participants: ICollectionMember[];
+  members: ICollectionMember[];
   pagination: ApiPaginationResponseParams;
 }
 
-export interface ICollectionMember {
+export interface ICollectionMember extends ISystemUser {
   collection_member_id: number;
-  system_user_id: number;
   collection_role_id: number;
   collection_role_name: string;
-  identity_source: string;
-  user_identifier: string;
-  email: string | null;
-  display_name: string;
-  agency: string | null;
 }
 
 export interface IGetProjectParticipant {
@@ -77,8 +73,8 @@ export interface IGetProjectParticipant {
   email: string | null;
   display_name: string;
   agency: string | null;
-  survey_role_ids: number[];
-  survey_role_names: string[];
+  survey_role_id: number;
+  survey_role_name: string[];
   project_role_permissions: string[];
 }
 

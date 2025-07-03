@@ -239,14 +239,14 @@ const CollectionsListContainer = (props: ICollectionsListContainerProps) => {
         hasNoData={!rows.length}
         hasNoDataFallback={
           <NoDataOverlay
-            title="Create or Join Collections"
+            title="Create or Join Projects"
             subtitle="You currently have no collections. Once you create or get invited to collections, they will be displayed here"
             icon={mdiArrowTopRight}
           />
         }
         hasNoDataFallbackDelay={100}>
         <StyledDataGrid
-          noRowsMessage="No collections found"
+          noRowsMessage="No projects found"
           loading={!rows.length && (collectionsDataLoader.isLoading || !collectionsDataLoader.isReady)}
           // Columns
           columns={columns}

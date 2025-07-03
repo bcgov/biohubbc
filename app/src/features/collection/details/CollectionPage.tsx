@@ -1,7 +1,7 @@
 import { mdiAccountMultipleOutline, mdiClipboardOutline, mdiDatabaseSearchOutline, mdiLabelOutline } from '@mdi/js';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
-import CustomToggleButtonGroup from 'components/toolbar/CustomToggleButtonGroup';
+import CustomToggleButtonGroup from 'components/toggle/CustomToggleButtonGroup';
 import { CodesContext } from 'contexts/codesContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
@@ -20,7 +20,7 @@ const COLLECTION_ACTIVE_VIEW_KEY = 'cvk';
 export enum CollectionView {
   Surveys = 'surveys',
   Data = 'data',
-  Subcollections = 'subcollections',
+  Subcollections = 'subprojects',
   Participants = 'participants'
 }
 
@@ -67,7 +67,7 @@ const CollectionPage = () => {
 
   const views = [
     { value: CollectionView.Surveys, label: 'Surveys', icon: mdiClipboardOutline },
-    { value: CollectionView.Subcollections, label: 'Subcollections', icon: mdiLabelOutline },
+    { value: CollectionView.Subcollections, label: 'Subprojects', icon: mdiLabelOutline },
     { value: CollectionView.Data, label: 'Data', icon: mdiDatabaseSearchOutline },
     { value: CollectionView.Participants, label: 'Members', icon: mdiAccountMultipleOutline }
   ];
@@ -109,7 +109,7 @@ const CollectionPage = () => {
 
             {activeView === CollectionView.Participants && (
               <Box>
-                <CollectionParticipantsContainer collectionId={collection.collection_id} showSearch={true} />
+                <CollectionParticipantsContainer collectionId={collection.collection_id} />
               </Box>
             )}
           </SidebarLayout>

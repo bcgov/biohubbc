@@ -1,9 +1,10 @@
 import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { DataLoader } from 'hooks/useDataLoader';
+import { IGetSurveyChecklistResponse } from 'interfaces/useChecklistApi.interface';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import { codes } from 'test-helpers/code-helpers';
-import { getSurveyForViewResponse } from 'test-helpers/survey-helpers';
+import { getSurveyChecklistResponse, getSurveyForViewResponse } from 'test-helpers/survey-helpers';
 import { cleanup, render } from 'test-helpers/test-utils';
 import SurveyGeneralInformation from './SurveyGeneralInformation';
 
@@ -21,6 +22,11 @@ describe('SurveyGeneralInformation', () => {
 
   it('renders correctly with end date', () => {
     const mockSurveyDataLoader = { data: getSurveyForViewResponse } as DataLoader<any, IGetSurveyForViewResponse, any>;
+    const mockSurveyChecklistDataLoader = { data: getSurveyChecklistResponse } as DataLoader<
+      any,
+      IGetSurveyChecklistResponse,
+      any
+    >;
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockCritterDataLoader = { data: [] } as DataLoader<any, any, any>;
 
@@ -29,6 +35,7 @@ describe('SurveyGeneralInformation', () => {
         <SurveyContext.Provider
           value={{
             surveyId: 1,
+            surveyChecklistDataLoader: mockSurveyChecklistDataLoader,
             surveyDataLoader: mockSurveyDataLoader,
             artifactDataLoader: mockArtifactDataLoader,
             critterDataLoader: mockCritterDataLoader
@@ -54,6 +61,11 @@ describe('SurveyGeneralInformation', () => {
         }
       }
     } as DataLoader<any, IGetSurveyForViewResponse, any>;
+    const mockSurveyChecklistDataLoader = { data: getSurveyChecklistResponse } as DataLoader<
+      any,
+      IGetSurveyChecklistResponse,
+      any
+    >;
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockCritterDataLoader = { data: [] } as DataLoader<any, any, any>;
 
@@ -62,6 +74,7 @@ describe('SurveyGeneralInformation', () => {
         <SurveyContext.Provider
           value={{
             surveyId: 1,
+            surveyChecklistDataLoader: mockSurveyChecklistDataLoader,
             surveyDataLoader: mockSurveyDataLoader,
             artifactDataLoader: mockArtifactDataLoader,
             critterDataLoader: mockCritterDataLoader
@@ -78,12 +91,18 @@ describe('SurveyGeneralInformation', () => {
     const mockSurveyDataLoader = { data: undefined } as DataLoader<any, IGetSurveyForViewResponse, any>;
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockCritterDataLoader = { data: [] } as DataLoader<any, any, any>;
+    const mockSurveyChecklistDataLoader = { data: getSurveyChecklistResponse } as DataLoader<
+      any,
+      IGetSurveyChecklistResponse,
+      any
+    >;
 
     const { container } = render(
       <CodesContext.Provider value={mockCodesContext}>
         <SurveyContext.Provider
           value={{
             surveyId: 1,
+            surveyChecklistDataLoader: mockSurveyChecklistDataLoader,
             surveyDataLoader: mockSurveyDataLoader,
             artifactDataLoader: mockArtifactDataLoader,
             critterDataLoader: mockCritterDataLoader

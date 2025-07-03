@@ -1,5 +1,6 @@
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader, { DataLoader } from 'hooks/useDataLoader';
+import { IGetSurveyChecklistResponse } from 'interfaces/useChecklistApi.interface';
 import { ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 import { IGetSurveyAttachmentsResponse, IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import { createContext, PropsWithChildren, useEffect, useMemo } from 'react';
@@ -19,6 +20,14 @@ export interface ISurveyContext {
    * @memberof ISurveyContext
    */
   surveyDataLoader: DataLoader<[survey_id: number], IGetSurveyForViewResponse, unknown>;
+
+  /**
+   * The Data Loader used to load survey checklist data
+   *
+   * @type {DataLoader<[survey_id: number], IGetSurveyChecklistResponse, unknown>}
+   * @memberof ISurveyContext
+   */
+  surveyChecklistDataLoader: DataLoader<[survey_id: number], IGetSurveyChecklistResponse, unknown>;
 
   /**
    * The Data Loader used to load survey data
@@ -47,6 +56,7 @@ export interface ISurveyContext {
 
 export const SurveyContext = createContext<ISurveyContext>({
   surveyDataLoader: {} as DataLoader<[survey_id: number], IGetSurveyForViewResponse, unknown>,
+  surveyChecklistDataLoader: {} as DataLoader<[survey_id: number], IGetSurveyChecklistResponse, unknown>,
   artifactDataLoader: {} as DataLoader<[survey_id: number], IGetSurveyAttachmentsResponse, unknown>,
   critterDataLoader: {} as DataLoader<[survey_id: number], ICritterSimpleResponse[], unknown>,
   surveyId: -1
@@ -57,6 +67,7 @@ export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any
   const surveyDataLoader = useDataLoader(biohubApi.survey.getSurveyForView);
   const artifactDataLoader = useDataLoader(biohubApi.survey.getSurveyAttachments);
   const critterDataLoader = useDataLoader(biohubApi.survey.getSurveyCritters);
+  const surveyChecklistDataLoader = useDataLoader(biohubApi.checklist.getSurveyChecklist);
 
   const urlParams: Record<string, string | number | undefined> = useParams<{ survey_id: string }>();
 
@@ -72,7 +83,8 @@ export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any
     surveyDataLoader.load(surveyId);
     artifactDataLoader.load(surveyId);
     critterDataLoader.load(surveyId);
-  }, [surveyId, critterDataLoader, artifactDataLoader, surveyDataLoader]);
+    surveyChecklistDataLoader.load(surveyId);
+  }, [surveyId, critterDataLoader, artifactDataLoader, surveyDataLoader, surveyChecklistDataLoader]);
 
   /**
    * Refreshes the current survey object whenever the current survey ID changes from the currently loaded survey.
@@ -80,6 +92,7 @@ export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any
   useEffect(() => {
     if (surveyId && surveyId !== surveyDataLoader.data?.surveyData.survey_details.id) {
       surveyDataLoader.refresh(surveyId);
+      surveyChecklistDataLoader.refresh(surveyId);
       artifactDataLoader.refresh(surveyId);
       critterDataLoader.refresh(surveyId);
     }
@@ -90,11 +103,12 @@ export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any
   const surveyContext: ISurveyContext = useMemo(() => {
     return {
       surveyDataLoader,
+      surveyChecklistDataLoader,
       artifactDataLoader,
       critterDataLoader,
       surveyId
     };
-  }, [surveyDataLoader, artifactDataLoader, critterDataLoader, surveyId]);
+  }, [surveyDataLoader, artifactDataLoader, critterDataLoader, surveyChecklistDataLoader, surveyId]);
 
   return <SurveyContext.Provider value={surveyContext}>{props.children}</SurveyContext.Provider>;
 };

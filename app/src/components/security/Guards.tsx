@@ -1,8 +1,7 @@
 import { SURVEY_ROLE, SYSTEM_ROLE } from 'constants/roles';
-import { SurveyAuthStateContext } from 'contexts/surveyAuthStateContext';
 import { useAuthStateContext } from 'hooks/useAuthStateContext';
 import { useConfigContext } from 'hooks/useContext';
-import { PropsWithChildren, ReactElement, useContext } from 'react';
+import { PropsWithChildren, ReactElement } from 'react';
 import { hasAtLeastOneValidValue } from 'utils/authUtils';
 
 interface IGuardProps {
@@ -29,10 +28,10 @@ export interface ISurveyRoleRouteGuardProps extends IGuardProps {
   /**
    * An array of valid project roles. The user may have 1 or more matching project roles to pass the guard.
    *
-   * @type {SURVEY_ROLE[]}
+   * @type {SURVEY_ROLE}
    * @memberof ISurveyRoleRouteGuardProps
    */
-  validProjectRoles?: SURVEY_ROLE[];
+  validProjectRoles?: SURVEY_ROLE;
   /**
    * An array of valid system roles. The user may have 1 or more matching system roles to override the guard.
    *
@@ -43,7 +42,7 @@ export interface ISurveyRoleRouteGuardProps extends IGuardProps {
 
   /**
    * An array of valid project permissions. The user must have 1 or more matching permissions to pass the guard
-   * @type {SURVEY_ROLE[]}
+   * @type {SURVEY_ROLE}
    * @memberof ISurveyRoleRouteGuardProps
    */
   validSurveyRoles: SURVEY_ROLE[];
@@ -80,31 +79,6 @@ export const SystemRoleGuard = (props: PropsWithChildren<ISystemRoleGuardProps>)
   }
 
   return <>{props.children}</>;
-};
-
-/**
- * Renders `props.children` only if the user has the necessary roles as a project participant.
- *
- * @param {*} props
- * @return {*}
- */
-export const SurveyRoleRouteGuard = (props: PropsWithChildren<ISurveyRoleRouteGuardProps>) => {
-  const { validProjectRoles, validSystemRoles, validSurveyRoles } = props;
-  const surveyAuthStateContext = useContext(SurveyAuthStateContext);
-
-  const hasSystemRole = surveyAuthStateContext.hasSystemRole(validSystemRoles);
-  const hasSurveyRole = surveyAuthStateContext.hasSurveyRole(validProjectRoles);
-  const hasSurveyRoles = surveyAuthStateContext.hasSurveyRole(validSurveyRoles);
-
-  if (hasSystemRole || hasSurveyRole || hasSurveyRoles) {
-    return <>{props.children}</>;
-  }
-
-  if (props.fallback) {
-    return <>{props.fallback}</>;
-  }
-
-  return <></>;
 };
 
 /**

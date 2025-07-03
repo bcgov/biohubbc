@@ -12,8 +12,8 @@ import React from 'react';
 import { Redirect, Switch } from 'react-router';
 import RouteWithTitle from 'utils/RouteWithTitle';
 import { getTitle } from 'utils/Utils';
+import { SurveyPage } from './details/SurveyPage';
 import { HabitatFeatureRouter } from './habitat-features/SurveyHabitatFeatureRouter';
-import { SurveyPage } from './main/SurveyPage';
 import CreateObservationPage from './observations/form/create/CreateObservationPage';
 import { TelemetryRouter } from './telemetry/TelemetryRouter';
 

@@ -2,6 +2,7 @@ import { AuthenticatedRouteGuard, SystemRoleRouteGuard } from 'components/securi
 import { SYSTEM_ROLE } from 'constants/roles';
 import { CodesContextProvider } from 'contexts/codesContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
+import { HabitatFeatureTableContextProvider } from 'contexts/habitatFeatureTableContext';
 import { SurveyAuthStateContextProvider } from 'contexts/surveyAuthStateContext';
 import { SurveyContextProvider } from 'contexts/surveyContext';
 import { TaxonomyContextProvider } from 'contexts/taxonomyContext';
@@ -95,7 +96,9 @@ const AppRouter: React.FC = () => {
                 <SurveyContextProvider>
                   <TaxonomyContextProvider>
                     <DialogContextProvider>
-                      <SurveyRouter />
+                      <HabitatFeatureTableContextProvider>
+                        <SurveyRouter />
+                      </HabitatFeatureTableContextProvider>
                     </DialogContextProvider>
                   </TaxonomyContextProvider>
                 </SurveyContextProvider>

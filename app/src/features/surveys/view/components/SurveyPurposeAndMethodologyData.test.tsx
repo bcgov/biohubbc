@@ -1,9 +1,10 @@
 import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { DataLoader } from 'hooks/useDataLoader';
+import { IGetSurveyChecklistResponse } from 'interfaces/useChecklistApi.interface';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import { codes } from 'test-helpers/code-helpers';
-import { getSurveyForViewResponse } from 'test-helpers/survey-helpers';
+import { getSurveyChecklistResponse, getSurveyForViewResponse } from 'test-helpers/survey-helpers';
 import { cleanup, render } from 'test-helpers/test-utils';
 import SurveyPurposeAndMethodologyData from './SurveyPurposeAndMethodologyData';
 
@@ -22,12 +23,18 @@ describe('SurveyPurposeAndMethodologyData', () => {
     const mockSurveyDataLoader = { data: getSurveyForViewResponse } as DataLoader<any, any, any>;
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockCritterDataLoader = { data: [] } as DataLoader<any, any, any>;
+    const mockSurveyChecklistDataLoader = { data: getSurveyChecklistResponse } as DataLoader<
+      any,
+      IGetSurveyChecklistResponse,
+      any
+    >;
 
     const { getByTestId } = render(
       <CodesContext.Provider value={mockCodesContext}>
         <SurveyContext.Provider
           value={{
             surveyId: 1,
+            surveyChecklistDataLoader: mockSurveyChecklistDataLoader,
             surveyDataLoader: mockSurveyDataLoader,
             artifactDataLoader: mockArtifactDataLoader,
             critterDataLoader: mockCritterDataLoader
@@ -62,12 +69,18 @@ describe('SurveyPurposeAndMethodologyData', () => {
     } as DataLoader<any, IGetSurveyForViewResponse, any>;
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockCritterDataLoader = { data: [] } as DataLoader<any, any, any>;
+    const mockSurveyChecklistDataLoader = { data: getSurveyChecklistResponse } as DataLoader<
+      any,
+      IGetSurveyChecklistResponse,
+      any
+    >;
 
     const { getByTestId, queryByTestId } = render(
       <CodesContext.Provider value={mockCodesContext}>
         <SurveyContext.Provider
           value={{
             surveyId: 1,
+            surveyChecklistDataLoader: mockSurveyChecklistDataLoader,
             surveyDataLoader: mockSurveyDataLoader,
             artifactDataLoader: mockArtifactDataLoader,
             critterDataLoader: mockCritterDataLoader

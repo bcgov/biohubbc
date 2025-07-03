@@ -66,17 +66,6 @@ export const SurveyMembersForm = (props: ISurveyMembersFormProps) => {
     setErrors({ ...errors, members: undefined });
   };
 
-  const alertBarText = (): { title: string; text: string } => {
-    let title = '';
-    let text = '';
-    if (errors?.members && Array.isArray(errors.members)) {
-      title = 'Missing s';
-      text = 'All team members must be assigned a survey role.';
-    }
-
-    return { title, text };
-  };
-
   const rowItemError = (index: number): JSX.Element | undefined => {
     if (errors?.members && Array.isArray(errors.members)) {
       const errorAtIndex = errors.members[index];
@@ -97,9 +86,9 @@ export const SurveyMembersForm = (props: ISurveyMembersFormProps) => {
 
   return (
     <form onSubmit={handleSubmit}>
-      {errors?.['members'] && values.members.length > 0 && (
-        <Box mt={3}>
-          <AlertBar severity="error" variant="outlined" title={alertBarText().title} text={alertBarText().text} />
+      {errors?.['members'] && !Array.isArray(errors['members']) && (
+        <Box my={3}>
+          <AlertBar severity="error" variant="outlined" title="Missing Invites" text={errors['members']} />
         </Box>
       )}
       <SystemUserAutocompleteField

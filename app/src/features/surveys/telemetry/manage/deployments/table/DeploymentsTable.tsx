@@ -339,8 +339,7 @@ export const DeploymentsTable = (props: IDeploymentsTableProps) => {
 
       {/* DATA TABLE */}
       <StyledDataGrid
-        autoHeight
-        getRowHeight={() => 'auto'}
+        rowHeight={52}
         disableColumnMenu
         rows={rows}
         getRowId={(row: IDeploymentRowData) => row.id}

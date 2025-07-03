@@ -1,4 +1,5 @@
 import { SURVEY_ROLE } from 'constants/roles';
+import { IGetSurveyChecklistResponse } from 'interfaces/useChecklistApi.interface';
 import {
   IFindSurveysResponse,
   IGetSurveyForViewResponse,
@@ -79,7 +80,7 @@ export const surveyObject: SurveyViewObject = {
       agency: 'agency',
       survey_job_id: 1,
       survey_job_name: 'survey job name',
-      survey_role_names: [SURVEY_ROLE.ADMIN]
+      survey_role_name: SURVEY_ROLE.ADMIN
     }
   ],
   locations: [
@@ -111,6 +112,28 @@ export const surveySupplementaryData: SurveySupplementaryData = {
 export const getSurveyForViewResponse: IGetSurveyForViewResponse = {
   surveyData: surveyObject,
   surveySupplementaryData: surveySupplementaryData
+};
+
+export const getSurveyChecklistResponse: IGetSurveyChecklistResponse = {
+  checklist: {
+    sampling: {
+      sites: { applicable: true, count: 3, checklist_item_name: 'sites' },
+      techniques: { applicable: true, count: 2, checklist_item_name: 'techniques' },
+      periods: { applicable: false, count: 0, checklist_item_name: 'periods' }
+    },
+    data: {
+      observations: { applicable: true, count: 1, checklist_item_name: 'observations' },
+      telemetry: {
+        devices: { applicable: true, count: 4, checklist_item_name: 'devices' },
+        deployments: { applicable: true, count: 2, checklist_item_name: 'deployments' },
+        locations: { applicable: false, count: 0, checklist_item_name: 'locations' }
+      },
+      habitat: { applicable: true, count: 5, checklist_item_name: 'habitat features' },
+      animals: { applicable: false, count: 0, checklist_item_name: 'animals' }
+    },
+    attachments: { applicable: true, count: 1, checklist_item_name: 'attachments' },
+    progress_percentage: 75
+  }
 };
 
 export const getSurveyForListResponse: IFindSurveysResponse = {

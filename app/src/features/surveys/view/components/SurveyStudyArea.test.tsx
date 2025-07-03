@@ -2,7 +2,13 @@ import { ISurveyAuthStateContext, SurveyAuthStateContext } from 'contexts/survey
 import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
-import { getSurveyForViewResponse, surveyObject, surveySupplementaryData } from 'test-helpers/survey-helpers';
+import { IGetSurveyChecklistResponse } from 'interfaces/useChecklistApi.interface';
+import {
+  getSurveyChecklistResponse,
+  getSurveyForViewResponse,
+  surveyObject,
+  surveySupplementaryData
+} from 'test-helpers/survey-helpers';
 import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import { Mock } from 'vitest';
 import SurveyStudyArea from './SurveyStudyArea';
@@ -41,12 +47,18 @@ describe.skip('SurveyStudyArea', () => {
     const mockSurveyDataLoader = { data: getSurveyForViewResponse } as DataLoader<any, any, any>;
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockCritterDataLoader = { data: [] } as DataLoader<any, any, any>;
+    const mockSurveyChecklistDataLoader = { data: getSurveyChecklistResponse } as DataLoader<
+      any,
+      IGetSurveyChecklistResponse,
+      any
+    >;
 
     const { container } = render(
       <SurveyContext.Provider
         value={{
           surveyId: 1,
           surveyDataLoader: mockSurveyDataLoader,
+          surveyChecklistDataLoader: mockSurveyChecklistDataLoader,
           artifactDataLoader: mockArtifactDataLoader,
 
           critterDataLoader: mockCritterDataLoader
@@ -73,12 +85,18 @@ describe.skip('SurveyStudyArea', () => {
       } as DataLoader<any, any, any>;
       const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
       const mockCritterDataLoader = { data: [] } as DataLoader<any, any, any>;
+      const mockSurveyChecklistDataLoader = { data: getSurveyChecklistResponse } as DataLoader<
+        any,
+        IGetSurveyChecklistResponse,
+        any
+      >;
 
       const { container, queryByTestId } = render(
         <SurveyContext.Provider
           value={{
             surveyId: 1,
             surveyDataLoader: mockSurveyDataLoader,
+            surveyChecklistDataLoader: mockSurveyChecklistDataLoader,
             artifactDataLoader: mockArtifactDataLoader,
             critterDataLoader: mockCritterDataLoader
           }}>
@@ -96,12 +114,18 @@ describe.skip('SurveyStudyArea', () => {
       const mockSurveyDataLoader = { data: getSurveyForViewResponse } as DataLoader<any, any, any>;
       const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
       const mockCritterDataLoader = { data: [] } as DataLoader<any, any, any>;
+      const mockSurveyChecklistDataLoader = { data: getSurveyChecklistResponse } as DataLoader<
+        any,
+        IGetSurveyChecklistResponse,
+        any
+      >;
 
       const { container, getByTestId } = render(
         <SurveyContext.Provider
           value={{
             surveyId: 1,
             surveyDataLoader: mockSurveyDataLoader,
+            surveyChecklistDataLoader: mockSurveyChecklistDataLoader,
             artifactDataLoader: mockArtifactDataLoader,
             critterDataLoader: mockCritterDataLoader
           }}>
@@ -123,6 +147,11 @@ describe.skip('SurveyStudyArea', () => {
     } as DataLoader<any, any, any>;
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockCritterDataLoader = { data: [] } as DataLoader<any, any, any>;
+    const mockSurveyChecklistDataLoader = { data: getSurveyChecklistResponse } as DataLoader<
+      any,
+      IGetSurveyChecklistResponse,
+      any
+    >;
     const mockSurveyAuthStateContext: ISurveyAuthStateContext = {
       getSurveyMember: () => null,
       hasSurveyRole: () => true,
@@ -138,6 +167,7 @@ describe.skip('SurveyStudyArea', () => {
           value={{
             surveyId: 1,
             surveyDataLoader: mockSurveyDataLoader,
+            surveyChecklistDataLoader: mockSurveyChecklistDataLoader,
             artifactDataLoader: mockArtifactDataLoader,
             critterDataLoader: mockCritterDataLoader
           }}>
@@ -209,6 +239,11 @@ describe.skip('SurveyStudyArea', () => {
     const mockSurveyDataLoader = { data: getSurveyForViewResponse } as DataLoader<any, any, any>;
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockCritterDataLoader = { data: [] } as DataLoader<any, any, any>;
+    const mockSurveyChecklistDataLoader = { data: getSurveyChecklistResponse } as DataLoader<
+      any,
+      IGetSurveyChecklistResponse,
+      any
+    >;
 
     mockUseApi.survey.getSurveyForView.mockResolvedValue({
       surveyData: {
@@ -243,6 +278,7 @@ describe.skip('SurveyStudyArea', () => {
           value={{
             surveyId: 1,
             surveyDataLoader: mockSurveyDataLoader,
+            surveyChecklistDataLoader: mockSurveyChecklistDataLoader,
             artifactDataLoader: mockArtifactDataLoader,
             critterDataLoader: mockCritterDataLoader
           }}>

@@ -3,8 +3,8 @@ import { SURVEY_ROLE } from 'constants/roles';
 export type IGetUserSurveyMemberResponse = {
   survey_id: number;
   system_user_id: number;
-  survey_role_ids: number[];
-  survey_role_names: SURVEY_ROLE[];
+  survey_role_id: number;
+  survey_role_name: SURVEY_ROLE;
 } | null;
 
 /**
@@ -18,6 +18,6 @@ export interface IGetUserSurveysListResponse {
   survey_id: number;
   survey_name: string;
   system_user_id: number;
-  survey_role_ids: number[];
-  survey_role_names: string[];
+  survey_role_id: number;
+  survey_role_name: string[];
 }
