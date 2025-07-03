@@ -11,9 +11,10 @@ import { useCodesContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { useSearchParams } from 'hooks/useSearchParams';
 import { SidebarLayout } from 'layouts/SidebarLayout';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import SurveyHeader from '../view/SurveyHeader';
+import { SURVEY_ACTIVE_TAB_VALUE } from '../view/tabs/SurveyHeaderTabs';
 import { AnimalViewToggle } from './sidebar/AnimalViewToggle';
 import { SurveyAnimalsTab } from './tabs/SurveyAnimalsTab';
 import { SurveyCapturesTab } from './tabs/SurveyCapturesTab';
@@ -49,6 +50,9 @@ export const SurveyAnimalPage = () => {
   const { searchParams, setSearchParams } = useSearchParams<{ [ANIMAL_ACTIVE_VIEW_KEY]: ANIMAL_ACTIVE_VIEW_VALUE }>();
   const activeView = searchParams.get(ANIMAL_ACTIVE_VIEW_KEY) as ANIMAL_ACTIVE_VIEW_VALUE;
 
+  const [activeTab, setActiveTab] = useState(SURVEY_ACTIVE_TAB_VALUE.details);
+  const handleTabChange = (tab: SURVEY_ACTIVE_TAB_VALUE) => setActiveTab(tab);
+
   useEffect(() => {
     codesContext.codesDataLoader.load();
     if (!searchParams.get(ANIMAL_ACTIVE_VIEW_KEY)) {
@@ -67,7 +71,7 @@ export const SurveyAnimalPage = () => {
 
   return (
     <>
-      <SurveyHeader />
+      <SurveyHeader activeTab={activeTab} handleTabChange={handleTabChange} />
       <Container maxWidth="xl" sx={{ my: 3, p: 0, px: 2 }} disableGutters>
         <Box sx={{ display: 'flex', gap: 2, height: '100%' }}>
           <Box sx={{ flex: 1, minWidth: 0, height: '100%' }}>
