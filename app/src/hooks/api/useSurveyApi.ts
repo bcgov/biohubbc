@@ -459,7 +459,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
 
     formData.append('media', file);
 
-    const { data } = await axios.post(`/api/survey/${surveyId}/critters/mortalities/import`, formData, {
+    const { data } = await axios.post(`/api/survey/${surveyId}/critters/mortality/import`, formData, {
       cancelToken: cancelTokenSource?.token,
       onUploadProgress: onProgress
     });

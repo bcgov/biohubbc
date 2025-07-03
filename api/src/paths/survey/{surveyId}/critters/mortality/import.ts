@@ -113,8 +113,8 @@ export function importMortalityCSV(): RequestHandler {
     const worksheet = getDefaultWorksheet(constructXLSXWorkbook(mediaFile));
     try {
       await connection.open();
-      const importMarkings = new ImportMortalitiesService(connection, worksheet, surveyId);
-      const errors = await importMarkings.importCSVWorksheet();
+      const importMortalityService = new ImportMortalitiesService(connection, worksheet, surveyId);
+      const errors = await importMortalityService.importCSVWorksheet();
       if (errors.length) {
         throw new HTTP422CSVValidationError(CSV_ERROR_MESSAGE, errors);
       }

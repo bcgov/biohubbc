@@ -1,3 +1,6 @@
+import dayjs from 'dayjs';
+import timezone from 'dayjs/plugin/timezone';
+import utc from 'dayjs/plugin/utc';
 import { v4 as uuid } from 'uuid';
 import { WorkSheet } from 'xlsx';
 import { IDBConnection } from '../../../database/db';
@@ -18,10 +21,14 @@ import {
   getTimeCellSetter,
   getTimeCellValidator
 } from '../../../utils/csv-utils/csv-header-configs';
+import { formatDateString, formatTimeString } from '../../../utils/date-time-utils';
 import { getLogger } from '../../../utils/logger';
 import { ILocation, IMortality } from '../../critterbase-service';
 import { DBService } from '../../db-service';
 import { SurveyCritterService } from '../../survey-critter-service';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const defaultLog = getLogger('services/import/import-mortalities-service');
 
@@ -192,13 +199,20 @@ export class ImportMortalitiesService extends DBService {
       mortality_id: uuid(),
       critter_id: row[CSVRowState]?.critterId,
       location_id: mortalityLocation.location_id as string,
-      mortality_timestamp: `${row.MORTALITY_DATE}${row.MORTALITY_TIME ? 'T' + row.MORTALITY_TIME : ''}`,
+      mortality_timestamp: dayjs
+        .tz(
+          row.MORTALITY_TIME
+            ? `${formatDateString(row.MORTALITY_DATE)} ${formatTimeString(row.MORTALITY_TIME)}`
+            : formatDateString(row.MORTALITY_DATE),
+          'America/Los_Angeles'
+        )
+        .format(),
       proximate_cause_of_death_id: causeOfDeathId,
-      proximate_cause_of_death_confidence: '', // Set as needed
-      proximate_predated_by_itis_tsn: '', // Set as needed
-      ultimate_cause_of_death_id: '', // Set as needed
-      ultimate_cause_of_death_confidence: '', // Set as needed
-      ultimate_predated_by_itis_tsn: '', // Set as needed
+      proximate_cause_of_death_confidence: null,
+      proximate_predated_by_itis_tsn: null,
+      ultimate_cause_of_death_id: null,
+      ultimate_cause_of_death_confidence: null,
+      ultimate_predated_by_itis_tsn: null,
       mortality_comment: row.MORTALITY_COMMENT,
       mortality_location: {
         latitude: row.MORTALITY_LATITUDE,
