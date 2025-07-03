@@ -141,6 +141,15 @@ export const getCritterCaptureFromRowState = createRowStateGetter(
   'getCritterCaptureFromRowState'
 );
 
+// Critter / Mortality
+export const getCritterMortalityFromRowState = createRowStateGetter(
+  z.object({
+    critter_id: z.string().uuid(),
+    mortality_id: z.string().uuid()
+  }),
+  'getCritterMortalityFromRowState'
+);
+
 // Taxon
 export const getTaxonFromRowState = createRowStateGetter(
   z.object({
