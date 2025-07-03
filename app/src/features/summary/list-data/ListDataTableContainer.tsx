@@ -10,7 +10,7 @@ import { useSearchParams } from 'hooks/useSearchParams';
 import { SidebarLayout } from 'layouts/SidebarLayout';
 import { useState } from 'react';
 import { TabularDataTableContainer } from '../tabular-data/TabularDataTableContainer';
-import { CollectionsListContainer } from './collection/CollectionListContainer';
+import { CollectionListContainer } from './collection/CollectionListContainer';
 import { CreateCollectionButton } from './collection/create/CreateCollectionButton';
 import { CreateSurveyButton } from './survey/create/CreateSurveyButton';
 
@@ -103,7 +103,7 @@ export const ListDataTableContainer = () => {
         </>
       }>
       {activeView === SUMMARY_ACTIVE_VIEW_VALUE.surveys && <SurveysListContainer showSearch={showSearch} />}
-      {activeView === SUMMARY_ACTIVE_VIEW_VALUE.collections && <CollectionsListContainer showSearch={showSearch} />}
+      {activeView === SUMMARY_ACTIVE_VIEW_VALUE.collections && <CollectionListContainer showSearch={showSearch} />}
       {activeView === SUMMARY_ACTIVE_VIEW_VALUE.data && <TabularDataTableContainer />}
     </SidebarLayout>
   );

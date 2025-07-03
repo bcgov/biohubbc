@@ -40,7 +40,6 @@ import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
 import { useSearchParams } from 'hooks/useSearchParams';
 
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
-import { SUMMARY_ACTIVE_VIEW_KEY, SUMMARY_ACTIVE_VIEW_VALUE } from 'features/summary/list-data/ListDataTableContainer';
 import { APIError } from 'hooks/api/useAxios';
 import { ICollection } from 'interfaces/useCollectionApi.interface';
 import { ApiPaginationRequestOptions, StringValues } from 'types/misc';
@@ -144,7 +143,6 @@ export const SubcollectionContainer = ({ collection, showSearch }: ICollectionsT
         try {
           await biohubApi.collection.deleteCollection(actionMenuAnchorEl.collectionId);
           collectionsDataLoader.refresh(paginationSort, advancedFiltersModel);
-          history.push(`/admin/summary?${SUMMARY_ACTIVE_VIEW_KEY}=${SUMMARY_ACTIVE_VIEW_VALUE.collections}`);
         } catch (error) {
           showDeleteErrorDialog({ dialogErrorDetails: [(error as APIError).message], open: true });
         } finally {

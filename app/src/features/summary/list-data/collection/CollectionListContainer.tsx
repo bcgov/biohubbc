@@ -51,7 +51,7 @@ type CollectionDataTableURLParams = {
 
 const pageSizeOptions = [10, 25, 50];
 
-interface ICollectionsListContainerProps {
+interface ICollectionListContainerProps {
   showSearch: boolean;
 }
 
@@ -65,10 +65,10 @@ const initialPaginationParams: Required<ApiPaginationRequestOptions> = {
 /**
  * Displays collections that the user has access to
  *
- * @param {ICollectionsListContainerProps} props
+ * @param {ICollectionListContainerProps} props
  * @returns
  */
-export const CollectionsListContainer = (props: ICollectionsListContainerProps) => {
+export const CollectionListContainer = (props: ICollectionListContainerProps) => {
   const { showSearch } = props;
 
   const biohubApi = useBiohubApi();
